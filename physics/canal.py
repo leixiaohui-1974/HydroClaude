@@ -92,9 +92,15 @@ class Canal(HydraulicComponent):
             self.state.flow = np.mean(self.hydraulic_state.Q)
 
         elif self.method == 'preissmann':
+            # 设置边界条件
+            boundary_conditions = {
+                'upstream_flow': inputs.get('upstream_flow', self.hydraulic_state.Q[0]),
+                'downstream_level': inputs.get('downstream_level', self.hydraulic_state.h[-1])
+            }
             self.hydraulic_state.h, self.hydraulic_state.Q = self.solver.solve_canal_step(
                 self.hydraulic_state.h, self.hydraulic_state.Q, dt, self.dx,
-                self.parameters['width'], self.parameters['manning_n'], self.slope, {}
+                self.parameters['width'], self.parameters['manning_n'], self.slope,
+                boundary_conditions
             )
             self.state.level = np.mean(self.hydraulic_state.h)
             self.state.flow = np.mean(self.hydraulic_state.Q)

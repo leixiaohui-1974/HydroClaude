@@ -23,6 +23,10 @@ class PreissmannSolver:
         h_new = h_old.copy()
         Q_new = Q_old.copy()
 
+        # 确保初始值合理
+        h_new = np.maximum(h_new, 0.1)
+        Q_new = np.maximum(Q_new, 0.01)
+
         for iteration in range(self.max_iter):
             J, R = self._build_jacobian_residual(
                 h_old, Q_old, h_new, Q_new,
@@ -32,22 +36,37 @@ class PreissmannSolver:
             J, R = self._apply_boundaries(J, R, boundary_conditions, n)
 
             try:
+                # 添加小的对角元素以提高数值稳定性
+                J_dense = J.toarray()
+                for i in range(2*n):
+                    if abs(J_dense[i, i]) < 1e-10:
+                        J_dense[i, i] = 1e-6
+
+                from scipy.sparse import csr_matrix
+                J = csr_matrix(J_dense)
+
                 dx_vector = spsolve(J, -R)
-            except:
-                print(f"Warning: 求解器在迭代{iteration}失败，使用显式步进")
+            except Exception as e:
+                print(f"Warning: 求解器在迭代{iteration}失败: {e}")
                 break
 
             dh = dx_vector[:n]
             dQ = dx_vector[n:]
 
+            # 限制每次迭代的变化量
+            dh = np.clip(dh, -0.5, 0.5)
+            dQ = np.clip(dQ, -1.0, 1.0)
+
             h_new += dh
             Q_new += dQ
+
+            # 确保物理合理性
+            h_new = np.maximum(h_new, 0.01)
+            Q_new = np.maximum(Q_new, 0.0)
 
             residual_norm = np.linalg.norm(R)
             if residual_norm < self.tolerance:
                 break
-
-            h_new = np.maximum(h_new, 0.01)
 
         return h_new, Q_new
 
@@ -118,22 +137,39 @@ class PreissmannSolver:
         return J.tocsr(), R
 
     def _apply_boundaries(self, J, R, bc: dict, n: int):
+        """应用边界条件"""
+        # 上游边界
         if 'upstream_level' in bc:
+            # 固定水位
+            J[0, :] = 0
+            J[0, 0] = 1
+            R[0] = 0  # h[0]已经被设为目标值
+        elif 'upstream_flow' in bc:
+            # 固定流量
+            J[n, :] = 0
+            J[n, n] = 1
+            R[n] = 0  # Q[0]已经被设为目标值
+        else:
+            # 默认：自由边界（保持当前状态）
             J[0, :] = 0
             J[0, 0] = 1
             R[0] = 0
-        elif 'upstream_flow' in bc:
-            J[n, :] = 0
-            J[n, n] = 1
-            R[n] = 0
 
+        # 下游边界
         if 'downstream_level' in bc:
+            # 固定水位
             J[n-1, :] = 0
             J[n-1, n-1] = 1
             R[n-1] = 0
         elif 'downstream_flow' in bc:
+            # 固定流量
             J[2*n-1, :] = 0
             J[2*n-1, 2*n-1] = 1
             R[2*n-1] = 0
+        else:
+            # 默认：自由边界
+            J[n-1, :] = 0
+            J[n-1, n-1] = 1
+            R[n-1] = 0
 
         return J, R
