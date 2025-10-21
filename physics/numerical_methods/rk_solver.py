@@ -109,7 +109,7 @@ class RKSolver:
         # 边界（简单处理）
         dH_dt[0] = dH_dt[1]
         dH_dt[-1] = dH_dt[-2]
-        dQ_dt[0] = 0
-        dQ_dt[-1] = 0
+        dQ_dt[0] = dQ_dt[1]
+        dQ_dt[-1] = dQ_dt[-2]
 
         return dH_dt, dQ_dt

@@ -131,8 +131,6 @@ class PreissmannSolver:
 
             # === 连续性方程 ===
             # ∂A/∂t + ∂Q/∂x = 0
-            continuity_residual = (A_new_mid - A_old_mid) / dt + \
-                                 (Q_theta - Q_theta) / dx  # 空间差分会在下面处理
 
             # 实际的空间导数 (使用θ加权)
             dQ_dx = (Q_new[i+1] - Q_new[i]) / dx * theta + \
@@ -143,43 +141,32 @@ class PreissmannSolver:
             R[i] = continuity_residual
 
             # 连续性方程的Jacobian
-            # ∂R_continuity/∂h_i
             J[i, i] = 0.5 * width / dt
             J[i, i+1] = 0.5 * width / dt
-            # ∂R_continuity/∂Q_i
             J[i, n+i] = -theta / dx
             J[i, n+i+1] = theta / dx
 
             # === 动量方程 ===
             # ∂Q/∂t + ∂(Q²/A)/∂x + gA∂h/∂x = gA(S₀ - Sf)
 
-            # 流速
-            V_theta = Q_theta / A_theta if A_theta > 0 else 0
+            V_theta = Q_theta / A_theta if A_theta > 1e-6 else 0
 
-            # 水力半径
             P_wetted = width + 2 * h_theta
-            R_hydraulic = A_theta / P_wetted if P_wetted > 0 else 0
+            R_hydraulic = A_theta / P_wetted if P_wetted > 1e-6 else 0
 
-            # 摩阻坡度 (Manning公式)
-            if R_hydraulic > 0 and abs(V_theta) > 1e-6:
-                Sf = (n_manning * V_theta)**2 / (R_hydraulic**(4/3))
-            else:
-                Sf = 0
+            Sf = (n_manning * V_theta)**2 / (R_hydraulic**(4/3)) if R_hydraulic > 1e-6 and abs(V_theta) > 1e-6 else 0
 
-            # 动量方程各项
             dQ_dt = (Q_new_mid - Q_old_mid) / dt
 
-            # 对流项 ∂(Q²/A)/∂x
-            Q2_A_i = Q_new[i]**2 / (h_new[i] * width) if h_new[i] > 0 else 0
-            Q2_A_i1 = Q_new[i+1]**2 / (h_new[i+1] * width) if h_new[i+1] > 0 else 0
-            d_Q2A_dx = (Q2_A_i1 - Q2_A_i) / dx * theta
+            Q2_A_i = Q_new[i]**2 / (h_new[i] * width) if h_new[i] > 1e-6 else 0
+            Q2_A_i1 = Q_new[i+1]**2 / (h_new[i+1] * width) if h_new[i+1] > 1e-6 else 0
+            d_Q2A_dx = (Q2_A_i1 - Q2_A_i) / dx * theta + \
+                       (Q_old[i+1]**2 / (h_old[i+1] * width) - Q_old[i]**2 / (h_old[i] * width)) / dx * (1 - theta)
 
-            # 压力项 gA∂h/∂x
             dh_dx = (h_new[i+1] - h_new[i]) / dx * theta + \
                     (h_old[i+1] - h_old[i]) / dx * (1 - theta)
             pressure_term = g * A_theta * dh_dx
 
-            # 源项
             source_term = g * A_theta * (S0 - Sf)
 
             momentum_residual = dQ_dt + d_Q2A_dx + pressure_term - source_term
@@ -192,14 +179,11 @@ class PreissmannSolver:
             Q_i = Q_new[i]
             Q_i1 = Q_new[i+1]
 
-            # Partial derivatives of R_momentum w.r.t. h_i, h_i+1, Q_i, Q_i+1
-            # 1. d(dQ_dt)/d...
             dR_dh_i = 0
             dR_dh_i1 = 0
             dR_dQ_i = 0.5 / dt
             dR_dQ_i1 = 0.5 / dt
 
-            # 2. d(d(Q²/A)/dx)/d...
             if A_i > 1e-6:
                 dR_dh_i += (theta/dx) * (Q_i**2 * width / A_i**2)
                 dR_dQ_i -= (theta/dx) * (2 * Q_i / A_i)
@@ -207,15 +191,10 @@ class PreissmannSolver:
                 dR_dh_i1 -= (theta/dx) * (Q_i1**2 * width / A_i1**2)
                 dR_dQ_i1 += (theta/dx) * (2 * Q_i1 / A_i1)
 
-            # 3. d(gA*dh/dx)/d...
-            dR_dh_i += (theta/dx) * (-g * 0.5 * width) # d(A_theta)/dh_i * g*dh_dx
-            dR_dh_i += (theta/dx) * (-g * A_theta / dx) # A_theta * d(g*dh_dx)/dh_i
-            dR_dh_i1 += (theta/dx) * (g * 0.5 * width)
-            dR_dh_i1 += (theta/dx) * (g * A_theta / dx)
-
-            # 4. d(-gA(S0-Sf))/d...
-            # This part is complex, simplified for now
-            # but the above terms are the most important for stability
+            dR_dh_i += (theta/dx) * (-g * 0.5 * width) * dh_dx
+            dR_dh_i += theta * (-g * A_theta / dx)
+            dR_dh_i1 += (theta/dx) * (g * 0.5 * width) * dh_dx
+            dR_dh_i1 += theta * (g * A_theta / dx)
 
             J[n+i, i] = dR_dh_i
             J[n+i, i+1] = dR_dh_i1
@@ -228,24 +207,20 @@ class PreissmannSolver:
         """应用边界条件"""
         # 上游边界 (使用空行 n-1)
         if 'upstream_level' in bc:
-            # h_new[0] = bc['upstream_level']
             J[n-1, :] = 0
             J[n-1, 0] = 1
             R[n-1] = h_new[0] - bc['upstream_level']
         elif 'upstream_flow' in bc:
-            # Q_new[0] = bc['upstream_flow']
             J[n-1, :] = 0
             J[n-1, n] = 1
             R[n-1] = Q_new[0] - bc['upstream_flow']
 
         # 下游边界 (使用空行 2n-1)
         if 'downstream_level' in bc:
-            # h_new[n-1] = bc['downstream_level']
             J[2*n-1, :] = 0
             J[2*n-1, n-1] = 1
             R[2*n-1] = h_new[n-1] - bc['downstream_level']
         elif 'downstream_flow' in bc:
-            # Q_new[n-1] = bc['downstream_flow']
             J[2*n-1, :] = 0
             J[2*n-1, 2*n-1] = 1
             R[2*n-1] = Q_new[n-1] - bc['downstream_flow']

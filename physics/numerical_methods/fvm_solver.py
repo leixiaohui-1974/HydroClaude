@@ -115,23 +115,29 @@ class FVMSolver:
 
     def _reconstruct_left(self, U: np.ndarray, i: int, limiter: str) -> np.ndarray:
         """重构界面左侧状态 (MUSCL格式)"""
-        if i == 1:
+        if i < 2:
             return U[:, i-1]
 
-        # 计算梯度
-        r = (U[:, i-1] - U[:, i-2]) / (U[:, i] - U[:, i-1] + 1e-10)
+        r_num = U[:, i-1] - U[:, i-2]
+        r_den = U[:, i] - U[:, i-1]
+
+        # Avoid division by zero
+        r = np.divide(r_num, r_den, out=np.ones_like(r_num), where=np.abs(r_den)>1e-10)
+
         phi = self._limiter_function(r, limiter)
 
-        # 重构
         U_left = U[:, i-1] + 0.5 * phi * (U[:, i] - U[:, i-1])
         return U_left
 
     def _reconstruct_right(self, U: np.ndarray, i: int, limiter: str) -> np.ndarray:
         """重构界面右侧状态"""
-        if i == len(U[0]) - 1:
+        if i < 1 or i >= len(U[0]) - 1:
             return U[:, i]
 
-        r = (U[:, i+1] - U[:, i]) / (U[:, i] - U[:, i-1] + 1e-10)
+        r_num = U[:, i+1] - U[:, i]
+        r_den = U[:, i] - U[:, i-1]
+
+        r = np.divide(r_num, r_den, out=np.ones_like(r_num), where=np.abs(r_den)>1e-10)
         phi = self._limiter_function(r, limiter)
 
         U_right = U[:, i] - 0.5 * phi * (U[:, i] - U[:, i-1])
@@ -144,7 +150,7 @@ class FVMSolver:
         elif limiter == 'superbee':
             return np.maximum(0, np.maximum(np.minimum(2*r, 1), np.minimum(r, 2)))
         elif limiter == 'vanleer':
-            return (r + np.abs(r)) / (1 + np.abs(r))
+            return (r + np.abs(r)) / (1 + np.abs(r) + 1e-10)
         else:
             return np.ones_like(r)  # 无限制
 
@@ -154,18 +160,16 @@ class FVMSolver:
         A_L, Q_L = U_left
         A_R, Q_R = U_right
 
-        # Handle dry states to prevent division by zero
         if A_L <= 1e-6: A_L, Q_L = 0, 0
         if A_R <= 1e-6: A_R, Q_R = 0, 0
 
         F_L = self._physical_flux(A_L, Q_L, g, width)
         F_R = self._physical_flux(A_R, Q_R, g, width)
 
-        # Wave speed calculations (celerity c = sqrt(g*h))
         h_L = A_L / width if width > 0 else 0
         h_R = A_R / width if width > 0 else 0
-        v_L = Q_L / A_L if A_L > 0 else 0
-        v_R = Q_R / A_R if A_R > 0 else 0
+        v_L = Q_L / A_L if A_L > 1e-6 else 0
+        v_R = Q_R / A_R if A_R > 1e-6 else 0
         c_L = np.sqrt(g * h_L)
         c_R = np.sqrt(g * h_R)
 
@@ -186,7 +190,7 @@ class FVMSolver:
                     F = 0.5 * (F_L + F_R)
                 else:
                     F = (S_R*F_L - S_L*F_R + S_L*S_R*(U_right - U_left)) / denominator
-        else: # Default to centered flux
+        else:
             F = 0.5 * (F_L + F_R)
 
         return F

@@ -1,18 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.font_manager
 from physics.canal_hf import CanalHighFidelity
 from physics.pipe_hf import PipeHighFidelity
 
-# Use the correct font path
-font_path = '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc'
-if font_path:
-    font_prop = matplotlib.font_manager.FontProperties(fname=font_path)
-    plt.rcParams['font.sans-serif'] = [font_prop.get_name()]
-    plt.rcParams['axes.unicode_minus'] = False
-
 def example_preissmann_vs_fvm():
     """示例：Preissmann vs FVM对比"""
+    import matplotlib.pyplot as plt
 
     print("\n" + "="*60)
     print("示例：Preissmann四点格式 vs 有限体积法对比")
@@ -112,6 +105,7 @@ def example_preissmann_vs_fvm():
 
 def example_pipe_rk4():
     """示例：管道RK4高精度求解"""
+    import matplotlib.pyplot as plt
 
     print("\n" + "="*60)
     print("示例：管道水击RK4高精度求解")
