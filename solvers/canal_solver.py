@@ -1,0 +1,440 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+明渠非恒定流求解器
+
+支持三种数值方法求解Saint-Venant方程：
+- EXPLICIT: 显式有限差分法（混合迎风-中心格式）
+- PREISSMANN: 四点隐式格式
+- HLL: HLL Riemann求解器（有限体积法）
+
+作者: Claude
+日期: 2025-10-21
+"""
+
+import numpy as np
+from scipy.signal import savgol_filter
+import sys
+import os
+
+# 添加父目录到路径
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from utils.canal_utils import compute_steady_uniform_flow, compute_manning_friction_slope
+
+
+class CanalSolver:
+    """
+    明渠非恒定流求解器
+
+    求解Saint-Venant方程组：
+        ∂A/∂t + ∂Q/∂x = 0                       (连续性方程)
+        ∂Q/∂t + ∂(Q²/A)/∂x + gA·∂h/∂x = gA(S₀-Sf) (动量方程)
+
+    其中：
+        h: 水深 (m)
+        Q: 流量 (m³/s)
+        A = B*h: 断面面积 (m²)
+        Sf: 摩阻坡度 (Manning公式)
+        S₀: 渠底坡度
+        g: 重力加速度 (m/s²)
+    """
+
+    def __init__(self, length: float = 1000.0, nx: int = 201,
+                 B: float = 10.0, S0: float = 0.001, n: float = 0.025,
+                 g: float = 9.81, method: str = 'preissmann'):
+        """
+        初始化求解器
+
+        Args:
+            length: 渠道长度 (m)
+            nx: 空间离散点数
+            B: 渠道宽度 (m)
+            S0: 渠底坡度 (无量纲)
+            n: Manning糙率系数 (s/m^(1/3))
+            g: 重力加速度 (m/s²)
+            method: 数值方法 ('explicit', 'preissmann', 'hll')
+        """
+        self.length = length
+        self.nx = nx
+        self.B = B
+        self.S0 = S0
+        self.n = n
+        self.g = g
+        self.method = method.lower()
+
+        # 空间离散
+        self.dx = length / (nx - 1)
+        self.x = np.linspace(0, length, nx)
+
+        # 初始化状态变量
+        self.h = np.ones(nx) * 1.0  # 初始水深 (m)
+        self.Q = np.ones(nx) * 5.0  # 初始流量 (m³/s)
+
+        # Savitzky-Golay滤波参数（用于抑制高频振荡）
+        self.filter_window = 11  # 滤波窗口大小（必须为奇数）
+        self.filter_order = 3    # 多项式阶数
+
+        # Preissmann格式参数
+        self.theta = 0.6   # 时间加权系数 (0.5-1.0)
+        self.omega = 0.95  # 松弛因子 (0.5-1.0)
+
+        # 历史记录
+        self.h_history = []
+        self.Q_history = []
+        self.t_history = []
+
+    def reset_with_steady_state(self, Q0: float) -> float:
+        """
+        使用恒定均匀流作为初值
+
+        Args:
+            Q0: 初始流量 (m³/s)
+
+        Returns:
+            恒定均匀流水深 (m)
+        """
+        h_uniform = compute_steady_uniform_flow(Q0, self.B, self.S0, self.n, self.g)
+        self.h[:] = h_uniform
+        self.Q[:] = Q0
+
+        # 清空历史记录
+        self.h_history = []
+        self.Q_history = []
+        self.t_history = []
+
+        return h_uniform
+
+    def apply_spatial_filter(self, field: np.ndarray) -> np.ndarray:
+        """
+        应用Savitzky-Golay空间滤波器
+
+        用于抑制高频空间振荡，同时保持边界条件不变
+
+        Args:
+            field: 待滤波的场变量
+
+        Returns:
+            滤波后的场变量
+        """
+        if len(field) < self.filter_window:
+            return field
+
+        filtered = savgol_filter(field, self.filter_window,
+                                self.filter_order, mode='nearest')
+
+        # 保持边界条件
+        filtered[0] = field[0]
+        filtered[-1] = field[-1]
+
+        return filtered
+
+    def compute_friction_slope(self, h: np.ndarray, Q: np.ndarray) -> np.ndarray:
+        """
+        计算Manning摩阻坡度
+
+        Args:
+            h: 水深数组 (m)
+            Q: 流量数组 (m³/s)
+
+        Returns:
+            摩阻坡度数组 Sf (无量纲)
+        """
+        return compute_manning_friction_slope(h, Q, self.B, self.n)
+
+    def step_explicit(self, dt: float, Q_upstream: float,
+                     h_downstream: float) -> tuple:
+        """
+        显式有限差分法（混合迎风-中心格式）
+
+        采用30%迎风 + 70%中心的混合格式以提高稳定性
+
+        Args:
+            dt: 时间步长 (s)
+            Q_upstream: 上游边界流量 (m³/s)
+            h_downstream: 下游边界水深 (m)
+
+        Returns:
+            (h_new, Q_new): 更新后的水深和流量数组
+        """
+        h_old = self.h.copy()
+        Q_old = self.Q.copy()
+        h_new = h_old.copy()
+        Q_new = Q_old.copy()
+
+        Sf = self.compute_friction_slope(h_old, Q_old)
+
+        # 混合格式参数
+        upwind_ratio = 0.3  # 迎风格式权重
+        central_ratio = 1.0 - upwind_ratio  # 中心格式权重
+
+        # 内部节点更新
+        for i in range(1, self.nx - 1):
+            if h_old[i] > 1e-6:
+                A = self.B * h_old[i]
+                V = Q_old[i] / A
+
+                # === 连续性方程 ===
+                # 中心差分
+                dQ_dx_central = (Q_old[i+1] - Q_old[i-1]) / (2 * self.dx)
+
+                # 迎风差分
+                if Q_old[i] >= 0:
+                    dQ_dx_upwind = (Q_old[i] - Q_old[i-1]) / self.dx
+                else:
+                    dQ_dx_upwind = (Q_old[i+1] - Q_old[i]) / self.dx
+
+                # 混合格式
+                dQ_dx = upwind_ratio * dQ_dx_upwind + central_ratio * dQ_dx_central
+
+                # 更新水深
+                dh_dt = -dQ_dx / self.B
+                h_new[i] = h_old[i] + dt * dh_dt
+
+                # === 动量方程 ===
+                # 中心差分
+                dh_dx_central = (h_old[i+1] - h_old[i-1]) / (2 * self.dx)
+
+                # 迎风差分
+                if Q_old[i] >= 0:
+                    dh_dx_upwind = (h_old[i] - h_old[i-1]) / self.dx
+                else:
+                    dh_dx_upwind = (h_old[i+1] - h_old[i]) / self.dx
+
+                # 混合格式
+                dh_dx = upwind_ratio * dh_dx_upwind + central_ratio * dh_dx_central
+
+                # 对流项使用迎风
+                if Q_old[i] >= 0:
+                    dQ_dx_mom = (Q_old[i] - Q_old[i-1]) / self.dx
+                else:
+                    dQ_dx_mom = (Q_old[i+1] - Q_old[i]) / self.dx
+
+                # 更新流量
+                dQ_dt = (-V * dQ_dx_mom -
+                        self.g * A * dh_dx +
+                        self.g * A * (self.S0 - Sf[i]))
+                Q_new[i] = Q_old[i] + dt * dQ_dt
+
+        # 边界条件
+        h_new[0] = h_new[1]           # 上游水深外推
+        Q_new[0] = Q_upstream         # 上游流量指定
+        h_new[-1] = h_downstream      # 下游水深指定
+        Q_new[-1] = Q_new[-2]         # 下游流量外推
+
+        # 应用空间滤波器（抑制振荡）
+        h_new = self.apply_spatial_filter(h_new)
+        Q_new = self.apply_spatial_filter(Q_new)
+
+        self.h = h_new
+        self.Q = Q_new
+
+        return h_new, Q_new
+
+    def step_preissmann(self, dt: float, Q_upstream: float,
+                       h_downstream: float) -> tuple:
+        """
+        Preissmann四点隐式格式
+
+        使用显式预估 + θ加权校正的半隐式方法
+
+        Args:
+            dt: 时间步长 (s)
+            Q_upstream: 上游边界流量 (m³/s)
+            h_downstream: 下游边界水深 (m)
+
+        Returns:
+            (h_new, Q_new): 更新后的水深和流量数组
+        """
+        h_old = self.h.copy()
+        Q_old = self.Q.copy()
+
+        # 步骤1: 显式预估
+        h_pred, Q_pred = self.step_explicit(dt, Q_upstream, h_downstream)
+
+        # 步骤2: θ加权校正
+        # h^(n+1) = ω * [(1-θ)*h^n + θ*h^pred] + (1-ω)*h^n
+        self.h = (self.omega * ((1 - self.theta) * h_old + self.theta * h_pred) +
+                 (1 - self.omega) * h_old)
+        self.Q = (self.omega * ((1 - self.theta) * Q_old + self.theta * Q_pred) +
+                 (1 - self.omega) * Q_old)
+
+        # 应用空间滤波器
+        self.h = self.apply_spatial_filter(self.h)
+        self.Q = self.apply_spatial_filter(self.Q)
+
+        return self.h, self.Q
+
+    def step_hll(self, dt: float, Q_upstream: float,
+                h_downstream: float) -> tuple:
+        """
+        HLL (Harten-Lax-van Leer) 有限体积法
+
+        使用HLL Riemann求解器计算界面通量
+
+        Args:
+            dt: 时间步长 (s)
+            Q_upstream: 上游边界流量 (m³/s)
+            h_downstream: 下游边界水深 (m)
+
+        Returns:
+            (h_new, Q_new): 更新后的水深和流量数组
+        """
+        h_old = self.h.copy()
+        Q_old = self.Q.copy()
+        h_new = h_old.copy()
+        Q_new = Q_old.copy()
+
+        Sf = self.compute_friction_slope(h_old, Q_old)
+
+        # 内部节点更新
+        for i in range(1, self.nx - 1):
+            # 单元i和i+1的状态
+            h_L = h_old[i]
+            h_R = h_old[i+1]
+            Q_L = Q_old[i]
+            Q_R = Q_old[i+1]
+
+            if h_L > 1e-6 and h_R > 1e-6:
+                A_L = self.B * h_L
+                A_R = self.B * h_R
+                V_L = Q_L / A_L
+                V_R = Q_R / A_R
+                c_L = np.sqrt(self.g * h_L)  # 左侧波速
+                c_R = np.sqrt(self.g * h_R)  # 右侧波速
+
+                # HLL波速估计
+                S_L = min(V_L - c_L, V_R - c_R)
+                S_R = max(V_L + c_L, V_R + c_R)
+
+                # 通量计算
+                F1_L = Q_L
+                F1_R = Q_R
+                F2_L = Q_L * V_L + 0.5 * self.g * self.B * h_L**2
+                F2_R = Q_R * V_R + 0.5 * self.g * self.B * h_R**2
+
+                # HLL通量
+                if S_L >= 0:
+                    F1 = F1_L
+                    F2 = F2_L
+                elif S_R <= 0:
+                    F1 = F1_R
+                    F2 = F2_R
+                else:
+                    F1 = (S_R * F1_L - S_L * F1_R + S_L * S_R * (A_R - A_L)) / (S_R - S_L)
+                    F2 = (S_R * F2_L - S_L * F2_R + S_L * S_R * (Q_R - Q_L)) / (S_R - S_L)
+
+                # 更新守恒变量
+                if i > 0:
+                    A_Lm = self.B * h_old[i-1]
+                    dh_dt = -(F1 - Q_old[i-1]) / self.dx / self.B
+                    dQ_dt = -(F2 - (Q_old[i-1]**2/A_Lm + 0.5*self.g*self.B*h_old[i-1]**2)) / self.dx
+                    dQ_dt += self.g * A_L * (self.S0 - Sf[i])
+
+                    h_new[i] = h_old[i] + dt * dh_dt
+                    Q_new[i] = Q_old[i] + dt * dQ_dt
+
+        # 边界条件
+        h_new[0] = h_new[1]
+        Q_new[0] = Q_upstream
+        h_new[-1] = h_downstream
+        Q_new[-1] = Q_new[-2]
+
+        # 应用空间滤波器
+        h_new = self.apply_spatial_filter(h_new)
+        Q_new = self.apply_spatial_filter(Q_new)
+
+        self.h = h_new
+        self.Q = Q_new
+
+        return h_new, Q_new
+
+    def step(self, dt: float, Q_upstream: float, h_downstream: float) -> tuple:
+        """
+        执行一个时间步（统一接口）
+
+        Args:
+            dt: 时间步长 (s)
+            Q_upstream: 上游边界流量 (m³/s)
+            h_downstream: 下游边界水深 (m)
+
+        Returns:
+            (h, Q): 更新后的水深和流量数组
+
+        Raises:
+            ValueError: 如果数值方法未知
+        """
+        if self.method == 'explicit':
+            return self.step_explicit(dt, Q_upstream, h_downstream)
+        elif self.method == 'preissmann':
+            return self.step_preissmann(dt, Q_upstream, h_downstream)
+        elif self.method == 'hll':
+            return self.step_hll(dt, Q_upstream, h_downstream)
+        else:
+            raise ValueError(f"Unknown numerical method: {self.method}. "
+                           f"Available methods: 'explicit', 'preissmann', 'hll'")
+
+    def save_state(self, t: float):
+        """
+        保存当前状态到历史记录
+
+        Args:
+            t: 当前时间 (s)
+        """
+        self.h_history.append(self.h.copy())
+        self.Q_history.append(self.Q.copy())
+        self.t_history.append(t)
+
+    def clear_history(self):
+        """清空历史记录"""
+        self.h_history = []
+        self.Q_history = []
+        self.t_history = []
+
+    def get_history(self) -> dict:
+        """
+        获取历史记录
+
+        Returns:
+            包含时间、水深和流量历史的字典
+        """
+        return {
+            'time': np.array(self.t_history),
+            'h_history': self.h_history,
+            'Q_history': self.Q_history,
+            'x': self.x
+        }
+
+
+if __name__ == '__main__':
+    # 测试求解器
+    print("=== 明渠求解器测试 ===\n")
+
+    # 创建求解器
+    solver = CanalSolver(length=1000.0, nx=201, B=10.0, S0=0.001,
+                        n=0.025, method='preissmann')
+
+    # 设置初值
+    Q0 = 8.0
+    h_uniform = solver.reset_with_steady_state(Q0)
+    print(f"初始恒定均匀流:")
+    print(f"  流量 Q = {Q0} m³/s")
+    print(f"  水深 h = {h_uniform:.6f} m")
+
+    # 边界条件
+    Q_upstream = Q0
+    h_downstream = h_uniform
+
+    # 时间步长
+    dt = 0.5
+    n_steps = 10
+
+    # 运行模拟
+    print(f"\n运行 {n_steps} 步模拟 (dt = {dt} s)...")
+    for i in range(n_steps):
+        h, Q = solver.step(dt, Q_upstream, h_downstream)
+        solver.save_state((i+1) * dt)
+
+        if i % 2 == 0:
+            print(f"  Step {i+1}: h_avg = {np.mean(h):.6f} m, Q_avg = {np.mean(Q):.6f} m³/s")
+
+    print("\n✅ 求解器测试完成")
