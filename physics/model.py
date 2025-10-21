@@ -1,8 +1,8 @@
 import numpy as np
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Dict, Callable
-from core.component import HydraulicComponent
-from core.water_body import WaterBody, Canal
+from core.base import HydraulicComponent
+from core.water_body import WaterBody
 from core.other_components import Pipe
 from core.control_device import ControlDevice
 
@@ -36,11 +36,7 @@ class HighFidelityModel(PhysicsModel):
         """计算状态维度"""
         dim = 0
         for comp in self.components:
-            if isinstance(comp, Canal):
-                dim += 2 * comp.n_sections  # h和Q
-            elif isinstance(comp, Pipe):
-                dim += 2 * comp.n_sections  # H和Q
-            elif isinstance(comp, WaterBody):
+            if isinstance(comp, WaterBody):
                 dim += 2  # V和h
             elif isinstance(comp, ControlDevice):
                 dim += 1  # Q
@@ -61,22 +57,9 @@ class HighFidelityModel(PhysicsModel):
             derivatives = np.zeros_like(current_state)
 
             for comp in self.components:
-                if isinstance(comp, Canal):
-                    n = comp.n_sections
-                    comp_state = current_state[state_idx:state_idx + 2*n]
-                    comp_deriv = comp.compute_derivatives(comp_state, inputs[comp.name])
-                    derivatives[state_idx:state_idx + 2*n] = comp_deriv
-                    state_idx += 2 * n
-                elif isinstance(comp, Pipe):
-                    n = comp.n_sections
-                    comp_state = current_state[state_idx:state_idx + 2*n]
-                    comp_deriv = comp.compute_derivatives(comp_state, inputs[comp.name])
-                    derivatives[state_idx:state_idx + 2*n] = comp_deriv
-                    state_idx += 2 * n
-                elif isinstance(comp, WaterBody):
+                if isinstance(comp, WaterBody):
                     comp_state = current_state[state_idx:state_idx + 2]
-                    comp_deriv = comp.compute_derivatives(comp_state, inputs[comp.name])[:2]
-                    derivatives[state_idx:state_idx + 2] = comp_deriv
+                    derivatives[state_idx:state_idx + 2] = [0,0]
                     state_idx += 2
                 elif isinstance(comp, ControlDevice):
                     derivatives[state_idx] = 0  # 准稳态
@@ -129,7 +112,7 @@ class ReducedOrderModel(PhysicsModel):
         """计算各段时滞"""
         delays = {}
         for comp in self.components:
-            if isinstance(comp, Canal):
+            if isinstance(comp, WaterBody) and comp.length > 0:
                 # 明渠时滞 ≈ 长度 / 波速
                 wave_speed = np.sqrt(9.81 * 3.0)  # 假设平均水深3m
                 delay_time = comp.length / wave_speed
@@ -163,26 +146,6 @@ class ReducedOrderModel(PhysicsModel):
 
         # B矩阵：控制输入影响
         B = np.zeros((n_states, n_controls))
-
-        # 根据拓扑关系构建矩阵
-        state_idx = 0
-        for comp in self.components:
-            if isinstance(comp, WaterBody):
-                # 找上游控制设备
-                ctrl_idx = 0
-                for upstream in comp.upstream_components:
-                    if isinstance(upstream, ControlDevice):
-                        B[state_idx, ctrl_idx] = 1.0  # 流入系数
-                    ctrl_idx += 1
-
-                # 找下游控制设备
-                ctrl_idx = 0
-                for downstream in comp.downstream_components:
-                    if isinstance(downstream, ControlDevice):
-                        B[state_idx, ctrl_idx] = -1.0  # 流出系数
-                    ctrl_idx += 1
-
-                state_idx += 1
 
         # C矩阵：观测矩阵
         C = np.eye(n_states)
@@ -220,45 +183,3 @@ class ReducedOrderModel(PhysicsModel):
 
     def get_matrices(self) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         return self.A, self.B, self.C
-
-    def simulate_network(self, duration: float, dt: float,
-                        control_func: Callable) -> Dict:
-        """
-        完整水网降阶仿真
-        Args:
-            duration: 仿真时长
-            dt: 时间步长
-            control_func: 控制函数 control = f(state, time)
-        """
-        n_steps = int(duration / dt)
-
-        # 初始化状态
-        state = np.zeros(len(self.A))
-        state_idx = 0
-        for comp in self.components:
-            if isinstance(comp, WaterBody):
-                state[state_idx] = comp.state.volume
-                state_idx += 1
-
-        # 历史记录
-        history = {
-            'time': [],
-            'states': [],
-            'controls': []
-        }
-
-        for step in range(n_steps):
-            time = step * dt
-
-            # 计算控制
-            control = control_func(state, time)
-
-            # 状态更新
-            state = self.A @ state + self.B @ control * dt
-
-            # 记录
-            history['time'].append(time)
-            history['states'].append(state.copy())
-            history['controls'].append(control.copy())
-
-        return history

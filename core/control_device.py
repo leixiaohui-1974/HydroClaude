@@ -1,24 +1,32 @@
 import numpy as np
 from typing import Dict, Tuple
-from core.component import HydraulicComponent, ComponentType, ComponentState
+from core.base import HydraulicComponent
+from core.enums import ComponentType
+from core.states import ComponentState
 
 class ControlDevice(HydraulicComponent):
     """控制设备基类"""
 
     def __init__(self, name: str, comp_type: ComponentType,
                  flow_min: float, flow_max: float):
-        super().__init__(name, comp_type)
+        super().__init__(name, comp_type.value)
         self.flow_min = flow_min
         self.flow_max = flow_max
+        self.state = ComponentState()
         self.state.flow = (flow_min + flow_max) / 2
 
     def get_constraints(self) -> Dict[str, Tuple[float, float]]:
         return {'flow': (self.flow_min, self.flow_max)}
 
-    def compute_derivatives(self, state_vector: np.ndarray,
-                          inputs: Dict[str, float]) -> np.ndarray:
-        """控制设备状态变化较快，认为准稳态"""
-        return np.zeros(4)
+    def update_high_fidelity(self, dt: float, inputs: Dict) -> ComponentState:
+        """For control devices, high-fidelity is the same as reduced-order."""
+        return self.update_reduced_order(dt, inputs)
+
+    def update_reduced_order(self, dt: float, inputs: Dict) -> ComponentState:
+        """Base implementation for reduced-order update."""
+        # This will be overridden by child classes with specific logic.
+        # Default is to do nothing.
+        return self.state
 
 class Gate(ControlDevice):
     """闸门 - 实现堰流/孔流方程"""
@@ -31,40 +39,12 @@ class Gate(ControlDevice):
         self.state.opening = max_opening / 2
         self.Cd = 0.6  # 流量系数
 
-    def update_state(self, dt: float, inputs: Dict[str, float]) -> ComponentState:
+    def update_reduced_order(self, dt: float, inputs: Dict[str, float]) -> ComponentState:
         """闸门水力学计算"""
-        target_flow = inputs.get('target_flow', self.state.flow)
-        upstream_level = inputs.get('upstream_level', 5.0)
-        downstream_level = inputs.get('downstream_level', 4.0)
+        target_flow = inputs.get('control', self.state.flow)
 
-        # 限制目标流量
-        target_flow = np.clip(target_flow, self.flow_min, self.flow_max)
-
-        # 水头差
-        delta_h = upstream_level - downstream_level
-
-        if delta_h > 0:
-            # 自由堰流（当开度较小时）
-            if self.state.opening < upstream_level * 0.67:
-                # 堰流公式: Q = Cd * b * a * sqrt(2*g*H)
-                g = 9.81
-                Q_capacity = self.Cd * self.width * self.state.opening * \
-                            np.sqrt(2 * g * upstream_level)
-            else:
-                # 孔流公式: Q = Cd * A * sqrt(2*g*delta_h)
-                area = self.width * self.state.opening
-                Q_capacity = self.Cd * area * np.sqrt(2 * 9.81 * delta_h)
-
-            # 实际流量不超过容量
-            self.state.flow = min(target_flow, Q_capacity)
-        else:
-            self.state.flow = 0
-
-        # 反算开度
-        if upstream_level > 0:
-            self.state.opening = self.state.flow / \
-                (self.Cd * self.width * np.sqrt(2 * 9.81 * upstream_level) + 1e-6)
-            self.state.opening = np.clip(self.state.opening, 0, self.max_opening)
+        # Simple implementation for now
+        self.state.flow = np.clip(target_flow, self.flow_min, self.flow_max)
 
         return self.state
 
@@ -78,32 +58,10 @@ class Valve(ControlDevice):
         self.Cv = Cv  # 阀门流量系数
         self.state.opening = 0.5  # 开度 0-1
 
-    def update_state(self, dt: float, inputs: Dict[str, float]) -> ComponentState:
+    def update_reduced_order(self, dt: float, inputs: Dict[str, float]) -> ComponentState:
         """阀门水力学计算"""
-        target_flow = inputs.get('target_flow', self.state.flow)
-        upstream_pressure = inputs.get('upstream_pressure', 40.0)
-        downstream_pressure = inputs.get('downstream_pressure', 35.0)
-
+        target_flow = inputs.get('control', self.state.flow)
         self.state.flow = np.clip(target_flow, self.flow_min, self.flow_max)
-
-        # 阀门方程: Q = Cv * tau * sqrt(delta_P)
-        # tau 是开度函数，这里简化为线性
-        delta_P = max(0.1, upstream_pressure - downstream_pressure)
-
-        # 计算所需开度
-        Q_max = self.Cv * np.sqrt(delta_P)
-        self.state.opening = self.state.flow / (Q_max + 1e-6)
-        self.state.opening = np.clip(self.state.opening, 0, 1)
-
-        # 压降计算
-        if self.state.opening > 0.01:
-            actual_Cv = self.Cv * self.state.opening
-            pressure_drop = (self.state.flow / actual_Cv)**2
-        else:
-            pressure_drop = upstream_pressure
-
-        self.state.pressure = max(0, upstream_pressure - pressure_drop)
-
         return self.state
 
 class Pump(ControlDevice):
@@ -127,61 +85,38 @@ class Pump(ControlDevice):
 
     def _compute_curve_coefficients(self):
         """计算H-Q特性曲线系数: H = a*Q^2 + b*Q + c"""
-        # 三点确定抛物线
-        # 点1: (0, head_max) - 零流量扬程
-        # 点2: (rated_flow, rated_head) - 额定工况点
-        # 点3: (flow_max, head_min) - 最大流量扬程
-
         Q = np.array([0, self.rated_flow, self.flow_max])
         H = np.array([self.head_max, self.rated_head, self.head_min])
-
-        # 拟合二次曲线
         self.curve_coeffs = np.polyfit(Q, H, 2)
-        self.a, self.b, self.c = self.curve_coeffs
 
     def _compute_head(self, flow: float) -> float:
         """根据特性曲线计算扬程"""
-        return self.a * flow**2 + self.b * flow + self.c
+        return np.polyval(self.curve_coeffs, flow)
 
     def _compute_efficiency(self, flow: float) -> float:
         """计算效率（简化为高斯曲线）"""
-        if flow < 1e-6:
-            return 0.1
-
-        # 在额定点效率最高
+        if flow < 1e-6: return 0.1
         sigma = self.rated_flow * 0.3
         eta = self.state.efficiency * np.exp(-((flow - self.rated_flow)**2) / (2 * sigma**2))
         return max(0.1, min(0.95, eta))
 
-    def update_state(self, dt: float, inputs: Dict[str, float]) -> ComponentState:
+    def update_reduced_order(self, dt: float, inputs: Dict[str, float]) -> ComponentState:
         """泵站特性计算"""
-        target_flow = inputs.get('target_flow', self.state.flow)
-        suction_level = inputs.get('suction_level', 0.0)
-        discharge_level = inputs.get('discharge_level', 0.0)
-
+        target_flow = inputs.get('control', self.state.flow)
         self.state.flow = np.clip(target_flow, self.flow_min, self.flow_max)
 
         if self.state.flow > 0.1:
             self.is_running = True
-
-            # 根据特性曲线计算扬程
             self.state.head = self._compute_head(self.state.flow)
-            self.state.pressure = self.state.head
-
-            # 计算效率
             eta = self._compute_efficiency(self.state.flow)
-
-            # 计算功率: P = ρ*g*Q*H / η
-            rho = 1000  # kg/m³
-            g = 9.81    # m/s²
-            self.state.power = (rho * g * self.state.flow * self.state.head) / (eta * 1000)
+            rho = 1000
+            g = 9.81
+            self.state.power = (rho * g * self.state.flow * self.state.head) / (eta * 1000) if eta > 0 else 0
             self.state.efficiency = eta
         else:
             self.is_running = False
             self.state.power = 0
             self.state.head = 0
-            self.state.pressure = 0
-
         return self.state
 
     def get_constraints(self) -> Dict[str, Tuple[float, float]]:

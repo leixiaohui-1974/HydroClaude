@@ -1,5 +1,5 @@
 import numpy as np
-from core.water_body import Canal
+from physics.canal import Canal
 from core.other_components import Pipe
 from core.control_device import Pump
 
@@ -27,11 +27,11 @@ class ModelValidator:
             inputs = {'inflow': inflow, 'outflow': outflow}
 
             # 高保真更新
-            canal.update_state_high_fidelity(dt, inputs)
+            canal.update_high_fidelity(dt, inputs)
             history_high_fidelity.append(canal.state.level)
 
             # 降阶更新
-            canal.update_state(dt, inputs)
+            canal.update_reduced_order(dt, inputs)
             history_reduced_order.append(canal.state.level)
 
         # 比较结果
@@ -57,7 +57,7 @@ class ModelValidator:
             flow = 5.0 if step < n_steps / 2 else 0.5
             inputs = {'inflow': flow, 'outflow': flow, 'upstream_pressure': 50.0}
 
-            pipe.update_state_high_fidelity(dt, inputs)
+            pipe.update_high_fidelity(dt, inputs)
 
         print(f"✓ 最大压力: {np.max(pipe.H_nodes):.2f} m")
         print(f"✓ 压力波动: {np.std(pipe.H_nodes):.2f} m")
@@ -77,7 +77,7 @@ class ModelValidator:
         efficiencies = []
 
         for Q in flows:
-            pump.update_state(1.0, {'target_flow': Q})
+            pump.update_reduced_order(1.0, {'target_flow': Q})
             heads.append(pump.state.head)
             powers.append(pump.state.power)
             efficiencies.append(pump.state.efficiency)

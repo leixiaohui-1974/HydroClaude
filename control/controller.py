@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Tuple, List
 from scipy.optimize import minimize, linprog
 from physics.model import PhysicsModel
-from core.component import HydraulicComponent
+from core.base import HydraulicComponent
 from core.control_device import Pump
 
 class Controller(ABC):

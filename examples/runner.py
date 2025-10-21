@@ -3,12 +3,14 @@ import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings('ignore')
 
-from core.water_body import Canal, Reservoir, SettlingBasin, StorageTank
+from physics.canal import Canal
+from core.water_body import Reservoir, SettlingBasin, StorageTank
 from core.control_device import Gate, Valve, Pump
 from core.other_components import Pipe, DistributionPoint
 from control.controller import PIDController
-from simulation.engine import SimulationEngine
+from simulation.plant_simulator import PlantSimulator
 from validation.validator import ModelValidator
+from core.control_device import ControlDevice
 
 def example_1_simple_canal():
     """示例1: 简单明渠 + 模型对比"""
@@ -16,23 +18,35 @@ def example_1_simple_canal():
     print("示例1: 简单明渠系统 - 高保真vs降阶模型对比")
     print("="*60)
 
-    canal = Canal("渠池1", 5000, 10000, 300, 5000, slope=0.0002, method='fvm')
-    gate = Gate("闸门1", 0, 10, width=5.0)
-    gate.add_upstream(canal)
-
-    pid = PIDController(0.5, 0.1, 0.05, (0, 10))
-
     # 降阶模式
-    engine_reduced = SimulationEngine([canal, gate], pid, dt=60, mode='reduced')
-    history_reduced = engine_reduced.run(3600 * 2)
+    canal_r = Canal("渠池1", 5000, 10000, 300, 5000)
+    gate_r = Gate("闸门1", 0, 10, width=5.0)
+    gate_r.set_upstream(canal_r)
+
+    engine_reduced = PlantSimulator([canal_r, gate_r], mode='reduced')
+
+    history_reduced = {'time': [], 'states': {'渠池1': [], '闸门1': []}, 'controls': {'闸门1': []}}
+    for _ in range(120):
+        states = engine_reduced.step(60)
+        history_reduced['time'].append(engine_reduced.time)
+        history_reduced['states']['渠池1'].append(states['渠池1'].to_dict())
+        history_reduced['states']['闸门1'].append(states['闸门1'].to_dict())
+        history_reduced['controls']['闸门1'].append(states['闸门1'].flow)
 
     # 高保真模式
-    canal2 = Canal("渠池2", 5000, 10000, 300, 5000, slope=0.0002, method='fvm')
-    gate2 = Gate("闸门2", 0, 10, width=5.0)
-    gate2.add_upstream(canal2)
+    canal_h = Canal("渠池2", 5000, 10000, 300, 5000)
+    gate_h = Gate("闸门2", 0, 10, width=5.0)
+    gate_h.set_upstream(canal_h)
 
-    engine_high = SimulationEngine([canal2, gate2], pid, dt=60, mode='high_fidelity')
-    history_high = engine_high.run(3600 * 2)
+    engine_high = PlantSimulator([canal_h, gate_h], mode='high_fidelity')
+
+    history_high = {'time': [], 'states': {'渠池2': [], '闸门2': []}, 'controls': {'闸门2': []}}
+    for _ in range(120):
+        states = engine_high.step(60)
+        history_high['time'].append(engine_high.time)
+        history_high['states']['渠池2'].append(states['渠池2'].to_dict())
+        history_high['states']['闸门2'].append(states['闸门2'].to_dict())
+        history_high['controls']['闸门2'].append(states['闸门2'].flow)
 
     # 对比可视化
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
@@ -63,11 +77,10 @@ def example_1_simple_canal():
 
     # 流量对比
     ax = axes[1, 0]
-    if '闸门1' in history_reduced['controls']:
-        flow_r = history_reduced['controls']['闸门1']
-        flow_h = history_high['controls']['闸门2']
-        ax.plot(time_r, flow_r, 'g-', linewidth=2, label='降阶')
-        ax.plot(time_h, flow_h, 'm--', linewidth=2, label='高保真')
+    flow_r = history_reduced['controls']['闸门1']
+    flow_h = history_high['controls']['闸门2']
+    ax.plot(time_r, flow_r, 'g-', linewidth=2, label='降阶')
+    ax.plot(time_h, flow_h, 'm--', linewidth=2, label='高保真')
     ax.set_xlabel('时间 (小时)')
     ax.set_ylabel('流量 (m³/s)')
     ax.set_title('闸门流量对比')
@@ -108,7 +121,7 @@ def example_2_pump_characteristics():
     efficiencies = []
 
     for Q in flows:
-        pump.update_state(1.0, {'target_flow': Q})
+        pump.update_reduced_order(1.0, {'target_flow': Q})
         heads.append(pump.state.head)
         powers.append(pump.state.power)
         efficiencies.append(pump.state.efficiency)
@@ -156,9 +169,9 @@ def example_3_complex_network_with_pumps():
     # 主线组件
     reservoir = Reservoir("水库", 80000, 120000, 5000)
     inlet_gate = Gate("入口闸", 0, 15, width=6.0)
-    canal1 = Canal("上游渠池", 6000, 12000, 400, 8000, method='preissmann')
+    canal1 = Canal("上游渠池", 6000, 12000, 400, 8000)
     upstream_gate = Gate("上游闸", 0, 15, width=6.0)
-    canal2 = Canal("中游渠池", 5000, 10000, 350, 7000, method='preissmann')
+    canal2 = Canal("中游渠池", 5000, 10000, 350, 7000)
     midstream_gate = Gate("中游闸", 0, 15, width=6.0)
     settling_basin = SettlingBasin("稳流池", 3000, 8000, 200)
     middle_valve = Valve("中间阀", 0, 12, diameter=1.2)
@@ -167,26 +180,26 @@ def example_3_complex_network_with_pumps():
 
     # 泵站分支
     pump1 = Pump("一级泵站", 0, 8, 15, 35, rated_flow=5.0, rated_head=25.0, efficiency=0.78)
-    canal_branch1 = Canal("分支渠道1", 2000, 5000, 150, 4000, method='preissmann')
+    canal_branch1 = Canal("分支渠道1", 2000, 5000, 150, 4000)
     pump2 = Pump("二级泵站", 0, 6, 15, 30, rated_flow=4.0, rated_head=22.0, efficiency=0.75)
-    canal_branch2 = Canal("分支渠道2", 1500, 4000, 120, 3000, method='preissmann')
+    canal_branch2 = Canal("分支渠道2", 1500, 4000, 120, 3000)
 
     # 连接拓扑
-    inlet_gate.add_upstream(reservoir)
-    canal1.add_upstream(inlet_gate)
-    upstream_gate.add_upstream(canal1)
-    canal2.add_upstream(upstream_gate)
-    midstream_gate.add_upstream(canal2)
-    settling_basin.add_upstream(midstream_gate)
+    inlet_gate.set_upstream(reservoir)
+    canal1.set_upstream(inlet_gate)
+    upstream_gate.set_upstream(canal1)
+    canal2.set_upstream(upstream_gate)
+    midstream_gate.set_upstream(canal2)
+    settling_basin.set_upstream(midstream_gate)
 
-    middle_valve.add_upstream(settling_basin)
-    terminal_valve.add_upstream(middle_valve)
-    elevated_tank.add_upstream(terminal_valve)
+    middle_valve.set_upstream(settling_basin)
+    terminal_valve.set_upstream(middle_valve)
+    elevated_tank.set_upstream(terminal_valve)
 
-    pump1.add_upstream(settling_basin)
-    canal_branch1.add_upstream(pump1)
-    pump2.add_upstream(canal_branch1)
-    canal_branch2.add_upstream(pump2)
+    pump1.set_upstream(settling_basin)
+    canal_branch1.set_upstream(pump1)
+    pump2.set_upstream(canal_branch1)
+    canal_branch2.set_upstream(pump2)
 
     components = [
         reservoir, inlet_gate, canal1, upstream_gate, canal2,
@@ -194,12 +207,22 @@ def example_3_complex_network_with_pumps():
         elevated_tank, pump1, canal_branch1, pump2, canal_branch2
     ]
 
-    # 简单PID控制
-    pid = PIDController(0.5, 0.1, 0.05, (0, 15))
-
     # 降阶模式仿真（快速）
-    engine = SimulationEngine(components, pid, dt=60, mode='reduced')
-    history = engine.run(3600 * 8)  # 8小时
+    engine = PlantSimulator(components, mode='reduced')
+
+    history = {
+        'time': [],
+        'states': {comp.name: [] for comp in components},
+        'controls': {comp.name: [] for comp in components if isinstance(comp, ControlDevice)},
+    }
+    for _ in range(480):
+        states = engine.step(60)
+        history['time'].append(engine.time)
+        for name, state in states.items():
+            history['states'][name].append(state.to_dict())
+            comp = engine.components[name]
+            if isinstance(comp, ControlDevice):
+                history['controls'][name].append(state.flow)
 
     # 可视化
     fig = plt.figure(figsize=(16, 12))
@@ -233,12 +256,9 @@ def example_3_complex_network_with_pumps():
 
     # 4. 闸门流量
     ax4 = fig.add_subplot(gs[1, 0])
-    if '入口闸' in history['controls']:
-        ax4.plot(time, history['controls']['入口闸'], label='入口闸')
-    if '上游闸' in history['controls']:
-        ax4.plot(time, history['controls']['上游闸'], label='上游闸')
-    if '中游闸' in history['controls']:
-        ax4.plot(time, history['controls']['中游闸'], label='中游闸')
+    ax4.plot(time, [s['flow'] for s in history['states']['入口闸']], label='入口闸')
+    ax4.plot(time, [s['flow'] for s in history['states']['上游闸']], label='上游闸')
+    ax4.plot(time, [s['flow'] for s in history['states']['中游闸']], label='中游闸')
     ax4.set_ylabel('流量 (m³/s)')
     ax4.set_title('闸门流量')
     ax4.legend()
@@ -246,10 +266,8 @@ def example_3_complex_network_with_pumps():
 
     # 5. 阀门流量
     ax5 = fig.add_subplot(gs[1, 1])
-    if '中间阀' in history['controls']:
-        ax5.plot(time, history['controls']['中间阀'], 'g-', label='中间阀')
-    if '末端阀' in history['controls']:
-        ax5.plot(time, history['controls']['末端阀'], 'm-', label='末端阀')
+    ax5.plot(time, [s['flow'] for s in history['states']['中间阀']], 'g-', label='中间阀')
+    ax5.plot(time, [s['flow'] for s in history['states']['末端阀']], 'm-', label='末端阀')
     ax5.set_ylabel('流量 (m³/s)')
     ax5.set_title('阀门流量')
     ax5.legend()
@@ -257,86 +275,19 @@ def example_3_complex_network_with_pumps():
 
     # 6. 泵站流量
     ax6 = fig.add_subplot(gs[1, 2])
-    if '一级泵站' in history['controls']:
-        ax6.plot(time, history['controls']['一级泵站'], 'b-', linewidth=2, label='一级泵站')
-    if '二级泵站' in history['controls']:
-        ax6.plot(time, history['controls']['二级泵站'], 'r-', linewidth=2, label='二级泵站')
+    ax6.plot(time, [s['flow'] for s in history['states']['一级泵站']], 'b-', linewidth=2, label='一级泵站')
+    ax6.plot(time, [s['flow'] for s in history['states']['二级泵站']], 'r-', linewidth=2, label='二级泵站')
     ax6.set_ylabel('流量 (m³/s)')
     ax6.set_title('泵站流量')
     ax6.legend()
     ax6.grid(True, alpha=0.3)
 
-    # 7. 泵站扬程
-    ax7 = fig.add_subplot(gs[2, 0])
-    ax7.plot(time, [s['head'] for s in history['states']['一级泵站']], 'b-', label='一级')
-    ax7.plot(time, [s['head'] for s in history['states']['二级泵站']], 'r-', label='二级')
-    ax7.set_ylabel('扬程 (m)')
-    ax7.set_title('泵站扬程')
-    ax7.legend()
-    ax7.grid(True, alpha=0.3)
-
-    # 8. 泵站功率
-    ax8 = fig.add_subplot(gs[2, 1])
-    ax8.plot(time, [s['power'] for s in history['states']['一级泵站']], 'b-', label='一级')
-    ax8.plot(time, [s['power'] for s in history['states']['二级泵站']], 'r-', label='二级')
-    ax8.set_ylabel('功率 (kW)')
-    ax8.set_title('泵站功率')
-    ax8.legend()
-    ax8.grid(True, alpha=0.3)
-
-    # 9. 泵站效率
-    ax9 = fig.add_subplot(gs[2, 2])
-    ax9.plot(time, [s['efficiency']*100 for s in history['states']['一级泵站']], 'b-', label='一级')
-    ax9.plot(time, [s['efficiency']*100 for s in history['states']['二级泵站']], 'r-', label='二级')
-    ax9.set_ylabel('效率 (%)')
-    ax9.set_title('泵站效率')
-    ax9.legend()
-    ax9.grid(True, alpha=0.3)
-
-    # 10. 分支渠道
-    ax10 = fig.add_subplot(gs[3, 0])
-    ax10.plot(time, [s['volume'] for s in history['states']['分支渠道1']], label='分支1')
-    ax10.plot(time, [s['volume'] for s in history['states']['分支渠道2']], label='分支2')
-    ax10.set_xlabel('时间 (小时)')
-    ax10.set_ylabel('蓄水量 (m³)')
-    ax10.set_title('分支渠道')
-    ax10.legend()
-    ax10.grid(True, alpha=0.3)
-
-    # 11. 系统能耗
-    ax11 = fig.add_subplot(gs[3, 1])
-    total_power = np.array([s['power'] for s in history['states']['一级泵站']]) + \
-                  np.array([s['power'] for s in history['states']['二级泵站']])
-    cumulative_energy = np.cumsum(total_power) * (1/60)  # kWh
-    ax11.plot(time, cumulative_energy, 'r-', linewidth=2)
-    ax11.set_xlabel('时间 (小时)')
-    ax11.set_ylabel('累计能耗 (kWh)')
-    ax11.set_title(f'系统总能耗: {cumulative_energy[-1]:.1f} kWh')
-    ax11.grid(True, alpha=0.3)
-
-    # 12. 系统拓扑
-    ax12 = fig.add_subplot(gs[3, 2])
-    ax12.text(0.5, 0.95, '系统拓扑结构', ha='center', fontsize=12, fontweight='bold')
-    ax12.text(0.05, 0.80, '主线:', fontsize=10, fontweight='bold')
-    ax12.text(0.05, 0.70, '  水库→闸→渠→闸→渠→闸→稳流池', fontsize=8)
-    ax12.text(0.05, 0.60, '  稳流池→阀→阀→高位水池', fontsize=8)
-    ax12.text(0.05, 0.45, '分支:', fontsize=10, fontweight='bold')
-    ax12.text(0.05, 0.35, '  稳流池→泵→渠→泵→渠', fontsize=8)
-    ax12.text(0.05, 0.20, f'组件总数: {len(components)}', fontsize=9)
-    ax12.text(0.05, 0.10, f'仿真时长: {time[-1]:.1f} 小时', fontsize=9)
-    ax12.set_xlim(0, 1)
-    ax12.set_ylim(0, 1)
-    ax12.axis('off')
-
+    plt.tight_layout()
     plt.savefig('example3_complex_network.png', dpi=100, bbox_inches='tight')
     print("✓ 图表已保存: example3_complex_network.png")
 
-    # 统计信息
-    print("\n" + "="*60)
-    print("仿真统计")
-    print("="*60)
-    print(f"总能耗: {cumulative_energy[-1]:.1f} kWh")
-    print(f"平均功率: {np.mean(total_power):.1f} kW")
-    print(f"一级泵站平均效率: {np.mean([s['efficiency'] for s in history['states']['一级泵站']]):.2%}")
-    print(f"二级泵站平均效率: {np.mean([s['efficiency'] for s in history['states']['二级泵站']]):.2%}")
-    print("="*60)
+def run_framework_example():
+    """Runs all framework examples."""
+    example_1_simple_canal()
+    example_2_pump_characteristics()
+    example_3_complex_network_with_pumps()

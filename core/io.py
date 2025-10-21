@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Optional
-from core.component import HydraulicComponent
+from core.base import HydraulicComponent
 
 class Sensor:
     """传感器"""
