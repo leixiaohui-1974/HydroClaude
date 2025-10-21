@@ -38,3 +38,12 @@ class IntelligenceLevel(Enum):
     L3_AUTONOMOUS = 3
     L4_PREDICTIVE = 4
     L5_COGNITIVE = 5
+
+class NodeType(Enum):
+    """节点类型"""
+    SOURCE = "source"
+    SINK = "sink"
+    JUNCTION = "junction"
+    BRANCH = "branch"
+    MERGE = "merge"
+    COMPLEX = "complex"
