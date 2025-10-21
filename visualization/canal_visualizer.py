@@ -144,7 +144,9 @@ class CanalVisualizer:
     def plot_methods_comparison(self, x: np.ndarray, results: Dict[str, Dict],
                                h_theory: float, Q_theory: float,
                                title: str = "方法对比",
-                               save_path: Optional[str] = None):
+                               save_path: Optional[str] = None,
+                               h_margin_pct: float = 0.05,
+                               Q_margin_pct: float = 0.1):
         """
         绘制多个方法的对比图
 
@@ -155,6 +157,8 @@ class CanalVisualizer:
             Q_theory: 理论流量值
             title: 图表标题
             save_path: 保存路径
+            h_margin_pct: 水深Y轴边距百分比（默认5%）
+            Q_margin_pct: 流量Y轴边距百分比（默认10%）
         """
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10))
 
@@ -173,6 +177,10 @@ class CanalVisualizer:
         ax1.grid(True, alpha=0.3)
         ax1.legend()
 
+        # 设置合理的Y轴范围（避免科学计数法混淆）
+        h_margin = h_theory * h_margin_pct
+        ax1.set_ylim([h_theory - h_margin, h_theory + h_margin])
+
         # 流量对比
         for method_name, data in results.items():
             color = self.colors.get(method_name.upper(), None)
@@ -187,6 +195,10 @@ class CanalVisualizer:
         ax2.set_title(f'{title} - Flow Rate')
         ax2.grid(True, alpha=0.3)
         ax2.legend()
+
+        # 设置合理的Y轴范围（避免科学计数法混淆）
+        Q_margin = Q_theory * Q_margin_pct
+        ax2.set_ylim([Q_theory - Q_margin, Q_theory + Q_margin])
 
         plt.tight_layout()
 
