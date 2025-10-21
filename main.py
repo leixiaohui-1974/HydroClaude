@@ -1,93 +1,36 @@
-# ==============================================================================
-# 水网分层预测控制系统 - 主运行文件
-# Water Network Hierarchical Predictive Control System - Main Runner
-#
-# V3.0 - 软件在环(SIL)测试平台 & 完整框架
-# ==============================================================================
-
-import matplotlib.pyplot as plt
-import os
 import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Add the project root directory to the Python path to ensure modules are found
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-
-# Import examples from the 'examples' directory
-from examples.runner import run_framework_example
-from examples.example_preissmann_vs_fvm import example_preissmann_vs_fvm
-from examples.example_pipe_rk4 import example_pipe_rk4
-from examples.sil_runner import example_sil_basic_test, example_sil_fault_test
+from examples.run_moc_gate_boundary_example import example_moc_gate_boundary
+from examples.run_mode_comparison_example import example_mode_comparison
 
 
 def main():
-    """
-    主函数，用于运行所有示例和测试。
-    """
-    print("="*80)
-    print("开始运行水网控制系统仿真与测试套件")
-    print("="*80)
+    """主程序入口"""
+    print("\n" + "="*60)
+    print("水网SIL测试平台 V3.1")
+    print("完整内边界处理 + 双模式本体仿真")
+    print("="*60)
 
-    # --- 设置 ---
-    # 为matplotlib设置中文字体，以正确显示图表标签
     try:
-        plt.rcParams['font.sans-serif'] = ['SimHei']
-        plt.rcParams['axes.unicode_minus'] = False
-        print("✓ 中文字体 'SimHei' 加载成功。")
+        example_moc_gate_boundary()
     except Exception as e:
-        print(f"⚠️ 警告: 未找到中文字体 'SimHei'。图表标签可能无法正确显示。错误: {e}")
-        print("   请安装 'SimHei' 字体或修改代码以使用您系统上可用的中文字体。")
-
-    # --- 运行示例 ---
-
-    # 1. 运行 V2.1 框架示例
-    try:
-        run_framework_example()
-    except Exception as e:
-        print(f"\n❌ V2.1 框架示例运行出错: {e}")
+        print(f"示例1出错: {e}")
         import traceback
         traceback.print_exc()
 
-    # 2. 运行 V3.0 SIL 基础测试
     try:
-        example_sil_basic_test()
+        example_mode_comparison()
     except Exception as e:
-        print(f"\n❌ V3.0 SIL 基础测试运行出错: {e}")
+        print(f"示例2出错: {e}")
         import traceback
         traceback.print_exc()
 
-    # 3. 运行 V3.0 SIL 故障注入测试
-    try:
-        example_sil_fault_test()
-    except Exception as e:
-        print(f"\n❌ V3.0 SIL 故障测试运行出错: {e}")
-        import traceback
-        traceback.print_exc()
+    print("\n" + "="*60)
+    print("所有测试完成！")
+    print("="*60)
 
-    # 4. 运行 V3.2 高精度数值方法对比: Preissmann vs FVM
-    try:
-        example_preissmann_vs_fvm()
-    except Exception as e:
-        print(f"\n❌ 高精度方法对比 (Preissmann vs FVM) 运行出错: {e}")
-        import traceback
-        traceback.print_exc()
 
-    # 5. 运行 V3.2 高精度管道水击仿真
-    try:
-        example_pipe_rk4()
-    except Exception as e:
-        print(f"\n❌ 高精度管道水击仿真 (RK4) 运行出错: {e}")
-        import traceback
-        traceback.print_exc()
-
-    print("\n" + "="*80)
-    print("所有测试运行完成！")
-    print("="*80)
-    print("\n生成的文件:")
-    files = [f for f in os.listdir('.') if f.endswith('.png')]
-    if files:
-        for f in files:
-            print(f"- {f}")
-    else:
-        print("- 未生成图表文件。")
-
-main()
+if __name__ == "__main__":
+    main()

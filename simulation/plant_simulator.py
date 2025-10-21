@@ -1,12 +1,15 @@
-from typing import List, Dict
+from typing import Dict, List
+
+from actuator.gate import Gate
+from actuator.pump import Pump
 from core.base import HydraulicComponent
 from core.states import ComponentState
 
-class PlantSimulator:
-    """本体仿真器 - 支持双模式"""
 
-    def __init__(self, components: List[HydraulicComponent],
-                 mode: str = 'high_fidelity'):
+class PlantSimulator:
+    """本体仿真器 - 支持高保真/降阶双模式"""
+
+    def __init__(self, components: List[HydraulicComponent], mode: str = 'high_fidelity'):
         """
         Args:
             components: 组件列表
@@ -16,90 +19,70 @@ class PlantSimulator:
         self.mode = mode
         self.time = 0.0
 
-        # 验证所有组件都有必需的方法
-        for comp in components:
-            if not hasattr(comp, 'update_high_fidelity'):
-                raise AttributeError(f"组件 '{comp.name}' 缺少 'update_high_fidelity' 方法")
-            if not hasattr(comp, 'update_reduced_order'):
-                raise AttributeError(f"组件 '{comp.name}' 缺少 'update_reduced_order' 方法")
+        # 自动建立拓扑连接
+        self._build_topology()
 
-        print(f"✓ 本体仿真器初始化: 模式={mode}, 组件数={len(components)}")
+        print(f"本体仿真器初始化完成")
+        print(f"  模式: {mode}")
+        print(f"  组件数: {len(components)}")
 
-    def step(self, dt: float, control_inputs: Dict = None) -> Dict[str, ComponentState]:
+    def _build_topology(self):
+        """自动建立拓扑连接"""
+        # 简化实现：假设组件按顺序连接
+        comp_list = list(self.components.values())
+
+        for i in range(len(comp_list) - 1):
+            current = comp_list[i]
+            next_comp = comp_list[i + 1]
+
+            # 如果下一个是控制设备，设置为边界条件
+            if isinstance(next_comp, (Gate, Pump)):
+                current.set_downstream(next_comp, next_comp.boundary_condition)
+                next_comp.set_upstream(current)
+
+                # 跳过控制设备，连接到其下游
+                if i + 2 < len(comp_list):
+                    next_next = comp_list[i + 2]
+                    next_comp.set_downstream(next_next)
+                    next_next.set_upstream(next_comp, next_comp.boundary_condition)
+            else:
+                current.set_downstream(next_comp)
+                next_comp.set_upstream(current)
+
+    def step(self, dt: float, control_inputs: Dict[str, float] = None) -> Dict[str, ComponentState]:
         """
         单步仿真
-
         Args:
             dt: 时间步长
-            control_inputs: 控制输入字典 {component_name: control_value}
-
+            control_inputs: 控制输入 {component_name: value}
         Returns:
-            各组件的状态字典
+            各组件状态
         """
         control_inputs = control_inputs or {}
         states = {}
 
-        # 准备输入
-        inputs_dict = self._prepare_inputs(control_inputs)
+        # 应用控制输入
+        for name, value in control_inputs.items():
+            if name in self.components:
+                comp = self.components[name]
+                if isinstance(comp, Gate):
+                    comp.set_opening(value)
 
         # 更新所有组件
         for name, comp in self.components.items():
-            comp_inputs = inputs_dict.get(name, {})
-
-            try:
-                if self.mode == 'high_fidelity':
-                    state = comp.update_high_fidelity(dt, comp_inputs)
-                else:
-                    state = comp.update_reduced_order(dt, comp_inputs)
-
-                states[name] = state
-
-            except AttributeError as e:
-                print(f"错误: 组件 '{name}' (类型: {type(comp).__name__}) 方法调用失败")
-                print(f"  模式: {self.mode}")
-                print(f"  错误信息: {e}")
-                print(f"  可用方法: {[m for m in dir(comp) if not m.startswith('_')]}")
-                raise
-            except Exception as e:
-                print(f"警告: 组件 '{name}' 更新失败: {e}")
-                # 使用旧状态
-                states[name] = comp.state
+            if self.mode == 'high_fidelity':
+                state = comp.update_high_fidelity(dt)
+            else:
+                state = comp.update_reduced_order(dt)
+            states[name] = state
 
         self.time += dt
         return states
 
-    def _prepare_inputs(self, control_inputs: Dict) -> Dict[str, Dict]:
-        """准备每个组件的输入"""
-        inputs = {}
-
-        for name, comp in self.components.items():
-            comp_inputs = {
-                'time': self.time,
-                'control': control_inputs.get(name, 0),
-            }
-
-            # 从拓扑获取上下游流量
-            if comp.upstream_component:
-                comp_inputs['inflow'] = comp.upstream_component.state.flow
-            else:
-                comp_inputs['inflow'] = 5.0  # 默认值
-
-            if comp.downstream_component:
-                comp_inputs['outflow'] = comp.downstream_component.state.flow
-            else:
-                comp_inputs['outflow'] = 4.0  # 默认值
-
-            comp_inputs['disturbance'] = 0.0  # 默认无扰动
-
-            inputs[name] = comp_inputs
-
-        return inputs
-
     def switch_mode(self, new_mode: str):
         """切换仿真模式"""
         if new_mode in ['high_fidelity', 'reduced']:
-            old_mode = self.mode
             self.mode = new_mode
-            print(f"✓ 模式切换: {old_mode} → {new_mode}")
+            print(f"本体仿真模式切换为: {new_mode}")
         else:
-            print(f"✗ 无效模式: {new_mode}")
+            print(f"无效模式: {new_mode}")
