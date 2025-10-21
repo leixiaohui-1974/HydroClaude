@@ -10,8 +10,31 @@ class ComponentType(Enum):
     VALVE = "valve"
     TANK = "tank"
 
-class BoundaryType(Enum):
-    """边界类型"""
-    UPSTREAM = "upstream"      # 上游边界
-    DOWNSTREAM = "downstream"  # 下游边界
-    INTERNAL = "internal"      # 内边界
+class SensorFault(Enum):
+    """传感器故障类型"""
+    NORMAL = "normal"
+    BIAS = "bias"
+    DRIFT = "drift"
+    NOISE = "noise"
+    STUCK = "stuck"
+    INTERMITTENT = "intermittent"
+    COMPLETE_FAILURE = "complete_failure"
+
+class ActuatorFault(Enum):
+    """执行器故障类型"""
+    NORMAL = "normal"
+    DELAY = "delay"
+    SATURATION = "saturation"
+    STUCK = "stuck"
+    SLOW_RESPONSE = "slow_response"
+    DEAD_ZONE = "dead_zone"
+    HYSTERESIS = "hysteresis"
+
+class IntelligenceLevel(Enum):
+    """智能化等级"""
+    L0_MANUAL = 0
+    L1_ASSISTED = 1
+    L2_SUPERVISED = 2
+    L3_AUTONOMOUS = 3
+    L4_PREDICTIVE = 4
+    L5_COGNITIVE = 5

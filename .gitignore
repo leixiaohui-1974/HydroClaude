@@ -1,4 +1,21 @@
-# Ignore generated files
-*.png
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Virtual environment
+venv/
+env/
+.venv/
+.env/
+
+# IDE files
+.idea/
+.vscode/

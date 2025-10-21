@@ -1,36 +1,17 @@
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-from examples.run_moc_gate_boundary_example import example_moc_gate_boundary
-from examples.run_mode_comparison_example import example_mode_comparison
-
-
 def main():
-    """主程序入口"""
-    print("\n" + "="*60)
-    print("水网SIL测试平台 V3.1")
-    print("完整内边界处理 + 双模式本体仿真")
+    print("="*60)
+    print("水网分层预测控制与SIL测试系统")
     print("="*60)
 
+    # 导入示例
     try:
-        example_moc_gate_boundary()
-    except Exception as e:
-        print(f"示例1出错: {e}")
-        import traceback
-        traceback.print_exc()
+        from examples.example_01_simple_canal import run_example as example1
+        print("\n运行示例1: 简单明渠系统")
+        example1()
+    except ImportError as e:
+        print(f"导入示例1失败: {e}")
 
-    try:
-        example_mode_comparison()
-    except Exception as e:
-        print(f"示例2出错: {e}")
-        import traceback
-        traceback.print_exc()
-
-    print("\n" + "="*60)
-    print("所有测试完成！")
-    print("="*60)
-
+    print("\n系统演示完成!")
 
 if __name__ == "__main__":
     main()
