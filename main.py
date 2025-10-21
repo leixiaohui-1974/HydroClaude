@@ -1,5 +1,26 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.font_manager
+
+def set_cjk_font():
+    """Set a CJK font if available."""
+    # List of common CJK fonts
+    cjk_fonts = ['Noto Sans CJK JP', 'Microsoft YaHei', 'SimHei', 'Arial Unicode MS']
+
+    for font in cjk_fonts:
+        try:
+            # Check if the font is available
+            matplotlib.font_manager.findfont(font)
+            plt.rcParams['font.sans-serif'] = [font]
+            plt.rcParams['axes.unicode_minus'] = False
+            print(f"Using font: {font}")
+            return
+        except:
+            continue
+    print("Warning: No CJK font found. Chinese characters may not display correctly.")
+
+set_cjk_font()
+
 from physics.canal_hf import CanalHighFidelity
 from physics.pipe_hf import PipeHighFidelity
 
