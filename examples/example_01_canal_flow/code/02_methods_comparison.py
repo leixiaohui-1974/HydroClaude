@@ -580,6 +580,10 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
         ax.grid(True, alpha=0.3)
         ax.legend(loc='best', fontsize=9)
 
+        # 设置合理的Y轴范围（避免科学计数法混淆）
+        h_margin = h_theory * 0.05  # ±5%
+        ax.set_ylim([h_theory - h_margin, h_theory + h_margin])
+
         # 添加统计信息
         textstr = f'Mean: {r["h_mean"]:.6f} m\nStd:  {r["h_std"]:.8f} m\nCV:   {r["h_cv"]:.6f} %'
         props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
@@ -602,6 +606,10 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
                     fontsize=12, fontweight='bold')
         ax.grid(True, alpha=0.3)
         ax.legend(loc='best', fontsize=9)
+
+        # 设置合理的Y轴范围（避免科学计数法混淆）
+        Q_margin = Q_theory * 0.1  # ±10%
+        ax.set_ylim([Q_theory - Q_margin, Q_theory + Q_margin])
 
         # 添加统计信息
         textstr = f'Mean: {r["Q_mean"]:.6f} m^3/s\nStd:  {r["Q_std"]:.8f} m^3/s\nCV:   {r["Q_cv"]:.6f} %'
@@ -636,6 +644,10 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
     ax.grid(True, alpha=0.3)
     ax.legend(loc='best', fontsize=10)
 
+    # 设置合理的Y轴范围
+    h_margin = h_theory * 0.05
+    ax.set_ylim([h_theory - h_margin, h_theory + h_margin])
+
     # 流量时间序列
     ax = axes[1]
     for method in methods:
@@ -649,6 +661,10 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
     ax.set_title('Discharge at Channel Midpoint', fontsize=12, fontweight='bold')
     ax.grid(True, alpha=0.3)
     ax.legend(loc='best', fontsize=10)
+
+    # 设置合理的Y轴范围
+    Q_margin = Q_theory * 0.1
+    ax.set_ylim([Q_theory - Q_margin, Q_theory + Q_margin])
 
     plt.tight_layout()
     fig_path = '../reports/figures/example_01_methods_temporal_comparison.png'
