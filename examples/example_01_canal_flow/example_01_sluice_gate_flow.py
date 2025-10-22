@@ -269,7 +269,7 @@ def run_sluice_gate_dynamics():
 
     Q_before_step = Q_initial
     Q_after_step = 15.0  # 增大阶跃幅度以更明显地展示动态效果
-    step_time = 300.0  # 提前阶跃时间
+    step_time = 500.0  # 在500s时刻施加阶跃，留出充分时间观察传播
 
     print(f"  阶跃前流量: {Q_before_step} m³/s")
     print(f"  阶跃后流量: {Q_after_step} m³/s")
@@ -288,8 +288,11 @@ def run_sluice_gate_dynamics():
     downstream_solver.clear_history()
 
     # 仿真参数
+    # 估算波速：典型值约为 c = sqrt(g*h) ≈ sqrt(9.81*1.16) ≈ 3.4 m/s
+    # 渠道长度10000m，传播时间约 10000/3.4 ≈ 2940s
+    # 为了充分展示传播过程，设置4000s的模拟时间
     dt = 2.0
-    total_time = 1500.0  # 缩短总时间
+    total_time = 4000.0  # 延长至4000s以覆盖整个渠道
     n_steps = int(total_time / dt)
 
     # 监测点
@@ -308,7 +311,9 @@ def run_sluice_gate_dynamics():
     gate_flow = []
 
     # 用于GIF动画的完整状态历史
-    snapshot_interval = 20  # 每20步保存一次
+    # 控制GIF帧数在合理范围内（目标：60-80帧）
+    # total_time=4000s, 目标60帧，则间隔约为4000/60≈67步
+    snapshot_interval = 30  # 每30步(60s)保存一次快照
     h_snapshots = []
     Q_snapshots = []
     t_snapshots = []
@@ -360,10 +365,12 @@ def run_sluice_gate_dynamics():
             Q_snapshots.append(Q_full_now)
             t_snapshots.append(t)
 
-        # 打印进度
-        if i % 50 == 0 or abs(t - step_time) < dt:
+        # 打印进度（每100步打印一次）
+        if i % 100 == 0 or abs(t - step_time) < dt:
             marker = " <-- STEP" if abs(t - step_time) < dt else ""
-            print(f"  t={t:7.0f}s: Q_up={Q_up_bc:5.1f}, Q_gate={Q_gate:6.2f} m³/s, "
+            # 添加出口监测信息
+            outlet_Q = monitor_data['Outlet']['Q'][-1] if len(monitor_data['Outlet']['Q']) > 0 else Q_initial
+            print(f"  t={t:7.0f}s: Q_inlet={Q_up_bc:5.1f}, Q_gate={Q_gate:6.2f}, Q_outlet={outlet_Q:6.2f} m³/s, "
                   f"h_gate_up={h_gate_up:.3f}m, h_gate_down={h_gate_down:.3f}m{marker}")
 
     print()
