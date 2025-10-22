@@ -600,6 +600,123 @@ def run_sluice_gate_dynamics():
     generated_files.append(fig_path2)
     print(f"  ✓ 过流特性图")
 
+    # === 生成动画 ===
+    # 场景1动画（恒定流）
+    def create_steady_animation():
+        """创建恒定流动画"""
+        fig, axes = plt.subplots(2, 1, figsize=(12, 8))
+
+        # 准备空间剖面数据
+        x_up = upstream_reach.x
+        x_down = gate_position + downstream_reach.x
+
+        def animate(frame):
+            for ax in axes:
+                ax.clear()
+
+            # 水深剖面
+            ax = axes[0]
+            h_u = h_up_1[frame]
+            h_d = h_down_1[frame]
+            ax.plot(x_up, np.ones_like(x_up) * h_u, 'b-', linewidth=2, label='Upstream')
+            ax.plot(x_down, np.ones_like(x_down) * h_d, 'g-', linewidth=2, label='Downstream')
+            ax.axvline(x=gate_position, color='r', linestyle='--', linewidth=2, alpha=0.5, label='Gate')
+            ax.set_xlabel('Position (m)', fontsize=11)
+            ax.set_ylabel('Water Depth (m)', fontsize=11)
+            ax.set_title(f'Scenario 1 (Steady Flow) - Time: {time1[frame]:.1f}s', fontsize=12, fontweight='bold')
+            ax.set_ylim(h_ylim)
+            ax.grid(True, alpha=0.3)
+            ax.legend(fontsize=10)
+
+            # 流量剖面
+            ax = axes[1]
+            Q_g = Q_gate_1[frame]
+            ax.plot(x_up, np.ones_like(x_up) * Q_g, 'r-', linewidth=2, label='Flow Rate')
+            ax.plot(x_down, np.ones_like(x_down) * Q_g, 'r-', linewidth=2)
+            ax.axvline(x=gate_position, color='r', linestyle='--', linewidth=2, alpha=0.5)
+            ax.axhline(y=Q_upstream_bc, color='k', linestyle=':', alpha=0.5, label='Target BC')
+            ax.set_xlabel('Position (m)', fontsize=11)
+            ax.set_ylabel('Flow Rate (m³/s)', fontsize=11)
+            ax.set_title(f'Gate Flow: {Q_g:.3f} m³/s', fontsize=12, fontweight='bold')
+            ax.set_ylim(Q_ylim)
+            ax.grid(True, alpha=0.3)
+            ax.legend(fontsize=10)
+
+            plt.tight_layout()
+
+        anim = animation.FuncAnimation(fig, animate, frames=len(time1), interval=100, repeat=True)
+        anim_path = 'reports/figures/example_01_gate_scenario1_steady.gif'
+        anim.save(anim_path, writer='pillow', fps=10)
+        plt.close(fig)
+        return anim_path
+
+    # 场景2动画（非恒定流）
+    def create_unsteady_animation():
+        """创建非恒定流动画"""
+        fig, axes = plt.subplots(2, 1, figsize=(12, 8))
+
+        x_up = upstream_reach.x
+        x_down = gate_position + downstream_reach.x
+
+        def animate(frame):
+            for ax in axes:
+                ax.clear()
+
+            # 水深剖面
+            ax = axes[0]
+            h_u = h_up_2[frame]
+            h_d = h_down_2[frame]
+            ax.plot(x_up, np.ones_like(x_up) * h_u, 'b-', linewidth=2, label='Upstream')
+            ax.plot(x_down, np.ones_like(x_down) * h_d, 'g-', linewidth=2, label='Downstream')
+            ax.axvline(x=gate_position, color='r', linestyle='--', linewidth=2, alpha=0.5, label='Gate')
+
+            # 标记是否已阶跃
+            if time2[frame] >= step_time:
+                ax.text(0.02, 0.98, 'AFTER STEP', transform=ax.transAxes,
+                       fontsize=12, fontweight='bold', color='red',
+                       verticalalignment='top',
+                       bbox=dict(boxstyle='round', facecolor='yellow', alpha=0.5))
+
+            ax.set_xlabel('Position (m)', fontsize=11)
+            ax.set_ylabel('Water Depth (m)', fontsize=11)
+            ax.set_title(f'Scenario 2 (Unsteady Flow) - Time: {time2[frame]:.1f}s', fontsize=12, fontweight='bold')
+            ax.set_ylim(h_ylim)
+            ax.grid(True, alpha=0.3)
+            ax.legend(fontsize=10)
+
+            # 流量剖面
+            ax = axes[1]
+            Q_g = Q_gate_2[frame]
+            Q_up = Q_upstream_2[frame]
+            ax.plot(x_up, np.ones_like(x_up) * Q_g, 'r-', linewidth=2, label='Gate Flow')
+            ax.plot(x_down, np.ones_like(x_down) * Q_g, 'r-', linewidth=2)
+            ax.axvline(x=gate_position, color='r', linestyle='--', linewidth=2, alpha=0.5)
+            ax.axhline(y=Q_up, color='k', linestyle=':', alpha=0.5, label=f'Upstream BC: {Q_up:.1f}')
+            ax.set_xlabel('Position (m)', fontsize=11)
+            ax.set_ylabel('Flow Rate (m³/s)', fontsize=11)
+            ax.set_title(f'Gate Flow: {Q_g:.3f} m³/s (Target: {Q_up:.1f} m³/s)', fontsize=12, fontweight='bold')
+            ax.set_ylim(Q_ylim)
+            ax.grid(True, alpha=0.3)
+            ax.legend(fontsize=10)
+
+            plt.tight_layout()
+
+        anim = animation.FuncAnimation(fig, animate, frames=len(time2), interval=100, repeat=True)
+        anim_path = 'reports/figures/example_01_gate_scenario2_unsteady.gif'
+        anim.save(anim_path, writer='pillow', fps=10)
+        plt.close(fig)
+        return anim_path
+
+    print(f"  ✓ 生成场景1动画...")
+    anim1_path = create_steady_animation()
+    generated_files.append(anim1_path)
+    print(f"    → {anim1_path}")
+
+    print(f"  ✓ 生成场景2动画...")
+    anim2_path = create_unsteady_animation()
+    generated_files.append(anim2_path)
+    print(f"    → {anim2_path}")
+
     print()
     print("=" * 80)
     print("分析完成！")
