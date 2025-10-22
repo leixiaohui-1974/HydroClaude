@@ -450,7 +450,7 @@ def run_step_response_comparison():
                 f'(Q: {Q_initial} → {Q_step} m³/s at t = {t_step}s)',
                 fontsize=16, fontweight='bold', y=0.995)
 
-    fig_path = get_output_path('figures', '05_step_response_methods_comparison.png'
+    fig_path = get_output_path('figures', '05_step_response_methods_comparison.png')
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
     print(f"  ✓ Saved figure: {os.path.basename(fig_path)}")
     plt.close()
@@ -519,9 +519,9 @@ def run_step_response_comparison():
                ha='center', va='bottom', fontsize=9)
 
     plt.tight_layout()
-    fig_path2 = '../reports/figures/example_01_step_response_detailed_comparison.png'
+    fig_path2 = get_output_path('figures', '05_step_response_detailed.png')
     plt.savefig(fig_path2, dpi=150, bbox_inches='tight')
-    print(f"  Saved: {fig_path2}")
+    print(f"  ✓ Saved figure: {os.path.basename(fig_path2)}")
     plt.close()
 
     print(f"\n{'='*80}")

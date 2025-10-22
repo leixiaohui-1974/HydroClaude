@@ -19,6 +19,11 @@ from scipy.signal import savgol_filter
 from scipy.optimize import curve_fit, minimize
 import time
 from datetime import datetime
+import pandas as pd
+
+# Import output helper
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from output_helper import get_output_path, save_table, save_figure
 
 # ============================================================================
 # 稳定流初值计算
@@ -675,17 +680,6 @@ def generate_comparison_report(all_results):
 
 
 def generate_visualizations(all_results):
-    """生成可视化图表"""
-
-    import os
-import pandas as pd
-
-# Import output helper
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from output_helper import get_output_path, save_table, save_figure
-
-
-def generate_idz_plots(all_results):
     """生成IDZ参数辨识图表"""
     methods = ['EXPLICIT', 'PREISSMANN', 'HLL']
     scenarios = ['upstream_flow', 'downstream_depth']
@@ -841,11 +835,66 @@ def generate_parameter_comparison_plot(all_results):
 if __name__ == '__main__':
     results = run_comprehensive_idz_test()
 
+    # ========================================================================
+    # Save Results as CSV Tables
+    # ========================================================================
+    print("\n" + "=" * 80)
+    print("Saving Results Tables...")
+    print("=" * 80)
+
+    # Collect all IDZ parameters
+    table_data = []
+    for method in ['EXPLICIT', 'PREISSMANN', 'HLL']:
+        for scenario in ['upstream_flow', 'downstream_depth']:
+            idz_params = results[method][scenario]['idz_params']
+            for direction, params in idz_params.items():
+                table_data.append({
+                    'Method': method,
+                    'Scenario': scenario,
+                    'Direction': direction,
+                    'K (gain)': params['K'],
+                    'tau (delay_s)': params['tau'],
+                    'T (time_const_s)': params['T'],
+                    'R_squared': params['R2']
+                })
+
+    df = pd.DataFrame(table_data)
+    save_table(df, '03_idz_parameters.csv', index=False)
+
+    # Save summary statistics
+    summary_data = []
+    scenarios = ['upstream_flow', 'downstream_depth']
+    directions = ['Q_to_h', 'h_to_h', 'Q_to_Q', 'h_to_Q']
+
+    for scenario in scenarios:
+        for direction in directions:
+            K_values = [results[m][scenario]['idz_params'][direction]['K'] for m in ['EXPLICIT', 'PREISSMANN', 'HLL']]
+            tau_values = [results[m][scenario]['idz_params'][direction]['tau'] for m in ['EXPLICIT', 'PREISSMANN', 'HLL']]
+            T_values = [results[m][scenario]['idz_params'][direction]['T'] for m in ['EXPLICIT', 'PREISSMANN', 'HLL']]
+
+            summary_data.append({
+                'Scenario': scenario,
+                'Direction': direction,
+                'K_mean': np.mean(K_values),
+                'K_std': np.std(K_values),
+                'tau_mean': np.mean(tau_values),
+                'tau_std': np.std(tau_values),
+                'T_mean': np.mean(T_values),
+                'T_std': np.std(T_values)
+            })
+
+    df_summary = pd.DataFrame(summary_data)
+    save_table(df_summary, '03_idz_summary_statistics.csv', index=False)
+
     print("\n" + "=" * 80)
     print("IDZ参数辨识测试完成！")
     print("=" * 80)
     print("\n生成的文件:")
-    print("  1. example_01_idz_upstream_flow.png - 上游流量阶跃场景")
-    print("  2. example_01_idz_downstream_depth.png - 下游水深阶跃场景")
-    print("  3. example_01_idz_parameters_comparison.png - 参数对比图")
+    print("  Figures (3):")
+    print("    - 03_idz_upstream_flow.png")
+    print("    - 03_idz_downstream_depth.png")
+    print("    - 03_idz_parameters_comparison.png")
+    print("  Tables (2):")
+    print("    - 03_idz_parameters.csv")
+    print("    - 03_idz_summary_statistics.csv")
     print("=" * 80)
