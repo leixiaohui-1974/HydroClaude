@@ -91,17 +91,28 @@ class SteadySaintVenantSystem:
         self.n_vars = 2 * nx
 
         # 边界条件类型
-        self.bc_upstream_type = 'Q'  # 上游流量边界
+        self.bc_upstream_type = 'Q+h'  # 上游流量+水深边界（两个约束）
         self.bc_downstream_type = 'h'  # 下游水深边界
         self.Q_upstream = 10.0  # 默认值
+        self.h_upstream = 1.0   # 默认值（新增）
         self.h_downstream = 1.0  # 默认值
 
     def set_boundary_conditions(self,
                                Q_upstream: Optional[float] = None,
+                               h_upstream: Optional[float] = None,
                                h_downstream: Optional[float] = None):
-        """设置边界条件"""
+        """
+        设置边界条件
+
+        Args:
+            Q_upstream: 上游流量 (m³/s)
+            h_upstream: 上游水深 (m)（新增，修复Jacobian奇异性）
+            h_downstream: 下游水深 (m)
+        """
         if Q_upstream is not None:
             self.Q_upstream = Q_upstream
+        if h_upstream is not None:
+            self.h_upstream = h_upstream
         if h_downstream is not None:
             self.h_downstream = h_downstream
 
@@ -245,13 +256,10 @@ class SteadySaintVenantSystem:
                 F[2*i + 1] = pseudo_time_term_h + d_momentum_flux + pressure_term - source_term
 
         # ========== 上游边界（i=0） ==========
-        # F[0]: Q[0] = Q_upstream（流量边界，无伪时间项）
-        # F[1]: 伪瞬态连续性方程
+        # F[0]: Q[0] = Q_upstream（流量边界）
+        # F[1]: h[0] = h_upstream（水深边界，修复Jacobian奇异性）
         F[0] = Q[0] - self.Q_upstream
-
-        # 上游边界的第二个方程：伪瞬态连续性（向前差分）
-        pseudo_time_term_Q0 = (Q[0] - Q_prev[0]) / self.pseudo_dt
-        F[1] = pseudo_time_term_Q0 + (Q[1] - Q[0]) / self.dx
+        F[1] = h[0] - self.h_upstream
 
         # ========== 下游边界（i=nx-1） ==========
         # F[2*(nx-1)]: h[nx-1] = h_downstream（水深边界，无伪时间项）
@@ -393,11 +401,10 @@ class SteadySaintVenantSystem:
 
         # ========== 上游边界（i=0） ==========
         # F[0] = Q[0] - Q_upstream
-        J[0, 1] = 1.0  # ∂F/∂Q_0
+        J[0, 1] = 1.0  # ∂F[0]/∂Q_0
 
-        # F[1] = (Q[0]-Q_prev[0])/pseudo_dt + (Q[1] - Q[0]) / dx
-        J[1, 1] = 1.0 / self.pseudo_dt - 1.0 / self.dx  # ∂F/∂Q_0（伪时间+空间）
-        J[1, 3] = 1.0 / self.dx   # ∂F/∂Q_1
+        # F[1] = h[0] - h_upstream（水深边界，修复Jacobian奇异性）
+        J[1, 0] = 1.0  # ∂F[1]/∂h_0
 
         # ========== 下游边界（i=nx-1） ==========
         i = self.nx - 1
