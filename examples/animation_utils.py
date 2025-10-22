@@ -36,7 +36,7 @@ class AnimationGenerator:
     ... )
     """
 
-    def __init__(self, output_dir='./outputs/animations', fps=10, dpi=100):
+    def __init__(self, output_dir='./outputs/animations', fps=10, dpi=100, optimize=True):
         """
         初始化动画生成器
 
@@ -48,11 +48,14 @@ class AnimationGenerator:
             帧率 (默认: 10)
         dpi : int
             分辨率 (默认: 100)
+        optimize : bool
+            启用GIF优化以减小文件大小 (默认: True)
         """
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.fps = fps
         self.dpi = dpi
+        self.optimize = optimize
 
     def create_timeseries_animation(
         self,
@@ -496,3 +499,77 @@ if __name__ == '__main__':
     print("  gen = AnimationGenerator(output_dir='./animations')")
     print("  gen.create_timeseries_animation(...)")
     print("=" * 60)
+
+    def _save_optimized(self, anim, output_path, fps=None):
+        """
+        保存优化的GIF动画
+        
+        Parameters
+        ----------
+        anim : FuncAnimation
+            matplotlib动画对象
+        output_path : Path
+            输出文件路径
+        fps : int, optional
+            帧率（如果None则使用self.fps）
+        """
+        if fps is None:
+            fps = self.fps
+            
+        # 基础保存
+        writer = PillowWriter(fps=fps)
+        temp_path = str(output_path).replace('.gif', '_temp.gif')
+        anim.save(temp_path, writer=writer, dpi=self.dpi)
+        
+        # 如果启用优化，使用PIL进行二次优化
+        if self.optimize:
+            try:
+                from PIL import Image, ImageSequence
+                
+                # 读取原始GIF
+                img = Image.open(temp_path)
+                frames = []
+                durations = []
+                
+                # 提取所有帧
+                for frame in ImageSequence.Iterator(img):
+                    # 转换为P模式（256色调色板）以减小大小
+                    frame_rgb = frame.convert('RGB')
+                    frame_p = frame_rgb.convert('P', palette=Image.ADAPTIVE, colors=128)
+                    frames.append(frame_p)
+                    durations.append(frame.info.get('duration', int(1000/fps)))
+                
+                # 保存优化的GIF
+                frames[0].save(
+                    str(output_path),
+                    save_all=True,
+                    append_images=frames[1:],
+                    duration=durations,
+                    loop=0,
+                    optimize=True,
+                    quality=85
+                )
+                
+                # 删除临时文件
+                import os
+                os.remove(temp_path)
+                
+                # 打印压缩效果
+                original_size = os.path.getsize(str(output_path))
+                print(f"    压缩后文件大小: {original_size/1024:.1f} KB")
+                
+            except ImportError:
+                # 如果PIL不可用，使用原始文件
+                import shutil
+                shutil.move(temp_path, str(output_path))
+                print("    警告: PIL未安装，无法进行深度优化")
+            except Exception as e:
+                # 出错时使用原始文件
+                import shutil
+                shutil.move(temp_path, str(output_path))
+                print(f"    警告: 优化失败 ({e})，使用未优化版本")
+        else:
+            # 不优化，直接重命名
+            import shutil
+            shutil.move(temp_path, str(output_path))
+
