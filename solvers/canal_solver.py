@@ -100,14 +100,16 @@ class CanalSolver:
             self.structure_indices.append(idx)
             self.structure_objects.append(structure)
 
-    def _apply_internal_bc(self, max_iter: int = 10, tol: float = 0.01, relax: float = 0.5):
+    def _apply_internal_bc(self, t: float = 0.0, max_iter: int = 10,
+                          tol: float = 0.01, relax: float = 0.5):
         """
         应用内部边界条件（闸门等水工建筑物）
 
-        在闸门位置强制流量满足闸门关系：Q_gate = f(h_upstream, h_downstream)
+        在闸门位置强制流量满足闸门关系：Q_gate = f(h_upstream, h_downstream, t)
         使用迭代松弛确保数值稳定性
 
         Args:
+            t: 当前时间 (s)，用于时变参数
             max_iter: 最大迭代次数
             tol: 收敛容差 (m³/s)
             relax: 松弛因子 (0-1)，较小值更稳定但收敛慢
@@ -119,6 +121,9 @@ class CanalSolver:
             converged = True
 
             for idx, structure in zip(self.structure_indices, self.structure_objects):
+                # 更新结构的当前时间
+                structure.update_time(t)
+
                 # 获取闸门上下游水深
                 # 注意：idx是闸门所在节点，我们使用idx-1作为上游，idx+1作为下游
                 if idx <=0 or idx >= self.nx - 1:
@@ -127,8 +132,8 @@ class CanalSolver:
                 h_up = self.h[idx - 1]
                 h_down = self.h[idx + 1]
 
-                # 计算闸门流量
-                Q_gate_target, _ = structure.calculate_discharge(h_up, h_down)
+                # 计算闸门流量（支持时变参数）
+                Q_gate_target, _ = structure.calculate_discharge(h_up, h_down, t)
 
                 # 当前闸门位置的流量
                 Q_gate_current = self.Q[idx]
@@ -419,7 +424,8 @@ class CanalSolver:
 
         return h_new, Q_new
 
-    def step(self, dt: float, Q_upstream: float, h_downstream: float) -> tuple:
+    def step(self, dt: float, Q_upstream: float, h_downstream: float,
+             t: float = 0.0) -> tuple:
         """
         执行一个时间步（统一接口）
 
@@ -429,6 +435,7 @@ class CanalSolver:
             dt: 时间步长 (s)
             Q_upstream: 上游边界流量 (m³/s)
             h_downstream: 下游边界水深 (m)
+            t: 当前时间 (s)，用于时变参数
 
         Returns:
             (h, Q): 更新后的水深和流量数组
@@ -450,7 +457,7 @@ class CanalSolver:
         # 步骤2: 应用内部边界条件（闸门等）
         # 关键：在时间步后修正闸门位置的流量，使其满足闸门关系
         if self.internal_structures:
-            self._apply_internal_bc(max_iter=20, tol=0.001, relax=0.3)
+            self._apply_internal_bc(t=t, max_iter=20, tol=0.001, relax=0.3)
 
         return self.h, self.Q
 

@@ -92,23 +92,14 @@ def run_sluice_gate_dynamics():
     print(f"  恒定均匀流水深: {h_uniform:.4f} m")
     print()
 
-    print("运行到稳态...")
-    dt_steady = 1.0
-    max_steady_steps = 3000  # 最大步数
-
-    for i in range(max_steady_steps):
-        solver.step(dt_steady, Q_initial, h_downstream=None)
-
-        # 每500步检查一次收敛
-        if i % 500 == 0 and i > 0:
-            profile = solver.get_full_profile()
-            Q_avg = np.mean(profile['Q'][1:-1])
-            Q_error = abs(Q_avg - Q_initial) / Q_initial
-            print(f"  t={i*dt_steady:.0f}s: Q_avg={Q_avg:.4f} m³/s, 误差={Q_error*100:.4f}%")
-
-            if Q_error < 0.01:  # < 1%
-                print(f"\n✓ 达到稳态 (i={i}, t={i*dt_steady:.0f}s)")
-                break
+    # 使用优化的稳态求解器
+    result = solver.solve_steady_state(
+        Q_target=Q_initial,
+        max_iterations=5000,
+        convergence_tol=0.001,  # < 0.1%
+        check_interval=500,
+        verbose=True
+    )
 
     # 获取稳态剖面
     profile_steady = solver.get_full_profile()
@@ -118,14 +109,15 @@ def run_sluice_gate_dynamics():
 
     # 找到闸门位置的索引
     gate_idx = solver.solver.structure_indices[0]
-    gate_flows = solver.get_gate_flows()
 
     print(f"\n稳态结果:")
     print(f"  闸前水深: {h_steady[gate_idx-1]:.4f} m")
     print(f"  闸后水深: {h_steady[gate_idx+1]:.4f} m")
     print(f"  水位差: {h_steady[gate_idx-1] - h_steady[gate_idx+1]:.4f} m")
-    print(f"  闸门流量: {gate_flows[0]:.4f} m³/s")
-    print(f"  流量守恒误差: {abs(np.mean(Q_steady[1:-1])-Q_initial)/Q_initial*100:.4f}%")
+    print(f"  闸门流量: {result['gate_flows'][0]:.4f} m³/s")
+    print(f"  流量守恒误差: {result['final_error']*100:.4f}%")
+    if result['final_error'] < 0.001:
+        print(f"  ✓ 流量守恒达标！（<0.1%）")
     print()
 
     # ==================== 生成初始稳态图 ====================
@@ -197,10 +189,15 @@ def run_sluice_gate_dynamics():
     print(f"  阶跃幅度: +{Q_after_step - Q_before_step} m³/s (+{(Q_after_step/Q_before_step-1)*100:.0f}%)")
     print()
 
-    # 重新初始化为稳态
+    # 重新初始化为稳态（为非恒定流准备）
     solver.reset_with_steady_state(Q_initial)
-    for i in range(500):
-        solver.step(dt_steady, Q_initial, None)
+    result_init = solver.solve_steady_state(
+        Q_target=Q_initial,
+        max_iterations=2000,
+        convergence_tol=0.01,
+        check_interval=500,
+        verbose=False
+    )
     solver.clear_history()
 
     # 仿真参数
