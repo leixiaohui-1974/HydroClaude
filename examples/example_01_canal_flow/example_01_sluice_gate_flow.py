@@ -1,7 +1,8 @@
 """
-示例1扩展：明渠闸门过流动力学分析（使用重构后的基础库）
+示例1扩展：明渠闸门过流动力学分析（单一求解器版本）
 
-演示如何使用CoupledCanalSolver和SluiceGate实现闸门流动模拟
+演示如何使用SingleCanalSolver和SluiceGate实现闸门流动模拟
+- 方法：单一连续求解器 + 闸门作为内部边界条件
 - 稳态：恒定均匀流，流量守恒精度 < 0.1%
 - 非恒定流：上游流量阶跃，观察流量传播过程
 
@@ -16,7 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from solvers.coupled_canal_solver import CoupledCanalSolver
+from solvers.single_canal_solver import SingleCanalSolver
 from solvers.gate import SluiceGate
 from utils.canal_utils import compute_steady_uniform_flow
 
@@ -25,7 +26,7 @@ def run_sluice_gate_dynamics():
     """运行闸门流量动力学分析"""
 
     print("=" * 80)
-    print("示例1扩展：明渠闸门过流动力学分析（重构版）")
+    print("示例1扩展：明渠闸门过流动力学分析（单一求解器版本）")
     print("=" * 80)
     print()
 
@@ -63,22 +64,19 @@ def run_sluice_gate_dynamics():
         Cd=gate_Cd
     )
 
-    # 创建耦合求解器
-    solver = CoupledCanalSolver(
+    # 创建单一求解器（闸门作为内部边界条件）
+    solver = SingleCanalSolver(
         total_length=canal_length,
         structures=[sluice_gate],  # 可以添加多个水工建筑物
         nx_total=n_points,
         B=canal_width,
         S0=bed_slope,
         n=manning_n,
-        method='preissmann',
-        coupling_max_iter=20,      # 最大耦合迭代次数
-        coupling_tol=0.01,         # 收敛容差 (m³/s)
-        coupling_relax=0.3         # 松弛因子
+        method='preissmann'
     )
 
     print(f"求解器: {solver}")
-    print(f"  渠道段数: {len(solver.segments)}")
+    print(f"  方法: 单一连续求解器 + 内部边界条件")
     print(f"  水工建筑物: {sluice_gate}")
     print()
 
@@ -96,21 +94,21 @@ def run_sluice_gate_dynamics():
 
     print("运行到稳态...")
     dt_steady = 1.0
-    result = solver.step_steady(
-        dt=dt_steady,
-        Q_upstream=Q_initial,
-        h_downstream=None,  # 自动计算
-        max_iterations=500,
-        verbose=True
-    )
+    max_steady_steps = 3000  # 最大步数
 
-    print(f"  迭代次数: {result['iterations']}")
-    print(f"  闸门流量: {result['structure_flows'][0]:.4f} m³/s")
-    if result['Q_errors']:
-        print(f"  最大流量守恒误差: {max(result['Q_errors'])*100:.4f}%")
-        if max(result['Q_errors']) < 0.001:
-            print(f"  ✓ 流量守恒达标！（<0.1%）")
-    print()
+    for i in range(max_steady_steps):
+        solver.step(dt_steady, Q_initial, h_downstream=None)
+
+        # 每500步检查一次收敛
+        if i % 500 == 0 and i > 0:
+            profile = solver.get_full_profile()
+            Q_avg = np.mean(profile['Q'][1:-1])
+            Q_error = abs(Q_avg - Q_initial) / Q_initial
+            print(f"  t={i*dt_steady:.0f}s: Q_avg={Q_avg:.4f} m³/s, 误差={Q_error*100:.4f}%")
+
+            if Q_error < 0.01:  # < 1%
+                print(f"\n✓ 达到稳态 (i={i}, t={i*dt_steady:.0f}s)")
+                break
 
     # 获取稳态剖面
     profile_steady = solver.get_full_profile()
@@ -118,11 +116,16 @@ def run_sluice_gate_dynamics():
     h_steady = profile_steady['h']
     Q_steady = profile_steady['Q']
 
-    print(f"稳态结果:")
-    print(f"  闸前水深: {solver.segments[0].h[-1]:.4f} m")
-    print(f"  闸后水深: {solver.segments[1].h[0]:.4f} m")
-    print(f"  水位差: {solver.segments[0].h[-1] - solver.segments[1].h[0]:.4f} m")
-    print(f"  闸门流量: {solver.structure_flows[0]:.4f} m³/s")
+    # 找到闸门位置的索引
+    gate_idx = solver.solver.structure_indices[0]
+    gate_flows = solver.get_gate_flows()
+
+    print(f"\n稳态结果:")
+    print(f"  闸前水深: {h_steady[gate_idx-1]:.4f} m")
+    print(f"  闸后水深: {h_steady[gate_idx+1]:.4f} m")
+    print(f"  水位差: {h_steady[gate_idx-1] - h_steady[gate_idx+1]:.4f} m")
+    print(f"  闸门流量: {gate_flows[0]:.4f} m³/s")
+    print(f"  流量守恒误差: {abs(np.mean(Q_steady[1:-1])-Q_initial)/Q_initial*100:.4f}%")
     print()
 
     # ==================== 生成初始稳态图 ====================
@@ -196,7 +199,8 @@ def run_sluice_gate_dynamics():
 
     # 重新初始化为稳态
     solver.reset_with_steady_state(Q_initial)
-    solver.step_steady(dt_steady, Q_initial, None, max_iterations=300, verbose=False)
+    for i in range(500):
+        solver.step(dt_steady, Q_initial, None)
     solver.clear_history()
 
     # 仿真参数
@@ -224,7 +228,7 @@ def run_sluice_gate_dynamics():
     t_snapshots = []
 
     print("开始非恒定流仿真...")
-    print("  使用CoupledCanalSolver内置的迭代耦合机制")
+    print("  使用单一连续求解器 + 内部边界条件")
     print()
 
     for i in range(n_steps):
@@ -233,15 +237,16 @@ def run_sluice_gate_dynamics():
         # 上游边界：流量阶跃
         Q_up_bc = Q_before_step if t < step_time else Q_after_step
 
-        # 更新（内部自动处理耦合迭代）
+        # 更新（内部自动应用闸门边界条件）
         solver.step(dt, Q_up_bc, h_downstream=None)
 
         # 获取当前剖面
         profile = solver.get_full_profile()
+        gate_flows = solver.get_gate_flows()
 
         # 记录数据
         time_series.append(t)
-        gate_flow.append(solver.structure_flows[0])
+        gate_flow.append(gate_flows[0])
 
         # 监测点数据
         for name, pos in monitor_positions.items():

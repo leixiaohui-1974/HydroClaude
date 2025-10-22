@@ -41,7 +41,8 @@ class CanalSolver:
 
     def __init__(self, length: float = 1000.0, nx: int = 201,
                  B: float = 10.0, S0: float = 0.001, n: float = 0.025,
-                 g: float = 9.81, method: str = 'preissmann'):
+                 g: float = 9.81, method: str = 'preissmann',
+                 internal_structures: list = None):
         """
         初始化求解器
 
@@ -53,6 +54,7 @@ class CanalSolver:
             n: Manning糙率系数 (s/m^(1/3))
             g: 重力加速度 (m/s²)
             method: 数值方法 ('explicit', 'preissmann', 'hll')
+            internal_structures: 内部水工建筑物列表 [(position, structure_obj), ...]
         """
         self.length = length
         self.nx = nx
@@ -78,10 +80,79 @@ class CanalSolver:
         self.theta = 0.6   # 时间加权系数 (0.5-1.0)
         self.omega = 0.95  # 松弛因子 (0.5-1.0)
 
+        # 内部边界条件（水工建筑物）
+        self.internal_structures = internal_structures or []
+        self._setup_internal_structures()
+
         # 历史记录
         self.h_history = []
         self.Q_history = []
         self.t_history = []
+
+    def _setup_internal_structures(self):
+        """设置内部水工建筑物的节点索引"""
+        self.structure_indices = []
+        self.structure_objects = []
+
+        for position, structure in self.internal_structures:
+            # 找到最接近的节点索引
+            idx = np.argmin(np.abs(self.x - position))
+            self.structure_indices.append(idx)
+            self.structure_objects.append(structure)
+
+    def _apply_internal_bc(self, max_iter: int = 10, tol: float = 0.01, relax: float = 0.5):
+        """
+        应用内部边界条件（闸门等水工建筑物）
+
+        在闸门位置强制流量满足闸门关系：Q_gate = f(h_upstream, h_downstream)
+        使用迭代松弛确保数值稳定性
+
+        Args:
+            max_iter: 最大迭代次数
+            tol: 收敛容差 (m³/s)
+            relax: 松弛因子 (0-1)，较小值更稳定但收敛慢
+        """
+        if not self.structure_indices:
+            return
+
+        for _ in range(max_iter):
+            converged = True
+
+            for idx, structure in zip(self.structure_indices, self.structure_objects):
+                # 获取闸门上下游水深
+                # 注意：idx是闸门所在节点，我们使用idx-1作为上游，idx+1作为下游
+                if idx <=0 or idx >= self.nx - 1:
+                    continue  # 跳过边界处的结构
+
+                h_up = self.h[idx - 1]
+                h_down = self.h[idx + 1]
+
+                # 计算闸门流量
+                Q_gate_target, _ = structure.calculate_discharge(h_up, h_down)
+
+                # 当前闸门位置的流量
+                Q_gate_current = self.Q[idx]
+
+                # 检查收敛
+                if abs(Q_gate_target - Q_gate_current) > tol:
+                    converged = False
+
+                    # 松弛更新：Q_new = Q_old * (1-relax) + Q_target * relax
+                    Q_gate_new = Q_gate_current * (1 - relax) + Q_gate_target * relax
+
+                    # 更新闸门节点及其附近的流量
+                    # 使用渐变过渡确保平滑
+                    self.Q[idx] = Q_gate_new
+
+                    # 可选：调整邻近节点流量以保持平滑过渡
+                    # 这有助于数值稳定性
+                    if idx > 1:
+                        self.Q[idx - 1] = 0.5 * (self.Q[idx - 2] + Q_gate_new)
+                    if idx < self.nx - 2:
+                        self.Q[idx + 1] = 0.5 * (Q_gate_new + self.Q[idx + 2])
+
+            if converged:
+                break
 
     def reset_with_steady_state(self, Q0: float) -> float:
         """
@@ -352,6 +423,8 @@ class CanalSolver:
         """
         执行一个时间步（统一接口）
 
+        包含内部边界条件（闸门等）的处理
+
         Args:
             dt: 时间步长 (s)
             Q_upstream: 上游边界流量 (m³/s)
@@ -363,15 +436,23 @@ class CanalSolver:
         Raises:
             ValueError: 如果数值方法未知
         """
+        # 步骤1: 标准时间步进
         if self.method == 'explicit':
-            return self.step_explicit(dt, Q_upstream, h_downstream)
+            h, Q = self.step_explicit(dt, Q_upstream, h_downstream)
         elif self.method == 'preissmann':
-            return self.step_preissmann(dt, Q_upstream, h_downstream)
+            h, Q = self.step_preissmann(dt, Q_upstream, h_downstream)
         elif self.method == 'hll':
-            return self.step_hll(dt, Q_upstream, h_downstream)
+            h, Q = self.step_hll(dt, Q_upstream, h_downstream)
         else:
             raise ValueError(f"Unknown numerical method: {self.method}. "
                            f"Available methods: 'explicit', 'preissmann', 'hll'")
+
+        # 步骤2: 应用内部边界条件（闸门等）
+        # 关键：在时间步后修正闸门位置的流量，使其满足闸门关系
+        if self.internal_structures:
+            self._apply_internal_bc(max_iter=20, tol=0.001, relax=0.3)
+
+        return self.h, self.Q
 
     def save_state(self, t: float):
         """
