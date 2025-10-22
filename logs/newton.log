@@ -1,0 +1,3 @@
+2025-10-22 11:39:33 - HydroClaude.Newton - INFO - logging_config.py:217 - 开始Newton迭代求解
+2025-10-22 11:39:33 - HydroClaude.Newton - WARNING - logging_config.py:218 - 接近最大迭代次数（18/20）
+2025-10-22 11:39:33 - HydroClaude.Newton - ERROR - logging_config.py:219 - 求解失败: 残差未收敛
