@@ -1,83 +1,61 @@
-# Example 08: Load Acceptance Transient Analysis
+# 接受负荷暂态
 
-## Overview
+## 概述
 
-This example demonstrates the behavior of a hydropower plant during **load acceptance** (sudden load increase), which is the opposite scenario of load rejection.
+分析水电站接受负荷（负荷突然增加）时的暂态过程。
 
-## Scenario
+## 物理原理
 
-- **Initial condition**: Light load (10 MW)
-- **Event at t=5s**: Load suddenly increases to 100 MW
-- **System response**: Governor opens guide vanes, speed drops initially, then recovers
+接受负荷时电能消耗增加，转速下降，需快速增加水流
 
-## Key Phenomena
+## 主要功能
 
-### 1. Speed Response
-- **Frequency dip**: When load increases, generator speed decreases
-- **Governor action**: PID controller detects speed drop and increases guide vane opening
-- **Recovery**: Speed gradually returns to rated value (250 rpm)
+- 负荷增加响应
+- 转速下降分析
+- 导叶开启策略
+- 频率恢复过程
 
-### 2. Guide Vane Opening
-- **Initial**: ~15% opening for 10 MW
-- **Transient**: Rapid opening to increase water flow
-- **Final**: ~60% opening for 100 MW
+## 应用场景
 
-### 3. Surge Tank Level
-- **Initial**: 480 m
-- **Response**: Water level drops as turbine draws more water
-- **Recovery**: Level stabilizes at new equilibrium
+- 一次调频
+- 备用容量
+- 电网支撑
+- 频率调节
 
-## Comparison with Load Rejection
+## 脚本文件
 
-| Aspect | Load Rejection (100→0 MW) | Load Acceptance (10→100 MW) |
-|--------|---------------------------|------------------------------|
-| Speed change | **Overshoot** (↑) | **Undershoot** (↓) |
-| Guide vane | Closes rapidly | Opens rapidly |
-| Surge tank | Level rises | Level drops |
-| Critical risk | Over-speed damage | Under-frequency, stall risk |
-| Control challenge | Prevent runaway | Maintain stability |
+- `example_08_load_acceptance.py`
 
-## System Components
-
-1. **Francis Turbine**: 100 MW, 150 m head, 250 rpm
-2. **PID Governor**: Kp=10, Ki=1.0, Kd=0.5, faster rate limit (15%/s)
-3. **Surge Tank**: Ø12m simple cylindrical tank
-4. **Generator**: GD²=8 MN·m² (high inertia)
-
-## Performance Metrics
-
-- **Speed undershoot**: Should be < 10% (frequency dip tolerance)
-- **Recovery time**: Typically 30-60 seconds
-- **Final speed deviation**: < 1% at steady state
-- **Surge tank**: Level drop should stay within design limits
-
-## Usage
+## 运行方法
 
 ```bash
 cd examples/example_08_load_acceptance
 PYTHONPATH=../.. python example_08_load_acceptance.py
 ```
 
-## Output
+## 输出结果
 
-- Console: Detailed analysis and performance metrics
-- Plot: `load_acceptance_transient.png` showing:
-  - Speed response
-  - Guide vane opening
-  - Power output
-  - Surge tank level
+### 图表
 
-## Notes
+- 待生成
 
-This example demonstrates the importance of:
-1. **Adequate spinning reserve**: System must have capacity to accept load
-2. **Fast governor response**: Quick guide vane opening prevents excessive frequency dip
-3. **Surge tank sizing**: Must handle increased water draw
-4. **Grid frequency stability**: Load acceptance affects system frequency
+### 动画
 
-Load acceptance is a critical operating scenario for hydropower plants participating in grid frequency regulation and providing spinning reserve.
+- 待生成
 
-## See Also
+## 技术要点
 
-- **Example 05**: Load rejection transient
-- **Example 07**: Multi-unit AGC for coordinated load response
+本示例展示了以下技术：
+
+1. **负荷增加响应**
+2. **转速下降分析**
+3. **导叶开启策略**
+
+## 参考
+
+- 项目文档: [HydroClaude文档](../../docs/)
+- 相关示例: 查看 `examples/` 目录下的其他示例
+
+---
+
+*本README由自动化脚本生成*

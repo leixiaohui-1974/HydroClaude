@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydroClaude 动画预览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 150px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .search-bar {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .search-input {
+            width: 60%;
+            max-width: 500px;
+            padding: 15px 20px;
+            font-size: 1em;
+            border: 2px solid #ddd;
+            border-radius: 50px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .animations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .animation-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .animation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+
+        .animation-preview {
+            width: 100%;
+            height: 300px;
+            object-fit: contain;
+            background: #fff;
+            padding: 10px;
+        }
+
+        .animation-info {
+            padding: 20px;
+        }
+
+        .animation-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .animation-example {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+        }
+
+        .animation-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+        }
+
+        .detail-value {
+            color: #667eea;
+        }
+
+        .size-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .size-small {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .size-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .size-large {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #eee;
+            color: #999;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #bbb;
+        }
+
+        @media (max-width: 768px) {
+            .animations-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-input {
+                width: 90%;
+            }
+
+            .stats {
+                gap: 15px;
+            }
+
+            .stat-item {
+                min-width: 120px;
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 HydroClaude 动画预览</h1>
+            <p class="subtitle">水力学仿真动画可视化展示</p>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-value">33</span>
+                    <span class="stat-label">动画总数</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">44.4</span>
+                    <span class="stat-label">总大小 (MB)</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">31</span>
+                    <span class="stat-label">示例数量</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="search-bar">
+            <input type="text" class="search-input" id="searchInput" placeholder="搜索动画名称或示例...">
+        </div>
+
+        <div class="animations-grid" id="animationsGrid">
+
+            <div class="animation-card" data-name="canal_flow_comparison.gif" data-example="example_01_canal_flow">
+                <img src="example_01_canal_flow/outputs/animations/canal_flow_comparison.gif" alt="canal_flow_comparison.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_01_canal_flow</div>
+                    <div class="animation-name">canal_flow_comparison.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1500x800</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">80</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-medium">859 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="canal_flow_comparison_improved.gif" data-example="example_01_canal_flow">
+                <img src="example_01_canal_flow/outputs/animations/canal_flow_comparison_improved.gif" alt="canal_flow_comparison_improved.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_01_canal_flow</div>
+                    <div class="animation-name">canal_flow_comparison_improved.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1500x800</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">120</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-medium">1188 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_01_comprehensive_animation.gif" data-example="example_01_canal_flow">
+                <img src="example_01_canal_flow/outputs/animations/example_01_comprehensive_animation.gif" alt="example_01_comprehensive_animation.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_01_canal_flow</div>
+                    <div class="animation-name">example_01_comprehensive_animation.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1600x900</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">120</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-medium">1140 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_02_pump_system_startup.gif" data-example="example_02_pump_system">
+                <img src="example_02_pump_system/outputs/animations/example_02_pump_system_startup.gif" alt="example_02_pump_system_startup.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_02_pump_system</div>
+                    <div class="animation-name">example_02_pump_system_startup.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1200x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-small">548 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_02_spillway_cascade_pipe_flow.gif" data-example="example_02_spillway_cascade">
+                <img src="example_02_spillway_cascade/outputs/animations/example_02_spillway_cascade_pipe_flow.gif" alt="example_02_spillway_cascade_pipe_flow.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_02_spillway_cascade</div>
+                    <div class="animation-name">example_02_spillway_cascade_pipe_flow.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x900</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">150</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-large">1875 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_03_complex_network_pipe_flow.gif" data-example="example_03_complex_network">
+                <img src="example_03_complex_network/outputs/animations/example_03_complex_network_pipe_flow.gif" alt="example_03_complex_network_pipe_flow.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_03_complex_network</div>
+                    <div class="animation-name">example_03_complex_network_pipe_flow.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x900</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">150</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-large">1875 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_03_turbine_demo_transient.gif" data-example="example_03_turbine_demo">
+                <img src="example_03_turbine_demo/outputs/animations/example_03_turbine_demo_transient.gif" alt="example_03_turbine_demo_transient.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_03_turbine_demo</div>
+                    <div class="animation-name">example_03_turbine_demo_transient.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1200x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-small">545 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_04_hydropower_system_hydropower_transient.gif" data-example="example_04_hydropower_system">
+                <img src="example_04_hydropower_system/outputs/animations/example_04_hydropower_system_hydropower_transient.gif" alt="example_04_hydropower_system_hydropower_transient.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_04_hydropower_system</div>
+                    <div class="animation-name">example_04_hydropower_system_hydropower_transient.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-medium">870 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_04_moc_boundary_pipe_flow.gif" data-example="example_04_moc_boundary">
+                <img src="example_04_moc_boundary/outputs/animations/example_04_moc_boundary_pipe_flow.gif" alt="example_04_moc_boundary_pipe_flow.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_04_moc_boundary</div>
+                    <div class="animation-name">example_04_moc_boundary_pipe_flow.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x900</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">150</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-large">1875 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_05_mode_comparison_pipe_flow.gif" data-example="example_05_mode_comparison">
+                <img src="example_05_mode_comparison/outputs/animations/example_05_mode_comparison_pipe_flow.gif" alt="example_05_mode_comparison_pipe_flow.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_05_mode_comparison</div>
+                    <div class="animation-name">example_05_mode_comparison_pipe_flow.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x900</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">150</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-large">1875 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_05_transient_analysis_hydropower_transient.gif" data-example="example_05_transient_analysis">
+                <img src="example_05_transient_analysis/outputs/animations/example_05_transient_analysis_hydropower_transient.gif" alt="example_05_transient_analysis_hydropower_transient.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_05_transient_analysis</div>
+                    <div class="animation-name">example_05_transient_analysis_hydropower_transient.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-medium">1037 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_06_complete_hydropower_system_hydropower_transient.gif" data-example="example_06_complete_hydropower_system">
+                <img src="example_06_complete_hydropower_system/outputs/animations/example_06_complete_hydropower_system_hydropower_transient.gif" alt="example_06_complete_hydropower_system_hydropower_transient.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_06_complete_hydropower_system</div>
+                    <div class="animation-name">example_06_complete_hydropower_system_hydropower_transient.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-medium">870 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_06_sil_basic_control.gif" data-example="example_06_sil_basic">
+                <img src="example_06_sil_basic/outputs/animations/example_06_sil_basic_control.gif" alt="example_06_sil_basic_control.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_06_sil_basic</div>
+                    <div class="animation-name">example_06_sil_basic_control.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-medium">1466 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_07_fault_test_control.gif" data-example="example_07_fault_test">
+                <img src="example_07_fault_test/outputs/animations/example_07_fault_test_control.gif" alt="example_07_fault_test_control.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_07_fault_test</div>
+                    <div class="animation-name">example_07_fault_test_control.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-large">1507 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_07_multi_unit_agc_control.gif" data-example="example_07_multi_unit_agc">
+                <img src="example_07_multi_unit_agc/outputs/animations/example_07_multi_unit_agc_control.gif" alt="example_07_multi_unit_agc_control.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_07_multi_unit_agc</div>
+                    <div class="animation-name">example_07_multi_unit_agc_control.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-large">2326 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_08_load_acceptance_transient.gif" data-example="example_08_load_acceptance">
+                <img src="example_08_load_acceptance/outputs/animations/example_08_load_acceptance_transient.gif" alt="example_08_load_acceptance_transient.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_08_load_acceptance</div>
+                    <div class="animation-name">example_08_load_acceptance_transient.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1200x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-small">545 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_08_preissmann_vs_fvm_pipe_flow.gif" data-example="example_08_preissmann_vs_fvm">
+                <img src="example_08_preissmann_vs_fvm/outputs/animations/example_08_preissmann_vs_fvm_pipe_flow.gif" alt="example_08_preissmann_vs_fvm_pipe_flow.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_08_preissmann_vs_fvm</div>
+                    <div class="animation-name">example_08_preissmann_vs_fvm_pipe_flow.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x900</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">150</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-large">1875 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_09_pipe_rk4_pipe_flow.gif" data-example="example_09_pipe_rk4">
+                <img src="example_09_pipe_rk4/outputs/animations/example_09_pipe_rk4_pipe_flow.gif" alt="example_09_pipe_rk4_pipe_flow.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_09_pipe_rk4</div>
+                    <div class="animation-name">example_09_pipe_rk4_pipe_flow.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x900</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">150</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-large">1875 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_10_series_network_network.gif" data-example="example_10_series_network">
+                <img src="example_10_series_network/outputs/animations/example_10_series_network_network.gif" alt="example_10_series_network_network.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_10_series_network</div>
+                    <div class="animation-name">example_10_series_network_network.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1200x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-large">1533 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_11_tree_network_network.gif" data-example="example_11_tree_network">
+                <img src="example_11_tree_network/outputs/animations/example_11_tree_network_network.gif" alt="example_11_tree_network_network.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_11_tree_network</div>
+                    <div class="animation-name">example_11_tree_network_network.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1200x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-large">1533 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_12_loop_network_network.gif" data-example="example_12_loop_network">
+                <img src="example_12_loop_network/outputs/animations/example_12_loop_network_network.gif" alt="example_12_loop_network_network.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_12_loop_network</div>
+                    <div class="animation-name">example_12_loop_network_network.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1200x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-large">1533 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_13_adaptive_timescale_control.gif" data-example="example_13_adaptive_timescale">
+                <img src="example_13_adaptive_timescale/outputs/animations/example_13_adaptive_timescale_control.gif" alt="example_13_adaptive_timescale_control.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_13_adaptive_timescale</div>
+                    <div class="animation-name">example_13_adaptive_timescale_control.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-medium">1465 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_14_adaptive_mpc_control.gif" data-example="example_14_adaptive_mpc">
+                <img src="example_14_adaptive_mpc/outputs/animations/example_14_adaptive_mpc_control.gif" alt="example_14_adaptive_mpc_control.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_14_adaptive_mpc</div>
+                    <div class="animation-name">example_14_adaptive_mpc_control.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-medium">1450 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_15_rls_identification_control.gif" data-example="example_15_rls_identification">
+                <img src="example_15_rls_identification/outputs/animations/example_15_rls_identification_control.gif" alt="example_15_rls_identification_control.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_15_rls_identification</div>
+                    <div class="animation-name">example_15_rls_identification_control.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-medium">1446 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_16_weirs_application_water_resource.gif" data-example="example_16_weirs_application">
+                <img src="example_16_weirs_application/outputs/animations/example_16_weirs_application_water_resource.gif" alt="example_16_weirs_application_water_resource.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_16_weirs_application</div>
+                    <div class="animation-name">example_16_weirs_application_water_resource.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-medium">875 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="reservoir_operation.gif" data-example="example_17_reservoir_basic">
+                <img src="example_17_reservoir_basic/outputs/animations/reservoir_operation.gif" alt="reservoir_operation.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_17_reservoir_basic</div>
+                    <div class="animation-name">reservoir_operation.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1200x1200</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">72</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-small">764 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="reservoir_operation.gif" data-example="example_18_cascade_hydropower">
+                <img src="example_18_cascade_hydropower/outputs/animations/reservoir_operation.gif" alt="reservoir_operation.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_18_cascade_hydropower</div>
+                    <div class="animation-name">reservoir_operation.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1200x1200</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">72</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-small">764 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_19_water_transfer_water_resource.gif" data-example="example_19_water_transfer">
+                <img src="example_19_water_transfer/outputs/animations/example_19_water_transfer_water_resource.gif" alt="example_19_water_transfer_water_resource.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_19_water_transfer</div>
+                    <div class="animation-name">example_19_water_transfer_water_resource.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-medium">1014 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_20_urban_water_supply_water_resource.gif" data-example="example_20_urban_water_supply">
+                <img src="example_20_urban_water_supply/outputs/animations/example_20_urban_water_supply_water_resource.gif" alt="example_20_urban_water_supply_water_resource.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_20_urban_water_supply</div>
+                    <div class="animation-name">example_20_urban_water_supply_water_resource.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-medium">1014 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_21_irrigation_optimization_water_resource.gif" data-example="example_21_irrigation_optimization">
+                <img src="example_21_irrigation_optimization/outputs/animations/example_21_irrigation_optimization_water_resource.gif" alt="example_21_irrigation_optimization_water_resource.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_21_irrigation_optimization</div>
+                    <div class="animation-name">example_21_irrigation_optimization_water_resource.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-medium">1014 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_22_water_hammer_pipe_flow.gif" data-example="example_22_water_hammer">
+                <img src="example_22_water_hammer/outputs/animations/example_22_water_hammer_pipe_flow.gif" alt="example_22_water_hammer_pipe_flow.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_22_water_hammer</div>
+                    <div class="animation-name">example_22_water_hammer_pipe_flow.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x900</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">150</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-large">2541 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_23_control_comparison_control.gif" data-example="example_23_control_comparison">
+                <img src="example_23_control_comparison/outputs/animations/example_23_control_comparison_control.gif" alt="example_23_control_comparison_control.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_23_control_comparison</div>
+                    <div class="animation-name">example_23_control_comparison_control.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-medium">1490 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-card" data-name="example_24_multi_objective_optimization_control.gif" data-example="example_24_multi_objective_optimization">
+                <img src="example_24_multi_objective_optimization/outputs/animations/example_24_multi_objective_optimization_control.gif" alt="example_24_multi_objective_optimization_control.gif" class="animation-preview" onclick="openModal(this.src)">
+                <div class="animation-info">
+                    <div class="animation-example">example_24_multi_objective_optimization</div>
+                    <div class="animation-name">example_24_multi_objective_optimization_control.gif</div>
+                    <div class="animation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">尺寸</span>
+                            <span class="detail-value">1400x1000</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">帧数</span>
+                            <span class="detail-value">100</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">大小</span>
+                            <span class="detail-value size-badge size-large">2832 KB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">模式</span>
+                            <span class="detail-value">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer>
+            <p>生成时间: 2025-10-22 14:51:53</p>
+            <p>HydroClaude Examples - Animation Preview</p>
+        </footer>
+    </div>
+
+    <!-- 模态框 -->
+    <div id="myModal" class="modal" onclick="closeModal()">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="modalImg">
+    </div>
+
+    <script>
+        // 搜索功能
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.animation-card');
+
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name');
+                const example = card.getAttribute('data-example');
+
+                if (name.includes(searchTerm) || example.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // 模态框功能
+        function openModal(src) {
+            const modal = document.getElementById('myModal');
+            const modalImg = document.getElementById('modalImg');
+            modal.style.display = 'flex';
+            modalImg.src = src;
+        }
+
+        function closeModal() {
+            document.getElementById('myModal').style.display = 'none';
+        }
+
+        // ESC键关闭模态框
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
