@@ -1,0 +1,103 @@
+name: 三级梯级水电站示例
+description: 包含3个水库、2条渠道和2个闸门的梯级系统
+reservoirs:
+- id: R1_upstream
+  total_capacity: 100000000.0
+  min_level: 200.0
+  normal_level: 260.0
+  flood_level: 265.0
+  design_level: 270.0
+  dead_storage: 0.0
+  turbine_capacity: 200.0
+  turbine_efficiency: 0.9
+  ecological_flow: 50.0
+  initial_storage: null
+- id: R2_middle
+  total_capacity: 50000000.0
+  min_level: 150.0
+  normal_level: 180.0
+  flood_level: 185.0
+  design_level: 190.0
+  dead_storage: 0.0
+  turbine_capacity: 100.0
+  turbine_efficiency: 0.9
+  ecological_flow: 30.0
+  initial_storage: null
+- id: R3_downstream
+  total_capacity: 30000000.0
+  min_level: 100.0
+  normal_level: 120.0
+  flood_level: 125.0
+  design_level: 130.0
+  dead_storage: 0.0
+  turbine_capacity: 50.0
+  turbine_efficiency: 0.9
+  ecological_flow: 20.0
+  initial_storage: null
+canals:
+- id: C1_R1_to_R2
+  length: 5000.0
+  nx: 51
+  width: 15.0
+  slope: 0.001
+  roughness: 0.025
+  initial_depth: null
+  initial_flow: null
+- id: C2_R2_to_R3
+  length: 3000.0
+  nx: 31
+  width: 12.0
+  slope: 0.0008
+  roughness: 0.025
+  initial_depth: null
+  initial_flow: null
+gates:
+- id: Gate_R1
+  position: 0.0
+  width: 10.0
+  opening: 5.0
+  discharge_coefficient: 0.6
+  gate_type: sluice
+- id: Gate_R2
+  position: 0.0
+  width: 8.0
+  opening: 4.0
+  discharge_coefficient: 0.6
+  gate_type: sluice
+controllers:
+- id: PID_R1_level
+  Kp: 0.5
+  Ki: 0.1
+  Kd: 0.05
+  setpoint: 260.0
+  output_min: 0.0
+  output_max: 1.0
+  anti_windup: true
+topology:
+- from_node: R1_upstream
+  to_node: C1_R1_to_R2
+  travel_time: 0
+  connection_type: direct
+- from_node: C1_R1_to_R2
+  to_node: R2_middle
+  travel_time: 7200
+  connection_type: direct
+- from_node: R2_middle
+  to_node: C2_R2_to_R3
+  travel_time: 0
+  connection_type: direct
+- from_node: C2_R2_to_R3
+  to_node: R3_downstream
+  travel_time: 3600
+  connection_type: direct
+optimization:
+  objective: maximize_power
+  constraints:
+    ecological_flow: true
+    flood_control: true
+  algorithm: dynamic_programming
+  horizon: 24
+simulation:
+  duration: 86400
+  timestep: 300
+  solver: implicit

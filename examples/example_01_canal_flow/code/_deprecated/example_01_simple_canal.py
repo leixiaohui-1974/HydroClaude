@@ -1,4 +1,7 @@
 from physics.canal import Canal
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))))
+
 from simulation.plant_simulator import PlantSimulator
 import numpy as np
 

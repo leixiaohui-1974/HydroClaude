@@ -1,0 +1,249 @@
+# 防洪调度系统配置
+# 用于水库群防洪联合调度和洪水演进模拟
+
+name: 流域防洪调度系统
+description: 包含2个防洪水库、1条泄洪河道、3个泄洪闸门的防洪调度系统
+
+# 防洪水库
+reservoirs:
+  # 上游主控水库 - 大型防洪水库
+  - id: upstream_flood_reservoir
+    total_capacity: 500000000.0    # 总库容 5亿m³
+    min_level: 220.0               # 死水位 (m)
+    normal_level: 265.0            # 正常蓄水位 (m)
+    flood_level: 268.0             # 防洪限制水位 (m)
+    design_level: 275.0            # 设计洪水位 (m)
+    check_level: 278.0             # 校核洪水位 (m)
+    dead_storage: 50000000.0       # 死库容 5000万m³
+    flood_control_storage: 80000000.0  # 防洪库容 8000万m³
+    turbine_capacity: 300.0        # 发电能力 (MW)
+    turbine_efficiency: 0.92
+    ecological_flow: 80.0          # 生态流量 (m³/s)
+    initial_storage: 350000000.0   # 初始蓄水量 3.5亿m³
+
+  # 下游调节水库 - 中型拦蓄水库
+  - id: downstream_regulation_reservoir
+    total_capacity: 150000000.0    # 总库容 1.5亿m³
+    min_level: 150.0
+    normal_level: 175.0
+    flood_level: 177.0
+    design_level: 182.0
+    check_level: 184.0
+    dead_storage: 20000000.0
+    flood_control_storage: 30000000.0
+    turbine_capacity: 100.0
+    turbine_efficiency: 0.90
+    ecological_flow: 30.0
+    initial_storage: 120000000.0
+
+# 泄洪河道
+canals:
+  # 主河道 - 泄洪通道
+  - id: main_flood_channel
+    length: 25000.0                # 25km 长河段
+    nx: 101                        # 高分辨率网格
+    width: 150.0                   # 宽阔河道 (m)
+    slope: 0.0002                  # 较缓坡度
+    roughness: 0.035               # 天然河床
+    initial_depth: 5.0             # 初始水深 (m)
+    initial_flow: 500.0            # 初始流量 (m³/s)
+    max_flow: 15000.0              # 最大安全泄量 (m³/s)
+
+# 泄洪闸门
+gates:
+  # 上游水库泄洪闸 - 主泄洪口
+  - id: upstream_spillway_main
+    position: 0.0
+    width: 50.0                    # 大型泄洪闸 (m)
+    opening: 0.0                   # 初始关闭
+    max_opening: 15.0              # 最大开度 (m)
+    discharge_coefficient: 0.7     # 宽顶堰系数
+    gate_type: radial              # 弧形闸门
+
+  # 上游水库泄洪闸 - 辅助泄洪口
+  - id: upstream_spillway_auxiliary
+    position: 0.0
+    width: 30.0
+    opening: 0.0
+    max_opening: 10.0
+    discharge_coefficient: 0.65
+    gate_type: radial
+
+  # 下游水库泄洪闸
+  - id: downstream_spillway
+    position: 25000.0              # 河道末端
+    width: 40.0
+    opening: 5.0
+    max_opening: 12.0
+    discharge_coefficient: 0.7
+    gate_type: radial
+
+# 防洪控制器
+controllers:
+  # 上游水库水位控制（防洪优先）
+  - id: PID_upstream_flood_control
+    Kp: 1.5                        # 激进响应
+    Ki: 0.3
+    Kd: 0.2
+    setpoint: 268.0                # 防洪限制水位
+    output_min: 0.0                # 关闭
+    output_max: 15.0               # 全开
+    anti_windup: true
+    alarm_threshold: 273.0         # 警戒水位
+
+  # 下游水库水位控制（削峰为主）
+  - id: PID_downstream_flood_control
+    Kp: 1.2
+    Ki: 0.25
+    Kd: 0.15
+    setpoint: 177.0
+    output_min: 0.0
+    output_max: 12.0
+    anti_windup: true
+    alarm_threshold: 180.0
+
+  # 河道流量控制（保护下游）
+  - id: PID_channel_flow_limit
+    Kp: 2.0                        # 强控制
+    Ki: 0.4
+    Kd: 0.3
+    setpoint: 12000.0              # 安全泄量 (m³/s)
+    output_min: 0.0
+    output_max: 15.0
+    anti_windup: true
+
+# 系统拓扑
+topology:
+  - from_node: upstream_flood_reservoir
+    to_node: main_flood_channel
+    travel_time: 0
+    connection_type: gated
+
+  - from_node: main_flood_channel
+    to_node: downstream_regulation_reservoir
+    travel_time: 10800             # 3小时传播时间
+    connection_type: direct
+
+# 防洪调度规则
+optimization:
+  objective: minimize_flood_risk   # 最小化洪水风险
+  constraints:
+    max_reservoir_level: true      # 水位上限
+    max_channel_flow: true         # 河道安全泄量
+    downstream_protection: true    # 下游保护
+    ecological_flow: true          # 生态流量
+  algorithm: dynamic_programming
+  horizon: 72                      # 预见期 72小时
+
+  # 防洪调度策略
+  flood_control_rules:
+    # 水位-泄量关系
+    level_discharge_curve:
+      upstream:
+        - [265.0, 0.0]             # 正常蓄水位以下不泄洪
+        - [268.0, 3000.0]          # 防洪限制水位开始泄洪
+        - [270.0, 6000.0]          # 设计水位加大泄洪
+        - [275.0, 12000.0]         # 设计洪水位全力泄洪
+      downstream:
+        - [175.0, 0.0]
+        - [177.0, 2000.0]
+        - [180.0, 5000.0]
+        - [182.0, 8000.0]
+
+    # 泄洪优先级
+    priority:
+      - upstream_spillway_main     # 主泄洪口优先
+      - upstream_spillway_auxiliary  # 辅助泄洪口补充
+      - downstream_spillway        # 下游削峰
+
+    # 闸门操作限制
+    gate_operation:
+      max_opening_rate: 0.5        # 最大开启速度 (m/min)
+      max_closing_rate: 0.3        # 最大关闭速度 (m/min)
+      min_stable_time: 1800        # 最小稳定时间 30分钟 (s)
+
+# 仿真配置
+simulation:
+  duration: 259200                 # 仿真时长 3天 (s)
+  timestep: 60                     # 时间步长 1分钟 (s)
+  solver: implicit                 # 隐式求解器（稳定性优先）
+  output_interval: 600             # 输出间隔 10分钟 (s)
+
+  # 洪水场景
+  flood_scenario:
+    type: design_flood             # 设计洪水
+    peak_inflow: 8000.0            # 洪峰流量 (m³/s)
+    peak_time: 43200               # 洪峰时刻 12小时后 (s)
+    base_flow: 500.0               # 基流 (m³/s)
+    duration: 86400                # 洪水持续时间 24小时 (s)
+    shape: gamma                   # 洪水过程线形状
+
+  # 降雨输入（可选）
+  rainfall:
+    enabled: true
+    duration: 21600                # 降雨持续 6小时 (s)
+    intensity: 50.0                # 平均雨强 (mm/h)
+    spatial_pattern: uniform       # 均匀降雨
+
+  # 初始条件
+  initial_conditions:
+    reservoirs:
+      upstream:汛前水位            # 防洪限制水位
+      downstream: 正常蓄水位
+    channel: 枯水流量
+    gates: 全部关闭
+
+# 监测和预警
+monitoring:
+  critical_sections:
+    - node: upstream_flood_reservoir
+      variable: water_level
+      warning_threshold: 273.0     # 警戒水位 (m)
+      danger_threshold: 276.0      # 危险水位 (m)
+
+    - node: downstream_regulation_reservoir
+      variable: water_level
+      warning_threshold: 180.0
+      danger_threshold: 183.0
+
+    - node: main_flood_channel
+      position: 12500               # 河道中点 (m)
+      variable: flow
+      warning_threshold: 12000.0   # 警戒流量 (m³/s)
+      danger_threshold: 14000.0    # 危险流量 (m³/s)
+
+    - node: main_flood_channel
+      position: 12500
+      variable: water_depth
+      warning_threshold: 8.0       # 警戒水深 (m)
+      danger_threshold: 10.0       # 危险水深 (m)
+
+  # 预警响应
+  alert_actions:
+    warning_level:
+      - 加密观测频率
+      - 准备泄洪设施
+      - 通知下游单位
+    danger_level:
+      - 启动应急预案
+      - 全力开闸泄洪
+      - 组织人员撤离
+
+# 应用场景说明
+application:
+  use_case: 流域防洪联合调度
+  features:
+    - 水库群联合防洪
+    - 洪水演进模拟
+    - 实时预警响应
+    - 下游保护优化
+  typical_operations:
+    - 汛期防洪调度
+    - 洪水预报调度
+    - 超标准洪水应对
+    - 梯级水库协同
+  performance_metrics:
+    - 削峰率: ≥30%
+    - 错峰时间: ≥2小时
+    - 水位控制精度: ±0.5m
+    - 下游流量控制: <12000 m³/s

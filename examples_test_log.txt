@@ -1,0 +1,196 @@
+================================================================================
+Examples 1-16 自动化测试
+================================================================================
+
+找到 19 个示例组，共 21 个文件
+
+================================================================================
+运行: example_01_canal_flow - 01_basic
+文件: examples/example_01_canal_flow/code/01_basic.py
+================================================================================
+✓ 成功 (5.37s)
+
+================================================================================
+运行: example_01_canal_flow - 02_methods_comparison
+文件: examples/example_01_canal_flow/code/02_methods_comparison.py
+================================================================================
+✓ 成功 (8.23s)
+
+================================================================================
+运行: example_01_canal_flow - 05_step_response
+文件: examples/example_01_canal_flow/code/05_step_response.py
+================================================================================
+✓ 成功 (9.00s)
+
+================================================================================
+运行: example_02_pump_system - example_02_pump_system_enhanced
+文件: examples/example_02_pump_system/example_02_pump_system_enhanced.py
+================================================================================
+✗ 失败 (0.03s)
+错误: Traceback (most recent call last):
+  File "/home/user/HydroClaude/examples/example_02_pump_system/example_02_pump_system_enhanced.py", line 14, in <module>
+    from physics.tank import Tank
+ModuleNotF...
+
+================================================================================
+运行: example_02_spillway_cascade - example_02_spillway_system
+文件: examples/example_02_spillway_cascade/example_02_spillway_system.py
+================================================================================
+✗ 失败 (0.62s)
+错误: Traceback (most recent call last):
+  File "/home/user/HydroClaude/examples/example_02_spillway_cascade/example_02_spillway_system.py", line 37, in <module>
+    from solvers.gate import Spillway, Trans...
+
+================================================================================
+运行: example_03_turbine_demo - example_03_turbine_comparison
+文件: examples/example_03_turbine_demo/example_03_turbine_comparison.py
+================================================================================
+✗ 失败 (0.58s)
+错误: Traceback (most recent call last):
+  File "/home/user/HydroClaude/examples/example_03_turbine_demo/example_03_turbine_comparison.py", line 29, in <module>
+    from physics.turbine import FrancisTurbin...
+
+================================================================================
+运行: example_03_complex_network - example_03_complex_network
+文件: examples/example_03_complex_network/code/example_03_complex_network.py
+================================================================================
+✗ 失败 (0.03s)
+错误: Traceback (most recent call last):
+  File "/home/user/HydroClaude/examples/example_03_complex_network/code/example_03_complex_network.py", line 4, in <module>
+    from topology.network_graph import Ne...
+
+================================================================================
+运行: example_04_hydropower_system - example_04_hydropower_plant
+文件: examples/example_04_hydropower_system/example_04_hydropower_plant.py
+================================================================================
+✗ 失败 (0.57s)
+错误: Traceback (most recent call last):
+  File "/home/user/HydroClaude/examples/example_04_hydropower_system/example_04_hydropower_plant.py", line 34, in <module>
+    from physics.turbine import FrancisTur...
+
+================================================================================
+运行: example_05_transient_analysis - example_05_load_rejection
+文件: examples/example_05_transient_analysis/example_05_load_rejection.py
+================================================================================
+✗ 失败 (0.57s)
+错误: Traceback (most recent call last):
+  File "/home/user/HydroClaude/examples/example_05_transient_analysis/example_05_load_rejection.py", line 33, in <module>
+    from physics.turbine import FrancisTurb...
+
+================================================================================
+运行: example_06_complete_hydropower_system - example_06_complete_system
+文件: examples/example_06_complete_hydropower_system/example_06_complete_system.py
+================================================================================
+✗ 失败 (0.57s)
+错误: Traceback (most recent call last):
+  File "/home/user/HydroClaude/examples/example_06_complete_hydropower_system/example_06_complete_system.py", line 47, in <module>
+    from physics.turbine import Fr...
+
+================================================================================
+运行: example_07_multi_unit_agc - example_07_multi_unit_agc
+文件: examples/example_07_multi_unit_agc/example_07_multi_unit_agc.py
+================================================================================
+✗ 失败 (0.58s)
+错误: Traceback (most recent call last):
+  File "/home/user/HydroClaude/examples/example_07_multi_unit_agc/example_07_multi_unit_agc.py", line 27, in <module>
+    from control.agc import (
+ModuleNotFoundErr...
+
+================================================================================
+运行: example_08_load_acceptance - example_08_load_acceptance
+文件: examples/example_08_load_acceptance/example_08_load_acceptance.py
+================================================================================
+✓ 成功 (1.48s)
+
+================================================================================
+运行: example_08_preissmann_vs_fvm - example_08_preissmann_vs_fvm_enhanced
+文件: examples/example_08_preissmann_vs_fvm/example_08_preissmann_vs_fvm_enhanced.py
+================================================================================
+✗ 失败 (0.58s)
+错误: Traceback (most recent call last):
+  File "/home/user/HydroClaude/examples/example_08_preissmann_vs_fvm/example_08_preissmann_vs_fvm_enhanced.py", line 19, in <module>
+    from physics.canal import Ca...
+
+================================================================================
+运行: example_09_pipe_rk4 - example_09_pipe_rk4_enhanced
+文件: examples/example_09_pipe_rk4/example_09_pipe_rk4_enhanced.py
+================================================================================
+✗ 失败 (0.58s)
+错误: Traceback (most recent call last):
+  File "/home/user/HydroClaude/examples/example_09_pipe_rk4/example_09_pipe_rk4_enhanced.py", line 19, in <module>
+    from physics.pipe import Pipe
+ModuleNotFoundEr...
+
+================================================================================
+运行: example_10_series_network - example_10_series_network
+文件: examples/example_10_series_network/code/example_10_series_network.py
+================================================================================
+✗ 失败 (0.03s)
+错误: Traceback (most recent call last):
+  File "/home/user/HydroClaude/examples/example_10_series_network/code/example_10_series_network.py", line 5, in <module>
+    from topology.network_graph import Netw...
+
+================================================================================
+运行: example_11_tree_network - example_11_tree_network
+文件: examples/example_11_tree_network/code/example_11_tree_network.py
+================================================================================
+✗ 失败 (0.03s)
+错误: Traceback (most recent call last):
+  File "/home/user/HydroClaude/examples/example_11_tree_network/code/example_11_tree_network.py", line 5, in <module>
+    from topology.network_graph import NetworkT...
+
+================================================================================
+运行: example_12_loop_network - example_12_loop_network
+文件: examples/example_12_loop_network/code/example_12_loop_network.py
+================================================================================
+✗ 失败 (0.03s)
+错误: Traceback (most recent call last):
+  File "/home/user/HydroClaude/examples/example_12_loop_network/code/example_12_loop_network.py", line 5, in <module>
+    from topology.network_graph import NetworkT...
+
+================================================================================
+运行: example_13_adaptive_timescale - example_13_adaptive_timescale_enhanced
+文件: examples/example_13_adaptive_timescale/example_13_adaptive_timescale_enhanced.py
+================================================================================
+✗ 失败 (0.59s)
+错误: Traceback (most recent call last):
+  File "/home/user/HydroClaude/examples/example_13_adaptive_timescale/example_13_adaptive_timescale_enhanced.py", line 17, in <module>
+    from models.timescale_sele...
+
+================================================================================
+运行: example_14_adaptive_mpc - example_14_adaptive_mpc_enhanced
+文件: examples/example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py
+================================================================================
+✗ 失败 (0.60s)
+错误: Traceback (most recent call last):
+  File "/home/user/HydroClaude/examples/example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py", line 18, in <module>
+    from control.adaptive_mpc import Adapt...
+
+================================================================================
+运行: example_15_rls_identification - example_15_rls_identification_enhanced
+文件: examples/example_15_rls_identification/example_15_rls_identification_enhanced.py
+================================================================================
+✗ 失败 (0.60s)
+错误: Traceback (most recent call last):
+  File "/home/user/HydroClaude/examples/example_15_rls_identification/example_15_rls_identification_enhanced.py", line 18, in <module>
+    from identification.rls_id...
+
+================================================================================
+运行: example_16_weirs_application - weirs_irrigation_system
+文件: examples/example_16_weirs_application/weirs_irrigation_system.py
+================================================================================
+✓ 成功 (12.71s)
+
+================================================================================
+生成测试报告...
+================================================================================
+
+报告已保存到: EXAMPLES_1_16_TEST_REPORT.md
+
+================================================================================
+测试完成!
+================================================================================
+总计: 21
+成功: 5 (23.8%)
+失败: 16 (76.2%)
+================================================================================

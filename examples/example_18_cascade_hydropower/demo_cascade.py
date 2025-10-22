@@ -13,7 +13,7 @@
 """
 
 import sys
-sys.path.append('/home/user/HydroClaude')
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -227,16 +227,22 @@ def simulate_cascade_operation(cascade):
         total_power = 0
         total_storage = 0
 
+        # Helper function to convert to scalar
+        def to_scalar(val):
+            if isinstance(val, np.ndarray):
+                return float(val.item() if val.size == 1 else val.flat[0])
+            return float(val)
+
         for res_id, state in states.items():
             results[res_id]['time'].append(i)
-            results[res_id]['storage'].append(state.storage / 1e4)
-            results[res_id]['level'].append(state.water_level)
-            results[res_id]['inflow'].append(state.inflow)
-            results[res_id]['outflow'].append(state.outflow)
-            results[res_id]['power'].append(state.power_generation)
+            results[res_id]['storage'].append(to_scalar(state.storage) / 1e4)
+            results[res_id]['level'].append(to_scalar(state.water_level))
+            results[res_id]['inflow'].append(to_scalar(state.inflow))
+            results[res_id]['outflow'].append(to_scalar(state.outflow))
+            results[res_id]['power'].append(to_scalar(state.power_generation))
 
-            total_power += state.power_generation
-            total_storage += state.storage
+            total_power += to_scalar(state.power_generation)
+            total_storage += to_scalar(state.storage)
 
         results['cascade']['time'].append(i)
         results['cascade']['total_power'].append(total_power)

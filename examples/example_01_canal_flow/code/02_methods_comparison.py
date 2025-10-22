@@ -11,6 +11,9 @@
 """
 
 import numpy as np
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt

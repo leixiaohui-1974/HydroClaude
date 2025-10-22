@@ -1,0 +1,4 @@
+2025-10-22 11:39:33 - HydroClaude.Reservoir - DEBUG - logging_config.py:223 - 当前库容: 50000000 m³
+2025-10-22 11:39:33 - HydroClaude.Reservoir - INFO - logging_config.py:224 - 水位上涨: 260.5m → 261.2m
+2025-10-22 11:39:33 - HydroClaude.Reservoir - WARNING - logging_config.py:225 - 接近防洪限制水位
+2025-10-22 11:39:33 - HydroClaude.Reservoir - ERROR - logging_config.py:226 - 水量平衡检查失败

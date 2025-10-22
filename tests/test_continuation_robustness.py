@@ -21,7 +21,7 @@ from solvers.gate import SluiceGate
 from utils.canal_utils import compute_steady_uniform_flow
 
 
-def test_initial_condition(name, h_init_func, Q_init_func, system, Q_target):
+def run_initial_condition_test(name, h_init_func, Q_init_func, system, Q_target):
     """
     测试特定初值
 
@@ -219,7 +219,7 @@ def main():
     all_results = {}
 
     # 测试1: 好初值（均匀流）
-    all_results['uniform'] = test_initial_condition(
+    all_results['uniform'] = run_initial_condition_test(
         name="均匀流（好初值）",
         h_init_func=lambda nx: np.ones(nx) * h_uniform,
         Q_init_func=lambda nx: np.ones(nx) * Q_target,
@@ -228,7 +228,7 @@ def main():
     )
 
     # 测试2: 中等初值（线性插值）
-    all_results['linear'] = test_initial_condition(
+    all_results['linear'] = run_initial_condition_test(
         name="线性插值（中等初值）",
         h_init_func=lambda nx: np.linspace(h_uniform * 0.8, h_uniform * 1.2, nx),
         Q_init_func=lambda nx: np.linspace(Q_target * 0.8, Q_target * 1.2, nx),
@@ -237,7 +237,7 @@ def main():
     )
 
     # 测试3: 差初值（零初值）
-    all_results['zero'] = test_initial_condition(
+    all_results['zero'] = run_initial_condition_test(
         name="零初值（差初值）",
         h_init_func=lambda nx: np.ones(nx) * 0.1,
         Q_init_func=lambda nx: np.ones(nx) * 0.1,
@@ -246,7 +246,7 @@ def main():
     )
 
     # 测试4: 极端初值（大值）
-    all_results['large'] = test_initial_condition(
+    all_results['large'] = run_initial_condition_test(
         name="大值初值（极端初值）",
         h_init_func=lambda nx: np.ones(nx) * h_uniform * 5.0,
         Q_init_func=lambda nx: np.ones(nx) * Q_target * 5.0,

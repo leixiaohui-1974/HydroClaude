@@ -21,6 +21,13 @@ The system demonstrates:
 Author: HydroClaude Development Team
 Date: 2025-10-22
 """
+import sys
+import os
+
+# 添加项目根目录到Python路径
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+
 
 import numpy as np
 import matplotlib.pyplot as plt

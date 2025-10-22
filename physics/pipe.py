@@ -4,12 +4,35 @@ from core.states import ComponentState, HydraulicState
 from physics.numerical_methods.rk_solver import RKSolver
 
 class Pipe(HydraulicComponent):
-    """有压管道 - 水击方程"""
+    """
+    有压管道组件 - 水击方程
 
-    def __init__(self, name: str, length: float, diameter: float,
+    支持灵活的参数命名，兼容 name/pipe_id
+    """
+
+    def __init__(self, name: str = None, length: float = 1000.0,
+                 diameter: float = 1.0,
                  wave_speed: float = 1000.0, n_sections: int = 11,
-                 method: str = 'rk4'):
-        super().__init__(name, "pipe")
+                 method: str = 'rk4',
+                 # 额外参数支持（兼容性）
+                 pipe_id: str = None, **kwargs):
+        """
+        初始化管道组件
+
+        Args:
+            name: Pipe name (or use pipe_id)
+            length: Pipe length (m)
+            diameter: Pipe diameter (m)
+            wave_speed: Pressure wave speed (m/s)
+            n_sections: Number of spatial discretization points
+            method: Numerical method ('rk4', 'rk2')
+            pipe_id: Alternative parameter for name
+            **kwargs: Other parameters for compatibility
+        """
+        # 参数兼容性处理
+        actual_name = name or pipe_id
+
+        super().__init__(name=actual_name, comp_type="pipe", **kwargs)
         self.length = length
         self.diameter = diameter
         self.wave_speed = wave_speed

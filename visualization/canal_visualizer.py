@@ -15,6 +15,13 @@
 """
 
 import numpy as np
+import warnings
+
+# 全局抑制所有matplotlib相关警告（包括字体警告）
+warnings.filterwarnings('ignore', category=UserWarning)
+warnings.filterwarnings('ignore', module='matplotlib')
+warnings.filterwarnings('ignore', module='matplotlib.font_manager')
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt

@@ -1,0 +1,305 @@
+# 城市供水系统配置
+# 用于长距离调水、水厂供水和管网优化调度
+
+name: 城市供水调度系统
+description: 包含1个调蓄水库、1条长距离输水渠道、2个泵站、3个调节闸门的城市供水系统
+
+# 水源水库
+reservoirs:
+  - id: source_reservoir
+    total_capacity: 80000000.0     # 总库容 8000万m³
+    min_level: 210.0               # 最低运行水位 (m)
+    normal_level: 245.0            # 正常蓄水位 (m)
+    flood_level: 248.0             # 防洪限制水位 (m)
+    design_level: 252.0            # 设计洪水位 (m)
+    dead_storage: 10000000.0       # 死库容 1000万m³
+    turbine_capacity: 0.0          # 无发电功能（专用供水）
+    turbine_efficiency: 0.0
+    ecological_flow: 15.0          # 生态流量 (m³/s)
+    initial_storage: 60000000.0    # 初始蓄水量 6000万m³
+    water_quality_grade: II        # 水质等级（二类水）
+
+# 输水渠道
+canals:
+  # 长距离输水干渠
+  - id: main_water_transfer_canal
+    length: 50000.0                # 50km 长距离调水
+    nx: 201                        # 高精度网格
+    width: 20.0                    # 较宽渠道 (m)
+    slope: 0.00015                 # 非常缓的坡度
+    roughness: 0.018               # 混凝土光滑衬砌
+    initial_depth: 3.0             # 初始水深 (m)
+    initial_flow: 25.0             # 初始流量 (m³/s)
+    design_flow: 50.0              # 设计流量 (m³/s)
+    max_velocity: 2.0              # 最大流速 (m/s)
+
+  # 城市配水主管
+  - id: urban_distribution_main
+    length: 15000.0                # 15km
+    nx: 76
+    width: 10.0                    # 管道直径等效宽度 (m)
+    slope: 0.0002
+    roughness: 0.015               # 钢管
+    initial_depth: 2.5
+    initial_flow: 20.0
+    design_flow: 40.0
+
+  # 备用供水通道
+  - id: backup_supply_canal
+    length: 8000.0                 # 8km
+    nx: 41
+    width: 8.0
+    slope: 0.0003
+    roughness: 0.018
+    initial_depth: 2.0
+    initial_flow: 0.0              # 平时不用
+    design_flow: 20.0
+
+# 闸门和控制设施
+gates:
+  # 水库取水闸
+  - id: intake_gate
+    position: 0.0
+    width: 20.0                    # 大型取水口 (m)
+    opening: 5.0                   # 运行开度 (m)
+    max_opening: 8.0
+    discharge_coefficient: 0.65
+    gate_type: sluice
+
+  # 输水渠中途调节闸
+  - id: midway_regulating_gate
+    position: 25000.0              # 中点位置 (m)
+    width: 20.0
+    opening: 4.5
+    max_opening: 8.0
+    discharge_coefficient: 0.65
+    gate_type: sluice
+
+  # 城市进水闸
+  - id: urban_inlet_gate
+    position: 50000.0              # 末端
+    width: 18.0
+    opening: 4.0
+    max_opening: 7.0
+    discharge_coefficient: 0.65
+    gate_type: sluice
+
+# 泵站（用于提升水位）
+pumps:
+  # 一级提升泵站
+  - id: primary_pumping_station
+    position: 25000.0              # 输水渠中途
+    rated_head: 50.0               # 额定扬程 (m)
+    rated_flow: 30.0               # 额定流量 (m³/s)
+    efficiency: 0.85               # 泵效率
+    power: 15000.0                 # 装机功率 (kW)
+    num_units: 4                   # 泵组数量
+    min_operating_units: 1         # 最少运行台数
+    max_operating_units: 4         # 最多运行台数
+
+  # 二级提升泵站
+  - id: secondary_pumping_station
+    position: 50000.0              # 城市入口
+    rated_head: 30.0
+    rated_flow: 25.0
+    efficiency: 0.87
+    power: 8000.0
+    num_units: 3
+    min_operating_units: 1
+    max_operating_units: 3
+
+# 控制器
+controllers:
+  # 水库水位控制（保障供水）
+  - id: PID_reservoir_level
+    Kp: 0.6
+    Ki: 0.12
+    Kd: 0.06
+    setpoint: 245.0                # 维持正常蓄水位
+    output_min: 10.0               # 最小取水量 (m³/s)
+    output_max: 50.0               # 最大取水量 (m³/s)
+    anti_windup: true
+
+  # 输水渠水深控制（保证输水）
+  - id: PID_canal_depth
+    Kp: 0.4
+    Ki: 0.08
+    Kd: 0.04
+    setpoint: 3.0                  # 目标水深 (m)
+    output_min: 1.0
+    output_max: 8.0
+    anti_windup: true
+
+  # 城市供水流量控制（满足需求）
+  - id: PID_urban_supply_flow
+    Kp: 0.8
+    Ki: 0.15
+    Kd: 0.08
+    setpoint: 25.0                 # 目标供水流量 (m³/s)
+    output_min: 10.0
+    output_max: 40.0
+    anti_windup: true
+
+  # 泵站运行控制
+  - id: PID_pump_station
+    Kp: 1.0
+    Ki: 0.2
+    Kd: 0.1
+    setpoint: 50.0                 # 目标扬程 (m)
+    output_min: 1                  # 最少运行台数
+    output_max: 4                  # 最多运行台数
+    anti_windup: true
+
+# 系统拓扑
+topology:
+  - from_node: source_reservoir
+    to_node: main_water_transfer_canal
+    travel_time: 0
+    connection_type: gated
+
+  - from_node: main_water_transfer_canal
+    to_node: urban_distribution_main
+    travel_time: 14400             # 4小时传播延迟
+    connection_type: pumped        # 经过泵站提升
+
+  - from_node: source_reservoir
+    to_node: backup_supply_canal
+    travel_time: 0
+    connection_type: gated
+
+  - from_node: backup_supply_canal
+    to_node: urban_distribution_main
+    travel_time: 3600              # 1小时
+    connection_type: direct
+
+# 优化目标 - 城市供水
+optimization:
+  objective: minimize_cost_reliable_supply  # 最小成本可靠供水
+  constraints:
+    min_supply: true               # 保证最小供水量
+    water_quality: true            # 水质要求
+    reservoir_level: true          # 水库水位约束
+    max_pump_power: true           # 泵站功率限制
+  algorithm: model_predictive_control  # 模型预测控制
+  horizon: 168                     # 优化时域 7天 (小时)
+
+  # 供水需求预测
+  demand_forecast:
+    # 典型日用水模式（24小时）
+    hourly_pattern: [
+      0.4, 0.3, 0.3, 0.3, 0.4, 0.6,   # 0-5时 夜间低谷
+      0.9, 1.2, 1.5, 1.4, 1.3, 1.3,   # 6-11时 早高峰
+      1.4, 1.3, 1.2, 1.3, 1.5, 1.6,   # 12-17时 午后至晚高峰
+      1.5, 1.3, 1.0, 0.8, 0.6, 0.5    # 18-23时 晚间下降
+    ]
+    base_demand: 25.0              # 基准需求 (m³/s)
+    peak_factor: 1.6               # 高峰系数
+    weekend_factor: 0.85           # 周末系数
+
+  # 成本函数
+  cost_function:
+    electricity_price: 0.6         # 电价 (元/kWh)
+    peak_hours: [8, 9, 10, 18, 19, 20]  # 峰时电价时段
+    peak_price_factor: 1.5         # 峰时电价倍数
+    valley_hours: [23, 0, 1, 2, 3, 4]   # 谷时电价时段
+    valley_price_factor: 0.5       # 谷时电价折扣
+    water_treatment_cost: 0.3      # 水处理成本 (元/m³)
+
+# 仿真配置
+simulation:
+  duration: 604800                 # 仿真时长 7天 (s)
+  timestep: 300                    # 时间步长 5分钟 (s)
+  solver: implicit
+  output_interval: 3600            # 输出间隔 1小时 (s)
+
+  # 运行模式
+  operation_mode: normal           # normal/peak/emergency
+
+  # 初始条件
+  initial_conditions:
+    reservoir_level: 245.0         # 正常水位
+    canal_depths: design           # 设计水深
+    pumps: standby                 # 备用状态
+    gates: preset                  # 预设开度
+
+# 水质监测
+water_quality:
+  monitoring_points:
+    - location: source_reservoir
+      parameters: [pH, DO, COD, NH3-N, TP]
+      sampling_interval: 3600      # 每小时采样
+
+    - location: main_water_transfer_canal
+      position: 25000.0            # 中点
+      parameters: [turbidity, pH, residual_chlorine]
+      sampling_interval: 1800
+
+    - location: urban_distribution_main
+      position: 15000.0            # 末端
+      parameters: [residual_chlorine, bacteria_count]
+      sampling_interval: 1800
+
+  alert_thresholds:
+    turbidity_max: 3.0             # NTU
+    pH_min: 6.5
+    pH_max: 8.5
+    residual_chlorine_min: 0.05    # mg/L
+    COD_max: 15.0                  # mg/L
+
+# 应急响应
+emergency_protocols:
+  # 水质污染事故
+  water_pollution:
+    actions:
+      - 关闭取水口
+      - 启用备用水源
+      - 加大冲洗力度
+      - 通知用户
+    response_time: 300             # 5分钟内响应
+
+  # 水库低水位
+  low_reservoir_level:
+    trigger_level: 220.0           # 触发水位 (m)
+    actions:
+      - 限制供水量
+      - 优先保障生活用水
+      - 启用备用水源
+      - 分时段供水
+
+  # 管道爆裂
+  pipe_burst:
+    actions:
+      - 快速定位
+      - 隔离受影响区段
+      - 启用环网供水
+      - 抢修作业
+
+  # 泵站故障
+  pump_failure:
+    actions:
+      - 切换备用泵组
+      - 调整其他泵站出力
+      - 降低供水压力
+      - 通知维修
+
+# 应用场景说明
+application:
+  use_case: 城市长距离调水与供水调度
+  features:
+    - 长距离输水优化
+    - 泵站经济运行
+    - 需求预测响应
+    - 水质实时监测
+    - 应急事故处理
+  typical_operations:
+    - 日常供水调度
+    - 峰谷电价优化
+    - 水质保障控制
+    - 应急供水响应
+    - 管网压力平衡
+  performance_metrics:
+    - 供水保证率: ≥99.5%
+    - 水质达标率: 100%
+    - 能耗降低: ≥15%
+    - 应急响应时间: <5分钟
+    - 水厂到户时间: <4小时

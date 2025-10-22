@@ -1,0 +1,34 @@
+# 简单渠道流动配置示例
+# 用于Saint-Venant方程求解
+
+name: 简单明渠流动
+description: 单条渠道，一个闸门，用于演示基本配置
+
+canals:
+  - id: main_canal
+    length: 1000.0      # 渠道长度 (m)
+    nx: 21              # 网格点数
+    width: 10.0         # 渠道宽度 (m)
+    slope: 0.001        # 渠底坡度
+    roughness: 0.025    # Manning糙率系数
+    initial_depth: 2.0  # 初始水深 (m)
+    initial_flow: 10.0  # 初始流量 (m³/s)
+
+gates:
+  - id: gate_1
+    position: 500.0         # 位置：渠道中点 (m)
+    width: 10.0             # 闸门宽度 (m)
+    opening: 3.0            # 闸门开度 (m)
+    discharge_coefficient: 0.6
+    gate_type: sluice       # 闸门类型：平板闸门
+
+simulation:
+  duration: 3600          # 仿真时长: 1小时 (s)
+  timestep: 10            # 时间步长 (s)
+  solver: implicit        # 求解器类型
+  boundary_upstream:
+    type: constant_flow
+    value: 10.0           # 上游恒定流量 (m³/s)
+  boundary_downstream:
+    type: constant_depth
+    value: 2.0            # 下游恒定水深 (m)

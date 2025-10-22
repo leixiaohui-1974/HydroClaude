@@ -14,7 +14,7 @@ import os
 import numpy as np
 
 # 添加项目根目录到路径
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 from solvers.canal_solver import CanalSolver
 from utils.canal_utils import compute_steady_uniform_flow, get_convergence_metrics
