@@ -1,0 +1,146 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+测试牛顿法 - 使用良好初值
+
+验证牛顿法在良好初值下的二次收敛特性
+"""
+
+import numpy as np
+import sys
+import time
+
+sys.path.insert(0, '.')
+
+from physics.steady_saint_venant import SteadySaintVenantSystem
+from solvers.newton_solver import NewtonSolver
+from utils.canal_utils import compute_steady_uniform_flow
+
+print('='*80)
+print('牛顿法测试 - 良好初值')
+print('='*80)
+
+# 测试参数
+length = 1000.0
+nx = 51
+B = 10.0
+S0 = 0.001
+n = 0.025
+Q_target = 10.0
+
+# 创建系统（小的pseudo_dt）
+system = SteadySaintVenantSystem(
+    length, nx, B, S0, n,
+    pseudo_dt=0.001  # 非常小的pseudo_dt
+)
+
+h_uniform = compute_steady_uniform_flow(Q_target, B, S0, n)
+
+print(f'\n系统配置:')
+print(f'  目标流量: {Q_target} m³/s')
+print(f'  均匀流水深: {h_uniform:.3f} m')
+print(f'  pseudo_dt: {system.pseudo_dt}')
+
+# 设置边界条件
+system.set_boundary_conditions(
+    Q_upstream=Q_target,
+    h_upstream=h_uniform,
+    h_downstream=h_uniform
+)
+
+# 测试不同质量的初值
+init_configs = [
+    ('Perfect (exact solution)', 1.0000, 1.0000),
+    ('Excellent (0.1% error)', 1.001, 1.001),
+    ('Good (1% error)', 1.01, 1.01),
+    ('Fair (5% error)', 1.05, 1.05),
+    ('Poor (10% error)', 1.10, 1.10),
+    ('Bad (20% error)', 1.20, 1.20),
+]
+
+print(f'\n{"="*80}')
+print(f'测试不同初值质量下的牛顿法收敛性')
+print(f'{"="*80}\n')
+
+print(f'{"初值质量":30s} {"迭代":>6s} {"残差":>10s} {"时间(ms)":>10s} {"收敛":>6s}')
+print('-'*70)
+
+for name, h_factor, Q_factor in init_configs:
+    # 设置初值
+    h_init = np.ones(nx) * h_uniform * h_factor
+    Q_init = np.ones(nx) * Q_target * Q_factor
+    U_init = system.pack_state(h_init, Q_init)
+
+    # 设置U_prev为当前初值（使伪瞬态项初始为0）
+    system.U_prev = U_init.copy()
+
+    # 牛顿法求解
+    solver = NewtonSolver(
+        max_iter=30,
+        tol_residual=1e-8,
+        verbose=False
+    )
+
+    start_time = time.time()
+    U_solution, info = solver.solve(
+        U_init,
+        system.compute_residual,
+        system.compute_jacobian
+    )
+    solve_time = time.time() - start_time
+
+    converged_str = "YES" if info['converged'] else "NO"
+
+    print(f'{name:30s} {info["iterations"]:6d} {info["residual_norm"]:10.2e} '
+          f'{solve_time*1000:10.2f} {converged_str:>6s}')
+
+print()
+
+# 详细分析最好的情况
+print(f'\n{"="*80}')
+print(f'详细分析：使用0.1%误差初值')
+print(f'{"="*80}')
+
+h_init = np.ones(nx) * h_uniform * 1.001
+Q_init = np.ones(nx) * Q_target * 1.001
+U_init = system.pack_state(h_init, Q_init)
+system.U_prev = U_init.copy()
+
+solver = NewtonSolver(
+    max_iter=30,
+    tol_residual=1e-12,  # 更严格的容差
+    verbose=True
+)
+
+U_solution, info = solver.solve(
+    U_init,
+    system.compute_residual,
+    system.compute_jacobian
+)
+
+if info['converged']:
+    h_sol, Q_sol = system.unpack_state(U_solution)
+    print(f'\n最终解的物理检查:')
+    print(f'  水深偏差: {np.abs(h_sol - h_uniform).max():.2e} m')
+    print(f'  流量偏差: {np.abs(Q_sol - Q_target).max():.2e} m³/s')
+
+    # 检查收敛速度
+    residuals = info['residual_history']
+    if len(residuals) >= 3:
+        # 计算收敛率（二次收敛时，log(r_{k+1}) ≈ 2*log(r_k)）
+        rates = []
+        for i in range(len(residuals)-2):
+            if residuals[i] > 0 and residuals[i+1] > 0:
+                rate = np.log(residuals[i+2]) / np.log(residuals[i+1])
+                rates.append(rate)
+
+        if rates:
+            avg_rate = np.mean(rates[1:]) if len(rates) > 1 else rates[0]
+            print(f'\n收敛率分析:')
+            print(f'  平均收敛率: {avg_rate:.2f}')
+            if avg_rate > 1.5:
+                print(f'  ✓ 展现超线性/二次收敛特性')
+            else:
+                print(f'  ✗ 收敛速度较慢（线性收敛）')
+
+print('='*80)
