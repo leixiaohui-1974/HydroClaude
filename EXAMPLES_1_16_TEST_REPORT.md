@@ -1,13 +1,13 @@
 # Examples 1-16 测试报告
 
-**生成时间**: 2025-10-22 11:14:47
+**生成时间**: 2025-10-22 11:45:44
 
 ## 📊 总体统计
 
 - **总示例数**: 21
 - **成功**: 5 (23.8%)
 - **失败**: 16 (76.2%)
-- **总耗时**: 43.37s
+- **总耗时**: 44.69s
 
 ---
 
@@ -15,29 +15,29 @@
 
 | ID | 名称 | 状态 | 耗时 | 错误信息 |
 |----|------|------|------|----------|
-| example_01_canal_flow | 01_basic | ✅ 成功 | 5.37s | - |
-| example_01_canal_flow | 02_methods_comparison | ✅ 成功 | 8.23s | - |
-| example_01_canal_flow | 05_step_response | ✅ 成功 | 9.00s | - |
+| example_01_canal_flow | 01_basic | ✅ 成功 | 5.51s | - |
+| example_01_canal_flow | 02_methods_comparison | ✅ 成功 | 8.71s | - |
+| example_01_canal_flow | 05_step_response | ✅ 成功 | 9.09s | - |
 | example_02_pump_system | example_02_pump_system_enhanced | ❌ 失败 | 0.03s | Traceback (most recent call last):
   File "/home/u |
-| example_02_spillway_cascade | example_02_spillway_system | ❌ 失败 | 0.62s | Traceback (most recent call last):
+| example_02_spillway_cascade | example_02_spillway_system | ❌ 失败 | 0.61s | Traceback (most recent call last):
   File "/home/u |
-| example_03_turbine_demo | example_03_turbine_comparison | ❌ 失败 | 0.58s | Traceback (most recent call last):
+| example_03_turbine_demo | example_03_turbine_comparison | ❌ 失败 | 0.61s | Traceback (most recent call last):
   File "/home/u |
 | example_03_complex_network | example_03_complex_network | ❌ 失败 | 0.03s | Traceback (most recent call last):
   File "/home/u |
-| example_04_hydropower_system | example_04_hydropower_plant | ❌ 失败 | 0.57s | Traceback (most recent call last):
+| example_04_hydropower_system | example_04_hydropower_plant | ❌ 失败 | 0.60s | Traceback (most recent call last):
   File "/home/u |
-| example_05_transient_analysis | example_05_load_rejection | ❌ 失败 | 0.57s | Traceback (most recent call last):
+| example_05_transient_analysis | example_05_load_rejection | ❌ 失败 | 0.61s | Traceback (most recent call last):
   File "/home/u |
-| example_06_complete_hydropower_system | example_06_complete_system | ❌ 失败 | 0.57s | Traceback (most recent call last):
+| example_06_complete_hydropower_system | example_06_complete_system | ❌ 失败 | 0.61s | Traceback (most recent call last):
   File "/home/u |
-| example_07_multi_unit_agc | example_07_multi_unit_agc | ❌ 失败 | 0.58s | Traceback (most recent call last):
+| example_07_multi_unit_agc | example_07_multi_unit_agc | ❌ 失败 | 0.64s | Traceback (most recent call last):
   File "/home/u |
-| example_08_load_acceptance | example_08_load_acceptance | ✅ 成功 | 1.48s | - |
-| example_08_preissmann_vs_fvm | example_08_preissmann_vs_fvm_enhanced | ❌ 失败 | 0.58s | Traceback (most recent call last):
+| example_08_load_acceptance | example_08_load_acceptance | ✅ 成功 | 1.53s | - |
+| example_08_preissmann_vs_fvm | example_08_preissmann_vs_fvm_enhanced | ❌ 失败 | 0.69s | Traceback (most recent call last):
   File "/home/u |
-| example_09_pipe_rk4 | example_09_pipe_rk4_enhanced | ❌ 失败 | 0.58s | Traceback (most recent call last):
+| example_09_pipe_rk4 | example_09_pipe_rk4_enhanced | ❌ 失败 | 0.62s | Traceback (most recent call last):
   File "/home/u |
 | example_10_series_network | example_10_series_network | ❌ 失败 | 0.03s | Traceback (most recent call last):
   File "/home/u |
@@ -45,13 +45,13 @@
   File "/home/u |
 | example_12_loop_network | example_12_loop_network | ❌ 失败 | 0.03s | Traceback (most recent call last):
   File "/home/u |
-| example_13_adaptive_timescale | example_13_adaptive_timescale_enhanced | ❌ 失败 | 0.59s | Traceback (most recent call last):
+| example_13_adaptive_timescale | example_13_adaptive_timescale_enhanced | ❌ 失败 | 0.62s | Traceback (most recent call last):
   File "/home/u |
-| example_14_adaptive_mpc | example_14_adaptive_mpc_enhanced | ❌ 失败 | 0.60s | Traceback (most recent call last):
+| example_14_adaptive_mpc | example_14_adaptive_mpc_enhanced | ❌ 失败 | 0.62s | Traceback (most recent call last):
   File "/home/u |
-| example_15_rls_identification | example_15_rls_identification_enhanced | ❌ 失败 | 0.60s | Traceback (most recent call last):
+| example_15_rls_identification | example_15_rls_identification_enhanced | ❌ 失败 | 0.63s | Traceback (most recent call last):
   File "/home/u |
-| example_16_weirs_application | weirs_irrigation_system | ✅ 成功 | 12.71s | - |
+| example_16_weirs_application | weirs_irrigation_system | ✅ 成功 | 12.86s | - |
 
 ---
 
@@ -60,29 +60,29 @@
 ### example_01_canal_flow: 01_basic
 
 - **文件**: `examples/example_01_canal_flow/code/01_basic.py`
-- **耗时**: 5.37s
+- **耗时**: 5.51s
 
 ### example_01_canal_flow: 02_methods_comparison
 
 - **文件**: `examples/example_01_canal_flow/code/02_methods_comparison.py`
-- **耗时**: 8.23s
+- **耗时**: 8.71s
 
 ### example_01_canal_flow: 05_step_response
 
 - **文件**: `examples/example_01_canal_flow/code/05_step_response.py`
-- **耗时**: 9.00s
+- **耗时**: 9.09s
 
 ### example_08_load_acceptance: example_08_load_acceptance
 
 - **文件**: `examples/example_08_load_acceptance/example_08_load_acceptance.py`
-- **耗时**: 1.48s
+- **耗时**: 1.53s
 - **输出文件**: 1个
   - `examples/example_08_load_acceptance/load_acceptance_transient.png`
 
 ### example_16_weirs_application: weirs_irrigation_system
 
 - **文件**: `examples/example_16_weirs_application/weirs_irrigation_system.py`
-- **耗时**: 12.71s
+- **耗时**: 12.86s
 
 ## ❌ 失败的示例
 
@@ -169,7 +169,7 @@ ModuleNotFoundError: No module named 'physics'
 - **错误**:
 ```
 Traceback (most recent call last):
-  File "/home/user/HydroClaude/examples/example_07_multi_unit_agc/example_07_multi_unit_agc.py", line 27, in <module>
+  File "/home/user/HydroClaude/examples/example_07_multi_unit_agc/example_07_multi_unit_agc.py", line 34, in <module>
     from control.agc import (
 ModuleNotFoundError: No module named 'control'
 ```
