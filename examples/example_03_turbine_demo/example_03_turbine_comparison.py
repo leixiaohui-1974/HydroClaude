@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 import sys
 import os
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from physics.turbine import FrancisTurbine, KaplanTurbine, PeltonTurbine
 from physics.turbine import select_turbine_type, calculate_specific_speed

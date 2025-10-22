@@ -22,7 +22,7 @@ from typing import Tuple, List, Dict
 from dataclasses import dataclass
 
 # 添加项目根目录到路径
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from core.constants import PhysicsConstants
 
