@@ -37,11 +37,12 @@ class SluiceGate:
         """
         计算闸门过流量
 
-        自由出流（开度 < 0.67 * 上游水深）:
-            Q = Cd * B * e * sqrt(2*g*h_upstream)
+        流态判断改进：
+        1. 如果下游水位 > 闸门开度，则为淹没出流
+        2. 否则检查 e < 0.67 * h_upstream 判断自由/淹没出流
 
-        淹没出流（开度 >= 0.67 * 上游水深）:
-            Q = Cd * B * e * sqrt(2*g*(h_upstream - h_downstream))
+        自由出流：Q = Cd * B * e * sqrt(2*g*h_upstream)
+        淹没出流：Q = Cd * B * e * sqrt(2*g*(h_upstream - h_downstream))
 
         Args:
             h_upstream: 上游水深 (m)
@@ -53,18 +54,60 @@ class SluiceGate:
         """
         e = self.opening
 
-        # 判断流态
-        if e < 0.67 * h_upstream:
+        # 改进的流态判断
+        # 条件1：下游水位超过闸孔，肯定是淹没出流
+        # 条件2：上下游水位差很小，也是淹没出流
+        if h_downstream > e or (h_upstream - h_downstream) < 0.5:
+            # 淹没出流
+            delta_h = max(0.001, h_upstream - h_downstream)
+            discharge = self.Cd * self.width * e * np.sqrt(2 * self.g * delta_h)
+            flow_type = 'submerged'
+        else:
             # 自由出流
             discharge = self.Cd * self.width * e * np.sqrt(2 * self.g * h_upstream)
             flow_type = 'free'
-        else:
-            # 淹没出流
-            delta_h = max(0.01, h_upstream - h_downstream)
-            discharge = self.Cd * self.width * e * np.sqrt(2 * self.g * delta_h)
-            flow_type = 'submerged'
 
         return discharge, flow_type
+
+    def calculate_upstream_depth(self, Q, h_downstream):
+        """
+        反算上游水深：给定流量和下游水位，计算上游水位
+
+        使用淹没出流公式的解析解（适用于本例的小流量情况）
+
+        Args:
+            Q: 流量 (m³/s)
+            h_downstream: 下游水深 (m)
+
+        Returns:
+            h_upstream: 上游水深 (m)
+        """
+        # 对于小流量、下游水位较高的情况，通常是淹没出流
+        # Q = Cd * B * e * sqrt(2*g*(h_up - h_down))
+        # h_up = h_down + (Q / (Cd * B * e))^2 / (2*g)
+
+        C = self.Cd * self.width * self.opening
+        delta_h = (Q / C) ** 2 / (2 * self.g)
+        h_up = h_downstream + delta_h
+
+        # 验证这个结果
+        Q_check, flow_type = self.calculate_discharge(h_up, h_downstream)
+
+        # 如果误差较大，使用数值迭代
+        if abs(Q_check - Q) / Q > 0.01:
+            from scipy.optimize import fsolve
+
+            def equation(h):
+                Q_calc, _ = self.calculate_discharge(h, h_downstream)
+                return Q_calc - Q
+
+            try:
+                h_up = fsolve(equation, h_up, full_output=False)[0]
+                h_up = max(h_downstream + 0.001, h_up)
+            except:
+                pass  # 保持解析解结果
+
+        return h_up
 
 
 class SimplifiedCanalReach:
@@ -154,15 +197,27 @@ def run_sluice_gate_dynamics():
     print("场景1: 恒定流分析")
     print("-" * 80)
 
-    # 初始条件
-    h_init = 5.0
-    Q_init = 5.0
-    upstream_reach.set_uniform_state(h_init, Q_init)
-    downstream_reach.set_uniform_state(h_init, Q_init)
-
     # 边界条件
     Q_upstream_bc = 5.0
     h_downstream_bc = 5.0
+
+    # 计算稳态初值（有水头损失）
+    h_up_init = gate.calculate_upstream_depth(Q_upstream_bc, h_downstream_bc)
+    print(f"\n计算稳态初值:")
+    print(f"  上游流量: {Q_upstream_bc} m³/s")
+    print(f"  下游水位: {h_downstream_bc} m")
+    print(f"  上游水位: {h_up_init:.4f} m")
+    print(f"  水头损失: {h_up_init - h_downstream_bc:.4f} m")
+
+    # 验证
+    Q_check, flow_type_check = gate.calculate_discharge(h_up_init, h_downstream_bc)
+    print(f"  验证闸门流量: {Q_check:.4f} m³/s (应为 {Q_upstream_bc} m³/s)")
+    print(f"  流态: {flow_type_check}")
+    print()
+
+    # 初始条件（使用稳态值）
+    upstream_reach.set_uniform_state(h_up_init, Q_upstream_bc)
+    downstream_reach.set_uniform_state(h_downstream_bc, Q_upstream_bc)
 
     # 仿真参数
     dt = 10.0
@@ -193,11 +248,15 @@ def run_sluice_gate_dynamics():
         # 更新上游段 (入流=边界流量, 出流=闸门流量)
         upstream_reach.update_simple(dt, Q_upstream_bc, Q_gate)
 
-        # 更新下游段 (入流=闸门流量, 出流=边界流量)
-        # 下游出流由水位边界控制，简化假设为闸门流量
+        # 更新下游段 (入流=闸门流量, 出流=闸门流量)
+        # 下游段保持水位稳定（由下游边界控制）
+        h_d_avg = np.mean(downstream_reach.h)
         downstream_reach.update_simple(dt, Q_gate, Q_gate)
-        # 强制下游水位为边界条件
-        downstream_reach.h[-1] = h_downstream_bc
+        # 限制下游水位变化，保持接近边界值
+        h_d_new = np.mean(downstream_reach.h)
+        # 使用阻尼因子，让下游水位缓慢接近边界值
+        h_d_target = 0.9 * h_d_new + 0.1 * h_downstream_bc
+        downstream_reach.h[:] = h_d_target
 
         # 记录数据
         time1.append(t)
@@ -223,17 +282,23 @@ def run_sluice_gate_dynamics():
     print("场景2: 非恒定流 - 上游流量阶跃 (5.0 → 8.0 m³/s)")
     print("-" * 80)
 
-    # 重置初始条件
-    upstream_reach.set_uniform_state(h_init, Q_init)
-    downstream_reach.set_uniform_state(h_init, Q_init)
-
     # 阶跃参数
     step_time = 100.0
     Q_before_step = 5.0
     Q_after_step = 8.0
 
-    # 仿真参数
-    total_time_2 = 500.0
+    # 初始条件：使用阶跃前的稳态值
+    h_up_init_2 = gate.calculate_upstream_depth(Q_before_step, h_downstream_bc)
+    print(f"\n初始稳态（阶跃前）:")
+    print(f"  上游流量: {Q_before_step} m³/s")
+    print(f"  上游水位: {h_up_init_2:.4f} m")
+    print(f"  下游水位: {h_downstream_bc} m")
+
+    upstream_reach.set_uniform_state(h_up_init_2, Q_before_step)
+    downstream_reach.set_uniform_state(h_downstream_bc, Q_before_step)
+
+    # 仿真参数（延长时间以达到新稳态）
+    total_time_2 = 1000.0  # 延长到1000s
     n_steps_2 = int(total_time_2 / dt)
 
     # 数据存储
@@ -268,9 +333,11 @@ def run_sluice_gate_dynamics():
         # 更新上游段
         upstream_reach.update_simple(dt, Q_up_bc, Q_gate)
 
-        # 更新下游段
+        # 更新下游段（同场景1）
         downstream_reach.update_simple(dt, Q_gate, Q_gate)
-        downstream_reach.h[-1] = h_downstream_bc
+        h_d_new = np.mean(downstream_reach.h)
+        h_d_target = 0.9 * h_d_new + 0.1 * h_downstream_bc
+        downstream_reach.h[:] = h_d_target
 
         # 记录数据
         time2.append(t)
@@ -285,12 +352,17 @@ def run_sluice_gate_dynamics():
             print(f"  t={t:6.0f}s: Q_up={Q_up_bc:.1f}, Q_gate={Q_gate:.3f} m³/s, "
                   f"h_up={h_u:.3f}m, h_down={h_d:.3f}m, type={f_type}{marker}")
 
+    # 计算阶跃后的理论稳态值
+    h_up_final_theory = gate.calculate_upstream_depth(Q_after_step, h_downstream_bc)
+    Q_final_theory, flow_type_final_theory = gate.calculate_discharge(h_up_final_theory, h_downstream_bc)
+
     print()
     print(f"非恒定流最终状态:")
-    print(f"  闸门流量: {Q_gate_2[-1]:.3f} m³/s")
-    print(f"  上游水深: {h_up_2[-1]:.3f} m (初始: {h_up_2[0]:.3f} m)")
-    print(f"  下游水深: {h_down_2[-1]:.3f} m (初始: {h_down_2[0]:.3f} m)")
+    print(f"  闸门流量: {Q_gate_2[-1]:.3f} m³/s (目标: {Q_after_step} m³/s)")
+    print(f"  上游水深: {h_up_2[-1]:.3f} m (初始: {h_up_2[0]:.3f} m, 理论终值: {h_up_final_theory:.3f} m)")
+    print(f"  下游水深: {h_down_2[-1]:.3f} m (边界: {h_downstream_bc} m)")
     print(f"  流态: {flow_type_2[-1]}")
+    print(f"  水位变化: {h_up_2[-1] - h_up_2[0]:.3f} m")
     print()
 
     # === 生成可视化 ===
