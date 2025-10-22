@@ -11,7 +11,8 @@ Date: 2025-10-21
 """
 
 import sys, os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# 添加项目根目录到路径（向上两级：canal_flow -> examples -> HydroClaude）
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -177,27 +178,37 @@ def run_sluice_gate_dynamics():
     print()
 
     # === 系统配置 ===
-    canal_length_total = 1000.0  # 总长度
+    # 优化参数以增强可视化效果：
+    # 1. 增加渠道长度，展示流量传播过程
+    # 2. 减小闸门开度，增大上下游水位差
+    # 3. 调整下游水位，使水位差更明显
+
+    canal_length_total = 5000.0  # 总长度（增加到5000m）
     canal_width = 10.0
-    gate_position = 500.0  # 闸门位置
+    gate_position = 2500.0  # 闸门位置（中点）
+
+    # 渠道高程设置（模拟坡度效果）
+    bed_slope = 0.002  # 底坡2‰
+    upstream_bed_elevation = gate_position * bed_slope  # 上游段末端高程
+    downstream_bed_elevation = 0.0  # 下游段末端高程（基准）
 
     # 上游段和下游段
     upstream_reach = SimplifiedCanalReach(
         length=gate_position,
         width=canal_width,
-        n_points=26
+        n_points=51  # 增加空间点数以展示传播
     )
 
     downstream_reach = SimplifiedCanalReach(
         length=canal_length_total - gate_position,
         width=canal_width,
-        n_points=26
+        n_points=51  # 增加空间点数
     )
 
-    # 闸门
+    # 闸门 - 减小开度以增大水位差
     gate = SluiceGate(
         width=canal_width,
-        opening=2.5,  # 半开
+        opening=1.2,  # 减小开度（从2.5m减到1.2m）
         Cd=0.6
     )
 
@@ -207,6 +218,8 @@ def run_sluice_gate_dynamics():
     print(f"  闸门位置: {gate_position} m")
     print(f"  闸门开度: {gate.opening} m")
     print(f"  流量系数: {gate.Cd}")
+    print(f"  底坡: {bed_slope*1000:.1f}‰")
+    print(f"  上游床面高程: {upstream_bed_elevation:.1f} m")
     print()
 
     # === 场景1: 恒定流 ===
@@ -214,9 +227,9 @@ def run_sluice_gate_dynamics():
     print("场景1: 恒定流分析")
     print("-" * 80)
 
-    # 边界条件
-    Q_upstream_bc = 5.0
-    h_downstream_bc = 5.0
+    # 边界条件 - 调整以增大水位差
+    Q_upstream_bc = 8.0  # 增大流量
+    h_downstream_bc = 3.0  # 降低下游水位（相对于床面）
 
     # 计算稳态初值（有水头损失）
     h_up_init = gate.calculate_upstream_depth(Q_upstream_bc, h_downstream_bc)
@@ -301,9 +314,9 @@ def run_sluice_gate_dynamics():
     canal_params = {
         'length': canal_length_total,
         'width': canal_width,
-        'slope': 0.0001,
+        'slope': bed_slope,  # 使用实际底坡
         'manning_n': 0.025,
-        'nx': 51
+        'nx': 101  # 51 + 51 - 1（去掉重复点）
     }
 
     # 需要准备完整的空间分布数据
@@ -312,10 +325,10 @@ def run_sluice_gate_dynamics():
     for h_u, h_d, q_g in zip(h_up_1, h_down_1, Q_gate_1):
         # 简化：上游段用h_u，下游段用h_d
         h_profile = np.concatenate([
-            np.ones(26) * h_u,
-            np.ones(25) * h_d
+            np.ones(51) * h_u,
+            np.ones(50) * h_d  # 51-1以避免重复
         ])
-        Q_profile = np.ones(51) * q_g
+        Q_profile = np.ones(101) * q_g
         h_history1_full.append(h_profile)
         Q_history1_full.append(Q_profile)
 
@@ -332,13 +345,14 @@ def run_sluice_gate_dynamics():
 
     # === 场景2: 非恒定流 (流量阶跃) ===
     print("=" * 80)
-    print("场景2: 非恒定流 - 上游流量阶跃 (5.0 → 8.0 m³/s)")
-    print("-" * 80)
 
-    # 阶跃参数
-    step_time = 100.0
-    Q_before_step = 5.0
-    Q_after_step = 8.0
+    # 阶跃参数 - 增大流量变化幅度
+    step_time = 200.0  # 延长阶跃时间以观察传播
+    Q_before_step = 8.0  # 与场景1相同的初始流量
+    Q_after_step = 15.0  # 大幅增加流量以观察明显变化
+
+    print(f"场景2: 非恒定流 - 上游流量阶跃 ({Q_before_step} → {Q_after_step} m³/s)")
+    print("-" * 80)
 
     # 初始条件：使用阶跃前的稳态值
     h_up_init_2 = gate.calculate_upstream_depth(Q_before_step, h_downstream_bc)
@@ -351,7 +365,7 @@ def run_sluice_gate_dynamics():
     downstream_reach.set_uniform_state(h_downstream_bc, Q_before_step)
 
     # 仿真参数（延长时间以达到新稳态）
-    total_time_2 = 1000.0  # 延长到1000s
+    total_time_2 = 1500.0  # 延长到1500s以观察完整传播过程
     n_steps_2 = int(total_time_2 / dt)
 
     # 数据存储
@@ -429,10 +443,10 @@ def run_sluice_gate_dynamics():
     Q_history2_full = []
     for h_u, h_d, q_g in zip(h_up_2, h_down_2, Q_gate_2):
         h_profile = np.concatenate([
-            np.ones(26) * h_u,
-            np.ones(25) * h_d
+            np.ones(51) * h_u,
+            np.ones(50) * h_d  # 51-1以避免重复
         ])
-        Q_profile = np.ones(51) * q_g
+        Q_profile = np.ones(101) * q_g
         h_history2_full.append(h_profile)
         Q_history2_full.append(Q_profile)
 
@@ -648,8 +662,8 @@ def run_sluice_gate_dynamics():
                                   h_limits, Q_limits, step_t=None, Q_upstream_data=None):
         """创建单个场景的GIF动画"""
 
-        # 每隔几帧保存一次（减少GIF大小）
-        frame_skip = 2
+        # 每隔几帧保存一次（平衡GIF大小和流畅度）
+        frame_skip = 3  # 增加跳帧以减少文件大小，但保持关键帧
         n_frames = len(time_data) // frame_skip
 
         # 准备数据
@@ -681,13 +695,9 @@ def run_sluice_gate_dynamics():
         ax_profile.fill_between(x_full, -1, bed_elev, color='saddlebrown', alpha=0.5, label='Channel Bed')
 
         # 水面线（初始化）
-        # 使用实际的点数
+        # 使用实际的点数（注意：n_upstream=51, n_downstream=51, 但x_full去掉了一个重复点）
         water_surface = np.concatenate([np.ones(n_upstream) * frames_h_up[0],
                                        np.ones(n_downstream - 1) * frames_h_down[0]])
-
-        if len(x_full) != len(water_surface):
-            print(f"DEBUG: x_full shape = {x_full.shape}, water_surface shape = {water_surface.shape}")
-            print(f"DEBUG: n_upstream = {n_upstream}, n_downstream = {n_downstream}")
 
         line_water, = ax_profile.plot(x_full, water_surface, 'b-', linewidth=2.5, label='Water Surface')
         ax_profile.fill_between(x_full, bed_elev, water_surface, color='lightblue', alpha=0.6)
@@ -796,15 +806,16 @@ def run_sluice_gate_dynamics():
             return (line_water, line_Q_dist, gate_Q_text, time_text,
                    line_Q_hist, line_h_up, line_h_down)
 
-        # 创建动画
-        anim = FuncAnimation(fig, update, frames=n_frames, interval=100, blit=True)
+        # 创建动画 - 减慢播放速度以观察细节
+        anim = FuncAnimation(fig, update, frames=n_frames, interval=200, blit=True)
 
         # 保存为GIF
         gif_filename = f'example_01_gate_{scenario_name.lower().replace(" ", "_").replace(":", "")}.gif'
         gif_path = os.path.join('reports/figures', gif_filename)
 
         print(f"  生成 {scenario_name} 动画...", end=' ')
-        writer = PillowWriter(fps=10)
+        # 降低fps以减慢播放速度（从10fps降到5fps）
+        writer = PillowWriter(fps=5)
         anim.save(gif_path, writer=writer, dpi=100)
         print(f"✓")
 
