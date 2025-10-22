@@ -31,11 +31,18 @@ def setup_chinese_fonts(font_size: int = 11):
 
     Note:
         在Docker环境中，中文字体可能显示为方框，但不影响功能
+        会自动抑制字体缺失的警告信息
     """
+    import warnings
+
     chinese_fonts = [
         'SimHei',           # 黑体
         'Microsoft YaHei',  # 微软雅黑
+        'WenQuanYi Micro Hei',  # 文泉驿微米黑
+        'Noto Sans CJK SC',     # Noto
         'STSong',           # 华文宋体
+        'PingFang SC',      # 苹方
+        'Heiti SC',         # 黑体
         'DejaVu Sans',      # 备用
     ]
 
@@ -47,6 +54,9 @@ def setup_chinese_fonts(font_size: int = 11):
     plt.rcParams['xtick.labelsize'] = font_size - 1
     plt.rcParams['ytick.labelsize'] = font_size - 1
     plt.rcParams['legend.fontsize'] = font_size - 1
+
+    # 抑制字体缺失警告
+    warnings.filterwarnings('ignore', category=UserWarning, module='matplotlib')
 
 
 # ============================================================================
