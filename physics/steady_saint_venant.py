@@ -319,8 +319,9 @@ class SteadySaintVenantSystem:
             else:
                 # 普通节点：标准Saint-Venant方程
 
-                # 连续性方程 Jacobian
-                # F[2*i] = (Q[i+1] - Q[i-1]) / (2*dx)
+                # 连续性方程 Jacobian（带伪瞬态）
+                # F[2*i] = (Q[i]-Q_prev[i])/pseudo_dt + (Q[i+1] - Q[i-1]) / (2*dx)
+                J[2*i, 2*i+1] = 1.0 / self.pseudo_dt  # ∂F/∂Q_i（伪时间项，关键！）
                 J[2*i, 2*(i-1)+1] = -1.0 / (2 * self.dx)
                 J[2*i, 2*(i+1)+1] = 1.0 / (2 * self.dx)
 
