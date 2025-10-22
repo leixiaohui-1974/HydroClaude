@@ -112,7 +112,7 @@ class Reservoir(HydraulicComponent):
             hydraulic_head: 水头 (m)
             turbine_efficiency: 水轮机综合效率
         """
-        super().__init__(component_id=reservoir_id, component_type=ComponentType.RESERVOIR, **kwargs)
+        super().__init__(reservoir_id, "reservoir")
 
         # 水库特征参数
         self.reservoir_id = reservoir_id
