@@ -60,7 +60,7 @@ class WaterTransferSystem:
         print(f"  源水库: {self.source_reservoir.reservoir_id}")
         print(f"  泵站数: {len(self.pump_stations)}")
         print(f"  管道数: {len(self.pipelines)}")
-        print(f"  调蓄池: {self.regulation_tank.component_id}")
+        print(f"  调蓄池: {self.regulation_tank.tank_id}")
         print(f"  总距离: {self.total_distance:.0f} km")
         print(f"  总提升: {self.total_lift:.0f} m")
 
@@ -179,16 +179,14 @@ class WaterTransferSystem:
         """创建末端调蓄水池"""
         self.regulation_tank = Tank(
             tank_id="regulation_tank",
-            volume=5e6,          # 容积 500万m³
-            area=250000.0,       # 面积 25万m²
-            min_level=0.0,
-            max_level=20.0,
-            initial_level=10.0
+            volume_min=0.0,      # 最小容积
+            volume_max=5e6,      # 最大容积 500万m³
+            area=250000.0        # 面积 25万m²
         )
 
         print(f"\n调蓄池参数:")
         print(f"  容积: {self.regulation_tank.volume/1e6:.0f} 万m³")
-        print(f"  调蓄能力: {self.regulation_tank.max_level:.0f} m")
+        print(f"  调蓄能力: {self.regulation_tank.volume_max/self.regulation_tank.area:.0f} m")
 
     def simulate_daily_operation(
         self,
@@ -305,7 +303,7 @@ class WaterTransferSystem:
                 'head': 55.0,
                 'speed_ratio': 1.0
             }
-            pump1_state = self.pump_stations[0].update(dt, pump1_inputs)
+            pump1_state = self.pump_stations[0].update_high_fidelity(dt, pump1_inputs)
 
             # 泵站2 (考虑沿程损失)
             pump2_flow = target_pump_flow * 0.98
@@ -314,7 +312,7 @@ class WaterTransferSystem:
                 'head': 65.0,
                 'speed_ratio': 1.0
             }
-            pump2_state = self.pump_stations[1].update(dt, pump2_inputs)
+            pump2_state = self.pump_stations[1].update_high_fidelity(dt, pump2_inputs)
 
             # 泵站3
             pump3_flow = pump2_flow * 0.98
@@ -323,7 +321,7 @@ class WaterTransferSystem:
                 'head': 45.0,
                 'speed_ratio': 1.0
             }
-            pump3_state = self.pump_stations[2].update(dt, pump3_inputs)
+            pump3_state = self.pump_stations[2].update_high_fidelity(dt, pump3_inputs)
 
             # 调蓄池
             # 入流 = 泵站3出流, 出流 = 目标需水
@@ -335,7 +333,7 @@ class WaterTransferSystem:
                 'inflow': tank_inflow,
                 'outflow': tank_outflow
             }
-            tank_state = self.regulation_tank.update(dt, tank_inputs)
+            tank_state = self.regulation_tank.update_reduced_order(dt, tank_inputs)
 
             # 计算缺水
             shortage = max(0, target_demand[t] - tank_outflow)

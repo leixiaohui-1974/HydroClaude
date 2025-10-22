@@ -32,20 +32,33 @@ class Pump(HydraulicComponent):
     Supports speed variation via similarity laws
     """
 
-    def __init__(self, name: str, rated_flow: float = 100.0,
+    def __init__(self, name: str = None, rated_flow: float = None,
                  rated_head: float = 50.0, rated_speed: float = 1500.0,
-                 shutoff_head_ratio: float = 1.2, max_efficiency: float = 0.85):
+                 shutoff_head_ratio: float = 1.2, max_efficiency: float = 0.85,
+                 # 额外参数支持（兼容性）
+                 pump_id: str = None, max_flow: float = None, **kwargs):
         """
         Args:
-            name: Pump name
-            rated_flow: Rated flow rate (m3/s)
+            name: Pump name (or use pump_id)
+            rated_flow: Rated flow rate (m3/s) (or use max_flow)
             rated_head: Rated head (m)
             rated_speed: Rated speed (rpm)
             shutoff_head_ratio: Ratio of shutoff head to rated head (typically 1.1-1.3)
             max_efficiency: Maximum efficiency (0-1)
+            pump_id: Alternative parameter for name
+            max_flow: Alternative parameter for rated_flow
+            **kwargs: Other parameters for compatibility
         """
-        super().__init__(name, "pump")
-        self.rated_flow = rated_flow
+        # 参数兼容性处理
+        actual_name = name or pump_id
+        actual_rated_flow = rated_flow or max_flow or 100.0
+
+        super().__init__(name=actual_name, comp_type="pump", **kwargs)
+
+        # 添加便捷属性（兼容性）
+        self.pump_id = self.id  # 别名
+
+        self.rated_flow = actual_rated_flow
         self.rated_head = rated_head
         self.rated_speed = rated_speed
         self.shutoff_head_ratio = shutoff_head_ratio
@@ -54,10 +67,10 @@ class Pump(HydraulicComponent):
         # Characteristic curve parameters (parabolic)
         # H = H0 - a*Q^2
         self.H0 = rated_head * shutoff_head_ratio  # Shutoff head (Q=0)
-        self.a = -(self.H0 - rated_head) / (rated_flow ** 2)
+        self.a = -(self.H0 - rated_head) / (actual_rated_flow ** 2)
 
         # Efficiency curve parameters
-        self.Q_eta_max = rated_flow  # Flow at maximum efficiency
+        self.Q_eta_max = actual_rated_flow  # Flow at maximum efficiency
 
         # Physical constants
         self.rho = 1000.0  # Water density (kg/m3)

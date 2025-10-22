@@ -354,7 +354,7 @@ class UrbanWaterSupplySystem:
                     'inflow': tank_inflow,
                     'outflow': tank_outflow
                 }
-                tank.update(dt, tank_inputs)
+                tank.update_reduced_order(dt, tank_inputs)
 
             # 4. 计算缺水和成本
             total_supply = sum(source_supplies.values())

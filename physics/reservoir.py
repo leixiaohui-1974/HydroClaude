@@ -23,6 +23,7 @@ from scipy.interpolate import interp1d
 from core.base import HydraulicComponent
 from core.states import ComponentState
 from core.enums import ComponentType
+from core.constants import PhysicsConstants, ReservoirDefaults
 
 
 @dataclass
@@ -87,7 +88,12 @@ class Reservoir(HydraulicComponent):
         has_turbine: bool = False,
         turbine_capacity: float = 0.0,
         hydraulic_head: float = 0.0,
-        turbine_efficiency: float = 0.85,
+        turbine_efficiency: float = None,
+        # 新增：可配置的溢洪道参数
+        spillway_coefficient: float = None,
+        spillway_length: float = None,
+        # 新增：可配置的物理常数
+        g: float = None,
         **kwargs
     ):
         """
@@ -110,9 +116,12 @@ class Reservoir(HydraulicComponent):
             has_turbine: 是否有水轮机
             turbine_capacity: 水轮机装机容量 (MW)
             hydraulic_head: 水头 (m)
-            turbine_efficiency: 水轮机综合效率
+            turbine_efficiency: 水轮机综合效率，默认使用ReservoirDefaults.TURBINE_EFFICIENCY
+            spillway_coefficient: 溢洪道流量系数，默认使用ReservoirDefaults.SPILLWAY_COEFFICIENT
+            spillway_length: 溢洪道长度 (m)，默认使用ReservoirDefaults.SPILLWAY_LENGTH
+            g: 重力加速度 (m/s²)，默认使用PhysicsConstants.GRAVITY
         """
-        super().__init__(reservoir_id, "reservoir")
+        super().__init__(name=reservoir_id, comp_type="reservoir", **kwargs)
 
         # 水库特征参数
         self.reservoir_id = reservoir_id
@@ -125,6 +134,16 @@ class Reservoir(HydraulicComponent):
         self.normal_level = normal_level        # 正常蓄水位
         self.flood_limit_level = flood_limit_level  # 防洪限制水位
         self.design_level = design_level        # 设计洪水位
+
+        # 物理常数 - 使用默认值或用户指定值
+        self.g = g if g is not None else PhysicsConstants.GRAVITY
+
+        # 溢洪道参数 - 使用默认值或用户指定值
+        self.spillway_coefficient = spillway_coefficient if spillway_coefficient is not None else ReservoirDefaults.SPILLWAY_COEFFICIENT
+        self.spillway_length = spillway_length if spillway_length is not None else ReservoirDefaults.SPILLWAY_LENGTH
+
+        # 水轮机效率 - 使用默认值或用户指定值
+        turbine_efficiency = turbine_efficiency if turbine_efficiency is not None else ReservoirDefaults.TURBINE_EFFICIENCY
 
         # 库容-水位关系
         self.storage_curve = storage_curve
@@ -155,7 +174,7 @@ class Reservoir(HydraulicComponent):
         self.turbine_efficiency = turbine_efficiency
 
         # 状态初始化
-        initial_storage = (dead_storage + total_capacity) / 2  # 默认半库
+        initial_storage = float((dead_storage + total_capacity) / 2)  # 默认半库
         initial_level = float(self.storage_to_level(initial_storage))
 
         self.state = ReservoirState(
@@ -163,9 +182,9 @@ class Reservoir(HydraulicComponent):
             level=initial_level,
             storage=initial_storage,
             water_level=initial_level,
-            dead_storage=dead_storage,
-            active_storage=self.active_storage,
-            flood_control_capacity=total_capacity - self.level_to_storage(flood_limit_level)
+            dead_storage=float(dead_storage),
+            active_storage=float(self.active_storage),
+            flood_control_capacity=float(total_capacity - self.level_to_storage(flood_limit_level))
         )
 
         # 历史数据
@@ -220,6 +239,11 @@ class Reservoir(HydraulicComponent):
 
         # 水量平衡: V(t+dt) = V(t) + (Q_in - Q_out) * dt
         new_storage = current_storage + (inflow - outflow) * dt
+        # Convert to scalar if it's a numpy array
+        if isinstance(new_storage, np.ndarray):
+            new_storage = float(new_storage.item() if new_storage.size == 1 else new_storage[0])
+        else:
+            new_storage = float(new_storage)
 
         # 库容约束
         if new_storage < self.dead_storage:
@@ -238,9 +262,10 @@ class Reservoir(HydraulicComponent):
         # 计算发电量
         if self.has_turbine and turbine_discharge > 0:
             # P = η * ρ * g * Q * H (单位: W)
-            # 简化: P = 9.81 * Q * H * η / 1000 (单位: MW)
+            # 简化: P = g * Q * H * η / 1000 (单位: MW)
             head = self.hydraulic_head if self.hydraulic_head > 0 else (new_level - self.min_level)
-            power = 9.81 * turbine_discharge * head * self.turbine_efficiency / 1000.0
+            # 使用实例变量 self.g 而不是硬编码 9.81
+            power = self.g * turbine_discharge * head * self.turbine_efficiency / 1000.0
             power = min(power, self.turbine_capacity)
         else:
             power = 0.0
@@ -259,7 +284,7 @@ class Reservoir(HydraulicComponent):
             power_generation=power,
             dead_storage=self.dead_storage,
             active_storage=self.active_storage,
-            flood_control_capacity=self.total_capacity - self.level_to_storage(self.flood_limit_level)
+            flood_control_capacity=float(self.total_capacity - self.level_to_storage(self.flood_limit_level))
         )
 
         # 记录历史
@@ -313,13 +338,9 @@ class Reservoir(HydraulicComponent):
         # 堰上水头
         head = level - self.flood_limit_level
 
-        # 简化的堰流公式
-        # Q = C * L * opening * H^(3/2)
-        # 这里使用简化系数，实际应用中应根据水库特性校准
-        discharge_coefficient = 2.0  # 流量系数
-        weir_length = 50.0  # 假设堰长50m
-
-        discharge = discharge_coefficient * weir_length * opening * (head ** 1.5)
+        # 简化的堰流公式: Q = C * L * opening * H^(3/2)
+        # 使用实例变量而不是硬编码
+        discharge = self.spillway_coefficient * self.spillway_length * opening * (head ** 1.5)
 
         return min(discharge, self.max_discharge)
 
@@ -353,11 +374,12 @@ class Reservoir(HydraulicComponent):
             return 0.0
 
         # 根据水轮机容量计算最大流量
-        # P = 9.81 * Q * H * η / 1000
-        # Q_max = P_max * 1000 / (9.81 * H * η)
+        # P = g * Q * H * η / 1000
+        # Q_max = P_max * 1000 / (g * H * η)
         head = self.hydraulic_head if self.hydraulic_head > 0 else (self.state.water_level - self.min_level)
         if head > 0:
-            max_turbine_flow = self.turbine_capacity * 1000.0 / (9.81 * head * self.turbine_efficiency)
+            # 使用实例变量 self.g 而不是硬编码
+            max_turbine_flow = self.turbine_capacity * 1000.0 / (self.g * head * self.turbine_efficiency)
             discharge = min(discharge, max_turbine_flow)
 
         return max(0, discharge)
@@ -383,7 +405,8 @@ class Reservoir(HydraulicComponent):
             return 0.0
         head = self.hydraulic_head if self.hydraulic_head > 0 else (self.state.water_level - self.min_level)
         if head > 0:
-            return self.turbine_capacity * 1000.0 / (9.81 * head * self.turbine_efficiency)
+            # 使用实例变量 self.g 而不是硬编码
+            return self.turbine_capacity * 1000.0 / (self.g * head * self.turbine_efficiency)
         return 0.0
 
     def check_flood_control(self) -> bool:
@@ -454,7 +477,7 @@ class Reservoir(HydraulicComponent):
             water_level=initial_level,
             dead_storage=self.dead_storage,
             active_storage=self.active_storage,
-            flood_control_capacity=self.total_capacity - self.level_to_storage(self.flood_limit_level)
+            flood_control_capacity=float(self.total_capacity - self.level_to_storage(self.flood_limit_level))
         )
 
         self.inflow_history = []

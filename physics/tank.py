@@ -2,15 +2,40 @@ from core.base import HydraulicComponent
 from core.states import ComponentState
 
 class Tank(HydraulicComponent):
-    """水池/水库"""
-    def __init__(self, name: str, volume_min: float, volume_max: float, area: float):
-        super().__init__(name, "tank")
+    """
+    水池/水库组件
+
+    支持灵活的参数命名，兼容 name/tank_id
+    """
+    def __init__(self, name: str = None, volume_min: float = 0.0,
+                 volume_max: float = 1000.0, area: float = 100.0,
+                 # 额外参数支持（兼容性）
+                 tank_id: str = None, **kwargs):
+        """
+        初始化水池组件
+
+        Args:
+            name: Tank name (or use tank_id)
+            volume_min: Minimum volume (m³)
+            volume_max: Maximum volume (m³)
+            area: Surface area (m²)
+            tank_id: Alternative parameter for name
+            **kwargs: Other parameters for compatibility
+        """
+        # 参数兼容性处理
+        actual_name = name or tank_id
+
+        super().__init__(name=actual_name, comp_type="tank", **kwargs)
         self.volume_min = volume_min
         self.volume_max = volume_max
         self.area = area
 
+        # 添加便捷属性（兼容性）
+        self.tank_id = self.id  # 别名
+        self.volume = (volume_min + volume_max) / 2  # 初始容积
+
         self.state = ComponentState()
-        self.state.volume = (volume_min + volume_max) / 2
+        self.state.volume = self.volume
         self.state.level = self.state.volume / area
 
     def update_high_fidelity(self, dt: float, inputs: dict) -> ComponentState:
