@@ -290,9 +290,10 @@ def run_sluice_gate_dynamics():
     # 仿真参数
     # 估算波速：典型值约为 c = sqrt(g*h) ≈ sqrt(9.81*1.16) ≈ 3.4 m/s
     # 渠道长度10000m，传播时间约 10000/3.4 ≈ 2940s
-    # 为了充分展示传播过程，设置4000s的模拟时间
+    # 为了观察完整的传播过程并达到新的平衡态，延长至16000s（4倍）
+    # 这样可以观察：初始稳态 → 阶跃扰动 → 传播过程 → 新平衡态
     dt = 2.0
-    total_time = 4000.0  # 延长至4000s以覆盖整个渠道
+    total_time = 16000.0  # 延长至16000s（4倍）
     n_steps = int(total_time / dt)
 
     # 监测点
@@ -311,9 +312,9 @@ def run_sluice_gate_dynamics():
     gate_flow = []
 
     # 用于GIF动画的完整状态历史
-    # 控制GIF帧数在合理范围内（目标：60-80帧）
-    # total_time=4000s, 目标60帧，则间隔约为4000/60≈67步
-    snapshot_interval = 30  # 每30步(60s)保存一次快照
+    # 控制GIF帧数在合理范围内（目标：80-100帧）
+    # total_time=16000s, n_steps=8000, 目标80帧，则间隔约为8000/80=100步
+    snapshot_interval = 100  # 每100步(200s)保存一次快照
     h_snapshots = []
     Q_snapshots = []
     t_snapshots = []
@@ -365,13 +366,14 @@ def run_sluice_gate_dynamics():
             Q_snapshots.append(Q_full_now)
             t_snapshots.append(t)
 
-        # 打印进度（每100步打印一次）
-        if i % 100 == 0 or abs(t - step_time) < dt:
+        # 打印进度（每200步打印一次，相当于每400s）
+        if i % 200 == 0 or abs(t - step_time) < dt:
             marker = " <-- STEP" if abs(t - step_time) < dt else ""
             # 添加出口监测信息
             outlet_Q = monitor_data['Outlet']['Q'][-1] if len(monitor_data['Outlet']['Q']) > 0 else Q_initial
-            print(f"  t={t:7.0f}s: Q_inlet={Q_up_bc:5.1f}, Q_gate={Q_gate:6.2f}, Q_outlet={outlet_Q:6.2f} m³/s, "
-                  f"h_gate_up={h_gate_up:.3f}m, h_gate_down={h_gate_down:.3f}m{marker}")
+            inlet_Q = monitor_data['Inlet']['Q'][-1] if len(monitor_data['Inlet']['Q']) > 0 else Q_initial
+            print(f"  t={t:7.0f}s: Q_inlet={inlet_Q:5.2f}, Q_gate={Q_gate:5.2f}, Q_outlet={outlet_Q:5.2f} m³/s, "
+                  f"h_inlet={monitor_data['Inlet']['h'][-1]:.3f}m{marker}")
 
     print()
     print(f"仿真完成！")
