@@ -101,7 +101,8 @@ class CanalSolver:
             self.structure_objects.append(structure)
 
     def _apply_internal_bc(self, t: float = 0.0, max_iter: int = 10,
-                          tol: float = 0.01, relax: float = 0.5):
+                          tol: float = 0.01, relax: float = 0.5,
+                          adaptive_relax: bool = False):
         """
         应用内部边界条件（闸门等水工建筑物）
 
@@ -112,13 +113,25 @@ class CanalSolver:
             t: 当前时间 (s)，用于时变参数
             max_iter: 最大迭代次数
             tol: 收敛容差 (m³/s)
-            relax: 松弛因子 (0-1)，较小值更稳定但收敛慢
+            relax: 初始松弛因子 (0-1)，较小值更稳定但收敛慢
+            adaptive_relax: 是否使用自适应松弛因子
         """
         if not self.structure_indices:
             return
 
-        for _ in range(max_iter):
+        # 自适应松弛因子参数
+        if adaptive_relax:
+            relax_current = max(relax, 0.5)  # 提高初始松弛因子
+            relax_min = 0.1
+            relax_max = 0.95
+            residual_prev = None
+            residual_prev2 = None  # 用于Aitken加速
+            relax_history = [relax_current]
+
+        for iter_count in range(max_iter):
             converged = True
+            total_residual = 0.0
+            n_structures = 0
 
             for idx, structure in zip(self.structure_indices, self.structure_objects):
                 # 更新结构的当前时间
@@ -138,12 +151,20 @@ class CanalSolver:
                 # 当前闸门位置的流量
                 Q_gate_current = self.Q[idx]
 
+                # 计算残差
+                residual = Q_gate_target - Q_gate_current
+                total_residual += abs(residual)
+                n_structures += 1
+
                 # 检查收敛
-                if abs(Q_gate_target - Q_gate_current) > tol:
+                if abs(residual) > tol:
                     converged = False
 
-                    # 松弛更新：Q_new = Q_old * (1-relax) + Q_target * relax
-                    Q_gate_new = Q_gate_current * (1 - relax) + Q_gate_target * relax
+                    # 使用当前松弛因子更新
+                    if adaptive_relax:
+                        Q_gate_new = Q_gate_current + relax_current * residual
+                    else:
+                        Q_gate_new = Q_gate_current * (1 - relax) + Q_gate_target * relax
 
                     # 更新闸门节点及其附近的流量
                     # 使用渐变过渡确保平滑
@@ -155,6 +176,44 @@ class CanalSolver:
                         self.Q[idx - 1] = 0.5 * (self.Q[idx - 2] + Q_gate_new)
                     if idx < self.nx - 2:
                         self.Q[idx + 1] = 0.5 * (Q_gate_new + self.Q[idx + 2])
+
+            # 自适应调整松弛因子
+            if adaptive_relax and n_structures > 0:
+                avg_residual = total_residual / n_structures
+
+                if iter_count >= 2 and residual_prev is not None and residual_prev2 is not None:
+                    # Aitken加速法: 基于连续三次残差估算最优松弛因子
+                    r0, r1, r2 = residual_prev2, residual_prev, avg_residual
+
+                    # 避免除零
+                    if abs(r2 - r1) > 1e-10 and abs(r1 - r0) > 1e-10:
+                        # Aitken公式: ω_optimal = ω * (1 - (Δr_{n+1} / Δr_n))
+                        ratio = (r2 - r1) / (r1 - r0)
+
+                        if 0 < ratio < 1:
+                            # 收敛加速
+                            relax_new = relax_current / (1 - ratio)
+                            relax_current = np.clip(relax_new, relax_min, relax_max)
+                        elif ratio < 0:
+                            # 振荡检测 -> 降低松弛因子
+                            relax_current = max(relax_current * 0.6, relax_min)
+                        elif ratio > 1:
+                            # 发散趋势 -> 显著降低松弛因子
+                            relax_current = max(relax_current * 0.5, relax_min)
+
+                elif residual_prev is not None:
+                    # 简单自适应策略（前两次迭代）
+                    if avg_residual < residual_prev * 0.7:
+                        # 快速收敛 -> 增大松弛因子
+                        relax_current = min(relax_current * 1.3, relax_max)
+                    elif avg_residual > residual_prev * 1.2:
+                        # 发散 -> 减小松弛因子
+                        relax_current = max(relax_current * 0.6, relax_min)
+
+                # 更新历史
+                residual_prev2 = residual_prev
+                residual_prev = avg_residual
+                relax_history.append(relax_current)
 
             if converged:
                 break
@@ -425,7 +484,7 @@ class CanalSolver:
         return h_new, Q_new
 
     def step(self, dt: float, Q_upstream: float, h_downstream: float,
-             t: float = 0.0) -> tuple:
+             t: float = 0.0, adaptive_relax: bool = False) -> tuple:
         """
         执行一个时间步（统一接口）
 
@@ -436,6 +495,7 @@ class CanalSolver:
             Q_upstream: 上游边界流量 (m³/s)
             h_downstream: 下游边界水深 (m)
             t: 当前时间 (s)，用于时变参数
+            adaptive_relax: 是否使用自适应松弛因子
 
         Returns:
             (h, Q): 更新后的水深和流量数组
@@ -457,7 +517,8 @@ class CanalSolver:
         # 步骤2: 应用内部边界条件（闸门等）
         # 关键：在时间步后修正闸门位置的流量，使其满足闸门关系
         if self.internal_structures:
-            self._apply_internal_bc(t=t, max_iter=20, tol=0.001, relax=0.3)
+            self._apply_internal_bc(t=t, max_iter=20, tol=0.001, relax=0.3,
+                                   adaptive_relax=adaptive_relax)
 
         return self.h, self.Q
 

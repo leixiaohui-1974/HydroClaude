@@ -100,6 +100,7 @@ class SingleCanalSolver:
                           max_iterations: int = 5000,
                           convergence_tol: float = 0.01,
                           check_interval: int = 500,
+                          adaptive_relax: bool = True,
                           verbose: bool = True) -> Dict:
         """
         优化的稳态求解
@@ -109,6 +110,7 @@ class SingleCanalSolver:
             max_iterations: 最大迭代步数
             convergence_tol: 收敛容差（相对误差）
             check_interval: 检查收敛的时间间隔
+            adaptive_relax: 是否使用自适应松弛因子（默认True）
             verbose: 是否打印详细信息
 
         Returns:
@@ -122,7 +124,8 @@ class SingleCanalSolver:
         iterations_used = 0
 
         if verbose:
-            print(f"开始稳态求解（目标流量: {Q_target} m³/s）...")
+            mode_str = "自适应松弛" if adaptive_relax else "固定松弛"
+            print(f"开始稳态求解（目标流量: {Q_target} m³/s, {mode_str}）...")
 
         for i in range(max_iterations):
             # 计算下游边界水深（使用正常水深）
@@ -132,7 +135,8 @@ class SingleCanalSolver:
             )
 
             # 执行时间步
-            self.solver.step(dt, Q_target, h_downstream, t=t)
+            self.solver.step(dt, Q_target, h_downstream, t=t,
+                           adaptive_relax=adaptive_relax)
             t += dt
             iterations_used = i + 1
 
@@ -167,7 +171,8 @@ class SingleCanalSolver:
 
     def step(self, dt: float, Q_upstream: float,
              h_downstream: Optional[float] = None,
-             Q_func: Optional[Callable[[float], float]] = None):
+             Q_func: Optional[Callable[[float], float]] = None,
+             adaptive_relax: bool = False):
         """
         执行一个时间步
 
@@ -176,6 +181,7 @@ class SingleCanalSolver:
             Q_upstream: 上游边界流量 (m³/s)，如果提供Q_func则忽略
             h_downstream: 下游边界水深 (m) - 如果为None则自动计算
             Q_func: 上游流量时间函数 Q(t) -> float
+            adaptive_relax: 是否使用自适应松弛因子
         """
         # 如果提供了流量函数，使用它
         if Q_func is not None:
@@ -192,7 +198,8 @@ class SingleCanalSolver:
             )
 
         # 执行时间步（内部会自动应用闸门边界条件）
-        self.solver.step(dt, Q_up, h_downstream, t=self.current_time)
+        self.solver.step(dt, Q_up, h_downstream, t=self.current_time,
+                        adaptive_relax=adaptive_relax)
 
         # 更新时间
         self.current_time += dt
