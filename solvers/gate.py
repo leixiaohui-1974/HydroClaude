@@ -56,6 +56,22 @@ class HydraulicStructure(ABC):
         pass
 
     @abstractmethod
+    def calculate_discharge_derivatives(self, h_upstream: float, h_downstream: float,
+                                        t: Optional[float] = None) -> tuple:
+        """
+        计算过流量对水深的导数（解析）
+
+        Args:
+            h_upstream: 上游水深 (m)
+            h_downstream: 下游水深 (m)
+            t: 当前时间 (s)，用于时变参数
+
+        Returns:
+            (dQ_dh_up, dQ_dh_down): 流量对上下游水深的导数
+        """
+        pass
+
+    @abstractmethod
     def __repr__(self) -> str:
         """对象的字符串表示"""
         pass
@@ -139,6 +155,51 @@ class SluiceGate(HydraulicStructure):
 
         return discharge, flow_type
 
+    def calculate_discharge_derivatives(self, h_upstream: float, h_downstream: float,
+                                        t: Optional[float] = None) -> tuple:
+        """
+        计算闸门流量对水深的导数（解析）
+
+        Args:
+            h_upstream: 上游水深 (m)
+            h_downstream: 下游水深 (m)
+            t: 当前时间 (s)
+
+        Returns:
+            (dQ_dh_up, dQ_dh_down): 流量对上下游水深的导数
+        """
+        # 获取当前开度
+        e = self.get_opening(t)
+
+        # 流态判断
+        delta_h = h_upstream - h_downstream
+        if h_downstream > e or delta_h < self.submerged_threshold:
+            # 淹没出流: Q = Cd * B * e * √(2g * Δh)
+            # 其中 Δh = max(1e-4, h_up - h_down)
+            delta_h_effective = max(1e-4, delta_h)
+
+            # dQ/dh_up = Cd * B * e * (1/2) * (2g * Δh)^(-1/2) * 2g
+            #          = Cd * B * e * g / √(2g * Δh)
+            # dQ/dh_down = -dQ/dh_up
+
+            if delta_h > 1e-4:
+                # 正常情况：导数正常计算
+                dQ_dh_up = self.Cd * self.width * e * self.g / np.sqrt(2 * self.g * delta_h_effective)
+                dQ_dh_down = -dQ_dh_up
+            else:
+                # 特殊情况：delta_h很小，导数在截断点
+                # 在截断点 delta_h = 1e-4 处的导数
+                dQ_dh_up = self.Cd * self.width * e * self.g / np.sqrt(2 * self.g * 1e-4)
+                dQ_dh_down = -dQ_dh_up
+        else:
+            # 自由出流: Q = Cd * B * e * √(2g * h_up)
+            # dQ/dh_up = Cd * B * e * g / √(2g * h_up)
+            # dQ/dh_down = 0 (自由出流不依赖下游水深)
+            dQ_dh_up = self.Cd * self.width * e * self.g / np.sqrt(2 * self.g * h_upstream)
+            dQ_dh_down = 0.0
+
+        return dQ_dh_up, dQ_dh_down
+
     def __repr__(self) -> str:
         try:
             current_opening = self.get_opening()
@@ -194,6 +255,35 @@ class BroadCrestedWeir(HydraulicStructure):
         discharge = self.Cd * self.width * (H ** 1.5) * np.sqrt(2 * self.g)
 
         return discharge, 'free'
+
+    def calculate_discharge_derivatives(self, h_upstream: float, h_downstream: float = None,
+                                        t: Optional[float] = None) -> tuple:
+        """
+        计算堰流量对水深的导数（解析）
+
+        Args:
+            h_upstream: 上游水深 (m)
+            h_downstream: 下游水深 (m，对于自由溢流可忽略)
+            t: 当前时间 (s)
+
+        Returns:
+            (dQ_dh_up, dQ_dh_down): 流量对上下游水深的导数
+        """
+        # 堰顶以上水头
+        H = max(0.0, h_upstream - self.crest_height)
+
+        if H < 1e-4:
+            # 水位低于堰顶，导数为零
+            return 0.0, 0.0
+
+        # 宽顶堰公式: Q = Cd * B * H^(3/2) * √(2g)
+        # dQ/dh_up = Cd * B * (3/2) * H^(1/2) * √(2g)
+        dQ_dh_up = self.Cd * self.width * 1.5 * np.sqrt(H * 2 * self.g)
+
+        # 自由溢流不依赖下游水深
+        dQ_dh_down = 0.0
+
+        return dQ_dh_up, dQ_dh_down
 
     def __repr__(self) -> str:
         return (f"BroadCrestedWeir(position={self.position}m, width={self.width}m, "
@@ -259,6 +349,47 @@ class Orifice(HydraulicStructure):
             flow_type = 'free'
 
         return discharge, flow_type
+
+    def calculate_discharge_derivatives(self, h_upstream: float, h_downstream: float,
+                                        t: Optional[float] = None) -> tuple:
+        """
+        计算孔口流量对水深的导数（解析）
+
+        Args:
+            h_upstream: 上游水深 (m)
+            h_downstream: 下游水深 (m)
+            t: 当前时间 (s)
+
+        Returns:
+            (dQ_dh_up, dQ_dh_down): 流量对上下游水深的导数
+        """
+        # 孔口中心高程
+        center_elevation = self.bottom_elevation + self.height / 2
+
+        # 孔口中心处的上游水头
+        h_center_upstream = max(0.0, h_upstream - center_elevation)
+
+        if h_center_upstream < 1e-4:
+            return 0.0, 0.0
+
+        # 判断是否淹没
+        if h_downstream > (center_elevation + self.height / 2):
+            # 淹没出流: Q = Cd * A * √(2g * Δh)
+            h_center_downstream = h_downstream - center_elevation
+            delta_h = max(1e-4, h_center_upstream - h_center_downstream)
+
+            # dQ/dh_up = Cd * A * g / √(2g * Δh)
+            # dQ/dh_down = -dQ/dh_up
+            dQ_dh_up = self.Cd * self.area * self.g / np.sqrt(2 * self.g * delta_h)
+            dQ_dh_down = -dQ_dh_up
+        else:
+            # 自由出流: Q = Cd * A * √(2g * h_center_up)
+            # dQ/dh_up = Cd * A * g / √(2g * h_center_up)
+            # dQ/dh_down = 0
+            dQ_dh_up = self.Cd * self.area * self.g / np.sqrt(2 * self.g * h_center_upstream)
+            dQ_dh_down = 0.0
+
+        return dQ_dh_up, dQ_dh_down
 
     def __repr__(self) -> str:
         return (f"Orifice(position={self.position}m, width={self.width}m, "

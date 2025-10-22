@@ -311,15 +311,8 @@ class SteadySaintVenantSystem:
                 # F[2*i+1] = Q[i] - Q_gate(h_up, h_down)
                 J[2*i+1, 2*i+1] = 1.0  # ∂F/∂Q_i
 
-                # 计算 ∂Q_gate/∂h_up 和 ∂Q_gate/∂h_down（数值微分）
-                eps = 1e-6
-                Q_gate_0, _ = structure.calculate_discharge(h_up, h_down, t)
-
-                Q_gate_h_up_plus, _ = structure.calculate_discharge(h_up + eps, h_down, t)
-                dQ_gate_dh_up = (Q_gate_h_up_plus - Q_gate_0) / eps
-
-                Q_gate_h_down_plus, _ = structure.calculate_discharge(h_up, h_down + eps, t)
-                dQ_gate_dh_down = (Q_gate_h_down_plus - Q_gate_0) / eps
+                # 计算 ∂Q_gate/∂h_up 和 ∂Q_gate/∂h_down（解析导数）
+                dQ_gate_dh_up, dQ_gate_dh_down = structure.calculate_discharge_derivatives(h_up, h_down, t)
 
                 J[2*i+1, 2*(i-1)] = -dQ_gate_dh_up    # ∂F/∂h_{i-1}
                 J[2*i+1, 2*(i+1)] = -dQ_gate_dh_down  # ∂F/∂h_{i+1}

@@ -1,0 +1,354 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+调试闸门场景的Jacobian奇异性
+
+详细分析闸门节点的Jacobian结构，找出奇异性根源
+
+作者: Claude
+日期: 2025-10-22
+"""
+
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import numpy as np
+import matplotlib.pyplot as plt
+from physics.steady_saint_venant import SteadySaintVenantSystem
+from solvers.gate import SluiceGate
+from utils.canal_utils import compute_steady_uniform_flow
+
+
+def analyze_gate_jacobian():
+    """详细分析闸门场景的Jacobian"""
+
+    print("=" * 100)
+    print("闸门场景Jacobian详细分析")
+    print("=" * 100)
+    print()
+
+    # 使用小网格便于分析
+    length = 100.0
+    nx = 11  # 小网格
+    B = 10.0
+    S0 = 0.001
+    n = 0.025
+    Q_target = 10.0
+
+    # 闸门在中间
+    gate_position = 50.0
+    gate_opening = 5.0
+    gate = SluiceGate(position=gate_position, width=B, opening=gate_opening, Cd=0.6)
+
+    # 均匀流水深
+    h_uniform = compute_steady_uniform_flow(Q_target, B, S0, n)
+
+    print(f"网格参数:")
+    print(f"  nx = {nx}")
+    print(f"  闸门位置 = {gate_position} m")
+    print(f"  闸门开度 = {gate_opening} m")
+    print(f"  均匀流水深 = {h_uniform:.4f} m")
+    print()
+
+    # 创建系统
+    system = SteadySaintVenantSystem(
+        length, nx, B, S0, n,
+        structures=[(gate_position, gate)],
+        pseudo_dt=0.1
+    )
+    system.set_boundary_conditions(
+        Q_upstream=Q_target,
+        h_upstream=h_uniform,
+        h_downstream=h_uniform
+    )
+
+    # 找到闸门节点索引
+    gate_idx = np.argmin(np.abs(system.x - gate_position))
+    print(f"闸门节点索引: i = {gate_idx}")
+    print(f"闸门节点位置: x = {system.x[gate_idx]:.2f} m")
+    print()
+
+    # 使用均匀流作为状态点
+    h = np.ones(nx) * h_uniform
+    Q = np.ones(nx) * Q_target
+    U = system.pack_state(h, Q)
+    system.U_prev = U.copy()
+
+    # 计算Jacobian
+    J = system.compute_jacobian(U, t=0.0)
+    J_dense = J.toarray()
+
+    # 计算秩和条件数
+    rank = np.linalg.matrix_rank(J_dense)
+    expected_rank = 2 * nx
+
+    print("Jacobian整体属性:")
+    print(f"  形状: {J_dense.shape}")
+    print(f"  秩: {rank} / {expected_rank}")
+
+    if rank < expected_rank:
+        print(f"  ❌ Jacobian欠秩（缺少{expected_rank - rank}个独立方程）")
+    else:
+        print(f"  ✅ Jacobian满秩")
+
+    try:
+        cond = np.linalg.cond(J_dense)
+        print(f"  条件数: {cond:.2e}")
+        if cond < 1e10:
+            print(f"  ✅ 条件数良好")
+        else:
+            print(f"  ⚠️ 条件数较大")
+    except:
+        print(f"  ❌ 无法计算条件数（可能奇异）")
+
+    print()
+
+    # 分析闸门节点的方程
+    print("闸门节点方程分析:")
+    print("-" * 100)
+
+    # 闸门节点的两个方程索引
+    eq_continuity_idx = 2 * gate_idx      # 连续性方程
+    eq_gate_idx = 2 * gate_idx + 1        # 闸门约束
+
+    print(f"\n闸门节点 i={gate_idx} 的方程:")
+    print(f"  F[{eq_continuity_idx}]: 连续性方程（伪瞬态）")
+    print(f"  F[{eq_gate_idx}]: 闸门流量约束")
+    print()
+
+    # 打印连续性方程的Jacobian行
+    print(f"连续性方程 F[{eq_continuity_idx}] 的Jacobian:")
+    row_cont = J_dense[eq_continuity_idx, :]
+    nonzero_cont = np.nonzero(row_cont)[0]
+    print(f"  非零元素数: {len(nonzero_cont)}")
+    print(f"  非零元素索引: {nonzero_cont}")
+    for idx in nonzero_cont:
+        var_name = f"h_{idx//2}" if idx % 2 == 0 else f"Q_{idx//2}"
+        print(f"    J[{eq_continuity_idx},{idx}] ({var_name}) = {row_cont[idx]:.6f}")
+
+    # 打印闸门约束的Jacobian行
+    print(f"\n闸门约束 F[{eq_gate_idx}] 的Jacobian:")
+    row_gate = J_dense[eq_gate_idx, :]
+    nonzero_gate = np.nonzero(row_gate)[0]
+    print(f"  非零元素数: {len(nonzero_gate)}")
+    print(f"  非零元素索引: {nonzero_gate}")
+    for idx in nonzero_gate:
+        var_name = f"h_{idx//2}" if idx % 2 == 0 else f"Q_{idx//2}"
+        print(f"    J[{eq_gate_idx},{idx}] ({var_name}) = {row_gate[idx]:.6f}")
+
+    print()
+
+    # 检查对角线
+    print("对角线元素分析:")
+    print("-" * 100)
+    diag = np.diag(J_dense)
+    zero_diag_indices = np.where(np.abs(diag) < 1e-10)[0]
+
+    print(f"零对角元素数: {len(zero_diag_indices)} / {2*nx}")
+    if len(zero_diag_indices) > 0:
+        print(f"零对角元素索引: {zero_diag_indices}")
+        for idx in zero_diag_indices:
+            eq_type = get_equation_type(idx, nx, gate_idx)
+            var_name = f"h_{idx//2}" if idx % 2 == 0 else f"Q_{idx//2}"
+            print(f"  J[{idx},{idx}] ({eq_type}, ∂F/∂{var_name}) = {diag[idx]:.6e}")
+
+    print()
+
+    # 奇异值分解
+    print("奇异值分析:")
+    print("-" * 100)
+    U_svd, s, Vt = np.linalg.svd(J_dense)
+    print(f"奇异值范围: [{s.min():.2e}, {s.max():.2e}]")
+    print(f"前5个奇异值: {s[:5]}")
+    print(f"后5个奇异值: {s[-5:]}")
+
+    # 找到接近零的奇异值
+    zero_sv_indices = np.where(s < 1e-10)[0]
+    if len(zero_sv_indices) > 0:
+        print(f"\n接近零的奇异值数: {len(zero_sv_indices)}")
+        print(f"接近零的奇异值: {s[zero_sv_indices]}")
+
+        # 分析零空间
+        print(f"\n零空间分析（第一个零空间向量）:")
+        null_vec = Vt[zero_sv_indices[0], :]
+        significant_indices = np.where(np.abs(null_vec) > 0.01)[0]
+        print(f"显著分量数: {len(significant_indices)}")
+        for idx in significant_indices:
+            var_name = f"h_{idx//2}" if idx % 2 == 0 else f"Q_{idx//2}"
+            print(f"  {var_name}: {null_vec[idx]:.6f}")
+
+    print()
+
+    # 打印完整Jacobian（如果足够小）
+    if 2 * nx <= 22:
+        print("完整Jacobian矩阵:")
+        print("-" * 100)
+        np.set_printoptions(precision=3, linewidth=200, suppress=True)
+        print(J_dense)
+        print()
+
+    # 可视化Jacobian稀疏模式
+    print("生成Jacobian稀疏模式图...")
+    plt.figure(figsize=(10, 10))
+    plt.spy(J_dense, markersize=5)
+    plt.title(f'Jacobian Sparsity Pattern (nx={nx}, gate at i={gate_idx})')
+    plt.xlabel('Column (Variables)')
+    plt.ylabel('Row (Equations)')
+
+    # 标记闸门节点
+    plt.axhline(y=eq_continuity_idx, color='r', linestyle='--', linewidth=2, label='Gate continuity')
+    plt.axhline(y=eq_gate_idx, color='b', linestyle='--', linewidth=2, label='Gate constraint')
+    plt.legend()
+
+    output_path = 'jacobian_sparsity_gate.png'
+    plt.savefig(output_path, dpi=150, bbox_inches='tight')
+    print(f"  已保存到: {output_path}")
+    plt.close()
+
+    return rank == expected_rank
+
+
+def get_equation_type(eq_idx, nx, gate_idx):
+    """获取方程类型描述"""
+    i = eq_idx // 2
+    is_h_eq = (eq_idx % 2 == 0)
+
+    if i == 0:
+        if is_h_eq:
+            return "上游Q边界"
+        else:
+            return "上游h边界"
+    elif i == nx - 1:
+        if is_h_eq:
+            return "下游h边界"
+        else:
+            return "下游连续性"
+    elif i == gate_idx:
+        if is_h_eq:
+            return "闸门连续性"
+        else:
+            return "闸门约束"
+    else:
+        if is_h_eq:
+            return "连续性"
+        else:
+            return "动量"
+
+
+def compare_no_gate_vs_gate():
+    """对比无闸门和有闸门的Jacobian"""
+
+    print("\n" + "=" * 100)
+    print("对比分析：无闸门 vs 有闸门")
+    print("=" * 100)
+    print()
+
+    length = 100.0
+    nx = 11
+    B = 10.0
+    S0 = 0.001
+    n = 0.025
+    Q_target = 10.0
+
+    h_uniform = compute_steady_uniform_flow(Q_target, B, S0, n)
+
+    results = {}
+
+    # 情况1：无闸门
+    print("情况1：无闸门")
+    print("-" * 100)
+    system_no_gate = SteadySaintVenantSystem(length, nx, B, S0, n, pseudo_dt=0.1)
+    system_no_gate.set_boundary_conditions(
+        Q_upstream=Q_target,
+        h_upstream=h_uniform,
+        h_downstream=h_uniform
+    )
+
+    h = np.ones(nx) * h_uniform
+    Q = np.ones(nx) * Q_target
+    U = system_no_gate.pack_state(h, Q)
+    system_no_gate.U_prev = U.copy()
+
+    J_no_gate = system_no_gate.compute_jacobian(U, t=0.0).toarray()
+    rank_no_gate = np.linalg.matrix_rank(J_no_gate)
+    cond_no_gate = np.linalg.cond(J_no_gate)
+
+    print(f"  秩: {rank_no_gate} / {2*nx}")
+    print(f"  条件数: {cond_no_gate:.2e}")
+    print(f"  状态: {'✅ 满秩' if rank_no_gate == 2*nx else '❌ 欠秩'}")
+    print()
+
+    results['no_gate'] = {'rank': rank_no_gate, 'cond': cond_no_gate}
+
+    # 情况2：有闸门
+    print("情况2：有闸门（位置=50m）")
+    print("-" * 100)
+    gate = SluiceGate(position=50.0, width=B, opening=5.0, Cd=0.6)
+    system_gate = SteadySaintVenantSystem(
+        length, nx, B, S0, n,
+        structures=[(50.0, gate)],
+        pseudo_dt=0.1
+    )
+    system_gate.set_boundary_conditions(
+        Q_upstream=Q_target,
+        h_upstream=h_uniform,
+        h_downstream=h_uniform
+    )
+
+    system_gate.U_prev = U.copy()
+    J_gate = system_gate.compute_jacobian(U, t=0.0).toarray()
+    rank_gate = np.linalg.matrix_rank(J_gate)
+
+    try:
+        cond_gate = np.linalg.cond(J_gate)
+        cond_gate_str = f"{cond_gate:.2e}"
+    except:
+        cond_gate_str = "inf (奇异)"
+        cond_gate = float('inf')
+
+    print(f"  秩: {rank_gate} / {2*nx}")
+    print(f"  条件数: {cond_gate_str}")
+    print(f"  状态: {'✅ 满秩' if rank_gate == 2*nx else '❌ 欠秩'}")
+    print()
+
+    results['gate'] = {'rank': rank_gate, 'cond': cond_gate}
+
+    # 对比分析
+    print("对比总结:")
+    print("-" * 100)
+    print(f"{'场景':<15} {'秩':<15} {'条件数':<20} {'状态':<10}")
+    print("-" * 100)
+    print(f"{'无闸门':<15} {rank_no_gate}/{2*nx:<11} {cond_no_gate:<20.2e} {'✅' if rank_no_gate==2*nx else '❌'}")
+    print(f"{'有闸门':<15} {rank_gate}/{2*nx:<11} {cond_gate_str:<20} {'✅' if rank_gate==2*nx else '❌'}")
+    print()
+
+    # 分析差异
+    if rank_gate < rank_no_gate:
+        print(f"⚠️ 添加闸门后秩减少了{rank_no_gate - rank_gate}！")
+        print(f"这说明闸门节点的方程设置存在问题")
+    elif rank_gate == rank_no_gate and rank_gate == 2*nx:
+        print(f"✅ 两种情况都满秩！")
+
+    return results
+
+
+if __name__ == '__main__':
+    # 详细分析闸门Jacobian
+    full_rank = analyze_gate_jacobian()
+
+    # 对比分析
+    comparison = compare_no_gate_vs_gate()
+
+    print("\n" + "=" * 100)
+    print("调试总结")
+    print("=" * 100)
+    print()
+
+    if full_rank:
+        print("✅ 闸门场景Jacobian满秩！")
+    else:
+        print("❌ 闸门场景Jacobian欠秩，需要修复")
+        print("\n调试建议：")
+        print("1. 检查闸门节点的连续性方程Jacobian是否正确")
+        print("2. 检查闸门约束方程的Jacobian是否正确")
+        print("3. 确认伪瞬态项是否正确添加")
