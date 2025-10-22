@@ -59,6 +59,7 @@ class Pump(HydraulicComponent):
         self.pump_id = self.id  # 别名
 
         self.rated_flow = actual_rated_flow
+        self.max_flow = actual_rated_flow  # 别名，向后兼容
         self.rated_head = rated_head
         self.rated_speed = rated_speed
         self.shutoff_head_ratio = shutoff_head_ratio

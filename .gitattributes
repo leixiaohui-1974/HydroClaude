@@ -1,0 +1,42 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Python
+*.py text eol=lf
+*.pyx text eol=lf
+*.pxd text eol=lf
+
+# Shell scripts
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Batch scripts
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Documentation
+*.md text eol=lf
+*.rst text eol=lf
+*.txt text eol=lf
+
+# Config files
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.ini text eol=lf
+*.cfg text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.pkl binary
+*.npz binary
+
+# Linguist overrides for better language detection
+docs/* linguist-documentation
+examples/* linguist-documentation
+tests/* linguist-vendored

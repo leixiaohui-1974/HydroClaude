@@ -1,8 +1,11 @@
 # HydroClaude - 水力学仿真与优化框架
 
+[![CI](https://github.com/leixiaohui-1974/HydroClaude/workflows/CI/badge.svg)](https://github.com/leixiaohui-1974/HydroClaude/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![Tests](https://img.shields.io/badge/tests-164%2F164-brightgreen.svg)](tests/)
+[![Examples](https://img.shields.io/badge/examples-21%2F21-brightgreen.svg)](examples/)
+[![Documentation](https://img.shields.io/badge/docs-sphinx-blue.svg)](docs/)
 
 HydroClaude是一个专业的水力学仿真与优化框架，专注于明渠流动、管网系统和梯级水库调度。
 
