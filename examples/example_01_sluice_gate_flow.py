@@ -468,6 +468,12 @@ def run_sluice_gate_dynamics():
     Q_range = Q_max - Q_min
     Q_ylim = [max(0, Q_min - 0.1 * Q_range), Q_max + 0.1 * Q_range]
 
+    print(f"\n数据范围检查:")
+    print(f"  场景1: Q_gate范围 [{min(Q_gate_1):.3f}, {max(Q_gate_1):.3f}] m³/s")
+    print(f"  场景2: Q_gate范围 [{min(Q_gate_2):.3f}, {max(Q_gate_2):.3f}] m³/s")
+    print(f"  h_up范围: [{min(h_up_1 + h_up_2):.3f}, {max(h_up_1 + h_up_2):.3f}] m")
+    print()
+
     # 时程曲线
     fig, axes = plt.subplots(3, 2, figsize=(14, 12))
 
@@ -625,6 +631,210 @@ def run_sluice_gate_dynamics():
     print(f"\n生成文件:")
     for f in generated_files:
         print(f"  - {f}")
+
+    print("\n" + "=" * 80)
+
+    # === 生成GIF动画 ===
+    print()
+    print("=" * 80)
+    print("生成GIF动画")
+    print("=" * 80)
+
+    from matplotlib.animation import FuncAnimation, PillowWriter
+
+    def create_scenario_animation(scenario_name, time_data, h_up_data, h_down_data,
+                                  Q_gate_data, upstream_reach_obj, downstream_reach_obj,
+                                  gate_obj, canal_total_length, gate_pos,
+                                  h_limits, Q_limits, step_t=None, Q_upstream_data=None):
+        """创建单个场景的GIF动画"""
+
+        # 每隔几帧保存一次（减少GIF大小）
+        frame_skip = 2
+        n_frames = len(time_data) // frame_skip
+
+        # 准备数据
+        frames_time = [time_data[i*frame_skip] for i in range(n_frames)]
+        frames_h_up = [h_up_data[i*frame_skip] for i in range(n_frames)]
+        frames_h_down = [h_down_data[i*frame_skip] for i in range(n_frames)]
+        frames_Q_gate = [Q_gate_data[i*frame_skip] for i in range(n_frames)]
+
+        if Q_upstream_data is not None:
+            frames_Q_up = [Q_upstream_data[i*frame_skip] for i in range(n_frames)]
+        else:
+            frames_Q_up = None
+
+        # 创建图形
+        fig = plt.figure(figsize=(16, 10))
+        gs = fig.add_gridspec(3, 2, hspace=0.3, wspace=0.3)
+
+        # 1. 纵向剖面图 (跨两列)
+        ax_profile = fig.add_subplot(gs[0, :])
+
+        # 渠道床面
+        # 检查数组大小
+        n_upstream = len(upstream_reach_obj.x)
+        n_downstream = len(downstream_reach_obj.x)
+
+        # 注意：上游段包含闸门位置，下游段从闸门后开始，所以要跳过第一个点以避免重复
+        x_full = np.concatenate([upstream_reach_obj.x, downstream_reach_obj.x[1:] + gate_pos])
+        bed_elev = np.zeros_like(x_full)
+        ax_profile.fill_between(x_full, -1, bed_elev, color='saddlebrown', alpha=0.5, label='Channel Bed')
+
+        # 水面线（初始化）
+        # 使用实际的点数
+        water_surface = np.concatenate([np.ones(n_upstream) * frames_h_up[0],
+                                       np.ones(n_downstream - 1) * frames_h_down[0]])
+
+        if len(x_full) != len(water_surface):
+            print(f"DEBUG: x_full shape = {x_full.shape}, water_surface shape = {water_surface.shape}")
+            print(f"DEBUG: n_upstream = {n_upstream}, n_downstream = {n_downstream}")
+
+        line_water, = ax_profile.plot(x_full, water_surface, 'b-', linewidth=2.5, label='Water Surface')
+        ax_profile.fill_between(x_full, bed_elev, water_surface, color='lightblue', alpha=0.6)
+
+        # 闸门
+        gate_x = gate_pos
+        gate_bottom = 0
+        gate_top = 5.0  # 假设闸门总高度
+        gate_line = ax_profile.plot([gate_x, gate_x], [gate_bottom, gate_top], 'r-', linewidth=6, label='Gate')[0]
+
+        # 闸门开度标注
+        gate_opening_line = ax_profile.plot([gate_x, gate_x], [gate_bottom, gate_obj.opening],
+                                           'g-', linewidth=8, alpha=0.7)[0]
+        gate_text = ax_profile.text(gate_x + 20, gate_obj.opening / 2,
+                                   f'Gate\nOpening: {gate_obj.opening}m',
+                                   fontsize=9, bbox=dict(boxstyle='round', facecolor='yellow', alpha=0.8))
+
+        # 时间文本
+        time_text = ax_profile.text(0.02, 0.95, '', transform=ax_profile.transAxes,
+                                   fontsize=12, verticalalignment='top', fontweight='bold',
+                                   bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.9))
+
+        ax_profile.set_xlabel('Distance (m)', fontsize=11)
+        ax_profile.set_ylabel('Elevation (m)', fontsize=11)
+        ax_profile.set_title(f'{scenario_name} - Longitudinal Profile with Gate', fontsize=13, fontweight='bold')
+        ax_profile.set_xlim([0, canal_total_length])
+        ax_profile.set_ylim([-1, 6])
+        ax_profile.grid(True, alpha=0.3)
+        ax_profile.legend(fontsize=9, loc='upper right')
+
+        # 2. 流量分布图
+        ax_Q_dist = fig.add_subplot(gs[1, :])
+        Q_full = np.concatenate([np.ones(n_upstream) * frames_Q_gate[0],
+                                np.ones(n_downstream - 1) * frames_Q_gate[0]])
+        line_Q_dist, = ax_Q_dist.plot(x_full, Q_full, 'g-', linewidth=2, marker='o',
+                                      markersize=3, label='Flow Rate')
+        ax_Q_dist.axvline(x=gate_pos, color='r', linestyle='--', linewidth=2, alpha=0.5)
+
+        # 闸门流量标注
+        gate_Q_text = ax_Q_dist.text(gate_pos + 20, frames_Q_gate[0],
+                                     f'Gate Flow: {frames_Q_gate[0]:.2f} m³/s',
+                                     fontsize=9, bbox=dict(boxstyle='round',
+                                     facecolor='lightgreen', alpha=0.8))
+
+        ax_Q_dist.set_xlabel('Distance (m)', fontsize=11)
+        ax_Q_dist.set_ylabel('Flow Rate (m³/s)', fontsize=11)
+        ax_Q_dist.set_title('Flow Rate Distribution', fontsize=12, fontweight='bold')
+        ax_Q_dist.set_xlim([0, canal_total_length])
+        ax_Q_dist.set_ylim([Q_limits[0], Q_limits[1]])
+        ax_Q_dist.grid(True, alpha=0.3)
+        ax_Q_dist.legend(fontsize=9)
+
+        # 3. 闸门流量历史
+        ax_Q_hist = fig.add_subplot(gs[2, 0])
+        line_Q_hist, = ax_Q_hist.plot([], [], 'b-', linewidth=2)
+        ax_Q_hist.axvline(x=0, color='r', linestyle='--', linewidth=1.5, alpha=0.5, label='Step Time')
+        ax_Q_hist.set_xlabel('Time (s)', fontsize=10)
+        ax_Q_hist.set_ylabel('Gate Flow (m³/s)', fontsize=10)
+        ax_Q_hist.set_title('Gate Flow History', fontsize=11, fontweight='bold')
+        ax_Q_hist.set_xlim([0, max(frames_time)])
+        ax_Q_hist.set_ylim([Q_limits[0], Q_limits[1]])  # 使用相同的Y轴范围
+        ax_Q_hist.grid(True, alpha=0.3)
+        ax_Q_hist.legend(fontsize=9)
+
+        # 4. 闸门上下游水位历史
+        ax_h_hist = fig.add_subplot(gs[2, 1])
+        line_h_up, = ax_h_hist.plot([], [], 'b-', linewidth=2, label='Upstream Level')
+        line_h_down, = ax_h_hist.plot([], [], 'g-', linewidth=2, label='Downstream Level')
+        if step_t is not None:
+            ax_h_hist.axvline(x=step_t, color='r', linestyle='--',
+                            linewidth=1.5, alpha=0.5, label='Step Time')
+        ax_h_hist.set_xlabel('Time (s)', fontsize=10)
+        ax_h_hist.set_ylabel('Water Level (m)', fontsize=10)
+        ax_h_hist.set_title('Gate Water Levels History', fontsize=11, fontweight='bold')
+        ax_h_hist.set_xlim([0, max(frames_time)])
+        ax_h_hist.set_ylim([h_limits[0], h_limits[1]])
+        ax_h_hist.grid(True, alpha=0.3)
+        ax_h_hist.legend(fontsize=9)
+
+        # 动画更新函数
+        def update(frame):
+            """更新动画帧"""
+            t = frames_time[frame]
+            h_u = frames_h_up[frame]
+            h_d = frames_h_down[frame]
+            Q_g = frames_Q_gate[frame]
+
+            # 更新水面线
+            water_surface = np.concatenate([np.ones(n_upstream) * h_u, np.ones(n_downstream - 1) * h_d])
+            line_water.set_ydata(water_surface)
+
+            # 更新流量分布
+            Q_full = np.concatenate([np.ones(n_upstream) * Q_g, np.ones(n_downstream - 1) * Q_g])
+            line_Q_dist.set_ydata(Q_full)
+            gate_Q_text.set_text(f'Gate Flow: {Q_g:.2f} m³/s')
+            gate_Q_text.set_position((gate_pos + 20, Q_g))
+
+            # 更新时间文本
+            time_text.set_text(f'Time = {t:.1f} s')
+
+            # 更新历史曲线
+            line_Q_hist.set_data(frames_time[:frame+1], frames_Q_gate[:frame+1])
+            line_h_up.set_data(frames_time[:frame+1], frames_h_up[:frame+1])
+            line_h_down.set_data(frames_time[:frame+1], frames_h_down[:frame+1])
+
+            return (line_water, line_Q_dist, gate_Q_text, time_text,
+                   line_Q_hist, line_h_up, line_h_down)
+
+        # 创建动画
+        anim = FuncAnimation(fig, update, frames=n_frames, interval=100, blit=True)
+
+        # 保存为GIF
+        gif_filename = f'example_01_gate_{scenario_name.lower().replace(" ", "_").replace(":", "")}.gif'
+        gif_path = os.path.join('reports/figures', gif_filename)
+
+        print(f"  生成 {scenario_name} 动画...", end=' ')
+        writer = PillowWriter(fps=10)
+        anim.save(gif_path, writer=writer, dpi=100)
+        print(f"✓")
+
+        plt.close(fig)
+        return gif_path
+
+    # 生成场景1的GIF
+    gif1_path = create_scenario_animation(
+        "Scenario 1: Steady Flow",
+        time1, h_up_1, h_down_1, Q_gate_1,
+        upstream_reach, downstream_reach, gate,
+        canal_length_total, gate_position,
+        h_ylim, Q_ylim
+    )
+    generated_files.append(gif1_path)
+
+    # 生成场景2的GIF
+    gif2_path = create_scenario_animation(
+        "Scenario 2: Unsteady Flow",
+        time2, h_up_2, h_down_2, Q_gate_2,
+        upstream_reach, downstream_reach, gate,
+        canal_length_total, gate_position,
+        h_ylim, Q_ylim,
+        step_t=step_time,
+        Q_upstream_data=Q_upstream_2
+    )
+    generated_files.append(gif2_path)
+
+    print(f"\n  ✓ GIF动画生成完成")
+    print()
 
     print("\n" + "=" * 80)
 
