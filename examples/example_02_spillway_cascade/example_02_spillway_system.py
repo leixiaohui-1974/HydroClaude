@@ -1,0 +1,328 @@
+# -*- coding: utf-8 -*-
+"""
+Example 02: Spillway Cascade System
+====================================
+
+Demonstrates the simulation of a multi-structure hydraulic system including:
+- WES spillway
+- Channel transition (expansion)
+- Hydraulic drop
+- Broad-crested weir
+
+This example shows how different hydraulic structures interact in a cascade
+configuration, typical of dam outlet works.
+
+System Configuration:
+--------------------
+Reservoir → WES Spillway → Channel (Expansion) → Drop → Channel → Broad-Crested Weir → Tailwater
+
+Design Parameters:
+- Reservoir level: 110 m
+- Spillway crest: 100 m
+- Channel width: 50 m → 80 m (expansion)
+- Drop height: 5 m
+- Downstream weir crest: 85 m
+
+Author: Claude
+Date: 2025-10-22
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+import sys
+import os
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from solvers.gate import Spillway, Transition, Drop, BroadCrestedWeir
+
+
+class SpillwayCascadeSystem:
+    """
+    Spillway cascade system with multiple hydraulic structures
+    """
+
+    def __init__(self):
+        """Initialize the spillway cascade system"""
+
+        # Structure 1: WES Spillway at dam
+        self.spillway = Spillway(
+            position=0.0,
+            width=50.0,
+            crest_elevation=100.0,
+            spillway_type='wes',
+            Cd=2.1
+        )
+
+        # Structure 2: Channel expansion (50m → 80m)
+        self.transition = Transition(
+            position=100.0,
+            width_upstream=50.0,
+            width_downstream=80.0,
+            K_loss=0.25
+        )
+
+        # Structure 3: Hydraulic drop (5m)
+        self.drop = Drop(
+            position=200.0,
+            width=80.0,
+            drop_height=5.0,
+            Cd=0.6
+        )
+
+        # Structure 4: Broad-crested weir (flow control)
+        self.weir = BroadCrestedWeir(
+            position=300.0,
+            width=80.0,
+            crest_height=85.0,
+            Cd=0.848
+        )
+
+        print("Spillway Cascade System Initialized")
+        print("=" * 70)
+        print(f"  1. {self.spillway}")
+        print(f"  2. {self.transition}")
+        print(f"  3. {self.drop}")
+        print(f"  4. {self.weir}")
+        print("=" * 70)
+
+    def calculate_flow_through_system(self, reservoir_level, tailwater_level):
+        """
+        Calculate flow through the entire cascade system
+
+        This is a simplified analysis assuming:
+        - Energy losses at each structure
+        - Quasi-steady flow
+        - Iterative solution for flow continuity
+
+        Parameters:
+        -----------
+        reservoir_level : float
+            Upstream reservoir water level (m)
+        tailwater_level : float
+            Downstream tailwater level (m)
+
+        Returns:
+        --------
+        results : dict
+            Flow rates and water levels at each structure
+        """
+
+        print(f"\nCalculating flow for reservoir level: {reservoir_level:.2f} m")
+
+        # Initial guess for intermediate water levels
+        # Assume linear drop from reservoir to tailwater
+        h1 = reservoir_level  # Upstream of spillway
+        h2 = reservoir_level - 3.0  # Downstream of spillway (energy loss)
+        h3 = h2 - 0.5  # Downstream of transition
+        h4 = h3 - self.drop.drop_height - 0.5  # Downstream of drop
+        h5 = tailwater_level  # Tailwater
+
+        # Iterative solution for flow continuity
+        max_iterations = 50
+        tolerance = 1e-3
+
+        for iteration in range(max_iterations):
+            # Calculate flow through each structure
+            Q1, type1 = self.spillway.calculate_discharge(h1, h2)
+            Q2, type2 = self.transition.calculate_discharge(h2, h3)
+            Q3, type3 = self.drop.calculate_discharge(h3, h4)
+            Q4, type4 = self.weir.calculate_discharge(h4, h5)
+
+            # Check continuity
+            Q_avg = (Q1 + Q2 + Q3 + Q4) / 4.0
+            residuals = np.array([Q1 - Q_avg, Q2 - Q_avg, Q3 - Q_avg, Q4 - Q_avg])
+            max_residual = np.max(np.abs(residuals))
+
+            if max_residual < tolerance:
+                print(f"  Converged in {iteration + 1} iterations")
+                break
+
+            # Update intermediate water levels (relaxation)
+            relaxation = 0.5
+
+            # If flow is too high, raise downstream levels
+            if Q1 > Q_avg:
+                h2 += relaxation * 0.01
+            else:
+                h2 -= relaxation * 0.01
+
+            if Q2 > Q_avg:
+                h3 += relaxation * 0.01
+            else:
+                h3 -= relaxation * 0.01
+
+            if Q3 > Q_avg:
+                h4 += relaxation * 0.01
+            else:
+                h4 -= relaxation * 0.01
+
+        results = {
+            'reservoir_level': h1,
+            'spillway': {'Q': Q1, 'h_down': h2, 'flow_type': type1},
+            'transition': {'Q': Q2, 'h_down': h3, 'flow_type': type2},
+            'drop': {'Q': Q3, 'h_down': h4, 'flow_type': type3},
+            'weir': {'Q': Q4, 'flow_type': type4},
+            'tailwater_level': h5,
+            'average_flow': Q_avg,
+            'max_residual': max_residual,
+            'iterations': iteration + 1
+        }
+
+        return results
+
+    def print_results(self, results):
+        """Print flow calculation results"""
+
+        print("\n" + "=" * 70)
+        print("FLOW CALCULATION RESULTS")
+        print("=" * 70)
+        print(f"Reservoir Level:  {results['reservoir_level']:.2f} m")
+        print(f"Tailwater Level:  {results['tailwater_level']:.2f} m")
+        print(f"Average Flow:     {results['average_flow']:.2f} m³/s")
+        print(f"Convergence:      {results['iterations']} iterations, residual = {results['max_residual']:.2e}")
+        print("-" * 70)
+
+        print(f"\nStructure 1 - Dam Spillway:")
+        print(f"  Flow:           {results['spillway']['Q']:.2f} m³/s ({results['spillway']['flow_type']})")
+        print(f"  Downstream:     {results['spillway']['h_down']:.2f} m")
+
+        print(f"\nStructure 2 - Stilling Basin Expansion:")
+        print(f"  Flow:           {results['transition']['Q']:.2f} m³/s ({results['transition']['flow_type']})")
+        print(f"  Downstream:     {results['transition']['h_down']:.2f} m")
+
+        print(f"\nStructure 3 - Cascade Drop:")
+        print(f"  Flow:           {results['drop']['Q']:.2f} m³/s ({results['drop']['flow_type']})")
+        print(f"  Downstream:     {results['drop']['h_down']:.2f} m")
+
+        print(f"\nStructure 4 - Control Weir:")
+        print(f"  Flow:           {results['weir']['Q']:.2f} m³/s ({results['weir']['flow_type']})")
+
+        print("=" * 70)
+
+    def run_rating_curve_analysis(self):
+        """
+        Generate rating curve for the spillway system
+        (Relationship between reservoir level and discharge)
+        """
+
+        print("\n" + "=" * 70)
+        print("RATING CURVE ANALYSIS")
+        print("=" * 70)
+
+        # Range of reservoir levels
+        reservoir_levels = np.linspace(100.5, 115.0, 30)
+        tailwater_level = 80.0  # Fixed tailwater
+
+        discharges = []
+
+        print("\nCalculating rating curve...")
+        for i, h_res in enumerate(reservoir_levels):
+            results = self.calculate_flow_through_system(h_res, tailwater_level)
+            discharges.append(results['average_flow'])
+
+            if (i + 1) % 5 == 0:
+                print(f"  Progress: {i+1}/{len(reservoir_levels)} points")
+
+        # Plot rating curve
+        plt.figure(figsize=(10, 6))
+        plt.plot(discharges, reservoir_levels, 'b-', linewidth=2, label='Rating Curve')
+        plt.xlabel('Discharge (m³/s)', fontsize=12)
+        plt.ylabel('Reservoir Level (m)', fontsize=12)
+        plt.title('Spillway System Rating Curve', fontsize=14, fontweight='bold')
+        plt.grid(True, alpha=0.3)
+        plt.legend()
+
+        # Add design point
+        design_level = 110.0
+        design_Q = discharges[np.argmin(np.abs(reservoir_levels - design_level))]
+        plt.plot(design_Q, design_level, 'ro', markersize=10, label=f'Design Point ({design_Q:.0f} m³/s @ {design_level:.0f} m)')
+        plt.legend()
+
+        plt.tight_layout()
+        plt.savefig('/home/user/HydroClaude/examples/example_02_spillway_cascade/rating_curve.png', dpi=150)
+        print(f"\nRating curve saved to: rating_curve.png")
+
+        # Print summary table
+        print("\n" + "-" * 70)
+        print("RATING CURVE SUMMARY TABLE")
+        print("-" * 70)
+        print(f"{'Reservoir (m)':>15} {'Discharge (m³/s)':>20} {'Specific Discharge':>20}")
+        print("-" * 70)
+
+        for i in range(0, len(reservoir_levels), 3):
+            h = reservoir_levels[i]
+            Q = discharges[i]
+            q = Q / self.spillway.width  # Specific discharge (m³/s per m width)
+            print(f"{h:>15.2f} {Q:>20.2f} {q:>20.2f}")
+
+        print("-" * 70)
+
+        return reservoir_levels, discharges
+
+
+def main():
+    """Main function to run the spillway cascade example"""
+
+    print("\n" + "=" * 70)
+    print("EXAMPLE 02: SPILLWAY CASCADE SYSTEM")
+    print("=" * 70)
+
+    # Create system
+    system = SpillwayCascadeSystem()
+
+    # Test Case 1: Design condition
+    print("\n" + "=" * 70)
+    print("TEST CASE 1: Design Condition")
+    print("=" * 70)
+
+    reservoir_level = 110.0  # 10m above spillway crest
+    tailwater_level = 80.0   # Fixed tailwater
+
+    results = system.calculate_flow_through_system(reservoir_level, tailwater_level)
+    system.print_results(results)
+
+    # Test Case 2: High flow condition
+    print("\n" + "=" * 70)
+    print("TEST CASE 2: High Flow Condition (PMF)")
+    print("=" * 70)
+
+    reservoir_level_high = 115.0  # 15m above spillway crest (PMF condition)
+
+    results_high = system.calculate_flow_through_system(reservoir_level_high, tailwater_level)
+    system.print_results(results_high)
+
+    # Test Case 3: Low flow condition
+    print("\n" + "=" * 70)
+    print("TEST CASE 3: Low Flow Condition")
+    print("=" * 70)
+
+    reservoir_level_low = 102.0  # 2m above spillway crest
+
+    results_low = system.calculate_flow_through_system(reservoir_level_low, tailwater_level)
+    system.print_results(results_low)
+
+    # Rating curve analysis
+    reservoir_levels, discharges = system.run_rating_curve_analysis()
+
+    # Summary
+    print("\n" + "=" * 70)
+    print("EXAMPLE COMPLETED SUCCESSFULLY")
+    print("=" * 70)
+    print("\nKey Findings:")
+    print(f"  - Design discharge (h=110m):  {results['average_flow']:.2f} m³/s")
+    print(f"  - PMF discharge (h=115m):     {results_high['average_flow']:.2f} m³/s")
+    print(f"  - Low flow (h=102m):          {results_low['average_flow']:.2f} m³/s")
+    print(f"  - Discharge range:            {discharges[0]:.2f} - {discharges[-1]:.2f} m³/s")
+    print("\nThis example demonstrates:")
+    print("  ✓ WES spillway hydraulics")
+    print("  ✓ Channel transition (expansion) effects")
+    print("  ✓ Hydraulic drop energy dissipation")
+    print("  ✓ Broad-crested weir flow control")
+    print("  ✓ Flow continuity through multiple structures")
+    print("  ✓ Rating curve generation")
+    print("=" * 70)
+
+
+if __name__ == "__main__":
+    main()
