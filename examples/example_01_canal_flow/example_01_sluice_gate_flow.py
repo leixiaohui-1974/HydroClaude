@@ -113,355 +113,357 @@ class SluiceGate:
 
 
 class SimplifiedCanalReach:
-    """简化的渠道段 - 用于演示闸门过流（改进稳定性）"""
+    """简化的渠道段 - 使用动力波方法展示沿程传播（改进版）"""
 
-    def __init__(self, length, width, n_points):
+    def __init__(self, length, width, n_points, slope=0.0001, manning_n=0.025):
         self.length = length
         self.width = width
         self.n_points = n_points
         self.dx = length / (n_points - 1)
         self.x = np.linspace(0, length, n_points)
+        self.slope = slope  # 底坡
+        self.manning_n = manning_n  # 曼宁糙率
+        self.g = 9.81
 
-        # 状态变量 (简化为均匀分布)
+        # 状态变量 - 每个节点独立
         self.h = np.ones(n_points) * 5.0  # 水深
         self.Q = np.ones(n_points) * 5.0  # 流量
 
+        # 辅助变量
+        self.h_new = np.ones(n_points) * 5.0
+        self.Q_new = np.ones(n_points) * 5.0
+
         # 稳定性参数
-        self.relaxation = 0.5  # 松弛因子
+        self.alpha = 0.3  # 扩散系数（用于数值稳定）
+        self.max_celerity = 5.0  # 最大波速 (m/s)
 
     def set_uniform_state(self, h, Q):
         """设置均匀状态"""
-        self.h = np.ones(self.n_points) * h
-        self.Q = np.ones(self.n_points) * Q
+        self.h[:] = h
+        self.Q[:] = Q
+        self.h_new[:] = h
+        self.Q_new[:] = Q
 
-    def update_stable(self, dt, Q_in, Q_out):
+    def calculate_celerity(self, h, Q):
+        """计算波速 c = sqrt(g*h) 用于CFL条件"""
+        return np.sqrt(self.g * np.maximum(h, 0.1))
+
+    def update_kinematic(self, dt, Q_upstream=None, h_downstream=None):
         """
-        稳定的更新方法（改进版）
+        使用简化的运动波方法更新状态
 
-        使用松弛因子和限制器确保稳定性
+        连续方程: ∂h/∂t + ∂Q/∂x / B = 0
+        运动方程: Q = (B * h * sqrt(S0) / n) * h^(2/3) (曼宁公式简化)
+
+        边界条件:
+        - 上游: Q_upstream (流量边界)
+        - 下游: h_downstream (水位边界)
         """
-        # 当前平均水深
-        h_old = np.mean(self.h)
+        # 拷贝当前状态
+        h_old = self.h.copy()
+        Q_old = self.Q.copy()
 
-        # 质量守恒：dV/dt = Q_in - Q_out
-        V_old = h_old * self.width * self.length
-        dV = (Q_in - Q_out) * dt
-        V_new_theoretical = V_old + dV
+        # 内部节点：使用上风格式
+        for i in range(1, self.n_points - 1):
+            # 连续方程（显式）
+            dQ_dx = (Q_old[i] - Q_old[i-1]) / self.dx
+            dh_dt = -dQ_dx / self.width
 
-        # 新水深（理论值）
-        h_new_theoretical = V_new_theoretical / (self.width * self.length)
+            # 更新水深
+            h_new_i = h_old[i] + dt * dh_dt
 
-        # 应用松弛因子（避免突变）
-        h_new = h_old + self.relaxation * (h_new_theoretical - h_old)
+            # 限制水深范围
+            h_new_i = np.clip(h_new_i, 0.5, 20.0)
 
-        # 限制水深范围（物理约束）
-        h_new = np.clip(h_new, 0.5, 15.0)
+            # 使用曼宁公式计算流量（简化）
+            # Q = A * V,  V = (1/n) * R^(2/3) * S^(1/2)
+            # 对于宽浅渠道 R ≈ h
+            A = self.width * h_new_i
+            R = h_new_i  # 简化：宽浅渠道水力半径≈水深
+            V = (1.0 / self.manning_n) * (R ** (2.0/3.0)) * (self.slope ** 0.5)
+            Q_new_i = A * V
 
-        # 流量也使用松弛因子
-        Q_new_theoretical = (Q_in + Q_out) / 2
-        Q_old = np.mean(self.Q)
-        Q_new = Q_old + self.relaxation * (Q_new_theoretical - Q_old)
+            # 添加扩散项以增强稳定性
+            if i > 0 and i < self.n_points - 1:
+                diffusion = self.alpha * (h_old[i+1] - 2*h_old[i] + h_old[i-1])
+                h_new_i += diffusion
 
-        # 更新状态（均匀分布）
-        self.h = np.ones(self.n_points) * h_new
-        self.Q = np.ones(self.n_points) * Q_new
+            self.h_new[i] = h_new_i
+            self.Q_new[i] = Q_new_i
 
-        return h_new, Q_new
+        # 上游边界条件（流量边界）
+        if Q_upstream is not None:
+            self.Q_new[0] = Q_upstream
+            # 从流量反推水深（使用曼宁公式）
+            # Q = B * h * (1/n) * h^(2/3) * S^(1/2)
+            # 简化求解
+            h_est = (Q_upstream * self.manning_n / (self.width * (self.slope ** 0.5))) ** (3.0/5.0)
+            self.h_new[0] = np.clip(h_est, 0.5, 20.0)
+        else:
+            # 外推
+            self.h_new[0] = self.h_new[1]
+            self.Q_new[0] = self.Q_new[1]
+
+        # 下游边界条件（水位边界）
+        if h_downstream is not None:
+            self.h_new[-1] = h_downstream
+            # 从水深计算流量
+            A = self.width * h_downstream
+            R = h_downstream
+            V = (1.0 / self.manning_n) * (R ** (2.0/3.0)) * (self.slope ** 0.5)
+            self.Q_new[-1] = A * V
+        else:
+            # 外推
+            self.h_new[-1] = self.h_new[-2]
+            self.Q_new[-1] = self.Q_new[-2]
+
+        # 更新状态
+        self.h = self.h_new.copy()
+        self.Q = self.Q_new.copy()
+
+        return self.h.copy(), self.Q.copy()
+
+    def get_values_at(self, position):
+        """获取指定位置的水深和流量（线性插值）"""
+        if position <= 0:
+            return self.h[0], self.Q[0]
+        elif position >= self.length:
+            return self.h[-1], self.Q[-1]
+        else:
+            # 线性插值
+            idx = int(position / self.dx)
+            if idx >= self.n_points - 1:
+                return self.h[-1], self.Q[-1]
+            frac = (position - idx * self.dx) / self.dx
+            h_interp = self.h[idx] * (1 - frac) + self.h[idx+1] * frac
+            Q_interp = self.Q[idx] * (1 - frac) + self.Q[idx+1] * frac
+            return h_interp, Q_interp
 
 
 def run_sluice_gate_dynamics():
-    """运行闸门流量动力学分析"""
+    """运行闸门流量动力学分析 - 改进版：展示真实的沿程传播过程"""
 
     print("=" * 80)
-    print("示例1扩展：明渠闸门过流动力学分析")
+    print("示例1扩展：明渠闸门过流动力学分析（改进版）")
     print("=" * 80)
     print()
 
     # === 系统配置 ===
     # 优化参数以增强可视化效果：
-    # 1. 增加渠道长度，展示流量传播过程
-    # 2. 减小闸门开度，增大上下游水位差
-    # 3. 调整下游水位，使水位差更明显
+    # 1. 使用单个渠道段，中间设置闸门
+    # 2. 上游边界：流量阶跃
+    # 3. 下游边界：水位边界（在渠道末端）
+    # 4. 增加监测断面数量
 
-    canal_length_total = 5000.0  # 总长度（增加到5000m）
+    canal_length_total = 10000.0  # 总长度（增加到10000m以展示传播过程）
     canal_width = 10.0
-    gate_position = 2500.0  # 闸门位置（中点）
+    gate_position = 5000.0  # 闸门位置（中点）
+    n_points_total = 201  # 总空间点数（增加密度）
 
-    # 渠道高程设置（模拟坡度效果）
-    bed_slope = 0.002  # 底坡2‰
-    upstream_bed_elevation = gate_position * bed_slope  # 上游段末端高程
-    downstream_bed_elevation = 0.0  # 下游段末端高程（基准）
+    # 渠道参数
+    bed_slope = 0.0005  # 底坡0.5‰（减小底坡以增大水位差效果）
+    manning_n = 0.025  # 曼宁糙率
 
-    # 上游段和下游段
+    # 创建渠道段（分上下游两段）
+    gate_idx = n_points_total // 2  # 闸门所在索引
+
     upstream_reach = SimplifiedCanalReach(
         length=gate_position,
         width=canal_width,
-        n_points=51  # 增加空间点数以展示传播
+        n_points=gate_idx + 1,  # 包含闸门位置
+        slope=bed_slope,
+        manning_n=manning_n
     )
 
     downstream_reach = SimplifiedCanalReach(
         length=canal_length_total - gate_position,
         width=canal_width,
-        n_points=51  # 增加空间点数
+        n_points=n_points_total - gate_idx,  # 从闸门位置到末端
+        slope=bed_slope,
+        manning_n=manning_n
     )
 
     # 闸门 - 减小开度以增大水位差
     gate = SluiceGate(
         width=canal_width,
-        opening=1.2,  # 减小开度（从2.5m减到1.2m）
+        opening=0.8,  # 进一步减小开度以增大水位差
         Cd=0.6
     )
 
     print("系统配置:")
     print(f"  渠道总长度: {canal_length_total} m")
     print(f"  渠道宽度: {canal_width} m")
+    print(f"  空间点数: {n_points_total}")
+    print(f"  空间步长: {upstream_reach.dx:.1f} m")
     print(f"  闸门位置: {gate_position} m")
     print(f"  闸门开度: {gate.opening} m")
     print(f"  流量系数: {gate.Cd}")
-    print(f"  底坡: {bed_slope*1000:.1f}‰")
-    print(f"  上游床面高程: {upstream_bed_elevation:.1f} m")
+    print(f"  底坡: {bed_slope*1000:.2f}‰")
+    print(f"  曼宁糙率: {manning_n}")
     print()
 
-    # === 场景1: 恒定流 ===
-    print("=" * 80)
-    print("场景1: 恒定流分析")
-    print("-" * 80)
-
-    # 边界条件 - 调整以增大水位差
-    Q_upstream_bc = 8.0  # 增大流量
-    h_downstream_bc = 3.0  # 降低下游水位（相对于床面）
-
-    # 计算稳态初值（有水头损失）
-    h_up_init = gate.calculate_upstream_depth(Q_upstream_bc, h_downstream_bc)
-    print(f"\n计算稳态初值:")
-    print(f"  上游流量: {Q_upstream_bc} m³/s")
-    print(f"  下游水位: {h_downstream_bc} m")
-    print(f"  上游水位: {h_up_init:.4f} m")
-    print(f"  水头损失: {h_up_init - h_downstream_bc:.4f} m")
-
-    # 验证
-    Q_check, flow_type_check = gate.calculate_discharge(h_up_init, h_downstream_bc)
-    print(f"  验证闸门流量: {Q_check:.4f} m³/s (应为 {Q_upstream_bc} m³/s)")
-    print(f"  流态: {flow_type_check}")
-    print()
-
-    # 初始条件（使用稳态值）
-    upstream_reach.set_uniform_state(h_up_init, Q_upstream_bc)
-    downstream_reach.set_uniform_state(h_downstream_bc, Q_upstream_bc)
-
-    # 仿真参数
-    dt = 10.0
-    total_time_1 = 500.0
-    n_steps_1 = int(total_time_1 / dt)
-
-    # 数据存储
-    time1 = []
-    h_up_1 = []
-    h_down_1 = []
-    Q_gate_1 = []
-    flow_type_1 = []
-
-    print(f"边界条件: Q_upstream={Q_upstream_bc} m³/s, h_downstream={h_downstream_bc} m")
-    print(f"仿真时长: {total_time_1} s, 时间步长: {dt} s")
-    print()
-
-    for i in range(n_steps_1):
-        t = i * dt
-
-        # 闸门上下游水深
-        h_u = np.mean(upstream_reach.h)
-        h_d = np.mean(downstream_reach.h)
-
-        # 计算闸门流量
-        Q_gate, f_type = gate.calculate_discharge(h_u, h_d)
-
-        # 更新上游段 (入流=边界流量, 出流=闸门流量)
-        upstream_reach.update_stable(dt, Q_upstream_bc, Q_gate)
-
-        # 更新下游段 (入流=闸门流量, 出流=Q_gate)
-        # 注意：下游段也用Q_gate作为出流，保持流量连续性
-        downstream_reach.update_stable(dt, Q_gate, Q_gate)
-
-        # 强制下游水位为边界条件（用较强的约束）
-        downstream_reach.h[:] = h_downstream_bc
-
-        # 记录数据
-        time1.append(t)
-        h_up_1.append(h_u)
-        h_down_1.append(h_d)
-        Q_gate_1.append(Q_gate)
-        flow_type_1.append(f_type)
-
-        if i % 10 == 0:
-            print(f"  t={t:6.0f}s: Q_gate={Q_gate:.3f} m³/s, "
-                  f"h_up={h_u:.3f}m, h_down={h_d:.3f}m, type={f_type}")
-
-    print()
-    print(f"恒定流最终状态:")
-    print(f"  闸门流量: {Q_gate_1[-1]:.3f} m³/s")
-    print(f"  上游水深: {h_up_1[-1]:.3f} m")
-    print(f"  下游水深: {h_down_1[-1]:.3f} m")
-    print(f"  水头损失: {h_up_1[-1] - h_down_1[-1]:.4f} m")
-    print(f"  流态: {flow_type_1[-1]}")
-    print()
-
-    # 稳定性评价
-    print("=" * 80)
-    print("场景1：稳定性评价")
-    print("-" * 80)
-
-    evaluator = StabilityEvaluator()
-    canal_params = {
-        'length': canal_length_total,
-        'width': canal_width,
-        'slope': bed_slope,  # 使用实际底坡
-        'manning_n': 0.025,
-        'nx': 101  # 51 + 51 - 1（去掉重复点）
+    # 监测断面（沿程多个位置）
+    monitor_positions = {
+        'Upstream 1': 1000.0,
+        'Upstream 2': 3000.0,
+        'Gate Upstream': gate_position - 100.0,
+        'Gate Downstream': gate_position + 100.0,
+        'Downstream 1': 7000.0,
+        'Downstream 2': 9000.0,
     }
 
-    # 需要准备完整的空间分布数据
-    h_history1_full = []
-    Q_history1_full = []
-    for h_u, h_d, q_g in zip(h_up_1, h_down_1, Q_gate_1):
-        # 简化：上游段用h_u，下游段用h_d
-        h_profile = np.concatenate([
-            np.ones(51) * h_u,
-            np.ones(50) * h_d  # 51-1以避免重复
-        ])
-        Q_profile = np.ones(101) * q_g
-        h_history1_full.append(h_profile)
-        Q_history1_full.append(Q_profile)
-
-    result1 = evaluator.evaluate(
-        time=np.array(time1),
-        h_history=h_history1_full,
-        Q_history=Q_history1_full,
-        canal_params=canal_params,
-        method_name="场景1_恒定流"
-    )
-
-    evaluator.print_report("场景1_恒定流")
+    print("监测断面:")
+    for name, pos in monitor_positions.items():
+        print(f"  {name}: {pos:.0f} m")
     print()
 
-    # === 场景2: 非恒定流 (流量阶跃) ===
+    # === 场景2: 非恒定流 (流量阶跃) - 改进版 ===
     print("=" * 80)
-
-    # 阶跃参数 - 增大流量变化幅度
-    step_time = 200.0  # 延长阶跃时间以观察传播
-    Q_before_step = 8.0  # 与场景1相同的初始流量
-    Q_after_step = 15.0  # 大幅增加流量以观察明显变化
-
-    print(f"场景2: 非恒定流 - 上游流量阶跃 ({Q_before_step} → {Q_after_step} m³/s)")
+    print("场景2: 非恒定流 - 上游流量阶跃（展示沿程传播）")
     print("-" * 80)
 
-    # 初始条件：使用阶跃前的稳态值
-    h_up_init_2 = gate.calculate_upstream_depth(Q_before_step, h_downstream_bc)
+    # 边界条件
+    Q_before_step = 5.0  # 阶跃前流量
+    Q_after_step = 12.0  # 阶跃后流量（大幅增加）
+    h_downstream_bc = 2.5  # 下游末端水位边界
+    step_time = 600.0  # 阶跃时刻（延后以观察稳定状态）
+
+    # 计算初始稳态
+    h_gate_down_init = h_downstream_bc  # 初始假设闸下水位≈末端水位
+    h_gate_up_init = gate.calculate_upstream_depth(Q_before_step, h_gate_down_init)
+
     print(f"\n初始稳态（阶跃前）:")
     print(f"  上游流量: {Q_before_step} m³/s")
-    print(f"  上游水位: {h_up_init_2:.4f} m")
-    print(f"  下游水位: {h_downstream_bc} m")
+    print(f"  闸前水位: {h_gate_up_init:.3f} m")
+    print(f"  闸后水位: {h_gate_down_init:.3f} m")
+    print(f"  末端水位: {h_downstream_bc} m")
+    print(f"  水头损失: {h_gate_up_init - h_gate_down_init:.3f} m")
 
-    upstream_reach.set_uniform_state(h_up_init_2, Q_before_step)
+    # 设置初始条件
+    upstream_reach.set_uniform_state(h_gate_up_init, Q_before_step)
     downstream_reach.set_uniform_state(h_downstream_bc, Q_before_step)
 
-    # 仿真参数（延长时间以达到新稳态）
-    total_time_2 = 1500.0  # 延长到1500s以观察完整传播过程
-    n_steps_2 = int(total_time_2 / dt)
+    # 仿真参数
+    dt = 5.0  # 减小时间步长以提高精度
+    total_time = 3000.0  # 延长仿真时间以观察完整传播过程
+    n_steps = int(total_time / dt)
 
-    # 数据存储
-    time2 = []
-    h_up_2 = []
-    h_down_2 = []
-    Q_gate_2 = []
-    flow_type_2 = []
-    Q_upstream_2 = []
-
-    print(f"阶跃时刻: {step_time} s")
-    print(f"流量变化: {Q_before_step} → {Q_after_step} m³/s")
-    print(f"仿真时长: {total_time_2} s")
+    # CFL条件检查
+    max_celerity = np.sqrt(9.81 * 10)  # 假设最大水深10m
+    CFL = max_celerity * dt / upstream_reach.dx
+    print(f"\nCFL数检查: {CFL:.3f} (应 < 1)")
+    if CFL >= 1:
+        print(f"  警告: CFL数过大，可能不稳定！")
     print()
 
-    for i in range(n_steps_2):
+    print(f"仿真配置:")
+    print(f"  流量阶跃: {Q_before_step} → {Q_after_step} m³/s (at t={step_time}s)")
+    print(f"  仿真时长: {total_time} s")
+    print(f"  时间步长: {dt} s")
+    print(f"  总步数: {n_steps}")
+    print()
+
+    # 数据存储 - 监测点时间序列
+    time_series = []
+    monitor_data = {name: {'h': [], 'Q': []} for name in monitor_positions}
+    gate_upstream_h = []
+    gate_downstream_h = []
+    gate_flow = []
+    flow_type_list = []
+
+    # 空间分布快照（用于动画）
+    snapshot_times = []
+    snapshot_h_profiles = []
+    snapshot_Q_profiles = []
+
+    print("开始仿真...")
+    for i in range(n_steps):
         t = i * dt
 
-        # 上游边界流量（阶跃）
+        # 上游边界：流量阶跃
         if t < step_time:
             Q_up_bc = Q_before_step
         else:
             Q_up_bc = Q_after_step
 
-        # 闸门上下游水深
-        h_u = np.mean(upstream_reach.h)
-        h_d = np.mean(downstream_reach.h)
+        # 获取闸门上下游水深
+        h_gate_up = upstream_reach.h[-1]  # 上游段末端 = 闸前
+        h_gate_down = downstream_reach.h[0]  # 下游段起点 = 闸后
 
         # 计算闸门流量
-        Q_gate, f_type = gate.calculate_discharge(h_u, h_d)
+        Q_gate, f_type = gate.calculate_discharge(h_gate_up, h_gate_down)
 
-        # 更新上游段
-        upstream_reach.update_stable(dt, Q_up_bc, Q_gate)
+        # 更新上游段：上游边界为流量，下游为闸门流量
+        upstream_reach.update_kinematic(dt, Q_upstream=Q_up_bc, h_downstream=None)
+        # 闸门位置的流量由闸门方程确定
+        upstream_reach.Q[-1] = Q_gate
 
-        # 更新下游段（同场景1）
-        downstream_reach.update_stable(dt, Q_gate, Q_gate)
+        # 更新下游段：上游为闸门流量，下游为水位边界
+        downstream_reach.update_kinematic(dt, Q_upstream=None, h_downstream=h_downstream_bc)
+        downstream_reach.Q[0] = Q_gate
 
-        # 强制下游水位为边界条件
-        downstream_reach.h[:] = h_downstream_bc
+        # 记录监测点数据
+        time_series.append(t)
+        for name, pos in monitor_positions.items():
+            if pos < gate_position:
+                h_val, Q_val = upstream_reach.get_values_at(pos)
+            else:
+                h_val, Q_val = downstream_reach.get_values_at(pos - gate_position)
+            monitor_data[name]['h'].append(h_val)
+            monitor_data[name]['Q'].append(Q_val)
 
-        # 记录数据
-        time2.append(t)
-        h_up_2.append(h_u)
-        h_down_2.append(h_d)
-        Q_gate_2.append(Q_gate)
-        flow_type_2.append(f_type)
-        Q_upstream_2.append(Q_up_bc)
+        gate_upstream_h.append(h_gate_up)
+        gate_downstream_h.append(h_gate_down)
+        gate_flow.append(Q_gate)
+        flow_type_list.append(f_type)
 
-        if i % 10 == 0 or abs(t - step_time) < dt:
+        # 保存空间分布快照（每隔一定时间）
+        if i % 20 == 0:
+            snapshot_times.append(t)
+            # 合并上下游段的空间分布
+            h_profile = np.concatenate([upstream_reach.h[:-1], downstream_reach.h])
+            Q_profile = np.concatenate([upstream_reach.Q[:-1], downstream_reach.Q])
+            snapshot_h_profiles.append(h_profile)
+            snapshot_Q_profiles.append(Q_profile)
+
+        # 打印进度
+        if i % 100 == 0 or abs(t - step_time) < dt:
             marker = " <-- STEP" if abs(t - step_time) < dt else ""
-            print(f"  t={t:6.0f}s: Q_up={Q_up_bc:.1f}, Q_gate={Q_gate:.3f} m³/s, "
-                  f"h_up={h_u:.3f}m, h_down={h_d:.3f}m, type={f_type}{marker}")
-
-    # 计算阶跃后的理论稳态值
-    h_up_final_theory = gate.calculate_upstream_depth(Q_after_step, h_downstream_bc)
-    Q_final_theory, flow_type_final_theory = gate.calculate_discharge(h_up_final_theory, h_downstream_bc)
+            print(f"  t={t:7.0f}s: Q_up={Q_up_bc:5.1f}, Q_gate={Q_gate:5.2f} m³/s, "
+                  f"h_gate_up={h_gate_up:.2f}m, h_gate_down={h_gate_down:.2f}m{marker}")
 
     print()
-    print(f"非恒定流最终状态:")
-    print(f"  闸门流量: {Q_gate_2[-1]:.3f} m³/s (目标: {Q_after_step} m³/s)")
-    print(f"  上游水深: {h_up_2[-1]:.3f} m (初始: {h_up_2[0]:.3f} m, 理论终值: {h_up_final_theory:.3f} m)")
-    print(f"  下游水深: {h_down_2[-1]:.3f} m (边界: {h_downstream_bc} m)")
-    print(f"  水头损失: {h_up_2[-1] - h_down_2[-1]:.4f} m")
-    print(f"  流态: {flow_type_2[-1]}")
-    print(f"  水位变化: {h_up_2[-1] - h_up_2[0]:.3f} m")
+    print(f"仿真完成！")
+    print(f"  最终闸门流量: {gate_flow[-1]:.3f} m³/s (目标: {Q_after_step} m³/s)")
+    print(f"  最终闸前水位: {gate_upstream_h[-1]:.3f} m (初始: {gate_upstream_h[0]:.3f} m)")
+    print(f"  最终闸后水位: {gate_downstream_h[-1]:.3f} m (初始: {gate_downstream_h[0]:.3f} m)")
+    print(f"  水位变化: {gate_upstream_h[-1] - gate_upstream_h[0]:.3f} m")
     print()
 
-    # 稳定性评价
+    # === 分析传播特性 ===
     print("=" * 80)
-    print("场景2：稳定性评价")
+    print("传播特性分析")
     print("-" * 80)
 
-    # 准备完整的空间分布数据
-    h_history2_full = []
-    Q_history2_full = []
-    for h_u, h_d, q_g in zip(h_up_2, h_down_2, Q_gate_2):
-        h_profile = np.concatenate([
-            np.ones(51) * h_u,
-            np.ones(50) * h_d  # 51-1以避免重复
-        ])
-        Q_profile = np.ones(101) * q_g
-        h_history2_full.append(h_profile)
-        Q_history2_full.append(Q_profile)
+    # 分析传播波速
+    # 找到阶跃时刻的索引
+    step_idx = int(step_time / dt)
 
-    result2 = evaluator.evaluate(
-        time=np.array(time2),
-        h_history=h_history2_full,
-        Q_history=Q_history2_full,
-        canal_params=canal_params,
-        method_name="场景2_非恒定流"
-    )
-
-    evaluator.print_report("场景2_非恒定流")
-
-    # 对比两个场景
-    evaluator.compare_methods()
+    # 分析各监测点何时响应
+    print("\n监测点响应时间:")
+    response_threshold = 0.1  # 流量变化超过0.1 m³/s视为响应
+    for name, pos in monitor_positions.items():
+        Q_data = np.array(monitor_data[name]['Q'])
+        Q_before = Q_data[step_idx]
+        # 查找响应时刻
+        for i in range(step_idx, len(Q_data)):
+            if abs(Q_data[i] - Q_before) > response_threshold:
+                delay_time = time_series[i] - step_time
+                distance = abs(pos - 0)  # 距离上游边界的距离
+                apparent_speed = distance / delay_time if delay_time > 0 else 0
+                print(f"  {name:20s} (x={pos:6.0f}m): "
+                      f"响应时间 {delay_time:6.1f}s, 表观波速 {apparent_speed:.2f} m/s")
+                break
     print()
 
     # === 生成可视化 ===
@@ -470,177 +472,126 @@ def run_sluice_gate_dynamics():
     print("=" * 80)
 
     generated_files = []
+    os.makedirs('reports/figures', exist_ok=True)
 
-    # 计算数据范围（用于固定y轴）
-    all_h = h_up_1 + h_down_1 + h_up_2 + h_down_2
-    h_min, h_max = min(all_h), max(all_h)
-    h_range = h_max - h_min
-    h_ylim = [h_min - 0.1 * h_range, h_max + 0.1 * h_range]
+    # 图1: 监测断面时间序列 - 流量
+    fig, axes = plt.subplots(3, 2, figsize=(16, 12))
 
-    all_Q = Q_gate_1 + Q_gate_2 + Q_upstream_2
-    Q_min, Q_max = min(all_Q), max(all_Q)
-    Q_range = Q_max - Q_min
-    Q_ylim = [max(0, Q_min - 0.1 * Q_range), Q_max + 0.1 * Q_range]
+    # 绘制各监测点的流量历史
+    colors = plt.cm.viridis(np.linspace(0, 1, len(monitor_positions)))
 
-    print(f"\n数据范围检查:")
-    print(f"  场景1: Q_gate范围 [{min(Q_gate_1):.3f}, {max(Q_gate_1):.3f}] m³/s")
-    print(f"  场景2: Q_gate范围 [{min(Q_gate_2):.3f}, {max(Q_gate_2):.3f}] m³/s")
-    print(f"  h_up范围: [{min(h_up_1 + h_up_2):.3f}, {max(h_up_1 + h_up_2):.3f}] m")
-    print()
-
-    # 时程曲线
-    fig, axes = plt.subplots(3, 2, figsize=(14, 12))
-
-    # 场景1 - 水深
     ax = axes[0, 0]
-    ax.plot(time1, h_up_1, 'b-', linewidth=2, label='Upstream')
-    ax.plot(time1, h_down_1, 'g-', linewidth=2, label='Downstream')
-    ax.set_xlabel('Time (s)', fontsize=10)
-    ax.set_ylabel('Water Depth (m)', fontsize=10)
-    ax.set_title('Scenario 1 (Steady): Water Depth', fontsize=11, fontweight='bold')
-    ax.set_ylim(h_ylim)  # 固定y轴
-    ax.grid(True, alpha=0.3)
-    ax.legend(fontsize=9)
-
-    # 场景1 - 流量
-    ax = axes[1, 0]
-    ax.plot(time1, Q_gate_1, 'r-', linewidth=2)
-    ax.axhline(y=Q_upstream_bc, color='k', linestyle='--', alpha=0.5, label='Upstream BC')
+    for (name, pos), color in zip(monitor_positions.items(), colors):
+        Q_data = monitor_data[name]['Q']
+        ax.plot(time_series, Q_data, label=name, linewidth=1.5, color=color)
+    ax.axvline(x=step_time, color='r', linestyle='--', linewidth=2, alpha=0.7, label='Step Time')
     ax.set_xlabel('Time (s)', fontsize=10)
     ax.set_ylabel('Flow Rate (m³/s)', fontsize=10)
-    ax.set_title('Scenario 1 (Steady): Gate Flow', fontsize=11, fontweight='bold')
-    ax.set_ylim(Q_ylim)  # 固定y轴
+    ax.set_title('Flow Rate at Monitoring Sections', fontsize=11, fontweight='bold')
     ax.grid(True, alpha=0.3)
-    ax.legend(fontsize=9)
+    ax.legend(fontsize=8, ncol=2)
 
-    # 场景1 - 过流曲线
-    ax = axes[2, 0]
-    ax.plot(h_up_1, Q_gate_1, 'bo-', markersize=3, alpha=0.6)
-    ax.set_xlabel('Upstream Depth (m)', fontsize=10)
-    ax.set_ylabel('Gate Flow (m³/s)', fontsize=10)
-    ax.set_title('Scenario 1: Discharge Curve', fontsize=11, fontweight='bold')
-    ax.grid(True, alpha=0.3)
-
-    # 场景2 - 水深
+    # 监测点水深历史
     ax = axes[0, 1]
-    ax.plot(time2, h_up_2, 'b-', linewidth=2, label='Upstream')
-    ax.plot(time2, h_down_2, 'g-', linewidth=2, label='Downstream')
-    ax.axvline(x=step_time, color='k', linestyle='--', alpha=0.5, label='Step Time')
+    for (name, pos), color in zip(monitor_positions.items(), colors):
+        h_data = monitor_data[name]['h']
+        ax.plot(time_series, h_data, label=name, linewidth=1.5, color=color)
+    ax.axvline(x=step_time, color='r', linestyle='--', linewidth=2, alpha=0.7, label='Step Time')
     ax.set_xlabel('Time (s)', fontsize=10)
     ax.set_ylabel('Water Depth (m)', fontsize=10)
-    ax.set_title('Scenario 2 (Unsteady): Water Depth', fontsize=11, fontweight='bold')
-    ax.set_ylim(h_ylim)  # 固定y轴
+    ax.set_title('Water Depth at Monitoring Sections', fontsize=11, fontweight='bold')
+    # 优化y轴范围以突出变化
+    all_h = []
+    for name in monitor_positions:
+        all_h.extend(monitor_data[name]['h'])
+    h_min, h_max = min(all_h), max(all_h)
+    h_margin = (h_max - h_min) * 0.1
+    ax.set_ylim([h_min - h_margin, h_max + h_margin])
     ax.grid(True, alpha=0.3)
-    ax.legend(fontsize=9)
+    ax.legend(fontsize=8, ncol=2)
 
-    # 场景2 - 流量
-    ax = axes[1, 1]
-    ax.plot(time2, Q_upstream_2, 'k--', linewidth=1.5, alpha=0.7, label='Upstream BC')
-    ax.plot(time2, Q_gate_2, 'r-', linewidth=2, label='Gate Flow')
-    ax.axvline(x=step_time, color='k', linestyle='--', alpha=0.5)
+    # 闸门处流量和水位
+    ax = axes[1, 0]
+    ax.plot(time_series, gate_flow, 'r-', linewidth=2, label='Gate Flow')
+    ax.axvline(x=step_time, color='k', linestyle='--', linewidth=1.5, alpha=0.5)
+    ax.axhline(y=Q_before_step, color='b', linestyle=':', alpha=0.5, label=f'Initial: {Q_before_step} m³/s')
+    ax.axhline(y=Q_after_step, color='g', linestyle=':', alpha=0.5, label=f'Target: {Q_after_step} m³/s')
     ax.set_xlabel('Time (s)', fontsize=10)
-    ax.set_ylabel('Flow Rate (m³/s)', fontsize=10)
-    ax.set_title('Scenario 2 (Unsteady): Flow Response', fontsize=11, fontweight='bold')
-    ax.set_ylim(Q_ylim)  # 固定y轴
+    ax.set_ylabel('Gate Flow (m³/s)', fontsize=10)
+    ax.set_title('Gate Flow Rate', fontsize=11, fontweight='bold')
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize=9)
 
-    # 场景2 - 过流曲线
-    ax = axes[2, 1]
-    # 使用颜色表示时间
-    scatter = ax.scatter(h_up_2, Q_gate_2, c=time2, cmap='viridis',
-                        s=20, alpha=0.6, edgecolors='none')
-    ax.set_xlabel('Upstream Depth (m)', fontsize=10)
-    ax.set_ylabel('Gate Flow (m³/s)', fontsize=10)
-    ax.set_title('Scenario 2: Discharge Curve (colored by time)', fontsize=11, fontweight='bold')
+    ax = axes[1, 1]
+    ax.plot(time_series, gate_upstream_h, 'b-', linewidth=2, label='Gate Upstream')
+    ax.plot(time_series, gate_downstream_h, 'g-', linewidth=2, label='Gate Downstream')
+    ax.axvline(x=step_time, color='k', linestyle='--', linewidth=1.5, alpha=0.5, label='Step Time')
+    ax.set_xlabel('Time (s)', fontsize=10)
+    ax.set_ylabel('Water Depth (m)', fontsize=10)
+    ax.set_title('Water Depth at Gate', fontsize=11, fontweight='bold')
+    # 优化y轴
+    gate_h_min = min(min(gate_upstream_h), min(gate_downstream_h))
+    gate_h_max = max(max(gate_upstream_h), max(gate_downstream_h))
+    gate_h_margin = (gate_h_max - gate_h_min) * 0.15
+    ax.set_ylim([gate_h_min - gate_h_margin, gate_h_max + gate_h_margin])
     ax.grid(True, alpha=0.3)
-    cbar = plt.colorbar(scatter, ax=ax)
-    cbar.set_label('Time (s)', fontsize=9)
+    ax.legend(fontsize=9)
+
+    # 空间分布快照（选择关键时刻）
+    key_snapshot_indices = [0, len(snapshot_times)//4, len(snapshot_times)//2, -1]
+    ax = axes[2, 0]
+    x_full = np.concatenate([upstream_reach.x[:-1], downstream_reach.x + gate_position])
+    for idx in key_snapshot_indices:
+        t = snapshot_times[idx]
+        h_profile = snapshot_h_profiles[idx]
+        ax.plot(x_full, h_profile, linewidth=1.5, label=f't={t:.0f}s')
+    ax.axvline(x=gate_position, color='r', linestyle='--', linewidth=2, alpha=0.5, label='Gate')
+    ax.set_xlabel('Distance (m)', fontsize=10)
+    ax.set_ylabel('Water Depth (m)', fontsize=10)
+    ax.set_title('Water Depth Profiles (Key Snapshots)', fontsize=11, fontweight='bold')
+    ax.grid(True, alpha=0.3)
+    ax.legend(fontsize=8)
+
+    ax = axes[2, 1]
+    for idx in key_snapshot_indices:
+        t = snapshot_times[idx]
+        Q_profile = snapshot_Q_profiles[idx]
+        ax.plot(x_full, Q_profile, linewidth=1.5, label=f't={t:.0f}s')
+    ax.axvline(x=gate_position, color='r', linestyle='--', linewidth=2, alpha=0.5, label='Gate')
+    ax.set_xlabel('Distance (m)', fontsize=10)
+    ax.set_ylabel('Flow Rate (m³/s)', fontsize=10)
+    ax.set_title('Flow Rate Profiles (Key Snapshots)', fontsize=11, fontweight='bold')
+    ax.grid(True, alpha=0.3)
+    ax.legend(fontsize=8)
 
     plt.tight_layout()
     fig_path = 'reports/figures/example_01_sluice_gate_dynamics.png'
-    os.makedirs('reports/figures', exist_ok=True)
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_files.append(fig_path)
-    print(f"  ✓ 动力学分析图")
+    print(f"  ✓ 动力学分析图（监测断面+空间分布）")
 
-    # 闸门过流特性图
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-
-    # 理论过流曲线
-    ax = axes[0]
-    h_range = np.linspace(2.0, 8.0, 50)
-    Q_free = gate.Cd * gate.width * gate.opening * np.sqrt(2 * gate.g * h_range)
-    delta_h_range = np.linspace(0.5, 3.0, 30)
-    Q_submerged = gate.Cd * gate.width * gate.opening * np.sqrt(2 * gate.g * delta_h_range)
-
-    ax.plot(h_range, Q_free, 'b-', linewidth=2, label='Free Flow (theory)')
-    ax.plot([3.0 + dh for dh in delta_h_range], Q_submerged, 'g-',
-           linewidth=2, label='Submerged Flow (theory, h_down=3m)')
-
-    # 仿真结果
-    ax.plot(h_up_1, Q_gate_1, 'ro', markersize=4, alpha=0.5, label='Scenario 1 (Steady)')
-    ax.plot(h_up_2, Q_gate_2, 'mo', markersize=3, alpha=0.3, label='Scenario 2 (Unsteady)')
-
-    ax.set_xlabel('Upstream Water Depth (m)', fontsize=11)
-    ax.set_ylabel('Gate Discharge (m³/s)', fontsize=11)
-    ax.set_title('Gate Discharge Characteristics', fontsize=12, fontweight='bold')
-    ax.grid(True, alpha=0.3)
-    ax.legend(fontsize=9)
-
-    # 流态判断示意图
-    ax = axes[1]
-    h_test = np.linspace(2.0, 8.0, 100)
-    e = gate.opening
-    h_threshold = e / 0.67
-
-    ax.fill_between(h_test, 0, 20, where=(h_test < h_threshold),
-                   color='blue', alpha=0.2, label='Free Flow Region')
-    ax.fill_between(h_test, 0, 20, where=(h_test >= h_threshold),
-                   color='green', alpha=0.2, label='Submerged Flow Region')
-    ax.axvline(x=h_threshold, color='r', linestyle='--', linewidth=2,
-              label=f'Threshold: h = {h_threshold:.2f}m')
-
-    # 标注闸门开度
-    ax.axhline(y=gate.opening, color='k', linestyle='-', linewidth=3,
-              label=f'Gate Opening: e = {gate.opening}m')
-
-    ax.set_xlabel('Upstream Water Depth (m)', fontsize=11)
-    ax.set_ylabel('Vertical Position (m)', fontsize=11)
-    ax.set_title('Flow Regime Classification', fontsize=12, fontweight='bold')
-    ax.set_ylim([0, 10])
-    ax.grid(True, alpha=0.3)
-    ax.legend(fontsize=9)
-
-    plt.tight_layout()
-    fig_path2 = 'reports/figures/example_01_sluice_gate_characteristics.png'
-    plt.savefig(fig_path2, dpi=150, bbox_inches='tight')
-    plt.close(fig)
-    generated_files.append(fig_path2)
-    print(f"  ✓ 过流特性图")
-
-    print()
-    print("=" * 80)
+    print("\n" + "=" * 80)
     print("分析完成！")
     print("=" * 80)
 
     print(f"\n关键结论:")
-    print(f"\n1. 恒定流情况:")
-    print(f"   - 系统达到稳态，闸门流量≈上游边界流量")
-    print(f"   - 最终闸门流量: {Q_gate_1[-1]:.3f} m³/s (边界: {Q_upstream_bc} m³/s)")
-    print(f"   - 上游水深调整以满足过流能力")
 
-    print(f"\n2. 非恒定流情况:")
-    print(f"   - 上游流量阶跃后，系统动态响应")
-    print(f"   - 闸门流量从 {Q_gate_2[0]:.3f} → {Q_gate_2[-1]:.3f} m³/s")
-    print(f"   - 上游水深变化: {h_up_2[0]:.3f} → {h_up_2[-1]:.3f} m")
-    print(f"   - 说明闸门对流量变化的调节作用")
+    print(f"\n1. 非恒定流动力学:")
+    print(f"   - 上游流量阶跃: {Q_before_step} → {Q_after_step} m³/s (at t={step_time}s)")
+    print(f"   - 闸门流量响应: {gate_flow[0]:.3f} → {gate_flow[-1]:.3f} m³/s")
+    print(f"   - 闸前水位变化: {gate_upstream_h[0]:.3f} → {gate_upstream_h[-1]:.3f} m")
+    print(f"   - 水头损失: {gate_upstream_h[-1] - gate_downstream_h[-1]:.3f} m")
+
+    print(f"\n2. 沿程传播特性:")
+    print(f"   - 流量和水位扰动沿渠道传播")
+    print(f"   - 闸门产生水位跃升，形成上下游水位差")
+    print(f"   - 下游边界为水位边界（末端水位固定）")
 
     print(f"\n3. 闸门过流特性:")
     print(f"   - 开度: {gate.opening} m")
-    print(f"   - 流态转换阈值: h ≈ {gate.opening/0.67:.2f} m")
-    print(f"   - 本次仿真主要为{flow_type_2[-1]}流")
+    print(f"   - 流态: {flow_type_list[-1]}")
+    print(f"   - 闸门起到流量调节和水位壅高作用")
 
     print(f"\n生成文件:")
     for f in generated_files:
@@ -656,198 +607,141 @@ def run_sluice_gate_dynamics():
 
     from matplotlib.animation import FuncAnimation, PillowWriter
 
-    def create_scenario_animation(scenario_name, time_data, h_up_data, h_down_data,
-                                  Q_gate_data, upstream_reach_obj, downstream_reach_obj,
-                                  gate_obj, canal_total_length, gate_pos,
-                                  h_limits, Q_limits, step_t=None, Q_upstream_data=None):
-        """创建单个场景的GIF动画"""
+    # 创建改进的GIF动画，展示沿程传播过程
+    print("  正在生成动画...")
 
-        # 每隔几帧保存一次（平衡GIF大小和流畅度）
-        frame_skip = 3  # 增加跳帧以减少文件大小，但保持关键帧
-        n_frames = len(time_data) // frame_skip
+    # 选择帧（跳帧以减小文件大小）
+    frame_skip = 10
+    anim_snapshot_indices = list(range(0, len(snapshot_times), frame_skip))
+    n_frames = len(anim_snapshot_indices)
 
-        # 准备数据
-        frames_time = [time_data[i*frame_skip] for i in range(n_frames)]
-        frames_h_up = [h_up_data[i*frame_skip] for i in range(n_frames)]
-        frames_h_down = [h_down_data[i*frame_skip] for i in range(n_frames)]
-        frames_Q_gate = [Q_gate_data[i*frame_skip] for i in range(n_frames)]
+    # 创建图形
+    fig = plt.figure(figsize=(16, 10))
+    gs = fig.add_gridspec(3, 2, hspace=0.35, wspace=0.3)
 
-        if Q_upstream_data is not None:
-            frames_Q_up = [Q_upstream_data[i*frame_skip] for i in range(n_frames)]
-        else:
-            frames_Q_up = None
+    # 1. 纵向水深剖面图 (跨两列)
+    ax_profile = fig.add_subplot(gs[0, :])
+    x_full = np.concatenate([upstream_reach.x[:-1], downstream_reach.x + gate_position])
 
-        # 创建图形
-        fig = plt.figure(figsize=(16, 10))
-        gs = fig.add_gridspec(3, 2, hspace=0.3, wspace=0.3)
+    # 床面
+    bed_elev = np.zeros_like(x_full)
+    ax_profile.fill_between(x_full, -0.5, bed_elev, color='saddlebrown', alpha=0.5, label='Channel Bed')
 
-        # 1. 纵向剖面图 (跨两列)
-        ax_profile = fig.add_subplot(gs[0, :])
+    # 初始水面线
+    h_init = snapshot_h_profiles[0]
+    line_water, = ax_profile.plot(x_full, h_init, 'b-', linewidth=2.5, label='Water Surface')
+    fill_water = ax_profile.fill_between(x_full, bed_elev, h_init, color='lightblue', alpha=0.6)
 
-        # 渠道床面
-        # 检查数组大小
-        n_upstream = len(upstream_reach_obj.x)
-        n_downstream = len(downstream_reach_obj.x)
+    # 闸门
+    ax_profile.axvline(x=gate_position, color='r', linestyle='-', linewidth=4, alpha=0.7, label='Gate')
+    gate_text = ax_profile.text(gate_position + 200, max(h_init) * 0.9,
+                               f'Gate Opening: {gate.opening}m',
+                               fontsize=10, bbox=dict(boxstyle='round', facecolor='yellow', alpha=0.8))
 
-        # 注意：上游段包含闸门位置，下游段从闸门后开始，所以要跳过第一个点以避免重复
-        x_full = np.concatenate([upstream_reach_obj.x, downstream_reach_obj.x[1:] + gate_pos])
-        bed_elev = np.zeros_like(x_full)
-        ax_profile.fill_between(x_full, -1, bed_elev, color='saddlebrown', alpha=0.5, label='Channel Bed')
+    # 时间文本
+    time_text = ax_profile.text(0.02, 0.98, '', transform=ax_profile.transAxes,
+                               fontsize=13, verticalalignment='top', fontweight='bold',
+                               bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.9))
 
-        # 水面线（初始化）
-        # 使用实际的点数（注意：n_upstream=51, n_downstream=51, 但x_full去掉了一个重复点）
-        water_surface = np.concatenate([np.ones(n_upstream) * frames_h_up[0],
-                                       np.ones(n_downstream - 1) * frames_h_down[0]])
+    ax_profile.set_xlabel('Distance along Channel (m)', fontsize=11)
+    ax_profile.set_ylabel('Water Depth (m)', fontsize=11)
+    ax_profile.set_title('Longitudinal Water Depth Profile', fontsize=13, fontweight='bold')
+    ax_profile.set_xlim([0, canal_length_total])
+    # 优化y轴范围
+    all_snapshot_h = [h for h_profile in snapshot_h_profiles for h in h_profile]
+    h_min_snap = min(all_snapshot_h)
+    h_max_snap = max(all_snapshot_h)
+    ax_profile.set_ylim([-0.2, h_max_snap * 1.1])
+    ax_profile.grid(True, alpha=0.3)
+    ax_profile.legend(fontsize=9, loc='upper left')
 
-        line_water, = ax_profile.plot(x_full, water_surface, 'b-', linewidth=2.5, label='Water Surface')
-        ax_profile.fill_between(x_full, bed_elev, water_surface, color='lightblue', alpha=0.6)
+    # 2. 流量分布图 (跨两列)
+    ax_Q_profile = fig.add_subplot(gs[1, :])
+    Q_init = snapshot_Q_profiles[0]
+    line_Q, = ax_Q_profile.plot(x_full, Q_init, 'g-', linewidth=2.5, marker='o',
+                                markersize=2, label='Flow Rate')
+    ax_Q_profile.axvline(x=gate_position, color='r', linestyle='--', linewidth=2, alpha=0.5, label='Gate')
 
-        # 闸门
-        gate_x = gate_pos
-        gate_bottom = 0
-        gate_top = 5.0  # 假设闸门总高度
-        gate_line = ax_profile.plot([gate_x, gate_x], [gate_bottom, gate_top], 'r-', linewidth=6, label='Gate')[0]
+    ax_Q_profile.set_xlabel('Distance along Channel (m)', fontsize=11)
+    ax_Q_profile.set_ylabel('Flow Rate (m³/s)', fontsize=11)
+    ax_Q_profile.set_title('Longitudinal Flow Rate Distribution', fontsize=13, fontweight='bold')
+    ax_Q_profile.set_xlim([0, canal_length_total])
+    ax_Q_profile.set_ylim([0, Q_after_step * 1.2])
+    ax_Q_profile.grid(True, alpha=0.3)
+    ax_Q_profile.legend(fontsize=9)
 
-        # 闸门开度标注
-        gate_opening_line = ax_profile.plot([gate_x, gate_x], [gate_bottom, gate_obj.opening],
-                                           'g-', linewidth=8, alpha=0.7)[0]
-        gate_text = ax_profile.text(gate_x + 20, gate_obj.opening / 2,
-                                   f'Gate\nOpening: {gate_obj.opening}m',
-                                   fontsize=9, bbox=dict(boxstyle='round', facecolor='yellow', alpha=0.8))
+    # 3. 闸门流量历史
+    ax_Q_hist = fig.add_subplot(gs[2, 0])
+    line_Q_hist, = ax_Q_hist.plot([], [], 'r-', linewidth=2.5, label='Gate Flow')
+    ax_Q_hist.axvline(x=step_time, color='k', linestyle='--', linewidth=1.5, alpha=0.5, label='Step Time')
+    ax_Q_hist.axhline(y=Q_before_step, color='b', linestyle=':', alpha=0.5)
+    ax_Q_hist.axhline(y=Q_after_step, color='g', linestyle=':', alpha=0.5)
+    ax_Q_hist.set_xlabel('Time (s)', fontsize=10)
+    ax_Q_hist.set_ylabel('Gate Flow (m³/s)', fontsize=10)
+    ax_Q_hist.set_title('Gate Flow Rate History', fontsize=11, fontweight='bold')
+    ax_Q_hist.set_xlim([0, total_time])
+    ax_Q_hist.set_ylim([0, Q_after_step * 1.2])
+    ax_Q_hist.grid(True, alpha=0.3)
+    ax_Q_hist.legend(fontsize=9)
 
-        # 时间文本
-        time_text = ax_profile.text(0.02, 0.95, '', transform=ax_profile.transAxes,
-                                   fontsize=12, verticalalignment='top', fontweight='bold',
-                                   bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.9))
+    # 4. 闸门水位历史
+    ax_h_hist = fig.add_subplot(gs[2, 1])
+    line_h_up, = ax_h_hist.plot([], [], 'b-', linewidth=2.5, label='Gate Upstream')
+    line_h_down, = ax_h_hist.plot([], [], 'g-', linewidth=2.5, label='Gate Downstream')
+    ax_h_hist.axvline(x=step_time, color='k', linestyle='--', linewidth=1.5, alpha=0.5, label='Step Time')
+    ax_h_hist.set_xlabel('Time (s)', fontsize=10)
+    ax_h_hist.set_ylabel('Water Depth (m)', fontsize=10)
+    ax_h_hist.set_title('Water Depth at Gate', fontsize=11, fontweight='bold')
+    ax_h_hist.set_xlim([0, total_time])
+    ax_h_hist.set_ylim([gate_h_min - gate_h_margin, gate_h_max + gate_h_margin])
+    ax_h_hist.grid(True, alpha=0.3)
+    ax_h_hist.legend(fontsize=9)
 
-        ax_profile.set_xlabel('Distance (m)', fontsize=11)
-        ax_profile.set_ylabel('Elevation (m)', fontsize=11)
-        ax_profile.set_title(f'{scenario_name} - Longitudinal Profile with Gate', fontsize=13, fontweight='bold')
-        ax_profile.set_xlim([0, canal_total_length])
-        ax_profile.set_ylim([-1, 6])
-        ax_profile.grid(True, alpha=0.3)
-        ax_profile.legend(fontsize=9, loc='upper right')
+    # 动画更新函数（简化版，不更新fill）
+    def update_animation(frame_num):
+        """更新动画帧"""
+        idx = anim_snapshot_indices[frame_num]
+        t = snapshot_times[idx]
+        h_profile = snapshot_h_profiles[idx]
+        Q_profile = snapshot_Q_profiles[idx]
 
-        # 2. 流量分布图
-        ax_Q_dist = fig.add_subplot(gs[1, :])
-        Q_full = np.concatenate([np.ones(n_upstream) * frames_Q_gate[0],
-                                np.ones(n_downstream - 1) * frames_Q_gate[0]])
-        line_Q_dist, = ax_Q_dist.plot(x_full, Q_full, 'g-', linewidth=2, marker='o',
-                                      markersize=3, label='Flow Rate')
-        ax_Q_dist.axvline(x=gate_pos, color='r', linestyle='--', linewidth=2, alpha=0.5)
+        # 更新水深剖面
+        line_water.set_ydata(h_profile)
 
-        # 闸门流量标注
-        gate_Q_text = ax_Q_dist.text(gate_pos + 20, frames_Q_gate[0],
-                                     f'Gate Flow: {frames_Q_gate[0]:.2f} m³/s',
-                                     fontsize=9, bbox=dict(boxstyle='round',
-                                     facecolor='lightgreen', alpha=0.8))
+        # 更新流量剖面
+        line_Q.set_ydata(Q_profile)
 
-        ax_Q_dist.set_xlabel('Distance (m)', fontsize=11)
-        ax_Q_dist.set_ylabel('Flow Rate (m³/s)', fontsize=11)
-        ax_Q_dist.set_title('Flow Rate Distribution', fontsize=12, fontweight='bold')
-        ax_Q_dist.set_xlim([0, canal_total_length])
-        ax_Q_dist.set_ylim([Q_limits[0], Q_limits[1]])
-        ax_Q_dist.grid(True, alpha=0.3)
-        ax_Q_dist.legend(fontsize=9)
+        # 更新时间文本
+        step_marker = " <-- STEP OCCURRED" if t >= step_time else ""
+        time_text.set_text(f'Time = {t:.0f} s{step_marker}')
 
-        # 3. 闸门流量历史
-        ax_Q_hist = fig.add_subplot(gs[2, 0])
-        line_Q_hist, = ax_Q_hist.plot([], [], 'b-', linewidth=2)
-        ax_Q_hist.axvline(x=0, color='r', linestyle='--', linewidth=1.5, alpha=0.5, label='Step Time')
-        ax_Q_hist.set_xlabel('Time (s)', fontsize=10)
-        ax_Q_hist.set_ylabel('Gate Flow (m³/s)', fontsize=10)
-        ax_Q_hist.set_title('Gate Flow History', fontsize=11, fontweight='bold')
-        ax_Q_hist.set_xlim([0, max(frames_time)])
-        ax_Q_hist.set_ylim([Q_limits[0], Q_limits[1]])  # 使用相同的Y轴范围
-        ax_Q_hist.grid(True, alpha=0.3)
-        ax_Q_hist.legend(fontsize=9)
+        # 更新历史曲线（需要找到对应的时间索引）
+        time_idx = int(t / dt)
+        time_hist = time_series[:time_idx+1]
+        line_Q_hist.set_data(time_hist, gate_flow[:time_idx+1])
+        line_h_up.set_data(time_hist, gate_upstream_h[:time_idx+1])
+        line_h_down.set_data(time_hist, gate_downstream_h[:time_idx+1])
 
-        # 4. 闸门上下游水位历史
-        ax_h_hist = fig.add_subplot(gs[2, 1])
-        line_h_up, = ax_h_hist.plot([], [], 'b-', linewidth=2, label='Upstream Level')
-        line_h_down, = ax_h_hist.plot([], [], 'g-', linewidth=2, label='Downstream Level')
-        if step_t is not None:
-            ax_h_hist.axvline(x=step_t, color='r', linestyle='--',
-                            linewidth=1.5, alpha=0.5, label='Step Time')
-        ax_h_hist.set_xlabel('Time (s)', fontsize=10)
-        ax_h_hist.set_ylabel('Water Level (m)', fontsize=10)
-        ax_h_hist.set_title('Gate Water Levels History', fontsize=11, fontweight='bold')
-        ax_h_hist.set_xlim([0, max(frames_time)])
-        ax_h_hist.set_ylim([h_limits[0], h_limits[1]])
-        ax_h_hist.grid(True, alpha=0.3)
-        ax_h_hist.legend(fontsize=9)
+        return line_water, line_Q, time_text, line_Q_hist, line_h_up, line_h_down
 
-        # 动画更新函数
-        def update(frame):
-            """更新动画帧"""
-            t = frames_time[frame]
-            h_u = frames_h_up[frame]
-            h_d = frames_h_down[frame]
-            Q_g = frames_Q_gate[frame]
+    # 创建动画
+    anim = FuncAnimation(fig, update_animation, frames=n_frames, interval=150, blit=True)
 
-            # 更新水面线
-            water_surface = np.concatenate([np.ones(n_upstream) * h_u, np.ones(n_downstream - 1) * h_d])
-            line_water.set_ydata(water_surface)
+    # 保存为GIF
+    gif_path = 'reports/figures/example_01_sluice_gate_flow_propagation.gif'
+    writer = PillowWriter(fps=6)
+    anim.save(gif_path, writer=writer, dpi=100)
+    plt.close(fig)
+    generated_files.append(gif_path)
 
-            # 更新流量分布
-            Q_full = np.concatenate([np.ones(n_upstream) * Q_g, np.ones(n_downstream - 1) * Q_g])
-            line_Q_dist.set_ydata(Q_full)
-            gate_Q_text.set_text(f'Gate Flow: {Q_g:.2f} m³/s')
-            gate_Q_text.set_position((gate_pos + 20, Q_g))
-
-            # 更新时间文本
-            time_text.set_text(f'Time = {t:.1f} s')
-
-            # 更新历史曲线
-            line_Q_hist.set_data(frames_time[:frame+1], frames_Q_gate[:frame+1])
-            line_h_up.set_data(frames_time[:frame+1], frames_h_up[:frame+1])
-            line_h_down.set_data(frames_time[:frame+1], frames_h_down[:frame+1])
-
-            return (line_water, line_Q_dist, gate_Q_text, time_text,
-                   line_Q_hist, line_h_up, line_h_down)
-
-        # 创建动画 - 减慢播放速度以观察细节
-        anim = FuncAnimation(fig, update, frames=n_frames, interval=200, blit=True)
-
-        # 保存为GIF
-        gif_filename = f'example_01_gate_{scenario_name.lower().replace(" ", "_").replace(":", "")}.gif'
-        gif_path = os.path.join('reports/figures', gif_filename)
-
-        print(f"  生成 {scenario_name} 动画...", end=' ')
-        # 降低fps以减慢播放速度（从10fps降到5fps）
-        writer = PillowWriter(fps=5)
-        anim.save(gif_path, writer=writer, dpi=100)
-        print(f"✓")
-
-        plt.close(fig)
-        return gif_path
-
-    # 生成场景1的GIF
-    gif1_path = create_scenario_animation(
-        "Scenario 1: Steady Flow",
-        time1, h_up_1, h_down_1, Q_gate_1,
-        upstream_reach, downstream_reach, gate,
-        canal_length_total, gate_position,
-        h_ylim, Q_ylim
-    )
-    generated_files.append(gif1_path)
-
-    # 生成场景2的GIF
-    gif2_path = create_scenario_animation(
-        "Scenario 2: Unsteady Flow",
-        time2, h_up_2, h_down_2, Q_gate_2,
-        upstream_reach, downstream_reach, gate,
-        canal_length_total, gate_position,
-        h_ylim, Q_ylim,
-        step_t=step_time,
-        Q_upstream_data=Q_upstream_2
-    )
-    generated_files.append(gif2_path)
-
-    print(f"\n  ✓ GIF动画生成完成")
+    print(f"  ✓ 动画生成完成")
     print()
 
     print("\n" + "=" * 80)
+    print("所有文件生成完成！")
+    for f in generated_files:
+        print(f"  - {f}")
+    print("=" * 80)
 
 
 if __name__ == "__main__":
