@@ -1,0 +1,129 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+管网组件单元测试
+
+测试所有管网组件：
+- 节点 (Junction)
+- 弯头 (Elbow)
+- 渐变管 (Reducer/Expander)
+- 气压罐 (AirVessel)
+- 单向阀 (CheckValve)
+- 安全阀 (ReliefValve)
+
+作者: Claude
+日期: 2025-10-22
+"""
+
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from physics.network import *
+
+
+class TestNetworkComponents:
+    """管网组件测试"""
+
+    def test_junction(self):
+        """测试节点质量守恒"""
+        tee = TeeJunction("Tee-1", elevation=10.0)
+        tee.add_pipe("P1", "in", 0.2)
+        tee.add_pipe("P2", "out", 0.2)
+        tee.add_pipe("P3", "out", 0.8)
+
+        flows = {"P1": 10.0, "P2": 6.0, "P3": 4.0}
+        residual = tee.calculate_mass_balance(flows)
+        assert abs(residual) < 1e-6, "质量守恒失败"
+        print("✓ 节点质量守恒测试通过")
+
+    def test_elbow(self):
+        """测试弯头损失计算"""
+        elbow = Elbow("E90", angle=90.0, diameter=0.5, radius_ratio=1.5)
+        h_loss = elbow.calculate_head_loss(velocity=3.0)
+        assert h_loss > 0, "弯头损失应为正值"
+        assert 0.05 < h_loss < 0.15, f"弯头损失异常: {h_loss}"
+        print(f"✓ 弯头损失测试通过 (h_loss={h_loss:.4f}m)")
+
+    def test_reducer(self):
+        """测试渐缩管"""
+        reducer = Reducer("R1", D1=0.5, D2=0.3)
+        h_loss = reducer.calculate_head_loss(V1=3.0)
+        assert h_loss > 0, "渐缩损失应为正值"
+        print(f"✓ 渐缩管测试通过 (h_loss={h_loss:.4f}m)")
+
+    def test_air_vessel(self):
+        """测试气压罐"""
+        vessel = AirVessel("AV1", volume=10.0, initial_pressure=500000)
+        Q = vessel.calculate_flow_to_vessel(P_main=600000)
+        assert Q > 0, "主管压力高时应流入气压罐"
+
+        vessel.update_state(Q, dt=1.0, P_main=600000)
+        assert vessel.pressure > 500000, "气压罐压力应升高"
+        print(f"✓ 气压罐测试通过 (P={vessel.pressure/1e5:.2f}bar)")
+
+    def test_check_valve(self):
+        """测试单向阀"""
+        valve = CheckValve("CV1", diameter=0.4)
+
+        Q_forward = valve.calculate_flow(P_up=500000, P_down=400000)
+        assert Q_forward > 0, "正向流动应有流量"
+        assert valve.is_open, "正向流动阀门应打开"
+
+        Q_reverse = valve.calculate_flow(P_up=400000, P_down=500000)
+        assert Q_reverse == 0, "反向流动应无流量"
+        assert not valve.is_open, "反向流动阀门应关闭"
+        print("✓ 单向阀测试通过")
+
+    def test_relief_valve(self):
+        """测试安全阀"""
+        valve = ReliefValve("RV1", diameter=0.1, set_pressure=600000)
+
+        Q_normal = valve.calculate_relief_flow(pressure=500000)
+        assert Q_normal == 0, "正常压力不应泄压"
+        assert not valve.is_open, "正常压力阀门应关闭"
+
+        Q_overpressure = valve.calculate_relief_flow(pressure=650000)
+        assert Q_overpressure > 0, "超压应泄压"
+        assert valve.is_open, "超压阀门应打开"
+        print(f"✓ 安全阀测试通过 (Q_relief={Q_overpressure:.3f}m³/s)")
+
+
+def run_all_tests():
+    """运行所有测试"""
+    print("=" * 80)
+    print("管网组件单元测试")
+    print("=" * 80)
+    print()
+
+    test = TestNetworkComponents()
+
+    tests = [
+        ("节点", test.test_junction),
+        ("弯头", test.test_elbow),
+        ("渐缩管", test.test_reducer),
+        ("气压罐", test.test_air_vessel),
+        ("单向阀", test.test_check_valve),
+        ("安全阀", test.test_relief_valve),
+    ]
+
+    for name, func in tests:
+        print(f"【{name}】", end=" ")
+        try:
+            func()
+        except AssertionError as e:
+            print(f"✗ 测试失败: {e}")
+            return False
+        except Exception as e:
+            print(f"✗ 异常: {e}")
+            return False
+
+    print()
+    print("=" * 80)
+    print("所有测试通过！✓")
+    print("=" * 80)
+    return True
+
+
+if __name__ == "__main__":
+    success = run_all_tests()
+    sys.exit(0 if success else 1)
