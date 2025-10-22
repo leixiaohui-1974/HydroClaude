@@ -23,11 +23,11 @@ from solvers.gate import HydraulicStructure
 
 class SteadySaintVenantSystem:
     """
-    稳态Saint-Venant方程系统
+    稳态Saint-Venant方程系统（带伪瞬态延拓）
 
     方程：
-    - 连续性：dQ/dx = 0 （稳态）
-    - 动量：  d(Q²/A)/dx + gA·dh/dx = gA(S₀ - Sf)
+    - 连续性：ε·∂Q/∂τ + dQ/dx = 0 （伪瞬态）
+    - 动量：  ε·∂h/∂τ + d(Q²/A)/dx + gA·dh/dx = gA(S₀ - Sf)
 
     其中：
     - h: 水深
@@ -35,6 +35,10 @@ class SteadySaintVenantSystem:
     - A = B·h: 断面面积（矩形断面）
     - Sf: Manning摩阻坡度 = (n·V)²/R^(4/3)
     - S₀: 渠底坡度
+    - ε: 伪时间步长（小值，避免Jacobian奇异）
+    - τ: 伪时间
+
+    当ε→0时，收敛到稳态解
     """
 
     def __init__(self,
@@ -44,7 +48,8 @@ class SteadySaintVenantSystem:
                  S0: float,
                  n: float,
                  g: float = 9.81,
-                 structures: Optional[List[Tuple[float, HydraulicStructure]]] = None):
+                 structures: Optional[List[Tuple[float, HydraulicStructure]]] = None,
+                 pseudo_dt: float = 0.1):
         """
         Args:
             length: 渠道长度 (m)
@@ -61,10 +66,14 @@ class SteadySaintVenantSystem:
         self.S0 = S0
         self.n = n
         self.g = g
+        self.pseudo_dt = pseudo_dt  # 伪时间步长
 
         # 空间网格
         self.x = np.linspace(0, length, nx)
         self.dx = length / (nx - 1)
+
+        # 上一步的解（用于伪瞬态项）
+        self.U_prev = None
 
         # 水工建筑物
         self.structures = structures if structures is not None else []
@@ -154,11 +163,11 @@ class SteadySaintVenantSystem:
 
     def compute_residual(self, U: np.ndarray, t: float = 0.0) -> np.ndarray:
         """
-        计算残差向量 F(U)
+        计算残差向量 F(U)（带伪瞬态项）
 
         对于每个内部节点i（1 <= i < nx-1）:
-        - F_{2i}: 连续性方程残差
-        - F_{2i+1}: 动量方程残差
+        - F_{2i}: 伪瞬态连续性方程残差
+        - F_{2i+1}: 伪瞬态动量方程残差
 
         边界节点（i=0, i=nx-1）:
         - 应用边界条件
@@ -172,6 +181,12 @@ class SteadySaintVenantSystem:
         """
         h, Q = self.unpack_state(U)
         F = np.zeros(self.n_vars)
+
+        # 获取上一步的解（如果没有，使用当前解）
+        if self.U_prev is None:
+            h_prev, Q_prev = h.copy(), Q.copy()
+        else:
+            h_prev, Q_prev = self.unpack_state(self.U_prev)
 
         # 计算摩阻坡度
         Sf = self.compute_friction_slope(h, Q)
@@ -191,8 +206,9 @@ class SteadySaintVenantSystem:
                 # 计算闸门流量
                 Q_gate_target, _ = structure.calculate_discharge(h_up, h_down, t)
 
-                # 连续性方程（保持）
-                F[2*i] = (Q[i+1] - Q[i-1]) / (2 * self.dx)
+                # 连续性方程（保持，添加伪时间项）
+                pseudo_time_term_Q_gate = (Q[i] - Q_prev[i]) / self.pseudo_dt
+                F[2*i] = pseudo_time_term_Q_gate + (Q[i+1] - Q[i-1]) / (2 * self.dx)
 
                 # 闸门流量约束（替代动量方程）
                 F[2*i + 1] = Q[i] - Q_gate_target
@@ -200,8 +216,9 @@ class SteadySaintVenantSystem:
             else:
                 # 普通节点：标准Saint-Venant方程
 
-                # 连续性方程：dQ/dx = 0
-                F[2*i] = (Q[i+1] - Q[i-1]) / (2 * self.dx)
+                # 伪瞬态连续性方程：ε·(Q-Q_prev)/Δτ + dQ/dx = 0
+                pseudo_time_term_Q = (Q[i] - Q_prev[i]) / self.pseudo_dt
+                F[2*i] = pseudo_time_term_Q + (Q[i+1] - Q[i-1]) / (2 * self.dx)
 
                 # 动量方程：d(Q²/A)/dx + gA·dh/dx = gA(S₀ - Sf)
                 # 防止除零
@@ -221,25 +238,30 @@ class SteadySaintVenantSystem:
                 # 源项：gA(S₀ - Sf)
                 source_term = self.g * A[i] * (self.S0 - Sf[i])
 
+                # 伪瞬态动量方程：ε·(h-h_prev)/Δτ + 动量方程 = 0
+                pseudo_time_term_h = (h[i] - h_prev[i]) / self.pseudo_dt
+
                 # 动量方程残差
-                F[2*i + 1] = d_momentum_flux + pressure_term - source_term
+                F[2*i + 1] = pseudo_time_term_h + d_momentum_flux + pressure_term - source_term
 
         # ========== 上游边界（i=0） ==========
-        # F[0]: Q[0] = Q_upstream
-        # F[1]: 使用动量方程（或其他）
+        # F[0]: Q[0] = Q_upstream（流量边界，无伪时间项）
+        # F[1]: 伪瞬态连续性方程
         F[0] = Q[0] - self.Q_upstream
 
-        # 上游边界的第二个方程：使用向前差分的连续性
-        F[1] = (Q[1] - Q[0]) / self.dx
+        # 上游边界的第二个方程：伪瞬态连续性（向前差分）
+        pseudo_time_term_Q0 = (Q[0] - Q_prev[0]) / self.pseudo_dt
+        F[1] = pseudo_time_term_Q0 + (Q[1] - Q[0]) / self.dx
 
         # ========== 下游边界（i=nx-1） ==========
-        # F[2*(nx-1)]: h[nx-1] = h_downstream
-        # F[2*(nx-1)+1]: 使用动量方程
+        # F[2*(nx-1)]: h[nx-1] = h_downstream（水深边界，无伪时间项）
+        # F[2*(nx-1)+1]: 伪瞬态连续性方程
         i = self.nx - 1
         F[2*i] = h[i] - self.h_downstream
 
-        # 下游边界的第二个方程：使用向后差分的连续性
-        F[2*i + 1] = (Q[i] - Q[i-1]) / self.dx
+        # 下游边界的第二个方程：伪瞬态连续性（向后差分）
+        pseudo_time_term_Qn = (Q[i] - Q_prev[i]) / self.pseudo_dt
+        F[2*i + 1] = pseudo_time_term_Qn + (Q[i] - Q[i-1]) / self.dx
 
         return F
 
@@ -271,8 +293,9 @@ class SteadySaintVenantSystem:
                 h_up = h[i - 1]
                 h_down = h[i + 1]
 
-                # 连续性方程 Jacobian（保持）
-                # F[2*i] = (Q[i+1] - Q[i-1]) / (2*dx)
+                # 连续性方程 Jacobian（带伪瞬态）
+                # F[2*i] = (Q[i]-Q_prev[i])/pseudo_dt + (Q[i+1] - Q[i-1]) / (2*dx)
+                J[2*i, 2*i+1] = 1.0 / self.pseudo_dt  # ∂F/∂Q_i（伪时间项）
                 J[2*i, 2*(i-1)+1] = -1.0 / (2 * self.dx)  # ∂F/∂Q_{i-1}
                 J[2*i, 2*(i+1)+1] = 1.0 / (2 * self.dx)   # ∂F/∂Q_{i+1}
 
@@ -325,7 +348,9 @@ class SteadySaintVenantSystem:
                 J[2*i+1, 2*(i-1)+1] = d_momentum_flux_dQ_im1
 
                 # ∂F/∂h_i
-                # 来自压力项、源项中的A_i和Sf_i
+                # 来自伪时间项、压力项、源项中的A_i和Sf_i
+                pseudo_time_dh_i = 1.0 / self.pseudo_dt  # 伪时间项的导数
+
                 pressure_dh_i = self.g * dA_dh * (h[i+1] - h[i-1]) / (2 * self.dx)
 
                 # Sf对h的导数（数值微分，更精确）
@@ -337,7 +362,7 @@ class SteadySaintVenantSystem:
 
                 source_dh_i = self.g * (dA_dh * (self.S0 - Sf[i]) - A[i] * dSf_dh_i)
 
-                J[2*i+1, 2*i] = pressure_dh_i - source_dh_i
+                J[2*i+1, 2*i] = pseudo_time_dh_i + pressure_dh_i - source_dh_i
 
                 # ∂F/∂Q_i
                 # 来自源项中的Sf_i（数值微分）
@@ -349,6 +374,7 @@ class SteadySaintVenantSystem:
 
                 source_dQ_i = -self.g * A[i] * dSf_dQ_i
 
+                # 加上伪时间项的贡献
                 J[2*i+1, 2*i+1] = source_dQ_i
 
                 # ∂F/∂h_{i+1}
@@ -368,8 +394,8 @@ class SteadySaintVenantSystem:
         # F[0] = Q[0] - Q_upstream
         J[0, 1] = 1.0  # ∂F/∂Q_0
 
-        # F[1] = (Q[1] - Q[0]) / dx
-        J[1, 1] = -1.0 / self.dx  # ∂F/∂Q_0
+        # F[1] = (Q[0]-Q_prev[0])/pseudo_dt + (Q[1] - Q[0]) / dx
+        J[1, 1] = 1.0 / self.pseudo_dt - 1.0 / self.dx  # ∂F/∂Q_0（伪时间+空间）
         J[1, 3] = 1.0 / self.dx   # ∂F/∂Q_1
 
         # ========== 下游边界（i=nx-1） ==========
@@ -378,9 +404,9 @@ class SteadySaintVenantSystem:
         # F[2*i] = h[i] - h_downstream
         J[2*i, 2*i] = 1.0  # ∂F/∂h_{nx-1}
 
-        # F[2*i+1] = (Q[i] - Q[i-1]) / dx
+        # F[2*i+1] = (Q[i]-Q_prev[i])/pseudo_dt + (Q[i] - Q[i-1]) / dx
         J[2*i+1, 2*(i-1)+1] = -1.0 / self.dx  # ∂F/∂Q_{nx-2}
-        J[2*i+1, 2*i+1] = 1.0 / self.dx       # ∂F/∂Q_{nx-1}
+        J[2*i+1, 2*i+1] = 1.0 / self.pseudo_dt + 1.0 / self.dx  # ∂F/∂Q_{nx-1}（伪时间+空间）
 
         return J.tocsr()
 

@@ -64,9 +64,10 @@ class NewtonMultiGridSolver:
         self.structures = structures if structures is not None else []
         self.verbose = verbose
 
-        # 创建稳态Saint-Venant系统
+        # 创建稳态Saint-Venant系统（带伪瞬态延拓）
         self.sv_system = SteadySaintVenantSystem(
-            length, nx, B, S0, n, g, structures
+            length, nx, B, S0, n, g, structures,
+            pseudo_dt=1.0  # 伪时间步长，避免Jacobian奇异
         )
 
         # 创建牛顿求解器（先用直接求解器测试）
@@ -169,17 +170,25 @@ class NewtonMultiGridSolver:
         def jacobian_func(U):
             return self.sv_system.compute_jacobian(U, t)
 
+        # 回调函数：更新伪瞬态的前一步
+        def callback(iter_num, U_current, F, dU, alpha):
+            # 更新上一步的解
+            self.sv_system.U_prev = U_current.copy()
+
         # 求解
         if self.verbose:
             print(f"\n开始牛顿-多网格迭代...")
             print("-" * 80)
+
+        # 初始化伪瞬态的前一步
+        self.sv_system.U_prev = U_init.copy()
 
         # 更新牛顿求解器参数
         self.newton_solver.max_iter = max_newton_iter
         self.newton_solver.tol_residual = tol
 
         U_sol, info = self.newton_solver.solve(
-            U_init, residual_func, jacobian_func
+            U_init, residual_func, jacobian_func, callback=callback
         )
 
         elapsed_time = time.time() - start_time
