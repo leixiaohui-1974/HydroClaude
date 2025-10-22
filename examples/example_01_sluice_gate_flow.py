@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+from utils.stability_evaluator import StabilityEvaluator
 
 
 class SluiceGate:
@@ -111,7 +112,7 @@ class SluiceGate:
 
 
 class SimplifiedCanalReach:
-    """简化的渠道段 - 用于演示闸门过流"""
+    """简化的渠道段 - 用于演示闸门过流（改进稳定性）"""
 
     def __init__(self, length, width, n_points):
         self.length = length
@@ -124,31 +125,47 @@ class SimplifiedCanalReach:
         self.h = np.ones(n_points) * 5.0  # 水深
         self.Q = np.ones(n_points) * 5.0  # 流量
 
+        # 稳定性参数
+        self.relaxation = 0.5  # 松弛因子
+
     def set_uniform_state(self, h, Q):
         """设置均匀状态"""
         self.h = np.ones(self.n_points) * h
         self.Q = np.ones(self.n_points) * Q
 
-    def update_simple(self, dt, Q_in, Q_out):
+    def update_stable(self, dt, Q_in, Q_out):
         """
-        简化更新（质量守恒）
+        稳定的更新方法（改进版）
 
-        假设渠段内水深和流量均匀变化
+        使用松弛因子和限制器确保稳定性
         """
-        # 质量守恒
-        V_total = np.mean(self.h) * self.width * self.length
+        # 当前平均水深
+        h_old = np.mean(self.h)
+
+        # 质量守恒：dV/dt = Q_in - Q_out
+        V_old = h_old * self.width * self.length
         dV = (Q_in - Q_out) * dt
-        V_new = V_total + dV
+        V_new_theoretical = V_old + dV
 
-        # 新的平均水深
-        h_new = V_new / (self.width * self.length)
-        h_new = max(0.5, min(10.0, h_new))  # 限制范围
+        # 新水深（理论值）
+        h_new_theoretical = V_new_theoretical / (self.width * self.length)
 
-        # 更新状态
+        # 应用松弛因子（避免突变）
+        h_new = h_old + self.relaxation * (h_new_theoretical - h_old)
+
+        # 限制水深范围（物理约束）
+        h_new = np.clip(h_new, 0.5, 15.0)
+
+        # 流量也使用松弛因子
+        Q_new_theoretical = (Q_in + Q_out) / 2
+        Q_old = np.mean(self.Q)
+        Q_new = Q_old + self.relaxation * (Q_new_theoretical - Q_old)
+
+        # 更新状态（均匀分布）
         self.h = np.ones(self.n_points) * h_new
-        self.Q = np.ones(self.n_points) * (Q_in + Q_out) / 2
+        self.Q = np.ones(self.n_points) * Q_new
 
-        return h_new, (Q_in + Q_out) / 2
+        return h_new, Q_new
 
 
 def run_sluice_gate_dynamics():
@@ -246,17 +263,14 @@ def run_sluice_gate_dynamics():
         Q_gate, f_type = gate.calculate_discharge(h_u, h_d)
 
         # 更新上游段 (入流=边界流量, 出流=闸门流量)
-        upstream_reach.update_simple(dt, Q_upstream_bc, Q_gate)
+        upstream_reach.update_stable(dt, Q_upstream_bc, Q_gate)
 
-        # 更新下游段 (入流=闸门流量, 出流=闸门流量)
-        # 下游段保持水位稳定（由下游边界控制）
-        h_d_avg = np.mean(downstream_reach.h)
-        downstream_reach.update_simple(dt, Q_gate, Q_gate)
-        # 限制下游水位变化，保持接近边界值
-        h_d_new = np.mean(downstream_reach.h)
-        # 使用阻尼因子，让下游水位缓慢接近边界值
-        h_d_target = 0.9 * h_d_new + 0.1 * h_downstream_bc
-        downstream_reach.h[:] = h_d_target
+        # 更新下游段 (入流=闸门流量, 出流=Q_gate)
+        # 注意：下游段也用Q_gate作为出流，保持流量连续性
+        downstream_reach.update_stable(dt, Q_gate, Q_gate)
+
+        # 强制下游水位为边界条件（用较强的约束）
+        downstream_reach.h[:] = h_downstream_bc
 
         # 记录数据
         time1.append(t)
@@ -274,7 +288,46 @@ def run_sluice_gate_dynamics():
     print(f"  闸门流量: {Q_gate_1[-1]:.3f} m³/s")
     print(f"  上游水深: {h_up_1[-1]:.3f} m")
     print(f"  下游水深: {h_down_1[-1]:.3f} m")
+    print(f"  水头损失: {h_up_1[-1] - h_down_1[-1]:.4f} m")
     print(f"  流态: {flow_type_1[-1]}")
+    print()
+
+    # 稳定性评价
+    print("=" * 80)
+    print("场景1：稳定性评价")
+    print("-" * 80)
+
+    evaluator = StabilityEvaluator()
+    canal_params = {
+        'length': canal_length_total,
+        'width': canal_width,
+        'slope': 0.0001,
+        'manning_n': 0.025,
+        'nx': 51
+    }
+
+    # 需要准备完整的空间分布数据
+    h_history1_full = []
+    Q_history1_full = []
+    for h_u, h_d, q_g in zip(h_up_1, h_down_1, Q_gate_1):
+        # 简化：上游段用h_u，下游段用h_d
+        h_profile = np.concatenate([
+            np.ones(26) * h_u,
+            np.ones(25) * h_d
+        ])
+        Q_profile = np.ones(51) * q_g
+        h_history1_full.append(h_profile)
+        Q_history1_full.append(Q_profile)
+
+    result1 = evaluator.evaluate(
+        time=np.array(time1),
+        h_history=h_history1_full,
+        Q_history=Q_history1_full,
+        canal_params=canal_params,
+        method_name="场景1_恒定流"
+    )
+
+    evaluator.print_report("场景1_恒定流")
     print()
 
     # === 场景2: 非恒定流 (流量阶跃) ===
@@ -331,13 +384,13 @@ def run_sluice_gate_dynamics():
         Q_gate, f_type = gate.calculate_discharge(h_u, h_d)
 
         # 更新上游段
-        upstream_reach.update_simple(dt, Q_up_bc, Q_gate)
+        upstream_reach.update_stable(dt, Q_up_bc, Q_gate)
 
         # 更新下游段（同场景1）
-        downstream_reach.update_simple(dt, Q_gate, Q_gate)
-        h_d_new = np.mean(downstream_reach.h)
-        h_d_target = 0.9 * h_d_new + 0.1 * h_downstream_bc
-        downstream_reach.h[:] = h_d_target
+        downstream_reach.update_stable(dt, Q_gate, Q_gate)
+
+        # 强制下游水位为边界条件
+        downstream_reach.h[:] = h_downstream_bc
 
         # 记录数据
         time2.append(t)
@@ -361,8 +414,40 @@ def run_sluice_gate_dynamics():
     print(f"  闸门流量: {Q_gate_2[-1]:.3f} m³/s (目标: {Q_after_step} m³/s)")
     print(f"  上游水深: {h_up_2[-1]:.3f} m (初始: {h_up_2[0]:.3f} m, 理论终值: {h_up_final_theory:.3f} m)")
     print(f"  下游水深: {h_down_2[-1]:.3f} m (边界: {h_downstream_bc} m)")
+    print(f"  水头损失: {h_up_2[-1] - h_down_2[-1]:.4f} m")
     print(f"  流态: {flow_type_2[-1]}")
     print(f"  水位变化: {h_up_2[-1] - h_up_2[0]:.3f} m")
+    print()
+
+    # 稳定性评价
+    print("=" * 80)
+    print("场景2：稳定性评价")
+    print("-" * 80)
+
+    # 准备完整的空间分布数据
+    h_history2_full = []
+    Q_history2_full = []
+    for h_u, h_d, q_g in zip(h_up_2, h_down_2, Q_gate_2):
+        h_profile = np.concatenate([
+            np.ones(26) * h_u,
+            np.ones(25) * h_d
+        ])
+        Q_profile = np.ones(51) * q_g
+        h_history2_full.append(h_profile)
+        Q_history2_full.append(Q_profile)
+
+    result2 = evaluator.evaluate(
+        time=np.array(time2),
+        h_history=h_history2_full,
+        Q_history=Q_history2_full,
+        canal_params=canal_params,
+        method_name="场景2_非恒定流"
+    )
+
+    evaluator.print_report("场景2_非恒定流")
+
+    # 对比两个场景
+    evaluator.compare_methods()
     print()
 
     # === 生成可视化 ===
@@ -371,6 +456,17 @@ def run_sluice_gate_dynamics():
     print("=" * 80)
 
     generated_files = []
+
+    # 计算数据范围（用于固定y轴）
+    all_h = h_up_1 + h_down_1 + h_up_2 + h_down_2
+    h_min, h_max = min(all_h), max(all_h)
+    h_range = h_max - h_min
+    h_ylim = [h_min - 0.1 * h_range, h_max + 0.1 * h_range]
+
+    all_Q = Q_gate_1 + Q_gate_2 + Q_upstream_2
+    Q_min, Q_max = min(all_Q), max(all_Q)
+    Q_range = Q_max - Q_min
+    Q_ylim = [max(0, Q_min - 0.1 * Q_range), Q_max + 0.1 * Q_range]
 
     # 时程曲线
     fig, axes = plt.subplots(3, 2, figsize=(14, 12))
@@ -382,6 +478,7 @@ def run_sluice_gate_dynamics():
     ax.set_xlabel('Time (s)', fontsize=10)
     ax.set_ylabel('Water Depth (m)', fontsize=10)
     ax.set_title('Scenario 1 (Steady): Water Depth', fontsize=11, fontweight='bold')
+    ax.set_ylim(h_ylim)  # 固定y轴
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize=9)
 
@@ -392,6 +489,7 @@ def run_sluice_gate_dynamics():
     ax.set_xlabel('Time (s)', fontsize=10)
     ax.set_ylabel('Flow Rate (m³/s)', fontsize=10)
     ax.set_title('Scenario 1 (Steady): Gate Flow', fontsize=11, fontweight='bold')
+    ax.set_ylim(Q_ylim)  # 固定y轴
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize=9)
 
@@ -411,6 +509,7 @@ def run_sluice_gate_dynamics():
     ax.set_xlabel('Time (s)', fontsize=10)
     ax.set_ylabel('Water Depth (m)', fontsize=10)
     ax.set_title('Scenario 2 (Unsteady): Water Depth', fontsize=11, fontweight='bold')
+    ax.set_ylim(h_ylim)  # 固定y轴
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize=9)
 
@@ -422,6 +521,7 @@ def run_sluice_gate_dynamics():
     ax.set_xlabel('Time (s)', fontsize=10)
     ax.set_ylabel('Flow Rate (m³/s)', fontsize=10)
     ax.set_title('Scenario 2 (Unsteady): Flow Response', fontsize=11, fontweight='bold')
+    ax.set_ylim(Q_ylim)  # 固定y轴
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize=9)
 
