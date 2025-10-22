@@ -12,6 +12,7 @@
 import sys
 import os
 import numpy as np
+import pandas as pd
 
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
@@ -20,6 +21,10 @@ from solvers.canal_solver import CanalSolver
 from utils.canal_utils import compute_steady_uniform_flow, get_convergence_metrics
 from visualization.canal_visualizer import CanalVisualizer
 from analysis.stability_evaluator import StabilityEvaluator
+
+# Import output helper
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from output_helper import get_output_path, save_table
 
 
 def main():
@@ -155,12 +160,6 @@ def main():
     print("\n5. 生成可视化图表")
     print("-" * 80)
 
-    output_dir = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        "..", "figures"
-    )
-    os.makedirs(output_dir, exist_ok=True)
-
     viz = CanalVisualizer(use_chinese=False)  # 使用英文以避免字体问题
 
     # 方法对比图
@@ -171,7 +170,7 @@ def main():
             'Q': results[method]['Q']
         }
 
-    save_path = os.path.join(output_dir, "example_01_refactored_comparison.png")
+    save_path = get_output_path('figures', "01_basic_comparison.png")
     viz.plot_methods_comparison(
         x=solvers['PREISSMANN'].x,
         results=comparison_data,
@@ -180,10 +179,11 @@ def main():
         title="Methods Comparison - Final State",
         save_path=save_path
     )
+    print(f"  ✓ Saved figure: 01_basic_comparison.png")
 
     # 单个方法的时空分布
     for method in methods:
-        save_path = os.path.join(output_dir, f"example_01_refactored_{method.lower()}.png")
+        save_path = get_output_path('figures', f"01_basic_{method.lower()}.png")
         viz.plot_spatial_distribution(
             x=solvers[method].x,
             h=results[method]['h'],
@@ -195,6 +195,7 @@ def main():
             h_margin=0.01,
             Q_margin=0.05
         )
+        print(f"  ✓ Saved figure: 01_basic_{method.lower()}.png")
 
     # ========================================================================
     # 6. 收敛性分析
@@ -219,12 +220,59 @@ def main():
         print(f"  收敛状态: {'✓ 收敛' if metrics['converged'] else '✗ 未收敛'}")
 
     # ========================================================================
+    # 7. 保存数据表
+    # ========================================================================
+    print("\n7. 保存数据表")
+    print("-" * 80)
+
+    # 保存收敛性结果表
+    convergence_data = []
+    for method in methods:
+        history = results[method]['history']
+        metrics = get_convergence_metrics(
+            time=history['time'],
+            h_history=history['h_history'],
+            Q_history=history['Q_history']
+        )
+        convergence_data.append({
+            'Method': method,
+            'h_CV_upstream (%)': metrics['cv_h_upstream'],
+            'h_CV_downstream (%)': metrics['cv_h_downstream'],
+            'Q_CV_upstream (%)': metrics['cv_Q_upstream'],
+            'Q_CV_downstream (%)': metrics['cv_Q_downstream'],
+            'Max_CV (%)': metrics['max_cv'],
+            'Converged': metrics['converged']
+        })
+
+    df = pd.DataFrame(convergence_data)
+    save_table(df, '01_basic_convergence.csv', index=False)
+
+    # 保存最终分布数据
+    distribution_data = []
+    for method in methods:
+        x = solvers[method].x
+        h = results[method]['h']
+        Q = results[method]['Q']
+        for i in range(len(x)):
+            distribution_data.append({
+                'Method': method,
+                'Position (m)': x[i],
+                'Water_Depth (m)': h[i],
+                'Discharge (m³/s)': Q[i]
+            })
+
+    df_dist = pd.DataFrame(distribution_data)
+    save_table(df_dist, '01_basic_distribution.csv', index=False)
+
+    # ========================================================================
     # 完成
     # ========================================================================
     print("\n" + "=" * 80)
     print("仿真完成！")
     print("=" * 80)
-    print(f"\n所有图表已保存到: {output_dir}")
+    print(f"\n所有输出已保存到: results/")
+    print("  Figures: results/figures/")
+    print("  Tables: results/tables/")
     print("\n✅ 例子1（重构版）运行成功")
 
 

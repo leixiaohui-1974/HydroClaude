@@ -22,6 +22,11 @@ from scipy.signal import savgol_filter
 import time
 from datetime import datetime
 import os
+import pandas as pd
+
+# Import output helper
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from output_helper import save_figure, save_table, get_output_path
 
 # 配置matplotlib支持中文
 plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial Unicode MS', 'SimHei']
@@ -554,8 +559,6 @@ def run_standard_comparison_test():
 def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total):
     """生成对比图表（使用英文标签避免中文显示问题）"""
 
-    os.makedirs('../reports/figures', exist_ok=True)
-
     # ========================================================================
     # 图1：空间分布对比（最终时刻）
     # ========================================================================
@@ -621,9 +624,7 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
                 verticalalignment='top', bbox=props)
 
     plt.tight_layout()
-    fig_path = '../reports/figures/example_01_methods_spatial_comparison.png'
-    plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f"  Saved: {fig_path}")
+    save_figure(fig, '02_methods_spatial_comparison.png')
     plt.close()
 
     # ========================================================================
@@ -670,9 +671,7 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
     ax.set_ylim([Q_theory - Q_margin, Q_theory + Q_margin])
 
     plt.tight_layout()
-    fig_path = '../reports/figures/example_01_methods_temporal_comparison.png'
-    plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f"  Saved: {fig_path}")
+    save_figure(fig, '02_methods_temporal_comparison.png')
     plt.close()
 
     # ========================================================================
@@ -749,9 +748,7 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
                 f'{height:.1f}', ha='center', va='bottom', fontsize=9)
 
     plt.tight_layout()
-    fig_path = '../reports/figures/example_01_methods_performance_comparison.png'
-    plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f"  Saved: {fig_path}")
+    save_figure(fig, '02_methods_performance_comparison.png')
     plt.close()
 
     # ========================================================================
@@ -790,12 +787,10 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
     ax.legend(loc='best', fontsize=10)
 
     plt.tight_layout()
-    fig_path = '../reports/figures/example_01_methods_overlay_comparison.png'
-    plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f"  Saved: {fig_path}")
+    save_figure(fig, '02_methods_overlay_comparison.png')
     plt.close()
 
-    print("\nAll visualizations generated successfully!")
+    print("\n✓ All visualizations generated successfully!")
 
 
 # ============================================================================
@@ -805,12 +800,59 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
 if __name__ == '__main__':
     results = run_standard_comparison_test()
 
+    # ========================================================================
+    # Save Results as CSV Table
+    # ========================================================================
+    print("\n" + "=" * 80)
+    print("Saving Results Tables...")
+    print("=" * 80)
+
+    # Create comparison table
+    table_data = []
+    for method in ['EXPLICIT', 'PREISSMANN', 'HLL']:
+        r = results[method]
+        table_data.append({
+            'Method': method,
+            'h_mean (m)': r['h_mean'],
+            'h_std (m)': r['h_std'],
+            'h_CV (%)': r['h_cv'],
+            'h_error (%)': r['h_error'],
+            'Q_mean (m³/s)': r['Q_mean'],
+            'Q_std (m³/s)': r['Q_std'],
+            'Q_CV (%)': r['Q_cv'],
+            'Q_error (%)': r['Q_error'],
+            'Speed (step/s)': r['comp_speed'],
+            'Runtime (s)': r['comp_time']
+        })
+
+    df = pd.DataFrame(table_data)
+    save_table(df, '02_methods_comparison_results.csv', index=False)
+
+    # Save detailed statistics
+    detailed_data = []
+    for method in ['EXPLICIT', 'PREISSMANN', 'HLL']:
+        r = results[method]
+        for i in range(len(r['x'])):
+            detailed_data.append({
+                'Method': method,
+                'Position (m)': r['x'][i],
+                'Water_Depth (m)': r['h_final'][i],
+                'Discharge (m³/s)': r['Q_final'][i]
+            })
+
+    df_detailed = pd.DataFrame(detailed_data)
+    save_table(df_detailed, '02_methods_detailed_profiles.csv', index=False)
+
     print("\n" + "=" * 80)
     print("STANDARD METHODS COMPARISON TEST COMPLETED!")
     print("=" * 80)
     print("\nGenerated Files:")
-    print("  1. example_01_methods_spatial_comparison.png")
-    print("  2. example_01_methods_temporal_comparison.png")
-    print("  3. example_01_methods_performance_comparison.png")
-    print("  4. example_01_methods_overlay_comparison.png")
+    print("  Figures (4):")
+    print("    - 02_methods_spatial_comparison.png")
+    print("    - 02_methods_temporal_comparison.png")
+    print("    - 02_methods_performance_comparison.png")
+    print("    - 02_methods_overlay_comparison.png")
+    print("  Tables (2):")
+    print("    - 02_methods_comparison_results.csv")
+    print("    - 02_methods_detailed_profiles.csv")
     print("=" * 80)

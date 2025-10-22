@@ -19,6 +19,11 @@ from matplotlib.animation import FuncAnimation, PillowWriter
 from scipy.optimize import fsolve
 
 
+
+# Import output helper
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from output_helper import get_output_path, save_animation
+
 def compute_steady_uniform_flow(Q, B, S0, n):
     """计算恒定均匀流水深（Manning公式）"""
 
@@ -417,9 +422,9 @@ def generate_gif_animation():
     anim = FuncAnimation(fig, update, frames=n_frames, interval=50, blit=True)
 
     # 保存为GIF
-    output_dir = os.path.join(os.path.dirname(__file__), '..', 'reports', 'figures')
-    os.makedirs(output_dir, exist_ok=True)
-    gif_path = os.path.join(output_dir, 'canal_flow_comparison_improved.gif')
+    
+    
+    gif_path = get_output_path('animations', '06_canal_flow_animation.gif')
 
     print(f"  保存GIF到: {gif_path}")
     writer = PillowWriter(fps=20)
@@ -479,7 +484,7 @@ def generate_gif_animation():
 
     plt.tight_layout()
 
-    fig_path = os.path.join(output_dir, 'canal_flow_final_state_improved.png')
+    fig_path = get_output_path('figures', '06_canal_flow_final_state.png')
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
     print(f"  ✓ 静态图保存到: {fig_path}")
 

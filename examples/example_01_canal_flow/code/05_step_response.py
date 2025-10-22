@@ -21,6 +21,11 @@ from scipy.signal import savgol_filter
 import time
 from datetime import datetime
 import os
+import pandas as pd
+
+# Import output helper
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from output_helper import get_output_path, save_table, save_figure
 
 # 配置matplotlib
 plt.rcParams['font.size'] = 11
@@ -381,7 +386,7 @@ def run_step_response_comparison():
     print("Generating Comparison Plots...")
     print(f"{'='*80}")
 
-    os.makedirs('../reports/figures', exist_ok=True)
+    
 
     # 创建综合对比图
     fig = plt.figure(figsize=(18, 12))
@@ -445,9 +450,9 @@ def run_step_response_comparison():
                 f'(Q: {Q_initial} → {Q_step} m³/s at t = {t_step}s)',
                 fontsize=16, fontweight='bold', y=0.995)
 
-    fig_path = '../reports/figures/example_01_step_response_methods_comparison.png'
+    fig_path = get_output_path('figures', '05_step_response_methods_comparison.png'
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f"  Saved: {fig_path}")
+    print(f"  ✓ Saved figure: {os.path.basename(fig_path)}")
     plt.close()
 
     # 创建详细对比图（叠加显示）

@@ -678,8 +678,15 @@ def generate_visualizations(all_results):
     """生成可视化图表"""
 
     import os
-    os.makedirs('../reports/figures', exist_ok=True)
+import pandas as pd
 
+# Import output helper
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from output_helper import get_output_path, save_table, save_figure
+
+
+def generate_idz_plots(all_results):
+    """生成IDZ参数辨识图表"""
     methods = ['EXPLICIT', 'PREISSMANN', 'HLL']
     scenarios = ['upstream_flow', 'downstream_depth']
 
@@ -745,9 +752,9 @@ def generate_visualizations(all_results):
                     ax.set_title(f'{method}', fontsize=12, fontweight='bold')
 
         plt.tight_layout()
-        fig_path = f'../reports/figures/example_01_idz_{scenario}.png'
+        fig_path = get_output_path('figures', f'03_idz_{scenario}.png')
         plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-        print(f"  保存图表: {fig_path}")
+        print(f"  ✓ Saved figure: {os.path.basename(fig_path)}")
         plt.close()
 
     # 生成参数对比图
@@ -821,9 +828,9 @@ def generate_parameter_comparison_plot(all_results):
         ax.grid(True, alpha=0.3, axis='y')
 
     plt.tight_layout()
-    fig_path = '../reports/figures/example_01_idz_parameters_comparison.png'
+    fig_path = get_output_path('figures', '03_idz_parameters_comparison.png')
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f"  保存参数对比图: {fig_path}")
+    print(f"  ✓ Saved figure: {os.path.basename(fig_path)}")
     plt.close()
 
 
