@@ -500,7 +500,509 @@ class VisualizationTemplates:
 
         return fig, anim
 
+    # ==================== 流场可视化 ====================
+
+    def plot_velocity_field(
+        self,
+        X: np.ndarray,
+        Y: np.ndarray,
+        U: np.ndarray,
+        V: np.ndarray,
+        speed: Optional[np.ndarray] = None,
+        title: str = "Velocity Field",
+        streamlines: bool = True,
+        quiver: bool = False,
+        filename: Optional[str] = None
+    ) -> plt.Figure:
+        """
+        绘制流场速度图（流线图/矢量图）
+
+        Args:
+            X: X坐标网格
+            Y: Y坐标网格
+            U: X方向速度分量
+            V: Y方向速度分量
+            speed: 速度大小（用于着色）
+            title: 图表标题
+            streamlines: 是否绘制流线
+            quiver: 是否绘制矢量箭头
+            filename: 保存文件名
+
+        Returns:
+            图表对象
+        """
+        fig, ax = plt.subplots(figsize=self.DEFAULT_FIGSIZE_SINGLE)
+
+        # 计算速度大小
+        if speed is None:
+            speed = np.sqrt(U**2 + V**2)
+
+        # 绘制速度等高线作为背景
+        contour = ax.contourf(X, Y, speed, levels=20, cmap='viridis', alpha=0.6)
+        plt.colorbar(contour, ax=ax, label='Velocity Magnitude (m/s)')
+
+        # 绘制流线
+        if streamlines:
+            strm = ax.streamplot(X, Y, U, V, color='white', linewidth=1.5,
+                               density=1.5, arrowsize=1.2, arrowstyle='->')
+
+        # 绘制矢量箭头
+        if quiver:
+            # 降采样以避免过于密集
+            skip = max(1, len(X[0]) // 20)
+            ax.quiver(X[::skip, ::skip], Y[::skip, ::skip],
+                     U[::skip, ::skip], V[::skip, ::skip],
+                     alpha=0.7, scale=20)
+
+        ax.set_xlabel('Distance (m)', fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_ylabel('Depth (m)', fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_title(title, fontsize=self.DEFAULT_TITLE_SIZE, fontweight='bold')
+        ax.set_aspect('equal')
+
+        plt.tight_layout()
+
+        if filename:
+            filepath = os.path.join(self.output_dir, filename)
+            fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
+            print(f"  ✓ Saved: {filepath}")
+
+        return fig
+
+    def plot_contour_map(
+        self,
+        X: np.ndarray,
+        Y: np.ndarray,
+        Z: np.ndarray,
+        xlabel: str = "X",
+        ylabel: str = "Y",
+        zlabel: str = "Z",
+        title: str = "Contour Map",
+        levels: int = 20,
+        filled: bool = True,
+        show_labels: bool = True,
+        filename: Optional[str] = None
+    ) -> plt.Figure:
+        """
+        绘制等高线图
+
+        Args:
+            X: X坐标网格
+            Y: Y坐标网格
+            Z: 数值网格
+            xlabel: X轴标签
+            ylabel: Y轴标签
+            zlabel: 数值标签
+            title: 图表标题
+            levels: 等高线级数
+            filled: 是否填充
+            show_labels: 是否显示等高线标签
+            filename: 保存文件名
+
+        Returns:
+            图表对象
+        """
+        fig, ax = plt.subplots(figsize=self.DEFAULT_FIGSIZE_SINGLE)
+
+        if filled:
+            contour = ax.contourf(X, Y, Z, levels=levels, cmap='coolwarm')
+        else:
+            contour = ax.contour(X, Y, Z, levels=levels, colors='black')
+
+        if show_labels and not filled:
+            ax.clabel(contour, inline=True, fontsize=8)
+
+        plt.colorbar(contour, ax=ax, label=zlabel)
+
+        ax.set_xlabel(xlabel, fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_ylabel(ylabel, fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_title(title, fontsize=self.DEFAULT_TITLE_SIZE, fontweight='bold')
+        ax.grid(True, alpha=0.3)
+
+        plt.tight_layout()
+
+        if filename:
+            filepath = os.path.join(self.output_dir, filename)
+            fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
+            print(f"  ✓ Saved: {filepath}")
+
+        return fig
+
+    def plot_heatmap(
+        self,
+        data: np.ndarray,
+        xticklabels: Optional[List[str]] = None,
+        yticklabels: Optional[List[str]] = None,
+        xlabel: str = "X",
+        ylabel: str = "Y",
+        title: str = "Heatmap",
+        cmap: str = 'viridis',
+        annot: bool = False,
+        fmt: str = '.2f',
+        filename: Optional[str] = None
+    ) -> plt.Figure:
+        """
+        绘制热图
+
+        Args:
+            data: 数据矩阵
+            xticklabels: X轴标签列表
+            yticklabels: Y轴标签列表
+            xlabel: X轴标签
+            ylabel: Y轴标签
+            title: 图表标题
+            cmap: 颜色映射
+            annot: 是否显示数值
+            fmt: 数值格式
+            filename: 保存文件名
+
+        Returns:
+            图表对象
+        """
+        fig, ax = plt.subplots(figsize=self.DEFAULT_FIGSIZE_SINGLE)
+
+        im = ax.imshow(data, cmap=cmap, aspect='auto')
+        plt.colorbar(im, ax=ax)
+
+        # 设置刻度标签
+        if xticklabels is not None:
+            ax.set_xticks(np.arange(len(xticklabels)))
+            ax.set_xticklabels(xticklabels, rotation=45, ha='right')
+
+        if yticklabels is not None:
+            ax.set_yticks(np.arange(len(yticklabels)))
+            ax.set_yticklabels(yticklabels)
+
+        # 添加数值标注
+        if annot:
+            for i in range(data.shape[0]):
+                for j in range(data.shape[1]):
+                    text = ax.text(j, i, format(data[i, j], fmt),
+                                 ha="center", va="center", color="w", fontsize=8)
+
+        ax.set_xlabel(xlabel, fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_ylabel(ylabel, fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_title(title, fontsize=self.DEFAULT_TITLE_SIZE, fontweight='bold')
+
+        plt.tight_layout()
+
+        if filename:
+            filepath = os.path.join(self.output_dir, filename)
+            fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
+            print(f"  ✓ Saved: {filepath}")
+
+        return fig
+
+    # ==================== 3D可视化 ====================
+
+    def plot_3d_surface(
+        self,
+        X: np.ndarray,
+        Y: np.ndarray,
+        Z: np.ndarray,
+        xlabel: str = "X",
+        ylabel: str = "Y",
+        zlabel: str = "Z",
+        title: str = "3D Surface",
+        cmap: str = 'viridis',
+        view_angle: Tuple[int, int] = (30, 45),
+        filename: Optional[str] = None
+    ) -> plt.Figure:
+        """
+        绘制3D表面图
+
+        Args:
+            X: X坐标网格
+            Y: Y坐标网格
+            Z: 数值网格
+            xlabel: X轴标签
+            ylabel: Y轴标签
+            zlabel: Z轴标签
+            title: 图表标题
+            cmap: 颜色映射
+            view_angle: 视角 (elevation, azimuth)
+            filename: 保存文件名
+
+        Returns:
+            图表对象
+        """
+        from mpl_toolkits.mplot3d import Axes3D
+
+        fig = plt.figure(figsize=self.DEFAULT_FIGSIZE_SINGLE)
+        ax = fig.add_subplot(111, projection='3d')
+
+        surf = ax.plot_surface(X, Y, Z, cmap=cmap, alpha=0.8,
+                              linewidth=0, antialiased=True)
+
+        fig.colorbar(surf, ax=ax, shrink=0.5, aspect=5)
+
+        ax.set_xlabel(xlabel, fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_ylabel(ylabel, fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_zlabel(zlabel, fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_title(title, fontsize=self.DEFAULT_TITLE_SIZE, fontweight='bold')
+
+        # 设置视角
+        ax.view_init(elev=view_angle[0], azim=view_angle[1])
+
+        plt.tight_layout()
+
+        if filename:
+            filepath = os.path.join(self.output_dir, filename)
+            fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
+            print(f"  ✓ Saved: {filepath}")
+
+        return fig
+
+    def plot_3d_water_surface(
+        self,
+        x: np.ndarray,
+        time: np.ndarray,
+        h: np.ndarray,
+        S0: float,
+        canal_length: float,
+        title: str = "3D Water Surface Evolution",
+        filename: Optional[str] = None
+    ) -> plt.Figure:
+        """
+        绘制3D水面演化图（空间-时间-水深）
+
+        Args:
+            x: 位置坐标数组
+            time: 时间数组
+            h: 水深数组 (time x space)
+            S0: 渠底坡度
+            canal_length: 渠道长度
+            title: 图表标题
+            filename: 保存文件名
+
+        Returns:
+            图表对象
+        """
+        from mpl_toolkits.mplot3d import Axes3D
+
+        X, T = np.meshgrid(x, time)
+        H = h  # shape: (len(time), len(x))
+
+        fig = plt.figure(figsize=(14, 10))
+        ax = fig.add_subplot(111, projection='3d')
+
+        surf = ax.plot_surface(X, T, H, cmap='ocean', alpha=0.8,
+                              linewidth=0.5, antialiased=True,
+                              edgecolor='gray', linewidths=0.2)
+
+        fig.colorbar(surf, ax=ax, shrink=0.5, aspect=5, label='Water Depth (m)')
+
+        ax.set_xlabel('Distance (m)', fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_ylabel('Time (s)', fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_zlabel('Water Depth (m)', fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_title(title, fontsize=self.DEFAULT_TITLE_SIZE, fontweight='bold')
+
+        ax.view_init(elev=25, azim=225)
+
+        plt.tight_layout()
+
+        if filename:
+            filepath = os.path.join(self.output_dir, filename)
+            fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
+            print(f"  ✓ Saved: {filepath}")
+
+        return fig
+
     # ==================== 专业领域图表 ====================
+
+    def plot_backwater_curve(
+        self,
+        x: np.ndarray,
+        h: np.ndarray,
+        h_normal: float,
+        h_critical: float,
+        S0: float,
+        canal_length: float,
+        gate_position: Optional[float] = None,
+        title: str = "Backwater Curve (Gradually Varied Flow)",
+        filename: Optional[str] = None
+    ) -> plt.Figure:
+        """
+        绘制回水曲线图（渐变流水面线）
+
+        Args:
+            x: 位置坐标
+            h: 水深数组
+            h_normal: 正常水深
+            h_critical: 临界水深
+            S0: 渠底坡度
+            canal_length: 渠道长度
+            gate_position: 闸门位置
+            title: 图表标题
+            filename: 保存文件名
+
+        Returns:
+            图表对象
+        """
+        fig, ax = plt.subplots(figsize=self.DEFAULT_FIGSIZE_SINGLE)
+
+        # 计算高程
+        z_bed = (canal_length - x) * S0
+        z_surface = z_bed + h
+
+        # 绘制水面线
+        ax.plot(x, z_surface, color='blue', linewidth=3, label='Water Surface')
+        ax.fill_between(x, z_bed, z_surface, color='cyan', alpha=0.3)
+
+        # 绘制渠底
+        ax.plot(x, z_bed, color='saddlebrown', linewidth=2, label='Bed Level')
+
+        # 参考线
+        ax.plot(x, z_bed + h_normal, color='green', linestyle='--',
+               linewidth=1.5, label=f'Normal Depth ({h_normal:.3f}m)', alpha=0.7)
+        ax.plot(x, z_bed + h_critical, color='red', linestyle='--',
+               linewidth=1.5, label=f'Critical Depth ({h_critical:.3f}m)', alpha=0.7)
+
+        # 闸门标记
+        if gate_position is not None:
+            ax.axvline(x=gate_position, color='red', linestyle=':', linewidth=2,
+                      alpha=0.7, label='Control Structure')
+
+        # 标注流态区域
+        if h[0] > h_normal:
+            flow_type = "M1 Backwater Curve (Subcritical)"
+        elif h[0] < h_normal and h[0] > h_critical:
+            flow_type = "M2 Drawdown Curve (Subcritical)"
+        else:
+            flow_type = "Varied Flow Profile"
+
+        ax.text(0.05, 0.95, flow_type, transform=ax.transAxes,
+               fontsize=11, verticalalignment='top',
+               bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+
+        ax.set_xlabel('Distance (m)', fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_ylabel('Elevation (m)', fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_title(title, fontsize=self.DEFAULT_TITLE_SIZE, fontweight='bold')
+        ax.legend(fontsize=10, loc='best')
+        ax.grid(True, alpha=0.3)
+        ax.set_xlim([0, canal_length])
+
+        plt.tight_layout()
+
+        if filename:
+            filepath = os.path.join(self.output_dir, filename)
+            fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
+            print(f"  ✓ Saved: {filepath}")
+
+        return fig
+
+    def plot_froude_number(
+        self,
+        x: np.ndarray,
+        Fr: np.ndarray,
+        gate_positions: Optional[List[float]] = None,
+        title: str = "Froude Number Distribution",
+        filename: Optional[str] = None
+    ) -> plt.Figure:
+        """
+        绘制Froude数分布图（判断流态）
+
+        Args:
+            x: 位置坐标
+            Fr: Froude数数组
+            gate_positions: 闸门位置列表
+            title: 图表标题
+            filename: 保存文件名
+
+        Returns:
+            图表对象
+        """
+        fig, ax = plt.subplots(figsize=self.DEFAULT_FIGSIZE_SINGLE)
+
+        # 绘制Froude数
+        ax.plot(x, Fr, color='purple', linewidth=2.5, label='Froude Number')
+
+        # 临界流线 Fr=1
+        ax.axhline(y=1.0, color='red', linestyle='--', linewidth=2,
+                  label='Critical Flow (Fr=1)', alpha=0.7)
+
+        # 流态区域着色
+        ax.fill_between(x, 0, np.minimum(Fr, 1), color='blue', alpha=0.2,
+                       label='Subcritical (Fr<1)')
+        ax.fill_between(x, 1, np.maximum(Fr, 1), color='orange', alpha=0.2,
+                       label='Supercritical (Fr>1)')
+
+        # 闸门标记
+        if gate_positions:
+            for pos in gate_positions:
+                ax.axvline(x=pos, color='gray', linestyle=':', alpha=0.5)
+
+        ax.set_xlabel('Distance (m)', fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_ylabel('Froude Number (-)', fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_title(title, fontsize=self.DEFAULT_TITLE_SIZE, fontweight='bold')
+        ax.legend(fontsize=11, loc='best')
+        ax.grid(True, alpha=0.3)
+        ax.set_ylim([0, max(2, np.max(Fr) * 1.1)])
+
+        plt.tight_layout()
+
+        if filename:
+            filepath = os.path.join(self.output_dir, filename)
+            fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
+            print(f"  ✓ Saved: {filepath}")
+
+        return fig
+
+    def plot_energy_line(
+        self,
+        x: np.ndarray,
+        h: np.ndarray,
+        v: np.ndarray,
+        S0: float,
+        canal_length: float,
+        g: float = 9.81,
+        title: str = "Energy and Hydraulic Grade Lines",
+        filename: Optional[str] = None
+    ) -> plt.Figure:
+        """
+        绘制能量线和水力坡度线
+
+        Args:
+            x: 位置坐标
+            h: 水深数组
+            v: 流速数组
+            S0: 渠底坡度
+            canal_length: 渠道长度
+            g: 重力加速度
+            title: 图表标题
+            filename: 保存文件名
+
+        Returns:
+            图表对象
+        """
+        fig, ax = plt.subplots(figsize=self.DEFAULT_FIGSIZE_SINGLE)
+
+        # 计算高程
+        z_bed = (canal_length - x) * S0
+        z_surface = z_bed + h
+        E_total = z_surface + v**2 / (2 * g)  # 总能量线
+
+        # 绘制
+        ax.fill_between(x, z_bed, z_surface, color='cyan', alpha=0.4, label='Water')
+        ax.plot(x, z_bed, color='saddlebrown', linewidth=2, label='Bed Level')
+        ax.plot(x, z_surface, color='blue', linewidth=2.5, label='Water Surface (HGL)')
+        ax.plot(x, E_total, color='red', linewidth=2.5, linestyle='--',
+               label='Total Energy Line (EGL)')
+
+        ax.set_xlabel('Distance (m)', fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_ylabel('Elevation (m)', fontsize=self.DEFAULT_FONT_SIZE)
+        ax.set_title(title, fontsize=self.DEFAULT_TITLE_SIZE, fontweight='bold')
+        ax.legend(fontsize=11, loc='best')
+        ax.grid(True, alpha=0.3)
+        ax.set_xlim([0, canal_length])
+
+        plt.tight_layout()
+
+        if filename:
+            filepath = os.path.join(self.output_dir, filename)
+            fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
+            print(f"  ✓ Saved: {filepath}")
+
+        return fig
 
     def plot_rainfall_runoff(
         self,
