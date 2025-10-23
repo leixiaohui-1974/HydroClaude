@@ -13,11 +13,15 @@ Date: 2025-10-22
 
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+# Add scripts directory to path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 from solvers.single_canal_solver import SingleCanalSolver
 from solvers.gate import SluiceGate, BroadCrestedWeir, Orifice
+from output_helper import save_animation, save_figure, save_table
 
 
 def run_advanced_structures_demo():
@@ -96,8 +100,7 @@ def run_advanced_structures_demo():
     ax1.legend(fontsize=11)
     ax1.grid(True, alpha=0.3)
 
-    os.makedirs('reports/figures', exist_ok=True)
-    fig1.savefig('reports/figures/example_02_scenario1_multi_gates.png', dpi=150, bbox_inches='tight')
+    save_figure(fig1, 'example_02_scenario1_multi_gates.png')
     plt.close(fig1)
     print(f"  ✓ 保存: reports/figures/example_02_scenario1_multi_gates.png")
     print()
@@ -173,9 +176,9 @@ def run_advanced_structures_demo():
     ax2b.grid(True, alpha=0.3)
 
     plt.tight_layout()
-    fig2.savefig('reports/figures/example_02_scenario2_mixed_structures.png', dpi=150, bbox_inches='tight')
+    save_figure(fig2, 'example_02_scenario2_mixed_structures.png')
     plt.close(fig2)
-    print(f"  ✓ 保存: reports/figures/example_02_scenario2_mixed_structures.png")
+    print(f"  ✓ Saved figure: example_02_scenario2_mixed_structures.png")
     print()
 
     # ==================== 场景3: 时变闸门开度 ====================
@@ -239,6 +242,13 @@ def run_advanced_structures_demo():
     inlet_flow_series = []
     outlet_flow_series = []
 
+    # For animation - record spatial profiles at intervals
+    snapshot_interval = 50  # Every 50 steps
+    h_snapshots = []
+    Q_snapshots = []
+    t_snapshots = []
+    x_profile = None
+
     for i in range(n_steps):
         solver3.step(dt, Q_upstream=Q_initial)
 
@@ -252,6 +262,14 @@ def run_advanced_structures_demo():
         profile = solver3.get_full_profile()
         inlet_flow_series.append(profile['Q'][10])
         outlet_flow_series.append(profile['Q'][-10])
+
+        # Record spatial snapshots for animation
+        if i % snapshot_interval == 0:
+            h_snapshots.append(profile['h'].copy())
+            Q_snapshots.append(profile['Q'].copy())
+            t_snapshots.append(t)
+            if x_profile is None:
+                x_profile = profile['x'].copy()
 
         # 打印进度
         if i % 100 == 0:
@@ -286,9 +304,114 @@ def run_advanced_structures_demo():
     ax3b.grid(True, alpha=0.3)
 
     plt.tight_layout()
-    fig3.savefig('reports/figures/example_02_scenario3_time_varying.png', dpi=150, bbox_inches='tight')
+    save_figure(fig3, 'example_02_scenario3_time_varying.png')
     plt.close(fig3)
-    print(f"  ✓ 保存: reports/figures/example_02_scenario3_time_varying.png")
+    print(f"  ✓ Saved figure: example_02_scenario3_time_varying.png")
+
+    # ==================== Create Animated GIF ====================
+    print("\n" + "=" * 80)
+    print("Creating animated GIF for Scenario 3...")
+    print("=" * 80)
+    print(f"  Total frames: {len(t_snapshots)}")
+    print(f"  Time range: {t_snapshots[0]:.0f}s - {t_snapshots[-1]:.0f}s")
+    print()
+
+    # Create animation function
+    def create_scenario3_animation():
+        """Create animation showing water depth and flow rate evolution"""
+
+        fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(14, 12))
+
+        # Find gate position index
+        gate_idx = np.argmin(np.abs(x_profile - gate_variable.position))
+
+        # Calculate y-axis limits
+        h_min, h_max = np.min(h_snapshots), np.max(h_snapshots)
+        Q_min, Q_max = np.min(Q_snapshots), np.max(Q_snapshots)
+        h_margin = (h_max - h_min) * 0.1
+        Q_margin = (Q_max - Q_min) * 0.1
+
+        def animate(frame):
+            # Clear all axes
+            ax1.clear()
+            ax2.clear()
+            ax3.clear()
+
+            t = t_snapshots[frame]
+            h_frame = h_snapshots[frame]
+            Q_frame = Q_snapshots[frame]
+            gate_opening = gate_variable.get_opening(t)
+
+            # Panel 1: Water Depth Distribution
+            ax1.plot(x_profile, h_frame, 'b-', linewidth=2.5, label='Water Depth')
+            ax1.axvline(x=gate_variable.position, color='r', linestyle='--',
+                       linewidth=2, alpha=0.7, label='Gate')
+            ax1.set_xlabel('Distance (m)', fontsize=11)
+            ax1.set_ylabel('Water Depth (m)', fontsize=11)
+            ax1.set_title(f'Water Depth Distribution (t={t:.0f}s, Gate Opening={gate_opening:.2f}m)',
+                         fontsize=12, fontweight='bold')
+            ax1.grid(True, alpha=0.3)
+            ax1.legend(loc='upper right', fontsize=10)
+            ax1.set_xlim([0, canal_length])
+            ax1.set_ylim([h_min - h_margin, h_max + h_margin])
+
+            # Panel 2: Flow Rate Distribution
+            ax2.plot(x_profile, Q_frame, 'g-', linewidth=2.5, label='Flow Rate')
+            ax2.axvline(x=gate_variable.position, color='r', linestyle='--',
+                       linewidth=2, alpha=0.7, label='Gate')
+            ax2.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5,
+                       label=f'Initial: {Q_initial} m³/s')
+            ax2.set_xlabel('Distance (m)', fontsize=11)
+            ax2.set_ylabel('Flow Rate (m³/s)', fontsize=11)
+            ax2.set_title('Flow Rate Distribution', fontsize=12, fontweight='bold')
+            ax2.grid(True, alpha=0.3)
+            ax2.legend(loc='best', fontsize=10)
+            ax2.set_xlim([0, canal_length])
+            ax2.set_ylim([Q_min - Q_margin, Q_max + Q_margin])
+
+            # Panel 3: Time History (up to current time)
+            idx = frame * snapshot_interval
+            ax3.plot(np.array(time_series[:idx+1])/60, gate_opening_series[:idx+1],
+                    'r-', linewidth=2, label='Gate Opening (m)', alpha=0.8)
+            ax3_twin = ax3.twinx()
+            ax3_twin.plot(np.array(time_series[:idx+1])/60, gate_flow_series[:idx+1],
+                         'b-', linewidth=2, label='Gate Flow (m³/s)', alpha=0.8)
+
+            ax3.set_xlabel('Time (min)', fontsize=11)
+            ax3.set_ylabel('Gate Opening (m)', fontsize=11, color='r')
+            ax3_twin.set_ylabel('Flow Rate (m³/s)', fontsize=11, color='b')
+            ax3.set_title('Gate Opening and Flow Rate History', fontsize=12, fontweight='bold')
+            ax3.grid(True, alpha=0.3)
+            ax3.tick_params(axis='y', labelcolor='r')
+            ax3_twin.tick_params(axis='y', labelcolor='b')
+            ax3.set_xlim([0, total_time/60])
+
+            # Add legends
+            lines1, labels1 = ax3.get_legend_handles_labels()
+            lines2, labels2 = ax3_twin.get_legend_handles_labels()
+            ax3.legend(lines1 + lines2, labels1 + labels2, loc='upper right', fontsize=9)
+
+            plt.tight_layout()
+
+        # Create animation
+        anim = animation.FuncAnimation(
+            fig, animate, frames=len(t_snapshots),
+            interval=100, blit=False, repeat=True
+        )
+
+        return fig, anim
+
+    # Generate and save animation
+    print("  Generating animation frames...")
+    fig_anim, anim = create_scenario3_animation()
+
+    print("  Saving GIF animation...")
+    save_animation(anim, 'example_02_scenario3_time_varying_animation.gif')
+    plt.close(fig_anim)
+
+    print(f"  ✓ Saved animation: example_02_scenario3_time_varying_animation.gif")
+    print(f"    Frames: {len(t_snapshots)}, Duration: ~{len(t_snapshots)/10:.1f}s")
+    print()
 
     # ==================== 总结 ====================
     print("\n" + "=" * 80)
@@ -296,14 +419,19 @@ def run_advanced_structures_demo():
     print("=" * 80)
 
     print(f"\n生成的文件:")
-    print(f"  1. 场景1（三个闸门）: reports/figures/example_02_scenario1_multi_gates.png")
-    print(f"  2. 场景2（混合结构）: reports/figures/example_02_scenario2_mixed_structures.png")
-    print(f"  3. 场景3（时变开度）: reports/figures/example_02_scenario3_time_varying.png")
+    print(f"  Figures:")
+    print(f"    1. Scenario 1 (Three Gates): example_02_scenario1_multi_gates.png")
+    print(f"    2. Scenario 2 (Mixed Structures): example_02_scenario2_mixed_structures.png")
+    print(f"    3. Scenario 3 (Time-Varying): example_02_scenario3_time_varying.png")
+    print(f"  Animations:")
+    print(f"    1. Scenario 3 Dynamic GIF: example_02_scenario3_time_varying_animation.gif")
+    print(f"       ({len(t_snapshots)} frames showing water depth and flow evolution)")
 
     print("\n关键结果:")
     print(f"  场景1 - 三闸门流量守恒误差: {result1['final_error']*100:.4f}%")
     print(f"  场景2 - 混合结构流量守恒误差: {result2['final_error']*100:.4f}%")
     print(f"  场景3 - 闸门关闭后流量减少: {Q_initial:.2f} → {gate_flow_series[-1]:.2f} m³/s")
+    print(f"  场景3 - Animation shows gate closing from 5.0m to 2.0m over {total_time/60:.0f} minutes")
 
     print("\n" + "=" * 80)
 
