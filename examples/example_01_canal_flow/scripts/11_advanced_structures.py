@@ -27,7 +27,7 @@ sys.path.insert(0, script_dir)
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from solvers.single_canal_solver import SingleCanalSolver
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
 from solvers.gate import SluiceGate, BroadCrestedWeir, Orifice
 from output_helper import save_animation, save_figure, save_table
 
@@ -70,74 +70,75 @@ def run_advanced_structures_demo():
     print(f"闸门3: {gate3}")
     print()
 
-    solver1 = SingleCanalSolver(
-        total_length=canal_length,
-        structures=[gate1, gate2, gate3],
-        nx_total=n_points,
+    solver1 = HydrostaticCanalSolver(
+        length=canal_length,
+        nx=n_points,
         B=canal_width,
         S0=bed_slope,
-        n=manning_n
+        n=manning_n,
+        internal_structures=[
+            (gate1.position, gate1),
+            (gate2.position, gate2),
+            (gate3.position, gate3)
+        ]
     )
 
     Q_initial = 10.0
-    solver1.reset_with_steady_state(Q_initial)
 
-    # 先使用标准求解器（作为对比）
-    print("使用标准求解器（对比基准）...")
-    result1_standard = solver1.solve_steady_state(
+    # 初始化均匀流
+    print("初始化均匀流...")
+    from utils.canal_utils import compute_steady_uniform_flow
+    h_uniform = compute_steady_uniform_flow(Q_initial, canal_width, bed_slope, manning_n)
+    solver1.h[:] = h_uniform
+    solver1.hu[:] = Q_initial / canal_width
+
+    # 使用静水重构稳态求解器
+    print("\n使用HydrostaticCanalSolver（Phase 2修复版）...")
+    result1 = solver1.solve_steady_state(
         Q_target=Q_initial,
+        h_downstream=h_uniform,
         max_iterations=5000,
         convergence_tol=0.001,
-        check_interval=500,
+        dt=0.5,
         verbose=True
     )
 
-    profile1_standard = solver1.get_full_profile()
-    x1_std = profile1_standard['x']
-    Q1_std = profile1_standard['Q']
+    # 获取结果
+    x1 = solver1.x
+    h1 = result1['h']
+    Q1 = result1['Q']
 
-    # 计算标准求解器的误差
-    Q1_std_error = np.abs(Q1_std - Q_initial) / Q_initial * 100
-    Q1_std_max_error = np.max(Q1_std_error)
-    print(f"\n标准求解器结果:")
-    print(f"  最大相对误差: {Q1_std_max_error:.4f}%")
-    print(f"  闸门1流量: {Q1_std[np.argmin(np.abs(x1_std-gate1.position))]:.4f} m³/s")
-    print(f"  闸门2流量: {Q1_std[np.argmin(np.abs(x1_std-gate2.position))]:.4f} m³/s")
-    print(f"  闸门3流量: {Q1_std[np.argmin(np.abs(x1_std-gate3.position))]:.4f} m³/s")
+    # 使用求解器返回的误差
+    Q1_max_error = result1['Q_error_percent']
+    Q1_mean = result1['Q_mean']
 
-    # 重置求解器，使用两阶段混合高精度求解器
-    print("\n" + "=" * 80)
-    print("使用两阶段混合高精度求解器（目标精度: 0.01%）...")
-    print("=" * 80)
-    solver1.reset_with_steady_state(Q_initial)
+    print(f"\n求解器结果:")
+    print(f"  收敛状态: {'✓ 收敛' if result1['converged'] else '✗ 未收敛'}")
+    print(f"  迭代次数: {result1['iterations']}")
+    print(f"  平均流量: {Q1_mean:.4f} m³/s")
+    print(f"  流量守恒误差: {Q1_max_error:.6f}%")
 
-    result1 = solver1.solve_steady_state_hybrid(
-        Q_target=Q_initial,
-        stage1_iterations=5000,
-        stage1_tol=0.01,
-        stage2_iterations=50000,
-        tol_global=1e-4,
-        tol_local=1e-4,
-        tol_structure=1e-4,
-        tol_temporal=1e-5,
-        check_interval=200,
-        verbose=True
-    )
+    # 验证闸门流量
+    print(f"\n闸门流量验证:")
+    for i, (idx, gate, name) in enumerate(zip(
+        solver1.structure_indices,
+        solver1.structure_objects,
+        ['闸门1', '闸门2', '闸门3']
+    )):
+        h_up = h1[idx - 1]
+        h_down = h1[idx + 1]
+        Q_gate, flow_type = gate.calculate_discharge(h_up, h_down)
+        gate_error = abs(Q_gate - Q_initial) / Q_initial * 100
+        print(f"  {name}: Q={Q_gate:.4f} m³/s (误差{gate_error:.2f}%, {flow_type})")
 
-    # 可视化高精度结果
-    profile1 = solver1.get_full_profile()
-    x1 = profile1['x']
-    Q1 = profile1['Q']
-
-    # 计算高精度求解器的误差
+    # 计算流量误差数组用于绘图
     Q1_error = np.abs(Q1 - Q_initial) / Q_initial * 100
-    Q1_max_error = np.max(Q1_error)
-    print(f"\n高精度求解器结果:")
-    print(f"  最大相对误差: {Q1_max_error:.4f}%")
-    print(f"  闸门1流量: {Q1[np.argmin(np.abs(x1-gate1.position))]:.4f} m³/s")
-    print(f"  闸门2流量: {Q1[np.argmin(np.abs(x1-gate2.position))]:.4f} m³/s")
-    print(f"  闸门3流量: {Q1[np.argmin(np.abs(x1-gate3.position))]:.4f} m³/s")
-    print(f"\n精度提升: {Q1_std_max_error/Q1_max_error:.1f}x")
+
+    # 设置对比变量（之前没有标准求解器）
+    Q1_std_max_error = Q1_max_error  # 只有一个求解器
+    Q1_std_error = Q1_error  # 定义误差数组用于绘图
+    x1_std = x1
+    Q1_std = Q1
 
     # 对比可视化
     fig1, (ax1a, ax1b, ax1c) = plt.subplots(3, 1, figsize=(14, 14))
@@ -206,30 +207,42 @@ def run_advanced_structures_demo():
     print(f"孔口: {orifice}")
     print()
 
-    solver2 = SingleCanalSolver(
-        total_length=canal_length,
-        structures=[gate_mixed, weir, orifice],
-        nx_total=n_points,
+    solver2 = HydrostaticCanalSolver(
+        length=canal_length,
+        nx=n_points,
         B=canal_width,
         S0=bed_slope,
-        n=manning_n
+        n=manning_n,
+        internal_structures=[
+            (gate_mixed.position, gate_mixed),
+            (weir.position, weir),
+            (orifice.position, orifice)
+        ]
     )
 
-    solver2.reset_with_steady_state(Q_initial)
+    # 初始化
+    h_uniform = compute_steady_uniform_flow(Q_initial, canal_width, bed_slope, manning_n)
+    solver2.h[:] = h_uniform
+    solver2.hu[:] = Q_initial / canal_width
 
     result2 = solver2.solve_steady_state(
         Q_target=Q_initial,
+        h_downstream=h_uniform,
         max_iterations=5000,
         convergence_tol=0.001,
-        check_interval=500,
+        dt=0.5,
         verbose=True
     )
 
+    print(f"\n场景2求解结果:")
+    print(f"  收敛: {'✓' if result2['converged'] else '✗'}")
+    print(f"  迭代: {result2['iterations']}")
+    print(f"  流量误差: {result2['Q_error_percent']:.6f}%")
+
     # 可视化
-    profile2 = solver2.get_full_profile()
-    x2 = profile2['x']
-    h2 = profile2['h']
-    Q2 = profile2['Q']
+    x2 = solver2.x
+    h2 = result2['h']
+    Q2 = result2['Q']
 
     # 渠底高程
     z_bed2 = (canal_length - x2) * bed_slope
@@ -296,24 +309,32 @@ def run_advanced_structures_demo():
     print(f"  t>3000s:  开度=2.0m (部分关闭)")
     print()
 
-    solver3 = SingleCanalSolver(
-        total_length=canal_length,
-        structures=[gate_variable],
-        nx_total=n_points,
+    solver3 = HydrostaticCanalSolver(
+        length=canal_length,
+        nx=n_points,
         B=canal_width,
         S0=bed_slope,
-        n=manning_n
+        n=manning_n,
+        internal_structures=[(gate_variable.position, gate_variable)]
     )
 
     # 初始稳态（完全开启）
-    solver3.reset_with_steady_state(Q_initial)
+    h_uniform = compute_steady_uniform_flow(Q_initial, canal_width, bed_slope, manning_n)
+    solver3.h[:] = h_uniform
+    solver3.hu[:] = Q_initial / canal_width
+
     result3 = solver3.solve_steady_state(
         Q_target=Q_initial,
-        max_iterations=2000,
-        convergence_tol=0.01,
-        check_interval=500,
+        h_downstream=h_uniform,
+        max_iterations=5000,
+        convergence_tol=0.001,
+        dt=0.5,
         verbose=True
     )
+
+    print(f"\n场景3初始稳态:")
+    print(f"  收敛: {'✓' if result3['converged'] else '✗'}")
+    print(f"  流量误差: {result3['Q_error_percent']:.6f}%")
 
     # 非恒定流模拟（闸门逐渐关闭）
     print("\n开始非恒定流模拟（闸门逐渐关闭）...")
@@ -336,26 +357,37 @@ def run_advanced_structures_demo():
     x_profile = None
 
     for i in range(n_steps):
-        solver3.step(dt, Q_upstream=Q_initial)
+        # 使用 step_preissmann 方法进行时间步进
+        h_new, hu_new = solver3.step_preissmann(
+            dt=dt,
+            max_iter=10,
+            enforce_bc=True,
+            Q_in=Q_initial,
+            h_out=None  # 自由出流
+        )
+        solver3.h = h_new
+        solver3.hu = hu_new
+        solver3.current_time += dt
 
         # 记录数据
         t = solver3.current_time
         time_series.append(t)
         gate_opening_series.append(gate_variable.get_opening(t))
-        gate_flows = solver3.get_gate_flows()
-        gate_flow_series.append(gate_flows[0])
 
-        profile = solver3.get_full_profile()
-        inlet_flow_series.append(profile['Q'][10])
-        outlet_flow_series.append(profile['Q'][-10])
+        # 计算流量（直接从求解器获取）
+        Q_current = solver3.hu  # hu数组就是流量
+        gate_idx = np.argmin(np.abs(solver3.x - gate_variable.position))
+        gate_flow_series.append(Q_current[gate_idx])
+        inlet_flow_series.append(Q_current[10])
+        outlet_flow_series.append(Q_current[-10])
 
         # Record spatial snapshots for animation
         if i % snapshot_interval == 0:
-            h_snapshots.append(profile['h'].copy())
-            Q_snapshots.append(profile['Q'].copy())
+            h_snapshots.append(solver3.h.copy())
+            Q_snapshots.append(solver3.hu.copy())
             t_snapshots.append(t)
             if x_profile is None:
-                x_profile = profile['x'].copy()
+                x_profile = solver3.x.copy()
 
         # 打印进度
         if i % 100 == 0:
@@ -514,9 +546,10 @@ def run_advanced_structures_demo():
     print(f"       ({len(t_snapshots)} frames showing water depth and flow evolution)")
 
     print("\n关键结果:")
-    print(f"  场景1 - 标准求解器误差: {Q1_std_max_error:.4f}%")
-    print(f"  场景1 - 高精度求解器误差: {Q1_max_error:.4f}% (提升 {Q1_std_max_error/Q1_max_error:.1f}x)")
-    print(f"  场景2 - 混合结构流量守恒误差: {result2['final_error']*100:.4f}%")
+    print(f"  场景1 - HydrostaticCanalSolver流量误差: {Q1_max_error:.6f}%")
+    print(f"  场景1 - 收敛迭代次数: {result1['iterations']}")
+    print(f"  场景2 - 混合结构流量守恒误差: {result2['Q_error_percent']:.6f}%")
+    print(f"  场景2 - 收敛迭代次数: {result2['iterations']}")
     print(f"  场景3 - 闸门关闭后流量减少: {Q_initial:.2f} → {gate_flow_series[-1]:.2f} m³/s")
     print(f"  场景3 - Animation shows gate closing from 5.0m to 2.0m over {total_time/60:.0f} minutes")
 
