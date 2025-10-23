@@ -1,0 +1,261 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+验证所有v2升级脚本
+
+运行所有使用HydrostaticCanalSolver的v2脚本，
+收集验证结果，生成综合报告。
+
+Author: Claude
+Date: 2025-10-23
+"""
+
+import subprocess
+import sys
+import os
+from pathlib import Path
+import time
+from datetime import datetime
+
+# 脚本列表
+V2_SCRIPTS = [
+    "01_basic_v2.py",
+    "04_boundary_conditions_v2.py",
+    "07_sluice_gate_flow_v2.py",
+    "08_optimized_steady_solving_v2.py",
+    "11_advanced_structures.py",  # 已使用HydrostaticCanalSolver
+    "12_advanced_optimized_v2.py"
+]
+
+def run_script(script_name, script_dir):
+    """运行单个脚本并捕获结果"""
+    print("\n" + "=" * 80)
+    print(f"运行脚本: {script_name}")
+    print("=" * 80)
+
+    script_path = script_dir / script_name
+
+    start_time = time.time()
+
+    try:
+        # 运行脚本
+        result = subprocess.run(
+            [sys.executable, str(script_path)],
+            cwd=script_dir,
+            capture_output=True,
+            text=True,
+            timeout=300  # 5分钟超时
+        )
+
+        elapsed = time.time() - start_time
+
+        # 检查是否成功
+        success = result.returncode == 0
+
+        # 提取关键信息
+        output_lines = result.stdout.split('\n')
+
+        # 查找流量误差
+        flow_error = None
+        iterations = None
+        for line in output_lines:
+            if '流量误差' in line or 'flow_error' in line.lower():
+                # 尝试提取百分比
+                try:
+                    if '%' in line:
+                        parts = line.split(':')
+                        if len(parts) > 1:
+                            error_str = parts[-1].strip()
+                            flow_error = error_str.split('%')[0].strip()
+                except:
+                    pass
+
+            if '迭代次数' in line or 'iterations' in line.lower():
+                try:
+                    parts = line.split(':')
+                    if len(parts) > 1:
+                        iter_str = parts[-1].strip()
+                        # 提取数字
+                        import re
+                        match = re.search(r'(\d+)', iter_str)
+                        if match:
+                            iterations = match.group(1)
+                except:
+                    pass
+
+        return {
+            'script': script_name,
+            'success': success,
+            'elapsed': elapsed,
+            'flow_error': flow_error,
+            'iterations': iterations,
+            'returncode': result.returncode,
+            'stdout_lines': len(output_lines),
+            'stderr': result.stderr[:500] if result.stderr else ""
+        }
+
+    except subprocess.TimeoutExpired:
+        return {
+            'script': script_name,
+            'success': False,
+            'elapsed': 300.0,
+            'flow_error': None,
+            'iterations': None,
+            'returncode': -1,
+            'stdout_lines': 0,
+            'stderr': "TIMEOUT: 脚本运行超过5分钟"
+        }
+    except Exception as e:
+        return {
+            'script': script_name,
+            'success': False,
+            'elapsed': time.time() - start_time,
+            'flow_error': None,
+            'iterations': None,
+            'returncode': -2,
+            'stdout_lines': 0,
+            'stderr': f"ERROR: {str(e)}"
+        }
+
+
+def main():
+    """主函数"""
+    print("=" * 80)
+    print("HydrostaticCanalSolver v2脚本验证工具")
+    print("=" * 80)
+    print(f"验证时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"脚本数量: {len(V2_SCRIPTS)}")
+    print()
+
+    # 获取脚本目录
+    script_dir = Path(__file__).parent / "scripts"
+
+    if not script_dir.exists():
+        print(f"❌ 错误: 脚本目录不存在: {script_dir}")
+        return 1
+
+    # 验证所有脚本存在
+    missing = []
+    for script in V2_SCRIPTS:
+        if not (script_dir / script).exists():
+            missing.append(script)
+
+    if missing:
+        print("❌ 以下脚本不存在:")
+        for s in missing:
+            print(f"  - {s}")
+        return 1
+
+    print("✓ 所有脚本文件已确认存在\n")
+
+    # 运行所有脚本
+    results = []
+    for script in V2_SCRIPTS:
+        result = run_script(script, script_dir)
+        results.append(result)
+
+        # 打印即时结果
+        status = "✓ 成功" if result['success'] else "✗ 失败"
+        print(f"\n{status} - 耗时: {result['elapsed']:.2f}秒")
+        if result['flow_error']:
+            print(f"  流量误差: {result['flow_error']}%")
+        if result['iterations']:
+            print(f"  迭代次数: {result['iterations']}")
+        if result['stderr']:
+            print(f"  错误信息: {result['stderr'][:200]}")
+
+    # 生成综合报告
+    print("\n\n" + "=" * 80)
+    print("验证结果汇总")
+    print("=" * 80)
+    print()
+
+    # 统计
+    total = len(results)
+    success_count = sum(1 for r in results if r['success'])
+    fail_count = total - success_count
+    total_time = sum(r['elapsed'] for r in results)
+
+    print(f"总脚本数: {total}")
+    print(f"✓ 成功: {success_count} ({success_count/total*100:.1f}%)")
+    print(f"✗ 失败: {fail_count} ({fail_count/total*100:.1f}%)")
+    print(f"总耗时: {total_time:.2f}秒")
+    print(f"平均耗时: {total_time/total:.2f}秒")
+    print()
+
+    # 详细结果表
+    print(f"{'脚本':<35} {'状态':<8} {'耗时(s)':<10} {'流量误差':<15} {'迭代':<10}")
+    print("-" * 80)
+
+    for r in results:
+        status = "✓ 成功" if r['success'] else "✗ 失败"
+        flow_err = f"{r['flow_error']}%" if r['flow_error'] else "N/A"
+        iters = r['iterations'] if r['iterations'] else "N/A"
+
+        print(f"{r['script']:<35} {status:<8} {r['elapsed']:<10.2f} {flow_err:<15} {iters:<10}")
+
+    print()
+
+    # 失败详情
+    if fail_count > 0:
+        print("\n" + "=" * 80)
+        print("失败脚本详情")
+        print("=" * 80)
+        for r in results:
+            if not r['success']:
+                print(f"\n脚本: {r['script']}")
+                print(f"返回码: {r['returncode']}")
+                print(f"错误信息:\n{r['stderr']}")
+
+    # 生成Markdown报告
+    report_path = Path(__file__).parent / "results" / "VALIDATION_REPORT.md"
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(report_path, 'w', encoding='utf-8') as f:
+        f.write("# HydrostaticCanalSolver v2脚本验证报告\n\n")
+        f.write(f"**验证时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+        f.write(f"**验证脚本数**: {total}\n\n")
+        f.write("---\n\n")
+
+        f.write("## 📊 总体统计\n\n")
+        f.write(f"| 指标 | 数值 |\n")
+        f.write(f"|-----|------|\n")
+        f.write(f"| 总脚本数 | {total} |\n")
+        f.write(f"| ✓ 成功 | {success_count} ({success_count/total*100:.1f}%) |\n")
+        f.write(f"| ✗ 失败 | {fail_count} ({fail_count/total*100:.1f}%) |\n")
+        f.write(f"| 总耗时 | {total_time:.2f}秒 |\n")
+        f.write(f"| 平均耗时 | {total_time/total:.2f}秒 |\n")
+        f.write("\n---\n\n")
+
+        f.write("## 📋 详细结果\n\n")
+        f.write(f"| 脚本 | 状态 | 耗时(s) | 流量误差 | 迭代次数 |\n")
+        f.write(f"|------|------|---------|---------|----------|\n")
+
+        for r in results:
+            status = "✓" if r['success'] else "✗"
+            flow_err = f"{r['flow_error']}%" if r['flow_error'] else "N/A"
+            iters = r['iterations'] if r['iterations'] else "N/A"
+
+            f.write(f"| {r['script']} | {status} | {r['elapsed']:.2f} | {flow_err} | {iters} |\n")
+
+        if fail_count > 0:
+            f.write("\n---\n\n")
+            f.write("## ⚠️ 失败详情\n\n")
+            for r in results:
+                if not r['success']:
+                    f.write(f"### {r['script']}\n\n")
+                    f.write(f"- **返回码**: {r['returncode']}\n")
+                    f.write(f"- **错误信息**:\n```\n{r['stderr']}\n```\n\n")
+
+        f.write("\n---\n\n")
+        f.write("**Generated with Claude Code**\n")
+        f.write("**Co-Authored-By: Claude <noreply@anthropic.com>**\n")
+
+    print(f"\n✓ 验证报告已保存: {report_path}")
+
+    # 返回状态码
+    return 0 if fail_count == 0 else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
