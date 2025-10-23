@@ -415,22 +415,18 @@ def run_sluice_gate_dynamics():
     h_max_overall = np.max([np.max(h) for h in h_snapshots])
     h_change = h_max_overall - h_min_overall
 
-    # 设置Y轴范围：聚焦在水面变化区域
-    # 策略：以水面高程为中心，设置一个能清晰显示水位变化的范围
-    # 如果水位变化很小，就放大显示；如果变化大，就用实际范围
-    focus_range = max(h_change * 3.0, 2.0)  # 至少2m范围，或水位变化的3倍
+    # 设置Y轴范围：确保完整显示水面，同时突出水位变化
+    # 策略：包含所有水面 + 适当边距，让水位变化占据合理比例
+    y_margin_bottom = max(0.3, h_change * 0.5)  # 下边距
+    y_margin_top = max(0.5, h_change * 1.0)     # 上边距（稍大以留出图例空间）
 
-    # 找到水面高程的中心
-    z_center = (z_surface_min + z_surface_max) / 2
+    y_min = z_surface_min - y_margin_bottom
+    y_max = z_surface_max + y_margin_top
 
-    # 以中心为基准，设置聚焦范围
-    y_min = z_center - focus_range / 2
-    y_max = z_center + focus_range / 2
-
-    # 确保渠底至少部分可见（但不强制显示全部渠底）
-    z_bed_min = np.min(z_bed)
-    if y_min < z_bed_min:
-        y_min = z_bed_min - 0.2
+    # 打印Y轴范围信息用于调试
+    print(f"    动画Y轴范围: {y_min:.2f}m - {y_max:.2f}m (跨度={y_max-y_min:.2f}m)")
+    print(f"    水面高程: {z_surface_min:.2f}m - {z_surface_max:.2f}m (变化={z_range:.2f}m)")
+    print(f"    水深变化: {h_change:.3f}m")
 
     fig_anim = plt.figure(figsize=(16, 10))
 
