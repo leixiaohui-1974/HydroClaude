@@ -19,10 +19,7 @@ import os
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-# Import output helper
-code_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'code')
-sys.path.insert(0, code_dir)
-from output_helper import get_output_path, save_table
+from output_helper import get_output_path, save_figure, save_table, save_animation
 
 
 def run_example():

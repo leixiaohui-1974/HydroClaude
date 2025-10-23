@@ -23,9 +23,6 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from scipy import signal
 
-# Import output helper
-code_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'code')
-sys.path.insert(0, code_dir)
 from output_helper import get_output_path, save_figure, save_table, save_animation
 
 class SimpleCanalSolver:

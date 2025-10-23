@@ -22,10 +22,7 @@ from solvers.steady_profile_solver import SteadyProfileSolver
 from solvers.gate import SluiceGate
 from utils.canal_utils import compute_steady_uniform_flow
 
-# Import output helper
-code_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'code')
-sys.path.insert(0, code_dir)
-from output_helper import get_output_path, save_figure, save_table
+from output_helper import get_output_path, save_figure, save_table, save_animation
 
 
 def run_optimized_example():
