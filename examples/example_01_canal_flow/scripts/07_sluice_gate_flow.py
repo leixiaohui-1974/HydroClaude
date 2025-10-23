@@ -385,50 +385,30 @@ def run_sluice_gate_dynamics():
         ax1.set_xlim([0, canal_length])
         ax1.set_ylim([np.min(z_bed)-0.2, np.max(z_surface_frame)+0.3])
 
-        # 子图2: 水深分布 + 渠底高程
+        # 子图2: 水深分布
         ax2 = plt.subplot(3, 1, 2)
-        # 添加渠底高程作为背景
-        ax2_twin = ax2.twinx()
-        ax2_twin.fill_between(x_full, np.min(z_bed), z_bed, color='saddlebrown', alpha=0.3, label='Bed Elevation')
-        ax2_twin.plot(x_full, z_bed, 'brown', linewidth=1.5, linestyle='--', alpha=0.7)
-        ax2_twin.set_ylabel('Bed Elevation (m)', fontsize=11, color='brown')
-        ax2_twin.tick_params(axis='y', labelcolor='brown')
-        ax2_twin.set_ylim([np.min(z_bed)-0.5, np.max(z_bed)+0.5])
-
-        # 水深曲线（主坐标轴）
         ax2.plot(x_full, h_frame, 'b-', linewidth=2.5, label='Water Depth')
         ax2.axvline(x=gate_position, color='r', linestyle='--', linewidth=2, alpha=0.7, label='Gate')
         ax2.axhline(y=h_uniform, color='k', linestyle=':', alpha=0.5, label=f'Uniform: {h_uniform:.2f}m')
         ax2.set_xlabel('Distance (m)', fontsize=12)
-        ax2.set_ylabel('Water Depth (m)', fontsize=12, color='blue')
-        ax2.set_title('Water Depth Distribution (with Bed Elevation)', fontsize=13, fontweight='bold')
-        ax2.tick_params(axis='y', labelcolor='blue')
+        ax2.set_ylabel('Water Depth (m)', fontsize=12)
+        ax2.set_title('Water Depth Distribution', fontsize=13, fontweight='bold')
         ax2.grid(True, alpha=0.3)
-        ax2.legend(loc='upper left', fontsize=9)
+        ax2.legend(loc='upper right', fontsize=10)
         ax2.set_xlim([0, canal_length])
         ax2.set_ylim([h_uniform-0.1, np.max([np.max(h_snapshots), h_uniform+0.3])])
 
-        # 子图3: 流量分布 + 渠底高程
+        # 子图3: 流量分布
         ax3 = plt.subplot(3, 1, 3)
-        # 添加渠底高程作为背景
-        ax3_twin = ax3.twinx()
-        ax3_twin.fill_between(x_full, np.min(z_bed), z_bed, color='saddlebrown', alpha=0.3, label='Bed Elevation')
-        ax3_twin.plot(x_full, z_bed, 'brown', linewidth=1.5, linestyle='--', alpha=0.7)
-        ax3_twin.set_ylabel('Bed Elevation (m)', fontsize=11, color='brown')
-        ax3_twin.tick_params(axis='y', labelcolor='brown')
-        ax3_twin.set_ylim([np.min(z_bed)-0.5, np.max(z_bed)+0.5])
-
-        # 流量曲线（主坐标轴）
         ax3.plot(x_full, Q_frame, 'g-', linewidth=2.5, label='Flow Rate')
         ax3.axvline(x=gate_position, color='r', linestyle='--', linewidth=2, alpha=0.7, label='Gate')
         ax3.axhline(y=Q_initial, color='gray', linestyle=':', alpha=0.5, label=f'Initial: {Q_initial}')
         ax3.axhline(y=Q_after_step, color='orange', linestyle=':', alpha=0.5, label=f'Target: {Q_after_step}')
         ax3.set_xlabel('Distance (m)', fontsize=12)
-        ax3.set_ylabel('Flow Rate (m³/s)', fontsize=12, color='green')
-        ax3.set_title('Flow Rate Distribution (with Bed Elevation)', fontsize=13, fontweight='bold')
-        ax3.tick_params(axis='y', labelcolor='green')
+        ax3.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+        ax3.set_title('Flow Rate Distribution', fontsize=13, fontweight='bold')
         ax3.grid(True, alpha=0.3)
-        ax3.legend(loc='upper left', fontsize=9)
+        ax3.legend(loc='best', fontsize=10)
         ax3.set_xlim([0, canal_length])
         ax3.set_ylim([Q_initial-2, Q_after_step+3])
 
