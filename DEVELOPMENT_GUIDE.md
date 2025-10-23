@@ -1,8 +1,46 @@
 # HydroClaude 开发指南
 # Development Guide
 
-**版本**: 1.0
+**版本**: 2.0
 **更新日期**: 2025-10-23
+**重要更新**: 新增通用工具库（ScriptHelper, PlotHelper）
+
+---
+
+## 🚀 快速开始（新增工具）
+
+### ScriptHelper - 消除路径设置重复代码
+
+```python
+from utils.script_helper import quick_setup
+
+# 一行代码完成所有设置（自动添加项目路径）
+helper = quick_setup(__file__)
+
+# 导入项目模块（无需手动设置sys.path）
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+
+# 获取输出路径
+output_dir = helper.get_output_dir()  # 自动创建results/目录
+fig_path = helper.get_output_path("figure.png")
+```
+
+### PlotHelper - 标准化绘图
+
+```python
+from utils.plot_helper import PlotHelper
+
+helper = PlotHelper()
+
+# 快速绘制纵剖面
+fig = helper.plot_profile(
+    x, h,
+    xlabel="Distance (km)",
+    ylabel="Water Depth (m)",
+    structures=[(25, "Gate"), (50, "Pump")],  # 自动标注结构物
+    save_path=output_dir / "profile.png"
+)
+```
 
 ---
 
@@ -11,10 +49,11 @@
 1. [开发原则](#开发原则)
 2. [基础类库优先原则](#基础类库优先原则)
 3. [基础类库清单](#基础类库清单)
-4. [开发工作流](#开发工作流)
-5. [代码规范](#代码规范)
-6. [测试与验证](#测试与验证)
-7. [何时扩展基础库](#何时扩展基础库)
+4. [新增通用工具](#新增通用工具) ⭐ NEW
+5. [开发工作流](#开发工作流)
+6. [代码规范](#代码规范)
+7. [测试与验证](#测试与验证)
+8. [何时扩展基础库](#何时扩展基础库)
 
 ---
 

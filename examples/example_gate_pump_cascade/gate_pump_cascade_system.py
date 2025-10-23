@@ -37,8 +37,7 @@ sys.path.insert(0, project_root)
 import numpy as np
 import matplotlib.pyplot as plt
 from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
-from solvers.gate import SluiceGate
-from solvers.pump_station import PumpStation
+from solvers.gate import SluiceGate, PumpStation
 from utils.canal_utils import compute_steady_uniform_flow
 from utils.result_validator import ResultValidator, quick_validate_steady_state
 from utils.visualization_templates import VisualizationTemplates
