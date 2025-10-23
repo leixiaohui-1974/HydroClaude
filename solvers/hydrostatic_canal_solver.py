@@ -23,6 +23,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from solvers.hydrostatic_reconstruction_v3 import BoundaryType
+from solvers.gate import PumpStation  # 导入PumpStation用于泵站扬程处理
 
 
 class HydrostaticCanalSolver:
@@ -348,11 +349,13 @@ class HydrostaticCanalSolver:
     def _apply_internal_bc(self, t: float = 0.0, Q_target: float = None,
                           max_iter: int = 20, tol: float = 0.01, relax: float = 0.5):
         """
-        应用内部边界条件（闸门等水工建筑物）
+        应用内部边界条件（闸门、泵站等水工建筑物）
 
         对于稳态流：通过调整水深来满足闸门流量公式
         闸门公式: Q = f(h_up, h_down)
         已知Q_target，调整h_up使得f(h_up, h_down) = Q_target
+
+        泵站处理：先调整上游水深满足流量，然后应用扬程到下游
 
         Args:
             t: 当前时间 (s)
@@ -405,6 +408,29 @@ class HydrostaticCanalSolver:
 
             if converged:
                 break
+
+        # 🔧 修复：流量调整收敛后，应用泵站扬程（使用软约束避免累加）
+        # 泵站会提升水位，下游水位应该 = 上游水位 + 扬程
+        # 使用松弛更新而非硬设置，避免在大循环中累加
+        pump_relax = 0.1  # 泵站扬程的松弛因子（较小以保持稳定）
+        for idx, structure in zip(self.structure_indices, self.structure_objects):
+            if idx <= 0 or idx >= self.nx - 1:
+                continue
+
+            if isinstance(structure, PumpStation) and structure.is_running:
+                # 获取当前上下游水深
+                h_up_current = self.h[idx - 1]
+                h_down_current = self.h[idx + 1]
+
+                # 目标下游水深 = 上游水深 + 扬程
+                h_down_target = h_up_current + structure.rated_head
+
+                # 软约束：渐进式调整下游水深
+                # h_down_new = h_down_old + relax * (h_down_target - h_down_old)
+                self.h[idx + 1] = h_down_current + pump_relax * (h_down_target - h_down_current)
+
+                # 确保水深为正
+                self.h[idx + 1] = max(self.eps_dry, self.h[idx + 1])
 
     def step_explicit(self, dt: float) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -583,11 +609,11 @@ class HydrostaticCanalSolver:
             self.h = h_new
             self.hu = hu_new
 
-            # 应用内部边界条件（闸门）
-            # 通过调整水深使闸门流量公式满足Q_target
+            # 应用内部边界条件（闸门、泵站）
+            # 通过调整水深使闸门流量公式满足Q_target，泵站应用扬程
             if self.structure_indices:
                 self._apply_internal_bc(t=self.current_time, Q_target=Q_target,
-                                      max_iter=20, tol=0.05, relax=0.6)
+                                      max_iter=20, tol=0.05, relax=0.3)  # P2优化: 降低松弛因子 (0.6→0.3)
 
             # 检查收敛
             dh_max = np.max(np.abs(self.h - h_old))

@@ -60,7 +60,7 @@ def main():
     B = 15.0                # 渠道宽度 (m)
     S0 = 0.0001             # 底坡（缓坡）
     n = 0.025               # 曼宁糙率
-    nx = 501                # 空间网格点数
+    nx = 501                # 空间网格点数 (暂时用501快速测试)
 
     # 流量参数
     Q_initial = 30.0        # 初始流量 (m³/s)
@@ -80,9 +80,9 @@ def main():
     pump_rated_head = 5.0   # 额定扬程 (m)
     pump_min_head = 2.0     # 最小吸入水头 (m)
 
-    # 瞬态模拟参数
-    t_total = 3600.0        # 总模拟时间 (s) = 1小时
-    dt = 1.0                # 时间步长 (s)
+    # 瞬态模拟参数  (P2优化: 增加模拟时长和减小时间步长)
+    t_total = 7200.0        # 总模拟时间 (s) = 2小时 (原1小时)
+    dt = 0.5                # 时间步长 (s) (原1.0秒)
 
     print(f"渠道参数:")
     print(f"  总长度: {L_total/1000:.1f} km = {L_total:.0f} m")
@@ -181,7 +181,7 @@ def main():
         Q_target=Q_initial,
         h_downstream=h_down_steady,
         convergence_tol=0.001,  # 0.1%容差
-        max_iterations=500,
+        max_iterations=500,     # 先用500测试收敛性
         dt=dt,
         verbose=True
     )
