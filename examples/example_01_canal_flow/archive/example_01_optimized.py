@@ -14,11 +14,18 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 import time
 from solvers.single_canal_solver import SingleCanalSolver
 from solvers.steady_profile_solver import SteadyProfileSolver
 from solvers.gate import SluiceGate
 from utils.canal_utils import compute_steady_uniform_flow
+
+# Import output helper
+code_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'code')
+sys.path.insert(0, code_dir)
+from output_helper import get_output_path, save_figure, save_table
 
 
 def run_optimized_example():
@@ -229,6 +236,100 @@ def run_optimized_example():
               f"({'↓' if iter_improve > 0 else '↑'}{abs(iter_improve):.1f}%)")
         print(f"  计算时间: {time1:.4f}s → {time3_total:.4f}s "
               f"({'↓' if time_improve > 0 else '↑'}{abs(time_improve):.1f}%)")
+
+    # ========== 生成图表和导出数据 ==========
+    print("\n\n" + "=" * 100)
+    print("生成可视化和数据导出")
+    print("=" * 100)
+
+    # 创建性能对比图
+    fig, axes = plt.subplots(2, 2, figsize=(16, 10))
+
+    method_names = ['Standard\n(0.5%)', 'Relaxed\n(1%)', 'Optimized Init\n(1%)']
+    iterations = [result1['iterations'], result2['iterations'], result3['iterations']]
+    times = [time1, time2, time3_total]
+    errors = [result1['final_error']*100, result2['final_error']*100, result3['final_error']*100]
+    colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
+
+    # 子图1: 迭代次数对比
+    ax1 = axes[0, 0]
+    bars1 = ax1.bar(method_names, iterations, color=colors, alpha=0.7, edgecolor='black', linewidth=1.5)
+    ax1.set_ylabel('Iterations', fontsize=12, fontweight='bold')
+    ax1.set_title('Convergence Iterations Comparison', fontsize=13, fontweight='bold')
+    ax1.grid(axis='y', alpha=0.3)
+    for i, (bar, val) in enumerate(zip(bars1, iterations)):
+        height = bar.get_height()
+        ax1.text(bar.get_x() + bar.get_width()/2., height,
+                f'{val}', ha='center', va='bottom', fontsize=11, fontweight='bold')
+
+    # 子图2: 计算时间对比
+    ax2 = axes[0, 1]
+    bars2 = ax2.bar(method_names, times, color=colors, alpha=0.7, edgecolor='black', linewidth=1.5)
+    ax2.set_ylabel('Computation Time (s)', fontsize=12, fontweight='bold')
+    ax2.set_title('Computation Time Comparison', fontsize=13, fontweight='bold')
+    ax2.grid(axis='y', alpha=0.3)
+    for i, (bar, val) in enumerate(zip(bars2, times)):
+        height = bar.get_height()
+        ax2.text(bar.get_x() + bar.get_width()/2., height,
+                f'{val:.3f}s', ha='center', va='bottom', fontsize=11, fontweight='bold')
+
+    # 子图3: 误差对比
+    ax3 = axes[1, 0]
+    bars3 = ax3.bar(method_names, errors, color=colors, alpha=0.7, edgecolor='black', linewidth=1.5)
+    ax3.set_ylabel('Final Error (%)', fontsize=12, fontweight='bold')
+    ax3.set_title('Convergence Error Comparison', fontsize=13, fontweight='bold')
+    ax3.grid(axis='y', alpha=0.3)
+    ax3.axhline(y=0.5, color='r', linestyle='--', linewidth=1.5, alpha=0.5, label='0.5% target')
+    ax3.axhline(y=1.0, color='orange', linestyle='--', linewidth=1.5, alpha=0.5, label='1% target')
+    ax3.legend(fontsize=10)
+    for i, (bar, val) in enumerate(zip(bars3, errors)):
+        height = bar.get_height()
+        ax3.text(bar.get_x() + bar.get_width()/2., height,
+                f'{val:.4f}%', ha='center', va='bottom', fontsize=11, fontweight='bold')
+
+    # 子图4: 效率总结（迭代/秒）
+    ax4 = axes[1, 1]
+    efficiency = [iterations[i]/times[i] for i in range(3)]
+    bars4 = ax4.bar(method_names, efficiency, color=colors, alpha=0.7, edgecolor='black', linewidth=1.5)
+    ax4.set_ylabel('Iterations per Second', fontsize=12, fontweight='bold')
+    ax4.set_title('Computational Efficiency', fontsize=13, fontweight='bold')
+    ax4.grid(axis='y', alpha=0.3)
+    for i, (bar, val) in enumerate(zip(bars4, efficiency)):
+        height = bar.get_height()
+        ax4.text(bar.get_x() + bar.get_width()/2., height,
+                f'{val:.1f}', ha='center', va='bottom', fontsize=11, fontweight='bold')
+
+    plt.suptitle('Optimization Methods Performance Comparison', fontsize=16, fontweight='bold', y=0.995)
+    plt.tight_layout()
+    save_figure(fig, 'archive_01_optimized_comparison.png')
+    plt.close()
+
+    # 导出性能对比表
+    comparison_data = pd.DataFrame({
+        'Method': ['Standard (0.5%)', 'Relaxed (1%)', 'Optimized Init (1%)'],
+        'Converged': [result1['converged'], result2['converged'], result3['converged']],
+        'Iterations': iterations,
+        'Final_Error_%': errors,
+        'Computation_Time_s': times,
+        'Iterations_per_Second': efficiency
+    })
+    save_table(comparison_data, 'archive_01_optimized_comparison.csv', index=False)
+
+    # 导出详细剖面数据（方法3最优结果）
+    profile3 = solver3.get_full_profile()
+    profile_data = pd.DataFrame({
+        'Distance_m': profile3['x'],
+        'Water_Depth_m': profile3['h'],
+        'Flow_Rate_m3s': profile3['Q']
+    })
+    save_table(profile_data, 'archive_01_optimized_profile.csv', index=False)
+
+    print("\n生成的文件:")
+    print("  Figures:")
+    print("    - archive_01_optimized_comparison.png")
+    print("  Tables:")
+    print(f"    - archive_01_optimized_comparison.csv (3 methods)")
+    print(f"    - archive_01_optimized_profile.csv ({len(profile3['x'])} points)")
 
     print("\n" + "=" * 100)
     print("完成！")

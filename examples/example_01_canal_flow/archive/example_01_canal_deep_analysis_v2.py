@@ -18,9 +18,15 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from scipy import signal
+
+# Import output helper
+code_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'code')
+sys.path.insert(0, code_dir)
+from output_helper import get_output_path, save_figure, save_table, save_animation
 
 class SimpleCanalSolver:
     """
@@ -267,9 +273,9 @@ def create_annotated_animation(solver, time_list, h_history, Q_history,
     anim = animation.FuncAnimation(fig, animate, frames=keyframes,
                                   interval=100, repeat=True)
 
-    os.makedirs("reports/figures", exist_ok=True)
-    output_path = f"reports/figures/{output_filename}"
-    anim.save(output_path, writer='pillow', fps=10, dpi=100)
+    # Use archive prefix for filename
+    output_filename_prefixed = 'archive_' + output_filename
+    output_path = save_animation(anim, output_filename_prefixed, fps=10, dpi=100)
     plt.close(fig)
 
     return output_path
@@ -435,6 +441,43 @@ def run_deep_analysis():
     print(f"G22 (hd→hd): K={params_G22['K']:.4f}, T1={params_G22['T1']:.1f}s, "
           f"T2={params_G22['T2']:.1f}s, delay={params_G22['delay']:.1f}s")
 
+    # === 导出数据表 ===
+    print("\n" + "=" * 80)
+    print("导出数据表")
+    print("=" * 80)
+
+    # Export scenario 1 time series
+    scenario1_df = pd.DataFrame({
+        'Time_s': time1,
+        'Upstream_Level_m': hu1,
+        'Downstream_Level_m': hd1
+    })
+    save_table(scenario1_df, 'archive_01_deep_scenario1_timeseries.csv', index=False)
+
+    # Export scenario 2 time series
+    scenario2_df = pd.DataFrame({
+        'Time_s': time2,
+        'Upstream_Level_m': hu2,
+        'Downstream_Level_m': hd2
+    })
+    save_table(scenario2_df, 'archive_01_deep_scenario2_timeseries.csv', index=False)
+
+    # Export IDZ parameters
+    idz_params_df = pd.DataFrame({
+        'Transfer_Function': ['G11: Qu→hu', 'G12: hd→hu', 'G21: Qu→hd', 'G22: hd→hd'],
+        'K_Gain': [params_G11['K'], params_G12['K'], params_G21['K'], params_G22['K']],
+        'T1_s': [params_G11['T1'], params_G12['T1'], params_G21['T1'], params_G22['T1']],
+        'T2_s': [params_G11['T2'], params_G12['T2'], params_G21['T2'], params_G22['T2']],
+        'Delay_s': [params_G11['delay'], params_G12['delay'], params_G21['delay'], params_G22['delay']],
+        'Physical_Meaning': [
+            'Upstream flow affects upstream level',
+            'Backwater effect',
+            'Flow propagates to downstream',
+            'Direct downstream effect'
+        ]
+    })
+    save_table(idz_params_df, 'archive_01_deep_idz_parameters.csv', index=False)
+
     # === 生成可视化 ===
     print("\n" + "=" * 80)
     print("生成可视化")
@@ -508,11 +551,10 @@ def run_deep_analysis():
     ax.grid(True, alpha=0.3)
 
     plt.tight_layout()
-    fig_path = 'reports/figures/example_01_deep_step_responses.png'
-    plt.savefig(fig_path, dpi=150, bbox_inches='tight')
+    fig_path = save_figure(fig, 'archive_01_deep_step_responses.png')
     plt.close(fig)
     generated_files.append(fig_path)
-    print(f"  ✓ 阶跃响应图")
+    print(f"  (阶跃响应图)")
 
     # IDZ参数表
     fig, ax = plt.subplots(figsize=(12, 4))
@@ -553,11 +595,10 @@ def run_deep_analysis():
     plt.title('IDZ Model Parameters (4 Transfer Functions)',
              fontsize=14, fontweight='bold', pad=20)
 
-    table_path = 'reports/figures/example_01_deep_idz_params.png'
-    plt.savefig(table_path, dpi=150, bbox_inches='tight')
+    table_path = save_figure(fig, 'archive_01_deep_idz_params.png')
     plt.close(fig)
     generated_files.append(table_path)
-    print(f"  ✓ IDZ参数表")
+    print(f"  (IDZ参数表)")
 
     print("\n" + "=" * 80)
     print("深入分析完成!")
@@ -571,9 +612,18 @@ def run_deep_analysis():
     print(f"  下游水位: {hd2[0]:.3f} → {hd2[-1]:.3f} m (Δ={hd2[-1]-hd2[0]:.3f} m)")
 
     print(f"\n生成文件:")
-    for f in generated_files:
-        print(f"  - {f}")
+    print("  Figures (2):")
+    print("    - archive_01_deep_step_responses.png")
+    print("    - archive_01_deep_idz_params.png")
+    print("  Animations (2):")
+    print("    - archive_example_01_deep_scenario1.gif")
+    print("    - archive_example_01_deep_scenario2.gif")
+    print("  Tables (3):")
+    print(f"    - archive_01_deep_scenario1_timeseries.csv ({len(time1)} rows)")
+    print(f"    - archive_01_deep_scenario2_timeseries.csv ({len(time2)} rows)")
+    print("    - archive_01_deep_idz_parameters.csv (4 transfer functions)")
 
+    print("\n所有输出文件已保存到 results/ 目录")
     print("\n" + "=" * 80)
 
 

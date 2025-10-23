@@ -15,11 +15,17 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from solvers.single_canal_solver import SingleCanalSolver
 from solvers.gate import SluiceGate
 from utils.canal_utils import compute_steady_uniform_flow
+
+# Import output helper (add code directory to path)
+code_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'code')
+sys.path.insert(0, code_dir)
+from output_helper import get_output_path, save_figure, save_table, save_animation
 
 
 def run_sluice_gate_dynamics():
@@ -167,11 +173,18 @@ def run_sluice_gate_dynamics():
     ax3.set_xlim([0, canal_length])
 
     plt.tight_layout()
-    os.makedirs('reports/figures', exist_ok=True)
-    steady_fig_path = 'reports/figures/example_01_sluice_gate_steady_state.png'
-    plt.savefig(steady_fig_path, dpi=150, bbox_inches='tight')
+    steady_fig_path = save_figure(fig_steady, 'archive_01_sluice_gate_steady_state.png')
     plt.close(fig_steady)
-    print(f"  ✓ 稳态纵剖面图已保存: {steady_fig_path}")
+
+    # Export steady state profile data to CSV
+    steady_data = pd.DataFrame({
+        'Distance_m': x_full,
+        'Bed_Elevation_m': z_bed,
+        'Water_Depth_m': h_steady,
+        'Water_Surface_Elevation_m': z_surface,
+        'Flow_Rate_m3s': Q_steady
+    })
+    save_table(steady_data, 'archive_01_sluice_gate_steady_profile.csv', index=False)
     print()
 
     # ==================== 步骤2: 非恒定流仿真 ====================
@@ -329,10 +342,23 @@ def run_sluice_gate_dynamics():
     ax4.legend(fontsize=11)
 
     plt.tight_layout()
-    key_fig_path = 'reports/figures/example_01_sluice_gate_key_locations.png'
-    plt.savefig(key_fig_path, dpi=150, bbox_inches='tight')
+    key_fig_path = save_figure(fig_key, 'archive_01_sluice_gate_key_locations.png')
     plt.close(fig_key)
-    print(f"     ✓ 已保存: {key_fig_path}")
+
+    # Export time series data to CSV
+    time_series_data = pd.DataFrame({
+        'Time_s': time_series,
+        'Gate_Flow_m3s': gate_flow,
+        'Inlet_h_m': monitor_data['Inlet']['h'],
+        'Inlet_Q_m3s': monitor_data['Inlet']['Q'],
+        'Gate_Up_h_m': monitor_data['Gate_Up']['h'],
+        'Gate_Up_Q_m3s': monitor_data['Gate_Up']['Q'],
+        'Gate_Down_h_m': monitor_data['Gate_Down']['h'],
+        'Gate_Down_Q_m3s': monitor_data['Gate_Down']['Q'],
+        'Outlet_h_m': monitor_data['Outlet']['h'],
+        'Outlet_Q_m3s': monitor_data['Outlet']['Q']
+    })
+    save_table(time_series_data, 'archive_01_sluice_gate_time_series.csv', index=False)
 
     # ==================== 生成GIF动画 ====================
     print("  2. 生成纵剖面动态GIF动画...")
@@ -396,10 +422,8 @@ def run_sluice_gate_dynamics():
     anim = animation.FuncAnimation(fig_anim, animate, frames=n_frames, interval=100, repeat=True)
 
     # 保存GIF
-    gif_path = 'reports/figures/example_01_sluice_gate_dynamics.gif'
-    anim.save(gif_path, writer='pillow', fps=10, dpi=80)
+    gif_path = save_animation(anim, 'archive_01_sluice_gate_dynamics.gif', fps=10, dpi=80)
     plt.close(fig_anim)
-    print(f"     ✓ 已保存: {gif_path}")
     print(f"        (共 {n_frames} 帧, {total_time:.0f}s 模拟时长)")
 
     print()
@@ -408,10 +432,16 @@ def run_sluice_gate_dynamics():
     print("=" * 80)
 
     print(f"\n生成的文件:")
-    print(f"  1. 初始稳态纵剖面图（含渠底）: {steady_fig_path}")
-    print(f"  2. 关键位置时间序列图: {key_fig_path}")
-    print(f"  3. 纵剖面动态GIF: {gif_path}")
+    print(f"  Figures:")
+    print(f"    - archive_01_sluice_gate_steady_state.png")
+    print(f"    - archive_01_sluice_gate_key_locations.png")
+    print(f"  Tables:")
+    print(f"    - archive_01_sluice_gate_steady_profile.csv (201 rows)")
+    print(f"    - archive_01_sluice_gate_time_series.csv (8000 rows)")
+    print(f"  Animations:")
+    print(f"    - archive_01_sluice_gate_dynamics.gif ({n_frames} frames)")
 
+    print("\n所有输出文件已保存到 results/ 目录")
     print("\n" + "=" * 80)
 
 

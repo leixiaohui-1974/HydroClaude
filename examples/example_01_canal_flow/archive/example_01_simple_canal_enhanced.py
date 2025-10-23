@@ -12,11 +12,17 @@ from physics.canal import Canal
 from simulation.plant_simulator import PlantSimulator
 from utils.visualization import SimulationVisualizer, ReportGenerator
 import numpy as np
+import pandas as pd
 import sys
 import os
 
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+# Import output helper
+code_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'code')
+sys.path.insert(0, code_dir)
+from output_helper import get_output_path, save_table
 
 
 def run_example():
@@ -124,7 +130,13 @@ def run_example():
 
     # ====== 6. 生成可视化 ======
     print("生成可视化图表...")
-    visualizer = SimulationVisualizer(output_dir="reports/figures")
+    # Get results directory
+    example_dir = os.path.dirname(os.path.abspath(__file__))
+    parent_dir = os.path.dirname(example_dir)
+    results_figures_dir = os.path.join(parent_dir, 'results', 'figures')
+    os.makedirs(results_figures_dir, exist_ok=True)
+
+    visualizer = SimulationVisualizer(output_dir=results_figures_dir)
 
     generated_images = []
 
@@ -134,7 +146,7 @@ def run_example():
         data={'Water Depth': level_history},
         title='Canal Water Depth Evolution',
         ylabel='Water Depth (m)',
-        filename='example_01_depth_time.png'
+        filename='archive_01_simple_depth_time.png'
     )
     generated_images.append(img_path)
     print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
@@ -145,7 +157,7 @@ def run_example():
         data={'Flow Rate': flow_history},
         title='Canal Flow Rate Evolution',
         ylabel='Flow Rate (m³/s)',
-        filename='example_01_flow_time.png'
+        filename='archive_01_simple_flow_time.png'
     )
     generated_images.append(img_path)
     print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
@@ -159,33 +171,38 @@ def run_example():
         },
         title='Canal Spatial Profile - Water Depth',
         ylabel='Water Depth (m)',
-        filename='example_01_depth_profile.png'
+        filename='archive_01_simple_depth_profile.png'
     )
     generated_images.append(img_path)
     print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
 
     # (4) 动态GIF - 水深演化
     print("  生成动态GIF动画...")
-    img_path = visualizer.create_animation_gif(
+    # Move GIFs to animations directory
+    results_animations_dir = os.path.join(parent_dir, 'results', 'animations')
+    os.makedirs(results_animations_dir, exist_ok=True)
+    visualizer_anim = SimulationVisualizer(output_dir=results_animations_dir)
+
+    img_path = visualizer_anim.create_animation_gif(
         x=x_coords,
         time_data=spatial_profiles_level,
         time_points=time_points,
         title='Canal Water Depth Animation',
         ylabel='Water Depth (m)',
-        filename='example_01_depth_animation.gif',
+        filename='archive_01_simple_depth_animation.gif',
         fps=2  # 2帧/秒
     )
     generated_images.append(img_path)
     print(f"  ✓ 生成动画: {os.path.basename(img_path)}")
 
     # (5) 动态GIF - 流量演化
-    img_path = visualizer.create_animation_gif(
+    img_path = visualizer_anim.create_animation_gif(
         x=x_coords,
         time_data=spatial_profiles_flow,
         time_points=time_points,
         title='Canal Flow Rate Animation',
         ylabel='Flow Rate (m³/s)',
-        filename='example_01_flow_animation.gif',
+        filename='archive_01_simple_flow_animation.gif',
         fps=2
     )
     generated_images.append(img_path)
@@ -193,9 +210,33 @@ def run_example():
 
     print()
 
+    # ====== 6.5. 导出数据表 ======
+    print("导出数据表...")
+
+    # Export time series data
+    time_series_df = pd.DataFrame({
+        'Time_s': time_history,
+        'Water_Depth_m': level_history,
+        'Flow_Rate_m3s': flow_history,
+        'Volume_m3': volume_history
+    })
+    save_table(time_series_df, 'archive_01_simple_time_series.csv', index=False)
+
+    # Export spatial profile data (final state)
+    spatial_df = pd.DataFrame({
+        'Distance_m': x_coords,
+        'Initial_Water_Depth_m': spatial_profiles_level[0],
+        'Final_Water_Depth_m': spatial_profiles_level[-1],
+        'Initial_Flow_Rate_m3s': spatial_profiles_flow[0],
+        'Final_Flow_Rate_m3s': spatial_profiles_flow[-1]
+    })
+    save_table(spatial_df, 'archive_01_simple_spatial_profile.csv', index=False)
+
     # ====== 7. 生成报告 ======
     print("生成仿真报告...")
-    report_gen = ReportGenerator(output_dir="reports")
+    results_reports_dir = os.path.join(parent_dir, 'results', 'reports')
+    os.makedirs(results_reports_dir, exist_ok=True)
+    report_gen = ReportGenerator(output_dir=results_reports_dir)
 
     # 计算统计信息
     stats = {
@@ -265,9 +306,9 @@ def run_example():
     ]
 
     report_path = report_gen.generate_markdown_report(
-        title='示例1: 简单明渠仿真结果报告',
+        title='示例1: 简单明渠仿真结果报告 (Archive)',
         sections=sections,
-        filename='example_01_simulation_report.md'
+        filename='archive_01_simple_simulation_report.md'
     )
 
     print(f"  ✓ 报告已生成: {os.path.basename(report_path)}")
@@ -283,10 +324,20 @@ def run_example():
     print(f"平均流量: {flow_history.mean():.3f} m³/s")
     print()
     print(f"生成文件:")
-    for img in generated_images:
-        print(f"  - {os.path.relpath(img)}")
-    print(f"  - {os.path.relpath(report_path)}")
+    print("  Figures (3):")
+    print("    - archive_01_simple_depth_time.png")
+    print("    - archive_01_simple_flow_time.png")
+    print("    - archive_01_simple_depth_profile.png")
+    print("  Animations (2):")
+    print("    - archive_01_simple_depth_animation.gif")
+    print("    - archive_01_simple_flow_animation.gif")
+    print("  Tables (2):")
+    print(f"    - archive_01_simple_time_series.csv ({len(time_history)} rows)")
+    print(f"    - archive_01_simple_spatial_profile.csv ({len(x_coords)} rows)")
+    print("  Report (1):")
+    print("    - archive_01_simple_simulation_report.md")
     print()
+    print("所有输出文件已保存到 results/ 目录")
     print("=" * 70)
 
 
