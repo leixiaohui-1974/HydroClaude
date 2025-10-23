@@ -211,8 +211,13 @@ def run_sluice_gate_dynamics():
 
     # 仿真参数
     dt = 2.0
-    total_time = 16000.0  # 足够长以观察完整传播过程
+    total_time = 40000.0  # Extended from 16000s to allow full convergence
     n_steps = int(total_time / dt)
+
+    # Convergence detection parameters
+    convergence_check_interval = 200  # Check every 200 steps
+    convergence_window = 500  # Check last 500 steps for convergence
+    flow_convergence_tol = 0.001  # < 0.1% variation means converged
 
     # 监测点
     monitor_positions = {
@@ -266,19 +271,59 @@ def run_sluice_gate_dynamics():
             Q_snapshots.append(profile['Q'].copy())
             t_snapshots.append(t)
 
-        # 打印进度
-        if i % 200 == 0 or abs(t - step_time) < dt:
+        # 打印进度 and convergence check
+        if i % convergence_check_interval == 0 or abs(t - step_time) < dt:
             marker = " <-- STEP" if abs(t - step_time) < dt else ""
             inlet_Q = monitor_data['Inlet']['Q'][-1]
             outlet_Q = monitor_data['Outlet']['Q'][-1]
             gate_Q = gate_flow[-1]
+
+            # Check convergence (after step time and with sufficient history)
+            converged = False
+            if t > step_time + 2000 and len(gate_flow) >= convergence_window:
+                recent_flows = gate_flow[-convergence_window:]
+                flow_mean = np.mean(recent_flows)
+                flow_std = np.std(recent_flows)
+                flow_cv = flow_std / flow_mean if flow_mean > 0 else 1.0
+
+                if flow_cv < flow_convergence_tol:
+                    converged = True
+                    marker += " ✓ CONVERGED"
+
             print(f"  t={t:7.0f}s: Q_inlet={inlet_Q:5.2f}, Q_gate={gate_Q:5.2f}, Q_outlet={outlet_Q:5.2f} m³/s{marker}")
+
+            # Early termination if converged
+            if converged and t > step_time + 5000:
+                print(f"\n  ✓ System converged at t={t:.0f}s - terminating early")
+                # Trim arrays to actual length
+                time_series = time_series[:i+1]
+                gate_flow = gate_flow[:i+1]
+                for name in monitor_data:
+                    monitor_data[name]['h'] = monitor_data[name]['h'][:i+1]
+                    monitor_data[name]['Q'] = monitor_data[name]['Q'][:i+1]
+                break
 
     print()
     print(f"仿真完成！")
+    print(f"  总仿真时间: {time_series[-1]:.0f}s")
     print(f"  最终闸门流量: {gate_flow[-1]:.3f} m³/s (阶跃后目标: {Q_after_step} m³/s)")
     print(f"  最终入口流量: {monitor_data['Inlet']['Q'][-1]:.3f} m³/s")
     print(f"  最终出口流量: {monitor_data['Outlet']['Q'][-1]:.3f} m³/s")
+
+    # Calculate final convergence metrics
+    if len(gate_flow) >= convergence_window:
+        recent_flows = gate_flow[-convergence_window:]
+        flow_mean = np.mean(recent_flows)
+        flow_std = np.std(recent_flows)
+        flow_cv = (flow_std / flow_mean * 100) if flow_mean > 0 else 100.0
+        flow_error = abs(flow_mean - Q_after_step) / Q_after_step * 100
+        print(f"  最终收敛指标:")
+        print(f"    闸门流量变异系数: {flow_cv:.4f}%")
+        print(f"    闸门流量误差: {flow_error:.4f}%")
+        if flow_cv < 0.1:
+            print(f"    ✓ 系统已收敛 (CV < 0.1%)")
+        else:
+            print(f"    ⚠ 系统仍在调整 (CV = {flow_cv:.4f}%)")
     print()
 
     # ==================== 生成关键位置时间序列图 ====================
@@ -385,50 +430,30 @@ def run_sluice_gate_dynamics():
         ax1.set_xlim([0, canal_length])
         ax1.set_ylim([np.min(z_bed)-0.2, np.max(z_surface_frame)+0.3])
 
-        # 子图2: 水深分布 + 渠底高程
+        # 子图2: 水深分布
         ax2 = plt.subplot(3, 1, 2)
-        # 添加渠底高程作为背景
-        ax2_twin = ax2.twinx()
-        ax2_twin.fill_between(x_full, np.min(z_bed), z_bed, color='saddlebrown', alpha=0.3, label='Bed Elevation')
-        ax2_twin.plot(x_full, z_bed, 'brown', linewidth=1.5, linestyle='--', alpha=0.7)
-        ax2_twin.set_ylabel('Bed Elevation (m)', fontsize=11, color='brown')
-        ax2_twin.tick_params(axis='y', labelcolor='brown')
-        ax2_twin.set_ylim([np.min(z_bed)-0.5, np.max(z_bed)+0.5])
-
-        # 水深曲线（主坐标轴）
         ax2.plot(x_full, h_frame, 'b-', linewidth=2.5, label='Water Depth')
         ax2.axvline(x=gate_position, color='r', linestyle='--', linewidth=2, alpha=0.7, label='Gate')
         ax2.axhline(y=h_uniform, color='k', linestyle=':', alpha=0.5, label=f'Uniform: {h_uniform:.2f}m')
         ax2.set_xlabel('Distance (m)', fontsize=12)
-        ax2.set_ylabel('Water Depth (m)', fontsize=12, color='blue')
-        ax2.set_title('Water Depth Distribution (with Bed Elevation)', fontsize=13, fontweight='bold')
-        ax2.tick_params(axis='y', labelcolor='blue')
+        ax2.set_ylabel('Water Depth (m)', fontsize=12)
+        ax2.set_title('Water Depth Distribution', fontsize=13, fontweight='bold')
         ax2.grid(True, alpha=0.3)
-        ax2.legend(loc='upper left', fontsize=9)
+        ax2.legend(loc='upper right', fontsize=10)
         ax2.set_xlim([0, canal_length])
         ax2.set_ylim([h_uniform-0.1, np.max([np.max(h_snapshots), h_uniform+0.3])])
 
-        # 子图3: 流量分布 + 渠底高程
+        # 子图3: 流量分布
         ax3 = plt.subplot(3, 1, 3)
-        # 添加渠底高程作为背景
-        ax3_twin = ax3.twinx()
-        ax3_twin.fill_between(x_full, np.min(z_bed), z_bed, color='saddlebrown', alpha=0.3, label='Bed Elevation')
-        ax3_twin.plot(x_full, z_bed, 'brown', linewidth=1.5, linestyle='--', alpha=0.7)
-        ax3_twin.set_ylabel('Bed Elevation (m)', fontsize=11, color='brown')
-        ax3_twin.tick_params(axis='y', labelcolor='brown')
-        ax3_twin.set_ylim([np.min(z_bed)-0.5, np.max(z_bed)+0.5])
-
-        # 流量曲线（主坐标轴）
         ax3.plot(x_full, Q_frame, 'g-', linewidth=2.5, label='Flow Rate')
         ax3.axvline(x=gate_position, color='r', linestyle='--', linewidth=2, alpha=0.7, label='Gate')
         ax3.axhline(y=Q_initial, color='gray', linestyle=':', alpha=0.5, label=f'Initial: {Q_initial}')
         ax3.axhline(y=Q_after_step, color='orange', linestyle=':', alpha=0.5, label=f'Target: {Q_after_step}')
         ax3.set_xlabel('Distance (m)', fontsize=12)
-        ax3.set_ylabel('Flow Rate (m³/s)', fontsize=12, color='green')
-        ax3.set_title('Flow Rate Distribution (with Bed Elevation)', fontsize=13, fontweight='bold')
-        ax3.tick_params(axis='y', labelcolor='green')
+        ax3.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+        ax3.set_title('Flow Rate Distribution', fontsize=13, fontweight='bold')
         ax3.grid(True, alpha=0.3)
-        ax3.legend(loc='upper left', fontsize=9)
+        ax3.legend(loc='best', fontsize=10)
         ax3.set_xlim([0, canal_length])
         ax3.set_ylim([Q_initial-2, Q_after_step+3])
 
