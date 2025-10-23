@@ -453,7 +453,9 @@ class HydrostaticCanalSolver:
         if h_out is not None:
             self.h[-1] = h_out
 
-    def step_preissmann(self, dt: float, max_iter: int = 10) -> Tuple[np.ndarray, np.ndarray]:
+    def step_preissmann(self, dt: float, max_iter: int = 10,
+                       enforce_bc: bool = False,
+                       Q_in: float = None, h_out: float = None) -> Tuple[np.ndarray, np.ndarray]:
         """
         Preissmann四点隐式格式时间步
 
@@ -462,6 +464,9 @@ class HydrostaticCanalSolver:
         Args:
             dt: 时间步长 (s)
             max_iter: 最大迭代次数
+            enforce_bc: 是否在每次迭代中强制边界条件（瞬态流用）
+            Q_in: 入流流量 (m³/s)，enforce_bc=True时需要
+            h_out: 出流水深 (m)，enforce_bc=True时需要
 
         Returns:
             (h_new, hu_new): 更新后的状态
@@ -503,6 +508,13 @@ class HydrostaticCanalSolver:
             # 松弛
             h_new = self.omega * h_new + (1 - self.omega) * h_old_iter
             hu_new = self.omega * hu_new + (1 - self.omega) * hu_old_iter
+
+            # 瞬态流：在迭代中强制边界条件
+            if enforce_bc:
+                if Q_in is not None:
+                    hu_new[0] = Q_in / self.B
+                if h_out is not None:
+                    h_new[-1] = h_out
 
         return h_new, hu_new
 
@@ -623,6 +635,115 @@ class HydrostaticCanalSolver:
         self.hu = Q / self.B
 
     Q = property(get_Q, set_Q)
+
+    def solve_transient(
+        self,
+        t_end: float,
+        dt: float = 0.1,
+        Q_upstream: float = None,
+        h_downstream: float = None,
+        Q_upstream_func: callable = None,
+        h_downstream_func: callable = None,
+        save_interval: int = 10,
+        verbose: bool = True
+    ) -> dict:
+        """
+        求解瞬态流（时间演化）
+
+        Args:
+            t_end: 结束时间 (s)
+            dt: 时间步长 (s)
+            Q_upstream: 上游流量边界 (m³/s)，常数
+            h_downstream: 下游水深边界 (m)，常数
+            Q_upstream_func: 上游流量时间函数 Q(t)
+            h_downstream_func: 下游水深时间函数 h(t)
+            save_interval: 保存间隔（每N步保存一次）
+            verbose: 是否打印进度
+
+        Returns:
+            result: 包含时间历史的结果字典
+        """
+        # 清空历史记录
+        self.h_history = []
+        self.Q_history = []
+        self.t_history = []
+
+        # 边界条件函数
+        if Q_upstream_func is None:
+            Q_upstream_func = lambda t: Q_upstream
+        if h_downstream_func is None:
+            h_downstream_func = lambda t: h_downstream
+
+        # 初始化
+        t = 0.0
+        n_steps = int(t_end / dt)
+
+        if verbose:
+            print(f"瞬态流求解：")
+            print(f"  时间: 0 → {t_end} s")
+            print(f"  时间步: {dt} s")
+            print(f"  总步数: {n_steps}")
+
+        # 初始状态保存
+        self.h_history.append(self.h.copy())
+        self.Q_history.append(self.get_Q().copy())
+        self.t_history.append(t)
+
+        # 时间循环
+        for step in range(n_steps):
+            t = (step + 1) * dt
+            self.current_time = t
+
+            # 获取当前边界条件
+            Q_in = Q_upstream_func(t)
+            h_out = h_downstream_func(t)
+
+            # 应用边界条件到当前状态（用于flux计算）
+            self.set_boundary_conditions(Q_in=Q_in, h_out=h_out)
+
+            # Preissmann时间步（在迭代中强制边界条件）
+            h_new, hu_new = self.step_preissmann(dt, enforce_bc=True,
+                                                Q_in=Q_in, h_out=h_out)
+
+            # 更新状态
+            self.h = h_new
+            self.hu = hu_new
+
+            # 应用内部边界条件（闸门）
+            if self.structure_indices:
+                self._apply_internal_bc(t=t, Q_target=Q_in,
+                                      max_iter=20, tol=0.05, relax=0.6)
+
+            # 保存历史
+            if (step + 1) % save_interval == 0:
+                self.h_history.append(self.h.copy())
+                self.Q_history.append(self.get_Q().copy())
+                self.t_history.append(t)
+
+            # 进度输出
+            if verbose and (step + 1) % max(n_steps // 10, 1) == 0:
+                Q_mean = np.mean(self.get_Q())
+                h_mean = np.mean(self.h)
+                print(f"  t={t:.2f}s ({(step+1)/n_steps*100:.1f}%): " +
+                      f"Q={Q_mean:.3f} m³/s, h_avg={h_mean:.3f} m")
+
+        # 最终状态
+        if verbose:
+            print(f"\n瞬态求解完成：")
+            print(f"  保存的时间步: {len(self.t_history)}")
+            print(f"  最终流量: {np.mean(self.get_Q()):.3f} m³/s")
+            print(f"  最终水深范围: [{self.h.min():.3f}, {self.h.max():.3f}] m")
+
+        result = {
+            't_history': np.array(self.t_history),
+            'h_history': np.array(self.h_history),
+            'Q_history': np.array(self.Q_history),
+            'h_final': self.h.copy(),
+            'Q_final': self.get_Q().copy(),
+            'x': self.x.copy()
+        }
+
+        return result
 
 
 # 测试代码
