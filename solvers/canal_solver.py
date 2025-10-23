@@ -42,22 +42,23 @@ class CanalSolver:
     def __init__(self, length: float = 1000.0, nx: int = 201,
                  B: float = 10.0, S0: float = 0.001, n: float = 0.025,
                  g: float = 9.81, method: str = 'preissmann',
-                 internal_structures: list = None):
+                 internal_structures: list = None,
+                 x_grid: np.ndarray = None):
         """
         初始化求解器
 
         Args:
             length: 渠道长度 (m)
-            nx: 空间离散点数
+            nx: 空间离散点数（如果x_grid=None时使用）
             B: 渠道宽度 (m)
             S0: 渠底坡度 (无量纲)
             n: Manning糙率系数 (s/m^(1/3))
             g: 重力加速度 (m/s²)
             method: 数值方法 ('explicit', 'preissmann', 'hll')
             internal_structures: 内部水工建筑物列表 [(position, structure_obj), ...]
+            x_grid: 自定义网格点坐标数组（可选，用于非均匀网格）
         """
         self.length = length
-        self.nx = nx
         self.B = B
         self.S0 = S0
         self.n = n
@@ -65,8 +66,23 @@ class CanalSolver:
         self.method = method.lower()
 
         # 空间离散
-        self.dx = length / (nx - 1)
-        self.x = np.linspace(0, length, nx)
+        if x_grid is not None:
+            # 使用自定义网格（非均匀）
+            self.x = x_grid
+            self.nx = len(x_grid)
+            self.is_uniform_grid = False
+            # 计算局部网格间距
+            self.dx_local = np.diff(x_grid)
+            # 为了兼容性，保留平均dx
+            self.dx = np.mean(self.dx_local)
+        else:
+            # 使用均匀网格
+            self.nx = nx
+            self.dx = length / (nx - 1)
+            self.x = np.linspace(0, length, nx)
+            self.is_uniform_grid = True
+            # 对于均匀网格，所有局部dx相同
+            self.dx_local = np.ones(nx-1) * self.dx
 
         # 初始化状态变量
         self.h = np.ones(nx) * 1.0  # 初始水深 (m)

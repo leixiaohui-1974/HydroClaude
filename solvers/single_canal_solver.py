@@ -43,17 +43,25 @@ class SingleCanalSolver:
                  S0: float = 0.001,
                  n: float = 0.025,
                  g: float = 9.81,
-                 method: str = 'preissmann'):
+                 method: str = 'preissmann',
+                 use_adaptive_grid: bool = False,
+                 refinement_radius: float = 200.0,
+                 dx_fine: float = 5.0,
+                 dx_coarse: float = 33.0):
         """
         Args:
             total_length: 渠道总长度 (m)
             structures: 水工建筑物列表
-            nx_total: 总空间点数
+            nx_total: 总空间点数（均匀网格时使用）
             B: 渠道宽度 (m)
             S0: 渠底坡度
             n: Manning糙率
             g: 重力加速度 (m/s²)
             method: 数值方法 ('explicit', 'preissmann', 'hll')
+            use_adaptive_grid: 是否使用自适应网格加密
+            refinement_radius: 结构附近加密半径 (m)
+            dx_fine: 加密区网格间距 (m)
+            dx_coarse: 粗网格区间距 (m)
         """
         self.total_length = total_length
         self.structures = sorted(structures, key=lambda s: s.position)
@@ -63,9 +71,38 @@ class SingleCanalSolver:
         self.n = n
         self.g = g
         self.method = method
+        self.use_adaptive_grid = use_adaptive_grid
 
         # 当前模拟时间
         self.current_time = 0.0
+
+        # 生成网格
+        x_grid = None
+        if use_adaptive_grid and len(structures) > 0:
+            # 导入网格生成工具
+            sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            from utils.adaptive_grid import generate_structure_refined_grid
+
+            # 生成自适应网格
+            structure_positions = [s.position for s in structures]
+            x_grid = generate_structure_refined_grid(
+                total_length=total_length,
+                structure_positions=structure_positions,
+                refinement_radius=refinement_radius,
+                dx_fine=dx_fine,
+                dx_coarse=dx_coarse,
+                transition_width=50.0
+            )
+
+            print(f"\n{'='*60}")
+            print(f"自适应网格已生成")
+            print(f"{'='*60}")
+            print(f"  网格点数: {len(x_grid)} (均匀网格: {nx_total})")
+            print(f"  精细区间距: {dx_fine} m")
+            print(f"  粗糙区间距: {dx_coarse} m")
+            print(f"  加密半径: ±{refinement_radius} m")
+            print(f"  结构位置: {structure_positions}")
+            print(f"{'='*60}\n")
 
         # 准备内部结构列表（格式：[(position, structure), ...]）
         internal_structures = [(s.position, s) for s in self.structures]
@@ -73,11 +110,12 @@ class SingleCanalSolver:
         # 创建单一求解器
         self.solver = CanalSolver(
             length=total_length,
-            nx=nx_total,
+            nx=nx_total if x_grid is None else len(x_grid),
             B=B,
             S0=S0,
             n=n,
             g=g,
+            x_grid=x_grid,
             method=method,
             internal_structures=internal_structures
         )
