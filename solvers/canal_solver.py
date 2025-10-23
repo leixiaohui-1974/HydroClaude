@@ -182,16 +182,18 @@ class CanalSolver:
                     else:
                         Q_gate_new = Q_gate_current * (1 - relax) + Q_gate_target * relax
 
-                    # 更新闸门节点及其附近的流量
-                    # 使用渐变过渡确保平滑
+                    # 更新闸门节点流量
                     self.Q[idx] = Q_gate_new
 
-                    # 可选：调整邻近节点流量以保持平滑过渡
-                    # 这有助于数值稳定性
+                    # ⚠️  温和的邻近节点平滑（权重降低以减少守恒性破坏）
+                    # 使用10%权重而非50%，在稳定性和守恒性之间平衡
+                    smooth_weight = 0.1  # 降低平滑强度
                     if idx > 1:
-                        self.Q[idx - 1] = 0.5 * (self.Q[idx - 2] + Q_gate_new)
+                        Q_neighbor_target = 0.5 * (self.Q[idx - 2] + Q_gate_new)
+                        self.Q[idx - 1] = self.Q[idx - 1] * (1 - smooth_weight) + Q_neighbor_target * smooth_weight
                     if idx < self.nx - 2:
-                        self.Q[idx + 1] = 0.5 * (Q_gate_new + self.Q[idx + 2])
+                        Q_neighbor_target = 0.5 * (Q_gate_new + self.Q[idx + 2])
+                        self.Q[idx + 1] = self.Q[idx + 1] * (1 - smooth_weight) + Q_neighbor_target * smooth_weight
 
             # 自适应调整松弛因子
             if adaptive_relax and n_structures > 0:
@@ -260,6 +262,7 @@ class CanalSolver:
         应用Savitzky-Golay空间滤波器
 
         用于抑制高频空间振荡，同时保持边界条件不变
+        **重要**：跳过结构附近的节点，避免平滑真实的物理间断
 
         Args:
             field: 待滤波的场变量
@@ -276,6 +279,15 @@ class CanalSolver:
         # 保持边界条件
         filtered[0] = field[0]
         filtered[-1] = field[-1]
+
+        # ✅ 关键改进：保持结构附近的真实物理间断，不要平滑
+        # 在结构±3个节点范围内保持原始值
+        if self.structure_indices:
+            protection_radius = 3  # 保护半径（节点数）
+            for idx in self.structure_indices:
+                i_start = max(0, idx - protection_radius)
+                i_end = min(len(field), idx + protection_radius + 1)
+                filtered[i_start:i_end] = field[i_start:i_end]
 
         return filtered
 
@@ -325,7 +337,8 @@ class CanalSolver:
                 V = Q_old[i] / A
 
                 # === 连续性方程 ===
-                # 中心差分
+                # 注：使用平均dx以确保数值稳定性
+                # 非均匀网格的局部dx需要结构特定的守恒格式（Phase 2工作）
                 dQ_dx_central = (Q_old[i+1] - Q_old[i-1]) / (2 * self.dx)
 
                 # 迎风差分
@@ -475,6 +488,7 @@ class CanalSolver:
                     F2 = (S_R * F2_L - S_L * F2_R + S_L * S_R * (Q_R - Q_L)) / (S_R - S_L)
 
                 # 更新守恒变量
+                # 注：目前使用平均dx以确保稳定性
                 if i > 0:
                     A_Lm = self.B * h_old[i-1]
                     dh_dt = -(F1 - Q_old[i-1]) / self.dx / self.B

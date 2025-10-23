@@ -154,7 +154,16 @@ class SingleCanalSolver:
         Returns:
             收敛信息字典
         """
-        dt = 1.0  # 稳态求解时间步长
+        # ✅ 自适应时间步长（满足CFL条件）
+        dx_min = np.min(self.solver.dx_local)
+        h_typical = 2.0  # 典型水深 (m)
+        V_typical = Q_target / (self.B * h_typical)  # 典型流速
+        c_typical = np.sqrt(self.g * h_typical)  # 典型波速
+        CFL_target = 0.5  # CFL安全系数
+
+        dt = CFL_target * dx_min / (V_typical + c_typical)
+        dt = max(0.1, min(dt, 1.0))  # 限制在0.1-1.0s范围内
+
         t = 0.0
 
         converged = False
@@ -164,6 +173,7 @@ class SingleCanalSolver:
         if verbose:
             mode_str = "自适应松弛" if adaptive_relax else "固定松弛"
             print(f"开始稳态求解（目标流量: {Q_target} m³/s, {mode_str}）...")
+            print(f"  自适应时间步长: dt={dt:.3f}s (dx_min={dx_min:.2f}m, CFL={CFL_target})")
 
         for i in range(max_iterations):
             # 计算下游边界水深（使用正常水深）
