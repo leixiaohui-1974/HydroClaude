@@ -21,6 +21,12 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.canal_utils import compute_steady_uniform_flow, compute_manning_friction_slope
 
+# 导入自适应平滑配置（可选）
+try:
+    from solvers.adaptive_smooth_config import AdaptiveSmoothConfig
+except ImportError:
+    AdaptiveSmoothConfig = None
+
 
 class CanalSolver:
     """
@@ -43,7 +49,9 @@ class CanalSolver:
                  B: float = 10.0, S0: float = 0.001, n: float = 0.025,
                  g: float = 9.81, method: str = 'preissmann',
                  internal_structures: list = None,
-                 x_grid: np.ndarray = None):
+                 x_grid: np.ndarray = None,
+                 smooth_weight: float = 0.1,
+                 adaptive_smooth_config = None):
         """
         初始化求解器
 
@@ -57,6 +65,8 @@ class CanalSolver:
             method: 数值方法 ('explicit', 'preissmann', 'hll')
             internal_structures: 内部水工建筑物列表 [(position, structure_obj), ...]
             x_grid: 自定义网格点坐标数组（可选，用于非均匀网格）
+            smooth_weight: 闸门附近节点平滑权重 (0-1, 默认0.1，当adaptive_smooth_config=None时使用)
+            adaptive_smooth_config: 自适应平滑配置（可选，AdaptiveSmoothConfig对象）
         """
         self.length = length
         self.B = B
@@ -64,6 +74,8 @@ class CanalSolver:
         self.n = n
         self.g = g
         self.method = method.lower()
+        self.smooth_weight = smooth_weight  # 固定平滑权重（adaptive_smooth_config=None时使用）
+        self.adaptive_smooth_config = adaptive_smooth_config  # 自适应平滑配置
 
         # 空间离散
         if x_grid is not None:
@@ -115,6 +127,79 @@ class CanalSolver:
             idx = np.argmin(np.abs(self.x - position))
             self.structure_indices.append(idx)
             self.structure_objects.append(structure)
+
+    def _compute_adaptive_smooth_weight(self, idx: int, Q_target: float, Q_current: float) -> float:
+        """
+        计算自适应平滑权重
+
+        根据配置模式动态计算平滑权重：
+        - 'fixed': 返回固定权重
+        - 'residual': 基于局部残差
+        - 'distance': 基于到闸门的距离
+        - 'hybrid': 残差和距离的组合
+
+        Args:
+            idx: 网格点索引
+            Q_target: 目标流量 (m³/s)
+            Q_current: 当前流量 (m³/s)
+
+        Returns:
+            smooth_weight: 自适应平滑权重 [0, 1]
+        """
+        # 如果未配置自适应，使用固定值
+        if self.adaptive_smooth_config is None:
+            return self.smooth_weight
+
+        config = self.adaptive_smooth_config
+
+        # 固定模式
+        if config.mode == 'fixed':
+            return config.fixed_weight
+
+        # 计算残差因子
+        residual_factor = 0.0
+        if config.mode in ['residual', 'hybrid']:
+            # 计算归一化残差
+            if abs(Q_target) > 1e-6:
+                residual = abs(Q_target - Q_current) / abs(Q_target)
+            else:
+                residual = abs(Q_target - Q_current)
+
+            # 使用tanh进行平滑饱和
+            residual_factor = np.tanh(residual / config.residual_scale)
+
+        # 计算距离因子
+        distance_factor = 0.0
+        if config.mode in ['distance', 'hybrid']:
+            # 计算到最近闸门的距离
+            if len(self.structure_indices) > 0:
+                x_pos = self.x[idx]
+                distances = [abs(x_pos - self.x[struct_idx])
+                           for struct_idx in self.structure_indices]
+                min_distance = min(distances)
+
+                # 指数衰减
+                distance_factor = np.exp(-min_distance / config.characteristic_length)
+            else:
+                # 无闸门时distance_factor = 0
+                distance_factor = 0.0
+
+        # 根据模式计算最终权重
+        if config.mode == 'residual':
+            combined_factor = residual_factor
+        elif config.mode == 'distance':
+            combined_factor = distance_factor
+        elif config.mode == 'hybrid':
+            combined_factor = config.alpha * distance_factor + config.beta * residual_factor
+        else:
+            # 不应该到这里
+            combined_factor = 0.5
+
+        # 映射到权重范围
+        smooth_weight = (config.smooth_weight_min +
+                        (config.smooth_weight_max - config.smooth_weight_min) * combined_factor)
+
+        return smooth_weight
 
     def _apply_internal_bc(self, t: float = 0.0, max_iter: int = 10,
                           tol: float = 0.01, relax: float = 0.5,
@@ -186,14 +271,17 @@ class CanalSolver:
                     self.Q[idx] = Q_gate_new
 
                     # ⚠️  温和的邻近节点平滑（权重降低以减少守恒性破坏）
-                    # 使用10%权重而非50%，在稳定性和守恒性之间平衡
-                    smooth_weight = 0.1  # 降低平滑强度
+                    # 使用自适应权重（若配置），在稳定性和守恒性之间智能平衡
                     if idx > 1:
                         Q_neighbor_target = 0.5 * (self.Q[idx - 2] + Q_gate_new)
-                        self.Q[idx - 1] = self.Q[idx - 1] * (1 - smooth_weight) + Q_neighbor_target * smooth_weight
+                        # 计算自适应权重
+                        adaptive_weight = self._compute_adaptive_smooth_weight(idx - 1, Q_neighbor_target, self.Q[idx - 1])
+                        self.Q[idx - 1] = self.Q[idx - 1] * (1 - adaptive_weight) + Q_neighbor_target * adaptive_weight
                     if idx < self.nx - 2:
                         Q_neighbor_target = 0.5 * (Q_gate_new + self.Q[idx + 2])
-                        self.Q[idx + 1] = self.Q[idx + 1] * (1 - smooth_weight) + Q_neighbor_target * smooth_weight
+                        # 计算自适应权重
+                        adaptive_weight = self._compute_adaptive_smooth_weight(idx + 1, Q_neighbor_target, self.Q[idx + 1])
+                        self.Q[idx + 1] = self.Q[idx + 1] * (1 - adaptive_weight) + Q_neighbor_target * adaptive_weight
 
             # 自适应调整松弛因子
             if adaptive_relax and n_structures > 0:

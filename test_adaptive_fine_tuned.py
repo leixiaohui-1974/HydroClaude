@@ -1,0 +1,240 @@
+"""
+精细调优的自适应smooth_weight测试
+
+基于之前的参数扫描结果(0.45-0.60最优)，优化自适应配置
+
+Author: Claude
+Date: 2025-10-23
+"""
+
+import sys
+import os
+import numpy as np
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from solvers.single_canal_solver import SingleCanalSolver
+from solvers.gate import SluiceGate
+from solvers.adaptive_smooth_config import AdaptiveSmoothConfig
+
+
+def test_config(config_name, config, verbose=False):
+    """测试配置"""
+    canal_length = 10000.0
+    canal_width = 10.0
+    n_points = 301
+    bed_slope = 0.0005
+    manning_n = 0.025
+    Q_initial = 10.0
+
+    gate1 = SluiceGate(position=2500.0, width=canal_width, opening=4.5, Cd=0.6)
+    gate2 = SluiceGate(position=5000.0, width=canal_width, opening=4.0, Cd=0.6)
+    gate3 = SluiceGate(position=7500.0, width=canal_width, opening=5.0, Cd=0.6)
+
+    solver = SingleCanalSolver(
+        total_length=canal_length,
+        structures=[gate1, gate2, gate3],
+        nx_total=n_points,
+        B=canal_width,
+        S0=bed_slope,
+        n=manning_n,
+        smooth_weight=0.55,
+        adaptive_smooth_config=config
+    )
+
+    solver.reset_with_steady_state(Q_initial)
+
+    try:
+        result = solver.solve_steady_state(
+            Q_target=Q_initial,
+            max_iterations=10000,
+            convergence_tol=0.001,
+            check_interval=500,
+            verbose=verbose
+        )
+
+        profile = solver.get_full_profile()
+        x, Q = profile['x'], profile['Q']
+        Q_error = np.abs(Q - Q_initial) / Q_initial * 100
+
+        gate_flows = solver.get_gate_flows()
+        gate_errors = [abs(gf - Q_initial) / Q_initial * 100 for gf in gate_flows]
+
+        return {
+            'success': True,
+            'config_name': config_name,
+            'max_error': np.max(Q_error),
+            'mean_error': np.mean(Q_error),
+            'max_gate_error': max(gate_errors),
+            'iterations': result.get('iterations', 0)
+        }
+
+    except Exception as e:
+        return {
+            'success': False,
+            'config_name': config_name,
+            'max_error': float('inf'),
+            'mean_error': float('inf'),
+            'max_gate_error': float('inf')
+        }
+
+
+def main():
+    """精细调优测试"""
+
+    print("=" * 80)
+    print("精细调优的自适应smooth_weight测试")
+    print("=" * 80)
+    print("\n基于参数扫描结果，优化范围设置为0.45-0.60\n")
+
+    # 精细调优的配置
+    test_configs = [
+        ("基准:固定0.55", None),
+
+        # 缩小范围到最优区间
+        ("窄范围(0.45-0.60)", AdaptiveSmoothConfig(
+            mode='hybrid',
+            smooth_weight_min=0.45,
+            smooth_weight_max=0.60,
+            characteristic_length=150.0,
+            alpha=0.6,
+            beta=0.4
+        )),
+
+        # 更窄的范围
+        ("极窄范围(0.50-0.58)", AdaptiveSmoothConfig(
+            mode='hybrid',
+            smooth_weight_min=0.50,
+            smooth_weight_max=0.58,
+            characteristic_length=150.0,
+            alpha=0.6,
+            beta=0.4
+        )),
+
+        # 距离为主的策略
+        ("距离为主(0.45-0.60)", AdaptiveSmoothConfig(
+            mode='hybrid',
+            smooth_weight_min=0.45,
+            smooth_weight_max=0.60,
+            characteristic_length=150.0,
+            alpha=0.8,  # 距离权重更高
+            beta=0.2
+        )),
+
+        # 残差为主的策略
+        ("残差为主(0.45-0.60)", AdaptiveSmoothConfig(
+            mode='hybrid',
+            smooth_weight_min=0.45,
+            smooth_weight_max=0.60,
+            residual_scale=0.02,  # 更敏感
+            alpha=0.3,
+            beta=0.7  # 残差权重更高
+        )),
+
+        # 小范围高灵敏度
+        ("小范围高灵敏(0.52-0.58)", AdaptiveSmoothConfig(
+            mode='hybrid',
+            smooth_weight_min=0.52,
+            smooth_weight_max=0.58,
+            characteristic_length=100.0,  # 更小的影响范围
+            residual_scale=0.01,  # 高灵敏度
+            alpha=0.5,
+            beta=0.5
+        )),
+
+        # 仅距离，最优范围
+        ("纯距离(0.45-0.60)", AdaptiveSmoothConfig(
+            mode='distance',
+            smooth_weight_min=0.45,
+            smooth_weight_max=0.60,
+            characteristic_length=150.0
+        )),
+
+        # 仅残差，最优范围
+        ("纯残差(0.45-0.60)", AdaptiveSmoothConfig(
+            mode='residual',
+            smooth_weight_min=0.45,
+            smooth_weight_max=0.60,
+            residual_scale=0.02
+        )),
+    ]
+
+    results = []
+
+    for i, (config_name, config) in enumerate(test_configs, 1):
+        print(f"\n[{i}/{len(test_configs)}] 测试: {config_name}")
+
+        result = test_config(config_name, config, verbose=False)
+        results.append(result)
+
+        if result['success']:
+            print(f"  ✓ 最大误差={result['max_error']:.4f}%, "
+                  f"平均误差={result['mean_error']:.4f}%, "
+                  f"闸门误差={result['max_gate_error']:.4f}%")
+        else:
+            print(f"  ✗ 失败")
+
+    # 汇总
+    print("\n" + "=" * 80)
+    print("结果汇总")
+    print("=" * 80)
+    print()
+
+    successful = [r for r in results if r['success']]
+
+    if successful:
+        print(f"{'配置':<25} | {'最大误差':>10} | {'平均误差':>10} | {'闸门误差':>10}")
+        print("-" * 80)
+
+        for r in sorted(successful, key=lambda x: x['max_error']):
+            print(f"{r['config_name']:<25} | {r['max_error']:>9.4f}% | "
+                  f"{r['mean_error']:>9.4f}% | {r['max_gate_error']:>9.4f}%")
+
+        print()
+
+        best = min(successful, key=lambda r: r['max_error'])
+        baseline = next((r for r in successful if "基准" in r['config_name']), None)
+
+        print("最佳配置:")
+        print(f"  名称: {best['config_name']}")
+        print(f"  最大误差: {best['max_error']:.4f}%")
+        print(f"  平均误差: {best['mean_error']:.4f}%")
+        print(f"  最大闸门误差: {best['max_gate_error']:.4f}%")
+
+        if baseline and best != baseline:
+            improvement = baseline['max_error'] / best['max_error']
+            diff = baseline['max_error'] - best['max_error']
+            print(f"\n相比基准:")
+            print(f"  改善倍数: {improvement:.3f}x")
+            print(f"  绝对改善: {diff:.4f}%")
+
+            if improvement > 1.1:
+                print(f"  ✓✓ 自适应策略有效！")
+            elif improvement > 1.02:
+                print(f"  ✓ 自适应策略略有改善")
+            else:
+                print(f"  ⚠ 自适应策略未显著改善")
+
+        # 检查1.5%目标
+        target_1_5 = [r for r in successful if r['max_error'] < 1.5]
+        target_1_0 = [r for r in successful if r['max_error'] < 1.0]
+
+        print()
+        if target_1_0:
+            print(f"✓✓✓ 有{len(target_1_0)}个配置达到1.0%目标！")
+            for r in target_1_0:
+                print(f"  - {r['config_name']}: {r['max_error']:.4f}%")
+        elif target_1_5:
+            print(f"✓✓ 有{len(target_1_5)}个配置达到1.5%目标！")
+            for r in target_1_5:
+                print(f"  - {r['config_name']}: {r['max_error']:.4f}%")
+        else:
+            print(f"⚠ 未达到1.5%目标")
+            print(f"  最佳: {best['max_error']:.4f}%")
+            print(f"  距离: {best['max_error'] / 1.5:.2f}x")
+
+    print("\n" + "=" * 80)
+
+
+if __name__ == "__main__":
+    main()
