@@ -1,0 +1,145 @@
+{
+  "examples/example_01_canal_flow/scripts/01_basic.py": {
+    "path": "examples/example_01_canal_flow/scripts/01_basic.py",
+    "name": "01_basic.py",
+    "uses_hydrostatic": false,
+    "uses_single": false,
+    "uses_canal": true,
+    "has_validation": false,
+    "has_gate": false,
+    "analyzable": true,
+    "solver_type": "CanalSolver (需迁移)"
+  },
+  "examples/example_01_canal_flow/scripts/01_basic_with_animation.py": {
+    "path": "examples/example_01_canal_flow/scripts/01_basic_with_animation.py",
+    "name": "01_basic_with_animation.py",
+    "uses_hydrostatic": false,
+    "uses_single": false,
+    "uses_canal": true,
+    "has_validation": false,
+    "has_gate": false,
+    "analyzable": true,
+    "solver_type": "CanalSolver (需迁移)"
+  },
+  "examples/example_01_canal_flow/scripts/02_methods_comparison.py": {
+    "path": "examples/example_01_canal_flow/scripts/02_methods_comparison.py",
+    "name": "02_methods_comparison.py",
+    "uses_hydrostatic": false,
+    "uses_single": false,
+    "uses_canal": false,
+    "has_validation": false,
+    "has_gate": false,
+    "analyzable": true,
+    "solver_type": "未知或无求解器"
+  },
+  "examples/example_01_canal_flow/scripts/03_idz_identification.py": {
+    "path": "examples/example_01_canal_flow/scripts/03_idz_identification.py",
+    "name": "03_idz_identification.py",
+    "uses_hydrostatic": false,
+    "uses_single": false,
+    "uses_canal": false,
+    "has_validation": false,
+    "has_gate": false,
+    "analyzable": true,
+    "solver_type": "未知或无求解器"
+  },
+  "examples/example_01_canal_flow/scripts/04_boundary_conditions.py": {
+    "path": "examples/example_01_canal_flow/scripts/04_boundary_conditions.py",
+    "name": "04_boundary_conditions.py",
+    "uses_hydrostatic": false,
+    "uses_single": false,
+    "uses_canal": true,
+    "has_validation": false,
+    "has_gate": false,
+    "analyzable": true,
+    "solver_type": "CanalSolver (需迁移)"
+  },
+  "examples/example_01_canal_flow/scripts/05_step_response.py": {
+    "path": "examples/example_01_canal_flow/scripts/05_step_response.py",
+    "name": "05_step_response.py",
+    "uses_hydrostatic": false,
+    "uses_single": false,
+    "uses_canal": false,
+    "has_validation": false,
+    "has_gate": false,
+    "analyzable": true,
+    "solver_type": "未知或无求解器"
+  },
+  "examples/example_01_canal_flow/scripts/06_animation.py": {
+    "path": "examples/example_01_canal_flow/scripts/06_animation.py",
+    "name": "06_animation.py",
+    "uses_hydrostatic": false,
+    "uses_single": false,
+    "uses_canal": false,
+    "has_validation": false,
+    "has_gate": false,
+    "analyzable": true,
+    "solver_type": "未知或无求解器"
+  },
+  "examples/example_01_canal_flow/scripts/07_sluice_gate_flow.py": {
+    "path": "examples/example_01_canal_flow/scripts/07_sluice_gate_flow.py",
+    "name": "07_sluice_gate_flow.py",
+    "uses_hydrostatic": false,
+    "uses_single": true,
+    "uses_canal": false,
+    "has_validation": false,
+    "has_gate": true,
+    "analyzable": true,
+    "solver_type": "SingleCanalSolver (需迁移)"
+  },
+  "examples/example_01_canal_flow/scripts/08_optimized_steady_solving.py": {
+    "path": "examples/example_01_canal_flow/scripts/08_optimized_steady_solving.py",
+    "name": "08_optimized_steady_solving.py",
+    "uses_hydrostatic": false,
+    "uses_single": true,
+    "uses_canal": false,
+    "has_validation": false,
+    "has_gate": true,
+    "analyzable": true,
+    "solver_type": "SingleCanalSolver (需迁移)"
+  },
+  "examples/example_01_canal_flow/scripts/09_simple_canal_enhanced.py": {
+    "path": "examples/example_01_canal_flow/scripts/09_simple_canal_enhanced.py",
+    "name": "09_simple_canal_enhanced.py",
+    "uses_hydrostatic": false,
+    "uses_single": false,
+    "uses_canal": false,
+    "has_validation": false,
+    "has_gate": false,
+    "analyzable": true,
+    "solver_type": "未知或无求解器"
+  },
+  "examples/example_01_canal_flow/scripts/10_canal_deep_analysis.py": {
+    "path": "examples/example_01_canal_flow/scripts/10_canal_deep_analysis.py",
+    "name": "10_canal_deep_analysis.py",
+    "uses_hydrostatic": false,
+    "uses_single": false,
+    "uses_canal": false,
+    "has_validation": false,
+    "has_gate": false,
+    "analyzable": true,
+    "solver_type": "未知或无求解器"
+  },
+  "examples/example_01_canal_flow/scripts/11_advanced_structures.py": {
+    "path": "examples/example_01_canal_flow/scripts/11_advanced_structures.py",
+    "name": "11_advanced_structures.py",
+    "uses_hydrostatic": true,
+    "uses_single": false,
+    "uses_canal": false,
+    "has_validation": false,
+    "has_gate": true,
+    "analyzable": true,
+    "solver_type": "HydrostaticCanalSolver (✓ 最新)"
+  },
+  "examples/example_01_canal_flow/scripts/12_advanced_optimized.py": {
+    "path": "examples/example_01_canal_flow/scripts/12_advanced_optimized.py",
+    "name": "12_advanced_optimized.py",
+    "uses_hydrostatic": false,
+    "uses_single": true,
+    "uses_canal": false,
+    "has_validation": false,
+    "has_gate": true,
+    "analyzable": true,
+    "solver_type": "SingleCanalSolver (需迁移)"
+  }
+}
