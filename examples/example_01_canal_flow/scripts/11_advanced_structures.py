@@ -12,9 +12,17 @@ Date: 2025-10-22
 """
 
 import sys, os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-# Add scripts directory to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Add project root to path
+# Script is in: examples/example_01_canal_flow/scripts/
+# Project root is 3 levels up
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_path))))
+sys.path.insert(0, project_root)
+
+# Add scripts directory to path for output_helper
+script_dir = os.path.dirname(script_path)
+sys.path.insert(0, script_dir)
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -74,8 +82,9 @@ def run_advanced_structures_demo():
     Q_initial = 10.0
     solver1.reset_with_steady_state(Q_initial)
 
-    # 稳态求解
-    result1 = solver1.solve_steady_state(
+    # 先使用标准求解器（作为对比）
+    print("使用标准求解器（对比基准）...")
+    result1_standard = solver1.solve_steady_state(
         Q_target=Q_initial,
         max_iterations=5000,
         convergence_tol=0.001,
@@ -83,26 +92,103 @@ def run_advanced_structures_demo():
         verbose=True
     )
 
-    # 可视化
+    profile1_standard = solver1.get_full_profile()
+    x1_std = profile1_standard['x']
+    Q1_std = profile1_standard['Q']
+
+    # 计算标准求解器的误差
+    Q1_std_error = np.abs(Q1_std - Q_initial) / Q_initial * 100
+    Q1_std_max_error = np.max(Q1_std_error)
+    print(f"\n标准求解器结果:")
+    print(f"  最大相对误差: {Q1_std_max_error:.4f}%")
+    print(f"  闸门1流量: {Q1_std[np.argmin(np.abs(x1_std-gate1.position))]:.4f} m³/s")
+    print(f"  闸门2流量: {Q1_std[np.argmin(np.abs(x1_std-gate2.position))]:.4f} m³/s")
+    print(f"  闸门3流量: {Q1_std[np.argmin(np.abs(x1_std-gate3.position))]:.4f} m³/s")
+
+    # 重置求解器，使用两阶段混合高精度求解器
+    print("\n" + "=" * 80)
+    print("使用两阶段混合高精度求解器（目标精度: 0.01%）...")
+    print("=" * 80)
+    solver1.reset_with_steady_state(Q_initial)
+
+    result1 = solver1.solve_steady_state_hybrid(
+        Q_target=Q_initial,
+        stage1_iterations=5000,
+        stage1_tol=0.01,
+        stage2_iterations=50000,
+        tol_global=1e-4,
+        tol_local=1e-4,
+        tol_structure=1e-4,
+        tol_temporal=1e-5,
+        check_interval=200,
+        verbose=True
+    )
+
+    # 可视化高精度结果
     profile1 = solver1.get_full_profile()
     x1 = profile1['x']
     Q1 = profile1['Q']
 
-    fig1, ax1 = plt.subplots(figsize=(14, 6))
-    ax1.plot(x1, Q1, 'b-', linewidth=2, label='Flow Rate')
-    ax1.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5, label=f'Target: {Q_initial} m³/s')
-    for i, gate in enumerate([gate1, gate2, gate3]):
-        ax1.axvline(x=gate.position, color='r', linestyle='--', alpha=0.7,
-                   label=f'Gate {i+1}' if i == 0 else '')
-    ax1.set_xlabel('Distance (m)', fontsize=12)
-    ax1.set_ylabel('Flow Rate (m³/s)', fontsize=12)
-    ax1.set_title('场景1: 三个闸门串联 - 流量分布', fontsize=14, fontweight='bold')
-    ax1.legend(fontsize=11)
-    ax1.grid(True, alpha=0.3)
+    # 计算高精度求解器的误差
+    Q1_error = np.abs(Q1 - Q_initial) / Q_initial * 100
+    Q1_max_error = np.max(Q1_error)
+    print(f"\n高精度求解器结果:")
+    print(f"  最大相对误差: {Q1_max_error:.4f}%")
+    print(f"  闸门1流量: {Q1[np.argmin(np.abs(x1-gate1.position))]:.4f} m³/s")
+    print(f"  闸门2流量: {Q1[np.argmin(np.abs(x1-gate2.position))]:.4f} m³/s")
+    print(f"  闸门3流量: {Q1[np.argmin(np.abs(x1-gate3.position))]:.4f} m³/s")
+    print(f"\n精度提升: {Q1_std_max_error/Q1_max_error:.1f}x")
 
-    save_figure(fig1, 'example_02_scenario1_multi_gates.png')
+    # 对比可视化
+    fig1, (ax1a, ax1b, ax1c) = plt.subplots(3, 1, figsize=(14, 14))
+
+    # Panel 1: 标准求解器结果
+    ax1a.plot(x1_std, Q1_std, 'r-', linewidth=2, label='Standard Solver', alpha=0.7)
+    ax1a.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5, label=f'Target: {Q_initial} m³/s')
+    for i, gate in enumerate([gate1, gate2, gate3]):
+        ax1a.axvline(x=gate.position, color='gray', linestyle='--', alpha=0.5)
+    ax1a.text(2500, Q_initial+0.3, 'Gate 1', ha='center', fontsize=9, color='gray')
+    ax1a.text(5000, Q_initial+0.3, 'Gate 2', ha='center', fontsize=9, color='gray')
+    ax1a.text(7500, Q_initial+0.3, 'Gate 3', ha='center', fontsize=9, color='gray')
+    ax1a.set_xlabel('Distance (m)', fontsize=12)
+    ax1a.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+    ax1a.set_title(f'标准求解器 (最大误差: {Q1_std_max_error:.4f}%)', fontsize=13, fontweight='bold')
+    ax1a.legend(fontsize=11)
+    ax1a.grid(True, alpha=0.3)
+    ax1a.set_ylim([Q_initial-0.8, Q_initial+0.5])
+
+    # Panel 2: 两阶段混合高精度求解器结果
+    ax1b.plot(x1, Q1, 'b-', linewidth=2, label='Hybrid High-Precision Solver', alpha=0.7)
+    ax1b.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5, label=f'Target: {Q_initial} m³/s')
+    for i, gate in enumerate([gate1, gate2, gate3]):
+        ax1b.axvline(x=gate.position, color='gray', linestyle='--', alpha=0.5)
+    ax1b.text(2500, Q_initial+0.3, 'Gate 1', ha='center', fontsize=9, color='gray')
+    ax1b.text(5000, Q_initial+0.3, 'Gate 2', ha='center', fontsize=9, color='gray')
+    ax1b.text(7500, Q_initial+0.3, 'Gate 3', ha='center', fontsize=9, color='gray')
+    ax1b.set_xlabel('Distance (m)', fontsize=12)
+    ax1b.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+    ax1b.set_title(f'两阶段混合高精度求解器 (最大误差: {Q1_max_error:.4f}%)', fontsize=13, fontweight='bold')
+    ax1b.legend(fontsize=11)
+    ax1b.grid(True, alpha=0.3)
+    ax1b.set_ylim([Q_initial-0.8, Q_initial+0.5])
+
+    # Panel 3: 误差对比
+    ax1c.plot(x1_std, Q1_std_error, 'r-', linewidth=2, label='Standard Solver Error', alpha=0.7)
+    ax1c.plot(x1, Q1_error, 'b-', linewidth=2, label='Hybrid Solver Error', alpha=0.7)
+    ax1c.axhline(y=0.01, color='g', linestyle='--', alpha=0.5, label='Target: 0.01%')
+    for i, gate in enumerate([gate1, gate2, gate3]):
+        ax1c.axvline(x=gate.position, color='gray', linestyle='--', alpha=0.5)
+    ax1c.set_xlabel('Distance (m)', fontsize=12)
+    ax1c.set_ylabel('Relative Error (%)', fontsize=12)
+    ax1c.set_title(f'误差对比 (精度提升: {Q1_std_max_error/Q1_max_error:.1f}x)', fontsize=13, fontweight='bold')
+    ax1c.legend(fontsize=11)
+    ax1c.grid(True, alpha=0.3)
+    ax1c.set_yscale('log')
+
+    plt.tight_layout()
+    save_figure(fig1, 'example_02_scenario1_multi_gates_comparison.png')
     plt.close(fig1)
-    print(f"  ✓ 保存: reports/figures/example_02_scenario1_multi_gates.png")
+    print(f"\n  ✓ 保存: reports/figures/example_02_scenario1_multi_gates_comparison.png")
     print()
 
     # ==================== 场景2: 混合结构 ====================
@@ -428,7 +514,8 @@ def run_advanced_structures_demo():
     print(f"       ({len(t_snapshots)} frames showing water depth and flow evolution)")
 
     print("\n关键结果:")
-    print(f"  场景1 - 三闸门流量守恒误差: {result1['final_error']*100:.4f}%")
+    print(f"  场景1 - 标准求解器误差: {Q1_std_max_error:.4f}%")
+    print(f"  场景1 - 高精度求解器误差: {Q1_max_error:.4f}% (提升 {Q1_std_max_error/Q1_max_error:.1f}x)")
     print(f"  场景2 - 混合结构流量守恒误差: {result2['final_error']*100:.4f}%")
     print(f"  场景3 - 闸门关闭后流量减少: {Q_initial:.2f} → {gate_flow_series[-1]:.2f} m³/s")
     print(f"  场景3 - Animation shows gate closing from 5.0m to 2.0m over {total_time/60:.0f} minutes")

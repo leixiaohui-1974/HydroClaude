@@ -42,22 +42,23 @@ class CanalSolver:
     def __init__(self, length: float = 1000.0, nx: int = 201,
                  B: float = 10.0, S0: float = 0.001, n: float = 0.025,
                  g: float = 9.81, method: str = 'preissmann',
-                 internal_structures: list = None):
+                 internal_structures: list = None,
+                 x_grid: np.ndarray = None):
         """
         初始化求解器
 
         Args:
             length: 渠道长度 (m)
-            nx: 空间离散点数
+            nx: 空间离散点数（如果x_grid=None时使用）
             B: 渠道宽度 (m)
             S0: 渠底坡度 (无量纲)
             n: Manning糙率系数 (s/m^(1/3))
             g: 重力加速度 (m/s²)
             method: 数值方法 ('explicit', 'preissmann', 'hll')
             internal_structures: 内部水工建筑物列表 [(position, structure_obj), ...]
+            x_grid: 自定义网格点坐标数组（可选，用于非均匀网格）
         """
         self.length = length
-        self.nx = nx
         self.B = B
         self.S0 = S0
         self.n = n
@@ -65,8 +66,23 @@ class CanalSolver:
         self.method = method.lower()
 
         # 空间离散
-        self.dx = length / (nx - 1)
-        self.x = np.linspace(0, length, nx)
+        if x_grid is not None:
+            # 使用自定义网格（非均匀）
+            self.x = x_grid
+            self.nx = len(x_grid)
+            self.is_uniform_grid = False
+            # 计算局部网格间距
+            self.dx_local = np.diff(x_grid)
+            # 为了兼容性，保留平均dx
+            self.dx = np.mean(self.dx_local)
+        else:
+            # 使用均匀网格
+            self.nx = nx
+            self.dx = length / (nx - 1)
+            self.x = np.linspace(0, length, nx)
+            self.is_uniform_grid = True
+            # 对于均匀网格，所有局部dx相同
+            self.dx_local = np.ones(nx-1) * self.dx
 
         # 初始化状态变量
         self.h = np.ones(nx) * 1.0  # 初始水深 (m)
@@ -166,16 +182,18 @@ class CanalSolver:
                     else:
                         Q_gate_new = Q_gate_current * (1 - relax) + Q_gate_target * relax
 
-                    # 更新闸门节点及其附近的流量
-                    # 使用渐变过渡确保平滑
+                    # 更新闸门节点流量
                     self.Q[idx] = Q_gate_new
 
-                    # 可选：调整邻近节点流量以保持平滑过渡
-                    # 这有助于数值稳定性
+                    # ⚠️  温和的邻近节点平滑（权重降低以减少守恒性破坏）
+                    # 使用10%权重而非50%，在稳定性和守恒性之间平衡
+                    smooth_weight = 0.1  # 降低平滑强度
                     if idx > 1:
-                        self.Q[idx - 1] = 0.5 * (self.Q[idx - 2] + Q_gate_new)
+                        Q_neighbor_target = 0.5 * (self.Q[idx - 2] + Q_gate_new)
+                        self.Q[idx - 1] = self.Q[idx - 1] * (1 - smooth_weight) + Q_neighbor_target * smooth_weight
                     if idx < self.nx - 2:
-                        self.Q[idx + 1] = 0.5 * (Q_gate_new + self.Q[idx + 2])
+                        Q_neighbor_target = 0.5 * (Q_gate_new + self.Q[idx + 2])
+                        self.Q[idx + 1] = self.Q[idx + 1] * (1 - smooth_weight) + Q_neighbor_target * smooth_weight
 
             # 自适应调整松弛因子
             if adaptive_relax and n_structures > 0:
@@ -244,6 +262,7 @@ class CanalSolver:
         应用Savitzky-Golay空间滤波器
 
         用于抑制高频空间振荡，同时保持边界条件不变
+        **重要**：跳过结构附近的节点，避免平滑真实的物理间断
 
         Args:
             field: 待滤波的场变量
@@ -260,6 +279,15 @@ class CanalSolver:
         # 保持边界条件
         filtered[0] = field[0]
         filtered[-1] = field[-1]
+
+        # ✅ 关键改进：保持结构附近的真实物理间断，不要平滑
+        # 在结构±3个节点范围内保持原始值
+        if self.structure_indices:
+            protection_radius = 3  # 保护半径（节点数）
+            for idx in self.structure_indices:
+                i_start = max(0, idx - protection_radius)
+                i_end = min(len(field), idx + protection_radius + 1)
+                filtered[i_start:i_end] = field[i_start:i_end]
 
         return filtered
 
@@ -309,7 +337,8 @@ class CanalSolver:
                 V = Q_old[i] / A
 
                 # === 连续性方程 ===
-                # 中心差分
+                # 注：使用平均dx以确保数值稳定性
+                # 非均匀网格的局部dx需要结构特定的守恒格式（Phase 2工作）
                 dQ_dx_central = (Q_old[i+1] - Q_old[i-1]) / (2 * self.dx)
 
                 # 迎风差分
@@ -459,6 +488,7 @@ class CanalSolver:
                     F2 = (S_R * F2_L - S_L * F2_R + S_L * S_R * (Q_R - Q_L)) / (S_R - S_L)
 
                 # 更新守恒变量
+                # 注：目前使用平均dx以确保稳定性
                 if i > 0:
                     A_Lm = self.B * h_old[i-1]
                     dh_dt = -(F1 - Q_old[i-1]) / self.dx / self.B
