@@ -1,0 +1,96 @@
+================================================================================
+旧代码清理报告
+================================================================================
+
+删除文件数: 11
+
+已删除文件列表:
+  - solvers/single_canal_solver.py
+  - solvers/canal_solver.py
+  - solvers/canal_solver_anderson.py
+  - solvers/canal_solver_improved.py
+  - solvers/hydrostatic_reconstruction_v2.py
+  - solvers/hydrostatic_reconstruction.py
+  - solvers/hybrid_solver_enhanced.py
+  - solvers/digital_twin.py
+  - solvers/fvm_steady_full.py
+  - solvers/mpc_scheduler_fast.py
+  - solvers/mpc_scheduler.py
+
+
+================================================================================
+旧代码迁移指南
+================================================================================
+
+## 已删除的旧求解器
+
+### single_canal_solver
+- 文件: `solvers/single_canal_solver.py`
+- 迁移到: `HydrostaticCanalSolver`
+
+需要更新的文件:
+  - test_high_precision_solver.py
+  - test_fvm_full_final.py
+  - test_adaptive_grid_optimized.py
+  - test_fvm_steady_comparison.py
+  - test_adaptive_grid_solver.py
+  - test_swmm_omega.py
+  - diagnose_precision.py
+  - test_adaptive_fine_tuned.py
+  - test_phase2_solver.py
+  - test_adaptive_smooth_weight.py
+  - test_final_optimization.py
+  - test_fvm_fdm_comparison.py
+  - fine_tune_optimization.py
+  - diagnose_grid_issue.py
+  - optimize_gate_precision.py
+  - test_grid_comprehensive.py
+  - verify_fixes.py
+  - optimize_gate_precision_extended.py
+  - diagnose_precision_issues.py
+  - test_fixes_quick.py
+  - test_grid_refinement.py
+  - examples/example_01_canal_flow/scripts/08_optimized_steady_solving.py
+  - examples/example_01_canal_flow/scripts/12_advanced_optimized.py
+  - examples/example_01_canal_flow/scripts/07_sluice_gate_flow.py
+  - examples/example_01_canal_flow/tests/test_adaptive_relax.py
+  - examples/example_01_canal_flow/tests/test_performance_comparison.py
+  - examples/example_16_weirs_application/weirs_irrigation_system.py
+  - tools/migrate_to_hydrostatic_solver.py
+  - tools/cleanup_legacy_code.py
+
+### canal_solver
+- 文件: `solvers/canal_solver.py`
+- 迁移到: `HydrostaticCanalSolver`
+
+需要更新的文件:
+  - solvers/canal_solver_anderson.py
+  - solvers/coupled_canal_solver.py
+  - solvers/canal_solver_improved.py
+  - solvers/single_canal_solver.py
+  - examples/advanced_animation_generator.py
+  - examples/generate_animations.py
+  - examples/example_01_canal_flow/scripts/01_basic.py
+  - examples/example_01_canal_flow/scripts/04_boundary_conditions.py
+  - examples/example_01_canal_flow/scripts/01_basic_with_animation.py
+  - examples/example_01_canal_flow/tests/test_anderson_tuning.py
+  - examples/example_01_canal_flow/tests/test_anderson_vs_aitken.py
+  - tests/benchmark_newton_vs_iterative.py
+  - tools/migrate_to_hydrostatic_solver.py
+  - tools/validate_all_scripts.py
+
+### canal_solver_anderson
+- 文件: `solvers/canal_solver_anderson.py`
+- 迁移到: `HydrostaticCanalSolver`
+
+需要更新的文件:
+  - examples/example_01_canal_flow/tests/test_anderson_vs_aitken.py
+
+### canal_solver_improved
+- 文件: `solvers/canal_solver_improved.py`
+- 迁移到: `HydrostaticCanalSolver`
+
+需要更新的文件:
+  - test_fvm_fdm_comparison.py
+
+================================================================================
