@@ -211,8 +211,13 @@ def run_sluice_gate_dynamics():
 
     # 仿真参数
     dt = 2.0
-    total_time = 16000.0  # 足够长以观察完整传播过程
+    total_time = 40000.0  # Extended from 16000s to allow full convergence
     n_steps = int(total_time / dt)
+
+    # Convergence detection parameters
+    convergence_check_interval = 200  # Check every 200 steps
+    convergence_window = 500  # Check last 500 steps for convergence
+    flow_convergence_tol = 0.001  # < 0.1% variation means converged
 
     # 监测点
     monitor_positions = {
@@ -266,19 +271,59 @@ def run_sluice_gate_dynamics():
             Q_snapshots.append(profile['Q'].copy())
             t_snapshots.append(t)
 
-        # 打印进度
-        if i % 200 == 0 or abs(t - step_time) < dt:
+        # 打印进度 and convergence check
+        if i % convergence_check_interval == 0 or abs(t - step_time) < dt:
             marker = " <-- STEP" if abs(t - step_time) < dt else ""
             inlet_Q = monitor_data['Inlet']['Q'][-1]
             outlet_Q = monitor_data['Outlet']['Q'][-1]
             gate_Q = gate_flow[-1]
+
+            # Check convergence (after step time and with sufficient history)
+            converged = False
+            if t > step_time + 2000 and len(gate_flow) >= convergence_window:
+                recent_flows = gate_flow[-convergence_window:]
+                flow_mean = np.mean(recent_flows)
+                flow_std = np.std(recent_flows)
+                flow_cv = flow_std / flow_mean if flow_mean > 0 else 1.0
+
+                if flow_cv < flow_convergence_tol:
+                    converged = True
+                    marker += " ✓ CONVERGED"
+
             print(f"  t={t:7.0f}s: Q_inlet={inlet_Q:5.2f}, Q_gate={gate_Q:5.2f}, Q_outlet={outlet_Q:5.2f} m³/s{marker}")
+
+            # Early termination if converged
+            if converged and t > step_time + 5000:
+                print(f"\n  ✓ System converged at t={t:.0f}s - terminating early")
+                # Trim arrays to actual length
+                time_series = time_series[:i+1]
+                gate_flow = gate_flow[:i+1]
+                for name in monitor_data:
+                    monitor_data[name]['h'] = monitor_data[name]['h'][:i+1]
+                    monitor_data[name]['Q'] = monitor_data[name]['Q'][:i+1]
+                break
 
     print()
     print(f"仿真完成！")
+    print(f"  总仿真时间: {time_series[-1]:.0f}s")
     print(f"  最终闸门流量: {gate_flow[-1]:.3f} m³/s (阶跃后目标: {Q_after_step} m³/s)")
     print(f"  最终入口流量: {monitor_data['Inlet']['Q'][-1]:.3f} m³/s")
     print(f"  最终出口流量: {monitor_data['Outlet']['Q'][-1]:.3f} m³/s")
+
+    # Calculate final convergence metrics
+    if len(gate_flow) >= convergence_window:
+        recent_flows = gate_flow[-convergence_window:]
+        flow_mean = np.mean(recent_flows)
+        flow_std = np.std(recent_flows)
+        flow_cv = (flow_std / flow_mean * 100) if flow_mean > 0 else 100.0
+        flow_error = abs(flow_mean - Q_after_step) / Q_after_step * 100
+        print(f"  最终收敛指标:")
+        print(f"    闸门流量变异系数: {flow_cv:.4f}%")
+        print(f"    闸门流量误差: {flow_error:.4f}%")
+        if flow_cv < 0.1:
+            print(f"    ✓ 系统已收敛 (CV < 0.1%)")
+        else:
+            print(f"    ⚠ 系统仍在调整 (CV = {flow_cv:.4f}%)")
     print()
 
     # ==================== 生成关键位置时间序列图 ====================

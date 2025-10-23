@@ -26,6 +26,14 @@ def run_optimized_example():
     print("优化版例子2：多闸门和混合结构")
     print("=" * 100)
     print()
+    print("重要说明:")
+    print("  对于复杂场景（如三闸门串联），标准方法（0.5%容差）可能无法收敛")
+    print("  建议:")
+    print("    - 简单场景（单结构或两结构）: 使用原方法（0.5%容差）")
+    print("    - 复杂场景（三个及以上结构）: 使用优化方法（1%容差 + 更多迭代）")
+    print("  本脚本对比两种方法的性能，帮助您选择合适的方法")
+    print("=" * 100)
+    print()
 
     # 通用参数
     canal_length = 10000.0
@@ -231,6 +239,7 @@ def run_optimized_example():
             if not result_a['converged']:
                 print(f"  ✓ 原方法未收敛，优化方法成功收敛！")
                 print(f"  优化结果: {result_b['iterations']}次迭代, 误差{result_b['final_error']*100:.4f}%, {time_b:.4f}s")
+                print(f"  ⚠ 推荐: 对于此场景，必须使用优化方法（1%容差）")
             else:
                 iter_improve = (result_a['iterations'] - result_b['iterations']) / result_a['iterations'] * 100
                 time_improve = (time_a - time_b) / time_a * 100
