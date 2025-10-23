@@ -404,6 +404,34 @@ def run_sluice_gate_dynamics():
     # ==================== 生成GIF动画 ====================
     print("  2. 生成纵剖面动态GIF动画...")
 
+    # 预计算所有帧的水面高程范围，以便设置合理的Y轴范围
+    all_z_surfaces = [z_bed + h_snap for h_snap in h_snapshots]
+    z_surface_min = np.min([np.min(z_surf) for z_surf in all_z_surfaces])
+    z_surface_max = np.max([np.max(z_surf) for z_surf in all_z_surfaces])
+    z_range = z_surface_max - z_surface_min
+
+    # 计算水位变化幅度
+    h_min_overall = np.min([np.min(h) for h in h_snapshots])
+    h_max_overall = np.max([np.max(h) for h in h_snapshots])
+    h_change = h_max_overall - h_min_overall
+
+    # 设置Y轴范围：聚焦在水面变化区域
+    # 策略：以水面高程为中心，设置一个能清晰显示水位变化的范围
+    # 如果水位变化很小，就放大显示；如果变化大，就用实际范围
+    focus_range = max(h_change * 3.0, 2.0)  # 至少2m范围，或水位变化的3倍
+
+    # 找到水面高程的中心
+    z_center = (z_surface_min + z_surface_max) / 2
+
+    # 以中心为基准，设置聚焦范围
+    y_min = z_center - focus_range / 2
+    y_max = z_center + focus_range / 2
+
+    # 确保渠底至少部分可见（但不强制显示全部渠底）
+    z_bed_min = np.min(z_bed)
+    if y_min < z_bed_min:
+        y_min = z_bed_min - 0.2
+
     fig_anim = plt.figure(figsize=(16, 10))
 
     def animate(frame_idx):
@@ -416,7 +444,7 @@ def run_sluice_gate_dynamics():
         # 计算水面高程
         z_surface_frame = z_bed + h_frame
 
-        # 子图1: 纵剖面
+        # 子图1: 纵剖面（使用优化的Y轴范围以显示水位变化）
         ax1 = plt.subplot(3, 1, 1)
         ax1.fill_between(x_full, z_bed, z_surface_frame, color='cyan', alpha=0.5)
         ax1.plot(x_full, z_surface_frame, 'b-', linewidth=2.5, label='Water Surface')
@@ -424,11 +452,11 @@ def run_sluice_gate_dynamics():
         ax1.axvline(x=gate_position, color='r', linestyle='--', linewidth=2.5, alpha=0.7, label='Gate')
         ax1.set_xlabel('Distance (m)', fontsize=12)
         ax1.set_ylabel('Elevation (m)', fontsize=12)
-        ax1.set_title(f'Longitudinal Profile - t = {t_frame:.0f}s', fontsize=14, fontweight='bold')
+        ax1.set_title(f'Longitudinal Profile - t = {t_frame:.0f}s (Y-axis optimized for water level changes)', fontsize=14, fontweight='bold')
         ax1.grid(True, alpha=0.3)
         ax1.legend(fontsize=10, loc='upper right')
         ax1.set_xlim([0, canal_length])
-        ax1.set_ylim([np.min(z_bed)-0.2, np.max(z_surface_frame)+0.3])
+        ax1.set_ylim([y_min, y_max])  # 使用优化的Y轴范围
 
         # 子图2: 水深分布
         ax2 = plt.subplot(3, 1, 2)
