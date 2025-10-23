@@ -344,6 +344,9 @@ class HydrostaticCanalSolver:
             S_mass[i] = 0.0
             S_momentum[i] = S_gravity + S_friction
 
+        # 注意：泵站扬程现在通过_apply_pump_head_jump()方法实现（跃变法）
+        # 不再使用源项法
+
         return F_mass, F_momentum, S_mass, S_momentum
 
     def _apply_internal_bc(self, t: float = 0.0, Q_target: float = None,
@@ -371,11 +374,18 @@ class HydrostaticCanalSolver:
             converged = True
 
             for idx, structure in zip(self.structure_indices, self.structure_objects):
+                # 导入PumpStation类型
+                from solvers.gate import PumpStation
+
                 # 更新结构时间
                 structure.update_time(t)
 
                 # 边界检查
                 if idx <= 0 or idx >= self.nx - 1:
+                    continue
+
+                # 🔧 跳过泵站：泵站的水位跃变通过_apply_pump_head_jump单独处理
+                if isinstance(structure, PumpStation):
                     continue
 
                 # 获取闸门上下游水深（闸门在节点idx，上游idx-1，下游idx+1）
@@ -409,28 +419,69 @@ class HydrostaticCanalSolver:
             if converged:
                 break
 
-        # 🔧 修复：流量调整收敛后，应用泵站扬程（使用软约束避免累加）
-        # 泵站会提升水位，下游水位应该 = 上游水位 + 扬程
-        # 使用松弛更新而非硬设置，避免在大循环中累加
-        pump_relax = 0.1  # 泵站扬程的松弛因子（较小以保持稳定）
+        # 注意：泵站扬程不通过这里的迭代实现，而是在每次迭代后强制施加跃变
+        # （见_apply_pump_head_jump方法）
+
+    def _apply_pump_head_jump(self):
+        """
+        施加泵站水位跃变（内部边界条件）
+
+        物理机制：
+        - 泵站将水流从低水位提升到高水位
+        - 下游水深 = 上游水深 + 扬程
+        - 流量守恒：Q_up = Q_down
+
+        实现策略：
+        - 在泵站位置(idx)建立一个平滑过渡段
+        - 过渡长度约3-5个网格点
+        - 使用强制约束确保扬程效果不被动力学抹平
+
+        这个方法在每个时间步或迭代后调用，确保泵站扬程效果。
+        """
+        if not self.structure_indices or not self.structure_objects:
+            return
+
         for idx, structure in zip(self.structure_indices, self.structure_objects):
-            if idx <= 0 or idx >= self.nx - 1:
-                continue
+            # 导入PumpStation类型
+            from solvers.gate import PumpStation
 
             if isinstance(structure, PumpStation) and structure.is_running:
-                # 获取当前上下游水深
-                h_up_current = self.h[idx - 1]
-                h_down_current = self.h[idx + 1]
+                # 检查索引有效性
+                if idx <= 2 or idx >= self.nx - 3:
+                    continue
 
-                # 目标下游水深 = 上游水深 + 扬程
-                h_down_target = h_up_current + structure.rated_head
+                # 获取泵站远上游水深（idx-2处，避免局部扰动影响）
+                h_upstream_ref = self.h[idx - 2]
 
-                # 软约束：渐进式调整下游水深
-                # h_down_new = h_down_old + relax * (h_down_target - h_down_old)
-                self.h[idx + 1] = h_down_current + pump_relax * (h_down_target - h_down_current)
+                # 获取泵站远下游水深（idx+3处）
+                h_downstream_ref = self.h[idx + 3]
+
+                # 目标：下游水深应该比上游高出rated_head
+                h_downstream_target = h_upstream_ref + structure.rated_head
+
+                # 计算参考流量（使用上游）
+                Q_ref = self.hu[idx - 2] * self.B
+
+                # 🔧 关键修复：在泵站上下游建立平滑过渡
+                # 使用较强的松弛因子，确保跃变不被完全抹平
+                relax_strong = 0.8  # 强约束
+
+                # 泵站下游第一个点（idx+1）：强制接近目标水深
+                self.h[idx + 1] = (1 - relax_strong) * self.h[idx + 1] + relax_strong * h_downstream_target
+
+                # 泵站下游第二个点（idx+2）：也施加部分约束
+                self.h[idx + 2] = (1 - relax_strong*0.6) * self.h[idx + 2] + relax_strong*0.6 * h_downstream_target
+
+                # 保持流量守恒
+                if self.h[idx + 1] > self.eps_dry:
+                    self.hu[idx + 1] = Q_ref / self.B
+
+                if self.h[idx + 2] > self.eps_dry:
+                    self.hu[idx + 2] = Q_ref / self.B
 
                 # 确保水深为正
                 self.h[idx + 1] = max(self.eps_dry, self.h[idx + 1])
+                self.h[idx + 2] = max(self.eps_dry, self.h[idx + 2])
 
     def step_explicit(self, dt: float) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -609,8 +660,11 @@ class HydrostaticCanalSolver:
             self.h = h_new
             self.hu = hu_new
 
-            # 应用内部边界条件（闸门、泵站）
-            # 通过调整水深使闸门流量公式满足Q_target，泵站应用扬程
+            # 应用泵站水位跃变（在强制流量守恒之后）
+            self._apply_pump_head_jump()
+
+            # 应用内部边界条件（闸门）
+            # 通过调整水深使闸门流量公式满足Q_target
             if self.structure_indices:
                 self._apply_internal_bc(t=self.current_time, Q_target=Q_target,
                                       max_iter=20, tol=0.05, relax=0.3)  # P2优化: 降低松弛因子 (0.6→0.3)
@@ -764,6 +818,9 @@ class HydrostaticCanalSolver:
             # 更新状态
             self.h = h_new
             self.hu = hu_new
+
+            # 应用泵站水位跃变
+            self._apply_pump_head_jump()
 
             # 应用内部边界条件（闸门）
             if self.structure_indices:
