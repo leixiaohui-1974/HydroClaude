@@ -195,9 +195,10 @@ class SingleCanalSolver:
                 Q_downstream_avg, self.B, self.S0, self.n, self.g
             )
 
-            # 执行时间步
+            # 执行时间步（PRECISION FIX #3: 保守策略 - 始终使用滤波器保持稳定性）
             self.solver.step(dt, Q_target, h_downstream, t=t,
-                           adaptive_relax=adaptive_relax)
+                           adaptive_relax=adaptive_relax,
+                           apply_filter=True)  # 保持滤波器以确保稳定性
             t += dt
             iterations_used = i + 1
 
@@ -411,7 +412,8 @@ class SingleCanalSolver:
 
             # 执行时间步（使用自适应松弛）
             self.solver.step(dt, Q_target, h_downstream, t=t,
-                           adaptive_relax=True)
+                           adaptive_relax=True,
+                           apply_filter=True)  # 保持滤波器以确保稳定性
             t += dt
             iterations_used += 1
 
