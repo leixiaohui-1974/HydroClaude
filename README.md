@@ -25,6 +25,16 @@ HydroClaude是一个专业的水力学仿真与优化框架，专注于明渠流
 | **[脚本升级总结](SCRIPT_UPGRADE_SUMMARY.md)** | 5个示例的详细测试结果 | 了解最佳实践 |
 | **[示例代码](examples/)** | 可运行的完整示例 | 快速上手 |
 
+### 🎯 工程化迁移项目
+
+| 文档 | 说明 | 状态 |
+|-----|------|------|
+| **[执行摘要](docs/EXECUTIVE_SUMMARY.md)** | 一分钟了解项目进展和成果 | ✅ 完成 |
+| **[Phase 2完成度报告](docs/PHASE_2_COMPLETION_REPORT.md)** | 详细的工作总结和剩余计划 | ✅ 完成 |
+| **[Phase 1总结](docs/PHASE_1_SUMMARY.md)** | 工具生态系统建设总结 | ✅ 完成 |
+| **[迁移总结](docs/MIGRATION_SUMMARY.md)** | 2个脚本迁移经验总结 | ✅ 完成 |
+| **[迁移指南](docs/MIGRATION_GUIDE.md)** | 完整的迁移操作手册 | ✅ 完成 |
+
 **⚠️ 开发前必读**: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md) - 避免重复造轮子！
 
 ---
