@@ -284,12 +284,12 @@ def run_optimized_example():
     })
     save_table(comparison_data, 'archive_01_optimized_comparison.csv', index=False)
 
-    # 导出详细剖面数据（方法3最优结果）
-    profile3 = solver3.get_full_profile()
+    # 导出详细剖面数据（使用方法2结果，因为方法3已禁用）
+    profile2 = solver2.get_full_profile()
     profile_data = pd.DataFrame({
-        'Distance_m': profile3['x'],
-        'Water_Depth_m': profile3['h'],
-        'Flow_Rate_m3s': profile3['Q']
+        'Distance_m': profile2['x'],
+        'Water_Depth_m': profile2['h'],
+        'Flow_Rate_m3s': profile2['Q']
     })
     save_table(profile_data, 'archive_01_optimized_profile.csv', index=False)
 
@@ -298,7 +298,7 @@ def run_optimized_example():
     print("    - archive_01_optimized_comparison.png")
     print("  Tables:")
     print(f"    - archive_01_optimized_comparison.csv (3 methods)")
-    print(f"    - archive_01_optimized_profile.csv ({len(profile3['x'])} points)")
+    print(f"    - archive_01_optimized_profile.csv ({len(profile2['x'])} points, from Method 2)")
 
     print("\n" + "=" * 100)
     print("完成！")
