@@ -48,7 +48,8 @@ class SingleCanalSolver:
                  refinement_radius: float = 200.0,
                  dx_fine: float = 5.0,
                  dx_coarse: float = 33.0,
-                 smooth_weight: float = 0.1):
+                 smooth_weight: float = 0.1,
+                 adaptive_smooth_config = None):
         """
         Args:
             total_length: 渠道总长度 (m)
@@ -63,7 +64,8 @@ class SingleCanalSolver:
             refinement_radius: 结构附近加密半径 (m)
             dx_fine: 加密区网格间距 (m)
             dx_coarse: 粗网格区间距 (m)
-            smooth_weight: 闸门附近节点平滑权重 (0-1, 默认0.1)
+            smooth_weight: 闸门附近节点平滑权重 (0-1, 默认0.1，当adaptive_smooth_config=None时使用)
+            adaptive_smooth_config: 自适应平滑配置（可选，AdaptiveSmoothConfig对象）
         """
         self.total_length = total_length
         self.structures = sorted(structures, key=lambda s: s.position)
@@ -75,6 +77,7 @@ class SingleCanalSolver:
         self.method = method
         self.use_adaptive_grid = use_adaptive_grid
         self.smooth_weight = smooth_weight
+        self.adaptive_smooth_config = adaptive_smooth_config
 
         # 当前模拟时间
         self.current_time = 0.0
@@ -121,7 +124,8 @@ class SingleCanalSolver:
             x_grid=x_grid,
             method=method,
             internal_structures=internal_structures,
-            smooth_weight=smooth_weight
+            smooth_weight=smooth_weight,
+            adaptive_smooth_config=adaptive_smooth_config
         )
 
     def reset_with_steady_state(self, Q0: float) -> float:
