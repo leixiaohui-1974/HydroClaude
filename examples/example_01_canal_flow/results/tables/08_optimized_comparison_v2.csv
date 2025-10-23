@@ -1,0 +1,4 @@
+Method,Converged,Iterations,Flow_Error_%,Computation_Time_s,Iterations_per_Second
+严格 (0.001),True,1,0.0,0.07594466209411621,13.167482380272183
+标准 (0.01),True,0,0.0,0.03949737548828125,0.0
+宽松 (0.1),True,0,0.0,0.0388181209564209,0.0
