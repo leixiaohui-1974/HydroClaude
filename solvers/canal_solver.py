@@ -43,7 +43,8 @@ class CanalSolver:
                  B: float = 10.0, S0: float = 0.001, n: float = 0.025,
                  g: float = 9.81, method: str = 'preissmann',
                  internal_structures: list = None,
-                 x_grid: np.ndarray = None):
+                 x_grid: np.ndarray = None,
+                 smooth_weight: float = 0.1):
         """
         初始化求解器
 
@@ -57,6 +58,7 @@ class CanalSolver:
             method: 数值方法 ('explicit', 'preissmann', 'hll')
             internal_structures: 内部水工建筑物列表 [(position, structure_obj), ...]
             x_grid: 自定义网格点坐标数组（可选，用于非均匀网格）
+            smooth_weight: 闸门附近节点平滑权重 (0-1, 默认0.1)
         """
         self.length = length
         self.B = B
@@ -64,6 +66,7 @@ class CanalSolver:
         self.n = n
         self.g = g
         self.method = method.lower()
+        self.smooth_weight = smooth_weight  # 闸门附近节点平滑权重
 
         # 空间离散
         if x_grid is not None:
@@ -186,14 +189,13 @@ class CanalSolver:
                     self.Q[idx] = Q_gate_new
 
                     # ⚠️  温和的邻近节点平滑（权重降低以减少守恒性破坏）
-                    # 使用10%权重而非50%，在稳定性和守恒性之间平衡
-                    smooth_weight = 0.1  # 降低平滑强度
+                    # 使用可配置权重，在稳定性和守恒性之间平衡
                     if idx > 1:
                         Q_neighbor_target = 0.5 * (self.Q[idx - 2] + Q_gate_new)
-                        self.Q[idx - 1] = self.Q[idx - 1] * (1 - smooth_weight) + Q_neighbor_target * smooth_weight
+                        self.Q[idx - 1] = self.Q[idx - 1] * (1 - self.smooth_weight) + Q_neighbor_target * self.smooth_weight
                     if idx < self.nx - 2:
                         Q_neighbor_target = 0.5 * (Q_gate_new + self.Q[idx + 2])
-                        self.Q[idx + 1] = self.Q[idx + 1] * (1 - smooth_weight) + Q_neighbor_target * smooth_weight
+                        self.Q[idx + 1] = self.Q[idx + 1] * (1 - self.smooth_weight) + Q_neighbor_target * self.smooth_weight
 
             # 自适应调整松弛因子
             if adaptive_relax and n_structures > 0:

@@ -47,7 +47,8 @@ class SingleCanalSolver:
                  use_adaptive_grid: bool = False,
                  refinement_radius: float = 200.0,
                  dx_fine: float = 5.0,
-                 dx_coarse: float = 33.0):
+                 dx_coarse: float = 33.0,
+                 smooth_weight: float = 0.1):
         """
         Args:
             total_length: 渠道总长度 (m)
@@ -62,6 +63,7 @@ class SingleCanalSolver:
             refinement_radius: 结构附近加密半径 (m)
             dx_fine: 加密区网格间距 (m)
             dx_coarse: 粗网格区间距 (m)
+            smooth_weight: 闸门附近节点平滑权重 (0-1, 默认0.1)
         """
         self.total_length = total_length
         self.structures = sorted(structures, key=lambda s: s.position)
@@ -72,6 +74,7 @@ class SingleCanalSolver:
         self.g = g
         self.method = method
         self.use_adaptive_grid = use_adaptive_grid
+        self.smooth_weight = smooth_weight
 
         # 当前模拟时间
         self.current_time = 0.0
@@ -117,7 +120,8 @@ class SingleCanalSolver:
             g=g,
             x_grid=x_grid,
             method=method,
-            internal_structures=internal_structures
+            internal_structures=internal_structures,
+            smooth_weight=smooth_weight
         )
 
     def reset_with_steady_state(self, Q0: float) -> float:
@@ -170,9 +174,14 @@ class SingleCanalSolver:
         final_error = 1.0
         iterations_used = 0
 
+        # 🎯 智能早期终止机制
+        best_error = float('inf')
+        best_state = None
+        error_increase_count = 0
+
         if verbose:
             mode_str = "自适应松弛" if adaptive_relax else "固定松弛"
-            print(f"开始稳态求解（目标流量: {Q_target} m³/s, {mode_str}）...")
+            print(f"开始稳态求解（目标流量: {Q_target} m³/s, {mode_str} + 智能早停）...")
             print(f"  自适应时间步长: dt={dt:.3f}s (dx_min={dx_min:.2f}m, CFL={CFL_target})")
 
         for i in range(max_iterations):
@@ -199,6 +208,32 @@ class SingleCanalSolver:
                     gate_str = ', '.join([f"Q{j+1}={gf:.3f}" for j, gf in enumerate(gate_flows)])
                     print(f"  t={t:.0f}s: Q_avg={Q_avg:.4f} m³/s, 误差={Q_error*100:.4f}%, {gate_str}")
 
+                # 🎯 早期终止逻辑：追踪最佳状态
+                if Q_error < best_error:
+                    best_error = Q_error
+                    best_state = {
+                        'Q': self.solver.Q.copy(),
+                        'h': self.solver.h.copy(),
+                        'iteration': i,
+                        'time': t
+                    }
+                    error_increase_count = 0
+                else:
+                    error_increase_count += 1
+                    # 误差连续增长3次 → 回退并终止
+                    if error_increase_count >= 3 and best_state is not None:
+                        if verbose:
+                            print(f"\n⚠ 检测到误差连续增长，回退到最佳状态")
+                            print(f"  最佳: i={best_state['iteration']}, t={best_state['time']:.0f}s, "
+                                  f"误差={best_error*100:.4f}%")
+                        self.solver.Q = best_state['Q']
+                        self.solver.h = best_state['h']
+                        iterations_used = best_state['iteration']
+                        t = best_state['time']
+                        final_error = best_error
+                        converged = (best_error < convergence_tol)
+                        break
+
                 if Q_error < convergence_tol:
                     converged = True
                     if verbose:
@@ -214,7 +249,8 @@ class SingleCanalSolver:
             'final_error': final_error,
             'Q_target': Q_target,
             'Q_avg': np.mean(self.solver.Q[1:-1]),
-            'gate_flows': self.get_gate_flows()
+            'gate_flows': self.get_gate_flows(),
+            'best_error': best_error
         }
 
     def step(self, dt: float, Q_upstream: float,
