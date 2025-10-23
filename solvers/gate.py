@@ -145,7 +145,10 @@ class SluiceGate(HydraulicStructure):
         delta_h = h_upstream - h_downstream
         if h_downstream > e or delta_h < self.submerged_threshold:
             # 淹没出流
-            delta_h_effective = max(1e-4, delta_h)  # 避免负值或零
+            # ✅ 精度修复：降低截断阈值（PRECISION FIX #1 - MINIMAL）
+            # 使用更小的截断阈值以提高精度，但保持数值稳定性
+            delta_h_min = 1e-6  # 降低阈值从1e-4到1e-6（提高100倍精度）
+            delta_h_effective = max(delta_h_min, delta_h)
             discharge = self.Cd * self.width * e * np.sqrt(2 * self.g * delta_h_effective)
             flow_type = 'submerged'
         else:
