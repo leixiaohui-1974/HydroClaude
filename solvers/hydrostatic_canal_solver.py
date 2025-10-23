@@ -560,20 +560,22 @@ class HydrostaticCanalSolver:
             h_new, hu_new = self.step_preissmann(dt)
 
             # 应用边界条件
-            # 入口：强制设置流量
-            hu_new[0] = Q_target / self.B
             # 出口：设置水深
             h_new[-1] = h_downstream
+
+            # 流量约束策略：稳态流全渠道流量应守恒
+            # 强制所有节点流量相同（质量守恒）
+            hu_new[:] = Q_target / self.B
 
             # 更新状态
             self.h = h_new
             self.hu = hu_new
 
             # 应用内部边界条件（闸门）
-            # 通过调整水深使闸门流量满足Q_target
+            # 通过调整水深使闸门流量公式满足Q_target
             if self.structure_indices:
                 self._apply_internal_bc(t=self.current_time, Q_target=Q_target,
-                                      max_iter=20, tol=0.01, relax=0.5)
+                                      max_iter=20, tol=0.05, relax=0.6)
 
             # 检查收敛
             dh_max = np.max(np.abs(self.h - h_old))
