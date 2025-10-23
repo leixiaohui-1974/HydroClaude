@@ -22,3 +22,6 @@ env/
 
 # Generated files
 *.png
+
+# Log files
+*.log
