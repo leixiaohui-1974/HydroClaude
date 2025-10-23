@@ -431,6 +431,205 @@ class SingleCanalSolver:
 
         return result
 
+    def solve_steady_state_hybrid(self,
+                                   Q_target: float,
+                                   stage1_iterations: int = 5000,
+                                   stage1_tol: float = 0.01,
+                                   stage2_iterations: int = 50000,
+                                   tol_global: float = 1e-4,
+                                   tol_local: float = 1e-4,
+                                   tol_structure: float = 1e-4,
+                                   tol_temporal: float = 1e-5,
+                                   check_interval: int = 200,
+                                   verbose: bool = True) -> Dict:
+        """
+        两阶段混合高精度求解器
+
+        阶段1: 使用标准求解器快速逼近（dt=1.0s + 自适应松弛）
+        阶段2: 使用小步长精细优化（dt=0.2s固定）
+
+        这种策略结合了两种方法的优势：
+        - 快速收敛到目标附近（避免长时间小步长迭代）
+        - 精细优化达到高精度（小步长保证稳定性）
+        """
+
+        if verbose:
+            print("\n" + "=" * 80)
+            print("两阶段混合高精度求解")
+            print("=" * 80)
+
+        # ==================== 阶段1: 快速逼近 ====================
+        if verbose:
+            print(f"\n阶段1: 使用标准求解器快速逼近（目标误差: {stage1_tol*100:.2f}%）")
+            print("-" * 80)
+
+        result_stage1 = self.solve_steady_state(
+            Q_target=Q_target,
+            max_iterations=stage1_iterations,
+            convergence_tol=stage1_tol,
+            check_interval=500,
+            verbose=verbose
+        )
+
+        stage1_error = result_stage1['final_error']
+
+        if verbose:
+            print(f"\n阶段1完成:")
+            print(f"  迭代次数: {result_stage1['iterations']}")
+            print(f"  最终误差: {stage1_error*100:.4f}%")
+            print(f"  平均流量: {result_stage1['Q_avg']:.4f} m³/s")
+            gate_flows_1 = self.get_gate_flows()
+            if gate_flows_1:
+                print(f"  闸门流量: {', '.join([f'{gf:.4f}' for gf in gate_flows_1])}")
+
+        # ==================== 阶段2: 精细优化 ====================
+        if verbose:
+            print(f"\n" + "=" * 80)
+            print(f"阶段2: 使用小步长精细优化（目标精度: {tol_global*100:.4f}%）")
+            print("-" * 80)
+            print(f"  固定时间步: dt=0.2s")
+            print(f"  最大迭代次数: {stage2_iterations}")
+            print(f"  收敛标准: 全局<{tol_global:.0e}, 局部<{tol_local:.0e}, "
+                  f"结构<{tol_structure:.0e}, 时间<{tol_temporal:.0e}")
+            print()
+
+        # 阶段2使用小固定步长
+        dt = 0.2
+
+        # 记录残差历史
+        residuals = {
+            'global': [],
+            'local': [],
+            'structure': [],
+            'temporal': [],
+            'L2': [],
+            'Linf': []
+        }
+
+        # 历史记录用于时间稳定性检查
+        Q_history = []
+
+        converged = False
+        iterations_used = result_stage1['iterations']
+        t = self.current_time
+
+        for i in range(stage2_iterations):
+            # 单步推进
+            self.step(dt, Q_upstream=Q_target)
+            t = self.current_time
+            iterations_used += 1
+
+            # 记录流量历史
+            Q_current = self.solver.Q.copy()
+            Q_history.append(Q_current)
+            if len(Q_history) > 10:
+                Q_history.pop(0)
+
+            # 每check_interval步检查收敛
+            if i % check_interval == 0:
+                # Level 1: 全局守恒
+                Q_avg = np.mean(Q_current[1:-1])
+                error_global = abs(Q_avg - Q_target) / Q_target
+                residuals['global'].append(error_global)
+
+                # Level 2: 局部守恒
+                Q_diff = np.abs(np.diff(Q_current))
+                error_local = np.max(Q_diff) / Q_target
+                residuals['local'].append(error_local)
+
+                # Level 3: 结构守恒
+                gate_flows = self.get_gate_flows()
+                if gate_flows:
+                    gate_errors = [abs(gf - Q_target) / Q_target for gf in gate_flows]
+                    error_structure = max(gate_errors)
+                else:
+                    error_structure = 0.0
+                residuals['structure'].append(error_structure)
+
+                # Level 4: 时间稳定性
+                if len(Q_history) >= 2:
+                    Q_change = np.max(np.abs(Q_history[-1] - Q_history[-2]))
+                    Q_magnitude = np.mean(np.abs(Q_history[-1]))
+                    error_temporal = Q_change / Q_magnitude if Q_magnitude > 0 else 1.0
+                else:
+                    error_temporal = 1.0
+                residuals['temporal'].append(error_temporal)
+
+                # Additional metrics
+                error_L2 = np.sqrt(np.mean((Q_current - Q_target)**2)) / Q_target
+                residuals['L2'].append(error_L2)
+
+                error_Linf = np.max(np.abs(Q_current - Q_target)) / Q_target
+                residuals['Linf'].append(error_Linf)
+
+                if verbose:
+                    gate_str = ', '.join([f"Q{j+1}={gf:.4f}" for j, gf in enumerate(gate_flows)])
+                    print(f"  t={t:7.0f}s: 全局={error_global:.2e}, 局部={error_local:.2e}, "
+                          f"结构={error_structure:.2e}, 时间={error_temporal:.2e} | {gate_str}")
+
+                # 检查收敛（所有层次同时满足）
+                all_converged = (error_global < tol_global and
+                                error_local < tol_local and
+                                error_structure < tol_structure and
+                                error_temporal < tol_temporal)
+
+                if all_converged:
+                    converged = True
+                    if verbose:
+                        print(f"\n{'='*60}")
+                        print(f"✓✓✓ 达到高精度稳态 ✓✓✓")
+                        print(f"{'='*60}")
+                        print(f"  阶段1迭代: {result_stage1['iterations']}")
+                        print(f"  阶段2迭代: {i+1}")
+                        print(f"  总迭代数: {iterations_used}")
+                    break
+
+        # 最终统计
+        final_Q_avg = np.mean(self.solver.Q[1:-1])
+        final_gate_flows = self.get_gate_flows()
+
+        result = {
+            'converged': converged,
+            'iterations': iterations_used,
+            'stage1_iterations': result_stage1['iterations'],
+            'stage2_iterations': iterations_used - result_stage1['iterations'],
+            'final_time': self.current_time,
+            'Q_target': Q_target,
+            'Q_avg': final_Q_avg,
+            'gate_flows': final_gate_flows,
+            'residuals': residuals,
+            'stage1_error': stage1_error,
+            'error_global': residuals['global'][-1] if residuals['global'] else 1.0,
+            'error_local': residuals['local'][-1] if residuals['local'] else 1.0,
+            'error_structure': residuals['structure'][-1] if residuals['structure'] else 1.0,
+            'error_temporal': residuals['temporal'][-1] if residuals['temporal'] else 1.0,
+            'error_L2': residuals['L2'][-1] if residuals['L2'] else 1.0,
+            'error_Linf': residuals['Linf'][-1] if residuals['Linf'] else 1.0,
+        }
+
+        if verbose:
+            print(f"\n最终结果:")
+            print(f"  阶段1迭代数: {result['stage1_iterations']}")
+            print(f"  阶段2迭代数: {result['stage2_iterations']}")
+            print(f"  总迭代次数: {iterations_used}")
+            print(f"  总仿真时间: {self.current_time:.0f}s")
+            print(f"  目标流量: {Q_target:.6f} m³/s")
+            print(f"  平均流量: {final_Q_avg:.6f} m³/s")
+            print(f"  阶段1→阶段2误差: {stage1_error*100:.4f}% → {result['error_structure']*100:.4f}%")
+            print(f"  精度提升倍数: {stage1_error/result['error_structure']:.1f}x")
+            print(f"\n分项误差:")
+            print(f"  全局误差: {result['error_global']:.2e} ({'✓' if result['error_global'] < tol_global else '✗'})")
+            print(f"  局部误差: {result['error_local']:.2e} ({'✓' if result['error_local'] < tol_local else '✗'})")
+            print(f"  结构误差: {result['error_structure']:.2e} ({'✓' if result['error_structure'] < tol_structure else '✗'})")
+            print(f"  时间误差: {result['error_temporal']:.2e} ({'✓' if result['error_temporal'] < tol_temporal else '✗'})")
+            print(f"  L2范数: {result['error_L2']:.2e}")
+            print(f"  L∞范数: {result['error_Linf']:.2e}")
+            if final_gate_flows:
+                print(f"  闸门流量: {', '.join([f'{gf:.6f}' for gf in final_gate_flows])}")
+            print()
+
+        return result
+
     def clear_history(self):
         """清空历史记录"""
         self.solver.clear_history()
