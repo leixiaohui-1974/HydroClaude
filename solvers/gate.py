@@ -846,6 +846,40 @@ class PumpStation(HydraulicStructure):
         """
         self.is_running = is_running
 
+    def get_momentum_source(self, h: float, dx: float, spread_points: int = 5) -> float:
+        """
+        计算泵站扬程引起的动量源项
+
+        物理意义：泵站提供能量（扬程），在明渠中表现为水位抬升。
+        在动量方程中，这相当于一个压力梯度源项。
+
+        动量方程：∂(hu)/∂t + ∂(hu²/h + 0.5gh²)/∂x = -ghS_f + S_pump
+
+        泵站源项：S_pump = g * h * (ΔH/Δx)
+        其中：
+        - ΔH = rated_head（泵站额定扬程）
+        - Δx = spread_points * dx（泵站作用范围，通常2-5个网格）
+
+        Args:
+            h: 当前位置水深 (m)
+            dx: 网格间距 (m)
+            spread_points: 泵站作用范围（网格点数）
+
+        Returns:
+            S_pump: 动量源项 (m/s²)
+        """
+        if not self.is_running:
+            return 0.0
+
+        # 泵站作用范围
+        pump_length = spread_points * dx
+
+        # 动量源项：S = g * h * (ΔH / L_pump)
+        # 这个源项使下游动量增加，表现为水位抬升
+        S_pump = self.g * h * self.rated_head / pump_length
+
+        return S_pump
+
     def __repr__(self) -> str:
         state = "ON" if self.is_running else "OFF"
         return (f"PumpStation(position={self.position}m, Q_rated={self.rated_flow}m³/s, "

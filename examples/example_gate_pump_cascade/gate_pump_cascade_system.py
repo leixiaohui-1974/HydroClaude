@@ -60,7 +60,7 @@ def main():
     B = 15.0                # 渠道宽度 (m)
     S0 = 0.0001             # 底坡（缓坡）
     n = 0.025               # 曼宁糙率
-    nx = 501                # 空间网格点数
+    nx = 501                # 空间网格点数 (暂时用501快速测试)
 
     # 流量参数
     Q_initial = 30.0        # 初始流量 (m³/s)
@@ -80,9 +80,9 @@ def main():
     pump_rated_head = 5.0   # 额定扬程 (m)
     pump_min_head = 2.0     # 最小吸入水头 (m)
 
-    # 瞬态模拟参数
-    t_total = 3600.0        # 总模拟时间 (s) = 1小时
-    dt = 1.0                # 时间步长 (s)
+    # 瞬态模拟参数  (P2优化: 增加模拟时长和减小时间步长)
+    t_total = 7200.0        # 总模拟时间 (s) = 2小时 (原1小时)
+    dt = 0.5                # 时间步长 (s) (原1.0秒)
 
     print(f"渠道参数:")
     print(f"  总长度: {L_total/1000:.1f} km = {L_total:.0f} m")
@@ -181,7 +181,7 @@ def main():
         Q_target=Q_initial,
         h_downstream=h_down_steady,
         convergence_tol=0.001,  # 0.1%容差
-        max_iterations=500,
+        max_iterations=500,     # 先用500测试收敛性
         dt=dt,
         verbose=True
     )
@@ -290,100 +290,100 @@ def main():
 
     viz = VisualizationTemplates()
 
-    # 图1：稳态纵剖面（水深+流量）
-    print("生成图1：稳态纵剖面...")
+    # Figure 1: Steady-state longitudinal profile (water depth + flow)
+    print("Generating Figure 1: Steady-state longitudinal profile...")
 
     fig1, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 10), sharex=True)
 
-    # 子图1：水深
-    ax1.plot(solver.x / 1000, h_steady, 'b-', linewidth=2, label='水深')
-    ax1.set_ylabel('水深 (m)', fontsize=12)
-    ax1.set_title(f'稳态纵剖面 (Q = {Q_initial} m³/s)', fontsize=14, fontweight='bold')
+    # Subplot 1: Water depth
+    ax1.plot(solver.x / 1000, h_steady, 'b-', linewidth=2, label='Water Depth')
+    ax1.set_ylabel('Water Depth (m)', fontsize=12)
+    ax1.set_title(f'Steady-State Longitudinal Profile (Q = {Q_initial} m³/s)', fontsize=14, fontweight='bold')
     ax1.grid(True, alpha=0.3)
     ax1.legend(fontsize=11)
 
-    # 标注结构物
-    for pos, name in [(gate1_pos/1000, '闸1'), (pump_pos/1000, '泵站'), (gate2_pos/1000, '闸2')]:
+    # Mark structures
+    for pos, name in [(gate1_pos/1000, 'Gate1'), (pump_pos/1000, 'Pump'), (gate2_pos/1000, 'Gate2')]:
         ax1.axvline(pos, color='red', linestyle='--', linewidth=1.5, alpha=0.5)
         ax1.text(pos, ax1.get_ylim()[1] * 0.98, name,
                 color='red', fontsize=10, ha='center', va='top',
                 bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
 
-    # 子图2：流量
+    # Subplot 2: Flow rate
     q_steady = hu_steady * B
-    ax2.plot(solver.x / 1000, q_steady, 'g-', linewidth=2, label='流量')
-    ax2.axhline(Q_initial, color='gray', linestyle='--', linewidth=1, alpha=0.5, label=f'目标流量 ({Q_initial} m³/s)')
-    ax2.set_xlabel('距离 (km)', fontsize=12)
-    ax2.set_ylabel('流量 (m³/s)', fontsize=12)
+    ax2.plot(solver.x / 1000, q_steady, 'g-', linewidth=2, label='Flow Rate')
+    ax2.axhline(Q_initial, color='gray', linestyle='--', linewidth=1, alpha=0.5, label=f'Target Flow ({Q_initial} m³/s)')
+    ax2.set_xlabel('Distance (km)', fontsize=12)
+    ax2.set_ylabel('Flow Rate (m³/s)', fontsize=12)
     ax2.grid(True, alpha=0.3)
     ax2.legend(fontsize=11)
 
-    # 标注结构物
-    for pos, name in [(gate1_pos/1000, '闸1'), (pump_pos/1000, '泵站'), (gate2_pos/1000, '闸2')]:
+    # Mark structures
+    for pos, name in [(gate1_pos/1000, 'Gate1'), (pump_pos/1000, 'Pump'), (gate2_pos/1000, 'Gate2')]:
         ax2.axvline(pos, color='red', linestyle='--', linewidth=1.5, alpha=0.5)
 
     fig1.tight_layout()
 
-    # 保存
+    # Save
     output_dir = os.path.join(project_root, "examples", "example_gate_pump_cascade", "results")
     os.makedirs(output_dir, exist_ok=True)
     fig1.savefig(os.path.join(output_dir, "01_steady_state_profile.png"), dpi=150, bbox_inches='tight')
     plt.close(fig1)
-    print(f"  已保存: 01_steady_state_profile.png")
+    print(f"  Saved: 01_steady_state_profile.png")
 
-    # 图2：水深时空演化图
-    print("生成图2：水深时空演化...")
+    # Figure 2: Water depth spatiotemporal evolution
+    print("Generating Figure 2: Water depth spatiotemporal evolution...")
     X, T = np.meshgrid(solver.x / 1000, time_history / 60)  # km, min
 
     fig2, ax2 = plt.subplots(figsize=(16, 10))
     contour2 = ax2.contourf(X, T, h_history, levels=20, cmap='viridis')
-    cbar2 = plt.colorbar(contour2, ax=ax2, label='水深 (m)')
+    cbar2 = plt.colorbar(contour2, ax=ax2, label='Water Depth (m)')
 
-    # 添加结构物位置线
-    for pos, name in [(gate1_pos/1000, "闸1"), (pump_pos/1000, "泵站"), (gate2_pos/1000, "闸2")]:
+    # Add structure position lines
+    for pos, name in [(gate1_pos/1000, "Gate1"), (pump_pos/1000, "Pump"), (gate2_pos/1000, "Gate2")]:
         ax2.axvline(pos, color='red', linestyle='--', linewidth=1.5, alpha=0.7)
         ax2.text(pos, np.max(time_history/60) * 0.95, name,
                 color='red', fontsize=10, ha='center', va='top',
                 bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
 
-    ax2.set_xlabel('距离 (km)', fontsize=12)
-    ax2.set_ylabel('时间 (分钟)', fontsize=12)
-    ax2.set_title('水深时空演化 (流量阶跃 30→55 m³/s)', fontsize=14, fontweight='bold')
+    ax2.set_xlabel('Distance (km)', fontsize=12)
+    ax2.set_ylabel('Time (min)', fontsize=12)
+    ax2.set_title('Water Depth Spatiotemporal Evolution (Flow Step 30→55 m³/s)', fontsize=14, fontweight='bold')
     ax2.grid(True, alpha=0.3)
     fig2.tight_layout()
 
     fig2.savefig(os.path.join(output_dir, "02_water_depth_spacetime.png"), dpi=150, bbox_inches='tight')
     plt.close(fig2)
-    print(f"  已保存: 02_water_depth_spacetime.png")
+    print(f"  Saved: 02_water_depth_spacetime.png")
 
-    # 图3：流量时空演化图
-    print("生成图3：流量时空演化...")
+    # Figure 3: Flow rate spatiotemporal evolution
+    print("Generating Figure 3: Flow rate spatiotemporal evolution...")
 
     fig3, ax3 = plt.subplots(figsize=(16, 10))
     contour3 = ax3.contourf(X, T, q_history, levels=20, cmap='plasma')
-    cbar3 = plt.colorbar(contour3, ax=ax3, label='流量 (m³/s)')
+    cbar3 = plt.colorbar(contour3, ax=ax3, label='Flow Rate (m³/s)')
 
-    # 添加结构物位置线
-    for pos, name in [(gate1_pos/1000, "闸1"), (pump_pos/1000, "泵站"), (gate2_pos/1000, "闸2")]:
+    # Add structure position lines
+    for pos, name in [(gate1_pos/1000, "Gate1"), (pump_pos/1000, "Pump"), (gate2_pos/1000, "Gate2")]:
         ax3.axvline(pos, color='cyan', linestyle='--', linewidth=1.5, alpha=0.7)
         ax3.text(pos, np.max(time_history/60) * 0.95, name,
                 color='cyan', fontsize=10, ha='center', va='top',
                 bbox=dict(boxstyle='round', facecolor='black', alpha=0.7))
 
-    ax3.set_xlabel('距离 (km)', fontsize=12)
-    ax3.set_ylabel('时间 (分钟)', fontsize=12)
-    ax3.set_title('流量时空演化 (流量阶跃 30→55 m³/s)', fontsize=14, fontweight='bold')
+    ax3.set_xlabel('Distance (km)', fontsize=12)
+    ax3.set_ylabel('Time (min)', fontsize=12)
+    ax3.set_title('Flow Rate Spatiotemporal Evolution (Flow Step 30→55 m³/s)', fontsize=14, fontweight='bold')
     ax3.grid(True, alpha=0.3)
     fig3.tight_layout()
 
     fig3.savefig(os.path.join(output_dir, "03_flow_rate_spacetime.png"), dpi=150, bbox_inches='tight')
     plt.close(fig3)
-    print(f"  已保存: 03_flow_rate_spacetime.png")
+    print(f"  Saved: 03_flow_rate_spacetime.png")
 
-    # 图4：关键位置水深时间序列
-    print("生成图4：关键位置水深时间序列...")
+    # Figure 4: Water depth time series at key locations
+    print("Generating Figure 4: Water depth time series at key locations...")
 
-    # 找到关键位置的索引
+    # Find indices of key locations
     idx_upstream = 0
     idx_gate1 = np.argmin(np.abs(solver.x - gate1_pos))
     idx_pump = np.argmin(np.abs(solver.x - pump_pos))
@@ -391,50 +391,78 @@ def main():
     idx_downstream = -1
 
     fig4, ax4 = plt.subplots(figsize=(14, 8))
-    ax4.plot(time_history / 60, h_history[:, idx_upstream], 'b-', linewidth=2, label='渠首 (0 km)')
-    ax4.plot(time_history / 60, h_history[:, idx_gate1], 'g-', linewidth=2, label=f'闸站1 ({gate1_pos/1000:.0f} km)')
-    ax4.plot(time_history / 60, h_history[:, idx_pump], 'r-', linewidth=2, label=f'泵站 ({pump_pos/1000:.0f} km)')
-    ax4.plot(time_history / 60, h_history[:, idx_gate2], 'm-', linewidth=2, label=f'闸站2 ({gate2_pos/1000:.0f} km)')
-    ax4.plot(time_history / 60, h_history[:, idx_downstream], 'k-', linewidth=2, label=f'渠尾 ({L_total/1000:.0f} km)')
+    ax4.plot(time_history / 60, h_history[:, idx_upstream], 'b-', linewidth=2, label='Upstream (0 km)')
+    ax4.plot(time_history / 60, h_history[:, idx_gate1], 'g-', linewidth=2, label=f'Gate1 ({gate1_pos/1000:.0f} km)')
+    ax4.plot(time_history / 60, h_history[:, idx_pump], 'r-', linewidth=2, label=f'Pump ({pump_pos/1000:.0f} km)')
+    ax4.plot(time_history / 60, h_history[:, idx_gate2], 'm-', linewidth=2, label=f'Gate2 ({gate2_pos/1000:.0f} km)')
+    ax4.plot(time_history / 60, h_history[:, idx_downstream], 'k-', linewidth=2, label=f'Downstream ({L_total/1000:.0f} km)')
 
-    ax4.set_xlabel('时间 (分钟)', fontsize=12)
-    ax4.set_ylabel('水深 (m)', fontsize=12)
-    ax4.set_title('关键位置水深时间序列', fontsize=14, fontweight='bold')
+    ax4.set_xlabel('Time (min)', fontsize=12)
+    ax4.set_ylabel('Water Depth (m)', fontsize=12)
+    ax4.set_title('Water Depth Time Series at Key Locations', fontsize=14, fontweight='bold')
     ax4.legend(fontsize=11, loc='best')
     ax4.grid(True, alpha=0.3)
     fig4.tight_layout()
 
     fig4.savefig(os.path.join(output_dir, "04_key_locations_water_depth.png"), dpi=150, bbox_inches='tight')
     plt.close(fig4)
-    print(f"  已保存: 04_key_locations_water_depth.png")
+    print(f"  Saved: 04_key_locations_water_depth.png")
 
-    # 图5：关键位置流量时间序列
-    print("生成图5：关键位置流量时间序列...")
+    # Figure 5: Flow rate time series at key locations
+    print("Generating Figure 5: Flow rate time series at key locations...")
 
     fig5, ax5 = plt.subplots(figsize=(14, 8))
-    ax5.plot(time_history / 60, q_history[:, idx_upstream], 'b-', linewidth=2, label='渠首 (0 km)')
-    ax5.plot(time_history / 60, q_history[:, idx_gate1], 'g-', linewidth=2, label=f'闸站1 ({gate1_pos/1000:.0f} km)')
-    ax5.plot(time_history / 60, q_history[:, idx_pump], 'r-', linewidth=2, label=f'泵站 ({pump_pos/1000:.0f} km)')
-    ax5.plot(time_history / 60, q_history[:, idx_gate2], 'm-', linewidth=2, label=f'闸站2 ({gate2_pos/1000:.0f} km)')
-    ax5.plot(time_history / 60, q_history[:, idx_downstream], 'k-', linewidth=2, label=f'渠尾 ({L_total/1000:.0f} km)')
+    ax5.plot(time_history / 60, q_history[:, idx_upstream], 'b-', linewidth=2, label='Upstream (0 km)')
+    ax5.plot(time_history / 60, q_history[:, idx_gate1], 'g-', linewidth=2, label=f'Gate1 ({gate1_pos/1000:.0f} km)')
+    ax5.plot(time_history / 60, q_history[:, idx_pump], 'r-', linewidth=2, label=f'Pump ({pump_pos/1000:.0f} km)')
+    ax5.plot(time_history / 60, q_history[:, idx_gate2], 'm-', linewidth=2, label=f'Gate2 ({gate2_pos/1000:.0f} km)')
+    ax5.plot(time_history / 60, q_history[:, idx_downstream], 'k-', linewidth=2, label=f'Downstream ({L_total/1000:.0f} km)')
 
-    # 添加阶跃流量参考线
-    ax5.axhline(Q_initial, color='gray', linestyle='--', linewidth=1, alpha=0.5, label=f'初始流量 ({Q_initial} m³/s)')
-    ax5.axhline(Q_step, color='orange', linestyle='--', linewidth=1, alpha=0.5, label=f'阶跃流量 ({Q_step} m³/s)')
+    # Add reference lines for flow step
+    ax5.axhline(Q_initial, color='gray', linestyle='--', linewidth=1, alpha=0.5, label=f'Initial Flow ({Q_initial} m³/s)')
+    ax5.axhline(Q_step, color='orange', linestyle='--', linewidth=1, alpha=0.5, label=f'Step Flow ({Q_step} m³/s)')
 
-    ax5.set_xlabel('时间 (分钟)', fontsize=12)
-    ax5.set_ylabel('流量 (m³/s)', fontsize=12)
-    ax5.set_title('关键位置流量时间序列', fontsize=14, fontweight='bold')
+    ax5.set_xlabel('Time (min)', fontsize=12)
+    ax5.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+    ax5.set_title('Flow Rate Time Series at Key Locations', fontsize=14, fontweight='bold')
     ax5.legend(fontsize=11, loc='best')
     ax5.grid(True, alpha=0.3)
     fig5.tight_layout()
 
     fig5.savefig(os.path.join(output_dir, "05_key_locations_flow_rate.png"), dpi=150, bbox_inches='tight')
     plt.close(fig5)
-    print(f"  已保存: 05_key_locations_flow_rate.png")
+    print(f"  Saved: 05_key_locations_flow_rate.png")
+
+    # Figure 6: Longitudinal profile animation (using visualization library)
+    print("Generating Figure 6: Longitudinal profile animation...")
+    print("  Creating animation frames (this may take a while)...")
+
+    # Prepare snapshots for animation
+    h_snapshots = [h_history[i, :] for i in range(len(time_history))]
+    Q_snapshots = [q_history[i, :] for i in range(len(time_history))]
+    time_snapshots = list(time_history)
+
+    # Create animation using VisualizationTemplates
+    viz_anim = VisualizationTemplates(output_dir=output_dir)
+    fig_anim, anim = viz_anim.create_longitudinal_animation(
+        x=solver.x,
+        h_snapshots=h_snapshots,
+        Q_snapshots=Q_snapshots,
+        time_snapshots=time_snapshots,
+        S0=S0,
+        canal_length=L_total,
+        Q_target=Q_step,
+        gate_positions=[gate1_pos, pump_pos, gate2_pos],
+        h_uniform=h_uniform,
+        title_prefix="Gate-Pump Cascade System",
+        filename="06_longitudinal_profile_animation.gif",
+        fps=2,
+        dpi=80
+    )
+    plt.close(fig_anim)
 
     print()
-    print("✓ 所有图表已生成并保存到:", output_dir)
+    print("✓ All figures and animation generated and saved to:", output_dir)
     print()
 
     # ==================== 7. 保存数据 ====================
