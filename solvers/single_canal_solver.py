@@ -143,8 +143,8 @@ class SingleCanalSolver:
 
     def solve_steady_state(self,
                           Q_target: float,
-                          max_iterations: int = 5000,
-                          convergence_tol: float = 0.01,
+                          max_iterations: int = 10000,  # SWMM启发：增加迭代（omega更小需要更多迭代）
+                          convergence_tol: float = 0.001,  # SWMM启发：收紧容差
                           check_interval: int = 500,
                           adaptive_relax: bool = True,
                           verbose: bool = True) -> Dict:
