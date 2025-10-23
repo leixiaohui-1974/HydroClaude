@@ -8,39 +8,32 @@
 - 嵌入可视化结果
 """
 
-from physics.canal import Canal
-from simulation.plant_simulator import PlantSimulator
-from utils.visualization import SimulationVisualizer, ReportGenerator
 import numpy as np
 import pandas as pd
 import sys
 import os
 
-# 添加项目根目录到路径
 from pathlib import Path
-
 # ScriptHelper path setup
 script_path = Path(__file__).resolve()
 project_root = script_path.parents[3]
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
-
 from utils.script_helper import ScriptHelper
-
-
 # Initialize ScriptHelper
 helper = ScriptHelper(__file__)
+
+from physics.canal import Canal
+from simulation.plant_simulator import PlantSimulator
+from utils.visualization import SimulationVisualizer, ReportGenerator
 
 
 def run_example():
     """运行简单明渠仿真示例（增强版）"""
-
     print("=" * 70)
     print("示例1: 简单明渠仿真 (增强版)")
     print("=" * 70)
     print()
-
-    # ====== 1. 创建组件 ======
     canal1 = Canal(
         name="canal1",
         volume_min=5000,

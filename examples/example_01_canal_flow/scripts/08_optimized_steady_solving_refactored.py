@@ -11,39 +11,33 @@ Date: 2025-10-22
 """
 
 import sys, os
-from pathlib import Path
+import numpy as np
+import pandas as pd
+import time
 
+from pathlib import Path
 # ScriptHelper path setup
 script_path = Path(__file__).resolve()
 project_root = script_path.parents[3]
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
-
 from utils.script_helper import ScriptHelper
+# Initialize ScriptHelper
+helper = ScriptHelper(__file__)
 
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import time
 from solvers.single_canal_solver import SingleCanalSolver
 from solvers.steady_profile_solver import SteadyProfileSolver
 from solvers.gate import SluiceGate
 from utils.canal_utils import compute_steady_uniform_flow
 
 
-# Initialize ScriptHelper
-helper = ScriptHelper(__file__)
-
-
+import matplotlib.pyplot as plt
 def run_optimized_example():
     """运行优化版例子1"""
-
     print("=" * 100)
     print("优化版例子1：单闸门流动模拟")
     print("=" * 100)
     print()
-
-    # 系统配置
     canal_length = 10000.0
     canal_width = 10.0
     gate_position = 5000.0

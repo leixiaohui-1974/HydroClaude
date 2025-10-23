@@ -16,30 +16,28 @@
 import sys
 import os
 import numpy as np
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 
 from pathlib import Path
-
 # ScriptHelper path setup
 script_path = Path(__file__).resolve()
 project_root = script_path.parents[3]
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
-
 from utils.script_helper import ScriptHelper
 
 from solvers.canal_solver import CanalSolver
 from utils.canal_utils import compute_steady_uniform_flow, setup_chinese_fonts, get_convergence_metrics
 
 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
 def compute_steady_state_with_convergence(Q, h_downstream, B, S0, n, length, nx,
                                           mass_tol=0.001, cv_tol=0.0001,
                                           check_interval=200, max_steps=10000):
     """
     计算稳态初始条件，带收敛监测
-
     参数:
         Q: 流量 (m³/s)
         h_downstream: 下游水位 (m)
@@ -47,7 +45,6 @@ def compute_steady_state_with_convergence(Q, h_downstream, B, S0, n, length, nx,
         cv_tol: 变异系数容忍度 (默认0.01%)
         check_interval: 收敛检查间隔步数
         max_steps: 最大迭代步数
-
     返回:
         h, Q: 收敛的水深和流量分布
         converged: 是否收敛

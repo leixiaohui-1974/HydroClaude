@@ -11,43 +11,37 @@ Date: 2025-10-22
 """
 
 import sys, os
-# 添加项目根目录到路径
-from pathlib import Path
+import numpy as np
+import pandas as pd
 
+from pathlib import Path
 # ScriptHelper path setup
 script_path = Path(__file__).resolve()
 project_root = script_path.parents[3]
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
-
 from utils.script_helper import ScriptHelper
+# Initialize ScriptHelper
+helper = ScriptHelper(__file__)
 
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 from solvers.single_canal_solver import SingleCanalSolver
 from solvers.gate import SluiceGate
 from utils.canal_utils import compute_steady_uniform_flow
 
-# Initialize ScriptHelper
-helper = ScriptHelper(__file__)
 
-
+# 添加项目根目录到路径
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 def run_sluice_gate_dynamics():
     """运行闸门流量动力学分析"""
-
     print("=" * 80)
     print("示例1扩展：明渠闸门过流动力学分析（单一求解器版本）")
     print("=" * 80)
     print()
-
-    # ==================== 系统配置 ====================
     canal_length = 10000.0  # 渠道总长度 (m)
     canal_width = 10.0      # 渠道宽度 (m)
     gate_position = 5000.0  # 闸门位置（中点）
     n_points = 201          # 总空间点数
-
     # 渠道参数
     bed_slope = 0.0005      # 底坡
     manning_n = 0.025       # 曼宁糙率

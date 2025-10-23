@@ -11,25 +11,23 @@ Date: 2025-10-22
 """
 
 import sys, os
-from pathlib import Path
+import numpy as np
+import time
 
+from pathlib import Path
 # ScriptHelper path setup
 script_path = Path(__file__).resolve()
 project_root = script_path.parents[3]
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
-
 from utils.script_helper import ScriptHelper
 
-import numpy as np
-import time
 from solvers.single_canal_solver import SingleCanalSolver
 from solvers.gate import SluiceGate, BroadCrestedWeir, Orifice
 
 
 def run_optimized_example():
     """运行优化版例子2"""
-
     print("=" * 100)
     print("优化版例子2：多闸门和混合结构")
     print("=" * 100)
@@ -42,8 +40,6 @@ def run_optimized_example():
     print("  本脚本对比两种方法的性能，帮助您选择合适的方法")
     print("=" * 100)
     print()
-
-    # 通用参数
     canal_length = 10000.0
     canal_width = 10.0
     n_points = 301

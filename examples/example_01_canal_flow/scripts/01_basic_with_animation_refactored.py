@@ -17,30 +17,27 @@
 import sys
 import os
 import numpy as np
-import argparse
 
-# 添加项目根目录到路径
 from pathlib import Path
-
 # ScriptHelper path setup
 script_path = Path(__file__).resolve()
 project_root = script_path.parents[3]
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
-
 from utils.script_helper import ScriptHelper
+sys.path.insert(0, EXAMPLES_DIR)
 
 from solvers.canal_solver import CanalSolver
 from utils.canal_utils import compute_steady_uniform_flow, get_convergence_metrics
 from visualization.canal_visualizer import CanalVisualizer
 from analysis.stability_evaluator import StabilityEvaluator
 
-# 导入动画工具
+
+import argparse
+
+# 添加项目根目录到路径
 EXAMPLES_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, EXAMPLES_DIR)
 from animation_utils import AnimationGenerator
-
-
 def parse_args():
     """解析命令行参数"""
     parser = argparse.ArgumentParser(

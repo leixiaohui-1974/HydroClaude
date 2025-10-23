@@ -14,40 +14,31 @@ import os
 import numpy as np
 import pandas as pd
 
-# 添加项目根目录到路径
 from pathlib import Path
-
 # ScriptHelper path setup
 script_path = Path(__file__).resolve()
 project_root = script_path.parents[3]
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
-
 from utils.script_helper import ScriptHelper
+# Initialize ScriptHelper
+helper = ScriptHelper(__file__)
 
 from solvers.canal_solver import CanalSolver
 from utils.canal_utils import compute_steady_uniform_flow, get_convergence_metrics
 from visualization.canal_visualizer import CanalVisualizer
 from analysis.stability_evaluator import StabilityEvaluator
 
-# Import output helper
-
-# Initialize ScriptHelper
-helper = ScriptHelper(__file__)
 
 
+# 添加项目根目录到路径
 def main():
     """主函数"""
     print("=" * 80)
     print("例子1：明渠非恒定流仿真 - 重构版")
     print("=" * 80)
-
-    # ========================================================================
-    # 1. 参数设置
-    # ========================================================================
     print("\n1. 参数设置")
     print("-" * 80)
-
     # 渠道参数
     length = 1000.0  # 渠道长度 (m)
     B = 10.0         # 渠道宽度 (m)
