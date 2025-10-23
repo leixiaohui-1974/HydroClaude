@@ -24,7 +24,7 @@ from utils.script_helper import ScriptHelper
 # Initialize ScriptHelper
 helper = ScriptHelper(__file__)
 
-from solvers.canal_solver import CanalSolver
+from solvers_canal_solver import CanalSolver
 from utils.canal_utils import compute_steady_uniform_flow, get_convergence_metrics
 from visualization.canal_visualizer import CanalVisualizer
 from analysis.stability_evaluator import StabilityEvaluator
@@ -170,7 +170,7 @@ def main():
             'Q': results[method]['Q']
         }
 
-    save_path = get_output_path('figures', "01_basic_comparison.png")
+    save_path = helper.get_output_path('01_basic_comparison_refactored.png', subdir='figures')
     viz.plot_methods_comparison(
         x=solvers['PREISSMANN'].x,
         results=comparison_data,

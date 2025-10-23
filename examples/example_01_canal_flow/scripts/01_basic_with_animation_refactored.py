@@ -27,7 +27,7 @@ if str(project_root) not in sys.path:
 from utils.script_helper import ScriptHelper
 sys.path.insert(0, EXAMPLES_DIR)
 
-from solvers.canal_solver import CanalSolver
+from solvers_canal_solver import CanalSolver
 from utils.canal_utils import compute_steady_uniform_flow, get_convergence_metrics
 from visualization.canal_visualizer import CanalVisualizer
 from analysis.stability_evaluator import StabilityEvaluator

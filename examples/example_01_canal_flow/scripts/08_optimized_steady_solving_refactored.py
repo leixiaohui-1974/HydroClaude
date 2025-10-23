@@ -25,7 +25,7 @@ from utils.script_helper import ScriptHelper
 # Initialize ScriptHelper
 helper = ScriptHelper(__file__)
 
-from solvers.single_canal_solver import SingleCanalSolver
+from _local_single_canal_solver import SingleCanalSolver
 from solvers.steady_profile_solver import SteadyProfileSolver
 from solvers.gate import SluiceGate
 from utils.canal_utils import compute_steady_uniform_flow

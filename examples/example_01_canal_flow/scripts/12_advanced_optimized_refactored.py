@@ -22,7 +22,7 @@ if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 from utils.script_helper import ScriptHelper
 
-from solvers.single_canal_solver import SingleCanalSolver
+from _local_single_canal_solver import SingleCanalSolver
 from solvers.gate import SluiceGate, BroadCrestedWeir, Orifice
 
 
