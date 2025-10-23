@@ -533,16 +533,16 @@ class SingleCanalSolver:
         # ==================== 阶段2: 精细优化 ====================
         if verbose:
             print(f"\n" + "=" * 80)
-            print(f"阶段2: 使用小步长精细优化（目标精度: {tol_global*100:.4f}%）")
+            print(f"阶段2: 使用标准步长优化（目标精度: {tol_global*100:.4f}%）")
             print("-" * 80)
-            print(f"  固定时间步: dt=0.2s")
+            print(f"  固定时间步: dt=1.0s（减少累积误差）")
             print(f"  最大迭代次数: {stage2_iterations}")
             print(f"  收敛标准: 全局<{tol_global:.0e}, 局部<{tol_local:.0e}, "
                   f"结构<{tol_structure:.0e}, 时间<{tol_temporal:.0e}")
             print()
 
-        # 阶段2使用小固定步长
-        dt = 0.2
+        # 阶段2使用标准步长（减少累积误差）
+        dt = 1.0
 
         # 记录残差历史
         residuals = {
@@ -560,6 +560,10 @@ class SingleCanalSolver:
         converged = False
         iterations_used = result_stage1['iterations']
         t = self.current_time
+
+        # 早期终止检测
+        divergence_count = 0
+        prev_structure_error = 1.0
 
         for i in range(stage2_iterations):
             # 单步推进
@@ -632,6 +636,23 @@ class SingleCanalSolver:
                         print(f"  总迭代数: {iterations_used}")
                     break
 
+                # 发散检测：如果结构误差持续增长，提前终止
+                if error_structure > prev_structure_error * 1.2:
+                    divergence_count += 1
+                else:
+                    divergence_count = 0
+
+                if divergence_count >= 5:
+                    if verbose:
+                        print(f"\n{'='*60}")
+                        print(f"⚠ 检测到持续发散，提前终止阶段2")
+                        print(f"{'='*60}")
+                        print(f"  当前误差: {error_structure*100:.4f}%")
+                        print(f"  建议: 使用阶段1结果或调整参数")
+                    break
+
+                prev_structure_error = error_structure
+
         # 最终统计
         final_Q_avg = np.mean(self.solver.Q[1:-1])
         final_gate_flows = self.get_gate_flows()
@@ -674,6 +695,178 @@ class SingleCanalSolver:
             print(f"  L∞范数: {result['error_Linf']:.2e}")
             if final_gate_flows:
                 print(f"  闸门流量: {', '.join([f'{gf:.6f}' for gf in final_gate_flows])}")
+            print()
+
+        return result
+
+    def solve_steady_state_phase2(self,
+                                   Q_target: float,
+                                   verbose: bool = True) -> Dict:
+        """
+        Phase 2: 三阶段高精度求解器
+
+        理论设计：
+        - 阶段1: 粗收敛 (dt=1.0s, tol=1%, ~500步)
+        - 阶段2: 中收敛 (dt=1.0s, tol=0.1%, ~500步, 严格守恒)
+        - 阶段3: 细优化 (dt=0.5s, tol=0.01%, ~200步, 最终抛光)
+
+        核心改进：
+        1. 严格流量守恒（canal_solver.py已实现）
+        2. 减少时间积分步数（1200步 vs 50000步）
+        3. 逐级提高精度要求
+
+        预期精度：0.5% (当前2.56% → 5倍提升)
+        """
+
+        if verbose:
+            print("\n" + "=" * 80)
+            print("Phase 2: 三阶段高精度求解器")
+            print("=" * 80)
+            print("理论目标: 均匀网格达到0.5%误差 (5倍精度提升)")
+            print("=" * 80)
+
+        # ==================== 阶段1: 粗收敛 ====================
+        if verbose:
+            print(f"\n阶段1: 粗收敛 (目标误差: 1%)")
+            print("-" * 80)
+
+        result_stage1 = self.solve_steady_state(
+            Q_target=Q_target,
+            max_iterations=5000,
+            convergence_tol=0.01,  # 1%
+            check_interval=500,
+            verbose=verbose
+        )
+
+        stage1_error = result_stage1['final_error']
+        stage1_iters = result_stage1['iterations']
+
+        if verbose:
+            print(f"\n阶段1完成:")
+            print(f"  迭代次数: {stage1_iters}")
+            print(f"  误差: {stage1_error*100:.4f}%")
+            gate_flows = self.get_gate_flows()
+            if gate_flows:
+                print(f"  闸门流量: {', '.join([f'{gf:.4f}' for gf in gate_flows])}")
+
+        # ==================== 阶段2: 中收敛 ====================
+        if verbose:
+            print(f"\n" + "=" * 80)
+            print(f"阶段2: 中收敛 (目标误差: 0.1%)")
+            print("-" * 80)
+            print(f"  时间步: dt=1.0s")
+            print(f"  最大迭代: 5000步")
+            print(f"  收敛标准: 结构误差<0.1%")
+            print()
+
+        dt_stage2 = 1.0
+        max_iters_stage2 = 5000
+        tol_stage2 = 0.001  # 0.1%
+
+        stage2_converged = False
+        stage2_iters = 0
+
+        for i in range(max_iters_stage2):
+            self.step(dt_stage2, Q_upstream=Q_target)
+            stage2_iters += 1
+
+            if i % 100 == 0:
+                gate_flows = self.get_gate_flows()
+                if gate_flows:
+                    errors = [abs(gf - Q_target) / Q_target for gf in gate_flows]
+                    max_error = max(errors)
+
+                    if verbose and i % 500 == 0:
+                        print(f"  t={self.current_time:.0f}s: 结构误差={max_error:.2e} | " +
+                              ', '.join([f"Q{j+1}={gf:.4f}" for j, gf in enumerate(gate_flows)]))
+
+                    if max_error < tol_stage2:
+                        stage2_converged = True
+                        if verbose:
+                            print(f"\n✓ 阶段2收敛 (i={i+1}, 误差={max_error*100:.4f}%)")
+                        break
+
+        # ==================== 阶段3: 细优化 ====================
+        if verbose:
+            print(f"\n" + "=" * 80)
+            print(f"阶段3: 细优化 (目标误差: 0.01%)")
+            print("-" * 80)
+            print(f"  时间步: dt=0.5s (最终抛光)")
+            print(f"  最大迭代: 1000步")
+            print(f"  收敛标准: 结构误差<0.01%")
+            print()
+
+        dt_stage3 = 0.5
+        max_iters_stage3 = 1000
+        tol_stage3 = 0.0001  # 0.01%
+
+        stage3_converged = False
+        stage3_iters = 0
+
+        for i in range(max_iters_stage3):
+            self.step(dt_stage3, Q_upstream=Q_target)
+            stage3_iters += 1
+
+            if i % 50 == 0:
+                gate_flows = self.get_gate_flows()
+                if gate_flows:
+                    errors = [abs(gf - Q_target) / Q_target for gf in gate_flows]
+                    max_error = max(errors)
+
+                    if verbose and i % 200 == 0:
+                        print(f"  t={self.current_time:.0f}s: 结构误差={max_error:.2e} | " +
+                              ', '.join([f"Q{j+1}={gf:.4f}" for j, gf in enumerate(gate_flows)]))
+
+                    if max_error < tol_stage3:
+                        stage3_converged = True
+                        if verbose:
+                            print(f"\n✓✓✓ 阶段3收敛 (i={i+1}, 误差={max_error*100:.4f}%)")
+                        break
+
+        # ==================== 最终统计 ====================
+        final_Q_avg = np.mean(self.solver.Q[1:-1])
+        final_gate_flows = self.get_gate_flows()
+
+        if final_gate_flows:
+            final_errors = [abs(gf - Q_target) / Q_target for gf in final_gate_flows]
+            final_error = max(final_errors)
+        else:
+            final_error = abs(final_Q_avg - Q_target) / Q_target
+
+        total_iters = stage1_iters + stage2_iters + stage3_iters
+
+        result = {
+            'converged': stage2_converged and stage3_converged,
+            'total_iterations': total_iters,
+            'stage1_iterations': stage1_iters,
+            'stage2_iterations': stage2_iters,
+            'stage3_iterations': stage3_iters,
+            'stage1_error': stage1_error,
+            'final_error': final_error,
+            'Q_target': Q_target,
+            'Q_avg': final_Q_avg,
+            'gate_flows': final_gate_flows,
+            'final_time': self.current_time
+        }
+
+        if verbose:
+            print("\n" + "=" * 80)
+            print("Phase 2 求解完成！")
+            print("=" * 80)
+            print(f"\n总体统计:")
+            print(f"  阶段1迭代: {stage1_iters} (粗收敛)")
+            print(f"  阶段2迭代: {stage2_iters} (中收敛)")
+            print(f"  阶段3迭代: {stage3_iters} (细优化)")
+            print(f"  总迭代数: {total_iters}")
+            print(f"  总仿真时间: {self.current_time:.0f}s")
+            print(f"\n精度表现:")
+            print(f"  阶段1误差: {stage1_error*100:.4f}%")
+            print(f"  最终误差: {final_error*100:.4f}%")
+            print(f"  精度提升: {stage1_error/final_error:.2f}x")
+            print(f"\n目标流量: {Q_target:.6f} m³/s")
+            print(f"平均流量: {final_Q_avg:.6f} m³/s")
+            if final_gate_flows:
+                print(f"闸门流量: {', '.join([f'{gf:.6f}' for gf in final_gate_flows])}")
             print()
 
         return result
