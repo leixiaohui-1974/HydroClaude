@@ -1,0 +1,74 @@
+{
+  "core_examples": [
+    {
+      "id": "example_01_basic",
+      "path": "examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py",
+      "description": "基本渠道流动",
+      "status": "failed",
+      "execution_time": 0.15880703926086426,
+      "error": "Traceback (most recent call last):\n  File \"/home/user/HydroClaude/examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py\", line 19, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'\n"
+    },
+    {
+      "id": "example_01_methods",
+      "path": "examples/example_01_canal_flow/scripts/02_methods_comparison_refactored.py",
+      "description": "方法对比",
+      "status": "failed",
+      "execution_time": 1.4925377368927002,
+      "error": "Traceback (most recent call last):\n  File \"/home/user/HydroClaude/examples/example_01_canal_flow/scripts/02_methods_comparison_refactored.py\", line 33, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'\n"
+    },
+    {
+      "id": "example_01_gate",
+      "path": "examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2_refactored.py",
+      "description": "闸门流动",
+      "status": "failed",
+      "execution_time": 0.16476726531982422,
+      "error": "Traceback (most recent call last):\n  File \"/home/user/HydroClaude/examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2_refactored.py\", line 39, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'\n"
+    }
+  ],
+  "preissmann_examples": [
+    {
+      "id": "example_08_preissmann",
+      "path": "examples/example_08_preissmann_vs_fvm/example_08_preissmann_vs_fvm_enhanced.py",
+      "description": "Preissmann求解器测试",
+      "status": "failed",
+      "execution_time": 0.9798667430877686,
+      "error": "Traceback (most recent call last):\n  File \"/home/user/HydroClaude/examples/example_08_preissmann_vs_fvm/example_08_preissmann_vs_fvm_enhanced.py\", line 20, in <module>\n    from utils.visualization import SimulationVisualizer, ReportGenerator\n  File \"/home/user/HydroClaude/utils/visualization.py\", line 13, in <module>\n    import networkx as nx\nModuleNotFoundError: No module named 'networkx'\n"
+    }
+  ],
+  "mpc_examples": [
+    {
+      "id": "example_14_mpc",
+      "path": "examples/example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py",
+      "description": "自适应MPC",
+      "status": "failed",
+      "execution_time": 1.3540775775909424,
+      "error": "Traceback (most recent call last):\n  File \"/home/user/HydroClaude/examples/example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py\", line 19, in <module>\n    from utils.visualization import SimulationVisualizer, ReportGenerator\n  File \"/home/user/HydroClaude/utils/visualization.py\", line 13, in <module>\n    import networkx as nx\nModuleNotFoundError: No module named 'networkx'\n"
+    },
+    {
+      "id": "example_15_rls",
+      "path": "examples/example_15_rls_identification/example_15_rls_identification_enhanced.py",
+      "description": "RLS参数辨识",
+      "status": "failed",
+      "execution_time": 0.6499683856964111,
+      "error": "Traceback (most recent call last):\n  File \"/home/user/HydroClaude/examples/example_15_rls_identification/example_15_rls_identification_enhanced.py\", line 19, in <module>\n    from utils.visualization import SimulationVisualizer, ReportGenerator\n  File \"/home/user/HydroClaude/utils/visualization.py\", line 13, in <module>\n    import networkx as nx\nModuleNotFoundError: No module named 'networkx'\n"
+    }
+  ],
+  "advanced_examples": [
+    {
+      "id": "example_advanced_idz",
+      "path": "examples/advanced_examples/idz_saint_venant_integration.py",
+      "description": "IDZ-Saint-Venant集成",
+      "status": "success",
+      "execution_time": 2.3424794673919678,
+      "error": null
+    },
+    {
+      "id": "example_advanced_mpc_benchmark",
+      "path": "examples/advanced_examples/run_mpc_benchmark.py",
+      "description": "MPC基准测试",
+      "status": "success",
+      "execution_time": 9.811230897903442,
+      "error": null
+    }
+  ]
+}

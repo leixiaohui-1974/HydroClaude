@@ -1,0 +1,73 @@
+# HydroClaude Examples配置文件
+# 用于管理和测试所有示例
+
+# 全局配置
+global:
+  timeout: 120  # 默认超时时间（秒）
+  output_dir: "results"
+  test_mode: true
+
+# 核心examples（必须通过）
+core_examples:
+  - id: example_01_basic
+    path: "examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py"
+    description: "基本渠道流动"
+    priority: high
+    expected_outputs:
+      - "results/figures/longitudinal_profile.png"
+
+  - id: example_01_methods
+    path: "examples/example_01_canal_flow/scripts/02_methods_comparison_refactored.py"
+    description: "方法对比"
+    priority: high
+    expected_outputs:
+      - "results/figures/methods_comparison.png"
+
+  - id: example_01_gate
+    path: "examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2_refactored.py"
+    description: "闸门流动"
+    priority: high
+
+# Preissmann求解器相关
+preissmann_examples:
+  - id: example_08_preissmann
+    path: "examples/example_08_preissmann_vs_fvm/example_08_preissmann_vs_fvm_enhanced.py"
+    description: "Preissmann求解器测试"
+    priority: high
+    notes: "FVM已删除，需要更新"
+
+# MPC控制examples
+mpc_examples:
+  - id: example_14_mpc
+    path: "examples/example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py"
+    description: "自适应MPC"
+    priority: medium
+
+  - id: example_15_rls
+    path: "examples/example_15_rls_identification/example_15_rls_identification_enhanced.py"
+    description: "RLS参数辨识"
+    priority: medium
+
+# 高级examples
+advanced_examples:
+  - id: example_advanced_idz
+    path: "examples/advanced_examples/idz_saint_venant_integration.py"
+    description: "IDZ-Saint-Venant集成"
+    priority: high
+
+  - id: example_advanced_mpc_benchmark
+    path: "examples/advanced_examples/run_mpc_benchmark.py"
+    description: "MPC基准测试"
+    priority: medium
+
+#需要删除或标记废弃的MOC/FVM examples
+deprecated_examples:
+  - id: example_04_moc_boundary
+    path: "examples/example_04_moc_boundary/code/example_04_moc_boundary.py"
+    reason: "使用MOC求解器（已删除）"
+    action: "删除或重写为Preissmann"
+
+  - id: example_05_mode_comparison
+    path: "examples/example_05_mode_comparison/code/example_05_mode_comparison.py"
+    reason: "对比MOC/FVM/Preissmann（MOC和FVM已删除）"
+    action: "简化为仅Preissmann演示"
