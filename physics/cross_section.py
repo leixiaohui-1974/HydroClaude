@@ -302,7 +302,8 @@ class NaturalSection(CrossSection):
         # 计算过水面积（梯形法则）
         area = 0.0
         perimeter = 0.0
-        width_segments = []
+        x_waterline_left = None   # 水面线左端
+        x_waterline_right = None  # 水面线右端
 
         for i in range(len(self.distances) - 1):
             x1, y1 = self.distances[i], self.elevations[i]
@@ -320,17 +321,55 @@ class NaturalSection(CrossSection):
                 seg_area = 0.5 * (d1 + d2) * (x2 - x1)
                 area += seg_area
 
-                # 湿周
+                # 湿周 - 处理完全浸没和部分浸没
                 if d1 > 0 and d2 > 0:
+                    # 完全浸没：整段都在水下
                     perimeter += seg_length
+                elif d1 == 0 and d2 > 0:
+                    # 部分浸没：从水线开始到x2
+                    # 找到水线交点位置
+                    if y2 != y1:
+                        x_intersection = x1 + (water_level - y1) / (y2 - y1) * (x2 - x1)
+                        y_intersection = water_level
+                        partial_length = np.sqrt((x2 - x_intersection)**2 + (y2 - y_intersection)**2)
+                        perimeter += partial_length
+                    # else: y1 == y2 == water_level, 水平线段，湿周为0
+                elif d1 > 0 and d2 == 0:
+                    # 部分浸没：从x1到水线结束
+                    # 找到水线交点位置
+                    if y2 != y1:
+                        x_intersection = x1 + (water_level - y1) / (y2 - y1) * (x2 - x1)
+                        y_intersection = water_level
+                        partial_length = np.sqrt((x_intersection - x1)**2 + (y_intersection - y1)**2)
+                        perimeter += partial_length
+                    # else: y1 == y2 == water_level, 水平线段，湿周为0
 
-                # 水面宽度
+                # 水面宽度：找水线与断面的交点
+                # 情况1：d1=0, d2>0 - 水线从这段开始（左端）
+                if d1 == 0 and d2 > 0 and x_waterline_left is None:
+                    # 线性插值找交点
+                    if y2 != y1:
+                        x_waterline_left = x1 + (water_level - y1) / (y2 - y1) * (x2 - x1)
+                    else:
+                        x_waterline_left = x1
+
+                # 情况2：d1>0, d2=0 - 水线在这段结束（右端）
+                if d1 > 0 and d2 == 0:
+                    # 线性插值找交点
+                    if y2 != y1:
+                        x_waterline_right = x1 + (water_level - y1) / (y2 - y1) * (x2 - x1)
+                    else:
+                        x_waterline_right = x1
+
+                # 情况3：d1>0, d2>0 - 整段都在水下
                 if d1 > 0 and d2 > 0:
-                    width_segments.append((x1, x2))
+                    if x_waterline_left is None:
+                        x_waterline_left = x1
+                    x_waterline_right = x2  # 持续更新右端
 
         # 水面宽度
-        if width_segments:
-            width = width_segments[-1][1] - width_segments[0][0]
+        if x_waterline_left is not None and x_waterline_right is not None:
+            width = x_waterline_right - x_waterline_left
         else:
             width = 0
 
