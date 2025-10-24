@@ -60,59 +60,85 @@ def imc_tune(idz_params, lambda_factor=2.0):
 
 
 class SimplifiedCanalSimulator:
-    """简化渠道模拟器（用于快速基准测试）"""
+    """
+    简化渠道模拟器（用于快速基准测试）
+
+    使用水量平衡方程：
+    dV/dt = Q_in - Q_out
+
+    其中：
+    - V = L * W * h（渠道体积）
+    - Q_in = 上游流量（扰动）
+    - Q_out = Cd * a * W * sqrt(2*g*Δh)（闸门流量）
+    """
 
     def __init__(self, K=100.0, tau_z=200.0, tau_d=300.0, theta=20.0, dt=2.0):
         """
         初始化模拟器
 
         Args:
-            K, tau_z, tau_d, theta: IDZ模型参数
+            K, tau_z, tau_d, theta: IDZ模型参数（用于对比，但不用于仿真）
             dt: 采样时间
         """
-        self.params = IDZParameters(K=K, tau_z=tau_z, tau_d=tau_d, theta=theta)
         self.dt = dt
 
-        # 使用IDZModel进行高保真仿真
-        from control.idz_model import IDZModel
-        self.model = IDZModel(self.params, dt=dt)
+        # 渠道几何参数
+        self.L = 1000.0  # 渠道长度 (m)
+        self.W = 10.0    # 渠道宽度 (m)
+        self.A_surface = self.L * self.W  # 水面面积
+
+        # 闸门参数
+        self.Cd = 0.6    # 闸门流量系数
+        self.g = 9.81    # 重力加速度
+
+        # 下游水位（固定）
+        self.h_downstream = 2.2  # 下游水位 (m)
 
         # 状态
-        self.y = 0.0  # 当前水位偏差（相对于基准）
-        self.base_level = 2.2  # 基准水位
-        self.u_disturbance = 0.0  # 上游流量扰动
+        self.h = 2.2     # 当前水位 (m)
+        self.Q_in = 20.0  # 上游流量 (m³/s)
 
     def reset(self):
         """重置模拟器"""
-        self.model.reset()
-        self.y = 0.0
-        self.u_disturbance = 0.0
+        self.h = 2.2
+        self.Q_in = 20.0
 
     def set_disturbance(self, Q_disturbance):
         """设置上游流量扰动"""
-        self.u_disturbance = Q_disturbance
+        self.Q_in = Q_disturbance
 
     def step(self, u_control):
         """
         仿真一步
 
         Args:
-            u_control: 控制量（闸门开度）
+            u_control: 控制量（闸门开度, m）
 
         Returns:
-            y: 当前水位（绝对值）
+            h: 当前水位 (m)
         """
-        # 总输入 = 控制量 + 扰动
-        u_total = u_control + self.u_disturbance * 0.01  # 扰动增益
+        # 闸门开度
+        a = max(u_control, 0.1)  # 最小0.1m防止除零
 
-        # IDZ模型仿真
-        dy = self.model.step(u_total)
+        # 水位差（上游-下游）
+        delta_h = max(self.h - self.h_downstream, 0.01)  # 最小0.01m
 
-        # 累积到基准水位
-        self.y = dy
-        y_absolute = self.base_level + self.y
+        # 闸门出流（闸门方程）
+        Q_out = self.Cd * a * self.W * np.sqrt(2 * self.g * delta_h)
 
-        return y_absolute
+        # 水量平衡
+        dV_dt = self.Q_in - Q_out
+
+        # 水位变化（dV = A * dh）
+        dh_dt = dV_dt / self.A_surface
+
+        # 更新水位（显式欧拉法）
+        self.h += dh_dt * self.dt
+
+        # 限制水位范围（物理约束）
+        self.h = np.clip(self.h, 0.5, 5.0)
+
+        return self.h
 
 
 def run_benchmark(controller_type="pid", config_path=None, plot_results=True):
