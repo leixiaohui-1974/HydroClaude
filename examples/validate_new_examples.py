@@ -119,13 +119,14 @@ def main():
 
     print("本脚本将测试以下新增案例：")
     print()
-    print("1. 工程案例库（3个）")
+    print("1. 工程案例库（5个）")
     print("2. 控制系统示例（2个）")
     print("3. 闸泵控制策略（3个）")
     print("4. 结构类型展示（1个）")
     print("5. 时变边界条件（3个）")
+    print("6. 文件边界条件（1个）")
     print()
-    print("总计: 12个测试")
+    print("总计: 15个测试")
     print()
 
     input("按Enter开始测试...")
@@ -153,6 +154,18 @@ def main():
                     'command': ['python', 'run.py'],
                     'cwd': project_root / 'examples/engineering_cases/case_03_multi_gate_control',
                     'timeout': 120
+                },
+                {
+                    'name': 'Case 4: 参数在线估计（增广EKF）',
+                    'command': ['python', 'run.py'],
+                    'cwd': project_root / 'examples/engineering_cases/case_04_parameter_calibration',
+                    'timeout': 60
+                },
+                {
+                    'name': 'Case 5: 水资源优化调度（峰谷电价）',
+                    'command': ['python', 'run.py'],
+                    'cwd': project_root / 'examples/engineering_cases/case_05_water_resource_optimization',
+                    'timeout': 45
                 }
             ]
         },
@@ -240,6 +253,19 @@ def main():
                                'examples/example_time_varying_bc/config_linear.yaml'],
                     'cwd': project_root,
                     'timeout': 60
+                }
+            ]
+        },
+
+        # 文件边界条件
+        {
+            'category': '文件边界条件',
+            'tests': [
+                {
+                    'name': 'File（CSV文件读取）',
+                    'command': ['python', 'run.py'],
+                    'cwd': project_root / 'examples/example_file_boundary_condition',
+                    'timeout': 30
                 }
             ]
         }
