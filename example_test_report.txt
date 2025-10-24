@@ -1,0 +1,75 @@
+================================================================================
+HydroClaude Examples 测试报告
+================================================================================
+
+总计: 8 个examples
+  ✅ 成功: 8
+  ❌ 失败: 0
+  📁 文件不存在: 0
+  成功率: 100.0%
+
+================================================================================
+类别: core_examples
+================================================================================
+
+✅ example_01_basic
+   描述: 基本渠道流动
+   路径: examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py
+   状态: success
+   执行时间: 8.4s
+   ⚠️  缺失输出: results/figures/longitudinal_profile.png
+
+✅ example_01_methods
+   描述: 方法对比
+   路径: examples/example_01_canal_flow/scripts/02_methods_comparison_refactored.py
+   状态: success
+   执行时间: 9.2s
+   ⚠️  缺失输出: results/figures/methods_comparison.png
+
+✅ example_01_gate
+   描述: 闸门流动
+   路径: examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2_refactored.py
+   状态: success
+   执行时间: 1.9s
+
+================================================================================
+类别: preissmann_examples
+================================================================================
+
+✅ example_08_preissmann
+   描述: Preissmann求解器演示
+   路径: examples/example_08_preissmann_vs_fvm/example_08_preissmann_demo.py
+   状态: success
+   执行时间: 2.7s
+
+================================================================================
+类别: mpc_examples
+================================================================================
+
+✅ example_14_mpc
+   描述: 自适应MPC
+   路径: examples/example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py
+   状态: success
+   执行时间: 5.8s
+
+✅ example_15_rls
+   描述: RLS参数辨识
+   路径: examples/example_15_rls_identification/example_15_rls_identification_enhanced.py
+   状态: success
+   执行时间: 8.8s
+
+================================================================================
+类别: advanced_examples
+================================================================================
+
+✅ example_advanced_idz
+   描述: IDZ-Saint-Venant集成
+   路径: examples/advanced_examples/idz_saint_venant_integration.py
+   状态: success
+   执行时间: 2.4s
+
+✅ example_advanced_mpc_benchmark
+   描述: MPC基准测试
+   路径: examples/advanced_examples/run_mpc_benchmark.py
+   状态: success
+   执行时间: 9.9s

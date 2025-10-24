@@ -12,7 +12,8 @@ class FVMSolver:
 
     def solve_canal_step(self, A_old: np.ndarray, Q_old: np.ndarray,
                         dt: float, dx: float,
-                        width: float, manning_n: float, slope: float) -> Tuple[np.ndarray, np.ndarray]:
+                        width: float, manning_n: float, slope: float,
+                        boundary_conditions: dict = None) -> Tuple[np.ndarray, np.ndarray]:
         n = len(A_old)
         g = 9.81
 
@@ -59,6 +60,22 @@ class FVMSolver:
             Q_new[i] = U_new[1]
 
         A_new = np.maximum(A_new, 0.01 * width)
+
+        # 应用边界条件
+        if boundary_conditions:
+            # 上游边界
+            if 'upstream_flow' in boundary_conditions:
+                Q_new[0] = boundary_conditions['upstream_flow']
+            elif 'upstream_level' in boundary_conditions:
+                h_upstream = boundary_conditions['upstream_level']
+                A_new[0] = h_upstream * width
+
+            # 下游边界
+            if 'downstream_flow' in boundary_conditions:
+                Q_new[-1] = boundary_conditions['downstream_flow']
+            elif 'downstream_level' in boundary_conditions:
+                h_downstream = boundary_conditions['downstream_level']
+                A_new[-1] = h_downstream * width
 
         return A_new / width, Q_new
 

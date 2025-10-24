@@ -50,10 +50,11 @@ fig = helper.plot_profile(
 2. [基础类库优先原则](#基础类库优先原则)
 3. [基础类库清单](#基础类库清单)
 4. [新增通用工具](#新增通用工具) ⭐ NEW
-5. [开发工作流](#开发工作流)
-6. [代码规范](#代码规范)
-7. [测试与验证](#测试与验证)
-8. [何时扩展基础库](#何时扩展基础库)
+5. [配置驱动的Example管理](#配置驱动的example管理) ⭐⭐ NEW
+6. [开发工作流](#开发工作流)
+7. [代码规范](#代码规范)
+8. [测试与验证](#测试与验证)
+9. [何时扩展基础库](#何时扩展基础库)
 
 ---
 
@@ -462,6 +463,187 @@ save_table(df, 'my_results.csv', index=False)
 
 ---
 
+## 🎛️ 配置驱动的Example管理
+
+**2025-10-24更新** - 全新的配置驱动测试框架
+
+### 核心理念
+
+✅ **完全消除硬编码**
+- 所有example路径在配置文件中管理
+- 参数（超时、优先级）可配置
+- 预期输出可验证
+
+✅ **自动化测试**
+- 一键运行所有examples
+- 自动生成详细报告
+- 支持CI/CD集成
+
+✅ **易于维护**
+- 添加新example无需修改代码
+- 分类管理（核心/高级/废弃）
+- 清晰的优先级标记
+
+### 配置文件: examples_config.yaml
+
+```yaml
+# 全局配置
+global:
+  timeout: 120  # 默认超时时间（秒）
+  output_dir: "results"
+
+# 核心examples
+core_examples:
+  - id: example_01_basic
+    path: "examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py"
+    description: "基本渠道流动"
+    priority: high
+    expected_outputs:
+      - "results/figures/longitudinal_profile.png"
+
+# 废弃的examples
+deprecated_examples:
+  - id: example_04_moc
+    path: "examples/example_04_moc_boundary/code/example_04_moc_boundary.py"
+    reason: "使用MOC求解器（已删除）"
+    action: "删除或重写为Preissmann"
+```
+
+### 运行测试框架
+
+```bash
+# 运行所有examples
+python run_example_tests.py
+
+# 查看报告
+cat example_test_report.txt
+
+# 查看JSON数据
+cat example_test_report.json
+```
+
+### 测试输出示例
+
+```
+================================================================================
+HydroClaude Examples 配置驱动测试
+================================================================================
+
+################################################################################
+# 类别: core_examples (3 个examples)
+################################################################################
+
+✅ example_01_basic (2.3s)
+   描述: 基本渠道流动
+   状态: success
+
+❌ example_01_methods (1.5s)
+   描述: 方法对比
+   状态: failed
+   错误: ModuleNotFoundError: pandas
+
+总计: 8 个examples
+  ✅ 成功: 6 (75%)
+  ❌ 失败: 2 (25%)
+```
+
+### 添加新Example
+
+**步骤1**: 编辑 `examples_config.yaml`
+
+```yaml
+core_examples:
+  - id: my_new_example
+    path: "examples/my_category/my_example.py"
+    description: "我的新功能演示"
+    priority: high
+    timeout: 60  # 可选，覆盖全局超时
+    expected_outputs:
+      - "results/my_output.png"
+      - "results/my_data.csv"
+```
+
+**步骤2**: 运行测试
+
+```bash
+python run_example_tests.py
+```
+
+就这么简单！无需修改Python代码。
+
+### 标记废弃Example
+
+当某个example使用了废弃的API：
+
+```yaml
+deprecated_examples:
+  - id: old_example
+    path: "examples/old/old_example.py"
+    reason: "使用了MOC求解器（已删除）"
+    action: "删除或重写为Preissmann"
+```
+
+测试框架会自动识别并报告：
+
+```
+################################################################################
+# 废弃的Examples (需要处理)
+################################################################################
+
+⚠️  old_example
+   路径: examples/old/old_example.py
+   原因: 使用了MOC求解器（已删除）
+   建议: 删除或重写为Preissmann
+```
+
+### Example分类
+
+| 类别 | 说明 | 优先级 |
+|------|------|--------|
+| `core_examples` | 核心功能，必须通过 | 🔴 高 |
+| `preissmann_examples` | Preissmann求解器相关 | 🔴 高 |
+| `mpc_examples` | MPC控制系统 | 🟡 中 |
+| `advanced_examples` | 高级主题和研究功能 | 🟡 中 |
+| `deprecated_examples` | 废弃的examples | ⚪ 待处理 |
+
+### CI/CD集成
+
+在CI pipeline中使用：
+
+```yaml
+# .github/workflows/test_examples.yml
+steps:
+  - name: Test Examples
+    run: |
+      python run_example_tests.py
+      # 检查退出码
+      if [ $? -ne 0 ]; then
+        echo "Examples tests failed"
+        exit 1
+      fi
+```
+
+### 最佳实践
+
+1. **新example必须添加到配置**
+   - 编写example后立即添加到`examples_config.yaml`
+   - 指定预期输出以验证正确性
+
+2. **定期运行测试**
+   - 每次修改基础库后运行
+   - 确保所有examples仍然工作
+
+3. **及时标记废弃**
+   - API变更后，标记受影响的examples
+   - 提供明确的修复建议
+
+4. **分类清晰**
+   - 核心功能放在`core_examples`
+   - 实验性功能放在`advanced_examples`
+   - 确保核心examples 100%通过
+
+---
+
 ## 🔄 开发工作流
 
 ### 标准工作流程
@@ -508,6 +690,143 @@ save_table(df, 'my_results.csv', index=False)
 │     - 提交清晰的commit message                                │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## 🎛️ 控制系统开发最佳实践
+
+**2025-10-24更新** - 基于IDZ-Saint-Venant示例修复经验
+
+### 关键原则
+
+#### 1. 理解模型的输入输出类型 ⚠️
+
+**许多控制模型（如IDZ）处理的是变化量而非绝对值！**
+
+```python
+# ❌ 错误：混淆绝对值和变化量
+identifier = IDZIdentifier(dt=10.0)
+u_flow = 20.0  # 绝对流量
+y_depth = 2.5  # 绝对水深
+params = identifier.update(u_flow, y_depth)  # 错误！
+
+# ✅ 正确：传入变化量
+u_nominal = 20.0  # 工作点流量
+y_nominal = 2.0  # 工作点水深
+u_deviation = u_flow - u_nominal  # Δu = 0
+y_deviation = y_depth - y_nominal  # Δy = +0.5
+params = identifier.update(u_deviation, y_deviation)  # 正确！
+```
+
+**规则**：
+- 阅读模型文档，明确输入输出类型
+- 如果模型传递函数是 `G(s) = Y(s)/U(s)`，通常表示**变化量关系**
+- 集成到闭环系统时，需要记录工作点并转换数据
+
+#### 2. 控制器符号正确性检查 ⚠️
+
+**控制器符号错误是最常见且最隐蔽的bug！**
+
+**检查方法**：物理直觉测试
+
+```python
+# 水深控制器的物理直觉测试：
+
+# 场景1：水深过低（error > 0）
+# 期望：减少下游出流 → 水位上升
+error = target_depth - current_depth  # > 0
+u_feedback = ???  # 应该是负值（减少出流）
+
+# 场景2：水深过高（error < 0）
+# 期望：增加下游出流 → 水位下降
+error = target_depth - current_depth  # < 0
+u_feedback = ???  # 应该是正值（增加出流）
+```
+
+**正确实现**：
+```python
+def compute_control(self, current_depth, target_depth, q_upstream):
+    error = target_depth - current_depth
+
+    # 负反馈：error > 0 → u_feedback < 0（减少出流）
+    u_feedback = -(self.kp * error + self.ki * self.integral_error)
+
+    u = q_upstream + u_feedback
+    return np.clip(u, self.u_min, self.u_max)
+```
+
+**验证步骤**：
+1. ✅ 推导：error符号 → u_feedback符号 → 物理效果
+2. ✅ 运行：设置阶跃输入，观察响应方向
+3. ✅ 绘图：误差和控制量应该反向变化
+
+#### 3. 参数更新频率合理性
+
+**问题**：更新频率过低导致参数辨识失效
+
+```python
+# ❌ 错误：更新频率不合理
+if k % 100 == 0:  # 仅在k=0,100,200...更新
+    self.idz_params = self._discrete_to_idz(theta)
+# 问题：如果仿真只有90步，永远不会更新！
+
+# ✅ 正确：根据仿真时长选择合理频率
+if k % 10 == 0:  # 每10步更新
+    self.idz_params = self._discrete_to_idz(theta)
+```
+
+**规则**：
+- 更新频率 ≥ 10次/仿真
+- 至少有50个数据点用于辨识
+- 监控RLS估计误差以判断收敛性
+
+#### 4. 添加诊断输出
+
+**必须实时监控关键变量**：
+
+```python
+if step % 10 == 0:
+    print(f"t={t:.0f}s, "
+          f"y={current_depth:.3f}m, "
+          f"err={error:.3f}m, "
+          f"K={params.K:.1f}, "
+          f"RLS_err={rls_error:.4f}")
+```
+
+**最小诊断清单**：
+- ✅ 当前输出值
+- ✅ 跟踪误差
+- ✅ 控制参数
+- ✅ 辨识误差
+
+### 开发检查清单
+
+**在提交控制系统代码前，必须完成以下检查**：
+
+```
+□ 模型输入输出类型明确（绝对值 vs 变化量）
+□ 控制器符号通过物理直觉测试
+□ 参数更新频率合理（≥10次/仿真）
+□ 添加诊断输出
+□ 绘制结果图表（输出、控制量、参数、误差）
+□ 性能指标计算（MAE, RMSE）
+□ 文档更新（CONTROL_API_REFERENCE.md）
+```
+
+### 常见错误模式
+
+| 错误类型 | 症状 | 修复 |
+|---------|------|------|
+| **数据类型错误** | 参数辨识失效，参数不变化 | 传入变化量而非绝对值 |
+| **控制符号错误** | 控制反向，误差越来越大 | 添加负号，确保负反馈 |
+| **更新频率低** | 参数从不更新 | 降低更新间隔（如100→10） |
+| **无诊断输出** | 无法调试 | 添加print监控关键变量 |
+
+### 参考资料
+
+- **IDZ模型详解**: `CONTROL_API_REFERENCE.md` → 在线辨识章节
+- **修复案例**: `docs/IDZ_Saint_Venant_Fix_Report.md`
+- **完整示例**: `examples/advanced_examples/idz_saint_venant_integration.py`
 
 ---
 

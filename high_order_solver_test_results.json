@@ -1,0 +1,17 @@
+{
+  "HighOrderCanalSolver_MUSCL_RK2": {
+    "error_pct": 2550.9803921568628,
+    "actual_dh": -2.450980392156863,
+    "expected_dh": 0.1
+  },
+  "HighOrderCanalSolver_1st_order": {
+    "error_pct": 2550.9803921568628,
+    "actual_dh": -2.450980392156863,
+    "expected_dh": 0.1
+  },
+  "Canal_Preissmann": {
+    "error_pct": 36.274509803921354,
+    "actual_dh": 0.06372549019607865,
+    "expected_dh": 0.1
+  }
+}

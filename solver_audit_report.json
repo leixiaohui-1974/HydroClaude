@@ -1,0 +1,54 @@
+{
+  "test_config": {
+    "Q_in": 22.0,
+    "Q_out": 20.0,
+    "sim_time": 500.0,
+    "expected_dh": 0.1
+  },
+  "results": {
+    "Canal-Preissmann": {
+      "status": "success",
+      "error_pct": 36.274509803921354,
+      "error_m": 0.036274509803921356,
+      "actual_dh": 0.06372549019607865,
+      "stable": true
+    },
+    "Canal-FVM": {
+      "status": "unstable",
+      "error": "Numerical overflow (NaN)",
+      "stable": false
+    },
+    "Canal-MOC": {
+      "status": "success",
+      "error_pct": 6782.479988146173,
+      "error_m": 6.782479988146173,
+      "actual_dh": 6.882479988146173,
+      "stable": true
+    },
+    "HighOrderCanalSolver": {
+      "status": "success",
+      "error_pct": 2550.9803921568628,
+      "error_m": 2.550980392156863,
+      "actual_dh": -2.450980392156863,
+      "stable": true
+    },
+    "HydrostaticCanalSolver": {
+      "status": "success",
+      "error_pct": 2600.0,
+      "error_m": 2.6,
+      "actual_dh": -2.5,
+      "stable": true
+    }
+  },
+  "recommendations": {
+    "keep": [
+      "Canal-Preissmann"
+    ],
+    "delete": [
+      "Canal-FVM",
+      "HighOrderCanalSolver",
+      "HydrostaticCanalSolver",
+      "Canal-MOC"
+    ]
+  }
+}

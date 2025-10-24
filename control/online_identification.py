@@ -32,6 +32,15 @@ except ImportError:
     # 如果作为模块导入
     from control.idz_model import IDZParameters
 
+# 导入scipy参数转换器
+try:
+    from scipy_parameter_conversion import ScipyParameterConverter
+except ImportError:
+    try:
+        from control.scipy_parameter_conversion import ScipyParameterConverter
+    except ImportError:
+        ScipyParameterConverter = None  # scipy方法不可用
+
 
 class IdentificationMethod(Enum):
     """辨识方法"""
@@ -180,16 +189,26 @@ class IDZIdentifier:
     使用输入-输出数据在线估计参数
     """
 
-    def __init__(self, dt: float, method: IdentificationMethod = IdentificationMethod.FORGETTING_RLS):
+    def __init__(self, dt: float, method: IdentificationMethod = IdentificationMethod.FORGETTING_RLS,
+                 use_scipy: bool = True, scipy_method: str = 'bilinear'):
         """
         初始化IDZ辨识器
 
         Args:
             dt: 采样时间
             method: 辨识方法
+            use_scipy: 是否使用scipy进行参数转换（推荐）
+            scipy_method: scipy转换方法 ('bilinear', 'backward_diff')
         """
         self.dt = dt
         self.method = method
+        self.use_scipy = use_scipy and (ScipyParameterConverter is not None)
+
+        # Scipy参数转换器（如果可用）
+        if self.use_scipy:
+            self.scipy_converter = ScipyParameterConverter(dt=dt, method=scipy_method)
+        else:
+            self.scipy_converter = None
 
         # 离散时间模型参数
         # y(k) = a1*y(k-1) + a2*y(k-2) + b0*u(k-d) + b1*u(k-d-1) + b2*u(k-d-2)
@@ -207,6 +226,11 @@ class IDZIdentifier:
 
         # 延迟估计
         self.estimated_delay = 0
+
+        # 参数平滑（指数加权移动平均）
+        self.smooth_alpha = 0.3  # 平滑系数（0-1，越小越平滑）
+        self.K_history = []
+        self.tau_d_history = []
 
     def update(self, u: float, y: float) -> Optional[IDZParameters]:
         """
@@ -250,8 +274,8 @@ class IDZIdentifier:
             else:
                 theta, error = self.rls.update(phi, y_k)
 
-            # 每100步转换为IDZ参数
-            if k % 100 == 0:
+            # 每10步转换为IDZ参数（修正：提高更新频率）
+            if k % 10 == 0:
                 self.idz_params = self._discrete_to_idz(theta)
 
         # 保持缓冲大小
@@ -263,7 +287,7 @@ class IDZIdentifier:
 
     def _discrete_to_idz(self, theta: np.ndarray) -> IDZParameters:
         """
-        从离散参数转换为IDZ参数
+        从离散参数转换为IDZ参数（改进版：带平滑和更好的约束）
 
         离散模型: y(k) = a1*y(k-1) + a2*y(k-2) + b0*u(k) + b1*u(k-1) + b2*u(k-2)
         对应连续系统: G(s) = K*(1 + τ_z*s) / (s*(1 + τ_d*s))
@@ -275,25 +299,96 @@ class IDZIdentifier:
             IDZ参数
         """
         a1, a2, b0, b1, b2 = theta
-
-        # 简化估计（需要更精确的转换）
-        # 这里使用近似公式
         dt = self.dt
 
-        # 增益估计
-        K = (b0 + b1 + b2) / (1 - a1 - a2) if abs(1 - a1 - a2) > 1e-6 else 100.0
+        # 方法1：使用scipy进行转换（推荐）
+        if self.use_scipy and self.scipy_converter is not None:
+            try:
+                return self.scipy_converter.discrete_to_continuous(theta, use_optimization=True)
+            except Exception as e:
+                print(f"Warning: scipy conversion failed: {e}, using fallback")
+                # 失败时降级到原始方法
+                pass
 
-        # 时间常数估计（粗略）
-        tau_d = -dt / np.log(abs(a1)) if 0 < abs(a1) < 1 else 100.0 * dt
-        tau_z = tau_d * 0.9  # 近似
+        # 方法2：原始手工转换方法（作为备用）
+
+        # 增益估计（改进：考虑积分器效应）
+        # 对于IDZ模型，稳态增益是 K (因为有积分器)
+        # 从离散模型估计：使用低频增益
+        numerator_sum = b0 + b1 + b2
+        denominator_sum = 1 - a1 - a2
+
+        if abs(denominator_sum) > 1e-3:
+            K_raw = numerator_sum / denominator_sum
+        else:
+            # 分母接近0说明有积分器，使用导数增益
+            K_raw = (b0 + b1 + b2) / dt if dt > 0 else 100.0
+
+        # 时间常数估计（改进：更稳健的方法）
+        # 使用极点位置估计
+        # 二阶系统：z^2 - a1*z - a2 = 0
+        discriminant = a1**2 + 4*a2
+        if discriminant >= 0 and abs(a1) < 2:
+            # 稳定系统
+            z1 = (a1 + np.sqrt(discriminant)) / 2
+            z2 = (a1 - np.sqrt(discriminant)) / 2
+
+            # 从主极点估计时间常数
+            z_dom = z1 if abs(z1) > abs(z2) else z2
+            if 0 < abs(z_dom) < 1:
+                tau_d_raw = -dt / np.log(abs(z_dom))
+            else:
+                tau_d_raw = 100.0 * dt
+        else:
+            # 退化情况
+            tau_d_raw = 100.0 * dt
+
+        tau_z_raw = tau_d_raw * 0.85  # IDZ通常 tau_z < tau_d
 
         theta_delay = self.estimated_delay * dt
 
-        # 限制参数范围
-        K = np.clip(K, 1.0, 1000.0)
-        tau_z = np.clip(tau_z, dt, 10000.0)
-        tau_d = np.clip(tau_d, dt, 10000.0)
+        # 平滑滤波（指数加权移动平均）
+        if self.idz_params is not None:
+            # 有历史值，进行平滑
+            K_prev = self.idz_params.K
+            tau_d_prev = self.idz_params.tau_d
+
+            # 限制单步变化幅度（避免突变）
+            # 修复：使用绝对值比较，支持负增益系统
+            K_change_ratio = K_raw / K_prev if abs(K_prev) > 0.01 else 1.0
+            K_change_ratio = np.clip(K_change_ratio, 0.5, 2.0)  # 单步最多变化2倍
+            K_raw = K_prev * K_change_ratio
+
+            tau_d_change_ratio = tau_d_raw / tau_d_prev if tau_d_prev > 0 else 1.0
+            tau_d_change_ratio = np.clip(tau_d_change_ratio, 0.5, 2.0)
+            tau_d_raw = tau_d_prev * tau_d_change_ratio
+
+            # 指数平滑
+            K = self.smooth_alpha * K_raw + (1 - self.smooth_alpha) * K_prev
+            tau_d = self.smooth_alpha * tau_d_raw + (1 - self.smooth_alpha) * tau_d_prev
+        else:
+            # 首次估计，不平滑
+            K = K_raw
+            tau_d = tau_d_raw
+
+        tau_z = tau_d * 0.85
+
+        # 限制参数范围（修复：支持负增益系统）
+        # 根据K的符号分别处理
+        if K >= 0:
+            # 正向作用系统（流量增大→水位升高）
+            K = np.clip(K, 0.1, 2000.0)
+        else:
+            # 反向作用系统（闸门开度增大→水位降低）
+            K = np.clip(K, -2000.0, -0.01)
+
+        tau_z = np.clip(tau_z, dt, 20000.0)
+        tau_d = np.clip(tau_d, dt, 20000.0)
         theta_delay = np.clip(theta_delay, 0, 3600.0)
+
+        # 记录历史
+        self.K_history.append(K)
+        self.tau_d_history.append(tau_d)
 
         return IDZParameters(K=K, tau_z=tau_z, tau_d=tau_d, theta=theta_delay)
 

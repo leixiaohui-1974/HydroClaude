@@ -1,0 +1,102 @@
+# MPC控制器基准测试配置
+# 对比MPC vs PID vs 自适应PI的控制性能
+
+canal:
+  length: 1000.0
+  width: 10.0
+  slope: 0.0001
+  manning_n: 0.025
+
+grid:
+  nx: 51
+  adaptive: false
+
+structures:
+  - type: sluice_gate
+    position: 950.0      # 下游闸门（控制执行器）
+    width: 10.0
+    initial_opening: 2.0
+    Cd: 0.6
+
+boundary_conditions:
+  upstream:
+    type: flow
+    value: 20.0          # 初始上游流量
+  downstream:
+    type: depth
+    value: 2.2           # 下游水位
+
+simulation:
+  type: control
+  dt: 2.0               # 采样时间（与MPC匹配）
+  total_time: 1200.0    # 20分钟仿真
+
+  # 时变边界条件（多工况点测试）
+  time_varying_bc:
+    - boundary: upstream
+      type: step
+      step_time: 300.0   # 5分钟时阶跃
+      value_before: 20.0
+      value_after: 25.0
+
+    - boundary: upstream
+      type: step
+      step_time: 600.0   # 10分钟时阶跃
+      value_before: 25.0
+      value_after: 18.0
+
+    - boundary: upstream
+      type: step
+      step_time: 900.0   # 15分钟时阶跃
+      value_before: 18.0
+      value_after: 23.0
+
+  control:
+    type: mpc            # 控制器类型: pid / adaptive_pi / mpc
+    setpoint: 2.2        # 目标水位
+    monitoring_points: [25]  # 中游监测点（索引）
+    control_points: [0]      # 下游闸门（结构索引）
+
+    controller:
+      # MPC配置
+      prediction_horizon: 15
+      control_horizon: 10
+      Q: 100.0           # 状态误差权重
+      R: 1.0             # 控制增量权重
+      Qf: 1000.0         # 终端权重
+
+      # 约束
+      output_min: 0.5
+      output_max: 4.0
+      du_max: 0.3        # 最大变化率
+
+      # 求解器
+      solver: "OSQP"
+      use_observer: true  # 使用Luenberger观测器
+
+      # IDZ模型参数（自动辨识或手动设置）
+      idz_params:
+        K: 100.0
+        tau_z: 200.0
+        tau_d: 300.0
+        theta: 20.0
+
+      # 在线辨识（可选）
+      online_identification:
+        enabled: true
+        method: "forgetting_rls"
+        forgetting_factor: 0.98
+        update_interval: 10  # 每10步更新一次模型
+
+solver:
+  method: hydrostatic_riemann
+  cfl: 0.5
+  max_iterations: 100
+  tolerance: 1e-6
+
+output:
+  save_interval: 10
+  output_dir: "output/mpc_benchmark"
+  save_states: true
+  save_control: true
+  save_metrics: true

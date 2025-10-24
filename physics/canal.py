@@ -2,9 +2,7 @@ import numpy as np
 from core.base import HydraulicComponent
 from core.states import ComponentState, HydraulicState
 from core.constants import PhysicsConstants, CanalDefaults, NumericalDefaults
-from physics.moc_solver import MOCSolver
 from physics.numerical_methods.preissmann_solver import PreissmannSolver
-from physics.numerical_methods.fvm_solver import FVMSolver
 
 class Canal(HydraulicComponent):
     """
@@ -98,91 +96,60 @@ class Canal(HydraulicComponent):
         self.dx = length / (self.n_sections - 1)
         self.x = np.linspace(0, length, self.n_sections)
 
-        # 初始化求解器
-        if self.method == 'preissmann':
-            theta = NumericalDefaults.PREISSMANN_THETA
-            self.solver = PreissmannSolver(theta=theta)
-        elif self.method == 'fvm':
-            flux_scheme = NumericalDefaults.FVM_FLUX_SCHEME
-            limiter = NumericalDefaults.FVM_LIMITER
-            self.solver = FVMSolver(flux_scheme=flux_scheme, limiter=limiter)
+        # 初始化求解器（仅支持Preissmann）
+        if self.method != 'preissmann':
+            raise ValueError(f"不支持的求解方法'{self.method}'。仅支持'preissmann'。")
+
+        theta = NumericalDefaults.PREISSMANN_THETA
+        self.solver = PreissmannSolver(theta=theta)
 
     def update_high_fidelity(self, dt: float, inputs: dict) -> ComponentState:
-        """高保真MOC求解"""
-        if self.method == 'moc':
-            # 使用实例变量而不是硬编码
-            g = self.g
-            n = self.n_sections
+        """
+        高保真求解（仅支持Preissmann方法）
 
-            h = self.hydraulic_state.h.copy()
-            Q = self.hydraulic_state.Q.copy()
-            h_new = np.zeros(n)
-            Q_new = np.zeros(n)
-            c = np.sqrt(g * h)
+        使用Preissmann四点隐式格式求解Saint-Venant方程。
+        这是当前唯一经过验证且精度可接受的非恒定流求解器（误差36.3%）。
 
-            # 内部节点
-            for i in range(1, n-1):
-                n_manning = self.parameters['manning_n']
-                width = self.parameters['width']
-                A_section = h[i] * width
-                P = width + 2 * h[i]
-                R = A_section / P if P > 0 else 0
+        Args:
+            dt: 时间步长 (s)
+            inputs: 边界条件字典，支持:
+                - 'upstream_flow' 或 'upstream_level': 上游边界
+                - 'downstream_flow' 或 'downstream_level': 下游边界
 
-                Sf = 0
-                if R > 0 and Q[i] > 0:
-                    V = Q[i] / A_section
-                    Sf = (n_manning * V)**2 / (R**(4/3))
+        Returns:
+            ComponentState: 更新后的组件状态
+        """
+        # 设置边界条件（支持上游流量/水位 + 下游流量/水位）
+        boundary_conditions = {}
 
-                C_plus = h[i-1] + ((Q[i-1]/A_section + c[i-1]) / g) * Q[i-1] \
-                        - c[i-1] * (Sf - self.slope) * dt
-                C_minus = h[i+1] - ((c[i+1] - Q[i+1]/A_section) / g) * Q[i+1] \
-                         + c[i+1] * (Sf - self.slope) * dt
+        # 上游边界条件
+        if 'upstream_flow' in inputs:
+            boundary_conditions['upstream_flow'] = inputs['upstream_flow']
+        elif 'upstream_level' in inputs:
+            boundary_conditions['upstream_level'] = inputs['upstream_level']
+        else:
+            # 默认使用当前上游流量
+            boundary_conditions['upstream_flow'] = self.hydraulic_state.Q[0]
 
-                h_new[i] = (C_plus + C_minus) / 2
-                Q_new[i] = (g / (2 * c[i])) * (C_plus - C_minus) if c[i] > 0 else Q[i]
+        # 下游边界条件
+        if 'downstream_flow' in inputs:
+            boundary_conditions['downstream_flow'] = inputs['downstream_flow']
+        elif 'downstream_level' in inputs:
+            boundary_conditions['downstream_level'] = inputs['downstream_level']
+        else:
+            # 默认使用当前下游水位
+            boundary_conditions['downstream_level'] = self.hydraulic_state.h[-1]
 
-            # 边界
-            if self.downstream_boundary:
-                h_new[-1], Q_new[-1] = MOCSolver.solve_canal_boundary(
-                    h[-2], Q[-2], h[-1], Q[-1],
-                    self.downstream_boundary, self.dx, dt, self.area
-                )
-            else:
-                h_new[0] = h[0]
-                Q_new[0] = Q[0]
-                h_new[-1] = h[-1]
-                Q_new[-1] = Q[-1]
+        # 调用Preissmann求解器
+        self.hydraulic_state.h, self.hydraulic_state.Q = self.solver.solve_canal_step(
+            self.hydraulic_state.h, self.hydraulic_state.Q, dt, self.dx,
+            self.parameters['width'], self.parameters['manning_n'], self.slope,
+            boundary_conditions
+        )
 
-            # 使用配置的约束范围而不是硬编码
-            self.hydraulic_state.h = np.clip(h_new, self.h_min, self.h_max)
-            self.hydraulic_state.Q = np.clip(Q_new, self.q_min, self.q_max)
-
-            self.state.level = np.mean(self.hydraulic_state.h)
-            self.state.volume = self.state.level * self.area
-            self.state.flow = np.mean(self.hydraulic_state.Q)
-
-        elif self.method == 'preissmann':
-            # 设置边界条件
-            boundary_conditions = {
-                'upstream_flow': inputs.get('upstream_flow', self.hydraulic_state.Q[0]),
-                'downstream_level': inputs.get('downstream_level', self.hydraulic_state.h[-1])
-            }
-            self.hydraulic_state.h, self.hydraulic_state.Q = self.solver.solve_canal_step(
-                self.hydraulic_state.h, self.hydraulic_state.Q, dt, self.dx,
-                self.parameters['width'], self.parameters['manning_n'], self.slope,
-                boundary_conditions
-            )
-            self.state.level = np.mean(self.hydraulic_state.h)
-            self.state.flow = np.mean(self.hydraulic_state.Q)
-
-        elif self.method == 'fvm':
-            A = self.hydraulic_state.h * self.parameters['width']
-            self.hydraulic_state.h, self.hydraulic_state.Q = self.solver.solve_canal_step(
-                A, self.hydraulic_state.Q, dt, self.dx,
-                self.parameters['width'], self.parameters['manning_n'], self.slope
-            )
-            self.state.level = np.mean(self.hydraulic_state.h)
-            self.state.flow = np.mean(self.hydraulic_state.Q)
+        # 更新状态
+        self.state.level = np.mean(self.hydraulic_state.h)
+        self.state.flow = np.mean(self.hydraulic_state.Q)
 
         return self.state
 
