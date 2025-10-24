@@ -65,13 +65,15 @@ python -m modeling.universal_modeler
 
 ### 1. 工程案例库 ✨
 
-完整的工程实践案例，涵盖设计、运行、控制：
+完整的工程实践案例，涵盖设计、运行、控制、优化：
 
 | 案例 | 类型 | 说明 | 运行时间 |
 |------|------|------|----------|
 | [case_01_irrigation_design](examples/engineering_cases/case_01_irrigation_design/) | 设计 | 灌溉渠道设计优化 | ~10s |
 | [case_02_flood_emergency](examples/engineering_cases/case_02_flood_emergency/) | 运行 | 防洪应急响应（时变边界） | ~30s |
 | [case_03_multi_gate_control](examples/engineering_cases/case_03_multi_gate_control/) | 控制 | 多闸门协同控制（3×3 MPC） | ~60s |
+| [case_04_parameter_calibration](examples/engineering_cases/case_04_parameter_calibration/) | 校准 | 参数在线估计（增广EKF） | ~30s |
+| [case_05_water_resource_optimization](examples/engineering_cases/case_05_water_resource_optimization/) | 优化 | 水资源调度（峰谷电价） | ~20s |
 
 ### 2. 控制系统示例 ✨
 
@@ -214,6 +216,108 @@ fig = plotter.plot_contour(X, T, h_history,
 - ✅ 减少80%的重复代码
 - ✅ 统一的图表样式
 - ✅ 自动处理中文字体问题
+
+### 📝 ReportGenerator - 自动生成专业报告 🆕
+
+一键生成Markdown/HTML/JSON格式的专业报告：
+
+```python
+from utils.report_generator import ReportGenerator
+
+# 创建报告生成器
+reporter = ReportGenerator(
+    project_name="灌溉渠道仿真",
+    output_dir="reports"
+)
+
+# 添加系统配置
+reporter.add_system_info({
+    '渠道长度': '10 km',
+    '渠道宽度': '10 m',
+    '底坡': '0.001'
+})
+
+# 添加仿真结果
+reporter.add_results({
+    '最大水深': 3.5,
+    '平均流量': 15.3,
+    '收敛迭代': 5
+})
+
+# 添加图表
+reporter.add_figure('profile.png', '水面线剖面图')
+
+# 生成多种格式报告
+reporter.generate_markdown()  # Markdown报告
+reporter.generate_html()      # HTML报告（带专业样式）
+reporter.generate_summary_json()  # JSON摘要
+```
+
+### 📈 TimeSeriesAnalyzer - 时间序列深度分析 🆕
+
+对非稳态仿真结果进行全面分析：
+
+```python
+from utils.time_series_analyzer import TimeSeriesAnalyzer
+
+# 创建分析器
+analyzer = TimeSeriesAnalyzer(time=t_array, data=h_array, name="水深")
+
+# 统计分析
+stats = analyzer.compute_statistics()
+# 输出: 均值、标准差、偏度、峰度、变异系数等
+
+# 趋势检测
+trend = analyzer.detect_trend('linear')
+# 输出: 斜率、R²、显著性检验
+
+# 异常检测
+outliers = analyzer.detect_outliers('iqr')
+# 输出: 异常点数量、位置、比例
+
+# 频谱分析
+frequencies, power = analyzer.compute_spectrum('welch')
+
+# 周期性检测
+periodicity = analyzer.detect_periodicity()
+# 输出: 是否周期、主周期时长
+
+# 自动生成6面板分析报告图
+analyzer.generate_analysis_report('analysis.png')
+```
+
+### 💾 DataExporter - 统一数据导出 🆕
+
+支持CSV/JSON/NPZ多种格式的数据导出：
+
+```python
+from utils.data_exporter import DataExporter
+
+exporter = DataExporter(output_dir='results')
+
+# 导出时间序列（支持多格式）
+files = exporter.export_time_series(
+    time=t_array,
+    data={'depth': h_array, 'flow': Q_array},
+    filename='simulation',
+    formats=['csv', 'json', 'npz']
+)
+
+# 导出空间剖面
+exporter.export_profile(
+    x=x_grid,
+    data={'depth': h_final, 'velocity': v_final},
+    filename='profile',
+    format='csv'
+)
+
+# 导出汇总信息
+exporter.export_summary({
+    '仿真名称': '测试仿真',
+    '最大水深': 3.5,
+    '平均流量': 15.3
+}, format='json')
+```
 
 ---
 

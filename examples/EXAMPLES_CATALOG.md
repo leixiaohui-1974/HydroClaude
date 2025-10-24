@@ -2,7 +2,7 @@
 
 **版本**: 1.0
 **更新日期**: 2025-10-24
-**总计**: 43个示例案例
+**总计**: 45个示例案例
 
 ---
 
@@ -71,8 +71,10 @@
 | `engineering_cases/case_01_irrigation_design` | 设计 | 灌溉渠道设计优化 | ~10s | ✅ |
 | `engineering_cases/case_02_flood_emergency` | 运行 | 防洪应急响应 | ~30s | ✅ |
 | `engineering_cases/case_03_multi_gate_control` | 控制 | 多闸门协同控制（3×3 MPC） | ~60s | ✅ |
+| `engineering_cases/case_04_parameter_calibration` | 校准 | 参数在线估计（增广EKF） | ~30s | ✅ 🆕 |
+| `engineering_cases/case_05_water_resource_optimization` | 优化 | 水资源调度（峰谷电价） | ~20s | ✅ 🆕 |
 
-**总结**：完整的工程案例库，涵盖设计、运行、控制三大类。
+**总结**：完整的工程案例库，涵盖设计、运行、控制、校准、优化五大类。
 
 ### 2. 控制系统示例（Control Examples）
 
@@ -123,6 +125,19 @@
 
 **状态**：✅ 完成
 
+### 6. 文件边界条件支持 🆕
+
+**案例**：`example_file_boundary_condition`
+
+**功能**：从CSV文件读取时间序列边界条件
+- CSV文件读取
+- 线性插值
+- 时变流量边界
+
+**应用场景**：实测数据驱动的仿真
+
+**状态**：✅ 完成
+
 ---
 
 ## 📚 完整案例列表
@@ -135,6 +150,7 @@
 | `example_universal_modeling` | ⭐ | 通用建模器入门 | ~10s |
 | `example_structures` | ⭐⭐ | 结构物基础示例 | ~10s |
 | `example_unsteady` | ⭐⭐ | 非稳态模拟基础 | ~15s |
+| `example_file_boundary_condition` | ⭐⭐ | 文件边界条件（CSV读取）🆕 | ~20s |
 
 ### B. 工程案例库（Engineering Cases）🆕
 
@@ -143,6 +159,8 @@
 | `case_01_irrigation_design` | 设计 | 稳态设计、参数优化 | ~10s |
 | `case_02_flood_emergency` | 运行 | 时变边界、非稳态 | ~30s |
 | `case_03_multi_gate_control` | 控制 | 多闸门、MPC协同 | ~60s |
+| `case_04_parameter_calibration` | 校准 | 参数在线估计（增广EKF） | ~30s |
+| `case_05_water_resource_optimization` | 优化 | 水资源调度（峰谷电价） | ~20s |
 
 ### C. 控制系统示例（Control）🆕
 
@@ -253,8 +271,13 @@
 
 **优化设计**：
 - `engineering_cases/case_01`
+- `engineering_cases/case_05` 🆕
 - `example_21_irrigation_optimization`
 - `example_24_multi_objective_optimization`
+
+**参数估计与校准** 🆕：
+- `engineering_cases/case_04`
+- `example_15_rls_identification`
 
 ### 按应用领域
 
@@ -295,6 +318,8 @@ python examples/validate_new_examples.py
 cd examples/engineering_cases/case_01_irrigation_design && python run.py
 cd examples/engineering_cases/case_02_flood_emergency && python run.py
 cd examples/engineering_cases/case_03_multi_gate_control && python run.py
+cd examples/engineering_cases/case_04_parameter_calibration && python run.py
+cd examples/engineering_cases/case_05_water_resource_optimization && python run.py
 
 # 测试控制系统
 python -m modeling.universal_modeler examples/example_control/config_pid_water_level.yaml
@@ -349,7 +374,8 @@ python examples/example_time_varying_bc/run_all.py
 ### 第1周：基础入门
 - Day 1-2: `example_simple_canal`, `example_universal_modeling`
 - Day 3-4: `example_structures`, `example_structure_showcase`
-- Day 5-7: `engineering_cases/case_01`, `case_02`
+- Day 5-6: `example_file_boundary_condition`, `engineering_cases/case_01`
+- Day 7: `engineering_cases/case_02`
 
 ### 第2周：控制系统
 - Day 1-3: `example_control` (PID和MPC)
@@ -358,7 +384,8 @@ python examples/example_time_varying_bc/run_all.py
 
 ### 第3周：高级应用
 - Day 1-2: `example_time_varying_bc`
-- Day 3-4: 传统示例中感兴趣的案例
+- Day 3: `engineering_cases/case_04` (参数估计)
+- Day 4: `engineering_cases/case_05` (水资源优化)
 - Day 5-7: 自定义开发和实践
 
 ---
@@ -395,10 +422,10 @@ sudo apt-get install fonts-wqy-zenhei
 ### 案例统计
 
 ```
-总案例数: 43
-  - 新增案例: 5 (本版本)
-  - Universal Modeler系列: 4
-  - 工程案例库: 3
+总案例数: 45
+  - 新增案例: 7 (本版本)
+  - Universal Modeler系列: 5
+  - 工程案例库: 5
   - 控制系统: 5+
   - 展示示例: 2
   - 传统示例: 24
@@ -450,17 +477,28 @@ sudo apt-get install fonts-wqy-zenhei
 ### v1.0 (2025-10-24)
 
 **新增**：
-- ✨ 工程案例库（3个完整案例）
+- ✨ 工程案例库（5个完整案例）
+  - case_01: 灌溉渠道设计优化
+  - case_02: 防洪应急响应
+  - case_03: 多闸门协同控制
+  - case_04: 参数在线估计（增广EKF）🆕
+  - case_05: 水资源优化调度（峰谷电价）🆕
 - ✨ 控制系统示例（PID/MPC）
 - ✨ 闸泵控制策略对比（3种策略）
 - ✨ 结构类型展示（7种结构）
-- ✨ 时变边界条件展示（3种类型）
+- ✨ 时变边界条件展示（4种类型，含文件读取）🆕
+- ✨ 数据分析工具（TimeSeriesAnalyzer）🆕
+- ✨ 报告生成工具（ReportGenerator - Markdown/HTML/JSON）🆕
+- ✨ 数据导出工具（DataExporter - CSV/JSON/NPZ）🆕
 - ✨ 命令行接口（UniversalModeler CLI）
 
 **改进**：
 - 🐛 修复多变量控制可视化
 - 🐛 修复结构物配置参数（3个）
+- 🐛 完成参数估计中的渗漏率敏感度分析
 - 📚 新增文档5篇，总计50+页
+- 🧪 新增单元测试框架（pytest，37个测试用例）
+- 🔄 新增CI/CD流水线（GitHub Actions）
 
 **性能**：
 - ⚡ 所有新案例均达到30倍以上实时性能
