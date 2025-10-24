@@ -20,12 +20,149 @@ HydroClaude是一个专业的水力学仿真与优化框架，专注于明渠流
 
 | 文档 | 说明 | 适用对象 |
 |-----|------|---------|
+| **[快速入门指南](QUICKSTART_GUIDE.md)** 🆕 | 30分钟快速上手 | 新用户 ⭐⭐⭐ |
+| **[示例案例目录](examples/EXAMPLES_CATALOG.md)** 🆕 | 43个示例的完整索引 | 所有用户 ⭐⭐⭐ |
 | **[开发指南](DEVELOPMENT_GUIDE.md)** | 基础库优先原则、代码规范、工作流 | 所有开发者 ⭐ |
 | **[库参考手册](LIBRARY_REFERENCE.md)** | 完整API文档、使用示例 | 所有开发者 ⭐ |
 | **[脚本升级总结](SCRIPT_UPGRADE_SUMMARY.md)** | 5个示例的详细测试结果 | 了解最佳实践 |
 | **[示例代码](examples/)** | 可运行的完整示例 | 快速上手 |
 
 **⚠️ 开发前必读**: [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md) - 避免重复造轮子！
+
+---
+
+## 🚀 快速开始（5分钟）
+
+### 第一个示例
+
+```bash
+# 1. 安装依赖
+pip install -r requirements.txt
+
+# 2. 运行最简单的示例
+cd examples/example_simple_canal
+python run.py
+
+# 3. 查看结果
+# results/profile.png - 水面线剖面图
+```
+
+### 使用通用建模器
+
+```bash
+# 命令行运行任意配置
+python -m modeling.universal_modeler examples/example_simple_canal/config.yaml
+
+# 查看帮助
+python -m modeling.universal_modeler
+```
+
+**完整教程**: 查看 [快速入门指南](QUICKSTART_GUIDE.md)
+
+---
+
+## 🆕 新增功能（v1.0 - 2025-10-24）
+
+### 1. 工程案例库 ✨
+
+完整的工程实践案例，涵盖设计、运行、控制：
+
+| 案例 | 类型 | 说明 | 运行时间 |
+|------|------|------|----------|
+| [case_01_irrigation_design](examples/engineering_cases/case_01_irrigation_design/) | 设计 | 灌溉渠道设计优化 | ~10s |
+| [case_02_flood_emergency](examples/engineering_cases/case_02_flood_emergency/) | 运行 | 防洪应急响应（时变边界） | ~30s |
+| [case_03_multi_gate_control](examples/engineering_cases/case_03_multi_gate_control/) | 控制 | 多闸门协同控制（3×3 MPC） | ~60s |
+
+### 2. 控制系统示例 ✨
+
+完整的PID和MPC控制器示例：
+
+```bash
+# PID控制
+python -m modeling.universal_modeler examples/example_control/config_pid_water_level.yaml
+
+# MPC控制（调优版）
+python -m modeling.universal_modeler examples/example_control/config_mpc_tuned.yaml
+```
+
+**性能**：
+- PID: MAE 0.79m
+- MPC: MAE 0.95m（控制更平滑）
+
+[查看控制系统文档 →](examples/example_control/README.md)
+
+### 3. 闸泵控制策略对比 ✨
+
+3种不同控制策略的系统对比：
+
+| 策略 | 方法 | MAE | 控制平滑度 | 特点 |
+|------|------|-----|-----------|------|
+| Strategy 1 | PID | 0.546m | 基准 | 快速响应 |
+| Strategy 2 | MPC | 0.546m | **54% ↑** | 预测优化 |
+| Strategy 3 | 分层MPC+PID | 0.546m | **77% ↑** | 协同控制 |
+
+[查看策略对比总结 →](examples/example_gate_pump_cascade/control_strategies/SUMMARY.md)
+
+### 4. 结构类型展示 ✨
+
+展示所有7种水工结构类型的综合案例：
+
+```bash
+python examples/example_structure_showcase/run.py
+```
+
+**支持的结构**：SluiceGate（闸门）、Transition（过渡段）、BroadCrestedWeir（宽顶堰）、Drop（跌水）、Spillway（溢洪道）、Orifice（孔口）、PumpStation（泵站）
+
+[查看结构展示文档 →](examples/example_structure_showcase/README.md)
+
+### 5. 时变边界条件展示 ✨
+
+3种时变边界条件类型的完整展示：
+
+```bash
+# 运行所有3种类型
+python examples/example_time_varying_bc/run_all.py
+```
+
+**类型**：
+- **Sinusoidal**（正弦波动）- 潮汐、周期调度 - 性能：38× 实时
+- **Step**（阶跃变化）- 突发事件 - 性能：35× 实时
+- **Linear**（线性变化）- 渐进过程 - 性能：36× 实时
+
+[查看时变边界文档 →](examples/example_time_varying_bc/README.md)
+
+### 6. 完整的示例验证系统 ✨
+
+快速验证所有新增案例：
+
+```bash
+python examples/validate_new_examples.py
+```
+
+**测试覆盖**：12个新增案例，预期成功率100%
+
+---
+
+## 📊 示例案例
+
+### 推荐学习路径
+
+```
+初学者（1-2小时）:
+  example_simple_canal → example_universal_modeling → example_structure_showcase
+
+进阶用户（3-5小时）:
+  engineering_cases/case_01 → case_02 → example_control → case_03
+
+专业开发者：
+  浏览 LIBRARY_REFERENCE.md → 研究 engineering_cases → 自定义开发
+```
+
+### 完整案例目录
+
+**总计**: 43个示例案例
+
+详见 [示例案例目录](examples/EXAMPLES_CATALOG.md) 📚
 
 ---
 
