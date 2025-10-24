@@ -301,12 +301,17 @@ class MPCControlWrapper(BaseController):
         self.mpc = mpc_controller
 
     def compute_control(self, measurement: np.ndarray,
-                       setpoint: np.ndarray,
+                       setpoint,
                        dt: float) -> np.ndarray:
         """计算控制输出"""
         # 确保是列向量
         x = measurement.reshape(-1, 1)
-        ref = setpoint.reshape(-1, 1)
+
+        # 处理标量或数组setpoint
+        if np.isscalar(setpoint):
+            ref = np.array([[setpoint]])
+        else:
+            ref = np.array(setpoint).reshape(-1, 1)
 
         # MPC计算
         u, info = self.mpc.step(x, ref)
@@ -355,18 +360,37 @@ def create_control_loop(solver,
     elif controller_type == 'mpc' or controller_type == 'adaptive_mpc':
         from control.adaptive_mpc import AdaptiveMPC, AdaptiveMPCConfig
 
-        # 创建MPC控制器
-        mpc_cfg = AdaptiveMPCConfig(**controller_config)
-
-        # 需要初始模型矩阵
+        # 提取初始模型矩阵
         if 'initial_A' in controller_config and 'initial_B' in controller_config:
-            A = controller_config['initial_A']
-            B = controller_config['initial_B']
+            A = np.array(controller_config['initial_A'])
+            B = np.array(controller_config['initial_B'])
         else:
             # 默认单输入单输出系统
             A = np.array([[0.9]])
             B = np.array([[0.1]])
 
+        # 处理权重矩阵：从标量转换为矩阵
+        nx = A.shape[0]
+        nu = B.shape[1] if len(B.shape) > 1 else 1
+
+        Q = None
+        R = None
+        if 'Q_weight' in controller_config:
+            Q = np.eye(nx) * controller_config['Q_weight']
+        if 'R_weight' in controller_config:
+            R = np.eye(nu) * controller_config['R_weight']
+
+        # 创建MPC配置（排除initial_A, initial_B, Q_weight, R_weight）
+        mpc_config_dict = {k: v for k, v in controller_config.items()
+                          if k not in ['initial_A', 'initial_B', 'Q_weight', 'R_weight']}
+
+        # 添加权重矩阵
+        if Q is not None:
+            mpc_config_dict['Q'] = Q
+        if R is not None:
+            mpc_config_dict['R'] = R
+
+        mpc_cfg = AdaptiveMPCConfig(**mpc_config_dict)
         mpc = AdaptiveMPC(mpc_cfg, A, B)
         controller = MPCControlWrapper(mpc)
 
