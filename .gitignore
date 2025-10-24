@@ -33,3 +33,4 @@ test_analysis.png
 
 # Log files
 *.log
+benchmark_results/
