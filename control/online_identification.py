@@ -354,7 +354,8 @@ class IDZIdentifier:
             tau_d_prev = self.idz_params.tau_d
 
             # 限制单步变化幅度（避免突变）
-            K_change_ratio = K_raw / K_prev if K_prev > 0 else 1.0
+            # 修复：使用绝对值比较，支持负增益系统
+            K_change_ratio = K_raw / K_prev if abs(K_prev) > 0.01 else 1.0
             K_change_ratio = np.clip(K_change_ratio, 0.5, 2.0)  # 单步最多变化2倍
             K_raw = K_prev * K_change_ratio
 
@@ -372,8 +373,15 @@ class IDZIdentifier:
 
         tau_z = tau_d * 0.85
 
-        # 限制参数范围（放宽K的范围）
-        K = np.clip(K, 50.0, 2000.0)  # 提高K最小值从10→50，避免崩溃到过小值
+        # 限制参数范围（修复：支持负增益系统）
+        # 根据K的符号分别处理
+        if K >= 0:
+            # 正向作用系统（流量增大→水位升高）
+            K = np.clip(K, 0.1, 2000.0)
+        else:
+            # 反向作用系统（闸门开度增大→水位降低）
+            K = np.clip(K, -2000.0, -0.01)
+
         tau_z = np.clip(tau_z, dt, 20000.0)
         tau_d = np.clip(tau_d, dt, 20000.0)
         theta_delay = np.clip(theta_delay, 0, 3600.0)
