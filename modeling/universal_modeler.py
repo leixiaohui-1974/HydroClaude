@@ -1000,5 +1000,18 @@ class UniversalModeler:
 
 
 if __name__ == "__main__":
-    print("通用建模系统主模块")
-    print("请通过配置文件使用此系统")
+    import sys
+
+    if len(sys.argv) < 2:
+        print("通用建模系统")
+        print()
+        print("用法:")
+        print("  python -m modeling.universal_modeler <config_file.yaml>")
+        print()
+        print("示例:")
+        print("  python -m modeling.universal_modeler examples/example_simple_canal/config.yaml")
+        sys.exit(1)
+
+    config_file = sys.argv[1]
+    modeler = UniversalModeler(config_file)
+    modeler.run()
