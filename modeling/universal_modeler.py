@@ -289,11 +289,203 @@ class UniversalModeler:
         return result
 
     def run_unsteady_simulation(self):
-        """运行非稳态模拟"""
+        """
+        运行非稳态模拟
+
+        Returns:
+            result: 非稳态模拟结果
+        """
         print("\n[6/7] 执行非稳态模拟...")
-        print("      (非稳态模拟功能将在后续版本实现)")
-        # TODO: 实现非稳态模拟
-        return None
+
+        bc = self.config.get_boundary_conditions()
+        sim_config = self.config.get_simulation_config()
+
+        # 非稳态参数
+        dt = sim_config.get('dt', 1.0)  # 时间步长 (s)
+        total_time = sim_config.get('total_time', 3600.0)  # 总模拟时间 (s)
+        save_interval = sim_config.get('save_interval', 100)  # 保存间隔
+
+        # 计算时间步数
+        n_steps = int(total_time / dt)
+        n_saves = n_steps // save_interval + 1
+
+        print(f"      时间步长: {dt} s")
+        print(f"      总时间: {total_time} s")
+        print(f"      时间步数: {n_steps}")
+        print(f"      保存点数: {n_saves}")
+
+        # 获取稳态初值
+        print("\n      获取稳态初值作为初始条件...")
+
+        if bc['upstream_type'] == 'flow':
+            Q_target = bc['upstream_value']
+        else:
+            raise ValueError("非稳态模拟要求上游边界为流量类型")
+
+        if bc['downstream_type'] == 'depth':
+            h_downstream = bc['downstream_value']
+        else:
+            raise ValueError("非稳态模拟要求下游边界为水深类型")
+
+        # 初始化边界条件变量（可能随时间变化）
+        self.unsteady_Q_target = Q_target
+        self.unsteady_h_downstream = h_downstream
+
+        # 使用稳态作为初始条件
+        h, hu, steady_result = self.steady_estimator.estimate_from_steady_solution(
+            solver=self.solver,
+            Q_target=Q_target,
+            h_downstream=h_downstream,
+            max_iterations=sim_config.get('max_iterations', 5000),
+            convergence_tol=sim_config.get('convergence_tol', 0.001),
+            verbose=False
+        )
+
+        print(f"      ✓ 稳态初值已获取")
+
+        # 初始化结果存储
+        nx = len(self.solver.x)
+        time_saves = []
+        h_history = np.zeros((n_saves, nx))
+        hu_history = np.zeros((n_saves, nx))
+
+        # 保存初始状态
+        time_saves.append(0.0)
+        h_history[0, :] = self.solver.h.copy()
+        hu_history[0, :] = self.solver.hu.copy()
+
+        save_idx = 1
+
+        # 检查是否有时变边界条件
+        time_varying_bc = sim_config.get('time_varying_bc', None)
+
+        print(f"\n      开始时间推进...")
+
+        # 时间循环
+        for step in range(1, n_steps + 1):
+            current_time = step * dt
+
+            # 更新时变边界条件（如果有）
+            if time_varying_bc:
+                self._apply_time_varying_bc(current_time, time_varying_bc)
+
+            # Preissmann隐式时间步进（使用可能动态更新的边界条件）
+            h_new, hu_new = self.solver.step_preissmann(
+                dt=dt,
+                max_iter=sim_config.get('preissmann_max_iter', 10),
+                enforce_bc=True,
+                Q_in=self.unsteady_Q_target,
+                h_out=self.unsteady_h_downstream
+            )
+
+            # 更新状态
+            self.solver.h = h_new
+            self.solver.hu = hu_new
+
+            # 定期保存
+            if step % save_interval == 0:
+                time_saves.append(current_time)
+                h_history[save_idx, :] = h_new.copy()
+                hu_history[save_idx, :] = hu_new.copy()
+                save_idx += 1
+
+                # 进度提示
+                if step % (save_interval * 10) == 0:
+                    progress = step / n_steps * 100
+                    print(f"        进度: {progress:.1f}% (t = {current_time:.1f}s)")
+
+        print(f"      ✓ 非稳态模拟完成")
+
+        # 构造结果
+        self.unsteady_result = {
+            'converged': True,
+            'n_steps': n_steps,
+            'dt': dt,
+            'total_time': total_time,
+            'time': np.array(time_saves),
+            'h_history': h_history[:save_idx, :],
+            'hu_history': hu_history[:save_idx, :],
+            'Q_target': Q_target,
+            'h_downstream': h_downstream,
+        }
+
+        return self.unsteady_result
+
+    def _apply_time_varying_bc(self, t: float, time_varying_bc: dict):
+        """
+        应用时变边界条件
+
+        支持的类型：
+        1. sinusoidal - 正弦波动
+        2. step - 阶跃变化
+        3. linear - 线性变化
+        4. file - 从文件读取时间序列
+
+        Args:
+            t: 当前时间
+            time_varying_bc: 时变边界条件配置
+        """
+        bc_type = time_varying_bc.get('type')
+
+        if bc_type == 'sinusoidal':
+            # 正弦波动：value(t) = base + amplitude * sin(2π * t / period + phase)
+            base = time_varying_bc.get('base', 10.0)
+            amplitude = time_varying_bc.get('amplitude', 2.0)
+            period = time_varying_bc.get('period', 360.0)  # 周期（秒）
+            phase = time_varying_bc.get('phase', 0.0)  # 相位（弧度）
+
+            import math
+            value = base + amplitude * math.sin(2 * math.pi * t / period + phase)
+
+            # 应用到边界
+            if time_varying_bc.get('boundary') == 'upstream':
+                self._update_upstream_bc(value)
+            elif time_varying_bc.get('boundary') == 'downstream':
+                self._update_downstream_bc(value)
+
+        elif bc_type == 'step':
+            # 阶跃变化
+            step_time = time_varying_bc.get('step_time', 300.0)
+            value_before = time_varying_bc.get('value_before', 10.0)
+            value_after = time_varying_bc.get('value_after', 15.0)
+
+            value = value_after if t >= step_time else value_before
+
+            if time_varying_bc.get('boundary') == 'upstream':
+                self._update_upstream_bc(value)
+            elif time_varying_bc.get('boundary') == 'downstream':
+                self._update_downstream_bc(value)
+
+        elif bc_type == 'linear':
+            # 线性变化：value(t) = start + (end - start) * t / duration
+            start_value = time_varying_bc.get('start_value', 10.0)
+            end_value = time_varying_bc.get('end_value', 20.0)
+            duration = time_varying_bc.get('duration', 600.0)
+
+            if t <= duration:
+                value = start_value + (end_value - start_value) * t / duration
+            else:
+                value = end_value
+
+            if time_varying_bc.get('boundary') == 'upstream':
+                self._update_upstream_bc(value)
+            elif time_varying_bc.get('boundary') == 'downstream':
+                self._update_downstream_bc(value)
+
+        elif bc_type == 'file':
+            # 从文件读取时间序列
+            # TODO: 实现文件读取
+            pass
+
+    def _update_upstream_bc(self, value: float):
+        """更新上游边界条件"""
+        # 如果是流量边界，更新流量
+        self.unsteady_Q_target = value
+
+    def _update_downstream_bc(self, value: float):
+        """更新下游边界条件"""
+        # 如果是水深边界，更新水深
+        self.unsteady_h_downstream = value
 
     def validate_results(self):
         """验证结果"""
@@ -323,39 +515,99 @@ class UniversalModeler:
 
         output_config = self.config.get_output_config()
         prefix = output_config['prefix']
+        sim_type = self.config.get('simulation.type')
 
         # 保存数值数据
         if 'npz' in output_config['formats']:
             data_file = self.output_dir / f"{prefix}_data.npz"
-            np.savez(
-                data_file,
-                x=self.solver.x,
-                h=self.solver.h,
-                Q=self.solver.hu * self.solver.B,
-                result=self.steady_result
-            )
+
+            if sim_type == 'steady':
+                # 稳态数据
+                np.savez(
+                    data_file,
+                    x=self.solver.x,
+                    h=self.solver.h,
+                    Q=self.solver.hu * self.solver.B,
+                    result=self.steady_result
+                )
+            else:
+                # 非稳态数据
+                np.savez(
+                    data_file,
+                    x=self.solver.x,
+                    time=self.unsteady_result['time'],
+                    h_history=self.unsteady_result['h_history'],
+                    hu_history=self.unsteady_result['hu_history'],
+                    result=self.unsteady_result
+                )
             print(f"✓ 数据文件: {data_file}")
 
         # 生成图表
         if 'png' in output_config['formats']:
             viz = VisualizationTemplates(output_dir=str(self.output_dir))
-
-            # 纵剖面图
             canal_params = self.config.get_canal_params()
-            fig1 = viz.plot_longitudinal_profile(
-                x=self.solver.x,
-                h=self.solver.h,
-                S0=self.solver.S0,
-                canal_length=canal_params['length'],
-                gate_positions=[pos for pos, _ in self.structures] if self.structures else None,
-                title=f"Longitudinal Profile - {prefix}",
-                filename=f"{prefix}_profile.png"
-            )
-            print(f"✓ 纵剖面图: {prefix}_profile.png")
-            import matplotlib.pyplot as plt
-            plt.close(fig1)
+
+            if sim_type == 'steady':
+                # 稳态：纵剖面图
+                fig1 = viz.plot_longitudinal_profile(
+                    x=self.solver.x,
+                    h=self.solver.h,
+                    S0=self.solver.S0,
+                    canal_length=canal_params['length'],
+                    gate_positions=[pos for pos, _ in self.structures] if self.structures else None,
+                    title=f"Longitudinal Profile - {prefix}",
+                    filename=f"{prefix}_profile.png"
+                )
+                print(f"✓ 纵剖面图: {prefix}_profile.png")
+                import matplotlib.pyplot as plt
+                plt.close(fig1)
+
+            else:
+                # 非稳态：时间序列图等
+                self._generate_unsteady_outputs(viz, prefix, canal_params)
 
         print("=" * 90)
+
+    def _generate_unsteady_outputs(self, viz, prefix, canal_params):
+        """生成非稳态模拟输出"""
+        import matplotlib.pyplot as plt
+
+        # 1. 最终时刻纵剖面
+        fig1 = viz.plot_longitudinal_profile(
+            x=self.solver.x,
+            h=self.unsteady_result['h_history'][-1, :],
+            S0=self.solver.S0,
+            canal_length=canal_params['length'],
+            gate_positions=[pos for pos, _ in self.structures] if self.structures else None,
+            title=f"Final State - {prefix}",
+            filename=f"{prefix}_final_profile.png"
+        )
+        print(f"✓ 最终纵剖面图: {prefix}_final_profile.png")
+        plt.close(fig1)
+
+        # 2. 时间序列图（选择几个监测点）
+        x = self.solver.x
+        nx = len(x)
+        monitor_indices = [0, nx//4, nx//2, 3*nx//4, nx-1]
+        monitor_positions = x[monitor_indices]
+
+        # 构造变量字典
+        variables = {}
+        for i, idx in enumerate(monitor_indices):
+            label = f"x = {monitor_positions[i]/1000:.1f}km"
+            variables[label] = self.unsteady_result['h_history'][:, idx]
+
+        fig2 = viz.plot_time_series(
+            time=self.unsteady_result['time'],
+            variables=variables,
+            title=f"Water Depth Time Series - {prefix}",
+            ylabel="Water Depth (m)",
+            filename=f"{prefix}_time_series.png"
+        )
+        print(f"✓ 时间序列图: {prefix}_time_series.png")
+        plt.close(fig2)
+
+        print(f"  >> 非稳态结果生成完成")
 
     def run(self):
         """运行完整建模流程"""
