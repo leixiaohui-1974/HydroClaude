@@ -95,12 +95,12 @@ class SimplifiedCanalSimulator:
         self.h_downstream = 2.2  # 下游水位 (m)
 
         # 状态
-        self.h = 2.2     # 当前水位 (m)
+        self.h = 2.5     # 当前上游水位 (m)，略高于下游
         self.Q_in = 20.0  # 上游流量 (m³/s)
 
     def reset(self):
         """重置模拟器"""
-        self.h = 2.2
+        self.h = 2.5  # 初始上游水位
         self.Q_in = 20.0
 
     def set_disturbance(self, Q_disturbance):
@@ -179,9 +179,10 @@ def run_benchmark(controller_type="pid", config_path=None, plot_results=True):
     # 创建控制器
     if controller_type == "pid":
         # 传统PID（经验整定）
+        # 注意：使用负增益，因为闸门是反向作用（开度大→水位低）
         controller = PIDController(
-            PIDConfig(kp=0.5, ki=0.1, kd=0.0, dt=dt,
-                     output_min=0.5, output_max=4.0)
+            PIDConfig(kp=-0.5, ki=-0.1, kd=0.0, dt=dt,
+                     output_min=0.1, output_max=4.0)
         )
         controller.set_setpoint(setpoint)
 
@@ -189,9 +190,10 @@ def run_benchmark(controller_type="pid", config_path=None, plot_results=True):
         # 自适应PI（IMC整定）
         identifier = IDZIdentifier(dt=dt, method=IdentificationMethod.FORGETTING_RLS, use_scipy=True)
 
+        # 初始负增益（反向作用）
         controller = PIDController(
-            PIDConfig(kp=0.5, ki=0.1, kd=0.0, dt=dt,
-                     output_min=0.5, output_max=4.0)
+            PIDConfig(kp=-0.5, ki=-0.1, kd=0.0, dt=dt,
+                     output_min=0.1, output_max=4.0)
         )
         controller.set_setpoint(setpoint)
 
@@ -249,30 +251,48 @@ def run_benchmark(controller_type="pid", config_path=None, plot_results=True):
                 print(f"  t={t:.0f}s: 扰动切换到 Q={Q_new} m³/s")
                 break
 
+        # 自适应PI特殊处理：先用上一步的数据进行在线辨识
+        if controller_type == "adaptive_pi" and k > 20:
+            # 每10步更新一次
+            if k % 10 == 0:
+                try:
+                    # 在线辨识（使用上一步的u和当前的y）
+                    identifier.update(u_history[-1] if k > 0 else 2.0, y)
+                    idz_params = identifier.get_idz_parameters()
+
+                    # IMC整定
+                    if idz_params is not None and idz_params.K > 0:
+                        Kp, Ki = imc_tune(idz_params, lambda_factor=1.5)  # 减小lambda，更激进
+                        # 限制参数范围防止不稳定（放宽范围）
+                        Kp = np.clip(Kp, 0.3, 10.0)  # 增大允许范围
+                        Ki = np.clip(Ki, 0.05, 2.0)  # 增大允许范围
+                        # 应用负号（闸门反向作用：开度大→水位低）
+                        controller.set_gains(-Kp, -Ki, 0.0)
+
+                        # 诊断输出
+                        if k % 100 == 0:
+                            print(f"    自适应PI更新: K={idz_params.K:.1f}, Kp={-Kp:.3f}, Ki={-Ki:.3f}")
+                except Exception as e:
+                    if k % 100 == 0:
+                        print(f"    自适应PI辨识失败: {e}")
+
         # 计算控制量
         if controller_type == "mpc":
             u, diagnostics = controller.compute_control(y, setpoint)
         else:
             u = controller.compute(y)
 
-        # 自适应PI特殊处理：在线辨识和IMC整定
-        if controller_type == "adaptive_pi" and k > 20:
-            # 每10步更新一次
-            if k % 10 == 0:
-                try:
-                    # 在线辨识
-                    identifier.update(y, u)
-                    idz_params = identifier.get_parameters()
-
-                    # IMC整定
-                    if idz_params is not None and idz_params.K > 0:
-                        Kp, Ki = imc_tune(idz_params, lambda_factor=2.0)
-                        controller.set_gains(Kp, Ki, 0.0)
-                except Exception as e:
-                    pass  # 辨识失败时保持当前参数
-
         # 仿真一步
-        y = simulator.step(u)
+        y_next = simulator.step(u)
+
+        # 自适应PI：使用当前的(u, y_next)进行辨识更新
+        if controller_type == "adaptive_pi" and k > 5:
+            try:
+                identifier.update(u, y_next)
+            except:
+                pass
+
+        y = y_next
 
         # 记录
         time_history.append(t)
