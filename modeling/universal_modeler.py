@@ -196,9 +196,10 @@ class UniversalModeler:
                 structure = Orifice(
                     position=position,
                     width=struct_cfg.get('width', canal_params['B']),
-                    opening=struct_cfg['opening'],
-                    invert_level=struct_cfg.get('invert_level', 0.0),
-                    Cd=struct_cfg.get('Cd', 0.6)
+                    height=struct_cfg['height'],
+                    bottom_elevation=struct_cfg.get('invert_elevation', 0.0),
+                    Cd=struct_cfg.get('Cd', 0.61),
+                    g=canal_params['g']
                 )
             elif struct_type == 'spillway':
                 structure = Spillway(
@@ -214,16 +215,16 @@ class UniversalModeler:
                     position=position,
                     width_upstream=struct_cfg.get('width_upstream', canal_params['B']),
                     width_downstream=struct_cfg.get('width_downstream', canal_params['B']),
-                    length=struct_cfg.get('length', 100.0),
-                    transition_type=struct_cfg.get('transition_type', 'linear')
+                    K_loss=struct_cfg.get('loss_coefficient', 0.2),
+                    g=canal_params['g']
                 )
             elif struct_type == 'drop':
                 structure = Drop(
                     position=position,
                     width=struct_cfg.get('width', canal_params['B']),
                     drop_height=struct_cfg['drop_height'],
-                    drop_type=struct_cfg.get('drop_type', 'vertical'),
-                    Cd=struct_cfg.get('Cd', 0.8)
+                    Cd=struct_cfg.get('Cd', 0.6),
+                    g=canal_params['g']
                 )
             else:
                 print(f"      ⚠ 未知结构物类型: {struct_type}，跳过")
