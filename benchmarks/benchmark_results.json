@@ -1,0 +1,80 @@
+{
+  "timestamp": "2025-10-24 03:55:49",
+  "results": [
+    {
+      "name": "simple_canal",
+      "description": "简单渠道（无结构物）",
+      "execution_time": 0.02475595474243164,
+      "iterations": 0,
+      "flow_error": 0.0,
+      "grid_points": 201,
+      "structures": 0,
+      "performance_ratio": Infinity
+    },
+    {
+      "name": "single_gate",
+      "description": "单闸门渠道",
+      "execution_time": 0.025198698043823242,
+      "iterations": 0,
+      "flow_error": 0.0,
+      "grid_points": 201,
+      "structures": 1,
+      "performance_ratio": Infinity
+    },
+    {
+      "name": "three_gates",
+      "description": "三闸门渠道",
+      "execution_time": 0.025449275970458984,
+      "iterations": 0,
+      "flow_error": 0.0,
+      "grid_points": 201,
+      "structures": 3,
+      "performance_ratio": Infinity
+    },
+    {
+      "name": "fine_grid",
+      "description": "细网格（1001个点）",
+      "execution_time": 0.12728095054626465,
+      "iterations": 0,
+      "flow_error": 0.0,
+      "grid_points": 1001,
+      "structures": 1,
+      "performance_ratio": Infinity
+    },
+    {
+      "name": "unsteady_short",
+      "description": "非稳态（60秒物理时间）",
+      "execution_time": 1.5108602046966553,
+      "iterations": 60,
+      "flow_error": 5.794783343036194,
+      "grid_points": 201,
+      "structures": 1,
+      "performance_ratio": 39.712476252590534
+    },
+    {
+      "name": "unsteady_medium",
+      "description": "非稳态（600秒物理时间）",
+      "execution_time": 15.072708368301392,
+      "iterations": 600,
+      "flow_error": 61.25675344319795,
+      "grid_points": 201,
+      "structures": 1,
+      "performance_ratio": 39.807046307737764
+    },
+    {
+      "name": "scalability",
+      "description": "可扩展性（50km，1001点，3闸门）",
+      "execution_time": 0.12522125244140625,
+      "iterations": 0,
+      "flow_error": 0.0,
+      "grid_points": 1001,
+      "structures": 3,
+      "performance_ratio": Infinity
+    }
+  ],
+  "summary": {
+    "total_benchmarks": 7,
+    "total_time": 16.91147470474243,
+    "average_time": 2.4159249578203474
+  }
+}

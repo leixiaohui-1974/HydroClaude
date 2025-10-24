@@ -114,7 +114,7 @@ class VisualizationTemplates:
                       alpha=0.5, label=f'Uniform Depth ({h_uniform:.3f}m)')
 
         if gate_positions:
-            for pos in enumerate(gate_positions):
+            for i, pos in enumerate(gate_positions):
                 ax2.axvline(x=pos, color=self.COLOR_GATE, linestyle='--',
                           linewidth=2, alpha=0.7)
 

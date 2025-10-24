@@ -22,6 +22,15 @@ env/
 
 # Generated files
 *.png
+*.npz
+
+# Result directories
+results_*/
+results/
+test_export/
+test_reports/
+test_analysis.png
 
 # Log files
 *.log
+benchmark_results/

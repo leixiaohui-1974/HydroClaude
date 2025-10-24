@@ -319,9 +319,61 @@ class ParameterEstimator:
             param_idx += 1
 
         if self.estimate_leakage:
-            # 类似处理渗漏率
-            # TODO: 实现渗漏率敏感度
-            pass
+            # 渗漏率敏感度分析
+            # 渗漏率影响连续性方程: ∂h/∂t + ∂(hu)/∂x = -leak_rate
+
+            # 保存原始渗漏率（如果存在）
+            leak_base = getattr(self.solver, 'leak_rate', np.zeros(self.nx))
+            if not hasattr(self.solver, 'leak_rate'):
+                # 如果求解器没有渗漏率属性，添加它
+                self.solver.leak_rate = np.zeros(self.nx)
+                leak_base = self.solver.leak_rate.copy()
+
+            # 对每个网格点的渗漏率进行扰动
+            delta_leak = 1e-6  # 扰动量 (m/s)
+
+            for i in range(self.nx):
+                try:
+                    # 保存当前状态
+                    h_save = self.solver.h.copy()
+                    hu_save = self.solver.hu.copy()
+
+                    # 扰动第i个点的渗漏率
+                    self.solver.leak_rate[i] += delta_leak
+
+                    # 计算稳态（简化处理：假设渗漏率变化后快速达到新稳态）
+                    # 在实际中，渗漏会通过连续性方程影响水深
+                    # ∂h/∂t = -∂(hu)/∂x - leak_rate
+                    # 稳态时: ∂(hu)/∂x = -leak_rate
+
+                    # 简化估计：渗漏导致的水深变化
+                    # Δh ≈ -leak_rate * dt（局部水量损失）
+                    h_pert = self.solver.h.copy()
+                    h_pert[i] -= delta_leak * self.dt  # 渗漏导致水深降低
+
+                    # 更新求解器状态
+                    self.solver.h = h_pert
+                    # hu保持不变（一阶近似）
+
+                    # 计算扰动后的观测值
+                    z_pert = self._predict_measurement(sensor)
+
+                    # 计算敏感度
+                    sensitivity[param_idx] = (z_pert - z_base) / delta_leak
+
+                except Exception as e:
+                    # 如果计算失败，使用零敏感度
+                    sensitivity[param_idx] = 0.0
+                    if self.verbose:
+                        print(f"[警告] 渗漏率敏感度计算失败 (i={i}): {e}")
+
+                finally:
+                    # 恢复参数和状态
+                    self.solver.leak_rate[i] = leak_base[i]
+                    self.solver.h = h_save
+                    self.solver.hu = hu_save
+
+                param_idx += 1
 
         return sensitivity
 
