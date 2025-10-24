@@ -876,20 +876,55 @@ class UniversalModeler:
 
         # 子图2: 测量值 vs 设定值
         measurement = np.array(self.control_result['measurement_history'])
-        if measurement.ndim == 2:
-            measurement = measurement[:, 0]  # 取第一个监测点
         setpoint = self.control_result['setpoint']
-        axes[1].plot(time, measurement, 'g-', linewidth=1.5, label='测量值')
-        axes[1].axhline(y=setpoint, color='r', linestyle='--', linewidth=2, label=f'设定值 = {setpoint} m')
+
+        # 处理多变量/单变量情况
+        if measurement.ndim == 2 and measurement.shape[1] > 1:
+            # 多变量控制：绘制所有监测点
+            colors = ['g', 'b', 'orange', 'purple', 'brown']
+            for i in range(measurement.shape[1]):
+                axes[1].plot(time, measurement[:, i], color=colors[i % len(colors)],
+                           linewidth=1.5, label=f'测量值 {i+1}')
+            # 绘制设定值
+            if np.isscalar(setpoint):
+                axes[1].axhline(y=setpoint, color='r', linestyle='--', linewidth=2,
+                              label=f'设定值 = {setpoint} m')
+            else:
+                for i, sp in enumerate(setpoint):
+                    axes[1].axhline(y=sp, color=colors[i % len(colors)], linestyle='--',
+                                  linewidth=1.5, alpha=0.7, label=f'设定值 {i+1} = {sp} m')
+        else:
+            # 单变量控制
+            if measurement.ndim == 2:
+                measurement = measurement[:, 0]
+            axes[1].plot(time, measurement, 'g-', linewidth=1.5, label='测量值')
+            if np.isscalar(setpoint):
+                axes[1].axhline(y=setpoint, color='r', linestyle='--', linewidth=2,
+                              label=f'设定值 = {setpoint} m')
+            else:
+                axes[1].axhline(y=setpoint[0], color='r', linestyle='--', linewidth=2,
+                              label=f'设定值 = {setpoint[0]} m')
+
         axes[1].set_ylabel('水深 (m)', fontsize=12)
         axes[1].grid(True, alpha=0.3)
         axes[1].legend()
 
         # 子图3: 控制量
         control = np.array(self.control_result['control_history'])
-        if control.ndim == 2:
-            control = control[:, 0]  # 取第一个控制点
-        axes[2].plot(time, control, 'r-', linewidth=1.5, label='控制量')
+
+        # 处理多变量/单变量情况
+        if control.ndim == 2 and control.shape[1] > 1:
+            # 多变量控制：绘制所有控制点
+            colors = ['r', 'b', 'g', 'orange', 'purple']
+            for i in range(control.shape[1]):
+                axes[2].plot(time, control[:, i], color=colors[i % len(colors)],
+                           linewidth=1.5, label=f'控制量 {i+1}')
+        else:
+            # 单变量控制
+            if control.ndim == 2:
+                control = control[:, 0]
+            axes[2].plot(time, control, 'r-', linewidth=1.5, label='控制量')
+
         axes[2].set_xlabel('时间 (s)', fontsize=12)
         axes[2].set_ylabel('控制量', fontsize=12)
         axes[2].grid(True, alpha=0.3)
