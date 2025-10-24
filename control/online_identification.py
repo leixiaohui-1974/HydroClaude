@@ -32,6 +32,15 @@ except ImportError:
     # 如果作为模块导入
     from control.idz_model import IDZParameters
 
+# 导入scipy参数转换器
+try:
+    from scipy_parameter_conversion import ScipyParameterConverter
+except ImportError:
+    try:
+        from control.scipy_parameter_conversion import ScipyParameterConverter
+    except ImportError:
+        ScipyParameterConverter = None  # scipy方法不可用
+
 
 class IdentificationMethod(Enum):
     """辨识方法"""
@@ -180,16 +189,26 @@ class IDZIdentifier:
     使用输入-输出数据在线估计参数
     """
 
-    def __init__(self, dt: float, method: IdentificationMethod = IdentificationMethod.FORGETTING_RLS):
+    def __init__(self, dt: float, method: IdentificationMethod = IdentificationMethod.FORGETTING_RLS,
+                 use_scipy: bool = True, scipy_method: str = 'bilinear'):
         """
         初始化IDZ辨识器
 
         Args:
             dt: 采样时间
             method: 辨识方法
+            use_scipy: 是否使用scipy进行参数转换（推荐）
+            scipy_method: scipy转换方法 ('bilinear', 'backward_diff')
         """
         self.dt = dt
         self.method = method
+        self.use_scipy = use_scipy and (ScipyParameterConverter is not None)
+
+        # Scipy参数转换器（如果可用）
+        if self.use_scipy:
+            self.scipy_converter = ScipyParameterConverter(dt=dt, method=scipy_method)
+        else:
+            self.scipy_converter = None
 
         # 离散时间模型参数
         # y(k) = a1*y(k-1) + a2*y(k-2) + b0*u(k-d) + b1*u(k-d-1) + b2*u(k-d-2)
@@ -281,6 +300,17 @@ class IDZIdentifier:
         """
         a1, a2, b0, b1, b2 = theta
         dt = self.dt
+
+        # 方法1：使用scipy进行转换（推荐）
+        if self.use_scipy and self.scipy_converter is not None:
+            try:
+                return self.scipy_converter.discrete_to_continuous(theta, use_optimization=True)
+            except Exception as e:
+                print(f"Warning: scipy conversion failed: {e}, using fallback")
+                # 失败时降级到原始方法
+                pass
+
+        # 方法2：原始手工转换方法（作为备用）
 
         # 增益估计（改进：考虑积分器效应）
         # 对于IDZ模型，稳态增益是 K (因为有积分器)
