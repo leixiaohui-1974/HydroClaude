@@ -27,6 +27,7 @@ env/
 # Result directories
 results_*/
 results/
+test_export/
 
 # Log files
 *.log
