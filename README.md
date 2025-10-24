@@ -57,6 +57,42 @@ python -m modeling.universal_modeler examples/example_simple_canal/config.yaml
 python -m modeling.universal_modeler
 ```
 
+### 使用统一CLI工具 🆕
+
+HydroClaude提供统一的命令行工具，整合所有功能：
+
+```bash
+# 查看帮助
+python hydroclaude_cli.py --help
+
+# 运行模拟
+python hydroclaude_cli.py run config.yaml
+
+# 创建配置（交互式）
+python hydroclaude_cli.py config create
+
+# 使用模板快速创建配置
+python hydroclaude_cli.py config create --template basic_canal
+
+# 列出所有示例
+python hydroclaude_cli.py list
+
+# 验证所有示例
+python hydroclaude_cli.py validate --report
+
+# 运行测试
+python hydroclaude_cli.py test --type unit
+
+# 性能基准测试
+python hydroclaude_cli.py benchmark
+
+# 项目健康检查
+python hydroclaude_cli.py health --report
+
+# 查看文档
+python hydroclaude_cli.py docs --type quickstart
+```
+
 **完整教程**: 查看 [快速入门指南](QUICKSTART_GUIDE.md)
 
 ---
