@@ -165,11 +165,12 @@ class MPCController:
         # 计算系统极点
         sys_poles = np.linalg.eigvals(self.A)
 
-        # 设计观测器极点（比系统极点快3倍）
-        observer_poles = sys_poles * 0.3
+        # 设计观测器极点（比系统极点快2-3倍，更保守以提高数值稳定性）
+        # 从0.3改为0.5，牺牲一些响应速度换取稳定性
+        observer_poles = sys_poles * 0.5
 
-        # 确保极点在单位圆内（稳定性）
-        observer_poles = np.clip(np.abs(observer_poles), 0, 0.9) * np.exp(1j * np.angle(observer_poles))
+        # 确保极点在单位圆内（稳定性），更保守的上限
+        observer_poles = np.clip(np.abs(observer_poles), 0, 0.85) * np.exp(1j * np.angle(observer_poles))
 
         # 使用极点配置法设计观测器增益L
         # 对偶系统：(A', C')，设计K使得A'-K*C'有期望极点
@@ -188,23 +189,44 @@ class MPCController:
 
     def _update_observer(self, y_measured: float, u_applied: float):
         """
-        更新Luenberger观测器状态
+        更新Luenberger观测器状态（带数值保护）
 
         Args:
             y_measured: 测量输出
             u_applied: 施加的控制量
         """
+        # 检查当前状态是否有效
+        if np.any(np.isnan(self.x_hat)) or np.any(np.isinf(self.x_hat)):
+            # 状态无效，重置为简单估计
+            print(f"Warning: Observer state invalid, resetting...")
+            self.x_hat = self._estimate_state(y_measured)
+            return
+
         # 预测步骤：x_hat_pred = A*x_hat + B*u
         x_hat_pred = self.A @ self.x_hat + self.B * u_applied
+
+        # 状态饱和保护（防止累积）
+        x_hat_pred = np.clip(x_hat_pred, -1e6, 1e6)
 
         # 输出预测：y_hat = C*x_hat_pred + D*u
         y_hat = self.C @ x_hat_pred + self.D[0] * u_applied
 
-        # 输出误差
+        # 输出误差（限制最大误差，避免观测器过度校正）
         y_error = y_measured - y_hat
+        y_error = np.clip(y_error, -10.0, 10.0)  # 限制误差在±10m
 
         # 校正步骤：x_hat = x_hat_pred + L*(y - y_hat)
-        self.x_hat = x_hat_pred + (self.L @ np.array([[y_error]])).flatten()
+        correction = (self.L @ np.array([[y_error]])).flatten()
+        correction = np.clip(correction, -100.0, 100.0)  # 限制校正量
+        self.x_hat = x_hat_pred + correction
+
+        # 最终饱和保护
+        self.x_hat = np.clip(self.x_hat, -1e6, 1e6)
+
+        # 二次检查
+        if np.any(np.isnan(self.x_hat)) or np.any(np.isinf(self.x_hat)):
+            print(f"Warning: Observer state became invalid after update, resetting...")
+            self.x_hat = self._estimate_state(y_measured)
 
     def _build_optimization_problem(self):
         """构建CVXPY优化问题"""
@@ -303,6 +325,15 @@ class MPCController:
 
         # 构建参考轨迹（恒定设定值）
         r_trajectory = np.full(self.config.prediction_horizon + 1, setpoint)
+
+        # 参数验证和清理（确保无NaN/Inf）
+        if np.any(np.isnan(self.x_hat)) or np.any(np.isinf(self.x_hat)):
+            print(f"Warning: x_hat contains NaN/Inf, using fallback estimation")
+            self.x_hat = self._estimate_state(y_current)
+
+        if not np.isfinite(self.u_prev):
+            print(f"Warning: u_prev is not finite, resetting to 2.0")
+            self.u_prev = 2.0
 
         # 更新优化问题参数
         self.opt_x0.value = self.x_hat
