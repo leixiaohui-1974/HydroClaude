@@ -28,6 +28,8 @@ env/
 results_*/
 results/
 test_export/
+test_reports/
+test_analysis.png
 
 # Log files
 *.log
