@@ -343,7 +343,7 @@ class IDZIdentifier:
         tau_z = tau_d * 0.85
 
         # 限制参数范围（放宽K的范围）
-        K = np.clip(K, 10.0, 2000.0)  # 扩大K的范围
+        K = np.clip(K, 50.0, 2000.0)  # 提高K最小值从10→50，避免崩溃到过小值
         tau_z = np.clip(tau_z, dt, 20000.0)
         tau_d = np.clip(tau_d, dt, 20000.0)
         theta_delay = np.clip(theta_delay, 0, 3600.0)

@@ -27,6 +27,16 @@ class PreissmannSolver:
         h_new = np.maximum(h_new, 0.1)
         Q_new = np.maximum(Q_new, 0.01)
 
+        # 应用边界条件初值
+        if 'upstream_level' in boundary_conditions:
+            h_new[0] = boundary_conditions['upstream_level']
+        if 'upstream_flow' in boundary_conditions:
+            Q_new[0] = boundary_conditions['upstream_flow']
+        if 'downstream_level' in boundary_conditions:
+            h_new[-1] = boundary_conditions['downstream_level']
+        if 'downstream_flow' in boundary_conditions:
+            Q_new[-1] = boundary_conditions['downstream_flow']
+
         for iteration in range(self.max_iter):
             J, R = self._build_jacobian_residual(
                 h_old, Q_old, h_new, Q_new,
