@@ -22,6 +22,11 @@ env/
 
 # Generated files
 *.png
+*.npz
+
+# Result directories
+results_*/
+results/
 
 # Log files
 *.log
