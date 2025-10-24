@@ -1,0 +1,144 @@
+# IDZ自适应控制基准测试配置
+#
+# 对比：静态IDZ vs 自适应IDZ vs Saint-Venant基准
+# 使用UniversalModeler和HydrostaticCanalSolver
+#
+# 作者: Claude
+# 日期: 2025-10-24
+
+# ============================================================================
+# 1. 渠道基本参数
+# ============================================================================
+canal:
+  length: 1000.0         # 短渠道：快响应系统
+  width: 10.0            # 渠道宽度 (m)
+  slope: 0.0001          # 渠底坡度
+  manning_n: 0.025       # Manning糙率系数
+  gravity: 9.81          # 重力加速度 (m/s²)
+
+# ============================================================================
+# 2. 网格设置
+# ============================================================================
+grid:
+  nx: 51                 # 网格点数
+  adaptive: false
+
+# ============================================================================
+# 3. 结构物 - 下游闸门（作为控制执行器）
+# ============================================================================
+structures:
+  # 下游闸门 - 水位调节执行器
+  - type: sluice_gate
+    position: 950.0      # 位置：距下游50m
+    width: 10.0          # 闸门宽度 (m)
+    initial_opening: 2.0 # 初始开度 (m)
+    Cd: 0.6              # 流量系数
+
+# ============================================================================
+# 4. 边界条件
+# ============================================================================
+boundary_conditions:
+  upstream:
+    type: flow
+    value: 23.6          # 名义流量 (m³/s)
+
+  downstream:
+    type: depth
+    value: 2.2           # 下游水深 (m)
+
+# ============================================================================
+# 5. 模拟设置 - PID控制（作为baseline）
+# ============================================================================
+simulation:
+  type: control
+
+  # 时间参数
+  dt: 2.0                # 时间步长 (s)
+  total_time: 2100.0     # 总时间 (s) = 35分钟
+  save_interval: 5       # 保存间隔
+
+  # Preissmann求解器参数
+  preissmann_max_iter: 10
+  max_iterations: 5000
+  convergence_tol: 0.001
+
+  # 时变边界条件 - 模拟多工况点
+  time_varying_bc:
+    - boundary: upstream
+      type: step
+      step_time: 500.0
+      value_before: 18.0
+      value_after: 25.0
+    - boundary: upstream
+      type: step
+      step_time: 1000.0
+      value_before: 25.0
+      value_after: 32.0
+    - boundary: upstream
+      type: step
+      step_time: 1500.0
+      value_before: 32.0
+      value_after: 25.0
+    - boundary: upstream
+      type: step
+      step_time: 1800.0
+      value_before: 25.0
+      value_after: 18.0
+
+  # 控制配置
+  control:
+    type: pid            # 使用PID控制
+
+    # 控制目标（随时间变化）
+    setpoint: 2.2        # 基准目标水位 (m)
+
+    # 目标水位时变
+    time_varying_setpoint:
+      - time: 0.0
+        value: 1.8
+      - time: 500.0
+        value: 1.8
+      - time: 1000.0
+        value: 2.3
+      - time: 1500.0
+        value: 2.8
+      - time: 1800.0
+        value: 2.3
+      - time: 2100.0
+        value: 1.8
+
+    # 控制周期
+    control_interval: 5  # 控制周期 = 10秒
+
+    # 监测点（渠道中点）
+    monitoring_points: [25]  # 索引25 ≈ 500m
+
+    # 控制点（下游闸门）
+    control_points: [0]
+
+    # PID控制器参数
+    controller:
+      kp: 0.5            # 比例增益
+      ki: 0.1            # 积分增益
+      kd: 0.0            # 微分增益
+      dt: 10.0           # 采样时间 (s)
+
+      # 控制约束
+      output_min: 0.5    # 最小开度 (m)
+      output_max: 4.0    # 最大开度 (m)
+
+      # 抗积分饱和
+      integral_min: -2.0
+      integral_max: 2.0
+
+# ============================================================================
+# 6. 输出设置
+# ============================================================================
+output:
+  directory: results_idz_benchmark
+  prefix: idz_bench
+
+  formats:
+    - npz
+    - png
+    - txt
