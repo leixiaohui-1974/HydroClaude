@@ -172,6 +172,10 @@ class IDZSaintVenantIntegration:
         # 在线辨识器
         self.identifier = IDZIdentifier(dt=dt)
 
+        # 工作点（用于计算变化量）
+        self.depth_nominal = canal.depth  # 标称水深
+        self.flow_nominal = 20.0  # 标称流量 (m³/s)
+
         # 数据缓冲
         self.u_buffer = []  # 控制输入历史
         self.y_buffer = []  # 系统输出历史
@@ -204,15 +208,19 @@ class IDZSaintVenantIntegration:
         更新在线辨识
 
         Args:
-            u: 控制输入（流量 m³/s）
-            y: 系统输出（水位 m）
+            u: 控制输入（流量 m³/s）- 绝对值
+            y: 系统输出（水位 m）- 绝对值
         """
         # 添加到缓冲
         self.u_buffer.append(u)
         self.y_buffer.append(y)
 
-        # 在线辨识
-        identified_params = self.identifier.update(u, y)
+        # 转换为变化量（修正：IDZ模型需要变化量而非绝对值）
+        u_deviation = u - self.flow_nominal
+        y_deviation = y - self.depth_nominal
+
+        # 在线辨识（传入变化量）
+        identified_params = self.identifier.update(u_deviation, y_deviation)
 
         # 如果辨识收敛，更新IDZ参数
         if identified_params is not None:
@@ -280,8 +288,10 @@ class SimpleMPCController:
         # 积分
         self.integral_error += error * self.system.dt
 
-        # PI控制
-        u_feedback = self.kp * error + self.ki * self.integral_error
+        # PI控制 (修正：符号反转)
+        # 当水深过低(error>0)时，应减少下游出流
+        # 当水深过高(error<0)时，应增加下游出流
+        u_feedback = -(self.kp * error + self.ki * self.integral_error)
 
         # 前馈（基于水量平衡）
         u_feedforward = q_upstream
@@ -397,10 +407,24 @@ def run_comparison_simulation():
         target_history.append(target_depth)
         disturbance_history.append(q_disturbance)
 
-        # 进度显示
+        # 进度显示（增强诊断输出）
         if step % 10 == 0:
+            # 计算当前误差
+            error_adaptive = depth_current_adaptive - target_depth
+
+            # RLS诊断信息
+            rls = system_adaptive.identifier.rls
+            rls_info = ""
+            if len(rls.estimation_error_history) > 0:
+                rls_error = rls.estimation_error_history[-1]
+                rls_info = f", RLS_err={rls_error:.4f}"
+
             print(f"   进度: {step}/{n_steps} ({100*step/n_steps:.1f}%) - "
-                  f"t={t:.0f}s, 自适应K={system_adaptive.current_idz_params.K:.1f}")
+                  f"t={t:.0f}s, "
+                  f"h_adp={depth_current_adaptive:.3f}m, "
+                  f"err={error_adaptive:.3f}m, "
+                  f"K={system_adaptive.current_idz_params.K:.1f}"
+                  f"{rls_info}")
 
     print("\n3. 仿真完成！开始分析...")
 

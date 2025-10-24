@@ -511,6 +511,143 @@ save_table(df, 'my_results.csv', index=False)
 
 ---
 
+## 🎛️ 控制系统开发最佳实践
+
+**2025-10-24更新** - 基于IDZ-Saint-Venant示例修复经验
+
+### 关键原则
+
+#### 1. 理解模型的输入输出类型 ⚠️
+
+**许多控制模型（如IDZ）处理的是变化量而非绝对值！**
+
+```python
+# ❌ 错误：混淆绝对值和变化量
+identifier = IDZIdentifier(dt=10.0)
+u_flow = 20.0  # 绝对流量
+y_depth = 2.5  # 绝对水深
+params = identifier.update(u_flow, y_depth)  # 错误！
+
+# ✅ 正确：传入变化量
+u_nominal = 20.0  # 工作点流量
+y_nominal = 2.0  # 工作点水深
+u_deviation = u_flow - u_nominal  # Δu = 0
+y_deviation = y_depth - y_nominal  # Δy = +0.5
+params = identifier.update(u_deviation, y_deviation)  # 正确！
+```
+
+**规则**：
+- 阅读模型文档，明确输入输出类型
+- 如果模型传递函数是 `G(s) = Y(s)/U(s)`，通常表示**变化量关系**
+- 集成到闭环系统时，需要记录工作点并转换数据
+
+#### 2. 控制器符号正确性检查 ⚠️
+
+**控制器符号错误是最常见且最隐蔽的bug！**
+
+**检查方法**：物理直觉测试
+
+```python
+# 水深控制器的物理直觉测试：
+
+# 场景1：水深过低（error > 0）
+# 期望：减少下游出流 → 水位上升
+error = target_depth - current_depth  # > 0
+u_feedback = ???  # 应该是负值（减少出流）
+
+# 场景2：水深过高（error < 0）
+# 期望：增加下游出流 → 水位下降
+error = target_depth - current_depth  # < 0
+u_feedback = ???  # 应该是正值（增加出流）
+```
+
+**正确实现**：
+```python
+def compute_control(self, current_depth, target_depth, q_upstream):
+    error = target_depth - current_depth
+
+    # 负反馈：error > 0 → u_feedback < 0（减少出流）
+    u_feedback = -(self.kp * error + self.ki * self.integral_error)
+
+    u = q_upstream + u_feedback
+    return np.clip(u, self.u_min, self.u_max)
+```
+
+**验证步骤**：
+1. ✅ 推导：error符号 → u_feedback符号 → 物理效果
+2. ✅ 运行：设置阶跃输入，观察响应方向
+3. ✅ 绘图：误差和控制量应该反向变化
+
+#### 3. 参数更新频率合理性
+
+**问题**：更新频率过低导致参数辨识失效
+
+```python
+# ❌ 错误：更新频率不合理
+if k % 100 == 0:  # 仅在k=0,100,200...更新
+    self.idz_params = self._discrete_to_idz(theta)
+# 问题：如果仿真只有90步，永远不会更新！
+
+# ✅ 正确：根据仿真时长选择合理频率
+if k % 10 == 0:  # 每10步更新
+    self.idz_params = self._discrete_to_idz(theta)
+```
+
+**规则**：
+- 更新频率 ≥ 10次/仿真
+- 至少有50个数据点用于辨识
+- 监控RLS估计误差以判断收敛性
+
+#### 4. 添加诊断输出
+
+**必须实时监控关键变量**：
+
+```python
+if step % 10 == 0:
+    print(f"t={t:.0f}s, "
+          f"y={current_depth:.3f}m, "
+          f"err={error:.3f}m, "
+          f"K={params.K:.1f}, "
+          f"RLS_err={rls_error:.4f}")
+```
+
+**最小诊断清单**：
+- ✅ 当前输出值
+- ✅ 跟踪误差
+- ✅ 控制参数
+- ✅ 辨识误差
+
+### 开发检查清单
+
+**在提交控制系统代码前，必须完成以下检查**：
+
+```
+□ 模型输入输出类型明确（绝对值 vs 变化量）
+□ 控制器符号通过物理直觉测试
+□ 参数更新频率合理（≥10次/仿真）
+□ 添加诊断输出
+□ 绘制结果图表（输出、控制量、参数、误差）
+□ 性能指标计算（MAE, RMSE）
+□ 文档更新（CONTROL_API_REFERENCE.md）
+```
+
+### 常见错误模式
+
+| 错误类型 | 症状 | 修复 |
+|---------|------|------|
+| **数据类型错误** | 参数辨识失效，参数不变化 | 传入变化量而非绝对值 |
+| **控制符号错误** | 控制反向，误差越来越大 | 添加负号，确保负反馈 |
+| **更新频率低** | 参数从不更新 | 降低更新间隔（如100→10） |
+| **无诊断输出** | 无法调试 | 添加print监控关键变量 |
+
+### 参考资料
+
+- **IDZ模型详解**: `CONTROL_API_REFERENCE.md` → 在线辨识章节
+- **修复案例**: `docs/IDZ_Saint_Venant_Fix_Report.md`
+- **完整示例**: `examples/advanced_examples/idz_saint_venant_integration.py`
+
+---
+
 ## 💻 代码规范
 
 ### 1. 脚本结构标准模板

@@ -500,6 +500,91 @@ for u, y in data_stream:
         print(f"辨识成功: K={params.K:.2f}")
 ```
 
+#### ⚠️ 重要提示：数据类型要求（2025-10-24更新）
+
+**IDZIdentifier需要输入变化量而非绝对值！**
+
+IDZ模型表示的是**变化量之间的关系**：
+```
+Δy(s) = G(s) * Δu(s)
+```
+
+其中：
+- `Δu`: 控制输入的**变化量**（相对于标称工作点）
+- `Δy`: 系统输出的**变化量**（相对于标称工作点）
+
+**错误用法**❌:
+```python
+identifier = IDZIdentifier(dt=10.0)
+
+# 错误：直接传入绝对值
+u_absolute = 20.0  # 绝对流量 (m³/s)
+y_absolute = 2.5   # 绝对水深 (m)
+params = identifier.update(u_absolute, y_absolute)  # ❌ 错误！
+```
+
+**正确用法**✅:
+```python
+identifier = IDZIdentifier(dt=10.0)
+
+# 定义工作点（标称值）
+u_nominal = 20.0  # 标称流量 (m³/s)
+y_nominal = 2.0   # 标称水深 (m)
+
+# 正确：传入变化量
+u_absolute = 22.0  # 当前流量
+y_absolute = 2.1   # 当前水深
+
+u_deviation = u_absolute - u_nominal  # Δu = +2.0 m³/s
+y_deviation = y_absolute - y_nominal  # Δy = +0.1 m
+
+params = identifier.update(u_deviation, y_deviation)  # ✅ 正确！
+```
+
+**完整示例（集成到闭环系统）**:
+```python
+from control.online_identification import IDZIdentifier
+from control.idz_model import IDZModel
+
+class AdaptiveIDZSystem:
+    def __init__(self, canal, dt=10.0):
+        self.canal = canal
+        self.dt = dt
+
+        # 记录工作点（标称值）
+        self.depth_nominal = canal.initial_depth
+        self.flow_nominal = 20.0  # 标称流量
+
+        # 初始化辨识器
+        self.identifier = IDZIdentifier(dt=dt)
+
+    def update_identification(self, u_absolute, y_absolute):
+        """
+        在线辨识更新
+
+        参数:
+            u_absolute: 绝对流量 (m³/s)
+            y_absolute: 绝对水深 (m)
+        """
+        # 转换为变化量
+        u_deviation = u_absolute - self.flow_nominal
+        y_deviation = y_absolute - self.depth_nominal
+
+        # 在线辨识（传入变化量）
+        params = self.identifier.update(u_deviation, y_deviation)
+
+        if params is not None:
+            print(f"辨识更新: K={params.K:.1f}, τ_d={params.tau_d:.1f}s")
+
+        return params
+```
+
+**参考**:
+- 完整示例: `examples/advanced_examples/idz_saint_venant_integration.py`
+- 修复报告: `docs/IDZ_Saint_Venant_Fix_Report.md`
+
+---
+
 ### 3. `GateIdentifier` - 闸门特性辨识
 
 ```python

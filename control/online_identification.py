@@ -250,8 +250,8 @@ class IDZIdentifier:
             else:
                 theta, error = self.rls.update(phi, y_k)
 
-            # 每100步转换为IDZ参数
-            if k % 100 == 0:
+            # 每10步转换为IDZ参数（修正：提高更新频率）
+            if k % 10 == 0:
                 self.idz_params = self._discrete_to_idz(theta)
 
         # 保持缓冲大小
