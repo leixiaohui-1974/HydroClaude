@@ -26,7 +26,15 @@ from modeling.steady_estimator import SteadyEstimator
 from modeling.multi_validator import MultiValidator
 
 from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
-from solvers.gate import SluiceGate, PumpStation, BroadCrestedWeir, Orifice
+from solvers.gate import (
+    SluiceGate,
+    PumpStation,
+    BroadCrestedWeir,
+    Orifice,
+    Spillway,
+    Transition,
+    Drop
+)
 from utils.visualization_templates import VisualizationTemplates
 from utils.result_validator import quick_validate_steady_state
 
@@ -180,6 +188,31 @@ class UniversalModeler:
                     opening=struct_cfg['opening'],
                     invert_level=struct_cfg.get('invert_level', 0.0),
                     Cd=struct_cfg.get('Cd', 0.6)
+                )
+            elif struct_type == 'spillway':
+                structure = Spillway(
+                    position=position,
+                    width=struct_cfg.get('width', canal_params['B']),
+                    crest_elevation=struct_cfg['crest_elevation'],
+                    spillway_type=struct_cfg.get('spillway_type', 'wes'),
+                    Cd=struct_cfg.get('Cd', 2.1),
+                    submergence_threshold=struct_cfg.get('submergence_threshold', 0.67)
+                )
+            elif struct_type == 'transition':
+                structure = Transition(
+                    position=position,
+                    width_upstream=struct_cfg.get('width_upstream', canal_params['B']),
+                    width_downstream=struct_cfg.get('width_downstream', canal_params['B']),
+                    length=struct_cfg.get('length', 100.0),
+                    transition_type=struct_cfg.get('transition_type', 'linear')
+                )
+            elif struct_type == 'drop':
+                structure = Drop(
+                    position=position,
+                    width=struct_cfg.get('width', canal_params['B']),
+                    drop_height=struct_cfg['drop_height'],
+                    drop_type=struct_cfg.get('drop_type', 'vertical'),
+                    Cd=struct_cfg.get('Cd', 0.8)
                 )
             else:
                 print(f"      ⚠ 未知结构物类型: {struct_type}，跳过")
