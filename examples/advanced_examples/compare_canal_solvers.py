@@ -143,7 +143,7 @@ def main():
     print("  - 仿真时间: 500s")
     print("  - 理论Δh: 0.100m")
 
-    methods = ['preissmann', 'moc']
+    methods = ['preissmann', 'moc', 'fvm']
     results = {}
 
     for method in methods:
