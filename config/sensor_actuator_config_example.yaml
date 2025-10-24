@@ -1,0 +1,123 @@
+# 传感器和执行器配置示例
+# 用于自适应MPC控制系统
+
+sensors:
+  # 水位传感器 - 池段1
+  - name: "LEVEL_POOL1"
+    sensor_type: "water_level"
+    noise_std: 0.02          # 2cm测量噪声
+    impulse_prob: 0.001      # 0.1%脉冲噪声概率
+    impulse_amplitude: 0.10  # 10cm脉冲幅度
+    delay_steps: 2           # 2步延迟
+    quantization_step: 0.01  # 1cm量化
+    min_value: 0.0
+    max_value: 10.0
+    fault_type: "none"
+    use_filter: true
+    filter_alpha: 0.2
+
+  # 水位传感器 - 池段2（有漂移故障）
+  - name: "LEVEL_POOL2"
+    sensor_type: "water_level"
+    noise_std: 0.02
+    delay_steps: 2
+    min_value: 0.0
+    max_value: 10.0
+    fault_type: "drift"
+    drift_rate: 0.0001       # 每秒漂移0.1mm
+    use_filter: true
+    filter_alpha: 0.2
+
+  # 流量传感器 - 上游
+  - name: "FLOW_UPSTREAM"
+    sensor_type: "flow_rate"
+    noise_std: 0.05          # 5%流量噪声
+    delay_steps: 1
+    quantization_step: 0.01
+    min_value: 0.0
+    max_value: 100.0
+    fault_type: "none"
+
+  # 流量传感器 - 下游（间歇性故障）
+  - name: "FLOW_DOWNSTREAM"
+    sensor_type: "flow_rate"
+    noise_std: 0.05
+    delay_steps: 1
+    min_value: 0.0
+    max_value: 100.0
+    fault_type: "intermittent"
+    intermittent_prob: 0.01  # 1%故障概率
+
+  # 闸门位置传感器
+  - name: "GATE1_POS"
+    sensor_type: "gate_position"
+    noise_std: 0.005         # 5mm位置噪声
+    quantization_step: 0.01
+    min_value: 0.0
+    max_value: 5.0
+
+  # 泵站转速传感器
+  - name: "PUMP1_SPEED"
+    sensor_type: "pump_speed"
+    noise_std: 2.0           # 2rpm噪声
+    min_value: 0.0
+    max_value: 1500.0
+
+  # 余氯传感器
+  - name: "CHLORINE_OUTLET"
+    sensor_type: "chlorine"
+    noise_std: 0.01          # 0.01mg/L噪声
+    delay_steps: 5           # 余氯测量延迟较大
+    min_value: 0.0
+    max_value: 2.0
+    fault_type: "bias"
+    bias: -0.02              # -0.02mg/L偏置
+
+actuators:
+  # 闸门执行器 - 闸门1
+  - name: "GATE1"
+    actuator_type: "gate"
+    rate_limit: 0.05         # 5cm/s速率限制
+    min_value: 0.0
+    max_value: 3.0           # 最大开度3m
+    dead_zone: 0.02          # 2cm死区
+    hysteresis: 0.03         # 3cm滞后
+    delay_steps: 1           # 1步延迟
+    quantization_step: 0.01  # 1cm量化
+    noise_std: 0.005         # 5mm抖动
+
+  # 闸门执行器 - 闸门2
+  - name: "GATE2"
+    actuator_type: "gate"
+    rate_limit: 0.05
+    min_value: 0.0
+    max_value: 3.0
+    dead_zone: 0.02
+    hysteresis: 0.03
+    delay_steps: 1
+    quantization_step: 0.01
+    noise_std: 0.005
+
+  # 泵站执行器
+  - name: "PUMP1"
+    actuator_type: "pump"
+    rate_limit: 20.0         # 20rpm/s加速度限制
+    min_value: 0.0
+    max_value: 1500.0        # 最大1500rpm
+    dead_zone: 5.0           # 5rpm死区
+    hysteresis: 10.0         # 10rpm滞后
+    delay_steps: 2           # 2步延迟
+    quantization_step: 1.0   # 1rpm量化
+    noise_std: 1.0           # 1rpm抖动
+
+  # 阀门执行器
+  - name: "VALVE1"
+    actuator_type: "valve"
+    rate_limit: 0.1          # 10%/s速率限制
+    min_value: 0.0
+    max_value: 1.0           # 0-100%
+    dead_zone: 0.01          # 1%死区
+    hysteresis: 0.02         # 2%滞后
+    delay_steps: 1
+    quantization_step: 0.01
+    noise_std: 0.005
