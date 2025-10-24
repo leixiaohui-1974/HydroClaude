@@ -315,6 +315,10 @@ class MPCController:
         if self.prob is None:
             self._build_optimization_problem()
 
+        # 首次调用时初始化观测器状态（使用实际测量值）
+        if np.allclose(self.x_hat, 0.0):
+            self.x_hat = self._estimate_state(y_current)
+
         # 状态估计：使用Luenberger观测器或简单估计
         if self.use_observer:
             # 使用观测器更新状态估计
@@ -401,7 +405,14 @@ class MPCController:
         """
         从测量输出估计状态（简化方法）
 
-        理想情况下应使用卡尔曼滤波器或Luenberger观测器
+        对于Controller Canonical Form:
+        y = C @ x = [b0, b1] @ [x1, x2]
+        其中 b0 = K/tau_d, b1 = K*tau_z/tau_d
+
+        由于 |b1| >> |b0|（通常tau_z << tau_d），假设x2主导输出：
+        y ≈ b1 * x2
+        → x2 ≈ y / b1
+        → x1 ≈ 0（或保持小值）
 
         Args:
             y_measured: 测量水位
@@ -409,20 +420,21 @@ class MPCController:
         Returns:
             估计状态向量
         """
-        # 简化：假设系统处于准稳态
-        # y = C*x，求伪逆
-        # 这里使用最小二乘估计
+        # 使用C矩阵进行估计
+        b0 = self.C[0]  # K / tau_d
+        b1 = self.C[1]  # K * tau_z / tau_d
 
-        # 如果C可逆（在我们的2状态系统中不可逆），使用伪逆
-        # x_est = pinv(C) * y
+        # 如果b1接近0（tau_z很小），则使用b0
+        if abs(b1) > abs(b0):
+            # x2主导输出
+            x2_est = y_measured / b1 if b1 != 0 else 0.0
+            x1_est = 0.0
+        else:
+            # x1主导输出
+            x1_est = y_measured / b0 if b0 != 0 else 0.0
+            x2_est = 0.0
 
-        # 更简单的方法：根据IDZ模型特性估计
-        # 假设 x1 主导输出，x2 缓慢变化
-        K = self.idz_params.K
-        tau_z = self.idz_params.tau_z
-
-        # 粗略估计：x1 ≈ y/K, x2 ≈ 0
-        x_est = np.array([y_measured / K, 0.0])
+        x_est = np.array([x1_est, x2_est])
 
         return x_est
 

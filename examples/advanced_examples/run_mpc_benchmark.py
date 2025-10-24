@@ -37,6 +37,9 @@ from control.online_identification import IDZIdentifier, IdentificationMethod
 from control.idz_model import IDZParameters
 from control.mpc_controller import MPCController, MPCConfig
 
+# 导入线性化渠道仿真器
+from linearized_canal_simulator import LinearizedCanalSimulator
+
 
 def imc_tune(idz_params, lambda_factor=2.0):
     """
@@ -172,8 +175,9 @@ def run_benchmark(controller_type="pid", config_path=None, plot_results=True):
         (900, 23.0)
     ]
 
-    # 创建模拟器
-    simulator = SimplifiedCanalSimulator(K=100.0, tau_z=200.0, tau_d=300.0, theta=20.0, dt=dt)
+    # 创建模拟器（使用线性化模型）
+    # 工作点：h=2.5m, a=2.0m（基于物理分析）
+    simulator = LinearizedCanalSimulator(h_work=2.5, a_work=2.0, dt=dt, use_linear=True)
     simulator.reset()
 
     # 创建控制器
