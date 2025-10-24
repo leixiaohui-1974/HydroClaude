@@ -50,10 +50,11 @@ fig = helper.plot_profile(
 2. [基础类库优先原则](#基础类库优先原则)
 3. [基础类库清单](#基础类库清单)
 4. [新增通用工具](#新增通用工具) ⭐ NEW
-5. [开发工作流](#开发工作流)
-6. [代码规范](#代码规范)
-7. [测试与验证](#测试与验证)
-8. [何时扩展基础库](#何时扩展基础库)
+5. [配置驱动的Example管理](#配置驱动的example管理) ⭐⭐ NEW
+6. [开发工作流](#开发工作流)
+7. [代码规范](#代码规范)
+8. [测试与验证](#测试与验证)
+9. [何时扩展基础库](#何时扩展基础库)
 
 ---
 
@@ -459,6 +460,187 @@ save_table(df, 'my_results.csv', index=False)
 # 保存到: results/tables/my_results.csv
 # 自动打印确认信息
 ```
+
+---
+
+## 🎛️ 配置驱动的Example管理
+
+**2025-10-24更新** - 全新的配置驱动测试框架
+
+### 核心理念
+
+✅ **完全消除硬编码**
+- 所有example路径在配置文件中管理
+- 参数（超时、优先级）可配置
+- 预期输出可验证
+
+✅ **自动化测试**
+- 一键运行所有examples
+- 自动生成详细报告
+- 支持CI/CD集成
+
+✅ **易于维护**
+- 添加新example无需修改代码
+- 分类管理（核心/高级/废弃）
+- 清晰的优先级标记
+
+### 配置文件: examples_config.yaml
+
+```yaml
+# 全局配置
+global:
+  timeout: 120  # 默认超时时间（秒）
+  output_dir: "results"
+
+# 核心examples
+core_examples:
+  - id: example_01_basic
+    path: "examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py"
+    description: "基本渠道流动"
+    priority: high
+    expected_outputs:
+      - "results/figures/longitudinal_profile.png"
+
+# 废弃的examples
+deprecated_examples:
+  - id: example_04_moc
+    path: "examples/example_04_moc_boundary/code/example_04_moc_boundary.py"
+    reason: "使用MOC求解器（已删除）"
+    action: "删除或重写为Preissmann"
+```
+
+### 运行测试框架
+
+```bash
+# 运行所有examples
+python run_example_tests.py
+
+# 查看报告
+cat example_test_report.txt
+
+# 查看JSON数据
+cat example_test_report.json
+```
+
+### 测试输出示例
+
+```
+================================================================================
+HydroClaude Examples 配置驱动测试
+================================================================================
+
+################################################################################
+# 类别: core_examples (3 个examples)
+################################################################################
+
+✅ example_01_basic (2.3s)
+   描述: 基本渠道流动
+   状态: success
+
+❌ example_01_methods (1.5s)
+   描述: 方法对比
+   状态: failed
+   错误: ModuleNotFoundError: pandas
+
+总计: 8 个examples
+  ✅ 成功: 6 (75%)
+  ❌ 失败: 2 (25%)
+```
+
+### 添加新Example
+
+**步骤1**: 编辑 `examples_config.yaml`
+
+```yaml
+core_examples:
+  - id: my_new_example
+    path: "examples/my_category/my_example.py"
+    description: "我的新功能演示"
+    priority: high
+    timeout: 60  # 可选，覆盖全局超时
+    expected_outputs:
+      - "results/my_output.png"
+      - "results/my_data.csv"
+```
+
+**步骤2**: 运行测试
+
+```bash
+python run_example_tests.py
+```
+
+就这么简单！无需修改Python代码。
+
+### 标记废弃Example
+
+当某个example使用了废弃的API：
+
+```yaml
+deprecated_examples:
+  - id: old_example
+    path: "examples/old/old_example.py"
+    reason: "使用了MOC求解器（已删除）"
+    action: "删除或重写为Preissmann"
+```
+
+测试框架会自动识别并报告：
+
+```
+################################################################################
+# 废弃的Examples (需要处理)
+################################################################################
+
+⚠️  old_example
+   路径: examples/old/old_example.py
+   原因: 使用了MOC求解器（已删除）
+   建议: 删除或重写为Preissmann
+```
+
+### Example分类
+
+| 类别 | 说明 | 优先级 |
+|------|------|--------|
+| `core_examples` | 核心功能，必须通过 | 🔴 高 |
+| `preissmann_examples` | Preissmann求解器相关 | 🔴 高 |
+| `mpc_examples` | MPC控制系统 | 🟡 中 |
+| `advanced_examples` | 高级主题和研究功能 | 🟡 中 |
+| `deprecated_examples` | 废弃的examples | ⚪ 待处理 |
+
+### CI/CD集成
+
+在CI pipeline中使用：
+
+```yaml
+# .github/workflows/test_examples.yml
+steps:
+  - name: Test Examples
+    run: |
+      python run_example_tests.py
+      # 检查退出码
+      if [ $? -ne 0 ]; then
+        echo "Examples tests failed"
+        exit 1
+      fi
+```
+
+### 最佳实践
+
+1. **新example必须添加到配置**
+   - 编写example后立即添加到`examples_config.yaml`
+   - 指定预期输出以验证正确性
+
+2. **定期运行测试**
+   - 每次修改基础库后运行
+   - 确保所有examples仍然工作
+
+3. **及时标记废弃**
+   - API变更后，标记受影响的examples
+   - 提供明确的修复建议
+
+4. **分类清晰**
+   - 核心功能放在`core_examples`
+   - 实验性功能放在`advanced_examples`
+   - 确保核心examples 100%通过
 
 ---
 
