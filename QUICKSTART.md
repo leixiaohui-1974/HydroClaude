@@ -1,568 +1,503 @@
 # HydroClaude 快速入门指南
 
-欢迎使用 HydroClaude！本指南将帮助您在 **10 分钟内** 快速上手水力学仿真与优化。
+欢迎使用 HydroClaude！本指南将帮助您在 5 分钟内运行第一个水力模拟。
 
----
+## 目录
 
-## 📋 目录
+- [环境要求](#环境要求)
+- [5分钟快速开始](#5分钟快速开始)
+- [基本概念](#基本概念)
+- [常见用例](#常见用例)
+- [使用CLI工具](#使用cli工具)
+- [下一步](#下一步)
 
-1. [安装](#1-安装)
-2. [第一个示例](#2-第一个示例---明渠流动)
-3. [使用 YAML 配置](#3-使用-yaml-配置)
-4. [求解器选择](#4-求解器选择)
-5. [性能基准测试](#5-性能基准测试)
-6. [常见问题](#6-常见问题)
-7. [下一步](#7-下一步)
+## 环境要求
 
----
+确保您的系统已安装：
 
-## 1. 安装
-
-### 方式 A: 开发模式安装（推荐）
-
-```bash
-# 克隆仓库
-git clone https://github.com/leixiaohui-1974/HydroClaude.git
-cd HydroClaude
-
-# 安装（开发模式 + 开发工具 + 彩色日志）
-pip install -e .[dev,logging]
-```
-
-### 方式 B: 正式安装
+- Python 3.8 或更高版本
+- NumPy
+- Matplotlib
+- PyYAML
 
 ```bash
-pip install .
+# 安装依赖
+pip install numpy matplotlib pyyaml scipy
 ```
 
-### 验证安装
+## 5分钟快速开始
+
+### 方法 1: 使用统一CLI工具（推荐）
 
 ```bash
-# 检查版本
-python -c "import numpy; print('NumPy:', numpy.__version__)"
-python -c "import scipy; print('SciPy:', scipy.__version__)"
+# 1. 交互式创建配置文件
+python hydroclaude_cli.py config create --interactive
 
-# 运行测试（可选）
-pytest tests/
+# 2. 运行模拟
+python hydroclaude_cli.py run config.yaml --plot
+
+# 3. 验证所有示例
+python hydroclaude_cli.py validate
 ```
 
-**预期结果**: 164/164 测试通过 ✅
+### 方法 2: 运行现有示例
 
----
+```bash
+# 运行简单渠道流动模拟
+python examples/basic_examples/simple_channel_flow.py
 
-## 2. 第一个示例 - 明渠流动
+# 运行闸门控制示例
+python examples/basic_examples/gate_control.py
 
-创建文件 `my_first_canal.py`:
+# 运行泵站控制示例
+python examples/basic_examples/pump_control.py
+```
+
+### 方法 3: 编写您的第一个模拟脚本
+
+创建文件 `my_first_simulation.py`:
 
 ```python
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""我的第一个明渠流动模拟"""
-
 import numpy as np
+from core.solver import HydraulicSolver
+
+# 1. 定义计算域
+L = 1000.0  # 渠道长度 (m)
+nx = 100    # 网格点数
+x = np.linspace(0, L, nx)
+
+# 2. 设置初始条件
+h_init = np.ones(nx) * 2.0  # 初始水深 2m
+u_init = np.zeros(nx)        # 初始速度 0 m/s
+z_bed = np.zeros(nx)         # 平底渠道
+
+# 3. 创建求解器
+solver = HydraulicSolver(
+    x=x,
+    h=h_init,
+    u=u_init,
+    z_bed=z_bed,
+    width=10.0,     # 渠道宽度 10m
+    manning_n=0.025  # 曼宁系数
+)
+
+# 4. 设置边界条件：上游流量 20 m³/s，下游水深 2m
+def boundary_conditions(t):
+    Q_upstream = 20.0
+    h_downstream = 2.0
+    return Q_upstream, h_downstream
+
+solver.set_boundary_conditions(boundary_conditions)
+
+# 5. 运行模拟 (600秒，时间步长0.1秒)
+t_final = 600.0
+dt = 0.1
+time, results = solver.solve(t_final, dt, save_interval=10)
+
+# 6. 可视化结果
 import matplotlib.pyplot as plt
 
-from physics.steady_saint_venant import SteadySaintVenantSystem
-from solvers.newton_solver import NewtonSolver
-from utils.canal_utils import compute_steady_uniform_flow
+plt.figure(figsize=(12, 5))
 
-# ========== 1. 定义渠道参数 ==========
-length = 1000.0      # 渠道长度 (m)
-nx = 21              # 网格点数
-B = 10.0             # 渠道宽度 (m)
-S0 = 0.001           # 渠底坡度
-n = 0.025            # Manning 糙率系数
-Q_target = 10.0      # 目标流量 (m³/s)
+# 绘制水深分布
+plt.subplot(1, 2, 1)
+plt.plot(x, results['h'][-1])
+plt.xlabel('距离 (m)')
+plt.ylabel('水深 (m)')
+plt.title('最终水深分布')
+plt.grid(True)
 
-# ========== 2. 创建物理系统 ==========
-system = SteadySaintVenantSystem(
-    length=length,
-    nx=nx,
-    B=B,
-    S0=S0,
-    n=n,
-    pseudo_dt=0.1
-)
-
-# ========== 3. 设置边界条件 ==========
-h_uniform = compute_steady_uniform_flow(Q_target, B, S0, n)
-
-system.set_boundary_conditions(
-    Q_upstream=Q_target,           # 上游流量
-    h_upstream=h_uniform,          # 上游水深
-    h_downstream=h_uniform * 1.1   # 下游壅水
-)
-
-# ========== 4. 准备初值 ==========
-h_init = np.ones(nx) * h_uniform
-Q_init = np.ones(nx) * Q_target
-U_init = system.pack_state(h_init, Q_init)
-system.U_prev = U_init.copy()
-
-# ========== 5. 求解 ==========
-solver = NewtonSolver(
-    max_iter=20,
-    tol_residual=1e-6,
-    linear_solver='direct',
-    line_search=True,
-    verbose=True
-)
-
-U_solution, info = solver.solve(
-    U_init=U_init,
-    residual_func=system.compute_residual,
-    jacobian_func=system.compute_jacobian
-)
-
-# ========== 6. 提取结果 ==========
-h_solution, Q_solution = system.unpack_state(U_solution)
-
-# ========== 7. 可视化 ==========
-x = np.linspace(0, length, nx)
-
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
-
-# 水深分布
-ax1.plot(x, h_solution, 'b-o', label='水深')
-ax1.axhline(h_uniform, color='r', linestyle='--', label='均匀流水深')
-ax1.set_xlabel('距离 (m)')
-ax1.set_ylabel('水深 (m)')
-ax1.set_title('水深沿程分布')
-ax1.legend()
-ax1.grid(True)
-
-# 流量分布
-ax2.plot(x, Q_solution, 'g-o', label='流量')
-ax2.axhline(Q_target, color='r', linestyle='--', label='目标流量')
-ax2.set_xlabel('距离 (m)')
-ax2.set_ylabel('流量 (m³/s)')
-ax2.set_title('流量沿程分布')
-ax2.legend()
-ax2.grid(True)
+# 绘制流速分布
+plt.subplot(1, 2, 2)
+plt.plot(x, results['u'][-1])
+plt.xlabel('距离 (m)')
+plt.ylabel('流速 (m/s)')
+plt.title('最终流速分布')
+plt.grid(True)
 
 plt.tight_layout()
-plt.savefig('my_first_canal.png', dpi=150)
-print("\n✅ 结果已保存到: my_first_canal.png")
+plt.savefig('my_first_simulation.png', dpi=150, bbox_inches='tight')
+plt.show()
 
-# ========== 8. 打印结果 ==========
-print("\n" + "="*60)
-print("求解结果")
-print("="*60)
-print(f"收敛: {info['converged']}")
-print(f"迭代次数: {info['iterations']}")
-print(f"最终残差: {info['residual_norm']:.2e}")
-print(f"水深范围: {h_solution.min():.3f} ~ {h_solution.max():.3f} m")
-print(f"流量范围: {Q_solution.min():.3f} ~ {Q_solution.max():.3f} m³/s")
-print("="*60)
+print("✓ 模拟完成！结果已保存到 my_first_simulation.png")
 ```
 
-### 运行
+运行脚本：
 
 ```bash
-python my_first_canal.py
+python my_first_simulation.py
 ```
 
-**预期输出**:
+## 基本概念
+
+### 1. 核心模块
+
+HydroClaude 由以下核心模块组成：
+
 ```
-Newton求解器: 迭代 1, 残差: 1.23e-02
-Newton求解器: 迭代 2, 残差: 2.45e-04
-Newton求解器: 迭代 3, 残差: 3.67e-08
-✓ Newton收敛
+core/
+├── solver.py          # 水力求解器（圣维南方程组）
+├── structures.py      # 水工结构物（闸门、堰、泵站）
+└── controllers.py     # 控制器（PID、MPC等）
 
-============================================================
-求解结果
-============================================================
-收敛: True
-迭代次数: 3
-最终残差: 3.67e-08
-水深范围: 1.925 ~ 2.112 m
-流量范围: 9.998 ~ 10.002 m³/s
-============================================================
-
-✅ 结果已保存到: my_first_canal.png
+utils/
+├── visualizer.py      # 高级可视化工具
+├── config_generator.py # 配置文件生成器
+└── data_validator.py  # 数据验证工具
 ```
 
----
+### 2. 工作流程
 
-## 3. 使用 YAML 配置
-
-HydroClaude 支持 YAML 配置文件，无需编写 Python 代码即可定义复杂系统。
-
-### 3.1 查看示例配置
-
-```bash
-# 查看简单渠道配置
-cat config/simple_canal.yaml
-
-# 查看三级梯级水电站配置
-cat config/example_system.yaml
-
-# 查看灌区配水系统配置
-cat config/irrigation_system.yaml
-
-# 查看防洪调度系统配置
-cat config/flood_control.yaml
-
-# 查看城市供水系统配置
-cat config/urban_water_supply.yaml
+```
+配置/脚本 → 求解器 → 结构物 → 控制器 → 结果输出 → 可视化/分析
 ```
 
-### 3.2 加载并使用配置
+### 3. 关键参数说明
+
+| 参数 | 符号 | 单位 | 说明 |
+|------|------|------|------|
+| 水深 | h | m | 垂直水深 |
+| 流速 | u | m/s | 断面平均流速 |
+| 底高程 | z_bed | m | 渠底高程 |
+| 渠道宽度 | width | m | 矩形渠道宽度 |
+| 曼宁系数 | manning_n | - | 糙率系数 (0.01-0.05) |
+| 流量 | Q | m³/s | Q = u × h × width |
+| 弗劳德数 | Fr | - | Fr = u / sqrt(g×h) |
+
+### 4. 常见结构物
 
 ```python
-from core.config import SystemConfig
+from core.structures import SluiceGate, Weir, Pump
 
-# 加载配置
-config = SystemConfig.from_yaml('config/simple_canal.yaml')
+# 闸门：通过开度控制流量
+gate = SluiceGate(position=500, opening=0.5)  # 50%开度
 
-# 验证配置
-errors = config.validate()
-if errors:
-    print("配置错误:", errors)
-else:
-    print("✓ 配置验证通过")
+# 堰：固定溢流结构
+weir = Weir(position=500, crest_height=1.0)
 
-# 访问配置
-print(f"渠道数量: {len(config.canals)}")
-print(f"闸门数量: {len(config.gates)}")
-print(f"仿真时长: {config.simulation.duration} 秒")
+# 泵站：提升水位
+pump = Pump(position=500, capacity=10.0, efficiency=0.85)
 ```
 
-### 3.3 创建自定义配置
+## 常见用例
 
-复制并修改现有配置：
+### 用例 1: 渠道稳态流动模拟
 
-```bash
-# 复制简单渠道配置
-cp config/simple_canal.yaml config/my_canal.yaml
-
-# 编辑配置
-vim config/my_canal.yaml  # 或使用您喜欢的编辑器
-```
-
-修改参数：
-```yaml
-canals:
-  - id: my_canal
-    length: 2000.0      # 修改长度
-    nx: 41              # 修改网格点数
-    width: 15.0         # 修改宽度
-    slope: 0.0008       # 修改坡度
-    roughness: 0.020    # 修改糙率
-```
-
----
-
-## 4. 求解器选择
-
-HydroClaude 提供多种求解器，适用于不同场景。
-
-### 4.1 Newton 法（快速、适合好初值）
+适用场景：计算渠道的正常水深和流速分布。
 
 ```python
-from solvers.newton_solver import NewtonSolver
+# 使用 examples/basic_examples/simple_channel_flow.py
+python examples/basic_examples/simple_channel_flow.py
+```
 
-solver = NewtonSolver(
-    max_iter=20,
-    tol_residual=1e-6,
-    linear_solver='direct',  # 'direct' 或 'gmres'
-    line_search=True,
-    verbose=True
+关键技术：
+- 恒定边界条件
+- 曼宁公式计算摩阻
+- 稳态解收敛判断
+
+### 用例 2: 闸门控制水位
+
+适用场景：水库/渠道通过闸门维持目标水位。
+
+```python
+# 使用 examples/basic_examples/gate_control.py
+python examples/basic_examples/gate_control.py
+```
+
+关键技术：
+- PID控制器
+- 闸门流量系数
+- 反馈控制回路
+
+### 用例 3: 泵站自动控制
+
+适用场景：排水泵站根据水位自动启停。
+
+```python
+# 使用 examples/basic_examples/pump_control.py
+python examples/basic_examples/pump_control.py
+```
+
+关键技术：
+- 阈值控制（开/停水位）
+- 泵站性能曲线
+- 能耗计算
+
+### 用例 4: 复杂系统集成
+
+适用场景：多个结构物和控制器协同工作。
+
+```python
+# 使用 examples/advanced_examples/multi_structure_control.py
+python examples/advanced_examples/multi_structure_control.py
+```
+
+关键技术：
+- 多点控制
+- 结构物相互作用
+- 前馈+反馈控制
+
+## 使用CLI工具
+
+### 创建配置文件
+
+```bash
+# 交互式向导
+python hydroclaude_cli.py config create --interactive
+
+# 从模板创建
+python hydroclaude_cli.py config create --template canal_with_gate
+
+# 验证配置文件
+python hydroclaude_cli.py config validate config.yaml
+```
+
+### 运行模拟
+
+```bash
+# 基本运行
+python hydroclaude_cli.py run config.yaml
+
+# 运行并绘图
+python hydroclaude_cli.py run config.yaml --plot
+
+# 运行并导出数据
+python hydroclaude_cli.py run config.yaml --export results.csv
+
+# 详细输出
+python hydroclaude_cli.py run config.yaml --verbose
+```
+
+### 验证和测试
+
+```bash
+# 验证所有示例
+python hydroclaude_cli.py validate
+
+# 生成验证报告
+python hydroclaude_cli.py validate --report
+
+# 运行单元测试
+python hydroclaude_cli.py test --type unit
+
+# 运行集成测试
+python hydroclaude_cli.py test --type integration
+```
+
+### 性能和健康检查
+
+```bash
+# 性能基准测试
+python hydroclaude_cli.py benchmark
+
+# 项目健康检查
+python hydroclaude_cli.py health
+
+# 生成健康报告
+python hydroclaude_cli.py health --report
+```
+
+## 下一步
+
+### 学习资源
+
+1. **README.md** - 项目概览和功能介绍
+2. **DEVELOPMENT_SUMMARY.md** - 详细开发文档和架构说明
+3. **examples/** - 丰富的示例代码
+   - `basic_examples/` - 基础示例
+   - `advanced_examples/` - 高级示例
+   - `real_world_cases/` - 实际工程案例
+4. **tests/** - 单元测试和集成测试（最佳学习材料）
+
+### 深入主题
+
+#### 1. 自定义控制器
+
+```python
+from core.controllers import BaseController
+
+class MyController(BaseController):
+    def compute_control(self, current_state, target_state, dt):
+        # 实现您的控制算法
+        error = target_state - current_state
+        control_output = self.my_algorithm(error)
+        return control_output
+```
+
+参考：`examples/advanced_examples/custom_controller.py`
+
+#### 2. 高级可视化
+
+```python
+from utils.visualizer import HydroVisualizer
+
+viz = HydroVisualizer(style='scientific')
+viz.create_dashboard(
+    time=time,
+    water_level=h_history,
+    flow_rate=Q_history,
+    control_input=u_control_history
 )
-
-U_solution, info = solver.solve(U_init, residual_func, jacobian_func)
 ```
 
-**适用场景**:
-- 初值较好（如均匀流）
-- 中小规模问题（nx < 500）
-- 需要快速收敛
+参考：`examples/visualization_examples/`
 
-### 4.2 延拓法（鲁棒、适合差初值）
+#### 3. 数据验证和质量保障
 
 ```python
-from solvers.continuation_solver import ContinuationSolver
+from utils.data_validator import DataValidator
 
-solver = ContinuationSolver(
-    system=system,
-    pseudo_dt_sequence=[10.0, 1.0, 0.1],
-    verbose=True
-)
-
-U_solution, info = solver.solve(U_init)
+validator = DataValidator()
+report = validator.validate_simulation_results(results)
+validator.generate_html_report(report, 'validation_report.html')
 ```
 
-**适用场景**:
-- 初值较差
-- 强非线性问题
-- 需要高鲁棒性
+参考：`examples/data_validation_examples/`
 
-### 4.3 混合求解器（智能、自动选择）
+#### 4. 性能优化
+
+- 使用向量化操作（NumPy）
+- 调整网格分辨率（CFL条件）
+- 选择合适的时间步长
+- 考虑并行计算（未来功能）
+
+参考：`docs/performance_optimization.md`
+
+### 常见问题
+
+#### Q1: 模拟不稳定/发散？
+
+**解决方案**：
+1. 减小时间步长 `dt`
+2. 检查CFL条件：`dt < dx / (|u| + sqrt(g*h))`
+3. 使用数据验证工具检查初始条件
 
 ```python
-from solvers.hybrid_solver_enhanced import HybridSolverEnhanced, SolverStrategy
-
-solver = HybridSolverEnhanced(
-    max_strategies=3,
-    quick_newton_trials=5,
-    enable_strategy_memory=True,
-    verbose=True
-)
-
-U_solution, info = solver.solve(
-    U_init,
-    residual_func,
-    jacobian_func,
-    preferred_strategy=SolverStrategy.AUTO  # 自动选择最优策略
-)
-
-print(f"使用策略: {info['strategy_used']}")
-print(f"尝试次数: {info['attempts']}")
+from utils.data_validator import DataValidator
+validator = DataValidator()
+validator.check_courant_condition(u, h, dx, dt)
 ```
 
-**适用场景**:
-- 不确定哪种求解器最好
-- 需要自动降级备份
-- 追求最高成功率
+#### Q2: 控制器不工作？
 
-### 4.4 求解器对比
-
-| 求解器 | 速度 | 鲁棒性 | 适用规模 | 推荐场景 |
-|--------|------|--------|----------|----------|
-| Newton-Direct | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | 小-中 | 初值好、快速原型 |
-| Newton-GMRES | ⭐⭐⭐⭐ | ⭐⭐⭐ | 中-大 | 大规模稀疏系统 |
-| Continuation | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | 小-中 | 初值差、强非线性 |
-| Hybrid | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | 小-大 | 生产环境、可靠性优先 |
-
----
-
-## 5. 性能基准测试
-
-HydroClaude 内置了性能测试套件。
-
-### 5.1 快速测试（~1分钟）
-
-```bash
-hydroclaude-benchmark --quick
-```
-
-或：
-
-```bash
-python benchmark_suite.py --mode quick
-```
-
-### 5.2 标准测试（~5分钟）
-
-```bash
-python benchmark_suite.py --mode standard
-```
-
-### 5.3 全面测试（~15分钟）
-
-```bash
-python benchmark_suite.py --mode comprehensive
-```
-
-### 5.4 查看测试报告
-
-测试完成后会生成报告：
-
-```bash
-# 查看 Markdown 报告
-cat benchmark_results/benchmark_report_YYYYMMDD_HHMMSS.md
-
-# 查看 JSON 报告
-cat benchmark_results/benchmark_report_YYYYMMDD_HHMMSS.json
-```
-
-**示例报告输出**:
-
-```
-============================================================
-HydroClaude 性能基准测试
-============================================================
-
-模式: standard
-日期: 2025-10-22 15:30:45
-
-------------------------------------------------------------
-1. 求解器性能测试
-------------------------------------------------------------
-✓ Newton-Direct   : 3 迭代, 0.0123 秒, 残差 2.34e-08
-✓ Newton-GMRES    : 5 迭代, 0.0187 秒, 残差 3.45e-08
-✓ Continuation    : 2 阶段, 0.0456 秒, 总迭代 12
-
-------------------------------------------------------------
-2. 可扩展性测试
-------------------------------------------------------------
-✓ nx=6    : 0.0012 秒
-✓ nx=21   : 0.0123 秒
-✓ nx=51   : 0.0345 秒
-✓ nx=101  : 0.0678 秒
-✓ nx=201  : 0.1234 秒
-
-总计: 6/6 测试通过 (100.0%)
-```
-
----
-
-## 6. 常见问题
-
-### Q1: 安装时提示缺少依赖包
-
-**A**: 确保 pip 版本 ≥ 21.0：
-
-```bash
-pip install --upgrade pip
-pip install -e .[dev,logging]
-```
-
-### Q2: Newton 求解器不收敛
-
-**A**: 尝试以下方法：
-
-1. **改善初值**:
-   ```python
-   # 使用均匀流作为初值
-   h_uniform = compute_steady_uniform_flow(Q, B, S0, n)
-   h_init = np.ones(nx) * h_uniform
-   ```
-
-2. **使用延拓法**:
-   ```python
-   from solvers.continuation_solver import ContinuationSolver
-   solver = ContinuationSolver(system, [10.0, 1.0, 0.1])
-   ```
-
-3. **使用混合求解器**:
-   ```python
-   from solvers.hybrid_solver_enhanced import HybridSolverEnhanced
-   solver = HybridSolverEnhanced()
-   ```
-
-### Q3: 测试失败
-
-**A**: 检查测试环境：
-
-```bash
-# 查看详细测试输出
-pytest tests/ -v
-
-# 查看失败原因
-pytest tests/ -v --tb=short
-
-# 只运行特定测试
-pytest tests/test_newton_solver.py -v
-```
-
-### Q4: YAML 配置加载失败
-
-**A**: 验证 YAML 语法：
+**解决方案**：
+1. 检查PID参数（Kp, Ki, Kd）
+2. 验证测量点位置
+3. 查看控制输出是否饱和
+4. 使用可视化工具分析控制性能
 
 ```python
-from core.config import SystemConfig
-
-config = SystemConfig.from_yaml('config/my_canal.yaml')
-errors = config.validate()
-
-if errors:
-    print("配置错误:")
-    for error in errors:
-        print(f"  - {error}")
+viz.plot_control_performance(time, actual, target, control)
 ```
 
-### Q5: 如何查看日志
+#### Q3: 如何选择网格分辨率？
 
-**A**: 日志保存在 `logs/` 目录：
+**经验法则**：
+- 简单渠道：`nx = 50-100`
+- 有结构物：在结构物附近加密
+- 精细模拟：`nx > 200`
+- 权衡精度和速度
+
+#### Q4: 如何处理复杂边界条件？
+
+```python
+def time_varying_bc(t):
+    # 时变边界条件
+    Q_upstream = 20.0 + 5.0 * np.sin(2*np.pi*t/3600)  # 周期变化
+    h_downstream = 2.0
+    return Q_upstream, h_downstream
+
+solver.set_boundary_conditions(time_varying_bc)
+```
+
+### 获取帮助
+
+- **GitHub Issues**: 报告bug或请求功能
+- **示例代码**: 查看 `examples/` 目录
+- **测试代码**: `tests/` 目录包含大量使用示例
+- **CLI帮助**: `python hydroclaude_cli.py --help`
+
+## 最佳实践
+
+### 1. 项目组织
+
+```
+my_project/
+├── configs/          # 配置文件
+├── scripts/          # 模拟脚本
+├── results/          # 模拟结果
+│   ├── data/        # 数据文件
+│   └── plots/       # 图表
+└── reports/          # 分析报告
+```
+
+### 2. 代码风格
+
+```python
+# ✓ 好的实践
+solver = HydraulicSolver(x=x, h=h_init, u=u_init, z_bed=z_bed)
+time, results = solver.solve(t_final=600, dt=0.1)
+
+# ✗ 避免
+solver = HydraulicSolver(x, h_init, u_init, z_bed)  # 参数不明确
+```
+
+### 3. 模拟流程
+
+1. **前处理**：验证输入数据
+2. **模拟**：使用合适的时间步长
+3. **后处理**：验证结果物理合理性
+4. **可视化**：使用专业工具展示结果
+5. **文档化**：记录关键参数和假设
+
+### 4. 版本控制
 
 ```bash
-# 查看 Newton 求解器日志
-cat logs/newtonsolver.log
+# 保存配置
+git add configs/
 
-# 查看水库模拟日志
-cat logs/reservoir.log
+# 不要提交大数据文件
+echo "results/*.csv" >> .gitignore
+echo "results/*.npy" >> .gitignore
+```
 
-# 实时监控日志
-tail -f logs/hybridsolver.log
+## 示例：完整工作流程
+
+```bash
+# 1. 创建项目目录
+mkdir my_canal_project && cd my_canal_project
+
+# 2. 创建配置
+python ../hydroclaude_cli.py config create --interactive
+
+# 3. 验证配置
+python ../hydroclaude_cli.py config validate my_config.yaml
+
+# 4. 运行模拟
+python ../hydroclaude_cli.py run my_config.yaml --plot --export results.csv
+
+# 5. 验证结果
+python -c "
+from utils.data_validator import DataValidator
+import numpy as np
+
+data = np.loadtxt('results.csv', delimiter=',', skiprows=1)
+validator = DataValidator()
+# 进行验证...
+"
+
+# 6. 生成报告
+python ../hydroclaude_cli.py health --report
 ```
 
 ---
 
-## 7. 下一步
-
-### 📚 学习更多
-
-1. **查看完整示例**:
-   ```bash
-   ls examples/
-   python examples/example_01_steady_canal/example_01_steady_flow.py
-   ```
-
-2. **阅读 API 文档**:
-   - 查看 `README.md` 的 API 参考部分
-   - 查看源代码中的 docstrings
-
-3. **研究高级功能**:
-   - Anderson 加速: `ANDERSON_ACCELERATION_VERIFICATION.md`
-   - 项目总结: `PROJECT_SUMMARY.md`
-   - 开发任务: `DEVELOPMENT_TASKS.md`
-
-### 🎯 实践项目
-
-1. **明渠流动**:
-   - 不同坡度对水深的影响
-   - 闸门调节对流量的影响
-   - 糙率对流速的影响
-
-2. **水库调度**:
-   - 发电优化
-   - 防洪调度
-   - 生态流量保障
-
-3. **管网系统**:
-   - 串联管网
-   - 树状管网
-   - 环状管网
-
-### 🤝 贡献代码
-
-欢迎贡献！查看贡献指南：
-
-```bash
-cat CONTRIBUTING.md  # （如果有的话）
-```
-
-或直接提交 Pull Request：
-1. Fork 仓库
-2. 创建功能分支: `git checkout -b feature/my-feature`
-3. 提交代码: `git commit -am 'Add my feature'`
-4. 推送分支: `git push origin feature/my-feature`
-5. 创建 Pull Request
-
-### 📧 获取帮助
-
-- **问题反馈**: [GitHub Issues](https://github.com/leixiaohui-1974/HydroClaude/issues)
-- **功能请求**: [GitHub Issues](https://github.com/leixiaohui-1974/HydroClaude/issues)
-- **讨论交流**: [GitHub Discussions](https://github.com/leixiaohui-1974/HydroClaude/discussions)
-
----
-
-## 🎉 恭喜！
-
-您已经完成了 HydroClaude 的快速入门！
+**恭喜！您已经掌握了 HydroClaude 的基础使用。** 🎉
 
 现在您可以：
-- ✅ 创建和求解明渠流动问题
-- ✅ 使用 YAML 配置复杂系统
-- ✅ 选择合适的求解器
-- ✅ 运行性能基准测试
-- ✅ 排查常见问题
+- ✓ 运行基本模拟
+- ✓ 使用CLI工具
+- ✓ 添加结构物和控制器
+- ✓ 可视化和验证结果
 
-**Happy Coding! 🚀**
-
----
-
-*最后更新: 2025-10-22*
-*版本: 0.2.0*
-*作者: leixiaohui-1974*
+继续探索 `examples/` 目录，尝试更高级的功能！
