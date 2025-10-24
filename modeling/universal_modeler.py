@@ -101,6 +101,9 @@ class UniversalModeler:
         self.output_dir = Path(self.config.get_output_config()['directory'])
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
+        # 时变边界条件数据缓存
+        self.time_series_data = {}
+
     def setup_grid(self):
         """设置网格"""
         print("\n[2/7] 生成网格...")
@@ -519,8 +522,26 @@ class UniversalModeler:
 
         elif bc_type == 'file':
             # 从文件读取时间序列
-            # TODO: 实现文件读取
-            pass
+            file_path = time_varying_bc.get('file')
+            boundary = time_varying_bc.get('boundary', 'upstream')
+            column = time_varying_bc.get('column', 'value')  # 数据列名
+
+            if not file_path:
+                print(f"      警告: 文件边界条件未指定文件路径，跳过")
+                return
+
+            # 如果还没有加载此文件，则加载它
+            if file_path not in self.time_series_data:
+                self._load_time_series_file(file_path)
+
+            # 获取插值后的值
+            value = self._interpolate_time_series(file_path, t, column)
+
+            # 应用到边界
+            if boundary == 'upstream':
+                self._update_upstream_bc(value)
+            elif boundary == 'downstream':
+                self._update_downstream_bc(value)
 
     def _update_upstream_bc(self, value: float):
         """更新上游边界条件"""
@@ -531,6 +552,92 @@ class UniversalModeler:
         """更新下游边界条件"""
         # 如果是水深边界，更新水深
         self.unsteady_h_downstream = value
+
+    def _load_time_series_file(self, file_path: str):
+        """
+        加载时间序列文件（CSV格式）
+
+        文件格式要求:
+        - 第一列: time (秒)
+        - 其他列: 数据值（如flow、depth等）
+
+        Args:
+            file_path: CSV文件路径
+        """
+        import csv
+
+        # 解析相对路径
+        if not os.path.isabs(file_path):
+            # 相对于配置文件的路径
+            config_dir = os.path.dirname(self.config.config_file)
+            file_path = os.path.join(config_dir, file_path)
+
+        print(f"      加载时间序列文件: {file_path}")
+
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+
+                # 读取所有行
+                time_data = []
+                value_data = {}
+
+                for row in reader:
+                    time_data.append(float(row['time']))
+
+                    # 读取所有非time列
+                    for key in row.keys():
+                        if key != 'time':
+                            if key not in value_data:
+                                value_data[key] = []
+                            value_data[key].append(float(row[key]))
+
+                # 转换为numpy数组
+                self.time_series_data[file_path] = {
+                    'time': np.array(time_data),
+                    'data': {k: np.array(v) for k, v in value_data.items()}
+                }
+
+                print(f"      ✓ 已加载 {len(time_data)} 个时间点")
+                print(f"      ✓ 数据列: {list(value_data.keys())}")
+
+        except Exception as e:
+            print(f"      ✗ 加载文件失败: {e}")
+            # 创建空数据
+            self.time_series_data[file_path] = {
+                'time': np.array([0.0]),
+                'data': {'value': np.array([0.0])}
+            }
+
+    def _interpolate_time_series(self, file_path: str, t: float, column: str = 'value') -> float:
+        """
+        对时间序列数据进行线性插值
+
+        Args:
+            file_path: 文件路径
+            t: 当前时间
+            column: 数据列名
+
+        Returns:
+            插值后的值
+        """
+        if file_path not in self.time_series_data:
+            return 0.0
+
+        data = self.time_series_data[file_path]
+        time = data['time']
+
+        # 检查列是否存在
+        if column not in data['data']:
+            print(f"      警告: 列 '{column}' 不存在，使用第一列")
+            column = list(data['data'].keys())[0]
+
+        values = data['data'][column]
+
+        # 线性插值
+        value = np.interp(t, time, values)
+
+        return float(value)
 
     def run_control_simulation(self):
         """
