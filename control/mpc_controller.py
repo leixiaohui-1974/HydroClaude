@@ -66,23 +66,30 @@ class MPCController:
          状态约束：y_min ≤ y[k] ≤ y_max (可选)
     """
 
-    def __init__(self, idz_params: IDZParameters, config: MPCConfig):
+    def __init__(self, idz_params: IDZParameters, config: MPCConfig, use_observer: bool = True):
         """
         初始化MPC控制器
 
         Args:
             idz_params: IDZ模型参数
             config: MPC配置
+            use_observer: 是否使用Luenberger观测器（推荐True）
         """
         self.idz_params = idz_params
         self.config = config
+        self.use_observer = use_observer
 
         # 构建IDZ离散状态空间模型
         self._build_state_space_model()
 
-        # 初始化状态
-        self.x = np.zeros(self.n_states)  # 当前状态
+        # 初始化状态估计
+        self.x_hat = np.zeros(self.n_states)  # 状态估计值
         self.u_prev = 2.0  # 上一步控制量 (初始开度)
+        self.y_prev = 0.0  # 上一步测量输出
+
+        # 构建Luenberger观测器
+        if self.use_observer:
+            self._design_observer()
 
         # 优化问题（延迟构建）
         self.prob = None
@@ -144,6 +151,60 @@ class MPCController:
         self.C = sys_d.C.flatten()
         self.D = sys_d.D.flatten()
         self.n_states = self.A.shape[0]
+
+    def _design_observer(self):
+        """
+        设计Luenberger状态观测器
+
+        观测器动态方程：
+        x_hat[k+1] = A*x_hat[k] + B*u[k] + L*(y[k] - C*x_hat[k])
+
+        其中L是观测器增益矩阵，通过极点配置法设计。
+        观测器极点应比系统极点快2-5倍，以快速收敛到真实状态。
+        """
+        # 计算系统极点
+        sys_poles = np.linalg.eigvals(self.A)
+
+        # 设计观测器极点（比系统极点快3倍）
+        observer_poles = sys_poles * 0.3
+
+        # 确保极点在单位圆内（稳定性）
+        observer_poles = np.clip(np.abs(observer_poles), 0, 0.9) * np.exp(1j * np.angle(observer_poles))
+
+        # 使用极点配置法设计观测器增益L
+        # 对偶系统：(A', C')，设计K使得A'-K*C'有期望极点
+        # 则L = K'
+        try:
+            from scipy import linalg
+            K = linalg.place_poles(self.A.T, self.C.reshape(-1, 1), observer_poles).gain_matrix.T
+            self.L = K
+        except:
+            # 如果极点配置失败，使用简单的增益
+            # L = [l1, l2]^T，手动调整
+            self.L = np.array([[2.0], [1.0]])  # 经验值
+
+        print(f"Luenberger观测器增益 L = {self.L.flatten()}")
+        print(f"观测器极点: {observer_poles}")
+
+    def _update_observer(self, y_measured: float, u_applied: float):
+        """
+        更新Luenberger观测器状态
+
+        Args:
+            y_measured: 测量输出
+            u_applied: 施加的控制量
+        """
+        # 预测步骤：x_hat_pred = A*x_hat + B*u
+        x_hat_pred = self.A @ self.x_hat + self.B * u_applied
+
+        # 输出预测：y_hat = C*x_hat_pred + D*u
+        y_hat = self.C @ x_hat_pred + self.D[0] * u_applied
+
+        # 输出误差
+        y_error = y_measured - y_hat
+
+        # 校正步骤：x_hat = x_hat_pred + L*(y - y_hat)
+        self.x_hat = x_hat_pred + (self.L @ np.array([[y_error]])).flatten()
 
     def _build_optimization_problem(self):
         """构建CVXPY优化问题"""
@@ -232,15 +293,19 @@ class MPCController:
         if self.prob is None:
             self._build_optimization_problem()
 
-        # 状态估计（简化：直接从输出反推状态）
-        # 理想情况下应使用状态观测器（如卡尔曼滤波）
-        self.x = self._estimate_state(y_current)
+        # 状态估计：使用Luenberger观测器或简单估计
+        if self.use_observer:
+            # 使用观测器更新状态估计
+            self._update_observer(y_current, self.u_prev)
+        else:
+            # 简单估计（不推荐）
+            self.x_hat = self._estimate_state(y_current)
 
         # 构建参考轨迹（恒定设定值）
         r_trajectory = np.full(self.config.prediction_horizon + 1, setpoint)
 
         # 更新优化问题参数
-        self.opt_x0.value = self.x
+        self.opt_x0.value = self.x_hat
         self.opt_r.value = r_trajectory
         self.opt_u_prev.value = self.u_prev
 
@@ -332,8 +397,9 @@ class MPCController:
 
     def reset(self):
         """重置控制器状态"""
-        self.x = np.zeros(self.n_states)
+        self.x_hat = np.zeros(self.n_states)
         self.u_prev = 2.0
+        self.y_prev = 0.0
         self.solve_time_history = []
         self.objective_history = []
 
@@ -356,8 +422,9 @@ class MPCController:
             'average_solve_time': np.mean(self.solve_time_history) if self.solve_time_history else 0.0,
             'max_solve_time': np.max(self.solve_time_history) if self.solve_time_history else 0.0,
             'average_objective': np.mean(self.objective_history) if self.objective_history else 0.0,
-            'current_state': self.x.copy(),
-            'previous_control': self.u_prev
+            'current_state': self.x_hat.copy(),
+            'previous_control': self.u_prev,
+            'use_observer': self.use_observer
         }
 
 
@@ -375,15 +442,15 @@ def test_mpc_controller():
 
     # 创建MPC配置
     mpc_config = MPCConfig(
-        prediction_horizon=10,
-        control_horizon=5,
-        dt=2.0,  # 更小的时间步长
-        Q=10.0,  # 增大状态误差权重
-        R=0.1,   # 控制增量权重
-        Qf=100.0,  # 更大的终端权重
-        u_min=0.0,
+        prediction_horizon=15,  # 增加预测时域
+        control_horizon=10,     # 增加控制时域
+        dt=2.0,
+        Q=100.0,   # 大幅增大状态误差权重
+        R=1.0,     # 增大控制增量权重（更保守）
+        Qf=1000.0, # 大幅增大终端权重
+        u_min=-2.0,  # 允许负控制量（用于降低水位）
         u_max=5.0,
-        du_max=1.0,
+        du_max=0.5,  # 减小最大变化率
         solver='OSQP',
         verbose=False
     )
