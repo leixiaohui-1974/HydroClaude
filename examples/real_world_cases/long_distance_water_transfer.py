@@ -1,0 +1,587 @@
+"""
+长距离调水工程案例
+
+模拟类似南水北调工程的大规模多级泵站渠道系统。
+
+系统特点：
+- 总长度：100km
+- 10个串联池段，每段10km
+- 3个泵站（位于30km、60km、90km处）
+- 7个控制闸门（各池段间）
+- 总提升高度：约50m
+
+控制目标：
+1. 流量分配：满足下游用水需求
+2. 水位维持：各池段水位在安全范围
+3. 能耗优化：泵站协同运行，降低电耗
+4. 扰动抑制：应对需水量变化
+
+系统拓扑：
+┌────────┐  Q0   ┌─────┐  Q1   ┌─────┐  Q2   ┌─────┐  Q3
+│ 水源   │──────>│池1  │──────>│池2  │──────>│池3  │─────> ...
+│ (水库) │       └─────┘       └─────┘       └─────┘
+└────────┘         ↑              ↑             ↑
+                 泵站1          闸门2          泵站2
+
+作者：HydroClaude Team
+日期：2025-10-24
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+from dataclasses import dataclass
+from typing import List, Dict, Tuple
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+from control.idz_model import IDZParameters, IDZModel
+from control.online_identification import GateIdentifier, PumpIdentifier
+
+
+@dataclass
+class PoolConfig:
+    """池段配置"""
+    id: int
+    length: float  # 长度 (m)
+    width: float  # 宽度 (m)
+    bed_slope: float  # 底坡
+    manning: float  # 曼宁系数
+    normal_depth: float  # 设计正常水深 (m)
+    h_min: float  # 最小水深 (m)
+    h_max: float  # 最大水深 (m)
+
+
+@dataclass
+class PumpStationConfig:
+    """泵站配置"""
+    id: int
+    location_km: float  # 位置 (km)
+    downstream_pool_id: int  # 下游池段ID
+    rated_flow: float  # 额定流量 (m³/s)
+    rated_head: float  # 额定扬程 (m)
+    rated_power: float  # 额定功率 (kW)
+    efficiency: float  # 效率
+
+
+@dataclass
+class GateConfig:
+    """闸门配置"""
+    id: int
+    location_km: float  # 位置 (km)
+    downstream_pool_id: int  # 下游池段ID
+    width: float  # 宽度 (m)
+    max_opening: float  # 最大开度 (m)
+
+
+class SimplifiedPool:
+    """简化的池段模型（集总参数）"""
+
+    def __init__(self, config: PoolConfig, dt: float = 60.0):
+        self.config = config
+        self.dt = dt
+
+        # 状态
+        self.depth = config.normal_depth
+        self.volume = self.depth * config.width * config.length
+
+        # 表面面积
+        self.surface_area = config.width * config.length
+
+    def step(self, q_in: float, q_out: float):
+        """时间步进"""
+        # 水量平衡
+        dV = (q_in - q_out) * self.dt
+        self.volume += dV
+        self.volume = max(0, self.volume)
+
+        # 更新水深
+        self.depth = self.volume / self.surface_area
+
+        # 约束检查
+        if self.depth < self.config.h_min:
+            self.depth = self.config.h_min
+            self.volume = self.depth * self.surface_area
+        elif self.depth > self.config.h_max:
+            self.depth = self.config.h_max
+            self.volume = self.depth * self.surface_area
+
+    def get_state(self) -> Dict[str, float]:
+        return {
+            'depth': self.depth,
+            'volume': self.volume
+        }
+
+
+class PumpStation:
+    """泵站模型"""
+
+    def __init__(self, config: PumpStationConfig):
+        self.config = config
+        self.is_running = False
+        self.current_flow = 0.0
+        self.current_power = 0.0
+
+    def operate(self, target_flow: float) -> float:
+        """
+        运行泵站
+
+        Args:
+            target_flow: 目标流量 (m³/s)
+
+        Returns:
+            实际流量 (m³/s)
+        """
+        # 限制在额定范围内
+        actual_flow = np.clip(target_flow, 0, self.config.rated_flow)
+
+        if actual_flow > 0:
+            self.is_running = True
+            self.current_flow = actual_flow
+
+            # 简化的功率计算：P = ρ*g*Q*H/η
+            rho = 1000  # kg/m³
+            g = 9.81    # m/s²
+            self.current_power = (rho * g * actual_flow * self.config.rated_head /
+                                 self.config.efficiency) / 1000  # kW
+        else:
+            self.is_running = False
+            self.current_flow = 0
+            self.current_power = 0
+
+        return self.current_flow
+
+    def get_state(self) -> Dict[str, float]:
+        return {
+            'flow': self.current_flow,
+            'power': self.current_power,
+            'is_running': 1.0 if self.is_running else 0.0
+        }
+
+
+class Gate:
+    """闸门模型"""
+
+    def __init__(self, config: GateConfig):
+        self.config = config
+        self.opening = 0.5  # 当前开度 (m)
+        self.current_flow = 0.0
+
+        # 闸门流量系数（经验值）
+        self.C_d = 0.6
+        self.g = 9.81
+
+    def operate(self, opening: float, upstream_depth: float) -> float:
+        """
+        操作闸门
+
+        Args:
+            opening: 目标开度 (m)
+            upstream_depth: 上游水深 (m)
+
+        Returns:
+            实际流量 (m³/s)
+        """
+        # 限制开度
+        self.opening = np.clip(opening, 0, self.config.max_opening)
+
+        # 闸门流量公式：Q = C_d * b * a * sqrt(2*g*h)
+        if self.opening > 0 and upstream_depth > 0:
+            self.current_flow = (self.C_d * self.config.width * self.opening *
+                                np.sqrt(2 * self.g * upstream_depth))
+        else:
+            self.current_flow = 0
+
+        return self.current_flow
+
+    def get_state(self) -> Dict[str, float]:
+        return {
+            'opening': self.opening,
+            'flow': self.current_flow
+        }
+
+
+class WaterTransferSystem:
+    """长距离调水系统"""
+
+    def __init__(self, dt: float = 60.0):
+        """
+        初始化系统
+
+        Args:
+            dt: 仿真时间步 (s)
+        """
+        self.dt = dt
+
+        # 创建系统组件
+        self.pools = self._create_pools()
+        self.pump_stations = self._create_pump_stations()
+        self.gates = self._create_gates()
+
+        # 系统状态
+        self.time = 0.0
+        self.total_power_consumption = 0.0  # 累计电耗 (kWh)
+
+        # 数据记录
+        self.history = {
+            'time': [],
+            'depths': [],
+            'flows': [],
+            'pump_powers': [],
+            'gate_openings': []
+        }
+
+    def _create_pools(self) -> List[SimplifiedPool]:
+        """创建10个串联池段"""
+        pools = []
+        for i in range(10):
+            config = PoolConfig(
+                id=i,
+                length=10000.0,  # 10km
+                width=20.0,      # 20m宽
+                bed_slope=0.0001,
+                manning=0.025,
+                normal_depth=3.0,
+                h_min=1.5,
+                h_max=4.5
+            )
+            pools.append(SimplifiedPool(config, self.dt))
+        return pools
+
+    def _create_pump_stations(self) -> Dict[int, PumpStation]:
+        """创建3个泵站（30km、60km、90km处）"""
+        stations = {}
+
+        # 泵站1：30km处，池2→池3
+        stations[0] = PumpStation(PumpStationConfig(
+            id=0,
+            location_km=30.0,
+            downstream_pool_id=3,
+            rated_flow=50.0,  # m³/s
+            rated_head=15.0,  # m
+            rated_power=8000.0,  # kW
+            efficiency=0.85
+        ))
+
+        # 泵站2：60km处，池5→池6
+        stations[1] = PumpStation(PumpStationConfig(
+            id=1,
+            location_km=60.0,
+            downstream_pool_id=6,
+            rated_flow=50.0,
+            rated_head=20.0,
+            rated_power=11000.0,
+            efficiency=0.85
+        ))
+
+        # 泵站3：90km处，池8→池9
+        stations[2] = PumpStation(PumpStationConfig(
+            id=2,
+            location_km=90.0,
+            downstream_pool_id=9,
+            rated_flow=50.0,
+            rated_head=15.0,
+            rated_power=8000.0,
+            efficiency=0.85
+        ))
+
+        return stations
+
+    def _create_gates(self) -> Dict[int, Gate]:
+        """创建7个闸门（非泵站池段间）"""
+        gates = {}
+
+        gate_locations = [10, 20, 40, 50, 70, 80, 100]  # km
+        pool_ids = [1, 2, 4, 5, 7, 8, 10]
+
+        for i, (loc, pool_id) in enumerate(zip(gate_locations, pool_ids)):
+            gates[i] = Gate(GateConfig(
+                id=i,
+                location_km=loc,
+                downstream_pool_id=pool_id - 1,
+                width=20.0,
+                max_opening=3.0
+            ))
+
+        return gates
+
+    def step(self, q_source: float, pump_flows: Dict[int, float],
+             gate_openings: Dict[int, float]):
+        """
+        系统时间步进
+
+        Args:
+            q_source: 源头流量 (m³/s)
+            pump_flows: 各泵站流量设定值 {pump_id: flow}
+            gate_openings: 各闸门开度设定值 {gate_id: opening}
+        """
+        # 计算各池段的入流和出流
+        q_in = [0.0] * 10
+        q_out = [0.0] * 10
+
+        # 池0的入流是源头
+        q_in[0] = q_source
+
+        # 处理泵站流量
+        for pump_id, target_flow in pump_flows.items():
+            pump = self.pump_stations[pump_id]
+            actual_flow = pump.operate(target_flow)
+            pool_id = pump.config.downstream_pool_id
+
+            # 泵的出流是下游池的入流
+            if pool_id < 10:
+                q_in[pool_id] = actual_flow
+
+            # 泵的入流是上游池的出流
+            if pool_id > 0:
+                q_out[pool_id - 1] = actual_flow
+
+        # 处理闸门流量
+        for gate_id, opening in gate_openings.items():
+            gate = self.gates[gate_id]
+            pool_id = gate.config.downstream_pool_id
+
+            # 获取上游池水深
+            if pool_id > 0:
+                upstream_depth = self.pools[pool_id - 1].depth
+            else:
+                upstream_depth = 3.0  # 假设源头水深充足
+
+            actual_flow = gate.operate(opening, upstream_depth)
+
+            # 闸门的出流是下游池的入流
+            if pool_id < 10:
+                q_in[pool_id] = actual_flow
+
+            # 闸门的入流是上游池的出流
+            if pool_id > 0:
+                q_out[pool_id - 1] = actual_flow
+
+        # 更新各池段状态
+        for i, pool in enumerate(self.pools):
+            pool.step(q_in[i], q_out[i])
+
+        # 累计电耗
+        for pump in self.pump_stations.values():
+            self.total_power_consumption += pump.current_power * (self.dt / 3600)  # kWh
+
+        # 更新时间
+        self.time += self.dt
+
+        # 记录数据
+        self._record_state()
+
+    def _record_state(self):
+        """记录当前状态"""
+        self.history['time'].append(self.time)
+
+        depths = [pool.depth for pool in self.pools]
+        self.history['depths'].append(depths)
+
+        flows = [pool.get_state()['volume'] for pool in self.pools]  # 简化
+        self.history['flows'].append(flows)
+
+        pump_powers = [pump.current_power for pump in self.pump_stations.values()]
+        self.history['pump_powers'].append(pump_powers)
+
+        gate_openings = [gate.opening for gate in self.gates.values()]
+        self.history['gate_openings'].append(gate_openings)
+
+    def get_system_state(self) -> Dict:
+        """获取系统状态"""
+        return {
+            'time': self.time,
+            'pool_depths': [p.depth for p in self.pools],
+            'pump_powers': [p.current_power for p in self.pump_stations.values()],
+            'total_power': self.total_power_consumption
+        }
+
+
+class SimpleHierarchicalController:
+    """简化的分层控制器"""
+
+    def __init__(self, system: WaterTransferSystem):
+        self.system = system
+
+        # 目标水深（各池段）
+        self.target_depths = [3.0] * 10
+
+        # PI控制器参数
+        self.kp = 2.0
+        self.ki = 0.05
+
+        # 积分项
+        self.integral_errors = [0.0] * 10
+
+    def compute_control(self, downstream_demand: float) -> Tuple[Dict, Dict]:
+        """
+        计算控制指令
+
+        Args:
+            downstream_demand: 下游用水需求 (m³/s)
+
+        Returns:
+            (pump_flows, gate_openings)
+        """
+        pump_flows = {}
+        gate_openings = {}
+
+        # 简化策略：基于水位偏差的PI控制
+
+        # 泵站控制
+        for pump_id, pump in self.system.pump_stations.items():
+            pool_id = pump.config.downstream_pool_id
+            if pool_id < 10:
+                # 目标：维持下游池水位
+                error = self.target_depths[pool_id] - self.system.pools[pool_id].depth
+                self.integral_errors[pool_id] += error * self.system.dt
+
+                # PI控制
+                flow_adjustment = self.kp * error + self.ki * self.integral_errors[pool_id]
+
+                # 基础流量 + 调节
+                target_flow = downstream_demand + flow_adjustment
+                pump_flows[pump_id] = np.clip(target_flow, 0, pump.config.rated_flow)
+
+        # 闸门控制
+        for gate_id, gate in self.system.gates.items():
+            pool_id = gate.config.downstream_pool_id
+            if pool_id < 10:
+                # 目标：维持下游池水位
+                error = self.target_depths[pool_id] - self.system.pools[pool_id].depth
+
+                # 简化：基于误差调节开度
+                opening = gate.config.max_opening * 0.5 + 0.5 * error
+                gate_openings[gate_id] = np.clip(opening, 0.2, gate.config.max_opening)
+
+        return pump_flows, gate_openings
+
+
+def run_water_transfer_simulation():
+    """运行长距离调水工程仿真"""
+    print("=" * 80)
+    print("长距离调水工程案例（类南水北调工程）")
+    print("=" * 80)
+
+    # 仿真参数
+    dt = 60.0  # 1分钟步长
+    simulation_hours = 24  # 24小时仿真
+    total_time = simulation_hours * 3600
+    n_steps = int(total_time / dt)
+
+    print(f"\n系统配置：")
+    print(f"  总长度：100km")
+    print(f"  池段数：10个（每段10km）")
+    print(f"  泵站数：3个（30km、60km、90km处）")
+    print(f"  闸门数：7个")
+    print(f"  仿真时长：{simulation_hours}小时")
+
+    # 创建系统
+    system = WaterTransferSystem(dt)
+    controller = SimpleHierarchicalController(system)
+
+    print(f"\n初始状态：")
+    state = system.get_system_state()
+    print(f"  各池段水深：{[f'{d:.2f}m' for d in state['pool_depths']]}")
+
+    print(f"\n开始仿真...")
+
+    # 源头流量（恒定）
+    q_source = 40.0  # m³/s
+
+    # 下游需水量变化场景
+    for step in range(n_steps):
+        t_hours = step * dt / 3600
+
+        # 需水量场景
+        if t_hours < 6:
+            demand = 30.0  # 夜间低需求
+        elif t_hours < 12:
+            demand = 45.0  # 上午高需求
+        elif t_hours < 18:
+            demand = 40.0  # 下午中等需求
+        else:
+            demand = 35.0  # 傍晚
+
+        # 控制决策
+        pump_flows, gate_openings = controller.compute_control(demand)
+
+        # 系统步进
+        system.step(q_source, pump_flows, gate_openings)
+
+        # 进度显示
+        if step % 60 == 0:
+            state = system.get_system_state()
+            avg_depth = np.mean(state['pool_depths'])
+            total_power = state['total_power']
+            print(f"  进度: {step}/{n_steps} ({100*step/n_steps:.1f}%) - "
+                  f"t={t_hours:.1f}h, 平均水深={avg_depth:.2f}m, 累计电耗={total_power:.1f}kWh")
+
+    print(f"\n仿真完成！")
+
+    # 统计结果
+    final_state = system.get_system_state()
+    print(f"\n运行统计：")
+    print(f"  总电耗：{final_state['total_power']:.1f} kWh")
+    print(f"  平均功率：{final_state['total_power']/simulation_hours:.1f} kW")
+    print(f"  终态水深：{[f'{d:.2f}m' for d in final_state['pool_depths']]}")
+
+    # 可视化
+    print(f"\n生成可视化图表...")
+    visualize_results(system)
+
+    print("\n✅ 示例运行完成！")
+    print("=" * 80)
+
+
+def visualize_results(system: WaterTransferSystem):
+    """可视化结果"""
+    history = system.history
+    time_hours = np.array(history['time']) / 3600
+
+    fig, axes = plt.subplots(3, 1, figsize=(14, 10))
+
+    # 子图1：各池段水深
+    ax = axes[0]
+    depths = np.array(history['depths'])
+    for i in range(10):
+        ax.plot(time_hours, depths[:, i], label=f'Pool {i+1}', alpha=0.7)
+    ax.axhline(3.0, color='black', linestyle='--', alpha=0.5, label='Target')
+    ax.axhline(1.5, color='red', linestyle=':', alpha=0.5, label='Min')
+    ax.axhline(4.5, color='red', linestyle=':', alpha=0.5, label='Max')
+    ax.set_ylabel('Water Depth (m)', fontsize=11)
+    ax.set_title('Long-Distance Water Transfer System - 100km, 10 Pools, 3 Pump Stations',
+                 fontsize=13, fontweight='bold')
+    ax.legend(loc='upper right', ncol=5, fontsize=8)
+    ax.grid(True, alpha=0.3)
+
+    # 子图2：泵站功率
+    ax = axes[1]
+    pump_powers = np.array(history['pump_powers'])
+    for i in range(3):
+        ax.plot(time_hours, pump_powers[:, i], linewidth=2, label=f'Pump Station {i+1}')
+    ax.set_ylabel('Pump Power (kW)', fontsize=11)
+    ax.legend(loc='upper right', fontsize=10)
+    ax.grid(True, alpha=0.3)
+
+    # 子图3：闸门开度
+    ax = axes[2]
+    gate_openings = np.array(history['gate_openings'])
+    for i in range(7):
+        ax.plot(time_hours, gate_openings[:, i], alpha=0.7, label=f'Gate {i+1}')
+    ax.set_xlabel('Time (hours)', fontsize=11)
+    ax.set_ylabel('Gate Opening (m)', fontsize=11)
+    ax.legend(loc='upper right', ncol=4, fontsize=8)
+    ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+
+    # 保存
+    output_file = 'long_distance_water_transfer.png'
+    plt.savefig(output_file, dpi=150, bbox_inches='tight')
+    print(f"  图表已保存：{output_file}")
+
+
+if __name__ == '__main__':
+    run_water_transfer_simulation()
