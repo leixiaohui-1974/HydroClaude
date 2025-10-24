@@ -160,7 +160,8 @@ class ModelConfig:
     def get_simulation_config(self) -> Dict:
         """获取仿真配置"""
         sim = self.config['simulation']
-        return {
+        # 返回所有simulation配置，不只是固定字段
+        result = {
             'type': sim.get('type', 'steady'),
             'dt': sim.get('dt', 0.5),
             'total_time': sim.get('total_time', 3600),
@@ -168,6 +169,11 @@ class ModelConfig:
             'convergence_tol': sim.get('convergence_tol', 0.001),
             'max_iterations': sim.get('max_iterations', 5000)
         }
+        # 添加其他可选配置（如control, time_varying_bc, preissmann_max_iter等）
+        for key in sim:
+            if key not in result:
+                result[key] = sim[key]
+        return result
 
     def get_boundary_conditions(self) -> Dict:
         """获取边界条件"""

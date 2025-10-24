@@ -38,6 +38,13 @@ from solvers.gate import (
 from utils.visualization_templates import VisualizationTemplates
 from utils.result_validator import quick_validate_steady_state
 
+# 控制系统
+from control.control_interface import (
+    ControlLoop,
+    ControlConfig,
+    create_control_loop
+)
+
 
 class UniversalModeler:
     """
@@ -86,7 +93,9 @@ class UniversalModeler:
         self.solver = None
         self.structures = []
         self.steady_result = None
-        self.unsteady_results = None
+        self.unsteady_result = None
+        self.control_result = None
+        self.control_loop = None
 
         # 输出设置
         self.output_dir = Path(self.config.get_output_config()['directory'])
@@ -160,10 +169,12 @@ class UniversalModeler:
             position = struct_cfg['position']
 
             if struct_type == 'sluice_gate':
+                # 支持 'opening' 或 'initial_opening'
+                opening = struct_cfg.get('opening', struct_cfg.get('initial_opening', 1.0))
                 structure = SluiceGate(
                     position=position,
                     width=struct_cfg.get('width', canal_params['B']),
-                    opening=struct_cfg['opening'],
+                    opening=opening,
                     Cd=struct_cfg.get('Cd', 0.6)
                 )
             elif struct_type == 'pump_station':
@@ -520,6 +531,185 @@ class UniversalModeler:
         # 如果是水深边界，更新水深
         self.unsteady_h_downstream = value
 
+    def run_control_simulation(self):
+        """
+        运行带闭环控制的模拟
+
+        实现控制在环（Control-in-the-Loop）仿真：
+        1. 初始化控制器（PID、MPC等）
+        2. 时间步进循环：
+           - 从求解器获取测量值
+           - 控制器计算控制输出
+           - 应用控制到结构物
+           - 执行水力仿真时间步
+        3. 记录控制历史和性能指标
+
+        Returns:
+            控制仿真结果字典
+        """
+        print("\n[6/7] 执行控制仿真...")
+
+        # 获取配置
+        sim_config = self.config.get_simulation_config()
+        control_config_dict = sim_config.get('control', {})
+        bc = self.config.get_boundary_conditions()
+
+        # 时间参数
+        dt = sim_config['dt']
+        total_time = sim_config['total_time']
+        n_steps = int(total_time / dt)
+        save_interval = sim_config.get('save_interval', 1)
+        control_interval = control_config_dict.get('control_interval', 1)  # 控制周期（时间步数）
+
+        # 边界条件
+        if bc['upstream_type'] == 'flow':
+            Q_target = bc['upstream_value']
+        else:
+            raise ValueError("控制仿真要求上游边界为流量类型")
+
+        if bc['downstream_type'] == 'depth':
+            h_downstream = bc['downstream_value']
+        else:
+            raise ValueError("控制仿真要求下游边界为水深类型")
+
+        # 存储边界条件用于Preissmann求解器
+        self.unsteady_Q_target = Q_target
+        self.unsteady_h_downstream = h_downstream
+
+        # 获取稳态初值
+        print("\n      获取稳态初值...")
+        h_init, hu_init, steady_result = self.steady_estimator.estimate_from_steady_solution(
+            solver=self.solver,
+            Q_target=Q_target,
+            h_downstream=h_downstream,
+            max_iterations=sim_config.get('max_iterations', 5000),
+            convergence_tol=sim_config.get('convergence_tol', 0.001),
+            verbose=False
+        )
+        self.solver.h[:] = h_init
+        self.solver.hu[:] = hu_init
+        print(f"      ✓ 初值设置完成 (收敛步数: {steady_result.get('iterations', 0)})")
+
+        # 创建控制配置
+        control_config = ControlConfig(
+            control_interval=control_interval,
+            monitoring_points=control_config_dict.get('monitoring_points', None),
+            control_points=control_config_dict.get('control_points', None)
+        )
+
+        # 创建控制循环
+        controller_type = control_config_dict.get('type', 'pid')
+        controller_config = control_config_dict.get('controller', {})
+
+        print(f"\n      创建控制循环...")
+        print(f"      控制器类型: {controller_type.upper()}")
+        print(f"      控制周期: {control_interval * dt:.1f} s")
+
+        self.control_loop = create_control_loop(
+            solver=self.solver,
+            controller_type=controller_type,
+            controller_config=controller_config,
+            control_config=control_config
+        )
+
+        # 设定值
+        setpoint = control_config_dict.get('setpoint', 2.0)
+        print(f"      设定值: {setpoint} m")
+
+        # 初始化历史记录
+        n_saves = n_steps // save_interval + 1
+        time_saves = []
+        h_history = np.zeros((n_saves, self.solver.nx))
+        hu_history = np.zeros((n_saves, self.solver.nx))
+        control_history = []
+        measurement_history = []
+        error_history = []
+
+        # 初始记录
+        save_idx = 0
+        time_saves.append(0.0)
+        h_history[save_idx, :] = self.solver.h.copy()
+        hu_history[save_idx, :] = self.solver.hu.copy()
+        save_idx += 1
+
+        print(f"\n      开始时间步进...")
+        print(f"      总步数: {n_steps}, 保存间隔: {save_interval}")
+
+        # 时间步进循环
+        for step in range(1, n_steps + 1):
+            current_time = step * dt
+
+            # 控制步（按控制周期执行）
+            if step % control_interval == 0:
+                control_data = self.control_loop.step(
+                    current_time=current_time,
+                    dt=dt * control_interval,
+                    setpoint=setpoint
+                )
+
+                # 记录控制数据
+                control_history.append(control_data['control'])
+                measurement_history.append(control_data['measurement'])
+                error_history.append(control_data['error'])
+
+            # 水力仿真时间步
+            h_new, hu_new = self.solver.step_preissmann(
+                dt=dt,
+                max_iter=sim_config.get('preissmann_max_iter', 10),
+                enforce_bc=True,
+                Q_in=self.unsteady_Q_target,
+                h_out=self.unsteady_h_downstream
+            )
+
+            self.solver.h[:] = h_new
+            self.solver.hu[:] = hu_new
+
+            # 保存结果
+            if step % save_interval == 0:
+                time_saves.append(current_time)
+                h_history[save_idx, :] = self.solver.h.copy()
+                hu_history[save_idx, :] = self.solver.hu.copy()
+                save_idx += 1
+
+            # 进度显示
+            if step % (n_steps // 10) == 0:
+                progress = step / n_steps * 100
+                h_range = (self.solver.h.min(), self.solver.h.max())
+                print(f"      进度: {progress:.0f}% | 时间: {current_time:.0f}s | 水深: [{h_range[0]:.2f}, {h_range[1]:.2f}] m")
+
+        print(f"      ✓ 控制仿真完成")
+
+        # 获取控制性能指标
+        performance_metrics = self.control_loop.get_performance_metrics()
+
+        # 构造结果
+        self.control_result = {
+            'converged': True,
+            'n_steps': n_steps,
+            'dt': dt,
+            'total_time': total_time,
+            'control_interval': control_interval,
+            'controller_type': controller_type,
+            'setpoint': setpoint,
+            'time': np.array(time_saves),
+            'h_history': h_history[:save_idx, :],
+            'hu_history': hu_history[:save_idx, :],
+            'control_history': np.array(control_history),
+            'measurement_history': np.array(measurement_history),
+            'error_history': np.array(error_history),
+            'performance_metrics': performance_metrics,
+            'Q_target': Q_target,
+            'h_downstream': h_downstream,
+        }
+
+        # 打印性能指标
+        print(f"\n      控制性能指标:")
+        for key, value in performance_metrics.items():
+            if isinstance(value, (int, float)):
+                print(f"        {key}: {value:.4f}")
+
+        return self.control_result
+
     def validate_results(self):
         """验证结果"""
         print("\n[7/7] 多重验证...")
@@ -563,6 +753,19 @@ class UniversalModeler:
                     Q=self.solver.hu * self.solver.B,
                     result=self.steady_result
                 )
+            elif sim_type == 'control':
+                # 控制仿真数据
+                np.savez(
+                    data_file,
+                    x=self.solver.x,
+                    time=self.control_result['time'],
+                    h_history=self.control_result['h_history'],
+                    hu_history=self.control_result['hu_history'],
+                    control_history=self.control_result['control_history'],
+                    measurement_history=self.control_result['measurement_history'],
+                    error_history=self.control_result['error_history'],
+                    result=self.control_result
+                )
             else:
                 # 非稳态数据
                 np.savez(
@@ -594,6 +797,10 @@ class UniversalModeler:
                 print(f"✓ 纵剖面图: {prefix}_profile.png")
                 import matplotlib.pyplot as plt
                 plt.close(fig1)
+
+            elif sim_type == 'control':
+                # 控制仿真：控制性能图表
+                self._generate_control_outputs(viz, prefix, canal_params)
 
             else:
                 # 非稳态：时间序列图等
@@ -642,6 +849,73 @@ class UniversalModeler:
 
         print(f"  >> 非稳态结果生成完成")
 
+    def _generate_control_outputs(self, viz, prefix, canal_params):
+        """生成控制仿真输出"""
+        import matplotlib.pyplot as plt
+
+        # 1. 控制性能时间序列（误差、控制量、测量值）
+        # 控制历史的时间点：从control_interval开始，每隔control_interval记录一次
+        dt = self.control_result['dt']
+        control_interval = self.control_result['control_interval']
+        n_control_samples = len(self.control_result['error_history'])
+        time = np.arange(1, n_control_samples + 1) * (dt * control_interval)
+
+        # 创建控制性能图（3子图）
+        fig, axes = plt.subplots(3, 1, figsize=(12, 10))
+
+        # 子图1: 误差
+        error = np.array(self.control_result['error_history'])
+        if error.ndim == 2:
+            error = error[:, 0]  # 取第一个监测点
+        axes[0].plot(time, error, 'b-', linewidth=1.5, label='跟踪误差')
+        axes[0].axhline(y=0, color='k', linestyle='--', alpha=0.3)
+        axes[0].set_ylabel('误差 (m)', fontsize=12)
+        axes[0].set_title(f'控制性能 - {prefix}', fontsize=14, fontweight='bold')
+        axes[0].grid(True, alpha=0.3)
+        axes[0].legend()
+
+        # 子图2: 测量值 vs 设定值
+        measurement = np.array(self.control_result['measurement_history'])
+        if measurement.ndim == 2:
+            measurement = measurement[:, 0]  # 取第一个监测点
+        setpoint = self.control_result['setpoint']
+        axes[1].plot(time, measurement, 'g-', linewidth=1.5, label='测量值')
+        axes[1].axhline(y=setpoint, color='r', linestyle='--', linewidth=2, label=f'设定值 = {setpoint} m')
+        axes[1].set_ylabel('水深 (m)', fontsize=12)
+        axes[1].grid(True, alpha=0.3)
+        axes[1].legend()
+
+        # 子图3: 控制量
+        control = np.array(self.control_result['control_history'])
+        if control.ndim == 2:
+            control = control[:, 0]  # 取第一个控制点
+        axes[2].plot(time, control, 'r-', linewidth=1.5, label='控制量')
+        axes[2].set_xlabel('时间 (s)', fontsize=12)
+        axes[2].set_ylabel('控制量', fontsize=12)
+        axes[2].grid(True, alpha=0.3)
+        axes[2].legend()
+
+        plt.tight_layout()
+        control_file = str(self.output_dir / f"{prefix}_control_performance.png")
+        plt.savefig(control_file, dpi=150, bbox_inches='tight')
+        print(f"✓ 控制性能图: {prefix}_control_performance.png")
+        plt.close(fig)
+
+        # 2. 最终时刻纵剖面
+        fig2 = viz.plot_longitudinal_profile(
+            x=self.solver.x,
+            h=self.control_result['h_history'][-1, :],
+            S0=self.solver.S0,
+            canal_length=canal_params['length'],
+            gate_positions=[pos for pos, _ in self.structures] if self.structures else None,
+            title=f"Final State (Control) - {prefix}",
+            filename=f"{prefix}_final_profile.png"
+        )
+        print(f"✓ 最终纵剖面图: {prefix}_final_profile.png")
+        plt.close(fig2)
+
+        print(f"  >> 控制仿真结果生成完成")
+
     def run(self):
         """运行完整建模流程"""
         try:
@@ -661,6 +935,8 @@ class UniversalModeler:
             sim_type = self.config.get('simulation.type')
             if sim_type == 'steady':
                 self.run_steady_simulation()
+            elif sim_type == 'control':
+                self.run_control_simulation()
             else:
                 self.run_unsteady_simulation()
 
