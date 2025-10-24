@@ -246,16 +246,16 @@ class SimpleMPCController:
 
     def __init__(self, idz_system: IDZSaintVenantIntegration,
                  horizon: int = 10,
-                 kp: float = 5.0,
-                 ki: float = 0.1):
+                 kp: float = 10.0,
+                 ki: float = 0.5):
         """
         初始化简化MPC控制器
 
         Args:
             idz_system: IDZ集成系统
             horizon: 预测时域
-            kp: 比例增益
-            ki: 积分增益
+            kp: 比例增益（调优后：5.0 -> 10.0）
+            ki: 积分增益（调优后：0.1 -> 0.5）
         """
         self.system = idz_system
         self.horizon = horizon
@@ -264,6 +264,9 @@ class SimpleMPCController:
 
         # 积分项
         self.integral_error = 0.0
+
+        # 积分抗饱和
+        self.integral_max = 100.0  # 限制积分项
 
         # 控制约束
         self.u_min = 0.0
@@ -285,8 +288,9 @@ class SimpleMPCController:
         # 误差
         error = target_depth - current_depth
 
-        # 积分
+        # 积分（带抗饱和）
         self.integral_error += error * self.system.dt
+        self.integral_error = np.clip(self.integral_error, -self.integral_max, self.integral_max)
 
         # PI控制 (修正：符号反转)
         # 当水深过低(error>0)时，应减少下游出流
@@ -309,19 +313,22 @@ def run_comparison_simulation():
     """
     运行对比仿真：静态IDZ vs 自适应IDZ
 
-    场景：
+    改进的场景（更具挑战性）：
     1. 初始流量20 m³/s，目标水深2.0m
-    2. 300s时流量扰动增加到25 m³/s
+    2. 300s时流量扰动增加到28 m³/s（更大扰动）
     3. 600s时目标水深改变为2.5m
+    4. 900s时流量扰动降至15 m³/s
+    5. 1200s时目标水深改变为1.8m
+    6. 仿真时长：1800s（30分钟）
     """
     print("=" * 80)
-    print("IDZ-物理模型深度集成示例")
+    print("IDZ-物理模型深度集成示例（改进版）")
     print("对比静态IDZ参数 vs 自适应IDZ参数的控制性能")
     print("=" * 80)
 
     # 仿真参数
     dt = 10.0  # 控制周期
-    total_time = 900.0  # 总仿真时间
+    total_time = 1800.0  # 总仿真时间（延长到1800s）
     n_steps = int(total_time / dt)
 
     # 场景设置
@@ -366,16 +373,20 @@ def run_comparison_simulation():
     for step in range(n_steps):
         t = step * dt
 
-        # 场景变化
-        if t >= 300 and t < 305:
-            q_disturbance = 25.0  # 上游流量扰动
+        # 场景变化（更具挑战性）
+        if 300 <= t < 600:
+            q_disturbance = 28.0  # 阶段1：大流量扰动（持续300s）
+        elif 900 <= t < 1200:
+            q_disturbance = 15.0  # 阶段3：小流量扰动（持续300s）
         else:
-            q_disturbance = q_upstream_base
+            q_disturbance = q_upstream_base  # 基础流量
 
-        if t >= 600:
-            target_depth = 2.5  # 目标水深改变
+        if 600 <= t < 1200:
+            target_depth = 2.5  # 阶段2：高水深目标
+        elif t >= 1200:
+            target_depth = 1.8  # 阶段4：低水深目标
         else:
-            target_depth = 2.0
+            target_depth = 2.0  # 初始水深目标
 
         # === 静态IDZ系统 ===
         depth_current_static = canal_static.depth
