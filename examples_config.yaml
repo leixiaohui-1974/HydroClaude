@@ -31,10 +31,10 @@ core_examples:
 # Preissmann求解器相关
 preissmann_examples:
   - id: example_08_preissmann
-    path: "examples/example_08_preissmann_vs_fvm/example_08_preissmann_vs_fvm_enhanced.py"
-    description: "Preissmann求解器测试"
+    path: "examples/example_08_preissmann_vs_fvm/example_08_preissmann_demo.py"
+    description: "Preissmann求解器演示"
     priority: high
-    notes: "FVM已删除，需要更新"
+    notes: "简化版Preissmann演示（FVM已删除）"
 
 # MPC控制examples
 mpc_examples:

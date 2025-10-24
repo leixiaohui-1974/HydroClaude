@@ -1,8 +1,8 @@
 # HydroClaude 基础类库参考手册
 # Library Reference Manual
 
-**版本**: 2.0 (新增ScriptHelper和PlotHelper)
-**更新日期**: 2025-10-23
+**版本**: 2.1 (新增Canal非恒定流求解器，配置驱动测试)
+**更新日期**: 2025-10-24
 
 ---
 
@@ -10,6 +10,7 @@
 
 | 类别 | 库/模块 | 文件路径 | 核心功能 |
 |-----|--------|---------|---------|
+| **🆕 非恒定流** | Canal | `physics/canal.py` | Preissmann非恒定流求解 |
 | **求解器** | HydrostaticCanalSolver | `solvers/hydrostatic_canal_solver.py` | Phase 2高精度求解 |
 | **结构** | gate.py | `solvers/gate.py` | 闸门/堰/孔口/泵站 |
 | **验证** | ResultValidator | `utils/result_validator.py` | 自动验证与分级 |
@@ -18,10 +19,184 @@
 | **输出** | output_helper | `examples/.../output_helper.py` | 文件管理（旧） |
 | **🆕 脚本助手** | ScriptHelper | `utils/script_helper.py` | 路径设置+输出管理 |
 | **🆕 绘图助手** | PlotHelper | `utils/plot_helper.py` | 标准化快速绘图 |
+| **🆕 测试框架** | run_example_tests | `run_example_tests.py` | 配置驱动的自动化测试 |
 
 ---
 
-## 1️⃣ HydrostaticCanalSolver - 高精度求解器
+## 1️⃣ Canal - 非恒定流求解器
+
+### 📍 位置
+```
+physics/canal.py
+```
+
+### 🎯 核心功能
+
+Canal类是HydroClaude的主要非恒定流(unsteady flow)仿真接口，使用Preissmann四点隐式格式求解Saint-Venant方程。
+
+**特点**:
+- ✅ 唯一可用的高精度非恒定流求解器（MOC和FVM已删除）
+- ✅ 数值稳定，适合工程应用
+- ✅ 精度: 36.3%误差（已通过质量守恒验证）
+- ✅ 支持上下游边界条件
+- ✅ 与HydroNode和HydroEdge集成
+
+### 📖 完整API
+
+#### 构造函数
+
+```python
+from physics.canal import Canal
+
+canal = Canal(
+    name,                    # 渠道名称 (str)
+    volume_min,              # 最小容积 (m³)
+    volume_max,              # 最大容积 (m³)
+    area,                    # 横截面积 (m²)
+    length,                  # 渠道长度 (m)
+    width,                   # 渠道宽度 (m)
+    slope,                   # 渠底坡度
+    manning_n,               # Manning糙率系数
+    method='preissmann',     # 求解方法（仅支持'preissmann'）
+    n_sections=51,           # 空间离散点数
+    initial_depth=2.0,       # 初始水深 (m)
+    initial_flow=20.0        # 初始流量 (m³/s)
+)
+```
+
+**参数说明**:
+- `method`: 必须为`'preissmann'`，其他方法已删除
+- `n_sections`: 空间网格数，推荐51-101（奇数）
+- `initial_depth`/`initial_flow`: 初始条件，用于初始化求解器
+
+#### 主要属性
+
+```python
+canal.state.level      # 当前平均水位 (m)
+canal.state.flow       # 当前平均流量 (m³/s)
+canal.state.volume     # 当前总容积 (m³)
+canal.hydraulic_state  # PreissmannState对象
+canal.hydraulic_state.h    # 水深分布 (n_sections,)
+canal.hydraulic_state.Q    # 流量分布 (n_sections,)
+```
+
+#### 方法1: 非恒定流时间步进（核心方法）
+
+```python
+canal.update_high_fidelity(
+    dt,              # 时间步长 (s)
+    inputs           # 边界条件字典
+)
+```
+
+**边界条件格式**:
+```python
+inputs = {
+    'upstream_flow': 20.0,      # 上游流量 (m³/s)
+    'downstream_flow': 20.0     # 下游流量 (m³/s)
+}
+```
+
+**使用示例**:
+```python
+from physics.canal import Canal
+
+# 1. 创建Canal
+canal = Canal(
+    name="Canal_Preissmann",
+    volume_min=0,
+    volume_max=10000,
+    area=100,
+    length=5000.0,
+    width=10.0,
+    slope=0.001,
+    manning_n=0.025,
+    method='preissmann',
+    n_sections=51,
+    initial_depth=2.0,
+    initial_flow=20.0
+)
+
+# 2. 时间步进仿真
+dt = 10.0  # 10秒时间步
+n_steps = 50
+
+for step in range(n_steps):
+    # 更新边界条件
+    canal.update_high_fidelity(dt, {
+        'upstream_flow': 20.0,
+        'downstream_flow': 20.0
+    })
+
+    # 访问结果
+    print(f"步 {step}: 水位={canal.state.level:.3f}m, "
+          f"流量={canal.state.flow:.3f}m³/s")
+
+# 3. 获取空间分布
+h_profile = canal.hydraulic_state.h  # 水深分布
+Q_profile = canal.hydraulic_state.Q  # 流量分布
+```
+
+#### 方法2: 低精度更新（集成用）
+
+```python
+canal.update(dt, inputs)
+```
+
+**说明**: 简化的更新接口，用于与HydroNode/HydroEdge集成。内部调用`update_high_fidelity`。
+
+### 🔬 Preissmann求解器详情
+
+**PreissmannSolver类** (`solvers/preissmann_solver.py`):
+
+```python
+from solvers.preissmann_solver import PreissmannSolver
+
+solver = PreissmannSolver(
+    theta=0.6,         # 隐式权重系数（默认0.6）
+    max_iter=10        # 最大迭代次数（默认10）
+)
+```
+
+**theta参数**:
+- `theta = 0.5`: Crank-Nicolson格式（二阶精度）
+- `theta = 0.6`: 推荐值，更稳定
+- `theta = 1.0`: 完全隐式（最稳定但精度降低）
+
+**算法**:
+四点隐式差分格式，求解Saint-Venant方程：
+```
+∂h/∂t + ∂Q/∂x = 0                    (连续方程)
+∂Q/∂t + ∂(Q²/A)/∂x + gA∂h/∂x = S_f  (动量方程)
+```
+
+### ⚡ 精度验证结果
+
+基于`docs/CANAL_SOLVER_PRECISION_REPORT.md`的测试结果：
+
+| 求解器 | 质量守恒误差 | 稳定性 | 状态 |
+|-------|------------|-------|------|
+| **Preissmann** | **36.3%** | ✅ 稳定 | ✅ 保留 |
+| FVM | 75.5% | ❌ 不稳定 | ❌ 已删除 |
+| MOC | 94.2% | ❌ 不稳定 | ❌ 已删除 |
+
+**结论**: Preissmann是唯一可用的高精度非恒定流求解器，误差36.3%在工程应用中可接受。
+
+### 🎓 参考示例
+
+- `examples/example_08_preissmann_vs_fvm/example_08_preissmann_demo.py` - Preissmann演示
+- `examples/advanced_examples/idz_saint_venant_integration.py` - IDZ-Saint-Venant集成
+- `examples/advanced_examples/run_mpc_benchmark.py` - MPC基准测试
+
+### 📚 相关文档
+
+- `docs/CANAL_SOLVER_PRECISION_REPORT.md` - 精度测试完整报告
+- `docs/HIGH_FIDELITY_SOLVER_GUIDE.md` - 高精度求解器使用指南
+- `docs/SOLVER_CLEANUP_SUMMARY_zh.md` - 求解器清理总结
+
+---
+
+## 2️⃣ HydrostaticCanalSolver - 高精度求解器
 
 ### 📍 位置
 ```
@@ -1886,6 +2061,247 @@ fig = plotter.plot_profile(
 - 日常绘图：使用PlotHelper
 - 复杂分析：使用VisualizationTemplates
 - 两者可以混用
+
+---
+
+## 9️⃣ 配置驱动的Example测试框架（新增 v2.1）
+
+### 📍 位置
+```
+run_example_tests.py
+examples_config.yaml
+```
+
+### 🎯 核心功能
+
+自动化测试框架，通过YAML配置文件管理和测试所有examples，消除硬编码。
+
+**特点**:
+- ✅ 零硬编码 - 所有路径和参数在配置文件中管理
+- ✅ 自动化测试 - 一键运行所有examples
+- ✅ 分类管理 - 按功能分类（core, advanced, mpc等）
+- ✅ 详细报告 - 生成TXT和JSON格式报告
+- ✅ 废弃标记 - 自动标记使用已删除功能的examples
+
+### 📖 完整API
+
+#### 配置文件格式 (`examples_config.yaml`)
+
+```yaml
+# 全局配置
+global:
+  timeout: 120         # 默认超时时间（秒）
+  output_dir: "results"
+  test_mode: true
+
+# 核心examples（必须通过）
+core_examples:
+  - id: example_01_basic
+    path: "examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py"
+    description: "基本渠道流动"
+    priority: high
+    expected_outputs:
+      - "results/figures/longitudinal_profile.png"
+
+# Preissmann求解器相关
+preissmann_examples:
+  - id: example_08_preissmann
+    path: "examples/example_08_preissmann_vs_fvm/example_08_preissmann_demo.py"
+    description: "Preissmann求解器演示"
+    priority: high
+
+# MPC控制examples
+mpc_examples:
+  - id: example_14_mpc
+    path: "examples/example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py"
+    description: "自适应MPC"
+    priority: medium
+
+# 高级examples
+advanced_examples:
+  - id: example_advanced_idz
+    path: "examples/advanced_examples/idz_saint_venant_integration.py"
+    description: "IDZ-Saint-Venant集成"
+    priority: high
+
+# 废弃的examples（需要处理）
+deprecated_examples:
+  - id: example_04_moc_boundary
+    path: "examples/example_04_moc_boundary/code/example_04_moc_boundary.py"
+    reason: "使用MOC求解器（已删除）"
+    action: "删除或重写为Preissmann"
+```
+
+**配置字段说明**:
+- `id`: 唯一标识符
+- `path`: example文件相对路径
+- `description`: 简短描述
+- `priority`: 优先级（high/medium/low）
+- `expected_outputs`: 预期输出文件列表（可选）
+- `reason`: 废弃原因（仅废弃项）
+- `action`: 建议操作（仅废弃项）
+
+#### 测试运行器使用
+
+**基本用法**:
+```bash
+# 运行所有tests
+python run_example_tests.py
+```
+
+**输出**:
+```
+================================================================================
+HydroClaude Examples 配置驱动测试
+================================================================================
+配置文件: /home/user/HydroClaude/examples_config.yaml
+超时设置: 120s
+
+################################################################################
+# 类别: core_examples (3 个examples)
+################################################################################
+
+================================================================================
+测试: example_01_basic
+描述: 基本渠道流动
+路径: examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py
+================================================================================
+✅ 成功 (8.4s)
+
+...
+
+================================================================================
+测试完成！
+================================================================================
+总计: 8 个examples
+  ✅ 成功: 8
+  ❌ 失败: 0
+  📁 文件不存在: 0
+  成功率: 100.0%
+```
+
+**生成的报告**:
+- `example_test_report.txt` - 人类可读的详细报告
+- `example_test_report.json` - 机器可读的JSON数据
+
+#### Python API
+
+```python
+from run_example_tests import ConfigDrivenTester
+
+# 创建测试器
+tester = ConfigDrivenTester(config_file="examples_config.yaml")
+
+# 运行所有tests
+results = tester.run_all_tests()
+
+# 访问结果
+for category, examples in tester.config.items():
+    if category == 'global':
+        continue
+    print(f"类别: {category}")
+    for example in examples:
+        print(f"  - {example['id']}: {example['description']}")
+
+# 生成报告
+tester.generate_report()
+```
+
+### 💡 添加新Example
+
+1. **编辑配置文件**:
+```yaml
+core_examples:
+  - id: my_new_example
+    path: "examples/my_category/my_example.py"
+    description: "我的新功能演示"
+    priority: high
+    expected_outputs:
+      - "results/output.png"
+```
+
+2. **运行测试验证**:
+```bash
+python run_example_tests.py
+```
+
+3. **检查报告**:
+- 查看 `example_test_report.txt` 确认成功
+
+### 🔧 测试结果格式
+
+**TXT报告示例**:
+```
+================================================================================
+HydroClaude Examples 测试报告
+================================================================================
+
+总计: 8 个examples
+  ✅ 成功: 8
+  ❌ 失败: 0
+  📁 文件不存在: 0
+  成功率: 100.0%
+
+================================================================================
+类别: core_examples
+================================================================================
+
+✅ example_01_basic
+   描述: 基本渠道流动
+   路径: examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py
+   状态: success
+   执行时间: 8.4s
+   ⚠️  缺失输出: results/figures/longitudinal_profile.png
+```
+
+**JSON报告示例**:
+```json
+{
+  "summary": {
+    "total": 8,
+    "success": 8,
+    "failed": 0,
+    "success_rate": 100.0
+  },
+  "results": {
+    "core_examples": [
+      {
+        "id": "example_01_basic",
+        "description": "基本渠道流动",
+        "path": "examples/...",
+        "status": "success",
+        "execution_time": 8.4,
+        "missing_outputs": [...]
+      }
+    ]
+  }
+}
+```
+
+### 🎓 最佳实践
+
+1. **分类管理**: 按功能分类examples（core, advanced, mpc等）
+2. **优先级设置**: 核心功能设为high，实验性功能设为low
+3. **预期输出**: 列出关键输出文件，自动验证
+4. **废弃标记**: 及时标记使用已删除功能的examples
+5. **定期测试**: 每次修改基础类库后运行测试
+
+### 🔄 与CI/CD集成
+
+```bash
+# 在CI流程中运行
+python run_example_tests.py
+if [ $? -ne 0 ]; then
+    echo "Examples测试失败!"
+    exit 1
+fi
+```
+
+### 📚 相关文档
+
+- `DEVELOPMENT_GUIDE.md` - 第9章：配置驱动的Example管理
+- `examples_config.yaml` - 配置文件模板
+- `example_test_report.txt` - 最新测试报告
 
 ---
 
