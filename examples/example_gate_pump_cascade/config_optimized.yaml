@@ -1,0 +1,44 @@
+boundary_conditions:
+  downstream:
+    type: depth
+    value: 5.0
+  upstream:
+    type: flow
+    value: 10.0
+canal:
+  gravity: 9.81
+  length: 100000.0
+  manning_n: 0.025
+  slope: 0.0001
+  width: 10.0
+grid:
+  adaptive: true
+  dx_target: 200.0
+output:
+  directory: results_gate_pump_auto
+  formats:
+  - npz
+  - png
+  - txt
+  prefix: gate_pump_auto
+simulation:
+  convergence_tol: 0.001
+  max_iterations: 10000
+  type: steady
+structures:
+- Cd: 0.6
+  opening: 1.5
+  position: 25000.0
+  type: sluice_gate
+  width: 10.0
+- min_suction_head: 2.0
+  position: 50000.0
+  rated_flow: 10.0
+  rated_head: 5.0
+  type: pump_station
+  width: 10.0
+- Cd: 0.6
+  opening: 2.0
+  position: 75000.0
+  type: sluice_gate
+  width: 10.0
