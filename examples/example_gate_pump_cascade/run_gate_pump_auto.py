@@ -110,32 +110,38 @@ def main():
         # 找到泵站在网格上的索引
         pump_idx = np.argmin(np.abs(modeler.solver.x - pump_position))
 
-        # 定义检查距离（10km）
-        check_distance = 10000.0  # 10 km
-
-        # 找到上下游检查点
+        # 使用直接邻居节点测量扬程（标准方法 v4.0）
         x = modeler.solver.x
         h = modeler.solver.h
 
-        # 上游检查点：泵站前10km
-        upstream_target_x = pump_position - check_distance
-        upstream_idx = np.argmin(np.abs(x - upstream_target_x))
-
-        # 下游检查点：泵站后10km
-        downstream_target_x = pump_position + check_distance
-        downstream_idx = np.argmin(np.abs(x - downstream_target_x))
-
-        h_upstream = h[upstream_idx]
-        h_downstream = h[downstream_idx]
+        # 直接邻居节点：泵站上游（idx-1）和下游（idx+1）
+        h_upstream = h[pump_idx - 1]
+        h_downstream = h[pump_idx + 1]
         rated_head = pump_structure['rated_head']
+        
+        actual_head = h_downstream - h_upstream
+        precision = actual_head / rated_head * 100
+        abs_error = abs(actual_head - rated_head)
 
-        print(f"\n泵站扬程效果验证：")
-        print(f"  泵站位置: {pump_position/1000:.1f} km")
-        print(f"  上游水深（-{check_distance/1000:.0f}km）: {h_upstream:.4f} m")
-        print(f"  下游水深（+{check_distance/1000:.0f}km）: {h_downstream:.4f} m")
-        print(f"  实际扬程效果: {h_downstream - h_upstream:.4f} m")
+        print(f"\n泵站扬程效果验证（直接邻居节点法 v4.0）：")
+        print(f"  泵站位置: {pump_position/1000:.1f} km (索引 {pump_idx})")
+        print(f"  上游水深 (idx-1): {h_upstream:.4f} m @ {x[pump_idx-1]/1000:.2f} km")
+        print(f"  下游水深 (idx+1): {h_downstream:.4f} m @ {x[pump_idx+1]/1000:.2f} km")
+        print(f"  实际扬程: {actual_head:.4f} m")
         print(f"  额定扬程: {rated_head:.3f} m")
-        print(f"  精度: {(h_downstream - h_upstream) / rated_head * 100:.1f}%")
+        print(f"  绝对误差: {abs_error:.4f} m")
+        print(f"  精度: {precision:.2f}%")
+        
+        # 精度评级
+        if precision >= 99.0 and precision <= 101.0:
+            rating = "🏆 PERFECT (完美)"
+        elif precision >= 95.0 and precision <= 105.0:
+            rating = "✅ EXCELLENT (优秀)"
+        elif precision >= 90.0 and precision <= 110.0:
+            rating = "⚠️  GOOD (良好)"
+        else:
+            rating = "❌ POOR (不佳)"
+        print(f"  评级: {rating}")
 
     print("\n" + "=" * 90)
     print(f"✓ 建模完成！")
