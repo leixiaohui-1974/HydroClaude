@@ -164,14 +164,18 @@ def plot_results(times, h_history, Q_history, solver, scenario_name):
     """绘制结果"""
     x = solver.x / 1000
     
+    # 计算水位历史（水位 = 底床高程 + 水深）
+    z_bed = solver.z  # 底床高程
+    eta_history = z_bed[None, :] + h_history  # 广播加法
+    
     fig, axes = plt.subplots(3, 1, figsize=(14, 10))
     
     # 子图1: 水位时空图
     ax1 = axes[0]
-    im1 = ax1.contourf(x, times/60, h_history, levels=20, cmap='viridis')
-    plt.colorbar(im1, ax=ax1, label='水深 (m)')
+    im1 = ax1.contourf(x, times/60, eta_history, levels=20, cmap='viridis')
+    plt.colorbar(im1, ax=ax1, label='水位 (m)')
     ax1.set_ylabel('时间 (min)')
-    ax1.set_title(f'{scenario_name} - 水深时空演化', fontsize=12, fontweight='bold')
+    ax1.set_title(f'{scenario_name} - 水位时空演化', fontsize=12, fontweight='bold')
     ax1.grid(True, alpha=0.3)
     
     # 标记结构物

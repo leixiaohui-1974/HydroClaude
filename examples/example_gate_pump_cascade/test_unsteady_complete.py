@@ -206,16 +206,19 @@ def test_pump_on_off():
     ax.legend(loc='best', fontsize=9)
     ax.grid(True, alpha=0.3)
     
-    # 子图3: 时空演化（水深）
+    # 子图3: 时空演化（水位）
     ax = axes[2]
     X, T = np.meshgrid(solver.x / 1000, times)
-    contour = ax.contourf(X, T, h_saves, levels=20, cmap='Blues')
+    # 计算水位历史（水位 = 底床高程 + 水深）
+    z_bed = solver.z  # 底床高程
+    eta_saves = z_bed[None, :] + h_saves  # 广播加法
+    contour = ax.contourf(X, T, eta_saves, levels=20, cmap='Blues')
     ax.axvline(pump_structure.position / 1000, color='r', linestyle='--', linewidth=2, label='Pump Station')
     cbar = plt.colorbar(contour, ax=ax)
-    cbar.set_label('Water Depth (m)', fontsize=10)
+    cbar.set_label('Water Level (m)', fontsize=10)
     ax.set_xlabel('Distance (km)', fontsize=11)
     ax.set_ylabel('Time (s)', fontsize=11)
-    ax.set_title('Spatiotemporal Evolution: Water Depth', fontsize=12, fontweight='bold')
+    ax.set_title('Spatiotemporal Evolution: Water Level', fontsize=12, fontweight='bold')
     ax.legend(loc='upper right', fontsize=9)
     
     plt.tight_layout()
@@ -370,10 +373,13 @@ def test_multi_disturbance():
     fig = plt.figure(figsize=(14, 10))
     gs = fig.add_gridspec(3, 2, hspace=0.3, wspace=0.3)
     
-    # 子图1: 时空演化（水深）
+    # 子图1: 时空演化（水位）
     ax1 = fig.add_subplot(gs[0, :])
     X, T = np.meshgrid(solver.x / 1000, times)
-    contour = ax1.contourf(X, T, h_saves, levels=20, cmap='Blues')
+    # 计算水位历史（水位 = 底床高程 + 水深）
+    z_bed = solver.z  # 底床高程
+    eta_saves = z_bed[None, :] + h_saves  # 广播加法
+    contour = ax1.contourf(X, T, eta_saves, levels=20, cmap='Blues')
     ax1.axvline(gate1.position / 1000, color='orange', linestyle='--', linewidth=1.5, alpha=0.7)
     ax1.axvline(pump.position / 1000, color='red', linestyle='--', linewidth=1.5, alpha=0.7)
     ax1.axvline(gate2.position / 1000, color='orange', linestyle='--', linewidth=1.5, alpha=0.7)
@@ -382,10 +388,10 @@ def test_multi_disturbance():
     ax1.axhline(600, color='white', linestyle=':', alpha=0.5)
     ax1.axhline(800, color='white', linestyle=':', alpha=0.5)
     cbar = plt.colorbar(contour, ax=ax1)
-    cbar.set_label('Water Depth (m)', fontsize=10)
+    cbar.set_label('Water Level (m)', fontsize=10)
     ax1.set_xlabel('Distance (km)', fontsize=11)
     ax1.set_ylabel('Time (s)', fontsize=11)
-    ax1.set_title('Spatiotemporal Evolution: Water Depth (Multi-Disturbance)', fontsize=12, fontweight='bold')
+    ax1.set_title('Spatiotemporal Evolution: Water Level (Multi-Disturbance)', fontsize=12, fontweight='bold')
     
     # 子图2: 时空演化（流量）
     ax2 = fig.add_subplot(gs[1, :])
