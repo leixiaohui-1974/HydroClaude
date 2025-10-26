@@ -568,17 +568,31 @@ class HydrostaticCanalSolver:
                 continue
 
             if conserve_local_flow:
-                # 非恒定流模式：暂不处理泵站跳跃
-                # 原因：在非恒定流中施加跳跃条件会破坏数值稳定性
-                # 
-                # TODO: 实现稳定的非恒定流泵站处理方法
-                # 可能方案：
-                # 1. 源项法（需要兼容的稳态求解器）
-                # 2. 更温和的跳跃条件（渐进施加）
-                # 3. 特征线方法
-                #
-                # 当前：让泵站像普通渠段一样演化，保证流量守恒
-                pass
+                # 非恒定流模式：温和的跳跃条件（v4.1改进）
+                # 策略：
+                # 1. 保持Preissmann更新的流量（不破坏质量守恒）
+                # 2. 仅调整水深以施加扬程效果
+                # 3. 使用松弛因子避免数值振荡
+                
+                # 获取上游状态
+                h_upstream = self.h[idx - 1]
+                
+                # 计算目标下游水深（基于上游水深+扬程）
+                h_downstream_target = h_upstream + structure.rated_head
+                
+                # 使用松弛因子温和地施加跳跃条件
+                # 松弛因子0.3: 每次仅移动30%到目标值
+                relax_factor = 0.3
+                
+                # 下游节点：温和地向目标水深移动
+                self.h[idx + 1] = (1.0 - relax_factor) * self.h[idx + 1] + \
+                                  relax_factor * h_downstream_target
+                
+                # 泵站节点：保持在上下游之间
+                self.h[idx] = 0.5 * (self.h[idx - 1] + self.h[idx + 1])
+                
+                # 保持流量不变（Preissmann已经计算好）
+                # 不修改 self.hu，让质量守恒自然满足
             else:
                 # 稳态模式：标准跳跃条件
                 # 获取上游状态
@@ -604,16 +618,6 @@ class HydrostaticCanalSolver:
             self.h[idx] = max(self.eps_dry, self.h[idx])
             self.h[idx + 1] = max(self.eps_dry, self.h[idx + 1])
     
-    def _apply_pump_region_constraints(self):
-        """
-        【已废弃 v3.0】应用泵站区域约束（旧方法）
-        
-        v4.0使用源项法，此方法已废弃。
-        保留仅为向后兼容。
-        """
-        # 调用源项法的辅助方法
-        self._apply_pump_internal_bc()
-
     def _apply_pump_region_constraints(self):
         """
         【已废弃 v3.0】应用泵站区域约束（旧方法）
@@ -1024,9 +1028,9 @@ class HydrostaticCanalSolver:
             self.h = h_new
             self.hu = hu_new
 
-            # ⚠️ 源项法模式：不施加泵站跳跃条件
-            # 泵站效果已通过compute_fluxes_and_sources中的源项实现
-            # self._apply_pump_internal_bc(conserve_local_flow=True)  # 禁用
+            # 应用泵站水位跃变（非恒定流模式：温和跳跃条件）
+            # v4.1改进：使用松弛因子保持数值稳定性
+            self._apply_pump_internal_bc(conserve_local_flow=True)
 
             # 应用内部边界条件（闸门）
             if self.structure_indices:
@@ -1163,9 +1167,9 @@ class HydrostaticCanalSolver:
             self.h = h_new
             self.hu = hu_new
 
-            # ⚠️ 源项法模式：不施加泵站跳跃条件
-            # 泵站效果已通过compute_fluxes_and_sources中的源项实现
-            # self._apply_pump_internal_bc(conserve_local_flow=True)  # 禁用
+            # 应用泵站水位跃变（非恒定流模式：温和跳跃条件）
+            # v4.1改进：使用松弛因子保持数值稳定性
+            self._apply_pump_internal_bc(conserve_local_flow=True)
 
             # 应用内部边界条件（闸门）
             if self.structure_indices:
