@@ -54,6 +54,27 @@ def main():
     # ==================== 1. 参数设置 ====================
     print("▶ 1. 系统参数设置")
     print("-" * 90)
+    
+    # ==================== 场景选择（v7.0修正）====================
+    # 选择泵站建模场景：
+    # 
+    # 场景A "mountain": 山区/调水泵站
+    #   - 底床有高差：泵后底床抬高 ΔH ≈ H_pump
+    #   - 下游边界：低水位或自由边界
+    #   - 物理：泵站克服地形高差
+    #   - 结果：水深基本不变，水位抬升
+    #
+    # 场景B "plain": 平原排涝泵站
+    #   - 底床连续：泵后底床不抬高（或更低）
+    #   - 下游边界：高水位（关键！模拟外江汛期）
+    #   - 物理：泵站克服下游高水位阻力
+    #   - 结果：水深增加（泵后水深由下游边界控制）
+    #
+    # 典型案例：
+    #   - 场景A：南水北调泵站（长江→黄河，克服地形）
+    #   - 场景B：江汉平原排涝泵站（内河→长江，外江汛期高水位）
+    # ================================================================
+    SCENARIO = "mountain"  # 可选: "mountain" 或 "plain"
 
     # 渠道参数
     L_total = 100000.0      # 总长度 (m) = 100 km
@@ -80,9 +101,10 @@ def main():
     pump_rated_head = 5.0   # 额定扬程 (m)
     pump_min_head = 2.0     # 最小吸入水头 (m)
 
-    # 瞬态模拟参数  (P2优化: 增加模拟时长和减小时间步长)
-    t_total = 7200.0        # 总模拟时间 (s) = 2小时 (原1小时)
-    dt = 0.5                # 时间步长 (s) (原1.0秒)
+    # 瞬态模拟参数
+    ENABLE_TRANSIENT = False  # ⚠️ 暂时禁用：显式方法数值不稳定
+    t_total = 7200.0        # 总模拟时间 (s) = 2小时
+    dt = 0.5                # 时间步长 (s)
 
     print(f"渠道参数:")
     print(f"  总长度: {L_total/1000:.1f} km = {L_total:.0f} m")
@@ -98,6 +120,19 @@ def main():
     print(f"  闸站2: {gate2_pos/1000:.0f} km处，开度{gate_opening}m")
     print()
 
+    print(f"泵站场景选择: {SCENARIO.upper()}")
+    if SCENARIO == "plain":
+        print(f"  → 平原排涝泵站")
+        print(f"     - 底床：连续（无高差）")
+        print(f"     - 下游边界：高水位（模拟外江汛期）")
+        print(f"     - 预期：水深增加")
+    elif SCENARIO == "mountain":
+        print(f"  → 山区调水泵站")
+        print(f"     - 底床：有高差 ΔH={pump_rated_head}m")
+        print(f"     - 下游边界：低水位")
+        print(f"     - 预期：水深基本不变")
+    print()
+    
     print(f"模拟场景:")
     print(f"  初始流量: {Q_initial:.1f} m³/s (稳态)")
     print(f"  阶跃流量: {Q_step:.1f} m³/s (t=0时刻，渠首突增)")
@@ -158,16 +193,68 @@ def main():
     print(f"  网格间距: {solver.dx:.1f} m")
     print(f"  内部结构: {len(solver.structure_objects)}个（2闸1泵）")
     print()
+    
+    # 计算均匀流水深（用于场景配置和初始化）
+    h_uniform = compute_steady_uniform_flow(Q_initial, B, S0, n)
+    print(f"均匀流水深估计: {h_uniform:.3f} m")
+    print()
+    
+    # ==================== 场景配置：底床高程+边界条件（v7.0修正）====================
+    print(f"▶ 场景配置: {SCENARIO.upper()}")
+    print("-" * 90)
+    
+    pump_idx = np.argmin(np.abs(solver.x - pump_pos))
+    
+    if SCENARIO == "plain":
+        # 场景B：平原排涝泵站（底床连续，下游高水位）
+        print("场景B: 平原排涝泵站")
+        print("  物理配置:")
+        print(f"    - 底床高程: z = -S0·x（连续，无跳跃）")
+        print(f"    - 下游边界: 高水位 = 均匀流水深 + {pump_rated_head:.1f}m")
+        print(f"  物理过程:")
+        print(f"    - 内河低洼积水，需抽排到高水位外江")
+        print(f"    - 泵站克服下游高水位阻力")
+        print(f"  预期结果:")
+        print(f"    - 泵后水深增加（受下游高水位控制）")
+        
+        # 底床不修改（保持连续）
+        # 关键：设置高水位下游边界
+        h_downstream_boundary = h_uniform + pump_rated_head  # 高水位边界
+        
+    elif SCENARIO == "mountain":
+        # 场景A：山区调水泵站（底床有高差，下游低水位）
+        print("场景A: 山区调水泵站")
+        print("  物理配置:")
+        print(f"    - 泵前底床: 保持原始高程")
+        print(f"    - 泵后底床: 抬高 {pump_rated_head:.1f}m（实际地形高差）")
+        print(f"    - 下游边界: 低水位 = 均匀流水深")
+        print(f"  物理过程:")
+        print(f"    - 泵站克服地形高差 ΔH = {pump_rated_head:.1f}m")
+        print(f"    - 扬程用于克服地形")
+        print(f"  预期结果:")
+        print(f"    - 泵后水深基本不变")
+        print(f"    - 水位抬升 {pump_rated_head:.1f}m")
+        
+        # 抬高泵后底床（模拟实际地形高差）
+        solver.z[pump_idx:] += pump_rated_head
+        print(f"  ✓ 已设置底床跳跃: idx={pump_idx}, x={solver.x[pump_idx]/1000:.1f}km")
+        
+        # 下游边界：低水位（均匀流）
+        h_downstream_boundary = h_uniform
+        
+    else:
+        raise ValueError(f"未知场景: {SCENARIO}，可选: 'plain' 或 'mountain'")
+    
+    print()
+    print(f"✓ 场景配置完成")
+    print(f"  - 下游边界条件: h = {h_downstream_boundary:.3f} m")
+    print()
+    # ================================================================
 
     # ==================== 3. 稳态求解 ====================
     print("=" * 90)
     print("▶ 3. 稳态求解（初始流量 30 m³/s）")
     print("-" * 90)
-
-    # 计算均匀流水深作为初始猜测
-    h_uniform = compute_steady_uniform_flow(Q_initial, B, S0, n)
-    print(f"均匀流水深估计: {h_uniform:.3f} m (用作初始条件)")
-    print()
 
     # 初始化
     solver.h[:] = h_uniform
@@ -175,11 +262,12 @@ def main():
 
     # 稳态求解
     print("开始稳态求解...")
-    h_down_steady = h_uniform  # 下游边界条件
+    print(f"下游边界条件: h_downstream = {h_downstream_boundary:.3f} m")
+    print()
 
     result_steady = solver.solve_steady_state(
         Q_target=Q_initial,
-        h_downstream=h_down_steady,
+        h_downstream=h_downstream_boundary,  # 使用场景配置的边界条件
         convergence_tol=0.001,  # 0.1%容差
         max_iterations=500,     # 先用500测试收敛性
         dt=dt,
@@ -212,9 +300,17 @@ def main():
     print()
 
     # ==================== 5. 瞬态模拟 ====================
-    print("=" * 90)
-    print("▶ 5. 瞬态模拟（流量阶跃 30→55 m³/s）")
-    print("-" * 90)
+    if not ENABLE_TRANSIENT:
+        print("=" * 90)
+        print("▶ 5. 瞬态模拟")
+        print("-" * 90)
+        print("⚠️  已禁用：显式方法数值不稳定")
+        print()
+        # 跳过瞬态，直接进入可视化
+    else:
+        print("=" * 90)
+        print("▶ 5. 瞬态模拟（流量阶跃 30→55 m³/s）")
+        print("-" * 90)
 
     # 重置为稳态初始条件
     solver.h[:] = h_steady
@@ -252,8 +348,8 @@ def main():
         # 上游边界：阶跃流量
         Q_upstream = Q_step  # 从t>0开始即为阶跃后流量
 
-        # 下游边界：保持初始水深
-        h_downstream = h_down_steady
+        # 下游边界：保持初始水深（使用场景配置的边界）
+        h_downstream = h_downstream_boundary
 
         # 设置边界条件
         solver.set_boundary_conditions(Q_in=Q_upstream, h_out=h_downstream)
@@ -290,17 +386,24 @@ def main():
 
     viz = VisualizationTemplates()
 
-    # Figure 1: Steady-state longitudinal profile (water depth + flow)
+    # Figure 1: Steady-state longitudinal profile (water level + flow)
     print("Generating Figure 1: Steady-state longitudinal profile...")
 
     fig1, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 10), sharex=True)
 
-    # Subplot 1: Water depth
-    ax1.plot(solver.x / 1000, h_steady, 'b-', linewidth=2, label='Water Depth')
-    ax1.set_ylabel('Water Depth (m)', fontsize=12)
-    ax1.set_title(f'Steady-State Longitudinal Profile (Q = {Q_initial} m³/s)', fontsize=14, fontweight='bold')
+    # 计算水位（水面高程）= 底床高程 + 水深
+    z_bed = -S0 * solver.x  # 底床高程
+    eta_steady = z_bed + h_steady  # 水位
+
+    # Subplot 1: Water level (水位) and bed level (底床)
+    ax1.plot(solver.x / 1000, eta_steady, 'b-', linewidth=2, label='Water Level (水位)')
+    ax1.fill_between(solver.x / 1000, z_bed, eta_steady, alpha=0.3, color='cyan', label='Water Depth (水深)')
+    ax1.plot(solver.x / 1000, z_bed, 'k-', linewidth=1.5, label='Bed Level (底床高程)')
+    ax1.set_ylabel('Elevation (m)', fontsize=12)
+    scenario_label = "平原排涝泵站" if SCENARIO == "plain" else "山区调水泵站"
+    ax1.set_title(f'Steady-State Profile (Q={Q_initial} m³/s) - {scenario_label}', fontsize=14, fontweight='bold')
     ax1.grid(True, alpha=0.3)
-    ax1.legend(fontsize=11)
+    ax1.legend(fontsize=11, loc='best')
 
     # Mark structures
     for pos, name in [(gate1_pos/1000, 'Gate1'), (pump_pos/1000, 'Pump'), (gate2_pos/1000, 'Gate2')]:
@@ -331,13 +434,18 @@ def main():
     plt.close(fig1)
     print(f"  Saved: 01_steady_state_profile.png")
 
-    # Figure 2: Water depth spatiotemporal evolution
-    print("Generating Figure 2: Water depth spatiotemporal evolution...")
+    # Figure 2: Water level spatiotemporal evolution (水位时空演化)
+    print("Generating Figure 2: Water level spatiotemporal evolution...")
     X, T = np.meshgrid(solver.x / 1000, time_history / 60)  # km, min
+    
+    # 计算水位历史（每个时间步的水位）
+    eta_history = np.zeros_like(h_history)
+    for i in range(len(time_history)):
+        eta_history[i, :] = z_bed + h_history[i, :]
 
     fig2, ax2 = plt.subplots(figsize=(16, 10))
-    contour2 = ax2.contourf(X, T, h_history, levels=20, cmap='viridis')
-    cbar2 = plt.colorbar(contour2, ax=ax2, label='Water Depth (m)')
+    contour2 = ax2.contourf(X, T, eta_history, levels=20, cmap='viridis')
+    cbar2 = plt.colorbar(contour2, ax=ax2, label='Water Level (水位, m)')
 
     # Add structure position lines
     for pos, name in [(gate1_pos/1000, "Gate1"), (pump_pos/1000, "Pump"), (gate2_pos/1000, "Gate2")]:
@@ -348,13 +456,13 @@ def main():
 
     ax2.set_xlabel('Distance (km)', fontsize=12)
     ax2.set_ylabel('Time (min)', fontsize=12)
-    ax2.set_title('Water Depth Spatiotemporal Evolution (Flow Step 30→55 m³/s)', fontsize=14, fontweight='bold')
+    ax2.set_title('Water Level Spatiotemporal Evolution (水位时空演化, Flow Step 30→55 m³/s)', fontsize=14, fontweight='bold')
     ax2.grid(True, alpha=0.3)
     fig2.tight_layout()
 
-    fig2.savefig(os.path.join(output_dir, "02_water_depth_spacetime.png"), dpi=150, bbox_inches='tight')
+    fig2.savefig(os.path.join(output_dir, "02_water_level_spacetime.png"), dpi=150, bbox_inches='tight')
     plt.close(fig2)
-    print(f"  Saved: 02_water_depth_spacetime.png")
+    print(f"  Saved: 02_water_level_spacetime.png")
 
     # Figure 3: Flow rate spatiotemporal evolution
     print("Generating Figure 3: Flow rate spatiotemporal evolution...")
