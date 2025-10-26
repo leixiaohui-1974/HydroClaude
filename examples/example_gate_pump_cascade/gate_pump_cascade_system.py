@@ -101,9 +101,10 @@ def main():
     pump_rated_head = 5.0   # 额定扬程 (m)
     pump_min_head = 2.0     # 最小吸入水头 (m)
 
-    # 瞬态模拟参数  (P2优化: 增加模拟时长和减小时间步长)
-    t_total = 7200.0        # 总模拟时间 (s) = 2小时 (原1小时)
-    dt = 0.5                # 时间步长 (s) (原1.0秒)
+    # 瞬态模拟参数
+    ENABLE_TRANSIENT = False  # ⚠️ 暂时禁用：显式方法数值不稳定
+    t_total = 7200.0        # 总模拟时间 (s) = 2小时
+    dt = 0.5                # 时间步长 (s)
 
     print(f"渠道参数:")
     print(f"  总长度: {L_total/1000:.1f} km = {L_total:.0f} m")
@@ -299,9 +300,17 @@ def main():
     print()
 
     # ==================== 5. 瞬态模拟 ====================
-    print("=" * 90)
-    print("▶ 5. 瞬态模拟（流量阶跃 30→55 m³/s）")
-    print("-" * 90)
+    if not ENABLE_TRANSIENT:
+        print("=" * 90)
+        print("▶ 5. 瞬态模拟")
+        print("-" * 90)
+        print("⚠️  已禁用：显式方法数值不稳定")
+        print()
+        # 跳过瞬态，直接进入可视化
+    else:
+        print("=" * 90)
+        print("▶ 5. 瞬态模拟（流量阶跃 30→55 m³/s）")
+        print("-" * 90)
 
     # 重置为稳态初始条件
     solver.h[:] = h_steady
