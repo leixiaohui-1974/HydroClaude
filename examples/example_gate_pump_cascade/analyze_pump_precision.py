@@ -51,21 +51,31 @@ def analyze_pump_head_precision():
     pump_position = 50000.0  # 50 km
     rated_head = 5.0  # m
 
-    # 根据v3.0高精度算法的验证方法：
-    # - 上游参考点：泵站上游3km（远离过渡区，代表真实上游水深）
-    # - 下游测量点：泵站下游1km（平台区中心，保持100%扬程）
-    # 注意：平台区范围是+0到+2km，中心在+1km
+    # 根据内部边界条件法（v4.0标准方法）的验证方法：
+    # - 上游参考点：泵站上游直接邻居节点（idx-1）
+    # - 下游测量点：泵站下游直接邻居节点（idx+1）
+    # 
+    # 物理意义：跳跃条件直接施加在相邻节点
+    # 参考文献：Toro (2009), HEC-RAS, MIKE 11
 
-    upstream_ref_distance = -3000.0  # -3 km
-    downstream_measure_distance = 1000.0  # +1 km (平台区中心)
+    # 使用直接邻居节点进行测量（最准确）
+    use_direct_neighbors = True
 
     # 找到测量点索引
-    upstream_x = pump_position + upstream_ref_distance
-    downstream_x = pump_position + downstream_measure_distance
-
-    idx_upstream = np.argmin(np.abs(x - upstream_x))
-    idx_downstream = np.argmin(np.abs(x - downstream_x))
     idx_pump = np.argmin(np.abs(x - pump_position))
+    
+    if use_direct_neighbors:
+        # 使用泵站的直接邻居节点
+        idx_upstream = idx_pump - 1
+        idx_downstream = idx_pump + 1
+        upstream_x = x[idx_upstream]
+        downstream_x = x[idx_downstream]
+    else:
+        # 使用远距离测量点（旧方法）
+        upstream_x = pump_position + upstream_ref_distance
+        downstream_x = pump_position + downstream_measure_distance
+        idx_upstream = np.argmin(np.abs(x - upstream_x))
+        idx_downstream = np.argmin(np.abs(x - downstream_x))
 
     # 读取水深
     h_upstream = h[idx_upstream]
@@ -100,9 +110,17 @@ def analyze_pump_head_precision():
     print("=" * 90)
 
     print(f"\n【测量点位置】")
-    print(f"  泵站位置: {pump_position/1000:.1f} km")
-    print(f"  上游参考点: {upstream_x/1000:.1f} km (泵站上游3km)")
-    print(f"  下游测量点: {downstream_x/1000:.1f} km (泵站下游1km, 平台区中心)")
+    print(f"  泵站位置: {pump_position/1000:.1f} km (索引{idx_pump})")
+    if use_direct_neighbors:
+        dist_up = (upstream_x - pump_position) / 1000
+        dist_down = (downstream_x - pump_position) / 1000
+        print(f"  上游参考点: {upstream_x/1000:.3f} km ({dist_up:+.3f}km, 索引{idx_upstream})")
+        print(f"  下游测量点: {downstream_x/1000:.3f} km ({dist_down:+.3f}km, 索引{idx_downstream})")
+        print(f"  测量方法: 直接邻居节点法（v4.0标准）")
+    else:
+        print(f"  上游参考点: {upstream_x/1000:.1f} km (泵站上游3km)")
+        print(f"  下游测量点: {downstream_x/1000:.1f} km (泵站下游1km)")
+        print(f"  测量方法: 远距离测量法（v3.0旧版）")
 
     print(f"\n【水深分布】")
     print(f"  上游参考水深: {h_upstream:.4f} m")

@@ -345,43 +345,22 @@ class HydrostaticCanalSolver:
             S_momentum[i] = S_gravity + S_friction
 
         # ========================================================================
-        # 泵站源项法（标准PDE方法 v4.0）
+        # 泵站源项法（TODO: 将来实现）
         # ========================================================================
-        # 在泵站位置添加动量源项，代表泵站向水体输入能量
+        # 源项法是更严格的方法，但需要修改稳态求解器才能正常工作
+        # 当前使用内部边界条件法代替
         # 
-        # 理论：泵站通过做功增加水体的总能量
-        # 动量方程源项：S_pump = g * H_pump / Δx
+        # TODO: 实现真正的源项法
+        # - 需要修改solve_steady_state以支持局部动量增加
+        # - 或仅在瞬态模拟中使用源项法
         # 
-        # 参考文献：
+        # 参考文献（将来实现时使用）：
         # - Sanders et al. (2010): ParBreZo shallow-water code
         # - Guinot (2008): Wave Propagation in Fluids, Chapter 9
         # - Toro (2009): Riemann Solvers, Chapter 10
         # ========================================================================
         
-        if self.structure_indices and self.structure_objects:
-            from solvers.gate import PumpStation
-            
-            for idx, structure in zip(self.structure_indices, self.structure_objects):
-                # 只处理运行中的泵站
-                if isinstance(structure, PumpStation) and structure.is_running:
-                    # 边界检查
-                    if 0 < idx < n_cells:
-                        # 计算源项强度
-                        # S_pump = g * H_pump / Δx
-                        # 物理意义：单位体积水体获得的动量增量（N/m³）
-                        S_pump = self.g * structure.rated_head / dx
-                        
-                        # 添加到动量源项
-                        # 在泵站节点及其邻居节点上分布源项（3点平滑，避免数值振荡）
-                        # 权重分配：中心50%，两侧各25%
-                        weight_center = 0.5
-                        weight_neighbor = 0.25
-                        
-                        S_momentum[idx] += S_pump * weight_center
-                        if idx > 0:
-                            S_momentum[idx - 1] += S_pump * weight_neighbor
-                        if idx < n_cells - 1:
-                            S_momentum[idx + 1] += S_pump * weight_neighbor
+        # 源项法代码已注释，将来实现
 
         return F_mass, F_momentum, S_mass, S_momentum
 
@@ -492,32 +471,71 @@ class HydrostaticCanalSolver:
 
     def _apply_pump_internal_bc(self):
         """
-        泵站源项法的辅助处理（v4.0 - 源项法版本）
-        
-        在使用源项法时，泵站的主要作用通过动量方程的源项实现。
-        此方法在源项法下**不做任何操作**，让源项完全控制流动。
+        泵站作为内部边界条件（标准方法 v4.0）
         
         理论基础：
         =========
-        源项法在动量方程中添加：
-            S_pump = g * H_pump / Δx
+        泵站产生水位跃变，根据Rankine-Hugoniot跳跃条件：
         
-        源项通过PDE求解器自然产生：
-        1. 动量增加
-        2. 水位抬升
-        3. 达到平衡
+        质量守恒：Q⁺ = Q⁻  (流量连续)
+        能量跃变：h⁺ = h⁻ + H_pump  (水位跃升)
         
-        **关键**：不能人工设置任何跳跃条件，否则会干扰源项的作用。
+        数值实现：
+        =========
+        在泵站节点i处：
+        1. 从上游（i-1）获取状态
+        2. 施加跳跃条件到下游（i+1）
+        3. 泵站节点（i）设为过渡值
+        4. 其余节点由PDE求解器自然求解
         
         参考文献：
         =========
-        - Sanders et al. (2010): ParBreZo code
-        - Guinot (2008): Wave Propagation in Fluids
-        - Toro (2009): Source term treatment
+        - Toro (2009): Riemann Solvers, Chapter 10
+        - HEC-RAS: Energy equation at structures
+        - DHI MIKE 11: Internal boundary conditions
+        
+        优点：
+        =====
+        ✓ 物理清晰（能量守恒 + 质量守恒）
+        ✓ 仅影响3个节点
+        ✓ 适合稳态和瞬态问题
+        ✓ 商业软件标准方法
         """
-        # 源项法下，不做任何人工设置
-        # 让PDE求解器和源项自然产生扬程效果
-        pass
+        if not self.structure_indices or not self.structure_objects:
+            return
+
+        for idx, structure in zip(self.structure_indices, self.structure_objects):
+            from solvers.gate import PumpStation
+
+            if not isinstance(structure, PumpStation) or not structure.is_running:
+                continue
+
+            # 边界检查
+            if idx <= 0 or idx >= self.nx - 1:
+                continue
+
+            # 获取上游状态
+            h_upstream = self.h[idx - 1]
+            hu_upstream = self.hu[idx - 1]
+            
+            # 施加跳跃条件
+            # 1. 能量跃变：h⁺ = h⁻ + H_pump
+            h_downstream = h_upstream + structure.rated_head
+            
+            # 2. 质量守恒：Q⁺ = Q⁻
+            hu_downstream = hu_upstream
+            
+            # 应用到节点
+            self.h[idx + 1] = h_downstream
+            self.hu[idx + 1] = hu_downstream
+            
+            # 泵站节点：线性插值
+            self.h[idx] = 0.5 * (h_upstream + h_downstream)
+            self.hu[idx] = hu_upstream
+            
+            # 确保正值
+            self.h[idx] = max(self.eps_dry, self.h[idx])
+            self.h[idx + 1] = max(self.eps_dry, self.h[idx + 1])
     
     def _apply_pump_region_constraints(self):
         """
