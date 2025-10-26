@@ -446,6 +446,7 @@ class HydrostaticCanalSolver:
 
             # 标记泵站区域：上游过渡区 + 中心 + 下游平台区 + 下游过渡区
             # 总共15个点：idx-2 到 idx+12
+            # 注意：过渡区仍然在掩码内，但使用较弱约束
             start_idx = idx - 2
             end_idx = idx + 13  # Python切片是左闭右开
             mask[start_idx:end_idx] = True
@@ -520,15 +521,13 @@ class HydrostaticCanalSolver:
                 self.h[pos] = max(self.eps_dry, self.h[pos])
 
             # 4. 下游过渡段（idx+11 到 idx+12，共2个点）
-            # 从100%扬程逐渐降低
+            # 改进：保持平台区高度，让自然水力学控制过渡
+            # 这样避免人为创造台阶，过渡会更平滑
             downstream_transition = [idx + 11, idx + 12]
-            for i, pos in enumerate(downstream_transition):
-                alpha = (i + 1) / (len(downstream_transition) + 1)  # 0.33, 0.67
-                # 从100%扬程逐渐降低到65%
-                h_target = h_downstream_target - alpha * structure.rated_head * 0.35
-                # 使用较弱的约束（混合当前值和目标值）
-                relax = 0.5  # 50%约束强度（降低from 60%）
-                self.h[pos] = (1 - relax) * self.h[pos] + relax * h_target
+            for pos in downstream_transition:
+                # 保持100%扬程，但使用较弱约束（80%）让求解器有更多自由度
+                relax = 0.8  # 80%约束强度
+                self.h[pos] = (1 - relax) * self.h[pos] + relax * h_downstream_target
                 self.hu[pos] = Q_ref / self.B
                 self.h[pos] = max(self.eps_dry, self.h[pos])
 
