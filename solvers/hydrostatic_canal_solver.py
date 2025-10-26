@@ -345,22 +345,68 @@ class HydrostaticCanalSolver:
             S_momentum[i] = S_gravity + S_friction
 
         # ========================================================================
-        # 泵站源项法（TODO: 将来实现）
+        # 泵站源项法（v5.0 - 实现版）
         # ========================================================================
-        # 源项法是更严格的方法，但需要修改稳态求解器才能正常工作
-        # 当前使用内部边界条件法代替
+        # 原理：泵站通过动量源项添加能量，避免剧烈的水深跳跃
         # 
-        # TODO: 实现真正的源项法
-        # - 需要修改solve_steady_state以支持局部动量增加
-        # - 或仅在瞬态模拟中使用源项法
+        # 物理模型：
+        #   S_momentum = ρ * g * H_pump * Q / Δx
         # 
-        # 参考文献（将来实现时使用）：
+        # 其中：
+        #   H_pump: 泵站扬程 (m)
+        #   Q: 局部流量 (m³/s)
+        #   Δx: 网格间距 (m)
+        #
+        # 优点：
+        #   ✓ 避免水深跳跃导致的数值不稳定
+        #   ✓ 适合非恒定流
+        #   ✓ 物理上合理（能量输入分布在空间上）
+        #
+        # 参考文献：
         # - Sanders et al. (2010): ParBreZo shallow-water code
         # - Guinot (2008): Wave Propagation in Fluids, Chapter 9
         # - Toro (2009): Riemann Solvers, Chapter 10
         # ========================================================================
         
-        # 源项法代码已注释，将来实现
+        if self.structure_indices and self.structure_objects:
+            from solvers.gate import PumpStation
+            
+            for idx, structure in zip(self.structure_indices, self.structure_objects):
+                # 仅处理运行中的泵站
+                if not isinstance(structure, PumpStation) or not structure.is_running:
+                    continue
+                
+                # 边界检查
+                if idx <= 0 or idx >= n_cells:
+                    continue
+                
+                # 获取泵站位置的流量
+                Q_pump = hu[idx] * self.B  # m³/s
+                
+                # 计算动量源项: S = ρ * g * H_pump * Q / Δx
+                # 简化：ρ = 1000 kg/m³, 单位面积: S = g * H_pump * Q / (B * Δx)
+                # 这里 hu 已经是单位宽度流量，所以：
+                S_pump_base = self.g * structure.rated_head * abs(hu[idx]) / dx
+                
+                # ⚠️ 实验：减小源项强度（平滑分布，避免过强）
+                # 将源项分布到3个节点，权重 [0.2, 0.6, 0.2]
+                weight_center = 0.6
+                weight_neighbor = 0.2
+                
+                S_momentum[idx] += weight_center * S_pump_base
+                if idx > 0:
+                    S_momentum[idx-1] += weight_neighbor * S_pump_base
+                if idx < n_cells - 1:
+                    S_momentum[idx+1] += weight_neighbor * S_pump_base
+                
+                # 可选：平滑源项到相邻单元（提高数值稳定性）
+                # weight_center = 0.6
+                # weight_neighbor = 0.2
+                # S_momentum[idx] += weight_center * S_pump
+                # if idx > 0:
+                #     S_momentum[idx-1] += weight_neighbor * S_pump
+                # if idx < n_cells - 1:
+                #     S_momentum[idx+1] += weight_neighbor * S_pump
 
         return F_mass, F_momentum, S_mass, S_momentum
 
@@ -978,8 +1024,9 @@ class HydrostaticCanalSolver:
             self.h = h_new
             self.hu = hu_new
 
-            # 应用泵站水位跃变（非恒定流模式：保持流量守恒）
-            self._apply_pump_internal_bc(conserve_local_flow=True)
+            # ⚠️ 源项法模式：不施加泵站跳跃条件
+            # 泵站效果已通过compute_fluxes_and_sources中的源项实现
+            # self._apply_pump_internal_bc(conserve_local_flow=True)  # 禁用
 
             # 应用内部边界条件（闸门）
             if self.structure_indices:
@@ -1116,8 +1163,9 @@ class HydrostaticCanalSolver:
             self.h = h_new
             self.hu = hu_new
 
-            # 应用泵站水位跃变（非恒定流模式：保持流量守恒）
-            self._apply_pump_internal_bc(conserve_local_flow=True)
+            # ⚠️ 源项法模式：不施加泵站跳跃条件
+            # 泵站效果已通过compute_fluxes_and_sources中的源项实现
+            # self._apply_pump_internal_bc(conserve_local_flow=True)  # 禁用
 
             # 应用内部边界条件（闸门）
             if self.structure_indices:
