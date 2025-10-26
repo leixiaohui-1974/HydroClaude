@@ -102,7 +102,9 @@ def main():
     pump_min_head = 2.0     # 最小吸入水头 (m)
 
     # 瞬态模拟参数
-    ENABLE_TRANSIENT = False  # ⚠️ 暂时禁用：显式方法数值不稳定
+    ENABLE_TRANSIENT = False  # ⚠️ 暂时禁用：泵站+闸门组合系统的非恒定流需要更稳定的数值方法
+    # 说明：当前Preissmann隐式方法在处理多个水工建筑物时存在数值稳定性问题
+    # 建议使用专业软件（如HEC-RAS、MIKE 11）进行复杂系统的非恒定流模拟
     t_total = 7200.0        # 总模拟时间 (s) = 2小时
     dt = 0.5                # 时间步长 (s)
 

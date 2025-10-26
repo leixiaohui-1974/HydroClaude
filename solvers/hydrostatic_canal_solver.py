@@ -735,11 +735,14 @@ class HydrostaticCanalSolver:
                     hu_new[i] = self.omega * hu_new[i] + (1 - self.omega) * hu_old_iter[i]
 
             # 应用泵站区域约束（在每次迭代中）
-            self.h[:] = h_new
-            self.hu[:] = hu_new
-            self._apply_pump_region_constraints()
-            h_new = self.h.copy()
-            hu_new = self.hu.copy()
+            # ⚠️ 仅在稳态求解时使用（use_pump_mask=True时）
+            # 非恒定流时（use_pump_mask=False），泵站边界条件在外层循环单独处理
+            if use_pump_mask:
+                self.h[:] = h_new
+                self.hu[:] = hu_new
+                self._apply_pump_region_constraints()
+                h_new = self.h.copy()
+                hu_new = self.hu.copy()
 
             # ⭐ 关键修复：在所有更新操作后最终强制边界条件
             # 这确保边界条件不被松弛或泵站约束覆盖
@@ -818,9 +821,9 @@ class HydrostaticCanalSolver:
             self.h = h_new
             self.hu = hu_new
 
-            # v7.0: 泵站边界条件在稳态求解中不需要每次迭代施加
-            # 能量方程会自然体现在求解过程中
-            # self._apply_pump_internal_bc(conserve_local_flow=False)
+            # ⭐ 关键修复：在稳态求解中施加泵站内部边界条件
+            # 这确保泵站前后水位差正确反映扬程
+            self._apply_pump_internal_bc(conserve_local_flow=False)
 
             # 获取泵站区域掩码
             pump_mask = self._get_pump_region_mask()
