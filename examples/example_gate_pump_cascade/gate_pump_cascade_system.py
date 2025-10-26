@@ -568,6 +568,7 @@ def main():
         Q_target=Q_step,
         gate_positions=[gate1_pos, pump_pos, gate2_pos],
         h_uniform=h_uniform,
+        z_bed=solver.z,  # ✓ 传递实际的底床高程数组（包含泵站处的跳跃）
         title_prefix="Gate-Pump Cascade System",
         filename="06_longitudinal_profile_animation.gif",
         fps=2,
