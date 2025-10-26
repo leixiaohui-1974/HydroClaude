@@ -398,7 +398,7 @@ def main():
     fig1, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 10), sharex=True)
 
     # 计算水位（水面高程）= 底床高程 + 水深
-    z_bed = -S0 * solver.x  # 底床高程
+    z_bed = solver.z  # 底床高程（使用求解器中的实际值，包含泵站处的跳跃）
     eta_steady = z_bed + h_steady  # 水位
 
     # Subplot 1: Water level (水位) and bed level (底床)
@@ -447,7 +447,7 @@ def main():
     # 计算水位历史（每个时间步的水位）
     eta_history = np.zeros_like(h_history)
     for i in range(len(time_history)):
-        eta_history[i, :] = z_bed + h_history[i, :]
+        eta_history[i, :] = solver.z + h_history[i, :]
 
     fig2, ax2 = plt.subplots(figsize=(16, 10))
     contour2 = ax2.contourf(X, T, eta_history, levels=20, cmap='viridis')
