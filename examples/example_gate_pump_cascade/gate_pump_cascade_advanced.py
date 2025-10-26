@@ -73,7 +73,7 @@ def main():
     
     # 瞬态模拟参数
     t_total = 3600.0
-    dt = 1.0
+    dt = 0.5  # 减小时间步长，提高稳定性
     
     print(f"渠道参数:")
     print(f"  总长度: {L_total/1000:.1f} km")
@@ -166,8 +166,8 @@ def main():
     result_steady = solver.solve_steady_state(
         Q_target=Q_initial,
         h_downstream=h_downstream_boundary,
-        convergence_tol=0.001,
-        max_iterations=500,
+        convergence_tol=0.0005,  # 更严格的收敛判据
+        max_iterations=2000,  # 增加迭代次数
         dt=dt,
         verbose=True
     )
@@ -227,7 +227,7 @@ def main():
         # Preissmann时间推进
         h_new, hu_new = solver.step_preissmann(
             dt=dt,
-            max_iter=10,
+            max_iter=20,  # 增加瞬态迭代次数
             enforce_bc=True,
             Q_in=Q_upstream,
             h_out=h_downstream

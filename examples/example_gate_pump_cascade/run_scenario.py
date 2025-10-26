@@ -40,7 +40,7 @@ def run_scenario(scenario_name, scenario_config):
     S0 = 0.0001
     n = 0.025
     nx = 501
-    dt = 1.0
+    dt = 0.5  # 减小时间步长，提高稳定性
     
     # 结构物位置
     gate1_pos = 25000.0
@@ -90,8 +90,8 @@ def run_scenario(scenario_name, scenario_config):
     result_steady = solver.solve_steady_state(
         Q_target=Q_initial,
         h_downstream=h_downstream_boundary,
-        convergence_tol=0.001,
-        max_iterations=500,
+        convergence_tol=0.0005,  # 更严格的收敛判据
+        max_iterations=2000,  # 增加迭代次数
         dt=dt,
         verbose=False
     )
@@ -107,8 +107,8 @@ def run_scenario(scenario_name, scenario_config):
     solver.h[:] = h_steady
     solver.hu[:] = hu_steady
     
-    n_steps = 3600
-    save_interval = 60
+    n_steps = int(3600 / dt)  # 总时长3600s
+    save_interval = int(60 / dt)  # 每60s保存一次
     n_saves = n_steps // save_interval + 1
     
     h_history = np.zeros((n_saves, solver.nx))
@@ -138,7 +138,7 @@ def run_scenario(scenario_name, scenario_config):
         # 时间推进
         h_new, hu_new = solver.step_preissmann(
             dt=dt,
-            max_iter=10,
+            max_iter=20,  # 增加瞬态迭代次数
             enforce_bc=True,
             Q_in=Q_upstream,
             h_out=h_downstream
