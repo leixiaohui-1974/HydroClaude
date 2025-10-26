@@ -413,8 +413,21 @@ class VisualizationTemplates:
 
         # 预计算范围
         all_z_surfaces = [z_bed + h for h in h_snapshots]
-        z_min = np.min([np.min(z) for z in all_z_surfaces]) - 0.3
-        z_max = np.max([np.max(z) for z in all_z_surfaces]) + 0.5
+        
+        # Y轴范围：必须包含完整的渠底和水位
+        # 下限：渠底最低点（不能截断渠底）
+        z_bed_min = np.min(z_bed)
+        z_bed_max = np.max(z_bed)
+        
+        # 上限：水位最高点
+        z_surface_max = np.max([np.max(z) for z in all_z_surfaces])
+        
+        # 添加合理的余量
+        margin_bottom = 0.5  # 渠底下方留0.5m余量
+        margin_top = 0.5     # 水面上方留0.5m余量
+        
+        z_min = z_bed_min - margin_bottom
+        z_max = z_surface_max + margin_top
 
         h_min = np.min([np.min(h) for h in h_snapshots])
         h_max = np.max([np.max(h) for h in h_snapshots])
