@@ -53,10 +53,11 @@ def analyze_pump_head_precision():
 
     # 根据v3.0高精度算法的验证方法：
     # - 上游参考点：泵站上游3km（远离过渡区，代表真实上游水深）
-    # - 下游测量点：泵站下游2km（平台区中心，保持100%扬程）
+    # - 下游测量点：泵站下游1km（平台区中心，保持100%扬程）
+    # 注意：平台区范围是+0到+2km，中心在+1km
 
     upstream_ref_distance = -3000.0  # -3 km
-    downstream_measure_distance = 2000.0  # +2 km
+    downstream_measure_distance = 1000.0  # +1 km (平台区中心)
 
     # 找到测量点索引
     upstream_x = pump_position + upstream_ref_distance
@@ -101,7 +102,7 @@ def analyze_pump_head_precision():
     print(f"\n【测量点位置】")
     print(f"  泵站位置: {pump_position/1000:.1f} km")
     print(f"  上游参考点: {upstream_x/1000:.1f} km (泵站上游3km)")
-    print(f"  下游测量点: {downstream_x/1000:.1f} km (泵站下游2km)")
+    print(f"  下游测量点: {downstream_x/1000:.1f} km (泵站下游1km, 平台区中心)")
 
     print(f"\n【水深分布】")
     print(f"  上游参考水深: {h_upstream:.4f} m")
@@ -293,7 +294,7 @@ def analyze_pump_head_precision():
 
         f.write(f"\n【测量方法（v3.0高精度算法）】\n")
         f.write(f"  上游参考点: 泵站上游3km（远离过渡区）\n")
-        f.write(f"  下游测量点: 泵站下游2km（平台区中心）\n")
+        f.write(f"  下游测量点: 泵站下游1km（平台区中心）\n")
         f.write(f"  扬程计算: 下游水深 - 上游水深\n")
 
         f.write(f"\n【水深数据】\n")

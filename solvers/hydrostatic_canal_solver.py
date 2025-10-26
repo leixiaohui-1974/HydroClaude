@@ -422,6 +422,36 @@ class HydrostaticCanalSolver:
         # 注意：泵站扬程不通过这里的迭代实现，而是在每次迭代后强制施加跃变
         # （见_apply_pump_head_jump方法）
 
+    def _get_pump_region_mask(self) -> np.ndarray:
+        """
+        获取泵站区域的掩码数组
+
+        Returns:
+            mask: 布尔数组，True表示该点在泵站区域内
+        """
+        mask = np.zeros(self.nx, dtype=bool)
+
+        if not self.structure_indices or not self.structure_objects:
+            return mask
+
+        for idx, structure in zip(self.structure_indices, self.structure_objects):
+            from solvers.gate import PumpStation
+
+            if not isinstance(structure, PumpStation) or not structure.is_running:
+                continue
+
+            # 检查索引有效性（需要至少前后各15个点）
+            if idx <= 15 or idx >= self.nx - 15:
+                continue
+
+            # 标记泵站区域：上游过渡区 + 中心 + 下游平台区 + 下游过渡区
+            # 总共15个点：idx-2 到 idx+12
+            start_idx = idx - 2
+            end_idx = idx + 13  # Python切片是左闭右开
+            mask[start_idx:end_idx] = True
+
+        return mask
+
     def _apply_pump_region_constraints(self):
         """
         应用泵站区域约束（改进型区域法 v3.0 - 高精度版）
@@ -433,7 +463,7 @@ class HydrostaticCanalSolver:
         - 下游过渡区（idx+11 到 idx+12）：向正常流动过渡
 
         关键改进 v3.0：
-        - 使用远上游点（idx-15）作为参考，避免过渡区影响
+        - 使用远上游点（idx-15，约3km）作为参考，避免过渡区影响
         - 平台区设置为95%扬程，精确补偿累积效应
         - 优化过渡区梯度，提高精度
 
@@ -606,8 +636,15 @@ class HydrostaticCanalSolver:
             h_old_iter = h_new.copy()
             hu_old_iter = hu_new.copy()
 
-            # 更新
+            # 获取泵站区域掩码（在更新前）
+            pump_mask = self._get_pump_region_mask()
+
+            # 更新（排除泵站区域）
             for i in range(self.nx):
+                if pump_mask[i]:
+                    # 泵站区域：保持不变
+                    continue
+                
                 # 连续性方程
                 dh = dt * (-(F_mass[i+1] - F_mass[i])/self.dx + S_mass[i])
                 h_new[i] = self.h[i] + dh
@@ -616,9 +653,11 @@ class HydrostaticCanalSolver:
                 dhu = dt * (-(F_momentum[i+1] - F_momentum[i])/self.dx + S_momentum[i])
                 hu_new[i] = self.hu[i] + dhu
 
-            # 松弛
-            h_new = self.omega * h_new + (1 - self.omega) * h_old_iter
-            hu_new = self.omega * hu_new + (1 - self.omega) * hu_old_iter
+            # 松弛（排除泵站区域）
+            for i in range(self.nx):
+                if not pump_mask[i]:
+                    h_new[i] = self.omega * h_new[i] + (1 - self.omega) * h_old_iter[i]
+                    hu_new[i] = self.omega * hu_new[i] + (1 - self.omega) * hu_old_iter[i]
 
             # 瞬态流：在迭代中强制边界条件
             if enforce_bc:
@@ -693,22 +732,35 @@ class HydrostaticCanalSolver:
             # 出口：设置水深
             h_new[-1] = h_downstream
 
-            # 流量约束策略：稳态流全渠道流量应守恒
-            # 强制所有节点流量相同（质量守恒）
-            hu_new[:] = Q_target / self.B
-
-            # 更新状态
+            # 更新状态（先更新，以便后续方法访问当前状态）
             self.h = h_new
             self.hu = hu_new
 
-            # 应用泵站水位跃变（在强制流量守恒之后）
+            # 应用泵站水位跃变（在强制流量守恒之前）
+            # 这样可以确保泵站区域的水深和流量被正确设置
             self._apply_pump_head_jump()
+
+            # 获取泵站区域掩码
+            pump_mask = self._get_pump_region_mask()
+
+            # 流量约束策略：稳态流全渠道流量应守恒
+            # 强制所有节点流量相同（质量守恒），但排除泵站区域
+            # 关键修复：不覆盖泵站区域的流量设置
+            if pump_mask.any():
+                # 有泵站：只强制非泵站区域的流量
+                self.hu[~pump_mask] = Q_target / self.B
+            else:
+                # 无泵站：所有节点强制流量
+                self.hu[:] = Q_target / self.B
 
             # 应用内部边界条件（闸门）
             # 通过调整水深使闸门流量公式满足Q_target
             if self.structure_indices:
                 self._apply_internal_bc(t=self.current_time, Q_target=Q_target,
                                       max_iter=20, tol=0.05, relax=0.3)  # P2优化: 降低松弛因子 (0.6→0.3)
+            
+            # 再次应用泵站约束，确保不被闸门约束覆盖
+            self._apply_pump_head_jump()
 
             # 检查收敛
             dh_max = np.max(np.abs(self.h - h_old))
