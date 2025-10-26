@@ -79,6 +79,10 @@ class HydrostaticCanalSolver:
         self.eps_dry = eps_dry
         self.bc_left = bc_left
         self.bc_right = bc_right
+        
+        # 泵站源项控制标志（v5.2）
+        # 稳态求解时禁用，避免与水深调整叠加；瞬态时启用
+        self.enable_pump_momentum_source = True
 
         # 空间网格
         if x_grid is not None:
@@ -263,7 +267,8 @@ class HydrostaticCanalSolver:
         return h_ext, hu_ext, z_ext
 
     def compute_fluxes_and_sources(
-        self, h: np.ndarray, hu: np.ndarray, z: np.ndarray, dx: float
+        self, h: np.ndarray, hu: np.ndarray, z: np.ndarray, dx: float,
+        include_pump_source: bool = True
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
         计算所有界面的通量和所有单元的源项（静水重构）
@@ -345,7 +350,7 @@ class HydrostaticCanalSolver:
             S_momentum[i] = S_gravity + S_friction
 
         # ========================================================================
-        # 泵站源项法（v5.0 - 实现版）
+        # 泵站源项法（v5.2 - 可选版）
         # ========================================================================
         # 原理：泵站通过动量源项添加能量，避免剧烈的水深跳跃
         # 
@@ -366,9 +371,13 @@ class HydrostaticCanalSolver:
         # - Sanders et al. (2010): ParBreZo shallow-water code
         # - Guinot (2008): Wave Propagation in Fluids, Chapter 9
         # - Toro (2009): Riemann Solvers, Chapter 10
+        # 
+        # v5.2: 稳态时禁用此源项，避免与水深调整叠加
         # ========================================================================
         
-        if self.structure_indices and self.structure_objects:
+        # 检查全局标志和局部参数
+        if include_pump_source and self.enable_pump_momentum_source and \
+           self.structure_indices and self.structure_objects:
             from solvers.gate import PumpStation
             
             for idx, structure in zip(self.structure_indices, self.structure_objects):
@@ -380,24 +389,34 @@ class HydrostaticCanalSolver:
                 if idx <= 0 or idx >= n_cells:
                     continue
                 
-                # 获取泵站位置的流量
-                Q_pump = hu[idx] * self.B  # m³/s
+                # =====================================================================
+                # 泵站动量源项计算（v5.1 - 增强版）
+                # =====================================================================
+                # 
+                # 物理原理：
+                # 泵站通过外部能量输入（用电）提升水位，相当于在动量方程中
+                # 添加一个分布式的压力梯度源项。
+                # 
+                # 动量方程: ∂(hu)/∂t + ∂F/∂x = -ghS_f + S_pump
+                # 
+                # 泵站源项: S_pump = g * H_pump / L_pump
+                # 其中:
+                #   - H_pump: 额定扬程 (m)
+                #   - L_pump: 泵站作用范围（取较小值以增强梯度）
+                # 
+                # 关键修正：使用较小的L_pump以产生足够强的水位抬升效果
+                # =====================================================================
                 
-                # 计算动量源项: S = ρ * g * H_pump * Q / Δx
-                # 简化：ρ = 1000 kg/m³, 单位面积: S = g * H_pump * Q / (B * Δx)
-                # 这里 hu 已经是单位宽度流量，所以：
-                S_pump_base = self.g * structure.rated_head * abs(hu[idx]) / dx
+                # 泵站作用范围：使用1个网格以产生最强效果
+                # 这样可以在短距离内产生显著的水位抬升
+                L_pump = 1.0 * dx  # 单个网格长度
                 
-                # ⚠️ 实验：减小源项强度（平滑分布，避免过强）
-                # 将源项分布到3个节点，权重 [0.2, 0.6, 0.2]
-                weight_center = 0.6
-                weight_neighbor = 0.2
+                # 泵站动量源项：S_pump = g * H / L
+                # L_pump很小时，源项非常强，能够在短距离内抬高水位
+                S_pump_unit = self.g * structure.rated_head / L_pump
                 
-                S_momentum[idx] += weight_center * S_pump_base
-                if idx > 0:
-                    S_momentum[idx-1] += weight_neighbor * S_pump_base
-                if idx < n_cells - 1:
-                    S_momentum[idx+1] += weight_neighbor * S_pump_base
+                # 直接在泵站位置施加源项
+                S_momentum[idx] += S_pump_unit
                 
                 # 可选：平滑源项到相邻单元（提高数值稳定性）
                 # weight_center = 0.6
@@ -517,106 +536,68 @@ class HydrostaticCanalSolver:
 
     def _apply_pump_internal_bc(self, conserve_local_flow=False):
         """
-        泵站作为内部边界条件（标准方法 v4.0 - 改进版）
+        泵站作为内部边界条件（v5.2 - 实用混合方法）
         
         理论基础：
         =========
-        泵站产生水位跃变，根据Rankine-Hugoniot跳跃条件：
+        泵站在短距离内抬高水位（扬程），同时保持流量守恒。
         
-        质量守恒：Q⁺ = Q⁻  (流量连续)
-        能量跃变：h⁺ = h⁻ + H_pump  (水位跃升)
+        实现策略：
+        - 瞬态：依靠动量源项（自然演化）
+        - 稳态：施加平滑的水深梯度（加速收敛到正确的水位分布）
         
-        数值实现：
-        =========
-        在泵站节点i处：
-        1. 从上游（i-1）获取状态
-        2. 施加跳跃条件到下游（i+1）
-        3. 泵站节点（i）设为过渡值
-        4. 其余节点由PDE求解器自然求解
-        
-        改进（v4.1 - 非恒定流）：
-        =====================
-        当conserve_local_flow=True时（用于非恒定流）：
-        - 保持泵站附近3节点的平均流量（来自Preissmann更新）
-        - 仅调整水深分布（施加扬程）
-        - 避免破坏Preissmann步的流量守恒
-        
-        参考文献：
-        =========
-        - Toro (2009): Riemann Solvers, Chapter 10
-        - HEC-RAS: Energy equation at structures
-        - DHI MIKE 11: Internal boundary conditions
-        
-        优点：
-        =====
-        ✓ 物理清晰（能量守恒 + 质量守恒）
-        ✓ 仅影响3个节点
-        ✓ 适合稳态和瞬态问题
-        ✓ 改进后在非恒定流中保持流量守恒
+        关键：使用"平滑跃变"而非"瞬时跳跃"
         """
         if not self.structure_indices or not self.structure_objects:
             return
-
-        for idx, structure in zip(self.structure_indices, self.structure_objects):
+        
+        # 稳态模式：施加平滑的水深调整
+        if not conserve_local_flow:
             from solvers.gate import PumpStation
-
-            if not isinstance(structure, PumpStation) or not structure.is_running:
-                continue
-
-            # 边界检查
-            if idx <= 0 or idx >= self.nx - 1:
-                continue
-
-            if conserve_local_flow:
-                # 非恒定流模式：温和的跳跃条件（v4.1改进）
-                # 策略：
-                # 1. 保持Preissmann更新的流量（不破坏质量守恒）
-                # 2. 仅调整水深以施加扬程效果
-                # 3. 使用松弛因子避免数值振荡
-                
-                # 获取上游状态
-                h_upstream = self.h[idx - 1]
-                
-                # 计算目标下游水深（基于上游水深+扬程）
-                h_downstream_target = h_upstream + structure.rated_head
-                
-                # 使用松弛因子温和地施加跳跃条件
-                # 松弛因子0.3: 每次仅移动30%到目标值
-                relax_factor = 0.3
-                
-                # 下游节点：温和地向目标水深移动
-                self.h[idx + 1] = (1.0 - relax_factor) * self.h[idx + 1] + \
-                                  relax_factor * h_downstream_target
-                
-                # 泵站节点：保持在上下游之间
-                self.h[idx] = 0.5 * (self.h[idx - 1] + self.h[idx + 1])
-                
-                # 保持流量不变（Preissmann已经计算好）
-                # 不修改 self.hu，让质量守恒自然满足
-            else:
-                # 稳态模式：标准跳跃条件
-                # 获取上游状态
-                h_upstream = self.h[idx - 1]
-                hu_upstream = self.hu[idx - 1]
-                
-                # 施加跳跃条件
-                # 1. 能量跃变：h⁺ = h⁻ + H_pump
-                h_downstream = h_upstream + structure.rated_head
-                
-                # 2. 质量守恒：Q⁺ = Q⁻
-                hu_downstream = hu_upstream
-                
-                # 应用到节点
-                self.h[idx + 1] = h_downstream
-                self.hu[idx + 1] = hu_downstream
-                
-                # 泵站节点：线性插值
-                self.h[idx] = 0.5 * (h_upstream + h_downstream)
-                self.hu[idx] = hu_upstream
             
-            # 确保正值
-            self.h[idx] = max(self.eps_dry, self.h[idx])
-            self.h[idx + 1] = max(self.eps_dry, self.h[idx + 1])
+            for idx, structure in zip(self.structure_indices, self.structure_objects):
+                if not isinstance(structure, PumpStation) or not structure.is_running:
+                    continue
+                
+                # 边界检查
+                if idx <= 5 or idx >= self.nx - 5:
+                    continue
+                
+                # 泵站作用范围：8个网格（约1.6km），较大范围使梯度更平缓
+                pump_spread = 8
+                
+                # 获取上游参考水深（泵站前5个节点的平均，避免局部扰动）
+                h_upstream_ref = np.mean(self.h[max(0, idx-5):idx])
+                
+                # 获取下游实际水深（泵站后5个节点的平均）
+                h_downstream_actual = np.mean(self.h[idx+1:min(self.nx, idx+6)])
+                
+                # 计算当前的水深抬升量
+                current_head_gain = h_downstream_actual - h_upstream_ref
+                
+                # 目标扬程
+                target_head = structure.rated_head
+                
+                # 如果当前抬升已经接近目标，不再调整（避免过度累积）
+                if current_head_gain >= target_head * 0.95:
+                    continue  # 已经达到目标，跳过
+                
+                # 在泵站范围内建立平滑的水深梯度
+                for i in range(pump_spread + 1):
+                    i_target = idx + i - pump_spread//2
+                    
+                    # 边界检查
+                    if i_target < 0 or i_target >= self.nx:
+                        continue
+                    
+                    # 线性插值：从上游水深到下游水深
+                    ratio = i / pump_spread  # 0 到 1
+                    h_target = h_upstream_ref + target_head * ratio
+                    
+                    # 极小的松弛因子，避免累积过大
+                    relax = 0.01  # 从0.05降到0.01
+                    self.h[i_target] = (1.0 - relax) * self.h[i_target] + relax * h_target
+        # 瞬态模式：不做任何操作，完全依靠动量源项
     
     def _apply_pump_region_constraints(self):
         """
@@ -834,6 +815,9 @@ class HydrostaticCanalSolver:
             print(f"  目标流量：{Q_target:.3f} m³/s")
             print(f"  下游水深：{h_downstream:.3f} m")
             print(f"  上游初始猜测：{h_upstream_guess:.3f} m")
+        
+        # v5.2: 稳态求解时禁用泵站动量源项，避免与水深调整叠加
+        self.enable_pump_momentum_source = False
 
         # 时间推进至稳态
         for iteration in range(max_iterations):
@@ -889,6 +873,9 @@ class HydrostaticCanalSolver:
                 if verbose:
                     print(f"  收敛于迭代 {iteration}")
                 break
+        
+        # v5.2: 恢复泵站动量源项（用于后续瞬态模拟）
+        self.enable_pump_momentum_source = True
 
         # 计算结果
         Q_final = self.get_Q()
