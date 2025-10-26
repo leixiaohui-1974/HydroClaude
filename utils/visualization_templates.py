@@ -379,6 +379,7 @@ class VisualizationTemplates:
         Q_target: float,
         gate_positions: Optional[List[float]] = None,
         h_uniform: Optional[float] = None,
+        z_bed: Optional[np.ndarray] = None,
         title_prefix: str = "Longitudinal Profile",
         filename: Optional[str] = None,
         fps: int = 10,
@@ -397,6 +398,7 @@ class VisualizationTemplates:
             Q_target: 目标流量
             gate_positions: 闸门位置列表
             h_uniform: 均匀流水深
+            z_bed: 渠底高程数组（可选，如果不提供则根据S0计算）
             title_prefix: 标题前缀
             filename: 保存文件名
             fps: 帧率
@@ -405,13 +407,27 @@ class VisualizationTemplates:
         Returns:
             (图表对象, 动画对象)
         """
-        # 计算渠底高程
-        z_bed = (canal_length - x) * S0
+        # 计算渠底高程（如果没有提供，则根据S0计算）
+        if z_bed is None:
+            z_bed = (canal_length - x) * S0
 
         # 预计算范围
         all_z_surfaces = [z_bed + h for h in h_snapshots]
-        z_min = np.min([np.min(z) for z in all_z_surfaces]) - 0.3
-        z_max = np.max([np.max(z) for z in all_z_surfaces]) + 0.5
+        
+        # Y轴范围：必须包含完整的渠底和水位
+        # 下限：渠底最低点（不能截断渠底）
+        z_bed_min = np.min(z_bed)
+        z_bed_max = np.max(z_bed)
+        
+        # 上限：水位最高点
+        z_surface_max = np.max([np.max(z) for z in all_z_surfaces])
+        
+        # 添加合理的余量
+        margin_bottom = 0.5  # 渠底下方留0.5m余量
+        margin_top = 0.5     # 水面上方留0.5m余量
+        
+        z_min = z_bed_min - margin_bottom
+        z_max = z_surface_max + margin_top
 
         h_min = np.min([np.min(h) for h in h_snapshots])
         h_max = np.max([np.max(h) for h in h_snapshots])
