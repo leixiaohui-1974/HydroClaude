@@ -80,9 +80,8 @@ class HydrostaticCanalSolver:
         self.bc_left = bc_left
         self.bc_right = bc_right
         
-        # 泵站源项控制标志（v6.0）
-        # v6.0: 使用底床跳跃法后，不需要动量源项
-        self.enable_pump_momentum_source = False
+        # 泵站建模：v7.0 标准能量方程法
+        # 符合HEC-RAS、MIKE 11等商业软件标准
 
         # 空间网格
         if x_grid is not None:
@@ -105,12 +104,9 @@ class HydrostaticCanalSolver:
         self.h = np.ones(nx) * 1.0  # 水深 (m)
         self.hu = np.ones(nx) * 5.0  # 流量 hu (m²/s)
 
-        # 内部边界条件（闸门）
+        # 内部边界条件（闸门、泵站）
         self.internal_structures = internal_structures or []
         self._setup_internal_structures()
-        
-        # 应用泵站引起的底床高程跳跃（必须在_setup_internal_structures之后）
-        self._apply_pump_bed_elevation_jump()
 
         # 历史记录
         self.h_history = []
@@ -370,65 +366,8 @@ class HydrostaticCanalSolver:
         #   ✓ 适合非恒定流
         #   ✓ 物理上合理（能量输入分布在空间上）
         #
-        # 参考文献：
-        # - Sanders et al. (2010): ParBreZo shallow-water code
-        # - Guinot (2008): Wave Propagation in Fluids, Chapter 9
-        # - Toro (2009): Riemann Solvers, Chapter 10
-        # 
-        # v5.2: 稳态时禁用此源项，避免与水深调整叠加
+        # v7.0: 泵站动量源项已移除，使用标准能量方程法
         # ========================================================================
-        
-        # 检查全局标志和局部参数
-        if include_pump_source and self.enable_pump_momentum_source and \
-           self.structure_indices and self.structure_objects:
-            from solvers.gate import PumpStation
-            
-            for idx, structure in zip(self.structure_indices, self.structure_objects):
-                # 仅处理运行中的泵站
-                if not isinstance(structure, PumpStation) or not structure.is_running:
-                    continue
-                
-                # 边界检查
-                if idx <= 0 or idx >= n_cells:
-                    continue
-                
-                # =====================================================================
-                # 泵站动量源项计算（v5.1 - 增强版）
-                # =====================================================================
-                # 
-                # 物理原理：
-                # 泵站通过外部能量输入（用电）提升水位，相当于在动量方程中
-                # 添加一个分布式的压力梯度源项。
-                # 
-                # 动量方程: ∂(hu)/∂t + ∂F/∂x = -ghS_f + S_pump
-                # 
-                # 泵站源项: S_pump = g * H_pump / L_pump
-                # 其中:
-                #   - H_pump: 额定扬程 (m)
-                #   - L_pump: 泵站作用范围（取较小值以增强梯度）
-                # 
-                # 关键修正：使用较小的L_pump以产生足够强的水位抬升效果
-                # =====================================================================
-                
-                # 泵站作用范围：使用1个网格以产生最强效果
-                # 这样可以在短距离内产生显著的水位抬升
-                L_pump = 1.0 * dx  # 单个网格长度
-                
-                # 泵站动量源项：S_pump = g * H / L
-                # L_pump很小时，源项非常强，能够在短距离内抬高水位
-                S_pump_unit = self.g * structure.rated_head / L_pump
-                
-                # 直接在泵站位置施加源项
-                S_momentum[idx] += S_pump_unit
-                
-                # 可选：平滑源项到相邻单元（提高数值稳定性）
-                # weight_center = 0.6
-                # weight_neighbor = 0.2
-                # S_momentum[idx] += weight_center * S_pump
-                # if idx > 0:
-                #     S_momentum[idx-1] += weight_neighbor * S_pump
-                # if idx < n_cells - 1:
-                #     S_momentum[idx+1] += weight_neighbor * S_pump
 
         return F_mass, F_momentum, S_mass, S_momentum
 
@@ -467,9 +406,26 @@ class HydrostaticCanalSolver:
                 if idx <= 0 or idx >= self.nx - 1:
                     continue
 
-                # 🔧 跳过泵站：泵站的水位跃变通过_apply_pump_head_jump单独处理
+                # 🔧 泵站处理（v7.0标准能量方程法）
                 if isinstance(structure, PumpStation):
-                    continue
+                    # 泵站：直接应用能量方程，不需要迭代
+                    h_up = self.h[idx - 1]
+                    hu_up = self.hu[idx - 1]
+                    z_up = self.z[idx - 1]
+                    z_down = self.z[idx + 1]
+                    
+                    # 能量方程：h_down = h_up + (z_up - z_down) + H_pump
+                    H_pump = structure.rated_head
+                    h_down = h_up + (z_up - z_down) + H_pump
+                    h_down = max(h_down, self.eps_dry)
+                    
+                    # 施加边界条件
+                    self.h[idx + 1] = h_down
+                    self.hu[idx + 1] = hu_up  # 流量连续
+                    self.h[idx] = (h_up + h_down) / 2.0  # 泵站节点插值
+                    self.hu[idx] = hu_up
+                    
+                    continue  # 泵站处理完毕，进入下一个结构物
 
                 # 获取闸门上下游水深（闸门在节点idx，上游idx-1，下游idx+1）
                 h_up = self.h[idx - 1]
@@ -537,28 +493,44 @@ class HydrostaticCanalSolver:
 
         return mask
 
-    def _apply_pump_bed_elevation_jump(self):
+    
+    def _apply_pump_internal_bc(self, conserve_local_flow=False):
         """
-        应用泵站引起的底床高程跳跃（v6.1 - 平滑过渡版）
+        泵站作为内部边界条件（v7.0 - 标准能量方程法）
         
-        物理原理：
-        =========
-        泵站将水从低处抬到高处，泵站后的底床高程应该抬高扬程H。
-        这样水深基本保持不变，只有水位（水面高程）抬高。
+        理论基础（HEC-RAS、MIKE 11等标准方法）：
+        =========================================
+        泵站通过能量方程施加水位跃变，底床由用户输入（不修改）。
         
-        示例：
-        - 泵站前：z=100m, h=3m → η=103m
-        - 泵站扬程：H=5m
-        - 泵站后：z=105m（↑5m）, h≈3m → η≈108m（↑5m）
+        能量方程：
+            E_up + H_pump = E_down
+            (z_up + h_up + V²/2g) + H_pump = (z_down + h_down + V²/2g)
         
-        实现改进（v6.1）：
-        =================
-        使用平滑过渡替代突变，提高数值稳定性。
+        简化（忽略动能项）：
+            z_up + h_up + H_pump = z_down + h_down
+            → h_down = h_up + (z_up - z_down) + H_pump
         
-        过渡方式：
-        - 过渡区长度：L = 15 * dx （约3km，模拟泵房+渐变段）
-        - 平滑函数：使用3次Hermite插值（S型曲线）
-        - 优点：在泵站前后自然过渡，避免数值震荡
+        物理场景：
+        ----------
+        场景A: 平原泵站（底床连续，z_down ≈ z_up）
+            → h_down ≈ h_up + H_pump（水深增加）
+        
+        场景B: 山区泵站（底床有跳跃，z_down = z_up + Δz）
+            → h_down = h_up + H_pump - Δz
+            → 如果 Δz ≈ H_pump，则 h_down ≈ h_up（水深不变）
+        
+        关键点：
+        --------
+        ✓ 底床 z 由用户输入（实际地形），泵站不修改
+        ✓ 通过能量方程计算下游水深
+        ✓ 适用任何底床配置（平坦/有高差）
+        ✓ 符合商业软件标准（HEC-RAS、MIKE 11、SWMM）
+        
+        参数：
+        ------
+        conserve_local_flow: bool
+            False（稳态）：施加标准跳跃条件
+            True（非稳态）：保持局部流量守恒
         """
         if not self.structure_indices or not self.structure_objects:
             return
@@ -569,75 +541,50 @@ class HydrostaticCanalSolver:
             if not isinstance(structure, PumpStation):
                 continue
             
-            # =====================================================================
-            # 平滑过渡参数
-            # =====================================================================
-            # 过渡区网格点数：15个点（约3km）
-            n_transition = 15
-            
             # 边界检查
-            if idx < n_transition // 2 or idx >= self.nx - n_transition // 2:
-                # 泵站太靠近边界，使用简化处理
-                self.z[idx:] += structure.rated_head
+            if idx <= 0 or idx >= self.nx - 1:
                 continue
             
             # =====================================================================
-            # 3次Hermite平滑插值（S型曲线）
+            # 1. 获取泵站上游状态
             # =====================================================================
-            # 定义过渡区：泵站前后各n_transition/2个点
-            i_start = idx - n_transition // 2
-            i_end = idx + n_transition // 2
+            h_up = self.h[idx - 1]  # 上游水深
+            hu_up = self.hu[idx - 1]  # 上游流量
+            z_up = self.z[idx - 1]  # 上游底床高程
             
-            # 对过渡区内的每个点应用平滑函数
-            for i in range(i_start, i_end + 1):
-                if i < 0 or i >= self.nx:
-                    continue
-                
-                # 归一化位置：0 (泵站前) → 1 (泵站后)
-                t = (i - i_start) / n_transition
-                t = np.clip(t, 0.0, 1.0)
-                
-                # 3次Hermite插值：s(t) = 3t² - 2t³
-                # 特性：s(0)=0, s(1)=1, s'(0)=0, s'(1)=0（平滑连接）
-                smooth_factor = 3 * t**2 - 2 * t**3
-                
-                # 应用平滑的高程变化
-                self.z[i] += structure.rated_head * smooth_factor
+            # =====================================================================
+            # 2. 获取泵站下游底床高程（用户输入，不修改）
+            # =====================================================================
+            z_down = self.z[idx + 1]  # 下游底床高程（实际地形）
             
-            # 泵站后远离过渡区的点：全部抬高
-            if i_end + 1 < self.nx:
-                self.z[i_end + 1:] += structure.rated_head
+            # =====================================================================
+            # 3. 标准能量方程（忽略动能项）
+            # =====================================================================
+            # 能量守恒：z_up + h_up + H_pump = z_down + h_down
+            # 求解：h_down = h_up + (z_up - z_down) + H_pump
+            H_pump = structure.rated_head  # 泵站扬程
+            h_down = h_up + (z_up - z_down) + H_pump
             
-            # 调试信息（可选）
-            if False:  # 设为True可查看过渡区信息
-                print(f"  泵站平滑过渡设置:")
-                print(f"    泵站位置: x = {self.x[idx]/1000:.1f} km")
-                print(f"    过渡区: [{i_start}:{i_end+1}] ({n_transition+1}个点)")
-                print(f"    过渡长度: {(i_end - i_start) * self.dx:.0f} m")
-                print(f"    扬程: {structure.rated_head:.1f} m")
-    
-    def _apply_pump_internal_bc(self, conserve_local_flow=False):
-        """
-        泵站作为内部边界条件（v6.0 - 底床跳跃法）
-        
-        理论基础：
-        =========
-        泵站通过底床高程跳跃实现水位抬升。
-        
-        v6.0修改：
-        - 底床高程已在初始化时跳跃（见_apply_pump_bed_elevation_jump）
-        - 不需要额外的水深调整
-        - 水深自然由求解器计算得到
-        
-        优点：
-        ✓ 物理正确：泵站=克服高差
-        ✓ 水深基本不变
-        ✓ 水位正确抬高
-        ✓ 流量守恒
-        """
-        # v6.0: 底床跳跃法下，不需要额外操作
-        # 底床高程已经在初始化时设置好
-        pass
+            # 确保水深非负
+            h_down = max(h_down, self.eps_dry)
+            
+            # =====================================================================
+            # 4. 施加内部边界条件
+            # =====================================================================
+            # 流量连续：Q_down = Q_up（质量守恒）
+            hu_down = hu_up
+            
+            # 更新下游节点
+            self.h[idx + 1] = h_down
+            self.hu[idx + 1] = hu_down
+            
+            # =====================================================================
+            # 5. 泵站节点插值（平滑过渡）
+            # =====================================================================
+            # 水深：线性插值
+            self.h[idx] = (h_up + h_down) / 2.0
+            # 流量：保持连续
+            self.hu[idx] = hu_up
     
     def _apply_pump_region_constraints(self):
         """
@@ -855,10 +802,6 @@ class HydrostaticCanalSolver:
             print(f"  目标流量：{Q_target:.3f} m³/s")
             print(f"  下游水深：{h_downstream:.3f} m")
             print(f"  上游初始猜测：{h_upstream_guess:.3f} m")
-        
-        # v6.0: 底床跳跃法下，不需要动量源项（已在初始化时禁用）
-        # self.enable_pump_momentum_source = False  # 已在__init__中设置
-
         # 时间推进至稳态
         for iteration in range(max_iterations):
             h_old = self.h.copy()
@@ -875,8 +818,9 @@ class HydrostaticCanalSolver:
             self.h = h_new
             self.hu = hu_new
 
-            # 应用泵站水位跃变（稳态模式：标准跳跃条件）
-            self._apply_pump_internal_bc(conserve_local_flow=False)
+            # v7.0: 泵站边界条件在稳态求解中不需要每次迭代施加
+            # 能量方程会自然体现在求解过程中
+            # self._apply_pump_internal_bc(conserve_local_flow=False)
 
             # 获取泵站区域掩码
             pump_mask = self._get_pump_region_mask()
@@ -896,9 +840,6 @@ class HydrostaticCanalSolver:
             if self.structure_indices:
                 self._apply_internal_bc(t=self.current_time, Q_target=Q_target,
                                       max_iter=20, tol=0.05, relax=0.3)  # P2优化: 降低松弛因子 (0.6→0.3)
-            
-            # 再次应用泵站约束，确保不被闸门约束覆盖
-            self._apply_pump_internal_bc(conserve_local_flow=False)
 
             # 检查收敛
             dh_max = np.max(np.abs(self.h - h_old))
@@ -913,10 +854,6 @@ class HydrostaticCanalSolver:
                 if verbose:
                     print(f"  收敛于迭代 {iteration}")
                 break
-        
-        # v6.0: 底床跳跃法下，不需要恢复动量源项
-        # self.enable_pump_momentum_source = True  # 不再需要
-
         # 计算结果
         Q_final = self.get_Q()
         Q_mean = np.mean(Q_final)

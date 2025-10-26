@@ -54,6 +54,13 @@ def main():
     # ==================== 1. 参数设置 ====================
     print("▶ 1. 系统参数设置")
     print("-" * 90)
+    
+    # ==================== 场景选择（v7.0新增）====================
+    # 选择泵站建模场景：
+    #   "flat": 平原场景（底床连续）→ 水深会增加
+    #   "stepped": 山区场景（底床有高差）→ 水深基本不变
+    # ================================================================
+    SCENARIO = "flat"  # 可选: "flat" 或 "stepped"
 
     # 渠道参数
     L_total = 100000.0      # 总长度 (m) = 100 km
@@ -98,6 +105,13 @@ def main():
     print(f"  闸站2: {gate2_pos/1000:.0f} km处，开度{gate_opening}m")
     print()
 
+    print(f"泵站场景选择: {SCENARIO.upper()}")
+    if SCENARIO == "flat":
+        print(f"  → 平原泵站（底床连续）")
+    elif SCENARIO == "stepped":
+        print(f"  → 山区泵站（底床高差={pump_rated_head}m）")
+    print()
+    
     print(f"模拟场景:")
     print(f"  初始流量: {Q_initial:.1f} m³/s (稳态)")
     print(f"  阶跃流量: {Q_step:.1f} m³/s (t=0时刻，渠首突增)")
@@ -158,6 +172,37 @@ def main():
     print(f"  网格间距: {solver.dx:.1f} m")
     print(f"  内部结构: {len(solver.structure_objects)}个（2闸1泵）")
     print()
+    
+    # ==================== 场景配置：底床高程（v7.0）====================
+    print(f"▶ 场景配置: {SCENARIO.upper()}")
+    print("-" * 90)
+    
+    if SCENARIO == "flat":
+        # 平原场景：底床连续（默认配置）
+        print("场景: 平原泵站（底床连续）")
+        print("  - 底床高程: z = -S0·x（连续，无跳跃）")
+        print("  - 泵站作用: 提供能量抬升水位")
+        print("  - 预期结果: 泵站下游水深增加 ≈ 扬程 = 5m")
+        # 不修改底床（默认就是连续的）
+        
+    elif SCENARIO == "stepped":
+        # 山区场景：底床在泵站处有跳跃
+        pump_idx = np.argmin(np.abs(solver.x - pump_pos))
+        print("场景: 山区泵站（底床有高差）")
+        print(f"  - 泵站前底床: 保持原始高程")
+        print(f"  - 泵站后底床: 抬高 {pump_rated_head:.1f}m（实际地形高差）")
+        print(f"  - 泵站作用: 克服地形高差")
+        print(f"  - 预期结果: 泵站下游水深基本不变")
+        
+        # 在泵站后抬高底床（模拟实际地形高差）
+        solver.z[pump_idx:] += pump_rated_head
+        print(f"  - 已设置底床跳跃: idx={pump_idx}, x={solver.x[pump_idx]/1000:.1f}km")
+        
+    else:
+        raise ValueError(f"未知场景: {SCENARIO}，可选: 'flat' 或 'stepped'")
+    
+    print()
+    # ================================================================
 
     # ==================== 3. 稳态求解 ====================
     print("=" * 90)
@@ -304,7 +349,8 @@ def main():
     ax1.fill_between(solver.x / 1000, z_bed, eta_steady, alpha=0.3, color='cyan', label='Water Depth (水深)')
     ax1.plot(solver.x / 1000, z_bed, 'k-', linewidth=1.5, label='Bed Level (底床高程)')
     ax1.set_ylabel('Elevation (m)', fontsize=12)
-    ax1.set_title(f'Steady-State Longitudinal Profile (Q = {Q_initial} m³/s) - 显示水位和底床', fontsize=14, fontweight='bold')
+    scenario_label = "平原泵站（底床连续）" if SCENARIO == "flat" else "山区泵站（底床有高差）"
+    ax1.set_title(f'Steady-State Profile (Q={Q_initial} m³/s) - {scenario_label}', fontsize=14, fontweight='bold')
     ax1.grid(True, alpha=0.3)
     ax1.legend(fontsize=11, loc='best')
 
