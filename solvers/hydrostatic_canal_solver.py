@@ -80,9 +80,9 @@ class HydrostaticCanalSolver:
         self.bc_left = bc_left
         self.bc_right = bc_right
         
-        # 泵站源项控制标志（v5.2）
-        # 稳态求解时禁用，避免与水深调整叠加；瞬态时启用
-        self.enable_pump_momentum_source = True
+        # 泵站源项控制标志（v6.0）
+        # v6.0: 使用底床跳跃法后，不需要动量源项
+        self.enable_pump_momentum_source = False
 
         # 空间网格
         if x_grid is not None:
@@ -108,6 +108,9 @@ class HydrostaticCanalSolver:
         # 内部边界条件（闸门）
         self.internal_structures = internal_structures or []
         self._setup_internal_structures()
+        
+        # 应用泵站引起的底床高程跳跃（必须在_setup_internal_structures之后）
+        self._apply_pump_bed_elevation_jump()
 
         # 历史记录
         self.h_history = []
@@ -534,70 +537,58 @@ class HydrostaticCanalSolver:
 
         return mask
 
-    def _apply_pump_internal_bc(self, conserve_local_flow=False):
+    def _apply_pump_bed_elevation_jump(self):
         """
-        泵站作为内部边界条件（v5.2 - 实用混合方法）
+        应用泵站引起的底床高程跳跃
         
-        理论基础：
+        物理原理：
         =========
-        泵站在短距离内抬高水位（扬程），同时保持流量守恒。
+        泵站将水从低处抬到高处，泵站后的底床高程应该抬高扬程H。
+        这样水深基本保持不变，只有水位（水面高程）抬高。
         
-        实现策略：
-        - 瞬态：依靠动量源项（自然演化）
-        - 稳态：施加平滑的水深梯度（加速收敛到正确的水位分布）
+        示例：
+        - 泵站前：z=100m, h=3m → η=103m
+        - 泵站扬程：H=5m
+        - 泵站后：z=105m（↑5m）, h≈3m → η≈108m（↑5m）
         
-        关键：使用"平滑跃变"而非"瞬时跳跃"
+        实现：
+        - 在泵站位置之后，底床高程整体抬高H_pump
         """
         if not self.structure_indices or not self.structure_objects:
             return
         
-        # 稳态模式：施加平滑的水深调整
-        if not conserve_local_flow:
-            from solvers.gate import PumpStation
+        from solvers.gate import PumpStation
+        
+        for idx, structure in zip(self.structure_indices, self.structure_objects):
+            if not isinstance(structure, PumpStation):
+                continue
             
-            for idx, structure in zip(self.structure_indices, self.structure_objects):
-                if not isinstance(structure, PumpStation) or not structure.is_running:
-                    continue
-                
-                # 边界检查
-                if idx <= 5 or idx >= self.nx - 5:
-                    continue
-                
-                # 泵站作用范围：8个网格（约1.6km），较大范围使梯度更平缓
-                pump_spread = 8
-                
-                # 获取上游参考水深（泵站前5个节点的平均，避免局部扰动）
-                h_upstream_ref = np.mean(self.h[max(0, idx-5):idx])
-                
-                # 获取下游实际水深（泵站后5个节点的平均）
-                h_downstream_actual = np.mean(self.h[idx+1:min(self.nx, idx+6)])
-                
-                # 计算当前的水深抬升量
-                current_head_gain = h_downstream_actual - h_upstream_ref
-                
-                # 目标扬程
-                target_head = structure.rated_head
-                
-                # 如果当前抬升已经接近目标，不再调整（避免过度累积）
-                if current_head_gain >= target_head * 0.95:
-                    continue  # 已经达到目标，跳过
-                
-                # 在泵站范围内建立平滑的水深梯度
-                for i in range(pump_spread + 1):
-                    i_target = idx + i - pump_spread//2
-                    
-                    # 边界检查
-                    if i_target < 0 or i_target >= self.nx:
-                        continue
-                    
-                    # 线性插值：从上游水深到下游水深
-                    ratio = i / pump_spread  # 0 到 1
-                    h_target = h_upstream_ref + target_head * ratio
-                    
-                    # 极小的松弛因子，避免累积过大
-                    relax = 0.01  # 从0.05降到0.01
-                    self.h[i_target] = (1.0 - relax) * self.h[i_target] + relax * h_target
-        # 瞬态模式：不做任何操作，完全依靠动量源项
+            # 泵站后的所有点，底床高程抬高扬程
+            # 注意：这里假设只有一个泵站，多个泵站需要累积
+            self.z[idx:] += structure.rated_head
+    
+    def _apply_pump_internal_bc(self, conserve_local_flow=False):
+        """
+        泵站作为内部边界条件（v6.0 - 底床跳跃法）
+        
+        理论基础：
+        =========
+        泵站通过底床高程跳跃实现水位抬升。
+        
+        v6.0修改：
+        - 底床高程已在初始化时跳跃（见_apply_pump_bed_elevation_jump）
+        - 不需要额外的水深调整
+        - 水深自然由求解器计算得到
+        
+        优点：
+        ✓ 物理正确：泵站=克服高差
+        ✓ 水深基本不变
+        ✓ 水位正确抬高
+        ✓ 流量守恒
+        """
+        # v6.0: 底床跳跃法下，不需要额外操作
+        # 底床高程已经在初始化时设置好
+        pass
     
     def _apply_pump_region_constraints(self):
         """
@@ -816,8 +807,8 @@ class HydrostaticCanalSolver:
             print(f"  下游水深：{h_downstream:.3f} m")
             print(f"  上游初始猜测：{h_upstream_guess:.3f} m")
         
-        # v5.2: 稳态求解时禁用泵站动量源项，避免与水深调整叠加
-        self.enable_pump_momentum_source = False
+        # v6.0: 底床跳跃法下，不需要动量源项（已在初始化时禁用）
+        # self.enable_pump_momentum_source = False  # 已在__init__中设置
 
         # 时间推进至稳态
         for iteration in range(max_iterations):
@@ -874,8 +865,8 @@ class HydrostaticCanalSolver:
                     print(f"  收敛于迭代 {iteration}")
                 break
         
-        # v5.2: 恢复泵站动量源项（用于后续瞬态模拟）
-        self.enable_pump_momentum_source = True
+        # v6.0: 底床跳跃法下，不需要恢复动量源项
+        # self.enable_pump_momentum_source = True  # 不再需要
 
         # 计算结果
         Q_final = self.get_Q()
