@@ -628,7 +628,8 @@ class HydrostaticCanalSolver:
 
     def step_preissmann(self, dt: float, max_iter: int = 10,
                        enforce_bc: bool = False,
-                       Q_in: float = None, h_out: float = None) -> Tuple[np.ndarray, np.ndarray]:
+                       Q_in: float = None, h_out: float = None,
+                       use_pump_mask: bool = True) -> Tuple[np.ndarray, np.ndarray]:
         """
         Preissmann四点隐式格式时间步
 
@@ -669,7 +670,11 @@ class HydrostaticCanalSolver:
             hu_old_iter = hu_new.copy()
 
             # 获取泵站区域掩码（在更新前）
-            pump_mask = self._get_pump_region_mask()
+            # 稳态求解使用掩码，非恒定流不使用（避免流量累积）
+            if use_pump_mask:
+                pump_mask = self._get_pump_region_mask()
+            else:
+                pump_mask = np.zeros(self.nx, dtype=bool)
 
             # 更新（排除泵站区域）
             for i in range(self.nx):
@@ -691,19 +696,27 @@ class HydrostaticCanalSolver:
                     h_new[i] = self.omega * h_new[i] + (1 - self.omega) * h_old_iter[i]
                     hu_new[i] = self.omega * hu_new[i] + (1 - self.omega) * hu_old_iter[i]
 
-            # 瞬态流：在迭代中强制边界条件
-            if enforce_bc:
-                if Q_in is not None:
-                    hu_new[0] = Q_in / self.B
-                if h_out is not None:
-                    h_new[-1] = h_out
-
             # 应用泵站区域约束（在每次迭代中）
             self.h[:] = h_new
             self.hu[:] = hu_new
             self._apply_pump_region_constraints()
             h_new = self.h.copy()
             hu_new = self.hu.copy()
+
+            # ⭐ 关键修复：在所有更新操作后最终强制边界条件
+            # 这确保边界条件不被松弛或泵站约束覆盖
+            if enforce_bc:
+                # 确保泵站掩码不影响边界节点
+                pump_mask[0] = False
+                pump_mask[-1] = False
+                
+                # 强制上游流量边界
+                if Q_in is not None:
+                    hu_new[0] = Q_in / self.B
+                
+                # 强制下游水深边界
+                if h_out is not None:
+                    h_new[-1] = h_out
 
         return h_new, hu_new
 
@@ -937,8 +950,10 @@ class HydrostaticCanalSolver:
             self.set_boundary_conditions(Q_in=Q_in, h_out=h_out)
 
             # Preissmann时间步（在迭代中强制边界条件）
+            # 非恒定流不使用泵站掩码，避免流量累积
             h_new, hu_new = self.step_preissmann(dt, enforce_bc=True,
-                                                Q_in=Q_in, h_out=h_out)
+                                                Q_in=Q_in, h_out=h_out,
+                                                use_pump_mask=False)
 
             # 更新状态
             self.h = h_new
@@ -1073,8 +1088,10 @@ class HydrostaticCanalSolver:
             self.set_boundary_conditions(Q_in=Q_in, h_out=h_out)
 
             # Preissmann时间步（在迭代中强制边界条件）
+            # 非恒定流不使用泵站掩码，避免流量累积
             h_new, hu_new = self.step_preissmann(dt, enforce_bc=True,
-                                                Q_in=Q_in, h_out=h_out)
+                                                Q_in=Q_in, h_out=h_out,
+                                                use_pump_mask=False)
 
             # 更新状态
             self.h = h_new
