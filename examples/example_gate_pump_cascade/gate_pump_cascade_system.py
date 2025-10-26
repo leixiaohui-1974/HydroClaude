@@ -290,17 +290,23 @@ def main():
 
     viz = VisualizationTemplates()
 
-    # Figure 1: Steady-state longitudinal profile (water depth + flow)
+    # Figure 1: Steady-state longitudinal profile (water level + flow)
     print("Generating Figure 1: Steady-state longitudinal profile...")
 
     fig1, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 10), sharex=True)
 
-    # Subplot 1: Water depth
-    ax1.plot(solver.x / 1000, h_steady, 'b-', linewidth=2, label='Water Depth')
-    ax1.set_ylabel('Water Depth (m)', fontsize=12)
-    ax1.set_title(f'Steady-State Longitudinal Profile (Q = {Q_initial} m³/s)', fontsize=14, fontweight='bold')
+    # 计算水位（水面高程）= 底床高程 + 水深
+    z_bed = -S0 * solver.x  # 底床高程
+    eta_steady = z_bed + h_steady  # 水位
+
+    # Subplot 1: Water level (水位) and bed level (底床)
+    ax1.plot(solver.x / 1000, eta_steady, 'b-', linewidth=2, label='Water Level (水位)')
+    ax1.fill_between(solver.x / 1000, z_bed, eta_steady, alpha=0.3, color='cyan', label='Water Depth (水深)')
+    ax1.plot(solver.x / 1000, z_bed, 'k-', linewidth=1.5, label='Bed Level (底床高程)')
+    ax1.set_ylabel('Elevation (m)', fontsize=12)
+    ax1.set_title(f'Steady-State Longitudinal Profile (Q = {Q_initial} m³/s) - 显示水位和底床', fontsize=14, fontweight='bold')
     ax1.grid(True, alpha=0.3)
-    ax1.legend(fontsize=11)
+    ax1.legend(fontsize=11, loc='best')
 
     # Mark structures
     for pos, name in [(gate1_pos/1000, 'Gate1'), (pump_pos/1000, 'Pump'), (gate2_pos/1000, 'Gate2')]:
@@ -331,13 +337,18 @@ def main():
     plt.close(fig1)
     print(f"  Saved: 01_steady_state_profile.png")
 
-    # Figure 2: Water depth spatiotemporal evolution
-    print("Generating Figure 2: Water depth spatiotemporal evolution...")
+    # Figure 2: Water level spatiotemporal evolution (水位时空演化)
+    print("Generating Figure 2: Water level spatiotemporal evolution...")
     X, T = np.meshgrid(solver.x / 1000, time_history / 60)  # km, min
+    
+    # 计算水位历史（每个时间步的水位）
+    eta_history = np.zeros_like(h_history)
+    for i in range(len(time_history)):
+        eta_history[i, :] = z_bed + h_history[i, :]
 
     fig2, ax2 = plt.subplots(figsize=(16, 10))
-    contour2 = ax2.contourf(X, T, h_history, levels=20, cmap='viridis')
-    cbar2 = plt.colorbar(contour2, ax=ax2, label='Water Depth (m)')
+    contour2 = ax2.contourf(X, T, eta_history, levels=20, cmap='viridis')
+    cbar2 = plt.colorbar(contour2, ax=ax2, label='Water Level (水位, m)')
 
     # Add structure position lines
     for pos, name in [(gate1_pos/1000, "Gate1"), (pump_pos/1000, "Pump"), (gate2_pos/1000, "Gate2")]:
@@ -348,13 +359,13 @@ def main():
 
     ax2.set_xlabel('Distance (km)', fontsize=12)
     ax2.set_ylabel('Time (min)', fontsize=12)
-    ax2.set_title('Water Depth Spatiotemporal Evolution (Flow Step 30→55 m³/s)', fontsize=14, fontweight='bold')
+    ax2.set_title('Water Level Spatiotemporal Evolution (水位时空演化, Flow Step 30→55 m³/s)', fontsize=14, fontweight='bold')
     ax2.grid(True, alpha=0.3)
     fig2.tight_layout()
 
-    fig2.savefig(os.path.join(output_dir, "02_water_depth_spacetime.png"), dpi=150, bbox_inches='tight')
+    fig2.savefig(os.path.join(output_dir, "02_water_level_spacetime.png"), dpi=150, bbox_inches='tight')
     plt.close(fig2)
-    print(f"  Saved: 02_water_depth_spacetime.png")
+    print(f"  Saved: 02_water_level_spacetime.png")
 
     # Figure 3: Flow rate spatiotemporal evolution
     print("Generating Figure 3: Flow rate spatiotemporal evolution...")
