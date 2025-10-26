@@ -55,12 +55,26 @@ def main():
     print("▶ 1. 系统参数设置")
     print("-" * 90)
     
-    # ==================== 场景选择（v7.0新增）====================
+    # ==================== 场景选择（v7.0修正）====================
     # 选择泵站建模场景：
-    #   "flat": 平原场景（底床连续）→ 水深会增加
-    #   "stepped": 山区场景（底床有高差）→ 水深基本不变
+    # 
+    # 场景A "mountain": 山区/调水泵站
+    #   - 底床有高差：泵后底床抬高 ΔH ≈ H_pump
+    #   - 下游边界：低水位或自由边界
+    #   - 物理：泵站克服地形高差
+    #   - 结果：水深基本不变，水位抬升
+    #
+    # 场景B "plain": 平原排涝泵站
+    #   - 底床连续：泵后底床不抬高（或更低）
+    #   - 下游边界：高水位（关键！模拟外江汛期）
+    #   - 物理：泵站克服下游高水位阻力
+    #   - 结果：水深增加（泵后水深由下游边界控制）
+    #
+    # 典型案例：
+    #   - 场景A：南水北调泵站（长江→黄河，克服地形）
+    #   - 场景B：江汉平原排涝泵站（内河→长江，外江汛期高水位）
     # ================================================================
-    SCENARIO = "flat"  # 可选: "flat" 或 "stepped"
+    SCENARIO = "mountain"  # 可选: "mountain" 或 "plain"
 
     # 渠道参数
     L_total = 100000.0      # 总长度 (m) = 100 km
@@ -106,10 +120,16 @@ def main():
     print()
 
     print(f"泵站场景选择: {SCENARIO.upper()}")
-    if SCENARIO == "flat":
-        print(f"  → 平原泵站（底床连续）")
-    elif SCENARIO == "stepped":
-        print(f"  → 山区泵站（底床高差={pump_rated_head}m）")
+    if SCENARIO == "plain":
+        print(f"  → 平原排涝泵站")
+        print(f"     - 底床：连续（无高差）")
+        print(f"     - 下游边界：高水位（模拟外江汛期）")
+        print(f"     - 预期：水深增加")
+    elif SCENARIO == "mountain":
+        print(f"  → 山区调水泵站")
+        print(f"     - 底床：有高差 ΔH={pump_rated_head}m")
+        print(f"     - 下游边界：低水位")
+        print(f"     - 预期：水深基本不变")
     print()
     
     print(f"模拟场景:")
@@ -173,34 +193,60 @@ def main():
     print(f"  内部结构: {len(solver.structure_objects)}个（2闸1泵）")
     print()
     
-    # ==================== 场景配置：底床高程（v7.0）====================
+    # 计算均匀流水深（用于场景配置和初始化）
+    h_uniform = compute_steady_uniform_flow(Q_initial, B, S0, n)
+    print(f"均匀流水深估计: {h_uniform:.3f} m")
+    print()
+    
+    # ==================== 场景配置：底床高程+边界条件（v7.0修正）====================
     print(f"▶ 场景配置: {SCENARIO.upper()}")
     print("-" * 90)
     
-    if SCENARIO == "flat":
-        # 平原场景：底床连续（默认配置）
-        print("场景: 平原泵站（底床连续）")
-        print("  - 底床高程: z = -S0·x（连续，无跳跃）")
-        print("  - 泵站作用: 提供能量抬升水位")
-        print("  - 预期结果: 泵站下游水深增加 ≈ 扬程 = 5m")
-        # 不修改底床（默认就是连续的）
+    pump_idx = np.argmin(np.abs(solver.x - pump_pos))
+    
+    if SCENARIO == "plain":
+        # 场景B：平原排涝泵站（底床连续，下游高水位）
+        print("场景B: 平原排涝泵站")
+        print("  物理配置:")
+        print(f"    - 底床高程: z = -S0·x（连续，无跳跃）")
+        print(f"    - 下游边界: 高水位 = 均匀流水深 + {pump_rated_head:.1f}m")
+        print(f"  物理过程:")
+        print(f"    - 内河低洼积水，需抽排到高水位外江")
+        print(f"    - 泵站克服下游高水位阻力")
+        print(f"  预期结果:")
+        print(f"    - 泵后水深增加（受下游高水位控制）")
         
-    elif SCENARIO == "stepped":
-        # 山区场景：底床在泵站处有跳跃
-        pump_idx = np.argmin(np.abs(solver.x - pump_pos))
-        print("场景: 山区泵站（底床有高差）")
-        print(f"  - 泵站前底床: 保持原始高程")
-        print(f"  - 泵站后底床: 抬高 {pump_rated_head:.1f}m（实际地形高差）")
-        print(f"  - 泵站作用: 克服地形高差")
-        print(f"  - 预期结果: 泵站下游水深基本不变")
+        # 底床不修改（保持连续）
+        # 关键：设置高水位下游边界
+        h_downstream_boundary = h_uniform + pump_rated_head  # 高水位边界
         
-        # 在泵站后抬高底床（模拟实际地形高差）
+    elif SCENARIO == "mountain":
+        # 场景A：山区调水泵站（底床有高差，下游低水位）
+        print("场景A: 山区调水泵站")
+        print("  物理配置:")
+        print(f"    - 泵前底床: 保持原始高程")
+        print(f"    - 泵后底床: 抬高 {pump_rated_head:.1f}m（实际地形高差）")
+        print(f"    - 下游边界: 低水位 = 均匀流水深")
+        print(f"  物理过程:")
+        print(f"    - 泵站克服地形高差 ΔH = {pump_rated_head:.1f}m")
+        print(f"    - 扬程用于克服地形")
+        print(f"  预期结果:")
+        print(f"    - 泵后水深基本不变")
+        print(f"    - 水位抬升 {pump_rated_head:.1f}m")
+        
+        # 抬高泵后底床（模拟实际地形高差）
         solver.z[pump_idx:] += pump_rated_head
-        print(f"  - 已设置底床跳跃: idx={pump_idx}, x={solver.x[pump_idx]/1000:.1f}km")
+        print(f"  ✓ 已设置底床跳跃: idx={pump_idx}, x={solver.x[pump_idx]/1000:.1f}km")
+        
+        # 下游边界：低水位（均匀流）
+        h_downstream_boundary = h_uniform
         
     else:
-        raise ValueError(f"未知场景: {SCENARIO}，可选: 'flat' 或 'stepped'")
+        raise ValueError(f"未知场景: {SCENARIO}，可选: 'plain' 或 'mountain'")
     
+    print()
+    print(f"✓ 场景配置完成")
+    print(f"  - 下游边界条件: h = {h_downstream_boundary:.3f} m")
     print()
     # ================================================================
 
@@ -209,22 +255,18 @@ def main():
     print("▶ 3. 稳态求解（初始流量 30 m³/s）")
     print("-" * 90)
 
-    # 计算均匀流水深作为初始猜测
-    h_uniform = compute_steady_uniform_flow(Q_initial, B, S0, n)
-    print(f"均匀流水深估计: {h_uniform:.3f} m (用作初始条件)")
-    print()
-
     # 初始化
     solver.h[:] = h_uniform
     solver.hu[:] = Q_initial / B
 
     # 稳态求解
     print("开始稳态求解...")
-    h_down_steady = h_uniform  # 下游边界条件
+    print(f"下游边界条件: h_downstream = {h_downstream_boundary:.3f} m")
+    print()
 
     result_steady = solver.solve_steady_state(
         Q_target=Q_initial,
-        h_downstream=h_down_steady,
+        h_downstream=h_downstream_boundary,  # 使用场景配置的边界条件
         convergence_tol=0.001,  # 0.1%容差
         max_iterations=500,     # 先用500测试收敛性
         dt=dt,
@@ -297,8 +339,8 @@ def main():
         # 上游边界：阶跃流量
         Q_upstream = Q_step  # 从t>0开始即为阶跃后流量
 
-        # 下游边界：保持初始水深
-        h_downstream = h_down_steady
+        # 下游边界：保持初始水深（使用场景配置的边界）
+        h_downstream = h_downstream_boundary
 
         # 设置边界条件
         solver.set_boundary_conditions(Q_in=Q_upstream, h_out=h_downstream)
@@ -349,7 +391,7 @@ def main():
     ax1.fill_between(solver.x / 1000, z_bed, eta_steady, alpha=0.3, color='cyan', label='Water Depth (水深)')
     ax1.plot(solver.x / 1000, z_bed, 'k-', linewidth=1.5, label='Bed Level (底床高程)')
     ax1.set_ylabel('Elevation (m)', fontsize=12)
-    scenario_label = "平原泵站（底床连续）" if SCENARIO == "flat" else "山区泵站（底床有高差）"
+    scenario_label = "平原排涝泵站" if SCENARIO == "plain" else "山区调水泵站"
     ax1.set_title(f'Steady-State Profile (Q={Q_initial} m³/s) - {scenario_label}', fontsize=14, fontweight='bold')
     ax1.grid(True, alpha=0.3)
     ax1.legend(fontsize=11, loc='best')
