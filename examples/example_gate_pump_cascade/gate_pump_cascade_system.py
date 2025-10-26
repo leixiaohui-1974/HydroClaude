@@ -102,11 +102,11 @@ def main():
     pump_min_head = 2.0     # 最小吸入水头 (m)
 
     # 瞬态模拟参数
-    ENABLE_TRANSIENT = False  # ⚠️ 暂时禁用：泵站+闸门组合系统的非恒定流需要更稳定的数值方法
-    # 说明：当前Preissmann隐式方法在处理多个水工建筑物时存在数值稳定性问题
-    # 建议使用专业软件（如HEC-RAS、MIKE 11）进行复杂系统的非恒定流模拟
-    t_total = 7200.0        # 总模拟时间 (s) = 2小时
-    dt = 0.5                # 时间步长 (s)
+    ENABLE_TRANSIENT = True   # ✓ 已修复：使用隐式Preissmann方法
+    # 修复说明：改用稳定的Preissmann隐式时间推进方法
+    # 相比显式方法，隐式方法在处理水工结构时更加稳定
+    t_total = 3600.0        # 总模拟时间 (s) = 1小时
+    dt = 1.0                # 时间步长 (s)
 
     print(f"渠道参数:")
     print(f"  总长度: {L_total/1000:.1f} km = {L_total:.0f} m")
@@ -353,11 +353,15 @@ def main():
         # 下游边界：保持初始水深（使用场景配置的边界）
         h_downstream = h_downstream_boundary
 
-        # 设置边界条件
-        solver.set_boundary_conditions(Q_in=Q_upstream, h_out=h_downstream)
-
-        # 时间推进（使用显式方法）
-        h_new, hu_new = solver.step_explicit(dt)
+        # 时间推进（使用隐式Preissmann方法）
+        # 隐式方法相比显式方法更稳定，适合处理复杂水工结构
+        h_new, hu_new = solver.step_preissmann(
+            dt=dt,
+            max_iter=10,
+            enforce_bc=True,
+            Q_in=Q_upstream,
+            h_out=h_downstream
+        )
         solver.h[:] = h_new
         solver.hu[:] = hu_new
 
