@@ -539,7 +539,7 @@ class HydrostaticCanalSolver:
 
     def _apply_pump_bed_elevation_jump(self):
         """
-        应用泵站引起的底床高程跳跃
+        应用泵站引起的底床高程跳跃（v6.1 - 平滑过渡版）
         
         物理原理：
         =========
@@ -551,8 +551,14 @@ class HydrostaticCanalSolver:
         - 泵站扬程：H=5m
         - 泵站后：z=105m（↑5m）, h≈3m → η≈108m（↑5m）
         
-        实现：
-        - 在泵站位置之后，底床高程整体抬高H_pump
+        实现改进（v6.1）：
+        =================
+        使用平滑过渡替代突变，提高数值稳定性。
+        
+        过渡方式：
+        - 过渡区长度：L = 15 * dx （约3km，模拟泵房+渐变段）
+        - 平滑函数：使用3次Hermite插值（S型曲线）
+        - 优点：在泵站前后自然过渡，避免数值震荡
         """
         if not self.structure_indices or not self.structure_objects:
             return
@@ -563,9 +569,52 @@ class HydrostaticCanalSolver:
             if not isinstance(structure, PumpStation):
                 continue
             
-            # 泵站后的所有点，底床高程抬高扬程
-            # 注意：这里假设只有一个泵站，多个泵站需要累积
-            self.z[idx:] += structure.rated_head
+            # =====================================================================
+            # 平滑过渡参数
+            # =====================================================================
+            # 过渡区网格点数：15个点（约3km）
+            n_transition = 15
+            
+            # 边界检查
+            if idx < n_transition // 2 or idx >= self.nx - n_transition // 2:
+                # 泵站太靠近边界，使用简化处理
+                self.z[idx:] += structure.rated_head
+                continue
+            
+            # =====================================================================
+            # 3次Hermite平滑插值（S型曲线）
+            # =====================================================================
+            # 定义过渡区：泵站前后各n_transition/2个点
+            i_start = idx - n_transition // 2
+            i_end = idx + n_transition // 2
+            
+            # 对过渡区内的每个点应用平滑函数
+            for i in range(i_start, i_end + 1):
+                if i < 0 or i >= self.nx:
+                    continue
+                
+                # 归一化位置：0 (泵站前) → 1 (泵站后)
+                t = (i - i_start) / n_transition
+                t = np.clip(t, 0.0, 1.0)
+                
+                # 3次Hermite插值：s(t) = 3t² - 2t³
+                # 特性：s(0)=0, s(1)=1, s'(0)=0, s'(1)=0（平滑连接）
+                smooth_factor = 3 * t**2 - 2 * t**3
+                
+                # 应用平滑的高程变化
+                self.z[i] += structure.rated_head * smooth_factor
+            
+            # 泵站后远离过渡区的点：全部抬高
+            if i_end + 1 < self.nx:
+                self.z[i_end + 1:] += structure.rated_head
+            
+            # 调试信息（可选）
+            if False:  # 设为True可查看过渡区信息
+                print(f"  泵站平滑过渡设置:")
+                print(f"    泵站位置: x = {self.x[idx]/1000:.1f} km")
+                print(f"    过渡区: [{i_start}:{i_end+1}] ({n_transition+1}个点)")
+                print(f"    过渡长度: {(i_end - i_start) * self.dx:.0f} m")
+                print(f"    扬程: {structure.rated_head:.1f} m")
     
     def _apply_pump_internal_bc(self, conserve_local_flow=False):
         """
