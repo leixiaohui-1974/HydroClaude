@@ -424,10 +424,12 @@ class HydrostaticCanalSolver:
 
     def _get_pump_region_mask(self) -> np.ndarray:
         """
-        获取泵站区域的掩码数组
+        获取泵站区域的掩码数组（用于排除Preissmann更新）
 
+        返回泵站直接影响的节点：idx-1, idx, idx+1
+        
         Returns:
-            mask: 布尔数组，True表示该点在泵站区域内
+            mask: 布尔数组，True表示该点在泵站影响区内
         """
         mask = np.zeros(self.nx, dtype=bool)
 
@@ -440,16 +442,14 @@ class HydrostaticCanalSolver:
             if not isinstance(structure, PumpStation) or not structure.is_running:
                 continue
 
-            # 检查索引有效性（需要至少前后各15个点）
-            if idx <= 15 or idx >= self.nx - 15:
+            # 边界检查
+            if idx <= 0 or idx >= self.nx - 1:
                 continue
 
-            # 标记泵站区域：上游过渡区 + 中心 + 下游平台区 + 下游过渡区
-            # 总共15个点：idx-2 到 idx+12
-            # 注意：过渡区仍然在掩码内，但使用较弱约束
-            start_idx = idx - 2
-            end_idx = idx + 13  # Python切片是左闭右开
-            mask[start_idx:end_idx] = True
+            # 标记泵站直接影响的3个节点：上游邻居、泵站、下游邻居
+            mask[idx - 1] = True
+            mask[idx] = True
+            mask[idx + 1] = True
 
         return mask
 
