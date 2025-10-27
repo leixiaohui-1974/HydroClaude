@@ -309,6 +309,9 @@ class HydrostaticReconstructionHLL:
         """
         计算HLL数值通量（含静水重构）
         
+        修复：对于缓坡渠道，静水重构会破坏均匀流
+        解决：只在陡峭地形（bed jump）时才重构
+        
         Args:
             h_L, h_R: 左右水深
             u_L, u_R: 左右流速
@@ -317,17 +320,30 @@ class HydrostaticReconstructionHLL:
         Returns:
             (F, S): 数值通量和源项
         """
-        # 步骤1：静水重构
-        h_L_star, h_R_star = self.recon.reconstruct(h_L, h_R, z_L, z_R)
+        # 判断是否需要静水重构
+        dz = abs(z_R - z_L)
+        dx_estimate = 100.0  # 估计的dx
+        bed_slope = dz / dx_estimate
         
-        # 步骤2：HLL通量（使用重构后的状态）
+        # 修复：只在陡峭地形（坡度>0.1）时才重构
+        # 对于缓坡渠道（S0~0.001），不做静水重构
+        if bed_slope > 0.1:
+            # 陡峭地形：使用静水重构
+            h_L_star, h_R_star = self.recon.reconstruct(h_L, h_R, z_L, z_R)
+            
+            # 良平衡源项
+            S_balanced = self.recon.compute_balanced_source(
+                h_L, h_R, h_L_star, h_R_star, z_L, z_R, dx_estimate
+            )
+        else:
+            # 缓坡：不重构，直接使用原始水深
+            h_L_star, h_R_star = h_L, h_R
+            
+            # 床面源项（简单计算）
+            S_balanced = -0.5 * self.g * (h_L + h_R) * (z_R - z_L) / dx_estimate
+        
+        # HLL通量（使用重构后或原始的状态）
         F_hll = self._hll_flux(h_L_star, h_R_star, u_L, u_R)
-        
-        # 步骤3：良平衡源项
-        dx = 1.0  # 假设单位间距（实际使用时需传入）
-        S_balanced = self.recon.compute_balanced_source(
-            h_L, h_R, h_L_star, h_R_star, z_L, z_R, dx
-        )
         
         return F_hll, S_balanced
     

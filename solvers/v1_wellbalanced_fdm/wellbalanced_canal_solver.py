@@ -224,18 +224,19 @@ class WellBalancedCanalSolver:
         """
         计算摩阻坡度（Manning公式）
         
-        Sf = n² * |u| * u / h^(4/3)
+        标准公式：Sf = n² * u² / h^(4/3) （不需要g）
         
         Args:
             i: 节点索引
         
         Returns:
-            Sf: 摩阻坡度
+            Sf: 摩阻坡度（无量纲）
         """
         h = max(self.h[i], self.eps_dry)
         u = self.hu[i] / h
         
-        Sf = self.n**2 * abs(u) * u / (h**(4/3))
+        # 标准Manning公式（无g）
+        Sf = self.n**2 * u**2 / (h**(4/3))
         
         return Sf
     
