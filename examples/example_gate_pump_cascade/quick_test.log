@@ -1,0 +1,1316 @@
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 23567 (\N{CJK UNIFIED IDEOGRAPH-5C0F}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 24133 (\N{CJK UNIFIED IDEOGRAPH-5E45}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 38454 (\N{CJK UNIFIED IDEOGRAPH-9636}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 36291 (\N{CJK UNIFIED IDEOGRAPH-8DC3}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 23567 (\N{CJK UNIFIED IDEOGRAPH-5C0F}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 24133 (\N{CJK UNIFIED IDEOGRAPH-5E45}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 38454 (\N{CJK UNIFIED IDEOGRAPH-9636}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 36291 (\N{CJK UNIFIED IDEOGRAPH-8DC3}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 23567 (\N{CJK UNIFIED IDEOGRAPH-5C0F}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 24133 (\N{CJK UNIFIED IDEOGRAPH-5E45}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 38454 (\N{CJK UNIFIED IDEOGRAPH-9636}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 36291 (\N{CJK UNIFIED IDEOGRAPH-8DC3}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 23567 (\N{CJK UNIFIED IDEOGRAPH-5C0F}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 24133 (\N{CJK UNIFIED IDEOGRAPH-5E45}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 38454 (\N{CJK UNIFIED IDEOGRAPH-9636}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 36291 (\N{CJK UNIFIED IDEOGRAPH-8DC3}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 23567 (\N{CJK UNIFIED IDEOGRAPH-5C0F}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 24133 (\N{CJK UNIFIED IDEOGRAPH-5E45}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 38454 (\N{CJK UNIFIED IDEOGRAPH-9636}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 36291 (\N{CJK UNIFIED IDEOGRAPH-8DC3}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 23567 (\N{CJK UNIFIED IDEOGRAPH-5C0F}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 24133 (\N{CJK UNIFIED IDEOGRAPH-5E45}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 38454 (\N{CJK UNIFIED IDEOGRAPH-9636}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 36291 (\N{CJK UNIFIED IDEOGRAPH-8DC3}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 22823 (\N{CJK UNIFIED IDEOGRAPH-5927}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 24133 (\N{CJK UNIFIED IDEOGRAPH-5E45}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 38454 (\N{CJK UNIFIED IDEOGRAPH-9636}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 36291 (\N{CJK UNIFIED IDEOGRAPH-8DC3}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 22823 (\N{CJK UNIFIED IDEOGRAPH-5927}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 24133 (\N{CJK UNIFIED IDEOGRAPH-5E45}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 38454 (\N{CJK UNIFIED IDEOGRAPH-9636}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 36291 (\N{CJK UNIFIED IDEOGRAPH-8DC3}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 22823 (\N{CJK UNIFIED IDEOGRAPH-5927}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 24133 (\N{CJK UNIFIED IDEOGRAPH-5E45}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 38454 (\N{CJK UNIFIED IDEOGRAPH-9636}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 36291 (\N{CJK UNIFIED IDEOGRAPH-8DC3}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 22823 (\N{CJK UNIFIED IDEOGRAPH-5927}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 24133 (\N{CJK UNIFIED IDEOGRAPH-5E45}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 38454 (\N{CJK UNIFIED IDEOGRAPH-9636}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 36291 (\N{CJK UNIFIED IDEOGRAPH-8DC3}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 22823 (\N{CJK UNIFIED IDEOGRAPH-5927}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 24133 (\N{CJK UNIFIED IDEOGRAPH-5E45}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 38454 (\N{CJK UNIFIED IDEOGRAPH-9636}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 36291 (\N{CJK UNIFIED IDEOGRAPH-8DC3}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 22823 (\N{CJK UNIFIED IDEOGRAPH-5927}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 24133 (\N{CJK UNIFIED IDEOGRAPH-5E45}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 38454 (\N{CJK UNIFIED IDEOGRAPH-9636}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 36291 (\N{CJK UNIFIED IDEOGRAPH-8DC3}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 21608 (\N{CJK UNIFIED IDEOGRAPH-5468}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 26399 (\N{CJK UNIFIED IDEOGRAPH-671F}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 27874 (\N{CJK UNIFIED IDEOGRAPH-6CE2}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 21160 (\N{CJK UNIFIED IDEOGRAPH-52A8}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 21608 (\N{CJK UNIFIED IDEOGRAPH-5468}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 26399 (\N{CJK UNIFIED IDEOGRAPH-671F}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 27874 (\N{CJK UNIFIED IDEOGRAPH-6CE2}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 21160 (\N{CJK UNIFIED IDEOGRAPH-52A8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 21608 (\N{CJK UNIFIED IDEOGRAPH-5468}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 26399 (\N{CJK UNIFIED IDEOGRAPH-671F}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 27874 (\N{CJK UNIFIED IDEOGRAPH-6CE2}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 21160 (\N{CJK UNIFIED IDEOGRAPH-52A8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 21608 (\N{CJK UNIFIED IDEOGRAPH-5468}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 26399 (\N{CJK UNIFIED IDEOGRAPH-671F}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 27874 (\N{CJK UNIFIED IDEOGRAPH-6CE2}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 21160 (\N{CJK UNIFIED IDEOGRAPH-52A8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 21608 (\N{CJK UNIFIED IDEOGRAPH-5468}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 26399 (\N{CJK UNIFIED IDEOGRAPH-671F}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 27874 (\N{CJK UNIFIED IDEOGRAPH-6CE2}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 21160 (\N{CJK UNIFIED IDEOGRAPH-52A8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 19978 (\N{CJK UNIFIED IDEOGRAPH-4E0A}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 21608 (\N{CJK UNIFIED IDEOGRAPH-5468}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 26399 (\N{CJK UNIFIED IDEOGRAPH-671F}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 27874 (\N{CJK UNIFIED IDEOGRAPH-6CE2}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 21160 (\N{CJK UNIFIED IDEOGRAPH-52A8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 19979 (\N{CJK UNIFIED IDEOGRAPH-4E0B}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 27700 (\N{CJK UNIFIED IDEOGRAPH-6C34}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 20301 (\N{CJK UNIFIED IDEOGRAPH-4F4D}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 25260 (\N{CJK UNIFIED IDEOGRAPH-62AC}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 39640 (\N{CJK UNIFIED IDEOGRAPH-9AD8}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 19979 (\N{CJK UNIFIED IDEOGRAPH-4E0B}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 27700 (\N{CJK UNIFIED IDEOGRAPH-6C34}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 20301 (\N{CJK UNIFIED IDEOGRAPH-4F4D}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 25260 (\N{CJK UNIFIED IDEOGRAPH-62AC}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 39640 (\N{CJK UNIFIED IDEOGRAPH-9AD8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 19979 (\N{CJK UNIFIED IDEOGRAPH-4E0B}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 27700 (\N{CJK UNIFIED IDEOGRAPH-6C34}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 20301 (\N{CJK UNIFIED IDEOGRAPH-4F4D}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 25260 (\N{CJK UNIFIED IDEOGRAPH-62AC}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 39640 (\N{CJK UNIFIED IDEOGRAPH-9AD8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 19979 (\N{CJK UNIFIED IDEOGRAPH-4E0B}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 27700 (\N{CJK UNIFIED IDEOGRAPH-6C34}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 20301 (\N{CJK UNIFIED IDEOGRAPH-4F4D}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 25260 (\N{CJK UNIFIED IDEOGRAPH-62AC}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 39640 (\N{CJK UNIFIED IDEOGRAPH-9AD8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 19979 (\N{CJK UNIFIED IDEOGRAPH-4E0B}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 27700 (\N{CJK UNIFIED IDEOGRAPH-6C34}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 20301 (\N{CJK UNIFIED IDEOGRAPH-4F4D}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 25260 (\N{CJK UNIFIED IDEOGRAPH-62AC}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 39640 (\N{CJK UNIFIED IDEOGRAPH-9AD8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 19979 (\N{CJK UNIFIED IDEOGRAPH-4E0B}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 28216 (\N{CJK UNIFIED IDEOGRAPH-6E38}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 27700 (\N{CJK UNIFIED IDEOGRAPH-6C34}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 20301 (\N{CJK UNIFIED IDEOGRAPH-4F4D}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 25260 (\N{CJK UNIFIED IDEOGRAPH-62AC}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 39640 (\N{CJK UNIFIED IDEOGRAPH-9AD8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+
+====================================================================================================
+                                      串联明渠闸泵群系统 - 快速工况测试（精简版）                                       
+====================================================================================================
+
+开始时间: 2025-10-27 00:14:44
+共设计 8 个代表性工况
+
+优化设置:
+  - 模拟时间: 1200秒 (20分钟)
+  - 网格点数: 301 (减少约40%)
+  - 时间步长: 1.0秒 (加快2倍)
+  - 预计总耗时: 20-30分钟
+
+工况分类统计:
+  - 上游流量扰动: 3个
+  - 下游水位扰动: 1个
+  - 闸门开度调节: 1个
+  - 多重扰动组合: 1个
+  - 极端工况: 2个
+
+====================================================================================================
+
+进度: [1/8]
+
+====================================================================================================
+                                       工况01: 上游流量小幅阶跃 [快速模式]                                        
+====================================================================================================
+
+初始30 m³/s，t=300s阶跃至35 m³/s (+17%)
+类别: 上游流量扰动
+----------------------------------------------------------------------------------------------------
+
+▶ 创建求解器和结构物...
+泵特性曲线系数: a=6.000, b=-0.05556, c=0.0029630
+  ✓ 网格: 301点, Δx=333.3m
+  ✓ 时间步长: 1.0s (快速模式)
+
+▶ 稳态求解...
+  ✓ 稳态收敛 (迭代812次)
+
+▶ 瞬态模拟...
+  总步数: 1200, 保存次数: 21
+  进度:  25.0% | t=   300s | 泵前h=5.56m | 泵Q=-7.54m³/s | 泵H=5.00m
+  进度:  50.0% | t=   600s | 泵前h=6.10m | 泵Q=3.88m³/s | 泵H=5.00m
+  进度:  75.0% | t=   900s | 泵前h=6.38m | 泵Q=8.64m³/s | 泵H=5.00m
+  进度: 100.0% | t=  1200s | 泵前h=6.57m | 泵Q=11.24m³/s | 泵H=5.00m
+  ✓ 瞬态模拟完成
+
+▶ 结果分析...
+  最终状态:
+    泵前水深: 6.572 m
+    泵站流量: 11.24 m³/s
+    泵站扬程: 5.000 m
+    蓄水速率: 5.93 m³/s
+  物理检查:
+    质量守恒误差: 0.127024
+    水深变异系数: 0.020079
+    流量变异系数: 0.210581
+
+▶ 生成结果文件...
+  生成动画...
+  生成时空图...
+  生成时间序列...
+  生成稳态剖面...
+  保存数据...
+  生成报告...
+  ✓ 所有结果已保存至: /workspace/examples/example_gate_pump_cascade/results_quick/S01_flow_step_small
+
+✓ 工况01: 上游流量小幅阶跃 完成 (耗时: 65.0秒)
+====================================================================================================
+
+
+进度: [2/8]
+
+====================================================================================================
+                                       工况03: 上游流量大幅阶跃 [快速模式]                                        
+====================================================================================================
+
+初始30 m³/s，t=300s阶跃至55 m³/s (+83%)
+类别: 上游流量扰动
+----------------------------------------------------------------------------------------------------
+
+▶ 创建求解器和结构物...
+泵特性曲线系数: a=6.000, b=-0.05556, c=0.0029630
+  ✓ 网格: 301点, Δx=333.3m
+  ✓ 时间步长: 1.0s (快速模式)
+
+▶ 稳态求解...
+  ✓ 稳态收敛 (迭代812次)
+
+▶ 瞬态模拟...
+  总步数: 1200, 保存次数: 21
+  进度:  25.0% | t=   300s | 泵前h=5.56m | 泵Q=-7.54m³/s | 泵H=5.00m
+  进度:  50.0% | t=   600s | 泵前h=6.10m | 泵Q=3.88m³/s | 泵H=5.00m
+  进度:  75.0% | t=   900s | 泵前h=6.41m | 泵Q=9.26m³/s | 泵H=5.00m
+  进度: 100.0% | t=  1200s | 泵前h=6.72m | 泵Q=13.71m³/s | 泵H=5.00m
+  ✓ 瞬态模拟完成
+
+▶ 结果分析...
+  最终状态:
+    泵前水深: 6.715 m
+    泵站流量: 13.71 m³/s
+    泵站扬程: 5.000 m
+    蓄水速率: 25.93 m³/s
+  物理检查:
+    质量守恒误差: 0.233839
+    水深变异系数: 0.027364
+    流量变异系数: 0.275508
+
+▶ 生成结果文件...
+  生成动画...
+  生成时空图...
+  生成时间序列...
+  生成稳态剖面...
+  保存数据...
+  生成报告...
+  ✓ 所有结果已保存至: /workspace/examples/example_gate_pump_cascade/results_quick/S03_flow_step_large
+
+✓ 工况03: 上游流量大幅阶跃 完成 (耗时: 65.7秒)
+====================================================================================================
+
+
+进度: [3/8]
+
+====================================================================================================
+                                       工况05: 上游流量周期波动 [快速模式]                                        
+====================================================================================================
+
+初始30 m³/s，t=300s后周期性波动 30±5 m³/s
+类别: 上游流量扰动
+----------------------------------------------------------------------------------------------------
+
+▶ 创建求解器和结构物...
+泵特性曲线系数: a=6.000, b=-0.05556, c=0.0029630
+  ✓ 网格: 301点, Δx=333.3m
+  ✓ 时间步长: 1.0s (快速模式)
+
+▶ 稳态求解...
+  ✓ 稳态收敛 (迭代812次)
+
+▶ 瞬态模拟...
+  总步数: 1200, 保存次数: 21
+  进度:  25.0% | t=   300s | 泵前h=5.56m | 泵Q=-7.54m³/s | 泵H=5.00m
+  进度:  50.0% | t=   600s | 泵前h=6.10m | 泵Q=3.88m³/s | 泵H=5.00m
+  进度:  75.0% | t=   900s | 泵前h=6.38m | 泵Q=8.57m³/s | 泵H=5.00m
+  进度: 100.0% | t=  1200s | 泵前h=6.55m | 泵Q=10.80m³/s | 泵H=5.00m
+  ✓ 瞬态模拟完成
+
+▶ 结果分析...
+  最终状态:
+    泵前水深: 6.548 m
+    泵站流量: 10.80 m³/s
+    泵站扬程: 5.000 m
+    蓄水速率: 0.93 m³/s
+  物理检查:
+    质量守恒误差: 0.157494
+    水深变异系数: 0.019136
+    流量变异系数: 0.200706
+
+▶ 生成结果文件...
+  生成动画...
+  生成时空图...
+  生成时间序列...
+  生成稳态剖面...
+  保存数据...
+  生成报告...
+  ✓ 所有结果已保存至: /workspace/examples/example_gate_pump_cascade/results_quick/S05_flow_fluctuation
+
+✓ 工况05: 上游流量周期波动 完成 (耗时: 66.3秒)
+====================================================================================================
+
+
+进度: [4/8]
+
+====================================================================================================
+                                        工况06: 下游水位抬高 [快速模式]                                         
+====================================================================================================
+
+初始h=2.0m，t=300s阶跃至h=3.5m
+类别: 下游水位扰动
+----------------------------------------------------------------------------------------------------
+
+▶ 创建求解器和结构物...
+泵特性曲线系数: a=6.000, b=-0.05556, c=0.0029630
+  ✓ 网格: 301点, Δx=333.3m
+  ✓ 时间步长: 1.0s (快速模式)
+
+▶ 稳态求解...
+  ✓ 稳态收敛 (迭代812次)
+
+▶ 瞬态模拟...
+  总步数: 1200, 保存次数: 21
+  进度:  25.0% | t=   300s | 泵前h=5.56m | 泵Q=-7.54m³/s | 泵H=5.00m
+  进度:  50.0% | t=   600s | 泵前h=6.10m | 泵Q=3.88m³/s | 泵H=5.00m
+  进度:  75.0% | t=   900s | 泵前h=6.37m | 泵Q=8.49m³/s | 泵H=5.00m
+  进度: 100.0% | t=  1200s | 泵前h=6.54m | 泵Q=10.66m³/s | 泵H=5.00m
+  ✓ 瞬态模拟完成
+
+▶ 结果分析...
+  最终状态:
+    泵前水深: 6.537 m
+    泵站流量: 10.66 m³/s
+    泵站扬程: 5.000 m
+    蓄水速率: 3.10 m³/s
+  物理检查:
+    质量守恒误差: 0.141166
+    水深变异系数: 0.018331
+    流量变异系数: 0.193947
+
+▶ 生成结果文件...
+  生成动画...
+  生成时空图...
+  生成时间序列...
+  生成稳态剖面...
+  保存数据...
+  生成报告...
+  ✓ 所有结果已保存至: /workspace/examples/example_gate_pump_cascade/results_quick/S06_downstream_h_step_up
+
+✓ 工况06: 下游水位抬高 完成 (耗时: 64.9秒)
+====================================================================================================
+
+
+进度: [5/8]
+
+====================================================================================================/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 24320 (\N{CJK UNIFIED IDEOGRAPH-5F00}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 24230 (\N{CJK UNIFIED IDEOGRAPH-5EA6}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 20943 (\N{CJK UNIFIED IDEOGRAPH-51CF}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 23567 (\N{CJK UNIFIED IDEOGRAPH-5C0F}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 24320 (\N{CJK UNIFIED IDEOGRAPH-5F00}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 24230 (\N{CJK UNIFIED IDEOGRAPH-5EA6}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 20943 (\N{CJK UNIFIED IDEOGRAPH-51CF}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 23567 (\N{CJK UNIFIED IDEOGRAPH-5C0F}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 24320 (\N{CJK UNIFIED IDEOGRAPH-5F00}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 24230 (\N{CJK UNIFIED IDEOGRAPH-5EA6}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 20943 (\N{CJK UNIFIED IDEOGRAPH-51CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 23567 (\N{CJK UNIFIED IDEOGRAPH-5C0F}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 24320 (\N{CJK UNIFIED IDEOGRAPH-5F00}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 24230 (\N{CJK UNIFIED IDEOGRAPH-5EA6}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 20943 (\N{CJK UNIFIED IDEOGRAPH-51CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 23567 (\N{CJK UNIFIED IDEOGRAPH-5C0F}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 24320 (\N{CJK UNIFIED IDEOGRAPH-5F00}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 24230 (\N{CJK UNIFIED IDEOGRAPH-5EA6}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 20943 (\N{CJK UNIFIED IDEOGRAPH-51CF}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 23567 (\N{CJK UNIFIED IDEOGRAPH-5C0F}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 24320 (\N{CJK UNIFIED IDEOGRAPH-5F00}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 24230 (\N{CJK UNIFIED IDEOGRAPH-5EA6}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 20943 (\N{CJK UNIFIED IDEOGRAPH-51CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 23567 (\N{CJK UNIFIED IDEOGRAPH-5C0F}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 19982 (\N{CJK UNIFIED IDEOGRAPH-4E0E}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 32452 (\N{CJK UNIFIED IDEOGRAPH-7EC4}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 21512 (\N{CJK UNIFIED IDEOGRAPH-5408}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 25200 (\N{CJK UNIFIED IDEOGRAPH-6270}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 21160 (\N{CJK UNIFIED IDEOGRAPH-52A8}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 19982 (\N{CJK UNIFIED IDEOGRAPH-4E0E}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 32452 (\N{CJK UNIFIED IDEOGRAPH-7EC4}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 21512 (\N{CJK UNIFIED IDEOGRAPH-5408}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 25200 (\N{CJK UNIFIED IDEOGRAPH-6270}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 21160 (\N{CJK UNIFIED IDEOGRAPH-52A8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 19982 (\N{CJK UNIFIED IDEOGRAPH-4E0E}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 32452 (\N{CJK UNIFIED IDEOGRAPH-7EC4}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 21512 (\N{CJK UNIFIED IDEOGRAPH-5408}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 25200 (\N{CJK UNIFIED IDEOGRAPH-6270}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 21160 (\N{CJK UNIFIED IDEOGRAPH-52A8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 19982 (\N{CJK UNIFIED IDEOGRAPH-4E0E}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 32452 (\N{CJK UNIFIED IDEOGRAPH-7EC4}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 21512 (\N{CJK UNIFIED IDEOGRAPH-5408}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 25200 (\N{CJK UNIFIED IDEOGRAPH-6270}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 21160 (\N{CJK UNIFIED IDEOGRAPH-52A8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 19982 (\N{CJK UNIFIED IDEOGRAPH-4E0E}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 32452 (\N{CJK UNIFIED IDEOGRAPH-7EC4}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 21512 (\N{CJK UNIFIED IDEOGRAPH-5408}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 25200 (\N{CJK UNIFIED IDEOGRAPH-6270}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 21160 (\N{CJK UNIFIED IDEOGRAPH-52A8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 19982 (\N{CJK UNIFIED IDEOGRAPH-4E0E}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 32452 (\N{CJK UNIFIED IDEOGRAPH-7EC4}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 21512 (\N{CJK UNIFIED IDEOGRAPH-5408}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 25200 (\N{CJK UNIFIED IDEOGRAPH-6270}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 21160 (\N{CJK UNIFIED IDEOGRAPH-52A8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 26497 (\N{CJK UNIFIED IDEOGRAPH-6781}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 31471 (\N{CJK UNIFIED IDEOGRAPH-7AEF}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 22686 (\N{CJK UNIFIED IDEOGRAPH-589E}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 21152 (\N{CJK UNIFIED IDEOGRAPH-52A0}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 26497 (\N{CJK UNIFIED IDEOGRAPH-6781}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 31471 (\N{CJK UNIFIED IDEOGRAPH-7AEF}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 22686 (\N{CJK UNIFIED IDEOGRAPH-589E}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 21152 (\N{CJK UNIFIED IDEOGRAPH-52A0}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 26497 (\N{CJK UNIFIED IDEOGRAPH-6781}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 31471 (\N{CJK UNIFIED IDEOGRAPH-7AEF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 22686 (\N{CJK UNIFIED IDEOGRAPH-589E}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 21152 (\N{CJK UNIFIED IDEOGRAPH-52A0}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 26497 (\N{CJK UNIFIED IDEOGRAPH-6781}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 31471 (\N{CJK UNIFIED IDEOGRAPH-7AEF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 22686 (\N{CJK UNIFIED IDEOGRAPH-589E}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 21152 (\N{CJK UNIFIED IDEOGRAPH-52A0}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 26497 (\N{CJK UNIFIED IDEOGRAPH-6781}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 31471 (\N{CJK UNIFIED IDEOGRAPH-7AEF}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 22686 (\N{CJK UNIFIED IDEOGRAPH-589E}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 21152 (\N{CJK UNIFIED IDEOGRAPH-52A0}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 26497 (\N{CJK UNIFIED IDEOGRAPH-6781}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 31471 (\N{CJK UNIFIED IDEOGRAPH-7AEF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 27969 (\N{CJK UNIFIED IDEOGRAPH-6D41}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 37327 (\N{CJK UNIFIED IDEOGRAPH-91CF}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 22686 (\N{CJK UNIFIED IDEOGRAPH-589E}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 21152 (\N{CJK UNIFIED IDEOGRAPH-52A0}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 24555 (\N{CJK UNIFIED IDEOGRAPH-5FEB}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 36895 (\N{CJK UNIFIED IDEOGRAPH-901F}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 20851 (\N{CJK UNIFIED IDEOGRAPH-5173}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:617: UserWarning: Glyph 38381 (\N{CJK UNIFIED IDEOGRAPH-95ED}) missing from font(s) DejaVu Sans.
+  anim.save(os.path.join(output_dir, "animation_water_level.gif"), writer=PillowWriter(fps=5), dpi=100)
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 24555 (\N{CJK UNIFIED IDEOGRAPH-5FEB}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 36895 (\N{CJK UNIFIED IDEOGRAPH-901F}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 20851 (\N{CJK UNIFIED IDEOGRAPH-5173}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:651: UserWarning: Glyph 38381 (\N{CJK UNIFIED IDEOGRAPH-95ED}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 24555 (\N{CJK UNIFIED IDEOGRAPH-5FEB}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 36895 (\N{CJK UNIFIED IDEOGRAPH-901F}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 20851 (\N{CJK UNIFIED IDEOGRAPH-5173}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:652: UserWarning: Glyph 38381 (\N{CJK UNIFIED IDEOGRAPH-95ED}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 24555 (\N{CJK UNIFIED IDEOGRAPH-5FEB}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 36895 (\N{CJK UNIFIED IDEOGRAPH-901F}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 20851 (\N{CJK UNIFIED IDEOGRAPH-5173}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:749: UserWarning: Glyph 38381 (\N{CJK UNIFIED IDEOGRAPH-95ED}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "time_series.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 24555 (\N{CJK UNIFIED IDEOGRAPH-5FEB}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 36895 (\N{CJK UNIFIED IDEOGRAPH-901F}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 20851 (\N{CJK UNIFIED IDEOGRAPH-5173}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:790: UserWarning: Glyph 38381 (\N{CJK UNIFIED IDEOGRAPH-95ED}) missing from font(s) DejaVu Sans.
+  plt.tight_layout()
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 24037 (\N{CJK UNIFIED IDEOGRAPH-5DE5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 20917 (\N{CJK UNIFIED IDEOGRAPH-51B5}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 38392 (\N{CJK UNIFIED IDEOGRAPH-95F8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 38376 (\N{CJK UNIFIED IDEOGRAPH-95E8}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 24555 (\N{CJK UNIFIED IDEOGRAPH-5FEB}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 36895 (\N{CJK UNIFIED IDEOGRAPH-901F}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 20851 (\N{CJK UNIFIED IDEOGRAPH-5173}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+/workspace/examples/example_gate_pump_cascade/comprehensive_scenario_test.py:791: UserWarning: Glyph 38381 (\N{CJK UNIFIED IDEOGRAPH-95ED}) missing from font(s) DejaVu Sans.
+  plt.savefig(os.path.join(output_dir, "steady_state_profile.png"), dpi=150, bbox_inches='tight')
+
+                                        工况10: 闸门1开度减小 [快速模式]                                        
+====================================================================================================
+
+初始5m，t=300s阶跃至3m（抬高上游水位）
+类别: 闸门开度调节
+----------------------------------------------------------------------------------------------------
+
+▶ 创建求解器和结构物...
+泵特性曲线系数: a=6.000, b=-0.05556, c=0.0029630
+  ✓ 网格: 301点, Δx=333.3m
+  ✓ 时间步长: 1.0s (快速模式)
+
+▶ 稳态求解...
+  ✓ 稳态收敛 (迭代812次)
+
+▶ 瞬态模拟...
+  总步数: 1200, 保存次数: 21
+  进度:  25.0% | t=   300s | 泵前h=5.56m | 泵Q=-7.54m³/s | 泵H=5.00m
+  进度:  50.0% | t=   600s | 泵前h=6.10m | 泵Q=3.88m³/s | 泵H=5.00m
+  进度:  75.0% | t=   900s | 泵前h=6.37m | 泵Q=8.49m³/s | 泵H=5.00m
+  进度: 100.0% | t=  1200s | 泵前h=6.54m | 泵Q=10.67m³/s | 泵H=5.00m
+  ✓ 瞬态模拟完成
+
+▶ 结果分析...
+  最终状态:
+    泵前水深: 6.537 m
+    泵站流量: 10.67 m³/s
+    泵站扬程: 5.000 m
+    蓄水速率: 0.93 m³/s
+  物理检查:
+    质量守恒误差: 0.119464
+    水深变异系数: 0.018331
+    流量变异系数: 0.193953
+
+▶ 生成结果文件...
+  生成动画...
+  生成时空图...
+  生成时间序列...
+  生成稳态剖面...
+  保存数据...
+  生成报告...
+  ✓ 所有结果已保存至: /workspace/examples/example_gate_pump_cascade/results_quick/S10_gate1_close_more
+
+✓ 工况10: 闸门1开度减小 完成 (耗时: 64.6秒)
+====================================================================================================
+
+
+进度: [6/8]
+
+====================================================================================================
+                                       工况13: 流量与闸门组合扰动 [快速模式]                                       
+====================================================================================================
+
+t=300s流量30→40，t=900s闸门5→7m
+类别: 多重扰动组合
+----------------------------------------------------------------------------------------------------
+
+▶ 创建求解器和结构物...
+泵特性曲线系数: a=6.000, b=-0.05556, c=0.0029630
+  ✓ 网格: 301点, Δx=333.3m
+  ✓ 时间步长: 1.0s (快速模式)
+
+▶ 稳态求解...
+  ✓ 稳态收敛 (迭代812次)
+
+▶ 瞬态模拟...
+  总步数: 1200, 保存次数: 21
+  进度:  25.0% | t=   300s | 泵前h=5.56m | 泵Q=-7.54m³/s | 泵H=5.00m
+  进度:  50.0% | t=   600s | 泵前h=6.10m | 泵Q=3.88m³/s | 泵H=5.00m
+  进度:  75.0% | t=   900s | 泵前h=6.39m | 泵Q=8.79m³/s | 泵H=5.00m
+  进度: 100.0% | t=  1200s | 泵前h=6.61m | 泵Q=11.83m³/s | 泵H=5.00m
+  ✓ 瞬态模拟完成
+
+▶ 结果分析...
+  最终状态:
+    泵前水深: 6.607 m
+    泵站流量: 11.83 m³/s
+    泵站扬程: 5.000 m
+    蓄水速率: 10.93 m³/s
+  物理检查:
+    质量守恒误差: 0.152966
+    水深变异系数: 0.021857
+    流量变异系数: 0.227073
+
+▶ 生成结果文件...
+  生成动画...
+  生成时空图...
+  生成时间序列...
+  生成稳态剖面...
+  保存数据...
+  生成报告...
+  ✓ 所有结果已保存至: /workspace/examples/example_gate_pump_cascade/results_quick/S13_combined_flow_and_gate
+
+✓ 工况13: 流量与闸门组合扰动 完成 (耗时: 69.3秒)
+====================================================================================================
+
+
+进度: [7/8]
+
+====================================================================================================
+                                        工况16: 极端流量增加 [快速模式]                                         
+====================================================================================================
+
+初始30 m³/s，t=300s阶跃至70 m³/s (+133%)
+类别: 极端工况
+----------------------------------------------------------------------------------------------------
+
+▶ 创建求解器和结构物...
+泵特性曲线系数: a=6.000, b=-0.05556, c=0.0029630
+  ✓ 网格: 301点, Δx=333.3m
+  ✓ 时间步长: 1.0s (快速模式)
+
+▶ 稳态求解...
+  ✓ 稳态收敛 (迭代812次)
+
+▶ 瞬态模拟...
+  总步数: 1200, 保存次数: 21
+  进度:  25.0% | t=   300s | 泵前h=5.56m | 泵Q=-7.54m³/s | 泵H=5.00m
+  进度:  50.0% | t=   600s | 泵前h=6.10m | 泵Q=3.88m³/s | 泵H=5.00m
+  进度:  75.0% | t=   900s | 泵前h=6.44m | 泵Q=9.76m³/s | 泵H=5.00m
+  进度: 100.0% | t=  1200s | 泵前h=6.83m | 泵Q=15.79m³/s | 泵H=5.00m
+  ✓ 瞬态模拟完成
+
+▶ 结果分析...
+  最终状态:
+    泵前水深: 6.828 m
+    泵站流量: 15.79 m³/s
+    泵站扬程: 5.000 m
+    蓄水速率: 40.93 m³/s
+  物理检查:
+    质量守恒误差: 0.291890
+    水深变异系数: 0.033130
+    流量变异系数: 0.322124
+
+▶ 生成结果文件...
+  生成动画...
+  生成时空图...
+  生成时间序列...
+  生成稳态剖面...
+  保存数据...
+  生成报告...
+  ✓ 所有结果已保存至: /workspace/examples/example_gate_pump_cascade/results_quick/S16_extreme_flow_increase
+
+✓ 工况16: 极端流量增加 完成 (耗时: 65.3秒)
+====================================================================================================
+
+
+进度: [8/8]
+
+====================================================================================================
+                                        工况17: 闸门快速关闭 [快速模式]                                         
+====================================================================================================
+
+初始5m，t=300s快速关闭至1m（紧急工况）
+类别: 极端工况
+----------------------------------------------------------------------------------------------------
+
+▶ 创建求解器和结构物...
+泵特性曲线系数: a=6.000, b=-0.05556, c=0.0029630
+  ✓ 网格: 301点, Δx=333.3m
+  ✓ 时间步长: 1.0s (快速模式)
+
+▶ 稳态求解...
+  ✓ 稳态收敛 (迭代812次)
+
+▶ 瞬态模拟...
+  总步数: 1200, 保存次数: 21
+  进度:  25.0% | t=   300s | 泵前h=5.56m | 泵Q=-7.54m³/s | 泵H=5.00m
+  进度:  50.0% | t=   600s | 泵前h=6.10m | 泵Q=3.88m³/s | 泵H=5.00m
+  进度:  75.0% | t=   900s | 泵前h=6.37m | 泵Q=8.49m³/s | 泵H=5.00m
+  进度: 100.0% | t=  1200s | 泵前h=6.54m | 泵Q=10.67m³/s | 泵H=5.00m
+  ✓ 瞬态模拟完成
+
+▶ 结果分析...
+  最终状态:
+    泵前水深: 6.537 m
+    泵站流量: 10.67 m³/s
+    泵站扬程: 5.000 m
+    蓄水速率: 0.93 m³/s
+  物理检查:
+    质量守恒误差: 0.119464
+    水深变异系数: 0.018331
+    流量变异系数: 0.193953
+
+▶ 生成结果文件...
+  生成动画...
+  生成时空图...
+  生成时间序列...
+  生成稳态剖面...
+  保存数据...
+  生成报告...
+  ✓ 所有结果已保存至: /workspace/examples/example_gate_pump_cascade/results_quick/S17_rapid_gate_closure
+
+✓ 工况17: 闸门快速关闭 完成 (耗时: 66.8秒)
+====================================================================================================
+
+
+====================================================================================================
+                                               生成总结报告                                               
+====================================================================================================
+
+运行统计:
+  总工况数: 8
+  成功: 8
+  失败: 0
+  总耗时: 565.9秒 (9.4分钟)
+
+✓ 总结报告已生成: /workspace/examples/example_gate_pump_cascade/results_quick/QUICK_TEST_SUMMARY.md
+✓ JSON结果已生成: /workspace/examples/example_gate_pump_cascade/results_quick/results_summary.json
+
+====================================================================================================
+                                            🎉 所有快速测试完成！                                             
+====================================================================================================
+
