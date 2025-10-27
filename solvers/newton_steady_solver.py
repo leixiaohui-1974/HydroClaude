@@ -101,7 +101,7 @@ class NewtonSteadySolver:
     
     def initialize_with_uniform_flow(self, Q):
         """
-        使用均匀流初始化
+        使用均匀流初始化（考虑结构物）
         
         参数:
             Q: 流量 (m³/s)
@@ -118,10 +118,26 @@ class NewtonSteadySolver:
         )
         
         result = simple_solver.solve_uniform_flow(Q)
-        h_uniform = result['h']
+        h_uniform = result['h'].copy()
         
         print(f"\n初始化: 使用均匀流解")
         print(f"  均匀流水深: {h_uniform[0]:.4f} m")
+        
+        # 如果有泵站，在泵站处添加扬程跳跃
+        for structure in self.structures:
+            structure_type = structure.__class__.__name__
+            if 'Pump' in structure_type or 'pump' in structure_type.lower():
+                # 找到泵站位置
+                idx = np.argmin(np.abs(self.x - structure.position))
+                
+                # 估算泵站扬程
+                H_pump = structure.calculate_head(Q)
+                
+                # 在泵站下游添加扬程（抬高水位）
+                for i in range(idx+1, self.nx):
+                    h_uniform[i] += H_pump * 0.5  # 初始估计，减半避免过度
+                
+                print(f"  泵站 @ x={structure.position}m: 初始扬程+{H_pump*0.5:.2f}m")
         
         return h_uniform
     
@@ -237,15 +253,29 @@ class NewtonSteadySolver:
             
             if structure is not None:
                 # 结构物处：使用结构物方程
-                # 上游水深 h[i], 下游水深 h[i-1]
                 try:
-                    Q_structure, flow_type = structure.calculate_discharge(
-                        h_upstream=h[i],
-                        h_downstream=h[i-1],
-                        t=0.0
-                    )
-                    # 流量连续性
-                    R[i] = Q_structure - Q
+                    # 判断结构物类型
+                    structure_type = structure.__class__.__name__
+                    
+                    if 'Pump' in structure_type or 'pump' in structure_type.lower():
+                        # 泵站：主动提水，下游水位高于上游
+                        # h[i]是泵后（下游），h[i-1]是泵前（上游）
+                        Q_structure, flow_type = structure.calculate_discharge(
+                            h_upstream=h[i-1],  # 泵前
+                            h_downstream=h[i],  # 泵后
+                            t=0.0
+                        )
+                        # 流量连续性
+                        R[i] = Q_structure - Q
+                    else:
+                        # 闸门等：上游水深 h[i], 下游水深 h[i-1]
+                        Q_structure, flow_type = structure.calculate_discharge(
+                            h_upstream=h[i],
+                            h_downstream=h[i-1],
+                            t=0.0
+                        )
+                        # 流量连续性
+                        R[i] = Q_structure - Q
                 except Exception as e:
                     # 如果结构物方程失败，回退到能量方程
                     Sf_avg = 0.5 * (Sf[i] + Sf[i-1])
