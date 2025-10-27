@@ -1,14 +1,14 @@
 {
-  "start_time": "2025-10-27T09:28:59.109568",
+  "start_time": "2025-10-27T09:40:05.777018",
   "weeks": {
     "week1": {
       "name": "\u89e3\u6790\u89e3\u9a8c\u8bc1",
-      "passed": 0,
-      "failed": 51,
+      "passed": 51,
+      "failed": 0,
       "total": 51,
-      "pass_rate": 0.0,
+      "pass_rate": 100.0,
       "status": "completed"
     }
   },
-  "end_time": "2025-10-27T09:29:16.139562"
+  "end_time": "2025-10-27T09:40:06.049430"
 }

@@ -29,7 +29,10 @@ from .staggered_grid import StaggeredGrid
 from .fv_continuity import FVContinuityEquation
 from .fd_momentum import FDMomentumEquation
 from .boundary_conditions import BoundaryManager, BoundaryCondition
-from ..v1_wellbalanced_fdm.structures import HydraulicStructure
+try:
+    from ..v1_wellbalanced_fdm.structures import HydraulicStructure
+except ImportError:
+    from solvers.v1_wellbalanced_fdm.structures import HydraulicStructure
 
 
 class UnsteadySolver:

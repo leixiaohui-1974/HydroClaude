@@ -36,7 +36,14 @@ Date: 2025-10-27
 import numpy as np
 from typing import Tuple, List
 from scipy.special import legendre
-from scipy.integrate import quadrature
+try:
+    from scipy.integrate import quadrature
+except ImportError:
+    # scipy 1.14+中quadrature被移除，使用quad代替
+    from scipy.integrate import quad
+    def quadrature(func, a, b):
+        result, _ = quad(func, a, b)
+        return result, None
 
 
 class LegendreBasis:

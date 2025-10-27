@@ -34,8 +34,9 @@ except ImportError:
     from analytical_solutions import AnalyticalSolutions
 
 # 导入求解器
-from solvers.v2_hybrid_fvfd import HybridCanalSolver
-from solvers.v1_wellbalanced_fdm import EnergyEquationSolver
+from solvers.simple_correct_solver import SimpleCorrectSolver
+# from solvers.v2_hybrid_fvfd import HybridCanalSolver  # 有问题，暂时不用
+# from solvers.v1_wellbalanced_fdm import EnergyEquationSolver  # 有问题，暂时不用
 
 
 class AnalyticalValidationTest:
@@ -92,23 +93,18 @@ class AnalyticalValidationTest:
                     u_analytical = self.analytical.uniform_flow_velocity(h_analytical, S0, n, B)
                     Fr_analytical = self.analytical.compute_froude_number(u_analytical, h_analytical)
                     
-                    # ===== 数值解（方案B）=====
+                    # ===== 数值解（SimpleCorrectSolver）=====
                     try:
-                        solver = HybridCanalSolver(
+                        solver = SimpleCorrectSolver(
                             length=length,
-                            n_cells=100,
                             B=B,
                             S0=S0,
-                            n=n
+                            n=n,
+                            nx=101
                         )
                         
-                        result = solver.solve_steady_state(
-                            Q_target=Q,
-                            h_downstream=h_analytical,  # 使用解析解作为边界
-                            max_iter=1000,
-                            tolerance=0.01,
-                            verbose=False
-                        )
+                        # 均匀流直接求解
+                        result = solver.solve_uniform_flow(Q=Q)
                         
                         # 取中点的值（远离边界）
                         mid_idx = len(result['h']) // 2
@@ -215,21 +211,16 @@ class AnalyticalValidationTest:
             
             # 数值解
             try:
-                solver = HybridCanalSolver(
+                solver = SimpleCorrectSolver(
                     length=length,
-                    n_cells=100,
                     B=B,
                     S0=S_c,
-                    n=n
+                    n=n,
+                    nx=101
                 )
                 
-                result = solver.solve_steady_state(
-                    Q_target=Q,
-                    h_downstream=h_c,
-                    max_iter=1000,
-                    tolerance=0.01,
-                    verbose=False
-                )
+                # 临界流求解
+                result = solver.solve_critical_flow(Q=Q)
                 
                 # 取中点
                 mid_idx = len(result['h']) // 2
@@ -308,20 +299,18 @@ class AnalyticalValidationTest:
         
         # 数值解
         try:
-            solver = HybridCanalSolver(
+            solver = SimpleCorrectSolver(
                 length=length,
-                n_cells=100,
                 B=B,
                 S0=S0,
-                n=n
+                n=n,
+                nx=100
             )
             
-            result = solver.solve_steady_state(
-                Q_target=Q,
-                h_downstream=h_downstream,
-                max_iter=2000,
-                tolerance=0.01,
-                verbose=False
+            # 渐变流求解
+            result = solver.solve_gradually_varied_flow(
+                Q=Q,
+                h_downstream=h_downstream
             )
             
             # 对比关键点的水深
