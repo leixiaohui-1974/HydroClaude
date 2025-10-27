@@ -30,6 +30,14 @@ from .fv_continuity import FVContinuityEquation
 from .fd_momentum import FDMomentumEquation
 from .riemann_solver import ExactRiemannSolver, HLLRiemannSolver
 from .hybrid_canal_solver import HybridCanalSolver
+from .boundary_conditions import (
+    BoundaryCondition,
+    ConstantBC,
+    TimeSeriesBC,
+    ControlRuleBC,
+    BoundaryManager
+)
+from .unsteady_solver import UnsteadySolver
 
 __all__ = [
     'StaggeredGrid',
@@ -39,8 +47,14 @@ __all__ = [
     'ExactRiemannSolver',
     'HLLRiemannSolver',
     'HybridCanalSolver',
+    'BoundaryCondition',
+    'ConstantBC',
+    'TimeSeriesBC',
+    'ControlRuleBC',
+    'BoundaryManager',
+    'UnsteadySolver',
 ]
 
-__version__ = '2.0.0-alpha'
+__version__ = '2.1.0-alpha'
 __author__ = 'Claude AI Assistant'
-__description__ = '混合FV/FD法 + 交错网格（方案B）- 精度目标: 流量误差 < 0.3%'
+__description__ = '混合FV/FD法 + 交错网格（方案B）- 稳态+非恒定流'
