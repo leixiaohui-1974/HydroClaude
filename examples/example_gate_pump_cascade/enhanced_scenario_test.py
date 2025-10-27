@@ -33,13 +33,14 @@ from matplotlib.patches import Rectangle
 from matplotlib.gridspec import GridSpec
 
 from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
-from solvers.gate import SluiceGate, PumpStationAdvanced
+from solvers.gate import SluiceGate, PumpStation
 from utils.canal_utils import compute_steady_uniform_flow
 
 
 # ==================== 工况配置 ====================
 
 FOCUSED_SCENARIOS = {
+    # ========== 1. 上游流量扰动工况 ==========
     'S01_flow_step_small': {
         'name': '工况01: 上游流量小幅阶跃',
         'description': '初始30 m³/s，t=300s阶跃至35 m³/s (+17%)',
@@ -59,6 +60,76 @@ FOCUSED_SCENARIOS = {
         'Q_upstream_func': lambda t: 55.0 if t >= 300 else 30.0,
         'h_downstream_func': None,
         'gate1_opening_func': None,
+        't_total': 2400.0,
+    },
+    
+    'S05_flow_fluctuation': {
+        'name': '工况05: 上游流量周期波动',
+        'description': '初始30 m³/s，t=300s后周期性波动 30±5 m³/s',
+        'category': '上游流量扰动',
+        'Q_initial': 30.0,
+        'Q_upstream_func': lambda t: 30.0 + 5.0 * np.sin(2 * np.pi * (t - 300) / 600.0) if t >= 300 else 30.0,
+        'h_downstream_func': None,
+        'gate1_opening_func': None,
+        't_total': 2400.0,
+    },
+    
+    # ========== 2. 下游水位扰动工况 ==========
+    'S06_downstream_h_step_up': {
+        'name': '工况06: 下游水位抬高',
+        'description': '初始均匀流水深，t=300s阶跃至+1.0m',
+        'category': '下游水位扰动',
+        'Q_initial': 30.0,
+        'Q_upstream_func': lambda t: 30.0,
+        'h_downstream_func': lambda t, h_ref: h_ref + 1.0 if t >= 300 else h_ref,
+        'gate1_opening_func': None,
+        't_total': 2400.0,
+    },
+    
+    # ========== 3. 闸门开度调节工况 ==========
+    'S10_gate1_close_more': {
+        'name': '工况10: 闸门1开度减小',
+        'description': '初始5m，t=300s阶跃至3m（减小泄流）',
+        'category': '闸门开度调节',
+        'Q_initial': 30.0,
+        'Q_upstream_func': lambda t: 30.0,
+        'h_downstream_func': None,
+        'gate1_opening_func': lambda t: 3.0 if t >= 300 else 5.0,
+        't_total': 2400.0,
+    },
+    
+    # ========== 4. 多重扰动组合工况 ==========
+    'S13_combined_flow_and_gate': {
+        'name': '工况13: 流量增加+闸门调节组合',
+        'description': '初始30 m³/s，t=300s流量→40 m³/s，t=900s闸门5m→7m',
+        'category': '多重扰动组合',
+        'Q_initial': 30.0,
+        'Q_upstream_func': lambda t: 40.0 if t >= 300 else 30.0,
+        'h_downstream_func': None,
+        'gate1_opening_func': lambda t: 7.0 if t >= 900 else 5.0,
+        't_total': 2400.0,
+    },
+    
+    # ========== 5. 极端工况 ==========
+    'S16_extreme_flow_increase': {
+        'name': '工况16: 极端流量突增',
+        'description': '初始30 m³/s，t=300s突增至80 m³/s (+167%)',
+        'category': '极端工况',
+        'Q_initial': 30.0,
+        'Q_upstream_func': lambda t: 80.0 if t >= 300 else 30.0,
+        'h_downstream_func': None,
+        'gate1_opening_func': None,
+        't_total': 2400.0,
+    },
+    
+    'S17_rapid_gate_closure': {
+        'name': '工况17: 闸门快速关闭',
+        'description': '初始5m，t=300s快速关闭至1m（模拟事故）',
+        'category': '极端工况',
+        'Q_initial': 30.0,
+        'Q_upstream_func': lambda t: 30.0,
+        'h_downstream_func': None,
+        'gate1_opening_func': lambda t: 1.0 if t >= 300 else 5.0,
         't_total': 2400.0,
     },
 }
@@ -495,13 +566,11 @@ def run_enhanced_scenario(scenario_id, config, output_base_dir):
     
     gate1 = SluiceGate(gate1_pos, B, 5.0, 0.6)
     gate2 = SluiceGate(gate2_pos, B, 5.0, 0.6)
-    pump = PumpStationAdvanced(
+    pump = PumpStation(
         position=pump_pos,
         width=B,
         rated_flow=30.0,
         rated_head=5.0,
-        shutoff_head=6.0,
-        friction_coef=0.0001,
         min_suction_head=2.0
     )
     
@@ -518,7 +587,9 @@ def run_enhanced_scenario(scenario_id, config, output_base_dir):
         ]
     )
     
-    # 配置底床高程（泵站后抬高）
+    # 配置底床高程（泵站后抬高5.0m，与泵站额定扬程一致）
+    # 注意：根据能量方程 h_down = h_up + (z_up - z_down) + H_pump
+    # 如果 z_down = z_up + H_pump，则 h_down ≈ h_up（水深基本不变）
     pump_idx = np.argmin(np.abs(solver.x - pump_pos))
     solver.z[pump_idx:] += 5.0
     
@@ -585,7 +656,7 @@ def run_enhanced_scenario(scenario_id, config, output_base_dir):
     
     h_history[0, :] = solver.h
     q_history[0, :] = solver.hu * B
-    pump_head_history[0] = pump.get_current_head()
+    pump_head_history[0] = pump.rated_head  # PumpStation使用固定额定扬程
     pump_flow_history[0] = q_history[0, pump_idx]
     time_history[0] = 0.0
     
@@ -642,7 +713,7 @@ def run_enhanced_scenario(scenario_id, config, output_base_dir):
             if step % save_interval == 0:
                 h_history[save_idx, :] = solver.h
                 q_history[save_idx, :] = solver.hu * B
-                pump_head_history[save_idx] = pump.get_current_head()
+                pump_head_history[save_idx] = pump.rated_head  # PumpStation使用固定额定扬程
                 pump_flow_history[save_idx] = q_history[save_idx, pump_idx]
                 time_history[save_idx] = t_current
                 
@@ -651,7 +722,7 @@ def run_enhanced_scenario(scenario_id, config, output_base_dir):
                     print(f"  进度: {progress:5.1f}% | t={t_current:6.0f}s | "
                           f"泵前h={solver.h[pump_idx-1]:.3f}m | "
                           f"泵Q={q_history[save_idx, pump_idx]:.2f}m³/s | "
-                          f"泵H={pump.get_current_head():.3f}m")
+                          f"泵H={pump.rated_head:.3f}m")
                 
                 save_idx += 1
         
