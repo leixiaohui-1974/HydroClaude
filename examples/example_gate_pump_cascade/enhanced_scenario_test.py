@@ -40,6 +40,7 @@ from utils.canal_utils import compute_steady_uniform_flow
 # ==================== 工况配置 ====================
 
 FOCUSED_SCENARIOS = {
+    # ========== 1. 上游流量扰动工况 ==========
     'S01_flow_step_small': {
         'name': '工况01: 上游流量小幅阶跃',
         'description': '初始30 m³/s，t=300s阶跃至35 m³/s (+17%)',
@@ -59,6 +60,76 @@ FOCUSED_SCENARIOS = {
         'Q_upstream_func': lambda t: 55.0 if t >= 300 else 30.0,
         'h_downstream_func': None,
         'gate1_opening_func': None,
+        't_total': 2400.0,
+    },
+    
+    'S05_flow_fluctuation': {
+        'name': '工况05: 上游流量周期波动',
+        'description': '初始30 m³/s，t=300s后周期性波动 30±5 m³/s',
+        'category': '上游流量扰动',
+        'Q_initial': 30.0,
+        'Q_upstream_func': lambda t: 30.0 + 5.0 * np.sin(2 * np.pi * (t - 300) / 600.0) if t >= 300 else 30.0,
+        'h_downstream_func': None,
+        'gate1_opening_func': None,
+        't_total': 2400.0,
+    },
+    
+    # ========== 2. 下游水位扰动工况 ==========
+    'S06_downstream_h_step_up': {
+        'name': '工况06: 下游水位抬高',
+        'description': '初始均匀流水深，t=300s阶跃至+1.0m',
+        'category': '下游水位扰动',
+        'Q_initial': 30.0,
+        'Q_upstream_func': lambda t: 30.0,
+        'h_downstream_func': lambda t, h_ref: h_ref + 1.0 if t >= 300 else h_ref,
+        'gate1_opening_func': None,
+        't_total': 2400.0,
+    },
+    
+    # ========== 3. 闸门开度调节工况 ==========
+    'S10_gate1_close_more': {
+        'name': '工况10: 闸门1开度减小',
+        'description': '初始5m，t=300s阶跃至3m（减小泄流）',
+        'category': '闸门开度调节',
+        'Q_initial': 30.0,
+        'Q_upstream_func': lambda t: 30.0,
+        'h_downstream_func': None,
+        'gate1_opening_func': lambda t: 3.0 if t >= 300 else 5.0,
+        't_total': 2400.0,
+    },
+    
+    # ========== 4. 多重扰动组合工况 ==========
+    'S13_combined_flow_and_gate': {
+        'name': '工况13: 流量增加+闸门调节组合',
+        'description': '初始30 m³/s，t=300s流量→40 m³/s，t=900s闸门5m→7m',
+        'category': '多重扰动组合',
+        'Q_initial': 30.0,
+        'Q_upstream_func': lambda t: 40.0 if t >= 300 else 30.0,
+        'h_downstream_func': None,
+        'gate1_opening_func': lambda t: 7.0 if t >= 900 else 5.0,
+        't_total': 2400.0,
+    },
+    
+    # ========== 5. 极端工况 ==========
+    'S16_extreme_flow_increase': {
+        'name': '工况16: 极端流量突增',
+        'description': '初始30 m³/s，t=300s突增至80 m³/s (+167%)',
+        'category': '极端工况',
+        'Q_initial': 30.0,
+        'Q_upstream_func': lambda t: 80.0 if t >= 300 else 30.0,
+        'h_downstream_func': None,
+        'gate1_opening_func': None,
+        't_total': 2400.0,
+    },
+    
+    'S17_rapid_gate_closure': {
+        'name': '工况17: 闸门快速关闭',
+        'description': '初始5m，t=300s快速关闭至1m（模拟事故）',
+        'category': '极端工况',
+        'Q_initial': 30.0,
+        'Q_upstream_func': lambda t: 30.0,
+        'h_downstream_func': None,
+        'gate1_opening_func': lambda t: 1.0 if t >= 300 else 5.0,
         't_total': 2400.0,
     },
 }
