@@ -38,7 +38,26 @@
 
 ## 🚀 快速开始
 
-### 方案A：快速设计计算（推荐首选）
+### ⭐ 最简单方式：配置文件驱动（推荐）
+
+**3行Python代码**：
+```python
+from config import HydraulicModelConfig
+
+config = HydraulicModelConfig("config/examples/simple_canal.yaml")
+result = config.run_simulation()  # 一行完成！自动绘图、保存结果
+```
+
+**或1行命令**：
+```bash
+python3 run_simulation.py config/examples/gate_pump_cascade.yaml
+```
+
+**就这么简单！** 无需编程，仅配置文件。
+
+---
+
+### 方案A：快速设计计算（编程API）
 
 ```python
 from solvers.v1_wellbalanced_fdm import (
@@ -138,6 +157,43 @@ print(f"空间精度: 四阶（P3）")
 
 ---
 
+### 方式4：非恒定流模拟
+
+```python
+from solvers.v2_hybrid_fvfd import UnsteadySolver, ConstantBC
+
+solver = UnsteadySolver(length=10000, n_cells=100, B=10, S0=0.001, n=0.025)
+solver.boundary.set_upstream(ConstantBC('flow', 10.0))
+solver.boundary.set_downstream(ConstantBC('depth', 2.0))
+
+# 运行非恒定流（24小时）
+result = solver.solve_unsteady(duration=86400, cfl=0.3, output_interval=600)
+```
+
+**特点**: CFL自适应，质量守恒<1e-10
+
+---
+
+### 方式5：批量情景分析
+
+```python
+from scenarios import ScenarioManager
+
+scenarios = {
+    "基准": {},
+    "高扬程": {"pump_head": 6.0},
+    "大流量": {"upstream_flow": 15.0},
+}
+
+manager = ScenarioManager("config/examples/gate_pump_cascade.yaml")
+results = manager.run_scenarios(scenarios)
+manager.compare_results(results)  # 自动对比
+```
+
+**特点**: 批量运行，自动对比
+
+---
+
 ## 📊 核心指标对比
 
 ### 精度对比
@@ -161,6 +217,37 @@ print(f"空间精度: 四阶（P3）")
 - 快速计算 → 方案A
 - 精确模拟 → 方案B
 - 极端精度 → 方案C
+
+---
+
+## 💻 系统特性
+
+### ✅ 通用性
+
+```
+稳态求解:       3种方法（A/B/C）
+非恒定流:       CFL自适应，守恒<1e-10
+结构物:         3种类型（闸门、泵站、堰）
+边界条件:       恒定值、时间序列、控制规则
+```
+
+### ✅ 自动化
+
+```
+配置文件驱动:   YAML格式，<100行
+一键建模:       自动创建求解器和结构物
+一键运行:       自动求解+绘图+保存
+批量情景:       自动对比分析
+```
+
+### ✅ 易用性
+
+```
+Python API:     3行代码
+命令行:         1行命令
+配置文件:       直观简洁
+学习时间:       30分钟
+```
 
 ---
 
