@@ -33,7 +33,7 @@ from matplotlib.patches import Rectangle
 from matplotlib.gridspec import GridSpec
 
 from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
-from solvers.gate import SluiceGate, PumpStationAdvanced
+from solvers.gate import SluiceGate, PumpStation
 from utils.canal_utils import compute_steady_uniform_flow
 
 
@@ -495,13 +495,11 @@ def run_enhanced_scenario(scenario_id, config, output_base_dir):
     
     gate1 = SluiceGate(gate1_pos, B, 5.0, 0.6)
     gate2 = SluiceGate(gate2_pos, B, 5.0, 0.6)
-    pump = PumpStationAdvanced(
+    pump = PumpStation(
         position=pump_pos,
         width=B,
         rated_flow=30.0,
         rated_head=5.0,
-        shutoff_head=6.0,
-        friction_coef=0.0001,
         min_suction_head=2.0
     )
     
@@ -518,7 +516,9 @@ def run_enhanced_scenario(scenario_id, config, output_base_dir):
         ]
     )
     
-    # 配置底床高程（泵站后抬高）
+    # 配置底床高程（泵站后抬高5.0m，与泵站额定扬程一致）
+    # 注意：根据能量方程 h_down = h_up + (z_up - z_down) + H_pump
+    # 如果 z_down = z_up + H_pump，则 h_down ≈ h_up（水深基本不变）
     pump_idx = np.argmin(np.abs(solver.x - pump_pos))
     solver.z[pump_idx:] += 5.0
     
@@ -585,7 +585,7 @@ def run_enhanced_scenario(scenario_id, config, output_base_dir):
     
     h_history[0, :] = solver.h
     q_history[0, :] = solver.hu * B
-    pump_head_history[0] = pump.get_current_head()
+    pump_head_history[0] = pump.rated_head  # PumpStation使用固定额定扬程
     pump_flow_history[0] = q_history[0, pump_idx]
     time_history[0] = 0.0
     
@@ -642,7 +642,7 @@ def run_enhanced_scenario(scenario_id, config, output_base_dir):
             if step % save_interval == 0:
                 h_history[save_idx, :] = solver.h
                 q_history[save_idx, :] = solver.hu * B
-                pump_head_history[save_idx] = pump.get_current_head()
+                pump_head_history[save_idx] = pump.rated_head  # PumpStation使用固定额定扬程
                 pump_flow_history[save_idx] = q_history[save_idx, pump_idx]
                 time_history[save_idx] = t_current
                 
@@ -651,7 +651,7 @@ def run_enhanced_scenario(scenario_id, config, output_base_dir):
                     print(f"  进度: {progress:5.1f}% | t={t_current:6.0f}s | "
                           f"泵前h={solver.h[pump_idx-1]:.3f}m | "
                           f"泵Q={q_history[save_idx, pump_idx]:.2f}m³/s | "
-                          f"泵H={pump.get_current_head():.3f}m")
+                          f"泵H={pump.rated_head:.3f}m")
                 
                 save_idx += 1
         
