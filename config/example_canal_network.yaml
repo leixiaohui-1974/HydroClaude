@@ -1,0 +1,135 @@
+# ========================================================================
+# 示例配置文件：串联闸泵群明渠系统
+# 
+# 用途：演示如何通过配置文件快速建模
+# 目标：3行Python代码完成模拟
+# ========================================================================
+
+# 1. 渠道几何参数
+canal:
+  length: 100000.0        # 渠道长度 (m)
+  width: 10.0             # 渠道宽度 (m) - 矩形断面
+  slope: 0.0001           # 渠底坡度 (无量纲)
+  manning: 0.025          # Manning糙率系数
+
+# 2. 网格设置（可选）
+mesh:
+  n_cells: 200            # 计算单元数（默认：自动）
+  
+  # 局部加密（可选）
+  refinement:
+    - position: 25000     # 上游闸门附近加密
+      factor: 4           # 加密倍数
+      width: 1000         # 加密区域宽度 (m)
+    - position: 50000     # 泵站附近加密
+      factor: 4
+      width: 1000
+    - position: 75000     # 下游闸门附近加密
+      factor: 4
+      width: 1000
+
+# 3. 水工结构物
+structures:
+  # 上游闸门
+  - type: gate
+    name: "上游闸门"
+    position: 25000.0     # 位置 (m)
+    width: 10.0           # 闸孔宽度 (m)
+    opening: 3.0          # 开度 (m)
+    
+  # 中间泵站
+  - type: pump
+    name: "中间泵站"
+    position: 50000.0
+    width: 10.0
+    rated_flow: 10.0      # 设计流量 (m³/s)
+    rated_head: 5.0       # 设计扬程 (m)
+    efficiency: 0.80      # 效率（可选）
+    
+  # 下游闸门
+  - type: gate
+    name: "下游闸门"
+    position: 75000.0
+    width: 10.0
+    opening: 2.5
+
+# 4. 边界条件
+boundary:
+  # 上游边界
+  upstream:
+    type: flow            # 流量边界
+    value: 10.0           # 常数值 (m³/s)
+    # 或使用时间序列（非恒定流）
+    # timeseries: "data/upstream_flow.csv"
+    
+  # 下游边界
+  downstream:
+    type: depth           # 水深边界
+    value: 2.0            # 常数值 (m)
+    # 或使用时间序列
+    # timeseries: "data/downstream_depth.csv"
+
+# 5. 求解器设置
+solver:
+  # 求解器类型
+  method: hybrid_fvfd     # 方案B（推荐）
+  # 可选: wellbalanced_fdm (方案A), dg_high_order (方案C)
+  
+  # 稳态求解设置
+  steady_state:
+    max_iter: 2000        # 最大迭代次数
+    tolerance: 0.01       # 收敛容差 (%)
+    check_interval: 400   # 检查间隔
+    
+  # 非恒定流设置（可选）
+  unsteady:
+    enable: false         # 是否运行非恒定流
+    duration: 86400       # 模拟时长 (s) - 24小时
+    dt: 1.0               # 初始时间步长 (s)
+    cfl: 0.3              # CFL数（自动调整dt）
+    output_interval: 600  # 输出间隔 (s) - 每10分钟
+
+# 6. 输出设置
+output:
+  directory: "results/canal_network/"   # 输出目录
+  prefix: "case1"                       # 文件名前缀
+  
+  # 输出格式
+  formats:
+    - csv                 # CSV数据文件
+    - png                 # PNG图片
+    # - json              # JSON格式（可选）
+    
+  # 输出变量
+  variables:
+    - h                   # 水深
+    - Q                   # 流量
+    - u                   # 流速
+    - eta                 # 水位（h+z）
+    
+  # 自动生成的图表
+  plots:
+    - profile             # 纵断面图
+    - timeseries          # 时间序列（非恒定流）
+    - convergence         # 收敛历史
+    - structures          # 结构物状态
+
+# 7. 验证设置（可选）
+validation:
+  check_mass_conservation: true    # 检查质量守恒
+  tolerance: 1.0e-10               # 守恒容差
+  
+  check_physical: true             # 物理合理性检查
+  min_depth: 0.01                  # 最小水深 (m)
+  max_velocity: 10.0               # 最大流速 (m/s)
+
+# ========================================================================
+# 使用方法：
+#
+# from config import HydraulicModelConfig
+# 
+# config = HydraulicModelConfig("config/example_canal_network.yaml")
+# result = config.run_simulation()
+#
+# 就这么简单！自动生成图表和报告。
+# ========================================================================
