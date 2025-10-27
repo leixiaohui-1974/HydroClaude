@@ -1,0 +1,81 @@
+# ========================================================================
+# 示例3：串联闸泵群系统（核心场景）
+# 
+# 用途：完整的串联闸泵群系统
+# 适合：复杂水网、多结构物联合调度
+# ========================================================================
+
+canal:
+  length: 100000.0      # 100 km
+  width: 10.0
+  slope: 0.0001         # 平坦渠道
+  manning: 0.025
+
+mesh:
+  n_cells: 200          # 200单元
+  
+  # 在结构物附近加密（可选）
+  refinement:
+    - position: 25000
+      factor: 4
+      width: 1000
+    - position: 50000
+      factor: 4
+      width: 1000
+    - position: 75000
+      factor: 4
+      width: 1000
+
+structures:
+  # 上游闸门
+  - type: gate
+    name: "上游控制闸"
+    position: 25000.0   # 25 km
+    width: 10.0
+    opening: 3.0
+    
+  # 中间泵站
+  - type: pump
+    name: "提升泵站"
+    position: 50000.0   # 50 km
+    width: 10.0
+    rated_flow: 10.0
+    rated_head: 5.0
+    efficiency: 0.80
+    
+  # 下游闸门
+  - type: gate
+    name: "下游控制闸"
+    position: 75000.0   # 75 km
+    width: 10.0
+    opening: 2.5
+
+boundary:
+  upstream:
+    type: flow
+    value: 10.0
+  downstream:
+    type: depth
+    value: 2.0
+
+solver:
+  method: hybrid_fvfd   # 方案B（精确守恒）
+  
+  steady_state:
+    max_iter: 2000
+    tolerance: 0.01
+    check_interval: 400
+
+output:
+  directory: "results/cascade_system/"
+  prefix: "cascade"
+  formats: [csv, png]
+  variables: [h, Q, u, eta]
+  plots: [profile, convergence, structures]
+
+validation:
+  check_mass_conservation: true
+  tolerance: 1.0e-10
+  check_physical: true
+  min_depth: 0.01
+  max_velocity: 10.0

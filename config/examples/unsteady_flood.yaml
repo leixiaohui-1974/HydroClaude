@@ -1,0 +1,61 @@
+# ========================================================================
+# 示例4：非恒定流 - 洪水演进
+# 
+# 用途：洪水过程模拟
+# 适合：防洪调度、应急响应分析
+# ========================================================================
+
+canal:
+  length: 50000.0       # 50 km
+  width: 15.0           # 15 m宽
+  slope: 0.0002
+  manning: 0.030        # 天然河道糙率稍大
+
+mesh:
+  n_cells: 200
+
+structures:
+  - type: gate
+    name: "防洪闸"
+    position: 25000.0
+    width: 15.0
+    opening: 5.0        # 初始开度5m
+
+boundary:
+  upstream:
+    type: flow
+    # 使用时间序列（洪峰过程）
+    # 时间序列文件格式: time(s), value(m³/s)
+    timeseries: "data/flood_hydrograph.csv"
+    
+  downstream:
+    type: depth
+    value: 3.0          # 下游水位相对稳定
+
+solver:
+  method: hybrid_fvfd
+  
+  # 非恒定流设置
+  unsteady:
+    enable: true
+    duration: 86400     # 24小时
+    dt: 1.0
+    cfl: 0.3
+    output_interval: 1800  # 每30分钟输出
+
+output:
+  directory: "results/flood_simulation/"
+  prefix: "flood"
+  formats: [csv]
+  variables: [h, Q, u]
+  plots: [profile, timeseries]
+
+# 注意：需要提供 data/flood_hydrograph.csv
+# 格式示例：
+#   time,value
+#   0,50
+#   3600,100
+#   7200,150
+#   10800,120
+#   14400,80
+#   ...

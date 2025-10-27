@@ -1,0 +1,35 @@
+# ========================================================================
+# 示例1：简单明渠（无结构物）
+# 
+# 用途：最简单的配置，验证基本功能
+# 适合：初学者、快速测试
+# ========================================================================
+
+canal:
+  length: 10000.0       # 10 km
+  width: 10.0           # 10 m
+  slope: 0.001          # 0.1%
+  manning: 0.025
+
+# 无结构物
+structures: []
+
+boundary:
+  upstream:
+    type: flow
+    value: 10.0         # m³/s
+  downstream:
+    type: depth
+    value: 2.0          # m
+
+solver:
+  method: hybrid_fvfd   # 方案B（推荐）
+  steady_state:
+    max_iter: 1000
+    tolerance: 0.01
+
+output:
+  directory: "results/simple_canal/"
+  prefix: "simple"
+  formats: [csv]
+  variables: [h, Q, eta]
