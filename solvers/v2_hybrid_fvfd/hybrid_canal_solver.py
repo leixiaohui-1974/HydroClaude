@@ -100,6 +100,7 @@ class HybridCanalSolver:
         self.B = B
         self.S0 = S0
         self.n_manning = n
+        self.n = n  # 修复：添加self.n别名，兼容性
         self.g = g
         self.theta = theta
         
@@ -277,8 +278,8 @@ class HybridCanalSolver:
         h_avg = np.mean(self.h)
         u_avg = Q_target / (self.B * h_avg)
         c_avg = np.sqrt(self.g * h_avg)
-        dt = 0.2 * self.grid.dx_center.min() / (abs(u_avg) + c_avg)  # CFL=0.2更保守
-        dt = np.clip(dt, 0.01, 5.0)
+        dt = 0.05 * self.grid.dx_center.min() / (abs(u_avg) + c_avg)  # 修复：CFL从0.2降到0.05
+        dt = np.clip(dt, 0.01, 1.0)  # 修复：dt_max从5s降到1s
         
         if verbose:
             print(f"时间步长: {dt:.3f}s (CFL=0.3)")
@@ -320,6 +321,12 @@ class HybridCanalSolver:
             # 再次限制
             h_new = np.maximum(h_new, 0.01)
             Q_new = np.clip(Q_new, -100.0, 100.0)
+            
+            # 修复：添加松弛更新（类似WellBalanced）
+            omega = 0.3  # 保守的松弛因子
+            self.h = omega * h_new + (1 - omega) * self.h
+            self.Q = omega * Q_new + (1 - omega) * self.Q
+            self.A = self.h * self.B
             
             # 检查收敛
             if iteration % check_interval == 0:
