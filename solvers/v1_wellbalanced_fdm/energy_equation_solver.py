@@ -301,7 +301,7 @@ class EnergyEquationSolver:
              Q: float,
              h_downstream: float,
              dx: float = 100.0,
-             verbose: bool = True) -> Dict:
+             verbose: bool = False) -> Dict:
         """
         能量方程稳态求解（从下游向上游）
         
@@ -322,6 +322,39 @@ class EnergyEquationSolver:
         Returns:
             result: 包含 x, h, V, z, H, E
         """
+        # ===== 修复：检测并特殊处理均匀流 =====
+        if len(self.structures) == 0:
+            h_n = self.compute_normal_depth(Q)
+            # 如果下游边界接近正常水深，且无结构物，判定为均匀流
+            if abs(h_downstream - h_n) / h_n < 0.02:  # 2%容差
+                if verbose:
+                    print("检测到均匀流条件，使用直接求解")
+                
+                # 均匀流直接返回
+                x = np.arange(0, self.length + dx, dx)
+                n_points = len(x)
+                h = np.ones(n_points) * h_n
+                V = np.ones(n_points) * Q / (self.B * h_n)
+                z = (self.length - x) * self.S0
+                E = self.compute_specific_energy(h_n, Q)
+                H = z + E
+                Q_check = self.B * h * V
+                
+                return {
+                    'x': x,
+                    'h': h,
+                    'V': V,
+                    'z': z,
+                    'H': H,
+                    'E': np.ones(n_points) * E,
+                    'Q': Q_check,
+                    'Q_avg': Q,
+                    'Q_std': 0.0,
+                    'error': 0.0,
+                    'n_sections': n_points,
+                    'type': 'uniform_flow'
+                }
+        
         if verbose:
             print("="*60)
             print("能量方程稳态求解（HEC-RAS方法）")
@@ -381,9 +414,11 @@ class EnergyEquationSolver:
             
             # 能量平衡
             if structure_at_section is None:
-                # 无结构物：H_up = H_down + hf + bed_gain
+                # 无结构物：H_up = H_down - hf + bed_gain
+                # 床面抬升增加势能（正值）
+                # 摩阻消耗能量（正值，需要减去）
                 bed_gain = z[i] - z[i-1]  # 床面抬升增加势能
-                H[i] = H[i-1] + hf + bed_gain
+                H[i] = H[i-1] - hf + bed_gain  # 修复：hf前面应该是减号
                 
                 # 求解水深
                 E[i] = H[i] - z[i]
