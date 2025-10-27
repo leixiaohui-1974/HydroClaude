@@ -494,19 +494,60 @@ class WellBalancedCanalSolver:
             # 边界条件
             self.apply_boundary_conditions(Q_target, h_downstream)
             
+            # ===== 数值稳定化（修复前）=====
+            # 限制最小水深（防止负值）
+            self.h = np.maximum(self.h, 0.01)
+            
+            # 限制流速范围
+            u = self.hu / self.h
+            u_max = 10.0  # 最大流速10 m/s
+            u = np.clip(u, -u_max, u_max)
+            self.hu = u * self.h
+            self.Q = self.hu * self.B
+            
+            # 检测NaN并重新初始化
+            if np.any(np.isnan(self.h)) or np.any(np.isnan(self.Q)) or np.any(np.isinf(self.h)):
+                print(f"\n⚠️ 检测到NaN/Inf @ iter={iteration}，重新初始化...")
+                # 使用SimpleCorrectSolver重新初始化
+                try:
+                    from solvers.simple_correct_solver import SimpleCorrectSolver
+                    simple = SimpleCorrectSolver(
+                        length=self.length, B=self.B, S0=self.S0, n=self.n, nx=self.nx
+                    )
+                    init_result = simple.solve_uniform_flow(Q_target)
+                    self.h = init_result['h'].copy()
+                    self.hu = init_result['u'] * self.h
+                    self.Q = np.ones_like(self.h) * Q_target
+                except:
+                    print("   重新初始化失败，终止迭代")
+                    break
+            
             # 时间步进（HLL + 静水重构）
             h_new, hu_new = self.step_hll_wellbalanced(dt)
+            
+            # ===== 数值稳定化（修复后）=====
+            # 松弛更新（降低松弛因子）
+            omega_local = 0.5  # 从0.95降到0.5
+            h_new = omega_local * h_new + (1 - omega_local) * self.h
+            hu_new = omega_local * hu_new + (1 - omega_local) * self.hu
             
             # 更新状态
             self.h = h_new
             self.hu = hu_new
             self.Q = hu_new * self.B
             
+            # 再次限制（防止时间推进后产生问题）
+            self.h = np.maximum(self.h, 0.01)
+            u = self.hu / self.h
+            u = np.clip(u, -10.0, 10.0)
+            self.hu = u * self.h
+            self.Q = self.hu * self.B
+            
             # 应用结构物边界条件
             self.apply_structure_bc()
             
-            # 条件性滤波（保护结构物）
-            if iteration % 10 == 0:
+            # 条件性滤波（保护结构物）- 减少频率
+            if iteration % 20 == 0:  # 从10改为20
                 self.h = self.apply_spatial_filter_conditional(self.h)
                 self.hu = self.apply_spatial_filter_conditional(self.hu)
                 self.Q = self.hu * self.B
