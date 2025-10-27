@@ -26,7 +26,14 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
-from analytical_solutions import AnalyticalSolutions
+
+# 导入解析解库
+try:
+    from tests.analytical_solutions import AnalyticalSolutions
+except ImportError:
+    from analytical_solutions import AnalyticalSolutions
+
+# 导入求解器
 from solvers.v2_hybrid_fvfd import HybridCanalSolver
 from solvers.v1_wellbalanced_fdm import EnergyEquationSolver
 

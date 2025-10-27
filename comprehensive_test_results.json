@@ -1,11 +1,14 @@
 {
-  "start_time": "2025-10-27T09:02:33.049901",
+  "start_time": "2025-10-27T09:28:59.109568",
   "weeks": {
     "week1": {
       "name": "\u89e3\u6790\u89e3\u9a8c\u8bc1",
-      "status": "failed",
-      "error": "No module named 'numpy'"
+      "passed": 0,
+      "failed": 51,
+      "total": 51,
+      "pass_rate": 0.0,
+      "status": "completed"
     }
   },
-  "end_time": "2025-10-27T09:02:33.059130"
+  "end_time": "2025-10-27T09:29:16.139562"
 }
