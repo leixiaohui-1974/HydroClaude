@@ -25,6 +25,25 @@ import numpy as np
 from typing import Optional, Dict, List
 from scipy.optimize import fsolve
 
+# 导入结构物
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+try:
+    from solvers.v1_wellbalanced_fdm.structures import (
+        HydraulicStructure,
+        SluiceGate,
+        PumpStation,
+        BroadCrestedWeir
+    )
+except ImportError:
+    # 如果导入失败，定义简单的占位符
+    HydraulicStructure = None
+    SluiceGate = None
+    PumpStation = None
+    BroadCrestedWeir = None
+
 
 class SimpleCorrectSolver:
     """
@@ -85,6 +104,9 @@ class SimpleCorrectSolver:
         
         # 床面高程
         self.z = (length - self.x) * S0
+        
+        # 结构物列表
+        self.structures: List = []
     
     def compute_normal_depth(self, Q: float) -> float:
         """
@@ -268,6 +290,51 @@ class SimpleCorrectSolver:
         }
         
         return result
+    
+    def add_structure(self, structure):
+        """
+        添加结构物
+        
+        Args:
+            structure: 结构物对象（SluiceGate/PumpStation/Weir）
+        """
+        self.structures.append(structure)
+    
+    def solve_with_structures(self,
+                             Q: float,
+                             h_downstream: float) -> Dict:
+        """
+        求解带结构物的流动
+        
+        Args:
+            Q: 流量 (m³/s)
+            h_downstream: 下游边界水深 (m)
+        
+        Returns:
+            result: 求解结果
+        """
+        if len(self.structures) == 0:
+            # 无结构物：使用渐变流求解
+            return self.solve_gradually_varied_flow(Q, h_downstream)
+        
+        # 有结构物：分段求解
+        # 将渠道按结构物位置分段
+        structure_positions = sorted([s.position for s in self.structures])
+        segments = []
+        
+        # 创建分段
+        x_start = 0
+        for pos in structure_positions:
+            segments.append((x_start, pos))
+            x_start = pos
+        segments.append((x_start, self.length))
+        
+        # TODO: 实现分段求解逻辑
+        # 每段使用渐变流求解
+        # 在结构物处应用边界条件
+        
+        # 暂时返回简单的渐变流解
+        return self.solve_gradually_varied_flow(Q, h_downstream)
 
 
 # ========== 测试 ==========
