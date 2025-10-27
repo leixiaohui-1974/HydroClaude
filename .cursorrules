@@ -1,0 +1,280 @@
+# HydroClaude AI开发规则
+
+## 🎯 核心原则（必须严格遵守）
+
+### 1. 基础库优先（LIBRARY FIRST）- 最高优先级 ⚠️
+
+**在编写任何代码之前，必须先做这些检查：**
+
+```
+✅ 第1步：打开并查阅 LIBRARY_REFERENCE.md
+✅ 第2步：搜索是否有对应的基础库
+✅ 第3步：查看 examples/ 下是否有类似示例
+✅ 第4步：如果有基础库，必须使用它！
+❌ 禁止：直接编写功能实现代码
+```
+
+### 2. 强制使用基础库清单 📚
+
+#### 求解器（唯一推荐）
+```python
+# ✅ 必须使用这个
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+
+# ❌ 禁止使用这些（已废弃）
+# from solvers.single_canal_solver import SingleCanalSolver  # 已废弃
+# from solvers.canal_solver import CanalSolver  # 已废弃
+```
+
+#### 结果验证（必须使用）
+```python
+# ✅ 必须使用 - 所有稳态求解后都要验证
+from utils.result_validator import quick_validate_steady_state
+
+# 用法：
+validator = quick_validate_steady_state(
+    solver=solver,
+    result_dict=result,
+    Q_target=Q_target,
+    name="场景名称"
+)
+```
+
+#### 水力学计算（必须使用）
+```python
+# ✅ 必须使用 - 不要自己实现
+from utils.canal_utils import (
+    compute_steady_uniform_flow,  # 计算均匀流水深
+    compute_critical_depth,       # 计算临界水深
+    compute_froude_number,        # 计算Froude数
+)
+
+# ❌ 禁止自己实现这些函数
+```
+
+#### 可视化（优先使用）
+```python
+# ✅ 方式1：使用PlotHelper（推荐，最简单）
+from utils.plot_helper import PlotHelper
+
+plotter = PlotHelper()
+fig = plotter.plot_profile(x, h, xlabel="...", ylabel="...")
+
+# ✅ 方式2：使用VisualizationTemplates（更多图表类型）
+from utils.visualization_templates import VisualizationTemplates
+
+viz = VisualizationTemplates()
+fig = viz.plot_longitudinal_profile(x, h, S0, length)
+
+# ❌ 禁止直接使用matplotlib手写绘图代码
+# 除非 PlotHelper 和 VisualizationTemplates 都没有对应模板
+```
+
+#### 水工结构
+```python
+# ✅ 必须使用这些
+from solvers.gate import SluiceGate, BroadCrestedWeir, Orifice
+
+# 创建结构
+gate = SluiceGate(position=5000.0, width=10.0, opening=5.0)
+weir = BroadCrestedWeir(position=5000.0, width=10.0, crest_height=0.5)
+```
+
+### 3. 开发工作流（强制顺序）⚡
+
+```
+步骤1: 查阅 LIBRARY_REFERENCE.md
+       ↓
+步骤2: 找到对应的基础库API
+       ↓
+步骤3: 查看 examples/ 下的示例代码学习用法
+       ↓
+步骤4: 使用基础库编写代码（禁止重复实现）
+       ↓
+步骤5: 使用 ResultValidator 验证结果（必须步骤）
+       ↓
+步骤6: 如有新功能，更新 LIBRARY_REFERENCE.md
+```
+
+### 4. 绝对禁止的行为 ❌
+
+```python
+# ❌ 禁止1：自己写流量验证函数
+def validate_flow(Q, Q_target):  # 不要这样做！
+    error = abs(Q - Q_target) / Q_target * 100
+    ...
+
+# ✅ 正确：使用基础库
+from utils.result_validator import quick_validate_steady_state
+validator = quick_validate_steady_state(...)
+
+# ❌ 禁止2：手写matplotlib绘图代码
+fig, ax = plt.subplots()  # 不要这样做！
+ax.plot(x, h)
+ax.set_xlabel(...)
+...
+
+# ✅ 正确：使用PlotHelper
+from utils.plot_helper import PlotHelper
+plotter = PlotHelper()
+fig = plotter.plot_profile(x, h, xlabel="...", ylabel="...")
+
+# ❌ 禁止3：自己实现水力学计算
+def compute_uniform_depth(Q, B, S0, n):  # 不要这样做！
+    ...
+
+# ✅ 正确：使用canal_utils
+from utils.canal_utils import compute_steady_uniform_flow
+h = compute_steady_uniform_flow(Q, B, S0, n)
+
+# ❌ 禁止4：使用废弃的求解器
+from solvers.single_canal_solver import SingleCanalSolver  # 不要用！
+from solvers.canal_solver import CanalSolver  # 不要用！
+
+# ✅ 正确：使用HydrostaticCanalSolver
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+```
+
+### 5. 每次编写代码前必问的3个问题 🤔
+
+```
+问题1: LIBRARY_REFERENCE.md 里有这个功能吗？
+       → 有 → 使用它！
+       → 没有 → 继续问题2
+
+问题2: examples/ 下有类似的示例吗？
+       → 有 → 参考它！
+       → 没有 → 继续问题3
+
+问题3: 我是在重复造轮子吗？
+       → 是 → 停止！回到问题1
+       → 否 → 可以实现新功能（但要更新文档）
+```
+
+### 6. 标准代码模板 📝
+
+所有新脚本都必须遵循这个结构：
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+脚本功能描述
+
+Author: [作者]
+Date: [日期]
+"""
+
+import sys, os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(script_path)))
+sys.path.insert(0, project_root)
+
+# ========== 基础库导入（必须）==========
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+from solvers.gate import SluiceGate
+from utils.canal_utils import compute_steady_uniform_flow
+from utils.result_validator import quick_validate_steady_state
+from utils.plot_helper import PlotHelper
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def main():
+    """主函数"""
+    # 1. 参数设置
+    # 2. 创建求解器（使用基础库）
+    # 3. 初始化（使用基础库）
+    # 4. 稳态求解
+    # 5. 验证（必须使用 ResultValidator）
+    # 6. 可视化（使用 PlotHelper 或 VisualizationTemplates）
+    # 7. 保存数据
+    # 8. 总结
+    pass
+
+
+if __name__ == '__main__':
+    main()
+```
+
+### 7. 性能预期 🎯
+
+使用 HydrostaticCanalSolver 时应达到：
+
+- ✅ 流量误差: **0.000000%**（所有场景）
+- ✅ 迭代次数: **0-1次**（简单场景）, **1-10次**（复杂场景）
+- ✅ 收敛成功率: **100%**
+- ✅ 闸门误差: **< 1%**
+
+如果达不到这些指标，说明使用方式有误，请检查：
+1. 是否使用了 HydrostaticCanalSolver
+2. 是否设置了合理的 convergence_tol（推荐 0.1）
+3. 是否正确初始化了水深和流量
+
+### 8. 完整示例代码 📖
+
+参考这些已验证的示例（都使用了基础库）：
+
+```
+examples/example_01_canal_flow/scripts/01_basic_v2.py          - 基础流动
+examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2.py - 单闸门
+examples/example_01_canal_flow/scripts/12_advanced_optimized_v2.py - 多结构
+```
+
+**重要**: 只参考带 `_v2` 后缀的示例！
+
+### 9. 文档更新要求 📚
+
+如果扩展了基础库，必须：
+
+1. ✅ 更新 `LIBRARY_REFERENCE.md` - 添加API文档
+2. ✅ 更新 `DEVELOPMENT_GUIDE.md` - 添加使用说明
+3. ✅ 提供使用示例代码
+4. ✅ 说明适用场景和限制
+
+### 10. 验证清单 ✅
+
+提交代码前，确认以下所有项：
+
+- [ ] 使用了 HydrostaticCanalSolver（不是其他求解器）
+- [ ] 使用了 ResultValidator 验证结果
+- [ ] 使用了 PlotHelper 或 VisualizationTemplates 绘图
+- [ ] 使用了 canal_utils 进行水力学计算
+- [ ] 没有重复实现基础库已有的功能
+- [ ] 代码遵循标准模板结构
+- [ ] 流量误差 < 0.01%
+- [ ] 迭代次数合理（< 100次）
+
+## 📚 关键文档索引
+
+**开发前必读**：
+- `LIBRARY_REFERENCE.md` - 完整的基础库API文档（必读！）
+- `DEVELOPMENT_GUIDE.md` - 开发规范和最佳实践
+- `EXAMPLES_INDEX.md` - 快速找到参考示例
+- `SCRIPT_UPGRADE_SUMMARY.md` - 最佳实践案例
+
+**快速查询**：
+- 需要什么功能？→ 查 `LIBRARY_REFERENCE.md`
+- 怎么用？→ 看 `examples/` 下的 `_v2` 示例
+- 性能基准？→ 看 `SCRIPT_UPGRADE_SUMMARY.md`
+
+## 🎯 总结
+
+**记住这三点：**
+
+1. **先查文档，后写代码**（LIBRARY_REFERENCE.md）
+2. **必须使用基础库**（禁止重复造轮子）
+3. **必须验证结果**（ResultValidator）
+
+**如果不确定怎么做，查看示例：**
+```bash
+examples/example_01_canal_flow/scripts/*_v2.py
+```
+
+---
+
+**Generated by HydroClaude Development Team**
+**Last Updated: 2025-10-27**
