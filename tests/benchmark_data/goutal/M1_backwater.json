@@ -1,0 +1,16 @@
+{
+  "name": "Goutal M1 Backwater Curve",
+  "description": "M1壅水曲线",
+  "reference": "Goutal & Maurel (1997) EDF-SOGREAH",
+  "parameters": {
+    "length": 10000.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "manning": 0.025,
+    "flow_rate": 10.0,
+    "downstream_depth": 3.0
+  },
+  "solution_type": "step_integration",
+  "expected_error": 0.005,
+  "notes": "使用逐步积分法生成准解析解"
+}

@@ -1,0 +1,18 @@
+{
+  "name": "SWASHES Case 2",
+  "description": "经典溃坝问题（解析解）",
+  "reference": "Delestre et al. (2013) IJNMF",
+  "doi": "10.1002/fld.3741",
+  "website": "http://www.univ-orleans.fr/mapmo/soft/SWASHES/",
+  "parameters": {
+    "case_number": 2,
+    "description": "MacDonald溃坝问题",
+    "initial_left_depth": 10.0,
+    "initial_right_depth": 5.0,
+    "length": 2000.0,
+    "time": 60.0
+  },
+  "solution_type": "analytical",
+  "expected_error": 0.001,
+  "notes": "SWASHES提供精确解析解"
+}

@@ -1,0 +1,110 @@
+{
+  "description": "HydroClaude基准算例索引",
+  "total_cases": 6,
+  "cases": [
+    {
+      "name": "MacDonald Case 1",
+      "description": "矩形渠道稳态均匀流",
+      "reference": "MacDonald et al. (1997) Journal of Hydraulic Engineering",
+      "doi": "10.1061/(ASCE)0733-9429(1997)123:11(1041)",
+      "parameters": {
+        "length": 10000.0,
+        "width": 10.0,
+        "slope": 0.001,
+        "manning": 0.025,
+        "flow_rate": 10.0
+      },
+      "solution_type": "analytical",
+      "expected_error": 0.001,
+      "notes": "使用Manning公式的精确解析解"
+    },
+    {
+      "name": "MacDonald Case 2",
+      "description": "单闸门控制流",
+      "reference": "MacDonald et al. (1997) JHE",
+      "doi": "10.1061/(ASCE)0733-9429(1997)123:11(1041)",
+      "parameters": {
+        "length": 10000.0,
+        "width": 10.0,
+        "slope": 0.001,
+        "manning": 0.025,
+        "flow_rate": 10.0,
+        "gate_position": 5000.0,
+        "gate_opening": 3.0
+      },
+      "solution_type": "numerical_high_precision",
+      "expected_error": 0.01,
+      "notes": "需要使用高精度数值方法生成参考解"
+    },
+    {
+      "name": "Goutal M1 Backwater Curve",
+      "description": "M1壅水曲线",
+      "reference": "Goutal & Maurel (1997) EDF-SOGREAH",
+      "parameters": {
+        "length": 10000.0,
+        "width": 10.0,
+        "slope": 0.001,
+        "manning": 0.025,
+        "flow_rate": 10.0,
+        "downstream_depth": 3.0
+      },
+      "solution_type": "step_integration",
+      "expected_error": 0.005,
+      "notes": "使用逐步积分法生成准解析解"
+    },
+    {
+      "name": "SWASHES Case 1",
+      "description": "经典溃坝问题（解析解）",
+      "reference": "Delestre et al. (2013) IJNMF",
+      "doi": "10.1002/fld.3741",
+      "website": "http://www.univ-orleans.fr/mapmo/soft/SWASHES/",
+      "parameters": {
+        "case_number": 1,
+        "description": "MacDonald溃坝问题",
+        "initial_left_depth": 10.0,
+        "initial_right_depth": 5.0,
+        "length": 2000.0,
+        "time": 60.0
+      },
+      "solution_type": "analytical",
+      "expected_error": 0.001,
+      "notes": "SWASHES提供精确解析解"
+    },
+    {
+      "name": "SWASHES Case 2",
+      "description": "经典溃坝问题（解析解）",
+      "reference": "Delestre et al. (2013) IJNMF",
+      "doi": "10.1002/fld.3741",
+      "website": "http://www.univ-orleans.fr/mapmo/soft/SWASHES/",
+      "parameters": {
+        "case_number": 2,
+        "description": "MacDonald溃坝问题",
+        "initial_left_depth": 10.0,
+        "initial_right_depth": 5.0,
+        "length": 2000.0,
+        "time": 60.0
+      },
+      "solution_type": "analytical",
+      "expected_error": 0.001,
+      "notes": "SWASHES提供精确解析解"
+    },
+    {
+      "name": "SWASHES Case 3",
+      "description": "经典溃坝问题（解析解）",
+      "reference": "Delestre et al. (2013) IJNMF",
+      "doi": "10.1002/fld.3741",
+      "website": "http://www.univ-orleans.fr/mapmo/soft/SWASHES/",
+      "parameters": {
+        "case_number": 3,
+        "description": "MacDonald溃坝问题",
+        "initial_left_depth": 10.0,
+        "initial_right_depth": 5.0,
+        "length": 2000.0,
+        "time": 60.0
+      },
+      "solution_type": "analytical",
+      "expected_error": 0.001,
+      "notes": "SWASHES提供精确解析解"
+    }
+  ]
+}

@@ -32,6 +32,23 @@ class BenchmarkValidationTest:
         
         # 创建数据目录
         os.makedirs(self.benchmark_data_dir, exist_ok=True)
+        
+        # 加载基准算例索引
+        self.load_benchmark_index()
+    
+    def load_benchmark_index(self):
+        """加载基准算例索引"""
+        index_file = os.path.join(self.benchmark_data_dir, 'index.json')
+        
+        if os.path.exists(index_file):
+            import json
+            with open(index_file, 'r', encoding='utf-8') as f:
+                self.benchmark_index = json.load(f)
+            print(f"✓ 加载基准算例索引: {self.benchmark_index['total_cases']}个算例")
+        else:
+            self.benchmark_index = None
+            print("⚠️ 基准算例索引不存在，请先运行:")
+            print("  python tests/benchmark_data/generate_benchmark_data.py")
     
     def test_macdonald_case1(self):
         """
@@ -44,27 +61,36 @@ class BenchmarkValidationTest:
         print("MacDonald Case 1: 矩形渠道稳态流")
         print("="*80)
         
-        # 参数（来自MacDonald论文）
-        L = 10000.0  # m
-        B = 10.0     # m
-        S0 = 0.001
-        n = 0.025
-        Q = 10.0     # m³/s
+        # 加载元数据
+        metadata_file = os.path.join(self.benchmark_data_dir, 'macdonald', 'case1_uniform_flow.json')
         
-        # 参考解（来自文献）
-        h_ref = 1.85  # m（文献值）
+        if not os.path.exists(metadata_file):
+            print("❌ 元数据文件不存在")
+            return 0, 1
         
-        print(f"参数: L={L}m, B={B}m, S0={S0}, n={n}, Q={Q}m³/s")
-        print(f"文献参考水深: {h_ref}m")
+        import json
+        with open(metadata_file, 'r') as f:
+            metadata = json.load(f)
         
-        # TODO: 运行数值模拟，与文献对比
-        # result = solver.solve(...)
-        # error = abs(result['h'] - h_ref) / h_ref
+        params = metadata['parameters']
         
-        # 暂时标记为待实现
-        print("⏸️ 待实现（需要从文献获取完整数据）")
+        print(f"算例: {metadata['name']}")
+        print(f"参考: {metadata['reference']}")
+        print(f"参数: Q={params['flow_rate']}, B={params['width']}, S0={params['slope']}, n={params['manning']}")
+        print(f"预期误差: < {metadata['expected_error']*100}%")
         
-        return 0, 1  # 暂时标记为失败
+        # 检查数据文件
+        data_file = os.path.join(self.benchmark_data_dir, 'macdonald', 'case1_uniform_flow.csv')
+        
+        if not os.path.exists(data_file):
+            print("⏸️ 数据文件不存在，需要生成")
+            print("   提示: python tests/benchmark_data/generate_benchmark_data.py --with-data")
+            return 0, 1
+        
+        # TODO: 读取数据，运行模拟，对比
+        print("⏸️ 待实现（需要numpy读取数据并运行模拟）")
+        
+        return 0, 1
     
     def test_goutal_case1(self):
         """
