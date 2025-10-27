@@ -175,12 +175,33 @@ class NewtonSteadySolver:
         
         return Sf
     
+    def find_structure_at_position(self, x_pos):
+        """
+        查找指定位置的结构物
+        
+        参数:
+            x_pos: 位置 (m)
+        
+        返回:
+            structure: 结构物对象，或None
+            idx: 网格索引
+        """
+        for structure in self.structures:
+            # 找到最近的网格点
+            idx = np.argmin(np.abs(self.x - structure.position))
+            if abs(self.x[idx] - structure.position) < self.dx / 2:
+                return structure, idx
+        return None, -1
+    
     def compute_residuals(self, h, Q, h_downstream):
         """
         计算残差向量 R(h)
         
         能量方程残差:
         R[i] = H[i] - H[i-1] + Sf_avg * dx - S0 * dx
+        
+        结构物处:
+        R[i] = Q_structure - Q (流量连续性)
         
         边界条件:
         R[0] = h[0] - h_downstream  (下游边界)
@@ -204,17 +225,35 @@ class NewtonSteadySolver:
         # 下游边界条件（已知水深）
         R[0] = h[0] - h_downstream
         
-        # 内部节点：能量方程
+        # 内部节点：能量方程或结构物方程
         for i in range(1, self.nx):
-            # 平均摩阻坡度
-            Sf_avg = 0.5 * (Sf[i] + Sf[i-1])
+            # 检查是否有结构物
+            structure = None
+            for s in self.structures:
+                idx = np.argmin(np.abs(self.x - s.position))
+                if idx == i and abs(self.x[idx] - s.position) < self.dx / 2:
+                    structure = s
+                    break
             
-            # 能量方程残差
-            # 沿x正方向（从下游i-1到上游i），逆流方向
-            # 总水头变化: dH/dx = Sf（逆流方向，总水头增加）
-            # 离散形式: H[i] - H[i-1] = Sf_avg * dx
-            # 残差: R[i] = H[i] - H[i-1] - Sf_avg * dx = 0
-            R[i] = H[i] - H[i-1] - Sf_avg * self.dx
+            if structure is not None:
+                # 结构物处：使用结构物方程
+                # 上游水深 h[i], 下游水深 h[i-1]
+                try:
+                    Q_structure, flow_type = structure.calculate_discharge(
+                        h_upstream=h[i],
+                        h_downstream=h[i-1],
+                        t=0.0
+                    )
+                    # 流量连续性
+                    R[i] = Q_structure - Q
+                except Exception as e:
+                    # 如果结构物方程失败，回退到能量方程
+                    Sf_avg = 0.5 * (Sf[i] + Sf[i-1])
+                    R[i] = H[i] - H[i-1] - Sf_avg * self.dx
+            else:
+                # 普通渠道：能量方程
+                Sf_avg = 0.5 * (Sf[i] + Sf[i-1])
+                R[i] = H[i] - H[i-1] - Sf_avg * self.dx
         
         return R
     
