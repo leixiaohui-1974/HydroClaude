@@ -24,4 +24,6 @@ __all__ = [
     'BroadCrestedWeir',
 ]
 
-__version__ = '1.0.0-alpha'
+__version__ = '1.0.0'
+__author__ = 'Claude AI Assistant'
+__description__ = '良平衡有限差分法（方案A）- 精度目标: 流量误差 < 0.5%'
