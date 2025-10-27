@@ -36,17 +36,37 @@ class ExtremeConditionTest:
         print("测试：极端坡度")
         print("="*80)
         
-        # 极陡坡度
-        print("1. 极陡坡度 (S0=0.1, 10%)")
-        print("   目标: 不崩溃，收敛")
-        print("   ⏸️ 待实现")
+        test_cases = [
+            {"name": "极陡坡度", "S0": 0.1, "expected": "收敛，超临界流"},
+            {"name": "极缓坡度", "S0": 1e-6, "expected": "收敛，亚临界流"},
+            {"name": "零坡度", "S0": 0.0, "expected": "特殊处理"},
+            {"name": "负坡度", "S0": -0.001, "expected": "逆坡，特殊处理"}
+        ]
         
-        # 极缓坡度
-        print("\n2. 极缓坡度 (S0=1e-6)")
-        print("   目标: 不崩溃，收敛")
-        print("   ⏸️ 待实现")
+        passed = 0
+        failed = 0
         
-        return 0, 2
+        for i, case in enumerate(test_cases, 1):
+            print(f"\n{i}. {case['name']} (S0={case['S0']})")
+            print(f"   预期: {case['expected']}")
+            
+            # TODO: 实际运行测试
+            # try:
+            #     result = solver.solve(S0=case['S0'], ...)
+            #     if result['converged']:
+            #         passed += 1
+            #         print("   ✓ 通过")
+            #     else:
+            #         failed += 1
+            #         print("   ✗ 失败: 不收敛")
+            # except Exception as e:
+            #     failed += 1
+            #     print(f"   ✗ 失败: {e}")
+            
+            print("   ⏸️ 待实现")
+            failed += 1
+        
+        return passed, failed
     
     def test_extreme_flows(self):
         """测试极端流量"""
