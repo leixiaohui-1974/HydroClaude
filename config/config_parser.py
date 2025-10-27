@@ -551,9 +551,43 @@ class HydraulicModelConfig:
         
         plots_to_generate = output_config['plots']
         
-        # TODO: 实现自动绘图（Phase 2.3）
-        print(f"\n⚠️  自动绘图功能将在Phase 2.3实现")
-        print(f"  计划图表: {plots_to_generate}")
+        if not plots_to_generate:
+            return
+        
+        # 导入可视化工具
+        try:
+            from visualization import ResultVisualizer
+            
+            output_dir = output_config.get('directory', 'results/')
+            prefix = output_config.get('prefix', 'simulation')
+            
+            viz = ResultVisualizer(result)
+            
+            print(f"\n生成图表:")
+            
+            # 根据配置生成图表
+            for plot_type in plots_to_generate:
+                if plot_type == 'profile':
+                    save_path = os.path.join(output_dir, f"{prefix}_profile.png")
+                    viz.plot_profile(save_path=save_path)
+                
+                elif plot_type == 'flow':
+                    save_path = os.path.join(output_dir, f"{prefix}_flow.png")
+                    viz.plot_flow_distribution(save_path=save_path)
+                
+                elif plot_type == 'timeseries':
+                    if viz.is_unsteady:
+                        save_path = os.path.join(output_dir, f"{prefix}_timeseries.png")
+                        viz.plot_timeseries(save_path=save_path)
+                
+                elif plot_type == 'convergence':
+                    save_path = os.path.join(output_dir, f"{prefix}_convergence.png")
+                    viz.plot_convergence(save_path=save_path)
+        
+        except ImportError:
+            print(f"\n⚠️  matplotlib未安装，跳过绘图")
+        except Exception as e:
+            print(f"\n⚠️  绘图失败: {e}")
     
     def print_summary(self):
         """打印配置摘要"""
