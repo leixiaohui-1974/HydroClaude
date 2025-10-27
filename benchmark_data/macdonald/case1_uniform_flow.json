@@ -1,0 +1,16 @@
+{
+  "name": "MacDonald Case 1",
+  "description": "矩形渠道稳态均匀流",
+  "reference": "MacDonald et al. (1997) Journal of Hydraulic Engineering",
+  "doi": "10.1061/(ASCE)0733-9429(1997)123:11(1041)",
+  "parameters": {
+    "length": 10000.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "manning": 0.025,
+    "flow_rate": 10.0
+  },
+  "solution_type": "analytical",
+  "expected_error": 0.001,
+  "notes": "使用Manning公式的精确解析解"
+}
