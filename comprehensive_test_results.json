@@ -1,0 +1,11 @@
+{
+  "start_time": "2025-10-27T09:02:33.049901",
+  "weeks": {
+    "week1": {
+      "name": "\u89e3\u6790\u89e3\u9a8c\u8bc1",
+      "status": "failed",
+      "error": "No module named 'numpy'"
+    }
+  },
+  "end_time": "2025-10-27T09:02:33.059130"
+}
