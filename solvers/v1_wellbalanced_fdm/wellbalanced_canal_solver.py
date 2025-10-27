@@ -87,7 +87,7 @@ class WellBalancedCanalSolver:
                  g: float = 9.81,
                  x_grid: Optional[np.ndarray] = None,
                  theta: float = 0.6,
-                 omega: float = 0.95,
+                 omega: float = 0.3,  # 修复：从0.95降到0.3，更保守
                  eps_dry: float = 1e-6):
         """
         初始化求解器
@@ -483,8 +483,8 @@ class WellBalancedCanalSolver:
         h_avg = np.mean(self.h)
         u_avg = Q_target / (self.B * h_avg)
         c_avg = np.sqrt(self.g * h_avg)
-        dt = 0.3 * self.dx / (abs(u_avg) + c_avg)  # CFL = 0.3（更保守）
-        dt = np.clip(dt, 0.01, 5.0)  # 限制范围
+        dt = 0.05 * self.dx / (abs(u_avg) + c_avg)  # 修复：CFL从0.3降到0.05，极度保守
+        dt = np.clip(dt, 0.01, 1.0)  # 修复：最大时间步从5s降到1s
         
         print(f"时间步长: {dt:.3f}s (CFL)")
         print("")
