@@ -240,10 +240,45 @@ class HybridCanalSolver:
             print(f"结构物: {len(self.structures)}个")
             self.grid.print_info()
         
-        # CFL时间步长
-        u_max = 5.0
-        c_max = np.sqrt(self.g * 10.0)
-        dt = 0.3 * self.grid.dx_center.min() / (u_max + c_max)
+        # ===== 修复：使用SimpleCorrectSolver初始化 =====
+        try:
+            from solvers.simple_correct_solver import SimpleCorrectSolver
+            simple = SimpleCorrectSolver(
+                length=self.grid.length,
+                B=self.B,
+                S0=self.S0,
+                n=self.n,
+                nx=self.grid.n_cells
+            )
+            init_result = simple.solve_uniform_flow(Q_target)
+            
+            # 设置初始条件（单元中心）
+            self.h = init_result['h'].copy()
+            self.A = self.h * self.B
+            
+            # 界面流量（插值）
+            Q_init = np.zeros(self.grid.n_faces)
+            Q_init[0] = Q_target
+            Q_init[1:-1] = Q_target  # 均匀流
+            Q_init[-1] = Q_target
+            self.Q = Q_init
+            
+            if verbose:
+                print(f"\n初始化: 使用SimpleCorrectSolver ✓")
+                print(f"初始h: {self.h.min():.3f} - {self.h.max():.3f} m")
+                print(f"初始Q: {Q_target:.2f} m³/s")
+                print("")
+        except Exception as e:
+            if verbose:
+                print(f"\n⚠️ SimpleCorrectSolver初始化失败: {e}")
+                print("使用默认初始化...\n")
+        
+        # CFL时间步长（使用实际水深）
+        h_avg = np.mean(self.h)
+        u_avg = Q_target / (self.B * h_avg)
+        c_avg = np.sqrt(self.g * h_avg)
+        dt = 0.2 * self.grid.dx_center.min() / (abs(u_avg) + c_avg)  # CFL=0.2更保守
+        dt = np.clip(dt, 0.01, 5.0)
         
         if verbose:
             print(f"时间步长: {dt:.3f}s (CFL=0.3)")
@@ -258,8 +293,33 @@ class HybridCanalSolver:
             self.h[-1] = h_downstream  # 下游水深
             self.A[-1] = h_downstream * self.B
             
+            # ===== 数值稳定化（修复前）=====
+            # 限制最小水深
+            self.h = np.maximum(self.h, 0.01)
+            self.A = self.h * self.B
+            
+            # 限制流速
+            u_faces = self.Q / (self.B * np.interp(
+                self.grid.x_face, self.grid.x_center, self.h
+            ))
+            u_faces = np.clip(u_faces, -10.0, 10.0)
+            self.Q = u_faces * self.B * np.interp(
+                self.grid.x_face, self.grid.x_center, self.h
+            )
+            
+            # 检测NaN
+            if np.any(np.isnan(self.h)) or np.any(np.isnan(self.Q)):
+                if verbose:
+                    print(f"\n⚠️ 检测到NaN @ iter={iteration}，终止")
+                break
+            
             # 时间步进
             h_new, Q_new = self.step(dt)
+            
+            # ===== 数值稳定化（修复后）=====
+            # 再次限制
+            h_new = np.maximum(h_new, 0.01)
+            Q_new = np.clip(Q_new, -100.0, 100.0)
             
             # 检查收敛
             if iteration % check_interval == 0:

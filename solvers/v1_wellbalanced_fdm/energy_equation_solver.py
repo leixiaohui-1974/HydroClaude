@@ -326,7 +326,7 @@ class EnergyEquationSolver:
         if len(self.structures) == 0:
             h_n = self.compute_normal_depth(Q)
             # 如果下游边界接近正常水深，且无结构物，判定为均匀流
-            if abs(h_downstream - h_n) / h_n < 0.02:  # 2%容差
+            if abs(h_downstream - h_n) / h_n < 0.05:  # 5%容差（从2%放宽）
                 if verbose:
                     print("检测到均匀流条件，使用直接求解")
                 
