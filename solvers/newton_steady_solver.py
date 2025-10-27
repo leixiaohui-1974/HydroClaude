@@ -77,6 +77,9 @@ class NewtonSteadySolver:
         # 结构物列表
         self.structures = []
         
+        # 泵站扬程累积（用于修正床面高程）
+        self.pump_head_adjustments = np.zeros(nx)
+        
         print(f"="*70)
         print(f"Newton-Raphson稳态求解器初始化")
         print(f"="*70)
@@ -94,10 +97,41 @@ class NewtonSteadySolver:
         添加水工结构物
         
         参数:
-            structure: 结构物对象（SluiceGate, Weir等）
+            structure: 结构物对象（SluiceGate, Pump等）
         """
         self.structures.append(structure)
         print(f"添加结构物: {structure.__class__.__name__} @ x={structure.position}m")
+    
+    def update_bed_elevation_for_pumps(self, Q):
+        """
+        更新床面高程以体现泵站扬程
+        
+        关键思想:
+        - 泵站相当于将下游渠道"抬高"了H_pump
+        - 将泵站扬程加到泵后的床面高程z上
+        - 这样能量方程自动正确
+        
+        参数:
+            Q: 流量 (m³/s)
+        """
+        # 重置
+        self.pump_head_adjustments = np.zeros(self.nx)
+        
+        # 处理每个泵站
+        for structure in self.structures:
+            structure_type = structure.__class__.__name__
+            if 'Pump' in structure_type or 'pump' in structure_type.lower():
+                # 找到泵站位置
+                idx = np.argmin(np.abs(self.x - structure.position))
+                
+                # 计算泵站扬程
+                H_pump = structure.calculate_head(Q)
+                
+                # 将扬程加到泵站下游所有节点的床面高程
+                for i in range(idx+1, self.nx):
+                    self.pump_head_adjustments[i] += H_pump
+                
+                print(f"  泵站 @ x={structure.position}m: 扬程={H_pump:.2f}m，下游床面抬高")
     
     def initialize_with_uniform_flow(self, Q):
         """
@@ -158,8 +192,9 @@ class NewtonSteadySolver:
         # 速度水头
         v_head = v**2 / (2 * self.g)
         
-        # 总水头
-        H = self.z + h + v_head
+        # 总水头（包含泵站扬程调整）
+        z_effective = self.z + self.pump_head_adjustments
+        H = z_effective + h + v_head
         
         return H
     
@@ -252,23 +287,27 @@ class NewtonSteadySolver:
                     break
             
             if structure is not None:
-                # 结构物处：使用结构物方程
+                # 结构物处：使用修改的能量方程
                 try:
-                    # 判断结构物类型
                     structure_type = structure.__class__.__name__
                     
                     if 'Pump' in structure_type or 'pump' in structure_type.lower():
-                        # 泵站：主动提水，下游水位高于上游
-                        # h[i]是泵后（下游），h[i-1]是泵前（上游）
-                        Q_structure, flow_type = structure.calculate_discharge(
-                            h_upstream=h[i-1],  # 泵前
-                            h_downstream=h[i],  # 泵后
-                            t=0.0
-                        )
-                        # 流量连续性
-                        R[i] = Q_structure - Q
+                        # 泵站：修改能量方程，加入泵站扬程
+                        # 能量方程: H[i] = H[i-1] + H_pump - Sf_avg*dx
+                        # 残差: R[i] = H[i] - H[i-1] - H_pump - Sf_avg*dx
+                        
+                        # 泵站扬程（从特性曲线，只依赖Q，不依赖h）
+                        H_pump = structure.calculate_head(Q)
+                        
+                        # 平均摩阻坡度
+                        Sf_avg = 0.5 * (Sf[i] + Sf[i-1])
+                        
+                        # 能量方程残差（加入泵站扬程）
+                        R[i] = H[i] - H[i-1] - H_pump - Sf_avg * self.dx
+                        
                     else:
-                        # 闸门等：上游水深 h[i], 下游水深 h[i-1]
+                        # 闸门等：使用闸门流量方程
+                        # Q_gate = f(h_upstream, h_downstream)
                         Q_structure, flow_type = structure.calculate_discharge(
                             h_upstream=h[i],
                             h_downstream=h[i-1],
@@ -276,8 +315,9 @@ class NewtonSteadySolver:
                         )
                         # 流量连续性
                         R[i] = Q_structure - Q
+                        
                 except Exception as e:
-                    # 如果结构物方程失败，回退到能量方程
+                    # 如果结构物方程失败，回退到普通能量方程
                     Sf_avg = 0.5 * (Sf[i] + Sf[i-1])
                     R[i] = H[i] - H[i-1] - Sf_avg * self.dx
             else:
@@ -369,6 +409,9 @@ class NewtonSteadySolver:
         
         # 迭代历史
         residual_history = []
+        
+        # 1.5 更新床面高程（体现泵站扬程）
+        self.update_bed_elevation_for_pumps(Q)
         
         # 2. Newton迭代
         for iter in range(max_iter):
