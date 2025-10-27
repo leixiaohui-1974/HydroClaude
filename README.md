@@ -8,6 +8,45 @@
 
 HydroClaude是一个专业的水力学仿真与优化框架，专注于明渠流动、管网系统和梯级水库调度。
 
+---
+
+## 🤖 AI开发者请注意 ⚠️
+
+> **在编写任何代码之前，请务必遵守以下规则，避免重复造轮子！**
+
+### ✅ 必须做的事
+
+1. **📚 查阅基础库** → 打开 [LIBRARY_REFERENCE.md](LIBRARY_REFERENCE.md) 查找已有功能
+2. **📖 参考示例** → 查看 [EXAMPLES_INDEX.md](EXAMPLES_INDEX.md) 找到参考代码
+3. **✅ 使用求解器** → 必须使用 `HydrostaticCanalSolver`（唯一推荐）
+4. **✅ 验证结果** → 必须使用 `ResultValidator` 验证所有求解结果
+5. **✅ 使用绘图工具** → 必须使用 `PlotHelper` 或 `VisualizationTemplates`
+6. **✅ 水力学计算** → 必须使用 `canal_utils`（不要自己实现）
+
+### ❌ 禁止的行为
+
+- ❌ 自己编写流量验证函数 → 使用 `ResultValidator`
+- ❌ 手写matplotlib绘图代码 → 使用 `PlotHelper`
+- ❌ 重复实现水力学计算 → 使用 `canal_utils`
+- ❌ 使用废弃的求解器 → 只用 `HydrostaticCanalSolver`
+
+### 📋 开发前检查清单
+
+```bash
+# 第1步：查阅文档
+打开 LIBRARY_REFERENCE.md 搜索功能
+
+# 第2步：参考示例
+打开 EXAMPLES_INDEX.md 找到类似案例
+
+# 第3步：检查代码规范（可选）
+python tools/check_library_usage.py <你的文件>
+```
+
+**详细规则**: [.cursorrules](.cursorrules) | [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md)
+
+---
+
 **🎯 核心特性**:
 - 🚀 **极致精度**: 流量守恒误差 < 0.000001%
 - ⚡ **极速收敛**: 0-1次迭代（典型场景）

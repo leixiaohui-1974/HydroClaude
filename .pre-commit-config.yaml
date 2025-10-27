@@ -1,0 +1,74 @@
+# HydroClaude Pre-commit Hooks 配置
+# 
+# 功能：在git提交前自动检查代码是否符合基础库使用规范
+#
+# 安装方法:
+#   pip install pre-commit
+#   pre-commit install
+#
+# 手动运行:
+#   pre-commit run --all-files
+#
+# 跳过检查（不推荐）:
+#   git commit --no-verify
+
+repos:
+  # 本地钩子 - HydroClaude基础库使用检查
+  - repo: local
+    hooks:
+      - id: check-library-usage
+        name: 检查基础库使用规范
+        description: 确保代码使用HydroClaude基础库而非重复实现
+        entry: python tools/check_library_usage.py
+        language: system
+        types: [python]
+        pass_filenames: true
+        verbose: true
+        stages: [commit]
+  
+  # Python代码质量检查
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      # 检查是否有大文件
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      
+      # 检查是否有合并冲突标记
+      - id: check-merge-conflict
+      
+      # 检查YAML文件语法
+      - id: check-yaml
+        exclude: ^\.github/
+      
+      # 检查JSON文件语法
+      - id: check-json
+      
+      # 去除文件末尾空白
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      
+      # 确保文件以换行符结尾
+      - id: end-of-file-fixer
+      
+      # 检查Python语法
+      - id: check-ast
+  
+  # Python代码格式化（可选）
+  # - repo: https://github.com/psf/black
+  #   rev: 23.12.1
+  #   hooks:
+  #     - id: black
+  #       args: [--line-length=100]
+  #       language_version: python3
+  
+  # Python导入排序（可选）
+  # - repo: https://github.com/pycqa/isort
+  #   rev: 5.13.2
+  #   hooks:
+  #     - id: isort
+  #       args: [--profile=black]
+
+# 默认配置
+default_stages: [commit]
+fail_fast: false
