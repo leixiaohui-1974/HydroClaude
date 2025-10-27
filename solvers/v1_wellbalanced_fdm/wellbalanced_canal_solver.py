@@ -452,10 +452,38 @@ class WellBalancedCanalSolver:
         print(f"结构物数量: {len(self.structures)}")
         print("")
         
-        # CFL条件估算时间步长
-        u_max = 5.0  # 最大流速估计
-        c_max = np.sqrt(self.g * 10.0)  # 最大波速
-        dt = 0.5 * self.dx / (u_max + c_max)  # CFL < 0.5
+        # ===== 修复：使用SimpleCorrectSolver初始化 =====
+        try:
+            from solvers.simple_correct_solver import SimpleCorrectSolver
+            simple = SimpleCorrectSolver(
+                length=self.length,
+                B=self.B,
+                S0=self.S0,
+                n=self.n,
+                nx=self.nx
+            )
+            init_result = simple.solve_uniform_flow(Q_target)
+            
+            # 设置初始条件
+            self.h = init_result['h'].copy()
+            self.hu = init_result['u'] * self.h
+            self.Q = np.ones_like(self.h) * Q_target
+            
+            print("初始化: 使用SimpleCorrectSolver（均匀流）✓")
+            print(f"初始h范围: {self.h.min():.3f} - {self.h.max():.3f} m")
+            print(f"初始Q: {Q_target:.2f} m³/s")
+            print("")
+        except Exception as e:
+            print(f"⚠️ SimpleCorrectSolver初始化失败: {e}")
+            print("使用默认初始化...")
+            print("")
+        
+        # CFL条件估算时间步长（使用实际水深）
+        h_avg = np.mean(self.h)
+        u_avg = Q_target / (self.B * h_avg)
+        c_avg = np.sqrt(self.g * h_avg)
+        dt = 0.3 * self.dx / (abs(u_avg) + c_avg)  # CFL = 0.3（更保守）
+        dt = np.clip(dt, 0.01, 5.0)  # 限制范围
         
         print(f"时间步长: {dt:.3f}s (CFL)")
         print("")
