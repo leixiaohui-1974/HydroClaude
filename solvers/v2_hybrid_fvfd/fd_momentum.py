@@ -176,8 +176,8 @@ class FDMomentumEquation:
             h_i = max(h_face[i], self.eps_dry)
             u_i = Q[i] / max(A_face[i], self.eps_dry)
             
-            # Manning摩阻坡度
-            Sf = (self.n * abs(u_i) * u_i) / (h_i**(4/3))
+            # Manning摩阻坡度（修复：使用标准公式）
+            Sf = (self.n**2 * u_i**2) / (h_i**(4/3))
             
             # 摩阻项
             friction[i] = self.g * A_face[i] * Sf
