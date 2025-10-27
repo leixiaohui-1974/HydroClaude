@@ -789,10 +789,24 @@ class HydrostaticCanalSolver:
         # 初始化流量
         self.hu = np.ones(self.nx) * Q_target / self.B
 
-        # 初始水深猜测：如果有闸门，上游应该有回水
+        # 初始水深猜测
         if h_upstream_guess is None:
-            # 简单估算：使用下游水深作为基准
-            h_upstream_guess = h_downstream * 1.2  # 假设上游水深高20%
+            # 🔧 修复：根据是否有结构物决定初始猜测策略
+            has_structures = len(self.structure_indices) > 0 if self.structure_indices else False
+            
+            if has_structures:
+                # 有结构物（闸门/泵站）：预期有回水，上游水深高20%
+                h_upstream_guess = h_downstream * 1.2
+            else:
+                # 无结构物：均匀流，上游水深应该等于下游
+                # 使用Manning公式估算更精确的初值
+                from utils.canal_utils import compute_steady_uniform_flow
+                try:
+                    h_uniform = compute_steady_uniform_flow(Q_target, self.B, self.S0, self.n, self.g)
+                    h_upstream_guess = h_uniform
+                except:
+                    # 如果计算失败，使用下游水深
+                    h_upstream_guess = h_downstream
 
         # 线性插值初始水深分布
         self.h = np.linspace(h_upstream_guess, h_downstream, self.nx)
