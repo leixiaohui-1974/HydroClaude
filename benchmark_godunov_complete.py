@@ -242,8 +242,8 @@ state_godunov = solver_godunov.get_state()
 t_start = time.time()
 
 solver_hydrostatic = HydrostaticCanalSolver(
-    length=1000.0, width=10.0, n=100,
-    manning_n=0.025, slope=0.001
+    length=1000.0, nx=100, B=10.0,
+    n=0.025, S0=0.001
 )
 
 result_hydrostatic = solver_hydrostatic.solve_steady_state(
