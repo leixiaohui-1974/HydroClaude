@@ -20,6 +20,24 @@ from .bridge import (
     create_rectangular_pier_bridge
 )
 
+from .drop import (
+    Drop,
+    DropGeometry,
+    create_drop_structure
+)
+
+from .flow_measurement import (
+    RectangularWeir,
+    RectangularWeirGeometry,
+    TriangularWeir,
+    TriangularWeirGeometry,
+    ParshallFlume,
+    ParshallFlumeGeometry,
+    create_rectangular_weir,
+    create_triangular_weir,
+    create_parshall_flume
+)
+
 __all__ = [
     # Culvert
     'Culvert',
@@ -32,4 +50,18 @@ __all__ = [
     'Pier',
     'create_simple_bridge',
     'create_rectangular_pier_bridge',
+    # Drop
+    'Drop',
+    'DropGeometry',
+    'create_drop_structure',
+    # Flow Measurement
+    'RectangularWeir',
+    'RectangularWeirGeometry',
+    'TriangularWeir',
+    'TriangularWeirGeometry',
+    'ParshallFlume',
+    'ParshallFlumeGeometry',
+    'create_rectangular_weir',
+    'create_triangular_weir',
+    'create_parshall_flume',
 ]
