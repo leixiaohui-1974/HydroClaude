@@ -49,7 +49,8 @@ class GodunvFVMSolver:
         g: float = 9.81,
         cfl: float = 0.5,
         eps_dry: float = 1e-6,
-        order: int = 2
+        order: int = 2,
+        riemann_solver: str = 'hll'
     ):
         """
         初始化
@@ -64,6 +65,9 @@ class GodunvFVMSolver:
             cfl: CFL数 (建议0.5-0.8)
             eps_dry: 干床阈值
             order: 空间精度 (1=一阶, 2=二阶MUSCL)
+            riemann_solver: Riemann求解器类型 ('hll' 或 'hllc')
+                          默认'hll'（更稳定）
+                          'hllc'在短时间激波捕捉上更精确，但长时间积分稳定性需改进
         """
         self.B = width
         self.L = length
@@ -83,6 +87,10 @@ class GodunvFVMSolver:
         self.cfl = cfl
         self.eps_dry = eps_dry
         self.order = order
+        self.riemann_solver = riemann_solver.lower()
+
+        if self.riemann_solver not in ['hll', 'hllc']:
+            raise ValueError(f"Riemann求解器必须是'hll'或'hllc'，当前值: {riemann_solver}")
         
         # 单元中心守恒变量
         self.h = np.zeros(n_cells)  # 水深
@@ -108,6 +116,7 @@ class GodunvFVMSolver:
         print(f"  dx = {self.dx:.3f} m")
         print(f"  空间精度: {order}阶")
         print(f"  时间积分: TVD-RK2")
+        print(f"  Riemann求解器: {self.riemann_solver.upper()}")
     
     def initialize(
         self,
@@ -223,9 +232,14 @@ class GodunvFVMSolver:
         
         for i in range(n + 1):
             # 界面i位于单元i-1和单元i之间
-            F_h[i], F_Q[i] = self._hll_flux(
-                h_L[i], Q_L[i], h_R[i], Q_R[i]
-            )
+            if self.riemann_solver == 'hllc':
+                F_h[i], F_Q[i] = self._hllc_flux(
+                    h_L[i], Q_L[i], h_R[i], Q_R[i]
+                )
+            else:  # hll
+                F_h[i], F_Q[i] = self._hll_flux(
+                    h_L[i], Q_L[i], h_R[i], Q_R[i]
+                )
         
         # 计算每个单元的空间导数
         for i in range(n):
@@ -292,6 +306,99 @@ class GodunvFVMSolver:
         
         return phi_L, phi_R
     
+    def _hllc_flux(
+        self,
+        h_L: float,
+        Q_L: float,
+        h_R: float,
+        Q_R: float
+    ) -> Tuple[float, float]:
+        """
+        HLLC Riemann求解器（界面通量）
+
+        HLLC = HLL with Contact wave
+        相比HLL，能分辨接触间断，提高激波捕捉精度
+
+        参考: Toro (2009) "Riemann Solvers", Chapter 10
+        """
+        # 干床检测
+        if h_L < self.eps_dry and h_R < self.eps_dry:
+            return 0.0, 0.0
+
+        # 左状态
+        h_L = max(h_L, self.eps_dry)
+        A_L = h_L * self.B
+        u_L = Q_L / A_L
+        c_L = np.sqrt(self.g * h_L)
+        P_L = 0.5 * self.g * h_L * h_L * self.B  # 压力项
+
+        # 右状态
+        h_R = max(h_R, self.eps_dry)
+        A_R = h_R * self.B
+        u_R = Q_R / A_R
+        c_R = np.sqrt(self.g * h_R)
+        P_R = 0.5 * self.g * h_R * h_R * self.B
+
+        # 波速估计（Davis估计）
+        S_L = min(u_L - c_L, u_R - c_R)
+        S_R = max(u_L + c_L, u_R + c_R)
+
+        # 通量（左右）
+        F_h_L = Q_L
+        F_Q_L = Q_L**2 / A_L + P_L
+
+        F_h_R = Q_R
+        F_Q_R = Q_R**2 / A_R + P_R
+
+        # 守恒变量
+        U_h_L = h_L
+        U_Q_L = Q_L
+        U_h_R = h_R
+        U_Q_R = Q_R
+
+        # HLLC通量选择
+        if S_L >= 0:
+            # 区域L（超音速向右）
+            return F_h_L, F_Q_L
+        elif S_R <= 0:
+            # 区域R（超音速向左）
+            return F_h_R, F_Q_R
+        else:
+            # 跨音速：计算接触波速度S*
+            # S* = (P_R - P_L + Q_L*(S_L - u_L) - Q_R*(S_R - u_R)) / (h_L*(S_L - u_L) - h_R*(S_R - u_R))
+            numerator = P_R - P_L + Q_L * (S_L - u_L) - Q_R * (S_R - u_R)
+            denominator = h_L * (S_L - u_L) - h_R * (S_R - u_R)
+
+            if abs(denominator) < 1e-10:
+                # 退化为HLL
+                F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / (S_R - S_L)
+                F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / (S_R - S_L)
+                return F_h, F_Q
+
+            S_star = numerator / denominator
+
+            if S_star >= 0:
+                # 区域L*（左侧中间状态）
+                # U*_L = [(S_L - u_L)/(S_L - S*)] * [h_L, Q_L + (S* - u_L)*h_L]
+                factor = (S_L - u_L) / (S_L - S_star)
+                U_h_star = factor * h_L
+                U_Q_star = factor * (Q_L + (S_star - u_L) * h_L)
+
+                # F*_L = F_L + S_L*(U*_L - U_L)
+                F_h = F_h_L + S_L * (U_h_star - U_h_L)
+                F_Q = F_Q_L + S_L * (U_Q_star - U_Q_L)
+                return F_h, F_Q
+            else:
+                # 区域R*（右侧中间状态）
+                factor = (S_R - u_R) / (S_R - S_star)
+                U_h_star = factor * h_R
+                U_Q_star = factor * (Q_R + (S_star - u_R) * h_R)
+
+                # F*_R = F_R + S_R*(U*_R - U_R)
+                F_h = F_h_R + S_R * (U_h_star - U_h_R)
+                F_Q = F_Q_R + S_R * (U_Q_star - U_Q_R)
+                return F_h, F_Q
+
     def _hll_flux(
         self,
         h_L: float,
@@ -301,7 +408,7 @@ class GodunvFVMSolver:
     ) -> Tuple[float, float]:
         """
         HLL Riemann求解器（界面通量）
-        
+
         保证：
         1. 守恒性
         2. 熵条件
@@ -310,28 +417,28 @@ class GodunvFVMSolver:
         # 干床检测
         if h_L < self.eps_dry and h_R < self.eps_dry:
             return 0.0, 0.0
-        
+
         # 左状态
         A_L = max(h_L * self.B, self.eps_dry * self.B)
         u_L = Q_L / A_L
         c_L = np.sqrt(self.g * max(h_L, 0.0))
-        
+
         # 右状态
         A_R = max(h_R * self.B, self.eps_dry * self.B)
         u_R = Q_R / A_R
         c_R = np.sqrt(self.g * max(h_R, 0.0))
-        
+
         # 波速估计（Davis估计）
         S_L = min(u_L - c_L, u_R - c_R)
         S_R = max(u_L + c_L, u_R + c_R)
-        
+
         # 通量（左右）
         F_h_L = Q_L
         F_Q_L = Q_L**2 / A_L + 0.5 * self.g * h_L**2 * self.B
-        
+
         F_h_R = Q_R
         F_Q_R = Q_R**2 / A_R + 0.5 * self.g * h_R**2 * self.B
-        
+
         # HLL通量
         if S_L >= 0:
             # 超音速向右
@@ -345,10 +452,10 @@ class GodunvFVMSolver:
             U_h_R = h_R
             U_Q_L = Q_L
             U_Q_R = Q_R
-            
+
             F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / (S_R - S_L)
             F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / (S_R - S_L)
-            
+
             return F_h, F_Q
     
     def _compute_source_term(self, h: float, Q: float, cell_idx: int) -> float:
