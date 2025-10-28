@@ -1,0 +1,73 @@
+{
+  "project": {
+    "name": "均匀流验证 (配置驱动)",
+    "description": "验证Manning公式，检查稳态求解器",
+    "author": "HydroClaude Team",
+    "created": "2025-10-28"
+  },
+
+  "geometry": {
+    "type": "uniform",
+    "channel_width": 10.0,
+    "channel_length": 1000.0,
+    "bottom_slope": 0.001,
+    "manning_n": 0.025
+  },
+
+  "mesh": {
+    "n_cells": 100
+  },
+
+  "solver": {
+    "type": "godunov_fvm",
+    "spatial_order": 2,
+    "riemann_solver": "hll",
+    "use_numba": true,
+    "cfl": 0.5
+  },
+
+  "initial_conditions": {
+    "type": "uniform",
+    "h": 2.0,
+    "Q": 20.0
+  },
+
+  "boundary_conditions": {
+    "left": {
+      "type": "Q",
+      "value": 20.0
+    },
+    "right": {
+      "type": "h",
+      "value": 2.0
+    }
+  },
+
+  "simulation": {
+    "start_time": 0.0,
+    "end_time": 100.0,
+    "output_interval": 10.0
+  },
+
+  "output": {
+    "directory": "./examples/config_driven/results/uniform_flow",
+    "formats": ["csv"],
+    "variables": ["h", "Q", "u"],
+    "statistics": true,
+    "plots": {
+      "enabled": true,
+      "format": "png",
+      "dpi": 300
+    }
+  },
+
+  "validation": {
+    "enabled": true,
+    "analytical_solution": "uniform_flow",
+    "tolerance": {
+      "h_rmse": 0.01,
+      "Q_rmse": 0.1,
+      "mass_error": 0.1
+    }
+  }
+}
