@@ -325,6 +325,14 @@ class GodunvFVMSolver:
         if h_L < self.eps_dry and h_R < self.eps_dry:
             return 0.0, 0.0
 
+        # 均匀流检测（特殊情况，直接返回）
+        if abs(h_L - h_R) < 1e-10 and abs(Q_L - Q_R) < 1e-10:
+            # 均匀流：F_h = Q, F_Q = Q²/A + P
+            A = max(h_L, self.eps_dry) * self.B
+            F_h = Q_L
+            F_Q = Q_L**2 / A + 0.5 * self.g * h_L**2 * self.B
+            return F_h, F_Q
+
         # 左状态
         h_L = max(h_L, self.eps_dry)
         A_L = h_L * self.B
