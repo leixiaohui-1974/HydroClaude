@@ -187,62 +187,72 @@ class ConfigParser:
     def _validate_types_and_ranges(self):
         """验证数据类型和范围"""
         # 网格数必须为正整数
-        if 'n_cells' in self.config['mesh']:
+        if 'mesh' in self.config and 'n_cells' in self.config['mesh']:
             n_cells = self.config['mesh']['n_cells']
             if not isinstance(n_cells, int) or n_cells <= 0:
                 self.errors.append("mesh.n_cells必须为正整数")
 
         # CFL必须在(0, 1]范围内
-        if 'cfl' in self.config['solver']:
+        if 'solver' in self.config and 'cfl' in self.config['solver']:
             cfl = self.config['solver']['cfl']
             if not isinstance(cfl, (int, float)) or cfl <= 0 or cfl > 1.0:
                 self.errors.append("solver.cfl必须在(0, 1]范围内")
 
         # 时间参数
-        sim = self.config['simulation']
-        if sim['end_time'] <= sim['start_time']:
-            self.errors.append("simulation.end_time必须大于start_time")
+        if 'simulation' in self.config:
+            sim = self.config['simulation']
+            if 'end_time' in sim and 'start_time' in sim:
+                if sim['end_time'] <= sim['start_time']:
+                    self.errors.append("simulation.end_time必须大于start_time")
 
         # Riemann求解器类型
-        valid_solvers = ['hll', 'hllc']
-        if self.config['solver']['riemann_solver'] not in valid_solvers:
-            self.errors.append(f"solver.riemann_solver必须是{valid_solvers}之一")
+        if 'solver' in self.config and 'riemann_solver' in self.config['solver']:
+            valid_solvers = ['hll', 'hllc']
+            if self.config['solver']['riemann_solver'] not in valid_solvers:
+                self.errors.append(f"solver.riemann_solver必须是{valid_solvers}之一")
 
         # 几何类型
-        valid_geom_types = ['uniform', 'variable', 'from_file']
-        if self.config['geometry']['type'] not in valid_geom_types:
-            self.errors.append(f"geometry.type必须是{valid_geom_types}之一")
+        if 'geometry' in self.config and 'type' in self.config['geometry']:
+            valid_geom_types = ['uniform', 'variable', 'from_file']
+            if self.config['geometry']['type'] not in valid_geom_types:
+                self.errors.append(f"geometry.type必须是{valid_geom_types}之一")
 
     def _validate_consistency(self):
         """验证配置一致性"""
         # 如果几何类型是from_file，必须提供cross_sections
-        if self.config['geometry']['type'] == 'from_file':
-            if not self.config['geometry'].get('cross_sections'):
-                self.errors.append("geometry.type='from_file'时必须提供cross_sections路径")
+        if 'geometry' in self.config and 'type' in self.config['geometry']:
+            if self.config['geometry']['type'] == 'from_file':
+                if not self.config['geometry'].get('cross_sections'):
+                    self.errors.append("geometry.type='from_file'时必须提供cross_sections路径")
 
         # 如果启用验证，必须指定解析解类型
-        if self.config['validation']['enabled']:
-            if not self.config['validation']['analytical_solution']:
-                self.warnings.append("validation.enabled=true但未指定analytical_solution")
+        if 'validation' in self.config and 'enabled' in self.config['validation']:
+            if self.config['validation']['enabled']:
+                if not self.config['validation'].get('analytical_solution'):
+                    self.warnings.append("validation.enabled=true但未指定analytical_solution")
 
         # 输出间隔不应大于模拟时间
-        if self.config['simulation']['output_interval'] > \
-           (self.config['simulation']['end_time'] - self.config['simulation']['start_time']):
-            self.warnings.append("output_interval大于模拟时长，可能只有一个输出")
+        if 'simulation' in self.config:
+            sim = self.config['simulation']
+            if all(k in sim for k in ['output_interval', 'end_time', 'start_time']):
+                if sim['output_interval'] > (sim['end_time'] - sim['start_time']):
+                    self.warnings.append("output_interval大于模拟时长，可能只有一个输出")
 
     def _check_file_paths(self):
         """检查文件路径是否存在"""
         # 断面文件
-        if self.config['geometry']['type'] == 'from_file':
-            path = self.config['geometry'].get('cross_sections')
-            if path and not Path(path).exists():
-                self.errors.append(f"断面文件不存在: {path}")
+        if 'geometry' in self.config and 'type' in self.config['geometry']:
+            if self.config['geometry']['type'] == 'from_file':
+                path = self.config['geometry'].get('cross_sections')
+                if path and not Path(path).exists():
+                    self.errors.append(f"断面文件不存在: {path}")
 
         # 初始条件文件
-        if self.config['initial_conditions']['type'] == 'from_file':
-            path = self.config['initial_conditions'].get('file')
-            if path and not Path(path).exists():
-                self.errors.append(f"初始条件文件不存在: {path}")
+        if 'initial_conditions' in self.config and 'type' in self.config['initial_conditions']:
+            if self.config['initial_conditions']['type'] == 'from_file':
+                path = self.config['initial_conditions'].get('file')
+                if path and not Path(path).exists():
+                    self.errors.append(f"初始条件文件不存在: {path}")
 
     def get_project_info(self) -> Dict[str, str]:
         """获取项目信息"""

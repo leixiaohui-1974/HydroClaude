@@ -1,0 +1,82 @@
+{
+  "timestamp": "2025-10-28T14:54:02.218867",
+  "total_count": 3,
+  "success_count": 3,
+  "failure_count": 0,
+  "total_time": 15.114482641220093,
+  "parallel": 1,
+  "results": [
+    {
+      "config_file": "examples/config_driven/steady_flow.json",
+      "name": "steady_flow",
+      "success": true,
+      "attempts": 1,
+      "wall_time": 4.417822599411011,
+      "statistics": {
+        "project": {
+          "name": "稳态流动测试",
+          "description": "测试求解器达到稳态的能力",
+          "author": "HydroClaude Team",
+          "created": "2025-10-28"
+        },
+        "simulation": {
+          "n_steps": 243,
+          "sim_time": 200.26232355632166,
+          "wall_time": 2.0724806785583496,
+          "time_per_step": 0.008528727072256582,
+          "mass_error": NaN
+        },
+        "timestamp": "2025-10-28T14:53:49.836603"
+      },
+      "stderr": null
+    },
+    {
+      "config_file": "examples/config_driven/uniform_flow.json",
+      "name": "uniform_flow",
+      "success": true,
+      "attempts": 1,
+      "wall_time": 5.463723421096802,
+      "statistics": {
+        "project": {
+          "name": "均匀流验证 (配置驱动)",
+          "description": "验证Manning公式，检查稳态求解器",
+          "author": "HydroClaude Team",
+          "created": "2025-10-28"
+        },
+        "simulation": {
+          "n_steps": 113,
+          "sim_time": 100.15228714227221,
+          "wall_time": 2.042802572250366,
+          "time_per_step": 0.018077898869472267,
+          "mass_error": -17.84400259457032
+        },
+        "timestamp": "2025-10-28T14:53:54.235746"
+      },
+      "stderr": null
+    },
+    {
+      "config_file": "examples/config_driven/dam_break_short.json",
+      "name": "dam_break_short",
+      "success": true,
+      "attempts": 1,
+      "wall_time": 5.230217218399048,
+      "statistics": {
+        "project": {
+          "name": "溃坝模拟 - 短时间版本",
+          "description": "优化参数，避免CFL瓶颈，适合快速测试",
+          "author": "HydroClaude Team",
+          "created": "2025-10-28"
+        },
+        "simulation": {
+          "n_steps": 25,
+          "sim_time": 10.094915501224266,
+          "wall_time": 1.850559949874878,
+          "time_per_step": 0.07402239799499512,
+          "mass_error": 0.0
+        },
+        "timestamp": "2025-10-28T14:53:59.506357"
+      },
+      "stderr": null
+    }
+  ]
+}

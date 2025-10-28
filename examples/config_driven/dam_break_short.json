@@ -1,0 +1,88 @@
+{
+  "project": {
+    "name": "溃坝模拟 - 短时间版本",
+    "description": "优化参数，避免CFL瓶颈，适合快速测试",
+    "author": "HydroClaude Team",
+    "created": "2025-10-28"
+  },
+
+  "geometry": {
+    "type": "uniform",
+    "channel_width": 10.0,
+    "channel_length": 2000.0,
+    "bottom_slope": 0.0,
+    "manning_n": 0.0
+  },
+
+  "mesh": {
+    "n_cells": 200,
+    "comment": "减少网格数，加快计算"
+  },
+
+  "solver": {
+    "type": "godunov_fvm",
+    "spatial_order": 2,
+    "time_integration": "tvd_rk2",
+    "riemann_solver": "hll",
+    "use_numba": true,
+    "well_balanced": false,
+    "cfl": 0.4,
+    "comment": "降低CFL数提高稳定性",
+    "eps_dry": 1e-6
+  },
+
+  "initial_conditions": {
+    "type": "dam_break",
+    "h_left": 10.0,
+    "h_right": 1.0,
+    "Q_initial": 0.0,
+    "dam_position": 1000.0,
+    "comment": "降低h_right，减少极端条件"
+  },
+
+  "boundary_conditions": {
+    "left": {
+      "type": "h",
+      "value": 10.0
+    },
+    "right": {
+      "type": "h",
+      "value": 1.0
+    }
+  },
+
+  "simulation": {
+    "start_time": 0.0,
+    "end_time": 10.0,
+    "max_steps": 1000000,
+    "output_interval": 2.0,
+    "comment": "缩短模拟时间到10秒"
+  },
+
+  "output": {
+    "directory": "./examples/config_driven/results/dam_break_short",
+    "formats": ["hdf5"],
+    "variables": ["h", "Q", "u"],
+    "statistics": true,
+    "plots": {
+      "enabled": true,
+      "format": "png",
+      "dpi": 300
+    }
+  },
+
+  "validation": {
+    "enabled": true,
+    "analytical_solution": "ritter",
+    "tolerance": {
+      "h_rmse": 0.5,
+      "Q_rmse": 10.0,
+      "mass_error": 0.1
+    }
+  },
+
+  "logging": {
+    "level": "INFO",
+    "console": true
+  }
+}

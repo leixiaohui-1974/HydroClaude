@@ -1,0 +1,74 @@
+{
+  "project": {
+    "name": "稳态流动测试",
+    "description": "测试求解器达到稳态的能力",
+    "author": "HydroClaude Team",
+    "created": "2025-10-28"
+  },
+
+  "geometry": {
+    "type": "uniform",
+    "channel_width": 10.0,
+    "channel_length": 1000.0,
+    "bottom_slope": 0.002,
+    "manning_n": 0.025
+  },
+
+  "mesh": {
+    "n_cells": 100
+  },
+
+  "solver": {
+    "type": "godunov_fvm",
+    "spatial_order": 2,
+    "riemann_solver": "hll",
+    "use_numba": true,
+    "cfl": 0.5,
+    "eps_dry": 1e-6
+  },
+
+  "initial_conditions": {
+    "type": "uniform",
+    "h": 2.5,
+    "Q": 25.0,
+    "comment": "初始条件接近Manning稳态"
+  },
+
+  "boundary_conditions": {
+    "left": {
+      "type": "Q",
+      "value": 25.0,
+      "comment": "上游固定流量"
+    },
+    "right": {
+      "type": "h",
+      "value": 2.5,
+      "comment": "下游固定水深"
+    }
+  },
+
+  "simulation": {
+    "start_time": 0.0,
+    "end_time": 200.0,
+    "max_steps": 10000000,
+    "output_interval": 20.0,
+    "comment": "长时间模拟确保达到稳态"
+  },
+
+  "output": {
+    "directory": "./examples/config_driven/results/steady_flow",
+    "formats": ["hdf5"],
+    "variables": ["h", "Q", "u"],
+    "statistics": true,
+    "plots": {
+      "enabled": true,
+      "format": "png",
+      "dpi": 300
+    }
+  },
+
+  "validation": {
+    "enabled": false,
+    "comment": "稳态验证需要检查时间序列收敛"
+  }
+}

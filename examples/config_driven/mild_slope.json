@@ -1,0 +1,71 @@
+{
+  "project": {
+    "name": "缓坡渠道流动",
+    "description": "测试带坡度的明渠流动，验证源项处理",
+    "author": "HydroClaude Team",
+    "created": "2025-10-28"
+  },
+
+  "geometry": {
+    "type": "uniform",
+    "channel_width": 8.0,
+    "channel_length": 5000.0,
+    "bottom_slope": 0.0005,
+    "manning_n": 0.03,
+    "comment": "缓坡，高糙率"
+  },
+
+  "mesh": {
+    "n_cells": 150
+  },
+
+  "solver": {
+    "type": "godunov_fvm",
+    "spatial_order": 2,
+    "riemann_solver": "hll",
+    "use_numba": true,
+    "well_balanced": false,
+    "cfl": 0.5,
+    "eps_dry": 1e-6
+  },
+
+  "initial_conditions": {
+    "type": "uniform",
+    "h": 3.0,
+    "Q": 15.0
+  },
+
+  "boundary_conditions": {
+    "left": {
+      "type": "Q",
+      "value": 15.0
+    },
+    "right": {
+      "type": "h",
+      "value": 3.0
+    }
+  },
+
+  "simulation": {
+    "start_time": 0.0,
+    "end_time": 300.0,
+    "max_steps": 10000000,
+    "output_interval": 30.0
+  },
+
+  "output": {
+    "directory": "./examples/config_driven/results/mild_slope",
+    "formats": ["hdf5"],
+    "variables": ["h", "Q", "u"],
+    "statistics": true,
+    "plots": {
+      "enabled": true,
+      "format": "png",
+      "dpi": 300
+    }
+  },
+
+  "validation": {
+    "enabled": false
+  }
+}
