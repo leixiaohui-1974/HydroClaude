@@ -152,7 +152,7 @@ class HydrostaticCanalSolver:
         self, h_L: float, hu_L: float, h_R: float, hu_R: float
     ) -> Tuple[float, float]:
         """
-        HLL Riemann求解器
+        HLL Riemann求解器（原始版本，已被HLLC替代）
 
         Args:
             h_L, hu_L: 左状态（水深，流量）
@@ -209,6 +209,122 @@ class HydrostaticCanalSolver:
                         s_L * s_R * (U_R[1] - U_L[1])) / (s_R - s_L)
 
             return F_mass_HLL, F_mom_HLL
+
+    def hllc_flux(
+        self, h_L: float, hu_L: float, h_R: float, hu_R: float
+    ) -> Tuple[float, float]:
+        """
+        HLLC Riemann求解器（改进版本）
+        
+        HLLC相比HLL的改进：
+        - 保留contact discontinuity（接触间断）
+        - 更低的数值耗散
+        - 更准确的波速和激波捕捉
+        
+        基于：
+        - Toro, E.F. (2009) "Riemann Solvers and Numerical Methods for Fluid Dynamics"
+        - 适配浅水方程（Shallow Water Equations）
+
+        Args:
+            h_L, hu_L: 左状态（水深，单宽流量）
+            h_R, hu_R: 右状态（水深，单宽流量）
+
+        Returns:
+            (F_mass, F_momentum): 质量和动量通量
+        """
+        # 干床处理
+        if h_L < self.eps_dry and h_R < self.eps_dry:
+            return 0.0, 0.0
+
+        # 计算流速
+        u_L = hu_L / h_L if h_L > self.eps_dry else 0.0
+        u_R = hu_R / h_R if h_R > self.eps_dry else 0.0
+
+        # 计算波速
+        c_L = math.sqrt(self.g * h_L) if h_L > self.eps_dry else 0.0
+        c_R = math.sqrt(self.g * h_R) if h_R > self.eps_dry else 0.0
+
+        # 估计左右波速（使用简化的Roe平均）
+        # 参考：Toro (2009), Section 10.5
+        h_avg = 0.5 * (h_L + h_R)
+        c_avg = math.sqrt(self.g * h_avg) if h_avg > self.eps_dry else 0.0
+        
+        # Roe平均速度
+        if h_L + h_R > self.eps_dry:
+            u_avg = (u_L * math.sqrt(h_L) + u_R * math.sqrt(h_R)) / (math.sqrt(h_L) + math.sqrt(h_R))
+        else:
+            u_avg = 0.0
+
+        s_L = min(u_L - c_L, u_avg - c_avg)
+        s_R = max(u_R + c_R, u_avg + c_avg)
+
+        # 数值稳定性：避免零除
+        if abs(s_L) < 1e-14 and abs(s_R) < 1e-14:
+            s_L = -1e-10
+            s_R = 1e-10
+
+        # 计算物理通量
+        if h_L > self.eps_dry:
+            F_mass_L = hu_L
+            F_mom_L = hu_L * u_L + 0.5 * self.g * h_L**2
+        else:
+            F_mass_L = 0.0
+            F_mom_L = 0.0
+
+        if h_R > self.eps_dry:
+            F_mass_R = hu_R
+            F_mom_R = hu_R * u_R + 0.5 * self.g * h_R**2
+        else:
+            F_mass_R = 0.0
+            F_mom_R = 0.0
+
+        # HLLC通量计算
+        if s_L >= 0:
+            # 超音速左行：使用左状态
+            return F_mass_L, F_mom_L
+        elif s_R <= 0:
+            # 超音速右行：使用右状态
+            return F_mass_R, F_mom_R
+        else:
+            # 亚音速区域：需要计算中间波速s_star
+            
+            # 计算中间波速（contact wave speed）
+            # 从Rankine-Hugoniot条件推导
+            if abs(s_R - s_L) > 1e-14:
+                s_star = (s_R * hu_R - s_L * hu_L + F_mom_L - F_mom_R) / (s_R * h_R - s_L * h_L)
+            else:
+                s_star = 0.5 * (u_L + u_R)
+
+            if s_star >= 0:
+                # 左侧星区（s_L < 0 < s_star）
+                # 计算星区左状态
+                if abs(s_L - s_star) > 1e-14:
+                    h_star_L = h_L * (s_L - u_L) / (s_L - s_star)
+                    hu_star_L = h_star_L * s_star
+                else:
+                    h_star_L = h_L
+                    hu_star_L = hu_L
+                
+                # 星区通量
+                F_mass_star = F_mass_L + s_L * (h_star_L - h_L)
+                F_mom_star = F_mom_L + s_L * (hu_star_L - hu_L)
+                
+                return F_mass_star, F_mom_star
+            else:
+                # 右侧星区（s_star < 0 < s_R）
+                # 计算星区右状态
+                if abs(s_R - s_star) > 1e-14:
+                    h_star_R = h_R * (s_R - u_R) / (s_R - s_star)
+                    hu_star_R = h_star_R * s_star
+                else:
+                    h_star_R = h_R
+                    hu_star_R = hu_R
+                
+                # 星区通量
+                F_mass_star = F_mass_R + s_R * (h_star_R - h_R)
+                F_mom_star = F_mom_R + s_R * (hu_star_R - hu_R)
+                
+                return F_mass_star, F_mom_star
 
     def setup_ghost_cells(
         self, h: np.ndarray, hu: np.ndarray, z: np.ndarray
@@ -320,7 +436,8 @@ class HydrostaticCanalSolver:
                 hu_star_R = 0.0
 
             # HLL通量
-            F_mass[i], F_momentum[i] = self.hll_flux(
+            # 使用HLLC求解器（改进版本，降低数值耗散）
+            F_mass[i], F_momentum[i] = self.hllc_flux(
                 h_star_L, hu_star_L, h_star_R, hu_star_R
             )
 
