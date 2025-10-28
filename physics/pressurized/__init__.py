@@ -17,6 +17,14 @@ from .valves import (
     create_prv
 )
 
+from .pumps import (
+    CentrifugalPump,
+    PumpCharacteristics,
+    PumpArray,
+    create_centrifugal_pump,
+    create_pump_array
+)
+
 __all__ = [
     # Butterfly Valve
     'ButterflyValve',
@@ -27,8 +35,15 @@ __all__ = [
     # Pressure Reducing Valve
     'PressureReducingValve',
     'PRVGeometry',
-    # Convenience functions
+    # Valve convenience functions
     'create_butterfly_valve',
     'create_ball_valve',
     'create_prv',
+    # Centrifugal Pump
+    'CentrifugalPump',
+    'PumpCharacteristics',
+    'PumpArray',
+    # Pump convenience functions
+    'create_centrifugal_pump',
+    'create_pump_array',
 ]
