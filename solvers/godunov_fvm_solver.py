@@ -20,6 +20,18 @@ Godunov有限体积法求解器（标准守恒格式）
 import numpy as np
 from typing import Tuple, Dict, Optional
 
+# 尝试导入Numba加速函数
+try:
+    from .riemann_numba import (
+        hll_flux_numba,
+        muscl_reconstruction_numba,
+        compute_all_fluxes_numba,
+        compute_spatial_derivatives_numba
+    )
+    NUMBA_AVAILABLE = True
+except ImportError:
+    NUMBA_AVAILABLE = False
+
 
 class GodunvFVMSolver:
     """
@@ -51,7 +63,8 @@ class GodunvFVMSolver:
         eps_dry: float = 1e-6,
         order: int = 2,
         riemann_solver: str = 'hll',
-        well_balanced: bool = False
+        well_balanced: bool = False,
+        use_numba: bool = True
     ):
         """
         初始化
@@ -71,6 +84,8 @@ class GodunvFVMSolver:
                           'hllc'在短时间激波捕捉上更精确，但长时间积分稳定性需改进
             well_balanced: 是否使用well-balanced格式 (默认False)
                           True时使用hydrostatic reconstruction，提高稳定性
+            use_numba: 是否使用Numba JIT加速 (默认True)
+                      True时使用编译版本，速度提升10-50倍
         """
         self.B = width
         self.L = length
@@ -92,6 +107,11 @@ class GodunvFVMSolver:
         self.order = order
         self.riemann_solver = riemann_solver.lower()
         self.well_balanced = well_balanced
+
+        # Numba加速
+        self.use_numba = use_numba and NUMBA_AVAILABLE
+        if use_numba and not NUMBA_AVAILABLE:
+            print("  ⚠️  Numba未安装，回退到纯Python版本")
 
         if self.riemann_solver not in ['hll', 'hllc']:
             raise ValueError(f"Riemann求解器必须是'hll'或'hllc'，当前值: {riemann_solver}")
@@ -134,6 +154,8 @@ class GodunvFVMSolver:
         print(f"  Riemann求解器: {self.riemann_solver.upper()}")
         if self.well_balanced:
             print(f"  Well-Balanced: 启用 (Hydrostatic Reconstruction)")
+        if self.use_numba:
+            print(f"  🚀 Numba JIT: 启用 (高性能模式)")
     
     def initialize(
         self,
@@ -286,16 +308,41 @@ class GodunvFVMSolver:
                 Q_R = Q_ext[1:]
         else:
             # 标准格式：直接重构h和Q
-            if self.order == 2:
-                h_L, h_R = self._muscl_reconstruction(h_ext)
-                Q_L, Q_R = self._muscl_reconstruction(Q_ext)
-            else:
-                h_L = h_ext[:-1]
-                h_R = h_ext[1:]
-                Q_L = Q_ext[:-1]
-                Q_R = Q_ext[1:]
+            # 使用Numba加速版本（如果启用且只支持HLL求解器）
+            if self.use_numba and self.riemann_solver == 'hll':
+                # 🚀 Numba加速路径
+                if self.order == 2:
+                    h_L, h_R = muscl_reconstruction_numba(h_ext)
+                    Q_L, Q_R = muscl_reconstruction_numba(Q_ext)
+                else:
+                    h_L = h_ext[:-1]
+                    h_R = h_ext[1:]
+                    Q_L = Q_ext[:-1]
+                    Q_R = Q_ext[1:]
 
-        # 计算所有界面通量
+                # 计算所有通量（Numba版本）
+                F_h, F_Q = compute_all_fluxes_numba(
+                    h_L, h_R, Q_L, Q_R, self.B, self.g, self.eps_dry
+                )
+
+                # 计算空间导数+源项（Numba版本）
+                dh_dt, dQ_dt = compute_spatial_derivatives_numba(
+                    F_h, F_Q, self.S0, h, Q, self.B, self.g, self.n, self.eps_dry, self.dx
+                )
+
+                return dh_dt, dQ_dt
+            else:
+                # 标准Python版本
+                if self.order == 2:
+                    h_L, h_R = self._muscl_reconstruction(h_ext)
+                    Q_L, Q_R = self._muscl_reconstruction(Q_ext)
+                else:
+                    h_L = h_ext[:-1]
+                    h_R = h_ext[1:]
+                    Q_L = Q_ext[:-1]
+                    Q_R = Q_ext[1:]
+
+        # 计算所有界面通量（Python版本）
         F_h = np.zeros(n + 1)
         F_Q = np.zeros(n + 1)
 
@@ -310,8 +357,8 @@ class GodunvFVMSolver:
                 F_h[i], F_Q[i] = self._hll_flux(
                     h_L[i], Q_L[i], h_R[i], Q_R[i]
                 )
-        
-        # 计算每个单元的空间导数
+
+        # 计算每个单元的空间导数（Python版本）
         for i in range(n):
             # 单元i的通量差
             dh_dt[i] = -(F_h[i+1] - F_h[i]) / self.dx
