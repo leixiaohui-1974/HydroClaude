@@ -136,16 +136,18 @@ class GodunvFVMNetworkV2:
     4. 按阻力分配流量
     """
     
-    def __init__(self, g: float = 9.81, relaxation: float = 0.5):
+    def __init__(self, g: float = 9.81, relaxation: float = 0.5, update_interval: int = 10):
         """
         初始化网络求解器
         
         Args:
             g: 重力加速度
             relaxation: 松弛因子（0-1），用于稳定边界条件更新
+            update_interval: 边界条件更新间隔（步数）
         """
         self.g = g
         self.relaxation = relaxation  # 松弛因子
+        self.update_interval = update_interval  # 更新间隔
         
         self.nodes: Dict[str, Node] = {}
         self.edges: Dict[str, Edge] = {}
@@ -161,6 +163,7 @@ class GodunvFVMNetworkV2:
         
         print("🌐 Godunov-FVM网络求解器 V2 初始化")
         print(f"  松弛因子: {self.relaxation}")
+        print(f"  边界更新间隔: 每{self.update_interval}步")
     
     def add_node(
         self,
@@ -218,8 +221,9 @@ class GodunvFVMNetworkV2:
     
     def step(self):
         """推进一个时间步"""
-        # 1. 更新边界条件（守恒改进）
-        self._update_boundary_conditions_conservative()
+        # 1. 更新边界条件（仅在指定间隔）
+        if self.step_count % self.update_interval == 0:
+            self._update_boundary_conditions_conservative()
         
         # 2. 推进所有边
         dt_min = float('inf')
