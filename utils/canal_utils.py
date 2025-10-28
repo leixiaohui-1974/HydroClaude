@@ -63,6 +63,62 @@ def setup_chinese_fonts(font_size: int = 11):
 # Manning公式计算
 # ============================================================================
 
+def compute_critical_depth(Q: float, B: float, g: float = 9.81) -> float:
+    """
+    计算矩形明渠的临界水深
+    
+    临界条件：Froude数 = 1
+    对于矩形渠道：h_c = (Q²/(g*B²))^(1/3)
+    
+    Args:
+        Q: 流量 (m³/s)
+        B: 渠道宽度 (m)
+        g: 重力加速度 (m/s², 默认9.81)
+    
+    Returns:
+        临界水深 h_c (m)
+    
+    Example:
+        >>> h_c = compute_critical_depth(Q=15.0, B=10.0)
+        >>> print(f"临界水深: {h_c:.3f} m")
+    """
+    q = Q / B  # 单宽流量 (m²/s)
+    h_c = (q**2 / g)**(1/3)
+    return h_c
+
+
+def compute_froude_scalar(Q: float, B: float, h: float, g: float = 9.81) -> float:
+    """
+    计算单点Froude数（标量版本）
+    
+    Froude数定义：Fr = v / sqrt(g*h)
+    其中 v = Q / (B*h) 为平均流速
+    
+    Fr < 1: 亚临界流
+    Fr = 1: 临界流
+    Fr > 1: 超临界流
+    
+    Args:
+        Q: 流量 (m³/s)
+        B: 渠道宽度 (m)
+        h: 水深 (m)
+        g: 重力加速度 (m/s², 默认9.81)
+    
+    Returns:
+        Froude数 Fr (无量纲)
+    
+    Example:
+        >>> Fr = compute_froude_scalar(Q=15.0, B=10.0, h=1.0)
+        >>> if Fr < 1:
+        >>>     print("亚临界流")
+    """
+    if h <= 0:
+        return np.inf
+    v = Q / (B * h)
+    Fr = v / np.sqrt(g * h)
+    return Fr
+
+
 def compute_steady_uniform_flow(Q: float, B: float, S0: float, n: float,
                                 g: float = 9.81, h_min: float = 0.01,
                                 h_max: float = 20.0, tol: float = 1e-6) -> float:

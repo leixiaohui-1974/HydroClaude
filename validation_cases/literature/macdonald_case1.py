@@ -30,6 +30,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+from utils.canal_utils import compute_critical_depth, compute_froude_scalar
 
 
 class MacDonaldCase1:
@@ -44,19 +45,19 @@ class MacDonaldCase1:
     """
     
     def __init__(self):
-        # 物理参数（MacDonald论文中的标准配置）
+        # 物理参数（MacDonald论文修正版配置）
         self.L = 1000.0          # 渠道长度 (m)
         self.B = 10.0            # 渠道宽度 (m)
         self.S0 = 0.001          # 底坡
-        self.n = 0.025           # Manning糙率
+        self.n = 0.01            # Manning糙率（修正）
         self.g = 9.81            # 重力加速度
         
         # 流量（给定）
-        self.Q = 15.0            # m³/s
+        self.Q = 20.0            # m³/s（修正）
         
-        # 边界条件
-        self.h_upstream = 2.5    # 上游水深 (m) - 亚临界
-        self.h_downstream = 0.8  # 下游水深 (m) - 超临界
+        # 边界条件（正确配置：上游超临界 → 下游亚临界）
+        self.h_upstream = 0.6    # 上游水深 (m) - 超临界 (Fr=1.37)
+        self.h_downstream = 0.904  # 下游水深 (m) - 亚临界 (Fr=0.74)
         
         # 数值参数
         self.nx = 201
@@ -79,30 +80,27 @@ class MacDonaldCase1:
         h = np.zeros(self.nx)
         
         # 计算临界水深
-        q = self.Q / self.B  # 单宽流量
-        h_c = (q**2 / self.g)**(1/3)  # 临界水深
+        h_c = compute_critical_depth(self.Q, self.B, self.g)
         
         # 计算正常水深（Manning公式）
-        # Q = (1/n) * A * R^(2/3) * S0^(1/2)
-        # 对于矩形渠道: A = B*h, R ≈ h (宽渠)
-        # 求解: h_n = (q * n / S0^(1/2))^(3/5)
-        h_n = (q * self.n / np.sqrt(self.S0))**(3/5)
+        from utils.canal_utils import compute_steady_uniform_flow
+        h_n = compute_steady_uniform_flow(self.Q, self.B, self.S0, self.n, self.g)
         
         # Froude数判断
-        Fr_up = (self.Q / self.B) / np.sqrt(self.g * self.h_upstream**3)
-        Fr_down = (self.Q / self.B) / np.sqrt(self.g * self.h_downstream**3)
+        Fr_up = compute_froude_scalar(self.Q, self.B, self.h_upstream, self.g)
+        Fr_down = compute_froude_scalar(self.Q, self.B, self.h_downstream, self.g)
         
         print(f"\n解析解计算:")
         print(f"  临界水深 h_c = {h_c:.4f} m")
         print(f"  正常水深 h_n = {h_n:.4f} m")
-        print(f"  上游Froude数 = {Fr_up:.4f} (< 1: 亚临界)")
-        print(f"  下游Froude数 = {Fr_down:.4f} (> 1: 超临界)")
+        print(f"  上游Froude数 = {Fr_up:.4f} ({'超临界' if Fr_up > 1 else '亚临界'})")
+        print(f"  下游Froude数 = {Fr_down:.4f} ({'超临界' if Fr_down > 1 else '亚临界'})")
         
         # 水跃共轭水深关系
-        # h2 = (-h1/2) + sqrt((h1^2)/4 + 2*q^2/(g*h1))
-        # 从下游超临界水深计算上游亚临界水深
-        h1 = self.h_downstream
-        h2 = (-h1/2) + np.sqrt((h1**2)/4 + 2*(q**2)/(self.g*h1))
+        # h2 = h1/2 * (sqrt(1 + 8*Fr1^2) - 1)
+        # 从上游超临界水深计算下游亚临界水深
+        h1 = self.h_upstream  # 超临界
+        h2 = h1 / 2 * (np.sqrt(1 + 8 * Fr_up**2) - 1)  # 亚临界
         
         print(f"  水跃共轭水深: h1={h1:.4f}m → h2={h2:.4f}m")
         

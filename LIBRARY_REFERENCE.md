@@ -1,8 +1,8 @@
 # HydroClaude 基础类库参考手册
 # Library Reference Manual
 
-**版本**: 2.1 (新增Canal非恒定流求解器，配置驱动测试)
-**更新日期**: 2025-10-24
+**版本**: 2.2 (新增compute_critical_depth和compute_froude_scalar，修复MacDonald Case 1)
+**更新日期**: 2025-10-27
 
 ---
 
