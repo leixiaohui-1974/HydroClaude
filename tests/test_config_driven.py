@@ -331,6 +331,305 @@ class TestPerformance:
         assert wall_times[2] / wall_times[0] < 20.0
 
 
+class TestBoundaryConditions:
+    """边界条件测试"""
+
+    def test_h_h_boundary(self):
+        """测试水深-水深边界条件 (h-h)"""
+        # 创建配置：两端指定水深
+        config = {
+            'project': {'name': 'h-h Boundary Test'},
+            'geometry': {
+                'type': 'uniform',
+                'channel_width': 10.0,
+                'channel_length': 1000.0,
+                'bottom_slope': 0.0,
+                'manning_n': 0.03
+            },
+            'mesh': {'n_cells': 50},
+            'solver': {'type': 'godunov_fvm', 'use_numba': True},
+            'initial_conditions': {'type': 'uniform', 'h': 2.0, 'Q': 0.0},
+            'boundary_conditions': {
+                'left': {'type': 'h', 'value': 2.5},
+                'right': {'type': 'h', 'value': 2.0}
+            },
+            'simulation': {'end_time': 10.0},
+            'output': {
+                'directory': '/tmp/bc_test_h_h',
+                'formats': [],
+                'statistics': False,
+                'plots': {'enabled': False}
+            }
+        }
+
+        temp_file = Path('/tmp/test_bc_h_h.json')
+        with open(temp_file, 'w') as f:
+            json.dump(config, f)
+
+        # 运行仿真
+        engine = SimulationEngine(str(temp_file))
+        engine.initialize()
+
+        # 检查边界条件正确解析
+        assert engine.solver.bc_left['type'] == 'h'
+        assert engine.solver.bc_left['value'] == 2.5
+        assert engine.solver.bc_right['type'] == 'h'
+        assert engine.solver.bc_right['value'] == 2.0
+
+        engine.run()
+
+        # 检查仿真成功
+        assert engine.results['statistics']['n_steps'] > 0
+
+        temp_file.unlink()
+
+    def test_Q_Q_boundary(self):
+        """测试流量-流量边界条件 (Q-Q)"""
+        # 创建配置：两端指定流量
+        config = {
+            'project': {'name': 'Q-Q Boundary Test'},
+            'geometry': {
+                'type': 'uniform',
+                'channel_width': 10.0,
+                'channel_length': 1000.0,
+                'bottom_slope': 0.001,
+                'manning_n': 0.03
+            },
+            'mesh': {'n_cells': 50},
+            'solver': {'type': 'godunov_fvm', 'use_numba': True},
+            'initial_conditions': {'type': 'uniform', 'h': 2.0, 'Q': 20.0},
+            'boundary_conditions': {
+                'left': {'type': 'Q', 'value': 25.0},
+                'right': {'type': 'Q', 'value': 20.0}
+            },
+            'simulation': {'end_time': 10.0},
+            'output': {
+                'directory': '/tmp/bc_test_Q_Q',
+                'formats': [],
+                'statistics': False,
+                'plots': {'enabled': False}
+            }
+        }
+
+        temp_file = Path('/tmp/test_bc_Q_Q.json')
+        with open(temp_file, 'w') as f:
+            json.dump(config, f)
+
+        # 运行仿真
+        engine = SimulationEngine(str(temp_file))
+        engine.initialize()
+
+        # 检查边界条件正确解析
+        assert engine.solver.bc_left['type'] == 'Q'
+        assert engine.solver.bc_left['value'] == 25.0
+        assert engine.solver.bc_right['type'] == 'Q'
+        assert engine.solver.bc_right['value'] == 20.0
+
+        engine.run()
+
+        # 检查仿真成功
+        assert engine.results['statistics']['n_steps'] > 0
+
+        temp_file.unlink()
+
+    def test_h_Q_boundary(self):
+        """测试混合边界条件 (h-Q)"""
+        # 创建配置：左端水深，右端流量
+        config = {
+            'project': {'name': 'h-Q Boundary Test'},
+            'geometry': {
+                'type': 'uniform',
+                'channel_width': 10.0,
+                'channel_length': 1000.0,
+                'bottom_slope': 0.001,
+                'manning_n': 0.03
+            },
+            'mesh': {'n_cells': 50},
+            'solver': {'type': 'godunov_fvm', 'use_numba': True},
+            'initial_conditions': {'type': 'uniform', 'h': 2.0, 'Q': 20.0},
+            'boundary_conditions': {
+                'left': {'type': 'h', 'value': 2.5},
+                'right': {'type': 'Q', 'value': 20.0}
+            },
+            'simulation': {'end_time': 10.0},
+            'output': {
+                'directory': '/tmp/bc_test_h_Q',
+                'formats': [],
+                'statistics': False,
+                'plots': {'enabled': False}
+            }
+        }
+
+        temp_file = Path('/tmp/test_bc_h_Q.json')
+        with open(temp_file, 'w') as f:
+            json.dump(config, f)
+
+        # 运行仿真
+        engine = SimulationEngine(str(temp_file))
+        engine.initialize()
+
+        # 检查边界条件正确解析
+        assert engine.solver.bc_left['type'] == 'h'
+        assert engine.solver.bc_right['type'] == 'Q'
+
+        engine.run()
+
+        # 检查仿真成功
+        assert engine.results['statistics']['n_steps'] > 0
+
+        temp_file.unlink()
+
+    def test_Q_h_boundary(self):
+        """测试混合边界条件 (Q-h)"""
+        # 创建配置：左端流量，右端水深
+        config = {
+            'project': {'name': 'Q-h Boundary Test'},
+            'geometry': {
+                'type': 'uniform',
+                'channel_width': 10.0,
+                'channel_length': 1000.0,
+                'bottom_slope': 0.001,
+                'manning_n': 0.03
+            },
+            'mesh': {'n_cells': 50},
+            'solver': {'type': 'godunov_fvm', 'use_numba': True},
+            'initial_conditions': {'type': 'uniform', 'h': 2.0, 'Q': 20.0},
+            'boundary_conditions': {
+                'left': {'type': 'Q', 'value': 20.0},
+                'right': {'type': 'h', 'value': 2.0}
+            },
+            'simulation': {'end_time': 10.0},
+            'output': {
+                'directory': '/tmp/bc_test_Q_h',
+                'formats': [],
+                'statistics': False,
+                'plots': {'enabled': False}
+            }
+        }
+
+        temp_file = Path('/tmp/test_bc_Q_h.json')
+        with open(temp_file, 'w') as f:
+            json.dump(config, f)
+
+        # 运行仿真
+        engine = SimulationEngine(str(temp_file))
+        engine.initialize()
+
+        # 检查边界条件正确解析
+        assert engine.solver.bc_left['type'] == 'Q'
+        assert engine.solver.bc_right['type'] == 'h'
+
+        engine.run()
+
+        # 检查仿真成功
+        assert engine.results['statistics']['n_steps'] > 0
+
+        temp_file.unlink()
+
+
+class TestGridConvergence:
+    """网格收敛性测试"""
+
+    @pytest.mark.slow
+    def test_dam_break_convergence(self):
+        """测试溃坝案例的网格收敛性"""
+        # 使用不同网格分辨率运行同一案例
+        grid_sizes = [50, 100, 200]
+        errors = []
+
+        for n_cells in grid_sizes:
+            config = {
+                'project': {'name': f'Grid Convergence Test {n_cells}'},
+                'geometry': {
+                    'type': 'uniform',
+                    'channel_width': 10.0,
+                    'channel_length': 200.0,
+                    'bottom_slope': 0.0,
+                    'manning_n': 0.0
+                },
+                'mesh': {'n_cells': n_cells},
+                'solver': {'type': 'godunov_fvm', 'use_numba': True, 'cfl': 0.4},
+                'initial_conditions': {
+                    'type': 'dam_break',
+                    'h_left': 10.0,
+                    'h_right': 1.0,
+                    'x_dam': 100.0
+                },
+                'boundary_conditions': {
+                    'left': {'type': 'Q', 'value': 0.0},
+                    'right': {'type': 'Q', 'value': 0.0}
+                },
+                'simulation': {'end_time': 5.0},
+                'validation': {
+                    'enabled': True,
+                    'analytical_solution': 'ritter'
+                },
+                'output': {
+                    'directory': f'/tmp/convergence_test_{n_cells}',
+                    'formats': [],
+                    'statistics': False,
+                    'plots': {'enabled': False}
+                }
+            }
+
+            temp_file = Path(f'/tmp/test_convergence_{n_cells}.json')
+            with open(temp_file, 'w') as f:
+                json.dump(config, f)
+
+            # 运行仿真
+            engine = SimulationEngine(str(temp_file))
+            engine.initialize()
+            engine.run()
+
+            # 获取最终解
+            h_num = engine.solver.h
+
+            # 计算解析解
+            builder = ModelBuilder.from_config_file(str(temp_file))
+            t = 5.0
+            h_ana, u_ana = builder.get_analytical_solution(t, engine.solver.x)
+
+            # 计算L2误差
+            error = np.sqrt(np.mean((h_num - h_ana)**2))
+            errors.append(error)
+
+            temp_file.unlink()
+
+        # 验证误差随网格加密而减小
+        print(f"\n网格收敛性测试结果:")
+        for i, (n, e) in enumerate(zip(grid_sizes, errors)):
+            print(f"  {n:3d} 网格: L2误差 = {e:.6f}")
+
+        # 检查：更细网格应该有更小误差
+        assert errors[1] < errors[0], f"误差应该随网格加密而减小: {errors[0]} -> {errors[1]}"
+        assert errors[2] < errors[1], f"误差应该随网格加密而减小: {errors[1]} -> {errors[2]}"
+
+        # 估计收敛阶数 (p)
+        # error = C * h^p, where h = dx
+        # log(error2/error1) = p * log(h2/h1)
+        ratio_21 = errors[1] / errors[0]
+        ratio_32 = errors[2] / errors[1]
+        grid_ratio = 2.0  # 每次网格加密2倍
+
+        order_21 = np.log(ratio_21) / np.log(1.0/grid_ratio)
+        order_32 = np.log(ratio_32) / np.log(1.0/grid_ratio)
+        avg_order = (order_21 + order_32) / 2.0
+
+        print(f"\n收敛阶数分析:")
+        print(f"  100/50:   p = {order_21:.2f}")
+        print(f"  200/100:  p = {order_32:.2f}")
+        print(f"  平均:     p = {avg_order:.2f}")
+
+        # 注意：溃坝问题包含间断(激波)，收敛阶数会显著降低
+        # 二阶格式在光滑区域收敛阶~2，但在间断附近降为~1或更低
+        # 对于包含激波的问题，我们只检查误差是否单调减小即可
+        # （收敛阶数可能很低，这是间断捕捉格式的正常现象）
+        print(f"\n注意：溃坝问题包含激波，收敛阶数降低是正常现象")
+
+    # 注意：均匀流保持性已在其他测试中验证（TestSimulationEngine等）
+    # 此处不再重复测试
+
+
 if __name__ == '__main__':
     # 运行测试
     pytest.main([__file__, '-v', '-s'])
