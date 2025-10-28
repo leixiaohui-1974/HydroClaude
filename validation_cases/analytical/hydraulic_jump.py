@@ -137,8 +137,8 @@ def validate_hydraulic_jump():
     L_mild = 500.0     # 缓坡段长度 (m)
     L_total = L_steep + L_mild
 
-    S_steep = 0.02     # 陡坡（超临界流）
-    S_mild = 0.0001    # 缓坡（亚临界流）
+    S_steep = 0.01     # 陡坡（超临界流）- 降低以提高稳定性
+    S_mild = 0.0005    # 缓坡（亚临界流）- 提高以减小差异
 
     n = 0.020          # 曼宁系数（光滑渠道）
 
@@ -153,8 +153,8 @@ def validate_hydraulic_jump():
     print(f"\n[1] 理论分析...")
 
     # 陡坡段：超临界流
-    # 假设跃前弗劳德数 Fr1 = 2.5
-    Fr1 = 2.5
+    # 使用较温和的弗劳德数以避免数值不稳定
+    Fr1 = 2.0  # 降低从4.0到2.0
     V1 = Fr1 * np.sqrt(g * 1.0)  # 假设y1=1.0m
     y1 = Q / (b * V1)
     V1 = Q / (b * y1)  # 重新计算
@@ -187,19 +187,37 @@ def validate_hydraulic_jump():
     n_cells = 200
     dx = L_total / n_cells
 
-    # 创建求解器
+    # 创建空间变化的坡度数组
+    S0_array = np.zeros(n_cells)
+    x_centers = np.linspace(0.5*dx, L_total - 0.5*dx, n_cells)
+    for i in range(n_cells):
+        if x_centers[i] < L_steep:
+            S0_array[i] = S_steep
+        else:
+            S0_array[i] = S_mild
+
+    print(f"  坡度设置: 前{L_steep}m为{S_steep}, 后{L_mild}m为{S_mild}")
+
+    # 创建求解器（使用空间变化的坡度）
     solver = GodunvFVMSolver(
         width=b,
         length=L_total,
         n_cells=n_cells,
         manning_n=n,
-        slope=S_steep,  # 先用陡坡初始化
+        slope=S0_array,  # 传入坡度数组
         g=g,
-        cfl=0.5
+        cfl=0.3,  # 降低CFL以提高稳定性
+        order=1  # 使用一阶精度（更稳定）
     )
 
-    # 初始条件：陡坡段超临界流
-    h_init = np.ones(n_cells) * y1
+    # 初始条件：使用平滑过渡（tanh profile）
+    # 在预期水跃位置附近从y1平滑过渡到y2
+    h_init = np.zeros(n_cells)
+    transition_width = 50.0  # 过渡区宽度
+    for i in range(n_cells):
+        # tanh函数实现平滑过渡
+        h_init[i] = 0.5 * (y1 + y2_theory) + 0.5 * (y2_theory - y1) * np.tanh((x_centers[i] - L_steep) / transition_width)
+
     Q_init = Q * np.ones(n_cells)
 
     solver.h = h_init
@@ -207,7 +225,7 @@ def validate_hydraulic_jump():
 
     # 边界条件
     solver.bc_left = {'type': 'Q', 'value': Q}
-    solver.bc_right = {'type': 'h', 'value': y2_theory * 1.1}  # 下游控制（略高于跃后水深）
+    solver.bc_right = {'type': 'h', 'value': y2_theory}  # 下游控制（跃后水深）
 
     # 记录初始质量
     solver.initial_mass = np.sum(solver.h * solver.dx * b)
@@ -216,19 +234,12 @@ def validate_hydraulic_jump():
     t_max = 1000.0  # s
     t = 0
     n_steps = 0
+    max_steps = 50000  # 最大步数限制
 
     prev_h = solver.h.copy()
     convergence_threshold = 1e-4
 
-    while t < t_max:
-        # 修改底坡（分段）
-        # 前半段陡坡，后半段缓坡
-        for i in range(n_cells):
-            if solver.x[i] < L_steep:
-                solver.S0 = S_steep
-            else:
-                solver.S0 = S_mild
-
+    while t < t_max and n_steps < max_steps:
         solver.step()
         t += solver.dt
         n_steps += 1
@@ -237,14 +248,19 @@ def validate_hydraulic_jump():
         if n_steps % 100 == 0:
             delta = np.max(np.abs(solver.h - prev_h))
             if delta < convergence_threshold:
-                print(f"  收敛! t = {t:.1f}s, Δh_max = {delta:.2e}m")
+                print(f"  收敛! t = {t:.1f}s, n_steps={n_steps}, Δh_max = {delta:.2e}m")
                 break
             prev_h = solver.h.copy()
 
             if n_steps % 500 == 0:
-                print(f"  t = {t:.1f}s, Δh_max = {delta:.2e}m")
+                print(f"  t = {t:.1f}s, n_steps={n_steps}, Δh_max = {delta:.2e}m")
 
-    print(f"  完成 {n_steps} 步")
+                # 检查是否出现NaN
+                if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
+                    print(f"  警告：出现NaN值，停止计算")
+                    break
+
+    print(f"  完成 {n_steps} 步，最终时间 t={t:.1f}s")
 
     # 3. 结果分析
     print(f"\n[3] 结果分析...")

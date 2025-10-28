@@ -53,13 +53,13 @@ class GodunvFVMSolver:
     ):
         """
         初始化
-        
+
         Args:
             width: 渠宽 (m)
             length: 渠长 (m)
             n_cells: 单元数
             manning_n: Manning系数
-            slope: 坡度
+            slope: 坡度 (可以是标量或数组)
             g: 重力加速度
             cfl: CFL数 (建议0.5-0.8)
             eps_dry: 干床阈值
@@ -70,7 +70,15 @@ class GodunvFVMSolver:
         self.n_cells = n_cells
         self.dx = length / n_cells
         self.n = manning_n
-        self.S0 = slope
+
+        # 支持标量或数组形式的坡度
+        if isinstance(slope, (int, float)):
+            self.S0 = np.ones(n_cells) * slope
+        else:
+            self.S0 = np.asarray(slope)
+            if len(self.S0) != n_cells:
+                raise ValueError(f"slope数组长度({len(self.S0)})必须等于单元数({n_cells})")
+
         self.g = g
         self.cfl = cfl
         self.eps_dry = eps_dry
@@ -224,10 +232,10 @@ class GodunvFVMSolver:
             # 单元i的通量差
             dh_dt[i] = -(F_h[i+1] - F_h[i]) / self.dx
             dQ_dt[i] = -(F_Q[i+1] - F_Q[i]) / self.dx
-            
+
             # 加上源项（只对Q方程）
-            dQ_dt[i] += self._compute_source_term(h[i], Q[i])
-        
+            dQ_dt[i] += self._compute_source_term(h[i], Q[i], i)
+
         return dh_dt, dQ_dt
     
     def _muscl_reconstruction(self, phi: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
@@ -343,23 +351,31 @@ class GodunvFVMSolver:
             
             return F_h, F_Q
     
-    def _compute_source_term(self, h: float, Q: float) -> float:
+    def _compute_source_term(self, h: float, Q: float, cell_idx: int) -> float:
         """
         源项（重力+摩阻）
-        
+
         S_Q = g*A*(S0 - Sf)
+
+        Args:
+            h: 水深 (m)
+            Q: 流量 (m³/s)
+            cell_idx: 单元索引
+
+        Returns:
+            源项值
         """
         A = max(h * self.B, self.eps_dry * self.B)
         P = self.B + 2.0 * h
         R = A / P if P > 1e-10 else 0.0
-        
+
         if R > 1e-10 and abs(Q) > 1e-6:
             Sf = self.n**2 * Q**2 / (A**2 * R**(4.0/3.0))
             Sf = np.sign(Q) * Sf
         else:
             Sf = 0.0
-        
-        return self.g * A * (self.S0 - Sf)
+
+        return self.g * A * (self.S0[cell_idx] - Sf)
     
     def _extend_with_ghosts(
         self,
