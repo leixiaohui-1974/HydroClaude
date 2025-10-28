@@ -1,0 +1,294 @@
+{
+  "metadata": {
+    "date": "2025-10-27",
+    "version": "Phase 1 Ultimate",
+    "system": "HydroClaude"
+  },
+  "benchmarks": {
+    "efficiency": [
+      {
+        "n_cells": 50,
+        "dx": 40.0,
+        "elapsed": 0.23308992385864258,
+        "steps_per_sec": 2145.0948703523754,
+        "mass_error": 0.41006745362497365
+      },
+      {
+        "n_cells": 100,
+        "dx": 20.0,
+        "elapsed": 0.45283985137939453,
+        "steps_per_sec": 1104.143105950042,
+        "mass_error": 0.832025747711243
+      },
+      {
+        "n_cells": 200,
+        "dx": 10.0,
+        "elapsed": 0.8930854797363281,
+        "steps_per_sec": 559.8568237248896,
+        "mass_error": 0.7039559639350865
+      },
+      {
+        "n_cells": 400,
+        "dx": 5.0,
+        "elapsed": 1.7774126529693604,
+        "steps_per_sec": 281.30777575184686,
+        "mass_error": 0.08641978168289315
+      },
+      {
+        "n_cells": 800,
+        "dx": 2.5,
+        "elapsed": 3.54091477394104,
+        "steps_per_sec": 141.2064485933672,
+        "mass_error": 3.6034848990258572e-06
+      }
+    ],
+    "conservation": [
+      {
+        "scenario": "\u4f4e\u6d41\u91cf",
+        "params": {
+          "name": "\u4f4e\u6d41\u91cf",
+          "Q": 20,
+          "B": 10,
+          "S0": 0.001,
+          "n": 0.025
+        },
+        "mass_error": 0.6486257431722658
+      },
+      {
+        "scenario": "\u4e2d\u6d41\u91cf",
+        "params": {
+          "name": "\u4e2d\u6d41\u91cf",
+          "Q": 50,
+          "B": 10,
+          "S0": 0.001,
+          "n": 0.025
+        },
+        "mass_error": 0.832025747711243
+      },
+      {
+        "scenario": "\u9ad8\u6d41\u91cf",
+        "params": {
+          "name": "\u9ad8\u6d41\u91cf",
+          "Q": 100,
+          "B": 10,
+          "S0": 0.001,
+          "n": 0.025
+        },
+        "mass_error": 0.5637531868974978
+      },
+      {
+        "scenario": "\u9661\u5761",
+        "params": {
+          "name": "\u9661\u5761",
+          "Q": 50,
+          "B": 10,
+          "S0": 0.003,
+          "n": 0.025
+        },
+        "mass_error": 2.2992555137016004
+      },
+      {
+        "scenario": "\u7f13\u5761",
+        "params": {
+          "name": "\u7f13\u5761",
+          "Q": 50,
+          "B": 10,
+          "S0": 0.0005,
+          "n": 0.025
+        },
+        "mass_error": 2.1659260860929033e-06
+      },
+      {
+        "scenario": "\u5149\u6ed1",
+        "params": {
+          "name": "\u5149\u6ed1",
+          "Q": 50,
+          "B": 10,
+          "S0": 0.001,
+          "n": 0.015
+        },
+        "mass_error": 2.9697610958723852
+      },
+      {
+        "scenario": "\u7c97\u7cd9",
+        "params": {
+          "name": "\u7c97\u7cd9",
+          "Q": 50,
+          "B": 10,
+          "S0": 0.001,
+          "n": 0.04
+        },
+        "mass_error": 1.8562428909450218e-06
+      }
+    ],
+    "stability": [
+      {
+        "t": 1000,
+        "mass_error": 0.9292420739536313,
+        "steps": 709
+      },
+      {
+        "t": 5000,
+        "mass_error": 0.9279634992375666,
+        "steps": 3569
+      },
+      {
+        "t": 10000,
+        "mass_error": 0.9179251485193616,
+        "steps": 7145
+      }
+    ],
+    "robustness": [
+      {
+        "scenario": "\u6781\u4f4e\u6d41\u91cf",
+        "params": {
+          "name": "\u6781\u4f4e\u6d41\u91cf",
+          "Q": 5,
+          "B": 10,
+          "S0": 0.001,
+          "n": 0.025
+        },
+        "success": true,
+        "mass_error": 1.6104486399493003e-05,
+        "has_nan": false
+      },
+      {
+        "scenario": "\u6781\u9ad8\u6d41\u91cf",
+        "params": {
+          "name": "\u6781\u9ad8\u6d41\u91cf",
+          "Q": 150,
+          "B": 10,
+          "S0": 0.001,
+          "n": 0.025
+        },
+        "success": true,
+        "mass_error": 0.22381918509129153,
+        "has_nan": false
+      },
+      {
+        "scenario": "\u6781\u9661\u5761",
+        "params": {
+          "name": "\u6781\u9661\u5761",
+          "Q": 50,
+          "B": 10,
+          "S0": 0.005,
+          "n": 0.025
+        },
+        "success": false,
+        "mass_error": null,
+        "has_nan": true
+      },
+      {
+        "scenario": "\u6781\u7f13\u5761",
+        "params": {
+          "name": "\u6781\u7f13\u5761",
+          "Q": 50,
+          "B": 10,
+          "S0": 0.0003,
+          "n": 0.025
+        },
+        "success": true,
+        "mass_error": 5.274436730400004e-07,
+        "has_nan": false
+      },
+      {
+        "scenario": "\u6781\u5149\u6ed1",
+        "params": {
+          "name": "\u6781\u5149\u6ed1",
+          "Q": 50,
+          "B": 10,
+          "S0": 0.001,
+          "n": 0.012
+        },
+        "success": false,
+        "mass_error": null,
+        "has_nan": true
+      },
+      {
+        "scenario": "\u6781\u7c97\u7cd9",
+        "params": {
+          "name": "\u6781\u7c97\u7cd9",
+          "Q": 50,
+          "B": 10,
+          "S0": 0.001,
+          "n": 0.06
+        },
+        "success": true,
+        "mass_error": 1.4093111774151533e-06,
+        "has_nan": false
+      },
+      {
+        "scenario": "\u7a84\u6e20\u9053",
+        "params": {
+          "name": "\u7a84\u6e20\u9053",
+          "Q": 50,
+          "B": 5,
+          "S0": 0.001,
+          "n": 0.025
+        },
+        "success": true,
+        "mass_error": 8.583866668909792e-07,
+        "has_nan": false
+      },
+      {
+        "scenario": "\u5bbd\u6e20\u9053",
+        "params": {
+          "name": "\u5bbd\u6e20\u9053",
+          "Q": 50,
+          "B": 15,
+          "S0": 0.001,
+          "n": 0.025
+        },
+        "success": true,
+        "mass_error": 7.470578617208597,
+        "has_nan": false
+      }
+    ],
+    "theory_comparison": [
+      {
+        "params": {
+          "Q": 30,
+          "B": 10,
+          "S0": 0.001,
+          "n": 0.025
+        },
+        "h_theory": 1.9110219034552576,
+        "h_numerical": 1.9248939547753758,
+        "relative_error": 0.7258970342012642
+      },
+      {
+        "params": {
+          "Q": 60,
+          "B": 10,
+          "S0": 0.001,
+          "n": 0.025
+        },
+        "h_theory": 3.0840243384242063,
+        "h_numerical": 3.1072290942981913,
+        "relative_error": 0.7524180527654822
+      },
+      {
+        "params": {
+          "Q": 90,
+          "B": 10,
+          "S0": 0.001,
+          "n": 0.025
+        },
+        "h_theory": 4.129532738178968,
+        "h_numerical": 4.155149951190067,
+        "relative_error": 0.6203416859796007
+      }
+    ]
+  },
+  "summary": {
+    "scores": {
+      "efficiency": 100,
+      "conservation": 100,
+      "stability": 100,
+      "robustness": 75.0,
+      "accuracy": 100
+    },
+    "overall_score": 95.0,
+    "grade": "\u2b50\u2b50\u2b50\u2b50\u2b50 \u5353\u8d8a"
+  }
+}
