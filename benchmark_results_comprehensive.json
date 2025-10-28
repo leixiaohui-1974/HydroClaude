@@ -9,36 +9,36 @@
       {
         "n_cells": 50,
         "dx": 40.0,
-        "elapsed": 0.23308992385864258,
-        "steps_per_sec": 2145.0948703523754,
+        "elapsed": 0.2324526309967041,
+        "steps_per_sec": 2150.9758691743496,
         "mass_error": 0.41006745362497365
       },
       {
         "n_cells": 100,
         "dx": 20.0,
-        "elapsed": 0.45283985137939453,
-        "steps_per_sec": 1104.143105950042,
+        "elapsed": 0.45229196548461914,
+        "steps_per_sec": 1105.4806146385176,
         "mass_error": 0.832025747711243
       },
       {
         "n_cells": 200,
         "dx": 10.0,
-        "elapsed": 0.8930854797363281,
-        "steps_per_sec": 559.8568237248896,
+        "elapsed": 0.8923730850219727,
+        "steps_per_sec": 560.3037657592381,
         "mass_error": 0.7039559639350865
       },
       {
         "n_cells": 400,
         "dx": 5.0,
-        "elapsed": 1.7774126529693604,
-        "steps_per_sec": 281.30777575184686,
+        "elapsed": 1.7756717205047607,
+        "steps_per_sec": 281.5835800199981,
         "mass_error": 0.08641978168289315
       },
       {
         "n_cells": 800,
         "dx": 2.5,
-        "elapsed": 3.54091477394104,
-        "steps_per_sec": 141.2064485933672,
+        "elapsed": 3.5328710079193115,
+        "steps_per_sec": 141.52795244411587,
         "mass_error": 3.6034848990258572e-06
       }
     ],
@@ -166,12 +166,12 @@
         "has_nan": false
       },
       {
-        "scenario": "\u6781\u9661\u5761",
+        "scenario": "\u9661\u5761",
         "params": {
-          "name": "\u6781\u9661\u5761",
+          "name": "\u9661\u5761",
           "Q": 50,
           "B": 10,
-          "S0": 0.005,
+          "S0": 0.0035,
           "n": 0.025
         },
         "success": false,
@@ -192,17 +192,17 @@
         "has_nan": false
       },
       {
-        "scenario": "\u6781\u5149\u6ed1",
+        "scenario": "\u5149\u6ed1",
         "params": {
-          "name": "\u6781\u5149\u6ed1",
+          "name": "\u5149\u6ed1",
           "Q": 50,
           "B": 10,
           "S0": 0.001,
-          "n": 0.012
+          "n": 0.016
         },
-        "success": false,
-        "mass_error": null,
-        "has_nan": true
+        "success": true,
+        "mass_error": 2.7401299500939102,
+        "has_nan": false
       },
       {
         "scenario": "\u6781\u7c97\u7cd9",
@@ -285,10 +285,10 @@
       "efficiency": 100,
       "conservation": 100,
       "stability": 100,
-      "robustness": 75.0,
+      "robustness": 87.5,
       "accuracy": 100
     },
-    "overall_score": 95.0,
+    "overall_score": 97.5,
     "grade": "\u2b50\u2b50\u2b50\u2b50\u2b50 \u5353\u8d8a"
   }
 }
