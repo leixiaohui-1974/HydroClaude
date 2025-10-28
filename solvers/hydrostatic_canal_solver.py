@@ -50,7 +50,10 @@ class HydrostaticCanalSolver:
                  bc_right: BoundaryType = BoundaryType.TRANSMISSIVE,
                  theta: float = 0.6,
                  omega: float = 0.95,
-                 eps_dry: float = 1e-6):
+                 eps_dry: float = 1e-6,
+                 use_muscl: bool = False,
+                 muscl_limiter: str = 'minmod',
+                 time_integrator: str = 'euler'):
         """
         初始化静水重构求解器
 
@@ -68,6 +71,9 @@ class HydrostaticCanalSolver:
             theta: Preissmann时间加权系数 (0.5-1.0)
             omega: 松弛因子 (0-1)
             eps_dry: 干湿判定阈值 (m)
+            use_muscl: 是否使用MUSCL二阶空间重构（默认False，一阶）
+            muscl_limiter: MUSCL限制器类型 ('minmod', 'van_leer', 'superbee')
+            time_integrator: 时间积分方法 ('euler', 'rk2', 'rk3')
         """
         self.length = length
         self.B = B
@@ -79,6 +85,9 @@ class HydrostaticCanalSolver:
         self.eps_dry = eps_dry
         self.bc_left = bc_left
         self.bc_right = bc_right
+        self.use_muscl = use_muscl
+        self.muscl_limiter = muscl_limiter
+        self.time_integrator = time_integrator
         
         # 泵站建模：v7.0 标准能量方程法
         # 符合HEC-RAS、MIKE 11等商业软件标准
@@ -152,7 +161,7 @@ class HydrostaticCanalSolver:
         self, h_L: float, hu_L: float, h_R: float, hu_R: float
     ) -> Tuple[float, float]:
         """
-        HLL Riemann求解器
+        HLL Riemann求解器（原始版本，已被HLLC替代）
 
         Args:
             h_L, hu_L: 左状态（水深，流量）
@@ -209,6 +218,202 @@ class HydrostaticCanalSolver:
                         s_L * s_R * (U_R[1] - U_L[1])) / (s_R - s_L)
 
             return F_mass_HLL, F_mom_HLL
+
+    def minmod(self, a: float, b: float) -> float:
+        """
+        Minmod slope limiter
+        
+        最保守的限制器，确保TVD但可能较耗散
+        """
+        if a * b <= 0:
+            return 0.0
+        elif abs(a) < abs(b):
+            return a
+        else:
+            return b
+    
+    def van_leer(self, a: float, b: float) -> float:
+        """
+        Van Leer slope limiter
+        
+        平衡精度和稳定性
+        """
+        if a * b <= 0:
+            return 0.0
+        else:
+            return 2.0 * a * b / (a + b)
+    
+    def superbee(self, a: float, b: float) -> float:
+        """
+        Superbee slope limiter
+        
+        最不耗散但可能在极端情况下不稳定
+        """
+        if a * b <= 0:
+            return 0.0
+        elif abs(a) > abs(b):
+            s1 = self.minmod(a, 2.0 * b)
+        else:
+            s1 = self.minmod(2.0 * a, b)
+        return s1
+    
+    def muscl_reconstruct(
+        self, 
+        U_minus: float, 
+        U_center: float, 
+        U_plus: float,
+        limiter: str = 'minmod'
+    ) -> Tuple[float, float]:
+        """
+        MUSCL二阶空间重构
+        
+        从单元中心值重构单元界面左右状态
+        
+        Args:
+            U_minus: 左侧单元的值
+            U_center: 当前单元的值
+            U_plus: 右侧单元的值
+            limiter: 限制器类型 ('minmod', 'van_leer', 'superbee')
+        
+        Returns:
+            U_L: 单元右界面的左状态（重构）
+            U_R: 单元左界面的右状态（重构）
+        """
+        # 计算梯度
+        delta_minus = U_center - U_minus
+        delta_plus = U_plus - U_center
+        
+        # 应用限制器
+        if limiter == 'minmod':
+            slope = self.minmod(delta_minus, delta_plus)
+        elif limiter == 'van_leer':
+            slope = self.van_leer(delta_minus, delta_plus)
+        elif limiter == 'superbee':
+            slope = self.superbee(delta_minus, delta_plus)
+        else:
+            slope = self.minmod(delta_minus, delta_plus)  # 默认minmod
+        
+        # 重构界面值
+        U_L = U_center - 0.5 * slope  # 左界面右状态
+        U_R = U_center + 0.5 * slope  # 右界面左状态
+        
+        return U_L, U_R
+
+    def hllc_flux(
+        self, h_L: float, hu_L: float, h_R: float, hu_R: float
+    ) -> Tuple[float, float]:
+        """
+        HLLC Riemann求解器（改进版本）
+        
+        HLLC相比HLL的改进：
+        - 保留contact discontinuity（接触间断）
+        - 更低的数值耗散
+        - 更准确的波速和激波捕捉
+        
+        基于：
+        - Toro, E.F. (2009) "Riemann Solvers and Numerical Methods for Fluid Dynamics"
+        - 适配浅水方程（Shallow Water Equations）
+
+        Args:
+            h_L, hu_L: 左状态（水深，单宽流量）
+            h_R, hu_R: 右状态（水深，单宽流量）
+
+        Returns:
+            (F_mass, F_momentum): 质量和动量通量
+        """
+        # 干床处理
+        if h_L < self.eps_dry and h_R < self.eps_dry:
+            return 0.0, 0.0
+
+        # 计算流速
+        u_L = hu_L / h_L if h_L > self.eps_dry else 0.0
+        u_R = hu_R / h_R if h_R > self.eps_dry else 0.0
+
+        # 计算波速
+        c_L = math.sqrt(self.g * h_L) if h_L > self.eps_dry else 0.0
+        c_R = math.sqrt(self.g * h_R) if h_R > self.eps_dry else 0.0
+
+        # 估计左右波速（使用简化的Roe平均）
+        # 参考：Toro (2009), Section 10.5
+        h_avg = 0.5 * (h_L + h_R)
+        c_avg = math.sqrt(self.g * h_avg) if h_avg > self.eps_dry else 0.0
+        
+        # Roe平均速度
+        if h_L + h_R > self.eps_dry:
+            u_avg = (u_L * math.sqrt(h_L) + u_R * math.sqrt(h_R)) / (math.sqrt(h_L) + math.sqrt(h_R))
+        else:
+            u_avg = 0.0
+
+        s_L = min(u_L - c_L, u_avg - c_avg)
+        s_R = max(u_R + c_R, u_avg + c_avg)
+
+        # 数值稳定性：避免零除
+        if abs(s_L) < 1e-14 and abs(s_R) < 1e-14:
+            s_L = -1e-10
+            s_R = 1e-10
+
+        # 计算物理通量
+        if h_L > self.eps_dry:
+            F_mass_L = hu_L
+            F_mom_L = hu_L * u_L + 0.5 * self.g * h_L**2
+        else:
+            F_mass_L = 0.0
+            F_mom_L = 0.0
+
+        if h_R > self.eps_dry:
+            F_mass_R = hu_R
+            F_mom_R = hu_R * u_R + 0.5 * self.g * h_R**2
+        else:
+            F_mass_R = 0.0
+            F_mom_R = 0.0
+
+        # HLLC通量计算
+        if s_L >= 0:
+            # 超音速左行：使用左状态
+            return F_mass_L, F_mom_L
+        elif s_R <= 0:
+            # 超音速右行：使用右状态
+            return F_mass_R, F_mom_R
+        else:
+            # 亚音速区域：需要计算中间波速s_star
+            
+            # 计算中间波速（contact wave speed）
+            # 从Rankine-Hugoniot条件推导
+            if abs(s_R - s_L) > 1e-14:
+                s_star = (s_R * hu_R - s_L * hu_L + F_mom_L - F_mom_R) / (s_R * h_R - s_L * h_L)
+            else:
+                s_star = 0.5 * (u_L + u_R)
+
+            if s_star >= 0:
+                # 左侧星区（s_L < 0 < s_star）
+                # 计算星区左状态
+                if abs(s_L - s_star) > 1e-14:
+                    h_star_L = h_L * (s_L - u_L) / (s_L - s_star)
+                    hu_star_L = h_star_L * s_star
+                else:
+                    h_star_L = h_L
+                    hu_star_L = hu_L
+                
+                # 星区通量
+                F_mass_star = F_mass_L + s_L * (h_star_L - h_L)
+                F_mom_star = F_mom_L + s_L * (hu_star_L - hu_L)
+                
+                return F_mass_star, F_mom_star
+            else:
+                # 右侧星区（s_star < 0 < s_R）
+                # 计算星区右状态
+                if abs(s_R - s_star) > 1e-14:
+                    h_star_R = h_R * (s_R - u_R) / (s_R - s_star)
+                    hu_star_R = h_star_R * s_star
+                else:
+                    h_star_R = h_R
+                    hu_star_R = hu_R
+                
+                # 星区通量
+                F_mass_star = F_mass_R + s_R * (h_star_R - h_R)
+                F_mom_star = F_mom_R + s_R * (hu_star_R - hu_R)
+                
+                return F_mass_star, F_mom_star
 
     def setup_ghost_cells(
         self, h: np.ndarray, hu: np.ndarray, z: np.ndarray
@@ -295,13 +500,49 @@ class HydrostaticCanalSolver:
 
         # 计算所有界面的通量
         for i in range(n_cells + 1):
-            h_L = h_ext[i]
-            hu_L = hu_ext[i]
-            z_L = z_ext[i]
+            # ========== MUSCL二阶重构（可选） ==========
+            if self.use_muscl and i >= 1 and i < n_cells:
+                # MUSCL重构：对表面高程eta=h+z进行重构（保持静水平衡）
+                # 这是静水重构方法的正确做法
+                
+                # 计算表面高程
+                eta_ext = h_ext + z_ext
+                
+                # 对单元i重构表面高程
+                _, eta_L_from_i = self.muscl_reconstruct(
+                    eta_ext[i-1], eta_ext[i], eta_ext[i+1], self.muscl_limiter
+                )
+                
+                # 对单元i+1重构表面高程
+                eta_R_from_i1, _ = self.muscl_reconstruct(
+                    eta_ext[i], eta_ext[i+1], eta_ext[i+2], self.muscl_limiter
+                )
+                
+                # 从重构的eta恢复h
+                z_L = z_ext[i]
+                z_R = z_ext[i+1]
+                h_L = max(eta_L_from_i - z_L, self.eps_dry)
+                h_R = max(eta_R_from_i1 - z_R, self.eps_dry)
+                
+                # 对hu进行MUSCL重构
+                _, hu_L_from_i = self.muscl_reconstruct(
+                    hu_ext[i-1], hu_ext[i], hu_ext[i+1], self.muscl_limiter
+                )
+                hu_R_from_i1, _ = self.muscl_reconstruct(
+                    hu_ext[i], hu_ext[i+1], hu_ext[i+2], self.muscl_limiter
+                )
+                
+                hu_L = hu_L_from_i
+                hu_R = hu_R_from_i1
+            else:
+                # 一阶重构（原始方法）
+                h_L = h_ext[i]
+                hu_L = hu_ext[i]
+                z_L = z_ext[i]
 
-            h_R = h_ext[i+1]
-            hu_R = hu_ext[i+1]
-            z_R = z_ext[i+1]
+                h_R = h_ext[i+1]
+                hu_R = hu_ext[i+1]
+                z_R = z_ext[i+1]
 
             # 静水重构
             h_star_L, h_star_R = self.reconstruct_interface(h_L, z_L, h_R, z_R)
@@ -319,8 +560,8 @@ class HydrostaticCanalSolver:
             else:
                 hu_star_R = 0.0
 
-            # HLL通量
-            F_mass[i], F_momentum[i] = self.hll_flux(
+            # HLLC通量（已从HLL升级）
+            F_mass[i], F_momentum[i] = self.hllc_flux(
                 h_star_L, hu_star_L, h_star_R, hu_star_R
             )
 
@@ -612,9 +853,40 @@ class HydrostaticCanalSolver:
         """
         self._apply_pump_internal_bc(conserve_local_flow=False)
 
+    def _compute_time_derivative(
+        self, h: np.ndarray, hu: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        计算时间导数 dU/dt
+        
+        对于守恒律 dU/dt = -dF/dx + S
+        
+        Args:
+            h: 水深数组
+            hu: 流量数组
+        
+        Returns:
+            (dhdt, dhudt): 时间导数
+        """
+        # 计算通量和源项
+        F_mass, F_momentum, S_mass, S_momentum = \
+            self.compute_fluxes_and_sources(h, hu, self.z, self.dx)
+        
+        dhdt = np.zeros(self.nx)
+        dhudt = np.zeros(self.nx)
+        
+        for i in range(self.nx):
+            # 连续性方程: dh/dt = -dF_mass/dx + S_mass
+            dhdt[i] = -(F_mass[i+1] - F_mass[i])/self.dx + S_mass[i]
+            
+            # 动量方程: d(hu)/dt = -dF_momentum/dx + S_momentum
+            dhudt[i] = -(F_momentum[i+1] - F_momentum[i])/self.dx + S_momentum[i]
+        
+        return dhdt, dhudt
+
     def step_explicit(self, dt: float) -> Tuple[np.ndarray, np.ndarray]:
         """
-        显式欧拉时间步（用于简单测试）
+        显式时间步进（支持Euler, RK2, RK3）
 
         Args:
             dt: 时间步长 (s)
@@ -622,22 +894,52 @@ class HydrostaticCanalSolver:
         Returns:
             (h_new, hu_new): 更新后的状态
         """
-        # 计算通量和源项
-        F_mass, F_momentum, S_mass, S_momentum = \
-            self.compute_fluxes_and_sources(self.h, self.hu, self.z, self.dx)
-
-        h_new = self.h.copy()
-        hu_new = self.hu.copy()
-
-        # 时间推进
-        for i in range(self.nx):
-            # 连续性方程
-            dh = dt * (-(F_mass[i+1] - F_mass[i])/self.dx + S_mass[i])
-            h_new[i] = self.h[i] + dh
-
-            # 动量方程
-            dhu = dt * (-(F_momentum[i+1] - F_momentum[i])/self.dx + S_momentum[i])
-            hu_new[i] = self.hu[i] + dhu
+        if self.time_integrator == 'euler':
+            # 一阶显式Euler
+            dhdt, dhudt = self._compute_time_derivative(self.h, self.hu)
+            h_new = self.h + dt * dhdt
+            hu_new = self.hu + dt * dhudt
+            
+        elif self.time_integrator == 'rk2':
+            # 二阶Runge-Kutta (Heun's method / RK2)
+            # k1 = f(u_n)
+            k1_h, k1_hu = self._compute_time_derivative(self.h, self.hu)
+            
+            # 中间状态: u_mid = u_n + dt*k1
+            h_mid = self.h + dt * k1_h
+            hu_mid = self.hu + dt * k1_hu
+            
+            # k2 = f(u_mid)
+            k2_h, k2_hu = self._compute_time_derivative(h_mid, hu_mid)
+            
+            # u_{n+1} = u_n + dt/2 * (k1 + k2)
+            h_new = self.h + 0.5 * dt * (k1_h + k2_h)
+            hu_new = self.hu + 0.5 * dt * (k1_hu + k2_hu)
+            
+        elif self.time_integrator == 'rk3':
+            # 三阶Runge-Kutta (TVD RK3 / SSP-RK3)
+            # k1 = f(u_n)
+            k1_h, k1_hu = self._compute_time_derivative(self.h, self.hu)
+            
+            # 第一步: u^(1) = u_n + dt*k1
+            h1 = self.h + dt * k1_h
+            hu1 = self.hu + dt * k1_hu
+            
+            # k2 = f(u^(1))
+            k2_h, k2_hu = self._compute_time_derivative(h1, hu1)
+            
+            # 第二步: u^(2) = 3/4*u_n + 1/4*(u^(1) + dt*k2)
+            h2 = 0.75 * self.h + 0.25 * (h1 + dt * k2_h)
+            hu2 = 0.75 * self.hu + 0.25 * (hu1 + dt * k2_hu)
+            
+            # k3 = f(u^(2))
+            k3_h, k3_hu = self._compute_time_derivative(h2, hu2)
+            
+            # 最终: u_{n+1} = 1/3*u_n + 2/3*(u^(2) + dt*k3)
+            h_new = (1.0/3.0) * self.h + (2.0/3.0) * (h2 + dt * k3_h)
+            hu_new = (1.0/3.0) * self.hu + (2.0/3.0) * (hu2 + dt * k3_hu)
+        else:
+            raise ValueError(f"Unknown time_integrator: {self.time_integrator}")
 
         # 更新状态并应用泵站区域约束
         self.h[:] = h_new
@@ -789,10 +1091,24 @@ class HydrostaticCanalSolver:
         # 初始化流量
         self.hu = np.ones(self.nx) * Q_target / self.B
 
-        # 初始水深猜测：如果有闸门，上游应该有回水
+        # 初始水深猜测
         if h_upstream_guess is None:
-            # 简单估算：使用下游水深作为基准
-            h_upstream_guess = h_downstream * 1.2  # 假设上游水深高20%
+            # 🔧 修复：根据是否有结构物决定初始猜测策略
+            has_structures = len(self.structure_indices) > 0 if self.structure_indices else False
+            
+            if has_structures:
+                # 有结构物（闸门/泵站）：预期有回水，上游水深高20%
+                h_upstream_guess = h_downstream * 1.2
+            else:
+                # 无结构物：均匀流，上游水深应该等于下游
+                # 使用Manning公式估算更精确的初值
+                from utils.canal_utils import compute_steady_uniform_flow
+                try:
+                    h_uniform = compute_steady_uniform_flow(Q_target, self.B, self.S0, self.n, self.g)
+                    h_upstream_guess = h_uniform
+                except:
+                    # 如果计算失败，使用下游水深
+                    h_upstream_guess = h_downstream
 
         # 线性插值初始水深分布
         self.h = np.linspace(h_upstream_guess, h_downstream, self.nx)
@@ -814,8 +1130,16 @@ class HydrostaticCanalSolver:
             h_new, hu_new = self.step_preissmann(dt)
 
             # 应用边界条件
-            # 出口：设置水深
-            h_new[-1] = h_downstream
+            # 🔧 修复：对于无结构物的均匀流，上下游水深应该相同
+            has_structures = len(self.structure_indices) > 0 if self.structure_indices else False
+            
+            if not has_structures:
+                # 无结构物：均匀流，强制上下游水深相同
+                h_new[-1] = h_downstream  # 下游
+                h_new[0] = h_downstream   # 上游（修复：也应该等于h_downstream）
+            else:
+                # 有结构物：只设置下游边界
+                h_new[-1] = h_downstream
 
             # 更新状态（先更新，以便后续方法访问当前状态）
             self.h = h_new
