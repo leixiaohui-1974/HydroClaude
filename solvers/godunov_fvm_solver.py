@@ -116,6 +116,32 @@ class GodunvFVMSolver:
         if self.riemann_solver not in ['hll', 'hllc']:
             raise ValueError(f"Riemann求解器必须是'hll'或'hllc'，当前值: {riemann_solver}")
 
+        # CRITICAL: HLLC求解器在Lake at Rest测试中失败
+        # 测试结果显示长时间积分时产生NaN，质量守恒完全崩溃
+        # 详见: LAKE_AT_REST_TEST_REPORT.md
+        if self.riemann_solver == 'hllc':
+            raise NotImplementedError(
+                "\n" + "="*80 + "\n"
+                "❌ HLLC求解器已临时禁用\n"
+                "="*80 + "\n"
+                "原因: Lake at Rest P0测试发现HLLC在长时间积分时产生NaN\n"
+                "      质量守恒计算失败，求解器完全崩溃\n"
+                "\n"
+                "测试结果:\n"
+                "  - 模拟时间: 100秒\n"
+                "  - 总步数: 112步（提前终止）\n"
+                "  - 质量误差: NaN (完全失败)\n"
+                "  - 状态: 🔴 P0 BLOCKING FAILURE\n"
+                "\n"
+                "临时方案: 请使用 riemann_solver='hll' 代替\n"
+                "长期修复: Issue #XXX - 修复或重写HLLC求解器\n"
+                "\n"
+                "参考文档:\n"
+                "  - LAKE_AT_REST_TEST_REPORT.md (测试结果详细分析)\n"
+                "  - DEVELOPMENT_STANDARDS.md (P0测试定义)\n"
+                "="*80
+            )
+
         # 单元中心守恒变量
         self.h = np.zeros(n_cells)  # 水深
         self.Q = np.zeros(n_cells)  # 流量
@@ -133,7 +159,46 @@ class GodunvFVMSolver:
             else:
                 # 使用梯形积分
                 self.z_b[i] = self.z_b[i-1] + 0.5 * (self.S0[i-1] + self.S0[i]) * self.dx
-        
+
+        # 检查是否有变化的底高程
+        z_b_range = np.max(self.z_b) - np.min(self.z_b)
+        has_variable_bottom = z_b_range > 1e-10  # 底高程变化 > 0.1mm
+
+        # WARNING: 变底高程但未启用well-balanced格式
+        if has_variable_bottom and not self.well_balanced:
+            import warnings
+            warnings.warn(
+                "\n" + "="*80 + "\n"
+                "⚠️  检测到变化的底高程，但未启用Well-Balanced格式！\n"
+                "="*80 + "\n"
+                f"底高程变化范围: {np.min(self.z_b):.2f} ~ {np.max(self.z_b):.2f} m "
+                f"(总变化 {z_b_range:.2f} m)\n"
+                "当前设置: well_balanced=False\n"
+                "\n"
+                "Lake at Rest P0测试结果显示:\n"
+                "  - 变底高程（2m凸起）: 水面扰动 3.99 m ❌\n"
+                "  - 陡峭底坡（5m台阶）: 水面扰动 11.35 m ❌\n"
+                "  - 质量守恒误差: 0.01% ~ 2%\n"
+                "\n"
+                "这意味着当前求解器可能产生:\n"
+                "  1. 虚假的水流（静水状态下出现流速）\n"
+                "  2. 非物理的水面扰动（米级误差）\n"
+                "  3. 质量守恒恶化\n"
+                "\n"
+                "建议操作:\n"
+                "  1. 如果是静水或缓流问题，设置 well_balanced=True\n"
+                "     （需要先实现Hydrostatic Reconstruction - 开发中）\n"
+                "  2. 如果底坡很小（< 0.001），可以忽略此警告\n"
+                "  3. 如果是激波/溃坝问题，当前格式可能适用\n"
+                "\n"
+                "参考文档:\n"
+                "  - LAKE_AT_REST_TEST_REPORT.md (详细测试结果)\n"
+                "  - DEVELOPMENT_STANDARDS.md (质量标准)\n"
+                "="*80,
+                UserWarning,
+                stacklevel=2
+            )
+
         # 时间
         self.t = 0.0
         self.dt = 0.0
