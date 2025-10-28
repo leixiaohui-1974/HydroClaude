@@ -114,13 +114,12 @@ for scheme in schemes:
     
     # 2. 计算渠道过流能力（假设最大水深3.5m）
     h_max = 3.5
-    capacity = tools.compute_channel_capacity(
-        width=B, h_max=h_max, slope=S0, manning_n=n
-    )
-    
-    Q_max = capacity['Q_max']
-    v_max = capacity['v_max']
-    Fr_max = capacity['Fr_max']
+    # 使用Manning公式计算最大流量
+    A_max = B * h_max
+    R_max = A_max / (B + 2 * h_max)
+    Q_max = (1/n) * A_max * R_max**(2/3) * np.sqrt(S0)
+    v_max = Q_max / A_max
+    Fr_max = v_max / np.sqrt(9.81 * h_max)
     
     print(f"\n过流能力分析（h_max={h_max}m）:")
     print(f"  最大流量: {Q_max:.2f} m³/s")
