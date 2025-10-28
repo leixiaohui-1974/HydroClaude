@@ -50,7 +50,8 @@ class GodunvFVMSolver:
         cfl: float = 0.5,
         eps_dry: float = 1e-6,
         order: int = 2,
-        riemann_solver: str = 'hll'
+        riemann_solver: str = 'hll',
+        well_balanced: bool = False
     ):
         """
         初始化
@@ -68,6 +69,8 @@ class GodunvFVMSolver:
             riemann_solver: Riemann求解器类型 ('hll' 或 'hllc')
                           默认'hll'（更稳定）
                           'hllc'在短时间激波捕捉上更精确，但长时间积分稳定性需改进
+            well_balanced: 是否使用well-balanced格式 (默认False)
+                          True时使用hydrostatic reconstruction，提高稳定性
         """
         self.B = width
         self.L = length
@@ -88,16 +91,28 @@ class GodunvFVMSolver:
         self.eps_dry = eps_dry
         self.order = order
         self.riemann_solver = riemann_solver.lower()
+        self.well_balanced = well_balanced
 
         if self.riemann_solver not in ['hll', 'hllc']:
             raise ValueError(f"Riemann求解器必须是'hll'或'hllc'，当前值: {riemann_solver}")
-        
+
         # 单元中心守恒变量
         self.h = np.zeros(n_cells)  # 水深
         self.Q = np.zeros(n_cells)  # 流量
-        
+
         # 单元中心坐标
         self.x = np.linspace(0.5*self.dx, length - 0.5*self.dx, n_cells)
+
+        # 计算单元中心底高程（用于well-balanced格式）
+        # 从下游（x=0）开始积分：z_b(x) = z_0 - ∫S0(ξ)dξ
+        # 这里假设下游底高程为0
+        self.z_b = np.zeros(n_cells)
+        for i in range(n_cells):
+            if i == 0:
+                self.z_b[i] = self.S0[i] * self.x[i]  # 从x=0到x[0]
+            else:
+                # 使用梯形积分
+                self.z_b[i] = self.z_b[i-1] + 0.5 * (self.S0[i-1] + self.S0[i]) * self.dx
         
         # 时间
         self.t = 0.0
@@ -117,6 +132,8 @@ class GodunvFVMSolver:
         print(f"  空间精度: {order}阶")
         print(f"  时间积分: TVD-RK2")
         print(f"  Riemann求解器: {self.riemann_solver.upper()}")
+        if self.well_balanced:
+            print(f"  Well-Balanced: 启用 (Hydrostatic Reconstruction)")
     
     def initialize(
         self,
@@ -214,24 +231,77 @@ class GodunvFVMSolver:
         
         # 扩展数组（ghost cells）
         h_ext, Q_ext = self._extend_with_ghosts(h, Q)
-        
-        # 界面重构（MUSCL二阶 或 常数一阶）
-        if self.order == 2:
-            h_L, h_R = self._muscl_reconstruction(h_ext)
-            Q_L, Q_R = self._muscl_reconstruction(Q_ext)
+
+        # Well-balanced: 重构水面高程 η = h + z_b
+        if self.well_balanced:
+            # 计算水面高程（cell centers）
+            eta = h + self.z_b
+
+            # 扩展eta到ghost cells
+            eta_ext = np.zeros(n + 2)
+            eta_ext[1:n+1] = eta
+
+            # 左ghost：eta = h_bc + z_b_ghost
+            # 需要估算ghost cell的z_b
+            if self.bc_left['type'] == 'h':
+                value = self.bc_left['value']
+                h_ghost = value if not callable(value) else value(self.t)
+                # Ghost底高程：外推（假设坡度连续）
+                z_b_ghost = self.z_b[0] - (self.z_b[1] - self.z_b[0])
+                eta_ext[0] = h_ghost + z_b_ghost
+            else:  # Q boundary
+                # 使用内部eta外推
+                eta_ext[0] = eta[0]
+
+            # 右ghost
+            if self.bc_right['type'] == 'h':
+                value = self.bc_right['value']
+                h_ghost = value if not callable(value) else value(self.t)
+                z_b_ghost = self.z_b[n-1] + (self.z_b[n-1] - self.z_b[n-2])
+                eta_ext[n+1] = h_ghost + z_b_ghost
+            else:  # Q boundary
+                eta_ext[n+1] = eta[n-1]
+
+            # 重构水面高程
+            if self.order == 2:
+                eta_L, eta_R = self._muscl_reconstruction(eta_ext)
+            else:
+                eta_L = eta_ext[:-1]
+                eta_R = eta_ext[1:]
+
+            # 获取界面底高程（使用单元中心值）
+            z_b_ext, _ = self._extend_with_ghosts(self.z_b, self.z_b)
+            # 界面底高程：取左右单元的最大值（保守）
+            z_b_interface = np.maximum(z_b_ext[:-1], z_b_ext[1:])
+
+            # 应用hydrostatic reconstruction
+            h_L = np.maximum(0.0, eta_L - z_b_interface)
+            h_R = np.maximum(0.0, eta_R - z_b_interface)
+
+            # 重构流量（不变）
+            if self.order == 2:
+                Q_L, Q_R = self._muscl_reconstruction(Q_ext)
+            else:
+                Q_L = Q_ext[:-1]
+                Q_R = Q_ext[1:]
         else:
-            # 一阶：分片常数
-            h_L = h_ext[:-1]
-            h_R = h_ext[1:]
-            Q_L = Q_ext[:-1]
-            Q_R = Q_ext[1:]
-        
+            # 标准格式：直接重构h和Q
+            if self.order == 2:
+                h_L, h_R = self._muscl_reconstruction(h_ext)
+                Q_L, Q_R = self._muscl_reconstruction(Q_ext)
+            else:
+                h_L = h_ext[:-1]
+                h_R = h_ext[1:]
+                Q_L = Q_ext[:-1]
+                Q_R = Q_ext[1:]
+
         # 计算所有界面通量
         F_h = np.zeros(n + 1)
         F_Q = np.zeros(n + 1)
-        
+
         for i in range(n + 1):
             # 界面i位于单元i-1和单元i之间
+            # 计算通量（h_L, h_R已经通过hydrostatic reconstruction调整）
             if self.riemann_solver == 'hllc':
                 F_h[i], F_Q[i] = self._hllc_flux(
                     h_L[i], Q_L[i], h_R[i], Q_R[i]
@@ -305,7 +375,47 @@ class GodunvFVMSolver:
                 phi_R[i] = phi[i+1]
         
         return phi_L, phi_R
-    
+
+    def _hydrostatic_reconstruction(
+        self,
+        h_L: float,
+        h_R: float,
+        z_b_L: float,
+        z_b_R: float
+    ) -> Tuple[float, float]:
+        """
+        Hydrostatic Reconstruction (Audusse et al. 2004)
+
+        核心思想：重构水面高程η=h+z_b而不是水深h
+        确保水静止时(Q=0, ∂η/∂x=0)通量为0
+
+        方法：
+        1. 定义界面底高程 z*= max(z_b_L, z_b_R)
+        2. 调整水深：h*_L = max(0, η_L - z*), h*_R = max(0, η_R - z*)
+        3. 使用h*计算通量
+
+        Args:
+            h_L: 左侧水深
+            h_R: 右侧水深
+            z_b_L: 左侧底高程
+            z_b_R: 右侧底高程
+
+        Returns:
+            h*_L, h*_R: 调整后的水深
+        """
+        # 计算水面高程
+        eta_L = h_L + z_b_L
+        eta_R = h_R + z_b_R
+
+        # 界面底高程取max（保守处理）
+        z_interface = max(z_b_L, z_b_R)
+
+        # 调整水深（确保非负）
+        h_star_L = max(0.0, eta_L - z_interface)
+        h_star_R = max(0.0, eta_R - z_interface)
+
+        return h_star_L, h_star_R
+
     def _hllc_flux(
         self,
         h_L: float,
