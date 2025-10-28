@@ -828,8 +828,16 @@ class HydrostaticCanalSolver:
             h_new, hu_new = self.step_preissmann(dt)
 
             # 应用边界条件
-            # 出口：设置水深
-            h_new[-1] = h_downstream
+            # 🔧 修复：对于无结构物的均匀流，上下游水深应该相同
+            has_structures = len(self.structure_indices) > 0 if self.structure_indices else False
+            
+            if not has_structures:
+                # 无结构物：均匀流，强制上下游水深相同
+                h_new[-1] = h_downstream  # 下游
+                h_new[0] = h_downstream   # 上游（修复：也应该等于h_downstream）
+            else:
+                # 有结构物：只设置下游边界
+                h_new[-1] = h_downstream
 
             # 更新状态（先更新，以便后续方法访问当前状态）
             self.h = h_new
