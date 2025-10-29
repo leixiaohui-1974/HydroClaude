@@ -26,6 +26,10 @@ from .nodes import (
     create_junction, create_bifurcation, create_reservoir,
     create_inflow_boundary, create_outflow_boundary
 )
+from .validation import (
+    NetworkValidator, NetworkVisualizer,
+    validate_network, visualize_network
+)
 # from .coupling import ReachCoupler  # Coming in Task 3.2.1
 # from .solver import NetworkSolver  # Coming in Task 3.2.3
 
@@ -45,6 +49,11 @@ __all__ = [
     'create_reservoir',
     'create_inflow_boundary',
     'create_outflow_boundary',
+    # 验证和可视化
+    'NetworkValidator',
+    'NetworkVisualizer',
+    'validate_network',
+    'visualize_network',
     # 耦合和求解器（待实现）
     # 'ReachCoupler',  # Task 3.2.1
     # 'NetworkSolver',  # Task 3.2.3
