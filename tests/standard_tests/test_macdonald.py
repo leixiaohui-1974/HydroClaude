@@ -382,7 +382,7 @@ class TestMacDonald:
         return h_analytical
 
     @pytest.mark.p1
-    @pytest.mark.skip(reason="M2曲线临界流转换数值困难，需要特殊边界条件实现。已知技术挑战，待专项优化。")
+    @pytest.mark.skip(reason="M2曲线存在质量守恒问题(33%误差)，与边界条件类型无关。需要深入调查边界单元处理和时间积分。")
     def test_macdonald_2_drawdown_curve(self):
         """
         MacDonald Test 2: M2下降曲线（Drawdown Curve）
@@ -487,7 +487,7 @@ class TestMacDonald:
             },
             'boundary_conditions': {
                 'left': {'type': 'Q', 'value': Q},      # 上游：固定流量
-                'right': {'type': 'Q', 'value': Q}      # 下游：固定流量（保证守恒）
+                'right': {'type': 'h', 'value': h_c}    # 下游：固定临界水深
             },
             'solver': {
                 'type': 'godunov_fvm',
@@ -981,7 +981,7 @@ class TestMacDonald:
         return h, u
 
     @pytest.mark.p1
-    @pytest.mark.skip(reason="水跃问题需要特殊的急流边界条件（supercritical BC）。当前Q-BC在急流情况下导致质量守恒失败。待实现特征线方法边界条件。")
+    @pytest.mark.skip(reason="水跃问题存在严重质量守恒问题(61%误差)，supercritical BC未能约束上游。上游Fr=0.034应为>1。需要重新设计边界处理机制。")
     def test_macdonald_4_hydraulic_jump(self):
         """
         MacDonald Test 4: 水跃问题（Hydraulic Jump）
@@ -1098,7 +1098,7 @@ class TestMacDonald:
                 'file': str(ic_file_path)
             },
             'boundary_conditions': {
-                'left': {'type': 'Q', 'value': Q},           # 上游：固定流量
+                'left': {'type': 'supercritical', 'h': h_upstream, 'Q': Q},  # 上游：急流（同时指定h和Q）
                 'right': {'type': 'h', 'value': h_downstream}  # 下游：固定水深
             },
             'solver': {

@@ -20,6 +20,9 @@ Godunov有限体积法求解器（标准守恒格式）
 import numpy as np
 from typing import Tuple, Dict, Optional
 
+# 导入特征线边界条件
+from .boundary_conditions import CharacteristicBC
+
 # 尝试导入Numba加速函数
 try:
     from .riemann_numba import (
@@ -202,11 +205,14 @@ class GodunvFVMSolver:
         # 时间
         self.t = 0.0
         self.dt = 0.0
-        
+
         # 边界条件
         self.bc_left = None
         self.bc_right = None
-        
+
+        # 特征线边界条件处理器
+        self.characteristic_bc = CharacteristicBC(g=g)
+
         # 统计
         self.initial_mass = 0.0
         self.step_count = 0
@@ -778,11 +784,11 @@ class GodunvFVMSolver:
         n = len(h)
         h_ext = np.zeros(n + 2)
         Q_ext = np.zeros(n + 2)
-        
+
         # 内部
         h_ext[1:n+1] = h
         Q_ext[1:n+1] = Q
-        
+
         # 左ghost（外推）
         if self.bc_left['type'] == 'h':
             value = self.bc_left['value']
@@ -792,7 +798,28 @@ class GodunvFVMSolver:
             h_ext[0] = h[0]
             value = self.bc_left['value']
             Q_ext[0] = value if not callable(value) else value(self.t)
-        
+        elif self.bc_left['type'] == 'critical':
+            # 临界流边界条件：仅指定h_c，Q通过内部值外推
+            if self.bc_right['type'] == 'Q':
+                # 使用对侧固定Q边界值计算临界水深
+                Q_boundary = self.bc_right['value'] if not callable(self.bc_right['value']) else self.bc_right['value'](self.t)
+            else:
+                # 使用内部流量估算
+                Q_boundary = np.mean(Q[:min(10, n)])
+            h_c, u_c = self.characteristic_bc.apply_critical_depth_bc(Q=Q_boundary, B=self.B)
+            # 只设置h，Q从内部外推
+            h_ext[0] = h_c
+            Q_ext[0] = Q[0]  # 外推流量
+        elif self.bc_left['type'] == 'supercritical':
+            # 急流入口：同时指定h和Q
+            h_bc_value = self.bc_left['h']
+            Q_bc_value = self.bc_left['Q']
+            h_bc, u_bc = self.characteristic_bc.apply_supercritical_inlet(
+                h_bc_value=h_bc_value, Q_bc_value=Q_bc_value, B=self.B
+            )
+            h_ext[0] = h_bc
+            Q_ext[0] = Q_bc_value
+
         # 右ghost
         if self.bc_right['type'] == 'h':
             value = self.bc_right['value']
@@ -802,7 +829,26 @@ class GodunvFVMSolver:
             h_ext[n+1] = h[n-1]
             value = self.bc_right['value']
             Q_ext[n+1] = value if not callable(value) else value(self.t)
-        
+        elif self.bc_right['type'] == 'critical':
+            # 临界流边界条件：仅指定h_c，Q通过内部值外推
+            if self.bc_left['type'] == 'Q':
+                # 使用对侧固定Q边界值计算临界水深
+                Q_boundary = self.bc_left['value'] if not callable(self.bc_left['value']) else self.bc_left['value'](self.t)
+            else:
+                # 使用内部流量估算
+                Q_boundary = np.mean(Q[-min(10, n):])
+            h_c, u_c = self.characteristic_bc.apply_critical_depth_bc(Q=Q_boundary, B=self.B)
+            # 只设置h，Q从内部外推（避免over-constrain）
+            h_ext[n+1] = h_c
+            Q_ext[n+1] = Q[n-1]  # 外推流量
+        elif self.bc_right['type'] == 'supercritical':
+            # 急流出口：完全外推（所有特征线向外）
+            h_bc, u_bc = self.characteristic_bc.apply_supercritical_outlet(
+                h_interior=h[n-1], u_interior=Q[n-1]/(h[n-1]*self.B) if h[n-1] > self.eps_dry else 0.0
+            )
+            h_ext[n+1] = h_bc
+            Q_ext[n+1] = u_bc * h_bc * self.B
+
         return h_ext, Q_ext
     
     def _apply_bc(
@@ -818,7 +864,25 @@ class GodunvFVMSolver:
         elif self.bc_left['type'] == 'Q':
             value = self.bc_left['value']
             Q[0] = value if not callable(value) else value(self.t)
-        
+        elif self.bc_left['type'] == 'critical':
+            # 临界流边界条件：仅指定h_c，不强制Q
+            if self.bc_right['type'] == 'Q':
+                Q_boundary = self.bc_right['value'] if not callable(self.bc_right['value']) else self.bc_right['value'](self.t)
+            else:
+                Q_boundary = np.mean(Q[:min(10, len(Q))])
+            h_c, u_c = self.characteristic_bc.apply_critical_depth_bc(Q=Q_boundary, B=self.B)
+            # 只强制h，不强制Q
+            h[0] = h_c
+        elif self.bc_left['type'] == 'supercritical':
+            # 急流入口
+            h_bc_value = self.bc_left['h']
+            Q_bc_value = self.bc_left['Q']
+            h_bc, u_bc = self.characteristic_bc.apply_supercritical_inlet(
+                h_bc_value=h_bc_value, Q_bc_value=Q_bc_value, B=self.B
+            )
+            h[0] = h_bc
+            Q[0] = Q_bc_value
+
         # 右
         if self.bc_right['type'] == 'h':
             value = self.bc_right['value']
@@ -826,7 +890,24 @@ class GodunvFVMSolver:
         elif self.bc_right['type'] == 'Q':
             value = self.bc_right['value']
             Q[-1] = value if not callable(value) else value(self.t)
-        
+        elif self.bc_right['type'] == 'critical':
+            # 临界流边界条件：仅指定h_c，不强制Q
+            if self.bc_left['type'] == 'Q':
+                Q_boundary = self.bc_left['value'] if not callable(self.bc_left['value']) else self.bc_left['value'](self.t)
+            else:
+                Q_boundary = np.mean(Q[-min(10, len(Q)):])
+            h_c, u_c = self.characteristic_bc.apply_critical_depth_bc(Q=Q_boundary, B=self.B)
+            # 只强制h，不强制Q（让流量自然调整）
+            h[-1] = h_c
+        elif self.bc_right['type'] == 'supercritical':
+            # 急流出口：完全外推
+            h_bc, u_bc = self.characteristic_bc.apply_supercritical_outlet(
+                h_interior=h[-2] if len(h) > 1 else h[-1],
+                u_interior=Q[-2]/(h[-2]*self.B) if len(h) > 1 and h[-2] > self.eps_dry else 0.0
+            )
+            h[-1] = h_bc
+            Q[-1] = u_bc * h_bc * self.B
+
         return h, Q
     
     def _compute_total_mass(self) -> float:

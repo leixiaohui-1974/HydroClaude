@@ -224,6 +224,17 @@ class ModelBuilder:
 
             return {'type': bc_type, 'value': value}
 
+        elif bc_type == 'critical':
+            # 临界流边界条件（基于特征线方法）
+            # 自动计算临界水深 h_c = (Q²/(g*B²))^(1/3)
+            return {'type': 'critical'}
+
+        elif bc_type == 'supercritical':
+            # 急流边界条件（同时指定h和Q）
+            h_value = bc_dict['h']
+            Q_value = bc_dict['Q']
+            return {'type': 'supercritical', 'h': h_value, 'Q': Q_value}
+
         elif bc_type == 'rating_curve':
             # 水位-流量关系
             # TODO: 实现rating curve
