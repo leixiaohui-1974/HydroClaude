@@ -455,6 +455,27 @@ class GodunvFVMSolver:
             dh_dt[i] = -(F_h[i+1] - F_h[i]) / self.dx
             dQ_dt[i] = -(F_Q[i+1] - F_Q[i]) / self.dx
 
+            # Well-balanced几何源项修正（Audusse et al. 2004）
+            if self.well_balanced:
+                # 关键：hydrostatic reconstruction调整了h*，但通量中缺少了
+                # 从z_b到z_interface之间的压力贡献，需要作为源项补偿
+                #
+                # 几何源项需要考虑界面处的调整后水深
+                # 使用界面处的平均h*来计算
+
+                # 左界面处的调整后水深（平均）
+                h_star_left = 0.5 * (h_L[i] + h_R[i])
+                # 右界面处的调整后水深（平均）
+                h_star_right = 0.5 * (h_L[i+1] + h_R[i+1])
+
+                # 计算两侧界面处的底高程差异
+                dz_interface = z_b_interface[i+1] - z_b_interface[i]
+
+                # 几何源项（使用界面处的平均h*）
+                h_star_avg = 0.5 * (h_star_left + h_star_right)
+                S_geo = -self.g * h_star_avg * self.B * dz_interface / self.dx
+                dQ_dt[i] += S_geo
+
             # 加上源项（只对Q方程）
             dQ_dt[i] += self._compute_source_term(h[i], Q[i], i)
 

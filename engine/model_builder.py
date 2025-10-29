@@ -43,6 +43,7 @@ class ModelBuilder:
         self.config = config
         self.solver = None
         self.analytical_solution = None
+        self.z_b_from_file = None  # 从IC文件读取的底高程（如果有）
 
     @classmethod
     def from_config_file(cls, config_file: str):
@@ -105,6 +106,10 @@ class ModelBuilder:
         # 初始化求解器
         self.solver.initialize(h_init, Q_init, bc_left, bc_right)
 
+        # 如果IC文件包含z_b，覆盖求解器的z_b
+        if self.z_b_from_file is not None:
+            self.solver.z_b = self.z_b_from_file.copy()
+
         return self.solver
 
     def _get_bottom_slope(self) -> Any:
@@ -155,6 +160,14 @@ class ModelBuilder:
             data = np.loadtxt(file_path, delimiter=',', skiprows=1)
             h_init = data[:, 1]  # 假设第2列是h
             Q_init = data[:, 2]  # 假设第3列是Q
+
+            # 检查是否有第4列（z_b）
+            if data.shape[1] >= 4:
+                z_b_from_file = data[:, 3]
+                # 保存到实例变量，稍后设置到求解器
+                self.z_b_from_file = z_b_from_file
+            else:
+                self.z_b_from_file = None
 
             if len(h_init) != n_cells:
                 raise ValueError(f"初始条件数据点数({len(h_init)})与网格单元数({n_cells})不匹配")
