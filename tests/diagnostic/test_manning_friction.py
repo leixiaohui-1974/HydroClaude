@@ -1,0 +1,392 @@
+"""
+Manning摩阻项诊断测试
+
+目标：定位MacDonald Test 5中出现的NaN问题
+策略：从简单到复杂逐步测试
+"""
+
+import pytest
+import numpy as np
+import tempfile
+from pathlib import Path
+from engine.simulation_engine import SimulationEngine
+
+
+class TestManningFriction:
+    """Manning摩阻项诊断测试套件"""
+
+    def test_manning_short_time(self):
+        """
+        测试1：短时间Manning摩阻（排除长时间积分问题）
+
+        如果短时间就出现NaN，说明是摩阻项本身的问题
+        如果短时间正常，说明是长时间积分的累积误差
+        """
+
+        # 简单配置：均匀流
+        L = 1000.0
+        B = 50.0
+        S0 = 0.001
+        n = 0.025
+        Q = 20.0
+
+        # 计算正常水深
+        h_n = self._compute_normal_depth(Q, B, S0, n)
+
+        n_cells = 50
+        dx = L / n_cells
+        x = np.linspace(dx/2, L - dx/2, n_cells)
+
+        # 初始条件：正常水深
+        h_init = np.ones(n_cells) * h_n
+        Q_init = np.ones(n_cells) * Q
+
+        # 创建IC文件
+        ic_data = np.column_stack([x, h_init, Q_init])
+        ic_file = tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False)
+        ic_file.write('x,h,Q\n')
+        np.savetxt(ic_file, ic_data, delimiter=',')
+        ic_file.close()
+        ic_file_path = Path(ic_file.name)
+
+        # 配置
+        config = {
+            'project': {
+                'name': 'Manning Friction Diagnostic - Short Time',
+                'description': '短时间Manning摩阻测试',
+                'author': 'Test',
+                'created': '2025-10-29'
+            },
+            'geometry': {
+                'type': 'uniform',
+                'channel_width': B,
+                'channel_length': L,
+                'bottom_slope': S0,
+                'manning_n': n
+            },
+            'mesh': {
+                'n_cells': n_cells
+            },
+            'initial_conditions': {
+                'type': 'from_file',
+                'file': str(ic_file_path)
+            },
+            'boundary_conditions': {
+                'left': {'type': 'Q', 'value': Q},
+                'right': {'type': 'h', 'value': h_n}
+            },
+            'solver': {
+                'type': 'godunov_fvm',
+                'spatial_order': 1,  # 一阶格式
+                'riemann_solver': 'hll',
+                'use_numba': True,
+                'cfl': 0.5,
+                'eps_dry': 1e-6,
+                'well_balanced': False
+            },
+            'simulation': {
+                'start_time': 0.0,
+                'end_time': 100.0,  # 短时间：100s
+                'max_steps': 10000,
+                'output_interval': 10.0
+            },
+            'output': {
+                'directory': 'test_output',
+                'formats': ['json'],
+                'variables': ['h', 'Q', 'u'],
+                'statistics': True,
+                'plots': {'enabled': False}
+            },
+            'validation': {
+                'enabled': False
+            }
+        }
+
+        config_file = tempfile.NamedTemporaryFile(
+            mode='w', suffix='.json', delete=False, encoding='utf-8'
+        )
+        import json
+        json.dump(config, config_file, indent=2, ensure_ascii=False)
+        config_file.close()
+        config_file_path = Path(config_file.name)
+
+        try:
+            # 运行仿真
+            engine = SimulationEngine(str(config_file_path))
+            engine.initialize()
+            engine.run()
+
+            solver = engine.solver
+            h_final = solver.h.copy()
+            Q_final = solver.Q.copy()
+
+            print(f"\n=== 短时间测试结果 ===")
+            print(f"模拟时间: {solver.t:.1f} s")
+            print(f"最终水深: min={np.min(h_final):.4f}, max={np.max(h_final):.4f}, mean={np.mean(h_final):.4f}")
+            print(f"最终流量: min={np.min(Q_final):.4f}, max={np.max(Q_final):.4f}, mean={np.mean(Q_final):.4f}")
+
+            # 检查是否有NaN
+            assert not np.any(np.isnan(h_final)), \
+                f"水深出现NaN！位置：{np.where(np.isnan(h_final))}"
+            assert not np.any(np.isnan(Q_final)), \
+                f"流量出现NaN！位置：{np.where(np.isnan(Q_final))}"
+
+            print("✅ 短时间测试通过：无NaN")
+
+        finally:
+            ic_file_path.unlink(missing_ok=True)
+            config_file_path.unlink(missing_ok=True)
+
+    def test_manning_first_order(self):
+        """
+        测试2：一阶格式 + Manning摩阻（排除高阶格式问题）
+
+        如果一阶格式正常，说明问题在二阶MUSCL重构与摩阻的交互
+        """
+
+        L = 5000.0
+        B = 50.0
+        S0 = 0.001
+        n = 0.025
+        Q = 20.0
+
+        h_n = self._compute_normal_depth(Q, B, S0, n)
+
+        n_cells = 100
+        dx = L / n_cells
+        x = np.linspace(dx/2, L - dx/2, n_cells)
+
+        h_init = np.ones(n_cells) * h_n
+        Q_init = np.ones(n_cells) * Q
+
+        ic_data = np.column_stack([x, h_init, Q_init])
+        ic_file = tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False)
+        ic_file.write('x,h,Q\n')
+        np.savetxt(ic_file, ic_data, delimiter=',')
+        ic_file.close()
+        ic_file_path = Path(ic_file.name)
+
+        config = {
+            'project': {
+                'name': 'Manning Friction Diagnostic - First Order',
+                'description': '一阶格式Manning摩阻测试',
+                'author': 'Test',
+                'created': '2025-10-29'
+            },
+            'geometry': {
+                'type': 'uniform',
+                'channel_width': B,
+                'channel_length': L,
+                'bottom_slope': S0,
+                'manning_n': n
+            },
+            'mesh': {
+                'n_cells': n_cells
+            },
+            'initial_conditions': {
+                'type': 'from_file',
+                'file': str(ic_file_path)
+            },
+            'boundary_conditions': {
+                'left': {'type': 'Q', 'value': Q},
+                'right': {'type': 'h', 'value': h_n}
+            },
+            'solver': {
+                'type': 'godunov_fvm',
+                'spatial_order': 1,  # 一阶格式
+                'riemann_solver': 'hll',
+                'use_numba': True,
+                'cfl': 0.5,
+                'eps_dry': 1e-6,
+                'well_balanced': False
+            },
+            'simulation': {
+                'start_time': 0.0,
+                'end_time': 1000.0,  # 中等时间
+                'max_steps': 50000,
+                'output_interval': 100.0
+            },
+            'output': {
+                'directory': 'test_output',
+                'formats': ['json'],
+                'variables': ['h', 'Q', 'u'],
+                'statistics': True,
+                'plots': {'enabled': False}
+            },
+            'validation': {
+                'enabled': False
+            }
+        }
+
+        config_file = tempfile.NamedTemporaryFile(
+            mode='w', suffix='.json', delete=False, encoding='utf-8'
+        )
+        import json
+        json.dump(config, config_file, indent=2, ensure_ascii=False)
+        config_file.close()
+        config_file_path = Path(config_file.name)
+
+        try:
+            engine = SimulationEngine(str(config_file_path))
+            engine.initialize()
+            engine.run()
+
+            solver = engine.solver
+            h_final = solver.h.copy()
+            Q_final = solver.Q.copy()
+
+            print(f"\n=== 一阶格式测试结果 ===")
+            print(f"模拟时间: {solver.t:.1f} s")
+            print(f"最终水深: min={np.min(h_final):.4f}, max={np.max(h_final):.4f}, mean={np.mean(h_final):.4f}")
+            print(f"与正常水深偏差: {abs(np.mean(h_final) - h_n)/h_n * 100:.2f}%")
+
+            assert not np.any(np.isnan(h_final)), "水深出现NaN"
+            assert not np.any(np.isnan(Q_final)), "流量出现NaN"
+
+            # 检查是否收敛到正常水深
+            deviation = abs(np.mean(h_final) - h_n) / h_n * 100
+            assert deviation < 5.0, f"未收敛到正常水深：偏差{deviation:.2f}%"
+
+            print("✅ 一阶格式测试通过：收敛到正常水深")
+
+        finally:
+            ic_file_path.unlink(missing_ok=True)
+            config_file_path.unlink(missing_ok=True)
+
+    def test_manning_no_numba(self):
+        """
+        测试3：禁用Numba（排除Numba JIT编译问题）
+
+        如果禁用Numba后正常，说明Numba版本的摩阻实现有问题
+        """
+
+        L = 1000.0
+        B = 50.0
+        S0 = 0.001
+        n = 0.025
+        Q = 20.0
+
+        h_n = self._compute_normal_depth(Q, B, S0, n)
+
+        n_cells = 50
+        dx = L / n_cells
+        x = np.linspace(dx/2, L - dx/2, n_cells)
+
+        h_init = np.ones(n_cells) * h_n
+        Q_init = np.ones(n_cells) * Q
+
+        ic_data = np.column_stack([x, h_init, Q_init])
+        ic_file = tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False)
+        ic_file.write('x,h,Q\n')
+        np.savetxt(ic_file, ic_data, delimiter=',')
+        ic_file.close()
+        ic_file_path = Path(ic_file.name)
+
+        config = {
+            'project': {
+                'name': 'Manning Friction Diagnostic - No Numba',
+                'description': '禁用Numba的Manning摩阻测试',
+                'author': 'Test',
+                'created': '2025-10-29'
+            },
+            'geometry': {
+                'type': 'uniform',
+                'channel_width': B,
+                'channel_length': L,
+                'bottom_slope': S0,
+                'manning_n': n
+            },
+            'mesh': {
+                'n_cells': n_cells
+            },
+            'initial_conditions': {
+                'type': 'from_file',
+                'file': str(ic_file_path)
+            },
+            'boundary_conditions': {
+                'left': {'type': 'Q', 'value': Q},
+                'right': {'type': 'h', 'value': h_n}
+            },
+            'solver': {
+                'type': 'godunov_fvm',
+                'spatial_order': 1,
+                'riemann_solver': 'hll',
+                'use_numba': False,  # 禁用Numba
+                'cfl': 0.5,
+                'eps_dry': 1e-6,
+                'well_balanced': False
+            },
+            'simulation': {
+                'start_time': 0.0,
+                'end_time': 500.0,
+                'max_steps': 50000,
+                'output_interval': 50.0
+            },
+            'output': {
+                'directory': 'test_output',
+                'formats': ['json'],
+                'variables': ['h', 'Q', 'u'],
+                'statistics': True,
+                'plots': {'enabled': False}
+            },
+            'validation': {
+                'enabled': False
+            }
+        }
+
+        config_file = tempfile.NamedTemporaryFile(
+            mode='w', suffix='.json', delete=False, encoding='utf-8'
+        )
+        import json
+        json.dump(config, config_file, indent=2, ensure_ascii=False)
+        config_file.close()
+        config_file_path = Path(config_file.name)
+
+        try:
+            engine = SimulationEngine(str(config_file_path))
+            engine.initialize()
+            engine.run()
+
+            solver = engine.solver
+            h_final = solver.h.copy()
+
+            print(f"\n=== 无Numba测试结果 ===")
+            print(f"模拟时间: {solver.t:.1f} s")
+            print(f"最终水深: min={np.min(h_final):.4f}, max={np.max(h_final):.4f}, mean={np.mean(h_final):.4f}")
+
+            assert not np.any(np.isnan(h_final)), "水深出现NaN"
+
+            print("✅ 无Numba测试通过")
+
+        finally:
+            ic_file_path.unlink(missing_ok=True)
+            config_file_path.unlink(missing_ok=True)
+
+    def _compute_normal_depth(self, Q: float, B: float, S0: float, n: float) -> float:
+        """计算正常水深（Newton迭代）"""
+        g = 9.81
+        h = 1.0  # 初始猜测
+
+        for _ in range(50):
+            A = B * h
+            P = B + 2 * h
+            R = A / P
+
+            Q_calc = (1.0 / n) * A * R**(2/3) * np.sqrt(S0)
+
+            dQ_dh = (1.0 / n) * np.sqrt(S0) * (
+                B * R**(2/3) + A * (2/3) * R**(-1/3) * (B * P - A * 2) / P**2
+            )
+
+            h_new = h - (Q_calc - Q) / dQ_dh
+
+            if abs(h_new - h) < 1e-6:
+                return h_new
+
+            h = h_new
+
+        return h
+
+
+if __name__ == '__main__':
+    pytest.main([__file__, '-xvs'])
