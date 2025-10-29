@@ -94,8 +94,8 @@ def run_macdonald_test4_realistic(critical_flow_treatment=False):
             'right': {'type': 'h', 'value': 2.0}
         },
         'simulation': {
-            't_start': 0.0,
-            't_end': 200.0,  # 运行到稳态
+            'start_time': 0.0,
+            'end_time': 200.0,  # 运行到稳态
             'dt_output': 50.0
         },
         'solver': {
@@ -123,14 +123,13 @@ def run_macdonald_test4_realistic(critical_flow_treatment=False):
     # 运行仿真
     print("\n启动仿真...")
     try:
-        builder = ModelBuilder(str(config_file_path))
-        model = builder.build()
-        engine = SimulationEngine(model)
+        engine = SimulationEngine(str(config_file_path))
+        engine.initialize()
         engine.run()
 
         # 计算结果统计
-        solver = model.solver
-        mass_error = abs(solver.compute_mass_error())
+        solver = engine.solver
+        mass_error = abs(solver.get_mass_conservation_error())
         min_h = np.min(solver.h)
         max_h = np.max(solver.h)
 
