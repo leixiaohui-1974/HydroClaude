@@ -1275,7 +1275,42 @@ class GodunvFVMSolver:
             Q[-1] = u_bc * h_bc * self.B
 
         # 对于其他边界类型（'h', 'Q', 'critical'）：
-        # 不强制边界单元，完全通过ghost cells和通量演化
+        # 使用relaxation方法温和地将边界单元值推向目标
+        relaxation_factor = 0.5  # 每步调整50%（平衡收敛速度和质量守恒）
+
+        # 左边界relaxation
+        if self.bc_left['type'] == 'h':
+            value = self.bc_left['value']
+            h_target = value if not callable(value) else value(self.t)
+            h[0] = h[0] + relaxation_factor * (h_target - h[0])
+        elif self.bc_left['type'] == 'Q':
+            value = self.bc_left['value']
+            Q_target = value if not callable(value) else value(self.t)
+            Q[0] = Q[0] + relaxation_factor * (Q_target - Q[0])
+        elif self.bc_left['type'] == 'critical':
+            if self.bc_right['type'] == 'Q':
+                Q_boundary = self.bc_right['value'] if not callable(self.bc_right['value']) else self.bc_right['value'](self.t)
+            else:
+                Q_boundary = np.mean(Q[:min(10, len(Q))])
+            h_c, u_c = self.characteristic_bc.apply_critical_depth_bc(Q=Q_boundary, B=self.B)
+            h[0] = h[0] + relaxation_factor * (h_c - h[0])
+
+        # 右边界relaxation
+        if self.bc_right['type'] == 'h':
+            value = self.bc_right['value']
+            h_target = value if not callable(value) else value(self.t)
+            h[-1] = h[-1] + relaxation_factor * (h_target - h[-1])
+        elif self.bc_right['type'] == 'Q':
+            value = self.bc_right['value']
+            Q_target = value if not callable(value) else value(self.t)
+            Q[-1] = Q[-1] + relaxation_factor * (Q_target - Q[-1])
+        elif self.bc_right['type'] == 'critical':
+            if self.bc_left['type'] == 'Q':
+                Q_boundary = self.bc_left['value'] if not callable(self.bc_left['value']) else self.bc_left['value'](self.t)
+            else:
+                Q_boundary = np.mean(Q[-min(10, len(Q)):])
+            h_c, u_c = self.characteristic_bc.apply_critical_depth_bc(Q=Q_boundary, B=self.B)
+            h[-1] = h[-1] + relaxation_factor * (h_c - h[-1])
 
         return h, Q
 
