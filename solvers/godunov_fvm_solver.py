@@ -524,12 +524,13 @@ class GodunvFVMSolver:
                     h_L, h_R, Q_L, Q_R, self.B, self.g, self.eps_dry
                 )
 
+                # 不强制边界通量 - 完全依赖ghost cells
+                # （强制通量会导致与TVD-RK2不一致，破坏质量守恒）
+                # self._enforce_boundary_fluxes(F_h, F_Q, h, Q)
+
                 # 保存通量用于诊断
                 self.last_F_h = F_h.copy()
                 self.last_F_Q = F_Q.copy()
-
-                # 不强制边界通量 - 让Riemann求解器基于ghost cells计算
-                # （保持质量守恒）
 
                 # 计算空间导数+源项（Numba版本）
                 dh_dt, dQ_dt = compute_spatial_derivatives_numba(
@@ -573,13 +574,13 @@ class GodunvFVMSolver:
                     h_L[i], Q_L[i], h_R[i], Q_R[i]
                 )
 
+        # 不强制边界通量 - 完全依赖ghost cells
+        # （强制通量会导致与TVD-RK2不一致，破坏质量守恒）
+        # self._enforce_boundary_fluxes(F_h, F_Q, h, Q)
+
         # 保存通量用于诊断
         self.last_F_h = F_h.copy()
         self.last_F_Q = F_Q.copy()
-
-        # 不强制边界通量 - 让Riemann求解器基于ghost cells计算
-        # （保持质量守恒）
-        # self._enforce_boundary_fluxes(F_h, F_Q, h, Q)
 
         # DEBUG: Print computed fluxes
         if DEBUG and self.well_balanced and self.t < 1e-6:
@@ -1315,17 +1316,10 @@ class GodunvFVMSolver:
                 F_Q[0] = 0.0
 
         elif self.bc_left['type'] == 'h':
-            # h边界：水深固定，流量从内部外推
-            h_bc = self.bc_left['value'] if not callable(self.bc_left['value']) else self.bc_left['value'](self.t)
-            Q_bc = Q[0]  # 流量从内部单元外推
-
-            if h_bc > self.eps_dry:
-                u_bc = Q_bc / (self.B * h_bc)
-                F_h[0] = Q_bc
-                F_Q[0] = Q_bc * u_bc + 0.5 * self.g * h_bc * h_bc * self.B
-            else:
-                F_h[0] = 0.0
-                F_Q[0] = 0.0
+            # h边界：不强制通量（让Riemann求解器计算）
+            # 因为h边界只指定水深，流量Q未知，
+            # 强制通量会导致质量泄漏
+            pass
 
         elif self.bc_left['type'] == 'supercritical':
             # 急流边界：h和Q都固定（所有特征线向内）
@@ -1371,17 +1365,10 @@ class GodunvFVMSolver:
                 F_Q[n] = 0.0
 
         elif self.bc_right['type'] == 'h':
-            # h边界：水深固定，流量外推
-            h_bc = self.bc_right['value'] if not callable(self.bc_right['value']) else self.bc_right['value'](self.t)
-            Q_bc = Q[n-1]
-
-            if h_bc > self.eps_dry:
-                u_bc = Q_bc / (self.B * h_bc)
-                F_h[n] = Q_bc
-                F_Q[n] = Q_bc * u_bc + 0.5 * self.g * h_bc * h_bc * self.B
-            else:
-                F_h[n] = 0.0
-                F_Q[n] = 0.0
+            # h边界：不强制通量（让Riemann求解器计算）
+            # 因为h边界只指定水深，流量Q未知，
+            # 强制通量会导致质量泄漏
+            pass
 
         elif self.bc_right['type'] == 'supercritical':
             # 急流出口：完全外推（所有特征线向外）
