@@ -67,7 +67,8 @@ class GodunvFVMSolver:
         order: int = 2,
         riemann_solver: str = 'hll',
         well_balanced: bool = False,
-        use_numba: bool = True
+        use_numba: bool = True,
+        source_term_method: str = 'standard'
     ):
         """
         初始化
@@ -89,6 +90,10 @@ class GodunvFVMSolver:
                           True时使用hydrostatic reconstruction，提高稳定性
             use_numba: 是否使用Numba JIT加速 (默认True)
                       True时使用编译版本，速度提升10-50倍
+            source_term_method: 源项计算方法 ('standard' 或 'interface')
+                              'standard': 点值法 S = g*A*(S0 - Sf)
+                              'interface': 界面法（Zhou's Surface Gradient Method启发）
+                                         底坡源项从界面值计算，更精确平衡
         """
         self.B = width
         self.L = length
@@ -110,6 +115,45 @@ class GodunvFVMSolver:
         self.order = order
         self.riemann_solver = riemann_solver.lower()
         self.well_balanced = well_balanced
+        self.source_term_method = source_term_method.lower()
+
+        # 验证source_term_method参数
+        if self.source_term_method not in ['standard', 'interface']:
+            raise ValueError(f"source_term_method必须是'standard'或'interface'，当前值: {source_term_method}")
+
+        # ⚠️ Interface方法当前禁用（2025-10-29测试失败）
+        if self.source_term_method == 'interface':
+            raise NotImplementedError(
+                "\n" + "="*80 + "\n"
+                "❌ Interface Source Method当前禁用\n"
+                "="*80 + "\n"
+                "原因: 简单的界面法实现导致质量守恒恶化（61% → 114%）\n"
+                "\n"
+                "测试结果（MacDonald场景）:\n"
+                "  - Standard方法: 质量误差 61.41%\n"
+                "  - Interface方法: 质量误差 114.17% ❌ 恶化52.76%\n"
+                "\n"
+                "问题根源:\n"
+                "  Zhou's Surface Gradient Method需要完整实现:\n"
+                "  1. 重构水面高程 η = h + z_b (NOT IMPLEMENTED)\n"
+                "  2. 从η还原界面水深 h_L, h_R (NOT IMPLEMENTED)\n"
+                "  3. 底坡源项自动平衡 (INCORRECTLY IMPLEMENTED)\n"
+                "\n"
+                "当前实现只做了第3步，导致通量和源项不一致，破坏守恒性。\n"
+                "\n"
+                "正确实现需要:\n"
+                "  - 修改_compute_rhs的reconstruction逻辑\n"
+                "  - 添加η重构分支\n"
+                "  - 完整测试验证\n"
+                "\n"
+                "临时方案: 使用 source_term_method='standard'\n"
+                "长期修复: 完整实现Zhou's SGM或使用其他方法\n"
+                "\n"
+                "参考文档:\n"
+                "  - docs/INTERFACE_SOURCE_METHOD_FAILURE_ANALYSIS.md\n"
+                "  - Zhou et al. (2001) JCP 168(1):1-25\n"
+                "="*80
+            )
 
         # Numba加速
         self.use_numba = use_numba and NUMBA_AVAILABLE
@@ -467,6 +511,18 @@ class GodunvFVMSolver:
             print(f"  F_h: {F_h}")
             print(f"  F_Q: {F_Q}")
 
+        # 如果使用界面法源项，预计算z_b界面值
+        z_b_interface_for_source = None
+        if self.source_term_method == 'interface' and not self.well_balanced:
+            z_b_ext = np.zeros(n + 2)
+            z_b_ext[1:n+1] = self.z_b
+            # 左ghost: 外推（假设坡度连续）
+            z_b_ext[0] = self.z_b[0] - (self.z_b[1] - self.z_b[0]) if n > 1 else self.z_b[0]
+            # 右ghost: 外推
+            z_b_ext[n+1] = self.z_b[n-1] + (self.z_b[n-1] - self.z_b[n-2]) if n > 1 else self.z_b[n-1]
+            # 界面底高程：平均值
+            z_b_interface_for_source = 0.5 * (z_b_ext[:-1] + z_b_ext[1:])
+
         # 计算每个单元的空间导数（Python版本）
         for i in range(n):
             # 单元i的通量差
@@ -494,8 +550,29 @@ class GodunvFVMSolver:
                 S_geo = -self.g * h_star_avg * self.B * dz_interface / self.dx
                 dQ_dt[i] += S_geo
 
-            # 加上源项（只对Q方程）
-            dQ_dt[i] += self._compute_source_term(h[i], Q[i], i)
+            # 界面法源项（Zhou's Surface Gradient Method启发）
+            # 当source_term_method='interface'时，底坡源项从界面值计算
+            if self.source_term_method == 'interface' and not self.well_balanced:
+                # 从界面计算底坡源项（Zhou方法）
+                # S_bed = -g * h * B * ∂z_b/∂x
+                # 离散: S_bed = -g * h * B * (z_b[i+1/2] - z_b[i-1/2]) / dx
+                dz = z_b_interface_for_source[i+1] - z_b_interface_for_source[i]
+                h_for_source = h[i]  # 使用单元中心水深
+                S_bed_interface = -self.g * h_for_source * self.B * dz / self.dx
+
+                # 摩阻源项仍用点值法
+                S_friction = self._compute_friction_source_term(h[i], Q[i], i)
+
+                # 总源项
+                dQ_dt[i] += S_bed_interface + S_friction
+
+            # 标准法源项（点值法）
+            elif self.source_term_method == 'standard' and not self.well_balanced:
+                dQ_dt[i] += self._compute_source_term(h[i], Q[i], i)
+
+            # Well-balanced模式下，摩阻源项单独添加
+            elif self.well_balanced:
+                dQ_dt[i] += self._compute_source_term(h[i], Q[i], i)
 
         return dh_dt, dQ_dt
     
@@ -753,6 +830,32 @@ class GodunvFVMSolver:
 
             return F_h, F_Q
     
+    def _compute_friction_source_term(self, h: float, Q: float, cell_idx: int) -> float:
+        """
+        仅计算摩阻源项（用于interface方法）
+
+        Args:
+            h: 水深 (m)
+            Q: 流量 (m³/s)
+            cell_idx: 单元索引
+
+        Returns:
+            摩阻源项值
+        """
+        A = max(h * self.B, self.eps_dry * self.B)
+        P = self.B + 2.0 * h
+        R = A / P if P > 1e-10 else 0.0
+
+        # 摩阻坡度
+        if R > 1e-10 and abs(Q) > 1e-6:
+            Sf = self.n**2 * Q**2 / (A**2 * R**(4.0/3.0))
+            Sf = np.sign(Q) * Sf
+        else:
+            Sf = 0.0
+
+        # 返回摩阻源项
+        return -self.g * A * Sf
+
     def _compute_source_term(self, h: float, Q: float, cell_idx: int) -> float:
         """
         源项（重力+摩阻）
