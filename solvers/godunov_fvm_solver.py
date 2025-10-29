@@ -23,6 +23,9 @@ from typing import Tuple, Dict, Optional
 # 导入特征线边界条件
 from .boundary_conditions import CharacteristicBC
 
+# 导入断面类
+from physics.cross_section import CrossSection, RectangularSection
+
 # 尝试导入Numba加速函数
 try:
     from .riemann_numba import (
@@ -72,7 +75,8 @@ class GodunvFVMSolver:
         source_term_treatment: str = 'coupled',
         dt_max: float = None,
         entropy_fix: bool = False,
-        critical_flow_treatment: bool = False
+        critical_flow_treatment: bool = False,
+        cross_section: Optional[CrossSection] = None
     ):
         """
         初始化
@@ -111,7 +115,46 @@ class GodunvFVMSolver:
                         True时在跨音速区域应用entropy修正，防止数值振荡
             critical_flow_treatment: 是否使用临界流特殊处理 (默认False)
                                    True时在临界流区域(0.9<Fr<1.1)增加数值耗散
+            cross_section: 断面对象 (可选)
+                         None时自动创建RectangularSection(width)保持向后兼容
+                         可传入TrapezoidalSection, CompoundSection, NaturalSection等
         """
+        # 断面设置：支持任意断面类型
+        if cross_section is None:
+            # 向后兼容：自动创建矩形断面
+            self.cross_section = RectangularSection("default", width)
+        else:
+            self.cross_section = cross_section
+            # ⚠️  Phase 2.3 部分实现警告
+            # 当前实现已支持：
+            # 1. ✅ 摩阻源项计算（使用断面的A, P, R）
+            # 2. ✅ 质量守恒计算（使用断面的A）
+            # 3. ✅ Froude数计算（使用断面的水力深度）
+            #
+            # 尚未完全支持（仍使用矩形假设）：
+            # 1. ⚠️  动量通量压力项 (0.5*g*h²*B) - 需要断面压力积分方法
+            # 2. ⚠️  边界条件通量计算 - 依赖压力项
+            # 3. ⚠️  临界水深计算 (CharacteristicBC) - 需要断面方法
+            #
+            # 对于梯形/复式/自然断面：
+            # - 摩阻计算：准确 ✅
+            # - 质量守恒：准确 ✅
+            # - Froude数：准确 ✅
+            # - 动量方程：近似（使用矩形压力项）⚠️
+            #
+            # 建议：当前版本适用于缓流、摩阻主导的问题
+            #       激波/急流问题需要完整实现动量通量
+            import warnings
+            warnings.warn(
+                "\n⚠️  非矩形断面支持：部分实现 (Phase 2.3)\n"
+                "已支持：摩阻、质量、Froude数\n"
+                "未完全支持：动量通量压力项（使用矩形近似）\n"
+                "适用场景：缓流、摩阻主导问题\n"
+                "详见: docs/STAGE2_PHASE2_3_COMPLETION_REPORT.md",
+                UserWarning
+            )
+
+        # 保留self.B用于向后兼容 (某些代码可能直接访问)
         self.B = width
         self.L = length
         self.n_cells = n_cells
@@ -1162,9 +1205,11 @@ class GodunvFVMSolver:
         Returns:
             摩阻源项值
         """
-        A = max(h * self.B, self.eps_dry * self.B)
-        P = self.B + 2.0 * h
-        R = A / P if P > 1e-10 else 0.0
+        # 使用断面对象计算几何参数
+        h_safe = max(h, self.eps_dry)
+        geom = self.cross_section.compute_geometry(h_safe)
+        A = geom.area
+        R = geom.hydraulic_radius
 
         # 摩阻坡度
         if R > 1e-10 and abs(Q) > 1e-6:
@@ -1191,9 +1236,11 @@ class GodunvFVMSolver:
         Returns:
             源项值
         """
-        A = max(h * self.B, self.eps_dry * self.B)
-        P = self.B + 2.0 * h
-        R = A / P if P > 1e-10 else 0.0
+        # 使用断面对象计算几何参数
+        h_safe = max(h, self.eps_dry)
+        geom = self.cross_section.compute_geometry(h_safe)
+        A = geom.area
+        R = geom.hydraulic_radius
 
         # 摩阻坡度
         if R > 1e-10 and abs(Q) > 1e-6:
@@ -1515,11 +1562,19 @@ class GodunvFVMSolver:
             start_idx = 1 if exclude_left else 0
             end_idx = len(self.h) - 1 if exclude_right else len(self.h)
 
-            # 只计算内部单元
-            return np.sum(self.h[start_idx:end_idx] * self.B * self.dx)
+            # 只计算内部单元 - 使用断面对象计算面积
+            mass = 0.0
+            for i in range(start_idx, end_idx):
+                geom = self.cross_section.compute_geometry(max(self.h[i], 0.0))
+                mass += geom.area * self.dx
+            return mass
         else:
-            # 计算所有单元
-            return np.sum(self.h * self.B * self.dx)
+            # 计算所有单元 - 使用断面对象计算面积
+            mass = 0.0
+            for i in range(len(self.h)):
+                geom = self.cross_section.compute_geometry(max(self.h[i], 0.0))
+                mass += geom.area * self.dx
+            return mass
     
     def get_mass_conservation_error(self, exclude_boundary_cells=False) -> float:
         """
@@ -1569,7 +1624,8 @@ class GodunvFVMSolver:
         """
         计算Froude数
 
-        Fr = u / sqrt(g*h)
+        Fr = u / sqrt(g*h_d)
+        其中 h_d = 水力深度 = A/B (断面面积/水面宽度)
 
         Args:
             h: 水深数组（默认使用self.h）
@@ -1586,9 +1642,15 @@ class GodunvFVMSolver:
         Fr = np.zeros_like(h)
         for i in range(len(h)):
             if h[i] > self.eps_dry:
-                u = Q[i] / (self.B * h[i])
-                c = np.sqrt(self.g * h[i])
-                Fr[i] = u / c if c > 1e-10 else 0.0
+                # 使用断面对象计算几何参数
+                geom = self.cross_section.compute_geometry(h[i])
+                if geom.area > self.eps_dry:
+                    u = Q[i] / geom.area
+                    # 使用水力深度计算Froude数
+                    c = np.sqrt(self.g * geom.hydraulic_depth)
+                    Fr[i] = u / c if c > 1e-10 else 0.0
+                else:
+                    Fr[i] = 0.0
             else:
                 Fr[i] = 0.0
         return Fr
