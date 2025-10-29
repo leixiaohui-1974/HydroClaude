@@ -1,0 +1,148 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+对比两种初始化方式的差异
+
+找出from_file为什么导致问题
+日期: 2025-10-29
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.dirname(__file__))
+
+import json
+import tempfile
+from pathlib import Path
+from engine.model_builder import ModelBuilder
+import numpy as np
+from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+
+# Test 4参数
+L = 1000.0
+B = 10.0
+h_upstream = 0.7
+Q_val = 20.0
+h_downstream = 2.8
+n_cells = 200
+
+print("="*70)
+print("对比两种初始化方式")
+print("="*70)
+
+# ========== 方法1: 直接初始化（工作正常）==========
+print("\n方法1: 直接初始化 np.linspace")
+h_init_direct = np.linspace(h_upstream, h_downstream, n_cells)
+Q_init_direct = np.ones(n_cells) * Q_val
+
+solver1 = GodunvFVMWENO3(
+    width=B, length=L, n_cells=n_cells,
+    manning_n=0.0, slope=0.0, g=9.81,
+    cfl=0.4, eps_dry=1e-6, weno_epsilon=1e-6,
+    riemann_solver='hll', use_numba=True, dt_max=0.5
+)
+
+bc_left = {'type': 'supercritical', 'h': h_upstream, 'Q': Q_val}
+bc_right = {'type': 'fixed_h', 'h': h_downstream}
+
+solver1.initialize(h_init_direct, Q_init_direct, bc_left, bc_right)
+
+print(f"  h范围: [{np.min(solver1.h):.6f}, {np.max(solver1.h):.6f}]")
+print(f"  Q范围: [{np.min(solver1.Q):.6f}, {np.max(solver1.Q):.6f}]")
+print(f"  前5个h: {solver1.h[:5]}")
+print(f"  后5个h: {solver1.h[-5:]}")
+print(f"  z_b范围: [{np.min(solver1.z_b):.6f}, {np.max(solver1.z_b):.6f}]")
+
+# ========== 方法2: ModelBuilder + from_file（出问题）==========
+print("\n方法2: ModelBuilder + from_file")
+
+# 创建IC文件（与直接方法完全相同的数据）
+dx = L / n_cells
+x = np.linspace(dx/2, L - dx/2, n_cells)
+h_init_file = np.linspace(h_upstream, h_downstream, n_cells)
+Q_init_file = np.ones(n_cells) * Q_val
+
+ic_data = np.column_stack([x, h_init_file, Q_init_file])
+ic_file = tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False)
+ic_file.write('x,h,Q\n')
+np.savetxt(ic_file, ic_data, delimiter=',')
+ic_file.close()
+ic_file_path = Path(ic_file.name)
+
+print(f"  IC文件: {ic_file_path}")
+print(f"  写入的h范围: [{np.min(h_init_file):.6f}, {np.max(h_init_file):.6f}]")
+
+# 通过ModelBuilder加载
+config = {
+    'project': {'name': 'Test'},
+    'geometry': {
+        'type': 'uniform',
+        'channel_width': B,
+        'channel_length': L,
+        'bottom_slope': 0.0,
+        'manning_n': 0.0
+    },
+    'mesh': {'n_cells': n_cells},
+    'initial_conditions': {
+        'type': 'from_file',
+        'file': str(ic_file_path)
+    },
+    'boundary_conditions': {
+        'left': {'type': 'supercritical', 'h': h_upstream, 'Q': Q_val},
+        'right': {'type': 'h', 'value': h_downstream}
+    },
+    'solver': {
+        'type': 'godunov_fvm',
+        'spatial_order': 3,
+        'riemann_solver': 'hll',
+        'use_numba': True,
+        'cfl': 0.4,
+        'eps_dry': 1e-6,
+        'weno_epsilon': 1e-6,
+        'well_balanced': False,
+        'dt_max': 0.5
+    },
+    'simulation': {'start_time': 0.0, 'end_time': 50.0, 'max_steps': 1000, 'output_interval': 50.0},
+    'output': {'directory': '/tmp/test', 'formats': [], 'variables': [], 'statistics': False, 'plots': {'enabled': False}},
+    'validation': {'enabled': False}
+}
+
+config_file = tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False)
+json.dump(config, config_file, indent=2)
+config_file.close()
+
+builder = ModelBuilder.from_config_file(config_file.name)
+solver2 = builder.build_solver()
+
+print(f"  h范围: [{np.min(solver2.h):.6f}, {np.max(solver2.h):.6f}]")
+print(f"  Q范围: [{np.min(solver2.Q):.6f}, {np.max(solver2.Q):.6f}]")
+print(f"  前5个h: {solver2.h[:5]}")
+print(f"  后5个h: {solver2.h[-5:]}")
+print(f"  z_b范围: [{np.min(solver2.z_b):.6f}, {np.max(solver2.z_b):.6f}]")
+
+# ========== 对比差异 ==========
+print("\n差异对比:")
+h_diff = solver2.h - solver1.h
+Q_diff = solver2.Q - solver1.Q
+z_b_diff = solver2.z_b - solver1.z_b
+
+print(f"  h差异: max={np.max(np.abs(h_diff)):.2e}, mean={np.mean(np.abs(h_diff)):.2e}")
+print(f"  Q差异: max={np.max(np.abs(Q_diff)):.2e}, mean={np.mean(np.abs(Q_diff)):.2e}")
+print(f"  z_b差异: max={np.max(np.abs(z_b_diff)):.2e}, mean={np.mean(np.abs(z_b_diff)):.2e}")
+
+if np.max(np.abs(h_diff)) > 1e-10:
+    diff_indices = np.where(np.abs(h_diff) > 1e-10)[0]
+    print(f"  h不同的位置: {diff_indices[:10]}")
+    for idx in diff_indices[:5]:
+        print(f"    索引{idx}: direct={solver1.h[idx]:.10f}, file={solver2.h[idx]:.10f}, diff={h_diff[idx]:.2e}")
+
+if np.max(np.abs(z_b_diff)) > 1e-10:
+    print(f"  ⚠️  z_b不同！")
+    print(f"    direct前5: {solver1.z_b[:5]}")
+    print(f"    file前5:   {solver2.z_b[:5]}")
+
+# 清理
+ic_file_path.unlink(missing_ok=True)
+Path(config_file.name).unlink(missing_ok=True)
+
+print("\n" + "="*70)
