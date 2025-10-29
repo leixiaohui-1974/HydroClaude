@@ -465,7 +465,82 @@ class GodunvFVMSolverWB:
     def _apply_bc(self):
         """强制边界条件"""
         self.h, self.Q = self._apply_bc_to_state(self.h, self.Q)
-    
+
+    def compute_froude_number(self, h=None, Q=None):
+        """
+        计算Froude数
+
+        Fr = u / sqrt(g*h)
+
+        其中:
+        - u = Q / (B*h)  流速
+        - c = sqrt(g*h)  波速
+
+        参数:
+            h: 水深数组（可选，默认使用self.h）
+            Q: 流量数组（可选，默认使用self.Q）
+
+        返回:
+            Fr: Froude数数组
+        """
+        if h is None:
+            h = self.h
+        if Q is None:
+            Q = self.Q
+
+        Fr = np.zeros_like(h)
+
+        for i in range(len(h)):
+            if h[i] > self.eps_dry:
+                u = Q[i] / (self.B * h[i])
+                c = np.sqrt(self.g * h[i])
+                Fr[i] = u / c if c > 1e-10 else 0.0
+            else:
+                Fr[i] = 0.0
+
+        return Fr
+
+    def is_critical_flow(self, Fr=None, threshold=0.1):
+        """
+        检测临界流区域
+
+        临界流定义: |Fr - 1.0| < threshold
+
+        参数:
+            Fr: Froude数数组（可选，会自动计算）
+            threshold: 临界流阈值（默认0.1）
+
+        返回:
+            mask: 布尔数组，True表示临界流区域
+        """
+        if Fr is None:
+            Fr = self.compute_froude_number()
+
+        return np.abs(Fr - 1.0) < threshold
+
+    def get_flow_regime(self, Fr=None):
+        """
+        获取流态分类
+
+        参数:
+            Fr: Froude数组（可选）
+
+        返回:
+            regime: 流态数组
+                - 0: 亚临界 (Fr < 0.9)
+                - 1: 临界 (0.9 <= Fr <= 1.1)
+                - 2: 超临界 (Fr > 1.1)
+        """
+        if Fr is None:
+            Fr = self.compute_froude_number()
+
+        regime = np.zeros_like(Fr, dtype=int)
+        regime[Fr < 0.9] = 0  # 亚临界
+        regime[(Fr >= 0.9) & (Fr <= 1.1)] = 1  # 临界
+        regime[Fr > 1.1] = 2  # 超临界
+
+        return regime
+
     def _compute_total_mass(self):
         """计算总质量"""
         return np.sum(self.h * self.B * self.dx)
