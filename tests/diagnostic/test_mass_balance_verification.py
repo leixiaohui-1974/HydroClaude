@@ -205,14 +205,14 @@ def test_mass_balance_verification():
         print(f"   这说明有限体积法的实现有问题")
 
         print(f"\n🐛 可能的bug位置：")
-        print(f"   1. 通量计算不守恒（F_{i+1/2}在相邻单元不一致）")
+        print(f"   1. 通量计算不守恒（F_{{i+1/2}}在相邻单元不一致）")
         print(f"   2. 边界通量处理错误")
         print(f"   3. 源项错误地引入了质量（应该只影响动量）")
         print(f"   4. 时间积分有bug")
 
         print(f"\n需要进一步检查：")
         print(f"   - 打印每个界面的通量")
-        print(f"   - 验证Σ(F_{i+1/2} - F_{i-1/2}) = F_right - F_left")
+        print(f"   - 验证Σ(F_{{i+1/2}} - F_{{i-1/2}}) = F_right - F_left")
         print(f"   - 检查源项是否只出现在dQ/dt，不出现在dh/dt")
 
     # 检查时间依赖性
