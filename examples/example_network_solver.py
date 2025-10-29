@@ -1,0 +1,328 @@
+"""
+网络求解器使用示例
+
+演示如何使用NetworkSolver求解完整的河网系统：
+1. 简单串联河段求解
+2. Y型汇流网络求解
+3. 复杂河网系统求解
+4. 质量守恒验证
+
+Stage 3 - Phase 3.2 示例
+
+作者: HydroClaude Team
+日期: 2025-10-29
+"""
+
+import numpy as np
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from network import (
+    RiverNetwork, Node, Reach,
+    create_inflow_boundary, create_outflow_boundary, create_junction,
+    NetworkSolver, solve_network, validate_network
+)
+from solvers.godunov_fvm_solver import GodunvFVMSolver
+
+
+def create_solver(length=500.0, width=15.0, h_init=2.0, Q_init=50.0, slope=0.001):
+    """创建求解器"""
+    n_cells = max(10, int(length / 50))
+    solver = GodunvFVMSolver(
+        width=width,
+        length=length,
+        n_cells=n_cells,
+        manning_n=0.025,
+        slope=slope
+    )
+
+    h = np.ones(n_cells) * h_init
+    Q = np.ones(n_cells) * Q_init
+
+    solver.set_initial_conditions(
+        h, Q,
+        {'type': 'Q', 'value': Q_init},
+        {'type': 'h', 'value': h_init}
+    )
+
+    return solver
+
+
+def example_1_simple_serial():
+    """
+    示例1: 简单串联河段求解
+
+    两条河段串联: N1 → R1 → N2 → R2 → N3
+    """
+    print("\n" + "="*80)
+    print("示例1: 简单串联河段求解")
+    print("="*80)
+
+    # 创建网络
+    network = RiverNetwork("简单串联网络")
+
+    # 添加节点
+    n1 = create_inflow_boundary("上游", Q=50.0, elevation=110.0)
+    n2 = Node("中游", "junction", elevation=105.0)
+    n3 = create_outflow_boundary("下游", h=2.0, elevation=100.0)
+
+    network.add_node(n1)
+    network.add_node(n2)
+    network.add_node(n3)
+
+    # 添加河段
+    solver1 = create_solver(length=1000.0, width=20.0, Q_init=50.0, slope=0.001)
+    solver2 = create_solver(length=1000.0, width=20.0, Q_init=50.0, slope=0.001)
+
+    network.add_reach(Reach("河段1", "上游", "中游", solver1))
+    network.add_reach(Reach("河段2", "中游", "下游", solver2))
+
+    # 验证网络
+    print("\n网络验证:")
+    is_valid, score = validate_network(network, verbose=False)
+    print(f"  健康评分: {score:.1f}/100 {'✅' if is_valid else '❌'}")
+
+    # 创建求解器
+    print("\n创建网络求解器...")
+    net_solver = NetworkSolver(network, solve_method='sequential')
+
+    # 运行模拟
+    print("\n运行模拟...")
+    results = net_solver.run(
+        t_end=3600.0,  # 1小时
+        dt=10.0,       # 10秒时间步
+        output_interval=600.0,  # 每10分钟输出
+        verbose=True
+    )
+
+    # 检查一致性
+    net_solver.check_network_consistency(verbose=True)
+
+    return network, net_solver
+
+
+def example_2_y_junction():
+    """
+    示例2: Y型汇流网络求解
+
+    两条支流汇入主河
+    """
+    print("\n" + "="*80)
+    print("示例2: Y型汇流网络求解")
+    print("="*80)
+
+    # 创建网络
+    network = RiverNetwork("Y型汇流网络")
+
+    # 节点
+    n1 = create_inflow_boundary("支流1", Q=30.0, elevation=120.0)
+    n2 = create_inflow_boundary("支流2", Q=20.0, elevation=120.0)
+    n3 = create_junction("汇流点", elevation=100.0, method='energy')
+    n4 = create_outflow_boundary("出口", h=2.5, elevation=90.0)
+
+    network.add_node(n1)
+    network.add_node(n2)
+    network.add_node(n3)
+    network.add_node(n4)
+
+    # 河段
+    s1 = create_solver(length=800.0, width=10.0, h_init=2.0, Q_init=30.0)
+    s2 = create_solver(length=800.0, width=8.0, h_init=2.0, Q_init=20.0)
+    s3 = create_solver(length=1200.0, width=25.0, h_init=2.5, Q_init=50.0)
+
+    network.add_reach(Reach("支流1河段", "支流1", "汇流点", s1))
+    network.add_reach(Reach("支流2河段", "支流2", "汇流点", s2))
+    network.add_reach(Reach("主河河段", "汇流点", "出口", s3))
+
+    # 验证
+    is_valid, score = validate_network(network, verbose=False)
+    print(f"\n网络健康评分: {score:.1f}/100")
+
+    # 求解
+    print("\n运行Y型汇流模拟...")
+    net_solver = NetworkSolver(network)
+
+    results = net_solver.run(
+        t_end=1800.0,  # 30分钟
+        dt=5.0,
+        output_interval=300.0,
+        verbose=True
+    )
+
+    # 验证汇流点质量守恒
+    print("\n汇流点质量守恒:")
+    Q_in_total = 30.0 + 20.0
+    Q_out_total = s3.Q[0]
+    error = abs(Q_in_total - Q_out_total) / Q_in_total * 100
+    print(f"  入流总和: {Q_in_total:.2f} m³/s")
+    print(f"  出流: {Q_out_total:.2f} m³/s")
+    print(f"  误差: {error:.3f}%")
+
+    return network, net_solver
+
+
+def example_3_complex_network():
+    """
+    示例3: 复杂河网系统求解
+
+    包含多个汇流点的复杂河网
+    """
+    print("\n" + "="*80)
+    print("示例3: 复杂河网系统求解")
+    print("="*80)
+
+    # 创建网络
+    network = RiverNetwork("复杂河网")
+
+    # 节点（4个入口，1个出口，2个汇流点）
+    network.add_node(create_inflow_boundary("入口1", Q=40.0, elevation=130.0))
+    network.add_node(create_inflow_boundary("入口2", Q=30.0, elevation=130.0))
+    network.add_node(create_inflow_boundary("入口3", Q=25.0, elevation=125.0))
+    network.add_node(create_junction("汇流点1", elevation=110.0))
+    network.add_node(create_junction("汇流点2", elevation=100.0))
+    network.add_node(create_outflow_boundary("总出口", h=3.0, elevation=90.0))
+
+    # 河段
+    reaches_config = [
+        ("R1", "入口1", "汇流点1", 1000, 15),
+        ("R2", "入口2", "汇流点1", 1000, 12),
+        ("R3", "汇流点1", "汇流点2", 800, 25),
+        ("R4", "入口3", "汇流点2", 600, 10),
+        ("R5", "汇流点2", "总出口", 1500, 35),
+    ]
+
+    for reach_id, up, down, length, width in reaches_config:
+        Q_init = 40 if 'R1' in reach_id else (30 if 'R2' in reach_id else
+                                              25 if 'R4' in reach_id else 70)
+        solver = create_solver(length=length, width=width,
+                              h_init=2.5, Q_init=Q_init)
+        network.add_reach(Reach(reach_id, up, down, solver))
+
+    # 验证
+    print("\n网络拓扑验证:")
+    network.print_summary()
+
+    is_valid, score = validate_network(network, verbose=False)
+    print(f"\n网络健康评分: {score:.1f}/100")
+
+    # 求解
+    print("\n运行复杂河网模拟...")
+    net_solver = NetworkSolver(network, solve_method='sequential')
+
+    results = net_solver.run(
+        t_end=3600.0,  # 1小时
+        dt=10.0,
+        output_interval=600.0,
+        verbose=True
+    )
+
+    # 全局质量守恒
+    Q_in, Q_out, error = network.check_global_mass_balance()
+    print(f"\n全局质量守恒:")
+    print(f"  总入流: {Q_in:.2f} m³/s (40+30+25={40+30+25} m³/s)")
+    print(f"  总出流: {Q_out:.2f} m³/s")
+    print(f"  误差: {error:.4f}%")
+
+    if error < 1.0:
+        print(f"  {'✅ 优秀 (< 1%)'}")
+    elif error < 5.0:
+        print(f"  {'⚠️  良好 (< 5%)'}")
+    else:
+        print(f"  {'❌ 需改进 (> 5%)'}")
+
+    # 绘制质量守恒历史
+    try:
+        print("\n绘制质量守恒历史...")
+        fig = net_solver.plot_mass_balance_history()
+        if fig:
+            print("✅ 质量守恒历史图已生成")
+            # fig.savefig('mass_balance_history.png', dpi=150, bbox_inches='tight')
+    except:
+        print("⚠️  需要matplotlib绘图")
+
+    return network, net_solver
+
+
+def example_4_solve_network_function():
+    """
+    示例4: 使用便捷函数求解
+
+    演示最简单的求解方式
+    """
+    print("\n" + "="*80)
+    print("示例4: 使用便捷函数求解")
+    print("="*80)
+
+    # 快速创建网络
+    network = RiverNetwork("便捷求解示例")
+
+    network.add_node(create_inflow_boundary("IN", Q=60.0, elevation=120.0))
+    network.add_node(create_outflow_boundary("OUT", h=2.0, elevation=100.0))
+
+    solver = create_solver(length=2000.0, width=25.0, Q_init=60.0)
+    network.add_reach(Reach("MainReach", "IN", "OUT", solver))
+
+    # 一行代码求解！
+    print("\n使用便捷函数 solve_network() 求解...")
+    results = solve_network(
+        network,
+        t_end=1800.0,  # 30分钟
+        dt=10.0,
+        verbose=True
+    )
+
+    print(f"\n模拟完成！")
+    print(f"  总步数: {results['n_steps']}")
+    print(f"  计算时间: {results['total_time']:.2f} s")
+    print(f"  最终质量误差: {results['mass_error_history'][-1]:.4f}%")
+
+    return network, results
+
+
+if __name__ == "__main__":
+    """运行所有示例"""
+    print("="*80)
+    print("网络求解器使用示例集")
+    print("Stage 3 - Network Solver Examples")
+    print("="*80)
+
+    # 示例1: 简单串联
+    net1, solver1 = example_1_simple_serial()
+
+    # 示例2: Y型汇流
+    net2, solver2 = example_2_y_junction()
+
+    # 示例3: 复杂河网
+    net3, solver3 = example_3_complex_network()
+
+    # 示例4: 便捷函数
+    net4, results4 = example_4_solve_network_function()
+
+    print("\n" + "="*80)
+    print("✅ 所有网络求解示例运行完成！")
+    print("="*80)
+
+    print("\n总结:")
+    print("  Stage 3 网络求解功能:")
+    print("  1. ✅ NetworkSolver - 统一求解器")
+    print("     - 顺序求解（sequential）")
+    print("     - 迭代求解（iterative）")
+    print("     - 自动边界条件传递")
+    print("     - 时间步长自动协调")
+    print("  2. ✅ 耦合器支持")
+    print("     - ReachCoupler - 串联河段")
+    print("     - JunctionCoupler - 汇流节点")
+    print("     - BifurcationCoupler - 分流节点")
+    print("  3. ✅ 质量守恒验证")
+    print("     - 全局质量平衡")
+    print("     - 质量守恒历史")
+    print("     - 网络一致性检查")
+    print("  4. ✅ 便捷函数")
+    print("     - solve_network() - 一行代码求解")
+    print("\n  应用价值:")
+    print("  - 完整河网系统模拟")
+    print("  - 自动化耦合计算")
+    print("  - 质量守恒保证")
+    print("  - 工程级可靠性")

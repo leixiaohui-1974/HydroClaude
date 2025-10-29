@@ -30,8 +30,11 @@ from .validation import (
     NetworkValidator, NetworkVisualizer,
     validate_network, visualize_network
 )
-# from .coupling import ReachCoupler  # Coming in Task 3.2.1
-# from .solver import NetworkSolver  # Coming in Task 3.2.3
+from .coupling import (
+    ReachCoupler, JunctionCoupler, BifurcationCoupler,
+    create_reach_coupler, create_junction_coupler, create_bifurcation_coupler
+)
+from .solver import NetworkSolver, create_network_solver, solve_network
 
 __all__ = [
     # 基础类
@@ -54,7 +57,15 @@ __all__ = [
     'NetworkVisualizer',
     'validate_network',
     'visualize_network',
-    # 耦合和求解器（待实现）
-    # 'ReachCoupler',  # Task 3.2.1
-    # 'NetworkSolver',  # Task 3.2.3
+    # 耦合器
+    'ReachCoupler',
+    'JunctionCoupler',
+    'BifurcationCoupler',
+    'create_reach_coupler',
+    'create_junction_coupler',
+    'create_bifurcation_coupler',
+    # 求解器
+    'NetworkSolver',
+    'create_network_solver',
+    'solve_network',
 ]
