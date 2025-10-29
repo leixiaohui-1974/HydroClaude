@@ -20,10 +20,13 @@ __author__ = "HydroClaude Team"
 
 from .trapezoidal_channel import TrapezoidalChannel, create_trapezoidal_channel
 from .irregular_channel import IrregularChannel, create_irregular_channel
+from .compound_channel import CompoundChannel, create_compound_channel
 
 __all__ = [
     'TrapezoidalChannel',
     'create_trapezoidal_channel',
     'IrregularChannel',
     'create_irregular_channel',
+    'CompoundChannel',
+    'create_compound_channel',
 ]
