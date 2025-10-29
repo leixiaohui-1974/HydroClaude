@@ -1,0 +1,106 @@
+{
+  "timestamp": "2025-10-28T22:00:25.091015",
+  "total_count": 4,
+  "success_count": 4,
+  "failure_count": 0,
+  "total_time": 6.368919849395752,
+  "parallel": 4,
+  "results": [
+    {
+      "config_file": "examples/config_driven/steady_flow.json",
+      "name": "steady_flow",
+      "success": true,
+      "attempts": 1,
+      "wall_time": 5.363494396209717,
+      "statistics": {
+        "project": {
+          "name": "稳态流动测试",
+          "description": "测试求解器达到稳态的能力",
+          "author": "HydroClaude Team",
+          "created": "2025-10-28"
+        },
+        "simulation": {
+          "n_steps": 243,
+          "sim_time": 200.26232355632166,
+          "wall_time": 2.705090045928955,
+          "time_per_step": 0.01113205780217677,
+          "mass_error": NaN
+        },
+        "timestamp": "2025-10-28T22:00:22.411983"
+      },
+      "stderr": null
+    },
+    {
+      "config_file": "examples/config_driven/hllc_comparison.json",
+      "name": "hllc_comparison",
+      "success": true,
+      "attempts": 1,
+      "wall_time": 5.393494606018066,
+      "statistics": {
+        "project": {
+          "name": "HLLC求解器测试",
+          "description": "测试HLLC Riemann求解器的性能",
+          "author": "HydroClaude Team",
+          "created": "2025-10-28"
+        },
+        "simulation": {
+          "n_steps": 540,
+          "sim_time": 5.375745690123704,
+          "wall_time": 1.8914141654968262,
+          "time_per_step": 0.0035026188249941224,
+          "mass_error": NaN
+        },
+        "timestamp": "2025-10-28T22:00:21.599469"
+      },
+      "stderr": null
+    },
+    {
+      "config_file": "examples/config_driven/mild_slope.json",
+      "name": "mild_slope",
+      "success": true,
+      "attempts": 1,
+      "wall_time": 5.453958511352539,
+      "statistics": {
+        "project": {
+          "name": "缓坡渠道流动",
+          "description": "测试带坡度的明渠流动，验证源项处理",
+          "author": "HydroClaude Team",
+          "created": "2025-10-28"
+        },
+        "simulation": {
+          "n_steps": 212,
+          "sim_time": 300.3237858099057,
+          "wall_time": 2.7043862342834473,
+          "time_per_step": 0.012756538840959657,
+          "mass_error": NaN
+        },
+        "timestamp": "2025-10-28T22:00:22.411377"
+      },
+      "stderr": null
+    },
+    {
+      "config_file": "examples/config_driven/dam_break_short.json",
+      "name": "dam_break_short",
+      "success": true,
+      "attempts": 1,
+      "wall_time": 6.309663772583008,
+      "statistics": {
+        "project": {
+          "name": "溃坝模拟 - 短时间版本",
+          "description": "优化参数，避免CFL瓶颈，适合快速测试",
+          "author": "HydroClaude Team",
+          "created": "2025-10-28"
+        },
+        "simulation": {
+          "n_steps": 25,
+          "sim_time": 10.094915501224266,
+          "wall_time": 2.6963090896606445,
+          "time_per_step": 0.10785236358642578,
+          "mass_error": 0.0
+        },
+        "timestamp": "2025-10-28T22:00:22.403460"
+      },
+      "stderr": null
+    }
+  ]
+}

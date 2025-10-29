@@ -1,0 +1,78 @@
+{
+  "project": {
+    "name": "HLLC求解器测试",
+    "description": "测试HLLC Riemann求解器的性能",
+    "author": "HydroClaude Team",
+    "created": "2025-10-28"
+  },
+
+  "geometry": {
+    "type": "uniform",
+    "channel_width": 10.0,
+    "channel_length": 2000.0,
+    "bottom_slope": 0.0,
+    "manning_n": 0.0
+  },
+
+  "mesh": {
+    "n_cells": 200
+  },
+
+  "solver": {
+    "type": "godunov_fvm",
+    "spatial_order": 2,
+    "riemann_solver": "hllc",
+    "use_numba": false,
+    "comment": "HLLC求解器，暂不启用Numba以便调试",
+    "cfl": 0.4,
+    "eps_dry": 1e-6
+  },
+
+  "initial_conditions": {
+    "type": "dam_break",
+    "h_left": 10.0,
+    "h_right": 1.0,
+    "dam_position": 1000.0
+  },
+
+  "boundary_conditions": {
+    "left": {
+      "type": "h",
+      "value": 10.0
+    },
+    "right": {
+      "type": "h",
+      "value": 1.0
+    }
+  },
+
+  "simulation": {
+    "start_time": 0.0,
+    "end_time": 5.0,
+    "max_steps": 1000000,
+    "output_interval": 1.0,
+    "comment": "短时间测试HLLC稳定性"
+  },
+
+  "output": {
+    "directory": "./examples/config_driven/results/hllc_comparison",
+    "formats": ["hdf5"],
+    "variables": ["h", "Q", "u"],
+    "statistics": true,
+    "plots": {
+      "enabled": true,
+      "format": "png",
+      "dpi": 300
+    }
+  },
+
+  "validation": {
+    "enabled": true,
+    "analytical_solution": "ritter",
+    "tolerance": {
+      "h_rmse": 0.5,
+      "Q_rmse": 10.0,
+      "mass_error": 0.1
+    }
+  }
+}

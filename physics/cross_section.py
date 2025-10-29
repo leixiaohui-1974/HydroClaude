@@ -21,7 +21,7 @@
 """
 
 import numpy as np
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Dict
 from dataclasses import dataclass
 from enum import Enum
 from scipy.interpolate import interp1d
@@ -186,7 +186,8 @@ class CompoundSection(CrossSection):
                  main_side_slope: float,
                  flood_width_left: float,
                  flood_width_right: float,
-                 flood_side_slope: float = 0.0):
+                 flood_side_slope: float = 0.0,
+                 roughness_zones: Optional[Dict[str, float]] = None):
         """
         Args:
             name: 断面名称
@@ -196,6 +197,7 @@ class CompoundSection(CrossSection):
             flood_width_left: 左滩地宽度 (m)
             flood_width_right: 右滩地宽度 (m)
             flood_side_slope: 滩地边坡系数
+            roughness_zones: 分区糙率系数 {'main': 0.025, 'left_flood': 0.060, 'right_flood': 0.060}
         """
         super().__init__(name)
         self.section_type = SectionType.COMPOUND
@@ -207,6 +209,13 @@ class CompoundSection(CrossSection):
         self.flood_width_left = flood_width_left
         self.flood_width_right = flood_width_right
         self.flood_side_slope = flood_side_slope
+
+        # 分区糙率系数（真实河道中主槽和滩地糙率通常不同）
+        self.roughness_zones = roughness_zones or {
+            'main': 0.025,        # 主槽：较光滑
+            'left_flood': 0.040,  # 左滩地：稍粗糙
+            'right_flood': 0.040  # 右滩地：稍粗糙
+        }
 
     def compute_geometry(self, depth: float) -> SectionGeometry:
         """计算复式断面几何参数"""
@@ -258,6 +267,126 @@ class CompoundSection(CrossSection):
             hydraulic_radius=hydraulic_radius,
             hydraulic_depth=hydraulic_depth
         )
+
+    def compute_zones(self, depth: float) -> List[Tuple[float, float, float, str]]:
+        """
+        计算各分区的几何参数
+
+        Args:
+            depth: 水深 (m)
+
+        Returns:
+            [(A_i, P_i, n_i, name_i), ...] 面积、湿周、糙率系数、分区名称
+        """
+        zones = []
+
+        if depth <= 0:
+            return zones
+
+        b_main = self.main_bottom_width
+        h_main = self.main_depth
+        m_main = self.main_side_slope
+
+        if depth <= h_main:
+            # 水深在主槽内
+            h = depth
+            area = (b_main + m_main * h) * h
+            perimeter = b_main + 2 * h * np.sqrt(1 + m_main**2)
+            n_main = self.roughness_zones.get('main', 0.025)
+            zones.append((area, perimeter, n_main, 'main'))
+
+        else:
+            # 水深超过主槽
+            # 主槽满水
+            area_main = (b_main + m_main * h_main) * h_main
+            perim_main = b_main + 2 * h_main * np.sqrt(1 + m_main**2)
+            n_main = self.roughness_zones.get('main', 0.025)
+            zones.append((area_main, perim_main, n_main, 'main'))
+
+            # 滩地水深
+            h_flood = depth - h_main
+
+            # 左滩地
+            area_left = self.flood_width_left * h_flood
+            perim_left = h_flood  # 只计算垂直湿周
+            n_left = self.roughness_zones.get('left_flood', 0.040)
+            zones.append((area_left, perim_left, n_left, 'left_flood'))
+
+            # 右滩地
+            area_right = self.flood_width_right * h_flood
+            perim_right = h_flood
+            n_right = self.roughness_zones.get('right_flood', 0.040)
+            zones.append((area_right, perim_right, n_right, 'right_flood'))
+
+        return zones
+
+    def compute_composite_conveyance(self, depth: float,
+                                     method: str = 'hec_ras') -> float:
+        """
+        计算复合断面的输沙能力（考虑分区糙率）
+
+        使用HEC-RAS方法：K_total = Σ K_i = Σ [(1/n_i) * A_i * R_i^(2/3)]
+
+        Args:
+            depth: 水深 (m)
+            method: 计算方法 ('hec_ras', 'horton', 'lotter')
+
+        Returns:
+            总输沙能力 K (m³/s)
+        """
+        from physics.composite_roughness import CompositeRoughness, RoughnessZone, CompositeMethod
+
+        zones_data = self.compute_zones(depth)
+
+        if not zones_data:
+            return 0.0
+
+        # 创建RoughnessZone对象
+        zones = [RoughnessZone(name, A, P, n) for A, P, n, name in zones_data]
+
+        # 选择计算方法
+        if method == 'hec_ras':
+            calc_method = CompositeMethod.HEC_RAS
+        elif method == 'horton':
+            calc_method = CompositeMethod.HORTON
+        elif method == 'lotter':
+            calc_method = CompositeMethod.LOTTER
+        else:
+            calc_method = CompositeMethod.HEC_RAS
+
+        calc = CompositeRoughness(method=calc_method)
+        K = calc.compute_composite_conveyance(zones)
+
+        return K
+
+    def compute_composite_manning_n(self, depth: float,
+                                    method: str = 'hec_ras') -> float:
+        """
+        计算等效曼宁糙率系数
+
+        从复合输沙能力反推：n_eq = A * R^(2/3) / K
+
+        Args:
+            depth: 水深 (m)
+            method: 计算方法
+
+        Returns:
+            等效曼宁系数 n_eq
+        """
+        geom = self.compute_geometry(depth)
+
+        if geom.area <= 0 or geom.perimeter <= 0:
+            return 0.025
+
+        K = self.compute_composite_conveyance(depth, method)
+
+        if K <= 0:
+            return 0.025
+
+        R = geom.hydraulic_radius
+        n_eq = geom.area * (R ** (2.0/3.0)) / K
+
+        return n_eq
 
 
 class NaturalSection(CrossSection):

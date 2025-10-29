@@ -1,0 +1,46 @@
+{
+  "timestamp": "2025-10-28T21:59:21.527785",
+  "total_count": 4,
+  "success_count": 0,
+  "failure_count": 4,
+  "total_time": 0.11403679847717285,
+  "parallel": 4,
+  "results": [
+    {
+      "config_file": "dam_break_short.json",
+      "name": "dam_break_short",
+      "success": false,
+      "attempts": 1,
+      "wall_time": 0.0417943000793457,
+      "statistics": null,
+      "stderr": "/usr/local/bin/python: can't open file '/home/user/HydroClaude/examples/config_driven/simulate.py': [Errno 2] No such file or directory\n"
+    },
+    {
+      "config_file": "steady_flow.json",
+      "name": "steady_flow",
+      "success": false,
+      "attempts": 1,
+      "wall_time": 0.04287266731262207,
+      "statistics": null,
+      "stderr": "/usr/local/bin/python: can't open file '/home/user/HydroClaude/examples/config_driven/simulate.py': [Errno 2] No such file or directory\n"
+    },
+    {
+      "config_file": "hllc_comparison.json",
+      "name": "hllc_comparison",
+      "success": false,
+      "attempts": 1,
+      "wall_time": 0.04283404350280762,
+      "statistics": null,
+      "stderr": "/usr/local/bin/python: can't open file '/home/user/HydroClaude/examples/config_driven/simulate.py': [Errno 2] No such file or directory\n"
+    },
+    {
+      "config_file": "mild_slope.json",
+      "name": "mild_slope",
+      "success": false,
+      "attempts": 1,
+      "wall_time": 0.04458975791931152,
+      "statistics": null,
+      "stderr": "/usr/local/bin/python: can't open file '/home/user/HydroClaude/examples/config_driven/simulate.py': [Errno 2] No such file or directory\n"
+    }
+  ]
+}
