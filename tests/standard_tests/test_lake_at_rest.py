@@ -228,7 +228,8 @@ class TestLakeAtRest:
                 'spatial_order': 1,
                 'riemann_solver': 'hll',
                 'use_numba': True,
-                'cfl': 0.5
+                'cfl': 0.5,
+                'well_balanced': True  # ✅ 必须启用well-balanced格式
             },
             'simulation': {
                 'start_time': 0.0,
@@ -372,7 +373,8 @@ class TestLakeAtRest:
                 'spatial_order': 1,
                 'riemann_solver': 'hll',
                 'use_numba': True,
-                'cfl': 0.3  # 更保守的CFL数
+                'cfl': 0.3,  # 更保守的CFL数
+                'well_balanced': True  # ✅ 必须启用well-balanced格式
             },
             'simulation': {
                 'start_time': 0.0,

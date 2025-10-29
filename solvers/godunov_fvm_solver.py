@@ -328,24 +328,28 @@ class GodunvFVMSolver:
             eta_ext = np.zeros(n + 2)
             eta_ext[1:n+1] = eta
 
-            # 左ghost：eta = h_bc + z_b_ghost
-            # 需要估算ghost cell的z_b
+            # 左ghost：外推eta（而非重构 h_bc + z_b_ghost）
+            # 关键：对于Lake at Rest，eta应该恒定，所以ghost的eta应该从内部外推
             if self.bc_left['type'] == 'h':
+                # 🔧 BUG修复：不能用 eta = h_bc + z_b_ghost（z_b_ghost≠z_b_boundary）
+                # 正确做法：外推eta从边界单元
+                # 边界单元eta = h_bc + z_b[0]，ghost应该保持这个eta
                 value = self.bc_left['value']
-                h_ghost = value if not callable(value) else value(self.t)
-                # Ghost底高程：外推（假设坡度连续）
-                z_b_ghost = self.z_b[0] - (self.z_b[1] - self.z_b[0])
-                eta_ext[0] = h_ghost + z_b_ghost
+                h_bc = value if not callable(value) else value(self.t)
+                eta_bc = h_bc + self.z_b[0]  # 边界单元的水面高程
+                # 对于Lake at Rest：保持eta恒定
+                eta_ext[0] = eta_bc
             else:  # Q boundary
                 # 使用内部eta外推
                 eta_ext[0] = eta[0]
 
-            # 右ghost
+            # 右ghost：同样外推eta
             if self.bc_right['type'] == 'h':
                 value = self.bc_right['value']
-                h_ghost = value if not callable(value) else value(self.t)
-                z_b_ghost = self.z_b[n-1] + (self.z_b[n-1] - self.z_b[n-2])
-                eta_ext[n+1] = h_ghost + z_b_ghost
+                h_bc = value if not callable(value) else value(self.t)
+                eta_bc = h_bc + self.z_b[n-1]  # 边界单元的水面高程
+                # 对于Lake at Rest：保持eta恒定
+                eta_ext[n+1] = eta_bc
             else:  # Q boundary
                 eta_ext[n+1] = eta[n-1]
 
@@ -357,7 +361,14 @@ class GodunvFVMSolver:
                 eta_R = eta_ext[1:]
 
             # 获取界面底高程（使用单元中心值）
-            z_b_ext, _ = self._extend_with_ghosts(self.z_b, self.z_b)
+            # 注意：z_b不需要边界条件，直接外推
+            z_b_ext = np.zeros(n + 2)
+            z_b_ext[1:n+1] = self.z_b
+            # 左ghost: 外推（假设坡度连续）
+            z_b_ext[0] = self.z_b[0] - (self.z_b[1] - self.z_b[0]) if n > 1 else self.z_b[0]
+            # 右ghost: 外推
+            z_b_ext[n+1] = self.z_b[n-1] + (self.z_b[n-1] - self.z_b[n-2]) if n > 1 else self.z_b[n-1]
+
             # 界面底高程：取左右单元的最大值（保守）
             z_b_interface = np.maximum(z_b_ext[:-1], z_b_ext[1:])
 
@@ -411,6 +422,15 @@ class GodunvFVMSolver:
         F_h = np.zeros(n + 1)
         F_Q = np.zeros(n + 1)
 
+        # DEBUG: Print interface states for Lake at Rest diagnosis
+        DEBUG = False  # Set to True to enable diagnostics
+        if DEBUG and self.well_balanced and self.t < 1e-6:  # Only at t=0
+            print(f"\n[DEBUG] Interface states at t={self.t:.2e}:")
+            print(f"  h_L: {h_L}")
+            print(f"  h_R: {h_R}")
+            print(f"  Q_L: {Q_L}")
+            print(f"  Q_R: {Q_R}")
+
         for i in range(n + 1):
             # 界面i位于单元i-1和单元i之间
             # 计算通量（h_L, h_R已经通过hydrostatic reconstruction调整）
@@ -422,6 +442,12 @@ class GodunvFVMSolver:
                 F_h[i], F_Q[i] = self._hll_flux(
                     h_L[i], Q_L[i], h_R[i], Q_R[i]
                 )
+
+        # DEBUG: Print computed fluxes
+        if DEBUG and self.well_balanced and self.t < 1e-6:
+            print(f"[DEBUG] Computed fluxes:")
+            print(f"  F_h: {F_h}")
+            print(f"  F_Q: {F_Q}")
 
         # 计算每个单元的空间导数（Python版本）
         for i in range(n):
@@ -692,7 +718,8 @@ class GodunvFVMSolver:
         """
         源项（重力+摩阻）
 
-        S_Q = g*A*(S0 - Sf)
+        标准格式：S_Q = g*A*(S0 - Sf)
+        Well-balanced格式：S_Q = -g*A*Sf （底坡项已在通量中处理）
 
         Args:
             h: 水深 (m)
@@ -706,13 +733,20 @@ class GodunvFVMSolver:
         P = self.B + 2.0 * h
         R = A / P if P > 1e-10 else 0.0
 
+        # 摩阻坡度
         if R > 1e-10 and abs(Q) > 1e-6:
             Sf = self.n**2 * Q**2 / (A**2 * R**(4.0/3.0))
             Sf = np.sign(Q) * Sf
         else:
             Sf = 0.0
 
-        return self.g * A * (self.S0[cell_idx] - Sf)
+        # Well-balanced格式：底坡源项已通过hydrostatic reconstruction处理
+        # 只需要添加摩阻项
+        if self.well_balanced:
+            return -self.g * A * Sf
+        else:
+            # 标准格式：包含底坡和摩阻
+            return self.g * A * (self.S0[cell_idx] - Sf)
     
     def _extend_with_ghosts(
         self,
