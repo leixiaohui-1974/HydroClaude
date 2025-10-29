@@ -19,8 +19,11 @@ __version__ = "1.0.0"
 __author__ = "HydroClaude Team"
 
 from .trapezoidal_channel import TrapezoidalChannel, create_trapezoidal_channel
+from .irregular_channel import IrregularChannel, create_irregular_channel
 
 __all__ = [
     'TrapezoidalChannel',
     'create_trapezoidal_channel',
+    'IrregularChannel',
+    'create_irregular_channel',
 ]
