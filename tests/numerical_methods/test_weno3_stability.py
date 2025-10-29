@@ -1,0 +1,493 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+WENO3稳定性分析测试
+
+测试WENO3格式的稳定性特性：
+1. CFL数敏感性测试
+2. 长时间稳定性测试
+3. 极端条件稳定性测试
+
+理论背景：
+- WENO格式的稳定性取决于CFL条件、TVD性质
+- CFL条件：Δt ≤ CFL * Δx / max(|u| + c)
+- WENO3理论CFL上限约为0.6-0.7（取决于时间积分格式）
+
+参考文献：
+- Shu & Osher (1988): "Efficient Implementation of ENO Schemes"
+- Gottlieb et al. (2001): "Strong Stability Preserving Properties of Runge-Kutta Methods"
+
+作者: HydroClaude Team
+日期: 2025-10-29
+优先级: P3
+"""
+
+import pytest
+import numpy as np
+import tempfile
+import json
+from pathlib import Path
+import sys
+import time
+
+# 添加项目路径
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+from engine.simulation_engine import SimulationEngine
+
+
+class TestWENO3Stability:
+    """WENO3稳定性测试套件"""
+
+    @pytest.mark.p3
+    @pytest.mark.parametrize("cfl", [0.1, 0.2, 0.3, 0.4, 0.5, 0.6])
+    def test_cfl_stability_smooth_flow(self, cfl):
+        """
+        测试1: 平稳流下的CFL稳定性
+
+        使用MacDonald Test 1测试不同CFL数
+        """
+        print(f"\n{'='*70}")
+        print(f"CFL稳定性测试 - CFL={cfl}")
+        print(f"{'='*70}")
+
+        config = {
+            'project': {
+                'name': f'CFL Stability Test - CFL={cfl}',
+                'description': 'P3测试：WENO3 CFL稳定性验证'
+            },
+            'geometry': {
+                'type': 'uniform',
+                'channel_width': 10.0,
+                'channel_length': 10000.0,
+                'bottom_slope': 0.0001,
+                'manning_n': 0.025
+            },
+            'mesh': {'n_cells': 200},
+            'initial_conditions': {
+                'type': 'uniform',
+                'h': 2.0,
+                'Q': 20.0
+            },
+            'boundary_conditions': {
+                'left': {'type': 'Q', 'value': 20.0},
+                'right': {'type': 'h', 'value': 2.5}
+            },
+            'solver': {
+                'type': 'godunov_fvm',
+                'spatial_order': 3,
+                'riemann_solver': 'hll',
+                'use_numba': True,
+                'cfl': cfl,
+                'entropy_fix': True
+            },
+            'simulation': {
+                'start_time': 0.0,
+                'end_time': 5000.0,
+                'max_steps': 100000
+            },
+            'output': {
+                'directory': f'/tmp/test_cfl_{cfl}',
+                'formats': [],
+                'statistics': False,
+                'plots': {'enabled': False}
+            },
+            'validation': {'enabled': False}
+        }
+
+        config_file = tempfile.NamedTemporaryFile(
+            mode='w', suffix='.json', delete=False
+        )
+        json.dump(config, config_file, indent=2)
+        config_file.close()
+        config_file_path = Path(config_file.name)
+
+        try:
+            print(f"\n运行模拟 (CFL={cfl})...")
+            start_time = time.time()
+
+            engine = SimulationEngine(str(config_file_path))
+            engine.initialize()
+            engine.run()
+
+            elapsed = time.time() - start_time
+
+            # 检查稳定性
+            h = engine.solver.h
+            has_nan = np.any(np.isnan(h))
+            has_inf = np.any(np.isinf(h))
+            has_negative = np.any(h < 0)
+
+            # 质量守恒
+            mass_error = abs(
+                engine.solver.get_mass_conservation_error()
+            ) if hasattr(engine.solver, 'get_mass_conservation_error') else 0.0
+
+            print(f"\n结果:")
+            print(f"  计算步数: {engine.solver.step_count}")
+            print(f"  计算时间: {elapsed:.2f}s")
+            print(f"  质量误差: {mass_error:.4f}%")
+            print(f"  水深范围: [{np.min(h):.3f}, {np.max(h):.3f}] m")
+
+            # 验证稳定性
+            assert not has_nan, f"CFL={cfl}时出现NaN，失稳"
+            assert not has_inf, f"CFL={cfl}时出现Inf，失稳"
+            assert not has_negative, f"CFL={cfl}时出现负水深，失稳"
+            assert mass_error < 5.0, f"CFL={cfl}时质量误差{mass_error:.4f}% > 5%"
+
+            print(f"\n✅ CFL={cfl}: 稳定 (质量误差={mass_error:.4f}%)")
+
+        except Exception as e:
+            print(f"\n❌ CFL={cfl}: 失稳 - {str(e)}")
+            pytest.fail(f"CFL={cfl}时失稳: {str(e)}")
+
+        finally:
+            config_file_path.unlink(missing_ok=True)
+
+    @pytest.mark.p3
+    def test_long_term_stability(self):
+        """
+        测试2: 长时间稳定性
+
+        运行1000+个时间步，验证无数值振荡累积
+        """
+        print("\n" + "="*70)
+        print("长时间稳定性测试")
+        print("="*70)
+
+        config = {
+            'project': {
+                'name': 'Long-term Stability Test',
+                'description': 'P3测试：WENO3长时间稳定性验证'
+            },
+            'geometry': {
+                'type': 'uniform',
+                'channel_width': 10.0,
+                'channel_length': 5000.0,
+                'bottom_slope': 0.0002,
+                'manning_n': 0.025
+            },
+            'mesh': {'n_cells': 100},
+            'initial_conditions': {
+                'type': 'uniform',
+                'h': 2.0,
+                'Q': 15.0
+            },
+            'boundary_conditions': {
+                'left': {'type': 'Q', 'value': 15.0},
+                'right': {'type': 'h', 'value': 2.0}
+            },
+            'solver': {
+                'type': 'godunov_fvm',
+                'spatial_order': 3,
+                'riemann_solver': 'hll',
+                'use_numba': True,
+                'cfl': 0.5,
+                'entropy_fix': True
+            },
+            'simulation': {
+                'start_time': 0.0,
+                'end_time': 20000.0,  # 长时间
+                'max_steps': 200000
+            },
+            'output': {
+                'directory': '/tmp/test_longterm',
+                'formats': [],
+                'statistics': False,
+                'plots': {'enabled': False}
+            },
+            'validation': {'enabled': False}
+        }
+
+        config_file = tempfile.NamedTemporaryFile(
+            mode='w', suffix='.json', delete=False
+        )
+        json.dump(config, config_file, indent=2)
+        config_file.close()
+        config_file_path = Path(config_file.name)
+
+        try:
+            print("\n运行长时间模拟...")
+            engine = SimulationEngine(str(config_file_path))
+            engine.initialize()
+
+            # 记录初始状态
+            mass_init = engine.solver._compute_total_mass()
+            mass_history = [mass_init]
+            time_points = [0.0]
+
+            # 每5000s记录一次
+            checkpoint_times = [5000, 10000, 15000, 20000]
+
+            for t_checkpoint in checkpoint_times:
+                engine.run_to_time(t_checkpoint)
+                mass = engine.solver._compute_total_mass()
+                mass_history.append(mass)
+                time_points.append(engine.solver.t)
+
+                print(f"  t={engine.solver.t:.0f}s: 质量={mass:.2f} m³")
+
+            # 分析质量守恒
+            mass_errors = [
+                abs(m - mass_init) / mass_init * 100 for m in mass_history
+            ]
+            max_mass_error = max(mass_errors)
+
+            print(f"\n长时间质量守恒:")
+            print(f"  初始质量: {mass_init:.2f} m³")
+            print(f"  最终质量: {mass_history[-1]:.2f} m³")
+            print(f"  最大误差: {max_mass_error:.4f}%")
+
+            # 检查振荡累积
+            h = engine.solver.h
+            d2h_dx2 = np.abs(np.diff(h, n=2))
+            max_oscillation = np.max(d2h_dx2)
+            mean_h = np.mean(h)
+            relative_oscillation = max_oscillation / mean_h
+
+            print(f"\n振荡分析:")
+            print(f"  最大二阶导数: {max_oscillation:.6f}")
+            print(f"  相对振荡: {relative_oscillation:.6f}")
+
+            # 验证：长时间后仍稳定
+            assert max_mass_error < 1.0, f"长时间质量误差{max_mass_error:.4f}% > 1.0%"
+            assert relative_oscillation < 0.1, f"振荡累积过大: {relative_oscillation:.6f}"
+
+            print("\n✅ 长时间稳定性验证通过")
+
+        finally:
+            config_file_path.unlink(missing_ok=True)
+
+    @pytest.mark.p3
+    def test_cfl_performance_tradeoff(self):
+        """
+        测试3: CFL数与计算性能权衡
+
+        测试不同CFL数对计算效率的影响
+        """
+        print("\n" + "="*70)
+        print("CFL性能权衡分析")
+        print("="*70)
+
+        cfl_list = [0.1, 0.2, 0.3, 0.4, 0.5]
+        results = []
+
+        base_config = {
+            'project': {
+                'name': 'CFL Performance Test',
+                'description': 'P3测试：CFL性能权衡'
+            },
+            'geometry': {
+                'type': 'uniform',
+                'channel_width': 10.0,
+                'channel_length': 5000.0,
+                'bottom_slope': 0.0001,
+                'manning_n': 0.025
+            },
+            'mesh': {'n_cells': 100},
+            'initial_conditions': {
+                'type': 'uniform',
+                'h': 2.0,
+                'Q': 20.0
+            },
+            'boundary_conditions': {
+                'left': {'type': 'Q', 'value': 20.0},
+                'right': {'type': 'h', 'value': 2.0}
+            },
+            'simulation': {
+                'start_time': 0.0,
+                'end_time': 5000.0,
+                'max_steps': 100000
+            },
+            'output': {
+                'directory': '/tmp/test_cfl_perf',
+                'formats': [],
+                'statistics': False,
+                'plots': {'enabled': False}
+            },
+            'validation': {'enabled': False}
+        }
+
+        for cfl in cfl_list:
+            print(f"\n[CFL={cfl}] 测试中...")
+
+            config = base_config.copy()
+            config['solver'] = {
+                'type': 'godunov_fvm',
+                'spatial_order': 3,
+                'riemann_solver': 'hll',
+                'use_numba': True,
+                'cfl': cfl,
+                'entropy_fix': True
+            }
+
+            config_file = tempfile.NamedTemporaryFile(
+                mode='w', suffix='.json', delete=False
+            )
+            json.dump(config, config_file, indent=2)
+            config_file.close()
+            config_file_path = Path(config_file.name)
+
+            try:
+                start = time.time()
+                engine = SimulationEngine(str(config_file_path))
+                engine.initialize()
+                engine.run()
+                elapsed = time.time() - start
+
+                results.append({
+                    'cfl': cfl,
+                    'time': elapsed,
+                    'steps': engine.solver.step_count,
+                    'time_per_step': elapsed / engine.solver.step_count * 1000  # ms
+                })
+
+                print(f"  计算时间: {elapsed:.2f}s")
+                print(f"  计算步数: {engine.solver.step_count}")
+                print(f"  每步时间: {elapsed/engine.solver.step_count*1000:.2f} ms")
+
+            finally:
+                config_file_path.unlink(missing_ok=True)
+
+        # 生成性能报告
+        print("\n" + "="*70)
+        print("CFL性能权衡分析:")
+        print("="*70)
+
+        print(f"\n{'CFL':<8} {'计算时间(s)':<12} {'计算步数':<10} {'每步时间(ms)':<12}")
+        print("-" * 70)
+        for r in results:
+            print(f"{r['cfl']:<8.1f} {r['time']:<12.2f} {r['steps']:<10} {r['time_per_step']:<12.2f}")
+
+        # 分析最优CFL
+        fastest = min(results, key=lambda x: x['time'])
+        print(f"\n最快配置: CFL={fastest['cfl']}, 时间={fastest['time']:.2f}s")
+
+        # 理论分析：较大CFL减少步数，但每步可能更复杂
+        # 通常存在最优点
+        print("\n性能建议:")
+        if fastest['cfl'] >= 0.4:
+            print("  推荐CFL ≥ 0.4 以获得最佳性能")
+        else:
+            print(f"  推荐CFL = {fastest['cfl']} 以获得最佳性能")
+
+        print("\n✅ CFL性能权衡分析完成")
+
+    @pytest.mark.p3
+    def test_extreme_conditions_stability(self):
+        """
+        测试4: 极端条件稳定性
+
+        测试极端初始条件下的稳定性
+        """
+        print("\n" + "="*70)
+        print("极端条件稳定性测试")
+        print("="*70)
+
+        # 测试案例：大高差溃坝
+        config = {
+            'project': {
+                'name': 'Extreme Conditions Test',
+                'description': 'P3测试：极端条件稳定性'
+            },
+            'geometry': {
+                'type': 'uniform',
+                'channel_width': 10.0,
+                'channel_length': 2000.0,
+                'bottom_slope': 0.0,
+                'manning_n': 0.0
+            },
+            'mesh': {'n_cells': 200},
+            'initial_conditions': {
+                'type': 'dam_break',
+                'h_left': 20.0,  # 极大高差 20:1
+                'h_right': 1.0,
+                'dam_position': 1000.0
+            },
+            'boundary_conditions': {
+                'left': {'type': 'Q', 'value': 0.0},
+                'right': {'type': 'Q', 'value': 0.0}
+            },
+            'solver': {
+                'type': 'godunov_fvm',
+                'spatial_order': 3,
+                'riemann_solver': 'hll',
+                'use_numba': True,
+                'cfl': 0.4,  # 较小CFL增强稳定性
+                'entropy_fix': True,
+                'critical_flow_treatment': True  # 启用临界流处理
+            },
+            'simulation': {
+                'start_time': 0.0,
+                'end_time': 50.0,
+                'max_steps': 100000
+            },
+            'output': {
+                'directory': '/tmp/test_extreme',
+                'formats': [],
+                'statistics': False,
+                'plots': {'enabled': False}
+            },
+            'validation': {'enabled': False}
+        }
+
+        config_file = tempfile.NamedTemporaryFile(
+            mode='w', suffix='.json', delete=False
+        )
+        json.dump(config, config_file, indent=2)
+        config_file.close()
+        config_file_path = Path(config_file.name)
+
+        try:
+            print("\n运行极端条件模拟...")
+            print("  初始条件: h_left=20m, h_right=1m (20倍高差)")
+
+            engine = SimulationEngine(str(config_file_path))
+            engine.initialize()
+
+            mass_init = engine.solver._compute_total_mass()
+            engine.run()
+            mass_final = engine.solver._compute_total_mass()
+            mass_error = abs(mass_final - mass_init) / mass_init * 100
+
+            # 检查稳定性
+            h = engine.solver.h
+            has_nan = np.any(np.isnan(h))
+            has_negative = np.any(h < 0)
+
+            print(f"\n结果:")
+            print(f"  模拟时间: {engine.solver.t:.2f}s")
+            print(f"  计算步数: {engine.solver.step_count}")
+            print(f"  质量误差: {mass_error:.4f}%")
+            print(f"  水深范围: [{np.min(h):.3f}, {np.max(h):.3f}] m")
+
+            # 验证
+            assert not has_nan, "极端条件下出现NaN"
+            assert not has_negative, "极端条件下出现负水深"
+            assert mass_error < 5.0, f"极端条件下质量误差{mass_error:.4f}% > 5%"
+
+            print("\n✅ 极端条件稳定性验证通过")
+            print("  WENO3在20倍高差溃坝问题上保持稳定")
+
+        finally:
+            config_file_path.unlink(missing_ok=True)
+
+
+if __name__ == "__main__":
+    # 快速测试
+    test = TestWENO3Stability()
+
+    print("测试1: CFL稳定性 (单个CFL值)")
+    test.test_cfl_stability_smooth_flow(cfl=0.5)
+    print("\n" + "="*70 + "\n")
+
+    print("测试2: 长时间稳定性")
+    test.test_long_term_stability()
+    print("\n" + "="*70 + "\n")
+
+    print("测试3: CFL性能权衡")
+    test.test_cfl_performance_tradeoff()
+    print("\n" + "="*70 + "\n")
+
+    print("测试4: 极端条件稳定性")
+    test.test_extreme_conditions_stability()
