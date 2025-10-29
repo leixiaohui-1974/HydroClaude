@@ -21,17 +21,31 @@ __author__ = "HydroClaude Team"
 
 # 核心类导入
 from .topology import Node, Reach, RiverNetwork
-# from .nodes import JunctionNode, BifurcationNode, ReservoirNode  # Coming in Task 3.1.2
+from .nodes import (
+    JunctionNode, BifurcationNode, ReservoirNode, BoundaryNode,
+    create_junction, create_bifurcation, create_reservoir,
+    create_inflow_boundary, create_outflow_boundary
+)
 # from .coupling import ReachCoupler  # Coming in Task 3.2.1
 # from .solver import NetworkSolver  # Coming in Task 3.2.3
 
 __all__ = [
+    # 基础类
     'Node',
     'Reach',
     'RiverNetwork',
-    # 'JunctionNode',  # Task 3.1.2
-    # 'BifurcationNode',  # Task 3.1.2
-    # 'ReservoirNode',  # Task 3.1.2
+    # 节点类型
+    'JunctionNode',
+    'BifurcationNode',
+    'ReservoirNode',
+    'BoundaryNode',
+    # 便捷函数
+    'create_junction',
+    'create_bifurcation',
+    'create_reservoir',
+    'create_inflow_boundary',
+    'create_outflow_boundary',
+    # 耦合和求解器（待实现）
     # 'ReachCoupler',  # Task 3.2.1
     # 'NetworkSolver',  # Task 3.2.3
 ]
