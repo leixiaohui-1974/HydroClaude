@@ -47,7 +47,12 @@ class TestCriticalFlow:
         测试1: 临界流检测
 
         验证求解器能正确识别和处理Fr ≈ 1的情况
+
+        已知问题：当前测试设置（S0=0.001, n=0.03）在物理上不会产生稳定的临界流。
+        流动会在摩阻和坡度作用下调整到亚临界状态（Fr≈0.08）。
+        需要重新设计测试场景（如喉道收缩或堰流）来真正测试临界流。
         """
+        pytest.skip("测试设置需重新设计：当前配置不产生稳定临界流（见test_critical_flow_treatment.py的实际临界流测试）")
         # 参数设置：设计一个Fr≈1的稳态流
         L = 1000.0
         B = 10.0
@@ -113,7 +118,8 @@ class TestCriticalFlow:
                 'use_numba': True,
                 'cfl': 0.5,
                 'eps_dry': 1e-6,
-                'well_balanced': True
+                'well_balanced': True,
+                'entropy_fix': True  # 启用Entropy Fix处理临界流
             },
             'simulation': {
                 'start_time': 0.0,
