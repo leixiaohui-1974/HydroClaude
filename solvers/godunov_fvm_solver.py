@@ -68,7 +68,8 @@ class GodunvFVMSolver:
         riemann_solver: str = 'hll',
         well_balanced: bool = False,
         use_numba: bool = True,
-        source_term_method: str = 'standard'
+        source_term_method: str = 'standard',
+        source_term_treatment: str = 'coupled'
     ):
         """
         初始化
@@ -94,6 +95,11 @@ class GodunvFVMSolver:
                               'standard': 点值法 S = g*A*(S0 - Sf)
                               'interface': 界面法（Zhou's Surface Gradient Method启发）
                                          底坡源项从界面值计算，更精确平衡
+            source_term_treatment: 源项时间积分方法 ('coupled' 或 'strang_splitting')
+                                 'coupled': 通量和源项耦合求解（标准TVD-RK2）
+                                 'strang_splitting': Strang算子分裂法
+                                                    分步求解：通量(dt/2) → 源项(dt) → 通量(dt/2)
+                                                    优点：解耦通量-源项，减少数值误差
         """
         self.B = width
         self.L = length
@@ -116,10 +122,15 @@ class GodunvFVMSolver:
         self.riemann_solver = riemann_solver.lower()
         self.well_balanced = well_balanced
         self.source_term_method = source_term_method.lower()
+        self.source_term_treatment = source_term_treatment.lower()
 
         # 验证source_term_method参数
         if self.source_term_method not in ['standard', 'interface']:
             raise ValueError(f"source_term_method必须是'standard'或'interface'，当前值: {source_term_method}")
+
+        # 验证source_term_treatment参数
+        if self.source_term_treatment not in ['coupled', 'strang_splitting']:
+            raise ValueError(f"source_term_treatment必须是'coupled'或'strang_splitting'，当前值: {source_term_treatment}")
 
         # ⚠️ Interface方法当前禁用（2025-10-29测试失败）
         if self.source_term_method == 'interface':
@@ -308,23 +319,42 @@ class GodunvFVMSolver:
     
     def step(self, dt: Optional[float] = None) -> Tuple[np.ndarray, np.ndarray]:
         """
-        TVD-RK2时间步进
-        
-        RK2 (Heun's method):
-        1. U* = U^n + dt * L(U^n)
-        2. U^{n+1} = 0.5*(U^n + U*) + 0.5*dt*L(U*)
-        
-        其中 L(U) = -1/dx*(F_{i+1/2} - F_{i-1/2}) + S
+        时间步进
+
+        根据source_term_treatment选择不同的时间积分方法：
+        - 'coupled': TVD-RK2（通量和源项耦合）
+        - 'strang_splitting': Strang算子分裂法
         """
         if dt is None:
             dt = self.compute_dt()
-        
+
         self.dt = dt
-        
+
+        # 选择时间积分方法
+        if self.source_term_treatment == 'strang_splitting':
+            self._step_strang_splitting(dt)
+        else:  # coupled
+            self._step_coupled_rk2(dt)
+
+        self.t += dt
+        self.step_count += 1
+
+        return self.h.copy(), self.Q.copy()
+
+    def _step_coupled_rk2(self, dt: float):
+        """
+        标准TVD-RK2时间步进（通量和源项耦合）
+
+        RK2 (Heun's method):
+        1. U* = U^n + dt * L(U^n)
+        2. U^{n+1} = 0.5*(U^n + U*) + 0.5*dt*L(U*)
+
+        其中 L(U) = -1/dx*(F_{i+1/2} - F_{i-1/2}) + S
+        """
         # 保存初值
         h_n = self.h.copy()
         Q_n = self.Q.copy()
-        
+
         # === 第1步：前向欧拉 ===
         dh_dt, dQ_dt = self._compute_rhs(h_n, Q_n)
         h_star = h_n + dt * dh_dt
@@ -343,14 +373,51 @@ class GodunvFVMSolver:
 
         # 只在最后强制边界条件
         self.h, self.Q = self._apply_bc(self.h, self.Q)
-        
+
         # 干床
         self.h = np.maximum(self.h, 0.0)
-        
-        self.t += dt
-        self.step_count += 1
-        
-        return self.h.copy(), self.Q.copy()
+
+    def _step_strang_splitting(self, dt: float):
+        """
+        Strang算子分裂法时间步进
+
+        分步求解：
+        1. 通量步(dt/2): dU/dt = -∂F/∂x
+        2. 源项步(dt):   dU/dt = S
+        3. 通量步(dt/2): dU/dt = -∂F/∂x
+
+        优点：解耦通量和源项，减少数值误差，保持二阶精度
+        """
+        # 保存初值
+        h_n = self.h.copy()
+        Q_n = self.Q.copy()
+
+        # === 步骤1：通量步 dt/2 ===
+        # 计算只有通量的RHS（不包含源项）
+        dh_dt, dQ_dt = self._compute_flux_only_rhs(h_n, Q_n)
+        h_half = h_n + 0.5 * dt * dh_dt
+        Q_half = Q_n + 0.5 * dt * dQ_dt
+
+        # 边界条件
+        h_half, Q_half = self._apply_bc(h_half, Q_half)
+        h_half = np.maximum(h_half, 0.0)
+
+        # === 步骤2：源项步 dt ===
+        # 求解dU/dt = S从t到t+dt
+        h_source, Q_source = self._solve_source_ode(h_half, Q_half, dt)
+
+        # 边界条件
+        h_source, Q_source = self._apply_bc(h_source, Q_source)
+        h_source = np.maximum(h_source, 0.0)
+
+        # === 步骤3：通量步 dt/2 ===
+        dh_dt, dQ_dt = self._compute_flux_only_rhs(h_source, Q_source)
+        self.h = h_source + 0.5 * dt * dh_dt
+        self.Q = Q_source + 0.5 * dt * dQ_dt
+
+        # 边界条件
+        self.h, self.Q = self._apply_bc(self.h, self.Q)
+        self.h = np.maximum(self.h, 0.0)
     
     def _compute_rhs(self, h: np.ndarray, Q: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -575,7 +642,183 @@ class GodunvFVMSolver:
                 dQ_dt[i] += self._compute_source_term(h[i], Q[i], i)
 
         return dh_dt, dQ_dt
-    
+
+    def _compute_flux_only_rhs(self, h: np.ndarray, Q: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        计算只有通量的右端项（不包含源项）
+
+        用于Strang Splitting的通量步
+
+        dU/dt = -1/dx*(F_{i+1/2} - F_{i-1/2})
+
+        Returns:
+            dh/dt, dQ/dt (只包含通量导数)
+        """
+        n = len(h)
+
+        # 初始化
+        dh_dt = np.zeros(n)
+        dQ_dt = np.zeros(n)
+
+        # 扩展数组（ghost cells）
+        h_ext, Q_ext = self._extend_with_ghosts(h, Q)
+
+        # Well-balanced重构
+        if self.well_balanced:
+            # 计算水面高程
+            eta = h + self.z_b
+            eta_ext = np.zeros(n + 2)
+            eta_ext[1:n+1] = eta
+
+            # 左ghost
+            if self.bc_left['type'] == 'h':
+                value = self.bc_left['value']
+                h_bc = value if not callable(value) else value(self.t)
+                eta_bc = h_bc + self.z_b[0]
+                eta_ext[0] = eta_bc
+            else:  # Q boundary
+                eta_ext[0] = eta[0]
+
+            # 右ghost
+            if self.bc_right['type'] == 'h':
+                value = self.bc_right['value']
+                h_bc = value if not callable(value) else value(self.t)
+                eta_bc = h_bc + self.z_b[n-1]
+                eta_ext[n+1] = eta_bc
+            else:  # Q boundary
+                eta_ext[n+1] = eta[n-1]
+
+            # 重构η
+            if self.order == 2:
+                eta_L, eta_R = self._muscl_reconstruction(eta_ext)
+            else:
+                eta_L = eta_ext[:-1]
+                eta_R = eta_ext[1:]
+
+            # 获取界面底高程
+            z_b_ext = np.zeros(n + 2)
+            z_b_ext[1:n+1] = self.z_b
+            z_b_ext[0] = self.z_b[0] - (self.z_b[1] - self.z_b[0]) if n > 1 else self.z_b[0]
+            z_b_ext[n+1] = self.z_b[n-1] + (self.z_b[n-1] - self.z_b[n-2]) if n > 1 else self.z_b[n-1]
+            z_b_interface = np.maximum(z_b_ext[:-1], z_b_ext[1:])
+
+            # 从η还原h
+            h_L = np.maximum(0.0, eta_L - z_b_interface)
+            h_R = np.maximum(0.0, eta_R - z_b_interface)
+
+            # 重构Q
+            if self.order == 2:
+                Q_L, Q_R = self._muscl_reconstruction(Q_ext)
+            else:
+                Q_L = Q_ext[:-1]
+                Q_R = Q_ext[1:]
+        else:
+            # 标准重构
+            if self.use_numba and self.riemann_solver == 'hll':
+                if self.order == 2:
+                    h_L, h_R = muscl_reconstruction_numba(h_ext)
+                    Q_L, Q_R = muscl_reconstruction_numba(Q_ext)
+                else:
+                    h_L = h_ext[:-1]
+                    h_R = h_ext[1:]
+                    Q_L = Q_ext[:-1]
+                    Q_R = Q_ext[1:]
+
+                # 计算通量
+                F_h, F_Q = compute_all_fluxes_numba(
+                    h_L, h_R, Q_L, Q_R, self.B, self.g, self.eps_dry
+                )
+
+                # 计算空间导数（只通量，无源项）
+                for i in range(n):
+                    dh_dt[i] = -(F_h[i+1] - F_h[i]) / self.dx
+                    dQ_dt[i] = -(F_Q[i+1] - F_Q[i]) / self.dx
+
+                    # Well-balanced几何源项
+                    if self.well_balanced:
+                        h_star_left = 0.5 * (h_L[i] + h_R[i])
+                        h_star_right = 0.5 * (h_L[i+1] + h_R[i+1])
+                        dz_interface = z_b_interface[i+1] - z_b_interface[i]
+                        h_star_avg = 0.5 * (h_star_left + h_star_right)
+                        S_geo = -self.g * h_star_avg * self.B * dz_interface / self.dx
+                        dQ_dt[i] += S_geo
+
+                return dh_dt, dQ_dt
+            else:
+                if self.order == 2:
+                    h_L, h_R = self._muscl_reconstruction(h_ext)
+                    Q_L, Q_R = self._muscl_reconstruction(Q_ext)
+                else:
+                    h_L = h_ext[:-1]
+                    h_R = h_ext[1:]
+                    Q_L = Q_ext[:-1]
+                    Q_R = Q_ext[1:]
+
+        # 计算通量（Python版本）
+        F_h = np.zeros(n + 1)
+        F_Q = np.zeros(n + 1)
+
+        for i in range(n + 1):
+            if self.riemann_solver == 'hllc':
+                F_h[i], F_Q[i] = self._hllc_flux(
+                    h_L[i], Q_L[i], h_R[i], Q_R[i]
+                )
+            else:  # hll
+                F_h[i], F_Q[i] = self._hll_flux(
+                    h_L[i], Q_L[i], h_R[i], Q_R[i]
+                )
+
+        # 计算空间导数（只通量，无源项）
+        for i in range(n):
+            dh_dt[i] = -(F_h[i+1] - F_h[i]) / self.dx
+            dQ_dt[i] = -(F_Q[i+1] - F_Q[i]) / self.dx
+
+            # Well-balanced几何源项
+            if self.well_balanced:
+                h_star_left = 0.5 * (h_L[i] + h_R[i])
+                h_star_right = 0.5 * (h_L[i+1] + h_R[i+1])
+                dz_interface = z_b_interface[i+1] - z_b_interface[i]
+                h_star_avg = 0.5 * (h_star_left + h_star_right)
+                S_geo = -self.g * h_star_avg * self.B * dz_interface / self.dx
+                dQ_dt[i] += S_geo
+
+        return dh_dt, dQ_dt
+
+    def _solve_source_ode(self, h: np.ndarray, Q: np.ndarray, dt: float) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        求解纯源项ODE
+
+        用于Strang Splitting的源项步
+
+        dh/dt = 0  (连续性方程无源项)
+        dQ/dt = S_Q = g*A*(S0 - Sf)
+
+        使用显式欧拉法求解
+
+        Args:
+            h: 初始水深
+            Q: 初始流量
+            dt: 时间步长
+
+        Returns:
+            h_new, Q_new (源项更新后的值)
+        """
+        n = len(h)
+
+        # 连续性方程无源项，h保持不变
+        h_new = h.copy()
+        Q_new = Q.copy()
+
+        # 对每个单元求解Q的ODE
+        for i in range(n):
+            # 计算源项
+            S_Q = self._compute_source_term(h[i], Q[i], i)
+
+            # 显式欧拉更新
+            Q_new[i] = Q[i] + dt * S_Q
+
+        return h_new, Q_new
+
     def _muscl_reconstruction(self, phi: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
         MUSCL重构（二阶精度+TVD）
