@@ -19,6 +19,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from solvers.godunov_fvm_solver import GodunvFVMSolver
+from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
 from engine.config_parser import ConfigParser
 
 
@@ -80,21 +81,45 @@ class ModelBuilder:
             # 处理底坡（标量或数组）
             slope = self._get_bottom_slope()
 
-            self.solver = GodunvFVMSolver(
-                width=geom['channel_width'],
-                length=geom['channel_length'],
-                n_cells=mesh['n_cells'],
-                manning_n=geom['manning_n'],
-                slope=slope,
-                g=9.81,
-                cfl=solver_cfg['cfl'],
-                eps_dry=solver_cfg['eps_dry'],
-                order=solver_cfg['spatial_order'],
-                riemann_solver=solver_cfg['riemann_solver'],
-                well_balanced=solver_cfg['well_balanced'],
-                use_numba=solver_cfg['use_numba'],
-                dt_max=solver_cfg.get('dt_max', None)
-            )
+            # 根据spatial_order选择合适的求解器
+            spatial_order = solver_cfg['spatial_order']
+
+            if spatial_order == 3:
+                # 使用WENO3求解器（3阶精度，激波捕捉）
+                self.solver = GodunvFVMWENO3(
+                    width=geom['channel_width'],
+                    length=geom['channel_length'],
+                    n_cells=mesh['n_cells'],
+                    manning_n=geom['manning_n'],
+                    slope=slope,
+                    g=9.81,
+                    cfl=solver_cfg['cfl'],
+                    eps_dry=solver_cfg['eps_dry'],
+                    weno_epsilon=solver_cfg.get('weno_epsilon', 1e-6),
+                    riemann_solver=solver_cfg['riemann_solver'],
+                    well_balanced=solver_cfg['well_balanced'],
+                    use_numba=solver_cfg['use_numba'],
+                    dt_max=solver_cfg.get('dt_max', None)
+                )
+            elif spatial_order in [1, 2]:
+                # 使用标准Godunov FVM求解器（1阶或2阶MUSCL）
+                self.solver = GodunvFVMSolver(
+                    width=geom['channel_width'],
+                    length=geom['channel_length'],
+                    n_cells=mesh['n_cells'],
+                    manning_n=geom['manning_n'],
+                    slope=slope,
+                    g=9.81,
+                    cfl=solver_cfg['cfl'],
+                    eps_dry=solver_cfg['eps_dry'],
+                    order=spatial_order,
+                    riemann_solver=solver_cfg['riemann_solver'],
+                    well_balanced=solver_cfg['well_balanced'],
+                    use_numba=solver_cfg['use_numba'],
+                    dt_max=solver_cfg.get('dt_max', None)
+                )
+            else:
+                raise ValueError(f"不支持的spatial_order: {spatial_order}. 支持: 1, 2, 3")
         else:
             raise ValueError(f"不支持的求解器类型: {solver_cfg['type']}")
 

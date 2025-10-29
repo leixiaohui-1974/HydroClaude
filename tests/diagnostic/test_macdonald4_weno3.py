@@ -204,11 +204,17 @@ class TestMacDonald4WENO3:
         x = np.linspace(0, self.L, self.n_cells)
         jump_loc = self.L / 2
 
-        h_init = np.where(
-            x < jump_loc,
-            self.h_up,
-            np.linspace(h2_theory, self.h_down, np.sum(x >= jump_loc))
-        )
+        # 构造初始条件（预形成水跃）
+        h_init = np.zeros(self.n_cells)
+        idx_jump = np.argmin(np.abs(x - jump_loc))  # 水跃位置索引
+
+        # 前半段：超临界区
+        h_init[:idx_jump] = self.h_up
+
+        # 后半段：从理论水跃后水深过渡到边界水深
+        n_downstream = self.n_cells - idx_jump
+        h_init[idx_jump:] = np.linspace(h2_theory, self.h_down, n_downstream)
+
         Q_init = np.ones(self.n_cells) * self.Q
 
         # 边界条件
