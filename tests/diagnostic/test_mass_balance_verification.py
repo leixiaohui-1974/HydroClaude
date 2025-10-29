@@ -100,25 +100,22 @@ def test_mass_balance_verification():
 
     step_count = 0
     while solver.t < t_final and step_count < 5000:
-        # 记录当前时刻的边界流量
-        # 注意：需要从求解器内部获取边界通量
-        # 左边界（流入）：Q_left
-        # 右边界（流出）：Q_right
-
-        # 获取边界单元的Q
-        Q_left = solver.Q[0]  # 左边界单元
-        Q_right = solver.Q[-1]  # 右边界单元
-
         # 时间步长
         dt = solver.compute_dt()
 
-        # 累积通量
-        cumulative_inflow += Q_left * dt
-        cumulative_outflow += Q_right * dt
-
-        # 执行一步
+        # 执行一步（这会计算界面通量并保存到solver.last_F_h）
         solver.step()
         step_count += 1
+
+        # 获取界面通量（正确的边界通量）
+        # F_h[0] 是左边界通量，F_h[n] 是右边界通量
+        if solver.last_F_h is not None:
+            F_left = solver.last_F_h[0]  # 左边界质量通量
+            F_right = solver.last_F_h[-1]  # 右边界质量通量
+
+            # 累积通量
+            cumulative_inflow += F_left * dt
+            cumulative_outflow += F_right * dt
 
         # 记录数据
         if solver.t >= t_next_record or solver.t >= t_final:
