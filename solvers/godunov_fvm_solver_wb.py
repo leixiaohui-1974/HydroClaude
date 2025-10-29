@@ -44,13 +44,17 @@ class GodunvFVMSolverWB:
         cfl: float = 0.5,
         eps_dry: float = 1e-6,
         order: int = 2,
-        well_balanced: bool = True
+        well_balanced: bool = True,
+        entropy_fix: bool = False,
+        critical_flow_treatment: bool = False
     ):
         """
         初始化Well-Balanced求解器
-        
+
         Args:
             well_balanced: 是否使用Well-Balanced技术
+            entropy_fix: 是否使用Harten-Hyman entropy修正
+            critical_flow_treatment: 是否使用临界流特殊处理
         """
         self.B = width
         self.L = length
@@ -63,6 +67,8 @@ class GodunvFVMSolverWB:
         self.eps_dry = eps_dry
         self.order = order
         self.well_balanced = well_balanced
+        self.entropy_fix = entropy_fix
+        self.critical_flow_treatment = critical_flow_treatment
         
         # 单元中心
         self.h = np.zeros(n_cells)
@@ -81,10 +87,14 @@ class GodunvFVMSolverWB:
         self.step_count = 0
         
         wb_status = "启用" if well_balanced else "禁用"
+        entropy_status = "启用" if entropy_fix else "禁用"
+        critical_status = "启用" if critical_flow_treatment else "禁用"
         print(f"Godunov-FVM Well-Balanced求解器:")
         print(f"  单元数: {n_cells}, dx={self.dx:.3f}m")
         print(f"  空间精度: {order}阶")
         print(f"  Well-Balanced: {wb_status}")
+        print(f"  Entropy Fix: {entropy_status}")
+        print(f"  Critical Flow Treatment: {critical_status}")
         print(f"  底坡: {slope}")
     
     def initialize(self, h_init, Q_init, bc_left, bc_right):
@@ -327,42 +337,113 @@ class GodunvFVMSolverWB:
         
         return phi_L, phi_R
     
+    def _entropy_fix(self, lambda_val, delta):
+        """
+        Harten-Hyman Entropy修正
+
+        防止特征速度变号附近的数值振荡
+
+        参数:
+            lambda_val: 特征速度
+            delta: entropy修正参数（通常为max(|λ_L|, |λ_R|)的10%）
+
+        返回:
+            修正后的特征速度
+        """
+        if abs(lambda_val) >= delta:
+            return lambda_val
+        else:
+            # 平滑处理接近零的特征速度
+            return (lambda_val**2 + delta**2) / (2.0 * delta)
+
     def _hll_flux(self, h_L, Q_L, h_R, Q_R):
-        """HLL Riemann求解器"""
+        """
+        HLL Riemann求解器（可选entropy修正）
+
+        参数:
+            h_L, Q_L: 左状态（水深、流量）
+            h_R, Q_R: 右状态
+
+        返回:
+            F_h, F_Q: 数值通量
+        """
         if h_L < self.eps_dry and h_R < self.eps_dry:
             return 0.0, 0.0
-        
+
+        # 计算左右状态
         A_L = max(h_L * self.B, self.eps_dry * self.B)
         u_L = Q_L / A_L
         c_L = np.sqrt(self.g * max(h_L, 0.0))
-        
+
         A_R = max(h_R * self.B, self.eps_dry * self.B)
         u_R = Q_R / A_R
         c_R = np.sqrt(self.g * max(h_R, 0.0))
-        
+
+        # 估算波速
         S_L = min(u_L - c_L, u_R - c_R)
         S_R = max(u_L + c_L, u_R + c_R)
-        
+
+        # Entropy修正（如果启用）
+        if self.entropy_fix:
+            # 计算delta（通常取最大波速的10%）
+            delta = 0.1 * max(abs(S_L), abs(S_R), 1e-10)
+
+            # 对两个波速都应用entropy修正
+            S_L = self._entropy_fix(S_L, delta)
+            S_R = self._entropy_fix(S_R, delta)
+
+        # 计算通量
         F_h_L = Q_L
         F_Q_L = Q_L**2 / A_L + 0.5 * self.g * h_L**2 * self.B
-        
+
         F_h_R = Q_R
         F_Q_R = Q_R**2 / A_R + 0.5 * self.g * h_R**2 * self.B
-        
+
+        # HLL格式
         if S_L >= 0:
-            return F_h_L, F_Q_L
+            # 完全左侧
+            F_h = F_h_L
+            F_Q = F_Q_L
         elif S_R <= 0:
-            return F_h_R, F_Q_R
+            # 完全右侧
+            F_h = F_h_R
+            F_Q = F_Q_R
         else:
+            # 中间状态
             U_h_L = h_L
             U_h_R = h_R
             U_Q_L = Q_L
             U_Q_R = Q_R
-            
+
             F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / (S_R - S_L)
             F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / (S_R - S_L)
-            
-            return F_h, F_Q
+
+        # 临界流特殊处理（如果启用）
+        if self.critical_flow_treatment:
+            # 计算左右Froude数
+            Fr_L = abs(u_L) / c_L if c_L > 1e-10 else 0.0
+            Fr_R = abs(u_R) / c_R if c_R > 1e-10 else 0.0
+
+            # 平均Froude数
+            Fr_avg = 0.5 * (Fr_L + Fr_R)
+
+            # 如果接近临界流（0.9 < Fr < 1.1），增加数值耗散
+            if 0.9 < Fr_avg < 1.1:
+                # 耗散强度随着接近Fr=1而增加
+                # alpha在Fr=1时最大（0.5），在Fr=0.9或1.1时为0
+                alpha = 0.5 * (1.0 - abs(Fr_avg - 1.0) / 0.1)
+
+                # Lax-Friedrichs型耗散
+                max_speed = max(abs(u_L) + c_L, abs(u_R) + c_R, 1e-10)
+
+                # 增加耗散项（类似于人工粘性）
+                dissipation_h = alpha * max_speed * (h_R - h_L)
+                dissipation_Q = alpha * max_speed * (Q_R - Q_L)
+
+                F_h -= dissipation_h
+                F_Q -= dissipation_Q
+
+        return F_h, F_Q
     
     def _extend_with_ghosts(self, h, Q):
         """扩展ghost cells"""
@@ -416,7 +497,82 @@ class GodunvFVMSolverWB:
     def _apply_bc(self):
         """强制边界条件"""
         self.h, self.Q = self._apply_bc_to_state(self.h, self.Q)
-    
+
+    def compute_froude_number(self, h=None, Q=None):
+        """
+        计算Froude数
+
+        Fr = u / sqrt(g*h)
+
+        其中:
+        - u = Q / (B*h)  流速
+        - c = sqrt(g*h)  波速
+
+        参数:
+            h: 水深数组（可选，默认使用self.h）
+            Q: 流量数组（可选，默认使用self.Q）
+
+        返回:
+            Fr: Froude数数组
+        """
+        if h is None:
+            h = self.h
+        if Q is None:
+            Q = self.Q
+
+        Fr = np.zeros_like(h)
+
+        for i in range(len(h)):
+            if h[i] > self.eps_dry:
+                u = Q[i] / (self.B * h[i])
+                c = np.sqrt(self.g * h[i])
+                Fr[i] = u / c if c > 1e-10 else 0.0
+            else:
+                Fr[i] = 0.0
+
+        return Fr
+
+    def is_critical_flow(self, Fr=None, threshold=0.1):
+        """
+        检测临界流区域
+
+        临界流定义: |Fr - 1.0| < threshold
+
+        参数:
+            Fr: Froude数数组（可选，会自动计算）
+            threshold: 临界流阈值（默认0.1）
+
+        返回:
+            mask: 布尔数组，True表示临界流区域
+        """
+        if Fr is None:
+            Fr = self.compute_froude_number()
+
+        return np.abs(Fr - 1.0) < threshold
+
+    def get_flow_regime(self, Fr=None):
+        """
+        获取流态分类
+
+        参数:
+            Fr: Froude数组（可选）
+
+        返回:
+            regime: 流态数组
+                - 0: 亚临界 (Fr < 0.9)
+                - 1: 临界 (0.9 <= Fr <= 1.1)
+                - 2: 超临界 (Fr > 1.1)
+        """
+        if Fr is None:
+            Fr = self.compute_froude_number()
+
+        regime = np.zeros_like(Fr, dtype=int)
+        regime[Fr < 0.9] = 0  # 亚临界
+        regime[(Fr >= 0.9) & (Fr <= 1.1)] = 1  # 临界
+        regime[Fr > 1.1] = 2  # 超临界
+
+        return regime
+
     def _compute_total_mass(self):
         """计算总质量"""
         return np.sum(self.h * self.B * self.dx)

@@ -51,14 +51,26 @@ class GodunvFVMWENO3(GodunvFVMSolver):
         g: float = 9.81,
         cfl: float = 0.5,
         eps_dry: float = 1e-6,
-        weno_epsilon: float = 1e-5
+        weno_epsilon: float = 1e-5,
+        riemann_solver: str = 'hll',
+        well_balanced: bool = False,
+        use_numba: bool = True,
+        dt_max: Optional[float] = None,
+        entropy_fix: bool = False,
+        critical_flow_treatment: bool = False
     ):
         """
         初始化
-        
+
         Args:
             (与父类相同)
             weno_epsilon: WENO小量参数（防止除零）
+            riemann_solver: Riemann求解器类型 ('hll' 或 'hllc')
+            well_balanced: 是否使用Well-Balanced格式
+            use_numba: 是否使用Numba加速
+            dt_max: 最大时间步长（秒）
+            entropy_fix: 是否使用Harten-Hyman entropy修正
+            critical_flow_treatment: 是否使用临界流特殊处理
         """
         # 调用父类初始化，但强制order=3
         super().__init__(
@@ -70,7 +82,13 @@ class GodunvFVMWENO3(GodunvFVMSolver):
             g=g,
             cfl=cfl,
             eps_dry=eps_dry,
-            order=3  # 标记为3阶
+            order=3,  # 标记为3阶
+            riemann_solver=riemann_solver,
+            well_balanced=well_balanced,
+            use_numba=use_numba,
+            dt_max=dt_max,
+            entropy_fix=entropy_fix,
+            critical_flow_treatment=critical_flow_treatment
         )
         
         self.weno_eps = weno_epsilon
@@ -114,9 +132,9 @@ class GodunvFVMWENO3(GodunvFVMSolver):
             # 单元i的通量差
             dh_dt[i] = -(F_h[i+1] - F_h[i]) / self.dx
             dQ_dt[i] = -(F_Q[i+1] - F_Q[i]) / self.dx
-            
-            # 加上源项
-            dQ_dt[i] += self._compute_source_term(h[i], Q[i])
+
+            # 加上源项（需要传入cell_idx以支持变底坡和well-balanced）
+            dQ_dt[i] += self._compute_source_term(h[i], Q[i], i)
         
         return dh_dt, dQ_dt
     

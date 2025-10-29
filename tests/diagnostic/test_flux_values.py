@@ -1,0 +1,133 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+通量值诊断
+
+打印每个界面的通量值，找出质量泄漏的位置
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
+
+import numpy as np
+from solvers.godunov_fvm_solver import GodunvFVMSolver
+
+
+def analyze_flux_values():
+    """打印通量值"""
+
+    print("\n" + "="*80)
+    print("通量值诊断")
+    print("="*80)
+
+    B = 10.0
+    L = 100.0
+    n_cells = 5  # 只用5个单元便于观察
+
+    solver = GodunvFVMSolver(
+        width=B,
+        length=L,
+        n_cells=n_cells,
+        manning_n=0.0,
+        slope=0.0,
+        cfl=0.4,
+        order=1,
+        use_numba=False  # 关闭Numba以便我们可以访问内部变量
+    )
+
+    h_up = 0.3
+    Q_up = 10.0
+    h_down = 2.0
+
+    h_init = np.linspace(h_up, h_down, n_cells)
+    Q_init = np.ones(n_cells) * Q_up
+
+    bc_left = {'type': 'supercritical', 'h': h_up, 'Q': Q_up}
+    bc_right = {'type': 'h', 'value': h_down}
+
+    solver.initialize(h_init, Q_init, bc_left, bc_right)
+
+    print(f"\n初始状态:")
+    for i in range(n_cells):
+        print(f"  单元{i}: h={solver.h[i]:.4f}m, Q={solver.Q[i]:.4f}m³/s")
+
+    # 修改 _compute_rhs 以返回通量数组
+    # 我们需要暂时Monkey patch这个方法
+    original_compute_rhs = solver._compute_rhs
+
+    flux_h = None
+    flux_Q = None
+
+    def patched_compute_rhs(h, Q):
+        nonlocal flux_h, flux_Q
+
+        # 调用原始方法
+        dh_dt, dQ_dt = original_compute_rhs(h, Q)
+
+        # 重新计算通量以便检查（复制部分_compute_rhs的逻辑）
+        n = len(h)
+        h_ext, Q_ext = solver._extend_with_ghosts(h, Q)
+
+        # 重构
+        h_L = h_ext[:-1]
+        h_R = h_ext[1:]
+        Q_L = Q_ext[:-1]
+        Q_R = Q_ext[1:]
+
+        # 计算通量
+        F_h = np.zeros(n + 1)
+        F_Q = np.zeros(n + 1)
+
+        for i in range(n + 1):
+            F_h[i], F_Q[i] = solver._hll_flux(h_L[i], Q_L[i], h_R[i], Q_R[i])
+
+        # 强制边界通量
+        solver._enforce_boundary_fluxes(F_h, F_Q, h, Q)
+
+        flux_h = F_h.copy()
+        flux_Q = F_Q.copy()
+
+        return dh_dt, dQ_dt
+
+    solver._compute_rhs = patched_compute_rhs
+
+    # 推进一步
+    dt = solver.compute_dt()
+    print(f"\n时间步长: dt = {dt:.6f} s")
+
+    # 计算初始RHS
+    dh_dt, dQ_dt = solver._compute_rhs(solver.h, solver.Q)
+
+    print(f"\n通量值 (F_h = Q):")
+    print(f"  界面   位置              F_h(m³/s)         说明")
+    print("-" * 80)
+    print(f"  0      ghost | 单元0    {flux_h[0]:10.4f}      ← 边界通量 (应该=10)")
+    for i in range(1, n_cells):
+        print(f"  {i}      单元{i-1} | 单元{i}    {flux_h[i]:10.4f}")
+    print(f"  {n_cells}      单元{n_cells-1} | ghost    {flux_h[n_cells]:10.4f}      ← 边界通量")
+
+    print(f"\n各单元的质量通量平衡 (F_in - F_out):")
+    print(f"  单元   F_in     F_out    净流入   dh/dt*dx    一致性")
+    print("-" * 80)
+    dx = L / n_cells
+    for i in range(n_cells):
+        F_in = flux_h[i]
+        F_out = flux_h[i+1]
+        net_flux = F_in - F_out
+        mass_change = dh_dt[i] * dx
+
+        consistent = "✓" if abs(net_flux - mass_change) < 1e-6 else "✗"
+        print(f"  {i}      {F_in:7.3f}  {F_out:7.3f}  {net_flux:7.3f}  {mass_change:10.3f}      {consistent}")
+
+    print("\n" + "="*80)
+    print("分析：")
+    print(f"  1. 界面0通量应该等于10.0 m³/s (边界条件)")
+    print(f"     实际值: {flux_h[0]:.4f} m³/s")
+    print(f"  2. 如果无摩阻，所有界面通量应该接近")
+    print(f"  3. 净流入 = dh/dt * dx 应该对所有单元成立 (质量守恒)")
+    print("="*80)
+
+
+if __name__ == "__main__":
+    analyze_flux_values()

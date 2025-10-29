@@ -1,0 +1,319 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+质量守恒计算验证测试
+
+经过五次失败后的关键检查：是否质量守恒计算本身有bug？
+
+测试方法：
+1. 记录每个时间步的边界通量
+2. 计算理论质量：mass(t) = mass(0) + ∫(Q_in - Q_out)dt
+3. 对比with实际质量：mass_actual = Σ(h * dx * B)
+4. 如果两者一致 → get_mass_conservation_error()有bug
+   如果两者不一致 → 真的在泄漏质量
+
+这是30分钟内能完成的最重要测试！
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
+
+import numpy as np
+from solvers.godunov_fvm_solver import GodunvFVMSolver
+
+
+def test_mass_balance_verification():
+    """验证质量守恒计算的正确性"""
+
+    print("\n" + "="*80)
+    print("质量守恒计算验证测试")
+    print("="*80)
+
+    print("\n目的：")
+    print("  检查质量是否真的在泄漏，还是只是计算错误")
+    print("\n方法：")
+    print("  1. 记录边界通量：Q_in, Q_out")
+    print("  2. 计算理论质量：mass_theory = mass_0 + ∫(Q_in - Q_out)dt")
+    print("  3. 计算实际质量：mass_actual = Σ(h * dx * B)")
+    print("  4. 对比两者")
+
+    # 标准MacDonald设置
+    B = 1.0
+    L = 1000.0
+    n_cells = 20
+    Q_bc = 2.0
+    g = 9.81
+    h_c = (Q_bc**2 / (g * B**2))**(1/3)
+
+    print(f"\n测试场景（MacDonald标准）:")
+    print(f"  n_cells = {n_cells}")
+    print(f"  Q_bc = {Q_bc} m³/s")
+    print(f"  h_c = {h_c:.4f} m")
+
+    # 创建求解器
+    solver = GodunvFVMSolver(
+        width=B,
+        length=L,
+        n_cells=n_cells,
+        manning_n=0.03,
+        slope=0.002,
+        cfl=0.4,
+        order=1,
+        well_balanced=False,
+        use_numba=False
+    )
+
+    # 初始化
+    h_init = np.linspace(h_c * 1.5, h_c, n_cells)
+    Q_init = np.ones(n_cells) * Q_bc
+
+    bc_left = {'type': 'Q', 'value': Q_bc}
+    bc_right = {'type': 'h', 'value': h_c}
+
+    solver.initialize(h_init, Q_init, bc_left, bc_right)
+
+    # 初始质量
+    mass_0 = solver.initial_mass
+    print(f"  初始质量 = {mass_0:.2f} m³")
+
+    # 记录数据
+    times = []
+    mass_actual_list = []
+    mass_theory_list = []
+    inflow_cumulative = []
+    outflow_cumulative = []
+    mass_error_reported = []
+
+    # 累积通量
+    cumulative_inflow = 0.0
+    cumulative_outflow = 0.0
+
+    # 运行500s，每10s记录一次
+    t_final = 500.0
+    t_record = 10.0
+    t_next_record = t_record
+
+    print(f"\n运行到 t={t_final}s，每{t_record}s记录一次...")
+    print(f"\n{'时间(s)':<10} {'实际质量':<12} {'理论质量':<12} {'差异(%)':<12} {'报告误差(%)':<15}")
+    print("-" * 70)
+
+    step_count = 0
+    while solver.t < t_final and step_count < 5000:
+        # 时间步长
+        dt = solver.compute_dt()
+
+        # 执行一步（这会计算界面通量并保存到solver.last_F_h）
+        solver.step()
+        step_count += 1
+
+        # 获取界面通量（正确的边界通量）
+        # F_h[0] 是左边界通量，F_h[n] 是右边界通量
+        if solver.last_F_h is not None:
+            F_left = solver.last_F_h[0]  # 左边界质量通量
+            F_right = solver.last_F_h[-1]  # 右边界质量通量
+
+            # 累积通量
+            cumulative_inflow += F_left * dt
+            cumulative_outflow += F_right * dt
+
+        # 记录数据
+        if solver.t >= t_next_record or solver.t >= t_final:
+            # 实际质量
+            mass_actual = np.sum(solver.h * solver.dx * solver.B)
+
+            # 理论质量（质量平衡）
+            mass_theory = mass_0 + cumulative_inflow - cumulative_outflow
+
+            # 差异
+            difference = abs(mass_actual - mass_theory) / mass_theory * 100
+
+            # 报告的质量误差
+            error_reported = solver.get_mass_conservation_error()
+
+            # 保存
+            times.append(solver.t)
+            mass_actual_list.append(mass_actual)
+            mass_theory_list.append(mass_theory)
+            inflow_cumulative.append(cumulative_inflow)
+            outflow_cumulative.append(cumulative_outflow)
+            mass_error_reported.append(error_reported)
+
+            # 打印
+            print(f"{solver.t:<10.1f} {mass_actual:>11.2f} {mass_theory:>11.2f} {difference:>11.2f} {error_reported:>14.2f}")
+
+            t_next_record += t_record
+
+    # 分析结果
+    print(f"\n{'='*80}")
+    print("分析结果")
+    print("="*80)
+
+    # 最终值
+    mass_actual_final = mass_actual_list[-1]
+    mass_theory_final = mass_theory_list[-1]
+    error_reported_final = mass_error_reported[-1]
+
+    # 实际质量 vs 理论质量的差异
+    actual_vs_theory_error = abs(mass_actual_final - mass_theory_final) / mass_theory_final * 100
+
+    # 报告误差 vs 理论误差
+    theory_error = abs(mass_theory_final - mass_0) / mass_0 * 100
+
+    print(f"\n最终时刻 t={times[-1]:.1f}s:")
+    print(f"  初始质量:       {mass_0:.2f} m³")
+    print(f"  实际质量:       {mass_actual_final:.2f} m³")
+    print(f"  理论质量:       {mass_theory_final:.2f} m³")
+    print(f"  累积流入:       {cumulative_inflow:.2f} m³")
+    print(f"  累积流出:       {cumulative_outflow:.2f} m³")
+    print(f"  净变化（流入-流出）: {cumulative_inflow - cumulative_outflow:.2f} m³")
+
+    print(f"\n误差分析:")
+    print(f"  实际 vs 理论差异: {actual_vs_theory_error:.3f}%")
+    print(f"  理论质量变化:     {theory_error:.2f}%")
+    print(f"  报告的质量误差:   {error_reported_final:.2f}%")
+
+    # 判断
+    print(f"\n{'='*80}")
+    print("诊断结论")
+    print("="*80)
+
+    if actual_vs_theory_error < 0.1:
+        print(f"\n✅ 质量平衡成立！")
+        print(f"   实际质量 ≈ 理论质量（差异<0.1%）")
+        print(f"   这说明质量守恒计算**可能有问题**")
+
+        if abs(error_reported_final - theory_error) > 5:
+            print(f"\n❌ get_mass_conservation_error() 有BUG！")
+            print(f"   报告误差 = {error_reported_final:.2f}%")
+            print(f"   理论误差 = {theory_error:.2f}%")
+            print(f"   差异 = {abs(error_reported_final - theory_error):.2f}%")
+            print(f"\n🐛 找到bug位置：")
+            print(f"   检查 get_mass_conservation_error() 的实现")
+            print(f"   可能的问题：")
+            print(f"   - 使用了错误的初始质量")
+            print(f"   - 计算当前质量时包含了ghost cell")
+            print(f"   - dx或B的值不一致")
+        else:
+            print(f"\n⚠️ 报告误差与理论误差一致")
+            print(f"   质量确实在变化，但质量平衡成立")
+            print(f"   这说明边界通量处理可能合理，但问题在别处")
+
+    else:
+        print(f"\n❌ 质量平衡不成立！")
+        print(f"   实际质量 ≠ 理论质量（差异={actual_vs_theory_error:.3f}%）")
+        print(f"   这说明有限体积法的实现有问题")
+
+        print(f"\n🐛 可能的bug位置：")
+        print(f"   1. 通量计算不守恒（F_{{i+1/2}}在相邻单元不一致）")
+        print(f"   2. 边界通量处理错误")
+        print(f"   3. 源项错误地引入了质量（应该只影响动量）")
+        print(f"   4. 时间积分有bug")
+
+        print(f"\n需要进一步检查：")
+        print(f"   - 打印每个界面的通量")
+        print(f"   - 验证Σ(F_{{i+1/2}} - F_{{i-1/2}}) = F_right - F_left")
+        print(f"   - 检查源项是否只出现在dQ/dt，不出现在dh/dt")
+
+    # 检查时间依赖性
+    print(f"\n{'='*80}")
+    print("时间依赖性分析")
+    print("="*80)
+
+    # 线性回归：error vs time
+    times_arr = np.array(times)
+    errors_arr = np.array(mass_error_reported)
+
+    # 简单线性拟合
+    if len(times_arr) > 1:
+        coef = np.polyfit(times_arr, errors_arr, 1)
+        slope = coef[0]  # %/s
+
+        print(f"\n质量误差 vs 时间:")
+        print(f"  线性拟合: error = {coef[1]:.3f} + {slope:.4f} * t")
+        print(f"  误差增长率: {slope:.4f} %/s = {slope*60:.3f} %/min")
+
+        if slope > 0.05:
+            print(f"\n⚠️ 误差随时间线性增长")
+            print(f"   这是典型的**累积效应**")
+            print(f"   每个时间步都有微小误差，长时间累积成大误差")
+            print(f"\n可能原因：")
+            print(f"   - 边界条件每步引入小误差")
+            print(f"   - 数值耗散")
+            print(f"   - 舍入误差累积")
+        else:
+            print(f"\n✓ 误差增长较慢")
+            print(f"   不是明显的累积效应")
+
+    # 绘图（如果可能）
+    try:
+        import matplotlib.pyplot as plt
+
+        fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+        # 子图1: 质量vs时间
+        ax1 = axes[0, 0]
+        ax1.plot(times, [mass_0]*len(times), '--', label='初始质量', linewidth=2)
+        ax1.plot(times, mass_actual_list, 'o-', label='实际质量', linewidth=2)
+        ax1.plot(times, mass_theory_list, 's-', label='理论质量', linewidth=2)
+        ax1.set_xlabel('时间 (s)')
+        ax1.set_ylabel('质量 (m³)')
+        ax1.set_title('质量随时间变化')
+        ax1.legend()
+        ax1.grid(True, alpha=0.3)
+
+        # 子图2: 误差vs时间
+        ax2 = axes[0, 1]
+        ax2.plot(times, mass_error_reported, 'o-', label='报告误差', linewidth=2)
+        theory_errors = [abs(m - mass_0)/mass_0*100 for m in mass_theory_list]
+        ax2.plot(times, theory_errors, 's-', label='理论误差', linewidth=2)
+        ax2.set_xlabel('时间 (s)')
+        ax2.set_ylabel('质量误差 (%)')
+        ax2.set_title('质量误差随时间变化')
+        ax2.legend()
+        ax2.grid(True, alpha=0.3)
+
+        # 子图3: 累积通量
+        ax3 = axes[1, 0]
+        ax3.plot(times, inflow_cumulative, 'o-', label='累积流入', linewidth=2)
+        ax3.plot(times, outflow_cumulative, 's-', label='累积流出', linewidth=2)
+        net_flux = np.array(inflow_cumulative) - np.array(outflow_cumulative)
+        ax3.plot(times, net_flux, '^-', label='净变化', linewidth=2)
+        ax3.set_xlabel('时间 (s)')
+        ax3.set_ylabel('通量 (m³)')
+        ax3.set_title('累积通量随时间变化')
+        ax3.legend()
+        ax3.grid(True, alpha=0.3)
+
+        # 子图4: 实际vs理论差异
+        ax4 = axes[1, 1]
+        actual_vs_theory_diff = [abs(a - t)/t*100
+                                  for a, t in zip(mass_actual_list, mass_theory_list)]
+        ax4.plot(times, actual_vs_theory_diff, 'o-', linewidth=2, color='red')
+        ax4.set_xlabel('时间 (s)')
+        ax4.set_ylabel('差异 (%)')
+        ax4.set_title('实际质量 vs 理论质量的差异')
+        ax4.grid(True, alpha=0.3)
+        ax4.axhline(y=0.1, color='green', linestyle='--', label='0.1%阈值')
+        ax4.legend()
+
+        plt.tight_layout()
+        plt.savefig('tests/diagnostic/mass_balance_verification.png', dpi=150)
+        print(f"\n✅ 分析图已保存: tests/diagnostic/mass_balance_verification.png")
+    except Exception as e:
+        print(f"\n⚠️ 无法生成图表: {e}")
+
+    print("\n" + "="*80)
+    print("测试完成")
+    print("="*80)
+
+    return {
+        'actual_vs_theory_error': actual_vs_theory_error,
+        'error_reported': error_reported_final,
+        'theory_error': theory_error,
+        'mass_balance_holds': actual_vs_theory_error < 0.1
+    }
+
+
+if __name__ == "__main__":
+    result = test_mass_balance_verification()

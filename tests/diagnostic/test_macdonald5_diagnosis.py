@@ -1,0 +1,276 @@
+"""
+MacDonald Test 5 诊断测试
+
+目的：诊断为什么Test 5出现NaN
+策略：从最简单配置开始，逐步增加复杂度
+"""
+import numpy as np
+from solvers.godunov_fvm_solver import GodunvFVMSolver
+
+
+def compute_normal_depth(Q, B, S0, n, h_guess=1.0, tol=1e-6, max_iter=100):
+    """
+    使用Newton迭代计算正常水深
+
+    Manning方程: Q = (1/n) * A * R^(2/3) * S0^(1/2)
+    对于矩形渠道: A = B*h, R = B*h / (B + 2*h)
+    """
+    g = 9.81
+    h = h_guess
+
+    for i in range(max_iter):
+        A = B * h
+        P = B + 2 * h
+        R = A / P
+
+        Q_calc = (1.0/n) * A * (R**(2.0/3.0)) * np.sqrt(S0)
+
+        # 残差
+        f = Q_calc - Q
+
+        if abs(f) < tol:
+            return h
+
+        # 雅可比（数值导数）
+        dh = 1e-6
+        A_dh = B * (h + dh)
+        P_dh = B + 2 * (h + dh)
+        R_dh = A_dh / P_dh
+        Q_dh = (1.0/n) * A_dh * (R_dh**(2.0/3.0)) * np.sqrt(S0)
+        df_dh = (Q_dh - Q_calc) / dh
+
+        # Newton更新
+        h = h - f / df_dh
+
+        if h <= 0:
+            h = h_guess / 2.0
+
+    return h
+
+
+def test_macdonald5_step1_no_manning():
+    """
+    步骤1：无摩阻情况（排除Manning摩阻问题）
+    """
+    print("\n" + "="*80)
+    print("步骤1：无摩阻测试（n=0.0）")
+    print("="*80)
+
+    L = 1000.0
+    B = 50.0
+    S0 = 0.001
+    n = 0.0  # 无摩阻
+    Q = 20.0
+    n_cells = 50
+
+    h_init = 1.0
+    Q_init = Q
+
+    solver = GodunvFVMSolver(
+        width=B, length=L, n_cells=n_cells,
+        manning_n=n, slope=S0, cfl=0.5, order=1,
+        riemann_solver='hll', use_numba=True
+    )
+
+    bc_left = {'type': 'Q', 'value': Q}
+    bc_right = {'type': 'h', 'value': h_init}
+
+    h_init_arr = np.ones(n_cells) * h_init
+    Q_init_arr = np.ones(n_cells) * Q_init
+
+    solver.initialize(h_init_arr, Q_init_arr, bc_left, bc_right)
+
+    # 运行100步
+    dt = 0.5
+    n_steps = 100
+
+    for step in range(n_steps):
+        solver.step(dt)
+
+        if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
+            print(f"❌ NaN出现在第{step+1}步")
+            print(f"   h范围: [{np.nanmin(solver.h):.4f}, {np.nanmax(solver.h):.4f}]")
+            print(f"   Q范围: [{np.nanmin(solver.Q):.4f}, {np.nanmax(solver.Q):.4f}]")
+            return False
+
+    print(f"✅ 测试通过：运行{n_steps}步无NaN")
+    print(f"   最终h范围: [{np.min(solver.h):.4f}, {np.max(solver.h):.4f}]")
+    print(f"   最终Q范围: [{np.min(solver.Q):.4f}, {np.max(solver.Q):.4f}]")
+    print(f"   质量守恒误差: {abs(solver.get_mass_conservation_error()):.2f}%")
+
+    return True
+
+
+def test_macdonald5_step2_with_manning():
+    """
+    步骤2：带Manning摩阻（Test 5的实际配置）
+    """
+    print("\n" + "="*80)
+    print("步骤2：带Manning摩阻测试（n=0.025）")
+    print("="*80)
+
+    L = 1000.0
+    B = 50.0
+    S0 = 0.001
+    n = 0.025  # Manning系数
+    Q = 20.0
+    n_cells = 50
+    g = 9.81
+
+    # 计算正常水深
+    h_normal = compute_normal_depth(Q, B, S0, n)
+    u_normal = Q / (B * h_normal)
+    Fr_normal = u_normal / np.sqrt(g * h_normal)
+
+    print(f"\n理论值:")
+    print(f"  正常水深 h_n = {h_normal:.4f} m")
+    print(f"  流速 u_n = {u_normal:.4f} m/s")
+    print(f"  Froude数 Fr_n = {Fr_normal:.4f}")
+    print(f"  流态: {'缓流' if Fr_normal < 1 else '急流'}")
+
+    solver = GodunvFVMSolver(
+        width=B, length=L, n_cells=n_cells,
+        manning_n=n, slope=S0, cfl=0.5, order=1,
+        riemann_solver='hll', use_numba=True
+    )
+
+    bc_left = {'type': 'Q', 'value': Q}
+    bc_right = {'type': 'h', 'value': h_normal}
+
+    h_init_arr = np.ones(n_cells) * h_normal
+    Q_init_arr = np.ones(n_cells) * Q
+
+    solver.initialize(h_init_arr, Q_init_arr, bc_left, bc_right)
+
+    # 运行500步，检测NaN
+    dt = 0.5
+    n_steps = 500
+
+    print(f"\n运行{n_steps}步模拟...")
+
+    for step in range(n_steps):
+        solver.step(dt)
+
+        if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
+            print(f"❌ NaN出现在第{step+1}步")
+            print(f"   时间 t = {solver.t:.2f} s")
+
+            # 找到NaN位置
+            nan_h = np.where(np.isnan(solver.h))[0]
+            nan_Q = np.where(np.isnan(solver.Q))[0]
+
+            if len(nan_h) > 0:
+                print(f"   NaN位置(h): {nan_h[:5]}")
+            if len(nan_Q) > 0:
+                print(f"   NaN位置(Q): {nan_Q[:5]}")
+
+            # 显示NaN前的状态
+            if step > 0:
+                print(f"\n   NaN前的统计:")
+                print(f"     h范围: [{np.nanmin(solver.h):.6f}, {np.nanmax(solver.h):.6f}]")
+                print(f"     Q范围: [{np.nanmin(solver.Q):.6f}, {np.nanmax(solver.Q):.6f}]")
+
+            return False
+
+        # 每100步输出进度
+        if (step + 1) % 100 == 0:
+            h_mean = np.mean(solver.h)
+            h_std = np.std(solver.h)
+            mass_error = abs(solver.get_mass_conservation_error())
+            print(f"  步骤{step+1}: h_mean={h_mean:.4f}±{h_std:.4f} m, 质量误差={mass_error:.2f}%")
+
+    print(f"\n✅ 测试通过：运行{n_steps}步无NaN")
+    print(f"\n最终状态:")
+    h_mean = np.mean(solver.h)
+    h_error = abs(h_mean - h_normal) / h_normal * 100
+    print(f"  平均水深: {h_mean:.4f} m (目标: {h_normal:.4f} m)")
+    print(f"  水深误差: {h_error:.2f}%")
+    print(f"  质量守恒误差: {abs(solver.get_mass_conservation_error()):.2f}%")
+
+    return True
+
+
+def test_macdonald5_step3_second_order():
+    """
+    步骤3：测试二阶格式（可能的问题源）
+    """
+    print("\n" + "="*80)
+    print("步骤3：二阶格式测试（order=2）")
+    print("="*80)
+
+    L = 1000.0
+    B = 50.0
+    S0 = 0.001
+    n = 0.025
+    Q = 20.0
+    n_cells = 50
+
+    h_normal = compute_normal_depth(Q, B, S0, n)
+
+    print(f"正常水深 h_n = {h_normal:.4f} m")
+
+    solver = GodunvFVMSolver(
+        width=B, length=L, n_cells=n_cells,
+        manning_n=n, slope=S0, cfl=0.5, order=2,  # 二阶格式
+        riemann_solver='hll', use_numba=True
+    )
+
+    bc_left = {'type': 'Q', 'value': Q}
+    bc_right = {'type': 'h', 'value': h_normal}
+
+    h_init_arr = np.ones(n_cells) * h_normal
+    Q_init_arr = np.ones(n_cells) * Q
+
+    solver.initialize(h_init_arr, Q_init_arr, bc_left, bc_right)
+
+    # 运行200步
+    dt = 0.5
+    n_steps = 200
+
+    print(f"\n运行{n_steps}步模拟（二阶格式）...")
+
+    for step in range(n_steps):
+        solver.step(dt)
+
+        if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
+            print(f"❌ NaN出现在第{step+1}步（二阶格式）")
+            return False
+
+        if (step + 1) % 50 == 0:
+            h_mean = np.mean(solver.h)
+            mass_error = abs(solver.get_mass_conservation_error())
+            print(f"  步骤{step+1}: h_mean={h_mean:.4f} m, 质量误差={mass_error:.2f}%")
+
+    print(f"✅ 二阶格式测试通过：运行{n_steps}步无NaN")
+
+    return True
+
+
+if __name__ == "__main__":
+    print("\n" + "="*80)
+    print("MacDonald Test 5 诊断测试套件")
+    print("="*80)
+
+    # 步骤1：无摩阻
+    result1 = test_macdonald5_step1_no_manning()
+
+    if not result1:
+        print("\n⚠️ 步骤1失败，问题在基础求解器")
+        exit(1)
+
+    # 步骤2：带Manning摩阻
+    result2 = test_macdonald5_step2_with_manning()
+
+    if not result2:
+        print("\n⚠️ 步骤2失败，问题在Manning摩阻处理")
+        exit(1)
+
+    # 步骤3：二阶格式
+    result3 = test_macdonald5_step3_second_order()
+
+    if not result3:
+        print("\n⚠️ 步骤3失败，问题在二阶格式")
+
+    print("\n" + "="*80)
+    print("✅ 所有诊断测试通过！Test 5应该可以正常运行")
+    print("="*80)
