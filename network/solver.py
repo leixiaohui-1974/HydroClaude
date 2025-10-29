@@ -17,7 +17,7 @@ import numpy as np
 from typing import Dict, List, Tuple, Optional
 import time
 
-from .coupling import ReachCoupler, JunctionCoupler, BifurcationCoupler, StructureCoupler
+from .coupling import ReachCoupler, JunctionCoupler, BifurcationCoupler, StructureCoupler, PumpStationCoupler
 
 
 class NetworkSolver:
@@ -83,9 +83,17 @@ class NetworkSolver:
                 continue
 
             if n_upstream == 1 and n_downstream == 1:
-                # 检查是否有内部建筑物
-                if hasattr(node, 'internal_structure') and node.internal_structure is not None:
-                    # 使用StructureCoupler
+                # 检查节点类型
+                from .pump_station import PumpStationNode
+
+                if isinstance(node, PumpStationNode):
+                    # 泵站节点，使用PumpStationCoupler
+                    upstream_reach = self.network.reaches[node.upstream_reaches[0]]
+                    downstream_reach = self.network.reaches[node.downstream_reaches[0]]
+                    coupler = PumpStationCoupler(node, upstream_reach, downstream_reach)
+                    self.couplers[node_id] = coupler
+                elif hasattr(node, 'internal_structure') and node.internal_structure is not None:
+                    # 内部建筑物，使用StructureCoupler
                     coupler = StructureCoupler(node.internal_structure)
                     self.couplers[node_id] = coupler
                 else:
@@ -185,7 +193,7 @@ class NetworkSolver:
                 reach.solver.solve()
 
         # 2. 传递边界条件
-        self._transfer_boundary_conditions()
+        self._transfer_boundary_conditions(dt=dt)
 
         # 3. 更新时间
         self.t += dt
@@ -219,7 +227,7 @@ class NetworkSolver:
                     reach.solver.step(dt)
 
             # 传递边界条件
-            self._transfer_boundary_conditions()
+            self._transfer_boundary_conditions(dt=dt)
 
             # 检查收敛
             if self._check_convergence(tol):
@@ -250,8 +258,13 @@ class NetworkSolver:
         else:
             raise ValueError(f"Unknown solve_method: {self.solve_method}")
 
-    def _transfer_boundary_conditions(self):
-        """传递所有耦合器的边界条件"""
+    def _transfer_boundary_conditions(self, dt: Optional[float] = None):
+        """
+        传递所有耦合器的边界条件
+
+        Args:
+            dt: 时间步长 (s)，用于泵站能耗计算
+        """
         for node_id, coupler in self.couplers.items():
             if isinstance(coupler, ReachCoupler):
                 coupler.transfer_boundary_conditions()
@@ -261,6 +274,8 @@ class NetworkSolver:
                 coupler.couple()
             elif isinstance(coupler, StructureCoupler):
                 coupler.couple()
+            elif isinstance(coupler, PumpStationCoupler):
+                coupler.couple(dt=dt)
 
     def _check_convergence(self, tol: float = 1e-4) -> bool:
         """

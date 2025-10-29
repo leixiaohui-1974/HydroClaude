@@ -31,13 +31,17 @@ from .validation import (
     validate_network, visualize_network
 )
 from .coupling import (
-    ReachCoupler, JunctionCoupler, BifurcationCoupler, StructureCoupler,
+    ReachCoupler, JunctionCoupler, BifurcationCoupler, StructureCoupler, PumpStationCoupler,
     create_reach_coupler, create_junction_coupler, create_bifurcation_coupler,
     create_structure_coupler
 )
 from .structures import (
     InternalStructure, InternalWeir, InternalGate, InternalOrifice,
     create_internal_weir, create_internal_gate, create_internal_orifice
+)
+from .pump_station import (
+    PumpStationNode, Pump,
+    create_pump_station
 )
 from .solver import NetworkSolver, create_network_solver, solve_network
 
@@ -51,12 +55,14 @@ __all__ = [
     'BifurcationNode',
     'ReservoirNode',
     'BoundaryNode',
+    'PumpStationNode',
     # 便捷函数
     'create_junction',
     'create_bifurcation',
     'create_reservoir',
     'create_inflow_boundary',
     'create_outflow_boundary',
+    'create_pump_station',
     # 验证和可视化
     'NetworkValidator',
     'NetworkVisualizer',
@@ -67,6 +73,7 @@ __all__ = [
     'JunctionCoupler',
     'BifurcationCoupler',
     'StructureCoupler',
+    'PumpStationCoupler',
     'create_reach_coupler',
     'create_junction_coupler',
     'create_bifurcation_coupler',
@@ -79,6 +86,8 @@ __all__ = [
     'create_internal_weir',
     'create_internal_gate',
     'create_internal_orifice',
+    # 泵站组件
+    'Pump',
     # 求解器
     'NetworkSolver',
     'create_network_solver',

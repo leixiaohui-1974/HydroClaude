@@ -471,6 +471,97 @@ def create_structure_coupler(internal_structure) -> StructureCoupler:
     return StructureCoupler(internal_structure)
 
 
+class PumpStationCoupler:
+    """
+    泵站耦合器
+
+    处理泵站节点的耦合：
+    - 1条上游河段 → 1个泵站 → 1条下游河段
+
+    特点:
+    - 流量由泵站控制策略确定
+    - 提升水位（克服高差）
+    - 功率和能耗计算
+    - 支持多控制模式
+    """
+
+    def __init__(self, pump_station_node, upstream_reach, downstream_reach):
+        """
+        初始化泵站耦合器
+
+        Args:
+            pump_station_node: PumpStationNode实例
+            upstream_reach: 上游河段
+            downstream_reach: 下游河段
+        """
+        self.pump_station = pump_station_node
+        self.upstream = upstream_reach
+        self.downstream = downstream_reach
+        self.node = pump_station_node
+
+        # 状态
+        self.Q_pump = 0.0
+        self.H_pump = 0.0
+
+    def couple(self, dt: Optional[float] = None) -> float:
+        """
+        执行泵站耦合
+
+        Args:
+            dt: 时间步长 (s)
+
+        Returns:
+            泵站流量 (m³/s)
+        """
+        # 获取上下游状态
+        Q_upstream = self.upstream.get_downstream_Q()
+        h_upstream = self.upstream.get_downstream_h()
+        h_downstream = self.downstream.get_upstream_h()
+
+        # 控制策略更新
+        Q_pump, n_running = self.pump_station.update_control(
+            Q_available=Q_upstream,
+            h_upstream=h_upstream,
+            h_downstream=h_downstream
+        )
+
+        # 计算泵站扬程
+        H_pump = self.pump_station.compute_pump_head(Q_pump)
+
+        # 计算功率和效率
+        self.pump_station.compute_power_and_efficiency(Q_pump, H_pump)
+
+        # 更新能耗
+        if dt is not None:
+            self.pump_station.update_energy(dt)
+
+        # 设置边界条件
+        self.upstream.solver.bc_right = {'type': 'Q', 'value': Q_pump}
+        self.downstream.solver.bc_left = {'type': 'Q', 'value': Q_pump}
+
+        # 更新节点状态
+        self.pump_station.Q_in = [Q_pump]
+        self.pump_station.Q_out = [Q_pump]
+        self.pump_station.h = h_upstream + H_pump
+
+        self.Q_pump = Q_pump
+        self.H_pump = H_pump
+
+        return Q_pump
+
+    def check_mass_balance(self, tol: float = 1e-3) -> Tuple[bool, float]:
+        """检查质量平衡"""
+        Q_in = self.upstream.get_downstream_Q()
+        Q_out = self.downstream.get_upstream_Q()
+        error = abs(Q_in - Q_out)
+        return error < tol, error
+
+
+def create_pump_station_coupler(pump_station_node, upstream_reach, downstream_reach) -> PumpStationCoupler:
+    """创建泵站耦合器（便捷函数）"""
+    return PumpStationCoupler(pump_station_node, upstream_reach, downstream_reach)
+
+
 if __name__ == "__main__":
     """简单测试"""
     print("Network Coupling Module")
@@ -481,9 +572,11 @@ if __name__ == "__main__":
     print("  - JunctionCoupler: 汇流节点耦合")
     print("  - BifurcationCoupler: 分流节点耦合")
     print("  - StructureCoupler: 内部建筑物耦合")
+    print("  - PumpStationCoupler: 泵站耦合")
     print()
     print("Convenience functions:")
     print("  - create_reach_coupler()")
     print("  - create_junction_coupler()")
     print("  - create_bifurcation_coupler()")
     print("  - create_structure_coupler()")
+    print("  - create_pump_station_coupler()")
