@@ -55,7 +55,9 @@ class GodunvFVMWENO3(GodunvFVMSolver):
         riemann_solver: str = 'hll',
         well_balanced: bool = False,
         use_numba: bool = True,
-        dt_max: Optional[float] = None
+        dt_max: Optional[float] = None,
+        entropy_fix: bool = False,
+        critical_flow_treatment: bool = False
     ):
         """
         初始化
@@ -67,6 +69,8 @@ class GodunvFVMWENO3(GodunvFVMSolver):
             well_balanced: 是否使用Well-Balanced格式
             use_numba: 是否使用Numba加速
             dt_max: 最大时间步长（秒）
+            entropy_fix: 是否使用Harten-Hyman entropy修正
+            critical_flow_treatment: 是否使用临界流特殊处理
         """
         # 调用父类初始化，但强制order=3
         super().__init__(
@@ -82,7 +86,9 @@ class GodunvFVMWENO3(GodunvFVMSolver):
             riemann_solver=riemann_solver,
             well_balanced=well_balanced,
             use_numba=use_numba,
-            dt_max=dt_max
+            dt_max=dt_max,
+            entropy_fix=entropy_fix,
+            critical_flow_treatment=critical_flow_treatment
         )
         
         self.weno_eps = weno_epsilon

@@ -70,7 +70,9 @@ class GodunvFVMSolver:
         use_numba: bool = True,
         source_term_method: str = 'standard',
         source_term_treatment: str = 'coupled',
-        dt_max: float = None
+        dt_max: float = None,
+        entropy_fix: bool = False,
+        critical_flow_treatment: bool = False
     ):
         """
         初始化
@@ -105,6 +107,10 @@ class GodunvFVMSolver:
                    None表示无限制，使用完全自适应时间步长
                    设置此参数可防止大时间步导致的数值不稳定
                    推荐值：0.5-1.0s（取决于问题尺度）
+            entropy_fix: 是否使用Harten-Hyman entropy修正 (默认False)
+                        True时在跨音速区域应用entropy修正，防止数值振荡
+            critical_flow_treatment: 是否使用临界流特殊处理 (默认False)
+                                   True时在临界流区域(0.9<Fr<1.1)增加数值耗散
         """
         self.B = width
         self.L = length
@@ -129,6 +135,8 @@ class GodunvFVMSolver:
         self.well_balanced = well_balanced
         self.source_term_method = source_term_method.lower()
         self.source_term_treatment = source_term_treatment.lower()
+        self.entropy_fix = entropy_fix
+        self.critical_flow_treatment = critical_flow_treatment
 
         # 验证source_term_method参数
         if self.source_term_method not in ['standard', 'interface']:
@@ -286,6 +294,10 @@ class GodunvFVMSolver:
         print(f"  Riemann求解器: {self.riemann_solver.upper()}")
         if self.well_balanced:
             print(f"  Well-Balanced: 启用 (Hydrostatic Reconstruction)")
+        if self.entropy_fix:
+            print(f"  Entropy Fix: 启用 (Harten-Hyman)")
+        if self.critical_flow_treatment:
+            print(f"  Critical Flow Treatment: 启用 (Lax-Friedrichs耗散)")
         if self.use_numba:
             print(f"  🚀 Numba JIT: 启用 (高性能模式)")
     
@@ -1076,6 +1088,15 @@ class GodunvFVMSolver:
         S_L = min(u_L - c_L, u_R - c_R)
         S_R = max(u_L + c_L, u_R + c_R)
 
+        # Entropy修正（如果启用）
+        if self.entropy_fix:
+            # 计算delta（通常取最大波速的10%）
+            delta = 0.1 * max(abs(S_L), abs(S_R), 1e-10)
+
+            # 对两个波速都应用entropy修正
+            S_L = self._entropy_fix(S_L, delta)
+            S_R = self._entropy_fix(S_R, delta)
+
         # 通量（左右）
         F_h_L = Q_L
         F_Q_L = Q_L**2 / A_L + 0.5 * self.g * h_L**2 * self.B
@@ -1086,10 +1107,12 @@ class GodunvFVMSolver:
         # HLL通量
         if S_L >= 0:
             # 超音速向右
-            return F_h_L, F_Q_L
+            F_h = F_h_L
+            F_Q = F_Q_L
         elif S_R <= 0:
             # 超音速向左
-            return F_h_R, F_Q_R
+            F_h = F_h_R
+            F_Q = F_Q_R
         else:
             # 跨音速（HLL平均）
             U_h_L = h_L
@@ -1100,7 +1123,32 @@ class GodunvFVMSolver:
             F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / (S_R - S_L)
             F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / (S_R - S_L)
 
-            return F_h, F_Q
+        # 临界流特殊处理（如果启用）
+        if self.critical_flow_treatment:
+            # 计算左右Froude数
+            Fr_L = abs(u_L) / c_L if c_L > 1e-10 else 0.0
+            Fr_R = abs(u_R) / c_R if c_R > 1e-10 else 0.0
+
+            # 平均Froude数
+            Fr_avg = 0.5 * (Fr_L + Fr_R)
+
+            # 如果接近临界流（0.9 < Fr < 1.1），增加数值耗散
+            if 0.9 < Fr_avg < 1.1:
+                # 耗散强度随着接近Fr=1而增加
+                # alpha在Fr=1时最大（0.5），在Fr=0.9或1.1时为0
+                alpha = 0.5 * (1.0 - abs(Fr_avg - 1.0) / 0.1)
+
+                # Lax-Friedrichs型耗散
+                max_speed = max(abs(u_L) + c_L, abs(u_R) + c_R, 1e-10)
+
+                # 增加耗散项（类似于人工粘性）
+                dissipation_h = alpha * max_speed * (h_R - h_L)
+                dissipation_Q = alpha * max_speed * (Q_R - Q_L)
+
+                F_h -= dissipation_h
+                F_Q -= dissipation_Q
+
+        return F_h, F_Q
     
     def _compute_friction_source_term(self, h: float, Q: float, cell_idx: int) -> float:
         """
@@ -1498,6 +1546,88 @@ class GodunvFVMSolver:
             'step': self.step_count,
             'mass_error': self.get_mass_conservation_error()
         }
+
+    def _entropy_fix(self, lambda_val: float, delta: float) -> float:
+        """
+        Harten-Hyman Entropy修正
+
+        在跨音速区域平滑波速，防止数值振荡
+
+        Args:
+            lambda_val: 原始波速
+            delta: 修正参数（通常为最大波速的10%）
+
+        Returns:
+            修正后的波速
+        """
+        if abs(lambda_val) >= delta:
+            return lambda_val
+        else:
+            return (lambda_val**2 + delta**2) / (2.0 * delta)
+
+    def compute_froude_number(self, h=None, Q=None) -> np.ndarray:
+        """
+        计算Froude数
+
+        Fr = u / sqrt(g*h)
+
+        Args:
+            h: 水深数组（默认使用self.h）
+            Q: 流量数组（默认使用self.Q）
+
+        Returns:
+            Froude数数组
+        """
+        if h is None:
+            h = self.h
+        if Q is None:
+            Q = self.Q
+
+        Fr = np.zeros_like(h)
+        for i in range(len(h)):
+            if h[i] > self.eps_dry:
+                u = Q[i] / (self.B * h[i])
+                c = np.sqrt(self.g * h[i])
+                Fr[i] = u / c if c > 1e-10 else 0.0
+            else:
+                Fr[i] = 0.0
+        return Fr
+
+    def is_critical_flow(self, Fr=None, threshold=0.1) -> np.ndarray:
+        """
+        检测临界流区域
+
+        临界流定义为 |Fr - 1.0| < threshold
+
+        Args:
+            Fr: Froude数数组（默认自动计算）
+            threshold: 临界流阈值（默认0.1）
+
+        Returns:
+            布尔数组，True表示临界流
+        """
+        if Fr is None:
+            Fr = self.compute_froude_number()
+        return np.abs(Fr - 1.0) < threshold
+
+    def get_flow_regime(self, Fr=None) -> np.ndarray:
+        """
+        流态分类
+
+        Args:
+            Fr: Froude数数组（默认自动计算）
+
+        Returns:
+            整数数组：0=亚临界, 1=临界, 2=超临界
+        """
+        if Fr is None:
+            Fr = self.compute_froude_number()
+
+        regime = np.zeros_like(Fr, dtype=int)
+        regime[Fr < 0.9] = 0  # 亚临界
+        regime[(Fr >= 0.9) & (Fr <= 1.1)] = 1  # 临界
+        regime[Fr > 1.1] = 2  # 超临界
+        return regime
 
 
 if __name__ == "__main__":

@@ -99,7 +99,9 @@ class ModelBuilder:
                     riemann_solver=solver_cfg['riemann_solver'],
                     well_balanced=solver_cfg['well_balanced'],
                     use_numba=solver_cfg['use_numba'],
-                    dt_max=solver_cfg.get('dt_max', None)
+                    dt_max=solver_cfg.get('dt_max', None),
+                    entropy_fix=solver_cfg.get('entropy_fix', False),
+                    critical_flow_treatment=solver_cfg.get('critical_flow_treatment', False)
                 )
             elif spatial_order in [1, 2]:
                 # 使用标准Godunov FVM求解器（1阶或2阶MUSCL）
@@ -116,7 +118,9 @@ class ModelBuilder:
                     riemann_solver=solver_cfg['riemann_solver'],
                     well_balanced=solver_cfg['well_balanced'],
                     use_numba=solver_cfg['use_numba'],
-                    dt_max=solver_cfg.get('dt_max', None)
+                    dt_max=solver_cfg.get('dt_max', None),
+                    entropy_fix=solver_cfg.get('entropy_fix', False),
+                    critical_flow_treatment=solver_cfg.get('critical_flow_treatment', False)
                 )
             else:
                 raise ValueError(f"不支持的spatial_order: {spatial_order}. 支持: 1, 2, 3")
