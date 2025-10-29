@@ -1195,8 +1195,41 @@ class GodunvFVMSolver:
         # 右ghost
         if self.bc_right['type'] == 'h':
             value = self.bc_right['value']
-            h_ext[n+1] = value if not callable(value) else value(self.t)
-            Q_ext[n+1] = Q[n-1]
+            h_bc = value if not callable(value) else value(self.t)
+            h_ext[n+1] = h_bc
+
+            # 检查是否是临界水深边界
+            # 临界水深定义: h_c = (Q^2 / (g * B^2))^(1/3)
+            # 即 Q_c = B * sqrt(g * h_c^3)
+            Q_critical = self.B * np.sqrt(self.g * h_bc**3)
+
+            # 计算当前边界单元的Froude数
+            if h[n-1] > self.eps_dry:
+                u_boundary = Q[n-1] / (h[n-1] * self.B)
+                Fr_boundary = abs(u_boundary) / np.sqrt(self.g * h[n-1])
+            else:
+                Fr_boundary = 0.0
+
+            # 如果边界水深接近临界水深 (检查Fr是否接近1)
+            # 或者如果左边界是固定流量，使用该流量来计算临界状态
+            if self.bc_left['type'] == 'Q':
+                # 左边界固定流量，检查是否对应临界状态
+                Q_left = self.bc_left['value'] if not callable(self.bc_left['value']) else self.bc_left['value'](self.t)
+                h_c_from_Q = (Q_left**2 / (self.g * self.B**2))**(1/3)
+
+                # 如果边界水深接近由左边界流量计算的临界水深
+                if abs(h_bc - h_c_from_Q) / h_c_from_Q < 0.1:  # 10%容差
+                    # 使用左边界流量（确保连续性）
+                    Q_ext[n+1] = Q_left
+                else:
+                    # 非临界状态，外推流量
+                    Q_ext[n+1] = Q[n-1]
+            elif 0.8 < Fr_boundary < 1.2:
+                # 边界接近临界状态，使用临界流量
+                Q_ext[n+1] = Q_critical
+            else:
+                # 远离临界状态，外推流量
+                Q_ext[n+1] = Q[n-1]
         elif self.bc_right['type'] == 'Q':
             h_ext[n+1] = h[n-1]
             value = self.bc_right['value']
