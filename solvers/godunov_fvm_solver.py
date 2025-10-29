@@ -240,9 +240,10 @@ class GodunvFVMSolver:
         self.Q = Q_init.copy()
         self.bc_left = bc_left
         self.bc_right = bc_right
-        
-        self.initial_mass = self._compute_total_mass()
-        
+
+        # 计算初始质量
+        self.initial_mass = self._compute_total_mass(exclude_boundary_cells=False)
+
         print(f"  初始质量: {self.initial_mass:.2f} m³")
     
     def compute_dt(self) -> float:
@@ -284,19 +285,19 @@ class GodunvFVMSolver:
         dh_dt, dQ_dt = self._compute_rhs(h_n, Q_n)
         h_star = h_n + dt * dh_dt
         Q_star = Q_n + dt * dQ_dt
-        
-        # 边界条件
-        h_star, Q_star = self._apply_bc(h_star, Q_star)
-        
+
+        # 不在中间步骤强制边界条件（避免质量泄漏）
+        # h_star, Q_star = self._apply_bc(h_star, Q_star)
+
         # 干床处理
         h_star = np.maximum(h_star, 0.0)
-        
+
         # === 第2步：梯形修正 ===
         dh_dt_star, dQ_dt_star = self._compute_rhs(h_star, Q_star)
         self.h = 0.5 * (h_n + h_star) + 0.5 * dt * dh_dt_star
         self.Q = 0.5 * (Q_n + Q_star) + 0.5 * dt * dQ_dt_star
-        
-        # 边界条件
+
+        # 只在最后强制边界条件
         self.h, self.Q = self._apply_bc(self.h, self.Q)
         
         # 干床
@@ -1060,13 +1061,40 @@ class GodunvFVMSolver:
                 F_h[n] = 0.0
                 F_Q[n] = 0.0
 
-    def _compute_total_mass(self) -> float:
-        """计算总质量"""
-        return np.sum(self.h * self.B * self.dx)
+    def _compute_total_mass(self, exclude_boundary_cells=False) -> float:
+        """
+        计算总质量
+
+        Args:
+            exclude_boundary_cells: 是否排除边界单元
+                - True: 只计算内部单元质量（适用于强制边界）
+                - False: 计算所有单元质量（默认）
+        """
+        if exclude_boundary_cells:
+            # 判断哪些边界被强制
+            exclude_left = self.bc_left['type'] in ['supercritical', 'h', 'Q', 'critical']
+            exclude_right = self.bc_right['type'] in ['supercritical', 'h', 'Q', 'critical']
+
+            # 确定计算域范围
+            start_idx = 1 if exclude_left else 0
+            end_idx = len(self.h) - 1 if exclude_right else len(self.h)
+
+            # 只计算内部单元
+            return np.sum(self.h[start_idx:end_idx] * self.B * self.dx)
+        else:
+            # 计算所有单元
+            return np.sum(self.h * self.B * self.dx)
     
-    def get_mass_conservation_error(self) -> float:
-        """质量守恒误差 (%)"""
-        current_mass = self._compute_total_mass()
+    def get_mass_conservation_error(self, exclude_boundary_cells=False) -> float:
+        """
+        质量守恒误差 (%)
+
+        Args:
+            exclude_boundary_cells: 是否排除边界单元（默认False）
+                - True: 只检查内部计算域的质量守恒
+                - False: 检查包括边界在内的所有单元
+        """
+        current_mass = self._compute_total_mass(exclude_boundary_cells=exclude_boundary_cells)
         if self.initial_mass > 1e-10:
             return (current_mass - self.initial_mass) / self.initial_mass * 100.0
         return 0.0

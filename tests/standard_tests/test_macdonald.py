@@ -382,7 +382,7 @@ class TestMacDonald:
         return h_analytical
 
     @pytest.mark.p1
-    @pytest.mark.skip(reason="M2曲线存在质量守恒问题(33%误差)，与边界条件类型无关。需要深入调查边界单元处理和时间积分。")
+    # @pytest.mark.skip(reason="M2曲线存在质量守恒问题(33%误差)，与边界条件类型无关。需要深入调查边界单元处理和时间积分。")
     def test_macdonald_2_drawdown_curve(self):
         """
         MacDonald Test 2: M2下降曲线（Drawdown Curve）
