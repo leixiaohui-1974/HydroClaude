@@ -69,7 +69,8 @@ class GodunvFVMSolver:
         well_balanced: bool = False,
         use_numba: bool = True,
         source_term_method: str = 'standard',
-        source_term_treatment: str = 'coupled'
+        source_term_treatment: str = 'coupled',
+        dt_max: float = None
     ):
         """
         初始化
@@ -100,6 +101,10 @@ class GodunvFVMSolver:
                                  'strang_splitting': Strang算子分裂法
                                                     分步求解：通量(dt/2) → 源项(dt) → 通量(dt/2)
                                                     优点：解耦通量-源项，减少数值误差
+            dt_max: 最大时间步长限制 (秒，可选)
+                   None表示无限制，使用完全自适应时间步长
+                   设置此参数可防止大时间步导致的数值不稳定
+                   推荐值：0.5-1.0s（取决于问题尺度）
         """
         self.B = width
         self.L = length
@@ -117,6 +122,7 @@ class GodunvFVMSolver:
 
         self.g = g
         self.cfl = cfl
+        self.dt_max = dt_max
         self.eps_dry = eps_dry
         self.order = order
         self.riemann_solver = riemann_solver.lower()
@@ -307,19 +313,28 @@ class GodunvFVMSolver:
         print(f"  初始质量: {self.initial_mass:.2f} m³")
     
     def compute_dt(self) -> float:
-        """CFL条件计算时间步长"""
+        """
+        CFL条件计算时间步长
+
+        Returns:
+            dt: 时间步长（秒），如果设置了dt_max则会被限制
+        """
         h_safe = np.maximum(self.h, self.eps_dry)
         A = h_safe * self.B
         u = self.Q / A
         c = np.sqrt(self.g * h_safe)
-        
+
         lambda_max = np.max(np.abs(u) + c)
-        
+
         if lambda_max > 1e-10:
             dt = self.cfl * self.dx / lambda_max
         else:
             dt = 1.0
-        
+
+        # 应用dt_max限制（如果设置）
+        if self.dt_max is not None:
+            dt = min(dt, self.dt_max)
+
         return dt
     
     def step(self, dt: Optional[float] = None) -> Tuple[np.ndarray, np.ndarray]:

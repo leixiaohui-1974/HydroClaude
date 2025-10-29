@@ -92,7 +92,8 @@ class ModelBuilder:
                 order=solver_cfg['spatial_order'],
                 riemann_solver=solver_cfg['riemann_solver'],
                 well_balanced=solver_cfg['well_balanced'],
-                use_numba=solver_cfg['use_numba']
+                use_numba=solver_cfg['use_numba'],
+                dt_max=solver_cfg.get('dt_max', None)
             )
         else:
             raise ValueError(f"不支持的求解器类型: {solver_cfg['type']}")
