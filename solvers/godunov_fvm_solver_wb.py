@@ -45,7 +45,8 @@ class GodunvFVMSolverWB:
         eps_dry: float = 1e-6,
         order: int = 2,
         well_balanced: bool = True,
-        entropy_fix: bool = False
+        entropy_fix: bool = False,
+        critical_flow_treatment: bool = False
     ):
         """
         初始化Well-Balanced求解器
@@ -53,6 +54,7 @@ class GodunvFVMSolverWB:
         Args:
             well_balanced: 是否使用Well-Balanced技术
             entropy_fix: 是否使用Harten-Hyman entropy修正
+            critical_flow_treatment: 是否使用临界流特殊处理
         """
         self.B = width
         self.L = length
@@ -66,6 +68,7 @@ class GodunvFVMSolverWB:
         self.order = order
         self.well_balanced = well_balanced
         self.entropy_fix = entropy_fix
+        self.critical_flow_treatment = critical_flow_treatment
         
         # 单元中心
         self.h = np.zeros(n_cells)
@@ -85,11 +88,13 @@ class GodunvFVMSolverWB:
         
         wb_status = "启用" if well_balanced else "禁用"
         entropy_status = "启用" if entropy_fix else "禁用"
+        critical_status = "启用" if critical_flow_treatment else "禁用"
         print(f"Godunov-FVM Well-Balanced求解器:")
         print(f"  单元数: {n_cells}, dx={self.dx:.3f}m")
         print(f"  空间精度: {order}阶")
         print(f"  Well-Balanced: {wb_status}")
         print(f"  Entropy Fix: {entropy_status}")
+        print(f"  Critical Flow Treatment: {critical_status}")
         print(f"  底坡: {slope}")
     
     def initialize(self, h_init, Q_init, bc_left, bc_right):
@@ -397,10 +402,12 @@ class GodunvFVMSolverWB:
         # HLL格式
         if S_L >= 0:
             # 完全左侧
-            return F_h_L, F_Q_L
+            F_h = F_h_L
+            F_Q = F_Q_L
         elif S_R <= 0:
             # 完全右侧
-            return F_h_R, F_Q_R
+            F_h = F_h_R
+            F_Q = F_Q_R
         else:
             # 中间状态
             U_h_L = h_L
@@ -411,7 +418,32 @@ class GodunvFVMSolverWB:
             F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / (S_R - S_L)
             F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / (S_R - S_L)
 
-            return F_h, F_Q
+        # 临界流特殊处理（如果启用）
+        if self.critical_flow_treatment:
+            # 计算左右Froude数
+            Fr_L = abs(u_L) / c_L if c_L > 1e-10 else 0.0
+            Fr_R = abs(u_R) / c_R if c_R > 1e-10 else 0.0
+
+            # 平均Froude数
+            Fr_avg = 0.5 * (Fr_L + Fr_R)
+
+            # 如果接近临界流（0.9 < Fr < 1.1），增加数值耗散
+            if 0.9 < Fr_avg < 1.1:
+                # 耗散强度随着接近Fr=1而增加
+                # alpha在Fr=1时最大（0.5），在Fr=0.9或1.1时为0
+                alpha = 0.5 * (1.0 - abs(Fr_avg - 1.0) / 0.1)
+
+                # Lax-Friedrichs型耗散
+                max_speed = max(abs(u_L) + c_L, abs(u_R) + c_R, 1e-10)
+
+                # 增加耗散项（类似于人工粘性）
+                dissipation_h = alpha * max_speed * (h_R - h_L)
+                dissipation_Q = alpha * max_speed * (Q_R - Q_L)
+
+                F_h -= dissipation_h
+                F_Q -= dissipation_Q
+
+        return F_h, F_Q
     
     def _extend_with_ghosts(self, h, Q):
         """扩展ghost cells"""
