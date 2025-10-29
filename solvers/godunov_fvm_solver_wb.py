@@ -44,13 +44,15 @@ class GodunvFVMSolverWB:
         cfl: float = 0.5,
         eps_dry: float = 1e-6,
         order: int = 2,
-        well_balanced: bool = True
+        well_balanced: bool = True,
+        entropy_fix: bool = False
     ):
         """
         初始化Well-Balanced求解器
-        
+
         Args:
             well_balanced: 是否使用Well-Balanced技术
+            entropy_fix: 是否使用Harten-Hyman entropy修正
         """
         self.B = width
         self.L = length
@@ -63,6 +65,7 @@ class GodunvFVMSolverWB:
         self.eps_dry = eps_dry
         self.order = order
         self.well_balanced = well_balanced
+        self.entropy_fix = entropy_fix
         
         # 单元中心
         self.h = np.zeros(n_cells)
@@ -81,10 +84,12 @@ class GodunvFVMSolverWB:
         self.step_count = 0
         
         wb_status = "启用" if well_balanced else "禁用"
+        entropy_status = "启用" if entropy_fix else "禁用"
         print(f"Godunov-FVM Well-Balanced求解器:")
         print(f"  单元数: {n_cells}, dx={self.dx:.3f}m")
         print(f"  空间精度: {order}阶")
         print(f"  Well-Balanced: {wb_status}")
+        print(f"  Entropy Fix: {entropy_status}")
         print(f"  底坡: {slope}")
     
     def initialize(self, h_init, Q_init, bc_left, bc_right):
@@ -327,41 +332,85 @@ class GodunvFVMSolverWB:
         
         return phi_L, phi_R
     
+    def _entropy_fix(self, lambda_val, delta):
+        """
+        Harten-Hyman Entropy修正
+
+        防止特征速度变号附近的数值振荡
+
+        参数:
+            lambda_val: 特征速度
+            delta: entropy修正参数（通常为max(|λ_L|, |λ_R|)的10%）
+
+        返回:
+            修正后的特征速度
+        """
+        if abs(lambda_val) >= delta:
+            return lambda_val
+        else:
+            # 平滑处理接近零的特征速度
+            return (lambda_val**2 + delta**2) / (2.0 * delta)
+
     def _hll_flux(self, h_L, Q_L, h_R, Q_R):
-        """HLL Riemann求解器"""
+        """
+        HLL Riemann求解器（可选entropy修正）
+
+        参数:
+            h_L, Q_L: 左状态（水深、流量）
+            h_R, Q_R: 右状态
+
+        返回:
+            F_h, F_Q: 数值通量
+        """
         if h_L < self.eps_dry and h_R < self.eps_dry:
             return 0.0, 0.0
-        
+
+        # 计算左右状态
         A_L = max(h_L * self.B, self.eps_dry * self.B)
         u_L = Q_L / A_L
         c_L = np.sqrt(self.g * max(h_L, 0.0))
-        
+
         A_R = max(h_R * self.B, self.eps_dry * self.B)
         u_R = Q_R / A_R
         c_R = np.sqrt(self.g * max(h_R, 0.0))
-        
+
+        # 估算波速
         S_L = min(u_L - c_L, u_R - c_R)
         S_R = max(u_L + c_L, u_R + c_R)
-        
+
+        # Entropy修正（如果启用）
+        if self.entropy_fix:
+            # 计算delta（通常取最大波速的10%）
+            delta = 0.1 * max(abs(S_L), abs(S_R), 1e-10)
+
+            # 对两个波速都应用entropy修正
+            S_L = self._entropy_fix(S_L, delta)
+            S_R = self._entropy_fix(S_R, delta)
+
+        # 计算通量
         F_h_L = Q_L
         F_Q_L = Q_L**2 / A_L + 0.5 * self.g * h_L**2 * self.B
-        
+
         F_h_R = Q_R
         F_Q_R = Q_R**2 / A_R + 0.5 * self.g * h_R**2 * self.B
-        
+
+        # HLL格式
         if S_L >= 0:
+            # 完全左侧
             return F_h_L, F_Q_L
         elif S_R <= 0:
+            # 完全右侧
             return F_h_R, F_Q_R
         else:
+            # 中间状态
             U_h_L = h_L
             U_h_R = h_R
             U_Q_L = Q_L
             U_Q_R = Q_R
-            
+
             F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / (S_R - S_L)
             F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / (S_R - S_L)
-            
+
             return F_h, F_Q
     
     def _extend_with_ghosts(self, h, Q):
