@@ -412,6 +412,14 @@ class GodunvFVMSolver:
                     F_h, F_Q, self.S0, h, Q, self.B, self.g, self.n, self.eps_dry, self.dx
                 )
 
+                # 注释掉边界通量强制 - 让Riemann求解器基于ghost cells计算
+                # self._enforce_boundary_fluxes(F_h, F_Q, h, Q)
+                # dh_dt[0] = -(F_h[1] - F_h[0]) / self.dx
+                # dQ_dt[0] = -(F_Q[1] - F_Q[0]) / self.dx + self._compute_source_term(h[0], Q[0], 0)
+                # n = len(h)
+                # dh_dt[n-1] = -(F_h[n] - F_h[n-1]) / self.dx
+                # dQ_dt[n-1] = -(F_Q[n] - F_Q[n-1]) / self.dx + self._compute_source_term(h[n-1], Q[n-1], n-1)
+
                 return dh_dt, dQ_dt
             else:
                 # 标准Python版本
@@ -448,6 +456,9 @@ class GodunvFVMSolver:
                 F_h[i], F_Q[i] = self._hll_flux(
                     h_L[i], Q_L[i], h_R[i], Q_R[i]
                 )
+
+        # 注释掉边界通量强制 - 让Riemann求解器基于ghost cells计算
+        # self._enforce_boundary_fluxes(F_h, F_Q, h, Q)
 
         # DEBUG: Print computed fluxes
         if DEBUG and self.well_balanced and self.t < 1e-6:
@@ -856,7 +867,12 @@ class GodunvFVMSolver:
         h: np.ndarray,
         Q: np.ndarray
     ) -> Tuple[np.ndarray, np.ndarray]:
-        """强制边界条件"""
+        """
+        强制边界条件
+
+        注意：对于使用强制通量的边界类型（supercritical），我们不强制边界单元的值，
+        而是让它们根据通量平衡自然演化。这避免了通量与状态不一致导致的质量泄漏。
+        """
         # 左
         if self.bc_left['type'] == 'h':
             value = self.bc_left['value']
@@ -874,7 +890,7 @@ class GodunvFVMSolver:
             # 只强制h，不强制Q
             h[0] = h_c
         elif self.bc_left['type'] == 'supercritical':
-            # 急流入口
+            # 急流入口：强制h和Q（所有特征线向内）
             h_bc_value = self.bc_left['h']
             Q_bc_value = self.bc_left['Q']
             h_bc, u_bc = self.characteristic_bc.apply_supercritical_inlet(
@@ -900,7 +916,7 @@ class GodunvFVMSolver:
             # 只强制h，不强制Q（让流量自然调整）
             h[-1] = h_c
         elif self.bc_right['type'] == 'supercritical':
-            # 急流出口：完全外推
+            # 急流出口：完全外推（所有特征线向外）
             h_bc, u_bc = self.characteristic_bc.apply_supercritical_outlet(
                 h_interior=h[-2] if len(h) > 1 else h[-1],
                 u_interior=Q[-2]/(h[-2]*self.B) if len(h) > 1 and h[-2] > self.eps_dry else 0.0
@@ -909,7 +925,141 @@ class GodunvFVMSolver:
             Q[-1] = u_bc * h_bc * self.B
 
         return h, Q
-    
+
+    def _enforce_boundary_fluxes(
+        self,
+        F_h: np.ndarray,
+        F_Q: np.ndarray,
+        h: np.ndarray,
+        Q: np.ndarray
+    ):
+        """
+        强制边界通量与边界条件一致
+
+        关键思路：边界通量应该由边界条件决定，而不是由Riemann求解器计算。
+        这解决了边界单元与相邻单元通量不一致导致的质量守恒问题。
+
+        Args:
+            F_h: 质量通量数组 [n+1]（会被修改）
+            F_Q: 动量通量数组 [n+1]（会被修改）
+            h: 当前水深数组 [n]
+            Q: 当前流量数组 [n]
+        """
+        n = len(h)
+
+        # 左边界通量（界面0，位于ghost cell和单元0之间）
+        if self.bc_left['type'] == 'Q':
+            # Q边界：流量固定
+            Q_bc = self.bc_left['value'] if not callable(self.bc_left['value']) else self.bc_left['value'](self.t)
+            h_bc = h[0]  # 水深从内部单元获取
+
+            # 计算通量
+            if h_bc > self.eps_dry:
+                u_bc = Q_bc / (self.B * h_bc)
+                F_h[0] = Q_bc
+                F_Q[0] = Q_bc * u_bc + 0.5 * self.g * h_bc * h_bc * self.B
+            else:
+                F_h[0] = 0.0
+                F_Q[0] = 0.0
+
+        elif self.bc_left['type'] == 'h':
+            # h边界：水深固定，流量从内部外推
+            h_bc = self.bc_left['value'] if not callable(self.bc_left['value']) else self.bc_left['value'](self.t)
+            Q_bc = Q[0]  # 流量从内部单元外推
+
+            if h_bc > self.eps_dry:
+                u_bc = Q_bc / (self.B * h_bc)
+                F_h[0] = Q_bc
+                F_Q[0] = Q_bc * u_bc + 0.5 * self.g * h_bc * h_bc * self.B
+            else:
+                F_h[0] = 0.0
+                F_Q[0] = 0.0
+
+        elif self.bc_left['type'] == 'supercritical':
+            # 急流边界：h和Q都固定（所有特征线向内）
+            h_bc = self.bc_left['h']
+            Q_bc = self.bc_left['Q']
+
+            if h_bc > self.eps_dry:
+                u_bc = Q_bc / (self.B * h_bc)
+                F_h[0] = Q_bc
+                F_Q[0] = Q_bc * u_bc + 0.5 * self.g * h_bc * h_bc * self.B
+            else:
+                F_h[0] = 0.0
+                F_Q[0] = 0.0
+
+        elif self.bc_left['type'] == 'critical':
+            # 临界流边界：根据流量计算临界水深
+            if self.bc_right['type'] == 'Q':
+                Q_bc = self.bc_right['value'] if not callable(self.bc_right['value']) else self.bc_right['value'](self.t)
+            else:
+                Q_bc = Q[0]
+
+            h_c, u_c = self.characteristic_bc.apply_critical_depth_bc(Q=Q_bc, B=self.B)
+
+            if h_c > self.eps_dry:
+                F_h[0] = Q_bc
+                F_Q[0] = Q_bc * u_c + 0.5 * self.g * h_c * h_c * self.B
+            else:
+                F_h[0] = 0.0
+                F_Q[0] = 0.0
+
+        # 右边界通量（界面n，位于单元n-1和ghost cell之间）
+        if self.bc_right['type'] == 'Q':
+            # Q边界：流量固定
+            Q_bc = self.bc_right['value'] if not callable(self.bc_right['value']) else self.bc_right['value'](self.t)
+            h_bc = h[n-1]
+
+            if h_bc > self.eps_dry:
+                u_bc = Q_bc / (self.B * h_bc)
+                F_h[n] = Q_bc
+                F_Q[n] = Q_bc * u_bc + 0.5 * self.g * h_bc * h_bc * self.B
+            else:
+                F_h[n] = 0.0
+                F_Q[n] = 0.0
+
+        elif self.bc_right['type'] == 'h':
+            # h边界：水深固定，流量外推
+            h_bc = self.bc_right['value'] if not callable(self.bc_right['value']) else self.bc_right['value'](self.t)
+            Q_bc = Q[n-1]
+
+            if h_bc > self.eps_dry:
+                u_bc = Q_bc / (self.B * h_bc)
+                F_h[n] = Q_bc
+                F_Q[n] = Q_bc * u_bc + 0.5 * self.g * h_bc * h_bc * self.B
+            else:
+                F_h[n] = 0.0
+                F_Q[n] = 0.0
+
+        elif self.bc_right['type'] == 'supercritical':
+            # 急流出口：完全外推（所有特征线向外）
+            h_bc = h[n-1]
+            Q_bc = Q[n-1]
+
+            if h_bc > self.eps_dry:
+                u_bc = Q_bc / (self.B * h_bc)
+                F_h[n] = Q_bc
+                F_Q[n] = Q_bc * u_bc + 0.5 * self.g * h_bc * h_bc * self.B
+            else:
+                F_h[n] = 0.0
+                F_Q[n] = 0.0
+
+        elif self.bc_right['type'] == 'critical':
+            # 临界流边界
+            if self.bc_left['type'] == 'Q':
+                Q_bc = self.bc_left['value'] if not callable(self.bc_left['value']) else self.bc_left['value'](self.t)
+            else:
+                Q_bc = Q[n-1]
+
+            h_c, u_c = self.characteristic_bc.apply_critical_depth_bc(Q=Q_bc, B=self.B)
+
+            if h_c > self.eps_dry:
+                F_h[n] = Q_bc
+                F_Q[n] = Q_bc * u_c + 0.5 * self.g * h_c * h_c * self.B
+            else:
+                F_h[n] = 0.0
+                F_Q[n] = 0.0
+
     def _compute_total_mass(self) -> float:
         """计算总质量"""
         return np.sum(self.h * self.B * self.dx)
