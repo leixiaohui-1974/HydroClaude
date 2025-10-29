@@ -17,7 +17,7 @@ import numpy as np
 from typing import Dict, List, Tuple, Optional
 import time
 
-from .coupling import ReachCoupler, JunctionCoupler, BifurcationCoupler
+from .coupling import ReachCoupler, JunctionCoupler, BifurcationCoupler, StructureCoupler
 
 
 class NetworkSolver:
@@ -83,11 +83,17 @@ class NetworkSolver:
                 continue
 
             if n_upstream == 1 and n_downstream == 1:
-                # 简单串联，使用ReachCoupler
-                upstream_reach = self.network.reaches[node.upstream_reaches[0]]
-                downstream_reach = self.network.reaches[node.downstream_reaches[0]]
-                coupler = ReachCoupler(upstream_reach, downstream_reach, node)
-                self.couplers[node_id] = coupler
+                # 检查是否有内部建筑物
+                if hasattr(node, 'internal_structure') and node.internal_structure is not None:
+                    # 使用StructureCoupler
+                    coupler = StructureCoupler(node.internal_structure)
+                    self.couplers[node_id] = coupler
+                else:
+                    # 简单串联，使用ReachCoupler
+                    upstream_reach = self.network.reaches[node.upstream_reaches[0]]
+                    downstream_reach = self.network.reaches[node.downstream_reaches[0]]
+                    coupler = ReachCoupler(upstream_reach, downstream_reach, node)
+                    self.couplers[node_id] = coupler
 
             elif n_upstream > 1 and n_downstream == 1:
                 # 汇流节点
@@ -252,6 +258,8 @@ class NetworkSolver:
             elif isinstance(coupler, JunctionCoupler):
                 coupler.couple()
             elif isinstance(coupler, BifurcationCoupler):
+                coupler.couple()
+            elif isinstance(coupler, StructureCoupler):
                 coupler.couple()
 
     def _check_convergence(self, tol: float = 1e-4) -> bool:

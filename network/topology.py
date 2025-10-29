@@ -75,6 +75,9 @@ class Node:
         self.upstream_reaches = []  # 上游河段ID列表
         self.downstream_reaches = []  # 下游河段ID列表
 
+        # 内部建筑物（可选）
+        self.internal_structure = None  # InternalStructure对象
+
     def check_mass_balance(self, tol: float = 1e-6) -> Tuple[bool, float]:
         """
         检查节点质量平衡
@@ -290,6 +293,51 @@ class RiverNetwork:
         self.adjacency[reach.upstream].append(reach.id)
 
         self._topology_built = False
+
+    def add_internal_structure(self, node_id: str, internal_structure) -> None:
+        """
+        添加内部建筑物到节点
+
+        内部建筑物（堰、闸）将作为特殊的耦合器，连接上下游河段。
+
+        Args:
+            node_id: 节点ID
+            internal_structure: InternalStructure实例
+                (InternalWeir, InternalGate, InternalOrifice)
+
+        Raises:
+            ValueError: 如果节点不存在或节点不是串联节点
+
+        示例:
+            from network.structures import InternalWeir
+            from physics.hydraulic_structures import BroadCrestedWeir
+
+            # 创建堰
+            weir = BroadCrestedWeir(crest_elevation=2.0, width=10.0)
+
+            # 创建内部堰（连接reach1和reach2）
+            internal_weir = InternalWeir(weir, reach1, reach2, node)
+
+            # 添加到网络
+            network.add_internal_structure('middle_node', internal_weir)
+        """
+        if node_id not in self.nodes:
+            raise ValueError(f"Node '{node_id}' not found in network")
+
+        node = self.nodes[node_id]
+
+        # 验证节点连接（必须是1入1出的串联节点）
+        n_upstream = len(node.upstream_reaches)
+        n_downstream = len(node.downstream_reaches)
+
+        if n_upstream != 1 or n_downstream != 1:
+            raise ValueError(
+                f"Internal structure can only be added to serial nodes (1 upstream, 1 downstream). "
+                f"Node '{node_id}' has {n_upstream} upstream and {n_downstream} downstream reaches."
+            )
+
+        # 附加内部建筑物
+        node.internal_structure = internal_structure
 
     def build_topology(self) -> List[str]:
         """

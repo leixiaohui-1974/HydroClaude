@@ -31,8 +31,13 @@ from .validation import (
     validate_network, visualize_network
 )
 from .coupling import (
-    ReachCoupler, JunctionCoupler, BifurcationCoupler,
-    create_reach_coupler, create_junction_coupler, create_bifurcation_coupler
+    ReachCoupler, JunctionCoupler, BifurcationCoupler, StructureCoupler,
+    create_reach_coupler, create_junction_coupler, create_bifurcation_coupler,
+    create_structure_coupler
+)
+from .structures import (
+    InternalStructure, InternalWeir, InternalGate, InternalOrifice,
+    create_internal_weir, create_internal_gate, create_internal_orifice
 )
 from .solver import NetworkSolver, create_network_solver, solve_network
 
@@ -61,9 +66,19 @@ __all__ = [
     'ReachCoupler',
     'JunctionCoupler',
     'BifurcationCoupler',
+    'StructureCoupler',
     'create_reach_coupler',
     'create_junction_coupler',
     'create_bifurcation_coupler',
+    'create_structure_coupler',
+    # 内部建筑物
+    'InternalStructure',
+    'InternalWeir',
+    'InternalGate',
+    'InternalOrifice',
+    'create_internal_weir',
+    'create_internal_gate',
+    'create_internal_orifice',
     # 求解器
     'NetworkSolver',
     'create_network_solver',

@@ -338,6 +338,70 @@ class BifurcationCoupler:
         return self.bifurcation.check_mass_balance(tol=tol)
 
 
+class StructureCoupler:
+    """
+    内部建筑物耦合器
+
+    处理内部水工建筑物（堰、闸）的耦合：
+    - 1条上游河段 → 1个建筑物 → 1条下游河段
+
+    特点:
+    - 流量由建筑物水力计算确定
+    - Q = f(h_up, h_down)
+    - 自动设置双向边界条件
+
+    建筑物类型:
+    - 宽顶堰 (BroadCrestedWeir)
+    - 薄壁堰 (SharpCrestedWeir)
+    - 平板闸门 (SluiceGate)
+    - 孔口 (Orifice)
+    """
+
+    def __init__(self, internal_structure):
+        """
+        初始化建筑物耦合器
+
+        Args:
+            internal_structure: InternalStructure实例
+                (InternalWeir, InternalGate, InternalOrifice)
+        """
+        self.structure = internal_structure
+        self.upstream = internal_structure.upstream
+        self.downstream = internal_structure.downstream
+        self.node = internal_structure.node
+
+    def couple(self) -> float:
+        """
+        执行建筑物耦合
+
+        Returns:
+            流量 Q (m³/s)
+        """
+        # 调用InternalStructure的solve方法
+        Q = self.structure.solve()
+        return Q
+
+    def check_mass_balance(self, tol: float = 1e-3) -> Tuple[bool, float]:
+        """
+        检查质量平衡
+
+        Args:
+            tol: 容差 (m³/s)
+
+        Returns:
+            (is_balanced, error): 是否平衡，误差值
+        """
+        return self.structure.check_mass_balance(tol=tol)
+
+    def get_status(self) -> Dict:
+        """获取状态"""
+        return self.structure.get_status()
+
+    def print_status(self):
+        """打印状态"""
+        self.structure.print_status()
+
+
 # 便捷函数
 def create_reach_coupler(upstream_reach, downstream_reach, coupling_node) -> ReachCoupler:
     """
@@ -385,6 +449,28 @@ def create_bifurcation_coupler(bifurcation_node, upstream_reach,
     return BifurcationCoupler(bifurcation_node, upstream_reach, downstream_reaches)
 
 
+def create_structure_coupler(internal_structure) -> StructureCoupler:
+    """
+    创建建筑物耦合器（便捷函数）
+
+    Args:
+        internal_structure: InternalStructure实例
+            (InternalWeir, InternalGate, InternalOrifice)
+
+    Returns:
+        StructureCoupler实例
+
+    示例:
+        from network.structures import InternalWeir
+        from physics.hydraulic_structures import BroadCrestedWeir
+
+        weir = BroadCrestedWeir(crest_elevation=2.0, width=10.0)
+        internal_weir = InternalWeir(weir, reach1, reach2, node)
+        coupler = create_structure_coupler(internal_weir)
+    """
+    return StructureCoupler(internal_structure)
+
+
 if __name__ == "__main__":
     """简单测试"""
     print("Network Coupling Module")
@@ -394,8 +480,10 @@ if __name__ == "__main__":
     print("  - ReachCoupler: 串联河段耦合")
     print("  - JunctionCoupler: 汇流节点耦合")
     print("  - BifurcationCoupler: 分流节点耦合")
+    print("  - StructureCoupler: 内部建筑物耦合")
     print()
     print("Convenience functions:")
     print("  - create_reach_coupler()")
     print("  - create_junction_coupler()")
     print("  - create_bifurcation_coupler()")
+    print("  - create_structure_coupler()")
