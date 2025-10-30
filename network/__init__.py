@@ -44,6 +44,7 @@ from .pump_station import (
     create_pump_station
 )
 from .bridge_structure import Bridge, create_bridge
+from .culvert_structure import Culvert, create_culvert
 from .solver import NetworkSolver, create_network_solver, solve_network
 
 __all__ = [
@@ -92,6 +93,8 @@ __all__ = [
     # 高级水工建筑物
     'Bridge',
     'create_bridge',
+    'Culvert',
+    'create_culvert',
     # 求解器
     'NetworkSolver',
     'create_network_solver',
