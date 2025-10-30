@@ -100,7 +100,7 @@ class BridgeHydraulicAssessment:
             bottom_width=bottom_width,
             side_slope=side_slope,
             length=self.L,
-            bed_slope=bed_slope,
+            bottom_slope=bed_slope,
             manning_n=manning_n
         )
 
@@ -473,7 +473,7 @@ class BridgeHydraulicAssessment:
         x, h_no, h_with = self.compute_backwater_profile(Q_design, h_normal, dx=50.0)
 
         # Bed elevation
-        bed_elev = 100.0 - x * self.channel.bed_slope
+        bed_elev = 100.0 - x * self.channel.S0
 
         ax1.fill_between(x/1000, bed_elev, bed_elev + h_no, alpha=0.3, color='blue',
                         label='Without Bridge')

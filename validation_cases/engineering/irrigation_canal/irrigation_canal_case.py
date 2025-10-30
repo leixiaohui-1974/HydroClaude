@@ -137,7 +137,7 @@ class IrrigationCanalSystem:
             bottom_width=self.B,
             side_slope=self.m,
             length=self.L,
-            bed_slope=self.S0,
+            bottom_slope=self.S0,
             manning_n=self.n
         )
 
@@ -250,8 +250,11 @@ class IrrigationCanalSystem:
 
         print(f"\nSetup irrigation demands for {len(self.offtake_demands)} offtakes:")
         for i, demand in enumerate(self.offtake_demands):
-            print(f"  - Offtake {i+1}: Peak demand {demand.get_max():.2f} m³/s "
-                  f"at t={demand.get_time_at_max():.1f}h")
+            stats = demand.get_statistics()
+            max_idx = np.argmax(demand.values)
+            time_at_max = demand.t[max_idx] / 3600.0  # Convert to hours
+            print(f"  - Offtake {i+1}: Peak demand {stats['max']:.2f} m³/s "
+                  f"at t={time_at_max:.1f}h")
 
     def calculate_required_upstream_flow(self, t: float) -> float:
         """

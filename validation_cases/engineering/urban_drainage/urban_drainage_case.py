@@ -100,7 +100,7 @@ class UrbanDrainageSystem:
                 bottom_width=2.0,
                 side_slope=1.5,
                 length=800.0,
-                bed_slope=0.005,
+                bottom_slope=0.005,
                 manning_n=0.015
             )
         }
@@ -108,7 +108,8 @@ class UrbanDrainageSystem:
 
         # Channel 2: Middle drainage channel (irregular)
         # Rectangular with bench on one side
-        y_coords_2 = np.array([-1.5, -1.5, 0.0, 3.0, 3.0, 4.0, 4.0])
+        # Note: Stations must be strictly increasing, so vertical segments use small offsets
+        y_coords_2 = np.array([-1.5, -1.49, 0.0, 3.0, 3.01, 4.0, 4.01])
         z_coords_2 = np.array([2.0, 0.0, 0.0, 0.0, 0.5, 0.5, 2.0])
 
         ch2 = {
@@ -120,10 +121,10 @@ class UrbanDrainageSystem:
             'y_coords': y_coords_2,
             'z_coords': z_coords_2,
             'geometry': IrregularChannel(
-                y_coordinates=y_coords_2,
-                z_coordinates=z_coords_2,
+                stations=y_coords_2,
+                elevations=z_coords_2,
                 length=600.0,
-                bed_slope=0.004,
+                bottom_slope=0.004,
                 manning_n=0.016
             )
         }
@@ -142,7 +143,7 @@ class UrbanDrainageSystem:
                 bottom_width=3.0,
                 side_slope=2.0,
                 length=1000.0,
-                bed_slope=0.003,
+                bottom_slope=0.003,
                 manning_n=0.015
             )
         }
@@ -171,13 +172,14 @@ class UrbanDrainageSystem:
             'manning_n': 0.013,
             'geometry': Culvert(
                 culvert_id='CULV-1',
-                diameter=1.2,
                 length=50.0,
-                inlet_invert=0.0,
-                outlet_invert=-0.1,
+                inlet_elevation=0.0,
+                outlet_elevation=-0.1,
+                shape="circular",
+                diameter=1.2,
                 manning_n=0.013,
-                entrance_loss_coeff=0.5,
-                exit_loss_coeff=1.0
+                Ke_inlet=0.5,
+                Ke_outlet=1.0
             )
         }
         self.culverts.append(culv1)
@@ -195,13 +197,14 @@ class UrbanDrainageSystem:
             'manning_n': 0.013,
             'geometry': Culvert(
                 culvert_id='CULV-2',
-                diameter=1.5,
                 length=80.0,
-                inlet_invert=-0.1,
-                outlet_invert=-0.3,
+                inlet_elevation=-0.1,
+                outlet_elevation=-0.3,
+                shape="circular",
+                diameter=1.5,
                 manning_n=0.013,
-                entrance_loss_coeff=0.5,
-                exit_loss_coeff=1.0
+                Ke_inlet=0.5,
+                Ke_outlet=1.0
             )
         }
         self.culverts.append(culv2)
@@ -307,9 +310,10 @@ class UrbanDrainageSystem:
             intensity = np.full_like(time_array, total_depth / duration)
 
         # Create TimeSeriesBoundary for rainfall
+        # Note: Using bc_type="Q" as generic time series (rainfall intensity mm/hr)
         self.rainfall = TimeSeriesBoundary(
             bc_id=f"STORM_{self.T_design}Y",
-            bc_type="rainfall",
+            bc_type="Q",
             time_data=time_array,
             value_data=intensity,
             interpolation_method="linear"
