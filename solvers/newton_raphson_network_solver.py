@@ -30,18 +30,38 @@ class NewtonRaphsonNetworkSolver:
     2. 连续性方程: ΣQ_in - ΣQ_out - demand = 0
     """
 
-    def __init__(self, network: NetworkTopology, max_iter: int = 50, 
-                 tol: float = 1e-6, verbose: bool = True):
+    def __init__(self, network: NetworkTopology, max_iter: int = 50,
+                 tol: float = 1e-6, verbose: bool = True,
+                 use_hardy_cross_init: bool = False,
+                 damping_factor: float = 0.5,
+                 adaptive_damping: bool = True):
+        """
+        初始化Newton-Raphson求解器
+
+        Args:
+            network: 管网拓扑对象
+            max_iter: 最大迭代次数
+            tol: 收敛容差
+            verbose: 是否打印详细信息
+            use_hardy_cross_init: 是否使用Hardy Cross结果作为初始猜测
+                                 (可显著提高收敛性，特别是对复杂网络)
+            damping_factor: 阻尼因子 (0 < α ≤ 1)，用于稳定迭代
+                           X_{k+1} = X_k - α * dX
+            adaptive_damping: 是否使用自适应阻尼（根据残差变化自动调整）
+        """
         self.network = network
         self.max_iter = max_iter
         self.tol = tol
         self.verbose = verbose
-        
+        self.use_hardy_cross_init = use_hardy_cross_init
+        self.damping_factor = damping_factor
+        self.adaptive_damping = adaptive_damping
+
         self.iteration_count = 0
         self.converged = False
         self.flows: Dict[str, float] = {}
         self.heads: Dict[str, float] = {}
-        
+
         # 索引映射
         self.pipe_ids = sorted(network.pipes.keys())
         self.node_ids = sorted(network.nodes.keys())
@@ -52,58 +72,126 @@ class NewtonRaphsonNetworkSolver:
         """求解管网"""
         if self.verbose:
             print("\n" + "="*80)
-            print("Newton-Raphson 管网求解")
+            print("Newton-Raphson 管网求解 (带阻尼)")
             print("="*80)
-        
+            if self.adaptive_damping:
+                print(f"  阻尼策略: 自适应 (初始α={self.damping_factor})")
+            else:
+                print(f"  阻尼因子: α={self.damping_factor}")
+
         # 初始化
         Q, H = self._initialize()
-        
+
         # Newton-Raphson迭代
+        prev_residual = float('inf')
+        alpha = self.damping_factor  # 当前阻尼因子
+
         for iteration in range(self.max_iter):
             # 构造方程和Jacobian
             F = self._build_equations(Q, H)
             J = self._build_jacobian(Q, H)
-            
+
             # 求解: J * dX = -F
             dX = spsolve(J, -F)
-            
-            # 更新
+
+            # 应用阻尼更新
             n_pipes = len(self.pipe_ids)
-            Q += dX[:n_pipes]
-            H += dX[n_pipes:]
-            
+            Q += alpha * dX[:n_pipes]
+            H += alpha * dX[n_pipes:]
+
             # 检查收敛
             max_residual = np.max(np.abs(F))
             self.iteration_count = iteration + 1
-            
+
+            # 自适应阻尼调整
+            if self.adaptive_damping and iteration > 0:
+                if max_residual > prev_residual:
+                    # 残差增大，减小阻尼因子
+                    alpha *= 0.5
+                    alpha = max(alpha, 0.01)  # 最小阻尼因子
+                elif max_residual < 0.5 * prev_residual:
+                    # 残差快速下降，可以增大阻尼因子
+                    alpha = min(alpha * 1.2, 1.0)
+
             if self.verbose and (iteration < 5 or iteration % 5 == 0):
-                print(f"  迭代 {iteration+1}: 最大残差 = {max_residual:.8e}")
-            
+                if self.adaptive_damping:
+                    print(f"  迭代 {iteration+1}: 残差={max_residual:.8e}, α={alpha:.3f}")
+                else:
+                    print(f"  迭代 {iteration+1}: 最大残差 = {max_residual:.8e}")
+
             if max_residual < self.tol:
                 self.converged = True
                 if self.verbose:
                     print(f"\n  ✓ 收敛! 迭代次数: {self.iteration_count}")
+                    if self.adaptive_damping:
+                        print(f"  最终阻尼因子: α={alpha:.3f}")
                 break
-        
+
+            prev_residual = max_residual
+
         # 保存结果
         for i, pid in enumerate(self.pipe_ids):
             self.flows[pid] = Q[i]
         for i, nid in enumerate(self.node_ids):
             self.heads[nid] = H[i]
-            
+
         if self.verbose:
             print("="*80 + "\n")
-        
+
         return self.flows, self.heads
     
     def _initialize(self) -> Tuple[np.ndarray, np.ndarray]:
-        """初始化流量和水头"""
+        """
+        初始化流量和水头
+
+        策略 Strategy:
+        1. 如果use_hardy_cross_init=True: 使用Hardy Cross结果作为初始猜测
+           If use_hardy_cross_init=True: Use Hardy Cross solution as initial guess
+        2. 否则使用简单估计
+           Otherwise use simple estimation
+
+        Returns:
+            Q: 初始流量数组 (Initial flow array)
+            H: 初始水头数组 (Initial head array)
+        """
         n_pipes = len(self.pipe_ids)
         n_nodes = len(self.node_ids)
-        
+
         Q = np.zeros(n_pipes)
         H = np.zeros(n_nodes)
-        
+
+        if self.use_hardy_cross_init:
+            # 策略1: 使用Hardy Cross求解器获得初始值
+            try:
+                from solvers.hardy_cross_solver import HardyCrossSolver
+
+                if self.verbose:
+                    print("  使用Hardy Cross结果初始化...")
+
+                hc_solver = HardyCrossSolver(self.network, verbose=False,
+                                            max_iter=100, tol=1e-6)
+                hc_flows, hc_heads = hc_solver.solve()
+
+                if hc_solver.converged:
+                    # 使用HC结果
+                    for i, pid in enumerate(self.pipe_ids):
+                        Q[i] = hc_flows.get(pid, 0.0)
+                    for i, nid in enumerate(self.node_ids):
+                        H[i] = hc_heads.get(nid, self.network.nodes[nid].elevation + 20.0)
+
+                    if self.verbose:
+                        print(f"  ✓ Hardy Cross收敛 ({hc_solver.iteration_count}次迭代)")
+
+                    return Q, H
+                else:
+                    if self.verbose:
+                        print("  ⚠ Hardy Cross未收敛，使用简单初始化")
+            except Exception as e:
+                if self.verbose:
+                    print(f"  ⚠ Hardy Cross初始化失败: {e}")
+                    print("  使用简单初始化")
+
+        # 策略2: 简单初始化
         # 初始化水头（水源节点）
         for i, nid in enumerate(self.node_ids):
             node = self.network.nodes[nid]
@@ -111,13 +199,13 @@ class NewtonRaphsonNetworkSolver:
                 H[i] = node.available_head()
             else:
                 H[i] = node.elevation + 20.0  # 默认20m压力
-        
+
         # 初始化流量（简单估计）
-        total_demand = sum(n.demand for n in self.network.nodes.values() 
+        total_demand = sum(n.demand for n in self.network.nodes.values()
                           if isinstance(n, Junction))
         for i in range(n_pipes):
             Q[i] = total_demand / n_pipes if n_pipes > 0 else 0.0
-        
+
         return Q, H
     
     def _build_equations(self, Q: np.ndarray, H: np.ndarray) -> np.ndarray:
