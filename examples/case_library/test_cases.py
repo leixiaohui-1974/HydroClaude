@@ -130,11 +130,11 @@ def test_case_01_hydropower_basic():
 
     # Check parameters
     assert plant.turbine.rated_power == 100e6, "Turbine power incorrect"
-    assert plant.reservoir.area == 5e6, "Reservoir area incorrect"
+    assert plant.reservoir.catchment_area == 5e6, "Reservoir catchment area incorrect"
 
     print("✓ All components created successfully")
     print(f"✓ Turbine: {plant.turbine.rated_power/1e6:.0f} MW")
-    print(f"✓ Reservoir: {plant.reservoir.area/1e6:.1f} km²")
+    print(f"✓ Reservoir: {plant.reservoir.catchment_area/1e6:.1f} km²")
 
 
 def test_case_01_hydropower_simulation():
@@ -310,11 +310,16 @@ def test_physics_valve():
 def test_physics_surge_tank():
     """Test Physics: Surge Tank Models"""
     from physics.surge_tank import SimpleSurgeTank
+    import math
 
     # Create surge tank
+    # Note: SimpleSurgeTank uses diameter, not area
+    # If we want area = 100 m², then diameter = sqrt(4 * 100 / π) ≈ 11.28 m
+    diameter = math.sqrt(4 * 100.0 / math.pi)
+
     tank = SimpleSurgeTank(
         position=0.0,
-        area=100.0,
+        diameter=diameter,
         min_level=50.0,
         max_level=110.0,
         initial_level=80.0

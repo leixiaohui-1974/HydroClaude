@@ -37,7 +37,6 @@ sys.path.insert(0, project_root)
 from solvers.hardy_cross_solver import HardyCrossSolver
 from solvers.newton_raphson_network_solver import NewtonRaphsonNetworkSolver
 from physics.pressurized.pumps import CentrifugalPump
-from physics.pressurized.valves import ControlValve
 from physics.tank import Tank
 
 
@@ -235,13 +234,25 @@ class WaterSupplyNetwork:
         """Setup pump stations / 设置泵站"""
         self.pumps = []
 
+        # Import PumpCharacteristics for creating pumps
+        from physics.pressurized.pumps import PumpCharacteristics
+
         for i in range(self.n_pumps):
+            # Create pump characteristics
+            # H0 (shutoff head) is typically ~1.2x of design head
+            pump_char = PumpCharacteristics(
+                H0=60.0,  # Shutoff head (关死扬程)
+                Q_design=0.3,  # 300 L/s = 0.3 m³/s
+                H_design=50.0,  # Design head (设计扬程)
+                eta_design=0.85,  # Efficiency
+                n_rated=1500.0,  # Rated speed (rpm)
+                curve_type='parabolic'
+            )
+
+            # Create centrifugal pump
             pump = CentrifugalPump(
-                pump_id=f'PUMP{i+1}',
-                rated_flow=0.3,  # 300 L/s = 0.3 m³/s
-                rated_head=50.0,
-                rated_speed=1500.0,
-                efficiency=0.85
+                position=1000.0 * (i+1),  # Position along network
+                characteristics=pump_char
             )
             pump.is_running = True
             self.pumps.append(pump)
@@ -250,15 +261,23 @@ class WaterSupplyNetwork:
 
     def _setup_water_tower(self):
         """Setup water tower / 设置水塔"""
+        # Tank class uses volume instead of level
+        # volume = level * area
+        area = 100.0
+        min_level = 10.0
+        max_level = 40.0
+
         self.water_tower = Tank(
             name='TOWER',
-            area=100.0,        # 100 m² cross-section
-            max_level=40.0,    # 40m max height
-            min_level=10.0,    # 10m min height
-            initial_level=30.0  # 30m initial
+            area=area,                      # 100 m² cross-section
+            volume_max=max_level * area,    # 4000 m³ (40m height)
+            volume_min=min_level * area,    # 1000 m³ (10m height)
         )
+        # Set initial level
+        self.water_tower.state.volume = 30.0 * area  # 30m initial
+        self.water_tower.state.level = 30.0
 
-        print(f"✓ Created water tower: {self.water_tower.max_level}m height")
+        print(f"✓ Created water tower: {max_level}m max height")
 
     def _setup_demand_pattern(self):
         """Setup time-varying demand pattern / 设置时变需水模式"""

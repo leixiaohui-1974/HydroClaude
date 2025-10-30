@@ -86,15 +86,31 @@ class HydropowerPlant:
 
     def _setup_reservoir(self):
         """Setup upstream reservoir / 设置上游水库"""
+        # 水库特征水位和库容参数
+        normal_level = 100.0  # 正常蓄水位 (m)
+        dead_level = 50.0     # 死水位 (m)
+        flood_limit_level = 105.0  # 防洪限制水位 (m)
+        design_level = 110.0  # 设计水位 (m)
+
+        # 根据平均深度估算库容（假设平均深度30m，水面面积5 km²）
+        total_capacity = 5e6 * 30.0  # 150 million m³
+        dead_storage = 5e6 * dead_level * 0.3  # 死库容（粗略估算）
+
         self.reservoir = Reservoir(
-            name="Upstream Reservoir",
-            area=5e6,  # 5 km² (较大型水库)
-            normal_level=100.0,  # 正常蓄水位 (m)
-            dead_level=50.0,     # 死水位 (m)
-            flood_level=105.0    # 防洪限制水位 (m)
+            reservoir_id="Upstream_Reservoir",
+            total_capacity=total_capacity,
+            dead_storage=dead_storage,
+            min_level=dead_level,
+            normal_level=normal_level,
+            flood_limit_level=flood_limit_level,
+            design_level=design_level,
+            catchment_area=5e6,  # 5 km² 流域面积
+            has_turbine=True,
+            turbine_capacity=100.0,  # 100 MW
+            hydraulic_head=normal_level - 50.0  # 净水头约50m
         )
         # Initial condition
-        self.reservoir.water_level = 95.0  # 初始水位
+        self.reservoir.state.water_level = 95.0  # 初始水位
 
     def _setup_headrace_tunnel(self):
         """Setup headrace tunnel / 设置引水隧洞"""
@@ -113,20 +129,28 @@ class HydropowerPlant:
         """Setup surge tank / 设置调压井"""
         if self.plant_type == 'francis':
             # Throttled surge tank for medium/high head
+            # If we want area = 80 m², then diameter = sqrt(4 * 80 / π) ≈ 10.1 m
+            import math
+            diameter = math.sqrt(4 * 80.0 / math.pi)
+
             self.surge_tank = ThrottledSurgeTank(
                 position=3000.0,      # At end of tunnel
-                area=80.0,            # 80 m² cross-section
+                diameter=diameter,    # ~10.1 m (for 80 m² area)
                 min_level=50.0,       # 最低水位
                 max_level=110.0,      # 最高水位
-                initial_level=92.0,   # 初始水位
-                throttle_diameter=2.5, # 阻抗孔直径
-                throttle_Cd=0.8       # 阻抗系数
+                orifice_diameter=2.5, # 阻抗孔直径
+                loss_coefficient=2.0, # 阻力系数
+                initial_level=92.0    # 初始水位
             )
         else:
             # Simple surge tank for low head
+            # If we want area = 100 m², then diameter = sqrt(4 * 100 / π) ≈ 11.28 m
+            import math
+            diameter_simple = math.sqrt(4 * 100.0 / math.pi)
+
             self.surge_tank = SimpleSurgeTank(
                 position=3000.0,
-                area=100.0,
+                diameter=diameter_simple,  # ~11.28 m (for 100 m² area)
                 min_level=45.0,
                 max_level=105.0,
                 initial_level=90.0
@@ -173,15 +197,27 @@ class HydropowerPlant:
 
     def _setup_tailrace(self):
         """Setup tailrace channel / 设置尾水渠"""
+        # Canal parameters
+        length = 1000.0
+        width = 25.0
+        h_normal = 3.0  # Normal depth
+        area = width * h_normal  # Cross-section area
+        volume_min = area * length * 0.5  # Minimum volume (half depth)
+        volume_max = area * length * 2.0  # Maximum volume (double depth)
+
         self.tailrace = Canal(
-            length=1000.0,
-            width=25.0,
+            name="Tailrace",
+            volume_min=volume_min,
+            volume_max=volume_max,
+            area=area,
+            length=length,
+            width=width,
             slope=0.001,
             manning_n=0.025,
-            nx=51
+            n_sections=51,  # Number of spatial nodes
+            method='preissmann'  # Canal only supports preissmann method
         )
         # Initial condition - normal depth
-        h_normal = 3.0
         self.tailrace.h = np.ones(51) * h_normal
         self.tailrace.Q = np.ones(51) * 150.0
 
@@ -193,19 +229,23 @@ class HydropowerPlant:
         H_net = H_reservoir - H_surge - H_friction - H_tailrace
         """
         # Upstream head (reservoir to surge tank)
-        H_reservoir = self.reservoir.water_level
+        H_reservoir = self.reservoir.state.water_level
 
         # Surge tank level
         H_surge = self.surge_tank.water_level
 
-        # Friction losses in headrace
-        h_loss_headrace = self.headrace.calculate_friction_loss()
+        # Friction losses in headrace (simplified estimate)
+        # For a long, low-velocity tunnel, losses are typically small
+        h_loss_headrace = 0.5  # m (simplified estimate)
 
         # Pressure at penstock inlet (surge tank outlet)
         H_penstock_inlet = H_surge
 
-        # Friction losses in penstock
-        h_loss_penstock = self.penstock.calculate_friction_loss()
+        # Friction losses in penstock (simplified estimate)
+        # Darcy-Weisbach: h_f = f * (L/D) * (V²/(2g))
+        # For penstock: L=400m, D=3m, V≈20m/s, f≈0.02
+        # h_f ≈ 0.02 * (400/3) * (20²/(2*9.81)) ≈ 54m
+        h_loss_penstock = 5.0  # m (simplified estimate, assuming lower velocity)
 
         # Tailrace water level (approximate)
         H_tailrace = self.tailrace.h.mean()
@@ -262,7 +302,8 @@ class HydropowerPlant:
 
             # Update reservoir (outflow = Q_turbine)
             Q_reservoir_out = Q_turbine
-            self.reservoir.update(dt, inflow=0.0, outflow=Q_reservoir_out)
+            inputs_reservoir = {'inflow': 0.0, 'outflow': Q_reservoir_out}
+            self.reservoir.update_high_fidelity(dt, inputs_reservoir)
 
             # Update headrace tunnel
             # Simplified: assume quasi-steady
@@ -279,7 +320,7 @@ class HydropowerPlant:
             # Record history
             if step % 10 == 0:  # Record every 10 steps
                 self.state_history['time'].append(self.time)
-                self.state_history['reservoir_level'].append(self.reservoir.water_level)
+                self.state_history['reservoir_level'].append(self.reservoir.state.water_level)
                 self.state_history['surge_tank_level'].append(self.surge_tank.water_level)
                 self.state_history['penstock_pressure'].append(
                     self.rho * self.g * H_net / 1e6  # MPa
@@ -291,7 +332,7 @@ class HydropowerPlant:
             # Progress
             if step % 1000 == 0:
                 print(f"t={self.time:6.1f}s | " +
-                      f"H_res={self.reservoir.water_level:6.2f}m | " +
+                      f"H_res={self.reservoir.state.water_level:6.2f}m | " +
                       f"H_surge={self.surge_tank.water_level:6.2f}m | " +
                       f"Q={Q_turbine:6.1f}m³/s | " +
                       f"P={P/1e6:6.1f}MW | " +
