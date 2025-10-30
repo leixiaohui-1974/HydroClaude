@@ -389,8 +389,8 @@ class WaterSupplyNetwork:
         """
         solver = NewtonRaphsonNetworkSolver(
             network=self,
-            tolerance=tolerance,
-            max_iterations=max_iter
+            tol=tolerance,
+            max_iter=max_iter
         )
 
         converged, iterations = solver.solve()
