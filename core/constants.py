@@ -50,7 +50,7 @@ class CanalDefaults:
 
     # 数值求解参数
     DEFAULT_SECTIONS = 11             # 默认空间离散节点数
-    DEFAULT_METHOD = 'moc'            # 默认求解方法 (moc/preissmann/fvm)
+    DEFAULT_METHOD = 'preissmann'     # 默认求解方法 (使用修复后的preissmann)
 
     # 曼宁系数参考值
     MANNING_N_RANGES = {
