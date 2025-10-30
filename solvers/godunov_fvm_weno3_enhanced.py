@@ -158,7 +158,8 @@ class GodunvFVMWENO3Enhanced(GodunvFVMWENO3):
         phi_R = np.zeros(n + 1)
 
         # ===== 改进2：自适应epsilon =====
-        phi_max = np.max(np.abs(phi))
+        # 限制phi_max避免过大导致eps失控
+        phi_max = min(np.max(np.abs(phi)), 100.0)  # 上限100
         eps = self.weno_eps * (1.0 + phi_max)
 
         # 理想权重
@@ -183,10 +184,11 @@ class GodunvFVMWENO3Enhanced(GodunvFVMWENO3):
                 # 基本平滑度
                 IS1_L = (phi[i] - phi[i-1])**2
 
-                # 高阶项：近似二阶导数的平方
+                # 高阶项：近似二阶导数的平方（缩放避免粗网格放大）
                 if i > 1:
                     d2phi_1 = phi[i] - 2*phi[i-1] + phi[i-2]
-                    IS1_L += self.dx**2 * d2phi_1**2
+                    # 使用归一化的高阶项，避免dx^2过大
+                    IS1_L += min(self.dx, 1.0)**2 * d2phi_1**2
 
                 beta1_L = IS1_L
             else:
@@ -197,7 +199,8 @@ class GodunvFVMWENO3Enhanced(GodunvFVMWENO3):
 
                 if i < n - 1:
                     d2phi_2 = phi[i+1] - 2*phi[i] + phi[i-1] if i > 0 else phi[i+1] - phi[i]
-                    IS2_L += self.dx**2 * d2phi_2**2
+                    # 使用归一化的高阶项，避免dx^2过大
+                    IS2_L += min(self.dx, 1.0)**2 * d2phi_2**2
 
                 beta2_L = IS2_L
             else:
@@ -237,7 +240,8 @@ class GodunvFVMWENO3Enhanced(GodunvFVMWENO3):
                 IS1_R = (phi[i+1] - phi[i])**2
                 if i < n - 1:
                     d2phi_1 = phi[i+2] - 2*phi[i+1] + phi[i] if i < n - 1 else 0
-                    IS1_R += self.dx**2 * d2phi_1**2
+                    # 使用归一化的高阶项
+                    IS1_R += min(self.dx, 1.0)**2 * d2phi_1**2
                 beta1_R = IS1_R
             else:
                 beta1_R = 0.0
@@ -246,7 +250,8 @@ class GodunvFVMWENO3Enhanced(GodunvFVMWENO3):
                 IS2_R = (phi[i] - phi[i-1])**2 if i > 0 else 0
                 if i > 1:
                     d2phi_2 = phi[i+1] - 2*phi[i] + phi[i-1] if i < n else 0
-                    IS2_R += self.dx**2 * d2phi_2**2
+                    # 使用归一化的高阶项
+                    IS2_R += min(self.dx, 1.0)**2 * d2phi_2**2
                 beta2_R = IS2_R
             else:
                 beta2_R = 0.0
