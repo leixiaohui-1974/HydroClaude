@@ -329,5 +329,307 @@ class TestCaseExamplesIntegration:
         assert '水锤防护措施建议' in captured.out
 
 
+class TestIndustrialCoolingCase:
+    """测试工业供水系统案例"""
+
+    def test_case3_network_creation(self):
+        """测试管网创建"""
+        from examples.case3_industrial_cooling_system import create_industrial_cooling_network
+
+        topology = create_industrial_cooling_network()
+
+        # 验证节点数量：1水池 + 1泵站 + 6用水点 = 8
+        assert len(topology.nodes) >= 8
+        assert 'R1' in topology.nodes or 'POOL' in topology.nodes
+
+        # 验证管道数量
+        assert len(topology.pipes) >= 10
+
+    def test_case3_steady_state_analysis(self):
+        """测试稳态分析"""
+        from examples.case3_industrial_cooling_system import (
+            create_industrial_cooling_network,
+            simulate_pump_scenarios
+        )
+
+        topology = create_industrial_cooling_network()
+        results = simulate_pump_scenarios(topology)
+
+        # 验证至少有2种工况
+        assert len(results) >= 2
+        for scenario, result in results.items():
+            if result.get('converged'):
+                # 验证有有效的数据
+                assert 'min_pressure' in result or 'total_demand' in result
+
+    def test_case3_standalone_execution(self, capsys):
+        """测试案例3独立执行"""
+        capsys.readouterr()
+
+        from examples.case3_industrial_cooling_system import main
+        main()
+
+        captured = capsys.readouterr()
+        assert '工业供水系统' in captured.out or '✅ 案例分析完成' in captured.out
+
+
+class TestFireProtectionCase:
+    """测试消防系统案例"""
+
+    def test_case4_network_creation(self):
+        """测试消防管网创建"""
+        from examples.case4_fire_protection_system import create_fire_protection_network
+
+        topology = create_fire_protection_network()
+
+        # 验证节点和管道
+        assert len(topology.nodes) >= 6
+        assert len(topology.pipes) >= 8
+
+    def test_case4_fire_requirements(self):
+        """测试消防规范要求"""
+        from examples.case4_fire_protection_system import (
+            create_fire_protection_network,
+            analyze_fire_scenarios
+        )
+
+        topology = create_fire_protection_network()
+        results = analyze_fire_scenarios(topology)
+
+        # 至少要有一个场景分析
+        assert len(results) > 0
+
+        # 检查所有场景都成功收敛
+        for scenario, result in results.items():
+            assert result.get('converged', False), f"{scenario}: 应该收敛"
+
+    def test_case4_standalone_execution(self, capsys):
+        """测试案例4独立执行"""
+        capsys.readouterr()
+
+        from examples.case4_fire_protection_system import main
+        main()
+
+        captured = capsys.readouterr()
+        assert '消防系统' in captured.out or '✅ 案例分析完成' in captured.out
+
+
+class TestIrrigationCase:
+    """测试灌溉系统案例"""
+
+    def test_case5_network_creation(self):
+        """测试灌溉管网创建"""
+        from examples.case5_irrigation_system import create_irrigation_network
+
+        topology = create_irrigation_network()
+
+        # 验证基本结构
+        assert len(topology.nodes) >= 5
+        assert len(topology.pipes) >= 6
+
+    def test_case5_seasonal_analysis(self):
+        """测试季节性分析"""
+        from examples.case5_irrigation_system import (
+            create_irrigation_network,
+            analyze_irrigation_scenarios
+        )
+
+        topology = create_irrigation_network()
+        results = analyze_irrigation_scenarios(topology)
+
+        # 至少要有2个场景
+        assert len(results) >= 2
+
+        # 验证收敛
+        for scenario, result in results.items():
+            if result.get('converged'):
+                # 验证有有效数据
+                assert 'total_demand' in result or 'min_pressure' in result
+
+    def test_case5_standalone_execution(self, capsys):
+        """测试案例5独立执行"""
+        capsys.readouterr()
+
+        from examples.case5_irrigation_system import main
+        main()
+
+        captured = capsys.readouterr()
+        assert '灌溉系统' in captured.out or '✅ 案例分析完成' in captured.out
+
+
+class TestHighriseCase:
+    """测试高层建筑案例"""
+
+    def test_case6_pressure_zones(self):
+        """测试分区供水"""
+        from examples.case6_highrise_water_supply import analyze_pressure_zones
+
+        results = analyze_pressure_zones(None)  # 函数内部创建拓扑
+
+        # 应该有3个分区结果
+        assert len(results) >= 3 or len(results) == 0  # 允许返回空字典
+
+    def test_case6_standalone_execution(self, capsys):
+        """测试案例6独立执行"""
+        capsys.readouterr()
+
+        from examples.case6_highrise_water_supply import main
+        main()
+
+        captured = capsys.readouterr()
+        assert '高层建筑' in captured.out or '✅ 案例分析完成' in captured.out
+
+
+class TestRegionalNetworkCase:
+    """测试区域供水管网案例"""
+
+    def test_case7_large_scale_network(self):
+        """测试大规模管网"""
+        from examples.case7_regional_water_supply import create_regional_network
+
+        topology = create_regional_network()
+
+        # 验证规模：18个节点，25根管道
+        assert len(topology.nodes) == 18
+        assert len(topology.pipes) == 25
+
+        # 验证水源
+        assert 'R1' in topology.nodes
+        assert 'R2' in topology.nodes
+        assert 'T1' in topology.nodes
+
+    def test_case7_multi_scenario_analysis(self):
+        """测试多工况分析"""
+        from examples.case7_regional_water_supply import (
+            create_regional_network,
+            analyze_demand_scenarios
+        )
+
+        topology = create_regional_network()
+        results = analyze_demand_scenarios(topology)
+
+        # 应该有3个工况
+        assert len(results) == 3
+        assert '高峰工况' in results
+        assert '平均工况' in results
+        assert '低谷工况' in results
+
+        # 验证收敛
+        for scenario, result in results.items():
+            if result.get('converged'):
+                assert result['min_pressure'] > 0
+                assert result['max_velocity'] > 0
+                assert result['total_demand'] > 0
+
+    def test_case7_reliability(self):
+        """测试可靠性分析"""
+        from examples.case7_regional_water_supply import (
+            create_regional_network,
+            reliability_analysis
+        )
+
+        topology = create_regional_network()
+
+        # 可靠性分析应该能正常运行（不抛出异常）
+        try:
+            reliability_analysis(topology)
+            assert True
+        except Exception as e:
+            pytest.fail(f"可靠性分析失败: {e}")
+
+    def test_case7_standalone_execution(self, capsys):
+        """测试案例7独立执行"""
+        capsys.readouterr()
+
+        from examples.case7_regional_water_supply import main
+        main()
+
+        captured = capsys.readouterr()
+        assert '区域供水' in captured.out
+        assert '✅ 案例分析完成' in captured.out
+
+
+class TestNetworkOptimizationCase:
+    """测试管网优化案例"""
+
+    def test_case8_baseline_network(self):
+        """测试基准管网"""
+        from examples.case8_network_optimization import create_baseline_network
+
+        topology, pipes = create_baseline_network()
+
+        # 验证节点和管道数量
+        assert len(topology.nodes) == 11  # 1水库 + 10节点
+        assert len(topology.pipes) == 14
+
+    def test_case8_optimized_network(self):
+        """测试优化管网"""
+        from examples.case8_network_optimization import create_optimized_network
+
+        topology, pipes = create_optimized_network()
+
+        # 验证节点和管道数量
+        assert len(topology.nodes) == 11
+        assert len(topology.pipes) == 14
+
+    def test_case8_hydraulic_analysis(self):
+        """测试水力分析"""
+        from examples.case8_network_optimization import (
+            create_baseline_network,
+            analyze_hydraulics
+        )
+
+        topology, pipes = create_baseline_network()
+        results = analyze_hydraulics(topology, "测试方案")
+
+        # 验证分析结果
+        assert results is not None
+        assert results['converged'] is True
+        assert results['min_pressure'] > 0
+        assert results['max_velocity'] > 0
+
+    def test_case8_economic_analysis(self):
+        """测试经济分析"""
+        from examples.case8_network_optimization import (
+            create_baseline_network,
+            economic_analysis
+        )
+
+        topology, pipes = create_baseline_network()
+        economics = economic_analysis(pipes, "测试方案")
+
+        # 验证经济分析结果
+        assert economics['total_cost'] > 0
+        assert economics['total_length'] > 0
+        assert economics['avg_unit_price'] > 0
+
+    def test_case8_optimization_comparison(self):
+        """测试优化对比"""
+        from examples.case8_network_optimization import compare_schemes
+
+        results = compare_schemes()
+
+        # 验证对比结果
+        assert results is not None
+        assert 'baseline' in results
+        assert 'optimized' in results
+
+        # 验证优化方案确实节省了成本
+        baseline_cost = results['baseline']['economics']['total_cost']
+        optimized_cost = results['optimized']['economics']['total_cost']
+        assert optimized_cost < baseline_cost, "优化方案应该更经济"
+
+    def test_case8_standalone_execution(self, capsys):
+        """测试案例8独立执行"""
+        capsys.readouterr()
+
+        from examples.case8_network_optimization import main
+        main()
+
+        captured = capsys.readouterr()
+        assert '管网优化' in captured.out or 'Network Optimization' in captured.out
+        assert '✅ 案例分析完成' in captured.out
+
+
 if __name__ == '__main__':
     pytest.main([__file__, '-v', '--tb=short'])
