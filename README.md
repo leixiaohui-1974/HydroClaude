@@ -1162,6 +1162,165 @@ if __name__ == '__main__':
 
 ---
 
+## 🧪 测试指南
+
+### 快速测试核心功能
+
+```bash
+# 运行核心组件测试（秒级完成）
+python -m pytest tests/test_components.py tests/test_boundary_conditions.py tests/test_cross_section.py -v
+
+# 运行特定测试
+python -m pytest tests/test_components.py::test_canal_creation -v
+
+# 运行PID控制器测试
+python -m pytest tests/test_controllers.py -v
+```
+
+### 完整测试套件
+
+```bash
+# 运行所有测试（排除legacy）
+python -m pytest tests/ --ignore=tests/legacy_diagnostic --ignore=tests/diagnostic -v
+
+# 快速模式（失败后停止）
+python -m pytest tests/ --ignore=tests/legacy_diagnostic --maxfail=3 -x
+
+# 只显示摘要
+python -m pytest tests/ --ignore=tests/legacy_diagnostic -q
+```
+
+### Preissmann求解器专项测试
+
+```bash
+# 运行修正版Preissmann求解器测试（质量守恒0.000000%）
+cd physics/numerical_methods
+python test_preissmann_corrected.py
+
+# 预期输出：
+# ✅ 静水测试：质量误差 0.000000%
+# ✅ 均匀流测试：质量误差 0.000000%
+# ✅ 水位阶跃测试：通过
+```
+
+### 测试覆盖率分析
+
+```bash
+# 安装coverage工具
+pip install pytest-cov
+
+# 生成HTML覆盖率报告
+python -m pytest tests/ \
+  --ignore=tests/legacy_diagnostic \
+  --ignore=tests/diagnostic \
+  --cov=core --cov=physics --cov=control \
+  --cov-report=html --cov-report=term
+
+# 查看报告
+# 在浏览器打开：htmlcov/index.html
+
+# 只显示未覆盖的行
+python -m pytest tests/test_components.py \
+  --cov=core --cov=physics \
+  --cov-report=term-missing
+```
+
+### 端到端集成测试
+
+```bash
+# 配置驱动系统测试
+python -m pytest tests/test_config_driven.py -v
+
+# 特定集成测试
+python -m pytest tests/test_config_driven.py::TestIntegration::test_end_to_end_workflow -v
+```
+
+### 性能和基准测试
+
+```bash
+# 运行性能基准测试
+python benchmark_suite.py
+
+# 查看结果
+cat benchmark_results/latest/summary.json
+```
+
+### 测试最佳实践
+
+**测试结构**:
+```
+tests/
+├── test_components.py          # 核心组件测试
+├── test_boundary_conditions.py # 边界条件测试
+├── test_cross_section.py       # 断面几何测试
+├── test_controllers.py         # 控制器测试
+├── test_config_driven.py       # 配置驱动测试
+└── diagnostic/                 # 诊断测试（需要时运行）
+```
+
+**测试命名规范**:
+- 测试文件: `test_*.py`
+- 测试函数: `def test_功能描述():`
+- 测试类: `class TestXXX:`
+
+**断言示例**:
+```python
+def test_canal_creation():
+    canal = Canal("test", 1000, 5000, 100, 1000)
+    assert canal.name == "test"
+    assert canal.length == 1000
+    assert canal.width == 5000
+```
+
+### 测试覆盖率目标
+
+| 模块 | 目标覆盖率 | 当前状态 |
+|------|-----------|---------|
+| core/ | 80%+ | ✅ 72-93% |
+| physics/ | 70%+ | ✅ 58-78% |
+| control/ | 70%+ | ✅ 良好 |
+| boundary/ | 60%+ | ⚠️ 需提高 |
+
+### CI/CD集成
+
+项目使用`.coveragerc`配置文件控制覆盖率分析：
+- 排除tests/、examples/、legacy代码
+- 启用分支覆盖率分析
+- 生成HTML和XML报告
+
+**GitHub Actions示例**:
+```yaml
+- name: Run tests with coverage
+  run: |
+    pytest tests/ \
+      --ignore=tests/legacy_diagnostic \
+      --cov=core --cov=physics \
+      --cov-report=xml \
+      --cov-report=term
+```
+
+### 常见问题
+
+**Q: 测试失败"No module named 'numba'"?**
+A: 这是可选依赖，跳过性能测试即可：
+```bash
+pytest tests/ --ignore=tests/test_utils/test_performance.py
+```
+
+**Q: 测试很慢怎么办？**
+A: 使用`-k`过滤器只运行需要的测试：
+```bash
+pytest tests/ -k "component or boundary"
+```
+
+**Q: 如何查看详细的失败信息？**
+A: 使用`-v`和`--tb=long`：
+```bash
+pytest tests/test_components.py -v --tb=long
+```
+
+---
+
 ## 🤝 贡献指南
 
 1. **Fork** 本仓库

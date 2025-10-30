@@ -1,0 +1,110 @@
+# Coverage.py配置文件
+# 用于pytest-cov生成覆盖率报告
+
+[run]
+# 包含的源代码目录
+source =
+    core
+    physics
+    control
+    boundary
+    engine
+    geometry
+    modeling
+    network
+    optimization
+    solvers
+    utils
+
+# 排除的文件和目录
+omit =
+    # 测试文件
+    tests/*
+    */tests/*
+    *_test.py
+    test_*.py
+
+    # 示例代码
+    examples/*
+    */examples/*
+
+    # Legacy和废弃代码
+    */legacy_*/*
+    **/legacy_*/*
+
+    # 配置和设置
+    setup.py
+    */setup.py
+
+    # 临时和缓存
+    */.pytest_cache/*
+    */__pycache__/*
+    */tmp/*
+    */temp/*
+
+    # 第三方和虚拟环境
+    */venv/*
+    */env/*
+    */site-packages/*
+
+# 分支覆盖率
+branch = True
+
+[report]
+# 报告中排除的代码行
+exclude_lines =
+    # 标准排除
+    pragma: no cover
+    def __repr__
+    def __str__
+
+    # 调试代码
+    if self\.debug
+    if settings\.DEBUG
+
+    # 抽象方法
+    raise AssertionError
+    raise NotImplementedError
+
+    # 类型检查
+    if TYPE_CHECKING:
+    if typing\.TYPE_CHECKING:
+
+    # 主程序入口
+    if __name__ == .__main__.:
+
+    # 可选导入
+    except ImportError
+    except ModuleNotFoundError
+
+    # 防御性编程
+    pass
+
+# 精度
+precision = 2
+
+# 显示缺失的行号
+show_missing = True
+
+# 跳过空文件
+skip_empty = True
+
+# 跳过覆盖率的文件
+skip_covered = False
+
+[html]
+# HTML报告输出目录
+directory = htmlcov
+
+# HTML报告标题
+title = HydroClaude 测试覆盖率报告
+
+[xml]
+# XML报告输出文件（用于CI/CD）
+output = coverage.xml
+
+[paths]
+# 路径映射（用于多环境）
+source =
+    .
+    */HydroClaude
