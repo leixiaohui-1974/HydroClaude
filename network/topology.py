@@ -454,28 +454,29 @@ class RiverNetwork:
         if len(self.reaches) == 0:
             errors.append("Network has no reaches")
 
-        if errors:
-            return False, errors
+        # 即使网络为空或缺少河段，也继续检查孤立节点
+        # （只在有节点时检查）
+        if len(self.nodes) > 0:
+            # 检查孤立节点
+            for node_id, node in self.nodes.items():
+                if len(node.upstream_reaches) == 0 and len(node.downstream_reaches) == 0:
+                    errors.append(f"Isolated node: '{node_id}'")
 
-        # 检查孤立节点
-        for node_id, node in self.nodes.items():
-            if len(node.upstream_reaches) == 0 and len(node.downstream_reaches) == 0:
-                errors.append(f"Isolated node: '{node_id}'")
+        # 检查拓扑排序（自动检测环路）- 只在有河段时检查
+        if len(self.reaches) > 0:
+            try:
+                self.build_topology()
+            except ValueError as e:
+                errors.append(str(e))
 
-        # 检查拓扑排序（自动检测环路）
-        try:
-            self.build_topology()
-        except ValueError as e:
-            errors.append(str(e))
+            # 检查边界节点 - 只在有河段时检查
+            upstream_nodes = self.get_upstream_nodes()
+            downstream_nodes = self.get_downstream_nodes()
 
-        # 检查边界节点
-        upstream_nodes = self.get_upstream_nodes()
-        downstream_nodes = self.get_downstream_nodes()
-
-        if len(upstream_nodes) == 0:
-            errors.append("No upstream boundary nodes (inlet)")
-        if len(downstream_nodes) == 0:
-            errors.append("No downstream boundary nodes (outlet)")
+            if len(upstream_nodes) == 0:
+                errors.append("No upstream boundary nodes (inlet)")
+            if len(downstream_nodes) == 0:
+                errors.append("No downstream boundary nodes (outlet)")
 
         is_valid = len(errors) == 0
         return is_valid, errors
