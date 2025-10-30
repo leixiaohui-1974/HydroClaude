@@ -212,7 +212,10 @@ class TestIntegration:
         engine.initialize()
         engine.run()
 
-        # 4. 检查输出
+        # 4. 保存结果
+        engine.save_results()
+
+        # 5. 检查输出
         output_dir = Path(config['output']['directory'])
         assert output_dir.exists()
 
