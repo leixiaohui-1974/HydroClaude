@@ -43,6 +43,7 @@ from .pump_station import (
     PumpStationNode, Pump,
     create_pump_station
 )
+from .bridge_structure import Bridge, create_bridge
 from .solver import NetworkSolver, create_network_solver, solve_network
 
 __all__ = [
@@ -88,6 +89,9 @@ __all__ = [
     'create_internal_orifice',
     # 泵站组件
     'Pump',
+    # 高级水工建筑物
+    'Bridge',
+    'create_bridge',
     # 求解器
     'NetworkSolver',
     'create_network_solver',
