@@ -34,3 +34,11 @@ test_analysis.png
 # Log files
 *.log
 benchmark_results/
+
+# Test coverage
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+.pytest_cache/
