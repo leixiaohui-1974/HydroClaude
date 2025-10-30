@@ -87,8 +87,9 @@ class InternalStructure(ABC):
     def update_water_levels(self):
         """从上下游河段更新水位"""
         # 上游水位 = 上游河段末端水深 + 河床高程
+        # 注意：solver.S0是坡度数组，取平均值
         self.h_upstream = (self.upstream.get_downstream_h() +
-                          self.upstream.solver.slope * self.upstream.length)
+                          np.mean(self.upstream.solver.S0) * self.upstream.length)
 
         # 下游水位 = 下游河段起点水深 + 河床高程
         self.h_downstream = self.downstream.get_upstream_h()

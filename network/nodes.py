@@ -380,12 +380,12 @@ class ReservoirNode(Node):
         self.h_min = h_min
         self.h_max = h_max
 
+        # 默认库容曲线（线性，可自定义）
+        self.storage_curve = None
+
         # 初始水位和库容
         self.h = (h_min + h_max) / 2  # 初始水深为中间值
         self.volume = self.compute_volume(self.h)
-
-        # 默认库容曲线（线性，可自定义）
-        self.storage_curve = None
 
     def compute_volume(self, h: float) -> float:
         """

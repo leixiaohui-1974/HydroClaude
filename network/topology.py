@@ -150,7 +150,13 @@ class Reach:
         self.solver = solver
 
         # 提取几何信息
-        self.length = solver.length if hasattr(solver, 'length') else None
+        # 注意：GodunvFVMSolver使用self.L，旧版求解器可能使用self.length
+        if hasattr(solver, 'length'):
+            self.length = solver.length
+        elif hasattr(solver, 'L'):
+            self.length = solver.L
+        else:
+            self.length = None
 
         # 内部边界条件（可选）
         self.internal_structures = []  # 堰、闸等

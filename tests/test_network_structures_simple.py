@@ -39,7 +39,7 @@ def create_test_solver(length=100.0, width=10.0, h_init=2.0, Q_init=20.0, slope=
     h = np.ones(n_cells) * h_init
     Q = np.ones(n_cells) * Q_init
 
-    solver.set_initial_conditions(
+    solver.initialize(
         h, Q,
         {'type': 'Q', 'value': Q_init},
         {'type': 'h', 'value': h_init}
