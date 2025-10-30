@@ -18,8 +18,11 @@ __version__ = "1.0.0"
 __author__ = "HydroClaude Team"
 
 from .timeseries_bc import TimeSeriesBoundary, create_timeseries_boundary
+from .rating_curve_bc import RatingCurveBoundary, create_rating_curve
 
 __all__ = [
     'TimeSeriesBoundary',
     'create_timeseries_boundary',
+    'RatingCurveBoundary',
+    'create_rating_curve',
 ]
