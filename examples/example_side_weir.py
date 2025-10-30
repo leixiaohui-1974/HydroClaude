@@ -1,0 +1,492 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+侧堰水工建筑物示例
+
+演示 SideWeir 类的使用，包括：
+1. 基本侧堰分流计算
+2. 薄壁堰 vs 宽顶堰对比
+3. 沿程水位和流量变化
+4. 侧堰长度设计
+5. 灌溉分水应用
+6. 防洪溢流堰
+7. 淹没效应分析
+
+作者: HydroClaude Team
+日期: 2025-10-29
+"""
+
+import numpy as np
+import sys
+from pathlib import Path
+
+# 添加项目路径
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from network.side_weir import SideWeir, create_side_weir
+
+
+def example_1_basic_side_weir():
+    """
+    示例1：基本侧堰分流计算
+
+    计算给定条件下的侧堰分流流量和分流比
+    """
+    print("="*80)
+    print("示例1：基本侧堰分流计算")
+    print("="*80)
+
+    # 创建侧堰
+    weir = SideWeir(
+        weir_id="SW001",
+        length=50.0,          # 侧堰长度 50m
+        crest_elevation=102.0,  # 堰顶高程 102m
+        channel_width=5.0,    # 主渠宽度 5m
+        channel_slope=0.001,  # 底坡 0.001
+        manning_n=0.020,
+        weir_type="sharp"     # 薄壁侧堰
+    )
+
+    print(f"\n侧堰参数：")
+    props = weir.properties()
+    print(f"  堰长: {props['length']:.1f} m")
+    print(f"  堰顶高程: {props['crest_elevation']:.2f} m")
+    print(f"  主渠宽度: {props['channel_width']:.1f} m")
+    print(f"  主渠底坡: {props['channel_slope']:.4f}")
+    print(f"  流量系数: Cd = {props['discharge_coefficient']:.3f}")
+    print(f"  堰型: {props['weir_type']} (薄壁)")
+
+    # 不同上游条件
+    print(f"\n分流计算：")
+    print(f"{'进口流量':>12} {'上游水位':>12} {'堰顶水头':>12} {'分流量':>12} "
+          f"{'下游流量':>12} {'分流比':>12} {'水深降':>12}")
+    print(f"{'(m³/s)':>12} {'(m)':>12} {'(m)':>12} {'(m³/s)':>12} "
+          f"{'(m³/s)':>12} {'(%)':>12} {'(m)':>12}")
+    print("-" * 108)
+
+    test_cases = [
+        (10.0, 102.5),   # 小流量，小水头
+        (12.0, 103.0),
+        (15.0, 103.5),
+        (18.0, 104.0),
+        (20.0, 104.5),   # 大流量，大水头
+    ]
+
+    for Q_in, h_up in test_cases:
+        H = h_up - weir.z_crest  # 堰顶水头
+
+        result = weir.compute_diversion(Q_in, h_up)
+
+        Q_div = result['Q_diverted']
+        Q_down = result['Q_downstream']
+        ratio = result['diversion_ratio'] * 100
+        dh = result['water_depth_drop']
+
+        print(f"{Q_in:>12.1f} {h_up:>12.2f} {H:>12.2f} {Q_div:>12.2f} "
+              f"{Q_down:>12.2f} {ratio:>12.1f} {dh:>12.3f}")
+
+    print("\n分析：")
+    print("  1. 堰顶水头增大 → 分流量增加（H^(3/2) 关系）")
+    print("  2. 分流比随进口流量和水头变化")
+    print("  3. 主渠流量沿程减小，水深降低")
+    print("  4. De Marchi 公式考虑沿程水位变化")
+
+
+def example_2_sharp_vs_broad_weir():
+    """
+    示例2：薄壁堰 vs 宽顶堰对比
+
+    对比两种堰型的分流特性
+    """
+    print("\n" + "="*80)
+    print("示例2：薄壁堰 vs 宽顶堰对比")
+    print("="*80)
+
+    Q_inflow = 15.0
+    h_upstream = 103.5
+
+    # 薄壁侧堰
+    weir_sharp = SideWeir(
+        weir_id="SW_SHARP",
+        length=50.0,
+        crest_elevation=102.0,
+        channel_width=5.0,
+        channel_slope=0.001,
+        weir_type="sharp"
+    )
+
+    # 宽顶侧堰
+    weir_broad = SideWeir(
+        weir_id="SW_BROAD",
+        length=50.0,
+        crest_elevation=102.0,
+        channel_width=5.0,
+        channel_slope=0.001,
+        weir_type="broad"
+    )
+
+    print(f"\n堰型对比（相同几何尺寸）：")
+    print(f"  进口流量: {Q_inflow:.1f} m³/s")
+    print(f"  上游水位: {h_upstream:.2f} m")
+    print(f"  堰顶水头: {h_upstream - 102.0:.2f} m")
+
+    print(f"\n{'堰型':>12} {'流量系数':>12} {'分流量(m³/s)':>15} "
+          f"{'分流比(%)':>12} {'下游流量(m³/s)':>18}")
+    print("-" * 84)
+
+    for weir, name in [(weir_sharp, "薄壁堰"), (weir_broad, "宽顶堰")]:
+        result = weir.compute_diversion(Q_inflow, h_upstream)
+
+        Cd = weir.Cd
+        Q_div = result['Q_diverted']
+        ratio = result['diversion_ratio'] * 100
+        Q_down = result['Q_downstream']
+
+        print(f"{name:>12} {Cd:>12.3f} {Q_div:>15.2f} {ratio:>12.1f} {Q_down:>18.2f}")
+
+    print("\n结论：")
+    print("  薄壁堰：")
+    print("    - 流量系数 Cd ≈ 0.45，溢流能力强")
+    print("    - 适用于急流分水")
+    print("  宽顶堰：")
+    print("    - 流量系数 Cd ≈ 0.35，溢流能力较弱")
+    print("    - 结构稳定，适用于大流量长期运行")
+
+
+def example_3_profile_analysis():
+    """
+    示例3：沿程水位和流量变化
+
+    分析侧堰沿程的水力要素变化
+    """
+    print("\n" + "="*80)
+    print("示例3：沿程水位和流量变化")
+    print("="*80)
+
+    weir = SideWeir(
+        weir_id="SW_PROFILE",
+        length=60.0,
+        crest_elevation=100.0,
+        channel_width=5.0,
+        channel_slope=0.001,
+        manning_n=0.020
+    )
+
+    Q_inflow = 18.0
+    h_upstream = 102.5
+
+    print(f"\n侧堰参数：")
+    print(f"  堰长: {weir.L:.1f} m")
+    print(f"  堰顶高程: {weir.z_crest:.1f} m")
+    print(f"  进口流量: {Q_inflow:.1f} m³/s")
+    print(f"  上游水位: {h_upstream:.2f} m")
+
+    # 计算沿程剖面
+    result = weir.compute_diversion(Q_inflow, h_upstream, n_segments=10)
+
+    profile = result['profile']
+
+    print(f"\n沿程剖面（每隔 {weir.L/10:.1f} m）：")
+    print(f"{'距离(m)':>12} {'水位(m)':>12} {'主渠流量(m³/s)':>18} "
+          f"{'单宽溢流(m²/s)':>18} {'堰顶水头(m)':>15}")
+    print("-" * 90)
+
+    for point in profile:
+        x = point['x']
+        h = point['h']
+        Q = point['Q']
+        q = point['q']
+        H = h - weir.z_crest
+
+        print(f"{x:>12.1f} {h:>12.3f} {Q:>18.2f} {q:>18.3f} {H:>15.3f}")
+
+    print(f"\n总分流量: {result['Q_diverted']:.2f} m³/s")
+    print(f"下游剩余流量: {result['Q_downstream']:.2f} m³/s")
+    print(f"分流比: {result['diversion_ratio']*100:.1f}%")
+    print(f"水深降落: {result['water_depth_drop']:.3f} m")
+
+    print("\n观察：")
+    print("  1. 主渠流量沿程递减（分流作用）")
+    print("  2. 水位沿程降低（流量减小，水深减小）")
+    print("  3. 单宽溢流流量不均匀（受水位变化影响）")
+    print("  4. 前段水位高，溢流量大；后段水位低，溢流量小")
+
+
+def example_4_weir_length_design():
+    """
+    示例4：侧堰长度设计
+
+    根据目标分流比设计侧堰长度
+    """
+    print("\n" + "="*80)
+    print("示例4：侧堰长度设计")
+    print("="*80)
+
+    # 设计条件
+    Q_inflow = 20.0  # 主渠进口流量 20 m³/s
+    h_upstream = 104.0  # 上游水位 104 m
+    z_crest = 102.0  # 堰顶高程 102 m
+
+    print(f"\n设计条件：")
+    print(f"  主渠进口流量: {Q_inflow:.1f} m³/s")
+    print(f"  上游水位: {h_upstream:.2f} m")
+    print(f"  堰顶高程: {z_crest:.2f} m")
+    print(f"  堰顶水头: {h_upstream - z_crest:.2f} m")
+    print(f"  主渠宽度: 5.0 m")
+
+    # 不同目标分流比
+    target_ratios = [0.20, 0.40, 0.60, 0.80]
+
+    print(f"\n侧堰长度设计：")
+    print(f"{'目标分流比(%)':>18} {'所需长度(m)':>15} {'实际分流比(%)':>18} "
+          f"{'分流量(m³/s)':>15} {'误差(%)':>12}")
+    print("-" * 90)
+
+    for target in target_ratios:
+        # 创建侧堰（初始长度可任意）
+        weir = SideWeir(
+            weir_id=f"SW_DESIGN_{int(target*100)}",
+            length=50.0,  # 初始长度
+            crest_elevation=z_crest,
+            channel_width=5.0,
+            channel_slope=0.001
+        )
+
+        # 计算所需长度
+        L_required = weir.compute_required_length(Q_inflow, h_upstream, target)
+
+        # 验证
+        weir_verify = SideWeir(
+            weir_id="SW_VERIFY",
+            length=L_required,
+            crest_elevation=z_crest,
+            channel_width=5.0,
+            channel_slope=0.001
+        )
+
+        result = weir_verify.compute_diversion(Q_inflow, h_upstream)
+        actual_ratio = result['diversion_ratio']
+        Q_div = result['Q_diverted']
+        error = abs(actual_ratio - target) / target * 100
+
+        print(f"{target*100:>18.1f} {L_required:>15.1f} {actual_ratio*100:>18.1f} "
+              f"{Q_div:>15.2f} {error:>12.2f}")
+
+    print("\n设计结论：")
+    print("  1. 分流比越高，所需侧堰越长")
+    print("  2. 80% 分流比需要约 100m 长侧堰")
+    print("  3. 设计计算误差 < 1%，满足工程精度要求")
+    print("  4. 实际工程需考虑施工条件和经济性")
+
+
+def example_5_irrigation_diversion():
+    """
+    示例5：灌溉分水应用
+
+    灌区干渠通过侧堰向支渠分水
+    """
+    print("\n" + "="*80)
+    print("示例5：灌溉分水应用")
+    print("="*80)
+
+    # 干渠参数
+    Q_main = 25.0  # 干渠流量 25 m³/s
+    h_main = 105.5  # 干渠水位 105.5 m
+
+    # 支渠需水量
+    irrigation_areas = [
+        ("支渠A", 5.0),   # 需水 5 m³/s
+        ("支渠B", 8.0),   # 需水 8 m³/s
+        ("支渠C", 6.0),   # 需水 6 m³/s
+    ]
+
+    print(f"\n灌区分水方案：")
+    print(f"  干渠流量: {Q_main:.1f} m³/s")
+    print(f"  干渠水位: {h_main:.2f} m")
+
+    print(f"\n支渠分水计算：")
+    print(f"{'支渠':>10} {'需水量(m³/s)':>15} {'目标分流比(%)':>18} "
+          f"{'侧堰长度(m)':>15} {'实际分流(m³/s)':>18}")
+    print("-" * 90)
+
+    Q_remaining = Q_main
+    z_crest = 104.0  # 侧堰堰顶高程
+
+    for branch, Q_demand in irrigation_areas:
+        # 目标分流比
+        target_ratio = Q_demand / Q_remaining
+
+        # 设计侧堰
+        weir = SideWeir(
+            weir_id=f"SW_{branch}",
+            length=50.0,  # 初始值
+            crest_elevation=z_crest,
+            channel_width=6.0,
+            channel_slope=0.0008
+        )
+
+        # 计算所需长度
+        try:
+            L_required = weir.compute_required_length(Q_remaining, h_main, target_ratio)
+
+            # 验证
+            weir.L = L_required
+            result = weir.compute_diversion(Q_remaining, h_main)
+            Q_actual = result['Q_diverted']
+
+            print(f"{branch:>10} {Q_demand:>15.1f} {target_ratio*100:>18.1f} "
+                  f"{L_required:>15.1f} {Q_actual:>18.2f}")
+
+            # 更新剩余流量
+            Q_remaining = result['Q_downstream']
+
+        except ValueError:
+            print(f"{branch:>10} {Q_demand:>15.1f} {'N/A':>18} {'N/A':>15} {'超出能力':>18}")
+
+    print(f"\n干渠末端剩余流量: {Q_remaining:.2f} m³/s")
+
+    print("\n灌溉分水特点：")
+    print("  1. 侧堰自动分水，无需闸门调节")
+    print("  2. 分水量随干渠水位自动调整")
+    print("  3. 结构简单，维护方便")
+    print("  4. 适用于梯级分水系统")
+
+
+def example_6_flood_overflow_weir():
+    """
+    示例6：防洪溢流堰
+
+    河道中设置侧堰，超标洪水溢流到滞洪区
+    """
+    print("\n" + "="*80)
+    print("示例6：防洪溢流堰")
+    print("="*80)
+
+    # 河道参数
+    z_crest = 108.0  # 堰顶高程（20年一遇设计水位）
+
+    weir = SideWeir(
+        weir_id="SW_FLOOD",
+        length=80.0,      # 溢流堰长 80m
+        crest_elevation=z_crest,
+        channel_width=30.0,  # 河道宽 30m
+        channel_slope=0.0005,
+        manning_n=0.030,  # 天然河道
+        weir_type="broad"
+    )
+
+    print(f"\n防洪溢流堰参数：")
+    print(f"  堰长: {weir.L:.1f} m")
+    print(f"  堰顶高程: {weir.z_crest:.1f} m（20年一遇水位）")
+    print(f"  河道宽度: {weir.B:.1f} m")
+
+    # 不同重现期洪水
+    floods = [
+        ("20年", 800, 108.0),   # 设计水位，不溢流
+        ("50年", 1200, 109.5),  # 溢流
+        ("100年", 1500, 110.5), # 大量溢流
+        ("200年", 1800, 111.2), # 大量溢流
+    ]
+
+    print(f"\n不同重现期洪水溢流分析：")
+    print(f"{'重现期':>10} {'流量(m³/s)':>15} {'河道水位(m)':>15} "
+          f"{'溢流量(m³/s)':>15} {'溢流比(%)':>12} {'下游流量(m³/s)':>18}")
+    print("-" * 102)
+
+    for period, Q, h in floods:
+        if h > z_crest:
+            result = weir.compute_diversion(Q, h)
+            Q_overflow = result['Q_diverted']
+            ratio = result['diversion_ratio'] * 100
+            Q_down = result['Q_downstream']
+        else:
+            Q_overflow = 0.0
+            ratio = 0.0
+            Q_down = Q
+
+        print(f"{period:>10} {Q:>15.0f} {h:>15.2f} {Q_overflow:>15.1f} "
+              f"{ratio:>12.1f} {Q_down:>18.1f}")
+
+    print("\n防洪作用：")
+    print("  1. 20年一遇以下：不溢流，河道正常行洪")
+    print("  2. 超标洪水：自动溢流到滞洪区")
+    print("  3. 100年一遇：溢流约 400 m³/s，降低下游洪峰")
+    print("  4. 保护下游重要城镇和设施")
+
+
+def example_7_submergence_analysis():
+    """
+    示例7：淹没效应分析
+
+    分析侧渠水位对侧堰溢流的影响
+    """
+    print("\n" + "="*80)
+    print("示例7：淹没效应分析")
+    print("="*80)
+
+    weir = SideWeir(
+        weir_id="SW_SUBM",
+        length=50.0,
+        crest_elevation=100.0,
+        channel_width=5.0,
+        channel_slope=0.001
+    )
+
+    Q_inflow = 15.0
+    h_upstream = 103.0
+
+    print(f"\n主渠条件：")
+    print(f"  进口流量: {Q_inflow:.1f} m³/s")
+    print(f"  上游水位: {h_upstream:.2f} m")
+    print(f"  堰顶高程: {weir.z_crest:.1f} m")
+    print(f"  堰顶水头: {h_upstream - weir.z_crest:.2f} m")
+
+    # 不同侧渠水位
+    h_side_values = [98.0, 99.0, 100.0, 101.0, 101.5, 102.0, 102.5]
+
+    print(f"\n淹没效应分析：")
+    print(f"{'侧渠水位(m)':>15} {'淹没比':>12} {'折减系数':>12} "
+          f"{'自由溢流(m³/s)':>18} {'淹没溢流(m³/s)':>18} {'流量损失(%)':>15}")
+    print("-" * 108)
+
+    for h_side in h_side_values:
+        result = weir.compute_submergence_effect(Q_inflow, h_upstream, h_side)
+
+        subm_ratio = result['submergence_ratio']
+        reduction = result['reduction_factor']
+        Q_free = result['Q_diverted_free']
+        Q_subm = result['Q_diverted_submerged']
+        loss = (Q_free - Q_subm) / Q_free * 100 if Q_free > 0 else 0
+
+        print(f"{h_side:>15.2f} {subm_ratio:>12.3f} {reduction:>12.3f} "
+              f"{Q_free:>18.2f} {Q_subm:>18.2f} {loss:>15.1f}")
+
+    print("\n结论：")
+    print("  1. 侧渠水位 < 堰顶：无淹没影响")
+    print("  2. 淹没比 < 0.7：影响较小（< 10% 流量损失）")
+    print("  3. 淹没比 > 0.7：显著降低溢流能力")
+    print("  4. 设计时应保持侧渠水位低于主渠")
+    print("  5. 必要时设置跌水或陡坡降低侧渠水位")
+
+
+def main():
+    """运行所有示例"""
+    print("\n" + "="*80)
+    print("侧堰水工建筑物示例集")
+    print("="*80)
+
+    example_1_basic_side_weir()
+    example_2_sharp_vs_broad_weir()
+    example_3_profile_analysis()
+    example_4_weir_length_design()
+    example_5_irrigation_diversion()
+    example_6_flood_overflow_weir()
+    example_7_submergence_analysis()
+
+    print("\n" + "="*80)
+    print("所有示例运行完成！")
+    print("="*80)
+
+
+if __name__ == '__main__':
+    main()

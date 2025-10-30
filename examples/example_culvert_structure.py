@@ -1,0 +1,518 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+涵洞/倒虹吸水工建筑物示例
+
+演示 Culvert 类的使用，包括：
+1. 基本涵洞过流计算（圆形和矩形）
+2. 进口控制 vs 出口控制对比
+3. 能量损失分析
+4. 多孔并联涵洞
+5. 倒虹吸应用
+6. 道路涵洞设计
+7. 流态转换分析
+
+作者: HydroClaude Team
+日期: 2025-10-29
+"""
+
+import numpy as np
+import sys
+from pathlib import Path
+
+# 添加项目路径
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from network.culvert_structure import Culvert, create_culvert
+
+
+def example_1_basic_culvert_flow():
+    """
+    示例1：基本涵洞过流计算
+
+    对比圆形和矩形涵洞的过流特性
+    """
+    print("="*80)
+    print("示例1：基本涵洞过流计算")
+    print("="*80)
+
+    # 圆形涵洞
+    culvert_circular = Culvert(
+        culvert_id="CV_CIRCULAR",
+        length=50.0,
+        inlet_elevation=100.0,
+        outlet_elevation=99.5,
+        shape="circular",
+        diameter=2.0,
+        n_barrels=1
+    )
+
+    # 矩形涵洞（相近断面积）
+    culvert_rectangular = Culvert(
+        culvert_id="CV_RECTANGULAR",
+        length=50.0,
+        inlet_elevation=100.0,
+        outlet_elevation=99.5,
+        shape="rectangular",
+        width=2.5,
+        height=1.3,  # A ≈ 3.25 m² vs 圆形 π*1² ≈ 3.14 m²
+        n_barrels=1
+    )
+
+    print("\n涵洞参数对比：")
+    print(f"{'类型':>12} {'断面':>15} {'断面积(m²)':>15} {'湿周(m)':>15} {'水力直径(m)':>15}")
+    print("-" * 78)
+
+    props_c = culvert_circular.properties()
+    props_r = culvert_rectangular.properties()
+
+    print(f"{'圆形':>12} {'D=2.0m':>15} {props_c['full_area_per_barrel']:>15.2f} "
+          f"{props_c['full_perimeter']:>15.2f} {props_c['hydraulic_diameter']:>15.2f}")
+    print(f"{'矩形':>12} {'2.5m×1.3m':>15} {props_r['full_area_per_barrel']:>15.2f} "
+          f"{props_r['full_perimeter']:>15.2f} {props_r['hydraulic_diameter']:>15.2f}")
+
+    # 过流计算
+    h_upstream = 103.0
+    h_downstream = 101.5
+
+    print(f"\n过流计算（上游 {h_upstream:.1f}m，下游 {h_downstream:.1f}m）：")
+    print(f"{'类型':>12} {'流态':>15} {'流量(m³/s)':>15} {'流速(m/s)':>12} "
+          f"{'摩阻(m)':>12} {'局部(m)':>12}")
+    print("-" * 90)
+
+    result_c = culvert_circular.compute_discharge(h_upstream, h_downstream)
+    result_r = culvert_rectangular.compute_discharge(h_upstream, h_downstream)
+
+    regime_cn = {
+        "inlet_control": "进口控制",
+        "outlet_control": "出口控制"
+    }
+
+    print(f"{'圆形':>12} {regime_cn[result_c['regime']]:>15} {result_c['Q']:>15.2f} "
+          f"{result_c['velocity']:>12.2f} {result_c['friction_loss']:>12.3f} "
+          f"{result_c['form_loss']:>12.3f}")
+    print(f"{'矩形':>12} {regime_cn[result_r['regime']]:>15} {result_r['Q']:>15.2f} "
+          f"{result_r['velocity']:>12.2f} {result_r['friction_loss']:>12.3f} "
+          f"{result_r['form_loss']:>12.3f}")
+
+    print("\n分析：")
+    print("  1. 断面积相近时，过流能力相近")
+    print("  2. 圆形断面水力效率更高（湿周更小）")
+    print("  3. 矩形断面施工方便，适用于浅埋涵洞")
+
+
+def example_2_inlet_vs_outlet_control():
+    """
+    示例2：进口控制 vs 出口控制对比
+
+    分析不同涵洞长度和坡度对流态的影响
+    """
+    print("\n" + "="*80)
+    print("示例2：进口控制 vs 出口控制对比")
+    print("="*80)
+
+    # 短陡涵洞（进口控制）
+    culvert_inlet = Culvert(
+        culvert_id="CV_INLET",
+        length=20.0,      # 短
+        inlet_elevation=100.0,
+        outlet_elevation=99.0,  # 陡坡 S0=0.05
+        shape="circular",
+        diameter=1.8,
+        manning_n=0.013
+    )
+
+    # 长缓涵洞（出口控制）
+    culvert_outlet = Culvert(
+        culvert_id="CV_OUTLET",
+        length=80.0,      # 长
+        inlet_elevation=100.0,
+        outlet_elevation=99.2,  # 缓坡 S0=0.01
+        shape="circular",
+        diameter=1.8,
+        manning_n=0.013
+    )
+
+    print(f"\n涵洞配置：")
+    print(f"{'类型':>15} {'长度(m)':>12} {'底坡':>12} {'L/D比':>12}")
+    print("-" * 60)
+    print(f"{'短陡（进口）':>15} {culvert_inlet.length:>12.1f} "
+          f"{culvert_inlet.S0:>12.4f} {culvert_inlet.length/1.8:>12.1f}")
+    print(f"{'长缓（出口）':>15} {culvert_outlet.length:>12.1f} "
+          f"{culvert_outlet.S0:>12.4f} {culvert_outlet.length/1.8:>12.1f}")
+
+    # 不同水位组合
+    print(f"\n过流对比：")
+    print(f"{'上游(m)':>10} {'下游(m)':>10} {'短陡Q(m³/s)':>15} {'流态':>15} "
+          f"{'长缓Q(m³/s)':>15} {'流态':>15}")
+    print("-" * 90)
+
+    water_levels = [
+        (101.5, 100.5),
+        (102.0, 101.0),
+        (102.5, 101.5),
+        (103.0, 102.0)
+    ]
+
+    regime_cn = {
+        "inlet_control": "进口控制",
+        "outlet_control": "出口控制"
+    }
+
+    for h_up, h_down in water_levels:
+        result_inlet = culvert_inlet.compute_discharge(h_up, h_down)
+        result_outlet = culvert_outlet.compute_discharge(h_up, h_down)
+
+        print(f"{h_up:>10.1f} {h_down:>10.1f} {result_inlet['Q']:>15.2f} "
+              f"{regime_cn[result_inlet['regime']]:>15} "
+              f"{result_outlet['Q']:>15.2f} {regime_cn[result_outlet['regime']]:>15}")
+
+    print("\n结论：")
+    print("  短陡涵洞：")
+    print("    - 进口控制为主，流量主要取决于进口水头")
+    print("    - 摩阻损失小，局部损失占主导")
+    print("  长缓涵洞：")
+    print("    - 出口控制为主，需考虑下游水位和摩阻")
+    print("    - 摩阻损失显著")
+
+
+def example_3_energy_loss_analysis():
+    """
+    示例3：能量损失分析
+
+    分析不同涵洞长度下的摩阻损失和局部损失
+    """
+    print("\n" + "="*80)
+    print("示例3：能量损失分析")
+    print("="*80)
+
+    # 固定水位
+    h_upstream = 104.0
+    h_downstream = 102.0
+
+    print(f"\n固定条件：")
+    print(f"  上游水位: {h_upstream:.1f} m")
+    print(f"  下游水位: {h_downstream:.1f} m")
+    print(f"  可用水头: {h_upstream - h_downstream:.1f} m")
+
+    # 不同长度涵洞
+    lengths = [20, 40, 60, 80, 100]
+
+    print(f"\n能量损失分布：")
+    print(f"{'长度(m)':>10} {'流量(m³/s)':>15} {'摩阻(m)':>12} {'局部(m)':>12} "
+          f"{'总损失(m)':>12} {'摩阻占比(%)':>15}")
+    print("-" * 90)
+
+    for L in lengths:
+        culvert = Culvert(
+            culvert_id=f"CV_L{L}",
+            length=L,
+            inlet_elevation=100.0,
+            outlet_elevation=100.0 - L * 0.005,  # 保持 S0=0.005
+            shape="circular",
+            diameter=2.0,
+            manning_n=0.015
+        )
+
+        result = culvert.compute_discharge(h_upstream, h_downstream, method='outlet')
+
+        h_f = result['friction_loss']
+        h_e = result['form_loss']
+        h_total = result['head_loss']
+        friction_pct = (h_f / h_total * 100) if h_total > 0 else 0
+
+        print(f"{L:>10} {result['Q']:>15.2f} {h_f:>12.3f} {h_e:>12.3f} "
+              f"{h_total:>12.3f} {friction_pct:>15.1f}")
+
+    print("\n分析：")
+    print("  1. 涵洞越长，摩阻损失越大")
+    print("  2. 短涵洞：局部损失占主导（进出口、弯头）")
+    print("  3. 长涵洞：摩阻损失占主导（管壁摩擦）")
+    print("  4. 设计时需根据长度选择合理的损失计算方法")
+
+
+def example_4_multiple_barrels():
+    """
+    示例4：多孔并联涵洞
+
+    分析多孔涵洞的过流能力提升
+    """
+    print("\n" + "="*80)
+    print("示例4：多孔并联涵洞")
+    print("="*80)
+
+    h_upstream = 103.5
+    h_downstream = 101.5
+
+    print(f"\n设计条件：")
+    print(f"  上游水位: {h_upstream:.1f} m")
+    print(f"  下游水位: {h_downstream:.1f} m")
+    print(f"  单孔尺寸: D = 1.8 m")
+    print(f"  涵洞长度: L = 50 m")
+
+    # 不同孔数
+    barrel_counts = [1, 2, 3, 4]
+
+    print(f"\n过流能力对比：")
+    print(f"{'孔数':>8} {'总流量(m³/s)':>15} {'单孔流量(m³/s)':>18} "
+          f"{'单孔流速(m/s)':>15} {'增幅(%)':>12}")
+    print("-" * 80)
+
+    Q_baseline = None
+
+    for n in barrel_counts:
+        culvert = Culvert(
+            culvert_id=f"CV_{n}B",
+            length=50.0,
+            inlet_elevation=100.0,
+            outlet_elevation=99.5,
+            shape="circular",
+            diameter=1.8,
+            n_barrels=n
+        )
+
+        result = culvert.compute_discharge(h_upstream, h_downstream)
+
+        Q_total = result['Q']
+        Q_per = result['Q_per_barrel']
+        v = result['velocity']
+
+        if Q_baseline is None:
+            Q_baseline = Q_total
+            increase_pct = 0.0
+        else:
+            increase_pct = (Q_total / Q_baseline - 1) * 100
+
+        print(f"{n:>8} {Q_total:>15.2f} {Q_per:>18.2f} {v:>15.2f} {increase_pct:>12.1f}")
+
+    print("\n设计建议：")
+    print(f"  1. 单孔流量固定，总流量与孔数成正比")
+    print(f"  2. 增加孔数可有效提高过流能力")
+    print(f"  3. 4孔涵洞可达单孔涵洞4倍流量")
+    print(f"  4. 工程中需权衡造价与过流需求")
+
+
+def example_5_inverted_siphon():
+    """
+    示例5：倒虹吸应用
+
+    倒虹吸跨越低洼地，出口高于进口
+    """
+    print("\n" + "="*80)
+    print("示例5：倒虹吸应用")
+    print("="*80)
+
+    # 倒虹吸：出口高于进口
+    siphon = Culvert(
+        culvert_id="SIPHON_001",
+        length=120.0,
+        inlet_elevation=100.0,
+        outlet_elevation=100.8,  # 出口高0.8m（逆坡）
+        shape="rectangular",
+        width=2.5,
+        height=2.0,
+        n_barrels=2,
+        manning_n=0.013,
+        n_bends=4,  # 4个弯头（进口下降、底部水平、出口上升）
+        Ke_bends=0.3
+    )
+
+    print(f"\n倒虹吸参数：")
+    props = siphon.properties()
+    print(f"  长度: {props['length']:.1f} m")
+    print(f"  进口高程: {props['inlet_elevation']:.2f} m")
+    print(f"  出口高程: {props['outlet_elevation']:.2f} m")
+    print(f"  高差: {props['outlet_elevation'] - props['inlet_elevation']:.2f} m（逆坡）")
+    print(f"  断面: {props['width']:.1f}m × {props['height']:.1f}m")
+    print(f"  孔数: {props['n_barrels']}")
+    print(f"  弯头数: {props['n_bends']}")
+
+    # 不同上游水位
+    h_downstream = 102.0
+    h_upstream_values = [103.0, 104.0, 105.0, 106.0, 107.0]
+
+    print(f"\n下游水位固定: {h_downstream:.1f} m")
+    print(f"\n过流能力分析：")
+    print(f"{'上游水位(m)':>15} {'可用水头(m)':>15} {'流量(m³/s)':>15} "
+          f"{'摩阻(m)':>12} {'局部(m)':>12}")
+    print("-" * 84)
+
+    for h_up in h_upstream_values:
+        result = siphon.compute_discharge(h_up, h_downstream, method='outlet')
+
+        H_available = h_up - h_downstream
+
+        print(f"{h_up:>15.1f} {H_available:>15.2f} {result['Q']:>15.2f} "
+              f"{result['friction_loss']:>12.3f} {result['form_loss']:>12.3f}")
+
+    print("\n倒虹吸特点：")
+    print("  1. 出口高于进口，需足够的上游水位提供驱动水头")
+    print("  2. 高差需计入总水头损失")
+    print("  3. 弯头损失显著（多个90°弯）")
+    print("  4. 需要排气和沉沙设施")
+    print("  5. 适用于跨越道路、河道等低洼地")
+
+
+def example_6_road_culvert_design():
+    """
+    示例6：道路涵洞设计
+
+    设计满足防洪标准的道路涵洞
+    """
+    print("\n" + "="*80)
+    print("示例6：道路涵洞设计")
+    print("="*80)
+
+    # 设计要求
+    Q_50yr = 12.0  # 50年一遇设计流量 12 m³/s
+    h_downstream = 101.0  # 下游天然水位
+    max_headwater = 103.5  # 最大允许上游水位（路基高程限制）
+    max_velocity = 3.0  # 最大允许流速（防冲刷）
+
+    print(f"\n设计标准：")
+    print(f"  设计流量: Q_50 = {Q_50yr:.1f} m³/s（50年一遇）")
+    print(f"  下游水位: {h_downstream:.1f} m")
+    print(f"  最大上游水位: {max_headwater:.1f} m（路基限制）")
+    print(f"  最大流速: {max_velocity:.1f} m/s（防冲刷）")
+
+    # 尝试不同设计方案
+    print(f"\n设计方案对比：")
+    print(f"{'方案':>6} {'孔数':>8} {'断面':>15} {'上游水位(m)':>15} "
+          f"{'流速(m/s)':>12} {'评价':>12}")
+    print("-" * 84)
+
+    designs = [
+        ("A", 1, "circular", 2.5),       # 单孔大管径
+        ("B", 2, "circular", 2.0),       # 双孔中管径
+        ("C", 3, "circular", 1.8),       # 三孔小管径
+        ("D", 2, "rectangular", (2.5, 2.0)),  # 双孔矩形
+    ]
+
+    suitable_designs = []
+
+    for name, n_barrels, shape, dimensions in designs:
+        if shape == "circular":
+            diameter = dimensions
+            culvert = Culvert(
+                culvert_id=f"DESIGN_{name}",
+                length=40.0,
+                inlet_elevation=100.0,
+                outlet_elevation=99.6,
+                shape="circular",
+                diameter=diameter,
+                n_barrels=n_barrels
+            )
+            section_str = f"D={diameter:.1f}m"
+        else:  # rectangular
+            width, height = dimensions
+            culvert = Culvert(
+                culvert_id=f"DESIGN_{name}",
+                length=40.0,
+                inlet_elevation=100.0,
+                outlet_elevation=99.6,
+                shape="rectangular",
+                width=width,
+                height=height,
+                n_barrels=n_barrels
+            )
+            section_str = f"{width:.1f}m×{height:.1f}m"
+
+        # 计算所需上游水位
+        h_up = culvert.compute_backwater_effect(Q_50yr, h_downstream)
+        result = culvert.compute_discharge(h_up, h_downstream)
+        v = result['velocity']
+
+        # 评价
+        if h_up > max_headwater:
+            evaluation = "✗ 壅水过高"
+        elif v > max_velocity:
+            evaluation = "✗ 流速过大"
+        else:
+            evaluation = "✓ 合格"
+            suitable_designs.append((name, n_barrels, section_str, h_up, v))
+
+        print(f"{name:>6} {n_barrels:>8} {section_str:>15} {h_up:>15.2f} "
+              f"{v:>12.2f} {evaluation:>12}")
+
+    print(f"\n推荐方案：")
+    if suitable_designs:
+        for name, n_barrels, section_str, h_up, v in suitable_designs:
+            print(f"  方案{name}: {n_barrels}孔 {section_str}")
+            print(f"    上游水位: {h_up:.2f} m（余度 {max_headwater - h_up:.2f} m）")
+            print(f"    流速: {v:.2f} m/s（安全）")
+    else:
+        print(f"  无满足要求的方案，建议增大断面或孔数")
+
+
+def example_7_flow_regime_transition():
+    """
+    示例7：流态转换分析
+
+    分析从进口控制到出口控制的转换过程
+    """
+    print("\n" + "="*80)
+    print("示例7：流态转换分析")
+    print("="*80)
+
+    culvert = Culvert(
+        culvert_id="CV_TRANSITION",
+        length=50.0,
+        inlet_elevation=100.0,
+        outlet_elevation=99.5,
+        shape="circular",
+        diameter=2.0,
+        n_barrels=1
+    )
+
+    # 固定上游水位，变化下游水位
+    h_upstream = 105.0
+    h_downstream_values = np.linspace(100.0, 104.5, 15)
+
+    print(f"\n固定上游水位: {h_upstream:.1f} m")
+    print(f"变化下游水位: {h_downstream_values[0]:.1f} - {h_downstream_values[-1]:.1f} m")
+
+    print(f"\n{'下游(m)':>10} {'水头差(m)':>12} {'流态':>15} {'流量(m³/s)':>15} "
+          f"{'流速(m/s)':>12}")
+    print("-" * 78)
+
+    regime_cn = {
+        "inlet_control": "进口控制",
+        "outlet_control": "出口控制"
+    }
+
+    for h_down in h_downstream_values:
+        result = culvert.compute_discharge(h_upstream, h_down)
+
+        dH = h_upstream - h_down
+
+        print(f"{h_down:>10.2f} {dH:>12.2f} {regime_cn[result['regime']]:>15} "
+              f"{result['Q']:>15.2f} {result['velocity']:>12.2f}")
+
+    print("\n分析：")
+    print("  1. 下游水位低：进口控制，流量主要取决于上游水位")
+    print("  2. 下游水位高（淹没）：出口控制，流量受下游水位影响")
+    print("  3. 转换点通常在下游淹没涵洞出口附近")
+    print("  4. 自动流态判断确保计算准确性")
+
+
+def main():
+    """运行所有示例"""
+    print("\n" + "="*80)
+    print("涵洞/倒虹吸水工建筑物示例集")
+    print("="*80)
+
+    example_1_basic_culvert_flow()
+    example_2_inlet_vs_outlet_control()
+    example_3_energy_loss_analysis()
+    example_4_multiple_barrels()
+    example_5_inverted_siphon()
+    example_6_road_culvert_design()
+    example_7_flow_regime_transition()
+
+    print("\n" + "="*80)
+    print("所有示例运行完成！")
+    print("="*80)
+
+
+if __name__ == '__main__':
+    main()
