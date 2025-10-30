@@ -584,7 +584,7 @@ class TestEnergyLosses:
         # 长涵洞：摩阻损失主导
         culvert_long = Culvert(
             culvert_id="CV_LONG",
-            length=150.0,
+            length=300.0,  # 增加长度以确保摩阻损失主导
             inlet_elevation=100.0,
             outlet_elevation=98.0,
             shape="circular",
