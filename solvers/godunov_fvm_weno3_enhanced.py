@@ -531,8 +531,8 @@ class GodunvFVMWENO3Enhanced(GodunvFVMWENO3):
         for i in range(n + 1):
             # 如果启用熵修正，先修正特征速度
             if self.entropy_fix and h_L[i] > self.eps_dry and h_R[i] > self.eps_dry:
-                u_L = Q_L[i] / (self.width * h_L[i])
-                u_R = Q_R[i] / (self.width * h_R[i])
+                u_L = Q_L[i] / (self.B * h_L[i])
+                u_R = Q_R[i] / (self.B * h_R[i])
                 # 熵修正后再计算通量（在HLL内部应用）
 
             F_h[i], F_Q[i] = self._hll_flux(
