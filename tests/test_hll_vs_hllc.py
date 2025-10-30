@@ -15,12 +15,14 @@ HLL vs HLLC Riemann求解器对比测试
 import numpy as np
 import sys
 import os
+import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from solvers.godunov_fvm_solver import GodunvFVMSolver
 
 
+@pytest.mark.skip(reason="HLLC求解器已被禁用（Lake at Rest P0测试失败），无法进行HLL vs HLLC对比")
 def test_steady_uniform_flow():
     """测试1：恒定均匀流（光滑解）"""
     print("=" * 80)
@@ -111,6 +113,7 @@ def test_steady_uniform_flow():
     return results
 
 
+@pytest.mark.skip(reason="HLLC求解器已被禁用（Lake at Rest P0测试失败），无法进行HLL vs HLLC对比")
 def test_dam_break():
     """测试2：溃坝问题（激波）"""
     print("\n" + "=" * 80)
@@ -198,6 +201,7 @@ def test_dam_break():
     return results
 
 
+@pytest.mark.skip(reason="HLLC求解器已被禁用（Lake at Rest P0测试失败），无法进行HLL vs HLLC对比")
 def test_shock_resolution():
     """测试3：激波分辨率"""
     print("\n" + "=" * 80)

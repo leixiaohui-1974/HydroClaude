@@ -11,7 +11,7 @@ import numpy as np
 import sys
 sys.path.insert(0, '/workspace')
 
-from physics.numerical_methods.preissmann_solver_v4_linear import PreissmannSolverV4Linear
+from physics.numerical_methods.legacy_preissmann.preissmann_solver_v4_linear import PreissmannSolverV4Linear
 
 
 def test_steady_flow():

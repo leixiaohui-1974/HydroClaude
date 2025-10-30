@@ -150,7 +150,13 @@ class Reach:
         self.solver = solver
 
         # 提取几何信息
-        self.length = solver.length if hasattr(solver, 'length') else None
+        # 注意：GodunvFVMSolver使用self.L，旧版求解器可能使用self.length
+        if hasattr(solver, 'length'):
+            self.length = solver.length
+        elif hasattr(solver, 'L'):
+            self.length = solver.L
+        else:
+            self.length = None
 
         # 内部边界条件（可选）
         self.internal_structures = []  # 堰、闸等
@@ -448,28 +454,29 @@ class RiverNetwork:
         if len(self.reaches) == 0:
             errors.append("Network has no reaches")
 
-        if errors:
-            return False, errors
+        # 即使网络为空或缺少河段，也继续检查孤立节点
+        # （只在有节点时检查）
+        if len(self.nodes) > 0:
+            # 检查孤立节点
+            for node_id, node in self.nodes.items():
+                if len(node.upstream_reaches) == 0 and len(node.downstream_reaches) == 0:
+                    errors.append(f"Isolated node: '{node_id}'")
 
-        # 检查孤立节点
-        for node_id, node in self.nodes.items():
-            if len(node.upstream_reaches) == 0 and len(node.downstream_reaches) == 0:
-                errors.append(f"Isolated node: '{node_id}'")
+        # 检查拓扑排序（自动检测环路）- 只在有河段时检查
+        if len(self.reaches) > 0:
+            try:
+                self.build_topology()
+            except ValueError as e:
+                errors.append(str(e))
 
-        # 检查拓扑排序（自动检测环路）
-        try:
-            self.build_topology()
-        except ValueError as e:
-            errors.append(str(e))
+            # 检查边界节点 - 只在有河段时检查
+            upstream_nodes = self.get_upstream_nodes()
+            downstream_nodes = self.get_downstream_nodes()
 
-        # 检查边界节点
-        upstream_nodes = self.get_upstream_nodes()
-        downstream_nodes = self.get_downstream_nodes()
-
-        if len(upstream_nodes) == 0:
-            errors.append("No upstream boundary nodes (inlet)")
-        if len(downstream_nodes) == 0:
-            errors.append("No downstream boundary nodes (outlet)")
+            if len(upstream_nodes) == 0:
+                errors.append("No upstream boundary nodes (inlet)")
+            if len(downstream_nodes) == 0:
+                errors.append("No downstream boundary nodes (outlet)")
 
         is_valid = len(errors) == 0
         return is_valid, errors

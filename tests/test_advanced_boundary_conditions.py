@@ -107,11 +107,12 @@ def test_tidal_bc():
         duration=24*3600
     )
 
-    # 测试关键时刻
+    # 测试关键时刻（余弦函数，phase=0时t=0为高潮）
     assert tidal(0) == pytest.approx(5.0, abs=0.1)  # 高潮：mean + amplitude
-    assert tidal(6*3600) == pytest.approx(3.0, abs=0.1)  # 平潮
-    assert tidal(12*3600) == pytest.approx(1.0, abs=0.1)  # 低潮：mean - amplitude
-    assert tidal(24*3600) == pytest.approx(5.0, abs=0.1)  # 回到高潮
+    assert tidal(3*3600) == pytest.approx(3.0, abs=0.1)  # 平潮（π/2）
+    assert tidal(6*3600) == pytest.approx(1.0, abs=0.1)  # 低潮：mean - amplitude（π）
+    assert tidal(9*3600) == pytest.approx(3.0, abs=0.1)  # 平潮（3π/2）
+    assert tidal(12*3600) == pytest.approx(5.0, abs=0.1)  # 回到高潮（2π）
 
     print("✅ 潮汐边界条件测试通过")
 

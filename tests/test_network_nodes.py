@@ -131,13 +131,21 @@ def test_bifurcation_invalid_ratios():
     with pytest.raises(ValueError, match="must sum to 1.0"):
         BifurcationNode("B1", split_ratios=[0.3, 0.5])
 
-    # 负数
-    with pytest.raises(ValueError, match="must be in"):
+    # 负数 (这个会先触发sum检查，因为0.6 + -0.4 = 0.2 ≠ 1.0)
+    with pytest.raises(ValueError, match="must sum to 1.0"):
         BifurcationNode("B1", split_ratios=[0.6, -0.4])
 
-    # 超过1
-    with pytest.raises(ValueError, match="must be in"):
+    # 超过1 (这个也会先触发sum检查，因为0.6 + 1.4 = 2.0 ≠ 1.0)
+    with pytest.raises(ValueError, match="must sum to 1.0"):
         BifurcationNode("B1", split_ratios=[0.6, 1.4])
+
+    # 测试范围检查：和为1但有负数
+    with pytest.raises(ValueError, match="must be in"):
+        BifurcationNode("B1", split_ratios=[1.5, -0.5])
+
+    # 测试范围检查：和为1但超过1
+    with pytest.raises(ValueError, match="must be in"):
+        BifurcationNode("B1", split_ratios=[-0.2, 1.2])
 
     print("✅ 无效分流比例检测通过")
 

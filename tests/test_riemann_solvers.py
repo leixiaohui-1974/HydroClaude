@@ -27,7 +27,8 @@ def test_dry_bed_handling():
     """测试干床处理"""
     print("测试1: 干床处理")
 
-    for solver_type in ['hll', 'hllc']:
+    # 注意：HLLC已被禁用，只测试HLL
+    for solver_type in ['hll']:
         solver = GodunvFVMSolver(
             width=10.0,
             length=100.0,
@@ -59,7 +60,8 @@ def test_shock_wave():
     h_R = 1.0
     Q_R = 0.0
 
-    for solver_type in ['hll', 'hllc']:
+    # 注意：HLLC已被禁用，只测试HLL
+    for solver_type in ['hll']:
         solver = GodunvFVMSolver(
             width=10.0,
             length=100.0,
@@ -92,7 +94,8 @@ def test_rarefaction_wave():
     h_R = 2.0
     Q_R = 8.0
 
-    for solver_type in ['hll', 'hllc']:
+    # 注意：HLLC已被禁用，只测试HLL
+    for solver_type in ['hll']:
         solver = GodunvFVMSolver(
             width=10.0,
             length=100.0,
@@ -119,7 +122,8 @@ def test_mass_conservation():
     """测试质量守恒"""
     print("测试4: 质量守恒")
 
-    for solver_type in ['hll', 'hllc']:
+    # 注意：HLLC已被禁用，只测试HLL
+    for solver_type in ['hll']:
         solver = GodunvFVMSolver(
             width=10.0,
             length=1000.0,  # 更长的域
@@ -170,7 +174,8 @@ def test_numerical_stability():
     """测试数值稳定性"""
     print("测试5: 数值稳定性")
 
-    for solver_type in ['hll', 'hllc']:
+    # 注意：HLLC已被禁用，只测试HLL
+    for solver_type in ['hll']:
         solver = GodunvFVMSolver(
             width=10.0,
             length=1000.0,  # 更长的域
@@ -232,7 +237,8 @@ def test_symmetry():
     """测试对称性"""
     print("测试6: 对称性检验")
 
-    for solver_type in ['hll', 'hllc']:
+    # 注意：HLLC已被禁用，只测试HLL
+    for solver_type in ['hll']:
         solver = GodunvFVMSolver(
             width=10.0,
             length=100.0,

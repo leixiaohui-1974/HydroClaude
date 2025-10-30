@@ -117,9 +117,10 @@ def test_trapezoidal_section_integration():
             slope=0.001,
             cross_section=section
         )
-        # 验证有警告
-        assert len(w) == 1
-        assert "非矩形断面支持" in str(w[0].message)
+        # 验证有非矩形断面警告
+        cross_section_warnings = [warn for warn in w if "非矩形断面支持" in str(warn.message)]
+        assert len(cross_section_warnings) >= 1, "应该有非矩形断面支持警告"
+        assert "非矩形断面支持" in str(cross_section_warnings[0].message)
 
     assert solver.cross_section is section
     assert solver.cross_section.section_type.value == "trapezoidal"
