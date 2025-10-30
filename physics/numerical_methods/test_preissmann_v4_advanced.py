@@ -14,7 +14,7 @@ Preissmann v4.0高级测试：多种流动工况
 """
 
 import numpy as np
-from preissmann_solver_v4_linear import PreissmannSolverV4Linear
+from legacy_preissmann.preissmann_solver_v4_linear import PreissmannSolverV4Linear
 
 
 def test_1_lake_at_rest():

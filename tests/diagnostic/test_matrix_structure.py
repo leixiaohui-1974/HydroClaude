@@ -10,7 +10,7 @@ import numpy as np
 import sys
 sys.path.insert(0, '/workspace')
 
-from physics.numerical_methods.preissmann_solver_v2 import PreissmannSolverV2
+from physics.numerical_methods.legacy_preissmann.preissmann_solver_v2 import PreissmannSolverV2
 
 def test_matrix_structure():
     """测试矩阵结构"""
