@@ -120,7 +120,8 @@ class FloodRoutingSimulation:
             slope=self.S0,
             g=self.g,
             cfl=self.cfl,
-            order=1  # 使用一阶格式，更稳定
+            order=1,  # 使用一阶格式，更稳定
+            well_balanced=True  # 启用Well-Balanced格式 (Stage 9)
         )
 
         # 初始条件：均匀流
