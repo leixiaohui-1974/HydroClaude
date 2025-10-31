@@ -329,7 +329,7 @@ def main():
 
     # 改进幅度
     l2_improvement = (res_weno3['errors']['L2_rel'] - res_pp['errors']['L2_rel']) / res_weno3['errors']['L2_rel'] * 100
-    linf_improvement = (res_weno3['errors']['Linf_rel'] - res_pp['errors']['L inf_rel']) / res_weno3['errors']['Linf_rel'] * 100
+    linf_improvement = (res_weno3['errors']['Linf_rel'] - res_pp['errors']['Linf_rel']) / res_weno3['errors']['Linf_rel'] * 100
 
     print(f"\n改进幅度:")
     print(f"  L2误差降低:  {l2_improvement:.1f}%")
