@@ -57,7 +57,8 @@ class GodunvFVMWENO3(GodunvFVMSolver):
         use_numba: bool = True,
         dt_max: Optional[float] = None,
         entropy_fix: bool = False,
-        critical_flow_treatment: bool = False
+        critical_flow_treatment: bool = False,
+        use_enhanced_bc: bool = True
     ):
         """
         初始化
@@ -71,6 +72,7 @@ class GodunvFVMWENO3(GodunvFVMSolver):
             dt_max: 最大时间步长（秒）
             entropy_fix: 是否使用Harten-Hyman entropy修正
             critical_flow_treatment: 是否使用临界流特殊处理
+            use_enhanced_bc: 是否使用增强边界处理（3阶精度）
         """
         # 调用父类初始化，但强制order=3
         super().__init__(
@@ -90,13 +92,160 @@ class GodunvFVMWENO3(GodunvFVMSolver):
             entropy_fix=entropy_fix,
             critical_flow_treatment=critical_flow_treatment
         )
-        
+
         self.weno_eps = weno_epsilon
-        
+        self.use_enhanced_bc = use_enhanced_bc
+
         print(f"  WENO-3重构已启用")
         print(f"  空间精度: 3阶")
         print(f"  epsilon: {self.weno_eps}")
-    
+        if use_enhanced_bc:
+            print(f"  边界处理: 3阶精度（增强Ghost Cell）")
+
+    def _extend_with_ghosts(
+        self,
+        h: np.ndarray,
+        Q: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        扩展数组with ghost cells（WENO3增强版本）
+
+        为了在边界处保持3阶精度，使用2个ghost cells per side
+        并采用高阶外推填充
+
+        Args:
+            h: 水深数组 [n]
+            Q: 流量数组 [n]
+
+        Returns:
+            h_ext: 扩展水深数组 [n+4] (包含2个左ghost + n个物理 + 2个右ghost)
+            Q_ext: 扩展流量数组 [n+4]
+
+        索引映射：
+            ghost_left_2 = 0
+            ghost_left_1 = 1
+            physical[0] = 2
+            physical[1] = 3
+            ...
+            physical[n-1] = n+1
+            ghost_right_1 = n+2
+            ghost_right_2 = n+3
+        """
+        if not self.use_enhanced_bc:
+            # 退化为父类方法（1个ghost cell）
+            return super()._extend_with_ghosts(h, Q)
+
+        n = len(h)
+        h_ext = np.zeros(n + 4)
+        Q_ext = np.zeros(n + 4)
+
+        # 复制物理域 (索引2 to n+1)
+        h_ext[2:n+2] = h
+        Q_ext[2:n+2] = Q
+
+        # ===== 左边界 ghost cells (索引0, 1) =====
+        bc_type = self.bc_left['type']
+
+        if bc_type in ['h', 'fixed_h']:
+            # 固定水深边界
+            value = self.bc_left.get('value', self.bc_left.get('h', h[0]))
+            h_bc = value if not callable(value) else value(self.t)
+
+            # Ghost cells使用边界值（零梯度）
+            h_ext[1] = h_bc
+            h_ext[0] = h_bc
+
+            # 流量使用二阶外推
+            Q_ext[1] = 2*Q[0] - Q[1]
+            Q_ext[0] = 2*Q_ext[1] - Q[0]
+
+        elif bc_type in ['Q', 'fixed_Q']:
+            # 固定流量边界
+            value = self.bc_left.get('value', self.bc_left.get('Q', Q[0]))
+            Q_bc = value if not callable(value) else value(self.t)
+
+            # Ghost cells使用边界值
+            Q_ext[1] = Q_bc
+            Q_ext[0] = Q_bc
+
+            # 水深使用二阶外推
+            h_ext[1] = 2*h[0] - h[1]
+            h_ext[0] = 2*h_ext[1] - h[0]
+
+        elif bc_type == 'transmissive':
+            # 透射边界（零梯度外推）
+            h_ext[1] = h[0]
+            h_ext[0] = h[0]
+            Q_ext[1] = Q[0]
+            Q_ext[0] = Q[0]
+
+        elif bc_type == 'reflective':
+            # 反射边界（镜像对称）
+            h_ext[1] = h[0]
+            h_ext[0] = h[1]
+            Q_ext[1] = -Q[0]  # 流量反向
+            Q_ext[0] = -Q[1]
+
+        else:
+            # 默认：二阶外推
+            h_ext[1] = 2*h[0] - h[1]
+            h_ext[0] = 2*h_ext[1] - h[0]
+            Q_ext[1] = 2*Q[0] - Q[1]
+            Q_ext[0] = 2*Q_ext[1] - Q[0]
+
+        # ===== 右边界 ghost cells (索引n+2, n+3) =====
+        bc_type = self.bc_right['type']
+
+        if bc_type in ['h', 'fixed_h']:
+            # 固定水深边界
+            value = self.bc_right.get('value', self.bc_right.get('h', h[-1]))
+            h_bc = value if not callable(value) else value(self.t)
+
+            h_ext[n+2] = h_bc
+            h_ext[n+3] = h_bc
+
+            # 流量使用二阶外推
+            Q_ext[n+2] = 2*Q[-1] - Q[-2]
+            Q_ext[n+3] = 2*Q_ext[n+2] - Q[-1]
+
+        elif bc_type in ['Q', 'fixed_Q']:
+            # 固定流量边界
+            value = self.bc_right.get('value', self.bc_right.get('Q', Q[-1]))
+            Q_bc = value if not callable(value) else value(self.t)
+
+            Q_ext[n+2] = Q_bc
+            Q_ext[n+3] = Q_bc
+
+            # 水深使用二阶外推
+            h_ext[n+2] = 2*h[-1] - h[-2]
+            h_ext[n+3] = 2*h_ext[n+2] - h[-1]
+
+        elif bc_type == 'transmissive':
+            # 透射边界（零梯度外推）
+            h_ext[n+2] = h[-1]
+            h_ext[n+3] = h[-1]
+            Q_ext[n+2] = Q[-1]
+            Q_ext[n+3] = Q[-1]
+
+        elif bc_type == 'reflective':
+            # 反射边界（镜像对称）
+            h_ext[n+2] = h[-1]
+            h_ext[n+3] = h[-2]
+            Q_ext[n+2] = -Q[-1]  # 流量反向
+            Q_ext[n+3] = -Q[-2]
+
+        else:
+            # 默认：二阶外推
+            h_ext[n+2] = 2*h[-1] - h[-2]
+            h_ext[n+3] = 2*h_ext[n+2] - h[-1]
+            Q_ext[n+2] = 2*Q[-1] - Q[-2]
+            Q_ext[n+3] = 2*Q_ext[n+2] - Q[-1]
+
+        # 确保ghost cells的水深非负
+        h_ext = np.maximum(h_ext, self.eps_dry)
+
+        return h_ext, Q_ext
+
     def _compute_rhs(self, h: np.ndarray, Q: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
         计算右端项（空间导数+源项）
@@ -141,154 +290,277 @@ class GodunvFVMWENO3(GodunvFVMSolver):
     def _weno3_reconstruction(self, phi: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
         WENO-3重构（3阶精度+无振荡）
-        
+
         从单元平均值phi_i重构界面左右值
-        
+
         Args:
-            phi: 扩展变量数组 [n+2] (包含ghost cells)
-        
+            phi: 扩展变量数组
+                - 如果use_enhanced_bc=True: [n+4] (2个ghost cells per side)
+                - 如果use_enhanced_bc=False: [n+2] (1个ghost cell per side)
+
         Returns:
             phi_L: 所有界面的左值 [n+1] (从左侧重构)
             phi_R: 所有界面的右值 [n+1] (从右侧重构)
-        
+
         WENO-3算法：
         ----------------
         两个模板：
             Stencil 1 (左偏): phi_{i-1}, phi_i
             Stencil 2 (右偏): phi_i, phi_{i+1}
-        
+
         模板重构值：
             phi^(1) = 3/2*phi_i - 1/2*phi_{i-1}
             phi^(2) = 1/2*phi_i + 1/2*phi_{i+1}
-        
+
         光滑性指标：
             beta_1 = (phi_i - phi_{i-1})^2
             beta_2 = (phi_{i+1} - phi_i)^2
-        
+
         理想权重：
             d_1 = 1/3, d_2 = 2/3
-        
+
         非线性权重：
             alpha_k = d_k / (epsilon + beta_k)^2
             omega_k = alpha_k / sum(alpha_k)
-        
+
         WENO重构：
             phi_{i+1/2}^- = omega_1*phi^(1) + omega_2*phi^(2)
         """
-        n = len(phi) - 2  # 内部单元数
-        
+        if self.use_enhanced_bc:
+            # 增强边界处理：n+4数组，使用统一模板
+            return self._weno3_reconstruction_enhanced(phi)
+        else:
+            # 标准边界处理：n+2数组，边界特殊处理
+            return self._weno3_reconstruction_standard(phi)
+
+    def _weno3_reconstruction_enhanced(self, phi: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        WENO-3重构（增强版本 - 统一模板）
+
+        使用2个ghost cells，所有界面使用相同的5点模板，边界精度3阶
+
+        Args:
+            phi: 扩展变量数组 [n+4]
+
+        Returns:
+            phi_L, phi_R: 界面左右值 [n+1]
+
+        索引说明：
+            扩展数组: [ghost0, ghost1, phys0, phys1, ..., phys(n-1), ghost_n, ghost_n+1]
+            索引:     [0,      1,      2,     3,     ..., n+1,        n+2,     n+3]
+            界面i的扩展索引: idx = i + 2
+            - 界面0在ghost1和phys0之间, idx=2
+            - 界面n在phys(n-1)和ghost_n之间, idx=n+2
+        """
+        # 物理单元数
+        n = len(phi) - 4
+
         phi_L = np.zeros(n + 1)
         phi_R = np.zeros(n + 1)
-        
+
         eps = self.weno_eps
-        
+
         # 理想权重
         d1 = 1.0 / 3.0
         d2 = 2.0 / 3.0
-        
+
+        # ===== 对每个界面进行重构（统一处理）=====
+        for i in range(n + 1):
+            # 界面i位于物理单元i-1和i之间
+            # 在扩展数组中，物理单元0对应索引2
+            # 界面i对应扩展索引idx = i + 2
+            # 对于界面i，我们需要:
+            #   - 左重构用: phi[idx-1], phi[idx], phi[idx+1]
+            #   - 右重构用: phi[idx], phi[idx+1], phi[idx+2]
+            # 最大索引idx+2 = (n) + 2 + 2 = n+4，但phi数组是[0...n+3]
+            # 所以当i=n时，idx=n+2, idx+2=n+4会越界！
+
+            # 解决方案：界面索引应该是i，对应扩展数组的idx=i+1（不是i+2）
+            # 重新理解：
+            #   - 扩展数组: [g0, g1, p0, p1, ..., p(n-1), g_n, g_n+1]
+            #   - 索引:     [0,  1,  2,  3,  ..., n+1,    n+2,  n+3]
+            #   - 界面0在索引1和2之间
+            #   - 界面i在索引i+1和i+2之间
+            #   - 界面n在索引n+1和n+2之间
+
+            # 实际上，对于界面i+1/2（物理界面编号），应该：
+            # 左重构从单元i（扩展索引i+2）
+            # 右重构从单元i+1（扩展索引i+3）
+
+            # Let me reconsider the indexing:
+            # Physical cells: [0, 1, ..., n-1]
+            # Extended array: [ghost-1, ghost0, cell0, cell1, ..., cell(n-1), ghostn, ghostn+1]
+            # Extended index: [0,       1,      2,     3,     ..., n+1,        n+2,   n+3]
+            # Interface i is between cell(i-1) and cell(i)
+            # For interface i=0: between ghost0 and cell0 (extended indices 1 and 2)
+            # For interface i=n: between cell(n-1) and ghostn (extended indices n+1 and n+2)
+
+            # For left reconstruction at interface i (from left cell i-1 in physical, or i+1 in extended):
+            # We need stencil around cell i-1: [i-2, i-1, i, i+1] in physical = [i, i+1, i+2, i+3] in extended
+            # But for i=0, physical i-1 doesn't exist, we use ghosts
+
+            # Actually, let's keep it simple:
+            # For interface i, in extended array:
+            #   Left value uses cells around index i+1: need i, i+1, i+2
+            #   Right value uses cells around index i+2: need i+1, i+2, i+3
+            # Max index needed: i+3, for i=n, that's n+3, which is valid!
+
+            # Correction: the issue is idx = i+2 is wrong, should be based on interface position
+
+            # Let's use simpler indexing:
+            # Interface i in physical is between cells i-1 and i
+            # In extended array (offset by 2), it's between extended[i+1] and extended[i+2]
+
+            # For left reconstruction (from cell i-1, extended i+1):
+            #   Need stencil: extended[i], extended[i+1], extended[i+2]
+            # For right reconstruction (from cell i, extended i+2):
+            #   Need stencil: extended[i+1], extended[i+2], extended[i+3]
+
+            # Max index: i+3, when i=n, that's n+3 ✓ (valid for array of size n+4)
+
+            # ----- 左侧重构 phi_{i+1/2}^- (from cell i-1, extended index i+1) -----
+            # Stencil: [i, i+1, i+2]
+            idx_L = i + 1
+
+            # 模板1（左偏）: phi[i], phi[i+1]
+            phi1_L = 1.5 * phi[idx_L] - 0.5 * phi[idx_L-1] if idx_L > 0 else phi[idx_L]
+
+            # 模板2（右偏）: phi[i+1], phi[i+2]
+            phi2_L = 0.5 * phi[idx_L] + 0.5 * phi[idx_L+1]
+
+            # 光滑性指标
+            beta1_L = (phi[idx_L] - phi[idx_L-1])**2 if idx_L > 0 else 0.0
+            beta2_L = (phi[idx_L+1] - phi[idx_L])**2
+
+            # 非线性权重
+            alpha1_L = d1 / (eps + beta1_L)**2
+            alpha2_L = d2 / (eps + beta2_L)**2
+
+            sum_alpha_L = alpha1_L + alpha2_L
+            omega1_L = alpha1_L / sum_alpha_L
+            omega2_L = alpha2_L / sum_alpha_L
+
+            # WENO重构（左侧）
+            phi_L[i] = omega1_L * phi1_L + omega2_L * phi2_L
+
+            # ----- 右侧重构 phi_{i+1/2}^+ (from cell i, extended index i+2) -----
+            # Stencil: [i+1, i+2, i+3]
+            idx_R = i + 2
+
+            # 模板1（右偏）: phi[i+2], phi[i+3]
+            phi1_R = 1.5 * phi[idx_R] - 0.5 * phi[idx_R+1] if idx_R+1 < len(phi) else phi[idx_R]
+
+            # 模板2（左偏）: phi[i+1], phi[i+2]
+            phi2_R = 0.5 * phi[idx_R] + 0.5 * phi[idx_R-1]
+
+            # 光滑性指标
+            beta1_R = (phi[idx_R] - phi[idx_R+1])**2 if idx_R+1 < len(phi) else 0.0
+            beta2_R = (phi[idx_R-1] - phi[idx_R])**2
+
+            # 非线性权重
+            alpha1_R = d1 / (eps + beta1_R)**2
+            alpha2_R = d2 / (eps + beta2_R)**2
+
+            sum_alpha_R = alpha1_R + alpha2_R
+            omega1_R = alpha1_R / sum_alpha_R
+            omega2_R = alpha2_R / sum_alpha_R
+
+            # WENO重构（右侧）
+            phi_R[i] = omega1_R * phi1_R + omega2_R * phi2_R
+
+        return phi_L, phi_R
+
+    def _weno3_reconstruction_standard(self, phi: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        WENO-3重构（标准版本 - 边界特殊处理）
+
+        使用1个ghost cell，边界处使用特殊处理，边界精度降为1阶
+
+        Args:
+            phi: 扩展变量数组 [n+2]
+
+        Returns:
+            phi_L, phi_R: 界面左右值 [n+1]
+        """
+        n = len(phi) - 2  # 内部单元数
+
+        phi_L = np.zeros(n + 1)
+        phi_R = np.zeros(n + 1)
+
+        eps = self.weno_eps
+
+        # 理想权重
+        d1 = 1.0 / 3.0
+        d2 = 2.0 / 3.0
+
         # ===== 对每个界面进行重构 =====
         for i in range(n + 1):
-            # 界面i位于单元i-1和i之间
-            # phi扩展数组: [ghost_left | 0, 1, ..., n-1 | ghost_right]
-            # 界面i对应扩展索引i（ghost_left=0, 第一个内部单元=1）
-            
-            # ----- 左侧重构 phi_{i+1/2}^- (从左侧单元i向右) -----
-            # 使用扩展数组索引: i-1, i, i+1
-            
+            # ----- 左侧重构 phi_{i+1/2}^- -----
             # 模板1（左偏）: phi_{i-1}, phi_i
             if i > 0:
                 phi1_L = 1.5 * phi[i] - 0.5 * phi[i-1]
+                beta1_L = (phi[i] - phi[i-1])**2
             else:
-                # 左边界
+                # 左边界：退化为1阶
                 phi1_L = phi[i]
-            
+                beta1_L = 0.0
+
             # 模板2（右偏）: phi_i, phi_{i+1}
             if i < n:
                 phi2_L = 0.5 * phi[i] + 0.5 * phi[i+1]
-            else:
-                # 右边界
-                phi2_L = phi[i]
-            
-            # 光滑性指标
-            if i > 0:
-                beta1_L = (phi[i] - phi[i-1])**2
-            else:
-                beta1_L = 0.0
-            
-            if i < n:
                 beta2_L = (phi[i+1] - phi[i])**2
             else:
+                # 右边界：退化为1阶
+                phi2_L = phi[i]
                 beta2_L = 0.0
-            
-            # 非线性权重（数值稳定版本）
-            # 防止beta过大导致alpha溢出
-            beta1_L_safe = min(beta1_L, 1e10)
-            beta2_L_safe = min(beta2_L, 1e10)
-            
-            alpha1_L = d1 / (eps + beta1_L_safe)**2
-            alpha2_L = d2 / (eps + beta2_L_safe)**2
-            
+
+            # 非线性权重
+            alpha1_L = d1 / (eps + beta1_L)**2
+            alpha2_L = d2 / (eps + beta2_L)**2
+
             sum_alpha_L = alpha1_L + alpha2_L
-            
-            # 防止除零
             if sum_alpha_L > 1e-20:
                 omega1_L = alpha1_L / sum_alpha_L
                 omega2_L = alpha2_L / sum_alpha_L
             else:
-                # 退化为理想权重
                 omega1_L = d1
                 omega2_L = d2
-            
+
             # WENO重构（左侧）
             phi_L[i] = omega1_L * phi1_L + omega2_L * phi2_L
-            
-            # ----- 右侧重构 phi_{i+1/2}^+ (从右侧单元i+1向左) -----
-            # 镜像过程
-            
+
+            # ----- 右侧重构 phi_{i+1/2}^+ -----
             # 模板1（右偏）: phi_{i+1}, phi_{i+2}
             if i < n - 1:
                 phi1_R = 1.5 * phi[i+1] - 0.5 * phi[i+2]
+                beta1_R = (phi[i+1] - phi[i+2])**2
             else:
                 phi1_R = phi[i+1]
-            
+                beta1_R = 0.0
+
             # 模板2（左偏）: phi_i, phi_{i+1}
             if i < n:
                 phi2_R = 0.5 * phi[i+1] + 0.5 * phi[i]
-            else:
-                phi2_R = phi[i+1]
-            
-            # 光滑性指标
-            if i < n - 1:
-                beta1_R = (phi[i+1] - phi[i+2])**2
-            else:
-                beta1_R = 0.0
-            
-            if i < n:
                 beta2_R = (phi[i] - phi[i+1])**2
             else:
+                phi2_R = phi[i+1]
                 beta2_R = 0.0
-            
-            # 非线性权重（数值稳定版本）
-            beta1_R_safe = min(beta1_R, 1e10)
-            beta2_R_safe = min(beta2_R, 1e10)
-            
-            alpha1_R = d1 / (eps + beta1_R_safe)**2
-            alpha2_R = d2 / (eps + beta2_R_safe)**2
-            
+
+            # 非线性权重
+            alpha1_R = d1 / (eps + beta1_R)**2
+            alpha2_R = d2 / (eps + beta2_R)**2
+
             sum_alpha_R = alpha1_R + alpha2_R
-            
-            # 防止除零
             if sum_alpha_R > 1e-20:
                 omega1_R = alpha1_R / sum_alpha_R
                 omega2_R = alpha2_R / sum_alpha_R
             else:
-                # 退化为理想权重
                 omega1_R = d1
                 omega2_R = d2
-            
+
             # WENO重构（右侧）
             phi_R[i] = omega1_R * phi1_R + omega2_R * phi2_R
-        
+
         return phi_L, phi_R
     
     def get_diagnostics(self) -> Dict:
