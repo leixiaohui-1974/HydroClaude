@@ -485,7 +485,7 @@ def main():
             'kwargs': {
                 'eps_pp': 1e-10,
                 'theta_min': 0.0,
-                'wet_dry_threshold': 1e-4,
+                'wet_dry_threshold': 1e-3,  # 放宽检测阈值: 1e-4→1e-3
                 'interface_theta_max': 0.3,
                 'use_pp': True,
                 'use_wd_flux': True
