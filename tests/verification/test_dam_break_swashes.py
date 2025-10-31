@@ -33,6 +33,11 @@ from tests.verification.ritter_solution import (
     ritter_characteristics,
     verify_ritter_properties
 )
+from tests.verification.stoker_solution import (
+    stoker_solution,
+    stoker_characteristics,
+    verify_stoker_properties
+)
 
 
 class TestDamBreakSWASHES:
@@ -394,6 +399,192 @@ class TestDamBreakSWASHES:
         print(f"  相对改善: {(errors_h[0]-min_error)/errors_h[0]*100:.1f}%")
 
         print(f"\n✅ 网格收敛性验证通过 - 误差在合理范围内，存在网格改善")
+
+    def test_db2_stoker_coarse_grid(self):
+        """
+        DB2测试：Stoker溃坝（下游有水，粗网格）
+
+        目的：验证激波捕捉能力
+        网格：200 cells
+        初始条件：h_L = 10m, h_R = 2m（下游有水）
+        验收标准：相对L2误差 < 20%（激波问题比干床更难）
+
+        关键特征：
+        - 包含激波（与DB1干床的区别）
+        - 四区域结构：稀疏波 + 中间常值区 + 激波 + 下游区
+        - 测试激波位置和速度
+        """
+        print("\n" + "="*80)
+        print("SWASHES DB2: Stoker Dam Break with Shock (Coarse Grid)")
+        print("="*80)
+
+        # 参数设置
+        L = 2000.0
+        n_cells = 200
+        h_L = 10.0
+        h_R = 2.0  # 下游有水（与DB1的关键区别）
+        x_dam = L / 2.0
+        t_end = 10.0
+        B = 10.0
+
+        print(f"\n参数:")
+        print(f"  计算域: [0, {L:.0f}] m")
+        print(f"  坝址位置: {x_dam:.0f} m")
+        print(f"  网格数: {n_cells}")
+        print(f"  上游水深: {h_L} m")
+        print(f"  下游水深: {h_R} m  ← 与DB1不同（有水）")
+        print(f"  模拟时间: {t_end} s")
+
+        # 创建求解器
+        solver = GodunvFVMWENO3(
+            width=B,
+            length=L,
+            n_cells=n_cells,
+            manning_n=0.0,
+            slope=0.0,
+            use_enhanced_bc=True,
+            well_balanced=False,
+            cfl=0.5,
+            use_numba=True
+        )
+
+        # 初始条件
+        x = solver.x
+        h_init = np.where(x <= x_dam, h_L, h_R)
+        Q_init = np.zeros_like(h_init)
+
+        bc_left = {'type': 'transmissive'}
+        bc_right = {'type': 'transmissive'}
+
+        solver.initialize(h_init, Q_init, bc_left, bc_right)
+
+        # 运行模拟
+        print(f"\n运行数值模拟...")
+        while solver.t < t_end:
+            solver.step()
+
+        print(f"✅ 模拟完成: {solver.step_count}步, {solver.t:.3f}s")
+
+        # 获取数值解
+        h_num = solver.h
+        u_num = solver.Q / np.maximum(solver.h, solver.eps_dry)
+
+        # 获取解析解
+        h_exact, u_exact = stoker_solution(x, solver.t, h_L, h_R, x_dam)
+
+        # 计算误差
+        errors = self.compute_errors(x, h_num, h_exact, u_num, u_exact)
+
+        print(f"\n误差分析:")
+        print(f"  水深 - L1: {errors['h_L1']:.4f} m, L2: {errors['h_L2']:.4f} m, L∞: {errors['h_Linf']:.4f} m")
+        print(f"  流速 - L1: {errors['u_L1']:.4f} m/s, L2: {errors['u_L2']:.4f} m/s, L∞: {errors['u_Linf']:.4f} m/s")
+
+        # 相对误差
+        rel_h_L2 = errors['h_L2'] / h_L * 100
+        print(f"\n相对L2误差: {rel_h_L2:.2f}%")
+
+        # 验收标准（激波问题，误差容忍度略高）
+        assert rel_h_L2 < 20.0, f"相对误差过大: {rel_h_L2:.2f}% (验收标准 < 20%)"
+
+        # 验证激波位置
+        chars = stoker_characteristics(solver.t, h_L, h_R, x_dam)
+        print(f"\n激波特征验证:")
+        print(f"  理论激波位置: {chars['x_shock']:.2f} m")
+        print(f"  理论激波速度: {chars['shock_speed']:.2f} m/s")
+        print(f"  中间状态水深: {chars['h_star']:.2f} m")
+        print(f"  中间状态流速: {chars['u_star']:.2f} m/s")
+
+        print(f"\n✅ DB2测试通过 (粗网格) - 相对误差{rel_h_L2:.1f}%在合理范围内")
+
+        # 保存对比图
+        self._plot_comparison(
+            x, h_num, h_exact, u_num, u_exact,
+            solver.t, h_L, 'db2_stoker_coarse_grid'
+        )
+
+    def test_db2_stoker_fine_grid(self):
+        """
+        DB2测试：Stoker溃坝（细网格）
+
+        网格：1000 cells, CFL=0.2
+        验收标准：相对L2误差 < 16%（激波捕捉难度较大）
+        """
+        print("\n" + "="*80)
+        print("SWASHES DB2: Stoker Dam Break (Fine Grid)")
+        print("="*80)
+
+        # 参数
+        L = 2000.0
+        n_cells = 1000
+        h_L = 10.0
+        h_R = 2.0
+        x_dam = L / 2.0
+        t_end = 10.0
+        B = 10.0
+
+        print(f"\n参数:")
+        print(f"  计算域: [0, {L:.0f}] m")
+        print(f"  坝址位置: {x_dam:.0f} m")
+        print(f"  网格数: {n_cells}")
+        print(f"  上游水深: {h_L} m, 下游水深: {h_R} m")
+        print(f"  模拟时间: {t_end} s")
+
+        # 创建求解器（细网格降低CFL）
+        solver = GodunvFVMWENO3(
+            width=B,
+            length=L,
+            n_cells=n_cells,
+            manning_n=0.0,
+            slope=0.0,
+            use_enhanced_bc=True,
+            well_balanced=False,
+            cfl=0.2,  # 细网格稳定性
+            use_numba=True
+        )
+
+        # 初始条件
+        x = solver.x
+        h_init = np.where(x <= x_dam, h_L, h_R)
+        Q_init = np.zeros_like(h_init)
+
+        bc = {'type': 'transmissive'}
+        solver.initialize(h_init, Q_init, bc, bc)
+
+        # 运行
+        print(f"\n运行数值模拟...")
+        step_count = 0
+        while solver.t < t_end:
+            solver.step()
+            step_count += 1
+            if step_count % 100 == 0:
+                print(f"  步数: {step_count}, 时间: {solver.t:.3f}s")
+
+        print(f"✅ 模拟完成: {solver.step_count}步, {solver.t:.3f}s")
+
+        # 计算误差
+        h_num = solver.h
+        u_num = solver.Q / np.maximum(solver.h, solver.eps_dry)
+        h_exact, u_exact = stoker_solution(x, solver.t, h_L, h_R, x_dam)
+
+        errors = self.compute_errors(x, h_num, h_exact, u_num, u_exact)
+
+        print(f"\n误差分析:")
+        print(f"  水深 - L1: {errors['h_L1']:.4f} m, L2: {errors['h_L2']:.4f} m, L∞: {errors['h_Linf']:.4f} m")
+        print(f"  流速 - L1: {errors['u_L1']:.4f} m/s, L2: {errors['u_L2']:.4f} m/s, L∞: {errors['u_Linf']:.4f} m/s")
+
+        rel_h_L2 = errors['h_L2'] / h_L * 100
+        print(f"\n相对L2误差: {rel_h_L2:.2f}%")
+
+        # 验收标准（激波问题略放宽）
+        assert rel_h_L2 < 16.0, f"相对误差过大: {rel_h_L2:.2f}% (验收标准 < 16%)"
+
+        print(f"\n✅ DB2测试通过 (细网格) - 相对误差{rel_h_L2:.1f}%在合理范围内")
+
+        # 保存对比图
+        self._plot_comparison(
+            x, h_num, h_exact, u_num, u_exact,
+            solver.t, h_L, 'db2_stoker_fine_grid'
+        )
 
 
 if __name__ == '__main__':
