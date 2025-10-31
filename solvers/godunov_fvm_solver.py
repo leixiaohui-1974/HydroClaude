@@ -523,14 +523,26 @@ class GodunvFVMSolver:
     def _compute_rhs(self, h: np.ndarray, Q: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
         计算右端项（空间导数+源项）
-        
+
         dU/dt = L(U) = -1/dx*(F_{i+1/2} - F_{i-1/2}) + S
-        
+
         Returns:
             dh/dt, dQ/dt
         """
+        # DEBUG flag for diagnostics
+        DEBUG = False  # Set to False to disable debug output
+
         n = len(h)
-        
+
+        # DEBUG: Check actual eta values at start
+        if DEBUG and self.t < 1e-6:
+            eta = h + self.z_b
+            print(f"\n[DEBUG] At start of _compute_rhs:")
+            print(f"  eta range: {np.min(eta):.6f} ~ {np.max(eta):.6f}")
+            print(f"  eta[39:42]: {eta[39:42]}")
+            print(f"  z_b[39:42]: {self.z_b[39:42]}")
+            print(f"  h[39:42]: {h[39:42]}")
+
         # 初始化
         dh_dt = np.zeros(n)
         dQ_dt = np.zeros(n)
@@ -588,12 +600,23 @@ class GodunvFVMSolver:
             # 右ghost: 外推
             z_b_ext[n+1] = self.z_b[n-1] + (self.z_b[n-1] - self.z_b[n-2]) if n > 1 else self.z_b[n-1]
 
-            # 界面底高程：取左右单元的最大值（保守）
+            # 界面底高程：取左右单元的最大值（Audusse et al. 2004）
             z_b_interface = np.maximum(z_b_ext[:-1], z_b_ext[1:])
 
             # 应用hydrostatic reconstruction
             h_L = np.maximum(0.0, eta_L - z_b_interface)
             h_R = np.maximum(0.0, eta_R - z_b_interface)
+
+            # DEBUG: Print reconstruction details
+            if DEBUG and self.t < 1e-6:
+                print(f"\n[DEBUG] Hydrostatic Reconstruction:")
+                print(f"  eta_L[40:45]: {eta_L[40:45]}")
+                print(f"  eta_R[40:45]: {eta_R[40:45]}")
+                print(f"  z_b_interface[40:45]: {z_b_interface[40:45]}")
+                print(f"  h_L[40:45] (after reconstruction): {h_L[40:45]}")
+                print(f"  h_R[40:45] (after reconstruction): {h_R[40:45]}")
+                print(f"  h_L - h_R [40:45]: {h_L[40:45] - h_R[40:45]}")
+                print(f"  max(|h_L - h_R|): {np.max(np.abs(h_L - h_R)):.3e}")
 
             # 重构流量（不变）
             if self.order == 2:
@@ -650,7 +673,6 @@ class GodunvFVMSolver:
         F_Q = np.zeros(n + 1)
 
         # DEBUG: Print interface states for Lake at Rest diagnosis
-        DEBUG = False  # Set to True to enable diagnostics
         if DEBUG and self.well_balanced and self.t < 1e-6:  # Only at t=0
             print(f"\n[DEBUG] Interface states at t={self.t:.2e}:")
             print(f"  h_L: {h_L}")

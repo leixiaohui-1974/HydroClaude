@@ -159,6 +159,14 @@ class LakeAtRestTest:
                 dist_from_center = abs(x[i] - x_center)
                 z_b[i] = hump_height * (1.0 - 2.0 * dist_from_center / hump_width)
 
+        # 计算坡度 (slope = dz/dx)
+        slope = np.zeros(n_cells)
+        for i in range(n_cells):
+            if i == 0:
+                slope[i] = z_b[i] / x[i] if x[i] > 0 else 0
+            else:
+                slope[i] = (z_b[i] - z_b[i-1]) / (x[i] - x[i-1])
+
         # 初始水深: h = eta - z_b
         h = eta_init - z_b
         Q = np.zeros(n_cells)
@@ -169,7 +177,7 @@ class LakeAtRestTest:
             length=L,
             n_cells=n_cells,
             manning_n=0.03,
-            slope=z_b,  # 使用数组形式的底高程
+            slope=slope,  # ← Fixed: pass slope, not z_b
             cfl=0.5,
             order=1,
             well_balanced=True
@@ -258,6 +266,14 @@ class LakeAtRestTest:
             if x[i] > x_center:
                 z_b[i] = step_height
 
+        # 计算坡度 (slope = dz/dx)
+        slope = np.zeros(n_cells)
+        for i in range(n_cells):
+            if i == 0:
+                slope[i] = z_b[i] / x[i] if x[i] > 0 else 0
+            else:
+                slope[i] = (z_b[i] - z_b[i-1]) / (x[i] - x[i-1])
+
         # 初始水深: h = eta - z_b
         h = eta_init - z_b
         Q = np.zeros(n_cells)
@@ -268,7 +284,7 @@ class LakeAtRestTest:
             length=L,
             n_cells=n_cells,
             manning_n=0.03,
-            slope=z_b,
+            slope=slope,  # ← Fixed: pass slope, not z_b
             cfl=0.5,
             order=1,
             well_balanced=True
