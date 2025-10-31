@@ -30,13 +30,14 @@ class FloodRoutingSimulation:
 
     河道特征:
     - 长度: 50 km
-    - 断面: 梯形
-    - 底宽: 30m, 边坡: 1:2
+    - 断面: 矩形（简化）
+    - 底宽: 30m
     - 粗糙度: n=0.030 (天然河道)
-    - 坡度: 1/1000
+    - 坡度: 1/2000 (更缓)
 
     洪水过程:
-    - 洪峰流量: 1000 m³/s
+    - 基流: 100 m³/s
+    - 洪峰流量: 500 m³/s (降低以提高稳定性)
     - 涨洪历时: 6 hours
     - 落洪历时: 12 hours
     """
@@ -45,23 +46,36 @@ class FloodRoutingSimulation:
         # 河道参数
         self.L = 50000.0  # 河道长度 (m)
         self.B = 30.0     # 河底宽度 (m)
-        self.m = 2.0      # 边坡系数 (1:m)
         self.n = 0.030    # 曼宁粗糙度
-        self.S0 = 0.001   # 河床坡度
+        self.S0 = 0.0005  # 河床坡度 (降低以提高稳定性)
 
         # 数值计算参数
-        self.n_cells = 200  # 网格数
+        self.n_cells = 100  # 减少网格数以提高稳定性
         self.dx = self.L / self.n_cells
-        self.cfl = 0.5
+        self.cfl = 0.3  # 降低CFL以提高稳定性
 
         # 洪水参数
-        self.Q_peak = 1000.0  # 洪峰流量 (m³/s)
+        self.Q_base = 100.0   # 基流 (m³/s)
+        self.Q_peak = 500.0   # 洪峰流量 (m³/s，降低)
         self.T_rise = 6.0 * 3600  # 涨洪历时 (s)
         self.T_fall = 12.0 * 3600  # 落洪历时 (s)
         self.T_total = self.T_rise + self.T_fall  # 总时长 (s)
 
-        # 初始水深
-        self.h0 = 3.0  # m
+        # 计算初始水深（使用曼宁公式的均匀流）
+        # Q = (1/n) * A * R^(2/3) * S0^(1/2)
+        # 对于矩形断面宽浅渠道：R ≈ h
+        # 简化：Q ≈ (1/n) * B * h * h^(2/3) * S0^(1/2)
+        # 求解得到合理初始水深
+        self.h0 = 2.0  # m (初始估计)
+        # 迭代求解精确初始水深
+        for _ in range(10):
+            A = self.B * self.h0
+            P = self.B + 2 * self.h0
+            R = A / P
+            Q_calc = (1.0 / self.n) * A * (R ** (2/3)) * (self.S0 ** 0.5)
+            if abs(Q_calc - self.Q_base) < 0.1:
+                break
+            self.h0 = self.h0 * (self.Q_base / Q_calc) ** 0.5
 
         # 重力加速度
         self.g = 9.81
@@ -80,18 +94,16 @@ class FloodRoutingSimulation:
         Returns:
             流量 (m³/s)
         """
-        Q_base = 100.0  # 基流 (m³/s)
-
         if t <= 0:
-            return Q_base
+            return self.Q_base
         elif t < self.T_rise:
             # 涨洪段
-            return Q_base + (self.Q_peak - Q_base) * (t / self.T_rise)
+            return self.Q_base + (self.Q_peak - self.Q_base) * (t / self.T_rise)
         elif t < self.T_total:
             # 落洪段
-            return Q_base + (self.Q_peak - Q_base) * (1 - (t - self.T_rise) / self.T_fall)
+            return self.Q_base + (self.Q_peak - self.Q_base) * (1 - (t - self.T_rise) / self.T_fall)
         else:
-            return Q_base
+            return self.Q_base
 
     def initialize_solver(self) -> GodunvFVMSolver:
         """

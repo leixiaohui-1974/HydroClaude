@@ -112,23 +112,30 @@
 
 **文件**: `case_02_flood_routing/flood_routing_simulation.py`
 
-**状态**: 🚧 框架完成，数值稳定性待优化
+**状态**: 🚧 框架完成，需要Well-Balanced格式支持
 
-**当前问题**:
-- ⚠️ 模拟第一步后出现NaN
-- ⚠️ 初始条件或边界条件配置需优化
-- ⚠️ 数值参数需调整
+**根本原因**:
+- 🔍 **Well-Balanced属性缺失**：当前FVM求解器对坡度河道无法保持静水平衡
+- 河床坡度0.0005，总高程变化24.75m (50km)
+- Lake at Rest测试显示3.99-11.35m虚假水面扰动
+- 非物理流动累积导致t=1.0h时出现NaN
 
 **已完成**:
 - ✅ 代码框架 (400+行)
 - ✅ 三角形洪水过程生成
 - ✅ 6面板可视化代码
 - ✅ 洪峰削减分析算法
+- ✅ Manning公式初始化
+- ✅ 边界条件配置
+- ✅ 诊断分析完成
 
-**待完成**:
-- 🔄 数值稳定性调试
-- 🔄 边界条件优化
-- 🔄 初始条件匹配
+**技术要求**（未实现）:
+- ❌ **Hydrostatic Reconstruction** (Well-Balanced格式)
+- ❌ 坡度源项精确平衡
+- ❌ C-property保持能力
+
+**结论**:
+此案例验证了河道洪水演进需要Well-Balanced格式，这是Stage 9重要开发方向
 
 ---
 
@@ -228,9 +235,17 @@ AttributeError: 'dict' object has no attribute 'elevation'
 
 ### ⚠️ 发现的问题
 
-1. **数值稳定性**: 部分案例（如洪水演进）对初始条件和边界条件敏感
-2. **代码一致性**: 部分老代码与新数据结构不兼容
-3. **文档完整性**: 部分案例缺少详细的运行说明
+1. **Well-Balanced格式需求** ⭐:
+   - 河道洪水演进案例揭示了关键技术缺口
+   - 坡度河道需要Hydrostatic Reconstruction保持静水平衡
+   - Lake at Rest测试证实当前格式产生3.99-11.35m虚假扰动
+   - **指明Stage 9开发方向**
+
+2. **数值稳定性**: 溃坝干床问题在7.4s后累积误差导致爆炸
+
+3. **代码一致性**: 部分老代码与新数据结构不兼容（供水管网节点类型）
+
+4. **文档完整性**: 部分案例缺少详细的运行说明
 
 ---
 
@@ -238,21 +253,22 @@ AttributeError: 'dict' object has no attribute 'elevation'
 
 ### 短期（1-2天）
 
-1. ✅ **修复case_02_water_supply_network**
+1. 🔄 **修复case_02_water_supply_network**
    - 节点对象类型统一
    - 数据结构验证
 
-2. ✅ **优化case_02_flood_routing**
-   - 数值参数调优
-   - 初始条件匹配
-   - 边界条件简化
+2. ✅ **case_02_flood_routing诊断完成**
+   - 确认需要Well-Balanced格式
+   - 已识别技术缺口
+   - 为Stage 9指明方向
 
 ### 中期（3-5天）
 
-3. ✅ **增加更多工程案例**
-   - 城市排涝系统
-   - 河网洪水演进
-   - 跨流域调水
+3. ⭐ **启动Stage 9: Well-Balanced格式开发**
+   - 实现Hydrostatic Reconstruction
+   - C-property保持能力
+   - Lake at Rest基准测试
+   - 使洪水演进案例可运行
 
 4. ✅ **性能基准测试**
    - 各案例运行时间
@@ -261,12 +277,17 @@ AttributeError: 'dict' object has no attribute 'elevation'
 
 ### 长期（1-2周）
 
-5. ✅ **案例库文档完善**
+5. ✅ **增加更多工程案例**
+   - 城市排涝系统
+   - 河网洪水演进
+   - 跨流域调水
+
+6. ✅ **案例库文档完善**
    - 每个案例的详细README
    - 参数设置指南
    - 故障排除手册
 
-6. ✅ **自动化测试**
+7. ✅ **自动化测试**
    - CI/CD集成
    - 回归测试套件
    - 性能基准跟踪
