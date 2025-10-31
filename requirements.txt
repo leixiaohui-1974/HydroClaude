@@ -7,6 +7,9 @@ numpy>=1.20.0
 # Scientific computing (interpolation, optimization)
 scipy>=1.7.0
 
+# JIT compilation for high performance (8-14x speedup)
+numba>=0.50.0
+
 # Plotting and visualization
 matplotlib>=3.3.0
 
