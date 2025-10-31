@@ -335,7 +335,7 @@ class GodunvFVMWENO3(GodunvFVMSolver):
 
     def _weno3_reconstruction_enhanced(self, phi: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
-        WENO-3重构（增强版本 - 统一模板）
+        WENO-3重构（增强版本 - 向量化）
 
         使用2个ghost cells，所有界面使用相同的5点模板，边界精度3阶
 
@@ -345,12 +345,74 @@ class GodunvFVMWENO3(GodunvFVMSolver):
         Returns:
             phi_L, phi_R: 界面左右值 [n+1]
 
-        索引说明：
-            扩展数组: [ghost0, ghost1, phys0, phys1, ..., phys(n-1), ghost_n, ghost_n+1]
-            索引:     [0,      1,      2,     3,     ..., n+1,        n+2,     n+3]
-            界面i的扩展索引: idx = i + 2
-            - 界面0在ghost1和phys0之间, idx=2
-            - 界面n在phys(n-1)和ghost_n之间, idx=n+2
+        优化：完全向量化，无Python循环
+        """
+        # 物理单元数
+        n = len(phi) - 4
+
+        eps = self.weno_eps
+
+        # 理想权重
+        d1 = 1.0 / 3.0
+        d2 = 2.0 / 3.0
+
+        # ===== 向量化重构（所有界面同时处理）=====
+        # 为所有n+1个界面创建索引数组
+        i = np.arange(n + 1)
+        idx_L = i + 1  # 左侧单元索引
+        idx_R = i + 2  # 右侧单元索引
+
+        # ----- 左侧重构 phi_{i+1/2}^- -----
+        # 模板1（左偏）: phi[idx_L-1], phi[idx_L]
+        phi1_L = 1.5 * phi[idx_L] - 0.5 * phi[idx_L-1]
+
+        # 模板2（右偏）: phi[idx_L], phi[idx_L+1]
+        phi2_L = 0.5 * phi[idx_L] + 0.5 * phi[idx_L+1]
+
+        # 光滑性指标
+        beta1_L = (phi[idx_L] - phi[idx_L-1])**2
+        beta2_L = (phi[idx_L+1] - phi[idx_L])**2
+
+        # 非线性权重（向量化）
+        alpha1_L = d1 / (eps + beta1_L)**2
+        alpha2_L = d2 / (eps + beta2_L)**2
+
+        sum_alpha_L = alpha1_L + alpha2_L
+        omega1_L = alpha1_L / sum_alpha_L
+        omega2_L = alpha2_L / sum_alpha_L
+
+        # WENO重构（左侧）
+        phi_L = omega1_L * phi1_L + omega2_L * phi2_L
+
+        # ----- 右侧重构 phi_{i+1/2}^+ -----
+        # 模板1（右偏）: phi[idx_R], phi[idx_R+1]
+        phi1_R = 1.5 * phi[idx_R] - 0.5 * phi[idx_R+1]
+
+        # 模板2（左偏）: phi[idx_R-1], phi[idx_R]
+        phi2_R = 0.5 * phi[idx_R] + 0.5 * phi[idx_R-1]
+
+        # 光滑性指标
+        beta1_R = (phi[idx_R] - phi[idx_R+1])**2
+        beta2_R = (phi[idx_R-1] - phi[idx_R])**2
+
+        # 非线性权重（向量化）
+        alpha1_R = d1 / (eps + beta1_R)**2
+        alpha2_R = d2 / (eps + beta2_R)**2
+
+        sum_alpha_R = alpha1_R + alpha2_R
+        omega1_R = alpha1_R / sum_alpha_R
+        omega2_R = alpha2_R / sum_alpha_R
+
+        # WENO重构（右侧）
+        phi_R = omega1_R * phi1_R + omega2_R * phi2_R
+
+        return phi_L, phi_R
+
+    def _weno3_reconstruction_enhanced_loop(self, phi: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        WENO-3重构（增强版本 - 循环版）
+
+        保留原始循环版本用于对比测试
         """
         # 物理单元数
         n = len(phi) - 4
@@ -364,7 +426,7 @@ class GodunvFVMWENO3(GodunvFVMSolver):
         d1 = 1.0 / 3.0
         d2 = 2.0 / 3.0
 
-        # ===== 对每个界面进行重构（统一处理）=====
+        # ===== 对每个界面进行重构（循环版本）=====
         for i in range(n + 1):
             # 界面i位于物理单元i-1和i之间
             # 在扩展数组中，物理单元0对应索引2
