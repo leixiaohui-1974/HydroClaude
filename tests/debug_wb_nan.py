@@ -39,15 +39,6 @@ def debug_p0_2():
             dist_from_center = abs(x[i] - x_center)
             z_b[i] = hump_height * (1.0 - 2.0 * dist_from_center / hump_width)
 
-    # 计算坡度 (slope = dz/dx)
-    # 对于单元中心z_b，计算相邻单元间的坡度
-    slope = np.zeros(n_cells)
-    for i in range(n_cells):
-        if i == 0:
-            slope[i] = z_b[i] / x[i] if x[i] > 0 else 0
-        else:
-            slope[i] = (z_b[i] - z_b[i-1]) / (x[i] - x[i-1])
-
     # 初始水深: h = eta - z_b
     h = eta_init - z_b
     Q = np.zeros(n_cells)
@@ -58,19 +49,18 @@ def debug_p0_2():
     print(f"\n初始状态:")
     print(f"  eta_target = {eta_init} m")
     print(f"  z_b range: {np.min(z_b):.3f} ~ {np.max(z_b):.3f} m")
-    print(f"  slope range: {np.min(slope):.6f} ~ {np.max(slope):.6f}")
     print(f"  h range: {np.min(h):.3f} ~ {np.max(h):.3f} m")
     print(f"  eta_actual range: {np.min(eta_check):.6f} ~ {np.max(eta_check):.6f} m")
     print(f"  eta deviation: {np.max(np.abs(eta_check - eta_init)):.3e} m")
     print(f"  Any h < 0? {np.any(h < 0)}")
 
-    # 创建求解器（传递坡度，而非底高程）
+    # 创建求解器（直接传递底高程z_b）
     solver = GodunvFVMSolver(
         width=10.0,
         length=L,
         n_cells=n_cells,
         manning_n=0.03,
-        slope=slope,  # ← Fixed: pass slope, not z_b
+        z_b=z_b,  # ← Pass z_b directly (no integration error!)
         cfl=0.5,
         order=1,
         well_balanced=True
@@ -85,6 +75,13 @@ def debug_p0_2():
     print(f"\n初始化后:")
     print(f"  Mass = {solver._compute_total_mass():.2f} m³")
     print(f"  h range: {np.min(solver.h):.3f} ~ {np.max(solver.h):.3f} m")
+
+    # Check z_b reconstruction accuracy
+    z_b_error = np.max(np.abs(solver.z_b - z_b))
+    print(f"\nz_b重构精度检查:")
+    print(f"  原始z_b[40:45]: {z_b[40:45]}")
+    print(f"  求解器z_b[40:45]: {solver.z_b[40:45]}")
+    print(f"  最大误差: {z_b_error:.6e} m")
 
     # 单步测试
     print(f"\n执行第一步...")

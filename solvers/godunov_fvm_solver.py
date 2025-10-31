@@ -75,7 +75,8 @@ class GodunvFVMSolver:
         length: float,
         n_cells: int,
         manning_n: float,
-        slope: float,
+        slope: float = None,
+        z_b: np.ndarray = None,
         g: float = 9.81,
         cfl: float = 0.5,
         eps_dry: float = 1e-6,
@@ -98,7 +99,8 @@ class GodunvFVMSolver:
             length: 渠长 (m)
             n_cells: 单元数
             manning_n: Manning系数
-            slope: 坡度 (可以是标量或数组)
+            slope: 坡度 (可以是标量或数组，与z_b二选一)
+            z_b: 底高程数组 (直接指定，与slope二选一，推荐用于Well-Balanced)
             g: 重力加速度
             cfl: CFL数 (建议0.5-0.8)
             eps_dry: 干床阈值
@@ -173,13 +175,32 @@ class GodunvFVMSolver:
         self.dx = length / n_cells
         self.n = manning_n
 
-        # 支持标量或数组形式的坡度
-        if isinstance(slope, (int, float)):
-            self.S0 = np.ones(n_cells) * slope
+        # 支持slope或z_b两种输入方式
+        if slope is None and z_b is None:
+            raise ValueError("必须指定slope或z_b参数之一")
+        if slope is not None and z_b is not None:
+            raise ValueError("slope和z_b参数不能同时指定")
+
+        if slope is not None:
+            # 传统方式：从坡度计算底高程
+            if isinstance(slope, (int, float)):
+                self.S0 = np.ones(n_cells) * slope
+            else:
+                self.S0 = np.asarray(slope)
+                if len(self.S0) != n_cells:
+                    raise ValueError(f"slope数组长度({len(self.S0)})必须等于单元数({n_cells})")
         else:
-            self.S0 = np.asarray(slope)
-            if len(self.S0) != n_cells:
-                raise ValueError(f"slope数组长度({len(self.S0)})必须等于单元数({n_cells})")
+            # 新方式：直接使用底高程（推荐用于Well-Balanced）
+            self.z_b = np.asarray(z_b)
+            if len(self.z_b) != n_cells:
+                raise ValueError(f"z_b数组长度({len(self.z_b)})必须等于单元数({n_cells})")
+            # 反算S0（用于摩阻计算）
+            self.S0 = np.zeros(n_cells)
+            for i in range(n_cells):
+                if i == 0:
+                    self.S0[i] = self.z_b[i] / (self.dx * 0.5) if self.dx > 0 else 0
+                else:
+                    self.S0[i] = (self.z_b[i] - self.z_b[i-1]) / self.dx
 
         self.g = g
         self.cfl = cfl
@@ -277,15 +298,18 @@ class GodunvFVMSolver:
         self.x = np.linspace(0.5*self.dx, length - 0.5*self.dx, n_cells)
 
         # 计算单元中心底高程（用于well-balanced格式）
-        # 从下游（x=0）开始积分：z_b(x) = z_0 - ∫S0(ξ)dξ
-        # 这里假设下游底高程为0
-        self.z_b = np.zeros(n_cells)
-        for i in range(n_cells):
-            if i == 0:
-                self.z_b[i] = self.S0[i] * self.x[i]  # 从x=0到x[0]
-            else:
-                # 使用梯形积分
-                self.z_b[i] = self.z_b[i-1] + 0.5 * (self.S0[i-1] + self.S0[i]) * self.dx
+        # 如果未直接提供z_b，则从S0积分计算
+        if slope is not None:
+            # 从下游（x=0）开始积分：z_b(x) = z_0 - ∫S0(ξ)dξ
+            # 这里假设下游底高程为0
+            self.z_b = np.zeros(n_cells)
+            for i in range(n_cells):
+                if i == 0:
+                    self.z_b[i] = self.S0[i] * self.x[i]  # 从x=0到x[0]
+                else:
+                    # 使用梯形积分
+                    self.z_b[i] = self.z_b[i-1] + 0.5 * (self.S0[i-1] + self.S0[i]) * self.dx
+        # else: z_b已经在上面直接赋值
 
         # 检查是否有变化的底高程
         z_b_range = np.max(self.z_b) - np.min(self.z_b)
