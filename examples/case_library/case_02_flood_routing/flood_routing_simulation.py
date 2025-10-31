@@ -113,8 +113,22 @@ class FloodRoutingSimulation:
 
         # 初始条件：均匀流
         Q_init = self.create_inflow_hydrograph(0.0)
-        solver.h[:] = self.h0
-        solver.Q[:] = Q_init * np.ones(self.n_cells)
+        h_init = self.h0 * np.ones(self.n_cells)
+        Q_init_array = Q_init * np.ones(self.n_cells)
+
+        # 边界条件设置
+        # 上游：流量边界（时变）
+        bc_left = {'type': 'Q', 'value': Q_init}
+        # 下游：水深边界（自由出流，使用初始水深）
+        bc_right = {'type': 'h', 'value': self.h0}
+
+        # 初始化
+        solver.initialize(
+            h_init=h_init,
+            Q_init=Q_init_array,
+            bc_left=bc_left,
+            bc_right=bc_right
+        )
 
         return solver
 
@@ -161,14 +175,9 @@ class FloodRoutingSimulation:
             # 计算时间步长
             dt = solver.compute_dt()
 
-            # 上游边界：入流流量
+            # 更新上游边界条件（时变流量）
             Q_in = self.create_inflow_hydrograph(t)
-            A_in = solver.B * solver.h[0]
-            solver.Q[0] = Q_in
-
-            # 下游边界：自由出流
-            solver.h[-1] = solver.h[-2]
-            solver.Q[-1] = solver.Q[-2]
+            solver.bc_left['value'] = Q_in
 
             # 时间步进
             solver.step(dt)
