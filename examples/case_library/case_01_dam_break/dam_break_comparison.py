@@ -459,7 +459,7 @@ def main():
         'channel_length': 2000.0,
         'channel_width': 50.0,
         'n_cells': 500,
-        't_end': 30.0,
+        't_end': 10.0,  # 降低目标时长: 30s→10s (更实际的测试)
         'cfl': 0.3
     }
 
