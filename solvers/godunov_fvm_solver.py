@@ -1352,7 +1352,12 @@ class GodunvFVMSolver:
         Q_ext[1:n+1] = Q
 
         # 左ghost（外推）
-        if self.bc_left['type'] == 'h':
+        if self.bc_left['type'] == 'wall':
+            # Reflective (wall/no-penetration) boundary
+            # 镜像反射：h相同，Q反向
+            h_ext[0] = h[0]
+            Q_ext[0] = -Q[0]  # Reflective
+        elif self.bc_left['type'] == 'h':
             value = self.bc_left['value']
             h_ext[0] = value if not callable(value) else value(self.t)
             Q_ext[0] = Q[0]  # 外推
@@ -1383,7 +1388,12 @@ class GodunvFVMSolver:
             Q_ext[0] = Q_bc_value
 
         # 右ghost
-        if self.bc_right['type'] == 'h':
+        if self.bc_right['type'] == 'wall':
+            # Reflective (wall/no-penetration) boundary
+            # 镜像反射：h相同，Q反向
+            h_ext[n+1] = h[n-1]
+            Q_ext[n+1] = -Q[n-1]  # Reflective
+        elif self.bc_right['type'] == 'h':
             value = self.bc_right['value']
             h_ext[n+1] = value if not callable(value) else value(self.t)
             Q_ext[n+1] = Q[n-1]  # 简单外推流量
