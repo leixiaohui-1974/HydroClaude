@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from solvers.godunov_fvm_solver import GodunvFVMSolver
 from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+from solvers.godunov_fvm_weno3_enhanced import GodunvFVMWENO3Enhanced
 from engine.config_parser import ConfigParser
 
 
@@ -86,23 +87,50 @@ class ModelBuilder:
 
             if spatial_order == 3:
                 # 使用WENO3求解器（3阶精度，激波捕捉）
-                self.solver = GodunvFVMWENO3(
-                    width=geom['channel_width'],
-                    length=geom['channel_length'],
-                    n_cells=mesh['n_cells'],
-                    manning_n=geom['manning_n'],
-                    slope=slope,
-                    g=9.81,
-                    cfl=solver_cfg['cfl'],
-                    eps_dry=solver_cfg['eps_dry'],
-                    weno_epsilon=solver_cfg.get('weno_epsilon', 1e-6),
-                    riemann_solver=solver_cfg['riemann_solver'],
-                    well_balanced=solver_cfg['well_balanced'],
-                    use_numba=solver_cfg['use_numba'],
-                    dt_max=solver_cfg.get('dt_max', None),
-                    entropy_fix=solver_cfg.get('entropy_fix', False),
-                    critical_flow_treatment=solver_cfg.get('critical_flow_treatment', False)
-                )
+                # 支持标准版和增强版
+                use_enhanced = solver_cfg.get('weno3_enhanced', False)
+
+                if use_enhanced:
+                    # 增强版WENO3（适用于水跃、激波等强间断问题）
+                    self.solver = GodunvFVMWENO3Enhanced(
+                        width=geom['channel_width'],
+                        length=geom['channel_length'],
+                        n_cells=mesh['n_cells'],
+                        manning_n=geom['manning_n'],
+                        slope=slope,
+                        g=9.81,
+                        cfl=solver_cfg['cfl'],
+                        eps_dry=solver_cfg['eps_dry'],
+                        weno_epsilon=solver_cfg.get('weno_epsilon', 1e-6),
+                        riemann_solver=solver_cfg['riemann_solver'],
+                        well_balanced=solver_cfg['well_balanced'],
+                        use_numba=solver_cfg['use_numba'],
+                        dt_max=solver_cfg.get('dt_max', None),
+                        entropy_fix=solver_cfg.get('entropy_fix', True),
+                        critical_flow_treatment=solver_cfg.get('critical_flow_treatment', True),
+                        adaptive_cfl=solver_cfg.get('adaptive_cfl', True),
+                        cfl_shock=solver_cfg.get('cfl_shock', 0.2),
+                        entropy_delta=solver_cfg.get('entropy_delta', 0.1)
+                    )
+                else:
+                    # 标准版WENO3
+                    self.solver = GodunvFVMWENO3(
+                        width=geom['channel_width'],
+                        length=geom['channel_length'],
+                        n_cells=mesh['n_cells'],
+                        manning_n=geom['manning_n'],
+                        slope=slope,
+                        g=9.81,
+                        cfl=solver_cfg['cfl'],
+                        eps_dry=solver_cfg['eps_dry'],
+                        weno_epsilon=solver_cfg.get('weno_epsilon', 1e-6),
+                        riemann_solver=solver_cfg['riemann_solver'],
+                        well_balanced=solver_cfg['well_balanced'],
+                        use_numba=solver_cfg['use_numba'],
+                        dt_max=solver_cfg.get('dt_max', None),
+                        entropy_fix=solver_cfg.get('entropy_fix', False),
+                        critical_flow_treatment=solver_cfg.get('critical_flow_treatment', False)
+                    )
             elif spatial_order in [1, 2]:
                 # 使用标准Godunov FVM求解器（1阶或2阶MUSCL）
                 self.solver = GodunvFVMSolver(
