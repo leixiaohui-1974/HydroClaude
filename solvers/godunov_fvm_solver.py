@@ -381,22 +381,36 @@ class GodunvFVMSolver:
     
     def compute_dt(self) -> float:
         """
-        CFL条件计算时间步长
+        CFL条件计算时间步长（干床安全版本）
 
         Returns:
             dt: 时间步长（秒），如果设置了dt_max则会被限制
         """
-        h_safe = np.maximum(self.h, self.eps_dry)
-        A = h_safe * self.B
-        u = self.Q / A
-        c = np.sqrt(self.g * h_safe)
+        lambda_max = 0.0
 
-        lambda_max = np.max(np.abs(u) + c)
+        # 只在湿区计算波速，避免干床处的数值问题
+        for i in range(self.n_cells):
+            if self.h[i] > self.eps_dry:
+                # 湿区：计算u+c
+                A = self.h[i] * self.B
+                u = self.Q[i] / A
+                c = np.sqrt(self.g * self.h[i])
+                speed = abs(u) + c
+                lambda_max = max(lambda_max, speed)
+            else:
+                # 干床：使用邻居cell的波速估计
+                c_neighbor = 0.0
+                if i > 0 and self.h[i-1] > self.eps_dry:
+                    c_neighbor = max(c_neighbor, np.sqrt(self.g * self.h[i-1]))
+                if i < self.n_cells-1 and self.h[i+1] > self.eps_dry:
+                    c_neighbor = max(c_neighbor, np.sqrt(self.g * self.h[i+1]))
+                lambda_max = max(lambda_max, c_neighbor)
 
-        if lambda_max > 1e-10:
-            dt = self.cfl * self.dx / lambda_max
-        else:
-            dt = 1.0
+        # 确保lambda_max > 0
+        if lambda_max < 1e-6:
+            lambda_max = np.sqrt(self.g * 1.0)  # 使用1m水深的默认波速
+
+        dt = self.cfl * self.dx / lambda_max
 
         # 应用dt_max限制（如果设置）
         if self.dt_max is not None:
