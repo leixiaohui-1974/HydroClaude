@@ -148,6 +148,8 @@ class TestMixedFlowRegime:
 
         场景：渠道收缩或底坡增加导致流态转换
         验证：临界深自动识别
+
+        更新：变坡度支持已实现（2025-10-31）
         """
         print("\n" + "="*70)
         print("混合流态 Test 2: 缓流→急流转换")
@@ -191,14 +193,14 @@ class TestMixedFlowRegime:
         h_init = np.linspace(h_n_mild, h_n_steep, nx)
         Q_init = np.ones(nx) * Q
 
-        # 注意：变坡度需要特殊处理，这里简化为平均坡度
-        S0_avg = (S0_mild + S0_steep) / 2
+        # 使用变坡度数组（新功能）
+        S0_array = np.where(x < L1, S0_mild, S0_steep)[:-1]  # 长度nx-1
 
         solver = HydrostaticCanalSolver(
             length=L_total,
             nx=nx,
             B=B,
-            S0=S0_avg,  # 简化：平均坡度
+            S0=S0_array,  # 变坡度数组
             n=n,
             g=g
         )

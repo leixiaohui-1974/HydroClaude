@@ -61,7 +61,9 @@ class HydrostaticCanalSolver:
             length: 渠道长度 (m)
             nx: 空间离散点数
             B: 渠道宽度 (m)
-            S0: 渠底坡度
+            S0: 渠底坡度 (float标量或ndarray数组)
+                - float: 恒定坡度（传统用法）
+                - ndarray: 变坡度，长度应为nx-1（每个单元的坡度）
             n: Manning糙率
             g: 重力加速度 (m/s²)
             internal_structures: 内部水工建筑物 [(position, structure_obj), ...]
@@ -77,9 +79,11 @@ class HydrostaticCanalSolver:
         """
         self.length = length
         self.B = B
-        self.S0 = S0
         self.n = n
         self.g = g
+
+        # 支持变坡度：标量或数组
+        # S0可以是float（恒定坡度）或ndarray（变坡度）
         self.theta = theta
         self.omega = omega
         self.eps_dry = eps_dry
@@ -106,8 +110,23 @@ class HydrostaticCanalSolver:
             self.is_uniform_grid = True
             self.dx_local = np.ones(nx-1) * self.dx
 
-        # 底床高程（线性坡度）
-        self.z = -self.S0 * self.x
+        # 标准化S0为数组（支持变坡度）
+        if isinstance(S0, (int, float)):
+            # 恒定坡度：转换为uniform数组
+            self.S0 = np.ones(self.nx - 1) * float(S0)
+            self.is_uniform_slope = True
+            self.S0_scalar = float(S0)  # 保存标量值用于兼容性
+        else:
+            # 变坡度：验证长度
+            S0_array = np.asarray(S0, dtype=float)
+            if len(S0_array) != self.nx - 1:
+                raise ValueError(f"S0数组长度({len(S0_array)})应等于nx-1({self.nx-1})")
+            self.S0 = S0_array
+            self.is_uniform_slope = False
+            self.S0_scalar = np.mean(S0_array)  # 平均坡度用于兼容性
+
+        # 底床高程（支持变坡度）
+        self.z = self._compute_bed_elevation()
 
         # 初始化状态变量
         self.h = np.ones(nx) * 1.0  # 水深 (m)
@@ -124,6 +143,24 @@ class HydrostaticCanalSolver:
 
         # 时间变量（用于时变内部边界条件）
         self.current_time = 0.0
+
+    def _compute_bed_elevation(self) -> np.ndarray:
+        """
+        计算底床高程（支持变坡度）
+
+        Returns:
+            z: 底床高程数组 [nx]
+        """
+        z = np.zeros(self.nx)
+        z[0] = 0.0  # 起点高程为0
+
+        # 累积坡度计算高程
+        for i in range(self.nx - 1):
+            # z[i+1] = z[i] - S0[i] * dx[i]
+            # 注意：向下游高程下降（S0为正时）
+            z[i + 1] = z[i] - self.S0[i] * self.dx_local[i]
+
+        return z
 
     def _setup_internal_structures(self):
         """设置内部水工建筑物的节点索引"""
@@ -1104,7 +1141,8 @@ class HydrostaticCanalSolver:
                 # 使用Manning公式估算更精确的初值
                 from utils.canal_utils import compute_steady_uniform_flow
                 try:
-                    h_uniform = compute_steady_uniform_flow(Q_target, self.B, self.S0, self.n, self.g)
+                    # 使用平均坡度计算均匀流水深（兼容变坡度）
+                    h_uniform = compute_steady_uniform_flow(Q_target, self.B, self.S0_scalar, self.n, self.g)
                     h_upstream_guess = h_uniform
                 except:
                     # 如果计算失败，使用下游水深
