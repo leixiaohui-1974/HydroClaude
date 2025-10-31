@@ -414,7 +414,7 @@ class WetDryEnhancedWENO3(PositivityPreservingWENO3):
 
         # === Step 1: 计算标准WENO3通量 ===
         # 扩展边界条件
-        h_ext, Q_ext = self._extend_ghost_cells(h, Q)
+        h_ext, Q_ext = self._extend_with_ghosts(h, Q)
 
         # WENO3重构
         h_L_weno, h_R_weno = self._weno3_reconstruction(h_ext)
