@@ -658,8 +658,15 @@ class WaterSupplyNetwork:
                     pump.is_running = schedule[hour, i] > 0.5
 
                 # Calculate power
-                power = sum(pump.rated_flow * 50.0 * self.rho * self.g / pump.efficiency
-                          for pump in self.pumps if pump.is_running)
+                power = 0.0
+                for pump in self.pumps:
+                    if pump.is_running:
+                        Q = pump.char.Q_design  # Use design flow rate
+                        H = 50.0  # Assume design head
+                        eta = pump.compute_efficiency(Q)
+                        if eta > 0:
+                            P = self.rho * self.g * Q * H / eta
+                            power += P
 
                 # Energy cost = power * price * time
                 cost = power * price_pattern[hour] * 1.0  # 1 hour
