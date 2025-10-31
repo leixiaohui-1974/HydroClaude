@@ -554,14 +554,16 @@ class WaterSupplyNetwork:
                     # Simplified power calculation
                     Q = 0.3  # Assume rated flow
                     H = 50.0  # Assume rated head
-                    P = self.rho * self.g * Q * H / pump.efficiency
-                    total_pump_power += P
+                    eta = pump.compute_efficiency(Q)
+                    if eta > 0:
+                        P = self.rho * self.g * Q * H / eta
+                        total_pump_power += P
 
             # Update water tower
             # Simplified: assume tower balances supply-demand difference
             total_demand = sum(node.current_demand for node_id, node in self.nodes.items()
                              if node_id not in ['SOURCE', 'TOWER'])
-            total_supply = sum(pump.rated_flow for pump in self.pumps if pump.is_running)
+            total_supply = sum(pump.char.Q_design for pump in self.pumps if pump.is_running)
 
             tower_inflow = total_supply - total_demand
             self.water_tower.update(dt, inflow=tower_inflow, outflow=0.0)
