@@ -141,20 +141,33 @@
 
 ## ❌ 发现问题的案例
 
-### Case 02: 城市供水管网 ❌
+### Case 02: 城市供水管网 ⚠️
 
 **文件**: `case_02_water_supply_network.py`
 
-**问题**: AttributeError - 节点对象类型不匹配
+**状态**: 部分修复，发现架构问题
 
-**错误信息**:
-```
-AttributeError: 'dict' object has no attribute 'elevation'
-```
+**初始问题**: AttributeError - 节点dict vs 对象类型不匹配
 
-**根本原因**: 代码实现与节点数据结构不一致
+**修复完成** ✅:
+1. 创建NetworkNode和NetworkPipe类
+2. 所有dict访问改为对象属性访问
+3. 添加pipe_connections映射
+4. 实现get_node_pipes()方法
+5. 实现NetworkPipe.head_loss()方法 (Darcy-Weisbach)
 
-**状态**: ⚠️ 需要代码修复
+**剩余问题** ⚠️:
+- 求解器期望NetworkTopology架构（Reservoir/Junction类型）
+- 节点需要available_head(), demand等方法
+- 需要完整重构以符合network包接口
+
+**修复进度**: 50%
+- ✅ 数据结构对象化（5处修改）
+- ❌ 求解器接口适配（需NetworkTopology继承）
+
+**完全修复预计**: 2-4小时（需重构为NetworkTopology子类）
+
+**结论**: 原始AttributeError已修复，但求解器架构不匹配需要更深层重构
 
 ---
 
