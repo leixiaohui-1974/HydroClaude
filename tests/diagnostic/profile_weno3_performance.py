@@ -1,0 +1,208 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+WENO3性能分析工具
+
+使用cProfile分析WENO3求解器的性能瓶颈
+
+作者: HydroClaude Team
+日期: 2025-10-31
+Phase: 6.4 - 性能优化
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+
+import cProfile
+import pstats
+import io
+import numpy as np
+from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+
+
+def run_weno3_benchmark():
+    """
+    运行WENO3基准测试
+
+    模拟一个典型的河道流动问题
+    """
+    print("="*80)
+    print("WENO3性能基准测试")
+    print("="*80)
+
+    # 测试参数 - 中等规模
+    L = 10000.0      # 渠道长度 (m)
+    B = 10.0         # 渠宽 (m)
+    S0 = 0.001       # 底坡
+    n = 0.025        # Manning系数
+    n_cells = 500    # 网格单元数（中等规模）
+
+    Q = 50.0         # 流量 (m³/s)
+    h_init = 2.0     # 初始水深 (m)
+
+    print(f"\n测试参数:")
+    print(f"  网格单元: {n_cells}")
+    print(f"  渠道长度: {L} m")
+    print(f"  dx: {L/n_cells:.2f} m")
+    print(f"  流量: {Q} m³/s")
+    print(f"  初始水深: {h_init} m")
+
+    # 创建求解器
+    solver = GodunvFVMWENO3(
+        width=B,
+        length=L,
+        n_cells=n_cells,
+        manning_n=n,
+        slope=S0,
+        use_enhanced_bc=True,
+        well_balanced=False,  # 关闭well-balanced警告（均匀底坡）
+        cfl=0.5
+    )
+
+    # 初始条件
+    h = np.ones(n_cells) * h_init
+    Q_arr = np.ones(n_cells) * Q
+
+    bc_left = {'type': 'fixed_Q', 'Q': Q}
+    bc_right = {'type': 'fixed_h', 'h': h_init}
+
+    solver.initialize(h, Q_arr, bc_left, bc_right)
+
+    # 运行模拟
+    n_steps = 100  # 运行100步
+    print(f"\n运行 {n_steps} 步...")
+
+    for i in range(n_steps):
+        solver.step()
+
+        if (i+1) % 20 == 0:
+            print(f"  步 {i+1}/{n_steps} 完成")
+
+    diag = solver.get_diagnostics()
+    print(f"\n最终状态:")
+    print(f"  t = {diag['t']:.2f} s")
+    print(f"  步数 = {diag['step_count']}")
+    print(f"  质量误差 = {diag['mass_error']:.6f}%")
+
+    return solver
+
+
+def profile_weno3():
+    """
+    使用cProfile分析WENO3性能
+    """
+    print("\n" + "="*80)
+    print("开始性能分析...")
+    print("="*80)
+
+    # 创建profiler
+    profiler = cProfile.Profile()
+
+    # 运行基准测试
+    profiler.enable()
+    solver = run_weno3_benchmark()
+    profiler.disable()
+
+    # 输出profiling结果
+    print("\n" + "="*80)
+    print("性能分析结果 - Top 30 最耗时函数")
+    print("="*80)
+
+    s = io.StringIO()
+    ps = pstats.Stats(profiler, stream=s).sort_stats('cumulative')
+    ps.print_stats(30)
+
+    profile_output = s.getvalue()
+    print(profile_output)
+
+    # 保存到文件
+    output_file = '/home/user/HydroClaude/tests/diagnostic/profile_results.txt'
+    with open(output_file, 'w') as f:
+        f.write("WENO3 Performance Profiling Results\n")
+        f.write("="*80 + "\n\n")
+        f.write(profile_output)
+
+    print(f"\n完整结果已保存到: {output_file}")
+
+    # 分析关键函数
+    print("\n" + "="*80)
+    print("关键性能指标分析")
+    print("="*80)
+
+    # 按tottime排序查看纯执行时间
+    s2 = io.StringIO()
+    ps2 = pstats.Stats(profiler, stream=s2).sort_stats('tottime')
+    ps2.print_stats(15)
+
+    tottime_output = s2.getvalue()
+
+    # 提取关键信息
+    print("\n最耗时的函数（纯执行时间）:")
+    lines = tottime_output.split('\n')
+    for i, line in enumerate(lines):
+        if 'tottime' in line:
+            # 打印接下来15行
+            for j in range(i+1, min(i+16, len(lines))):
+                if lines[j].strip():
+                    print(lines[j])
+            break
+
+    return solver, profiler
+
+
+def analyze_bottlenecks(profiler):
+    """
+    分析性能瓶颈
+    """
+    print("\n" + "="*80)
+    print("瓶颈分析与优化建议")
+    print("="*80)
+
+    s = io.StringIO()
+    ps = pstats.Stats(profiler, stream=s).sort_stats('cumulative')
+    stats = ps.stats
+
+    # 查找特定函数
+    bottlenecks = {
+        '_weno3_reconstruction': 0,
+        '_extend_with_ghosts': 0,
+        '_hll_flux': 0,
+        '_compute_rhs': 0,
+        'step': 0
+    }
+
+    for key, value in stats.items():
+        func_name = key[2]  # 函数名
+        tottime = value[2]  # 纯执行时间
+
+        for bottleneck in bottlenecks.keys():
+            if bottleneck in func_name:
+                bottlenecks[bottleneck] = max(bottlenecks[bottleneck], tottime)
+
+    print("\n关键函数耗时统计:")
+    print(f"{'函数':<30} {'耗时(秒)':<15} {'优化优先级':<15}")
+    print("-"*60)
+
+    total_time = sum(bottlenecks.values())
+
+    for func, time in sorted(bottlenecks.items(), key=lambda x: x[1], reverse=True):
+        if time > 0:
+            percentage = (time / total_time * 100) if total_time > 0 else 0
+            priority = "🔴 高" if percentage > 30 else "🟡 中" if percentage > 10 else "🟢 低"
+            print(f"{func:<30} {time:<15.3f} {priority:<15} ({percentage:.1f}%)")
+
+    print("\n优化建议:")
+    print("1. 🔴 WENO3重构 - 考虑NumPy向量化，减少Python循环")
+    print("2. 🟡 Ghost cells扩展 - 使用数组切片操作")
+    print("3. 🟡 HLL通量计算 - 批量计算，避免逐个界面循环")
+    print("4. 🟢 整体架构 - 考虑Numba JIT编译关键函数")
+
+
+if __name__ == '__main__':
+    solver, profiler = profile_weno3()
+    analyze_bottlenecks(profiler)
+
+    print("\n" + "="*80)
+    print("✅ 性能分析完成")
+    print("="*80)

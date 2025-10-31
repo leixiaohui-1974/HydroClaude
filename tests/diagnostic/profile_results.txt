@@ -1,0 +1,41 @@
+WENO3 Performance Profiling Results
+================================================================================
+
+         1585836 function calls (1551342 primitive calls) in 1.514 seconds
+
+   Ordered by: cumulative time
+   List reduced from 2925 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    1.514    1.514 /home/user/HydroClaude/tests/diagnostic/profile_weno3_performance.py:24(run_weno3_benchmark)
+      100    0.000    0.000    1.508    0.015 /home/user/HydroClaude/solvers/godunov_fvm_solver.py:407(step)
+      100    0.003    0.000    1.505    0.015 /home/user/HydroClaude/solvers/godunov_fvm_solver.py:431(_step_coupled_rk2)
+      200    0.243    0.001    1.502    0.008 /home/user/HydroClaude/tests/diagnostic/../../solvers/godunov_fvm_weno3.py:249(_compute_rhs)
+   100000    0.180    0.000    0.721    0.000 /home/user/HydroClaude/solvers/godunov_fvm_solver.py:1247(_compute_source_term)
+        2    0.000    0.000    0.719    0.359 /usr/local/lib/python3.11/dist-packages/numba/core/dispatcher.py:344(_compile_for_args)
+        2    0.000    0.000    0.700    0.350 /usr/local/lib/python3.11/dist-packages/numba/core/dispatcher.py:862(compile)
+   100200    0.139    0.000    0.507    0.000 /home/user/HydroClaude/solvers/godunov_fvm_solver.py:1113(_hll_flux)
+  304/276    0.001    0.000    0.388    0.001 /usr/local/lib/python3.11/dist-packages/numba/core/compiler_lock.py:32(_acquire_compile_lock)
+        1    0.000    0.000    0.355    0.355 /usr/local/lib/python3.11/dist-packages/numba/core/dispatcher.py:79(compile)
+        1    0.000    0.000    0.355    0.355 /usr/local/lib/python3.11/dist-packages/numba/core/dispatcher.py:86(_compile_cached)
+        1    0.000    0.000    0.355    0.355 /usr/local/lib/python3.11/dist-packages/numba/core/dispatcher.py:101(_compile_core)
+        1    0.000    0.000    0.354    0.354 /usr/local/lib/python3.11/dist-packages/numba/core/compiler.py:713(compile_extra)
+      2/1    0.000    0.000    0.353    0.353 /usr/local/lib/python3.11/dist-packages/numba/core/compiler.py:433(compile_extra)
+      2/1    0.000    0.000    0.353    0.353 /usr/local/lib/python3.11/dist-packages/numba/core/compiler.py:500(_compile_bytecode)
+      2/1    0.000    0.000    0.353    0.353 /usr/local/lib/python3.11/dist-packages/numba/core/compiler.py:456(_compile_core)
+      2/1    0.000    0.000    0.352    0.352 /usr/local/lib/python3.11/dist-packages/numba/core/compiler_machinery.py:342(run)
+    54/27    0.002    0.000    0.351    0.013 /usr/local/lib/python3.11/dist-packages/numba/core/compiler_machinery.py:267(_runPass)
+   162/81    0.000    0.000    0.347    0.004 /usr/local/lib/python3.11/dist-packages/numba/core/compiler_machinery.py:271(check)
+        2    0.000    0.000    0.328    0.164 /usr/local/lib/python3.11/dist-packages/numba/core/caching.py:713(load_overload)
+    250/4    0.000    0.000    0.322    0.081 /usr/local/lib/python3.11/dist-packages/numba/core/base.py:261(refresh)
+      2/1    0.000    0.000    0.284    0.284 /usr/local/lib/python3.11/dist-packages/numba/core/typed_passes.py:439(run_pass)
+      250    0.003    0.000    0.250    0.001 /usr/local/lib/python3.11/dist-packages/numba/core/cpu.py:60(load_additional_registries)
+5372/5170    0.006    0.000    0.212    0.000 <frozen importlib._bootstrap>:1207(_handle_fromlist)
+      2/1    0.000    0.000    0.211    0.211 /usr/local/lib/python3.11/dist-packages/numba/core/lowering.py:188(lower)
+  139/108    0.001    0.000    0.209    0.002 <frozen importlib._bootstrap>:1165(_find_and_load)
+    72/41    0.001    0.000    0.208    0.005 <frozen importlib._bootstrap>:1120(_find_and_load_unlocked)
+      2/1    0.000    0.000    0.202    0.202 /usr/local/lib/python3.11/dist-packages/numba/core/lowering.py:224(lower_normal_function)
+      2/1    0.000    0.000    0.201    0.201 /usr/local/lib/python3.11/dist-packages/numba/core/lowering.py:241(lower_function_body)
+     23/7    0.001    0.000    0.200    0.029 /usr/local/lib/python3.11/dist-packages/numba/core/lowering.py:266(lower_block)
+
+
