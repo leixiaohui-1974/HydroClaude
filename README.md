@@ -132,10 +132,11 @@ python your_first_simulation.py
 |----------|-------------|----------|
 | **[Quick Start Guide](docs/USER_QUICK_START.md)** 🆕 | 5-minute tutorial, examples, tips | New Users ⭐⭐⭐ |
 | **[API Reference](docs/API_REFERENCE.md)** 🆕 | Complete API documentation | All Users ⭐⭐⭐ |
+| **[Exact Solver Root Cause](docs/EXACT_SOLVER_ROOT_CAUSE_ANALYSIS.md)** 🔍 | Complete debugging report, fix available | Developers ⭐⭐⭐ |
+| **[Exact Solver Final Report](docs/SESSION_2025_11_01_EXACT_SOLVER_FINAL.md)** 📝 | Decision rationale, future roadmap | Developers ⭐⭐ |
 | **[HLLC Critical Findings](docs/PHASE_9_2_CRITICAL_FINDINGS.md)** ⚠️ | HLLC stability issues | Developers ⭐⭐ |
-| **[Exact Solver Analysis](docs/PHASE_9_3_EXACT_RIEMANN_SOLVER.md)** ❌ | Mass conservation failure | Developers ⭐⭐ |
+| **[Exact Solver Phase 9.3](docs/PHASE_9_3_EXACT_RIEMANN_SOLVER.md)** ❌ | Original mass conservation findings | Developers ⭐ |
 | **[Project Status](docs/PROJECT_STATUS_UPDATE_2025_10_31.md)** | Development roadmap, progress | Contributors ⭐ |
-| **[Session Summary](docs/SESSION_SUMMARY_2025_11_01.md)** 📝 | Phase 9.3 development log | Developers ⭐ |
 
 **New to HydroClaude?** Start with [Quick Start Guide](docs/USER_QUICK_START.md)!
 
@@ -146,15 +147,20 @@ python your_first_simulation.py
 ### Run Tests
 
 ```bash
-# Quick verification (5 seconds)
+# Quick verification (5 seconds) - Recommended for new installations
 python quick_verify.py
 
-# Core functionality (30 seconds)
+# Core functionality (30 seconds) - Validates HLL solver
 python tests/core_functionality_verification_v2.py
 
-# Full regression suite (2 minutes)
+# Full regression suite (2 minutes) - Comprehensive validation
 python tests/regression_test_suite.py
 ```
+
+**Recommended Test Order:**
+1. Start with `quick_verify.py` for installation verification
+2. Run `core_functionality_verification_v2.py` for solver validation
+3. Use `regression_test_suite.py` for full coverage (12 tests)
 
 ### Test Results
 
@@ -213,12 +219,21 @@ solver = GodunvFVMSolver(
 ```
 
 **Critical Issues with Exact Solver:**
-- ❌❌❌ **Mass conservation completely fails** (42% error after 10 steps)
-- ❌ Water depth explodes from 2m to 14.5m (non-physical)
-- ❌ Violates fundamental conservation laws
+- ❌❌❌ **Mass conservation completely fails** (1738% error at t≈1.8s)
+- ❌ Water depth explodes from 2.9m to 1305m (completely non-physical)
+- ❌ Velocities reach 3.9 trillion m/s (absurd values)
 - ❌ Well-Balanced incompatible (crashes at t=0.29s)
 
-**Details**: See [PHASE_9_3_EXACT_RIEMANN_SOLVER.md](docs/PHASE_9_3_EXACT_RIEMANN_SOLVER.md)
+**Root Cause (Identified 2025-11-01):**
+- Bug in `_sample_solution` function (rarefaction wave sampling)
+- Missing dry bed protection: `h = c²/g` can produce h→0
+- When h→0, velocity `u = Q/(h*B)` diverges to extreme values
+- **Fix available but not implemented** (prioritizing stable HLL solver)
+
+**Technical Details:**
+- [Root Cause Analysis](docs/EXACT_SOLVER_ROOT_CAUSE_ANALYSIS.md) - Complete debugging report ⭐
+- [Phase 9.3 Documentation](docs/PHASE_9_3_EXACT_RIEMANN_SOLVER.md) - Original findings
+- [Final Session Report](docs/SESSION_2025_11_01_EXACT_SOLVER_FINAL.md) - Decision rationale
 
 **If you see this warning, switch to HLL immediately:**
 ```
