@@ -319,10 +319,10 @@ class GodunvFVMSolver:
                 stacklevel=2
             )
 
-        # Phase 9.3: 精确Riemann求解器 - HIGH ACCURACY
-        # ✅ 优势: 机器精度、零数值耗散、精确接触间断分辨率
-        # ⚠️  性能: 比HLL/HLLC慢（迭代求解）
-        # 推荐: 需要高精度的问题（如Lake at Rest验证）
+        # Phase 9.3: 精确Riemann求解器 - ❌❌❌ DO NOT USE ❌❌❌
+        # ⚠️⚠️⚠️ 严重问题: 质量守恒失败 (42%误差)
+        # ⚠️⚠️⚠️ 水深爆炸, 数值不稳定
+        # ❌ 状态: 实验性代码，已知严重bug，禁止使用
         if self.riemann_solver == 'exact':
             if not EXACT_AVAILABLE:
                 raise ImportError(
@@ -330,11 +330,34 @@ class GodunvFVMSolver:
                     "请确保solvers/riemann_exact.py文件存在并可导入"
                 )
 
-            # 信息提示
-            print("✅ 使用精确Riemann求解器 (Phase 9.3)")
-            print("   优势: 机器精度、零数值耗散")
-            print("   性能: 比HLL慢约2-3倍（迭代求解）")
-            print("   推荐: 高精度问题、Lake at Rest验证\n")
+            # ❌❌❌ 严重警告 ❌❌❌
+            import warnings
+            warnings.warn(
+                "\n" + "="*80 + "\n"
+                "❌❌❌  精确求解器警告 - DO NOT USE  ❌❌❌\n"
+                "="*80 + "\n"
+                "精确Riemann求解器存在严重数值问题:\n"
+                "  - 质量守恒完全失败 (10步后误差42%)\n"
+                "  - 水深从2m爆炸到14.5m (完全非物理)\n"
+                "  - Well-Balanced组合在t=0.3s崩溃\n"
+                "  - 根本原因未明，可能是通量计算或边界条件bug\n"
+                "\n"
+                "❌❌❌ 严重建议:\n"
+                "  - 请勿使用此求解器\n"
+                "  - 生产环境使用 riemann_solver='hll' (稳定可靠)\n"
+                "  - 此代码仅供研究调试用途\n"
+                "\n"
+                "详细分析: docs/PHASE_9_3_EXACT_RIEMANN_SOLVER.md\n"
+                "质量守恒诊断: tests/diagnose_exact_mass_loss.py\n"
+                "="*80 + "\n",
+                UserWarning,
+                stacklevel=2
+            )
+
+            print("⚠️  使用精确Riemann求解器 (Phase 9.3) - 实验性")
+            print("   ❌ 已知严重问题: 质量守恒失败")
+            print("   ❌ 请勿用于生产")
+            print("   ✅ 推荐: 使用riemann_solver='hll'代替\n")
 
         # 单元中心守恒变量
         self.h = np.zeros(n_cells)  # 水深
