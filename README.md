@@ -236,11 +236,11 @@ solver = GodunvFVMSolver(
 HydroClaude includes 5 comprehensive engineering examples:
 
 ```bash
-# Case 1: Hydropower Plant Diversion
+# Case 1: Hydropower Plant Diversion System
 python examples/case_library/case_01_hydropower_plant.py
 
-# Case 2: River Flood Propagation (Well-Balanced validation)
-python examples/case_library/case_02_river_flood.py
+# Case 2: Urban Water Supply Network
+python examples/case_library/case_02_water_supply_network.py
 
 # Case 3: Irrigation Canal Control
 python examples/case_library/case_03_irrigation_canal.py
@@ -248,8 +248,8 @@ python examples/case_library/case_03_irrigation_canal.py
 # Case 4: Urban Drainage System
 python examples/case_library/case_04_urban_drainage.py
 
-# Case 5: Water Supply Network Optimization
-python examples/case_library/case_05_water_supply_network.py
+# Case 5: River Network with Flood Routing
+python examples/case_library/case_05_river_network.py
 ```
 
 Each case includes:
