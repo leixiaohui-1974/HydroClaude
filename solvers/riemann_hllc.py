@@ -63,6 +63,18 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
     S_L = min(u_L - c_L, u_R - c_R)
     S_R = max(u_L + c_L, u_R + c_R)
 
+    # ========== Fix 3: 静态条件检测 (Phase 9.2 - DISABLED) ==========
+    # NOTE: Fix 3暂时禁用。
+    # 理论上在静态条件下HLLC可能放大Well-Balanced误差，
+    # 但实践中Froude数检测不稳定，反而导致更差的结果。
+    # 保留代码供将来研究。
+    #
+    # Fr_L = abs(u_L) / (c_L + eps_dry)
+    # Fr_R = abs(u_R) / (c_R + eps_dry)
+    # if Fr_L < 0.01 and Fr_R < 0.01:
+    #     # Use HLL in near-static conditions
+    #     ...
+
     # ========== 左右物理通量 ==========
     # 深度通量: F_h = Q
     F_h_L = Q_L
@@ -106,6 +118,24 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
     numerator = (F_Q_R - F_Q_L + S_L * Q_L - S_R * Q_R)
     S_star = numerator / denominator
 
+    # ========== 数值稳定性检查 (Phase 9.2修复) ==========
+    # Fix 2: 检查S_star是否在合理范围内
+    if not (S_L - 1e-10 <= S_star <= S_R + 1e-10):
+        # S_star超出[S_L, S_R]范围，说明计算有问题
+        # 回退到HLL求解器
+        if S_L >= 0.0:
+            return F_h_L, F_Q_L
+        elif S_R <= 0.0:
+            return F_h_R, F_Q_R
+        else:
+            U_h_L = h_L
+            U_h_R = h_R
+            U_Q_L = Q_L
+            U_Q_R = Q_R
+            F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / (S_R - S_L)
+            F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / (S_R - S_L)
+            return F_h, F_Q
+
     # ========== HLLC通量选择 (四区域) ==========
 
     if S_L >= 0.0:
@@ -119,6 +149,9 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
 
         # 星区深度 (守恒)
         h_L_star = h_L * (S_L - u_L) / (S_L - S_star)
+
+        # Fix 1: 正定性检查，防止NaN
+        h_L_star = max(eps_dry, h_L_star)
 
         # 星区流量 (由接触波速确定)
         Q_L_star = h_L_star * B * S_star
@@ -136,6 +169,9 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
 
         # 星区深度 (守恒)
         h_R_star = h_R * (S_R - u_R) / (S_R - S_star)
+
+        # Fix 1: 正定性检查，防止NaN
+        h_R_star = max(eps_dry, h_R_star)
 
         # 星区流量 (由接触波速确定)
         Q_R_star = h_R_star * B * S_star
