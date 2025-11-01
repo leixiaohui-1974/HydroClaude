@@ -233,30 +233,34 @@ solver = GodunvFVMSolver(
 
 ## 🎓 Example Cases
 
-HydroClaude includes 5 comprehensive engineering examples:
+### Quick Examples (GodunvFVMSolver)
 
 ```bash
-# Case 1: Hydropower Plant Diversion System
-python examples/case_library/case_01_hydropower_plant.py
+# Example 1: Dam Break (classic shock problem)
+python tests/diagnostic/test_godunov_dam_break.py
 
-# Case 2: Urban Water Supply Network
-python examples/case_library/case_02_water_supply_network.py
+# Example 2: Lake at Rest (Well-Balanced validation)
+python tests/test_lake_at_rest_wb.py
 
-# Case 3: Irrigation Canal Control
-python examples/case_library/case_03_irrigation_canal.py
+# Example 3: MacDonald Test Cases (benchmark problems)
+python tests/regression_test_suite.py
 
-# Case 4: Urban Drainage System
-python examples/case_library/case_04_urban_drainage.py
+# Example 4: Performance Comparison (HLL vs HLLC)
+python tests/test_hllc_vs_hll.py
 
-# Case 5: River Network with Flood Routing
-python examples/case_library/case_05_river_network.py
+# Example 5: Comprehensive Regression Suite
+python tests/core_functionality_verification_v2.py
 ```
 
-Each case includes:
-- Real-world scenario
+**For detailed tutorials and more examples, see:**
+- **[Quick Start Guide](docs/USER_QUICK_START.md)** - 5-minute tutorial with 3 complete examples
+- **[API Reference](docs/API_REFERENCE.md)** - Complete examples for all solver features
+
+Each example includes:
+- Real-world hydraulic scenarios
 - Complete runnable code
-- Detailed comments
-- Visualization
+- Detailed output and visualization
+- Validation against analytical solutions
 
 ---
 
