@@ -274,13 +274,39 @@ class GodunvFVMSolver:
         if self.riemann_solver not in ['hll', 'hllc']:
             raise ValueError(f"Riemann求解器必须是'hll'或'hllc'，当前值: {riemann_solver}")
 
-        # Phase 9.2: HLLC求解器已重新实现
-        # 新实现修复了旧版本的NaN问题，提供更低的数值耗散
-        # 对Lake at Rest测试性能显著改善
-        if self.riemann_solver == 'hllc' and not HLLC_AVAILABLE:
-            raise ImportError(
-                "HLLC求解器需要riemann_hllc模块\n"
-                "请确保solvers/riemann_hllc.py文件存在并可导入"
+        # Phase 9.2: HLLC求解器 - EXPERIMENTAL, NOT PRODUCTION READY
+        # ⚠️  WARNING: HLLC存在严重数值不稳定性问题
+        # - Dam Break测试在t=1.69s崩溃产生NaN
+        # - 干湿界面处理缺陷导致速度爆炸
+        # - Lake at Rest性能比HLL差141%
+        # 详见: docs/PHASE_9_2_CRITICAL_FINDINGS.md
+        # 推荐: 生产环境使用HLL (默认)
+        if self.riemann_solver == 'hllc':
+            if not HLLC_AVAILABLE:
+                raise ImportError(
+                    "HLLC求解器需要riemann_hllc模块\n"
+                    "请确保solvers/riemann_hllc.py文件存在并可导入"
+                )
+
+            # 发出明确警告
+            import warnings
+            warnings.warn(
+                "\n" + "="*80 + "\n"
+                "⚠️⚠️⚠️  HLLC求解器警告 - NOT PRODUCTION READY  ⚠️⚠️⚠️\n"
+                "="*80 + "\n"
+                "HLLC求解器存在严重数值不稳定性问题:\n"
+                "  - Dam Break测试在t=1.69s崩溃产生NaN\n"
+                "  - 干湿界面处理缺陷导致流量爆炸到10^75量级\n"
+                "  - Lake at Rest性能比HLL差141%\n"
+                "\n"
+                "⚠️  强烈建议:\n"
+                "  - 生产环境使用 riemann_solver='hll' (默认)\n"
+                "  - HLLC仅用于研究和测试目的\n"
+                "\n"
+                "详细技术分析: docs/PHASE_9_2_CRITICAL_FINDINGS.md\n"
+                "="*80 + "\n",
+                UserWarning,
+                stacklevel=2
             )
 
         # 单元中心守恒变量

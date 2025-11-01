@@ -91,7 +91,7 @@ def __init__(
     cfl: float = 0.5,                # CFL number (0 < CFL ≤ 1)
     order: int = 2,                  # Spatial order: 1 (Godunov) or 2 (MUSCL)
     limiter: str = 'minmod',         # Slope limiter: 'minmod', 'superbee', 'vanleer'
-    riemann_solver: str = 'hll',     # Riemann solver: 'hll'
+    riemann_solver: str = 'hll',     # Riemann solver: 'hll' (recommended) or 'hllc' (EXPERIMENTAL)
     time_integrator: str = 'tvd_rk2',# Time integrator: 'euler', 'tvd_rk2'
     well_balanced: bool = False,     # Enable Well-Balanced scheme
     positivity_preserving: bool = False,  # Enable WENO3 positivity-preserving
@@ -575,7 +575,48 @@ limiter = 'superbee'  # Use for smooth problems
 limiter = 'vanleer'  # Good compromise
 ```
 
-### 5. Performance Optimization
+### 5. Riemann Solver Selection ⚠️ IMPORTANT
+
+```python
+# ✅ HLL (RECOMMENDED for all production use)
+riemann_solver = 'hll'  # Default, proven stable and robust
+```
+
+**Why HLL is recommended:**
+- ✅ **Stable**: No numerical explosions, handles dry-wet interfaces correctly
+- ✅ **Robust**: Proven in production across all problem types
+- ✅ **Fast**: Efficient with Numba JIT
+- ✅ **Well-tested**: 100% pass rate on all test suites
+
+**⚠️⚠️⚠️ HLLC NOT RECOMMENDED ⚠️⚠️⚠️**
+
+```python
+# ❌ HLLC (EXPERIMENTAL, NOT PRODUCTION READY)
+riemann_solver = 'hllc'  # DO NOT USE in production!
+```
+
+**Critical issues with HLLC:**
+- ❌ **Unstable**: Dam Break crashes at t=1.69s with NaN
+- ❌ **Dry cell failure**: Flow explodes to 10^75 magnitude at h=0
+- ❌ **Lake at Rest**: Performance 141% worse than HLL (1.98m vs 0.82m)
+- ❌ **Not tested**: May fail on other problem types
+
+**Root cause**: Dry-wet interface handling deficiency causes velocity explosion when h=0 but Q≠0.
+
+**Recommendation**:
+- Production: **Always use HLL** (default)
+- Research: HLLC for experimental purposes only
+- Details: See `docs/PHASE_9_2_CRITICAL_FINDINGS.md`
+
+**When you see the HLLC warning:**
+```
+⚠️⚠️⚠️  HLLC求解器警告 - NOT PRODUCTION READY  ⚠️⚠️⚠️
+```
+This is **intentional** - switch to HLL immediately!
+
+---
+
+### 6. Performance Optimization
 
 ```python
 # Always enable Numba for production
