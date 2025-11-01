@@ -1,0 +1,177 @@
+# -*- coding: utf-8 -*-
+"""
+Debug Well-Balanced NaN Issue
+调试Well-Balanced格式NaN问题
+
+简化P0.2测试，添加详细诊断输出
+"""
+
+import sys
+import os
+import numpy as np
+
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, project_root)
+
+from solvers.godunov_fvm_solver import GodunvFVMSolver
+
+
+def debug_p0_2():
+    """P0.2测试的调试版本"""
+    print("="*70)
+    print("Debug P0.2: Gentle Slope")
+    print("="*70)
+
+    # 参数
+    L = 100.0
+    n_cells = 100
+    eta_init = 10.0
+
+    # 创建底高程: 中间2m凸起
+    x = np.linspace(0, L, n_cells)
+    x_center = L / 2.0
+    hump_width = 20.0
+    hump_height = 2.0
+
+    z_b = np.zeros(n_cells)
+    for i in range(n_cells):
+        if abs(x[i] - x_center) < hump_width / 2:
+            dist_from_center = abs(x[i] - x_center)
+            z_b[i] = hump_height * (1.0 - 2.0 * dist_from_center / hump_width)
+
+    # 初始水深: h = eta - z_b
+    h = eta_init - z_b
+    Q = np.zeros(n_cells)
+
+    # 验证eta是否恒定
+    eta_check = h + z_b
+
+    print(f"\n初始状态:")
+    print(f"  eta_target = {eta_init} m")
+    print(f"  z_b range: {np.min(z_b):.3f} ~ {np.max(z_b):.3f} m")
+    print(f"  h range: {np.min(h):.3f} ~ {np.max(h):.3f} m")
+    print(f"  eta_actual range: {np.min(eta_check):.6f} ~ {np.max(eta_check):.6f} m")
+    print(f"  eta deviation: {np.max(np.abs(eta_check - eta_init)):.3e} m")
+    print(f"  Any h < 0? {np.any(h < 0)}")
+
+    # 创建求解器（直接传递底高程z_b）
+    solver = GodunvFVMSolver(
+        width=10.0,
+        length=L,
+        n_cells=n_cells,
+        manning_n=0.03,
+        z_b=z_b,  # ← Pass z_b directly (no integration error!)
+        cfl=0.5,
+        order=1,
+        well_balanced=True
+    )
+
+    # 边界条件
+    bc_left = {'type': 'h', 'value': h[0]}
+    bc_right = {'type': 'h', 'value': h[-1]}
+
+    solver.initialize(h, Q, bc_left, bc_right)
+
+    print(f"\n初始化后:")
+    print(f"  Mass = {solver._compute_total_mass():.2f} m³")
+    print(f"  h range: {np.min(solver.h):.3f} ~ {np.max(solver.h):.3f} m")
+
+    # Check z_b reconstruction accuracy
+    z_b_error = np.max(np.abs(solver.z_b - z_b))
+    print(f"\nz_b重构精度检查:")
+    print(f"  原始z_b[40:45]: {z_b[40:45]}")
+    print(f"  求解器z_b[40:45]: {solver.z_b[40:45]}")
+    print(f"  最大误差: {z_b_error:.6e} m")
+
+    # 单步测试
+    print(f"\n执行第一步...")
+    dt = solver.compute_dt()
+    print(f"  dt = {dt:.6f} s")
+
+    # 手动调用_compute_rhs来查看中间结果
+    print(f"\n计算RHS...")
+    try:
+        dh_dt, dQ_dt = solver._compute_rhs(solver.h, solver.Q)
+        print(f"  dh_dt range: {np.nanmin(dh_dt):.6e} ~ {np.nanmax(dh_dt):.6e}")
+        print(f"  dQ_dt range: {np.nanmin(dQ_dt):.6e} ~ {np.nanmax(dQ_dt):.6e}")
+        print(f"  Any NaN in dh_dt? {np.any(np.isnan(dh_dt))}")
+        print(f"  Any NaN in dQ_dt? {np.any(np.isnan(dQ_dt))}")
+
+        if np.any(np.isnan(dh_dt)) or np.any(np.isnan(dQ_dt)):
+            print(f"\n❌ NaN detected in RHS!")
+            print(f"  NaN locations in dh_dt: {np.where(np.isnan(dh_dt))[0]}")
+            print(f"  NaN locations in dQ_dt: {np.where(np.isnan(dQ_dt))[0]}")
+
+            # 检查通量
+            if hasattr(solver, 'last_F_h'):
+                print(f"\n  Last fluxes:")
+                print(f"    F_h range: {np.nanmin(solver.last_F_h):.6e} ~ {np.nanmax(solver.last_F_h):.6e}")
+                print(f"    F_Q range: {np.nanmin(solver.last_F_Q):.6e} ~ {np.nanmax(solver.last_F_Q):.6e}")
+                print(f"    Any NaN in F_h? {np.any(np.isnan(solver.last_F_h))}")
+                print(f"    Any NaN in F_Q? {np.any(np.isnan(solver.last_F_Q))}")
+
+                if np.any(np.isnan(solver.last_F_h)):
+                    nan_idx = np.where(np.isnan(solver.last_F_h))[0]
+                    print(f"    NaN in F_h at interfaces: {nan_idx}")
+        else:
+            print(f"  ✅ No NaN in RHS")
+
+    except Exception as e:
+        print(f"  ❌ Exception: {e}")
+        import traceback
+        traceback.print_exc()
+
+    # 运行多步测试
+    print(f"\n运行多步...")
+    t = 0.0
+    step = 0
+    max_steps = 100
+
+    while t < 1.0 and step < max_steps:  # 运行1秒或100步
+        dt = solver.compute_dt()
+        h_before = solver.h.copy()
+
+        try:
+            solver.step(dt)
+        except Exception as e:
+            print(f"\n❌ Exception at step {step}, t={t:.6f}:")
+            print(f"  {e}")
+            break
+
+        t += dt
+        step += 1
+
+        # 检查NaN
+        if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
+            print(f"\n❌ NaN detected at step {step}, t={t:.6f}:")
+            print(f"  h range: {np.nanmin(solver.h):.6e} ~ {np.nanmax(solver.h):.6e}")
+            print(f"  Q range: {np.nanmin(solver.Q):.6e} ~ {np.nanmax(solver.Q):.6e}")
+            print(f"  NaN in h: {np.sum(np.isnan(solver.h))} cells")
+            print(f"  NaN in Q: {np.sum(np.isnan(solver.Q))} cells")
+
+            # 查看NaN位置
+            nan_h_idx = np.where(np.isnan(solver.h))[0]
+            if len(nan_h_idx) > 0:
+                print(f"  NaN h indices: {nan_h_idx[:10]}")  # 只显示前10个
+                # 显示NaN前后的值
+                for idx in nan_h_idx[:3]:
+                    print(f"    Cell {idx}: h_before={h_before[idx]:.6f}, z_b={solver.z_b[idx]:.6f}")
+
+            break
+
+        # 每10步报告
+        if step % 10 == 0:
+            h_min, h_max = np.min(solver.h), np.max(solver.h)
+            Q_min, Q_max = np.min(solver.Q), np.max(solver.Q)
+            print(f"  Step {step:3d}, t={t:.6f}s: h=[{h_min:.6f}, {h_max:.6f}], Q=[{Q_min:.6e}, {Q_max:.6e}]")
+
+    if step == max_steps:
+        print(f"\n✅ Completed {step} steps without NaN")
+    elif not (np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q))):
+        print(f"\n✅ Reached t={t:.6f}s without NaN")
+
+    print("\n" + "="*70)
+
+
+if __name__ == '__main__':
+    debug_p0_2()

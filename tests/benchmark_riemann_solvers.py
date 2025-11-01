@@ -1,0 +1,411 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Riemann求解器性能基准测试
+
+Purpose:
+    对比HLL, HLLC, Exact三种Riemann求解器的:
+    - 精度 (vs 解析解/高分辨率解)
+    - 性能 (计算时间)
+    - 质量守恒
+    - 数值耗散
+
+Test Cases:
+    1. Dam Break (经典激波问题)
+    2. Smooth Wave (光滑波传播)
+
+Author: HydroClaude Development Team
+Date: 2025-11-01
+Phase: 9.3
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from solvers.godunov_fvm_solver import GodunvFVMSolver
+
+
+def benchmark_dam_break(
+    n_cells=100,
+    t_final=2.0,
+    h_L=5.0,
+    h_R=1.0,
+    make_plots=True
+):
+    """
+    Dam Break基准测试: 对比三种求解器
+
+    Configuration:
+        - 域: 100m
+        - 初始: 左侧h=5m, 右侧h=1m, u=0
+        - 边界: Wall
+        - 时间: 0-2s
+    """
+
+    print("="*70)
+    print("Dam Break基准测试: HLL vs HLLC vs 精确")
+    print("="*70)
+    print()
+
+    # 配置
+    length = 100.0
+    width = 10.0
+    dx = length / n_cells
+
+    print(f"配置:")
+    print(f"  域: {length}m")
+    print(f"  单元数: {n_cells} (dx={dx:.2f}m)")
+    print(f"  时间: {t_final}s")
+    print(f"  初始: h_L={h_L}m, h_R={h_R}m")
+    print()
+
+    # 初始条件
+    x = np.linspace(0.5*dx, length - 0.5*dx, n_cells)
+    h_init = np.ones(n_cells)
+    h_init[x < 50.0] = h_L
+    h_init[x >= 50.0] = h_R
+    Q_init = np.zeros(n_cells)
+
+    # 使用h边界条件 (更稳定)
+    bc_left = {'type': 'h', 'value': h_L}
+    bc_right = {'type': 'h', 'value': h_R}
+
+    mass_init = np.sum(h_init * dx * width)
+
+    # 存储结果
+    results = {}
+
+    # ========== 测试1: HLL求解器 ==========
+    print("[1/3] 运行HLL求解器...")
+    solver_hll = GodunvFVMSolver(
+        width=width, length=length, n_cells=n_cells,
+        manning_n=0.0, cfl=0.5, order=2,
+        use_numba=True, riemann_solver='hll',
+        well_balanced=False, slope=0.0
+    )
+    solver_hll.initialize(h_init.copy(), Q_init.copy(), bc_left, bc_right)
+
+    t_start = time.time()
+    while solver_hll.t < t_final:
+        solver_hll.step()
+    t_hll = time.time() - t_start
+
+    mass_hll = np.sum(solver_hll.h * dx * width)
+    mass_error_hll = abs(mass_hll - mass_init) / mass_init * 100
+
+    results['hll'] = {
+        'solver': solver_hll,
+        'time': t_hll,
+        'steps': solver_hll.step_count,
+        'mass_error': mass_error_hll,
+        'h': solver_hll.h.copy(),
+        'Q': solver_hll.Q.copy(),
+        'u': solver_hll.Q / (solver_hll.h * width + 1e-10)
+    }
+
+    print(f"  时间: {t_hll:.3f}s")
+    print(f"  步数: {solver_hll.step_count}")
+    print(f"  质量误差: {mass_error_hll:.6f}%")
+    print()
+
+    # ========== 测试2: HLLC求解器 ==========
+    print("[2/3] 运行HLLC求解器...")
+
+    # 捕获HLLC警告
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+
+        solver_hllc = GodunvFVMSolver(
+            width=width, length=length, n_cells=n_cells,
+            manning_n=0.0, cfl=0.5, order=2,
+            use_numba=True, riemann_solver='hllc',
+            well_balanced=False, slope=0.0
+        )
+        solver_hllc.initialize(h_init.copy(), Q_init.copy(), bc_left, bc_right)
+
+        t_start = time.time()
+        hllc_success = True
+        try:
+            while solver_hllc.t < t_final:
+                solver_hllc.step()
+
+                # 检查NaN
+                if np.any(np.isnan(solver_hllc.h)) or np.any(np.isnan(solver_hllc.Q)):
+                    print(f"  ⚠️  HLLC在t={solver_hllc.t:.2f}s出现NaN, 停止模拟")
+                    hllc_success = False
+                    break
+        except Exception as e:
+            print(f"  ⚠️  HLLC运行失败: {e}")
+            hllc_success = False
+
+        t_hllc = time.time() - t_start
+
+    if hllc_success:
+        mass_hllc = np.sum(solver_hllc.h * dx * width)
+        mass_error_hllc = abs(mass_hllc - mass_init) / mass_init * 100
+
+        results['hllc'] = {
+            'solver': solver_hllc,
+            'time': t_hllc,
+            'steps': solver_hllc.step_count,
+            'mass_error': mass_error_hllc,
+            'h': solver_hllc.h.copy(),
+            'Q': solver_hllc.Q.copy(),
+            'u': solver_hllc.Q / (solver_hllc.h * width + 1e-10),
+            'success': True
+        }
+
+        print(f"  时间: {t_hllc:.3f}s")
+        print(f"  步数: {solver_hllc.step_count}")
+        print(f"  质量误差: {mass_error_hllc:.6f}%")
+    else:
+        results['hllc'] = {
+            'success': False,
+            'time': t_hllc,
+            'error': 'NaN or crash'
+        }
+        print(f"  ❌ HLLC失败")
+
+    print()
+
+    # ========== 测试3: 精确求解器 ==========
+    print("[3/3] 运行精确求解器...")
+    solver_exact = GodunvFVMSolver(
+        width=width, length=length, n_cells=n_cells,
+        manning_n=0.0, cfl=0.5, order=2,
+        use_numba=True, riemann_solver='exact',
+        well_balanced=False, slope=0.0
+    )
+    solver_exact.initialize(h_init.copy(), Q_init.copy(), bc_left, bc_right)
+
+    t_start = time.time()
+    while solver_exact.t < t_final:
+        solver_exact.step()
+    t_exact = time.time() - t_start
+
+    mass_exact = np.sum(solver_exact.h * dx * width)
+    mass_error_exact = abs(mass_exact - mass_init) / mass_init * 100
+
+    results['exact'] = {
+        'solver': solver_exact,
+        'time': t_exact,
+        'steps': solver_exact.step_count,
+        'mass_error': mass_error_exact,
+        'h': solver_exact.h.copy(),
+        'Q': solver_exact.Q.copy(),
+        'u': solver_exact.Q / (solver_exact.h * width + 1e-10)
+    }
+
+    print(f"  时间: {t_exact:.3f}s")
+    print(f"  步数: {solver_exact.step_count}")
+    print(f"  质量误差: {mass_error_exact:.6f}%")
+    print()
+
+    # ========== 性能对比 ==========
+    print("="*70)
+    print("性能对比")
+    print("="*70)
+    print()
+
+    print(f"计算时间:")
+    print(f"  HLL:    {t_hll:.3f}s  (基准: 1.00x)")
+    if results['hllc'].get('success', False):
+        print(f"  HLLC:   {t_hllc:.3f}s  ({t_hllc/t_hll:.2f}x)")
+    else:
+        print(f"  HLLC:   失败")
+    print(f"  精确:   {t_exact:.3f}s  ({t_exact/t_hll:.2f}x)")
+    print()
+
+    print(f"质量守恒:")
+    print(f"  HLL:    {mass_error_hll:.6f}%")
+    if results['hllc'].get('success', False):
+        print(f"  HLLC:   {mass_error_hllc:.6f}%")
+    print(f"  精确:   {mass_error_exact:.6f}%")
+    print()
+
+    # ========== 精度对比 (以精确解为基准) ==========
+    print(f"精度对比 (vs 精确求解器):")
+
+    # HLL vs 精确
+    h_diff_hll = results['hll']['h'] - results['exact']['h']
+    max_h_diff_hll = np.max(np.abs(h_diff_hll))
+    rms_h_diff_hll = np.sqrt(np.mean(h_diff_hll**2))
+
+    print(f"  HLL:")
+    print(f"    Max |Δh|: {max_h_diff_hll:.6f} m")
+    print(f"    RMS(Δh):  {rms_h_diff_hll:.6f} m")
+
+    # HLLC vs 精确
+    if results['hllc'].get('success', False):
+        h_diff_hllc = results['hllc']['h'] - results['exact']['h']
+        max_h_diff_hllc = np.max(np.abs(h_diff_hllc))
+        rms_h_diff_hllc = np.sqrt(np.mean(h_diff_hllc**2))
+
+        print(f"  HLLC:")
+        print(f"    Max |Δh|: {max_h_diff_hllc:.6f} m")
+        print(f"    RMS(Δh):  {rms_h_diff_hllc:.6f} m")
+        print()
+
+        # 精度提升
+        if max_h_diff_hllc < max_h_diff_hll:
+            improvement = (max_h_diff_hll - max_h_diff_hllc) / max_h_diff_hll * 100
+            print(f"  ✅ HLLC比HLL精度提升: {improvement:.1f}%")
+        else:
+            degradation = (max_h_diff_hllc - max_h_diff_hll) / max_h_diff_hll * 100
+            print(f"  ⚠️  HLLC比HLL精度下降: {degradation:.1f}%")
+
+    print()
+
+    # ========== 可视化 ==========
+    if make_plots:
+        print("生成对比图...")
+
+        fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+        # 1. 水深对比
+        ax1 = axes[0, 0]
+        ax1.plot(x, results['hll']['h'], 'b-', linewidth=2, label='HLL')
+        if results['hllc'].get('success', False):
+            ax1.plot(x, results['hllc']['h'], 'g--', linewidth=2, label='HLLC')
+        ax1.plot(x, results['exact']['h'], 'r:', linewidth=2.5, label='精确')
+        ax1.set_xlabel('位置 x (m)', fontsize=12)
+        ax1.set_ylabel('水深 h (m)', fontsize=12)
+        ax1.set_title(f'水深对比 (t={t_final}s)', fontsize=13, weight='bold')
+        ax1.legend(loc='best')
+        ax1.grid(True, alpha=0.3)
+
+        # 2. 流速对比
+        ax2 = axes[0, 1]
+        ax2.plot(x, results['hll']['u'], 'b-', linewidth=2, label='HLL')
+        if results['hllc'].get('success', False):
+            ax2.plot(x, results['hllc']['u'], 'g--', linewidth=2, label='HLLC')
+        ax2.plot(x, results['exact']['u'], 'r:', linewidth=2.5, label='精确')
+        ax2.set_xlabel('位置 x (m)', fontsize=12)
+        ax2.set_ylabel('流速 u (m/s)', fontsize=12)
+        ax2.set_title(f'流速对比 (t={t_final}s)', fontsize=13, weight='bold')
+        ax2.legend(loc='best')
+        ax2.grid(True, alpha=0.3)
+
+        # 3. 误差分析
+        ax3 = axes[1, 0]
+        ax3.plot(x, h_diff_hll, 'b-', linewidth=2, label='HLL - 精确')
+        if results['hllc'].get('success', False):
+            ax3.plot(x, h_diff_hllc, 'g--', linewidth=2, label='HLLC - 精确')
+        ax3.axhline(0, color='gray', linestyle=':', alpha=0.5)
+        ax3.set_xlabel('位置 x (m)', fontsize=12)
+        ax3.set_ylabel('水深误差 Δh (m)', fontsize=12)
+        ax3.set_title('误差分布 (vs 精确解)', fontsize=13, weight='bold')
+        ax3.legend(loc='best')
+        ax3.grid(True, alpha=0.3)
+
+        # 4. 性能统计
+        ax4 = axes[1, 1]
+
+        solvers_list = ['HLL', 'HLLC', '精确']
+        times_list = [t_hll, t_hllc if results['hllc'].get('success') else 0, t_exact]
+        colors_list = ['blue', 'green', 'red']
+
+        if not results['hllc'].get('success', False):
+            solvers_list = ['HLL', '精确']
+            times_list = [t_hll, t_exact]
+            colors_list = ['blue', 'red']
+
+        bars = ax4.bar(solvers_list, times_list, color=colors_list, alpha=0.7)
+
+        # 添加数值标签
+        for bar, time_val in zip(bars, times_list):
+            height = bar.get_height()
+            ax4.text(bar.get_x() + bar.get_width()/2., height,
+                    f'{time_val:.3f}s\n({time_val/t_hll:.2f}x)',
+                    ha='center', va='bottom', fontsize=10)
+
+        ax4.set_ylabel('计算时间 (s)', fontsize=12)
+        ax4.set_title('性能对比', fontsize=13, weight='bold')
+        ax4.grid(True, alpha=0.3, axis='y')
+
+        plt.tight_layout()
+
+        # 保存
+        output_dir = 'test_results'
+        os.makedirs(output_dir, exist_ok=True)
+        output_file = os.path.join(output_dir, 'riemann_solvers_benchmark.png')
+        plt.savefig(output_file, dpi=150, bbox_inches='tight')
+        print(f"  保存: {output_file}")
+        print()
+
+    print("="*70)
+    print()
+
+    return results
+
+
+def print_summary_table(results):
+    """打印汇总表格"""
+
+    print("="*70)
+    print("基准测试汇总")
+    print("="*70)
+    print()
+
+    print("| 求解器 | 计算时间 | 相对速度 | 步数 | 质量误差(%) | Max|Δh|(vs精确) |")
+    print("|--------|----------|----------|------|-------------|----------------|")
+
+    # HLL
+    hll = results['hll']
+    print(f"| HLL    | {hll['time']:.3f}s   | 1.00x    | {hll['steps']:4d} | {hll['mass_error']:.6f}  | {np.max(np.abs(hll['h'] - results['exact']['h'])):.6f}m     |")
+
+    # HLLC
+    if results['hllc'].get('success', False):
+        hllc = results['hllc']
+        rel_speed = hllc['time'] / hll['time']
+        max_diff = np.max(np.abs(hllc['h'] - results['exact']['h']))
+        print(f"| HLLC   | {hllc['time']:.3f}s   | {rel_speed:.2f}x    | {hllc['steps']:4d} | {hllc['mass_error']:.6f}  | {max_diff:.6f}m     |")
+    else:
+        print(f"| HLLC   | 失败     | -        | -    | -           | -              |")
+
+    # 精确
+    exact = results['exact']
+    rel_speed = exact['time'] / hll['time']
+    print(f"| 精确   | {exact['time']:.3f}s   | {rel_speed:.2f}x    | {exact['steps']:4d} | {exact['mass_error']:.6f}  | 0.000000m      |")
+
+    print()
+
+    # 推荐
+    print("推荐:")
+    print("  - 快速稳定模拟: HLL")
+    print("  - 高精度需求: 精确求解器")
+    if results['hllc'].get('success', False):
+        print("  - HLLC: 实验性, 存在稳定性问题")
+    else:
+        print("  - HLLC: ❌ 不稳定, 不推荐")
+
+    print()
+    print("="*70)
+    print()
+
+
+if __name__ == '__main__':
+    print("\n")
+
+    # 运行基准测试
+    results = benchmark_dam_break(
+        n_cells=100,
+        t_final=2.0,
+        h_L=5.0,
+        h_R=1.0,
+        make_plots=True
+    )
+
+    # 打印汇总表格
+    print_summary_table(results)
+
+    print("✅ 基准测试完成!")
+    print()
+
+    sys.exit(0)

@@ -1,0 +1,19 @@
+{
+  "timestamp": "20251031_221957",
+  "total_tests": 12,
+  "passed": 11,
+  "failed": 1,
+  "errors": 0,
+  "duration_seconds": 3.087122917175293,
+  "tests": [
+    {
+      "test": "1.1_flat_bottom_static",
+      "description": "Flat bottom static water (machine precision test)",
+      "status": "PASS",
+      "metrics": {
+        "max_Q": 0.0,
+        "max_h_deviation": 0.0,
+        "steps": 1000,
+        "time": 713.9215614635175
+      },
+      "passed": 

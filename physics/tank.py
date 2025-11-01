@@ -34,9 +34,28 @@ class Tank(HydraulicComponent):
         self.tank_id = self.id  # 别名
         self.volume = (volume_min + volume_max) / 2  # 初始容积
 
+        # Add level limits for convenience
+        self.min_level = volume_min / area
+        self.max_level = volume_max / area
+
         self.state = ComponentState()
         self.state.volume = self.volume
         self.state.level = self.state.volume / area
+
+    def update(self, dt: float, inflow: float = 0.0, outflow: float = 0.0) -> ComponentState:
+        """
+        Simplified update method for convenience
+        简化的更新方法，方便直接调用
+
+        Args:
+            dt: Time step (s)
+            inflow: Inflow rate (m³/s)
+            outflow: Outflow rate (m³/s)
+
+        Returns:
+            Updated component state
+        """
+        return self.update_reduced_order(dt, {'inflow': inflow, 'outflow': outflow})
 
     def update_high_fidelity(self, dt: float, inputs: dict) -> ComponentState:
         return self.update_reduced_order(dt, inputs)

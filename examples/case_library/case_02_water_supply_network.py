@@ -40,6 +40,76 @@ from physics.pressurized.pumps import CentrifugalPump
 from physics.tank import Tank
 
 
+class NetworkNode:
+    """
+    Network node for water supply system
+    管网节点数据结构
+    """
+    def __init__(self, node_id, x, y, elevation, base_demand=0.0, node_type='junction'):
+        self.id = node_id
+        self.x = x
+        self.y = y
+        self.elevation = elevation
+        self.base_demand = base_demand
+        self.current_demand = base_demand
+        self.pressure = 0.0
+        self.head = 0.0
+        self.type = node_type
+
+
+class NetworkPipe:
+    """
+    Network pipe for water supply system
+    管网管道数据结构
+    """
+    def __init__(self, pipe_id, node1, node2, length, diameter, roughness):
+        self.id = pipe_id
+        self.node1 = node1
+        self.node2 = node2
+        self.length = length
+        self.diameter = diameter
+        self.roughness = roughness
+        self.flow = 0.0
+        self.g = 9.81  # m/s²
+
+    def head_loss(self, flow):
+        """
+        Calculate head loss using Hazen-Williams equation
+        使用Hazen-Williams公式计算水头损失
+
+        Args:
+            flow: Flow rate (m³/s)
+
+        Returns:
+            Head loss (m)
+        """
+        if abs(flow) < 1e-10:
+            return 0.0
+
+        # Hazen-Williams: h = 10.67 * L * Q^1.852 / (C^1.852 * D^4.87)
+        # C = Hazen-Williams coefficient (~120-140 for cast iron)
+        # Convert roughness (mm) to C coefficient (approximation)
+        C = max(100, 150 - self.roughness * 20)  # Rough conversion
+
+        # Calculate velocity and head loss
+        area = np.pi * (self.diameter / 2.0) ** 2
+        velocity = flow / area if area > 0 else 0.0
+
+        # Darcy-Weisbach friction factor (Swamee-Jain approximation)
+        # f = 0.25 / [log10(ε/(3.7D) + 5.74/Re^0.9)]^2
+        Re = abs(velocity * self.diameter / 1e-6)  # ν ≈ 1e-6 m²/s for water
+        if Re < 2000:
+            f = 64.0 / Re if Re > 0 else 0.0
+        else:
+            eps_D = (self.roughness / 1000.0) / self.diameter
+            f = 0.25 / (np.log10(eps_D / 3.7 + 5.74 / (Re ** 0.9))) ** 2 if Re > 0 else 0.0
+
+        # Head loss: h_f = f * (L/D) * (V²/2g)
+        h_loss = f * (self.length / self.diameter) * (velocity ** 2) / (2.0 * self.g)
+
+        return h_loss
+
+
 class WaterSupplyNetwork:
     """
     Complete Urban Water Supply Network System
@@ -120,40 +190,40 @@ class WaterSupplyNetwork:
                 elevation = 5.0 + np.random.uniform(-2, 2)  # Flat terrain with small variation
                 base_demand = np.random.uniform(0.005, 0.02)  # 5-20 L/s per node
 
-                self.nodes[f'N{node_id}'] = {
-                    'x': x,
-                    'y': y,
-                    'elevation': elevation,
-                    'base_demand': base_demand,
-                    'current_demand': base_demand,
-                    'pressure': 0.0,
-                    'head': 0.0
-                }
+                self.nodes[f'N{node_id}'] = NetworkNode(
+                    node_id=f'N{node_id}',
+                    x=x,
+                    y=y,
+                    elevation=elevation,
+                    base_demand=base_demand,
+                    node_type='junction'
+                )
                 node_id += 1
 
         # Water source node (treatment plant)
-        self.nodes['SOURCE'] = {
-            'x': -500.0,
-            'y': grid_size * 250.0,
-            'elevation': 10.0,
-            'base_demand': 0.0,
-            'current_demand': 0.0,
-            'pressure': 50.0,  # Fixed pressure head
-            'head': 60.0,
-            'type': 'source'
-        }
+        source_node = NetworkNode(
+            node_id='SOURCE',
+            x=-500.0,
+            y=grid_size * 250.0,
+            elevation=10.0,
+            base_demand=0.0,
+            node_type='source'
+        )
+        source_node.pressure = 50.0
+        source_node.head = 60.0
+        self.nodes['SOURCE'] = source_node
 
         # Water tower node
-        self.nodes['TOWER'] = {
-            'x': grid_size * 250.0,
-            'y': grid_size * 250.0,
-            'elevation': 0.0,
-            'base_demand': 0.0,
-            'current_demand': 0.0,
-            'pressure': 0.0,
-            'head': 30.0,  # Initial water level
-            'type': 'tower'
-        }
+        tower_node = NetworkNode(
+            node_id='TOWER',
+            x=grid_size * 250.0,
+            y=grid_size * 250.0,
+            elevation=0.0,
+            base_demand=0.0,
+            node_type='tower'
+        )
+        tower_node.head = 30.0
+        self.nodes['TOWER'] = tower_node
 
         print(f"✓ Created {len(self.nodes)} nodes")
 
@@ -177,14 +247,14 @@ class WaterSupplyNetwork:
                     diameter = 0.3 if pipe_id < 20 else 0.2  # Main pipes larger
                     roughness = 0.1  # mm, cast iron
 
-                    self.pipes[f'P{pipe_id}'] = {
-                        'node1': node1,
-                        'node2': node2,
-                        'length': length,
-                        'diameter': diameter,
-                        'roughness': roughness,
-                        'flow': 0.0
-                    }
+                    self.pipes[f'P{pipe_id}'] = NetworkPipe(
+                        pipe_id=f'P{pipe_id}',
+                        node1=node1,
+                        node2=node2,
+                        length=length,
+                        diameter=diameter,
+                        roughness=roughness
+                    )
                     pipe_id += 1
 
                 # Vertical connection
@@ -196,39 +266,64 @@ class WaterSupplyNetwork:
                         diameter = 0.3 if pipe_id < 20 else 0.2
                         roughness = 0.1
 
-                        self.pipes[f'P{pipe_id}'] = {
-                            'node1': node1,
-                            'node2': node2,
-                            'length': length,
-                            'diameter': diameter,
-                            'roughness': roughness,
-                            'flow': 0.0
-                        }
+                        self.pipes[f'P{pipe_id}'] = NetworkPipe(
+                            pipe_id=f'P{pipe_id}',
+                            node1=node1,
+                            node2=node2,
+                            length=length,
+                            diameter=diameter,
+                            roughness=roughness
+                        )
                         pipe_id += 1
 
         # Connect source to network
-        self.pipes[f'P{pipe_id}'] = {
-            'node1': 'SOURCE',
-            'node2': 'N0',
-            'length': 500.0,
-            'diameter': 0.5,  # Large main
-            'roughness': 0.1,
-            'flow': 0.0
-        }
+        self.pipes[f'P{pipe_id}'] = NetworkPipe(
+            pipe_id=f'P{pipe_id}',
+            node1='SOURCE',
+            node2='N0',
+            length=500.0,
+            diameter=0.5,
+            roughness=0.1
+        )
         pipe_id += 1
 
         # Connect tower to network (at center)
         center_node = grid_size * grid_size // 2
-        self.pipes[f'P{pipe_id}'] = {
-            'node1': 'TOWER',
-            'node2': f'N{center_node}',
-            'length': 300.0,
-            'diameter': 0.4,
-            'roughness': 0.1,
-            'flow': 0.0
-        }
+        self.pipes[f'P{pipe_id}'] = NetworkPipe(
+            pipe_id=f'P{pipe_id}',
+            node1='TOWER',
+            node2=f'N{center_node}',
+            length=300.0,
+            diameter=0.4,
+            roughness=0.1
+        )
 
         print(f"✓ Created {len(self.pipes)} pipes")
+
+        # Build pipe connections dict for solvers
+        self.pipe_connections = {}
+        for pipe_id, pipe in self.pipes.items():
+            self.pipe_connections[pipe_id] = (pipe.node1, pipe.node2)
+
+    def get_node_pipes(self, node_id):
+        """
+        Get all pipes connected to a node
+        获取连接到某个节点的所有管道
+
+        Args:
+            node_id: Node ID
+
+        Returns:
+            List of (pipe_id, direction) tuples
+            direction is 'in' if flow enters node, 'out' if flow exits
+        """
+        result = []
+        for pipe_id, pipe in self.pipes.items():
+            if pipe.node1 == node_id:
+                result.append((pipe_id, 'out'))  # Flow from this node
+            elif pipe.node2 == node_id:
+                result.append((pipe_id, 'in'))   # Flow to this node
+        return result
 
     def _setup_pumps(self):
         """Setup pump stations / 设置泵站"""
@@ -346,7 +441,7 @@ class WaterSupplyNetwork:
 
         for node_id, node in self.nodes.items():
             if node_id not in ['SOURCE', 'TOWER']:
-                node['current_demand'] = node['base_demand'] * multiplier
+                node.current_demand = node.base_demand * multiplier
 
     def solve_hydraulics_hardy_cross(self, tolerance=1e-6, max_iter=100):
         """
@@ -370,12 +465,12 @@ class WaterSupplyNetwork:
         if converged:
             # Extract results
             for pipe_id, pipe in self.pipes.items():
-                pipe['flow'] = self.solver.get_pipe_flow(pipe_id)
+                pipe.flow = self.solver.get_pipe_flow(pipe_id)
 
             for node_id, node in self.nodes.items():
                 if node_id not in ['SOURCE', 'TOWER']:
-                    node['head'] = self.solver.get_node_head(node_id)
-                    node['pressure'] = node['head'] - node['elevation']
+                    node.head = self.solver.get_node_head(node_id)
+                    node.pressure = node.head - node.elevation
 
         return converged
 
@@ -393,19 +488,20 @@ class WaterSupplyNetwork:
             max_iter=max_iter
         )
 
-        converged, iterations = solver.solve()
+        flows, heads = solver.solve()
 
-        if converged:
-            # Extract results
-            for pipe_id, pipe in self.pipes.items():
-                pipe['flow'] = solver.get_pipe_flow(pipe_id)
+        if solver.converged:
+            # Extract results from solver dicts
+            for pipe_id in flows:
+                if pipe_id in self.pipes:
+                    self.pipes[pipe_id].flow = flows[pipe_id]
 
-            for node_id, node in self.nodes.items():
-                if node_id not in ['SOURCE', 'TOWER']:
-                    node['head'] = solver.get_node_head(node_id)
-                    node['pressure'] = node['head'] - node['elevation']
+            for node_id in heads:
+                if node_id in self.nodes and node_id not in ['SOURCE', 'TOWER']:
+                    self.nodes[node_id].head = heads[node_id]
+                    self.nodes[node_id].pressure = heads[node_id] - self.nodes[node_id].elevation
 
-        return converged
+        return solver.converged
 
     def simulate_normal_supply(self, duration=86400.0, dt=3600.0):
         """
@@ -458,14 +554,16 @@ class WaterSupplyNetwork:
                     # Simplified power calculation
                     Q = 0.3  # Assume rated flow
                     H = 50.0  # Assume rated head
-                    P = self.rho * self.g * Q * H / pump.efficiency
-                    total_pump_power += P
+                    eta = pump.compute_efficiency(Q)
+                    if eta > 0:
+                        P = self.rho * self.g * Q * H / eta
+                        total_pump_power += P
 
             # Update water tower
             # Simplified: assume tower balances supply-demand difference
-            total_demand = sum(node['current_demand'] for node_id, node in self.nodes.items()
+            total_demand = sum(node.current_demand for node_id, node in self.nodes.items()
                              if node_id not in ['SOURCE', 'TOWER'])
-            total_supply = sum(pump.rated_flow for pump in self.pumps if pump.is_running)
+            total_supply = sum(pump.char.Q_design for pump in self.pumps if pump.is_running)
 
             tower_inflow = total_supply - total_demand
             self.water_tower.update(dt, inflow=tower_inflow, outflow=0.0)
@@ -474,7 +572,7 @@ class WaterSupplyNetwork:
             min_pressure_required = 20.0  # 20m minimum pressure
             pressure_violations = sum(1 for node_id, node in self.nodes.items()
                                     if node_id not in ['SOURCE', 'TOWER'] and
-                                    node['pressure'] < min_pressure_required)
+                                    node.pressure < min_pressure_required)
 
             # Record history
             self.state_history['time'].append(time / 3600.0)
@@ -485,7 +583,7 @@ class WaterSupplyNetwork:
             self.state_history['pressure_violations'].append(pressure_violations)
 
             # Average node pressure
-            avg_pressure = np.mean([node['pressure'] for node_id, node in self.nodes.items()
+            avg_pressure = np.mean([node.pressure for node_id, node in self.nodes.items()
                                    if node_id not in ['SOURCE', 'TOWER']])
             self.state_history['node_pressures'].append(avg_pressure)
 
@@ -560,8 +658,15 @@ class WaterSupplyNetwork:
                     pump.is_running = schedule[hour, i] > 0.5
 
                 # Calculate power
-                power = sum(pump.rated_flow * 50.0 * self.rho * self.g / pump.efficiency
-                          for pump in self.pumps if pump.is_running)
+                power = 0.0
+                for pump in self.pumps:
+                    if pump.is_running:
+                        Q = pump.char.Q_design  # Use design flow rate
+                        H = 50.0  # Assume design head
+                        eta = pump.compute_efficiency(Q)
+                        if eta > 0:
+                            P = self.rho * self.g * Q * H / eta
+                            power += P
 
                 # Energy cost = power * price * time
                 cost = power * price_pattern[hour] * 1.0  # 1 hour
