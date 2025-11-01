@@ -181,13 +181,16 @@ def _solve_star_region_newton(
     # When velocity difference is very small relative to wave speeds,
     # avoid numerical instability in Newton solver
     du = abs(u_R - u_L)
+    dh = abs(h_R - h_L)
     wave_scale = c_L + c_R
+    h_avg = 0.5 * (h_L + h_R)
 
-    if du < 1e-6 * wave_scale or (abs(u_L) < 1e-6 and abs(u_R) < 1e-6):
-        # For static or nearly static water: analytical solution
-        # Use isentropic relations for small perturbations
+    # True Lake at Rest: h差异小 AND 速度都接近零
+    # 修复：溃坝(h_L≠h_R但u=0)不应该被当作静水！
+    if (abs(u_L) < 1e-6 and abs(u_R) < 1e-6 and dh < 1e-3 * h_avg):
+        # 真正的静水：深度差异<0.1%且速度为零
         h_star = 0.5 * (h_L + h_R)
-        u_star = 0.5 * (u_L + u_R)  # Average velocity
+        u_star = 0.0
         return h_star, u_star
 
     # Initial guess: Two-rarefaction approximation (Toro 2009, Eq 9.35)
@@ -430,13 +433,16 @@ def _solve_star_region_numba(
     # When velocity difference is very small relative to wave speeds,
     # avoid numerical instability in Newton solver
     du = abs(u_R - u_L)
+    dh = abs(h_R - h_L)
     wave_scale = c_L + c_R
+    h_avg = 0.5 * (h_L + h_R)
 
-    if du < 1e-6 * wave_scale or (abs(u_L) < 1e-6 and abs(u_R) < 1e-6):
-        # For static or nearly static water: analytical solution
-        # Use isentropic relations for small perturbations
+    # True Lake at Rest: h差异小 AND 速度都接近零
+    # 修复：溃坝(h_L≠h_R但u=0)不应该被当作静水！
+    if (abs(u_L) < 1e-6 and abs(u_R) < 1e-6 and dh < 1e-3 * h_avg):
+        # 真正的静水：深度差异<0.1%且速度为零
         h_star = 0.5 * (h_L + h_R)
-        u_star = 0.5 * (u_L + u_R)  # Average velocity
+        u_star = 0.0
         return h_star, u_star
 
     # Initial guess
