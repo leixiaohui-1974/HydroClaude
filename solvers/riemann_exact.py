@@ -177,6 +177,19 @@ def _solve_star_region_newton(
     c_L = np.sqrt(g * h_L)
     c_R = np.sqrt(g * h_R)
 
+    # Special case: Lake at Rest or near-zero velocity
+    # When velocity difference is very small relative to wave speeds,
+    # avoid numerical instability in Newton solver
+    du = abs(u_R - u_L)
+    wave_scale = c_L + c_R
+
+    if du < 1e-6 * wave_scale or (abs(u_L) < 1e-6 and abs(u_R) < 1e-6):
+        # For static or nearly static water: analytical solution
+        # Use isentropic relations for small perturbations
+        h_star = 0.5 * (h_L + h_R)
+        u_star = 0.5 * (u_L + u_R)  # Average velocity
+        return h_star, u_star
+
     # Initial guess: Two-rarefaction approximation (Toro 2009, Eq 9.35)
     h_star = 0.5 * (h_L + h_R) - 0.25 * (u_R - u_L) * (h_L + h_R) / (c_L + c_R)
     h_star = max(0.1 * min(h_L, h_R), h_star)  # Ensure positive
@@ -258,6 +271,10 @@ def _df_function(h_star: float, h_K: float, c_K: float, g: float) -> float:
     if h_star > h_K:
         # Shock wave derivative
         Q_K = np.sqrt(0.5 * g * (h_star + h_K) / (h_star * h_K))
+
+        # Safeguard against division by very small Q_K
+        Q_K = max(Q_K, 1e-10)
+
         dQ_K = -0.25 * g * (h_star + h_K) / (h_star**2 * h_K * Q_K) + \
                0.25 * g / (h_star * h_K * Q_K)
         df_val = Q_K + (h_star - h_K) * dQ_K
@@ -382,6 +399,10 @@ def _df_function_numba(h_star: float, h_K: float, c_K: float, g: float) -> float
     """Numba version of _df_function"""
     if h_star > h_K:
         Q_K = np.sqrt(0.5 * g * (h_star + h_K) / (h_star * h_K))
+
+        # Safeguard against division by very small Q_K
+        Q_K = max(Q_K, 1e-10)
+
         dQ_K = -0.25 * g * (h_star + h_K) / (h_star**2 * h_K * Q_K) + \
                0.25 * g / (h_star * h_K * Q_K)
         df_val = Q_K + (h_star - h_K) * dQ_K
@@ -404,6 +425,19 @@ def _solve_star_region_numba(
     """Numba version of _solve_star_region_newton"""
     c_L = np.sqrt(g * h_L)
     c_R = np.sqrt(g * h_R)
+
+    # Special case: Lake at Rest or near-zero velocity
+    # When velocity difference is very small relative to wave speeds,
+    # avoid numerical instability in Newton solver
+    du = abs(u_R - u_L)
+    wave_scale = c_L + c_R
+
+    if du < 1e-6 * wave_scale or (abs(u_L) < 1e-6 and abs(u_R) < 1e-6):
+        # For static or nearly static water: analytical solution
+        # Use isentropic relations for small perturbations
+        h_star = 0.5 * (h_L + h_R)
+        u_star = 0.5 * (u_L + u_R)  # Average velocity
+        return h_star, u_star
 
     # Initial guess
     h_star = 0.5 * (h_L + h_R) - 0.25 * (u_R - u_L) * (h_L + h_R) / (c_L + c_R)
