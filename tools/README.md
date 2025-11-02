@@ -188,6 +188,83 @@ Time (days),water_temperature,dissolved_oxygen,ice_thickness,chlorophyll_a
 
 ---
 
+### 4. `visualize_results.py` - 结果可视化工具
+
+为模拟结果生成专业级可视化图表，支持多种图表类型和自定义样式。
+
+**用法:**
+
+**生成所有图表:**
+```bash
+python tools/visualize_results.py outputs/simulation_results.npz --plot-type all
+```
+
+**仅生成时间序列图:**
+```bash
+python tools/visualize_results.py outputs/simulation_results.npz --plot-type timeseries
+```
+
+**生成综合仪表板:**
+```bash
+python tools/visualize_results.py outputs/simulation_results.npz --plot-type dashboard
+```
+
+**生成空间分布图（需要2D数据）:**
+```bash
+python tools/visualize_results.py outputs/simulation_results.npz --plot-type spatial --time-index -1
+```
+
+**高级选项:**
+
+```bash
+# 自定义输出目录
+python tools/visualize_results.py outputs/simulation_results.npz \
+    --plot-type all --output-dir my_figures/
+
+# 仅绘制特定变量
+python tools/visualize_results.py outputs/simulation_results.npz \
+    --plot-type timeseries --variables water_temperature dissolved_oxygen ice_thickness
+
+# 使用不同的绘图风格
+python tools/visualize_results.py outputs/simulation_results.npz \
+    --plot-type all --style ggplot
+```
+
+**可用图表类型:**
+
+1. **时间序列图 (timeseries)**
+   - 所有变量的时间演化
+   - 多面板布局
+   - 自动颜色编码
+
+2. **综合仪表板 (dashboard)**
+   - 6面板综合视图
+   - 水温和冰盖动态（双Y轴）
+   - 溶解氧变化（含低氧阈值线）
+   - 营养盐动态（NH₄⁺, NO₃⁻, PO₄³⁻）
+   - 叶绿素 a 面积图
+   - 统计摘要表
+   - 相关性矩阵热图
+
+3. **空间分布图 (spatial)**
+   - 沿河道的空间分布
+   - 指定时间截面
+   - 面积填充样式
+
+**输出:**
+- PNG 格式图片（300 DPI，适合出版）
+- 默认保存在 `outputs/figures/` 目录
+- 文件名: `timeseries.png`, `dashboard.png`, `spatial_t{index}.png`
+
+**支持的Matplotlib样式:**
+- `seaborn-v0_8-darkgrid` (默认)
+- `ggplot`
+- `bmh`
+- `fivethirtyeight`
+- 其他内置 matplotlib 样式
+
+---
+
 ## 工作流示例
 
 ### 典型模拟工作流:
@@ -200,10 +277,13 @@ cp config/example_winter_simulation.json config/my_simulation.json
 # 2. 运行模拟
 python tools/run_from_config.py config/my_simulation.json
 
-# 3. 导出结果
+# 3. 可视化结果
+python tools/visualize_results.py outputs/simulation_results.npz --plot-type all
+
+# 4. 导出结果为CSV/JSON
 python tools/export_data.py outputs/simulation_results.npz --format all
 
-# 4. 参数敏感性分析（可选）
+# 5. 参数敏感性分析（可选）
 python tools/sensitivity_analysis.py
 ```
 
