@@ -1,0 +1,103 @@
+{
+  "simulation_name": "Winter River Ice-Water Quality Simulation",
+  "description": "Example configuration for winter river simulation with ice cover",
+  "version": "1.0",
+
+  "domain": {
+    "length": 10000.0,
+    "n_cells": 100,
+    "dx": 100.0,
+    "description": "River domain: 10 km, 100 cells"
+  },
+
+  "hydraulics": {
+    "velocity": 0.3,
+    "depth": 2.5,
+    "width": 30.0,
+    "manning_n": 0.03,
+    "description": "Flow conditions"
+  },
+
+  "simulation_time": {
+    "duration_days": 30,
+    "time_step_seconds": 3600,
+    "output_interval_hours": 24,
+    "description": "30 days simulation with 1-hour time step"
+  },
+
+  "meteorology": {
+    "air_temperature_initial": 0.0,
+    "air_temperature_final": -15.0,
+    "solar_radiation_max": 300.0,
+    "wind_speed": 5.0,
+    "relative_humidity": 0.7,
+    "cloud_cover": 0.3,
+    "daylight_hours": 10,
+    "description": "Winter meteorological conditions"
+  },
+
+  "initial_conditions": {
+    "water_temperature": 2.0,
+    "dissolved_oxygen": 12.0,
+    "BOD": 3.0,
+    "ice_thickness": 0.0,
+    "NH4": 0.3,
+    "NO3": 1.2,
+    "PO4": 0.08,
+    "OrgN": 0.5,
+    "OrgP": 0.05,
+    "chlorophyll_a": 12.0,
+    "description": "Initial water quality conditions"
+  },
+
+  "solver_parameters": {
+    "dissolved_oxygen": {
+      "kd_20": 0.15,
+      "SOD_20": 1.0,
+      "use_numba": false
+    },
+    "water_temperature": {
+      "use_numba": false
+    },
+    "ice_cover": {
+      "enabled": true
+    },
+    "nutrients": {
+      "nitrification_rate_20": 0.1,
+      "denitrification_rate_20": 0.05,
+      "mineralization_rate_20": 0.05,
+      "use_numba": false
+    },
+    "phytoplankton": {
+      "mu_max_20": 2.0,
+      "I_s": 100.0,
+      "K_N_NH4": 0.025,
+      "K_N_NO3": 0.05,
+      "K_P": 0.001,
+      "k_d": 0.05,
+      "k_r": 0.05,
+      "vs_algae": 0.1,
+      "use_numba": false
+    }
+  },
+
+  "output": {
+    "save_format": "npz",
+    "save_path": "./outputs",
+    "variables": [
+      "water_temperature",
+      "dissolved_oxygen",
+      "ice_thickness",
+      "ice_cover_fraction",
+      "NH4",
+      "NO3",
+      "PO4",
+      "chlorophyll_a"
+    ],
+    "create_plots": true,
+    "plot_format": "png",
+    "plot_dpi": 150
+  },
+
+  "notes": "This is an example configuration for winter river simulation"
+}
