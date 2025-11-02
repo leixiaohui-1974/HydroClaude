@@ -1,0 +1,108 @@
+{
+  "metadata": {
+    "source_file": "outputs/simulation_results.npz",
+    "export_time": "2025-11-02T09:38:06.700103",
+    "variables": [
+      "times",
+      "water_temperature",
+      "dissolved_oxygen",
+      "ice_thickness",
+      "ice_cover_fraction",
+      "NH4",
+      "NO3",
+      "PO4",
+      "chlorophyll_a"
+    ],
+    "n_time_points": 31
+  },
+  "summary": {
+    "time_range": {
+      "start": 0.0,
+      "end": 29.958333333333332,
+      "duration_days": 29.958333333333332
+    },
+    "water_temperature": {
+      "mean": 0.6092203295510072,
+      "min": 0.0,
+      "max": 2.175752265843222,
+      "std": 0.8283957695583881,
+      "shape": [
+        31
+      ],
+      "initial": 2.0,
+      "final": 0.0
+    },
+    "dissolved_oxygen": {
+      "mean": 13.55016003883525,
+      "min": 12.0,
+      "max": 14.194458239534727,
+      "std": 0.6553379575338553,
+      "shape": [
+        31
+      ],
+      "initial": 12.0,
+      "final": 14.194458239534727
+    },
+    "ice_thickness": {
+      "mean": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "std": 0.0,
+      "shape": [
+        31
+      ],
+      "initial": 0.0,
+      "final": 0.0
+    },
+    "ice_cover_fraction": {
+      "mean": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "std": 0.0,
+      "shape": [
+        30
+      ],
+      "initial": 0.0,
+      "final": 0.0
+    },
+    "NH4": {
+      "mean": 0.31579702708549096,
+      "min": 0.27944178175975143,
+      "max": 0.3329456696041899,
+      "std": 0.015966336279290252,
+      "shape": [
+        30
+      ],
+      "initial": 0.30743265652911583,
+      "final": 0.27944178175975143
+    },
+    "NO3": {
+      "mean": 1.311672429747233,
+      "min": 1.2073483435191767,
+      "max": 1.4064441864688857,
+      "std": 0.05951658633176425,
+      "shape": [
+        30
+      ],
+      "initial": 1.2073483435191767,
+      "final": 1.4064441864688857
+    },
+    "PO4": {
+      "note": "Empty array",
+      "shape": [
+        0
+      ]
+    },
+    "chlorophyll_a": {
+      "mean": 4.482620763210405,
+      "min": 1.0199521086429966,
+      "max": 12.0,
+      "std": 3.147806246643478,
+      "shape": [
+        31
+      ],
+      "initial": 12.0,
+      "final": 1.0199521086429966
+    }
+  }
+}
