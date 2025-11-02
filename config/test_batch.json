@@ -1,0 +1,40 @@
+{
+  "domain": {
+    "n_cells": 50,
+    "dx": 200.0
+  },
+  "simulation_time": {
+    "duration_days": 5,
+    "time_step_seconds": 3600
+  },
+  "hydraulics": {
+    "velocity": 0.3,
+    "depth": 2.5,
+    "manning_n": 0.03
+  },
+  "meteorology": {
+    "air_temperature_initial": 0.0,
+    "air_temperature_final": -10.0,
+    "solar_radiation": 100.0,
+    "wind_speed": 5.0,
+    "relative_humidity": 0.7
+  },
+  "initial_conditions": {
+    "water_temperature": 2.0,
+    "dissolved_oxygen": 12.0,
+    "BOD": 3.0,
+    "ice_thickness": 0.0,
+    "NH4": 0.3,
+    "NO3": 1.2,
+    "PO4": 0.08,
+    "OrgN": 0.5,
+    "OrgP": 0.05,
+    "chlorophyll_a": 12.0
+  },
+  "solver_parameters": {
+    "dissolved_oxygen": {
+      "kd_20": 0.15,
+      "SOD_20": 1.0
+    }
+  }
+}
