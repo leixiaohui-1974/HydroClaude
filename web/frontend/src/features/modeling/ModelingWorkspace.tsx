@@ -3,7 +3,7 @@
  * 建模工作台主页面
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Layout, Button, Space, message, Modal, Tooltip } from 'antd';
 import {
   SaveOutlined,
@@ -53,18 +53,15 @@ const ModelingWorkspace: React.FC = () => {
   const currentModel = useAppSelector(selectCurrentModel);
   const isEmpty = useAppSelector(selectIsModelEmpty);
 
-  // 本地状态
-  const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
-
   // 处理组件拖拽开始
-  const handleComponentDragStart = (template: ComponentTemplate, event: React.DragEvent) => {
+  const handleComponentDragStart = (template: ComponentTemplate, _event: React.DragEvent) => {
     // 可以在这里添加拖拽开始的视觉反馈
     console.log('Drag start:', template.name);
   };
 
   // 处理节点选择
-  const handleNodeSelect = (nodeIds: string[]) => {
-    setSelectedNodeIds(nodeIds);
+  const handleNodeSelect = (_nodeIds: string[]) => {
+    // 未来可以在这里处理节点选择逻辑
   };
 
   // 处理撤销

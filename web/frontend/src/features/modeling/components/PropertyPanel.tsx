@@ -33,7 +33,7 @@ const PropertyPanel: React.FC = () => {
   }, [selectedNode, form]);
 
   // 处理表单值变化
-  const handleValuesChange = (changedValues: any, allValues: any) => {
+  const handleValuesChange = (_changedValues: any, allValues: any) => {
     if (!selectedNode) return;
 
     // 实时更新Redux状态
@@ -89,7 +89,7 @@ const PropertyPanel: React.FC = () => {
   };
 
   // 明渠节点表单
-  const renderCanalForm = (data: CanalNodeData) => (
+  const renderCanalForm = (_data: CanalNodeData) => (
     <>
       <Form.Item
         label="名称"
@@ -233,7 +233,7 @@ const PropertyPanel: React.FC = () => {
   );
 
   // 闸门节点表单
-  const renderGateForm = (data: GateNodeData) => (
+  const renderGateForm = (_data: GateNodeData) => (
     <>
       <Form.Item
         label="名称"

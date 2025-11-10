@@ -14,8 +14,6 @@ import ReactFlow, {
   useNodesState,
   useEdgesState,
   Connection,
-  Edge,
-  Node,
   BackgroundVariant,
   OnConnect,
   OnNodesChange,

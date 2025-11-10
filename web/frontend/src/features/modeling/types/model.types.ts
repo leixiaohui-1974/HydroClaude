@@ -3,7 +3,7 @@
  * 建模工作台类型定义
  */
 
-import { Node, Edge } from 'reactflow';
+import { Node } from 'reactflow';
 
 // ============= 节点类型枚举 =============
 
