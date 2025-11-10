@@ -5,7 +5,7 @@ import SimulationResults from './SimulationResults';
 import { SimulationResultResponse } from '@/services/api';
 
 const SimulationWorkspace = () => {
-  const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
+  const [_currentTaskId, setCurrentTaskId] = useState<string | null>(null);
   const [simulationResult, setSimulationResult] = useState<SimulationResultResponse | null>(null);
 
   const handleSimulationComplete = (taskId: string, result: SimulationResultResponse) => {

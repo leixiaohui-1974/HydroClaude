@@ -22,7 +22,10 @@ import {
   undo,
   redo,
   toggleComponentPalette,
-  togglePropertyPanel
+  togglePropertyPanel,
+  startValidation,
+  completeValidation,
+  importModel
 } from './store/modelSlice';
 import {
   selectCanUndo,
@@ -32,6 +35,15 @@ import {
   selectCurrentModel,
   selectIsModelEmpty
 } from './store/selectors';
+
+// 导入验证和转换工具
+import { validateModel } from './utils/validator';
+import {
+  convertModelToSimulationConfig,
+  canConvertToSimulation,
+  generateConfigSummary
+} from './utils/converter';
+import { createSimulation } from '@/services/api';
 
 import ComponentPalette from './components/ComponentPalette';
 import ModelCanvas from './components/ModelCanvas';
@@ -113,26 +125,193 @@ const ModelingWorkspace: React.FC = () => {
     message.success('模型已导出');
   };
 
+  // 处理导入
+  const handleImport = () => {
+    // 创建隐藏的文件输入元素
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+
+    input.onchange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      const file = target.files?.[0];
+
+      if (!file) {
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const content = event.target?.result as string;
+          const importedModel = JSON.parse(content);
+
+          // 验证导入的模型格式
+          if (!importedModel.id || !importedModel.nodes || !Array.isArray(importedModel.nodes)) {
+            throw new Error('无效的模型文件格式');
+          }
+
+          // 如果当前有模型且未保存，提示用户
+          if (!isEmpty) {
+            Modal.confirm({
+              title: '确认导入',
+              content: '导入新模型将覆盖当前模型，是否继续？',
+              onOk: () => {
+                dispatch(importModel({ model: importedModel, replace: true }));
+                message.success(`模型"${importedModel.name}"已导入`);
+              }
+            });
+          } else {
+            dispatch(importModel({ model: importedModel, replace: true }));
+            message.success(`模型"${importedModel.name}"已导入`);
+          }
+        } catch (error: any) {
+          console.error('Import error:', error);
+          message.error(`导入失败: ${error.message || '无效的文件格式'}`);
+        }
+      };
+
+      reader.onerror = () => {
+        message.error('读取文件失败');
+      };
+
+      reader.readAsText(file);
+    };
+
+    input.click();
+  };
+
   // 处理验证
   const handleValidate = () => {
-    if (isEmpty) {
+    if (isEmpty || !currentModel) {
       message.warning('模型为空,无法验证');
       return;
     }
 
-    // TODO: 实现完整的验证逻辑
-    message.info('验证功能开发中...');
+    // 开始验证
+    dispatch(startValidation());
+    message.loading({ content: '正在验证模型...', key: 'validation' });
+
+    try {
+      // 执行验证
+      const validationResult = validateModel(currentModel);
+
+      // 更新验证结果
+      dispatch(completeValidation(validationResult));
+
+      // 根据验证结果显示消息
+      if (validationResult.valid) {
+        message.success({ content: '模型验证通过!', key: 'validation', duration: 2 });
+      } else {
+        const errorCount = validationResult.errors.filter(e => e.severity === 'error').length;
+        const warningCount = validationResult.errors.filter(e => e.severity === 'warning').length;
+
+        let content = '模型验证失败: ';
+        if (errorCount > 0) content += `${errorCount} 个错误`;
+        if (warningCount > 0) content += `${errorCount > 0 ? ', ' : ''}${warningCount} 个警告`;
+
+        message.error({ content, key: 'validation', duration: 3 });
+
+        // 显示详细错误信息
+        Modal.error({
+          title: '验证结果',
+          width: 600,
+          content: (
+            <div>
+              {validationResult.errors.map((error, index) => (
+                <div key={index} style={{ marginBottom: 8 }}>
+                  <strong>[{error.severity.toUpperCase()}]</strong> {error.message}
+                  {error.suggestion && (
+                    <div style={{ color: '#666', fontSize: '12px', marginTop: 4 }}>
+                      💡 {error.suggestion}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )
+        });
+      }
+    } catch (error) {
+      console.error('Validation error:', error);
+      message.error({ content: '验证过程中发生错误', key: 'validation' });
+    }
   };
 
   // 处理运行仿真
-  const handleRun = () => {
-    if (isEmpty) {
+  const handleRun = async () => {
+    if (isEmpty || !currentModel) {
       message.warning('模型为空,无法运行');
       return;
     }
 
-    // TODO: 转换模型为仿真配置并运行
-    message.info('仿真功能开发中...');
+    // 检查模型是否可以转换为仿真配置
+    const { canConvert, reason } = canConvertToSimulation(currentModel);
+    if (!canConvert) {
+      message.error(reason || '模型无法转换为仿真配置');
+      return;
+    }
+
+    // 转换模型为仿真配置
+    const simulationRequest = convertModelToSimulationConfig(currentModel);
+    if (!simulationRequest) {
+      message.error('转换模型失败,请检查模型配置');
+      return;
+    }
+
+    // 显示配置摘要并确认
+    const summary = generateConfigSummary(simulationRequest);
+    Modal.confirm({
+      title: '确认运行仿真',
+      width: 600,
+      content: (
+        <div>
+          <p>将使用以下配置运行仿真:</p>
+          <pre style={{
+            backgroundColor: '#f5f5f5',
+            padding: '12px',
+            borderRadius: '4px',
+            fontSize: '12px',
+            maxHeight: '400px',
+            overflow: 'auto'
+          }}>
+            {summary}
+          </pre>
+        </div>
+      ),
+      onOk: async () => {
+        const hideLoading = message.loading('正在创建仿真任务...', 0);
+
+        try {
+          // 调用API创建仿真
+          const simulation = await createSimulation(simulationRequest);
+
+          hideLoading();
+          message.success('仿真任务创建成功!');
+
+          // 显示成功信息
+          Modal.success({
+            title: '仿真任务已创建',
+            content: (
+              <div>
+                <p><strong>任务ID:</strong> {simulation.task_id}</p>
+                <p><strong>状态:</strong> {simulation.status}</p>
+                <p>请切换到"仿真管理"标签页查看运行状态和结果。</p>
+              </div>
+            )
+          });
+        } catch (error: any) {
+          hideLoading();
+          console.error('Simulation creation error:', error);
+
+          const errorMessage = error.response?.data?.detail || error.message || '创建仿真任务失败';
+          Modal.error({
+            title: '创建仿真失败',
+            content: errorMessage
+          });
+        }
+      }
+    });
   };
 
   return (
@@ -157,10 +336,10 @@ const ModelingWorkspace: React.FC = () => {
             </Button>
           </Tooltip>
 
-          <Tooltip title="导入模型 (开发中)">
+          <Tooltip title="导入模型">
             <Button
               icon={<FolderOpenOutlined />}
-              disabled
+              onClick={handleImport}
             >
               导入
             </Button>

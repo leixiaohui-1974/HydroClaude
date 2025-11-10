@@ -30,7 +30,7 @@ const SimulationConfigForm = ({ onSimulationComplete }: SimulationConfigFormProp
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
+  const [_currentTaskId, setCurrentTaskId] = useState<string | null>(null);
 
   // Poll simulation status
   const pollSimulationStatus = async (taskId: string) => {

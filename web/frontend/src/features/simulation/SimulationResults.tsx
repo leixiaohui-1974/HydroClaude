@@ -3,7 +3,7 @@ import { Card, Descriptions, Slider, Space, Tag, Typography } from 'antd';
 import Plot from 'react-plotly.js';
 import { SimulationResultResponse } from '@/services/api';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 interface SimulationResultsProps {
   result: SimulationResultResponse;
