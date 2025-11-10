@@ -133,6 +133,21 @@ async def startup_event():
     logger.info("Documentation: http://localhost:8000/api/docs")
     logger.info("=" * 60)
 
+    # Initialize database
+    import sys
+    import os
+    backend_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if backend_path not in sys.path:
+        sys.path.insert(0, backend_path)
+
+    from shared.database import init_db
+    try:
+        init_db()
+        logger.info("Database initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize database: {e}")
+        raise
+
 
 # Shutdown event
 @app.on_event("shutdown")
