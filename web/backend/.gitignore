@@ -32,3 +32,6 @@ logs/
 htmlcov/
 .coverage
 .pytest_cache/
+
+# Test reports
+tests/test_report_*.json
