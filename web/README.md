@@ -54,55 +54,67 @@ web/
 
 ### 前置要求
 
-- Node.js >= 18.0
 - Python >= 3.10
-- Docker >= 20.0
-- PostgreSQL >= 15
-- Redis >= 7.0
+- FastAPI, uvicorn, pydantic, httpx (已安装)
 
-### 开发环境搭建
+### 启动后端API服务器
 
 ```bash
-# 1. 初始化项目
-cd /home/user/HydroClaude/web
-./scripts/setup.sh
+# 方法1: 使用启动脚本（推荐）
+cd /home/user/HydroClaude/web/backend
+./start_server.sh --reload
 
-# 2. 启动开发环境
-./scripts/dev.sh
+# 方法2: 直接运行
+cd /home/user/HydroClaude/web/backend/api_gateway
+python main.py
 
-# 3. 访问应用
-# 前端: http://localhost:3000
-# 后端: http://localhost:8000
-# API文档: http://localhost:8000/docs
+# 方法3: 使用uvicorn
+cd /home/user/HydroClaude/web/backend/api_gateway
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### 手动启动
+### 访问API文档
 
-#### 前端开发
+服务器启动后，打开浏览器访问：
+- **Swagger UI**: http://localhost:8000/api/docs
+- **ReDoc**: http://localhost:8000/api/redoc
+- **健康检查**: http://localhost:8000/health
+
+### 运行测试
 
 ```bash
-cd frontend
-npm install
-npm run dev
+cd /home/user/HydroClaude/web/backend/api_gateway
+python test_api.py
 ```
 
-#### 后端开发
+### API使用示例
+
+#### 创建仿真任务
 
 ```bash
-cd backend
-pip install -r requirements.txt
-uvicorn api_gateway.main:app --reload --host 0.0.0.0 --port 8000
+curl -X POST "http://localhost:8000/api/v1/simulations" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Uniform Flow Test",
+    "config": {
+      "width": 10.0,
+      "length": 1000.0,
+      "n_cells": 100,
+      "t_end": 10.0,
+      "initial_conditions": {
+        "type": "uniform",
+        "h": 5.0,
+        "Q": 0.0
+      }
+    }
+  }'
 ```
 
-#### 数据库
+#### 查询结果
 
 ```bash
-# 启动PostgreSQL和Redis
-docker-compose up -d db redis
-
-# 运行数据库迁移
-cd backend
-alembic upgrade head
+# 获取task_id后查询结果
+curl "http://localhost:8000/api/v1/simulations/{task_id}/results"
 ```
 
 ## 📚 文档
@@ -114,29 +126,32 @@ alembic upgrade head
 
 ## 🏗️ 开发进度
 
-- [ ] Phase 1: 基础架构（1-3个月）
-  - [ ] 前后端框架搭建
-  - [ ] 数据库设计与实现
-  - [ ] 核心API开发
-  - [ ] 用户认证系统
+### ✅ Milestone 1.1: 技术验证（Week 1-2）- **已完成**
 
-- [ ] Phase 2: 核心功能（4-6个月）
-  - [ ] 建模工作台
-  - [ ] 仿真引擎集成
-  - [ ] 基础可视化
-  - [ ] 项目管理
+- ✅ 核心引擎封装（`web/backend/core/hydraulic_engine.py`）
+- ✅ FastAPI基础框架（`web/backend/api_gateway/main.py`）
+- ✅ 仿真API端点（5个端点全部实现）
+- ✅ Pydantic数据模型（8个模型定义）
+- ✅ 集成测试（7/7 测试通过）
+- ✅ 端到端验证（质量守恒误差 0.00e+00）
 
-- [ ] Phase 3: 高级功能（7-9个月）
-  - [ ] 3D可视化
-  - [ ] 控制系统
-  - [ ] 高级分析
-  - [ ] 协作功能
+**详细报告**: [MILESTONE_1.1_COMPLETED.md](backend/MILESTONE_1.1_COMPLETED.md)
 
-- [ ] Phase 4: 商业化（10-12个月）
-  - [ ] 性能优化
-  - [ ] 安全加固
-  - [ ] 许可证系统
-  - [ ] 文档培训
+### 🔄 Milestone 1.2: MVP - 明渠基础（Week 3-6）- **进行中**
+
+- [ ] 前端React项目搭建
+- [ ] 仿真配置界面
+- [ ] 结果可视化（2D图表）
+- [ ] 数据持久化（SQLite/PostgreSQL）
+- [ ] 任务队列（Celery）
+- [ ] 3个标准测试案例通过
+
+### 📋 后续里程碑
+
+- [ ] Milestone 1.3-1.7: 明渠高级功能、管道、混合系统、3D可视化
+- [ ] Phase 2: 全面测试与验证（65个测试案例）
+- [ ] Phase 3: 控制系统
+- [ ] Phase 4: 辨识系统
 
 ## 🛠️ 技术栈
 
