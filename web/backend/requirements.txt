@@ -1,0 +1,37 @@
+# Web框架
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# 数据库
+sqlalchemy==2.0.23
+alembic==1.12.1
+psycopg2-binary==2.9.9
+asyncpg==0.29.0
+
+# 验证
+pydantic==2.5.0
+pydantic-settings==2.1.0
+email-validator==2.1.0
+
+# 认证
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# 缓存和任务队列
+redis==5.0.1
+celery==5.3.4
+
+# 工具
+python-dotenv==1.0.0
+httpx==0.25.2
+
+# HydroClaude核心依赖
+numpy>=1.24.0
+scipy>=1.11.0
+matplotlib>=3.7.0
+
+# 测试
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
