@@ -1,0 +1,15 @@
+#root {
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.ant-layout-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.ant-layout-content {
+  background: #f0f2f5;
+}
