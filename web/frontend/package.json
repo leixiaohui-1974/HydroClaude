@@ -10,18 +10,26 @@
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "@ant-design/icons": "^5.2.6",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@hookform/resolvers": "^5.2.2",
+    "@reduxjs/toolkit": "^2.10.1",
     "antd": "^5.11.5",
     "axios": "^1.6.2",
     "plotly.js": "^2.27.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.66.0",
     "react-plotly.js": "^2.6.0",
-    "@ant-design/icons": "^5.2.6"
+    "react-redux": "^9.2.0",
+    "reactflow": "^11.11.4",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
+    "@types/plotly.js": "^2.12.29",
     "@types/react": "^18.2.42",
     "@types/react-dom": "^18.2.17",
-    "@types/plotly.js": "^2.12.29",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
     "@vitejs/plugin-react": "^4.2.1",
