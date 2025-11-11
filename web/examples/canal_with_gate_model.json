@@ -1,0 +1,147 @@
+{
+  "id": "model_canal_gate_001",
+  "name": "明渠+闸门控制模型",
+  "description": "包含闸门控制的明渠系统：上游边界 → 明渠1 → 闸门 → 明渠2 → 下游边界",
+  "created_at": "2025-11-11T00:00:00.000Z",
+  "updated_at": "2025-11-11T00:00:00.000Z",
+  "nodes": [
+    {
+      "id": "node_upstream",
+      "type": "boundary_flow",
+      "position": {
+        "x": 100,
+        "y": 300
+      },
+      "data": {
+        "name": "上游流量Q=150m³/s",
+        "boundary_type": "flow",
+        "value": 150.0,
+        "position": "upstream",
+        "validated": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "node_canal_1",
+      "type": "canal",
+      "position": {
+        "x": 300,
+        "y": 300
+      },
+      "data": {
+        "name": "上游明渠段",
+        "width": 12.0,
+        "length": 1500.0,
+        "slope": 0.002,
+        "manning_n": 0.025,
+        "n_cells": 150,
+        "initial_depth": 4.0,
+        "initial_discharge": 150.0,
+        "validated": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "node_gate",
+      "type": "gate",
+      "position": {
+        "x": 500,
+        "y": 300
+      },
+      "data": {
+        "name": "控制闸门",
+        "opening": 0.7,
+        "discharge_coeff": 0.6,
+        "width": 12.0,
+        "validated": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "node_canal_2",
+      "type": "canal",
+      "position": {
+        "x": 700,
+        "y": 300
+      },
+      "data": {
+        "name": "下游明渠段",
+        "width": 12.0,
+        "length": 1000.0,
+        "slope": 0.001,
+        "manning_n": 0.03,
+        "n_cells": 100,
+        "initial_depth": 3.5,
+        "initial_discharge": 150.0,
+        "validated": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "node_downstream",
+      "type": "boundary_depth",
+      "position": {
+        "x": 900,
+        "y": 300
+      },
+      "data": {
+        "name": "下游水深h=3.5m",
+        "boundary_type": "depth",
+        "value": 3.5,
+        "position": "downstream",
+        "validated": true,
+        "errors": [],
+        "warnings": []
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_1",
+      "source": "node_upstream",
+      "target": "node_canal_1",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "edge_2",
+      "source": "node_canal_1",
+      "target": "node_gate",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "edge_3",
+      "source": "node_gate",
+      "target": "node_canal_2",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "type": "smoothstep",
+      "animated": true
+    },
+    {
+      "id": "edge_4",
+      "source": "node_canal_2",
+      "target": "node_downstream",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "type": "smoothstep",
+      "animated": true
+    }
+  ],
+  "metadata": {
+    "version": "1.3.0",
+    "author": "Claude",
+    "tags": ["测试", "闸门控制", "复杂模型"],
+    "simulation_ready": true,
+    "notes": "此模型可用于测试闸门控制对水流的影响"
+  }
+}

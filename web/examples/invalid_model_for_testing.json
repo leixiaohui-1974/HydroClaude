@@ -1,0 +1,67 @@
+{
+  "id": "model_invalid_test_001",
+  "name": "验证测试模型（包含错误）",
+  "description": "用于测试验证功能的模型，包含多种验证错误",
+  "created_at": "2025-11-11T00:00:00.000Z",
+  "updated_at": "2025-11-11T00:00:00.000Z",
+  "nodes": [
+    {
+      "id": "node_canal_1",
+      "type": "canal",
+      "position": {
+        "x": 200,
+        "y": 200
+      },
+      "data": {
+        "name": "孤立明渠",
+        "width": 10.0,
+        "length": 1000.0,
+        "slope": 0.001,
+        "manning_n": 0.025,
+        "n_cells": 100,
+        "initial_depth": 5.0,
+        "initial_discharge": 0.0,
+        "validated": false,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "node_canal_2",
+      "type": "canal",
+      "position": {
+        "x": 500,
+        "y": 200
+      },
+      "data": {
+        "name": "无效参数明渠",
+        "width": -5.0,
+        "length": 0.5,
+        "slope": 0.5,
+        "manning_n": 0.5,
+        "n_cells": 5,
+        "initial_depth": -2.0,
+        "initial_discharge": 0.0,
+        "validated": false,
+        "errors": [],
+        "warnings": []
+      }
+    }
+  ],
+  "edges": [],
+  "metadata": {
+    "version": "1.3.0",
+    "author": "Claude",
+    "tags": ["测试", "验证", "错误模型"],
+    "simulation_ready": false,
+    "expected_errors": [
+      "孤立节点",
+      "宽度必须大于0",
+      "长度超出范围",
+      "坡度超出范围",
+      "曼宁系数超出范围",
+      "网格数太少",
+      "初始水深为负"
+    ]
+  }
+}
