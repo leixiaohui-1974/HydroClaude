@@ -54,7 +54,9 @@ describe('Plot3D', () => {
       const plot = screen.getByTestId('plotly-plot');
       const layout = JSON.parse(plot.getAttribute('data-plot-layout') || '{}');
 
-      expect(layout.title).toContain('自定义标题');
+      // Layout.title can be either a string or an object with text property
+      const titleText = typeof layout.title === 'string' ? layout.title : layout.title?.text;
+      expect(titleText).toContain('自定义标题');
     });
 
     it('should render color scheme selector', () => {

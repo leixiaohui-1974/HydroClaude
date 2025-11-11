@@ -44,18 +44,21 @@ describe('EnhancedCharts', () => {
     it('should render all chart sections', () => {
       render(<EnhancedCharts {...defaultProps} />);
 
-      // Check for chart titles
-      expect(screen.getByText(/等值线图/i)).toBeInTheDocument();
-      expect(screen.getByText(/热力图/i)).toBeInTheDocument();
-      expect(screen.getByText(/时间序列/i)).toBeInTheDocument();
-      expect(screen.getByText(/统计分析/i)).toBeInTheDocument();
+      // Check for tab buttons using role queries to avoid ambiguity
+      expect(screen.getByRole('tab', { name: /等值线图/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /🔥 热力图/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /流量热力图/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /时间序列/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /统计分析/i })).toBeInTheDocument();
     });
 
     it('should render all plotly plots', () => {
       render(<EnhancedCharts {...defaultProps} />);
 
+      // EnhancedCharts uses Tabs, so only the active tab's plot is rendered
+      // The first tab (Contour Plot) should be active by default
       const plots = screen.getAllByTestId('plotly-plot');
-      expect(plots.length).toBeGreaterThan(4); // Contour, 2 heatmaps, time series, 2 stats
+      expect(plots.length).toBeGreaterThanOrEqual(1); // At least the default tab's plot
     });
 
     it('should render color scheme selector', () => {
@@ -124,89 +127,106 @@ describe('EnhancedCharts', () => {
   });
 
   describe('Heatmap - Velocity', () => {
-    it('should render velocity heatmap with correct data', () => {
+    it('should render velocity heatmap with correct data', async () => {
       render(<EnhancedCharts {...defaultProps} />);
 
-      const plots = screen.getAllByTestId('plotly-plot');
-      const velocityHeatmap = plots[1]; // Second plot should be velocity heatmap
+      // Click on heatmap tab to activate it
+      const heatmapTab = screen.getByRole('tab', { name: /🔥 热力图/i });
+      await user.click(heatmapTab);
 
-      const data = JSON.parse(velocityHeatmap.getAttribute('data-plot-data') || '[]');
+      const plot = screen.getByTestId('plotly-plot');
+      const data = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
       expect(data[0].type).toBe('heatmap');
       expect(data[0].z).toEqual(mockV);
     });
 
-    it('should have correct title for velocity', () => {
+    it('should have correct title for velocity', async () => {
       render(<EnhancedCharts {...defaultProps} />);
 
-      const plots = screen.getAllByTestId('plotly-plot');
-      const velocityHeatmap = plots[1];
+      // Click on heatmap tab to activate it
+      const heatmapTab = screen.getByRole('tab', { name: /🔥 热力图/i });
+      await user.click(heatmapTab);
 
-      const layout = JSON.parse(velocityHeatmap.getAttribute('data-plot-layout') || '{}');
+      const plot = screen.getByTestId('plotly-plot');
+      const layout = JSON.parse(plot.getAttribute('data-plot-layout') || '{}');
       expect(layout.title).toContain('流速');
     });
 
-    it('should include color bar for velocity', () => {
+    it('should include color bar for velocity', async () => {
       render(<EnhancedCharts {...defaultProps} />);
 
-      const plots = screen.getAllByTestId('plotly-plot');
-      const velocityHeatmap = plots[1];
+      // Click on heatmap tab to activate it
+      const heatmapTab = screen.getByRole('tab', { name: /🔥 热力图/i });
+      await user.click(heatmapTab);
 
-      const data = JSON.parse(velocityHeatmap.getAttribute('data-plot-data') || '[]');
+      const plot = screen.getByTestId('plotly-plot');
+      const data = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
       expect(data[0].colorbar).toBeDefined();
     });
   });
 
   describe('Heatmap - Discharge', () => {
-    it('should render discharge heatmap with correct data', () => {
+    it('should render discharge heatmap with correct data', async () => {
       render(<EnhancedCharts {...defaultProps} />);
 
-      const plots = screen.getAllByTestId('plotly-plot');
-      const dischargeHeatmap = plots[2]; // Third plot should be discharge heatmap
+      // Click on discharge heatmap tab to activate it
+      const dischargeTab = screen.getByRole('tab', { name: /💧 流量热力图/i });
+      await user.click(dischargeTab);
 
-      const data = JSON.parse(dischargeHeatmap.getAttribute('data-plot-data') || '[]');
+      const plot = screen.getByTestId('plotly-plot');
+      const data = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
       expect(data[0].type).toBe('heatmap');
       expect(data[0].z).toEqual(mockQ);
     });
 
-    it('should have correct title for discharge', () => {
+    it('should have correct title for discharge', async () => {
       render(<EnhancedCharts {...defaultProps} />);
 
-      const plots = screen.getAllByTestId('plotly-plot');
-      const dischargeHeatmap = plots[2];
+      // Click on discharge heatmap tab to activate it
+      const dischargeTab = screen.getByRole('tab', { name: /💧 流量热力图/i });
+      await user.click(dischargeTab);
 
-      const layout = JSON.parse(dischargeHeatmap.getAttribute('data-plot-layout') || '{}');
+      const plot = screen.getByTestId('plotly-plot');
+
+      const layout = JSON.parse(plot.getAttribute('data-plot-layout') || '{}');
       expect(layout.title).toContain('流量');
     });
   });
 
   describe('Time Series Plot', () => {
-    it('should render time series with all three variables', () => {
+    it('should render time series with all three variables', async () => {
       render(<EnhancedCharts {...defaultProps} />);
 
-      const plots = screen.getAllByTestId('plotly-plot');
-      const timeSeriesPlot = plots[3]; // Fourth plot should be time series
+      // Click on time series tab to activate it
+      const timeSeriesTab = screen.getByRole('tab', { name: /📈 时间序列/i });
+      await user.click(timeSeriesTab);
 
-      const data = JSON.parse(timeSeriesPlot.getAttribute('data-plot-data') || '[]');
+      const plot = screen.getByTestId('plotly-plot');
+      const data = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
       expect(data).toHaveLength(3); // h, V, Q
     });
 
-    it('should show data for middle location by default', () => {
+    it('should show data for middle location by default', async () => {
       render(<EnhancedCharts {...defaultProps} />);
 
-      const plots = screen.getAllByTestId('plotly-plot');
-      const timeSeriesPlot = plots[3];
+      // Click on time series tab to activate it
+      const timeSeriesTab = screen.getByRole('tab', { name: /📈 时间序列/i });
+      await user.click(timeSeriesTab);
 
-      const layout = JSON.parse(timeSeriesPlot.getAttribute('data-plot-layout') || '{}');
+      const plot = screen.getByTestId('plotly-plot');
+      const layout = JSON.parse(plot.getAttribute('data-plot-layout') || '{}');
       expect(layout.title).toContain('x = 20'); // Middle position
     });
 
-    it('should have three y-axes for different variables', () => {
+    it('should have three y-axes for different variables', async () => {
       render(<EnhancedCharts {...defaultProps} />);
 
-      const plots = screen.getAllByTestId('plotly-plot');
-      const timeSeriesPlot = plots[3];
+      // Click on time series tab to activate it
+      const timeSeriesTab = screen.getByRole('tab', { name: /📈 时间序列/i });
+      await user.click(timeSeriesTab);
 
-      const layout = JSON.parse(timeSeriesPlot.getAttribute('data-plot-layout') || '{}');
+      const plot = screen.getByTestId('plotly-plot');
+      const layout = JSON.parse(plot.getAttribute('data-plot-layout') || '{}');
       expect(layout.yaxis).toBeDefined();
       expect(layout.yaxis2).toBeDefined();
       expect(layout.yaxis3).toBeDefined();
@@ -560,11 +580,12 @@ describe('EnhancedCharts', () => {
     it('should provide visual grouping for chart sections', () => {
       render(<EnhancedCharts {...defaultProps} />);
 
-      // Check for Card titles which provide semantic grouping
-      expect(screen.getByText(/等值线图/i)).toBeInTheDocument();
-      expect(screen.getByText(/热力图/i)).toBeInTheDocument();
-      expect(screen.getByText(/时间序列/i)).toBeInTheDocument();
-      expect(screen.getByText(/统计分析/i)).toBeInTheDocument();
+      // Check for tab buttons which provide semantic grouping
+      expect(screen.getByRole('tab', { name: /📊 等值线图/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /🔥 热力图/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /💧 流量热力图/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /📈 时间序列/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /📊 统计分析/i })).toBeInTheDocument();
     });
   });
 });

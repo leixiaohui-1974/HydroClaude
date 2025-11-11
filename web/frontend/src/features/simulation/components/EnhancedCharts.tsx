@@ -36,10 +36,10 @@ const EnhancedCharts = ({ x, time, h, V, Q }: EnhancedChartsProps) => {
 
   // Calculate statistics
   const statistics = useMemo(() => {
-    const maxDepth = h.map(frame => Math.max(...frame));
-    const meanDepth = h.map(frame => frame.reduce((a, b) => a + b, 0) / frame.length);
-    const maxVelocity = V.map(frame => Math.max(...frame));
-    const meanVelocity = V.map(frame => frame.reduce((a, b) => a + b, 0) / frame.length);
+    const maxDepth = h.map(frame => frame.length > 0 ? Math.max(...frame) : 0);
+    const meanDepth = h.map(frame => frame.length > 0 ? frame.reduce((a, b) => a + b, 0) / frame.length : 0);
+    const maxVelocity = V.map(frame => frame.length > 0 ? Math.max(...frame) : 0);
+    const meanVelocity = V.map(frame => frame.length > 0 ? frame.reduce((a, b) => a + b, 0) / frame.length : 0);
 
     return {
       maxDepth,
@@ -168,7 +168,9 @@ const EnhancedCharts = ({ x, time, h, V, Q }: EnhancedChartsProps) => {
       }
     ],
     layout: {
-      title: `位置 x = ${x[selectedLocation].toFixed(1)} m 的时间序列`,
+      title: x.length > 0 && selectedLocation < x.length
+        ? `位置 x = ${x[selectedLocation].toFixed(1)} m 的时间序列`
+        : '时间序列',
       xaxis: {
         title: '时间 (s)',
         showgrid: true,
@@ -409,16 +411,18 @@ const EnhancedCharts = ({ x, time, h, V, Q }: EnhancedChartsProps) => {
               <Col span={18}>
                 <Slider
                   min={0}
-                  max={x.length - 1}
+                  max={Math.max(0, x.length - 1)}
                   value={selectedLocation}
                   onChange={setSelectedLocation}
-                  marks={{
+                  marks={x.length > 0 ? {
                     0: `${x[0].toFixed(0)}m`,
                     [Math.floor(x.length / 2)]: `${x[Math.floor(x.length / 2)].toFixed(0)}m`,
                     [x.length - 1]: `${x[x.length - 1].toFixed(0)}m`
-                  }}
+                  } : {}}
                   tooltip={{
-                    formatter: (value) => `位置: ${x[value || 0].toFixed(1)} m`
+                    formatter: (value) => x.length > 0 && value !== undefined && value < x.length
+                      ? `位置: ${x[value].toFixed(1)} m`
+                      : '位置: --'
                   }}
                 />
               </Col>
