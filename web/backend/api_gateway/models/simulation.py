@@ -2,7 +2,7 @@
 Pydantic models for simulation API
 """
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import Optional, List, Dict, Any, Literal
 from datetime import datetime
 
@@ -70,14 +70,14 @@ class InitialConditionConfig(BaseModel):
 
 class SimulationConfig(BaseModel):
     """Canal simulation configuration"""
-    # Geometry
-    width: float = Field(10.0, gt=0, description="Channel width (m)")
-    length: float = Field(1000.0, gt=0, description="Channel length (m)")
-    n_cells: int = Field(100, ge=10, le=10000, description="Number of computational cells")
+    # Geometry - REQUIRED fields (no defaults for critical parameters)
+    width: float = Field(..., gt=0, le=1000, description="Channel width (m) - REQUIRED")
+    length: float = Field(..., gt=0, le=100000, description="Channel length (m) - REQUIRED")
+    n_cells: int = Field(..., ge=10, le=10000, description="Number of computational cells - REQUIRED")
 
     # Physical parameters
-    manning_n: float = Field(0.0, ge=0, le=0.1, description="Manning's roughness coefficient")
-    slope: float = Field(0.0, ge=0, le=0.1, description="Channel bed slope")
+    manning_n: float = Field(0.025, ge=0.001, le=0.1, description="Manning's roughness coefficient")
+    slope: float = Field(0.001, ge=0, le=0.1, description="Channel bed slope")
 
     # Numerical parameters
     cfl: float = Field(0.5, gt=0, le=1.0, description="CFL number for stability")
@@ -89,15 +89,98 @@ class SimulationConfig(BaseModel):
     dt_max: float = Field(0.1, gt=0, description="Maximum time step (s)")
     output_interval: float = Field(0.5, gt=0, description="Output data interval (s)")
 
-    # Initial and boundary conditions
+    # Initial and boundary conditions - REQUIRED
     initial_conditions: InitialConditionConfig = Field(
-        default_factory=InitialConditionConfig,
-        description="Initial conditions"
+        ...,
+        description="Initial conditions - REQUIRED"
     )
     boundary_conditions: BoundaryConditionConfig = Field(
-        default_factory=BoundaryConditionConfig,
-        description="Boundary conditions"
+        ...,
+        description="Boundary conditions - REQUIRED"
     )
+
+    @model_validator(mode='after')
+    def validate_simulation_config(self):
+        """Validate overall configuration consistency"""
+        # Check dx (spatial resolution)
+        dx = self.length / self.n_cells
+        if dx < 0.1:
+            raise ValueError(
+                f"Spatial resolution too fine: dx={dx:.3f}m. "
+                f"Consider reducing n_cells or increasing length."
+            )
+        if dx > 1000:
+            raise ValueError(
+                f"Spatial resolution too coarse: dx={dx:.1f}m. "
+                f"Consider increasing n_cells or reducing length."
+            )
+
+        # Check CFL for high order
+        if self.order == 2 and self.cfl > 0.5:
+            raise ValueError(
+                f"CFL={self.cfl} is too high for 2nd order scheme. "
+                f"Recommend CFL <= 0.5 for stability."
+            )
+
+        # Validate boundary conditions have values when needed
+        if self.boundary_conditions.upstream.type in ['h', 'Q']:
+            if self.boundary_conditions.upstream.value is None:
+                raise ValueError(
+                    f"Upstream boundary type '{self.boundary_conditions.upstream.type}' "
+                    f"requires a value"
+                )
+            if self.boundary_conditions.upstream.value < 0:
+                raise ValueError(
+                    f"Upstream boundary value must be non-negative, "
+                    f"got {self.boundary_conditions.upstream.value}"
+                )
+
+        if self.boundary_conditions.downstream.type in ['h', 'Q']:
+            if self.boundary_conditions.downstream.value is None:
+                raise ValueError(
+                    f"Downstream boundary type '{self.boundary_conditions.downstream.type}' "
+                    f"requires a value"
+                )
+            if self.boundary_conditions.downstream.value < 0:
+                raise ValueError(
+                    f"Downstream boundary value must be non-negative, "
+                    f"got {self.boundary_conditions.downstream.value}"
+                )
+
+        # Validate initial conditions
+        if self.initial_conditions.type == 'uniform':
+            if self.initial_conditions.h is None or self.initial_conditions.h <= 0:
+                raise ValueError(
+                    f"Uniform initial condition requires positive water depth, "
+                    f"got h={self.initial_conditions.h}"
+                )
+            if self.initial_conditions.Q is None:
+                raise ValueError("Uniform initial condition requires discharge Q")
+
+        elif self.initial_conditions.type == 'dam_break':
+            if any(x is None for x in [
+                self.initial_conditions.dam_position,
+                self.initial_conditions.h_left,
+                self.initial_conditions.h_right
+            ]):
+                raise ValueError(
+                    "Dam break initial condition requires: "
+                    "dam_position, h_left, and h_right"
+                )
+            if self.initial_conditions.h_left <= 0 or self.initial_conditions.h_right <= 0:
+                raise ValueError(
+                    f"Dam break water depths must be positive: "
+                    f"h_left={self.initial_conditions.h_left}, "
+                    f"h_right={self.initial_conditions.h_right}"
+                )
+            # Check dam position is within channel
+            if not (0 < self.initial_conditions.dam_position < self.length):
+                raise ValueError(
+                    f"Dam position {self.initial_conditions.dam_position}m must be "
+                    f"between 0 and {self.length}m"
+                )
+
+        return self
 
     class Config:
         schema_extra = {
