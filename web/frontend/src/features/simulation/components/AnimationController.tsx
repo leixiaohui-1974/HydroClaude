@@ -130,6 +130,7 @@ const AnimationController = ({
             onClick={handleSkipBackward}
             disabled={currentFrame === 0}
             size="small"
+            aria-label="快退10%"
           />
         </Tooltip>
 
@@ -138,6 +139,7 @@ const AnimationController = ({
             icon={<StepBackwardOutlined />}
             onClick={handleStepBackward}
             disabled={currentFrame === 0}
+            aria-label="上一帧"
           />
         </Tooltip>
 
@@ -148,6 +150,7 @@ const AnimationController = ({
               onClick={handlePause}
               type="primary"
               size="large"
+              aria-label="暂停"
             >
               暂停
             </Button>
@@ -160,6 +163,7 @@ const AnimationController = ({
               type="primary"
               size="large"
               disabled={currentFrame === totalFrames - 1 && !loop}
+              aria-label="播放"
             >
               播放
             </Button>
@@ -170,6 +174,7 @@ const AnimationController = ({
           <Button
             icon={<ReloadOutlined />}
             onClick={handleStop}
+            aria-label="重置"
           >
             重置
           </Button>
@@ -180,6 +185,7 @@ const AnimationController = ({
             icon={<StepForwardOutlined />}
             onClick={handleStepForward}
             disabled={currentFrame === totalFrames - 1}
+            aria-label="下一帧"
           />
         </Tooltip>
 
@@ -189,6 +195,7 @@ const AnimationController = ({
             onClick={handleSkipForward}
             disabled={currentFrame === totalFrames - 1}
             size="small"
+            aria-label="快进10%"
           />
         </Tooltip>
       </Space>
