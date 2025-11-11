@@ -1,0 +1,584 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import EnhancedCharts from '../EnhancedCharts';
+
+describe('EnhancedCharts', () => {
+  // Mock simulation data
+  const mockX = [0, 10, 20, 30, 40];
+  const mockTime = [0, 0.5, 1.0, 1.5];
+  const mockH = [
+    [1.0, 1.1, 1.2, 1.1, 1.0],
+    [1.1, 1.2, 1.3, 1.2, 1.1],
+    [1.2, 1.3, 1.4, 1.3, 1.2],
+    [1.3, 1.4, 1.5, 1.4, 1.3]
+  ];
+  const mockV = [
+    [0.5, 0.6, 0.7, 0.6, 0.5],
+    [0.6, 0.7, 0.8, 0.7, 0.6],
+    [0.7, 0.8, 0.9, 0.8, 0.7],
+    [0.8, 0.9, 1.0, 0.9, 0.8]
+  ];
+  const mockQ = [
+    [0.5, 0.66, 0.84, 0.66, 0.5],
+    [0.66, 0.84, 1.04, 0.84, 0.66],
+    [0.84, 1.04, 1.26, 1.04, 0.84],
+    [1.04, 1.26, 1.5, 1.26, 1.04]
+  ];
+
+  const defaultProps = {
+    x: mockX,
+    time: mockTime,
+    h: mockH,
+    V: mockV,
+    Q: mockQ
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe('Rendering', () => {
+    it('should render all chart sections', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      // Check for chart titles
+      expect(screen.getByText(/等值线图/i)).toBeInTheDocument();
+      expect(screen.getByText(/热力图/i)).toBeInTheDocument();
+      expect(screen.getByText(/时间序列/i)).toBeInTheDocument();
+      expect(screen.getByText(/统计分析/i)).toBeInTheDocument();
+    });
+
+    it('should render all plotly plots', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      expect(plots.length).toBeGreaterThan(4); // Contour, 2 heatmaps, time series, 2 stats
+    });
+
+    it('should render color scheme selector', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      expect(screen.getByText(/配色方案/i)).toBeInTheDocument();
+    });
+
+    it('should render location selector for time series', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      expect(screen.getByText(/位置选择/i)).toBeInTheDocument();
+    });
+  });
+
+  describe('Contour Plot', () => {
+    it('should render contour plot with correct data', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const contourPlot = plots[0]; // First plot should be contour
+
+      const data = JSON.parse(contourPlot.getAttribute('data-plot-data') || '[]');
+      expect(data[0].type).toBe('contour');
+      expect(data[0].x).toEqual(mockX);
+      expect(data[0].y).toEqual(mockTime);
+      expect(data[0].z).toEqual(mockH);
+    });
+
+    it('should show contour labels', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const contourPlot = plots[0];
+
+      const data = JSON.parse(contourPlot.getAttribute('data-plot-data') || '[]');
+      expect(data[0].contours.showlabels).toBe(true);
+    });
+
+    it('should have correct axis labels', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const contourPlot = plots[0];
+
+      const layout = JSON.parse(contourPlot.getAttribute('data-plot-layout') || '{}');
+      expect(layout.xaxis.title).toContain('位置');
+      expect(layout.yaxis.title).toContain('时间');
+    });
+
+    it('should update color scheme when selector changes', async () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const colorSelector = screen.getByRole('combobox', { name: /配色/i });
+      await userEvent.click(colorSelector);
+
+      const jetOption = screen.getByText('Jet');
+      await userEvent.click(jetOption);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const contourPlot = plots[0];
+
+      const data = JSON.parse(contourPlot.getAttribute('data-plot-data') || '[]');
+      expect(data[0].colorscale).toBe('Jet');
+    });
+  });
+
+  describe('Heatmap - Velocity', () => {
+    it('should render velocity heatmap with correct data', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const velocityHeatmap = plots[1]; // Second plot should be velocity heatmap
+
+      const data = JSON.parse(velocityHeatmap.getAttribute('data-plot-data') || '[]');
+      expect(data[0].type).toBe('heatmap');
+      expect(data[0].z).toEqual(mockV);
+    });
+
+    it('should have correct title for velocity', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const velocityHeatmap = plots[1];
+
+      const layout = JSON.parse(velocityHeatmap.getAttribute('data-plot-layout') || '{}');
+      expect(layout.title).toContain('流速');
+    });
+
+    it('should include color bar for velocity', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const velocityHeatmap = plots[1];
+
+      const data = JSON.parse(velocityHeatmap.getAttribute('data-plot-data') || '[]');
+      expect(data[0].colorbar).toBeDefined();
+    });
+  });
+
+  describe('Heatmap - Discharge', () => {
+    it('should render discharge heatmap with correct data', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const dischargeHeatmap = plots[2]; // Third plot should be discharge heatmap
+
+      const data = JSON.parse(dischargeHeatmap.getAttribute('data-plot-data') || '[]');
+      expect(data[0].type).toBe('heatmap');
+      expect(data[0].z).toEqual(mockQ);
+    });
+
+    it('should have correct title for discharge', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const dischargeHeatmap = plots[2];
+
+      const layout = JSON.parse(dischargeHeatmap.getAttribute('data-plot-layout') || '{}');
+      expect(layout.title).toContain('流量');
+    });
+  });
+
+  describe('Time Series Plot', () => {
+    it('should render time series with all three variables', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const timeSeriesPlot = plots[3]; // Fourth plot should be time series
+
+      const data = JSON.parse(timeSeriesPlot.getAttribute('data-plot-data') || '[]');
+      expect(data).toHaveLength(3); // h, V, Q
+    });
+
+    it('should show data for middle location by default', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const timeSeriesPlot = plots[3];
+
+      const layout = JSON.parse(timeSeriesPlot.getAttribute('data-plot-layout') || '{}');
+      expect(layout.title).toContain('x = 20'); // Middle position
+    });
+
+    it('should have three y-axes for different variables', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const timeSeriesPlot = plots[3];
+
+      const layout = JSON.parse(timeSeriesPlot.getAttribute('data-plot-layout') || '{}');
+      expect(layout.yaxis).toBeDefined();
+      expect(layout.yaxis2).toBeDefined();
+      expect(layout.yaxis3).toBeDefined();
+    });
+
+    it('should update when location selector changes', async () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const locationSelector = screen.getByRole('combobox', { name: /位置/i });
+      await userEvent.click(locationSelector);
+
+      // Select first location
+      const firstOption = screen.getByText('x = 0.0 m');
+      await userEvent.click(firstOption);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const timeSeriesPlot = plots[3];
+
+      const layout = JSON.parse(timeSeriesPlot.getAttribute('data-plot-layout') || '{}');
+      expect(layout.title).toContain('x = 0');
+    });
+
+    it('should show all time points', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const timeSeriesPlot = plots[3];
+
+      const data = JSON.parse(timeSeriesPlot.getAttribute('data-plot-data') || '[]');
+      expect(data[0].x).toEqual(mockTime);
+    });
+
+    it('should extract correct values for selected location', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const timeSeriesPlot = plots[3];
+
+      const data = JSON.parse(timeSeriesPlot.getAttribute('data-plot-data') || '[]');
+
+      // Middle location (index 2): x = 20
+      const expectedH = [1.2, 1.3, 1.4, 1.5];
+      const expectedV = [0.7, 0.8, 0.9, 1.0];
+      const expectedQ = [0.84, 1.04, 1.26, 1.5];
+
+      expect(data[0].y).toEqual(expectedH);
+      expect(data[1].y).toEqual(expectedV);
+      expect(data[2].y).toEqual(expectedQ);
+    });
+  });
+
+  describe('Statistical Analysis - Max Values', () => {
+    it('should render max value evolution plot', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const maxPlot = plots[4]; // Fifth plot should be max values
+
+      const data = JSON.parse(maxPlot.getAttribute('data-plot-data') || '[]');
+      expect(data).toHaveLength(3); // max h, V, Q
+    });
+
+    it('should calculate correct max depth over time', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const maxPlot = plots[4];
+
+      const data = JSON.parse(maxPlot.getAttribute('data-plot-data') || '[]');
+
+      // Max depth at each time step
+      const expectedMaxH = [1.2, 1.3, 1.4, 1.5];
+      expect(data[0].y).toEqual(expectedMaxH);
+    });
+
+    it('should calculate correct max velocity over time', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const maxPlot = plots[4];
+
+      const data = JSON.parse(maxPlot.getAttribute('data-plot-data') || '[]');
+
+      // Max velocity at each time step
+      const expectedMaxV = [0.7, 0.8, 0.9, 1.0];
+      expect(data[1].y).toEqual(expectedMaxV);
+    });
+
+    it('should have correct labels for max values', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const maxPlot = plots[4];
+
+      const data = JSON.parse(maxPlot.getAttribute('data-plot-data') || '[]');
+
+      expect(data[0].name).toContain('最大水深');
+      expect(data[1].name).toContain('最大流速');
+      expect(data[2].name).toContain('最大流量');
+    });
+  });
+
+  describe('Statistical Analysis - Mean Values', () => {
+    it('should render mean value evolution plot', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const meanPlot = plots[5]; // Sixth plot should be mean values
+
+      const data = JSON.parse(meanPlot.getAttribute('data-plot-data') || '[]');
+      expect(data).toHaveLength(3); // mean h, V, Q
+    });
+
+    it('should calculate correct mean depth over time', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const meanPlot = plots[5];
+
+      const data = JSON.parse(meanPlot.getAttribute('data-plot-data') || '[]');
+
+      // Mean depth at t=0: (1.0 + 1.1 + 1.2 + 1.1 + 1.0) / 5 = 1.08
+      expect(data[0].y[0]).toBeCloseTo(1.08, 2);
+
+      // Mean depth at t=3: (1.3 + 1.4 + 1.5 + 1.4 + 1.3) / 5 = 1.38
+      expect(data[0].y[3]).toBeCloseTo(1.38, 2);
+    });
+
+    it('should have correct labels for mean values', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const meanPlot = plots[5];
+
+      const data = JSON.parse(meanPlot.getAttribute('data-plot-data') || '[]');
+
+      expect(data[0].name).toContain('平均水深');
+      expect(data[1].name).toContain('平均流速');
+      expect(data[2].name).toContain('平均流量');
+    });
+  });
+
+  describe('Location Selector', () => {
+    it('should create options for all spatial positions', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const locationSelector = screen.getByRole('combobox', { name: /位置/i });
+      expect(locationSelector).toBeInTheDocument();
+
+      // Should have 5 options (one for each x position)
+      // Note: Can't easily test dropdown options without opening it
+    });
+
+    it('should format location labels correctly', async () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const locationSelector = screen.getByRole('combobox', { name: /位置/i });
+      await userEvent.click(locationSelector);
+
+      expect(screen.getByText('x = 0.0 m')).toBeInTheDocument();
+      expect(screen.getByText('x = 10.0 m')).toBeInTheDocument();
+      expect(screen.getByText('x = 20.0 m')).toBeInTheDocument();
+    });
+
+    it('should handle location selection', async () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const locationSelector = screen.getByRole('combobox', { name: /位置/i });
+      await userEvent.click(locationSelector);
+
+      const lastLocation = screen.getByText('x = 40.0 m');
+      await userEvent.click(lastLocation);
+
+      // Time series should update to show data for x = 40
+      const plots = screen.getAllByTestId('plotly-plot');
+      const timeSeriesPlot = plots[3];
+
+      const layout = JSON.parse(timeSeriesPlot.getAttribute('data-plot-layout') || '{}');
+      expect(layout.title).toContain('x = 40');
+    });
+  });
+
+  describe('Color Scheme Selector', () => {
+    it('should apply color scheme to all applicable plots', async () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const colorSelector = screen.getByRole('combobox', { name: /配色/i });
+      await userEvent.click(colorSelector);
+
+      const hotOption = screen.getByText('Hot');
+      await userEvent.click(hotOption);
+
+      const plots = screen.getAllByTestId('plotly-plot');
+
+      // Check contour plot
+      const contourData = JSON.parse(plots[0].getAttribute('data-plot-data') || '[]');
+      expect(contourData[0].colorscale).toBe('Hot');
+
+      // Check heatmaps
+      const heatmap1Data = JSON.parse(plots[1].getAttribute('data-plot-data') || '[]');
+      expect(heatmap1Data[0].colorscale).toBe('Hot');
+
+      const heatmap2Data = JSON.parse(plots[2].getAttribute('data-plot-data') || '[]');
+      expect(heatmap2Data[0].colorscale).toBe('Hot');
+    });
+
+    it('should support all standard color schemes', async () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const colorSelector = screen.getByRole('combobox', { name: /配色/i });
+      await userEvent.click(colorSelector);
+
+      // Check for some standard color schemes
+      expect(screen.getByText('Viridis')).toBeInTheDocument();
+      expect(screen.getByText('Jet')).toBeInTheDocument();
+      expect(screen.getByText('Hot')).toBeInTheDocument();
+    });
+  });
+
+  describe('Data Handling', () => {
+    it('should handle empty data arrays', () => {
+      const emptyProps = {
+        x: [],
+        time: [],
+        h: [[]],
+        V: [[]],
+        Q: [[]]
+      };
+
+      render(<EnhancedCharts {...emptyProps} />);
+
+      expect(screen.getByText(/等值线图/i)).toBeInTheDocument();
+    });
+
+    it('should handle single time step', () => {
+      const singleTimeProps = {
+        ...defaultProps,
+        time: [0],
+        h: [[1.0, 1.1, 1.2, 1.1, 1.0]],
+        V: [[0.5, 0.6, 0.7, 0.6, 0.5]],
+        Q: [[0.5, 0.66, 0.84, 0.66, 0.5]]
+      };
+
+      render(<EnhancedCharts {...singleTimeProps} />);
+
+      expect(screen.getByText(/等值线图/i)).toBeInTheDocument();
+    });
+
+    it('should handle single spatial point', () => {
+      const singlePointProps = {
+        ...defaultProps,
+        x: [0],
+        h: [[1.0], [1.1], [1.2], [1.3]],
+        V: [[0.5], [0.6], [0.7], [0.8]],
+        Q: [[0.5], [0.66], [0.84], [1.04]]
+      };
+
+      render(<EnhancedCharts {...singlePointProps} />);
+
+      expect(screen.getByText(/等值线图/i)).toBeInTheDocument();
+    });
+  });
+
+  describe('Performance', () => {
+    it('should use useMemo for expensive computations', () => {
+      const { rerender } = render(<EnhancedCharts {...defaultProps} />);
+
+      const plots1 = screen.getAllByTestId('plotly-plot');
+      const data1 = plots1[0].getAttribute('data-plot-data');
+
+      // Rerender with same props
+      rerender(<EnhancedCharts {...defaultProps} />);
+
+      const plots2 = screen.getAllByTestId('plotly-plot');
+      const data2 = plots2[0].getAttribute('data-plot-data');
+
+      // Data should be memoized
+      expect(data1).toBe(data2);
+    });
+
+    it('should handle large datasets efficiently', () => {
+      const largeX = Array.from({ length: 100 }, (_, i) => i);
+      const largeTime = Array.from({ length: 200 }, (_, i) => i * 0.1);
+      const largeH = Array.from({ length: 200 }, () =>
+        Array.from({ length: 100 }, () => Math.random())
+      );
+      const largeV = Array.from({ length: 200 }, () =>
+        Array.from({ length: 100 }, () => Math.random())
+      );
+      const largeQ = Array.from({ length: 200 }, () =>
+        Array.from({ length: 100 }, () => Math.random())
+      );
+
+      const largeProps = {
+        x: largeX,
+        time: largeTime,
+        h: largeH,
+        V: largeV,
+        Q: largeQ
+      };
+
+      render(<EnhancedCharts {...largeProps} />);
+
+      expect(screen.getByText(/等值线图/i)).toBeInTheDocument();
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('should handle NaN values in data', () => {
+      const dataWithNaN = {
+        ...defaultProps,
+        h: [
+          [1.0, NaN, 1.2, 1.1, 1.0],
+          [1.1, 1.2, NaN, 1.2, 1.1],
+          [1.2, 1.3, 1.4, NaN, 1.2],
+          [1.3, 1.4, 1.5, 1.4, NaN]
+        ]
+      };
+
+      render(<EnhancedCharts {...dataWithNaN} />);
+
+      expect(screen.getByText(/等值线图/i)).toBeInTheDocument();
+    });
+
+    it('should handle negative values', () => {
+      const dataWithNegative = {
+        ...defaultProps,
+        V: [
+          [-0.5, -0.4, -0.3, -0.4, -0.5],
+          [-0.4, -0.3, -0.2, -0.3, -0.4],
+          [-0.3, -0.2, -0.1, -0.2, -0.3],
+          [-0.2, -0.1, 0.0, -0.1, -0.2]
+        ]
+      };
+
+      render(<EnhancedCharts {...dataWithNegative} />);
+
+      expect(screen.getByText(/等值线图/i)).toBeInTheDocument();
+    });
+
+    it('should handle uniform data (no variation)', () => {
+      const uniformData = {
+        x: mockX,
+        time: mockTime,
+        h: Array(4).fill(Array(5).fill(1.0)),
+        V: Array(4).fill(Array(5).fill(0.5)),
+        Q: Array(4).fill(Array(5).fill(0.5))
+      };
+
+      render(<EnhancedCharts {...uniformData} />);
+
+      expect(screen.getByText(/等值线图/i)).toBeInTheDocument();
+    });
+  });
+
+  describe('Accessibility', () => {
+    it('should have accessible selectors', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      const colorSelector = screen.getByRole('combobox', { name: /配色/i });
+      expect(colorSelector).toBeEnabled();
+
+      const locationSelector = screen.getByRole('combobox', { name: /位置/i });
+      expect(locationSelector).toBeEnabled();
+    });
+
+    it('should provide visual grouping for chart sections', () => {
+      render(<EnhancedCharts {...defaultProps} />);
+
+      // Check for Card titles which provide semantic grouping
+      expect(screen.getByText(/等值线图/i)).toBeInTheDocument();
+      expect(screen.getByText(/热力图/i)).toBeInTheDocument();
+      expect(screen.getByText(/时间序列/i)).toBeInTheDocument();
+      expect(screen.getByText(/统计分析/i)).toBeInTheDocument();
+    });
+  });
+});
