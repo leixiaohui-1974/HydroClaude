@@ -1,9 +1,11 @@
-import { useState } from 'react';
-import { Layout, Typography, Space, Tabs } from 'antd';
+import { useState, lazy, Suspense } from 'react';
+import { Layout, Typography, Space, Tabs, Spin } from 'antd';
 import { AppstoreOutlined, PlayCircleOutlined } from '@ant-design/icons';
-import SimulationWorkspace from './features/simulation/SimulationWorkspace';
-import ModelingWorkspace from './features/modeling/ModelingWorkspace';
 import './App.css';
+
+// Lazy load workspace components for code splitting
+const SimulationWorkspace = lazy(() => import('./features/simulation/SimulationWorkspace'));
+const ModelingWorkspace = lazy(() => import('./features/modeling/ModelingWorkspace'));
 
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
@@ -20,7 +22,11 @@ function App() {
           建模工作台
         </span>
       ),
-      children: <ModelingWorkspace />
+      children: (
+        <Suspense fallback={<div style={{ textAlign: 'center', padding: '50px' }}><Spin size="large" tip="加载中..." /></div>}>
+          <ModelingWorkspace />
+        </Suspense>
+      )
     },
     {
       key: 'simulation',
@@ -30,7 +36,11 @@ function App() {
           仿真管理
         </span>
       ),
-      children: <SimulationWorkspace />
+      children: (
+        <Suspense fallback={<div style={{ textAlign: 'center', padding: '50px' }}><Spin size="large" tip="加载中..." /></div>}>
+          <SimulationWorkspace />
+        </Suspense>
+      )
     }
   ];
 

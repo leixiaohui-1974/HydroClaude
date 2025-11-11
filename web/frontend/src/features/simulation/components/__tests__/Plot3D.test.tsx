@@ -1,10 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, within, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen } from '@testing-library/react';
 import Plot3D from '../Plot3D';
 
 describe('Plot3D', () => {
-  let user: ReturnType<typeof userEvent.setup>;
 
   // Mock simulation data
   const mockX = [0, 10, 20, 30, 40];
@@ -38,7 +36,6 @@ describe('Plot3D', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    user = userEvent.setup();
   });
 
   describe('Rendering', () => {
@@ -163,7 +160,7 @@ describe('Plot3D', () => {
       expect(data[0].colorscale).toBe('Viridis');
     });
 
-    it.each(colorSchemes)('should support %s color scheme', async (scheme) => {
+    it.each(colorSchemes)('should support %s color scheme', async () => {
       render(<Plot3D {...defaultProps} />);
 
       const colorSelector = screen.getByRole('combobox', { name: /配色/i });

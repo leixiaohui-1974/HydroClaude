@@ -2,10 +2,7 @@ import { useMemo, useState } from 'react';
 import Plot from 'react-plotly.js';
 import { Card, Select, Space, Typography, Button, Tooltip } from 'antd';
 import {
-  RotateLeftOutlined,
-  ZoomInOutlined,
-  ZoomOutOutlined,
-  BorderOutlined
+  RotateLeftOutlined
 } from '@ant-design/icons';
 
 const { Text } = Typography;

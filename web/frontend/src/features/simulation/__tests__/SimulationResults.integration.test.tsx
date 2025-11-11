@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, within, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import SimulationResults from '../SimulationResults';
 import { SimulationResultResponse } from '@/services/api';
@@ -11,6 +11,7 @@ describe('SimulationResults Integration Tests', () => {
   const mockResult: SimulationResultResponse = {
     task_id: 'test-task-123',
     status: 'completed',
+    timestamp: '2025-11-11T00:00:00Z',
     x: [0, 10, 20, 30, 40, 50],
     time: [0, 0.5, 1.0, 1.5, 2.0],
     h: [
@@ -42,6 +43,7 @@ describe('SimulationResults Integration Tests', () => {
       max_depth: 1.6,
       min_depth: 0.36,
       max_velocity: 1.1,
+      max_discharge: 1.76,
       max_froude: 0.85,
       mean_depth_final: 1.35,
       mean_discharge_final: 1.05
