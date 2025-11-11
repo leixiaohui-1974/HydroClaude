@@ -374,8 +374,12 @@ describe('SimulationResults Integration Tests', () => {
         const plots = screen.getAllByTestId('plotly-plot');
         expect(plots.length).toBeGreaterThanOrEqual(2);
 
-        // Verify both plots have complete data structure
-        const depthPlotData = JSON.parse(plots[0].getAttribute('data-plot-data') || '[]');
+        // Get the last 2 plots to avoid transition issues (same strategy as EnhancedCharts)
+        const plot1 = plots[plots.length - 2];
+        const plot2 = plots[plots.length - 1];
+
+        // Verify first plot has complete data structure
+        const depthPlotData = JSON.parse(plot1.getAttribute('data-plot-data') || '[]');
         expect(depthPlotData[0]).toBeDefined();
         expect(depthPlotData[0].x).toBeDefined();
         expect(depthPlotData[0].y).toBeDefined();
@@ -387,8 +391,9 @@ describe('SimulationResults Integration Tests', () => {
         expect(depthPlotData[0].z.length).toBe(mockResult.h.length);
       }, { timeout: 5000 });
 
+      // Also verify after waitFor - use last 2 plots to avoid transition issues
       const plots = screen.getAllByTestId('plotly-plot');
-      const depthPlot = plots[0]; // First plot is depth (variable='h')
+      const depthPlot = plots[plots.length - 2]; // Get the second-to-last plot (depth)
       const plot3DData = JSON.parse(depthPlot.getAttribute('data-plot-data') || '[]');
 
       expect(plot3DData[0].x).toEqual(mockResult.x);
