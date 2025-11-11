@@ -13,9 +13,13 @@ describe('AnimationController', () => {
     defaultSpeed: 1
   };
 
+  let user: ReturnType<typeof userEvent.setup>;
+
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
+    // Configure userEvent to work with fake timers
+    user = userEvent.setup({ delay: null });
   });
 
   afterEach(() => {
@@ -70,34 +74,48 @@ describe('AnimationController', () => {
       render(<AnimationController {...defaultProps} />);
 
       const playButton = screen.getByRole('button', { name: /播放/i });
-      await userEvent.click(playButton);
+      await user.click(playButton);
 
-      expect(screen.getByRole('button', { name: /暂停/i })).toBeInTheDocument();
+      // Wait for state update to complete
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /暂停/i })).toBeInTheDocument();
+      });
     });
 
     it('should pause when pause button is clicked', async () => {
       render(<AnimationController {...defaultProps} autoPlay={true} />);
 
       const pauseButton = screen.getByRole('button', { name: /暂停/i });
-      await userEvent.click(pauseButton);
+      await user.click(pauseButton);
 
-      expect(screen.getByRole('button', { name: /播放/i })).toBeInTheDocument();
+      // Wait for state update to complete
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /播放/i })).toBeInTheDocument();
+      });
     });
 
     it('should show playing status indicator when playing', async () => {
       render(<AnimationController {...defaultProps} />);
 
       const playButton = screen.getByRole('button', { name: /播放/i });
-      await userEvent.click(playButton);
+      await user.click(playButton);
 
-      expect(screen.getByText(/正在播放/i)).toBeInTheDocument();
+      // Wait for status indicator to appear
+      await waitFor(() => {
+        expect(screen.getByText(/正在播放/i)).toBeInTheDocument();
+      });
     });
 
     it('should advance frames when playing', async () => {
       render(<AnimationController {...defaultProps} />);
 
       const playButton = screen.getByRole('button', { name: /播放/i });
-      await userEvent.click(playButton);
+      await user.click(playButton);
+
+      // Wait for playing state to be set
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /暂停/i })).toBeInTheDocument();
+      });
 
       // Advance fake timers to trigger frame changes
       vi.advanceTimersByTime(100);
@@ -111,7 +129,7 @@ describe('AnimationController', () => {
       render(<AnimationController {...defaultProps} currentFrame={50} />);
 
       const resetButton = screen.getByRole('button', { name: /重置/i });
-      await userEvent.click(resetButton);
+      await user.click(resetButton);
 
       expect(mockOnFrameChange).toHaveBeenCalledWith(0);
     });
@@ -122,7 +140,7 @@ describe('AnimationController', () => {
       render(<AnimationController {...defaultProps} currentFrame={50} />);
 
       const stepBackButton = screen.getByRole('button', { name: /上一帧/i });
-      await userEvent.click(stepBackButton);
+      await user.click(stepBackButton);
 
       expect(mockOnFrameChange).toHaveBeenCalledWith(49);
     });
@@ -131,7 +149,7 @@ describe('AnimationController', () => {
       render(<AnimationController {...defaultProps} currentFrame={50} />);
 
       const stepForwardButton = screen.getByRole('button', { name: /下一帧/i });
-      await userEvent.click(stepForwardButton);
+      await user.click(stepForwardButton);
 
       expect(mockOnFrameChange).toHaveBeenCalledWith(51);
     });
@@ -154,7 +172,7 @@ describe('AnimationController', () => {
       render(<AnimationController {...defaultProps} currentFrame={50} />);
 
       const fastBackButton = screen.getByRole('button', { name: /快退10%/i });
-      await userEvent.click(fastBackButton);
+      await user.click(fastBackButton);
 
       // 10% of 100 = 10 frames
       expect(mockOnFrameChange).toHaveBeenCalledWith(40);
@@ -164,7 +182,7 @@ describe('AnimationController', () => {
       render(<AnimationController {...defaultProps} currentFrame={50} />);
 
       const fastForwardButton = screen.getByRole('button', { name: /快进10%/i });
-      await userEvent.click(fastForwardButton);
+      await user.click(fastForwardButton);
 
       // 10% of 100 = 10 frames
       expect(mockOnFrameChange).toHaveBeenCalledWith(60);
@@ -197,17 +215,25 @@ describe('AnimationController', () => {
       render(<AnimationController {...defaultProps} />);
 
       const speedSelector = screen.getByRole('combobox');
-      await userEvent.click(speedSelector);
+      await user.click(speedSelector);
 
       // Select 2x speed option
-      const speedOption = screen.getByText('2x');
-      await userEvent.click(speedOption);
+      const speedOption = await screen.findByText('2x');
+      await user.click(speedOption);
+
+      // Wait for dropdown to close
+      await waitFor(() => {
+        expect(speedSelector).toHaveTextContent('2x');
+      });
 
       // Start playing to verify speed
       const playButton = screen.getByRole('button', { name: /播放/i });
-      await userEvent.click(playButton);
+      await user.click(playButton);
 
-      expect(screen.getByText(/速度: 2x/i)).toBeInTheDocument();
+      // Wait for playing state and speed indicator to appear
+      await waitFor(() => {
+        expect(screen.getByText(/速度: 2x/i)).toBeInTheDocument();
+      });
     });
 
     it('should accept speed values from 0.25x to 20x', () => {
@@ -235,15 +261,24 @@ describe('AnimationController', () => {
       const loopSwitch = screen.getByRole('switch');
       expect(loopSwitch).toBeChecked(); // Default is true
 
-      await userEvent.click(loopSwitch);
-      expect(loopSwitch).not.toBeChecked();
+      await user.click(loopSwitch);
+
+      // Wait for state update
+      await waitFor(() => {
+        expect(loopSwitch).not.toBeChecked();
+      });
     });
 
     it('should loop back to frame 0 when reaching end in loop mode', async () => {
       render(<AnimationController {...defaultProps} currentFrame={99} />);
 
       const playButton = screen.getByRole('button', { name: /播放/i });
-      await userEvent.click(playButton);
+      await user.click(playButton);
+
+      // Wait for playing state to be set
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /暂停/i })).toBeInTheDocument();
+      });
 
       // Advance timer to trigger frame change
       vi.advanceTimersByTime(100);
@@ -258,11 +293,21 @@ describe('AnimationController', () => {
 
       // Disable loop
       const loopSwitch = screen.getByRole('switch');
-      await userEvent.click(loopSwitch);
+      await user.click(loopSwitch);
+
+      // Wait for loop state to update
+      await waitFor(() => {
+        expect(loopSwitch).not.toBeChecked();
+      });
 
       // Start playing
       const playButton = screen.getByRole('button', { name: /播放/i });
-      await userEvent.click(playButton);
+      await user.click(playButton);
+
+      // Wait for playing state to be set
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /暂停/i })).toBeInTheDocument();
+      });
 
       // Advance to next frame (last frame)
       vi.advanceTimersByTime(100);

@@ -5,6 +5,8 @@ import SimulationResults from '../SimulationResults';
 import { SimulationResultResponse } from '@/services/api';
 
 describe('SimulationResults Integration Tests', () => {
+  let user: ReturnType<typeof userEvent.setup>;
+
   // Complete mock simulation result
   const mockResult: SimulationResultResponse = {
     task_id: 'test-task-123',
@@ -48,6 +50,8 @@ describe('SimulationResults Integration Tests', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Configure userEvent for better async handling
+    user = userEvent.setup();
   });
 
   describe('Component Integration', () => {
@@ -124,7 +128,7 @@ describe('SimulationResults Integration Tests', () => {
 
       // Click step forward button
       const stepForwardButton = screen.getByRole('button', { name: /下一帧/i });
-      await userEvent.click(stepForwardButton);
+      await user.click(stepForwardButton);
 
       // Check that plots updated
       await waitFor(() => {
@@ -139,15 +143,21 @@ describe('SimulationResults Integration Tests', () => {
     it('should synchronize animation across all classic view plots', async () => {
       render(<SimulationResults result={mockResult} />);
 
-      // Move to frame 2 (t = 1.0s)
-      const slider = screen.getByRole('slider');
-      await userEvent.click(slider);
-      // Note: Slider interaction is complex; we'll check the frame display instead
-
       // Click step forward twice
       const stepForwardButton = screen.getByRole('button', { name: /下一帧/i });
-      await userEvent.click(stepForwardButton);
-      await userEvent.click(stepForwardButton);
+      await user.click(stepForwardButton);
+
+      // Wait for first click to complete
+      await waitFor(() => {
+        expect(screen.getByText('2')).toBeInTheDocument(); // Frame 2
+      });
+
+      await user.click(stepForwardButton);
+
+      // Wait for second click to complete
+      await waitFor(() => {
+        expect(screen.getByText('3')).toBeInTheDocument(); // Frame 3
+      });
 
       // All three classic plots should show t = 1.00s
       await waitFor(() => {
@@ -179,7 +189,7 @@ describe('SimulationResults Integration Tests', () => {
 
       // Step forward to frame 1 (t=0.5): h = [1.1, 1.2, 1.3, 1.2, 1.1, 1.0]
       const stepForwardButton = screen.getByRole('button', { name: /下一帧/i });
-      await userEvent.click(stepForwardButton);
+      await user.click(stepForwardButton);
 
       await waitFor(() => {
         const updatedPlots = screen.getAllByTestId('plotly-plot');
@@ -199,7 +209,7 @@ describe('SimulationResults Integration Tests', () => {
 
       // Step forward
       const stepForwardButton = screen.getByRole('button', { name: /下一帧/i });
-      await userEvent.click(stepForwardButton);
+      await user.click(stepForwardButton);
 
       await waitFor(() => {
         expect(screen.getByText('2')).toBeInTheDocument(); // Frame 2
@@ -220,10 +230,13 @@ describe('SimulationResults Integration Tests', () => {
       render(<SimulationResults result={mockResult} />);
 
       const threeDTab = screen.getByText(/3D可视化/i);
-      await userEvent.click(threeDTab);
+      await user.click(threeDTab);
 
-      // Should show 3D info alert
-      expect(screen.getByText(/3D可视化 \(v1.4.0新功能\)/i)).toBeInTheDocument();
+      // Wait for tab content to render
+      await waitFor(() => {
+        expect(screen.getByText(/3D可视化 \(v1.4.0新功能\)/i)).toBeInTheDocument();
+      });
+
       expect(screen.getByText(/使用鼠标拖动旋转视角/i)).toBeInTheDocument();
     });
 
@@ -231,10 +244,13 @@ describe('SimulationResults Integration Tests', () => {
       render(<SimulationResults result={mockResult} />);
 
       const enhancedTab = screen.getByText(/增强图表/i);
-      await userEvent.click(enhancedTab);
+      await user.click(enhancedTab);
 
-      // Should show enhanced charts info alert
-      expect(screen.getByText(/增强图表 \(v1.4.0新功能\)/i)).toBeInTheDocument();
+      // Wait for tab content to render
+      await waitFor(() => {
+        expect(screen.getByText(/增强图表 \(v1.4.0新功能\)/i)).toBeInTheDocument();
+      });
+
       expect(screen.getByText(/包含等值线图、热力图/i)).toBeInTheDocument();
     });
 
@@ -243,25 +259,39 @@ describe('SimulationResults Integration Tests', () => {
 
       // Move to frame 2
       const stepForwardButton = screen.getByRole('button', { name: /下一帧/i });
-      await userEvent.click(stepForwardButton);
-      await userEvent.click(stepForwardButton);
+      await user.click(stepForwardButton);
 
-      // Verify frame counter shows 3
-      expect(screen.getByText('3')).toBeInTheDocument();
+      // Wait for first click
+      await waitFor(() => {
+        expect(screen.getByText('2')).toBeInTheDocument();
+      });
+
+      await user.click(stepForwardButton);
+
+      // Wait for second click and verify frame counter shows 3
+      await waitFor(() => {
+        expect(screen.getByText('3')).toBeInTheDocument();
+      });
 
       // Switch to 3D tab
       const threeDTab = screen.getByText(/3D可视化/i);
-      await userEvent.click(threeDTab);
+      await user.click(threeDTab);
 
-      // Frame counter should still show 3
+      // Wait for tab to switch and verify frame counter still shows 3
+      await waitFor(() => {
+        expect(screen.getByText(/3D可视化 \(v1.4.0新功能\)/i)).toBeInTheDocument();
+      });
+
       expect(screen.getByText('3')).toBeInTheDocument();
 
       // Switch back to classic
       const classicTab = screen.getByText(/经典视图/i);
-      await userEvent.click(classicTab);
+      await user.click(classicTab);
 
-      // Should still be on frame 3
-      expect(screen.getByText('3')).toBeInTheDocument();
+      // Wait for tab to switch and verify still on frame 3
+      await waitFor(() => {
+        expect(screen.getByText('3')).toBeInTheDocument();
+      });
 
       // Plot should show t = 1.00s
       await waitFor(() => {
@@ -323,18 +353,26 @@ describe('SimulationResults Integration Tests', () => {
       render(<SimulationResults result={mockResult} />);
 
       const threeDTab = screen.getByText(/3D可视化/i);
-      await userEvent.click(threeDTab);
+      await user.click(threeDTab);
 
-      // Should have multiple 3D plots (depth and velocity)
-      const plots = screen.getAllByTestId('plotly-plot');
-      expect(plots.length).toBeGreaterThanOrEqual(2);
+      // Wait for tab content to render
+      await waitFor(() => {
+        const plots = screen.getAllByTestId('plotly-plot');
+        expect(plots.length).toBeGreaterThanOrEqual(2);
+      });
     });
 
     it('should pass all time steps to 3D plots', async () => {
       render(<SimulationResults result={mockResult} />);
 
       const threeDTab = screen.getByText(/3D可视化/i);
-      await userEvent.click(threeDTab);
+      await user.click(threeDTab);
+
+      // Wait for plots to render
+      await waitFor(() => {
+        const plots = screen.getAllByTestId('plotly-plot');
+        expect(plots.length).toBeGreaterThan(0);
+      });
 
       const plots = screen.getAllByTestId('plotly-plot');
       const plot3DData = JSON.parse(plots[0].getAttribute('data-plot-data') || '[]');
@@ -350,7 +388,7 @@ describe('SimulationResults Integration Tests', () => {
       render(<SimulationResults result={mockResult} />);
 
       const enhancedTab = screen.getByText(/增强图表/i);
-      await userEvent.click(enhancedTab);
+      await user.click(enhancedTab);
 
       // Should have contour, heatmaps, time series, statistics
       await waitFor(() => {
@@ -363,7 +401,13 @@ describe('SimulationResults Integration Tests', () => {
       render(<SimulationResults result={mockResult} />);
 
       const enhancedTab = screen.getByText(/增强图表/i);
-      await userEvent.click(enhancedTab);
+      await user.click(enhancedTab);
+
+      // Wait for plots to render
+      await waitFor(() => {
+        const plots = screen.getAllByTestId('plotly-plot');
+        expect(plots.length).toBeGreaterThan(0);
+      });
 
       // Verify contour plot has all data
       const plots = screen.getAllByTestId('plotly-plot');
@@ -464,7 +508,7 @@ describe('SimulationResults Integration Tests', () => {
       const stepForwardButton = screen.getByRole('button', { name: /下一帧/i });
 
       for (let i = 0; i < 3; i++) {
-        await userEvent.click(stepForwardButton);
+        await user.click(stepForwardButton);
       }
 
       // Should reach frame 4 without errors
