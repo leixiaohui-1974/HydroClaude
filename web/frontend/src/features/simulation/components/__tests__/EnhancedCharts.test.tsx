@@ -134,6 +134,12 @@ describe('EnhancedCharts', () => {
       const heatmapTab = screen.getByRole('tab', { name: /🔥 热力图/i });
       await user.click(heatmapTab);
 
+      // Wait for tab content to render and ensure only one plot is visible
+      await waitFor(() => {
+        const plots = screen.getAllByTestId('plotly-plot');
+        expect(plots.length).toBe(1);
+      });
+
       const plot = screen.getByTestId('plotly-plot');
       const data = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
       expect(data[0].type).toBe('heatmap');
@@ -147,6 +153,10 @@ describe('EnhancedCharts', () => {
       const heatmapTab = screen.getByRole('tab', { name: /🔥 热力图/i });
       await user.click(heatmapTab);
 
+      await waitFor(() => {
+        expect(screen.getAllByTestId('plotly-plot').length).toBe(1);
+      });
+
       const plot = screen.getByTestId('plotly-plot');
       const layout = JSON.parse(plot.getAttribute('data-plot-layout') || '{}');
       expect(layout.title).toContain('流速');
@@ -158,6 +168,10 @@ describe('EnhancedCharts', () => {
       // Click on heatmap tab to activate it
       const heatmapTab = screen.getByRole('tab', { name: /🔥 热力图/i });
       await user.click(heatmapTab);
+
+      await waitFor(() => {
+        expect(screen.getAllByTestId('plotly-plot').length).toBe(1);
+      });
 
       const plot = screen.getByTestId('plotly-plot');
       const data = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
@@ -173,6 +187,10 @@ describe('EnhancedCharts', () => {
       const dischargeTab = screen.getByRole('tab', { name: /💧 流量热力图/i });
       await user.click(dischargeTab);
 
+      await waitFor(() => {
+        expect(screen.getAllByTestId('plotly-plot').length).toBe(1);
+      });
+
       const plot = screen.getByTestId('plotly-plot');
       const data = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
       expect(data[0].type).toBe('heatmap');
@@ -186,8 +204,11 @@ describe('EnhancedCharts', () => {
       const dischargeTab = screen.getByRole('tab', { name: /💧 流量热力图/i });
       await user.click(dischargeTab);
 
-      const plot = screen.getByTestId('plotly-plot');
+      await waitFor(() => {
+        expect(screen.getAllByTestId('plotly-plot').length).toBe(1);
+      });
 
+      const plot = screen.getByTestId('plotly-plot');
       const layout = JSON.parse(plot.getAttribute('data-plot-layout') || '{}');
       expect(layout.title).toContain('流量');
     });
@@ -201,6 +222,10 @@ describe('EnhancedCharts', () => {
       const timeSeriesTab = screen.getByRole('tab', { name: /📈 时间序列/i });
       await user.click(timeSeriesTab);
 
+      await waitFor(() => {
+        expect(screen.getAllByTestId('plotly-plot').length).toBe(1);
+      });
+
       const plot = screen.getByTestId('plotly-plot');
       const data = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
       expect(data).toHaveLength(3); // h, V, Q
@@ -213,6 +238,10 @@ describe('EnhancedCharts', () => {
       const timeSeriesTab = screen.getByRole('tab', { name: /📈 时间序列/i });
       await user.click(timeSeriesTab);
 
+      await waitFor(() => {
+        expect(screen.getAllByTestId('plotly-plot').length).toBe(1);
+      });
+
       const plot = screen.getByTestId('plotly-plot');
       const layout = JSON.parse(plot.getAttribute('data-plot-layout') || '{}');
       expect(layout.title).toContain('x = 20'); // Middle position
@@ -224,6 +253,10 @@ describe('EnhancedCharts', () => {
       // Click on time series tab to activate it
       const timeSeriesTab = screen.getByRole('tab', { name: /📈 时间序列/i });
       await user.click(timeSeriesTab);
+
+      await waitFor(() => {
+        expect(screen.getAllByTestId('plotly-plot').length).toBe(1);
+      });
 
       const plot = screen.getByTestId('plotly-plot');
       const layout = JSON.parse(plot.getAttribute('data-plot-layout') || '{}');

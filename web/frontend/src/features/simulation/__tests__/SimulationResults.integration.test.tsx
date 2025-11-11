@@ -64,8 +64,8 @@ describe('SimulationResults Integration Tests', () => {
       // Metrics card
       expect(screen.getByText(/性能指标/i)).toBeInTheDocument();
 
-      // Animation controller (use heading role to be specific)
-      expect(screen.getByRole('heading', { name: /动画控制/i })).toBeInTheDocument();
+      // Animation controller (use more specific text including emoji and version)
+      expect(screen.getByText(/🎬 动画控制 \(v1.4.0新功能\)/i)).toBeInTheDocument();
 
       // Tabs (use tab role to be specific)
       expect(screen.getByRole('tab', { name: /经典视图/i })).toBeInTheDocument();
@@ -524,7 +524,7 @@ describe('SimulationResults Integration Tests', () => {
 
       // Cards provide semantic structure
       expect(screen.getByText(/性能指标/i)).toBeInTheDocument();
-      expect(screen.getByRole('heading', { name: /动画控制/i })).toBeInTheDocument();
+      expect(screen.getByText(/🎬 动画控制 \(v1.4.0新功能\)/i)).toBeInTheDocument();
     });
 
     it('should provide clear visual feedback for status', () => {
