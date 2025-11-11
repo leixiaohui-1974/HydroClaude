@@ -287,6 +287,7 @@ const Plot3D = ({
             options={colorScaleOptions}
             style={{ width: 150 }}
             size="small"
+            aria-label="配色方案"
           />
         </Space>
 
@@ -298,6 +299,7 @@ const Plot3D = ({
             options={surfaceModeOptions}
             style={{ width: 130 }}
             size="small"
+            aria-label="显示模式"
           />
         </Space>
       </Space>

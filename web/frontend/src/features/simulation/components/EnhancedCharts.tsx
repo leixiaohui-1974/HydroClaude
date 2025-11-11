@@ -347,6 +347,7 @@ const EnhancedCharts = ({ x, time, h, V, Q }: EnhancedChartsProps) => {
               options={colorScaleOptions}
               style={{ width: 120 }}
               size="small"
+              aria-label="配色方案"
             />
           </Space>
           <Plot
@@ -371,6 +372,7 @@ const EnhancedCharts = ({ x, time, h, V, Q }: EnhancedChartsProps) => {
               options={colorScaleOptions}
               style={{ width: 120 }}
               size="small"
+              aria-label="配色方案"
             />
           </Space>
           <Plot
