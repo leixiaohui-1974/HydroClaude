@@ -1,0 +1,140 @@
+{
+  "id": "example-gate-control-001",
+  "name": "闸门控制示例",
+  "description": "包含上游边界、明渠、闸门和下游边界的控制模型",
+  "nodes": [
+    {
+      "id": "boundary-upstream-1",
+      "type": "boundary_flow",
+      "position": {
+        "x": 100,
+        "y": 200
+      },
+      "data": {
+        "name": "上游流量",
+        "boundary_type": "flow",
+        "value": 80,
+        "position": "upstream",
+        "validated": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "canal-upstream-1",
+      "type": "canal",
+      "position": {
+        "x": 300,
+        "y": 200
+      },
+      "data": {
+        "name": "上游渠段",
+        "width": 12,
+        "length": 500,
+        "slope": 0.0015,
+        "manning_n": 0.025,
+        "n_cells": 50,
+        "initial_depth": 6,
+        "initial_discharge": 0,
+        "validated": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "gate-control-1",
+      "type": "gate",
+      "position": {
+        "x": 500,
+        "y": 200
+      },
+      "data": {
+        "name": "控制闸门",
+        "gate_type": "sluice",
+        "opening": 75,
+        "width": 12,
+        "discharge_coeff": 0.6,
+        "validated": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "canal-downstream-1",
+      "type": "canal",
+      "position": {
+        "x": 700,
+        "y": 200
+      },
+      "data": {
+        "name": "下游渠段",
+        "width": 12,
+        "length": 500,
+        "slope": 0.001,
+        "manning_n": 0.03,
+        "n_cells": 50,
+        "initial_depth": 5,
+        "initial_discharge": 0,
+        "validated": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "boundary-downstream-1",
+      "type": "boundary_depth",
+      "position": {
+        "x": 900,
+        "y": 200
+      },
+      "data": {
+        "name": "下游水深",
+        "boundary_type": "depth",
+        "value": 4.5,
+        "position": "downstream",
+        "validated": true,
+        "errors": [],
+        "warnings": []
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "source": "boundary-upstream-1",
+      "target": "canal-upstream-1",
+      "validated": true,
+      "flow_direction": "forward"
+    },
+    {
+      "id": "edge-2",
+      "source": "canal-upstream-1",
+      "target": "gate-control-1",
+      "validated": true,
+      "flow_direction": "forward"
+    },
+    {
+      "id": "edge-3",
+      "source": "gate-control-1",
+      "target": "canal-downstream-1",
+      "validated": true,
+      "flow_direction": "forward"
+    },
+    {
+      "id": "edge-4",
+      "source": "canal-downstream-1",
+      "target": "boundary-downstream-1",
+      "validated": true,
+      "flow_direction": "forward"
+    }
+  ],
+  "created_at": "2025-11-10T23:00:00.000Z",
+  "updated_at": "2025-11-10T23:00:00.000Z",
+  "version": 1,
+  "validated": true,
+  "validation_result": {
+    "valid": true,
+    "errors": [],
+    "timestamp": "2025-11-10T23:00:00.000Z"
+  }
+}
