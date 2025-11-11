@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import EnhancedCharts from '../EnhancedCharts';
 
 describe('EnhancedCharts', () => {
+  let user: ReturnType<typeof userEvent.setup>;
   // Mock simulation data
   const mockX = [0, 10, 20, 30, 40];
   const mockTime = [0, 0.5, 1.0, 1.5];
@@ -36,6 +37,7 @@ describe('EnhancedCharts', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    user = userEvent.setup();
   });
 
   describe('Rendering', () => {
@@ -108,16 +110,19 @@ describe('EnhancedCharts', () => {
       render(<EnhancedCharts {...defaultProps} />);
 
       const colorSelector = screen.getByRole('combobox', { name: /配色/i });
-      await userEvent.click(colorSelector);
+      await user.click(colorSelector);
 
-      const jetOption = screen.getByText('Jet');
-      await userEvent.click(jetOption);
+      // Wait for dropdown to open
+      const jetOption = await screen.findByText('Jet');
+      await user.click(jetOption);
 
-      const plots = screen.getAllByTestId('plotly-plot');
-      const contourPlot = plots[0];
-
-      const data = JSON.parse(contourPlot.getAttribute('data-plot-data') || '[]');
-      expect(data[0].colorscale).toBe('Jet');
+      // Wait for plot to update
+      await waitFor(() => {
+        const plots = screen.getAllByTestId('plotly-plot');
+        const contourPlot = plots[0];
+        const data = JSON.parse(contourPlot.getAttribute('data-plot-data') || '[]');
+        expect(data[0].colorscale).toBe('Jet');
+      });
     });
   });
 
@@ -214,17 +219,19 @@ describe('EnhancedCharts', () => {
       render(<EnhancedCharts {...defaultProps} />);
 
       const locationSelector = screen.getByRole('combobox', { name: /位置/i });
-      await userEvent.click(locationSelector);
+      await user.click(locationSelector);
 
-      // Select first location
-      const firstOption = screen.getByText('x = 0.0 m');
-      await userEvent.click(firstOption);
+      // Wait for dropdown to open and select first location
+      const firstOption = await screen.findByText('x = 0.0 m');
+      await user.click(firstOption);
 
-      const plots = screen.getAllByTestId('plotly-plot');
-      const timeSeriesPlot = plots[3];
-
-      const layout = JSON.parse(timeSeriesPlot.getAttribute('data-plot-layout') || '{}');
-      expect(layout.title).toContain('x = 0');
+      // Wait for plot to update
+      await waitFor(() => {
+        const plots = screen.getAllByTestId('plotly-plot');
+        const timeSeriesPlot = plots[3];
+        const layout = JSON.parse(timeSeriesPlot.getAttribute('data-plot-layout') || '{}');
+        expect(layout.title).toContain('x = 0');
+      });
     });
 
     it('should show all time points', () => {
@@ -362,28 +369,33 @@ describe('EnhancedCharts', () => {
       render(<EnhancedCharts {...defaultProps} />);
 
       const locationSelector = screen.getByRole('combobox', { name: /位置/i });
-      await userEvent.click(locationSelector);
+      await user.click(locationSelector);
 
-      expect(screen.getByText('x = 0.0 m')).toBeInTheDocument();
-      expect(screen.getByText('x = 10.0 m')).toBeInTheDocument();
-      expect(screen.getByText('x = 20.0 m')).toBeInTheDocument();
+      // Wait for dropdown to open
+      await waitFor(() => {
+        expect(screen.getByText('x = 0.0 m')).toBeInTheDocument();
+        expect(screen.getByText('x = 10.0 m')).toBeInTheDocument();
+        expect(screen.getByText('x = 20.0 m')).toBeInTheDocument();
+      });
     });
 
     it('should handle location selection', async () => {
       render(<EnhancedCharts {...defaultProps} />);
 
       const locationSelector = screen.getByRole('combobox', { name: /位置/i });
-      await userEvent.click(locationSelector);
+      await user.click(locationSelector);
 
-      const lastLocation = screen.getByText('x = 40.0 m');
-      await userEvent.click(lastLocation);
+      // Wait for dropdown to open
+      const lastLocation = await screen.findByText('x = 40.0 m');
+      await user.click(lastLocation);
 
-      // Time series should update to show data for x = 40
-      const plots = screen.getAllByTestId('plotly-plot');
-      const timeSeriesPlot = plots[3];
-
-      const layout = JSON.parse(timeSeriesPlot.getAttribute('data-plot-layout') || '{}');
-      expect(layout.title).toContain('x = 40');
+      // Wait for plot to update
+      await waitFor(() => {
+        const plots = screen.getAllByTestId('plotly-plot');
+        const timeSeriesPlot = plots[3];
+        const layout = JSON.parse(timeSeriesPlot.getAttribute('data-plot-layout') || '{}');
+        expect(layout.title).toContain('x = 40');
+      });
     });
   });
 
@@ -392,35 +404,41 @@ describe('EnhancedCharts', () => {
       render(<EnhancedCharts {...defaultProps} />);
 
       const colorSelector = screen.getByRole('combobox', { name: /配色/i });
-      await userEvent.click(colorSelector);
+      await user.click(colorSelector);
 
-      const hotOption = screen.getByText('Hot');
-      await userEvent.click(hotOption);
+      // Wait for dropdown to open
+      const hotOption = await screen.findByText('Hot');
+      await user.click(hotOption);
 
-      const plots = screen.getAllByTestId('plotly-plot');
+      // Wait for plots to update
+      await waitFor(() => {
+        const plots = screen.getAllByTestId('plotly-plot');
 
-      // Check contour plot
-      const contourData = JSON.parse(plots[0].getAttribute('data-plot-data') || '[]');
-      expect(contourData[0].colorscale).toBe('Hot');
+        // Check contour plot
+        const contourData = JSON.parse(plots[0].getAttribute('data-plot-data') || '[]');
+        expect(contourData[0].colorscale).toBe('Hot');
 
-      // Check heatmaps
-      const heatmap1Data = JSON.parse(plots[1].getAttribute('data-plot-data') || '[]');
-      expect(heatmap1Data[0].colorscale).toBe('Hot');
+        // Check heatmaps
+        const heatmap1Data = JSON.parse(plots[1].getAttribute('data-plot-data') || '[]');
+        expect(heatmap1Data[0].colorscale).toBe('Hot');
 
-      const heatmap2Data = JSON.parse(plots[2].getAttribute('data-plot-data') || '[]');
-      expect(heatmap2Data[0].colorscale).toBe('Hot');
+        const heatmap2Data = JSON.parse(plots[2].getAttribute('data-plot-data') || '[]');
+        expect(heatmap2Data[0].colorscale).toBe('Hot');
+      });
     });
 
     it('should support all standard color schemes', async () => {
       render(<EnhancedCharts {...defaultProps} />);
 
       const colorSelector = screen.getByRole('combobox', { name: /配色/i });
-      await userEvent.click(colorSelector);
+      await user.click(colorSelector);
 
-      // Check for some standard color schemes
-      expect(screen.getByText('Viridis')).toBeInTheDocument();
-      expect(screen.getByText('Jet')).toBeInTheDocument();
-      expect(screen.getByText('Hot')).toBeInTheDocument();
+      // Wait for dropdown to open and check for standard color schemes
+      await waitFor(() => {
+        expect(screen.getByText('Viridis')).toBeInTheDocument();
+        expect(screen.getByText('Jet')).toBeInTheDocument();
+        expect(screen.getByText('Hot')).toBeInTheDocument();
+      });
     });
   });
 

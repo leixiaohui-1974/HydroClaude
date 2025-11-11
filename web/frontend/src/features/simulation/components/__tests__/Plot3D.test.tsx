@@ -1,9 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Plot3D from '../Plot3D';
 
 describe('Plot3D', () => {
+  let user: ReturnType<typeof userEvent.setup>;
+
   // Mock simulation data
   const mockX = [0, 10, 20, 30, 40];
   const mockTime = [0, 0.5, 1.0, 1.5];
@@ -36,6 +38,7 @@ describe('Plot3D', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    user = userEvent.setup();
   });
 
   describe('Rendering', () => {
@@ -146,26 +149,30 @@ describe('Plot3D', () => {
       render(<Plot3D {...defaultProps} />);
 
       const colorSelector = screen.getByRole('combobox', { name: /配色/i });
-      await userEvent.click(colorSelector);
+      await user.click(colorSelector);
 
-      // Select Jet color scheme
-      const jetOption = screen.getByText('Jet');
-      await userEvent.click(jetOption);
+      // Wait for dropdown to open and select Jet color scheme
+      const jetOption = await screen.findByText('Jet');
+      await user.click(jetOption);
 
-      const plot = screen.getByTestId('plotly-plot');
-      const data = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
-
-      expect(data[0].colorscale).toBe('Jet');
+      // Wait for plot to update
+      await waitFor(() => {
+        const plot = screen.getByTestId('plotly-plot');
+        const data = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
+        expect(data[0].colorscale).toBe('Jet');
+      });
     });
 
     it.each(colorSchemes)('should support %s color scheme', async (scheme) => {
       render(<Plot3D {...defaultProps} />);
 
       const colorSelector = screen.getByRole('combobox', { name: /配色/i });
-      await userEvent.click(colorSelector);
+      await user.click(colorSelector);
 
-      // Check if option exists
-      expect(screen.getByText(scheme)).toBeInTheDocument();
+      // Wait for dropdown to open and check if option exists
+      await waitFor(() => {
+        expect(screen.getByText(scheme)).toBeInTheDocument();
+      });
     });
   });
 
@@ -184,31 +191,36 @@ describe('Plot3D', () => {
       render(<Plot3D {...defaultProps} />);
 
       const modeSelector = screen.getByRole('combobox', { name: /显示模式/i });
-      await userEvent.click(modeSelector);
+      await user.click(modeSelector);
 
-      const wireframeOption = screen.getByText(/线框/i);
-      await userEvent.click(wireframeOption);
+      // Wait for dropdown to open
+      const wireframeOption = await screen.findByText(/线框/i);
+      await user.click(wireframeOption);
 
-      const plot = screen.getByTestId('plotly-plot');
-      const data = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
-
-      expect(data[0].hidesurface).toBe(true);
+      // Wait for plot to update
+      await waitFor(() => {
+        const plot = screen.getByTestId('plotly-plot');
+        const data = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
+        expect(data[0].hidesurface).toBe(true);
+      });
     });
 
     it('should show both surface and wireframe in combined mode', async () => {
       render(<Plot3D {...defaultProps} />);
 
       const modeSelector = screen.getByRole('combobox', { name: /显示模式/i });
-      await userEvent.click(modeSelector);
+      await user.click(modeSelector);
 
-      const bothOption = screen.getByText(/两者/i);
-      await userEvent.click(bothOption);
+      // Wait for dropdown to open
+      const bothOption = await screen.findByText(/两者/i);
+      await user.click(bothOption);
 
-      const plot = screen.getByTestId('plotly-plot');
-      const data = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
-
-      // Should have multiple traces
-      expect(data.length).toBeGreaterThan(1);
+      // Wait for plot to update
+      await waitFor(() => {
+        const plot = screen.getByTestId('plotly-plot');
+        const data = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
+        expect(data.length).toBeGreaterThan(1);
+      });
     });
   });
 
@@ -240,8 +252,8 @@ describe('Plot3D', () => {
       const plot = screen.getByTestId('plotly-plot');
       const layout = JSON.parse(plot.getAttribute('data-plot-layout') || '{}');
 
-      expect(layout.scene.xaxis.title).toContain('位置');
-      expect(layout.scene.yaxis.title).toContain('时间');
+      expect(layout.scene.xaxis.title.text).toContain('位置');
+      expect(layout.scene.yaxis.title.text).toContain('时间');
     });
 
     it('should configure plot height', () => {
@@ -338,7 +350,7 @@ describe('Plot3D', () => {
       const data = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
 
       expect(data[0].colorbar).toBeDefined();
-      expect(data[0].colorbar.title).toContain('水深');
+      expect(data[0].colorbar.title.text).toContain('水深');
     });
 
     it('should display color bar with correct title for velocity', () => {
@@ -347,7 +359,7 @@ describe('Plot3D', () => {
       const plot = screen.getByTestId('plotly-plot');
       const data = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
 
-      expect(data[0].colorbar.title).toContain('流速');
+      expect(data[0].colorbar.title.text).toContain('流速');
     });
 
     it('should display color bar with correct title for discharge', () => {
@@ -356,7 +368,7 @@ describe('Plot3D', () => {
       const plot = screen.getByTestId('plotly-plot');
       const data = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
 
-      expect(data[0].colorbar.title).toContain('流量');
+      expect(data[0].colorbar.title.text).toContain('流量');
     });
   });
 
