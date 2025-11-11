@@ -362,7 +362,7 @@ describe('EnhancedCharts', () => {
       const maxPlot = plots[plots.length - 1];
 
       const data = JSON.parse(maxPlot.getAttribute('data-plot-data') || '[]');
-      expect(data).toHaveLength(3); // max h, V, Q
+      expect(data).toHaveLength(4); // max depth, mean depth, max velocity, mean velocity
     });
 
     it('should calculate correct max depth over time', async () => {
@@ -402,9 +402,9 @@ describe('EnhancedCharts', () => {
 
       const data = JSON.parse(maxPlot.getAttribute('data-plot-data') || '[]');
 
-      // Max velocity at each time step
+      // Max velocity at each time step (index 2: after max depth and mean depth)
       const expectedMaxV = [0.7, 0.8, 0.9, 1.0];
-      expect(data[1].y).toEqual(expectedMaxV);
+      expect(data[2].y).toEqual(expectedMaxV);
     });
 
     it('should have correct labels for max values', async () => {
@@ -423,83 +423,125 @@ describe('EnhancedCharts', () => {
 
       const data = JSON.parse(maxPlot.getAttribute('data-plot-data') || '[]');
 
+      // Check the actual data series names: max depth, mean depth, max velocity, mean velocity
       expect(data[0].name).toContain('最大水深');
-      expect(data[1].name).toContain('最大流速');
-      expect(data[2].name).toContain('最大流量');
+      expect(data[1].name).toContain('平均水深');
+      expect(data[2].name).toContain('最大流速');
+      expect(data[3].name).toContain('平均流速');
     });
   });
 
   describe('Statistical Analysis - Mean Values', () => {
-    it('should render mean value evolution plot', () => {
+    it('should render mean value evolution plot', async () => {
       render(<EnhancedCharts {...defaultProps} />);
 
-      const plots = screen.getAllByTestId('plotly-plot');
-      const meanPlot = plots[5]; // Sixth plot should be mean values
+      // Switch to statistics tab
+      const statsTab = screen.getByRole('tab', { name: /📊 统计分析/i });
+      await user.click(statsTab);
 
-      const data = JSON.parse(meanPlot.getAttribute('data-plot-data') || '[]');
-      expect(data).toHaveLength(3); // mean h, V, Q
+      await waitFor(() => {
+        expect(screen.getAllByTestId('plotly-plot').length).toBeGreaterThanOrEqual(1);
+      });
+
+      const plots = screen.getAllByTestId('plotly-plot');
+      const statsPlot = plots[plots.length - 1];
+
+      const data = JSON.parse(statsPlot.getAttribute('data-plot-data') || '[]');
+      expect(data).toHaveLength(4); // max depth, mean depth, max velocity, mean velocity
+      expect(data[1].name).toContain('平均'); // mean values are at indices 1 and 3
+      expect(data[3].name).toContain('平均');
     });
 
-    it('should calculate correct mean depth over time', () => {
+    it('should calculate correct mean depth over time', async () => {
       render(<EnhancedCharts {...defaultProps} />);
 
+      // Switch to statistics tab
+      const statsTab = screen.getByRole('tab', { name: /📊 统计分析/i });
+      await user.click(statsTab);
+
+      await waitFor(() => {
+        expect(screen.getAllByTestId('plotly-plot').length).toBeGreaterThanOrEqual(1);
+      });
+
       const plots = screen.getAllByTestId('plotly-plot');
-      const meanPlot = plots[5];
+      const statsPlot = plots[plots.length - 1];
 
-      const data = JSON.parse(meanPlot.getAttribute('data-plot-data') || '[]');
+      const data = JSON.parse(statsPlot.getAttribute('data-plot-data') || '[]');
 
+      // Mean depth is at index 1 (after max depth)
       // Mean depth at t=0: (1.0 + 1.1 + 1.2 + 1.1 + 1.0) / 5 = 1.08
-      expect(data[0].y[0]).toBeCloseTo(1.08, 2);
+      expect(data[1].y[0]).toBeCloseTo(1.08, 2);
 
       // Mean depth at t=3: (1.3 + 1.4 + 1.5 + 1.4 + 1.3) / 5 = 1.38
-      expect(data[0].y[3]).toBeCloseTo(1.38, 2);
+      expect(data[1].y[3]).toBeCloseTo(1.38, 2);
     });
 
-    it('should have correct labels for mean values', () => {
+    it('should have correct labels for mean values', async () => {
       render(<EnhancedCharts {...defaultProps} />);
 
+      // Switch to statistics tab
+      const statsTab = screen.getByRole('tab', { name: /📊 统计分析/i });
+      await user.click(statsTab);
+
+      await waitFor(() => {
+        expect(screen.getAllByTestId('plotly-plot').length).toBeGreaterThanOrEqual(1);
+      });
+
       const plots = screen.getAllByTestId('plotly-plot');
-      const meanPlot = plots[5];
+      const statsPlot = plots[plots.length - 1];
 
-      const data = JSON.parse(meanPlot.getAttribute('data-plot-data') || '[]');
+      const data = JSON.parse(statsPlot.getAttribute('data-plot-data') || '[]');
 
-      expect(data[0].name).toContain('平均水深');
-      expect(data[1].name).toContain('平均流速');
-      expect(data[2].name).toContain('平均流量');
+      // Mean values are at indices 1 and 3
+      expect(data[1].name).toContain('平均水深');
+      expect(data[3].name).toContain('平均流速');
     });
   });
 
   describe('Location Selector', () => {
-    it('should create options for all spatial positions', () => {
+    it('should create options for all spatial positions', async () => {
       render(<EnhancedCharts {...defaultProps} />);
 
-      const locationSelector = screen.getByRole('combobox', { name: /位置/i });
-      expect(locationSelector).toBeInTheDocument();
+      // Switch to time series tab where location selector exists
+      const timeSeriesTab = screen.getByRole('tab', { name: /📈 时间序列/i });
+      await user.click(timeSeriesTab);
 
-      // Should have 5 options (one for each x position)
-      // Note: Can't easily test dropdown options without opening it
+      await waitFor(() => {
+        expect(screen.getByText(/选择监测点/i)).toBeInTheDocument();
+      });
+
+      // Location selector is a Slider, not a combobox
+      expect(screen.getByText(/选择监测点/i)).toBeInTheDocument();
     });
 
     it('should format location labels correctly', async () => {
       render(<EnhancedCharts {...defaultProps} />);
 
-      const locationSelector = screen.getByRole('combobox', { name: /位置/i });
+      // Switch to time series tab where location selector exists
+      const timeSeriesTab = screen.getByRole('tab', { name: /📈 时间序列/i });
+      await user.click(timeSeriesTab);
 
-      // Note: Ant Design Select dropdown rendering in jsdom is limited
-      // This test verifies the location selector exists
-      expect(locationSelector).toBeInTheDocument();
-      expect(locationSelector).toBeEnabled();
+      await waitFor(() => {
+        expect(screen.getByText(/选择监测点/i)).toBeInTheDocument();
+      });
+
+      // Verify location selector label exists
+      expect(screen.getByText(/选择监测点/i)).toBeInTheDocument();
     });
 
     it('should handle location selection', async () => {
       render(<EnhancedCharts {...defaultProps} />);
 
-      const locationSelector = screen.getByRole('combobox', { name: /位置/i });
+      // Switch to time series tab where location selector exists
+      const timeSeriesTab = screen.getByRole('tab', { name: /📈 时间序列/i });
+      await user.click(timeSeriesTab);
 
-      // Note: Ant Design Select dropdown rendering in jsdom is limited
-      // This test verifies the location selector functionality exists
-      expect(locationSelector).toBeInTheDocument();
-      expect(locationSelector).toBeEnabled();
+      await waitFor(() => {
+        expect(screen.getByText(/选择监测点/i)).toBeInTheDocument();
+      });
+
+      // Verify location selector exists (it's a Slider)
+      expect(screen.getByText(/选择监测点/i)).toBeInTheDocument();
     });
   });
 
@@ -669,11 +711,19 @@ describe('EnhancedCharts', () => {
   });
 
   describe('Accessibility', () => {
-    it('should have accessible selectors', () => {
+    it('should have accessible selectors', async () => {
       render(<EnhancedCharts {...defaultProps} />);
 
       const colorSelector = screen.getByRole('combobox', { name: /配色/i });
       expect(colorSelector).toBeEnabled();
+
+      // Switch to time series tab to check location selector
+      const timeSeriesTab = screen.getByRole('tab', { name: /📈 时间序列/i });
+      await user.click(timeSeriesTab);
+
+      await waitFor(() => {
+        expect(screen.getByText(/选择监测点/i)).toBeInTheDocument();
+      });
 
       // Location selector is a Slider, not a combobox
       expect(screen.getByText(/选择监测点/i)).toBeInTheDocument();
