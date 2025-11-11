@@ -402,12 +402,12 @@ describe('SimulationResults Integration Tests', () => {
         expect(plots.length).toBeGreaterThanOrEqual(1);
       });
 
-      // Verify that all tab buttons exist
-      expect(screen.getByRole('tab', { name: /等值线图/i })).toBeInTheDocument();
-      expect(screen.getByRole('tab', { name: /热力图/i })).toBeInTheDocument();
-      expect(screen.getByRole('tab', { name: /流量热力图/i })).toBeInTheDocument();
-      expect(screen.getByRole('tab', { name: /时间序列/i })).toBeInTheDocument();
-      expect(screen.getByRole('tab', { name: /统计分析/i })).toBeInTheDocument();
+      // Verify that all tab buttons exist (use exact matching for tabs with similar names)
+      expect(screen.getByRole('tab', { name: /📊 等值线图/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /^🔥 热力图$/i })).toBeInTheDocument(); // Exact match to avoid "流量热力图"
+      expect(screen.getByRole('tab', { name: /💧 流量热力图/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /📈 时间序列/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /📊 统计分析/i })).toBeInTheDocument();
     });
 
     it('should pass complete data to EnhancedCharts', async () => {
