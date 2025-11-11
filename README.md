@@ -13,8 +13,9 @@
 - 🚀 **High Performance**: Numba JIT acceleration (8.80x speedup)
 - 🎯 **High Accuracy**: 2nd order MUSCL reconstruction
 - 💧 **Well-Balanced**: Preserves Lake at Rest (hydrostatic reconstruction)
-- 🏗️ **Production Ready**: v1.0.0-rc, comprehensive testing
+- 🏗️ **Production Ready**: v1.3.0 (90% ready), comprehensive testing
 - 📚 **Full Documentation**: API reference, quick start guide, examples
+- 🎬 **Enhanced Visualization**: Animation, 3D plots, advanced charts (v1.4.0 🆕)
 
 **快速链接**:
 - 📖 [Quick Start Guide](docs/USER_QUICK_START.md) - 5分钟入门教程
@@ -150,21 +151,29 @@ python your_first_simulation.py
 
 ## 🌐 HydroClaude Web - Visual Modeling Platform
 
-> **🎉 NEW in v1.3.0**: Configuration templates, parameter guide, and enhanced API validation!
+> **🎉 NEW in v1.4.0**: Animation controls, 3D visualization, and advanced charts!
+> **✨ NEW in v1.3.0**: Configuration templates, parameter guide, and enhanced API validation!
 
 **HydroClaude Web** is a modern, full-featured web platform for hydraulic modeling and simulation.
 
 ### ✨ Key Features
 
+#### Core Platform
 - **🎨 Visual Modeling**: Drag-and-drop interface for building hydraulic models
 - **🔍 Smart Validation**: 4-level validation system (topology, parameters, boundaries, physics)
-- **📦 Configuration Templates**: 4 verified templates for quick start (NEW v1.3.0) 🆕
-- **📖 Parameter Guide**: 800-line comprehensive guide for parameter selection (NEW v1.3.0) 🆕
-- **🛡️ Enhanced API Validation**: 3-layer validation architecture (NEW v1.3.0) 🆕
+- **📦 Configuration Templates**: 4 verified templates for quick start (v1.3.0)
+- **📖 Parameter Guide**: 800-line comprehensive guide for parameter selection (v1.3.0)
+- **🛡️ Enhanced API Validation**: 3-layer validation architecture (v1.3.0)
 - **🔄 Seamless Integration**: Graphical model → Simulation config → Results
-- **📊 Interactive Visualization**: Real-time plots with Plotly.js
 - **💾 Model Management**: Import/Export models as JSON
 - **⚡ Modern Tech Stack**: React 18 + TypeScript + Redux Toolkit + FastAPI
+
+#### Enhanced Visualization (v1.4.0 🆕)
+- **🎬 Animation Controls**: Play/pause/stop with variable speed (0.25x-20x)
+- **🎨 3D Visualization**: Interactive 3D surface plots with 10+ color schemes
+- **📊 Advanced Charts**: Contour plots, heatmaps, time series, statistical analysis
+- **🔄 Multiple View Modes**: Classic 2D, 3D surface, enhanced analytics
+- **🎯 Interactive Exploration**: Rotate, zoom, pan 3D plots; select points for time series
 
 ### 🚀 Quick Start
 
@@ -197,21 +206,32 @@ open http://localhost:5173
 | **[Example Use Cases](web/EXAMPLE_USE_CASES.md)** 🆕 | 6 real-world application examples (v1.3.0) |
 | **[Example Models](web/examples/)** | Pre-built example models |
 
-### 📚 v1.3.0 Complete Documentation Index 🆕
+### 📚 Complete Documentation Index
 
+#### v1.4.0 Documentation 🆕
 | Category | Document | Description |
 |----------|----------|-------------|
-| **Quick Reference** | [Quick Reference Card](QUICK_REFERENCE_v1.3.0.md) 🆕 | A4 printable quick reference (v1.3.0) |
-| **User Guides** | [FAQ](FAQ.md) 🆕 | 90+ common questions and answers (v1.3.0) |
-| | [Deployment Guide](DEPLOYMENT_GUIDE.md) 🆕 | Multi-environment deployment instructions (v1.3.0) |
-| **Technical Docs** | [API Specification](API_SPECIFICATION.md) 🆕 | Complete OpenAPI 3.0 specification (v1.3.0) |
-| | [Architecture](ARCHITECTURE.md) 🆕 | System architecture design document (v1.3.0) |
-| | [CHANGELOG](CHANGELOG.md) 🆕 | Complete version history (v1.3.0) |
-| | [Roadmap](ROADMAP.md) 🆕 | Future development roadmap v1.4-v3.0 (v1.3.0) |
-| **Quality** | [Project Certification](PROJECT_CERTIFICATION.md) 🆕 | A-grade quality certification (v1.3.0) |
-| **Release** | [Release Notes v1.3.0](RELEASE_NOTES_v1.3.0.md) 🆕 | v1.3.0 release notes (v1.3.0) |
-| | [Final Delivery Report](V1.3.0_FINAL_DELIVERY.md) 🆕 | Complete delivery documentation (v1.3.0) |
-| | [完成报告（中文）](V1.3.0_完成报告_中文版.md) 🆕 | Chinese version completion report (v1.3.0) |
+| **Release** | [Release Notes v1.4.0](RELEASE_NOTES_v1.4.0.md) 🆕 | v1.4.0 enhanced visualization release notes |
+| | [Development Plan](V1.4.0_DEVELOPMENT_PLAN.md) 🆕 | Complete technical specifications and roadmap |
+| | [完成总结（中文）](V1.4.0_完成总结.md) 🆕 | Chinese version completion summary |
+| **Features** | Animation Controls | Play/pause/stop, variable speed (0.25x-20x) |
+| | 3D Visualization | Interactive 3D surface plots, 10+ color schemes |
+| | Enhanced Charts | Contour, heatmap, time series, statistics |
+
+#### v1.3.0 Documentation
+| Category | Document | Description |
+|----------|----------|-------------|
+| **Quick Reference** | [Quick Reference Card](QUICK_REFERENCE_v1.3.0.md) | A4 printable quick reference |
+| **User Guides** | [FAQ](FAQ.md) | 90+ common questions and answers |
+| | [Deployment Guide](DEPLOYMENT_GUIDE.md) | Multi-environment deployment instructions |
+| **Technical Docs** | [API Specification](API_SPECIFICATION.md) | Complete OpenAPI 3.0 specification |
+| | [Architecture](ARCHITECTURE.md) | System architecture design document |
+| | [CHANGELOG](CHANGELOG.md) | Complete version history |
+| | [Roadmap](ROADMAP.md) | Future development roadmap v1.4-v3.0 |
+| **Quality** | [Project Certification](PROJECT_CERTIFICATION.md) | A-grade quality certification |
+| **Release** | [Release Notes v1.3.0](RELEASE_NOTES_v1.3.0.md) | v1.3.0 release notes |
+| | [Final Delivery Report](V1.3.0_FINAL_DELIVERY.md) | Complete delivery documentation |
+| | [完成报告（中文）](V1.3.0_完成报告_中文版.md) | Chinese version completion report |
 
 ### 🎯 Web Features
 
@@ -251,24 +271,33 @@ open http://localhost:5173
 - ✅ **Cross-validation**: CFL-order matching, boundary completeness
 - ✅ **100% test pass**: Error handling fully verified
 
-### 📊 Web System Stats (Updated v1.3.0)
+### 📊 Web System Stats (Updated v1.4.0)
 
 ```
-Frontend:          4,000+ lines TypeScript
+Frontend:          6,200+ lines TypeScript (+2,200 in v1.4.0) 🆕
 Backend:           2,500+ lines Python
-Components:        15+ React components
+Components:        18+ React components (+3 visualization in v1.4.0) 🆕
 Redux Actions:     25+ actions
-Validation Rules:  30+ rules (Enhanced in v1.3.0) 🆕
-Config Templates:  4 verified templates (NEW in v1.3.0) 🆕
-Documentation:     3,000+ lines (NEW in v1.3.0) 🆕
+Validation Rules:  30+ rules (Enhanced in v1.3.0)
+Config Templates:  4 verified templates (v1.3.0)
+Documentation:     5,600+ lines (+2,600 in v1.4.0) 🆕
 Test Coverage:     100% (43/43 pass) ✅
 Mass Conservation: 0.0% error ✅
-Status:            ✅ Production Ready (90%)
-Quality Grade:     A
+
+Visualization (NEW v1.4.0): 🆕
+- Animation Control  (180 lines TypeScript)
+- 3D Visualization   (250 lines TypeScript)
+- Enhanced Charts    (380 lines TypeScript)
+- 10+ Color Schemes  (Viridis, Jet, Hot, Cool, etc.)
+- 8 Chart Types      (2D, 3D, Contour, Heatmap, Time Series, Stats)
+
+Status:            ✅ v1.3.0 Production Ready (90%), v1.4.0 Beta (Testing)
+Quality Grade:     A (v1.3.0), A (v1.4.0 - Pending Testing)
 ```
 
-### 🎓 Example Workflow
+### 🎓 Example Workflows
 
+#### Classic Workflow (v1.3.0)
 ```
 1. Open Modeling Workspace
 2. Drag components to canvas (Boundary → Canal → Boundary)
@@ -280,8 +309,33 @@ Quality Grade:     A
 8. View results (water depth, velocity plots)
 9. Export model for future use
 ```
-
 **Total time**: ~5 minutes from modeling to results! 🚀
+
+#### Enhanced Visualization Workflow (v1.4.0 🆕)
+```
+1-6. [Same as above]
+7. Switch to "Simulation Management" tab
+8. View results with new visualization options:
+   📊 Classic View:
+      - Enhanced 2D plots (depth, velocity, discharge)
+   🎬 Animation Control:
+      - Click ▶️ Play to auto-animate simulation
+      - Adjust speed (0.25x-20x)
+      - Enable loop mode
+   🎨 3D Visualization:
+      - Switch to "3D可视化" tab
+      - View interactive 3D surface plots
+      - Rotate/zoom with mouse
+      - Try different color schemes
+   📈 Enhanced Charts:
+      - Switch to "增强图表" tab
+      - View contour plots
+      - Explore heatmaps
+      - Select location for time series
+      - Review statistical analysis
+9. Export visualizations and data
+```
+**Total time**: ~7 minutes with full visualization exploration! 🎨📊🎬
 
 ---
 
