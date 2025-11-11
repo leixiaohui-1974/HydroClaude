@@ -368,19 +368,28 @@ describe('SimulationResults Integration Tests', () => {
       const threeDTab = screen.getByRole('tab', { name: /3D可视化/i });
       await user.click(threeDTab);
 
-      // Wait for plots to render with correct data
+      // Wait for both 3D plots to render with correct data
+      // Note: 3D tab has 2 plots (depth and velocity)
       await waitFor(() => {
         const plots = screen.getAllByTestId('plotly-plot');
-        expect(plots.length).toBeGreaterThan(0);
+        expect(plots.length).toBeGreaterThanOrEqual(2);
 
-        // Verify data is correct (not loading state)
-        const plot3DData = JSON.parse(plots[0].getAttribute('data-plot-data') || '[]');
-        expect(plot3DData[0]).toBeDefined();
-        expect(plot3DData[0].y).toEqual(mockResult.time);
-      });
+        // Verify both plots have complete data structure
+        const depthPlotData = JSON.parse(plots[0].getAttribute('data-plot-data') || '[]');
+        expect(depthPlotData[0]).toBeDefined();
+        expect(depthPlotData[0].x).toBeDefined();
+        expect(depthPlotData[0].y).toBeDefined();
+        expect(depthPlotData[0].z).toBeDefined();
+
+        // Verify the data arrays have correct length
+        expect(depthPlotData[0].x.length).toBe(mockResult.x.length);
+        expect(depthPlotData[0].y.length).toBe(mockResult.time.length);
+        expect(depthPlotData[0].z.length).toBe(mockResult.h.length);
+      }, { timeout: 5000 });
 
       const plots = screen.getAllByTestId('plotly-plot');
-      const plot3DData = JSON.parse(plots[0].getAttribute('data-plot-data') || '[]');
+      const depthPlot = plots[0]; // First plot is depth (variable='h')
+      const plot3DData = JSON.parse(depthPlot.getAttribute('data-plot-data') || '[]');
 
       expect(plot3DData[0].x).toEqual(mockResult.x);
       expect(plot3DData[0].y).toEqual(mockResult.time);
@@ -421,15 +430,17 @@ describe('SimulationResults Integration Tests', () => {
         const plots = screen.getAllByTestId('plotly-plot');
         expect(plots.length).toBeGreaterThan(0);
 
-        // Verify data is correct (not loading state)
-        const contourData = JSON.parse(plots[0].getAttribute('data-plot-data') || '[]');
+        // Get the last (newest) plot to avoid transition issues
+        const plot = plots[plots.length - 1];
+        const contourData = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
         expect(contourData[0]).toBeDefined();
         expect(contourData[0].y).toEqual(mockResult.time);
       });
 
       // Verify contour plot has all data
       const plots = screen.getAllByTestId('plotly-plot');
-      const contourData = JSON.parse(plots[0].getAttribute('data-plot-data') || '[]');
+      const plot = plots[plots.length - 1]; // Get the last (newest) plot
+      const contourData = JSON.parse(plot.getAttribute('data-plot-data') || '[]');
 
       expect(contourData[0].x).toEqual(mockResult.x);
       expect(contourData[0].y).toEqual(mockResult.time);
