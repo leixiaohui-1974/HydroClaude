@@ -368,10 +368,15 @@ describe('SimulationResults Integration Tests', () => {
       const threeDTab = screen.getByRole('tab', { name: /3D可视化/i });
       await user.click(threeDTab);
 
-      // Wait for plots to render
+      // Wait for plots to render with correct data
       await waitFor(() => {
         const plots = screen.getAllByTestId('plotly-plot');
         expect(plots.length).toBeGreaterThan(0);
+
+        // Verify data is correct (not loading state)
+        const plot3DData = JSON.parse(plots[0].getAttribute('data-plot-data') || '[]');
+        expect(plot3DData[0]).toBeDefined();
+        expect(plot3DData[0].y).toEqual(mockResult.time);
       });
 
       const plots = screen.getAllByTestId('plotly-plot');
@@ -390,11 +395,19 @@ describe('SimulationResults Integration Tests', () => {
       const enhancedTab = screen.getByText(/增强图表/i);
       await user.click(enhancedTab);
 
-      // Should have contour, heatmaps, time series, statistics
+      // EnhancedCharts uses Tabs, so only the active tab's plot is rendered
+      // The contour plot tab should be active by default
       await waitFor(() => {
         const plots = screen.getAllByTestId('plotly-plot');
-        expect(plots.length).toBeGreaterThanOrEqual(6);
+        expect(plots.length).toBeGreaterThanOrEqual(1);
       });
+
+      // Verify that all tab buttons exist
+      expect(screen.getByRole('tab', { name: /等值线图/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /热力图/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /流量热力图/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /时间序列/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /统计分析/i })).toBeInTheDocument();
     });
 
     it('should pass complete data to EnhancedCharts', async () => {
@@ -403,10 +416,15 @@ describe('SimulationResults Integration Tests', () => {
       const enhancedTab = screen.getByText(/增强图表/i);
       await user.click(enhancedTab);
 
-      // Wait for plots to render
+      // Wait for plots to render with correct data
       await waitFor(() => {
         const plots = screen.getAllByTestId('plotly-plot');
         expect(plots.length).toBeGreaterThan(0);
+
+        // Verify data is correct (not loading state)
+        const contourData = JSON.parse(plots[0].getAttribute('data-plot-data') || '[]');
+        expect(contourData[0]).toBeDefined();
+        expect(contourData[0].y).toEqual(mockResult.time);
       });
 
       // Verify contour plot has all data
