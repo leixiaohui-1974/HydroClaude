@@ -28,6 +28,7 @@
     "react-plotly.js": "^2.6.0",
     "react-redux": "^9.2.0",
     "reactflow": "^11.11.4",
+    "xlsx": "^0.18.5",
     "zod": "^4.1.12"
   },
   "devDependencies": {
@@ -40,6 +41,7 @@
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
     "@vitejs/plugin-react": "^4.2.1",
+    "@vitest/coverage-v8": "^1.0.4",
     "@vitest/ui": "^1.0.4",
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
@@ -47,7 +49,6 @@
     "jsdom": "^23.0.1",
     "typescript": "^5.3.3",
     "vite": "^5.0.7",
-    "vitest": "^1.0.4",
-    "@vitest/coverage-v8": "^1.0.4"
+    "vitest": "^1.0.4"
   }
 }
