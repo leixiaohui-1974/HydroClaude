@@ -70,7 +70,7 @@ describe('EnhancedCharts', () => {
     it('should render location selector for time series', () => {
       render(<EnhancedCharts {...defaultProps} />);
 
-      expect(screen.getByText(/位置选择/i)).toBeInTheDocument();
+      expect(screen.getByText(/选择监测点/i)).toBeInTheDocument();
     });
   });
 
@@ -573,8 +573,8 @@ describe('EnhancedCharts', () => {
       const colorSelector = screen.getByRole('combobox', { name: /配色/i });
       expect(colorSelector).toBeEnabled();
 
-      const locationSelector = screen.getByRole('combobox', { name: /位置/i });
-      expect(locationSelector).toBeEnabled();
+      // Location selector is a Slider, not a combobox
+      expect(screen.getByText(/选择监测点/i)).toBeInTheDocument();
     });
 
     it('should provide visual grouping for chart sections', () => {

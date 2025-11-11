@@ -64,13 +64,13 @@ describe('SimulationResults Integration Tests', () => {
       // Metrics card
       expect(screen.getByText(/性能指标/i)).toBeInTheDocument();
 
-      // Animation controller
-      expect(screen.getByText(/动画控制/i)).toBeInTheDocument();
+      // Animation controller (use heading role to be specific)
+      expect(screen.getByRole('heading', { name: /动画控制/i })).toBeInTheDocument();
 
-      // Tabs
-      expect(screen.getByText(/经典视图/i)).toBeInTheDocument();
-      expect(screen.getByText(/3D可视化/i)).toBeInTheDocument();
-      expect(screen.getByText(/增强图表/i)).toBeInTheDocument();
+      // Tabs (use tab role to be specific)
+      expect(screen.getByRole('tab', { name: /经典视图/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /3D可视化/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /增强图表/i })).toBeInTheDocument();
     });
 
     it('should display correct task ID and status', () => {
@@ -229,7 +229,7 @@ describe('SimulationResults Integration Tests', () => {
     it('should switch to 3D visualization tab', async () => {
       render(<SimulationResults result={mockResult} />);
 
-      const threeDTab = screen.getByText(/3D可视化/i);
+      const threeDTab = screen.getByRole('tab', { name: /3D可视化/i });
       await user.click(threeDTab);
 
       // Wait for tab content to render
@@ -274,7 +274,7 @@ describe('SimulationResults Integration Tests', () => {
       });
 
       // Switch to 3D tab
-      const threeDTab = screen.getByText(/3D可视化/i);
+      const threeDTab = screen.getByRole('tab', { name: /3D可视化/i });
       await user.click(threeDTab);
 
       // Wait for tab to switch and verify frame counter still shows 3
@@ -352,7 +352,7 @@ describe('SimulationResults Integration Tests', () => {
     it('should render 3D plots when tab is active', async () => {
       render(<SimulationResults result={mockResult} />);
 
-      const threeDTab = screen.getByText(/3D可视化/i);
+      const threeDTab = screen.getByRole('tab', { name: /3D可视化/i });
       await user.click(threeDTab);
 
       // Wait for tab content to render
@@ -365,7 +365,7 @@ describe('SimulationResults Integration Tests', () => {
     it('should pass all time steps to 3D plots', async () => {
       render(<SimulationResults result={mockResult} />);
 
-      const threeDTab = screen.getByText(/3D可视化/i);
+      const threeDTab = screen.getByRole('tab', { name: /3D可视化/i });
       await user.click(threeDTab);
 
       // Wait for plots to render
@@ -524,7 +524,7 @@ describe('SimulationResults Integration Tests', () => {
 
       // Cards provide semantic structure
       expect(screen.getByText(/性能指标/i)).toBeInTheDocument();
-      expect(screen.getByText(/动画控制/i)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /动画控制/i })).toBeInTheDocument();
     });
 
     it('should provide clear visual feedback for status', () => {
