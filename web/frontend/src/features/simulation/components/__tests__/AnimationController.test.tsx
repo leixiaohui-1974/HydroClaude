@@ -17,13 +17,14 @@ describe('AnimationController', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.useFakeTimers();
-    // Configure userEvent to work with fake timers
-    user = userEvent.setup({ delay: null });
+    // Don't use fake timers for AnimationController tests
+    // as they conflict with requestAnimationFrame mocking
+    user = userEvent.setup();
   });
 
   afterEach(() => {
-    vi.useRealTimers();
+    // Ensure all timers are cleared
+    vi.clearAllTimers();
   });
 
   describe('Rendering', () => {
@@ -117,12 +118,10 @@ describe('AnimationController', () => {
         expect(screen.getByRole('button', { name: /暂停/i })).toBeInTheDocument();
       });
 
-      // Advance fake timers to trigger frame changes
-      vi.advanceTimersByTime(100);
-
+      // Wait for frame changes to be triggered by requestAnimationFrame
       await waitFor(() => {
         expect(mockOnFrameChange).toHaveBeenCalled();
-      });
+      }, { timeout: 1000 });
     });
 
     it('should stop and reset to frame 0 when reset button is clicked', async () => {
@@ -285,12 +284,10 @@ describe('AnimationController', () => {
         expect(screen.getByRole('button', { name: /暂停/i })).toBeInTheDocument();
       });
 
-      // Advance timer to trigger frame change
-      vi.advanceTimersByTime(100);
-
+      // Wait for frame change to loop back to 0
       await waitFor(() => {
         expect(mockOnFrameChange).toHaveBeenCalledWith(0);
-      });
+      }, { timeout: 1000 });
     });
 
     it('should stop at last frame when loop is disabled', async () => {
@@ -314,19 +311,15 @@ describe('AnimationController', () => {
         expect(screen.getByRole('button', { name: /暂停/i })).toBeInTheDocument();
       });
 
-      // Advance to next frame (last frame)
-      vi.advanceTimersByTime(100);
-
+      // Wait for animation to reach last frame
       await waitFor(() => {
         expect(mockOnFrameChange).toHaveBeenCalledWith(99);
-      });
+      }, { timeout: 1000 });
 
       // Should stop playing at last frame
-      vi.advanceTimersByTime(100);
-
       await waitFor(() => {
         expect(screen.getByRole('button', { name: /播放/i })).toBeInTheDocument();
-      });
+      }, { timeout: 1000 });
     });
   });
 
