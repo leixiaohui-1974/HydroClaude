@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, memo } from 'react';
 import Plot from 'react-plotly.js';
 import { Card, Tabs, Select, Space, Typography, Slider, Row, Col } from 'antd';
 
@@ -475,4 +475,5 @@ const EnhancedCharts = ({ x, time, h, V, Q }: EnhancedChartsProps) => {
   );
 };
 
-export default EnhancedCharts;
+// Memoize to prevent unnecessary re-renders when props haven't changed
+export default memo(EnhancedCharts);

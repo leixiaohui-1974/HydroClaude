@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import { Button, Space, Select, Switch, Typography, Tooltip, Slider } from 'antd';
 import {
   PlayCircleOutlined,
@@ -266,4 +266,6 @@ const AnimationController = ({
   );
 };
 
-export default AnimationController;
+// Memoize to prevent unnecessary re-renders when props haven't changed
+// Note: onFrameChange callback should be memoized by parent component
+export default memo(AnimationController);

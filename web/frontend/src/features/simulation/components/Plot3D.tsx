@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, memo } from 'react';
 import Plot from 'react-plotly.js';
 import { Card, Select, Space, Typography, Button, Tooltip } from 'antd';
 import {
@@ -320,4 +320,5 @@ const Plot3D = ({
   );
 };
 
-export default Plot3D;
+// Memoize to prevent unnecessary re-renders when props haven't changed
+export default memo(Plot3D);
