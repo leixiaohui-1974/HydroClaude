@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-11-12 09:38:25",
+  "total": 6,
+  "passed": 1,
+  "failed": 5,
+  "success_rate": 16.666666666666664,
+  "results": {
+    "API\u5065\u5eb7\u68c0\u67e5": "FAIL",
+    "\u9875\u9762\u52a0\u8f7d": "FAIL",
+    "\u5efa\u6a21\u5de5\u4f5c\u53f0": "FAIL",
+    "\u7ec4\u4ef6\u62d6\u62fd": "PASS",
+    "\u521b\u5efa\u4eff\u771f": "FAIL",
+    "\u4eff\u771f\u5217\u8868": "FAIL"
+  }
+}
