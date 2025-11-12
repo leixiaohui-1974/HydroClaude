@@ -25,11 +25,27 @@
 - components/ModelIO.tsx (361行) - 导入导出UI
 - components/ModelLibrary.tsx (462行) - 模型库UI
 
-**测试文档**: 2,129行
+**测试文档**: 2,500+行
 - V1.5.0_MANUAL_TESTING_CHECKLIST.md (41项测试用例)
 - V1.5.0_QUICK_TEST_GUIDE.md (15分钟快速测试指南)
 - V1.5.0_TEST_PROGRESS.md (测试进度追踪)
 - V1.5.0_SESSION_SUMMARY.md (完整会话总结)
+- V1.5.0_COMPONENT_TESTING_SUMMARY.md (组件测试总结)
+- V1.5.0_TEST_SESSION_SUMMARY.md (测试会话总结)
+- V1.5.0_UNIT_TESTING_SUMMARY.md (单元测试总结)
+
+**单元测试**: 310个测试，100%通过
+- modelExport.test.ts (35个测试)
+- modelImport.test.ts (36个测试)
+- storageManager.test.ts (41个测试)
+- ModelIO.test.tsx (23个测试)
+- ModelLibrary.test.tsx (23个测试)
+- Simulation组件测试 (152个测试)
+
+**测试覆盖率**:
+- 核心模块: 80%+ (model-io.ts: 97.05%)
+- Simulation组件: 95.99% (优秀)
+- utils模块: 67.17% (良好)
 
 **构建状态**:
 - ✅ TypeScript编译: 0错误
