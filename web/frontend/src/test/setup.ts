@@ -1,4 +1,4 @@
-import { expect, afterEach, vi } from 'vitest';
+import { afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
@@ -9,12 +9,27 @@ afterEach(() => {
 });
 
 // Mock requestAnimationFrame for animation tests
-global.requestAnimationFrame = vi.fn((cb) => {
-  setTimeout(cb, 0);
-  return 0;
+// Simple mock that can work with both real and fake timers
+let rafId = 0;
+const rafCallbacks = new Map<number, FrameRequestCallback>();
+
+global.requestAnimationFrame = vi.fn((cb: FrameRequestCallback) => {
+  const id = ++rafId;
+  rafCallbacks.set(id, cb);
+  // Use setImmediate-like behavior via setTimeout with 0 delay
+  setTimeout(() => {
+    const callback = rafCallbacks.get(id);
+    if (callback) {
+      rafCallbacks.delete(id);
+      callback(performance.now());
+    }
+  }, 0);
+  return id;
 });
 
-global.cancelAnimationFrame = vi.fn();
+global.cancelAnimationFrame = vi.fn((id: number) => {
+  rafCallbacks.delete(id);
+});
 
 // Mock Plotly.js for component tests (heavy library)
 vi.mock('react-plotly.js', () => ({

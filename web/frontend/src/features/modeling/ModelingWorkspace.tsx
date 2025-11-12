@@ -3,18 +3,20 @@
  * 建模工作台主页面
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Layout, Button, Space, message, Modal, Tooltip } from 'antd';
 import {
-  SaveOutlined,
-  FolderOpenOutlined,
   PlayCircleOutlined,
   CheckCircleOutlined,
   UndoOutlined,
   RedoOutlined,
   AppstoreOutlined,
-  LayoutOutlined
+  LayoutOutlined,
+  DatabaseOutlined,
+  BookOutlined
 } from '@ant-design/icons';
+
+import { useKeyboardShortcuts, DEFAULT_SHORTCUTS } from '@/hooks/useKeyboardShortcuts';
 
 import { useAppDispatch, useAppSelector } from '@/shared/hooks/redux';
 import {
@@ -48,7 +50,10 @@ import { createSimulation } from '@/services/api';
 import ComponentPalette from './components/ComponentPalette';
 import ModelCanvas from './components/ModelCanvas';
 import PropertyPanel from './components/PropertyPanel';
-import { ComponentTemplate } from './types/model.types';
+import ModelIO from './components/ModelIO';
+import ModelLibrary from './components/ModelLibrary';
+import TemplateGallery from './components/TemplateGallery';
+import { ComponentTemplate, HydraulicModel } from './types/model.types';
 
 import './ModelingWorkspace.css';
 
@@ -57,6 +62,10 @@ const { Header, Sider, Content } = Layout;
 const ModelingWorkspace: React.FC = () => {
   const dispatch = useAppDispatch();
 
+  // Local state for model library modal
+  const [showModelLibrary, setShowModelLibrary] = useState(false);
+  const [showTemplateGallery, setShowTemplateGallery] = useState(false);
+
   // Redux状态
   const canUndo = useAppSelector(selectCanUndo);
   const canRedo = useAppSelector(selectCanRedo);
@@ -64,6 +73,36 @@ const ModelingWorkspace: React.FC = () => {
   const showProperty = useAppSelector(selectShowPropertyPanel);
   const currentModel = useAppSelector(selectCurrentModel);
   const isEmpty = useAppSelector(selectIsModelEmpty);
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: DEFAULT_SHORTCUTS.NEW,
+      handler: () => handleNewModel(),
+      description: 'New model'
+    },
+    {
+      key: DEFAULT_SHORTCUTS.OPEN,
+      handler: () => handleOpenLibrary(),
+      description: 'Open model library'
+    },
+    {
+      key: DEFAULT_SHORTCUTS.UNDO,
+      handler: () => {
+        if (canUndo) handleUndo();
+      },
+      description: 'Undo',
+      enabled: canUndo
+    },
+    {
+      key: DEFAULT_SHORTCUTS.REDO,
+      handler: () => {
+        if (canRedo) handleRedo();
+      },
+      description: 'Redo',
+      enabled: canRedo
+    }
+  ]);
 
   // 处理组件拖拽开始
   const handleComponentDragStart = (template: ComponentTemplate, _event: React.DragEvent) => {
@@ -105,80 +144,48 @@ const ModelingWorkspace: React.FC = () => {
     }
   };
 
-  // 处理保存
-  const handleSave = () => {
-    if (!currentModel) {
-      message.warning('没有可保存的模型');
-      return;
+  // 处理从模型库加载模型
+  const handleLoadModelFromLibrary = (model: HydraulicModel) => {
+    if (!isEmpty) {
+      Modal.confirm({
+        title: '确认加载模型',
+        content: '加载新模型将覆盖当前模型，是否继续？',
+        onOk: () => {
+          dispatch(importModel({ model, replace: true }));
+        }
+      });
+    } else {
+      dispatch(importModel({ model, replace: true }));
     }
-
-    // 保存为JSON文件
-    const modelJson = JSON.stringify(currentModel, null, 2);
-    const blob = new Blob([modelJson], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${currentModel.name || 'model'}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-
-    message.success('模型已导出');
   };
 
-  // 处理导入
-  const handleImport = () => {
-    // 创建隐藏的文件输入元素
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
+  // 处理打开模型库
+  const handleOpenLibrary = () => {
+    setShowModelLibrary(true);
+  };
 
-    input.onchange = (e: Event) => {
-      const target = e.target as HTMLInputElement;
-      const file = target.files?.[0];
+  // 处理打开模板画廊
+  const handleOpenTemplates = () => {
+    setShowTemplateGallery(true);
+  };
 
-      if (!file) {
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const content = event.target?.result as string;
-          const importedModel = JSON.parse(content);
-
-          // 验证导入的模型格式
-          if (!importedModel.id || !importedModel.nodes || !Array.isArray(importedModel.nodes)) {
-            throw new Error('无效的模型文件格式');
-          }
-
-          // 如果当前有模型且未保存，提示用户
-          if (!isEmpty) {
-            Modal.confirm({
-              title: '确认导入',
-              content: '导入新模型将覆盖当前模型，是否继续？',
-              onOk: () => {
-                dispatch(importModel({ model: importedModel, replace: true }));
-                message.success(`模型"${importedModel.name}"已导入`);
-              }
-            });
-          } else {
-            dispatch(importModel({ model: importedModel, replace: true }));
-            message.success(`模型"${importedModel.name}"已导入`);
-          }
-        } catch (error: any) {
-          console.error('Import error:', error);
-          message.error(`导入失败: ${error.message || '无效的文件格式'}`);
+  // 处理从模板加载模型
+  const handleLoadTemplate = (model: HydraulicModel) => {
+    if (!isEmpty) {
+      Modal.confirm({
+        title: '确认应用模板',
+        content: '应用模板将覆盖当前模型，是否继续？',
+        onOk: () => {
+          dispatch(importModel({ model, replace: true }));
+          setShowTemplateGallery(false);
+          message.success('模板已应用');
         }
-      };
-
-      reader.onerror = () => {
-        message.error('读取文件失败');
-      };
-
-      reader.readAsText(file);
-    };
-
-    input.click();
+      });
+    } else {
+      dispatch(importModel({ model, replace: true }));
+      setShowTemplateGallery(false);
+      message.success('模板已应用');
+    }
   };
 
   // 处理验证
@@ -336,24 +343,30 @@ const ModelingWorkspace: React.FC = () => {
             </Button>
           </Tooltip>
 
-          <Tooltip title="导入模型">
+          <Tooltip title="打开模型库">
             <Button
-              icon={<FolderOpenOutlined />}
-              onClick={handleImport}
+              icon={<DatabaseOutlined />}
+              onClick={handleOpenLibrary}
             >
-              导入
+              模型库
             </Button>
           </Tooltip>
 
-          <Tooltip title="导出模型">
+          <Tooltip title="模板画廊">
             <Button
-              icon={<SaveOutlined />}
-              onClick={handleSave}
-              disabled={isEmpty}
+              icon={<BookOutlined />}
+              onClick={handleOpenTemplates}
             >
-              导出
+              模板
             </Button>
           </Tooltip>
+
+          {/* ModelIO Component - provides save/import/export */}
+          <ModelIO
+            currentModel={currentModel}
+            onModelLoad={handleLoadModelFromLibrary}
+            disabled={false}
+          />
 
           {/* 分隔线 */}
           <div className="header-divider" />
@@ -453,6 +466,21 @@ const ModelingWorkspace: React.FC = () => {
           </Sider>
         )}
       </Layout>
+
+      {/* Model Library Modal */}
+      <ModelLibrary
+        visible={showModelLibrary}
+        onClose={() => setShowModelLibrary(false)}
+        onLoadModel={handleLoadModelFromLibrary}
+        currentModelId={currentModel?.id}
+      />
+
+      {/* Template Gallery Modal */}
+      <TemplateGallery
+        visible={showTemplateGallery}
+        onClose={() => setShowTemplateGallery(false)}
+        onSelectTemplate={handleLoadTemplate}
+      />
     </Layout>
   );
 };

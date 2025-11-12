@@ -1,10 +1,13 @@
 import { useState, useMemo } from 'react';
-import { Card, Descriptions, Space, Tag, Typography, Tabs, Alert } from 'antd';
+import { Card, Descriptions, Space, Tag, Typography, Tabs, Alert, Button } from 'antd';
+import { DownloadOutlined } from '@ant-design/icons';
 import Plot from 'react-plotly.js';
 import { SimulationResultResponse } from '@/services/api';
 import AnimationController from './components/AnimationController';
 import Plot3D from './components/Plot3D';
 import EnhancedCharts from './components/EnhancedCharts';
+import ResultsExport from './components/ResultsExport';
+import { useKeyboardShortcuts, DEFAULT_SHORTCUTS } from '@/hooks/useKeyboardShortcuts';
 
 const { Text } = Typography;
 
@@ -29,6 +32,27 @@ interface SimulationResultsProps {
  */
 const SimulationResults = ({ result }: SimulationResultsProps) => {
   const [timeIndex, setTimeIndex] = useState(0); // Start from beginning for animation
+  const [exportModalVisible, setExportModalVisible] = useState(false); // Export modal visibility
+  const [isPlaying, setIsPlaying] = useState(false); // Animation play state
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: DEFAULT_SHORTCUTS.PLAY_PAUSE,
+      handler: () => setIsPlaying(prev => !prev),
+      description: 'Toggle play/pause animation'
+    },
+    {
+      key: DEFAULT_SHORTCUTS.EXPORT,
+      handler: () => {
+        if (result.status === 'completed') {
+          setExportModalVisible(true);
+        }
+      },
+      description: 'Export results',
+      enabled: result.status === 'completed'
+    }
+  ]);
 
   // Prepare data for current time step
   const currentData = useMemo(() => {
@@ -246,14 +270,24 @@ const SimulationResults = ({ result }: SimulationResultsProps) => {
 
   return (
     <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-      {/* Status Badge */}
-      <div>
-        <Tag color={result.status === 'completed' ? 'success' : 'error'} style={{ fontSize: 14 }}>
-          {result.status === 'completed' ? '✓ 模拟完成' : '✗ 模拟失败'}
-        </Tag>
-        <Text type="secondary">
-          任务ID: {result.task_id}
-        </Text>
+      {/* Status Badge and Export Button */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <Tag color={result.status === 'completed' ? 'success' : 'error'} style={{ fontSize: 14 }}>
+            {result.status === 'completed' ? '✓ 模拟完成' : '✗ 模拟失败'}
+          </Tag>
+          <Text type="secondary">
+            任务ID: {result.task_id}
+          </Text>
+        </div>
+        <Button
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={() => setExportModalVisible(true)}
+          disabled={result.status !== 'completed'}
+        >
+          导出结果
+        </Button>
       </div>
 
       {/* v1.4.0 Feature Banner */}
@@ -309,18 +343,25 @@ const SimulationResults = ({ result }: SimulationResultsProps) => {
       </Card>
 
       {/* Animation Controller (v1.4.0 NEW) */}
-      <Card title="🎬 动画控制 (v1.4.0新功能)" size="small">
+      <Card title="🎬 动画控制 (v1.4.0新功能) - 按Space键播放/暂停" size="small">
         <AnimationController
           totalFrames={result.time.length}
           currentFrame={timeIndex}
           onFrameChange={setTimeIndex}
-          autoPlay={false}
+          autoPlay={isPlaying}
           defaultSpeed={1}
         />
       </Card>
 
       {/* Visualization Tabs */}
       <Tabs items={visualizationTabs} defaultActiveKey="classic" />
+
+      {/* Export Modal (v1.5.0 NEW) */}
+      <ResultsExport
+        result={result}
+        visible={exportModalVisible}
+        onClose={() => setExportModalVisible(false)}
+      />
     </Space>
   );
 };
