@@ -1,10 +1,12 @@
 import { useState, useMemo } from 'react';
-import { Card, Descriptions, Space, Tag, Typography, Tabs, Alert } from 'antd';
+import { Card, Descriptions, Space, Tag, Typography, Tabs, Alert, Button } from 'antd';
+import { DownloadOutlined } from '@ant-design/icons';
 import Plot from 'react-plotly.js';
 import { SimulationResultResponse } from '@/services/api';
 import AnimationController from './components/AnimationController';
 import Plot3D from './components/Plot3D';
 import EnhancedCharts from './components/EnhancedCharts';
+import ResultsExport from './components/ResultsExport';
 
 const { Text } = Typography;
 
@@ -29,6 +31,7 @@ interface SimulationResultsProps {
  */
 const SimulationResults = ({ result }: SimulationResultsProps) => {
   const [timeIndex, setTimeIndex] = useState(0); // Start from beginning for animation
+  const [exportModalVisible, setExportModalVisible] = useState(false); // Export modal visibility
 
   // Prepare data for current time step
   const currentData = useMemo(() => {
@@ -246,14 +249,24 @@ const SimulationResults = ({ result }: SimulationResultsProps) => {
 
   return (
     <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-      {/* Status Badge */}
-      <div>
-        <Tag color={result.status === 'completed' ? 'success' : 'error'} style={{ fontSize: 14 }}>
-          {result.status === 'completed' ? '✓ 模拟完成' : '✗ 模拟失败'}
-        </Tag>
-        <Text type="secondary">
-          任务ID: {result.task_id}
-        </Text>
+      {/* Status Badge and Export Button */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <Tag color={result.status === 'completed' ? 'success' : 'error'} style={{ fontSize: 14 }}>
+            {result.status === 'completed' ? '✓ 模拟完成' : '✗ 模拟失败'}
+          </Tag>
+          <Text type="secondary">
+            任务ID: {result.task_id}
+          </Text>
+        </div>
+        <Button
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={() => setExportModalVisible(true)}
+          disabled={result.status !== 'completed'}
+        >
+          导出结果
+        </Button>
       </div>
 
       {/* v1.4.0 Feature Banner */}
@@ -321,6 +334,13 @@ const SimulationResults = ({ result }: SimulationResultsProps) => {
 
       {/* Visualization Tabs */}
       <Tabs items={visualizationTabs} defaultActiveKey="classic" />
+
+      {/* Export Modal (v1.5.0 NEW) */}
+      <ResultsExport
+        result={result}
+        visible={exportModalVisible}
+        onClose={() => setExportModalVisible(false)}
+      />
     </Space>
   );
 };
