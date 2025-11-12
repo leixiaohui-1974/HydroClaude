@@ -29,7 +29,6 @@ import {
   ColumnWidthOutlined,
   DiffOutlined,
   DownloadOutlined,
-  PlusOutlined,
   DeleteOutlined,
   EyeOutlined,
   EyeInvisibleOutlined
@@ -47,9 +46,9 @@ import {
   formatMetricValue,
   exportComparisonCSV
 } from '@/utils/comparisonUtils';
-import { DEFAULT_SCENARIO_COLORS, VARIABLE_NAMES } from '@/types/comparison';
+import { VARIABLE_NAMES } from '@/types/comparison';
 
-const { Text, Title } = Typography;
+const { Text } = Typography;
 const { Option } = Select;
 
 interface ComparisonViewProps {

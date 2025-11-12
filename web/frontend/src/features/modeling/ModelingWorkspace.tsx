@@ -12,7 +12,8 @@ import {
   RedoOutlined,
   AppstoreOutlined,
   LayoutOutlined,
-  DatabaseOutlined
+  DatabaseOutlined,
+  BookOutlined
 } from '@ant-design/icons';
 
 import { useKeyboardShortcuts, DEFAULT_SHORTCUTS } from '@/hooks/useKeyboardShortcuts';
@@ -51,6 +52,7 @@ import ModelCanvas from './components/ModelCanvas';
 import PropertyPanel from './components/PropertyPanel';
 import ModelIO from './components/ModelIO';
 import ModelLibrary from './components/ModelLibrary';
+import TemplateGallery from './components/TemplateGallery';
 import { ComponentTemplate, HydraulicModel } from './types/model.types';
 
 import './ModelingWorkspace.css';
@@ -62,6 +64,7 @@ const ModelingWorkspace: React.FC = () => {
 
   // Local state for model library modal
   const [showModelLibrary, setShowModelLibrary] = useState(false);
+  const [showTemplateGallery, setShowTemplateGallery] = useState(false);
 
   // Redux状态
   const canUndo = useAppSelector(selectCanUndo);
@@ -159,6 +162,30 @@ const ModelingWorkspace: React.FC = () => {
   // 处理打开模型库
   const handleOpenLibrary = () => {
     setShowModelLibrary(true);
+  };
+
+  // 处理打开模板画廊
+  const handleOpenTemplates = () => {
+    setShowTemplateGallery(true);
+  };
+
+  // 处理从模板加载模型
+  const handleLoadTemplate = (model: HydraulicModel) => {
+    if (!isEmpty) {
+      Modal.confirm({
+        title: '确认应用模板',
+        content: '应用模板将覆盖当前模型，是否继续？',
+        onOk: () => {
+          dispatch(importModel({ model, replace: true }));
+          setShowTemplateGallery(false);
+          message.success('模板已应用');
+        }
+      });
+    } else {
+      dispatch(importModel({ model, replace: true }));
+      setShowTemplateGallery(false);
+      message.success('模板已应用');
+    }
   };
 
   // 处理验证
@@ -325,6 +352,15 @@ const ModelingWorkspace: React.FC = () => {
             </Button>
           </Tooltip>
 
+          <Tooltip title="模板画廊">
+            <Button
+              icon={<BookOutlined />}
+              onClick={handleOpenTemplates}
+            >
+              模板
+            </Button>
+          </Tooltip>
+
           {/* ModelIO Component - provides save/import/export */}
           <ModelIO
             currentModel={currentModel}
@@ -437,6 +473,13 @@ const ModelingWorkspace: React.FC = () => {
         onClose={() => setShowModelLibrary(false)}
         onLoadModel={handleLoadModelFromLibrary}
         currentModelId={currentModel?.id}
+      />
+
+      {/* Template Gallery Modal */}
+      <TemplateGallery
+        visible={showTemplateGallery}
+        onClose={() => setShowTemplateGallery(false)}
+        onSelectTemplate={handleLoadTemplate}
       />
     </Layout>
   );

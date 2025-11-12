@@ -5,7 +5,6 @@
  * v1.5.0 Feature: Multi-Scenario Comparison
  */
 
-import type { SimulationResultResponse } from '../services/api';
 import type {
   ComparisonScenario,
   ComparisonMetrics,

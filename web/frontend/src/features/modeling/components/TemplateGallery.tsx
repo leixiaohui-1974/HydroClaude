@@ -48,6 +48,24 @@ const { Search } = Input;
 
 interface TemplateGalleryProps {
   /**
+   * Modal visibility
+   * 模态框可见性
+   */
+  visible?: boolean;
+
+  /**
+   * Close callback
+   * 关闭回调
+   */
+  onClose?: () => void;
+
+  /**
+   * Callback when template is selected
+   * 选择模板回调
+   */
+  onSelectTemplate?: (model: any) => void;
+
+  /**
    * Callback when template is applied
    * 应用模板回调
    */
@@ -66,6 +84,9 @@ interface TemplateGalleryProps {
  * Displays a gallery of model templates with filtering, search, and preview
  */
 const TemplateGallery: React.FC<TemplateGalleryProps> = ({
+  visible = true,
+  onClose,
+  onSelectTemplate,
   onApplyTemplate,
   categories
 }) => {
@@ -114,9 +135,33 @@ const TemplateGallery: React.FC<TemplateGalleryProps> = ({
 
   // Apply template
   const handleApplyTemplate = (template: ModelTemplate) => {
-    if (onApplyTemplate) {
+    incrementTemplateUsage(template.metadata.id);
+
+    // Call onSelectTemplate if provided (for modal usage)
+    if (onSelectTemplate) {
+      const { nodes, edges, config } = applyTemplate(template);
+      const model = {
+        id: `model-${Date.now()}`,
+        name: template.metadata.nameCN,
+        description: template.metadata.descriptionCN,
+        author: template.metadata.author,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        version: '1.0.0',
+        tags: template.metadata.tags,
+        nodes,
+        edges,
+        globalConfig: config,
+        isValid: true,
+        validationErrors: []
+      };
+      onSelectTemplate(model);
+      setDetailsModalVisible(false);
+      if (onClose) onClose();
+    }
+    // Call onApplyTemplate if provided (for standalone usage)
+    else if (onApplyTemplate) {
       onApplyTemplate(template);
-      incrementTemplateUsage(template.metadata.id);
       message.success(`已应用模板: ${template.metadata.nameCN}`);
       setDetailsModalVisible(false);
     }
@@ -344,7 +389,7 @@ const TemplateGallery: React.FC<TemplateGalleryProps> = ({
     );
   };
 
-  return (
+  const galleryContent = (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       {/* Header */}
       <div>
@@ -432,6 +477,31 @@ const TemplateGallery: React.FC<TemplateGalleryProps> = ({
       {renderDetailsModal()}
     </Space>
   );
+
+  // If onClose is provided, wrap in Modal
+  if (onClose) {
+    return (
+      <Modal
+        title={
+          <Space>
+            <AppstoreOutlined />
+            模板画廊 Template Gallery
+          </Space>
+        }
+        open={visible}
+        onCancel={onClose}
+        footer={null}
+        width={1200}
+        style={{ top: 20 }}
+        bodyStyle={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}
+      >
+        {galleryContent}
+      </Modal>
+    );
+  }
+
+  // Otherwise return standalone gallery
+  return galleryContent;
 };
 
 export default TemplateGallery;

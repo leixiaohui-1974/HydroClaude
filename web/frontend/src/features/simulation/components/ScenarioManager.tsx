@@ -81,11 +81,11 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({
    * 处理自定义场景创建
    */
   const handleCustomAdd = () => {
-    form.validateFields().then(values => {
+    form.validateFields().then(() => {
       // In a real application, this would select from saved results
       // For now, we'll just show the modal
       setModalVisible(true);
-    }).catch(err => {
+    }).catch(() => {
       message.error('请填写完整信息');
     });
   };
@@ -107,7 +107,7 @@ const ScenarioManager: React.FC<ScenarioManagerProps> = ({
       {/* Quick Add Button */}
       {availableResults.length > 0 && (
         <Space wrap>
-          {availableResults.slice(0, 3).map((result, index) => (
+          {availableResults.slice(0, 3).map((result) => (
             <Button
               key={result.task_id}
               icon={<PlusOutlined />}
