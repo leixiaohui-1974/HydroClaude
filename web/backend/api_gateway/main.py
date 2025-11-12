@@ -8,6 +8,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from datetime import datetime
 import uvicorn
+
+# Add project root to Python path
+import sys
+sys.path.insert(0, "/workspace")
+
 import logging
 
 # Import routers
