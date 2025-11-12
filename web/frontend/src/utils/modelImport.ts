@@ -7,12 +7,10 @@
 
 import type {
   HydraulicModel,
-  ModelExportData,
   ImportValidationResult,
-  IOError,
-  IOErrorType
+  IOError
 } from '../types/model-io';
-import { isModelExportData, isCompatibleVersion, isExtendedModel } from '../types/model-io';
+import { isModelExportData, isCompatibleVersion, IOErrorType } from '../types/model-io';
 
 // ============= JSON Import =============
 
@@ -29,7 +27,7 @@ export async function importModelJSON(file: File): Promise<HydraulicModel> {
     // Check file size (max 10 MB)
     if (file.size > 10 * 1024 * 1024) {
       throw createIOError(
-        'FILE_TOO_LARGE',
+        IOErrorType.FILE_TOO_LARGE,
         `File size ${(file.size / 1024 / 1024).toFixed(1)} MB exceeds limit of 10 MB`,
         false
       );
@@ -44,7 +42,7 @@ export async function importModelJSON(file: File): Promise<HydraulicModel> {
       data = JSON.parse(text);
     } catch (error) {
       throw createIOError(
-        'PARSE_ERROR',
+        IOErrorType.PARSE_ERROR,
         'Failed to parse JSON file. Please ensure the file is valid JSON.',
         false
       );
@@ -53,7 +51,7 @@ export async function importModelJSON(file: File): Promise<HydraulicModel> {
     // Validate format
     if (!isModelExportData(data)) {
       throw createIOError(
-        'INVALID_FORMAT',
+        IOErrorType.INVALID_FORMAT,
         'Invalid file format. Expected HydroClaude Model format.',
         false
       );
@@ -62,7 +60,7 @@ export async function importModelJSON(file: File): Promise<HydraulicModel> {
     // Version check
     if (!isCompatibleVersion(data.version)) {
       throw createIOError(
-        'UNSUPPORTED_VERSION',
+        IOErrorType.UNSUPPORTED_VERSION,
         `Model version ${data.version} is not compatible with current version`,
         false
       );
@@ -72,7 +70,7 @@ export async function importModelJSON(file: File): Promise<HydraulicModel> {
     const validation = validateImportedModel(data.model);
     if (!validation.valid) {
       throw createIOError(
-        'VALIDATION_FAILED',
+        IOErrorType.VALIDATION_FAILED,
         `Model validation failed: ${validation.errors.join(', ')}`,
         false
       );
@@ -93,7 +91,7 @@ export async function importModelJSON(file: File): Promise<HydraulicModel> {
 
     // Wrap unexpected errors
     throw createIOError(
-      'PARSE_ERROR',
+      IOErrorType.PARSE_ERROR,
       `Import failed: ${(error as Error).message}`,
       false
     );
@@ -160,7 +158,7 @@ export async function importModelCSV(
     const validation = validateImportedModel(model);
     if (!validation.valid) {
       throw createIOError(
-        'VALIDATION_FAILED',
+        IOErrorType.VALIDATION_FAILED,
         `CSV import validation failed: ${validation.errors.join(', ')}`,
         false
       );
@@ -169,7 +167,7 @@ export async function importModelCSV(
     return model;
   } catch (error) {
     throw createIOError(
-      'PARSE_ERROR',
+      IOErrorType.PARSE_ERROR,
       `CSV import failed: ${(error as Error).message}`,
       false
     );
@@ -189,7 +187,7 @@ function parseNodesCSV(csv: string): any[] {
     throw new Error('Invalid nodes CSV: missing header or data');
   }
 
-  const headers = lines[0].split(',').map(h => h.trim());
+  // Skip headers line
   const nodes: any[] = [];
 
   for (let i = 1; i < lines.length; i++) {
@@ -233,7 +231,7 @@ function parseEdgesCSV(csv: string): any[] {
     throw new Error('Invalid edges CSV: missing header or data');
   }
 
-  const headers = lines[0].split(',').map(h => h.trim());
+  // Skip headers line
   const edges: any[] = [];
 
   for (let i = 1; i < lines.length; i++) {

@@ -27,8 +27,7 @@ export function exportModelJSON(
 ): ModelExportData {
   const {
     includeMetadata = true,
-    includeThumbnail = true,
-    prettyPrint = true
+    includeThumbnail = true
   } = options;
 
   // Create export data structure
@@ -66,7 +65,8 @@ export function downloadModelJSON(
   options: ExportOptions = {}
 ): void {
   const exportData = exportModelJSON(model, options);
-  const json = JSON.stringify(exportData, null, options.prettyPrint ? 2 : 0);
+  const prettyPrint = options.prettyPrint !== false; // default true
+  const json = JSON.stringify(exportData, null, prettyPrint ? 2 : 0);
   const blob = new Blob([json], { type: 'application/json' });
   const filename = `${sanitizeFilename(model.name)}.hydro.json`;
 
@@ -295,7 +295,7 @@ export function validateModelForExport(model: HydraulicModel): {
  */
 export function exportModelsArchive(
   models: HydraulicModel[],
-  archiveName: string
+  _archiveName: string
 ): void {
   // TODO: Implement when JSZip is added
   console.warn('Batch export not yet implemented. Use individual exports.');

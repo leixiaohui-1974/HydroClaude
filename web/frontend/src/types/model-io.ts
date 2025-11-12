@@ -5,7 +5,10 @@
  * v1.5.0 Feature: Model Import/Export
  */
 
-import { HydraulicModel } from '../features/modeling/types/model.types';
+import { HydraulicModel as BaseHydraulicModel } from '../features/modeling/types/model.types';
+
+// Re-export HydraulicModel for convenience
+export type HydraulicModel = BaseHydraulicModel;
 
 // ============= Export Format =============
 
@@ -187,7 +190,7 @@ export type ImportFileType = 'json' | 'csv' | 'xml' | 'inp';
  * 导出选项
  */
 export interface ExportOptions {
-  format: 'json' | 'csv';
+  format?: 'json' | 'csv';
   includeMetadata?: boolean;
   includeThumbnail?: boolean;
   prettyPrint?: boolean;              // For JSON

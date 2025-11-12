@@ -6,8 +6,6 @@
 import React, { useState } from 'react';
 import { Layout, Button, Space, message, Modal, Tooltip } from 'antd';
 import {
-  SaveOutlined,
-  FolderOpenOutlined,
   PlayCircleOutlined,
   CheckCircleOutlined,
   UndoOutlined,
