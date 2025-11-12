@@ -1,0 +1,155 @@
+{
+  "test_date": "2025-11-12T10:26:09.379419",
+  "test_type": "advanced",
+  "summary": {
+    "total_tests": 28,
+    "passed": 28,
+    "failed": 0,
+    "success_rate": 100.0
+  },
+  "details": {
+    "workflow": {
+      "tests": [
+        [
+          "\u521b\u5efa\u4efb\u52a11",
+          true
+        ],
+        [
+          "\u521b\u5efa\u4efb\u52a12",
+          true
+        ],
+        [
+          "\u521b\u5efa\u4efb\u52a13",
+          true
+        ],
+        [
+          "\u4efb\u52a11\u72b6\u6001",
+          true
+        ],
+        [
+          "\u4efb\u52a12\u72b6\u6001",
+          true
+        ],
+        [
+          "\u4efb\u52a13\u72b6\u6001",
+          true
+        ],
+        [
+          "\u4efb\u52a11\u7ed3\u679c",
+          true
+        ],
+        [
+          "\u4efb\u52a12\u7ed3\u679c",
+          true
+        ],
+        [
+          "\u4efb\u52a13\u7ed3\u679c",
+          true
+        ],
+        [
+          "\u5217\u51fa\u4eff\u771f",
+          true
+        ],
+        [
+          "\u5220\u9664\u4efb\u52a11",
+          true
+        ],
+        [
+          "\u5220\u9664\u4efb\u52a12",
+          true
+        ],
+        [
+          "\u5220\u9664\u4efb\u52a13",
+          true
+        ]
+      ],
+      "passed": 13,
+      "total": 13
+    },
+    "ui_interactions": {
+      "tests": [
+        [
+          "\u5efa\u6a21\u5de5\u4f5c\u53f0\u5207\u6362",
+          true
+        ],
+        [
+          "\u4eff\u771f\u7ba1\u7406\u5207\u6362",
+          true
+        ],
+        [
+          "\u591a\u6b21\u5207\u6362",
+          true
+        ],
+        [
+          "\u6d4f\u89c8\u5668\u5bfc\u822a",
+          true
+        ],
+        [
+          "\u9875\u9762\u5237\u65b0",
+          true
+        ]
+      ],
+      "passed": 5,
+      "total": 5
+    },
+    "performance": {
+      "tests": [
+        [
+          "\u5e73\u5747\u54cd\u5e94<100ms",
+          true
+        ],
+        [
+          "\u6700\u5927\u54cd\u5e94<200ms",
+          true
+        ],
+        [
+          "\u5e76\u53d1\u8bf7\u6c42>90%",
+          true
+        ],
+        [
+          "\u5e76\u53d1\u8017\u65f6<5s",
+          true
+        ]
+      ],
+      "passed": 4,
+      "total": 4
+    },
+    "stress": {
+      "tests": [
+        [
+          "\u5feb\u901f\u521b\u5efa>80%",
+          true
+        ],
+        [
+          "\u538b\u529b\u540e\u5065\u5eb7",
+          true
+        ],
+        [
+          "\u6e05\u7406\u4efb\u52a1",
+          true
+        ]
+      ],
+      "passed": 3,
+      "total": 3
+    },
+    "error_handling": {
+      "tests": [
+        [
+          "\u4e0d\u5b58\u5728\u4efb\u52a1404",
+          true
+        ],
+        [
+          "\u65e0\u6548\u914d\u7f6e\u5904\u7406",
+          true
+        ],
+        [
+          "\u65e0\u6548\u7aef\u70b9404",
+          true
+        ]
+      ],
+      "passed": 3,
+      "total": 3
+    }
+  },
+  "screenshots": 7
+}

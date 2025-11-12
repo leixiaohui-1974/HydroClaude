@@ -1,0 +1,88 @@
+{
+  "test_date": "2025-11-12T10:24:37.713243",
+  "summary": {
+    "total_tests": 16,
+    "passed": 16,
+    "failed": 0,
+    "success_rate": 100.0
+  },
+  "details": {
+    "backend_api": {
+      "tests": [
+        [
+          "\u5065\u5eb7\u68c0\u67e5",
+          true
+        ],
+        [
+          "\u6839\u7aef\u70b9",
+          true
+        ],
+        [
+          "\u5f15\u64ce\u4fe1\u606f",
+          true
+        ],
+        [
+          "\u521b\u5efa\u4eff\u771f",
+          true
+        ],
+        [
+          "\u67e5\u8be2\u72b6\u6001",
+          true
+        ],
+        [
+          "\u83b7\u53d6\u7ed3\u679c",
+          true
+        ],
+        [
+          "\u5220\u9664\u4eff\u771f",
+          true
+        ]
+      ],
+      "passed": 7,
+      "total": 7
+    },
+    "frontend_ui": {
+      "tests": [
+        [
+          "\u9875\u9762\u52a0\u8f7d",
+          true
+        ],
+        [
+          "\u5efa\u6a21\u5de5\u4f5c\u53f0\u6807\u7b7e",
+          true
+        ],
+        [
+          "\u4eff\u771f\u7ba1\u7406\u6807\u7b7e",
+          true
+        ],
+        [
+          "\u5efa\u6a21\u753b\u5e03",
+          true
+        ],
+        [
+          "\u4eff\u771f\u7ba1\u7406\u5207\u6362",
+          true
+        ],
+        [
+          "\u54cd\u5e94\u5f0f1920x1080",
+          true
+        ],
+        [
+          "\u54cd\u5e94\u5f0f1366x768",
+          true
+        ],
+        [
+          "\u54cd\u5e94\u5f0f768x1024",
+          true
+        ],
+        [
+          "\u52a0\u8f7d\u6027\u80fd<5s",
+          true
+        ]
+      ],
+      "passed": 9,
+      "total": 9
+    }
+  },
+  "screenshots": 9
+}
