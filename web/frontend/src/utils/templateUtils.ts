@@ -6,7 +6,7 @@
  */
 
 import type { ModelTemplate, TemplateFilter } from '../types/template';
-import type { ModelNode, ModelEdge } from '../types/model-io';
+import type { ModelNode, ModelEdge } from '@/features/modeling/types/model.types';
 
 /**
  * Filter templates based on criteria

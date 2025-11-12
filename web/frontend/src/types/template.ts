@@ -5,7 +5,7 @@
  * v1.5.0 Feature: Model Templates
  */
 
-import type { ModelNode, ModelEdge } from './model-io';
+import type { ModelNode, ModelEdge } from '@/features/modeling/types/model.types';
 
 /**
  * Template category
