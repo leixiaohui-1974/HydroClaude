@@ -7,6 +7,7 @@ import AnimationController from './components/AnimationController';
 import Plot3D from './components/Plot3D';
 import EnhancedCharts from './components/EnhancedCharts';
 import ResultsExport from './components/ResultsExport';
+import { useKeyboardShortcuts, DEFAULT_SHORTCUTS } from '@/hooks/useKeyboardShortcuts';
 
 const { Text } = Typography;
 
@@ -32,6 +33,26 @@ interface SimulationResultsProps {
 const SimulationResults = ({ result }: SimulationResultsProps) => {
   const [timeIndex, setTimeIndex] = useState(0); // Start from beginning for animation
   const [exportModalVisible, setExportModalVisible] = useState(false); // Export modal visibility
+  const [isPlaying, setIsPlaying] = useState(false); // Animation play state
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: DEFAULT_SHORTCUTS.PLAY_PAUSE,
+      handler: () => setIsPlaying(prev => !prev),
+      description: 'Toggle play/pause animation'
+    },
+    {
+      key: DEFAULT_SHORTCUTS.EXPORT,
+      handler: () => {
+        if (result.status === 'completed') {
+          setExportModalVisible(true);
+        }
+      },
+      description: 'Export results',
+      enabled: result.status === 'completed'
+    }
+  ]);
 
   // Prepare data for current time step
   const currentData = useMemo(() => {
@@ -322,12 +343,12 @@ const SimulationResults = ({ result }: SimulationResultsProps) => {
       </Card>
 
       {/* Animation Controller (v1.4.0 NEW) */}
-      <Card title="🎬 动画控制 (v1.4.0新功能)" size="small">
+      <Card title="🎬 动画控制 (v1.4.0新功能) - 按Space键播放/暂停" size="small">
         <AnimationController
           totalFrames={result.time.length}
           currentFrame={timeIndex}
           onFrameChange={setTimeIndex}
-          autoPlay={false}
+          autoPlay={isPlaying}
           defaultSpeed={1}
         />
       </Card>

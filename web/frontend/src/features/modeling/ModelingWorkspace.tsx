@@ -15,6 +15,8 @@ import {
   DatabaseOutlined
 } from '@ant-design/icons';
 
+import { useKeyboardShortcuts, DEFAULT_SHORTCUTS } from '@/hooks/useKeyboardShortcuts';
+
 import { useAppDispatch, useAppSelector } from '@/shared/hooks/redux';
 import {
   createNewModel,
@@ -68,6 +70,36 @@ const ModelingWorkspace: React.FC = () => {
   const showProperty = useAppSelector(selectShowPropertyPanel);
   const currentModel = useAppSelector(selectCurrentModel);
   const isEmpty = useAppSelector(selectIsModelEmpty);
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: DEFAULT_SHORTCUTS.NEW,
+      handler: () => handleNewModel(),
+      description: 'New model'
+    },
+    {
+      key: DEFAULT_SHORTCUTS.OPEN,
+      handler: () => handleOpenLibrary(),
+      description: 'Open model library'
+    },
+    {
+      key: DEFAULT_SHORTCUTS.UNDO,
+      handler: () => {
+        if (canUndo) handleUndo();
+      },
+      description: 'Undo',
+      enabled: canUndo
+    },
+    {
+      key: DEFAULT_SHORTCUTS.REDO,
+      handler: () => {
+        if (canRedo) handleRedo();
+      },
+      description: 'Redo',
+      enabled: canRedo
+    }
+  ]);
 
   // 处理组件拖拽开始
   const handleComponentDragStart = (template: ComponentTemplate, _event: React.DragEvent) => {
