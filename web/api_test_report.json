@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-11-12T09:47:18.295780",
+  "total": 6,
+  "passed": 4,
+  "failed": 2,
+  "success_rate": 66.66666666666666,
+  "results": {
+    "\u5065\u5eb7\u68c0\u67e5": "PASS",
+    "\u5f15\u64ce\u4fe1\u606f": "FAIL",
+    "\u521b\u5efa\u4eff\u771f": "PASS",
+    "\u67e5\u8be2\u72b6\u6001": "PASS",
+    "\u83b7\u53d6\u7ed3\u679c": "FAIL",
+    "\u5220\u9664\u4eff\u771f": "PASS"
+  }
+}
