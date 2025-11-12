@@ -1,0 +1,275 @@
+{
+  "test_date": "2025-11-12T10:41:55.855249",
+  "test_type": "ultimate_comprehensive",
+  "summary": {
+    "total_tests": 22,
+    "passed": 22,
+    "failed": 0,
+    "success_rate": 100.0
+  },
+  "details": {
+    "backend": {
+      "passed": 7,
+      "total": 7,
+      "tests": [
+        [
+          "健康检查",
+          true
+        ],
+        [
+          "引擎信息",
+          true
+        ],
+        [
+          "创建仿真",
+          true
+        ],
+        [
+          "查询状态",
+          true
+        ],
+        [
+          "获取结果",
+          true
+        ],
+        [
+          "列出仿真",
+          true
+        ],
+        [
+          "删除仿真",
+          true
+        ]
+      ]
+    },
+    "frontend": {
+      "passed": 12,
+      "total": 12,
+      "tests": [
+        [
+          "页面标题",
+          true
+        ],
+        [
+          "建模组件库",
+          true
+        ],
+        [
+          "建模画布",
+          true
+        ],
+        [
+          "仿真配置表单",
+          true
+        ],
+        [
+          "单场景标签",
+          true
+        ],
+        [
+          "内容隔离",
+          true
+        ],
+        [
+          "单场景结果标签",
+          true
+        ],
+        [
+          "多场景对比标签",
+          true
+        ],
+        [
+          "响应式1920x1080",
+          true
+        ],
+        [
+          "响应式1366x768",
+          true
+        ],
+        [
+          "响应式768x1024",
+          true
+        ],
+        [
+          "标签切换",
+          true
+        ]
+      ]
+    },
+    "performance": {
+      "passed": 3,
+      "total": 3,
+      "tests": [
+        [
+          "平均响应<100ms",
+          true
+        ],
+        [
+          "最大响应<200ms",
+          true
+        ],
+        [
+          "并发>90%",
+          true
+        ]
+      ]
+    }
+  },
+  "all_tests": [
+    {
+      "category": "Backend",
+      "name": "健康检查",
+      "passed": true,
+      "details": "状态码: 200",
+      "timestamp": "2025-11-12T10:41:18.106413"
+    },
+    {
+      "category": "Backend",
+      "name": "引擎信息",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-12T10:41:18.108254"
+    },
+    {
+      "category": "Backend",
+      "name": "创建仿真",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-12T10:41:18.110210"
+    },
+    {
+      "category": "Backend",
+      "name": "查询状态",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-12T10:41:21.112277"
+    },
+    {
+      "category": "Backend",
+      "name": "获取结果",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-12T10:41:21.115471"
+    },
+    {
+      "category": "Backend",
+      "name": "列出仿真",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-12T10:41:21.117001"
+    },
+    {
+      "category": "Backend",
+      "name": "删除仿真",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-12T10:41:21.118438"
+    },
+    {
+      "category": "Frontend",
+      "name": "页面标题",
+      "passed": true,
+      "details": "HydroClaude Web - 水力学仿真管理平台",
+      "timestamp": "2025-11-12T10:41:25.350800"
+    },
+    {
+      "category": "Frontend",
+      "name": "建模组件库",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-12T10:41:30.494304"
+    },
+    {
+      "category": "Frontend",
+      "name": "建模画布",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-12T10:41:30.494310"
+    },
+    {
+      "category": "Frontend",
+      "name": "仿真配置表单",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-12T10:41:40.003447"
+    },
+    {
+      "category": "Frontend",
+      "name": "单场景标签",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-12T10:41:40.003453"
+    },
+    {
+      "category": "Frontend",
+      "name": "内容隔离",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-12T10:41:40.003455"
+    },
+    {
+      "category": "Frontend",
+      "name": "单场景结果标签",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-12T10:41:43.165598"
+    },
+    {
+      "category": "Frontend",
+      "name": "多场景对比标签",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-12T10:41:46.289541"
+    },
+    {
+      "category": "Frontend",
+      "name": "响应式桌面大屏",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-12T10:41:48.504450"
+    },
+    {
+      "category": "Frontend",
+      "name": "响应式桌面中屏",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-12T10:41:50.591067"
+    },
+    {
+      "category": "Frontend",
+      "name": "响应式平板",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-12T10:41:52.646942"
+    },
+    {
+      "category": "Frontend",
+      "name": "标签切换",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-12T10:41:55.788190"
+    },
+    {
+      "category": "Performance",
+      "name": "API平均响应",
+      "passed": true,
+      "details": "0.9ms",
+      "timestamp": "2025-11-12T10:41:55.837480"
+    },
+    {
+      "category": "Performance",
+      "name": "API最大响应",
+      "passed": true,
+      "details": "1.7ms",
+      "timestamp": "2025-11-12T10:41:55.837484"
+    },
+    {
+      "category": "Performance",
+      "name": "并发请求",
+      "passed": true,
+      "details": "20/20",
+      "timestamp": "2025-11-12T10:41:55.855200"
+    }
+  ],
+  "screenshots": 9
+}
