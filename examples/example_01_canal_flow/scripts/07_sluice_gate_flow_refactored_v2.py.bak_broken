@@ -173,9 +173,8 @@ def run_sluice_gate_dynamics():
 
     plt.tight_layout()
     steady_fig_path = fig_path = helper.get_output_path('archive_01_sluice_gate_steady_state_refactored.png', subdir='figures')
- plt.savefig(fig_path, dpi=150, bbox_inches='tight')
- print(f'   Saved: {fig_path.name}')
- plt.close()
+    plt.savefig(fig_path, dpi=150, bbox_inches='tight')
+    print(f'   Saved: {fig_path.name}')
     plt.close(fig_steady)
 
     # Export steady state profile data to CSV
