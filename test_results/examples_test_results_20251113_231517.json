@@ -1,0 +1,29 @@
+{
+  "test_time": "2025-11-13T23:15:17.291606",
+  "platform": "linux",
+  "python_version": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+  "total_tests": 1,
+  "results": [
+    {
+      "name": "明渠流动/01_basic",
+      "path": "/workspace/examples/example_01_canal_flow/scripts/01_basic.py",
+      "category": "basic",
+      "start_time": "2025-11-13T23:15:16.836800",
+      "status": "failed",
+      "duration": 0.4547579288482666,
+      "error": "脚本返回非零退出码: 1",
+      "output": "================================================================================\n例子1：明渠非恒定流仿真 - 重构版\n================================================================================\n\n1. 参数设置\n--------------------------------------------------------------------------------\n渠道长度: 1000.0 m\n渠道宽度: 10.0 m\n渠底坡度: 0.001\nManning糙率: 0.025\n网格数: 201\n上游流量: 8.0 m^3/s\n理论水深: 0.806483 m\n时间步长: 0.5 s\n总时间: 300.0 s\n总步数: 600\n\n2. 创建求解器\n--------------------------------------------------------------------------------\n  - EXPLICIT 求解器\n\nTraceback (most recent call last):\n  File \"/workspace/examples/example_01_canal_flow/scripts/01_basic.py\", line 284, in <module>\n    main()\n  File \"/workspace/examples/example_01_canal_flow/scripts/01_basic.py\", line 89, in main\n    solver = CanalSolver(\n             ^^^^^^^^^^^^\nTypeError: HydrostaticCanalSolver.__init__() got an unexpected keyword argument 'method'\n",
+      "returncode": 1
+    }
+  ],
+  "summary": {
+    "passed": 0,
+    "failed": 1,
+    "timeout": 0,
+    "error": 0,
+    "passed_with_warnings": 0,
+    "unknown": 0,
+    "total_duration": 0.4547579288482666,
+    "success_rate": 0.0
+  }
+}

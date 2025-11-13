@@ -167,6 +167,12 @@ class ExamplesTestRunner:
             env = os.environ.copy()
             env['PYTHONIOENCODING'] = 'utf-8'
             env['PYTHONUTF8'] = '1'
+            # 添加用户Python包路径
+            user_site = os.path.expanduser('~/.local/lib/python3.12/site-packages')
+            if 'PYTHONPATH' in env:
+                env['PYTHONPATH'] = f"{user_site}:{env['PYTHONPATH']}"
+            else:
+                env['PYTHONPATH'] = user_site
             
             # 运行脚本
             process = subprocess.Popen(

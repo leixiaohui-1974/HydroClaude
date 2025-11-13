@@ -1,0 +1,128 @@
+{
+  "test_time": "2025-11-13T23:14:27.220254",
+  "platform": "linux",
+  "python_version": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+  "total_tests": 10,
+  "results": [
+    {
+      "name": "明渠流动/01_basic",
+      "path": "/workspace/examples/example_01_canal_flow/scripts/01_basic.py",
+      "category": "basic",
+      "start_time": "2025-11-13T23:14:24.165263",
+      "status": "failed",
+      "duration": 0.05569624900817871,
+      "error": "脚本返回非零退出码: 1",
+      "output": "\nTraceback (most recent call last):\n  File \"/workspace/examples/example_01_canal_flow/scripts/01_basic.py\", line 15, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'\n",
+      "returncode": 1
+    },
+    {
+      "name": "明渠流动/01_basic_v2",
+      "path": "/workspace/examples/example_01_canal_flow/scripts/01_basic_v2.py",
+      "category": "basic",
+      "start_time": "2025-11-13T23:14:24.221252",
+      "status": "failed",
+      "duration": 0.05596470832824707,
+      "error": "脚本返回非零退出码: 1",
+      "output": "\nTraceback (most recent call last):\n  File \"/workspace/examples/example_01_canal_flow/scripts/01_basic_v2.py\", line 18, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'\n",
+      "returncode": 1
+    },
+    {
+      "name": "明渠流动/01_basic_v2_refactored",
+      "path": "/workspace/examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py",
+      "category": "basic",
+      "start_time": "2025-11-13T23:14:24.277457",
+      "status": "failed",
+      "duration": 0.059607505798339844,
+      "error": "脚本返回非零退出码: 1",
+      "output": "\nTraceback (most recent call last):\n  File \"/workspace/examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py\", line 19, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'\n",
+      "returncode": 1
+    },
+    {
+      "name": "明渠流动/01_basic_with_animation",
+      "path": "/workspace/examples/example_01_canal_flow/scripts/01_basic_with_animation.py",
+      "category": "basic",
+      "start_time": "2025-11-13T23:14:24.337322",
+      "status": "failed",
+      "duration": 0.6268565654754639,
+      "error": "脚本返回非零退出码: 1",
+      "output": "================================================================================\n例子1：明渠非恒定流仿真 - 嵌入动画版本\n================================================================================\n动画生成：未启用（使用 --animate 参数启用）\n\n1. 参数设置\n--------------------------------------------------------------------------------\n渠道长度: 1000.0 m\n渠道宽度: 10.0 m\n渠底坡度: 0.001\nManning糙率: 0.025\n网格数: 201\n上游流量: 8.0 m^3/s\n理论水深: 0.806483 m\n时间步长: 0.5 s\n总时间: 300.0 s\n总步数: 600\n\n2. 创建求解器\n--------------------------------------------------------------------------------\n  - EXPLICIT 求解器\n\nTraceback (most recent call last):\n  File \"/workspace/examples/example_01_canal_flow/scripts/01_basic_with_animation.py\", line 377, in <module>\n    main()\n  File \"/workspace/examples/example_01_canal_flow/scripts/01_basic_with_animation.py\", line 126, in main\n    solver = CanalSolver(\n             ^^^^^^^^^^^^\nTypeError: HydrostaticCanalSolver.__init__() got an unexpected keyword argument 'method'\n",
+      "returncode": 1
+    },
+    {
+      "name": "明渠流动/02_methods_comparison",
+      "path": "/workspace/examples/example_01_canal_flow/scripts/02_methods_comparison.py",
+      "category": "basic",
+      "start_time": "2025-11-13T23:14:24.964435",
+      "status": "failed",
+      "duration": 0.6172568798065186,
+      "error": "脚本返回非零退出码: 1",
+      "output": "\nTraceback (most recent call last):\n  File \"/workspace/examples/example_01_canal_flow/scripts/02_methods_comparison.py\", line 25, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'\n",
+      "returncode": 1
+    },
+    {
+      "name": "明渠流动/03_idz_identification",
+      "path": "/workspace/examples/example_01_canal_flow/scripts/03_idz_identification.py",
+      "category": "basic",
+      "start_time": "2025-11-13T23:14:25.581964",
+      "status": "failed",
+      "duration": 0.6150586605072021,
+      "error": "脚本返回非零退出码: 1",
+      "output": "\nTraceback (most recent call last):\n  File \"/workspace/examples/example_01_canal_flow/scripts/03_idz_identification.py\", line 22, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'\n",
+      "returncode": 1
+    },
+    {
+      "name": "明渠流动/04_boundary_conditions",
+      "path": "/workspace/examples/example_01_canal_flow/scripts/04_boundary_conditions.py",
+      "category": "basic",
+      "start_time": "2025-11-13T23:14:26.197304",
+      "status": "failed",
+      "duration": 0.30182361602783203,
+      "error": "脚本返回非零退出码: 1",
+      "output": "================================================================================\n例子1扩展：不同下游边界条件的影响研究（完全收敛版）\n================================================================================\n\n参数设置:\n  渠道: L=1000.0m, B=10.0m, S0=0.001, n=0.025\n  上游流量: 8.0 -> 10.0 m^3/s\n  理论水深: 0.806483 -> 0.929805 m\n\n下游边界条件:\n  高水位（回水）: h = 1.079805 m\n  恒定均匀流: h = 0.929805 m\n  低水位（泵站）: h = 0.829805 m\n\n================================================================================\n第一阶段：计算初始稳态（Q=8.0 m^3/s）\n================================================================================\n\n场景: 高水位（回水）\n\n  计算稳态初始条件:\n    目标: Q=8.00 m^3/s, h_down=1.0798 m\n    收敛判据: 质量守恒误差<0.10%, CV<0.0100%\n\nTraceback (most recent call last):\n  File \"/workspace/examples/example_01_canal_flow/scripts/04_boundary_conditions.py\", line 396, in <module>\n    main()\n  File \"/workspace/examples/example_01_canal_flow/scripts/04_boundary_conditions.py\", line 173, in main\n    h_init, Q_init, converged, iterations = compute_steady_state_with_convergence(\n                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/examples/example_01_canal_flow/scripts/04_boundary_conditions.py\", line 57, in compute_steady_state_with_convergence\n    solver = CanalSolver(length=length, nx=nx, B=B, S0=S0, n=n, method='preissmann')\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: HydrostaticCanalSolver.__init__() got an unexpected keyword argument 'method'\n",
+      "returncode": 1
+    },
+    {
+      "name": "明渠流动/04_boundary_conditions_v2",
+      "path": "/workspace/examples/example_01_canal_flow/scripts/04_boundary_conditions_v2.py",
+      "category": "basic",
+      "start_time": "2025-11-13T23:14:26.499446",
+      "status": "failed",
+      "duration": 0.055082082748413086,
+      "error": "脚本返回非零退出码: 1",
+      "output": "\nTraceback (most recent call last):\n  File \"/workspace/examples/example_01_canal_flow/scripts/04_boundary_conditions_v2.py\", line 20, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'\n",
+      "returncode": 1
+    },
+    {
+      "name": "明渠流动/04_boundary_conditions_v2_refactored",
+      "path": "/workspace/examples/example_01_canal_flow/scripts/04_boundary_conditions_v2_refactored.py",
+      "category": "basic",
+      "start_time": "2025-11-13T23:14:26.554888",
+      "status": "failed",
+      "duration": 0.06203651428222656,
+      "error": "脚本返回非零退出码: 1",
+      "output": "\nTraceback (most recent call last):\n  File \"/workspace/examples/example_01_canal_flow/scripts/04_boundary_conditions_v2_refactored.py\", line 43, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'\n",
+      "returncode": 1
+    },
+    {
+      "name": "明渠流动/05_step_response",
+      "path": "/workspace/examples/example_01_canal_flow/scripts/05_step_response.py",
+      "category": "basic",
+      "start_time": "2025-11-13T23:14:26.617327",
+      "status": "failed",
+      "duration": 0.6028800010681152,
+      "error": "脚本返回非零退出码: 1",
+      "output": "\nTraceback (most recent call last):\n  File \"/workspace/examples/example_01_canal_flow/scripts/05_step_response.py\", line 24, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'\n",
+      "returncode": 1
+    }
+  ],
+  "summary": {
+    "passed": 0,
+    "failed": 10,
+    "timeout": 0,
+    "error": 0,
+    "passed_with_warnings": 0,
+    "unknown": 0,
+    "total_duration": 3.052262783050537,
+    "success_rate": 0.0
+  }
+}
