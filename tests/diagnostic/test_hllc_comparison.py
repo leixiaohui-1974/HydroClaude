@@ -13,7 +13,13 @@ sys.path.insert(0, '/workspace')
 import numpy as np
 import time
 
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def run_dam_break_test(solver_type='hllc', nx=501, dt=0.1, T=50.0):
@@ -142,7 +148,7 @@ def main():
         
         # 对比
         print(f"\n  对比:")
-        print(f"    误差改进: {result_hll['error']:.2f}% → {result_hllc['error']:.2f}% (Δ={result_hll['error']-result_hllc['error']:.2f}%)")
+        print(f"    误差改进: {result_hll['error']:.2f}% -> {result_hllc['error']:.2f}% (Δ={result_hll['error']-result_hllc['error']:.2f}%)")
         print(f"    耗时比: {result_hllc['time']/result_hll['time']:.2f}x")
         
         results.append({
@@ -164,7 +170,7 @@ def main():
         hll_err = r['hll']['error']
         hllc_err = r['hllc']['error']
         improvement = hll_err - hllc_err
-        best = '✅' if hllc_err < hll_err else '⚠️'
+        best = '' if hllc_err < hll_err else '️'
         print(f"{config_name:<15} {hll_err:>10.2f}% {hllc_err:>10.2f}% {improvement:>8.2f}% {best}")
 
 

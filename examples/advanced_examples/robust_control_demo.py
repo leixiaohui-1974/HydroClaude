@@ -1,27 +1,30 @@
+# -*- coding: utf-8 -*-
 """
 鲁棒控制策略演示
 
-对比不同控制策略在扰动和不确定性下的鲁棒性：
+对比不同控制策略在扰动和不确定性下的鲁棒性
 1. PID控制器
-2. 滑模控制（SMC）
-3. 自适应滑模控制（Adaptive SMC）
+2. 滑模控制SMC
+3. 自适应滑模控制Adaptive SMC
 
-测试场景：
+测试场景
 - 阶跃参考跟踪
 - 阶跃扰动
 - 参数不确定性
 
-性能指标：
+性能指标
 - 跟踪误差
 - 控制平滑度
 - 扰动抑制能力
 
-作者：HydroClaude Team
-日期：2025-10-24
+作者HydroClaude Team
+日期2025-10-24
 """
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 import sys
 import os
 
@@ -51,7 +54,7 @@ class CanalSystemWithDisturbance:
         self.nominal_gain = nominal_gain
         self.h = 2.0  # 初始水深
 
-        # 系统参数不确定性（可变）
+        # 系统参数不确定性可变
         self.actual_gain = nominal_gain
 
     def step(self, u: float, disturbance: float = 0.0) -> float:
@@ -65,7 +68,7 @@ class CanalSystemWithDisturbance:
         返回:
             h: 当前水深
         """
-        # 系统动力学（带不确定性和扰动）
+        # 系统动力学带不确定性和扰动
         dh = self.actual_gain * u * self.dt + disturbance
 
         # 更新水深
@@ -134,9 +137,9 @@ def main():
         adaptation_gain=0.5
     )
 
-    print("  ✓ PID控制器")
-    print("  ✓ 滑模控制器（SMC）")
-    print("  ✓ 自适应滑模控制器（ASMC）")
+    print("   PID控制器")
+    print("   滑模控制器SMC")
+    print("   自适应滑模控制器ASMC")
 
     # ===== 3. 生成测试场景 =====
     print("\n3. 测试场景...")
@@ -229,7 +232,7 @@ def main():
 
         if step % 80 == 0:
             eta_adaptive = asmc.history_eta[-1] if asmc.history_eta else asmc.params.eta
-            print(f"    步骤 {step}: h={h:.3f}m, u={u:.4f}, η={eta_adaptive:.4f}")
+            print(f"    步骤 {step}: h={h:.3f}m, u={u:.4f}, ={eta_adaptive:.4f}")
 
     # 转换为numpy数组
     time_array = np.arange(n_steps) * dt
@@ -263,7 +266,7 @@ def main():
     smoothness_smc = np.sum(np.abs(np.diff(u_smc)))
     smoothness_asmc = np.sum(np.abs(np.diff(u_asmc)))
 
-    # 扰动抑制能力（扰动期间的误差）
+    # 扰动抑制能力扰动期间的误差
     disturbance_periods = (disturbance != 0)
     if np.any(disturbance_periods):
         mae_pid_dist = np.mean(np.abs(e_pid[disturbance_periods]))
@@ -277,12 +280,12 @@ def main():
     print(f"    SMC:  MAE={mae_smc:.4f}m, RMSE={rmse_smc:.4f}m")
     print(f"    ASMC: MAE={mae_asmc:.4f}m, RMSE={rmse_asmc:.4f}m")
 
-    print("\n  控制平滑度（总变化量）:")
+    print("\n  控制平滑度总变化量:")
     print(f"    PID:  {smoothness_pid:.4f}")
     print(f"    SMC:  {smoothness_smc:.4f}")
     print(f"    ASMC: {smoothness_asmc:.4f}")
 
-    print("\n  扰动抑制能力（扰动期间MAE）:")
+    print("\n  扰动抑制能力扰动期间MAE:")
     print(f"    PID:  {mae_pid_dist:.4f}m")
     print(f"    SMC:  {mae_smc_dist:.4f}m")
     print(f"    ASMC: {mae_asmc_dist:.4f}m")
@@ -342,7 +345,7 @@ def main():
     ax2.tick_params(axis='y', labelcolor='b')
     ax.grid(True, alpha=0.3)
 
-    # 子图5: 滑模面（SMC）
+    # 子图5: 滑模面SMC
     ax = axes[2, 0]
     s_smc = np.array(smc.history_s)
     s_asmc = np.array(asmc.history_s)
@@ -386,9 +389,9 @@ def main():
     # 保存图像
     output_path = os.path.join(os.path.dirname(__file__), 'robust_control_demo.png')
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
-    print(f"\n  ✓ 可视化已保存: {output_path}")
+    print(f"\n   可视化已保存: {output_path}")
 
-    plt.show()
+    # plt.show()  # Disabled for automated testing
 
     # ===== 7. 总结 =====
     print("\n" + "=" * 80)
@@ -396,21 +399,21 @@ def main():
     print("=" * 80)
     print("\n鲁棒控制策略对比:")
     print(f"\n1. PID控制器:")
-    print(f"   • 优点: 简单、平滑")
-    print(f"   • 缺点: 对扰动和不确定性敏感")
-    print(f"   • MAE: {mae_pid:.4f}m, 扰动抑制: {mae_pid_dist:.4f}m")
-    print(f"\n2. 滑模控制（SMC）:")
-    print(f"   • 优点: 鲁棒性强、对扰动不敏感")
-    print(f"   • 缺点: 可能有抖振")
-    print(f"   • MAE: {mae_smc:.4f}m, 扰动抑制: {mae_smc_dist:.4f}m")
-    print(f"\n3. 自适应滑模控制（ASMC）:")
-    print(f"   • 优点: 自适应调整、最佳鲁棒性")
-    print(f"   • 缺点: 计算复杂度略高")
-    print(f"   • MAE: {mae_asmc:.4f}m, 扰动抑制: {mae_asmc_dist:.4f}m")
+    print(f"   - 优点: 简单平滑")
+    print(f"   - 缺点: 对扰动和不确定性敏感")
+    print(f"   - MAE: {mae_pid:.4f}m, 扰动抑制: {mae_pid_dist:.4f}m")
+    print(f"\n2. 滑模控制SMC:")
+    print(f"   - 优点: 鲁棒性强对扰动不敏感")
+    print(f"   - 缺点: 可能有抖振")
+    print(f"   - MAE: {mae_smc:.4f}m, 扰动抑制: {mae_smc_dist:.4f}m")
+    print(f"\n3. 自适应滑模控制ASMC:")
+    print(f"   - 优点: 自适应调整最佳鲁棒性")
+    print(f"   - 缺点: 计算复杂度略高")
+    print(f"   - MAE: {mae_asmc:.4f}m, 扰动抑制: {mae_asmc_dist:.4f}m")
     print(f"\n关键观察:")
-    print(f"  • 滑模控制在扰动和不确定性下表现更好")
-    print(f"  • 自适应滑模控制能自动调整增益以适应变化")
-    print(f"  • 边界层有效抑制了抖振")
+    print(f"  - 滑模控制在扰动和不确定性下表现更好")
+    print(f"  - 自适应滑模控制能自动调整增益以适应变化")
+    print(f"  - 边界层有效抑制了抖振")
     print("=" * 80)
 
 

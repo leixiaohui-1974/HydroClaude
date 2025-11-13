@@ -30,7 +30,7 @@ SIL允许将实际控制软件与仿真模型联合运行
 
 ```bash
 cd examples/example_06_sil_basic
-PYTHONPATH=../.. python example_06_sil_basic.py
+PYTHONPATH=../.. python code/example_06_sil_basic.py
 ```
 
 ## 输出结果
@@ -41,7 +41,9 @@ PYTHONPATH=../.. python example_06_sil_basic.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_06_sil_basic_control.gif`
+
+![动画](outputs\animations\example_06_sil_basic_control.gif)
 
 ## 技术要点
 

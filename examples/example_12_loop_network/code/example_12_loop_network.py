@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
@@ -37,7 +38,7 @@ def example_loop_network():
     print("\n环路流量分布:")
     for edge_id, flow in results['edges'].items():
         edge = topology.edges[edge_id]
-        print(f"  {edge_id} ({edge.start_node}→{edge.end_node}): {flow:.2f} m³/s")
+        print(f"  {edge_id} ({edge.start_node}->{edge.end_node}): {flow:.2f} m^3/s")
 
     visualize_network(topology, results)
 

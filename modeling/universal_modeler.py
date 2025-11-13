@@ -80,7 +80,7 @@ class UniversalModeler:
         # 加载配置
         print("\n[1/7] 加载配置文件...")
         self.config = ModelConfig(config_file)
-        print(f"      ✓ 配置已加载: {config_file}")
+        print(f"       配置已加载: {config_file}")
 
         # 初始化各模块
         self.grid_generator = None
@@ -230,11 +230,11 @@ class UniversalModeler:
                     g=canal_params['g']
                 )
             else:
-                print(f"      ⚠ 未知结构物类型: {struct_type}，跳过")
+                print(f"       未知结构物类型: {struct_type}，跳过")
                 continue
 
             self.structures.append((position, structure))
-            print(f"      ✓ {struct_type} @ {position:.0f} m")
+            print(f"       {struct_type} @ {position:.0f} m")
 
         print(f"      总计: {len(self.structures)}个结构物")
 
@@ -288,7 +288,7 @@ class UniversalModeler:
             print(f"      Preissmann θ: {recommendation['theta']}")
         if 'warnings' in recommendation and recommendation['warnings']:
             for warning in recommendation['warnings']:
-                print(f"      ⚠ {warning}")
+                print(f"       {warning}")
 
         return recommendation
 
@@ -327,11 +327,11 @@ class UniversalModeler:
 
         # 快速验证
         if result['converged']:
-            print(f"\n      ✓ 稳态求解成功")
+            print(f"\n       稳态求解成功")
             print(f"        迭代次数: {result['iterations']}")
             print(f"        流量误差: {result.get('final_flow_error', 0):.6f}%")
         else:
-            print(f"\n      ⚠ 稳态求解未完全收敛")
+            print(f"\n       稳态求解未完全收敛")
             print(f"        已执行迭代: {result['iterations']}")
 
         return result
@@ -389,7 +389,7 @@ class UniversalModeler:
             verbose=False
         )
 
-        print(f"      ✓ 稳态初值已获取")
+        print(f"       稳态初值已获取")
 
         # 初始化结果存储
         nx = len(self.solver.x)
@@ -442,7 +442,7 @@ class UniversalModeler:
                     progress = step / n_steps * 100
                     print(f"        进度: {progress:.1f}% (t = {current_time:.1f}s)")
 
-        print(f"      ✓ 非稳态模拟完成")
+        print(f"       非稳态模拟完成")
 
         # 构造结果
         self.unsteady_result = {
@@ -598,11 +598,11 @@ class UniversalModeler:
                     'data': {k: np.array(v) for k, v in value_data.items()}
                 }
 
-                print(f"      ✓ 已加载 {len(time_data)} 个时间点")
-                print(f"      ✓ 数据列: {list(value_data.keys())}")
+                print(f"       已加载 {len(time_data)} 个时间点")
+                print(f"       数据列: {list(value_data.keys())}")
 
         except Exception as e:
-            print(f"      ✗ 加载文件失败: {e}")
+            print(f"       加载文件失败: {e}")
             # 创建空数据
             self.time_series_data[file_path] = {
                 'time': np.array([0.0]),
@@ -696,7 +696,7 @@ class UniversalModeler:
         )
         self.solver.h[:] = h_init
         self.solver.hu[:] = hu_init
-        print(f"      ✓ 初值设置完成 (收敛步数: {steady_result.get('iterations', 0)})")
+        print(f"       初值设置完成 (收敛步数: {steady_result.get('iterations', 0)})")
 
         # 创建控制配置
         control_config = ControlConfig(
@@ -785,7 +785,7 @@ class UniversalModeler:
                 h_range = (self.solver.h.min(), self.solver.h.max())
                 print(f"      进度: {progress:.0f}% | 时间: {current_time:.0f}s | 水深: [{h_range[0]:.2f}, {h_range[1]:.2f}] m")
 
-        print(f"      ✓ 控制仿真完成")
+        print(f"       控制仿真完成")
 
         # 获取控制性能指标
         performance_metrics = self.control_loop.get_performance_metrics()
@@ -884,7 +884,7 @@ class UniversalModeler:
                     hu_history=self.unsteady_result['hu_history'],
                     result=self.unsteady_result
                 )
-            print(f"✓ 数据文件: {data_file}")
+            print(f" 数据文件: {data_file}")
 
         # 生成图表
         if 'png' in output_config['formats']:
@@ -902,7 +902,7 @@ class UniversalModeler:
                     title=f"Longitudinal Profile - {prefix}",
                     filename=f"{prefix}_profile.png"
                 )
-                print(f"✓ 纵剖面图: {prefix}_profile.png")
+                print(f" 纵剖面图: {prefix}_profile.png")
                 import matplotlib.pyplot as plt
                 plt.close(fig1)
 
@@ -930,7 +930,7 @@ class UniversalModeler:
             title=f"Final State - {prefix}",
             filename=f"{prefix}_final_profile.png"
         )
-        print(f"✓ 最终纵剖面图: {prefix}_final_profile.png")
+        print(f" 最终纵剖面图: {prefix}_final_profile.png")
         plt.close(fig1)
 
         # 2. 时间序列图（选择几个监测点）
@@ -952,7 +952,7 @@ class UniversalModeler:
             ylabel="Water Depth (m)",
             filename=f"{prefix}_time_series.png"
         )
-        print(f"✓ 时间序列图: {prefix}_time_series.png")
+        print(f" 时间序列图: {prefix}_time_series.png")
         plt.close(fig2)
 
         print(f"  >> 非稳态结果生成完成")
@@ -1041,7 +1041,7 @@ class UniversalModeler:
         plt.tight_layout()
         control_file = str(self.output_dir / f"{prefix}_control_performance.png")
         plt.savefig(control_file, dpi=150, bbox_inches='tight')
-        print(f"✓ 控制性能图: {prefix}_control_performance.png")
+        print(f" 控制性能图: {prefix}_control_performance.png")
         plt.close(fig)
 
         # 2. 最终时刻纵剖面
@@ -1054,7 +1054,7 @@ class UniversalModeler:
             title=f"Final State (Control) - {prefix}",
             filename=f"{prefix}_final_profile.png"
         )
-        print(f"✓ 最终纵剖面图: {prefix}_final_profile.png")
+        print(f" 最终纵剖面图: {prefix}_final_profile.png")
         plt.close(fig2)
 
         print(f"  >> 控制仿真结果生成完成")
@@ -1090,14 +1090,14 @@ class UniversalModeler:
             self.generate_outputs()
 
             print("\n" + "=" * 90)
-            print("✓ 建模完成！")
+            print(" 建模完成！")
             print(f"  结果目录: {self.output_dir}")
             print("=" * 90)
 
             return True
 
         except Exception as e:
-            print(f"\n✗ 建模失败: {e}")
+            print(f"\n 建模失败: {e}")
             import traceback
             traceback.print_exc()
             return False

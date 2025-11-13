@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 一阶MPC在非线性模型上的性能测试
 
@@ -6,8 +7,8 @@
 2. 对比线性化模型与非线性模型的性能差异
 3. 评估非线性失配的影响
 
-非线性模型：使用非线性闸门方程Q = Cd*a*W*sqrt(2*g*Δh)
-线性化模型：工作点线性化的一阶模型H(s) = K/(τs+1)
+非线性模型：使用非线性闸门方程Q = Cd*a*W*sqrt(2*g*Deltah)
+线性化模型：工作点线性化的一阶模型H(s) = K/(taus+1)
 
 作者：HydroClaude Team
 日期：2025-10-24
@@ -182,7 +183,7 @@ def visualize_comparison(result_nonlin: Dict, result_lin: Dict):
     ax4 = plt.subplot(2, 3, 4)
     ax4.step(result_nonlin['time'], result_nonlin['Q_in'], 'g-', linewidth=2, where='post')
     ax4.set_xlabel('Time (s)', fontsize=11)
-    ax4.set_ylabel('Inflow (m³/s)', fontsize=11)
+    ax4.set_ylabel('Inflow (m^3/s)', fontsize=11)
     ax4.set_title('Disturbance (Inflow)', fontsize=12, fontweight='bold')
     ax4.grid(True, alpha=0.3)
 
@@ -230,7 +231,7 @@ def visualize_comparison(result_nonlin: Dict, result_lin: Dict):
 
     plt.tight_layout()
     plt.savefig('mpc_nonlinear_comparison.png', dpi=150, bbox_inches='tight')
-    print(f"✅ 图片已保存: mpc_nonlinear_comparison.png")
+    print(f" 图片已保存: mpc_nonlinear_comparison.png")
 
 
 def print_summary(result_nonlin: Dict, result_lin: Dict):
@@ -267,25 +268,25 @@ def print_summary(result_nonlin: Dict, result_lin: Dict):
 
     # 判定
     if abs(mae_diff_pct) < 10:
-        verdict = "✅ 优秀：非线性失配影响极小（<10%）"
+        verdict = " 优秀：非线性失配影响极小（<10%）"
     elif abs(mae_diff_pct) < 20:
         verdict = "⭕ 良好：非线性失配影响可接受（10-20%）"
     elif abs(mae_diff_pct) < 30:
-        verdict = "⚠️  一般：非线性失配影响较大（20-30%）"
+        verdict = "  一般：非线性失配影响较大（20-30%）"
     else:
-        verdict = "❌ 较差：非线性失配影响显著（>30%）"
+        verdict = " 较差：非线性失配影响显著（>30%）"
 
     print(f"\n  综合评价：{verdict}")
 
     print("\n【关键发现】")
     print("-" * 80)
     if abs(mae_diff_pct) < 15:
-        print("  ✅ 线性化假设在工作点附近有效")
-        print("  ✅ 一阶MPC可直接应用于非线性系统")
-        print("  ✅ 控制性能基本不受非线性影响")
+        print("   线性化假设在工作点附近有效")
+        print("   一阶MPC可直接应用于非线性系统")
+        print("   控制性能基本不受非线性影响")
     else:
-        print("  ⚠️  非线性效应不可忽略")
-        print("  💡 建议：考虑增益调度或多工作点MPC")
+        print("    非线性效应不可忽略")
+        print("   建议：考虑增益调度或多工作点MPC")
 
     print("\n" + "="*80)
 
@@ -296,20 +297,20 @@ def main():
     print("一阶MPC在非线性模型上的性能测试")
     print("="*80)
     print("\n测试配置：")
-    print("  - 控制器: 一阶MPC (K=-0.3, τ=206s)")
+    print("  - 控制器: 一阶MPC (K=-0.3, tau=206s)")
     print("  - 非线性模型: 非线性闸门方程 + 水量平衡ODE")
     print("  - 线性化模型: 工作点线性化的一阶模型")
     print("  - 仿真时间: 800s")
-    print("  - 扰动: 4次阶跃变化 (20→25→18→23 m³/s)")
+    print("  - 扰动: 4次阶跃变化 (20->25->18->23 m^3/s)")
     print("\n开始测试...\n")
 
     print("【步骤1】运行非线性模型测试...")
     result_nonlin = run_mpc_test(use_linear=False)
-    print(f"  ✅ 非线性模型测试完成 - MAE = {result_nonlin['mae']*100:.2f} cm")
+    print(f"   非线性模型测试完成 - MAE = {result_nonlin['mae']*100:.2f} cm")
 
     print("\n【步骤2】运行线性化模型测试...")
     result_lin = run_mpc_test(use_linear=True)
-    print(f"  ✅ 线性化模型测试完成 - MAE = {result_lin['mae']*100:.2f} cm")
+    print(f"   线性化模型测试完成 - MAE = {result_lin['mae']*100:.2f} cm")
 
     print("\n【步骤3】生成对比可视化...")
     visualize_comparison(result_nonlin, result_lin)
@@ -317,7 +318,7 @@ def main():
     # 打印详细总结
     print_summary(result_nonlin, result_lin)
 
-    print("\n测试完成！✅")
+    print("\n测试完成！")
 
 
 if __name__ == "__main__":

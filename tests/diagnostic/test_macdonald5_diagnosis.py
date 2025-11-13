@@ -4,8 +4,22 @@ MacDonald Test 5 诊断测试
 目的：诊断为什么Test 5出现NaN
 策略：从最简单配置开始，逐步增加复杂度
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def compute_normal_depth(Q, B, S0, n, h_guess=1.0, tol=1e-6, max_iter=100):
@@ -88,12 +102,12 @@ def test_macdonald5_step1_no_manning():
         solver.step(dt)
 
         if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
-            print(f"❌ NaN出现在第{step+1}步")
+            print(f" NaN出现在第{step+1}步")
             print(f"   h范围: [{np.nanmin(solver.h):.4f}, {np.nanmax(solver.h):.4f}]")
             print(f"   Q范围: [{np.nanmin(solver.Q):.4f}, {np.nanmax(solver.Q):.4f}]")
             return False
 
-    print(f"✅ 测试通过：运行{n_steps}步无NaN")
+    print(f" 测试通过：运行{n_steps}步无NaN")
     print(f"   最终h范围: [{np.min(solver.h):.4f}, {np.max(solver.h):.4f}]")
     print(f"   最终Q范围: [{np.min(solver.Q):.4f}, {np.max(solver.Q):.4f}]")
     print(f"   质量守恒误差: {abs(solver.get_mass_conservation_error()):.2f}%")
@@ -152,7 +166,7 @@ def test_macdonald5_step2_with_manning():
         solver.step(dt)
 
         if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
-            print(f"❌ NaN出现在第{step+1}步")
+            print(f" NaN出现在第{step+1}步")
             print(f"   时间 t = {solver.t:.2f} s")
 
             # 找到NaN位置
@@ -177,9 +191,9 @@ def test_macdonald5_step2_with_manning():
             h_mean = np.mean(solver.h)
             h_std = np.std(solver.h)
             mass_error = abs(solver.get_mass_conservation_error())
-            print(f"  步骤{step+1}: h_mean={h_mean:.4f}±{h_std:.4f} m, 质量误差={mass_error:.2f}%")
+            print(f"  步骤{step+1}: h_mean={h_mean:.4f}+/-{h_std:.4f} m, 质量误差={mass_error:.2f}%")
 
-    print(f"\n✅ 测试通过：运行{n_steps}步无NaN")
+    print(f"\n 测试通过：运行{n_steps}步无NaN")
     print(f"\n最终状态:")
     h_mean = np.mean(solver.h)
     h_error = abs(h_mean - h_normal) / h_normal * 100
@@ -233,7 +247,7 @@ def test_macdonald5_step3_second_order():
         solver.step(dt)
 
         if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
-            print(f"❌ NaN出现在第{step+1}步（二阶格式）")
+            print(f" NaN出现在第{step+1}步（二阶格式）")
             return False
 
         if (step + 1) % 50 == 0:
@@ -241,7 +255,7 @@ def test_macdonald5_step3_second_order():
             mass_error = abs(solver.get_mass_conservation_error())
             print(f"  步骤{step+1}: h_mean={h_mean:.4f} m, 质量误差={mass_error:.2f}%")
 
-    print(f"✅ 二阶格式测试通过：运行{n_steps}步无NaN")
+    print(f" 二阶格式测试通过：运行{n_steps}步无NaN")
 
     return True
 
@@ -255,22 +269,22 @@ if __name__ == "__main__":
     result1 = test_macdonald5_step1_no_manning()
 
     if not result1:
-        print("\n⚠️ 步骤1失败，问题在基础求解器")
+        print("\n️ 步骤1失败，问题在基础求解器")
         exit(1)
 
     # 步骤2：带Manning摩阻
     result2 = test_macdonald5_step2_with_manning()
 
     if not result2:
-        print("\n⚠️ 步骤2失败，问题在Manning摩阻处理")
+        print("\n️ 步骤2失败，问题在Manning摩阻处理")
         exit(1)
 
     # 步骤3：二阶格式
     result3 = test_macdonald5_step3_second_order()
 
     if not result3:
-        print("\n⚠️ 步骤3失败，问题在二阶格式")
+        print("\n️ 步骤3失败，问题在二阶格式")
 
     print("\n" + "="*80)
-    print("✅ 所有诊断测试通过！Test 5应该可以正常运行")
+    print(" 所有诊断测试通过！Test 5应该可以正常运行")
     print("="*80)

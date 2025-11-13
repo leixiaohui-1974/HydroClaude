@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Saint-Venant模型简化诊断脚本
 
@@ -21,7 +22,7 @@ canal = Canal(
     length=1000.0,
     slope=0.001,
     n_sections=51,
-    method='moc',
+    method='preissmann',
     manning_n=0.025,
     width=10.0,
     initial_depth=2.5,
@@ -76,12 +77,12 @@ h_change = canal.hydraulic_state.h[-1] - 2.5
 print(f"\n水位变化: Δh = {h_change:.3f} m")
 
 if abs(h_change) < 0.001:
-    print("\n❌ 问题：水位没有变化！")
+    print("\n[失败] 问题：水位没有变化！")
     print("   可能原因：")
     print("   1. 边界条件设置不正确")
     print("   2. MOC求解器没有正常工作")
     print("   3. downstream_boundary未设置")
 else:
-    print(f"\n✅ 正常：水位变化了 {h_change:.3f} m")
+    print(f"\n[成功] 正常：水位变化了 {h_change:.3f} m")
 
 print("="*60)

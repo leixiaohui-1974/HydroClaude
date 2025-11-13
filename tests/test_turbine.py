@@ -252,7 +252,7 @@ class TestPeltonTurbine:
             rated_speed=500.0
         )
 
-        # Jet velocity: v = Cv * √(2*g*H)
+        # Jet velocity: v = Cv * sqrt(2*g*H)
         v_jet = turbine.calculate_jet_velocity(800.0)
 
         # Theoretical velocity (Cv=0.98)
@@ -353,7 +353,7 @@ class TestUtilityFunctions:
 
         for head, expected_type in test_cases:
             selected = select_turbine_type(head)
-            print(f"    H={head:4.0f}m → {selected:8s} (expected: {expected_type})")
+            print(f"    H={head:4.0f}m -> {selected:8s} (expected: {expected_type})")
             assert selected == expected_type
 
     def test_specific_speed(self):
@@ -414,7 +414,7 @@ class TestIntegration:
                 assert powers[i+1] > powers[i], \
                     f"{turbine.turbine_type}: Power should increase with flow"
 
-            print(f"    {turbine.turbine_type:8s}: {powers[0]/1e6:.1f} MW → {powers[-1]/1e6:.1f} MW ✓")
+            print(f"    {turbine.turbine_type:8s}: {powers[0]/1e6:.1f} MW -> {powers[-1]/1e6:.1f} MW ")
 
     def test_torque_calculation(self):
         """Test torque calculation for all turbines"""
@@ -425,13 +425,13 @@ class TestIntegration:
 
         T = turbine.calculate_torque(P, n)
 
-        # Verify: P = T * ω = T * 2π * n / 60
+        # Verify: P = T * ω = T * 2pi * n / 60
         omega = 2 * np.pi * n / 60
         P_check = T * omega
 
         assert abs(P - P_check) / P < 0.01, "Torque calculation error"
 
-        print(f"\n  Torque test: P={P/1e6:.0f} MW, n={n} rpm → T={T/1e6:.3f} MN·m")
+        print(f"\n  Torque test: P={P/1e6:.0f} MW, n={n} rpm -> T={T/1e6:.3f} MN·m")
 
 
 def run_all_tests():

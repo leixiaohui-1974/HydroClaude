@@ -34,7 +34,7 @@ def main():
         engine = SimulationEngine(config_file)
 
         # 初始化
-        engine.initialize()
+        engine.initialize_steady_state()
 
         # 运行仿真
         engine.run()

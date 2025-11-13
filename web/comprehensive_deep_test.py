@@ -34,10 +34,10 @@ class DeepTester:
         print(f"{Colors.HEADER}{Colors.BOLD}{'='*80}{Colors.ENDC}\n")
         
     def log_success(self, msg):
-        print(f"{Colors.OKGREEN}✅ {msg}{Colors.ENDC}")
+        print(f"{Colors.OKGREEN} {msg}{Colors.ENDC}")
         
     def log_error(self, msg):
-        print(f"{Colors.FAIL}❌ {msg}{Colors.ENDC}")
+        print(f"{Colors.FAIL} {msg}{Colors.ENDC}")
         
     def log_info(self, msg):
         print(f"ℹ️  {msg}")
@@ -47,7 +47,7 @@ class DeepTester:
         filename = f"{self.screenshot_count:03d}_{name}.png"
         filepath = self.screenshots_dir / filename
         page.screenshot(path=str(filepath), full_page=True)
-        self.log_info(f"📸 截图保存: {filename}")
+        self.log_info(f" 截图保存: {filename}")
         return str(filepath)
         
     def record_test(self, name: str, passed: bool, details: str = ""):
@@ -66,7 +66,7 @@ class DeepTester:
         
     def test_backend_apis(self):
         """深度测试所有后端API"""
-        self.log_header("🔍 深度测试：后端API全覆盖")
+        self.log_header(" 深度测试：后端API全覆盖")
         
         # 1. 健康检查
         try:
@@ -140,7 +140,7 @@ class DeepTester:
             
     def test_frontend_deep(self, page: Page):
         """深度测试前端UI"""
-        self.log_header("🔍 深度测试：前端UI全覆盖")
+        self.log_header(" 深度测试：前端UI全覆盖")
         
         try:
             # 1. 页面加载
@@ -225,7 +225,7 @@ class DeepTester:
             
     def test_api_stress(self):
         """压力测试API"""
-        self.log_header("🔍 深度测试：API压力测试")
+        self.log_header(" 深度测试：API压力测试")
         
         self.log_info("并发创建10个仿真任务...")
         
@@ -265,7 +265,7 @@ class DeepTester:
         
     def test_security(self):
         """安全性测试"""
-        self.log_header("🔍 深度测试：安全性检查")
+        self.log_header(" 深度测试：安全性检查")
         
         # 1. SQL注入测试
         try:
@@ -340,7 +340,7 @@ class DeepTester:
             
     def generate_report(self):
         """生成测试报告"""
-        self.log_header("📊 测试报告生成")
+        self.log_header(" 测试报告生成")
         
         success_rate = (self.passed_count / self.test_count * 100) if self.test_count > 0 else 0
         
@@ -376,7 +376,7 @@ class DeepTester:
         
     def run_all_tests(self):
         """运行所有深度测试"""
-        self.log_header("🚀 HydroClaude Web 全面深度测试")
+        self.log_header(" HydroClaude Web 全面深度测试")
         self.log_info(f"开始时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         
         # 1. 后端API测试
@@ -405,10 +405,10 @@ class DeepTester:
         success = self.generate_report()
         
         if success:
-            self.log_header("✅ 测试完成！")
+            self.log_header(" 测试完成！")
             self.log_success("系统通过全面深度测试")
         else:
-            self.log_header("⚠️  测试完成，但存在问题")
+            self.log_header("️  测试完成，但存在问题")
             
         return success
 

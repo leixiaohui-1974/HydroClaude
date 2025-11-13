@@ -360,7 +360,7 @@ if __name__ == "__main__":
     Q_sum = sum(flow_dist.values())
     print(f"\n质量守恒检查: Σ Q_i = {Q_sum:.2f} m³/s")
     assert abs(Q_sum - Q_total) < 1e-10, "质量守恒失败!"
-    print("✓ 质量守恒验证通过")
+    print(" 质量守恒验证通过")
 
     # 测试摩阻坡度计算
     print("\n[测试3] 摩阻坡度计算")

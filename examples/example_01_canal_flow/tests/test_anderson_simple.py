@@ -9,6 +9,7 @@ Anderson加速简单测试
 日期: 2025-10-22
 """
 
+import os
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 

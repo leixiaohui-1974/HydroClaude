@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 示例22: 水锤效应分析
 
@@ -17,6 +18,8 @@
 import sys
 import os
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from typing import Tuple, List, Dict
 
@@ -40,7 +43,7 @@ def calculate_water_hammer_theory(V0: float, a: float, closure_time: float) -> D
     Returns:
         理论计算结果字典
     """
-    # Joukowsky公式: ΔP = ρ * a * ΔV
+    # Joukowsky公式: DeltaP = rho * a * DeltaV
     rho = PhysicsConstants.WATER_DENSITY
     delta_v = V0  # 流速从V0降到0
 
@@ -265,7 +268,7 @@ def demo_water_hammer_basic():
 
     plt.tight_layout()
 
-    output_path = '/home/user/HydroClaude/examples/example_22_water_hammer/water_hammer_analysis.png'
+    output_path = 'examples/example_22_water_hammer/water_hammer_analysis.png'
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
     print(f"图像已保存到: {output_path}")
     print()
@@ -279,22 +282,22 @@ def demo_water_hammer_basic():
     print()
 
     print("1. 水锤防护措施:")
-    print("   • 延长阀门关闭时间 (>5s)")
-    print("   • 安装调压塔或空气罐")
-    print("   • 使用缓闭止回阀")
-    print("   • 设置泄压阀")
+    print("   - 延长阀门关闭时间 (>5s)")
+    print("   - 安装调压塔或空气罐")
+    print("   - 使用缓闭止回阀")
+    print("   - 设置泄压阀")
     print()
 
     print("2. 管道设计考虑:")
-    print(f"   • 设计压力应考虑水锤压升 (+{delta_h_values[0]:.1f}m)")
-    print(f"   • 临界关闭时间: {critical_t:.2f}s")
-    print("   • 管材选择应考虑压力波速")
+    print(f"   - 设计压力应考虑水锤压升 (+{delta_h_values[0]:.1f}m)")
+    print(f"   - 临界关闭时间: {critical_t:.2f}s")
+    print("   - 管材选择应考虑压力波速")
     print()
 
     print("3. 操作规程:")
-    print("   • 避免突然关闭阀门")
-    print("   • 按规定速度启停泵")
-    print("   • 定期检查安全装置")
+    print("   - 避免突然关闭阀门")
+    print("   - 按规定速度启停泵")
+    print("   - 定期检查安全装置")
     print()
 
     return results
@@ -373,8 +376,8 @@ if __name__ == '__main__':
     print("="*80)
     print()
     print("关键成果:")
-    print("  ✓ Joukowsky公式应用")
-    print("  ✓ 水锤强度计算")
-    print("  ✓ 压力波传播分析")
-    print("  ✓ 保护措施设计")
-    print("  ✓ 工程设计建议")
+    print("   Joukowsky公式应用")
+    print("   水锤强度计算")
+    print("   压力波传播分析")
+    print("   保护措施设计")
+    print("   工程设计建议")

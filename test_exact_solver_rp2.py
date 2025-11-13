@@ -80,4 +80,4 @@ axes[1].grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('rp2_exact_solution.png', dpi=150)
-print(f"\n✅ 图像已保存: rp2_exact_solution.png")
+print(f"\n 图像已保存: rp2_exact_solution.png")

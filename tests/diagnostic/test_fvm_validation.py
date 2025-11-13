@@ -17,7 +17,13 @@ import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.fvm_solver import FVMSolver
+try:
+    from solvers.fvm_solver import FVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_still_water():
@@ -82,16 +88,16 @@ def test_still_water():
 
     # 判断
     if h_error_max < 1e-10 and u_max < 1e-10:
-        print("✓✓✓ Well-balanced性质：完美保持静水平衡（机器精度）")
+        print(" Well-balanced性质：完美保持静水平衡（机器精度）")
         result = "perfect"
     elif h_error_max < 1e-6 and u_max < 1e-6:
-        print("✓✓ Well-balanced性质：良好保持静水平衡")
+        print(" Well-balanced性质：良好保持静水平衡")
         result = "good"
     elif h_error_max < 1e-3 and u_max < 1e-3:
-        print("✓ Well-balanced性质：可接受")
+        print(" Well-balanced性质：可接受")
         result = "acceptable"
     else:
-        print("✗ Well-balanced性质：不佳")
+        print(" Well-balanced性质：不佳")
         result = "poor"
 
     print()
@@ -142,7 +148,7 @@ def test_dam_break():
     print("初始状态:")
     print(f"  左侧水深: 2.0m (x<50m)")
     print(f"  右侧水深: 1.0m (x>50m)")
-    print(f"  初始总质量: {mass_0:.6f} m²")
+    print(f"  初始总质量: {mass_0:.6f} m^2")
     print()
 
     # 求解
@@ -159,22 +165,22 @@ def test_dam_break():
     print(f"  t = {t_end}s")
     print(f"  h范围: [{h_final.min():.3f}, {h_final.max():.3f}]m")
     print(f"  u范围: [{u_final.min():.3f}, {u_final.max():.3f}]m/s")
-    print(f"  最终总质量: {mass_f:.6f} m²")
+    print(f"  最终总质量: {mass_f:.6f} m^2")
     print(f"  质量守恒误差: {mass_error:.2e}")
     print()
 
     # 判断守恒性
     if mass_error < 1e-12:
-        print("✓✓✓ 守恒性：机器精度级别")
+        print(" 守恒性：机器精度级别")
         result = "perfect"
     elif mass_error < 1e-9:
-        print("✓✓ 守恒性：优秀")
+        print(" 守恒性：优秀")
         result = "excellent"
     elif mass_error < 1e-6:
-        print("✓ 守恒性：良好")
+        print(" 守恒性：良好")
         result = "good"
     else:
-        print("⚠ 守恒性：需改进")
+        print(" 守恒性：需改进")
         result = "needs_improvement"
 
     print()
@@ -249,7 +255,7 @@ def test_convergence():
         print(f"{res['nx']:>6} | {dx:>8.3f} | {h_max:>8.4f} | {u_max:>8.4f}")
 
     print()
-    print("✓ 收敛性测试完成")
+    print(" 收敛性测试完成")
     print()
 
     return "completed"
@@ -282,15 +288,15 @@ def main():
     print()
 
     if result1 in ['perfect', 'good'] and result2 in ['perfect', 'excellent']:
-        print("✓✓✓ 所有测试通过！FVM求解器质量优秀")
+        print(" 所有测试通过！FVM求解器质量优秀")
         print()
         print("FVM求解器具备:")
-        print("  ✓ Well-balanced性质")
-        print("  ✓ 严格守恒")
-        print("  ✓ 激波捕捉能力")
-        print("  ✓ 数值稳定性")
+        print("   Well-balanced性质")
+        print("   严格守恒")
+        print("   激波捕捉能力")
+        print("   数值稳定性")
     else:
-        print("⚠ 部分测试需要改进")
+        print(" 部分测试需要改进")
 
     print()
     print("=" * 70)

@@ -14,7 +14,13 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.godunov_fvm_network_v2 import GodunvFVMNetworkV2, NodeType
+try:
+    from solvers.godunov_fvm_network_v2 import GodunvFVMNetworkV2, NodeType
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 import numpy as np
 
 print("=" * 80)
@@ -44,7 +50,7 @@ network.initialize_network(h_default=2.0, Q_default=50.0)
 print("\n网络拓扑：")
 print("  N1(SOURCE) --E1--> N2(BIFURCATION) --E2--> N3(SINK)")
 print("                                      \\--E3--> N4(SINK)")
-print(f"\n初始总质量: {network.initial_mass:.2f} m³")
+print(f"\n初始总质量: {network.initial_mass:.2f} m^3")
 
 # 运行
 print("\n推进500步...")
@@ -66,7 +72,7 @@ mass_error = state['network_mass_error']
 
 print(f"\n网络质量守恒：")
 print(f"  质量误差: {mass_error:.4f}%")
-print(f"  状态: {'✅ 优秀' if abs(mass_error) < 1.0 else '⚠️ 需改进'}")
+print(f"  状态: {' 优秀' if abs(mass_error) < 1.0 else '️ 需改进'}")
 
 print(f"\n节点流量平衡：")
 for node_id in ['N1', 'N2', 'N3', 'N4']:
@@ -85,11 +91,11 @@ print("综合评价")
 print("=" * 80)
 
 if abs(mass_error) < 1.0:
-    print("\n✅ 测试通过！")
+    print("\n 测试通过！")
     print(f"   质量误差 {abs(mass_error):.4f}% < 1%目标")
     print("   V2改进成功！")
 else:
-    print(f"\n⚠️ 测试未达标")
+    print(f"\n️ 测试未达标")
     print(f"   质量误差 {abs(mass_error):.4f}% > 1%目标")
     print("   需要进一步调试")
 

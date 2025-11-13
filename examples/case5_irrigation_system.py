@@ -123,7 +123,7 @@ def create_irrigation_network():
     # 灌溉系统通常采用PVC管，管径根据流量选择
     pipe_definitions = [
         # 主管（环状）
-        ('P1', 'Pump', 'J1', 0.3, 100.0, 1.0, '泵站→主管1'),
+        ('P1', 'Pump', 'J1', 0.3, 100.0, 1.0, '泵站->主管1'),
         ('P2', 'J1', 'J2', 0.25, 150.0, 0.5, '主管环路1'),
         ('P3', 'J2', 'J3', 0.25, 150.0, 0.5, '主管环路2'),
         ('P4', 'J3', 'J1', 0.2, 180.0, 0.5, '主管环路3'),
@@ -141,7 +141,7 @@ def create_irrigation_network():
     for pid, from_node, to_node, D, L, K, desc in pipe_definitions:
         pipe = create_pressure_pipe(pid, D, L, material='pvc', K_minor=K)
         topology.add_pipe(pipe, from_node, to_node)
-        print(f"  ✓ {pid}: {from_node}→{to_node}, D={int(D*1000)}mm, L={L}m ({desc})")
+        print(f"   {pid}: {from_node}->{to_node}, D={int(D*1000)}mm, L={L}m ({desc})")
 
     print(f"  管道数量: {len(pipe_definitions)}")
     print(f"  管材: PVC管（低摩阻）")
@@ -222,7 +222,7 @@ def analyze_irrigation_scenarios(topology):
         try:
             flows, heads = solver.solve()
             converged = True
-            print(f"  ✓ 求解收敛")
+            print(f"   求解收敛")
 
             # 分析各分区压力
             zone_pressures = {}
@@ -246,18 +246,18 @@ def analyze_irrigation_scenarios(topology):
             min_required = 15.0  # m
 
             if min_pressure >= min_required:
-                print(f"  ✓ 满足压力要求 (≥{min_required}m)")
+                print(f"   满足压力要求 (>={min_required}m)")
             else:
-                print(f"  ⚠️ 最低压力不足 (需≥{min_required}m)")
+                print(f"   最低压力不足 (需>={min_required}m)")
                 print(f"    建议: 提高泵扬程或增设增压泵")
 
             # 计算供水流量
             supply_flow = abs(flows['P1']) * 1000  # L/s
 
             # 计算泵功率（简化）
-            rho = 1000  # kg/m³
+            rho = 1000  # kg/m^3
             g = 9.81
-            Q = abs(flows['P1'])  # m³/s
+            Q = abs(flows['P1'])  # m^3/s
             H = 30.0  # m，泵扬程
             eta = 0.70  # 灌溉泵效率约70%
 
@@ -288,7 +288,7 @@ def analyze_irrigation_scenarios(topology):
             }
 
         except Exception as e:
-            print(f"  ✗ 求解失败: {str(e)[:50]}")
+            print(f"   求解失败: {str(e)[:50]}")
             results[scenario_name] = {'converged': False}
 
         print()
@@ -306,39 +306,39 @@ def irrigation_management_recommendations():
     print()
 
     print("【1. 灌溉制度优化】")
-    print("  • 根据作物生育期制定灌溉计划")
-    print("  • 避免全部分区同时灌溉，降低峰值需求")
-    print("  • 采用轮灌制度，提高水泵利用率")
-    print("  • 夜间灌溉，降低蒸发损失")
+    print("  - 根据作物生育期制定灌溉计划")
+    print("  - 避免全部分区同时灌溉，降低峰值需求")
+    print("  - 采用轮灌制度，提高水泵利用率")
+    print("  - 夜间灌溉，降低蒸发损失")
     print()
 
     print("【2. 节水技术应用】")
-    print("  • 蔬菜区：采用滴灌，节水30-50%")
-    print("  • 果树区：采用微喷灌，节水20-30%")
-    print("  • 大田区：采用喷灌，节水15-25%")
-    print("  • 安装土壤湿度传感器，精准灌溉")
+    print("  - 蔬菜区：采用滴灌，节水30-50%")
+    print("  - 果树区：采用微喷灌，节水20-30%")
+    print("  - 大田区：采用喷灌，节水15-25%")
+    print("  - 安装土壤湿度传感器，精准灌溉")
     print()
 
     print("【3. 系统维护管理】")
-    print("  • 定期检查管道，及时维修漏损")
-    print("  • 清洗过滤器，防止喷头堵塞")
-    print("  • 冬季排空管道，防止冻裂")
-    print("  • 记录用水量，优化灌溉参数")
+    print("  - 定期检查管道，及时维修漏损")
+    print("  - 清洗过滤器，防止喷头堵塞")
+    print("  - 冬季排空管道，防止冻裂")
+    print("  - 记录用水量，优化灌溉参数")
     print()
 
     print("【4. 自动化控制】")
-    print("  • 安装自动化灌溉控制系统")
-    print("  • 根据气象数据自动调整灌溉")
-    print("  • 手机APP远程监控和操作")
-    print("  • 异常报警功能（漏水、堵塞）")
+    print("  - 安装自动化灌溉控制系统")
+    print("  - 根据气象数据自动调整灌溉")
+    print("  - 手机APP远程监控和操作")
+    print("  - 异常报警功能（漏水、堵塞）")
     print()
 
     print("【5. 经济效益分析】")
-    print("  • 节水灌溉初期投资：约500-800元/亩")
-    print("  • 年节水量：30-40%")
-    print("  • 年节省成本：150-200元/亩")
-    print("  • 投资回收期：3-4年")
-    print("  • 增产效益：5-15%")
+    print("  - 节水灌溉初期投资：约500-800元/亩")
+    print("  - 年节水量：30-40%")
+    print("  - 年节省成本：150-200元/亩")
+    print("  - 投资回收期：3-4年")
+    print("  - 增产效益：5-15%")
     print()
 
 
@@ -402,7 +402,7 @@ def plot_results(topology, results):
     # 保存图片
     output_path = 'examples/irrigation_system_results.png'
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
-    print(f"📊 结果图表已保存: {output_path}")
+    print(f" 结果图表已保存: {output_path}")
 
 
 def main():
@@ -428,7 +428,7 @@ def main():
     plot_results(topology, results)
 
     print("="*80)
-    print("✅ 案例分析完成！")
+    print(" 案例分析完成！")
     print("="*80)
 
 

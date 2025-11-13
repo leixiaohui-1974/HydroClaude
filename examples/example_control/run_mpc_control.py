@@ -60,7 +60,7 @@ def main():
     success = modeler.run()
 
     if not success:
-        print("\n✗ 模拟失败")
+        print("\n 模拟失败")
         return False
 
     # 结果分析
@@ -107,13 +107,13 @@ def main():
     print("\n" + "=" * 90)
     print("MPC特性：")
     print("=" * 90)
-    print("✓ 在线模型辨识 - 自适应系统动态变化")
-    print("✓ 显式约束处理 - 严格满足物理限制")
-    print("✓ 前馈预测控制 - 提前规划控制动作")
-    print("✓ 多目标优化 - 平衡跟踪精度与控制能耗")
+    print(" 在线模型辨识 - 自适应系统动态变化")
+    print(" 显式约束处理 - 严格满足物理限制")
+    print(" 前馈预测控制 - 提前规划控制动作")
+    print(" 多目标优化 - 平衡跟踪精度与控制能耗")
 
     print("\n" + "=" * 90)
-    print(f"✓ 模拟完成！")
+    print(f" 模拟完成！")
     print(f"  结果目录: {modeler.output_dir}")
     print("=" * 90)
 

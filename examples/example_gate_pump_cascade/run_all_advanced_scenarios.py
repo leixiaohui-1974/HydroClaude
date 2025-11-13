@@ -3,9 +3,17 @@
 """
 高精度泵站模型 - 批量运行所有工况
 
-直接运行gate_pump_cascade_advanced.py，然后复制结果到不同工况目录
+直接运行gate_pump_cascade_advanced.py然后复制结果到不同工况目录
 每个工况修改关键参数后运行
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import os
 import sys
@@ -37,7 +45,7 @@ def copy_results_to_scenario(source_dir, scenario_name, scenario_desc):
             target = os.path.join(target_dir, target_name)
             shutil.copy2(source, target)
             copied += 1
-            print(f"    ✓ {target_name}")
+            print(f"     {target_name}")
     
     # 创建工况报告
     report_path = os.path.join(target_dir, "SCENARIO_REPORT.md")
@@ -45,15 +53,15 @@ def copy_results_to_scenario(source_dir, scenario_name, scenario_desc):
         f.write(f"# {scenario_name}\n\n")
         f.write(f"## 工况说明\n\n{scenario_desc}\n\n")
         f.write(f"## 输出文件\n\n")
-        f.write(f"- `animation_water_level.gif` - 水位纵剖面动画 ⚠️ 人工必查\n")
+        f.write(f"- `animation_water_level.gif` - 水位纵剖面动画  人工必查\n")
         f.write(f"- `spatiotemporal_water.png` - 水位时空演化\n")
         f.write(f"- `spatiotemporal_flow.png` - 流量时空演化\n")
         f.write(f"- `time_series.png` - 关键位置时间序列\n")
         f.write(f"- `steady_state.png` - 稳态纵剖面\n")
         f.write(f"- `scenario_data.npz` - 完整数据\n\n")
-        f.write(f"**状态**: ✅ 已生成\n")
+        f.write(f"**状态**:  已生成\n")
     
-    print(f"  ✓ 复制了{copied}个文件 + 1个报告")
+    print(f"   复制了{copied}个文件 + 1个报告")
     return copied > 0
 
 
@@ -62,18 +70,18 @@ def main():
     print("\n" + "="*90)
     print("高精度泵站模型 - 批量工况测试".center(90))
     print("="*90)
-    print("\n将运行以下工况（所有使用PumpStationAdvanced高精度模型）:")
-    print("  1. 上游流量大幅阶跃 (30→55 m³/s)")
-    print("  2. 上游流量中幅阶跃 (30→42 m³/s)")  
-    print("  3. 下游水位阶跃 (2.0→3.5 m)")
-    print("  4. 闸门开度阶跃 (0.7→1.2 m)")
+    print("\n将运行以下工况所有使用PumpStationAdvanced高精度模型:")
+    print("  1. 上游流量大幅阶跃 (30->55 m^3/s)")
+    print("  2. 上游流量中幅阶跃 (30->42 m^3/s)")  
+    print("  3. 下游水位阶跃 (2.0->3.5 m)")
+    print("  4. 闸门开度阶跃 (0.7->1.2 m)")
     print("\n注: 基于gate_pump_cascade_advanced.py的成功运行")
     print("="*90 + "\n")
     
     base_dir = os.path.dirname(os.path.abspath(__file__))
     
-    # 工况1: 使用已有的运行结果（30→55）
-    print("工况1: 上游流量大幅阶跃 (30→55 m³/s)")
+    # 工况1: 使用已有的运行结果30->55
+    print("工况1: 上游流量大幅阶跃 (30->55 m^3/s)")
     print("  使用已有运行结果...")
     copy_results_to_scenario(
         "results",
@@ -81,29 +89,29 @@ def main():
         """**工况类型**: 上游边界扰动
 
 **初始状态**:
-- 上游流量: 30 m³/s
+- 上游流量: 30 m^3/s
 - 稳态求解收敛
 
 **扰动**:
 - 时刻: t=0s开始
-- 变化: 上游流量 30 → 55 m³/s (+83%)
+- 变化: 上游流量 30 -> 55 m^3/s (+83%)
 
 **观测要点**:
 1. 流量波向下游传播
-2. 泵站处流量受限（最大约39 m³/s）
-3. 泵前水深上升（蓄水效应）
+2. 泵站处流量受限最大约39 m^3/s
+3. 泵前水深上升蓄水效应
 4. 泵站工作点变化
 5. 泵站扬程保持在5.0m左右
 
 **物理验证**:
-- 质量守恒: ✓ 渠道蓄水速率 = 入流 - 出流
-- 能量守恒: ✓ 泵站增加扬程5m
-- 泵站特性: ✓ 工作点在泵特性曲线上
+- 质量守恒:  渠道蓄水速率 = 入流 - 出流
+- 能量守恒:  泵站增加扬程5m
+- 泵站特性:  工作点在泵特性曲线上
 
 **预期结果**:
-- 泵前水深: 3.3 → 7.7 m
-- 泵站流量: ~29 m³/s
-- 渠尾流量: ~18 m³/s
+- 泵前水深: 3.3 -> 7.7 m
+- 泵站流量: ~29 m^3/s
+- 渠尾流量: ~18 m^3/s
 """
     )
     print()
@@ -113,18 +121,18 @@ def main():
     print("其他工况需要修改gate_pump_cascade_advanced.py中的参数:")
     print("="*90)
     
-    print("\n工况2: 上游流量中幅阶跃 (30→42 m³/s)")
+    print("\n工况2: 上游流量中幅阶跃 (30->42 m^3/s)")
     print("  修改: Q_step = 42.0 (第56行)")
     print("  然后运行并复制结果")
     
-    print("\n工况3: 下游水位阶跃 (2.0→3.5 m)")
+    print("\n工况3: 下游水位阶跃 (2.0->3.5 m)")
     print("  需要修改边界条件逻辑")
     
-    print("\n工况4: 闸门开度阶跃 (0.7→1.2 m)")
+    print("\n工况4: 闸门开度阶跃 (0.7->1.2 m)")
     print("  需要修改闸门控制逻辑")
     
     print("\n" + "="*90)
-    print("✓ 工况1已完成".center(90))
+    print(" 工况1已完成".center(90))
     print("提示: 其他工况可通过修改参数后重复运行".center(90))
     print("="*90 + "\n")
 

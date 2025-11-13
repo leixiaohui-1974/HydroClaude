@@ -79,9 +79,9 @@ class Gate:
             opening_ratio: Gate opening ratio (0-1), uses current if None
 
         Returns:
-            Discharge (m³/s)
+            Discharge (m^3/s)
         """
-        g = 9.81  # m/s²
+        g = 9.81  # m/s^2
 
         if opening_ratio is not None:
             self.opening = opening_ratio
@@ -253,7 +253,7 @@ class IrrigationCanalSystem:
             stats = demand.get_statistics()
             max_idx = np.argmax(demand.values)
             time_at_max = demand.t[max_idx] / 3600.0  # Convert to hours
-            print(f"  - Offtake {i+1}: Peak demand {stats['max']:.2f} m³/s "
+            print(f"  - Offtake {i+1}: Peak demand {stats['max']:.2f} m^3/s "
                   f"at t={time_at_max:.1f}h")
 
     def calculate_required_upstream_flow(self, t: float) -> float:
@@ -266,7 +266,7 @@ class IrrigationCanalSystem:
             t: Time (hours)
 
         Returns:
-            Required upstream discharge (m³/s)
+            Required upstream discharge (m^3/s)
         """
         total_demand = sum(demand.get_value(t) for demand in self.offtake_demands)
 
@@ -301,12 +301,12 @@ class IrrigationCanalSystem:
         Args:
             t: Current time (hours)
             h_upstream: Upstream water depth (m)
-            target_flows: Target discharge for each gate (m³/s)
+            target_flows: Target discharge for each gate (m^3/s)
 
         Returns:
             List of optimized gate openings (0-1)
         """
-        g = 9.81  # m/s²
+        g = 9.81  # m/s^2
         openings = []
 
         for i, (gate, Q_target) in enumerate(zip(self.gates, target_flows)):
@@ -330,7 +330,7 @@ class IrrigationCanalSystem:
 
     def simulate_steady_state(
         self,
-        Q_upstream: float = 5.0,  # m³/s
+        Q_upstream: float = 5.0,  # m^3/s
         num_points: int = 100
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
@@ -342,7 +342,7 @@ class IrrigationCanalSystem:
         then applies gradually varied flow equation for actual profile.
 
         Args:
-            Q_upstream: Upstream discharge (m³/s)
+            Q_upstream: Upstream discharge (m^3/s)
             num_points: Number of computational points
 
         Returns:
@@ -415,7 +415,7 @@ class IrrigationCanalSystem:
         print(f"Number of time steps: {nt}")
 
         # Initial water depth (from normal depth at design flow)
-        Q_design = 5.0  # m³/s
+        Q_design = 5.0  # m^3/s
         h_initial = self.channel.normal_depth(Q=Q_design)
 
         # Simulation loop
@@ -440,7 +440,7 @@ class IrrigationCanalSystem:
             if it % (nt // 10) == 0:
                 progress = 100 * it / nt
                 print(f"  Progress: {progress:.0f}% | t={t:.1f}h | "
-                      f"Q_up={Q_up:.2f} m³/s | Total demand={total_demand:.2f} m³/s")
+                      f"Q_up={Q_up:.2f} m^3/s | Total demand={total_demand:.2f} m^3/s")
 
         print(f"{'='*70}\n")
 
@@ -465,10 +465,10 @@ class IrrigationCanalSystem:
         Q_up_min = np.min(results['Q_upstream'])
 
         print(f"\nUpstream Flow Statistics:")
-        print(f"  Mean: {Q_up_mean:.2f} m³/s")
-        print(f"  Maximum: {Q_up_max:.2f} m³/s")
-        print(f"  Minimum: {Q_up_min:.2f} m³/s")
-        print(f"  Range: {Q_up_max - Q_up_min:.2f} m³/s")
+        print(f"  Mean: {Q_up_mean:.2f} m^3/s")
+        print(f"  Maximum: {Q_up_max:.2f} m^3/s")
+        print(f"  Minimum: {Q_up_min:.2f} m^3/s")
+        print(f"  Range: {Q_up_max - Q_up_min:.2f} m^3/s")
 
         # Total demand statistics
         demand_mean = np.mean(results['total_demand'])
@@ -476,9 +476,9 @@ class IrrigationCanalSystem:
         demand_min = np.min(results['total_demand'])
 
         print(f"\nTotal Irrigation Demand Statistics:")
-        print(f"  Mean: {demand_mean:.2f} m³/s")
-        print(f"  Maximum: {demand_max:.2f} m³/s")
-        print(f"  Minimum: {demand_min:.2f} m³/s")
+        print(f"  Mean: {demand_mean:.2f} m^3/s")
+        print(f"  Maximum: {demand_max:.2f} m^3/s")
+        print(f"  Minimum: {demand_min:.2f} m^3/s")
 
         # Gate operation statistics
         print(f"\nGate Operation Statistics:")
@@ -490,18 +490,18 @@ class IrrigationCanalSystem:
             print(f"    Opening: Mean={np.mean(openings)*100:.1f}%, "
                   f"Max={np.max(openings)*100:.1f}%, "
                   f"Min={np.min(openings)*100:.1f}%")
-            print(f"    Flow: Mean={np.mean(flows):.2f} m³/s, "
-                  f"Max={np.max(flows):.2f} m³/s, "
-                  f"Min={np.min(flows):.2f} m³/s")
+            print(f"    Flow: Mean={np.mean(flows):.2f} m^3/s, "
+                  f"Max={np.max(flows):.2f} m^3/s, "
+                  f"Min={np.min(flows):.2f} m^3/s")
 
         # Water balance check
-        total_delivered = np.trapz(results['total_demand'], results['time']) * 3600  # m³
-        total_supplied = np.trapz(results['Q_upstream'], results['time']) * 3600  # m³
+        total_delivered = np.trapz(results['total_demand'], results['time']) * 3600  # m^3
+        total_supplied = np.trapz(results['Q_upstream'], results['time']) * 3600  # m^3
 
         print(f"\nWater Balance:")
-        print(f"  Total Supplied: {total_supplied:.0f} m³")
-        print(f"  Total Demanded: {total_delivered:.0f} m³")
-        print(f"  Losses + Storage: {total_supplied - total_delivered:.0f} m³ "
+        print(f"  Total Supplied: {total_supplied:.0f} m^3")
+        print(f"  Total Demanded: {total_delivered:.0f} m^3")
+        print(f"  Losses + Storage: {total_supplied - total_delivered:.0f} m^3 "
               f"({100*(total_supplied - total_delivered)/total_supplied:.1f}%)")
 
         print(f"{'='*70}\n")
@@ -524,7 +524,7 @@ class IrrigationCanalSystem:
         ax1.plot(results['time'], results['total_demand'], 'r--', linewidth=2, label='Total Demand')
         ax1.fill_between(results['time'], results['total_demand'], alpha=0.3, color='red')
         ax1.set_xlabel('Time (hours)', fontsize=11)
-        ax1.set_ylabel('Discharge (m³/s)', fontsize=11)
+        ax1.set_ylabel('Discharge (m^3/s)', fontsize=11)
         ax1.set_title('Upstream Flow vs Total Irrigation Demand', fontsize=12, fontweight='bold')
         ax1.legend(fontsize=10)
         ax1.grid(True, alpha=0.3)
@@ -537,7 +537,7 @@ class IrrigationCanalSystem:
                     color=colors[i], linewidth=2,
                     label=f'Offtake {i+1} ({self.offtake_locations[i]/1000:.1f}km)')
         ax2.set_xlabel('Time (hours)', fontsize=11)
-        ax2.set_ylabel('Discharge (m³/s)', fontsize=11)
+        ax2.set_ylabel('Discharge (m^3/s)', fontsize=11)
         ax2.set_title('Individual Offtake Demands', fontsize=12, fontweight='bold')
         ax2.legend(fontsize=9)
         ax2.grid(True, alpha=0.3)
@@ -565,7 +565,7 @@ class IrrigationCanalSystem:
         ax4.set_title('Demand Distribution Heatmap', fontsize=12, fontweight='bold')
         ax4.set_yticks(range(1, self.num_offtakes + 1))
         cbar = plt.colorbar(im, ax=ax4)
-        cbar.set_label('Discharge (m³/s)', fontsize=10)
+        cbar.set_label('Discharge (m^3/s)', fontsize=10)
 
         # 5. Cumulative water delivery
         ax5 = plt.subplot(3, 2, 5)
@@ -574,7 +574,7 @@ class IrrigationCanalSystem:
         ax5.plot(results['time'], cumulative_supply, 'b-', linewidth=2, label='Cumulative Supply')
         ax5.plot(results['time'], cumulative_demand, 'r--', linewidth=2, label='Cumulative Demand')
         ax5.set_xlabel('Time (hours)', fontsize=11)
-        ax5.set_ylabel('Volume (1000 m³)', fontsize=11)
+        ax5.set_ylabel('Volume (1000 m^3)', fontsize=11)
         ax5.set_title('Cumulative Water Delivery', fontsize=12, fontweight='bold')
         ax5.legend(fontsize=10)
         ax5.grid(True, alpha=0.3)
@@ -589,7 +589,7 @@ class IrrigationCanalSystem:
         ax6.fill_between(results['time'], balance, 0, where=(balance < 0),
                         alpha=0.3, color='red', label='Deficit')
         ax6.set_xlabel('Time (hours)', fontsize=11)
-        ax6.set_ylabel('Supply - Demand (m³/s)', fontsize=11)
+        ax6.set_ylabel('Supply - Demand (m^3/s)', fontsize=11)
         ax6.set_title('Supply-Demand Balance', fontsize=12, fontweight='bold')
         ax6.legend(fontsize=10)
         ax6.grid(True, alpha=0.3)
@@ -661,8 +661,8 @@ def main():
     print(f"\nSteady-State Profile:")
     print(f"  Upstream depth: {h[0]:.2f} m")
     print(f"  Downstream depth: {h[-1]:.2f} m")
-    print(f"  Upstream discharge: {Q[0]:.2f} m³/s")
-    print(f"  Downstream discharge: {Q[-1]:.2f} m³/s")
+    print(f"  Upstream discharge: {Q[0]:.2f} m^3/s")
+    print(f"  Downstream discharge: {Q[-1]:.2f} m^3/s")
 
     # =========================================================================
     # Step 5: Transient Simulation
@@ -695,18 +695,18 @@ def main():
     print("Case Study Completed Successfully!")
     print("="*70)
     print("\nKey Achievements:")
-    print("  ✓ Modeled 10 km trapezoidal irrigation canal")
-    print("  ✓ Implemented 4 offtake points with gate structures")
-    print("  ✓ Simulated time-varying irrigation demands (24 hours)")
-    print("  ✓ Optimized gate operations for demand satisfaction")
-    print("  ✓ Verified water balance and system performance")
-    print("  ✓ Generated comprehensive visualizations")
+    print("   Modeled 10 km trapezoidal irrigation canal")
+    print("   Implemented 4 offtake points with gate structures")
+    print("   Simulated time-varying irrigation demands (24 hours)")
+    print("   Optimized gate operations for demand satisfaction")
+    print("   Verified water balance and system performance")
+    print("   Generated comprehensive visualizations")
     print("\nThis case study demonstrates:")
-    print("  • Trapezoidal channel hydraulics")
-    print("  • Gate structure modeling")
-    print("  • Time-varying boundary conditions")
-    print("  • Coordinated system operation")
-    print("  • Engineering optimization")
+    print("  - Trapezoidal channel hydraulics")
+    print("  - Gate structure modeling")
+    print("  - Time-varying boundary conditions")
+    print("  - Coordinated system operation")
+    print("  - Engineering optimization")
     print("="*70 + "\n")
 
 

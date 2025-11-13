@@ -15,7 +15,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 import numpy as np
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_macdonald4_with_entropy_fix():
@@ -33,7 +39,7 @@ def test_macdonald4_with_entropy_fix():
     B = 10.0         # 渠宽 (m)
     S0 = 0.0         # 水平河床
     n = 0.0          # 无摩阻（理想情况）
-    Q = 20.0         # 流量 (m³/s)
+    Q = 20.0         # 流量 (m^3/s)
     h_upstream = 0.5   # 上游水深 (m) - 急流
     h_downstream = 2.5 # 下游水深 (m) - 缓流
 
@@ -47,7 +53,7 @@ def test_macdonald4_with_entropy_fix():
     print(f"\n测试参数:")
     print(f"  长度: {L} m")
     print(f"  网格: {n_cells} cells")
-    print(f"  流量: {Q} m³/s")
+    print(f"  流量: {Q} m^3/s")
     print(f"  上游: h={h_upstream} m, Fr={Fr_upstream:.2f} (急流)")
     print(f"  下游: h={h_downstream} m")
     print(f"  Manning n={n} (无摩阻)")
@@ -107,14 +113,14 @@ def test_macdonald4_with_entropy_fix():
 
                 # 检测负流量
                 if np.any(solver.Q < -1e-6):
-                    print(f"  ⚠️  检测到负流量在 t={t:.2f}s")
+                    print(f"  ️  检测到负流量在 t={t:.2f}s")
                     break
 
                 # 每5秒报告
                 if n_steps % 100 == 0:
                     diag = solver.get_diagnostics()
                     print(f"  t={t:6.2f}s: h_avg={diag['h_mean']:.3f}m, "
-                          f"Q_avg={diag['Q_mean']:.2f}m³/s, "
+                          f"Q_avg={diag['Q_mean']:.2f}m^3/s, "
                           f"mass_err={diag['mass_error']:.3f}%")
 
             # 最终诊断
@@ -132,7 +138,7 @@ def test_macdonald4_with_entropy_fix():
             print(f"    质量误差: {mass_error:.2f}%")
             print(f"    负流量数: {negative_Q_count}")
             print(f"    h范围: [{solver.h.min():.3f}, {solver.h.max():.3f}] m")
-            print(f"    Q范围: [{solver.Q.min():.3f}, {solver.Q.max():.3f}] m³/s")
+            print(f"    Q范围: [{solver.Q.min():.3f}, {solver.Q.max():.3f}] m^3/s")
             print(f"    Fr范围: [{Fr.min():.3f}, {Fr.max():.3f}]")
 
             # 评估成功标准
@@ -148,12 +154,12 @@ def test_macdonald4_with_entropy_fix():
             })
 
             if success:
-                print(f"  ✅ 测试成功")
+                print(f"   测试成功")
             else:
-                print(f"  ❌ 测试失败")
+                print(f"   测试失败")
 
         except Exception as e:
-            print(f"  ❌ 求解失败: {e}")
+            print(f"   求解失败: {e}")
             results.append({
                 "name": config['name'],
                 "mass_error": None,
@@ -172,7 +178,7 @@ def test_macdonald4_with_entropy_fix():
     for r in results:
         mass_str = f"{r['mass_error']:.2f}%" if r['mass_error'] is not None else "N/A"
         neg_str = "是" if r['negative_Q'] else "否"
-        status_str = "✅" if r['success'] else "❌"
+        status_str = "" if r['success'] else ""
         print(f"{r['name']:<30} {mass_str:<12} {neg_str:<10} {status_str:<10}")
 
     print(f"\n{'='*80}")
@@ -191,7 +197,7 @@ def test_macdonald4_with_entropy_fix():
             print("  建议:")
             print("    1. 结合局部Lax-Friedrichs flux")
             print("    2. 使用自适应耗散")
-            print("    3. 或接受n≥0.01的实际工况限制")
+            print("    3. 或接受n>=0.01的实际工况限制")
 
 
 if __name__ == '__main__':

@@ -103,16 +103,16 @@ class SensitivityAnalyzer:
                         baseline_output = output
 
                     if verbose:
-                        print(f"✅ 输出={output:.6f}")
+                        print(f" 输出={output:.6f}")
                 else:
                     output_values.append(np.nan)
                     if verbose:
-                        print("❌ 未收敛")
+                        print(" 未收敛")
 
             except Exception as e:
                 output_values.append(np.nan)
                 if verbose:
-                    print(f"❌ 失败: {e}")
+                    print(f" 失败: {e}")
 
         return SensitivityResult(
             parameter_name=parameter_name,
@@ -353,7 +353,7 @@ def main():
     # 绘制敏感性曲线
     print("\n生成可视化图表...")
     plot_path = analyzer.plot_sensitivity(result_opening, output_name="Max Water Depth (m)")
-    print(f"✅ 保存到: {plot_path}")
+    print(f" 保存到: {plot_path}")
 
     print("\n" + "=" * 100)
     print("敏感性分析完成")

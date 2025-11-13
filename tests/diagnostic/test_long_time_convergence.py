@@ -9,7 +9,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_long_time():
@@ -28,7 +34,7 @@ def test_long_time():
 
     h_c = (Q_bc**2 / (g * B**2))**(1/3)
 
-    print(f"\n参数：L={L}m, Q={Q_bc} m³/s, h_c={h_c:.4f}m")
+    print(f"\n参数：L={L}m, Q={Q_bc} m^3/s, h_c={h_c:.4f}m")
 
     # 创建求解器
     n_cells = 50
@@ -58,7 +64,7 @@ def test_long_time():
     time_points = [100, 500, 1000, 2000, 5000]
 
     print(f"\n运行到不同时间点，观察流量平衡：")
-    print(f"{'时间(s)':<10} {'质量误差%':<12} {'流入/流出':<12} {'流入(m³)':<12} {'流出(m³)':<12}")
+    print(f"{'时间(s)':<10} {'质量误差%':<12} {'流入/流出':<12} {'流入(m^3)':<12} {'流出(m^3)':<12}")
     print("-" * 70)
 
     cumulative_inflow = 0.0
@@ -109,8 +115,8 @@ def test_long_time():
     avg_outflow_rate = (cumulative_outflow - cumulative_outflow_4000) / delta_t
 
     print(f"\n最后{delta_t:.0f}s的平均速率：")
-    print(f"  流入速率：{avg_inflow_rate:.4f} m³/s (理论：{Q_bc} m³/s)")
-    print(f"  流出速率：{avg_outflow_rate:.4f} m³/s")
+    print(f"  流入速率：{avg_inflow_rate:.4f} m^3/s (理论：{Q_bc} m^3/s)")
+    print(f"  流出速率：{avg_outflow_rate:.4f} m^3/s")
     print(f"  比值：{avg_inflow_rate/avg_outflow_rate:.2f}")
 
     print("\n" + "="*80)

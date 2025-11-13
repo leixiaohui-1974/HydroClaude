@@ -1,0 +1,244 @@
+"""
+FVM求解器闸门测试
+
+测试带闸门边界条件的FVM求解器
+
+Author: Claude
+Date: 2025-10-23
+"""
+
+import sys
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from solvers.fvm_solver import FVMSolver
+
+
+def test_fvm_with_single_gate():
+    """
+    单闸门测试
+    """
+    print("=" * 70)
+    print("FVM求解器 - 单闸门测试")
+    print("=" * 70)
+    print()
+
+    # 系统参数
+    L = 1000.0  # 渠道长度
+    B = 10.0    # 渠道宽度
+    S0 = 0.001  # 底坡
+    n = 0.025   # Manning糙率
+    g = 9.81
+
+    Q0 = 10.0  # 上游流量
+    gate_pos = 500.0  # 闸门位置
+    gate_opening = 3.0  # 闸门开度
+    Cd = 0.6  # 流量系数
+
+    # 创建网格
+    nx = 201
+    x = np.linspace(0, L, nx)
+
+    print("配置:")
+    print(f"  渠道长度: {L}m")
+    print(f"  渠道宽度: {B}m")
+    print(f"  底坡: {S0}")
+    print(f"  Manning糙率: {n}")
+    print(f"  上游流量: {Q0} m³/s")
+    print(f"  闸门位置: {gate_pos}m")
+    print(f"  闸门开度: {gate_opening}m")
+    print(f"  流量系数: {Cd}")
+    print(f"  网格点数: {nx}")
+    print()
+
+    # 定义闸门
+    gates = [(gate_pos, gate_opening, Cd)]
+
+    # 创建求解器
+    solver = FVMSolver(
+        x_grid=x,
+        B=B, S0=S0, n=n, g=g,
+        reconstruction='muscl',
+        limiter='minmod',
+        riemann='hll',
+        time_integrator='ssp_rk2',
+        gates=gates
+    )
+
+    print()
+
+    # 初始条件：均匀流
+    # 使用Manning公式估计初始水深
+    def manning_depth(Q, B, n, S0):
+        return (Q * n / (B * np.sqrt(S0)))**(3.0/5.0)
+
+    h_uniform = manning_depth(Q0, B, n, S0)
+    print(f"初始均匀流水深: {h_uniform:.3f}m")
+
+    # 初始化为均匀流
+    A0 = B * h_uniform * np.ones(solver.ncells)
+    Q0_arr = Q0 * np.ones(solver.ncells)
+
+    solver.initialize(A0, Q0_arr)
+
+    print("开始求解到稳态...")
+    print()
+
+    # 求解到稳态
+    t_end = 1000.0
+    history = solver.solve(t_end, cfl=0.5, verbose=True)
+
+    print()
+    print("求解完成!")
+    print(f"  总时间: {history['t'][-1]:.2f}s")
+    print(f"  时间步数: {len(history['t'])}")
+    print()
+
+    # 获取最终结果
+    h_final, u_final = solver.get_primitive_variables()
+    Q_final = solver.U[:, 1]
+
+    # 分析结果
+    print("最终状态:")
+    print(f"  水深范围: [{h_final.min():.3f}, {h_final.max():.3f}]m")
+    print(f"  流速范围: [{u_final.min():.3f}, {u_final.max():.3f}]m/s")
+    print(f"  流量范围: [{Q_final.min():.3f}, {Q_final.max():.3f}]m³/s")
+    print()
+
+    # 流量守恒分析
+    Q_mean = np.mean(Q_final)
+    Q_std = np.std(Q_final)
+    Q_error = np.abs(Q_final - Q0) / Q0 * 100
+    Q_max_error = np.max(Q_error)
+    Q_mean_error = np.mean(Q_error)
+
+    print("流量守恒:")
+    print(f"  目标流量: {Q0:.3f} m³/s")
+    print(f"  平均流量: {Q_mean:.3f} m³/s")
+    print(f"  流量标准差: {Q_std:.3f} m³/s")
+    print(f"  最大误差: {Q_max_error:.4f}%")
+    print(f"  平均误差: {Q_mean_error:.4f}%")
+    print()
+
+    # 闸门处分析
+    gate_idx = solver.gate_interfaces[0]['index']
+    # 上游：gate_idx-1单元
+    # 下游：gate_idx单元（如果gate_idx < ncells）
+
+    if gate_idx > 0 and gate_idx < solver.ncells:
+        h_upstream = h_final[gate_idx - 1]
+        h_downstream = h_final[gate_idx]
+        Q_upstream = Q_final[gate_idx - 1]
+        Q_downstream = Q_final[gate_idx]
+
+        delta_h = h_upstream - h_downstream
+
+        # 理论闸门流量
+        if h_upstream > gate_opening:
+            Q_theory = Cd * gate_opening * B * np.sqrt(2 * g * delta_h)
+        else:
+            Q_theory = Cd * gate_opening * B * np.sqrt(2 * g * h_upstream)
+
+        print("闸门处状态:")
+        print(f"  上游水深: {h_upstream:.3f}m")
+        print(f"  下游水深: {h_downstream:.3f}m")
+        print(f"  水头差: {delta_h:.3f}m")
+        print(f"  上游流量: {Q_upstream:.3f} m³/s")
+        print(f"  下游流量: {Q_downstream:.3f} m³/s")
+        print(f"  理论闸门流量: {Q_theory:.3f} m³/s")
+        print(f"  实际/理论: {Q_upstream/Q_theory:.4f}")
+        print()
+
+    # 绘图
+    fig, axes = plt.subplots(3, 1, figsize=(12, 10))
+
+    # 水深
+    ax = axes[0]
+    ax.plot(solver.x_cell, h_final, 'b-', linewidth=2, label='水深')
+    ax.axvline(gate_pos, color='r', linestyle='--', linewidth=2, alpha=0.7, label='闸门')
+    ax.set_xlabel('x [m]')
+    ax.set_ylabel('h [m]')
+    ax.set_title('水深剖面')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # 流速
+    ax = axes[1]
+    ax.plot(solver.x_cell, u_final, 'g-', linewidth=2, label='流速')
+    ax.axvline(gate_pos, color='r', linestyle='--', linewidth=2, alpha=0.7, label='闸门')
+    ax.set_xlabel('x [m]')
+    ax.set_ylabel('u [m/s]')
+    ax.set_title('流速剖面')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # 流量
+    ax = axes[2]
+    ax.plot(solver.x_cell, Q_final, 'purple', linewidth=2, label='流量')
+    ax.axhline(Q0, color='k', linestyle='--', linewidth=1.5, alpha=0.5, label=f'目标流量 ({Q0} m³/s)')
+    ax.axvline(gate_pos, color='r', linestyle='--', linewidth=2, alpha=0.7, label='闸门')
+    ax.set_xlabel('x [m]')
+    ax.set_ylabel('Q [m³/s]')
+    ax.set_title(f'流量剖面 (最大误差: {Q_max_error:.4f}%)')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('fvm_single_gate_result.png', dpi=150, bbox_inches='tight')
+    print(" 保存图像: fvm_single_gate_result.png")
+    print()
+
+    # 评估
+    print("=" * 70)
+    print("评估结果")
+    print("=" * 70)
+    print()
+
+    if Q_max_error < 0.5:
+        print(f" 优秀！最大流量误差 {Q_max_error:.4f}% < 0.5% - 达到目标！")
+        result = "excellent"
+    elif Q_max_error < 1.0:
+        print(f" 很好！最大流量误差 {Q_max_error:.4f}% < 1.0%")
+        result = "good"
+    elif Q_max_error < 2.0:
+        print(f" 可接受！最大流量误差 {Q_max_error:.4f}% < 2.0%")
+        result = "acceptable"
+    elif Q_max_error < 5.0:
+        print(f" 需改进。最大流量误差 {Q_max_error:.4f}% < 5.0%")
+        result = "needs_improvement"
+    else:
+        print(f" 不佳。最大流量误差 {Q_max_error:.4f}% >= 5.0%")
+        result = "poor"
+
+    print()
+
+    # 与FDM基准比较
+    fdm_baseline = 2.32  # Phase 1-2得到的FDM最佳精度
+    if Q_max_error < fdm_baseline:
+        improvement = fdm_baseline / Q_max_error
+        print(f" FVM相比FDM基准(2.32%)改善了 {improvement:.2f}x !")
+        print(f"   绝对改善: {fdm_baseline - Q_max_error:.4f}%")
+    else:
+        print(f" FVM({Q_max_error:.4f}%) 暂时未超过FDM基准({fdm_baseline}%)")
+        print(f"   可能需要更长时间达到稳态或调整参数")
+
+    print()
+    print("=" * 70)
+
+    return {
+        'result': result,
+        'max_error': Q_max_error,
+        'mean_error': Q_mean_error,
+        'gate_delta_h': delta_h if gate_idx > 0 and gate_idx < solver.ncells else 0.0
+    }
+
+
+if __name__ == "__main__":
+    result = test_fvm_with_single_gate()
+
+    print()
+    print("测试结果:", result['result'])
+    print(f"最大误差: {result['max_error']:.4f}%")

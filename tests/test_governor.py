@@ -43,7 +43,7 @@ class TestPIDController:
         """Test proportional-only control"""
         pid = PIDController(Kp=2.0, Ki=0.0, Kd=0.0, output_min=-10.0, output_max=10.0)
 
-        # setpoint=0, measurement=-1 → error=0-(-1)=1
+        # setpoint=0, measurement=-1 -> error=0-(-1)=1
         output = pid.compute(setpoint=0.0, measurement=-1.0, current_time=0.0)
 
         # P-only: output = Kp * error = 2.0 * 1.0 = 2.0
@@ -57,7 +57,7 @@ class TestPIDController:
         pid = PIDController(Kp=0.0, Ki=1.0, Kd=0.0, output_min=-10.0, output_max=10.0)
 
         # Apply constant error for 1 second
-        # setpoint=0, measurement=-1 → error=1
+        # setpoint=0, measurement=-1 -> error=1
         dt = 0.1
         total_time = 0.0
 
@@ -67,7 +67,7 @@ class TestPIDController:
             output = pid.compute(0.0, -1.0, total_time)
             outputs.append(output)
 
-        # Integral should accumulate: I = Ki * ∫e*dt ≈ 1.0 * 1.0 * 0.9 ≈ 0.9
+        # Integral should accumulate: I = Ki * ∫e*dt ~= 1.0 * 1.0 * 0.9 ~= 0.9
         # (slightly less due to discrete integration)
         assert outputs[-1] > 0.7, f"Expected ~0.9, got {outputs[-1]}"
         assert outputs[-1] < 1.1
@@ -102,7 +102,7 @@ class TestPIDController:
         assert output <= 1.0
         assert output >= -1.0
 
-        print(f"  Saturation test: large error → output={output:.3f} (clamped to ±1)")
+        print(f"  Saturation test: large error -> output={output:.3f} (clamped to +/-1)")
 
 
 class TestServoSystem:
@@ -133,7 +133,7 @@ class TestServoSystem:
         final = positions[-1]
         assert abs(final - 0.8) < 0.05  # Close to target
 
-        print(f"  First-order response: 0.5 → {final:.3f} (target 0.8)")
+        print(f"  First-order response: 0.5 -> {final:.3f} (target 0.8)")
 
     def test_rate_limit(self):
         """Test rate limiter"""
@@ -148,7 +148,7 @@ class TestServoSystem:
         # Should be limited by rate: max change = 0.1 * 1.0 = 0.1
         assert final <= 0.15  # Some margin for dynamics
 
-        print(f"  Rate limit test: 0.0 → {final:.3f} in 1s (limit 0.1/s)")
+        print(f"  Rate limit test: 0.0 -> {final:.3f} in 1s (limit 0.1/s)")
 
     def test_position_limits(self):
         """Test position limits"""
@@ -162,7 +162,7 @@ class TestServoSystem:
         servo.update(0.95, 1.0)
         assert servo.opening <= 0.9
 
-        print(f"  Position limits enforced: {servo.opening_min} ≤ y ≤ {servo.opening_max}")
+        print(f"  Position limits enforced: {servo.opening_min} <= y <= {servo.opening_max}")
 
 
 class TestPIDGovernor:
@@ -190,7 +190,7 @@ class TestPIDGovernor:
         # Should command increase in opening
         assert command > 0.5  # Baseline is 0.5
 
-        print(f"  Speed control: {speed}rpm → command={command:.3f} (increase opening)")
+        print(f"  Speed control: {speed}rpm -> command={command:.3f} (increase opening)")
 
     def test_dead_band(self):
         """Test dead band functionality"""
@@ -208,7 +208,7 @@ class TestPIDGovernor:
         # Command2 should be significantly different from baseline
         assert abs(command2 - 0.5) > abs(command1 - 0.5)
 
-        print(f"  Dead band: small error→{command1:.3f}, large error→{command2:.3f}")
+        print(f"  Dead band: small error->{command1:.3f}, large error->{command2:.3f}")
 
     def test_servo_update(self):
         """Test servo system integration"""
@@ -244,7 +244,7 @@ class TestPIDGovernor:
             openings.append(state['actual_opening'])
 
             # Simple turbine response model (for test purposes)
-            # Assume opening increase → speed increase
+            # Assume opening increase -> speed increase
             speed_change = (state['actual_opening'] - 0.5) * 10 * dt
             speed = min(speed + speed_change, speed_ref)
 
@@ -328,7 +328,7 @@ class TestUtilityFunctions:
             assert abs(bp - bp_expected) < 0.001
             assert abs(Kp_back - Kp) < 0.001
 
-            print(f"    Kp={Kp:.1f} → bp={bp:.1%} → Kp={Kp_back:.1f} ✓")
+            print(f"    Kp={Kp:.1f} -> bp={bp:.1%} -> Kp={Kp_back:.1f} ")
 
     def test_typical_droops(self):
         """Test typical droop values"""

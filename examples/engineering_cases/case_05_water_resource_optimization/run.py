@@ -39,7 +39,7 @@ def create_demand_profile(hours=24):
         hours: 小时数
 
     Returns:
-        需水量数组 (m³/s)
+        需水量数组 (m^3/s)
     """
     t = np.linspace(0, hours, hours * 4)  # 15分钟间隔
 
@@ -100,12 +100,12 @@ def simple_mpc_optimization(
 
     Args:
         current_state: 当前状态 {'water_level': h, 'flow': Q}
-        demand_forecast: 需求预测 (m³/s)
+        demand_forecast: 需求预测 (m^3/s)
         price_forecast: 电价预测 (元/kWh)
         horizon: 预测时域 (步数)
 
     Returns:
-        最优泵站流量 (m³/s)
+        最优泵站流量 (m^3/s)
     """
     # 简化优化：在低电价时多抽水，高电价时少抽水
     # 同时满足需求和水位约束
@@ -164,7 +164,7 @@ def run_optimization():
     t_demand, demand = create_demand_profile(hours=24)
     t_price, electricity_price = create_electricity_price(hours=24)
 
-    print(f"      需求范围: {demand.min():.1f} - {demand.max():.1f} m³/s")
+    print(f"      需求范围: {demand.min():.1f} - {demand.max():.1f} m^3/s")
     print(f"      电价范围: {electricity_price.min():.1f} - {electricity_price.max():.1f} 元/kWh")
 
     # ========================================
@@ -176,7 +176,7 @@ def run_optimization():
     pump = PumpStation(
         position=pump_position,
         width=B,
-        rated_flow=20.0,  # 额定流量 (m³/s)
+        rated_flow=20.0,  # 额定流量 (m^3/s)
         rated_head=10.0,  # 额定扬程 (m)
         efficiency=0.75,  # 效率
         g=9.81
@@ -197,8 +197,8 @@ def run_optimization():
     solver.h_downstream = 2.0
     solver.solve_steady_state(Q_target=5.0, h_downstream=2.0)
 
-    print(f"      ✓ 泵站容量: {pump.rated_flow:.1f} m³/s")
-    print(f"      ✓ 初始水位: {solver.h.mean():.2f} m")
+    print(f"       泵站容量: {pump.rated_flow:.1f} m^3/s")
+    print(f"       初始水位: {solver.h.mean():.2f} m")
 
     # ========================================
     # 第4步: 运行优化调度
@@ -246,7 +246,7 @@ def run_optimization():
         pump.set_flow(optimal_pump_flow)
 
         # 计算运行成本
-        # 功率 = ρ * g * Q * H / η
+        # 功率 = rho * g * Q * H / η
         if hasattr(solver, 'structure_indices') and solver.structure_indices:
             pump_idx = solver.structure_indices[0]
             head = solver.h[pump_idx]
@@ -269,11 +269,11 @@ def run_optimization():
 
         # 进度显示
         if step % 24 == 0:  # 每6小时
-            print(f"      时刻 {current_time:5.1f}h: 泵流 {optimal_pump_flow:5.1f} m³/s, "
+            print(f"      时刻 {current_time:5.1f}h: 泵流 {optimal_pump_flow:5.1f} m^3/s, "
                   f"水位 {current_state['water_level']:.2f} m, "
                   f"电价 {electricity_price[step]:.1f} 元/kWh")
 
-    print(f"      ✓ 调度完成")
+    print(f"       调度完成")
 
     # ========================================
     # 第5步: 结果分析和可视化
@@ -289,14 +289,14 @@ def run_optimization():
 
     # 统计
     total_cost = np.sum(cost_array)
-    total_water = np.sum(pump_flow_array) * (dt / 3600)  # m³
-    avg_cost_per_m3 = total_cost / total_water  # 元/m³
+    total_water = np.sum(pump_flow_array) * (dt / 3600)  # m^3
+    avg_cost_per_m3 = total_cost / total_water  # 元/m^3
 
     print(f"\n运行统计:")
-    print(f"  总抽水量:   {total_water:.0f} m³")
+    print(f"  总抽水量:   {total_water:.0f} m^3")
     print(f"  总电费:     {total_cost:.2f} 元")
-    print(f"  平均成本:   {avg_cost_per_m3:.4f} 元/m³")
-    print(f"  泵流范围:   {pump_flow_array.min():.1f} - {pump_flow_array.max():.1f} m³/s")
+    print(f"  平均成本:   {avg_cost_per_m3:.4f} 元/m^3")
+    print(f"  泵流范围:   {pump_flow_array.min():.1f} - {pump_flow_array.max():.1f} m^3/s")
     print(f"  水位范围:   {water_level_array.min():.2f} - {water_level_array.max():.2f} m")
 
     # 可视化
@@ -305,7 +305,7 @@ def run_optimization():
     # 子图1: 需求和泵流
     axes[0].plot(time_array, demand_array, 'b-', linewidth=2, label='用水需求')
     axes[0].plot(time_array, pump_flow_array, 'r-', linewidth=2, label='泵站流量')
-    axes[0].set_ylabel('流量 (m³/s)', fontsize=11)
+    axes[0].set_ylabel('流量 (m^3/s)', fontsize=11)
     axes[0].set_title('水资源优化调度结果 - 供需平衡', fontsize=13, fontweight='bold')
     axes[0].legend(fontsize=10)
     axes[0].grid(True, alpha=0.3)
@@ -348,13 +348,13 @@ def run_optimization():
 
     output_file = os.path.join(output_dir, 'optimization_results.png')
     plt.savefig(output_file, dpi=150, bbox_inches='tight')
-    print(f"\n✓ 结果图保存至: {output_file}")
+    print(f"\n 结果图保存至: {output_file}")
 
     plt.close()
 
     print()
     print("=" * 90)
-    print("✓ 优化调度完成！")
+    print(" 优化调度完成！")
     print("=" * 90)
 
 

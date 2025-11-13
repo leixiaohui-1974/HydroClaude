@@ -41,7 +41,9 @@ PYTHONPATH=../.. python weirs_irrigation_system.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_16_weirs_application_water_resource.gif`
+
+![动画](outputs\animations\example_16_weirs_application_water_resource.gif)
 
 ## 技术要点
 

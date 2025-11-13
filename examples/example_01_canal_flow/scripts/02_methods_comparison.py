@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-例子1：明渠非恒定流 - 三种数值方法标准对比测试
+例子1明渠非恒定流 - 三种数值方法标准对比测试
 
-对比EXPLICIT、PREISSMANN和HLL三种方法
-使用标准的物理参数、边界条件和初始条件
+对比EXPLICITPREISSMANN和HLL三种方法
+使用标准的物理参数边界条件和初始条件
 
 作者: Claude
 日期: 2025-10-21
@@ -40,7 +40,7 @@ plt.rcParams['ytick.labelsize'] = 9
 plt.rcParams['legend.fontsize'] = 9
 
 # ============================================================================
-# 中文标签映射（避免中文字体问题）
+# 中文标签映射避免中文字体问题
 # ============================================================================
 
 LABELS = {
@@ -109,7 +109,7 @@ def compute_steady_uniform_flow(Q, B, S0, n, g=9.81):
 # ============================================================================
 
 class CanalSolver:
-    """明渠非恒定流求解器（无振荡版本）"""
+    """明渠非恒定流求解器无振荡版本"""
 
     def __init__(self, length=1000.0, nx=201, B=10.0, S0=0.001, n=0.025,
                  g=9.81, method='preissmann'):
@@ -122,7 +122,7 @@ class CanalSolver:
             B: 渠道宽度 (m)
             S0: 底坡
             n: Manning糙率
-            g: 重力加速度 (m/s²)
+            g: 重力加速度 (m/s^2)
             method: 数值方法 ('explicit', 'preissmann', 'hll')
         """
         self.length = length
@@ -178,7 +178,7 @@ class CanalSolver:
         return Sf
 
     def step_explicit(self, dt, Q_upstream, h_downstream):
-        """显式有限差分法（混合迎风-中心格式）"""
+        """显式有限差分法混合迎风-中心格式"""
         h_old = self.h.copy()
         Q_old = self.Q.copy()
         h_new = h_old.copy()
@@ -240,7 +240,7 @@ class CanalSolver:
         # 显式预估
         h_pred, Q_pred = self.step_explicit(dt, Q_upstream, h_downstream)
 
-        # θ加权校正
+        # theta加权校正
         self.h = self.omega * ((1 - self.theta) * h_old + self.theta * h_pred) + (1 - self.omega) * h_old
         self.Q = self.omega * ((1 - self.theta) * Q_old + self.theta * Q_pred) + (1 - self.omega) * Q_old
 
@@ -346,7 +346,7 @@ def run_standard_comparison_test():
     print("=" * 80)
 
     # ========================================================================
-    # 标准物理参数（通用设置）
+    # 标准物理参数通用设置
     # ========================================================================
 
     # 渠道几何参数
@@ -354,7 +354,7 @@ def run_standard_comparison_test():
     B = 10.0            # 渠道宽度 (m)
     S0 = 0.001          # 底坡 (无量纲)
     n = 0.025           # Manning糙率系数 (s/m^(1/3))
-    g = 9.81            # 重力加速度 (m/s²)
+    g = 9.81            # 重力加速度 (m/s^2)
 
     # 数值参数
     nx = 201            # 空间离散点数
@@ -362,13 +362,13 @@ def run_standard_comparison_test():
     T_total = 600.0     # 总模拟时间 (s)
     n_steps = int(T_total / dt)
 
-    # 边界条件（恒定）
-    Q_upstream = 8.0    # 上游流量 (m³/s)
+    # 边界条件恒定
+    Q_upstream = 8.0    # 上游流量 (m^3/s)
 
-    # 计算下游水深（使用Manning公式保证兼容性）
+    # 计算下游水深使用Manning公式保证兼容性
     h_downstream = compute_steady_uniform_flow(Q_upstream, B, S0, n, g)
 
-    # 初始条件（恒定均匀流）
+    # 初始条件恒定均匀流
     Q_initial = Q_upstream
     h_initial = h_downstream
 
@@ -380,7 +380,7 @@ def run_standard_comparison_test():
     print(f"  Width B         = {B:.1f} m")
     print(f"  Bed Slope S0    = {S0:.4f}")
     print(f"  Manning's n     = {n:.3f} s/m^(1/3)")
-    print(f"  Gravity g       = {g:.2f} m/s²")
+    print(f"  Gravity g       = {g:.2f} m/s^2")
 
     print(f"\nNumerical Parameters:")
     print(f"  Grid Points nx  = {nx}")
@@ -390,11 +390,11 @@ def run_standard_comparison_test():
     print(f"  Total Steps     = {n_steps}")
 
     print(f"\nBoundary Conditions (Steady):")
-    print(f"  Upstream Q      = {Q_upstream:.2f} m³/s")
+    print(f"  Upstream Q      = {Q_upstream:.2f} m^3/s")
     print(f"  Downstream h    = {h_downstream:.4f} m (computed from Manning)")
 
     print(f"\nInitial Conditions (Uniform Flow):")
-    print(f"  Initial Q       = {Q_initial:.2f} m³/s")
+    print(f"  Initial Q       = {Q_initial:.2f} m^3/s")
     print(f"  Initial h       = {h_initial:.4f} m")
 
     # CFL条件检查
@@ -446,7 +446,7 @@ def run_standard_comparison_test():
             # 时间推进
             solver.step(dt, Q_upstream, h_downstream)
 
-            # 记录数据（每10步记录一次）
+            # 记录数据每10步记录一次
             if step % 10 == 0:
                 time_history.append(t)
                 h_history.append(solver.h.copy())
@@ -462,7 +462,7 @@ def run_standard_comparison_test():
                 Q_std = np.std(solver.Q)
                 print(f"  Step {step+1}/{n_steps}: t={t:.1f}s, "
                       f"h_mean={h_mean:.4f}m (std={h_std:.6f}m), "
-                      f"Q_mean={Q_mean:.4f}m³/s (std={Q_std:.6f}m³/s)")
+                      f"Q_mean={Q_mean:.4f}m^3/s (std={Q_std:.6f}m^3/s)")
 
         t_end = time.time()
         comp_time = t_end - t_start
@@ -489,8 +489,8 @@ def run_standard_comparison_test():
         print(f"    CV     = {h_cv:.6f} %")
         print(f"    Error  = {h_error:.6f} %")
         print(f"  Discharge:")
-        print(f"    Mean   = {Q_mean:.6f} m³/s")
-        print(f"    Std    = {Q_std:.8f} m³/s")
+        print(f"    Mean   = {Q_mean:.6f} m^3/s")
+        print(f"    Std    = {Q_std:.8f} m^3/s")
         print(f"    CV     = {Q_cv:.6f} %")
         print(f"    Error  = {Q_error:.6f} %")
         print(f"  Computation:")
@@ -528,7 +528,7 @@ def run_standard_comparison_test():
     print("=" * 80)
 
     print("\n{:<15} {:>15} {:>15} {:>15} {:>15}".format(
-        "Method", "h_mean (m)", "h_CV (%)", "Q_mean (m³/s)", "Q_CV (%)"))
+        "Method", "h_mean (m)", "h_CV (%)", "Q_mean (m^3/s)", "Q_CV (%)"))
     print("-" * 80)
     for method_name in methods:
         r = results[method_name]
@@ -557,10 +557,10 @@ def run_standard_comparison_test():
 
 
 def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total):
-    """生成对比图表（使用英文标签避免中文显示问题）"""
+    """生成对比图表使用英文标签避免中文显示问题"""
 
     # ========================================================================
-    # 图1：空间分布对比（最终时刻）
+    # 图1空间分布对比最终时刻
     # ========================================================================
 
     fig, axes = plt.subplots(2, 3, figsize=(18, 10))
@@ -569,7 +569,7 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
 
     colors = {'EXPLICIT': 'blue', 'PREISSMANN': 'red', 'HLL': 'green'}
 
-    # 第一行：水深分布
+    # 第一行水深分布
     for j, method in enumerate(methods):
         ax = axes[0, j]
         r = results[method]
@@ -586,8 +586,8 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
         ax.grid(True, alpha=0.3)
         ax.legend(loc='best', fontsize=9)
 
-        # 设置合理的Y轴范围（避免科学计数法混淆）
-        h_margin = h_theory * 0.05  # ±5%
+        # 设置合理的Y轴范围避免科学计数法混淆
+        h_margin = h_theory * 0.05  # +/-5%
         ax.set_ylim([h_theory - h_margin, h_theory + h_margin])
 
         # 添加统计信息
@@ -596,7 +596,7 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
         ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=9,
                 verticalalignment='top', bbox=props)
 
-    # 第二行：流量分布
+    # 第二行流量分布
     for j, method in enumerate(methods):
         ax = axes[1, j]
         r = results[method]
@@ -613,8 +613,8 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
         ax.grid(True, alpha=0.3)
         ax.legend(loc='best', fontsize=9)
 
-        # 设置合理的Y轴范围（避免科学计数法混淆）
-        Q_margin = Q_theory * 0.1  # ±10%
+        # 设置合理的Y轴范围避免科学计数法混淆
+        Q_margin = Q_theory * 0.1  # +/-10%
         ax.set_ylim([Q_theory - Q_margin, Q_theory + Q_margin])
 
         # 添加统计信息
@@ -628,7 +628,7 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
     plt.close()
 
     # ========================================================================
-    # 图2：时间演化对比（中点）
+    # 图2时间演化对比中点
     # ========================================================================
 
     fig, axes = plt.subplots(2, 1, figsize=(14, 10))
@@ -675,7 +675,7 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
     plt.close()
 
     # ========================================================================
-    # 图3：性能和精度对比柱状图
+    # 图3性能和精度对比柱状图
     # ========================================================================
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
@@ -752,7 +752,7 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
     plt.close()
 
     # ========================================================================
-    # 图4：三种方法叠加对比
+    # 图4三种方法叠加对比
     # ========================================================================
 
     fig, axes = plt.subplots(1, 2, figsize=(16, 6))
@@ -790,7 +790,7 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
     save_figure(fig, '02_methods_overlay_comparison.png')
     plt.close()
 
-    print("\n✓ All visualizations generated successfully!")
+    print("\n All visualizations generated successfully!")
 
 
 # ============================================================================
@@ -817,8 +817,8 @@ if __name__ == '__main__':
             'h_std (m)': r['h_std'],
             'h_CV (%)': r['h_cv'],
             'h_error (%)': r['h_error'],
-            'Q_mean (m³/s)': r['Q_mean'],
-            'Q_std (m³/s)': r['Q_std'],
+            'Q_mean (m^3/s)': r['Q_mean'],
+            'Q_std (m^3/s)': r['Q_std'],
             'Q_CV (%)': r['Q_cv'],
             'Q_error (%)': r['Q_error'],
             'Speed (step/s)': r['comp_speed'],
@@ -837,7 +837,7 @@ if __name__ == '__main__':
                 'Method': method,
                 'Position (m)': r['x'][i],
                 'Water_Depth (m)': r['h_final'][i],
-                'Discharge (m³/s)': r['Q_final'][i]
+                'Discharge (m^3/s)': r['Q_final'][i]
             })
 
     df_detailed = pd.DataFrame(detailed_data)

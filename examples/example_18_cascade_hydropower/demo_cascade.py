@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例18: 梯级水电站调度
 
@@ -16,6 +17,8 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
@@ -41,8 +44,8 @@ def create_three_stage_cascade():
     # 上游水库 - 大型调节水库
     reservoir_1 = Reservoir(
         reservoir_id="R1_upstream",
-        total_capacity=10000e4,  # 1亿m³
-        dead_storage=1000e4,     # 1000万m³
+        total_capacity=10000e4,  # 1亿m^3
+        dead_storage=1000e4,     # 1000万m^3
         min_level=200.0,
         normal_level=250.0,
         flood_limit_level=245.0,
@@ -59,7 +62,7 @@ def create_three_stage_cascade():
     # 中游水库 - 中型径流式水库
     reservoir_2 = Reservoir(
         reservoir_id="R2_middle",
-        total_capacity=5000e4,   # 5000万m³
+        total_capacity=5000e4,   # 5000万m^3
         dead_storage=500e4,
         min_level=150.0,
         normal_level=180.0,
@@ -77,7 +80,7 @@ def create_three_stage_cascade():
     # 下游水库 - 小型日调节水库
     reservoir_3 = Reservoir(
         reservoir_id="R3_downstream",
-        total_capacity=2000e4,   # 2000万m³
+        total_capacity=2000e4,   # 2000万m^3
         dead_storage=200e4,
         min_level=100.0,
         normal_level=120.0,
@@ -104,9 +107,9 @@ def create_three_stage_cascade():
             ("R2_middle", "R3_downstream"): 1.0   # 传播时间1小时
         },
         lateral_inflows={
-            "R1_upstream": 50.0,    # 区间入流 50 m³/s
-            "R2_middle": 30.0,      # 区间入流 30 m³/s
-            "R3_downstream": 20.0   # 区间入流 20 m³/s
+            "R1_upstream": 50.0,    # 区间入流 50 m^3/s
+            "R2_middle": 30.0,      # 区间入流 30 m^3/s
+            "R3_downstream": 20.0   # 区间入流 20 m^3/s
         }
     )
 
@@ -120,13 +123,13 @@ def create_three_stage_cascade():
     print("\n梯级系统参数:")
     print(f"  水库数量: {len(cascade.reservoirs)}")
     print(f"  总装机容量: {sum(r.turbine_capacity for r in cascade.reservoirs.values()):.0f} MW")
-    print(f"  总库容: {sum(r.total_capacity for r in cascade.reservoirs.values())/1e4:.0f} 万m³")
+    print(f"  总库容: {sum(r.total_capacity for r in cascade.reservoirs.values())/1e4:.0f} 万m^3")
 
     print("\n各水库参数:")
     for res_id, res in cascade.reservoirs.items():
         print(f"  {res_id}:")
         print(f"    装机: {res.turbine_capacity:.0f} MW")
-        print(f"    库容: {res.total_capacity/1e4:.0f} 万m³")
+        print(f"    库容: {res.total_capacity/1e4:.0f} 万m^3")
         print(f"    水头: {res.hydraulic_head:.0f} m")
 
     print("\n拓扑连接:")
@@ -164,7 +167,7 @@ def simulate_cascade_operation(cascade):
     print(f"\n仿真设置:")
     print(f"  时间步长: {dt/3600:.1f} 小时")
     print(f"  仿真时长: {n_hours} 小时 ({n_hours/24:.1f} 天)")
-    print(f"  R1入流范围: {np.min(inflow_r1):.0f} - {np.max(inflow_r1):.0f} m³/s")
+    print(f"  R1入流范围: {np.min(inflow_r1):.0f} - {np.max(inflow_r1):.0f} m^3/s")
 
     # 模拟时变电价（峰谷电价）
     electricity_prices = np.ones(n_hours)
@@ -257,8 +260,8 @@ def simulate_cascade_operation(cascade):
         if res_id == 'cascade':
             continue
         print(f"\n  {res_id}:")
-        print(f"    最大入流: {np.max(res_results['inflow']):.0f} m³/s")
-        print(f"    最大出流: {np.max(res_results['outflow']):.0f} m³/s")
+        print(f"    最大入流: {np.max(res_results['inflow']):.0f} m^3/s")
+        print(f"    最大出流: {np.max(res_results['outflow']):.0f} m^3/s")
         print(f"    水位变幅: {np.min(res_results['level']):.2f} - {np.max(res_results['level']):.2f} m")
         print(f"    平均发电: {np.mean(res_results['power']):.2f} MW")
         print(f"    总发电量: {np.sum(res_results['power']):.2f} MWh")
@@ -315,7 +318,7 @@ def visualize_cascade_results(results, cascade):
                 color=colors[res_id], linestyle='--', label=f'{res_id} 入流', alpha=0.7)
         ax2.plot(results[res_id]['time'], results[res_id]['outflow'],
                 color=colors[res_id], label=f'{res_id} 出流', linewidth=2)
-    ax2.set_ylabel('流量 (m³/s)', fontsize=12)
+    ax2.set_ylabel('流量 (m^3/s)', fontsize=12)
     ax2.set_title('梯级水库流量过程', fontsize=14, fontweight='bold')
     ax2.legend(loc='best', ncol=3, fontsize=9)
     ax2.grid(True, alpha=0.3)
@@ -359,12 +362,12 @@ def visualize_cascade_results(results, cascade):
         ax5.plot(results[res_id]['time'], results[res_id]['storage'],
                 color=colors[res_id], label=res_id, linewidth=2)
     ax5.set_xlabel('时间 (小时)', fontsize=12)
-    ax5.set_ylabel('库容 (万m³)', fontsize=12)
+    ax5.set_ylabel('库容 (万m^3)', fontsize=12)
     ax5.set_title('梯级水库库容过程', fontsize=14, fontweight='bold')
     ax5.legend(loc='best')
     ax5.grid(True, alpha=0.3)
 
-    plt.savefig('/home/user/HydroClaude/examples/example_18_cascade_hydropower/cascade_simulation.png', dpi=150)
+    plt.savefig('examples/example_18_cascade_hydropower/cascade_simulation.png', dpi=150)
     print(f"图像已保存到: cascade_simulation.png")
 
 
@@ -389,7 +392,7 @@ def demo_flood_control(cascade):
 
     print(f"\n洪水预报:")
     print(f"  预报时长: {forecast_horizon} 小时")
-    print(f"  R1预报洪峰: {np.max(forecast_inflows['R1_upstream']):.0f} m³/s")
+    print(f"  R1预报洪峰: {np.max(forecast_inflows['R1_upstream']):.0f} m^3/s")
 
     # 计算防洪控制策略
     strategies = flood_controller.compute_flood_control_strategy(
@@ -400,8 +403,8 @@ def demo_flood_control(cascade):
     print(f"\n防洪控制策略:")
     for res_id, outflows in strategies.items():
         print(f"  {res_id}:")
-        print(f"    最大出流: {np.max(outflows):.0f} m³/s")
-        print(f"    平均出流: {np.mean(outflows):.0f} m³/s")
+        print(f"    最大出流: {np.max(outflows):.0f} m^3/s")
+        print(f"    平均出流: {np.mean(outflows):.0f} m^3/s")
 
     # 可视化防洪策略
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -415,13 +418,13 @@ def demo_flood_control(cascade):
                color=colors[res_id], label=f'{res_id} 控制出流', linewidth=2)
 
     ax.set_xlabel('时间 (小时)', fontsize=12)
-    ax.set_ylabel('流量 (m³/s)', fontsize=12)
+    ax.set_ylabel('流量 (m^3/s)', fontsize=12)
     ax.set_title('防洪协调控制策略', fontsize=14, fontweight='bold')
     ax.legend(loc='best', fontsize=10)
     ax.grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig('/home/user/HydroClaude/examples/example_18_cascade_hydropower/flood_control.png', dpi=150)
+    plt.savefig('examples/example_18_cascade_hydropower/flood_control.png', dpi=150)
     print(f"\n防洪控制图像已保存到: flood_control.png")
 
 

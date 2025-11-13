@@ -16,7 +16,17 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.single_canal_solver import SingleCanalSolver
+try:
+    # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.single_canal_solver import SingleCanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 
 
@@ -47,7 +57,7 @@ def comprehensive_test():
     print(f"  闸门1: 位置={gate1.position}m, 开度={gate1.get_opening(0)}m")
     print(f"  闸门2: 位置={gate2.position}m, 开度={gate2.get_opening(0)}m (最小，最大阻力)")
     print(f"  闸门3: 位置={gate3.position}m, 开度={gate3.get_opening(0)}m")
-    print(f"  目标流量: {Q_initial} m³/s")
+    print(f"  目标流量: {Q_initial} m^3/s")
     print()
 
     # 定义测试配置
@@ -138,7 +148,7 @@ def comprehensive_test():
 
         # 自适应网格测试 - 不同加密半径
         {
-            "name": "自适应-小半径(±150m)",
+            "name": "自适应-小半径(+/-150m)",
             "use_adaptive": True,
             "nx": 301,
             "dx_fine": 5.0,
@@ -148,7 +158,7 @@ def comprehensive_test():
             "tol": 0.001
         },
         {
-            "name": "自适应-大半径(±300m)",
+            "name": "自适应-大半径(+/-300m)",
             "use_adaptive": True,
             "nx": 301,
             "dx_fine": 5.0,
@@ -158,7 +168,7 @@ def comprehensive_test():
             "tol": 0.001
         },
         {
-            "name": "自适应-超大半径(±500m)",
+            "name": "自适应-超大半径(+/-500m)",
             "use_adaptive": True,
             "nx": 301,
             "dx_fine": 5.0,
@@ -202,7 +212,7 @@ def comprehensive_test():
         if config['use_adaptive']:
             print(f"  配置: 自适应网格")
             print(f"    精细区间距: {config['dx_fine']} m")
-            print(f"    加密半径: ±{config['radius']} m")
+            print(f"    加密半径: +/-{config['radius']} m")
             print(f"    粗网格间距: {config['dx_coarse']} m")
         else:
             print(f"  配置: 均匀网格")
@@ -294,7 +304,7 @@ def comprehensive_test():
         print(f"  闸门误差: G1={gate_errors[0]:.4f}%, G2={gate_errors[1]:.4f}%, G3={gate_errors[2]:.4f}%")
         print(f"  守恒性指标: {conservation_quality:.4f}% (越小越好)")
         print(f"  迭代次数: {result['iterations']}")
-        print(f"  收敛状态: {'✓ 收敛' if result['converged'] else '✗ 未收敛'}")
+        print(f"  收敛状态: {' 收敛' if result['converged'] else ' 未收敛'}")
         print(f"  计算时间: {solve_time:.2f}s")
 
     # 生成完整报告
@@ -322,7 +332,7 @@ def comprehensive_test():
 
     for r in results:
         time_per_iter = r['solve_time'] / r['iterations'] * 1000  # ms
-        status = "✓" if r['converged'] else "✗"
+        status = "" if r['converged'] else ""
         print(f"{r['name']:<25} | {r['n_points']:6d} | {r['iterations']:9d} | {r['solve_time']:8.2f}s | "
               f"{time_per_iter:8.2f}ms | {status}")
 
@@ -366,11 +376,11 @@ def comprehensive_test():
 
     print(f"3. 阶段1目标评估 (目标: <0.5%)")
     if target_met:
-        print(f"   ✓ 达标配置数: {len(target_met)}/{len(results)}")
+        print(f"    达标配置数: {len(target_met)}/{len(results)}")
         for r in target_met:
             print(f"     - {r['name']}: {r['max_error']:.4f}%")
     else:
-        print(f"   ✗ 无配置达标")
+        print(f"    无配置达标")
         print(f"   最接近: {sorted_by_error[0]['name']} ({sorted_by_error[0]['max_error']:.4f}%)")
         print(f"   差距: {sorted_by_error[0]['max_error'] - 0.5:.4f}%")
     print()
@@ -385,7 +395,7 @@ def comprehensive_test():
     print(f"     201点: {uniform_201['max_error']:.4f}%")
     print(f"     301点: {uniform_301['max_error']:.4f}% (基准)")
     print(f"     501点: {uniform_501['max_error']:.4f}%")
-    print(f"     点数增加2.5x → 精度提升{uniform_301['max_error']/uniform_501['max_error']:.2f}x")
+    print(f"     点数增加2.5x -> 精度提升{uniform_301['max_error']/uniform_501['max_error']:.2f}x")
     print()
 
     adaptive_configs = [r for r in results if r['use_adaptive'] and 'dx=' in r['name'] and '半径' not in r['name']]
@@ -393,7 +403,7 @@ def comprehensive_test():
         print(f"   自适应网格 (按dx排序):")
         for r in sorted(adaptive_configs, key=lambda x: x['dx_min'], reverse=True):
             improvement = uniform_301['max_error'] / r['max_error']
-            print(f"     dx≈{r['dx_min']:.1f}m: {r['max_error']:.4f}% (提升{improvement:.2f}x, {r['n_points']}点, {r['solve_time']:.1f}s)")
+            print(f"     dx~={r['dx_min']:.1f}m: {r['max_error']:.4f}% (提升{improvement:.2f}x, {r['n_points']}点, {r['solve_time']:.1f}s)")
     print()
 
     print("=" * 100)

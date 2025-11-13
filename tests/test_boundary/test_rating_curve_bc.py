@@ -353,7 +353,7 @@ class TestPowerLawFitting:
         assert 'mae' in fit_stats
         assert 'r_squared' in fit_stats
 
-        # 完美拟合数据，R² 应接近 1
+        # 完美拟合数据，R^2 应接近 1
         assert fit_stats['r_squared'] > 0.99
 
 

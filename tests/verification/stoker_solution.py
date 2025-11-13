@@ -11,14 +11,22 @@ Stoker溃坝解析解 (1957)
 
 解的结构（从左到右）:
 1. 区域1: 上游未扰动区 (x < x_tail)
-2. 区域2: 稀疏波区 (x_tail ≤ x < x_star)
-3. 区域3: 中间常值区 (x_star ≤ x < x_shock)
-4. 区域4: 下游区域 (x ≥ x_shock) - 激波右侧
+2. 区域2: 稀疏波区 (x_tail <= x < x_star)
+3. 区域3: 中间常值区 (x_star <= x < x_shock)
+4. 区域4: 下游区域 (x >= x_shock) - 激波右侧
 
 与Ritter解的区别：
 - Ritter: 下游完全干床 (h_R = 0)
 - Stoker: 下游有水 (h_R > 0)，包含激波
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import numpy as np
 from typing import Tuple
@@ -42,7 +50,7 @@ def stoker_solution(
         h_L: 上游初始水深 (m)
         h_R: 下游初始水深 (m), h_R > 0
         x_dam: 坝址位置 (m)
-        g: 重力加速度 (m/s²)
+        g: 重力加速度 (m/s^2)
 
     Returns:
         h: 水深数组 (m)
@@ -183,7 +191,7 @@ def stoker_characteristics(
         h_L: 上游水深 (m)
         h_R: 下游水深 (m)
         x_dam: 坝址位置 (m)
-        g: 重力加速度 (m/s²)
+        g: 重力加速度 (m/s^2)
 
     Returns:
         dict: 包含特征位置和速度的字典
@@ -280,14 +288,14 @@ def verify_stoker_properties(
         expected_inv = 2.0 * c_L
         check4 = np.abs(riemann_inv - expected_inv) < 1e-6
         checks.append(('Riemann不变量', check4,
-                      f"{riemann_inv:.6f} ≈ {expected_inv:.6f}"))
+                      f"{riemann_inv:.6f} ~= {expected_inv:.6f}"))
 
         # 检查5: 质量守恒（Rankine-Hugoniot）
         mass_lhs = S * (h_star - h_R)
         mass_rhs = u_star * h_star
         check5 = np.abs(mass_lhs - mass_rhs) < 1e-6
         checks.append(('质量守恒', check5,
-                      f"{mass_lhs:.6f} ≈ {mass_rhs:.6f}"))
+                      f"{mass_lhs:.6f} ~= {mass_rhs:.6f}"))
 
         if verbose:
             print("\n" + "="*60)
@@ -299,14 +307,14 @@ def verify_stoker_properties(
             print(f"激波速度: S = {S:.3f} m/s")
             print(f"\n检查结果:")
             for name, result, detail in checks:
-                status = "✅" if result else "❌"
+                status = "" if result else ""
                 print(f"  {status} {name}: {detail}")
 
         return all(check for _, check, _ in checks)
 
     except Exception as e:
         if verbose:
-            print(f"❌ 验证失败: {e}")
+            print(f" 验证失败: {e}")
         return False
 
 
@@ -366,4 +374,4 @@ if __name__ == '__main__':
 
     plt.tight_layout()
     plt.savefig('stoker_solution_test.png', dpi=150, bbox_inches='tight')
-    print(f"\n✅ 测试图保存: stoker_solution_test.png")
+    print(f"\n 测试图保存: stoker_solution_test.png")

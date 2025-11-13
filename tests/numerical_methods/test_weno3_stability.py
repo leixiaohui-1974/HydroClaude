@@ -10,7 +10,7 @@ WENO3稳定性分析测试
 
 理论背景：
 - WENO格式的稳定性取决于CFL条件、TVD性质
-- CFL条件：Δt ≤ CFL * Δx / max(|u| + c)
+- CFL条件：Δt <= CFL * Δx / max(|u| + c)
 - WENO3理论CFL上限约为0.6-0.7（取决于时间积分格式）
 
 参考文献：
@@ -135,10 +135,10 @@ class TestWENO3Stability:
             assert not has_negative, f"CFL={cfl}时出现负水深，失稳"
             assert mass_error < 5.0, f"CFL={cfl}时质量误差{mass_error:.4f}% > 5%"
 
-            print(f"\n✅ CFL={cfl}: 稳定 (质量误差={mass_error:.4f}%)")
+            print(f"\n CFL={cfl}: 稳定 (质量误差={mass_error:.4f}%)")
 
         except Exception as e:
-            print(f"\n❌ CFL={cfl}: 失稳 - {str(e)}")
+            print(f"\n CFL={cfl}: 失稳 - {str(e)}")
             pytest.fail(f"CFL={cfl}时失稳: {str(e)}")
 
         finally:
@@ -225,7 +225,7 @@ class TestWENO3Stability:
                 mass_history.append(mass)
                 time_points.append(engine.solver.t)
 
-                print(f"  t={engine.solver.t:.0f}s: 质量={mass:.2f} m³")
+                print(f"  t={engine.solver.t:.0f}s: 质量={mass:.2f} m^3")
 
             # 分析质量守恒
             mass_errors = [
@@ -234,8 +234,8 @@ class TestWENO3Stability:
             max_mass_error = max(mass_errors)
 
             print(f"\n长时间质量守恒:")
-            print(f"  初始质量: {mass_init:.2f} m³")
-            print(f"  最终质量: {mass_history[-1]:.2f} m³")
+            print(f"  初始质量: {mass_init:.2f} m^3")
+            print(f"  最终质量: {mass_history[-1]:.2f} m^3")
             print(f"  最大误差: {max_mass_error:.4f}%")
 
             # 检查振荡累积
@@ -253,7 +253,7 @@ class TestWENO3Stability:
             assert max_mass_error < 1.0, f"长时间质量误差{max_mass_error:.4f}% > 1.0%"
             assert relative_oscillation < 0.1, f"振荡累积过大: {relative_oscillation:.6f}"
 
-            print("\n✅ 长时间稳定性验证通过")
+            print("\n 长时间稳定性验证通过")
 
         finally:
             config_file_path.unlink(missing_ok=True)
@@ -367,11 +367,11 @@ class TestWENO3Stability:
         # 通常存在最优点
         print("\n性能建议:")
         if fastest['cfl'] >= 0.4:
-            print("  推荐CFL ≥ 0.4 以获得最佳性能")
+            print("  推荐CFL >= 0.4 以获得最佳性能")
         else:
             print(f"  推荐CFL = {fastest['cfl']} 以获得最佳性能")
 
-        print("\n✅ CFL性能权衡分析完成")
+        print("\n CFL性能权衡分析完成")
 
     @pytest.mark.p3
     def test_extreme_conditions_stability(self):
@@ -466,7 +466,7 @@ class TestWENO3Stability:
             assert not has_negative, "极端条件下出现负水深"
             assert mass_error < 5.0, f"极端条件下质量误差{mass_error:.4f}% > 5%"
 
-            print("\n✅ 极端条件稳定性验证通过")
+            print("\n 极端条件稳定性验证通过")
             print("  WENO3在20倍高差溃坝问题上保持稳定")
 
         finally:

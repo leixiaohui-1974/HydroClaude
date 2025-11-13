@@ -422,7 +422,7 @@ if __name__ == "__main__":
     # Cavitation check
     at_risk, margin = siphon.check_cavitation_risk(Q)
     print(f"\nCavitation Check:")
-    print(f"  At risk:         {'YES ⚠️' if at_risk else 'NO ✓'}")
+    print(f"  At risk:         {'YES ️' if at_risk else 'NO '}")
     print(f"  Pressure margin: {margin/1000:.1f} kPa")
 
     # Minimum velocity check
@@ -430,7 +430,7 @@ if __name__ == "__main__":
     print(f"\nSedimentation Check:")
     print(f"  Current velocity: {breakdown['velocity']:.2f} m/s")
     print(f"  Minimum velocity: {v_min:.2f} m/s (for 1mm sediment)")
-    print(f"  Status:           {'OK ✓' if breakdown['velocity'] > v_min else 'Risk of sedimentation ⚠️'}")
+    print(f"  Status:           {'OK ' if breakdown['velocity'] > v_min else 'Risk of sedimentation ️'}")
 
     # Design example
     print("\n" + "=" * 80)

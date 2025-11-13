@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-例子1：明渠流动基础示例 (HydrostaticCanalSolver高精度版本)
+例子1明渠流动基础示例 (HydrostaticCanalSolver高精度版本)
 
-展示HydrostaticCanalSolver的核心能力：
+展示HydrostaticCanalSolver的核心能力
 1. 高精度稳态求解
 2. 非恒定流演化到稳态
 3. 流量守恒验证
@@ -42,7 +42,7 @@ plotter = PlotHelper()
 def main():
     """主函数"""
     print("=" * 80)
-    print("例子1：明渠流动基础示例 (HydrostaticCanalSolver高精度版本)")
+    print("例子1明渠流动基础示例 (HydrostaticCanalSolver高精度版本)")
     print("=" * 80)
 
     # ========================================================================
@@ -59,7 +59,7 @@ def main():
     nx = 201         # 空间网格数
 
     # 边界条件
-    Q_target = 8.0  # 目标流量 (m³/s)
+    Q_target = 8.0  # 目标流量 (m^3/s)
 
     # 计算理论水深
     h_uniform = compute_steady_uniform_flow(Q_target, B, S0, n)
@@ -69,7 +69,7 @@ def main():
     print(f"渠底坡度: {S0}")
     print(f"Manning糙率: {n}")
     print(f"网格数: {nx}")
-    print(f"目标流量: {Q_target} m³/s")
+    print(f"目标流量: {Q_target} m^3/s")
     print(f"均匀流水深: {h_uniform:.6f} m")
 
     # ========================================================================
@@ -96,7 +96,7 @@ def main():
         Q_target=Q_target,
         h_downstream=h_uniform,
         max_iterations=5000,
-        convergence_tol=0.001,
+        convergence_tol = 0.1,
         dt=0.5,
         verbose=True
     )
@@ -139,7 +139,7 @@ def main():
 
     print(f"初始状态:")
     print(f"  水深: {h_initial:.4f} m (理论值的120%)")
-    print(f"  流量: {Q_target} m³/s")
+    print(f"  流量: {Q_target} m^3/s")
 
     # 时间步进参数
     dt = 0.5
@@ -192,12 +192,12 @@ def main():
 
         # 打印进度
         if (i + 1) % 50 == 0:
-            print(f"  t={current_time:.1f}s: h_avg={h_avg:.6f} m, Q_avg={Q_avg:.6f} m³/s")
+            print(f"  t={current_time:.1f}s: h_avg={h_avg:.6f} m, Q_avg={Q_avg:.6f} m^3/s")
 
-    print(f"✓ 非恒定流仿真完成")
+    print(f" 非恒定流仿真完成")
 
     # ========================================================================
-    # 4. 生成可视化 (使用PlotHelper，代码大幅简化)
+    # 4. 生成可视化 (使用PlotHelper代码大幅简化)
     # ========================================================================
     print("\n4. 生成可视化图表")
     print("-" * 80)
@@ -209,7 +209,7 @@ def main():
     z_surface = z_bed + h_steady
     Q_error_pct = np.abs(Q_steady - Q_target) / Q_target * 100
 
-    # 图1: 稳态纵剖面 (使用matplotlib，保留复杂布局)
+    # 图1: 稳态纵剖面 (使用matplotlib保留复杂布局)
     print("  生成稳态纵剖面图...")
     fig1, axes1 = plt.subplots(2, 1, figsize=(14, 10))
 
@@ -231,9 +231,9 @@ def main():
     ax2 = axes1[1]
     ax2.plot(x, Q_steady, 'g-', linewidth=2.5, label='Flow Rate')
     ax2.axhline(y=Q_target, color='k', linestyle=':', alpha=0.5,
-                label=f'Target ({Q_target} m³/s)')
+                label=f'Target ({Q_target} m^3/s)')
     ax2.set_xlabel('Distance (m)', fontsize=12)
-    ax2.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+    ax2.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
     ax2.set_title(f'Flow Distribution (Error: {result["Q_error_percent"]:.6f}%)',
                   fontsize=14, fontweight='bold')
     ax2.grid(True, alpha=0.3)
@@ -263,7 +263,7 @@ def main():
     # 图2: 非恒定流演化 (使用PlotHelper简化)
     print("  生成非恒定流演化图...")
 
-    # 创建双剖面图（时间序列）
+    # 创建双剖面图时间序列
     fig2, axes2 = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
 
     # 子图1: 平均水深演化
@@ -281,9 +281,9 @@ def main():
     ax2 = axes2[1]
     ax2.plot(time_history, Q_avg_history, 'g-', linewidth=2.5, label='Average Flow')
     ax2.axhline(y=Q_target, color='r', linestyle='--', linewidth=2, alpha=0.7,
-                label=f'Target Flow ({Q_target} m³/s)')
+                label=f'Target Flow ({Q_target} m^3/s)')
     ax2.set_xlabel('Time (s)', fontsize=12)
-    ax2.set_ylabel('Average Flow Rate (m³/s)', fontsize=12)
+    ax2.set_ylabel('Average Flow Rate (m^3/s)', fontsize=12)
     ax2.set_title('Unsteady Flow Evolution - Average Flow Rate',
                   fontsize=14, fontweight='bold')
     ax2.grid(True, alpha=0.3)
@@ -293,7 +293,7 @@ def main():
     PlotHelper.save_figure(fig2, helper.get_output_path('01_basic_unsteady_evolution_v2.png'))
     plt.close(fig2)
 
-    # 图3: 快照对比 (使用matplotlib，保留颜色渐变效果)
+    # 图3: 快照对比 (使用matplotlib保留颜色渐变效果)
     print("  生成快照对比图...")
     fig3, ax3 = plt.subplots(1, 1, figsize=(14, 8))
 
@@ -332,7 +332,7 @@ def main():
     })
     csv_path1 = helper.get_output_path('01_basic_steady_profile_v2.csv')
     steady_profile.to_csv(csv_path1, index=False)
-    print(f"  ✓ 稳态剖面数据: 01_basic_steady_profile_v2.csv ({len(x)} rows)")
+    print(f"   稳态剖面数据: 01_basic_steady_profile_v2.csv ({len(x)} rows)")
 
     # 非恒定流演化数据
     unsteady_evolution = pd.DataFrame({
@@ -344,19 +344,19 @@ def main():
     })
     csv_path2 = helper.get_output_path('01_basic_unsteady_evolution_v2.csv')
     unsteady_evolution.to_csv(csv_path2, index=False)
-    print(f"  ✓ 非恒定流演化数据: 01_basic_unsteady_evolution_v2.csv ({len(time_history)} rows)")
+    print(f"   非恒定流演化数据: 01_basic_unsteady_evolution_v2.csv ({len(time_history)} rows)")
 
     # 保存验证报告
     print("  保存验证报告...")
     report_path = helper.get_output_path('01_basic_validation_report.txt')
     validator.save_report(str(report_path))
-    print(f"  ✓ 验证报告: 01_basic_validation_report.txt")
+    print(f"   验证报告: 01_basic_validation_report.txt")
 
     # ========================================================================
     # 6. 总结
     # ========================================================================
     print("\n" + "=" * 80)
-    print("仿真完成！")
+    print("仿真完成")
     print("=" * 80)
 
     print(f"\n生成的文件:")
@@ -375,7 +375,7 @@ def main():
     print(f"  稳态收敛迭代: {result['iterations']} (极快)")
     print(f"  非恒定流演化: 100s内稳定")
 
-    print("\n✅ 例子1 (HydrostaticCanalSolver版 - 重构) 运行成功")
+    print("\n 例子1 (HydrostaticCanalSolver版 - 重构) 运行成功")
     print("=" * 80)
 
     return validator

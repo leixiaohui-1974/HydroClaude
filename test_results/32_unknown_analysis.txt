@@ -1,0 +1,324 @@
+======================================================================
+ANALYSIS OF 32 UNKNOWN STATUS TESTS
+======================================================================
+
+
+[1] Test #4: Riemann姹傝В鍣ㄦ€ц兘鍩哄噯娴嬭瘯
+File: 
+----------------------------------------------------------------------
+[4/541] 娴嬭瘯: Riemann姹傝В鍣ㄦ€ц兘鍩哄噯娴嬭瘯
+    ID: tests-benchmark_riemann_solvers
+    鏂囦欢: tests\benchmark_riemann_solvers.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[2] Test #99: 鑷姩娴嬭瘯鎵€鏈夌ず渚嬶紙Examples 1-16锛?
+File: 
+----------------------------------------------------------------------
+[99/541] 娴嬭瘯: 鑷姩娴嬭瘯鎵€鏈夌ず渚嬶紙Examples 1-16锛?
+    ID: tests-diagnostic-test_all_examples
+    鏂囦欢: tests\diagnostic\test_all_examples.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[3] Test #199: 鐬€佹祦娴嬭瘯 - 楠岃瘉HydrostaticCanalSolver鐨勭灛鎬佹紨鍖栧姛鑳?
+File: 
+----------------------------------------------------------------------
+[199/541] 娴嬭瘯: 鐬€佹祦娴嬭瘯 - 楠岃瘉HydrostaticCanalSolver鐨勭灛鎬佹紨鍖栧姛鑳?
+    ID: tests-diagnostic-test_transient_flow
+    鏂囦欢: tests\diagnostic\test_transient_flow.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[4] Test #265: RP5-RP7骞插簥闂娴嬭瘯濂椾欢锛圥hase 8.2锛?
+File: 
+----------------------------------------------------------------------
+[265/541] 娴嬭瘯: RP5-RP7骞插簥闂娴嬭瘯濂椾欢锛圥hase 8.2锛?
+    ID: tests-verification-test_rp567_wet_dry
+    鏂囦欢: tests\verification\test_rp567_wet_dry.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[5] Test #292: 姘斿€欏彉鍖栧娌虫祦鍐?姘磋川鐨勫奖鍝嶈瘎浼?
+File: 
+----------------------------------------------------------------------
+[292/541] 娴嬭瘯: 姘斿€欏彉鍖栧娌虫祦鍐?姘磋川鐨勫奖鍝嶈瘎浼?
+    ID: examples-climate_change_assessment
+    鏂囦欢: examples\climate_change_assessment.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[6] Test #293: 缁煎悎鍔ㄧ敾鐢熸垚鍣?- 涓烘墍鏈夊墿浣欑ず渚嬬敓鎴怗IF鍔ㄧ敾
+File: 
+----------------------------------------------------------------------
+[293/541] 娴嬭瘯: 缁煎悎鍔ㄧ敾鐢熸垚鍣?- 涓烘墍鏈夊墿浣欑ず渚嬬敓鎴怗IF鍔ㄧ敾
+    ID: examples-comprehensive_animation_generator
+    鏂囦欢: examples\comprehensive_animation_generator.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[7] Test #331: 鎺у埗鍣ㄦ€ц兘鍩哄噯娴嬭瘯绀轰緥
+File: 
+----------------------------------------------------------------------
+[331/541] 娴嬭瘯: 鎺у埗鍣ㄦ€ц兘鍩哄噯娴嬭瘯绀轰緥
+    ID: examples-advanced_examples-benchmark_controllers
+    鏂囦欢: examples\advanced_examples\benchmark_controllers.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[8] Test #356: 澶氱洰鏍囨按搴撹皟搴︿紭鍖栨渚?
+File: 
+----------------------------------------------------------------------
+[356/541] 娴嬭瘯: 澶氱洰鏍囨按搴撹皟搴︿紭鍖栨渚?
+    ID: examples-advanced_examples-multi_objective_reservoir_scheduling
+    鏂囦欢: examples\advanced_examples\multi_objective_reservoir_scheduling.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[9] Test #357: Preissmann姹傝В鍣ㄥ弬鏁颁紭鍖?
+File: 
+----------------------------------------------------------------------
+[357/541] 娴嬭瘯: Preissmann姹傝В鍣ㄥ弬鏁颁紭鍖?
+    ID: examples-advanced_examples-optimize_preissmann
+    鏂囦欢: examples\advanced_examples\optimize_preissmann.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[10] Test #376: HydroClaude Performance Benchmark Tool - 鎬ц兘鍩哄噯娴嬭瘯宸ュ叿
+File: 
+----------------------------------------------------------------------
+[376/541] 娴嬭瘯: HydroClaude Performance Benchmark Tool - 鎬ц兘鍩哄噯娴嬭瘯宸ュ叿
+    ID: examples-case_library-benchmark_performance
+    鏂囦欢: examples\case_library\benchmark_performance.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[11] Test #382: HydroClaude Case Library Runner - 妗堜緥搴撹繍琛屽櫒
+File: 
+----------------------------------------------------------------------
+[382/541] 娴嬭瘯: HydroClaude Case Library Runner - 妗堜緥搴撹繍琛屽櫒
+    ID: examples-case_library-run_all_cases
+    鏂囦欢: examples\case_library\run_all_cases.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[12] Test #387: Quick test for script 10 numerical stability
+File: 
+----------------------------------------------------------------------
+[387/541] 娴嬭瘯: Quick test for script 10 numerical stability
+    ID: examples-example_01_canal_flow-test_script10_stability
+    鏂囦欢: examples\example_01_canal_flow\test_script10_stability.py
+    鐘舵€? 閿欒 - 鏂囦欢涓嶅瓨鍦?
+
+======================================================================
+
+[13] Test #388: 楠岃瘉鎵€鏈塿2鍗囩骇鑴氭湰
+File: 
+----------------------------------------------------------------------
+[388/541] 娴嬭瘯: 楠岃瘉鎵€鏈塿2鍗囩骇鑴氭湰
+    ID: examples-example_01_canal_flow-validate_all_v2_scripts
+    鏂囦欢: examples\example_01_canal_flow\validate_all_v2_scripts.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[14] Test #403: 绀轰緥9: 绠￠亾姘村嚮RK4楂樼簿搴︽眰瑙ｏ紙澧炲己鐗堬級
+File: 
+----------------------------------------------------------------------
+[403/541] 娴嬭瘯: 绀轰緥9: 绠￠亾姘村嚮RK4楂樼簿搴︽眰瑙ｏ紙澧炲己鐗堬級
+    ID: examples-example_09_pipe_rk4-example_09_pipe_rk4_enhanced
+    鏂囦欢: examples\example_09_pipe_rk4\example_09_pipe_rk4_enhanced.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[15] Test #422: 鎵归噺杩愯鎵€鏈夊伐鍐?- 楠岃瘉楂樼簿搴﹂潪鎭掑畾娴佹ā鎷熷紩鎿?
+File: 
+----------------------------------------------------------------------
+[422/541] 娴嬭瘯: 鎵归噺杩愯鎵€鏈夊伐鍐?- 楠岃瘉楂樼簿搴﹂潪鎭掑畾娴佹ā鎷熷紩鎿?
+    ID: examples-example_gate_pump_cascade-batch_run_all_scenarios
+    鏂囦欢: examples\example_gate_pump_cascade\batch_run_all_scenarios.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[16] Test #423: 涓茶仈鏄庢笭闂告车缇ょ郴缁?- 缁煎悎宸ュ喌娴嬭瘯
+File: 
+----------------------------------------------------------------------
+[423/541] 娴嬭瘯: 涓茶仈鏄庢笭闂告车缇ょ郴缁?- 缁煎悎宸ュ喌娴嬭瘯
+    ID: examples-example_gate_pump_cascade-comprehensive_scenario_test
+    鏂囦欢: examples\example_gate_pump_cascade\comprehensive_scenario_test.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[17] Test #425: 涓茶仈鏄庢笭闂告车缇ょ郴缁?- 澧炲己鐗堝伐鍐垫祴璇?
+File: 
+----------------------------------------------------------------------
+[425/541] 娴嬭瘯: 涓茶仈鏄庢笭闂告车缇ょ郴缁?- 澧炲己鐗堝伐鍐垫祴璇?
+    ID: examples-example_gate_pump_cascade-enhanced_scenario_test
+    鏂囦欢: examples\example_gate_pump_cascade\enhanced_scenario_test.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[18] Test #426: 鏄庢笭涓茶仈闂告车缇ょ郴缁?- 浣跨敤楂樼簿搴︽车绔欐ā鍨嬶紙瀹屾暣鐗规€ф洸绾匡級
+File: 
+----------------------------------------------------------------------
+[426/541] 娴嬭瘯: 鏄庢笭涓茶仈闂告车缇ょ郴缁?- 浣跨敤楂樼簿搴︽车绔欐ā鍨嬶紙瀹屾暣鐗规€ф洸绾匡級
+    ID: examples-example_gate_pump_cascade-gate_pump_cascade_advanced
+    鏂囦欢: examples\example_gate_pump_cascade\gate_pump_cascade_advanced.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[19] Test #427: 涓茶仈鏄庢笭闂告车缇ょ郴缁?- 蹇€熷伐鍐垫祴璇曪紙绮剧畝鐗堬級
+File: 
+----------------------------------------------------------------------
+[427/541] 娴嬭瘯: 涓茶仈鏄庢笭闂告车缇ょ郴缁?- 蹇€熷伐鍐垫祴璇曪紙绮剧畝鐗堬級
+    ID: examples-example_gate_pump_cascade-quick_scenario_test
+    鏂囦欢: examples\example_gate_pump_cascade\quick_scenario_test.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[20] Test #429: 蹇€熻繍琛屽伐鍐电殑杈呭姪鑴氭湰
+File: 
+----------------------------------------------------------------------
+[429/541] 娴嬭瘯: 蹇€熻繍琛屽伐鍐电殑杈呭姪鑴氭湰
+    ID: examples-example_gate_pump_cascade-run_scenario
+    鏂囦欢: examples\example_gate_pump_cascade\run_scenario.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[21] Test #435: 涓茶仈鏄庢笭闂告车缇ょ郴缁?- 鏍囧噯澶氬伐鍐垫祴璇曪紙閬靛畧寮€鍙戣鑼冿級
+File: 
+----------------------------------------------------------------------
+[435/541] 娴嬭瘯: 涓茶仈鏄庢笭闂告车缇ょ郴缁?- 鏍囧噯澶氬伐鍐垫祴璇曪紙閬靛畧寮€鍙戣鑼冿級
+    ID: examples-example_gate_pump_cascade-standard_multi_scenario_test
+    鏂囦欢: examples\example_gate_pump_cascade\standard_multi_scenario_test.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[22] Test #478: 渚嬪瓙1鎵╁睍锛氫笉鍚屼笅娓歌竟鐣屾潯浠剁殑褰卞搷鐮旂┒ (HydrostaticCanalSolver楂樼簿搴︾増鏈?
+File: 
+----------------------------------------------------------------------
+[478/541] 娴嬭瘯: 渚嬪瓙1鎵╁睍锛氫笉鍚屼笅娓歌竟鐣屾潯浠剁殑褰卞搷鐮旂┒ (HydrostaticCanalSolver楂樼簿搴︾増鏈?
+    ID: examples-example_01_canal_flow-scripts-04_boundary_conditions_v2
+    鏂囦欢: examples\example_01_canal_flow\scripts\04_boundary_conditions_v2.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[23] Test #479: 渚嬪瓙1鎵╁睍锛氫笉鍚屼笅娓歌竟鐣屾潯浠剁殑褰卞搷鐮旂┒ (HydrostaticCanalSolver楂樼簿搴︾増鏈?- Refactored)
+File: 
+----------------------------------------------------------------------
+[479/541] 娴嬭瘯: 渚嬪瓙1鎵╁睍锛氫笉鍚屼笅娓歌竟鐣屾潯浠剁殑褰卞搷鐮旂┒ (HydrostaticCanalSolver楂樼簿搴︾増鏈?- Refactored)
+    ID: examples-example_01_canal_flow-scripts-04_boundary_conditions_v2_refactored
+    鏂囦欢: examples\example_01_canal_flow\scripts\04_boundary_conditions_v2_refactored.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[24] Test #482: 绀轰緥1: 鏄庢笭闈炴亽瀹氭祦 - 鐢熸垚GIF鍔ㄧ敾锛堟敼杩涚増锛屾秷闄よ竟鐣屾尟鑽★級
+File: 
+----------------------------------------------------------------------
+[482/541] 娴嬭瘯: 绀轰緥1: 鏄庢笭闈炴亽瀹氭祦 - 鐢熸垚GIF鍔ㄧ敾锛堟敼杩涚増锛屾秷闄よ竟鐣屾尟鑽★級
+    ID: examples-example_01_canal_flow-scripts-06_animation
+    鏂囦欢: examples\example_01_canal_flow\scripts\06_animation.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[25] Test #483: 绀轰緥1: 鏄庢笭闈炴亽瀹氭祦 - 鐢熸垚GIF鍔ㄧ敾 (ScriptHelper閲嶆瀯鐗?
+File: 
+----------------------------------------------------------------------
+[483/541] 娴嬭瘯: 绀轰緥1: 鏄庢笭闈炴亽瀹氭祦 - 鐢熸垚GIF鍔ㄧ敾 (ScriptHelper閲嶆瀯鐗?
+    ID: examples-example_01_canal_flow-scripts-06_animation_refactored
+    鏂囦欢: examples\example_01_canal_flow\scripts\06_animation_refactored.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[26] Test #495: 绀轰緥1: 鏄庢笭娣卞叆鍒嗘瀽 v2锛堣竟鐣屾潯浠躲€侀樁璺冨搷搴斻€両DZ妯″瀷杈ㄨ瘑锛?
+File: 
+----------------------------------------------------------------------
+[495/541] 娴嬭瘯: 绀轰緥1: 鏄庢笭娣卞叆鍒嗘瀽 v2锛堣竟鐣屾潯浠躲€侀樁璺冨搷搴斻€両DZ妯″瀷杈ㄨ瘑锛?
+    ID: examples-example_01_canal_flow-scripts-10_canal_deep_analysis
+    鏂囦欢: examples\example_01_canal_flow\scripts\10_canal_deep_analysis.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[27] Test #497: 绀轰緥2锛氶珮绾ф按宸ュ缓绛戠墿缁勫悎锛堥噸鏋勭増锛?
+File: 
+----------------------------------------------------------------------
+[497/541] 娴嬭瘯: 绀轰緥2锛氶珮绾ф按宸ュ缓绛戠墿缁勫悎锛堥噸鏋勭増锛?
+    ID: examples-example_01_canal_flow-scripts-11_advanced_structures
+    鏂囦欢: examples\example_01_canal_flow\scripts\11_advanced_structures.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[28] Test #518: 妗堜緥1: 婧冨潩妯℃嫙 - 鏂规硶瀵规瘮
+File: 
+----------------------------------------------------------------------
+[518/541] 娴嬭瘯: 妗堜緥1: 婧冨潩妯℃嫙 - 鏂规硶瀵规瘮
+    ID: examples-case_library-case_01_dam_break-dam_break_comparison
+    鏂囦欢: examples\case_library\case_01_dam_break\dam_break_comparison.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[29] Test #520: 楠岃瘉妗堜緥鎵归噺杩愯宸ュ叿
+File: 
+----------------------------------------------------------------------
+[520/541] 娴嬭瘯: 楠岃瘉妗堜緥鎵归噺杩愯宸ュ叿
+    ID: validation_cases-run_all_validation
+    鏂囦欢: validation_cases\run_all_validation.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[30] Test #521: 缁煎悎楠岃瘉娴嬭瘯濂椾欢
+File: 
+----------------------------------------------------------------------
+[521/541] 娴嬭瘯: 缁煎悎楠岃瘉娴嬭瘯濂椾欢
+    ID: validation_cases-run_comprehensive_validation
+    鏂囦欢: validation_cases\run_comprehensive_validation.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[31] Test #523: 鏍囧噯楠岃瘉妗堜緥1: Dam Break with Dry Bed (Ritter Solution)
+File: 
+----------------------------------------------------------------------
+[523/541] 娴嬭瘯: 鏍囧噯楠岃瘉妗堜緥1: Dam Break with Dry Bed (Ritter Solution)
+    ID: validation_cases-analytical-dam_break_ritter
+    鏂囦欢: validation_cases\analytical\dam_break_ritter.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================
+
+[32] Test #532: 鍗曠閬撻獙璇佹渚嬮泦 - Single Pipe Validation Cases
+File: 
+----------------------------------------------------------------------
+[532/541] 娴嬭瘯: 鍗曠閬撻獙璇佹渚嬮泦 - Single Pipe Validation Cases
+    ID: validation_cases-pressure_network-single_pipe_validation
+    鏂囦欢: validation_cases\pressure_network\single_pipe_validation.py
+    鐘舵€? 澶辫触 - 瓒呮椂
+
+======================================================================

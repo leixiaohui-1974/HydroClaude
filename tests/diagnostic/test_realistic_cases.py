@@ -13,7 +13,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 from utils.canal_utils import compute_steady_uniform_flow
 from utils.result_validator import quick_validate_steady_state
@@ -31,7 +37,7 @@ def test_case_1_single_gate():
     
     # 参数（典型灌溉渠道）
     L = 5000.0  # 5km渠道
-    Q = 50.0    # 50 m³/s
+    Q = 50.0    # 50 m^3/s
     B = 15.0    # 15m宽
     S0 = 0.0005 # 0.05%坡度
     n = 0.025
@@ -53,7 +59,7 @@ def test_case_1_single_gate():
     
     print(f"\n参数设置:")
     print(f"  渠道: L={L/1000:.1f}km, B={B}m, S0={S0*100:.2f}%, n={n}")
-    print(f"  流量: Q={Q} m³/s")
+    print(f"  流量: Q={Q} m^3/s")
     print(f"  闸门: 位置={gate_pos/1000:.1f}km, 开度={gate_opening}m")
     print(f"  均匀流水深: {h_uniform:.3f}m")
     print(f"  下游水深: {h_downstream:.3f}m")
@@ -85,7 +91,7 @@ def test_case_1_single_gate():
     print(f"  闸前水深: {h_upstream:.3f}m")
     print(f"  闸后水深: {h_downstream_actual:.3f}m")
     print(f"  水位跌落: {water_level_drop:.3f}m")
-    print(f"  能量损失: {water_level_drop * 9.81 * 1000:.1f} kW (假设ρ=1000 kg/m³)")
+    print(f"  能量损失: {water_level_drop * 9.81 * 1000:.1f} kW (假设ρ=1000 kg/m^3)")
     
     return {
         'solver': solver,
@@ -130,7 +136,7 @@ def test_case_2_cascade_gates():
     h_downstream = h_uniform * 1.3
     
     print(f"\n参数设置:")
-    print(f"  渠道: L={L/1000:.1f}km, B={B}m, Q={Q} m³/s")
+    print(f"  渠道: L={L/1000:.1f}km, B={B}m, Q={Q} m^3/s")
     print(f"  闸门1: 位置={1000.0}m, 开度={2.5}m")
     print(f"  闸门2: 位置={1500.0}m, 开度={2.0}m")
     print(f"  闸门3: 位置={2000.0}m, 开度={2.5}m")
@@ -180,7 +186,7 @@ def test_case_3_mild_slope():
     
     # 参数（大型输水渠）
     L = 10000.0  # 10km
-    Q = 200.0    # 200 m³/s
+    Q = 200.0    # 200 m^3/s
     B = 30.0     # 30m宽
     S0 = 0.0002  # 0.02%缓坡
     n = 0.020
@@ -194,7 +200,7 @@ def test_case_3_mild_slope():
     
     print(f"\n参数设置:")
     print(f"  渠道: L={L/1000:.0f}km, B={B}m, S0={S0*100:.3f}%")
-    print(f"  流量: Q={Q} m³/s")
+    print(f"  流量: Q={Q} m^3/s")
     print(f"  均匀流水深: {h_uniform:.3f}m")
     print(f"  下游水深: {h_downstream:.3f}m (产生M1壅水曲线)")
     
@@ -258,7 +264,7 @@ def test_case_4_steep_slope():
     
     print(f"\n参数设置:")
     print(f"  渠道: L={L/1000:.1f}km, B={B}m, S0={S0*100:.1f}% (陡坡)")
-    print(f"  流量: Q={Q} m³/s")
+    print(f"  流量: Q={Q} m^3/s")
     print(f"  均匀流水深: {h_uniform:.3f}m")
     
     # 计算Froude数
@@ -301,7 +307,7 @@ def test_case_5_large_scale():
     
     # 参数（南水北调级别）
     L = 50000.0   # 50km
-    Q = 500.0     # 500 m³/s
+    Q = 500.0     # 500 m^3/s
     B = 50.0      # 50m宽
     S0 = 0.0001   # 0.01%
     n = 0.018
@@ -325,7 +331,7 @@ def test_case_5_large_scale():
     
     print(f"\n参数设置:")
     print(f"  渠道长度: {L/1000:.0f}km")
-    print(f"  设计流量: {Q} m³/s")
+    print(f"  设计流量: {Q} m^3/s")
     print(f"  渠道宽度: {B}m")
     print(f"  控制闸门: 3座 (位于10km, 25km, 40km)")
     
@@ -383,7 +389,7 @@ def generate_summary_report(all_results):
         converged = result.get('converged', False)
         time = result.get('solve_time', 0.0)
         
-        status = "✅ 成功" if converged else "❌ 失败"
+        status = " 成功" if converged else " 失败"
         
         print(f"{case_name:<20} {flow_error:>10.6f}% {n_iter:>9} {time:>10.3f}s {status}")
     
@@ -456,7 +462,7 @@ def plot_all_cases(all_results):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     fig_path = f'/workspace/validation_cases/results/realistic_cases_{timestamp}.png'
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f"\n✅ 图表已保存: {fig_path}")
+    print(f"\n 图表已保存: {fig_path}")
     plt.close()
 
 
@@ -475,31 +481,31 @@ def main():
         result1 = test_case_1_single_gate()
         all_results.append(result1)
     except Exception as e:
-        print(f"❌ 案例1失败: {e}")
+        print(f" 案例1失败: {e}")
     
     try:
         result2 = test_case_2_cascade_gates()
         all_results.append(result2)
     except Exception as e:
-        print(f"❌ 案例2失败: {e}")
+        print(f" 案例2失败: {e}")
     
     try:
         result3 = test_case_3_mild_slope()
         all_results.append(result3)
     except Exception as e:
-        print(f"❌ 案例3失败: {e}")
+        print(f" 案例3失败: {e}")
     
     try:
         result4 = test_case_4_steep_slope()
         all_results.append(result4)
     except Exception as e:
-        print(f"❌ 案例4失败: {e}")
+        print(f" 案例4失败: {e}")
     
     try:
         result5 = test_case_5_large_scale()
         all_results.append(result5)
     except Exception as e:
-        print(f"❌ 案例5失败: {e}")
+        print(f" 案例5失败: {e}")
     
     # 生成报告
     if all_results:

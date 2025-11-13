@@ -7,12 +7,12 @@ Preissmann四点隐式格式求解器 v2.0
 - 完整Jacobian矩阵
 
 关键修复：
-1. ✅ 方程数 = 未知数 = 2*(n_cells+1)
+1.  方程数 = 未知数 = 2*(n_cells+1)
    - 内部方程: 2*(n_cells-1) (单元i=1 to n_cells-1)
    - 边界方程: 4 (上下游各2个)
-2. ✅ 正确的连续方程离散
-3. ✅ 移除np.maximum截断
-4. ✅ 完整Jacobian
+2.  正确的连续方程离散
+3.  移除np.maximum截断
+4.  完整Jacobian
 
 作者: HydroClaude Team
 日期: 2025-10-28
@@ -36,7 +36,7 @@ class PreissmannSolverV2:
       * 边界方程: 4个 (上游h, Q; 下游h, Q)
       * 内部连续方程: n_cells-1个 (单元i=1 to n_cells-1)
       * 内部动量方程: n_cells-1个 (单元i=1 to n_cells-1)
-      * 总计: 4 + 2*(n_cells-1) = 2*n_cells+2 = 2*(n_cells+1) ✅
+      * 总计: 4 + 2*(n_cells-1) = 2*n_cells+2 = 2*(n_cells+1) 
     """
     
     def __init__(
@@ -111,7 +111,7 @@ class PreissmannSolverV2:
                 dx_vector = spsolve(J.tocsr(), -R)
             except Exception as e:
                 if self.verbose:
-                    print(f"⚠️ 线性求解失败 (iter {iteration}): {e}")
+                    print(f"️ 线性求解失败 (iter {iteration}): {e}")
                 break
             
             # 提取增量并更新
@@ -162,7 +162,7 @@ class PreissmannSolverV2:
             if residual_norm < self.tolerance:
                 self.last_iterations = iteration + 1
                 if self.verbose:
-                    print(f"✅ 收敛于第{iteration+1}次迭代")
+                    print(f" 收敛于第{iteration+1}次迭代")
                 break
         else:
             self.last_iterations = self.max_iter
@@ -496,6 +496,6 @@ if __name__ == "__main__":
     
     print(f"\n最终结果:")
     print(f"  质量误差: {mass_error:.8f}%")
-    print(f"  预期: < 0.01% {'✅' if abs(mass_error) < 0.01 else '❌'}")
+    print(f"  预期: < 0.01% {'' if abs(mass_error) < 0.01 else ''}")
     
     print("\n" + "="*80)

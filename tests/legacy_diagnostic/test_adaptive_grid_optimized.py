@@ -15,7 +15,17 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.single_canal_solver import SingleCanalSolver
+try:
+    # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.single_canal_solver import SingleCanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 
 
@@ -33,7 +43,7 @@ def test_optimized_grid(dx_fine=2.0, refinement_radius=300.0, dx_coarse=40.0):
     print(f"测试优化网格参数")
     print("=" * 80)
     print(f"  精细区间距: {dx_fine} m")
-    print(f"  加密半径: ±{refinement_radius} m")
+    print(f"  加密半径: +/-{refinement_radius} m")
     print(f"  粗网格间距: {dx_coarse} m")
     print()
 
@@ -89,22 +99,22 @@ def test_optimized_grid(dx_fine=2.0, refinement_radius=300.0, dx_coarse=40.0):
     print(f"\n结果:")
     print(f"  网格点数: {len(x)}")
     print(f"  最大相对误差: {max_error:.4f}%")
-    print(f"  闸门1流量: {gate_flows[0]:.4f} m³/s (误差: {abs(gate_flows[0]-Q_initial)/Q_initial*100:.4f}%)")
-    print(f"  闸门2流量: {gate_flows[1]:.4f} m³/s (误差: {abs(gate_flows[1]-Q_initial)/Q_initial*100:.4f}%)")
-    print(f"  闸门3流量: {gate_flows[2]:.4f} m³/s (误差: {abs(gate_flows[2]-Q_initial)/Q_initial*100:.4f}%)")
+    print(f"  闸门1流量: {gate_flows[0]:.4f} m^3/s (误差: {abs(gate_flows[0]-Q_initial)/Q_initial*100:.4f}%)")
+    print(f"  闸门2流量: {gate_flows[1]:.4f} m^3/s (误差: {abs(gate_flows[1]-Q_initial)/Q_initial*100:.4f}%)")
+    print(f"  闸门3流量: {gate_flows[2]:.4f} m^3/s (误差: {abs(gate_flows[2]-Q_initial)/Q_initial*100:.4f}%)")
 
     # 判断是否达到目标
     print(f"\n阶段1目标检验:")
     print(f"  目标: 0.1-0.5% 精度")
     print(f"  当前误差: {max_error:.4f}%")
     if max_error < 0.5:
-        print(f"  ✓ 达到阶段1目标！")
+        print(f"   达到阶段1目标！")
         return True, max_error
     elif max_error < 1.0:
         print(f"  ◐ 接近阶段1目标")
         return False, max_error
     else:
-        print(f"  ✗ 未达到阶段1目标")
+        print(f"   未达到阶段1目标")
         return False, max_error
 
 
@@ -153,7 +163,7 @@ if __name__ == "__main__":
     print("-" * 70)
 
     for r in results:
-        status = "✓ 达标" if r["success"] else "✗ 未达标"
+        status = " 达标" if r["success"] else " 未达标"
         print(f"{r['name']:<20} | {r['dx_fine']:6.1f}m | {r['radius']:4.0f}m | {r['error']:7.4f} | {status}")
 
     print()

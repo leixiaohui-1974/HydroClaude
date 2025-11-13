@@ -1,0 +1,491 @@
+/* Parameter Optimization Panel Styles */
+
+.optimization-panel {
+  min-height: 100vh;
+  background: #f0f2f5;
+}
+
+/* Algorithm selection cards */
+.algorithm-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.algorithm-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.algorithm-card-selected {
+  border: 2px solid #1890ff;
+  background: linear-gradient(135deg, #e6f7ff 0%, #ffffff 100%);
+}
+
+.algorithm-icon {
+  font-size: 48px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.algorithm-name {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.algorithm-description {
+  font-size: 13px;
+  color: #666;
+  text-align: center;
+}
+
+/* Parameter table customization */
+.parameter-table .ant-table {
+  font-size: 13px;
+}
+
+.parameter-table .ant-table-thead > tr > th {
+  background: #fafafa;
+  font-weight: 600;
+  color: #262626;
+}
+
+.parameter-table .ant-table-row:hover {
+  background: #f5f5f5;
+}
+
+.parameter-enabled {
+  background: #f6ffed;
+}
+
+.parameter-disabled {
+  opacity: 0.5;
+}
+
+/* Sensitivity indicators */
+.sensitivity-high {
+  color: #ff4d4f;
+  font-weight: bold;
+}
+
+.sensitivity-medium {
+  color: #fa8c16;
+  font-weight: 500;
+}
+
+.sensitivity-low {
+  color: #52c41a;
+}
+
+.sensitivity-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #52c41a 0%, #faad14 50%, #ff4d4f 100%);
+  position: relative;
+}
+
+.sensitivity-marker {
+  position: absolute;
+  top: -2px;
+  width: 4px;
+  height: 12px;
+  background: #000;
+  border-radius: 2px;
+}
+
+/* Objective function cards */
+.objective-card {
+  background: #fafafa;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border: 2px solid transparent;
+  transition: all 0.3s;
+}
+
+.objective-card:hover {
+  border-color: #1890ff;
+  background: #e6f7ff;
+}
+
+.objective-card-selected {
+  border-color: #1890ff;
+  background: linear-gradient(135deg, #e6f7ff 0%, #f0f5ff 100%);
+}
+
+.objective-formula {
+  font-family: 'Courier New', monospace;
+  background: #f5f5f5;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+/* Progress indicators */
+.optimization-progress {
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.progress-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.progress-stat-card {
+  background: #fafafa;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.progress-stat-value {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 12px 0;
+}
+
+.progress-stat-label {
+  font-size: 13px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Convergence chart */
+.convergence-chart-container {
+  height: 400px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+  margin-top: 24px;
+}
+
+/* Timeline customization */
+.optimization-history .ant-timeline-item-content {
+  font-size: 14px;
+}
+
+.optimization-history .ant-timeline-item-tail {
+  border-left: 2px dashed #d9d9d9;
+}
+
+/* Parameter range sliders */
+.parameter-range-slider {
+  margin: 8px 0;
+}
+
+.ant-slider-mark-text {
+  font-size: 11px;
+  color: #999;
+}
+
+.ant-slider-track {
+  background: linear-gradient(90deg, #1890ff, #52c41a);
+}
+
+/* Radio button groups for algorithms */
+.algorithm-radio-group .ant-radio-button-wrapper {
+  height: auto;
+  padding: 12px 16px;
+  line-height: 1.5;
+  white-space: normal;
+  text-align: left;
+}
+
+.algorithm-radio-group .ant-radio-button-wrapper-checked {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: #fff;
+}
+
+/* Constraint badges */
+.constraint-badge {
+  background: #f0f5ff;
+  border: 1px solid #adc6ff;
+  color: #2f54eb;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin: 4px;
+  display: inline-block;
+}
+
+/* Pareto front visualization */
+.pareto-front-container {
+  height: 400px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+  margin-top: 24px;
+}
+
+.pareto-point {
+  fill: #1890ff;
+  stroke: #fff;
+  stroke-width: 2px;
+}
+
+.pareto-point-optimal {
+  fill: #52c41a;
+  stroke: #fff;
+  stroke-width: 3px;
+}
+
+/* Sensitivity spider chart */
+.sensitivity-spider-container {
+  height: 400px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+}
+
+/* Loading overlay */
+.optimization-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.optimization-loading-content {
+  background: #fff;
+  padding: 40px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.optimization-loading-spinner {
+  font-size: 48px;
+  color: #1890ff;
+}
+
+/* Result comparison table */
+.result-comparison-table {
+  margin-top: 24px;
+}
+
+.result-comparison-table .best-result {
+  background: #f6ffed;
+  font-weight: bold;
+}
+
+.result-comparison-table .improvement {
+  color: #52c41a;
+}
+
+.result-comparison-table .degradation {
+  color: #ff4d4f;
+}
+
+/* Parameter correlation heatmap */
+.correlation-heatmap {
+  margin-top: 24px;
+}
+
+.correlation-cell {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.correlation-high {
+  background: #ff4d4f;
+  color: #fff;
+}
+
+.correlation-medium {
+  background: #faad14;
+  color: #fff;
+}
+
+.correlation-low {
+  background: #52c41a;
+  color: #fff;
+}
+
+.correlation-none {
+  background: #f0f0f0;
+  color: #999;
+}
+
+/* Uncertainty bounds visualization */
+.uncertainty-bounds {
+  fill: rgba(24, 144, 255, 0.2);
+  stroke: #1890ff;
+  stroke-width: 1px;
+  stroke-dasharray: 5, 5;
+}
+
+/* Action buttons */
+.optimization-actions {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
+}
+
+.btn-start-optimization {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  font-weight: 600;
+  height: 48px;
+  padding: 0 32px;
+  font-size: 16px;
+}
+
+.btn-start-optimization:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.btn-stop-optimization {
+  background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+  border: none;
+  font-weight: 600;
+}
+
+/* Status indicators */
+.status-running {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #1890ff;
+  font-weight: 600;
+}
+
+.status-completed {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #52c41a;
+  font-weight: 600;
+}
+
+.status-failed {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #ff4d4f;
+  font-weight: 600;
+}
+
+/* Animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.optimization-running {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ant-card {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .progress-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .algorithm-radio-group .ant-radio-button-wrapper {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 768px) {
+  .progress-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .convergence-chart-container,
+  .pareto-front-container,
+  .sensitivity-spider-container {
+    height: 300px;
+  }
+  
+  .optimization-actions {
+    flex-direction: column;
+  }
+  
+  .btn-start-optimization {
+    width: 100%;
+  }
+}
+
+/* Print styles */
+@media print {
+  .optimization-actions,
+  .ant-tabs-nav {
+    display: none;
+  }
+  
+  .ant-card {
+    page-break-inside: avoid;
+  }
+  
+  .convergence-chart-container {
+    page-break-before: always;
+  }
+}
+
+/* Dark mode support (future) */
+@media (prefers-color-scheme: dark) {
+  .optimization-panel {
+    background: #141414;
+  }
+  
+  .ant-card {
+    background: #1f1f1f;
+    border-color: #333;
+  }
+  
+  .algorithm-card {
+    background: #2a2a2a;
+  }
+  
+  .parameter-table .ant-table-thead > tr > th {
+    background: #2a2a2a;
+    color: #fff;
+  }
+}
+
+

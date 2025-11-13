@@ -111,7 +111,7 @@ class TestMassConservationComprehensive:
             mass_history = [mass_init]
             time_points = [0.0]
 
-            print(f"  初始质量: {mass_init:.2f} m³")
+            print(f"  初始质量: {mass_init:.2f} m^3")
 
             # 分段运行，记录质量
             checkpoint_times = [2000, 4000, 6000, 8000, 10000]
@@ -123,7 +123,7 @@ class TestMassConservationComprehensive:
                 time_points.append(engine.solver.t)
 
                 mass_error = abs(mass - mass_init) / mass_init * 100
-                print(f"  t={engine.solver.t:.0f}s: 质量={mass:.2f} m³, 误差={mass_error:.4f}%")
+                print(f"  t={engine.solver.t:.0f}s: 质量={mass:.2f} m^3, 误差={mass_error:.4f}%")
 
             # 分析质量守恒
             mass_errors = [
@@ -133,8 +133,8 @@ class TestMassConservationComprehensive:
             final_mass_error = mass_errors[-1]
 
             print(f"\n长时间质量守恒分析:")
-            print(f"  初始质量: {mass_init:.2f} m³")
-            print(f"  最终质量: {mass_history[-1]:.2f} m³")
+            print(f"  初始质量: {mass_init:.2f} m^3")
+            print(f"  最终质量: {mass_history[-1]:.2f} m^3")
             print(f"  最终误差: {final_mass_error:.4f}%")
             print(f"  最大误差: {max_mass_error:.4f}%")
 
@@ -142,11 +142,11 @@ class TestMassConservationComprehensive:
             assert max_mass_error < 1.0, f"长时间最大质量误差{max_mass_error:.4f}% > 1.0%"
 
             if max_mass_error < 0.1:
-                print("\n✅ 长时间质量守恒验证通过（优秀：<0.1%）")
+                print("\n 长时间质量守恒验证通过（优秀：<0.1%）")
             elif max_mass_error < 0.5:
-                print("\n✅ 长时间质量守恒验证通过（良好：<0.5%）")
+                print("\n 长时间质量守恒验证通过（良好：<0.5%）")
             else:
-                print(f"\n✅ 长时间质量守恒验证通过（可接受：{max_mass_error:.4f}%<1.0%）")
+                print(f"\n 长时间质量守恒验证通过（可接受：{max_mass_error:.4f}%<1.0%）")
 
         finally:
             config_file_path.unlink(missing_ok=True)
@@ -221,7 +221,7 @@ class TestMassConservationComprehensive:
 
             # 记录初始质量
             mass_init = engine.solver._compute_total_mass()
-            print(f"  初始质量: {mass_init:.2f} m³")
+            print(f"  初始质量: {mass_init:.2f} m^3")
 
             # 运行模拟
             engine.run()
@@ -231,8 +231,8 @@ class TestMassConservationComprehensive:
             mass_error = abs(mass_final - mass_init) / mass_init * 100
 
             print(f"\n质量守恒分析:")
-            print(f"  初始质量: {mass_init:.2f} m³")
-            print(f"  最终质量: {mass_final:.2f} m³")
+            print(f"  初始质量: {mass_init:.2f} m^3")
+            print(f"  最终质量: {mass_final:.2f} m^3")
             print(f"  质量误差: {mass_error:.4f}%")
 
             # 分析水舌位置（最右侧有水的位置）
@@ -249,11 +249,11 @@ class TestMassConservationComprehensive:
             assert mass_error < 2.0, f"溃坝质量误差{mass_error:.4f}% > 2.0%"
 
             if mass_error < 0.5:
-                print("\n✅ 溃坝质量守恒验证通过（优秀：<0.5%）")
+                print("\n 溃坝质量守恒验证通过（优秀：<0.5%）")
             elif mass_error < 1.0:
-                print("\n✅ 溃坝质量守恒验证通过（良好：<1.0%）")
+                print("\n 溃坝质量守恒验证通过（良好：<1.0%）")
             else:
-                print(f"\n✅ 溃坝质量守恒验证通过（可接受：{mass_error:.4f}%<2.0%）")
+                print(f"\n 溃坝质量守恒验证通过（可接受：{mass_error:.4f}%<2.0%）")
 
         finally:
             config_file_path.unlink(missing_ok=True)
@@ -347,23 +347,23 @@ class TestMassConservationComprehensive:
                 dV = V_final - V_init
                 mass_error = abs(mass_final - mass_init) / mass_init * 100
 
-                print(f"  初始存储: {V_init:.2f} m³")
-                print(f"  最终存储: {V_final:.2f} m³")
-                print(f"  存储变化: {dV:.2f} m³")
+                print(f"  初始存储: {V_init:.2f} m^3")
+                print(f"  最终存储: {V_final:.2f} m^3")
+                print(f"  存储变化: {dV:.2f} m^3")
                 print(f"  质量误差: {mass_error:.4f}%")
 
                 # 验证质量守恒
                 assert mass_error < 5.0, f"{bc_config['name']}边界质量误差{mass_error:.4f}% > 5%"
 
                 if mass_error < 1.0:
-                    print(f"  ✅ 质量守恒优秀 (<1%)")
+                    print(f"   质量守恒优秀 (<1%)")
                 else:
-                    print(f"  ✅ 质量守恒可接受 (<5%)")
+                    print(f"   质量守恒可接受 (<5%)")
 
             finally:
                 config_file_path.unlink(missing_ok=True)
 
-        print("\n✅ 边界条件质量平衡测试通过")
+        print("\n 边界条件质量平衡测试通过")
 
     @pytest.mark.p2
     def test_extreme_gradient_mass_conservation(self):
@@ -439,7 +439,7 @@ class TestMassConservationComprehensive:
 
             # 记录初始质量
             mass_init = engine.solver._compute_total_mass()
-            print(f"  初始质量: {mass_init:.2f} m³")
+            print(f"  初始质量: {mass_init:.2f} m^3")
 
             engine.run()
 
@@ -448,8 +448,8 @@ class TestMassConservationComprehensive:
             mass_error = abs(mass_final - mass_init) / mass_init * 100
 
             print(f"\n质量守恒分析:")
-            print(f"  初始质量: {mass_init:.2f} m³")
-            print(f"  最终质量: {mass_final:.2f} m³")
+            print(f"  初始质量: {mass_init:.2f} m^3")
+            print(f"  最终质量: {mass_final:.2f} m^3")
             print(f"  质量误差: {mass_error:.4f}%")
 
             # 检查稳定性
@@ -464,9 +464,9 @@ class TestMassConservationComprehensive:
             assert mass_error < 5.0, f"极端梯度质量误差{mass_error:.4f}% > 5.0%"
 
             if mass_error < 2.0:
-                print("\n✅ 极端梯度质量守恒验证通过（优秀：<2%）")
+                print("\n 极端梯度质量守恒验证通过（优秀：<2%）")
             else:
-                print(f"\n✅ 极端梯度质量守恒验证通过（可接受：{mass_error:.4f}%<5%）")
+                print(f"\n 极端梯度质量守恒验证通过（可接受：{mass_error:.4f}%<5%）")
                 print("  注：极端高差条件下的质量守恒具有挑战性")
 
         finally:
@@ -554,7 +554,7 @@ class TestMassConservationComprehensive:
 
             assert mass_error < 5.0, f"振荡边界质量误差{mass_error:.4f}% > 5%"
 
-            print("\n✅ 振荡边界条件质量守恒测试通过")
+            print("\n 振荡边界条件质量守恒测试通过")
 
         finally:
             config_file_path.unlink(missing_ok=True)

@@ -53,9 +53,9 @@ class MacDonaldCase1:
         self.g = 9.81            # 重力加速度
         
         # 流量（给定）
-        self.Q = 20.0            # m³/s（修正）
+        self.Q = 20.0            # m^3/s（修正）
         
-        # 边界条件（正确配置：上游超临界 → 下游亚临界）
+        # 边界条件（正确配置：上游超临界 -> 下游亚临界）
         self.h_upstream = 0.6    # 上游水深 (m) - 超临界 (Fr=1.37)
         self.h_downstream = 0.904  # 下游水深 (m) - 亚临界 (Fr=0.74)
         
@@ -102,7 +102,7 @@ class MacDonaldCase1:
         h1 = self.h_upstream  # 超临界
         h2 = h1 / 2 * (np.sqrt(1 + 8 * Fr_up**2) - 1)  # 亚临界
         
-        print(f"  水跃共轭水深: h1={h1:.4f}m → h2={h2:.4f}m")
+        print(f"  水跃共轭水深: h1={h1:.4f}m -> h2={h2:.4f}m")
         
         # 估计激波位置（简化：在中点附近）
         # 实际位置需要求解ODE，这里使用简化估计
@@ -145,7 +145,7 @@ class MacDonaldCase1:
         solver.hu[:] = self.Q / self.B
         
         print(f"初始水深: {h_init:.4f} m")
-        print(f"目标流量: {self.Q} m³/s")
+        print(f"目标流量: {self.Q} m^3/s")
         print(f"下游水深: {self.h_downstream} m")
         
         # 稳态求解
@@ -160,12 +160,12 @@ class MacDonaldCase1:
             )
             
             if result['converged']:
-                print(f"\n✅ 收敛成功!")
+                print(f"\n 收敛成功!")
                 print(f"  迭代次数: {result['iterations']}")
                 print(f"  流量误差: {result['Q_error_percent']:.6f}%")
-                print(f"  平均流量: {result['Q_mean']:.4f} m³/s")
+                print(f"  平均流量: {result['Q_mean']:.4f} m^3/s")
             else:
-                print(f"\n⚠️ 未收敛，但继续分析")
+                print(f"\n 未收敛，但继续分析")
             
             return {
                 'h': result['h'],
@@ -176,7 +176,7 @@ class MacDonaldCase1:
             }
             
         except Exception as e:
-            print(f"❌ 稳态求解失败: {e}")
+            print(f" 稳态求解失败: {e}")
             return None
     
     def find_shock_position(self, h):
@@ -221,8 +221,8 @@ class MacDonaldCase1:
         print(f"  激波位置: {shock_num:.2f} m (误差 {shock_error:.2f}%)")
         print(f"  水深RMSE: {rmse_h:.4f} m")
         print(f"  最大误差: {max_error:.4f} m")
-        print(f"  平均流量: {Q_mean:.4f} m³/s (误差 {Q_error:.6f}%)")
-        print(f"  流量标准差: {Q_std:.6f} m³/s")
+        print(f"  平均流量: {Q_mean:.4f} m^3/s (误差 {Q_error:.6f}%)")
+        print(f"  流量标准差: {Q_std:.6f} m^3/s")
         
         # 判断通过/失败
         passed = (rmse_h < 0.05 and shock_error < 5 and Q_error < 1)
@@ -280,10 +280,10 @@ class MacDonaldCase1:
         # 4. 流量分布验证
         ax = axes[1, 1]
         ax.plot(self.x, Q_num, 'b-', linewidth=2, label='Numerical')
-        ax.axhline(self.Q, color='red', linestyle='--', linewidth=2, label=f'Target ({self.Q} m³/s)')
+        ax.axhline(self.Q, color='red', linestyle='--', linewidth=2, label=f'Target ({self.Q} m^3/s)')
         ax.fill_between(self.x, self.Q*0.99, self.Q*1.01, alpha=0.2, color='green', label='±1% band')
         ax.set_xlabel('x (m)', fontsize=12)
-        ax.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+        ax.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
         ax.set_title(f'Flow Conservation (Error={Q_error:.6f}%)', fontsize=14, fontweight='bold')
         ax.legend()
         ax.grid(True, alpha=0.3)
@@ -297,7 +297,7 @@ class MacDonaldCase1:
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         fig_path = output_dir / f'macdonald_case1_{timestamp}.png'
         plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-        print(f"\n✅ 图表已保存: {fig_path}")
+        print(f"\n 图表已保存: {fig_path}")
         
         plt.close()
         
@@ -332,7 +332,7 @@ class MacDonaldCase1:
             f.write(f"  渠道长度: {self.L} m\n")
             f.write(f"  底坡: {self.S0}\n")
             f.write(f"  Manning糙率: {self.n}\n")
-            f.write(f"  流量: {self.Q} m³/s\n")
+            f.write(f"  流量: {self.Q} m^3/s\n")
             f.write(f"  节点数: {self.nx}\n\n")
             
             f.write("验收标准:\n")
@@ -346,32 +346,32 @@ class MacDonaldCase1:
             
             f.write(f"水深RMSE: {rmse_h:.4f} m")
             if rmse_h < 0.05:
-                f.write(" ✅ PASS\n")
+                f.write("  PASS\n")
             else:
-                f.write(" ❌ FAIL\n")
+                f.write("  FAIL\n")
             
             f.write(f"激波位置误差: {shock_error:.2f}%")
             if shock_error < 5:
-                f.write(" ✅ PASS\n")
+                f.write("  PASS\n")
             else:
-                f.write(" ❌ FAIL\n")
+                f.write("  FAIL\n")
             
             f.write(f"流量守恒误差: {Q_error:.6f}%")
             if Q_error < 1:
-                f.write(" ✅ PASS\n")
+                f.write("  PASS\n")
             else:
-                f.write(" ❌ FAIL\n")
+                f.write("  FAIL\n")
             
             f.write("\n" + "="*80 + "\n")
             f.write("最终结论\n")
             f.write("="*80 + "\n\n")
             
             if passed:
-                f.write("✅ HydrostaticCanalSolver: 通过MacDonald Case 1验证\n")
+                f.write(" HydrostaticCanalSolver: 通过MacDonald Case 1验证\n")
             else:
-                f.write("❌ HydrostaticCanalSolver: 未通过MacDonald Case 1验证\n")
+                f.write(" HydrostaticCanalSolver: 未通过MacDonald Case 1验证\n")
         
-        print(f"✅ 报告已保存: {report_path}")
+        print(f" 报告已保存: {report_path}")
 
 
 def main():
@@ -395,13 +395,13 @@ def main():
         print("="*80)
         
         if metrics['passed']:
-            print("✅ MacDonald Case 1 验证通过!")
+            print(" MacDonald Case 1 验证通过!")
         else:
-            print("⚠️ MacDonald Case 1 验证未完全通过，但提供了有价值的数据")
+            print(" MacDonald Case 1 验证未完全通过，但提供了有价值的数据")
         
         print(f"详细结果请查看: validation_cases/results/")
     else:
-        print("\n❌ 测试失败")
+        print("\n 测试失败")
 
 
 if __name__ == '__main__':

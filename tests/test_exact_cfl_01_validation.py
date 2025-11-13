@@ -12,7 +12,13 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('.'))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 def test_dam_break_long(cfl=0.1, max_time=10.0):
     """长时间溃坝模拟"""
@@ -22,7 +28,7 @@ def test_dam_break_long(cfl=0.1, max_time=10.0):
 
     width = 10.0
     length = 100.0
-    n_cells = 50
+    n_cells = 100
     dx = length / n_cells
 
     h_init = np.zeros(n_cells)
@@ -42,8 +48,8 @@ def test_dam_break_long(cfl=0.1, max_time=10.0):
     solver.initialize(h_init.copy(), Q_init.copy(), bc_left, bc_right)
     mass_0 = np.sum(solver.h * solver.B * dx)
 
-    print(f"\n初始质量: {mass_0:.6f} m³")
-    print(f"\n{'时间(s)':<10} {'步数':<8} {'质量(m³)':<15} {'误差(%)':<12} {'h_max(m)':<10} {'状态':<10}")
+    print(f"\n初始质量: {mass_0:.6f} m^3")
+    print(f"\n{'时间(s)':<10} {'步数':<8} {'质量(m^3)':<15} {'误差(%)':<12} {'h_max(m)':<10} {'状态':<10}")
     print("-" * 80)
 
     report_times = [0.5, 1.0, 2.0, 5.0, 10.0]
@@ -57,31 +63,31 @@ def test_dam_break_long(cfl=0.1, max_time=10.0):
             error = abs(mass - mass_0) / mass_0 * 100
             h_max = np.max(solver.h)
 
-            status = "✅" if error < 0.1 else ("⚠️" if error < 1.0 else "❌")
+            status = "" if error < 0.1 else ("" if error < 1.0 else "")
             print(f"{solver.t:<10.3f} {solver.step_count:<8} {mass:<15.6f} {error:<12.6f} {h_max:<10.3f} {status:<10}")
 
             next_report_idx += 1
 
         if np.any(np.isnan(solver.h)) or np.any(solver.h < 0):
-            print(f"\n❌ 模拟崩溃于t={solver.t:.3f}s")
+            print(f"\n 模拟崩溃于t={solver.t:.3f}s")
             return False
 
     # 最终报告
     mass_final = np.sum(solver.h * solver.B * dx)
     error_final = abs(mass_final - mass_0) / mass_0 * 100
 
-    print(f"\n✅ 模拟成功完成到t={solver.t:.3f}s")
+    print(f"\n 模拟成功完成到t={solver.t:.3f}s")
     print(f"   总步数: {solver.step_count}")
     print(f"   最终质量误差: {error_final:.6f}%")
 
     if error_final < 0.1:
-        print(f"   评估: 优秀 (<0.1%) ✅")
+        print(f"   评估: 优秀 (<0.1%) ")
         return True
     elif error_final < 1.0:
-        print(f"   评估: 良好 (<1.0%) ⚠️")
+        print(f"   评估: 良好 (<1.0%) ")
         return True
     else:
-        print(f"   评估: 质量守恒失败 (>{error_final:.2f}%) ❌")
+        print(f"   评估: 质量守恒失败 (>{error_final:.2f}%) ")
         return False
 
 def test_lake_at_rest(cfl=0.1, sim_time=10.0):
@@ -92,7 +98,7 @@ def test_lake_at_rest(cfl=0.1, sim_time=10.0):
 
     width = 10.0
     length = 100.0
-    n_cells = 100
+    n_cells = 120
 
     # Lake at Rest: 平坦水面 + 变化底高程
     z_b = np.zeros(n_cells)
@@ -129,33 +135,33 @@ def test_lake_at_rest(cfl=0.1, sim_time=10.0):
     max_h_dev = np.max(np.abs((solver.h + z_b) - 10.0))
 
     print(f"\n模拟到t={solver.t:.3f}s (步数={solver.step_count}):")
-    print(f"  max|Q|: {max_Q:.10f} m³/s")
+    print(f"  max|Q|: {max_Q:.10f} m^3/s")
     print(f"  max|η-η₀|: {max_h_dev:.10f} m")
 
     # 评估
     if max_Q < 1e-10 and max_h_dev < 1e-10:
-        print(f"\n✅ 达到机器精度 (<1e-10) ✅✅✅")
+        print(f"\n 达到机器精度 (<1e-10) ")
         print(f"   精确求解器+Well-Balanced完美组合！")
         return True
     elif max_Q < 1e-6 and max_h_dev < 1e-6:
-        print(f"\n✅ 优秀精度 (<1e-6) ✅")
+        print(f"\n 优秀精度 (<1e-6) ")
         return True
     elif max_Q < 0.01 and max_h_dev < 0.01:
-        print(f"\n⚠️  可接受 (<0.01)")
+        print(f"\n  可接受 (<0.01)")
         return True
     else:
-        print(f"\n❌ Lake at Rest失败")
+        print(f"\n Lake at Rest失败")
         return False
 
 def compare_exact_vs_hll():
-    """对比Exact (CFL=0.1) vs HLL (CFL=0.5)"""
+    """对比Exact (CFL=0.1) vs HLL (cfl = 0.3)"""
     print("\n" + "=" * 80)
-    print("测试3: Exact (CFL=0.1) vs HLL (CFL=0.5) 对比")
+    print("测试3: Exact (CFL=0.1) vs HLL (cfl = 0.3) 对比")
     print("=" * 80)
 
     width = 10.0
     length = 100.0
-    n_cells = 50
+    n_cells = 100
 
     h_init = np.zeros(n_cells)
     h_init[:25] = 2.0
@@ -192,7 +198,7 @@ def compare_exact_vs_hll():
         }
 
     # 打印对比
-    print(f"\n{'指标':<20} {'Exact (CFL=0.1)':<20} {'HLL (CFL=0.5)':<20} {'优势':<15}")
+    print(f"\n{'指标':<20} {'Exact (CFL=0.1)':<20} {'HLL (cfl = 0.3)':<20} {'优势':<15}")
     print("-" * 80)
 
     print(f"{'步数':<20} {results['exact']['steps']:<20} {results['hll']['steps']:<20} {'-':<15}")
@@ -208,11 +214,11 @@ def compare_exact_vs_hll():
 
     print(f"\n结论:")
     if exact_err < 0.1:
-        print(f"  ✅ Exact (CFL=0.1): 优秀质量守恒 ({exact_err:.6f}%)")
+        print(f"   Exact (CFL=0.1): 优秀质量守恒 ({exact_err:.6f}%)")
     if hll_err < 1.0:
-        print(f"  ✅ HLL (CFL=0.5): 良好质量守恒 ({hll_err:.6f}%)")
+        print(f"   HLL (cfl = 0.3): 良好质量守恒 ({hll_err:.6f}%)")
 
-    print(f"  ℹ️  Exact需要更多步数但精度更高")
+    print(f"  [INFO]  Exact需要更多步数但精度更高")
 
 def main():
     print("=" * 80)
@@ -238,17 +244,17 @@ def main():
     print(f"\n{'测试':<30} {'结果':<10}")
     print("-" * 45)
     for name, success in results:
-        status = "✅ PASS" if success else "❌ FAIL"
+        status = " PASS" if success else " FAIL"
         print(f"{name:<30} {status:<10}")
 
     if all(r[1] for r in results):
-        print(f"\n✅✅✅ 所有测试通过！")
-        print(f"\n🎉 重大发现: CFL=0.1时精确求解器完美工作！")
+        print(f"\n 所有测试通过！")
+        print(f"\n 重大发现: CFL=0.1时精确求解器完美工作！")
         print(f"   - 质量守恒: 机器精度级别")
         print(f"   - 数值稳定: 长时间模拟无崩溃")
         print(f"   - Well-Balanced兼容: Lake at Rest达到机器精度")
     else:
-        print(f"\n⚠️  部分测试失败，需要进一步调查")
+        print(f"\n  部分测试失败，需要进一步调查")
 
 if __name__ == "__main__":
     main()

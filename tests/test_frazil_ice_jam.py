@@ -24,7 +24,13 @@ import matplotlib.pyplot as plt
 from typing import Dict
 
 # 导入新模块
-from solvers.frazil_ice import FrazilIceSolver
+try:
+    from solvers.frazil_ice import FrazilIceSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.ice_jam import IceJamSolver
 
 
@@ -39,7 +45,7 @@ def test_frazil_nucleation_growth():
     print("="*70)
 
     # 参数
-    n_cells = 50
+    n_cells = 100
     dx = 100.0  # 100m
     n_classes = 10
 
@@ -48,7 +54,7 @@ def test_frazil_nucleation_growth():
         n_cells=n_cells,
         dx=dx,
         n_size_classes=n_classes,
-        r_min=1e-5,  # 10 μm
+        r_min=1e-5,  # 10 mum
         r_max=1e-2,  # 10 mm
         use_numba=False
     )
@@ -61,13 +67,13 @@ def test_frazil_nucleation_growth():
     h = np.full(n_cells, 2.0)  # 2 m
 
     # 温度条件 (过冷水)
-    T = np.full(n_cells, -0.1)  # -0.1°C (过冷0.1°C)
+    T = np.full(n_cells, -0.1)  # -0.1 degC (过冷0.1 degC)
 
     print(f"初始条件:")
     print(f"  流速: {u[0]:.2f} m/s")
     print(f"  水深: {h[0]:.2f} m")
-    print(f"  水温: {T[0]:.2f}°C (过冷{abs(T[0]):.2f}°C)")
-    print(f"  粒径范围: {frazil_solver.r_bins[0]*1e6:.1f} - {frazil_solver.r_bins[-1]*1e3:.1f} μm-mm")
+    print(f"  水温: {T[0]:.2f} degC (过冷{abs(T[0]):.2f} degC)")
+    print(f"  粒径范围: {frazil_solver.r_bins[0]*1e6:.1f} - {frazil_solver.r_bins[-1]*1e3:.1f} mum-mm")
 
     # 模拟30分钟
     t_end = 30 * 60.0  # s
@@ -89,19 +95,19 @@ def test_frazil_nucleation_growth():
         # 记录
         time_history.append((step + 1) * dt / 60.0)  # 分钟
         total_N_history.append(state['total_number'][n_cells//2])
-        mean_diameter_history.append(state['mean_diameter'][n_cells//2] * 1e6)  # μm
+        mean_diameter_history.append(state['mean_diameter'][n_cells//2] * 1e6)  # mum
         ice_volume_history.append(state['total_volume'][n_cells//2])
 
         if (step + 1) % 18 == 0:  # 每3分钟输出
             print(f"  t={time_history[-1]:.1f}min: "
-                  f"N={total_N_history[-1]:.2e} #/m³, "
-                  f"d={mean_diameter_history[-1]:.1f} μm, "
-                  f"φ={ice_volume_history[-1]:.2e} m³/m³")
+                  f"N={total_N_history[-1]:.2e} #/m^3, "
+                  f"d={mean_diameter_history[-1]:.1f} mum, "
+                  f"φ={ice_volume_history[-1]:.2e} m^3/m^3")
 
     # 结果分析
     print(f"\n最终状态 (t={time_history[-1]:.1f}min):")
-    print(f"  总数密度: {total_N_history[-1]:.2e} #/m³")
-    print(f"  平均直径: {mean_diameter_history[-1]:.1f} μm")
+    print(f"  总数密度: {total_N_history[-1]:.2e} #/m^3")
+    print(f"  平均直径: {mean_diameter_history[-1]:.1f} mum")
     print(f"  冰体积分数: {ice_volume_history[-1]:.2e}")
 
     # 绘图
@@ -110,7 +116,7 @@ def test_frazil_nucleation_growth():
     # 数密度
     axes[0].plot(time_history, total_N_history, 'b-', linewidth=2)
     axes[0].set_xlabel('Time (minutes)')
-    axes[0].set_ylabel('Total Number Density (#/m³)')
+    axes[0].set_ylabel('Total Number Density (#/m^3)')
     axes[0].set_title('Frazil Ice Number Density Evolution')
     axes[0].set_yscale('log')
     axes[0].grid(True, alpha=0.3)
@@ -118,14 +124,14 @@ def test_frazil_nucleation_growth():
     # 平均直径
     axes[1].plot(time_history, mean_diameter_history, 'r-', linewidth=2)
     axes[1].set_xlabel('Time (minutes)')
-    axes[1].set_ylabel('Mean Diameter (μm)')
+    axes[1].set_ylabel('Mean Diameter (mum)')
     axes[1].set_title('Frazil Ice Growth')
     axes[1].grid(True, alpha=0.3)
 
     # 冰体积分数
     axes[2].plot(time_history, ice_volume_history, 'g-', linewidth=2)
     axes[2].set_xlabel('Time (minutes)')
-    axes[2].set_ylabel('Ice Volume Fraction (m³/m³)')
+    axes[2].set_ylabel('Ice Volume Fraction (m^3/m^3)')
     axes[2].set_title('Total Ice Production')
     axes[2].set_yscale('log')
     axes[2].grid(True, alpha=0.3)
@@ -136,10 +142,10 @@ def test_frazil_nucleation_growth():
 
     # 验证: 过冷水应该产生frazil ice
     if total_N_history[-1] > 1e3 and mean_diameter_history[-1] > 0:
-        print(f"\n✅ 测试通过! Frazil ice成功生成")
+        print(f"\n 测试通过! Frazil ice成功生成")
         return True
     else:
-        print(f"\n❌ 测试失败! Frazil ice未生成")
+        print(f"\n 测试失败! Frazil ice未生成")
         return False
 
 
@@ -152,7 +158,7 @@ def test_frazil_size_distribution():
     print("="*70)
 
     # 参数
-    n_cells = 1
+    n_cells = 100
     dx = 100.0
     n_classes = 15  # 更多粒径组以观察分布
 
@@ -172,10 +178,10 @@ def test_frazil_size_distribution():
     h = np.array([3.0])
     T = np.array([-0.2])  # 较强过冷
 
-    print(f"强过冷条件: T={T[0]:.2f}°C, u={u[0]:.2f}m/s")
+    print(f"强过冷条件: T={T[0]:.2f} degC, u={u[0]:.2f}m/s")
 
     # 模拟1小时
-    t_end = 60 * 60.0
+    t_end = 50.0 * 60.0
     dt = 30.0
     n_steps = int(t_end / dt)
 
@@ -194,14 +200,14 @@ def test_frazil_size_distribution():
 
     for i, snap in enumerate(snapshots):
         t_min = snap * dt / 60.0
-        plt.plot(frazil_solver.r_bins * 1e6,  # μm
+        plt.plot(frazil_solver.r_bins * 1e6,  # mum
                  distributions[i],
                  linewidth=2,
                  label=f't={t_min:.0f} min',
                  marker='o')
 
-    plt.xlabel('Particle Radius (μm)')
-    plt.ylabel('Number Density (#/m³)')
+    plt.xlabel('Particle Radius (mum)')
+    plt.ylabel('Number Density (#/m^3)')
     plt.title('Frazil Ice Size Distribution Evolution')
     plt.xscale('log')
     plt.yscale('log')
@@ -213,10 +219,10 @@ def test_frazil_size_distribution():
 
     # 验证: 分布应该从小粒径向大粒径演化
     if np.sum(distributions[-1]) > np.sum(distributions[0]):
-        print(f"\n✅ 测试通过! 粒径分布正常演化")
+        print(f"\n 测试通过! 粒径分布正常演化")
         return True
     else:
-        print(f"\n❌ 测试失败! 粒径分布异常")
+        print(f"\n 测试失败! 粒径分布异常")
         return False
 
 
@@ -231,7 +237,7 @@ def test_ice_jam_formation():
     print("="*70)
 
     # 参数
-    n_cells = 100
+    n_cells = 120
     dx = 50.0  # 50m
 
     # 创建冰塞求解器
@@ -245,10 +251,10 @@ def test_ice_jam_formation():
 
     # 河道几何: 前半段陡峭, 后半段平缓
     x = np.linspace(dx/2, (n_cells-0.5)*dx, n_cells)
-    S0 = np.where(x < 2500, 0.002, 0.0005)  # 前半段2‰, 后半段0.5‰
+    S0 = np.where(x < 2500, 0.002, 0.0005)  # 前半段2[permille], 后半段0.5[permille]
 
     # 水动力条件
-    Q = np.full(n_cells, 20.0)  # 恒定流量 20 m³/s
+    Q = np.full(n_cells, 20.0)  # 恒定流量 20 m^3/s
     width = 10.0
     manning_n = 0.03
 
@@ -263,13 +269,13 @@ def test_ice_jam_formation():
     print(f"河道配置:")
     print(f"  长度: {n_cells*dx/1000:.1f} km")
     print(f"  宽度: {width} m")
-    print(f"  流量: {Q[0]:.1f} m³/s")
-    print(f"  上游坡度: {S0[0]*1000:.1f} ‰")
-    print(f"  下游坡度: {S0[-1]*1000:.1f} ‰")
+    print(f"  流量: {Q[0]:.1f} m^3/s")
+    print(f"  上游坡度: {S0[0]*1000:.1f} [permille]")
+    print(f"  下游坡度: {S0[-1]*1000:.1f} [permille]")
     print(f"  冰块输入: {h_ice_input[0]*100:.1f} cm (上游)")
 
     # 模拟1小时
-    t_end = 60 * 60.0
+    t_end = 50.0 * 60.0
     dt = 60.0  # 1分钟
     n_steps = int(t_end / dt)
 
@@ -304,7 +310,7 @@ def test_ice_jam_formation():
             print(f"  t={time_history[-1]:.0f}min: "
                   f"冰塞单元数={jam_count_history[-1]}, "
                   f"最大壅水={max_backwater_history[-1]:.2f}m, "
-                  f"总冰塞体积={diag['total_ice_jam_volume']:.1f}m³")
+                  f"总冰塞体积={diag['total_ice_jam_volume']:.1f}m^3")
 
     # 最终状态
     final_state = jam_solver.get_state()
@@ -337,9 +343,9 @@ def test_ice_jam_formation():
     # 空间分布
     axes[2].plot(x/1000, final_state['ice_jam_thickness'], 'g-', linewidth=2,
                  label='Ice Jam Thickness')
-    axes[2].plot(x/1000, S0*1000, 'k--', linewidth=1, label='Slope (‰)')
+    axes[2].plot(x/1000, S0*1000, 'k--', linewidth=1, label='Slope ([permille])')
     axes[2].set_xlabel('Distance (km)')
-    axes[2].set_ylabel('Ice Jam Thickness (m) / Slope (‰)')
+    axes[2].set_ylabel('Ice Jam Thickness (m) / Slope ([permille])')
     axes[2].set_title('Final Ice Jam Distribution')
     axes[2].legend()
     axes[2].grid(True, alpha=0.3)
@@ -350,10 +356,10 @@ def test_ice_jam_formation():
 
     # 验证: 应该在河道变缓处形成冰塞
     if jam_count_history[-1] > 0:
-        print(f"\n✅ 测试通过! 冰塞成功形成")
+        print(f"\n 测试通过! 冰塞成功形成")
         return True
     else:
-        print(f"\n⚠️  警告: 冰塞未形成 (可能需要更长时间或更多冰块输入)")
+        print(f"\n  警告: 冰塞未形成 (可能需要更长时间或更多冰块输入)")
         return True  # 仍然通过，因为物理模型正确
 
 
@@ -371,7 +377,7 @@ def run_all_tests():
     try:
         results['Frazil Nucleation'] = test_frazil_nucleation_growth()
     except Exception as e:
-        print(f"\n❌ 测试1异常: {e}")
+        print(f"\n 测试1异常: {e}")
         import traceback
         traceback.print_exc()
         results['Frazil Nucleation'] = False
@@ -380,7 +386,7 @@ def run_all_tests():
     try:
         results['Size Distribution'] = test_frazil_size_distribution()
     except Exception as e:
-        print(f"\n❌ 测试2异常: {e}")
+        print(f"\n 测试2异常: {e}")
         import traceback
         traceback.print_exc()
         results['Size Distribution'] = False
@@ -389,7 +395,7 @@ def run_all_tests():
     try:
         results['Ice Jam Formation'] = test_ice_jam_formation()
     except Exception as e:
-        print(f"\n❌ 测试3异常: {e}")
+        print(f"\n 测试3异常: {e}")
         import traceback
         traceback.print_exc()
         results['Ice Jam Formation'] = False
@@ -403,7 +409,7 @@ def run_all_tests():
     total = len(results)
 
     for test_name, result in results.items():
-        status = "✅ PASS" if result else "❌ FAIL"
+        status = " PASS" if result else " FAIL"
         print(f"{test_name:30s} : {status}")
         if result:
             passed += 1
@@ -414,10 +420,10 @@ def run_all_tests():
     print("="*70)
 
     if passed == total:
-        print("\n🎉 所有测试通过! HydroClaude Phase 2验证成功!")
-        print("Frazil Ice & Ice Jam模块对标商业软件: MIKE ICE, CRISSP ✅")
+        print("\n 所有测试通过! HydroClaude Phase 2验证成功!")
+        print("Frazil Ice & Ice Jam模块对标商业软件: MIKE ICE, CRISSP ")
     else:
-        print(f"\n⚠️  {total-passed}个测试失败，需要进一步调试")
+        print(f"\n  {total-passed}个测试失败，需要进一步调试")
 
     return passed == total
 

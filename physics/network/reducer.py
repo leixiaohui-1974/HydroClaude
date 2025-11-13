@@ -81,4 +81,4 @@ if __name__ == "__main__":
     V = 3.0
     print(f"  V={V}m/s: h_loss_reducer={reducer.calculate_head_loss(V):.4f}m, "
           f"h_loss_expander={expander.calculate_head_loss(V):.4f}m")
-    print("  ✓ 渐变管组件测试通过")
+    print("   渐变管组件测试通过")

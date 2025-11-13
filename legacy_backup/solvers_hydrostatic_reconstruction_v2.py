@@ -261,15 +261,15 @@ def test_well_balanced():
     momentum_ok = np.max(np.abs(R_momentum)) < tol
 
     print(f"\n良平衡性（阈值 {tol:.0e}）：")
-    print(f"  质量：{'✓ PASS' if mass_ok else '✗ FAIL'}")
-    print(f"  动量：{'✓ PASS' if momentum_ok else '✗ FAIL'}")
+    print(f"  质量：{' PASS' if mass_ok else ' FAIL'}")
+    print(f"  动量：{' PASS' if momentum_ok else ' FAIL'}")
 
     if mass_ok and momentum_ok:
-        print(f"\n✓✓✓ 良平衡性质验证成功！")
+        print(f"\n 良平衡性质验证成功！")
         print("="*70)
         return True
     else:
-        print(f"\n✗✗✗ 良平衡性质验证失败")
+        print(f"\n 良平衡性质验证失败")
         # 详细诊断
         if not momentum_ok:
             i_max = np.argmax(np.abs(R_momentum))
@@ -314,7 +314,7 @@ def test_well_balanced():
             print(f"               = -0.5*{9.81}*({h_star_R_check:.3f}²-{h_star_L_check:.3f}²)/{dx}")
             print(f"               = {S_check:.6e}")
             print(f"  源项（代码）：S = {S_momentum[i]:.6e}")
-            print(f"  匹配？ {'✓' if abs(S_check - S_momentum[i]) < 1e-6 else '✗'}")
+            print(f"  匹配？ {'' if abs(S_check - S_momentum[i]) < 1e-6 else ''}")
 
         print("="*70)
         return False

@@ -9,7 +9,13 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from solvers.riemann_exact import _solve_star_region_newton, _sample_solution
+try:
+    from solvers.riemann_exact import _solve_star_region_newton, _sample_solution
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def debug_exact_solver():
@@ -32,8 +38,8 @@ def debug_exact_solver():
     u_R = Q_R / (h_R * B) if h_R > 0 else 0.0
 
     print(f"初始条件:")
-    print(f"  左侧: h={h_L}m, u={u_L}m/s, Q={Q_L}m³/s")
-    print(f"  右侧: h={h_R}m, u={u_R}m/s, Q={Q_R}m³/s")
+    print(f"  左侧: h={h_L}m, u={u_L}m/s, Q={Q_L}m^3/s")
+    print(f"  右侧: h={h_R}m, u={u_R}m/s, Q={Q_R}m^3/s")
     print()
 
     # 计算星区
@@ -93,30 +99,30 @@ def debug_exact_solver():
     F_Q = Q_sample * u_sample + 0.5 * g * h_sample**2 * B
 
     print(f"通量:")
-    print(f"  Q_sample = {Q_sample:.6f} m³/s")
-    print(f"  F_h = {F_h:.6f} m³/s")
-    print(f"  F_Q = {F_Q:.6f} m³/s²")
+    print(f"  Q_sample = {Q_sample:.6f} m^3/s")
+    print(f"  F_h = {F_h:.6f} m^3/s")
+    print(f"  F_Q = {F_Q:.6f} m^3/s^2")
     print()
 
-    # 对比：如果使用星区状态
+    # 对比如果使用星区状态
     Q_star = h_star * u_star * B
     F_h_star = Q_star
     F_Q_star = Q_star * u_star + 0.5 * g * h_star**2 * B
 
-    print(f"对比：如果直接使用星区状态:")
-    print(f"  F_h_star = {F_h_star:.6f} m³/s")
-    print(f"  F_Q_star = {F_Q_star:.6f} m³/s²")
+    print(f"对比如果直接使用星区状态:")
+    print(f"  F_h_star = {F_h_star:.6f} m^3/s")
+    print(f"  F_Q_star = {F_Q_star:.6f} m^3/s^2")
     print()
 
     # 分析
     if abs(F_h - F_h_star) < 1e-6:
-        print("✅ 采样给出星区状态（预期对于s=0在星区内）")
+        print(" 采样给出星区状态预期对于s=0在星区内")
     elif u_sample == u_L and h_sample == h_L:
-        print("⚠️  采样给出左状态")
+        print("  采样给出左状态")
     elif u_sample == u_R and h_sample == h_R:
-        print("⚠️  采样给出右状态")
+        print("  采样给出右状态")
     else:
-        print("⚠️  采样给出中间状态（可能在稀疏波扇区内）")
+        print("  采样给出中间状态可能在稀疏波扇区内")
 
     print()
     print("="*70)

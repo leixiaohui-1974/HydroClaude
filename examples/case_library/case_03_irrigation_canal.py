@@ -24,7 +24,8 @@ Date: 2025-10-30
 import sys
 import os
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use("Agg")  # Non-interactive mode
 from matplotlib import gridspec
 
 # Add project root to path
@@ -35,6 +36,7 @@ from physics.canal import Canal
 from solvers.gate import SluiceGate, BroadCrestedWeir, Drop
 from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
 from utils.canal_utils import compute_steady_uniform_flow
+import matplotlib.pyplot as plt
 
 
 class IrrigationCanalSystem:
@@ -44,7 +46,7 @@ class IrrigationCanalSystem:
 
     Typical Chinese irrigation district configuration:
     - Main canal: 50 km, serves 10,000 hectares
-    - Design flow: 30 m³/s
+    - Design flow: 30 m^3/s
     - Branch canals: 10 branches
     - Control structures: Gates, weirs, drops
     """
@@ -54,7 +56,7 @@ class IrrigationCanalSystem:
         Initialize irrigation canal system
 
         Args:
-            design_flow: Design flow rate (m³/s)
+            design_flow: Design flow rate (m^3/s)
             canal_length: Main canal length (m)
         """
         self.design_flow = design_flow
@@ -116,7 +118,7 @@ class IrrigationCanalSystem:
         self.canal_solver.h[:] = h_normal
         self.canal_solver.hu[:] = self.design_flow / self.main_canal['width']
 
-        print(f"✓ Main canal: L={self.canal_length/1000:.0f}km, " +
+        print(f" Main canal: L={self.canal_length/1000:.0f}km, " +
               f"B={self.main_canal['width']}m, h_n={h_normal:.2f}m")
 
     def _setup_branch_canals(self):
@@ -144,7 +146,7 @@ class IrrigationCanalSystem:
 
             self.branch_canals.append(branch)
 
-        print(f"✓ Created {len(self.branch_canals)} branch canals")
+        print(f" Created {len(self.branch_canals)} branch canals")
 
     def _setup_control_structures(self):
         """Setup control structures / 设置控制建筑物"""
@@ -207,7 +209,7 @@ class IrrigationCanalSystem:
                 'height': 1.0
             })
 
-        print(f"✓ Created {len(self.gates)} gates, {len(self.weirs)} weirs, {len(self.drops)} drops")
+        print(f" Created {len(self.gates)} gates, {len(self.weirs)} weirs, {len(self.drops)} drops")
 
     def _setup_irrigation_schedule(self):
         """Setup rotation irrigation schedule / 设置轮灌调度"""
@@ -230,7 +232,7 @@ class IrrigationCanalSystem:
 
             self.irrigation_schedule.append(schedule)
 
-        print(f"✓ Created 24-hour rotation schedule for {len(self.branch_canals)} branches")
+        print(f" Created 24-hour rotation schedule for {len(self.branch_canals)} branches")
 
     def get_active_branches(self, time_of_day):
         """
@@ -265,7 +267,7 @@ class IrrigationCanalSystem:
         print(f"Simulating Normal Irrigation - 24 Hours")
         print(f"{'='*70}")
         print(f"Main Canal: {self.canal_length/1000:.0f} km")
-        print(f"Design Flow: {self.design_flow} m³/s")
+        print(f"Design Flow: {self.design_flow} m^3/s")
         print(f"Branches: {len(self.branch_canals)}")
         print(f"{'='*70}\n")
 
@@ -316,20 +318,20 @@ class IrrigationCanalSystem:
             self.state_history['main_canal_flow'].append(main_flow)
             self.state_history['branch_flows'].append(branch_flows.copy())
             self.state_history['avg_water_level'].append(avg_water_level)
-            self.state_history['total_delivered'].append(total_delivered / 1000.0)  # 1000 m³
+            self.state_history['total_delivered'].append(total_delivered / 1000.0)  # 1000 m^3
 
             # Progress
             if step % 4 == 0:
                 active_str = ','.join([str(b) for b in active_branches]) if active_branches else 'None'
                 print(f"t={time_of_day:5.1f}h | " +
-                      f"Q_main={main_flow:5.1f}m³/s | " +
+                      f"Q_main={main_flow:5.1f}m^3/s | " +
                       f"Active Branches: {active_str} | " +
                       f"h={avg_water_level:.2f}m")
 
         print(f"\n{'='*70}")
         print(f"Normal Irrigation Simulation Complete")
-        print(f"Total Water Delivered: {total_delivered/1000:.1f} × 10³ m³")
-        print(f"Average Flow: {np.mean(self.state_history['main_canal_flow']):.1f} m³/s")
+        print(f"Total Water Delivered: {total_delivered/1000:.1f} x 10^3 m^3")
+        print(f"Average Flow: {np.mean(self.state_history['main_canal_flow']):.1f} m^3/s")
         print(f"{'='*70}\n")
 
     def simulate_gate_control(self, duration=3600.0, dt=10.0):
@@ -405,7 +407,7 @@ class IrrigationCanalSystem:
                       f"Gate={gate_opening:4.2f}m | " +
                       f"h_up={h_upstream:4.2f}m | " +
                       f"h_dn={water_level:4.2f}m | " +
-                      f"Q={Q_gate:5.1f}m³/s")
+                      f"Q={Q_gate:5.1f}m^3/s")
 
         self.gate_control_history = gate_history
 
@@ -426,7 +428,7 @@ class IrrigationCanalSystem:
         ax1.plot(t, self.state_history['main_canal_flow'], 'b-', linewidth=2)
         ax1.axhline(y=self.design_flow, color='r', linestyle='--', label='Design Flow')
         ax1.set_xlabel('Time (hours)', fontsize=12)
-        ax1.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+        ax1.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
         ax1.set_title('Main Canal Flow - 总干渠流量', fontsize=14, fontweight='bold')
         ax1.legend(fontsize=11)
         ax1.grid(True, alpha=0.3)
@@ -446,7 +448,7 @@ class IrrigationCanalSystem:
                 bottom += branch_flows_array[:, i]
 
         ax2.set_xlabel('Time (hours)', fontsize=12)
-        ax2.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+        ax2.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
         ax2.set_title('Branch Canal Flows (Rotation Irrigation) - 支渠轮灌流量',
                      fontsize=14, fontweight='bold')
         ax2.legend(fontsize=8, ncol=5, loc='upper right')
@@ -470,7 +472,7 @@ class IrrigationCanalSystem:
         ax4.plot(t, self.state_history['total_delivered'], 'm-', linewidth=2)
         ax4.fill_between(t, 0, self.state_history['total_delivered'], alpha=0.3, color='m')
         ax4.set_xlabel('Time (hours)', fontsize=12)
-        ax4.set_ylabel('Volume (× 10³ m³)', fontsize=12)
+        ax4.set_ylabel('Volume (x 10^3 m^3)', fontsize=12)
         ax4.set_title('Cumulative Delivered Water - 累计供水量',
                      fontsize=14, fontweight='bold')
         ax4.grid(True, alpha=0.3)
@@ -485,15 +487,15 @@ class IrrigationCanalSystem:
         filename = f'irrigation_canal_{self.canal_length/1000:.0f}km.png'
         filepath = os.path.join(output_dir, filename)
         plt.savefig(filepath, dpi=150, bbox_inches='tight')
-        print(f"✓ Results saved to: {filepath}")
+        print(f" Results saved to: {filepath}")
 
-        plt.show()
+        plt.close("all")  # 自动关闭图形
 
     def plot_gate_control(self):
         """Plot gate control results / 绘制闸门控制结果"""
 
         if not hasattr(self, 'gate_control_history'):
-            print("⚠️  No gate control simulation data available")
+            print("  No gate control simulation data available")
             return
 
         fig, axes = plt.subplots(2, 2, figsize=(14, 10))
@@ -524,7 +526,7 @@ class IrrigationCanalSystem:
         # Flow rate
         axes[1, 0].plot(t, self.gate_control_history['flow_rate'], 'g-', linewidth=2)
         axes[1, 0].set_xlabel('Time (minutes)', fontsize=11)
-        axes[1, 0].set_ylabel('Flow Rate (m³/s)', fontsize=11)
+        axes[1, 0].set_ylabel('Flow Rate (m^3/s)', fontsize=11)
         axes[1, 0].set_title('Flow Through Gate - 闸门流量', fontsize=12, fontweight='bold')
         axes[1, 0].grid(True, alpha=0.3)
         axes[1, 0].axvline(x=10, color='r', linestyle='--', alpha=0.5)
@@ -549,9 +551,9 @@ class IrrigationCanalSystem:
         output_dir = os.path.join(os.path.dirname(__file__), 'results')
         filepath = os.path.join(output_dir, 'irrigation_gate_control.png')
         plt.savefig(filepath, dpi=150, bbox_inches='tight')
-        print(f"✓ Gate control results saved to: {filepath}")
+        print(f" Gate control results saved to: {filepath}")
 
-        plt.show()
+        plt.close("all")  # 自动关闭图形
 
 
 def main():

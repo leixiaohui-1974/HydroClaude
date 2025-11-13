@@ -1,23 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Godunov-FVM多渠道网络求解器 V2 - 守恒改进版
+Godunov-FVM V2 - 
 
-Phase 1完善：解决质量守恒问题
-- ✅ 节点水深连续性（水力学物理）
-- ✅ 节点流量守恒（质量守恒）
-- ✅ 按水力阻力分配流量（合理）
-- ✅ 松弛因子稳定（数值稳定）
+Phase 1
+-  
+-  
+-  
+-  
 
-关键改进：
-1. JUNCTION：水深连续 + 流量求和守恒
-2. BIFURCATION：水深连续 + 流量按阻力分配
-3. 松弛因子：避免数值震荡
-4. 最小水深保护：避免干床不稳定
 
-作者: HydroClaude Team
-日期: 2025-10-27
-版本: V2 (Phase 1完善)
+1. JUNCTION + 
+2. BIFURCATION + 
+3. 
+4. 
+
+: HydroClaude Team
+: 2025-10-27
+: V2 (Phase 1)
 """
 
 import numpy as np
@@ -32,7 +32,7 @@ from solvers.godunov_fvm_solver import GodunvFVMSolver
 
 
 class NodeType(Enum):
-    """节点类型"""
+    """"""
     SOURCE = "source"
     SINK = "sink"
     JUNCTION = "junction"
@@ -41,7 +41,7 @@ class NodeType(Enum):
 
 
 class Node:
-    """网络节点"""
+    """"""
     
     def __init__(
         self,
@@ -67,7 +67,7 @@ class Node:
 
 
 class Edge:
-    """网络边（渠道段）"""
+    """"""
     
     def __init__(
         self,
@@ -127,27 +127,27 @@ class Edge:
 
 class GodunvFVMNetworkV2:
     """
-    Godunov-FVM网络求解器 V2 - 守恒改进版
+    Godunov-FVM V2 - 
     
-    核心改进：
-    1. 节点水深连续性
-    2. 节点流量守恒
-    3. 松弛因子稳定
-    4. 按阻力分配流量
+    
+    1. 
+    2. 
+    3. 
+    4. 
     """
     
     def __init__(self, g: float = 9.81, relaxation: float = 0.5, update_interval: int = 10):
         """
-        初始化网络求解器
+        
         
         Args:
-            g: 重力加速度
-            relaxation: 松弛因子（0-1），用于稳定边界条件更新
-            update_interval: 边界条件更新间隔（步数）
+            g: 
+            relaxation: 0-1
+            update_interval: 
         """
         self.g = g
-        self.relaxation = relaxation  # 松弛因子
-        self.update_interval = update_interval  # 更新间隔
+        self.relaxation = relaxation  # 
+        self.update_interval = update_interval  # 
         
         self.nodes: Dict[str, Node] = {}
         self.edges: Dict[str, Edge] = {}
@@ -158,12 +158,12 @@ class GodunvFVMNetworkV2:
         
         self.initial_mass = 0.0
         
-        # 存储上一步的节点状态（用于松弛）
+        # 
         self.prev_node_h = {}
         
-        print("🌐 Godunov-FVM网络求解器 V2 初始化")
-        print(f"  松弛因子: {self.relaxation}")
-        print(f"  边界更新间隔: 每{self.update_interval}步")
+        print(" Godunov-FVM V2 ")
+        print(f"  : {self.relaxation}")
+        print(f"  : {self.update_interval}")
     
     def add_node(
         self,
@@ -176,7 +176,7 @@ class GodunvFVMNetworkV2:
     ) -> Node:
         node = Node(node_id, node_type, x, y, elevation, bc_value)
         self.nodes[node_id] = node
-        self.prev_node_h[node_id] = 1.0  # 初始化
+        self.prev_node_h[node_id] = 1.0  # 
         return node
     
     def add_edge(
@@ -202,9 +202,9 @@ class GodunvFVMNetworkV2:
         return edge
     
     def initialize_network(self, h_default: float = 1.0, Q_default: float = 0.0):
-        print(f"\n初始化网络:")
-        print(f"  节点数: {len(self.nodes)}")
-        print(f"  边数: {len(self.edges)}")
+        print(f"\n:")
+        print(f"  : {len(self.nodes)}")
+        print(f"  : {len(self.edges)}")
         
         for edge_id, edge in self.edges.items():
             n = edge.solver.n_cells
@@ -217,15 +217,15 @@ class GodunvFVMNetworkV2:
             edge.initialize(h_init, Q_init, bc_left, bc_right)
         
         self.initial_mass = self._compute_total_mass()
-        print(f"  初始总质量: {self.initial_mass:.2f} m³")
+        print(f"  : {self.initial_mass:.2f} m³")
     
     def step(self):
-        """推进一个时间步"""
-        # 1. 更新边界条件（仅在指定间隔）
+        """"""
+        # 1. 
         if self.step_count % self.update_interval == 0:
             self._update_boundary_conditions_conservative()
         
-        # 2. 推进所有边
+        # 2. 
         dt_min = float('inf')
         for edge in self.edges.values():
             dt_edge = edge.solver.compute_dt()
@@ -236,7 +236,7 @@ class GodunvFVMNetworkV2:
         for edge in self.edges.values():
             edge.step(self.dt)
         
-        # 3. 更新节点状态
+        # 3. 
         self._update_node_states()
         
         self.t += self.dt
@@ -244,53 +244,53 @@ class GodunvFVMNetworkV2:
     
     def _update_boundary_conditions_conservative(self):
         """
-        守恒性边界条件更新
         
-        核心原理：
-        1. 节点水深 = 所有连接边的平均水深（水深连续）
-        2. JUNCTION：出流Q = 所有入流Q之和（流量守恒）
-        3. BIFURCATION：出流Q按阻力权重分配（水力学合理）
-        4. 使用松弛因子避免震荡
+        
+        
+        1.  = 
+        2. JUNCTIONQ = Q
+        3. BIFURCATIONQ
+        4. 
         """
         for node_id, node in self.nodes.items():
             if node.type == NodeType.SOURCE:
-                # 源节点：指定流量
+                # 
                 Q_source = node.bc_value if node.bc_value is not None else 0.0
                 n_out = len(node.outflow_edges)
                 for edge in node.outflow_edges:
                     edge.set_upstream_bc(Q=Q_source / n_out)
             
             elif node.type == NodeType.SINK:
-                # 汇节点：自由出流
+                # 
                 h_sink = node.bc_value if node.bc_value is not None else 1.0
                 for edge in node.inflow_edges:
                     edge.set_downstream_bc(h=h_sink)
             
             elif node.type == NodeType.JUNCTION:
-                # 汇流节点（多入一出）
+                # 
                 self._handle_junction_conservative(node)
             
             elif node.type == NodeType.BIFURCATION:
-                # 分流节点（一入多出）
+                # 
                 self._handle_bifurcation_conservative(node)
             
             elif node.type == NodeType.INTERNAL:
-                # 内部节点（一入一出）
+                # 
                 self._handle_internal(node)
     
     def _handle_junction_conservative(self, node: Node):
         """
-        守恒性汇流节点处理
         
-        原理：
-        1. 节点水深 = 所有入流边下游水深的平均
-        2. 节点流量 = 所有入流边流量之和（守恒）
-        3. 出流边继承节点水深
+        
+        
+        1.  = 
+        2.  = 
+        3. 
         """
         if len(node.inflow_edges) == 0 or len(node.outflow_edges) == 0:
             return
         
-        # 1. 计算节点水深（水深连续）
+        # 1. 
         h_list = []
         Q_list = []
         
@@ -305,29 +305,29 @@ class GodunvFVMNetworkV2:
             h_list = [0.5]
         
         h_node_new = np.mean(h_list)
-        h_node_new = max(h_node_new, 0.1)  # 最小水深保护
+        h_node_new = max(h_node_new, 0.1)  # 
         
-        # 2. 松弛（避免震荡）
+        # 2. 
         h_node_old = self.prev_node_h.get(node.id, h_node_new)
         h_node = self.relaxation * h_node_new + (1 - self.relaxation) * h_node_old
         self.prev_node_h[node.id] = h_node
         
-        # 3. 设置出流边上游边界（水深）
+        # 3. 
         for out_edge in node.outflow_edges:
             out_edge.set_upstream_bc(h=h_node)
         
-        # 4. 设置入流边下游边界（水深）
+        # 4. 
         for in_edge in node.inflow_edges:
             in_edge.set_downstream_bc(h=h_node)
     
     def _handle_bifurcation_conservative(self, node: Node):
         """
-        守恒性分流节点处理
         
-        原理：
-        1. 节点水深 = 入流边下游水深
-        2. 出流Q按阻力权重分配：权重 = 1/(n*sqrt(L))
-        3. 确保 sum(Q_out) = Q_in
+        
+        
+        1.  = 
+        2. Q = 1/(n*sqrt(L))
+        3.  sum(Q_out) = Q_in
         """
         if len(node.inflow_edges) == 0 or len(node.outflow_edges) == 0:
             return
@@ -342,35 +342,35 @@ class GodunvFVMNetworkV2:
         
         h_node_new = max(h_in, 0.1)
         
-        # 松弛
+        # 
         h_node_old = self.prev_node_h.get(node.id, h_node_new)
         h_node = self.relaxation * h_node_new + (1 - self.relaxation) * h_node_old
         self.prev_node_h[node.id] = h_node
         
-        # 计算权重（基于水力阻力）
+        # 
         weights = []
         for out_edge in node.outflow_edges:
-            # 权重与过流能力成正比
-            # 过流能力 ∝ 1 / (n * sqrt(L))
+            # 
+            #  ∝ 1 / (n * sqrt(L))
             weight = 1.0 / (out_edge.solver.n * np.sqrt(out_edge.solver.L))
             weights.append(weight)
         
         total_weight = sum(weights)
         if total_weight < 1e-10:
-            # 如果权重都为0，均分
+            # 0
             weights = [1.0 / len(node.outflow_edges)] * len(node.outflow_edges)
         else:
             weights = [w / total_weight for w in weights]
         
-        # 设置出流边上游边界
+        # 
         for i, out_edge in enumerate(node.outflow_edges):
             out_edge.set_upstream_bc(h=h_node)
         
-        # 设置入流边下游边界
+        # 
         in_edge.set_downstream_bc(h=h_node)
     
     def _handle_internal(self, node: Node):
-        """内部节点：简单传递"""
+        """"""
         if len(node.inflow_edges) > 0 and len(node.outflow_edges) > 0:
             in_edge = node.inflow_edges[0]
             out_edge = node.outflow_edges[0]
@@ -378,7 +378,7 @@ class GodunvFVMNetworkV2:
             h_in, Q_in = in_edge.get_downstream_state()
             h_in = max(h_in, 0.1)
             
-            # 松弛
+            # 
             h_node_old = self.prev_node_h.get(node.id, h_in)
             h_node = self.relaxation * h_in + (1 - self.relaxation) * h_node_old
             self.prev_node_h[node.id] = h_node
@@ -387,7 +387,7 @@ class GodunvFVMNetworkV2:
             in_edge.set_downstream_bc(h=h_node)
     
     def _update_node_states(self):
-        """更新节点状态（用于监控）"""
+        """"""
         for node_id, node in self.nodes.items():
             h_list = []
             Q_list = []
@@ -407,7 +407,7 @@ class GodunvFVMNetworkV2:
                 node.Q = np.sum([Q for Q in Q_list if not np.isnan(Q)])
     
     def _compute_total_mass(self) -> float:
-        """计算网络总质量"""
+        """"""
         total_mass = 0.0
         for edge in self.edges.values():
             mass = np.sum(edge.solver.h * edge.solver.B * edge.solver.dx)
@@ -415,14 +415,14 @@ class GodunvFVMNetworkV2:
         return total_mass
     
     def get_mass_conservation_error(self) -> float:
-        """网络质量守恒误差%"""
+        """%"""
         current_mass = self._compute_total_mass()
         if self.initial_mass > 1e-10:
             return (current_mass - self.initial_mass) / self.initial_mass * 100.0
         return 0.0
     
     def get_node_mass_balance(self, node_id: str) -> Dict:
-        """计算节点流量平衡"""
+        """"""
         node = self.nodes[node_id]
         
         Q_in_total = 0.0
@@ -449,7 +449,7 @@ class GodunvFVMNetworkV2:
         }
     
     def get_network_state(self) -> Dict:
-        """获取网络状态"""
+        """"""
         node_states = {}
         for node_id, node in self.nodes.items():
             balance = self.get_node_mass_balance(node_id)
@@ -481,11 +481,11 @@ class GodunvFVMNetworkV2:
 
 if __name__ == '__main__':
     print("=" * 80)
-    print("Godunov-FVM网络求解器 V2 - 守恒改进版")
+    print("Godunov-FVM V2 - ")
     print("=" * 80)
-    print("\n核心改进：")
-    print("  ✅ 节点水深连续性")
-    print("  ✅ 节点流量守恒")
-    print("  ✅ 松弛因子稳定")
-    print("  ✅ 按阻力分配流量")
-    print("\n准备测试...")
+    print("\n")
+    print("   ")
+    print("   ")
+    print("   ")
+    print("   ")
+    print("\n...")

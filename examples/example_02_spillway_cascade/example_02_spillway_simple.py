@@ -15,6 +15,8 @@ Date: 2025-10-22
 """
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import os
@@ -61,7 +63,7 @@ def demo_spillway():
 
     print("\n1.1 Free Flow Discharge (No Submergence)")
     print("-" * 80)
-    print(f"{'Head (m)':>10} {'WES Q (m³/s)':>15} {'Ogee Q (m³/s)':>15} {'Broad Q (m³/s)':>15} {'Specific q':>15}")
+    print(f"{'Head (m)':>10} {'WES Q (m^3/s)':>15} {'Ogee Q (m^3/s)':>15} {'Broad Q (m^3/s)':>15} {'Specific q':>15}")
     print("-" * 80)
 
     results = {name: [] for name in spillways.keys()}
@@ -76,7 +78,7 @@ def demo_spillway():
             results[name].append(Q)
             row_data.append(Q)
 
-        q = row_data[1] / 50.0  # Specific discharge (m³/s per m)
+        q = row_data[1] / 50.0  # Specific discharge (m^3/s per m)
         print(f"{row_data[0]:>10.1f} {row_data[1]:>15.2f} {row_data[2]:>15.2f} {row_data[3]:>15.2f} {q:>15.2f}")
 
     # Plot rating curves
@@ -85,7 +87,7 @@ def demo_spillway():
     plt.subplot(1, 2, 1)
     for name, Q_values in results.items():
         plt.plot(Q_values, heads, 'o-', linewidth=2, label=name, markersize=6)
-    plt.xlabel('Discharge (m³/s)', fontsize=11)
+    plt.xlabel('Discharge (m^3/s)', fontsize=11)
     plt.ylabel('Head above crest (m)', fontsize=11)
     plt.title('Spillway Rating Curves (Free Flow)', fontsize=12, fontweight='bold')
     plt.grid(True, alpha=0.3)
@@ -94,7 +96,7 @@ def demo_spillway():
     # Test submergence for WES spillway
     print("\n1.2 Submergence Effect (WES Spillway)")
     print("-" * 80)
-    print(f"{'H_up (m)':>10} {'H_down (m)':>12} {'Submergence':>12} {'Q_free (m³/s)':>15} {'Q_sub (m³/s)':>15} {'Reduction':>12}")
+    print(f"{'H_up (m)':>10} {'H_down (m)':>12} {'Submergence':>12} {'Q_free (m^3/s)':>15} {'Q_sub (m^3/s)':>15} {'Reduction':>12}")
     print("-" * 80)
 
     wes = spillways['WES Standard']
@@ -129,7 +131,7 @@ def demo_spillway():
     plt.legend()
 
     plt.tight_layout()
-    plt.savefig('/home/user/HydroClaude/examples/example_02_spillway_cascade/spillway_demo.png', dpi=150)
+    plt.savefig('examples/example_02_spillway_cascade/spillway_demo.png', dpi=150)
     print(f"\nSpillway rating curves saved to: spillway_demo.png")
 
 
@@ -156,9 +158,9 @@ def demo_transition():
         K_loss=0.1
     )
 
-    print("\n2.1 Expansion (10m → 20m, K_loss=0.3)")
+    print("\n2.1 Expansion (10m -> 20m, K_loss=0.3)")
     print("-" * 80)
-    print(f"{'h_up (m)':>10} {'h_down (m)':>12} {'Δh (m)':>10} {'Q (m³/s)':>12} {'V_up (m/s)':>12} {'V_down (m/s)':>12}")
+    print(f"{'h_up (m)':>10} {'h_down (m)':>12} {'Deltah (m)':>10} {'Q (m^3/s)':>12} {'V_up (m/s)':>12} {'V_down (m/s)':>12}")
     print("-" * 80)
 
     h_upstream_values = [5.0, 5.0, 5.0, 5.0, 5.0]
@@ -172,9 +174,9 @@ def demo_transition():
 
         print(f"{h_up:>10.1f} {h_down:>12.1f} {delta_h:>10.2f} {Q:>12.2f} {V_up:>12.2f} {V_down:>12.2f}")
 
-    print("\n2.2 Contraction (20m → 10m, K_loss=0.1)")
+    print("\n2.2 Contraction (20m -> 10m, K_loss=0.1)")
     print("-" * 80)
-    print(f"{'h_up (m)':>10} {'h_down (m)':>12} {'Δh (m)':>10} {'Q (m³/s)':>12} {'V_up (m/s)':>12} {'V_down (m/s)':>12}")
+    print(f"{'h_up (m)':>10} {'h_down (m)':>12} {'Deltah (m)':>10} {'Q (m^3/s)':>12} {'V_up (m/s)':>12} {'V_down (m/s)':>12}")
     print("-" * 80)
 
     h_upstream_values = [5.0, 5.0, 5.0, 5.0, 5.0]
@@ -207,7 +209,7 @@ def demo_drop():
     print(f"\nDrop Configuration: Width = {drop.width}m, Height = {drop.drop_height}m, Cd = {drop.Cd}")
     print("\n3.1 Flow vs Upstream Depth")
     print("-" * 80)
-    print(f"{'h_up (m)':>10} {'Total Head (m)':>15} {'Q (m³/s)':>12} {'V (m/s)':>12} {'Fr':>10}")
+    print(f"{'h_up (m)':>10} {'Total Head (m)':>15} {'Q (m^3/s)':>12} {'V (m/s)':>12} {'Fr':>10}")
     print("-" * 80)
 
     depths = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0]
@@ -247,20 +249,20 @@ def demo_drop():
     plt.subplot(1, 2, 1)
     plt.plot(depths, Q_values, 'bo-', linewidth=2, markersize=8)
     plt.xlabel('Upstream Depth (m)', fontsize=11)
-    plt.ylabel('Discharge (m³/s)', fontsize=11)
-    plt.title(f'Drop Discharge vs Depth (Δz={drop.drop_height}m)', fontsize=12, fontweight='bold')
+    plt.ylabel('Discharge (m^3/s)', fontsize=11)
+    plt.title(f'Drop Discharge vs Depth (Deltaz={drop.drop_height}m)', fontsize=12, fontweight='bold')
     plt.grid(True, alpha=0.3)
 
     plt.subplot(1, 2, 2)
     specific_q = [Q / drop.width for Q in Q_values]
     plt.plot(depths, specific_q, 'ro-', linewidth=2, markersize=8)
     plt.xlabel('Upstream Depth (m)', fontsize=11)
-    plt.ylabel('Specific Discharge (m³/s/m)', fontsize=11)
+    plt.ylabel('Specific Discharge (m^3/s/m)', fontsize=11)
     plt.title('Specific Discharge per Unit Width', fontsize=12, fontweight='bold')
     plt.grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig('/home/user/HydroClaude/examples/example_02_spillway_cascade/drop_demo.png', dpi=150)
+    plt.savefig('examples/example_02_spillway_cascade/drop_demo.png', dpi=150)
     print(f"\nDrop characteristics saved to: drop_demo.png")
 
 
@@ -287,11 +289,11 @@ def main():
     print("DEMONSTRATION COMPLETED SUCCESSFULLY")
     print("=" * 80)
     print("\nKey Features Demonstrated:")
-    print("  ✓ Spillway rating curves for different types")
-    print("  ✓ Submergence effects on spillway discharge")
-    print("  ✓ Energy losses in expansion and contraction")
-    print("  ✓ Hydraulic drop discharge characteristics")
-    print("  ✓ Analytical derivative accuracy (< 0.01% error)")
+    print("   Spillway rating curves for different types")
+    print("   Submergence effects on spillway discharge")
+    print("   Energy losses in expansion and contraction")
+    print("   Hydraulic drop discharge characteristics")
+    print("   Analytical derivative accuracy (< 0.01% error)")
     print("\nOutput Files:")
     print("  - spillway_demo.png")
     print("  - drop_demo.png")

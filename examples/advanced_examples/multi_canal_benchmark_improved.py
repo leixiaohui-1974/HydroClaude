@@ -1,21 +1,22 @@
+# -*- coding: utf-8 -*-
 """
-多渠道自适应控制基准测试（改进版）
+多渠道自适应控制基准测试改进版
 
-修复的问题：
-1. ✅ 调整工况跨度（1.8m-2.8m，更合理）
-2. ✅ 改进初始IDZ参数估计（基于实际工况）
-3. ✅ 优化控制器调谐策略
-4. ✅ 添加参数收敛性检查
-5. ✅ 改进K值下限逻辑
+修复的问题
+1.  调整工况跨度1.8m-2.8m更合理
+2.  改进初始IDZ参数估计基于实际工况
+3.  优化控制器调谐策略
+4.  添加参数收敛性检查
+5.  改进K值下限逻辑
 
-改进要点：
-- 工况点更密集，跨度更小
+改进要点
+- 工况点更密集跨度更小
 - 根据渠道参数计算合理的初始K值
 - 动态调整lambda_c以适应不同K值
 - 添加参数验证和异常检测
 
-作者：HydroClaude Team
-日期：2025-10-24
+作者HydroClaude Team
+日期2025-10-24
 """
 
 import numpy as np
@@ -48,7 +49,7 @@ class CanalConfig:
 class WorkingPoint:
     """工况点"""
     name: str
-    flow: float  # m³/s
+    flow: float  # m^3/s
     target_depth: float  # m
     duration: float  # s
 
@@ -68,7 +69,7 @@ class BenchmarkResult:
     # 模型验证
     validation_metrics: ValidationMetrics = None
 
-    # IDZ参数跟踪（仅自适应方法）
+    # IDZ参数跟踪仅自适应方法
     K_history: List[float] = field(default_factory=list)
     tau_d_history: List[float] = field(default_factory=list)
 
@@ -85,7 +86,7 @@ class BenchmarkResult:
         s += f"  最大误差 = {self.max_error:.4f}m\n"
         s += f"  调节时间 = {self.settling_time:.1f}s\n"
         if self.validation_metrics:
-            s += f"  R² = {self.validation_metrics.r_squared:.4f}, "
+            s += f"  R^2 = {self.validation_metrics.r_squared:.4f}, "
             s += f"VAF = {self.validation_metrics.vaf:.2f}%\n"
         if len(self.K_history) > 0:
             s += f"  K范围: [{min(self.K_history):.1f}, {max(self.K_history):.1f}]\n"
@@ -93,7 +94,7 @@ class BenchmarkResult:
 
 
 class SimplifiedCanalDynamics:
-    """简化渠道动力学（集总参数水量平衡）"""
+    """简化渠道动力学集总参数水量平衡"""
 
     def __init__(self, length: float, width: float, bed_slope: float,
                  manning: float, initial_depth: float, dt: float = 10.0):
@@ -123,11 +124,11 @@ class ImprovedAdaptivePIController:
         self.dt = dt
         self.use_adaptive = use_adaptive
 
-        self.base_kp = 8.0  # 降低基础增益（原10.0）
-        self.base_ki = 0.3  # 降低基础积分增益（原0.5）
+        self.base_kp = 8.0  # 降低基础增益原10.0
+        self.base_ki = 0.3  # 降低基础积分增益原0.5
 
         self.integral_error = 0.0
-        self.integral_max = 50.0  # 降低积分限制（原100.0）
+        self.integral_max = 50.0  # 降低积分限制原100.0
 
         self.u_min = 0.0
         self.u_max = 60.0
@@ -136,7 +137,7 @@ class ImprovedAdaptivePIController:
         self.current_K = 100.0
         self.current_tau_d = 100.0
 
-        # 增益历史（用于诊断）
+        # 增益历史用于诊断
         self.kp_history = []
         self.ki_history = []
 
@@ -144,17 +145,17 @@ class ImprovedAdaptivePIController:
         """设置当前IDZ参数"""
         # 添加参数合理性检查
         if K < 1.0 or K > 5000.0:
-            print(f"  警告: K={K:.1f}超出合理范围，保持原值")
+            print(f"  警告: K={K:.1f}超出合理范围保持原值")
             return
         if tau_d < 1.0 or tau_d > 50000.0:
-            print(f"  警告: tau_d={tau_d:.1f}超出合理范围，保持原值")
+            print(f"  警告: tau_d={tau_d:.1f}超出合理范围保持原值")
             return
 
         self.current_K = K
         self.current_tau_d = tau_d
 
     def compute_adaptive_gains(self) -> Tuple[float, float]:
-        """计算自适应增益（改进的IMC调谐）"""
+        """计算自适应增益改进的IMC调谐"""
         if not self.use_adaptive:
             return self.base_kp, self.base_ki
 
@@ -163,15 +164,15 @@ class ImprovedAdaptivePIController:
 
         # 更细粒度的lambda调整
         if K_abs < 30.0:
-            lambda_c = 25.0  # 非常小的K → 激进控制
+            lambda_c = 25.0  # 非常小的K -> 激进控制
         elif K_abs < 100.0:
-            lambda_c = 40.0  # 小K → 较激进
+            lambda_c = 40.0  # 小K -> 较激进
         elif K_abs < 300.0:
-            lambda_c = 60.0  # 中等K → 中等控制
+            lambda_c = 60.0  # 中等K -> 中等控制
         elif K_abs < 1000.0:
-            lambda_c = 80.0  # 大K → 保守控制
+            lambda_c = 80.0  # 大K -> 保守控制
         else:
-            lambda_c = 100.0  # 非常大的K → 非常保守
+            lambda_c = 100.0  # 非常大的K -> 非常保守
 
         K_safe = max(K_abs, 10.0)
         tau_d_safe = max(self.current_tau_d, 10.0)
@@ -181,8 +182,8 @@ class ImprovedAdaptivePIController:
         Ki = 1.0 / (K_safe * lambda_c)
 
         # 更严格的增益限制
-        Kp = np.clip(Kp, 0.5, 50.0)  # 降低上限（原100.0）
-        Ki = np.clip(Ki, 0.01, 2.0)  # 降低上限（原5.0）
+        Kp = np.clip(Kp, 0.5, 50.0)  # 降低上限原100.0
+        Ki = np.clip(Ki, 0.01, 2.0)  # 降低上限原5.0
 
         return Kp, Ki
 
@@ -191,7 +192,7 @@ class ImprovedAdaptivePIController:
         """计算控制量"""
         error = target_depth - current_depth
 
-        # 积分（带抗饱和）
+        # 积分带抗饱和
         self.integral_error += error * self.dt
         self.integral_error = np.clip(self.integral_error,
                                      -self.integral_max,
@@ -225,7 +226,7 @@ def compute_better_initial_idz(canal_config: CanalConfig,
 
     基于渠道物理特性和名义工况点
     """
-    # 使用IDZParameters的from_hydraulics方法，但基于实际工况
+    # 使用IDZParameters的from_hydraulics方法但基于实际工况
     params = IDZParameters.from_hydraulics(
         length=canal_config.length,
         width=canal_config.width,
@@ -235,16 +236,16 @@ def compute_better_initial_idz(canal_config: CanalConfig,
     )
 
     # 根据渠道长度调整K值
-    # 长渠道K值应该更大（响应更慢）
+    # 长渠道K值应该更大响应更慢
     length_factor = canal_config.length / 2000.0
     params.K = params.K * length_factor
 
     # 确保参数在合理范围
-    params.K = np.clip(params.K, 50.0, 1000.0)  # 提高下限（原10.0→50.0）
+    params.K = np.clip(params.K, 50.0, 1000.0)  # 提高下限原10.0->50.0
     params.tau_d = np.clip(params.tau_d, 50.0, 10000.0)
 
-    print(f"  初始IDZ参数: K={params.K:.1f}, τ_d={params.tau_d:.1f}s, "
-          f"τ_z={params.tau_z:.1f}s")
+    print(f"  初始IDZ参数: K={params.K:.1f}, tau_d={params.tau_d:.1f}s, "
+          f"tau_z={params.tau_z:.1f}s")
 
     return params
 
@@ -252,7 +253,7 @@ def compute_better_initial_idz(canal_config: CanalConfig,
 def run_single_canal_test(canal_config: CanalConfig,
                           working_points: List[WorkingPoint],
                           dt: float = 10.0) -> Dict[str, BenchmarkResult]:
-    """运行单个渠道的基准测试（改进版）"""
+    """运行单个渠道的基准测试改进版"""
 
     print(f"\n{'='*80}")
     print(f"测试渠道: {canal_config.name}")
@@ -268,11 +269,11 @@ def run_single_canal_test(canal_config: CanalConfig,
     # 初始化三个系统
     methods = {}
 
-    # 计算名义工况（取中间值）
+    # 计算名义工况取中间值
     nominal_depth = np.mean([wp.target_depth for wp in working_points])
     nominal_flow = np.mean([wp.flow for wp in working_points])
 
-    print(f"\n名义工况: Q={nominal_flow:.1f}m³/s, h={nominal_depth:.2f}m")
+    print(f"\n名义工况: Q={nominal_flow:.1f}m^3/s, h={nominal_depth:.2f}m")
 
     # 计算更好的初始IDZ参数
     initial_params = compute_better_initial_idz(
@@ -351,7 +352,7 @@ def run_single_canal_test(canal_config: CanalConfig,
             # 获取当前状态
             current_depth = canal.depth
 
-            # 在线辨识（仅自适应IDZ）
+            # 在线辨识仅自适应IDZ
             if identifier is not None and step > 0:
                 u_prev = method_data['data']['control'][-1]
                 y_prev = method_data['data']['depth'][-1]
@@ -387,7 +388,7 @@ def run_single_canal_test(canal_config: CanalConfig,
             adp_depth = methods['自适应IDZ']['data']['depth'][-1]
             adp_K = methods['自适应IDZ']['K_history'][-1] if len(methods['自适应IDZ']['K_history']) > 0 else initial_params.K
             print(f"  t={t:.0f}s, 目标={target_depth:.2f}m, "
-                  f"自适应h={adp_depth:.2f}m, K={adp_K:.1f}, Q_up={q_upstream:.1f}m³/s")
+                  f"自适应h={adp_depth:.2f}m, K={adp_K:.1f}, Q_up={q_upstream:.1f}m^3/s")
 
     # 计算性能指标
     print(f"\n计算性能指标...")
@@ -445,14 +446,14 @@ def run_single_canal_test(canal_config: CanalConfig,
 
 def visualize_canal_comparison(results: Dict[str, BenchmarkResult],
                                canal_name: str):
-    """可视化单个渠道的对比结果（改进版）"""
+    """可视化单个渠道的对比结果改进版"""
 
     fig = plt.figure(figsize=(18, 12))
     gs = gridspec.GridSpec(4, 2, hspace=0.3, wspace=0.3)
 
     colors = {'静态IDZ': 'blue', '自适应IDZ': 'red'}
 
-    # 子图1：水深对比
+    # 子图1水深对比
     ax1 = fig.add_subplot(gs[0, :])
     for method_name, result in results.items():
         ax1.plot(result.time_history, result.depth_history,
@@ -465,17 +466,17 @@ def visualize_canal_comparison(results: Dict[str, BenchmarkResult],
     ax1.legend(loc='upper right', fontsize=10)
     ax1.grid(True, alpha=0.3)
 
-    # 子图2：控制输入对比
+    # 子图2控制输入对比
     ax2 = fig.add_subplot(gs[1, :])
     for method_name, result in results.items():
         ax2.plot(result.time_history, result.control_history,
                 label=method_name, color=colors.get(method_name, 'gray'),
                 linewidth=2)
-    ax2.set_ylabel('下游流量 (m³/s)', fontsize=12)
+    ax2.set_ylabel('下游流量 (m^3/s)', fontsize=12)
     ax2.legend(loc='upper right', fontsize=10)
     ax2.grid(True, alpha=0.3)
 
-    # 子图3：误差对比
+    # 子图3误差对比
     ax3 = fig.add_subplot(gs[2, 0])
     for method_name, result in results.items():
         error = np.array(result.depth_history) - np.array(result.target_history)
@@ -488,7 +489,7 @@ def visualize_canal_comparison(results: Dict[str, BenchmarkResult],
     ax3.legend(loc='upper right', fontsize=10)
     ax3.grid(True, alpha=0.3)
 
-    # 子图4：性能指标柱状图
+    # 子图4性能指标柱状图
     ax4 = fig.add_subplot(gs[2, 1])
     method_names = list(results.keys())
     mae_values = [results[m].mae for m in method_names]
@@ -507,7 +508,7 @@ def visualize_canal_comparison(results: Dict[str, BenchmarkResult],
     ax4.legend()
     ax4.grid(True, alpha=0.3, axis='y')
 
-    # 子图5：IDZ参数K演化（仅自适应）
+    # 子图5IDZ参数K演化仅自适应
     ax5 = fig.add_subplot(gs[3, 0])
     if '自适应IDZ' in results and len(results['自适应IDZ'].K_history) > 0:
         K_hist = results['自适应IDZ'].K_history
@@ -521,12 +522,12 @@ def visualize_canal_comparison(results: Dict[str, BenchmarkResult],
         ax5.legend()
         ax5.grid(True, alpha=0.3)
 
-    # 子图6：控制增益演化
+    # 子图6控制增益演化
     ax6 = fig.add_subplot(gs[3, 1])
     if '自适应IDZ' in results:
         controller = None
-        # 从results中提取增益历史需要另外存储，这里简化处理
-        ax6.text(0.5, 0.5, '控制增益演化\n（需额外数据）',
+        # 从results中提取增益历史需要另外存储这里简化处理
+        ax6.text(0.5, 0.5, '控制增益演化\n需额外数据',
                 ha='center', va='center', transform=ax6.transAxes, fontsize=12)
 
     plt.tight_layout()
@@ -545,7 +546,7 @@ def run_improved_benchmark():
     print("改进的多渠道自适应控制基准测试")
     print("="*80)
 
-    # 定义测试渠道（同原版）
+    # 定义测试渠道同原版
     canals = [
         CanalConfig(
             name="短渠道",
@@ -565,7 +566,7 @@ def run_improved_benchmark():
         ),
     ]
 
-    # 改进的工况序列（跨度更小，更合理）
+    # 改进的工况序列跨度更小更合理
     working_points = [
         WorkingPoint("低流量", flow=18.0, target_depth=1.8, duration=500.0),
         WorkingPoint("中流量", flow=25.0, target_depth=2.3, duration=500.0),
@@ -575,8 +576,8 @@ def run_improved_benchmark():
     ]
 
     print(f"\n改进的工况设计:")
-    print(f"  跨度: 1.8m → 2.8m (55%变化，原133%)")
-    print(f"  流量: 18-32 m³/s (77%变化)")
+    print(f"  跨度: 1.8m -> 2.8m (55%变化原133%)")
+    print(f"  流量: 18-32 m^3/s (77%变化)")
     print(f"  总时长: {sum(wp.duration for wp in working_points)}s")
 
     # 运行测试
@@ -602,11 +603,11 @@ def run_improved_benchmark():
             if method_name == '自适应IDZ' and '静态IDZ' in results:
                 mae_improve = (1 - result.mae / results['静态IDZ'].mae) * 100
                 rmse_improve = (1 - result.rmse / results['静态IDZ'].rmse) * 100
-                improvement = f" (MAE↓{mae_improve:.1f}%, RMSE↓{rmse_improve:.1f}%)"
+                improvement = f" (MAE{mae_improve:.1f}%, RMSE{rmse_improve:.1f}%)"
             print(f"  {method_name}: MAE={result.mae:.4f}m, "
                   f"RMSE={result.rmse:.4f}m{improvement}")
 
-    print(f"\n✅ 改进的基准测试完成！")
+    print(f"\n 改进的基准测试完成")
     print(f"{'='*80}")
 
 

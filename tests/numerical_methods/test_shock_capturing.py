@@ -117,7 +117,7 @@ class TestShockCapturing:
             mass_init = engine.solver._compute_total_mass()
             energy_init = self._compute_total_energy(engine.solver)
 
-            print(f"  初始质量: {mass_init:.2f} m³")
+            print(f"  初始质量: {mass_init:.2f} m^3")
             print(f"  初始能量: {energy_init:.2f} J")
 
             # 运行模拟
@@ -160,12 +160,12 @@ class TestShockCapturing:
             mass_final = engine.solver._compute_total_mass()
             mass_error = abs(mass_final - mass_init) / mass_init * 100
 
-            print(f"  初始质量: {mass_init:.2f} m³")
-            print(f"  最终质量: {mass_final:.2f} m³")
+            print(f"  初始质量: {mass_init:.2f} m^3")
+            print(f"  最终质量: {mass_final:.2f} m^3")
             print(f"  质量误差: {mass_error:.4f}%")
 
             assert mass_error < 2.0, f"质量误差{mass_error:.4f}% > 2.0%"
-            print(f"  ✅ 质量守恒良好 (<2%)")
+            print(f"   质量守恒良好 (<2%)")
 
             # 能量耗散分析
             print(f"\n[5] 能量耗散分析")
@@ -179,7 +179,7 @@ class TestShockCapturing:
 
             # 溃坝应该有能量耗散（物理上合理）
             assert energy_loss > 0, "溃坝应该有能量耗散"
-            print(f"  ✅ 能量耗散符合物理预期")
+            print(f"   能量耗散符合物理预期")
 
             # 解的光滑性检查（无振荡）
             print(f"\n[6] 解的光滑性检查（无振荡）")
@@ -193,10 +193,10 @@ class TestShockCapturing:
 
             # WENO3应该抑制振荡
             assert relative_oscillation < 0.1, f"振荡过大: {relative_oscillation:.6f}"
-            print(f"  ✅ WENO3无振荡特性良好")
+            print(f"   WENO3无振荡特性良好")
 
             print("\n" + "="*70)
-            print("✅ MacDonald Test 3 WENO3激波捕捉验证通过")
+            print(" MacDonald Test 3 WENO3激波捕捉验证通过")
             print("="*70)
 
         finally:
@@ -307,11 +307,11 @@ class TestShockCapturing:
             assert error < 0.30, f"激波速度误差{error*100:.2f}% > 30%"
 
             if error < 0.10:
-                print("\n✅ 激波传播速度验证通过（误差<10%，优秀）")
+                print("\n 激波传播速度验证通过（误差<10%，优秀）")
             elif error < 0.20:
-                print("\n✅ 激波传播速度验证通过（误差<20%，良好）")
+                print("\n 激波传播速度验证通过（误差<20%，良好）")
             else:
-                print(f"\n✅ 激波传播速度验证通过（误差{error*100:.1f}%<30%，可接受）")
+                print(f"\n 激波传播速度验证通过（误差{error*100:.1f}%<30%，可接受）")
                 print("  注：较大误差可能来自理论公式简化和边界效应")
 
         finally:
@@ -461,7 +461,7 @@ class TestShockCapturing:
         assert results[3]['shock_width'] < results[1]['shock_width'], \
             "WENO3激波宽度应小于1阶（更高分辨率）"
 
-        print("\n✅ WENO3 vs 1阶对比完成：WENO3激波分辨率更高")
+        print("\n WENO3 vs 1阶对比完成：WENO3激波分辨率更高")
 
     def _compute_total_energy(self, solver):
         """计算总能量（动能+势能）"""

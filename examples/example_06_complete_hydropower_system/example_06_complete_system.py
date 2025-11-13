@@ -9,13 +9,13 @@ System Layout:
 ==============
 Reservoir (500m)
     ↓
-Headrace Tunnel (5km × Ø8m)
+Headrace Tunnel (5km x Ø8m)
     ↓
-River Crossing - Inverted Siphon (150m × Ø2m × 2 barrels)
+River Crossing - Inverted Siphon (150m x Ø2m x 2 barrels)
     ↓
 Surge Tank (Ø12m, Simple type)
     ↓
-Penstock (500m × Ø4.5m)
+Penstock (500m x Ø4.5m)
     ↓
 Francis Turbine (120MW) with PID Governor
     ↓
@@ -38,6 +38,8 @@ Date: 2025-10-22
 """
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import os
@@ -90,7 +92,7 @@ class CompleteHydropowerSystem:
             'roughness': 0.001  # 1 mm (rock tunnel with shotcrete)
         }
 
-        # 3. Inverted Siphon (river crossing) ⭐ NEW COMPONENT
+        # 3. Inverted Siphon (river crossing) * NEW COMPONENT
         self.siphon = InvertedSiphon(
             position=5000.0,
             length=150.0,          # 150 m crossing
@@ -104,7 +106,7 @@ class CompleteHydropowerSystem:
             K_exit=1.0
         )
 
-        # 4. Surge Tank (simple cylindrical) ⭐
+        # 4. Surge Tank (simple cylindrical) *
         self.surge_tank = SimpleSurgeTank(
             position=5150.0,       # After siphon
             diameter=12.0,         # 12 m diameter
@@ -127,18 +129,18 @@ class CompleteHydropowerSystem:
             'roughness': 0.0005  # 0.5 mm (steel)
         }
 
-        # 6. Francis Turbine ⭐
+        # 6. Francis Turbine *
         self.turbine = FrancisTurbine(
             position=5650.0,
             rated_power=120.0,    # 120 MW
             rated_head=165.0,     # 165 m net head
-            rated_flow=82.0,      # 82 m³/s
+            rated_flow=82.0,      # 82 m^3/s
             rated_speed=250.0,    # 250 rpm
             runner_diameter=2.8,
             max_efficiency=0.935
         )
 
-        # 7. PID Governor ⭐
+        # 7. PID Governor *
         self.governor = PIDGovernor(
             rated_speed=250.0,
             Kp=10.0,      # 10% droop
@@ -150,8 +152,8 @@ class CompleteHydropowerSystem:
         )
 
         # 8. Generator (simplified)
-        self.GD2 = 600.0  # MN·m² (flywheel effect)
-        self.J = self.GD2 / 4.0 * 1e6  # kg·m²
+        self.GD2 = 600.0  # MN·m^2 (flywheel effect)
+        self.J = self.GD2 / 4.0 * 1e6  # kg·m^2
 
         # System state
         self.speed = 250.0
@@ -168,7 +170,7 @@ class CompleteHydropowerSystem:
         print(f"{'Penstock':<25} L={self.penstock['length']:.0f} m, Ø{self.penstock['diameter']:.1f} m")
         print(f"{'Turbine':<25} {self.turbine}")
         print(f"{'Governor':<25} {self.governor}")
-        print(f"{'Generator Inertia':<25} GD² = {self.GD2:.0f} MN·m²")
+        print(f"{'Generator Inertia':<25} GD^2 = {self.GD2:.0f} MN·m^2")
         print(f"{'Tailwater':<25} Level: {self.tailwater_level:.1f} m")
         print(f"{'Gross Head':<25} {self.gross_head:.1f} m")
         print("=" * 90)
@@ -188,7 +190,7 @@ class CompleteHydropowerSystem:
         v = Q / A
 
         # Reynolds number
-        nu = 1.14e-6  # m²/s @ 15°C
+        nu = 1.14e-6  # m^2/s @ 15 degC
         Re = v * diameter / nu
 
         # Friction factor (Swamee-Jain)
@@ -208,7 +210,7 @@ class CompleteHydropowerSystem:
         Calculate complete system steady state
 
         Args:
-            Q: Flow rate (m³/s)
+            Q: Flow rate (m^3/s)
 
         Returns:
             state: Complete system state
@@ -219,7 +221,7 @@ class CompleteHydropowerSystem:
             Q, self.tunnel['length'], self.tunnel['diameter'], self.tunnel['roughness']
         )
 
-        # 2. Siphon loss ⭐ NEW
+        # 2. Siphon loss * NEW
         h_siphon, siphon_breakdown = self.siphon.calculate_head_loss(Q)
 
         # 3. Surge tank level (steady state)
@@ -270,7 +272,7 @@ class CompleteHydropowerSystem:
 
         print(f"\n{'Hydraulic System':<50} {'Value':<20} {'%':<10}")
         print("-" * 90)
-        print(f"{'Flow Rate':<50} {state['flow']:.2f} m³/s")
+        print(f"{'Flow Rate':<50} {state['flow']:.2f} m^3/s")
         print(f"{'Gross Head':<50} {state['gross_head']:.2f} m")
         print(f"{'  - Tunnel Loss':<50} {state['tunnel_loss']:.3f} m {state['tunnel_loss']/state['gross_head']*100:>8.2f}%")
         print(f"{'  - Siphon Loss (NEW!)':<50} {state['siphon_loss']:.3f} m {state['siphon_loss']/state['gross_head']*100:>8.2f}%")
@@ -342,9 +344,9 @@ class CompleteHydropowerSystem:
 
         # 1. Power curve
         ax1.plot(Q_range, powers, 'b-', linewidth=2.5)
-        ax1.axvline(x=82, color='r', linestyle='--', alpha=0.5, label='Rated (82 m³/s)')
+        ax1.axvline(x=82, color='r', linestyle='--', alpha=0.5, label='Rated (82 m^3/s)')
         ax1.axhline(y=120, color='g', linestyle='--', alpha=0.5, label='Rated Power (120 MW)')
-        ax1.set_xlabel('Flow Rate (m³/s)', fontsize=12)
+        ax1.set_xlabel('Flow Rate (m^3/s)', fontsize=12)
         ax1.set_ylabel('Power Output (MW)', fontsize=12)
         ax1.set_title('Plant Power Output Curve', fontsize=13, fontweight='bold')
         ax1.grid(True, alpha=0.3)
@@ -353,7 +355,7 @@ class CompleteHydropowerSystem:
         # 2. Efficiency curve
         ax2.plot(Q_range, efficiencies, 'g-', linewidth=2.5)
         ax2.axvline(x=82, color='r', linestyle='--', alpha=0.5, label='Rated')
-        ax2.set_xlabel('Flow Rate (m³/s)', fontsize=12)
+        ax2.set_xlabel('Flow Rate (m^3/s)', fontsize=12)
         ax2.set_ylabel('Turbine Efficiency (%)', fontsize=12)
         ax2.set_title('Efficiency vs Flow', fontsize=13, fontweight='bold')
         ax2.grid(True, alpha=0.3)
@@ -363,7 +365,7 @@ class CompleteHydropowerSystem:
         # 3. Head losses
         ax3.plot(Q_range, losses, 'r-', linewidth=2.5, label='Total Loss')
         ax3.fill_between(Q_range, 0, losses, alpha=0.3, color='red')
-        ax3.set_xlabel('Flow Rate (m³/s)', fontsize=12)
+        ax3.set_xlabel('Flow Rate (m^3/s)', fontsize=12)
         ax3.set_ylabel('Head Loss (m)', fontsize=12)
         ax3.set_title('Total Hydraulic Losses', fontsize=13, fontweight='bold')
         ax3.grid(True, alpha=0.3)
@@ -372,14 +374,14 @@ class CompleteHydropowerSystem:
         # 4. Net head
         ax4.plot(Q_range, net_heads, 'm-', linewidth=2.5, label='Net Head')
         ax4.axhline(y=165, color='b', linestyle='--', alpha=0.5, label='Rated Head (165 m)')
-        ax4.set_xlabel('Flow Rate (m³/s)', fontsize=12)
+        ax4.set_xlabel('Flow Rate (m^3/s)', fontsize=12)
         ax4.set_ylabel('Net Head (m)', fontsize=12)
         ax4.set_title('Net Head at Turbine', fontsize=13, fontweight='bold')
         ax4.grid(True, alpha=0.3)
         ax4.legend()
 
         plt.tight_layout()
-        plt.savefig('/home/user/HydroClaude/examples/example_06_complete_hydropower_system/complete_system_performance.png', dpi=150)
+        plt.savefig('examples/example_06_complete_hydropower_system/complete_system_performance.png', dpi=150)
         print("\nPerformance curves saved to: complete_system_performance.png")
 
         return results
@@ -392,12 +394,12 @@ def main():
     print("EXAMPLE 06: COMPLETE HYDROPOWER PLANT SYSTEM INTEGRATION")
     print("=" * 90)
     print("\nThis is the most comprehensive example, demonstrating:")
-    print("  ✓ Complete hydraulic system (Reservoir → Tunnel → Siphon → Surge Tank → Penstock → Turbine)")
-    print("  ✓ Inverted Siphon for river crossing")
-    print("  ✓ Surge tank for pressure control")
-    print("  ✓ Francis turbine with governor")
-    print("  ✓ All hydraulic losses quantified")
-    print("  ✓ Performance optimization")
+    print("   Complete hydraulic system (Reservoir -> Tunnel -> Siphon -> Surge Tank -> Penstock -> Turbine)")
+    print("   Inverted Siphon for river crossing")
+    print("   Surge tank for pressure control")
+    print("   Francis turbine with governor")
+    print("   All hydraulic losses quantified")
+    print("   Performance optimization")
     print("=" * 90)
 
     # Create system
@@ -437,11 +439,11 @@ def main():
     print("\n" + "=" * 90)
     print("KEY FEATURES DEMONSTRATED")
     print("=" * 90)
-    print("  ✓ Inverted Siphon - 150m river crossing with 2 barrels")
-    print("  ✓ Surge Tank - 12m diameter, 3.5 min oscillation period")
-    print("  ✓ Francis Turbine - 120 MW, 93.5% peak efficiency")
-    print("  ✓ Complete hydraulic analysis - All losses quantified")
-    print("  ✓ Performance optimization - Operating curves generated")
+    print("   Inverted Siphon - 150m river crossing with 2 barrels")
+    print("   Surge Tank - 12m diameter, 3.5 min oscillation period")
+    print("   Francis Turbine - 120 MW, 93.5% peak efficiency")
+    print("   Complete hydraulic analysis - All losses quantified")
+    print("   Performance optimization - Operating curves generated")
 
     print("\n" + "=" * 90)
     print("EXAMPLE COMPLETED SUCCESSFULLY")

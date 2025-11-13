@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 IDZ MPC性能测试
 
@@ -279,7 +280,7 @@ def visualize_comparison(pid_result, fo_mpc_result, idz_mpc_result):
     ax5.plot(fo_mpc_result['time'][1:], fo_mpc_result['du'][1:]*100, 'r--', linewidth=2, label='FO-MPC')
     ax5.plot(idz_mpc_result['time'][1:], idz_mpc_result['du'][1:]*100, 'g-.', linewidth=2.5, label='IDZ-MPC')
     ax5.set_xlabel('Time (s)')
-    ax5.set_ylabel('Control Increment |Δu| (cm)')
+    ax5.set_ylabel('Control Increment |Deltau| (cm)')
     ax5.set_title('Control Smoothness', fontweight='bold')
     ax5.legend()
     ax5.grid(True, alpha=0.3)
@@ -343,11 +344,11 @@ def visualize_comparison(pid_result, fo_mpc_result, idz_mpc_result):
     ax8_twin = ax8.twinx()
     bars4 = ax8.bar(x - width/2, settling_values, width, label='Settling Time',
                    color='steelblue', alpha=0.8)
-    bars5 = ax8_twin.bar(x + width/2, avg_du_values, width, label='Avg |Δu|',
+    bars5 = ax8_twin.bar(x + width/2, avg_du_values, width, label='Avg |Deltau|',
                         color='coral', alpha=0.8)
 
     ax8.set_ylabel('Settling Time (s)', color='steelblue')
-    ax8_twin.set_ylabel('Avg |Δu| (cm)', color='coral')
+    ax8_twin.set_ylabel('Avg |Deltau| (cm)', color='coral')
     ax8.set_xticks(x)
     ax8.set_xticklabels(controllers)
     ax8.set_title('Settling Time & Control Smoothness', fontweight='bold')
@@ -367,7 +368,7 @@ def visualize_comparison(pid_result, fo_mpc_result, idz_mpc_result):
 
     plt.tight_layout()
     plt.savefig('idz_mpc_comparison.png', dpi=150, bbox_inches='tight')
-    print(f"\n✅ 对比图已保存: idz_mpc_comparison.png")
+    print(f"\n 对比图已保存: idz_mpc_comparison.png")
 
 
 def print_analysis(pid_result, fo_mpc_result, idz_mpc_result):
@@ -389,7 +390,7 @@ def print_analysis(pid_result, fo_mpc_result, idz_mpc_result):
 
     print("\n【2. 控制平滑度对比】")
     print("-" * 80)
-    print(f"{'控制器':<15} {'平均|Δu|(cm)':<15} {'最大|Δu|(cm)':<15} {'调节时间(s)':<15}")
+    print(f"{'控制器':<15} {'平均|Deltau|(cm)':<15} {'最大|Deltau|(cm)':<15} {'调节时间(s)':<15}")
     print("-" * 80)
     print(f"{'PID':<15} {pid_result['avg_du']*100:<15.2f} {pid_result['max_du']*100:<15.2f} "
           f"{pid_result['settling_time']:<15.1f}")
@@ -405,56 +406,56 @@ def print_analysis(pid_result, fo_mpc_result, idz_mpc_result):
     fo_vs_idz_mae = (fo_mpc_result['mae'] - idz_mpc_result['mae']) / fo_mpc_result['mae'] * 100
     fo_vs_idz_ss = fo_mpc_result['steady_state_error'] - idz_mpc_result['steady_state_error']
 
-    print(f"  📊 IDZ-MPC vs FO-MPC:")
+    print(f"   IDZ-MPC vs FO-MPC:")
     if fo_vs_idz_mae > 5:
-        print(f"     ✅ MAE改善: {fo_vs_idz_mae:.1f}%")
+        print(f"      MAE改善: {fo_vs_idz_mae:.1f}%")
     elif fo_vs_idz_mae > 0:
-        print(f"     ⚠️  MAE略有改善: {fo_vs_idz_mae:.1f}%")
+        print(f"       MAE略有改善: {fo_vs_idz_mae:.1f}%")
     else:
-        print(f"     ❌ MAE变差: {fo_vs_idz_mae:.1f}%")
+        print(f"      MAE变差: {fo_vs_idz_mae:.1f}%")
 
-    print(f"     → 稳态误差减少: {fo_vs_idz_ss*100:.2f}cm")
+    print(f"     -> 稳态误差减少: {fo_vs_idz_ss*100:.2f}cm")
 
     # 对比IDZ-MPC和PID
     idz_vs_pid_mae = (idz_mpc_result['mae'] - pid_result['mae']) / pid_result['mae'] * 100
 
-    print(f"\n  📊 IDZ-MPC vs PID:")
+    print(f"\n   IDZ-MPC vs PID:")
     if idz_vs_pid_mae < -5:
-        print(f"     🏆 IDZ-MPC更优: MAE好{-idz_vs_pid_mae:.1f}%")
+        print(f"      IDZ-MPC更优: MAE好{-idz_vs_pid_mae:.1f}%")
     elif abs(idz_vs_pid_mae) <= 5:
         print(f"     ⭕ 性能相当: MAE差异{idz_vs_pid_mae:+.1f}%")
     else:
-        print(f"     ❌ PID仍更优: MAE差{idz_vs_pid_mae:+.1f}%")
+        print(f"      PID仍更优: MAE差{idz_vs_pid_mae:+.1f}%")
 
     print("\n【4. 积分作用验证】")
     print("-" * 80)
     print(f"  PID积分器：")
-    print(f"    → 最终积分状态: {pid_result['integral'][-1]:.4f}")
-    print(f"    → 稳态误差: {pid_result['steady_state_error']*100:.2f}cm")
+    print(f"    -> 最终积分状态: {pid_result['integral'][-1]:.4f}")
+    print(f"    -> 稳态误差: {pid_result['steady_state_error']*100:.2f}cm")
 
     print(f"\n  IDZ-MPC积分器：")
-    print(f"    → 最终积分状态: {idz_mpc_result['integral'][-1]:.4f}")
-    print(f"    → 稳态误差: {idz_mpc_result['steady_state_error']*100:.2f}cm")
+    print(f"    -> 最终积分状态: {idz_mpc_result['integral'][-1]:.4f}")
+    print(f"    -> 稳态误差: {idz_mpc_result['steady_state_error']*100:.2f}cm")
 
     print(f"\n  FO-MPC（无积分器）：")
-    print(f"    → 稳态误差: {fo_mpc_result['steady_state_error']*100:.2f}cm")
+    print(f"    -> 稳态误差: {fo_mpc_result['steady_state_error']*100:.2f}cm")
 
     if idz_mpc_result['steady_state_error'] < 0.01:  # < 1cm
-        print(f"\n  ✅ IDZ-MPC成功实现近零稳态误差！")
+        print(f"\n   IDZ-MPC成功实现近零稳态误差！")
     else:
-        print(f"\n  ⚠️  IDZ-MPC稳态误差仍存在，可能需要调优")
+        print(f"\n    IDZ-MPC稳态误差仍存在，可能需要调优")
 
     print("\n【5. 总结】")
     print("-" * 80)
 
     if abs(idz_vs_pid_mae) <= 10:
-        print("  ✅ 成功！IDZ-MPC通过引入积分器达到了与PID相当的性能")
-        print("  ✅ IDZ-MPC相比FO-MPC显著降低了稳态误差")
-        print("  ✅ IDZ-MPC保持了MPC的约束处理和预测能力")
-        print("\n  💡 结论：积分器是关键！IDZ模型适合需要零稳态误差的应用")
+        print("   成功！IDZ-MPC通过引入积分器达到了与PID相当的性能")
+        print("   IDZ-MPC相比FO-MPC显著降低了稳态误差")
+        print("   IDZ-MPC保持了MPC的约束处理和预测能力")
+        print("\n   结论：积分器是关键！IDZ模型适合需要零稳态误差的应用")
     else:
-        print("  ⚠️  IDZ-MPC性能有改善，但仍未完全达到PID水平")
-        print("  💡 可能需要进一步调优MPC参数或模型参数")
+        print("    IDZ-MPC性能有改善，但仍未完全达到PID水平")
+        print("   可能需要进一步调优MPC参数或模型参数")
 
     print("\n" + "=" * 80)
 
@@ -464,7 +465,7 @@ def main():
     results = run_comparison_tests()
 
     print("\n" + "=" * 80)
-    print("测试完成！✅")
+    print("测试完成！")
     print("=" * 80)
 
 

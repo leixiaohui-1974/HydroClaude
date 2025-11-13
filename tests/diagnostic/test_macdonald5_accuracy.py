@@ -10,8 +10,22 @@ MacDonald Test 5 精度改进诊断
 3. 使用二阶格式
 4. 优化dt_max
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def compute_normal_depth(Q, B, S0, n, h_guess=1.0, tol=1e-6, max_iter=100):
@@ -87,7 +101,7 @@ def run_test5_config(end_time, n_cells, order, dt_max, description):
         n_steps += 1
 
         if np.any(np.isnan(solver.h)):
-            print(f"❌ NaN出现在第{n_steps}步")
+            print(f" NaN出现在第{n_steps}步")
             return None
 
     # 分析结果
@@ -156,9 +170,9 @@ def test_longer_simulation():
     if len(results) >= 2:
         improvement = results[0]['mean_deviation'] - results[-1]['mean_deviation']
         if improvement > 0:
-            print(f"\n✅ 偏差改善: {improvement:.2f}%")
+            print(f"\n 偏差改善: {improvement:.2f}%")
         else:
-            print(f"\n❌ 偏差未改善（可能已收敛）")
+            print(f"\n 偏差未改善（可能已收敛）")
 
 
 def test_finer_grid():
@@ -276,7 +290,7 @@ def test_optimal_config():
             best_config = desc
 
     print("\n" + "="*80)
-    print(f"✅ 最佳配置: {best_config}")
+    print(f" 最佳配置: {best_config}")
     print(f"   平均偏差: {best_deviation:.2f}%")
     print("="*80)
 

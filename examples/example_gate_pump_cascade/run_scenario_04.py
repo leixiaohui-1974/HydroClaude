@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """工况4: 闸门开度调控"""
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import sys
 import os
@@ -12,7 +20,7 @@ scenario4 = {
     'description': '''**工况类型**: 闸门调控
 
 **初始状态**: gate1_opening = 5.0 m
-**扰动**: t=300s, opening → 2.0 m (关小60%)
+**扰动**: t=300s, opening -> 2.0 m (关小60%)
 **观测**: 闸门上游水位上升、流量减小''',
     'Q_initial': 30.0,
     'Q_upstream_func': lambda t: 30.0,

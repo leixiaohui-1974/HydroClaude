@@ -138,7 +138,7 @@ def create_rp_comparison(h_L, u_L, h_R, u_R, t_end, title, filename, cfl=0.2):
              facecolor='wheat', alpha=0.3))
 
     plt.savefig(filename, dpi=150, bbox_inches='tight')
-    print(f"✅ 保存: {filename}")
+    print(f" 保存: {filename}")
     plt.close()
 
     return h_L2_rel
@@ -208,7 +208,7 @@ def create_summary_comparison():
 
     plt.tight_layout()
     plt.savefig('toro_summary_comparison.png', dpi=150, bbox_inches='tight')
-    print(f"✅ 保存汇总图: toro_summary_comparison.png")
+    print(f" 保存汇总图: toro_summary_comparison.png")
     plt.close()
 
 
@@ -249,7 +249,7 @@ if __name__ == '__main__':
     create_summary_comparison()
 
     print("\n" + "="*70)
-    print("✅ 所有可视化图生成完成!")
+    print(" 所有可视化图生成完成!")
     print("="*70)
     print(f"\n生成的文件:")
     print(f"  - toro_rp1_detailed.png (L2误差: {err1:.2f}%)")

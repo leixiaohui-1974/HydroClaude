@@ -2,19 +2,25 @@
 """
 详细分析Well-Balanced重构的数值行为
 
-目标：找出为何Lake at Rest有0.4m扰动
+目标找出为何Lake at Rest有0.4m扰动
 """
 
 import numpy as np
 import sys
 sys.path.insert(0, '.')
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 # 创建简单的Lake at Rest场景
 L = 100.0
-n_cells = 100
+n_cells = 120
 h0 = 10.0
 
 # 抛物线地形
@@ -28,13 +34,13 @@ solver = GodunvFVMSolver(
     n_cells=n_cells,
     manning_n=0.0,
     z_b=z_b,
-    cfl=0.5,
+    cfl=0.3,
     order=1,  # 一阶精度
     well_balanced=True,
     use_numba=False  # 禁用Numba便于调试
 )
 
-# 初始条件：完美平水面
+# 初始条件完美平水面
 h_init = np.full(n_cells, h0) - z_b
 Q_init = np.zeros(n_cells)
 
@@ -61,11 +67,11 @@ print(f"    最大偏差: {np.max(np.abs(eta - h0)):.2e} m")
 
 # 检查初始状态是否完美
 if np.allclose(eta, h0, atol=1e-14):
-    print(f"  ✅ 初始状态完美 (machine precision)")
+    print(f"   初始状态完美 (machine precision)")
 else:
-    print(f"  ⚠️  初始状态有偏差")
+    print(f"    初始状态有偏差")
 
-# 单步运行，检查重构
+# 单步运行检查重构
 print(f"\n{'='*70}")
 print("执行单步...")
 print(f"{'='*70}")
@@ -79,7 +85,7 @@ eta_before = h_before + solver.z_b
 dt = solver.compute_dt()
 print(f"\n时间步长: {dt:.6f}s")
 
-# 手动执行重构（复制solver内部逻辑）
+# 手动执行重构复制solver内部逻辑
 n = n_cells
 h = solver.h
 Q = solver.Q
@@ -122,7 +128,7 @@ print(f"  偏差: {eta_L[49:51] - eta_R[49:51]}")
 # z_b界面
 z_b_ext = np.zeros(n + 2)
 z_b_ext[1:n+1] = solver.z_b
-z_b_ext[0] = solver.z_b[0]  # 简化：直接取边界值
+z_b_ext[0] = solver.z_b[0]  # 简化直接取边界值
 z_b_ext[n+1] = solver.z_b[n-1]
 
 z_b_interface = np.maximum(z_b_ext[:-1], z_b_ext[1:])
@@ -150,21 +156,21 @@ print(f"\nQ (界面):")
 print(f"  Q_L[中间]: {Q_L[49:51]}")
 print(f"  Q_R[中间]: {Q_R[49:51]}")
 
-# 如果 h_L ≠ h_R 或 Q ≠ 0，Riemann求解器会产生通量
-# 即使Q=0，如果h不同，压力项会产生通量
+# 如果 h_L != h_R 或 Q != 0Riemann求解器会产生通量
+# 即使Q=0如果h不同压力项会产生通量
 
 print(f"\n分析:")
 if np.allclose(eta_L, eta_R, atol=1e-14):
-    print(f"  ✅ eta_L ≈ eta_R (machine precision)")
+    print(f"   eta_L ~= eta_R (machine precision)")
 else:
-    print(f"  ⚠️  eta_L ≠ eta_R")
+    print(f"    eta_L != eta_R")
     print(f"     max|eta_L - eta_R|: {np.max(np.abs(eta_L - eta_R)):.3e} m")
 
 if np.max(np.abs(h_L - h_R)) < 1e-14:
-    print(f"  ✅ h_L ≈ h_R after reconstruction (machine precision)")
+    print(f"   h_L ~= h_R after reconstruction (machine precision)")
 else:
-    print(f"  ❌ h_L ≠ h_R after reconstruction")
-    print(f"     这会导致压力项不平衡，产生虚假通量")
+    print(f"   h_L != h_R after reconstruction")
+    print(f"     这会导致压力项不平衡产生虚假通量")
 
 # 实际运行一步
 solver.step()
@@ -178,13 +184,13 @@ print(f"\n{'='*70}")
 print("单步后状态:")
 print(f"{'='*70}")
 print(f"  h变化: {np.max(np.abs(h_after - h_before)):.3e} m")
-print(f"  Q变化: {np.max(np.abs(Q_after - Q_before)):.3e} m³/s")
+print(f"  Q变化: {np.max(np.abs(Q_after - Q_before)):.3e} m^3/s")
 print(f"  eta变化: {np.max(np.abs(eta_after - eta_before)):.3e} m")
 
 if np.max(np.abs(eta_after - eta_before)) < 1e-10:
-    print(f"  ✅ Lake at Rest保持良好")
+    print(f"   Lake at Rest保持良好")
 else:
-    print(f"  ❌ Lake at Rest被破坏")
+    print(f"   Lake at Rest被破坏")
 
 # 运行更多步
 print(f"\n{'='*70}")
@@ -199,16 +205,16 @@ eta_disturbance = np.max(np.abs(eta_final - h0))
 
 print(f"\n100步后:")
 print(f"  eta扰动: {eta_disturbance:.3e} m")
-print(f"  Q最大值: {np.max(np.abs(solver.Q)):.3e} m³/s")
+print(f"  Q最大值: {np.max(np.abs(solver.Q)):.3e} m^3/s")
 
 if eta_disturbance < 1e-10:
-    print(f"  ✅ Machine precision - Well-Balanced优秀")
+    print(f"   Machine precision - Well-Balanced优秀")
 elif eta_disturbance < 1e-6:
-    print(f"  ⚠️  接近机器精度 - 良好")
+    print(f"    接近机器精度 - 良好")
 elif eta_disturbance < 1e-3:
-    print(f"  ⚠️  毫米级扰动 - 可接受")
+    print(f"    毫米级扰动 - 可接受")
 else:
-    print(f"  ❌ 厘米/米级扰动 - 需要改进")
+    print(f"   厘米/米级扰动 - 需要改进")
 
 print(f"\n{'='*70}")
 print("结论:")
@@ -216,30 +222,30 @@ print(f"{'='*70}")
 
 if np.max(np.abs(h_L - h_R)) > 1e-10:
     print(f"""
-问题诊断：
-  当前z_interface策略（MAX）导致 h_L ≠ h_R
+问题诊断
+  当前z_interface策略MAX导致 h_L != h_R
 
-  即使eta是常数，应用 z_interface = max(z_b_L, z_b_R) 后：
+  即使eta是常数应用 z_interface = max(z_b_L, z_b_R) 后
     h*_L = eta_L - z*
     h*_R = eta_R - z*
 
-  由于 eta_L ≈ eta_R (常数)，但 z* = max(z_b_L, z_b_R)
+  由于 eta_L ~= eta_R (常数)但 z* = max(z_b_L, z_b_R)
 
-  在抛物线地形中：
+  在抛物线地形中
     - 如果 z_b_L > z_b_R (上坡): z* = z_b_L
-      → h*_L = eta - z_b_L (正常)
-      → h*_R = eta - z_b_L > eta - z_b_R (过大！)
+      -> h*_L = eta - z_b_L (正常)
+      -> h*_R = eta - z_b_L > eta - z_b_R (过大)
 
     - 如果 z_b_L < z_b_R (下坡): z* = z_b_R
-      → h*_L = eta - z_b_R < eta - z_b_L (过小！)
-      → h*_R = eta - z_b_R (正常)
+      -> h*_L = eta - z_b_R < eta - z_b_L (过小)
+      -> h*_R = eta - z_b_R (正常)
 
-  结果：h*_L 和 h*_R 总是不同，破坏了平衡
+  结果h*_L 和 h*_R 总是不同破坏了平衡
 
-可能的解决方案：
+可能的解决方案
   1. 使用 AVERAGE: z* = 0.5*(z_b_L + z_b_R)
   2. 使用 MIN: z* = min(z_b_L, z_b_R)
-  3. 改进重构：确保 eta_L - z* = eta_R - z* 当 eta恒定时
+  3. 改进重构确保 eta_L - z* = eta_R - z* 当 eta恒定时
 """)
 else:
-    print(f"  z_interface策略工作良好，问题可能在其他地方")
+    print(f"  z_interface策略工作良好问题可能在其他地方")

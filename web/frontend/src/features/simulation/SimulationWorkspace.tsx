@@ -67,7 +67,7 @@ const SimulationWorkspace = () => {
       children: (
         <Row gutter={[16, 16]}>
           <Col xs={24} lg={10}>
-            <Card title="仿真配置" bordered={false}>
+            <Card title="仿真配置" variant="borderless">
               <SimulationConfigForm onSimulationComplete={handleSimulationComplete} />
             </Card>
           </Col>
@@ -75,7 +75,7 @@ const SimulationWorkspace = () => {
           <Col xs={24} lg={14}>
             <Card
               title="仿真结果"
-              bordered={false}
+              variant="borderless"
               extra={
                 simulationResult && (
                   <Button
@@ -132,7 +132,7 @@ const SimulationWorkspace = () => {
               </Button>
             )
           }
-          bordered={false}
+          variant="borderless"
         >
           {scenarios.length >= 2 ? (
             <ComparisonView

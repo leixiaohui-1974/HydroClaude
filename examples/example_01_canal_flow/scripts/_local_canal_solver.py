@@ -15,6 +15,13 @@
 import numpy as np
 from scipy.signal import savgol_filter
 import sys
+
+# Add project root to path
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 import os
 
 # 添加父目录到路径
@@ -34,15 +41,15 @@ class CanalSolver:
 
     求解Saint-Venant方程组：
         ∂A/∂t + ∂Q/∂x = 0                       (连续性方程)
-        ∂Q/∂t + ∂(Q²/A)/∂x + gA·∂h/∂x = gA(S₀-Sf) (动量方程)
+        ∂Q/∂t + ∂(Q^2/A)/∂x + gA·∂h/∂x = gA(S₀-Sf) (动量方程)
 
     其中：
         h: 水深 (m)
-        Q: 流量 (m³/s)
-        A = B*h: 断面面积 (m²)
+        Q: 流量 (m^3/s)
+        A = B*h: 断面面积 (m^2)
         Sf: 摩阻坡度 (Manning公式)
         S₀: 渠底坡度
-        g: 重力加速度 (m/s²)
+        g: 重力加速度 (m/s^2)
     """
 
     def __init__(self, length: float = 1000.0, nx: int = 201,
@@ -61,7 +68,7 @@ class CanalSolver:
             B: 渠道宽度 (m)
             S0: 渠底坡度 (无量纲)
             n: Manning糙率系数 (s/m^(1/3))
-            g: 重力加速度 (m/s²)
+            g: 重力加速度 (m/s^2)
             method: 数值方法 ('explicit', 'preissmann', 'hll')
             internal_structures: 内部水工建筑物列表 [(position, structure_obj), ...]
             x_grid: 自定义网格点坐标数组（可选，用于非均匀网格）
@@ -98,19 +105,19 @@ class CanalSolver:
 
         # 初始化状态变量
         self.h = np.ones(nx) * 1.0  # 初始水深 (m)
-        self.Q = np.ones(nx) * 5.0  # 初始流量 (m³/s)
+        self.Q = np.ones(nx) * 5.0  # 初始流量 (m^3/s)
 
         # Savitzky-Golay滤波参数（用于抑制高频振荡）
         self.filter_window = 11  # 滤波窗口大小（必须为奇数）
         self.filter_order = 3    # 多项式阶数
 
         # Preissmann格式参数
-        # ⚠️  实验结论：omega=0.95已是最优，SWMM的omega=0.5不适用于我们的长时间演化
+        #   实验结论：omega=0.95已是最优，SWMM的omega=0.5不适用于我们的长时间演化
         # 实验数据：
-        #   omega=0.5  → 0.62%excellent但t>4000后发散
-        #   omega=0.75 → 2.54%无改善
-        #   omega=0.85 → 4.46%更差
-        #   omega=0.95 → 2.32% ✓ 最佳且稳定
+        #   omega=0.5  -> 0.62%excellent但t>4000后发散
+        #   omega=0.75 -> 2.54%无改善
+        #   omega=0.85 -> 4.46%更差
+        #   omega=0.95 -> 2.32%  最佳且稳定
         self.theta = 0.6   # 时间加权系数 (0.5-1.0)
         self.omega = 0.95  # 松弛因子 (经验证的最优值)
 
@@ -146,8 +153,8 @@ class CanalSolver:
 
         Args:
             idx: 网格点索引
-            Q_target: 目标流量 (m³/s)
-            Q_current: 当前流量 (m³/s)
+            Q_target: 目标流量 (m^3/s)
+            Q_current: 当前流量 (m^3/s)
 
         Returns:
             smooth_weight: 自适应平滑权重 [0, 1]
@@ -219,7 +226,7 @@ class CanalSolver:
         Args:
             t: 当前时间 (s)，用于时变参数
             max_iter: 最大迭代次数
-            tol: 收敛容差 (m³/s)
+            tol: 收敛容差 (m^3/s)
             relax: 初始松弛因子 (0-1)，较小值更稳定但收敛慢
             adaptive_relax: 是否使用自适应松弛因子
         """
@@ -276,7 +283,7 @@ class CanalSolver:
                     # 更新闸门节点流量
                     self.Q[idx] = Q_gate_new
 
-                    # ⚠️  温和的邻近节点平滑（权重降低以减少守恒性破坏）
+                    #   温和的邻近节点平滑（权重降低以减少守恒性破坏）
                     # 使用自适应权重（若配置），在稳定性和守恒性之间智能平衡
                     if idx > 1:
                         Q_neighbor_target = 0.5 * (self.Q[idx - 2] + Q_gate_new)
@@ -299,7 +306,7 @@ class CanalSolver:
 
                     # 避免除零
                     if abs(r2 - r1) > 1e-10 and abs(r1 - r0) > 1e-10:
-                        # Aitken公式: ω_optimal = ω * (1 - (Δr_{n+1} / Δr_n))
+                        # Aitken公式: ω_optimal = ω * (1 - (Deltar_{n+1} / Deltar_n))
                         ratio = (r2 - r1) / (r1 - r0)
 
                         if 0 < ratio < 1:
@@ -335,7 +342,7 @@ class CanalSolver:
         使用恒定均匀流作为初值
 
         Args:
-            Q0: 初始流量 (m³/s)
+            Q0: 初始流量 (m^3/s)
 
         Returns:
             恒定均匀流水深 (m)
@@ -374,8 +381,8 @@ class CanalSolver:
         filtered[0] = field[0]
         filtered[-1] = field[-1]
 
-        # ✅ 关键改进：保持结构附近的真实物理间断，不要平滑
-        # 在结构±3个节点范围内保持原始值
+        #  关键改进：保持结构附近的真实物理间断，不要平滑
+        # 在结构+/-3个节点范围内保持原始值
         if self.structure_indices:
             protection_radius = 3  # 保护半径（节点数）
             for idx in self.structure_indices:
@@ -391,7 +398,7 @@ class CanalSolver:
 
         Args:
             h: 水深数组 (m)
-            Q: 流量数组 (m³/s)
+            Q: 流量数组 (m^3/s)
 
         Returns:
             摩阻坡度数组 Sf (无量纲)
@@ -407,7 +414,7 @@ class CanalSolver:
 
         Args:
             dt: 时间步长 (s)
-            Q_upstream: 上游边界流量 (m³/s)
+            Q_upstream: 上游边界流量 (m^3/s)
             h_downstream: 下游边界水深 (m)
 
         Returns:
@@ -493,11 +500,11 @@ class CanalSolver:
         """
         Preissmann四点隐式格式
 
-        使用显式预估 + θ加权校正的半隐式方法
+        使用显式预估 + theta加权校正的半隐式方法
 
         Args:
             dt: 时间步长 (s)
-            Q_upstream: 上游边界流量 (m³/s)
+            Q_upstream: 上游边界流量 (m^3/s)
             h_downstream: 下游边界水深 (m)
             apply_filter: 是否应用空间滤波器（PRECISION FIX #3）
 
@@ -510,14 +517,14 @@ class CanalSolver:
         # 步骤1: 显式预估
         h_pred, Q_pred = self.step_explicit(dt, Q_upstream, h_downstream)
 
-        # 步骤2: θ加权校正
-        # h^(n+1) = ω * [(1-θ)*h^n + θ*h^pred] + (1-ω)*h^n
+        # 步骤2: theta加权校正
+        # h^(n+1) = ω * [(1-theta)*h^n + theta*h^pred] + (1-ω)*h^n
         self.h = (self.omega * ((1 - self.theta) * h_old + self.theta * h_pred) +
                  (1 - self.omega) * h_old)
         self.Q = (self.omega * ((1 - self.theta) * Q_old + self.theta * Q_pred) +
                  (1 - self.omega) * Q_old)
 
-        # ✅ 修复：可选的空间滤波器（PRECISION FIX #3）
+        #  修复：可选的空间滤波器（PRECISION FIX #3）
         # 在稳态求解时禁用滤波器以提高精度
         if apply_filter:
             self.h = self.apply_spatial_filter(self.h)
@@ -534,7 +541,7 @@ class CanalSolver:
 
         Args:
             dt: 时间步长 (s)
-            Q_upstream: 上游边界流量 (m³/s)
+            Q_upstream: 上游边界流量 (m^3/s)
             h_downstream: 下游边界水深 (m)
 
         Returns:
@@ -619,7 +626,7 @@ class CanalSolver:
 
         Args:
             dt: 时间步长 (s)
-            Q_upstream: 上游边界流量 (m³/s)
+            Q_upstream: 上游边界流量 (m^3/s)
             h_downstream: 下游边界水深 (m)
             t: 当前时间 (s)，用于时变参数
             adaptive_relax: 是否使用自适应松弛因子
@@ -694,7 +701,7 @@ if __name__ == '__main__':
     Q0 = 8.0
     h_uniform = solver.reset_with_steady_state(Q0)
     print(f"初始恒定均匀流:")
-    print(f"  流量 Q = {Q0} m³/s")
+    print(f"  流量 Q = {Q0} m^3/s")
     print(f"  水深 h = {h_uniform:.6f} m")
 
     # 边界条件
@@ -712,6 +719,6 @@ if __name__ == '__main__':
         solver.save_state((i+1) * dt)
 
         if i % 2 == 0:
-            print(f"  Step {i+1}: h_avg = {np.mean(h):.6f} m, Q_avg = {np.mean(Q):.6f} m³/s")
+            print(f"  Step {i+1}: h_avg = {np.mean(h):.6f} m, Q_avg = {np.mean(Q):.6f} m^3/s")
 
-    print("\n✅ 求解器测试完成")
+    print("\n 求解器测试完成")

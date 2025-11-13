@@ -143,14 +143,14 @@ class CaseRunner:
             True if successful, False otherwise
         """
         if case_id not in self.cases:
-            print(f"✗ Error: Case {case_id} not found")
+            print(f" Error: Case {case_id} not found")
             return False
 
         case_info = self.cases[case_id]
         case_file = self.case_dir / case_info['file']
 
         if not case_file.exists():
-            print(f"✗ Error: Case file not found: {case_file}")
+            print(f" Error: Case file not found: {case_file}")
             return False
 
         print(f"\n{'='*80}")
@@ -183,7 +183,7 @@ class CaseRunner:
 
             # Check result
             if result.returncode == 0:
-                print(f"\n✓ Case {case_id} completed successfully in {elapsed_time:.2f}s")
+                print(f"\n Case {case_id} completed successfully in {elapsed_time:.2f}s")
                 self.results['passed'].append(case_id)
                 self.results['times'][case_id] = elapsed_time
 
@@ -194,7 +194,7 @@ class CaseRunner:
 
                 return True
             else:
-                print(f"\n✗ Case {case_id} FAILED with return code {result.returncode}")
+                print(f"\n Case {case_id} FAILED with return code {result.returncode}")
                 print(f"\nStdout:")
                 print(result.stdout[-1000:] if len(result.stdout) > 1000 else result.stdout)
                 print(f"\nStderr:")
@@ -203,12 +203,12 @@ class CaseRunner:
                 return False
 
         except subprocess.TimeoutExpired:
-            print(f"\n✗ Case {case_id} TIMEOUT (exceeded 10 minutes)")
+            print(f"\n Case {case_id} TIMEOUT (exceeded 10 minutes)")
             self.results['failed'].append(case_id)
             return False
 
         except Exception as e:
-            print(f"\n✗ Case {case_id} ERROR: {e}")
+            print(f"\n Case {case_id} ERROR: {e}")
             self.results['failed'].append(case_id)
             return False
 
@@ -260,14 +260,14 @@ class CaseRunner:
             for case_id in self.results['passed']:
                 elapsed = self.results['times'].get(case_id, 0)
                 case_name = self.cases[case_id]['name']
-                print(f"  ✓ Case {case_id}: {case_name} ({elapsed:.2f}s)")
+                print(f"   Case {case_id}: {case_name} ({elapsed:.2f}s)")
             print()
 
         if self.results['failed']:
             print("Failed Cases / 失败的案例:")
             for case_id in self.results['failed']:
                 case_name = self.cases[case_id]['name']
-                print(f"  ✗ Case {case_id}: {case_name}")
+                print(f"   Case {case_id}: {case_name}")
             print()
 
         # Performance summary (if benchmark mode)
@@ -281,20 +281,20 @@ class CaseRunner:
 
         # Success rate
         success_rate = (passed_count / total_cases * 100) if total_cases > 0 else 0
-        status_emoji = "🎉" if success_rate == 100 else "⚠️" if success_rate >= 80 else "❌"
+        status_emoji = "" if success_rate == 100 else "" if success_rate >= 80 else ""
 
         print(f"Success Rate / 成功率: {success_rate:.1f}% {status_emoji}")
         print()
 
         if success_rate == 100:
-            print("🎉 All cases completed successfully!")
-            print("🎉 所有案例成功完成!")
+            print(" All cases completed successfully!")
+            print(" 所有案例成功完成!")
         elif success_rate >= 80:
-            print("⚠️  Most cases completed, but some failures occurred.")
-            print("⚠️  大部分案例完成，但有一些失败。")
+            print("  Most cases completed, but some failures occurred.")
+            print("  大部分案例完成，但有一些失败。")
         else:
-            print("❌ Many cases failed. Please check the errors above.")
-            print("❌ 许多案例失败。请检查上面的错误。")
+            print(" Many cases failed. Please check the errors above.")
+            print(" 许多案例失败。请检查上面的错误。")
 
         print()
 

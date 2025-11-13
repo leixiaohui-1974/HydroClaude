@@ -17,8 +17,8 @@ scenario2 = {
     'name': 'Scenario 02: Medium Flow Step (Fixed)',
     'description': '''**工况类型**: 上游边界扰动（中等幅度）
 
-**初始状态**: Q = 30 m³/s
-**扰动**: t=300s, Q → 42 m³/s (+40%)
+**初始状态**: Q = 30 m^3/s
+**扰动**: t=300s, Q -> 42 m^3/s (+40%)
 **修复**: dt=0.5s, 稳态迭代2000次''',
     'Q_initial': 30.0,
     'Q_upstream_func': lambda t: 42.0 if t >= 300 else 30.0

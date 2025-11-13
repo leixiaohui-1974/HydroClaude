@@ -41,7 +41,9 @@ PYTHONPATH=../.. python demo_cascade.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/reservoir_operation.gif`
+
+![动画](outputs\animations\reservoir_operation.gif)
 
 ## 技术要点
 

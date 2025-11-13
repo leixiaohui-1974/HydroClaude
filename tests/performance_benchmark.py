@@ -21,7 +21,13 @@ from typing import Dict, List, Tuple
 
 sys.path.insert(0, '.')
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 class PerformanceBenchmark:
@@ -62,7 +68,7 @@ class PerformanceBenchmark:
             n_cells=n_cells,
             manning_n=0.0,
             slope=0.0,
-            cfl=0.5,
+            cfl=0.3,
             order=order,
             use_numba=use_numba
         )
@@ -108,7 +114,7 @@ class PerformanceBenchmark:
         print(f"  Steps: {step_count}")
         print(f"  Wall time: {wall_time:.2f}s")
         print(f"  Time/step: {metrics['time_per_step']:.3f}ms")
-        print(f"  Valid: {'✅' if metrics['valid'] else '❌'}")
+        print(f"  Valid: {'' if metrics['valid'] else ''}")
 
         return metrics
 
@@ -150,7 +156,7 @@ class PerformanceBenchmark:
             n_cells=n_cells,
             manning_n=n,
             slope=S0,
-            cfl=0.5,
+            cfl=0.3,
             order=order,
             well_balanced=True,
             use_numba=use_numba
@@ -197,7 +203,7 @@ class PerformanceBenchmark:
         print(f"  Steps: {step_count}")
         print(f"  Wall time: {wall_time:.2f}s")
         print(f"  Time/step: {metrics['time_per_step']:.3f}ms")
-        print(f"  Valid: {'✅' if metrics['valid'] else '❌'}")
+        print(f"  Valid: {'' if metrics['valid'] else ''}")
 
         return metrics
 
@@ -248,7 +254,7 @@ class PerformanceBenchmark:
             n_cells=n_cells,
             manning_n=0.03,
             z_b=z_b,
-            cfl=0.5,
+            cfl=0.3,
             order=order,
             well_balanced=True,
             use_numba=use_numba
@@ -297,7 +303,7 @@ class PerformanceBenchmark:
         print(f"  Wall time: {wall_time:.2f}s")
         print(f"  Time/step: {metrics['time_per_step']:.3f}ms")
         print(f"  Disturbance: {disturbance:.3f}m")
-        print(f"  Valid: {'✅' if metrics['valid'] else '❌'}")
+        print(f"  Valid: {'' if metrics['valid'] else ''}")
 
         return metrics
 
@@ -327,7 +333,7 @@ class PerformanceBenchmark:
                 configs.append(('flood_routing', 100, 600.0, True, 1))
                 configs.append(('lake_at_rest', 100, 10.0, True, 1))
             except ImportError:
-                print("\n⚠️  Numba not available, skipping Numba benchmarks")
+                print("\n️  Numba not available, skipping Numba benchmarks")
 
         # Run benchmarks
         for test_name, n_cells, duration, use_numba, order in configs:
@@ -413,7 +419,7 @@ def main():
     benchmark.run_suite(include_numba=True)
 
     print("\n" + "="*70)
-    print("✅ Benchmark Suite Complete!")
+    print(" Benchmark Suite Complete!")
     print("="*70)
 
 

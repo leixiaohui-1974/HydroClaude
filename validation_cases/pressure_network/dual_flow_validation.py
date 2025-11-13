@@ -21,7 +21,7 @@ def main():
     print(f"  虚拟狭缝宽度 b = {pipe.b_slot:.6f} m")
     
     print(f"\n水力特性随水深变化:")
-    print(f"{'h(m)':<8} {'A(m²)':<10} {'流态':<15} {'压力?':<8}")
+    print(f"{'h(m)':<8} {'A(m^2)':<10} {'流态':<15} {'压力?':<8}")
     print("-" * 45)
     
     for h in [0.3, 0.5, 0.7, 0.95, 1.0, 1.1, 1.2]:
@@ -29,7 +29,7 @@ def main():
         print(f"{h:<8.2f} {props['A']:<10.4f} {props['flow_type']:<15} "
               f"{'是' if props['is_pressurized'] else '否':<8}")
     
-    print("\n✓ 验证完成 - 明满流平滑过渡")
+    print("\n 验证完成 - 明满流平滑过渡")
     print("="*80 + "\n")
 
 

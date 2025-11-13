@@ -16,7 +16,13 @@ import tempfile
 from pathlib import Path
 from engine.model_builder import ModelBuilder
 import numpy as np
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 # Test 4参数
 L = 1000.0
@@ -118,7 +124,7 @@ print(f"  h差异: max={np.max(np.abs(h_diff)):.2e}, mean={np.mean(np.abs(h_diff
 print(f"  Q差异: max={np.max(np.abs(Q_diff)):.2e}, mean={np.mean(np.abs(Q_diff)):.2e}")
 
 if np.max(np.abs(h_diff)) > 1e-6:
-    print(f"  ⚠️  状态已经出现显著差异！")
+    print(f"  ️  状态已经出现显著差异！")
     diff_indices = np.where(np.abs(h_diff) > 1e-6)[0]
     print(f"  h不同的位置数量: {len(diff_indices)}")
     for idx in diff_indices[:5]:
@@ -131,7 +137,7 @@ count1 = 0
 while solver1.t < 36.0 and count1 < 100:
     dt1 = solver1.compute_dt()
     if dt1 < 1e-6:
-        print(f"  ❌ t={solver1.t:.3f}s时dt变小: {dt1:.2e}")
+        print(f"   t={solver1.t:.3f}s时dt变小: {dt1:.2e}")
         break
     solver1.step(dt1)
     count1 += 1
@@ -142,7 +148,7 @@ count2 = 0
 while solver2.t < 36.0 and count2 < 100:
     dt2 = solver2.compute_dt()
     if dt2 < 1e-6:
-        print(f"  ❌ t={solver2.t:.3f}s时dt变小: {dt2:.2e}")
+        print(f"   t={solver2.t:.3f}s时dt变小: {dt2:.2e}")
         break
     solver2.step(dt2)
     count2 += 1

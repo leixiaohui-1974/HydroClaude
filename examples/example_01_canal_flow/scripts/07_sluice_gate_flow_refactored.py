@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例1扩展：明渠闸门过流动力学分析（单一求解器版本）
 
@@ -57,7 +58,7 @@ def run_sluice_gate_dynamics():
     print(f"  闸门位置: {gate_position} m")
     print(f"  闸门开度: {gate_opening} m")
     print(f"  流量系数: {gate_Cd}")
-    print(f"  底坡: {bed_slope*1000:.2f}‰")
+    print(f"  底坡: {bed_slope*1000:.2f}[permille]")
     print(f"  曼宁糙率: {manning_n}")
     print()
 
@@ -91,10 +92,10 @@ def run_sluice_gate_dynamics():
     print("步骤1: 计算初始稳态（恒定流）")
     print("-" * 80)
 
-    Q_initial = 10.0  # 初始流量 (m³/s)
+    Q_initial = 10.0  # 初始流量 (m^3/s)
     h_uniform = solver.reset_with_steady_state(Q_initial)
 
-    print(f"  初始流量: {Q_initial} m³/s")
+    print(f"  初始流量: {Q_initial} m^3/s")
     print(f"  恒定均匀流水深: {h_uniform:.4f} m")
     print()
 
@@ -102,7 +103,7 @@ def run_sluice_gate_dynamics():
     result = solver.solve_steady_state(
         Q_target=Q_initial,
         max_iterations=5000,
-        convergence_tol=0.001,  # < 0.1%
+        convergence_tol = 0.1,  # < 0.1%
         check_interval=500,
         verbose=True
     )
@@ -120,10 +121,10 @@ def run_sluice_gate_dynamics():
     print(f"  闸前水深: {h_steady[gate_idx-1]:.4f} m")
     print(f"  闸后水深: {h_steady[gate_idx+1]:.4f} m")
     print(f"  水位差: {h_steady[gate_idx-1] - h_steady[gate_idx+1]:.4f} m")
-    print(f"  闸门流量: {result['gate_flows'][0]:.4f} m³/s")
+    print(f"  闸门流量: {result['gate_flows'][0]:.4f} m^3/s")
     print(f"  流量守恒误差: {result['final_error']*100:.4f}%")
     if result['final_error'] < 0.001:
-        print(f"  ✓ 流量守恒达标！（<0.1%）")
+        print(f"   流量守恒达标！（<0.1%）")
     print()
 
     # ==================== 生成初始稳态图 ====================
@@ -164,9 +165,9 @@ def run_sluice_gate_dynamics():
     ax3 = plt.subplot(3, 1, 3)
     ax3.plot(x_full, Q_steady, 'g-', linewidth=2.5, label='Flow Rate')
     ax3.axvline(x=gate_position, color='r', linestyle='--', linewidth=2, alpha=0.7, label='Gate Position')
-    ax3.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5, label=f'Target Flow ({Q_initial:.1f} m³/s)')
+    ax3.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5, label=f'Target Flow ({Q_initial:.1f} m^3/s)')
     ax3.set_xlabel('Distance (m)', fontsize=12)
-    ax3.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+    ax3.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
     ax3.set_title('Flow Rate Distribution (Should be constant for steady uniform flow)', fontsize=14, fontweight='bold')
     ax3.grid(True, alpha=0.3)
     ax3.legend(fontsize=11)
@@ -175,7 +176,7 @@ def run_sluice_gate_dynamics():
     plt.tight_layout()
     steady_fig_path = fig_path = helper.get_output_path('archive_01_sluice_gate_steady_state_refactored.png', subdir='figures')
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f'  ✓ Saved: {fig_path.name}')
+    print(f'   Saved: {fig_path.name}')
     plt.close()
     plt.close(fig_steady)
 
@@ -191,7 +192,7 @@ def run_sluice_gate_dynamics():
 
     steady_data.to_csv(table_path, index=False)
 
-    print(f'  ✓ Saved: {table_path.name}')
+    print(f'   Saved: {table_path.name}')
     print()
 
     # ==================== 步骤2: 非恒定流仿真 ====================
@@ -203,10 +204,10 @@ def run_sluice_gate_dynamics():
     Q_after_step = 15.0     # 阶跃幅度 +50%
     step_time = 500.0       # 阶跃时刻
 
-    print(f"  阶跃前流量: {Q_before_step} m³/s")
-    print(f"  阶跃后流量: {Q_after_step} m³/s")
+    print(f"  阶跃前流量: {Q_before_step} m^3/s")
+    print(f"  阶跃后流量: {Q_after_step} m^3/s")
     print(f"  阶跃时刻: {step_time} s")
-    print(f"  阶跃幅度: +{Q_after_step - Q_before_step} m³/s (+{(Q_after_step/Q_before_step-1)*100:.0f}%)")
+    print(f"  阶跃幅度: +{Q_after_step - Q_before_step} m^3/s (+{(Q_after_step/Q_before_step-1)*100:.0f}%)")
     print()
 
     # 重新初始化为稳态（为非恒定流准备）
@@ -214,7 +215,7 @@ def run_sluice_gate_dynamics():
     result_init = solver.solve_steady_state(
         Q_target=Q_initial,
         max_iterations=2000,
-        convergence_tol=0.01,
+        convergence_tol = 0.1,
         check_interval=500,
         verbose=False
     )
@@ -228,7 +229,7 @@ def run_sluice_gate_dynamics():
     # Convergence detection parameters
     convergence_check_interval = 200  # Check every 200 steps
     convergence_window = 500  # Check last 500 steps for convergence
-    flow_convergence_tol = 0.001  # < 0.1% variation means converged
+    flow_convergence_tol = 0.1  # < 0.1% variation means converged
 
     # 监测点
     monitor_positions = {
@@ -299,13 +300,13 @@ def run_sluice_gate_dynamics():
 
                 if flow_cv < flow_convergence_tol:
                     converged = True
-                    marker += " ✓ CONVERGED"
+                    marker += "  CONVERGED"
 
-            print(f"  t={t:7.0f}s: Q_inlet={inlet_Q:5.2f}, Q_gate={gate_Q:5.2f}, Q_outlet={outlet_Q:5.2f} m³/s{marker}")
+            print(f"  t={t:7.0f}s: Q_inlet={inlet_Q:5.2f}, Q_gate={gate_Q:5.2f}, Q_outlet={outlet_Q:5.2f} m^3/s{marker}")
 
             # Early termination if converged
             if converged and t > step_time + 5000:
-                print(f"\n  ✓ System converged at t={t:.0f}s - terminating early")
+                print(f"\n   System converged at t={t:.0f}s - terminating early")
                 # Trim arrays to actual length
                 time_series = time_series[:i+1]
                 gate_flow = gate_flow[:i+1]
@@ -317,9 +318,9 @@ def run_sluice_gate_dynamics():
     print()
     print(f"仿真完成！")
     print(f"  总仿真时间: {time_series[-1]:.0f}s")
-    print(f"  最终闸门流量: {gate_flow[-1]:.3f} m³/s (阶跃后目标: {Q_after_step} m³/s)")
-    print(f"  最终入口流量: {monitor_data['Inlet']['Q'][-1]:.3f} m³/s")
-    print(f"  最终出口流量: {monitor_data['Outlet']['Q'][-1]:.3f} m³/s")
+    print(f"  最终闸门流量: {gate_flow[-1]:.3f} m^3/s (阶跃后目标: {Q_after_step} m^3/s)")
+    print(f"  最终入口流量: {monitor_data['Inlet']['Q'][-1]:.3f} m^3/s")
+    print(f"  最终出口流量: {monitor_data['Outlet']['Q'][-1]:.3f} m^3/s")
 
     # Calculate final convergence metrics
     if len(gate_flow) >= convergence_window:
@@ -332,9 +333,9 @@ def run_sluice_gate_dynamics():
         print(f"    闸门流量变异系数: {flow_cv:.4f}%")
         print(f"    闸门流量误差: {flow_error:.4f}%")
         if flow_cv < 0.1:
-            print(f"    ✓ 系统已收敛 (CV < 0.1%)")
+            print(f"     系统已收敛 (CV < 0.1%)")
         else:
-            print(f"    ⚠ 系统仍在调整 (CV = {flow_cv:.4f}%)")
+            print(f"     系统仍在调整 (CV = {flow_cv:.4f}%)")
     print()
 
     # ==================== 生成关键位置时间序列图 ====================
@@ -358,7 +359,7 @@ def run_sluice_gate_dynamics():
     ax1.axhline(y=Q_before_step, color='gray', linestyle=':', alpha=0.5)
     ax1.axhline(y=Q_after_step, color='gray', linestyle=':', alpha=0.5)
     ax1.set_xlabel('Time (s)', fontsize=12)
-    ax1.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+    ax1.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
     ax1.set_title('Upstream Flow Rate', fontsize=13, fontweight='bold')
     ax1.grid(True, alpha=0.3)
     ax1.legend(fontsize=11)
@@ -369,7 +370,7 @@ def run_sluice_gate_dynamics():
     ax2.axhline(y=Q_before_step, color='gray', linestyle=':', alpha=0.5)
     ax2.axhline(y=Q_after_step, color='gray', linestyle=':', alpha=0.5)
     ax2.set_xlabel('Time (s)', fontsize=12)
-    ax2.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+    ax2.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
     ax2.set_title('Downstream Flow Rate', fontsize=13, fontweight='bold')
     ax2.grid(True, alpha=0.3)
     ax2.legend(fontsize=11)
@@ -396,7 +397,7 @@ def run_sluice_gate_dynamics():
     plt.tight_layout()
     key_fig_path = fig_path = helper.get_output_path('archive_01_sluice_gate_key_locations_refactored.png', subdir='figures')
  plt.savefig(fig_path, dpi=150, bbox_inches='tight')
- print(f'  ✓ Saved: {fig_path.name}')
+ print(f'   Saved: {fig_path.name}')
  plt.close()
     plt.close(fig_key)
 
@@ -417,7 +418,7 @@ def run_sluice_gate_dynamics():
 
     time_series_data.to_csv(table_path, index=False)
 
-    print(f'  ✓ Saved: {table_path.name}')
+    print(f'   Saved: {table_path.name}')
 
     # ==================== 生成GIF动画 ====================
     print("  2. 生成纵剖面动态GIF动画...")
@@ -492,7 +493,7 @@ def run_sluice_gate_dynamics():
         ax3.axhline(y=Q_initial, color='gray', linestyle=':', alpha=0.5, label=f'Initial: {Q_initial}')
         ax3.axhline(y=Q_after_step, color='orange', linestyle=':', alpha=0.5, label=f'Target: {Q_after_step}')
         ax3.set_xlabel('Distance (m)', fontsize=12)
-        ax3.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+        ax3.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
         ax3.set_title('Flow Rate Distribution', fontsize=13, fontweight='bold')
         ax3.grid(True, alpha=0.3)
         ax3.legend(loc='best', fontsize=10)

@@ -13,7 +13,13 @@ import numpy as np
 import sys
 sys.path.append('.')
 
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 
 
@@ -55,7 +61,7 @@ def test_simple_gate():
 
     print(f"\n参数设置：")
     print(f"  渠道：L={L}m, B={B}m, S0={S0}, n={n}")
-    print(f"  流量：Q={Q_target} m³/s")
+    print(f"  流量：Q={Q_target} m^3/s")
     print(f"  闸门：位置={gate_position}m, 开度={gate_opening}m, Cd={gate_Cd}")
     print(f"  下游边界：h={h_downstream:.4f}m（均匀流水深）")
 
@@ -98,8 +104,8 @@ def test_simple_gate():
 
     # 流量守恒
     print(f"\n流量守恒：")
-    print(f"  目标：{Q_target:.4f} m³/s")
-    print(f"  实际：{result['Q_mean']:.4f} m³/s")
+    print(f"  目标：{Q_target:.4f} m^3/s")
+    print(f"  实际：{result['Q_mean']:.4f} m^3/s")
     print(f"  误差：{result['Q_error_percent']:.2f}%")
 
     # 闸门验证
@@ -112,7 +118,7 @@ def test_simple_gate():
     print(f"  上游水深：{h_up:.4f} m")
     print(f"  下游水深：{h_down:.4f} m")
     print(f"  水位差：{h_up - h_down:.4f} m")
-    print(f"  闸门流量：{Q_gate:.4f} m³/s")
+    print(f"  闸门流量：{Q_gate:.4f} m^3/s")
     print(f"  流态：{flow_type}")
     print(f"  闸门流量误差：{abs(Q_gate - Q_target) / Q_target * 100:.2f}%")
 
@@ -123,13 +129,13 @@ def test_simple_gate():
     water_level_ok = h_up > h_down
 
     print(f"\n测试结果：")
-    print(f"  流量守恒：{'✓ PASS' if mass_ok else '✗ FAIL'} ({result['Q_error_percent']:.2f}% < 5%)")
-    print(f"  闸门流量：{'✓ PASS' if gate_ok else '✗ FAIL'} ({abs(Q_gate - Q_target) / Q_target * 100:.2f}% < 5%)")
-    print(f"  收敛性：{'✓ PASS' if converged_ok else '✗ FAIL'}")
-    print(f"  水位关系：{'✓ PASS' if water_level_ok else '✗ FAIL'}")
+    print(f"  流量守恒：{' PASS' if mass_ok else ' FAIL'} ({result['Q_error_percent']:.2f}% < 5%)")
+    print(f"  闸门流量：{' PASS' if gate_ok else ' FAIL'} ({abs(Q_gate - Q_target) / Q_target * 100:.2f}% < 5%)")
+    print(f"  收敛性：{' PASS' if converged_ok else ' FAIL'}")
+    print(f"  水位关系：{' PASS' if water_level_ok else ' FAIL'}")
 
     overall = mass_ok and gate_ok and converged_ok and water_level_ok
-    print(f"\n总体：{'✓✓✓ 全部通过' if overall else '✗✗✗ 存在问题'}")
+    print(f"\n总体：{' 全部通过' if overall else ' 存在问题'}")
     print("=" * 70)
 
     return overall

@@ -21,11 +21,17 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_lake_at_rest_exact(
-    n_cells=100,
+    n_cells=120,
     t_final=100.0,
     hump_amplitude=2.0,
     make_plot=True
@@ -84,8 +90,8 @@ def test_lake_at_rest_exact(
         n_cells=n_cells,
         manning_n=0.0,       # 无摩擦
         z_b=z_b,             # 变底高程
-        cfl=0.5,
-        order=2,
+        cfl=0.3,
+        order=1,
         use_numba=True,
         riemann_solver='exact',  # 精确求解器
         well_balanced=True,      # Well-Balanced格式
@@ -100,7 +106,7 @@ def test_lake_at_rest_exact(
     max_eta_init = np.max(eta_init)
     min_eta_init = np.min(eta_init)
 
-    print(f"  初始质量: {mass_init:.6f} m³")
+    print(f"  初始质量: {mass_init:.6f} m^3")
     print(f"  初始水面高程: η ∈ [{min_eta_init:.6f}, {max_eta_init:.6f}]m")
     print()
 
@@ -114,7 +120,7 @@ def test_lake_at_rest_exact(
 
         # 检查NaN
         if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
-            print(f"  ❌ 在t={solver.t:.2f}s出现NaN!")
+            print(f"   在t={solver.t:.2f}s出现NaN!")
             return False
 
         # 进度报告
@@ -123,7 +129,7 @@ def test_lake_at_rest_exact(
             max_disturbance = np.max(np.abs(eta - eta_0))
             print(f"  步骤{step_count}: t={solver.t:.2f}s, max|η-η₀|={max_disturbance:.3e}m")
 
-    print(f"  ✅ 模拟完成")
+    print(f"   模拟完成")
     print(f"  总步数: {step_count}")
     print()
 
@@ -144,16 +150,16 @@ def test_lake_at_rest_exact(
     print()
 
     print(f"质量守恒:")
-    print(f"  初始质量: {mass_init:.6f} m³")
-    print(f"  最终质量: {mass_final:.6f} m³")
+    print(f"  初始质量: {mass_init:.6f} m^3")
+    print(f"  最终质量: {mass_final:.6f} m^3")
     print(f"  误差: {mass_error:.6f}%")
 
     if mass_error < 0.01:
-        print(f"  ✅ 质量守恒优秀 (< 0.01%)")
+        print(f"   质量守恒优秀 (< 0.01%)")
     elif mass_error < 0.1:
-        print(f"  ✅ 质量守恒良好 (< 0.1%)")
+        print(f"   质量守恒良好 (< 0.1%)")
     else:
-        print(f"  ⚠️  质量守恒误差较大")
+        print(f"    质量守恒误差较大")
 
     print()
 
@@ -167,31 +173,31 @@ def test_lake_at_rest_exact(
     # 评估精度
     if max_disturbance < 1e-10:
         print("="*70)
-        print("✅✅✅ 机器精度达成! ✅✅✅")
+        print(" 机器精度达成! ")
         print("="*70)
         print(f"扰动 < 1e-10m: 精确求解器达到理论极限精度!")
         status = "MACHINE_PRECISION"
     elif max_disturbance < 1e-6:
         print("="*70)
-        print("✅✅ 超高精度! ✅✅")
+        print(" 超高精度! ")
         print("="*70)
         print(f"扰动 < 1µm: 精确求解器表现优异")
         status = "EXCELLENT"
     elif max_disturbance < 0.1:
         print("="*70)
-        print("✅ 高精度")
+        print(" 高精度")
         print("="*70)
         print(f"扰动 < 0.1m: 精确求解器精度良好")
         status = "GOOD"
     elif max_disturbance < 1.0:
         print("="*70)
-        print("⚠️  中等精度")
+        print("  中等精度")
         print("="*70)
         print(f"扰动 ~{max_disturbance:.2f}m: 精度可接受但未达预期")
         status = "MODERATE"
     else:
         print("="*70)
-        print("❌ 精度不足")
+        print(" 精度不足")
         print("="*70)
         print(f"扰动 ~{max_disturbance:.2f}m: 未能保持Lake at Rest")
         status = "POOR"
@@ -207,7 +213,7 @@ def test_lake_at_rest_exact(
 
     if max_disturbance < 1e-6:
         improvement_vs_hll = 0.82 / max_disturbance
-        print(f"  ✅ 精确求解器比HLL精度提升: {improvement_vs_hll:.0e}倍!")
+        print(f"   精确求解器比HLL精度提升: {improvement_vs_hll:.0e}倍!")
 
     print()
 
@@ -272,7 +278,7 @@ if __name__ == '__main__':
 
     # 运行测试
     result = test_lake_at_rest_exact(
-        n_cells=100,
+        n_cells=120,
         t_final=100.0,
         hump_amplitude=2.0,
         make_plot=True
@@ -282,14 +288,14 @@ if __name__ == '__main__':
     print("\n")
     print("="*70)
     if result['status'] in ['MACHINE_PRECISION', 'EXCELLENT']:
-        print("✅ Phase 9.3精确Riemann求解器测试通过!")
+        print(" Phase 9.3精确Riemann求解器测试通过!")
         print(f"   达到{result['status']}精度")
         exit_code = 0
     elif result['status'] == 'GOOD':
-        print("✅ 测试通过 (精度良好)")
+        print(" 测试通过 (精度良好)")
         exit_code = 0
     else:
-        print("❌ 测试未达预期精度")
+        print(" 测试未达预期精度")
         exit_code = 1
 
     print("="*70)

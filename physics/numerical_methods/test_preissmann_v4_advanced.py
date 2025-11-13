@@ -52,7 +52,7 @@ def test_1_lake_at_rest():
         )
 
         if np.any(np.isnan(h)) or np.any(np.isnan(Q)):
-            print(f"  ❌ 步骤{step+1}出现NaN")
+            print(f"   步骤{step+1}出现NaN")
             return False
 
     final_mass = np.sum(h[:-1] * width * dx)
@@ -67,7 +67,7 @@ def test_1_lake_at_rest():
     print(f"  最大流量: {Q_max:.6e} m³/s")
 
     success = mass_error < 1.0 and h_deviation < 0.1 and Q_max < 5.0
-    print(f"  结果: {'✅ 通过' if success else '❌ 失败'}")
+    print(f"  结果: {' 通过' if success else ' 失败'}")
 
     return success
 
@@ -109,7 +109,7 @@ def test_2_steady_flow():
         )
 
         if np.any(np.isnan(h)) or np.any(np.isnan(Q)):
-            print(f"  ❌ 步骤{step+1}出现NaN")
+            print(f"   步骤{step+1}出现NaN")
             return False
 
     final_mass = np.sum(h[:-1] * width * dx)
@@ -128,7 +128,7 @@ def test_2_steady_flow():
     print(f"  平均流量: {np.mean(Q):.3f} m³/s")
 
     success = mass_error < 5.0 and not np.any(np.isnan(h))
-    print(f"  结果: {'✅ 通过' if success else '❌ 失败'}")
+    print(f"  结果: {' 通过' if success else ' 失败'}")
 
     return success
 
@@ -177,7 +177,7 @@ def test_3_step_flow():
         )
 
         if np.any(np.isnan(h)) or np.any(np.isnan(Q)):
-            print(f"  ❌ 步骤{step+1}出现NaN")
+            print(f"   步骤{step+1}出现NaN")
             return False
 
         current_mass = np.sum(h[:-1] * width * dx)
@@ -197,7 +197,7 @@ def test_3_step_flow():
     print(f"  最大流量: {np.max(np.abs(Q)):.3f} m³/s")
 
     success = max_mass_error < 10.0 and not np.any(np.isnan(h))
-    print(f"  结果: {'✅ 通过' if success else '❌ 失败'}")
+    print(f"  结果: {' 通过' if success else ' 失败'}")
 
     return success
 
@@ -238,7 +238,7 @@ def test_4_dam_break():
         )
 
         if np.any(np.isnan(h)) or np.any(np.isnan(Q)):
-            print(f"  ❌ 步骤{step+1}出现NaN")
+            print(f"   步骤{step+1}出现NaN")
             return False
 
         current_mass = np.sum(h[:-1] * width * dx)
@@ -258,7 +258,7 @@ def test_4_dam_break():
     print(f"  最大流量: {np.max(np.abs(Q)):.3f} m³/s")
 
     success = max_mass_error < 15.0 and not np.any(np.isnan(h))
-    print(f"  结果: {'✅ 通过' if success else '❌ 失败'}")
+    print(f"  结果: {' 通过' if success else ' 失败'}")
 
     return success
 
@@ -280,15 +280,15 @@ if __name__ == "__main__":
     print("="*80)
 
     for name, result in results:
-        status = "✅ 通过" if result else "❌ 失败"
+        status = " 通过" if result else " 失败"
         print(f"  {name}: {status}")
 
     total_pass = sum(1 for _, r in results if r)
     print(f"\n  总计: {total_pass}/{len(results)} 通过")
 
     if total_pass == len(results):
-        print("\n  🎉 所有测试通过！v4_linear求解器表现优秀")
+        print("\n   所有测试通过！v4_linear求解器表现优秀")
     else:
-        print(f"\n  ⚠️ {len(results) - total_pass}个测试失败，需要进一步改进")
+        print(f"\n  ️ {len(results) - total_pass}个测试失败，需要进一步改进")
 
     print("="*80)

@@ -1,6 +1,14 @@
 """
 Unit Tests for Dual Flow Pipe - 明满流管道单元测试
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import pytest
 import numpy as np

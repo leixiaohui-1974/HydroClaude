@@ -21,7 +21,13 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 from network.pressure_pipe import create_pressure_pipe
 from network.network_node import Junction, Reservoir, Tank
 from network.network_topology import NetworkTopology
-from solvers.hardy_cross_solver import HardyCrossSolver
+try:
+    from solvers.hardy_cross_solver import HardyCrossSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 class TestUrbanWaterSupplyCase:
@@ -83,7 +89,13 @@ class TestUrbanWaterSupplyCase:
     def test_case1_pressure_requirements(self):
         """测试压力要求"""
         from examples.case1_urban_water_supply import create_urban_water_network
-        from solvers.hardy_cross_solver import HardyCrossSolver
+        try:
+    from solvers.hardy_cross_solver import HardyCrossSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
         topology = create_urban_water_network()
         solver = HardyCrossSolver(topology, max_iter=100, tol=1e-6, verbose=False)
@@ -107,7 +119,13 @@ class TestUrbanWaterSupplyCase:
     def test_case1_flow_conservation(self):
         """测试流量守恒"""
         from examples.case1_urban_water_supply import create_urban_water_network
-        from solvers.hardy_cross_solver import HardyCrossSolver
+        try:
+    from solvers.hardy_cross_solver import HardyCrossSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
         topology = create_urban_water_network()
         solver = HardyCrossSolver(topology, max_iter=100, tol=1e-6, verbose=False)
@@ -163,7 +181,7 @@ class TestPumpWaterHammerCase:
         """测试MOC模拟设置"""
         from examples.case2_pump_water_hammer import simulate_power_failure
 
-        Q0 = 1.0  # m³/s
+        Q0 = 1.0  # m^3/s
         D = 0.8   # m
         L = 5000  # m
         a = 1000  # m/s
@@ -305,7 +323,7 @@ class TestCaseExamplesIntegration:
 
         # 验证关键输出
         assert '城市供水管网系统' in captured.out
-        assert '✅ 案例分析完成' in captured.out
+        assert ' 案例分析完成' in captured.out
         assert '高峰工况' in captured.out
         assert '平均工况' in captured.out
         assert '低峰工况' in captured.out
@@ -325,7 +343,7 @@ class TestCaseExamplesIntegration:
         # 验证关键输出
         assert '泵站水锤分析案例' in captured.out
         assert 'Joukowsky' in captured.out
-        assert '✅ 案例分析完成' in captured.out
+        assert ' 案例分析完成' in captured.out
         assert '水锤防护措施建议' in captured.out
 
 
@@ -370,7 +388,7 @@ class TestIndustrialCoolingCase:
         main()
 
         captured = capsys.readouterr()
-        assert '工业供水系统' in captured.out or '✅ 案例分析完成' in captured.out
+        assert '工业供水系统' in captured.out or ' 案例分析完成' in captured.out
 
 
 class TestFireProtectionCase:
@@ -411,7 +429,7 @@ class TestFireProtectionCase:
         main()
 
         captured = capsys.readouterr()
-        assert '消防系统' in captured.out or '✅ 案例分析完成' in captured.out
+        assert '消防系统' in captured.out or ' 案例分析完成' in captured.out
 
 
 class TestIrrigationCase:
@@ -454,7 +472,7 @@ class TestIrrigationCase:
         main()
 
         captured = capsys.readouterr()
-        assert '灌溉系统' in captured.out or '✅ 案例分析完成' in captured.out
+        assert '灌溉系统' in captured.out or ' 案例分析完成' in captured.out
 
 
 class TestHighriseCase:
@@ -477,7 +495,7 @@ class TestHighriseCase:
         main()
 
         captured = capsys.readouterr()
-        assert '高层建筑' in captured.out or '✅ 案例分析完成' in captured.out
+        assert '高层建筑' in captured.out or ' 案例分析完成' in captured.out
 
 
 class TestRegionalNetworkCase:
@@ -546,7 +564,7 @@ class TestRegionalNetworkCase:
 
         captured = capsys.readouterr()
         assert '区域供水' in captured.out
-        assert '✅ 案例分析完成' in captured.out
+        assert ' 案例分析完成' in captured.out
 
 
 class TestNetworkOptimizationCase:
@@ -628,7 +646,7 @@ class TestNetworkOptimizationCase:
 
         captured = capsys.readouterr()
         assert '管网优化' in captured.out or 'Network Optimization' in captured.out
-        assert '✅ 案例分析完成' in captured.out
+        assert ' 案例分析完成' in captured.out
 
 
 if __name__ == '__main__':

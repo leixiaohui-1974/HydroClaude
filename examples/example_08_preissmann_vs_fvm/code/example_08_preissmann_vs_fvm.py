@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
@@ -62,7 +65,7 @@ def example_preissmann_vs_fvm():
     ax.plot(time, flows_p, 'b-', linewidth=2, label='Preissmann')
     ax.plot(time, flows_f, 'r--', linewidth=2, label='FVM')
     ax.set_xlabel('时间 (分钟)')
-    ax.set_ylabel('平均流量 (m³/s)')
+    ax.set_ylabel('平均流量 (m^3/s)')
     ax.set_title('流量时间历程')
     ax.legend()
     ax.grid(True, alpha=0.3)
@@ -88,9 +91,9 @@ def example_preissmann_vs_fvm():
 
     plt.tight_layout()
     plt.savefig('preissmann_vs_fvm.png', dpi=150, bbox_inches='tight')
-    print("\n✓ 图表已保存: preissmann_vs_fvm.png")
-    print(f"✓ 两种方法的RMSE: {rmse:.6f} m")
-    print(f"✓ 最大差异: {np.max(np.abs(errors)):.6f} m")
+    print("\n 图表已保存: preissmann_vs_fvm.png")
+    print(f" 两种方法的RMSE: {rmse:.6f} m")
+    print(f" 最大差异: {np.max(np.abs(errors)):.6f} m")
 
 if __name__ == "__main__":
     example_preissmann_vs_fvm()

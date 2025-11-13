@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 供水管网余氯衰减模拟案例
 
@@ -115,9 +116,9 @@ def example1_single_pipe_chlorine():
 
     # 检查是否满足标准
     if final_outlet >= 0.05:
-        print(f"\n✓ 管网末端余氯 {final_outlet:.3f} mg/L ≥ 0.05 mg/L (符合标准)")
+        print(f"\n 管网末端余氯 {final_outlet:.3f} mg/L >= 0.05 mg/L (符合标准)")
     else:
-        print(f"\n✗ 管网末端余氯 {final_outlet:.3f} mg/L < 0.05 mg/L (不符合标准)")
+        print(f"\n 管网末端余氯 {final_outlet:.3f} mg/L < 0.05 mg/L (不符合标准)")
 
     # 可视化
     visualize_single_pipe_results(
@@ -321,7 +322,7 @@ def visualize_single_pipe_results(time_history, conc_inlet, conc_mid, conc_outle
 
     Water Quality Standard:
       Minimum:       0.05 mg/L
-      Status:        {'✓ PASS' if conc_outlet[-1] >= 0.05 else '✗ FAIL'}
+      Status:        {' PASS' if conc_outlet[-1] >= 0.05 else ' FAIL'}
 
     Residence Time:
       Pipe:          {simulator.length/0.5/3600:.2f} hours
@@ -376,7 +377,7 @@ def main():
     print("- 主体衰减：水中余氯自然衰减")
     print("- 管壁衰减：管壁吸附和反应")
     print("- 一级反应：衰减速率与浓度成正比")
-    print("- 标准要求：管网末端余氯 ≥ 0.05 mg/L")
+    print("- 标准要求：管网末端余氯 >= 0.05 mg/L")
 
     print("\n应用场景:")
     print("- 水厂加氯量优化")

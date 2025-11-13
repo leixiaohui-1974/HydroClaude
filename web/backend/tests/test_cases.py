@@ -6,7 +6,7 @@ Collection of validated test cases for canal flow simulation
 # Test Case 1: Static Uniform Flow
 TEST_CASE_1_STATIC_UNIFORM = {
     "name": "TC1 - Static Uniform Flow",
-    "description": "静态均匀流：水体保持完全静止，验证质量守恒和数值稳定性",
+    "description": "",
     "config": {
         "width": 10.0,
         "length": 1000.0,
@@ -37,7 +37,7 @@ TEST_CASE_1_STATIC_UNIFORM = {
 # Test Case 2: Shallow Uniform Flow
 TEST_CASE_2_SHALLOW_UNIFORM = {
     "name": "TC2 - Shallow Uniform Flow",
-    "description": "浅水均匀流：较小水深的静态场景",
+    "description": "",
     "config": {
         "width": 10.0,
         "length": 500.0,
@@ -68,7 +68,7 @@ TEST_CASE_2_SHALLOW_UNIFORM = {
 # Test Case 3: Deep Uniform Flow
 TEST_CASE_3_DEEP_UNIFORM = {
     "name": "TC3 - Deep Uniform Flow",
-    "description": "深水均匀流：较大水深的静态场景",
+    "description": "",
     "config": {
         "width": 10.0,
         "length": 1000.0,
@@ -99,7 +99,7 @@ TEST_CASE_3_DEEP_UNIFORM = {
 # Test Case 4: Wide Channel Uniform Flow
 TEST_CASE_4_WIDE_CHANNEL = {
     "name": "TC4 - Wide Channel Uniform Flow",
-    "description": "宽渠道均匀流：验证不同渠道宽度",
+    "description": "",
     "config": {
         "width": 50.0,
         "length": 1000.0,
@@ -130,7 +130,7 @@ TEST_CASE_4_WIDE_CHANNEL = {
 # Test Case 5: Long Channel Uniform Flow
 TEST_CASE_5_LONG_CHANNEL = {
     "name": "TC5 - Long Channel Uniform Flow",
-    "description": "长渠道均匀流：验证较长的计算域",
+    "description": "",
     "config": {
         "width": 10.0,
         "length": 5000.0,
@@ -171,7 +171,7 @@ ALL_TEST_CASES = [
 TEST_SUITE_INFO = {
     "name": "HydroClaude Web Standard Test Suite",
     "version": "1.0.0",
-    "description": "标准测试案例集，验证明渠均匀流仿真功能",
+    "description": "",
     "total_cases": len(ALL_TEST_CASES),
     "categories": {
         "uniform_flow": 5

@@ -5,6 +5,14 @@
 
 通过修改参数快速运行多个工况
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import os
 import sys
@@ -65,7 +73,7 @@ def run_scenario_with_params(scenario_num, scenario_name, params_to_modify):
         elapsed = time.time() - start_time
         
         if result.returncode == 0:
-            print(f"✓ 工况{scenario_num}完成 (耗时: {elapsed:.1f}s)")
+            print(f" 工况{scenario_num}完成 (耗时: {elapsed:.1f}s)")
             
             # 整理结果
             results_dir = os.path.join(base_dir, "results")
@@ -94,23 +102,23 @@ def run_scenario_with_params(scenario_num, scenario_name, params_to_modify):
                     f.write(f"# 工况{scenario_num}: {scenario_name}\n\n")
                     f.write(f"## 参数修改\n\n")
                     for old, new in params_to_modify.items():
-                        f.write(f"- `{old}` → `{new}`\n")
+                        f.write(f"- `{old}` -> `{new}`\n")
                     f.write(f"\n## 运行时间\n\n{elapsed:.1f}秒\n\n")
-                    f.write(f"## 状态\n\n✅ 已完成\n")
+                    f.write(f"## 状态\n\n 已完成\n")
                 
                 print(f"  结果已保存到: {output_dir}")
             
             return True
         else:
-            print(f"✗ 工况{scenario_num}失败")
+            print(f" 工况{scenario_num}失败")
             print(f"  错误: {result.stderr[:500]}")
             return False
             
     except subprocess.TimeoutExpired:
-        print(f"✗ 工况{scenario_num}超时")
+        print(f" 工况{scenario_num}超时")
         return False
     except Exception as e:
-        print(f"✗ 工况{scenario_num}异常: {str(e)}")
+        print(f" 工况{scenario_num}异常: {str(e)}")
         return False
     finally:
         # 清理临时文件
@@ -180,15 +188,15 @@ def main():
     print(f"\n成功: {success_count}/{total_count}\n")
     
     for num, name, success in results:
-        status = "✓" if success else "✗"
+        status = "" if success else ""
         print(f"  {status} 工况{num}: {name}")
     
     print("\n" + "="*90)
     
     if success_count == total_count:
-        print("✓ 所有工况运行成功！".center(90))
+        print(" 所有工况运行成功！".center(90))
     else:
-        print(f"⚠ {total_count - success_count}个工况失败".center(90))
+        print(f" {total_count - success_count}个工况失败".center(90))
     
     print("="*90 + "\n")
 

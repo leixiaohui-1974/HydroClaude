@@ -1,0 +1,8 @@
+﻿python : D:\Users\lxh\miniconda3\python.exe: can't open file 'E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\web\\
+backend\\api_gateway\\commercial_grade_test.py': [Errno 2] No such file or directory
+所在位置 C:\Users\lxh\AppData\Local\Temp\ps-script-a0c27666-a244-4caa-810f-8759798f6af1.ps1:96 字符: 1
++ python commercial_grade_test.py 2>&1 | Tee-Object -Variable testOutpu ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (D:\Users\lxh\mi...le or directory:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

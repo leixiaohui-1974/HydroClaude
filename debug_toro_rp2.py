@@ -90,10 +90,10 @@ while solver.t < t_end and step_count < 200:
         print(f"  步{step_count}: t={solver.t:.3f}s, h=[{h_range[0]:.3f}, {h_range[1]:.3f}], u=[{u_range[0]:.3f}, {u_range[1]:.3f}]")
 
     if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
-        print(f"\n❌ 数值爆炸！")
+        print(f"\n 数值爆炸！")
         break
 
-print(f"\n✅ 模拟完成:")
+print(f"\n 模拟完成:")
 print(f"  总步数: {solver.step_count}")
 print(f"  最终时间: {solver.t:.6f} s")
 
@@ -118,7 +118,7 @@ print(f"\n误差分析:")
 print(f"  水深L2: {h_L2:.6f} m ({h_L2_rel:.2f}%)")
 print(f"  流速L2: {u_L2:.6f} m/s")
 print(f"  验收标准: < 8%")
-print(f"  状态: {'✅ 通过' if h_L2_rel < 8.0 else '❌ 失败'}")
+print(f"  状态: {' 通过' if h_L2_rel < 8.0 else ' 失败'}")
 
 # 检查数值解的范围
 print(f"\n数值解范围:")

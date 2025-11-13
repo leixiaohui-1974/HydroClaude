@@ -59,7 +59,7 @@ class TestCulvertGeometry:
         """Test hydraulic radius for half-full pipe"""
         geom = CulvertGeometry(shape='circular', diameter=1.0, length=20.0)
         R_h = geom.hydraulic_radius(depth=0.5)
-        # For half-full circular pipe, R_h ≈ 0.25 * D
+        # For half-full circular pipe, R_h ~= 0.25 * D
         assert 0.2 < R_h < 0.3, \
             f"Half-full R_h: got {R_h}, should be around 0.25"
 
@@ -355,13 +355,13 @@ class TestDerivatives:
             # (higher downstream depth -> less flow)
             assert dQ_dh_down < 0, \
                 f"Downstream derivative should be negative for outlet control, got {dQ_dh_down}"
-            print(f"✓ Outlet control confirmed: dQ/dh_down = {dQ_dh_down:.2f}")
+            print(f" Outlet control confirmed: dQ/dh_down = {dQ_dh_down:.2f}")
         else:
             # For inlet control, downstream effect is minimal
             # Just verify derivatives are reasonable
             assert np.isfinite(dQ_dh_down), \
                 f"Derivative should be finite, got {dQ_dh_down}"
-            print(f"ℹ Inlet control: dQ/dh_down = {dQ_dh_down:.2f} (minimal effect)")
+            print(f"[INFO] Inlet control: dQ/dh_down = {dQ_dh_down:.2f} (minimal effect)")
 
 
 class TestValidation:
@@ -380,8 +380,8 @@ class TestValidation:
 
         For submerged inlet control:
         Q = Cd * A * sqrt(2*g*(H - D/2))
-          = 0.47 * (π*0.6²) * sqrt(2*9.81*(1.5 - 0.6))
-          ≈ 2.35 m³/s
+          = 0.47 * (π*0.6^2) * sqrt(2*9.81*(1.5 - 0.6))
+          ~= 2.35 m^3/s
         """
         culvert = create_circular_culvert(
             position=0.0,

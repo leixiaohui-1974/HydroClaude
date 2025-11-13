@@ -1,0 +1,367 @@
+"""
+FVM-FDM对比测试
+
+对比Phase 3改进方案与原始FDM在3闸门问题上的精度
+
+测试系统：
+- 渠道长度：10000m
+- 3个闸门（positions: 2500m, 5000m, 7500m）
+- 目标流量：10 m³/s
+- 网格：301点
+
+对比方案：
+1. 原始FDM：Preissmann格式 + 平滑处理（smooth_weight=0.55）
+2. 改进FVM-FDM：守恒格式 + 闸门通量方程
+
+Author: Claude
+Date: 2025-10-23
+"""
+
+import sys
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    # DEPRECATED: Use HydrostaticCanalSolver instead
+# from solvers.single_canal_solver import SingleCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+from solvers.gate import SluiceGate
+
+
+def run_original_fdm_test():
+    """
+    运行原始FDM测试（Preissmann + 平滑）
+    """
+    print("=" * 70)
+    print("测试1: 原始FDM（Preissmann + 平滑）")
+    print("=" * 70)
+    print()
+
+    # 系统配置
+    canal_length = 10000.0
+    canal_width = 10.0
+    n_points = 301
+    bed_slope = 0.0005
+    manning_n = 0.025
+    Q_target = 10.0
+
+    # 三个闸门
+    gate1 = SluiceGate(position=2500.0, width=canal_width, opening=4.5, Cd=0.6)
+    gate2 = SluiceGate(position=5000.0, width=canal_width, opening=4.0, Cd=0.6)
+    gate3 = SluiceGate(position=7500.0, width=canal_width, opening=5.0, Cd=0.6)
+
+    # 创建原始求解器
+    solver = SingleCanalSolver(
+        total_length=canal_length,
+        structures=[gate1, gate2, gate3],
+        nx_total=n_points,
+        B=canal_width,
+        S0=bed_slope,
+        n=manning_n,
+        method='preissmann',
+        smooth_weight=0.55  # Phase 1找到的最优值
+    )
+
+    # 初始化
+    solver.reset_with_steady_state(Q_target)
+
+    # 求解
+    result = solver.solve_steady_state(
+        Q_target=Q_target,
+        max_iterations=10000,
+        convergence_tol=0.001,
+        check_interval=500,
+        verbose=True
+    )
+
+    # 获取结果
+    profile = solver.get_full_profile()
+    x, h, Q = profile['x'], profile['h'], profile['Q']
+
+    # 计算误差
+    Q_error = np.abs(Q - Q_target) / Q_target * 100
+    Q_max_error = np.max(Q_error)
+    Q_mean_error = np.mean(Q_error)
+
+    # 闸门流量
+    gate_flows = solver.get_gate_flows()
+    gate_errors = [abs(gf - Q_target) / Q_target * 100 for gf in gate_flows]
+
+    print()
+    print("结果:")
+    print(f"  最大流量误差: {Q_max_error:.4f}%")
+    print(f"  平均流量误差: {Q_mean_error:.4f}%")
+    print(f"  闸门流量误差: {gate_errors}")
+    print()
+
+    return {
+        'name': '原始FDM',
+        'x': x,
+        'h': h,
+        'Q': Q,
+        'max_error': Q_max_error,
+        'mean_error': Q_mean_error,
+        'gate_flows': gate_flows,
+        'gate_errors': gate_errors,
+        'converged': result['converged']
+    }
+
+
+def run_improved_fvm_fdm_test():
+    """
+    运行改进的FVM-FDM测试（守恒格式 + 闸门通量）
+    """
+    print("=" * 70)
+    print("测试2: 改进FVM-FDM（守恒格式 + 闸门通量）")
+    print("=" * 70)
+    print()
+
+    # 导入改进的求解器
+    from solvers.canal_solver_improved import CanalSolverImproved
+
+    # 系统配置
+    canal_length = 10000.0
+    canal_width = 10.0
+    n_points = 301
+    bed_slope = 0.0005
+    manning_n = 0.025
+    Q_target = 10.0
+
+    # 三个闸门
+    gate1 = SluiceGate(position=2500.0, width=canal_width, opening=4.5, Cd=0.6)
+    gate2 = SluiceGate(position=5000.0, width=canal_width, opening=4.0, Cd=0.6)
+    gate3 = SluiceGate(position=7500.0, width=canal_width, opening=5.0, Cd=0.6)
+
+    # 创建改进的求解器
+    # 注意：我们需要直接使用CanalSolverImproved
+    x_grid = np.linspace(0, canal_length, n_points)
+
+    solver_improved = CanalSolverImproved(
+        length=canal_length,
+        nx=n_points,
+        x_grid=x_grid,
+        B=canal_width,
+        S0=bed_slope,
+        n=manning_n,
+        method='preissmann',  # 基础方法（但会被覆盖为FVM）
+        use_gate_flux=True  # 使用闸门通量方程
+    )
+
+    # 设置闸门
+    solver_improved.structure_objects = [gate1, gate2, gate3]
+    solver_improved.structure_indices = []
+    for gate in [gate1, gate2, gate3]:
+        idx = np.argmin(np.abs(x_grid - gate.position))
+        solver_improved.structure_indices.append(idx)
+
+    # 初始化为均匀流
+    from utils.canal_utils import compute_steady_uniform_flow
+    h_uniform = compute_steady_uniform_flow(Q_target, canal_width, bed_slope, manning_n, 9.81)
+    solver_improved.h[:] = h_uniform
+    solver_improved.Q[:] = Q_target
+
+    # 求解稳态
+    print("开始求解稳态...")
+    print()
+
+    # 自适应时间步长
+    dx_min = np.min(np.diff(x_grid))
+    h_typical = 2.0
+    V_typical = Q_target / (canal_width * h_typical)
+    c_typical = np.sqrt(9.81 * h_typical)
+    CFL_target = 0.5
+    dt = CFL_target * dx_min / (V_typical + c_typical)
+    dt = max(0.1, min(dt, 1.0))
+
+    print(f"  时间步长: dt={dt:.3f}s (dx_min={dx_min:.2f}m)")
+    print()
+
+    t = 0.0
+    max_iterations = 10000
+    check_interval = 500
+    converged = False
+
+    for i in range(max_iterations):
+        # 计算下游边界
+        Q_downstream_avg = np.mean(solver_improved.Q[-10:])
+        h_downstream = compute_steady_uniform_flow(Q_downstream_avg, canal_width, bed_slope, manning_n, 9.81)
+
+        # 执行时间步
+        solver_improved.step(dt, Q_target, h_downstream, t=t)
+        t += dt
+
+        # 定期检查收敛
+        if i % check_interval == 0 and i > 0:
+            Q_avg = np.mean(solver_improved.Q[1:-1])
+            Q_error = abs(Q_avg - Q_target) / Q_target
+
+            # 获取闸门流量
+            gate_flows = [solver_improved.Q[idx] for idx in solver_improved.structure_indices]
+            gate_str = ', '.join([f"Q{j+1}={gf:.3f}" for j, gf in enumerate(gate_flows)])
+            print(f"  t={t:.0f}s: Q_avg={Q_avg:.4f} m³/s, 误差={Q_error*100:.4f}%, {gate_str}")
+
+            if Q_error < 0.001:
+                converged = True
+                print(f"\n 达到稳态 (i={i}, t={t:.0f}s)")
+                break
+
+    # 获取结果
+    x = x_grid
+    h = solver_improved.h.copy()
+    Q = solver_improved.Q.copy()
+
+    # 计算误差
+    Q_error = np.abs(Q - Q_target) / Q_target * 100
+    Q_max_error = np.max(Q_error)
+    Q_mean_error = np.mean(Q_error)
+
+    # 闸门流量
+    gate_flows = [Q[idx] for idx in solver_improved.structure_indices]
+    gate_errors = [abs(gf - Q_target) / Q_target * 100 for gf in gate_flows]
+
+    print()
+    print("结果:")
+    print(f"  最大流量误差: {Q_max_error:.4f}%")
+    print(f"  平均流量误差: {Q_mean_error:.4f}%")
+    print(f"  闸门流量误差: {gate_errors}")
+    print()
+
+    return {
+        'name': '改进FVM-FDM',
+        'x': x,
+        'h': h,
+        'Q': Q,
+        'max_error': Q_max_error,
+        'mean_error': Q_mean_error,
+        'gate_flows': gate_flows,
+        'gate_errors': gate_errors,
+        'converged': converged
+    }
+
+
+def plot_comparison(result_fdm, result_fvm):
+    """
+    绘制对比图
+    """
+    fig, axes = plt.subplots(3, 1, figsize=(14, 12))
+
+    Q_target = 10.0
+
+    # 水深对比
+    ax = axes[0]
+    ax.plot(result_fdm['x'], result_fdm['h'], 'b-', linewidth=2, label='原始FDM', alpha=0.7)
+    ax.plot(result_fvm['x'], result_fvm['h'], 'r--', linewidth=2, label='改进FVM-FDM', alpha=0.7)
+    ax.axvline(2500, color='gray', linestyle=':', alpha=0.5, label='闸门')
+    ax.axvline(5000, color='gray', linestyle=':', alpha=0.5)
+    ax.axvline(7500, color='gray', linestyle=':', alpha=0.5)
+    ax.set_xlabel('x [m]')
+    ax.set_ylabel('h [m]')
+    ax.set_title('水深剖面对比')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # 流量对比
+    ax = axes[1]
+    ax.plot(result_fdm['x'], result_fdm['Q'], 'b-', linewidth=2, label='原始FDM', alpha=0.7)
+    ax.plot(result_fvm['x'], result_fvm['Q'], 'r--', linewidth=2, label='改进FVM-FDM', alpha=0.7)
+    ax.axhline(Q_target, color='k', linestyle='--', linewidth=1.5, alpha=0.5, label=f'目标流量({Q_target} m³/s)')
+    ax.axvline(2500, color='gray', linestyle=':', alpha=0.5)
+    ax.axvline(5000, color='gray', linestyle=':', alpha=0.5)
+    ax.axvline(7500, color='gray', linestyle=':', alpha=0.5)
+    ax.set_xlabel('x [m]')
+    ax.set_ylabel('Q [m³/s]')
+    ax.set_title(f'流量剖面对比 (FDM误差: {result_fdm["max_error"]:.4f}%, FVM-FDM误差: {result_fvm["max_error"]:.4f}%)')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # 流量误差对比
+    ax = axes[2]
+    Q_error_fdm = np.abs(result_fdm['Q'] - Q_target) / Q_target * 100
+    Q_error_fvm = np.abs(result_fvm['Q'] - Q_target) / Q_target * 100
+    ax.plot(result_fdm['x'], Q_error_fdm, 'b-', linewidth=2, label='原始FDM', alpha=0.7)
+    ax.plot(result_fvm['x'], Q_error_fvm, 'r--', linewidth=2, label='改进FVM-FDM', alpha=0.7)
+    ax.axhline(0.5, color='g', linestyle='--', linewidth=1.5, alpha=0.5, label='目标精度(0.5%)')
+    ax.axvline(2500, color='gray', linestyle=':', alpha=0.5)
+    ax.axvline(5000, color='gray', linestyle=':', alpha=0.5)
+    ax.axvline(7500, color='gray', linestyle=':', alpha=0.5)
+    ax.set_xlabel('x [m]')
+    ax.set_ylabel('流量误差 [%]')
+    ax.set_title('流量误差对比')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('fvm_fdm_comparison.png', dpi=150, bbox_inches='tight')
+    print(" 保存对比图: fvm_fdm_comparison.png")
+    print()
+
+
+def main():
+    """
+    主测试函数
+    """
+    print("\n")
+    print("*" * 70)
+    print("*" + "  FVM-FDM对比测试 - Phase 3改进方案验证".center(68) + "*")
+    print("*" * 70)
+    print("\n")
+
+    # 运行测试
+    result_fdm = run_original_fdm_test()
+    result_fvm = run_improved_fvm_fdm_test()
+
+    # 绘制对比
+    plot_comparison(result_fdm, result_fvm)
+
+    # 生成总结报告
+    print("=" * 70)
+    print("总结报告")
+    print("=" * 70)
+    print()
+
+    print(f"{'方法':<20} {'最大误差':<15} {'平均误差':<15} {'收敛':<10}")
+    print("-" * 70)
+    print(f"{'原始FDM':<20} {result_fdm['max_error']:.4f}%{'':<8} {result_fdm['mean_error']:.4f}%{'':<8} {'' if result_fdm['converged'] else ''}")
+    print(f"{'改进FVM-FDM':<20} {result_fvm['max_error']:.4f}%{'':<8} {result_fvm['mean_error']:.4f}%{'':<8} {'' if result_fvm['converged'] else ''}")
+    print()
+
+    # 计算改进倍数
+    improvement = result_fdm['max_error'] / result_fvm['max_error'] if result_fvm['max_error'] > 0 else float('inf')
+    absolute_improvement = result_fdm['max_error'] - result_fvm['max_error']
+
+    print("改进效果:")
+    print(f"  精度提升倍数: {improvement:.2f}x")
+    print(f"  绝对误差降低: {absolute_improvement:.4f}%")
+    print()
+
+    # 与目标比较
+    fdm_baseline = 2.32  # Phase 1-2得到的最佳FDM精度
+    target = 0.5
+
+    print("与Phase 1-2基准比较:")
+    print(f"  FDM基准（Phase 1-2）: {fdm_baseline:.2f}%")
+    print(f"  原始FDM（本次）: {result_fdm['max_error']:.4f}%")
+    print(f"  改进FVM-FDM: {result_fvm['max_error']:.4f}%")
+    print(f"  目标精度: {target:.2f}%")
+    print()
+
+    if result_fvm['max_error'] < target:
+        print(f" 成功！FVM-FDM达到目标精度 {target}%！")
+    elif result_fvm['max_error'] < result_fdm['max_error']:
+        print(f" FVM-FDM改善了精度（改善{improvement:.2f}x），但未达到{target}%目标")
+    else:
+        print(f" FVM-FDM未改善精度")
+
+    print()
+    print("=" * 70)
+
+
+if __name__ == "__main__":
+    main()

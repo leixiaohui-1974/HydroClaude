@@ -66,13 +66,13 @@ def test_stable_simulation():
     )
 
     if response.status_code != 201:
-        print(f"❌ 创建失败: {response.status_code}")
+        print(f" 创建失败: {response.status_code}")
         print(response.text)
         return False
 
     task_data = response.json()
     task_id = task_data['task_id']
-    print(f"✅ 任务创建成功: {task_id[:8]}...")
+    print(f" 任务创建成功: {task_id[:8]}...")
 
     # 2. 等待完成
     print(f"\n[2/4] 等待仿真完成...")
@@ -93,18 +93,18 @@ def test_stable_simulation():
 
         if status == 'completed':
             duration = status_data.get('duration', 0)
-            print(f"\n✅ 仿真完成! 耗时: {duration:.3f}秒")
+            print(f"\n 仿真完成! 耗时: {duration:.3f}秒")
             break
         elif status == 'failed':
             error = status_data.get('error', 'Unknown')
-            print(f"\n❌ 仿真失败: {error}")
+            print(f"\n 仿真失败: {error}")
             return False
 
         time.sleep(interval)
         wait_time += interval
 
     if wait_time >= max_wait:
-        print(f"\n❌ 超时（{max_wait}秒）")
+        print(f"\n 超时（{max_wait}秒）")
         return False
 
     # 3. 获取结果
@@ -115,11 +115,11 @@ def test_stable_simulation():
     )
 
     if results_response.status_code != 200:
-        print(f"❌ 获取结果失败: {results_response.status_code}")
+        print(f" 获取结果失败: {results_response.status_code}")
         return False
 
     results = results_response.json()
-    print(f"✅ 结果获取成功")
+    print(f" 结果获取成功")
 
     # 4. 验证结果
     print(f"\n[4/4] 验证结果数据...")
@@ -129,10 +129,10 @@ def test_stable_simulation():
     missing_fields = [f for f in required_fields if f not in results]
 
     if missing_fields:
-        print(f"❌ 缺少字段: {missing_fields}")
+        print(f" 缺少字段: {missing_fields}")
         return False
 
-    print(f"✅ 数据结构完整")
+    print(f" 数据结构完整")
     print(f"  时间步数: {len(results['time'])}")
     print(f"  空间点数: {len(results['x'])}")
 
@@ -160,7 +160,7 @@ def test_stable_simulation():
     print(f"\n验证检查:")
     all_passed = True
     for name, passed, value in checks:
-        status = "✅" if passed else "❌"
+        status = "" if passed else ""
         print(f"  {status} {name}: {value}")
         if not passed:
             all_passed = False
@@ -179,9 +179,9 @@ def main():
     print(f"\n[0] 健康检查...")
     try:
         health = requests.get(f"{API_BASE}/health", timeout=5).json()
-        print(f"✅ 后端正常: {health.get('service')}")
+        print(f" 后端正常: {health.get('service')}")
     except Exception as e:
-        print(f"❌ 后端异常: {e}")
+        print(f" 后端异常: {e}")
         return 1
 
     # 运行测试
@@ -190,11 +190,11 @@ def main():
     # 总结
     print("\n" + "=" * 80)
     if success:
-        print("🎉 测试通过！工作流正常运行")
+        print(" 测试通过！工作流正常运行")
         print("=" * 80)
         return 0
     else:
-        print("⚠️  测试失败，请检查上述错误")
+        print("️  测试失败，请检查上述错误")
         print("=" * 80)
         return 1
 

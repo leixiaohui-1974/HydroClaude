@@ -1,0 +1,853 @@
+"""
+HydroClaude Engineering Case 04: Urban Drainage System
+HydroClaude 工程案例 04: 城市排涝系统
+
+This case demonstrates:
+此案例演示:
+- Urban stormwater drainage network / 城市雨洪排水管网
+- Preissmann Slot method for free-surface to pressurized flow / Preissmann Slot方法处理明满流转换
+- Rainfall-runoff simulation / 降雨径流模拟
+- Pump station coordinated operation / 泵站联合调度
+- Surface flooding analysis / 地表积水分析
+
+Author: HydroClaude Development Team
+Date: 2025-10-30
+"""
+
+import sys
+from pathlib import Path
+from typing import Dict, List, Tuple, Optional
+from dataclasses import dataclass
+import math
+
+# Add parent directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+try:
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from scipy.interpolate import interp1d
+    from scipy.integrate import odeint
+except ImportError as e:
+    print(f"Warning: {e}")
+    print("Please install required packages: pip install numpy matplotlib scipy")
+
+
+@dataclass
+class RainfallEvent:
+    """
+    Rainfall event data structure
+    降雨事件数据结构
+    """
+    duration: float  # Total duration (min) / 总持续时间(分钟)
+    total_depth: float  # Total rainfall depth (mm) / 总降雨量(毫米)
+    peak_intensity: float  # Peak intensity (mm/hr) / 峰值强度(毫米/小时)
+    time_to_peak: float  # Time to peak (min) / 达峰时间(分钟)
+    pattern: str  # 'chicago', 'uniform', 'triangular', 'custom'
+
+    def get_intensity(self, time_min: float) -> float:
+        """
+        Get rainfall intensity at given time
+        获取给定时刻的降雨强度
+
+        Args:
+            time_min: Time in minutes / 时间(分钟)
+
+        Returns:
+            Intensity in mm/hr / 强度(毫米/小时)
+        """
+        if time_min < 0 or time_min > self.duration:
+            return 0.0
+
+        if self.pattern == 'uniform':
+            return self.total_depth / self.duration * 60.0  # mm/hr
+
+        elif self.pattern == 'triangular':
+            if time_min <= self.time_to_peak:
+                # Rising limb / 上升段
+                return self.peak_intensity * (time_min / self.time_to_peak)
+            else:
+                # Falling limb / 下降段
+                remaining = self.duration - self.time_to_peak
+                return self.peak_intensity * (1.0 - (time_min - self.time_to_peak) / remaining)
+
+        elif self.pattern == 'chicago':
+            # Chicago design storm / 芝加哥设计暴雨
+            r = self.time_to_peak / self.duration  # Rainfall pattern factor
+            a = self.total_depth  # Rainfall depth parameter
+            b = 0.5  # Exponent (typical value for urban areas)
+
+            if time_min <= self.time_to_peak:
+                # Before peak / 峰值前
+                i = a * b / ((r * self.duration + time_min) ** (1 + b))
+            else:
+                # After peak / 峰值后
+                i = a * b / (((1 - r) * self.duration + self.duration - time_min) ** (1 + b))
+
+            return i * 60.0  # Convert to mm/hr
+
+        else:
+            return 0.0
+
+
+@dataclass
+class Catchment:
+    """
+    Urban catchment area properties
+    城市汇水区属性
+    """
+    area: float  # Area (ha) / 面积(公顷)
+    imperviousness: float  # Impervious fraction (0-1) / 不透水面积率(0-1)
+    width: float  # Characteristic width (m) / 特征宽度(米)
+    slope: float  # Average slope / 平均坡度
+    manning_n: float  # Manning's n for overland flow / 地表径流曼宁系数
+    depression_storage: float  # Depression storage (mm) / 洼蓄量(毫米)
+
+    def __post_init__(self):
+        """Calculate derived properties / 计算派生属性"""
+        # Time of concentration (Kirpich formula) / 汇流时间
+        self.tc = 0.0195 * (self.width ** 0.77) * (self.slope ** -0.385)  # minutes
+
+        # Runoff coefficient / 径流系数
+        self.runoff_coef = 0.05 + 0.9 * self.imperviousness
+
+
+class RationalMethodRunoff:
+    """
+    Rational method for runoff calculation
+    推理公式法计算径流
+
+    Q = C * i * A
+    where:
+      Q = peak runoff (L/s)
+      C = runoff coefficient
+      i = rainfall intensity (mm/hr)
+      A = drainage area (ha)
+    """
+
+    @staticmethod
+    def calculate_runoff(catchment: Catchment, intensity: float) -> float:
+        """
+        Calculate runoff using rational method
+        使用推理公式计算径流
+
+        Args:
+            catchment: Catchment properties / 汇水区属性
+            intensity: Rainfall intensity (mm/hr) / 降雨强度
+
+        Returns:
+            Runoff flow rate (m³/s) / 径流流量
+        """
+        # Q (m³/s) = C * i (mm/hr) * A (ha) / 360
+        q = catchment.runoff_coef * intensity * catchment.area / 360.0
+        return max(0.0, q)
+
+
+class PreissmannSlotPipe:
+    """
+    Pipe with Preissmann Slot for free-surface to pressurized flow transition
+    带Preissmann虚缝的管道，用于处理明满流转换
+
+    The Preissmann Slot is a narrow hypothetical slot at the crown of the pipe
+    that allows the Saint-Venant equations to be used for both free-surface
+    and pressurized flow conditions.
+
+    Preissmann虚缝是在管道顶部设置的一个假想狭缝，允许圣维南方程
+    同时处理明流和压力流工况。
+    """
+
+    def __init__(self,
+                 length: float,
+                 diameter: float,
+                 slope: float,
+                 manning_n: float,
+                 slot_width_ratio: float = 0.001):
+        """
+        Initialize Preissmann Slot pipe
+        初始化Preissmann虚缝管道
+
+        Args:
+            length: Pipe length (m) / 管道长度
+            diameter: Pipe diameter (m) / 管道直径
+            slope: Pipe slope / 管道坡度
+            manning_n: Manning's roughness coefficient / 曼宁粗糙系数
+            slot_width_ratio: Slot width as fraction of diameter / 虚缝宽度与直径之比
+        """
+        self.L = length
+        self.D = diameter
+        self.S0 = slope
+        self.n = manning_n
+        self.slot_ratio = slot_width_ratio
+
+        # Geometric properties / 几何特性
+        self.A_full = math.pi * (diameter / 2) ** 2  # Full pipe area
+        self.P_full = math.pi * diameter  # Full pipe perimeter
+        self.R_full = self.A_full / self.P_full  # Hydraulic radius at full
+
+        # Slot properties / 虚缝属性
+        self.slot_width = slot_width_ratio * diameter
+        self.slot_area_per_meter = self.slot_width  # Area per unit height in slot
+
+    def get_area(self, depth: float) -> float:
+        """
+        Get cross-sectional area at given depth
+        获取给定水深的过流面积
+
+        Args:
+            depth: Water depth (m) / 水深
+
+        Returns:
+            Area (m²) / 面积
+        """
+        if depth <= 0:
+            return 0.0
+        elif depth < self.D:
+            # Partially full (circular area) / 部分充满
+            theta = 2 * math.acos(1 - 2 * depth / self.D)
+            A = (self.D / 2) ** 2 * (theta - math.sin(theta)) / 2
+            return A
+        else:
+            # Pressurized (full pipe + slot) / 满管压力流(管道+虚缝)
+            h_slot = depth - self.D
+            A = self.A_full + self.slot_width * h_slot
+            return A
+
+    def get_wetted_perimeter(self, depth: float) -> float:
+        """
+        Get wetted perimeter at given depth
+        获取给定水深的湿周
+
+        Args:
+            depth: Water depth (m) / 水深
+
+        Returns:
+            Wetted perimeter (m) / 湿周
+        """
+        if depth <= 0:
+            return 0.0
+        elif depth < self.D:
+            # Partially full / 部分充满
+            theta = 2 * math.acos(1 - 2 * depth / self.D)
+            P = (self.D / 2) * theta
+            return P
+        else:
+            # Pressurized (approximately full perimeter) / 满管压力流
+            return self.P_full
+
+    def get_top_width(self, depth: float) -> float:
+        """
+        Get top width (for slot, this is the slot width)
+        获取水面宽度(对于虚缝，这是虚缝宽度)
+
+        Args:
+            depth: Water depth (m) / 水深
+
+        Returns:
+            Top width (m) / 水面宽度
+        """
+        if depth <= 0:
+            return 0.0
+        elif depth < self.D:
+            # Free surface / 明流
+            theta = 2 * math.acos(1 - 2 * depth / self.D)
+            T = self.D * math.sin(theta / 2)
+            return T
+        else:
+            # Pressurized (slot width) / 压力流(虚缝宽度)
+            return self.slot_width
+
+    def get_hydraulic_radius(self, depth: float) -> float:
+        """Get hydraulic radius / 获取水力半径"""
+        A = self.get_area(depth)
+        P = self.get_wetted_perimeter(depth)
+        return A / P if P > 0 else 0.0
+
+    def get_normal_depth(self, flow: float) -> float:
+        """
+        Calculate normal depth using Manning's equation
+        使用曼宁公式计算正常水深
+
+        Args:
+            flow: Flow rate (m³/s) / 流量
+
+        Returns:
+            Normal depth (m) / 正常水深
+        """
+        if flow <= 0:
+            return 0.0
+
+        # Use iteration to solve Manning's equation
+        # Q = (1/n) * A * R^(2/3) * S0^(1/2)
+        depth = self.D / 2  # Initial guess
+
+        for _ in range(50):
+            A = self.get_area(depth)
+            R = self.get_hydraulic_radius(depth)
+            Q_calc = (1.0 / self.n) * A * (R ** (2.0/3.0)) * math.sqrt(self.S0)
+
+            error = flow - Q_calc
+            if abs(error) < 1e-6:
+                break
+
+            # Adjust depth
+            if error > 0:
+                depth *= 1.05
+            else:
+                depth *= 0.95
+
+        return depth
+
+
+class DrainagePumpStation:
+    """
+    Drainage pump station with multiple pumps
+    排涝泵站（多台水泵）
+    """
+
+    def __init__(self,
+                 n_pumps: int,
+                 pump_capacity: float,
+                 design_head: float,
+                 start_level: float,
+                 stop_level: float):
+        """
+        Initialize pump station
+        初始化泵站
+
+        Args:
+            n_pumps: Number of pumps / 水泵数量
+            pump_capacity: Capacity per pump (m³/s) / 单泵流量
+            design_head: Design head (m) / 设计扬程
+            start_level: Water level to start pumps (m) / 启泵水位
+            stop_level: Water level to stop pumps (m) / 停泵水位
+        """
+        self.n_pumps = n_pumps
+        self.Q_pump = pump_capacity
+        self.H_design = design_head
+        self.h_start = start_level
+        self.h_stop = stop_level
+        self.pumps_running = 0
+
+    def update(self, water_level: float, dt: float) -> float:
+        """
+        Update pump operation based on water level
+        根据水位更新泵站运行
+
+        Args:
+            water_level: Current water level (m) / 当前水位
+            dt: Time step (s) / 时间步长
+
+        Returns:
+            Total pump discharge (m³/s) / 总抽排流量
+        """
+        # Start/stop logic with hysteresis / 启停逻辑（带滞后）
+        if water_level >= self.h_start:
+            # Start more pumps if needed / 需要时启动更多水泵
+            self.pumps_running = min(self.n_pumps,
+                                    int((water_level - self.h_stop) / (self.h_start - self.h_stop) * self.n_pumps) + 1)
+        elif water_level <= self.h_stop:
+            # Stop all pumps / 停止所有水泵
+            self.pumps_running = 0
+
+        # Total discharge / 总出流
+        return self.pumps_running * self.Q_pump
+
+
+class UrbanDrainageSystem:
+    """
+    Complete urban drainage system
+    完整城市排涝系统
+
+    System components / 系统组成:
+    - Multiple catchments with runoff generation / 多个汇水区产流
+    - Drainage pipe network with Preissmann Slot / 排水管网（含Preissmann虚缝）
+    - Pump stations for drainage / 排涝泵站
+    - Surface flooding analysis / 地表积水分析
+    """
+
+    def __init__(self, system_type: str = 'urban'):
+        """
+        Initialize urban drainage system
+        初始化城市排涝系统
+
+        Args:
+            system_type: System type ('urban', 'industrial', 'residential')
+        """
+        self.system_type = system_type
+        self.catchments: List[Catchment] = []
+        self.pipes: List[PreissmannSlotPipe] = []
+        self.pump_stations: List[DrainagePumpStation] = []
+        self.nodes: List[Dict] = []
+
+        # Simulation state / 模拟状态
+        self.time = 0.0
+        self.node_depths = []
+        self.node_flows = []
+        self.flooding_volumes = []
+
+        # Setup system / 设置系统
+        self._setup_catchments()
+        self._setup_drainage_network()
+        self._setup_pump_stations()
+
+    def _setup_catchments(self):
+        """
+        Setup urban catchments
+        设置城市汇水区
+        """
+        # Create 8 sub-catchments representing different urban areas
+        # 创建8个子汇水区，代表不同城市区域
+        catchment_configs = [
+            # (area_ha, imperviousness, width_m, slope, n, depression_mm)
+            (15.0, 0.75, 300, 0.005, 0.015, 2.0),  # High-density commercial / 高密度商业区
+            (20.0, 0.60, 350, 0.004, 0.018, 2.5),  # Medium-density residential / 中密度住宅区
+            (25.0, 0.50, 400, 0.003, 0.020, 3.0),  # Low-density residential / 低密度住宅区
+            (12.0, 0.85, 250, 0.006, 0.013, 1.5),  # Industrial area / 工业区
+            (18.0, 0.70, 320, 0.004, 0.016, 2.0),  # Mixed use / 混合用地
+            (22.0, 0.55, 380, 0.003, 0.019, 2.8),  # Suburban / 郊区
+            (10.0, 0.80, 280, 0.005, 0.014, 1.8),  # Urban core / 城市核心区
+            (16.0, 0.65, 310, 0.004, 0.017, 2.3),  # Transition zone / 过渡区
+        ]
+
+        for config in catchment_configs:
+            catchment = Catchment(
+                area=config[0],
+                imperviousness=config[1],
+                width=config[2],
+                slope=config[3],
+                manning_n=config[4],
+                depression_storage=config[5]
+            )
+            self.catchments.append(catchment)
+
+        print(f" Created {len(self.catchments)} catchments")
+        total_area = sum(c.area for c in self.catchments)
+        avg_imperv = np.mean([c.imperviousness for c in self.catchments])
+        print(f"  Total catchment area: {total_area:.1f} ha")
+        print(f"  Average imperviousness: {avg_imperv:.1%}")
+
+    def _setup_drainage_network(self):
+        """
+        Setup drainage pipe network
+        设置排水管网
+        """
+        # Create main drainage pipes (trunk lines)
+        # 创建主排水管道（主干线）
+        pipe_configs = [
+            # (length_m, diameter_m, slope, manning_n)
+            (500, 1.5, 0.003, 0.013),  # Main trunk 1 / 主干管1
+            (600, 1.8, 0.0025, 0.013), # Main trunk 2 / 主干管2
+            (400, 1.2, 0.004, 0.013),  # Branch 1 / 支管1
+            (450, 1.2, 0.0035, 0.013), # Branch 2 / 支管2
+            (350, 1.0, 0.005, 0.013),  # Branch 3 / 支管3
+            (380, 1.0, 0.0045, 0.013), # Branch 4 / 支管4
+            (700, 2.0, 0.002, 0.013),  # Outfall pipe / 出水管
+        ]
+
+        for config in pipe_configs:
+            pipe = PreissmannSlotPipe(
+                length=config[0],
+                diameter=config[1],
+                slope=config[2],
+                manning_n=config[3]
+            )
+            self.pipes.append(pipe)
+
+        # Create nodes / 创建节点
+        n_nodes = len(self.pipes) + 1
+        for i in range(n_nodes):
+            self.nodes.append({
+                'id': i,
+                'elevation': 10.0 - i * 0.5,  # Gradually decreasing elevation
+                'storage_area': 20.0,  # Surface storage area (m²)
+                'depth': 0.0,
+                'inflow': 0.0,
+                'flooding': 0.0
+            })
+
+        print(f" Created {len(self.pipes)} pipes and {len(self.nodes)} nodes")
+
+    def _setup_pump_stations(self):
+        """
+        Setup pump stations
+        设置泵站
+        """
+        # Main pump station at outfall / 出水口主泵站
+        main_station = DrainagePumpStation(
+            n_pumps=4,
+            pump_capacity=2.5,  # m³/s per pump
+            design_head=8.0,
+            start_level=2.0,
+            stop_level=0.5
+        )
+        self.pump_stations.append(main_station)
+
+        # Secondary pump station / 辅助泵站
+        secondary_station = DrainagePumpStation(
+            n_pumps=2,
+            pump_capacity=1.5,  # m³/s per pump
+            design_head=6.0,
+            start_level=1.8,
+            stop_level=0.4
+        )
+        self.pump_stations.append(secondary_station)
+
+        print(f" Created {len(self.pump_stations)} pump stations")
+        total_capacity = sum(ps.n_pumps * ps.Q_pump for ps in self.pump_stations)
+        print(f"  Total pumping capacity: {total_capacity:.1f} m³/s")
+
+    def simulate_rainfall_event(self,
+                                rainfall: RainfallEvent,
+                                duration: float = 7200.0,
+                                dt: float = 60.0):
+        """
+        Simulate drainage system response to rainfall event
+        模拟降雨事件的排水系统响应
+
+        Args:
+            rainfall: Rainfall event / 降雨事件
+            duration: Total simulation duration (s) / 总模拟时长
+            dt: Time step (s) / 时间步长
+        """
+        print(f"\n{'='*70}")
+        print(f"Simulating rainfall event: {rainfall.pattern}")
+        print(f"Duration: {rainfall.duration:.0f} min, Total depth: {rainfall.total_depth:.1f} mm")
+        print(f"Peak intensity: {rainfall.peak_intensity:.1f} mm/hr")
+        print(f"{'='*70}\n")
+
+        n_steps = int(duration / dt)
+
+        # Initialize result arrays / 初始化结果数组
+        times = np.zeros(n_steps)
+        total_inflows = np.zeros(n_steps)
+        total_pump_flows = np.zeros(n_steps)
+        max_depths = np.zeros(n_steps)
+        flooding_rates = np.zeros(n_steps)
+        pipe_surcharges = np.zeros((n_steps, len(self.pipes)))
+
+        # Initialize node states / 初始化节点状态
+        for node in self.nodes:
+            node['depth'] = 0.0
+            node['flooding'] = 0.0
+
+        # Time-stepping loop / 时间步进循环
+        for step in range(n_steps):
+            t = step * dt
+            t_min = t / 60.0
+            times[step] = t
+
+            # Get rainfall intensity / 获取降雨强度
+            intensity = rainfall.get_intensity(t_min)
+
+            # Calculate runoff from each catchment / 计算各汇水区径流
+            total_runoff = 0.0
+            for catchment in self.catchments:
+                runoff = RationalMethodRunoff.calculate_runoff(catchment, intensity)
+                total_runoff += runoff
+
+            total_inflows[step] = total_runoff
+
+            # Simplified routing through pipes / 简化管道演进
+            # Distribute inflow to nodes / 将入流分配到节点
+            inflow_per_node = total_runoff / len(self.catchments)
+
+            for i, node in enumerate(self.nodes[:len(self.catchments)]):
+                node['inflow'] = inflow_per_node
+
+            # Update node depths / 更新节点水深
+            for i, node in enumerate(self.nodes):
+                # Mass balance / 水量平衡
+                inflow = node['inflow']
+
+                # Outflow through connected pipes / 通过连接管道的出流
+                outflow = 0.0
+                if i < len(self.pipes):
+                    pipe = self.pipes[i]
+                    # Simplified flow calculation / 简化流量计算
+                    if node['depth'] > 0:
+                        area = pipe.get_area(node['depth'])
+                        R = pipe.get_hydraulic_radius(node['depth'])
+                        outflow = (1.0 / pipe.n) * area * (R ** (2.0/3.0)) * math.sqrt(pipe.S0)
+
+                # Pump outflow / 泵站出流
+                pump_flow = 0.0
+                if i == len(self.nodes) - 1:  # Last node has pump station
+                    for pump_station in self.pump_stations:
+                        pump_flow += pump_station.update(node['depth'], dt)
+
+                total_pump_flows[step] += pump_flow
+
+                # Update depth / 更新水深
+                dV = (inflow - outflow - pump_flow) * dt
+                dh = dV / node['storage_area']
+                node['depth'] = max(0.0, node['depth'] + dh)
+
+                # Check for flooding / 检查地表积水
+                if i < len(self.pipes):
+                    pipe = self.pipes[i]
+                    if node['depth'] > pipe.D:
+                        node['flooding'] = node['depth'] - pipe.D
+                        flooding_rates[step] += node['flooding'] * node['storage_area'] / dt
+                    else:
+                        node['flooding'] = 0.0
+
+            # Record maximum depth / 记录最大水深
+            max_depths[step] = max(node['depth'] for node in self.nodes)
+
+            # Record pipe surcharge / 记录管道超载
+            for j, pipe in enumerate(self.pipes):
+                if j < len(self.nodes):
+                    surcharge_ratio = self.nodes[j]['depth'] / pipe.D
+                    pipe_surcharges[step, j] = min(surcharge_ratio, 1.5)
+
+            # Progress indicator / 进度指示
+            if step % 20 == 0:
+                progress = (step + 1) / n_steps * 100
+                print(f"Progress: {progress:5.1f}% | Time: {t/60:6.1f} min | "
+                      f"Inflow: {total_runoff:6.2f} m³/s | "
+                      f"Max depth: {max_depths[step]:5.2f} m | "
+                      f"Pumps: {sum(ps.pumps_running for ps in self.pump_stations)} units")
+
+        print(f"\n Simulation completed\n")
+
+        # Store results / 存储结果
+        self.results = {
+            'times': times,
+            'inflows': total_inflows,
+            'pump_flows': total_pump_flows,
+            'max_depths': max_depths,
+            'flooding_rates': flooding_rates,
+            'pipe_surcharges': pipe_surcharges,
+            'rainfall': rainfall
+        }
+
+        return self.results
+
+    def analyze_results(self):
+        """
+        Analyze simulation results
+        分析模拟结果
+        """
+        if not hasattr(self, 'results'):
+            print("No results to analyze. Run simulation first.")
+            return
+
+        results = self.results
+
+        print(f"\n{'='*70}")
+        print(f"SIMULATION RESULTS ANALYSIS")
+        print(f"模拟结果分析")
+        print(f"{'='*70}\n")
+
+        # Peak values / 峰值
+        peak_inflow = np.max(results['inflows'])
+        peak_pump_flow = np.max(results['pump_flows'])
+        peak_depth = np.max(results['max_depths'])
+        total_flooding = np.sum(results['flooding_rates']) * (results['times'][1] - results['times'][0])
+
+        print(f"Peak Inflow / 峰值入流:           {peak_inflow:.2f} m³/s")
+        print(f"Peak Pump Flow / 峰值抽排:        {peak_pump_flow:.2f} m³/s")
+        print(f"Peak Depth / 峰值水深:            {peak_depth:.2f} m")
+        print(f"Total Flooding / 总积水量:        {total_flooding:.1f} m³")
+
+        # Pipe performance / 管道性能
+        print(f"\nPipe Performance / 管道性能:")
+        for i, pipe in enumerate(self.pipes):
+            max_surcharge = np.max(results['pipe_surcharges'][:, i])
+            status = "SURCHARGED" if max_surcharge > 1.0 else "OK"
+            print(f"  Pipe {i+1}: D={pipe.D:.1f}m, L={pipe.L:.0f}m, "
+                  f"Max surcharge={max_surcharge:.1%} [{status}]")
+
+        # Pump station performance / 泵站性能
+        print(f"\nPump Station Performance / 泵站性能:")
+        for i, ps in enumerate(self.pump_stations):
+            print(f"  Station {i+1}: {ps.n_pumps} pumps × {ps.Q_pump:.1f} m³/s, "
+                  f"Total capacity: {ps.n_pumps * ps.Q_pump:.1f} m³/s")
+
+        print(f"\n{'='*70}\n")
+
+    def plot_results(self, save_path: Optional[str] = None):
+        """
+        Plot simulation results
+        绘制模拟结果
+
+        Args:
+            save_path: Path to save figure / 保存图形路径
+        """
+        if not hasattr(self, 'results'):
+            print("No results to plot. Run simulation first.")
+            return
+
+        results = self.results
+        times_min = results['times'] / 60.0  # Convert to minutes
+
+        fig, axes = plt.subplots(3, 2, figsize=(14, 10))
+        fig.suptitle('Urban Drainage System Simulation Results\n城市排涝系统模拟结果',
+                     fontsize=14, fontweight='bold')
+
+        # 1. Rainfall intensity / 降雨强度
+        ax = axes[0, 0]
+        rainfall_intensities = [results['rainfall'].get_intensity(t) for t in times_min]
+        ax.plot(times_min, rainfall_intensities, 'b-', linewidth=2)
+        ax.set_xlabel('Time / 时间 (min)')
+        ax.set_ylabel('Intensity / 强度 (mm/hr)')
+        ax.set_title('Rainfall Intensity / 降雨强度')
+        ax.grid(True, alpha=0.3)
+
+        # 2. Inflow and pump flow / 入流与抽排流量
+        ax = axes[0, 1]
+        ax.plot(times_min, results['inflows'], 'r-', linewidth=2, label='Inflow / 入流')
+        ax.plot(times_min, results['pump_flows'], 'g-', linewidth=2, label='Pump flow / 抽排')
+        ax.set_xlabel('Time / 时间 (min)')
+        ax.set_ylabel('Flow / 流量 (m³/s)')
+        ax.set_title('System Flows / 系统流量')
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+
+        # 3. Maximum node depth / 最大节点水深
+        ax = axes[1, 0]
+        ax.plot(times_min, results['max_depths'], 'purple', linewidth=2)
+        ax.axhline(y=np.mean([p.D for p in self.pipes]), color='orange',
+                   linestyle='--', label='Avg pipe diameter / 平均管径')
+        ax.set_xlabel('Time / 时间 (min)')
+        ax.set_ylabel('Depth / 水深 (m)')
+        ax.set_title('Maximum Node Depth / 最大节点水深')
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+
+        # 4. Flooding rate / 积水率
+        ax = axes[1, 1]
+        ax.plot(times_min, results['flooding_rates'], 'darkred', linewidth=2)
+        ax.fill_between(times_min, 0, results['flooding_rates'], alpha=0.3, color='red')
+        ax.set_xlabel('Time / 时间 (min)')
+        ax.set_ylabel('Flooding rate / 积水率 (m³/s)')
+        ax.set_title('Surface Flooding / 地表积水')
+        ax.grid(True, alpha=0.3)
+
+        # 5. Pipe surcharge ratios / 管道超载率
+        ax = axes[2, 0]
+        for i in range(min(4, len(self.pipes))):
+            ax.plot(times_min, results['pipe_surcharges'][:, i],
+                   linewidth=1.5, label=f'Pipe {i+1}')
+        ax.axhline(y=1.0, color='red', linestyle='--', linewidth=2, label='Full pipe / 满管')
+        ax.set_xlabel('Time / 时间 (min)')
+        ax.set_ylabel('Surcharge ratio / 超载率')
+        ax.set_title('Pipe Surcharge / 管道超载')
+        ax.legend(ncol=2)
+        ax.grid(True, alpha=0.3)
+
+        # 6. Cumulative volumes / 累积水量
+        ax = axes[2, 1]
+        dt = results['times'][1] - results['times'][0]
+        cum_inflow = np.cumsum(results['inflows']) * dt
+        cum_pump = np.cumsum(results['pump_flows']) * dt
+        cum_flooding = np.cumsum(results['flooding_rates']) * dt
+
+        ax.plot(times_min, cum_inflow, 'r-', linewidth=2, label='Cumulative inflow / 累积入流')
+        ax.plot(times_min, cum_pump, 'g-', linewidth=2, label='Cumulative pumped / 累积抽排')
+        ax.plot(times_min, cum_flooding, 'darkred', linewidth=2, label='Cumulative flooding / 累积积水')
+        ax.set_xlabel('Time / 时间 (min)')
+        ax.set_ylabel('Volume / 水量 (m³)')
+        ax.set_title('Cumulative Volumes / 累积水量')
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+
+        plt.tight_layout()
+
+        if save_path:
+            plt.savefig(save_path, dpi=300, bbox_inches='tight')
+            print(f" Figure saved to: {save_path}")
+        else:
+            plt.savefig('case_04_urban_drainage_results.png', dpi=300, bbox_inches='tight')
+            print(f" Figure saved to: case_04_urban_drainage_results.png")
+
+        plt.close()
+
+
+def main():
+    """
+    Main function to run Case 04 demonstration
+    主函数运行案例04演示
+    """
+    print("\n" + "="*70)
+    print("HydroClaude Case 04: Urban Drainage System")
+    print("HydroClaude 案例04: 城市排涝系统")
+    print("="*70 + "\n")
+
+    # Create drainage system / 创建排涝系统
+    print("Initializing urban drainage system...")
+    drainage = UrbanDrainageSystem(system_type='urban')
+
+    # Define design storm event / 定义设计暴雨
+    print("\nDefining design storm event...")
+
+    # 50-year return period Chicago storm / 50年一遇芝加哥暴雨
+    design_storm = RainfallEvent(
+        duration=120.0,  # 2 hours / 2小时
+        total_depth=100.0,  # 100 mm
+        peak_intensity=180.0,  # 180 mm/hr
+        time_to_peak=40.0,  # Peak at 40 min / 40分钟达峰
+        pattern='chicago'
+    )
+
+    print(f"  Storm type: {design_storm.pattern}")
+    print(f"  Duration: {design_storm.duration} min")
+    print(f"  Total depth: {design_storm.total_depth} mm")
+    print(f"  Peak intensity: {design_storm.peak_intensity} mm/hr")
+
+    # Run simulation / 运行模拟
+    print("\nRunning simulation...")
+    results = drainage.simulate_rainfall_event(
+        rainfall=design_storm,
+        duration=7200.0,  # 2 hours simulation / 2小时模拟
+        dt=60.0  # 1-minute time step / 1分钟时间步长
+    )
+
+    # Analyze results / 分析结果
+    drainage.analyze_results()
+
+    # Plot results / 绘制结果
+    print("Generating plots...")
+    drainage.plot_results()
+
+    print("\n" + "="*70)
+    print(" Case 04 simulation completed successfully!")
+    print(" 案例04模拟成功完成!")
+    print("="*70 + "\n")
+
+    # Additional scenario: Extreme storm / 额外场景：极端暴雨
+    print("\n" + "="*70)
+    print("Running additional scenario: 100-year extreme storm")
+    print("运行额外场景: 百年一遇极端暴雨")
+    print("="*70 + "\n")
+
+    extreme_storm = RainfallEvent(
+        duration=180.0,  # 3 hours / 3小时
+        total_depth=150.0,  # 150 mm
+        peak_intensity=250.0,  # 250 mm/hr
+        time_to_peak=60.0,  # Peak at 60 min / 60分钟达峰
+        pattern='chicago'
+    )
+
+    # Run extreme storm simulation / 运行极端暴雨模拟
+    drainage2 = UrbanDrainageSystem(system_type='urban')
+    results_extreme = drainage2.simulate_rainfall_event(
+        rainfall=extreme_storm,
+        duration=10800.0,  # 3 hours / 3小时
+        dt=60.0
+    )
+
+    drainage2.analyze_results()
+    drainage2.plot_results(save_path='case_04_urban_drainage_extreme.png')
+
+    print("\n" + "="*70)
+    print(" All simulations completed!")
+    print(" 所有模拟完成!")
+    print("\n Output files:")
+    print("  - case_04_urban_drainage_results.png (Design storm / 设计暴雨)")
+    print("  - case_04_urban_drainage_extreme.png (Extreme storm / 极端暴雨)")
+    print("="*70 + "\n")
+
+
+if __name__ == '__main__':
+    main()

@@ -12,7 +12,13 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
 from physics.steady_saint_venant import SteadySaintVenantSystem
-from solvers.hybrid_solver import HybridSolver
+try:
+    from solvers.hybrid_solver import HybridSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 from utils.canal_utils import compute_steady_uniform_flow
 
@@ -38,7 +44,7 @@ def test_simple_gate():
 
     print(f"场景: 单闸门")
     print(f"  网格: {nx}点, {length}m")
-    print(f"  流量: {Q_target} m³/s")
+    print(f"  流量: {Q_target} m^3/s")
     print(f"  均匀流水深: {h_uniform:.4f} m")
     print()
 
@@ -54,7 +60,7 @@ def test_simple_gate():
         h_downstream=h_uniform
     )
 
-    # 初值（均匀流）
+    # 初值均匀流
     h_init = np.ones(nx) * h_uniform
     Q_init = np.ones(nx) * Q_target
     U_init = system.pack_state(h_init, Q_init)
@@ -80,11 +86,11 @@ def test_simple_gate():
     print("=" * 100)
     print("最终结果")
     print("=" * 100)
-    print(f"  收敛: {'✅' if info['converged'] else '❌'}")
+    print(f"  收敛: {'' if info['converged'] else ''}")
     print(f"  总迭代: {info['total_iterations']}")
     print(f"  总用时: {info['total_time']:.4f}s")
     print(f"  水深: {h_sol.min():.4f} - {h_sol.max():.4f} m")
-    print(f"  流量: {Q_sol.min():.4f} - {Q_sol.max():.4f} m³/s")
+    print(f"  流量: {Q_sol.min():.4f} - {Q_sol.max():.4f} m^3/s")
     print()
 
     # 对比纯Newton
@@ -127,11 +133,11 @@ def test_simple_gate():
 
     print()
     print(f"纯Newton结果:")
-    print(f"  收敛: {'✅' if info_newton['converged'] else '❌'}")
+    print(f"  收敛: {'' if info_newton['converged'] else ''}")
     print(f"  迭代: {info_newton['iterations']}")
     print(f"  用时: {time_newton:.4f}s")
     print(f"  水深: {h_newton.min():.4f} - {h_newton.max():.4f} m")
-    print(f"  流量: {Q_newton.min():.4f} - {Q_newton.max():.4f} m³/s")
+    print(f"  流量: {Q_newton.min():.4f} - {Q_newton.max():.4f} m^3/s")
     print()
 
 

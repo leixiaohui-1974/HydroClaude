@@ -12,7 +12,13 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.godunov_fvm_network_v2 import GodunvFVMNetworkV2, NodeType
+try:
+    from solvers.godunov_fvm_network_v2 import GodunvFVMNetworkV2, NodeType
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from utils.canal_utils import compute_steady_uniform_flow
 import numpy as np
 
@@ -36,7 +42,7 @@ e2 = network.add_edge('E2', 'N2', 'N3', width=10.0, length=1000.0, n_cells=50,
 # 计算均匀流水深
 Q_target = 50.0
 h_uniform = compute_steady_uniform_flow(Q_target, 10.0, 0.001, 0.025)
-print(f"\n目标流量: {Q_target} m³/s")
+print(f"\n目标流量: {Q_target} m^3/s")
 print(f"均匀流水深: {h_uniform:.3f} m")
 
 # 初始化
@@ -44,7 +50,7 @@ network.initialize_network(h_default=h_uniform, Q_default=Q_target)
 
 print("\n网络拓扑：串联")
 print("  N1(SOURCE) --E1--> N2(INTERNAL) --E2--> N3(SINK)")
-print(f"\n初始总质量: {network.initial_mass:.2f} m³")
+print(f"\n初始总质量: {network.initial_mass:.2f} m^3")
 
 # 运行
 print("\n推进500步...")
@@ -59,12 +65,12 @@ for i in range(max_steps):
             
             # 检查NaN
             if np.isnan(mass_error):
-                print(f"  ❌ 步数 {i+1}: 出现NaN，停止")
+                print(f"   步数 {i+1}: 出现NaN，停止")
                 break
             
             print(f"  步数 {i+1:4d}, t={network.t:6.1f}s, 质量误差={mass_error:+.4f}%")
     except Exception as e:
-        print(f"  ❌ 步数 {i+1}: 异常 - {str(e)}")
+        print(f"   步数 {i+1}: 异常 - {str(e)}")
         break
 
 # 最终结果
@@ -80,11 +86,11 @@ try:
     print(f"  质量误差: {mass_error:.4f}%")
     
     if np.isnan(mass_error):
-        print(f"  状态: ❌ NaN（数值不稳定）")
+        print(f"  状态:  NaN（数值不稳定）")
     elif abs(mass_error) < 1.0:
-        print(f"  状态: ✅ 优秀")
+        print(f"  状态:  优秀")
     else:
-        print(f"  状态: ⚠️ 需改进")
+        print(f"  状态: ️ 需改进")
 
     print(f"\n节点流量平衡：")
     for node_id in ['N1', 'N2', 'N3']:
@@ -97,6 +103,6 @@ try:
         edge_error = state['edges'][edge_id]['mass_error']
         print(f"  {edge_id}: {edge_error:.4f}%")
 except Exception as e:
-    print(f"\n❌ 无法获取结果: {str(e)}")
+    print(f"\n 无法获取结果: {str(e)}")
 
 print("\n" + "=" * 80)

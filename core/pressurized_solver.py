@@ -563,7 +563,7 @@ if __name__ == "__main__":
 
         plt.tight_layout()
         plt.savefig('pressurized_flow_test.png', dpi=150, bbox_inches='tight')
-        print(f"\n✓ 测试结果已保存到: pressurized_flow_test.png")
+        print(f"\n 测试结果已保存到: pressurized_flow_test.png")
 
     except ImportError:
         print("\n(Matplotlib未安装，跳过绘图)")

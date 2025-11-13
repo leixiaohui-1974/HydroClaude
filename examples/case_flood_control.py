@@ -3,15 +3,15 @@
 """
 工程案例2: 防洪调度优化
 
-场景：水库泄洪对下游渠道的影响分析
-目标：对比不同泄洪方案，选择最优策略
+场景水库泄洪对下游渠道的影响分析
+目标对比不同泄洪方案选择最优策略
 
-包含：
-1. 方案A: 快速泄洪（大流量短时间）
-2. 方案B: 缓慢泄洪（小流量长时间）
-3. 方案C: 渐变泄洪（逐步增加）
+包含
+1. 方案A: 快速泄洪大流量短时间
+2. 方案B: 缓慢泄洪小流量长时间
+3. 方案C: 渐变泄洪逐步增加
 
-分析：
+分析
 - 下游最大水深
 - 洪峰到达时间
 - 风险评估
@@ -28,6 +28,8 @@ from solvers.godunov_fvm_solver import GodunvFVMSolver
 from utils.canal_utils import compute_steady_uniform_flow
 from utils.hydraulic_tools import HydraulicTools
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 print("=" * 80)
@@ -47,9 +49,9 @@ print(f"  长度: {L/1000} km")
 print(f"  底坡: {S0}")
 print(f"  糙率: {n}")
 
-# 初始流量（基流）
+# 初始流量基流
 Q_base = 30.0
-print(f"\n初始基流: {Q_base} m³/s")
+print(f"\n初始基流: {Q_base} m^3/s")
 
 # 三个泄洪方案
 schemes = [
@@ -80,7 +82,7 @@ print(f"\n泄洪方案对比:")
 for i, scheme in enumerate(schemes, 1):
     print(f"\n{i}. {scheme['name']}")
     print(f"   {scheme['description']}")
-    print(f"   峰值流量: {scheme['Q_peak']} m³/s")
+    print(f"   峰值流量: {scheme['Q_peak']} m^3/s")
     print(f"   持续时间: {scheme['t_duration']/60:.0f} 分钟")
 
 # 运行每个方案
@@ -97,10 +99,10 @@ for scheme in schemes:
     solver = GodunvFVMSolver(
         width=B, length=L, n_cells=n_cells,
         manning_n=n, slope=S0,
-        cfl=0.5, order=1
+        cfl = 0.3, order=1
     )
     
-    # 初始化（基流）
+    # 初始化基流
     h_base = compute_steady_uniform_flow(Q_base, B, S0, n)
     h_init = np.ones(n_cells) * h_base
     Q_init = np.ones(n_cells) * Q_base
@@ -108,7 +110,11 @@ for scheme in schemes:
     bc_left = {'type': 'Q', 'value': Q_base}
     bc_right = {'type': 'h', 'value': h_base}
     
-    solver.initialize(h_init, Q_init, bc_left, bc_right)
+    # GodunvFVMSolver需要手动初始化
+    solver.h = h_init.copy()
+    solver.Q = Q_init.copy()
+    solver.bc_left = bc_left
+    solver.bc_right = bc_right
     
     # 模拟参数
     Q_peak = scheme['Q_peak']
@@ -129,7 +135,7 @@ for scheme in schemes:
     print(f"  总模拟时间: {t_total/60:.0f} 分钟")
     
     while t_sim < t_total and step_count < max_steps:
-        # 确定当前流量（线性增长到峰值，然后线性降回基流）
+        # 确定当前流量线性增长到峰值然后线性降回基流
         if t_sim < t_duration / 2:
             # 上升段
             Q_current = Q_base + (Q_peak - Q_base) * (t_sim / (t_duration / 2))
@@ -140,7 +146,7 @@ for scheme in schemes:
             # 恢复期
             Q_current = Q_base
         
-        # 更新边界（保持兼容性）
+        # 更新边界保持兼容性
         solver.bc_left = {'type': 'Q', 'value': Q_current}
         h_right = compute_steady_uniform_flow(Q_current, B, S0, n)
         solver.bc_right = {'type': 'h', 'value': h_right}
@@ -205,15 +211,15 @@ for result in results:
     peak_h = result['peak_h']
     
     if peak_h > h_safe:
-        risk = "🔴 高风险"
+        risk = " 高风险"
         safety_margin = (peak_h - h_safe) / h_safe * 100
         print(f"  {scheme_name}: {risk} (超出{safety_margin:.1f}%)")
     elif peak_h > h_safe * 0.9:
-        risk = "🟡 中等风险"
+        risk = " 中等风险"
         safety_margin = (h_safe - peak_h) / h_safe * 100
         print(f"  {scheme_name}: {risk} (余量{safety_margin:.1f}%)")
     else:
-        risk = "✅ 低风险"
+        risk = " 低风险"
         safety_margin = (h_safe - peak_h) / h_safe * 100
         print(f"  {scheme_name}: {risk} (余量{safety_margin:.1f}%)")
 
@@ -228,7 +234,7 @@ print(f"\n推荐方案: {recommended['scheme']['name']}")
 print(f"理由:")
 print(f"  1. 峰值水深最低: {recommended['peak_h']:.3f} m")
 print(f"  2. 风险最小")
-print(f"  3. 数值稳定（质量误差{recommended['mass_error'][-1]:.2f}%）")
+print(f"  3. 数值稳定质量误差{recommended['mass_error'][-1]:.2f}%")
 
 # 可视化
 try:
@@ -241,7 +247,7 @@ try:
                 label=result['scheme']['name'],
                 color=result['scheme']['color'], linewidth=2)
     ax1.set_xlabel('时间 (分钟)')
-    ax1.set_ylabel('上游流量 (m³/s)')
+    ax1.set_ylabel('上游流量 (m^3/s)')
     ax1.set_title('上游流量过程')
     ax1.legend()
     ax1.grid(True, alpha=0.3)
@@ -292,10 +298,10 @@ try:
                 f'{val:.2f}m', ha='center', va='bottom', fontsize=10, fontweight='bold')
     
     plt.tight_layout()
-    plt.savefig('/workspace/case_flood_control.png', dpi=150, bbox_inches='tight')
-    print(f"\n📊 分析图表已保存: case_flood_control.png")
+    plt.savefig('./case_flood_control.png', dpi=150, bbox_inches='tight')
+    print(f"\n 分析图表已保存: case_flood_control.png")
 except Exception as e:
-    print(f"\n⚠️ 可视化失败: {str(e)}")
+    print(f"\n 可视化失败: {str(e)}")
 
 # 工程建议
 print(f"\n" + "=" * 80)
@@ -303,20 +309,20 @@ print("工程建议")
 print("=" * 80)
 
 print(f"\n1. 调度策略:")
-print(f"   • 优先采用{recommended['scheme']['name']}")
-print(f"   • 峰值流量控制在{recommended['scheme']['Q_peak']} m³/s以内")
-print(f"   • 持续时间约{recommended['scheme']['t_duration']/60:.0f}分钟")
+print(f"   - 优先采用{recommended['scheme']['name']}")
+print(f"   - 峰值流量控制在{recommended['scheme']['Q_peak']} m^3/s以内")
+print(f"   - 持续时间约{recommended['scheme']['t_duration']/60:.0f}分钟")
 
 print(f"\n2. 安全措施:")
-print(f"   • 设置水深监测点（每500m一个）")
-print(f"   • 水深超过{h_safe*0.8:.1f}m时预警")
-print(f"   • 水深超过{h_safe:.1f}m时停止泄洪")
+print(f"   - 设置水深监测点每500m一个")
+print(f"   - 水深超过{h_safe*0.8:.1f}m时预警")
+print(f"   - 水深超过{h_safe:.1f}m时停止泄洪")
 
 print(f"\n3. 应急预案:")
-print(f"   • 准备备用泄洪通道")
-print(f"   • 下游居民提前通知")
-print(f"   • 24小时监测")
+print(f"   - 准备备用泄洪通道")
+print(f"   - 下游居民提前通知")
+print(f"   - 24小时监测")
 
 print(f"\n" + "=" * 80)
-print("✅ 防洪调度分析完成！")
+print(" 防洪调度分析完成")
 print("=" * 80)

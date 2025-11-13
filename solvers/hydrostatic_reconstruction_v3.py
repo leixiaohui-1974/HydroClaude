@@ -1,12 +1,12 @@
 """
-静水重构法 v3 - 正确的边界条件处理
+ v3 - 
 
-关键改进：使用虚拟单元（ghost cells）确保边界单元也满足良平衡性质
+ghost cells
 
-边界条件类型：
-1. 周期边界（Periodic）
-2. 反射边界（Reflective/Wall）
-3. 外推边界（Extrapolation）
+
+1. Periodic
+2. Reflective/Wall
+3. Extrapolation
 """
 
 import numpy as np
@@ -16,21 +16,21 @@ from enum import Enum
 
 
 class BoundaryType(Enum):
-    """边界条件类型"""
-    PERIODIC = "periodic"          # 周期边界
-    REFLECTIVE = "reflective"      # 反射边界（固壁）
-    EXTRAPOLATION = "extrapolation"  # 外推边界
-    TRANSMISSIVE = "transmissive"  # 透射边界（自然边界）
+    """"""
+    PERIODIC = "periodic"          # 
+    REFLECTIVE = "reflective"      # 
+    EXTRAPOLATION = "extrapolation"  # 
+    TRANSMISSIVE = "transmissive"  # 
 
 
 class WellBalancedSolverV3:
     """
-    良平衡求解器 v3 - 正确的边界条件
+     v3 - 
 
-    关键改进：
-    1. 虚拟单元（ghost cells）方法
-    2. 边界也进行静水重构
-    3. 确保边界单元的良平衡性
+    
+    1. ghost cells
+    2. 
+    3. 
     """
 
     def __init__(self,
@@ -39,13 +39,13 @@ class WellBalancedSolverV3:
                  bc_left: BoundaryType = BoundaryType.TRANSMISSIVE,
                  bc_right: BoundaryType = BoundaryType.TRANSMISSIVE):
         """
-        初始化
+        
 
-        参数:
-            g: 重力加速度
-            eps_dry: 干湿判定阈值
-            bc_left: 左边界条件
-            bc_right: 右边界条件
+        :
+            g: 
+            eps_dry: 
+            bc_left: 
+            bc_right: 
         """
         self.g = g
         self.eps_dry = eps_dry
@@ -59,62 +59,62 @@ class WellBalancedSolverV3:
         z: np.ndarray
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
-        设置虚拟单元（边界外侧的虚拟状态）
+        
 
-        参数:
-            h, hu, z: 物理单元数据 [n_cells]
+        :
+            h, hu, z:  [n_cells]
 
-        返回:
-            h_ext, hu_ext, z_ext: 扩展数据 [n_cells+2]（包含左右虚拟单元）
+        :
+            h_ext, hu_ext, z_ext:  [n_cells+2]
         """
         n_cells = len(h)
 
-        # 创建扩展数组（包含左右各1个虚拟单元）
+        # 1
         h_ext = np.zeros(n_cells + 2)
         hu_ext = np.zeros(n_cells + 2)
         z_ext = np.zeros(n_cells + 2)
 
-        # 复制物理单元数据到中间
+        # 
         h_ext[1:-1] = h
         hu_ext[1:-1] = hu
         z_ext[1:-1] = z
 
-        # 左边界虚拟单元（索引0）
+        # 0
         if self.bc_left == BoundaryType.TRANSMISSIVE:
-            # 透射：外推（保持水位，流速）
+            # 
             eta_0 = h[0] + z[0]
-            z_ext[0] = z[0]  # 底床外推
+            z_ext[0] = z[0]  # 
             h_ext[0] = eta_0 - z_ext[0]
             hu_ext[0] = hu[0]
 
         elif self.bc_left == BoundaryType.REFLECTIVE:
-            # 反射：镜像（水深相同，流速反向）
+            # 
             h_ext[0] = h[0]
-            hu_ext[0] = -hu[0]  # 流速反向
+            hu_ext[0] = -hu[0]  # 
             z_ext[0] = z[0]
 
         elif self.bc_left == BoundaryType.EXTRAPOLATION:
-            # 外推：零梯度
+            # 
             h_ext[0] = h[0]
             hu_ext[0] = hu[0]
             z_ext[0] = z[0]
 
-        # 右边界虚拟单元（索引n_cells+1）
+        # n_cells+1
         if self.bc_right == BoundaryType.TRANSMISSIVE:
-            # 透射：外推
+            # 
             eta_n = h[-1] + z[-1]
-            z_ext[-1] = z[-1]  # 底床外推
+            z_ext[-1] = z[-1]  # 
             h_ext[-1] = eta_n - z_ext[-1]
             hu_ext[-1] = hu[-1]
 
         elif self.bc_right == BoundaryType.REFLECTIVE:
-            # 反射：镜像
+            # 
             h_ext[-1] = h[-1]
             hu_ext[-1] = -hu[-1]
             z_ext[-1] = z[-1]
 
         elif self.bc_right == BoundaryType.EXTRAPOLATION:
-            # 外推：零梯度
+            # 
             h_ext[-1] = h[-1]
             hu_ext[-1] = hu[-1]
             z_ext[-1] = z[-1]
@@ -124,7 +124,7 @@ class WellBalancedSolverV3:
     def reconstruct_interface(
         self, h_L: float, z_L: float, h_R: float, z_R: float
     ) -> Tuple[float, float]:
-        """静水重构"""
+        """"""
         eta_L = h_L + z_L
         eta_R = h_R + z_R
         z_interface = max(z_L, z_R)
@@ -137,7 +137,7 @@ class WellBalancedSolverV3:
     def hll_flux(
         self, h_L: float, hu_L: float, h_R: float, hu_R: float
     ) -> Tuple[float, float]:
-        """HLL Riemann求解器"""
+        """HLL Riemann"""
         if h_L < self.eps_dry and h_R < self.eps_dry:
             return 0.0, 0.0
 
@@ -194,28 +194,28 @@ class WellBalancedSolverV3:
         n: float = 0.0
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
-        完整的良平衡时间步（带正确边界条件）
+        
 
-        返回:
+        :
             (F_mass, F_momentum, S_mass, S_momentum)
         """
         n_cells = len(h)
 
-        # Step 1: 设置虚拟单元
+        # Step 1: 
         h_ext, hu_ext, z_ext = self.setup_ghost_cells(h, hu, z)
 
-        # 存储通量（n_cells+1个界面，包括两个边界）
+        # n_cells+1
         F_mass = np.zeros(n_cells + 1)
         F_momentum = np.zeros(n_cells + 1)
 
-        # 存储重构水深（用于源项计算）
-        # h_star[i] = (从左看, 从右看) 对于界面i
+        # 
+        # h_star[i] = (, ) i
         h_star_interfaces = np.zeros((n_cells + 1, 2))
 
-        # Step 2: 计算所有界面的通量（包括边界）
+        # Step 2: 
         for i in range(n_cells + 1):
-            # 界面i在扩展数组中是单元i和i+1之间
-            # 对应物理单元：界面0是虚拟单元和单元0，界面n_cells是单元n_cells-1和虚拟单元
+            # iii+1
+            # 00n_cellsn_cells-1
 
             h_L = h_ext[i]
             hu_L = hu_ext[i]
@@ -225,12 +225,12 @@ class WellBalancedSolverV3:
             hu_R = hu_ext[i+1]
             z_R = z_ext[i+1]
 
-            # 静水重构
+            # 
             h_star_L, h_star_R = self.reconstruct_interface(h_L, z_L, h_R, z_R)
             h_star_interfaces[i, 0] = h_star_L
             h_star_interfaces[i, 1] = h_star_R
 
-            # 重构流量
+            # 
             if h_L > self.eps_dry:
                 hu_star_L = hu_L * (h_star_L / h_L)
             else:
@@ -241,30 +241,30 @@ class WellBalancedSolverV3:
             else:
                 hu_star_R = 0.0
 
-            # HLL通量
+            # HLL
             F_mass[i], F_momentum[i] = self.hll_flux(
                 h_star_L, hu_star_L, h_star_R, hu_star_R
             )
 
-        # Step 3: 计算源项（使用重构水深）
+        # Step 3: 
         S_mass = np.zeros(n_cells)
         S_momentum = np.zeros(n_cells)
 
         for i in range(n_cells):
-            # 物理单元i的左界面是界面i，右界面是界面i+1
+            # iii+1
 
-            # 左界面重构水深（从右侧看，即从单元i看）
+            # i
             h_star_L = h_star_interfaces[i, 1]
 
-            # 右界面重构水深（从左侧看，即从单元i看）
+            # i
             h_star_R = h_star_interfaces[i+1, 0]
 
-            # 良平衡源项（Audusse公式）
+            # Audusse
             # S = g/2 * (h*_{i+1/2}² - h*_{i-1/2}²) / dx
-            # 注意：右界面在前！
+            # 
             S_gravity = 0.5 * self.g * (h_star_R**2 - h_star_L**2) / dx
 
-            # 摩擦项
+            # 
             if h[i] > self.eps_dry and abs(n) > 1e-10:
                 u_i = hu[i] / h[i]
                 R_i = h[i]
@@ -279,20 +279,20 @@ class WellBalancedSolverV3:
 
 
 def test_well_balanced_v3():
-    """测试v3的良平衡性质"""
+    """v3"""
     print("=" * 70)
-    print("良平衡性质测试 v3（正确的边界条件）")
+    print(" v3")
     print("=" * 70)
 
-    # 创建求解器（使用透射边界条件）
+    # 
     solver = WellBalancedSolverV3(
         g=9.81,
         bc_left=BoundaryType.TRANSMISSIVE,
         bc_right=BoundaryType.TRANSMISSIVE
     )
 
-    # 测试1: 平坦底床
-    print("\n【测试1: 平坦底床】")
+    # 1: 
+    print("\n1: ")
     print("-" * 70)
 
     n_cells = 10
@@ -301,11 +301,11 @@ def test_well_balanced_v3():
     h = 10.0 * np.ones(n_cells)
     hu = np.zeros(n_cells)
 
-    print(f"设置：z=0, h=10m, u=0")
+    print(f"z=0, h=10m, u=0")
 
     F_mass, F_momentum, S_mass, S_momentum = solver.solve_step(h, hu, z, dx, n=0.0)
 
-    # 计算残差
+    # 
     R_mass = np.zeros(n_cells)
     R_momentum = np.zeros(n_cells)
 
@@ -318,15 +318,15 @@ def test_well_balanced_v3():
     max_R_mass = np.max(np.abs(R_mass))
     max_R_momentum = np.max(np.abs(R_momentum))
 
-    print(f"残差：")
-    print(f"  质量：max={max_R_mass:.2e}")
-    print(f"  动量：max={max_R_momentum:.2e}")
+    print(f"")
+    print(f"  max={max_R_mass:.2e}")
+    print(f"  max={max_R_momentum:.2e}")
 
     test1_pass = max_R_mass < 1e-10 and max_R_momentum < 1e-10
-    print(f"结果：{'✓✓✓ PASS' if test1_pass else '✗✗✗ FAIL'}")
+    print(f"{'[OK][OK][OK] PASS' if test1_pass else '[FAIL][FAIL][FAIL] FAIL'}")
 
-    # 测试2: 复杂地形
-    print("\n【测试2: 复杂地形】")
+    # 2: 
+    print("\n2: ")
     print("-" * 70)
 
     n_cells = 10
@@ -334,31 +334,31 @@ def test_well_balanced_v3():
     x = np.linspace(0.5*dx, 10-0.5*dx, n_cells)
     z = np.zeros(n_cells)
 
-    # 创建不规则底床
+    # 
     for i in range(n_cells):
         if x[i] < 2.0:
             z[i] = 0.0
         elif x[i] < 3.0:
-            z[i] = 1.5  # 台阶
+            z[i] = 1.5  # 
         elif x[i] < 5.0:
-            z[i] = 1.5 + 0.5 * (x[i] - 3.0)  # 斜坡
+            z[i] = 1.5 + 0.5 * (x[i] - 3.0)  # 
         elif x[i] < 7.0:
-            z[i] = 2.5  # 平台
+            z[i] = 2.5  # 
         elif x[i] < 8.0:
-            z[i] = 2.5 - 1.0 * (x[i] - 7.0)  # 下降
+            z[i] = 2.5 - 1.0 * (x[i] - 7.0)  # 
         else:
             z[i] = 1.5
 
-    # 湖面静止
+    # 
     eta_const = 10.0
     h = eta_const - z
     hu = np.zeros(n_cells)
 
-    print(f"设置：不规则底床（z: {z.min():.1f}-{z.max():.1f}m），η=10m恒定，u=0")
+    print(f"z: {z.min():.1f}-{z.max():.1f}mη=10mu=0")
 
     F_mass, F_momentum, S_mass, S_momentum = solver.solve_step(h, hu, z, dx, n=0.0)
 
-    # 计算残差
+    # 
     R_mass = np.zeros(n_cells)
     R_momentum = np.zeros(n_cells)
 
@@ -372,31 +372,31 @@ def test_well_balanced_v3():
     max_R_momentum = np.max(np.abs(R_momentum))
     rms_R_momentum = np.sqrt(np.mean(R_momentum**2))
 
-    print(f"残差：")
-    print(f"  质量：max={max_R_mass:.2e}")
-    print(f"  动量：max={max_R_momentum:.2e}, RMS={rms_R_momentum:.2e}")
+    print(f"")
+    print(f"  max={max_R_mass:.2e}")
+    print(f"  max={max_R_momentum:.2e}, RMS={rms_R_momentum:.2e}")
 
     test2_pass = max_R_mass < 1e-10 and max_R_momentum < 1e-10
 
     if not test2_pass:
-        # 详细诊断
+        # 
         i_max = np.argmax(np.abs(R_momentum))
-        print(f"\n最大残差位置：单元{i_max}")
+        print(f"\n{i_max}")
         print(f"  h={h[i_max]:.3f}, z={z[i_max]:.3f}, η={h[i_max]+z[i_max]:.3f}")
         print(f"  F_L={F_momentum[i_max]:.3f}, F_R={F_momentum[i_max+1]:.3f}")
         print(f"  ∂F/∂x={-(F_momentum[i_max+1]-F_momentum[i_max])/dx:.3f}")
         print(f"  S={S_momentum[i_max]:.3f}")
         print(f"  R={R_momentum[i_max]:.3f}")
 
-    print(f"结果：{'✓✓✓ PASS' if test2_pass else '✗✗✗ FAIL'}")
+    print(f"{'[OK][OK][OK] PASS' if test2_pass else '[FAIL][FAIL][FAIL] FAIL'}")
 
-    # 总结
+    # 
     print("\n" + "=" * 70)
     overall_pass = test1_pass and test2_pass
     if overall_pass:
-        print("✓✓✓ 所有测试通过！良平衡性质验证成功！")
+        print("[OK][OK][OK] ")
     else:
-        print("部分测试失败")
+        print("")
     print("=" * 70)
 
     return overall_pass

@@ -88,7 +88,7 @@ class CanalSolver:
             B: 渠道宽度 (m)
             S0: 底坡
             n: Manning糙率
-            g: 重力加速度 (m/s²)
+            g: 重力加速度 (m/s^2)
             method: 数值方法 ('explicit', 'preissmann', 'hll')
         """
         self.length = length
@@ -209,7 +209,7 @@ class CanalSolver:
         # 显式预估
         h_pred, Q_pred = self.step_explicit(dt, Q_upstream, h_downstream)
 
-        # θ加权校正
+        # theta加权校正
         self.h = self.omega * ((1 - self.theta) * h_old + self.theta * h_pred) + (1 - self.omega) * h_old
         self.Q = self.omega * ((1 - self.theta) * Q_old + self.theta * Q_pred) + (1 - self.omega) * Q_old
 
@@ -332,7 +332,7 @@ class IDZIdentifier:
 
         返回:
             params: [K, tau, T]
-            fit_quality: 拟合质量指标 (R²)
+            fit_quality: 拟合质量指标 (R^2)
         """
         # 数据预处理：去除初始值偏移
         y_baseline = np.mean(y[:10])  # 前10个点的平均值作为基线
@@ -377,7 +377,7 @@ class IDZIdentifier:
             params, _ = curve_fit(IDZIdentifier.idz_response, t, y_data,
                                  p0=initial_guess, bounds=bounds, maxfev=5000)
 
-            # 计算拟合质量（R²）
+            # 计算拟合质量（R^2）
             y_fit = IDZIdentifier.idz_response(t, *params)
             ss_res = np.sum((y_data - y_fit) ** 2)
             ss_tot = np.sum((y_data - np.mean(y_data)) ** 2)
@@ -408,8 +408,8 @@ class IDZIdentifier:
         """
         results = {}
 
-        # 方向1: 上游流量 → 下游水深
-        print("  方向1: Q_upstream → h_downstream")
+        # 方向1: 上游流量 -> 下游水深
+        print("  方向1: Q_upstream -> h_downstream")
         params1, r2_1 = IDZIdentifier.estimate_parameters(
             time, data_dict['h_downstream'])
         results['Q_to_h'] = {
@@ -417,12 +417,12 @@ class IDZIdentifier:
             'tau': params1[1],
             'T': params1[2],
             'R2': r2_1,
-            'name': 'Q_upstream → h_downstream'
+            'name': 'Q_upstream -> h_downstream'
         }
-        print(f"    K={params1[0]:.6f}, tau={params1[1]:.2f}s, T={params1[2]:.2f}s, R²={r2_1:.4f}")
+        print(f"    K={params1[0]:.6f}, tau={params1[1]:.2f}s, T={params1[2]:.2f}s, R^2={r2_1:.4f}")
 
-        # 方向2: 上游流量 → 下游流量
-        print("  方向2: Q_upstream → Q_downstream")
+        # 方向2: 上游流量 -> 下游流量
+        print("  方向2: Q_upstream -> Q_downstream")
         params2, r2_2 = IDZIdentifier.estimate_parameters(
             time, data_dict['Q_downstream'])
         results['Q_to_Q'] = {
@@ -430,12 +430,12 @@ class IDZIdentifier:
             'tau': params2[1],
             'T': params2[2],
             'R2': r2_2,
-            'name': 'Q_upstream → Q_downstream'
+            'name': 'Q_upstream -> Q_downstream'
         }
-        print(f"    K={params2[0]:.6f}, tau={params2[1]:.2f}s, T={params2[2]:.2f}s, R²={r2_2:.4f}")
+        print(f"    K={params2[0]:.6f}, tau={params2[1]:.2f}s, T={params2[2]:.2f}s, R^2={r2_2:.4f}")
 
-        # 方向3: 下游水深 → 上游水深（回水效应）
-        print("  方向3: h_downstream → h_upstream")
+        # 方向3: 下游水深 -> 上游水深（回水效应）
+        print("  方向3: h_downstream -> h_upstream")
         params3, r2_3 = IDZIdentifier.estimate_parameters(
             time, data_dict['h_upstream'])
         results['h_to_h'] = {
@@ -443,12 +443,12 @@ class IDZIdentifier:
             'tau': params3[1],
             'T': params3[2],
             'R2': r2_3,
-            'name': 'h_downstream → h_upstream'
+            'name': 'h_downstream -> h_upstream'
         }
-        print(f"    K={params3[0]:.6f}, tau={params3[1]:.2f}s, T={params3[2]:.2f}s, R²={r2_3:.4f}")
+        print(f"    K={params3[0]:.6f}, tau={params3[1]:.2f}s, T={params3[2]:.2f}s, R^2={r2_3:.4f}")
 
-        # 方向4: 下游水深 → 上游流量
-        print("  方向4: h_downstream → Q_upstream")
+        # 方向4: 下游水深 -> 上游流量
+        print("  方向4: h_downstream -> Q_upstream")
         params4, r2_4 = IDZIdentifier.estimate_parameters(
             time, data_dict['Q_upstream'])
         results['h_to_Q'] = {
@@ -456,9 +456,9 @@ class IDZIdentifier:
             'tau': params4[1],
             'T': params4[2],
             'R2': r2_4,
-            'name': 'h_downstream → Q_upstream'
+            'name': 'h_downstream -> Q_upstream'
         }
-        print(f"    K={params4[0]:.6f}, tau={params4[1]:.2f}s, T={params4[2]:.2f}s, R²={r2_4:.4f}")
+        print(f"    K={params4[0]:.6f}, tau={params4[1]:.2f}s, T={params4[2]:.2f}s, R^2={r2_4:.4f}")
 
         return results
 
@@ -493,20 +493,20 @@ def run_step_response_test(method_name='PREISSMANN', scenario='upstream_flow'):
     n_steps = int(T_total / dt)
 
     # 初始边界条件
-    Q_init = 8.0  # m³/s
+    Q_init = 8.0  # m^3/s
     h_init = compute_steady_uniform_flow(Q_init, B, S0, n, g)
 
     print(f"\n初始稳态:")
-    print(f"  Q = {Q_init:.2f} m³/s")
+    print(f"  Q = {Q_init:.2f} m^3/s")
     print(f"  h = {h_init:.4f} m")
 
     # 阶跃扰动设置
     if scenario == 'upstream_flow':
-        # 场景1：上游流量阶跃（8.0 → 10.0 m³/s）
+        # 场景1：上游流量阶跃（8.0 -> 10.0 m^3/s）
         Q_step = 10.0
         h_down_base = h_init
         step_time = 100.0
-        print(f"\n阶跃扰动: 上游流量 {Q_init:.1f} → {Q_step:.1f} m³/s @ t={step_time}s")
+        print(f"\n阶跃扰动: 上游流量 {Q_init:.1f} -> {Q_step:.1f} m^3/s @ t={step_time}s")
 
     elif scenario == 'downstream_depth':
         # 场景2：下游水深阶跃（基准 + 0.2m）
@@ -514,7 +514,7 @@ def run_step_response_test(method_name='PREISSMANN', scenario='upstream_flow'):
         h_down_step = 0.2
         h_down_base = h_init
         step_time = 100.0
-        print(f"\n阶跃扰动: 下游水深 {h_down_base:.3f} → {h_down_base + h_down_step:.3f} m @ t={step_time}s")
+        print(f"\n阶跃扰动: 下游水深 {h_down_base:.3f} -> {h_down_base + h_down_step:.3f} m @ t={step_time}s")
 
     # 创建求解器
     solver = CanalSolver(length=length, nx=nx, B=B, S0=S0, n=n, g=g,
@@ -650,10 +650,10 @@ def generate_comparison_report(all_results):
     scenarios = ['upstream_flow', 'downstream_depth']
     directions = ['Q_to_h', 'Q_to_Q', 'h_to_h', 'h_to_Q']
     direction_names = {
-        'Q_to_h': 'Q_upstream → h_downstream',
-        'Q_to_Q': 'Q_upstream → Q_downstream',
-        'h_to_h': 'h_downstream → h_upstream',
-        'h_to_Q': 'h_downstream → Q_upstream'
+        'Q_to_h': 'Q_upstream -> h_downstream',
+        'Q_to_Q': 'Q_upstream -> Q_downstream',
+        'h_to_h': 'h_downstream -> h_upstream',
+        'h_to_Q': 'h_downstream -> Q_upstream'
     }
 
     for scenario in scenarios:
@@ -663,7 +663,7 @@ def generate_comparison_report(all_results):
         for direction in directions:
             print(f"\n{direction_names[direction]}:")
             print("-" * 120)
-            print(f"{'方法':<15} {'增益 K':>15} {'时滞 τ (s)':>15} {'时间常数 T (s)':>20} {'拟合质量 R²':>15}")
+            print(f"{'方法':<15} {'增益 K':>15} {'时滞 tau (s)':>15} {'时间常数 T (s)':>20} {'拟合质量 R^2':>15}")
             print("-" * 120)
 
             for method in methods:
@@ -700,8 +700,8 @@ def generate_visualizations(all_results):
                      fontsize=16, fontweight='bold')
 
         response_vars = ['h_downstream', 'Q_downstream', 'h_upstream', 'Q_upstream']
-        var_labels = ['h_downstream (m)', 'Q_downstream (m³/s)',
-                     'h_upstream (m)', 'Q_upstream (m³/s)']
+        var_labels = ['h_downstream (m)', 'Q_downstream (m^3/s)',
+                     'h_upstream (m)', 'Q_upstream (m^3/s)']
 
         for j, method in enumerate(methods):
             result = all_results[method][scenario]
@@ -736,8 +736,8 @@ def generate_visualizations(all_results):
 
                     # 添加参数标注
                     ax.text(0.02, 0.98,
-                           f"K={params['K']:.4f}\nτ={params['tau']:.1f}s\n"
-                           f"T={params['T']:.1f}s\nR²={params['R2']:.3f}",
+                           f"K={params['K']:.4f}\ntau={params['tau']:.1f}s\n"
+                           f"T={params['T']:.1f}s\nR^2={params['R2']:.3f}",
                            transform=ax.transAxes, fontsize=9,
                            verticalalignment='top',
                            bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
@@ -757,7 +757,7 @@ def generate_visualizations(all_results):
         plt.tight_layout()
         fig_path = helper.get_output_path(f'03_idz_{scenario}_refactored.png', subdir='figures')
         plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-        print(f"  ✓ Saved figure: {os.path.basename(fig_path)}")
+        print(f"   Saved figure: {os.path.basename(fig_path)}")
         plt.close()
 
     # 生成参数对比图
@@ -771,10 +771,10 @@ def generate_parameter_comparison_plot(all_results):
     scenarios = ['upstream_flow', 'downstream_depth']
     directions = ['Q_to_h', 'Q_to_Q', 'h_to_h', 'h_to_Q']
     direction_names = {
-        'Q_to_h': 'Q→h',
-        'Q_to_Q': 'Q→Q',
-        'h_to_h': 'h→h',
-        'h_to_Q': 'h→Q'
+        'Q_to_h': 'Q->h',
+        'Q_to_Q': 'Q->Q',
+        'h_to_h': 'h->h',
+        'h_to_Q': 'h->Q'
     }
 
     fig, axes = plt.subplots(3, 2, figsize=(16, 12))
@@ -800,7 +800,7 @@ def generate_parameter_comparison_plot(all_results):
         ax.legend()
         ax.grid(True, alpha=0.3, axis='y')
 
-        # τ参数
+        # tau参数
         ax = axes[1, col]
         for i, method in enumerate(methods):
             tau_values = [all_results[method][scenario]['idz_params'][d]['tau']
@@ -808,7 +808,7 @@ def generate_parameter_comparison_plot(all_results):
             ax.bar(x + i*width, tau_values, width, label=method, alpha=0.8)
 
         ax.set_xlabel('Direction', fontsize=11)
-        ax.set_ylabel('Time Delay τ (s)', fontsize=11)
+        ax.set_ylabel('Time Delay tau (s)', fontsize=11)
         ax.set_title(f'Time Delay - {scenario}', fontsize=12, fontweight='bold')
         ax.set_xticks(x + width)
         ax.set_xticklabels([direction_names[d] for d in directions])
@@ -833,7 +833,7 @@ def generate_parameter_comparison_plot(all_results):
     plt.tight_layout()
     fig_path = helper.get_output_path('03_idz_parameters_comparison_refactored.png', subdir='figures')
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f"  ✓ Saved figure: {os.path.basename(fig_path)}")
+    print(f"   Saved figure: {os.path.basename(fig_path)}")
     plt.close()
 
 
@@ -870,7 +870,7 @@ if __name__ == '__main__':
     df = pd.DataFrame(table_data)
     table_path = helper.get_output_path('03_idz_parameters_refactored.csv', subdir='tables')
     df.to_csv(table_path, index=False)
-    print(f'  ✓ Saved table: {table_path.name}')
+    print(f'   Saved table: {table_path.name}')
 
     # Save summary statistics
     summary_data = []
@@ -897,7 +897,7 @@ if __name__ == '__main__':
     df_summary = pd.DataFrame(summary_data)
     table_path = helper.get_output_path('03_idz_summary_statistics_refactored.csv', subdir='tables')
     df_summary.to_csv(table_path, index=False)
-    print(f'  ✓ Saved table: {table_path.name}')
+    print(f'   Saved table: {table_path.name}')
 
     print("\n" + "=" * 80)
     print("IDZ参数辨识测试完成！")

@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 import numpy as np
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 # Test 4参数（与pytest完全一致）
 L = 1000.0  # 改为1000m（与Test 4一致）
@@ -88,7 +94,7 @@ while solver.t < t_end and step_count < 100000:
 
     # 检测dt异常
     if dt < 1e-5:
-        print(f"\n⚠️  警告：dt变得非常小！")
+        print(f"\n️  警告：dt变得非常小！")
         print(f"  t={solver.t:.3f}s, dt={dt:.9f}s")
         print(f"  step={step_count}")
 
@@ -118,7 +124,7 @@ print(f"  模拟时间: {solver.t:.2f}s / {t_end}s")
 print(f"  dt范围: {dt_min:.9f} ~ {dt_max_seen:.6f}s")
 
 if solver.t >= t_end * 0.9:
-    print(f"\n✅ 成功运行到接近目标时间")
+    print(f"\n 成功运行到接近目标时间")
 else:
-    print(f"\n❌ 提前停止 ({solver.t/t_end*100:.1f}%)")
+    print(f"\n 提前停止 ({solver.t/t_end*100:.1f}%)")
 print("="*70)

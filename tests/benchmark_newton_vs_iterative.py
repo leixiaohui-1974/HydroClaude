@@ -9,14 +9,25 @@
 日期: 2025-10-22
 """
 
+import os
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
 import time
 from physics.steady_saint_venant import SteadySaintVenantSystem
-from solvers.newton_solver import NewtonSolver
-from solvers.canal_solver import CanalSolver
+try:
+    from solvers.newton_solver import NewtonSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+# DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as CanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as CanalSolver
 from solvers.gate import SluiceGate, BroadCrestedWeir, Orifice
 from utils.canal_utils import compute_steady_uniform_flow
 
@@ -44,7 +55,7 @@ def benchmark_scenario(name, length, nx, B, S0, n, Q_target, structures_config):
     print(f"参数:")
     print(f"  渠道长度: {length} m")
     print(f"  网格点数: {nx}")
-    print(f"  目标流量: {Q_target} m³/s")
+    print(f"  目标流量: {Q_target} m^3/s")
     print(f"  均匀流水深: {h_uniform:.4f} m")
     if structures_config:
         print(f"  结构数量: {len(structures_config)}")
@@ -78,12 +89,12 @@ def benchmark_scenario(name, length, nx, B, S0, n, Q_target, structures_config):
     if converged_iter:
         Q_avg_iter = np.mean([solver_iter.Q[idx] for idx in solver_iter.structure_indices]) if solver_iter.structure_indices else np.mean(solver_iter.Q)
         error_iter = abs(Q_avg_iter - Q_target) / Q_target * 100
-        print(f"  收敛: ✅")
+        print(f"  收敛: ")
         print(f"  迭代次数: {solver_iter.steady_iteration_count}")
         print(f"  计算时间: {time_iter:.4f}s")
         print(f"  流量误差: {error_iter:.4f}%")
     else:
-        print(f"  收敛: ❌（达到最大迭代10000）")
+        print(f"  收敛: （达到最大迭代10000）")
         print(f"  计算时间: {time_iter:.4f}s")
         error_iter = float('inf')
 
@@ -143,7 +154,7 @@ def benchmark_scenario(name, length, nx, B, S0, n, Q_target, structures_config):
             Q_avg_newton = np.mean(Q_sol)
         error_newton = abs(Q_avg_newton - Q_target) / Q_target * 100
 
-        print(f"  收敛: {'✅' if info['converged'] else '❌'}")
+        print(f"  收敛: {'' if info['converged'] else ''}")
         print(f"  迭代次数: {info['iterations']}")
         print(f"  计算时间: {time_newton:.4f}s")
         print(f"  流量误差: {error_newton:.4f}%")
@@ -157,7 +168,7 @@ def benchmark_scenario(name, length, nx, B, S0, n, Q_target, structures_config):
 
     except Exception as e:
         time_newton = time.time() - start_time
-        print(f"  收敛: ❌")
+        print(f"  收敛: ")
         print(f"  错误: {e}")
         print(f"  计算时间: {time_newton:.4f}s")
 
@@ -187,14 +198,14 @@ def benchmark_scenario(name, length, nx, B, S0, n, Q_target, structures_config):
         print()
 
         if speedup_time > 1:
-            print(f"  ✅ 牛顿法快 {(speedup_time-1)*100:.1f}%")
+            print(f"   牛顿法快 {(speedup_time-1)*100:.1f}%")
         else:
-            print(f"  ⚠️ 迭代法快 {(1/speedup_time-1)*100:.1f}%")
+            print(f"   迭代法快 {(1/speedup_time-1)*100:.1f}%")
 
         results['speedup_time'] = speedup_time
         results['speedup_iter'] = speedup_iter
     else:
-        print(f"  ⚠️ 无法对比（至少有一种方法未收敛）")
+        print(f"   无法对比（至少有一种方法未收敛）")
         results['speedup_time'] = None
         results['speedup_iter'] = None
 
@@ -278,11 +289,11 @@ def main():
     for scenario_name, results in all_results.items():
         if 'iterative' in results:
             r = results['iterative']
-            print(f"{scenario_name:<20} {'迭代法':<10} {('✅' if r['converged'] else '❌'):<8} {r['iterations']:<8} {r['time']:<10.4f} {r['error'] if r['error'] != float('inf') else 'N/A':<10}")
+            print(f"{scenario_name:<20} {'迭代法':<10} {('' if r['converged'] else ''):<8} {r['iterations']:<8} {r['time']:<10.4f} {r['error'] if r['error'] != float('inf') else 'N/A':<10}")
 
         if 'newton' in results:
             r = results['newton']
-            print(f"{scenario_name:<20} {'牛顿法':<10} {('✅' if r['converged'] else '❌'):<8} {r['iterations']:<8} {r['time']:<10.4f} {r['error'] if r['error'] != float('inf') else 'N/A':<10}")
+            print(f"{scenario_name:<20} {'牛顿法':<10} {('' if r['converged'] else ''):<8} {r['iterations']:<8} {r['time']:<10.4f} {r['error'] if r['error'] != float('inf') else 'N/A':<10}")
 
         print()
 
@@ -322,17 +333,17 @@ def main():
     print("=" * 100)
     print()
 
-    print("1. ✅ 牛顿法在所有测试场景下都成功收敛")
+    print("1.  牛顿法在所有测试场景下都成功收敛")
     print()
 
     if speedup_times and min(speedup_times) > 1:
-        print(f"2. ✅ 牛顿法比迭代法平均快 {(avg_speedup_time-1)*100:.0f}%")
+        print(f"2.  牛顿法比迭代法平均快 {(avg_speedup_time-1)*100:.0f}%")
         print(f"   - 迭代次数减少 {(avg_speedup_iter-1)*100:.0f}%")
         print(f"   - 最小加速比: {min(speedup_times):.1f}x")
         print(f"   - 最大加速比: {max(speedup_times):.1f}x")
     print()
 
-    print("3. ✅ 关键成果:")
+    print("3.  关键成果:")
     print("   - 解析导数完全解决了Jacobian奇异性问题")
     print("   - 牛顿法在复杂多闸门场景下稳定收敛")
     print("   - 相比迭代法，牛顿法显著减少计算时间")

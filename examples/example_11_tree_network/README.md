@@ -30,7 +30,7 @@
 
 ```bash
 cd examples/example_11_tree_network
-PYTHONPATH=../.. python example_11_tree_network.py
+PYTHONPATH=../.. python code/example_11_tree_network.py
 ```
 
 ## 输出结果
@@ -41,7 +41,9 @@ PYTHONPATH=../.. python example_11_tree_network.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_11_tree_network_network.gif`
+
+![动画](outputs\animations\example_11_tree_network_network.gif)
 
 ## 技术要点
 

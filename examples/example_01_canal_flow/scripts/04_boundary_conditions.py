@@ -22,7 +22,11 @@ import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
-from solvers.canal_solver import CanalSolver
+# DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as CanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as CanalSolver
 from utils.canal_utils import compute_steady_uniform_flow, setup_chinese_fonts, get_convergence_metrics
 
 
@@ -33,7 +37,7 @@ def compute_steady_state_with_convergence(Q, h_downstream, B, S0, n, length, nx,
     计算稳态初始条件，带收敛监测
 
     参数:
-        Q: 流量 (m³/s)
+        Q: 流量 (m^3/s)
         h_downstream: 下游水位 (m)
         mass_tol: 质量守恒相对误差容忍度 (默认0.1%)
         cv_tol: 变异系数容忍度 (默认0.01%)
@@ -46,7 +50,7 @@ def compute_steady_state_with_convergence(Q, h_downstream, B, S0, n, length, nx,
         iterations: 实际迭代步数
     """
     print(f"\n  计算稳态初始条件:")
-    print(f"    目标: Q={Q:.2f} m³/s, h_down={h_downstream:.4f} m")
+    print(f"    目标: Q={Q:.2f} m^3/s, h_down={h_downstream:.4f} m")
     print(f"    收敛判据: 质量守恒误差<{mass_tol*100:.2f}%, CV<{cv_tol*100:.4f}%")
 
     # 初始化求解器
@@ -87,24 +91,24 @@ def compute_steady_state_with_convergence(Q, h_downstream, B, S0, n, length, nx,
             Q_cv = np.std(recent_Q) / np.mean(recent_Q) if np.mean(recent_Q) > 0 else 1.0
             h_cv = np.std(recent_h) / np.mean(recent_h) if np.mean(recent_h) > 0 else 1.0
 
-            print(f"    t={t:6.0f}s: Q_avg={Q_avg:.4f} m³/s, "
+            print(f"    t={t:6.0f}s: Q_avg={Q_avg:.4f} m^3/s, "
                   f"质量误差={mass_error*100:.4f}%, Q_CV={Q_cv*100:.4f}%, h_CV={h_cv*100:.4f}%")
 
             # 检查是否收敛
             if mass_error < mass_tol and Q_cv < cv_tol and h_cv < cv_tol:
-                print(f"    ✓ 收敛! 迭代{i+1}步 ({t:.0f}s)")
+                print(f"     收敛! 迭代{i+1}步 ({t:.0f}s)")
                 converged = True
                 break
 
     if not converged:
-        print(f"    ✗ 未完全收敛 (达到最大步数 {max_steps})")
+        print(f"     未完全收敛 (达到最大步数 {max_steps})")
         t = max_steps * dt
 
     # 最终状态检查
     Q_final_avg = np.mean(solver.Q)
     Q_final_error = abs(Q_final_avg - Q) / Q * 100
 
-    print(f"    最终状态: Q_avg={Q_final_avg:.4f} m³/s, 误差={Q_final_error:.3f}%")
+    print(f"    最终状态: Q_avg={Q_final_avg:.4f} m^3/s, 误差={Q_final_error:.3f}%")
 
     return solver.h.copy(), solver.Q.copy(), converged, i + 1
 
@@ -130,8 +134,8 @@ def main():
 
     print(f"\n参数设置:")
     print(f"  渠道: L={length}m, B={B}m, S0={S0}, n={n}")
-    print(f"  上游流量: {Q_initial} → {Q_final} m³/s")
-    print(f"  理论水深: {h_uniform_initial:.6f} → {h_uniform_final:.6f} m")
+    print(f"  上游流量: {Q_initial} -> {Q_final} m^3/s")
+    print(f"  理论水深: {h_uniform_initial:.6f} -> {h_uniform_final:.6f} m")
 
     # 定义三种边界条件
     scenarios = {
@@ -158,7 +162,7 @@ def main():
 
     # 运行仿真
     print("\n" + "=" * 80)
-    print("第一阶段：计算初始稳态（Q=8.0 m³/s）")
+    print("第一阶段：计算初始稳态（Q=8.0 m^3/s）")
     print("=" * 80)
 
     initial_states = {}
@@ -183,7 +187,7 @@ def main():
 
     # 第二阶段：流量阶跃响应
     print("\n" + "=" * 80)
-    print("第二阶段：流量阶跃响应（8.0 → 10.0 m³/s）")
+    print("第二阶段：流量阶跃响应（8.0 -> 10.0 m^3/s）")
     print("=" * 80)
 
     # 自适应时间：基于初始收敛时间估算
@@ -233,7 +237,7 @@ def main():
                 h_avg = np.mean(solver.h)
                 expected_Q = Q_initial if t < t_step else Q_final
                 error = abs(Q_avg - expected_Q) / expected_Q * 100
-                print(f"    t={t:6.0f}s: h_avg={h_avg:.4f}m, Q_avg={Q_avg:.4f} m³/s, 误差={error:.3f}%")
+                print(f"    t={t:6.0f}s: h_avg={h_avg:.4f}m, Q_avg={Q_avg:.4f} m^3/s, 误差={error:.3f}%")
 
         # 最终质量守恒检查
         Q_final_avg = np.mean(solver.Q)
@@ -249,9 +253,9 @@ def main():
         else:
             final_cv = 0
 
-        status = "✓" if Q_error < 1.0 else "✗"
+        status = "" if Q_error < 1.0 else ""
         print(f"  最终检查:")
-        print(f"    Q_avg = {Q_final_avg:.4f} m³/s (目标: {Q_final:.2f} m³/s)")
+        print(f"    Q_avg = {Q_final_avg:.4f} m^3/s (目标: {Q_final:.2f} m^3/s)")
         print(f"    质量守恒误差 = {Q_error:.3f}% {status}")
         print(f"    最后500s CV = {final_cv:.4f}%")
 
@@ -318,12 +322,12 @@ def main():
     axes[1].legend(fontsize=9, loc='best')
     axes[1].grid(True, alpha=0.3)
 
-    axes[2].set_ylabel('上游流量 (m³/s)', fontsize=11)
+    axes[2].set_ylabel('上游流量 (m^3/s)', fontsize=11)
     axes[2].set_title('系统响应 - 上游流量', fontsize=12, fontweight='bold')
     axes[2].legend(fontsize=9, loc='best')
     axes[2].grid(True, alpha=0.3)
 
-    axes[3].set_ylabel('下游流量 (m³/s)', fontsize=11)
+    axes[3].set_ylabel('下游流量 (m^3/s)', fontsize=11)
     axes[3].set_xlabel('时间 (s)', fontsize=11)
     axes[3].set_title('系统响应 - 下游流量', fontsize=12, fontweight='bold')
     axes[3].legend(fontsize=9, loc='best')
@@ -358,7 +362,7 @@ def main():
     ax1.grid(True, alpha=0.3)
 
     ax2.set_xlabel('距离 x (m)', fontsize=11)
-    ax2.set_ylabel('流量 Q (m³/s)', fontsize=11)
+    ax2.set_ylabel('流量 Q (m^3/s)', fontsize=11)
     ax2.set_title(f'最终稳态空间分布 - 流量 (t={T_total:.0f}s)', fontsize=12, fontweight='bold')
     ax2.legend(fontsize=10)
     ax2.grid(True, alpha=0.3)
@@ -375,17 +379,17 @@ def main():
     print("=" * 80)
 
     print("\n关键改进:")
-    print("1. ✅ 初始稳态计算带收敛监测（质量误差<0.1%, CV<0.01%）")
-    print("2. ✅ 自适应确定阶跃时刻和总时间")
-    print("3. ✅ 从真正的稳态初值开始阶跃响应")
-    print("4. ✅ 验证最终质量守恒和收敛性")
+    print("1.  初始稳态计算带收敛监测（质量误差<0.1%, CV<0.01%）")
+    print("2.  自适应确定阶跃时刻和总时间")
+    print("3.  从真正的稳态初值开始阶跃响应")
+    print("4.  验证最终质量守恒和收敛性")
 
     print("\n最终质量守恒检查:")
     for scenario_name, data in results.items():
-        status = "✓" if data['mass_error'] < 1.0 else "⚠"
+        status = "" if data['mass_error'] < 1.0 else ""
         print(f"  {data['params']['description']:12s}: 误差={data['mass_error']:6.3f}%, CV={data['final_cv']:7.4f}% {status}")
 
-    print("\n✅ 完全收敛版运行成功")
+    print("\n 完全收敛版运行成功")
 
 
 if __name__ == '__main__':

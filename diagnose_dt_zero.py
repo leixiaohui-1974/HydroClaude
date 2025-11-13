@@ -91,7 +91,7 @@ while solver.t < t_target and step < 100000:
 
     # 检测异常
     if dt < 1e-6:
-        print(f"\n❌ dt变得极小！")
+        print(f"\n dt变得极小！")
         print(f"  t={solver.t:.4f}s, step={step}")
         print(f"  dt={dt:.10f}")
 
@@ -111,9 +111,9 @@ while solver.t < t_target and step < 100000:
 
         # 检查NaN/Inf
         if np.any(np.isnan(solver.h)) or np.any(np.isinf(solver.h)):
-            print(f"  ⚠️  h中包含NaN或Inf！")
+            print(f"  ️  h中包含NaN或Inf！")
         if np.any(np.isnan(solver.Q)) or np.any(np.isinf(solver.Q)):
-            print(f"  ⚠️  Q中包含NaN或Inf！")
+            print(f"  ️  Q中包含NaN或Inf！")
 
         # CFL计算
         cfl_dt = solver.cfl * solver.dx / lambda_max if lambda_max > 1e-10 else 1.0

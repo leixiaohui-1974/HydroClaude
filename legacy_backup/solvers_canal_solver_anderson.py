@@ -112,7 +112,7 @@ class CanalSolverAnderson(CanalSolver):
             # 检查收敛
             if residual_norm < tol:
                 if verbose:
-                    print(f"    ✓ Anderson加速收敛 (迭代{iter_count}, 残差={residual_norm:.6f} m³/s)")
+                    print(f"     Anderson加速收敛 (迭代{iter_count}, 残差={residual_norm:.6f} m³/s)")
                 break
 
             # Anderson加速
@@ -138,7 +138,7 @@ class CanalSolverAnderson(CanalSolver):
 
         else:
             if verbose:
-                print(f"    ⚠ Anderson加速未收敛 (达到最大迭代{max_iter}, 残差={residual_norm:.6f} m³/s)")
+                print(f"     Anderson加速未收敛 (达到最大迭代{max_iter}, 残差={residual_norm:.6f} m³/s)")
 
     def solve_steady_state_anderson(self,
                                     Q_target: float,
@@ -216,13 +216,13 @@ class CanalSolverAnderson(CanalSolver):
                 if error < tol:
                     converged = True
                     if verbose:
-                        print(f"\n✓ 达到稳态 (i={iter_count}, t={iter_count+1}s)")
+                        print(f"\n 达到稳态 (i={iter_count}, t={iter_count+1}s)")
                     break
 
         if not converged and verbose:
             Q_avg = np.mean([self.Q[idx] for idx in self.structure_indices]) if self.structure_indices else np.mean(self.Q)
             error = abs(Q_avg - Q_target) / Q_target
-            print(f"\n✗ 未收敛 (i={max_iter}, 误差={error*100:.4f}%)")
+            print(f"\n 未收敛 (i={max_iter}, 误差={error*100:.4f}%)")
 
         return converged
 

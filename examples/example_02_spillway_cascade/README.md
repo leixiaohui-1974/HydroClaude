@@ -42,7 +42,9 @@ PYTHONPATH=../.. python example_02_spillway_simple.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_02_spillway_cascade_pipe_flow.gif`
+
+![动画](outputs\animations\example_02_spillway_cascade_pipe_flow.gif)
 
 ## 技术要点
 

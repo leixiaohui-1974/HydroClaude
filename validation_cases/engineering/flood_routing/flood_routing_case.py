@@ -177,9 +177,9 @@ class NaturalRiverFloodRouting:
 
     def setup_flood_hydrograph(
         self,
-        peak_discharge: float = 2500.0,  # m³/s (100-year flood)
+        peak_discharge: float = 2500.0,  # m^3/s (100-year flood)
         time_to_peak: float = 24.0,  # hours
-        base_flow: float = 100.0,  # m³/s
+        base_flow: float = 100.0,  # m^3/s
         simulation_duration: float = 96.0,  # hours (4 days)
         dt: float = 1.0  # hours
     ):
@@ -194,9 +194,9 @@ class NaturalRiverFloodRouting:
         - Recession limb (exponential decay)
 
         Args:
-            peak_discharge: Peak discharge (m³/s)
+            peak_discharge: Peak discharge (m^3/s)
             time_to_peak: Time to reach peak (hours)
-            base_flow: Base flow before and after flood (m³/s)
+            base_flow: Base flow before and after flood (m^3/s)
             simulation_duration: Total simulation time (hours)
             dt: Time step (hours)
         """
@@ -232,16 +232,16 @@ class NaturalRiverFloodRouting:
         )
 
         print(f"\nFlood Hydrograph Configured:")
-        print(f"  Peak Discharge: {peak_discharge:.1f} m³/s")
+        print(f"  Peak Discharge: {peak_discharge:.1f} m^3/s")
         print(f"  Time to Peak: {time_to_peak:.1f} hours")
-        print(f"  Base Flow: {base_flow:.1f} m³/s")
+        print(f"  Base Flow: {base_flow:.1f} m^3/s")
         print(f"  Duration: {simulation_duration:.1f} hours")
-        print(f"  Total Volume: {np.trapz(Q_flood, time_array) * 3600 / 1e6:.2f} million m³")
+        print(f"  Total Volume: {np.trapz(Q_flood, time_array) * 3600 / 1e6:.2f} million m^3")
 
     def setup_rating_curve(
         self,
         base_stage: float = 2.0,  # m (at base flow)
-        base_discharge: float = 100.0,  # m³/s
+        base_discharge: float = 100.0,  # m^3/s
         power_law_params: Optional[Dict[str, float]] = None
     ):
         """
@@ -253,7 +253,7 @@ class NaturalRiverFloodRouting:
 
         Args:
             base_stage: Stage at base flow (m)
-            base_discharge: Base discharge (m³/s)
+            base_discharge: Base discharge (m^3/s)
             power_law_params: Power law parameters {'a', 'b', 'h0'}
         """
         # Create rating curve data
@@ -286,9 +286,9 @@ class NaturalRiverFloodRouting:
         print(f"\nDownstream Rating Curve Configured:")
         print(f"  Power Law: Q = {power_law_params['a']:.2f} * "
               f"(h - {power_law_params['h0']:.2f})^{power_law_params['b']:.2f}")
-        print(f"  Base conditions: Q={base_discharge:.1f} m³/s at h={base_stage:.2f} m")
+        print(f"  Base conditions: Q={base_discharge:.1f} m^3/s at h={base_stage:.2f} m")
         print(f"  Range: h={h_array[0]:.1f}-{h_array[-1]:.1f} m, "
-              f"Q={Q_array[0]:.1f}-{Q_array[-1]:.1f} m³/s")
+              f"Q={Q_array[0]:.1f}-{Q_array[-1]:.1f} m^3/s")
 
     def compute_hydraulic_properties(self, xs_data: Dict, h: float) -> Dict:
         """
@@ -407,9 +407,9 @@ class NaturalRiverFloodRouting:
             print(f"WARNING: CFL condition violated! Reduce dt or increase dx.")
 
         # Initialize arrays
-        Q = np.zeros((nt, nx))  # Discharge [m³/s]
+        Q = np.zeros((nt, nx))  # Discharge [m^3/s]
         h = np.zeros((nt, nx))  # Water depth [m]
-        A = np.zeros((nt, nx))  # Flow area [m²]
+        A = np.zeros((nt, nx))  # Flow area [m^2]
 
         # Initial condition: base flow
         Q[0, :] = self.upstream_bc.get_value(0.0)  # Base flow
@@ -503,7 +503,7 @@ class NaturalRiverFloodRouting:
                 progress = 100 * n / nt
                 t_hrs = time_array[n] / 3600
                 print(f"  {progress:.0f}% complete | t={t_hrs:.1f}h | "
-                      f"Q_up={Q[n,0]:.1f} m³/s | Q_down={Q[n,-1]:.1f} m³/s")
+                      f"Q_up={Q[n,0]:.1f} m^3/s | Q_down={Q[n,-1]:.1f} m^3/s")
 
         print(f"{'='*70}\n")
 
@@ -560,27 +560,27 @@ class NaturalRiverFloodRouting:
         wave_speed = self.L / (travel_time * 3600) if travel_time > 0 else 0
 
         print(f"\nUpstream (x=0):")
-        print(f"  Peak discharge: {Q_peak_up:.1f} m³/s")
+        print(f"  Peak discharge: {Q_peak_up:.1f} m^3/s")
         print(f"  Time to peak: {t_peak_up:.1f} hours")
 
         print(f"\nDownstream (x={self.L/1000:.1f} km):")
-        print(f"  Peak discharge: {Q_peak_down:.1f} m³/s")
+        print(f"  Peak discharge: {Q_peak_down:.1f} m^3/s")
         print(f"  Time to peak: {t_peak_down:.1f} hours")
 
         print(f"\nAttenuation:")
-        print(f"  Peak reduction: {attenuation:.1f} m³/s ({attenuation_pct:.1f}%)")
+        print(f"  Peak reduction: {attenuation:.1f} m^3/s ({attenuation_pct:.1f}%)")
         print(f"  Travel time: {travel_time:.2f} hours")
         print(f"  Wave speed: {wave_speed:.2f} m/s")
 
         # Volumetric analysis
-        V_in = np.trapz(Q_upstream, time) * 3600  # m³
-        V_out = np.trapz(Q_downstream, time) * 3600  # m³
+        V_in = np.trapz(Q_upstream, time) * 3600  # m^3
+        V_out = np.trapz(Q_downstream, time) * 3600  # m^3
         V_storage = V_in - V_out
 
         print(f"\nWater Balance:")
-        print(f"  Inflow volume: {V_in/1e6:.2f} million m³")
-        print(f"  Outflow volume: {V_out/1e6:.2f} million m³")
-        print(f"  Channel storage: {V_storage/1e6:.2f} million m³ "
+        print(f"  Inflow volume: {V_in/1e6:.2f} million m^3")
+        print(f"  Outflow volume: {V_out/1e6:.2f} million m^3")
+        print(f"  Channel storage: {V_storage/1e6:.2f} million m^3 "
               f"({100*V_storage/V_in:.1f}%)")
 
         print(f"{'='*70}\n")
@@ -609,7 +609,7 @@ class NaturalRiverFloodRouting:
         ax1.fill_between(time, Q[:, 0], alpha=0.3, color='blue')
         ax1.fill_between(time, Q[:, -1], alpha=0.3, color='red')
         ax1.set_xlabel('Time (hours)', fontsize=11)
-        ax1.set_ylabel('Discharge (m³/s)', fontsize=11)
+        ax1.set_ylabel('Discharge (m^3/s)', fontsize=11)
         ax1.set_title('Flood Hydrographs - Peak Attenuation', fontsize=12, fontweight='bold')
         ax1.legend(fontsize=10)
         ax1.grid(True, alpha=0.3)
@@ -623,14 +623,14 @@ class NaturalRiverFloodRouting:
         ax2.set_ylabel('Time (hours)', fontsize=11)
         ax2.set_title('Flood Wave Propagation (Space-Time)', fontsize=12, fontweight='bold')
         cbar = plt.colorbar(contour, ax=ax2)
-        cbar.set_label('Discharge (m³/s)', fontsize=10)
+        cbar.set_label('Discharge (m^3/s)', fontsize=10)
 
         # 3. Peak discharge along the reach
         ax3 = plt.subplot(3, 2, 3)
         Q_peak_profile = np.max(Q, axis=0)
         ax3.plot(x/1000, Q_peak_profile, 'b-', linewidth=2, marker='o', markersize=4)
         ax3.set_xlabel('Distance (km)', fontsize=11)
-        ax3.set_ylabel('Peak Discharge (m³/s)', fontsize=11)
+        ax3.set_ylabel('Peak Discharge (m^3/s)', fontsize=11)
         ax3.set_title('Peak Discharge Profile Along Reach', fontsize=12, fontweight='bold')
         ax3.grid(True, alpha=0.3)
 
@@ -690,7 +690,7 @@ class NaturalRiverFloodRouting:
                     label=f't={time[t_idx]:.1f}h')
 
         ax6.set_xlabel('Distance (km)', fontsize=11)
-        ax6.set_ylabel('Discharge (m³/s)', fontsize=11)
+        ax6.set_ylabel('Discharge (m^3/s)', fontsize=11)
         ax6.set_title('Discharge Profiles at Different Times', fontsize=12, fontweight='bold')
         ax6.legend(fontsize=10)
         ax6.grid(True, alpha=0.3)
@@ -744,9 +744,9 @@ def main():
     print("\nStep 3: Setting up flood hydrograph (100-year event)...")
 
     river.setup_flood_hydrograph(
-        peak_discharge=2500.0,  # m³/s
+        peak_discharge=2500.0,  # m^3/s
         time_to_peak=24.0,  # hours
-        base_flow=100.0,  # m³/s
+        base_flow=100.0,  # m^3/s
         simulation_duration=96.0,  # 4 days
         dt=1.0  # hourly data
     )
@@ -758,7 +758,7 @@ def main():
 
     river.setup_rating_curve(
         base_stage=2.0,  # m
-        base_discharge=100.0,  # m³/s
+        base_discharge=100.0,  # m^3/s
         power_law_params={'a': 25.0, 'b': 2.0, 'h0': 0.0}
     )
 
@@ -793,20 +793,20 @@ def main():
     print("Case Study Completed Successfully!")
     print("="*70)
     print("\nKey Achievements:")
-    print("  ✓ Modeled 50 km natural river reach")
-    print("  ✓ Used realistic irregular/compound cross-sections")
-    print("  ✓ Routed 100-year flood event (Q_peak = 2500 m³/s)")
-    print("  ✓ Computed peak attenuation and wave translation")
-    print("  ✓ Simulated floodplain inundation")
-    print("  ✓ Verified water balance")
-    print("  ✓ Generated comprehensive visualizations")
+    print("   Modeled 50 km natural river reach")
+    print("   Used realistic irregular/compound cross-sections")
+    print("   Routed 100-year flood event (Q_peak = 2500 m^3/s)")
+    print("   Computed peak attenuation and wave translation")
+    print("   Simulated floodplain inundation")
+    print("   Verified water balance")
+    print("   Generated comprehensive visualizations")
     print("\nThis case study demonstrates:")
-    print("  • Natural irregular channel hydraulics")
-    print("  • Compound channel with floodplains")
-    print("  • Unsteady flood routing (kinematic wave)")
-    print("  • Time-varying boundary conditions")
-    print("  • Peak attenuation analysis")
-    print("  • Space-time flood propagation")
+    print("  - Natural irregular channel hydraulics")
+    print("  - Compound channel with floodplains")
+    print("  - Unsteady flood routing (kinematic wave)")
+    print("  - Time-varying boundary conditions")
+    print("  - Peak attenuation analysis")
+    print("  - Space-time flood propagation")
     print("="*70 + "\n")
 
 

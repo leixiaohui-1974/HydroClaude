@@ -14,12 +14,12 @@ configuration, typical of dam outlet works.
 
 System Configuration:
 --------------------
-Reservoir → WES Spillway → Channel (Expansion) → Drop → Channel → Broad-Crested Weir → Tailwater
+Reservoir -> WES Spillway -> Channel (Expansion) -> Drop -> Channel -> Broad-Crested Weir -> Tailwater
 
 Design Parameters:
 - Reservoir level: 110 m
 - Spillway crest: 100 m
-- Channel width: 50 m → 80 m (expansion)
+- Channel width: 50 m -> 80 m (expansion)
 - Drop height: 5 m
 - Downstream weir crest: 85 m
 
@@ -28,6 +28,8 @@ Date: 2025-10-22
 """
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import os
@@ -54,7 +56,7 @@ class SpillwayCascadeSystem:
             Cd=2.1
         )
 
-        # Structure 2: Channel expansion (50m → 80m)
+        # Structure 2: Channel expansion (50m -> 80m)
         self.transition = Transition(
             position=100.0,
             width_upstream=50.0,
@@ -179,24 +181,24 @@ class SpillwayCascadeSystem:
         print("=" * 70)
         print(f"Reservoir Level:  {results['reservoir_level']:.2f} m")
         print(f"Tailwater Level:  {results['tailwater_level']:.2f} m")
-        print(f"Average Flow:     {results['average_flow']:.2f} m³/s")
+        print(f"Average Flow:     {results['average_flow']:.2f} m^3/s")
         print(f"Convergence:      {results['iterations']} iterations, residual = {results['max_residual']:.2e}")
         print("-" * 70)
 
         print(f"\nStructure 1 - Dam Spillway:")
-        print(f"  Flow:           {results['spillway']['Q']:.2f} m³/s ({results['spillway']['flow_type']})")
+        print(f"  Flow:           {results['spillway']['Q']:.2f} m^3/s ({results['spillway']['flow_type']})")
         print(f"  Downstream:     {results['spillway']['h_down']:.2f} m")
 
         print(f"\nStructure 2 - Stilling Basin Expansion:")
-        print(f"  Flow:           {results['transition']['Q']:.2f} m³/s ({results['transition']['flow_type']})")
+        print(f"  Flow:           {results['transition']['Q']:.2f} m^3/s ({results['transition']['flow_type']})")
         print(f"  Downstream:     {results['transition']['h_down']:.2f} m")
 
         print(f"\nStructure 3 - Cascade Drop:")
-        print(f"  Flow:           {results['drop']['Q']:.2f} m³/s ({results['drop']['flow_type']})")
+        print(f"  Flow:           {results['drop']['Q']:.2f} m^3/s ({results['drop']['flow_type']})")
         print(f"  Downstream:     {results['drop']['h_down']:.2f} m")
 
         print(f"\nStructure 4 - Control Weir:")
-        print(f"  Flow:           {results['weir']['Q']:.2f} m³/s ({results['weir']['flow_type']})")
+        print(f"  Flow:           {results['weir']['Q']:.2f} m^3/s ({results['weir']['flow_type']})")
 
         print("=" * 70)
 
@@ -227,7 +229,7 @@ class SpillwayCascadeSystem:
         # Plot rating curve
         plt.figure(figsize=(10, 6))
         plt.plot(discharges, reservoir_levels, 'b-', linewidth=2, label='Rating Curve')
-        plt.xlabel('Discharge (m³/s)', fontsize=12)
+        plt.xlabel('Discharge (m^3/s)', fontsize=12)
         plt.ylabel('Reservoir Level (m)', fontsize=12)
         plt.title('Spillway System Rating Curve', fontsize=14, fontweight='bold')
         plt.grid(True, alpha=0.3)
@@ -236,24 +238,24 @@ class SpillwayCascadeSystem:
         # Add design point
         design_level = 110.0
         design_Q = discharges[np.argmin(np.abs(reservoir_levels - design_level))]
-        plt.plot(design_Q, design_level, 'ro', markersize=10, label=f'Design Point ({design_Q:.0f} m³/s @ {design_level:.0f} m)')
+        plt.plot(design_Q, design_level, 'ro', markersize=10, label=f'Design Point ({design_Q:.0f} m^3/s @ {design_level:.0f} m)')
         plt.legend()
 
         plt.tight_layout()
-        plt.savefig('/home/user/HydroClaude/examples/example_02_spillway_cascade/rating_curve.png', dpi=150)
+        plt.savefig('examples/example_02_spillway_cascade/rating_curve.png', dpi=150)
         print(f"\nRating curve saved to: rating_curve.png")
 
         # Print summary table
         print("\n" + "-" * 70)
         print("RATING CURVE SUMMARY TABLE")
         print("-" * 70)
-        print(f"{'Reservoir (m)':>15} {'Discharge (m³/s)':>20} {'Specific Discharge':>20}")
+        print(f"{'Reservoir (m)':>15} {'Discharge (m^3/s)':>20} {'Specific Discharge':>20}")
         print("-" * 70)
 
         for i in range(0, len(reservoir_levels), 3):
             h = reservoir_levels[i]
             Q = discharges[i]
-            q = Q / self.spillway.width  # Specific discharge (m³/s per m width)
+            q = Q / self.spillway.width  # Specific discharge (m^3/s per m width)
             print(f"{h:>15.2f} {Q:>20.2f} {q:>20.2f}")
 
         print("-" * 70)
@@ -310,17 +312,17 @@ def main():
     print("EXAMPLE COMPLETED SUCCESSFULLY")
     print("=" * 70)
     print("\nKey Findings:")
-    print(f"  - Design discharge (h=110m):  {results['average_flow']:.2f} m³/s")
-    print(f"  - PMF discharge (h=115m):     {results_high['average_flow']:.2f} m³/s")
-    print(f"  - Low flow (h=102m):          {results_low['average_flow']:.2f} m³/s")
-    print(f"  - Discharge range:            {discharges[0]:.2f} - {discharges[-1]:.2f} m³/s")
+    print(f"  - Design discharge (h=110m):  {results['average_flow']:.2f} m^3/s")
+    print(f"  - PMF discharge (h=115m):     {results_high['average_flow']:.2f} m^3/s")
+    print(f"  - Low flow (h=102m):          {results_low['average_flow']:.2f} m^3/s")
+    print(f"  - Discharge range:            {discharges[0]:.2f} - {discharges[-1]:.2f} m^3/s")
     print("\nThis example demonstrates:")
-    print("  ✓ WES spillway hydraulics")
-    print("  ✓ Channel transition (expansion) effects")
-    print("  ✓ Hydraulic drop energy dissipation")
-    print("  ✓ Broad-crested weir flow control")
-    print("  ✓ Flow continuity through multiple structures")
-    print("  ✓ Rating curve generation")
+    print("   WES spillway hydraulics")
+    print("   Channel transition (expansion) effects")
+    print("   Hydraulic drop energy dissipation")
+    print("   Broad-crested weir flow control")
+    print("   Flow continuity through multiple structures")
+    print("   Rating curve generation")
     print("=" * 70)
 
 

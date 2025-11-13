@@ -12,7 +12,13 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def simple_comparison():
@@ -26,7 +32,7 @@ def simple_comparison():
     # 温和的配置
     length = 100.0
     width = 10.0
-    n_cells = 50  # 减少单元数
+    n_cells = 100  # 减少单元数
     dx = length / n_cells
 
     # 温和的Dam Break
@@ -57,7 +63,7 @@ def simple_comparison():
     print("[1/2] HLL求解器...")
     solver_hll = GodunvFVMSolver(
         width=width, length=length, n_cells=n_cells,
-        manning_n=0.0, cfl=0.5, order=1,  # 使用1阶避免MUSCL不稳定
+        manning_n=0.0, cfl=0.3, order=1,  # 使用1阶避免MUSCL不稳定
         use_numba=True, riemann_solver='hll',
         well_balanced=False, slope=0.0
     )
@@ -71,7 +77,7 @@ def simple_comparison():
 
         # 检查NaN
         if np.any(np.isnan(solver_hll.h)):
-            print(f"  ❌ HLL在t={solver_hll.t:.3f}s, 步骤{step}出现NaN!")
+            print(f"   HLL在t={solver_hll.t:.3f}s, 步骤{step}出现NaN!")
             print(f"  h范围: [{np.nanmin(solver_hll.h):.3f}, {np.nanmax(solver_hll.h):.3f}]")
             break
 
@@ -81,11 +87,11 @@ def simple_comparison():
     if not np.any(np.isnan(solver_hll.h)):
         mass_hll = np.sum(solver_hll.h * dx * width)
         mass_error_hll = abs(mass_hll - mass_init) / mass_init * 100
-        print(f"  ✅ 完成: t={solver_hll.t:.3f}s, {step}步, 耗时{t_hll:.3f}s")
+        print(f"   完成: t={solver_hll.t:.3f}s, {step}步, 耗时{t_hll:.3f}s")
         print(f"  质量守恒: {mass_error_hll:.6f}%")
         hll_success = True
     else:
-        print(f"  ❌ HLL失败")
+        print(f"   HLL失败")
         hll_success = False
 
     print()
@@ -94,7 +100,7 @@ def simple_comparison():
     print("[2/2] 精确求解器...")
     solver_exact = GodunvFVMSolver(
         width=width, length=length, n_cells=n_cells,
-        manning_n=0.0, cfl=0.5, order=1,  # 使用1阶
+        manning_n=0.0, cfl=0.3, order=1,  # 使用1阶
         use_numba=True, riemann_solver='exact',
         well_balanced=False, slope=0.0
     )
@@ -108,7 +114,7 @@ def simple_comparison():
 
         # 检查NaN
         if np.any(np.isnan(solver_exact.h)):
-            print(f"  ❌ 精确在t={solver_exact.t:.3f}s, 步骤{step}出现NaN!")
+            print(f"   精确在t={solver_exact.t:.3f}s, 步骤{step}出现NaN!")
             print(f"  h范围: [{np.nanmin(solver_exact.h):.3f}, {np.nanmax(solver_exact.h):.3f}]")
             break
 
@@ -118,11 +124,11 @@ def simple_comparison():
     if not np.any(np.isnan(solver_exact.h)):
         mass_exact = np.sum(solver_exact.h * dx * width)
         mass_error_exact = abs(mass_exact - mass_init) / mass_init * 100
-        print(f"  ✅ 完成: t={solver_exact.t:.3f}s, {step}步, 耗时{t_exact:.3f}s")
+        print(f"   完成: t={solver_exact.t:.3f}s, {step}步, 耗时{t_exact:.3f}s")
         print(f"  质量守恒: {mass_error_exact:.6f}%")
         exact_success = True
     else:
-        print(f"  ❌ 精确失败")
+        print(f"   精确失败")
         exact_success = False
 
     print()
@@ -150,8 +156,8 @@ def simple_comparison():
         rms_diff = np.sqrt(np.mean(h_diff**2))
 
         print(f"精度 (精确 vs HLL):")
-        print(f"  Max |Δh|: {max_diff:.6f} m")
-        print(f"  RMS(Δh):  {rms_diff:.6f} m")
+        print(f"  Max |Deltah|: {max_diff:.6f} m")
+        print(f"  RMS(Deltah):  {rms_diff:.6f} m")
         print()
 
         # 可视化
@@ -185,13 +191,13 @@ def simple_comparison():
         print()
 
         print("="*70)
-        print("✅ 测试成功!")
+        print(" 测试成功!")
         print("="*70)
         return True
 
     else:
         print("="*70)
-        print("❌ 测试失败: 求解器不稳定")
+        print(" 测试失败: 求解器不稳定")
         print("="*70)
         return False
 

@@ -9,8 +9,8 @@
 1. 记录每个时间步的边界通量
 2. 计算理论质量：mass(t) = mass(0) + ∫(Q_in - Q_out)dt
 3. 对比with实际质量：mass_actual = Σ(h * dx * B)
-4. 如果两者一致 → get_mass_conservation_error()有bug
-   如果两者不一致 → 真的在泄漏质量
+4. 如果两者一致 -> get_mass_conservation_error()有bug
+   如果两者不一致 -> 真的在泄漏质量
 
 这是30分钟内能完成的最重要测试！
 """
@@ -20,7 +20,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_mass_balance_verification():
@@ -48,7 +54,7 @@ def test_mass_balance_verification():
 
     print(f"\n测试场景（MacDonald标准）:")
     print(f"  n_cells = {n_cells}")
-    print(f"  Q_bc = {Q_bc} m³/s")
+    print(f"  Q_bc = {Q_bc} m^3/s")
     print(f"  h_c = {h_c:.4f} m")
 
     # 创建求解器
@@ -75,7 +81,7 @@ def test_mass_balance_verification():
 
     # 初始质量
     mass_0 = solver.initial_mass
-    print(f"  初始质量 = {mass_0:.2f} m³")
+    print(f"  初始质量 = {mass_0:.2f} m^3")
 
     # 记录数据
     times = []
@@ -161,12 +167,12 @@ def test_mass_balance_verification():
     theory_error = abs(mass_theory_final - mass_0) / mass_0 * 100
 
     print(f"\n最终时刻 t={times[-1]:.1f}s:")
-    print(f"  初始质量:       {mass_0:.2f} m³")
-    print(f"  实际质量:       {mass_actual_final:.2f} m³")
-    print(f"  理论质量:       {mass_theory_final:.2f} m³")
-    print(f"  累积流入:       {cumulative_inflow:.2f} m³")
-    print(f"  累积流出:       {cumulative_outflow:.2f} m³")
-    print(f"  净变化（流入-流出）: {cumulative_inflow - cumulative_outflow:.2f} m³")
+    print(f"  初始质量:       {mass_0:.2f} m^3")
+    print(f"  实际质量:       {mass_actual_final:.2f} m^3")
+    print(f"  理论质量:       {mass_theory_final:.2f} m^3")
+    print(f"  累积流入:       {cumulative_inflow:.2f} m^3")
+    print(f"  累积流出:       {cumulative_outflow:.2f} m^3")
+    print(f"  净变化（流入-流出）: {cumulative_inflow - cumulative_outflow:.2f} m^3")
 
     print(f"\n误差分析:")
     print(f"  实际 vs 理论差异: {actual_vs_theory_error:.3f}%")
@@ -179,32 +185,32 @@ def test_mass_balance_verification():
     print("="*80)
 
     if actual_vs_theory_error < 0.1:
-        print(f"\n✅ 质量平衡成立！")
-        print(f"   实际质量 ≈ 理论质量（差异<0.1%）")
+        print(f"\n 质量平衡成立！")
+        print(f"   实际质量 ~= 理论质量（差异<0.1%）")
         print(f"   这说明质量守恒计算**可能有问题**")
 
         if abs(error_reported_final - theory_error) > 5:
-            print(f"\n❌ get_mass_conservation_error() 有BUG！")
+            print(f"\n get_mass_conservation_error() 有BUG！")
             print(f"   报告误差 = {error_reported_final:.2f}%")
             print(f"   理论误差 = {theory_error:.2f}%")
             print(f"   差异 = {abs(error_reported_final - theory_error):.2f}%")
-            print(f"\n🐛 找到bug位置：")
+            print(f"\n 找到bug位置：")
             print(f"   检查 get_mass_conservation_error() 的实现")
             print(f"   可能的问题：")
             print(f"   - 使用了错误的初始质量")
             print(f"   - 计算当前质量时包含了ghost cell")
             print(f"   - dx或B的值不一致")
         else:
-            print(f"\n⚠️ 报告误差与理论误差一致")
+            print(f"\n️ 报告误差与理论误差一致")
             print(f"   质量确实在变化，但质量平衡成立")
             print(f"   这说明边界通量处理可能合理，但问题在别处")
 
     else:
-        print(f"\n❌ 质量平衡不成立！")
+        print(f"\n 质量平衡不成立！")
         print(f"   实际质量 ≠ 理论质量（差异={actual_vs_theory_error:.3f}%）")
         print(f"   这说明有限体积法的实现有问题")
 
-        print(f"\n🐛 可能的bug位置：")
+        print(f"\n 可能的bug位置：")
         print(f"   1. 通量计算不守恒（F_{{i+1/2}}在相邻单元不一致）")
         print(f"   2. 边界通量处理错误")
         print(f"   3. 源项错误地引入了质量（应该只影响动量）")
@@ -234,7 +240,7 @@ def test_mass_balance_verification():
         print(f"  误差增长率: {slope:.4f} %/s = {slope*60:.3f} %/min")
 
         if slope > 0.05:
-            print(f"\n⚠️ 误差随时间线性增长")
+            print(f"\n️ 误差随时间线性增长")
             print(f"   这是典型的**累积效应**")
             print(f"   每个时间步都有微小误差，长时间累积成大误差")
             print(f"\n可能原因：")
@@ -242,7 +248,7 @@ def test_mass_balance_verification():
             print(f"   - 数值耗散")
             print(f"   - 舍入误差累积")
         else:
-            print(f"\n✓ 误差增长较慢")
+            print(f"\n 误差增长较慢")
             print(f"   不是明显的累积效应")
 
     # 绘图（如果可能）
@@ -257,7 +263,7 @@ def test_mass_balance_verification():
         ax1.plot(times, mass_actual_list, 'o-', label='实际质量', linewidth=2)
         ax1.plot(times, mass_theory_list, 's-', label='理论质量', linewidth=2)
         ax1.set_xlabel('时间 (s)')
-        ax1.set_ylabel('质量 (m³)')
+        ax1.set_ylabel('质量 (m^3)')
         ax1.set_title('质量随时间变化')
         ax1.legend()
         ax1.grid(True, alpha=0.3)
@@ -280,7 +286,7 @@ def test_mass_balance_verification():
         net_flux = np.array(inflow_cumulative) - np.array(outflow_cumulative)
         ax3.plot(times, net_flux, '^-', label='净变化', linewidth=2)
         ax3.set_xlabel('时间 (s)')
-        ax3.set_ylabel('通量 (m³)')
+        ax3.set_ylabel('通量 (m^3)')
         ax3.set_title('累积通量随时间变化')
         ax3.legend()
         ax3.grid(True, alpha=0.3)
@@ -299,9 +305,9 @@ def test_mass_balance_verification():
 
         plt.tight_layout()
         plt.savefig('tests/diagnostic/mass_balance_verification.png', dpi=150)
-        print(f"\n✅ 分析图已保存: tests/diagnostic/mass_balance_verification.png")
+        print(f"\n 分析图已保存: tests/diagnostic/mass_balance_verification.png")
     except Exception as e:
-        print(f"\n⚠️ 无法生成图表: {e}")
+        print(f"\n️ 无法生成图表: {e}")
 
     print("\n" + "="*80)
     print("测试完成")

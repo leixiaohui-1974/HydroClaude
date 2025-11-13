@@ -1,0 +1,363 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+简化集成测试 - 验证核心功能
+
+测试策略：
+1. 单模块测试（确保每个模块可独立运行）
+2. 双模块耦合（测试简单耦合）
+3. 完整系统（所有模块集成）
+
+作者: HydroClaude Team
+日期: 2025-11-02
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 导入各个模块
+from solvers.water_temperature import WaterTemperatureSolver
+from solvers.dissolved_oxygen import DissolvedOxygenSolver
+from solvers.ice_cover import IceCoverSolver
+from solvers.nutrients import NutrientsSolver
+from solvers.phytoplankton import PhytoplanktonSolver
+
+
+def test_temperature_do_coupling():
+    """
+    测试1: 水温-DO耦合
+
+    最基础的耦合：水温影响DO饱和度
+    """
+    print("\n" + "="*70)
+    print("测试1: 水温-DO耦合")
+    print("="*70)
+
+    n_cells = 20
+    dx = 100.0
+
+    # 创建模块
+    temp_solver = WaterTemperatureSolver(n_cells, dx, use_numba=False)
+    do_solver = DissolvedOxygenSolver(n_cells, dx, use_numba=False)
+
+    # 初始化
+    T_init = np.full(n_cells, 20.0)
+    temp_solver.initialize(T_init)
+
+    DO_init = np.full(n_cells, 8.0)
+    BOD_init = np.full(n_cells, 2.0)
+    do_solver.initialize(DO_init, BOD_init)
+
+    # 水动力
+    u = np.full(n_cells, 0.2)
+    h = np.full(n_cells, 2.0)
+    manning_n = np.full(n_cells, 0.03)
+
+    # 气象
+    T_air = 25.0
+    solar_radiation = 200.0
+    wind_speed = 2.0
+    relative_humidity = 0.6
+
+    print(f"初始条件:")
+    print(f"  水温: {T_init[0]:.1f}°C")
+    print(f"  DO: {DO_init[0]:.1f} mg/L")
+
+    # 模拟3天
+    n_steps = 72  # 3天，1小时步长
+    dt = 3600.0
+
+    T_history = [T_init[n_cells//2]]
+    DO_history = [DO_init[n_cells//2]]
+
+    for step in range(n_steps):
+        # 更新水温
+        T = temp_solver.step(
+            dt, u, h,
+            T_air, solar_radiation, wind_speed, relative_humidity
+        )
+
+        # 更新DO（使用当前水温）
+        do_state = do_solver.step(dt, u, h, T, manning_n)
+        DO = do_state['DO']
+
+        T_history.append(T[n_cells//2])
+        DO_history.append(DO[n_cells//2])
+
+    print(f"\n3天后:")
+    print(f"  水温: {T_init[0]:.1f} → {T_history[-1]:.1f}°C")
+    print(f"  DO: {DO_init[0]:.1f} → {DO_history[-1]:.2f} mg/L")
+
+    # 验证：水温和DO都有合理变化（耦合存在）
+    T_change = abs(T_history[-1] - T_history[0])
+    DO_change = abs(DO_history[-1] - DO_history[0])
+
+    # 水温和DO都应有变化（说明耦合在工作）
+    coupling_active = T_change > 0.01 and DO_change > 0.01
+
+    if coupling_active:
+        print(f"\n 测试通过! 水温-DO耦合正常")
+        print(f"   温度变化: {T_change:.2f}°C, DO变化: {DO_change:.2f} mg/L")
+        return True
+    else:
+        print(f"\n 测试失败! 耦合未激活")
+        return False
+
+
+def test_nutrients_algae_coupling():
+    """
+    测试2: 营养盐-藻类耦合
+
+    藻类吸收营养盐，营养盐限制藻类生长
+    """
+    print("\n" + "="*70)
+    print("测试2: 营养盐-藻类耦合")
+    print("="*70)
+
+    n_cells = 15
+    dx = 100.0
+
+    # 创建模块
+    nutrients_solver = NutrientsSolver(n_cells, dx, use_numba=False)
+    algae_solver = PhytoplanktonSolver(n_cells, dx, use_numba=False)
+
+    # 初始化
+    NH4_init = np.full(n_cells, 0.3)
+    NO3_init = np.full(n_cells, 1.5)
+    OrgN_init = np.full(n_cells, 0.5)
+    PO4_init = np.full(n_cells, 0.05)
+    OrgP_init = np.full(n_cells, 0.02)
+
+    nutrients_solver.initialize(
+        NH4_init, NO3_init, OrgN_init, PO4_init, OrgP_init
+    )
+
+    Chla_init = np.full(n_cells, 15.0)
+    algae_solver.initialize(Chla_init)
+
+    # 水动力
+    u = np.full(n_cells, 0.15)
+    h = np.full(n_cells, 2.0)
+    T = np.full(n_cells, 20.0)
+    DO = np.full(n_cells, 8.0)
+    I_0 = np.full(n_cells, 120.0)
+
+    print(f"初始条件:")
+    print(f"  NH4: {NH4_init[0]:.2f}, NO3: {NO3_init[0]:.2f}, PO4: {PO4_init[0]:.3f} mg/L")
+    print(f"  Chla: {Chla_init[0]:.1f} μg/L")
+
+    # 模拟5天
+    n_steps = 120  # 5天
+    dt = 3600.0
+
+    NH4_history = [NH4_init[n_cells//2]]
+    NO3_history = [NO3_init[n_cells//2]]
+    PO4_history = [PO4_init[n_cells//2]]
+    Chla_history = [Chla_init[n_cells//2]]
+
+    for step in range(n_steps):
+        # 营养盐循环
+        nut_state = nutrients_solver.step(dt, u, h, T, DO)
+        NH4 = nut_state['NH4']
+        NO3 = nut_state['NO3']
+        PO4 = nut_state['PO4']
+
+        # 藻类生长
+        algae_state = algae_solver.step(
+            dt, u, h, T, I_0, NH4, NO3, PO4
+        )
+        Chla = algae_state['Chla']
+
+        # 藻类吸收营养盐（简化：直接减少）
+        dt_day = dt / 86400.0
+        nutrients_solver.NH4 -= algae_state['NH4_uptake'] * dt_day
+        nutrients_solver.NO3 -= algae_state['NO3_uptake'] * dt_day
+        nutrients_solver.PO4 -= algae_state['PO4_uptake'] * dt_day
+
+        # 确保非负
+        nutrients_solver.NH4 = np.maximum(nutrients_solver.NH4, 0.0)
+        nutrients_solver.NO3 = np.maximum(nutrients_solver.NO3, 0.0)
+        nutrients_solver.PO4 = np.maximum(nutrients_solver.PO4, 0.0)
+
+        NH4_history.append(nutrients_solver.NH4[n_cells//2])
+        NO3_history.append(nutrients_solver.NO3[n_cells//2])
+        PO4_history.append(nutrients_solver.PO4[n_cells//2])
+        Chla_history.append(Chla[n_cells//2])
+
+    print(f"\n5天后:")
+    print(f"  NH4: {NH4_init[0]:.2f} → {NH4_history[-1]:.2f} mg/L")
+    print(f"  NO3: {NO3_init[0]:.2f} → {NO3_history[-1]:.2f} mg/L")
+    print(f"  PO4: {PO4_init[0]:.3f} → {PO4_history[-1]:.3f} mg/L")
+    print(f"  Chla: {Chla_init[0]:.1f} → {Chla_history[-1]:.1f} μg/L")
+
+    # 验证：藻类生长，营养盐减少
+    algae_growth = Chla_history[-1] > Chla_init[0]
+    nutrients_decrease = (NH4_history[-1] + NO3_history[-1]) < (NH4_init[0] + NO3_init[0])
+
+    if algae_growth and nutrients_decrease:
+        print(f"\n 测试通过! 营养盐-藻类耦合正常")
+        return True
+    else:
+        print(f"\n 测试失败!")
+        if not algae_growth:
+            print(f"  - 藻类未生长")
+        if not nutrients_decrease:
+            print(f"  - 营养盐未减少")
+        return False
+
+
+def test_do_algae_coupling():
+    """
+    测试3: DO-藻类耦合
+
+    藻类光合作用产氧，呼吸耗氧
+    """
+    print("\n" + "="*70)
+    print("测试3: DO-藻类耦合")
+    print("="*70)
+
+    n_cells = 10
+    dx = 100.0
+
+    # 创建模块
+    do_solver = DissolvedOxygenSolver(n_cells, dx, use_numba=False)
+    algae_solver = PhytoplanktonSolver(n_cells, dx, use_numba=False)
+
+    # 初始化
+    DO_init = np.full(n_cells, 6.0)
+    BOD_init = np.full(n_cells, 2.0)
+    do_solver.initialize(DO_init, BOD_init)
+
+    Chla_init = np.full(n_cells, 40.0)  # 较高藻类
+    algae_solver.initialize(Chla_init)
+
+    # 水动力
+    u = np.full(n_cells, 0.1)
+    h = np.full(n_cells, 2.0)
+    T = np.full(n_cells, 22.0)
+    manning_n = np.full(n_cells, 0.03)
+    NH4 = np.full(n_cells, 0.5)
+    NO3 = np.full(n_cells, 2.0)
+    PO4 = np.full(n_cells, 0.1)
+
+    print(f"初始条件:")
+    print(f"  DO: {DO_init[0]:.1f} mg/L")
+    print(f"  Chla: {Chla_init[0]:.1f} μg/L (高藻类)")
+
+    # 模拟1天，昼夜循环
+    n_steps = 24
+    dt = 3600.0  # 1小时
+
+    DO_history = [DO_init[n_cells//2]]
+    time_history = [0]
+
+    for step in range(n_steps):
+        # 当前时刻
+        hour = step % 24
+
+        # 光照（白天6-18点）
+        if 6 <= hour <= 18:
+            I_0 = np.full(n_cells, 150.0 * np.sin(np.pi * (hour - 6) / 12))
+        else:
+            I_0 = np.zeros(n_cells)
+
+        # DO演化
+        do_state = do_solver.step(dt, u, h, T, manning_n)
+        DO = do_state['DO']
+
+        # 藻类（影响DO）
+        algae_state = algae_solver.step(
+            dt, u, h, T, I_0, NH4, NO3, PO4
+        )
+
+        # DO变化（藻类产氧/耗氧）
+        dt_day = dt / 86400.0
+        DO_change = algae_state['DO_production'] * dt_day
+        do_solver.DO += DO_change
+        do_solver.DO = np.maximum(do_solver.DO, 0.0)
+
+        DO_history.append(do_solver.DO[n_cells//2])
+        time_history.append((step + 1))
+
+    print(f"\n1天后:")
+    print(f"  DO: {DO_init[0]:.1f} → {DO_history[-1]:.2f} mg/L")
+    print(f"  DO变化: {DO_history[-1] - DO_init[0]:+.2f} mg/L")
+
+    # 验证：由于高藻类，整体应产氧
+    DO_net_increase = DO_history[-1] > DO_init[0]
+
+    if DO_net_increase:
+        print(f"\n 测试通过! DO-藻类耦合正常（藻类净产氧）")
+        return True
+    else:
+        print(f"\n 测试失败! DO未增加")
+        return False
+
+
+def run_all_tests():
+    """运行所有简化集成测试"""
+    print("\n" + "="*70)
+    print("HydroClaude 简化集成测试套件")
+    print("="*70)
+    print("目标: 验证核心模块间耦合关系")
+    print("="*70)
+
+    results = {}
+
+    # 测试1: 水温-DO
+    try:
+        results['Temperature-DO Coupling'] = test_temperature_do_coupling()
+    except Exception as e:
+        print(f"\n 测试1异常: {e}")
+        import traceback
+        traceback.print_exc()
+        results['Temperature-DO Coupling'] = False
+
+    # 测试2: 营养盐-藻类
+    try:
+        results['Nutrients-Algae Coupling'] = test_nutrients_algae_coupling()
+    except Exception as e:
+        print(f"\n 测试2异常: {e}")
+        import traceback
+        traceback.print_exc()
+        results['Nutrients-Algae Coupling'] = False
+
+    # 测试3: DO-藻类
+    try:
+        results['DO-Algae Coupling'] = test_do_algae_coupling()
+    except Exception as e:
+        print(f"\n 测试3异常: {e}")
+        import traceback
+        traceback.print_exc()
+        results['DO-Algae Coupling'] = False
+
+    # 汇总
+    print("\n" + "="*70)
+    print("集成测试结果汇总")
+    print("="*70)
+    for test_name, passed in results.items():
+        status = " PASS" if passed else " FAIL"
+        print(f"{test_name:30s} : {status}")
+    print("="*70)
+
+    n_passed = sum(results.values())
+    n_total = len(results)
+    print(f"通过率: {n_passed}/{n_total} ({n_passed/n_total*100:.1f}%)")
+    print("="*70)
+
+    if n_passed == n_total:
+        print(f"\n 所有集成测试通过!")
+        print(f"核心耦合关系验证成功 ")
+    else:
+        print(f"\n️  {n_total - n_passed}个测试失败")
+
+    return n_passed == n_total
+
+
+if __name__ == '__main__':
+    success = run_all_tests()
+    sys.exit(0 if success else 1)

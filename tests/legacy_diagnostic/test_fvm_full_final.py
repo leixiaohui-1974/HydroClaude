@@ -20,7 +20,17 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.single_canal_solver import SingleCanalSolver
+try:
+    # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.single_canal_solver import SingleCanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.fvm_steady_full import FVMSteadyFullSolver
 from solvers.gate import SluiceGate
 
@@ -82,7 +92,7 @@ def run_fdm_for_initial_guess(verbose=False):
         print(f"\nFDM初值:")
         print(f"  最大流量误差: {np.max(Q_error):.4f}%")
         print(f"  水深范围: [{profile['h'].min():.3f}, {profile['h'].max():.3f}] m")
-        print(f"  流量范围: [{profile['Q'].min():.3f}, {profile['Q'].max():.3f}] m³/s")
+        print(f"  流量范围: [{profile['Q'].min():.3f}, {profile['Q'].max():.3f}] m^3/s")
         print()
 
     return {
@@ -155,7 +165,7 @@ def run_fvm_full_test(fdm_solution, verbose=True):
     if verbose:
         print(f"从FDM解初始化:")
         print(f"  初始水深范围: [{h_fvm_init.min():.3f}, {h_fvm_init.max():.3f}] m")
-        print(f"  初始流量范围: [{Q_fvm_init.min():.3f}, {Q_fvm_init.max():.3f}] m³/s")
+        print(f"  初始流量范围: [{Q_fvm_init.min():.3f}, {Q_fvm_init.max():.3f}] m^3/s")
 
     # 求解稳态
     start_time = time.time()
@@ -195,7 +205,7 @@ def run_fvm_full_test(fdm_solution, verbose=True):
         print()
         print("完整FVM结果:")
         print(f"  求解时间: {elapsed_time:.2f}s")
-        print(f"  收敛状态: {'✓ 收敛' if converged else '✗ 未收敛'}")
+        print(f"  收敛状态: {' 收敛' if converged else ' 未收敛'}")
         print(f"  最大流量误差: {Q_max_error:.4f}%")
         print(f"  平均流量误差: {Q_mean_error:.4f}%")
         print(f"  闸门流量: {[f'{gf:.3f}' for gf in gate_flows]}")
@@ -241,12 +251,12 @@ def plot_final_comparison(result_fdm, result_fvm):
     ax = axes[1]
     ax.plot(result_fdm['x'], result_fdm['Q'], 'b-', linewidth=2, label='FDM (Baseline)', alpha=0.7)
     ax.plot(result_fvm['x'], result_fvm['Q'], 'r--', linewidth=2, label='FVM Full Jacobian', alpha=0.7)
-    ax.axhline(Q_target, color='k', linestyle='--', linewidth=1.5, alpha=0.5, label=f'Target Q={Q_target} m³/s')
+    ax.axhline(Q_target, color='k', linestyle='--', linewidth=1.5, alpha=0.5, label=f'Target Q={Q_target} m^3/s')
     ax.axvline(2500, color='gray', linestyle=':', alpha=0.5)
     ax.axvline(5000, color='gray', linestyle=':', alpha=0.5)
     ax.axvline(7500, color='gray', linestyle=':', alpha=0.5)
     ax.set_xlabel('x [m]', fontsize=12)
-    ax.set_ylabel('Q [m³/s]', fontsize=12)
+    ax.set_ylabel('Q [m^3/s]', fontsize=12)
     ax.set_title(f'Discharge Profile (FDM: {result_fdm["max_error"]:.4f}%, FVM: {result_fvm["max_error"]:.4f}%)',
                  fontsize=14, fontweight='bold')
     ax.legend(fontsize=11)
@@ -271,7 +281,7 @@ def plot_final_comparison(result_fdm, result_fvm):
 
     plt.tight_layout()
     plt.savefig('fvm_full_final_comparison.png', dpi=150, bbox_inches='tight')
-    print("✓ Saved: fvm_full_final_comparison.png")
+    print(" Saved: fvm_full_final_comparison.png")
     print()
 
 
@@ -303,9 +313,9 @@ def main():
     print(f"{'Method':<30} {'Max Error':<15} {'Converged':<12} {'Time':<10}")
     print("-" * 70)
     print(f"{'FDM Baseline':<30} {fdm_solution['max_error']:.4f}%{'':<8} "
-          f"{'✓' if fdm_solution['converged'] else '✗':<12} {'-':<10}")
+          f"{'' if fdm_solution['converged'] else '':<12} {'-':<10}")
     print(f"{'FVM Full Jacobian':<30} {fvm_solution['max_error']:.4f}%{'':<8} "
-          f"{'✓' if fvm_solution['converged'] else '✗':<12} {fvm_solution['solve_time']:.2f}s")
+          f"{'' if fvm_solution['converged'] else '':<12} {fvm_solution['solve_time']:.2f}s")
     print()
 
     # 评估结果
@@ -321,24 +331,24 @@ def main():
     if fvm_solution['converged']:
         if fvm_solution['max_error'] < target:
             improvement = fdm_baseline / fvm_solution['max_error']
-            print(f"🎉🎉🎉 SUCCESS! Target precision achieved!")
-            print(f"  ✓ FVM error ({fvm_solution['max_error']:.4f}%) < Target ({target}%)")
-            print(f"  ✓ Improvement over FDM: {improvement:.2f}x")
-            print(f"  ✓ Absolute improvement: {fdm_baseline - fvm_solution['max_error']:.4f}%")
+            print(f" SUCCESS! Target precision achieved!")
+            print(f"   FVM error ({fvm_solution['max_error']:.4f}%) < Target ({target}%)")
+            print(f"   Improvement over FDM: {improvement:.2f}x")
+            print(f"   Absolute improvement: {fdm_baseline - fvm_solution['max_error']:.4f}%")
         elif fvm_solution['max_error'] < fdm_baseline:
             improvement = fdm_baseline / fvm_solution['max_error']
             gap = fvm_solution['max_error'] - target
-            print(f"✓✓✓ EXCELLENT! FVM improved precision significantly!")
-            print(f"  ✓ Improvement over FDM: {improvement:.2f}x")
-            print(f"  ✓ Absolute improvement: {fdm_baseline - fvm_solution['max_error']:.4f}%")
+            print(f" EXCELLENT! FVM improved precision significantly!")
+            print(f"   Improvement over FDM: {improvement:.2f}x")
+            print(f"   Absolute improvement: {fdm_baseline - fvm_solution['max_error']:.4f}%")
             print(f"  Gap to target: {gap:.4f}%")
             if fvm_solution['max_error'] < 1.0:
                 print(f"  Very close to target!")
         else:
-            print(f"✓ FVM converged, but precision similar to FDM")
+            print(f" FVM converged, but precision similar to FDM")
             print(f"  FVM: {fvm_solution['max_error']:.4f}% vs FDM: {fdm_baseline}%")
     else:
-        print(f"⚠ FVM did not converge")
+        print(f" FVM did not converge")
         print(f"  Final error: {fvm_solution['max_error']:.4f}%")
 
     print()

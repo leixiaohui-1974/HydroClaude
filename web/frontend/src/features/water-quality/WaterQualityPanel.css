@@ -1,0 +1,322 @@
+/* Water Quality Panel Styles */
+
+.water-quality-panel {
+  min-height: 100vh;
+  background: #f0f2f5;
+}
+
+.water-quality-info-panel,
+.nutrient-info-panel {
+  padding: 20px;
+  background: #fafafa;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+/* DO/BOD specific colors */
+.do-indicator {
+  color: #1890ff;
+}
+
+.bod-indicator {
+  color: #fa8c16;
+}
+
+.nutrient-indicator {
+  color: #52c41a;
+}
+
+/* Eutrophication level tags */
+.ant-tag.eutrophic-oligotrophic {
+  background: #f6ffed;
+  border-color: #b7eb8f;
+  color: #52c41a;
+}
+
+.ant-tag.eutrophic-mesotrophic {
+  background: #e6f7ff;
+  border-color: #91d5ff;
+  color: #1890ff;
+}
+
+.ant-tag.eutrophic-eutrophic {
+  background: #fff7e6;
+  border-color: #ffd591;
+  color: #fa8c16;
+}
+
+.ant-tag.eutrophic-hypertrophic {
+  background: #fff1f0;
+  border-color: #ffccc7;
+  color: #ff4d4f;
+}
+
+/* Water quality status indicators */
+.wq-status-excellent {
+  color: #52c41a;
+  font-weight: bold;
+}
+
+.wq-status-good {
+  color: #1890ff;
+  font-weight: bold;
+}
+
+.wq-status-acceptable {
+  color: #faad14;
+  font-weight: bold;
+}
+
+.wq-status-poor {
+  color: #ff4d4f;
+  font-weight: bold;
+}
+
+/* Progress dashboard customization */
+.ant-progress-circle-trail {
+  stroke: #f0f0f0;
+}
+
+.ant-progress-text {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Nutrient concentration cards */
+.nutrient-card {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.nutrient-value {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 8px 0;
+}
+
+.nutrient-label {
+  font-size: 13px;
+  color: #666;
+  text-transform: uppercase;
+}
+
+/* Pollution source table */
+.pollution-source-table {
+  margin-top: 24px;
+}
+
+.pollution-source-table .ant-table-thead > tr > th {
+  background: #fafafa;
+  font-weight: 600;
+}
+
+/* Temperature gradient */
+.temperature-indicator {
+  background: linear-gradient(90deg, 
+    #108ee9 0%, 
+    #87d068 50%, 
+    #f5222d 100%);
+  height: 8px;
+  border-radius: 4px;
+  position: relative;
+}
+
+.temperature-marker {
+  position: absolute;
+  top: -4px;
+  width: 4px;
+  height: 16px;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 2px;
+}
+
+/* Oxygen sag curve visualization */
+.oxygen-sag-container {
+  height: 300px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+/* Alert styling for water quality warnings */
+.wq-alert-critical {
+  background: #fff1f0;
+  border: 2px solid #ff4d4f;
+}
+
+.wq-alert-warning {
+  background: #fffbe6;
+  border: 2px solid #faad14;
+}
+
+.wq-alert-normal {
+  background: #f6ffed;
+  border: 2px solid #52c41a;
+}
+
+/* Statistics cards */
+.wq-stat-card {
+  text-align: center;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s;
+}
+
+.wq-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Slider with custom colors for different parameters */
+.do-slider .ant-slider-track {
+  background: linear-gradient(90deg, #ff4d4f 0%, #52c41a 100%);
+}
+
+.bod-slider .ant-slider-track {
+  background: linear-gradient(90deg, #52c41a 0%, #ff4d4f 100%);
+}
+
+.nutrient-slider .ant-slider-track {
+  background: linear-gradient(90deg, #1890ff 0%, #fa8c16 100%);
+}
+
+/* Tabs customization */
+.ant-tabs-tab {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.ant-tabs-tab-active {
+  background: linear-gradient(180deg, #ffffff 0%, #f5f5f5 100%);
+}
+
+/* Form item labels with icons */
+.ant-form-item-label > label .anticon {
+  margin-left: 4px;
+  color: #1890ff;
+  cursor: help;
+}
+
+/* Divider styling */
+.ant-divider-horizontal.ant-divider-with-text-left {
+  font-weight: 600;
+  color: #262626;
+  font-size: 14px;
+  margin: 24px 0 16px 0;
+}
+
+/* Parameter input groups */
+.param-input-group {
+  background: #fafafa;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+/* Chemical formula styling */
+.chemical-formula {
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+}
+
+.chemical-subscript {
+  font-size: 0.7em;
+  vertical-align: sub;
+}
+
+.chemical-superscript {
+  font-size: 0.7em;
+  vertical-align: super;
+}
+
+/* Water quality standards reference table */
+.wq-standards-table {
+  margin-top: 16px;
+  font-size: 12px;
+}
+
+.wq-standards-table td {
+  padding: 8px 12px;
+}
+
+.wq-standards-header {
+  background: #1890ff;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Monitoring dashboard */
+.monitoring-dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.monitoring-widget {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.wq-alert-animated {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .monitoring-dashboard {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .nutrient-value {
+    font-size: 20px;
+  }
+  
+  .oxygen-sag-container {
+    height: 250px;
+  }
+  
+  .monitoring-dashboard {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Print styles */
+@media print {
+  .ant-btn,
+  .ant-tabs-nav {
+    display: none;
+  }
+  
+  .ant-card {
+    page-break-inside: avoid;
+  }
+  
+  .wq-stat-card {
+    box-shadow: none;
+    border: 1px solid #d9d9d9;
+  }
+}
+
+

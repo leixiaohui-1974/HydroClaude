@@ -83,7 +83,7 @@ class UrbanDrainageSystem:
         创建包含3条排水渠和2个涵洞的排水网络。
 
         Network topology:
-        Catchment A → Channel 1 → Culvert 1 → Channel 2 → Culvert 2 → Channel 3 → Outlet
+        Catchment A -> Channel 1 -> Culvert 1 -> Channel 2 -> Culvert 2 -> Channel 3 -> Outlet
         """
         print("Creating drainage network topology...\n")
 
@@ -162,7 +162,7 @@ class UrbanDrainageSystem:
         # Culvert 1: Connecting CH-1 to CH-2
         culv1 = {
             'id': 'CULV-1',
-            'location': 'CH-1 → CH-2',
+            'location': 'CH-1 -> CH-2',
             'diameter': 1.2,  # m (circular culvert)
             'length': 50.0,  # m
             'inlet_elevation': 0.0,
@@ -187,7 +187,7 @@ class UrbanDrainageSystem:
         # Culvert 2: Connecting CH-2 to CH-3
         culv2 = {
             'id': 'CULV-2',
-            'location': 'CH-2 → CH-3',
+            'location': 'CH-2 -> CH-3',
             'diameter': 1.5,  # m
             'length': 80.0,  # m
             'inlet_elevation': -0.1,
@@ -259,7 +259,7 @@ class UrbanDrainageSystem:
             print(f"  {catch['id']}: Area={catch['area']}ha, "
                   f"Imperv={catch['imperviousness']*100:.0f}%, "
                   f"C={catch['runoff_coefficient']:.2f}, "
-                  f"→ {catch['drains_to']}")
+                  f"-> {catch['drains_to']}")
         print(f"  Total Catchment Area: {total_area:.1f} ha")
 
     def create_design_storm(
@@ -338,7 +338,7 @@ class UrbanDrainageSystem:
 
         使用推理公式法计算径流过程。
 
-        Q = C * i * A / 360  (m³/s)
+        Q = C * i * A / 360  (m^3/s)
 
         Args:
             catchment: Catchment dictionary
@@ -360,7 +360,7 @@ class UrbanDrainageSystem:
         C = catchment['runoff_coefficient']
         A = catchment['area']  # hectares
 
-        Q = C * intensity * A / 360.0  # m³/s
+        Q = C * intensity * A / 360.0  # m^3/s
 
         return time_array, Q
 
@@ -377,7 +377,7 @@ class UrbanDrainageSystem:
 
         Args:
             channel: Channel dictionary
-            Q_in: Inflow hydrograph (m³/s)
+            Q_in: Inflow hydrograph (m^3/s)
             time: Time array (minutes)
 
         Returns:
@@ -449,7 +449,7 @@ class UrbanDrainageSystem:
         for catch in self.catchments:
             t_runoff, Q_runoff = self.compute_runoff_hydrograph(catch, dt)
             results['runoff'][catch['id']] = Q_runoff
-            print(f"  {catch['id']}: Peak Q = {np.max(Q_runoff):.2f} m³/s")
+            print(f"  {catch['id']}: Peak Q = {np.max(Q_runoff):.2f} m^3/s")
 
         # Route through drainage network
         print(f"\nRouting through drainage network...")
@@ -495,8 +495,8 @@ class UrbanDrainageSystem:
             results['water_levels'][ch['id']] = h_peak
             results['overflow'][ch['id']] = overflow_ratio
 
-            status = "✓ OK" if overflow_ratio < 1.0 else "✗ OVERFLOW!"
-            print(f"  {ch['id']}: Peak Q = {Q_peak:.2f} m³/s, "
+            status = " OK" if overflow_ratio < 1.0 else " OVERFLOW!"
+            print(f"  {ch['id']}: Peak Q = {Q_peak:.2f} m^3/s, "
                   f"h = {h_peak:.2f} m, "
                   f"Capacity ratio = {overflow_ratio:.2%} {status}")
 
@@ -529,7 +529,7 @@ class UrbanDrainageSystem:
             ax2.plot(time, results['runoff'][catch['id']], linewidth=2,
                     color=colors_catch[i], label=catch['id'])
         ax2.set_xlabel('Time (minutes)', fontsize=11)
-        ax2.set_ylabel('Runoff (m³/s)', fontsize=11)
+        ax2.set_ylabel('Runoff (m^3/s)', fontsize=11)
         ax2.set_title('Catchment Runoff Hydrographs', fontsize=12, fontweight='bold')
         ax2.legend(fontsize=10)
         ax2.grid(True, alpha=0.3)
@@ -541,7 +541,7 @@ class UrbanDrainageSystem:
             ax3.plot(time, results['channel_flow'][ch['id']], linewidth=2,
                     color=colors_ch[i], label=ch['id'])
         ax3.set_xlabel('Time (minutes)', fontsize=11)
-        ax3.set_ylabel('Discharge (m³/s)', fontsize=11)
+        ax3.set_ylabel('Discharge (m^3/s)', fontsize=11)
         ax3.set_title('Channel Flow Hydrographs', fontsize=12, fontweight='bold')
         ax3.legend(fontsize=10)
         ax3.grid(True, alpha=0.3)
@@ -552,7 +552,7 @@ class UrbanDrainageSystem:
             ax4.plot(time, results['culvert_flow'][culv['id']], linewidth=2,
                     label=culv['id'])
         ax4.set_xlabel('Time (minutes)', fontsize=11)
-        ax4.set_ylabel('Discharge (m³/s)', fontsize=11)
+        ax4.set_ylabel('Discharge (m^3/s)', fontsize=11)
         ax4.set_title('Culvert Flow Hydrographs', fontsize=12, fontweight='bold')
         ax4.legend(fontsize=10)
         ax4.grid(True, alpha=0.3)
@@ -564,7 +564,7 @@ class UrbanDrainageSystem:
         ax5.plot(time, results['channel_flow']['CH-2'], 'g-', linewidth=2, label='CH-2 Out')
         ax5.plot(time, results['channel_flow']['CH-3'], 'r-', linewidth=2, label='CH-3 Out (System)')
         ax5.set_xlabel('Time (minutes)', fontsize=11)
-        ax5.set_ylabel('Discharge (m³/s)', fontsize=11)
+        ax5.set_ylabel('Discharge (m^3/s)', fontsize=11)
         ax5.set_title('System Flow Routing', fontsize=12, fontweight='bold')
         ax5.legend(fontsize=9)
         ax5.grid(True, alpha=0.3)
@@ -640,20 +640,20 @@ def main():
     print("Case Study Completed Successfully!")
     print("="*70)
     print("\nKey Achievements:")
-    print("  ✓ Modeled urban drainage network (3 channels, 2 culverts)")
-    print("  ✓ Simulated 3 catchment areas (60 hectares total)")
-    print("  ✓ Created 10-year design storm (Chicago method)")
-    print("  ✓ Computed runoff using rational method")
-    print("  ✓ Routed flow through network (Muskingum)")
-    print("  ✓ Assessed channel capacities and flood risk")
-    print("  ✓ Generated comprehensive visualizations")
+    print("   Modeled urban drainage network (3 channels, 2 culverts)")
+    print("   Simulated 3 catchment areas (60 hectares total)")
+    print("   Created 10-year design storm (Chicago method)")
+    print("   Computed runoff using rational method")
+    print("   Routed flow through network (Muskingum)")
+    print("   Assessed channel capacities and flood risk")
+    print("   Generated comprehensive visualizations")
     print("\nThis case study demonstrates:")
-    print("  • Urban drainage network modeling")
-    print("  • Design storm generation")
-    print("  • Runoff computation (rational method)")
-    print("  • Flow routing (Muskingum)")
-    print("  • Culvert hydraulics")
-    print("  • Flood risk assessment")
+    print("  - Urban drainage network modeling")
+    print("  - Design storm generation")
+    print("  - Runoff computation (rational method)")
+    print("  - Flow routing (Muskingum)")
+    print("  - Culvert hydraulics")
+    print("  - Flood risk assessment")
     print("="*70 + "\n")
 
 

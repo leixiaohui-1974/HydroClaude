@@ -47,7 +47,7 @@ def test_1_still_water():
     dx = length / n_cells
     width = 10.0
     manning_n = 0.025
-    slope = 0.0  # ⚠️ 关键：平坦河床
+    slope = 0.0  # ️ 关键：平坦河床
     dt = 60.0
 
     h_init = np.ones(n_cells + 1) * 2.0
@@ -72,7 +72,7 @@ def test_1_still_water():
         )
 
         if np.any(np.isnan(h)) or np.any(np.isnan(Q)):
-            print(f"  ❌ 步骤{step+1}出现NaN")
+            print(f"   步骤{step+1}出现NaN")
             success = False
             break
 
@@ -96,7 +96,7 @@ def test_1_still_water():
 
         # 判断标准
         success = (max_mass_error < 1.0 and h_deviation < 0.01 and Q_max < 1.0)
-        print(f"  结果: {'✅ 通过' if success else '❌ 失败'}")
+        print(f"  结果: {' 通过' if success else ' 失败'}")
 
     return success
 
@@ -161,7 +161,7 @@ def test_2_uniform_flow():
         )
 
         if np.any(np.isnan(h)) or np.any(np.isnan(Q)):
-            print(f"  ❌ 步骤{step+1}出现NaN")
+            print(f"   步骤{step+1}出现NaN")
             success = False
             break
 
@@ -184,7 +184,7 @@ def test_2_uniform_flow():
 
         # 判断标准：质量误差<10%
         success = (max_mass_error < 10.0)
-        print(f"  结果: {'✅ 通过' if success else '❌ 失败'}")
+        print(f"  结果: {' 通过' if success else ' 失败'}")
 
     return success
 
@@ -247,7 +247,7 @@ def test_3_water_level_step():
         )
 
         if np.any(np.isnan(h)) or np.any(np.isnan(Q)):
-            print(f"  ❌ 步骤{step+1}出现NaN")
+            print(f"   步骤{step+1}出现NaN")
             success = False
             break
 
@@ -269,7 +269,7 @@ def test_3_water_level_step():
 
         # 判断标准：质量应该增加（因为上游水位升高），且幅度合理
         success = (0 < mass_change_pct < 50.0 and not np.any(np.isnan(h)))
-        print(f"  结果: {'✅ 通过' if success else '❌ 失败'}")
+        print(f"  结果: {' 通过' if success else ' 失败'}")
 
     return success
 
@@ -290,17 +290,17 @@ if __name__ == "__main__":
     print("="*80)
 
     for name, result in results:
-        status = "✅ 通过" if result else "❌ 失败"
+        status = " 通过" if result else " 失败"
         print(f"  {name}: {status}")
 
     total_pass = sum(1 for _, r in results if r)
     print(f"\n  总计: {total_pass}/{len(results)} 通过")
 
     if total_pass == len(results):
-        print("\n  🎉 所有测试通过！修正版Preissmann求解器可用")
+        print("\n   所有测试通过！修正版Preissmann求解器可用")
     elif total_pass > 0:
-        print(f"\n  ⚠️ 部分测试通过，需要进一步调试")
+        print(f"\n  ️ 部分测试通过，需要进一步调试")
     else:
-        print(f"\n  ❌ 所有测试失败，需要重新审视算法")
+        print(f"\n   所有测试失败，需要重新审视算法")
 
     print("="*80)

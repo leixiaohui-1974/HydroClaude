@@ -9,11 +9,11 @@ WENO3重构精度测试（WENO3 Reconstruction Accuracy Test）
 1. 使用光滑的高斯波包作为初始条件
 2. 在多个网格分辨率下运行模拟
 3. 计算每个分辨率的L2误差
-4. 验证收敛率 ≈ 3.0（3阶精度）
+4. 验证收敛率 ~= 3.0（3阶精度）
 
 理论背景：
 - WENO3使用3点模板的加权重构
-- 在光滑区域应该达到3阶精度：Error ∝ Δx³
+- 在光滑区域应该达到3阶精度：Error ∝ Δx^3
 - 收敛率定义：p = log(E1/E2) / log(Δx1/Δx2)
 
 通过标准：
@@ -62,7 +62,7 @@ class TestWENO3Accuracy:
 
         返回:
             h: 水深分布 (m)
-            Q: 单宽流量 (m²/s)
+            Q: 单宽流量 (m^2/s)
         """
         h = h_base + h_amplitude * np.exp(-((x - x0)**2) / (2 * sigma**2))
         Q = h * u  # Q = h * u（单宽流量）
@@ -277,30 +277,30 @@ class TestWENO3Accuracy:
         # 1. 误差单调递减
         errors_decreasing = all(errors[i] > errors[i+1] for i in range(len(errors)-1))
         assert errors_decreasing, "L2误差未随网格细化单调递减"
-        print(f"  ✅ L2误差单调递减")
+        print(f"   L2误差单调递减")
 
         # 2. 最细网格误差
         finest_error = errors[-1]
         assert finest_error < 1e-2, f"最细网格误差过大: {finest_error:.3e} > 1e-2"
-        print(f"  ✅ 最细网格L2误差: {finest_error:.3e} < 1e-2")
+        print(f"   最细网格L2误差: {finest_error:.3e} < 1e-2")
 
         # 3. 收敛率（考虑时间积分的2阶精度影响）
         # 对于2阶时间积分+3阶空间离散，实际收敛率可能在2-3之间
         avg_rate = np.mean(rates)
         assert avg_rate > 1.5, f"收敛率过低: {avg_rate:.3f} < 1.5"
-        print(f"  ✅ 平均收敛率: {avg_rate:.3f} > 1.5（符合高阶格式特征）")
+        print(f"   平均收敛率: {avg_rate:.3f} > 1.5（符合高阶格式特征）")
 
         # 4. 检查最后两个分辨率的收敛率（应该最接近理论值）
         final_rate = rates[-1]
-        print(f"  ℹ️  最细网格收敛率: {final_rate:.3f}")
+        print(f"  [INFO]  最细网格收敛率: {final_rate:.3f}")
 
         if final_rate > 2.5:
-            print(f"  🌟 收敛率 > 2.5: WENO3达到接近3阶精度！")
+            print(f"   收敛率 > 2.5: WENO3达到接近3阶精度！")
         elif final_rate > 2.0:
-            print(f"  ✅ 收敛率 > 2.0: 高阶格式特征明显")
+            print(f"   收敛率 > 2.0: 高阶格式特征明显")
 
         print("\\n" + "="*70)
-        print("✅ WENO3精度测试通过：空间离散达到高阶精度")
+        print(" WENO3精度测试通过：空间离散达到高阶精度")
         print("="*70)
 
 

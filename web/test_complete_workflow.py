@@ -31,10 +31,10 @@ def print_header(text):
     print(f"{Colors.HEADER}{Colors.BOLD}{'='*60}{Colors.ENDC}\n")
 
 def print_success(text):
-    print(f"{Colors.OKGREEN}✅ {text}{Colors.ENDC}")
+    print(f"{Colors.OKGREEN} {text}{Colors.ENDC}")
 
 def print_error(text):
-    print(f"{Colors.FAIL}❌ {text}{Colors.ENDC}")
+    print(f"{Colors.FAIL} {text}{Colors.ENDC}")
 
 def print_info(text):
     print(f"{Colors.OKCYAN}ℹ️  {text}{Colors.ENDC}")
@@ -127,9 +127,9 @@ def validate_model_local(model):
         return False
     else:
         print_success("模型验证通过")
-        print_info("✓ 拓扑结构正确")
-        print_info("✓ 参数范围有效")
-        print_info("✓ 边界条件完整")
+        print_info(" 拓扑结构正确")
+        print_info(" 参数范围有效")
+        print_info(" 边界条件完整")
         return True
 
 def convert_model_to_config(model):
@@ -331,7 +331,7 @@ def print_summary(results):
 
     print("详细结果:")
     for name, result in results.items():
-        status = f"{Colors.OKGREEN}✅ PASS{Colors.ENDC}" if result else f"{Colors.FAIL}❌ FAIL{Colors.ENDC}"
+        status = f"{Colors.OKGREEN} PASS{Colors.ENDC}" if result else f"{Colors.FAIL} FAIL{Colors.ENDC}"
         print(f"  {name:30s} {status}")
 
 def main():
@@ -403,11 +403,11 @@ def main():
 
     # 最终状态
     if all(results.values()):
-        print_header("🎉 所有测试通过！")
+        print_header(" 所有测试通过！")
         print_success("HydroClaude Web 工作流完全正常")
         print_info("系统已准备就绪，可以进行生产使用")
     else:
-        print_header("⚠️  部分测试失败")
+        print_header("️  部分测试失败")
         print_error("请检查失败的测试项并修复")
 
 if __name__ == "__main__":

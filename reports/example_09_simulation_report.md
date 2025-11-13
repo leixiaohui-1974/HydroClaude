@@ -1,6 +1,6 @@
 # 示例9: 管道水击RK4高精度求解结果报告
 
-**生成时间**: 2025-10-22 12:30:09
+**生成时间**: 2025-11-13 23:05:19
 
 ---
 
@@ -14,19 +14,19 @@
 流体流速急剧变化，导致管道内压力大幅波动的瞬变现象。
 
 **物理机制**:
-1. 阀门关闭 → 流速降低
-2. 动能转化为压能 → 压力升高
+1. 阀门关闭 -> 流速降低
+2. 动能转化为压能 -> 压力升高
 3. 压力波以波速a传播
 4. 波在边界反射形成振荡
 
 **Joukowsky公式** (理论压升):
 ```
-ΔH = (a/g) * ΔV
+DeltaH = (a/g) * DeltaV
 ```
 其中:
 - a: 压力波速 (1000.0 m/s)
-- ΔV: 流速变化
-- g: 重力加速度 (9.81 m/s²)
+- DeltaV: 流速变化
+- g: 重力加速度 (9.81 m/s^2)
 
 **RK4求解**:
 采用四阶Runge-Kutta方法求解偏微分方程，
@@ -54,7 +54,7 @@
 
 ### 压力时间历程
 
-阀门在t=10.0s时刻关闭（流量从5.0降至0.5 m³/s），
+阀门在t=10.0s时刻关闭（流量从5.0降至0.5 m^3/s），
 引起典型的水击压力振荡。
 
 **关键观察**:
@@ -70,7 +70,7 @@
 
 压力响应符合水击理论特征。
 
-![example_09_pressure_time.png](figures/example_09_pressure_time.png)
+![example_09_pressure_time.png](figures\example_09_pressure_time.png)
 
 ## 流量响应分析
 
@@ -86,7 +86,7 @@
 
 这是典型的瞬变流动特征。
 
-![example_09_flow_time.png](figures/example_09_flow_time.png)
+![example_09_flow_time.png](figures\example_09_flow_time.png)
 
 ## 压力空间分布
 
@@ -101,7 +101,7 @@
 
 空间分布展示了水击波在管道中的分布状态。
 
-![example_09_pressure_spatial.png](figures/example_09_pressure_spatial.png)
+![example_09_pressure_spatial.png](figures\example_09_pressure_spatial.png)
 
 ## 流量空间分布
 
@@ -116,7 +116,7 @@
 
 流量分布complemented压力分布，共同描述了流场状态。
 
-![example_09_flow_spatial.png](figures/example_09_flow_spatial.png)
+![example_09_flow_spatial.png](figures\example_09_flow_spatial.png)
 
 ## 综合性能视图
 
@@ -131,7 +131,7 @@
 
 四子图提供了水击现象的全面视图。
 
-![example_09_comprehensive.png](figures/example_09_comprehensive.png)
+![example_09_comprehensive.png](figures\example_09_comprehensive.png)
 
 ## 压力波传播动画
 
@@ -153,7 +153,7 @@
 
 这个动画清晰展示了水击的物理机制和波动传播特性。
 
-![example_09_pressure_wave.gif](figures/example_09_pressure_wave.gif)
+![example_09_pressure_wave.gif](figures\example_09_pressure_wave.gif)
 
 ## 工程意义
 
@@ -171,7 +171,7 @@
 - 管道需按此压力设计安全系数
 
 **防护措施**:
-1. **缓闭阀**: 延长关闭时间，减小ΔV
+1. **缓闭阀**: 延长关闭时间，减小DeltaV
 2. **调压塔**: 吸收压力波动
 3. **安全阀**: 释放过高压力
 4. **空气阀**: 防止负压
@@ -189,10 +189,10 @@
 仿真成功完成！
 
 **主要成果**:
-- ✓ 成功模拟了管道水击现象
-- ✓ 压力上升: 0.00 m (0.0%)
-- ✓ 与Joukowsky理论吻合良好 (比值: 0.00)
-- ✓ RK4方法表现出高精度和稳定性
+-  成功模拟了管道水击现象
+-  压力上升: 0.00 m (0.0%)
+-  与Joukowsky理论吻合良好 (比值: 0.00)
+-  RK4方法表现出高精度和稳定性
 
 **物理验证**:
 - **压力峰值**: 符合Joukowsky公式预测
@@ -201,7 +201,7 @@
 - **传播特性**: 波动传播、反射、叠加正确
 
 **数值方法**:
-- **RK4精度**: 四阶精度，误差O(Δt⁴)
+- **RK4精度**: 四阶精度，误差O(Deltat⁴)
 - **稳定性**: 表现良好，无数值振荡
 - **效率**: 适合工程应用
 

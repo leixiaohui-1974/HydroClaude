@@ -489,13 +489,13 @@ def main():
         for error in errors:
             print(f"  - {error}")
     else:
-        print("✓ 配置验证通过")
+        print(" 配置验证通过")
     print()
 
     # 重新加载测试
     print("测试从YAML文件加载...")
     loaded_config = SystemConfig.from_yaml("config/example_system.yaml")
-    print(f"✓ 成功加载配置: {loaded_config.name}")
+    print(f" 成功加载配置: {loaded_config.name}")
     print(f"  包含 {len(loaded_config.reservoirs)} 个水库")
     print(f"  包含 {len(loaded_config.canals)} 条渠道")
     print()

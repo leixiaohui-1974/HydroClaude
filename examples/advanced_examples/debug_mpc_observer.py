@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 调试MPC观测器和优化问题
 
@@ -88,7 +89,7 @@ for u_test in u_test_values:
     # 预测下一步状态
     x_next = controller.A @ x_test + controller.B * u_test
     y_next = controller.C @ x_next + controller.D[0] * u_test
-    print(f"  u={u_test:.1f}m → x_next={x_next} → y_next={y_next:.4f}m")
+    print(f"  u={u_test:.1f}m -> x_next={x_next} -> y_next={y_next:.4f}m")
 
 print(f"\n观察：u从1.0增大到4.0时，y_next应该减小（负相关）")
 
@@ -106,8 +107,8 @@ print(f"  反推输出: y = C @ x_est = {y_est:.4f}m")
 print(f"  误差: {abs(y_est - y_current):.4f}m")
 
 if abs(y_est - y_current) > 0.1:
-    print(f"  ✗ _estimate_state函数有问题！估计不一致")
+    print(f"  X _estimate_state函数有问题！估计不一致")
 else:
-    print(f"  ✓ _estimate_state函数正确")
+    print(f"  OK _estimate_state函数正确")
 
 print("\n" + "=" * 80)

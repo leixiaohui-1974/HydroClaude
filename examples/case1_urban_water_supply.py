@@ -68,7 +68,7 @@ def create_urban_water_network():
         head=130.0        # 水库水位（总水头）
     )
     topology.add_node(reservoir)
-    print(f"  ✓ 水库 R1: 高程={reservoir.elevation}m, 水位={reservoir.head}m")
+    print(f"   水库 R1: 高程={reservoir.elevation}m, 水位={reservoir.head}m")
 
     # 水塔
     tank = Tank(
@@ -82,7 +82,7 @@ def create_urban_water_network():
     topology.add_node(tank)
     # Tank的水头 = elevation + level
     tank_head = tank.elevation + tank.level
-    print(f"  ✓ 水塔 T1: 高程={tank.elevation}m, 初始水位={tank.level}m, 水头={tank_head}m")
+    print(f"   水塔 T1: 高程={tank.elevation}m, 初始水位={tank.level}m, 水头={tank_head}m")
 
     # 用水节点（不同区域）
     junctions_data = [
@@ -97,7 +97,7 @@ def create_urban_water_network():
     for jid, elev, demand, desc in junctions_data:
         j = Junction(node_id=jid, elevation=elev, demand=demand)
         topology.add_node(j)
-        print(f"  ✓ 节点 {jid}: 高程={elev}m, 需求={demand*1000:.1f}L/s ({desc})")
+        print(f"   节点 {jid}: 高程={elev}m, 需求={demand*1000:.1f}L/s ({desc})")
 
     print()
 
@@ -120,7 +120,7 @@ def create_urban_water_network():
     for pid, from_node, to_node, D, L, material, desc in pipes_data:
         pipe = create_pressure_pipe(pid, D, L, material)
         topology.add_pipe(pipe, from_node, to_node)
-        print(f"  ✓ 管道 {pid}: {from_node}→{to_node}, D={D*1000}mm, L={L}m ({desc})")
+        print(f"   管道 {pid}: {from_node}->{to_node}, D={D*1000}mm, L={L}m ({desc})")
 
     print()
 
@@ -138,7 +138,7 @@ def create_urban_water_network():
     loops = topology.find_loops()
     print(f"  环路数量: {len(loops)}")
     for i, loop in enumerate(loops, 1):
-        print(f"    环路{i}: {' → '.join(loop + [loop[0]])}")
+        print(f"    环路{i}: {' -> '.join(loop + [loop[0]])}")
 
     print()
 
@@ -192,7 +192,7 @@ def analyze_operating_conditions(topology):
         }
 
         # 输出关键信息
-        print(f"  求解状态: {'✓ 收敛' if solver.converged else '✗ 未收敛'}")
+        print(f"  求解状态: {' 收敛' if solver.converged else ' 未收敛'}")
         print(f"  迭代次数: {solver.iteration_count}")
 
         # 节点压力分析
@@ -210,9 +210,9 @@ def analyze_operating_conditions(topology):
         )
 
         if min_pressure < 15:
-            print(f"  ⚠️  警告: 最小压力 {min_pressure:.2f}m < 15m (不满足规范要求)")
+            print(f"    警告: 最小压力 {min_pressure:.2f}m < 15m (不满足规范要求)")
         else:
-            print(f"  ✓ 最小压力 {min_pressure:.2f}m ≥ 15m (满足规范)")
+            print(f"   最小压力 {min_pressure:.2f}m >= 15m (满足规范)")
 
         # 管道流速分析
         print(f"\n  管道流速分布:")
@@ -226,9 +226,9 @@ def analyze_operating_conditions(topology):
             print(f"    {pid}: Q={Q*1000:.1f}L/s, V={V:.2f}m/s")
 
         if max_velocity > 3.0:
-            print(f"  ⚠️  警告: 最大流速 {max_velocity:.2f}m/s > 3.0m/s (可能产生水锤)")
+            print(f"    警告: 最大流速 {max_velocity:.2f}m/s > 3.0m/s (可能产生水锤)")
         else:
-            print(f"  ✓ 最大流速 {max_velocity:.2f}m/s ≤ 3.0m/s (满足要求)")
+            print(f"   最大流速 {max_velocity:.2f}m/s <= 3.0m/s (满足要求)")
 
         print()
 
@@ -306,7 +306,7 @@ def plot_results(topology, results):
         # 子图4: 水头线图
         ax = axes[1, 1]
 
-        # 选择一条主干路径: R1 → J1 → J2 → J4 → T1
+        # 选择一条主干路径: R1 -> J1 -> J2 -> J4 -> T1
         path_nodes = ['R1', 'J1', 'J2', 'J4', 'T1']
         path_pipes = ['P1', 'P2', 'P4', 'P6']
 
@@ -325,17 +325,17 @@ def plot_results(topology, results):
 
         ax.set_xlabel('Distance (m)', fontsize=12)
         ax.set_ylabel('Head (m)', fontsize=12)
-        ax.set_title('Hydraulic Grade Line (R1→J1→J2→J4→T1)', fontsize=14, fontweight='bold')
+        ax.set_title('Hydraulic Grade Line (R1->J1->J2->J4->T1)', fontsize=14, fontweight='bold')
         ax.legend()
         ax.grid(alpha=0.3)
 
         plt.tight_layout()
         plt.savefig('examples/urban_water_supply_results.png', dpi=150)
-        print("📊 结果图表已保存: examples/urban_water_supply_results.png\n")
+        print(" 结果图表已保存: examples/urban_water_supply_results.png\n")
         plt.close()
 
     except Exception as e:
-        print(f"⚠️ 无法生成图表: {e}\n")
+        print(f" 无法生成图表: {e}\n")
 
 
 def main():
@@ -374,7 +374,7 @@ def main():
     print("  4. 建立分区供水系统，提高供水可靠性")
     print()
     print("="*80)
-    print("✅ 案例分析完成！")
+    print(" 案例分析完成！")
     print("="*80)
 
 

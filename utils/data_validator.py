@@ -552,7 +552,7 @@ class DataValidator:
 </head>
 <body>
     <div class="container">
-        <h1>🔍 数据验证报告</h1>
+        <h1> 数据验证报告</h1>
         <p>生成时间: {summary['timestamp']}</p>
 
         <div class="summary">
@@ -578,7 +578,7 @@ class DataValidator:
         # 错误列表
         if summary['errors']:
             html += """
-        <h2>❌ 错误</h2>
+        <h2> 错误</h2>
 """
             for error in summary['errors']:
                 html += f'        <div class="error">{error}</div>\n'
@@ -586,14 +586,14 @@ class DataValidator:
         # 警告列表
         if summary['warnings']:
             html += """
-        <h2>⚠️ 警告</h2>
+        <h2>️ 警告</h2>
 """
             for warning in summary['warnings']:
                 html += f'        <div class="warning">{warning}</div>\n'
 
         # 详细结果
         html += """
-        <h2>📋 详细检查结果</h2>
+        <h2> 详细检查结果</h2>
 """
 
         for result in summary['all_results']:
@@ -613,7 +613,7 @@ class DataValidator:
 
             if 'checks' in result:
                 for check in result['checks']:
-                    check_status = '✓' if check['passed'] else '✗'
+                    check_status = '' if check['passed'] else ''
                     html += f"""
             <div>
                 {check_status} <strong>{check['name']}</strong>: {check['details']}
@@ -635,7 +635,7 @@ class DataValidator:
 
         output_path = Path(filename)
         output_path.write_text(html, encoding='utf-8')
-        print(f"✅ 验证报告已生成: {output_path}")
+        print(f" 验证报告已生成: {output_path}")
 
     def reset(self):
         """重置验证器状态"""
@@ -656,13 +656,13 @@ def demo():
     print("1. 验证水深数据...")
     h = np.linspace(1.8, 2.2, 50) + np.random.normal(0, 0.05, 50)
     is_valid, report = validator.validate_water_depth(h)
-    print(f"   结果: {'✓ 通过' if is_valid else '✗ 失败'}")
+    print(f"   结果: {' 通过' if is_valid else ' 失败'}")
 
     # 示例2：验证流速
     print("\n2. 验证流速数据...")
     u = np.linspace(0.8, 1.2, 50) + np.random.normal(0, 0.02, 50)
     is_valid, report = validator.validate_velocity(u, h)
-    print(f"   结果: {'✓ 通过' if is_valid else '✗ 失败'}")
+    print(f"   结果: {' 通过' if is_valid else ' 失败'}")
 
     # 示例3：质量守恒检查
     print("\n3. 检查质量守恒...")
@@ -670,7 +670,7 @@ def demo():
     Q_out = 19.98
     dV_dt = 0.02
     is_conserved, report = validator.check_mass_conservation(Q_in, Q_out, dV_dt)
-    print(f"   结果: {'✓ 守恒' if is_conserved else '✗ 不守恒'}")
+    print(f"   结果: {' 守恒' if is_conserved else ' 不守恒'}")
     print(f"   相对误差: {report['relative_error']:.4%}")
 
     # 生成报告
@@ -685,7 +685,7 @@ def demo():
     print(f"  失败: {summary['failed_checks']}")
     print(f"  成功率: {summary['success_rate']:.1f}%")
 
-    print("\n✅ 演示完成！")
+    print("\n 演示完成！")
 
 
 if __name__ == "__main__":

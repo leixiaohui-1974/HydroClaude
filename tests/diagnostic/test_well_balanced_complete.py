@@ -16,7 +16,13 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, '/workspace')
 
-from solvers.godunov_fvm_solver_wb import GodunvFVMSolverWB
+try:
+    from solvers.godunov_fvm_solver_wb import GodunvFVMSolverWB
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.godunov_fvm_solver import GodunvFVMSolver
 from utils.canal_utils import compute_steady_uniform_flow
 
@@ -42,7 +48,7 @@ h_uniform = compute_steady_uniform_flow(Q_target, width, slope, manning_n)
 print(f"\n配置:")
 print(f"  长度: {length}m, 单元: {n_cells}")
 print(f"  Manning n: {manning_n}, 坡度: {slope}")
-print(f"  目标流量: {Q_target} m³/s")
+print(f"  目标流量: {Q_target} m^3/s")
 print(f"  理论水深: {h_uniform:.4f} m")
 
 # 测试Well-Balanced
@@ -71,7 +77,7 @@ while solver_wb.t < t_target and solver_wb.step_count < max_steps:
     h, Q = solver_wb.step()
     
     if np.any(np.isnan(h)) or np.any(np.isnan(Q)):
-        print(f"  ❌ 步{solver_wb.step_count}出现NaN!")
+        print(f"   步{solver_wb.step_count}出现NaN!")
         break
     
     if solver_wb.step_count % 500 == 0:
@@ -93,9 +99,9 @@ h_std_wb = np.std(h_wb) / h_mean_wb * 100.0
 print(f"\nWell-Balanced结果 (t={state_wb['t']:.1f}s, {state_wb['step']}步):")
 print(f"  质量误差: {state_wb['mass_error']:.6f}%")
 print(f"  平均水深: {h_mean_wb:.4f}m (误差: {h_error_wb:.2f}%)")
-print(f"  平均流量: {Q_mean_wb:.2f}m³/s (误差: {Q_error_wb:.2f}%)")
+print(f"  平均流量: {Q_mean_wb:.2f}m^3/s (误差: {Q_error_wb:.2f}%)")
 print(f"  水深均匀性: {h_std_wb:.4f}%")
-print(f"  状态: {'✅ 稳定' if not np.any(np.isnan(h_wb)) else '❌ NaN'}")
+print(f"  状态: {' 稳定' if not np.any(np.isnan(h_wb)) else ' NaN'}")
 
 # 对比标准Order 1
 print(f"\n--- 标准Order 1（参考）---")
@@ -144,7 +150,7 @@ checks = [
 
 print(f"\n成功标准:")
 for name, passed in checks:
-    print(f"  {name}: {'✅' if passed else '❌'}")
+    print(f"  {name}: {'' if passed else ''}")
 
 all_pass = all(c[1] for c in checks)
 
@@ -163,9 +169,9 @@ ax1.grid(True, alpha=0.3)
 
 # 流量剖面
 ax2.plot(solver_wb.x, Q_wb, 'g-', lw=1.5, label='Well-Balanced')
-ax2.axhline(Q_target, color='k', ls=':', lw=2, label=f'Target ({Q_target}m³/s)')
+ax2.axhline(Q_target, color='k', ls=':', lw=2, label=f'Target ({Q_target}m^3/s)')
 ax2.set_xlabel('x (m)', fontsize=11)
-ax2.set_ylabel('Q (m³/s)', fontsize=11)
+ax2.set_ylabel('Q (m^3/s)', fontsize=11)
 ax2.set_title('Discharge Profile', fontsize=12)
 ax2.legend(fontsize=10)
 ax2.grid(True, alpha=0.3)
@@ -205,9 +211,9 @@ print(f"\n  图像: well_balanced_steady_flow.png")
 
 print(f"\n{'='*80}")
 if all_pass:
-    print("🎉 Well-Balanced稳态均匀流 **通过** ✅✅✅")
+    print(" Well-Balanced稳态均匀流 **通过** ")
 else:
-    print("⚠️ Well-Balanced稳态均匀流 部分通过")
+    print("️ Well-Balanced稳态均匀流 部分通过")
 print("="*80)
 
 # ========== 测试2: Dam Break ==========
@@ -236,7 +242,7 @@ while solver_dam.t < 2.0 and solver_dam.step_count < 10000:
     solver_dam.step()
     
     if np.any(np.isnan(solver_dam.h)):
-        print(f"  ❌ 步{solver_dam.step_count}出现NaN!")
+        print(f"   步{solver_dam.step_count}出现NaN!")
         break
     
     if solver_dam.step_count % 500 == 0:
@@ -248,9 +254,9 @@ state_dam = solver_dam.get_state()
 
 print(f"\nDam Break结果 (t={state_dam['t']:.2f}s, {state_dam['step']}步):")
 print(f"  质量误差: {state_dam['mass_error']:.6f}%")
-print(f"  状态: {'✅ 稳定' if not np.any(np.isnan(state_dam['h'])) else '❌ NaN'}")
-print(f"  目标<1%: {'✅' if abs(state_dam['mass_error']) < 1.0 else '❌'}")
+print(f"  状态: {' 稳定' if not np.any(np.isnan(state_dam['h'])) else ' NaN'}")
+print(f"  目标<1%: {'' if abs(state_dam['mass_error']) < 1.0 else ''}")
 
 print("\n" + "="*80)
-print("🚀 Well-Balanced完整验证完成！")
+print(" Well-Balanced完整验证完成！")
 print("="*80)

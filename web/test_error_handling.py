@@ -21,7 +21,7 @@ def log_test(name, passed, expected, actual):
     global test_count, passed_count, failed_count
     test_count += 1
 
-    status = "✅ PASS" if passed else "❌ FAIL"
+    status = " PASS" if passed else " FAIL"
     print(f"{status} {name}")
     print(f"    期望: {expected}")
     print(f"    实际: {actual}")
@@ -45,7 +45,7 @@ def test_invalid_parameters():
         json={
             "name": "错误测试-负数宽度",
             "config": {
-                "width": -10.0,  # ❌ 无效
+                "width": -10.0,  #  无效
                 "length": 1000.0,
                 "n_cells": 100,
                 "t_end": 10.0,
@@ -75,7 +75,7 @@ def test_invalid_parameters():
             "name": "错误测试-零长度",
             "config": {
                 "width": 10.0,
-                "length": 0.0,  # ❌ 无效
+                "length": 0.0,  #  无效
                 "n_cells": 100,
                 "t_end": 10.0,
                 "slope": 0.001,
@@ -105,7 +105,7 @@ def test_invalid_parameters():
             "config": {
                 "width": 10.0,
                 "length": 1000.0,
-                "n_cells": 5,  # ❌ 太少
+                "n_cells": 5,  #  太少
                 "t_end": 10.0,
                 "slope": 0.001,
                 "manning_n": 0.025,
@@ -137,7 +137,7 @@ def test_invalid_parameters():
                 "n_cells": 100,
                 "t_end": 10.0,
                 "slope": 0.001,
-                "manning_n": -0.025,  # ❌ 无效
+                "manning_n": -0.025,  #  无效
                 "initial_conditions": {"type": "uniform", "h": 5.0, "Q": 0.0},
                 "boundary_conditions": {
                     "left": {"type": "Q", "value": 10.0},
@@ -168,7 +168,7 @@ def test_missing_fields():
         json={
             "name": "错误测试-缺失width",
             "config": {
-                # "width": 10.0,  # ❌ 缺失
+                # "width": 10.0,  #  缺失
                 "length": 1000.0,
                 "n_cells": 100,
                 "t_end": 10.0,
@@ -204,7 +204,7 @@ def test_missing_fields():
                 "slope": 0.001,
                 "manning_n": 0.025,
                 "initial_conditions": {"type": "uniform", "h": 5.0, "Q": 0.0},
-                # "boundary_conditions": {...}  # ❌ 缺失
+                # "boundary_conditions": {...}  #  缺失
             }
         }
     )
@@ -260,7 +260,7 @@ def test_invalid_json():
     print("\n[4.1] 发送无效JSON")
     response = requests.post(
         f"{API_V1}/simulations",
-        data="这不是有效的JSON{]",  # ❌ 无效JSON
+        data="这不是有效的JSON{]",  #  无效JSON
         headers={"Content-Type": "application/json"}
     )
 
@@ -326,14 +326,14 @@ def print_summary():
     pass_rate = (passed_count / test_count * 100) if test_count > 0 else 0
 
     print(f"\n总测试数: {test_count}")
-    print(f"✅ 通过: {passed_count}")
-    print(f"❌ 失败: {failed_count}")
+    print(f" 通过: {passed_count}")
+    print(f" 失败: {failed_count}")
     print(f"通过率: {pass_rate:.1f}%")
 
     if failed_count == 0:
-        print("\n🎉 所有错误处理测试通过！API具有良好的鲁棒性")
+        print("\n 所有错误处理测试通过！API具有良好的鲁棒性")
     else:
-        print(f"\n⚠️  有{failed_count}个测试失败，需要改进错误处理")
+        print(f"\n️  有{failed_count}个测试失败，需要改进错误处理")
 
     print("=" * 80)
 
@@ -349,9 +349,9 @@ def main():
     print(f"\n[0] 健康检查...")
     try:
         health = requests.get(f"{API_BASE}/health", timeout=5).json()
-        print(f"✅ 后端正常: {health.get('service')}")
+        print(f" 后端正常: {health.get('service')}")
     except Exception as e:
-        print(f"❌ 后端异常: {e}")
+        print(f" 后端异常: {e}")
         return 1
 
     # 运行测试
@@ -362,7 +362,7 @@ def main():
         test_invalid_json()
         test_boundary_values()
     except Exception as e:
-        print(f"\n❌ 测试执行异常: {e}")
+        print(f"\n 测试执行异常: {e}")
         import traceback
         traceback.print_exc()
         return 1

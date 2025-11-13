@@ -25,6 +25,7 @@
 ## 脚本文件
 
 - `example_08_load_acceptance.py`
+- `example_08_load_acceptance_with_anim.py`
 
 ## 运行方法
 
@@ -37,11 +38,13 @@ PYTHONPATH=../.. python example_08_load_acceptance.py
 
 ### 图表
 
-- 待生成
+- `outputs/figures/load_acceptance_transient.png`
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_08_load_acceptance_transient.gif`
+
+![动画](outputs\animations\example_08_load_acceptance_transient.gif)
 
 ## 技术要点
 

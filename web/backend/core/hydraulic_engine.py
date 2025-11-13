@@ -11,10 +11,16 @@ from dataclasses import dataclass, asdict
 import json
 from datetime import datetime
 
-# 添加HydroClaude核心路径
-HYDROCLAUDE_PATH = os.environ.get('HYDROCLAUDE_PATH', '/home/user/HydroClaude')
+# 添加HydroClaude核心路径  
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
+HYDROCLAUDE_PATH = os.environ.get('HYDROCLAUDE_PATH', project_root)
 if HYDROCLAUDE_PATH not in sys.path:
     sys.path.insert(0, HYDROCLAUDE_PATH)
+
+# Windows编码问题：禁用警告
+import warnings
+warnings.filterwarnings('ignore')
+os.environ['NUMBA_DISABLE_PERFORMANCE_WARNINGS'] = '1'
 
 # 导入HydroClaude核心模块
 from solvers.godunov_fvm_solver import GodunvFVMSolver
@@ -96,7 +102,18 @@ class HydraulicEngine:
             SimulationResult: 仿真结果
         """
         start_time = datetime.now()
-
+        
+        # 使用输出抑制器避免Windows GBK编码错误
+        try:
+            from .output_suppressor import suppress_output
+        except ImportError:
+            from output_suppressor import suppress_output
+        
+        with suppress_output():
+            return self._run_canal_simulation_internal(task_id, config, start_time)
+    
+    def _run_canal_simulation_internal(self, task_id: str, config: Dict[str, Any], start_time):
+        """内部实现 - 在suppress_output上下文中调用"""
         try:
             # 1. 提取配置参数
             width = config.get('width', 10.0)

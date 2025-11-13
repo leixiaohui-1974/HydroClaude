@@ -1,0 +1,23 @@
+{
+  "timestamp": "2025-11-13T14:53:11.357846",
+  "system_info": {
+    "cpu_count": 16,
+    "memory_total_gb": 63.73994445800781
+  },
+  "results": [
+    {
+      "example": "example_02_pump_system",
+      "script": "code/example_02_pump_system.py",
+      "iterations": 3,
+      "avg_time": 0.386508305867513,
+      "min_time": 0.37259626388549805,
+      "max_time": 0.3936583995819092,
+      "avg_memory_mb": 0.09505208333333333,
+      "times": [
+        0.39327025413513184,
+        0.37259626388549805,
+        0.3936583995819092
+      ]
+    }
+  ]
+}

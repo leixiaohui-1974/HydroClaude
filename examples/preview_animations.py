@@ -13,6 +13,14 @@
 作者: Claude
 日期: 2025-10-22
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import sys
 import os
@@ -359,7 +367,7 @@ def generate_preview_html(examples_dir='.', output_file='preview.html'):
 <body>
     <div class="container">
         <header>
-            <h1>🎬 HydroClaude 动画预览</h1>
+            <h1> HydroClaude 动画预览</h1>
             <p class="subtitle">水力学仿真动画可视化展示</p>
 
             <div class="stats">
@@ -478,7 +486,7 @@ def generate_preview_html(examples_dir='.', output_file='preview.html'):
     output_path = examples_dir / output_file
     output_path.write_text(html, encoding='utf-8')
 
-    print(f"\n✓ 预览页面已生成: {output_path}")
+    print(f"\n 预览页面已生成: {output_path}")
     print(f"  总计 {len(animations)} 个动画")
     print(f"  总大小 {total_size/1024:.2f} MB")
 
@@ -525,7 +533,7 @@ def main():
     if output_path and args.open:
         import webbrowser
         print(f"\n正在打开浏览器...")
-        webbrowser.open('file://' + str(Path(output_path).absolute()))
+        webbrowser.open('file://' + str(Path(output_path, encoding='utf-8').absolute()))
 
     print("="*80)
 

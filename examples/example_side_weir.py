@@ -60,8 +60,8 @@ def example_1_basic_side_weir():
     print(f"\n分流计算：")
     print(f"{'进口流量':>12} {'上游水位':>12} {'堰顶水头':>12} {'分流量':>12} "
           f"{'下游流量':>12} {'分流比':>12} {'水深降':>12}")
-    print(f"{'(m³/s)':>12} {'(m)':>12} {'(m)':>12} {'(m³/s)':>12} "
-          f"{'(m³/s)':>12} {'(%)':>12} {'(m)':>12}")
+    print(f"{'(m^3/s)':>12} {'(m)':>12} {'(m)':>12} {'(m^3/s)':>12} "
+          f"{'(m^3/s)':>12} {'(%)':>12} {'(m)':>12}")
     print("-" * 108)
 
     test_cases = [
@@ -86,7 +86,7 @@ def example_1_basic_side_weir():
               f"{Q_down:>12.2f} {ratio:>12.1f} {dh:>12.3f}")
 
     print("\n分析：")
-    print("  1. 堰顶水头增大 → 分流量增加（H^(3/2) 关系）")
+    print("  1. 堰顶水头增大 -> 分流量增加（H^(3/2) 关系）")
     print("  2. 分流比随进口流量和水头变化")
     print("  3. 主渠流量沿程减小，水深降低")
     print("  4. De Marchi 公式考虑沿程水位变化")
@@ -126,12 +126,12 @@ def example_2_sharp_vs_broad_weir():
     )
 
     print(f"\n堰型对比（相同几何尺寸）：")
-    print(f"  进口流量: {Q_inflow:.1f} m³/s")
+    print(f"  进口流量: {Q_inflow:.1f} m^3/s")
     print(f"  上游水位: {h_upstream:.2f} m")
     print(f"  堰顶水头: {h_upstream - 102.0:.2f} m")
 
-    print(f"\n{'堰型':>12} {'流量系数':>12} {'分流量(m³/s)':>15} "
-          f"{'分流比(%)':>12} {'下游流量(m³/s)':>18}")
+    print(f"\n{'堰型':>12} {'流量系数':>12} {'分流量(m^3/s)':>15} "
+          f"{'分流比(%)':>12} {'下游流量(m^3/s)':>18}")
     print("-" * 84)
 
     for weir, name in [(weir_sharp, "薄壁堰"), (weir_broad, "宽顶堰")]:
@@ -146,10 +146,10 @@ def example_2_sharp_vs_broad_weir():
 
     print("\n结论：")
     print("  薄壁堰：")
-    print("    - 流量系数 Cd ≈ 0.45，溢流能力强")
+    print("    - 流量系数 Cd ~= 0.45，溢流能力强")
     print("    - 适用于急流分水")
     print("  宽顶堰：")
-    print("    - 流量系数 Cd ≈ 0.35，溢流能力较弱")
+    print("    - 流量系数 Cd ~= 0.35，溢流能力较弱")
     print("    - 结构稳定，适用于大流量长期运行")
 
 
@@ -178,7 +178,7 @@ def example_3_profile_analysis():
     print(f"\n侧堰参数：")
     print(f"  堰长: {weir.L:.1f} m")
     print(f"  堰顶高程: {weir.z_crest:.1f} m")
-    print(f"  进口流量: {Q_inflow:.1f} m³/s")
+    print(f"  进口流量: {Q_inflow:.1f} m^3/s")
     print(f"  上游水位: {h_upstream:.2f} m")
 
     # 计算沿程剖面
@@ -187,8 +187,8 @@ def example_3_profile_analysis():
     profile = result['profile']
 
     print(f"\n沿程剖面（每隔 {weir.L/10:.1f} m）：")
-    print(f"{'距离(m)':>12} {'水位(m)':>12} {'主渠流量(m³/s)':>18} "
-          f"{'单宽溢流(m²/s)':>18} {'堰顶水头(m)':>15}")
+    print(f"{'距离(m)':>12} {'水位(m)':>12} {'主渠流量(m^3/s)':>18} "
+          f"{'单宽溢流(m^2/s)':>18} {'堰顶水头(m)':>15}")
     print("-" * 90)
 
     for point in profile:
@@ -200,8 +200,8 @@ def example_3_profile_analysis():
 
         print(f"{x:>12.1f} {h:>12.3f} {Q:>18.2f} {q:>18.3f} {H:>15.3f}")
 
-    print(f"\n总分流量: {result['Q_diverted']:.2f} m³/s")
-    print(f"下游剩余流量: {result['Q_downstream']:.2f} m³/s")
+    print(f"\n总分流量: {result['Q_diverted']:.2f} m^3/s")
+    print(f"下游剩余流量: {result['Q_downstream']:.2f} m^3/s")
     print(f"分流比: {result['diversion_ratio']*100:.1f}%")
     print(f"水深降落: {result['water_depth_drop']:.3f} m")
 
@@ -223,12 +223,12 @@ def example_4_weir_length_design():
     print("="*80)
 
     # 设计条件
-    Q_inflow = 20.0  # 主渠进口流量 20 m³/s
+    Q_inflow = 20.0  # 主渠进口流量 20 m^3/s
     h_upstream = 104.0  # 上游水位 104 m
     z_crest = 102.0  # 堰顶高程 102 m
 
     print(f"\n设计条件：")
-    print(f"  主渠进口流量: {Q_inflow:.1f} m³/s")
+    print(f"  主渠进口流量: {Q_inflow:.1f} m^3/s")
     print(f"  上游水位: {h_upstream:.2f} m")
     print(f"  堰顶高程: {z_crest:.2f} m")
     print(f"  堰顶水头: {h_upstream - z_crest:.2f} m")
@@ -239,7 +239,7 @@ def example_4_weir_length_design():
 
     print(f"\n侧堰长度设计：")
     print(f"{'目标分流比(%)':>18} {'所需长度(m)':>15} {'实际分流比(%)':>18} "
-          f"{'分流量(m³/s)':>15} {'误差(%)':>12}")
+          f"{'分流量(m^3/s)':>15} {'误差(%)':>12}")
     print("-" * 90)
 
     for target in target_ratios:
@@ -290,23 +290,23 @@ def example_5_irrigation_diversion():
     print("="*80)
 
     # 干渠参数
-    Q_main = 25.0  # 干渠流量 25 m³/s
+    Q_main = 25.0  # 干渠流量 25 m^3/s
     h_main = 105.5  # 干渠水位 105.5 m
 
     # 支渠需水量
     irrigation_areas = [
-        ("支渠A", 5.0),   # 需水 5 m³/s
-        ("支渠B", 8.0),   # 需水 8 m³/s
-        ("支渠C", 6.0),   # 需水 6 m³/s
+        ("支渠A", 5.0),   # 需水 5 m^3/s
+        ("支渠B", 8.0),   # 需水 8 m^3/s
+        ("支渠C", 6.0),   # 需水 6 m^3/s
     ]
 
     print(f"\n灌区分水方案：")
-    print(f"  干渠流量: {Q_main:.1f} m³/s")
+    print(f"  干渠流量: {Q_main:.1f} m^3/s")
     print(f"  干渠水位: {h_main:.2f} m")
 
     print(f"\n支渠分水计算：")
-    print(f"{'支渠':>10} {'需水量(m³/s)':>15} {'目标分流比(%)':>18} "
-          f"{'侧堰长度(m)':>15} {'实际分流(m³/s)':>18}")
+    print(f"{'支渠':>10} {'需水量(m^3/s)':>15} {'目标分流比(%)':>18} "
+          f"{'侧堰长度(m)':>15} {'实际分流(m^3/s)':>18}")
     print("-" * 90)
 
     Q_remaining = Q_main
@@ -343,7 +343,7 @@ def example_5_irrigation_diversion():
         except ValueError:
             print(f"{branch:>10} {Q_demand:>15.1f} {'N/A':>18} {'N/A':>15} {'超出能力':>18}")
 
-    print(f"\n干渠末端剩余流量: {Q_remaining:.2f} m³/s")
+    print(f"\n干渠末端剩余流量: {Q_remaining:.2f} m^3/s")
 
     print("\n灌溉分水特点：")
     print("  1. 侧堰自动分水，无需闸门调节")
@@ -389,8 +389,8 @@ def example_6_flood_overflow_weir():
     ]
 
     print(f"\n不同重现期洪水溢流分析：")
-    print(f"{'重现期':>10} {'流量(m³/s)':>15} {'河道水位(m)':>15} "
-          f"{'溢流量(m³/s)':>15} {'溢流比(%)':>12} {'下游流量(m³/s)':>18}")
+    print(f"{'重现期':>10} {'流量(m^3/s)':>15} {'河道水位(m)':>15} "
+          f"{'溢流量(m^3/s)':>15} {'溢流比(%)':>12} {'下游流量(m^3/s)':>18}")
     print("-" * 102)
 
     for period, Q, h in floods:
@@ -410,7 +410,7 @@ def example_6_flood_overflow_weir():
     print("\n防洪作用：")
     print("  1. 20年一遇以下：不溢流，河道正常行洪")
     print("  2. 超标洪水：自动溢流到滞洪区")
-    print("  3. 100年一遇：溢流约 400 m³/s，降低下游洪峰")
+    print("  3. 100年一遇：溢流约 400 m^3/s，降低下游洪峰")
     print("  4. 保护下游重要城镇和设施")
 
 
@@ -436,7 +436,7 @@ def example_7_submergence_analysis():
     h_upstream = 103.0
 
     print(f"\n主渠条件：")
-    print(f"  进口流量: {Q_inflow:.1f} m³/s")
+    print(f"  进口流量: {Q_inflow:.1f} m^3/s")
     print(f"  上游水位: {h_upstream:.2f} m")
     print(f"  堰顶高程: {weir.z_crest:.1f} m")
     print(f"  堰顶水头: {h_upstream - weir.z_crest:.2f} m")
@@ -446,7 +446,7 @@ def example_7_submergence_analysis():
 
     print(f"\n淹没效应分析：")
     print(f"{'侧渠水位(m)':>15} {'淹没比':>12} {'折减系数':>12} "
-          f"{'自由溢流(m³/s)':>18} {'淹没溢流(m³/s)':>18} {'流量损失(%)':>15}")
+          f"{'自由溢流(m^3/s)':>18} {'淹没溢流(m^3/s)':>18} {'流量损失(%)':>15}")
     print("-" * 108)
 
     for h_side in h_side_values:

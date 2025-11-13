@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 测试IDZ在线辨识对负增益系统的修复
 
@@ -32,8 +33,8 @@ simulator.reset()
 # 获取真实系统参数
 K_true, tau_true = simulator.get_system_params()
 print(f"\n真实系统参数:")
-print(f"  K = {K_true:.4f} m/m  ← 负值（反向作用）")
-print(f"  τ = {tau_true:.1f}s")
+print(f"  K = {K_true:.4f} m/m  <- 负值（反向作用）")
+print(f"  tau = {tau_true:.1f}s")
 
 # 创建在线辨识器
 identifier = IDZIdentifier(dt=dt, method=IdentificationMethod.FORGETTING_RLS, use_scipy=False)
@@ -98,7 +99,7 @@ for k in range(n_steps):
 
     # 显示进度
     if k % 50 == 0 and idz_params is not None:
-        print(f"  t={t:.0f}s: K_est={idz_params.K:.4f}, τ_est={idz_params.tau_d:.1f}s")
+        print(f"  t={t:.0f}s: K_est={idz_params.K:.4f}, tau_est={idz_params.tau_d:.1f}s")
 
 # 最终辨识结果
 print(f"\n" + "=" * 80)
@@ -109,36 +110,36 @@ final_idz = identifier.get_idz_parameters()
 if final_idz is not None:
     print(f"\n最终辨识参数:")
     print(f"  K_est = {final_idz.K:.4f} m/m")
-    print(f"  τ_z_est = {final_idz.tau_z:.1f}s")
-    print(f"  τ_d_est = {final_idz.tau_d:.1f}s")
-    print(f"  θ_est = {final_idz.theta:.1f}s")
+    print(f"  tau_z_est = {final_idz.tau_z:.1f}s")
+    print(f"  tau_d_est = {final_idz.tau_d:.1f}s")
+    print(f"  theta_est = {final_idz.theta:.1f}s")
 
     print(f"\n真实参数:")
     print(f"  K_true = {K_true:.4f} m/m")
-    print(f"  τ_true = {tau_true:.1f}s")
+    print(f"  tau_true = {tau_true:.1f}s")
 
     print(f"\n辨识误差:")
     K_error = abs(final_idz.K - K_true) / abs(K_true) * 100
     tau_error = abs(final_idz.tau_d - tau_true) / tau_true * 100
     print(f"  K误差 = {K_error:.1f}%")
-    print(f"  τ误差 = {tau_error:.1f}%")
+    print(f"  tau误差 = {tau_error:.1f}%")
 
     # 评估辨识质量
     print(f"\n辨识质量评估:")
     if K_error < 20:
-        print(f"  K辨识: ✅ 优秀 (误差<20%)")
+        print(f"  K辨识:  优秀 (误差<20%)")
     elif K_error < 50:
         print(f"  K辨识: ⭕ 可接受 (误差<50%)")
     else:
-        print(f"  K辨识: ❌ 较差 (误差>{K_error:.1f}%)")
+        print(f"  K辨识:  较差 (误差>{K_error:.1f}%)")
 
     # 检查符号
     if np.sign(final_idz.K) == np.sign(K_true):
-        print(f"  K符号: ✅ 正确 (均为{'负' if K_true < 0 else '正'}值)")
+        print(f"  K符号:  正确 (均为{'负' if K_true < 0 else '正'}值)")
     else:
-        print(f"  K符号: ❌ 错误 (辨识={np.sign(final_idz.K)}, 真实={np.sign(K_true)})")
+        print(f"  K符号:  错误 (辨识={np.sign(final_idz.K)}, 真实={np.sign(K_true)})")
 else:
-    print("⚠️ 辨识未收敛")
+    print(" 辨识未收敛")
 
 # 绘图
 fig, axes = plt.subplots(4, 1, figsize=(12, 12))
@@ -169,12 +170,12 @@ ax2.axvspan(0, 100, alpha=0.1, color='blue', label='Step')
 ax2.axvspan(100, 200, alpha=0.1, color='green', label='Sine')
 ax2.axvspan(200, 300, alpha=0.1, color='orange', label='Square')
 
-# 子图3：τ估计
+# 子图3：tau估计
 ax3 = axes[2]
-ax3.plot(time_hist, tau_est_hist, 'purple', linewidth=2, label='τ_d_est (online)')
-ax3.axhline(tau_true, color='k', linestyle='--', linewidth=2, label=f'τ_true={tau_true:.1f}s')
-ax3.set_ylabel('Time constant τ_d (s)', fontsize=12)
-ax3.set_title('Time Constant Identification (τ)', fontsize=13, fontweight='bold')
+ax3.plot(time_hist, tau_est_hist, 'purple', linewidth=2, label='tau_d_est (online)')
+ax3.axhline(tau_true, color='k', linestyle='--', linewidth=2, label=f'tau_true={tau_true:.1f}s')
+ax3.set_ylabel('Time constant tau_d (s)', fontsize=12)
+ax3.set_title('Time Constant Identification (tau)', fontsize=13, fontweight='bold')
 ax3.legend()
 ax3.grid(True, alpha=0.3)
 
@@ -186,7 +187,7 @@ tau_error_hist = [abs(tau_est - tau_true) / tau_true * 100 if not np.isnan(tau_e
                   for tau_est in tau_est_hist]
 
 ax4.plot(time_hist, K_error_hist, 'r-', linewidth=2, label='K error (%)')
-ax4.plot(time_hist, tau_error_hist, 'purple', linewidth=2, label='τ error (%)')
+ax4.plot(time_hist, tau_error_hist, 'purple', linewidth=2, label='tau error (%)')
 ax4.axhline(20, color='orange', linestyle='--', alpha=0.5, label='20% threshold')
 ax4.set_ylabel('Relative error (%)', fontsize=12)
 ax4.set_xlabel('Time (s)', fontsize=12)
@@ -197,15 +198,15 @@ ax4.set_ylim([0, 200])
 
 plt.tight_layout()
 plt.savefig('idz_identification_negative_gain_test.png', dpi=150, bbox_inches='tight')
-print(f"\n✅ 图片已保存: idz_identification_negative_gain_test.png")
+print(f"\n 图片已保存: idz_identification_negative_gain_test.png")
 
 print("\n" + "=" * 80)
 print("测试完成")
 print("=" * 80)
 
 if final_idz is not None and np.sign(final_idz.K) == np.sign(K_true):
-    print("✅ 修复成功：IDZIdentifier现在能够正确辨识负增益系统！")
+    print(" 修复成功：IDZIdentifier现在能够正确辨识负增益系统！")
 else:
-    print("❌ 仍有问题：需要进一步调试")
+    print(" 仍有问题：需要进一步调试")
 
 print("=" * 80)

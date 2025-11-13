@@ -146,7 +146,7 @@ for idx, res in enumerate(results):
 
 plt.tight_layout()
 plt.savefig('scheme_order_comparison.png', dpi=150, bbox_inches='tight')
-print(f"\n✅ Comparison plot saved: scheme_order_comparison.png")
+print(f"\n Comparison plot saved: scheme_order_comparison.png")
 
 # Summary
 print(f"\n{'='*70}")

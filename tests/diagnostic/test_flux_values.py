@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def analyze_flux_values():
@@ -50,7 +56,7 @@ def analyze_flux_values():
 
     print(f"\n初始状态:")
     for i in range(n_cells):
-        print(f"  单元{i}: h={solver.h[i]:.4f}m, Q={solver.Q[i]:.4f}m³/s")
+        print(f"  单元{i}: h={solver.h[i]:.4f}m, Q={solver.Q[i]:.4f}m^3/s")
 
     # 修改 _compute_rhs 以返回通量数组
     # 我们需要暂时Monkey patch这个方法
@@ -100,12 +106,12 @@ def analyze_flux_values():
     dh_dt, dQ_dt = solver._compute_rhs(solver.h, solver.Q)
 
     print(f"\n通量值 (F_h = Q):")
-    print(f"  界面   位置              F_h(m³/s)         说明")
+    print(f"  界面   位置              F_h(m^3/s)         说明")
     print("-" * 80)
-    print(f"  0      ghost | 单元0    {flux_h[0]:10.4f}      ← 边界通量 (应该=10)")
+    print(f"  0      ghost | 单元0    {flux_h[0]:10.4f}      <- 边界通量 (应该=10)")
     for i in range(1, n_cells):
         print(f"  {i}      单元{i-1} | 单元{i}    {flux_h[i]:10.4f}")
-    print(f"  {n_cells}      单元{n_cells-1} | ghost    {flux_h[n_cells]:10.4f}      ← 边界通量")
+    print(f"  {n_cells}      单元{n_cells-1} | ghost    {flux_h[n_cells]:10.4f}      <- 边界通量")
 
     print(f"\n各单元的质量通量平衡 (F_in - F_out):")
     print(f"  单元   F_in     F_out    净流入   dh/dt*dx    一致性")
@@ -117,13 +123,13 @@ def analyze_flux_values():
         net_flux = F_in - F_out
         mass_change = dh_dt[i] * dx
 
-        consistent = "✓" if abs(net_flux - mass_change) < 1e-6 else "✗"
+        consistent = "" if abs(net_flux - mass_change) < 1e-6 else ""
         print(f"  {i}      {F_in:7.3f}  {F_out:7.3f}  {net_flux:7.3f}  {mass_change:10.3f}      {consistent}")
 
     print("\n" + "="*80)
     print("分析：")
-    print(f"  1. 界面0通量应该等于10.0 m³/s (边界条件)")
-    print(f"     实际值: {flux_h[0]:.4f} m³/s")
+    print(f"  1. 界面0通量应该等于10.0 m^3/s (边界条件)")
+    print(f"     实际值: {flux_h[0]:.4f} m^3/s")
     print(f"  2. 如果无摩阻，所有界面通量应该接近")
     print(f"  3. 净流入 = dh/dt * dx 应该对所有单元成立 (质量守恒)")
     print("="*80)

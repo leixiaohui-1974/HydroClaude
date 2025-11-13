@@ -56,7 +56,7 @@ def test_macdonald4_enhanced_weno3():
 
     # 边界条件
     h_upstream = 0.7    # 上游水深 (m)
-    Q = 20.0            # 流量 (m³/s)
+    Q = 20.0            # 流量 (m^3/s)
     h_downstream = 2.8  # 下游水深 (m)
 
     n_cells = 50  # 减少网格数以加快计算
@@ -75,7 +75,7 @@ def test_macdonald4_enhanced_weno3():
     print(f"  渠道: L={L:.0f}m, B={B:.1f}m, S0={S0}, n={n}")
     print(f"  网格: {n_cells} cells, dx={dx:.2f}m")
     print(f"\n边界条件:")
-    print(f"  上游: h={h_upstream:.2f}m, Q={Q:.1f}m³/s, Fr={Fr_upstream:.2f} (超临界)")
+    print(f"  上游: h={h_upstream:.2f}m, Q={Q:.1f}m^3/s, Fr={Fr_upstream:.2f} (超临界)")
     print(f"  下游: h={h_downstream:.2f}m")
     print(f"\n理论预测:")
     print(f"  水跃后水深 (Belanger): h2={h2_theory:.3f}m")
@@ -129,7 +129,7 @@ def test_macdonald4_enhanced_weno3():
         'solver': {
             'type': 'godunov_fvm',
             'spatial_order': 3,  # WENO3
-            'weno3_enhanced': True,  # ✅ 启用增强版
+            'weno3_enhanced': True,  #  启用增强版
             'riemann_solver': 'hll',
             'use_numba': True,
             'cfl': 0.5,  # 基础CFL（激波处会自动降低）
@@ -203,24 +203,24 @@ def test_macdonald4_enhanced_weno3():
                 print(f"\n质量守恒:")
                 print(f"  误差: {abs(mass_error):.2f}%")
                 if abs(mass_error) < 10.0:
-                    print(f"  ✅ 优秀 (< 10%)")
+                    print(f"   优秀 (< 10%)")
                 elif abs(mass_error) < 20.0:
-                    print(f"  ✅ 良好 (< 20%)")
+                    print(f"   良好 (< 20%)")
                 elif abs(mass_error) < 30.0:
-                    print(f"  ⚠️  可接受 (< 30%)")
+                    print(f"  ️  可接受 (< 30%)")
                 else:
-                    print(f"  ❌ 较差 (>= 30%)")
+                    print(f"   较差 (>= 30%)")
 
         # 2. 上游Froude数
         Fr_up = Fr_final[0]
         print(f"\n上游条件维持:")
         print(f"  Fr[0] = {Fr_up:.3f}")
         if Fr_up > 1.0:
-            print(f"  ✅ 超临界状态维持 (Fr > 1)")
+            print(f"   超临界状态维持 (Fr > 1)")
         elif Fr_up > 0.9:
-            print(f"  ⚠️  接近超临界 (0.9 < Fr < 1)")
+            print(f"  ️  接近超临界 (0.9 < Fr < 1)")
         else:
-            print(f"  ❌ 超临界状态丢失 (Fr < 0.9)")
+            print(f"   超临界状态丢失 (Fr < 0.9)")
 
         # 3. 水跃位置检测
         # 寻找Fr从>1到<1的转换点
@@ -231,7 +231,7 @@ def test_macdonald4_enhanced_weno3():
             jump_location = x_solver[last_super_idx]
 
             print(f"\n水跃分析:")
-            print(f"  水跃位置: x ≈ {jump_location:.1f}m ({jump_location/L*100:.1f}% of L)")
+            print(f"  水跃位置: x ~= {jump_location:.1f}m ({jump_location/L*100:.1f}% of L)")
 
             # 水跃前后水深
             h_before = h_final[last_super_idx]
@@ -249,29 +249,29 @@ def test_macdonald4_enhanced_weno3():
             print(f"  Belanger误差: {belanger_error:.1f}%")
 
             if belanger_error < 10.0:
-                print(f"  ✅ 优秀 (< 10%)")
+                print(f"   优秀 (< 10%)")
             elif belanger_error < 20.0:
-                print(f"  ✅ 良好 (< 20%)")
+                print(f"   良好 (< 20%)")
             elif belanger_error < 30.0:
-                print(f"  ⚠️  可接受 (< 30%)")
+                print(f"  ️  可接受 (< 30%)")
             else:
-                print(f"  ❌ 较差 (>= 30%)")
+                print(f"   较差 (>= 30%)")
 
             # 超临界区域大小
             n_supercritical = np.sum(supercritical_mask)
             print(f"\n超临界区域:")
             print(f"  单元数: {n_supercritical}/{n_cells} ({n_supercritical/n_cells*100:.1f}%)")
         else:
-            print(f"\n⚠️  警告: 未检测到超临界区域")
+            print(f"\n️  警告: 未检测到超临界区域")
 
         # 4. 负流量检查
         n_negative = np.sum(Q_final < 0)
         print(f"\n数值稳定性:")
         print(f"  负流量单元: {n_negative}/{n_cells}")
         if n_negative == 0:
-            print(f"  ✅ 无负流量")
+            print(f"   无负流量")
         else:
-            print(f"  ⚠️  存在负流量")
+            print(f"  ️  存在负流量")
 
         # 总结
         print("\n" + "="*80)
@@ -305,26 +305,26 @@ def test_macdonald4_enhanced_weno3():
 
         print("\n通过的标准:")
         for criterion in passed_criteria:
-            print(f"  ✅ {criterion}")
+            print(f"   {criterion}")
 
         if failed_criteria:
             print("\n未通过的标准:")
             for criterion in failed_criteria:
-                print(f"  ❌ {criterion}")
+                print(f"   {criterion}")
 
         # 与标准WENO3对比
         print("\n与标准WENO3对比:")
-        print("  标准WENO3: 质量误差 ~29%, 大量负流量 ❌")
+        print("  标准WENO3: 质量误差 ~29%, 大量负流量 ")
         if hasattr(engine, 'statistics') and 'simulation' in engine.statistics:
             mass_error = abs(engine.statistics['simulation'].get('mass_error', 100))
-            print(f"  增强WENO3: 质量误差 ~{mass_error:.1f}%, 负流量 {n_negative} {'✅' if n_negative == 0 else '⚠️'}")
+            print(f"  增强WENO3: 质量误差 ~{mass_error:.1f}%, 负流量 {n_negative} {'' if n_negative == 0 else '️'}")
 
             if mass_error < 29.0 and n_negative == 0:
-                print("\n🎉 增强版WENO3显著改善了求解质量！")
+                print("\n 增强版WENO3显著改善了求解质量！")
             elif mass_error < 29.0:
-                print("\n✅ 增强版WENO3改善了质量守恒")
+                print("\n 增强版WENO3改善了质量守恒")
             else:
-                print("\n⚠️  增强版WENO3仍需进一步优化")
+                print("\n️  增强版WENO3仍需进一步优化")
 
         print("\n" + "="*80)
 

@@ -21,6 +21,14 @@ Toro精确Riemann求解器 (Shallow Water Equations)
 - 迭代求解中间状态水深 h_star
 - 通过Riemann不变量和Rankine-Hugoniot条件计算
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import numpy as np
 from typing import Tuple, Dict
@@ -48,7 +56,7 @@ def exact_riemann_solution(
         h_R: 右侧初始水深 (m)
         u_R: 右侧初始流速 (m/s)
         x_0: 初始间断位置 (m)
-        g: 重力加速度 (m/s²)
+        g: 重力加速度 (m/s^2)
 
     Returns:
         h: 水深数组 (m)
@@ -360,4 +368,4 @@ if __name__ == '__main__':
 
     plt.tight_layout()
     plt.savefig('toro_riemann_test.png', dpi=150, bbox_inches='tight')
-    print(f"\n✅ 测试图保存: toro_riemann_test.png")
+    print(f"\n 测试图保存: toro_riemann_test.png")

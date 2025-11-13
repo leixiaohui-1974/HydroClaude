@@ -192,7 +192,7 @@ class TestFlowRegimeClassification:
             culvert_id="CV_STEEP",
             length=30.0,
             inlet_elevation=100.0,
-            outlet_elevation=99.0,  # S0 = 1.0/30 ≈ 0.033 > 0.02
+            outlet_elevation=99.0,  # S0 = 1.0/30 ~= 0.033 > 0.02
             shape="circular",
             diameter=1.5
         )
@@ -260,7 +260,7 @@ class TestInletControlFlow:
         result = culvert.compute_discharge(h_up, h_down, method='inlet')
 
         # Q = Cd * A * √(2g * HW)
-        # HW = 1.5 m, Cd ≈ 0.62
+        # HW = 1.5 m, Cd ~= 0.62
         A = np.pi * (1.5/2)**2
         HW = 1.5
         Q_expected = 0.62 * A * np.sqrt(2 * 9.81 * HW)
@@ -535,7 +535,7 @@ class TestEnergyLosses:
         Q_per_barrel = 6.0
         h_f = culvert._compute_friction_loss(Q_per_barrel)
 
-        # h_f = (n*v)² * L / R^(4/3)
+        # h_f = (n*v)^2 * L / R^(4/3)
         A = culvert.A_full
         R = A / culvert.P_full
         v = Q_per_barrel / A
@@ -563,7 +563,7 @@ class TestEnergyLosses:
 
         h_e = culvert._compute_form_loss(v)
 
-        # h_e = Σ Ke * v² / (2g)
+        # h_e = Σ Ke * v^2 / (2g)
         Ke_total = 0.5 + 1.0 + 2 * 0.3  # = 2.1
         h_e_expected = Ke_total * (v ** 2) / (2 * 9.81)
 
@@ -742,7 +742,7 @@ class TestEdgeCases:
         repr_str = repr(culvert)
 
         assert "CV_STR_R" in repr_str
-        assert "2.50m×2.00m" in repr_str
+        assert "2.50mx2.00m" in repr_str
         assert "L=50.0m" in repr_str
 
 

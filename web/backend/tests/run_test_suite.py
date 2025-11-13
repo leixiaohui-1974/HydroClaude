@@ -89,12 +89,12 @@ class TestSuiteRunner:
             if response.status_code != 201:
                 result.status = 'failed'
                 result.errors.append(f"Failed to create simulation: {response.status_code}")
-                print(f"❌ Failed to create simulation: {response.status_code}")
+                print(f" Failed to create simulation: {response.status_code}")
                 return result
 
             task_data = response.json()
             result.task_id = task_data['task_id']
-            print(f"✓ Simulation created: {result.task_id}")
+            print(f"[OK] Simulation created: {result.task_id}")
 
             # Wait for completion
             print("Waiting for completion", end="", flush=True)
@@ -113,25 +113,25 @@ class TestSuiteRunner:
                 if status_response.status_code != 200:
                     result.status = 'failed'
                     result.errors.append("Failed to query status")
-                    print(f"\n❌ Failed to query status")
+                    print(f"\n Failed to query status")
                     return result
 
                 status_data = status_response.json()
 
                 if status_data['status'] == 'completed':
                     result.duration = status_data.get('duration', 0.0)
-                    print(f"\n✓ Completed in {result.duration:.3f}s")
+                    print(f"\n[OK] Completed in {result.duration:.3f}s")
                     break
                 elif status_data['status'] == 'failed':
                     result.status = 'failed'
                     result.errors.append(f"Simulation failed: {status_data.get('error')}")
-                    print(f"\n❌ Simulation failed: {status_data.get('error')}")
+                    print(f"\n Simulation failed: {status_data.get('error')}")
                     return result
 
             if waited >= max_wait:
                 result.status = 'timeout'
                 result.errors.append("Simulation timeout")
-                print(f"\n❌ Timeout after {max_wait}s")
+                print(f"\n Timeout after {max_wait}s")
                 return result
 
             # Get results
@@ -144,14 +144,14 @@ class TestSuiteRunner:
             if results_response.status_code != 200:
                 result.status = 'failed'
                 result.errors.append("Failed to retrieve results")
-                print(f"❌ Failed to retrieve results")
+                print(f" Failed to retrieve results")
                 return result
 
             results_data = results_response.json()
             result.metrics = results_data['metrics']
             result.status = 'completed'
 
-            print("✓ Results retrieved")
+            print("[OK] Results retrieved")
 
             # Validate against expected values
             print("\nValidating results...")
@@ -159,9 +159,9 @@ class TestSuiteRunner:
             result.passed = self.validate_results(result.metrics, expected, result)
 
             if result.passed:
-                print("✅ TEST PASSED")
+                print(" TEST PASSED")
             else:
-                print("❌ TEST FAILED")
+                print(" TEST FAILED")
                 for error in result.errors:
                     print(f"  Error: {error}")
                 for warning in result.warnings:
@@ -170,7 +170,7 @@ class TestSuiteRunner:
         except Exception as e:
             result.status = 'error'
             result.errors.append(str(e))
-            print(f"\n❌ Error: {e}")
+            print(f"\n Error: {e}")
 
         return result
 
@@ -188,7 +188,7 @@ class TestSuiteRunner:
                 )
                 passed = False
             else:
-                print(f"  ✓ Mass conservation: {actual:.2e} (< {max_allowed:.2e})")
+                print(f"  [OK] Mass conservation: {actual:.2e} (< {max_allowed:.2e})")
 
         # Check max velocity
         if 'max_velocity' in expected:
@@ -200,7 +200,7 @@ class TestSuiteRunner:
                 )
                 passed = False
             else:
-                print(f"  ✓ Max velocity: {actual:.4f} m/s (< {max_allowed:.4f} m/s)")
+                print(f"  [OK] Max velocity: {actual:.4f} m/s (< {max_allowed:.4f} m/s)")
 
         # Check convergence
         if 'converged' in expected:
@@ -212,7 +212,7 @@ class TestSuiteRunner:
                 )
                 passed = False
             else:
-                print(f"  ✓ Converged: {actual}")
+                print(f"  [OK] Converged: {actual}")
 
         # Check final mean depth
         if 'final_mean_depth' in expected:
@@ -226,7 +226,7 @@ class TestSuiteRunner:
                 )
                 passed = False
             else:
-                print(f"  ✓ Final mean depth: {actual:.4f} m (expected: {expected_val:.4f} m)")
+                print(f"  [OK] Final mean depth: {actual:.4f} m (expected: {expected_val:.4f} m)")
 
         return passed
 
@@ -244,11 +244,11 @@ class TestSuiteRunner:
 
         # Check backend
         if not self.check_backend():
-            print("\n❌ Backend is not running!")
+            print("\n Backend is not running!")
             print("Please start it with: cd web/backend && ./start_server.sh")
             return False
 
-        print("✓ Backend is running\n")
+        print("[OK] Backend is running\n")
 
         # Run each test case
         for i, test_case in enumerate(ALL_TEST_CASES, 1):
@@ -278,8 +278,8 @@ class TestSuiteRunner:
         print("TEST SUMMARY")
         print("="*70)
         print(f"Total Cases:  {len(self.results)}")
-        print(f"Passed:       {passed} ✅")
-        print(f"Failed:       {failed} ❌")
+        print(f"Passed:       {passed} ")
+        print(f"Failed:       {failed} ")
         print(f"Success Rate: {passed/len(self.results)*100:.1f}%")
         print(f"Total Time:   {total_duration:.2f}s")
         print("="*70)
@@ -289,11 +289,11 @@ class TestSuiteRunner:
             print("\nFailed Tests:")
             for result in self.results:
                 if not result.passed:
-                    print(f"  ❌ {result.test_case['name']}")
+                    print(f"   {result.test_case['name']}")
                     for error in result.errors:
                         print(f"     - {error}")
         else:
-            print("\n✅ ALL TESTS PASSED!")
+            print("\n ALL TESTS PASSED!")
 
         print()
 

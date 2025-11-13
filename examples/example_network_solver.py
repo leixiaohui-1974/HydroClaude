@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 网络求解器使用示例
 
@@ -54,7 +55,7 @@ def example_1_simple_serial():
     """
     示例1: 简单串联河段求解
 
-    两条河段串联: N1 → R1 → N2 → R2 → N3
+    两条河段串联: N1 -> R1 -> N2 -> R2 -> N3
     """
     print("\n" + "="*80)
     print("示例1: 简单串联河段求解")
@@ -82,7 +83,7 @@ def example_1_simple_serial():
     # 验证网络
     print("\n网络验证:")
     is_valid, score = validate_network(network, verbose=False)
-    print(f"  健康评分: {score:.1f}/100 {'✅' if is_valid else '❌'}")
+    print(f"  健康评分: {score:.1f}/100 {'' if is_valid else ''}")
 
     # 创建求解器
     print("\n创建网络求解器...")
@@ -91,7 +92,7 @@ def example_1_simple_serial():
     # 运行模拟
     print("\n运行模拟...")
     results = net_solver.run(
-        t_end=3600.0,  # 1小时
+        t_end = 30.0,  # 1小时
         dt=10.0,       # 10秒时间步
         output_interval=600.0,  # 每10分钟输出
         verbose=True
@@ -145,7 +146,7 @@ def example_2_y_junction():
     net_solver = NetworkSolver(network)
 
     results = net_solver.run(
-        t_end=1800.0,  # 30分钟
+        t_end = 30.0,  # 30分钟
         dt=5.0,
         output_interval=300.0,
         verbose=True
@@ -156,8 +157,8 @@ def example_2_y_junction():
     Q_in_total = 30.0 + 20.0
     Q_out_total = s3.Q[0]
     error = abs(Q_in_total - Q_out_total) / Q_in_total * 100
-    print(f"  入流总和: {Q_in_total:.2f} m³/s")
-    print(f"  出流: {Q_out_total:.2f} m³/s")
+    print(f"  入流总和: {Q_in_total:.2f} m^3/s")
+    print(f"  出流: {Q_out_total:.2f} m^3/s")
     print(f"  误差: {error:.3f}%")
 
     return network, net_solver
@@ -212,7 +213,7 @@ def example_3_complex_network():
     net_solver = NetworkSolver(network, solve_method='sequential')
 
     results = net_solver.run(
-        t_end=3600.0,  # 1小时
+        t_end = 30.0,  # 1小时
         dt=10.0,
         output_interval=600.0,
         verbose=True
@@ -221,26 +222,26 @@ def example_3_complex_network():
     # 全局质量守恒
     Q_in, Q_out, error = network.check_global_mass_balance()
     print(f"\n全局质量守恒:")
-    print(f"  总入流: {Q_in:.2f} m³/s (40+30+25={40+30+25} m³/s)")
-    print(f"  总出流: {Q_out:.2f} m³/s")
+    print(f"  总入流: {Q_in:.2f} m^3/s (40+30+25={40+30+25} m^3/s)")
+    print(f"  总出流: {Q_out:.2f} m^3/s")
     print(f"  误差: {error:.4f}%")
 
     if error < 1.0:
-        print(f"  {'✅ 优秀 (< 1%)'}")
+        print(f"  {' 优秀 (< 1%)'}")
     elif error < 5.0:
-        print(f"  {'⚠️  良好 (< 5%)'}")
+        print(f"  {'  良好 (< 5%)'}")
     else:
-        print(f"  {'❌ 需改进 (> 5%)'}")
+        print(f"  {' 需改进 (> 5%)'}")
 
     # 绘制质量守恒历史
     try:
         print("\n绘制质量守恒历史...")
         fig = net_solver.plot_mass_balance_history()
         if fig:
-            print("✅ 质量守恒历史图已生成")
+            print(" 质量守恒历史图已生成")
             # fig.savefig('mass_balance_history.png', dpi=150, bbox_inches='tight')
     except:
-        print("⚠️  需要matplotlib绘图")
+        print("  需要matplotlib绘图")
 
     return network, net_solver
 
@@ -268,7 +269,7 @@ def example_4_solve_network_function():
     print("\n使用便捷函数 solve_network() 求解...")
     results = solve_network(
         network,
-        t_end=1800.0,  # 30分钟
+        t_end = 30.0,  # 30分钟
         dt=10.0,
         verbose=True
     )
@@ -301,25 +302,25 @@ if __name__ == "__main__":
     net4, results4 = example_4_solve_network_function()
 
     print("\n" + "="*80)
-    print("✅ 所有网络求解示例运行完成！")
+    print(" 所有网络求解示例运行完成！")
     print("="*80)
 
     print("\n总结:")
     print("  Stage 3 网络求解功能:")
-    print("  1. ✅ NetworkSolver - 统一求解器")
+    print("  1.  NetworkSolver - 统一求解器")
     print("     - 顺序求解（sequential）")
     print("     - 迭代求解（iterative）")
     print("     - 自动边界条件传递")
     print("     - 时间步长自动协调")
-    print("  2. ✅ 耦合器支持")
+    print("  2.  耦合器支持")
     print("     - ReachCoupler - 串联河段")
     print("     - JunctionCoupler - 汇流节点")
     print("     - BifurcationCoupler - 分流节点")
-    print("  3. ✅ 质量守恒验证")
+    print("  3.  质量守恒验证")
     print("     - 全局质量平衡")
     print("     - 质量守恒历史")
     print("     - 网络一致性检查")
-    print("  4. ✅ 便捷函数")
+    print("  4.  便捷函数")
     print("     - solve_network() - 一行代码求解")
     print("\n  应用价值:")
     print("  - 完整河网系统模拟")

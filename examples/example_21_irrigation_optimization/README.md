@@ -41,7 +41,9 @@ PYTHONPATH=../.. python demo_irrigation.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_21_irrigation_optimization_water_resource.gif`
+
+![动画](outputs\animations\example_21_irrigation_optimization_water_resource.gif)
 
 ## 技术要点
 

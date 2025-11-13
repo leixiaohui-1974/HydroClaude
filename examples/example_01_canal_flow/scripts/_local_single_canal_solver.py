@@ -14,6 +14,13 @@
 import numpy as np
 from typing import List, Optional, Dict, Callable
 import sys
+
+# Add project root to path
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -58,7 +65,7 @@ class SingleCanalSolver:
             B: 渠道宽度 (m)
             S0: 渠底坡度
             n: Manning糙率
-            g: 重力加速度 (m/s²)
+            g: 重力加速度 (m/s^2)
             method: 数值方法 ('explicit', 'preissmann', 'hll')
             use_adaptive_grid: 是否使用自适应网格加密
             refinement_radius: 结构附近加密半径 (m)
@@ -106,7 +113,7 @@ class SingleCanalSolver:
             print(f"  网格点数: {len(x_grid)} (均匀网格: {nx_total})")
             print(f"  精细区间距: {dx_fine} m")
             print(f"  粗糙区间距: {dx_coarse} m")
-            print(f"  加密半径: ±{refinement_radius} m")
+            print(f"  加密半径: +/-{refinement_radius} m")
             print(f"  结构位置: {structure_positions}")
             print(f"{'='*60}\n")
 
@@ -133,7 +140,7 @@ class SingleCanalSolver:
         使用恒定均匀流初始化
 
         Args:
-            Q0: 初始流量 (m³/s)
+            Q0: 初始流量 (m^3/s)
 
         Returns:
             恒定均匀流水深 (m)
@@ -152,7 +159,7 @@ class SingleCanalSolver:
         优化的稳态求解
 
         Args:
-            Q_target: 目标流量 (m³/s)
+            Q_target: 目标流量 (m^3/s)
             max_iterations: 最大迭代步数
             convergence_tol: 收敛容差（相对误差）
             check_interval: 检查收敛的时间间隔
@@ -162,7 +169,7 @@ class SingleCanalSolver:
         Returns:
             收敛信息字典
         """
-        # ✅ 自适应时间步长（满足CFL条件）
+        #  自适应时间步长（满足CFL条件）
         dx_min = np.min(self.solver.dx_local)
         h_typical = 2.0  # 典型水深 (m)
         V_typical = Q_target / (self.B * h_typical)  # 典型流速
@@ -178,14 +185,14 @@ class SingleCanalSolver:
         final_error = 1.0
         iterations_used = 0
 
-        # 🎯 智能早期终止机制
+        #  智能早期终止机制
         best_error = float('inf')
         best_state = None
         error_increase_count = 0
 
         if verbose:
             mode_str = "自适应松弛" if adaptive_relax else "固定松弛"
-            print(f"开始稳态求解（目标流量: {Q_target} m³/s, {mode_str} + 智能早停）...")
+            print(f"开始稳态求解（目标流量: {Q_target} m^3/s, {mode_str} + 智能早停）...")
             print(f"  自适应时间步长: dt={dt:.3f}s (dx_min={dx_min:.2f}m, CFL={CFL_target})")
 
         for i in range(max_iterations):
@@ -211,9 +218,9 @@ class SingleCanalSolver:
                 if verbose:
                     gate_flows = self.get_gate_flows()
                     gate_str = ', '.join([f"Q{j+1}={gf:.3f}" for j, gf in enumerate(gate_flows)])
-                    print(f"  t={t:.0f}s: Q_avg={Q_avg:.4f} m³/s, 误差={Q_error*100:.4f}%, {gate_str}")
+                    print(f"  t={t:.0f}s: Q_avg={Q_avg:.4f} m^3/s, 误差={Q_error*100:.4f}%, {gate_str}")
 
-                # 🎯 早期终止逻辑：追踪最佳状态
+                #  早期终止逻辑：追踪最佳状态
                 if Q_error < best_error:
                     best_error = Q_error
                     best_state = {
@@ -225,10 +232,10 @@ class SingleCanalSolver:
                     error_increase_count = 0
                 else:
                     error_increase_count += 1
-                    # 误差连续增长3次 → 回退并终止
+                    # 误差连续增长3次 -> 回退并终止
                     if error_increase_count >= 3 and best_state is not None:
                         if verbose:
-                            print(f"\n⚠ 检测到误差连续增长，回退到最佳状态")
+                            print(f"\n 检测到误差连续增长，回退到最佳状态")
                             print(f"  最佳: i={best_state['iteration']}, t={best_state['time']:.0f}s, "
                                   f"误差={best_error*100:.4f}%")
                         self.solver.Q = best_state['Q']
@@ -242,7 +249,7 @@ class SingleCanalSolver:
                 if Q_error < convergence_tol:
                     converged = True
                     if verbose:
-                        print(f"\n✓ 达到稳态 (i={i}, t={t:.0f}s)")
+                        print(f"\n 达到稳态 (i={i}, t={t:.0f}s)")
                     break
 
         self.current_time = t
@@ -267,7 +274,7 @@ class SingleCanalSolver:
 
         Args:
             dt: 时间步长 (s)
-            Q_upstream: 上游边界流量 (m³/s)，如果提供Q_func则忽略
+            Q_upstream: 上游边界流量 (m^3/s)，如果提供Q_func则忽略
             h_downstream: 下游边界水深 (m) - 如果为None则自动计算
             Q_func: 上游流量时间函数 Q(t) -> float
             adaptive_relax: 是否使用自适应松弛因子
@@ -357,7 +364,7 @@ class SingleCanalSolver:
         采用多层次收敛判据 + 自适应时间步进策略
 
         Args:
-            Q_target: 目标流量 (m³/s)
+            Q_target: 目标流量 (m^3/s)
             max_iterations: 最大迭代步数（增加到20000）
             tol_global: 全局收敛容差（10^-4）
             tol_local: 局部收敛容差（10^-4）
@@ -371,7 +378,7 @@ class SingleCanalSolver:
         """
 
         if verbose:
-            print(f"开始高精度稳态求解（目标流量: {Q_target} m³/s）...")
+            print(f"开始高精度稳态求解（目标流量: {Q_target} m^3/s）...")
             print(f"  收敛标准: 全局<{tol_global:.0e}, 局部<{tol_local:.0e}, "
                   f"结构<{tol_structure:.0e}, 时间<{tol_temporal:.0e}")
             print()
@@ -477,7 +484,7 @@ class SingleCanalSolver:
                     converged = True
                     if verbose:
                         print(f"\n{'='*60}")
-                        print(f"✓✓✓ 达到高精度稳态 ✓✓✓")
+                        print(f" 达到高精度稳态 ")
                         print(f"{'='*60}")
                     break
 
@@ -507,12 +514,12 @@ class SingleCanalSolver:
             print(f"\n最终结果:")
             print(f"  总迭代次数: {iterations_used}")
             print(f"  总仿真时间: {t:.0f}s")
-            print(f"  目标流量: {Q_target:.6f} m³/s")
-            print(f"  平均流量: {final_Q_avg:.6f} m³/s")
-            print(f"  全局误差: {result['error_global']:.2e} ({'✓' if result['error_global'] < tol_global else '✗'})")
-            print(f"  局部误差: {result['error_local']:.2e} ({'✓' if result['error_local'] < tol_local else '✗'})")
-            print(f"  结构误差: {result['error_structure']:.2e} ({'✓' if result['error_structure'] < tol_structure else '✗'})")
-            print(f"  时间误差: {result['error_temporal']:.2e} ({'✓' if result['error_temporal'] < tol_temporal else '✗'})")
+            print(f"  目标流量: {Q_target:.6f} m^3/s")
+            print(f"  平均流量: {final_Q_avg:.6f} m^3/s")
+            print(f"  全局误差: {result['error_global']:.2e} ({'' if result['error_global'] < tol_global else ''})")
+            print(f"  局部误差: {result['error_local']:.2e} ({'' if result['error_local'] < tol_local else ''})")
+            print(f"  结构误差: {result['error_structure']:.2e} ({'' if result['error_structure'] < tol_structure else ''})")
+            print(f"  时间误差: {result['error_temporal']:.2e} ({'' if result['error_temporal'] < tol_temporal else ''})")
             print(f"  L2范数: {result['error_L2']:.2e}")
             print(f"  L∞范数: {result['error_Linf']:.2e}")
             if final_gate_flows:
@@ -567,7 +574,7 @@ class SingleCanalSolver:
             print(f"\n阶段1完成:")
             print(f"  迭代次数: {result_stage1['iterations']}")
             print(f"  最终误差: {stage1_error*100:.4f}%")
-            print(f"  平均流量: {result_stage1['Q_avg']:.4f} m³/s")
+            print(f"  平均流量: {result_stage1['Q_avg']:.4f} m^3/s")
             gate_flows_1 = self.get_gate_flows()
             if gate_flows_1:
                 print(f"  闸门流量: {', '.join([f'{gf:.4f}' for gf in gate_flows_1])}")
@@ -671,7 +678,7 @@ class SingleCanalSolver:
                     converged = True
                     if verbose:
                         print(f"\n{'='*60}")
-                        print(f"✓✓✓ 达到高精度稳态 ✓✓✓")
+                        print(f" 达到高精度稳态 ")
                         print(f"{'='*60}")
                         print(f"  阶段1迭代: {result_stage1['iterations']}")
                         print(f"  阶段2迭代: {i+1}")
@@ -687,7 +694,7 @@ class SingleCanalSolver:
                 if divergence_count >= 5:
                     if verbose:
                         print(f"\n{'='*60}")
-                        print(f"⚠ 检测到持续发散，提前终止阶段2")
+                        print(f" 检测到持续发散，提前终止阶段2")
                         print(f"{'='*60}")
                         print(f"  当前误差: {error_structure*100:.4f}%")
                         print(f"  建议: 使用阶段1结果或调整参数")
@@ -724,15 +731,15 @@ class SingleCanalSolver:
             print(f"  阶段2迭代数: {result['stage2_iterations']}")
             print(f"  总迭代次数: {iterations_used}")
             print(f"  总仿真时间: {self.current_time:.0f}s")
-            print(f"  目标流量: {Q_target:.6f} m³/s")
-            print(f"  平均流量: {final_Q_avg:.6f} m³/s")
-            print(f"  阶段1→阶段2误差: {stage1_error*100:.4f}% → {result['error_structure']*100:.4f}%")
+            print(f"  目标流量: {Q_target:.6f} m^3/s")
+            print(f"  平均流量: {final_Q_avg:.6f} m^3/s")
+            print(f"  阶段1->阶段2误差: {stage1_error*100:.4f}% -> {result['error_structure']*100:.4f}%")
             print(f"  精度提升倍数: {stage1_error/result['error_structure']:.1f}x")
             print(f"\n分项误差:")
-            print(f"  全局误差: {result['error_global']:.2e} ({'✓' if result['error_global'] < tol_global else '✗'})")
-            print(f"  局部误差: {result['error_local']:.2e} ({'✓' if result['error_local'] < tol_local else '✗'})")
-            print(f"  结构误差: {result['error_structure']:.2e} ({'✓' if result['error_structure'] < tol_structure else '✗'})")
-            print(f"  时间误差: {result['error_temporal']:.2e} ({'✓' if result['error_temporal'] < tol_temporal else '✗'})")
+            print(f"  全局误差: {result['error_global']:.2e} ({'' if result['error_global'] < tol_global else ''})")
+            print(f"  局部误差: {result['error_local']:.2e} ({'' if result['error_local'] < tol_local else ''})")
+            print(f"  结构误差: {result['error_structure']:.2e} ({'' if result['error_structure'] < tol_structure else ''})")
+            print(f"  时间误差: {result['error_temporal']:.2e} ({'' if result['error_temporal'] < tol_temporal else ''})")
             print(f"  L2范数: {result['error_L2']:.2e}")
             print(f"  L∞范数: {result['error_Linf']:.2e}")
             if final_gate_flows:
@@ -757,7 +764,7 @@ class SingleCanalSolver:
         2. 减少时间积分步数（1200步 vs 50000步）
         3. 逐级提高精度要求
 
-        预期精度：0.5% (当前2.56% → 5倍提升)
+        预期精度：0.5% (当前2.56% -> 5倍提升)
         """
 
         if verbose:
@@ -775,7 +782,7 @@ class SingleCanalSolver:
         result_stage1 = self.solve_steady_state(
             Q_target=Q_target,
             max_iterations=5000,
-            convergence_tol=0.01,  # 1%
+            convergence_tol = 0.1,  # 1%
             check_interval=500,
             verbose=verbose
         )
@@ -825,7 +832,7 @@ class SingleCanalSolver:
                     if max_error < tol_stage2:
                         stage2_converged = True
                         if verbose:
-                            print(f"\n✓ 阶段2收敛 (i={i+1}, 误差={max_error*100:.4f}%)")
+                            print(f"\n 阶段2收敛 (i={i+1}, 误差={max_error*100:.4f}%)")
                         break
 
         # ==================== 阶段3: 细优化 ====================
@@ -862,7 +869,7 @@ class SingleCanalSolver:
                     if max_error < tol_stage3:
                         stage3_converged = True
                         if verbose:
-                            print(f"\n✓✓✓ 阶段3收敛 (i={i+1}, 误差={max_error*100:.4f}%)")
+                            print(f"\n 阶段3收敛 (i={i+1}, 误差={max_error*100:.4f}%)")
                         break
 
         # ==================== 最终统计 ====================
@@ -905,8 +912,8 @@ class SingleCanalSolver:
             print(f"  阶段1误差: {stage1_error*100:.4f}%")
             print(f"  最终误差: {final_error*100:.4f}%")
             print(f"  精度提升: {stage1_error/final_error:.2f}x")
-            print(f"\n目标流量: {Q_target:.6f} m³/s")
-            print(f"平均流量: {final_Q_avg:.6f} m³/s")
+            print(f"\n目标流量: {Q_target:.6f} m^3/s")
+            print(f"平均流量: {final_Q_avg:.6f} m^3/s")
             if final_gate_flows:
                 print(f"闸门流量: {', '.join([f'{gf:.6f}' for gf in final_gate_flows])}")
             print()

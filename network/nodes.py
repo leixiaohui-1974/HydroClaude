@@ -637,4 +637,4 @@ if __name__ == "__main__":
     print(f"Created: {outflow}")
 
     print()
-    print("✅ Node types module test passed!")
+    print(" Node types module test passed!")

@@ -1,0 +1,8 @@
+tests/benchmark_numba.py
+tests/core_functionality_verification.py
+tests/diagnostic-test_anderson_performance.py
+tests/diagnostic-test_macdonald4_parameter_sweep.py
+tests/diagnostic-test_macdonald4_quick_weno3.py
+tests/diagnostic-test_simulation_engine_weno3.py
+tests/numerical_methods-test_weno3_accuracy.py
+tests/verification-test_toro_riemann_problems.py

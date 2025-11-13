@@ -1,25 +1,28 @@
+# -*- coding: utf-8 -*-
 """
 渠道控制中的状态估计示例
 
-展示如何使用卡尔曼滤波器、扩展卡尔曼滤波器和无迹卡尔曼滤波器
-进行渠道系统的状态估计。
+展示如何使用卡尔曼滤波器扩展卡尔曼滤波器和无迹卡尔曼滤波器
+进行渠道系统的状态估计
 
-应用场景：
+应用场景
 - 传感器测量含有噪声
 - 融合模型预测和测量数据
 - 提供更准确的状态估计用于控制
 
-对比三种方法：
-1. 卡尔曼滤波器（KF）- 线性化IDZ模型
-2. 扩展卡尔曼滤波器（EKF）- 非线性模型
-3. 无迹卡尔曼滤波器（UKF）- 无迹变换
+对比三种方法
+1. 卡尔曼滤波器KF- 线性化IDZ模型
+2. 扩展卡尔曼滤波器EKF- 非线性模型
+3. 无迹卡尔曼滤波器UKF- 无迹变换
 
-作者：HydroClaude Team
-日期：2025-10-24
+作者HydroClaude Team
+日期2025-10-24
 """
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 import sys
 import os
 
@@ -51,10 +54,10 @@ class CanalPoolSimulator:
         self.dt = dt
         self.process_noise_std = process_noise_std
 
-        # IDZ模型（用于仿真真实系统）
+        # IDZ模型用于仿真真实系统
         self.model = IDZModel(params, dt)
 
-        # 状态：[水深, 水深变化率]
+        # 状态[水深, 水深变化率]
         self.x = np.array([0.0, 0.0])
 
         # 上一时刻水深
@@ -65,12 +68,12 @@ class CanalPoolSimulator:
         仿真一步
 
         参数:
-            u: 控制输入（流量差异）
+            u: 控制输入流量差异
 
         返回:
             x: 状态 [水深, 水深变化率]
         """
-        # IDZ模型输出是水深（已经是累积值）
+        # IDZ模型输出是水深已经是累积值
         h_new = self.model.step(u)
 
         # 添加过程噪声
@@ -88,13 +91,13 @@ class CanalPoolSimulator:
 
     def measure(self, measurement_noise_std: float = 0.05) -> float:
         """
-        测量水深（含噪声）
+        测量水深含噪声
 
         参数:
             measurement_noise_std: 测量噪声标准差
 
         返回:
-            z: 测量值（水深）
+            z: 测量值水深
         """
         return self.x[0] + np.random.randn() * measurement_noise_std
 
@@ -117,7 +120,7 @@ def create_kf_for_canal(params: IDZParameters, dt: float,
     状态: x = [h, dh/dt]
     测量: z = h
     """
-    # 状态转移矩阵（简化的离散化）
+    # 状态转移矩阵简化的离散化
     # x(k+1) = A*x(k) + B*u(k)
     A = np.array([
         [1.0, dt],
@@ -125,13 +128,13 @@ def create_kf_for_canal(params: IDZParameters, dt: float,
     ])
 
     # 控制输入矩阵
-    # 基于IDZ模型：dh/dt ≈ K * u
+    # 基于IDZ模型dh/dt ~= K * u
     B = np.array([
         [0.0],
         [params.K * dt]
     ])
 
-    # 测量矩阵（只测量水深）
+    # 测量矩阵只测量水深
     H = np.array([
         [1.0, 0.0]
     ])
@@ -168,14 +171,14 @@ def create_ekf_for_canal(params: IDZParameters, dt: float,
             u = u[0] if isinstance(u, np.ndarray) else u
 
         # 使用IDZ模型计算水深变化
-        # 注意：这里简化处理，实际应该保存IDZ内部状态
+        # 注意这里简化处理实际应该保存IDZ内部状态
         h_new = x[0] + params.K * u * dt
         dh_dt_new = (h_new - x[0]) / dt
 
         return np.array([h_new, dh_dt_new])
 
     def h(x: np.ndarray) -> np.ndarray:
-        """测量函数（只测量水深）"""
+        """测量函数只测量水深"""
         return np.array([x[0]])
 
     def F_jacobian(x: np.ndarray, u: np.ndarray = None) -> np.ndarray:
@@ -273,9 +276,9 @@ def main():
     ekf = create_ekf_for_canal(params, dt, process_noise_std, measurement_noise_std)
     ukf = create_ukf_for_canal(params, dt, process_noise_std, measurement_noise_std)
 
-    print("  ✓ 卡尔曼滤波器 (KF)")
-    print("  ✓ 扩展卡尔曼滤波器 (EKF)")
-    print("  ✓ 无迹卡尔曼滤波器 (UKF)")
+    print("   卡尔曼滤波器 (KF)")
+    print("   扩展卡尔曼滤波器 (EKF)")
+    print("   无迹卡尔曼滤波器 (UKF)")
 
     # ===== 3. 运行仿真 =====
     print("\n3. 运行仿真...")
@@ -289,11 +292,11 @@ def main():
     ukf_estimates = []
     control_inputs = []
 
-    # 控制输入序列（阶跃 + 斜坡）
+    # 控制输入序列阶跃 + 斜坡
     u_sequence = np.zeros(n_steps)
-    u_sequence[20:80] = 0.1   # 阶跃：20-80步
-    u_sequence[80:140] = 0.1 - 0.002 * np.arange(60)  # 斜坡：80-140步
-    u_sequence[140:] = 0.0    # 回零：140-200步
+    u_sequence[20:80] = 0.1   # 阶跃20-80步
+    u_sequence[80:140] = 0.1 - 0.002 * np.arange(60)  # 斜坡80-140步
+    u_sequence[140:] = 0.0    # 回零140-200步
 
     # 仿真循环
     for step in range(n_steps):
@@ -302,7 +305,7 @@ def main():
         # 真实系统
         x_true = simulator.step(u)
 
-        # 测量（含噪声）
+        # 测量含噪声
         z = simulator.measure(measurement_noise_std)
 
         # KF估计
@@ -359,20 +362,20 @@ def main():
     ukf_rmse = np.sqrt(np.mean(ukf_error**2))
     meas_rmse = np.sqrt(np.mean(meas_error**2))
 
-    print(f"\n  均方根误差（RMSE）:")
-    print(f"    测量（无滤波）: {meas_rmse:.4f} m")
+    print(f"\n  均方根误差RMSE:")
+    print(f"    测量无滤波: {meas_rmse:.4f} m")
     print(f"    卡尔曼滤波:     {kf_rmse:.4f} m  (改善 {(1-kf_rmse/meas_rmse)*100:.1f}%)")
     print(f"    扩展卡尔曼:     {ekf_rmse:.4f} m  (改善 {(1-ekf_rmse/meas_rmse)*100:.1f}%)")
     print(f"    无迹卡尔曼:     {ukf_rmse:.4f} m  (改善 {(1-ukf_rmse/meas_rmse)*100:.1f}%)")
 
-    # 计算NEES（归一化估计误差平方）
+    # 计算NEES归一化估计误差平方
     kf_nees = compute_nees(
         [x for x in true_states],
         [x for x in kf_estimates],
         [kf.history_P[i] for i in range(1, len(kf.history_P))]
     )
 
-    print(f"\n  归一化估计误差平方（NEES）:")
+    print(f"\n  归一化估计误差平方NEES:")
     print(f"    卡尔曼滤波: {kf_nees:.4f}")
     print(f"    (理论值应接近状态维度={kf_estimates.shape[1]})")
 
@@ -411,7 +414,7 @@ def main():
     ax = axes[1, 0]
     ax.plot(time_array, control_inputs, 'k-', linewidth=2)
     ax.set_xlabel('Time (s)')
-    ax.set_ylabel('Control Input (m³/s)')
+    ax.set_ylabel('Control Input (m^3/s)')
     ax.set_title('Control Input Sequence')
     ax.grid(True, alpha=0.3)
 
@@ -426,7 +429,7 @@ def main():
     ax.plot(time_array, true_states[:, 0], 'k-', linewidth=1, label='True State')
     ax.set_xlabel('Time (s)')
     ax.set_ylabel('Water Depth (m)')
-    ax.set_title('KF Uncertainty (±2σ Bounds)')
+    ax.set_title('KF Uncertainty (+/-2sigma Bounds)')
     ax.legend(loc='best')
     ax.grid(True, alpha=0.3)
 
@@ -436,7 +439,7 @@ def main():
     ax.plot(time_array, innovations, 'b-', linewidth=1, alpha=0.7)
     ax.axhline(y=0, color='k', linestyle='--', linewidth=1)
     ax.fill_between(time_array, -2*measurement_noise_std, 2*measurement_noise_std,
-                     alpha=0.2, color='gray', label='±2σ Bounds')
+                     alpha=0.2, color='gray', label='+/-2sigma Bounds')
     ax.set_xlabel('Time (s)')
     ax.set_ylabel('Innovation (m)')
     ax.set_title('KF Innovation Sequence')
@@ -468,18 +471,18 @@ def main():
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
     print(f"\n  可视化已保存: {output_path}")
 
-    plt.show()
+    # plt.show()  # Disabled for automated testing
 
     # ===== 6. 总结 =====
     print("\n" + "=" * 80)
     print("总结")
     print("=" * 80)
     print("\n状态估计改善了水深测量精度:")
-    print(f"  • 测量噪声: {measurement_noise_std:.3f} m")
-    print(f"  • KF滤波后: {kf_rmse:.4f} m (减少 {(1-kf_rmse/measurement_noise_std)*100:.1f}%)")
-    print(f"\n所有三种滤波器（KF、EKF、UKF）都显著改善了估计精度。")
-    print(f"在本例的线性化系统中，KF已经足够，EKF和UKF提供了相似的性能。")
-    print(f"\n对于更强的非线性系统，UKF通常优于EKF。")
+    print(f"  - 测量噪声: {measurement_noise_std:.3f} m")
+    print(f"  - KF滤波后: {kf_rmse:.4f} m (减少 {(1-kf_rmse/measurement_noise_std)*100:.1f}%)")
+    print(f"\n所有三种滤波器KFEKFUKF都显著改善了估计精度")
+    print(f"在本例的线性化系统中KF已经足够EKF和UKF提供了相似的性能")
+    print(f"\n对于更强的非线性系统UKF通常优于EKF")
     print("=" * 80)
 
 

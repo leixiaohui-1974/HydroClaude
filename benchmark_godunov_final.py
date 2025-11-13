@@ -4,10 +4,10 @@
 Godunov-FVM最终性能基准测试 - Phase 0完成版
 
 测试项：
-1. 计算效率（网格密度）✅
-2. 网格收敛性 ✅
-3. 长时间质量守恒 ✅
-4. 内存占用 ✅
+1. 计算效率（网格密度）
+2. 网格收敛性 
+3. 长时间质量守恒 
+4. 内存占用 
 """
 
 import numpy as np
@@ -20,7 +20,7 @@ from utils.canal_utils import compute_steady_uniform_flow
 
 
 print("="*80)
-print("🚀 Godunov-FVM Phase 0最终性能基准")
+print(" Godunov-FVM Phase 0最终性能基准")
 print("="*80)
 
 # ========== 基准1: 计算效率 ==========
@@ -70,10 +70,10 @@ for n_cells in grid_sizes:
     
     print(f"{n_cells:<8} {dx:<8.2f} {state['step']:<8} {t_elapsed:<10.2f} {state['mass_error']:<14.6f} {efficiency:<12.1f}")
 
-print(f"\n✅ 结论:")
+print(f"\n 结论:")
 print(f"  • 最快: {results[0]['n_cells']}格 ({results[0]['time']:.2f}s)")
 print(f"  • 推荐: 100格 (平衡精度和速度)")
-print(f"  • 质量误差: 全部<1% ✅")
+print(f"  • 质量误差: 全部<1% ")
 
 # ========== 基准2: 网格收敛性 ==========
 print("\n" + "="*80)
@@ -151,9 +151,9 @@ for n_cells in grid_sizes_dam:
     
     print(f"{n_cells:<8} {dx:<8.2f} {rmse_pct:<10.2f} {front_err:<12.2f} {state['mass_error']:<12.6f}")
 
-print(f"\n✅ 结论:")
-print(f"  • Dam Break质量误差: 0.000% (完美) ✅")
-print(f"  • 波前误差随网格加密降低 ✅")
+print(f"\n 结论:")
+print(f"  • Dam Break质量误差: 0.000% (完美) ")
+print(f"  • 波前误差随网格加密降低 ")
 print(f"  • Order 1固有耗散，RMSE稳定在26-27%")
 
 # ========== 基准3: 长时间稳定性 ==========
@@ -191,26 +191,26 @@ for t_target in t_checkpoints:
 
 state_long = solver_long.get_state()
 
-print(f"\n✅ 结论:")
+print(f"\n 结论:")
 print(f"  • 10000s后质量误差: {state_long['mass_error']:.6f}%")
-print(f"  • 长时间稳定性: {'✅ 优秀' if abs(state_long['mass_error']) < 1.0 else '❌ 需改进'}")
+print(f"  • 长时间稳定性: {' 优秀' if abs(state_long['mass_error']) < 1.0 else ' 需改进'}")
 
 # ========== 总结 ==========
 print("\n" + "="*80)
-print("🎉 Phase 0最终性能基准 - 总结")
+print(" Phase 0最终性能基准 - 总结")
 print("="*80)
 
 print(f"\n【核心性能】")
-print(f"  ✅ 质量守恒: 0.000%-0.568% (目标<1%)")
-print(f"  ✅ 长时间稳定: 10000s误差<0.5%")
-print(f"  ✅ 计算效率: 1100步/秒 (700倍实时)")
-print(f"  ✅ Dam Break: 完美质量守恒(0.000%)")
-print(f"  ✅ 稳定性: 100% (任何场景无NaN)")
+print(f"   质量守恒: 0.000%-0.568% (目标<1%)")
+print(f"   长时间稳定: 10000s误差<0.5%")
+print(f"   计算效率: 1100步/秒 (700倍实时)")
+print(f"   Dam Break: 完美质量守恒(0.000%)")
+print(f"   稳定性: 100% (任何场景无NaN)")
 
 print(f"\n【性能等级】")
 print(f"  质量守恒: ⭐⭐⭐⭐⭐ (商业软件级)")
 print(f"  稳定性:   ⭐⭐⭐⭐⭐ (100%)")
-print(f"  精度:     ⭐⭐⭐⭐☆ (Order 1限制)")
+print(f"  精度:     ⭐⭐⭐⭐ (Order 1限制)")
 print(f"  效率:     ⭐⭐⭐⭐⭐ (700倍实时)")
 print(f"  综合:     ⭐⭐⭐⭐⭐ (生产就绪)")
 
@@ -220,12 +220,12 @@ print(f"  • 高精度:   n_cells=200, cfl=0.4, order=1")
 print(f"  • 快速估算: n_cells=50,  cfl=0.5, order=1")
 
 print(f"\n【商业软件对比】")
-print(f"  质量守恒: HydroClaude {results[1]['mass_error']:.3f}% vs 商业软件 ~1%  → ✅ 更好")
-print(f"  稳定性:   HydroClaude 100% vs 商业软件 ~95%  → ✅ 更好")
-print(f"  效率:     HydroClaude 1100步/秒 → ✅ 优秀")
+print(f"  质量守恒: HydroClaude {results[1]['mass_error']:.3f}% vs 商业软件 ~1%  →  更好")
+print(f"  稳定性:   HydroClaude 100% vs 商业软件 ~95%  →  更好")
+print(f"  效率:     HydroClaude 1100步/秒 →  优秀")
 
-print(f"\n✅ Phase 0完成度: 95%")
-print(f"✅ 生产就绪度: 100%")
-print(f"✅ 可立即投入使用！")
+print(f"\n Phase 0完成度: 95%")
+print(f" 生产就绪度: 100%")
+print(f" 可立即投入使用！")
 
 print("\n" + "="*80)

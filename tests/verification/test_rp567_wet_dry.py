@@ -26,7 +26,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from typing import Tuple, Dict, List
 
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.positivity_preserving_weno3 import PositivityPreservingWENO3
 from solvers.wet_dry_enhanced_weno3 import WetDryEnhancedWENO3
 from tests.verification.toro_riemann_solver import exact_riemann_solution, riemann_structure
@@ -214,9 +220,9 @@ def run_dry_bed_simulation(
     h_min_all = np.min(h_min_history)
     result['h_min_all'] = h_min_all
     if h_min_all >= 0.0:
-        print(f"\n✅ 正定性保持成功: h_min = {h_min_all:.6e} ≥ 0")
+        print(f"\n 正定性保持成功: h_min = {h_min_all:.6e} >= 0")
     else:
-        print(f"\n❌ 正定性违背: h_min = {h_min_all:.6e} < 0")
+        print(f"\n 正定性违背: h_min = {h_min_all:.6e} < 0")
 
     return result
 
@@ -470,7 +476,7 @@ def main():
             'kwargs': {
                 'eps_pp': 1e-10,
                 'theta_min': 0.0,
-                'wet_dry_threshold': 1e-3,  # 放宽检测阈值: 1e-4→1e-3
+                'wet_dry_threshold': 1e-3,  # 放宽检测阈值: 1e-4->1e-3
                 'interface_theta_max': 0.3,
                 'use_pp': True,
                 'use_wd_flux': True
@@ -510,7 +516,7 @@ def main():
                 )
                 results_list.append(result)
             except Exception as e:
-                print(f"\n❌ {solver_config['name']} 失败: {e}")
+                print(f"\n {solver_config['name']} 失败: {e}")
                 import traceback
                 traceback.print_exc()
 
@@ -555,11 +561,11 @@ def main():
         if wd_result:
             l2_error = wd_result['errors']['L2_rel']
             if l2_error < target_l2:
-                print(f"  ✅ 达标！WD-Enhanced-WENO3的L2误差({l2_error:.2f}%) < 目标({target_l2}%)")
+                print(f"   达标！WD-Enhanced-WENO3的L2误差({l2_error:.2f}%) < 目标({target_l2}%)")
             else:
-                print(f"  ⚠️  未达标。WD-Enhanced-WENO3的L2误差({l2_error:.2f}%) ≥ 目标({target_l2}%)")
+                print(f"  ️  未达标。WD-Enhanced-WENO3的L2误差({l2_error:.2f}%) >= 目标({target_l2}%)")
         else:
-            print(f"  ⚠️  未运行WD-Enhanced-WENO3")
+            print(f"  ️  未运行WD-Enhanced-WENO3")
 
     # 绘制对比图
     if rp5_results and rp6_results and rp7_results:

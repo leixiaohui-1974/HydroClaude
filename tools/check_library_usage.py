@@ -132,7 +132,7 @@ def check_file(file_path: Path) -> Dict:
     for deprecated in DEPRECATED:
         if deprecated['name'] in content:
             results['issues'].append(
-                f"❌ 使用了废弃的类: {deprecated['name']} "
+                f" 使用了废弃的类: {deprecated['name']} "
                 f"({deprecated['reason']}) → 应使用: {deprecated['replacement']}"
             )
             results['passed'] = False
@@ -141,10 +141,10 @@ def check_file(file_path: Path) -> Dict:
     for forbidden in FORBIDDEN_PATTERNS:
         if re.search(forbidden['pattern'], content):
             results['warnings'].append(
-                f"⚠️  检测到可能的重复实现: {forbidden['description']}"
+                f"️  检测到可能的重复实现: {forbidden['description']}"
             )
             results['suggestions'].append(
-                f"💡 {forbidden['suggestion']}"
+                f" {forbidden['suggestion']}"
             )
     
     # 检查3: 如果是example文件，检查是否使用了推荐的基础库
@@ -153,7 +153,7 @@ def check_file(file_path: Path) -> Dict:
         if 'solve_steady_state' in content or 'solver' in content.lower():
             if 'HydrostaticCanalSolver' not in content:
                 results['issues'].append(
-                    '❌ 未使用推荐的求解器: HydrostaticCanalSolver'
+                    ' 未使用推荐的求解器: HydrostaticCanalSolver'
                 )
                 results['passed'] = False
         
@@ -161,10 +161,10 @@ def check_file(file_path: Path) -> Dict:
         if 'solve_steady_state' in content:
             if 'ResultValidator' not in content and 'quick_validate_steady_state' not in content:
                 results['warnings'].append(
-                    '⚠️  求解后未使用 ResultValidator 验证结果'
+                    '️  求解后未使用 ResultValidator 验证结果'
                 )
                 results['suggestions'].append(
-                    '💡 使用 quick_validate_steady_state 自动验证结果'
+                    ' 使用 quick_validate_steady_state 自动验证结果'
                 )
         
         # 检查可视化工具
@@ -172,19 +172,19 @@ def check_file(file_path: Path) -> Dict:
             has_viz_lib = any(lib in content for lib in VISUALIZATION_LIBS)
             if not has_viz_lib:
                 results['warnings'].append(
-                    '⚠️  使用原生matplotlib绘图，建议使用专业绘图工具'
+                    '️  使用原生matplotlib绘图，建议使用专业绘图工具'
                 )
                 results['suggestions'].append(
-                    '💡 使用 PlotHelper 或 VisualizationTemplates 简化绘图代码'
+                    ' 使用 PlotHelper 或 VisualizationTemplates 简化绘图代码'
                 )
     
     # 检查4: 检查是否有明显的性能问题
     if 'convergence_tol=0.001' in content or 'convergence_tol=0.0001' in content:
         results['warnings'].append(
-            '⚠️  使用了过于严格的收敛容差，可能导致收敛缓慢'
+            '️  使用了过于严格的收敛容差，可能导致收敛缓慢'
         )
         results['suggestions'].append(
-            '💡 推荐使用 convergence_tol=0.1 以获得极快收敛（0-1次迭代）'
+            ' 推荐使用 convergence_tol=0.1 以获得极快收敛（0-1次迭代）'
         )
     
     return results
@@ -220,18 +220,18 @@ def print_summary(results: List[Dict]):
     passed = sum(1 for r in results if r['passed'])
     failed = total - passed
     
-    print(f"\n📊 总计: {total} 个文件")
-    print(f"✅ 通过: {passed} ({passed/total*100:.1f}%)" if total > 0 else "✅ 通过: 0")
-    print(f"❌ 未通过: {failed}")
+    print(f"\n 总计: {total} 个文件")
+    print(f" 通过: {passed} ({passed/total*100:.1f}%)" if total > 0 else " 通过: 0")
+    print(f" 未通过: {failed}")
     
     # 统计问题类型
     total_issues = sum(len(r['issues']) for r in results)
     total_warnings = sum(len(r['warnings']) for r in results)
     
     if total_issues > 0:
-        print(f"\n⚠️  发现 {total_issues} 个严重问题")
+        print(f"\n️  发现 {total_issues} 个严重问题")
     if total_warnings > 0:
-        print(f"💡 发现 {total_warnings} 个警告")
+        print(f" 发现 {total_warnings} 个警告")
 
 
 def print_details(results: List[Dict]):
@@ -245,7 +245,7 @@ def print_details(results: List[Dict]):
         print("=" * 80)
         for result in results:
             if not result['passed']:
-                print(f"\n📁 {result['file']}")
+                print(f"\n {result['file']}")
                 for issue in result['issues']:
                     print(f"   {issue}")
                 for suggestion in result['suggestions']:
@@ -257,7 +257,7 @@ def print_details(results: List[Dict]):
         print("=" * 80)
         for result in results:
             if result['warnings']:
-                print(f"\n📁 {result['file']}")
+                print(f"\n {result['file']}")
                 for warning in result['warnings']:
                     print(f"   {warning}")
                 for suggestion in result['suggestions']:
@@ -287,7 +287,7 @@ def main():
     all_results = check_multiple_files(input_paths)
     
     if not all_results:
-        print("⚠️  没有找到Python文件")
+        print("️  没有找到Python文件")
         sys.exit(0)
     
     # 打印结果
@@ -300,13 +300,13 @@ def main():
     
     print("\n" + "=" * 80)
     if failed > 0:
-        print("❌ 检查失败！发现严重问题，请修复后再提交")
+        print(" 检查失败！发现严重问题，请修复后再提交")
         sys.exit(1)
     elif warnings > 0 and strict_mode:
-        print("⚠️  严格模式：发现警告，建议修复")
+        print("️  严格模式：发现警告，建议修复")
         sys.exit(1)
     else:
-        print("✅ 检查通过！代码符合基础库使用规范")
+        print(" 检查通过！代码符合基础库使用规范")
         sys.exit(0)
 
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例8: Preissmann求解器演示（简化版）
 
@@ -15,6 +16,8 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from physics.canal import Canal
 
@@ -24,7 +27,7 @@ def example_preissmann_demo():
     print("=" * 80)
     print("示例8: Preissmann求解器演示")
     print("=" * 80)
-    print("\n💡 说明：Preissmann是当前唯一可用的高精度非恒定流求解器")
+    print("\n 说明：Preissmann是当前唯一可用的高精度非恒定流求解器")
     print("   精度: 36.3%误差 (已验证)")
     print("   特点: 数值稳定，适合工程应用\n")
 
@@ -88,9 +91,9 @@ def example_preissmann_demo():
         if step % 10 == 0 or step == n_steps - 1:
             print(f"  步 {step+1}/{n_steps}: "
                   f"水位={canal.state.level:.3f}m, "
-                  f"流量={canal.state.flow:.3f}m³/s")
+                  f"流量={canal.state.flow:.3f}m^3/s")
 
-    print(f"\n✅ Preissmann求解完成!")
+    print(f"\n Preissmann求解完成!")
     print()
 
     # ====== 3. 结果分析 ======
@@ -110,10 +113,10 @@ def example_preissmann_demo():
     print(f"  最小: {levels.min():.3f} m")
 
     print(f"\n流量统计:")
-    print(f"  初始: {flows[0]:.3f} m³/s")
-    print(f"  最终: {flows[-1]:.3f} m³/s")
-    print(f"  变化: {flows[-1] - flows[0]:.3f} m³/s")
-    print(f"  平均: {flows.mean():.3f} m³/s")
+    print(f"  初始: {flows[0]:.3f} m^3/s")
+    print(f"  最终: {flows[-1]:.3f} m^3/s")
+    print(f"  变化: {flows[-1] - flows[0]:.3f} m^3/s")
+    print(f"  平均: {flows.mean():.3f} m^3/s")
 
     # ====== 4. 可视化 ======
     print("\n" + "="*80)
@@ -137,7 +140,7 @@ def example_preissmann_demo():
     ax2.plot(time, flows, 'r-', linewidth=2, label='流量')
     ax2.axhline(y=upstream_flow, color='g', linestyle='--', label='边界流量')
     ax2.set_xlabel('时间 (s)')
-    ax2.set_ylabel('流量 (m³/s)')
+    ax2.set_ylabel('流量 (m^3/s)')
     ax2.set_title('流量时间演化')
     ax2.grid(True, alpha=0.3)
     ax2.legend()
@@ -171,17 +174,17 @@ def example_preissmann_demo():
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, 'preissmann_demo.png')
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
-    print(f"\n✅ 图表已保存: {output_path}")
+    print(f"\n 图表已保存: {output_path}")
 
     # ====== 5. 总结 ======
     print("\n" + "="*80)
     print("总结")
     print("="*80)
-    print(f"\n✅ Preissmann求解器性能:")
+    print(f"\n Preissmann求解器性能:")
     print(f"   - 求解稳定：无数值振荡")
     print(f"   - 精度可接受：36.3%误差（已验证）")
     print(f"   - 适用场景：工程应用、长时仿真")
-    print(f"\n📚 更多信息:")
+    print(f"\n 更多信息:")
     print(f"   - 技术报告: docs/CANAL_SOLVER_PRECISION_REPORT.md")
     print(f"   - 使用指南: docs/HIGH_FIDELITY_SOLVER_GUIDE.md")
     print(f"   - 求解器对比: docs/SOLVER_CLEANUP_SUMMARY_zh.md")
@@ -196,4 +199,4 @@ def example_preissmann_demo():
 if __name__ == '__main__':
     canal, history = example_preissmann_demo()
     print("\n按Enter键关闭...")
-    # input()  # 取消注释以等待用户输入
+    ## input() disabled for automated testing  # 取消注释以等待用户输入

@@ -1,0 +1,142 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+DO模型简化测试 - 调试用
+
+作者: HydroClaude Team
+日期: 2025-11-02
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+try:
+    from solvers.dissolved_oxygen import DissolvedOxygenSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+
+def test_do_simple():
+    """简化DO测试 - 验证基本功能"""
+
+    print("="*70)
+    print("DO模型简化测试")
+    print("="*70)
+
+    # 简单场景: 10个单元, 1小时模拟
+    n_cells = 12
+    dx = 1000.0  # 1km
+
+    # 创建DO求解器
+    do_solver = DissolvedOxygenSolver(
+        n_cells=n_cells,
+        dx=dx,
+        kd_20=0.1,   # 降低BOD衰减速率
+        SOD_20=0.5,  # 降低底泥耗氧
+        use_numba=False  # 关闭Numba以便调试
+    )
+
+    # 初始条件 (高DO, 低BOD)
+    DO_init = np.full(n_cells, 8.0)  # 8 mg/L
+    BOD_init = np.full(n_cells, 2.0)  # 2 mg/L
+    do_solver.initialize(DO_init, BOD_init)
+
+    # 水动力条件 (恒定)
+    u = np.full(n_cells, 0.5)  # 0.5 m/s
+    h = np.full(n_cells, 2.0)  # 2 m
+    T = np.full(n_cells, 20.0)  # 20°C
+
+    # 计算DO饱和度和再曝气系数
+    DO_sat = do_solver.compute_DO_saturation(T)
+    Ka = do_solver.compute_reaeration_coefficient(u, h, T)
+
+    print(f"\n初始条件:")
+    print(f"  DO: {DO_init[0]:.2f} mg/L")
+    print(f"  BOD: {BOD_init[0]:.2f} mg/L")
+    print(f"  DO_sat: {DO_sat[0]:.2f} mg/L")
+    print(f"  Ka: {Ka[0]:.4f} 1/day")
+    print(f"  水深: {h[0]} m, 流速: {u[0]} m/s")
+
+    # 模拟1小时
+    dt = 60.0  # 1分钟
+    n_steps = 60  # 60步 = 1小时
+
+    print(f"\n模拟: {n_steps}步, dt={dt}s")
+
+    DO_history = [do_solver.DO[0]]
+    BOD_history = [do_solver.BOD[0]]
+
+    for step in range(n_steps):
+        # 推进一步
+        state = do_solver.step(
+            dt=dt,
+            u=u,
+            h=h,
+            T=T,
+            manning_n=0.03,
+            ice_cover_fraction=None
+        )
+
+        DO_history.append(state['DO'][0])
+        BOD_history.append(state['BOD'][0])
+
+        if (step+1) % 10 == 0:
+            print(f"  Step {step+1}: DO={state['DO'][0]:.4f} mg/L, BOD={state['BOD'][0]:.4f} mg/L")
+
+    # 检查结果
+    DO_final = do_solver.DO[0]
+    BOD_final = do_solver.BOD[0]
+
+    print(f"\n最终状态:")
+    print(f"  DO: {DO_init[0]:.4f} -> {DO_final:.4f} mg/L")
+    print(f"  BOD: {BOD_init[0]:.4f} -> {BOD_final:.4f} mg/L")
+
+    # 诊断信息
+    diag = do_solver.get_diagnostics(u, h, T)
+    print(f"\n诊断信息:")
+    print(f"  再曝气速率: {diag['reaeration_rate'][0]:.6f} mg/L/day")
+    print(f"  BOD耗氧速率: {diag['BOD_consumption'][0]:.6f} mg/L/day")
+    print(f"  SOD耗氧速率: {diag['SOD_rate'][0]:.6f} mg/L/day")
+    print(f"  DO亏损: {diag['DO_deficit'][0]:.4f} mg/L")
+
+    # 绘图
+    time = np.arange(len(DO_history)) / 60.0  # 小时
+
+    fig, axes = plt.subplots(2, 1, figsize=(10, 8))
+
+    axes[0].plot(time, DO_history, 'b-', linewidth=2, label='DO')
+    axes[0].axhline(DO_sat[0], color='g', linestyle='--', label='DO_sat')
+    axes[0].set_xlabel('Time (hours)')
+    axes[0].set_ylabel('DO (mg/L)')
+    axes[0].set_title('Dissolved Oxygen')
+    axes[0].legend()
+    axes[0].grid(True, alpha=0.3)
+
+    axes[1].plot(time, BOD_history, 'r-', linewidth=2, label='BOD')
+    axes[1].set_xlabel('Time (hours)')
+    axes[1].set_ylabel('BOD (mg/L)')
+    axes[1].set_title('Biochemical Oxygen Demand')
+    axes[1].legend()
+    axes[1].grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('test_do_simple.png', dpi=150)
+    print(f"\n图表已保存: test_do_simple.png")
+
+    # 验证: DO应该略有上升(因为初始DO < DO_sat)
+    if DO_final >= DO_init[0] * 0.95 and DO_final > 0:
+        print(f"\n 测试通过! DO保持合理值")
+        return True
+    else:
+        print(f"\n 测试失败! DO异常下降")
+        return False
+
+if __name__ == '__main__':
+    success = test_do_simple()
+    sys.exit(0 if success else 1)

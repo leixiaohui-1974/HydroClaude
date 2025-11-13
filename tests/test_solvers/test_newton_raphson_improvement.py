@@ -9,6 +9,14 @@ Test Newton-Raphson solver improvements
 作者: HydroClaude Team
 日期: 2025-10-30
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import pytest
 import numpy as np
@@ -16,7 +24,13 @@ import numpy as np
 from network.pressure_pipe import create_pressure_pipe
 from network.network_node import Junction, Reservoir
 from network.network_topology import NetworkTopology
-from solvers.hardy_cross_solver import HardyCrossSolver
+try:
+    from solvers.hardy_cross_solver import HardyCrossSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.newton_raphson_network_solver import NewtonRaphsonNetworkSolver
 
 
@@ -132,8 +146,8 @@ def test_compare_with_hardy_cross():
     print(f"\n结果对比:")
     print(f"  Hardy Cross迭代: {hc_solver.iteration_count}")
     print(f"  Newton-Raphson迭代: {nr_solver.iteration_count}")
-    print(f"  流量最大差异: {max_diff:.8f} m³/s")
-    print(f"  流量平均差异: {mean_diff:.8f} m³/s")
+    print(f"  流量最大差异: {max_diff:.8f} m^3/s")
+    print(f"  流量平均差异: {mean_diff:.8f} m^3/s")
 
     # 两种方法应该得到相近的结果
     assert max_diff < 1e-3, "两种方法结果应该接近"
@@ -181,5 +195,5 @@ if __name__ == '__main__':
     test_initialization_quality()
 
     print("\n" + "="*80)
-    print("✅ 所有测试通过！Newton-Raphson优化成功！")
+    print(" 所有测试通过！Newton-Raphson优化成功！")
     print("="*80)

@@ -11,6 +11,14 @@ Tests:
 Author: HydroClaude Development Team
 Date: 2025-10-22
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import pytest
 import numpy as np
@@ -43,7 +51,7 @@ class TestPrimaryFrequencyControl:
         delta_f = -0.5
         delta_P = pfc.calculate_power_adjustment(delta_f)
 
-        # Should increase power: ΔP = -K_droop × Δf = -50 × (-0.5) = 25 MW
+        # Should increase power: DeltaP = -K_droop x Deltaf = -50 x (-0.5) = 25 MW
         assert delta_P > 0
         assert abs(delta_P - 25.0) < 0.1
 
@@ -55,7 +63,7 @@ class TestPrimaryFrequencyControl:
         delta_f = 0.5
         delta_P = pfc.calculate_power_adjustment(delta_f)
 
-        # Should decrease power: ΔP = -50 × 0.5 = -25 MW
+        # Should decrease power: DeltaP = -50 x 0.5 = -25 MW
         assert delta_P < 0
         assert abs(delta_P + 25.0) < 0.1
 
@@ -93,7 +101,7 @@ class TestSecondaryFrequencyControl:
         # Frequency at 49.5 Hz, no tie-line flow
         ace = agc.calculate_ace(frequency=49.5, tie_line_flow=0.0)
 
-        # ACE = 0 + 10 × 1.0 × (-0.5) = -5.0 MW
+        # ACE = 0 + 10 x 1.0 x (-0.5) = -5.0 MW
         assert abs(ace + 5.0) < 0.01
 
     def test_ace_calculation_tie_line_only(self):
@@ -108,7 +116,7 @@ class TestSecondaryFrequencyControl:
         # Frequency nominal, tie-line exporting 10 MW (should be 0)
         ace = agc.calculate_ace(frequency=50.0, tie_line_flow=10.0)
 
-        # ACE = 10 + 10 × 1.0 × 0 = 10.0 MW
+        # ACE = 10 + 10 x 1.0 x 0 = 10.0 MW
         assert abs(ace - 10.0) < 0.01
 
     def test_ace_calculation_combined(self):
@@ -123,8 +131,8 @@ class TestSecondaryFrequencyControl:
         # Frequency at 49.8 Hz, tie-line at 60 MW (scheduled 50 MW)
         ace = agc.calculate_ace(frequency=49.8, tie_line_flow=60.0)
 
-        # ACE = (60 - 50) + 10 × 2.0 × (49.8 - 50.0)
-        #     = 10 + 10 × 2.0 × (-0.2)
+        # ACE = (60 - 50) + 10 x 2.0 x (49.8 - 50.0)
+        #     = 10 + 10 x 2.0 x (-0.2)
         #     = 10 - 4 = 6.0 MW
         assert abs(ace - 6.0) < 0.01
 
@@ -140,7 +148,7 @@ class TestSecondaryFrequencyControl:
         # ACE = -5 MW (under-frequency)
         output, ace = agc.compute_control(frequency=49.5, tie_line_flow=0.0, current_time=0.0)
 
-        # Output = Kp × ACE = 10.0 × (-5.0) = -50.0 MW
+        # Output = Kp x ACE = 10.0 x (-5.0) = -50.0 MW
         assert abs(output + 50.0) < 0.1
 
     def test_pi_control_integral(self):
@@ -158,8 +166,8 @@ class TestSecondaryFrequencyControl:
         agc.compute_control(frequency=49.5, tie_line_flow=0.0, current_time=1.0)
         output, ace = agc.compute_control(frequency=49.5, tie_line_flow=0.0, current_time=2.0)
 
-        # ACE = -5 MW, integral over 2 seconds = -5 × 2 = -10
-        # Output = Ki × integral = 5.0 × (-10) = -50 MW
+        # ACE = -5 MW, integral over 2 seconds = -5 x 2 = -10
+        # Output = Ki x integral = 5.0 x (-10) = -50 MW
         assert abs(output + 50.0) < 1.0  # Allow some tolerance due to rate limiting
 
     def test_ace_deadband(self):
@@ -174,7 +182,7 @@ class TestSecondaryFrequencyControl:
         # Small ACE within deadband
         output, ace = agc.compute_control(frequency=50.05, tie_line_flow=0.0, current_time=0.0)
 
-        # ACE ≈ 0.5 MW (within 1 MW deadband), so output should be 0
+        # ACE ~= 0.5 MW (within 1 MW deadband), so output should be 0
         assert abs(output) < 0.01
 
     def test_rate_limiter(self):
@@ -193,8 +201,8 @@ class TestSecondaryFrequencyControl:
         # Second call at t=0.5s with large ACE
         output, ace = agc.compute_control(frequency=49.5, tie_line_flow=0.0, current_time=0.5)
 
-        # Raw output = 100 × (-5) = -500 MW
-        # But rate limited to 2 MW/s × 0.5s = 1 MW change
+        # Raw output = 100 x (-5) = -500 MW
+        # But rate limited to 2 MW/s x 0.5s = 1 MW change
         assert abs(output) < 1.5  # Should be limited
 
     def test_reset(self):
@@ -322,9 +330,9 @@ class TestMultiUnitCoordinator:
 
         # Should be proportional to capacity
         # Total capacity = 450 MW
-        # Unit 0: 100/450 × 45 = 10 MW
-        # Unit 1: 150/450 × 45 = 15 MW
-        # Unit 2: 200/450 × 45 = 20 MW
+        # Unit 0: 100/450 x 45 = 10 MW
+        # Unit 1: 150/450 x 45 = 15 MW
+        # Unit 2: 200/450 x 45 = 20 MW
         assert abs(adjustments[0] - 10.0) < 0.5
         assert abs(adjustments[1] - 15.0) < 0.5
         assert abs(adjustments[2] - 20.0) < 0.5
@@ -422,9 +430,9 @@ class TestIntegratedAGCSystem:
         total_increase = sum(setpoints_1.values()) - sum(setpoints_0.values())
         assert total_increase > 0
 
-        # Primary control contribution: ΔP = -K_droop × Δf
-        # Each unit: K_droop = 100/(0.04×50) = 50 MW/Hz
-        # ΔP_primary per unit = -50 × (-0.5) = 25 MW
+        # Primary control contribution: DeltaP = -K_droop x Deltaf
+        # Each unit: K_droop = 100/(0.04x50) = 50 MW/Hz
+        # DeltaP_primary per unit = -50 x (-0.5) = 25 MW
         # Total primary = 50 MW
         # Plus AGC action on top
         assert total_increase > 40.0  # At least primary response
@@ -495,8 +503,8 @@ class TestAGCPerformanceMetrics:
         """
         Test CPS1 (Control Performance Standard 1) compliance.
 
-        CPS1 = (2 - CF) × 100%  where CF = avg(ACE × Δf) / (10 × ε₁²)
-        Must be ≥ 100% to comply.
+        CPS1 = (2 - CF) x 100%  where CF = avg(ACE x Deltaf) / (10 x ε₁^2)
+        Must be >= 100% to comply.
         """
         params = FrequencyControlParams(
             rated_frequency=50.0,

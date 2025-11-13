@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 内部水工建筑物使用示例
 
@@ -115,7 +116,7 @@ def example_1_weir_control():
     # 运行模拟
     print("\n运行模拟...")
     results = solver.run(
-        t_end=1800.0,  # 30分钟
+        t_end = 30.0,  # 30分钟
         dt=10.0,
         output_interval=300.0,
         verbose=True
@@ -124,7 +125,7 @@ def example_1_weir_control():
     # 检查堰流量
     print("\n堰流量统计:")
     Q_weir = internal_weir.Q_current
-    print(f"  最终流量: {Q_weir:.2f} m³/s")
+    print(f"  最终流量: {Q_weir:.2f} m^3/s")
     print(f"  上游水位: {internal_weir.h_upstream:.3f} m")
     print(f"  下游水位: {internal_weir.h_downstream:.3f} m")
     print(f"  堰顶水头: {internal_weir.h_upstream - weir.z_crest:.3f} m")
@@ -187,7 +188,7 @@ def example_2_gate_regulation():
 
     # 测试不同开度
     print("\n闸门开度调节测试:")
-    print(f"{'开度 (m)':>10} {'流量 (m³/s)':>15} {'流态':>12}")
+    print(f"{'开度 (m)':>10} {'流量 (m^3/s)':>15} {'流态':>12}")
     print("-" * 40)
 
     for opening in [0.3, 0.5, 0.8, 1.2]:
@@ -202,11 +203,11 @@ def example_2_gate_regulation():
     print(f"\n运行模拟（开度={internal_gate.get_opening():.1f}m）...")
     solver = NetworkSolver(network)
 
-    results = solver.run(t_end=1200.0, dt=10.0, verbose=False)
+    results = solver.run(t_end = 30.0, dt=10.0, verbose=False)
 
     print(f"\n模拟完成:")
     print(f"  总步数: {results['n_steps']}")
-    print(f"  最终流量: {internal_gate.Q_current:.2f} m³/s")
+    print(f"  最终流量: {internal_gate.Q_current:.2f} m^3/s")
     print(f"  质量误差: {results['mass_error_history'][-1]:.4f}%")
 
     return network, solver
@@ -254,7 +255,7 @@ def example_3_orifice_culvert():
     print("\n涵洞参数:")
     print(f"  孔口中心高程: {orifice.z_center:.1f} m")
     print(f"  直径: {orifice.D:.1f} m")
-    print(f"  过流面积: {orifice.A:.3f} m²")
+    print(f"  过流面积: {orifice.A:.3f} m^2")
     print(f"  流量系数: {orifice.C_d:.2f}")
 
     # 创建内部孔口
@@ -265,10 +266,10 @@ def example_3_orifice_culvert():
     print("\n运行模拟...")
     solver = NetworkSolver(network)
 
-    results = solver.run(t_end=600.0, dt=5.0, verbose=False)
+    results = solver.run(t_end = 30.0, dt=5.0, verbose=False)
 
     print(f"\n涵洞流量:")
-    print(f"  过流流量: {internal_orifice.Q_current:.2f} m³/s")
+    print(f"  过流流量: {internal_orifice.Q_current:.2f} m^3/s")
     print(f"  上游水位: {internal_orifice.h_upstream:.3f} m")
     print(f"  下游水位: {internal_orifice.h_downstream:.3f} m")
     print(f"  水头差: {internal_orifice.delta_h:.3f} m")
@@ -347,7 +348,7 @@ def example_4_series_gates():
     solver = NetworkSolver(network, solve_method='sequential')
 
     results = solver.run(
-        t_end=1800.0,  # 30分钟
+        t_end = 30.0,  # 30分钟
         dt=10.0,
         output_interval=600.0,
         verbose=True
@@ -355,7 +356,7 @@ def example_4_series_gates():
 
     # 分析各闸门流量
     print("\n各闸门流量:")
-    print(f"{'闸门':>8} {'开度 (m)':>12} {'流量 (m³/s)':>15}")
+    print(f"{'闸门':>8} {'开度 (m)':>12} {'流量 (m^3/s)':>15}")
     print("-" * 38)
 
     for i in range(3):
@@ -368,8 +369,8 @@ def example_4_series_gates():
     # 质量守恒
     Q_in, Q_out, error = network.check_global_mass_balance()
     print(f"\n全局质量守恒:")
-    print(f"  总入流: {Q_in:.2f} m³/s")
-    print(f"  总出流: {Q_out:.2f} m³/s")
+    print(f"  总入流: {Q_in:.2f} m^3/s")
+    print(f"  总出流: {Q_out:.2f} m^3/s")
     print(f"  误差: {error:.4f}%")
 
     return network, solver
@@ -443,13 +444,13 @@ def example_5_weir_gate_combination():
     print("\n运行模拟...")
     solver = NetworkSolver(network)
 
-    results = solver.run(t_end=1200.0, dt=10.0, verbose=False)
+    results = solver.run(t_end = 30.0, dt=10.0, verbose=False)
 
     # 对比堰和闸门流量
     print("\n建筑物流量:")
-    print(f"  堰流量: {internal_weir.Q_current:.2f} m³/s")
-    print(f"  闸流量: {internal_gate.Q_current:.2f} m³/s")
-    print(f"  差异: {abs(internal_weir.Q_current - internal_gate.Q_current):.4f} m³/s")
+    print(f"  堰流量: {internal_weir.Q_current:.2f} m^3/s")
+    print(f"  闸流量: {internal_gate.Q_current:.2f} m^3/s")
+    print(f"  差异: {abs(internal_weir.Q_current - internal_gate.Q_current):.4f} m^3/s")
 
     # 质量守恒
     max_error = max(results['mass_error_history'])
@@ -481,24 +482,24 @@ if __name__ == "__main__":
     net5, solver5 = example_5_weir_gate_combination()
 
     print("\n" + "=" * 80)
-    print("✅ 所有内部建筑物示例运行完成！")
+    print(" 所有内部建筑物示例运行完成！")
     print("=" * 80)
 
     print("\n总结:")
     print("  Stage 3 - Phase 3.3 内部水工建筑物功能:")
-    print("  1. ✅ InternalWeir - 宽顶堰/薄壁堰")
+    print("  1.  InternalWeir - 宽顶堰/薄壁堰")
     print("     - 自动计算过堰流量")
     print("     - 自由/淹没流态判断")
-    print("  2. ✅ InternalGate - 平板闸门")
+    print("  2.  InternalGate - 平板闸门")
     print("     - 可调节开度")
     print("     - 自由/淹没出流")
-    print("  3. ✅ InternalOrifice - 孔口/涵洞")
+    print("  3.  InternalOrifice - 孔口/涵洞")
     print("     - 孔流公式")
     print("     - 水头差驱动")
-    print("  4. ✅ StructureCoupler - 自动耦合")
+    print("  4.  StructureCoupler - 自动耦合")
     print("     - 自动边界条件传递")
     print("     - 质量守恒保证")
-    print("  5. ✅ Network集成")
+    print("  5.  Network集成")
     print("     - add_internal_structure()")
     print("     - 自动构建耦合器")
     print("     - 无缝集成NetworkSolver")

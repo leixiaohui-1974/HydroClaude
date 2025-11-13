@@ -21,7 +21,13 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import time
 
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.mpc_scheduler import MPCScheduler
 from solvers.gate import SluiceGate
 
@@ -62,7 +68,7 @@ def test_water_level_regulation():
     )
 
     # 初始条件：稳态流动
-    Q_initial = 5.0  # m³/s
+    Q_initial = 5.0  # m^3/s
     h_initial = 0.6  # m
     solver.h = np.ones(nx) * h_initial
     solver.hu = np.ones(nx) * Q_initial / B
@@ -174,7 +180,7 @@ def test_water_level_regulation():
     Q_downstream = Q_history[:, downstream_idx]
     ax4.plot(times, Q_downstream, 'c-', linewidth=2)
     ax4.set_xlabel('Time (s)')
-    ax4.set_ylabel('Discharge (m³/s)')
+    ax4.set_ylabel('Discharge (m^3/s)')
     ax4.set_title('Flow Rate Evolution')
     ax4.grid(True, alpha=0.3)
 
@@ -254,7 +260,7 @@ def test_flow_regulation():
         verbose=True
     )
 
-    # 设置控制目标：下游流量提升到7 m³/s（更保守的目标）
+    # 设置控制目标：下游流量提升到7 m^3/s（更保守的目标）
     target_flow = 7.0
     downstream_idx = -1
 
@@ -313,12 +319,12 @@ def test_flow_regulation():
     improvement = abs(final_flow - target_flow) < abs(initial_flow - target_flow)
 
     print(f"\n结果分析:")
-    print(f"  目标流量: {target_flow:.3f} m³/s")
-    print(f"  初始流量: {initial_flow:.3f} m³/s")
-    print(f"  最终流量: {final_flow:.3f} m³/s")
-    print(f"  绝对误差: {flow_error:.3f} m³/s ({flow_error/target_flow*100:.2f}%)")
-    print(f"  稳态误差: {steady_state_error:.3f} m³/s ({steady_state_error/target_flow*100:.2f}%)")
-    print(f"  是否改善: {'✓ 是' if improvement else '✗ 否'}")
+    print(f"  目标流量: {target_flow:.3f} m^3/s")
+    print(f"  初始流量: {initial_flow:.3f} m^3/s")
+    print(f"  最终流量: {final_flow:.3f} m^3/s")
+    print(f"  绝对误差: {flow_error:.3f} m^3/s ({flow_error/target_flow*100:.2f}%)")
+    print(f"  稳态误差: {steady_state_error:.3f} m^3/s ({steady_state_error/target_flow*100:.2f}%)")
+    print(f"  是否改善: {' 是' if improvement else ' 否'}")
 
     # 绘图
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
@@ -328,7 +334,7 @@ def test_flow_regulation():
     ax.plot(times, Q_downstream, 'b-', linewidth=2, label='实际流量')
     ax.axhline(target_flow, color='r', linestyle='--', linewidth=2, label='目标流量')
     ax.set_xlabel('Time (s)')
-    ax.set_ylabel('Downstream flow (m³/s)')
+    ax.set_ylabel('Downstream flow (m^3/s)')
     ax.set_title('Flow Rate Tracking')
     ax.legend()
     ax.grid(True, alpha=0.3)
@@ -338,7 +344,7 @@ def test_flow_regulation():
     control_times = [result['time'][i] for i in range(len(result['controls']))]
     ax.plot(control_times, Q_inflows, 'g-o', linewidth=2, markersize=4)
     ax.set_xlabel('Time (s)')
-    ax.set_ylabel('Inflow control (m³/s)')
+    ax.set_ylabel('Inflow control (m^3/s)')
     ax.set_title('Upstream Inflow Control')
     ax.grid(True, alpha=0.3)
 
@@ -369,12 +375,12 @@ def test_flow_regulation():
 
     if not test_passed:
         if not improvement:
-            print(f"\n⚠️  警告: MPC未能改善结果！可能是：")
+            print(f"\n️  警告: MPC未能改善结果！可能是：")
             print(f"      - 预测时域过短")
             print(f"      - 目标不可行")
             print(f"      - 优化器收敛失败")
         elif steady_state_error / target_flow >= 0.15:
-            print(f"\n⚠️  警告: 误差较大（>{15}%），可能需要：")
+            print(f"\n️  警告: 误差较大（>{15}%），可能需要：")
             print(f"      - 延长仿真时间")
             print(f"      - 增加预测时域")
             print(f"      - 调整控制权重")
@@ -509,9 +515,9 @@ def test_multi_objective_optimization():
     print(f"  目标1 - 中点水深: {target_depth_mid:.3f} m")
     print(f"         实际水深: {h_mid[-1]:.3f} m")
     print(f"         误差: {depth_error:.3f} m ({depth_error/target_depth_mid*100:.2f}%)")
-    print(f"  目标2 - 下游流量: {target_flow_down:.3f} m³/s")
-    print(f"         实际流量: {Q_downstream[-1]:.3f} m³/s")
-    print(f"         误差: {flow_error:.3f} m³/s ({flow_error/target_flow_down*100:.2f}%)")
+    print(f"  目标2 - 下游流量: {target_flow_down:.3f} m^3/s")
+    print(f"         实际流量: {Q_downstream[-1]:.3f} m^3/s")
+    print(f"         误差: {flow_error:.3f} m^3/s ({flow_error/target_flow_down*100:.2f}%)")
 
     # 绘图
     fig = plt.figure(figsize=(16, 10))
@@ -532,7 +538,7 @@ def test_multi_objective_optimization():
     ax2.plot(times, Q_downstream, 'g-', linewidth=2, label='实际流量')
     ax2.axhline(target_flow_down, color='r', linestyle='--', linewidth=2, label='目标')
     ax2.set_xlabel('Time (s)')
-    ax2.set_ylabel('Downstream flow (m³/s)')
+    ax2.set_ylabel('Downstream flow (m^3/s)')
     ax2.set_title('Objective 2: Flow Rate')
     ax2.legend()
     ax2.grid(True, alpha=0.3)
@@ -560,7 +566,7 @@ def test_multi_objective_optimization():
     ax5.plot(control_times, Q_inflows, 'orange', linestyle='-', marker='o',
             linewidth=2, markersize=4)
     ax5.set_xlabel('Time (s)')
-    ax5.set_ylabel('Inflow (m³/s)')
+    ax5.set_ylabel('Inflow (m^3/s)')
     ax5.set_title('Control 2: Upstream Inflow')
     ax5.grid(True, alpha=0.3)
 
@@ -576,7 +582,7 @@ def test_multi_objective_optimization():
                      linewidth=2, label='Inflow Δ', alpha=0.7)
         ax6.set_xlabel('Time (s)')
         ax6.set_ylabel('Gate change rate (m/step)', color='c')
-        ax6_twin.set_ylabel('Inflow change rate (m³/s/step)', color='orange')
+        ax6_twin.set_ylabel('Inflow change rate (m^3/s/step)', color='orange')
         ax6.set_title('Control Smoothness')
         ax6.grid(True, alpha=0.3)
 
@@ -619,9 +625,9 @@ def test_multi_objective_optimization():
 
 def main():
     """运行所有MPC测试"""
-    print("\n" + "🎯" * 40)
+    print("\n" + "" * 40)
     print("MPC 智能调度测试")
-    print("🎯" * 40)
+    print("" * 40)
 
     results = {}
 
@@ -630,11 +636,11 @@ def main():
         result1 = test_water_level_regulation()
         results['water_level'] = result1
         if result1['passed']:
-            print(f"\n✅ 测试1通过: 水位误差 {result1['error_percent']:.2f}%")
+            print(f"\n 测试1通过: 水位误差 {result1['error_percent']:.2f}%")
         else:
-            print(f"\n⚠️  测试1未达标: 水位误差 {result1['error_percent']:.2f}%")
+            print(f"\n️  测试1未达标: 水位误差 {result1['error_percent']:.2f}%")
     except Exception as e:
-        print(f"\n❌ 测试1失败: {e}")
+        print(f"\n 测试1失败: {e}")
         import traceback
         traceback.print_exc()
 
@@ -643,11 +649,11 @@ def main():
         result2 = test_flow_regulation()
         results['flow'] = result2
         if result2['passed']:
-            print(f"\n✅ 测试2通过: 流量误差 {result2['error_percent']:.2f}%")
+            print(f"\n 测试2通过: 流量误差 {result2['error_percent']:.2f}%")
         else:
-            print(f"\n⚠️  测试2未达标: 流量误差 {result2['error_percent']:.2f}%")
+            print(f"\n️  测试2未达标: 流量误差 {result2['error_percent']:.2f}%")
     except Exception as e:
-        print(f"\n❌ 测试2失败: {e}")
+        print(f"\n 测试2失败: {e}")
         import traceback
         traceback.print_exc()
 
@@ -656,13 +662,13 @@ def main():
         result3 = test_multi_objective_optimization()
         results['multi_objective'] = result3
         if result3['passed']:
-            print(f"\n✅ 测试3通过: 水深误差 {result3['depth_error_percent']:.2f}%, "
+            print(f"\n 测试3通过: 水深误差 {result3['depth_error_percent']:.2f}%, "
                   f"流量误差 {result3['flow_error_percent']:.2f}%")
         else:
-            print(f"\n⚠️  测试3未达标: 水深误差 {result3['depth_error_percent']:.2f}%, "
+            print(f"\n️  测试3未达标: 水深误差 {result3['depth_error_percent']:.2f}%, "
                   f"流量误差 {result3['flow_error_percent']:.2f}%")
     except Exception as e:
-        print(f"\n❌ 测试3失败: {e}")
+        print(f"\n 测试3失败: {e}")
         import traceback
         traceback.print_exc()
 
@@ -672,11 +678,11 @@ def main():
     print("=" * 80)
 
     print("\nMPC调度器特点：")
-    print("  ✅ 使用现有求解器作为预测模型（充分利用代码库）")
-    print("  ✅ 滚动时域优化（Receding Horizon）")
-    print("  ✅ 多目标优化（水位+流量）")
-    print("  ✅ 约束处理（闸门开度、流量限制）")
-    print("  ✅ 控制平滑性（避免剧烈变化）")
+    print("   使用现有求解器作为预测模型（充分利用代码库）")
+    print("   滚动时域优化（Receding Horizon）")
+    print("   多目标优化（水位+流量）")
+    print("   约束处理（闸门开度、流量限制）")
+    print("   控制平滑性（避免剧烈变化）")
 
     return results
 

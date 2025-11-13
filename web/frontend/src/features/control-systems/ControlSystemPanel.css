@@ -1,0 +1,368 @@
+/* Control System Panel Styles */
+
+.control-system-panel {
+  min-height: 100vh;
+  background: #f0f2f5;
+}
+
+.control-info-panel {
+  padding: 20px;
+  background: #fafafa;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+.control-info-panel .ant-typography {
+  margin-bottom: 12px;
+}
+
+/* PID/MPC Config Cards */
+.ant-card {
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+}
+
+.ant-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Slider customization */
+.ant-slider {
+  margin-bottom: 8px;
+}
+
+.ant-slider-mark-text {
+  font-size: 11px;
+  color: #8c8c8c;
+}
+
+.ant-slider-track {
+  background: linear-gradient(90deg, #1890ff, #52c41a);
+}
+
+.ant-slider-handle {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.ant-slider-handle:hover {
+  border-color: #40a9ff;
+}
+
+/* Input Number enhancements */
+.ant-input-number {
+  width: 100%;
+  border-radius: 4px;
+}
+
+.ant-input-number-focused {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* Alert styling */
+.ant-alert {
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.ant-alert-info {
+  background: #e6f7ff;
+  border: 1px solid #91d5ff;
+}
+
+.ant-alert-warning {
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
+}
+
+.ant-alert-success {
+  background: #f6ffed;
+  border: 1px solid #b7eb8f;
+}
+
+/* Divider styling */
+.ant-divider-horizontal.ant-divider-with-text-left {
+  font-weight: 600;
+  color: #262626;
+  font-size: 14px;
+}
+
+/* Switch styling */
+.ant-switch-checked {
+  background-color: #52c41a;
+}
+
+/* Tag styling */
+.ant-tag {
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+/* Statistics cards */
+.ant-statistic {
+  padding: 16px;
+}
+
+.ant-statistic-title {
+  font-size: 13px;
+  color: #8c8c8c;
+  margin-bottom: 4px;
+}
+
+.ant-statistic-content {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+/* Progress bars */
+.ant-progress-line {
+  font-size: 13px;
+}
+
+.ant-progress-success-bg,
+.ant-progress-bg {
+  border-radius: 100px;
+}
+
+/* Performance chart container */
+.performance-chart-container {
+  height: 400px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+}
+
+/* Tabs customization */
+.ant-tabs-large > .ant-tabs-nav .ant-tabs-tab {
+  font-size: 16px;
+  font-weight: 500;
+  padding: 12px 24px;
+}
+
+.ant-tabs-tab-active {
+  background: linear-gradient(180deg, #ffffff 0%, #f5f5f5 100%);
+}
+
+/* Form item labels */
+.ant-form-item-label > label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #262626;
+}
+
+.ant-form-item-label > label .anticon {
+  margin-left: 4px;
+  cursor: help;
+}
+
+/* Tooltips */
+.ant-tooltip-inner {
+  max-width: 300px;
+  font-size: 12px;
+}
+
+/* Button groups */
+.ant-space {
+  display: flex;
+  gap: 8px;
+}
+
+.ant-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  font-weight: 500;
+}
+
+.ant-btn-primary:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* Metric cards */
+.metric-card {
+  text-align: center;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s;
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.metric-value {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 12px 0;
+}
+
+.metric-label {
+  font-size: 13px;
+  color: #8c8c8c;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Performance indicators */
+.performance-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.performance-indicator-icon {
+  font-size: 24px;
+}
+
+.performance-indicator-text {
+  flex: 1;
+}
+
+.performance-indicator-value {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Loading states */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ant-card,
+.ant-alert {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Auto-tune button */
+.auto-tune-btn {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  border: none;
+  font-weight: 600;
+}
+
+.auto-tune-btn:hover {
+  background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+}
+
+/* Simulation controls */
+.simulation-controls {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
+}
+
+.simulation-controls .ant-btn-lg {
+  height: 48px;
+  padding: 0 32px;
+  font-size: 16px;
+}
+
+/* Controller comparison table */
+.controller-comparison-table {
+  margin-top: 24px;
+}
+
+.controller-comparison-table .ant-table {
+  font-size: 13px;
+}
+
+.controller-comparison-table .ant-table-thead > tr > th {
+  background: #fafafa;
+  font-weight: 600;
+  color: #262626;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .ant-col {
+    margin-bottom: 16px;
+  }
+  
+  .simulation-controls {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .ant-statistic-content {
+    font-size: 20px;
+  }
+  
+  .metric-value {
+    font-size: 24px;
+  }
+  
+  .performance-chart-container {
+    height: 300px;
+  }
+  
+  .ant-tabs-large > .ant-tabs-nav .ant-tabs-tab {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+}
+
+/* Dark mode support (future) */
+@media (prefers-color-scheme: dark) {
+  .control-system-panel {
+    background: #141414;
+  }
+  
+  .ant-card {
+    background: #1f1f1f;
+    border-color: #333;
+  }
+  
+  .control-info-panel {
+    background: #2a2a2a;
+  }
+}
+
+/* Print styles */
+@media print {
+  .ant-btn,
+  .ant-tabs-nav {
+    display: none;
+  }
+  
+  .ant-card {
+    page-break-inside: avoid;
+  }
+}
+
+

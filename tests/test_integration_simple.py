@@ -20,7 +20,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # 导入各个模块
-from solvers.water_temperature import WaterTemperatureSolver
+try:
+    from solvers.water_temperature import WaterTemperatureSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.dissolved_oxygen import DissolvedOxygenSolver
 from solvers.ice_cover import IceCoverSolver
 from solvers.nutrients import NutrientsSolver
@@ -37,7 +43,7 @@ def test_temperature_do_coupling():
     print("测试1: 水温-DO耦合")
     print("="*70)
 
-    n_cells = 20
+    n_cells = 24
     dx = 100.0
 
     # 创建模块
@@ -64,7 +70,7 @@ def test_temperature_do_coupling():
     relative_humidity = 0.6
 
     print(f"初始条件:")
-    print(f"  水温: {T_init[0]:.1f}°C")
+    print(f"  水温: {T_init[0]:.1f} degC")
     print(f"  DO: {DO_init[0]:.1f} mg/L")
 
     # 模拟3天
@@ -89,8 +95,8 @@ def test_temperature_do_coupling():
         DO_history.append(DO[n_cells//2])
 
     print(f"\n3天后:")
-    print(f"  水温: {T_init[0]:.1f} → {T_history[-1]:.1f}°C")
-    print(f"  DO: {DO_init[0]:.1f} → {DO_history[-1]:.2f} mg/L")
+    print(f"  水温: {T_init[0]:.1f} -> {T_history[-1]:.1f} degC")
+    print(f"  DO: {DO_init[0]:.1f} -> {DO_history[-1]:.2f} mg/L")
 
     # 验证：水温和DO都有合理变化（耦合存在）
     T_change = abs(T_history[-1] - T_history[0])
@@ -100,11 +106,11 @@ def test_temperature_do_coupling():
     coupling_active = T_change > 0.01 and DO_change > 0.01
 
     if coupling_active:
-        print(f"\n✅ 测试通过! 水温-DO耦合正常")
-        print(f"   温度变化: {T_change:.2f}°C, DO变化: {DO_change:.2f} mg/L")
+        print(f"\n 测试通过! 水温-DO耦合正常")
+        print(f"   温度变化: {T_change:.2f} degC, DO变化: {DO_change:.2f} mg/L")
         return True
     else:
-        print(f"\n❌ 测试失败! 耦合未激活")
+        print(f"\n 测试失败! 耦合未激活")
         return False
 
 
@@ -118,7 +124,7 @@ def test_nutrients_algae_coupling():
     print("测试2: 营养盐-藻类耦合")
     print("="*70)
 
-    n_cells = 15
+    n_cells = 18
     dx = 100.0
 
     # 创建模块
@@ -189,20 +195,20 @@ def test_nutrients_algae_coupling():
         Chla_history.append(Chla[n_cells//2])
 
     print(f"\n5天后:")
-    print(f"  NH4: {NH4_init[0]:.2f} → {NH4_history[-1]:.2f} mg/L")
-    print(f"  NO3: {NO3_init[0]:.2f} → {NO3_history[-1]:.2f} mg/L")
-    print(f"  PO4: {PO4_init[0]:.3f} → {PO4_history[-1]:.3f} mg/L")
-    print(f"  Chla: {Chla_init[0]:.1f} → {Chla_history[-1]:.1f} μg/L")
+    print(f"  NH4: {NH4_init[0]:.2f} -> {NH4_history[-1]:.2f} mg/L")
+    print(f"  NO3: {NO3_init[0]:.2f} -> {NO3_history[-1]:.2f} mg/L")
+    print(f"  PO4: {PO4_init[0]:.3f} -> {PO4_history[-1]:.3f} mg/L")
+    print(f"  Chla: {Chla_init[0]:.1f} -> {Chla_history[-1]:.1f} μg/L")
 
     # 验证：藻类生长，营养盐减少
     algae_growth = Chla_history[-1] > Chla_init[0]
     nutrients_decrease = (NH4_history[-1] + NO3_history[-1]) < (NH4_init[0] + NO3_init[0])
 
     if algae_growth and nutrients_decrease:
-        print(f"\n✅ 测试通过! 营养盐-藻类耦合正常")
+        print(f"\n 测试通过! 营养盐-藻类耦合正常")
         return True
     else:
-        print(f"\n❌ 测试失败!")
+        print(f"\n 测试失败!")
         if not algae_growth:
             print(f"  - 藻类未生长")
         if not nutrients_decrease:
@@ -220,7 +226,7 @@ def test_do_algae_coupling():
     print("测试3: DO-藻类耦合")
     print("="*70)
 
-    n_cells = 10
+    n_cells = 12
     dx = 100.0
 
     # 创建模块
@@ -284,17 +290,17 @@ def test_do_algae_coupling():
         time_history.append((step + 1))
 
     print(f"\n1天后:")
-    print(f"  DO: {DO_init[0]:.1f} → {DO_history[-1]:.2f} mg/L")
+    print(f"  DO: {DO_init[0]:.1f} -> {DO_history[-1]:.2f} mg/L")
     print(f"  DO变化: {DO_history[-1] - DO_init[0]:+.2f} mg/L")
 
     # 验证：由于高藻类，整体应产氧
     DO_net_increase = DO_history[-1] > DO_init[0]
 
     if DO_net_increase:
-        print(f"\n✅ 测试通过! DO-藻类耦合正常（藻类净产氧）")
+        print(f"\n 测试通过! DO-藻类耦合正常（藻类净产氧）")
         return True
     else:
-        print(f"\n❌ 测试失败! DO未增加")
+        print(f"\n 测试失败! DO未增加")
         return False
 
 
@@ -312,7 +318,7 @@ def run_all_tests():
     try:
         results['Temperature-DO Coupling'] = test_temperature_do_coupling()
     except Exception as e:
-        print(f"\n❌ 测试1异常: {e}")
+        print(f"\n 测试1异常: {e}")
         import traceback
         traceback.print_exc()
         results['Temperature-DO Coupling'] = False
@@ -321,7 +327,7 @@ def run_all_tests():
     try:
         results['Nutrients-Algae Coupling'] = test_nutrients_algae_coupling()
     except Exception as e:
-        print(f"\n❌ 测试2异常: {e}")
+        print(f"\n 测试2异常: {e}")
         import traceback
         traceback.print_exc()
         results['Nutrients-Algae Coupling'] = False
@@ -330,7 +336,7 @@ def run_all_tests():
     try:
         results['DO-Algae Coupling'] = test_do_algae_coupling()
     except Exception as e:
-        print(f"\n❌ 测试3异常: {e}")
+        print(f"\n 测试3异常: {e}")
         import traceback
         traceback.print_exc()
         results['DO-Algae Coupling'] = False
@@ -340,7 +346,7 @@ def run_all_tests():
     print("集成测试结果汇总")
     print("="*70)
     for test_name, passed in results.items():
-        status = "✅ PASS" if passed else "❌ FAIL"
+        status = " PASS" if passed else " FAIL"
         print(f"{test_name:30s} : {status}")
     print("="*70)
 
@@ -350,10 +356,10 @@ def run_all_tests():
     print("="*70)
 
     if n_passed == n_total:
-        print(f"\n🎉 所有集成测试通过!")
-        print(f"核心耦合关系验证成功 ✅")
+        print(f"\n 所有集成测试通过!")
+        print(f"核心耦合关系验证成功 ")
     else:
-        print(f"\n⚠️  {n_total - n_passed}个测试失败")
+        print(f"\n️  {n_total - n_passed}个测试失败")
 
     return n_passed == n_total
 

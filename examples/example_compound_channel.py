@@ -64,7 +64,7 @@ def example_1_basic_compound_channel():
     water_depths = [2.0, 3.0, 4.0, 5.0, 6.0]  # 相对于河底的水深
 
     print(f"\n水力几何要素：")
-    print(f"{'h(m)':>8} {'水位(m)':>10} {'状态':>12} {'A(m²)':>12} {'B(m)':>12} {'P(m)':>12} {'R(m)':>12}")
+    print(f"{'h(m)':>8} {'水位(m)':>10} {'状态':>12} {'A(m^2)':>12} {'B(m)':>12} {'P(m)':>12} {'R(m)':>12}")
     print("-" * 88)
 
     for h in water_depths:
@@ -113,7 +113,7 @@ def example_2_flood_stage_analysis():
 
     # 不同重现期的设计流量
     print(f"\n洪水演进分析：")
-    print(f"{'重现期':>12} {'Q(m³/s)':>12} {'h(m)':>12} {'状态':>12} "
+    print(f"{'重现期':>12} {'Q(m^3/s)':>12} {'h(m)':>12} {'状态':>12} "
           f"{'主槽Q(%)':>12} {'滩地Q(%)':>12} {'流速(m/s)':>12}")
     print("-" * 96)
 
@@ -187,7 +187,7 @@ def example_3_method_comparison():
     flow_rates = [50, 100, 150, 200, 250]
 
     print(f"\n方法对比：")
-    print(f"{'Q(m³/s)':>12} {'h_divided(m)':>15} {'h_equiv(m)':>15} "
+    print(f"{'Q(m^3/s)':>12} {'h_divided(m)':>15} {'h_equiv(m)':>15} "
           f"{'差异(m)':>12} {'差异(%)':>12} {'状态':>12}")
     print("-" * 90)
 
@@ -226,13 +226,13 @@ def example_4_flood_design():
     print("="*80)
 
     # 设计要求
-    Q_100yr = 400.0  # 百年一遇设计流量 400 m³/s
+    Q_100yr = 400.0  # 百年一遇设计流量 400 m^3/s
     freeboard = 0.5  # 安全超高 0.5 m
     v_max = 2.5      # 最大允许流速 2.5 m/s（防冲刷）
 
     print(f"\n设计标准：")
-    print(f"  百年一遇流量: Q_100 = {Q_100yr:.1f} m³/s")
-    print(f"  安全超高: Δh = {freeboard:.2f} m")
+    print(f"  百年一遇流量: Q_100 = {Q_100yr:.1f} m^3/s")
+    print(f"  安全超高: Deltah = {freeboard:.2f} m")
     print(f"  最大允许流速: v_max = {v_max:.2f} m/s")
 
     # 现有河道断面
@@ -278,19 +278,19 @@ def example_4_flood_design():
     print(f"\n设计复核：")
 
     if v_main > v_max:
-        print(f"  ✗ 主槽流速 {v_main:.2f} m/s > {v_max:.2f} m/s，需要护坡措施")
+        print(f"   主槽流速 {v_main:.2f} m/s > {v_max:.2f} m/s，需要护坡措施")
     else:
-        print(f"  ✓ 主槽流速 {v_main:.2f} m/s ≤ {v_max:.2f} m/s，满足要求")
+        print(f"   主槽流速 {v_main:.2f} m/s <= {v_max:.2f} m/s，满足要求")
 
     if levee_elevation > elevations[0]:
         delta_h = levee_elevation - elevations[0]
-        print(f"  ✗ 需加高堤防 {delta_h:.2f} m")
+        print(f"   需加高堤防 {delta_h:.2f} m")
     else:
-        print(f"  ✓ 堤防高度满足要求")
+        print(f"   堤防高度满足要求")
 
     # 分析不同重现期的安全裕度
     print(f"\n安全裕度分析：")
-    print(f"{'重现期':>12} {'Q(m³/s)':>12} {'h(m)':>12} {'水位(m)':>12} "
+    print(f"{'重现期':>12} {'Q(m^3/s)':>12} {'h(m)':>12} {'水位(m)':>12} "
           f"{'裕度(m)':>12} {'评价':>12}")
     print("-" * 84)
 
@@ -335,12 +335,12 @@ def example_5_manning_sensitivity():
     Q = 200.0  # 固定流量
 
     print(f"\n分析条件：")
-    print(f"  固定流量: Q = {Q:.1f} m³/s")
+    print(f"  固定流量: Q = {Q:.1f} m^3/s")
     print(f"  主槽Manning系数: n_main = 0.030（固定）")
     print(f"  滩地Manning系数: 变化范围 0.035-0.070")
 
     print(f"\n敏感性分析结果：")
-    print(f"{'n_flood':>12} {'h(m)':>12} {'Δh(m)':>12} {'v_main(m/s)':>15} "
+    print(f"{'n_flood':>12} {'h(m)':>12} {'Deltah(m)':>12} {'v_main(m/s)':>15} "
           f"{'v_flood(m/s)':>15} {'主槽Q(%)':>12}")
     print("-" * 90)
 
@@ -382,9 +382,9 @@ def example_5_manning_sensitivity():
               f"{v_flood_avg:>15.3f} {main_pct:>12.1f}")
 
     print("\n结论：")
-    print("  1. 滩地糙率增加 → 水深增加（阻力增大）")
-    print("  2. 滩地糙率增加 → 滩地流速降低")
-    print("  3. 滩地糙率增加 → 主槽承担更大比例的流量")
+    print("  1. 滩地糙率增加 -> 水深增加（阻力增大）")
+    print("  2. 滩地糙率增加 -> 滩地流速降低")
+    print("  3. 滩地糙率增加 -> 主槽承担更大比例的流量")
     print("  4. n_flood从0.035增至0.070，水深增加约0.2-0.3m")
     print("  5. 准确估计滩地糙率对水位预报至关重要")
 
@@ -417,7 +417,7 @@ def example_6_subdivision_details():
     h = channel.normal_depth(Q, method='divided')
 
     print(f"\n总体信息：")
-    print(f"  流量: Q = {Q:.1f} m³/s")
+    print(f"  流量: Q = {Q:.1f} m^3/s")
     print(f"  水深: h = {h:.3f} m")
     print(f"  水位: z = {channel.z_min + h:.2f} m")
     print(f"  是否漫滩: {'是' if channel.is_overbank(h) else '否'}")
@@ -426,8 +426,8 @@ def example_6_subdivision_details():
     info = channel.get_subdivision_info(h)
 
     print(f"\n分区详细信息：")
-    print(f"{'分区':>15} {'A(m²)':>12} {'P(m)':>12} {'R(m)':>12} "
-          f"{'n':>12} {'Q(m³/s)':>12} {'v(m/s)':>12}")
+    print(f"{'分区':>15} {'A(m^2)':>12} {'P(m)':>12} {'R(m)':>12} "
+          f"{'n':>12} {'Q(m^3/s)':>12} {'v(m/s)':>12}")
     print("-" * 99)
 
     zones = [
@@ -465,12 +465,12 @@ def example_6_subdivision_details():
     for zone_name, zone_key in zones:
         Q_zone = info[zone_key]['Q']
         pct = (Q_zone / Q) * 100 if Q > 0 else 0
-        print(f"  {zone_name}: {Q_zone:.2f} m³/s ({pct:.1f}%)")
+        print(f"  {zone_name}: {Q_zone:.2f} m^3/s ({pct:.1f}%)")
 
     print(f"\n验证：")
-    print(f"  各分区流量之和: {Q_total_check:.2f} m³/s")
-    print(f"  总流量: {Q:.2f} m³/s")
-    print(f"  误差: {abs(Q_total_check - Q):.4f} m³/s")
+    print(f"  各分区流量之和: {Q_total_check:.2f} m^3/s")
+    print(f"  总流量: {Q:.2f} m^3/s")
+    print(f"  误差: {abs(Q_total_check - Q):.4f} m^3/s")
 
 
 def main():

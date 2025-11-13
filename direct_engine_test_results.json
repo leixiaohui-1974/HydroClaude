@@ -1,0 +1,68 @@
+{
+  "test_time": "2025-11-12T22:58:41.951035",
+  "total": 7,
+  "passed": 2,
+  "failed": 5,
+  "success_rate": 28.57142857142857,
+  "scenarios": [
+    {
+      "name": "场景1: 基础矩形明渠流",
+      "status": "passed",
+      "duration": 2.823046,
+      "metrics": {
+        "mass_conservation_error": 0.29562543334935304,
+        "max_depth": 5.249589655353491,
+        "min_depth": 2.143403333924772,
+        "max_velocity": 4.952959177414846,
+        "max_discharge": 118.4908656077994,
+        "max_froude": 1.080135634124898,
+        "mean_depth_final": 3.8868763000480606,
+        "mean_discharge_final": 99.50918141962127,
+        "total_iterations": 11,
+        "converged": true
+      }
+    },
+    {
+      "name": "场景2: 陡坡明渠流",
+      "status": "failed",
+      "error": "Numerical instability detected at t=21.45s"
+    },
+    {
+      "name": "场景3: 缓坡宽渠道",
+      "status": "failed",
+      "error": "Numerical instability detected at t=13.94s"
+    },
+    {
+      "name": "场景4: 小流量窄渠道",
+      "status": "passed",
+      "duration": 0.039496,
+      "metrics": {
+        "mass_conservation_error": 0.03178030210140858,
+        "max_depth": 1.5,
+        "min_depth": 1.4319705272615129,
+        "max_velocity": 2.34127995689265,
+        "max_discharge": 10.446406397687818,
+        "max_froude": 0.6216437913136378,
+        "mean_depth_final": 1.4523295468478836,
+        "mean_discharge_final": 10.159315604965503,
+        "total_iterations": 11,
+        "converged": true
+      }
+    },
+    {
+      "name": "场景5: 大流量宽渠道",
+      "status": "failed",
+      "error": "Numerical instability detected at t=5.69s"
+    },
+    {
+      "name": "场景6: 极缓坡流动",
+      "status": "failed",
+      "error": "Numerical instability detected at t=38.21s"
+    },
+    {
+      "name": "场景7: 高糙率渠道",
+      "status": "failed",
+      "error": "Numerical instability detected at t=27.09s"
+    }
+  ]
+}

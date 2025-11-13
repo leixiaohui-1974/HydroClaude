@@ -13,6 +13,14 @@
 Author: HydroClaude Development Team
 Date: 2025-01
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import pytest
 import numpy as np
@@ -89,7 +97,7 @@ class TestFreeFlowCalculations:
 
         # 验证流量在合理范围
         # Q = Cd * b * H^1.5 * sqrt(2g)
-        # Q = 0.4 * 5 * 1^1.5 * sqrt(2*9.81) ≈ 8.86 m³/s
+        # Q = 0.4 * 5 * 1^1.5 * sqrt(2*9.81) ~= 8.86 m^3/s
         assert 8.0 < Q < 10.0
 
     def test_free_flow_increases_with_head(self):
@@ -188,8 +196,8 @@ class TestCriticalDepthCalculations:
         Q = 10.0
         hc = drop.compute_critical_depth(Q)
 
-        # 验证临界水深公式: hc = (q²/g)^(1/3)
-        q = Q / drop.geom.width  # = 2.0 m²/s
+        # 验证临界水深公式: hc = (q^2/g)^(1/3)
+        q = Q / drop.geom.width  # = 2.0 m^2/s
         hc_expected = (q ** 2 / drop.g) ** (1.0 / 3.0)
 
         assert abs(hc - hc_expected) < 0.001
@@ -381,7 +389,7 @@ class TestValidation:
 
         # 理论流量: Q = Cd * b * H^1.5 * sqrt(2g)
         Q_theory = 0.4 * 1.0 * (0.5 ** 1.5) * np.sqrt(2 * 9.81)
-        # Q_theory ≈ 0.628 m³/s
+        # Q_theory ~= 0.628 m^3/s
 
         assert flow_type == 'free'
         assert abs(Q - Q_theory) / Q_theory < 0.01  # 1%误差

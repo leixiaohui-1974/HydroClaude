@@ -642,7 +642,7 @@ def demo():
     viz.save_figure("demo_dashboard.png", dpi=200)
     viz.close()
 
-    print("\n✅ 演示完成！生成了4个示例图片。")
+    print("\n 演示完成！生成了4个示例图片。")
 
 
 if __name__ == "__main__":

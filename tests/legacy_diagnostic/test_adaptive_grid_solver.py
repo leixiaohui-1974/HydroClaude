@@ -15,7 +15,17 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.single_canal_solver import SingleCanalSolver
+try:
+    # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.single_canal_solver import SingleCanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 
 
@@ -88,9 +98,9 @@ def test_adaptive_grid_precision():
     print(f"  网格点数: {len(x_uniform)}")
     print(f"  平均间距: {(x_uniform[-1]-x_uniform[0])/(len(x_uniform)-1):.2f} m")
     print(f"  最大相对误差: {max_error_uniform:.4f}%")
-    print(f"  闸门1流量: {gate_flows_uniform[0]:.4f} m³/s (误差: {abs(gate_flows_uniform[0]-Q_initial)/Q_initial*100:.4f}%)")
-    print(f"  闸门2流量: {gate_flows_uniform[1]:.4f} m³/s (误差: {abs(gate_flows_uniform[1]-Q_initial)/Q_initial*100:.4f}%)")
-    print(f"  闸门3流量: {gate_flows_uniform[2]:.4f} m³/s (误差: {abs(gate_flows_uniform[2]-Q_initial)/Q_initial*100:.4f}%)")
+    print(f"  闸门1流量: {gate_flows_uniform[0]:.4f} m^3/s (误差: {abs(gate_flows_uniform[0]-Q_initial)/Q_initial*100:.4f}%)")
+    print(f"  闸门2流量: {gate_flows_uniform[1]:.4f} m^3/s (误差: {abs(gate_flows_uniform[1]-Q_initial)/Q_initial*100:.4f}%)")
+    print(f"  闸门3流量: {gate_flows_uniform[2]:.4f} m^3/s (误差: {abs(gate_flows_uniform[2]-Q_initial)/Q_initial*100:.4f}%)")
 
     # ==================== 测试2: 自适应网格 ====================
     print("\n" + "=" * 80)
@@ -105,7 +115,7 @@ def test_adaptive_grid_precision():
         S0=bed_slope,
         n=manning_n,
         use_adaptive_grid=True,  # 启用自适应网格
-        refinement_radius=200.0,  # 闸门±200m范围加密
+        refinement_radius=200.0,  # 闸门+/-200m范围加密
         dx_fine=5.0,              # 加密区5m间距
         dx_coarse=33.0            # 粗网格33m间距
     )
@@ -136,9 +146,9 @@ def test_adaptive_grid_precision():
     print(f"  网格点数: {len(x_adaptive)}")
     print(f"  间距范围: 5.0 - 33.0 m (自适应)")
     print(f"  最大相对误差: {max_error_adaptive:.4f}%")
-    print(f"  闸门1流量: {gate_flows_adaptive[0]:.4f} m³/s (误差: {abs(gate_flows_adaptive[0]-Q_initial)/Q_initial*100:.4f}%)")
-    print(f"  闸门2流量: {gate_flows_adaptive[1]:.4f} m³/s (误差: {abs(gate_flows_adaptive[1]-Q_initial)/Q_initial*100:.4f}%)")
-    print(f"  闸门3流量: {gate_flows_adaptive[2]:.4f} m³/s (误差: {abs(gate_flows_adaptive[2]-Q_initial)/Q_initial*100:.4f}%)")
+    print(f"  闸门1流量: {gate_flows_adaptive[0]:.4f} m^3/s (误差: {abs(gate_flows_adaptive[0]-Q_initial)/Q_initial*100:.4f}%)")
+    print(f"  闸门2流量: {gate_flows_adaptive[1]:.4f} m^3/s (误差: {abs(gate_flows_adaptive[1]-Q_initial)/Q_initial*100:.4f}%)")
+    print(f"  闸门3流量: {gate_flows_adaptive[2]:.4f} m^3/s (误差: {abs(gate_flows_adaptive[2]-Q_initial)/Q_initial*100:.4f}%)")
 
     # ==================== 对比分析 ====================
     print("\n" + "=" * 80)
@@ -166,9 +176,9 @@ def test_adaptive_grid_precision():
     print(f"  目标: 0.1-0.5% 精度")
     print(f"  自适应网格误差: {max_error_adaptive:.4f}%")
     if max_error_adaptive < 0.5:
-        print(f"  ✓ 达到阶段1目标！")
+        print(f"   达到阶段1目标！")
     else:
-        print(f"  ✗ 未达到阶段1目标，需要进一步优化")
+        print(f"   未达到阶段1目标，需要进一步优化")
 
     print("\n" + "=" * 80)
 

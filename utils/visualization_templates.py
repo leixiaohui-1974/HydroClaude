@@ -131,7 +131,7 @@ class VisualizationTemplates:
         if filename:
             filepath = os.path.join(self.output_dir, filename)
             fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
-            print(f"  ✓ Saved: {filepath}")
+            print(f"   Saved: {filepath}")
 
         return fig
 
@@ -213,7 +213,7 @@ class VisualizationTemplates:
         if filename:
             filepath = os.path.join(self.output_dir, filename)
             fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
-            print(f"  ✓ Saved: {filepath}")
+            print(f"   Saved: {filepath}")
 
         return fig
 
@@ -264,7 +264,7 @@ class VisualizationTemplates:
         if filename:
             filepath = os.path.join(self.output_dir, filename)
             fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
-            print(f"  ✓ Saved: {filepath}")
+            print(f"   Saved: {filepath}")
 
         return fig
 
@@ -312,7 +312,7 @@ class VisualizationTemplates:
         if filename:
             filepath = os.path.join(self.output_dir, filename)
             fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
-            print(f"  ✓ Saved: {filepath}")
+            print(f"   Saved: {filepath}")
 
         return fig
 
@@ -362,7 +362,7 @@ class VisualizationTemplates:
         if filename:
             filepath = os.path.join(self.output_dir, filename)
             fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
-            print(f"  ✓ Saved: {filepath}")
+            print(f"   Saved: {filepath}")
 
         return fig
 
@@ -512,7 +512,7 @@ class VisualizationTemplates:
             filepath = os.path.join(self.output_dir, filename)
             anim.save(filepath, writer='pillow', fps=fps, dpi=dpi)
             filesize_mb = os.path.getsize(filepath) / (1024 * 1024)
-            print(f"  ✓ Saved animation: {filepath} ({filesize_mb:.2f} MB)")
+            print(f"   Saved animation: {filepath} ({filesize_mb:.2f} MB)")
 
         return fig, anim
 
@@ -580,7 +580,7 @@ class VisualizationTemplates:
         if filename:
             filepath = os.path.join(self.output_dir, filename)
             fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
-            print(f"  ✓ Saved: {filepath}")
+            print(f"   Saved: {filepath}")
 
         return fig
 
@@ -639,7 +639,7 @@ class VisualizationTemplates:
         if filename:
             filepath = os.path.join(self.output_dir, filename)
             fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
-            print(f"  ✓ Saved: {filepath}")
+            print(f"   Saved: {filepath}")
 
         return fig
 
@@ -704,7 +704,7 @@ class VisualizationTemplates:
         if filename:
             filepath = os.path.join(self.output_dir, filename)
             fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
-            print(f"  ✓ Saved: {filepath}")
+            print(f"   Saved: {filepath}")
 
         return fig
 
@@ -764,7 +764,7 @@ class VisualizationTemplates:
         if filename:
             filepath = os.path.join(self.output_dir, filename)
             fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
-            print(f"  ✓ Saved: {filepath}")
+            print(f"   Saved: {filepath}")
 
         return fig
 
@@ -819,7 +819,7 @@ class VisualizationTemplates:
         if filename:
             filepath = os.path.join(self.output_dir, filename)
             fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
-            print(f"  ✓ Saved: {filepath}")
+            print(f"   Saved: {filepath}")
 
         return fig
 
@@ -902,7 +902,7 @@ class VisualizationTemplates:
         if filename:
             filepath = os.path.join(self.output_dir, filename)
             fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
-            print(f"  ✓ Saved: {filepath}")
+            print(f"   Saved: {filepath}")
 
         return fig
 
@@ -959,7 +959,7 @@ class VisualizationTemplates:
         if filename:
             filepath = os.path.join(self.output_dir, filename)
             fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
-            print(f"  ✓ Saved: {filepath}")
+            print(f"   Saved: {filepath}")
 
         return fig
 
@@ -1016,7 +1016,7 @@ class VisualizationTemplates:
         if filename:
             filepath = os.path.join(self.output_dir, filename)
             fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
-            print(f"  ✓ Saved: {filepath}")
+            print(f"   Saved: {filepath}")
 
         return fig
 
@@ -1067,7 +1067,7 @@ class VisualizationTemplates:
         if filename:
             filepath = os.path.join(self.output_dir, filename)
             fig.savefig(filepath, dpi=self.dpi, bbox_inches='tight')
-            print(f"  ✓ Saved: {filepath}")
+            print(f"   Saved: {filepath}")
 
         return fig
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 泵站提水灌溉示例
 
@@ -7,7 +8,7 @@
 3. 能耗计算
 
 拓扑结构:
-[水源] → [进水渠] → [泵站] → [出水渠] → [高位池]
+[水源] -> [进水渠] -> [泵站] -> [出水渠] -> [高位池]
 
 Stage 3 - Task 3.3.3 Example
 
@@ -74,7 +75,7 @@ def build_pumping_system():
     # 水源（低位）
     water_source = create_inflow_boundary(
         "水源",
-        Q=80.0,  # 80 m³/s
+        Q=80.0,  # 80 m^3/s
         elevation=50.0
     )
     network.add_node(water_source)
@@ -84,10 +85,10 @@ def build_pumping_system():
         "提水泵站",
         elevation=50.0,  # 与水源同高程
         n_pumps=3,  # 3台泵
-        pump_rated_flow=30.0,  # 单泵30 m³/s
+        pump_rated_flow=30.0,  # 单泵30 m^3/s
         pump_rated_head=80.0,  # 单泵扬程80m
         control_mode='constant_flow',
-        target_flow=70.0,  # 目标70 m³/s
+        target_flow=70.0,  # 目标70 m^3/s
         x=1000.0
     )
     network.add_node(pump_station)
@@ -109,7 +110,7 @@ def build_pumping_system():
     # ========== 河段 ==========
     print("\n[2] 添加河段...")
 
-    # 进水渠: 水源 → 泵站
+    # 进水渠: 水源 -> 泵站
     inlet_reach = Reach(
         "进水渠",
         "水源",
@@ -118,7 +119,7 @@ def build_pumping_system():
     )
     network.add_reach(inlet_reach)
 
-    # 出水渠: 泵站 → 高位池
+    # 出水渠: 泵站 -> 高位池
     outlet_reach = Reach(
         "出水渠",
         "提水泵站",
@@ -133,10 +134,10 @@ def build_pumping_system():
     print("\n[3] 泵站配置:")
     print(f"  泵数量: {len(pump_station.pumps)}")
     print(f"  控制模式: {pump_station.control_mode}")
-    print(f"  目标流量: {pump_station.target_flow:.1f} m³/s")
+    print(f"  目标流量: {pump_station.target_flow:.1f} m^3/s")
 
     for i, pump in enumerate(pump_station.pumps):
-        print(f"    泵{i+1}: 额定流量={pump.rated_flow:.1f} m³/s, "
+        print(f"    泵{i+1}: 额定流量={pump.rated_flow:.1f} m^3/s, "
               f"额定扬程={pump.rated_head:.1f} m, "
               f"最大效率={pump.eta_max*100:.1f}%")
 
@@ -154,7 +155,7 @@ def scenario_1_normal_pumping(network, pump_station):
     print("场景1: 正常提水运行")
     print("=" * 80)
 
-    print(f"目标流量: {pump_station.target_flow:.1f} m³/s")
+    print(f"目标流量: {pump_station.target_flow:.1f} m^3/s")
 
     # 创建求解器
     solver = NetworkSolver(network, solve_method='sequential')
@@ -162,7 +163,7 @@ def scenario_1_normal_pumping(network, pump_station):
     # 运行模拟
     print("\n运行模拟 (30分钟)...")
     results = solver.run(
-        t_end=1800.0,
+        t_end = 30.0,
         dt=10.0,
         output_interval=600.0,
         verbose=True
@@ -185,14 +186,14 @@ def analyze_pumping_results(network, pump_station, results):
     Q_in, Q_out, mass_error = network.check_global_mass_balance()
 
     print(f"\n[2] 流量平衡")
-    print(f"  进水流量: {Q_in:.2f} m³/s")
-    print(f"  出水流量: {Q_out:.2f} m³/s")
+    print(f"  进水流量: {Q_in:.2f} m^3/s")
+    print(f"  出水流量: {Q_out:.2f} m^3/s")
     print(f"  误差: {mass_error:.4f}%")
 
     if mass_error < 5.0:
-        print(f"  ✅ 良好")
+        print(f"   良好")
     else:
-        print(f"  ⚠️  需改进")
+        print(f"    需改进")
 
     # 3. 能耗统计
     print(f"\n[3] 能耗统计")
@@ -206,10 +207,10 @@ def analyze_pumping_results(network, pump_station, results):
     print(f"  估算电费: {cost:.2f} 元")
 
     # 单位水量能耗
-    total_water = Q_out * pump_station.operating_hours * 3600  # m³
+    total_water = Q_out * pump_station.operating_hours * 3600  # m^3
     if total_water > 0:
-        energy_per_m3 = pump_station.total_energy / (total_water / 1000)  # kWh/千m³
-        print(f"  单位水量能耗: {energy_per_m3:.4f} kWh/千m³")
+        energy_per_m3 = pump_station.total_energy / (total_water / 1000)  # kWh/千m^3
+        print(f"  单位水量能耗: {energy_per_m3:.4f} kWh/千m^3")
 
     # 4. 计算性能
     print(f"\n[4] 计算性能")
@@ -220,12 +221,12 @@ def analyze_pumping_results(network, pump_station, results):
 def scenario_2_reduced_demand(network, pump_station):
     """场景2: 减少用水需求"""
     print("\n" + "=" * 80)
-    print("场景2: 减少用水需求（目标流量50 m³/s）")
+    print("场景2: 减少用水需求（目标流量50 m^3/s）")
     print("=" * 80)
 
     # 调整目标流量
     pump_station.target_flow = 50.0
-    print(f"调整目标流量: 70 m³/s → 50 m³/s")
+    print(f"调整目标流量: 70 m^3/s -> 50 m^3/s")
 
     # 重置能耗统计
     pump_station.total_energy = 0.0
@@ -235,7 +236,7 @@ def scenario_2_reduced_demand(network, pump_station):
     solver = NetworkSolver(network, solve_method='sequential')
 
     results = solver.run(
-        t_end=1800.0,
+        t_end = 30.0,
         dt=10.0,
         verbose=False
     )
@@ -272,7 +273,7 @@ def main():
     pump_station.operating_hours = 0.0
 
     solver1 = NetworkSolver(network)
-    results1_new = solver1.run(t_end=1800.0, dt=10.0, verbose=False)
+    results1_new = solver1.run(t_end = 30.0, dt=10.0, verbose=False)
     energy1 = pump_station.total_energy
 
     pump_station.target_flow = 50.0
@@ -280,11 +281,11 @@ def main():
     pump_station.operating_hours = 0.0
 
     solver2 = NetworkSolver(network)
-    results2_new = solver2.run(t_end=1800.0, dt=10.0, verbose=False)
+    results2_new = solver2.run(t_end = 30.0, dt=10.0, verbose=False)
     energy2 = pump_station.total_energy
 
-    print(f"\n  场景1 (70 m³/s): 能耗 {energy1:.2f} kWh")
-    print(f"  场景2 (50 m³/s): 能耗 {energy2:.2f} kWh")
+    print(f"\n  场景1 (70 m^3/s): 能耗 {energy1:.2f} kWh")
+    print(f"  场景2 (50 m^3/s): 能耗 {energy2:.2f} kWh")
     print(f"  节能比例: {(energy1-energy2)/energy1*100:.1f}%")
 
     # 5. 总结
@@ -292,12 +293,12 @@ def main():
     print("示例完成")
     print("=" * 80)
     print("\n主要功能演示:")
-    print("  ✅ 泵站节点 (PumpStationNode)")
-    print("  ✅ 多泵并联运行")
-    print("  ✅ 定流量控制策略")
-    print("  ✅ 提升水位（50m → 120m）")
-    print("  ✅ 功率和效率计算")
-    print("  ✅ 能耗统计")
+    print("   泵站节点 (PumpStationNode)")
+    print("   多泵并联运行")
+    print("   定流量控制策略")
+    print("   提升水位（50m -> 120m）")
+    print("   功率和效率计算")
+    print("   能耗统计")
 
     print("\n应用价值:")
     print("  - 提水灌溉系统设计")

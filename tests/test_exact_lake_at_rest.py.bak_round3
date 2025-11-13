@@ -1,0 +1,304 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+精确Riemann求解器Lake at Rest测试
+
+Purpose:
+    验证精确求解器在Well-Balanced格式下是否达到机器精度
+
+Expected:
+    精确求解器 + Well-Balanced应该达到机器精度 (~1e-12m)
+    HLL + Well-Balanced: ~0.8m (Phase 9.1结果)
+    HLLC + Well-Balanced: ~2m (Phase 9.2结果)
+
+这个测试是Phase 9.3的关键验证,证明精确求解器的零耗散特性
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+
+
+def test_lake_at_rest_exact(
+    n_cells=100,
+    t_final=100.0,
+    hump_amplitude=2.0,
+    make_plot=True
+):
+    """
+    Lake at Rest测试 - 精确求解器
+
+    Configuration:
+        - 域: 100m
+        - 底部: Gaussian隆起 (高度2m, 中心50m, 宽度10m)
+        - 初始: 静水, 水面高程η=10m
+        - 边界: Wall (封闭)
+        - 运行: 100s
+
+    Expected:
+        - 精确求解器: 水面扰动 < 1e-10m (机器精度)
+        - HLL: 水面扰动 ~0.8m
+        - HLLC: 水面扰动 ~2m
+    """
+
+    print("="*70)
+    print("Lake at Rest测试 - 精确Riemann求解器")
+    print("="*70)
+    print()
+
+    # 配置
+    length = 100.0
+    width = 10.0
+    dx = length / n_cells
+
+    print(f"配置:")
+    print(f"  域: {length}m")
+    print(f"  单元数: {n_cells} (dx={dx:.2f}m)")
+    print(f"  时间: {t_final}s")
+    print(f"  隆起高度: {hump_amplitude}m")
+    print()
+
+    # 底部地形: Gaussian隆起
+    x = np.linspace(0.5*dx, length - 0.5*dx, n_cells)
+    z_b = hump_amplitude * np.exp(-((x - 50.0) / 10.0)**2)
+
+    # 初始条件: 静水, 水面高程10m
+    eta_0 = 10.0
+    h_init = eta_0 - z_b
+    Q_init = np.zeros(n_cells)
+
+    # 边界条件: Wall (封闭)
+    bc_left = {'type': 'wall'}
+    bc_right = {'type': 'wall'}
+
+    # 创建精确求解器
+    print("[1/2] 创建精确求解器...")
+    solver = GodunvFVMSolver(
+        width=width,
+        length=length,
+        n_cells=n_cells,
+        manning_n=0.0,       # 无摩擦
+        z_b=z_b,             # 变底高程
+        cfl=0.5,
+        order=2,
+        use_numba=True,
+        riemann_solver='exact',  # 精确求解器
+        well_balanced=True,      # Well-Balanced格式
+        slope=None  # z_b直接提供
+    )
+
+    solver.initialize(h_init, Q_init, bc_left, bc_right)
+
+    # 记录初始状态
+    mass_init = np.sum(solver.h * solver.dx * solver.B)
+    eta_init = solver.h + solver.z_b
+    max_eta_init = np.max(eta_init)
+    min_eta_init = np.min(eta_init)
+
+    print(f"  初始质量: {mass_init:.6f} m³")
+    print(f"  初始水面高程: η ∈ [{min_eta_init:.6f}, {max_eta_init:.6f}]m")
+    print()
+
+    # 运行模拟
+    print(f"[2/2] 运行{t_final}s模拟...")
+
+    step_count = 0
+    while solver.t < t_final:
+        solver.step()
+        step_count += 1
+
+        # 检查NaN
+        if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
+            print(f"   在t={solver.t:.2f}s出现NaN!")
+            return False
+
+        # 进度报告
+        if step_count % 50 == 0:
+            eta = solver.h + solver.z_b
+            max_disturbance = np.max(np.abs(eta - eta_0))
+            print(f"  步骤{step_count}: t={solver.t:.2f}s, max|η-η₀|={max_disturbance:.3e}m")
+
+    print(f"   模拟完成")
+    print(f"  总步数: {step_count}")
+    print()
+
+    # 最终分析
+    mass_final = np.sum(solver.h * solver.dx * solver.B)
+    mass_error = abs(mass_final - mass_init) / mass_init * 100
+
+    eta_final = solver.h + solver.z_b
+    max_eta_final = np.max(eta_final)
+    min_eta_final = np.min(eta_final)
+
+    max_disturbance = np.max(np.abs(eta_final - eta_0))
+    rms_disturbance = np.sqrt(np.mean((eta_final - eta_0)**2))
+
+    print("="*70)
+    print("结果分析")
+    print("="*70)
+    print()
+
+    print(f"质量守恒:")
+    print(f"  初始质量: {mass_init:.6f} m³")
+    print(f"  最终质量: {mass_final:.6f} m³")
+    print(f"  误差: {mass_error:.6f}%")
+
+    if mass_error < 0.01:
+        print(f"   质量守恒优秀 (< 0.01%)")
+    elif mass_error < 0.1:
+        print(f"   质量守恒良好 (< 0.1%)")
+    else:
+        print(f"  ️  质量守恒误差较大")
+
+    print()
+
+    print(f"水面扰动:")
+    print(f"  初始: η ∈ [{min_eta_init:.6f}, {max_eta_init:.6f}]m")
+    print(f"  最终: η ∈ [{min_eta_final:.6f}, {max_eta_final:.6f}]m")
+    print(f"  Max |η-η₀|: {max_disturbance:.6e} m")
+    print(f"  RMS(η-η₀): {rms_disturbance:.6e} m")
+    print()
+
+    # 评估精度
+    if max_disturbance < 1e-10:
+        print("="*70)
+        print(" 机器精度达成! ")
+        print("="*70)
+        print(f"扰动 < 1e-10m: 精确求解器达到理论极限精度!")
+        status = "MACHINE_PRECISION"
+    elif max_disturbance < 1e-6:
+        print("="*70)
+        print(" 超高精度! ")
+        print("="*70)
+        print(f"扰动 < 1µm: 精确求解器表现优异")
+        status = "EXCELLENT"
+    elif max_disturbance < 0.1:
+        print("="*70)
+        print(" 高精度")
+        print("="*70)
+        print(f"扰动 < 0.1m: 精确求解器精度良好")
+        status = "GOOD"
+    elif max_disturbance < 1.0:
+        print("="*70)
+        print("️  中等精度")
+        print("="*70)
+        print(f"扰动 ~{max_disturbance:.2f}m: 精度可接受但未达预期")
+        status = "MODERATE"
+    else:
+        print("="*70)
+        print(" 精度不足")
+        print("="*70)
+        print(f"扰动 ~{max_disturbance:.2f}m: 未能保持Lake at Rest")
+        status = "POOR"
+
+    print()
+
+    # 对比Phase 9.1和9.2结果
+    print("对比其他求解器:")
+    print(f"  HLL (Phase 9.1):  Max扰动 ~0.82m")
+    print(f"  HLLC (Phase 9.2): Max扰动 ~1.98m")
+    print(f"  精确 (Phase 9.3): Max扰动 {max_disturbance:.3e}m")
+    print()
+
+    if max_disturbance < 1e-6:
+        improvement_vs_hll = 0.82 / max_disturbance
+        print(f"   精确求解器比HLL精度提升: {improvement_vs_hll:.0e}倍!")
+
+    print()
+
+    # 可视化
+    if make_plot:
+        print("创建可视化...")
+        fig, axes = plt.subplots(3, 1, figsize=(12, 10))
+
+        # 1. 水面高程
+        ax1 = axes[0]
+        ax1.plot(x, eta_final, 'b-', linewidth=2, label='最终水面')
+        ax1.axhline(eta_0, color='gray', linestyle='--', label=f'理想水面 (η={eta_0}m)')
+        ax1.plot(x, z_b, 'brown', linewidth=1.5, label='底部')
+        ax1.fill_between(x, 0, z_b, color='brown', alpha=0.3)
+        ax1.set_ylabel('高程 (m)', fontsize=12)
+        ax1.set_title(f'Lake at Rest - 精确求解器 (t={t_final}s)', fontsize=14, weight='bold')
+        ax1.legend(loc='upper right')
+        ax1.grid(True, alpha=0.3)
+
+        # 2. 水面扰动 (放大显示)
+        ax2 = axes[1]
+        disturbance = eta_final - eta_0
+        ax2.plot(x, disturbance, 'r-', linewidth=2)
+        ax2.axhline(0, color='gray', linestyle='--')
+        ax2.set_ylabel('η - η₀ (m)', fontsize=12)
+        ax2.set_title(f'水面扰动 (Max={max_disturbance:.3e}m)', fontsize=12)
+        ax2.grid(True, alpha=0.3)
+
+        # 3. 流速
+        ax3 = axes[2]
+        u = solver.Q / (solver.h * solver.B + 1e-10)
+        ax3.plot(x, u, 'g-', linewidth=2)
+        ax3.axhline(0, color='gray', linestyle='--')
+        ax3.set_xlabel('位置 (m)', fontsize=12)
+        ax3.set_ylabel('流速 u (m/s)', fontsize=12)
+        ax3.set_title('流速分布', fontsize=12)
+        ax3.grid(True, alpha=0.3)
+
+        plt.tight_layout()
+
+        # 保存
+        output_dir = 'test_results'
+        os.makedirs(output_dir, exist_ok=True)
+        output_file = os.path.join(output_dir, 'exact_lake_at_rest.png')
+        plt.savefig(output_file, dpi=150, bbox_inches='tight')
+        print(f"  保存: {output_file}")
+        print()
+
+    print("="*70)
+    print()
+
+    return {
+        'status': status,
+        'max_disturbance': max_disturbance,
+        'rms_disturbance': rms_disturbance,
+        'mass_error': mass_error
+    }
+
+
+if __name__ == '__main__':
+    print("\n")
+
+    # 运行测试
+    result = test_lake_at_rest_exact(
+        n_cells=100,
+        t_final=100.0,
+        hump_amplitude=2.0,
+        make_plot=True
+    )
+
+    # 判断测试结果
+    print("\n")
+    print("="*70)
+    if result['status'] in ['MACHINE_PRECISION', 'EXCELLENT']:
+        print(" Phase 9.3精确Riemann求解器测试通过!")
+        print(f"   达到{result['status']}精度")
+        exit_code = 0
+    elif result['status'] == 'GOOD':
+        print(" 测试通过 (精度良好)")
+        exit_code = 0
+    else:
+        print(" 测试未达预期精度")
+        exit_code = 1
+
+    print("="*70)
+    print()
+
+    sys.exit(exit_code)

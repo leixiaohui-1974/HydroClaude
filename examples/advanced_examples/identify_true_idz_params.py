@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 从SimplifiedCanalSimulator辨识真实IDZ参数
 
@@ -8,7 +9,9 @@
 """
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 import sys
 import os
 
@@ -38,7 +41,7 @@ class SimplifiedCanalSimulator:
 
         # 状态
         self.h = 2.5     # 当前上游水位 (m)，略高于下游
-        self.Q_in = 20.0  # 上游流量 (m³/s)
+        self.Q_in = 20.0  # 上游流量 (m^3/s)
 
     def reset(self):
         """重置模拟器"""
@@ -125,7 +128,7 @@ for step in range(50):  # 100s
 
 # 阶段2：阶跃扰动 (100-400s)
 print("\n阶段2：闸门开度阶跃 (100-400s)")
-print("  u: 2.0m → 3.0m (增大开度 → 水位下降)")
+print("  u: 2.0m -> 3.0m (增大开度 -> 水位下降)")
 u = 3.0  # 阶跃增大
 for step in range(50, 200):  # 100-400s
     t = step * dt
@@ -147,7 +150,7 @@ for step in range(50, 200):  # 100-400s
 
 # 阶段3：反向阶跃 (400-700s)
 print("\n阶段3：反向阶跃 (400-700s)")
-print("  u: 3.0m → 1.5m (减小开度 → 水位上升)")
+print("  u: 3.0m -> 1.5m (减小开度 -> 水位上升)")
 u = 1.5
 for step in range(200, 350):  # 400-700s
     t = step * dt
@@ -183,9 +186,9 @@ if final_params:
 
     print(f"\n物理解释：")
     if final_params.K < 0:
-        print(f"  ✓ K < 0：确认反向作用（u↑ → h↓）")
+        print(f"   K < 0：确认反向作用（u↑ -> h↓）")
     else:
-        print(f"  ✗ K > 0：不符合预期（应为负）")
+        print(f"   K > 0：不符合预期（应为负）")
 
     print(f"\n与经验值对比：")
     print(f"  K:     {final_params.K:.1f} vs 经验值-100 (差{abs(final_params.K + 100):.1f})")
@@ -201,7 +204,7 @@ if final_params:
     print(f"      theta={final_params.theta:.1f}")
     print(f"  )")
 else:
-    print("\n❌ 辨识失败！")
+    print("\n 辨识失败！")
 
 # 绘图
 print("\n生成辨识过程可视化...")
@@ -236,8 +239,8 @@ ax3.grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('idz_identification_result.png', dpi=150, bbox_inches='tight')
-print("✅ 图片已保存: idz_identification_result.png")
+print(" 图片已保存: idz_identification_result.png")
 
-plt.show()
+# plt.show()  # Disabled for automated testing
 
 print("\n" + "=" * 80)

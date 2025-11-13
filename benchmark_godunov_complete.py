@@ -83,7 +83,7 @@ for n_cells in grid_sizes:
 print(f"\n结论:")
 print(f"  - 粗网格(50格): 最快 ({results_efficiency[0]['time']:.2f}s)")
 print(f"  - 细网格(400格): 最慢 ({results_efficiency[3]['time']:.2f}s)")
-print(f"  - 质量误差: 所有网格<1% ✅")
+print(f"  - 质量误差: 所有网格<1% ")
 print(f"  - 推荐: n_cells=100 (dx=10m, 平衡精度和速度)")
 
 # ========== 基准2: 收敛性分析 ==========
@@ -169,9 +169,9 @@ for n_cells in grid_sizes_dam:
 
 print(f"\n收敛趋势:")
 if results_convergence[-1]['rmse_pct'] < results_convergence[0]['rmse_pct']:
-    print(f"  ✅ RMSE随网格加密降低（收敛）")
+    print(f"   RMSE随网格加密降低（收敛）")
 else:
-    print(f"  ⚠️ RMSE未明显降低（耗散主导）")
+    print(f"  ️ RMSE未明显降低（耗散主导）")
 
 # ========== 基准3: 长时间质量守恒 ==========
 print("\n" + "="*80)
@@ -210,9 +210,9 @@ state_long = solver_long.get_state()
 
 print(f"\n长时间稳定性:")
 if abs(state_long['mass_error']) < 1.0:
-    print(f"  ✅ 质量误差保持<1% ({state_long['mass_error']:.6f}%)")
+    print(f"   质量误差保持<1% ({state_long['mass_error']:.6f}%)")
 else:
-    print(f"  ❌ 质量误差累积>1%")
+    print(f"   质量误差累积>1%")
 
 # ========== 基准4: vs HydrostaticSolver ==========
 print("\n" + "="*80)
@@ -279,16 +279,16 @@ if result_hydrostatic['converged']:
 
 # ========== 总结 ==========
 print("\n" + "="*80)
-print("🚀 性能基准测试完成！")
+print(" 性能基准测试完成！")
 print("="*80)
 
 print(f"\n关键发现:")
-print(f"  1. ✅ 网格100格最优（平衡精度和速度）")
-print(f"  2. ✅ 长时间质量守恒稳定（10000s误差<1%）")
-print(f"  3. ✅ 网格加密提高精度（收敛性良好）")
-print(f"  4. ✅ 计算效率优秀（1000s/3s）")
-print(f"  5. ✅ 稳态流可用HydrostaticSolver（更快）")
-print(f"  6. ✅ 非恒定流必须用Godunov-FVM")
+print(f"  1.  网格100格最优（平衡精度和速度）")
+print(f"  2.  长时间质量守恒稳定（10000s误差<1%）")
+print(f"  3.  网格加密提高精度（收敛性良好）")
+print(f"  4.  计算效率优秀（1000s/3s）")
+print(f"  5.  稳态流可用HydrostaticSolver（更快）")
+print(f"  6.  非恒定流必须用Godunov-FVM")
 
 print(f"\n推荐配置:")
 print(f"  - 通用工程: n_cells=100, cfl=0.5, order=1")

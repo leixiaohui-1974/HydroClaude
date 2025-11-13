@@ -1,0 +1,408 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+MacDonald Test 4 - WENO3求解器测试
+
+目标: 用WENO3 shock-capturing方法修复Test 4（水跃问题）
+
+测试内容:
+1. WENO3 + 线性初始条件
+2. WENO3 + 预形成水跃
+3. 质量守恒验证
+4. 超临界区域维持验证
+
+日期: 2025-10-29
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+
+import numpy as np
+import pytest
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+
+
+class TestMacDonald4WENO3:
+    """MacDonald Test 4 with WENO3"""
+
+    def setup_method(self):
+        """每个测试前的设置"""
+        # 通用参数
+        self.L = 2000.0
+        self.B = 10.0
+        self.n_cells = 200
+        self.manning_n = 0.03
+        self.S0 = 0.0
+        self.g = 9.81
+
+        # 边界条件
+        self.Q = 20.0
+        self.h_up = 0.7  # 上游超临界
+        self.h_down = 2.8  # 下游深水
+
+        # 计算上游Froude数
+        A_up = self.h_up * self.B
+        u_up = self.Q / A_up
+        Fr_up = u_up / np.sqrt(self.g * self.h_up)
+
+        print(f"\nTest 4 Setup:")
+        print(f"  上游: h={self.h_up}m, Q={self.Q}m³/s, Fr={Fr_up:.3f}")
+        print(f"  下游: h={self.h_down}m")
+
+    def test_weno3_linear_init(self):
+        """
+        测试1: WENO3 + 线性初始条件
+
+        这是Test 4的原始配置，测试WENO3能否改善质量守恒
+        """
+        print("\n" + "="*70)
+        print("Test 1: WENO3 + 线性初始条件")
+        print("="*70)
+
+        # 创建WENO3求解器
+        solver = GodunvFVMWENO3(
+            width=self.B,
+            length=self.L,
+            n_cells=self.n_cells,
+            manning_n=self.manning_n,
+            slope=self.S0,
+            g=self.g,
+            cfl=0.4,  # 更保守的CFL
+            eps_dry=1e-6,
+            weno_epsilon=1e-6
+        )
+
+        # 线性插值初始条件
+        h_init = np.linspace(self.h_up, self.h_down, self.n_cells)
+        Q_init = np.ones(self.n_cells) * self.Q
+
+        # 边界条件（超临界入口）
+        bc_left = {
+            'type': 'supercritical',
+            'h': self.h_up,
+            'Q': self.Q
+        }
+        bc_right = {
+            'type': 'fixed_h',
+            'h': self.h_down
+        }
+
+        solver.initialize(h_init, Q_init, bc_left, bc_right)
+
+        # 记录初始质量
+        mass_init = solver._compute_total_mass()
+
+        # 运行模拟
+        t_end = 100.0
+        diagnostics = []
+
+        print(f"\n运行模拟到 t={t_end}s...")
+
+        while solver.t < t_end:
+            solver.step()
+
+            # 每10秒记录一次
+            if solver.t >= len(diagnostics) * 10 and len(diagnostics) < 11:
+                diag = solver.get_diagnostics()
+                diagnostics.append(diag)
+
+                # 计算当前超临界区域大小
+                h_safe = np.maximum(solver.h, solver.eps_dry)
+                A = h_safe * solver.B
+                u = solver.Q / A
+                Fr = np.abs(u) / np.sqrt(solver.g * h_safe)
+                n_supercritical = np.sum(Fr > 1.0)
+
+                print(f"  t={solver.t:.1f}s: "
+                      f"Fr[0]={Fr[0]:.4f}, "
+                      f"超临界单元={n_supercritical}/{self.n_cells}, "
+                      f"质量误差={diag['mass_error']:.2f}%")
+
+        # 最终结果
+        mass_final = solver._compute_total_mass()
+        mass_error = abs(mass_final - mass_init) / mass_init * 100
+
+        print(f"\n最终结果:")
+        print(f"  质量误差: {mass_error:.2f}%")
+
+        # 验证上游超临界条件维持
+        h_safe = np.maximum(solver.h, solver.eps_dry)
+        A = h_safe * solver.B
+        u = solver.Q / A
+        Fr = np.abs(u) / np.sqrt(solver.g * h_safe)
+
+        Fr_upstream = Fr[0]
+        n_supercritical = np.sum(Fr > 1.0)
+
+        print(f"  上游Froude数: {Fr_upstream:.4f}")
+        print(f"  超临界单元: {n_supercritical}/{self.n_cells}")
+
+        # 断言: WENO3应该显著改善质量守恒
+        # 原方法: 55% 误差
+        # 期望: < 20% 误差（激波问题本质困难）
+        print(f"\n评估:")
+        if mass_error < 20.0:
+            print(f"   质量守恒改善: {mass_error:.2f}% < 20%")
+            status_mass = "PASS"
+        elif mass_error < 40.0:
+            print(f"  ️  质量守恒中等: {mass_error:.2f}% < 40%")
+            status_mass = "ACCEPTABLE"
+        else:
+            print(f"   质量守恒仍差: {mass_error:.2f}%")
+            status_mass = "FAIL"
+
+        if Fr_upstream > 1.0:
+            print(f"   上游超临界维持: Fr={Fr_upstream:.3f} > 1")
+            status_Fr = "PASS"
+        else:
+            print(f"   上游超临界失败: Fr={Fr_upstream:.3f} < 1")
+            status_Fr = "FAIL"
+
+        print(f"\n总体状态: {status_mass} / {status_Fr}")
+
+        # 宽松断言（WENO3可能仍不完美，但应有改善）
+        assert mass_error < 50.0, f"质量守恒误差过大: {mass_error:.2f}% (WENO3应<50%)"
+        assert Fr_upstream > 0.9, f"上游超临界丢失: Fr={Fr_upstream:.3f}"
+
+    def test_weno3_preformed_jump(self):
+        """
+        测试2: WENO3 + 预形成水跃初始条件
+
+        测试WENO3能否维持预形成的激波结构
+        """
+        print("\n" + "="*70)
+        print("Test 2: WENO3 + 预形成水跃")
+        print("="*70)
+
+        # 创建WENO3求解器
+        solver = GodunvFVMWENO3(
+            width=self.B,
+            length=self.L,
+            n_cells=self.n_cells,
+            manning_n=self.manning_n,
+            slope=self.S0,
+            g=self.g,
+            cfl=0.4,
+            eps_dry=1e-6,
+            weno_epsilon=1e-6
+        )
+
+        # 预形成水跃初始条件
+        # 前半段: 超临界区 (h=0.7m)
+        # 水跃位置: x=1000m
+        # 后半段: 从理论水跃后水深过渡到边界水深
+
+        # Belanger方程计算水跃后水深
+        Fr1 = self.Q / (self.h_up * self.B) / np.sqrt(self.g * self.h_up)
+        h2_theory = self.h_up / 2 * (-1 + np.sqrt(1 + 8 * Fr1**2))
+
+        print(f"  理论水跃后水深: {h2_theory:.3f}m")
+        print(f"  下游边界水深: {self.h_down}m")
+        print(f"  差异: {abs(self.h_down - h2_theory):.3f}m ({abs(self.h_down/h2_theory - 1)*100:.1f}%)")
+
+        x = np.linspace(0, self.L, self.n_cells)
+        jump_loc = self.L / 2
+
+        # 构造初始条件（预形成水跃）
+        h_init = np.zeros(self.n_cells)
+        idx_jump = np.argmin(np.abs(x - jump_loc))  # 水跃位置索引
+
+        # 前半段：超临界区
+        h_init[:idx_jump] = self.h_up
+
+        # 后半段：从理论水跃后水深过渡到边界水深
+        n_downstream = self.n_cells - idx_jump
+        h_init[idx_jump:] = np.linspace(h2_theory, self.h_down, n_downstream)
+
+        Q_init = np.ones(self.n_cells) * self.Q
+
+        # 边界条件
+        bc_left = {
+            'type': 'supercritical',
+            'h': self.h_up,
+            'Q': self.Q
+        }
+        bc_right = {
+            'type': 'fixed_h',
+            'h': self.h_down
+        }
+
+        solver.initialize(h_init, Q_init, bc_left, bc_right)
+
+        # 记录初始质量和超临界区域
+        mass_init = solver._compute_total_mass()
+        h_safe = np.maximum(solver.h, solver.eps_dry)
+        A = h_safe * solver.B
+        u = solver.Q / A
+        Fr = np.abs(u) / np.sqrt(solver.g * h_safe)
+        n_super_init = np.sum(Fr > 1.0)
+
+        print(f"\n初始状态:")
+        print(f"  超临界单元: {n_super_init}/{self.n_cells}")
+        print(f"  质量: {mass_init:.2f} m³")
+
+        # 运行模拟
+        t_end = 100.0
+
+        print(f"\n运行模拟到 t={t_end}s...")
+
+        diagnostics = []
+        while solver.t < t_end:
+            solver.step()
+
+            # 每10秒记录一次
+            if solver.t >= len(diagnostics) * 10 and len(diagnostics) < 11:
+                diag = solver.get_diagnostics()
+
+                # 计算超临界区域
+                h_safe = np.maximum(solver.h, solver.eps_dry)
+                A = h_safe * solver.B
+                u = solver.Q / A
+                Fr = np.abs(u) / np.sqrt(solver.g * h_safe)
+                n_supercritical = np.sum(Fr > 1.0)
+
+                print(f"  t={solver.t:.1f}s: "
+                      f"Fr[0]={Fr[0]:.4f}, "
+                      f"超临界={n_supercritical}, "
+                      f"质量误差={diag['mass_error']:.2f}%")
+
+                diagnostics.append(diag)
+
+        # 最终结果
+        mass_final = solver._compute_total_mass()
+        mass_error = abs(mass_final - mass_init) / mass_init * 100
+
+        # 最终超临界区域
+        h_safe = np.maximum(solver.h, solver.eps_dry)
+        A = h_safe * solver.B
+        u = solver.Q / A
+        Fr = np.abs(u) / np.sqrt(solver.g * h_safe)
+        n_super_final = np.sum(Fr > 1.0)
+
+        print(f"\n最终结果:")
+        print(f"  质量误差: {mass_error:.2f}%")
+        print(f"  上游Froude数: {Fr[0]:.4f}")
+        print(f"  超临界单元: {n_super_final}/{self.n_cells} (初始{n_super_init})")
+
+        # 评估
+        print(f"\n评估:")
+        if mass_error < 30.0:
+            print(f"   质量守恒可接受: {mass_error:.2f}% < 30%")
+        else:
+            print(f"   质量守恒较差: {mass_error:.2f}%")
+
+        if Fr[0] > 1.0:
+            print(f"   上游超临界维持: Fr={Fr[0]:.3f} > 1")
+        else:
+            print(f"   上游超临界丢失: Fr={Fr[0]:.3f}")
+
+        shrinkage = (n_super_init - n_super_final) / n_super_init * 100
+        print(f"  超临界区域收缩: {shrinkage:.1f}%")
+
+        # 宽松断言
+        assert mass_error < 60.0, f"质量守恒误差过大: {mass_error:.2f}%"
+        assert Fr[0] > 0.9, f"上游超临界丢失: Fr={Fr[0]:.3f}"
+
+    def test_weno3_shock_resolution(self):
+        """
+        测试3: WENO3激波分辨率测试
+
+        测试WENO3能否在粗网格上捕捉激波
+        """
+        print("\n" + "="*70)
+        print("Test 3: WENO3激波分辨率")
+        print("="*70)
+
+        # 简单溃坝问题（已知WENO3应表现良好）
+        solver = GodunvFVMWENO3(
+            width=1.0,
+            length=2000.0,
+            n_cells=100,  # 相对粗网格
+            manning_n=0.0,  # 无摩阻
+            slope=0.0,
+            g=self.g,
+            cfl=0.5,
+            eps_dry=1e-6,
+            weno_epsilon=1e-6
+        )
+
+        # 溃坝初始条件
+        x = np.linspace(0, 2000.0, 100)
+        h_init = np.where(x < 1000, 10.0, 5.0)  # 高低水位
+        Q_init = np.zeros(100)
+
+        bc_left = {'type': 'fixed_Q', 'Q': 0.0}
+        bc_right = {'type': 'fixed_Q', 'Q': 0.0}
+
+        solver.initialize(h_init, Q_init, bc_left, bc_right)
+
+        mass_init = solver._compute_total_mass()
+
+        # 运行到t=50s
+        print(f"\n运行溃坝模拟...")
+        while solver.t < 50.0:
+            solver.step()
+
+        mass_final = solver._compute_total_mass()
+        mass_error = abs(mass_final - mass_init) / mass_init * 100
+
+        print(f"\n溃坝测试结果:")
+        print(f"  质量误差: {mass_error:.2f}%")
+        print(f"  激波捕捉: {' 良好' if mass_error < 2.0 else '️ 一般'}")
+
+        # WENO3对溃坝问题应有很好的质量守恒
+        assert mass_error < 5.0, f"溃坝质量守恒失败: {mass_error:.2f}%"
+
+        print(f"   WENO3激波捕捉能力验证通过")
+
+
+if __name__ == '__main__':
+    print("="*70)
+    print("MacDonald Test 4 - WENO3求解器测试")
+    print("="*70)
+    print("目标: 验证WENO3能否改善水跃问题的质量守恒")
+    print("="*70)
+
+    # 创建测试实例
+    test = TestMacDonald4WENO3()
+
+    # 运行测试1
+    try:
+        test.setup_method()
+        test.test_weno3_linear_init()
+        print("\n 测试1通过")
+    except AssertionError as e:
+        print(f"\n 测试1失败: {e}")
+    except Exception as e:
+        print(f"\n 测试1错误: {e}")
+
+    # 运行测试2
+    try:
+        test.setup_method()
+        test.test_weno3_preformed_jump()
+        print("\n 测试2通过")
+    except AssertionError as e:
+        print(f"\n 测试2失败: {e}")
+    except Exception as e:
+        print(f"\n 测试2错误: {e}")
+
+    # 运行测试3
+    try:
+        test.setup_method()
+        test.test_weno3_shock_resolution()
+        print("\n 测试3通过")
+    except AssertionError as e:
+        print(f"\n 测试3失败: {e}")
+    except Exception as e:
+        print(f"\n 测试3错误: {e}")
+
+    print("\n" + "="*70)
+    print("所有测试完成")
+    print("="*70)

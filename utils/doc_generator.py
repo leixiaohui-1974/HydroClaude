@@ -229,7 +229,7 @@ class APIDocGenerator:
             module_doc = self.extract_module_doc(py_file)
             if module_doc:
                 self.modules[module_doc.name] = module_doc
-                print(f"  ✓ {module_doc.name}")
+                print(f"   {module_doc.name}")
 
         print(f"\n成功扫描 {len(self.modules)} 个模块")
 
@@ -392,7 +392,7 @@ class APIDocGenerator:
         index_file = output_path / 'API_INDEX.md'
         with open(index_file, 'w', encoding='utf-8') as f:
             f.write(index_md)
-        print(f"  ✓ {index_file.name}")
+        print(f"   {index_file.name}")
 
         # 生成各模块文档
         for module_name, module in self.modules.items():
@@ -402,7 +402,7 @@ class APIDocGenerator:
 
             with open(filepath, 'w', encoding='utf-8') as f:
                 f.write(module_md)
-            print(f"  ✓ {filename}")
+            print(f"   {filename}")
 
         print(f"\n成功生成 {len(self.modules) + 1} 个文档文件")
 

@@ -22,7 +22,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_flux_conservation_diagnosis():
@@ -72,7 +78,7 @@ def test_flux_conservation_diagnosis():
 
     solver.initialize(h_init, Q_init, bc_left, bc_right)
 
-    print(f"  初始质量 = {solver.initial_mass:.2f} m³")
+    print(f"  初始质量 = {solver.initial_mass:.2f} m^3")
 
     # 运行一步，详细记录
     print(f"\n{'='*80}")
@@ -85,7 +91,7 @@ def test_flux_conservation_diagnosis():
     mass_before = np.sum(h_before * solver.dx * solver.B)
 
     print(f"\n步前状态：")
-    print(f"  总质量 = {mass_before:.6f} m³")
+    print(f"  总质量 = {mass_before:.6f} m^3")
 
     # 计算时间步长
     dt = solver.compute_dt()
@@ -103,15 +109,15 @@ def test_flux_conservation_diagnosis():
     mass_after = np.sum(h_after * solver.dx * solver.B)
 
     print(f"\n步后状态：")
-    print(f"  总质量 = {mass_after:.6f} m³")
-    print(f"  质量变化 = {mass_after - mass_before:.6f} m³")
+    print(f"  总质量 = {mass_after:.6f} m^3")
+    print(f"  质量变化 = {mass_after - mass_before:.6f} m^3")
 
     # 分析每个单元
     print(f"\n{'='*80}")
     print("单元级诊断（前5个和后5个单元）")
     print("="*80)
 
-    print(f"\n{'单元':<6} {'h_before':<10} {'h_after':<10} {'Δh':<10} {'Δm (m³)':<12}")
+    print(f"\n{'单元':<6} {'h_before':<10} {'h_after':<10} {'Δh':<10} {'Δm (m^3)':<12}")
     print("-" * 60)
 
     # 前5个单元
@@ -130,7 +136,7 @@ def test_flux_conservation_diagnosis():
 
     # 总质量变化分析
     delta_mass = mass_after - mass_before
-    print(f"\n总质量变化 = {delta_mass:.6f} m³")
+    print(f"\n总质量变化 = {delta_mass:.6f} m^3")
 
     # 边界通量估算
     Q_left = Q_before[0]
@@ -140,25 +146,25 @@ def test_flux_conservation_diagnosis():
     net_flux = flux_in - flux_out
 
     print(f"\n边界通量（基于单元值）：")
-    print(f"  流入（左）= {flux_in:.6f} m³")
-    print(f"  流出（右）= {flux_out:.6f} m³")
-    print(f"  净通量   = {net_flux:.6f} m³")
+    print(f"  流入（左）= {flux_in:.6f} m^3")
+    print(f"  流出（右）= {flux_out:.6f} m^3")
+    print(f"  净通量   = {net_flux:.6f} m^3")
 
     # 对比
     discrepancy = delta_mass - net_flux
     discrepancy_pct = abs(discrepancy) / abs(net_flux) * 100 if net_flux != 0 else 0
 
     print(f"\n质量平衡检查：")
-    print(f"  实际质量变化 = {delta_mass:.6f} m³")
-    print(f"  边界净通量   = {net_flux:.6f} m³")
-    print(f"  差异         = {discrepancy:.6f} m³ ({discrepancy_pct:.2f}%)")
+    print(f"  实际质量变化 = {delta_mass:.6f} m^3")
+    print(f"  边界净通量   = {net_flux:.6f} m^3")
+    print(f"  差异         = {discrepancy:.6f} m^3 ({discrepancy_pct:.2f}%)")
 
     if abs(discrepancy_pct) > 1.0:
-        print(f"\n❌ 单步质量平衡不成立！")
+        print(f"\n 单步质量平衡不成立！")
         print(f"   即使在单个时间步，质量也不守恒")
         print(f"   差异 = {discrepancy_pct:.2f}%")
     else:
-        print(f"\n✅ 单步质量平衡基本成立")
+        print(f"\n 单步质量平衡基本成立")
         print(f"   差异 < 1%，可能是数值误差")
 
     # 运行更多步，观察累积效应
@@ -191,13 +197,13 @@ def test_flux_conservation_diagnosis():
     net_flux_100 = total_flux_in - total_flux_out
 
     print(f"\n100步后：")
-    print(f"  初始质量     = {mass_initial:.4f} m³")
-    print(f"  最终质量     = {mass_final:.4f} m³")
-    print(f"  质量变化     = {delta_mass_100:.4f} m³")
-    print(f"  累积流入     = {total_flux_in:.4f} m³")
-    print(f"  累积流出     = {total_flux_out:.4f} m³")
-    print(f"  净通量       = {net_flux_100:.4f} m³")
-    print(f"  差异         = {delta_mass_100 - net_flux_100:.4f} m³")
+    print(f"  初始质量     = {mass_initial:.4f} m^3")
+    print(f"  最终质量     = {mass_final:.4f} m^3")
+    print(f"  质量变化     = {delta_mass_100:.4f} m^3")
+    print(f"  累积流入     = {total_flux_in:.4f} m^3")
+    print(f"  累积流出     = {total_flux_out:.4f} m^3")
+    print(f"  净通量       = {net_flux_100:.4f} m^3")
+    print(f"  差异         = {delta_mass_100 - net_flux_100:.4f} m^3")
     print(f"  差异百分比   = {abs(delta_mass_100 - net_flux_100)/abs(net_flux_100)*100:.2f}%")
 
     discrepancy_100 = delta_mass_100 - net_flux_100
@@ -225,10 +231,10 @@ def test_flux_conservation_diagnosis():
     print("="*80)
 
     if discrepancy_100_pct > 5:
-        print(f"\n❌ 发现严重问题！")
+        print(f"\n 发现严重问题！")
         print(f"   100步累积差异 = {discrepancy_100_pct:.2f}%")
         print(f"   这与500s测试的5.5%差异一致")
-        print(f"\n🐛 问题定位：")
+        print(f"\n 问题定位：")
         print(f"   质量不守恒的根源在于：")
         print(f"   1. 通量计算不守恒（F_{i+1/2}不一致）")
         print(f"   2. 或源项错误地影响了dh/dt")
@@ -240,12 +246,12 @@ def test_flux_conservation_diagnosis():
         print(f"   3. 验证 Σ(F_{i+1/2} - F_{i-1/2}) = F_right - F_left")
 
     elif discrepancy_100_pct > 1:
-        print(f"\n⚠️ 发现问题")
+        print(f"\n️ 发现问题")
         print(f"   100步累积差异 = {discrepancy_100_pct:.2f}%")
         print(f"   虽然单步较小，但长时间累积显著")
 
     else:
-        print(f"\n✅ 质量守恒良好")
+        print(f"\n 质量守恒良好")
         print(f"   100步累积差异 = {discrepancy_100_pct:.2f}%")
         print(f"   问题可能在其他地方")
 

@@ -18,13 +18,15 @@ This example shows:
 4. Efficiency optimization
 
 Typical Francis turbine plant configuration:
-Reservoir → Tunnel (5km) → Surge Tank → Penstock (500m) → Turbine → Tailrace
+Reservoir -> Tunnel (5km) -> Surge Tank -> Penstock (500m) -> Turbine -> Tailrace
 
 Author: Claude
 Date: 2025-10-22
 """
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import os
@@ -93,7 +95,7 @@ class HydropowerPlant:
             position=5500.0,      # At powerhouse
             rated_power=120.0,    # 120 MW
             rated_head=165.0,     # 165 m (reservoir 500m - tailwater 320m - losses 15m)
-            rated_flow=82.0,      # 82 m³/s
+            rated_flow=82.0,      # 82 m^3/s
             rated_speed=250.0,    # 250 rpm
             runner_diameter=2.8,  # 2.8 m
             max_efficiency=0.935  # 93.5% peak efficiency
@@ -120,7 +122,7 @@ class HydropowerPlant:
         Calculate friction loss in pipe using Darcy-Weisbach
 
         Args:
-            Q: Flow rate (m³/s)
+            Q: Flow rate (m^3/s)
             length: Pipe length (m)
             diameter: Pipe diameter (m)
             roughness: Absolute roughness (m)
@@ -136,7 +138,7 @@ class HydropowerPlant:
         v = Q / A
 
         # Reynolds number
-        nu = 1.14e-6  # kinematic viscosity @ 15°C
+        nu = 1.14e-6  # kinematic viscosity @ 15 degC
         Re = v * diameter / nu
 
         # Friction factor (Swamee-Jain)
@@ -160,7 +162,7 @@ class HydropowerPlant:
         H_reservoir = H_tailwater + h_tunnel + h_penstock + h_turbine
 
         Args:
-            Q: Flow rate (m³/s)
+            Q: Flow rate (m^3/s)
 
         Returns:
             results: Dictionary with operating point data
@@ -205,7 +207,7 @@ class HydropowerPlant:
 
         print(f"\n{title}")
         print("-" * 80)
-        print(f"Flow rate:          {results['flow']:.2f} m³/s")
+        print(f"Flow rate:          {results['flow']:.2f} m^3/s")
         print(f"Gross head:         {results['gross_head']:.2f} m")
         print(f"  Tunnel loss:      {results['tunnel_loss']:.3f} m ({results['tunnel_loss']/results['gross_head']*100:.1f}%)")
         print(f"  Penstock loss:    {results['penstock_loss']:.3f} m ({results['penstock_loss']/results['gross_head']*100:.1f}%)")
@@ -223,7 +225,7 @@ class HydropowerPlant:
         print("=" * 80)
 
         # Range of flow rates
-        Q_range = np.linspace(20, 100, 30)  # 20 to 100 m³/s
+        Q_range = np.linspace(20, 100, 30)  # 20 to 100 m^3/s
 
         # Arrays for results
         powers = []
@@ -246,7 +248,7 @@ class HydropowerPlant:
         P_max = powers[idx_max_power]
 
         print(f"\nOptimal Operating Point:")
-        print(f"  Flow:       {Q_opt:.1f} m³/s")
+        print(f"  Flow:       {Q_opt:.1f} m^3/s")
         print(f"  Power:      {P_max:.1f} MW")
         print(f"  Efficiency: {efficiencies[idx_max_power]:.2f}%")
 
@@ -257,7 +259,7 @@ class HydropowerPlant:
         ax1.plot(Q_range, powers, 'b-', linewidth=2)
         ax1.plot(Q_opt, P_max, 'r*', markersize=15, label=f'Max: {P_max:.1f} MW')
         ax1.axhline(y=self.turbine.rated_power/1e6, color='g', linestyle='--', alpha=0.5, label='Rated')
-        ax1.set_xlabel('Flow Rate (m³/s)', fontsize=11)
+        ax1.set_xlabel('Flow Rate (m^3/s)', fontsize=11)
         ax1.set_ylabel('Power Output (MW)', fontsize=11)
         ax1.set_title('Plant Output Curve', fontsize=12, fontweight='bold')
         ax1.grid(True, alpha=0.3)
@@ -266,7 +268,7 @@ class HydropowerPlant:
         # 2. Efficiency vs Flow
         ax2.plot(Q_range, efficiencies, 'g-', linewidth=2)
         ax2.axvline(x=self.turbine.rated_flow, color='r', linestyle='--', alpha=0.5, label='Rated flow')
-        ax2.set_xlabel('Flow Rate (m³/s)', fontsize=11)
+        ax2.set_xlabel('Flow Rate (m^3/s)', fontsize=11)
         ax2.set_ylabel('Turbine Efficiency (%)', fontsize=11)
         ax2.set_title('Efficiency Curve', fontsize=12, fontweight='bold')
         ax2.grid(True, alpha=0.3)
@@ -278,7 +280,7 @@ class HydropowerPlant:
         ax3.fill_between(Q_range, net_heads, self.reservoir_level - self.tailwater_level,
                         alpha=0.3, label='Head losses')
         ax3.axhline(y=self.turbine.rated_head, color='b', linestyle='--', alpha=0.5, label='Rated head')
-        ax3.set_xlabel('Flow Rate (m³/s)', fontsize=11)
+        ax3.set_xlabel('Flow Rate (m^3/s)', fontsize=11)
         ax3.set_ylabel('Head (m)', fontsize=11)
         ax3.set_title('Head vs Flow', fontsize=12, fontweight='bold')
         ax3.grid(True, alpha=0.3)
@@ -289,14 +291,14 @@ class HydropowerPlant:
         ax4.plot(Q_range, penstock_losses, 'r-', linewidth=2, label='Penstock loss')
         total_losses = np.array(tunnel_losses) + np.array(penstock_losses)
         ax4.plot(Q_range, total_losses, 'k--', linewidth=2, label='Total loss')
-        ax4.set_xlabel('Flow Rate (m³/s)', fontsize=11)
+        ax4.set_xlabel('Flow Rate (m^3/s)', fontsize=11)
         ax4.set_ylabel('Head Loss (m)', fontsize=11)
         ax4.set_title('Hydraulic Losses', fontsize=12, fontweight='bold')
         ax4.grid(True, alpha=0.3)
         ax4.legend()
 
         plt.tight_layout()
-        plt.savefig('/home/user/HydroClaude/examples/example_04_hydropower_system/plant_performance.png', dpi=150)
+        plt.savefig('examples/example_04_hydropower_system/plant_performance.png', dpi=150)
         print(f"\nPerformance curves saved to: plant_performance.png")
 
         return Q_range, powers, efficiencies
@@ -349,13 +351,13 @@ def main():
 
     print(f"\nInstalled Capacity:  {plant.turbine.rated_power/1e6:.1f} MW")
     print(f"Rated Head:          {plant.turbine.rated_head:.1f} m")
-    print(f"Rated Flow:          {plant.turbine.rated_flow:.1f} m³/s")
+    print(f"Rated Flow:          {plant.turbine.rated_flow:.1f} m^3/s")
     print(f"Peak Efficiency:     {plant.turbine.max_efficiency*100:.1f}%")
 
     print(f"\nHydraulic System:")
-    print(f"  Tunnel:            {plant.tunnel_length/1000:.1f} km × Ø{plant.tunnel_diameter:.1f}m")
+    print(f"  Tunnel:            {plant.tunnel_length/1000:.1f} km x Ø{plant.tunnel_diameter:.1f}m")
     print(f"  Surge tank:        Ø{plant.surge_tank.diameter:.1f}m (T={plant.surge_period/60:.1f}min)")
-    print(f"  Penstock:          {plant.penstock_length:.0f}m × Ø{plant.penstock_diameter:.1f}m")
+    print(f"  Penstock:          {plant.penstock_length:.0f}m x Ø{plant.penstock_diameter:.1f}m")
 
     print(f"\nPerformance @ Rated:")
     print(f"  Power output:      {results_rated['power']:.2f} MW")
@@ -369,12 +371,12 @@ def main():
     print("EXAMPLE COMPLETED SUCCESSFULLY")
     print("=" * 80)
     print("\nThis example demonstrates:")
-    print("  ✓ Complete hydropower plant configuration")
-    print("  ✓ Steady-state hydraulic analysis")
-    print("  ✓ Turbine performance integration")
-    print("  ✓ Surge tank sizing")
-    print("  ✓ Head loss calculations")
-    print("  ✓ Performance optimization")
+    print("   Complete hydropower plant configuration")
+    print("   Steady-state hydraulic analysis")
+    print("   Turbine performance integration")
+    print("   Surge tank sizing")
+    print("   Head loss calculations")
+    print("   Performance optimization")
     print("\nOutput file:")
     print("  - plant_performance.png")
     print("=" * 80)

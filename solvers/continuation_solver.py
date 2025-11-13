@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-延拓求解器：伪时间步长延拓 + 牛顿法
+ + 
 
-策略：逐步减小pseudo_dt，每个阶段用Newton求解
-- 大pseudo_dt: Jacobian更对角占优，更稳定（容易求解）
-- 小pseudo_dt: 接近真实稳态方程（高精度解）
+pseudo_dtNewton
+- pseudo_dt: Jacobian
+- pseudo_dt: 
 
-作者: Claude
-日期: 2025-10-22
+: Claude
+: 2025-10-22
 """
 
 import numpy as np
@@ -24,12 +24,12 @@ from solvers.newton_solver import NewtonSolver
 
 class ContinuationSolver:
     """
-    延拓求解器：伪时间步长延拓
+    
 
-    工作流程：
-    1. pseudo_dt = 10.0 → Newton求解（粗解）
-    2. pseudo_dt = 1.0  → Newton求解（中等精度）
-    3. pseudo_dt = 0.1  → Newton求解（高精度）
+    
+    1. pseudo_dt = 10.0 → Newton
+    2. pseudo_dt = 1.0  → Newton
+    3. pseudo_dt = 0.1  → Newton
     """
 
     def __init__(self,
@@ -38,15 +38,15 @@ class ContinuationSolver:
                  newton_tol: float = 1e-4,
                  verbose: bool = True):
         """
-        初始化延拓求解器
+        
 
         Args:
-            pseudo_dt_sequence: 伪时间步长序列（从大到小）
-            newton_max_iter: 每个阶段Newton最大迭代次数
-            newton_tol: Newton收敛容差
-            verbose: 是否输出详细信息
+            pseudo_dt_sequence: 
+            newton_max_iter: Newton
+            newton_tol: Newton
+            verbose: 
         """
-        # 默认延拓序列：10.0 → 1.0 → 0.1
+        # 10.0 → 1.0 → 0.1
         self.pseudo_dt_sequence = pseudo_dt_sequence or [10.0, 1.0, 0.1]
         self.newton_max_iter = newton_max_iter
         self.newton_tol = newton_tol
@@ -57,45 +57,45 @@ class ContinuationSolver:
               U_init: np.ndarray,
               t: float = 0.0) -> Tuple[np.ndarray, Dict]:
         """
-        求解非线性系统
+        
 
         Args:
-            system: SteadySaintVenantSystem实例
-            U_init: 初值
-            t: 时间
+            system: SteadySaintVenantSystem
+            U_init: 
+            t: 
 
         Returns:
-            U_solution: 解
-            info: 求解信息
+            U_solution: 
+            info: 
         """
         start_time_total = time.time()
 
         if self.verbose:
-            print("[ContinuationSolver] 开始延拓求解...")
-            print(f"  pseudo_dt序列: {self.pseudo_dt_sequence}")
-            print(f"  Newton参数: max_iter={self.newton_max_iter}, tol={self.newton_tol}")
+            print("[ContinuationSolver] ...")
+            print(f"  pseudo_dt: {self.pseudo_dt_sequence}")
+            print(f"  Newton: max_iter={self.newton_max_iter}, tol={self.newton_tol}")
             print()
 
-        # 保存原始pseudo_dt
+        # pseudo_dt
         original_pseudo_dt = system.pseudo_dt
 
         U_current = U_init.copy()
         all_stage_info = []
 
-        # 逐阶段求解
+        # 
         for stage, pseudo_dt in enumerate(self.pseudo_dt_sequence):
             if self.verbose:
                 print("=" * 80)
-                print(f"阶段 {stage + 1}/{len(self.pseudo_dt_sequence)}: pseudo_dt = {pseudo_dt}")
+                print(f" {stage + 1}/{len(self.pseudo_dt_sequence)}: pseudo_dt = {pseudo_dt}")
                 print("=" * 80)
 
-            # 设置系统的pseudo_dt
+            # pseudo_dt
             system.pseudo_dt = pseudo_dt
 
-            # 更新U_prev
+            # U_prev
             system.U_prev = U_current.copy()
 
-            # Newton求解
+            # Newton
             newton = NewtonSolver(
                 max_iter=self.newton_max_iter,
                 tol_residual=self.newton_tol,
@@ -118,28 +118,28 @@ class ContinuationSolver:
                 all_stage_info.append(stage_info)
 
                 if self.verbose:
-                    print(f"  阶段{stage + 1}完成: {'✅ 收敛' if stage_info['converged'] else '❌ 未收敛'}")
-                    print(f"  迭代次数: {stage_info['iterations']}")
-                    print(f"  用时: {time_stage:.4f}s")
+                    print(f"  {stage + 1}: {' ' if stage_info['converged'] else ' '}")
+                    print(f"  : {stage_info['iterations']}")
+                    print(f"  : {time_stage:.4f}s")
                     print()
 
-                # 如果未收敛，停止延拓
+                # 
                 if not stage_info['converged']:
                     if self.verbose:
-                        print(f"⚠️ 阶段{stage + 1}未收敛，停止延拓")
+                        print(f"[WARN] {stage + 1}")
                     break
 
             except Exception as e:
                 if self.verbose:
-                    print(f"  ❌ 阶段{stage + 1}求解失败: {e}")
+                    print(f"   {stage + 1}: {e}")
                 break
 
-        # 恢复原始pseudo_dt
+        # pseudo_dt
         system.pseudo_dt = original_pseudo_dt
 
         time_total = time.time() - start_time_total
 
-        # 汇总信息
+        # 
         total_iterations = sum(s['iterations'] for s in all_stage_info)
         final_converged = all_stage_info[-1]['converged'] if all_stage_info else False
 
@@ -153,29 +153,29 @@ class ContinuationSolver:
 
         if self.verbose:
             print("=" * 80)
-            print("延拓求解完成")
+            print("")
             print("=" * 80)
-            print(f"  完成阶段数: {len(all_stage_info)}/{len(self.pseudo_dt_sequence)}")
-            print(f"  总迭代次数: {total_iterations}")
-            print(f"  总用时: {time_total:.4f}s")
-            print(f"  最终状态: {'✅ 收敛' if final_converged else '❌ 未收敛'}")
+            print(f"  : {len(all_stage_info)}/{len(self.pseudo_dt_sequence)}")
+            print(f"  : {total_iterations}")
+            print(f"  : {time_total:.4f}s")
+            print(f"  : {' ' if final_converged else ' '}")
             print()
 
         return U_current, info
 
 
 def main():
-    """测试延拓求解器"""
+    """"""
     from physics.steady_saint_venant import SteadySaintVenantSystem
     from solvers.gate import SluiceGate
     from utils.canal_utils import compute_steady_uniform_flow
 
     print("=" * 100)
-    print("延拓求解器测试 - 三闸门")
+    print(" - ")
     print("=" * 100)
     print()
 
-    # 三闸门场景
+    # 
     length = 10000.0
     nx = 301
     B = 10.0
@@ -189,13 +189,13 @@ def main():
 
     h_uniform = compute_steady_uniform_flow(Q_target, B, S0, n)
 
-    print(f"场景: 三闸门")
-    print(f"  网格: {nx}点, {length}m")
-    print(f"  流量: {Q_target} m³/s")
-    print(f"  均匀流水深: {h_uniform:.4f} m")
+    print(f": ")
+    print(f"  : {nx}, {length}m")
+    print(f"  : {Q_target} m³/s")
+    print(f"  : {h_uniform:.4f} m")
     print()
 
-    # 创建系统
+    # 
     system = SteadySaintVenantSystem(
         length, nx, B, S0, n,
         structures=[
@@ -203,7 +203,7 @@ def main():
             (gate2.position, gate2),
             (gate3.position, gate3)
         ],
-        pseudo_dt=0.1  # 这个会被延拓求解器覆盖
+        pseudo_dt=0.1  # 
     )
     system.set_boundary_conditions(
         Q_upstream=Q_target,
@@ -211,13 +211,13 @@ def main():
         h_downstream=h_uniform
     )
 
-    # 初值（均匀流）
+    # 
     h_init = np.ones(nx) * h_uniform
     Q_init = np.ones(nx) * Q_target
     U_init = system.pack_state(h_init, Q_init)
     system.U_prev = U_init.copy()
 
-    # 延拓求解器
+    # 
     solver = ContinuationSolver(
         pseudo_dt_sequence=[10.0, 1.0, 0.1],
         newton_max_iter=20,
@@ -227,24 +227,24 @@ def main():
 
     U_sol, info = solver.solve(system, U_init, t=0.0)
 
-    # 解析结果
+    # 
     h_sol, Q_sol = system.unpack_state(U_sol)
 
     print("=" * 100)
-    print("求解结果")
+    print("")
     print("=" * 100)
-    print(f"  收敛: {'✅' if info['converged'] else '❌'}")
-    print(f"  总迭代次数: {info['total_iterations']}")
-    print(f"  总用时: {info['total_time']:.4f}s")
-    print(f"  水深范围: {h_sol.min():.4f} - {h_sol.max():.4f} m")
-    print(f"  流量范围: {Q_sol.min():.4f} - {Q_sol.max():.4f} m³/s")
+    print(f"  : {'' if info['converged'] else ''}")
+    print(f"  : {info['total_iterations']}")
+    print(f"  : {info['total_time']:.4f}s")
+    print(f"  : {h_sol.min():.4f} - {h_sol.max():.4f} m")
+    print(f"  : {Q_sol.min():.4f} - {Q_sol.max():.4f} m³/s")
     print()
 
-    # 各阶段详情
-    print("各阶段详情:")
+    # 
+    print(":")
     for i, stage in enumerate(info['stage_info']):
-        print(f"  阶段{i+1} (pseudo_dt={stage['pseudo_dt']}): "
-              f"{stage['iterations']}次迭代, {stage['time']:.4f}s")
+        print(f"  {i+1} (pseudo_dt={stage['pseudo_dt']}): "
+              f"{stage['iterations']}, {stage['time']:.4f}s")
     print()
 
 

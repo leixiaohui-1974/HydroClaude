@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 梯级水库完整示例
 
@@ -9,7 +10,7 @@
 - 联合调度
 
 拓扑结构:
-[上游来水] → [水库1+堰] → [河段1] → [水库2+闸] → [河段2] → [水库3+堰] → [下游]
+[上游来水] -> [水库1+堰] -> [河段1] -> [水库2+闸] -> [河段2] -> [水库3+堰] -> [下游]
 
 Stage 3 - Task 3.4.2 示例2
 
@@ -78,7 +79,7 @@ def build_cascade_system():
     # 上游来水（边界）
     inflow = create_inflow_boundary(
         "上游来水",
-        Q=200.0,  # 200 m³/s
+        Q=200.0,  # 200 m^3/s
         elevation=500.0
     )
     network.add_node(inflow)
@@ -88,10 +89,10 @@ def build_cascade_system():
         "水库1",
         elevation=480.0,
         storage_curve_type='linear',
-        surface_area=2e6,  # 200万 m²
+        surface_area=2e6,  # 200万 m^2
         h_min=0.0,
         h_max=50.0,
-        volume_init=5e7  # 初始库容 5000万 m³
+        volume_init=5e7  # 初始库容 5000万 m^3
     )
     network.add_node(reservoir1)
 
@@ -104,10 +105,10 @@ def build_cascade_system():
         "水库2",
         elevation=450.0,
         storage_curve_type='linear',
-        surface_area=1.5e6,  # 150万 m²
+        surface_area=1.5e6,  # 150万 m^2
         h_min=0.0,
         h_max=40.0,
-        volume_init=3e7  # 初始库容 3000万 m³
+        volume_init=3e7  # 初始库容 3000万 m^3
     )
     network.add_node(reservoir2)
 
@@ -120,10 +121,10 @@ def build_cascade_system():
         "水库3",
         elevation=420.0,
         storage_curve_type='linear',
-        surface_area=1e6,  # 100万 m²
+        surface_area=1e6,  # 100万 m^2
         h_min=0.0,
         h_max=30.0,
-        volume_init=2e7  # 初始库容 2000万 m³
+        volume_init=2e7  # 初始库容 2000万 m^3
     )
     network.add_node(reservoir3)
 
@@ -156,7 +157,7 @@ def build_cascade_system():
     )
     network.add_reach(reach_in1)
 
-    # 出库河段1: 水库1 → 溢洪道1
+    # 出库河段1: 水库1 -> 溢洪道1
     reach_out1 = Reach(
         "出库河段1",
         "水库1",
@@ -165,7 +166,7 @@ def build_cascade_system():
     )
     network.add_reach(reach_out1)
 
-    # 连接河段1: 溢洪道1 → 水库2
+    # 连接河段1: 溢洪道1 -> 水库2
     connect1 = Reach(
         "连接河段1",
         "溢洪道1",
@@ -174,7 +175,7 @@ def build_cascade_system():
     )
     network.add_reach(connect1)
 
-    # 出库河段2: 水库2 → 泄洪闸2
+    # 出库河段2: 水库2 -> 泄洪闸2
     reach_out2 = Reach(
         "出库河段2",
         "水库2",
@@ -183,7 +184,7 @@ def build_cascade_system():
     )
     network.add_reach(reach_out2)
 
-    # 连接河段2: 泄洪闸2 → 水库3
+    # 连接河段2: 泄洪闸2 -> 水库3
     connect2 = Reach(
         "连接河段2",
         "泄洪闸2",
@@ -192,7 +193,7 @@ def build_cascade_system():
     )
     network.add_reach(connect2)
 
-    # 出库河段3: 水库3 → 溢洪道3
+    # 出库河段3: 水库3 -> 溢洪道3
     reach_out3 = Reach(
         "出库河段3",
         "水库3",
@@ -201,7 +202,7 @@ def build_cascade_system():
     )
     network.add_reach(reach_out3)
 
-    # 下泄河段: 溢洪道3 → 下游出口
+    # 下泄河段: 溢洪道3 -> 下游出口
     reach_down = Reach(
         "下泄河段",
         "溢洪道3",
@@ -254,7 +255,7 @@ def build_cascade_system():
     return network
 
 
-def simulate_cascade(network, scenario_name, t_end=7200.0):
+def simulate_cascade(network, scenario_name, t_end = 30.0):
     """
     运行梯级水库模拟
 
@@ -272,7 +273,7 @@ def simulate_cascade(network, scenario_name, t_end=7200.0):
 
     solver = NetworkSolver(network, solve_method='sequential')
 
-    print(f"\n运行模拟 (t=0 → {t_end/3600:.1f}h)...")
+    print(f"\n运行模拟 (t=0 -> {t_end/3600:.1f}h)...")
     results = solver.run(
         t_end=t_end,
         dt=20.0,
@@ -297,7 +298,7 @@ def analyze_cascade_results(network, results):
 
     # 1. 水库状态
     print("\n[1] 水库状态")
-    print(f"  {'水库':<10} {'库容(万m³)':<15} {'水位(m)':<12} {'蓄水率(%)':<12}")
+    print(f"  {'水库':<10} {'库容(万m^3)':<15} {'水位(m)':<12} {'蓄水率(%)':<12}")
     print(f"  {'-'*52}")
 
     for res_id in ["水库1", "水库2", "水库3"]:
@@ -316,7 +317,7 @@ def analyze_cascade_results(network, results):
     # 溢洪道1
     weir1 = network.nodes["溢洪道1"].internal_structure
     print(f"\n  溢洪道1:")
-    print(f"    流量: {weir1.Q_current:.2f} m³/s")
+    print(f"    流量: {weir1.Q_current:.2f} m^3/s")
     print(f"    上游水位: {weir1.h_upstream:.2f} m")
     print(f"    堰顶水头: {weir1.h_upstream - weir1.structure.z_crest:.2f} m")
     print(f"    流态: {weir1.get_flow_regime()}")
@@ -324,7 +325,7 @@ def analyze_cascade_results(network, results):
     # 泄洪闸2
     gate2 = network.nodes["泄洪闸2"].internal_structure
     print(f"\n  泄洪闸2:")
-    print(f"    流量: {gate2.Q_current:.2f} m³/s")
+    print(f"    流量: {gate2.Q_current:.2f} m^3/s")
     print(f"    开度: {gate2.get_opening():.2f} m")
     print(f"    上游水位: {gate2.h_upstream:.2f} m")
     print(f"    流态: {gate2.get_flow_regime()}")
@@ -332,7 +333,7 @@ def analyze_cascade_results(network, results):
     # 溢洪道3
     weir3 = network.nodes["溢洪道3"].internal_structure
     print(f"\n  溢洪道3:")
-    print(f"    流量: {weir3.Q_current:.2f} m³/s")
+    print(f"    流量: {weir3.Q_current:.2f} m^3/s")
     print(f"    上游水位: {weir3.h_upstream:.2f} m")
     print(f"    堰顶水头: {weir3.h_upstream - weir3.structure.z_crest:.2f} m")
 
@@ -340,14 +341,14 @@ def analyze_cascade_results(network, results):
     print(f"\n[3] 水量平衡")
 
     Q_in, Q_out, mass_error = network.check_global_mass_balance()
-    print(f"  总入流: {Q_in:.2f} m³/s")
-    print(f"  总出流: {Q_out:.2f} m³/s")
+    print(f"  总入流: {Q_in:.2f} m^3/s")
+    print(f"  总出流: {Q_out:.2f} m^3/s")
     print(f"  误差: {mass_error:.4f}%")
 
     if mass_error < 5.0:
-        print(f"  ✅ 良好 (< 5%)")
+        print(f"   良好 (< 5%)")
     else:
-        print(f"  ⚠️  需改进")
+        print(f"    需改进")
 
     # 4. 性能
     print(f"\n[4] 计算性能")
@@ -362,7 +363,7 @@ def scenario_1_normal_operation(network):
     print("=" * 80)
     print("泄洪闸2开度: 3.0m")
 
-    results = simulate_cascade(network, "正常运行", t_end=7200.0)
+    results = simulate_cascade(network, "正常运行", t_end = 30.0)
     analyze_cascade_results(network, results)
 
     return results
@@ -377,10 +378,10 @@ def scenario_2_flood_discharge(network):
     # 增大泄洪闸开度
     gate_node = network.nodes["泄洪闸2"]
     if hasattr(gate_node, 'internal_structure'):
-        gate_node.internal_structure.set_opening(5.0)  # 3.0m → 5.0m
-        print("调整泄洪闸2开度: 3.0m → 5.0m")
+        gate_node.internal_structure.set_opening(5.0)  # 3.0m -> 5.0m
+        print("调整泄洪闸2开度: 3.0m -> 5.0m")
 
-    results = simulate_cascade(network, "加大泄洪", t_end=7200.0)
+    results = simulate_cascade(network, "加大泄洪", t_end = 30.0)
     analyze_cascade_results(network, results)
 
     # 恢复开度
@@ -410,12 +411,12 @@ def main():
     print("示例完成")
     print("=" * 80)
     print("\n主要功能演示:")
-    print("  ✅ 梯级水库系统构建")
-    print("  ✅ 水库节点 (ReservoirNode)")
-    print("  ✅ 溢洪道控制 (InternalWeir)")
-    print("  ✅ 泄洪闸控制 (InternalGate)")
-    print("  ✅ 水库库容计算")
-    print("  ✅ 联合调度模拟")
+    print("   梯级水库系统构建")
+    print("   水库节点 (ReservoirNode)")
+    print("   溢洪道控制 (InternalWeir)")
+    print("   泄洪闸控制 (InternalGate)")
+    print("   水库库容计算")
+    print("   联合调度模拟")
 
     print("\n应用价值:")
     print("  - 梯级水库联合调度")

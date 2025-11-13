@@ -77,7 +77,7 @@ class ExampleOrganizer:
             shutil.move(str(script), str(dest))
             self.report['cleaned'].append(f"Archived {script.name}")
 
-        print(f"✓ example_01 清理完成")
+        print(f" example_01 清理完成")
         return True
 
     def organize_all_examples(self):
@@ -98,7 +98,7 @@ class ExampleOrganizer:
             self._organize_outputs(example_dir)
 
             self.report['organized'].append(example_dir.name)
-            print(f"  ✓ 目录结构已标准化")
+            print(f"   目录结构已标准化")
 
     def _organize_outputs(self, example_dir):
         """整理输出文件到outputs目录"""
@@ -162,7 +162,7 @@ class ExampleOrganizer:
                 for s in scripts:
                     print(f"  - {s.relative_to(example_dir)}")
             else:
-                print(f"\n{example_dir.name}: ⚠️  未找到核心脚本")
+                print(f"\n{example_dir.name}:   未找到核心脚本")
 
         return core_scripts
 
@@ -199,7 +199,7 @@ def main():
     organizer.save_report()
 
     print(f"\n{'='*80}")
-    print("✓ 目录整理完成！")
+    print(" 目录整理完成！")
     print('='*80)
 
     return core_scripts

@@ -55,7 +55,7 @@ def example_1_v_shaped_valley():
     depths = [2.0, 4.0, 6.0, 8.0]
 
     print(f"\n水力几何要素：")
-    print(f"{'h(m)':>8} {'A(m²)':>10} {'B(m)':>10} {'P(m)':>10} {'R(m)':>10} {'D(m)':>10}")
+    print(f"{'h(m)':>8} {'A(m^2)':>10} {'B(m)':>10} {'P(m)':>10} {'R(m)':>10} {'D(m)':>10}")
     print("-" * 70)
 
     for h in depths:
@@ -64,13 +64,13 @@ def example_1_v_shaped_valley():
               f"{props['P']:>10.2f} {props['R']:>10.3f} {props['D']:>10.3f}")
 
     # 计算正常水深和临界水深
-    Q = 50.0  # 流量50 m³/s
+    Q = 50.0  # 流量50 m^3/s
 
     h_n = channel.normal_depth(Q)
     h_c = channel.critical_depth(Q)
     Fr_n = channel.froude_number(Q, h_n)
 
-    print(f"\n流量 Q = {Q:.2f} m³/s:")
+    print(f"\n流量 Q = {Q:.2f} m^3/s:")
     print(f"  正常水深 h_n = {h_n:.3f} m")
     print(f"  临界水深 h_c = {h_c:.3f} m")
     print(f"  Froude数 Fr = {Fr_n:.3f}")
@@ -107,7 +107,7 @@ def example_2_u_shaped_valley():
     depths = [1.0, 2.0, 4.0, 6.0]
 
     print(f"\n水力几何要素：")
-    print(f"{'h(m)':>8} {'A(m²)':>10} {'B(m)':>10} {'B/h':>10} {'形态特征':>15}")
+    print(f"{'h(m)':>8} {'A(m^2)':>10} {'B(m)':>10} {'B/h':>10} {'形态特征':>15}")
     print("-" * 65)
 
     for h in depths:
@@ -154,7 +154,7 @@ def example_3_compound_channel():
 
     # 分析漫滩过程
     print(f"\n漫滩过程分析：")
-    print(f"{'h(m)':>8} {'A(m²)':>10} {'B(m)':>10} {'Q(m³/s)':>12} {'状态':>15}")
+    print(f"{'h(m)':>8} {'A(m^2)':>10} {'B(m)':>10} {'Q(m^3/s)':>12} {'状态':>15}")
     print("-" * 70)
 
     depths = [1.0, 2.0, 3.0, 4.0, 5.0]
@@ -215,7 +215,7 @@ def example_4_asymmetric_channel():
     props = channel.properties(h_test)
 
     print(f"  水深 h = {h_test:.2f} m时：")
-    print(f"    断面积 A = {props['A']:.2f} m²")
+    print(f"    断面积 A = {props['A']:.2f} m^2")
     print(f"    水面宽 B = {props['B']:.2f} m")
     print(f"    湿周 P = {props['P']:.2f} m")
 
@@ -265,7 +265,7 @@ def example_5_real_world_application():
     }
 
     print(f"\n防洪标准分析：")
-    print(f"{'标准':>15} {'Q(m³/s)':>12} {'h_n(m)':>12} {'h_c(m)':>12} {'Fr':>8} {'超堤风险':>12}")
+    print(f"{'标准':>15} {'Q(m^3/s)':>12} {'h_n(m)':>12} {'h_c(m)':>12} {'Fr':>8} {'超堤风险':>12}")
     print("-" * 85)
 
     dike_height = 10.0  # 堤防高度（相对于河床最低点）
@@ -276,13 +276,13 @@ def example_5_real_world_application():
         Fr = channel.froude_number(Q, h_n)
 
         if h_n > dike_height:
-            risk = "⚠️  漫堤"
+            risk = "  漫堤"
         elif h_n > 0.8 * dike_height:
-            risk = "⚠️  高风险"
+            risk = "  高风险"
         elif h_n > 0.6 * dike_height:
             risk = "适中"
         else:
-            risk = "✓ 安全"
+            risk = " 安全"
 
         print(f"{standard:>15} {Q:>12.0f} {h_n:>12.3f} {h_c:>12.3f} {Fr:>8.3f} {risk:>12}")
 
@@ -337,7 +337,7 @@ def example_6_channel_comparison():
     channels = [v_channel, u_channel, trap_channel]
 
     print(f"\n固定水深 h = 5m 时的对比：")
-    print(f"{'断面类型':>12} {'A(m²)':>12} {'B(m)':>12} {'R(m)':>12} {'Q(m³/s)':>12}")
+    print(f"{'断面类型':>12} {'A(m^2)':>12} {'B(m)':>12} {'R(m)':>12} {'Q(m^3/s)':>12}")
     print("-" * 72)
 
     h_test = 5.0

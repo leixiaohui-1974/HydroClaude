@@ -51,7 +51,7 @@ def diagnose_gate_formula_precision():
         print(f"{h_up:<12.4f} {h_down:<12.4f} {delta_h:<15.6f} {Q:<12.4f} {description}")
 
     # 发现问题1：截断阈值
-    print("\n⚠️  发现问题1：硬截断阈值 delta_h_effective = max(1e-4, delta_h)")
+    print("\n️  发现问题1：硬截断阈值 delta_h_effective = max(1e-4, delta_h)")
     print("   当 delta_h < 1e-4 时，使用固定值 1e-4，引入系统性误差")
     print("   建议：使用更小的截断值（1e-6）或平滑过渡函数")
 
@@ -96,7 +96,7 @@ def diagnose_smoothing_conservation():
     conservation_error = abs(np.mean(Q_smoothed) - np.mean(Q_array))
     print(f"\n守恒性误差: {conservation_error:.6f} m³/s ({conservation_error/Q_upstream*100:.4f}%)")
 
-    print("\n⚠️  发现问题2：邻近节点平滑破坏守恒性")
+    print("\n️  发现问题2：邻近节点平滑破坏守恒性")
     print("   Q_neighbor_target = 0.5 * (Q[idx-2] + Q_gate) 不守恒")
     print("   建议：使用守恒的平滑方法或减小smooth_weight")
 
@@ -145,7 +145,7 @@ def diagnose_spatial_filter():
         max_error_outside = np.max(np.abs(filter_error[non_protected_indices]))
         print(f"非保护区域最大误差：{max_error_outside:.6f} m³/s ({max_error_outside/10.0*100:.4f}%)")
 
-    print("\n⚠️  发现问题3：空间滤波器在非保护区域引入误差")
+    print("\n️  发现问题3：空间滤波器在非保护区域引入误差")
     print("   即使有保护机制，滤波器仍会在远离闸门的区域引入误差")
     print("   建议：在稳态求解时禁用滤波器，或使用更保守的滤波参数")
 
@@ -180,7 +180,7 @@ def diagnose_preissmann_dissipation():
     print(f"h_explicit = {h_explicit:.4f} m (完全显式)")
     print(f"\n数值耗散：{dissipation:.6f} m ({dissipation_percent:.2f}% of 增量)")
 
-    print("\n⚠️  发现问题4：Preissmann格式引入数值耗散")
+    print("\n️  发现问题4：Preissmann格式引入数值耗散")
     print(f"   当前配置下，约{dissipation_percent:.1f}%的更新被耗散掉")
     print("   建议：调整theta和omega以减少耗散，或使用更高精度的时间离散")
 
@@ -199,7 +199,7 @@ def diagnose_upwind_scheme():
     print("  - 迎风差分：一阶精度，O(dx)")
     print(f"  - 混合格式：约 {upwind_ratio*1 + (1-upwind_ratio)*2:.1f} 阶精度")
 
-    print("\n⚠️  发现问题5：迎风格式引入一阶耗散误差")
+    print("\n️  发现问题5：迎风格式引入一阶耗散误差")
     print(f"   {upwind_ratio*100:.0f}%的迎风成分会降低整体精度")
     print("   建议：在稳态求解时减少或去除迎风成分")
 
@@ -228,7 +228,7 @@ def diagnose_grid_dependency():
         dx = total_length / (nx - 1)
         print(f"{nx:<10} {dx:<15.2f} {error:<15.2f} {status}")
 
-    print("\n⚠️  发现问题6：网格细化导致精度恶化（异常！）")
+    print("\n️  发现问题6：网格细化导致精度恶化（异常！）")
     print("   理论上细网格应该更精确，但实际结果相反")
     print("   可能原因：")
     print("   1. Preissmann格式在细网格上数值不稳定")
@@ -299,7 +299,7 @@ def test_current_solver():
     print(f"  平均相对误差: {Q_mean_error:.4f}%")
     print(f"  闸门流量: {result['gate_flows']}")
 
-    print("\n✓ 确认当前精度约为 2-3%，距离0.5%目标还差4-5倍")
+    print("\n 确认当前精度约为 2-3%，距离0.5%目标还差4-5倍")
 
 
 def main():
@@ -357,12 +357,12 @@ def main():
     print("=" * 80)
     print()
     print("高优先级：")
-    print("  ✓ 修复问题2（守恒性破坏）- 预期改善0.5-1.0%")
-    print("  ✓ 修复问题1（截断阈值）- 预期改善0.1-0.3%")
+    print("   修复问题2（守恒性破坏）- 预期改善0.5-1.0%")
+    print("   修复问题1（截断阈值）- 预期改善0.1-0.3%")
     print()
     print("中优先级：")
-    print("  ✓ 优化问题3（滤波器）- 预期改善0.1-0.2%")
-    print("  ✓ 调整问题4（Preissmann参数）- 预期改善0.1-0.2%")
+    print("   优化问题3（滤波器）- 预期改善0.1-0.2%")
+    print("   调整问题4（Preissmann参数）- 预期改善0.1-0.2%")
     print()
     print("低优先级：")
     print("  - 问题5（迎风格式）- 结构性问题，难以修复")

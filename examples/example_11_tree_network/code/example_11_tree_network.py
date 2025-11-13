@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
@@ -46,10 +47,10 @@ def example_tree_network():
 
     print("\n分支节点流量分配:")
     branch_node = topology.nodes["分水口"]
-    # print(f"入流: {sum(topology.edges[e].flow for e in branch_node.incoming_edges):.2f} m³/s")
+    # print(f"入流: {sum(topology.edges[e].flow for e in branch_node.incoming_edges):.2f} m^3/s")
     for edge_id in branch_node.outgoing_edges:
         edge = topology.edges[edge_id]
-        print(f"  {edge_id}: {edge.flow:.2f} m³/s")
+        print(f"  {edge_id}: {edge.flow:.2f} m^3/s")
 
 if __name__ == "__main__":
     example_tree_network()

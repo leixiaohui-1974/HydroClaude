@@ -89,7 +89,7 @@ def main():
     nx = 201         # 空间网格数
 
     # 边界条件
-    Q_upstream = 8.0  # 上游流量 (m³/s)
+    Q_upstream = 8.0  # 上游流量 (m^3/s)
 
     # 计算理论水深
     h_downstream = compute_steady_uniform_flow(Q_upstream, B, S0, n)
@@ -99,7 +99,7 @@ def main():
     print(f"渠底坡度: {S0}")
     print(f"Manning糙率: {n}")
     print(f"网格数: {nx}")
-    print(f"上游流量: {Q_upstream} m³/s")
+    print(f"上游流量: {Q_upstream} m^3/s")
     print(f"理论水深: {h_downstream:.6f} m")
 
     # 时间参数
@@ -157,7 +157,7 @@ def main():
             if (i+1) % 100 == 0:
                 h_avg = np.mean(h)
                 Q_avg = np.mean(Q)
-                print(f"  Step {i+1}/{n_steps}: h_avg={h_avg:.6f} m, Q_avg={Q_avg:.6f} m³/s")
+                print(f"  Step {i+1}/{n_steps}: h_avg={h_avg:.6f} m, Q_avg={Q_avg:.6f} m^3/s")
 
         # 保存结果
         results[method] = {
@@ -166,7 +166,7 @@ def main():
             'history': solver.get_history()
         }
 
-        print(f"✓ {method} 完成")
+        print(f" {method} 完成")
 
     # ========================================================================
     # 4. 稳定性评估
@@ -295,9 +295,9 @@ def main():
                         'Upstream h': 'Water Depth (m)',
                         'Midstream h': 'Water Depth (m)',
                         'Downstream h': 'Water Depth (m)',
-                        'Upstream Q': 'Flow Rate (m³/s)',
-                        'Midstream Q': 'Flow Rate (m³/s)',
-                        'Downstream Q': 'Flow Rate (m³/s)',
+                        'Upstream Q': 'Flow Rate (m^3/s)',
+                        'Midstream Q': 'Flow Rate (m^3/s)',
+                        'Downstream Q': 'Flow Rate (m^3/s)',
                     },
                     reference_lines={
                         'Upstream h': h_downstream,
@@ -309,9 +309,9 @@ def main():
                     },
                     layout=(2, 3)
                 )
-                print(f"  ✓ 时间序列动画已保存: {os.path.basename(gif_path)}")
+                print(f"   时间序列动画已保存: {os.path.basename(gif_path)}")
             except Exception as e:
-                print(f"  ✗ 时间序列动画生成失败: {e}")
+                print(f"   时间序列动画生成失败: {e}")
 
             # 空间分布动画
             try:
@@ -330,13 +330,13 @@ def main():
                     xlabel='Distance (m)',
                     ylabels={
                         'Water Depth': 'h (m)',
-                        'Flow Rate': 'Q (m³/s)',
+                        'Flow Rate': 'Q (m^3/s)',
                     },
                     layout=(2, 1)
                 )
-                print(f"  ✓ 空间分布动画已保存: {os.path.basename(gif_path)}")
+                print(f"   空间分布动画已保存: {os.path.basename(gif_path)}")
             except Exception as e:
-                print(f"  ✗ 空间分布动画生成失败: {e}")
+                print(f"   空间分布动画生成失败: {e}")
 
         print(f"\n所有动画已保存到: {animation_dir}")
 
@@ -360,7 +360,7 @@ def main():
         print(f"  上游流量CV: {metrics['cv_Q_upstream']:.6f}%")
         print(f"  下游流量CV: {metrics['cv_Q_downstream']:.6f}%")
         print(f"  最大CV: {metrics['max_cv']:.6f}%")
-        print(f"  收敛状态: {'✓ 收敛' if metrics['converged'] else '✗ 未收敛'}")
+        print(f"  收敛状态: {' 收敛' if metrics['converged'] else ' 未收敛'}")
 
     # ========================================================================
     # 完成
@@ -371,7 +371,7 @@ def main():
     print(f"\n所有图表已保存到: {output_dir}")
     if args.animate:
         print(f"所有动画已保存到: {animation_dir}")
-    print("\n✅ 例子1（嵌入动画版本）运行成功")
+    print("\n 例子1（嵌入动画版本）运行成功")
 
 
 if __name__ == '__main__':

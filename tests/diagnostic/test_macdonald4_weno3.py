@@ -20,7 +20,13 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 import numpy as np
 import pytest
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 class TestMacDonald4WENO3:
@@ -47,7 +53,7 @@ class TestMacDonald4WENO3:
         Fr_up = u_up / np.sqrt(self.g * self.h_up)
 
         print(f"\nTest 4 Setup:")
-        print(f"  上游: h={self.h_up}m, Q={self.Q}m³/s, Fr={Fr_up:.3f}")
+        print(f"  上游: h={self.h_up}m, Q={self.Q}m^3/s, Fr={Fr_up:.3f}")
         print(f"  下游: h={self.h_down}m")
 
     def test_weno3_linear_init(self):
@@ -143,20 +149,20 @@ class TestMacDonald4WENO3:
         # 期望: < 20% 误差（激波问题本质困难）
         print(f"\n评估:")
         if mass_error < 20.0:
-            print(f"  ✅ 质量守恒改善: {mass_error:.2f}% < 20%")
+            print(f"   质量守恒改善: {mass_error:.2f}% < 20%")
             status_mass = "PASS"
         elif mass_error < 40.0:
-            print(f"  ⚠️  质量守恒中等: {mass_error:.2f}% < 40%")
+            print(f"  ️  质量守恒中等: {mass_error:.2f}% < 40%")
             status_mass = "ACCEPTABLE"
         else:
-            print(f"  ❌ 质量守恒仍差: {mass_error:.2f}%")
+            print(f"   质量守恒仍差: {mass_error:.2f}%")
             status_mass = "FAIL"
 
         if Fr_upstream > 1.0:
-            print(f"  ✅ 上游超临界维持: Fr={Fr_upstream:.3f} > 1")
+            print(f"   上游超临界维持: Fr={Fr_upstream:.3f} > 1")
             status_Fr = "PASS"
         else:
-            print(f"  ❌ 上游超临界失败: Fr={Fr_upstream:.3f} < 1")
+            print(f"   上游超临界失败: Fr={Fr_upstream:.3f} < 1")
             status_Fr = "FAIL"
 
         print(f"\n总体状态: {status_mass} / {status_Fr}")
@@ -240,7 +246,7 @@ class TestMacDonald4WENO3:
 
         print(f"\n初始状态:")
         print(f"  超临界单元: {n_super_init}/{self.n_cells}")
-        print(f"  质量: {mass_init:.2f} m³")
+        print(f"  质量: {mass_init:.2f} m^3")
 
         # 运行模拟
         t_end = 100.0
@@ -288,14 +294,14 @@ class TestMacDonald4WENO3:
         # 评估
         print(f"\n评估:")
         if mass_error < 30.0:
-            print(f"  ✅ 质量守恒可接受: {mass_error:.2f}% < 30%")
+            print(f"   质量守恒可接受: {mass_error:.2f}% < 30%")
         else:
-            print(f"  ❌ 质量守恒较差: {mass_error:.2f}%")
+            print(f"   质量守恒较差: {mass_error:.2f}%")
 
         if Fr[0] > 1.0:
-            print(f"  ✅ 上游超临界维持: Fr={Fr[0]:.3f} > 1")
+            print(f"   上游超临界维持: Fr={Fr[0]:.3f} > 1")
         else:
-            print(f"  ❌ 上游超临界丢失: Fr={Fr[0]:.3f}")
+            print(f"   上游超临界丢失: Fr={Fr[0]:.3f}")
 
         shrinkage = (n_super_init - n_super_final) / n_super_init * 100
         print(f"  超临界区域收缩: {shrinkage:.1f}%")
@@ -349,12 +355,12 @@ class TestMacDonald4WENO3:
 
         print(f"\n溃坝测试结果:")
         print(f"  质量误差: {mass_error:.2f}%")
-        print(f"  激波捕捉: {'✅ 良好' if mass_error < 2.0 else '⚠️ 一般'}")
+        print(f"  激波捕捉: {' 良好' if mass_error < 2.0 else '️ 一般'}")
 
         # WENO3对溃坝问题应有很好的质量守恒
         assert mass_error < 5.0, f"溃坝质量守恒失败: {mass_error:.2f}%"
 
-        print(f"  ✅ WENO3激波捕捉能力验证通过")
+        print(f"   WENO3激波捕捉能力验证通过")
 
 
 if __name__ == '__main__':
@@ -371,31 +377,31 @@ if __name__ == '__main__':
     try:
         test.setup_method()
         test.test_weno3_linear_init()
-        print("\n✅ 测试1通过")
+        print("\n 测试1通过")
     except AssertionError as e:
-        print(f"\n❌ 测试1失败: {e}")
+        print(f"\n 测试1失败: {e}")
     except Exception as e:
-        print(f"\n❌ 测试1错误: {e}")
+        print(f"\n 测试1错误: {e}")
 
     # 运行测试2
     try:
         test.setup_method()
         test.test_weno3_preformed_jump()
-        print("\n✅ 测试2通过")
+        print("\n 测试2通过")
     except AssertionError as e:
-        print(f"\n❌ 测试2失败: {e}")
+        print(f"\n 测试2失败: {e}")
     except Exception as e:
-        print(f"\n❌ 测试2错误: {e}")
+        print(f"\n 测试2错误: {e}")
 
     # 运行测试3
     try:
         test.setup_method()
         test.test_weno3_shock_resolution()
-        print("\n✅ 测试3通过")
+        print("\n 测试3通过")
     except AssertionError as e:
-        print(f"\n❌ 测试3失败: {e}")
+        print(f"\n 测试3失败: {e}")
     except Exception as e:
-        print(f"\n❌ 测试3错误: {e}")
+        print(f"\n 测试3错误: {e}")
 
     print("\n" + "="*70)
     print("所有测试完成")

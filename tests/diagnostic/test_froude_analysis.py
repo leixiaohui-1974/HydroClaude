@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def analyze_froude():
@@ -54,7 +60,7 @@ def analyze_froude():
 
     # 计算每个单元的Froude数
     print(f"\n第{step+1}步后的状态:")
-    print(f"\n{'单元':>4} {'x(m)':>8} {'h(m)':>8} {'Q(m³/s)':>10} {'u(m/s)':>8} {'Fr':>8} {'状态':>10}")
+    print(f"\n{'单元':>4} {'x(m)':>8} {'h(m)':>8} {'Q(m^3/s)':>10} {'u(m/s)':>8} {'Fr':>8} {'状态':>10}")
     print("-" * 80)
 
     for i in range(n_cells):

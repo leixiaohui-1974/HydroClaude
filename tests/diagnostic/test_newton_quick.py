@@ -9,7 +9,13 @@ import time
 sys.path.insert(0, '.')
 
 from physics.steady_saint_venant import SteadySaintVenantSystem
-from solvers.newton_solver import NewtonSolver
+try:
+    from solvers.newton_solver import NewtonSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from utils.canal_utils import compute_steady_uniform_flow
 
 print('='*80)
@@ -31,7 +37,7 @@ h_uniform = compute_steady_uniform_flow(Q_target, B, S0, n)
 print(f'\n系统配置:')
 print(f'  渠道长度: {length} m')
 print(f'  节点数: {nx}')
-print(f'  目标流量: {Q_target} m³/s')
+print(f'  目标流量: {Q_target} m^3/s')
 print(f'  均匀流水深: {h_uniform:.3f} m')
 
 # 设置边界条件（关键：同时指定Q和h）
@@ -77,9 +83,9 @@ if info['converged']:
     h_sol, Q_sol = system.unpack_state(U_solution)
     print(f'\n解的物理检查:')
     print(f'  水深范围: [{h_sol.min():.3f}, {h_sol.max():.3f}] m')
-    print(f'  流量范围: [{Q_sol.min():.3f}, {Q_sol.max():.3f}] m³/s')
+    print(f'  流量范围: [{Q_sol.min():.3f}, {Q_sol.max():.3f}] m^3/s')
     print(f'  水深偏差: {np.abs(h_sol - h_uniform).max():.2e} m')
-    print(f'  流量偏差: {np.abs(Q_sol - Q_target).max():.2e} m³/s')
+    print(f'  流量偏差: {np.abs(Q_sol - Q_target).max():.2e} m^3/s')
 
     if info['iterations'] <= 10:
         print(f'\nSUCCESS: 牛顿法快速收敛！({info["iterations"]}次迭代)')

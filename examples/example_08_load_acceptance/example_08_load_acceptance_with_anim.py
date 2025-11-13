@@ -17,6 +17,8 @@ import sys
 import os
 import numpy as np
 import argparse
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 # 添加项目根目录
@@ -45,7 +47,7 @@ def run_example(args):
 
     # 仿真参数
     dt = 0.1
-    t_end = 60.0
+    t_end = 30.0
     n_steps = int(t_end / dt)
 
     # 数据存储
@@ -121,7 +123,7 @@ def run_example(args):
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
     plt.close()
 
-    print(f"\n✓ 静态图表已保存: {fig_path}")
+    print(f"\n 静态图表已保存: {fig_path}")
 
     # 生成动画
     if args.animate:
@@ -142,11 +144,11 @@ def run_example(args):
                 reference_lines={'Speed': 1.0, 'Pressure': 1.0},
                 layout=(2, 2)
             )
-            print(f"✓ 动画已保存: {os.path.basename(gif_path)}")
+            print(f" 动画已保存: {os.path.basename(gif_path)}")
         except Exception as e:
-            print(f"✗ 动画生成失败: {e}")
+            print(f" 动画生成失败: {e}")
 
-    print("\n✅ 示例8（增强版）运行成功")
+    print("\n 示例8（增强版）运行成功")
 
 
 if __name__ == "__main__":

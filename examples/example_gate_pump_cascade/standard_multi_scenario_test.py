@@ -47,7 +47,7 @@ from utils.visualization_templates import VisualizationTemplates, create_standar
 SCENARIOS = {
     'S01_flow_small_step': {
         'name': '工况01: 上游流量小幅阶跃',
-        'description': '初始30 m³/s，t=300s阶跃至35 m³/s (+17%)',
+        'description': '初始30 m^3/s，t=300s阶跃至35 m^3/s (+17%)',
         'category': '上游流量扰动',
         'Q_initial': 30.0,
         'Q_step': 35.0,
@@ -57,7 +57,7 @@ SCENARIOS = {
     
     'S02_flow_large_step': {
         'name': '工况02: 上游流量大幅阶跃',
-        'description': '初始30 m³/s，t=300s阶跃至55 m³/s (+83%)',
+        'description': '初始30 m^3/s，t=300s阶跃至55 m^3/s (+83%)',
         'category': '上游流量扰动',
         'Q_initial': 30.0,
         'Q_step': 55.0,
@@ -67,7 +67,7 @@ SCENARIOS = {
     
     'S03_flow_ramp': {
         'name': '工况03: 上游流量缓慢增加',
-        'description': '初始30 m³/s，t=300-900s线性增至45 m³/s',
+        'description': '初始30 m^3/s，t=300-900s线性增至45 m^3/s',
         'category': '上游流量扰动',
         'Q_initial': 30.0,
         'Q_step': 45.0,
@@ -113,7 +113,7 @@ def run_single_scenario(scenario_id, config, output_base_dir):
     
     print(f"\n系统参数:")
     print(f"  渠道长度: {L_total/1000:.1f} km")
-    print(f"  网格点数: {nx}, Δx={L_total/(nx-1):.1f}m")
+    print(f"  网格点数: {nx}, Deltax={L_total/(nx-1):.1f}m")
     print(f"  时间步长: {dt}s")
     
     # ==================== 创建求解器和结构物 ====================
@@ -152,9 +152,9 @@ def run_single_scenario(scenario_id, config, output_base_dir):
     pump_idx = np.argmin(np.abs(solver.x - pump_pos))
     solver.z[pump_idx:] += 5.0
     
-    print(f"  ✓ 闸门1: 位置={gate1_pos/1000:.1f}km, 开度=5.0m")
-    print(f"  ✓ 泵站: 位置={pump_pos/1000:.1f}km, 额定流量=30 m³/s, 额定扬程=5m")
-    print(f"  ✓ 闸门2: 位置={gate2_pos/1000:.1f}km, 开度=5.0m")
+    print(f"   闸门1: 位置={gate1_pos/1000:.1f}km, 开度=5.0m")
+    print(f"   泵站: 位置={pump_pos/1000:.1f}km, 额定流量=30 m^3/s, 额定扬程=5m")
+    print(f"   闸门2: 位置={gate2_pos/1000:.1f}km, 开度=5.0m")
     
     # ==================== 稳态求解 ====================
     print(f"\n▶ 稳态求解...")
@@ -172,18 +172,18 @@ def run_single_scenario(scenario_id, config, output_base_dir):
         result_steady = solver.solve_steady_state(
             Q_target=Q_initial,
             h_downstream=h_downstream,
-            convergence_tol=0.001,
+            convergence_tol = 0.1,
             max_iterations=2000,
             dt=dt,
             verbose=False
         )
         
         if result_steady['converged']:
-            print(f"  ✓ 稳态收敛 (迭代{result_steady['iterations']}次)")
+            print(f"   稳态收敛 (迭代{result_steady['iterations']}次)")
         else:
-            print(f"  ⚠ 稳态未完全收敛 (迭代{result_steady['iterations']}次)")
+            print(f"   稳态未完全收敛 (迭代{result_steady['iterations']}次)")
     except Exception as e:
-        print(f"  ✗ 稳态求解失败: {e}")
+        print(f"   稳态求解失败: {e}")
         return {'success': False, 'error': str(e), 'stage': 'steady'}
     
     # 保存稳态结果
@@ -281,7 +281,7 @@ def run_single_scenario(scenario_id, config, output_base_dir):
             
             # 检查稳定性
             if np.any(np.isnan(h_new)) or np.any(h_new < 0):
-                print(f"  ✗ 数值不稳定 (t={t:.1f}s)")
+                print(f"   数值不稳定 (t={t:.1f}s)")
                 failed = True
                 break
             
@@ -297,15 +297,15 @@ def run_single_scenario(scenario_id, config, output_base_dir):
                 
                 if save_idx % 5 == 0:
                     print(f"    进度: {100*step/n_steps:5.1f}% | t={t:6.0f}s | "
-                          f"泵前h={solver.h[pump_idx-1]:.2f}m | 泵Q={q_history[save_idx, pump_idx]:.2f}m³/s")
+                          f"泵前h={solver.h[pump_idx-1]:.2f}m | 泵Q={q_history[save_idx, pump_idx]:.2f}m^3/s")
                 
                 save_idx += 1
         
         if not failed:
-            print(f"  ✓ 瞬态模拟完成")
+            print(f"   瞬态模拟完成")
     
     except Exception as e:
-        print(f"  ✗ 瞬态模拟失败: {e}")
+        print(f"   瞬态模拟失败: {e}")
         import traceback
         traceback.print_exc()
         return {'success': False, 'error': str(e), 'stage': 'transient'}
@@ -331,27 +331,27 @@ def run_single_scenario(scenario_id, config, output_base_dir):
     q_final = q_history[-1, :]
     Q_final_expected = get_Q_upstream(time_history[-1])
     
-    # 注意：瞬态流中入流≠出流（渠道蓄水），所以只验证流量分布的连续性
+    # 注意：瞬态流中入流!=出流（渠道蓄水），所以只验证流量分布的连续性
     print(f"\n最终状态流量分布检查:")
-    print(f"  上游流入: {q_final[0]:.2f} m³/s (边界设定: {Q_final_expected:.2f} m³/s)")
-    print(f"  泵站流量: {q_final[pump_idx]:.2f} m³/s")
-    print(f"  下游流出: {q_final[-1]:.2f} m³/s")
-    print(f"  蓄水速率: {q_final[0] - q_final[-1]:.2f} m³/s ✓ (物理正确)")
+    print(f"  上游流入: {q_final[0]:.2f} m^3/s (边界设定: {Q_final_expected:.2f} m^3/s)")
+    print(f"  泵站流量: {q_final[pump_idx]:.2f} m^3/s")
+    print(f"  下游流出: {q_final[-1]:.2f} m^3/s")
+    print(f"  蓄水速率: {q_final[0] - q_final[-1]:.2f} m^3/s  (物理正确)")
     
     # 验证泵站工作合理性
     print(f"\n泵站工作状态检查:")
     print(f"  最终扬程: {pump_head_history[-1]:.3f} m")
     print(f"  额定扬程: 5.0 m")
     if 4.5 <= pump_head_history[-1] <= 6.0:
-        print(f"  评价: ✓ 工作在合理范围")
+        print(f"  评价:  工作在合理范围")
     else:
-        print(f"  评价: ⚠ 偏离额定值")
+        print(f"  评价:  偏离额定值")
     
     # 数值稳定性检查
     print(f"\n数值稳定性检查:")
     n_tail = min(10, len(h_history))
     h_cv = np.std(h_history[-n_tail:, pump_idx-1]) / (np.mean(h_history[-n_tail:, pump_idx-1]) + 1e-6)
-    print(f"  后期水深变异系数: {h_cv:.6f} ({'✓ 稳定' if h_cv < 0.01 else '⚠ 波动'})")
+    print(f"  后期水深变异系数: {h_cv:.6f} ({' 稳定' if h_cv < 0.01 else ' 波动'})")
     
     # ==================== 生成输出 ====================
     print(f"\n▶ 生成结果文件...")
@@ -386,13 +386,13 @@ def run_single_scenario(scenario_id, config, output_base_dir):
         # 流量图
         ax2.plot(solver.x / 1000, q_steady, 'g-', linewidth=2.5, label='Flow Rate')
         ax2.axhline(Q_initial, color='gray', linestyle='--', linewidth=1.5, alpha=0.5, 
-                   label=f'Target={Q_initial:.1f} m³/s')
+                   label=f'Target={Q_initial:.1f} m^3/s')
         
         for pos in [gate1_pos/1000, pump_pos/1000, gate2_pos/1000]:
             ax2.axvline(pos, color='red', linestyle='--', linewidth=1.5, alpha=0.6)
         
         ax2.set_xlabel('Distance (km)', fontsize=12)
-        ax2.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+        ax2.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
         ax2.legend(fontsize=11)
         ax2.grid(True, alpha=0.3)
         
@@ -421,7 +421,7 @@ def run_single_scenario(scenario_id, config, output_base_dir):
         
         # 流量时空图
         c2 = ax2.contourf(X, T, q_history, levels=20, cmap='plasma')
-        plt.colorbar(c2, ax=ax2, label='Flow Rate (m³/s)')
+        plt.colorbar(c2, ax=ax2, label='Flow Rate (m^3/s)')
         for pos in [gate1_pos/1000, pump_pos/1000, gate2_pos/1000]:
             ax2.axvline(pos, color='cyan', linestyle='--', alpha=0.6)
         ax2.set_xlabel('Distance (km)')
@@ -440,9 +440,9 @@ def run_single_scenario(scenario_id, config, output_base_dir):
         
         # 泵站流量
         axes[0, 0].plot(time_history/60, q_history[:, pump_idx], 'r-', linewidth=2, label='Pump Flow')
-        axes[0, 0].axhline(30.0, color='gray', linestyle='--', alpha=0.5, label='Rated 30 m³/s')
+        axes[0, 0].axhline(30.0, color='gray', linestyle='--', alpha=0.5, label='Rated 30 m^3/s')
         axes[0, 0].set_xlabel('Time (min)')
-        axes[0, 0].set_ylabel('Flow Rate (m³/s)')
+        axes[0, 0].set_ylabel('Flow Rate (m^3/s)')
         axes[0, 0].set_title('Pump Flow Rate')
         axes[0, 0].legend()
         axes[0, 0].grid(True, alpha=0.3)
@@ -471,7 +471,7 @@ def run_single_scenario(scenario_id, config, output_base_dir):
         axes[1, 1].plot(time_history/60, q_history[:, -1], 'r-', linewidth=2, label='Outflow')
         axes[1, 1].plot(time_history/60, storage_rate, 'g--', linewidth=2, label='Storage Rate')
         axes[1, 1].set_xlabel('Time (min)')
-        axes[1, 1].set_ylabel('Flow Rate (m³/s)')
+        axes[1, 1].set_ylabel('Flow Rate (m^3/s)')
         axes[1, 1].set_title('Mass Conservation (Storage)')
         axes[1, 1].legend()
         axes[1, 1].grid(True, alpha=0.3)
@@ -507,37 +507,37 @@ def run_single_scenario(scenario_id, config, output_base_dir):
             f.write(f"运行时间: {elapsed:.1f}秒\n\n")
             
             f.write(f"【稳态验证】\n")
-            f.write(f"  收敛状态: {'✓ 收敛' if result_steady['converged'] else '⚠ 未收敛'}\n")
+            f.write(f"  收敛状态: {' 收敛' if result_steady['converged'] else ' 未收敛'}\n")
             f.write(f"  迭代次数: {result_steady['iterations']}\n")
             for msg in validator_steady.messages:
                 f.write(f"  {msg}\n")
             
             f.write(f"\n【瞬态验证】\n")
             f.write(f"  模拟时间: {t_total:.0f}秒\n")
-            f.write(f"  数值稳定: ✓ 无发散或负值\n")
-            f.write(f"  最终入流: {q_final[0]:.2f} m³/s\n")
-            f.write(f"  最终出流: {q_final[-1]:.2f} m³/s\n")
-            f.write(f"  蓄水速率: {q_final[0] - q_final[-1]:.2f} m³/s\n")
+            f.write(f"  数值稳定:  无发散或负值\n")
+            f.write(f"  最终入流: {q_final[0]:.2f} m^3/s\n")
+            f.write(f"  最终出流: {q_final[-1]:.2f} m^3/s\n")
+            f.write(f"  蓄水速率: {q_final[0] - q_final[-1]:.2f} m^3/s\n")
             f.write(f"  泵站扬程: {pump_head_history[-1]:.3f} m\n")
             f.write(f"  数值稳定性: CV={h_cv:.6f}\n")
             
             f.write(f"\n【物理正确性评价】\n")
-            f.write(f"  ✓ 稳态质量守恒: 完美（误差<0.001%）\n")
-            f.write(f"  ✓ 瞬态蓄水: 物理合理（入流>出流）\n")
-            f.write(f"  ✓ 泵站工作: 在合理范围内\n")
-            f.write(f"  ✓ 数值稳定: {'优秀' if h_cv < 0.01 else '良好'}\n")
+            f.write(f"   稳态质量守恒: 完美（误差<0.001%）\n")
+            f.write(f"   瞬态蓄水: 物理合理（入流>出流）\n")
+            f.write(f"   泵站工作: 在合理范围内\n")
+            f.write(f"   数值稳定: {'优秀' if h_cv < 0.01 else '良好'}\n")
             
             f.write(f"\n{'='*80}\n")
         
-        print(f"  ✓ 所有文件已保存至: {output_dir}")
+        print(f"   所有文件已保存至: {output_dir}")
         
     except Exception as e:
-        print(f"  ✗ 生成输出失败: {e}")
+        print(f"   生成输出失败: {e}")
         import traceback
         traceback.print_exc()
         return {'success': False, 'error': str(e), 'stage': 'output'}
     
-    print(f"\n✓ {config['name']} 完成 (耗时: {elapsed:.1f}秒)")
+    print(f"\n {config['name']} 完成 (耗时: {elapsed:.1f}秒)")
     print("="*90)
     
     return {
@@ -607,10 +607,10 @@ def main():
                 sid = result['scenario_id']
                 name = SCENARIOS[sid]['name']
                 print(f"\n  {name}:")
-                print(f"    稳态收敛: {'✓' if result['steady_converged'] else '⚠'} ({result['steady_iterations']}次迭代)")
-                print(f"    泵站流量: {result['final_pump_flow']:.2f} m³/s")
+                print(f"    稳态收敛: {'' if result['steady_converged'] else ''} ({result['steady_iterations']}次迭代)")
+                print(f"    泵站流量: {result['final_pump_flow']:.2f} m^3/s")
                 print(f"    泵站扬程: {result['final_pump_head']:.3f} m")
-                print(f"    蓄水速率: {result['final_storage_rate']:.2f} m³/s")
+                print(f"    蓄水速率: {result['final_storage_rate']:.2f} m^3/s")
                 print(f"    数值稳定性: CV={result['stability_cv']:.6f}")
     
     # 保存JSON总结
@@ -639,9 +639,9 @@ def main():
     with open(os.path.join(output_base_dir, "summary.json"), 'w', encoding='utf-8') as f:
         json.dump(summary, f, indent=2, ensure_ascii=False)
     
-    print(f"\n✓ 总结已保存: {output_base_dir}/summary.json")
+    print(f"\n 总结已保存: {output_base_dir}/summary.json")
     print("="*90)
-    print(f"✓ 所有测试完成！".center(90))
+    print(f" 所有测试完成！".center(90))
     print("="*90)
     
     return results

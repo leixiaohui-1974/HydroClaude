@@ -162,7 +162,14 @@ def compute_steady_uniform_flow(Q: float, B: float, S0: float, n: float,
     res_min = manning_residual(h_min)
     res_max = manning_residual(h_max)
 
-    if res_min * res_max > 0:
+    # 处理数组情况：使用np.all确保所有元素都满足条件
+    product = res_min * res_max
+    if np.isscalar(product):
+        same_sign = product > 0
+    else:
+        same_sign = np.all(product > 0)
+    
+    if same_sign:
         # 同号，使用经验公式估算
         h_est = (Q * n / (B * S0**0.5)) ** (3.0/5.0)
         return max(0.5, min(10.0, h_est))
@@ -172,10 +179,22 @@ def compute_steady_uniform_flow(Q: float, B: float, S0: float, n: float,
         h_mid = (h_min + h_max) / 2
         res_mid = manning_residual(h_mid)
 
-        if abs(res_mid) < tol:
+        abs_res_mid = np.abs(res_mid) if not np.isscalar(res_mid) else abs(res_mid)
+        if np.isscalar(abs_res_mid):
+            converged = abs_res_mid < tol
+        else:
+            converged = np.all(abs_res_mid < tol)
+        
+        if converged:
             return h_mid
 
-        if res_mid * res_min < 0:
+        product_check = res_mid * res_min
+        if np.isscalar(product_check):
+            opposite_sign = product_check < 0
+        else:
+            opposite_sign = np.any(product_check < 0)
+        
+        if opposite_sign:
             h_max = h_mid
             res_max = res_mid
         else:
@@ -458,4 +477,4 @@ if __name__ == '__main__':
     c = compute_wave_speed(h_array)
     print(f"波速 c = {c[0]:.3f} m/s")
 
-    print("\n✅ 所有测试通过")
+    print("\n 所有测试通过")

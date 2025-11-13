@@ -28,10 +28,10 @@ class PreissmannSolverV3Scaled:
     Preissmann四点隐式格式求解器 v3.0
     
     关键改进：
-    1. ✅ 变量缩放（解决矩阵病态）
-    2. ✅ 正确的方程结构
-    3. ✅ GMRES求解器（更鲁棒）
-    4. ✅ 简化的边界条件
+    1.  变量缩放（解决矩阵病态）
+    2.  正确的方程结构
+    3.  GMRES求解器（更鲁棒）
+    4.  简化的边界条件
     """
     
     def __init__(
@@ -164,12 +164,12 @@ class PreissmannSolverV3Scaled:
             if residual_norm < self.tolerance:
                 self.last_iterations = iteration + 1
                 if self.verbose:
-                    print(f"  ✅ 收敛")
+                    print(f"   收敛")
                 break
         else:
             self.last_iterations = self.max_iter
             if self.verbose:
-                print(f"  ⚠️ 未收敛，残差={residual_norm:.6e}")
+                print(f"  ️ 未收敛，残差={residual_norm:.6e}")
         
         # ========== 还原到物理变量 ==========
         h_new = h_new_scaled * self.h_scale
@@ -430,5 +430,5 @@ if __name__ == "__main__":
         print(f"  质量误差: {mass_error:.6f}%")
         print(f"  max|Q|: {np.max(np.abs(Q)):.6e}")
     
-    print(f"\n最终: 质量误差 {mass_error:.6f}% {'✅' if abs(mass_error)<0.1 else '❌'}")
+    print(f"\n最终: 质量误差 {mass_error:.6f}% {'' if abs(mass_error)<0.1 else ''}")
     print("="*80)

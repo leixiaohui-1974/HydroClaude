@@ -29,10 +29,10 @@ class BrowserTester:
         self.passed_count = 0
         
     def log_success(self, message):
-        print(f"{Colors.OKGREEN}✅ {message}{Colors.ENDC}")
+        print(f"{Colors.OKGREEN} {message}{Colors.ENDC}")
         
     def log_error(self, message):
-        print(f"{Colors.FAIL}❌ {message}{Colors.ENDC}")
+        print(f"{Colors.FAIL} {message}{Colors.ENDC}")
         
     def log_info(self, message):
         print(f"{Colors.OKCYAN}ℹ️  {message}{Colors.ENDC}")
@@ -409,10 +409,10 @@ class BrowserTester:
         
         # 最终结论
         if success:
-            self.log_header("🎉 测试成功！")
+            self.log_header(" 测试成功！")
             self.log_success("浏览器测试通过，系统运行正常")
         else:
-            self.log_header("⚠️  测试完成，但存在问题")
+            self.log_header("️  测试完成，但存在问题")
             self.log_error("部分测试未通过，请查看详细报告")
             
         return success

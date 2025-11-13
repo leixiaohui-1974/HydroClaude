@@ -16,6 +16,8 @@
 """
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 from pathlib import Path
@@ -58,7 +60,7 @@ def example_1_basic_bridge_flow():
 
     # 不同水位组合
     print(f"\n过流计算：")
-    print(f"{'上游(m)':>10} {'下游(m)':>10} {'流态':>20} {'流量(m³/s)':>15} {'流速(m/s)':>12} {'水头损失(m)':>15}")
+    print(f"{'上游(m)':>10} {'下游(m)':>10} {'流态':>20} {'流量(m^3/s)':>15} {'流速(m/s)':>12} {'水头损失(m)':>15}")
     print("-" * 95)
 
     test_cases = [
@@ -113,7 +115,7 @@ def example_2_flow_regime_transition():
 
     print(f"\n固定上游水位: {h_upstream:.1f} m")
     print(f"变化下游水位: {h_downstream_values[0]:.1f} - {h_downstream_values[-1]:.1f} m")
-    print(f"\n{'下游(m)':>10} {'流态':>20} {'流量(m³/s)':>15} {'水头损失(m)':>15}")
+    print(f"\n{'下游(m)':>10} {'流态':>20} {'流量(m^3/s)':>15} {'水头损失(m)':>15}")
     print("-" * 72)
 
     Q_values = []
@@ -136,9 +138,9 @@ def example_2_flow_regime_transition():
 
     print("\n分析：")
     print(f"  1. 下游水位 < {bridge.z_deck:.1f}m (桥面)：自由流")
-    print(f"  2. 下游水位 ≥ {bridge.z_deck:.1f}m (桥面)：压力流")
-    print(f"  3. 自由流 → 压力流转换点：下游水位 = 桥面高程")
-    print(f"  4. 下游水位升高 → 水头差减小 → 流量减小")
+    print(f"  2. 下游水位 >= {bridge.z_deck:.1f}m (桥面)：压力流")
+    print(f"  3. 自由流 -> 压力流转换点：下游水位 = 桥面高程")
+    print(f"  4. 下游水位升高 -> 水头差减小 -> 流量减小")
 
 
 def example_3_backwater_effect():
@@ -186,11 +188,11 @@ def example_3_backwater_effect():
         # 验证流量
         result = bridge.compute_discharge(h_upstream, h_downstream)
 
-        print(f"Q={Q:>3d} m³/s {h_upstream:>15.3f} {backwater_height:>15.3f} "
+        print(f"Q={Q:>3d} m^3/s {h_upstream:>15.3f} {backwater_height:>15.3f} "
               f"{result['head_loss']:>15.3f} {result['velocity']:>12.3f}")
 
     print("\n结论：")
-    print("  1. 流量增大 → 上游壅水增高")
+    print("  1. 流量增大 -> 上游壅水增高")
     print("  2. 壅水高度与流量平方成正比（压力流）")
     print("  3. 桥梁过流能力不足会显著抬高上游水位")
     print("  4. 设计时需考虑桥梁壅水对上游防洪的影响")
@@ -235,7 +237,7 @@ def example_4_flood_level_calculation():
     ]
 
     print(f"\n下游天然水位: {h_downstream_natural:.1f} m")
-    print(f"\n{'重现期':>12} {'流量(m³/s)':>15} {'上游水位(m)':>15} "
+    print(f"\n{'重现期':>12} {'流量(m^3/s)':>15} {'上游水位(m)':>15} "
           f"{'壅水(m)':>12} {'流态':>15} {'评价':>12}")
     print("-" * 96)
 
@@ -271,9 +273,9 @@ def example_4_flood_level_calculation():
     print(f"\n设计建议：")
     print(f"  桥面高程: {bridge.z_deck:.1f} m")
     print(f"  安全水位（含超高）: {max_safe_level:.1f} m")
-    print(f"  ✓ 5-20年一遇：安全")
-    print(f"  ⚠ 50年一遇：需核查")
-    print(f"  ✗ 100年一遇：可能超标，建议加大桥孔或加高桥面")
+    print(f"   5-20年一遇：安全")
+    print(f"   50年一遇：需核查")
+    print(f"   100年一遇：可能超标，建议加大桥孔或加高桥面")
 
 
 def example_5_bridge_capacity_assessment():
@@ -306,7 +308,7 @@ def example_5_bridge_capacity_assessment():
     h_upstream_values = np.linspace(105.5, 110.0, 10)
 
     print(f"\n下游水位固定: {h_downstream:.1f} m")
-    print(f"\n{'上游水位(m)':>15} {'水位差(m)':>12} {'流量(m³/s)':>15} "
+    print(f"\n{'上游水位(m)':>15} {'水位差(m)':>12} {'流量(m^3/s)':>15} "
           f"{'流速(m/s)':>12} {'流态':>15}")
     print("-" * 84)
 
@@ -331,13 +333,13 @@ def example_5_bridge_capacity_assessment():
     print(f"\n过流能力分析：")
     Q_max = max(Q_values)
     h_max = h_upstream_values[Q_values.index(Q_max)]
-    print(f"  最大过流量: {Q_max:.1f} m³/s")
+    print(f"  最大过流量: {Q_max:.1f} m^3/s")
     print(f"  对应上游水位: {h_max:.2f} m")
     print(f"  最大流速: {max([bridge.compute_discharge(h, h_downstream)['velocity'] for h in h_upstream_values]):.2f} m/s")
 
     # 推荐设计流量
     Q_design_recommended = Q_max * 0.85  # 85% 的最大过流量
-    print(f"\n推荐设计流量: {Q_design_recommended:.1f} m³/s (最大过流量的85%)")
+    print(f"\n推荐设计流量: {Q_design_recommended:.1f} m^3/s (最大过流量的85%)")
 
 
 def example_6_pier_effect_analysis():
@@ -366,7 +368,7 @@ def example_6_pier_effect_analysis():
 
     print(f"\n桥墩配置对比：")
     print(f"{'桥墩数':>10} {'墩宽(m)':>10} {'有效宽(m)':>12} "
-          f"{'流量(m³/s)':>15} {'流量损失(%)':>15}")
+          f"{'流量(m^3/s)':>15} {'流量损失(%)':>15}")
     print("-" * 75)
 
     pier_configs = [
@@ -405,8 +407,8 @@ def example_6_pier_effect_analysis():
               f"{Q:>15.1f} {loss_pct:>15.1f}")
 
     print("\n结论：")
-    print("  1. 桥墩数量增加 → 有效宽度减小 → 流量减小")
-    print("  2. 桥墩宽度增加 → 有效宽度减小 → 流量减小")
+    print("  1. 桥墩数量增加 -> 有效宽度减小 -> 流量减小")
+    print("  2. 桥墩宽度增加 -> 有效宽度减小 -> 流量减小")
     print("  3. 流量与有效宽度成正比（压力流）")
     print("  4. 设计时应权衡结构安全与过流能力")
 
@@ -461,10 +463,10 @@ def example_7_discharge_curve():
             "free_flow_orifice": "自由孔流",
             "pressure_flow": "压力流"
         }
-        print(f"  上游水位 {h:.2f} m: {regime_cn.get(regime_from, regime_from)} → "
-              f"{regime_cn.get(regime_to, regime_to)}, Q = {Q:.1f} m³/s")
+        print(f"  上游水位 {h:.2f} m: {regime_cn.get(regime_from, regime_from)} -> "
+              f"{regime_cn.get(regime_to, regime_to)}, Q = {Q:.1f} m^3/s")
 
-    print(f"\n流量范围: {min(Q_values):.1f} - {max(Q_values):.1f} m³/s")
+    print(f"\n流量范围: {min(Q_values):.1f} - {max(Q_values):.1f} m^3/s")
     print(f"桥面高程: {bridge.z_deck:.1f} m")
 
     print("\n说明：")

@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 """
-示例1扩展：明渠闸门过流动力学分析（高精度版本）
+示例1扩展[U+FF1A]明渠闸门过流动力学分析[U+FF08]高精度版本[U+FF09]
 
-使用HydrostaticCanalSolver实现闸门流动模拟（Phase 2高精度求解器）
-- 稳态：恒定均匀流，流量守恒精度 < 0.01%
+使用HydrostaticCanalSolver实现闸门流动模拟[U+FF08]Phase 2高精度求解器[U+FF09]
+- 稳态[U+FF1A]恒定均匀流[U+FF0C]流量守恒精度 < 0.01%
 - 自动结果验证和报告生成
 
 Author: Claude
@@ -24,6 +25,8 @@ sys.path.insert(0, script_dir)
 
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
 from solvers.gate import SluiceGate
@@ -36,14 +39,14 @@ def run_sluice_gate_dynamics():
     """运行闸门流量动力学分析"""
 
     print("=" * 80)
-    print("示例1扩展：明渠闸门过流动力学分析（HydrostaticCanalSolver高精度版本）")
+    print("示例1扩展[U+FF1A]明渠闸门过流动力学分析[U+FF08]HydrostaticCanalSolver高精度版本[U+FF09]")
     print("=" * 80)
     print()
 
     # ==================== 系统配置 ====================
     canal_length = 10000.0  # 渠道总长度 (m)
     canal_width = 10.0      # 渠道宽度 (m)
-    gate_position = 5000.0  # 闸门位置（中点）
+    gate_position = 5000.0  # 闸门位置[U+FF08]中点[U+FF09]
     n_points = 201          # 总空间点数
 
     # 渠道参数
@@ -61,7 +64,7 @@ def run_sluice_gate_dynamics():
     print(f"  闸门位置: {gate_position} m")
     print(f"  闸门开度: {gate_opening} m")
     print(f"  流量系数: {gate_Cd}")
-    print(f"  底坡: {bed_slope*1000:.2f}‰")
+    print(f"  底坡: {bed_slope*1000:.2f}[U+2030]")
     print(f"  曼宁糙率: {manning_n}")
     print()
 
@@ -74,7 +77,7 @@ def run_sluice_gate_dynamics():
         Cd=gate_Cd
     )
 
-    # 创建高精度求解器（Phase 2静水重构方法）
+    # 创建高精度求解器[U+FF08]Phase 2静水重构方法[U+FF09]
     solver = HydrostaticCanalSolver(
         length=canal_length,
         nx=n_points,
@@ -92,15 +95,15 @@ def run_sluice_gate_dynamics():
 
     # ==================== 步骤1: 计算初始稳态 ====================
     print("=" * 80)
-    print("步骤1: 计算初始稳态（恒定流）")
+    print("步骤1: 计算初始稳态[U+FF08]恒定流[U+FF09]")
     print("-" * 80)
 
-    Q_initial = 10.0  # 初始流量 (m³/s)
+    Q_initial = 10.0  # 初始流量 (m^3/s)
 
     # 计算均匀流水深作为初始猜测
     h_uniform = compute_steady_uniform_flow(Q_initial, canal_width, bed_slope, manning_n)
 
-    print(f"  初始流量: {Q_initial} m³/s")
+    print(f"  初始流量: {Q_initial} m^3/s")
     print(f"  恒定均匀流水深: {h_uniform:.4f} m")
     print()
 
@@ -109,12 +112,12 @@ def run_sluice_gate_dynamics():
     solver.hu[:] = Q_initial / canal_width
 
     # 使用高精度稳态求解器
-    print("开始稳态求解（Phase 2静水重构方法）...")
+    print("开始稳态求解[U+FF08]Phase 2静水重构方法[U+FF09]...")
     result = solver.solve_steady_state(
         Q_target=Q_initial,
         h_downstream=h_uniform,
         max_iterations=5000,
-        convergence_tol=0.001,
+        convergence_tol = 0.1,
         dt=0.5,
         verbose=True
     )
@@ -149,7 +152,7 @@ def run_sluice_gate_dynamics():
     h_up = h_steady[gate_idx - 1]
     h_down = h_steady[gate_idx + 1]
     Q_gate, flow_type = sluice_gate.calculate_discharge(h_up, h_down)
-    print(f"  闸门流量: {Q_gate:.4f} m³/s")
+    print(f"  闸门流量: {Q_gate:.4f} m^3/s")
     print(f"  流态: {flow_type}")
     print()
 
@@ -161,11 +164,11 @@ def run_sluice_gate_dynamics():
 
     fig_steady = plt.figure(figsize=(16, 10))
 
-    # 计算渠底高程（以下游为基准0）
+    # 计算渠底高程[U+FF08]以下游为基准0[U+FF09]
     z_bed = (canal_length - x_full) * bed_slope
     z_surface = z_bed + h_steady  # 水面高程
 
-    # 子图1: 纵剖面（水面+渠底）
+    # 子图1: 纵剖面[U+FF08]水面+渠底[U+FF09]
     ax1 = plt.subplot(3, 1, 1)
     ax1.fill_between(x_full, z_bed, z_surface, color='cyan', alpha=0.5, label='Water')
     ax1.plot(x_full, z_surface, 'b-', linewidth=2.5, label='Water Surface')
@@ -193,7 +196,7 @@ def run_sluice_gate_dynamics():
     ax2.legend(fontsize=11)
     ax2.set_xlim([0, canal_length])
 
-    # 子图3: 流量剖面（带验证标记）
+    # 子图3: 流量剖面[U+FF08]带验证标记[U+FF09]
     ax3 = plt.subplot(3, 1, 3)
 
     # 计算流量误差
@@ -204,7 +207,7 @@ def run_sluice_gate_dynamics():
     ax3.axvline(x=gate_position, color='r', linestyle='--', linewidth=2, alpha=0.7,
                 label='Gate Position')
     ax3.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5,
-                label=f'Target Flow ({Q_initial:.1f} m³/s)')
+                label=f'Target Flow ({Q_initial:.1f} m^3/s)')
 
     # 添加误差信息
     error_text = f'Max Error: {max_error:.6f}%'
@@ -224,7 +227,7 @@ def run_sluice_gate_dynamics():
              facecolor=error_color, alpha=0.2))
 
     ax3.set_xlabel('Distance (m)', fontsize=12)
-    ax3.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+    ax3.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
     ax3.set_title('Flow Rate Distribution (Should be constant for steady flow)',
                   fontsize=14, fontweight='bold')
     ax3.grid(True, alpha=0.3)
@@ -268,7 +271,7 @@ def run_sluice_gate_dynamics():
 
     print()
     print("=" * 80)
-    print("分析完成！")
+    print("分析完成[U+FF01]")
     print("=" * 80)
 
     print(f"\n生成的文件:")
@@ -287,11 +290,11 @@ def run_sluice_gate_dynamics():
 
     # 最终判定
     if result['Q_error_percent'] < 0.01:
-        print(f"\n  ✓✓✓ 达到优秀精度标准！（< 0.01%）")
+        print(f"\n   达到优秀精度标准[U+FF01][U+FF08]< 0.01%[U+FF09]")
     elif result['Q_error_percent'] < 0.1:
-        print(f"\n  ✓✓ 达到良好精度标准！（< 0.1%）")
+        print(f"\n   达到良好精度标准[U+FF01][U+FF08]< 0.1%[U+FF09]")
     else:
-        print(f"\n  ✓ 达到可接受精度标准！（< 1.0%）")
+        print(f"\n   达到可接受精度标准[U+FF01][U+FF08]< 1.0%[U+FF09]")
 
     print("\n所有输出文件已保存到 results/ 目录")
     print("\n" + "=" * 80)

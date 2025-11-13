@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例17: 水库基础示例
 
@@ -17,6 +18,8 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
@@ -39,15 +42,15 @@ def demo_basic_reservoir():
     # 参数基于典型中型水库
     reservoir = Reservoir(
         reservoir_id="demo_reservoir",
-        total_capacity=5000e4,  # 5000万m³ = 5000 * 10^4 m³
-        dead_storage=500e4,     # 500万m³
+        total_capacity=5000e4,  # 5000万m^3 = 5000 * 10^4 m^3
+        dead_storage=500e4,     # 500万m^3
         min_level=100.0,        # 死水位 100m
         normal_level=150.0,     # 正常蓄水位 150m
         flood_limit_level=145.0,  # 防洪限制水位 145m
         design_level=155.0,     # 设计洪水位 155m
-        catchment_area=1000.0,  # 集水面积 1000 km²
-        ecological_flow=10.0,   # 生态流量 10 m³/s
-        max_discharge=2000.0,   # 最大泄流 2000 m³/s
+        catchment_area=1000.0,  # 集水面积 1000 km^2
+        ecological_flow=10.0,   # 生态流量 10 m^3/s
+        max_discharge=2000.0,   # 最大泄流 2000 m^3/s
         has_spillway=True,
         has_turbine=True,
         turbine_capacity=100.0,  # 装机容量 100 MW
@@ -56,16 +59,16 @@ def demo_basic_reservoir():
     )
 
     print(f"\n水库参数:")
-    print(f"  总库容: {reservoir.total_capacity/1e4:.0f} 万m³")
-    print(f"  死库容: {reservoir.dead_storage/1e4:.0f} 万m³")
-    print(f"  兴利库容: {reservoir.active_storage/1e4:.0f} 万m³")
+    print(f"  总库容: {reservoir.total_capacity/1e4:.0f} 万m^3")
+    print(f"  死库容: {reservoir.dead_storage/1e4:.0f} 万m^3")
+    print(f"  兴利库容: {reservoir.active_storage/1e4:.0f} 万m^3")
     print(f"  水位范围: {reservoir.min_level:.1f} - {reservoir.design_level:.1f} m")
     print(f"  装机容量: {reservoir.turbine_capacity:.0f} MW")
 
     # 初始状态
     print(f"\n初始状态:")
     status = reservoir.get_operation_status()
-    print(f"  库容: {status['storage']/1e4:.0f} 万m³ ({status['storage_percent']:.1f}%)")
+    print(f"  库容: {status['storage']/1e4:.0f} 万m^3 ({status['storage_percent']:.1f}%)")
     print(f"  水位: {status['water_level']:.2f} m")
 
     # 仿真参数
@@ -74,7 +77,7 @@ def demo_basic_reservoir():
 
     # 生成入流过程线（模拟洪水过程）
     time_hours = np.arange(n_hours)
-    inflow_base = 500.0  # 基流 500 m³/s
+    inflow_base = 500.0  # 基流 500 m^3/s
 
     # 模拟洪峰过程
     flood_peak_time = 24  # 洪峰出现在第24小时
@@ -83,8 +86,8 @@ def demo_basic_reservoir():
     print(f"\n仿真设置:")
     print(f"  时间步长: {dt/3600:.1f} 小时")
     print(f"  仿真时长: {n_hours} 小时")
-    print(f"  基流: {inflow_base:.0f} m³/s")
-    print(f"  洪峰流量: {np.max(inflow):.0f} m³/s")
+    print(f"  基流: {inflow_base:.0f} m^3/s")
+    print(f"  洪峰流量: {np.max(inflow):.0f} m^3/s")
 
     # 仿真循环
     results = {
@@ -130,7 +133,7 @@ def demo_basic_reservoir():
         results['time'].append(i)
         results['inflow'].append(state.inflow)
         results['outflow'].append(state.outflow)
-        results['storage'].append(state.storage / 1e4)  # 转换为万m³
+        results['storage'].append(state.storage / 1e4)  # 转换为万m^3
         results['level'].append(state.water_level)
         results['turbine_discharge'].append(state.turbine_discharge)
         results['spillway_discharge'].append(state.spillway_discharge)
@@ -140,8 +143,8 @@ def demo_basic_reservoir():
 
     # 统计结果
     print(f"\n仿真结果统计:")
-    print(f"  最大入流: {np.max(results['inflow']):.0f} m³/s")
-    print(f"  最大出流: {np.max(results['outflow']):.0f} m³/s")
+    print(f"  最大入流: {np.max(results['inflow']):.0f} m^3/s")
+    print(f"  最大出流: {np.max(results['outflow']):.0f} m^3/s")
     print(f"  最高水位: {np.max(results['level']):.2f} m")
     print(f"  最低水位: {np.min(results['level']):.2f} m")
     print(f"  最大发电: {np.max(results['power']):.2f} MW")
@@ -156,7 +159,7 @@ def demo_basic_reservoir():
     axes[0].plot(results['time'], results['inflow'], 'b-', label='入流', linewidth=2)
     axes[0].plot(results['time'], results['outflow'], 'r-', label='出流', linewidth=2)
     axes[0].axhline(reservoir.ecological_flow, color='g', linestyle='--', label='生态流量')
-    axes[0].set_ylabel('流量 (m³/s)', fontsize=12)
+    axes[0].set_ylabel('流量 (m^3/s)', fontsize=12)
     axes[0].set_title('水库流量过程', fontsize=14, fontweight='bold')
     axes[0].legend(loc='upper right')
     axes[0].grid(True, alpha=0.3)
@@ -177,7 +180,7 @@ def demo_basic_reservoir():
     axes[2].plot(results['time'], results['storage'], 'b-', linewidth=2)
     axes[2].axhline(reservoir.dead_storage/1e4, color='r', linestyle='--', label='死库容')
     axes[2].axhline(reservoir.total_capacity/1e4, color='g', linestyle='--', label='总库容')
-    axes[2].set_ylabel('库容 (万m³)', fontsize=12)
+    axes[2].set_ylabel('库容 (万m^3)', fontsize=12)
     axes[2].set_title('水库库容过程', fontsize=14, fontweight='bold')
     axes[2].legend(loc='upper right')
     axes[2].grid(True, alpha=0.3)
@@ -192,7 +195,7 @@ def demo_basic_reservoir():
     axes[3].grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig('/home/user/HydroClaude/examples/example_17_reservoir_basic/reservoir_simulation.png', dpi=150)
+    plt.savefig('examples/example_17_reservoir_basic/reservoir_simulation.png', dpi=150)
     print(f"\n图像已保存到: reservoir_simulation.png")
 
     return reservoir, results
@@ -237,7 +240,7 @@ def demo_constraint_check():
 
     for scenario_name, inflow, turbine, spillway_opening in scenarios:
         print(f"\n场景: {scenario_name}")
-        print(f"  入流: {inflow:.0f} m³/s")
+        print(f"  入流: {inflow:.0f} m^3/s")
 
         reservoir.reset()
         inputs = {
@@ -249,10 +252,10 @@ def demo_constraint_check():
         state = reservoir.update_high_fidelity(dt, inputs)
 
         print(f"  水位: {state.water_level:.2f} m")
-        print(f"  出流: {state.outflow:.2f} m³/s")
-        print(f"  防洪约束: {'✓' if reservoir.check_flood_control() else '✗'}")
-        print(f"  抗旱约束: {'✓' if reservoir.check_drought_control() else '✗'}")
-        print(f"  生态流量: {'✓' if reservoir.check_ecological_flow() else '✗'}")
+        print(f"  出流: {state.outflow:.2f} m^3/s")
+        print(f"  防洪约束: {'' if reservoir.check_flood_control() else ''}")
+        print(f"  抗旱约束: {'' if reservoir.check_drought_control() else ''}")
+        print(f"  生态流量: {'' if reservoir.check_ecological_flow() else ''}")
 
 
 if __name__ == "__main__":

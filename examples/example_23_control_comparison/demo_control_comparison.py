@@ -1,14 +1,15 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 示例23: 控制策略性能对比 (PID vs MPC)
 
 对比不同控制策略在明渠水位控制中的性能
 
 场景:
-- 被控对象：明渠系统
-- 控制目标：维持水位稳定
-- 扰动：入流变化
-- 对比指标：稳定时间、超调量、能耗、鲁棒性
+- 被控对象明渠系统
+- 控制目标维持水位稳定
+- 扰动入流变化
+- 对比指标稳定时间超调量能耗鲁棒性
 
 作者: HydroClaude Team
 日期: 2025-10-22
@@ -17,6 +18,8 @@
 import sys
 import os
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from typing import Tuple, List, Dict
 
@@ -89,12 +92,12 @@ class SimpleMPCController:
         """
         计算控制输出
 
-        使用简化的MPC算法（贪心策略）
+        使用简化的MPC算法贪心策略
         """
         best_control = 0.0
         best_cost = float('inf')
 
-        # 搜索最优控制输入（简化为离散搜索）
+        # 搜索最优控制输入简化为离散搜索
         test_controls = np.linspace(self.output_limit[0],
                                    self.output_limit[1], 21)
 
@@ -128,9 +131,9 @@ def canal_water_balance_model(level: float, control_input: float,
     Args:
         level: 当前水位 (m)
         control_input: 控制输入 (归一化闸门开度 -1~1)
-        inflow: 入流 (m³/s)
+        inflow: 入流 (m^3/s)
         dt: 时间步长 (s)
-        area: 水面面积 (m²)
+        area: 水面面积 (m^2)
         outflow_gain: 出流增益
 
     Returns:
@@ -160,7 +163,7 @@ def generate_disturbance_scenario(duration: float, dt: float,
     Args:
         duration: 仿真时长 (s)
         dt: 时间步长 (s)
-        base_inflow: 基准入流 (m³/s)
+        base_inflow: 基准入流 (m^3/s)
 
     Returns:
         入流时间序列
@@ -212,15 +215,15 @@ def run_control_comparison():
     # 系统参数
     target_level = 5.0      # 目标水位 (m)
     initial_level = 5.0     # 初始水位 (m)
-    canal_area = 1000.0     # 水面面积 (m²)
-    base_inflow = 50.0      # 基准入流 (m³/s)
+    canal_area = 1000.0     # 水面面积 (m^2)
+    base_inflow = 50.0      # 基准入流 (m^3/s)
 
-    print("【仿真参数】")
+    print("仿真参数")
     print(f"  仿真时长: {duration}s")
     print(f"  时间步长: {dt}s")
     print(f"  目标水位: {target_level}m")
-    print(f"  水面面积: {canal_area}m²")
-    print(f"  基准入流: {base_inflow}m³/s")
+    print(f"  水面面积: {canal_area}m^2")
+    print(f"  基准入流: {base_inflow}m^3/s")
     print()
 
     # ========================================
@@ -242,7 +245,7 @@ def run_control_comparison():
         output_limit=(-1.0, 1.0)
     )
 
-    print("【控制器配置】")
+    print("控制器配置")
     print("PID控制器:")
     print(f"  Kp = {pid_controller.kp}")
     print(f"  Ki = {pid_controller.ki}")
@@ -261,12 +264,12 @@ def run_control_comparison():
 
     inflow = generate_disturbance_scenario(duration, dt, base_inflow)
 
-    print("【扰动场景】")
-    print(f"  t=0-100s: 基准流量 {base_inflow}m³/s")
-    print(f"  t=100s: 阶跃扰动 +20m³/s")
-    print(f"  t=200-300s: 斜坡扰动 +15m³/s")
-    print(f"  t=400-420s: 脉冲扰动 +30m³/s")
-    print(f"  全程: 随机噪声 σ=2m³/s")
+    print("扰动场景")
+    print(f"  t=0-100s: 基准流量 {base_inflow}m^3/s")
+    print(f"  t=100s: 阶跃扰动 +20m^3/s")
+    print(f"  t=200-300s: 斜坡扰动 +15m^3/s")
+    print(f"  t=400-420s: 脉冲扰动 +30m^3/s")
+    print(f"  全程: 随机噪声 sigma=2m^3/s")
     print()
 
     # ========================================
@@ -342,7 +345,7 @@ def run_control_comparison():
     pid_perf = evaluate_performance(pid_level, pid_control, target_level)
     mpc_perf = evaluate_performance(mpc_level, mpc_control, target_level)
 
-    print("【性能评估】")
+    print("性能评估")
     print("-" * 80)
     print(f"{'指标':<25} {'PID':<15} {'MPC':<15} {'优势':<10}")
     print("-" * 80)
@@ -411,7 +414,7 @@ def run_control_comparison():
     ax4 = axes[1, 1]
     ax4.plot(time, inflow, 'k-', linewidth=2, alpha=0.8)
     ax4.set_xlabel('Time (s)')
-    ax4.set_ylabel('Inflow (m³/s)')
+    ax4.set_ylabel('Inflow (m^3/s)')
     ax4.set_title('Disturbance Input (Inflow Variation)')
     ax4.grid(True, alpha=0.3)
 
@@ -464,7 +467,7 @@ def run_control_comparison():
 
     plt.tight_layout()
 
-    output_path = '/home/user/HydroClaude/examples/example_23_control_comparison/control_comparison.png'
+    output_path = 'examples/example_23_control_comparison/control_comparison.png'
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
     print(f"图像已保存到: {output_path}")
     print()
@@ -473,30 +476,30 @@ def run_control_comparison():
     # 7. 结论
     # ========================================
 
-    print("【对比结论】")
+    print("对比结论")
     print("-" * 80)
     print()
 
     print("PID控制器:")
     print("  优点:")
-    print("    • 结构简单，易于实现")
-    print("    • 参数少，调试方便")
-    print("    • 计算量小")
+    print("    - 结构简单易于实现")
+    print("    - 参数少调试方便")
+    print("    - 计算量小")
     print("  缺点:")
-    print("    • 对模型不确定性敏感")
-    print("    • 难以处理约束")
-    print("    • 大扰动下性能下降")
+    print("    - 对模型不确定性敏感")
+    print("    - 难以处理约束")
+    print("    - 大扰动下性能下降")
     print()
 
     print("MPC控制器:")
     print("  优点:")
-    print("    • 能处理约束")
-    print("    • 考虑未来预测")
-    print("    • 多变量优化")
+    print("    - 能处理约束")
+    print("    - 考虑未来预测")
+    print("    - 多变量优化")
     print("  缺点:")
-    print("    • 计算量大")
-    print("    • 需要准确模型")
-    print("    • 调参复杂")
+    print("    - 计算量大")
+    print("    - 需要准确模型")
+    print("    - 调参复杂")
     print()
 
     # 确定综合优胜者
@@ -508,7 +511,7 @@ def run_control_comparison():
     winner = 'PID' if pid_wins > mpc_wins else 'MPC'
 
     print(f"综合评分: PID {pid_wins}/5, MPC {mpc_wins}/5")
-    print(f"在本场景中，{winner}控制器表现更优")
+    print(f"在本场景中{winner}控制器表现更优")
     print()
 
     return {
@@ -528,8 +531,8 @@ if __name__ == '__main__':
     print("="*80)
     print()
     print("关键成果:")
-    print("  ✓ PID控制器实现")
-    print("  ✓ MPC控制器实现")
-    print("  ✓ 多种扰动场景")
-    print("  ✓ 性能指标对比")
-    print("  ✓ 可视化分析")
+    print("   PID控制器实现")
+    print("   MPC控制器实现")
+    print("   多种扰动场景")
+    print("   性能指标对比")
+    print("   可视化分析")

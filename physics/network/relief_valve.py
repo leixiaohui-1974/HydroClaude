@@ -104,4 +104,4 @@ if __name__ == "__main__":
     Q3 = valve.calculate_relief_flow(pressure=580000)  # 5.8bar
     print(f"  压力下降(5.8bar): {valve}")
 
-    print("  ✓ 安全阀组件测试通过")
+    print("   安全阀组件测试通过")

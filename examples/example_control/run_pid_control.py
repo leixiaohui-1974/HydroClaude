@@ -43,7 +43,7 @@ def main():
     success = modeler.run()
 
     if not success:
-        print("\n✗ 模拟失败")
+        print("\n 模拟失败")
         return False
 
     # 结果分析
@@ -81,7 +81,7 @@ def main():
         print(f"  最大值: {control_array.max():.3f} m")
 
     print("\n" + "=" * 90)
-    print(f"✓ 模拟完成！")
+    print(f" 模拟完成！")
     print(f"  结果目录: {modeler.output_dir}")
     print("=" * 90)
 

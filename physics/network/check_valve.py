@@ -94,4 +94,4 @@ if __name__ == "__main__":
     # 反向流动
     Q_reverse = valve.calculate_flow(P_up=400000, P_down=500000)
     print(f"  反向流动: {valve}")
-    print("  ✓ 单向阀组件测试通过")
+    print("   单向阀组件测试通过")

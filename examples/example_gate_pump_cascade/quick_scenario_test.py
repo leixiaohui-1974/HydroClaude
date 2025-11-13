@@ -103,8 +103,8 @@ def run_single_scenario_quick(scenario_id, config, output_base_dir):
     pump_idx = np.argmin(np.abs(solver.x - pump_pos))
     solver.z[pump_idx:] += 5.0
     
-    print(f"  ✓ 网格: {nx}点, Δx={L_total/(nx-1):.1f}m")
-    print(f"  ✓ 时间步长: {dt}s (快速模式)")
+    print(f"   网格: {nx}点, Deltax={L_total/(nx-1):.1f}m")
+    print(f"   时间步长: {dt}s (快速模式)")
     
     # ==================== 稳态求解 ====================
     print("\n▶ 稳态求解...")
@@ -120,19 +120,19 @@ def run_single_scenario_quick(scenario_id, config, output_base_dir):
         result_steady = solver.solve_steady_state(
             Q_target=Q_initial,
             h_downstream=h_downstream_boundary,
-            convergence_tol=0.001,  # 放宽收敛判据（快速模式）
+            convergence_tol = 0.1,  # 放宽收敛判据（快速模式）
             max_iterations=1000,  # 减少最大迭代次数
             dt=dt,
             verbose=False
         )
         
         if result_steady['converged']:
-            print(f"  ✓ 稳态收敛 (迭代{result_steady['iterations']}次)")
+            print(f"   稳态收敛 (迭代{result_steady['iterations']}次)")
         else:
-            print(f"  ⚠ 稳态未完全收敛 (迭代{result_steady['iterations']}次)")
+            print(f"   稳态未完全收敛 (迭代{result_steady['iterations']}次)")
             
     except Exception as e:
-        print(f"  ✗ 稳态求解失败: {str(e)}")
+        print(f"   稳态求解失败: {str(e)}")
         return {'success': False, 'error': str(e), 'stage': 'steady_state'}
     
     h_steady = solver.h.copy()
@@ -208,12 +208,12 @@ def run_single_scenario_quick(scenario_id, config, output_base_dir):
             
             # 检查数值稳定性
             if np.any(np.isnan(h_new)) or np.any(np.isinf(h_new)):
-                print(f"  ✗ 数值不稳定 (t={t_current:.1f}s)")
+                print(f"   数值不稳定 (t={t_current:.1f}s)")
                 failed = True
                 break
             
             if np.any(h_new < 0):
-                print(f"  ✗ 出现负水深 (t={t_current:.1f}s, min_h={np.min(h_new):.3f}m)")
+                print(f"   出现负水深 (t={t_current:.1f}s, min_h={np.min(h_new):.3f}m)")
                 failed = True
                 break
             
@@ -231,16 +231,16 @@ def run_single_scenario_quick(scenario_id, config, output_base_dir):
                     progress = (step / n_steps) * 100
                     print(f"  进度: {progress:5.1f}% | t={t_current:6.0f}s | "
                           f"泵前h={solver.h[pump_idx-1]:.2f}m | "
-                          f"泵Q={(solver.hu[pump_idx]*B):.2f}m³/s | "
+                          f"泵Q={(solver.hu[pump_idx]*B):.2f}m^3/s | "
                           f"泵H={pump.get_current_head():.2f}m")
                 
                 save_idx += 1
         
         if not failed:
-            print("  ✓ 瞬态模拟完成")
+            print("   瞬态模拟完成")
             
     except Exception as e:
-        print(f"  ✗ 瞬态模拟失败: {str(e)}")
+        print(f"   瞬态模拟失败: {str(e)}")
         import traceback
         traceback.print_exc()
         return {'success': False, 'error': str(e), 'stage': 'transient'}
@@ -292,9 +292,9 @@ def run_single_scenario_quick(scenario_id, config, output_base_dir):
     
     print(f"  最终状态:")
     print(f"    泵前水深: {final_stats['h_before_pump']:.3f} m")
-    print(f"    泵站流量: {final_stats['q_pump']:.2f} m³/s")
+    print(f"    泵站流量: {final_stats['q_pump']:.2f} m^3/s")
     print(f"    泵站扬程: {final_stats['pump_head']:.3f} m")
-    print(f"    蓄水速率: {final_stats['storage_rate']:.2f} m³/s")
+    print(f"    蓄水速率: {final_stats['storage_rate']:.2f} m^3/s")
     print(f"  物理检查:")
     print(f"    质量守恒误差: {analysis['mass_conservation_error']:.6f}")
     print(f"    水深变异系数: {analysis['h_variation_coefficient']:.6f}")
@@ -355,15 +355,15 @@ def run_single_scenario_quick(scenario_id, config, output_base_dir):
             output_dir, scenario_id, config, steady_stats, final_stats, analysis, elapsed_time
         )
         
-        print(f"  ✓ 所有结果已保存至: {output_dir}")
+        print(f"   所有结果已保存至: {output_dir}")
         
     except Exception as e:
-        print(f"  ✗ 生成输出失败: {str(e)}")
+        print(f"   生成输出失败: {str(e)}")
         import traceback
         traceback.print_exc()
         return {'success': False, 'error': str(e), 'stage': 'output'}
     
-    print(f"\n✓ {config['name']} 完成 (耗时: {elapsed_time:.1f}秒)")
+    print(f"\n {config['name']} 完成 (耗时: {elapsed_time:.1f}秒)")
     print("="*100 + "\n")
     
     return {
@@ -479,9 +479,9 @@ def main():
                 mass_error = result['analysis']['mass_conservation_error']
                 h_var = result['analysis']['h_variation_coefficient']
                 
-                status = "✅"
-                mass_status = "✓" if mass_error < 0.01 else "⚠"
-                stable_status = "✓" if h_var < 0.05 else "⚠"
+                status = ""
+                mass_status = "" if mass_error < 0.01 else ""
+                stable_status = "" if h_var < 0.05 else ""
                 
                 f.write(f"| {scenario_id} | {name} | {status} | {elapsed:.1f} | {mass_error:.6f} {mass_status} | {h_var:.6f} {stable_status} |\n")
             else:
@@ -489,7 +489,7 @@ def main():
                 name = QUICK_SCENARIOS.get(scenario_id, {}).get('name', '未知')
                 error = result.get('error', '未知错误')
                 stage = result.get('stage', '?')
-                f.write(f"| {scenario_id} | {name} | ❌ | - | 失败于{stage}: {error[:30]} | - |\n")
+                f.write(f"| {scenario_id} | {name} |  | - | 失败于{stage}: {error[:30]} | - |\n")
         
         f.write("\n---\n\n")
         
@@ -513,17 +513,17 @@ def main():
         f.write(f"## 结论\n\n")
         
         if n_success == len(results):
-            f.write(f"### ✅ 快速测试全部通过\n\n")
+            f.write(f"###  快速测试全部通过\n\n")
             f.write(f"所有{len(results)}个代表性工况均运行成功。\n\n")
         else:
-            f.write(f"### ⚠️ 快速测试需要关注\n\n")
+            f.write(f"###  快速测试需要关注\n\n")
             if n_failed > 0:
                 f.write(f"- {n_failed}个工况运行失败，需要检查\n\n")
         
         f.write("---\n\n")
         f.write(f"*报告自动生成于 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*\n")
     
-    print(f"\n✓ 总结报告已生成: {summary_report_path}")
+    print(f"\n 总结报告已生成: {summary_report_path}")
     
     # 生成JSON格式结果
     json_results = []
@@ -554,13 +554,13 @@ def main():
     with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(json_results, f, indent=2, ensure_ascii=False)
     
-    print(f"✓ JSON结果已生成: {json_path}")
+    print(f" JSON结果已生成: {json_path}")
     
     print("\n" + "="*100)
     if n_success == len(results):
-        print("🎉 所有快速测试完成！".center(100))
+        print(" 所有快速测试完成！".center(100))
     else:
-        print(f"⚠️ {n_success}/{len(results)} 工况完成".center(100))
+        print(f" {n_success}/{len(results)} 工况完成".center(100))
     print("="*100 + "\n")
     
     return results

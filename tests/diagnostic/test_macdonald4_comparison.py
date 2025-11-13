@@ -67,7 +67,7 @@ def run_test(test_name, weno3_enhanced=False):
 
     print(f"\n配置:")
     print(f"  网格: {n_cells} cells, dx={dx:.2f}m")
-    print(f"  上游: h={h_upstream:.2f}m, Q={Q:.1f}m³/s, Fr={Fr_upstream:.2f}")
+    print(f"  上游: h={h_upstream:.2f}m, Q={Q:.1f}m^3/s, Fr={Fr_upstream:.2f}")
     print(f"  理论水跃后: h2={h2_theory:.3f}m")
 
     # 初始条件
@@ -254,12 +254,12 @@ def compare_results(results_standard, results_enhanced):
     # 负流量
     neg_std = results_standard['n_negative']
     neg_enh = results_enhanced['n_negative']
-    print(f"{'负流量单元':<20} {neg_std:>15} {neg_enh:>15} {'✅' if neg_enh == 0 else '❌':>15}")
+    print(f"{'负流量单元':<20} {neg_std:>15} {neg_enh:>15} {'' if neg_enh == 0 else '':>15}")
 
     # 上游Fr
     Fr_std = results_standard['Fr_upstream']
     Fr_enh = results_enhanced['Fr_upstream']
-    print(f"{'上游Froude数':<20} {Fr_std:>15.3f} {Fr_enh:>15.3f} {'✅' if Fr_enh > 1.0 else '❌':>15}")
+    print(f"{'上游Froude数':<20} {Fr_std:>15.3f} {Fr_enh:>15.3f} {'' if Fr_enh > 1.0 else '':>15}")
 
     # Belanger误差
     bel_std = results_standard['belanger_error']
@@ -299,31 +299,31 @@ def compare_results(results_standard, results_enhanced):
 
         if mass_enh < 10:
             score_enh += 3
-            criteria.append(f"✅ 增强版质量守恒优秀: {mass_enh:.1f}% < 10%")
+            criteria.append(f" 增强版质量守恒优秀: {mass_enh:.1f}% < 10%")
         elif mass_enh < 20:
             score_enh += 2
-            criteria.append(f"✅ 增强版质量守恒良好: {mass_enh:.1f}% < 20%")
+            criteria.append(f" 增强版质量守恒良好: {mass_enh:.1f}% < 20%")
         elif mass_enh < 30:
             score_enh += 1
-            criteria.append(f"⚠️  增强版质量守恒可接受: {mass_enh:.1f}% < 30%")
+            criteria.append(f"️  增强版质量守恒可接受: {mass_enh:.1f}% < 30%")
 
     # 负流量 (权重: 2)
     if neg_std == 0:
         score_std += 2
     if neg_enh == 0:
         score_enh += 2
-        criteria.append(f"✅ 增强版无负流量")
+        criteria.append(f" 增强版无负流量")
     else:
-        criteria.append(f"⚠️  增强版仍有{neg_enh}个负流量单元")
+        criteria.append(f"️  增强版仍有{neg_enh}个负流量单元")
 
     # 超临界维持 (权重: 2)
     if Fr_std > 1.0:
         score_std += 2
     if Fr_enh > 1.0:
         score_enh += 2
-        criteria.append(f"✅ 增强版维持超临界: Fr={Fr_enh:.3f}")
+        criteria.append(f" 增强版维持超临界: Fr={Fr_enh:.3f}")
     else:
-        criteria.append(f"❌ 增强版超临界丢失: Fr={Fr_enh:.3f}")
+        criteria.append(f" 增强版超临界丢失: Fr={Fr_enh:.3f}")
 
     # Belanger精度 (权重: 2)
     if not np.isnan(bel_std) and not np.isnan(bel_enh):
@@ -334,12 +334,12 @@ def compare_results(results_standard, results_enhanced):
 
         if bel_enh < 10:
             score_enh += 2
-            criteria.append(f"✅ 增强版Belanger精度优秀: {bel_enh:.1f}% < 10%")
+            criteria.append(f" 增强版Belanger精度优秀: {bel_enh:.1f}% < 10%")
         elif bel_enh < 20:
             score_enh += 1
-            criteria.append(f"✅ 增强版Belanger精度良好: {bel_enh:.1f}% < 20%")
+            criteria.append(f" 增强版Belanger精度良好: {bel_enh:.1f}% < 20%")
         elif bel_enh < 30:
-            criteria.append(f"⚠️  增强版Belanger精度可接受: {bel_enh:.1f}% < 30%")
+            criteria.append(f"️  增强版Belanger精度可接受: {bel_enh:.1f}% < 30%")
 
     print(f"\n通过的标准:")
     for criterion in criteria:
@@ -350,11 +350,11 @@ def compare_results(results_standard, results_enhanced):
     print(f"  增强WENO3: {score_enh}/9")
 
     if score_enh > score_std:
-        print(f"\n🎉 增强版WENO3显著优于标准版！(提升{score_enh-score_std}分)")
+        print(f"\n 增强版WENO3显著优于标准版！(提升{score_enh-score_std}分)")
     elif score_enh == score_std:
-        print(f"\n✅ 增强版WENO3与标准版相当")
+        print(f"\n 增强版WENO3与标准版相当")
     else:
-        print(f"\n⚠️  增强版WENO3需要进一步优化")
+        print(f"\n️  增强版WENO3需要进一步优化")
 
     print(f"\n{'='*80}")
 

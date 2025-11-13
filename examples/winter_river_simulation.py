@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 HydroClaude 端到端应用示例: 冬季河流冰-水质模拟
 
 场景: 北方河流冬季冰封期水质演变
-- 气温从0°C逐渐下降到-15°C
+- 气温从0 degC逐渐下降到-15 degC
 - 河流逐渐结冰
 - 冰盖遮蔽导致DO下降
 - 藻类生长受到抑制
@@ -56,7 +57,7 @@ width = 30.0  # 河宽 (m)
 print(f"流速: {u[0]:.1f} m/s")
 print(f"水深: {h[0]:.1f} m")
 print(f"河宽: {width:.1f} m")
-print(f"流量: {u[0] * h[0] * width:.1f} m³/s")
+print(f"流量: {u[0] * h[0] * width:.1f} m^3/s")
 print()
 
 # 模拟时间
@@ -72,11 +73,11 @@ print()
 print("[2] 初始条件")
 print("-" * 70)
 
-# 水温: 初冬，接近冰点
-T_init = np.full(n_cells, 2.0)  # °C
-print(f"初始水温: {T_init[0]:.1f} °C")
+# 水温: 初冬接近冰点
+T_init = np.full(n_cells, 2.0)  #  degC
+print(f"初始水温: {T_init[0]:.1f}  degC")
 
-# 溶解氧: 较高（低温高溶解度）
+# 溶解氧: 较高低温高溶解度
 DO_init = np.full(n_cells, 12.0)  # mg/L
 print(f"初始DO: {DO_init[0]:.1f} mg/L")
 
@@ -93,31 +94,31 @@ print(f"总氮TN: {(NH4_init[0] + NO3_init[0] + OrgN_init[0]):.2f} mg/L")
 print(f"总磷TP: {(PO4_init[0] + OrgP_init[0]):.3f} mg/L")
 
 # 叶绿素: 秋季藻类
-Chla_init = np.full(n_cells, 12.0)  # μg/L
-print(f"初始叶绿素: {Chla_init[0]:.1f} μg/L")
+Chla_init = np.full(n_cells, 12.0)  # mug/L
+print(f"初始叶绿素: {Chla_init[0]:.1f} mug/L")
 print()
 
 # ==================== 边界条件 ====================
 print("[3] 气象强迫")
 print("-" * 70)
 
-# 气温: 从0°C逐渐降到-15°C
+# 气温: 从0 degC逐渐降到-15 degC
 def get_air_temperature(day):
     """气温随时间变化 (线性降温)"""
-    T_start = 0.0  # °C
-    T_end = -15.0  # °C
+    T_start = 0.0  #  degC
+    T_end = -15.0  #  degC
     T_air = T_start + (T_end - T_start) * day / n_days
-    # 添加日变化 (±3°C)
+    # 添加日变化 (+/-3 degC)
     hour = (day - int(day)) * 24
     T_daily = 3.0 * np.sin(2 * np.pi * (hour - 6) / 24)
     return T_air + T_daily
 
-# 太阳辐射: 冬季，短日照
+# 太阳辐射: 冬季短日照
 def get_solar_radiation(day):
-    """太阳辐射随时间变化 (W/m²)"""
+    """太阳辐射随时间变化 (W/m^2)"""
     hour = (day - int(day)) * 24
     if 7 <= hour <= 17:  # 白天10小时
-        # 冬季最大辐射300 W/m²
+        # 冬季最大辐射300 W/m^2
         max_radiation = 300.0
         return max_radiation * np.sin(np.pi * (hour - 7) / 10)
     else:
@@ -141,7 +142,7 @@ print("气象强迫时间序列:")
 for day in [0, 7, 14, 21, 28]:
     T_air = get_air_temperature(day)
     I_0 = get_solar_radiation(day + 0.5)  # 中午
-    print(f"  Day {day:2d}: T_air={T_air:6.1f}°C, I_0={I_0:6.1f} W/m²")
+    print(f"  Day {day:2d}: T_air={T_air:6.1f} degC, I_0={I_0:6.1f} W/m^2")
 print()
 
 # ==================== 初始化求解器 ====================
@@ -151,24 +152,24 @@ print("-" * 70)
 # 水温求解器
 temp_solver = WaterTemperatureSolver(n_cells, dx, use_numba=False)
 temp_solver.T = T_init.copy()
-print("✓ 水温求解器")
+print(" 水温求解器")
 
 # 溶解氧求解器
 do_solver = DissolvedOxygenSolver(
     n_cells, dx,
     kd_20=0.15,  # BOD降解系数 (1/day)
-    SOD_20=1.0,  # 底泥耗氧 (g/m²/day)
+    SOD_20=1.0,  # 底泥耗氧 (g/m^2/day)
     use_numba=False
 )
 do_solver.DO = DO_init.copy()
 do_solver.BOD = np.full(n_cells, 3.0)  # 初始BOD (mg/L)
-print("✓ 溶解氧求解器")
+print(" 溶解氧求解器")
 
 # 冰盖求解器
 ice_solver = IceCoverSolver(n_cells=n_cells)
 ice_solver.ice_thickness = np.zeros(n_cells)
 ice_solver.ice_cover_fraction = np.zeros(n_cells)
-print("✓ 冰盖求解器")
+print(" 冰盖求解器")
 
 # 营养盐求解器
 nutrients_solver = NutrientsSolver(n_cells, dx, use_numba=False)
@@ -177,12 +178,12 @@ nutrients_solver.NO3 = NO3_init.copy()
 nutrients_solver.PO4 = PO4_init.copy()
 nutrients_solver.OrgN = OrgN_init.copy()
 nutrients_solver.OrgP = OrgP_init.copy()
-print("✓ 营养盐求解器")
+print(" 营养盐求解器")
 
 # 藻类求解器
 algae_solver = PhytoplanktonSolver(n_cells, dx, use_numba=False)
 algae_solver.Chla = Chla_init.copy()
-print("✓ 藻类求解器")
+print(" 藻类求解器")
 print()
 
 # ==================== 时间积分 ====================
@@ -279,11 +280,11 @@ for step in range(n_steps):
         output_Chla.append(algae_solver.Chla.copy())
 
         # 打印进度
-        print(f"Day {day:5.1f}: T={T.mean():5.2f}°C, DO={do_solver.DO.mean():6.2f}mg/L, "
-              f"Ice={ice_solver.ice_thickness.mean()*100:5.1f}cm, Chla={algae_solver.Chla.mean():5.1f}μg/L")
+        print(f"Day {day:5.1f}: T={T.mean():5.2f} degC, DO={do_solver.DO.mean():6.2f}mg/L, "
+              f"Ice={ice_solver.ice_thickness.mean()*100:5.1f}cm, Chla={algae_solver.Chla.mean():5.1f}mug/L")
 
 print()
-print("✓ 模拟完成!")
+print(" 模拟完成!")
 print()
 
 # ==================== 结果分析 ====================
@@ -310,25 +311,25 @@ NO3_mean = output_NO3.mean(axis=1)
 Chla_mean = output_Chla.mean(axis=1)
 
 print(f"初始状态 (Day 0):")
-print(f"  水温: {T_mean[0]:.2f} °C")
+print(f"  水温: {T_mean[0]:.2f}  degC")
 print(f"  DO: {DO_mean[0]:.2f} mg/L")
 print(f"  冰厚: {ice_thickness_mean[0]*100:.2f} cm")
-print(f"  叶绿素: {Chla_mean[0]:.2f} μg/L")
+print(f"  叶绿素: {Chla_mean[0]:.2f} mug/L")
 print()
 
 print(f"最终状态 (Day {n_days}):")
-print(f"  水温: {T_mean[-1]:.2f} °C")
+print(f"  水温: {T_mean[-1]:.2f}  degC")
 print(f"  DO: {DO_mean[-1]:.2f} mg/L")
 print(f"  冰厚: {ice_thickness_mean[-1]*100:.2f} cm")
 print(f"  冰盖覆盖率: {ice_fraction_mean[-1]*100:.1f}%")
-print(f"  叶绿素: {Chla_mean[-1]:.2f} μg/L")
+print(f"  叶绿素: {Chla_mean[-1]:.2f} mug/L")
 print()
 
 print("变化量:")
-print(f"  水温变化: {T_mean[-1] - T_mean[0]:+.2f} °C")
+print(f"  水温变化: {T_mean[-1] - T_mean[0]:+.2f}  degC")
 print(f"  DO变化: {DO_mean[-1] - DO_mean[0]:+.2f} mg/L")
 print(f"  冰厚增长: {ice_thickness_mean[-1]*100:.2f} cm")
-print(f"  藻类变化: {Chla_mean[-1] - Chla_mean[0]:+.2f} μg/L ({(Chla_mean[-1]/Chla_mean[0]-1)*100:+.1f}%)")
+print(f"  藻类变化: {Chla_mean[-1] - Chla_mean[0]:+.2f} mug/L ({(Chla_mean[-1]/Chla_mean[0]-1)*100:+.1f}%)")
 print()
 
 # ==================== 可视化 ====================
@@ -342,7 +343,7 @@ ax = axes[0, 0]
 ax.plot(output_times, T_mean, 'b-', linewidth=2, label='Water Temperature')
 ax.axhline(0, color='gray', linestyle='--', linewidth=1, label='Freezing Point')
 ax.set_xlabel('Time (days)')
-ax.set_ylabel('Temperature (°C)')
+ax.set_ylabel('Temperature ( degC)')
 ax.set_title('(a) Water Temperature Evolution')
 ax.legend()
 ax.grid(True, alpha=0.3)
@@ -390,7 +391,7 @@ ax.grid(True, alpha=0.3)
 ax = axes[2, 1]
 ax.plot(output_times, Chla_mean, 'g-', linewidth=2, label='Chlorophyll-a')
 ax.set_xlabel('Time (days)')
-ax.set_ylabel('Chlorophyll-a (μg/L)')
+ax.set_ylabel('Chlorophyll-a (mug/L)')
 ax.set_title('(f) Phytoplankton Evolution')
 ax.legend()
 ax.grid(True, alpha=0.3)
@@ -398,7 +399,7 @@ ax.grid(True, alpha=0.3)
 plt.tight_layout()
 output_file = 'winter_river_simulation_results.png'
 plt.savefig(output_file, dpi=150, bbox_inches='tight')
-print(f"✓ 图表已保存: {output_file}")
+print(f" 图表已保存: {output_file}")
 print()
 
 # ==================== 时空分布图 ====================
@@ -417,7 +418,7 @@ for i, t_idx in enumerate(time_indices):
             linewidth=2, label=f'Day {int(output_times[t_idx])}')
 ax.axhline(0, color='gray', linestyle='--', linewidth=1)
 ax.set_xlabel('Distance (km)')
-ax.set_ylabel('Temperature (°C)')
+ax.set_ylabel('Temperature ( degC)')
 ax.set_title('(a) Spatial Temperature Distribution')
 ax.legend()
 ax.grid(True, alpha=0.3)
@@ -450,7 +451,7 @@ for i, t_idx in enumerate(time_indices):
     ax.plot(x_km, output_Chla[t_idx, :], color=colors[i],
             linewidth=2, label=f'Day {int(output_times[t_idx])}')
 ax.set_xlabel('Distance (km)')
-ax.set_ylabel('Chlorophyll-a (μg/L)')
+ax.set_ylabel('Chlorophyll-a (mug/L)')
 ax.set_title('(d) Spatial Chlorophyll Distribution')
 ax.legend()
 ax.grid(True, alpha=0.3)
@@ -458,27 +459,27 @@ ax.grid(True, alpha=0.3)
 plt.tight_layout()
 output_file2 = 'winter_river_simulation_spatial.png'
 plt.savefig(output_file2, dpi=150, bbox_inches='tight')
-print(f"✓ 空间分布图已保存: {output_file2}")
+print(f" 空间分布图已保存: {output_file2}")
 print()
 
 # ==================== 总结 ====================
 print("[8] 模拟总结")
 print("=" * 70)
 print()
-print("✅ 成功模拟了北方河流冬季冰封期水质演变过程")
+print(" 成功模拟了北方河流冬季冰封期水质演变过程")
 print()
 print("主要发现:")
-print(f"  1. 冰盖生长: 0 → {ice_thickness_mean[-1]*100:.1f} cm (30天)")
-print(f"  2. 水温下降: {T_mean[0]:.1f} → {T_mean[-1]:.1f} °C")
-print(f"  3. DO变化: {DO_mean[0]:.1f} → {DO_mean[-1]:.1f} mg/L ({(DO_mean[-1]/DO_mean[0]-1)*100:+.1f}%)")
-print(f"  4. 藻类变化: {Chla_mean[0]:.1f} → {Chla_mean[-1]:.1f} μg/L ({(Chla_mean[-1]/Chla_mean[0]-1)*100:+.1f}%)")
+print(f"  1. 冰盖生长: 0 -> {ice_thickness_mean[-1]*100:.1f} cm (30天)")
+print(f"  2. 水温下降: {T_mean[0]:.1f} -> {T_mean[-1]:.1f}  degC")
+print(f"  3. DO变化: {DO_mean[0]:.1f} -> {DO_mean[-1]:.1f} mg/L ({(DO_mean[-1]/DO_mean[0]-1)*100:+.1f}%)")
+print(f"  4. 藻类变化: {Chla_mean[0]:.1f} -> {Chla_mean[-1]:.1f} mug/L ({(Chla_mean[-1]/Chla_mean[0]-1)*100:+.1f}%)")
 print()
 print("物理-生态耦合机制:")
-print("  ✓ 气温下降 → 水温下降 → 冰盖生长")
-print("  ✓ 冰盖生长 → 复氧受阻 → DO下降")
-print("  ✓ 冰盖遮蔽 → 光照减弱 → 藻类受抑制")
-print("  ✓ 低温低光 → 生化反应变慢 → 营养盐循环减缓")
+print("   气温下降 -> 水温下降 -> 冰盖生长")
+print("   冰盖生长 -> 复氧受阻 -> DO下降")
+print("   冰盖遮蔽 -> 光照减弱 -> 藻类受抑制")
+print("   低温低光 -> 生化反应变慢 -> 营养盐循环减缓")
 print()
 print("=" * 70)
-print("HydroClaude v1.0 - 全球首个开源冰-水质耦合系统 ✨")
+print("HydroClaude v1.0 - 全球首个开源冰-水质耦合系统 ")
 print("=" * 70)

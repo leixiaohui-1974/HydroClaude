@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 网络拓扑使用示例
 
@@ -26,7 +27,7 @@ def example_1_simple_serial():
     """
     示例1: 简单串联网络
 
-    拓扑: N1 → R1 → N2 → R2 → N3
+    拓扑: N1 -> R1 -> N2 -> R2 -> N3
 
     场景：
     - 3个节点（2个边界节点，1个中间节点）
@@ -57,7 +58,7 @@ def example_1_simple_serial():
     solver1 = GodunvFVMSolver(
         width=20.0,
         length=500.0,
-        n_cells=50,
+        n_cells = 100,
         manning_n=0.025,
         slope=0.001
     )
@@ -65,7 +66,7 @@ def example_1_simple_serial():
     solver2 = GodunvFVMSolver(
         width=20.0,
         length=500.0,
-        n_cells=50,
+        n_cells = 100,
         manning_n=0.025,
         slope=0.001
     )
@@ -99,14 +100,14 @@ def example_1_simple_serial():
     # 5. 构建拓扑
     print("\n构建拓扑...")
     order = network.build_topology()
-    print(f"✅ 拓扑排序顺序: {order}")
+    print(f" 拓扑排序顺序: {order}")
 
     # 6. 验证拓扑
     is_valid, errors = network.validate_topology()
     if is_valid:
-        print("✅ 拓扑验证通过")
+        print(" 拓扑验证通过")
     else:
-        print("❌ 拓扑验证失败:")
+        print(" 拓扑验证失败:")
         for error in errors:
             print(f"   - {error}")
 
@@ -122,9 +123,9 @@ def example_2_y_junction():
     示例2: Y型汇流网络
 
     拓扑:
-        N1 → R1 ↘
-                   N3 → R3 → N4
-        N2 → R2 ↗
+        N1 -> R1 ↘
+                   N3 -> R3 -> N4
+        N2 -> R2 ↗
 
     场景：
     - 2条支流汇入主河
@@ -150,7 +151,7 @@ def example_2_y_junction():
     # 创建求解器
     # 支流1 (窄河)
     solver1 = GodunvFVMSolver(
-        width=10.0, length=400.0, n_cells=40,
+        width=10.0, length=400.0, n_cells = 100,
         manning_n=0.030, slope=0.002
     )
     h1 = np.ones(40) * 1.5
@@ -163,7 +164,7 @@ def example_2_y_junction():
 
     # 支流2 (窄河)
     solver2 = GodunvFVMSolver(
-        width=10.0, length=400.0, n_cells=40,
+        width=10.0, length=400.0, n_cells = 100,
         manning_n=0.030, slope=0.002
     )
     h2 = np.ones(40) * 1.5
@@ -176,7 +177,7 @@ def example_2_y_junction():
 
     # 主河 (宽河)
     solver3 = GodunvFVMSolver(
-        width=25.0, length=500.0, n_cells=50,
+        width=25.0, length=500.0, n_cells = 100,
         manning_n=0.025, slope=0.001
     )
     h3 = np.ones(50) * 2.0
@@ -209,8 +210,8 @@ def example_2_y_junction():
     # 质量平衡检查
     Q_in, Q_out, error = network.check_global_mass_balance()
     print(f"\n质量平衡检查:")
-    print(f"  总入流: {Q_in:.2f} m³/s")
-    print(f"  总出流: {Q_out:.2f} m³/s")
+    print(f"  总入流: {Q_in:.2f} m^3/s")
+    print(f"  总出流: {Q_out:.2f} m^3/s")
     print(f"  误差: {error:.4f}%")
 
     return network
@@ -221,11 +222,11 @@ def example_3_complex_network():
     示例3: 复杂河网
 
     拓扑:
-        N1 → R1 → N3 → R3 → N5
+        N1 -> R1 -> N3 -> R3 -> N5
                   ↑
-        N2 → R2 → ↑
+        N2 -> R2 -> ↑
 
-        N4 → R4 → N5
+        N4 -> R4 -> N5
 
     场景：
     - 多个汇流点
@@ -322,17 +323,17 @@ if __name__ == "__main__":
     net3 = example_3_complex_network()
 
     print("\n" + "="*80)
-    print("✅ 所有网络拓扑示例运行完成！")
+    print(" 所有网络拓扑示例运行完成！")
     print("="*80)
 
     print("\n总结:")
     print("  Stage 3 网络拓扑功能:")
-    print("  1. ✅ 节点管理 - 支持多种节点类型（boundary, junction, etc.）")
-    print("  2. ✅ 河段管理 - 连接节点，包含求解器")
-    print("  3. ✅ 拓扑构建 - 自动拓扑排序（上游→下游）")
-    print("  4. ✅ 拓扑验证 - 检测环路、孤立节点")
-    print("  5. ✅ 质量平衡 - 全局质量守恒检查")
-    print("  6. ✅ 网络可视化 - 拓扑图绘制")
+    print("  1.  节点管理 - 支持多种节点类型（boundary, junction, etc.）")
+    print("  2.  河段管理 - 连接节点，包含求解器")
+    print("  3.  拓扑构建 - 自动拓扑排序（上游->下游）")
+    print("  4.  拓扑验证 - 检测环路、孤立节点")
+    print("  5.  质量平衡 - 全局质量守恒检查")
+    print("  6.  网络可视化 - 拓扑图绘制")
     print("\n  可用于:")
     print("  - 串联河段模拟")
     print("  - 支流汇流模拟")

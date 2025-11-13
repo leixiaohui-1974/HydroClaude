@@ -386,8 +386,8 @@ class TestDesignIDZFromCanalGeometry(unittest.TestCase):
         self.assertNotAlmostEqual(K_values[0], K_values[1], places=0)
         self.assertNotAlmostEqual(K_values[1], K_values[2], places=0)
 
-        # K应该随长度增加（长度更长 → K更大）
-        # 随宽度增加而减小（宽度更大 → 面积更大 → K更小）
+        # K应该随长度增加（长度更长 -> K更大）
+        # 随宽度增加而减小（宽度更大 -> 面积更大 -> K更小）
         # 第3段最长最宽，效果取决于具体数值
 
         # 至少验证所有K都是正数

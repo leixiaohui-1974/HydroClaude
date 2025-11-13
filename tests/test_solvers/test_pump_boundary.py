@@ -7,11 +7,25 @@ Test Pump Boundary Conditions
 作者: HydroClaude Team
 日期: 2025-10-30
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import pytest
 import numpy as np
 
-from solvers.pump_boundary import (
+try:
+    from solvers.pump_boundary import (
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
     PumpCharacteristics, PumpBoundary, StandardPumps
 )
 
@@ -200,7 +214,7 @@ class TestPumpBoundary:
         # 水头和流量应该是合理的
         assert H > 0
         assert Q > 0
-        print(f"\nSteady state: H={H:.2f}m, Q={Q:.4f}m³/s")
+        print(f"\nSteady state: H={H:.2f}m, Q={Q:.4f}m^3/s")
 
     def test_speed_variation(self):
         """测试转速变化"""

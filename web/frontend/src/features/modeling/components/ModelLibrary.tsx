@@ -375,7 +375,7 @@ const ModelLibrary: React.FC<ModelLibraryProps> = ({
           关闭
         </Button>
       ]}
-      destroyOnClose
+      destroyOnClose={true}
     >
       {/* Toolbar */}
       <Space direction="vertical" style={{ width: '100%', marginBottom: 16 }} size="middle">

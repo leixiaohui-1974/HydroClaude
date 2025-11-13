@@ -3,6 +3,14 @@
 """
 补充缺失的6个示例的README文档
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 from pathlib import Path
 
@@ -150,7 +158,7 @@ def generate_missing_readmes():
         example_dir = examples_root / example_name
 
         if not example_dir.exists():
-            print(f"  ✗ {example_name}: 目录不存在")
+            print(f"   {example_name}: 目录不存在")
             continue
 
         readme_path = example_dir / 'README.md'
@@ -162,7 +170,7 @@ def generate_missing_readmes():
         with open(readme_path, 'w', encoding='utf-8') as f:
             f.write(content)
 
-        print(f"  ✓ {example_name}: README已生成")
+        print(f"   {example_name}: README已生成")
         success_count += 1
 
     print(f"\n补充完成: {success_count}/{len(missing_examples)}")

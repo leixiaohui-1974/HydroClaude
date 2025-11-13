@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例20: 城市供水管网优化调度
 
@@ -20,6 +21,8 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from typing import Dict, List, Tuple
@@ -39,8 +42,8 @@ class WaterSource:
     """水源数据类"""
     source_id: str
     source_type: str  # 'reservoir', 'groundwater', 'transfer'
-    capacity: float   # 最大供水能力 (m³/s)
-    cost: float       # 取水成本 (元/m³)
+    capacity: float   # 最大供水能力 (m^3/s)
+    cost: float       # 取水成本 (元/m^3)
     quality: float    # 水质等级 (0-1, 越高越好)
     reservoir: Reservoir = None
 
@@ -50,7 +53,7 @@ class DemandNode:
     """需水节点数据类"""
     node_id: str
     node_type: str    # 'residential', 'industrial', 'commercial'
-    base_demand: float  # 基础需水量 (m³/s)
+    base_demand: float  # 基础需水量 (m^3/s)
     priority: int     # 优先级 (1-5, 5最高)
     penalty: float    # 缺水惩罚系数
 
@@ -59,8 +62,8 @@ class DemandNode:
 class TreatmentPlant:
     """水处理厂数据类"""
     plant_id: str
-    capacity: float   # 处理能力 (m³/s)
-    cost: float       # 处理成本 (元/m³)
+    capacity: float   # 处理能力 (m^3/s)
+    cost: float       # 处理成本 (元/m^3)
     efficiency: float  # 处理效率 (0-1)
 
 
@@ -94,14 +97,14 @@ class UrbanWaterSupplySystem:
         print(f"  水厂数: {len(self.treatment_plants)}")
         print(f"  高位水池数: {len(self.storage_tanks)}")
         print(f"  需水节点数: {len(self.demand_nodes)}")
-        print(f"  总供水能力: {self.total_capacity:.0f} m³/s")
+        print(f"  总供水能力: {self.total_capacity:.0f} m^3/s")
 
     def _create_water_sources(self):
         """创建多水源"""
         # 水源1: 地表水库
         reservoir_1 = Reservoir(
             reservoir_id="surface_reservoir",
-            total_capacity=50000e4,  # 5亿m³
+            total_capacity=50000e4,  # 5亿m^3
             dead_storage=5000e4,
             min_level=100.0,
             normal_level=130.0,
@@ -114,8 +117,8 @@ class UrbanWaterSupplySystem:
         source_1 = WaterSource(
             source_id="surface_water",
             source_type="reservoir",
-            capacity=80.0,  # 最大80 m³/s
-            cost=0.5,       # 取水成本0.5元/m³
+            capacity=80.0,  # 最大80 m^3/s
+            cost=0.5,       # 取水成本0.5元/m^3
             quality=0.85,   # 水质等级
             reservoir=reservoir_1
         )
@@ -124,7 +127,7 @@ class UrbanWaterSupplySystem:
         source_2 = WaterSource(
             source_id="groundwater",
             source_type="groundwater",
-            capacity=30.0,  # 最大30 m³/s
+            capacity=30.0,  # 最大30 m^3/s
             cost=1.2,       # 地下水成本较高
             quality=0.95    # 水质好
         )
@@ -133,7 +136,7 @@ class UrbanWaterSupplySystem:
         source_3 = WaterSource(
             source_id="transfer_water",
             source_type="transfer",
-            capacity=50.0,  # 最大50 m³/s
+            capacity=50.0,  # 最大50 m^3/s
             cost=2.0,       # 外调水成本最高
             quality=0.80    # 水质一般
         )
@@ -144,8 +147,8 @@ class UrbanWaterSupplySystem:
         for source in self.water_sources:
             print(f"  {source.source_id}:")
             print(f"    类型: {source.source_type}")
-            print(f"    能力: {source.capacity:.0f} m³/s")
-            print(f"    成本: {source.cost:.2f} 元/m³")
+            print(f"    能力: {source.capacity:.0f} m^3/s")
+            print(f"    成本: {source.cost:.2f} 元/m^3")
             print(f"    水质: {source.quality:.2f}")
 
     def _create_treatment_plants(self):
@@ -153,7 +156,7 @@ class UrbanWaterSupplySystem:
         plants_config = [
             {
                 "id": "plant_north",
-                "capacity": 60.0,   # 60 m³/s
+                "capacity": 60.0,   # 60 m^3/s
                 "cost": 0.3,        # 处理成本
                 "efficiency": 0.95
             },
@@ -184,13 +187,13 @@ class UrbanWaterSupplySystem:
             self.treatment_plants.append(plant)
 
             print(f"  {config['id']}:")
-            print(f"    处理能力: {config['capacity']:.0f} m³/s")
-            print(f"    处理成本: {config['cost']:.2f} 元/m³")
+            print(f"    处理能力: {config['capacity']:.0f} m^3/s")
+            print(f"    处理成本: {config['cost']:.2f} 元/m^3")
 
     def _create_storage_tanks(self):
         """创建高位配水池"""
         tanks_config = [
-            {"id": "tank_north", "volume": 50000, "area": 10000},  # 5万m³
+            {"id": "tank_north", "volume": 50000, "area": 10000},  # 5万m^3
             {"id": "tank_south", "volume": 40000, "area": 8000},
             {"id": "tank_east", "volume": 45000, "area": 9000},
             {"id": "tank_west", "volume": 35000, "area": 7000}
@@ -211,7 +214,7 @@ class UrbanWaterSupplySystem:
             self.storage_tanks.append(tank)
 
             print(f"  {config['id']}:")
-            print(f"    容积: {config['volume']/1000:.0f} 千m³")
+            print(f"    容积: {config['volume']/1000:.0f} 千m^3")
 
     def _create_demand_nodes(self):
         """创建需水节点"""
@@ -253,10 +256,10 @@ class UrbanWaterSupplySystem:
         industrial_total = sum(n.base_demand for n in self.demand_nodes if n.node_type == "industrial")
         commercial_total = sum(n.base_demand for n in self.demand_nodes if n.node_type == "commercial")
 
-        print(f"  居民用水: {residential_total:.0f} m³/s")
-        print(f"  工业用水: {industrial_total:.0f} m³/s")
-        print(f"  商业用水: {commercial_total:.0f} m³/s")
-        print(f"  总需水: {residential_total + industrial_total + commercial_total:.0f} m³/s")
+        print(f"  居民用水: {residential_total:.0f} m^3/s")
+        print(f"  工业用水: {industrial_total:.0f} m^3/s")
+        print(f"  商业用水: {commercial_total:.0f} m^3/s")
+        print(f"  总需水: {residential_total + industrial_total + commercial_total:.0f} m^3/s")
 
     def simulate_daily_operation(self, n_days: int = 7):
         """
@@ -444,17 +447,17 @@ class UrbanWaterSupplySystem:
         """打印统计结果"""
         print(f"\n仿真结果统计:")
 
-        total_water = np.sum(results['total_supply']) * 3600 / 1e6  # 百万m³
-        print(f"  总供水量: {total_water:.2f} 百万m³")
-        print(f"  平均供水: {np.mean(results['total_supply']):.1f} m³/s")
-        print(f"  平均需水: {np.mean(results['total_demand']):.1f} m³/s")
+        total_water = np.sum(results['total_supply']) * 3600 / 1e6  # 百万m^3
+        print(f"  总供水量: {total_water:.2f} 百万m^3")
+        print(f"  平均供水: {np.mean(results['total_supply']):.1f} m^3/s")
+        print(f"  平均需水: {np.mean(results['total_demand']):.1f} m^3/s")
 
         # 水源分析
         print(f"\n  各水源供水量:")
         for source in self.water_sources:
             supply = np.sum(results['source_supplies'][source.source_id]) * 3600 / 1e6
             percentage = supply / total_water * 100 if total_water > 0 else 0
-            print(f"    {source.source_id}: {supply:.2f} 百万m³ ({percentage:.1f}%)")
+            print(f"    {source.source_id}: {supply:.2f} 百万m^3 ({percentage:.1f}%)")
 
         # 成本分析
         total_cost = np.sum(results['total_cost']) * 3600
@@ -465,7 +468,7 @@ class UrbanWaterSupplySystem:
         print(f"    总成本: {total_cost/1e6:.2f} 百万元")
         print(f"    取水成本: {water_cost/1e6:.2f} 百万元 ({water_cost/total_cost*100:.1f}%)")
         print(f"    处理成本: {treatment_cost/1e6:.2f} 百万元 ({treatment_cost/total_cost*100:.1f}%)")
-        print(f"    单位水成本: {total_cost/total_water:.2f} 元/m³")
+        print(f"    单位水成本: {total_cost/total_water:.2f} 元/m^3")
 
         # 缺水分析
         shortage_hours = np.sum(np.array(results['shortage']) > 0.1)
@@ -490,7 +493,7 @@ def visualize_results(results, system):
     if np.sum(results['shortage']) > 0:
         ax1.fill_between(time_hours, 0, results['shortage'],
                         color='red', alpha=0.3, label='缺水')
-    ax1.set_ylabel('流量 (m³/s)', fontsize=12)
+    ax1.set_ylabel('流量 (m^3/s)', fontsize=12)
     ax1.set_title('供水与需水平衡', fontsize=14, fontweight='bold')
     ax1.legend(loc='best')
     ax1.grid(True, alpha=0.3)
@@ -504,7 +507,7 @@ def visualize_results(results, system):
         ax2.bar(time_hours, supply, bottom=bottom, label=source.source_id,
                color=colors[i], alpha=0.7, width=0.8)
         bottom += supply
-    ax2.set_ylabel('流量 (m³/s)', fontsize=12)
+    ax2.set_ylabel('流量 (m^3/s)', fontsize=12)
     ax2.set_title('各水源供水分配', fontsize=14, fontweight='bold')
     ax2.legend(loc='best')
     ax2.grid(True, alpha=0.3, axis='y')
@@ -515,7 +518,7 @@ def visualize_results(results, system):
         ax3.plot(time_hours, results['plant_flows'][plant.plant_id],
                 label=plant.plant_id, linewidth=2)
     ax3.set_xlabel('时间 (小时)', fontsize=12)
-    ax3.set_ylabel('流量 (m³/s)', fontsize=12)
+    ax3.set_ylabel('流量 (m^3/s)', fontsize=12)
     ax3.set_title('水处理厂流量', fontsize=14, fontweight='bold')
     ax3.legend(loc='best', fontsize=9)
     ax3.grid(True, alpha=0.3)
@@ -547,7 +550,7 @@ def visualize_results(results, system):
     ax5.legend(loc='best')
     ax5.grid(True, alpha=0.3)
 
-    plt.savefig('/home/user/HydroClaude/examples/example_20_urban_water_supply/urban_supply_simulation.png',
+    plt.savefig('examples/example_20_urban_water_supply/urban_supply_simulation.png',
                 dpi=150, bbox_inches='tight')
     print(f"图像已保存到: urban_supply_simulation.png")
 
@@ -567,8 +570,8 @@ if __name__ == "__main__":
     print("=" * 80)
 
     print("\n关键成果:")
-    print("  ✓ 多水源联合调度")
-    print("  ✓ 水处理厂优化运行")
-    print("  ✓ 高位水池削峰填谷")
-    print("  ✓ 成本最小化优化")
-    print("  ✓ 高供水保证率")
+    print("   多水源联合调度")
+    print("   水处理厂优化运行")
+    print("   高位水池削峰填谷")
+    print("   成本最小化优化")
+    print("   高供水保证率")

@@ -1,0 +1,151 @@
+{
+  "test_suite": "HydroClaude Web Comprehensive Test Suite",
+  "timestamp": "2025-11-12T22:10:13.027089",
+  "total_tests": 20,
+  "passed": 12,
+  "failed": 7,
+  "warnings": 1,
+  "success_rate": "60.0%",
+  "results": [
+    {
+      "test_name": "Health Check",
+      "status": "pass",
+      "message": "Service: HydroClaude Web API",
+      "details": null,
+      "timestamp": "2025-11-12T22:09:01.791889"
+    },
+    {
+      "test_name": "Engine Info",
+      "status": "pass",
+      "message": "Version: 1.0.0",
+      "details": null,
+      "timestamp": "2025-11-12T22:09:03.858803"
+    },
+    {
+      "test_name": "List Simulations",
+      "status": "pass",
+      "message": "Found 1 simulations",
+      "details": null,
+      "timestamp": "2025-11-12T22:09:05.911316"
+    },
+    {
+      "test_name": "Simulation: 均匀流测试",
+      "status": "fail",
+      "message": "Failed: 'gbk' codec can't encode character '\\U0001f680' in position 2: illegal multibyte sequence",
+      "details": null,
+      "timestamp": "2025-11-12T22:09:10.998111"
+    },
+    {
+      "test_name": "Simulation: 溃坝测试",
+      "status": "fail",
+      "message": "Failed: 'gbk' codec can't encode character '\\U0001f680' in position 2: illegal multibyte sequence",
+      "details": null,
+      "timestamp": "2025-11-12T22:09:16.107795"
+    },
+    {
+      "test_name": "Simulation: 流量边界测试",
+      "status": "fail",
+      "message": "Failed: 'gbk' codec can't encode character '\\U0001f680' in position 2: illegal multibyte sequence",
+      "details": null,
+      "timestamp": "2025-11-12T22:09:21.200222"
+    },
+    {
+      "test_name": "Simulation: 陡坡流动测试",
+      "status": "fail",
+      "message": "Failed: 'gbk' codec can't encode character '\\U0001f680' in position 2: illegal multibyte sequence",
+      "details": null,
+      "timestamp": "2025-11-12T22:09:26.362476"
+    },
+    {
+      "test_name": "Simulation: 宽渠道测试",
+      "status": "fail",
+      "message": "Failed: 'gbk' codec can't encode character '\\U0001f680' in position 2: illegal multibyte sequence",
+      "details": null,
+      "timestamp": "2025-11-12T22:09:31.490911"
+    },
+    {
+      "test_name": "Simulation: 最小值测试",
+      "status": "fail",
+      "message": "Failed: 'gbk' codec can't encode character '\\U0001f680' in position 2: illegal multibyte sequence",
+      "details": null,
+      "timestamp": "2025-11-12T22:09:36.606592"
+    },
+    {
+      "test_name": "Simulation: 最大值测试",
+      "status": "fail",
+      "message": "Failed: 'gbk' codec can't encode character '\\U0001f680' in position 2: illegal multibyte sequence",
+      "details": null,
+      "timestamp": "2025-11-12T22:09:41.729842"
+    },
+    {
+      "test_name": "UI: Homepage Load",
+      "status": "pass",
+      "message": "Page loaded successfully",
+      "details": null,
+      "timestamp": "2025-11-12T22:09:50.878363"
+    },
+    {
+      "test_name": "UI: Modeling Components",
+      "status": "pass",
+      "message": "Found 1 components",
+      "details": null,
+      "timestamp": "2025-11-12T22:09:50.898981"
+    },
+    {
+      "test_name": "UI: Tab Switch",
+      "status": "pass",
+      "message": "Switched to simulation tab",
+      "details": null,
+      "timestamp": "2025-11-12T22:09:54.231692"
+    },
+    {
+      "test_name": "UI: Input Edit",
+      "status": "warn",
+      "message": "Input value not changed",
+      "details": null,
+      "timestamp": "2025-11-12T22:09:55.314574"
+    },
+    {
+      "test_name": "UI: Button Click",
+      "status": "pass",
+      "message": "Component button clickable",
+      "details": null,
+      "timestamp": "2025-11-12T22:09:58.890459"
+    },
+    {
+      "test_name": "UI: Responsiveness",
+      "status": "pass",
+      "message": "Tested 3 screen sizes",
+      "details": null,
+      "timestamp": "2025-11-12T22:10:02.454884"
+    },
+    {
+      "test_name": "Error: 负数宽度",
+      "status": "pass",
+      "message": "Correctly rejected invalid input",
+      "details": null,
+      "timestamp": "2025-11-12T22:10:06.822701"
+    },
+    {
+      "test_name": "Error: 零长度",
+      "status": "pass",
+      "message": "Correctly rejected invalid input",
+      "details": null,
+      "timestamp": "2025-11-12T22:10:08.881055"
+    },
+    {
+      "test_name": "Error: 过少网格",
+      "status": "pass",
+      "message": "Correctly rejected invalid input",
+      "details": null,
+      "timestamp": "2025-11-12T22:10:10.945859"
+    },
+    {
+      "test_name": "Error: Non-existent ID",
+      "status": "pass",
+      "message": "Correctly returned 404",
+      "details": null,
+      "timestamp": "2025-11-12T22:10:13.026923"
+    }
+  ]
+}

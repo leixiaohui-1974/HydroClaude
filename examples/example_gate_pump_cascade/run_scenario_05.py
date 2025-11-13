@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """工况5: 极端流量测试"""
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import sys
 import os
@@ -11,8 +19,8 @@ scenario5 = {
     'name': 'Scenario 05: Extreme Flow Test',
     'description': '''**工况类型**: 极端流量扰动
 
-**初始状态**: Q = 30 m³/s
-**扰动**: t=300s, Q → 60 m³/s (+100%)
+**初始状态**: Q = 30 m^3/s
+**扰动**: t=300s, Q -> 60 m^3/s (+100%)
 **观测**: 泵站严重超载、数值稳定性''',
     'Q_initial': 30.0,
     'Q_upstream_func': lambda t: 60.0 if t >= 300 else 30.0

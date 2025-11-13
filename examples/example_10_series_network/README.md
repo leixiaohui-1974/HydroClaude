@@ -30,18 +30,21 @@
 
 ```bash
 cd examples/example_10_series_network
-PYTHONPATH=../.. python example_10_series_network.py
+PYTHONPATH=../.. python code/example_10_series_network.py
 ```
 
 ## 输出结果
 
 ### 图表
 
-- 待生成
+- `outputs/figures/series_network.png`
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_10_series_network_network.gif`
+
+![动画](outputs\animations\example_10_series_network_network.gif)
+- `outputs/animations/series_network_embedded.gif`
 
 ## 技术要点
 

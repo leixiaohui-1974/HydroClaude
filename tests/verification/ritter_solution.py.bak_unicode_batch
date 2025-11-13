@@ -1,0 +1,261 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Ritter解析解 - Dam Break on Dry Bed
+
+经典溃坝问题的解析解（Ritter, 1892）
+
+问题设置:
+- 初始条件: 左侧h_L，右侧h_R=0（干床）
+- 平底、无摩阻
+- 瞬间移除坝体（t=0）
+
+解的结构:
+- 稀疏波（rarefaction wave）从坝址向上游传播
+- 激波前沿（bore front）向下游传播
+- 中间为均匀流动区域
+
+参考文献:
+- Ritter, A. (1892) "Die Fortpflanzung der Wasserwellen"
+- Stoker, J.J. (1957) "Water Waves"
+- Toro, E.F. (2001) "Shock-Capturing Methods"
+
+作者: HydroClaude Team
+日期: 2025-10-31
+Phase: Stage 7.1 - SWASHES Benchmark
+"""
+
+import numpy as np
+from typing import Tuple
+
+
+def ritter_solution(
+    x: np.ndarray,
+    t: float,
+    h_L: float,
+    x_dam: float = 0.0,
+    g: float = 9.81
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    计算Ritter溃坝解析解
+
+    Args:
+        x: 空间坐标数组 (m)
+        t: 时间 (s)
+        h_L: 上游初始水深 (m)
+        x_dam: 坝址位置 (m)
+        g: 重力加速度 (m/s²)
+
+    Returns:
+        (h, u): 水深和流速数组
+    """
+    # 特征波速
+    c_L = np.sqrt(g * h_L)
+
+    # 初始化数组
+    h = np.zeros_like(x)
+    u = np.zeros_like(x)
+
+    # 处理t=0情况（初始条件）
+    if t <= 1e-10:
+        h[x <= x_dam] = h_L
+        h[x > x_dam] = 0.0
+        return h, u
+
+    # 关键位置
+    x_tail = x_dam - c_L * t  # 稀疏波尾部
+    x_front = x_dam + 2.0 * c_L * t  # 激波前沿
+
+    # 相对坐标
+    xi = (x - x_dam) / t
+
+    # 区域1: 上游未扰动区（x < x_tail）
+    mask1 = (x < x_tail)
+    h[mask1] = h_L
+    u[mask1] = 0.0
+
+    # 区域2: 稀疏波区（x_tail <= x < x_front）
+    mask2 = (x >= x_tail) & (x < x_front)
+    h[mask2] = (1.0/g) * (2.0*c_L/3.0 - xi[mask2]/3.0)**2
+    u[mask2] = 2.0/3.0 * (xi[mask2] + c_L)
+
+    # 区域3: 下游干床区（x >= x_front）
+    mask3 = (x >= x_front)
+    h[mask3] = 0.0
+    u[mask3] = 0.0
+
+    return h, u
+
+
+def ritter_solution_at_points(
+    x_points: np.ndarray,
+    t: float,
+    h_L: float,
+    x_dam: float = 0.0,
+    g: float = 9.81
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    在指定空间点计算Ritter解（与ritter_solution相同，但更明确）
+
+    Args:
+        x_points: 评估点的空间坐标
+        t: 时间
+        h_L: 上游初始水深
+        x_dam: 坝址位置
+        g: 重力加速度
+
+    Returns:
+        (h, u): 指定点的水深和流速
+    """
+    return ritter_solution(x_points, t, h_L, x_dam, g)
+
+
+def compute_ritter_energy(h: np.ndarray, u: np.ndarray, g: float = 9.81) -> np.ndarray:
+    """
+    计算Ritter解的能量（用于验证）
+
+    Args:
+        h: 水深数组
+        u: 流速数组
+        g: 重力加速度
+
+    Returns:
+        E: 单位宽度总能量
+    """
+    # 动能
+    KE = 0.5 * h * u**2
+
+    # 势能（相对于底床）
+    PE = 0.5 * g * h**2
+
+    # 总能量
+    E = KE + PE
+
+    return E
+
+
+def ritter_characteristics(t: float, h_L: float, x_dam: float = 0.0, g: float = 9.81) -> dict:
+    """
+    计算Ritter解的特征量
+
+    Args:
+        t: 时间
+        h_L: 上游初始水深
+        x_dam: 坝址位置
+        g: 重力加速度
+
+    Returns:
+        dict: 包含关键特征量的字典
+            - x_tail: 稀疏波尾部位置
+            - x_front: 激波前沿位置
+            - c_L: 上游波速
+            - u_front: 前沿流速
+            - h_front: 前沿水深
+    """
+    c_L = np.sqrt(g * h_L)
+
+    x_tail = x_dam - c_L * t
+    x_front = x_dam + 2.0 * c_L * t
+
+    # 前沿处的流速和水深
+    u_front = 2.0 * c_L
+    h_front = 4.0 / 9.0 * h_L
+
+    return {
+        'x_tail': x_tail,
+        'x_front': x_front,
+        'c_L': c_L,
+        'u_front': u_front,
+        'h_front': h_front,
+        'wave_speed': 2.0 * c_L  # 前沿传播速度
+    }
+
+
+def verify_ritter_properties(h: np.ndarray, u: np.ndarray, g: float = 9.81) -> dict:
+    """
+    验证Ritter解的理论性质
+
+    Args:
+        h: 水深数组
+        u: 流速数组
+        g: 重力加速度
+
+    Returns:
+        dict: 验证结果
+            - riemann_invariant: Riemann不变量 (u + 2√(gh))
+            - froude_number: Froude数
+    """
+    # Riemann不变量（在稀疏波区应为常数）
+    c = np.sqrt(g * np.maximum(h, 1e-10))
+    R = u + 2.0 * c
+
+    # Froude数
+    Fr = np.abs(u) / np.maximum(c, 1e-10)
+
+    return {
+        'riemann_invariant': R,
+        'froude_number': Fr,
+        'wave_celerity': c
+    }
+
+
+# 测试代码
+if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+
+    # 测试参数
+    h_L = 10.0  # 上游水深 (m)
+    L = 2000.0  # 计算域长度 (m)
+    x_dam = 0.0  # 坝址位置 (m)
+    t = 10.0  # 测试时间 (s)
+
+    # 空间网格
+    x = np.linspace(-1000, 1000, 2001)
+
+    # 计算解析解
+    h, u = ritter_solution(x, t, h_L, x_dam)
+
+    # 计算特征量
+    chars = ritter_characteristics(t, h_L, x_dam)
+    print(f"\n=== Ritter解特征量 (t={t}s) ===")
+    print(f"稀疏波尾部位置: x_tail = {chars['x_tail']:.2f} m")
+    print(f"激波前沿位置: x_front = {chars['x_front']:.2f} m")
+    print(f"上游波速: c_L = {chars['c_L']:.2f} m/s")
+    print(f"前沿流速: u_front = {chars['u_front']:.2f} m/s")
+    print(f"前沿水深: h_front = {chars['h_front']:.2f} m")
+
+    # 验证性质
+    props = verify_ritter_properties(h, u)
+    print(f"\n=== Riemann不变量验证 ===")
+    print(f"R = u + 2√(gh):")
+    print(f"  最小值: {props['riemann_invariant'].min():.3f}")
+    print(f"  最大值: {props['riemann_invariant'].max():.3f}")
+    print(f"  标准差: {props['riemann_invariant'].std():.3f}")
+
+    # 绘图
+    fig, axes = plt.subplots(2, 1, figsize=(12, 8))
+
+    # 水深
+    axes[0].plot(x, h, 'b-', linewidth=2, label='水深 h')
+    axes[0].axvline(chars['x_tail'], color='r', linestyle='--', label='稀疏波尾部')
+    axes[0].axvline(chars['x_front'], color='g', linestyle='--', label='激波前沿')
+    axes[0].axvline(x_dam, color='k', linestyle=':', label='坝址')
+    axes[0].set_ylabel('水深 (m)', fontsize=12)
+    axes[0].set_title(f'Ritter溃坝解析解 (t={t}s, h_L={h_L}m)', fontsize=14)
+    axes[0].legend()
+    axes[0].grid(True, alpha=0.3)
+
+    # 流速
+    axes[1].plot(x, u, 'r-', linewidth=2, label='流速 u')
+    axes[1].axvline(chars['x_tail'], color='r', linestyle='--')
+    axes[1].axvline(chars['x_front'], color='g', linestyle='--')
+    axes[1].axvline(x_dam, color='k', linestyle=':')
+    axes[1].set_xlabel('距离 (m)', fontsize=12)
+    axes[1].set_ylabel('流速 (m/s)', fontsize=12)
+    axes[1].legend()
+    axes[1].grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('ritter_solution_test.png', dpi=150, bbox_inches='tight')
+    print(f"\n图像已保存: ritter_solution_test.png")
+    print(" Ritter解析解测试完成!")

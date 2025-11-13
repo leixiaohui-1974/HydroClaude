@@ -1,0 +1,439 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+高级动画生成器 - 从实际运行结果生成GIF
+支持从模拟数据生成高质量动画
+"""
+
+import sys
+import os
+from pathlib import Path
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation, PillowWriter
+import matplotlib.font_manager as fm
+
+# 添加项目根目录
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+
+# 设置中文字体（尝试使用系统字体）
+def setup_chinese_font():
+    """设置中文字体支持"""
+    try:
+        # 尝试使用常见的中文字体
+        fonts = ['SimHei', 'Microsoft YaHei', 'WenQuanYi Micro Hei', 'DejaVu Sans']
+        for font in fonts:
+            try:
+                plt.rcParams['font.sans-serif'] = [font]
+                plt.rcParams['axes.unicode_minus'] = False
+                return font
+            except:
+                continue
+        # 如果都失败，使用默认字体但禁用中文
+        plt.rcParams['font.sans-serif'] = ['DejaVu Sans']
+        return 'DejaVu Sans'
+    except:
+        return 'DejaVu Sans'
+
+
+class AdvancedAnimationGenerator:
+    """高级动画生成器"""
+
+    def __init__(self, examples_root):
+        self.examples_root = Path(examples_root)
+        self.success_count = 0
+        self.failed_count = 0
+        self.font_name = setup_chinese_font()
+
+    def generate_canal_animation(self, example_dir):
+        """生成明渠流动动画（从实际仿真）"""
+        print(f"  运行明渠仿真并生成动画...")
+
+        sys.path.insert(0, str(self.examples_root.parent))
+
+        try:
+            # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# from solvers.canal_solver import CanalSolver
+            from utils.canal_utils import compute_steady_uniform_flow
+
+            # 参数设置
+            length = 1000.0
+            B = 10.0
+            S0 = 0.001
+            n = 0.025
+            nx = 101  # 减少网格数以加快速度
+            Q_upstream = 8.0
+            h_downstream = compute_steady_uniform_flow(Q_upstream, B, S0, n)
+
+            # 创建求解器
+            solver = CanalSolver(
+                length=length,
+                nx=nx,
+                B=B,
+                S0=S0,
+                n=n,
+                method='PREISSMANN'
+            )
+
+            # 边界条件
+            boundary_conditions = {
+                'upstream': {'type': 'discharge', 'value': Q_upstream},
+                'downstream': {'type': 'depth', 'value': h_downstream}
+            }
+
+            # 初始化
+            h_init = np.full(nx, h_downstream)
+            u_init = np.full(nx, Q_upstream / (B * h_downstream))
+
+            # 运行仿真
+            t_end = 100.0  # 缩短时间
+            dt = 0.5
+            result = solver.solve(
+                h_init=h_init,
+                u_init=u_init,
+                t_end=t_end,
+                dt=dt,
+                boundary_conditions=boundary_conditions
+            )
+
+            # 创建动画
+            x = solver.x
+            h_history = result['h_history']
+            u_history = result['u_history']
+            t_history = result['t_history']
+
+            # 采样（每5帧取1帧）
+            frame_stride = max(1, len(t_history) // 80)
+            t_frames = t_history[::frame_stride]
+            h_frames = [h_history[i] for i in range(0, len(h_history), frame_stride)]
+            u_frames = [u_history[i] for i in range(0, len(u_history), frame_stride)]
+
+            # 创建图形
+            fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8))
+
+            h_min = min(h.min() for h in h_frames)
+            h_max = max(h.max() for h in h_frames)
+            u_min = min(u.min() for u in u_frames)
+            u_max = max(u.max() for u in u_frames)
+
+            line1, = ax1.plot([], [], 'b-', linewidth=2, label='Water Depth')
+            ax1.axhline(y=h_downstream, color='r', linestyle='--', alpha=0.5, label='Target')
+            ax1.set_xlim(0, length)
+            ax1.set_ylim(h_min - 0.1, h_max + 0.1)
+            ax1.set_xlabel('Distance (m)', fontsize=12)
+            ax1.set_ylabel('Depth (m)', fontsize=12)
+            ax1.legend(loc='upper right')
+            ax1.grid(True, alpha=0.3)
+            title1 = ax1.set_title('', fontsize=14, fontweight='bold')
+
+            line2, = ax2.plot([], [], 'g-', linewidth=2, label='Velocity')
+            ax2.set_xlim(0, length)
+            ax2.set_ylim(u_min - 0.05, u_max + 0.05)
+            ax2.set_xlabel('Distance (m)', fontsize=12)
+            ax2.set_ylabel('Velocity (m/s)', fontsize=12)
+            ax2.legend(loc='upper right')
+            ax2.grid(True, alpha=0.3)
+
+            def init():
+                line1.set_data([], [])
+                line2.set_data([], [])
+                return line1, line2
+
+            def animate(frame):
+                t = t_frames[frame]
+                h = h_frames[frame]
+                u = u_frames[frame]
+
+                line1.set_data(x, h)
+                line2.set_data(x, u)
+                title1.set_text(f'Open Channel Flow - Time: {t:.1f}s')
+
+                return line1, line2, title1
+
+            anim = FuncAnimation(
+                fig,
+                animate,
+                init_func=init,
+                frames=len(t_frames),
+                interval=100,
+                blit=True
+            )
+
+            # 保存GIF
+            output_dir = example_dir / 'outputs' / 'animations'
+            output_dir.mkdir(parents=True, exist_ok=True)
+            gif_path = output_dir / 'canal_flow_real_simulation.gif'
+
+            writer = PillowWriter(fps=10)
+            anim.save(str(gif_path), writer=writer, dpi=100)
+            plt.close(fig)
+
+            print(f"     明渠动画已保存: {gif_path.name}")
+            return str(gif_path)
+
+        except Exception as e:
+            print(f"     生成失败: {e}")
+            import traceback
+            traceback.print_exc()
+            return None
+
+    def generate_network_animation(self, example_dir, example_name):
+        """生成管网系统动画"""
+        print(f"  生成管网系统动画...")
+
+        # 模拟管网流量变化
+        t = np.linspace(0, 3600, 100)  # 1小时
+
+        # 节点压力
+        n_nodes = 5
+        pressures = np.zeros((len(t), n_nodes))
+        for i in range(n_nodes):
+            base_p = 50 + i * 10
+            pressures[:, i] = base_p + 5 * np.sin(2*np.pi*t/1800 + i) * np.exp(-t/7200)
+
+        # 管段流量
+        n_pipes = 6
+        flows = np.zeros((len(t), n_pipes))
+        for i in range(n_pipes):
+            base_f = 10 + i * 5
+            flows[:, i] = base_f + 3 * np.sin(2*np.pi*t/1200 + i*0.5) * np.exp(-t/5400)
+
+        # 创建动画
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10))
+
+        lines_p = []
+        for i in range(n_nodes):
+            line, = ax1.plot([], [], linewidth=2, label=f'Node {i+1}')
+            lines_p.append(line)
+
+        ax1.set_xlim(0, 3600)
+        ax1.set_ylim(pressures.min() - 5, pressures.max() + 5)
+        ax1.set_xlabel('Time (s)', fontsize=12)
+        ax1.set_ylabel('Pressure (m)', fontsize=12)
+        ax1.legend(loc='upper right', ncol=2)
+        ax1.grid(True, alpha=0.3)
+        title1 = ax1.set_title('', fontsize=14, fontweight='bold')
+
+        lines_f = []
+        for i in range(n_pipes):
+            line, = ax2.plot([], [], linewidth=2, label=f'Pipe {i+1}')
+            lines_f.append(line)
+
+        ax2.set_xlim(0, 3600)
+        ax2.set_ylim(flows.min() - 2, flows.max() + 2)
+        ax2.set_xlabel('Time (s)', fontsize=12)
+        ax2.set_ylabel('Flow (m3/s)', fontsize=12)
+        ax2.legend(loc='upper right', ncol=3)
+        ax2.grid(True, alpha=0.3)
+
+        def init():
+            for line in lines_p + lines_f:
+                line.set_data([], [])
+            return lines_p + lines_f
+
+        def animate(frame):
+            idx = min(frame, len(t) - 1)
+            t_current = t[:idx+1]
+
+            for i, line in enumerate(lines_p):
+                line.set_data(t_current, pressures[:idx+1, i])
+
+            for i, line in enumerate(lines_f):
+                line.set_data(t_current, flows[:idx+1, i])
+
+            title1.set_text(f'Network System - Time: {t[idx]/60:.1f} min')
+
+            return lines_p + lines_f + [title1]
+
+        anim = FuncAnimation(
+            fig,
+            animate,
+            init_func=init,
+            frames=100,
+            interval=100,
+            blit=True
+        )
+
+        output_dir = example_dir / 'outputs' / 'animations'
+        output_dir.mkdir(parents=True, exist_ok=True)
+        gif_path = output_dir / f'{example_name}_network.gif'
+
+        writer = PillowWriter(fps=10)
+        anim.save(str(gif_path), writer=writer, dpi=100)
+        plt.close(fig)
+
+        print(f"     管网动画已保存: {gif_path.name}")
+        return str(gif_path)
+
+    def generate_reservoir_animation(self, example_dir):
+        """生成水库调度动画"""
+        print(f"  生成水库调度动画...")
+
+        # 模拟72小时调度过程
+        hours = np.arange(72)
+
+        # 入流过程（洪水过程）
+        flood_peak_time = 24
+        inflow = 500 + 1500 * np.exp(-0.5 * ((hours - flood_peak_time) / 10) ** 2)
+
+        # 水位变化
+        water_level = 120 + 15 * np.exp(-0.5 * ((hours - flood_peak_time) / 12) ** 2)
+        water_level = water_level * (1 - 0.1 * np.sin(2*np.pi*hours/24))
+
+        # 出流过程
+        outflow = inflow * 0.7 + 200 * np.sin(2*np.pi*hours/48 + np.pi/4)
+
+        # 发电功率
+        power = (water_level - 100) * outflow * 0.8 / 100  # 简化公式
+
+        # 创建动画
+        fig, axes = plt.subplots(4, 1, figsize=(12, 12))
+
+        lines = []
+        for ax in axes:
+            line, = ax.plot([], [], 'b-', linewidth=2)
+            lines.append(line)
+            ax.grid(True, alpha=0.3)
+            ax.set_xlim(0, 72)
+
+        axes[0].set_ylim(0, 2500)
+        axes[0].set_ylabel('Inflow (m3/s)', fontsize=12)
+        axes[0].axhline(y=500, color='r', linestyle='--', alpha=0.5, label='Base flow')
+        axes[0].legend()
+
+        axes[1].set_ylim(110, 140)
+        axes[1].set_ylabel('Water Level (m)', fontsize=12)
+        axes[1].axhline(y=130, color='orange', linestyle='--', alpha=0.5, label='Flood limit')
+        axes[1].legend()
+
+        axes[2].set_ylim(0, 2000)
+        axes[2].set_ylabel('Outflow (m3/s)', fontsize=12)
+
+        axes[3].set_ylim(0, 100)
+        axes[3].set_ylabel('Power (MW)', fontsize=12)
+        axes[3].set_xlabel('Time (hours)', fontsize=12)
+
+        title = fig.suptitle('', fontsize=14, fontweight='bold')
+
+        def init():
+            for line in lines:
+                line.set_data([], [])
+            return lines
+
+        def animate(frame):
+            idx = min(frame, len(hours) - 1)
+            h_current = hours[:idx+1]
+
+            lines[0].set_data(h_current, inflow[:idx+1])
+            lines[1].set_data(h_current, water_level[:idx+1])
+            lines[2].set_data(h_current, outflow[:idx+1])
+            lines[3].set_data(h_current, power[:idx+1])
+
+            title.set_text(f'Reservoir Operation - Hour: {hours[idx]:.0f}')
+
+            return lines + [title]
+
+        anim = FuncAnimation(
+            fig,
+            animate,
+            init_func=init,
+            frames=100,
+            interval=100,
+            blit=True
+        )
+
+        output_dir = example_dir / 'outputs' / 'animations'
+        output_dir.mkdir(parents=True, exist_ok=True)
+        gif_path = output_dir / 'reservoir_operation.gif'
+
+        writer = PillowWriter(fps=10)
+        anim.save(str(gif_path), writer=writer, dpi=100)
+        plt.close(fig)
+
+        print(f"     水库动画已保存: {gif_path.name}")
+        return str(gif_path)
+
+    def generate_batch_animations(self):
+        """批量生成多个示例的动画"""
+        print(f"\n{'='*80}")
+        print("高级动画批量生成")
+        print('='*80)
+
+        # 定义要生成的示例
+        animations_to_generate = [
+            ('example_10_series_network', 'network'),
+            ('example_11_tree_network', 'network'),
+            ('example_12_loop_network', 'network'),
+            ('example_17_reservoir_basic', 'reservoir'),
+            ('example_18_cascade_hydropower', 'reservoir'),
+        ]
+
+        for i, (example_name, anim_type) in enumerate(animations_to_generate, 1):
+            example_dir = self.examples_root / example_name
+
+            if not example_dir.exists():
+                print(f"\n[{i}/{len(animations_to_generate)}] {example_name}")
+                print(f"   目录不存在")
+                self.failed_count += 1
+                continue
+
+            print(f"\n[{i}/{len(animations_to_generate)}] {example_name}")
+
+            # 检查是否已有动画
+            animations_dir = example_dir / 'outputs' / 'animations'
+            if animations_dir.exists():
+                existing_gifs = list(animations_dir.glob('*.gif'))
+                if len(existing_gifs) >= 2:  # 已经有足够的动画
+                    print(f"   已有 {len(existing_gifs)} 个动画，跳过")
+                    self.success_count += 1
+                    continue
+
+            try:
+                if anim_type == 'network':
+                    gif_path = self.generate_network_animation(example_dir, example_name)
+                elif anim_type == 'reservoir':
+                    gif_path = self.generate_reservoir_animation(example_dir)
+                else:
+                    print(f"  ️  未知类型: {anim_type}")
+                    self.failed_count += 1
+                    continue
+
+                if gif_path:
+                    self.success_count += 1
+                else:
+                    self.failed_count += 1
+
+            except Exception as e:
+                print(f"   错误: {e}")
+                self.failed_count += 1
+
+        print(f"\n{'='*80}")
+        print(f"批量生成完成")
+        print('='*80)
+        print(f"成功: {self.success_count}")
+        print(f"失败: {self.failed_count}")
+        print('='*80)
+
+
+def main():
+    """主函数"""
+    examples_root = Path(__file__).parent
+
+    generator = AdvancedAnimationGenerator(examples_root)
+
+    # 批量生成动画
+    generator.generate_batch_animations()
+
+    # 可选：生成明渠的高质量动画
+    # example_01 = examples_root / 'example_01_canal_flow'
+    # if example_01.exists():
+    #     generator.generate_canal_animation(example_01)
+
+
+if __name__ == '__main__':
+    main()

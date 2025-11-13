@@ -152,7 +152,7 @@ class ConfigParser:
 
         # 打印警告
         if self.warnings:
-            print("⚠️  配置警告:")
+            print("️  配置警告:")
             for warning in self.warnings:
                 print(f"  - {warning}")
 
@@ -388,6 +388,6 @@ if __name__ == '__main__':
         parser = ConfigParser(test_file)
         config = parser.parse()
         print(parser.summary())
-        print("\n✅ 配置解析成功！")
+        print("\n 配置解析成功！")
     except ConfigValidationError as e:
-        print(f"\n❌ 配置验证失败:\n{e}")
+        print(f"\n 配置验证失败:\n{e}")

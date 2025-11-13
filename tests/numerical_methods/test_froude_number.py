@@ -21,7 +21,13 @@ from pathlib import Path
 # 添加项目路径
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from solvers.godunov_fvm_solver_wb import GodunvFVMSolverWB
+try:
+    from solvers.godunov_fvm_solver_wb import GodunvFVMSolverWB
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 class TestFroudeNumber:
@@ -50,7 +56,7 @@ class TestFroudeNumber:
 
         # 测试案例1: 亚临界流 (Fr < 1)
         h = np.ones(10) * 2.0  # 2m水深
-        Q = np.ones(10) * 10.0  # 10 m³/s流量
+        Q = np.ones(10) * 10.0  # 10 m^3/s流量
         # u = Q/(B*h) = 10/(10*2) = 0.5 m/s
         # c = sqrt(g*h) = sqrt(9.81*2) = 4.43 m/s
         # Fr = u/c = 0.5/4.43 = 0.113
@@ -60,7 +66,7 @@ class TestFroudeNumber:
 
         print(f"\n测试1: 亚临界流")
         print(f"  水深h = {h[0]:.2f} m")
-        print(f"  流量Q = {Q[0]:.2f} m³/s")
+        print(f"  流量Q = {Q[0]:.2f} m^3/s")
         print(f"  流速u = {Q[0]/(solver.B*h[0]):.3f} m/s")
         print(f"  波速c = {np.sqrt(solver.g*h[0]):.3f} m/s")
         print(f"  Fr计算值 = {Fr[0]:.3f}")
@@ -68,21 +74,21 @@ class TestFroudeNumber:
 
         assert np.abs(Fr[0] - Fr_expected) < 0.01, f"Froude数计算误差过大"
         assert np.all(Fr < 1.0), "应该是亚临界流"
-        print(f"  ✅ 亚临界流Fr计算正确")
+        print(f"   亚临界流Fr计算正确")
 
-        # 测试案例2: 临界流 (Fr ≈ 1)
+        # 测试案例2: 临界流 (Fr ~= 1)
         h = np.ones(10) * 1.0  # 1m水深
-        Q = np.ones(10) * 31.3  # Q ≈ B*h*sqrt(g*h) = 10*1*sqrt(9.81*1) = 31.3
+        Q = np.ones(10) * 31.3  # Q ~= B*h*sqrt(g*h) = 10*1*sqrt(9.81*1) = 31.3
         # u = Q/(B*h) = 31.3/(10*1) = 3.13 m/s
         # c = sqrt(g*h) = sqrt(9.81*1) = 3.13 m/s
-        # Fr = u/c ≈ 1.0
+        # Fr = u/c ~= 1.0
 
         Fr = solver.compute_froude_number(h, Q)
         Fr_expected = 1.0
 
         print(f"\n测试2: 临界流")
         print(f"  水深h = {h[0]:.2f} m")
-        print(f"  流量Q = {Q[0]:.2f} m³/s")
+        print(f"  流量Q = {Q[0]:.2f} m^3/s")
         print(f"  流速u = {Q[0]/(solver.B*h[0]):.3f} m/s")
         print(f"  波速c = {np.sqrt(solver.g*h[0]):.3f} m/s")
         print(f"  Fr计算值 = {Fr[0]:.3f}")
@@ -90,11 +96,11 @@ class TestFroudeNumber:
 
         assert np.abs(Fr[0] - Fr_expected) < 0.01, "Froude数应该接近1.0"
         assert np.all((Fr > 0.95) & (Fr < 1.05)), "应该是临界流"
-        print(f"  ✅ 临界流Fr计算正确")
+        print(f"   临界流Fr计算正确")
 
         # 测试案例3: 超临界流 (Fr > 1)
         h = np.ones(10) * 0.5  # 0.5m水深
-        Q = np.ones(10) * 50.0  # 50 m³/s流量
+        Q = np.ones(10) * 50.0  # 50 m^3/s流量
         # u = Q/(B*h) = 50/(10*0.5) = 10.0 m/s
         # c = sqrt(g*h) = sqrt(9.81*0.5) = 2.21 m/s
         # Fr = u/c = 10.0/2.21 = 4.52
@@ -104,7 +110,7 @@ class TestFroudeNumber:
 
         print(f"\n测试3: 超临界流")
         print(f"  水深h = {h[0]:.2f} m")
-        print(f"  流量Q = {Q[0]:.2f} m³/s")
+        print(f"  流量Q = {Q[0]:.2f} m^3/s")
         print(f"  流速u = {Q[0]/(solver.B*h[0]):.3f} m/s")
         print(f"  波速c = {np.sqrt(solver.g*h[0]):.3f} m/s")
         print(f"  Fr计算值 = {Fr[0]:.3f}")
@@ -112,10 +118,10 @@ class TestFroudeNumber:
 
         assert np.abs(Fr[0] - Fr_expected) < 0.1, "Froude数计算误差过大"
         assert np.all(Fr > 1.0), "应该是超临界流"
-        print(f"  ✅ 超临界流Fr计算正确")
+        print(f"   超临界流Fr计算正确")
 
         print("\n" + "="*70)
-        print("✅ Froude数计算测试通过")
+        print(" Froude数计算测试通过")
         print("="*70)
 
     @pytest.mark.p1
@@ -151,16 +157,16 @@ class TestFroudeNumber:
         print(f"\n验证临界流检测:")
         for i in expected_critical_indices:
             assert is_critical[i], f"Fr={Fr[i]:.2f} 应该被检测为临界流"
-            print(f"  ✅ Fr={Fr[i]:.2f} 正确识别为临界流")
+            print(f"   Fr={Fr[i]:.2f} 正确识别为临界流")
 
         # Fr=0.5, 0.8, 1.2, 2.0, 0.3 不应该被检测为临界流
         non_critical_indices = [0, 1, 5, 6, 7]
         for i in non_critical_indices:
             assert not is_critical[i], f"Fr={Fr[i]:.2f} 不应该被检测为临界流"
-            print(f"  ✅ Fr={Fr[i]:.2f} 正确排除")
+            print(f"   Fr={Fr[i]:.2f} 正确排除")
 
         print("\n" + "="*70)
-        print("✅ 临界流检测测试通过")
+        print(" 临界流检测测试通过")
         print("="*70)
 
     @pytest.mark.p1
@@ -195,22 +201,22 @@ class TestFroudeNumber:
         subcritical_indices = [0, 1, 2, 9]  # Fr = 0.3, 0.5, 0.8, 0.1
         for i in subcritical_indices:
             assert regime[i] == 0, f"Fr={Fr[i]:.2f} 应该是亚临界流"
-            print(f"  ✅ Fr={Fr[i]:.2f} → 亚临界流")
+            print(f"   Fr={Fr[i]:.2f} -> 亚临界流")
 
         # 临界: 0.9 <= Fr <= 1.1
         critical_indices = [3, 4, 5]  # Fr = 0.95, 1.0, 1.05
         for i in critical_indices:
             assert regime[i] == 1, f"Fr={Fr[i]:.2f} 应该是临界流"
-            print(f"  ✅ Fr={Fr[i]:.2f} → 临界流")
+            print(f"   Fr={Fr[i]:.2f} -> 临界流")
 
         # 超临界: Fr > 1.1
         supercritical_indices = [6, 7, 8]  # Fr = 1.2, 2.0, 3.0
         for i in supercritical_indices:
             assert regime[i] == 2, f"Fr={Fr[i]:.2f} 应该是超临界流"
-            print(f"  ✅ Fr={Fr[i]:.2f} → 超临界流")
+            print(f"   Fr={Fr[i]:.2f} -> 超临界流")
 
         print("\n" + "="*70)
-        print("✅ 流态分类测试通过")
+        print(" 流态分类测试通过")
         print("="*70)
 
 

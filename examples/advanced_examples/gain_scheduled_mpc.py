@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 多工作点分段线性化MPC（增益调度MPC）
 
@@ -6,7 +7,7 @@
 从而在整个操作范围内保持良好的控制性能。
 
 方法：
-1. 离线：在多个工作点计算线性化参数（K, τ）
+1. 离线：在多个工作点计算线性化参数（K, tau）
 2. 在线：根据当前状态选择最优工作点或插值多个工作点
 
 优势：
@@ -85,7 +86,7 @@ class GainScheduledMPC:
         print(f"  切换模式: {switching_mode}")
         print(f"  工作点详情:")
         for wp in self.working_points:
-            print(f"    - {wp.name}: h={wp.h}m, a={wp.a}m, K={wp.K:.4f}, τ={wp.tau:.1f}s")
+            print(f"    - {wp.name}: h={wp.h}m, a={wp.a}m, K={wp.K:.4f}, tau={wp.tau:.1f}s")
 
     def select_working_point(self, y_current: float) -> WorkingPoint:
         """
@@ -505,7 +506,7 @@ def visualize_gain_scheduled_results(result_gs: Dict, result_single: Dict,
     ax5 = plt.subplot(3, 3, 5)
     ax5.step(result_gs['time'], result_gs['Q_in'], 'g-', linewidth=2, where='post')
     ax5.set_xlabel('Time (s)', fontsize=11)
-    ax5.set_ylabel('Inflow (m³/s)', fontsize=11)
+    ax5.set_ylabel('Inflow (m^3/s)', fontsize=11)
     ax5.set_title('Disturbance', fontsize=12, fontweight='bold')
     ax5.grid(True, alpha=0.3)
 
@@ -591,7 +592,7 @@ def visualize_gain_scheduled_results(result_gs: Dict, result_single: Dict,
 
     plt.tight_layout()
     plt.savefig('gain_scheduled_mpc_comparison.png', dpi=150, bbox_inches='tight')
-    print(f"✅ 图片已保存: gain_scheduled_mpc_comparison.png")
+    print(f" 图片已保存: gain_scheduled_mpc_comparison.png")
 
 
 def print_summary(result_gs: Dict, result_single: Dict, working_points: List[WorkingPoint]):
@@ -603,7 +604,7 @@ def print_summary(result_gs: Dict, result_single: Dict, working_points: List[Wor
     print(f"\n【工作点配置】")
     print("-" * 80)
     for wp in working_points:
-        print(f"  {wp.name}: h={wp.h}m, K={wp.K:.4f}, τ={wp.tau:.1f}s")
+        print(f"  {wp.name}: h={wp.h}m, K={wp.K:.4f}, tau={wp.tau:.1f}s")
 
     print(f"\n【测试1】增益调度MPC（{len(working_points)}个工作点）")
     print("-" * 80)
@@ -630,29 +631,29 @@ def print_summary(result_gs: Dict, result_single: Dict, working_points: List[Wor
 
     # 判定
     if improvement_mae > 30:
-        verdict = "✅ 显著改善：增益调度效果显著（>30%）"
+        verdict = " 显著改善：增益调度效果显著（>30%）"
     elif improvement_mae > 15:
         verdict = "⭕ 明显改善：增益调度效果明显（15-30%）"
     elif improvement_mae > 5:
         verdict = "△ 轻微改善：增益调度有一定效果（5-15%）"
     else:
-        verdict = "⚠️  改善有限：增益调度效果不明显（<5%）"
+        verdict = "  改善有限：增益调度效果不明显（<5%）"
 
     print(f"\n  综合评价：{verdict}")
 
     print(f"\n【关键发现】")
     print("-" * 80)
     if improvement_mae > 20:
-        print("  ✅ 增益调度MPC成功解决了大范围操作的非线性问题")
-        print("  ✅ 多工作点策略显著提升了控制性能")
-        print("  ✅ 推荐在实际系统中使用增益调度MPC")
+        print("   增益调度MPC成功解决了大范围操作的非线性问题")
+        print("   多工作点策略显著提升了控制性能")
+        print("   推荐在实际系统中使用增益调度MPC")
     elif improvement_mae > 10:
         print("  ⭕ 增益调度MPC带来了明显的性能提升")
-        print("  💡 可以考虑增加工作点数量以进一步改善")
+        print("   可以考虑增加工作点数量以进一步改善")
     else:
-        print("  ⚠️  增益调度效果不如预期")
-        print("  💡 建议检查工作点选择是否合理")
-        print("  💡 或者考虑其他非线性补偿策略")
+        print("    增益调度效果不如预期")
+        print("   建议检查工作点选择是否合理")
+        print("   或者考虑其他非线性补偿策略")
 
     print("\n" + "="*80)
 
@@ -671,7 +672,7 @@ def main():
         a_nominal=2.0,
         dt=10.0
     )
-    print(f"  ✅ 创建了{len(working_points)}个工作点")
+    print(f"   创建了{len(working_points)}个工作点")
 
     # 创建MPC配置
     mpc_config = FirstOrderMPCConfig(
@@ -700,18 +701,18 @@ def main():
     print("\n【步骤3】创建单工作点MPC（基准）...")
     K_mid, tau_mid = compute_linearization_at_point(2.5, 2.0, 10.0)
     single_mpc = FirstOrderMPC(K=K_mid, tau=tau_mid, config=mpc_config)
-    print(f"  ✅ 单工作点MPC: K={K_mid:.4f}, τ={tau_mid:.1f}s")
+    print(f"   单工作点MPC: K={K_mid:.4f}, tau={tau_mid:.1f}s")
 
     # 运行增益调度MPC测试
     print("\n【步骤4】运行增益调度MPC测试...")
     result_gs = run_gain_scheduled_mpc_test(gs_mpc, use_nonlinear=True)
-    print(f"  ✅ 增益调度MPC - MAE = {result_gs['mae']*100:.2f} cm")
+    print(f"   增益调度MPC - MAE = {result_gs['mae']*100:.2f} cm")
 
     # 运行单工作点MPC测试（对比）
     print("\n【步骤5】运行单工作点MPC测试...")
     # 使用相同的测试框架，但用单工作点MPC控制器
     result_single = run_single_point_mpc_test(single_mpc, use_nonlinear=True)
-    print(f"  ✅ 单工作点MPC - MAE = {result_single['mae']*100:.2f} cm")
+    print(f"   单工作点MPC - MAE = {result_single['mae']*100:.2f} cm")
 
     # 可视化对比
     print("\n【步骤6】生成对比可视化...")
@@ -720,7 +721,7 @@ def main():
     # 打印详细总结
     print_summary(result_gs, result_single, working_points)
 
-    print("\n测试完成！✅")
+    print("\n测试完成！")
 
 
 if __name__ == "__main__":

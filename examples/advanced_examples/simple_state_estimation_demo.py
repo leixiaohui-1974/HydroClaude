@@ -1,26 +1,29 @@
+# -*- coding: utf-8 -*-
 """
 状态估计简化示例
 
-使用简单的线性系统展示卡尔曼滤波器原理：
-- 简单的一阶系统（水深积分器）
+使用简单的线性系统展示卡尔曼滤波器原理
+- 简单的一阶系统水深积分器
 - 清晰的物理意义
 - 易于理解的滤波器效果
 
-系统模型：
+系统模型
   h(k+1) = h(k) + dt * q_in(k)
   z(k) = h(k) + v(k)
 
-其中：
+其中
   h: 水深
-  q_in: 流入速率（控制输入）
+  q_in: 流入速率控制输入
   v: 测量噪声
 
-作者：HydroClaude Team
-日期：2025-10-24
+作者HydroClaude Team
+日期2025-10-24
 """
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 import sys
 import os
 
@@ -30,7 +33,7 @@ from control.state_estimation import KalmanFilter
 
 
 class SimplePoolSimulator:
-    """简化的池段仿真器（水深积分器）"""
+    """简化的池段仿真器水深积分器"""
 
     def __init__(self, dt: float, process_noise_std: float = 0.001):
         """
@@ -51,7 +54,7 @@ class SimplePoolSimulator:
         仿真一步
 
         参数:
-            q_in: 流入速率 (m/s)，即dh/dt
+            q_in: 流入速率 (m/s)即dh/dt
 
         返回:
             h: 当前水深 (m)
@@ -69,7 +72,7 @@ class SimplePoolSimulator:
 
     def measure(self, measurement_noise_std: float = 0.05) -> float:
         """
-        测量水深（含噪声）
+        测量水深含噪声
 
         参数:
             measurement_noise_std: 测量噪声标准差 (m)
@@ -101,8 +104,8 @@ def main():
 
     print(f"  采样时间: {dt} s")
     print(f"  仿真步数: {n_steps}")
-    print(f"  过程噪声: σ_w = {process_noise_std} m")
-    print(f"  测量噪声: σ_v = {measurement_noise_std} m")
+    print(f"  过程噪声: sigma_w = {process_noise_std} m")
+    print(f"  测量噪声: sigma_v = {measurement_noise_std} m")
 
     # ===== 2. 创建仿真器 =====
     print("\n2. 创建系统...")
@@ -116,13 +119,13 @@ def main():
     # ===== 3. 创建卡尔曼滤波器 =====
     print("\n3. 创建卡尔曼滤波器...")
 
-    # 状态转移矩阵 A（状态: x = [h]，单维）
+    # 状态转移矩阵 A状态: x = [h]单维
     A = np.array([[1.0]])
 
     # 控制输入矩阵 B
     B = np.array([[dt]])
 
-    # 测量矩阵 H（直接测量水深）
+    # 测量矩阵 H直接测量水深
     H = np.array([[1.0]])
 
     # 过程噪声协方差矩阵 Q
@@ -132,25 +135,25 @@ def main():
     R = np.array([[measurement_noise_std**2]])
 
     # 初始状态估计
-    x0 = np.array([2.0])  # 初始猜测：2.0m
+    x0 = np.array([2.0])  # 初始猜测2.0m
     P0 = np.array([[1.0]])  # 初始不确定性
 
     kf = KalmanFilter(A, B, H, Q, R, x0, P0)
 
-    print("  ✓ 线性卡尔曼滤波器已创建")
-    print(f"  初始估计: h_est(0) = {x0[0]:.2f} m ± {np.sqrt(P0[0,0]):.2f} m")
+    print("   线性卡尔曼滤波器已创建")
+    print(f"  初始估计: h_est(0) = {x0[0]:.2f} m +/- {np.sqrt(P0[0,0]):.2f} m")
 
     # ===== 4. 生成控制输入序列 =====
     print("\n4. 生成控制场景...")
 
-    # 控制输入：dh/dt (m/s)
+    # 控制输入dh/dt (m/s)
     q_in_sequence = np.zeros(n_steps)
 
     # 场景1: 保持恒定水深 (0-50步)
     q_in_sequence[0:50] = 0.0
 
     # 场景2: 缓慢提升水深 (50-100步)
-    q_in_sequence[50:100] = 0.002  # 0.002 m/s → 0.02m per 10s
+    q_in_sequence[50:100] = 0.002  # 0.002 m/s -> 0.02m per 10s
 
     # 场景3: 保持恒定水深 (100-150步)
     q_in_sequence[100:150] = 0.0
@@ -174,7 +177,7 @@ def main():
         # 真实系统
         h_true = simulator.step(q_in)
 
-        # 测量（含噪声）
+        # 测量含噪声
         z = simulator.measure(measurement_noise_std)
 
         # 卡尔曼滤波器
@@ -194,7 +197,7 @@ def main():
             print(f"  步骤 {step:3d}: "
                   f"真实={h_true:.4f}m, "
                   f"测量={z:.4f}m, "
-                  f"KF估计={h_est:.4f}m ± {np.sqrt(P_est):.4f}m")
+                  f"KF估计={h_est:.4f}m +/- {np.sqrt(P_est):.4f}m")
 
     # 转换为numpy数组
     true_states = np.array(true_states)
@@ -217,19 +220,19 @@ def main():
     meas_rmse = np.sqrt(np.mean(meas_error**2))
     kf_rmse = np.sqrt(np.mean(kf_error**2))
 
-    print(f"\n  平均绝对误差（MAE）:")
+    print(f"\n  平均绝对误差MAE:")
     print(f"    测量:       {meas_mae:.4f} m")
     print(f"    KF滤波:     {kf_mae:.4f} m  (改善 {(1-kf_mae/meas_mae)*100:.1f}%)")
 
-    print(f"\n  均方根误差（RMSE）:")
+    print(f"\n  均方根误差RMSE:")
     print(f"    测量:       {meas_rmse:.4f} m")
     print(f"    KF滤波:     {kf_rmse:.4f} m  (改善 {(1-kf_rmse/meas_rmse)*100:.1f}%)")
 
-    # 稳态性能（最后50步）
+    # 稳态性能最后50步
     meas_rmse_steady = np.sqrt(np.mean(meas_error[-50:]**2))
     kf_rmse_steady = np.sqrt(np.mean(kf_error[-50:]**2))
 
-    print(f"\n  稳态RMSE（最后50步）:")
+    print(f"\n  稳态RMSE最后50步:")
     print(f"    测量:       {meas_rmse_steady:.4f} m")
     print(f"    KF滤波:     {kf_rmse_steady:.4f} m  (改善 {(1-kf_rmse_steady/meas_rmse_steady)*100:.1f}%)")
 
@@ -261,7 +264,7 @@ def main():
     ax.legend(loc='best', fontsize=10)
     ax.grid(True, alpha=0.3)
 
-    # 子图3: 不确定性演化（±2σ置信区间）
+    # 子图3: 不确定性演化+/-2sigma置信区间
     ax = axes[1, 0]
     ax.plot(time_array, true_states, 'k-', linewidth=2, label='True State', alpha=0.8)
     ax.plot(time_array, kf_estimates, 'b-', linewidth=2, label='KF Estimate', alpha=0.8)
@@ -271,7 +274,7 @@ def main():
                      alpha=0.3, color='blue', label='95% Confidence Interval')
     ax.set_xlabel('Time (s)', fontsize=12)
     ax.set_ylabel('Water Depth (m)', fontsize=12)
-    ax.set_title('Estimation Uncertainty (±2σ)', fontsize=13, fontweight='bold')
+    ax.set_title('Estimation Uncertainty (+/-2sigma)', fontsize=13, fontweight='bold')
     ax.legend(loc='best', fontsize=10)
     ax.grid(True, alpha=0.3)
 
@@ -286,7 +289,7 @@ def main():
     # 添加文本说明
     textstr = f'MAE Improvement: {(1-kf_mae/meas_mae)*100:.1f}%\n'
     textstr += f'RMSE Improvement: {(1-kf_rmse/meas_rmse)*100:.1f}%\n'
-    textstr += f'Final σ: {kf_uncertainties[-1]:.4f} m'
+    textstr += f'Final sigma: {kf_uncertainties[-1]:.4f} m'
     ax.text(0.98, 0.97, textstr, transform=ax.transAxes,
             fontsize=10, verticalalignment='top', horizontalalignment='right',
             bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
@@ -296,24 +299,24 @@ def main():
     # 保存图像
     output_path = os.path.join(os.path.dirname(__file__), 'simple_state_estimation_demo.png')
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
-    print(f"\n  ✓ 可视化已保存: {output_path}")
+    print(f"\n   可视化已保存: {output_path}")
 
-    plt.show()
+    # plt.show()  # Disabled for automated testing
 
     # ===== 8. 总结 =====
     print("\n" + "=" * 80)
     print("总结")
     print("=" * 80)
-    print("\n卡尔曼滤波器成功融合了模型预测和噪声测量：")
-    print(f"  • 测量噪声标准差: {measurement_noise_std:.3f} m")
-    print(f"  • 滤波后RMSE: {kf_rmse:.4f} m")
-    print(f"  • 精度提升: {(1-kf_rmse/meas_rmse)*100:.1f}%")
-    print(f"  • 稳态不确定性: {kf_uncertainties[-1]:.4f} m")
+    print("\n卡尔曼滤波器成功融合了模型预测和噪声测量")
+    print(f"  - 测量噪声标准差: {measurement_noise_std:.3f} m")
+    print(f"  - 滤波后RMSE: {kf_rmse:.4f} m")
+    print(f"  - 精度提升: {(1-kf_rmse/meas_rmse)*100:.1f}%")
+    print(f"  - 稳态不确定性: {kf_uncertainties[-1]:.4f} m")
     print(f"\n关键观察:")
-    print(f"  1. 滤波器快速收敛到最优估计（约10-20步）")
-    print(f"  2. 95%置信区间包含真实状态（±2σ区间）")
+    print(f"  1. 滤波器快速收敛到最优估计约10-20步")
+    print(f"  2. 95%置信区间包含真实状态+/-2sigma区间")
     print(f"  3. 估计误差明显小于测量噪声")
-    print(f"  4. 动态响应期间不确定性略有增加，稳态时收敛")
+    print(f"  4. 动态响应期间不确定性略有增加稳态时收敛")
     print("\n" + "=" * 80)
 
 

@@ -11,11 +11,25 @@
 作者: Claude
 日期: 2025-10-23
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 
 
@@ -107,7 +121,7 @@ def test_comparison_simple():
     Q_diff = np.abs(result_fixed['Q_final'] - result_adaptive['Q_final'])
     print(f"\n精度对比（最终状态）：")
     print(f"  水深最大差异: {np.max(h_diff):.6f} m")
-    print(f"  流量最大差异: {np.max(Q_diff):.6f} m³/s")
+    print(f"  流量最大差异: {np.max(Q_diff):.6f} m^3/s")
 
     # 绘图
     fig, axes = plt.subplots(3, 2, figsize=(14, 10))
@@ -131,7 +145,7 @@ def test_comparison_simple():
     ax.plot(solver_adaptive.x, result_adaptive['Q_final'], 'r--',
             linewidth=2, label='Adaptive dt')
     ax.set_xlabel('Position (m)')
-    ax.set_ylabel('Discharge (m³/s)')
+    ax.set_ylabel('Discharge (m^3/s)')
     ax.set_title('Final Discharge Profile')
     ax.legend()
     ax.grid(True, alpha=0.3)
@@ -157,7 +171,7 @@ def test_comparison_simple():
     ax.axhline(5.0, color='gray', linestyle=':', alpha=0.5)
     ax.axhline(10.0, color='gray', linestyle=':', alpha=0.5)
     ax.set_xlabel('Time (s)')
-    ax.set_ylabel('Discharge at inlet (m³/s)')
+    ax.set_ylabel('Discharge at inlet (m^3/s)')
     ax.set_title('Inlet Discharge Evolution')
     ax.legend()
     ax.grid(True, alpha=0.3)
@@ -426,9 +440,9 @@ def test_cfl_stability():
 
 def main():
     """运行所有测试"""
-    print("\n" + "🚀" * 40)
+    print("\n" + "" * 40)
     print("自适应时间步性能测试")
-    print("🚀" * 40 + "\n")
+    print("" * 40 + "\n")
 
     # 测试1
     result_fixed1, result_adaptive1, time_fixed1, time_adaptive1 = test_comparison_simple()
@@ -444,10 +458,10 @@ def main():
     print("测试总结")
     print("=" * 80)
     print("\n自适应时间步优势：")
-    print("  ✅ 自动调整时间步，无需手动选择")
-    print("  ✅ 在平稳区域使用大时间步，提高效率")
-    print("  ✅ 在激变区域使用小时间步，保证精度")
-    print("  ✅ 根据CFL条件保证数值稳定性")
+    print("   自动调整时间步，无需手动选择")
+    print("   在平稳区域使用大时间步，提高效率")
+    print("   在激变区域使用小时间步，保证精度")
+    print("   根据CFL条件保证数值稳定性")
 
     print("\n性能统计：")
     speedup1 = time_fixed1 / time_adaptive1 if time_adaptive1 > 0 else 0

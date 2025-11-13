@@ -1,0 +1,238 @@
+/* Component Palette Styles */
+
+.component-palette-layout {
+  min-height: 100vh;
+}
+
+.component-library-card {
+  cursor: pointer;
+  transition: all 0.3s;
+  border-radius: 8px;
+}
+
+.component-library-card:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.component-library-card .ant-card-body {
+  padding: 12px;
+}
+
+/* Sidebar customization */
+.ant-layout-sider {
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+  overflow-y: auto;
+}
+
+.ant-layout-sider::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ant-layout-sider::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.ant-layout-sider::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.ant-layout-sider::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Category tags */
+.ant-tag {
+  user-select: none;
+  transition: all 0.3s;
+}
+
+.ant-tag:hover {
+  transform: scale(1.05);
+}
+
+/* Collapse panels for instances */
+.ant-collapse {
+  background: transparent;
+  border: none;
+}
+
+.ant-collapse-item {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e8e8e8;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.ant-collapse-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ant-collapse-header {
+  background: #fafafa;
+  padding: 12px 16px !important;
+  font-weight: 500;
+}
+
+.ant-collapse-content-box {
+  padding: 16px;
+}
+
+/* Drawer enhancements */
+.ant-drawer-body {
+  padding: 24px;
+}
+
+.ant-drawer-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-bottom: none;
+}
+
+.ant-drawer-title {
+  color: #fff;
+  font-weight: 600;
+}
+
+.ant-drawer-close {
+  color: #fff;
+}
+
+.ant-drawer-close:hover {
+  color: #fff;
+  opacity: 0.8;
+}
+
+/* System summary cards */
+.system-summary-card {
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.system-summary-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.system-summary-value {
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.system-summary-label {
+  font-size: 13px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Instance panel extras */
+.instance-panel-actions {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.ant-collapse-item:hover .instance-panel-actions {
+  opacity: 1;
+}
+
+/* Empty state */
+.ant-empty {
+  padding: 60px 20px;
+}
+
+.ant-empty-description {
+  font-size: 14px;
+  color: #999;
+}
+
+/* Configuration export */
+.config-export-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+
+.config-export-btn:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.component-library-card,
+.ant-collapse-item {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* Loading states */
+.component-loading {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .ant-layout-sider {
+    width: 250px !important;
+    max-width: 250px !important;
+    min-width: 250px !important;
+  }
+  
+  .ant-drawer {
+    width: 90% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .ant-layout-sider {
+    position: absolute;
+    z-index: 100;
+    height: 100%;
+    width: 80% !important;
+    max-width: 80% !important;
+  }
+  
+  .ant-drawer {
+    width: 100% !important;
+  }
+  
+  .component-library-card .ant-card-body {
+    padding: 8px;
+  }
+  
+  .system-summary-value {
+    font-size: 24px;
+  }
+}
+
+/* Dark mode support (future) */
+@media (prefers-color-scheme: dark) {
+  .component-library-card {
+    background: #1f1f1f;
+    border-color: #333;
+  }
+  
+  .ant-collapse-item {
+    background: #1f1f1f;
+    border-color: #333;
+  }
+  
+  .ant-collapse-header {
+    background: #2a2a2a;
+  }
+}
+
+

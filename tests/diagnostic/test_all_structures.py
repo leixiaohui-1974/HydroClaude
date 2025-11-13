@@ -15,10 +15,24 @@
 作者: Claude
 日期: 2025-10-23
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import numpy as np
 import matplotlib.pyplot as plt
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import (
     SluiceGate, BroadCrestedWeir, Orifice,
     Spillway, Transition, Drop
@@ -58,7 +72,7 @@ def test_broad_crested_weir():
     )
 
     # 目标流量
-    Q_target = 8.0  # m³/s
+    Q_target = 8.0  # m^3/s
 
     # 下游边界（均匀流水深）
     def compute_uniform_h(Q, B, S0, n):
@@ -73,7 +87,7 @@ def test_broad_crested_weir():
 
     h_downstream = compute_uniform_h(Q_target, B, S0, n)
     print(f"\n边界条件：")
-    print(f"  目标流量: {Q_target} m³/s")
+    print(f"  目标流量: {Q_target} m^3/s")
     print(f"  下游水深: {h_downstream:.3f} m")
 
     # 求解稳态
@@ -94,7 +108,7 @@ def test_broad_crested_weir():
     print(f"  上游水深: {h_up:.3f} m")
     print(f"  下游水深: {h_down:.3f} m")
     print(f"  堰顶水头: {H_weir:.3f} m")
-    print(f"  堰流量: {Q_weir:.3f} m³/s")
+    print(f"  堰流量: {Q_weir:.3f} m^3/s")
     print(f"  流态: {flow_type}")
     print(f"  流量误差: {abs(Q_weir - Q_target)/Q_target*100:.2f}%")
 
@@ -121,7 +135,7 @@ def test_broad_crested_weir():
     ax.axhline(Q_target, color='red', linestyle='--', alpha=0.5, label='Target')
     ax.axvline(weir.position, color='red', linestyle='--', alpha=0.5)
     ax.set_xlabel('Position (m)')
-    ax.set_ylabel('Discharge (m³/s)')
+    ax.set_ylabel('Discharge (m^3/s)')
     ax.set_title('Discharge Distribution')
     ax.legend()
     ax.grid(True, alpha=0.3)
@@ -180,7 +194,7 @@ def test_spillway():
     h_downstream = compute_uniform_h(Q_target, B, S0, n)
 
     print(f"\n边界条件：")
-    print(f"  目标流量: {Q_target} m³/s")
+    print(f"  目标流量: {Q_target} m^3/s")
     print(f"  下游水深: {h_downstream:.3f} m")
 
     result = solver.solve_steady_state(
@@ -199,7 +213,7 @@ def test_spillway():
     print(f"\n溢洪道流态：")
     print(f"  上游水深: {h_up:.3f} m")
     print(f"  堰顶水头: {H:.3f} m")
-    print(f"  溢流量: {Q_spillway:.3f} m³/s")
+    print(f"  溢流量: {Q_spillway:.3f} m^3/s")
     print(f"  流态: {flow_type}")
     print(f"  误差: {abs(Q_spillway - Q_target)/Q_target*100:.2f}%")
 
@@ -222,7 +236,7 @@ def test_spillway():
     ax.plot(solver.x, Q_array, 'g-', linewidth=2)
     ax.axhline(Q_target, color='red', linestyle='--', alpha=0.5)
     ax.set_xlabel('Position (m)')
-    ax.set_ylabel('Discharge (m³/s)')
+    ax.set_ylabel('Discharge (m^3/s)')
     ax.set_title('Discharge Distribution')
     ax.grid(True, alpha=0.3)
 
@@ -278,7 +292,7 @@ def test_drop():
     h_downstream = compute_uniform_h(Q_target, B, S0, n)
 
     print(f"\n边界条件：")
-    print(f"  目标流量: {Q_target} m³/s")
+    print(f"  目标流量: {Q_target} m^3/s")
     print(f"  下游水深: {h_downstream:.3f} m")
 
     result = solver.solve_steady_state(
@@ -296,7 +310,7 @@ def test_drop():
     print(f"\n跌水流态：")
     print(f"  上游水深: {h_up:.3f} m")
     print(f"  下游水深: {h_down:.3f} m")
-    print(f"  跌水流量: {Q_drop:.3f} m³/s")
+    print(f"  跌水流量: {Q_drop:.3f} m^3/s")
     print(f"  误差: {abs(Q_drop - Q_target)/Q_target*100:.2f}%")
 
     # 绘图
@@ -318,7 +332,7 @@ def test_drop():
     ax.axhline(Q_target, color='red', linestyle='--', alpha=0.5)
     ax.axvline(drop.position, color='red', linestyle='--', alpha=0.5)
     ax.set_xlabel('Position (m)')
-    ax.set_ylabel('Discharge (m³/s)')
+    ax.set_ylabel('Discharge (m^3/s)')
     ax.set_title('Discharge Distribution')
     ax.grid(True, alpha=0.3)
 
@@ -352,7 +366,7 @@ def test_orifice():
 
     print(f"\n孔口配置：")
     print(f"  位置: {orifice.position} m")
-    print(f"  孔口尺寸: {orifice.width}m × {orifice.height}m")
+    print(f"  孔口尺寸: {orifice.width}m x {orifice.height}m")
     print(f"  底部高程: {orifice.bottom_elevation} m")
     print(f"  流量系数: {orifice.Cd}")
 
@@ -376,7 +390,7 @@ def test_orifice():
     h_downstream = compute_uniform_h(Q_target, B, S0, n)
 
     print(f"\n边界条件：")
-    print(f"  目标流量: {Q_target} m³/s")
+    print(f"  目标流量: {Q_target} m^3/s")
     print(f"  下游水深: {h_downstream:.3f} m")
 
     result = solver.solve_steady_state(
@@ -394,7 +408,7 @@ def test_orifice():
     print(f"\n孔口流态：")
     print(f"  上游水深: {h_up:.3f} m")
     print(f"  下游水深: {h_down:.3f} m")
-    print(f"  孔口流量: {Q_orifice:.3f} m³/s")
+    print(f"  孔口流量: {Q_orifice:.3f} m^3/s")
     print(f"  流态: {flow_type}")
     print(f"  误差: {abs(Q_orifice - Q_target)/Q_target*100:.2f}%")
 
@@ -420,7 +434,7 @@ def test_orifice():
     ax.axhline(Q_target, color='red', linestyle='--', alpha=0.5)
     ax.axvline(orifice.position, color='red', linestyle='--', alpha=0.5)
     ax.set_xlabel('Position (m)')
-    ax.set_ylabel('Discharge (m³/s)')
+    ax.set_ylabel('Discharge (m^3/s)')
     ax.set_title('Discharge Distribution')
     ax.grid(True, alpha=0.3)
 
@@ -481,7 +495,7 @@ def test_multiple_structures():
     h_downstream = compute_uniform_h(Q_target, B, S0, n)
 
     print(f"\n边界条件：")
-    print(f"  目标流量: {Q_target} m³/s")
+    print(f"  目标流量: {Q_target} m^3/s")
     print(f"  下游水深: {h_downstream:.3f} m")
 
     result = solver.solve_steady_state(
@@ -503,7 +517,7 @@ def test_multiple_structures():
         error = abs(Q_struct - Q_target) / Q_target * 100
         print(f"  {name} @ {struct.position}m:")
         print(f"    上游水深: {h_up:.3f}m, 下游水深: {h_down:.3f}m")
-        print(f"    流量: {Q_struct:.3f} m³/s, 误差: {error:.2f}%")
+        print(f"    流量: {Q_struct:.3f} m^3/s, 误差: {error:.2f}%")
 
     # 绘图
     fig, axes = plt.subplots(3, 1, figsize=(14, 10))
@@ -529,7 +543,7 @@ def test_multiple_structures():
     for struct, _ in structures:
         ax.axvline(struct.position, color='red', linestyle='--', alpha=0.3)
     ax.set_xlabel('Position (m)')
-    ax.set_ylabel('Discharge (m³/s)')
+    ax.set_ylabel('Discharge (m^3/s)')
     ax.set_title('Discharge Distribution')
     ax.legend()
     ax.grid(True, alpha=0.3)
@@ -556,36 +570,36 @@ def test_multiple_structures():
 
 def main():
     """运行所有测试"""
-    print("\n" + "🌊" * 40)
+    print("\n" + "" * 40)
     print("水工结构综合测试 - 静水重构求解器")
-    print("🌊" * 40 + "\n")
+    print("" * 40 + "\n")
 
     results = {}
 
     try:
         results['weir'] = test_broad_crested_weir()
     except Exception as e:
-        print(f"❌ 宽顶堰测试失败: {e}")
+        print(f" 宽顶堰测试失败: {e}")
 
     try:
         results['spillway'] = test_spillway()
     except Exception as e:
-        print(f"❌ 溢洪道测试失败: {e}")
+        print(f" 溢洪道测试失败: {e}")
 
     try:
         results['drop'] = test_drop()
     except Exception as e:
-        print(f"❌ 跌水测试失败: {e}")
+        print(f" 跌水测试失败: {e}")
 
     try:
         results['orifice'] = test_orifice()
     except Exception as e:
-        print(f"❌ 孔口测试失败: {e}")
+        print(f" 孔口测试失败: {e}")
 
     try:
         results['multiple'] = test_multiple_structures()
     except Exception as e:
-        print(f"❌ 多结构测试失败: {e}")
+        print(f" 多结构测试失败: {e}")
 
     # 总结
     print("\n" + "=" * 80)
@@ -603,10 +617,10 @@ def main():
     for key, name in test_names.items():
         if key in results:
             res = results[key]
-            status = "✅ PASS" if res['converged'] else "⚠ 部分收敛"
+            status = " PASS" if res['converged'] else " 部分收敛"
             print(f"  {name}: {status}, 流量误差={res['Q_error_percent']:.2f}%")
         else:
-            print(f"  {name}: ❌ FAIL")
+            print(f"  {name}:  FAIL")
 
     print("\n" + "=" * 80)
     print("所有测试完成!")

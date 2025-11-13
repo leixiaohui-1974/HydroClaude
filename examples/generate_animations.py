@@ -28,7 +28,11 @@ class AnimationGenerator:
         # 使用Preissmann方法重新仿真并生成动画
         sys.path.insert(0, str(self.examples_root.parent))
 
-        from solvers.canal_solver import CanalSolver
+        # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from physics.canal_solver import CanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as CanalSolver
         from utils.canal_utils import compute_steady_uniform_flow
 
         # 参数设置
@@ -147,7 +151,7 @@ class AnimationGenerator:
 
         plt.close(fig)
 
-        print(f"    ✓ 动画已保存: {gif_path}")
+        print(f"     动画已保存: {gif_path}")
         return str(gif_path)
 
     def generate_simple_animation(self, example_dir, example_name):
@@ -195,7 +199,7 @@ class AnimationGenerator:
 
         plt.close(fig)
 
-        print(f"    ✓ 示意动画已保存: {gif_path}")
+        print(f"     示意动画已保存: {gif_path}")
         return str(gif_path)
 
     def generate_all_animations(self):
@@ -222,7 +226,7 @@ class AnimationGenerator:
                     animations[example_dir.name] = gif_path
 
             except Exception as e:
-                print(f"  ✗ 错误: {e}")
+                print(f"   错误: {e}")
                 animations[example_dir.name] = None
 
         print(f"\n{'='*80}")

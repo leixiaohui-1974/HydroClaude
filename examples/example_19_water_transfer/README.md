@@ -41,7 +41,9 @@ PYTHONPATH=../.. python demo_water_transfer.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_19_water_transfer_water_resource.gif`
+
+![动画](outputs\animations\example_19_water_transfer_water_resource.gif)
 
 ## 技术要点
 

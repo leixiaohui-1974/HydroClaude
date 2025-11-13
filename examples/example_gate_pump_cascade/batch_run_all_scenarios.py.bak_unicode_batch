@@ -1,0 +1,197 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+批量运行所有工况 - 验证高精度非恒定流模拟引擎
+
+通过修改参数快速运行多个工况
+"""
+
+import os
+import sys
+import time
+import shutil
+import subprocess
+
+def run_scenario_with_params(scenario_num, scenario_name, params_to_modify):
+    """
+    运行单个工况
+    
+    Args:
+        scenario_num: 工况编号
+        scenario_name: 工况名称
+        params_to_modify: 要修改的参数字典
+    """
+    print("\n" + "="*90)
+    print(f"工况{scenario_num}: {scenario_name}".center(90))
+    print("="*90)
+    
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    script_path = os.path.join(base_dir, "gate_pump_cascade_advanced.py")
+    output_dir = os.path.join(base_dir, "results_advanced", f"scenario_{scenario_num:02d}_{scenario_name.replace(' ', '_').lower()}")
+    
+    # 读取原始脚本
+    with open(script_path, 'r', encoding='utf-8') as f:
+        original_content = f.read()
+    
+    # 修改参数
+    modified_content = original_content
+    for old_val, new_val in params_to_modify.items():
+        modified_content = modified_content.replace(old_val, new_val)
+    
+    # 修改输出目录
+    modified_content = modified_content.replace(
+        'output_dir = os.path.join(os.path.dirname(script_path), "results")',
+        f'output_dir = "{output_dir}"'
+    )
+    
+    # 写入临时脚本
+    temp_script = os.path.join(base_dir, "temp_scenario.py")
+    with open(temp_script, 'w', encoding='utf-8') as f:
+        f.write(modified_content)
+    
+    # 运行
+    print(f"\n开始运行...")
+    start_time = time.time()
+    
+    try:
+        result = subprocess.run(
+            [sys.executable, temp_script],
+            capture_output=True,
+            text=True,
+            timeout=600,
+            cwd=base_dir
+        )
+        
+        elapsed = time.time() - start_time
+        
+        if result.returncode == 0:
+            print(f" 工况{scenario_num}完成 (耗时: {elapsed:.1f}s)")
+            
+            # 整理结果
+            results_dir = os.path.join(base_dir, "results")
+            if os.path.exists(results_dir):
+                os.makedirs(output_dir, exist_ok=True)
+                
+                # 复制关键文件
+                key_files = {
+                    "ADVANCED_05_animation.gif": "animation_water_level.gif",
+                    "ADVANCED_01_steady_state.png": "steady_state.png",
+                    "ADVANCED_02_water_level_spacetime.png": "spatiotemporal_water.png",
+                    "ADVANCED_03_flow_rate_spacetime.png": "spatiotemporal_flow.png",
+                    "ADVANCED_04_time_series.png": "time_series.png",
+                    "advanced_model_data.npz": "scenario_data.npz"
+                }
+                
+                for src_name, dst_name in key_files.items():
+                    src = os.path.join(results_dir, src_name)
+                    if os.path.exists(src):
+                        dst = os.path.join(output_dir, dst_name)
+                        shutil.copy2(src, dst)
+                
+                # 创建工况报告
+                report_path = os.path.join(output_dir, "SCENARIO_REPORT.md")
+                with open(report_path, 'w', encoding='utf-8') as f:
+                    f.write(f"# 工况{scenario_num}: {scenario_name}\n\n")
+                    f.write(f"## 参数修改\n\n")
+                    for old, new in params_to_modify.items():
+                        f.write(f"- `{old}` → `{new}`\n")
+                    f.write(f"\n## 运行时间\n\n{elapsed:.1f}秒\n\n")
+                    f.write(f"## 状态\n\n 已完成\n")
+                
+                print(f"  结果已保存到: {output_dir}")
+            
+            return True
+        else:
+            print(f" 工况{scenario_num}失败")
+            print(f"  错误: {result.stderr[:500]}")
+            return False
+            
+    except subprocess.TimeoutExpired:
+        print(f" 工况{scenario_num}超时")
+        return False
+    except Exception as e:
+        print(f" 工况{scenario_num}异常: {str(e)}")
+        return False
+    finally:
+        # 清理临时文件
+        if os.path.exists(temp_script):
+            os.remove(temp_script)
+
+
+def main():
+    """主函数"""
+    print("\n" + "="*90)
+    print("高精度非恒定流模拟引擎 - 批量工况验证".center(90))
+    print("="*90)
+    
+    # 定义所有工况
+    scenarios = [
+        # 工况2: 中等流量阶跃
+        (2, "upstream_flow_medium", {
+            "Q_step = 55.0": "Q_step = 42.0"
+        }),
+        
+        # 工况3: 小幅流量阶跃
+        (3, "upstream_flow_small", {
+            "Q_step = 55.0": "Q_step = 35.0"
+        }),
+        
+        # 工况4: 极大流量阶跃
+        (4, "upstream_flow_extreme", {
+            "Q_step = 55.0": "Q_step = 65.0"
+        }),
+        
+        # 工况5: 闸门开度增大
+        (5, "gate1_opening_increase", {
+            "Q_step = 55.0": "Q_step = 30.0",  # 保持流量不变
+            "gate_opening = 5.0": "gate_opening = 8.0"  # 闸门开大
+        }),
+        
+        # 工况6: 闸门开度减小
+        (6, "gate1_opening_decrease", {
+            "Q_step = 55.0": "Q_step = 30.0",
+            "gate_opening = 5.0": "gate_opening = 3.0"
+        }),
+    ]
+    
+    print(f"\n将运行{len(scenarios)}个工况:")
+    for num, name, _ in scenarios:
+        print(f"  工况{num}: {name}")
+    
+    print("\n" + "="*90 + "\n")
+    
+    # 运行所有工况
+    results = []
+    for scenario_num, scenario_name, params in scenarios:
+        success = run_scenario_with_params(scenario_num, scenario_name, params)
+        results.append((scenario_num, scenario_name, success))
+        
+        # 短暂延迟
+        time.sleep(2)
+    
+    # 打印总结
+    print("\n" + "="*90)
+    print("运行总结".center(90))
+    print("="*90)
+    
+    success_count = sum(1 for _, _, success in results if success)
+    total_count = len(results)
+    
+    print(f"\n成功: {success_count}/{total_count}\n")
+    
+    for num, name, success in results:
+        status = "" if success else ""
+        print(f"  {status} 工况{num}: {name}")
+    
+    print("\n" + "="*90)
+    
+    if success_count == total_count:
+        print(" 所有工况运行成功！".center(90))
+    else:
+        print(f" {total_count - success_count}个工况失败".center(90))
+    
+    print("="*90 + "\n")
+
+
+if __name__ == "__main__":
+    main()

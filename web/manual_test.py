@@ -21,13 +21,13 @@ try:
     response = requests.get("http://127.0.0.1:8000/health", timeout=5)
     if response.status_code == 200:
         data = response.json()
-        print(f"   ✅ 成功 - 服务: {data.get('service')}, 版本: {data.get('version')}")
+        print(f"    成功 - 服务: {data.get('service')}, 版本: {data.get('version')}")
         results['健康检查'] = True
     else:
-        print(f"   ❌ 失败 - 状态码: {response.status_code}")
+        print(f"    失败 - 状态码: {response.status_code}")
         results['健康检查'] = False
 except Exception as e:
-    print(f"   ❌ 失败 - {str(e)}")
+    print(f"    失败 - {str(e)}")
     results['健康检查'] = False
 
 time.sleep(1)
@@ -38,14 +38,14 @@ try:
     response = requests.get("http://127.0.0.1:8000/api/v1/engine/info", timeout=5)
     if response.status_code == 200:
         data = response.json()
-        print(f"   ✅ 成功 - 引擎版本: {data.get('engine_version')}")
+        print(f"    成功 - 引擎版本: {data.get('engine_version')}")
         print(f"   Numba加速: {data.get('features', {}).get('numba_acceleration')}")
         results['引擎信息'] = True
     else:
-        print(f"   ❌ 失败 - 状态码: {response.status_code}")
+        print(f"    失败 - 状态码: {response.status_code}")
         results['引擎信息'] = False
 except Exception as e:
-    print(f"   ❌ 失败 - {str(e)}")
+    print(f"    失败 - {str(e)}")
     results['引擎信息'] = False
 
 time.sleep(1)
@@ -88,14 +88,14 @@ try:
     if response.status_code in [200, 201]:
         data = response.json()
         task_id = data.get('task_id')
-        print(f"   ✅ 成功 - 任务ID: {task_id}")
+        print(f"    成功 - 任务ID: {task_id}")
         results['创建仿真'] = True
     else:
-        print(f"   ❌ 失败 - 状态码: {response.status_code}")
+        print(f"    失败 - 状态码: {response.status_code}")
         print(f"   响应: {response.text[:200]}")
         results['创建仿真'] = False
 except Exception as e:
-    print(f"   ❌ 失败 - {str(e)}")
+    print(f"    失败 - {str(e)}")
     results['创建仿真'] = False
 
 time.sleep(2)
@@ -111,13 +111,13 @@ if task_id:
         if response.status_code == 200:
             data = response.json()
             status = data.get('status')
-            print(f"   ✅ 成功 - 状态: {status}")
+            print(f"    成功 - 状态: {status}")
             results['查询状态'] = True
         else:
-            print(f"   ❌ 失败 - 状态码: {response.status_code}")
+            print(f"    失败 - 状态码: {response.status_code}")
             results['查询状态'] = False
     except Exception as e:
-        print(f"   ❌ 失败 - {str(e)}")
+        print(f"    失败 - {str(e)}")
         results['查询状态'] = False
     
     # 等待仿真完成
@@ -155,7 +155,7 @@ if task_id:
         if response.status_code == 200:
             data = response.json()
             results_data = data.get('results', {})
-            print(f"   ✅ 成功")
+            print(f"    成功")
             print(f"   时间点数: {len(results_data.get('time', []))}")
             print(f"   空间点数: {len(results_data.get('x', []))}")
             
@@ -166,10 +166,10 @@ if task_id:
             
             results['获取结果'] = True
         else:
-            print(f"   ❌ 失败 - 状态码: {response.status_code}")
+            print(f"    失败 - 状态码: {response.status_code}")
             results['获取结果'] = False
     except Exception as e:
-        print(f"   ❌ 失败 - {str(e)}")
+        print(f"    失败 - {str(e)}")
         results['获取结果'] = False
     
     time.sleep(1)
@@ -182,13 +182,13 @@ if task_id:
             timeout=5
         )
         if response.status_code in [200, 204]:
-            print(f"   ✅ 成功 - 仿真已删除")
+            print(f"    成功 - 仿真已删除")
             results['删除仿真'] = True
         else:
-            print(f"   ❌ 失败 - 状态码: {response.status_code}")
+            print(f"    失败 - 状态码: {response.status_code}")
             results['删除仿真'] = False
     except Exception as e:
-        print(f"   ❌ 失败 - {str(e)}")
+        print(f"    失败 - {str(e)}")
         results['删除仿真'] = False
 else:
     print("\n[4/6] 测试: 查询仿真状态 - 跳过（无任务ID）")
@@ -208,7 +208,7 @@ passed = sum(1 for v in results.values() if v)
 failed = total - passed
 
 for name, result in results.items():
-    status = "✅ PASS" if result else "❌ FAIL"
+    status = " PASS" if result else " FAIL"
     print(f"{name:20s} {status}")
 
 print(f"\n总计: {total}")
@@ -229,7 +229,7 @@ report = {
 with open("/workspace/web/api_test_report.json", "w") as f:
     json.dump(report, f, indent=2)
 
-print(f"\n📄 测试报告已保存: api_test_report.json")
+print(f"\n 测试报告已保存: api_test_report.json")
 
 # 返回退出码
 exit(0 if passed == total else 1)

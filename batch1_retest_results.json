@@ -1,0 +1,85 @@
+{
+  "known_pass": [
+    "examples/case_library/case_01_hydropower_plant.py",
+    "examples/case_library/case_03_irrigation_canal.py",
+    "examples/benchmark_performance.py"
+  ],
+  "tested": [
+    {
+      "file": "examples/advanced_animation_generator.py",
+      "status": "TIMEOUT",
+      "detail": "Timeout (>30s)"
+    },
+    {
+      "file": "examples/advanced_examples/compare_canal_solvers.py",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "file": "examples/advanced_examples/complete_benchmark_suite.py",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "file": "examples/advanced_examples/debug_saint_venant.py",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "file": "examples/advanced_examples/diagnose_canal_boundary.py",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "file": "examples/advanced_examples/integrated_smart_water_system.py",
+      "status": "TIMEOUT",
+      "detail": "Timeout (>30s)"
+    },
+    {
+      "file": "examples/advanced_examples/multi_objective_reservoir_scheduling.py",
+      "status": "TIMEOUT",
+      "detail": "Timeout (>30s)"
+    },
+    {
+      "file": "examples/advanced_examples/optimize_preissmann.py",
+      "status": "TIMEOUT",
+      "detail": "Timeout (>30s)"
+    },
+    {
+      "file": "examples/case_gate_operation.py",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "file": "examples/case_irrigation_scheduling.py",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "file": "examples/case_library/case_01_dam_break/dam_break_comparison.py",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "file": "examples/case_library/case_02_flood_routing/flood_routing_simulation.py",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "file": "examples/case_library/case_02_water_supply_network.py",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "file": "examples/case_library/run_all_cases.py",
+      "status": "TIMEOUT",
+      "detail": "Timeout (>30s)"
+    }
+  ],
+  "summary": {
+    "pass": 9,
+    "fail": 0,
+    "timeout": 5,
+    "total": 14
+  }
+}

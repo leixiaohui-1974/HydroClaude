@@ -69,7 +69,7 @@ class TestWettingDrying:
         )
 
         # 初始条件：极浅水（实际工程中的"干河床"）
-        # 注意：Preissmann隐式方法不适合h→0的极端情况
+        # 注意：Preissmann隐式方法不适合h->0的极端情况
         # 使用h=1cm作为"干河床"更实际
         h_dry = 0.01  # 1cm（实际工程中的"干"）
         h_init = np.ones(nx) * h_dry
@@ -81,14 +81,14 @@ class TestWettingDrying:
         print(f"初始状态:")
         print(f"  河道长度: {L}m")
         print(f"  初始水深: {h_dry*100:.1f}cm (实际工程'干河床')")
-        print(f"  初始流量: 0 m³/s")
+        print(f"  初始流量: 0 m^3/s")
 
         # 上游逐步进水
-        Q_inflow = 5.0  # m³/s
+        Q_inflow = 5.0  # m^3/s
         h_inflow = 0.5  # m (浅水)
 
         print(f"\n上游进水:")
-        print(f"  入流流量: {Q_inflow} m³/s")
+        print(f"  入流流量: {Q_inflow} m^3/s")
         print(f"  入流水深: {h_inflow} m")
 
         # 运行模拟
@@ -114,7 +114,7 @@ class TestWettingDrying:
 
             # 检查负水深
             if np.any(solver.h < 0):
-                print(f"\n❌ ERROR: 出现负水深在step {step}")
+                print(f"\n ERROR: 出现负水深在step {step}")
                 print(f"   最小水深: {np.min(solver.h)}")
                 break
 
@@ -131,14 +131,14 @@ class TestWettingDrying:
         print(f"  湿润单元: {wet_cells}/{nx} ({wet_fraction:.1f}%)")
         print(f"  最大水深: {h_final.max():.3f}m")
         print(f"  最小水深: {h_final.min():.6f}m")
-        print(f"  累积质量: {mass_final:.2f} m³")
+        print(f"  累积质量: {mass_final:.2f} m^3")
 
         # 验证
         assert np.all(h_final >= 0), f"出现负水深: min={h_final.min()}"
         assert wet_cells > 0, "没有湿润区域"
         assert mass_final > mass_init, "质量未增加"
 
-        print(f"\n✅ PASSED: 干河床启动成功，无负水深")
+        print(f"\n PASSED: 干河床启动成功，无负水深")
 
     def test_dam_break_standard(self):
         """
@@ -198,7 +198,7 @@ class TestWettingDrying:
         print(f"  左侧水深: {h_left}m")
         print(f"  右侧水深: {h_right}m")
         print(f"  坝位置: {x_dam}m")
-        print(f"  初始质量: {mass_init:.2f} m³")
+        print(f"  初始质量: {mass_init:.2f} m^3")
 
         # 运行模拟
         t_end = 20.0
@@ -219,7 +219,7 @@ class TestWettingDrying:
 
             # 检查负水深
             if np.any(solver.h < 0):
-                print(f"\n❌ ERROR: 出现负水深在t={t:.2f}s")
+                print(f"\n ERROR: 出现负水深在t={t:.2f}s")
                 break
 
         # 检查结果
@@ -245,7 +245,7 @@ class TestWettingDrying:
         assert mass_error < 10.0, f"质量守恒误差过大: {mass_error}%（Dam Break无摩阻，容差10%）"
         assert step > 10, "模拟步数过少"
 
-        print(f"\n✅ PASSED: Dam Break模拟成功，质量守恒{mass_error:.2f}%")
+        print(f"\n PASSED: Dam Break模拟成功，质量守恒{mass_error:.2f}%")
 
     def test_tidal_wetting_drying(self):
         """
@@ -340,7 +340,7 @@ class TestWettingDrying:
         assert negative_h_count == 0, f"出现负水深{negative_h_count}次"
         assert min_h_overall >= 0, f"全过程最小水深为负: {min_h_overall}"
 
-        print(f"\n✅ PASSED: {n_cycles}个潮汐周期无负水深")
+        print(f"\n PASSED: {n_cycles}个潮汐周期无负水深")
 
     def test_negative_depth_prevention(self):
         """
@@ -382,7 +382,7 @@ class TestWettingDrying:
 
         print(f"初始状态（极端浅水）:")
         print(f"  初始水深: {h_init[0]*100:.1f}cm")
-        print(f"  初始流量: {Q_init[0]:.2f} m³/s")
+        print(f"  初始流量: {Q_init[0]:.2f} m^3/s")
         print(f"  底坡: {S0} (陡坡)")
 
         # 运行模拟
@@ -414,16 +414,16 @@ class TestWettingDrying:
 
         # 验证：允许极少量负值（由于数值误差），但应该很小
         if negative_count > 0:
-            print(f"\n⚠️  WARNING: 出现{negative_count}次负水深")
+            print(f"\n️  WARNING: 出现{negative_count}次负水深")
             print(f"   但最小值{min_h_overall:.2e}接近0（数值误差范围）")
             assert min_h_overall > -1e-6, f"负水深过大: {min_h_overall}"
         else:
-            print(f"\n✅ PASSED: 无负水深，正定性保持完美")
+            print(f"\n PASSED: 无负水深，正定性保持完美")
 
         # 主要验证：最小水深不应该太负
         assert min_h_overall > -1e-4, f"负水深严重: {min_h_overall}"
 
-        print(f"\n✅ PASSED: 负水深防止机制有效")
+        print(f"\n PASSED: 负水深防止机制有效")
 
     def test_partially_wet_channel(self):
         """
@@ -471,8 +471,8 @@ class TestWettingDrying:
         wet_init = np.sum(h_init > 1e-3)
 
         print(f"初始状态:")
-        print(f"  左侧（湿润）: h={h_wet}m, Q=5.0m³/s")
-        print(f"  右侧（浅水）: h={h_dry}m, Q=0m³/s")
+        print(f"  左侧（湿润）: h={h_wet}m, Q=5.0m^3/s")
+        print(f"  右侧（浅水）: h={h_dry}m, Q=0m^3/s")
         print(f"  初始湿润单元: {wet_init}/{nx}")
 
         # 运行模拟
@@ -485,7 +485,7 @@ class TestWettingDrying:
             solver.step_preissmann(dt)
 
             if np.any(solver.h < 0):
-                print(f"\n❌ ERROR: step {step}出现负水深")
+                print(f"\n ERROR: step {step}出现负水深")
                 break
 
         # 检查结果
@@ -502,7 +502,7 @@ class TestWettingDrying:
         assert np.all(h_final >= 0), "出现负水深"
         assert wet_final >= wet_init, "湿润区应该扩展"
 
-        print(f"\n✅ PASSED: 湿润前沿推进稳定")
+        print(f"\n PASSED: 湿润前沿推进稳定")
 
 
 if __name__ == '__main__':
@@ -522,17 +522,17 @@ if __name__ == '__main__':
         test.test_partially_wet_channel()
 
         print("\n" + "="*70)
-        print("✅ 所有干湿界面测试通过！")
+        print(" 所有干湿界面测试通过！")
         print("="*70)
         print("\n验证结论:")
-        print("  ✅ 干河床启动稳定")
-        print("  ✅ Dam Break模拟成功")
-        print("  ✅ 潮汐干湿交替无负水深")
-        print("  ✅ 负水深防止机制有效")
-        print("  ✅ 湿润前沿推进稳定")
+        print("   干河床启动稳定")
+        print("   Dam Break模拟成功")
+        print("   潮汐干湿交替无负水深")
+        print("   负水深防止机制有效")
+        print("   湿润前沿推进稳定")
         print("="*70)
 
     except AssertionError as e:
-        print(f"\n❌ 测试失败: {e}")
+        print(f"\n 测试失败: {e}")
         import traceback
         traceback.print_exc()

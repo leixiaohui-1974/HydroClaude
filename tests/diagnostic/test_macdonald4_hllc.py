@@ -15,12 +15,18 @@ sys.path.insert(0, '/home/user/HydroClaude')
 
 import numpy as np
 import time
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 print("="*80)
 print("MacDonald Test 4: HLLC低耗散求解器测试 (方案2)")
 print("="*80)
-print("\n改进: HLL → HLLC (更低数值耗散)")
+print("\n改进: HLL -> HLLC (更低数值耗散)")
 print("配置: 150网格, dx=6.67m, CFL=0.4")
 print("目标: 质量误差 < 15%")
 print("="*80)
@@ -49,7 +55,7 @@ bc_right = {'type': 'fixed_h', 'h': h_downstream}
 solver.initialize(h_init, Q_init, bc_left, bc_right)
 mass_init = solver._compute_total_mass()
 
-print(f"初始质量: {mass_init:.2f} m³")
+print(f"初始质量: {mass_init:.2f} m^3")
 print(f"\n运行到 t=50s...")
 print("(进度每10秒显示一次)")
 
@@ -125,27 +131,27 @@ print("评估")
 print(f"{'='*80}")
 
 if mass_error < 15.0:
-    print(f"✅ 质量误差: {mass_error:.2f}% < 15.0% ⭐⭐⭐")
+    print(f" 质量误差: {mass_error:.2f}% < 15.0% ⭐⭐⭐")
     if Fr_upstream_final > 0.9:
-        print(f"✅ Froude数: {Fr_upstream_final:.3f} ≈ {Fr_theory:.3f}")
+        print(f" Froude数: {Fr_upstream_final:.3f} ~= {Fr_theory:.3f}")
     if belanger_error < 30.0:
-        print(f"✅ Belanger: {belanger_error:.2f}% < 30%")
+        print(f" Belanger: {belanger_error:.2f}% < 30%")
     if n_negative < n_cells * 0.2:
-        print(f"✅ 负流量: {n_negative}/{n_cells} < 20%")
+        print(f" 负流量: {n_negative}/{n_cells} < 20%")
 
-    print(f"\n🎉🎉🎉 HLLC方案成功！达到100%通过率！ 🎉🎉🎉")
+    print(f"\n HLLC方案成功！达到100%通过率！ ")
     print(f"{'='*80}\n")
     exit(0)
 
 elif improvement > 5.0:
-    print(f"✅ HLLC有显著改善 (>{improvement:.1f}%)")
-    print(f"⚠️  但未达到<15%目标 (当前{mass_error:.2f}%)")
+    print(f" HLLC有显著改善 (>{improvement:.1f}%)")
+    print(f"️  但未达到<15%目标 (当前{mass_error:.2f}%)")
     print(f"\n建议: 继续实施方案1 (WENO5高阶格式)")
     print(f"{'='*80}\n")
     exit(1)
 
 else:
-    print(f"⚠️  HLLC改善有限 (<5%)")
+    print(f"️  HLLC改善有限 (<5%)")
     print(f"建议: 必须实施WENO5才能达到100%通过率")
     print(f"{'='*80}\n")
     exit(2)

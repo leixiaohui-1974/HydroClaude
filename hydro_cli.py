@@ -129,17 +129,17 @@ class HydroClaudeCLI:
         for package, description in required_packages:
             try:
                 __import__(package)
-                print(f"✓ {package:15s} - {description}")
+                print(f" {package:15s} - {description}")
             except ImportError:
-                print(f"✗ {package:15s} - {description} [未安装]")
+                print(f" {package:15s} - {description} [未安装]")
                 all_good = False
 
         print()
 
         if all_good:
-            print("✓ 所有依赖已安装")
+            print(" 所有依赖已安装")
         else:
-            print("⚠ 部分依赖未安装")
+            print(" 部分依赖未安装")
             print("\n安装方法:")
             print("  pip install -r requirements_reservoir.txt")
 
@@ -200,7 +200,7 @@ class HydroClaudeCLI:
 
         for doc, desc in docs:
             doc_path = self.base_dir / doc
-            status = "✓" if doc_path.exists() else "✗"
+            status = "" if doc_path.exists() else ""
             print(f"  {status} {doc:40s} - {desc}")
 
         print()

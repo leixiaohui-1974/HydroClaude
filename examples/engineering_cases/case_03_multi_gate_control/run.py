@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 工程案例3: 多闸门协同控制
 
-运行示例：
+运行示例
     python run.py
 
-或直接使用通用建模器：
+或直接使用通用建模器
     python -m modeling.universal_modeler config.yaml
 """
 
@@ -35,7 +36,7 @@ def main():
     print("  - 闸门数量: 3个 (位于3km, 6km, 9km)")
     print("  - 监测点: 3个 (1.5km, 4.5km, 7.5km)")
     print("  - 控制方式: MPC协同控制")
-    print("  - 扰动: t=300s，流量从25→32 m³/s (+28%)")
+    print("  - 扰动: t=300s流量从25->32 m^3/s (+28%)")
     print()
     print("控制目标:")
     print("  - 第1段水位: 2.5 m")
@@ -45,7 +46,7 @@ def main():
     print("-" * 80)
     print()
 
-    # 创建建模器（传入配置文件路径）
+    # 创建建模器传入配置文件路径
     modeler = UniversalModeler(str(config_file))
 
     # 运行仿真
@@ -55,7 +56,7 @@ def main():
 
     print()
     print("=" * 80)
-    print("仿真完成！")
+    print("仿真完成")
     print("=" * 80)
     print()
 

@@ -64,11 +64,11 @@ def validation_case_1_hardy_cross():
     print(f"  材料: 铸铁管")
 
     # 测试多个流量点
-    Q_values = np.array([0.05, 0.10, 0.15, 0.20, 0.25])  # m³/s
+    Q_values = np.array([0.05, 0.10, 0.15, 0.20, 0.25])  # m^3/s
 
     print(f"\n水头损失计算结果:")
     print(f"{'流量Q':<12}{'雷诺数Re':<15}{'摩阻系数f':<15}{'水头损失h':<15}")
-    print(f"{'(m³/s)':<12}{'(无量纲)':<15}{'(无量纲)':<15}{'(m)':<15}")
+    print(f"{'(m^3/s)':<12}{'(无量纲)':<15}{'(无量纲)':<15}{'(m)':<15}")
     print("-" * 60)
 
     results = []
@@ -87,8 +87,8 @@ def validation_case_1_hardy_cross():
 
         print(f"{Q:<12.3f}{Re:<15.0f}{f:<15.6f}{h:<15.4f}")
 
-    # 验证Darcy公式：h = f * (L/D) * (V²/2g)
-    print(f"\n公式验证 (Q=0.10 m³/s):")
+    # 验证Darcy公式：h = f * (L/D) * (V^2/2g)
+    print(f"\n公式验证 (Q=0.10 m^3/s):")
     Q_test = 0.10
     V = Q_test / pipe.A
     g = 9.81
@@ -109,11 +109,11 @@ def validation_case_1_hardy_cross():
     h_check = pipe.head_loss(Q_calc)
 
     print(f"  给定水头损失: h = {h_given:.4f} m")
-    print(f"  反算流量: Q = {Q_calc:.6f} m³/s")
+    print(f"  反算流量: Q = {Q_calc:.6f} m^3/s")
     print(f"  验证水头损失: h = {h_check:.6f} m")
     print(f"  误差: {abs(h_check - h_given):.8f} m")
 
-    print(f"\n✅ 案例1验证完成 - 计算精度优秀")
+    print(f"\n 案例1验证完成 - 计算精度优秀")
 
     return results
 
@@ -234,7 +234,7 @@ def validation_case_2_moody_diagram():
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
     print(f"\n图表已保存: {output_path}")
 
-    print(f"\n✅ 案例2验证完成 - Moody图对比一致")
+    print(f"\n 案例2验证完成 - Moody图对比一致")
 
     return fig
 
@@ -245,7 +245,7 @@ def validation_case_3_real_engineering():
 
     背景:
     某城市供水系统主干管，DN500铸铁管，长度5km
-    设计流量0.6 m³/s，需要计算水头损失和泵站扬程
+    设计流量0.6 m^3/s，需要计算水头损失和泵站扬程
 
     验证内容:
     - Darcy vs Hazen-Williams对比
@@ -260,12 +260,12 @@ def validation_case_3_real_engineering():
     # 工程参数
     D = 0.5          # DN500管道
     L = 5000.0       # 5km主干管
-    Q_design = 0.6   # 设计流量 m³/s
+    Q_design = 0.6   # 设计流量 m^3/s
 
     print(f"\n工程参数:")
     print(f"  管径: DN{int(D*1000)} ({D*1000:.0f} mm)")
     print(f"  长度: {L/1000:.1f} km")
-    print(f"  设计流量: {Q_design:.2f} m³/s")
+    print(f"  设计流量: {Q_design:.2f} m^3/s")
     print(f"  管材: 铸铁管")
 
     # 场景1: 新管
@@ -360,7 +360,7 @@ def validation_case_3_real_engineering():
     ax1.plot(Q_range, h_new_curve, 'b-', linewidth=2, marker='o', label='新管')
     ax1.plot(Q_range, h_old_curve, 'r-', linewidth=2, marker='s', label='老管(20年)')
     ax1.axvline(Q_design, color='k', linestyle='--', alpha=0.5, label='设计流量')
-    ax1.set_xlabel('流量 Q (m³/s)', fontsize=12)
+    ax1.set_xlabel('流量 Q (m^3/s)', fontsize=12)
     ax1.set_ylabel('水头损失 h (m)', fontsize=12)
     ax1.set_title('管道水头损失特性曲线', fontsize=14)
     ax1.grid(True, alpha=0.3)
@@ -371,7 +371,7 @@ def validation_case_3_real_engineering():
     ax2.axhline(1.5, color='orange', linestyle='--', alpha=0.7, label='经济流速上限')
     ax2.axhline(0.5, color='orange', linestyle='--', alpha=0.7, label='经济流速下限')
     ax2.axvline(Q_design, color='k', linestyle='--', alpha=0.5)
-    ax2.set_xlabel('流量 Q (m³/s)', fontsize=12)
+    ax2.set_xlabel('流量 Q (m^3/s)', fontsize=12)
     ax2.set_ylabel('流速 V (m/s)', fontsize=12)
     ax2.set_title('管道流速', fontsize=14)
     ax2.grid(True, alpha=0.3)
@@ -382,22 +382,22 @@ def validation_case_3_real_engineering():
     ax3.axhline(2000, color='r', linestyle='--', alpha=0.7, label='层流上限')
     ax3.axhline(4000, color='r', linestyle='--', alpha=0.7, label='湍流下限')
     ax3.axvline(Q_design, color='k', linestyle='--', alpha=0.5)
-    ax3.set_xlabel('流量 Q (m³/s)', fontsize=12)
+    ax3.set_xlabel('流量 Q (m^3/s)', fontsize=12)
     ax3.set_ylabel('雷诺数 Re', fontsize=12)
     ax3.set_title('雷诺数变化', fontsize=14)
     ax3.grid(True, alpha=0.3)
     ax3.legend(fontsize=10)
 
     # 子图4: 功率消耗
-    rho = 1000  # kg/m³
-    g = 9.81    # m/s²
+    rho = 1000  # kg/m^3
+    g = 9.81    # m/s^2
     P_new = [rho * g * Q * h / 1000 for Q, h in zip(Q_range, h_new_curve)]  # kW
     P_old = [rho * g * Q * h / 1000 for Q, h in zip(Q_range, h_old_curve)]
 
     ax4.plot(Q_range, P_new, 'b-', linewidth=2, marker='o', label='新管')
     ax4.plot(Q_range, P_old, 'r-', linewidth=2, marker='s', label='老管(20年)')
     ax4.axvline(Q_design, color='k', linestyle='--', alpha=0.5)
-    ax4.set_xlabel('流量 Q (m³/s)', fontsize=12)
+    ax4.set_xlabel('流量 Q (m^3/s)', fontsize=12)
     ax4.set_ylabel('功率消耗 P (kW)', fontsize=12)
     ax4.set_title('泵站功率需求', fontsize=14)
     ax4.grid(True, alpha=0.3)
@@ -417,12 +417,12 @@ def validation_case_3_real_engineering():
     print(f"  1. 设计流量下新管水头损失: {h_new_darcy:.2f} m")
     print(f"  2. 考虑20年老化，水头损失增至: {h_old_darcy:.2f} m")
     print(f"  3. 建议泵站扬程: {h_old_darcy * 1.2:.2f} m (含20%安全系数)")
-    print(f"  4. 经济流速范围: 0.5-1.5 m/s，设计流速 {props_new_darcy['V']:.2f} m/s ✓")
+    print(f"  4. 经济流速范围: 0.5-1.5 m/s，设计流速 {props_new_darcy['V']:.2f} m/s ")
     print(f"  5. 新管泵站功率: {P_new[np.argmin(abs(Q_range - Q_design))]:.1f} kW")
     print(f"  6. 老管泵站功率: {P_old[np.argmin(abs(Q_range - Q_design))]:.1f} kW")
     print(f"  7. 20年运行能耗增加: {(P_old[5] - P_new[5])/P_new[5] * 100:.1f}%")
 
-    print(f"\n✅ 案例3验证完成 - 实际工程应用验证成功")
+    print(f"\n 案例3验证完成 - 实际工程应用验证成功")
 
     return fig
 
@@ -450,19 +450,19 @@ def run_all_validations():
     print("\n" + "="*70)
     print("验证总结 VALIDATION SUMMARY")
     print("="*70)
-    print(f"✅ 案例1: Hardy Cross算例 - 通过")
+    print(f" 案例1: Hardy Cross算例 - 通过")
     print(f"   - Darcy-Weisbach公式精度: <0.0001%")
     print(f"   - 流量反算误差: <1e-8 m")
-    print(f"\n✅ 案例2: Moody图验证 - 通过")
+    print(f"\n 案例2: Moody图验证 - 通过")
     print(f"   - 摩阻系数与理论值一致")
     print(f"   - Colebrook迭代快速收敛")
-    print(f"\n✅ 案例3: 实际工程案例 - 通过")
+    print(f"\n 案例3: 实际工程案例 - 通过")
     print(f"   - Darcy与Hazen-Williams差异<10%")
     print(f"   - 老化效应准确反映")
     print(f"   - 工程建议合理可行")
 
     print("\n" + "="*70)
-    print("🎉 所有验证案例通过！PressurePipe类验证成功！")
+    print(" 所有验证案例通过！PressurePipe类验证成功！")
     print("="*70)
 
     plt.show()

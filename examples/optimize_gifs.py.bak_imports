@@ -1,0 +1,325 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+GIF动画优化工具
+
+用于批量优化现有的GIF文件，减小文件大小（目标<1MB）
+
+使用方法:
+    python optimize_gifs.py                  # 优化所有GIF
+    python optimize_gifs.py --target-kb 800  # 目标800KB
+    python optimize_gifs.py --colors 64      # 使用64色
+
+优化策略:
+1. 降低颜色数量（256 -> 128 -> 64）
+2. 降低分辨率（如果需要）
+3. 减少帧数（如果需要）
+4. PIL optimize选项
+
+作者: Claude
+日期: 2025-10-22
+"""
+
+import sys
+import os
+from pathlib import Path
+import argparse
+
+
+def optimize_gif(input_path, output_path=None, target_kb=1024, colors=128, scale=1.0, frame_skip=1):
+    """
+    优化单个GIF文件
+
+    Parameters
+    ----------
+    input_path : str or Path
+        输入GIF文件路径
+    output_path : str or Path, optional
+        输出路径（如果None则覆盖原文件）
+    target_kb : int
+        目标文件大小（KB）
+    colors : int
+        调色板颜色数（8-256）
+    scale : float
+        缩放比例（0.5-1.0）
+    frame_skip : int
+        帧跳过（1=不跳过，2=每隔一帧）
+
+    Returns
+    -------
+    tuple
+        (成功标志, 原始大小KB, 新大小KB, 压缩率%)
+    """
+    try:
+        from PIL import Image, ImageSequence
+    except ImportError:
+        print("错误: 需要安装Pillow库")
+        print("运行: pip install Pillow")
+        return False, 0, 0, 0
+
+    input_path = Path(input_path)
+    if output_path is None:
+        output_path = input_path
+    else:
+        output_path = Path(output_path)
+
+    # 读取原始文件大小
+    original_size_kb = input_path.stat().st_size / 1024
+
+    try:
+        # 打开GIF
+        img = Image.open(input_path)
+
+        # 提取帧
+        frames = []
+        durations = []
+
+        for i, frame in enumerate(ImageSequence.Iterator(img)):
+            # 跳帧
+            if i % frame_skip != 0:
+                continue
+
+            # 缩放
+            if scale < 1.0:
+                new_size = (int(frame.width * scale), int(frame.height * scale))
+                frame = frame.resize(new_size, Image.LANCZOS)
+
+            # 转换为RGB
+            frame_rgb = frame.convert('RGB')
+
+            # 转换为调色板模式（减少颜色）
+            frame_p = frame_rgb.convert('P', palette=Image.ADAPTIVE, colors=colors)
+
+            frames.append(frame_p)
+            duration = frame.info.get('duration', 100)
+            durations.append(duration * frame_skip)  # 调整duration以补偿跳帧
+
+        # 保存优化的GIF
+        frames[0].save(
+            str(output_path),
+            save_all=True,
+            append_images=frames[1:],
+            duration=durations,
+            loop=0,
+            optimize=True,
+            quality=85
+        )
+
+        # 检查新文件大小
+        new_size_kb = output_path.stat().st_size / 1024
+        compression_ratio = (1 - new_size_kb / original_size_kb) * 100
+
+        return True, original_size_kb, new_size_kb, compression_ratio
+
+    except Exception as e:
+        print(f"优化失败: {e}")
+        return False, original_size_kb, 0, 0
+
+
+def auto_optimize_gif(input_path, output_path=None, target_kb=1024, max_iterations=5):
+    """
+    自动优化GIF，尝试多种策略直到达到目标大小
+
+    Parameters
+    ----------
+    input_path : str or Path
+        输入GIF文件路径
+    output_path : str or Path, optional
+        输出路径
+    target_kb : int
+        目标文件大小（KB）
+    max_iterations : int
+        最大尝试次数
+
+    Returns
+    -------
+    tuple
+        (成功标志, 原始大小KB, 新大小KB, 压缩率%)
+    """
+    input_path = Path(input_path)
+    original_size_kb = input_path.stat().st_size / 1024
+
+    # 如果已经小于目标，直接返回
+    if original_size_kb <= target_kb:
+        print(f"  文件已经小于目标大小 ({original_size_kb:.1f} KB < {target_kb} KB)")
+        return True, original_size_kb, original_size_kb, 0
+
+    # 优化策略序列
+    strategies = [
+        {'colors': 128, 'scale': 1.0, 'frame_skip': 1},  # 降低颜色
+        {'colors': 96, 'scale': 1.0, 'frame_skip': 1},   # 进一步降低颜色
+        {'colors': 128, 'scale': 0.9, 'frame_skip': 1},  # 轻微缩小
+        {'colors': 96, 'scale': 0.85, 'frame_skip': 1},  # 颜色+缩小
+        {'colors': 64, 'scale': 0.8, 'frame_skip': 1},   # 更激进
+        {'colors': 96, 'scale': 0.9, 'frame_skip': 2},   # 跳帧
+        {'colors': 64, 'scale': 0.75, 'frame_skip': 2},  # 最激进
+    ]
+
+    best_result = None
+
+    for i, strategy in enumerate(strategies[:max_iterations]):
+        print(f"  尝试策略 {i+1}: colors={strategy['colors']}, "
+              f"scale={strategy['scale']}, frame_skip={strategy['frame_skip']}")
+
+        success, orig, new, ratio = optimize_gif(
+            input_path,
+            output_path,
+            target_kb=target_kb,
+            **strategy
+        )
+
+        if success:
+            print(f"    结果: {orig:.1f} KB -> {new:.1f} KB ({ratio:.1f}% 压缩)")
+            best_result = (success, orig, new, ratio)
+
+            # 达到目标，停止
+            if new <= target_kb:
+                print(f"     达到目标 ({new:.1f} KB <= {target_kb} KB)")
+                return best_result
+
+    # 未达到目标，但返回最好的结果
+    if best_result:
+        print(f"     未达到目标，但已尽力优化")
+        return best_result
+
+    return False, original_size_kb, original_size_kb, 0
+
+
+def batch_optimize(examples_dir='.', target_kb=1024, dry_run=False):
+    """
+    批量优化所有examples目录下的GIF文件
+
+    Parameters
+    ----------
+    examples_dir : str
+        examples目录路径
+    target_kb : int
+        目标文件大小（KB）
+    dry_run : bool
+        是否仅模拟（不实际修改文件）
+    """
+    examples_dir = Path(examples_dir)
+
+    # 查找所有GIF文件
+    gif_files = list(examples_dir.glob('example_*/outputs/animations/*.gif'))
+
+    if not gif_files:
+        print("未找到GIF文件")
+        return
+
+    print(f"\n找到 {len(gif_files)} 个GIF文件\n")
+    print("="*80)
+
+    # 统计
+    total_original_size = 0
+    total_new_size = 0
+    optimized_count = 0
+    already_small_count = 0
+    failed_count = 0
+
+    for i, gif_file in enumerate(gif_files, 1):
+        print(f"\n[{i}/{len(gif_files)}] {gif_file.name}")
+        print("-"*80)
+
+        original_size_kb = gif_file.stat().st_size / 1024
+        print(f"原始大小: {original_size_kb:.1f} KB")
+
+        total_original_size += original_size_kb
+
+        if dry_run:
+            print("  [模拟模式] 跳过优化")
+            total_new_size += original_size_kb
+            continue
+
+        # 如果已经很小，跳过
+        if original_size_kb <= target_kb:
+            print(f"   已经小于目标 ({target_kb} KB)，跳过")
+            total_new_size += original_size_kb
+            already_small_count += 1
+            continue
+
+        # 自动优化
+        success, orig, new, ratio = auto_optimize_gif(
+            gif_file,
+            output_path=gif_file,
+            target_kb=target_kb,
+            max_iterations=5
+        )
+
+        if success:
+            total_new_size += new
+            if new <= target_kb:
+                optimized_count += 1
+            else:
+                print(f"   未达目标，但已优化 {ratio:.1f}%")
+        else:
+            total_new_size += original_size_kb
+            failed_count += 1
+
+    # 打印汇总
+    print("\n" + "="*80)
+    print("批量优化完成")
+    print("="*80)
+    print(f"总文件数: {len(gif_files)}")
+    print(f"已达目标: {optimized_count}")
+    print(f"本来就小: {already_small_count}")
+    print(f"优化失败: {failed_count}")
+    print(f"总大小: {total_original_size/1024:.2f} MB -> {total_new_size/1024:.2f} MB")
+    compression = (1 - total_new_size/total_original_size) * 100
+    print(f"总压缩率: {compression:.1f}%")
+    print("="*80)
+
+
+def main():
+    """主函数"""
+    parser = argparse.ArgumentParser(
+        description='GIF动画优化工具 - 批量压缩GIF文件'
+    )
+
+    parser.add_argument(
+        '--target-kb',
+        type=int,
+        default=1024,
+        help='目标文件大小（KB），默认1024KB (1MB)'
+    )
+
+    parser.add_argument(
+        '--colors',
+        type=int,
+        default=128,
+        choices=[32, 64, 96, 128, 192, 256],
+        help='调色板颜色数，默认128'
+    )
+
+    parser.add_argument(
+        '--dry-run',
+        action='store_true',
+        help='仅模拟，不实际修改文件'
+    )
+
+    parser.add_argument(
+        '--examples-dir',
+        type=str,
+        default='.',
+        help='examples目录路径'
+    )
+
+    args = parser.parse_args()
+
+    print("\n" + "="*80)
+    print("GIF动画优化工具")
+    print("="*80)
+    print(f"目标大小: {args.target_kb} KB")
+    print(f"颜色数: {args.colors}")
+    print(f"模拟模式: {'是' if args.dry_run else '否'}")
+    print("="*80)
+
+    batch_optimize(
+        examples_dir=args.examples_dir,
+        target_kb=args.target_kb,
+        dry_run=args.dry_run
+    )
+
+
+if __name__ == '__main__':
+    main()

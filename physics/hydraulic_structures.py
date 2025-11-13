@@ -592,5 +592,5 @@ if __name__ == "__main__":
             print(f"  h_up={h_up:.1f}m: Q={Q:.2f} m³/s ({desc})")
 
     print("\n" + "="*80)
-    print("✅ 所有测试通过！")
+    print(" 所有测试通过！")
     print("="*80)

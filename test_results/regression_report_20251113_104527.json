@@ -1,0 +1,122 @@
+{
+  "timestamp": "20251113_104527",
+  "total_tests": 12,
+  "passed": 5,
+  "failed": 1,
+  "errors": 6,
+  "duration_seconds": 5.596125364303589,
+  "tests": [
+    {
+      "test": "1.1_flat_bottom_static",
+      "description": "Flat bottom static water (machine precision test)",
+      "status": "PASS",
+      "metrics": {
+        "max_Q": 0.0,
+        "max_h_deviation": 0.0,
+        "steps": 1000,
+        "time": 356.96078073175875
+      },
+      "passed": true
+    },
+    {
+      "test": "1.2_dam_break",
+      "description": "Dam break with mass conservation check",
+      "status": "PASS",
+      "metrics": {
+        "mass_error_percent": 1.3229013843969865e-13,
+        "has_nan": false,
+        "final_time": 10.146857424657659,
+        "h_min": 1.0,
+        "h_max": 9.999999999999613
+      },
+      "passed": true
+    },
+    {
+      "test": "1.3_shock_propagation",
+      "description": "Shock propagation stability",
+      "status": "PASS",
+      "metrics": {
+        "has_nan": false,
+        "h_range": 0.9993486608347375,
+        "final_time": 5.039967464362863
+      },
+      "passed": true
+    },
+    {
+      "test": "2.1_lake_at_rest_gentle",
+      "description": "Lake at Rest with gentle 1% slope",
+      "status": "FAIL",
+      "metrics": {
+        "disturbance": 0.023226399341016446,
+        "max_Q": 23.496997453737134,
+        "time": 2.4950030644208683
+      },
+      "passed": false
+    },
+    {
+      "test": "2.2_lake_at_rest_hump",
+      "description": "Lake at Rest with 2m hump",
+      "status": "PASS",
+      "metrics": {
+        "disturbance": 2.3329059803186336,
+        "mass_error_percent": 4.388288637315822,
+        "time": 10.022905508238113
+      },
+      "passed": true
+    },
+    {
+      "test": "2.3_well_balanced_friction",
+      "description": "Well-Balanced with Manning friction",
+      "status": "PASS",
+      "metrics": {
+        "has_nan": false,
+        "h_deviation": 1.3529200121776195,
+        "steps": 145,
+        "time": 100.27970435041857
+      },
+      "passed": true
+    },
+    {
+      "test": "3.1_bc_fixed_h",
+      "description": "Fixed h boundary",
+      "status": "ERROR",
+      "error": "index 50 is out of bounds for axis 0 with size 50",
+      "passed": false
+    },
+    {
+      "test": "3.2_bc_fixed_q",
+      "description": "Fixed Q boundary",
+      "status": "ERROR",
+      "error": "index 50 is out of bounds for axis 0 with size 50",
+      "passed": false
+    },
+    {
+      "test": "3.3_bc_mixed",
+      "description": "Mixed boundaries",
+      "status": "ERROR",
+      "error": "index 50 is out of bounds for axis 0 with size 50",
+      "passed": false
+    },
+    {
+      "test": "4.1_mass_conservation",
+      "description": "Mass conservation",
+      "status": "ERROR",
+      "error": "index 100 is out of bounds for axis 0 with size 100",
+      "passed": false
+    },
+    {
+      "test": "4.2_energy_dissipation",
+      "description": "Energy dissipation",
+      "status": "ERROR",
+      "error": "index 50 is out of bounds for axis 0 with size 50",
+      "passed": false
+    },
+    {
+      "test": "4.3_froude_number",
+      "description": "Froude number",
+      "status": "ERROR",
+      "error": "index 50 is out of bounds for axis 0 with size 50",
+      "passed": false
+    }
+  ]
+}

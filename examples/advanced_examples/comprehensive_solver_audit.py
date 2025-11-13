@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 """
 非恒定流求解器全面审计
 
-目标：
+目标
 1. 梳理所有非恒定流求解器
 2. 测试精度和稳定性
 3. 形成明确对比和适用性结论
@@ -21,28 +22,28 @@ print("="*80)
 
 # ========== 求解器清单 ==========
 print("\n" + "="*80)
-print("第一步：求解器清单")
+print("第一步求解器清单")
 print("="*80)
 
 solvers_inventory = {
     "Canal类集成求解器": {
         "preissmann": {
             "文件": "physics/numerical_methods/preissmann_solver.py",
-            "描述": "四点隐式格式（Preissmann格式）",
+            "描述": "四点隐式格式Preissmann格式",
             "类型": "隐式有限差分",
-            "接口": "physics/canal.py → PreissmannSolver"
+            "接口": "physics/canal.py -> PreissmannSolver"
         },
         "fvm": {
             "文件": "physics/numerical_methods/fvm_solver.py",
-            "描述": "有限体积法（HLL Riemann求解器）",
+            "描述": "有限体积法HLL Riemann求解器",
             "类型": "显式有限体积",
-            "接口": "physics/canal.py → FVMSolver"
+            "接口": "physics/canal.py -> FVMSolver"
         },
         "moc": {
             "文件": "physics/canal.py (内联实现)",
-            "描述": "特征线法（硬编码边界条件）",
+            "描述": "特征线法硬编码边界条件",
             "类型": "显式特征线",
-            "接口": "physics/canal.py → update_high_fidelity"
+            "接口": "physics/canal.py -> update_high_fidelity"
         }
     },
     "独立求解器类": {
@@ -72,27 +73,27 @@ solvers_inventory = {
         }
     },
     "遗留求解器 (legacy_backup)": {
-        "说明": "legacy_backup目录下有多个旧版求解器，不应再使用"
+        "说明": "legacy_backup目录下有多个旧版求解器不应再使用"
     }
 }
 
-print("\n📋 已识别的非恒定流求解器：\n")
+print("\n[LIST] 已识别的非恒定流求解器\n")
 for category, solvers in solvers_inventory.items():
-    print(f"【{category}】")
+    print(f"{category}")
     if isinstance(solvers, dict):
         for name, info in solvers.items():
             if isinstance(info, dict):
-                print(f"  • {name}")
+                print(f"  - {name}")
                 print(f"      文件: {info.get('文件', 'N/A')}")
                 print(f"      描述: {info.get('描述', 'N/A')}")
                 print(f"      类型: {info.get('类型', 'N/A')}")
             else:
-                print(f"  • {name}: {info}")
+                print(f"  - {name}: {info}")
     print()
 
 # ========== 精度测试 ==========
 print("="*80)
-print("第二步：精度测试（质量守恒场景）")
+print("第二步精度测试质量守恒场景")
 print("="*80)
 
 # 测试配置
@@ -112,8 +113,8 @@ area_total = canal_width * canal_length
 expected_delta_h = volume_added / area_total
 
 print(f"\n测试场景:")
-print(f"  入流={Q_in}m³/s, 出流={Q_out}m³/s, 时间={sim_time}s")
-print(f"  理论Δh={expected_delta_h:.4f}m")
+print(f"  入流={Q_in}m^3/s, 出流={Q_out}m^3/s, 时间={sim_time}s")
+print(f"  理论h={expected_delta_h:.4f}m")
 print()
 
 # 测试结果存储
@@ -164,7 +165,7 @@ try:
         'stable': True
     }
 
-    print(f"✅ 成功: 误差={error_pct:.1f}%")
+    print(f"[OK] 成功: 误差={error_pct:.1f}%")
 
 except Exception as e:
     test_results['Canal-Preissmann'] = {
@@ -172,7 +173,7 @@ except Exception as e:
         'error': str(e),
         'stable': False
     }
-    print(f"❌ 失败: {e}")
+    print(f"[X] 失败: {e}")
 
 # ========== 测试2: Canal FVM ==========
 print("\n" + "-" * 80)
@@ -208,7 +209,7 @@ try:
         # 检查NaN
         if np.isnan(canal_fvm.hydraulic_state.h).any():
             stable = False
-            print(f"❌ NaN出现在第{k}步")
+            print(f"[X] NaN出现在第{k}步")
             break
 
     final_h = np.mean(canal_fvm.hydraulic_state.h)
@@ -226,14 +227,14 @@ try:
             'stable': True
         }
 
-        print(f"✅ 成功: 误差={error_pct:.1f}%")
+        print(f"[OK] 成功: 误差={error_pct:.1f}%")
     else:
         test_results['Canal-FVM'] = {
             'status': 'unstable',
             'error': 'Numerical overflow (NaN)',
             'stable': False
         }
-        print(f"❌ 数值不稳定（NaN）")
+        print(f"[X] 数值不稳定NaN")
 
 except Exception as e:
     test_results['Canal-FVM'] = {
@@ -241,7 +242,7 @@ except Exception as e:
         'error': str(e),
         'stable': False
     }
-    print(f"❌ 失败: {e}")
+    print(f"[X] 失败: {e}")
 
 # ========== 测试3: Canal MOC ==========
 print("\n" + "-" * 80)
@@ -286,7 +287,7 @@ try:
         'stable': True
     }
 
-    print(f"✅ 成功: 误差={error_pct:.1f}%")
+    print(f"[OK] 成功: 误差={error_pct:.1f}%")
 
 except Exception as e:
     test_results['Canal-MOC'] = {
@@ -294,7 +295,7 @@ except Exception as e:
         'error': str(e),
         'stable': False
     }
-    print(f"❌ 失败: {e}")
+    print(f"[X] 失败: {e}")
 
 # ========== 测试4: HighOrderCanalSolver ==========
 print("\n" + "-" * 80)
@@ -348,14 +349,14 @@ try:
             'stable': True
         }
 
-        print(f"✅ 成功: 误差={error_pct:.1f}%")
+        print(f"[OK] 成功: 误差={error_pct:.1f}%")
     else:
         test_results['HighOrderCanalSolver'] = {
             'status': 'unstable',
             'error': 'Numerical overflow (NaN)',
             'stable': False
         }
-        print(f"❌ 数值不稳定（NaN）")
+        print(f"[X] 数值不稳定NaN")
 
 except Exception as e:
     test_results['HighOrderCanalSolver'] = {
@@ -363,7 +364,7 @@ except Exception as e:
         'error': str(e),
         'stable': False
     }
-    print(f"❌ 失败: {e}")
+    print(f"[X] 失败: {e}")
 
 # ========== 测试5: HydrostaticCanalSolver ==========
 print("\n" + "-" * 80)
@@ -417,7 +418,7 @@ try:
         # 检查NaN
         if np.isnan(solver_hs.h).any():
             stable = False
-            print(f"❌ NaN出现在第{step}步")
+            print(f"[X] NaN出现在第{step}步")
             break
 
     final_h_hs = np.mean(solver_hs.h)
@@ -435,14 +436,14 @@ try:
             'stable': True
         }
 
-        print(f"✅ 成功: 误差={error_pct:.1f}%")
+        print(f"[OK] 成功: 误差={error_pct:.1f}%")
     else:
         test_results['HydrostaticCanalSolver'] = {
             'status': 'unstable',
             'error': 'Numerical overflow (NaN)',
             'stable': False
         }
-        print(f"❌ 数值不稳定（NaN）")
+        print(f"[X] 数值不稳定NaN")
 
 except Exception as e:
     test_results['HydrostaticCanalSolver'] = {
@@ -450,14 +451,14 @@ except Exception as e:
         'error': str(e),
         'stable': False
     }
-    print(f"❌ 失败: {e}")
+    print(f"[X] 失败: {e}")
 
 # ========== 结果汇总 ==========
 print("\n" + "="*80)
-print("第三步：结果汇总与建议")
+print("第三步结果汇总与建议")
 print("="*80)
 
-print("\n【精度排名】（仅包含成功的求解器）\n")
+print("\n精度排名仅包含成功的求解器\n")
 
 successful_solvers = [
     (name, result) for name, result in test_results.items()
@@ -467,10 +468,10 @@ successful_solvers = [
 successful_solvers.sort(key=lambda x: x[1]['error_pct'])
 
 for i, (name, result) in enumerate(successful_solvers, 1):
-    stars = "⭐" * max(1, 6 - i)
+    stars = "[STAR]" * max(1, 6 - i)
     print(f"  {i}. {name:<30} {result['error_pct']:>7.1f}% {stars}")
 
-print("\n【不稳定的求解器】（数值溢出/NaN）\n")
+print("\n不稳定的求解器数值溢出/NaN\n")
 
 unstable_solvers = [
     (name, result) for name, result in test_results.items()
@@ -478,9 +479,9 @@ unstable_solvers = [
 ]
 
 for name, result in unstable_solvers:
-    print(f"  ❌ {name:<30} {result.get('error', 'Unknown')}")
+    print(f"  [X] {name:<30} {result.get('error', 'Unknown')}")
 
-print("\n【失败的求解器】（异常/错误）\n")
+print("\n失败的求解器异常/错误\n")
 
 failed_solvers = [
     (name, result) for name, result in test_results.items()
@@ -488,36 +489,36 @@ failed_solvers = [
 ]
 
 for name, result in failed_solvers:
-    print(f"  ❌ {name:<30} {result.get('error', 'Unknown')}")
+    print(f"  [X] {name:<30} {result.get('error', 'Unknown')}")
 
 # ========== 删除建议 ==========
 print("\n" + "="*80)
-print("第四步：删除建议")
+print("第四步删除建议")
 print("="*80)
 
-print("\n【建议保留】✅\n")
+print("\n建议保留[OK]\n")
 for name, result in successful_solvers:
     if result['error_pct'] < 100:
-        print(f"  • {name}: 误差{result['error_pct']:.1f}% - 可用于生产")
+        print(f"  - {name}: 误差{result['error_pct']:.1f}% - 可用于生产")
 
-print("\n【建议删除】❌\n")
+print("\n建议删除[X]\n")
 
 to_delete = []
 
 # 不稳定的求解器
 for name, result in unstable_solvers:
-    print(f"  • {name}: 数值不稳定（NaN溢出）")
+    print(f"  - {name}: 数值不稳定NaN溢出")
     to_delete.append(name)
 
 # 误差>1000%的求解器
 for name, result in successful_solvers:
     if result['error_pct'] > 1000:
-        print(f"  • {name}: 误差{result['error_pct']:.1f}% - 实现有误")
+        print(f"  - {name}: 误差{result['error_pct']:.1f}% - 实现有误")
         to_delete.append(name)
 
 # 失败的求解器
 for name, result in failed_solvers:
-    print(f"  • {name}: 运行失败")
+    print(f"  - {name}: 运行失败")
     to_delete.append(name)
 
 print("\n" + "="*80)
@@ -532,10 +533,10 @@ print(f"建议删除: {len(to_delete)}")
 
 if len(successful_solvers) > 0:
     best_name, best_result = successful_solvers[0]
-    print(f"\n🏆 推荐求解器: {best_name}")
+    print(f"\n 推荐求解器: {best_name}")
     print(f"   误差: {best_result['error_pct']:.1f}%")
 else:
-    print(f"\n⚠️  警告：没有可用的求解器！")
+    print(f"\n[WARN]  警告没有可用的求解器")
 
 print("\n" + "="*80)
 
@@ -555,7 +556,7 @@ report = {
     }
 }
 
-with open('solver_audit_report.json', 'w') as f:
+with open('solver_audit_report.json', 'w', encoding='utf-8') as f:
     json.dump(report, f, indent=2)
 
-print("✅ 详细报告已保存到: solver_audit_report.json")
+print("[OK] 详细报告已保存到: solver_audit_report.json")

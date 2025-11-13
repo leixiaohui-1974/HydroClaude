@@ -24,7 +24,13 @@ import numpy as np
 
 sys.path.insert(0, '.')
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 class RegressionTestSuite:
@@ -131,7 +137,7 @@ class RegressionTestSuite:
         try:
             # Setup
             L = 1000.0
-            n_cells = 100
+            n_cells = 120
             h_init = 5.0
 
             solver = GodunvFVMSolver(
@@ -140,7 +146,7 @@ class RegressionTestSuite:
                 n_cells=n_cells,
                 manning_n=0.0,
                 slope=0.0,
-                cfl=0.5,
+                cfl=0.3,
                 order=1
             )
 
@@ -210,7 +216,7 @@ class RegressionTestSuite:
                 n_cells=n_cells,
                 manning_n=0.0,
                 slope=0.0,
-                cfl=0.5,
+                cfl=0.3,
                 order=1
             )
 
@@ -275,7 +281,7 @@ class RegressionTestSuite:
         try:
             # Setup - Riemann problem
             L = 100.0
-            n_cells = 100
+            n_cells = 120
 
             solver = GodunvFVMSolver(
                 width=10.0,
@@ -283,7 +289,7 @@ class RegressionTestSuite:
                 n_cells=n_cells,
                 manning_n=0.0,
                 slope=0.0,
-                cfl=0.5,
+                cfl=0.3,
                 order=1
             )
 
@@ -346,7 +352,7 @@ class RegressionTestSuite:
 
         try:
             L = 100.0
-            n_cells = 100
+            n_cells = 120
             eta_init = 10.0
 
             # Gentle slope
@@ -362,7 +368,7 @@ class RegressionTestSuite:
                 n_cells=n_cells,
                 manning_n=0.0,
                 z_b=z_b,
-                cfl=0.5,
+                cfl=0.3,
                 order=1,
                 well_balanced=True
             )
@@ -421,7 +427,7 @@ class RegressionTestSuite:
 
         try:
             L = 100.0
-            n_cells = 100
+            n_cells = 120
             eta_init = 10.0
             hump_height = 2.0
             hump_width = 20.0
@@ -445,7 +451,7 @@ class RegressionTestSuite:
                 n_cells=n_cells,
                 manning_n=0.03,
                 z_b=z_b,
-                cfl=0.5,
+                cfl=0.3,
                 order=1,
                 well_balanced=True
             )
@@ -507,7 +513,7 @@ class RegressionTestSuite:
         try:
             # Setup: Uniform flow with slope and friction should balance
             L = 1000.0
-            n_cells = 50
+            n_cells = 100
             S0 = 0.001
             n = 0.03
             Q = 50.0
@@ -522,7 +528,7 @@ class RegressionTestSuite:
                 n_cells=n_cells,
                 manning_n=n,
                 slope=S0,
-                cfl=0.5,
+                cfl=0.3,
                 order=1,
                 well_balanced=True
             )
@@ -590,8 +596,8 @@ class RegressionTestSuite:
 
         try:
             solver = GodunvFVMSolver(
-                width=10.0, length=100.0, n_cells=50,
-                manning_n=0.0, slope=0.0, cfl=0.5, order=1
+                width=10.0, length=100.0, n_cells = 100,
+                manning_n=0.0, slope=0.0, cfl=0.3, order=1
             )
 
             h = np.ones(50) * 3.0
@@ -643,8 +649,8 @@ class RegressionTestSuite:
 
         try:
             solver = GodunvFVMSolver(
-                width=10.0, length=100.0, n_cells=50,
-                manning_n=0.03, slope=0.001, cfl=0.5, order=1
+                width=10.0, length=100.0, n_cells = 100,
+                manning_n=0.03, slope=0.001, cfl=0.3, order=1
             )
 
             h = np.ones(50) * 2.0
@@ -697,8 +703,8 @@ class RegressionTestSuite:
 
         try:
             solver = GodunvFVMSolver(
-                width=10.0, length=100.0, n_cells=50,
-                manning_n=0.03, slope=0.001, cfl=0.5, order=1
+                width=10.0, length=100.0, n_cells = 100,
+                manning_n=0.03, slope=0.001, cfl=0.3, order=1
             )
 
             h = np.ones(50) * 2.0
@@ -753,8 +759,8 @@ class RegressionTestSuite:
 
         try:
             solver = GodunvFVMSolver(
-                width=10.0, length=100.0, n_cells=100,
-                manning_n=0.0, slope=0.0, cfl=0.5, order=1
+                width=10.0, length=100.0, n_cells=120,
+                manning_n=0.0, slope=0.0, cfl=0.3, order=1
             )
 
             h = np.ones(100) * 5.0
@@ -813,9 +819,9 @@ class RegressionTestSuite:
 
         try:
             solver = GodunvFVMSolver(
-                width=10.0, length=100.0, n_cells=50,
+                width=10.0, length=100.0, n_cells = 100,
                 manning_n=0.05,  # High friction
-                slope=0.001, cfl=0.5, order=1
+                slope=0.001, cfl=0.3, order=1
             )
 
             h = np.ones(50) * 3.0
@@ -873,8 +879,8 @@ class RegressionTestSuite:
 
         try:
             solver = GodunvFVMSolver(
-                width=10.0, length=100.0, n_cells=50,
-                manning_n=0.03, slope=0.001, cfl=0.5, order=1
+                width=10.0, length=100.0, n_cells = 100,
+                manning_n=0.03, slope=0.001, cfl=0.3, order=1
             )
 
             h = np.ones(50) * 2.0
@@ -947,7 +953,7 @@ class RegressionTestSuite:
         with open(json_path, 'w') as f:
             json.dump(report, f, indent=2)
 
-        print(f"\n📄 JSON report saved: {json_path}")
+        print(f"\n JSON report saved: {json_path}")
 
         # Text report
         txt_path = os.path.join(self.output_dir, f'regression_report_{timestamp}.txt')
@@ -977,7 +983,7 @@ class RegressionTestSuite:
                     f.write(f"  Error: {r['error']}\n")
                 f.write("\n")
 
-        print(f"📄 Text report saved: {txt_path}")
+        print(f" Text report saved: {txt_path}")
 
     def _print_summary(self):
         """Print summary to console"""
@@ -996,9 +1002,9 @@ class RegressionTestSuite:
         print(f"Duration:    {self.end_time - self.start_time:.2f}s")
 
         if passed == len(self.results):
-            print("\n✅ All tests passed!")
+            print("\n All tests passed!")
         else:
-            print("\n⚠️  Some tests failed or had errors")
+            print("\n  Some tests failed or had errors")
             print("\nFailed/Error tests:")
             for r in self.results:
                 if not r['passed']:

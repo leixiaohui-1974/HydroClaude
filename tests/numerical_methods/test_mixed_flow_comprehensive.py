@@ -5,17 +5,17 @@
 
 测试entropy fix和critical flow treatment在各种流态转换中的表现：
 1. 跨临界流综合测试
-   - 喉道/卡口流动（亚临界→临界→超临界）
-   - 陡坡变缓坡（超临界→临界→亚临界）
-   - 堰流（淹没流→自由流转换）
+   - 喉道/卡口流动（亚临界->临界->超临界）
+   - 陡坡变缓坡（超临界->临界->亚临界）
+   - 堰流（淹没流->自由流转换）
 2. Entropy Fix效果对比
    - 有无entropy fix的质量守恒对比
    - 解的光滑性对比
 
 物理背景：
-- 临界流（Fr≈1）是数值求解的挑战
+- 临界流（Fr~=1）是数值求解的挑战
 - Entropy fix防止非物理激波
-- Critical flow treatment稳定Fr≈1区域
+- Critical flow treatment稳定Fr~=1区域
 
 参考文献：
 - Harten (1983): "High Resolution Schemes for Hyperbolic Conservation Laws"
@@ -47,7 +47,7 @@ class TestMixedFlowComprehensive:
         """
         测试1: 喉道临界流控制
 
-        渐缩-喉道-渐扩流动，验证喉道处Fr≈1
+        渐缩-喉道-渐扩流动，验证喉道处Fr~=1
         """
         print("\n" + "="*70)
         print("喉道临界流控制测试")
@@ -143,7 +143,7 @@ class TestMixedFlowComprehensive:
 
             print(f"\n流态分布:")
             print(f"  亚临界 (Fr<0.95): {subcritical}单元 ({subcritical/len(Fr)*100:.1f}%)")
-            print(f"  临界 (0.95≤Fr≤1.05): {critical}单元 ({critical/len(Fr)*100:.1f}%)")
+            print(f"  临界 (0.95<=Fr<=1.05): {critical}单元 ({critical/len(Fr)*100:.1f}%)")
             print(f"  超临界 (Fr>1.05): {supercritical}单元 ({supercritical/len(Fr)*100:.1f}%)")
 
             # 质量守恒
@@ -170,7 +170,7 @@ class TestMixedFlowComprehensive:
 
             assert relative_oscillation < 0.2, f"振荡过大: {relative_oscillation:.6f}"
 
-            print("\n✅ 喉道临界流测试通过")
+            print("\n 喉道临界流测试通过")
 
         finally:
             config_file_path.unlink(missing_ok=True)
@@ -180,7 +180,7 @@ class TestMixedFlowComprehensive:
         """
         测试2: 陡坡到缓坡流态转换
 
-        超临界流 → 临界流 → 亚临界流
+        超临界流 -> 临界流 -> 亚临界流
         """
         print("\n" + "="*70)
         print("陡坡到缓坡流态转换测试")
@@ -276,16 +276,16 @@ class TestMixedFlowComprehensive:
             # 验证流态转换
             print(f"\n流态转换验证:")
             if Fr_upstream > 1.1:
-                print("  ✓ 上游为超临界流 (Fr>1.1)")
+                print("   上游为超临界流 (Fr>1.1)")
             elif Fr_upstream > 0.9:
-                print("  ~ 上游接近临界流 (0.9≤Fr≤1.1)")
+                print("  ~ 上游接近临界流 (0.9<=Fr<=1.1)")
             else:
-                print("  ✓ 上游为亚临界流 (Fr<0.9)")
+                print("   上游为亚临界流 (Fr<0.9)")
 
             if Fr_downstream < 0.9:
-                print("  ✓ 下游为亚临界流 (Fr<0.9)")
+                print("   下游为亚临界流 (Fr<0.9)")
             elif Fr_downstream < 1.1:
-                print("  ~ 下游接近临界流 (0.9≤Fr≤1.1)")
+                print("  ~ 下游接近临界流 (0.9<=Fr<=1.1)")
             else:
                 print("  ! 下游为超临界流 (Fr>1.1)")
 
@@ -298,7 +298,7 @@ class TestMixedFlowComprehensive:
 
             assert mass_error < 5.0, f"质量误差{mass_error:.4f}% > 5%"
 
-            print("\n✅ 陡坡到缓坡流态转换测试通过")
+            print("\n 陡坡到缓坡流态转换测试通过")
 
         finally:
             config_file_path.unlink(missing_ok=True)
@@ -439,7 +439,7 @@ class TestMixedFlowComprehensive:
         assert results[True]['mass_error'] < results[False]['mass_error'] * 1.5, \
             "Entropy Fix不应显著恶化质量守恒"
 
-        print("\n✅ Entropy Fix效果对比完成")
+        print("\n Entropy Fix效果对比完成")
 
     @pytest.mark.p2
     def test_mixed_flow_transitions_complete(self):
@@ -531,7 +531,7 @@ class TestMixedFlowComprehensive:
             x_jump = engine.solver.x[jump_idx]
 
             print(f"\n水跃分析:")
-            print(f"  水跃位置: x≈{x_jump:.1f}m")
+            print(f"  水跃位置: x~={x_jump:.1f}m")
 
             # 水跃前后Froude数
             Fr_before = Fr[max(0, jump_idx-5):jump_idx].mean() if jump_idx > 5 else Fr[0]
@@ -542,7 +542,7 @@ class TestMixedFlowComprehensive:
 
             # 验证水跃特性：跃前超临界，跃后亚临界
             if Fr_before > 1.0 and Fr_after < 1.0:
-                print("  ✓ 水跃特性正确（跃前超临界，跃后亚临界）")
+                print("   水跃特性正确（跃前超临界，跃后亚临界）")
             else:
                 print(f"  ~ 流态特性：跃前Fr={Fr_before:.3f}, 跃后Fr={Fr_after:.3f}")
 
@@ -555,7 +555,7 @@ class TestMixedFlowComprehensive:
 
             assert mass_error < 5.0, f"质量误差{mass_error:.4f}% > 5%"
 
-            print("\n✅ 混合流态转换综合测试通过")
+            print("\n 混合流态转换综合测试通过")
 
         finally:
             config_file_path.unlink(missing_ok=True)

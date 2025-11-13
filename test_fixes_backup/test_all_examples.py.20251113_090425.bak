@@ -1,0 +1,338 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+自动测试所有示例（Examples 1-16）
+
+逐个运行示例，记录结果，生成测试报告
+"""
+
+import subprocess
+import sys
+import time
+from pathlib import Path
+from dataclasses import dataclass
+from typing import List, Optional
+import json
+
+@dataclass
+class ExampleTestResult:
+    """示例测试结果"""
+    example_id: str
+    name: str
+    file_path: str
+    success: bool
+    execution_time: float
+    error_message: Optional[str] = None
+    output_files: List[str] = None
+
+    def __post_init__(self):
+        if self.output_files is None:
+            self.output_files = []
+
+def find_example_files() -> dict:
+    """查找Examples 1-16的主要执行文件"""
+
+    examples = {
+        # Example 1: Canal flow - 多个子示例
+        "example_01": [
+            "examples/example_01_canal_flow/code/01_basic.py",
+            "examples/example_01_canal_flow/code/02_methods_comparison.py",
+            "examples/example_01_canal_flow/code/05_step_response.py",
+        ],
+
+        # Example 2: Pump system
+        "example_02_pump": [
+            "examples/example_02_pump_system/example_02_pump_system_enhanced.py",
+        ],
+
+        # Example 2: Spillway cascade
+        "example_02_spillway": [
+            "examples/example_02_spillway_cascade/example_02_spillway_system.py",
+        ],
+
+        # Example 3: Turbine
+        "example_03_turbine": [
+            "examples/example_03_turbine_demo/example_03_turbine_comparison.py",
+        ],
+
+        # Example 3: Complex network
+        "example_03_network": [
+            "examples/example_03_complex_network/code/example_03_complex_network.py",
+        ],
+
+        # Example 4: Hydropower system
+        "example_04_hydropower": [
+            "examples/example_04_hydropower_system/example_04_hydropower_plant.py",
+        ],
+
+        # Example 5: Transient analysis
+        "example_05_transient": [
+            "examples/example_05_transient_analysis/example_05_load_rejection.py",
+        ],
+
+        # Example 6: Complete system
+        "example_06_complete": [
+            "examples/example_06_complete_hydropower_system/example_06_complete_system.py",
+        ],
+
+        # Example 7: Multi-unit AGC
+        "example_07_agc": [
+            "examples/example_07_multi_unit_agc/example_07_multi_unit_agc.py",
+        ],
+
+        # Example 8: Load acceptance
+        "example_08_load": [
+            "examples/example_08_load_acceptance/example_08_load_acceptance.py",
+        ],
+
+        # Example 8: Preissmann vs FVM
+        "example_08_preissmann": [
+            "examples/example_08_preissmann_vs_fvm/example_08_preissmann_vs_fvm_enhanced.py",
+        ],
+
+        # Example 9: Pipe RK4
+        "example_09_pipe": [
+            "examples/example_09_pipe_rk4/example_09_pipe_rk4_enhanced.py",
+        ],
+
+        # Example 10: Series network
+        "example_10_series": [
+            "examples/example_10_series_network/code/example_10_series_network.py",
+        ],
+
+        # Example 11: Tree network
+        "example_11_tree": [
+            "examples/example_11_tree_network/code/example_11_tree_network.py",
+        ],
+
+        # Example 12: Loop network
+        "example_12_loop": [
+            "examples/example_12_loop_network/code/example_12_loop_network.py",
+        ],
+
+        # Example 13: Adaptive timescale
+        "example_13_adaptive": [
+            "examples/example_13_adaptive_timescale/example_13_adaptive_timescale_enhanced.py",
+        ],
+
+        # Example 14: Adaptive MPC
+        "example_14_mpc": [
+            "examples/example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py",
+        ],
+
+        # Example 15: RLS identification
+        "example_15_rls": [
+            "examples/example_15_rls_identification/example_15_rls_identification_enhanced.py",
+        ],
+
+        # Example 16: Weirs application
+        "example_16_weirs": [
+            "examples/example_16_weirs_application/weirs_irrigation_system.py",
+        ],
+    }
+
+    return examples
+
+def run_example(file_path: str, timeout: int = 120) -> ExampleTestResult:
+    """运行单个示例并记录结果"""
+
+    example_id = Path(file_path).parts[1]  # 提取example_XX部分
+    name = Path(file_path).stem
+
+    print(f"\n{'='*80}")
+    print(f"运行: {example_id} - {name}")
+    print(f"文件: {file_path}")
+    print(f"{'='*80}")
+
+    # 检查文件是否存在
+    if not Path(file_path).exists():
+        print(f" 文件不存在")
+        return ExampleTestResult(
+            example_id=example_id,
+            name=name,
+            file_path=file_path,
+            success=False,
+            execution_time=0.0,
+            error_message="File not found"
+        )
+
+    # 运行示例
+    start_time = time.time()
+
+    try:
+        result = subprocess.run(
+            [sys.executable, file_path],
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            cwd=str(Path.cwd())
+        )
+
+        execution_time = time.time() - start_time
+
+        # 检查返回码
+        if result.returncode == 0:
+            print(f" 成功 ({execution_time:.2f}s)")
+
+            # 查找输出文件
+            output_dir = Path(file_path).parent
+            output_files = list(output_dir.glob("*.png")) + list(output_dir.glob("*.pdf"))
+            output_files = [str(f) for f in output_files]
+
+            return ExampleTestResult(
+                example_id=example_id,
+                name=name,
+                file_path=file_path,
+                success=True,
+                execution_time=execution_time,
+                output_files=output_files
+            )
+        else:
+            # 失败
+            error_lines = result.stderr.split('\n')
+            # 提取最后几行错误信息
+            error_msg = '\n'.join([line for line in error_lines[-10:] if line.strip()])
+
+            print(f" 失败 ({execution_time:.2f}s)")
+            print(f"错误: {error_msg[:200]}...")
+
+            return ExampleTestResult(
+                example_id=example_id,
+                name=name,
+                file_path=file_path,
+                success=False,
+                execution_time=execution_time,
+                error_message=error_msg
+            )
+
+    except subprocess.TimeoutExpired:
+        execution_time = time.time() - start_time
+        print(f" 超时 ({timeout}s)")
+
+        return ExampleTestResult(
+            example_id=example_id,
+            name=name,
+            file_path=file_path,
+            success=False,
+            execution_time=execution_time,
+            error_message=f"Timeout after {timeout}s"
+        )
+
+    except Exception as e:
+        execution_time = time.time() - start_time
+        print(f" 异常: {e}")
+
+        return ExampleTestResult(
+            example_id=example_id,
+            name=name,
+            file_path=file_path,
+            success=False,
+            execution_time=execution_time,
+            error_message=str(e)
+        )
+
+def generate_report(results: List[ExampleTestResult], output_file: str):
+    """生成测试报告"""
+
+    total = len(results)
+    success = sum(1 for r in results if r.success)
+    failed = total - success
+    total_time = sum(r.execution_time for r in results)
+
+    # Markdown报告
+    report = f"""# Examples 1-16 测试报告
+
+**生成时间**: {time.strftime('%Y-%m-%d %H:%M:%S')}
+
+##  总体统计
+
+- **总示例数**: {total}
+- **成功**: {success} ({success/total*100:.1f}%)
+- **失败**: {failed} ({failed/total*100:.1f}%)
+- **总耗时**: {total_time:.2f}s
+
+---
+
+##  详细结果
+
+| ID | 名称 | 状态 | 耗时 | 错误信息 |
+|----|------|------|------|----------|
+"""
+
+    for r in results:
+        status = " 成功" if r.success else " 失败"
+        error = r.error_message[:50] if r.error_message else "-"
+        report += f"| {r.example_id} | {r.name} | {status} | {r.execution_time:.2f}s | {error} |\n"
+
+    report += "\n---\n\n"
+
+    # 成功的示例
+    report += "##  成功的示例\n\n"
+    for r in results:
+        if r.success:
+            report += f"### {r.example_id}: {r.name}\n\n"
+            report += f"- **文件**: `{r.file_path}`\n"
+            report += f"- **耗时**: {r.execution_time:.2f}s\n"
+            if r.output_files:
+                report += f"- **输出文件**: {len(r.output_files)}个\n"
+                for f in r.output_files[:3]:  # 只列出前3个
+                    report += f"  - `{f}`\n"
+            report += "\n"
+
+    # 失败的示例
+    if failed > 0:
+        report += "##  失败的示例\n\n"
+        for r in results:
+            if not r.success:
+                report += f"### {r.example_id}: {r.name}\n\n"
+                report += f"- **文件**: `{r.file_path}`\n"
+                report += f"- **错误**:\n```\n{r.error_message}\n```\n\n"
+
+    # 写入文件
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(report)
+
+    print(f"\n报告已保存到: {output_file}")
+
+def main():
+    """主函数"""
+    print("="*80)
+    print("Examples 1-16 自动化测试")
+    print("="*80)
+
+    examples = find_example_files()
+
+    print(f"\n找到 {len(examples)} 个示例组，共 {sum(len(files) for files in examples.values())} 个文件")
+
+    # 运行所有示例
+    all_results = []
+
+    for example_id, files in examples.items():
+        for file_path in files:
+            result = run_example(file_path, timeout=120)
+            all_results.append(result)
+
+    # 生成报告
+    print("\n" + "="*80)
+    print("生成测试报告...")
+    print("="*80)
+
+    generate_report(all_results, "EXAMPLES_1_16_TEST_REPORT.md")
+
+    # 打印总结
+    total = len(all_results)
+    success = sum(1 for r in all_results if r.success)
+    failed = total - success
+
+    print(f"\n{'='*80}")
+    print("测试完成!")
+    print(f"{'='*80}")
+    print(f"总计: {total}")
+    print(f"成功: {success} ({success/total*100:.1f}%)")
+    print(f"失败: {failed} ({failed/total*100:.1f}%)")
+    print(f"{'='*80}")
+
+    return 0 if failed == 0 else 1
+
+if __name__ == "__main__":
+    sys.exit(main())

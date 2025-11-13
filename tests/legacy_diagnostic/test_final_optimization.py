@@ -13,7 +13,17 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.single_canal_solver import SingleCanalSolver
+try:
+    # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.single_canal_solver import SingleCanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 
 def test_smooth_weight(smooth_weight, verbose=True):
@@ -71,7 +81,7 @@ def test_smooth_weight(smooth_weight, verbose=True):
 
     except Exception as e:
         if verbose:
-            print(f"  ✗ 失败: {e}")
+            print(f"   失败: {e}")
         return {
             'success': False,
             'max_error': float('inf'),
@@ -97,13 +107,13 @@ for sw in smooth_weights:
     results.append(result)
     
     if result['success']:
-        print(f"\n✓ 成功")
+        print(f"\n 成功")
         print(f"  最大误差: {result['max_error']:.4f}%")
         print(f"  平均误差: {result['mean_error']:.4f}%")
         print(f"  最大闸门误差: {result['max_gate_error']:.4f}%")
         
         if result['max_error'] < 0.5:
-            print(f"\n🎉🎉🎉 达到0.5%目标！ 🎉🎉🎉")
+            print(f"\n 达到0.5%目标！ ")
 
 print("\n" + "=" * 80)
 print("最终结果汇总")
@@ -120,7 +130,7 @@ if successful:
     
     achieving = [r for r in successful if r['max_error'] < 0.5]
     if achieving:
-        print(f"\n✓✓✓ 共{len(achieving)}个配置达到0.5%目标！")
+        print(f"\n 共{len(achieving)}个配置达到0.5%目标！")
     else:
         print(f"\n距离0.5%目标还有: {best['max_error']/0.5:.2f}x")
 

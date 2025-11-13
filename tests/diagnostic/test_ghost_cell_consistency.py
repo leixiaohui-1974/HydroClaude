@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_ghost_cell_consistency():
@@ -76,19 +82,19 @@ def test_ghost_cell_consistency():
     # 计算通量
     F_h, F_Q = solver._hll_flux(h_L, Q_L, h_R, Q_R)
 
-    print(f"  计算得到的通量: F_h={F_h:.6f} m³/s")
-    print(f"  理论边界通量:   F_h_theory={Q_bc:.6f} m³/s")
-    print(f"  误差: {abs(F_h - Q_bc):.6f} m³/s ({abs(F_h-Q_bc)/Q_bc*100:.2f}%)")
+    print(f"  计算得到的通量: F_h={F_h:.6f} m^3/s")
+    print(f"  理论边界通量:   F_h_theory={Q_bc:.6f} m^3/s")
+    print(f"  误差: {abs(F_h - Q_bc):.6f} m^3/s ({abs(F_h-Q_bc)/Q_bc*100:.2f}%)")
 
     # 如果状态完全相同，通量应该等于Q
     if abs(h_L - h_R) < 1e-10 and abs(Q_L - Q_R) < 1e-10:
-        print(f"\n✓ Ghost cell和边界单元状态相同，HLL通量应该=Q_bc")
+        print(f"\n Ghost cell和边界单元状态相同，HLL通量应该=Q_bc")
         if abs(F_h - Q_bc) < 1e-6:
-            print(f"✓ 通量计算正确")
+            print(f" 通量计算正确")
         else:
-            print(f"✗ 通量计算有误！")
+            print(f" 通量计算有误！")
     else:
-        print(f"\n✗ Ghost cell和边界单元状态不同，这会导致边界通量不等于Q_bc")
+        print(f"\n Ghost cell和边界单元状态不同，这会导致边界通量不等于Q_bc")
         print(f"  这是质量泄漏的根源！")
 
     # 计算界面1的通量（单元0和单元1之间）
@@ -102,19 +108,19 @@ def test_ghost_cell_consistency():
     print(f"\n界面1通量 (单元0和单元1之间):")
     print(f"  左状态 (单元0): h_L={h_L:.4f}, Q_L={Q_L:.4f}")
     print(f"  右状态 (单元1): h_R={h_R:.4f}, Q_R={Q_R:.4f}")
-    print(f"  计算得到的通量: F_h={F_h_1:.6f} m³/s")
+    print(f"  计算得到的通量: F_h={F_h_1:.6f} m^3/s")
 
     print(f"\n单元0的质量平衡:")
-    print(f"  流入 (界面0): F_in  = {F_h:.6f} m³/s")
-    print(f"  流出 (界面1): F_out = {F_h_1:.6f} m³/s")
-    print(f"  净流入:         ΔF   = {F_h - F_h_1:.6f} m³/s")
+    print(f"  流入 (界面0): F_in  = {F_h:.6f} m^3/s")
+    print(f"  流出 (界面1): F_out = {F_h_1:.6f} m^3/s")
+    print(f"  净流入:         ΔF   = {F_h - F_h_1:.6f} m^3/s")
 
     if abs(F_h - F_h_1) > 1e-6:
         dx = 100.0 / 5
         dh_dt = -(F_h_1 - F_h) / dx
-        print(f"  → 单元0水深变化率: dh/dt = {dh_dt:.6f} m/s")
-        print(f"  → 但边界条件强制 h[0]=0.3，这个变化被\"删除\"")
-        print(f"  → 质量泄漏 = {dh_dt * B * dx:.6f} m³/s")
+        print(f"  -> 单元0水深变化率: dh/dt = {dh_dt:.6f} m/s")
+        print(f"  -> 但边界条件强制 h[0]=0.3，这个变化被\"删除\"")
+        print(f"  -> 质量泄漏 = {dh_dt * B * dx:.6f} m^3/s")
 
     print("\n" + "="*80)
 

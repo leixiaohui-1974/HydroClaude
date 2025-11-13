@@ -4,8 +4,22 @@ MacDonald Test 5 稳定性诊断
 目的：找出NaN出现的临界时间点
 策略：逐步增加模拟时间，定位失败点
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def compute_normal_depth(Q, B, S0, n, h_guess=1.0, tol=1e-6, max_iter=100):
@@ -92,7 +106,7 @@ def test_stability_progressive():
                 failed = True
                 fail_step = step + 1
                 fail_time = solver.t
-                print(f"❌ NaN出现在第{fail_step}步 (t={fail_time:.2f}s)")
+                print(f" NaN出现在第{fail_step}步 (t={fail_time:.2f}s)")
                 break
 
             # 每100步检查一次
@@ -100,15 +114,15 @@ def test_stability_progressive():
                 h_mean = np.mean(solver.h)
                 h_std = np.std(solver.h)
                 mass_error = abs(solver.get_mass_conservation_error())
-                print(f"  步骤{step+1}/{n_steps}: h={h_mean:.4f}±{h_std:.4f}m, 质量误差={mass_error:.2f}%")
+                print(f"  步骤{step+1}/{n_steps}: h={h_mean:.4f}+/-{h_std:.4f}m, 质量误差={mass_error:.2f}%")
 
         if not failed:
             h_mean = np.mean(solver.h)
             mass_error = abs(solver.get_mass_conservation_error())
-            print(f"✅ 成功完成{n_steps}步 (t={end_time:.0f}s)")
+            print(f" 成功完成{n_steps}步 (t={end_time:.0f}s)")
             print(f"   最终: h_mean={h_mean:.4f}m, 质量误差={mass_error:.2f}%")
         else:
-            print(f"❌ 失败于 t={fail_time:.2f}s")
+            print(f" 失败于 t={fail_time:.2f}s")
             print(f"\n临界时间在 {test_times[test_times.index(end_time)-1] if test_times.index(end_time) > 0 else 0}s ~ {end_time}s 之间")
             break
 
@@ -168,13 +182,13 @@ def test_stability_smaller_cfl():
 
             if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
                 failed = True
-                print(f"❌ NaN出现在第{step+1}步 (t={solver.t:.2f}s, dt={dt:.4f}s)")
+                print(f" NaN出现在第{step+1}步 (t={solver.t:.2f}s, dt={dt:.4f}s)")
                 break
 
         if not failed:
             h_mean = np.mean(solver.h)
             mass_error = abs(solver.get_mass_conservation_error())
-            print(f"✅ 成功完成{n_steps}步 (t={solver.t:.2f}s)")
+            print(f" 成功完成{n_steps}步 (t={solver.t:.2f}s)")
             print(f"   最终: h_mean={h_mean:.4f}m, 质量误差={mass_error:.2f}%")
 
 

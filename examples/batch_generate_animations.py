@@ -47,7 +47,7 @@ class BatchAnimationGenerator:
         print(f"  从静态图生成动画...")
 
         if not png_files:
-            print(f"    ⚠️  没有找到PNG文件")
+            print(f"      没有找到PNG文件")
             return None
 
         # 读取第一个PNG作为基础
@@ -87,11 +87,11 @@ class BatchAnimationGenerator:
             anim.save(str(gif_path), writer=writer, dpi=100)
             plt.close(fig)
 
-            print(f"    ✓ 动画已保存: {gif_path.name}")
+            print(f"     动画已保存: {gif_path.name}")
             return str(gif_path)
 
         except Exception as e:
-            print(f"    ✗ 生成失败: {e}")
+            print(f"     生成失败: {e}")
             return None
 
     def run_example_and_capture(self, example_dir, script_path):
@@ -113,17 +113,17 @@ class BatchAnimationGenerator:
             )
 
             if result.returncode == 0:
-                print(f"    ✓ 运行成功")
+                print(f"     运行成功")
                 return True
             else:
-                print(f"    ✗ 运行失败: {result.stderr[:200]}")
+                print(f"     运行失败: {result.stderr[:200]}")
                 return False
 
         except subprocess.TimeoutExpired:
-            print(f"    ✗ 超时")
+            print(f"     超时")
             return False
         except Exception as e:
-            print(f"    ✗ 错误: {e}")
+            print(f"     错误: {e}")
             return False
 
     def generate_transient_animation(self, example_dir, data_type='hydropower'):
@@ -204,7 +204,7 @@ class BatchAnimationGenerator:
             anim.save(str(gif_path), writer=writer, dpi=100)
             plt.close(fig)
 
-            print(f"    ✓ 暂态动画已保存: {gif_path.name}")
+            print(f"     暂态动画已保存: {gif_path.name}")
             return str(gif_path)
 
         elif 'pump' in example_name:
@@ -224,7 +224,7 @@ class BatchAnimationGenerator:
                 ax.set_xlim(0, 60)
 
             axes[0].set_ylim(-0.1, 1.2)
-            axes[0].set_ylabel('流量 (m³/s)', fontsize=12)
+            axes[0].set_ylabel('流量 (m^3/s)', fontsize=12)
 
             axes[1].set_ylim(-0.1, 1.2)
             axes[1].set_ylabel('压力 (MPa)', fontsize=12)
@@ -266,11 +266,11 @@ class BatchAnimationGenerator:
             anim.save(str(gif_path), writer=writer, dpi=100)
             plt.close(fig)
 
-            print(f"    ✓ 泵站动画已保存: {gif_path.name}")
+            print(f"     泵站动画已保存: {gif_path.name}")
             return str(gif_path)
 
         else:
-            print(f"    ⚠️  未实现该类型的动画")
+            print(f"      未实现该类型的动画")
             return None
 
     def process_example(self, example_name):
@@ -278,7 +278,7 @@ class BatchAnimationGenerator:
         example_dir = self.examples_root / example_name
 
         if not example_dir.exists():
-            print(f"  ✗ 目录不存在")
+            print(f"   目录不存在")
             self.failed_count += 1
             return
 
@@ -287,7 +287,7 @@ class BatchAnimationGenerator:
         if animations_dir.exists():
             existing_gifs = list(animations_dir.glob('*.gif'))
             if existing_gifs:
-                print(f"  ✓ 已有 {len(existing_gifs)} 个GIF动画")
+                print(f"   已有 {len(existing_gifs)} 个GIF动画")
                 self.success_count += 1
                 return
 

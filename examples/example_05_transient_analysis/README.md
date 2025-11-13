@@ -37,11 +37,13 @@ PYTHONPATH=../.. python example_05_load_rejection.py
 
 ### 图表
 
-- 待生成
+- `outputs/figures/load_rejection.png`
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_05_transient_analysis_hydropower_transient.gif`
+
+![动画](outputs\animations\example_05_transient_analysis_hydropower_transient.gif)
 
 ## 技术要点
 

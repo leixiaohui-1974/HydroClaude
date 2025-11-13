@@ -9,7 +9,13 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, '/workspace')
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def ritter_solution(x, t, h_L, h_R, x_dam, g=9.81):
@@ -87,7 +93,7 @@ for order in [1, 2]:
         
         # NaN检测
         if np.any(np.isnan(h)) or np.any(np.isnan(Q)):
-            print(f"  ❌ 步{solver.step_count}出现NaN!")
+            print(f"   步{solver.step_count}出现NaN!")
             break
         
         if solver.step_count % 500 == 0:
@@ -136,7 +142,7 @@ for order in [1, 2]:
     
     print(f"\n评估:")
     for name, passed in checks:
-        print(f"  {name}: {'✅' if passed else '❌'}")
+        print(f"  {name}: {'' if passed else ''}")
     
     all_pass = all(c[1] for c in checks)
     
@@ -169,11 +175,11 @@ for order in [1, 2]:
     
     print(f"\n{'='*80}")
     if all_pass:
-        print(f"🎉 Godunov-FVM (Order {order}) Dam Break **通过** ✅✅✅")
+        print(f" Godunov-FVM (Order {order}) Dam Break **通过** ")
     else:
-        print(f"⚠️ Godunov-FVM (Order {order}) Dam Break部分通过")
+        print(f"️ Godunov-FVM (Order {order}) Dam Break部分通过")
     print("="*80)
 
 print("\n\n" + "="*80)
-print("🚀 Godunov-FVM求解器验证完成！")
+print(" Godunov-FVM求解器验证完成！")
 print("="*80)

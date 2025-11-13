@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_macdonald_test2_exact_config():
@@ -64,7 +70,7 @@ def test_macdonald_test2_exact_config():
     mass_initial = solver.initial_mass
 
     print(f"\n初始状态：")
-    print(f"  初始质量 = {mass_initial:.4f} m³")
+    print(f"  初始质量 = {mass_initial:.4f} m^3")
 
     # 运行模拟（与标准测试相同的时间）
     t_end = 3000.0
@@ -101,15 +107,15 @@ def test_macdonald_test2_exact_config():
     print("="*80)
 
     print(f"\n质量统计：")
-    print(f"  初始质量：{mass_initial:.4f} m³")
-    print(f"  最终质量：{mass_final:.4f} m³")
-    print(f"  质量变化：{delta_mass_actual:.4f} m³")
+    print(f"  初始质量：{mass_initial:.4f} m^3")
+    print(f"  最终质量：{mass_final:.4f} m^3")
+    print(f"  质量变化：{delta_mass_actual:.4f} m^3")
     print(f"  质量误差（MacDonald方法）：{mass_error_pct:.2f}%")
 
     print(f"\n通量守恒分析：")
-    print(f"  累积流入：{cumulative_inflow:.4f} m³")
-    print(f"  累积流出：{cumulative_outflow:.4f} m³")
-    print(f"  理论变化：{delta_mass_theory:.4f} m³")
+    print(f"  累积流入：{cumulative_inflow:.4f} m^3")
+    print(f"  累积流出：{cumulative_outflow:.4f} m^3")
+    print(f"  理论变化：{delta_mass_theory:.4f} m^3")
     print(f"  实际vs理论差异：{discrepancy_pct:.2f}%")
 
     print(f"\n总步数：{step_count}")
@@ -119,33 +125,33 @@ def test_macdonald_test2_exact_config():
     print("="*80)
 
     if mass_error_pct > 30:
-        print(f"\n❌ 质量误差 {mass_error_pct:.2f}% - 与MacDonald标准测试一致！")
+        print(f"\n 质量误差 {mass_error_pct:.2f}% - 与MacDonald标准测试一致！")
         print(f"\n问题定位：")
 
         if discrepancy_pct < 1.0:
-            print(f"  ✓ 通量守恒良好（{discrepancy_pct:.2f}%）")
-            print(f"  ✓ 实际质量变化 ≈ 理论质量变化")
+            print(f"   通量守恒良好（{discrepancy_pct:.2f}%）")
+            print(f"   实际质量变化 ~= 理论质量变化")
             print(f"\n  结论：")
-            print(f"    - 质量确实增加了 {delta_mass_actual:.2f} m³")
+            print(f"    - 质量确实增加了 {delta_mass_actual:.2f} m^3")
             print(f"    - 这是h边界的物理行为（维持临界水深）")
             print(f"    - 右边界h={h_c:.4f}m（临界水深）需要消耗流量")
-            print(f"    - 但由于某种原因，流出量 ({cumulative_outflow:.2f} m³) << 流入量 ({cumulative_inflow:.2f} m³)")
+            print(f"    - 但由于某种原因，流出量 ({cumulative_outflow:.2f} m^3) << 流入量 ({cumulative_inflow:.2f} m^3)")
             print(f"\n  核心问题：")
             print(f"    为什么累积流出量这么少？")
-            print(f"    - 平均流出速率 = {cumulative_outflow/t_end:.4f} m³/s")
-            print(f"    - 平均流入速率 = {cumulative_inflow/t_end:.4f} m³/s")
-            print(f"    - 理论上接近稳态时，流入≈流出（连续性）")
+            print(f"    - 平均流出速率 = {cumulative_outflow/t_end:.4f} m^3/s")
+            print(f"    - 平均流入速率 = {cumulative_inflow/t_end:.4f} m^3/s")
+            print(f"    - 理论上接近稳态时，流入~=流出（连续性）")
         else:
-            print(f"  ❌ 通量守恒有问题（{discrepancy_pct:.2f}%）")
-            print(f"  → 需要检查通量计算")
+            print(f"   通量守恒有问题（{discrepancy_pct:.2f}%）")
+            print(f"  -> 需要检查通量计算")
 
     elif mass_error_pct < 1.0:
-        print(f"\n✅ 质量守恒良好 ({mass_error_pct:.2f}%)")
-        print(f"  → 与我的简化测试一致")
+        print(f"\n 质量守恒良好 ({mass_error_pct:.2f}%)")
+        print(f"  -> 与我的简化测试一致")
 
     else:
-        print(f"\n⚠️ 质量误差 {mass_error_pct:.2f}%")
-        print(f"  → 在两者之间")
+        print(f"\n️ 质量误差 {mass_error_pct:.2f}%")
+        print(f"  -> 在两者之间")
 
     print("\n" + "="*80)
 

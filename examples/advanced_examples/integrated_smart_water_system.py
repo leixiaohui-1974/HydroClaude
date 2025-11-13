@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 智慧供水系统综合集成案例
 
@@ -12,7 +13,7 @@
 
 优化目标：
 - 最小化能耗
-- 保证水质（余氯≥0.05mg/L）
+- 保证水质（余氯>=0.05mg/L）
 - 满足供水需求
 - 平衡各用水区
 
@@ -21,6 +22,8 @@
 """
 
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")  # Non-interactive mode
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import sys
@@ -71,11 +74,11 @@ class SmartWaterSystem:
         self.pipe_lengths = [5000, 4000, 3000]  # m
         self.pipe_diameters = [0.6, 0.5, 0.4]  # m
 
-        # 用水需求（m³/h）
+        # 用水需求（m^3/h）
         self.demands = self._generate_demands()
 
         # 泵站参数
-        self.pump_capacity = 0.3  # m³/s
+        self.pump_capacity = 0.3  # m^3/s
         self.pump_efficiency = 0.75
         self.pump_head = 50  # m
 
@@ -94,7 +97,7 @@ class SmartWaterSystem:
         time = np.arange(24)
 
         # 典型日用水曲线（峰谷变化）
-        base_demands = np.array([50, 60, 70])  # m³/h
+        base_demands = np.array([50, 60, 70])  # m^3/h
 
         demands = {}
         for i, base in enumerate(base_demands):
@@ -142,7 +145,7 @@ class SmartWaterSystem:
                     point_id=f'AI_FLOW_Z{zone_id}',
                     point_type='AI',
                     description=f'Zone{zone_id} Flow Rate',
-                    unit='m³/s',
+                    unit='m^3/s',
                     min_value=0,
                     max_value=0.2
                 ),
@@ -185,7 +188,7 @@ class SmartWaterSystem:
             优化目标函数
 
             决策变量 x: [q1, q2, q3, pump_speed]
-            - q1, q2, q3: 各区流量 (m³/s)
+            - q1, q2, q3: 各区流量 (m^3/s)
             - pump_speed: 泵站转速比 (0.5-1.0)
             """
             q1, q2, q3, pump_speed = x
@@ -290,14 +293,14 @@ class SmartWaterSystem:
         best_objs = best_solution.objectives
 
         print(f"\n最优方案:")
-        print(f"  Zone1流量: {best_vars[0]:.3f} m³/s")
-        print(f"  Zone2流量: {best_vars[1]:.3f} m³/s")
-        print(f"  Zone3流量: {best_vars[2]:.3f} m³/s")
+        print(f"  Zone1流量: {best_vars[0]:.3f} m^3/s")
+        print(f"  Zone2流量: {best_vars[1]:.3f} m^3/s")
+        print(f"  Zone3流量: {best_vars[2]:.3f} m^3/s")
         print(f"  泵站转速: {best_vars[3]:.2f}")
         print(f"\n目标值:")
         print(f"  能耗成本: {best_objs[0]:.2f} 元/h")
         print(f"  余氯不足: {best_objs[1]:.4f}")
-        print(f"  供需偏差: {best_objs[2]:.4f} m³/s")
+        print(f"  供需偏差: {best_objs[2]:.4f} m^3/s")
 
         return best_vars, result
 
@@ -310,7 +313,7 @@ class SmartWaterSystem:
         q1, q2, q3, pump_speed = optimal_flows
 
         print(f"\n运行参数:")
-        print(f"  流量分配: [{q1:.3f}, {q2:.3f}, {q3:.3f}] m³/s")
+        print(f"  流量分配: [{q1:.3f}, {q2:.3f}, {q3:.3f}] m^3/s")
         print(f"  泵站转速: {pump_speed:.2f}")
 
         # 模拟历史
@@ -349,7 +352,7 @@ class SmartWaterSystem:
 
                 # 写入时序数据库
                 current_time = datetime.now() + timedelta(hours=hour)
-                self.tsdb.write(SensorData(f'FLOW_Z{i+1}', current_time, q, 'm³/s'))
+                self.tsdb.write(SensorData(f'FLOW_Z{i+1}', current_time, q, 'm^3/s'))
                 self.tsdb.write(SensorData(f'PRESSURE_Z{i+1}', current_time, pressure, 'm'))
                 self.tsdb.write(SensorData(f'CHLORINE_Z{i+1}', current_time, outlet_chlorine, 'mg/L'))
 
@@ -418,7 +421,7 @@ def visualize_integrated_results(history, optimization_result):
     for zone in ['Zone1', 'Zone2', 'Zone3']:
         ax1.plot(history['time'], history['flows'][zone], '-', linewidth=2, label=zone)
     ax1.set_xlabel('Time (hours)')
-    ax1.set_ylabel('Flow (m³/s)')
+    ax1.set_ylabel('Flow (m^3/s)')
     ax1.set_title('Zone Flow Rates', fontweight='bold')
     ax1.legend()
     ax1.grid(True, alpha=0.3)
@@ -524,7 +527,7 @@ def main():
 
     优化目标：
     - 最小化能耗成本
-    - 保证水质达标（余氯≥0.05mg/L）
+    - 保证水质达标（余氯>=0.05mg/L）
     - 满足各区供水需求
 
     系统特点：
@@ -558,7 +561,7 @@ def main():
         pressure_data = np.array(history['pressures'][zone])
 
         print(f"\n{zone}:")
-        print(f"  平均流量: {np.mean(history['flows'][zone]):.3f} m³/s")
+        print(f"  平均流量: {np.mean(history['flows'][zone]):.3f} m^3/s")
         print(f"  平均压力: {np.mean(pressure_data):.1f} m")
         print(f"  平均余氯: {np.mean(chlorine_data):.3f} mg/L")
         print(f"  水质合格率: {(chlorine_data >= 0.05).sum() / len(chlorine_data) * 100:.1f}%")

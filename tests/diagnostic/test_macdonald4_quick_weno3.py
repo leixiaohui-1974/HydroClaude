@@ -12,7 +12,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 import numpy as np
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 def test_quick_weno3():
     """快速验证WENO3改善Test 4"""
@@ -97,19 +103,19 @@ def test_quick_weno3():
     # 验证
     print(f"\n验证:")
     if mass_error < 10.0:
-        print(f"  ✅ 质量守恒良好: {mass_error:.2f}% < 10%")
+        print(f"   质量守恒良好: {mass_error:.2f}% < 10%")
         result = "PASS"
     elif mass_error < 20.0:
-        print(f"  ⚠️  质量守恒可接受: {mass_error:.2f}% < 20%")
+        print(f"  ️  质量守恒可接受: {mass_error:.2f}% < 20%")
         result = "ACCEPTABLE"
     else:
-        print(f"  ❌ 质量守恒仍差: {mass_error:.2f}%")
+        print(f"   质量守恒仍差: {mass_error:.2f}%")
         result = "FAIL"
 
     if Fr_upstream > 1.0:
-        print(f"  ✅ 上游超临界维持: Fr={Fr_upstream:.3f} > 1")
+        print(f"   上游超临界维持: Fr={Fr_upstream:.3f} > 1")
     else:
-        print(f"  ❌ 上游超临界失败: Fr={Fr_upstream:.3f}")
+        print(f"   上游超临界失败: Fr={Fr_upstream:.3f}")
         result = "FAIL"
 
     print(f"\n总体状态: {result}")
@@ -124,6 +130,6 @@ def test_quick_weno3():
 
 if __name__ == '__main__':
     mass_error, Fr = test_quick_weno3()
-    print(f"\n✅ 快速验证通过！WENO3改善效果显著")
+    print(f"\n 快速验证通过！WENO3改善效果显著")
     print(f"  质量误差: {mass_error:.2f}% (原方法: 55-120%)")
     print(f"  上游Fr: {Fr:.3f} (维持超临界)")

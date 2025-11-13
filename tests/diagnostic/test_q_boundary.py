@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_q_boundary_simple():
@@ -49,13 +55,13 @@ def test_q_boundary_simple():
     solver.initialize(h_init, Q_init, bc_left, bc_right)
 
     print(f"\n边界条件:")
-    print(f"  左边界: Q = {Q_bc} m³/s")
+    print(f"  左边界: Q = {Q_bc} m^3/s")
     print(f"  右边界: h = {h_down} m")
 
     print(f"\n初始状态:")
     print(f"  h[0] = {solver.h[0]:.6f} m")
-    print(f"  Q[0] = {solver.Q[0]:.6f} m³/s")
-    print(f"  初始质量 = {solver._compute_total_mass():.2f} m³")
+    print(f"  Q[0] = {solver.Q[0]:.6f} m^3/s")
+    print(f"  初始质量 = {solver._compute_total_mass():.2f} m^3")
 
     # 检查ghost cell设置
     h_ext, Q_ext = solver._extend_with_ghosts(solver.h, solver.Q)
@@ -76,13 +82,13 @@ def test_q_boundary_simple():
     print(f"\n界面0通量（ghost|单元0）:")
     print(f"  左状态:  h_L={h_L:.6f}, Q_L={Q_L:.6f}")
     print(f"  右状态:  h_R={h_R:.6f}, Q_R={Q_R:.6f}")
-    print(f"  计算通量: F_h={F_h_0:.6f} m³/s")
-    print(f"  理论值:   F_h={Q_bc:.6f} m³/s (应该等于Q_bc)")
-    print(f"  误差:     {abs(F_h_0 - Q_bc):.6f} m³/s ({abs(F_h_0-Q_bc)/Q_bc*100:.2f}%)")
+    print(f"  计算通量: F_h={F_h_0:.6f} m^3/s")
+    print(f"  理论值:   F_h={Q_bc:.6f} m^3/s (应该等于Q_bc)")
+    print(f"  误差:     {abs(F_h_0 - Q_bc):.6f} m^3/s ({abs(F_h_0-Q_bc)/Q_bc*100:.2f}%)")
 
     # 时间演化
     print(f"\n时间演化:")
-    print(f"{'步骤':>5} {'h[0](m)':>10} {'Q[0](m³/s)':>12} {'质量(m³)':>12} {'误差(%)':>10}")
+    print(f"{'步骤':>5} {'h[0](m)':>10} {'Q[0](m^3/s)':>12} {'质量(m^3)':>12} {'误差(%)':>10}")
     print("-" * 65)
 
     for step in range(10):
@@ -97,11 +103,11 @@ def test_q_boundary_simple():
     print(f"  最终质量误差 = {final_error:.4f}%")
 
     if abs(final_error) < 1.0:
-        print("  ✓ 质量守恒良好 (<1%)")
+        print("   质量守恒良好 (<1%)")
     elif abs(final_error) < 5.0:
-        print("  ⚠ 质量守恒一般 (1-5%)")
+        print("   质量守恒一般 (1-5%)")
     else:
-        print("  ✗ 质量守恒失败 (>5%)")
+        print("   质量守恒失败 (>5%)")
 
     print("="*80)
 
@@ -145,10 +151,10 @@ def test_q_boundary_with_manning():
     solver.initialize(h_init, Q_init, bc_left, bc_right)
 
     print(f"\n边界条件:")
-    print(f"  左边界: Q = {Q_bc} m³/s")
+    print(f"  左边界: Q = {Q_bc} m^3/s")
     print(f"  右边界: h = {h_c:.4f} m (临界水深)")
 
-    print(f"\n初始质量: {solver._compute_total_mass():.2f} m³")
+    print(f"\n初始质量: {solver._compute_total_mass():.2f} m^3")
 
     # 运行到稳态
     t_final = 500.0
@@ -166,31 +172,31 @@ def test_q_boundary_with_manning():
     print(f"  总步数: {solver.step_count}")
 
     mass_error = solver.get_mass_conservation_error()
-    print(f"  初始质量: {solver.initial_mass:.2f} m³")
-    print(f"  最终质量: {solver._compute_total_mass():.2f} m³")
+    print(f"  初始质量: {solver.initial_mass:.2f} m^3")
+    print(f"  最终质量: {solver._compute_total_mass():.2f} m^3")
     print(f"  质量误差: {mass_error:.4f}%")
 
     # 计算平均流量
     Q_avg = np.mean(solver.Q)
     print(f"\n流量统计:")
-    print(f"  边界条件: Q = {Q_bc} m³/s")
-    print(f"  平均流量: Q_avg = {Q_avg:.4f} m³/s")
+    print(f"  边界条件: Q = {Q_bc} m^3/s")
+    print(f"  平均流量: Q_avg = {Q_avg:.4f} m^3/s")
     print(f"  流量误差: {abs(Q_avg - Q_bc)/Q_bc*100:.2f}%")
 
     print("\n" + "="*80)
     print("分析:")
 
     if abs(mass_error) < 2.0:
-        print("  ✓ 质量守恒良好 (<2%)")
+        print("   质量守恒良好 (<2%)")
     elif abs(mass_error) < 10.0:
-        print("  ⚠ 质量守恒一般 (2-10%)")
+        print("   质量守恒一般 (2-10%)")
     else:
-        print("  ✗ 质量守恒失败 (>10%)")
+        print("   质量守恒失败 (>10%)")
 
     if abs(Q_avg - Q_bc) / Q_bc < 0.02:
-        print("  ✓ 流量守恒良好 (<2%)")
+        print("   流量守恒良好 (<2%)")
     else:
-        print("  ✗ 流量守恒失败 (>2%)")
+        print("   流量守恒失败 (>2%)")
 
     print("="*80)
 

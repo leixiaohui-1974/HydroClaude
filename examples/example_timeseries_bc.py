@@ -40,7 +40,7 @@ def example_1_basic_timeseries():
     # 创建流量边界条件（小时尺度）
     time_hours = [0, 1, 2, 3, 4, 5, 6]  # 小时
     time_seconds = [t * 3600 for t in time_hours]  # 转换为秒
-    flow_values = [10.0, 12.0, 15.0, 18.0, 16.0, 13.0, 10.0]  # m³/s
+    flow_values = [10.0, 12.0, 15.0, 18.0, 16.0, 13.0, 10.0]  # m^3/s
 
     bc = TimeSeriesBoundary(
         bc_id="BC_INFLOW",
@@ -55,11 +55,11 @@ def example_1_basic_timeseries():
     print(f"  类型: {bc.bc_type} (流量)")
     print(f"  数据点数: {len(bc.t)}")
     print(f"  时间范围: {bc.t[0]/3600:.1f} - {bc.t[-1]/3600:.1f} 小时")
-    print(f"  流量范围: {min(bc.values):.1f} - {max(bc.values):.1f} m³/s")
+    print(f"  流量范围: {min(bc.values):.1f} - {max(bc.values):.1f} m^3/s")
 
     # 查询不同时刻的值
     print(f"\n流量查询：")
-    print(f"{'时间(h)':>12} {'流量(m³/s)':>15} {'说明':>20}")
+    print(f"{'时间(h)':>12} {'流量(m^3/s)':>15} {'说明':>20}")
     print("-" * 60)
 
     query_times_hours = [0, 0.5, 1.5, 3.0, 4.5, 6.0]
@@ -93,7 +93,7 @@ def example_2_flood_hydrograph():
     time_days = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])  # 天
     time_seconds = time_days * 86400  # 转换为秒
 
-    # 洪水流量（m³/s）：基流 -> 涨水 -> 洪峰 -> 退水 -> 基流
+    # 洪水流量（m^3/s）：基流 -> 涨水 -> 洪峰 -> 退水 -> 基流
     Q_base = 50.0  # 基流
     Q_peak = 500.0  # 洪峰流量
     flow_values = np.array([
@@ -110,14 +110,14 @@ def example_2_flood_hydrograph():
 
     print(f"\n洪水特征：")
     stats = bc_flood.get_statistics()
-    print(f"  基流: {Q_base:.1f} m³/s")
-    print(f"  洪峰: {Q_peak:.1f} m³/s")
-    print(f"  平均流量: {stats['mean']:.1f} m³/s")
+    print(f"  基流: {Q_base:.1f} m^3/s")
+    print(f"  洪峰: {Q_peak:.1f} m^3/s")
+    print(f"  平均流量: {stats['mean']:.1f} m^3/s")
     print(f"  历时: {stats['duration']/86400:.1f} 天")
 
     # 分析洪水过程
     print(f"\n洪水过程分析：")
-    print(f"{'时间(天)':>12} {'流量(m³/s)':>15} {'阶段':>15}")
+    print(f"{'时间(天)':>12} {'流量(m^3/s)':>15} {'阶段':>15}")
     print("-" * 50)
 
     for t_day in [0, 2, 4, 6, 8, 10]:
@@ -137,7 +137,7 @@ def example_2_flood_hydrograph():
     t_fine = np.linspace(time_seconds[0], time_seconds[-1], 1000)
     Q_fine = bc_flood.get_values(t_fine)
     dt = t_fine[1] - t_fine[0]
-    total_volume = np.sum(Q_fine * dt)  # m³
+    total_volume = np.sum(Q_fine * dt)  # m^3
 
     print(f"\n洪水总量: {total_volume/1e6:.2f} 百万立方米")
 
@@ -223,7 +223,7 @@ def example_4_reservoir_operation():
     )
 
     print(f"\n调度计划：")
-    print(f"{'时段':>15} {'放水流量(m³/s)':>18} {'说明':>20}")
+    print(f"{'时段':>15} {'放水流量(m^3/s)':>18} {'说明':>20}")
     print("-" * 65)
 
     schedules = [
@@ -239,7 +239,7 @@ def example_4_reservoir_operation():
 
     # 详细查询
     print(f"\n逐时流量：")
-    print(f"{'时间(h)':>12} {'流量(m³/s)':>15}")
+    print(f"{'时间(h)':>12} {'流量(m^3/s)':>15}")
     print("-" * 35)
 
     for t_h in range(13):
@@ -424,7 +424,7 @@ def example_7_file_operations():
 
         # 数据变换：缩放
         bc_scaled = bc_loaded.scale_values(scale_factor=1.5)
-        print(f"\n流量缩放（×1.5）：")
+        print(f"\n流量缩放（x1.5）：")
         print(f"  原始平均值: {bc_loaded.get_statistics()['mean']:.2f}")
         print(f"  缩放后平均值: {bc_scaled.get_statistics()['mean']:.2f}")
 

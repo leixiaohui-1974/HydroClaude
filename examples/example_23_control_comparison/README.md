@@ -41,7 +41,9 @@ PYTHONPATH=../.. python demo_control_comparison.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_23_control_comparison_control.gif`
+
+![动画](outputs\animations\example_23_control_comparison_control.gif)
 
 ## 技术要点
 

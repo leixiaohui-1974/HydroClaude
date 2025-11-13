@@ -11,7 +11,7 @@ WENO3空间收敛性验证测试
 理论背景：
 - WENO3在光滑区域应达到3阶精度
 - 收敛率计算：slope = d(log(error)) / d(log(dx))
-- 预期斜率 ≈ 3.0
+- 预期斜率 ~= 3.0
 
 参考文献：
 - Jiang & Shu (1996): "Efficient Implementation of Weighted ENO Schemes"
@@ -175,11 +175,11 @@ class TestConvergence:
         assert 2.0 < slope < 4.0, f"收敛率{slope:.2f}不在合理范围[2.0, 4.0]"
 
         if 2.8 <= slope <= 3.2:
-            print("\n✅ WENO3收敛率验证通过（接近理论值3.0，优秀）")
+            print("\n WENO3收敛率验证通过（接近理论值3.0，优秀）")
         elif 2.5 <= slope <= 3.5:
-            print(f"\n✅ WENO3收敛率验证通过（{slope:.2f}在合理范围，良好）")
+            print(f"\n WENO3收敛率验证通过（{slope:.2f}在合理范围，良好）")
         else:
-            print(f"\n✅ WENO3收敛率验证通过（{slope:.2f}在可接受范围）")
+            print(f"\n WENO3收敛率验证通过（{slope:.2f}在可接受范围）")
             print("  注：偏差可能来自时间离散、边界效应或网格分辨率不足")
 
     @pytest.mark.p3
@@ -306,9 +306,9 @@ class TestConvergence:
         is_improving = Q_errors[2] <= Q_errors[0] * 1.2  # 最细网格不应显著差于粗网格
 
         if is_improving:
-            print("\n✅ 网格细化研究完成：网格细化改善解精度")
+            print("\n 网格细化研究完成：网格细化改善解精度")
         else:
-            print(f"\n⚠️  网格细化研究完成：精度未显著改善（可能已达收敛）")
+            print(f"\n️  网格细化研究完成：精度未显著改善（可能已达收敛）")
 
         assert is_improving or Q_errors[2] < 1.0, "网格细化应改善精度或已足够精确"
 
@@ -423,7 +423,7 @@ class TestConvergence:
             print(f"{r['name']:<20} {r['nx']:<10} {r['cfl']:<8.2f} "
                   f"{r['mass_error']:<12.4f} {r['steps']:<10}")
 
-        print("\n✅ 空间vs时间分辨率研究完成")
+        print("\n 空间vs时间分辨率研究完成")
 
 
 if __name__ == "__main__":

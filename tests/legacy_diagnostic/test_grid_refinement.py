@@ -13,7 +13,17 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.single_canal_solver import SingleCanalSolver
+try:
+    # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.single_canal_solver import SingleCanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 
 
@@ -162,12 +172,12 @@ def main():
         results.append(result)
 
         if result['success']:
-            print(f"  ✓ 网格点数={result['nx']}, dx范围=[{result['dx_min']:.2f}, {result['dx_max']:.2f}]m")
+            print(f"   网格点数={result['nx']}, dx范围=[{result['dx_min']:.2f}, {result['dx_max']:.2f}]m")
             print(f"    最大误差={result['max_error']:.4f}%, "
                   f"平均误差={result['mean_error']:.4f}%, "
                   f"闸门误差={result['max_gate_error']:.4f}%")
         else:
-            print(f"  ✗ 失败: {result.get('error', 'Unknown')}")
+            print(f"   失败: {result.get('error', 'Unknown')}")
 
     # 汇总
     print("\n" + "=" * 80)
@@ -210,13 +220,13 @@ def main():
             print(f"  效率(改善/网格增长): {efficiency:.3f}")
 
             if improvement > 1.5:
-                print(f"  ✓✓✓ 网格加密非常有效！")
+                print(f"   网格加密非常有效！")
             elif improvement > 1.2:
-                print(f"  ✓✓ 网格加密有效")
+                print(f"   网格加密有效")
             elif improvement > 1.05:
-                print(f"  ✓ 网格加密略有改善")
+                print(f"   网格加密略有改善")
             else:
-                print(f"  ⚠ 网格加密改善不明显")
+                print(f"   网格加密改善不明显")
 
         # 检查目标
         target_1_5 = [r for r in successful if r['max_error'] < 1.5]
@@ -225,19 +235,19 @@ def main():
 
         print()
         if target_0_5:
-            print(f"✓✓✓✓ 有{len(target_0_5)}个配置达到0.5%目标！")
+            print(f" 有{len(target_0_5)}个配置达到0.5%目标！")
             for r in target_0_5:
                 print(f"  - {r['config_name']}: {r['max_error']:.4f}% (nx={r['nx']})")
         elif target_1_0:
-            print(f"✓✓✓ 有{len(target_1_0)}个配置达到1.0%目标！")
+            print(f" 有{len(target_1_0)}个配置达到1.0%目标！")
             for r in target_1_0:
                 print(f"  - {r['config_name']}: {r['max_error']:.4f}% (nx={r['nx']})")
         elif target_1_5:
-            print(f"✓✓ 有{len(target_1_5)}个配置达到1.5%目标！")
+            print(f" 有{len(target_1_5)}个配置达到1.5%目标！")
             for r in target_1_5:
                 print(f"  - {r['config_name']}: {r['max_error']:.4f}% (nx={r['nx']})")
         else:
-            print(f"⚠ 未达到1.5%目标")
+            print(f" 未达到1.5%目标")
             print(f"  最佳: {best['max_error']:.4f}%")
             print(f"  距离1.5%: {best['max_error'] / 1.5:.2f}x")
 

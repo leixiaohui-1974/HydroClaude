@@ -14,7 +14,13 @@ import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.fvm_solver import FVMSolver
+try:
+    from solvers.fvm_solver import FVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_simple_gate():
@@ -24,7 +30,7 @@ def test_simple_gate():
     配置：
     - 长度: 1000m
     - 单个闸门在中点(500m)
-    - 上游流量: Q0 = 10 m³/s
+    - 上游流量: Q0 = 10 m^3/s
     - 闸门开度: a = 3.0m
     """
     print("=" * 70)
@@ -53,7 +59,7 @@ def test_simple_gate():
     print(f"  渠道宽度: {B}m")
     print(f"  底坡: {S0}")
     print(f"  Manning糙率: {n}")
-    print(f"  上游流量: {Q0} m³/s")
+    print(f"  上游流量: {Q0} m^3/s")
     print(f"  闸门位置: {gate_pos}m")
     print(f"  闸门开度: {gate_opening}m")
     print(f"  网格点数: {nx}")
@@ -72,7 +78,7 @@ def test_simple_gate():
     # 初始条件：均匀流
     # 使用Manning公式估计初始水深
     # Q = (1/n) * A * R^(2/3) * S0^(1/2)
-    # 对于宽矩形渠道 R ≈ h
+    # 对于宽矩形渠道 R ~= h
     # Q = (1/n) * B * h * h^(2/3) * S0^(1/2)
     # 求解 h
     def manning_depth(Q, B, n, S0):
@@ -128,7 +134,7 @@ def test_simple_gate():
     print("最终状态:")
     print(f"  水深范围: [{h_final.min():.3f}, {h_final.max():.3f}]m")
     print(f"  流速范围: [{u_final.min():.3f}, {u_final.max():.3f}]m/s")
-    print(f"  流量范围: [{Q_final.min():.3f}, {Q_final.max():.3f}]m³/s")
+    print(f"  流量范围: [{Q_final.min():.3f}, {Q_final.max():.3f}]m^3/s")
     print()
 
     # 流量守恒分析
@@ -139,9 +145,9 @@ def test_simple_gate():
     Q_mean_error = np.mean(Q_error)
 
     print("流量守恒:")
-    print(f"  目标流量: {Q0:.3f} m³/s")
-    print(f"  平均流量: {Q_mean:.3f} m³/s")
-    print(f"  流量标准差: {Q_std:.3f} m³/s")
+    print(f"  目标流量: {Q0:.3f} m^3/s")
+    print(f"  平均流量: {Q_mean:.3f} m^3/s")
+    print(f"  流量标准差: {Q_std:.3f} m^3/s")
     print(f"  最大误差: {Q_max_error:.4f}%")
     print(f"  平均误差: {Q_mean_error:.4f}%")
     print()
@@ -162,7 +168,7 @@ def test_simple_gate():
     print(f"  上游水深: {h_upstream:.3f}m")
     print(f"  下游水深: {h_downstream:.3f}m")
     print(f"  水头差: {delta_h_actual:.3f}m")
-    print(f"  闸门流量: {Q_gate:.3f} m³/s")
+    print(f"  闸门流量: {Q_gate:.3f} m^3/s")
     print(f"  流量误差: {abs(Q_gate - Q0) / Q0 * 100:.4f}%")
     print()
 
@@ -195,14 +201,14 @@ def test_simple_gate():
     ax.axhline(Q0, color='k', linestyle='--', alpha=0.5, label='Target Q')
     ax.axvline(gate_pos, color='r', linestyle='--', alpha=0.5, label='Gate')
     ax.set_xlabel('x [m]')
-    ax.set_ylabel('Q [m³/s]')
+    ax.set_ylabel('Q [m^3/s]')
     ax.set_title(f'Discharge Profile (Max error: {Q_max_error:.4f}%)')
     ax.legend()
     ax.grid(True, alpha=0.3)
 
     plt.tight_layout()
     plt.savefig('fvm_simple_gate_test.png', dpi=150, bbox_inches='tight')
-    print("✓ 保存图像: fvm_simple_gate_test.png")
+    print(" 保存图像: fvm_simple_gate_test.png")
     print()
 
     # 评估
@@ -212,19 +218,19 @@ def test_simple_gate():
     print()
 
     if Q_max_error < 0.5:
-        print(f"✓✓✓✓ 优秀！最大流量误差 {Q_max_error:.4f}% < 0.5%")
+        print(f" 优秀！最大流量误差 {Q_max_error:.4f}% < 0.5%")
         result = "excellent"
     elif Q_max_error < 1.0:
-        print(f"✓✓✓ 很好！最大流量误差 {Q_max_error:.4f}% < 1.0%")
+        print(f" 很好！最大流量误差 {Q_max_error:.4f}% < 1.0%")
         result = "good"
     elif Q_max_error < 2.0:
-        print(f"✓✓ 可接受！最大流量误差 {Q_max_error:.4f}% < 2.0%")
+        print(f" 可接受！最大流量误差 {Q_max_error:.4f}% < 2.0%")
         result = "acceptable"
     elif Q_max_error < 5.0:
-        print(f"✓ 需改进。最大流量误差 {Q_max_error:.4f}% < 5.0%")
+        print(f" 需改进。最大流量误差 {Q_max_error:.4f}% < 5.0%")
         result = "needs_improvement"
     else:
-        print(f"✗ 不佳。最大流量误差 {Q_max_error:.4f}% >= 5.0%")
+        print(f" 不佳。最大流量误差 {Q_max_error:.4f}% >= 5.0%")
         result = "poor"
 
     print()

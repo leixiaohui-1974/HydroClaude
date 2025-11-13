@@ -10,7 +10,7 @@
 - 末端用户：住宅区，需求流量波动
 
 控制目标：
-1. 维持用户端压力在30±2m范围
+1. 维持用户端压力在30+/-2m范围
 2. 通过泵站变频调速实现压力控制
 3. 应对用户需求波动（日变化）
 4. 防止管道水锤（缓慢调节）
@@ -26,7 +26,9 @@
 """
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 import sys
 sys.path.insert(0, '/home/user/HydroClaude')
 
@@ -44,7 +46,7 @@ def create_user_demand_profile(t: float) -> float:
         t: 时间 (s)
 
     Returns:
-        需求流量 (m³/s)
+        需求流量 (m^3/s)
     """
     # 基准流量
     Q_base = 0.15  # 150 L/s
@@ -162,7 +164,7 @@ class WaterSupplySystem:
         print("供水系统初始化:")
         print(f"  水库水头: {H_reservoir} m")
         print(f"  泵站扬程: {self.pump.rated_head * 0.8:.2f} m")
-        print(f"  初始流量: {Q0} m³/s")
+        print(f"  初始流量: {Q0} m^3/s")
         print(f"  末端压力: {self.solver.H[-1]:.2f} m")
 
     def control_loop(self, t: float, dt: float):
@@ -220,7 +222,7 @@ class WaterSupplySystem:
         print("-" * 80)
 
         # 初始化
-        self.initialize()
+        self.initialize_steady_state()
 
         # 设置边界条件
         H_reservoir = 100.0
@@ -362,7 +364,7 @@ class WaterSupplySystem:
         print(f"  Mean Pressure: {np.mean(P_array):.2f} m")
         print(f"  Std Deviation: {np.std(P_array):.2f} m")
         print(f"  Max Deviation: {np.max(np.abs(P_error)):.2f} m")
-        print(f"  Time in Tolerance (±2m): "
+        print(f"  Time in Tolerance (+/-2m): "
               f"{np.sum(np.abs(P_error) < 2.0) / len(P_error) * 100:.1f}%")
 
         # 流量统计
@@ -373,15 +375,15 @@ class WaterSupplySystem:
         print(f"  Mean Flow: {np.mean(Q_array):.2f} L/s")
         print(f"  Peak Flow: {np.max(Q_array):.2f} L/s")
         print(f"  Min Flow: {np.min(Q_array):.2f} L/s")
-        print(f"  Total Volume: {np.sum(Q_array) * self.solver.dt / 1000:.2f} m³")
+        print(f"  Total Volume: {np.sum(Q_array) * self.solver.dt / 1000:.2f} m^3")
 
         # 泵站性能
         print("\nPump Station:")
         print(f"  Start Count: {self.pump.start_count}")
         print(f"  Total Energy: {self.pump.total_energy:.2f} kWh")
         print(f"  Avg Power: {self.pump.total_energy / (self.time_history[-1] / 3600):.2f} kW")
-        print(f"  Total Volume Pumped: {self.pump.total_volume:.2f} m³")
-        print(f"  Energy per m³: {self.pump.total_energy / self.pump.total_volume:.4f} kWh/m³")
+        print(f"  Total Volume Pumped: {self.pump.total_volume:.2f} m^3")
+        print(f"  Energy per m^3: {self.pump.total_energy / self.pump.total_volume:.4f} kWh/m^3")
 
         # 控制器性能
         pid_metrics = self.pid.get_performance_metrics()
@@ -412,7 +414,7 @@ def main():
     # 绘图
     system.plot_results('water_supply_network.png')
 
-    plt.show()
+    # plt.show()  # Disabled for automated testing
 
     print("\nSimulation completed successfully!")
 

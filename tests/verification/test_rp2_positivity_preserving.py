@@ -26,7 +26,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from typing import Tuple, Dict
 
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.positivity_preserving_weno3 import PositivityPreservingWENO3
 from tests.verification.toro_riemann_solver import exact_riemann_solution, riemann_structure
 
@@ -338,9 +344,9 @@ def main():
     # 判断是否达标
     target_l2 = 30.0  # 目标L2误差<30%
     if res_pp['errors']['L2_rel'] < target_l2:
-        print(f"\n✅ 达标！PP-WENO3的L2误差({res_pp['errors']['L2_rel']:.2f}%) < 目标({target_l2}%)")
+        print(f"\n 达标！PP-WENO3的L2误差({res_pp['errors']['L2_rel']:.2f}%) < 目标({target_l2}%)")
     else:
-        print(f"\n⚠️  未达标。PP-WENO3的L2误差({res_pp['errors']['L2_rel']:.2f}%) ≥ 目标({target_l2}%)")
+        print(f"\n️  未达标。PP-WENO3的L2误差({res_pp['errors']['L2_rel']:.2f}%) >= 目标({target_l2}%)")
         print(f"   需要进一步调整参数或策略。")
 
     # 绘制对比图

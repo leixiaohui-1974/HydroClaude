@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 EPANET供水管网系统完整案例
 
@@ -152,7 +153,7 @@ def example1_hydraulic_analysis():
 
     # 检查压力合格率
     min_pressure = 20  # m
-    print(f"\n压力合格率分析（最小压力≥{min_pressure}m）:")
+    print(f"\n压力合格率分析（最小压力>={min_pressure}m）:")
     for node in ['J1', 'J2', 'J3', 'J4', 'J5', 'J6']:
         if node in pressure.columns:
             compliance = (pressure[node] >= min_pressure).mean() * 100
@@ -214,7 +215,7 @@ def example2_water_quality_simulation():
                 q_mean = quality[node].mean()
                 q_min = quality[node].min()
                 q_max = quality[node].max()
-                status = "✓" if q_min >= 0.05 else "✗"
+                status = "" if q_min >= 0.05 else ""
                 print(f"  {node}: {q_mean:.3f} mg/L (范围[{q_min:.3f}, {q_max:.3f}]) {status}")
 
         # 检查水质合格率
@@ -296,7 +297,7 @@ def simulate_hydraulic_analysis():
     pressure_data = {}
 
     for node, base_p in base_pressure.items():
-        # 添加日变化（±10%）
+        # 添加日变化（+/-10%）
         variation = 0.1 * base_p * np.sin(2 * np.pi * time / 24)
         pressure_data[node] = base_p + variation
 

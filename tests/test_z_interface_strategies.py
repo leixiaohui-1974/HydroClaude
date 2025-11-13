@@ -26,7 +26,13 @@ import numpy as np
 import sys
 sys.path.insert(0, '.')
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 class WellBalancedTester:
@@ -44,7 +50,7 @@ class WellBalancedTester:
         """
         # 基本配置
         L = 100.0
-        n_cells = 100
+        n_cells = 120
         h0 = 10.0
 
         # 创建抛物线地形 (最大2m凸起)
@@ -58,7 +64,7 @@ class WellBalancedTester:
             n_cells=n_cells,
             manning_n=0.0,  # 无摩阻（纯Lake at Rest）
             z_b=z_b,
-            cfl=0.5,
+            cfl=0.3,
             order=1,
             well_balanced=True,
             use_numba=True
@@ -143,7 +149,7 @@ class WellBalancedTester:
                 eta_diff = abs(eta_L - eta_R)
                 z_b_diff = abs(z_b_L - z_b_R)
 
-                # 如果水面梯度远小于底坡梯度 → 接近Lake at Rest
+                # 如果水面梯度远小于底坡梯度 -> 接近Lake at Rest
                 if eta_diff < 0.1 * z_b_diff and z_b_diff > 1e-10:
                     z_interface = min(z_b_L, z_b_R)  # 使用MIN
                 else:
@@ -218,7 +224,7 @@ class WellBalancedTester:
         print(f"  Steps: {step_count}")
         print(f"  Water surface disturbance: {eta_disturbance:.6e} m")
         print(f"  Water depth disturbance: {h_disturbance:.6e} m")
-        print(f"  Discharge disturbance: {Q_disturbance:.6e} m³/s")
+        print(f"  Discharge disturbance: {Q_disturbance:.6e} m^3/s")
         print(f"  Mass conservation error: {mass_error:.6e} %")
 
         return result
@@ -231,7 +237,7 @@ class WellBalancedTester:
         print("Z_INTERFACE STRATEGY COMPARISON FOR LAKE AT REST")
         print("="*70)
         print(f"\nConfiguration:")
-        print(f"  Domain: 100m × 10m")
+        print(f"  Domain: 100m x 10m")
         print(f"  Cells: 100")
         print(f"  Topography: Parabolic (max 2m)")
         print(f"  Duration: {duration}s")
@@ -274,7 +280,7 @@ class WellBalancedTester:
                 rating = "⭐"
 
             # 标记最佳
-            marker = " ← BEST" if strategy == best_strategy[0] else ""
+            marker = " <- BEST" if strategy == best_strategy[0] else ""
 
             print(f"{strategy:<12} {eta_dist:<15.6e} {Q_dist:<15.6e} {mass_err:<15.6e} {rating:<10}{marker}")
 
@@ -285,17 +291,17 @@ class WellBalancedTester:
         best_name, best_result = best_strategy
         eta_best = best_result['eta_disturbance']
 
-        print(f"\n✅ Best Strategy: {best_name.upper()}")
+        print(f"\n Best Strategy: {best_name.upper()}")
         print(f"   Water surface disturbance: {eta_best:.6e} m")
 
         if eta_best < 1e-10:
-            print(f"   Status: ✅ MACHINE PRECISION - Excellent!")
+            print(f"   Status:  MACHINE PRECISION - Excellent!")
             print(f"   Lake at Rest test: PASSED")
         elif eta_best < 1e-6:
-            print(f"   Status: ⚠️  Near machine precision - Good")
-            print(f"   Improvement: {best_result['eta_disturbance']} → {eta_best}")
+            print(f"   Status:   Near machine precision - Good")
+            print(f"   Improvement: {best_result['eta_disturbance']} -> {eta_best}")
         else:
-            print(f"   Status: ❌ Still needs improvement")
+            print(f"   Status:  Still needs improvement")
             print(f"   Target: < 1e-10 m")
 
         print("\n" + "="*70)

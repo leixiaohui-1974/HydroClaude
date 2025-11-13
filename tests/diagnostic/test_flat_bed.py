@@ -4,7 +4,13 @@ import numpy as np
 import sys
 sys.path.append('.')
 
-from solvers.hydrostatic_reconstruction_v2 import WellBalancedSolver
+try:
+    from solvers.hydrostatic_reconstruction_v2 import WellBalancedSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 def test_flat_bed():
     """平坦底床测试 - 最简单的情况"""
@@ -59,7 +65,7 @@ def test_flat_bed():
     tol = 1e-10
     success = np.max(np.abs(R)) < tol
 
-    print(f"\n结果（阈值{tol:.0e}）：{'✓✓✓ PASS' if success else '✗✗✗ FAIL'}")
+    print(f"\n结果（阈值{tol:.0e}）：{' PASS' if success else ' FAIL'}")
     print("="*70)
 
     return success

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 实时监控演示
 
@@ -50,7 +51,7 @@ def static_monitor_demo():
 
     sim = SimulationDataGenerator(dt)
 
-    print("  ✓ 仿真数据生成器已创建")
+    print("   仿真数据生成器已创建")
 
     # ===== 3. 创建报告生成器 =====
     print("\n3. 创建报告生成器...")
@@ -60,7 +61,7 @@ def static_monitor_demo():
     # 定义监控变量
     variables = [
         MonitorVariable('water_depth', 'm', 'Water Depth', color='blue'),
-        MonitorVariable('flow_rate', 'm³/s', 'Flow Rate', color='green'),
+        MonitorVariable('flow_rate', 'm^3/s', 'Flow Rate', color='green'),
         MonitorVariable('control_input', 'm/s', 'Control Input', color='orange'),
         MonitorVariable('tracking_error', 'm', 'Tracking Error', color='red')
     ]
@@ -72,7 +73,7 @@ def static_monitor_demo():
         AlarmConfig('High Tracking Error', 'tracking_error', high_threshold=0.5)
     ]
 
-    print("  ✓ 报告生成器已创建")
+    print("   报告生成器已创建")
     print(f"  监控变量: {len(variables)}个")
     print(f"  警报配置: {len(alarms)}个")
 
@@ -124,16 +125,16 @@ def static_monitor_demo():
             if not alarm_active:
                 alarm_count += 1
                 alarm_active = True
-                print(f"  ⚠️  步骤 {step}: 警报触发 (h={h:.3f}m)")
+                print(f"    步骤 {step}: 警报触发 (h={h:.3f}m)")
         else:
             if alarm_active:
                 alarm_active = False
-                print(f"  ✓  步骤 {step}: 警报清除 (h={h:.3f}m)")
+                print(f"    步骤 {step}: 警报清除 (h={h:.3f}m)")
 
         if step % 60 == 0:
             print(f"  进度: {step}/{n_steps} - "
                   f"h={h:.3f}m, "
-                  f"q={data['flow_rate']:.2f}m³/s, "
+                  f"q={data['flow_rate']:.2f}m^3/s, "
                   f"u={data['control_input']:.4f}m/s")
 
     print(f"\n  仿真完成! 总警报次数: {alarm_count}")
@@ -144,7 +145,7 @@ def static_monitor_demo():
     output_path = os.path.join(os.path.dirname(__file__), 'realtime_monitor_report.png')
     report.generate_report(variables, alarms, output_path)
 
-    print("\n  ✓ 报告生成完成!")
+    print("\n   报告生成完成!")
 
     # ===== 7. 统计分析 =====
     print("\n7. 统计分析...")
@@ -161,9 +162,9 @@ def static_monitor_demo():
     print(f"    标准差: {np.std(h_data):.3f} m")
 
     print(f"\n  流量统计:")
-    print(f"    平均值: {np.mean(q_data):.2f} m³/s")
-    print(f"    最小值: {np.min(q_data):.2f} m³/s")
-    print(f"    最大值: {np.max(q_data):.2f} m³/s")
+    print(f"    平均值: {np.mean(q_data):.2f} m^3/s")
+    print(f"    最小值: {np.min(q_data):.2f} m^3/s")
+    print(f"    最大值: {np.max(q_data):.2f} m^3/s")
 
     print(f"\n  控制输入统计:")
     print(f"    平均值: {np.mean(u_data):.4f} m/s")
@@ -180,10 +181,10 @@ def static_monitor_demo():
     print("总结")
     print("=" * 80)
     print(f"\n监控报告已生成，包含:")
-    print(f"  • {len(variables)}个监控变量的时间序列")
-    print(f"  • {len(alarms)}个警报阈值标注")
-    print(f"  • 完整的统计信息")
-    print(f"  • 警报事件记录（{alarm_count}次）")
+    print(f"  - {len(variables)}个监控变量的时间序列")
+    print(f"  - {len(alarms)}个警报阈值标注")
+    print(f"  - 完整的统计信息")
+    print(f"  - 警报事件记录（{alarm_count}次）")
     print(f"\n报告文件: {output_path}")
     print("\n" + "=" * 80)
 
@@ -199,7 +200,7 @@ def interactive_monitor_demo():
     print("\n说明: 此演示需要matplotlib的交互式后端")
     print("如果在无GUI环境中运行，请跳过此演示\n")
 
-    response = input("是否运行交互式演示? (y/n): ")
+    response =# input() disabled for automated testing: ")
     if response.lower() != 'y':
         print("已跳过交互式演示")
         return
@@ -213,7 +214,7 @@ def interactive_monitor_demo():
     # 设置子图
     monitor.setup_plot(0, ['water_depth'], 'Water Depth', 'Depth (m)',
                       y_limits=(1.0, 4.0))
-    monitor.setup_plot(1, ['flow_rate'], 'Flow Rate', 'Flow (m³/s)')
+    monitor.setup_plot(1, ['flow_rate'], 'Flow Rate', 'Flow (m^3/s)')
     monitor.setup_plot(2, ['control_input'], 'Control Input', 'Input (m/s)')
     monitor.setup_plot(3, ['tracking_error'], 'Tracking Error', 'Error (m)')
 
@@ -241,7 +242,9 @@ def interactive_monitor_demo():
         monitor.update_data(sim.t, data)
 
     # 定期更新（在动画中）
+    import matplotlib
     import matplotlib.pyplot as plt
+    matplotlib.use('Agg')
     from matplotlib.animation import FuncAnimation
 
     def animation_update(frame):
@@ -254,7 +257,7 @@ def interactive_monitor_demo():
     print("\n启动实时监控...")
     print("关闭窗口以停止监控")
 
-    plt.show()
+    # plt.show()  # Disabled for automated testing
 
 
 def main():

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Example 07: Multi-Unit Hydropower Plant with AGC
 
@@ -30,6 +31,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from control.agc import (
     IntegratedAGCSystem,
@@ -440,7 +443,7 @@ def simulate_tie_line_control():
 
     print("Initial Conditions:")
     print(f"  Plant demand: {base_demand:.1f} MW")
-    print(f"  Tie-line scheduled: 0 MW → 50 MW at t=30s")
+    print(f"  Tie-line scheduled: 0 MW -> 50 MW at t=30s")
     print()
 
     # Simulation loop
@@ -559,11 +562,11 @@ def main():
     print("ALL SCENARIOS COMPLETED")
     print("=" * 80)
     print("\nKey Findings:")
-    print("  ✓ Primary control provides immediate frequency response")
-    print("  ✓ Secondary control (AGC) eliminates steady-state errors")
-    print("  ✓ Load allocation optimizes efficiency across units")
-    print("  ✓ Unit commitment adapts to load variations")
-    print("  ✓ Tie-line power control maintains scheduled exchanges")
+    print("   Primary control provides immediate frequency response")
+    print("   Secondary control (AGC) eliminates steady-state errors")
+    print("   Load allocation optimizes efficiency across units")
+    print("   Unit commitment adapts to load variations")
+    print("   Tie-line power control maintains scheduled exchanges")
     print("\nThe integrated AGC system successfully coordinates multiple")
     print("generating units while maintaining frequency and tie-line schedules.")
     print()

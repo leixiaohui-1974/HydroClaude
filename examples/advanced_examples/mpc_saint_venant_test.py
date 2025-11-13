@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 一阶MPC在Saint-Venant高保真模型上的性能测试
 
@@ -13,14 +14,14 @@
 │  ┌─────────────────┐          ┌─────────────────┐      │
 │  │  一阶MPC控制器   │  u(k)    │  Saint-Venant   │      │
 │  │  (线性化模型)    │────────>│  高保真模型      │      │
-│  │  K=-0.3, τ=206s │<────────│   (MOC求解)     │      │
+│  │  K=-0.3, tau=206s │<────────│   (MOC求解)     │      │
 │  └─────────────────┘  y(k)    └─────────────────┘      │
 │         测试1: 真实模型控制                              │
 │                                                          │
 │  ┌─────────────────┐          ┌─────────────────┐      │
 │  │  一阶MPC控制器   │  u(k)    │   线性化模型    │      │
-│  │  (线性化模型)    │────────>│   H(s)=K/(τs+1) │      │
-│  │  K=-0.3, τ=206s │<────────│                 │      │
+│  │  (线性化模型)    │────────>│   H(s)=K/(taus+1) │      │
+│  │  K=-0.3, tau=206s │<────────│                 │      │
 │  └─────────────────┘  y(k)    └─────────────────┘      │
 │         测试2: 理想模型控制（基准）                      │
 │                                                          │
@@ -82,7 +83,7 @@ class MPCSaintVenantTest:
 
         # 初始条件
         initial_depth = self.h_work
-        initial_flow = 20.0  # 初始流量 (m³/s)
+        initial_flow = 20.0  # 初始流量 (m^3/s)
 
         # 创建Canal对象
         canal = Canal(
@@ -146,7 +147,7 @@ class MPCSaintVenantTest:
             h: 上游水位 (m)
 
         Returns:
-            Q: 流量 (m³/s)
+            Q: 流量 (m^3/s)
         """
         C_d = 0.6  # 流量系数
         g = 9.81   # 重力加速度
@@ -410,7 +411,7 @@ class MPCSaintVenantTest:
         ax4 = plt.subplot(2, 3, 4)
         ax4.step(result_sv['time'], result_sv['Q_in'], 'g-', linewidth=2, where='post')
         ax4.set_xlabel('Time (s)', fontsize=11)
-        ax4.set_ylabel('Inflow (m³/s)', fontsize=11)
+        ax4.set_ylabel('Inflow (m^3/s)', fontsize=11)
         ax4.set_title('Disturbance (Inflow)', fontsize=12, fontweight='bold')
         ax4.grid(True, alpha=0.3)
 
@@ -455,7 +456,7 @@ class MPCSaintVenantTest:
 
         plt.tight_layout()
         plt.savefig(save_path, dpi=150, bbox_inches='tight')
-        print(f"✅ 图片已保存: {save_path}")
+        print(f" 图片已保存: {save_path}")
 
         return fig
 
@@ -499,25 +500,25 @@ class MPCSaintVenantTest:
 
         # 判定
         if mae_diff_pct < 10:
-            verdict = "✅ 优秀：模型失配影响极小（<10%）"
+            verdict = " 优秀：模型失配影响极小（<10%）"
         elif mae_diff_pct < 20:
             verdict = "⭕ 良好：模型失配影响可接受（10-20%）"
         elif mae_diff_pct < 30:
-            verdict = "⚠️  一般：模型失配影响较大（20-30%）"
+            verdict = "  一般：模型失配影响较大（20-30%）"
         else:
-            verdict = "❌ 较差：模型失配影响显著（>30%）"
+            verdict = " 较差：模型失配影响显著（>30%）"
 
         print(f"\n  综合评价：{verdict}")
 
         print("\n【关键发现】")
         print("-" * 80)
         if mae_diff_pct < 15:
-            print("  ✅ 线性化假设在工作点附近有效")
-            print("  ✅ 一阶MPC可直接应用于实际Saint-Venant系统")
-            print("  ✅ 控制性能基本不受非线性影响")
+            print("   线性化假设在工作点附近有效")
+            print("   一阶MPC可直接应用于实际Saint-Venant系统")
+            print("   控制性能基本不受非线性影响")
         else:
-            print("  ⚠️  非线性效应不可忽略")
-            print("  💡 建议：考虑增益调度或多工作点MPC")
+            print("    非线性效应不可忽略")
+            print("   建议：考虑增益调度或多工作点MPC")
 
         print("\n" + "="*80)
 
@@ -528,11 +529,11 @@ def main():
     print("一阶MPC在Saint-Venant高保真模型上的性能测试")
     print("="*80)
     print("\n测试配置：")
-    print("  - 控制器: 一阶MPC (K=-0.3, τ=206s)")
+    print("  - 控制器: 一阶MPC (K=-0.3, tau=206s)")
     print("  - 高保真模型: Saint-Venant方程 (MOC求解)")
     print("  - 基准模型: 线性化一阶模型")
     print("  - 仿真时间: 800s")
-    print("  - 扰动: 4次阶跃变化 (20→25→18→23 m³/s)")
+    print("  - 扰动: 4次阶跃变化 (20->25->18->23 m^3/s)")
     print("\n开始测试...\n")
 
     # 创建测试对象
@@ -541,7 +542,7 @@ def main():
     # 创建模型
     print("【步骤1】创建Saint-Venant高保真模型...")
     canal = test.create_saint_venant_model()
-    print(f"  ✅ Canal模型创建完成")
+    print(f"   Canal模型创建完成")
     print(f"     - 长度: {canal.length}m")
     print(f"     - 宽度: {canal.parameters['width']}m")
     print(f"     - 离散节点: {canal.n_sections}")
@@ -549,26 +550,26 @@ def main():
 
     print("\n【步骤2】创建线性化模型（基准）...")
     simulator = test.create_linearized_model()
-    print(f"  ✅ 线性化模型创建完成")
+    print(f"   线性化模型创建完成")
     print(f"     - K = {test.K_linear}")
-    print(f"     - τ = {test.tau_linear}s")
+    print(f"     - tau = {test.tau_linear}s")
 
     print("\n【步骤3】创建MPC控制器...")
     controller_sv = test.create_mpc_controller()
     controller_lin = test.create_mpc_controller()
-    print(f"  ✅ MPC控制器创建完成")
+    print(f"   MPC控制器创建完成")
     print(f"     - 预测时域Np = 15")
     print(f"     - 控制时域Nc = 10")
     print(f"     - 权重Q = 100, R = 1")
 
     print("\n【步骤4】运行Saint-Venant模型测试...")
     result_sv = test.run_test_on_saint_venant(controller_sv, canal)
-    print(f"  ✅ Saint-Venant测试完成")
+    print(f"   Saint-Venant测试完成")
     print(f"     - MAE = {result_sv['mae']*100:.2f} cm")
 
     print("\n【步骤5】运行线性化模型测试...")
     result_lin = test.run_test_on_linearized(controller_lin, simulator)
-    print(f"  ✅ 线性化模型测试完成")
+    print(f"   线性化模型测试完成")
     print(f"     - MAE = {result_lin['mae']*100:.2f} cm")
 
     print("\n【步骤6】生成对比可视化...")
@@ -577,7 +578,7 @@ def main():
     # 打印详细总结
     test.print_summary(result_sv, result_lin)
 
-    print("\n测试完成！✅")
+    print("\n测试完成！")
 
 
 if __name__ == "__main__":

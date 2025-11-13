@@ -8,6 +8,14 @@ Network Node Boundary Tests - 网络节点边界测试
 Author: HydroClaude Development Team
 Date: 2025-10-30
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import pytest
 from network.network_node import NetworkNode, Junction, Reservoir, Tank
@@ -156,7 +164,7 @@ class TestJunctionBoundaries:
 
     def test_junction_large_demand(self):
         """测试大需水量Junction"""
-        # 1 m³/s = 1000 L/s（一个大型用水点）
+        # 1 m^3/s = 1000 L/s（一个大型用水点）
         j = Junction("J1", elevation=50.0, demand=1.0)
         assert j.demand == 1.0
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 MPC控制器基准测试
 
@@ -7,7 +8,7 @@ MPC控制器基准测试
 3. 模型预测控制（MPC，使用CVXPY）
 
 测试场景：
-- 多个工况点切换（流量20→25→18→23 m³/s）
+- 多个工况点切换（流量20->25->18->23 m^3/s）
 - 相同的约束条件
 - 相同的渠道系统
 
@@ -21,8 +22,11 @@ MPC控制器基准测试
 日期：2025-10-24
 """
 
+import os
 import sys
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from pathlib import Path
 import yaml
@@ -84,7 +88,7 @@ class SimpleFirstOrderMPC:
         self.u_max = u_max
         self.du_max = du_max
 
-        # 离散化：Δy[k+1] = a*Δy[k] + b*Δu[k]
+        # 离散化：Deltay[k+1] = a*Deltay[k] + b*Deltau[k]
         self.a = np.exp(-dt / tau)
         self.b = K * (1 - np.exp(-dt / tau))
 
@@ -163,7 +167,7 @@ class SimplifiedCanalSimulator:
     其中：
     - V = L * W * h（渠道体积）
     - Q_in = 上游流量（扰动）
-    - Q_out = Cd * a * W * sqrt(2*g*Δh)（闸门流量）
+    - Q_out = Cd * a * W * sqrt(2*g*Deltah)（闸门流量）
     """
 
     def __init__(self, K=100.0, tau_z=200.0, tau_d=300.0, theta=20.0, dt=2.0):
@@ -190,7 +194,7 @@ class SimplifiedCanalSimulator:
 
         # 状态
         self.h = 2.5     # 当前上游水位 (m)，略高于下游
-        self.Q_in = 20.0  # 上游流量 (m³/s)
+        self.Q_in = 20.0  # 上游流量 (m^3/s)
 
     def reset(self):
         """重置模拟器"""
@@ -274,7 +278,7 @@ def run_benchmark(controller_type="pid", config_path=None, plot_results=True):
     # 创建控制器
     if controller_type == "pid":
         # 传统PID（经验整定）
-        # 注意：使用负增益，因为闸门是反向作用（开度大→水位低）
+        # 注意：使用负增益，因为闸门是反向作用（开度大->水位低）
         controller = PIDController(
             PIDConfig(kp=-0.5, ki=-0.1, kd=0.0, dt=dt,
                      output_min=0.1, output_max=4.0)
@@ -283,7 +287,7 @@ def run_benchmark(controller_type="pid", config_path=None, plot_results=True):
 
     elif controller_type == "adaptive_pi":
         # 自适应PI（基于物理线性化优化）
-        # 物理分析显示：K≈-0.3, τ≈206s，需要更大的控制增益
+        # 物理分析显示：K~=-0.3, tau~=206s，需要更大的控制增益
         # 由于在线辨识算法对反向系统有bug，这里使用优化后的固定增益
         controller = PIDController(
             PIDConfig(kp=-1.0, ki=-0.15, kd=0.0, dt=dt,  # 增大增益以提升响应
@@ -297,7 +301,7 @@ def run_benchmark(controller_type="pid", config_path=None, plot_results=True):
     elif controller_type == "mpc":
         # MPC（使用物理线性化的准确参数）
         # 基于SimplifiedCanalSimulator线性化分析：
-        # 工作点(h=2.5m, a=2.0m): K=-0.3 m/m, τ=206s
+        # 工作点(h=2.5m, a=2.0m): K=-0.3 m/m, tau=206s
         idz_params = IDZParameters(K=-0.3, tau_z=103.0, tau_d=206.0, theta=4.0)
         mpc_config = MPCConfig(
             prediction_horizon=15,
@@ -316,7 +320,7 @@ def run_benchmark(controller_type="pid", config_path=None, plot_results=True):
 
     elif controller_type == "first_order_mpc":
         # 一阶MPC（基于正确的一阶模型，无积分器）
-        # 使用偏差模型：Δy = H(s)*Δu, H(s) = K/(τs+1)
+        # 使用偏差模型：Deltay = H(s)*Deltau, H(s) = K/(taus+1)
         # 参数来自LinearizedCanalSimulator的线性化分析
         K, tau = simulator.get_system_params()
         controller = SimpleFirstOrderMPC(
@@ -360,7 +364,7 @@ def run_benchmark(controller_type="pid", config_path=None, plot_results=True):
             if abs(t - t_switch) < dt / 2:
                 current_disturbance = Q_new
                 simulator.set_disturbance(Q_new)
-                print(f"  t={t:.0f}s: 扰动切换到 Q={Q_new} m³/s")
+                print(f"  t={t:.0f}s: 扰动切换到 Q={Q_new} m^3/s")
                 break
 
         # 自适应PI特殊处理：暂时禁用在线辨识（识别算法有bug）
@@ -505,13 +509,13 @@ def plot_single_result(result):
     # 子图4：扰动
     axes[3].plot(t, result['disturbance'], 'orange', linewidth=2, drawstyle='steps-post')
     axes[3].set_xlabel('时间 (min)')
-    axes[3].set_ylabel('上游流量 (m³/s)')
+    axes[3].set_ylabel('上游流量 (m^3/s)')
     axes[3].grid(True, alpha=0.3)
 
     plt.tight_layout()
     filename = f"mpc_benchmark_{result['controller_type']}.png"
     plt.savefig(filename, dpi=150, bbox_inches='tight')
-    print(f"\n✅ 图片已保存: {filename}")
+    print(f"\n 图片已保存: {filename}")
 
 
 def plot_comparison(results_list):
@@ -558,7 +562,7 @@ def plot_comparison(results_list):
     plt.tight_layout()
     filename = "mpc_benchmark_comparison.png"
     plt.savefig(filename, dpi=150, bbox_inches='tight')
-    print(f"\n✅ 对比图已保存: {filename}")
+    print(f"\n 对比图已保存: {filename}")
 
 
 def print_comparison_table(results_list):
@@ -603,7 +607,7 @@ def main():
     print_comparison_table(results)
 
     print("\n" + "=" * 80)
-    print("✅ 完整基准测试完成！")
+    print(" 完整基准测试完成！")
     print("=" * 80)
     print("\n关键发现：")
     print("  - 一阶MPC（First-Order MPC）性能最优")

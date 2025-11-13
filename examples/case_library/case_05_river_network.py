@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 HydroClaude Engineering Case 05: River Network System
 HydroClaude 工程案例 05: 河网系统
@@ -26,7 +27,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 try:
     import numpy as np
-    import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
     from scipy.interpolate import interp1d
     from scipy.integrate import solve_ivp
 except ImportError as e:
@@ -65,7 +68,7 @@ class CompoundChannel:
             depth: Water depth (m) / 水深
 
         Returns:
-            Flow area (m²) / 过流面积
+            Flow area (m^2) / 过流面积
         """
         if depth <= 0:
             return 0.0
@@ -238,7 +241,7 @@ class RiverReach:
 
         Args:
             depth: Initial depth (m) / 初始水深
-            flow: Initial flow (m³/s) / 初始流量
+            flow: Initial flow (m^3/s) / 初始流量
         """
         self.depths[:] = depth
         self.flows[:] = flow
@@ -254,7 +257,7 @@ class RiverReach:
         使用曼宁公式计算正常水深
 
         Args:
-            flow: Flow rate (m³/s) / 流量
+            flow: Flow rate (m^3/s) / 流量
 
         Returns:
             Normal depth (m) / 正常水深
@@ -312,7 +315,7 @@ class FloodDiversionGate:
         self.trigger_stage = trigger_stage
 
         self.opening = 0.0  # Current opening (m) / 当前开度
-        self.flow = 0.0  # Current flow (m³/s) / 当前流量
+        self.flow = 0.0  # Current flow (m^3/s) / 当前流量
 
     def update(self, water_stage: float, dt: float = 60.0) -> float:
         """
@@ -324,7 +327,7 @@ class FloodDiversionGate:
             dt: Time step (s) / 时间步长
 
         Returns:
-            Diversion flow (m³/s) / 分洪流量
+            Diversion flow (m^3/s) / 分洪流量
         """
         # Gate opening logic / 闸门开启逻辑
         if water_stage >= self.trigger_stage:
@@ -403,7 +406,7 @@ class RiverNetworkSystem:
             length=15000.0,  # 15 km
             slope=0.0008,
             cross_section=xs_trib1,
-            n_cells=30
+            n_cells = 100
         )
 
         # Tributary 2 / 支流2
@@ -421,7 +424,7 @@ class RiverNetworkSystem:
             length=12000.0,  # 12 km
             slope=0.001,
             cross_section=xs_trib2,
-            n_cells=30
+            n_cells = 100
         )
 
         # Main River Upper / 干流上游
@@ -439,7 +442,7 @@ class RiverNetworkSystem:
             length=20000.0,  # 20 km
             slope=0.0005,
             cross_section=xs_main_upper,
-            n_cells=40
+            n_cells = 100
         )
 
         # Main River Middle / 干流中游
@@ -457,7 +460,7 @@ class RiverNetworkSystem:
             length=25000.0,  # 25 km
             slope=0.0003,
             cross_section=xs_main_middle,
-            n_cells=50
+            n_cells = 100
         )
 
         # Main River Lower / 干流下游
@@ -475,10 +478,10 @@ class RiverNetworkSystem:
             length=30000.0,  # 30 km
             slope=0.0002,
             cross_section=xs_main_lower,
-            n_cells=50
+            n_cells = 100
         )
 
-        print(f"✓ Created {len(self.reaches)} river reaches")
+        print(f" Created {len(self.reaches)} river reaches")
 
         # Set initial conditions / 设置初始条件
         for reach in self.reaches.values():
@@ -509,7 +512,7 @@ class RiverNetworkSystem:
         )
         self.gates.append(gate2)
 
-        print(f"✓ Created {len(self.gates)} flood diversion gates")
+        print(f" Created {len(self.gates)} flood diversion gates")
 
     def create_flood_hydrograph(self, peak_flow: float, time_to_peak: float, duration: float) -> Tuple:
         """
@@ -517,7 +520,7 @@ class RiverNetworkSystem:
         创建洪水过程线（三角形）
 
         Args:
-            peak_flow: Peak flow (m³/s) / 洪峰流量
+            peak_flow: Peak flow (m^3/s) / 洪峰流量
             time_to_peak: Time to peak (hours) / 涨洪历时
             duration: Total duration (hours) / 总历时
 
@@ -550,8 +553,8 @@ class RiverNetworkSystem:
         模拟洪水在河网中的演进
 
         Args:
-            tributary_1_peak: Peak flow from tributary 1 (m³/s) / 支流1洪峰
-            tributary_2_peak: Peak flow from tributary 2 (m³/s) / 支流2洪峰
+            tributary_1_peak: Peak flow from tributary 1 (m^3/s) / 支流1洪峰
+            tributary_2_peak: Peak flow from tributary 2 (m^3/s) / 支流2洪峰
             duration: Simulation duration (hours) / 模拟时长
             dt: Time step (s) / 时间步长
         """
@@ -560,8 +563,8 @@ class RiverNetworkSystem:
         print(f"模拟河网洪水演进")
         print(f"{'='*70}\n")
 
-        print(f"Tributary 1 peak flow / 支流1洪峰: {tributary_1_peak:.0f} m³/s")
-        print(f"Tributary 2 peak flow / 支流2洪峰: {tributary_2_peak:.0f} m³/s")
+        print(f"Tributary 1 peak flow / 支流1洪峰: {tributary_1_peak:.0f} m^3/s")
+        print(f"Tributary 2 peak flow / 支流2洪峰: {tributary_2_peak:.0f} m^3/s")
         print(f"Duration / 历时: {duration:.1f} hours")
         print(f"Time step / 时间步长: {dt:.0f} s\n")
 
@@ -671,10 +674,10 @@ class RiverNetworkSystem:
             if step % 48 == 0:
                 progress = (step + 1) / n_steps * 100
                 print(f"Progress: {progress:5.1f}% | Time: {t/3600:6.1f} hr | "
-                      f"Main lower flow: {outflow_final:7.1f} m³/s | "
-                      f"Gates diverted: {gate1_flow + gate2_flow:6.1f} m³/s")
+                      f"Main lower flow: {outflow_final:7.1f} m^3/s | "
+                      f"Gates diverted: {gate1_flow + gate2_flow:6.1f} m^3/s")
 
-        print(f"\n✓ Simulation completed\n")
+        print(f"\n Simulation completed\n")
 
         self.results = results
         return results
@@ -701,9 +704,9 @@ class RiverNetworkSystem:
         peak_main_lower = np.max(results['main_lower_outflow'])
 
         print(f"Peak Flows / 洪峰流量:")
-        print(f"  Main River Upper / 干流上游:  {peak_main_upper:7.1f} m³/s")
-        print(f"  Main River Middle / 干流中游: {peak_main_middle:7.1f} m³/s")
-        print(f"  Main River Lower / 干流下游:  {peak_main_lower:7.1f} m³/s")
+        print(f"  Main River Upper / 干流上游:  {peak_main_upper:7.1f} m^3/s")
+        print(f"  Main River Middle / 干流中游: {peak_main_middle:7.1f} m^3/s")
+        print(f"  Main River Lower / 干流下游:  {peak_main_lower:7.1f} m^3/s")
 
         # Peak stages / 最高水位
         print(f"\nPeak Stages / 最高水位:")
@@ -718,17 +721,17 @@ class RiverNetworkSystem:
         total_diverted = total_gate1 + total_gate2
 
         print(f"\nFlood Diversion / 分洪效果:")
-        print(f"  Gate 1 total volume / 闸1总分洪量: {total_gate1/1e6:8.2f} million m³")
-        print(f"  Gate 2 total volume / 闸2总分洪量: {total_gate2/1e6:8.2f} million m³")
-        print(f"  Total diverted / 总分洪量:        {total_diverted/1e6:8.2f} million m³")
+        print(f"  Gate 1 total volume / 闸1总分洪量: {total_gate1/1e6:8.2f} million m^3")
+        print(f"  Gate 2 total volume / 闸2总分洪量: {total_gate2/1e6:8.2f} million m^3")
+        print(f"  Total diverted / 总分洪量:        {total_diverted/1e6:8.2f} million m^3")
 
         # Peak reduction / 削峰效果
         peak_without_diversion = peak_main_upper
         reduction = (peak_without_diversion - peak_main_lower) / peak_without_diversion * 100
 
         print(f"\nPeak Reduction / 削峰效果:")
-        print(f"  Peak at confluence / 汇流洪峰:    {peak_without_diversion:7.1f} m³/s")
-        print(f"  Peak at outlet / 出口洪峰:        {peak_main_lower:7.1f} m³/s")
+        print(f"  Peak at confluence / 汇流洪峰:    {peak_without_diversion:7.1f} m^3/s")
+        print(f"  Peak at outlet / 出口洪峰:        {peak_main_lower:7.1f} m^3/s")
         print(f"  Reduction / 削减率:               {reduction:6.2f} %")
 
         print(f"\n{'='*70}\n")
@@ -756,7 +759,7 @@ class RiverNetworkSystem:
         ax.plot(results['times'], results['trib1_outflow'], 'b-', linewidth=2, label='Tributary 1 / 支流1')
         ax.plot(results['times'], results['trib2_outflow'], 'r-', linewidth=2, label='Tributary 2 / 支流2')
         ax.set_xlabel('Time / 时间 (hr)')
-        ax.set_ylabel('Flow / 流量 (m³/s)')
+        ax.set_ylabel('Flow / 流量 (m^3/s)')
         ax.set_title('Tributary Flows / 支流流量')
         ax.legend()
         ax.grid(True, alpha=0.3)
@@ -767,7 +770,7 @@ class RiverNetworkSystem:
         ax.plot(results['times'], results['main_middle_outflow'], 'orange', linewidth=2, label='Middle / 中游')
         ax.plot(results['times'], results['main_lower_outflow'], 'purple', linewidth=2, label='Lower / 下游')
         ax.set_xlabel('Time / 时间 (hr)')
-        ax.set_ylabel('Flow / 流量 (m³/s)')
+        ax.set_ylabel('Flow / 流量 (m^3/s)')
         ax.set_title('Main River Flows / 干流流量')
         ax.legend()
         ax.grid(True, alpha=0.3)
@@ -779,7 +782,7 @@ class RiverNetworkSystem:
         total_diverted = results['gate1_flow'] + results['gate2_flow']
         ax.plot(results['times'], total_diverted, 'k--', linewidth=1.5, label='Total / 总计')
         ax.set_xlabel('Time / 时间 (hr)')
-        ax.set_ylabel('Diversion Flow / 分洪流量 (m³/s)')
+        ax.set_ylabel('Diversion Flow / 分洪流量 (m^3/s)')
         ax.set_title('Flood Diversion / 分洪流量')
         ax.legend()
         ax.grid(True, alpha=0.3)
@@ -808,7 +811,7 @@ class RiverNetworkSystem:
                        results['main_lower_outflow'],
                        alpha=0.2, color='red', label='Diverted / 分洪量')
         ax.set_xlabel('Time / 时间 (hr)')
-        ax.set_ylabel('Flow / 流量 (m³/s)')
+        ax.set_ylabel('Flow / 流量 (m^3/s)')
         ax.set_title('Peak Reduction Effect / 削峰效果')
         ax.legend()
         ax.grid(True, alpha=0.3)
@@ -816,7 +819,7 @@ class RiverNetworkSystem:
         # 6. Cumulative volumes / 累积水量
         ax = axes[2, 1]
         dt_hr = results['times'][1] - results['times'][0]
-        cum_inflow = np.cumsum(results['main_upper_outflow']) * dt_hr * 3600 / 1e6  # Million m³
+        cum_inflow = np.cumsum(results['main_upper_outflow']) * dt_hr * 3600 / 1e6  # Million m^3
         cum_outflow = np.cumsum(results['main_lower_outflow']) * dt_hr * 3600 / 1e6
         cum_diverted = np.cumsum(total_diverted) * dt_hr * 3600 / 1e6
 
@@ -824,7 +827,7 @@ class RiverNetworkSystem:
         ax.plot(results['times'], cum_outflow, 'purple', linewidth=2, label='Outflow / 出流')
         ax.plot(results['times'], cum_diverted, 'r--', linewidth=2, label='Diverted / 分洪')
         ax.set_xlabel('Time / 时间 (hr)')
-        ax.set_ylabel('Volume / 水量 (million m³)')
+        ax.set_ylabel('Volume / 水量 (million m^3)')
         ax.set_title('Cumulative Volumes / 累积水量')
         ax.legend()
         ax.grid(True, alpha=0.3)
@@ -833,10 +836,10 @@ class RiverNetworkSystem:
 
         if save_path:
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
-            print(f"✓ Figure saved to: {save_path}")
+            print(f" Figure saved to: {save_path}")
         else:
             plt.savefig('case_05_river_network_results.png', dpi=300, bbox_inches='tight')
-            print(f"✓ Figure saved to: case_05_river_network_results.png")
+            print(f" Figure saved to: case_05_river_network_results.png")
 
         plt.close()
 
@@ -858,8 +861,8 @@ def main():
     # Run flood simulation / 运行洪水模拟
     print("\nRunning flood simulation...")
     results = river_network.simulate_flood_event(
-        tributary_1_peak=600.0,  # m³/s
-        tributary_2_peak=500.0,  # m³/s
+        tributary_1_peak=600.0,  # m^3/s
+        tributary_2_peak=500.0,  # m^3/s
         duration=48.0,  # hours
         dt=600.0  # 10-minute time step
     )
@@ -872,9 +875,9 @@ def main():
     river_network.plot_results()
 
     print("\n" + "="*70)
-    print("✓ Case 05 simulation completed successfully!")
-    print("✓ 案例05模拟成功完成!")
-    print("\n📊 Output file: case_05_river_network_results.png")
+    print(" Case 05 simulation completed successfully!")
+    print(" 案例05模拟成功完成!")
+    print("\n Output file: case_05_river_network_results.png")
     print("="*70 + "\n")
 
 

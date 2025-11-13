@@ -1,0 +1,13 @@
+{
+"type": "FeatureCollection",
+"name": "water_network_nodes",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": "N1", "elevation": 100.0, "type": "reservoir" }, "geometry": { "type": "Point", "coordinates": [ 120.0, 30.0 ] } },
+{ "type": "Feature", "properties": { "id": "N2", "elevation": 95.0, "type": "junction" }, "geometry": { "type": "Point", "coordinates": [ 120.1, 30.0 ] } },
+{ "type": "Feature", "properties": { "id": "N3", "elevation": 90.0, "type": "junction" }, "geometry": { "type": "Point", "coordinates": [ 120.2, 30.0 ] } },
+{ "type": "Feature", "properties": { "id": "N4", "elevation": 85.0, "type": "junction" }, "geometry": { "type": "Point", "coordinates": [ 120.3, 30.0 ] } },
+{ "type": "Feature", "properties": { "id": "N5", "elevation": 80.0, "type": "outlet" }, "geometry": { "type": "Point", "coordinates": [ 120.4, 30.0 ] } },
+{ "type": "Feature", "properties": { "id": "N6", "elevation": 92.0, "type": "junction" }, "geometry": { "type": "Point", "coordinates": [ 120.2, 30.1 ] } }
+]
+}

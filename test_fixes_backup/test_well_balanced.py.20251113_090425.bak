@@ -1,0 +1,174 @@
+"""
+测试静水重构的良平衡性质
+
+良平衡性定义：对于湖面静止状态（η=const, u=0），
+数值格式应满足：∂F/∂x - S = 0（精确平衡，机器精度）
+"""
+
+import numpy as np
+import sys
+sys.path.append('.')
+
+from solvers.hydrostatic_reconstruction import HydrostaticFluxCalculator
+
+
+def test_well_balanced_property():
+    """
+    完整的良平衡性测试
+
+    设置：
+    - 不规则底床地形（包含台阶）
+    - 恒定水位 η = 10.0 m
+    - 零流速 u = 0
+
+    验证：
+    - 质量方程：∂(hu)/∂x = 0
+    - 动量方程：∂(hu² + 0.5*g*h²)/∂x + g*h*∂z/∂x = 0
+    """
+    print("=" * 70)
+    print("良平衡性质完整测试")
+    print("=" * 70)
+
+    # 创建计算器
+    g = 9.81
+    calculator = HydrostaticFluxCalculator(g=g)
+
+    # 网格参数
+    n_cells = 10
+    dx = 1.0  # 单元长度
+    L = n_cells * dx
+
+    print(f"\n网格设置：")
+    print(f"  单元数：{n_cells}")
+    print(f"  单元长度：{dx} m")
+    print(f"  总长度：{L} m")
+
+    # 创建不规则底床（包含多个台阶和斜坡）
+    x = np.linspace(0.5*dx, L-0.5*dx, n_cells)
+    z = np.zeros(n_cells)
+    for i in range(n_cells):
+        if x[i] < 2.0:
+            z[i] = 0.0
+        elif x[i] < 3.0:
+            z[i] = 1.5  # 台阶1
+        elif x[i] < 5.0:
+            z[i] = 1.5 + 0.5 * (x[i] - 3.0)  # 斜坡
+        elif x[i] < 7.0:
+            z[i] = 2.5  # 平台
+        elif x[i] < 8.0:
+            z[i] = 2.5 - 1.0 * (x[i] - 7.0)  # 下降
+        else:
+            z[i] = 1.5
+
+    print(f"\n底床地形：")
+    print(f"  最小高程：{z.min():.2f} m")
+    print(f"  最大高程：{z.max():.2f} m")
+    print(f"  高程差：{z.max() - z.min():.2f} m")
+    print(f"  地形变化：台阶 + 斜坡 + 平台")
+
+    # 设置湖面静止：η = 常数，u = 0
+    eta_const = 10.0
+    h = eta_const - z
+    hu = np.zeros(n_cells)
+
+    print(f"\n初始条件（湖面静止）：")
+    print(f"  水位 η：{eta_const:.2f} m (恒定)")
+    print(f"  流速 u：0.00 m/s (everywhere)")
+    print(f"  最小水深：{h.min():.2f} m")
+    print(f"  最大水深：{h.max():.2f} m")
+
+    # 计算所有通量
+    F_mass, F_momentum = calculator.compute_all_fluxes(h, hu, z, n_cells)
+
+    # 修正边界通量：对于湖面静止，边界应该有压力通量
+    # 左边界：假设延拓第一个单元的状态
+    F_mass[0] = hu[0]  # 质量通量 = hu (=0 for lake at rest)
+    F_momentum[0] = hu[0]**2 / h[0] + 0.5 * g * h[0]**2 if h[0] > 0 else 0.0
+
+    # 右边界：假设延拓最后一个单元的状态
+    F_mass[n_cells] = hu[n_cells-1]
+    F_momentum[n_cells] = (hu[n_cells-1]**2 / h[n_cells-1] +
+                           0.5 * g * h[n_cells-1]**2) if h[n_cells-1] > 0 else 0.0
+
+    print(f"\n通量计算：")
+    print(f"  质量通量范围：[{F_mass.min():.2e}, {F_mass.max():.2e}] m²/s")
+    print(f"  动量通量范围：[{F_momentum.min():.2e}, {F_momentum.max():.2e}] m³/s²")
+
+    # 计算所有源项
+    n_manning = 0.0  # 无摩擦
+    S_mass, S_momentum = calculator.compute_all_sources(h, hu, z, dx, n_manning, n_cells)
+
+    print(f"\n源项计算：")
+    print(f"  质量源项范围：[{S_mass.min():.2e}, {S_mass.max():.2e}] m/s")
+    print(f"  动量源项范围：[{S_momentum.min():.2e}, {S_momentum.max():.2e}] m²/s²")
+
+    # 计算通量梯度
+    dF_mass_dx = np.zeros(n_cells)
+    dF_momentum_dx = np.zeros(n_cells)
+
+    for i in range(n_cells):
+        dF_mass_dx[i] = (F_mass[i+1] - F_mass[i]) / dx
+        dF_momentum_dx[i] = (F_momentum[i+1] - F_momentum[i]) / dx
+
+    print(f"\n通量梯度：")
+    print(f"  ∂F_mass/∂x 范围：[{dF_mass_dx.min():.2e}, {dF_mass_dx.max():.2e}] m/s")
+    print(f"  ∂F_momentum/∂x 范围：[{dF_momentum_dx.min():.2e}, {dF_momentum_dx.max():.2e}] m²/s²")
+
+    # 计算残差：Residual = ∂F/∂x - S（应为0）
+    R_mass = dF_mass_dx - S_mass
+    R_momentum = dF_momentum_dx - S_momentum
+
+    print(f"\n残差计算（∂F/∂x - S）：")
+    print(f"  质量残差：")
+    print(f"    最大值：{np.max(np.abs(R_mass)):.2e}")
+    print(f"    RMS：{np.sqrt(np.mean(R_mass**2)):.2e}")
+
+    print(f"  动量残差：")
+    print(f"    最大值：{np.max(np.abs(R_momentum)):.2e}")
+    print(f"    RMS：{np.sqrt(np.mean(R_momentum**2)):.2e}")
+
+    # 良平衡性判断
+    tol = 1e-10  # 容差（考虑数值误差）
+
+    is_mass_balanced = np.max(np.abs(R_mass)) < tol
+    is_momentum_balanced = np.max(np.abs(R_momentum)) < tol
+
+    print(f"\n良平衡性验证（阈值 {tol:.0e}）：")
+    print(f"  质量方程：{' PASS' if is_mass_balanced else ' FAIL'}")
+    print(f"  动量方程：{' PASS' if is_momentum_balanced else ' FAIL'}")
+
+    overall_pass = is_mass_balanced and is_momentum_balanced
+
+    print(f"\n总体结论：{' 良平衡性质验证成功！' if overall_pass else ' 良平衡性质验证失败'}")
+
+    # 详细诊断（如果失败）
+    if not overall_pass:
+        print(f"\n详细诊断：")
+        if not is_mass_balanced:
+            i_max = np.argmax(np.abs(R_mass))
+            print(f"  质量残差最大位置：单元 {i_max}")
+            print(f"    ∂F/∂x = {dF_mass_dx[i_max]:.6e}")
+            print(f"    S = {S_mass[i_max]:.6e}")
+            print(f"    R = {R_mass[i_max]:.6e}")
+
+        if not is_momentum_balanced:
+            i_max = np.argmax(np.abs(R_momentum))
+            print(f"  动量残差最大位置：单元 {i_max}")
+            print(f"    ∂F/∂x = {dF_momentum_dx[i_max]:.6e}")
+            print(f"    S = {S_momentum[i_max]:.6e}")
+            print(f"    R = {R_momentum[i_max]:.6e}")
+            print(f"    h = {h[i_max]:.6f} m")
+            print(f"    z = {z[i_max]:.6f} m")
+            if i_max > 0:
+                print(f"    z[i-1] = {z[i_max-1]:.6f} m")
+            if i_max < n_cells - 1:
+                print(f"    z[i+1] = {z[i_max+1]:.6f} m")
+
+    print("\n" + "=" * 70)
+
+    return overall_pass
+
+
+if __name__ == "__main__":
+    success = test_well_balanced_property()
+    sys.exit(0 if success else 1)

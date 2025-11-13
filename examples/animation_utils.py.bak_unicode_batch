@@ -1,0 +1,575 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+动画生成工具模块 - 用于嵌入到示例脚本中
+"""
+
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation, PillowWriter
+from pathlib import Path
+
+# 设置中文字体（优雅降级）
+try:
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'DejaVu Sans']
+    plt.rcParams['axes.unicode_minus'] = False
+except:
+    pass
+
+
+class AnimationGenerator:
+    """
+    通用动画生成器
+
+    可以嵌入到任何示例脚本中，通过命令行参数或选项控制是否生成动画
+
+    使用示例:
+    --------
+    >>> gen = AnimationGenerator(output_dir='./outputs/animations')
+    >>> gen.create_timeseries_animation(
+    ...     t=t,
+    ...     data={'Speed': speed, 'Power': power},
+    ...     filename='transient.gif',
+    ...     title='Turbine Transient Response'
+    ... )
+    """
+
+    def __init__(self, output_dir='./outputs/animations', fps=10, dpi=100, optimize=True):
+        """
+        初始化动画生成器
+
+        Parameters
+        ----------
+        output_dir : str or Path
+            输出目录
+        fps : int
+            帧率 (默认: 10)
+        dpi : int
+            分辨率 (默认: 100)
+        optimize : bool
+            启用GIF优化以减小文件大小 (默认: True)
+        """
+        self.output_dir = Path(output_dir)
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.fps = fps
+        self.dpi = dpi
+        self.optimize = optimize
+
+    def create_timeseries_animation(
+        self,
+        t,
+        data,
+        filename,
+        title='',
+        xlabel='Time (s)',
+        ylabels=None,
+        ylims=None,
+        reference_lines=None,
+        layout=(None, 1),
+        figsize=None
+    ):
+        """
+        创建时间序列动画（多子图）
+
+        Parameters
+        ----------
+        t : array_like
+            时间数组
+        data : dict
+            数据字典，键为变量名，值为数据数组
+        filename : str
+            输出文件名
+        title : str
+            主标题
+        xlabel : str
+            x轴标签
+        ylabels : dict, optional
+            y轴标签字典，键为变量名
+        ylims : dict, optional
+            y轴范围字典，键为变量名
+        reference_lines : dict, optional
+            参考线字典，键为变量名，值为参考值
+        layout : tuple
+            子图布局 (rows, cols)，若rows为None则自动计算
+        figsize : tuple, optional
+            图形大小
+
+        Returns
+        -------
+        str
+            保存的文件路径
+        """
+        n_vars = len(data)
+        rows, cols = layout
+        if rows is None:
+            rows = (n_vars + cols - 1) // cols
+
+        if figsize is None:
+            figsize = (14, 3.5 * rows)
+
+        if ylabels is None:
+            ylabels = {}
+        if ylims is None:
+            ylims = {}
+        if reference_lines is None:
+            reference_lines = {}
+
+        # 创建图形
+        fig, axes = plt.subplots(rows, cols, figsize=figsize)
+        if n_vars == 1:
+            axes = [axes]
+        else:
+            axes = axes.flatten() if n_vars > 1 else [axes]
+
+        # 初始化线条
+        lines = []
+        var_names = list(data.keys())
+
+        for i, var_name in enumerate(var_names):
+            ax = axes[i]
+            line, = ax.plot([], [], 'b-', linewidth=2.5)
+            lines.append(line)
+
+            ax.set_xlim(t[0], t[-1])
+
+            # Y轴范围
+            if var_name in ylims:
+                ax.set_ylim(*ylims[var_name])
+            else:
+                y_data = data[var_name]
+                y_min, y_max = np.min(y_data), np.max(y_data)
+                margin = (y_max - y_min) * 0.1
+                ax.set_ylim(y_min - margin, y_max + margin)
+
+            # 标签
+            ax.set_ylabel(ylabels.get(var_name, var_name), fontsize=11)
+            ax.set_title(var_name, fontsize=12, fontweight='bold')
+            ax.grid(True, alpha=0.3, linestyle='--')
+
+            # 参考线
+            if var_name in reference_lines:
+                ax.axhline(y=reference_lines[var_name],
+                          color='r', linestyle='--', alpha=0.5, linewidth=1.5)
+
+            # X轴标签（只在最后一行显示）
+            if i >= n_vars - cols:
+                ax.set_xlabel(xlabel, fontsize=11)
+
+        # 隐藏多余的子图
+        for i in range(n_vars, len(axes)):
+            axes[i].axis('off')
+
+        suptitle = fig.suptitle('', fontsize=14, fontweight='bold')
+        plt.tight_layout()
+
+        def init():
+            for line in lines:
+                line.set_data([], [])
+            return lines
+
+        def animate(frame):
+            # 动态帧索引
+            idx = min(int(frame * len(t) / 100), len(t) - 1)
+            t_current = t[:idx]
+
+            for i, var_name in enumerate(var_names):
+                lines[i].set_data(t_current, data[var_name][:idx])
+
+            suptitle.set_text(f'{title} (t={t[idx]:.2f}s)')
+
+            return lines + [suptitle]
+
+        anim = FuncAnimation(
+            fig,
+            animate,
+            init_func=init,
+            frames=100,
+            interval=int(1000 / self.fps),
+            blit=True
+        )
+
+        output_path = self.output_dir / filename
+        writer = PillowWriter(fps=self.fps)
+        anim.save(str(output_path), writer=writer, dpi=self.dpi)
+        plt.close(fig)
+
+        return str(output_path)
+
+    def create_spatial_animation(
+        self,
+        x,
+        t,
+        data,
+        filename,
+        title='',
+        xlabel='Distance (m)',
+        ylabels=None,
+        ylims=None,
+        layout=(None, 1),
+        figsize=None
+    ):
+        """
+        创建空间分布动画（如管道流动、渠道水位等）
+
+        Parameters
+        ----------
+        x : array_like
+            空间坐标数组
+        t : array_like
+            时间数组
+        data : dict
+            数据字典，键为变量名，值为二维数组 (len(t), len(x))
+        filename : str
+            输出文件名
+        title : str
+            主标题
+        xlabel : str
+            x轴标签
+        ylabels : dict, optional
+            y轴标签字典
+        ylims : dict, optional
+            y轴范围字典
+        layout : tuple
+            子图布局
+        figsize : tuple, optional
+            图形大小
+
+        Returns
+        -------
+        str
+            保存的文件路径
+        """
+        n_vars = len(data)
+        rows, cols = layout
+        if rows is None:
+            rows = (n_vars + cols - 1) // cols
+
+        if figsize is None:
+            figsize = (14, 3.5 * rows)
+
+        if ylabels is None:
+            ylabels = {}
+        if ylims is None:
+            ylims = {}
+
+        # 创建图形
+        fig, axes = plt.subplots(rows, cols, figsize=figsize)
+        if n_vars == 1:
+            axes = [axes]
+        else:
+            axes = axes.flatten() if n_vars > 1 else [axes]
+
+        # 初始化线条
+        lines = []
+        var_names = list(data.keys())
+
+        for i, var_name in enumerate(var_names):
+            ax = axes[i]
+            line, = ax.plot([], [], 'b-', linewidth=2.5)
+            lines.append(line)
+
+            ax.set_xlim(x[0], x[-1])
+
+            # Y轴范围
+            if var_name in ylims:
+                ax.set_ylim(*ylims[var_name])
+            else:
+                y_data = data[var_name]
+                y_min, y_max = np.min(y_data), np.max(y_data)
+                margin = (y_max - y_min) * 0.1
+                ax.set_ylim(y_min - margin, y_max + margin)
+
+            # 标签
+            ax.set_ylabel(ylabels.get(var_name, var_name), fontsize=11)
+            ax.set_title(var_name, fontsize=12, fontweight='bold')
+            ax.grid(True, alpha=0.3, linestyle='--')
+
+            # X轴标签
+            if i >= n_vars - cols:
+                ax.set_xlabel(xlabel, fontsize=11)
+
+        # 隐藏多余的子图
+        for i in range(n_vars, len(axes)):
+            axes[i].axis('off')
+
+        suptitle = fig.suptitle('', fontsize=14, fontweight='bold')
+        plt.tight_layout()
+
+        def init():
+            for line in lines:
+                line.set_data([], [])
+            return lines
+
+        def animate(frame):
+            # 动态帧索引
+            idx = min(int(frame * len(t) / 100), len(t) - 1)
+
+            for i, var_name in enumerate(var_names):
+                lines[i].set_data(x, data[var_name][idx])
+
+            suptitle.set_text(f'{title} (t={t[idx]:.2f}s)')
+
+            return lines + [suptitle]
+
+        anim = FuncAnimation(
+            fig,
+            animate,
+            init_func=init,
+            frames=len(t),
+            interval=int(1000 / self.fps),
+            blit=True
+        )
+
+        output_path = self.output_dir / filename
+        writer = PillowWriter(fps=self.fps)
+        anim.save(str(output_path), writer=writer, dpi=self.dpi)
+        plt.close(fig)
+
+        return str(output_path)
+
+    def create_network_animation(
+        self,
+        t,
+        nodes_data,
+        edges_data,
+        filename,
+        title='',
+        figsize=(14, 10)
+    ):
+        """
+        创建网络系统动画（管网、水电站系统等）
+
+        Parameters
+        ----------
+        t : array_like
+            时间数组
+        nodes_data : dict
+            节点数据字典，例如 {'Node1': pressure_array, ...}
+        edges_data : dict
+            边数据字典，例如 {'Pipe1': flow_array, ...}
+        filename : str
+            输出文件名
+        title : str
+            主标题
+        figsize : tuple
+            图形大小
+
+        Returns
+        -------
+        str
+            保存的文件路径
+        """
+        # 创建2行布局：上方显示节点数据，下方显示边数据
+        fig, axes = plt.subplots(2, 1, figsize=figsize)
+
+        # 节点数据图
+        ax_nodes = axes[0]
+        node_lines = {}
+        for i, (node_name, data_array) in enumerate(nodes_data.items()):
+            line, = ax_nodes.plot([], [], linewidth=2, label=node_name)
+            node_lines[node_name] = line
+
+        ax_nodes.set_xlim(t[0], t[-1])
+        ax_nodes.set_xlabel('Time (s)', fontsize=11)
+        ax_nodes.set_ylabel('Pressure (MPa)', fontsize=11)
+        ax_nodes.set_title('Node Pressures', fontsize=12, fontweight='bold')
+        ax_nodes.grid(True, alpha=0.3)
+        ax_nodes.legend(loc='best')
+
+        # 边数据图
+        ax_edges = axes[1]
+        edge_lines = {}
+        for i, (edge_name, data_array) in enumerate(edges_data.items()):
+            line, = ax_edges.plot([], [], linewidth=2, label=edge_name)
+            edge_lines[edge_name] = line
+
+        ax_edges.set_xlim(t[0], t[-1])
+        ax_edges.set_xlabel('Time (s)', fontsize=11)
+        ax_edges.set_ylabel('Flow Rate (m³/s)', fontsize=11)
+        ax_edges.set_title('Edge Flows', fontsize=12, fontweight='bold')
+        ax_edges.grid(True, alpha=0.3)
+        ax_edges.legend(loc='best')
+
+        # 自动设置Y轴范围
+        all_node_data = np.concatenate([data for data in nodes_data.values()])
+        node_min, node_max = np.min(all_node_data), np.max(all_node_data)
+        node_margin = (node_max - node_min) * 0.1
+        ax_nodes.set_ylim(node_min - node_margin, node_max + node_margin)
+
+        all_edge_data = np.concatenate([data for data in edges_data.values()])
+        edge_min, edge_max = np.min(all_edge_data), np.max(all_edge_data)
+        edge_margin = (edge_max - edge_min) * 0.1
+        ax_edges.set_ylim(edge_min - edge_margin, edge_max + edge_margin)
+
+        suptitle = fig.suptitle('', fontsize=14, fontweight='bold')
+        plt.tight_layout()
+
+        def init():
+            for line in node_lines.values():
+                line.set_data([], [])
+            for line in edge_lines.values():
+                line.set_data([], [])
+            return list(node_lines.values()) + list(edge_lines.values())
+
+        def animate(frame):
+            idx = min(int(frame * len(t) / 100), len(t) - 1)
+            t_current = t[:idx]
+
+            for node_name, line in node_lines.items():
+                line.set_data(t_current, nodes_data[node_name][:idx])
+
+            for edge_name, line in edge_lines.items():
+                line.set_data(t_current, edges_data[edge_name][:idx])
+
+            suptitle.set_text(f'{title} (t={t[idx]:.2f}s)')
+
+            return list(node_lines.values()) + list(edge_lines.values()) + [suptitle]
+
+        anim = FuncAnimation(
+            fig,
+            animate,
+            init_func=init,
+            frames=100,
+            interval=int(1000 / self.fps),
+            blit=True
+        )
+
+        output_path = self.output_dir / filename
+        writer = PillowWriter(fps=self.fps)
+        anim.save(str(output_path), writer=writer, dpi=self.dpi)
+        plt.close(fig)
+
+        return str(output_path)
+
+
+def enable_animation_from_args(description='Generate animations'):
+    """
+    从命令行参数启用动画生成
+
+    在脚本开头使用:
+    >>> import argparse
+    >>> from animation_utils import enable_animation_from_args
+    >>> parser = argparse.ArgumentParser()
+    >>> enable_animation_from_args(parser)
+    >>> args = parser.parse_args()
+    >>> if args.animate:
+    ...     gen = AnimationGenerator()
+    ...     # ... 生成动画
+
+    Parameters
+    ----------
+    description : str
+        参数描述
+
+    Returns
+    -------
+    argparse.ArgumentParser
+        配置好的参数解析器
+    """
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--animate',
+        action='store_true',
+        help=description
+    )
+    parser.add_argument(
+        '--animation-fps',
+        type=int,
+        default=10,
+        help='Animation frame rate (default: 10)'
+    )
+    parser.add_argument(
+        '--animation-dpi',
+        type=int,
+        default=100,
+        help='Animation DPI (default: 100)'
+    )
+    return parser
+
+
+if __name__ == '__main__':
+    # 测试示例
+    print("Animation Utils Module")
+    print("=" * 60)
+    print("Usage:")
+    print("  from animation_utils import AnimationGenerator")
+    print("  gen = AnimationGenerator(output_dir='./animations')")
+    print("  gen.create_timeseries_animation(...)")
+    print("=" * 60)
+
+    def _save_optimized(self, anim, output_path, fps=None):
+        """
+        保存优化的GIF动画
+        
+        Parameters
+        ----------
+        anim : FuncAnimation
+            matplotlib动画对象
+        output_path : Path
+            输出文件路径
+        fps : int, optional
+            帧率（如果None则使用self.fps）
+        """
+        if fps is None:
+            fps = self.fps
+            
+        # 基础保存
+        writer = PillowWriter(fps=fps)
+        temp_path = str(output_path).replace('.gif', '_temp.gif')
+        anim.save(temp_path, writer=writer, dpi=self.dpi)
+        
+        # 如果启用优化，使用PIL进行二次优化
+        if self.optimize:
+            try:
+                from PIL import Image, ImageSequence
+                
+                # 读取原始GIF
+                img = Image.open(temp_path)
+                frames = []
+                durations = []
+                
+                # 提取所有帧
+                for frame in ImageSequence.Iterator(img):
+                    # 转换为P模式（256色调色板）以减小大小
+                    frame_rgb = frame.convert('RGB')
+                    frame_p = frame_rgb.convert('P', palette=Image.ADAPTIVE, colors=128)
+                    frames.append(frame_p)
+                    durations.append(frame.info.get('duration', int(1000/fps)))
+                
+                # 保存优化的GIF
+                frames[0].save(
+                    str(output_path),
+                    save_all=True,
+                    append_images=frames[1:],
+                    duration=durations,
+                    loop=0,
+                    optimize=True,
+                    quality=85
+                )
+                
+                # 删除临时文件
+                import os
+                os.remove(temp_path)
+                
+                # 打印压缩效果
+                original_size = os.path.getsize(str(output_path))
+                print(f"    压缩后文件大小: {original_size/1024:.1f} KB")
+                
+            except ImportError:
+                # 如果PIL不可用，使用原始文件
+                import shutil
+                shutil.move(temp_path, str(output_path))
+                print("    警告: PIL未安装，无法进行深度优化")
+            except Exception as e:
+                # 出错时使用原始文件
+                import shutil
+                shutil.move(temp_path, str(output_path))
+                print(f"    警告: 优化失败 ({e})，使用未优化版本")
+        else:
+            # 不优化，直接重命名
+            import shutil
+            shutil.move(temp_path, str(output_path))
+

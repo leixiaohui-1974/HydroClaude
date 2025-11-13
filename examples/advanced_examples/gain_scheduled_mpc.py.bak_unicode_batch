@@ -1,0 +1,727 @@
+"""
+多工作点分段线性化MPC（增益调度MPC）
+
+核心思想：
+在不同工作点进行线性化，根据当前状态选择或混合使用多个线性化模型，
+从而在整个操作范围内保持良好的控制性能。
+
+方法：
+1. 离线：在多个工作点计算线性化参数（K, τ）
+2. 在线：根据当前状态选择最优工作点或插值多个工作点
+
+优势：
+- 计算成本低（仍然是线性MPC）
+- 覆盖大范围操作（克服单点线性化局限）
+- 实现简单（工程上可行）
+
+作者：HydroClaude Team
+日期：2025-10-24
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+from typing import List, Dict, Tuple, Optional
+from dataclasses import dataclass
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+from control.first_order_mpc import FirstOrderMPC, FirstOrderMPCConfig
+from examples.advanced_examples.linearized_canal_simulator import LinearizedCanalSimulator
+
+
+@dataclass
+class WorkingPoint:
+    """工作点定义"""
+    h: float  # 水位 (m)
+    a: float  # 闸门开度 (m)
+    K: float  # 线性化增益
+    tau: float  # 线性化时间常数 (s)
+    name: str  # 工作点名称
+
+
+class GainScheduledMPC:
+    """
+    增益调度MPC（多工作点分段线性化MPC）
+
+    在多个工作点进行线性化，运行时根据当前状态选择合适的控制器
+    """
+
+    def __init__(self, working_points: List[WorkingPoint],
+                 mpc_config: FirstOrderMPCConfig,
+                 switching_mode: str = 'nearest'):
+        """
+        初始化增益调度MPC
+
+        Args:
+            working_points: 工作点列表
+            mpc_config: MPC配置（所有工作点共享）
+            switching_mode: 切换模式
+                - 'nearest': 选择最近的工作点（硬切换）
+                - 'interpolate': 插值相邻工作点（软切换）
+        """
+        self.working_points = sorted(working_points, key=lambda wp: wp.h)
+        self.mpc_config = mpc_config
+        self.switching_mode = switching_mode
+
+        # 为每个工作点创建MPC控制器
+        self.controllers = {}
+        for wp in self.working_points:
+            self.controllers[wp.name] = FirstOrderMPC(
+                K=wp.K,
+                tau=wp.tau,
+                config=mpc_config
+            )
+
+        # 当前激活的工作点
+        self.current_working_point = None
+
+        # 切换历史
+        self.switching_history = []
+
+        print(f"\n增益调度MPC初始化:")
+        print(f"  工作点数量: {len(self.working_points)}")
+        print(f"  切换模式: {switching_mode}")
+        print(f"  工作点详情:")
+        for wp in self.working_points:
+            print(f"    - {wp.name}: h={wp.h}m, a={wp.a}m, K={wp.K:.4f}, τ={wp.tau:.1f}s")
+
+    def select_working_point(self, y_current: float) -> WorkingPoint:
+        """
+        根据当前状态选择工作点
+
+        Args:
+            y_current: 当前水位 (m)
+
+        Returns:
+            selected_wp: 选中的工作点
+        """
+        if self.switching_mode == 'nearest':
+            # 选择最近的工作点（硬切换）
+            distances = [abs(y_current - wp.h) for wp in self.working_points]
+            min_idx = np.argmin(distances)
+            return self.working_points[min_idx]
+
+        elif self.switching_mode == 'interpolate':
+            # 插值相邻工作点（软切换）
+            # 对于插值模式，返回加权平均的虚拟工作点
+            # 这里先简化为选择最近的（后面可以扩展真正的插值）
+            distances = [abs(y_current - wp.h) for wp in self.working_points]
+            min_idx = np.argmin(distances)
+            return self.working_points[min_idx]
+
+        else:
+            raise ValueError(f"Unknown switching mode: {self.switching_mode}")
+
+    def compute_control(self, y_current: float, setpoint: float) -> Tuple[float, Dict]:
+        """
+        计算控制量（增益调度）
+
+        Args:
+            y_current: 当前水位 (m)
+            setpoint: 目标水位 (m)
+
+        Returns:
+            (u, diagnostics): 控制量和诊断信息
+        """
+        # 选择工作点
+        wp = self.select_working_point(y_current)
+
+        # 记录切换
+        if self.current_working_point is None or wp.name != self.current_working_point.name:
+            self.switching_history.append({
+                'y': y_current,
+                'from': self.current_working_point.name if self.current_working_point else None,
+                'to': wp.name
+            })
+            self.current_working_point = wp
+
+        # 使用选定工作点的控制器
+        controller = self.controllers[wp.name]
+        u, diag = controller.compute_control(y_current, setpoint)
+
+        # 添加增益调度信息到诊断
+        diag['working_point'] = wp.name
+        diag['working_point_h'] = wp.h
+        diag['working_point_K'] = wp.K
+        diag['working_point_tau'] = wp.tau
+
+        return u, diag
+
+
+def compute_linearization_at_point(h_work: float, a_work: float,
+                                   dt: float = 10.0) -> Tuple[float, float]:
+    """
+    在指定工作点计算线性化参数
+
+    Args:
+        h_work: 工作点水位 (m)
+        a_work: 工作点闸门开度 (m)
+        dt: 采样时间 (s)
+
+    Returns:
+        (K, tau): 线性化增益和时间常数
+    """
+    # 创建临时仿真器计算线性化参数
+    sim = LinearizedCanalSimulator(
+        h_work=h_work,
+        a_work=a_work,
+        dt=dt,
+        use_linear=True
+    )
+
+    K, tau = sim.get_system_params()
+    return K, tau
+
+
+def create_working_points(h_range: Tuple[float, float],
+                         n_points: int = 3,
+                         a_nominal: float = 2.0,
+                         dt: float = 10.0) -> List[WorkingPoint]:
+    """
+    创建均匀分布的工作点
+
+    Args:
+        h_range: 水位范围 (h_min, h_max)
+        n_points: 工作点数量
+        a_nominal: 标称闸门开度 (m)
+        dt: 采样时间 (s)
+
+    Returns:
+        working_points: 工作点列表
+    """
+    h_min, h_max = h_range
+    h_values = np.linspace(h_min, h_max, n_points)
+
+    working_points = []
+    for i, h in enumerate(h_values):
+        K, tau = compute_linearization_at_point(h, a_nominal, dt)
+
+        wp = WorkingPoint(
+            h=h,
+            a=a_nominal,
+            K=K,
+            tau=tau,
+            name=f"WP_{i+1}_h{h:.1f}m"
+        )
+        working_points.append(wp)
+
+    return working_points
+
+
+def run_gain_scheduled_mpc_test(gs_mpc: GainScheduledMPC,
+                                total_time: float = 800.0,
+                                use_nonlinear: bool = True) -> Dict:
+    """
+    运行增益调度MPC测试
+
+    Args:
+        gs_mpc: 增益调度MPC控制器
+        total_time: 仿真时间 (s)
+        use_nonlinear: 是否使用非线性模型
+
+    Returns:
+        result: 测试结果字典
+    """
+    dt = gs_mpc.mpc_config.dt
+
+    # 创建非线性仿真器（真实系统）
+    simulator = LinearizedCanalSimulator(
+        h_work=2.5,  # 中间工作点
+        a_work=2.0,
+        dt=dt,
+        use_linear=not use_nonlinear  # True表示非线性
+    )
+
+    # 扰动时间表
+    disturbance_schedule = [
+        (0, 20.0),
+        (200, 25.0),
+        (400, 18.0),
+        (600, 23.0)
+    ]
+
+    # 设定点（大范围变化以测试增益调度）
+    setpoint_schedule = [
+        (0, 2.8),    # 高水位
+        (300, 2.3),  # 低水位
+        (600, 2.6)   # 中水位
+    ]
+
+    # 仿真步数
+    n_steps = int(total_time / dt)
+
+    # 记录数组
+    time_hist = []
+    h_hist = []
+    u_hist = []
+    Q_in_hist = []
+    error_hist = []
+    wp_hist = []  # 工作点历史
+
+    current_Q_in = disturbance_schedule[0][1]
+    current_setpoint = setpoint_schedule[0][1]
+
+    for k in range(n_steps):
+        t = k * dt
+
+        # 更新扰动
+        for t_switch, Q_new in disturbance_schedule:
+            if abs(t - t_switch) < dt / 2:
+                current_Q_in = Q_new
+                simulator.set_disturbance(Q_new)
+                break
+
+        # 更新设定点
+        for t_switch, sp_new in setpoint_schedule:
+            if abs(t - t_switch) < dt / 2:
+                current_setpoint = sp_new
+                break
+
+        # 获取当前水位
+        y = simulator.h
+
+        # 增益调度MPC计算控制量
+        u, diag = gs_mpc.compute_control(y, current_setpoint)
+
+        # 执行控制
+        y_next = simulator.step(u)
+
+        # 记录
+        time_hist.append(t)
+        h_hist.append(y)
+        u_hist.append(u)
+        Q_in_hist.append(current_Q_in)
+        error_hist.append(abs(y - current_setpoint))
+        wp_hist.append(diag['working_point'])
+
+    # 计算性能指标
+    h_array = np.array(h_hist)
+    error_array = np.array(error_hist)
+
+    mae = np.mean(error_array)
+    rmse = np.sqrt(np.mean(error_array**2))
+    max_error = np.max(error_array)
+
+    result = {
+        'time': np.array(time_hist),
+        'h': h_array,
+        'u': np.array(u_hist),
+        'Q_in': np.array(Q_in_hist),
+        'error': error_array,
+        'working_point': wp_hist,
+        'setpoint_schedule': setpoint_schedule,
+        'mae': mae,
+        'rmse': rmse,
+        'max_error': max_error,
+        'switching_history': gs_mpc.switching_history
+    }
+
+    return result
+
+
+def run_single_point_mpc_test(mpc: FirstOrderMPC,
+                               total_time: float = 800.0,
+                               use_nonlinear: bool = True) -> Dict:
+    """
+    运行单工作点MPC测试（与增益调度MPC使用相同的测试场景）
+
+    Args:
+        mpc: 单工作点MPC控制器
+        total_time: 仿真时间 (s)
+        use_nonlinear: 是否使用非线性模型
+
+    Returns:
+        result: 测试结果字典
+    """
+    dt = mpc.config.dt
+
+    # 创建非线性仿真器（真实系统）
+    simulator = LinearizedCanalSimulator(
+        h_work=2.5,  # 中间工作点
+        a_work=2.0,
+        dt=dt,
+        use_linear=not use_nonlinear
+    )
+
+    # 扰动时间表（与增益调度MPC相同）
+    disturbance_schedule = [
+        (0, 20.0),
+        (200, 25.0),
+        (400, 18.0),
+        (600, 23.0)
+    ]
+
+    # 设定点（与增益调度MPC相同）
+    setpoint_schedule = [
+        (0, 2.8),    # 高水位
+        (300, 2.3),  # 低水位
+        (600, 2.6)   # 中水位
+    ]
+
+    # 仿真步数
+    n_steps = int(total_time / dt)
+
+    # 记录数组
+    time_hist = []
+    h_hist = []
+    u_hist = []
+    Q_in_hist = []
+    error_hist = []
+
+    current_Q_in = disturbance_schedule[0][1]
+    current_setpoint = setpoint_schedule[0][1]
+
+    for k in range(n_steps):
+        t = k * dt
+
+        # 更新扰动
+        for t_switch, Q_new in disturbance_schedule:
+            if abs(t - t_switch) < dt / 2:
+                current_Q_in = Q_new
+                simulator.set_disturbance(Q_new)
+                break
+
+        # 更新设定点
+        for t_switch, sp_new in setpoint_schedule:
+            if abs(t - t_switch) < dt / 2:
+                current_setpoint = sp_new
+                break
+
+        # 获取当前水位
+        y = simulator.h
+
+        # 单工作点MPC计算控制量
+        u, diag = mpc.compute_control(y, current_setpoint)
+
+        # 执行控制
+        y_next = simulator.step(u)
+
+        # 记录
+        time_hist.append(t)
+        h_hist.append(y)
+        u_hist.append(u)
+        Q_in_hist.append(current_Q_in)
+        error_hist.append(abs(y - current_setpoint))
+
+    # 计算性能指标
+    h_array = np.array(h_hist)
+    error_array = np.array(error_hist)
+
+    mae = np.mean(error_array)
+    rmse = np.sqrt(np.mean(error_array**2))
+    max_error = np.max(error_array)
+
+    result = {
+        'time': np.array(time_hist),
+        'h': h_array,
+        'u': np.array(u_hist),
+        'Q_in': np.array(Q_in_hist),
+        'error': error_array,
+        'working_point': ['Single-Point'] * len(time_hist),  # 保持一致的格式
+        'setpoint_schedule': setpoint_schedule,
+        'mae': mae,
+        'rmse': rmse,
+        'max_error': max_error,
+        'switching_history': []  # 单工作点没有切换
+    }
+
+    return result
+
+
+def visualize_gain_scheduled_results(result_gs: Dict, result_single: Dict,
+                                     working_points: List[WorkingPoint]):
+    """
+    可视化增益调度MPC vs 单工作点MPC的对比结果
+
+    Args:
+        result_gs: 增益调度MPC结果
+        result_single: 单工作点MPC结果
+        working_points: 工作点列表
+    """
+    fig = plt.figure(figsize=(18, 12))
+
+    # 子图1：水位对比
+    ax1 = plt.subplot(3, 3, 1)
+    ax1.plot(result_gs['time'], result_gs['h'], 'b-', linewidth=2, label='Gain-Scheduled MPC')
+    ax1.plot(result_single['time'], result_single['h'], 'r--', linewidth=2, label='Single-Point MPC', alpha=0.7)
+
+    # 绘制设定点阶跃
+    for t_switch, sp in result_gs['setpoint_schedule']:
+        t_end = result_gs['setpoint_schedule'][result_gs['setpoint_schedule'].index((t_switch, sp)) + 1][0] \
+                if result_gs['setpoint_schedule'].index((t_switch, sp)) < len(result_gs['setpoint_schedule']) - 1 \
+                else result_gs['time'][-1]
+        ax1.hlines(sp, t_switch, t_end, colors='gray', linestyles=':', linewidth=2, label='Setpoint' if t_switch == 0 else '')
+
+    # 标记工作点水位
+    for wp in working_points:
+        ax1.axhline(wp.h, color='green', linestyle=':', alpha=0.3, linewidth=1)
+        ax1.text(10, wp.h, f'{wp.name}', fontsize=8, color='green', alpha=0.7)
+
+    ax1.set_xlabel('Time (s)', fontsize=11)
+    ax1.set_ylabel('Water Level (m)', fontsize=11)
+    ax1.set_title('Water Level Tracking', fontsize=12, fontweight='bold')
+    ax1.legend(loc='best')
+    ax1.grid(True, alpha=0.3)
+
+    # 子图2：控制量对比
+    ax2 = plt.subplot(3, 3, 2)
+    ax2.plot(result_gs['time'], result_gs['u'], 'b-', linewidth=2, label='Gain-Scheduled MPC')
+    ax2.plot(result_single['time'], result_single['u'], 'r--', linewidth=2, label='Single-Point MPC', alpha=0.7)
+    ax2.set_xlabel('Time (s)', fontsize=11)
+    ax2.set_ylabel('Gate Opening (m)', fontsize=11)
+    ax2.set_title('Control Input', fontsize=12, fontweight='bold')
+    ax2.legend()
+    ax2.grid(True, alpha=0.3)
+
+    # 子图3：误差对比
+    ax3 = plt.subplot(3, 3, 3)
+    ax3.plot(result_gs['time'], result_gs['error'] * 100, 'b-', linewidth=2, label='Gain-Scheduled MPC')
+    ax3.plot(result_single['time'], result_single['error'] * 100, 'r--', linewidth=2, label='Single-Point MPC', alpha=0.7)
+    ax3.set_xlabel('Time (s)', fontsize=11)
+    ax3.set_ylabel('Absolute Error (cm)', fontsize=11)
+    ax3.set_title('Tracking Error', fontsize=12, fontweight='bold')
+    ax3.legend()
+    ax3.grid(True, alpha=0.3)
+
+    # 子图4：工作点切换历史
+    ax4 = plt.subplot(3, 3, 4)
+
+    # 将工作点名称转换为数字编码
+    wp_names = [wp.name for wp in working_points]
+    wp_to_idx = {name: i for i, name in enumerate(wp_names)}
+    wp_indices = [wp_to_idx[wp] for wp in result_gs['working_point']]
+
+    ax4.step(result_gs['time'], wp_indices, 'b-', linewidth=2, where='post')
+    ax4.set_yticks(range(len(wp_names)))
+    ax4.set_yticklabels(wp_names, fontsize=9)
+    ax4.set_xlabel('Time (s)', fontsize=11)
+    ax4.set_ylabel('Active Working Point', fontsize=11)
+    ax4.set_title('Working Point Switching', fontsize=12, fontweight='bold')
+    ax4.grid(True, alpha=0.3)
+
+    # 子图5：扰动
+    ax5 = plt.subplot(3, 3, 5)
+    ax5.step(result_gs['time'], result_gs['Q_in'], 'g-', linewidth=2, where='post')
+    ax5.set_xlabel('Time (s)', fontsize=11)
+    ax5.set_ylabel('Inflow (m³/s)', fontsize=11)
+    ax5.set_title('Disturbance', fontsize=12, fontweight='bold')
+    ax5.grid(True, alpha=0.3)
+
+    # 子图6：性能指标对比
+    ax6 = plt.subplot(3, 3, 6)
+    metrics = ['MAE\n(cm)', 'RMSE\n(cm)', 'Max Error\n(cm)']
+    gs_values = [result_gs['mae']*100, result_gs['rmse']*100, result_gs['max_error']*100]
+    single_values = [result_single['mae']*100, result_single['rmse']*100, result_single['max_error']*100]
+
+    x = np.arange(len(metrics))
+    width = 0.35
+
+    ax6.bar(x - width/2, gs_values, width, label='Gain-Scheduled', color='blue', alpha=0.7)
+    ax6.bar(x + width/2, single_values, width, label='Single-Point', color='red', alpha=0.7)
+    ax6.set_xticks(x)
+    ax6.set_xticklabels(metrics, fontsize=9)
+    ax6.set_ylabel('Value', fontsize=11)
+    ax6.set_title('Performance Metrics', fontsize=12, fontweight='bold')
+    ax6.legend()
+    ax6.grid(True, alpha=0.3, axis='y')
+
+    # 子图7：切换事件分析
+    ax7 = plt.subplot(3, 3, 7)
+    switching_times = []
+    switching_wp_from = []
+    switching_wp_to = []
+
+    for switch in result_gs['switching_history']:
+        if switch['from'] is not None:
+            switching_times.append(switch['y'])  # 使用水位作为x轴
+            switching_wp_from.append(wp_to_idx[switch['from']])
+            switching_wp_to.append(wp_to_idx[switch['to']])
+
+    if len(switching_times) > 0:
+        ax7.scatter(switching_times, switching_wp_from, c='red', marker='o', s=100, label='From', alpha=0.6)
+        ax7.scatter(switching_times, switching_wp_to, c='blue', marker='s', s=100, label='To', alpha=0.6)
+
+        # 连线
+        for i in range(len(switching_times)):
+            ax7.plot([switching_times[i], switching_times[i]],
+                    [switching_wp_from[i], switching_wp_to[i]],
+                    'k-', alpha=0.3)
+
+    ax7.set_yticks(range(len(wp_names)))
+    ax7.set_yticklabels(wp_names, fontsize=9)
+    ax7.set_xlabel('Water Level at Switching (m)', fontsize=11)
+    ax7.set_ylabel('Working Point', fontsize=11)
+    ax7.set_title(f'Switching Events (n={len(switching_times)})', fontsize=12, fontweight='bold')
+    ax7.legend()
+    ax7.grid(True, alpha=0.3)
+
+    # 子图8：误差直方图对比
+    ax8 = plt.subplot(3, 3, 8)
+    ax8.hist(result_gs['error'] * 100, bins=30, alpha=0.5, label='Gain-Scheduled', color='blue', edgecolor='black')
+    ax8.hist(result_single['error'] * 100, bins=30, alpha=0.5, label='Single-Point', color='red', edgecolor='black')
+    ax8.set_xlabel('Error (cm)', fontsize=11)
+    ax8.set_ylabel('Frequency', fontsize=11)
+    ax8.set_title('Error Distribution', fontsize=12, fontweight='bold')
+    ax8.legend()
+    ax8.grid(True, alpha=0.3, axis='y')
+
+    # 子图9：性能改善百分比
+    ax9 = plt.subplot(3, 3, 9)
+    improvement_mae = (result_single['mae'] - result_gs['mae']) / result_single['mae'] * 100
+    improvement_rmse = (result_single['rmse'] - result_gs['rmse']) / result_single['rmse'] * 100
+    improvement_max = (result_single['max_error'] - result_gs['max_error']) / result_single['max_error'] * 100
+
+    improvements = [improvement_mae, improvement_rmse, improvement_max]
+    colors = ['green' if imp > 0 else 'red' for imp in improvements]
+
+    ax9.bar(range(3), improvements, color=colors, alpha=0.7, edgecolor='black')
+    ax9.set_xticks(range(3))
+    ax9.set_xticklabels(['MAE', 'RMSE', 'Max Error'], fontsize=9)
+    ax9.set_ylabel('Improvement (%)', fontsize=11)
+    ax9.set_title('Performance Improvement', fontsize=12, fontweight='bold')
+    ax9.axhline(0, color='black', linestyle='-', linewidth=1)
+    ax9.grid(True, alpha=0.3, axis='y')
+
+    # 在柱状图上标注数值
+    for i, imp in enumerate(improvements):
+        ax9.text(i, imp + 2 if imp > 0 else imp - 2, f'{imp:.1f}%',
+                ha='center', va='bottom' if imp > 0 else 'top', fontweight='bold')
+
+    plt.tight_layout()
+    plt.savefig('gain_scheduled_mpc_comparison.png', dpi=150, bbox_inches='tight')
+    print(f" 图片已保存: gain_scheduled_mpc_comparison.png")
+
+
+def print_summary(result_gs: Dict, result_single: Dict, working_points: List[WorkingPoint]):
+    """打印性能对比总结"""
+    print("\n" + "="*80)
+    print("增益调度MPC vs 单工作点MPC性能对比")
+    print("="*80)
+
+    print(f"\n【工作点配置】")
+    print("-" * 80)
+    for wp in working_points:
+        print(f"  {wp.name}: h={wp.h}m, K={wp.K:.4f}, τ={wp.tau:.1f}s")
+
+    print(f"\n【测试1】增益调度MPC（{len(working_points)}个工作点）")
+    print("-" * 80)
+    print(f"  MAE           = {result_gs['mae']*100:.2f} cm")
+    print(f"  RMSE          = {result_gs['rmse']*100:.2f} cm")
+    print(f"  最大误差      = {result_gs['max_error']*100:.2f} cm")
+    print(f"  工作点切换次数 = {len(result_gs['switching_history'])}")
+
+    print(f"\n【测试2】单工作点MPC（基准）")
+    print("-" * 80)
+    print(f"  MAE           = {result_single['mae']*100:.2f} cm")
+    print(f"  RMSE          = {result_single['rmse']*100:.2f} cm")
+    print(f"  最大误差      = {result_single['max_error']*100:.2f} cm")
+
+    print(f"\n【性能改善分析】")
+    print("-" * 80)
+    improvement_mae = (result_single['mae'] - result_gs['mae']) / result_single['mae'] * 100
+    improvement_rmse = (result_single['rmse'] - result_gs['rmse']) / result_single['rmse'] * 100
+    improvement_max = (result_single['max_error'] - result_gs['max_error']) / result_single['max_error'] * 100
+
+    print(f"  MAE改善       = {improvement_mae:.1f}%")
+    print(f"  RMSE改善      = {improvement_rmse:.1f}%")
+    print(f"  最大误差改善   = {improvement_max:.1f}%")
+
+    # 判定
+    if improvement_mae > 30:
+        verdict = " 显著改善：增益调度效果显著（>30%）"
+    elif improvement_mae > 15:
+        verdict = "⭕ 明显改善：增益调度效果明显（15-30%）"
+    elif improvement_mae > 5:
+        verdict = "△ 轻微改善：增益调度有一定效果（5-15%）"
+    else:
+        verdict = "️  改善有限：增益调度效果不明显（<5%）"
+
+    print(f"\n  综合评价：{verdict}")
+
+    print(f"\n【关键发现】")
+    print("-" * 80)
+    if improvement_mae > 20:
+        print("   增益调度MPC成功解决了大范围操作的非线性问题")
+        print("   多工作点策略显著提升了控制性能")
+        print("   推荐在实际系统中使用增益调度MPC")
+    elif improvement_mae > 10:
+        print("  ⭕ 增益调度MPC带来了明显的性能提升")
+        print("   可以考虑增加工作点数量以进一步改善")
+    else:
+        print("  ️  增益调度效果不如预期")
+        print("   建议检查工作点选择是否合理")
+        print("   或者考虑其他非线性补偿策略")
+
+    print("\n" + "="*80)
+
+
+def main():
+    """主测试函数"""
+    print("="*80)
+    print("增益调度MPC（多工作点分段线性化MPC）性能测试")
+    print("="*80)
+
+    # 创建多个工作点
+    print("\n【步骤1】创建工作点...")
+    working_points = create_working_points(
+        h_range=(2.3, 2.8),  # 水位范围（避开下游水位2.2m）
+        n_points=3,          # 3个工作点
+        a_nominal=2.0,
+        dt=10.0
+    )
+    print(f"   创建了{len(working_points)}个工作点")
+
+    # 创建MPC配置
+    mpc_config = FirstOrderMPCConfig(
+        prediction_horizon=15,
+        control_horizon=10,
+        dt=10.0,
+        Q=100.0,
+        R=1.0,
+        Qf=1000.0,
+        u_min=0.1,
+        u_max=4.0,
+        du_max=0.5,
+        solver='OSQP',
+        verbose=False
+    )
+
+    # 创建增益调度MPC
+    print("\n【步骤2】创建增益调度MPC...")
+    gs_mpc = GainScheduledMPC(
+        working_points=working_points,
+        mpc_config=mpc_config,
+        switching_mode='nearest'
+    )
+
+    # 创建单工作点MPC（基准）
+    print("\n【步骤3】创建单工作点MPC（基准）...")
+    K_mid, tau_mid = compute_linearization_at_point(2.5, 2.0, 10.0)
+    single_mpc = FirstOrderMPC(K=K_mid, tau=tau_mid, config=mpc_config)
+    print(f"   单工作点MPC: K={K_mid:.4f}, τ={tau_mid:.1f}s")
+
+    # 运行增益调度MPC测试
+    print("\n【步骤4】运行增益调度MPC测试...")
+    result_gs = run_gain_scheduled_mpc_test(gs_mpc, use_nonlinear=True)
+    print(f"   增益调度MPC - MAE = {result_gs['mae']*100:.2f} cm")
+
+    # 运行单工作点MPC测试（对比）
+    print("\n【步骤5】运行单工作点MPC测试...")
+    # 使用相同的测试框架，但用单工作点MPC控制器
+    result_single = run_single_point_mpc_test(single_mpc, use_nonlinear=True)
+    print(f"   单工作点MPC - MAE = {result_single['mae']*100:.2f} cm")
+
+    # 可视化对比
+    print("\n【步骤6】生成对比可视化...")
+    visualize_gain_scheduled_results(result_gs, result_single, working_points)
+
+    # 打印详细总结
+    print_summary(result_gs, result_single, working_points)
+
+    print("\n测试完成！")
+
+
+if __name__ == "__main__":
+    main()

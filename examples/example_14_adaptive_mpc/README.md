@@ -30,7 +30,7 @@ MPC通过预测模型和优化算法实现最优控制
 
 ```bash
 cd examples/example_14_adaptive_mpc
-PYTHONPATH=../.. python example_14_adaptive_mpc.py
+PYTHONPATH=../.. python code/example_14_adaptive_mpc.py
 ```
 
 ## 输出结果
@@ -41,7 +41,10 @@ PYTHONPATH=../.. python example_14_adaptive_mpc.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_14_adaptive_mpc_control.gif`
+
+![动画](outputs\animations\example_14_adaptive_mpc_control.gif)
+- `outputs/animations/example_14_parameter_convergence.gif`
 
 ## 技术要点
 

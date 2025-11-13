@@ -162,12 +162,12 @@ def run_simulation(config):
     # 创建求解器
     print("[1] 创建求解器...")
     solvers = create_solvers(config)
-    print(f"✓ 创建了 {len(solvers)} 个求解器: {list(solvers.keys())}")
+    print(f" 创建了 {len(solvers)} 个求解器: {list(solvers.keys())}")
 
     # 初始化
     print("[2] 初始化...")
     initialize_solvers(solvers, config)
-    print("✓ 初始化完成")
+    print(" 初始化完成")
     print()
 
     # 准备模拟
@@ -285,7 +285,7 @@ def run_simulation(config):
             print()
 
     print()
-    print("✓ 模拟完成!")
+    print(" 模拟完成!")
     print()
 
     # 保存结果
@@ -297,7 +297,7 @@ def run_simulation(config):
     if save_format == 'npz':
         output_file = save_path / 'simulation_results.npz'
         np.savez(output_file, times=np.array(output_times), **{k: np.array(v) for k, v in output.items()})
-        print(f"✓ 结果已保存: {output_file}")
+        print(f" 结果已保存: {output_file}")
 
     # 可视化
     if output_config.get('create_plots', True):
@@ -338,7 +338,7 @@ def run_simulation(config):
         plot_dpi = output_config.get('plot_dpi', 150)
         plot_file = save_path / f'simulation_results.{plot_format}'
         plt.savefig(plot_file, dpi=plot_dpi)
-        print(f"✓ 图表已保存: {plot_file}")
+        print(f" 图表已保存: {plot_file}")
 
     print()
     print("=" * 70)

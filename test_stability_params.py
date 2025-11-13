@@ -112,4 +112,4 @@ for idx, config in enumerate(configs):
 
 plt.tight_layout()
 plt.savefig('stability_params_comparison.png', dpi=150, bbox_inches='tight')
-print(f"\n✅ Comparison plot saved: stability_params_comparison.png")
+print(f"\n Comparison plot saved: stability_params_comparison.png")

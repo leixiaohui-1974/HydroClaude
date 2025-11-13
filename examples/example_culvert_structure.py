@@ -55,12 +55,12 @@ def example_1_basic_culvert_flow():
         outlet_elevation=99.5,
         shape="rectangular",
         width=2.5,
-        height=1.3,  # A ≈ 3.25 m² vs 圆形 π*1² ≈ 3.14 m²
+        height=1.3,  # A ~= 3.25 m^2 vs 圆形 pi*1^2 ~= 3.14 m^2
         n_barrels=1
     )
 
     print("\n涵洞参数对比：")
-    print(f"{'类型':>12} {'断面':>15} {'断面积(m²)':>15} {'湿周(m)':>15} {'水力直径(m)':>15}")
+    print(f"{'类型':>12} {'断面':>15} {'断面积(m^2)':>15} {'湿周(m)':>15} {'水力直径(m)':>15}")
     print("-" * 78)
 
     props_c = culvert_circular.properties()
@@ -68,7 +68,7 @@ def example_1_basic_culvert_flow():
 
     print(f"{'圆形':>12} {'D=2.0m':>15} {props_c['full_area_per_barrel']:>15.2f} "
           f"{props_c['full_perimeter']:>15.2f} {props_c['hydraulic_diameter']:>15.2f}")
-    print(f"{'矩形':>12} {'2.5m×1.3m':>15} {props_r['full_area_per_barrel']:>15.2f} "
+    print(f"{'矩形':>12} {'2.5mx1.3m':>15} {props_r['full_area_per_barrel']:>15.2f} "
           f"{props_r['full_perimeter']:>15.2f} {props_r['hydraulic_diameter']:>15.2f}")
 
     # 过流计算
@@ -76,7 +76,7 @@ def example_1_basic_culvert_flow():
     h_downstream = 101.5
 
     print(f"\n过流计算（上游 {h_upstream:.1f}m，下游 {h_downstream:.1f}m）：")
-    print(f"{'类型':>12} {'流态':>15} {'流量(m³/s)':>15} {'流速(m/s)':>12} "
+    print(f"{'类型':>12} {'流态':>15} {'流量(m^3/s)':>15} {'流速(m/s)':>12} "
           f"{'摩阻(m)':>12} {'局部(m)':>12}")
     print("-" * 90)
 
@@ -143,8 +143,8 @@ def example_2_inlet_vs_outlet_control():
 
     # 不同水位组合
     print(f"\n过流对比：")
-    print(f"{'上游(m)':>10} {'下游(m)':>10} {'短陡Q(m³/s)':>15} {'流态':>15} "
-          f"{'长缓Q(m³/s)':>15} {'流态':>15}")
+    print(f"{'上游(m)':>10} {'下游(m)':>10} {'短陡Q(m^3/s)':>15} {'流态':>15} "
+          f"{'长缓Q(m^3/s)':>15} {'流态':>15}")
     print("-" * 90)
 
     water_levels = [
@@ -199,7 +199,7 @@ def example_3_energy_loss_analysis():
     lengths = [20, 40, 60, 80, 100]
 
     print(f"\n能量损失分布：")
-    print(f"{'长度(m)':>10} {'流量(m³/s)':>15} {'摩阻(m)':>12} {'局部(m)':>12} "
+    print(f"{'长度(m)':>10} {'流量(m^3/s)':>15} {'摩阻(m)':>12} {'局部(m)':>12} "
           f"{'总损失(m)':>12} {'摩阻占比(%)':>15}")
     print("-" * 90)
 
@@ -254,7 +254,7 @@ def example_4_multiple_barrels():
     barrel_counts = [1, 2, 3, 4]
 
     print(f"\n过流能力对比：")
-    print(f"{'孔数':>8} {'总流量(m³/s)':>15} {'单孔流量(m³/s)':>18} "
+    print(f"{'孔数':>8} {'总流量(m^3/s)':>15} {'单孔流量(m^3/s)':>18} "
           f"{'单孔流速(m/s)':>15} {'增幅(%)':>12}")
     print("-" * 80)
 
@@ -323,7 +323,7 @@ def example_5_inverted_siphon():
     print(f"  进口高程: {props['inlet_elevation']:.2f} m")
     print(f"  出口高程: {props['outlet_elevation']:.2f} m")
     print(f"  高差: {props['outlet_elevation'] - props['inlet_elevation']:.2f} m（逆坡）")
-    print(f"  断面: {props['width']:.1f}m × {props['height']:.1f}m")
+    print(f"  断面: {props['width']:.1f}m x {props['height']:.1f}m")
     print(f"  孔数: {props['n_barrels']}")
     print(f"  弯头数: {props['n_bends']}")
 
@@ -333,7 +333,7 @@ def example_5_inverted_siphon():
 
     print(f"\n下游水位固定: {h_downstream:.1f} m")
     print(f"\n过流能力分析：")
-    print(f"{'上游水位(m)':>15} {'可用水头(m)':>15} {'流量(m³/s)':>15} "
+    print(f"{'上游水位(m)':>15} {'可用水头(m)':>15} {'流量(m^3/s)':>15} "
           f"{'摩阻(m)':>12} {'局部(m)':>12}")
     print("-" * 84)
 
@@ -348,7 +348,7 @@ def example_5_inverted_siphon():
     print("\n倒虹吸特点：")
     print("  1. 出口高于进口，需足够的上游水位提供驱动水头")
     print("  2. 高差需计入总水头损失")
-    print("  3. 弯头损失显著（多个90°弯）")
+    print("  3. 弯头损失显著（多个90 deg弯）")
     print("  4. 需要排气和沉沙设施")
     print("  5. 适用于跨越道路、河道等低洼地")
 
@@ -364,13 +364,13 @@ def example_6_road_culvert_design():
     print("="*80)
 
     # 设计要求
-    Q_50yr = 12.0  # 50年一遇设计流量 12 m³/s
+    Q_50yr = 12.0  # 50年一遇设计流量 12 m^3/s
     h_downstream = 101.0  # 下游天然水位
     max_headwater = 103.5  # 最大允许上游水位（路基高程限制）
     max_velocity = 3.0  # 最大允许流速（防冲刷）
 
     print(f"\n设计标准：")
-    print(f"  设计流量: Q_50 = {Q_50yr:.1f} m³/s（50年一遇）")
+    print(f"  设计流量: Q_50 = {Q_50yr:.1f} m^3/s（50年一遇）")
     print(f"  下游水位: {h_downstream:.1f} m")
     print(f"  最大上游水位: {max_headwater:.1f} m（路基限制）")
     print(f"  最大流速: {max_velocity:.1f} m/s（防冲刷）")
@@ -415,7 +415,7 @@ def example_6_road_culvert_design():
                 height=height,
                 n_barrels=n_barrels
             )
-            section_str = f"{width:.1f}m×{height:.1f}m"
+            section_str = f"{width:.1f}mx{height:.1f}m"
 
         # 计算所需上游水位
         h_up = culvert.compute_backwater_effect(Q_50yr, h_downstream)
@@ -424,11 +424,11 @@ def example_6_road_culvert_design():
 
         # 评价
         if h_up > max_headwater:
-            evaluation = "✗ 壅水过高"
+            evaluation = " 壅水过高"
         elif v > max_velocity:
-            evaluation = "✗ 流速过大"
+            evaluation = " 流速过大"
         else:
-            evaluation = "✓ 合格"
+            evaluation = " 合格"
             suitable_designs.append((name, n_barrels, section_str, h_up, v))
 
         print(f"{name:>6} {n_barrels:>8} {section_str:>15} {h_up:>15.2f} "
@@ -471,7 +471,7 @@ def example_7_flow_regime_transition():
     print(f"\n固定上游水位: {h_upstream:.1f} m")
     print(f"变化下游水位: {h_downstream_values[0]:.1f} - {h_downstream_values[-1]:.1f} m")
 
-    print(f"\n{'下游(m)':>10} {'水头差(m)':>12} {'流态':>15} {'流量(m³/s)':>15} "
+    print(f"\n{'下游(m)':>10} {'水头差(m)':>12} {'流态':>15} {'流量(m^3/s)':>15} "
           f"{'流速(m/s)':>12}")
     print("-" * 78)
 

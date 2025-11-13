@@ -24,6 +24,8 @@ Date: 2025-10-30
 import sys
 import os
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")  # 非交互模式
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 
@@ -92,8 +94,8 @@ class HydropowerPlant:
         flood_limit_level = 105.0  # 防洪限制水位 (m)
         design_level = 110.0  # 设计水位 (m)
 
-        # 根据平均深度估算库容（假设平均深度30m，水面面积5 km²）
-        total_capacity = 5e6 * 30.0  # 150 million m³
+        # 根据平均深度估算库容（假设平均深度30m，水面面积5 km^2）
+        total_capacity = 5e6 * 30.0  # 150 million m^3
         dead_storage = 5e6 * dead_level * 0.3  # 死库容（粗略估算）
 
         self.reservoir = Reservoir(
@@ -104,7 +106,7 @@ class HydropowerPlant:
             normal_level=normal_level,
             flood_limit_level=flood_limit_level,
             design_level=design_level,
-            catchment_area=5e6,  # 5 km² 流域面积
+            catchment_area=5e6,  # 5 km^2 流域面积
             has_turbine=True,
             turbine_capacity=100.0,  # 100 MW
             hydraulic_head=normal_level - 50.0  # 净水头约50m
@@ -123,19 +125,19 @@ class HydropowerPlant:
             method='rk4'
         )
         # Initial condition
-        self.headrace.Q = np.ones(31) * 150.0  # 初始流量 150 m³/s
+        self.headrace.Q = np.ones(31) * 150.0  # 初始流量 150 m^3/s
 
     def _setup_surge_tank(self):
         """Setup surge tank / 设置调压井"""
         if self.plant_type == 'francis':
             # Throttled surge tank for medium/high head
-            # If we want area = 80 m², then diameter = sqrt(4 * 80 / π) ≈ 10.1 m
+            # If we want area = 80 m^2, then diameter = sqrt(4 * 80 / pi) ~= 10.1 m
             import math
             diameter = math.sqrt(4 * 80.0 / math.pi)
 
             self.surge_tank = ThrottledSurgeTank(
                 position=3000.0,      # At end of tunnel
-                diameter=diameter,    # ~10.1 m (for 80 m² area)
+                diameter=diameter,    # ~10.1 m (for 80 m^2 area)
                 min_level=50.0,       # 最低水位
                 max_level=110.0,      # 最高水位
                 orifice_diameter=2.5, # 阻抗孔直径
@@ -144,13 +146,13 @@ class HydropowerPlant:
             )
         else:
             # Simple surge tank for low head
-            # If we want area = 100 m², then diameter = sqrt(4 * 100 / π) ≈ 11.28 m
+            # If we want area = 100 m^2, then diameter = sqrt(4 * 100 / pi) ~= 11.28 m
             import math
             diameter_simple = math.sqrt(4 * 100.0 / math.pi)
 
             self.surge_tank = SimpleSurgeTank(
                 position=3000.0,
-                diameter=diameter_simple,  # ~11.28 m (for 100 m² area)
+                diameter=diameter_simple,  # ~11.28 m (for 100 m^2 area)
                 min_level=45.0,
                 max_level=105.0,
                 initial_level=90.0
@@ -178,7 +180,7 @@ class HydropowerPlant:
                 position=3400.0,
                 rated_power=self.capacity_mw,  # MW
                 rated_head=85.0,               # 设计水头 (m)
-                rated_flow=150.0,              # 设计流量 (m³/s)
+                rated_flow=150.0,              # 设计流量 (m^3/s)
                 rated_speed=500.0              # 额定转速 (rpm)
             )
         else:
@@ -242,9 +244,9 @@ class HydropowerPlant:
         H_penstock_inlet = H_surge
 
         # Friction losses in penstock (simplified estimate)
-        # Darcy-Weisbach: h_f = f * (L/D) * (V²/(2g))
-        # For penstock: L=400m, D=3m, V≈20m/s, f≈0.02
-        # h_f ≈ 0.02 * (400/3) * (20²/(2*9.81)) ≈ 54m
+        # Darcy-Weisbach: h_f = f * (L/D) * (V^2/(2g))
+        # For penstock: L=400m, D=3m, V~=20m/s, f~=0.02
+        # h_f ~= 0.02 * (400/3) * (20^2/(2*9.81)) ~= 54m
         h_loss_penstock = 5.0  # m (simplified estimate, assuming lower velocity)
 
         # Tailrace water level (approximate)
@@ -334,7 +336,7 @@ class HydropowerPlant:
                 print(f"t={self.time:6.1f}s | " +
                       f"H_res={self.reservoir.state.water_level:6.2f}m | " +
                       f"H_surge={self.surge_tank.water_level:6.2f}m | " +
-                      f"Q={Q_turbine:6.1f}m³/s | " +
+                      f"Q={Q_turbine:6.1f}m^3/s | " +
                       f"P={P/1e6:6.1f}MW | " +
                       f"η={eta*100:5.1f}%")
 
@@ -467,7 +469,7 @@ class HydropowerPlant:
             ax2.plot(t, self.state_history['turbine_flow'],
                     'g-', linewidth=2)
             ax2.set_xlabel('Time (s)', fontsize=12)
-            ax2.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+            ax2.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
             ax2.set_title('Turbine Flow - 水轮机流量', fontsize=14, fontweight='bold')
             ax2.grid(True, alpha=0.3)
 
@@ -520,7 +522,7 @@ class HydropowerPlant:
             ax2.plot(t, self.state_history['turbine_flow'],
                     'g-', linewidth=2)
             ax2.set_xlabel('Time (s)', fontsize=12)
-            ax2.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+            ax2.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
             ax2.set_title('Turbine Flow - 水轮机流量', fontsize=14, fontweight='bold')
             ax2.grid(True, alpha=0.3)
 
@@ -552,9 +554,9 @@ class HydropowerPlant:
         filename = f'hydropower_{case_name}_{self.plant_type}.png'
         filepath = os.path.join(output_dir, filename)
         plt.savefig(filepath, dpi=150, bbox_inches='tight')
-        print(f"✓ Results saved to: {filepath}")
+        print(f" Results saved to: {filepath}")
 
-        plt.show()
+        plt.close("all")  # 自动关闭图形
 
 
 def main():

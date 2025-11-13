@@ -119,9 +119,9 @@ print("=" * 80)
 
 # 检查是否真正收敛
 if result1['converged']:
-    print(f"✓ 求解器报告已收敛")
+    print(f" 求解器报告已收敛")
 else:
-    print(f"✗ 求解器报告未收敛！")
+    print(f" 求解器报告未收敛！")
 
 print(f"  最终误差: {result1['final_error']*100:.4f}%")
 print(f"  目标容差: {0.001*100:.4f}%")
@@ -139,16 +139,16 @@ print("关键发现")
 print("=" * 80)
 
 if Q1_max_error > 5.0:
-    print(f"⚠️  误差过大 ({Q1_max_error:.2f}%)，可能原因:")
+    print(f"️  误差过大 ({Q1_max_error:.2f}%)，可能原因:")
     print(f"  1. 求解器未真正收敛")
     print(f"  2. 闸门参数配置导致数值不稳定")
     print(f"  3. 网格分辨率不足")
 elif Q1_max_error > 1.0:
-    print(f"⚠️  误差较大 ({Q1_max_error:.2f}%)，主要问题:")
+    print(f"️  误差较大 ({Q1_max_error:.2f}%)，主要问题:")
     print(f"  1. 闸门附近流量不守恒")
     print(f"  2. 需要更细的收敛容差")
 else:
-    print(f"✓ 误差在可接受范围 ({Q1_max_error:.2f}%)")
+    print(f" 误差在可接受范围 ({Q1_max_error:.2f}%)")
 
 print(f"\n建议:")
 if not result1['converged']:

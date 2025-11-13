@@ -65,10 +65,10 @@ def test_precision_fixes():
     print("=" * 80)
     print()
     print("应用的修复（基于SWMM方法学习）：")
-    print("  ✓ 修复1：降低截断阈值 (1e-4 → 1e-6) - 保守改进")
-    print("  ✓ 修复2：SWMM风格强阻尼 (omega: 0.95 → 0.5) ⭐ 关键改进")
-    print("  ✓ 修复3：增加迭代上限 (5000 → 10000)")
-    print("  ✓ 修复4：收紧收敛容差 (0.01 → 0.001)")
+    print("   修复1：降低截断阈值 (1e-4 → 1e-6) - 保守改进")
+    print("   修复2：SWMM风格强阻尼 (omega: 0.95 → 0.5) ⭐ 关键改进")
+    print("   修复3：增加迭代上限 (5000 → 10000)")
+    print("   修复4：收紧收敛容差 (0.01 → 0.001)")
     print()
     print("SWMM启发：")
     print("  - omega=0.5提供强阻尼（70%记忆+30%新值）")
@@ -159,13 +159,13 @@ def test_precision_fixes():
     print()
 
     if Q_max_error <= target_error:
-        print("🎉 恭喜！已达到0.5%的目标精度！")
+        print(" 恭喜！已达到0.5%的目标精度！")
     elif Q_max_error <= target_error * 1.2:
-        print("✓ 非常接近！误差在目标的120%以内")
+        print(" 非常接近！误差在目标的120%以内")
     elif Q_max_error <= target_error * 2.0:
-        print("✓ 显著改善！误差在目标的2倍以内")
+        print(" 显著改善！误差在目标的2倍以内")
     else:
-        print("⚠  仍需进一步优化")
+        print("  仍需进一步优化")
 
     print()
     print("=" * 80)
@@ -185,11 +185,11 @@ def test_precision_fixes():
     print()
 
     if max_error_improvement >= 0.8:
-        print("✓ 实际改善符合或超出预期！")
+        print(" 实际改善符合或超出预期！")
     elif max_error_improvement >= 0.5:
-        print("✓ 实际改善接近预期下限")
+        print(" 实际改善接近预期下限")
     else:
-        print("⚠  实际改善低于预期，可能需要进一步调试")
+        print("  实际改善低于预期，可能需要进一步调试")
 
     print()
     print("=" * 80)
@@ -198,7 +198,7 @@ def test_precision_fixes():
     print()
 
     if Q_max_error <= 0.5:
-        print("✅ 成功！通过系统修复精度问题，达到了0.5%的目标精度。")
+        print(" 成功！通过系统修复精度问题，达到了0.5%的目标精度。")
         print()
         print("修复总结：")
         print("  1. 降低截断阈值避免硬截断误差")
@@ -209,14 +209,14 @@ def test_precision_fixes():
         print("这些修复证明了通过仔细的理论分析和数值优化，")
         print("可以在不改变算法框架的情况下显著提升精度。")
     elif Q_max_error <= 1.0:
-        print("✅ 显著改善！虽未完全达到0.5%目标，但已将误差降至1%以内。")
+        print(" 显著改善！虽未完全达到0.5%目标，但已将误差降至1%以内。")
         print()
         print("进一步优化建议：")
         print("  1. 微调smooth_weight参数")
         print("  2. 进一步优化Preissmann参数")
         print("  3. 研究闸门边界条件的更精确处理方法")
     else:
-        print("⚠  部分改善。修复提升了精度，但仍有优化空间。")
+        print("  部分改善。修复提升了精度，但仍有优化空间。")
         print()
         print("可能的原因：")
         print("  1. 某些修复的实际效果低于预期")

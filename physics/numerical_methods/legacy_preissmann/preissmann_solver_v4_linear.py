@@ -123,7 +123,7 @@ class PreissmannSolverV4Linear:
             if residual < self.tolerance:
                 self.last_iterations = iteration + 1
                 if self.verbose:
-                    print(f"  ✅ 收敛")
+                    print(f"   收敛")
                 break
         else:
             self.last_iterations = self.max_iter
@@ -286,7 +286,7 @@ if __name__ == "__main__":
         )
         
         if np.any(np.isnan(h)) or np.any(np.isnan(Q)):
-            print("  ❌ 出现NaN，停止")
+            print("   出现NaN，停止")
             break
         
         current_mass = np.sum(h[:-1] * width * dx)
@@ -298,5 +298,5 @@ if __name__ == "__main__":
         print(f"  max|Q|: {np.max(np.abs(Q)):.6e}")
     
     print(f"\n最终: 质量误差 {mass_error:.6f}%")
-    print(f"  目标 < 1%: {'✅' if abs(mass_error) < 1.0 else '❌'}")
+    print(f"  目标 < 1%: {'' if abs(mass_error) < 1.0 else ''}")
     print("="*80)

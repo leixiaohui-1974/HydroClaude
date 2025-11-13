@@ -1,32 +1,32 @@
 {
   "example_01_canal_flow": {
     "success": false,
-    "elapsed_time": 0.03310132026672363,
+    "elapsed_time": 0.13763976097106934,
     "returncode": 1,
-    "stderr_preview": "Traceback (most recent call last):\n  File \"/home/user/HydroClaude/examples/example_01_canal_flow/code/06_animation.py\", line 16, in <module>\n    import numpy as np\nModuleNotFoundError: No module named 'numpy'\n"
+    "stderr_preview": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_01_canal_flow\\batch_modify_scripts.py\", line 170, in <module>\n    modify_script_03()\n    ~~~~~~~~~~~~~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_01_canal_flow\\batch_modify_scripts.py\", line 18, in modify_script_03\n    with open(script_path, 'r') as f:\n         ~~~~^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'code/03_idz_identif"
   },
   "example_02_pump_system": {
-    "success": false,
-    "elapsed_time": 0.05081343650817871,
-    "returncode": 1,
-    "stderr_preview": "Traceback (most recent call last):\n  File \"/home/user/HydroClaude/examples/example_02_pump_system/code/example_02_pump_system.py\", line 4, in <module>\n    from physics.tank import Tank\n  File \"/home/user/HydroClaude/physics/tank.py\", line 1, in <module>\n    from core.base import HydraulicComponent\n  File \"/home/user/HydroClaude/core/base.py\", line 3, in <module>\n    import numpy as np\nModuleNotFoundError: No module named 'numpy'\n"
+    "success": true,
+    "elapsed_time": 0.3518834114074707,
+    "returncode": 0,
+    "stderr_preview": ""
   },
   "example_02_spillway_cascade": {
     "success": false,
-    "elapsed_time": 0.030662059783935547,
+    "elapsed_time": 1.8734078407287598,
     "returncode": 1,
-    "stderr_preview": "Traceback (most recent call last):\n  File \"/home/user/HydroClaude/examples/example_02_spillway_cascade/example_02_spillway_simple.py\", line 17, in <module>\n    import numpy as np\nModuleNotFoundError: No module named 'numpy'\n"
+    "stderr_preview": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_02_spillway_cascade\\example_02_spillway_simple.py\", line 302, in <module>\n    main()\n    ~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_02_spillway_cascade\\example_02_spillway_simple.py\", line 281, in main\n    demo_spillway()\n    ~~~~~~~~~~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_02_spillway_cascade\\example_02_spillway_simple"
   },
   "example_03_complex_network": {
-    "success": false,
-    "elapsed_time": 0.06844067573547363,
-    "returncode": 1,
-    "stderr_preview": "Traceback (most recent call last):\n  File \"/home/user/HydroClaude/examples/example_03_complex_network/code/example_03_complex_network.py\", line 5, in <module>\n    from solvers.coupled_solver import CoupledNetworkSolver\n  File \"/home/user/HydroClaude/solvers/coupled_solver.py\", line 4, in <module>\n    from solvers.hardy_cross import HardyCrossSolver\n  File \"/home/user/HydroClaude/solvers/hardy_cross.py\", line 3, in <module>\n    import numpy as np\nModuleNotFoundError: No module named 'numpy'\n"
+    "success": true,
+    "elapsed_time": 0.9800093173980713,
+    "returncode": 0,
+    "stderr_preview": ""
   },
   "example_03_turbine_demo": {
     "success": false,
-    "elapsed_time": 0.027383804321289062,
+    "elapsed_time": 1.8948030471801758,
     "returncode": 1,
-    "stderr_preview": "Traceback (most recent call last):\n  File \"/home/user/HydroClaude/examples/example_03_turbine_demo/example_03_turbine_comparison.py\", line 22, in <module>\n    import numpy as np\nModuleNotFoundError: No module named 'numpy'\n"
+    "stderr_preview": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_03_turbine_demo\\example_03_turbine_comparison.py\", line 374, in <module>\n    main()\n    ~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_03_turbine_demo\\example_03_turbine_comparison.py\", line 333, in main\n    plot_efficiency_curves(francis_data, kaplan_data, pelton_data)\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\OneDrive\\Docum"
   }
 }

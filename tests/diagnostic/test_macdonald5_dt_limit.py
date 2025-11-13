@@ -3,8 +3,22 @@ MacDonald Test 5 时间步长限制测试
 
 测试手动限制dt_max是否能解决不稳定问题
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def compute_normal_depth(Q, B, S0, n, h_guess=1.0, tol=1e-6, max_iter=100):
@@ -92,7 +106,7 @@ def test_with_dt_limit():
 
             # 检查NaN
             if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
-                print(f"❌ NaN出现在第{n_steps}步 (t={solver.t:.2f}s, dt={dt:.6f}s)")
+                print(f" NaN出现在第{n_steps}步 (t={solver.t:.2f}s, dt={dt:.6f}s)")
                 failed = True
                 break
 
@@ -105,7 +119,7 @@ def test_with_dt_limit():
         if not failed:
             h_mean = np.mean(solver.h)
             mass_error = abs(solver.get_mass_conservation_error())
-            print(f"\n✅ 成功运行到{solver.t:.2f}s")
+            print(f"\n 成功运行到{solver.t:.2f}s")
             print(f"   总步数: {n_steps}")
             print(f"   dt被限制次数: {dt_limited_count} ({dt_limited_count/n_steps*100:.1f}%)")
             print(f"   最终h_mean: {h_mean:.4f}m")
@@ -163,7 +177,7 @@ def test_optimal_dt_max():
         n_steps += 1
 
         if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
-            print(f"❌ NaN出现在第{n_steps}步")
+            print(f" NaN出现在第{n_steps}步")
             return False
 
         if n_steps % 100 == 0:
@@ -198,27 +212,27 @@ def test_optimal_dt_max():
     success = True
 
     if h_error < 10.0:
-        print(f"  ✅ 水深误差 {h_error:.2f}% < 10%")
+        print(f"   水深误差 {h_error:.2f}% < 10%")
     else:
-        print(f"  ❌ 水深误差 {h_error:.2f}% >= 10%")
+        print(f"   水深误差 {h_error:.2f}% >= 10%")
         success = False
 
     if mass_error < 10.0:
-        print(f"  ✅ 质量守恒误差 {mass_error:.2f}% < 10%")
+        print(f"   质量守恒误差 {mass_error:.2f}% < 10%")
     else:
-        print(f"  ❌ 质量守恒误差 {mass_error:.2f}% >= 10%")
+        print(f"   质量守恒误差 {mass_error:.2f}% >= 10%")
         success = False
 
     if Fr_mean < 1.0:
-        print(f"  ✅ 平均Froude数 {Fr_mean:.3f} < 1 (缓流)")
+        print(f"   平均Froude数 {Fr_mean:.3f} < 1 (缓流)")
     else:
-        print(f"  ❌ 平均Froude数 {Fr_mean:.3f} >= 1")
+        print(f"   平均Froude数 {Fr_mean:.3f} >= 1")
         success = False
 
     if success:
-        print(f"\n✅ MacDonald Test 5 通过（使用dt_max={dt_max}s）")
+        print(f"\n MacDonald Test 5 通过（使用dt_max={dt_max}s）")
     else:
-        print(f"\n⚠️ MacDonald Test 5 未完全满足验收标准")
+        print(f"\n️ MacDonald Test 5 未完全满足验收标准")
 
     return success
 

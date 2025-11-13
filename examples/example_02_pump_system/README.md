@@ -30,7 +30,7 @@
 
 ```bash
 cd examples/example_02_pump_system
-PYTHONPATH=../.. python example_02_pump_system.py
+PYTHONPATH=../.. python code/example_02_pump_system.py
 ```
 
 ## 输出结果
@@ -41,7 +41,9 @@ PYTHONPATH=../.. python example_02_pump_system.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_02_pump_system_startup.gif`
+
+![动画](outputs\animations\example_02_pump_system_startup.gif)
 
 ## 技术要点
 

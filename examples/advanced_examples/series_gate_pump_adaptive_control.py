@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 串联闸泵群明渠系统自适应控制案例
 
@@ -39,7 +40,7 @@ class SimplifiedMPC:
     """
     简化MPC控制器
 
-    使用线性化模型：Δh/Δt ≈ (Q_in - Q_out) / A
+    使用线性化模型：Δh/Δt ~= (Q_in - Q_out) / A
     """
 
     def __init__(self, pool_areas: List[float], dt: float = 60.0):
@@ -462,7 +463,7 @@ class SeriesGatePumpSystem:
         for i in range(4):
             ax2.plot(time_h, self.history['flows'][f'Q{i}'], linewidth=2, label=f'Q{i}')
         ax2.set_xlabel('Time (hours)')
-        ax2.set_ylabel('Flow Rate (m³/s)')
+        ax2.set_ylabel('Flow Rate (m^3/s)')
         ax2.set_title('Flow Rates', fontweight='bold')
         ax2.legend()
         ax2.grid(True, alpha=0.3)
@@ -546,10 +547,10 @@ class SeriesGatePumpSystem:
   泵站最终转速: {self.history['pump_speed'][-1]:.1f}rpm
 
 流量分配:
-  上游流量: {self.history['flows']['Q0'][-1]:.2f}m³/s
-  闸门1流量: {self.history['flows']['Q1'][-1]:.2f}m³/s
-  闸门2流量: {self.history['flows']['Q2'][-1]:.2f}m³/s
-  泵站流量: {self.history['flows']['Q3'][-1]:.2f}m³/s
+  上游流量: {self.history['flows']['Q0'][-1]:.2f}m^3/s
+  闸门1流量: {self.history['flows']['Q1'][-1]:.2f}m^3/s
+  闸门2流量: {self.history['flows']['Q2'][-1]:.2f}m^3/s
+  泵站流量: {self.history['flows']['Q3'][-1]:.2f}m^3/s
         """
 
         ax8.text(0.1, 0.5, stats_text, fontsize=10, family='monospace',

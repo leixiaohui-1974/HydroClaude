@@ -9,6 +9,7 @@
 日期: 2025-10-22
 """
 
+import os
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
@@ -57,7 +58,7 @@ def analyze_jacobian_structure():
     for i in range(nx):
         h_idx = 2 * i
         Q_idx = 2 * i + 1
-        print(f"  节点 i={i}: h_{i} → index {h_idx}, Q_{i} → index {Q_idx}")
+        print(f"  节点 i={i}: h_{i} -> index {h_idx}, Q_{i} -> index {Q_idx}")
     print()
 
     print("方程索引对应关系:")
@@ -82,7 +83,7 @@ def analyze_jacobian_structure():
     for idx, val in enumerate(diag):
         var_name = f"h_{idx//2}" if idx % 2 == 0 else f"Q_{idx//2}"
         eq_desc = get_equation_description(idx, nx)
-        zero_str = "  ← ZERO!" if abs(val) < 1e-10 else ""
+        zero_str = "  <- ZERO!" if abs(val) < 1e-10 else ""
         print(f"  J[{idx:2d},{idx:2d}] (∂F_{idx}/∂{var_name}): {val:12.6f}  ({eq_desc}){zero_str}")
     print()
 
@@ -105,7 +106,7 @@ def analyze_jacobian_structure():
     print()
 
     if rank < 2 * nx:
-        print("⚠ 矩阵奇异！寻找线性相关的行...")
+        print(" 矩阵奇异！寻找线性相关的行...")
         # 使用SVD找到零空间
         U_svd, s, Vt = np.linalg.svd(J_dense)
         print(f"奇异值: {s}")

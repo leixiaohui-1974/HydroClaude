@@ -26,6 +26,8 @@ Date: 2025-10-30
 import sys
 import os
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")  # 非交互模式
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 from scipy.optimize import differential_evolution
@@ -70,7 +72,7 @@ class NetworkPipe:
         self.diameter = diameter
         self.roughness = roughness
         self.flow = 0.0
-        self.g = 9.81  # m/s²
+        self.g = 9.81  # m/s^2
 
     def head_loss(self, flow):
         """
@@ -78,7 +80,7 @@ class NetworkPipe:
         使用Hazen-Williams公式计算水头损失
 
         Args:
-            flow: Flow rate (m³/s)
+            flow: Flow rate (m^3/s)
 
         Returns:
             Head loss (m)
@@ -97,14 +99,14 @@ class NetworkPipe:
 
         # Darcy-Weisbach friction factor (Swamee-Jain approximation)
         # f = 0.25 / [log10(ε/(3.7D) + 5.74/Re^0.9)]^2
-        Re = abs(velocity * self.diameter / 1e-6)  # ν ≈ 1e-6 m²/s for water
+        Re = abs(velocity * self.diameter / 1e-6)  # ν ~= 1e-6 m^2/s for water
         if Re < 2000:
             f = 64.0 / Re if Re > 0 else 0.0
         else:
             eps_D = (self.roughness / 1000.0) / self.diameter
             f = 0.25 / (np.log10(eps_D / 3.7 + 5.74 / (Re ** 0.9))) ** 2 if Re > 0 else 0.0
 
-        # Head loss: h_f = f * (L/D) * (V²/2g)
+        # Head loss: h_f = f * (L/D) * (V^2/2g)
         h_loss = f * (self.length / self.diameter) * (velocity ** 2) / (2.0 * self.g)
 
         return h_loss
@@ -225,7 +227,7 @@ class WaterSupplyNetwork:
         tower_node.head = 30.0
         self.nodes['TOWER'] = tower_node
 
-        print(f"✓ Created {len(self.nodes)} nodes")
+        print(f" Created {len(self.nodes)} nodes")
 
         # Pipe data: [node1, node2, length, diameter, roughness]
         self.pipes = {}
@@ -298,7 +300,7 @@ class WaterSupplyNetwork:
             roughness=0.1
         )
 
-        print(f"✓ Created {len(self.pipes)} pipes")
+        print(f" Created {len(self.pipes)} pipes")
 
         # Build pipe connections dict for solvers
         self.pipe_connections = {}
@@ -337,7 +339,7 @@ class WaterSupplyNetwork:
             # H0 (shutoff head) is typically ~1.2x of design head
             pump_char = PumpCharacteristics(
                 H0=60.0,  # Shutoff head (关死扬程)
-                Q_design=0.3,  # 300 L/s = 0.3 m³/s
+                Q_design=0.3,  # 300 L/s = 0.3 m^3/s
                 H_design=50.0,  # Design head (设计扬程)
                 eta_design=0.85,  # Efficiency
                 n_rated=1500.0,  # Rated speed (rpm)
@@ -352,7 +354,7 @@ class WaterSupplyNetwork:
             pump.is_running = True
             self.pumps.append(pump)
 
-        print(f"✓ Created {len(self.pumps)} pump stations")
+        print(f" Created {len(self.pumps)} pump stations")
 
     def _setup_water_tower(self):
         """Setup water tower / 设置水塔"""
@@ -364,15 +366,15 @@ class WaterSupplyNetwork:
 
         self.water_tower = Tank(
             name='TOWER',
-            area=area,                      # 100 m² cross-section
-            volume_max=max_level * area,    # 4000 m³ (40m height)
-            volume_min=min_level * area,    # 1000 m³ (10m height)
+            area=area,                      # 100 m^2 cross-section
+            volume_max=max_level * area,    # 4000 m^3 (40m height)
+            volume_min=min_level * area,    # 1000 m^3 (10m height)
         )
         # Set initial level
         self.water_tower.state.volume = 30.0 * area  # 30m initial
         self.water_tower.state.level = 30.0
 
-        print(f"✓ Created water tower: {max_level}m max height")
+        print(f" Created water tower: {max_level}m max height")
 
     def _setup_demand_pattern(self):
         """Setup time-varying demand pattern / 设置时变需水模式"""
@@ -413,7 +415,7 @@ class WaterSupplyNetwork:
             'multiplier': pattern_multiplier
         }
 
-        print(f"✓ Setup 24-hour demand pattern")
+        print(f" Setup 24-hour demand pattern")
 
     def get_demand_multiplier(self, time_of_day):
         """
@@ -545,7 +547,7 @@ class WaterSupplyNetwork:
             converged = self.solve_hydraulics_newton()
 
             if not converged:
-                print(f"⚠️  Warning: Solution did not converge at t={time/3600:.1f}h")
+                print(f"  Warning: Solution did not converge at t={time/3600:.1f}h")
 
             # Calculate pump power
             total_pump_power = 0.0
@@ -772,9 +774,9 @@ class WaterSupplyNetwork:
         filename = f'water_supply_network_{self.network_size}.png'
         filepath = os.path.join(output_dir, filename)
         plt.savefig(filepath, dpi=150, bbox_inches='tight')
-        print(f"✓ Results saved to: {filepath}")
+        print(f" Results saved to: {filepath}")
 
-        plt.show()
+        plt.close("all")  # 自动关闭图形
 
 
 def main():

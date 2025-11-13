@@ -12,7 +12,13 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append('.')
 
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from utils.canal_utils import compute_steady_uniform_flow
 
 
@@ -30,14 +36,14 @@ def test_simple_steady_flow():
     n = 0.025    # Manning糙率
     g = 9.81
 
-    Q_target = 10.0  # 目标流量 (m³/s)
+    Q_target = 10.0  # 目标流量 (m^3/s)
 
     print(f"\n渠道参数：")
     print(f"  长度：{L} m")
     print(f"  宽度：{B} m")
     print(f"  底坡：{S0}")
     print(f"  Manning糙率：{n}")
-    print(f"  目标流量：{Q_target} m³/s")
+    print(f"  目标流量：{Q_target} m^3/s")
 
     # 计算理论均匀流水深
     h_uniform = compute_steady_uniform_flow(Q_target, B, S0, n, g)
@@ -71,11 +77,11 @@ def test_simple_steady_flow():
 
     # 分析结果
     print(f"\n结果分析：")
-    print(f"  收敛状态：{'✓ 收敛' if result['converged'] else '✗ 未收敛'}")
+    print(f"  收敛状态：{' 收敛' if result['converged'] else ' 未收敛'}")
     print(f"  迭代次数：{result['iterations']}")
     print(f"  流量守恒：")
-    print(f"    目标流量：{Q_target:.3f} m³/s")
-    print(f"    实际流量：{result['Q_mean']:.3f} m³/s")
+    print(f"    目标流量：{Q_target:.3f} m^3/s")
+    print(f"    实际流量：{result['Q_mean']:.3f} m^3/s")
     print(f"    误差：{result['Q_error_percent']:.2f}%")
 
     # 与理论解对比
@@ -100,15 +106,15 @@ def test_simple_steady_flow():
     ax.plot(x, result['h'], 'b-', linewidth=2, label='Hydrostatic reconstruction')
     ax.axhline(h_uniform, color='r', linestyle='--', linewidth=1.5, label=f'Uniform flow theory ({h_uniform:.3f}m)')
     ax.set_ylabel('Water depth (m)')
-    ax.set_title(f'Steady State Solution (Q={Q_target} m³/s)')
+    ax.set_title(f'Steady State Solution (Q={Q_target} m^3/s)')
     ax.legend()
     ax.grid(True, alpha=0.3)
 
     # 图2：流量分布
     ax = axes[1]
     ax.plot(x, result['Q'], 'g-', linewidth=2, label='Discharge')
-    ax.axhline(Q_target, color='k', linestyle='--', linewidth=1.5, label=f'Target ({Q_target} m³/s)')
-    ax.set_ylabel('Discharge (m³/s)')
+    ax.axhline(Q_target, color='k', linestyle='--', linewidth=1.5, label=f'Target ({Q_target} m^3/s)')
+    ax.set_ylabel('Discharge (m^3/s)')
     ax.set_title(f'Mass Conservation (error={result["Q_error_percent"]:.2f}%)')
     ax.legend()
     ax.grid(True, alpha=0.3)
@@ -134,13 +140,13 @@ def test_simple_steady_flow():
     converged_ok = result['converged']
 
     print(f"\n测试结果：")
-    print(f"  流量守恒：{'✓ PASS' if mass_ok else '✗ FAIL'} ({result['Q_error_percent']:.2f}% < 5%)")
-    print(f"  水深精度：{'✓ PASS' if depth_ok else '✗ FAIL'} ({h_error:.2f}% < 10%)")
-    print(f"  收敛性：{'✓ PASS' if converged_ok else '✗ FAIL'}")
+    print(f"  流量守恒：{' PASS' if mass_ok else ' FAIL'} ({result['Q_error_percent']:.2f}% < 5%)")
+    print(f"  水深精度：{' PASS' if depth_ok else ' FAIL'} ({h_error:.2f}% < 10%)")
+    print(f"  收敛性：{' PASS' if converged_ok else ' FAIL'}")
 
     overall_pass = mass_ok and depth_ok and converged_ok
 
-    print(f"\n总体结论：{'✓✓✓ 测试通过' if overall_pass else '✗✗✗ 测试失败'}")
+    print(f"\n总体结论：{' 测试通过' if overall_pass else ' 测试失败'}")
     print("=" * 70)
 
     return overall_pass, result

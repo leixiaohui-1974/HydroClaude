@@ -116,16 +116,16 @@ try:
     engine = SimulationEngine(str(config_file_path))
     engine.initialize()
 
-    # ✅ 验证使用了WENO3求解器
+    #  验证使用了WENO3求解器
     solver_class_name = engine.solver.__class__.__name__
-    print(f"✓ 求解器类型: {solver_class_name}")
+    print(f" 求解器类型: {solver_class_name}")
 
     if solver_class_name != 'GodunvFVMWENO3':
-        print(f"❌ 错误！应该使用WENO3，实际使用{solver_class_name}")
+        print(f" 错误！应该使用WENO3，实际使用{solver_class_name}")
         sys.exit(1)
 
-    print(f"✓ dt_max: {engine.solver.dt_max}")
-    print(f"✓ weno_eps: {engine.solver.weno_eps}")
+    print(f" dt_max: {engine.solver.dt_max}")
+    print(f" weno_eps: {engine.solver.weno_eps}")
     print()
 
     engine.run()
@@ -154,14 +154,14 @@ try:
 
     print(f"\n验证:")
     if mass_error_percent < 10.0:
-        print(f"  ✅ 质量守恒良好")
+        print(f"   质量守恒良好")
     else:
-        print(f"  ❌ 质量守恒差")
+        print(f"   质量守恒差")
 
     if Fr_upstream_avg > 0.8:
-        print(f"  ✅ 上游超临界维持")
+        print(f"   上游超临界维持")
     else:
-        print(f"  ❌ 上游超临界丢失")
+        print(f"   上游超临界丢失")
 
     print("="*70)
 

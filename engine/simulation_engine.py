@@ -69,13 +69,13 @@ class SimulationEngine:
         print("[1/3] 加载配置文件...")
         self.builder = ModelBuilder.from_config_file(str(self.config_file))
         self.config = self.builder.config
-        print("  ✓ 配置加载成功")
+        print("   配置加载成功")
         print()
 
         # 2. 构建求解器
         print("[2/3] 构建求解器...")
         self.solver = self.builder.build_solver()
-        print(f"  ✓ 求解器创建成功")
+        print(f"   求解器创建成功")
         print(f"    - 类型: {self.config['solver']['type']}")
         print(f"    - 网格数: {self.solver.n_cells}")
         print(f"    - dx = {self.solver.dx:.3f} m")
@@ -86,7 +86,7 @@ class SimulationEngine:
         print("[3/3] 准备输出...")
         output_dir = Path(self.config['output']['directory'])
         output_dir.mkdir(parents=True, exist_ok=True)
-        print(f"  ✓ 输出目录: {output_dir}")
+        print(f"   输出目录: {output_dir}")
         print()
 
         print("=" * 80)
@@ -209,11 +209,11 @@ class SimulationEngine:
         print(f"  质量误差: {mass_error:.6f}%")
 
         if abs(mass_error) < 0.1:
-            print(f"  ✓ 质量守恒良好 (<0.1%)")
+            print(f"   质量守恒良好 (<0.1%)")
         elif abs(mass_error) < 1.0:
-            print(f"  ⚠ 质量守恒可接受 (<1.0%)")
+            print(f"   质量守恒可接受 (<1.0%)")
         else:
-            print(f"  ✗ 质量守恒较差 (>1.0%)")
+            print(f"   质量守恒较差 (>1.0%)")
         print()
 
         # 计算最终流速
@@ -279,7 +279,7 @@ class SimulationEngine:
         try:
             import pandas as pd
         except ImportError:
-            print(f"  ⚠ CSV格式跳过（需要安装pandas）")
+            print(f"   CSV格式跳过（需要安装pandas）")
             return
 
         csv_dir = output_dir / 'csv'
@@ -295,7 +295,7 @@ class SimulationEngine:
 
         final_file = csv_dir / 'final_state.csv'
         df_final.to_csv(final_file, index=False)
-        print(f"  ✓ 最终状态: {final_file}")
+        print(f"   最终状态: {final_file}")
 
         # 保存时间序列（选定位置）
         # 选择几个关键位置
@@ -316,7 +316,7 @@ class SimulationEngine:
             ts_file = csv_dir / f'timeseries_x{x_loc:.1f}m.csv'
             df_ts.to_csv(ts_file, index=False)
 
-        print(f"  ✓ 时间序列: {len(key_indices)}个位置")
+        print(f"   时间序列: {len(key_indices)}个位置")
 
     def _save_hdf5(self, output_dir: Path):
         """保存HDF5格式结果"""
@@ -365,10 +365,10 @@ class SimulationEngine:
                 for key, value in self.results['statistics'].items():
                     stats_grp.attrs[key] = value
 
-            print(f"  ✓ HDF5格式: {hdf5_file}")
+            print(f"   HDF5格式: {hdf5_file}")
 
         except ImportError:
-            print(f"  ⚠ HDF5格式跳过（需要安装h5py）")
+            print(f"   HDF5格式跳过（需要安装h5py）")
 
     def _save_statistics(self, output_dir: Path):
         """保存统计信息"""
@@ -383,7 +383,7 @@ class SimulationEngine:
         with open(stats_file, 'w', encoding='utf-8') as f:
             json.dump(stats, f, indent=2, ensure_ascii=False)
 
-        print(f"  ✓ 统计信息: {stats_file}")
+        print(f"   统计信息: {stats_file}")
 
     def _generate_plots(self, output_dir: Path):
         """生成图表"""
@@ -422,7 +422,7 @@ class SimulationEngine:
         plt.savefig(plot_file, dpi=self.config['output']['plots']['dpi'], bbox_inches='tight')
         plt.close()
 
-        print(f"  ✓ 最终状态图: {plot_file}")
+        print(f"   最终状态图: {plot_file}")
 
         # 2. 时空演化图（如果有多个输出）
         if len(self.results['output_data']) > 1:
@@ -455,7 +455,7 @@ class SimulationEngine:
         plt.savefig(plot_file, dpi=self.config['output']['plots']['dpi'], bbox_inches='tight')
         plt.close()
 
-        print(f"  ✓ 时空演化图: {plot_file}")
+        print(f"   时空演化图: {plot_file}")
 
     def validate(self):
         """验证结果（如果有解析解）"""
@@ -505,9 +505,9 @@ class SimulationEngine:
         tol = val_cfg['tolerance']
 
         if h_rmse < tol['h_rmse']:
-            print(f"  ✓ 水深误差在容差内 (< {tol['h_rmse']} m)")
+            print(f"   水深误差在容差内 (< {tol['h_rmse']} m)")
         else:
-            print(f"  ✗ 水深误差超出容差 (> {tol['h_rmse']} m)")
+            print(f"   水深误差超出容差 (> {tol['h_rmse']} m)")
 
         # 保存对比图
         self._plot_validation(x, h_analytical, h_numerical, u_analytical, u_numerical)
@@ -547,7 +547,7 @@ class SimulationEngine:
         plt.savefig(plot_file, dpi=self.config['output']['plots']['dpi'], bbox_inches='tight')
         plt.close()
 
-        print(f"  ✓ 验证对比图: {plot_file}")
+        print(f"   验证对比图: {plot_file}")
 
 
 def main():
@@ -579,11 +579,11 @@ def main():
             engine.validate()
 
         print("=" * 80)
-        print("✅ 仿真完成！")
+        print(" 仿真完成！")
         print("=" * 80)
 
     except Exception as e:
-        print(f"\n❌ 仿真失败:")
+        print(f"\n 仿真失败:")
         print(f"{e}")
         import traceback
         traceback.print_exc()

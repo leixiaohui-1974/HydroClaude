@@ -64,11 +64,11 @@ for idx, config in enumerate(configs):
         step_count += 1
         if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
             has_nan = True
-            print(f"  ❌ NaN detected at step {step_count}, t={solver.t:.3f}s!")
+            print(f"   NaN detected at step {step_count}, t={solver.t:.3f}s!")
             break
 
     if not has_nan:
-        print(f"  ✅ Steps: {step_count}, Final time: {solver.t:.3f}s")
+        print(f"   Steps: {step_count}, Final time: {solver.t:.3f}s")
 
     # Get solutions
     h_num = solver.h
@@ -118,4 +118,4 @@ for idx, config in enumerate(configs):
 
 plt.tight_layout()
 plt.savefig('numba_vs_python_comparison.png', dpi=150, bbox_inches='tight')
-print(f"\n✅ Comparison plot saved: numba_vs_python_comparison.png")
+print(f"\n Comparison plot saved: numba_vs_python_comparison.png")

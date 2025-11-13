@@ -4,6 +4,14 @@
 示例性能基准测试
 测试各个示例的运行时间和资源使用
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import sys
 import os
@@ -69,16 +77,16 @@ class BenchmarkRunner:
                 if result.returncode == 0:
                     times.append(elapsed_time)
                     memory_peaks.append(memory_used)
-                    print(f"    ✓ 成功: {elapsed_time:.2f}s, 内存: {memory_used:.1f}MB")
+                    print(f"     成功: {elapsed_time:.2f}s, 内存: {memory_used:.1f}MB")
                 else:
-                    print(f"    ✗ 失败")
+                    print(f"     失败")
                     return None
 
             except subprocess.TimeoutExpired:
-                print(f"    ✗ 超时")
+                print(f"     超时")
                 return None
             except Exception as e:
-                print(f"    ✗ 错误: {e}")
+                print(f"     错误: {e}")
                 return None
 
         # 计算统计信息
@@ -176,15 +184,15 @@ class BenchmarkRunner:
         for r in sorted_results:
             avg_time = r['avg_time']
             if avg_time < 1.0:
-                rating = "⭐⭐⭐⭐⭐ 极快"
+                rating = "***** 极快"
             elif avg_time < 3.0:
-                rating = "⭐⭐⭐⭐ 很快"
+                rating = "**** 很快"
             elif avg_time < 10.0:
-                rating = "⭐⭐⭐ 快速"
+                rating = "*** 快速"
             elif avg_time < 30.0:
-                rating = "⭐⭐ 中等"
+                rating = "** 中等"
             else:
-                rating = "⭐ 较慢"
+                rating = "* 较慢"
 
             print(f"{r['example']:<40} {rating}")
 

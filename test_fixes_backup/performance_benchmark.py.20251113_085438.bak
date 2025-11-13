@@ -1,0 +1,421 @@
+#!/usr/bin/env python3
+"""
+HydroClaude Performance Benchmark Suite
+性能基准测试套件
+
+Purpose:
+- Measure solver performance across different configurations
+- Identify performance bottlenecks
+- Track optimization progress
+- Compare with/without Numba
+
+Author: HydroClaude Development Team
+Date: 2025-10-31
+"""
+
+import numpy as np
+import sys
+import os
+import time
+from typing import Dict, List, Tuple
+
+sys.path.insert(0, '.')
+
+from solvers.godunov_fvm_solver import GodunvFVMSolver
+
+
+class PerformanceBenchmark:
+    """Performance benchmark suite for HydroClaude solvers"""
+
+    def __init__(self):
+        self.results = []
+
+    def benchmark_dam_break(self, n_cells: int = 400, duration: float = 10.0,
+                           use_numba: bool = False, order: int = 1) -> Dict:
+        """
+        Benchmark dam break simulation
+
+        Args:
+            n_cells: Number of grid cells
+            duration: Simulation duration (seconds)
+            use_numba: Whether to use Numba acceleration
+            order: Spatial order (1 or 2)
+
+        Returns:
+            Performance metrics dictionary
+        """
+        print(f"\n{'='*70}")
+        print(f"Benchmark: Dam Break")
+        print(f"  Grid: {n_cells} cells")
+        print(f"  Duration: {duration}s")
+        print(f"  Numba: {'ON' if use_numba else 'OFF'}")
+        print(f"  Order: {order}")
+        print(f"{'='*70}")
+
+        # Setup
+        L = 2000.0
+        h_L, h_R = 10.0, 1.0
+
+        solver = GodunvFVMSolver(
+            width=10.0,
+            length=L,
+            n_cells=n_cells,
+            manning_n=0.0,
+            slope=0.0,
+            cfl=0.5,
+            order=order,
+            use_numba=use_numba
+        )
+
+        h_init = np.where(solver.x < L/2, h_L, h_R)
+        Q_init = np.zeros(n_cells)
+
+        solver.initialize(
+            h_init, Q_init,
+            bc_left={'type': 'h', 'value': h_L},
+            bc_right={'type': 'h', 'value': h_R}
+        )
+
+        # Benchmark
+        start_time = time.time()
+        step_count = 0
+
+        while solver.t < duration:
+            solver.step()
+            step_count += 1
+
+        wall_time = time.time() - start_time
+
+        # Metrics
+        metrics = {
+            'test': 'dam_break',
+            'n_cells': n_cells,
+            'duration': duration,
+            'numba': use_numba,
+            'order': order,
+            'steps': step_count,
+            'wall_time': wall_time,
+            'time_per_step': wall_time / step_count * 1000,  # ms
+            'speedup': 1.0,  # Will be calculated later
+            'simulated_time': solver.t
+        }
+
+        # Check correctness
+        has_nan = np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q))
+        metrics['valid'] = not has_nan
+
+        print(f"\nResults:")
+        print(f"  Steps: {step_count}")
+        print(f"  Wall time: {wall_time:.2f}s")
+        print(f"  Time/step: {metrics['time_per_step']:.3f}ms")
+        print(f"  Valid: {'' if metrics['valid'] else ''}")
+
+        return metrics
+
+    def benchmark_flood_routing(self, n_cells: int = 100, duration: float = 3600.0,
+                               use_numba: bool = False, order: int = 1) -> Dict:
+        """
+        Benchmark flood routing simulation
+
+        Args:
+            n_cells: Number of grid cells
+            duration: Simulation duration (seconds)
+            use_numba: Whether to use Numba acceleration
+            order: Spatial order (1 or 2)
+
+        Returns:
+            Performance metrics dictionary
+        """
+        print(f"\n{'='*70}")
+        print(f"Benchmark: Flood Routing")
+        print(f"  Grid: {n_cells} cells")
+        print(f"  Duration: {duration/3600:.1f} hours")
+        print(f"  Numba: {'ON' if use_numba else 'OFF'}")
+        print(f"  Order: {order}")
+        print(f"{'='*70}")
+
+        # Setup - simplified flood routing
+        L = 10000.0
+        S0 = 1.0 / 2000.0
+        Q = 100.0
+        n = 0.03
+        B = 100.0
+
+        # Normal depth
+        h_normal = (Q * n / (B * np.sqrt(S0))) ** (3/5)
+
+        solver = GodunvFVMSolver(
+            width=B,
+            length=L,
+            n_cells=n_cells,
+            manning_n=n,
+            slope=S0,
+            cfl=0.5,
+            order=order,
+            well_balanced=True,
+            use_numba=use_numba
+        )
+
+        h_init = h_normal * np.ones(n_cells)
+        Q_init = Q * np.ones(n_cells)
+
+        solver.initialize(
+            h_init, Q_init,
+            bc_left={'type': 'Q', 'value': Q},
+            bc_right={'type': 'h', 'value': h_normal}
+        )
+
+        # Benchmark
+        start_time = time.time()
+        step_count = 0
+
+        while solver.t < duration:
+            solver.step()
+            step_count += 1
+
+        wall_time = time.time() - start_time
+
+        # Metrics
+        metrics = {
+            'test': 'flood_routing',
+            'n_cells': n_cells,
+            'duration': duration,
+            'numba': use_numba,
+            'order': order,
+            'steps': step_count,
+            'wall_time': wall_time,
+            'time_per_step': wall_time / step_count * 1000,  # ms
+            'speedup': 1.0,
+            'simulated_time': solver.t
+        }
+
+        # Check correctness
+        has_nan = np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q))
+        metrics['valid'] = not has_nan
+
+        print(f"\nResults:")
+        print(f"  Steps: {step_count}")
+        print(f"  Wall time: {wall_time:.2f}s")
+        print(f"  Time/step: {metrics['time_per_step']:.3f}ms")
+        print(f"  Valid: {'' if metrics['valid'] else ''}")
+
+        return metrics
+
+    def benchmark_lake_at_rest(self, n_cells: int = 100, duration: float = 10.0,
+                              use_numba: bool = False, order: int = 1) -> Dict:
+        """
+        Benchmark Lake at Rest with Well-Balanced
+
+        Args:
+            n_cells: Number of grid cells
+            duration: Simulation duration (seconds)
+            use_numba: Whether to use Numba acceleration
+            order: Spatial order (1 or 2)
+
+        Returns:
+            Performance metrics dictionary
+        """
+        print(f"\n{'='*70}")
+        print(f"Benchmark: Lake at Rest (Well-Balanced)")
+        print(f"  Grid: {n_cells} cells")
+        print(f"  Duration: {duration}s")
+        print(f"  Numba: {'ON' if use_numba else 'OFF'}")
+        print(f"  Order: {order}")
+        print(f"{'='*70}")
+
+        # Setup
+        L = 100.0
+        eta_init = 10.0
+        hump_height = 2.0
+        hump_width = 20.0
+
+        # Create bottom topography
+        x = np.linspace(0.5, L-0.5, n_cells)
+        x_center = L / 2.0
+
+        z_b = np.zeros(n_cells)
+        for i in range(n_cells):
+            if abs(x[i] - x_center) < hump_width / 2:
+                dist = abs(x[i] - x_center)
+                z_b[i] = hump_height * (1.0 - 2.0 * dist / hump_width)
+
+        h = eta_init - z_b
+        Q = np.zeros(n_cells)
+
+        solver = GodunvFVMSolver(
+            width=10.0,
+            length=L,
+            n_cells=n_cells,
+            manning_n=0.03,
+            z_b=z_b,
+            cfl=0.5,
+            order=order,
+            well_balanced=True,
+            use_numba=use_numba
+        )
+
+        solver.initialize(
+            h, Q,
+            bc_left={'type': 'h', 'value': h[0]},
+            bc_right={'type': 'h', 'value': h[-1]}
+        )
+
+        # Benchmark
+        start_time = time.time()
+        step_count = 0
+
+        while solver.t < duration:
+            solver.step()
+            step_count += 1
+
+        wall_time = time.time() - start_time
+
+        # Metrics
+        eta_current = solver.h + solver.z_b
+        disturbance = np.max(np.abs(eta_current - eta_init))
+
+        metrics = {
+            'test': 'lake_at_rest',
+            'n_cells': n_cells,
+            'duration': duration,
+            'numba': use_numba,
+            'order': order,
+            'steps': step_count,
+            'wall_time': wall_time,
+            'time_per_step': wall_time / step_count * 1000,  # ms
+            'speedup': 1.0,
+            'simulated_time': solver.t,
+            'disturbance': disturbance
+        }
+
+        # Check correctness
+        has_nan = np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q))
+        metrics['valid'] = not has_nan and disturbance < 5.0
+
+        print(f"\nResults:")
+        print(f"  Steps: {step_count}")
+        print(f"  Wall time: {wall_time:.2f}s")
+        print(f"  Time/step: {metrics['time_per_step']:.3f}ms")
+        print(f"  Disturbance: {disturbance:.3f}m")
+        print(f"  Valid: {'' if metrics['valid'] else ''}")
+
+        return metrics
+
+    def run_suite(self, include_numba: bool = True):
+        """
+        Run complete benchmark suite
+
+        Args:
+            include_numba: Whether to include Numba benchmarks
+        """
+        print("\n" + "="*70)
+        print("HydroClaude Performance Benchmark Suite")
+        print("="*70)
+
+        configs = []
+
+        # Without Numba
+        configs.append(('dam_break', 400, 10.0, False, 1))
+        configs.append(('flood_routing', 100, 600.0, False, 1))
+        configs.append(('lake_at_rest', 100, 10.0, False, 1))
+
+        # With Numba (if requested and available)
+        if include_numba:
+            try:
+                import numba
+                configs.append(('dam_break', 400, 10.0, True, 1))
+                configs.append(('flood_routing', 100, 600.0, True, 1))
+                configs.append(('lake_at_rest', 100, 10.0, True, 1))
+            except ImportError:
+                print("\n️  Numba not available, skipping Numba benchmarks")
+
+        # Run benchmarks
+        for test_name, n_cells, duration, use_numba, order in configs:
+            if test_name == 'dam_break':
+                result = self.benchmark_dam_break(n_cells, duration, use_numba, order)
+            elif test_name == 'flood_routing':
+                result = self.benchmark_flood_routing(n_cells, duration, use_numba, order)
+            elif test_name == 'lake_at_rest':
+                result = self.benchmark_lake_at_rest(n_cells, duration, use_numba, order)
+
+            self.results.append(result)
+
+        # Calculate speedups
+        self._calculate_speedups()
+
+        # Print summary
+        self.print_summary()
+
+    def _calculate_speedups(self):
+        """Calculate speedup ratios for Numba vs non-Numba"""
+        # Group by test type
+        by_test = {}
+        for r in self.results:
+            key = f"{r['test']}_{r['n_cells']}_{r['order']}"
+            if key not in by_test:
+                by_test[key] = {'base': None, 'numba': None}
+
+            if r['numba']:
+                by_test[key]['numba'] = r
+            else:
+                by_test[key]['base'] = r
+
+        # Calculate speedups
+        for key, pair in by_test.items():
+            if pair['base'] and pair['numba']:
+                speedup = pair['base']['wall_time'] / pair['numba']['wall_time']
+                pair['numba']['speedup'] = speedup
+
+    def print_summary(self):
+        """Print benchmark summary table"""
+        print("\n" + "="*70)
+        print("Benchmark Summary")
+        print("="*70)
+
+        print(f"\n{'Test':<20} {'Cells':<8} {'Numba':<8} {'Steps':<8} {'Time(s)':<10} {'ms/step':<10} {'Speedup':<8}")
+        print("-"*70)
+
+        for r in self.results:
+            numba_str = 'ON' if r['numba'] else 'OFF'
+            speedup_str = f"{r['speedup']:.2f}x" if r['speedup'] > 1.0 else '-'
+
+            print(f"{r['test']:<20} {r['n_cells']:<8} {numba_str:<8} {r['steps']:<8} "
+                  f"{r['wall_time']:<10.2f} {r['time_per_step']:<10.3f} {speedup_str:<8}")
+
+        # Overall statistics
+        print("\n" + "="*70)
+        print("Overall Statistics")
+        print("="*70)
+
+        total_tests = len(self.results)
+        valid_tests = sum(1 for r in self.results if r['valid'])
+        numba_tests = [r for r in self.results if r['numba'] and r['speedup'] > 1.0]
+
+        if numba_tests:
+            avg_speedup = np.mean([r['speedup'] for r in numba_tests])
+            max_speedup = max(r['speedup'] for r in numba_tests)
+
+            print(f"Total tests: {total_tests}")
+            print(f"Valid tests: {valid_tests}/{total_tests} ({valid_tests/total_tests*100:.0f}%)")
+            print(f"Numba average speedup: {avg_speedup:.2f}x")
+            print(f"Numba max speedup: {max_speedup:.2f}x")
+        else:
+            print(f"Total tests: {total_tests}")
+            print(f"Valid tests: {valid_tests}/{total_tests} ({valid_tests/total_tests*100:.0f}%)")
+            print("No Numba benchmarks available")
+
+
+def main():
+    """Run benchmark suite"""
+    benchmark = PerformanceBenchmark()
+
+    # Run with both configurations
+    benchmark.run_suite(include_numba=True)
+
+    print("\n" + "="*70)
+    print(" Benchmark Suite Complete!")
+    print("="*70)
+
+
+if __name__ == '__main__':
+    main()

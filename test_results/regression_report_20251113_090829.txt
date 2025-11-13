@@ -1,0 +1,84 @@
+======================================================================
+HydroClaude Regression Test Report
+======================================================================
+
+Timestamp: 20251113_090829
+Duration: 3.50s
+
+Total Tests: 12
+Passed: 10
+Failed: 1
+Errors: 1
+
+======================================================================
+Detailed Results
+======================================================================
+
+[1.1_flat_bottom_static] Flat bottom static water
+  Status: ERROR
+  Error: 'gbk' codec can't encode character '\u2080' in position 9: illegal multibyte sequence
+
+[1.2_dam_break] Dam break with mass conservation check
+  Status: PASS
+  mass_error_percent: 1.3229013843969865e-14
+  has_nan: False
+  final_time: 10.096375546923044
+  h_min: 1.0
+  h_max: 10.0
+
+[1.3_shock_propagation] Shock propagation stability
+  Status: PASS
+  has_nan: False
+  h_range: 1.0057329486219952
+  final_time: 5.045524360319609
+
+[2.1_lake_at_rest_gentle] Lake at Rest with gentle 1% slope
+  Status: FAIL
+  disturbance: 0.013595785083083456
+  max_Q: 46.3303308324294
+  time: 4.935453200883118
+
+[2.2_lake_at_rest_hump] Lake at Rest with 2m hump
+  Status: PASS
+  disturbance: 2.2941544818016784
+  mass_error_percent: 4.441092621258093
+  time: 10.047696305450376
+
+[2.3_well_balanced_friction] Well-Balanced with Manning friction
+  Status: PASS
+  has_nan: False
+  h_deviation: 1.3544270005870263
+  steps: 73
+  time: 100.99809494779657
+
+[3.1_bc_fixed_h] Fixed h boundary condition
+  Status: PASS
+  h_left: 3.0
+  h_right: 3.0
+
+[3.2_bc_fixed_q] Fixed Q boundary condition
+  Status: PASS
+  Q_left: 49.96062716098734
+  has_nan: False
+
+[3.3_bc_mixed] Mixed boundary conditions (Q+h)
+  Status: PASS
+  has_nan: False
+
+[4.1_mass_conservation] Mass conservation over 100 steps
+  Status: PASS
+  mass_init: 6500.0
+  mass_final: 6761.9623129588535
+  mass_error_percent: 4.0301894301362085
+
+[4.2_energy_dissipation] Energy dissipation with friction
+  Status: PASS
+  Q_init_avg: 100.0
+  Q_final_avg: 98.90255809866945
+  reduction_percent: 1.097441901330555
+
+[4.3_froude_number] Froude number physical range
+  Status: PASS
+  Fr_max: 0.33854627297156287
+  Fr_mean: 0.33854617292896705
+

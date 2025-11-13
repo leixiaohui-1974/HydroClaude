@@ -43,7 +43,7 @@ class SolverMigrator:
         filename = os.path.basename(filepath)
         backup_path = os.path.join(self.backup_dir, filename + '.bak')
         shutil.copy2(filepath, backup_path)
-        print(f"  ✓ 备份: {filepath} -> {backup_path}")
+        print(f"   备份: {filepath} -> {backup_path}")
         return backup_path
 
     def convert_imports(self, content: str) -> Tuple[str, List[str]]:
@@ -102,7 +102,7 @@ class SolverMigrator:
             # structures参数需要手动转换为元组格式
             # 这个比较复杂，需要添加注释提示
             if 'structures=[' in content:
-                changes.append("⚠ 警告: structures参数格式需要手动转换为 internal_structures=[(pos, obj), ...]")
+                changes.append(" 警告: structures参数格式需要手动转换为 internal_structures=[(pos, obj), ...]")
 
             changes.append("构造: SingleCanalSolver -> HydrostaticCanalSolver")
 
@@ -154,7 +154,7 @@ class SolverMigrator:
         if 'solve_steady_with_structures(' in content:
             content = content.replace('solve_steady_with_structures(', 'solve_steady_state(')
             # 添加h_downstream参数提示
-            changes.append("⚠ 注意: solve_steady_state()需要h_downstream参数")
+            changes.append(" 注意: solve_steady_state()需要h_downstream参数")
             changes.append("方法: solve_steady_with_structures -> solve_steady_state")
 
         # compute_steady_uniform_flow返回值处理
@@ -187,7 +187,7 @@ class SolverMigrator:
             with open(filepath, 'r', encoding='utf-8') as f:
                 content = f.read()
         except Exception as e:
-            print(f"  ✗ 读取失败: {e}")
+            print(f"   读取失败: {e}")
             return False
 
         # 检查是否需要迁移
@@ -231,11 +231,11 @@ class SolverMigrator:
             try:
                 with open(filepath, 'w', encoding='utf-8') as f:
                     f.write(content)
-                print(f"\n  ✓ 迁移成功")
+                print(f"\n   迁移成功")
                 self.conversion_log.append((filepath, True, all_changes))
                 return True
             except Exception as e:
-                print(f"\n  ✗ 写入失败: {e}")
+                print(f"\n   写入失败: {e}")
                 self.conversion_log.append((filepath, False, [str(e)]))
                 return False
         elif dry_run:
@@ -280,7 +280,7 @@ class SolverMigrator:
         if self.conversion_log:
             print(f"\n转换日志:")
             for filepath, success, changes in self.conversion_log:
-                status = "✓" if success else "✗"
+                status = "" if success else ""
                 print(f"  {status} {filepath}")
                 for change in changes:
                     print(f"      {change}")

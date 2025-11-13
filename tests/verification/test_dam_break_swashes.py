@@ -27,7 +27,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from typing import Tuple, Dict
 
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from tests.verification.ritter_solution import (
     ritter_solution,
     ritter_characteristics,
@@ -156,7 +162,7 @@ class TestDamBreakSWASHES:
             if solver.step_count % 100 == 0:
                 print(f"  步数: {solver.step_count}, 时间: {solver.t:.3f}s")
 
-        print(f"✅ 模拟完成: {solver.step_count}步, {solver.t:.3f}s")
+        print(f" 模拟完成: {solver.step_count}步, {solver.t:.3f}s")
 
         # 获取数值解
         h_num = solver.h
@@ -181,7 +187,7 @@ class TestDamBreakSWASHES:
         # 注：干床溃坝在粗网格上24-30%误差是典型的（所有格式）
         assert rel_h_L2 < 30.0, f"相对误差过大: {rel_h_L2:.2f}% (验收标准 < 30%)"
 
-        print(f"\n✅ DB1测试通过 (粗网格) - 相对误差{rel_h_L2:.1f}%在合理范围内")
+        print(f"\n DB1测试通过 (粗网格) - 相对误差{rel_h_L2:.1f}%在合理范围内")
 
     def test_db1_ritter_fine_grid(self):
         """
@@ -245,7 +251,7 @@ class TestDamBreakSWASHES:
             if solver.step_count % 200 == 0:
                 print(f"  步数: {solver.step_count}, 时间: {solver.t:.3f}s")
 
-        print(f"✅ 模拟完成: {solver.step_count}步, {solver.t:.3f}s")
+        print(f" 模拟完成: {solver.step_count}步, {solver.t:.3f}s")
 
         # 获取数值解
         h_num = solver.h
@@ -273,7 +279,7 @@ class TestDamBreakSWASHES:
         # 干床问题的网格收敛性受干湿界面振荡限制
         assert rel_h_L2 < 25.0, f"相对误差过大: {rel_h_L2:.2f}% (验收标准 < 25%)"
 
-        print(f"\n✅ DB1测试通过 (细网格) - 相对误差{rel_h_L2:.1f}%在合理范围内")
+        print(f"\n DB1测试通过 (细网格) - 相对误差{rel_h_L2:.1f}%在合理范围内")
 
         # 保存对比图
         self._plot_comparison(
@@ -398,7 +404,7 @@ class TestDamBreakSWASHES:
         print(f"  最优网格: {grid_sizes[errors_h.index(min_error)]} cells (误差{min_error:.3f}m)")
         print(f"  相对改善: {(errors_h[0]-min_error)/errors_h[0]*100:.1f}%")
 
-        print(f"\n✅ 网格收敛性验证通过 - 误差在合理范围内，存在网格改善")
+        print(f"\n 网格收敛性验证通过 - 误差在合理范围内，存在网格改善")
 
     def test_db2_stoker_coarse_grid(self):
         """
@@ -432,7 +438,7 @@ class TestDamBreakSWASHES:
         print(f"  坝址位置: {x_dam:.0f} m")
         print(f"  网格数: {n_cells}")
         print(f"  上游水深: {h_L} m")
-        print(f"  下游水深: {h_R} m  ← 与DB1不同（有水）")
+        print(f"  下游水深: {h_R} m  <- 与DB1不同（有水）")
         print(f"  模拟时间: {t_end} s")
 
         # 创建求解器
@@ -463,7 +469,7 @@ class TestDamBreakSWASHES:
         while solver.t < t_end:
             solver.step()
 
-        print(f"✅ 模拟完成: {solver.step_count}步, {solver.t:.3f}s")
+        print(f" 模拟完成: {solver.step_count}步, {solver.t:.3f}s")
 
         # 获取数值解
         h_num = solver.h
@@ -494,7 +500,7 @@ class TestDamBreakSWASHES:
         print(f"  中间状态水深: {chars['h_star']:.2f} m")
         print(f"  中间状态流速: {chars['u_star']:.2f} m/s")
 
-        print(f"\n✅ DB2测试通过 (粗网格) - 相对误差{rel_h_L2:.1f}%在合理范围内")
+        print(f"\n DB2测试通过 (粗网格) - 相对误差{rel_h_L2:.1f}%在合理范围内")
 
         # 保存对比图
         self._plot_comparison(
@@ -559,7 +565,7 @@ class TestDamBreakSWASHES:
             if step_count % 100 == 0:
                 print(f"  步数: {step_count}, 时间: {solver.t:.3f}s")
 
-        print(f"✅ 模拟完成: {solver.step_count}步, {solver.t:.3f}s")
+        print(f" 模拟完成: {solver.step_count}步, {solver.t:.3f}s")
 
         # 计算误差
         h_num = solver.h
@@ -578,7 +584,7 @@ class TestDamBreakSWASHES:
         # 验收标准（激波问题略放宽）
         assert rel_h_L2 < 16.0, f"相对误差过大: {rel_h_L2:.2f}% (验收标准 < 16%)"
 
-        print(f"\n✅ DB2测试通过 (细网格) - 相对误差{rel_h_L2:.1f}%在合理范围内")
+        print(f"\n DB2测试通过 (细网格) - 相对误差{rel_h_L2:.1f}%在合理范围内")
 
         # 保存对比图
         self._plot_comparison(

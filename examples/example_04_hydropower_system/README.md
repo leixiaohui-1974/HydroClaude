@@ -41,7 +41,9 @@ PYTHONPATH=../.. python example_04_hydropower_plant.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_04_hydropower_system_hydropower_transient.gif`
+
+![动画](outputs\animations\example_04_hydropower_system_hydropower_transient.gif)
 
 ## 技术要点
 

@@ -19,7 +19,13 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, '/workspace')
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def exact_solution_macdonald(x, t, h_L, u_L, h_R, u_R, x0=500.0, g=9.81):
@@ -112,7 +118,7 @@ for order in [1, 2]:
         
         # NaN检测
         if np.any(np.isnan(h)) or np.any(np.isnan(Q)):
-            print(f"  ❌ 步{solver.step_count}出现NaN!")
+            print(f"   步{solver.step_count}出现NaN!")
             break
         
         if solver.step_count % 100 == 0:
@@ -139,7 +145,7 @@ for order in [1, 2]:
     x_shock_num = x_centers[idx_shock_num]
     
     # 理论激波位置
-    S_shock = 0.0  # 初始静止，激波速度≈0
+    S_shock = 0.0  # 初始静止，激波速度~=0
     x_shock_exact = x0 + S_shock * t_final
     
     shock_error_m = abs(x_shock_num - x_shock_exact)
@@ -168,7 +174,7 @@ for order in [1, 2]:
     
     print(f"\n评估:")
     for name, passed in checks:
-        print(f"  {name}: {'✅' if passed else '❌'}")
+        print(f"  {name}: {'' if passed else ''}")
     
     all_pass = all(c[1] for c in checks)
     
@@ -222,11 +228,11 @@ for order in [1, 2]:
     
     print(f"\n{'='*80}")
     if all_pass:
-        print(f"🎉 MacDonald Test Case 1 (Order {order}) **通过** ✅✅✅")
+        print(f" MacDonald Test Case 1 (Order {order}) **通过** ")
     else:
-        print(f"⚠️ MacDonald Test Case 1 (Order {order}) 部分通过")
+        print(f"️ MacDonald Test Case 1 (Order {order}) 部分通过")
     print("="*80)
 
 print("\n\n" + "="*80)
-print("🚀 MacDonald Test Case 1验证完成！")
+print(" MacDonald Test Case 1验证完成！")
 print("="*80)

@@ -136,7 +136,7 @@ class TestCompositeRoughness:
         """测试流量分配"""
         calc = CompositeRoughness(method=CompositeMethod.HEC_RAS)
 
-        Q_total = 100.0  # m³/s
+        Q_total = 100.0  # m^3/s
         slope = 0.001
 
         flow_dist = calc.compute_flow_distribution(self.zones, Q_total, slope)
@@ -153,7 +153,7 @@ class TestCompositeRoughness:
         # 但滩地面积大，所以流量分配取决于输沙能力
         print(f"\n流量分配:")
         for name, Q in flow_dist.items():
-            print(f"  {name}: {Q:.2f} m³/s ({Q/Q_total*100:.1f}%)")
+            print(f"  {name}: {Q:.2f} m^3/s ({Q/Q_total*100:.1f}%)")
 
     def test_friction_slope(self):
         """测试摩阻坡度计算"""
@@ -225,7 +225,7 @@ class TestCompoundSectionRoughness:
         K = section.compute_composite_conveyance(depth, method='hec_ras')
 
         assert K > 0
-        print(f"\n复式断面输沙能力: K = {K:.2f} m³/s")
+        print(f"\n复式断面输沙能力: K = {K:.2f} m^3/s")
 
     def test_composite_manning_n(self):
         """测试等效曼宁系数"""
@@ -336,7 +336,7 @@ class TestMethodComparison:
             n_eq = section.compute_composite_manning_n(depth, method=method)
             results[method] = {'K': K, 'n_eq': n_eq}
 
-            print(f"{method:12s}: K = {K:8.2f} m³/s, n_eq = {n_eq:.4f}")
+            print(f"{method:12s}: K = {K:8.2f} m^3/s, n_eq = {n_eq:.4f}")
 
         # HEC-RAS方法通常给出最大的K值（最保守）
         K_hec = results['hec_ras']['K']

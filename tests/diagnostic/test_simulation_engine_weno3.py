@@ -95,12 +95,12 @@ try:
     solver = engine.solver
     solver_class = solver.__class__.__name__
 
-    print(f"✓ 求解器类型: {solver_class}")
+    print(f" 求解器类型: {solver_class}")
 
     if solver_class == 'GodunvFVMWENO3':
-        print("  ✅ 正确使用WENO3求解器！")
+        print("   正确使用WENO3求解器！")
     else:
-        print(f"  ❌ 错误！应该是GodunvFVMWENO3，实际是{solver_class}")
+        print(f"   错误！应该是GodunvFVMWENO3，实际是{solver_class}")
 
     # 检查关键参数
     print(f"  weno_eps: {getattr(solver, 'weno_eps', 'N/A')}")
@@ -133,14 +133,14 @@ try:
 
     print(f"\n验证:")
     if mass_error < 10.0:
-        print(f"  ✅ 质量守恒良好")
+        print(f"   质量守恒良好")
     else:
-        print(f"  ❌ 质量守恒差")
+        print(f"   质量守恒差")
 
     if Fr_upstream > 0.9:
-        print(f"  ✅ 上游超临界维持")
+        print(f"   上游超临界维持")
     else:
-        print(f"  ❌ 上游超临界丢失")
+        print(f"   上游超临界丢失")
 
     print("="*70)
 

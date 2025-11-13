@@ -5,7 +5,7 @@
 Pump Station Water Hammer Analysis Case Study
 
 案例背景 Case Background:
-某水厂配水泵站，泵出流量1.0 m³/s，扬程80m。
+某水厂配水泵站，泵出流量1.0 m^3/s，扬程80m。
 输水管道长度5000m，直径800mm。
 分析停电工况下的水锤压力变化。
 
@@ -40,7 +40,7 @@ def joukowsky_analysis():
     print()
 
     # 泵站参数
-    Q0 = 1.0          # 初始流量 (m³/s)
+    Q0 = 1.0          # 初始流量 (m^3/s)
     D = 0.8           # 管径 (m)
     L = 5000          # 管道长度 (m)
     a = 1000          # 波速 (m/s)
@@ -65,22 +65,22 @@ def joukowsky_analysis():
     print()
 
     print(f"【Joukowsky理论】")
-    print(f"  压力升高: ΔH = a*V/g = {delta_H_jouk:.2f} m")
+    print(f"  压力升高: DeltaH = a*V/g = {delta_H_jouk:.2f} m")
     print(f"  临界时间: T_c = 2L/a = {T_critical:.2f} s")
     print()
 
     print(f"【工程判断】")
     if delta_H_jouk > 50:
-        print(f"  ⚠️ 压力升高 {delta_H_jouk:.0f}m 过大！")
+        print(f"   压力升高 {delta_H_jouk:.0f}m 过大！")
         print(f"     必须采取水锤防护措施：")
         print(f"     1. 安装空气罐/调压塔")
         print(f"     2. 增加飞轮惯量")
         print(f"     3. 分段关阀控制")
     elif delta_H_jouk > 30:
-        print(f"  ⚠️ 压力升高 {delta_H_jouk:.0f}m 较大")
+        print(f"   压力升高 {delta_H_jouk:.0f}m 较大")
         print(f"     建议采取适当防护措施")
     else:
-        print(f"  ✓ 压力升高 {delta_H_jouk:.0f}m 在可接受范围内")
+        print(f"   压力升高 {delta_H_jouk:.0f}m 在可接受范围内")
 
     print()
 
@@ -148,7 +148,7 @@ def simulate_power_failure(Q0, D, L, a, f, duration=20.0, verbose=True):
     )
 
     if verbose:
-        print(f"  ✓ 模拟完成，时长 {duration:.1f}s")
+        print(f"   模拟完成，时长 {duration:.1f}s")
         print()
 
     return solver, result, H0_up
@@ -182,46 +182,46 @@ def analyze_results(solver, result, H0_up, delta_H_jouk):
     print(f"  初始水头: H0 = {H0_up:.2f} m")
     print(f"  最大水头: H_max = {H_max:.2f} m (t={t_max:.2f}s, x={x_max:.0f}m)")
     print(f"  最小水头: H_min = {H_min:.2f} m (t={t_min:.2f}s, x={x_min:.0f}m)")
-    print(f"  压力升高: ΔH_max = {H_max - H0_up:.2f} m")
-    print(f"  压力下降: ΔH_min = {H0_up - H_min:.2f} m")
+    print(f"  压力升高: DeltaH_max = {H_max - H0_up:.2f} m")
+    print(f"  压力下降: DeltaH_min = {H0_up - H_min:.2f} m")
     print()
 
     print(f"【理论对比】")
-    print(f"  Joukowsky理论: ΔH = {delta_H_jouk:.2f} m")
-    print(f"  数值模拟结果: ΔH = {H_max - H0_up:.2f} m")
+    print(f"  Joukowsky理论: DeltaH = {delta_H_jouk:.2f} m")
+    print(f"  数值模拟结果: DeltaH = {H_max - H0_up:.2f} m")
     error = abs((H_max - H0_up) - delta_H_jouk) / delta_H_jouk * 100
     print(f"  相对误差: {error:.1f}%")
 
     if error < 10:
-        print(f"  ✓ 数值结果与理论吻合良好")
+        print(f"   数值结果与理论吻合良好")
     else:
-        print(f"  ⚠️ 数值结果与理论存在偏差（可能受摩阻影响）")
+        print(f"   数值结果与理论存在偏差（可能受摩阻影响）")
     print()
 
     print(f"【安全评估】")
     # 假设管道设计压力为150m
     P_design = 150.0
     if H_max > P_design:
-        print(f"  ❌ 最大水头 {H_max:.0f}m 超过设计压力 {P_design:.0f}m")
+        print(f"   最大水头 {H_max:.0f}m 超过设计压力 {P_design:.0f}m")
         print(f"     超压: {H_max - P_design:.0f}m ({(H_max-P_design)/P_design*100:.1f}%)")
         print(f"     必须采取防护措施！")
     elif H_max > 0.9 * P_design:
-        print(f"  ⚠️ 最大水头 {H_max:.0f}m 接近设计压力 {P_design:.0f}m")
+        print(f"   最大水头 {H_max:.0f}m 接近设计压力 {P_design:.0f}m")
         print(f"     安全裕度较小，建议采取防护措施")
     else:
-        print(f"  ✓ 最大水头 {H_max:.0f}m < 设计压力 {P_design:.0f}m")
+        print(f"   最大水头 {H_max:.0f}m < 设计压力 {P_design:.0f}m")
         print(f"     安全裕度: {P_design - H_max:.0f}m")
 
     # 检查负压
     if H_min < 0:
-        print(f"  ❌ 出现负压 {H_min:.0f}m！")
+        print(f"   出现负压 {H_min:.0f}m！")
         print(f"     可能产生气穴和水柱分离")
         print(f"     必须安装空气阀或其他防护设备")
     elif H_min < 20:
-        print(f"  ⚠️ 最小水头 {H_min:.0f}m 过低")
+        print(f"   最小水头 {H_min:.0f}m 过低")
         print(f"     建议安装空气阀")
     else:
-        print(f"  ✓ 最小水头 {H_min:.0f}m > 0，无负压风险")
+        print(f"   最小水头 {H_min:.0f}m > 0，无负压风险")
 
     print()
 
@@ -301,7 +301,7 @@ def plot_results(solver, result, Q0, H0_up, delta_H_jouk):
     ax5.grid(alpha=0.3)
 
     plt.savefig('examples/pump_water_hammer_results.png', dpi=150, bbox_inches='tight')
-    print("📊 结果图表已保存: examples/pump_water_hammer_results.png")
+    print(" 结果图表已保存: examples/pump_water_hammer_results.png")
     plt.close()
 
 
@@ -312,7 +312,7 @@ def recommendations():
     print("="*80)
     print()
 
-    print("【方案1】增加飞轮惯量 (WR²)")
+    print("【方案1】增加飞轮惯量 (WR^2)")
     print("  原理: 增大泵组转动惯量，延缓转速下降")
     print("  优点: 简单可靠，无需额外设施")
     print("  缺点: 飞轮尺寸和重量较大")
@@ -341,10 +341,10 @@ def recommendations():
     print()
 
     print("【推荐方案】")
-    print("  对于本案例（ΔH≈200m）：")
+    print("  对于本案例（DeltaH~=200m）：")
     print("  建议采用 空气罐 + 增大飞轮 组合方案")
-    print("  - 空气罐容积约 5-10 m³")
-    print("  - 飞轮 WR² 增加50-100%")
+    print("  - 空气罐容积约 5-10 m^3")
+    print("  - 飞轮 WR^2 增加50-100%")
     print()
 
 
@@ -373,7 +373,7 @@ def main():
     recommendations()
 
     print("="*80)
-    print("✅ 案例分析完成！")
+    print(" 案例分析完成！")
     print("="*80)
 
 

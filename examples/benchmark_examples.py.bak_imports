@@ -1,0 +1,201 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+示例性能基准测试
+测试各个示例的运行时间和资源使用
+"""
+
+import sys
+import os
+from pathlib import Path
+import subprocess
+import time
+import json
+import psutil
+from datetime import datetime
+
+
+class BenchmarkRunner:
+    """基准测试运行器"""
+
+    def __init__(self, examples_root):
+        self.examples_root = Path(examples_root)
+        self.results = []
+
+    def run_benchmark(self, example_name, script_path, iterations=3):
+        """运行单个示例的基准测试"""
+        example_dir = self.examples_root / example_name
+        script_file = example_dir / script_path
+
+        if not script_file.exists():
+            return None
+
+        print(f"\n{'='*80}")
+        print(f"基准测试: {example_name} / {script_path}")
+        print('='*80)
+
+        times = []
+        memory_peaks = []
+
+        env = os.environ.copy()
+        env['PYTHONPATH'] = str(self.examples_root.parent)
+        env['MPLBACKEND'] = 'Agg'
+
+        for i in range(iterations):
+            print(f"  运行 {i+1}/{iterations}...")
+
+            # 记录初始内存
+            process = psutil.Process()
+            initial_memory = process.memory_info().rss / (1024 * 1024)  # MB
+
+            start_time = time.time()
+
+            try:
+                result = subprocess.run(
+                    [sys.executable, str(script_file)],
+                    cwd=str(example_dir),
+                    env=env,
+                    capture_output=True,
+                    text=True,
+                    timeout=120
+                )
+
+                elapsed_time = time.time() - start_time
+
+                # 记录峰值内存
+                peak_memory = process.memory_info().rss / (1024 * 1024)  # MB
+                memory_used = peak_memory - initial_memory
+
+                if result.returncode == 0:
+                    times.append(elapsed_time)
+                    memory_peaks.append(memory_used)
+                    print(f"     成功: {elapsed_time:.2f}s, 内存: {memory_used:.1f}MB")
+                else:
+                    print(f"     失败")
+                    return None
+
+            except subprocess.TimeoutExpired:
+                print(f"     超时")
+                return None
+            except Exception as e:
+                print(f"     错误: {e}")
+                return None
+
+        # 计算统计信息
+        if times:
+            avg_time = sum(times) / len(times)
+            min_time = min(times)
+            max_time = max(times)
+            avg_memory = sum(memory_peaks) / len(memory_peaks) if memory_peaks else 0
+
+            result = {
+                'example': example_name,
+                'script': script_path,
+                'iterations': iterations,
+                'avg_time': avg_time,
+                'min_time': min_time,
+                'max_time': max_time,
+                'avg_memory_mb': avg_memory,
+                'times': times
+            }
+
+            print(f"\n  平均时间: {avg_time:.2f}s")
+            print(f"  最小时间: {min_time:.2f}s")
+            print(f"  最大时间: {max_time:.2f}s")
+            print(f"  平均内存: {avg_memory:.1f}MB")
+
+            return result
+
+        return None
+
+    def run_all_benchmarks(self):
+        """运行所有基准测试"""
+        print(f"\n{'='*80}")
+        print("HydroClaude Examples 性能基准测试")
+        print('='*80)
+        print(f"时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+        # 定义要测试的示例
+        benchmarks = [
+            ('example_01_canal_flow', 'code/01_basic.py', 3),
+            ('example_02_pump_system', 'code/example_02_pump_system.py', 3),
+            ('example_03_turbine_demo', 'example_03_turbine_comparison.py', 3),
+            ('example_05_transient_analysis', 'example_05_load_rejection.py', 3),
+            ('example_08_load_acceptance', 'example_08_load_acceptance.py', 3),
+            ('example_17_reservoir_basic', 'demo_reservoir.py', 3),
+        ]
+
+        for example_name, script_path, iterations in benchmarks:
+            result = self.run_benchmark(example_name, script_path, iterations)
+            if result:
+                self.results.append(result)
+
+        # 生成报告
+        self.generate_report()
+
+    def generate_report(self):
+        """生成性能报告"""
+        print(f"\n{'='*80}")
+        print("性能基准测试报告")
+        print('='*80)
+
+        if not self.results:
+            print("没有基准测试结果")
+            return
+
+        # 按平均时间排序
+        sorted_results = sorted(self.results, key=lambda x: x['avg_time'])
+
+        print(f"\n{'示例':<40} {'平均时间':<12} {'最小时间':<12} {'内存(MB)':<12}")
+        print('-' * 80)
+
+        for r in sorted_results:
+            print(f"{r['example']:<40} {r['avg_time']:>8.2f}s    {r['min_time']:>8.2f}s    {r['avg_memory_mb']:>8.1f}")
+
+        # 保存到JSON
+        report_file = self.examples_root / 'benchmark_results.json'
+        report_data = {
+            'timestamp': datetime.now().isoformat(),
+            'system_info': {
+                'cpu_count': psutil.cpu_count(),
+                'memory_total_gb': psutil.virtual_memory().total / (1024**3)
+            },
+            'results': self.results
+        }
+
+        with open(report_file, 'w', encoding='utf-8') as f:
+            json.dump(report_data, f, indent=2)
+
+        print(f"\n详细结果已保存到: {report_file}")
+
+        # 性能评级
+        print(f"\n{'='*80}")
+        print("性能评级")
+        print('='*80)
+
+        for r in sorted_results:
+            avg_time = r['avg_time']
+            if avg_time < 1.0:
+                rating = "⭐⭐⭐⭐⭐ 极快"
+            elif avg_time < 3.0:
+                rating = "⭐⭐⭐⭐ 很快"
+            elif avg_time < 10.0:
+                rating = "⭐⭐⭐ 快速"
+            elif avg_time < 30.0:
+                rating = "⭐⭐ 中等"
+            else:
+                rating = "⭐ 较慢"
+
+            print(f"{r['example']:<40} {rating}")
+
+
+def main():
+    """主函数"""
+    examples_root = Path(__file__).parent
+
+    runner = BenchmarkRunner(examples_root)
+    runner.run_all_benchmarks()
+
+
+if __name__ == '__main__':
+    main()

@@ -62,7 +62,7 @@ for cfl in [0.1, 0.05]:
         step_count += 1
 
         if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
-            print(f"❌ 数值爆炸在步{step_count}")
+            print(f" 数值爆炸在步{step_count}")
             break
 
     print(f"完成: {solver.step_count}步, t={solver.t:.3f}s")

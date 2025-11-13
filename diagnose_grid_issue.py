@@ -101,7 +101,7 @@ for nx, dx in grid_configs:
         result = test_grid_with_smooth_weight(nx, sw)
 
         if result['success']:
-            status = "✓" if result['max_error'] < 10 else "✗"
+            status = "" if result['max_error'] < 10 else ""
             print(f"{sw:>15.2f} | {result['max_error']:>11.4f}% | "
                   f"{result['max_gate_error']:>11.4f}% | {status:>8}")
 
@@ -109,7 +109,7 @@ for nx, dx in grid_configs:
                 best_error = result['max_error']
                 best_sw = sw
         else:
-            print(f"{sw:>15.2f} | {'失败':>11} | {'失败':>11} | ✗")
+            print(f"{sw:>15.2f} | {'失败':>11} | {'失败':>11} | ")
 
     print()
     print(f"最佳配置: smooth_weight={best_sw:.2f}, 最大误差={best_error:.4f}%")

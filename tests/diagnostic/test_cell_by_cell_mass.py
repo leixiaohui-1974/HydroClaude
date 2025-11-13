@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def analyze_cell_mass():
@@ -54,11 +60,11 @@ def analyze_cell_mass():
     # 记录初始每个单元的质量
     mass_cell_init = solver.h * B * dx
 
-    print(f"\n初始每单元质量 (m³):")
+    print(f"\n初始每单元质量 (m^3):")
     for i in range(n_cells):
-        print(f"  单元{i}: {mass_cell_init[i]:.4f} m³ (h={solver.h[i]:.4f}m)")
+        print(f"  单元{i}: {mass_cell_init[i]:.4f} m^3 (h={solver.h[i]:.4f}m)")
 
-    print(f"\n总初始质量: {np.sum(mass_cell_init):.2f} m³")
+    print(f"\n总初始质量: {np.sum(mass_cell_init):.2f} m^3")
 
     # 推进3步
     for step in range(3):
@@ -74,20 +80,20 @@ def analyze_cell_mass():
         dmass_total = total_after - total_before
 
         print(f"\n步骤 {step+1}:")
-        print(f"  总质量变化: {dmass_total:.6f} m³")
+        print(f"  总质量变化: {dmass_total:.6f} m^3")
         print(f"  各单元质量变化:")
 
         for i in range(n_cells):
-            marker = "  " if abs(dmass_cell[i]) < 1e-3 else " ⚠"
-            print(f"    单元{i}: {dmass_cell[i]:+.6f} m³{marker}")
+            marker = "  " if abs(dmass_cell[i]) < 1e-3 else " "
+            print(f"    单元{i}: {dmass_cell[i]:+.6f} m^3{marker}")
 
     print(f"\n" + "="*80)
     print("总结:")
     mass_final = solver.h * B * dx
     total_final = np.sum(mass_final)
-    print(f"  初始总质量: {np.sum(mass_cell_init):.2f} m³")
-    print(f"  最终总质量: {total_final:.2f} m³")
-    print(f"  总质量误差: {(total_final - np.sum(mass_cell_init)):.2f} m³")
+    print(f"  初始总质量: {np.sum(mass_cell_init):.2f} m^3")
+    print(f"  最终总质量: {total_final:.2f} m^3")
+    print(f"  总质量误差: {(total_final - np.sum(mass_cell_init)):.2f} m^3")
     print("="*80)
 
 

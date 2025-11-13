@@ -30,7 +30,7 @@
 
 ```bash
 cd examples/example_07_fault_test
-PYTHONPATH=../.. python example_07_fault_test.py
+PYTHONPATH=../.. python code/example_07_fault_test.py
 ```
 
 ## 输出结果
@@ -41,7 +41,9 @@ PYTHONPATH=../.. python example_07_fault_test.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_07_fault_test_control.gif`
+
+![动画](outputs\animations\example_07_fault_test_control.gif)
 
 ## 技术要点
 

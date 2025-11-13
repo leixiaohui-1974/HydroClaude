@@ -3,6 +3,14 @@
 """
 诊断负流量问题根源
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import os
 import numpy as np
@@ -31,7 +39,7 @@ def diagnose_negative_flow(scenario_dir):
     # 找到负流量
     neg_mask = q_history < 0
     if not neg_mask.any():
-        print("✅ 无负流量")
+        print(" 无负流量")
         return
     
     # 统计
@@ -41,7 +49,7 @@ def diagnose_negative_flow(scenario_dir):
     
     print(f"\n负流量统计:")
     print(f"  - 负值点数: {neg_count} / {total_count} ({neg_percent:.2f}%)")
-    print(f"  - 最小流量: {q_history.min():.2f} m³/s")
+    print(f"  - 最小流量: {q_history.min():.2f} m^3/s")
     
     # 找到首次出现负流量的时间和位置
     time_idx, space_idx = np.where(neg_mask)
@@ -53,20 +61,20 @@ def diagnose_negative_flow(scenario_dir):
         print(f"\n首次负流量:")
         print(f"  - 时间: t = {time[first_t_idx]:.1f} s (第{first_t_idx}步)")
         print(f"  - 位置: x = {x[first_x_idx]:.1f} m (第{first_x_idx}点)")
-        print(f"  - 流量: Q = {q_history[first_t_idx, first_x_idx]:.2f} m³/s")
+        print(f"  - 流量: Q = {q_history[first_t_idx, first_x_idx]:.2f} m^3/s")
         
         # 检查前后时间步
         if first_t_idx > 0:
             print(f"\n前一时间步 (t={time[first_t_idx-1]:.1f}s):")
-            print(f"  - 该位置流量: {q_history[first_t_idx-1, first_x_idx]:.2f} m³/s")
-            print(f"  - 最小流量: {q_history[first_t_idx-1, :].min():.2f} m³/s")
+            print(f"  - 该位置流量: {q_history[first_t_idx-1, first_x_idx]:.2f} m^3/s")
+            print(f"  - 最小流量: {q_history[first_t_idx-1, :].min():.2f} m^3/s")
         
         # 检查周围位置
         print(f"\n同时间步周围位置流量:")
         for di in [-2, -1, 0, 1, 2]:
             idx = first_x_idx + di
             if 0 <= idx < len(x):
-                print(f"  - x={x[idx]:.1f}m: Q={q_history[first_t_idx, idx]:.2f} m³/s")
+                print(f"  - x={x[idx]:.1f}m: Q={q_history[first_t_idx, idx]:.2f} m^3/s")
     
     # 分析空间分布
     print(f"\n空间分布:")
@@ -77,9 +85,9 @@ def diagnose_negative_flow(scenario_dir):
         
         # 检查是否集中在边界附近
         if most_neg_idx < 10:
-            print(f"  ⚠️ 负值集中在上游边界附近")
+            print(f"   负值集中在上游边界附近")
         elif most_neg_idx > len(x) - 10:
-            print(f"  ⚠️ 负值集中在下游边界附近")
+            print(f"   负值集中在下游边界附近")
     
     # 分析时间演化
     print(f"\n时间演化:")
@@ -90,14 +98,14 @@ def diagnose_negative_flow(scenario_dir):
         
         # 检查是否在初期
         if most_neg_t_idx < 10:
-            print(f"  ⚠️ 负值主要出现在初期 - 可能是初值问题")
+            print(f"   负值主要出现在初期 - 可能是初值问题")
     
     # 检查初值
     print(f"\n初值检查 (t=0):")
-    print(f"  - 流量范围: [{q_history[0, :].min():.2f}, {q_history[0, :].max():.2f}] m³/s")
+    print(f"  - 流量范围: [{q_history[0, :].min():.2f}, {q_history[0, :].max():.2f}] m^3/s")
     print(f"  - 水深范围: [{h_history[0, :].min():.2f}, {h_history[0, :].max():.2f}] m")
     if q_history[0, :].min() < 0:
-        print(f"  ❌ 初值就有负流量！稳态求解有问题")
+        print(f"   初值就有负流量！稳态求解有问题")
 
 
 def main():

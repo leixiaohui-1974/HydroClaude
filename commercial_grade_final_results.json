@@ -1,0 +1,36 @@
+{
+  "timestamp": "2025-11-12T23:44:55.536673",
+  "test_type": "Direct Engine Test (Commercial-Grade)",
+  "total": 5,
+  "passed": 3,
+  "failed": 2,
+  "success_rate": "60.0%",
+  "total_computation_time": "2.79s",
+  "results": [
+    {
+      "name": "Scenario 1: Basic Rectangular Canal",
+      "passed": true,
+      "duration": 2.751174
+    },
+    {
+      "name": "Scenario 2: Small Canal Flow",
+      "passed": true,
+      "duration": 0.016617
+    },
+    {
+      "name": "Scenario 3: Medium Canal",
+      "passed": true,
+      "duration": 0.025595
+    },
+    {
+      "name": "Scenario 4: Wide Gentle Canal",
+      "passed": false,
+      "duration": 0
+    },
+    {
+      "name": "Scenario 5: Large River Canal",
+      "passed": false,
+      "duration": 0
+    }
+  ]
+}

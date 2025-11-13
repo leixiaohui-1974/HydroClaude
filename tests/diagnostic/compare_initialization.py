@@ -16,7 +16,13 @@ import tempfile
 from pathlib import Path
 from engine.model_builder import ModelBuilder
 import numpy as np
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 # Test 4参数
 L = 1000.0
@@ -137,7 +143,7 @@ if np.max(np.abs(h_diff)) > 1e-10:
         print(f"    索引{idx}: direct={solver1.h[idx]:.10f}, file={solver2.h[idx]:.10f}, diff={h_diff[idx]:.2e}")
 
 if np.max(np.abs(z_b_diff)) > 1e-10:
-    print(f"  ⚠️  z_b不同！")
+    print(f"  ️  z_b不同！")
     print(f"    direct前5: {solver1.z_b[:5]}")
     print(f"    file前5:   {solver2.z_b[:5]}")
 

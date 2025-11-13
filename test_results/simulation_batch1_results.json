@@ -1,0 +1,130 @@
+{
+  "batch": 1,
+  "total_batches": 25,
+  "passed": 14,
+  "failed": 6,
+  "timeout": 4,
+  "pass_rate": 70.0,
+  "results": [
+    {
+      "file": "examples\\advanced_animation_generator.py",
+      "basename": "advanced_animation_generator.py",
+      "status": "TIMEOUT",
+      "error": "Exceeded 15s"
+    },
+    {
+      "file": "examples\\animation_utils.py",
+      "basename": "animation_utils.py",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "file": "examples\\batch_generate_animations.py",
+      "basename": "batch_generate_animations.py",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "file": "examples\\benchmark_examples.py",
+      "basename": "benchmark_examples.py",
+      "status": "TIMEOUT",
+      "error": "Exceeded 15s"
+    },
+    {
+      "file": "examples\\benchmark_performance.py",
+      "basename": "benchmark_performance.py",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "file": "examples\\calibration_example.py",
+      "basename": "calibration_example.py",
+      "status": "TIMEOUT",
+      "error": "Exceeded 15s"
+    },
+    {
+      "file": "examples\\case02_flood_risk_assessment.py",
+      "basename": "case02_flood_risk_assessment.py",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "file": "examples\\case1_urban_water_supply.py",
+      "basename": "case1_urban_water_supply.py",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "file": "examples\\case2_pump_water_hammer.py",
+      "basename": "case2_pump_water_hammer.py",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "file": "examples\\case3_industrial_cooling_system.py",
+      "basename": "case3_industrial_cooling_system.py",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "file": "examples\\case4_fire_protection_system.py",
+      "basename": "case4_fire_protection_system.py",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "file": "examples\\case5_irrigation_system.py",
+      "basename": "case5_irrigation_system.py",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "file": "examples\\case6_highrise_water_supply.py",
+      "basename": "case6_highrise_water_supply.py",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "file": "examples\\case7_regional_water_supply.py",
+      "basename": "case7_regional_water_supply.py",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "file": "examples\\case8_network_optimization.py",
+      "basename": "case8_network_optimization.py",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "file": "examples\\case_channel_renovation.py",
+      "basename": "case_channel_renovation.py",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "file": "examples\\case_gate_operation.py",
+      "basename": "case_gate_operation.py",
+      "status": "FAIL",
+      "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\case_gate_operation.py\", line 133, in <module>\n    solver.initialize(h_init, Q_init)\n    ^^^^^^^^^^^^^^^^^\nAttributeError: 'HydrostaticCanalSolver' object has no attribute 'initialize'\n"
+    },
+    {
+      "file": "examples\\case_irrigation_scheduling.py",
+      "basename": "case_irrigation_scheduling.py",
+      "status": "FAIL",
+      "error": "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\case_irrigation_scheduling.py:104: UserWarning: \n================================================================================\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanc"
+    },
+    {
+      "file": "examples\\case_parameter_sensitivity.py",
+      "basename": "case_parameter_sensitivity.py",
+      "status": "PASS",
+      "error": null
+    },
+    {
+      "file": "examples\\climate_change_assessment.py",
+      "basename": "climate_change_assessment.py",
+      "status": "TIMEOUT",
+      "error": "Exceeded 15s"
+    }
+  ]
+}

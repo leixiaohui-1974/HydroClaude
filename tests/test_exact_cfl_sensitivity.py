@@ -10,13 +10,19 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('.'))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 def test_cfl_number(cfl, max_steps=20, max_time=1.0):
     """测试特定CFL数"""
     width = 10.0
     length = 100.0
-    n_cells = 50
+    n_cells = 100
     dx = length / n_cells
 
     h_init = np.zeros(n_cells)
@@ -98,7 +104,7 @@ def main():
         results = test_cfl_number(cfl, max_steps=20, max_time=1.0)
         all_results.append(results)
 
-        print(f"\n初始质量: 1500.00 m³")
+        print(f"\n初始质量: 1500.00 m^3")
         print(f"\n{'步骤':<6} {'时间(s)':<10} {'dt(s)':<10} {'误差(%)':<12} {'h_max(m)':<10} {'状态':<10}")
         print("-" * 80)
 
@@ -109,17 +115,17 @@ def main():
             error = results['mass_error_pct'][i]
             h_max = results['h_max'][i]
 
-            status = "✅" if error < 1.0 else ("⚠️" if error < 10 else "❌")
+            status = "" if error < 1.0 else ("" if error < 10 else "")
             print(f"{step:<6} {time:<10.3f} {dt:<10.6f} {error:<12.6f} {h_max:<10.3f} {status:<10}")
 
         if results['crashed']:
-            print(f"\n❌ 崩溃于步骤 {results['crash_step']}")
+            print(f"\n 崩溃于步骤 {results['crash_step']}")
         else:
             if len(results['steps']) > 0:
                 final_error = results['mass_error_pct'][-1]
-                print(f"\n✅ 达到t=1.0s，最终误差: {final_error:.4f}%")
+                print(f"\n 达到t=1.0s，最终误差: {final_error:.4f}%")
             else:
-                print(f"\n❌ 立即崩溃")
+                print(f"\n 立即崩溃")
 
     # 总结
     print("\n" + "=" * 80)
@@ -137,17 +143,17 @@ def main():
             final_error = results['mass_error_pct'][-1]
 
             if results['crashed']:
-                status = f"❌ 崩溃@{results.get('crash_step', '?')}"
+                status = f" 崩溃@{results.get('crash_step', '?')}"
             elif final_error < 1.0:
-                status = "✅ 优秀"
+                status = " 优秀"
             elif final_error < 10:
-                status = "⚠️  可接受"
+                status = "  可接受"
             else:
-                status = "❌ 失败"
+                status = " 失败"
         else:
             final_time = 0.0
             final_error = float('nan')
-            status = "❌ 立即崩溃"
+            status = " 立即崩溃"
 
         print(f"{cfl:<10.2f} {n_steps:<10} {final_time:<15.3f} {final_error:<15.6f} {status:<15}")
 
@@ -164,14 +170,14 @@ def main():
 
     if len(errors_at_step_1) > 1:
         if max(errors_at_step_1) - min(errors_at_step_1) < 0.001:
-            print("\n⚠️  所有CFL数产生相同结果")
-            print("   → CFL数不是问题的根源")
-            print("   → 问题可能在通量计算或数值方法本身")
+            print("\n  所有CFL数产生相同结果")
+            print("   -> CFL数不是问题的根源")
+            print("   -> 问题可能在通量计算或数值方法本身")
         else:
-            print("\n✅ CFL数影响显著")
+            print("\n CFL数影响显著")
             # 找到最优CFL
             best_idx = np.argmin(errors_at_step_1)
-            print(f"   → 推荐CFL = {cfl_values[best_idx]}")
+            print(f"   -> 推荐CFL = {cfl_values[best_idx]}")
 
 if __name__ == "__main__":
     main()

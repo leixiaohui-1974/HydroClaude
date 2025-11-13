@@ -81,17 +81,17 @@ for i in range(100):
 
         # 检查数值爆炸
         if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
-            print(f"\n❌ 数值爆炸！")
+            print(f"\n 数值爆炸！")
             break
 
         # 检查dt崩溃
         if dt_before < 1e-8:
-            print(f"\n⚠️  dt崩溃到{dt_before:.3e}s!")
+            print(f"\n️  dt崩溃到{dt_before:.3e}s!")
             print(f"   最大波速: {np.max(np.abs(u) + np.sqrt(solver.g * solver.h)):.6e} m/s")
             break
 
     if solver.t >= t_target:
-        print(f"\n✅ 达到目标时间 {t_target}s")
+        print(f"\n 达到目标时间 {t_target}s")
         break
 
 print(f"\n最终状态:")

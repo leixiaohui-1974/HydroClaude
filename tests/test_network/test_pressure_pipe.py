@@ -139,7 +139,7 @@ class TestReynoldsNumber:
         pipe = PressurePipe("P", diameter=0.05, length=10, roughness=0.0001)
 
         # 极小流量产生层流 (Re < 2000)
-        Q = 0.00003  # m³/s (非常小)
+        Q = 0.00003  # m^3/s (非常小)
         Re = pipe.reynolds_number(Q)
 
         assert Re > 0
@@ -150,7 +150,7 @@ class TestReynoldsNumber:
         pipe = PressurePipe("P", diameter=0.3, length=100, roughness=0.001)
 
         # 大流量应该产生湍流 (Re > 4000)
-        Q = 0.1  # m³/s
+        Q = 0.1  # m^3/s
         Re = pipe.reynolds_number(Q)
 
         assert Re > 4000  # 湍流范围
@@ -159,8 +159,8 @@ class TestReynoldsNumber:
         """测试雷诺数公式 Re = 4Q/(πDν)"""
         pipe = PressurePipe("P", diameter=0.2, length=50, roughness=0.0002)
 
-        Q = 0.02  # m³/s
-        nu = 1.0e-6  # m²/s
+        Q = 0.02  # m^3/s
+        nu = 1.0e-6  # m^2/s
         Re = pipe.reynolds_number(Q, nu)
 
         # 手算验证: Re = 4*0.02/(π*0.2*1e-6)
@@ -235,7 +235,7 @@ class TestFrictionFactorColebrook:
         if Re > 4000:  # 湍流
             f = pipe.friction_factor_colebrook(Q)
 
-            # 光滑管Blasius公式: f ≈ 0.316/Re^0.25
+            # 光滑管Blasius公式: f ~= 0.316/Re^0.25
             f_blasius = 0.316 / Re**0.25
 
             # 允许10%误差（Colebrook和Blasius略有差异）
@@ -262,7 +262,7 @@ class TestHeadLossDarcy:
         assert h == 0.0
 
     def test_head_loss_formula(self):
-        """测试水头损失公式 h = f*(L/D)*(V²/2g)"""
+        """测试水头损失公式 h = f*(L/D)*(V^2/2g)"""
         pipe = PressurePipe("P", diameter=0.2, length=100, roughness=0.0002)
 
         Q = 0.03
@@ -287,7 +287,7 @@ class TestHeadLossDarcy:
         # 总损失应该大于沿程损失
         assert h_total > h_friction
 
-        # 局部损失应该等于 K*(V²/2g)
+        # 局部损失应该等于 K*(V^2/2g)
         V = Q / pipe.A
         g = 9.81
         expected_minor = pipe.K_minor * (V**2 / (2*g))

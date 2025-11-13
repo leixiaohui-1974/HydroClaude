@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 IDZ-Saint-Venant深度集成示例
 
@@ -35,7 +36,9 @@ IDZ-Saint-Venant深度集成示例
 """
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 from typing import List, Tuple, Dict
 import sys
 import os
@@ -92,8 +95,8 @@ class SimplifiedCanalDynamics:
         时间步进仿真
 
         Args:
-            q_in: 上游入流 (m³/s)
-            q_out: 下游出流 (m³/s)
+            q_in: 上游入流 (m^3/s)
+            q_out: 下游出流 (m^3/s)
         """
         # 水量平衡
         dV = (q_in - q_out) * self.dt
@@ -113,7 +116,7 @@ class SimplifiedCanalDynamics:
             depth: 水深 (m)
 
         Returns:
-            正常流量 (m³/s)
+            正常流量 (m^3/s)
         """
         if depth <= 0:
             return 0.0
@@ -174,7 +177,7 @@ class IDZSaintVenantIntegration:
 
         # 工作点（用于计算变化量）
         self.depth_nominal = canal.depth  # 标称水深
-        self.flow_nominal = 20.0  # 标称流量 (m³/s)
+        self.flow_nominal = 20.0  # 标称流量 (m^3/s)
 
         # 数据缓冲
         self.u_buffer = []  # 控制输入历史
@@ -208,7 +211,7 @@ class IDZSaintVenantIntegration:
         更新在线辨识
 
         Args:
-            u: 控制输入（流量 m³/s）- 绝对值
+            u: 控制输入（流量 m^3/s）- 绝对值
             y: 系统输出（水位 m）- 绝对值
         """
         # 添加到缓冲
@@ -314,10 +317,10 @@ def run_comparison_simulation():
     运行对比仿真：静态IDZ vs 自适应IDZ
 
     改进的场景（更具挑战性）：
-    1. 初始流量20 m³/s，目标水深2.0m
-    2. 300s时流量扰动增加到28 m³/s（更大扰动）
+    1. 初始流量20 m^3/s，目标水深2.0m
+    2. 300s时流量扰动增加到28 m^3/s（更大扰动）
     3. 600s时目标水深改变为2.5m
-    4. 900s时流量扰动降至15 m³/s
+    4. 900s时流量扰动降至15 m^3/s
     5. 1200s时目标水深改变为1.8m
     6. 仿真时长：1800s（30分钟）
     """
@@ -474,7 +477,7 @@ def run_comparison_simulation():
         target_history, disturbance_history
     )
 
-    print("\n✅ 示例运行完成！")
+    print("\n 示例运行完成！")
     print("=" * 80)
 
 
@@ -503,7 +506,7 @@ def visualize_comparison(time, depth_static, control_static,
     ax.plot(time, control_static, 'b-', linewidth=2, label='静态IDZ控制')
     ax.plot(time, control_adaptive, 'r-', linewidth=2, label='自适应IDZ控制')
     ax.plot(time, disturbance, 'g--', linewidth=1.5, alpha=0.7, label='上游扰动')
-    ax.set_ylabel('下游流量 (m³/s)', fontsize=11)
+    ax.set_ylabel('下游流量 (m^3/s)', fontsize=11)
     ax.legend(loc='upper right', fontsize=10)
     ax.grid(True, alpha=0.3)
 
@@ -536,7 +539,7 @@ def visualize_comparison(time, depth_static, control_static,
     plt.savefig(output_file, dpi=150, bbox_inches='tight')
     print(f"   图表已保存: {output_file}")
 
-    # plt.show()
+    # # plt.show()  # Disabled for automated testing
 
 
 if __name__ == '__main__':

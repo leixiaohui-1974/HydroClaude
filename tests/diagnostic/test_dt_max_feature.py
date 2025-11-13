@@ -3,8 +3,22 @@
 
 验证GodunvFVMSolver的dt_max参数是否正常工作
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_dt_max_limit():
@@ -39,7 +53,7 @@ def test_dt_max_limit():
     dt1 = solver1.compute_dt()
     print(f"计算的dt: {dt1:.6f} s")
     print(f"dt_max设置: None (无限制)")
-    print(f"✅ dt未被限制")
+    print(f" dt未被限制")
 
     # 测试2：有dt_max限制
     print("\n--- 测试2：dt_max=0.5s ---")
@@ -57,9 +71,9 @@ def test_dt_max_limit():
     print(f"实际返回的dt: {dt2:.6f} s")
 
     if dt2 <= 0.5:
-        print(f"✅ dt被正确限制到 {dt2:.6f}s <= 0.5s")
+        print(f" dt被正确限制到 {dt2:.6f}s <= 0.5s")
     else:
-        print(f"❌ dt限制失败: {dt2:.6f}s > 0.5s")
+        print(f" dt限制失败: {dt2:.6f}s > 0.5s")
         return False
 
     # 测试3：dt_max大于CFL计算的dt
@@ -78,13 +92,13 @@ def test_dt_max_limit():
     print(f"实际返回的dt: {dt3:.6f} s")
 
     if abs(dt3 - dt1) < 1e-6:
-        print(f"✅ dt未被限制（CFL < dt_max）")
+        print(f" dt未被限制（CFL < dt_max）")
     else:
-        print(f"❌ dt异常: 应该等于{dt1:.6f}s，实际{dt3:.6f}s")
+        print(f" dt异常: 应该等于{dt1:.6f}s，实际{dt3:.6f}s")
         return False
 
     print("\n" + "="*80)
-    print("✅ dt_max功能测试全部通过")
+    print(" dt_max功能测试全部通过")
     print("="*80)
     return True
 

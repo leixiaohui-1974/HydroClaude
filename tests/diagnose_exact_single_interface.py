@@ -4,7 +4,7 @@
 单界面精确通量诊断
 Single Interface Exact Flux Diagnostics
 
-目标：
+目标
 1. 直接测试exact_riemann_flux函数
 2. 检查是否与理论一致
 3. 对比HLL和Exact的差异
@@ -15,11 +15,17 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('.'))
 
-from solvers.riemann_exact import exact_riemann_flux
+try:
+    from solvers.riemann_exact import exact_riemann_flux
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 def test_exact_flux_static_water():
     """
-    测试1: 静水状态（应该零通量）
+    测试1: 静水状态应该零通量
     """
     print("=" * 70)
     print("测试1: 静水状态 (h_L=h_R, Q_L=Q_R=0)")
@@ -34,14 +40,14 @@ def test_exact_flux_static_water():
 
     F_h, F_Q = exact_riemann_flux(h_L, Q_L, h_R, Q_R, B, g)
 
-    print(f"左状态: h={h_L}m, Q={Q_L}m³/s")
-    print(f"右状态: h={h_R}m, Q={Q_R}m³/s")
-    print(f"通量: F_h={F_h:.10f} m³/s, F_Q={F_Q:.10f} m⁴/s²")
+    print(f"左状态: h={h_L}m, Q={Q_L}m^3/s")
+    print(f"右状态: h={h_R}m, Q={Q_R}m^3/s")
+    print(f"通量: F_h={F_h:.10f} m^3/s, F_Q={F_Q:.10f} m/s^2")
 
     if abs(F_h) < 1e-10 and abs(F_Q) < 1e-10:
-        print("✅ 通过: 静水零通量")
+        print(" 通过: 静水零通量")
     else:
-        print(f"❌ 失败: 静水应该零通量，但F_h={F_h}, F_Q={F_Q}")
+        print(f" 失败: 静水应该零通量但F_h={F_h}, F_Q={F_Q}")
 
 def test_exact_flux_dam_break():
     """
@@ -60,25 +66,25 @@ def test_exact_flux_dam_break():
 
     F_h, F_Q = exact_riemann_flux(h_L, Q_L, h_R, Q_R, B, g)
 
-    # 理论上：稀疏波向左，激波向右，中间星区
+    # 理论上稀疏波向左激波向右中间星区
     # x/t=0处应该在星区或稀疏波中
-    # 通量应该是正的（从高处流向低处）
+    # 通量应该是正的从高处流向低处
 
-    print(f"左状态: h={h_L}m, Q={Q_L}m³/s")
-    print(f"右状态: h={h_R}m, Q={Q_R}m³/s")
-    print(f"通量: F_h={F_h:.6f} m³/s, F_Q={F_Q:.6f} m⁴/s²")
+    print(f"左状态: h={h_L}m, Q={Q_L}m^3/s")
+    print(f"右状态: h={h_R}m, Q={Q_R}m^3/s")
+    print(f"通量: F_h={F_h:.6f} m^3/s, F_Q={F_Q:.6f} m/s^2")
 
     # 计算对应的采样状态
     u_L = Q_L / (h_L * B) if h_L > 1e-6 else 0.0
     u_R = Q_R / (h_R * B) if h_R > 1e-6 else 0.0
 
     # F_h = Q = h*u*B, 所以 u = F_h / (h*B)
-    # 但我们不知道采样的h，需要从F_h和F_Q反推
+    # 但我们不知道采样的h需要从F_h和F_Q反推
 
     if F_h > 0:
-        print("✅ 通量为正（从高处流向低处）")
+        print(" 通量为正从高处流向低处")
     else:
-        print(f"⚠️  通量为负或零: F_h={F_h}")
+        print(f"  通量为负或零: F_h={F_h}")
 
 def test_mass_conservation_single_step():
     """
@@ -100,23 +106,23 @@ def test_mass_conservation_single_step():
 
     # 初始质量
     mass_0 = np.sum(h * B * dx)
-    print(f"初始质量: {mass_0:.6f} m³")
+    print(f"初始质量: {mass_0:.6f} m^3")
     print(f"初始h: {h}")
 
-    # 计算界面通量（3个界面：左边界、中间、右边界）
-    # 左边界（ghost单元 vs h[0]）
+    # 计算界面通量3个界面左边界中间右边界
+    # 左边界ghost单元 vs h[0]
     F_h_left, _ = exact_riemann_flux(h[0], Q[0], h[0], Q[0], B, g)
 
     # 中间界面
     F_h_mid, _ = exact_riemann_flux(h[0], Q[0], h[1], Q[1], B, g)
 
-    # 右边界（h[1] vs ghost单元）
+    # 右边界h[1] vs ghost单元
     F_h_right, _ = exact_riemann_flux(h[1], Q[1], h[1], Q[1], B, g)
 
     print(f"\n界面通量:")
-    print(f"  左边界 (i=0): F_h = {F_h_left:.6f} m³/s")
-    print(f"  中间 (i=1):   F_h = {F_h_mid:.6f} m³/s")
-    print(f"  右边界 (i=2): F_h = {F_h_right:.6f} m³/s")
+    print(f"  左边界 (i=0): F_h = {F_h_left:.6f} m^3/s")
+    print(f"  中间 (i=1):   F_h = {F_h_mid:.6f} m^3/s")
+    print(f"  右边界 (i=2): F_h = {F_h_right:.6f} m^3/s")
 
     # 更新状态
     dh_dt_0 = -(F_h_mid - F_h_left) / dx
@@ -129,15 +135,15 @@ def test_mass_conservation_single_step():
 
     print(f"\n单步后:")
     print(f"  h_new: {h_new}")
-    print(f"  质量: {mass_1:.6f} m³")
+    print(f"  质量: {mass_1:.6f} m^3")
     print(f"  误差: {mass_error:.6f}%")
 
     if mass_error < 0.01:
-        print("✅ 质量守恒良好 (<0.01%)")
+        print(" 质量守恒良好 (<0.01%)")
     elif mass_error < 1.0:
-        print(f"⚠️  质量误差: {mass_error:.6f}%")
+        print(f"  质量误差: {mass_error:.6f}%")
     else:
-        print(f"❌ 质量守恒失败: {mass_error:.6f}% > 1%")
+        print(f" 质量守恒失败: {mass_error:.6f}% > 1%")
 
 def test_fixed_boundary_interaction():
     """
@@ -147,23 +153,23 @@ def test_fixed_boundary_interaction():
     print("测试4: 固定h边界的质量累积问题")
     print("=" * 70)
 
-    # 模拟诊断测试中的情况：
+    # 模拟诊断测试中的情况
     # - 左边界固定h=2m
     # - 右边界固定h=1m
-    # - 初始: 左侧2m，右侧1m
+    # - 初始: 左侧2m右侧1m
 
     dx = 2.0
     dt = 0.2
     B = 10.0
     g = 9.81
 
-    # 三单元系统（简化）
+    # 三单元系统简化
     h = np.array([2.0, 1.5, 1.0])
     Q = np.array([0.0, 0.0, 0.0])
 
     print(f"初始h: {h}")
 
-    # 边界条件：固定h
+    # 边界条件固定h
     h_ghost_left = 2.0
     h_ghost_right = 1.0
 
@@ -194,14 +200,14 @@ def test_fixed_boundary_interaction():
         print(f"  界面通量: {F_h}")
         print(f"  dh/dt: {dh_dt}")
         print(f"  h_new: {h_new}")
-        print(f"  质量变化: {mass_1 - mass_0:+.6f} m³ ({mass_error:+.4f}%)")
+        print(f"  质量变化: {mass_1 - mass_0:+.6f} m^3 ({mass_error:+.4f}%)")
 
         # 检查是否有质量累积
         if abs(mass_error) > 1.0:
-            print(f"  ❌ 质量累积: {mass_error:.4f}%")
+            print(f"   质量累积: {mass_error:.4f}%")
             break
         elif abs(mass_error) > 0.1:
-            print(f"  ⚠️  质量轻微变化: {mass_error:.4f}%")
+            print(f"    质量轻微变化: {mass_error:.4f}%")
 
         h = h_new
 

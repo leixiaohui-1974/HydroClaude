@@ -39,7 +39,7 @@ def example_1_basic_rating_curve():
 
     # 河道断面的实测水位-流量数据
     h_data = [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]  # 水位 (m)
-    Q_data = [5.0, 15.0, 30.0, 50.0, 75.0, 105.0, 140.0]  # 流量 (m³/s)
+    Q_data = [5.0, 15.0, 30.0, 50.0, 75.0, 105.0, 140.0]  # 流量 (m^3/s)
 
     rc = RatingCurveBoundary(
         bc_id="RC_MAIN",
@@ -53,11 +53,11 @@ def example_1_basic_rating_curve():
     print(f"  数据点数: {len(rc.h)}")
     ranges = rc.get_range()
     print(f"  水位范围: {ranges['h_range'][0]:.2f} - {ranges['h_range'][1]:.2f} m")
-    print(f"  流量范围: {ranges['Q_range'][0]:.1f} - {ranges['Q_range'][1]:.1f} m³/s")
+    print(f"  流量范围: {ranges['Q_range'][0]:.1f} - {ranges['Q_range'][1]:.1f} m^3/s")
 
     # 水位 -> 流量查询
     print(f"\n水位 -> 流量转换：")
-    print(f"{'水位(m)':>12} {'流量(m³/s)':>15} {'说明':>20}")
+    print(f"{'水位(m)':>12} {'流量(m^3/s)':>15} {'说明':>20}")
     print("-" * 60)
 
     h_queries = [1.0, 1.25, 1.75, 2.5, 3.2, 4.0]
@@ -71,7 +71,7 @@ def example_1_basic_rating_curve():
 
     # 流量 -> 水位查询
     print(f"\n流量 -> 水位转换（反查）：")
-    print(f"{'流量(m³/s)':>15} {'水位(m)':>12} {'说明':>20}")
+    print(f"{'流量(m^3/s)':>15} {'水位(m)':>12} {'说明':>20}")
     print("-" * 60)
 
     Q_queries = [5.0, 20.0, 45.0, 75.0, 120.0]
@@ -101,7 +101,7 @@ def example_2_bidirectional_conversion():
     )
 
     print(f"\n双向转换一致性检验：")
-    print(f"{'原始水位(m)':>15} {'h→Q(m³/s)':>15} {'Q→h(m)':>15} {'误差(m)':>15}")
+    print(f"{'原始水位(m)':>15} {'h->Q(m^3/s)':>15} {'Q->h(m)':>15} {'误差(m)':>15}")
     print("-" * 75)
 
     h_tests = [1.2, 1.7, 2.3, 2.8]
@@ -111,7 +111,7 @@ def example_2_bidirectional_conversion():
         error = abs(h_back - h_orig)
         print(f"{h_orig:>15.2f} {Q:>15.2f} {h_back:>15.2f} {error:>15.4f}")
 
-    print(f"\n{'原始流量(m³/s)':>18} {'Q→h(m)':>12} {'h→Q(m³/s)':>15} {'误差(m³/s)':>18}")
+    print(f"\n{'原始流量(m^3/s)':>18} {'Q->h(m)':>12} {'h->Q(m^3/s)':>15} {'误差(m^3/s)':>18}")
     print("-" * 78)
 
     Q_tests = [15.0, 35.0, 60.0, 85.0]
@@ -164,14 +164,14 @@ def example_3_power_law_fitting():
     # 评估拟合质量
     fit_stats = rc_power.evaluate_fit()
     print(f"\n拟合质量：")
-    print(f"  R² = {fit_stats['r_squared']:.6f}")
-    print(f"  RMSE = {fit_stats['rmse']:.4f} m³/s")
-    print(f"  MAE = {fit_stats['mae']:.4f} m³/s")
-    print(f"  最大误差 = {fit_stats['max_error']:.4f} m³/s")
+    print(f"  R^2 = {fit_stats['r_squared']:.6f}")
+    print(f"  RMSE = {fit_stats['rmse']:.4f} m^3/s")
+    print(f"  MAE = {fit_stats['mae']:.4f} m^3/s")
+    print(f"  最大误差 = {fit_stats['max_error']:.4f} m^3/s")
 
     # 对比插值和幂律
     print(f"\n插值 vs 幂律公式对比：")
-    print(f"{'水位(m)':>12} {'插值Q(m³/s)':>18} {'幂律Q(m³/s)':>18} {'差异(%)':>15}")
+    print(f"{'水位(m)':>12} {'插值Q(m^3/s)':>18} {'幂律Q(m^3/s)':>18} {'差异(%)':>15}")
     print("-" * 75)
 
     rc_interp = RatingCurveBoundary(
@@ -207,7 +207,7 @@ def example_4_hydrological_station():
 
     # 某水文站实测 Rating Curve（典型河道数据）
     h_measured = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]  # m
-    Q_measured = [2.0, 8.0, 18.0, 32.0, 50.0, 72.0, 98.0, 128.0, 162.0, 200.0]  # m³/s
+    Q_measured = [2.0, 8.0, 18.0, 32.0, 50.0, 72.0, 98.0, 128.0, 162.0, 200.0]  # m^3/s
 
     rc_station = RatingCurveBoundary(
         bc_id="STATION_001",
@@ -223,7 +223,7 @@ def example_4_hydrological_station():
 
     # 模拟实时水位监测
     print(f"\n实时流量推算（基于水位观测）：")
-    print(f"{'观测时间':>12} {'水位(m)':>12} {'推算流量(m³/s)':>18} {'水情描述':>15}")
+    print(f"{'观测时间':>12} {'水位(m)':>12} {'推算流量(m^3/s)':>18} {'水情描述':>15}")
     print("-" * 72)
 
     observations = [
@@ -241,7 +241,7 @@ def example_4_hydrological_station():
 
     # 反向计算：已知流量需求，推算所需水位
     print(f"\n水位需求计算（基于流量要求）：")
-    print(f"{'需求流量(m³/s)':>18} {'所需水位(m)':>15} {'用途':>20}")
+    print(f"{'需求流量(m^3/s)':>18} {'所需水位(m)':>15} {'用途':>20}")
     print("-" * 65)
 
     flow_requirements = [
@@ -272,7 +272,7 @@ def example_5_interpolation_methods():
 
     print(f"\n原始数据点：")
     for h, Q in zip(h_sparse, Q_sparse):
-        print(f"  h = {h:.1f} m, Q = {Q:.1f} m³/s")
+        print(f"  h = {h:.1f} m, Q = {Q:.1f} m^3/s")
 
     # 线性插值
     rc_linear = RatingCurveBoundary(
@@ -291,7 +291,7 @@ def example_5_interpolation_methods():
     )
 
     print(f"\n插值方法对比：")
-    print(f"{'水位(m)':>12} {'线性插值(m³/s)':>18} {'样条插值(m³/s)':>18} {'差异(%)':>15}")
+    print(f"{'水位(m)':>12} {'线性插值(m^3/s)':>18} {'样条插值(m^3/s)':>18} {'差异(%)':>15}")
     print("-" * 75)
 
     h_tests = [1.5, 2.5, 3.5, 4.5]
@@ -322,7 +322,7 @@ def example_6_extrapolation_methods():
 
     print(f"\n数据范围：")
     print(f"  水位: {min(h_data):.1f} - {max(h_data):.1f} m")
-    print(f"  流量: {min(Q_data):.1f} - {max(Q_data):.1f} m³/s")
+    print(f"  流量: {min(Q_data):.1f} - {max(Q_data):.1f} m^3/s")
 
     # 不同外推方法
     rc_const = RatingCurveBoundary(
@@ -431,9 +431,9 @@ def example_7_file_operations():
         Q_loaded = rc_loaded.h_to_Q(h_test)
 
         print(f"\n一致性验证（h = {h_test:.1f} m）：")
-        print(f"  原始: Q = {Q_original:.2f} m³/s")
-        print(f"  加载: Q = {Q_loaded:.2f} m³/s")
-        print(f"  误差: {abs(Q_loaded - Q_original):.4f} m³/s")
+        print(f"  原始: Q = {Q_original:.2f} m^3/s")
+        print(f"  加载: Q = {Q_loaded:.2f} m^3/s")
+        print(f"  误差: {abs(Q_loaded - Q_original):.4f} m^3/s")
 
     finally:
         # 清理临时文件

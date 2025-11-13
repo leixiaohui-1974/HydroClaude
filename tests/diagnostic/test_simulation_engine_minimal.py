@@ -97,8 +97,8 @@ try:
     builder = ModelBuilder.from_config_file(config_file.name)
     solver = builder.build_solver()
 
-    print(f"✓ 求解器类型: {solver.__class__.__name__}")
-    print(f"✓ dt_max: {solver.dt_max}")
+    print(f" 求解器类型: {solver.__class__.__name__}")
+    print(f" dt_max: {solver.dt_max}")
     print()
 
     # 纯模拟循环（去除所有SimulationEngine的额外逻辑）
@@ -107,7 +107,7 @@ try:
     step = 0
 
     while solver.t < t_end and step < 10000:
-        # ⚠️ 关键：直接调用step()，不传dt（模拟SimulationEngine）
+        # ️ 关键：直接调用step()，不传dt（模拟SimulationEngine）
         solver.step()
         step += 1
 
@@ -120,9 +120,9 @@ try:
     print(f"  总步数: {step}")
 
     if solver.t >= t_end * 0.9:
-        print(f"  ✅ 成功运行")
+        print(f"   成功运行")
     else:
-        print(f"  ❌ 提前停止")
+        print(f"   提前停止")
 
 finally:
     ic_file_path.unlink(missing_ok=True)

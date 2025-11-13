@@ -186,10 +186,10 @@ def analyze_hydraulics(topology, scheme_name):
         flows, heads = solver.solve()
 
         if not solver.converged:
-            print(f"  ✗ 求解未收敛")
+            print(f"   求解未收敛")
             return None
 
-        print(f"  ✓ 求解收敛")
+        print(f"   求解收敛")
 
         # 压力分析
         pressures = []
@@ -206,13 +206,13 @@ def analyze_hydraulics(topology, scheme_name):
 
         # 压力检查
         if min_pressure < 15:
-            print(f"    ⚠️ 最小压力不足 (< 15m)")
+            print(f"     最小压力不足 (< 15m)")
             pressure_adequate = False
         elif min_pressure < 20:
-            print(f"    ⚠️ 最小压力偏低 (< 20m)")
+            print(f"     最小压力偏低 (< 20m)")
             pressure_adequate = True
         else:
-            print(f"    ✓ 压力满足要求 (≥ 20m)")
+            print(f"     压力满足要求 (>= 20m)")
             pressure_adequate = True
 
         # 流速分析
@@ -237,13 +237,13 @@ def analyze_hydraulics(topology, scheme_name):
 
         # 流速检查
         if max_velocity > 3.0:
-            print(f"    ⚠️ 最大流速过高 (> 3.0m/s)")
+            print(f"     最大流速过高 (> 3.0m/s)")
             velocity_adequate = False
         elif max_velocity > 2.5:
-            print(f"    ⚠️ 最大流速偏高 (> 2.5m/s)")
+            print(f"     最大流速偏高 (> 2.5m/s)")
             velocity_adequate = True
         else:
-            print(f"    ✓ 流速合理 (≤ 2.5m/s)")
+            print(f"     流速合理 (<= 2.5m/s)")
             velocity_adequate = True
 
         # 计算总水头损失
@@ -277,7 +277,7 @@ def analyze_hydraulics(topology, scheme_name):
         }
 
     except Exception as e:
-        print(f"  ✗ 分析失败: {e}")
+        print(f"   分析失败: {e}")
         return None
 
 
@@ -356,10 +356,10 @@ def compare_schemes():
     # 1. 创建两个方案
     print("【创建管网】")
     baseline_topo, baseline_pipes = create_baseline_network()
-    print(f"  ✓ 基准方案: {len(baseline_topo.nodes)}个节点, {len(baseline_topo.pipes)}根管道")
+    print(f"   基准方案: {len(baseline_topo.nodes)}个节点, {len(baseline_topo.pipes)}根管道")
 
     optimized_topo, optimized_pipes = create_optimized_network()
-    print(f"  ✓ 优化方案: {len(optimized_topo.nodes)}个节点, {len(optimized_topo.pipes)}根管道")
+    print(f"   优化方案: {len(optimized_topo.nodes)}个节点, {len(optimized_topo.pipes)}根管道")
     print()
 
     # 2. 水力分析
@@ -409,19 +409,19 @@ def compare_schemes():
 
         print(f"  最小压力变化: {pressure_change:+.2f}m")
         if pressure_change < -2:
-            print(f"    ⚠️ 压力下降较多")
+            print(f"     压力下降较多")
         elif pressure_change < 0:
-            print(f"    ⚠️ 压力略有下降")
+            print(f"     压力略有下降")
         else:
-            print(f"    ✓ 压力保持或提升")
+            print(f"     压力保持或提升")
 
         print(f"  最大流速变化: {velocity_change:+.2f}m/s")
         if velocity_change > 0.5:
-            print(f"    ⚠️ 流速增加较多")
+            print(f"     流速增加较多")
         elif velocity_change > 0.2:
-            print(f"    ⚠️ 流速略有增加")
+            print(f"     流速略有增加")
         else:
-            print(f"    ✓ 流速保持合理")
+            print(f"     流速保持合理")
 
         # 推荐方案
         print()
@@ -430,13 +430,13 @@ def compare_schemes():
         if (optimized_results['pressure_adequate'] and
             optimized_results['velocity_adequate'] and
             cost_saving_pct > 10):
-            print(f"  ✅ 推荐【优化方案】")
+            print(f"   推荐【优化方案】")
             print(f"     理由: 节省投资{cost_saving_pct:.1f}%，且水力性能满足要求")
         elif cost_saving_pct < 5:
-            print(f"  ⚠️ 推荐【基准方案】")
+            print(f"   推荐【基准方案】")
             print(f"     理由: 投资节省有限({cost_saving_pct:.1f}%)，保守设计更安全")
         else:
-            print(f"  ⚠️ 需要进一步优化")
+            print(f"   需要进一步优化")
             print(f"     理由: 投资可节省{cost_saving_pct:.1f}%，但水力性能需改进")
 
         return {
@@ -571,7 +571,7 @@ def plot_comparison(results):
 
     output_path = os.path.join(os.path.dirname(__file__), 'network_optimization_results.png')
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
-    print(f"📊 结果图表已保存: {output_path}")
+    print(f" 结果图表已保存: {output_path}")
 
     plt.close()
 
@@ -587,38 +587,38 @@ def recommendations():
     print()
 
     print("【1. 管径选择原则】")
-    print("  • 主干线：流量大，选择较大管径，降低水头损失")
-    print("  • 支线：流量小，可适当减小管径，节省投资")
-    print("  • 末端：需水量少，优先考虑经济性")
-    print("  • 控制流速：0.6-2.5 m/s为宜，避免过高或过低")
+    print("  - 主干线：流量大，选择较大管径，降低水头损失")
+    print("  - 支线：流量小，可适当减小管径，节省投资")
+    print("  - 末端：需水量少，优先考虑经济性")
+    print("  - 控制流速：0.6-2.5 m/s为宜，避免过高或过低")
     print()
 
     print("【2. 优化方法】")
-    print("  • 迭代优化：逐步调整管径，平衡水力与经济性")
-    print("  • 敏感性分析：识别关键管道，重点优化")
-    print("  • 多方案对比：评估不同设计的优缺点")
-    print("  • 可靠性检验：确保优化后系统仍满足要求")
+    print("  - 迭代优化：逐步调整管径，平衡水力与经济性")
+    print("  - 敏感性分析：识别关键管道，重点优化")
+    print("  - 多方案对比：评估不同设计的优缺点")
+    print("  - 可靠性检验：确保优化后系统仍满足要求")
     print()
 
     print("【3. 经济性评估】")
-    print("  • 初投资：管道材料+安装成本")
-    print("  • 运行成本：泵站能耗（与水头损失相关）")
-    print("  • 全生命周期：考虑50年使用期")
-    print("  • 投资回收期：一般3-5年为宜")
+    print("  - 初投资：管道材料+安装成本")
+    print("  - 运行成本：泵站能耗（与水头损失相关）")
+    print("  - 全生命周期：考虑50年使用期")
+    print("  - 投资回收期：一般3-5年为宜")
     print()
 
     print("【4. 约束条件】")
-    print("  • 最小压力：节点压力 ≥ 15-20m")
-    print("  • 最大流速：管道流速 ≤ 3.0m/s（防水锤）")
-    print("  • 最小流速：管道流速 ≥ 0.3m/s（防沉积）")
-    print("  • 标准管径：采用国标系列管径")
+    print("  - 最小压力：节点压力 >= 15-20m")
+    print("  - 最大流速：管道流速 <= 3.0m/s（防水锤）")
+    print("  - 最小流速：管道流速 >= 0.3m/s（防沉积）")
+    print("  - 标准管径：采用国标系列管径")
     print()
 
     print("【5. 实施建议】")
-    print("  • 分期建设：先建主干线，后建支线")
-    print("  • 预留余量：考虑未来需水量增长10-20%")
-    print("  • 材料选择：根据水质、地质条件选择合适管材")
-    print("  • 施工质量：确保管道连接密封，防止漏损")
+    print("  - 分期建设：先建主干线，后建支线")
+    print("  - 预留余量：考虑未来需水量增长10-20%")
+    print("  - 材料选择：根据水质、地质条件选择合适管材")
+    print("  - 施工质量：确保管道连接密封，防止漏损")
     print()
 
 
@@ -642,7 +642,7 @@ def main():
     recommendations()
 
     print("="*80)
-    print("✅ 案例分析完成！")
+    print(" 案例分析完成！")
     print("="*80)
     print()
 

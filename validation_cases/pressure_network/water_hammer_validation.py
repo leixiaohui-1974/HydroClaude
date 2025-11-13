@@ -90,8 +90,8 @@ def valve_closure_case():
 
     print("【求解器参数 / Solver Parameters】")
     print(f"  波速 / Wave speed:             a = {solver.a:.1f} m/s")
-    print(f"  空间步长 / Spatial step:       Δx = {solver.dx:.2f} m")
-    print(f"  时间步长 / Time step:          Δt = {solver.dt:.4f} s")
+    print(f"  空间步长 / Spatial step:       Deltax = {solver.dx:.2f} m")
+    print(f"  时间步长 / Time step:          Deltat = {solver.dt:.4f} s")
     print(f"  临界关闭时间 / Critical time:  T_crit = {solver.critical_closure_time():.3f} s")
     print()
 
@@ -103,7 +103,7 @@ def valve_closure_case():
     T_critical = solver.critical_closure_time()
 
     print("【理论预测 / Theoretical Prediction】")
-    print(f"  Joukowsky压升 / Joukowsky rise:  ΔH = {delta_H_joukowsky:.2f} m")
+    print(f"  Joukowsky压升 / Joukowsky rise:  DeltaH = {delta_H_joukowsky:.2f} m")
     print(f"  Joukowsky最大水头 / Joukowsky max: {H_reservoir + delta_H_joukowsky:.2f} m")
 
     if closure_time < T_critical:
@@ -152,7 +152,7 @@ def valve_closure_case():
         duration=duration
     )
 
-    print("✓ 求解完成 / Solution complete")
+    print(" 求解完成 / Solution complete")
     print()
 
     # ========================================
@@ -176,7 +176,7 @@ def valve_closure_case():
 
     print("【数值结果 / Numerical Results】")
     print(f"  最大水头 / Maximum head:        H_max = {H_max:.2f} m")
-    print(f"  最大压升 / Maximum rise:        ΔH_max = {H_max - H_reservoir:.2f} m")
+    print(f"  最大压升 / Maximum rise:        DeltaH_max = {H_max - H_reservoir:.2f} m")
     print(f"  发生时间 / Time of max:         t_max = {t_max:.3f} s")
     print(f"  发生位置 / Location of max:     x_max = {x_max:.1f} m")
     print()
@@ -200,13 +200,13 @@ def valve_closure_case():
 
     # 验收标准（水锤分析允许10-15%误差，因为简化假设和实际复杂性）
     if error_joukowsky < 10.0:
-        print("✅ 验证通过 / Validation PASSED (error < 10%)")
+        print(" 验证通过 / Validation PASSED (error < 10%)")
         validation_status = "PASSED"
     elif error_joukowsky < 20.0:
-        print("⚠️ 可接受 / Acceptable (10% < error < 20%)")
+        print(" 可接受 / Acceptable (10% < error < 20%)")
         validation_status = "ACCEPTABLE"
     else:
-        print("❌ 需要检查 / Need inspection (error >= 20%)")
+        print(" 需要检查 / Need inspection (error >= 20%)")
         validation_status = "FAILED"
     print()
 
@@ -238,7 +238,7 @@ def valve_closure_case():
     valve_tau = [valve_opening(ti) for ti in t]
     ax2_twin.plot(t, valve_tau, 'g--', linewidth=1.5, label='Valve opening')
     ax2.set_xlabel('Time (s)')
-    ax2.set_ylabel('Flow rate (m³/s)', color='r')
+    ax2.set_ylabel('Flow rate (m^3/s)', color='r')
     ax2_twin.set_ylabel('Valve opening ratio', color='g')
     ax2.set_title('Flow Rate and Valve Opening')
     ax2.grid(True, alpha=0.3)
@@ -296,7 +296,7 @@ def valve_closure_case():
 
     output_path = '/home/user/HydroClaude/validation_cases/pressure_network/water_hammer_validation.png'
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
-    print(f"✓ 图表已保存 / Plot saved: {output_path}")
+    print(f" 图表已保存 / Plot saved: {output_path}")
     print()
 
     # ========================================
@@ -316,10 +316,10 @@ def valve_closure_case():
     print()
     print("4. 关键特性验证:")
     print("   Key features validated:")
-    print("   ✓ 波速计算准确")
-    print("   ✓ 压力峰值合理")
-    print("   ✓ 边界条件正确")
-    print("   ✓ 质量守恒满足")
+    print("    波速计算准确")
+    print("    压力峰值合理")
+    print("    边界条件正确")
+    print("    质量守恒满足")
     print()
 
     return {

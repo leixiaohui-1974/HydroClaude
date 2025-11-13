@@ -264,7 +264,7 @@ def parameter_sweep():
 
         # 打印即时结果
         if result['success']:
-            print(f"\n✅ 完成:")
+            print(f"\n 完成:")
             print(f"  模拟时间: {result['time']:.1f}s, 步数: {result['steps']}")
             print(f"  质量误差: {result['mass_error']:.2f}%")
             print(f"  Fr上游: {result['Fr_upstream']:.3f}")
@@ -272,7 +272,7 @@ def parameter_sweep():
             if not np.isnan(result['belanger_error']):
                 print(f"  Belanger误差: {result['belanger_error']:.1f}%")
         else:
-            print(f"\n❌ 失败: {result['error']}")
+            print(f"\n 失败: {result['error']}")
 
     # 汇总分析
     print(f"\n{'='*80}")
@@ -306,7 +306,7 @@ def parameter_sweep():
         # 按质量误差排序
         sorted_by_mass = sorted(successful_results, key=lambda x: x['mass_error'])
 
-        print(f"\n🏆 质量守恒最佳:")
+        print(f"\n 质量守恒最佳:")
         best_mass = sorted_by_mass[0]
         print(f"  配置: {best_mass['config_name']}")
         print(f"  质量误差: {best_mass['mass_error']:.2f}%")
@@ -316,7 +316,7 @@ def parameter_sweep():
         # 按负流量排序
         sorted_by_neg = sorted(successful_results, key=lambda x: x['n_negative'])
         best_neg = sorted_by_neg[0]
-        print(f"\n🏆 负流量最少:")
+        print(f"\n 负流量最少:")
         print(f"  配置: {best_neg['config_name']}")
         print(f"  负流量: {best_neg['n_negative']}/{best_neg['n_cells']} ({best_neg['pct_negative']:.1f}%)")
         print(f"  质量误差: {best_neg['mass_error']:.2f}%")
@@ -330,7 +330,7 @@ def parameter_sweep():
         sorted_by_combined = sorted(successful_results, key=lambda x: x['综合得分'], reverse=True)
         best_combined = sorted_by_combined[0]
 
-        print(f"\n🏆 综合最佳 (0.6×质量+0.4×负流量):")
+        print(f"\n 综合最佳 (0.6x质量+0.4x负流量):")
         print(f"  配置: {best_combined['config_name']}")
         print(f"  质量误差: {best_combined['mass_error']:.2f}%")
         print(f"  负流量: {best_combined['pct_negative']:.1f}%")
@@ -340,13 +340,13 @@ def parameter_sweep():
         # 对比基准(100网格, CFL=0.4, eps=1e-6)
         baseline = next((r for r in results_list if r['config_name'] == 'n100_cfl0.4_eps1e-06'), None)
         if baseline and baseline['success']:
-            print(f"\n📊 vs 基准配置(n100_cfl0.4):")
+            print(f"\n vs 基准配置(n100_cfl0.4):")
             print(f"  基准质量误差: {baseline['mass_error']:.2f}%")
             print(f"  最佳质量误差: {best_mass['mass_error']:.2f}%")
             improvement = (baseline['mass_error'] - best_mass['mass_error']) / baseline['mass_error'] * 100
             print(f"  改善: {improvement:.1f}%")
     else:
-        print("\n⚠️  所有测试均失败或数据无效")
+        print("\n️  所有测试均失败或数据无效")
 
     print(f"\n{'='*80}")
     print("结论与建议")
@@ -356,7 +356,7 @@ def parameter_sweep():
     print("1. 更细的网格通常能改善质量守恒")
     print("2. CFL的影响需要具体分析")
     print("3. MacDonald Test 4本质上是困难问题（强激波+无摩阻）")
-    print("4. 28% → 15%的目标需要更激进的方法（更细网格或改进算法）")
+    print("4. 28% -> 15%的目标需要更激进的方法（更细网格或改进算法）")
     print()
 
 

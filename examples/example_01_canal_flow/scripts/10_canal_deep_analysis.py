@@ -1,14 +1,15 @@
+# -*- coding: utf-8 -*-
 """
-示例1: 明渠深入分析 v2（边界条件、阶跃响应、IDZ模型辨识）
+示例1: 明渠深入分析 v2边界条件阶跃响应IDZ模型辨识
 
-使用自定义的Saint-Venant求解器，确保边界条件正确应用
+使用自定义的Saint-Venant求解器确保边界条件正确应用
 
-深入分析内容：
-1. 边界条件分析：上游流量 + 下游水位边界
-2. 场景1：上游流量阶跃响应分析
-3. 场景2：下游水位阶跃响应分析
-4. IDZ降阶模型参数辨识（4个传递函数）
-5. 详细的纵剖面动画（标注边界条件、底坡等）
+深入分析内容
+1. 边界条件分析上游流量 + 下游水位边界
+2. 场景1上游流量阶跃响应分析
+3. 场景2下游水位阶跃响应分析
+4. IDZ降阶模型参数辨识4个传递函数
+5. 详细的纵剖面动画标注边界条件底坡等
 
 Author: Claude
 Date: 2025-10-21
@@ -28,7 +29,7 @@ from output_helper import get_output_path, save_figure, save_table, save_animati
 class SimpleCanalSolver:
     """
     简化的明渠Saint-Venant方程求解器
-    使用一阶显式格式，保证边界条件正确应用
+    使用一阶显式格式保证边界条件正确应用
     """
 
     def __init__(self, length, width, slope, manning_n, nx):
@@ -43,7 +44,7 @@ class SimpleCanalSolver:
 
         # 初始条件
         self.h = np.ones(nx) * 5.0  # 初始水深5m
-        self.Q = np.ones(nx) * 5.0  # 初始流量5m³/s
+        self.Q = np.ones(nx) * 5.0  # 初始流量5m^3/s
 
     def step(self, dt, Q_upstream, h_downstream):
         """
@@ -69,11 +70,11 @@ class SimpleCanalSolver:
             else:
                 V = 0
 
-            # 连续方程: ∂A/∂t + ∂Q/∂x = 0
+            # 连续方程: A/t + Q/x = 0
             dQ_dx = (self.Q[i+1] - self.Q[i-1]) / (2 * self.dx)
             dA_dt = -dQ_dx
 
-            # 动量方程: ∂Q/∂t + ∂(Q²/A)/∂x + gA·∂h/∂x = gA(S0 - Sf)
+            # 动量方程: Q/t + (Q^2/A)/x + gAh/x = gA(S0 - Sf)
             # 摩阻坡度
             if self.h[i] > 0:
                 R = A / (self.B + 2 * self.h[i])  # 水力半径
@@ -83,7 +84,7 @@ class SimpleCanalSolver:
 
             dh_dx = (self.h[i+1] - self.h[i-1]) / (2 * self.dx)
 
-            # 简化的动量方程（忽略对流项以提高稳定性）
+            # 简化的动量方程忽略对流项以提高稳定性
             dQ_dt = self.g * A * (self.S0 - Sf - dh_dx)
 
             # 更新
@@ -91,11 +92,11 @@ class SimpleCanalSolver:
             Q_new[i] = self.Q[i] + dQ_dt * dt
 
         # 边界条件
-        # 上游：流量边界
+        # 上游流量边界
         Q_new[0] = Q_upstream
         h_new[0] = h_new[1]  # 外推
 
-        # 下游：水位边界
+        # 下游水位边界
         h_new[-1] = h_downstream
         Q_new[-1] = Q_new[-2]  # 外推
 
@@ -104,7 +105,7 @@ class SimpleCanalSolver:
         h_new = np.minimum(h_new, 50.0)  # Maximum depth 50m (prevent extreme values)
 
         # Limit flow rate to physically reasonable range
-        max_Q = 100.0  # Maximum 100 m³/s for this channel size
+        max_Q = 100.0  # Maximum 100 m^3/s for this channel size
         Q_new = np.clip(Q_new, 0.0, max_Q)
 
         self.h = h_new
@@ -116,11 +117,11 @@ class SimpleCanalSolver:
 class IDZModel:
     """IDZ (Integrator Delay Zero) 模型
 
-    4个传递函数：
-    - G11: 上游流量 → 上游水位
-    - G12: 下游水位 → 上游水位
-    - G21: 上游流量 → 下游水位
-    - G22: 下游水位 → 下游水位
+    4个传递函数
+    - G11: 上游流量 -> 上游水位
+    - G12: 下游水位 -> 上游水位
+    - G21: 上游流量 -> 下游水位
+    - G22: 下游水位 -> 下游水位
     """
 
     def __init__(self):
@@ -193,7 +194,7 @@ def create_annotated_animation(solver, time_list, h_history, Q_history,
         h = h_history[frame]
         Q = Q_history[frame]
 
-        # 上图：水位剖面
+        # 上图水位剖面
         ax = axes[0]
 
         # 底坡
@@ -248,7 +249,7 @@ def create_annotated_animation(solver, time_list, h_history, Q_history,
         y_max = max(water_surface) + 0.5
         ax.set_ylim([y_min, y_max])
 
-        # 下图：流量剖面
+        # 下图流量剖面
         ax = axes[1]
         ax.plot(x, Q, 'g-o', linewidth=2.5, markersize=4,
                markeredgecolor='black', markeredgewidth=0.5)
@@ -258,7 +259,7 @@ def create_annotated_animation(solver, time_list, h_history, Q_history,
                   label=f'Downstream: {Q[-1]:.2f}')
 
         ax.set_xlabel('Distance (m)', fontsize=11)
-        ax.set_ylabel('Flow Rate (m³/s)', fontsize=11)
+        ax.set_ylabel('Flow Rate (m^3/s)', fontsize=11)
         ax.set_title('Flow Rate Distribution', fontsize=13, fontweight='bold')
         ax.grid(True, alpha=0.3, linestyle='--')
         ax.legend(loc='best', fontsize=9)
@@ -286,7 +287,7 @@ def run_deep_analysis():
     """运行明渠深入分析"""
 
     print("=" * 80)
-    print("示例1: 明渠深入分析 v2 - 边界条件、阶跃响应、IDZ模型辨识")
+    print("示例1: 明渠深入分析 v2 - 边界条件阶跃响应IDZ模型辨识")
     print("=" * 80)
     print()
 
@@ -310,7 +311,7 @@ def run_deep_analysis():
     # 仿真参数
     # CRITICAL FIX: Reduced time step from 1.0s to 0.1s for numerical stability
     # The original dt=1.0s was causing severe instabilities:
-    # - Flow rate spiked to 144 m³/s (unphysical)
+    # - Flow rate spiked to 144 m^3/s (unphysical)
     # - Flow rate dropped to 0 (mass conservation violation)
     # - Water depth decreased when inflow increased (wrong direction)
     dt = 0.1  # Reduced from 1.0s to satisfy CFL condition
@@ -325,16 +326,16 @@ def run_deep_analysis():
     print(f"  时间步长: {dt} s (REDUCED from 1.0s for stability)")
     print(f"  CFL数: {CFL:.4f} (应 < 1.0)")
     if CFL >= 1.0:
-        print(f"  ⚠ 警告: CFL数 >= 1.0, 可能不稳定")
+        print(f"   警告: CFL数 >= 1.0, 可能不稳定")
     else:
-        print(f"  ✓ CFL条件满足")
+        print(f"   CFL条件满足")
     print(f"  阶跃时刻: {step_time} s")
     print(f"  总时间: {total_time} s")
     print(f"  总步数: {n_steps}")
     print()
 
-    # === 场景1：上游流量阶跃 ===
-    print("场景1: 上游流量阶跃 (5.0 → 8.0 m³/s)")
+    # === 场景1上游流量阶跃 ===
+    print("场景1: 上游流量阶跃 (5.0 -> 8.0 m^3/s)")
     print("-" * 80)
 
     solver.h = np.ones(solver.nx) * 5.0
@@ -378,8 +379,8 @@ def run_deep_analysis():
     print(f"  最终: hu={hu1[-1]:.3f}m, hd={hd1[-1]:.3f}m")
     print()
 
-    # === 场景2：下游水位阶跃 ===
-    print("场景2: 下游水位阶跃 (5.0 → 6.0 m)")
+    # === 场景2下游水位阶跃 ===
+    print("场景2: 下游水位阶跃 (5.0 -> 6.0 m)")
     print("-" * 80)
 
     solver.h = np.ones(solver.nx) * 5.0
@@ -439,25 +440,25 @@ def run_deep_analysis():
     hu2 = np.array(hu2)
     hd2 = np.array(hd2)
 
-    # G11: Qu → hu
+    # G11: Qu -> hu
     time_resp = time1[step_idx:] - time1[step_idx]
     params_G11 = idz.identify_from_step_response(time_resp, 3.0, hu1[step_idx:], 'G11')
-    print(f"\nG11 (Qu→hu): K={params_G11['K']:.4f}, T1={params_G11['T1']:.1f}s, "
+    print(f"\nG11 (Qu->hu): K={params_G11['K']:.4f}, T1={params_G11['T1']:.1f}s, "
           f"T2={params_G11['T2']:.1f}s, delay={params_G11['delay']:.1f}s")
 
-    # G21: Qu → hd
+    # G21: Qu -> hd
     params_G21 = idz.identify_from_step_response(time_resp, 3.0, hd1[step_idx:], 'G21')
-    print(f"G21 (Qu→hd): K={params_G21['K']:.4f}, T1={params_G21['T1']:.1f}s, "
+    print(f"G21 (Qu->hd): K={params_G21['K']:.4f}, T1={params_G21['T1']:.1f}s, "
           f"T2={params_G21['T2']:.1f}s, delay={params_G21['delay']:.1f}s")
 
-    # G12: hd → hu
+    # G12: hd -> hu
     params_G12 = idz.identify_from_step_response(time_resp, 1.0, hu2[step_idx:], 'G12')
-    print(f"G12 (hd→hu): K={params_G12['K']:.4f}, T1={params_G12['T1']:.1f}s, "
+    print(f"G12 (hd->hu): K={params_G12['K']:.4f}, T1={params_G12['T1']:.1f}s, "
           f"T2={params_G12['T2']:.1f}s, delay={params_G12['delay']:.1f}s")
 
-    # G22: hd → hd
+    # G22: hd -> hd
     params_G22 = idz.identify_from_step_response(time_resp, 1.0, hd2[step_idx:], 'G22')
-    print(f"G22 (hd→hd): K={params_G22['K']:.4f}, T1={params_G22['T1']:.1f}s, "
+    print(f"G22 (hd->hd): K={params_G22['K']:.4f}, T1={params_G22['T1']:.1f}s, "
           f"T2={params_G22['T2']:.1f}s, delay={params_G22['delay']:.1f}s")
 
     # === 导出数据表 ===
@@ -483,7 +484,7 @@ def run_deep_analysis():
 
     # Export IDZ parameters
     idz_params_df = pd.DataFrame({
-        'Transfer_Function': ['G11: Qu→hu', 'G12: hd→hu', 'G21: Qu→hd', 'G22: hd→hd'],
+        'Transfer_Function': ['G11: Qu->hu', 'G12: hd->hu', 'G21: Qu->hd', 'G22: hd->hd'],
         'K_Gain': [params_G11['K'], params_G12['K'], params_G21['K'], params_G22['K']],
         'T1_s': [params_G11['T1'], params_G12['T1'], params_G21['T1'], params_G22['T1']],
         'T2_s': [params_G11['T2'], params_G12['T2'], params_G21['T2'], params_G22['T2']],
@@ -506,7 +507,7 @@ def run_deep_analysis():
 
     # 场景1动画
     boundary_info_1 = {
-        'upstream': 'Upstream BC:\nFlow Step\n5.0→8.0 m³/s',
+        'upstream': 'Upstream BC:\nFlow Step\n5.0->8.0 m^3/s',
         'downstream': 'Downstream BC:\nLevel = 5.0 m'
     }
 
@@ -517,12 +518,12 @@ def run_deep_analysis():
         'example_01_deep_scenario1.gif'
     )
     generated_files.append(anim1)
-    print(f"  ✓ 场景1动画")
+    print(f"   场景1动画")
 
     # 场景2动画
     boundary_info_2 = {
-        'upstream': 'Upstream BC:\nFlow = 5.0 m³/s',
-        'downstream': 'Downstream BC:\nLevel Step\n5.0→6.0 m'
+        'upstream': 'Upstream BC:\nFlow = 5.0 m^3/s',
+        'downstream': 'Downstream BC:\nLevel Step\n5.0->6.0 m'
     }
 
     anim2 = create_annotated_animation(
@@ -532,7 +533,7 @@ def run_deep_analysis():
         'example_01_deep_scenario2.gif'
     )
     generated_files.append(anim2)
-    print(f"  ✓ 场景2动画")
+    print(f"   场景2动画")
 
     # 阶跃响应图
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
@@ -582,16 +583,16 @@ def run_deep_analysis():
 
     table_data = [
         ['TF', 'K', 'T1 (s)', 'T2 (s)', 'Delay (s)', 'Physical Meaning'],
-        ['G11: Qu→hu', f"{params_G11['K']:.3f}", f"{params_G11['T1']:.1f}",
+        ['G11: Qu->hu', f"{params_G11['K']:.3f}", f"{params_G11['T1']:.1f}",
          f"{params_G11['T2']:.1f}", f"{params_G11['delay']:.1f}",
          'Upstream flow affects upstream level'],
-        ['G12: hd→hu', f"{params_G12['K']:.3f}", f"{params_G12['T1']:.1f}",
+        ['G12: hd->hu', f"{params_G12['K']:.3f}", f"{params_G12['T1']:.1f}",
          f"{params_G12['T2']:.1f}", f"{params_G12['delay']:.1f}",
          'Backwater effect'],
-        ['G21: Qu→hd', f"{params_G21['K']:.3f}", f"{params_G21['T1']:.1f}",
+        ['G21: Qu->hd', f"{params_G21['K']:.3f}", f"{params_G21['T1']:.1f}",
          f"{params_G21['T2']:.1f}", f"{params_G21['delay']:.1f}",
          'Flow propagates to downstream'],
-        ['G22: hd→hd', f"{params_G22['K']:.3f}", f"{params_G22['T1']:.1f}",
+        ['G22: hd->hd', f"{params_G22['K']:.3f}", f"{params_G22['T1']:.1f}",
          f"{params_G22['T2']:.1f}", f"{params_G22['delay']:.1f}",
          'Direct downstream effect']
     ]
@@ -622,13 +623,13 @@ def run_deep_analysis():
     print("\n" + "=" * 80)
     print("深入分析完成!")
     print("=" * 80)
-    print(f"\n场景1: 上游流量 5.0→8.0 m³/s")
-    print(f"  上游水位: {hu1[0]:.3f} → {hu1[-1]:.3f} m (Δ={hu1[-1]-hu1[0]:.3f} m)")
-    print(f"  下游水位: {hd1[0]:.3f} → {hd1[-1]:.3f} m (Δ={hd1[-1]-hd1[0]:.3f} m)")
+    print(f"\n场景1: 上游流量 5.0->8.0 m^3/s")
+    print(f"  上游水位: {hu1[0]:.3f} -> {hu1[-1]:.3f} m (Delta={hu1[-1]-hu1[0]:.3f} m)")
+    print(f"  下游水位: {hd1[0]:.3f} -> {hd1[-1]:.3f} m (Delta={hd1[-1]-hd1[0]:.3f} m)")
 
-    print(f"\n场景2: 下游水位 5.0→6.0 m")
-    print(f"  上游水位: {hu2[0]:.3f} → {hu2[-1]:.3f} m (Δ={hu2[-1]-hu2[0]:.3f} m)")
-    print(f"  下游水位: {hd2[0]:.3f} → {hd2[-1]:.3f} m (Δ={hd2[-1]-hd2[0]:.3f} m)")
+    print(f"\n场景2: 下游水位 5.0->6.0 m")
+    print(f"  上游水位: {hu2[0]:.3f} -> {hu2[-1]:.3f} m (Delta={hu2[-1]-hu2[0]:.3f} m)")
+    print(f"  下游水位: {hd2[0]:.3f} -> {hd2[-1]:.3f} m (Delta={hd2[-1]-hd2[0]:.3f} m)")
 
     print(f"\n生成文件:")
     print("  Figures (2):")

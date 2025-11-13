@@ -1,0 +1,11 @@
+examples\advanced_animation_generator.py
+examples\case_gate_operation.py
+examples\case_irrigation_scheduling.py
+examples\benchmark_performance.py
+examples\case_library\benchmark_performance.py
+examples\case_library\case_01_dam_break\dam_break_comparison.py
+examples\case_library\case_01_hydropower_plant.py
+examples\case_library\case_02_flood_routing\flood_routing_simulation.py
+examples\case_library\case_02_water_supply_network.py
+examples\case_library\case_03_irrigation_canal.py
+examples\case_library\run_all_cases.py

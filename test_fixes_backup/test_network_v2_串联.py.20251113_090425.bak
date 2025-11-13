@@ -1,0 +1,102 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+测试网络求解器V2 - 最简单串联测试
+
+先确保串联（一入一出）能正常工作
+
+作者: HydroClaude Team
+日期: 2025-10-27
+"""
+
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from solvers.godunov_fvm_network_v2 import GodunvFVMNetworkV2, NodeType
+from utils.canal_utils import compute_steady_uniform_flow
+import numpy as np
+
+print("=" * 80)
+print("网络求解器V2测试 - 串联场景（最简单）")
+print("=" * 80)
+
+# 创建网络
+network = GodunvFVMNetworkV2(relaxation=0.7)
+
+# 3个节点，2条边：N1 --E1--> N2 --E2--> N3
+n1 = network.add_node('N1', NodeType.SOURCE, x=0, y=0, bc_value=50.0)
+n2 = network.add_node('N2', NodeType.INTERNAL, x=1000, y=0)
+n3 = network.add_node('N3', NodeType.SINK, x=2000, y=0, bc_value=1.5)
+
+e1 = network.add_edge('E1', 'N1', 'N2', width=10.0, length=1000.0, n_cells=50,
+                      manning_n=0.025, slope=0.001)
+e2 = network.add_edge('E2', 'N2', 'N3', width=10.0, length=1000.0, n_cells=50,
+                      manning_n=0.025, slope=0.001)
+
+# 计算均匀流水深
+Q_target = 50.0
+h_uniform = compute_steady_uniform_flow(Q_target, 10.0, 0.001, 0.025)
+print(f"\n目标流量: {Q_target} m³/s")
+print(f"均匀流水深: {h_uniform:.3f} m")
+
+# 初始化
+network.initialize_network(h_default=h_uniform, Q_default=Q_target)
+
+print("\n网络拓扑：串联")
+print("  N1(SOURCE) --E1--> N2(INTERNAL) --E2--> N3(SINK)")
+print(f"\n初始总质量: {network.initial_mass:.2f} m³")
+
+# 运行
+print("\n推进500步...")
+max_steps = 500
+for i in range(max_steps):
+    try:
+        network.step()
+        
+        if (i + 1) % 100 == 0:
+            state = network.get_network_state()
+            mass_error = state['network_mass_error']
+            
+            # 检查NaN
+            if np.isnan(mass_error):
+                print(f"   步数 {i+1}: 出现NaN，停止")
+                break
+            
+            print(f"  步数 {i+1:4d}, t={network.t:6.1f}s, 质量误差={mass_error:+.4f}%")
+    except Exception as e:
+        print(f"   步数 {i+1}: 异常 - {str(e)}")
+        break
+
+# 最终结果
+print("\n" + "=" * 80)
+print("最终结果")
+print("=" * 80)
+
+try:
+    state = network.get_network_state()
+    mass_error = state['network_mass_error']
+
+    print(f"\n网络质量守恒：")
+    print(f"  质量误差: {mass_error:.4f}%")
+    
+    if np.isnan(mass_error):
+        print(f"  状态:  NaN（数值不稳定）")
+    elif abs(mass_error) < 1.0:
+        print(f"  状态:  优秀")
+    else:
+        print(f"  状态: ️ 需改进")
+
+    print(f"\n节点流量平衡：")
+    for node_id in ['N1', 'N2', 'N3']:
+        balance = network.get_node_mass_balance(node_id)
+        print(f"  {node_id}: Q_in={balance['Q_in']:6.2f}, Q_out={balance['Q_out']:6.2f}, "
+              f"误差={balance['relative_error']:.2f}%")
+
+    print(f"\n边质量守恒：")
+    for edge_id in ['E1', 'E2']:
+        edge_error = state['edges'][edge_id]['mass_error']
+        print(f"  {edge_id}: {edge_error:.4f}%")
+except Exception as e:
+    print(f"\n 无法获取结果: {str(e)}")
+
+print("\n" + "=" * 80)

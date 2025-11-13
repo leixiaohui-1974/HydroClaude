@@ -63,7 +63,7 @@ class ValidationRunner:
         print(f"")
         
         if not case['script'].exists():
-            print(f"❌ 脚本文件不存在: {case['script']}")
+            print(f" 脚本文件不存在: {case['script']}")
             return {
                 'success': False,
                 'error': 'Script not found',
@@ -82,9 +82,9 @@ class ValidationRunner:
             success = (result.returncode == 0)
             
             if success:
-                print(f"✅ 案例 {case['id']} 运行成功")
+                print(f" 案例 {case['id']} 运行成功")
             else:
-                print(f"❌ 案例 {case['id']} 运行失败")
+                print(f" 案例 {case['id']} 运行失败")
                 print(f"错误信息:\n{result.stderr}")
             
             return {
@@ -95,14 +95,14 @@ class ValidationRunner:
             }
             
         except subprocess.TimeoutExpired:
-            print(f"⏱️ 案例 {case['id']} 超时")
+            print(f"⏱ 案例 {case['id']} 超时")
             return {
                 'success': False,
                 'error': 'Timeout',
                 'output': ''
             }
         except Exception as e:
-            print(f"❌ 案例 {case['id']} 异常: {e}")
+            print(f" 案例 {case['id']} 异常: {e}")
             return {
                 'success': False,
                 'error': str(e),
@@ -150,7 +150,7 @@ class ValidationRunner:
         for r in results:
             case = r['case']
             success = r['result']['success']
-            status = "✅" if success else "❌"
+            status = "" if success else ""
             print(f"  {status} [{case['id']}] {case['name']}")
         
         # 保存JSON报告
@@ -178,7 +178,7 @@ class ValidationRunner:
         with open(json_path, 'w', encoding='utf-8') as f:
             json.dump(summary_data, f, indent=2, ensure_ascii=False)
         
-        print(f"\n✅ JSON报告已保存: {json_path}")
+        print(f"\n JSON报告已保存: {json_path}")
         
         # 保存文本报告
         txt_path = self.results_dir / f'validation_summary_{datetime.now().strftime("%Y%m%d_%H%M%S")}.txt'
@@ -209,9 +209,9 @@ class ValidationRunner:
                 f.write(f"  描述: {case['description']}\n")
                 f.write(f"  状态: ")
                 if result['success']:
-                    f.write("✅ 成功\n")
+                    f.write(" 成功\n")
                 else:
-                    f.write("❌ 失败\n")
+                    f.write(" 失败\n")
                     if 'error' in result:
                         f.write(f"  错误: {result['error']}\n")
                 f.write("\n")
@@ -221,16 +221,16 @@ class ValidationRunner:
             f.write("="*80 + "\n\n")
             
             if success_count == total_count:
-                f.write("✅ 所有验证案例通过！\n")
+                f.write(" 所有验证案例通过！\n")
                 f.write("   HydroClaude求解器达到预期精度标准。\n")
             elif success_count > 0:
-                f.write(f"⚠️ 部分验证案例通过 ({success_count}/{total_count})\n")
+                f.write(f" 部分验证案例通过 ({success_count}/{total_count})\n")
                 f.write("   建议检查失败案例，分析原因并改进。\n")
             else:
-                f.write("❌ 所有验证案例失败\n")
+                f.write(" 所有验证案例失败\n")
                 f.write("   需要全面检查求解器实现。\n")
         
-        print(f"✅ 文本报告已保存: {txt_path}")
+        print(f" 文本报告已保存: {txt_path}")
         
         print(f"\n所有结果文件位于: {self.results_dir}/")
 

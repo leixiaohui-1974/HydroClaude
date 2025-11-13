@@ -167,12 +167,12 @@ class RealtimeMonitor:
     def _on_alarm_triggered(self, name: str, alarm: AlarmConfig, value: float):
         """警报触发回调"""
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"[{timestamp}] ⚠️  ALARM: {name} - {alarm.variable} = {value:.3f}")
+        print(f"[{timestamp}] ️  ALARM: {name} - {alarm.variable} = {value:.3f}")
 
     def _on_alarm_cleared(self, name: str, alarm: AlarmConfig):
         """警报清除回调"""
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"[{timestamp}] ✓  CLEARED: {name}")
+        print(f"[{timestamp}]   CLEARED: {name}")
 
     def create_dashboard(self,
                         n_rows: int = 2,

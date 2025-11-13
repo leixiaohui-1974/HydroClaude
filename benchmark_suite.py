@@ -299,7 +299,7 @@ class HydroClaudeBenchmarkSuite:
             results.append(result)
 
             if verbose:
-                status = "✓" if result.converged else "✗"
+                status = "" if result.converged else ""
                 print(f"  {status} 迭代: {result.iterations:3d}, "
                       f"时间: {result.time*1000:7.2f}ms, "
                       f"内存: {result.memory_mb:6.2f}MB")
@@ -380,7 +380,7 @@ class HydroClaudeBenchmarkSuite:
             )
 
             if verbose:
-                status = "✓" if result.converged else "✗"
+                status = "" if result.converged else ""
                 print(f"  {status} 收敛: {result.converged}, 迭代: {result.iterations}, "
                       f"时间: {elapsed*1000:.2f}ms, Q误差: {Q_error:.4f}%")
 
@@ -388,7 +388,7 @@ class HydroClaudeBenchmarkSuite:
 
         except Exception as e:
             if verbose:
-                print(f"  ✗ 失败: {e}")
+                print(f"   失败: {e}")
 
             return BenchmarkResult(
                 scenario_name=scenario.name,
@@ -455,7 +455,7 @@ class HydroClaudeBenchmarkSuite:
             )
 
             if verbose:
-                status = "✓" if result.converged else "✗"
+                status = "" if result.converged else ""
                 print(f"  {status} 收敛: {result.converged}, 总迭代: {total_iterations}, "
                       f"时间: {elapsed*1000:.2f}ms, Q误差: {Q_error:.4f}%")
 
@@ -463,7 +463,7 @@ class HydroClaudeBenchmarkSuite:
 
         except Exception as e:
             if verbose:
-                print(f"  ✗ 失败: {e}")
+                print(f"   失败: {e}")
 
             return BenchmarkResult(
                 scenario_name=scenario.name,
@@ -510,7 +510,7 @@ class HydroClaudeBenchmarkSuite:
             f.write("**测试工具**: benchmark_suite.py\n")
             f.write(f"**生成时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
 
-        print(f"\n✓ 汇总报告已生成: {filepath}")
+        print(f"\n 汇总报告已生成: {filepath}")
 
         return str(filepath)
 
@@ -524,7 +524,7 @@ class HydroClaudeBenchmarkSuite:
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(self.summary, f, indent=2, ensure_ascii=False)
 
-        print(f"✓ JSON结果已保存: {filepath}")
+        print(f" JSON结果已保存: {filepath}")
 
         return str(filepath)
 

@@ -21,7 +21,11 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 from structures.sluice_gate import SluiceGate
 from structures.weir import Weir
 from structures.orifice import Orifice
-from solvers.canal_solver import CanalSolver
+# DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as CanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as CanalSolver
 from solvers.anderson_acceleration import AndersonAcceleration
 
 
@@ -138,7 +142,7 @@ def test_anderson_parameters():
         }
         results.append(baseline_result)
 
-        print(f"  收敛: {'✓' if success else '✗'}")
+        print(f"  收敛: {'' if success else ''}")
         print(f"  迭代: {solver.steady_iteration_count}")
         print(f"  误差: {error:.4f}%")
         print(f"  时间: {elapsed:.4f}s")
@@ -175,7 +179,7 @@ def test_anderson_parameters():
         for beta in beta_values:
             print(f"  beta={beta}...", end=' ', flush=True)
             result = {
-                'method': f'Anderson(β={beta})',
+                'method': f'Anderson(beta={beta})',
                 'converged': None,
                 'iterations': None,
                 'error': None,

@@ -1,10 +1,10 @@
 """
-HydroClaude Web API Gateway - 修复版本
+HydroClaude Web API Gateway - 
 """
 import sys
 import os
 
-# 添加项目根目录到路径
+# 
 project_root = '/workspace'
 if project_root not in sys.path:
     sys.path.insert(0, project_root)

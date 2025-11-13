@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 """
 MPC鲁棒性分析
 
 测试一阶MPC在以下不确定性条件下的性能：
-1. 参数误差（K和τ的估计误差）
+1. 参数误差（K和tau的估计误差）
 2. 测量噪声
 3. 扰动变化
 4. 与其他控制器的鲁棒性对比
@@ -120,7 +121,7 @@ def run_robustness_test(controller_type, K_error=0.0, tau_error=0.0,
     Args:
         controller_type: 'mpc' or 'pid'
         K_error: K的相对误差（-0.5表示低估50%）
-        tau_error: τ的相对误差
+        tau_error: tau的相对误差
         noise_std: 测量噪声标准差 (m)
         label: 测试标签
 
@@ -240,7 +241,7 @@ print("\n【测试1】参数误差敏感性")
 print("-" * 80)
 
 K_errors = [-0.5, -0.3, -0.1, 0.0, 0.1, 0.3, 0.5]  # -50%到+50%
-tau_errors = [0.0]  # 固定τ，只变K
+tau_errors = [0.0]  # 固定tau，只变K
 noise_std = 0.0  # 无噪声
 
 mpc_results_K = []
@@ -271,7 +272,7 @@ tau_errors = [-0.5, -0.3, -0.1, 0.0, 0.1, 0.3, 0.5]  # -50%到+50%
 mpc_results_tau = []
 
 for tau_err in tau_errors:
-    print(f"  测试 τ误差={tau_err*100:+.0f}%...", end='')
+    print(f"  测试 tau误差={tau_err*100:+.0f}%...", end='')
 
     result = run_robustness_test('mpc', K_error=0.0, tau_error=tau_err, noise_std=0.0,
                                  label=f'tau_err={tau_err*100:.0f}%')
@@ -354,14 +355,14 @@ ax1.set_title('Sensitivity to Gain Error', fontsize=12, fontweight='bold')
 ax1.legend()
 ax1.grid(True, alpha=0.3)
 
-# 子图2：τ误差敏感性
+# 子图2：tau误差敏感性
 ax2 = plt.subplot(2, 3, 2)
 tau_err_pcts = [tau_err * 100 for tau_err in tau_errors]
 mpc_maes_tau = [r['mae'] * 100 for r in mpc_results_tau]
 
 ax2.plot(tau_err_pcts, mpc_maes_tau, 'b-o', linewidth=2, markersize=8, label='MPC')
 ax2.axvline(0, color='gray', linestyle=':', alpha=0.5)
-ax2.set_xlabel('τ estimation error (%)', fontsize=11)
+ax2.set_xlabel('tau estimation error (%)', fontsize=11)
 ax2.set_ylabel('MAE (cm)', fontsize=11)
 ax2.set_title('Sensitivity to Time Constant Error', fontsize=12, fontweight='bold')
 ax2.legend()
@@ -408,7 +409,7 @@ for bars in [bars1, bars2]:
         ax4.text(bar.get_x() + bar.get_width()/2., height,
                 f'{height:.2f}', ha='center', va='bottom', fontsize=8)
 
-# 子图5：鲁棒性热图（K vs τ误差）
+# 子图5：鲁棒性热图（K vs tau误差）
 ax5 = plt.subplot(2, 3, 5)
 K_grid = np.linspace(-0.5, 0.5, 11)
 tau_grid = np.linspace(-0.5, 0.5, 11)
@@ -426,7 +427,7 @@ ax5.contour(K_grid * 100, tau_grid * 100, MAE_grid, levels=[2, 5, 10],
             colors='black', linewidths=1.5, linestyles='--')
 ax5.plot(0, 0, 'g*', markersize=15, label='Nominal')
 ax5.set_xlabel('K error (%)', fontsize=11)
-ax5.set_ylabel('τ error (%)', fontsize=11)
+ax5.set_ylabel('tau error (%)', fontsize=11)
 ax5.set_title('Robustness Heat Map (MAE in cm)', fontsize=12, fontweight='bold')
 ax5.legend()
 plt.colorbar(im, ax=ax5, label='MAE (cm)')
@@ -479,7 +480,7 @@ ax6.grid(True, alpha=0.3, axis='y')
 
 plt.tight_layout()
 plt.savefig('mpc_robustness_analysis.png', dpi=150, bbox_inches='tight')
-print(f"\n✅ 图片已保存: mpc_robustness_analysis.png")
+print(f"\n 图片已保存: mpc_robustness_analysis.png")
 
 # 打印详细结果
 print("\n" + "=" * 80)

@@ -55,7 +55,7 @@ def benchmark_colebrook_white():
     print(f"  耗时: {time_jit:.4f}s")
 
     speedup = time_orig / time_jit if time_jit > 0 else 0
-    print(f"\n✅ 加速比: {speedup:.1f}x")
+    print(f"\n 加速比: {speedup:.1f}x")
 
     return {
         'test': 'Colebrook-White',
@@ -95,7 +95,7 @@ def benchmark_head_loss():
     print(f"  耗时: {time_jit:.4f}s")
 
     speedup = time_orig / time_jit if time_jit > 0 else 0
-    print(f"\n✅ 加速比: {speedup:.1f}x")
+    print(f"\n 加速比: {speedup:.1f}x")
 
     return {
         'test': 'Head Loss',
@@ -149,10 +149,10 @@ def benchmark_large_network():
     print(f"  耗时: {time_jit:.4f}s")
 
     speedup = time_orig / time_jit if time_jit > 0 else 0
-    print(f"\n✅ 加速比: {speedup:.1f}x")
+    print(f"\n 加速比: {speedup:.1f}x")
 
     # 估算实际工程应用收益
-    print(f"\n💡 工程应用估算:")
+    print(f"\n 工程应用估算:")
     print(f"   对于{n_pipes}个管道的中型管网:")
     print(f"   - 原方法每次迭代: {time_orig/n_iterations:.3f}s")
     print(f"   - JIT方法每次迭代: {time_jit/n_iterations:.3f}s")
@@ -212,10 +212,10 @@ def plot_results(results):
 
         plt.tight_layout()
         plt.savefig('benchmarks/performance_benchmark_results.png', dpi=150)
-        print("\n📊 性能对比图已保存: benchmarks/performance_benchmark_results.png")
+        print("\n 性能对比图已保存: benchmarks/performance_benchmark_results.png")
         plt.close()
     except Exception as e:
-        print(f"\n⚠️ 无法生成图表: {e}")
+        print(f"\n️ 无法生成图表: {e}")
 
 
 def main():
@@ -254,11 +254,11 @@ def main():
     print()
 
     if avg_speedup > 15:
-        print("🎉 优秀！Numba JIT显著提升了计算性能！")
+        print(" 优秀！Numba JIT显著提升了计算性能！")
     elif avg_speedup > 8:
-        print("✅ 良好！性能提升明显，建议在生产环境中启用JIT。")
+        print(" 良好！性能提升明显，建议在生产环境中启用JIT。")
     else:
-        print("⚠️ 一般。性能提升有限，但在大规模计算中仍有价值。")
+        print("️ 一般。性能提升有限，但在大规模计算中仍有价值。")
 
     print("="*80)
 

@@ -306,7 +306,7 @@ class HydraulicTools:
 
 if __name__ == "__main__":
     print("="*80)
-    print("🛠️ 水力计算工具库 - 示例")
+    print("️ 水力计算工具库 - 示例")
     print("="*80)
     
     tools = HydraulicTools()
@@ -354,9 +354,9 @@ if __name__ == "__main__":
     print(f"  临界水深: {h_c:.3f}m")
     
     if Fr < 1.0:
-        print(f"  流态: 亚临界流 ✅")
+        print(f"  流态: 亚临界流 ")
     elif Fr > 1.0:
-        print(f"  流态: 超临界流 ⚠️")
+        print(f"  流态: 超临界流 ️")
     else:
         print(f"  流态: 临界流")
     
@@ -412,5 +412,5 @@ if __name__ == "__main__":
                               save_path='/workspace/hydraulic_froude_analysis.png')
     
     print(f"\n" + "="*80)
-    print(f"✅ 水力计算工具库示例完成！")
+    print(f" 水力计算工具库示例完成！")
     print(f"="*80)

@@ -15,7 +15,13 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from physics.steady_saint_venant import SteadySaintVenantSystem
-from solvers.newton_solver import NewtonSolver
+try:
+    from solvers.newton_solver import NewtonSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from utils.canal_utils import compute_steady_uniform_flow
 
 
@@ -61,14 +67,14 @@ def test_jacobian_full_rank():
         print(f"\n  nx = {nx}:")
         print(f"    Jacobian维度: {J.shape}")
         print(f"    秩: {rank}/{expected_rank}")
-        print(f"    满秩: {'✓' if rank == expected_rank else '✗'}")
+        print(f"    满秩: {'' if rank == expected_rank else ''}")
         print(f"    条件数: {cond_num:.2e}")
-        print(f"    良好条件: {'✓' if cond_num < 1e10 else '✗'}")
+        print(f"    良好条件: {'' if cond_num < 1e10 else ''}")
 
         assert rank == expected_rank, f"Jacobian不满秩: {rank}/{expected_rank}"
         assert cond_num < 1e10, f"条件数过大: {cond_num}"
 
-    print("\n  ✅ 所有规模的Jacobian均满秩且良好条件")
+    print("\n   所有规模的Jacobian均满秩且良好条件")
 
 
 def test_newton_convergence_uniform_flow():
@@ -126,13 +132,13 @@ def test_newton_convergence_uniform_flow():
         solve_time = time.time() - start_time
 
         print(f"\n  求解结果:")
-        print(f"    收敛: {'✓' if converged else '✗'}")
+        print(f"    收敛: {'' if converged else ''}")
         print(f"    迭代次数: {iterations}")
         print(f"    最终残差: {residual_norm:.2e}")
         print(f"    求解时间: {solve_time*1000:.2f} ms")
 
         if converged and iterations <= 10:
-            print(f"    ✅ 牛顿法快速收敛（{iterations}次迭代）")
+            print(f"     牛顿法快速收敛（{iterations}次迭代）")
 
         assert converged, "牛顿法未收敛"
         assert iterations <= 10, f"迭代次数过多: {iterations}"
@@ -143,20 +149,20 @@ def test_newton_convergence_uniform_flow():
 
         print(f"\n  解的物理检查:")
         print(f"    水深范围: [{h_sol.min():.3f}, {h_sol.max():.3f}] m")
-        print(f"    流量范围: [{Q_sol.min():.3f}, {Q_sol.max():.3f}] m³/s")
+        print(f"    流量范围: [{Q_sol.min():.3f}, {Q_sol.max():.3f}] m^3/s")
         print(f"    水深偏差: {np.abs(h_sol - h_uniform).max():.2e} m")
-        print(f"    流量偏差: {np.abs(Q_sol - Q_target).max():.2e} m³/s")
+        print(f"    流量偏差: {np.abs(Q_sol - Q_target).max():.2e} m^3/s")
 
         # 均匀流应该非常接近目标值
         assert np.allclose(h_sol, h_uniform, atol=1e-4)
         assert np.allclose(Q_sol, Q_target, atol=1e-4)
 
-        print(f"    ✅ 解与理论均匀流一致")
+        print(f"     解与理论均匀流一致")
 
         return True
 
     except Exception as e:
-        print(f"\n  ✗ 牛顿法求解失败: {e}")
+        print(f"\n   牛顿法求解失败: {e}")
         return False
 
 
@@ -216,12 +222,12 @@ def test_newton_vs_fixed_point():
     print(f"    最终残差: {res_newton:.2e}")
 
     # ===== 不动点迭代（固定松弛）=====
-    print("\n  [2] 不动点迭代（固定松弛 α=0.5）:")
+    print("\n  [2] 不动点迭代（固定松弛 alpha=0.5）:")
 
     def fixed_point_iteration(U):
         """简单的固定松弛迭代"""
         F = system.compute_residual(U)
-        return U - 0.5 * F  # α = 0.5
+        return U - 0.5 * F  # alpha = 0.5
 
     U_fp = U_init.copy()
     max_iter_fp = 200
@@ -256,7 +262,7 @@ def test_newton_vs_fixed_point():
         print(f"    时间加速: {speedup_time:.1f}x")
 
         if speedup_iter > 5:
-            print(f"    ✅ 牛顿法显著加速（迭代次数减少{speedup_iter:.1f}倍）")
+            print(f"     牛顿法显著加速（迭代次数减少{speedup_iter:.1f}倍）")
 
         assert speedup_iter > 3, "牛顿法加速不明显"
 
@@ -335,7 +341,7 @@ def test_newton_with_gate():
         solve_time = time.time() - start_time
 
         print(f"\n  求解结果:")
-        print(f"    收敛: {'✓' if converged else '✗'}")
+        print(f"    收敛: {'' if converged else ''}")
         print(f"    迭代次数: {iterations}")
         print(f"    最终残差: {residual_norm:.2e}")
         print(f"    求解时间: {solve_time*1000:.2f} ms")
@@ -347,20 +353,20 @@ def test_newton_with_gate():
             print(f"\n  闸门处水力状态:")
             print(f"    上游水深: {h_sol[gate_idx-1]:.3f} m")
             print(f"    下游水深: {h_sol[gate_idx+1]:.3f} m")
-            print(f"    通过流量: {Q_sol[gate_idx]:.3f} m³/s")
+            print(f"    通过流量: {Q_sol[gate_idx]:.3f} m^3/s")
             print(f"    水头损失: {h_sol[gate_idx-1] - h_sol[gate_idx+1]:.3f} m")
 
             assert converged, "牛顿法未收敛"
             assert iterations <= 20, f"迭代次数过多: {iterations}"
 
-            print(f"    ✅ 带闸门系统牛顿法收敛")
+            print(f"     带闸门系统牛顿法收敛")
             return True
         else:
-            print(f"    ✗ 牛顿法未收敛")
+            print(f"     牛顿法未收敛")
             return False
 
     except Exception as e:
-        print(f"\n  ✗ 求解失败: {e}")
+        print(f"\n   求解失败: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -389,22 +395,22 @@ def run_all_tests():
         test_jacobian_full_rank()
         results['jacobian_rank'] = True
     except Exception as e:
-        print(f"\n✗ 测试1失败: {e}")
+        print(f"\n 测试1失败: {e}")
 
     try:
         results['newton_convergence'] = test_newton_convergence_uniform_flow()
     except Exception as e:
-        print(f"\n✗ 测试2失败: {e}")
+        print(f"\n 测试2失败: {e}")
 
     try:
         results['performance_comparison'] = test_newton_vs_fixed_point()
     except Exception as e:
-        print(f"\n✗ 测试3失败: {e}")
+        print(f"\n 测试3失败: {e}")
 
     try:
         results['gate_convergence'] = test_newton_with_gate()
     except Exception as e:
-        print(f"\n✗ 测试4失败: {e}")
+        print(f"\n 测试4失败: {e}")
 
     # 总结
     print("\n" + "="*80)
@@ -412,21 +418,21 @@ def run_all_tests():
     print("="*80)
 
     for test_name, passed in results.items():
-        status = "✅ 通过" if passed else "✗ 失败"
+        status = " 通过" if passed else " 失败"
         print(f"  {test_name:25s}: {status}")
 
     all_passed = all(results.values())
 
     print("\n" + "="*80)
     if all_passed:
-        print("🎉 所有测试通过！牛顿法边界条件修复成功！")
+        print(" 所有测试通过！牛顿法边界条件修复成功！")
         print("\n核心成果:")
-        print("  ✅ Jacobian满秩（非奇异）")
-        print("  ✅ 牛顿法快速收敛（二次收敛）")
-        print("  ✅ 性能优于迭代法（10-100倍加速）")
-        print("  ✅ 支持复杂结构物")
+        print("   Jacobian满秩（非奇异）")
+        print("   牛顿法快速收敛（二次收敛）")
+        print("   性能优于迭代法（10-100倍加速）")
+        print("   支持复杂结构物")
     else:
-        print("⚠️  部分测试失败，需要进一步调试")
+        print("  部分测试失败，需要进一步调试")
     print("="*80)
 
     return all_passed

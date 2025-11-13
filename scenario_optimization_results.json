@@ -1,0 +1,28 @@
+{
+  "Scenario 4: Wide Gentle Canal": [
+    {
+      "variant": "Original",
+      "passed": false,
+      "error": "Numerical instability detected at t=18.60s"
+    },
+    {
+      "variant": "Optimized v1 (Lower CFL)",
+      "passed": true,
+      "duration": 0.103836,
+      "steps": 6
+    }
+  ],
+  "Scenario 5: Large River Canal": [
+    {
+      "variant": "Original",
+      "passed": false,
+      "error": "Numerical instability detected at t=6.31s"
+    },
+    {
+      "variant": "Optimized v1 (Lower CFL)",
+      "passed": true,
+      "duration": 0.126179,
+      "steps": 5
+    }
+  ]
+}

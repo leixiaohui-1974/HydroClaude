@@ -87,9 +87,9 @@ class ValidationSuite:
             metrics['elapsed_time'] = elapsed
 
             if passed:
-                print(f"✓ {test_name} 通过 ({elapsed:.1f}s)")
+                print(f" {test_name} 通过 ({elapsed:.1f}s)")
             else:
-                print(f"✗ {test_name} 失败 ({elapsed:.1f}s)")
+                print(f" {test_name} 失败 ({elapsed:.1f}s)")
                 if result.stderr:
                     print(f"  错误: {result.stderr[:200]}")
 
@@ -103,7 +103,7 @@ class ValidationSuite:
 
         except subprocess.TimeoutExpired:
             elapsed = time.time() - start
-            print(f"✗ {test_name} 超时 ({elapsed:.1f}s)")
+            print(f" {test_name} 超时 ({elapsed:.1f}s)")
             return ValidationResult(
                 name=test_name,
                 category=category,
@@ -114,7 +114,7 @@ class ValidationSuite:
 
         except Exception as e:
             elapsed = time.time() - start
-            print(f"✗ {test_name} 异常: {e}")
+            print(f" {test_name} 异常: {e}")
             return ValidationResult(
                 name=test_name,
                 category=category,
@@ -202,7 +202,7 @@ class ValidationSuite:
         for test in test_cases:
             # 检查文件是否存在
             if not os.path.exists(test['path']):
-                print(f"\n⚠ 跳过 {test['name']}: 文件不存在")
+                print(f"\n 跳过 {test['name']}: 文件不存在")
                 continue
 
             result = self.run_single_test(
@@ -255,7 +255,7 @@ class ValidationSuite:
         # 详细结果
         print("详细结果:")
         for result in self.results:
-            status = "✓ 通过" if result.passed else "✗ 失败"
+            status = " 通过" if result.passed else " 失败"
             elapsed = result.metrics.get('elapsed_time', 0)
             print(f"  {result.name:40s}: {status:10s} ({elapsed:.1f}s)")
 
@@ -275,14 +275,14 @@ class ValidationSuite:
         with open('validation_report.html', 'w', encoding='utf-8') as f:
             f.write(html_content)
 
-        print(f"\n✓ HTML验证报告已生成: validation_report.html")
+        print(f"\n HTML验证报告已生成: validation_report.html")
 
         # 判断整体是否通过
         if failed_tests == 0:
-            print("\n🎉 所有验证测试通过!")
+            print("\n 所有验证测试通过!")
             return True
         else:
-            print(f"\n❌ {failed_tests} 个验证测试失败!")
+            print(f"\n {failed_tests} 个验证测试失败!")
             return False
 
     def _generate_html(self):
@@ -439,7 +439,7 @@ class ValidationSuite:
         # 添加每个测试结果
         for result in self.results:
             status_class = "status-pass" if result.passed else "status-fail"
-            status_text = "✓ 通过" if result.passed else "✗ 失败"
+            status_text = " 通过" if result.passed else " 失败"
             elapsed = result.metrics.get('elapsed_time', 0)
 
             # 提取关键指标

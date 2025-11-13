@@ -94,9 +94,9 @@ if __name__ == "__main__":
     print("="*60)
 
     if _configured_font:
-        print(f"✓ 成功配置中文字体: {_configured_font}")
+        print(f" 成功配置中文字体: {_configured_font}")
     else:
-        print("⚠ 未找到中文字体，将抑制警告")
+        print(" 未找到中文字体，将抑制警告")
 
     # 创建测试图
     fig, ax = plt.subplots(figsize=(8, 6))
@@ -113,6 +113,6 @@ if __name__ == "__main__":
 
     plt.tight_layout()
     plt.savefig('font_test.png', dpi=150)
-    print("✓ 测试图已保存到: font_test.png")
+    print(" 测试图已保存到: font_test.png")
     print()
     print("如果图中中文显示正常，说明配置成功")

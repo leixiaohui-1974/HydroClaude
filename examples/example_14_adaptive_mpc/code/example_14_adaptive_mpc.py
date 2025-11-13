@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例14: 自适应MPC控制
 演示自适应MPC在线参数辨识和控制
@@ -6,6 +7,8 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from control.adaptive_mpc import AdaptiveMPC, AdaptiveMPCConfig
 
@@ -86,9 +89,9 @@ def run_example():
 
     print("\n" + "="*70)
     print("自适应MPC仿真完成!")
-    print("✓ 在线参数辨识")
-    print("✓ 模型自适应更新")
-    print("✓ 优秀的跟踪性能")
+    print(" 在线参数辨识")
+    print(" 模型自适应更新")
+    print(" 优秀的跟踪性能")
 
     # 可视化
     try:

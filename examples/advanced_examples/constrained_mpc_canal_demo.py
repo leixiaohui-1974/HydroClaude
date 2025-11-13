@@ -1,26 +1,29 @@
+# -*- coding: utf-8 -*-
 """
 约束MPC渠道控制示例
 
-展示如何使用约束MPC控制器处理：
+展示如何使用约束MPC控制器处理
 - 水位上下限约束
 - 流量限制
 - 参考跟踪
 
-对比场景：
-1. 无约束MPC（理想情况）
-2. 约束MPC（实际应用）
+对比场景
+1. 无约束MPC理想情况
+2. 约束MPC实际应用
 
-展示约束MPC如何：
+展示约束MPC如何
 - 保证水位安全
 - 尊重执行器限制
 - 实现最优控制
 
-作者：HydroClaude Team
-日期：2025-10-24
+作者HydroClaude Team
+日期2025-10-24
 """
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 import sys
 import os
 
@@ -33,7 +36,7 @@ from control.constrained_mpc import (
 
 
 class SimpleCanalSimulator:
-    """简化的渠道仿真器（用于测试MPC）"""
+    """简化的渠道仿真器用于测试MPC"""
 
     def __init__(self, dt: float):
         """
@@ -52,7 +55,7 @@ class SimpleCanalSimulator:
         仿真一步
 
         参数:
-            q: 流量控制输入 (m/s)，即dh/dt
+            q: 流量控制输入 (m/s)即dh/dt
             noise_std: 过程噪声标准差
 
         返回:
@@ -119,20 +122,20 @@ def main():
     )
     mpc_constrained = ConstrainedMPC(A, B, horizon, weights, constraints_full)
 
-    print("  ✓ 无约束MPC")
-    print("  ✓ 约束MPC（水深 + 流量约束）")
+    print("  [OK] 无约束MPC")
+    print("  [OK] 约束MPC水深 + 流量约束")
 
     # ===== 3. 生成参考轨迹 =====
     print("\n3. 生成参考轨迹...")
 
-    # 挑战性的参考轨迹：接近约束边界
+    # 挑战性的参考轨迹接近约束边界
     reference = np.zeros(n_steps)
-    reference[0:30] = 2.5    # 初始：中间水深
-    reference[30:50] = 3.2   # 阶段1：接近上限（挑战约束）
-    reference[50:70] = 1.8   # 阶段2：接近下限（挑战约束）
-    reference[70:100] = 2.5  # 阶段3：回到中间
+    reference[0:30] = 2.5    # 初始中间水深
+    reference[30:50] = 3.2   # 阶段1接近上限挑战约束
+    reference[50:70] = 1.8   # 阶段2接近下限挑战约束
+    reference[70:100] = 2.5  # 阶段3回到中间
 
-    print("  挑战性轨迹设计：")
+    print("  挑战性轨迹设计")
     print("    0-30步:   h_ref = 2.5 m  (中间水深)")
     print("    30-50步:  h_ref = 3.2 m  (接近上限 3.5m)")
     print("    50-70步:  h_ref = 1.8 m  (接近下限 1.5m)")
@@ -243,7 +246,7 @@ def main():
     print(f"    无约束MPC: 水深违反{violations_h_unconstrained}次, 流量违反{violations_q_unconstrained}次")
     print(f"    约束MPC:   水深违反{violations_h_constrained}次, 流量违反{violations_q_constrained}次")
 
-    print("\n  控制平滑度（总变化量）:")
+    print("\n  控制平滑度总变化量:")
     print(f"    无约束MPC: {smoothness_unconstrained:.4f}")
     print(f"    约束MPC:   {smoothness_constrained:.4f}")
 
@@ -330,25 +333,25 @@ def main():
     # 保存图像
     output_path = os.path.join(os.path.dirname(__file__), 'constrained_mpc_canal_demo.png')
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
-    print(f"\n  ✓ 可视化已保存: {output_path}")
+    print(f"\n  [OK] 可视化已保存: {output_path}")
 
-    plt.show()
+    # plt.show()  # Disabled for automated testing
 
     # ===== 7. 总结 =====
     print("\n" + "=" * 80)
     print("总结")
     print("=" * 80)
     print("\n约束MPC成功保证了系统约束满足:")
-    print(f"  • 水深约束违反: {violations_h_unconstrained}次 → {violations_h_constrained}次")
-    print(f"  • 流量约束违反: {violations_q_unconstrained}次 → {violations_q_constrained}次")
-    print(f"\n虽然跟踪性能略有下降（受约束限制）:")
-    print(f"  • MAE: {mae_unconstrained:.4f}m → {mae_constrained:.4f}m")
-    print(f"  • RMSE: {rmse_unconstrained:.4f}m → {rmse_constrained:.4f}m")
+    print(f"  - 水深约束违反: {violations_h_unconstrained}次 -> {violations_h_constrained}次")
+    print(f"  - 流量约束违反: {violations_q_unconstrained}次 -> {violations_q_constrained}次")
+    print(f"\n虽然跟踪性能略有下降受约束限制:")
+    print(f"  - MAE: {mae_unconstrained:.4f}m -> {mae_constrained:.4f}m")
+    print(f"  - RMSE: {rmse_unconstrained:.4f}m -> {rmse_constrained:.4f}m")
     print(f"\n但约束MPC确保了:")
     print(f"  1. 水位始终在安全范围内")
     print(f"  2. 执行器不超出物理限制")
     print(f"  3. 在约束允许下实现最优控制")
-    print("\n这对于实际工程应用至关重要！")
+    print("\n这对于实际工程应用至关重要")
     print("=" * 80)
 
 

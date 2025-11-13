@@ -14,7 +14,13 @@ import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.fvm_solver import FVMSolver
+try:
+    from solvers.fvm_solver import FVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_fvm_with_single_gate():
@@ -47,7 +53,7 @@ def test_fvm_with_single_gate():
     print(f"  渠道宽度: {B}m")
     print(f"  底坡: {S0}")
     print(f"  Manning糙率: {n}")
-    print(f"  上游流量: {Q0} m³/s")
+    print(f"  上游流量: {Q0} m^3/s")
     print(f"  闸门位置: {gate_pos}m")
     print(f"  闸门开度: {gate_opening}m")
     print(f"  流量系数: {Cd}")
@@ -105,7 +111,7 @@ def test_fvm_with_single_gate():
     print("最终状态:")
     print(f"  水深范围: [{h_final.min():.3f}, {h_final.max():.3f}]m")
     print(f"  流速范围: [{u_final.min():.3f}, {u_final.max():.3f}]m/s")
-    print(f"  流量范围: [{Q_final.min():.3f}, {Q_final.max():.3f}]m³/s")
+    print(f"  流量范围: [{Q_final.min():.3f}, {Q_final.max():.3f}]m^3/s")
     print()
 
     # 流量守恒分析
@@ -116,9 +122,9 @@ def test_fvm_with_single_gate():
     Q_mean_error = np.mean(Q_error)
 
     print("流量守恒:")
-    print(f"  目标流量: {Q0:.3f} m³/s")
-    print(f"  平均流量: {Q_mean:.3f} m³/s")
-    print(f"  流量标准差: {Q_std:.3f} m³/s")
+    print(f"  目标流量: {Q0:.3f} m^3/s")
+    print(f"  平均流量: {Q_mean:.3f} m^3/s")
+    print(f"  流量标准差: {Q_std:.3f} m^3/s")
     print(f"  最大误差: {Q_max_error:.4f}%")
     print(f"  平均误差: {Q_mean_error:.4f}%")
     print()
@@ -146,9 +152,9 @@ def test_fvm_with_single_gate():
         print(f"  上游水深: {h_upstream:.3f}m")
         print(f"  下游水深: {h_downstream:.3f}m")
         print(f"  水头差: {delta_h:.3f}m")
-        print(f"  上游流量: {Q_upstream:.3f} m³/s")
-        print(f"  下游流量: {Q_downstream:.3f} m³/s")
-        print(f"  理论闸门流量: {Q_theory:.3f} m³/s")
+        print(f"  上游流量: {Q_upstream:.3f} m^3/s")
+        print(f"  下游流量: {Q_downstream:.3f} m^3/s")
+        print(f"  理论闸门流量: {Q_theory:.3f} m^3/s")
         print(f"  实际/理论: {Q_upstream/Q_theory:.4f}")
         print()
 
@@ -178,17 +184,17 @@ def test_fvm_with_single_gate():
     # 流量
     ax = axes[2]
     ax.plot(solver.x_cell, Q_final, 'purple', linewidth=2, label='流量')
-    ax.axhline(Q0, color='k', linestyle='--', linewidth=1.5, alpha=0.5, label=f'目标流量 ({Q0} m³/s)')
+    ax.axhline(Q0, color='k', linestyle='--', linewidth=1.5, alpha=0.5, label=f'目标流量 ({Q0} m^3/s)')
     ax.axvline(gate_pos, color='r', linestyle='--', linewidth=2, alpha=0.7, label='闸门')
     ax.set_xlabel('x [m]')
-    ax.set_ylabel('Q [m³/s]')
+    ax.set_ylabel('Q [m^3/s]')
     ax.set_title(f'流量剖面 (最大误差: {Q_max_error:.4f}%)')
     ax.legend()
     ax.grid(True, alpha=0.3)
 
     plt.tight_layout()
     plt.savefig('fvm_single_gate_result.png', dpi=150, bbox_inches='tight')
-    print("✓ 保存图像: fvm_single_gate_result.png")
+    print(" 保存图像: fvm_single_gate_result.png")
     print()
 
     # 评估
@@ -198,19 +204,19 @@ def test_fvm_with_single_gate():
     print()
 
     if Q_max_error < 0.5:
-        print(f"✓✓✓✓ 优秀！最大流量误差 {Q_max_error:.4f}% < 0.5% - 达到目标！")
+        print(f" 优秀！最大流量误差 {Q_max_error:.4f}% < 0.5% - 达到目标！")
         result = "excellent"
     elif Q_max_error < 1.0:
-        print(f"✓✓✓ 很好！最大流量误差 {Q_max_error:.4f}% < 1.0%")
+        print(f" 很好！最大流量误差 {Q_max_error:.4f}% < 1.0%")
         result = "good"
     elif Q_max_error < 2.0:
-        print(f"✓✓ 可接受！最大流量误差 {Q_max_error:.4f}% < 2.0%")
+        print(f" 可接受！最大流量误差 {Q_max_error:.4f}% < 2.0%")
         result = "acceptable"
     elif Q_max_error < 5.0:
-        print(f"✓ 需改进。最大流量误差 {Q_max_error:.4f}% < 5.0%")
+        print(f" 需改进。最大流量误差 {Q_max_error:.4f}% < 5.0%")
         result = "needs_improvement"
     else:
-        print(f"✗ 不佳。最大流量误差 {Q_max_error:.4f}% >= 5.0%")
+        print(f" 不佳。最大流量误差 {Q_max_error:.4f}% >= 5.0%")
         result = "poor"
 
     print()
@@ -219,10 +225,10 @@ def test_fvm_with_single_gate():
     fdm_baseline = 2.32  # Phase 1-2得到的FDM最佳精度
     if Q_max_error < fdm_baseline:
         improvement = fdm_baseline / Q_max_error
-        print(f"🎉 FVM相比FDM基准(2.32%)改善了 {improvement:.2f}x !")
+        print(f" FVM相比FDM基准(2.32%)改善了 {improvement:.2f}x !")
         print(f"   绝对改善: {fdm_baseline - Q_max_error:.4f}%")
     else:
-        print(f"⚠ FVM({Q_max_error:.4f}%) 暂时未超过FDM基准({fdm_baseline}%)")
+        print(f" FVM({Q_max_error:.4f}%) 暂时未超过FDM基准({fdm_baseline}%)")
         print(f"   可能需要更长时间达到稳态或调整参数")
 
     print()

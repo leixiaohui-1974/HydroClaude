@@ -272,19 +272,19 @@ class NetworkValidator:
 
         # 错误
         if self.errors:
-            print(f"\n❌ 错误 ({len(self.errors)}):")
+            print(f"\n 错误 ({len(self.errors)}):")
             for i, error in enumerate(self.errors, 1):
                 print(f"  {i}. {error}")
         else:
-            print("\n✅ 无错误")
+            print("\n 无错误")
 
         # 警告
         if self.warnings:
-            print(f"\n⚠️  警告 ({len(self.warnings)}):")
+            print(f"\n️  警告 ({len(self.warnings)}):")
             for i, warning in enumerate(self.warnings, 1):
                 print(f"  {i}. {warning}")
         else:
-            print("\n✅ 无警告")
+            print("\n 无警告")
 
         # 信息
         if self.info:
@@ -294,7 +294,7 @@ class NetworkValidator:
 
         # 健康评分
         health_score = self._compute_health_score()
-        print(f"\n📊 网络健康评分: {health_score:.1f}/100")
+        print(f"\n 网络健康评分: {health_score:.1f}/100")
 
         if health_score >= 90:
             print("   评级: 优秀 ⭐⭐⭐⭐⭐")

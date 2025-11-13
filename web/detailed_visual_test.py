@@ -19,10 +19,10 @@ class DetailedVisualTester:
         
     def log(self, msg, status="info"):
         colors = {
-            "success": "\033[92m✅",
-            "error": "\033[91m❌",
+            "success": "\033[92m",
+            "error": "\033[91m",
             "info": "\033[94mℹ️",
-            "warning": "\033[93m⚠️"
+            "warning": "\033[93m️"
         }
         end = "\033[0m"
         timestamp = datetime.now().strftime("%H:%M:%S")
@@ -90,15 +90,15 @@ class DetailedVisualTester:
                 self.log(f"   建模工作台内容: {modeling_content}", "info")
                 
                 if modeling_content.get("has_modeling_components"):
-                    self.log("   ✅ 确认：建模工作台显示正确（有组件库）", "success")
+                    self.log("    确认：建模工作台显示正确（有组件库）", "success")
                     self.findings.append(("建模工作台显示", True, "正确显示组件库和画布"))
                 else:
-                    self.log("   ⚠️  警告：建模工作台可能缺少组件", "warning")
+                    self.log("   ️  警告：建模工作台可能缺少组件", "warning")
                     self.findings.append(("建模工作台显示", False, "未找到预期组件"))
             else:
-                self.log("   ❌ 建模工作台标签不可见", "error")
+                self.log("    建模工作台标签不可见", "error")
         except Exception as e:
-            self.log(f"   ❌ 建模工作台测试失败: {e}", "error")
+            self.log(f"    建模工作台测试失败: {e}", "error")
             
         # 3. 切换到仿真管理
         self.log("\n3. 切换到仿真管理标签...", "info")
@@ -119,23 +119,23 @@ class DetailedVisualTester:
                 self.log(f"   仿真管理内容: {simulation_content}", "info")
                 
                 if simulation_content.get("has_simulation_form"):
-                    self.log("   ✅ 确认：仿真管理显示正确（有仿真配置）", "success")
+                    self.log("    确认：仿真管理显示正确（有仿真配置）", "success")
                     self.findings.append(("仿真管理显示", True, "正确显示仿真配置表单"))
                 else:
-                    self.log("   ⚠️  警告：仿真管理可能缺少表单", "warning")
+                    self.log("   ️  警告：仿真管理可能缺少表单", "warning")
                     self.findings.append(("仿真管理显示", False, "未找到仿真配置表单"))
                     
                 # 检查是否还显示建模组件（不应该）
                 if simulation_content.get("has_modeling_components") and simulation_content.get("has_canvas"):
-                    self.log("   ❌ 错误：仿真管理仍显示建模组件！", "error")
+                    self.log("    错误：仿真管理仍显示建模组件！", "error")
                     self.findings.append(("内容隔离", False, "仿真管理中仍显示建模组件"))
                 else:
-                    self.log("   ✅ 确认：建模组件已隐藏", "success")
+                    self.log("    确认：建模组件已隐藏", "success")
                     self.findings.append(("内容隔离", True, "仿真管理与建模工作台内容正确隔离"))
             else:
-                self.log("   ❌ 仿真管理标签不可见", "error")
+                self.log("    仿真管理标签不可见", "error")
         except Exception as e:
-            self.log(f"   ❌ 仿真管理测试失败: {e}", "error")
+            self.log(f"    仿真管理测试失败: {e}", "error")
             
         # 4. 再次切换回建模工作台
         self.log("\n4. 切换回建模工作台验证...", "info")
@@ -147,11 +147,11 @@ class DetailedVisualTester:
             
             modeling_content_2 = self.analyze_page_content(page)
             if modeling_content_2.get("has_modeling_components"):
-                self.log("   ✅ 确认：返回建模工作台成功", "success")
+                self.log("    确认：返回建模工作台成功", "success")
             else:
-                self.log("   ⚠️  警告：返回后内容异常", "warning")
+                self.log("   ️  警告：返回后内容异常", "warning")
         except Exception as e:
-            self.log(f"   ❌ 返回测试失败: {e}", "error")
+            self.log(f"    返回测试失败: {e}", "error")
             
     def test_simulation_tab_details(self, page):
         """详细测试仿真管理标签的子标签"""
@@ -169,7 +169,7 @@ class DetailedVisualTester:
                 single_scenario.first.click()
                 self.wait_for_render(page, 3)
                 self.save_screenshot(page, "single_scenario_tab", "单场景结果标签")
-                self.log("   ✅ 单场景结果标签存在", "success")
+                self.log("    单场景结果标签存在", "success")
             else:
                 self.log("   ℹ️  未找到单场景结果标签", "info")
                 
@@ -180,12 +180,12 @@ class DetailedVisualTester:
                 comparison.first.click()
                 self.wait_for_render(page, 3)
                 self.save_screenshot(page, "comparison_tab", "多场景对比标签")
-                self.log("   ✅ 多场景对比标签存在", "success")
+                self.log("    多场景对比标签存在", "success")
             else:
                 self.log("   ℹ️  未找到多场景对比标签", "info")
                 
         except Exception as e:
-            self.log(f"   ⚠️  子标签测试失败: {e}", "warning")
+            self.log(f"   ️  子标签测试失败: {e}", "warning")
             
     def test_ui_elements(self, page):
         """测试UI元素存在性"""
@@ -211,11 +211,11 @@ class DetailedVisualTester:
                         break
                         
                 if found:
-                    self.log(f"   ✅ {name} 存在", "success")
+                    self.log(f"    {name} 存在", "success")
                 else:
-                    self.log(f"   ⚠️  {name} 未找到", "warning")
+                    self.log(f"   ️  {name} 未找到", "warning")
             except Exception as e:
-                self.log(f"   ⚠️  检查{name}时出错: {e}", "warning")
+                self.log(f"   ️  检查{name}时出错: {e}", "warning")
                 
     def generate_report(self):
         """生成详细分析报告"""
@@ -234,7 +234,7 @@ class DetailedVisualTester:
         
         if self.findings:
             for i, (name, passed, detail) in enumerate(self.findings, 1):
-                status = "✅ 通过" if passed else "❌ 失败"
+                status = " 通过" if passed else " 失败"
                 report.append(f"{i}. {name}: {status}")
                 report.append(f"   详情: {detail}")
         else:
@@ -280,7 +280,7 @@ class DetailedVisualTester:
                 self.test_ui_elements(page)
                 
             except Exception as e:
-                self.log(f"\n❌ 测试过程中出现错误: {e}", "error")
+                self.log(f"\n 测试过程中出现错误: {e}", "error")
             finally:
                 browser.close()
                 
@@ -288,9 +288,9 @@ class DetailedVisualTester:
         success = self.generate_report()
         
         if success:
-            self.log("\n🎉 所有测试通过！", "success")
+            self.log("\n 所有测试通过！", "success")
         else:
-            self.log("\n⚠️  发现一些问题，请查看报告", "warning")
+            self.log("\n️  发现一些问题，请查看报告", "warning")
             
         return success
 

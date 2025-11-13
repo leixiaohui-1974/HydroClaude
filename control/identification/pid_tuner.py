@@ -344,7 +344,7 @@ class PIDTuner:
             print(f"  Kp={zn['kp']:.4f}, Ki={zn['ki']:.4f}, Kd={zn['kd']:.4f}")
             print(f"  临界增益: {zn['critical_gain']:.4f}, 临界周期: {zn['critical_period']:.4f}")
         except Exception as e:
-            print(f"  ✗ 失败: {e}")
+            print(f"   失败: {e}")
             results['ZN'] = None
         
         # 方法2: IMC-PID
@@ -355,7 +355,7 @@ class PIDTuner:
             print(f"  Kp={imc['kp']:.4f}, Ki={imc['ki']:.4f}, Kd={imc['kd']:.4f}")
             print(f"  λ={imc['lambda']:.4f}, K={imc['K']:.4f}, τ={imc['tau']:.4f}")
         except Exception as e:
-            print(f"  ✗ 失败: {e}")
+            print(f"   失败: {e}")
             results['IMC'] = None
         
         # 方法3: 极点配置
@@ -365,7 +365,7 @@ class PIDTuner:
             results['Pole_Placement'] = pp
             print(f"  Kp={pp['kp']:.4f}, Ki={pp['ki']:.4f}, Kd={pp['kd']:.4f}")
         except Exception as e:
-            print(f"  ✗ 失败: {e}")
+            print(f"   失败: {e}")
             results['Pole_Placement'] = None
         
         # 方法4: 优化
@@ -376,7 +376,7 @@ class PIDTuner:
             print(f"  Kp={opt['kp']:.4f}, Ki={opt['ki']:.4f}, Kd={opt['kd']:.4f}")
             print(f"  目标函数值: {opt['objective_value']:.4f}")
         except Exception as e:
-            print(f"  ✗ 失败: {e}")
+            print(f"   失败: {e}")
             results['Optimization'] = None
         
         print("\n" + "="*60)
@@ -401,7 +401,7 @@ class PIDTuner:
         # 选择IMC方法（理论完备，鲁棒性好）
         if results.get('IMC') is not None:
             recommended = results['IMC']
-            print("\n✓ 推荐使用IMC-PID参数（鲁棒性好）")
+            print("\n 推荐使用IMC-PID参数（鲁棒性好）")
         elif results.get('ZN') is not None:
             # 使用改进的ZN参数（减少超调）
             zn = results['ZN']
@@ -411,10 +411,10 @@ class PIDTuner:
                 'kd': zn['kd_modified'],
                 'method': 'ziegler_nichols_modified'
             }
-            print("\n✓ 推荐使用改进ZN参数（减少超调）")
+            print("\n 推荐使用改进ZN参数（减少超调）")
         elif results.get('Optimization') is not None:
             recommended = results['Optimization']
-            print("\n✓ 推荐使用优化参数")
+            print("\n 推荐使用优化参数")
         else:
             # 默认保守参数
             recommended = {
@@ -423,7 +423,7 @@ class PIDTuner:
                 'kd': 0.1,
                 'method': 'default_conservative'
             }
-            print("\n⚠  使用默认保守参数")
+            print("\n  使用默认保守参数")
         
         return recommended
 
@@ -472,4 +472,4 @@ if __name__ == "__main__":
     print(f"  方法: {recommended['method']}")
     print("="*60)
     
-    print("\n✓ 测试完成")
+    print("\n 测试完成")

@@ -41,7 +41,9 @@ PYTHONPATH=../.. python demo_urban_supply.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_20_urban_water_supply_water_resource.gif`
+
+![动画](outputs\animations\example_20_urban_water_supply_water_resource.gif)
 
 ## 技术要点
 

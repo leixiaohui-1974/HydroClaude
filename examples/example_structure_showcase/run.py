@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 结构类型展示案例
 
@@ -77,7 +78,7 @@ def print_structure_info(modeler):
             print(f"   - 流量系数: {struct.Cd}")
 
         elif struct_type == 'PumpStation':
-            print(f"   - 额定流量: {struct.rated_flow} m³/s")
+            print(f"   - 额定流量: {struct.rated_flow} m^3/s")
             print(f"   - 额定扬程: {struct.rated_head} m")
             print(f"   - 效率: {struct.efficiency*100:.1f}%")
 
@@ -100,8 +101,8 @@ def print_hydraulic_analysis(modeler):
 
     # 整体流量
     print(f"流量分析:")
-    print(f"  平均流量: {result['Q_mean']:.3f} m³/s")
-    print(f"  流量标准差: {result['Q_std']:.6f} m³/s")
+    print(f"  平均流量: {result['Q_mean']:.3f} m^3/s")
+    print(f"  流量标准差: {result['Q_std']:.6f} m^3/s")
     print(f"  流量误差: {result['Q_error_percent']:.6f}%")
     print()
 

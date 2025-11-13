@@ -23,7 +23,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # 导入耦合求解器
-from solvers.coupled_ice_water_quality import CoupledIceWaterQualitySolver
+try:
+    from solvers.coupled_ice_water_quality import CoupledIceWaterQualitySolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_full_coupling():
@@ -38,7 +44,7 @@ def test_full_coupling():
     print("="*70)
 
     # 参数
-    n_cells = 30
+    n_cells = 36
     dx = 100.0
 
     # 创建耦合求解器
@@ -75,7 +81,7 @@ def test_full_coupling():
     )
 
     print(f"初始条件:")
-    print(f"  水温: 25°C (夏季)")
+    print(f"  水温: 25 degC (夏季)")
     print(f"  DO: 7.0 mg/L")
     print(f"  营养盐: NH4=0.5, NO3=2.0, PO4=0.1 mg/L")
     print(f"  叶绿素: 20 μg/L")
@@ -120,7 +126,7 @@ def test_full_coupling():
 
         if (step + 1) % 24 == 0:  # 每天输出
             day = time_history[-1]
-            print(f"  Day {day:.0f}: T={T_history[-1]:.1f}°C, DO={DO_history[-1]:.2f}mg/L, "
+            print(f"  Day {day:.0f}: T={T_history[-1]:.1f} degC, DO={DO_history[-1]:.2f}mg/L, "
                   f"Chla={Chla_history[-1]:.1f}μg/L, TN={TN_history[-1]:.2f}mg/L")
 
     # 绘图
@@ -132,7 +138,7 @@ def test_full_coupling():
     ax1.plot(time_history, T_history, 'r-', linewidth=2, label='温度')
     ax1_twin.plot(time_history, DO_history, 'b-', linewidth=2, label='DO')
     ax1.set_xlabel('时间 (days)')
-    ax1.set_ylabel('温度 (°C)', color='r')
+    ax1.set_ylabel('温度 ( degC)', color='r')
     ax1_twin.set_ylabel('DO (mg/L)', color='b')
     ax1.set_title('水温-DO动态')
     ax1.tick_params(axis='y', labelcolor='r')
@@ -183,15 +189,15 @@ def test_full_coupling():
     TN_change = abs(TN_history[-1] - TN_history[0]) / TN_history[0] * 100
 
     print(f"\n结果验证:")
-    print(f"  藻类生长: {Chla_history[0]:.1f} → {Chla_history[-1]:.1f} μg/L")
-    print(f"  DO变化: {DO_history[0]:.2f} → {DO_history[-1]:.2f} mg/L")
+    print(f"  藻类生长: {Chla_history[0]:.1f} -> {Chla_history[-1]:.1f} μg/L")
+    print(f"  DO变化: {DO_history[0]:.2f} -> {DO_history[-1]:.2f} mg/L")
     print(f"  TN变化: {TN_change:.1f}%")
 
     if Chla_growth and DO_reasonable:
-        print(f"\n✅ 测试通过! 夏季富营养化耦合正常")
+        print(f"\n 测试通过! 夏季富营养化耦合正常")
         return True
     else:
-        print(f"\n❌ 测试失败!")
+        print(f"\n 测试失败!")
         if not Chla_growth:
             print(f"  - 藻类未生长")
         if not DO_reasonable:
@@ -204,13 +210,13 @@ def test_ice_effect_on_algae():
     测试2: 冰盖对藻类的影响
 
     场景: 冬季结冰条件
-    验证: 冰盖 → 光照 → 藻类生长受限
+    验证: 冰盖 -> 光照 -> 藻类生长受限
     """
     print("\n" + "="*70)
     print("测试2: 冰盖对藻类的影响")
     print("="*70)
 
-    n_cells = 20
+    n_cells = 24
     dx = 100.0
 
     coupled_solver = CoupledIceWaterQualitySolver(
@@ -236,7 +242,7 @@ def test_ice_effect_on_algae():
     )
 
     print(f"初始条件:")
-    print(f"  水温: 0.5°C")
+    print(f"  水温: 0.5 degC")
     print(f"  冰厚: 0.2 m")
     print(f"  叶绿素: 15 μg/L")
 
@@ -266,8 +272,8 @@ def test_ice_effect_on_algae():
         h_ice_history.append(state['h_ice'][n_cells//2])
 
     print(f"\n5天后:")
-    print(f"  冰厚: {h_ice_history[0]:.3f} → {h_ice_history[-1]:.3f} m")
-    print(f"  叶绿素: {Chla_history[0]:.1f} → {Chla_history[-1]:.1f} μg/L")
+    print(f"  冰厚: {h_ice_history[0]:.3f} -> {h_ice_history[-1]:.3f} m")
+    print(f"  叶绿素: {Chla_history[0]:.1f} -> {Chla_history[-1]:.1f} μg/L")
 
     # 绘图
     fig, axes = plt.subplots(1, 2, figsize=(12, 4))
@@ -292,10 +298,10 @@ def test_ice_effect_on_algae():
     algae_suppressed = Chla_history[-1] <= Chla_history[0] * 1.1  # 允许小幅增长
 
     if algae_suppressed:
-        print(f"\n✅ 测试通过! 冰盖抑制藻类生长")
+        print(f"\n 测试通过! 冰盖抑制藻类生长")
         return True
     else:
-        print(f"\n❌ 测试失败! 冰盖下藻类异常生长")
+        print(f"\n 测试失败! 冰盖下藻类异常生长")
         return False
 
 
@@ -313,7 +319,7 @@ def run_all_tests():
     try:
         results['Summer Eutrophication'] = test_full_coupling()
     except Exception as e:
-        print(f"\n❌ 测试1异常: {e}")
+        print(f"\n 测试1异常: {e}")
         import traceback
         traceback.print_exc()
         results['Summer Eutrophication'] = False
@@ -322,7 +328,7 @@ def run_all_tests():
     try:
         results['Ice-Algae Coupling'] = test_ice_effect_on_algae()
     except Exception as e:
-        print(f"\n❌ 测试2异常: {e}")
+        print(f"\n 测试2异常: {e}")
         import traceback
         traceback.print_exc()
         results['Ice-Algae Coupling'] = False
@@ -332,7 +338,7 @@ def run_all_tests():
     print("测试结果汇总")
     print("="*70)
     for test_name, passed in results.items():
-        status = "✅ PASS" if passed else "❌ FAIL"
+        status = " PASS" if passed else " FAIL"
         print(f"{test_name:30s} : {status}")
     print("="*70)
 
@@ -342,10 +348,10 @@ def run_all_tests():
     print("="*70)
 
     if n_passed == n_total:
-        print(f"\n🎉 所有测试通过! HydroClaude Phase 4完整耦合验证成功!")
-        print(f"完整耦合系统对标: MIKE ICE + WASP + CE-QUAL-W2 ✅")
+        print(f"\n 所有测试通过! HydroClaude Phase 4完整耦合验证成功!")
+        print(f"完整耦合系统对标: MIKE ICE + WASP + CE-QUAL-W2 ")
     else:
-        print(f"\n⚠️  {n_total - n_passed}个测试失败，需要进一步调试")
+        print(f"\n️  {n_total - n_passed}个测试失败，需要进一步调试")
 
     return n_passed == n_total
 

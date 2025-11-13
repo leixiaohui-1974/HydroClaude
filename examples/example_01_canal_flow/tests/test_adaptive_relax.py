@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 性能对比测试：自适应松弛因子 vs 固定松弛因子
 
@@ -10,12 +11,17 @@ Author: Claude
 Date: 2025-10-22
 """
 
+import os
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
 import time
-from solvers.single_canal_solver import SingleCanalSolver
+# DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
 from solvers.gate import SluiceGate, BroadCrestedWeir, Orifice
 
 
@@ -82,7 +88,7 @@ def test_scenario(name: str, structures: list, Q_target: float = 10.0,
         print(f"  迭代次数: {result['iterations']}")
         print(f"  最终误差: {result['final_error']*100:.4f}%")
         print(f"  计算时间: {elapsed_time:.2f}s")
-        print(f"  闸门流量: {', '.join([f'{q:.3f}' for q in result['gate_flows']])} m³/s")
+        print(f"  闸门流量: {', '.join([f'{q:.3f}' for q in result['gate_flows']])} m^3/s")
 
     return results
 
@@ -159,7 +165,7 @@ def main():
 
     for scenario_name, scenario_results in all_results.items():
         for method_name, method_results in scenario_results.items():
-            converged_str = "✓" if method_results['converged'] else "✗"
+            converged_str = "" if method_results['converged'] else ""
             print(f"{scenario_name:<20} {method_name:<15} {method_results['iterations']:<12} "
                   f"{method_results['final_error']*100:>6.4f}%       "
                   f"{method_results['elapsed_time']:>6.2f}s      {converged_str:<8}")
@@ -180,11 +186,11 @@ def main():
             time_improvement = (fixed['elapsed_time'] - adaptive['elapsed_time']) / fixed['elapsed_time'] * 100
 
             print(f"\n{scenario_name}:")
-            print(f"  迭代次数: {fixed['iterations']} → {adaptive['iterations']} "
+            print(f"  迭代次数: {fixed['iterations']} -> {adaptive['iterations']} "
                   f"({'↓' if iter_improvement > 0 else '↑'}{abs(iter_improvement):.1f}%)")
-            print(f"  最终误差: {fixed['final_error']*100:.4f}% → {adaptive['final_error']*100:.4f}% "
+            print(f"  最终误差: {fixed['final_error']*100:.4f}% -> {adaptive['final_error']*100:.4f}% "
                   f"({'↓' if error_improvement > 0 else '↑'}{abs(error_improvement):.1f}%)")
-            print(f"  计算时间: {fixed['elapsed_time']:.2f}s → {adaptive['elapsed_time']:.2f}s "
+            print(f"  计算时间: {fixed['elapsed_time']:.2f}s -> {adaptive['elapsed_time']:.2f}s "
                   f"({'↓' if time_improvement > 0 else '↑'}{abs(time_improvement):.1f}%)")
         elif not fixed['converged'] and adaptive['converged']:
             print(f"\n{scenario_name}:")

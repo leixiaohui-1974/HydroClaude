@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+"""
+Quick Lake at Rest Test
+快速验证Well-Balanced C-property
+
+测试不同时间长度下的水面扰动累积
+"""
+
+import numpy as np
+import sys
+import os
+
+# 添加路径
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+
+
+def test_short_time(T_end=1.0):
+    """测试短时间Lake at Rest"""
+    print(f"\n{'='*70}")
+    print(f"Lake at Rest P0.2 - T={T_end}s 测试")
+    print(f"{'='*70}")
+
+    # 参数
+    L = 100.0
+    n_cells = 100
+    eta_init = 10.0
+
+    # 创建底高程: 2m凸起
+    x = np.linspace(0.5, L-0.5, n_cells)
+    x_center = L / 2.0
+    hump_width = 20.0
+    hump_height = 2.0
+
+    z_b = np.zeros(n_cells)
+    for i in range(n_cells):
+        if abs(x[i] - x_center) < hump_width / 2:
+            dist_from_center = abs(x[i] - x_center)
+            z_b[i] = hump_height * (1.0 - 2.0 * dist_from_center / hump_width)
+
+    # 初始水深
+    h = eta_init - z_b
+    Q = np.zeros(n_cells)
+
+    # 创建求解器（直接传递z_b）
+    solver = GodunvFVMSolver(
+        width=10.0,
+        length=L,
+        n_cells=n_cells,
+        manning_n=0.03,
+        z_b=z_b,
+        cfl=0.5,
+        order=1,
+        well_balanced=True
+    )
+
+    # 边界条件
+    bc_left = {'type': 'h', 'value': h[0]}
+    bc_right = {'type': 'h', 'value': h[-1]}
+
+    solver.initialize(h, Q, bc_left, bc_right)
+
+    # 记录初始质量
+    mass_init = solver._compute_total_mass()
+
+    # 运行模拟
+    t = 0.0
+    step_count = 0
+    while t < T_end:
+        dt = solver.compute_dt()
+        solver.step(dt)
+        t += dt
+        step_count += 1
+
+    # 检查结果
+    h_final = solver.h.copy()
+    eta_final = h_final + solver.z_b
+
+    # 水面扰动
+    eta_disturbance = np.max(np.abs(eta_final - eta_init))
+
+    # 质量守恒
+    mass_final = solver._compute_total_mass()
+    mass_error = abs(mass_final - mass_init) / mass_init * 100
+
+    print(f"\n结果:")
+    print(f"  模拟时间: {t:.3f} s")
+    print(f"  总步数: {step_count}")
+    print(f"  水面扰动: {eta_disturbance:.6e} m")
+    print(f"  质量误差: {mass_error:.6e} %")
+
+    return eta_disturbance, mass_error
+
+
+if __name__ == '__main__':
+    print("\n" + "="*70)
+    print("Well-Balanced格式短时间性能测试")
+    print("="*70)
+
+    # 测试不同时间长度
+    times = [0.1, 0.5, 1.0, 2.0, 5.0, 10.0]
+
+    print(f"\n{'时间(s)':<10} {'水面扰动(m)':<15} {'质量误差(%)':<15}")
+    print("-" * 70)
+
+    for T in times:
+        try:
+            dist, mass_err = test_short_time(T)
+            print(f"{T:<10.1f} {dist:<15.6e} {mass_err:<15.6e}")
+        except KeyboardInterrupt:
+            print("\n用户中断")
+            break
+        except Exception as e:
+            print(f"{T:<10.1f} {'ERROR':<15} {str(e)[:30]}")
+
+    print("\n" + "="*70)
+    print("测试完成！")
+    print("="*70)

@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_simple_bc():
@@ -42,7 +48,7 @@ def test_simple_bc():
     solver.initialize(h_init, Q_init, bc_left, bc_right)
 
     print(f"\n边界条件：")
-    print(f"  左：Q = 2.0 m³/s")
+    print(f"  左：Q = 2.0 m^3/s")
     print(f"  右：h = 0.8 m")
 
     # 运行一步
@@ -51,27 +57,27 @@ def test_simple_bc():
 
     # 检查通量
     print(f"\n边界通量：")
-    print(f"  F_h[0] (左) = {solver.last_F_h[0]:.3f} m²/s")
-    print(f"  F_h[-1] (右) = {solver.last_F_h[-1]:.3f} m²/s")
+    print(f"  F_h[0] (左) = {solver.last_F_h[0]:.3f} m^2/s")
+    print(f"  F_h[-1] (右) = {solver.last_F_h[-1]:.3f} m^2/s")
 
     print(f"\n边界单元：")
-    print(f"  Q[0] = {solver.Q[0]:.3f} m³/s")
-    print(f"  Q[-1] = {solver.Q[-1]:.3f} m³/s")
+    print(f"  Q[0] = {solver.Q[0]:.3f} m^3/s")
+    print(f"  Q[-1] = {solver.Q[-1]:.3f} m^3/s")
 
     print(f"\n检查：")
     left_ok = abs(solver.last_F_h[0] - 2.0) < 0.01
-    print(f"  左边界：F_h[0]应该=2.0 → 实际={solver.last_F_h[0]:.3f} → {'✓' if left_ok else '✗'}")
+    print(f"  左边界：F_h[0]应该=2.0 -> 实际={solver.last_F_h[0]:.3f} -> {'' if left_ok else ''}")
 
     # 右边界不检查具体值，只检查是否≠2.0
     right_ok = abs(solver.last_F_h[-1] - 2.0) > 0.1
-    print(f"  右边界：F_h[-1]应该≠2.0 (h边界) → 实际={solver.last_F_h[-1]:.3f} → {'✓' if right_ok else '✗'}")
+    print(f"  右边界：F_h[-1]应该≠2.0 (h边界) -> 实际={solver.last_F_h[-1]:.3f} -> {'' if right_ok else ''}")
 
     print("\n" + "="*60)
 
     if left_ok and right_ok:
-        print("✅ 测试通过")
+        print(" 测试通过")
     else:
-        print("❌ 测试失败")
+        print(" 测试失败")
         print("\n问题：")
         if not left_ok:
             print("  左边界通量未被正确强制为Q=2.0")

@@ -1,0 +1,430 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+高阶格式精度验证测试
+
+对比不同数值格式的精度：
+1. 一阶格式（原始静水重构）
+2. MUSCL + Euler
+3. 一阶 + RK2
+4. MUSCL + RK2（完全二阶）
+
+作者: Claude
+日期: 2025-10-23
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+from solvers.high_order_solver import HighOrderCanalSolver
+
+
+def analytical_solution_dam_break(x, t, h_L=2.0, h_R=1.0):
+    """
+    溃坝问题的解析解（简化）
+
+    Args:
+        x: 位置
+        t: 时间
+        h_L: 左侧水深
+        h_R: 右侧水深
+
+    Returns:
+        h: 水深解析解
+    """
+    g = 9.81
+    c_L = np.sqrt(g * h_L)
+    c_R = np.sqrt(g * h_R)
+
+    # 波速
+    S = 2 * (c_L - c_R)
+
+    if x < -c_L * t:
+        return h_L
+    elif x > S * t + c_R * t:
+        return h_R
+    else:
+        # 稀疏波区域
+        h = (2*c_L - x/t)**2 / (9*g)
+        return max(h, h_R)
+
+
+def test_accuracy_comparison():
+    """测试1: 精度对比"""
+    print("=" * 80)
+    print("测试1: 数值格式精度对比")
+    print("=" * 80)
+
+    # 参数
+    L = 500.0
+    nx = 101
+    B = 10.0
+    S0 = 0.0
+    n = 0.015  # 低摩阻
+
+    # 测试配置
+    configs = [
+        {'use_muscl': False, 'use_rk2': False, 'name': '一阶+Euler'},
+        {'use_muscl': True, 'use_rk2': False, 'name': 'MUSCL+Euler'},
+        {'use_muscl': False, 'use_rk2': True, 'name': '一阶+RK2'},
+        {'use_muscl': True, 'use_rk2': True, 'name': 'MUSCL+RK2 (完全二阶)'},
+    ]
+
+    results = {}
+    times = {}
+
+    # 运行所有配置
+    for config in configs:
+        print(f"\n运行 {config['name']}...")
+
+        solver = HighOrderCanalSolver(
+            length=L, nx=nx, B=B, S0=S0, n=n,
+            muscl_limiter='minmod'
+        )
+
+        # 初始条件：阶跃
+        x_mid = L / 2
+        for i, x in enumerate(solver.x):
+            if x < x_mid:
+                solver.h[i] = 1.5
+                solver.hu[i] = 0.0
+            else:
+                solver.h[i] = 0.8
+                solver.hu[i] = 0.0
+
+        t_start = time.time()
+        result = solver.solve_transient_high_order(
+            t_end=20.0,
+            dt=0.1,
+            Q_upstream=0.0,
+            h_downstream=0.8,
+            save_interval=5,
+            verbose=False,
+            use_muscl=config['use_muscl'],
+            use_rk2=config['use_rk2']
+        )
+        elapsed = time.time() - t_start
+
+        results[config['name']] = result
+        times[config['name']] = elapsed
+
+        print(f"  完成: {elapsed:.3f}秒")
+
+    # 绘图对比
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+    # 水深剖面对比
+    ax = axes[0, 0]
+    colors = ['blue', 'green', 'orange', 'red']
+    for (name, result), color in zip(results.items(), colors):
+        ax.plot(result['x'], result['h_final'], label=name,
+                linewidth=2, color=color, alpha=0.7)
+    ax.set_xlabel('Position (m)')
+    ax.set_ylabel('Water depth (m)')
+    ax.set_title('Water Depth Profiles (t=20s)')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # 放大中心区域
+    ax = axes[0, 1]
+    x_min, x_max = 200, 300
+    for (name, result), color in zip(results.items(), colors):
+        mask = (result['x'] >= x_min) & (result['x'] <= x_max)
+        ax.plot(result['x'][mask], result['h_final'][mask],
+                label=name, linewidth=2, color=color, alpha=0.7)
+    ax.set_xlabel('Position (m)')
+    ax.set_ylabel('Water depth (m)')
+    ax.set_title('Zoom: Central Region')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # 计算时间对比
+    ax = axes[1, 0]
+    names = list(times.keys())
+    values = list(times.values())
+    bars = ax.bar(range(len(names)), values, color=colors, alpha=0.7)
+    ax.set_xticks(range(len(names)))
+    ax.set_xticklabels(names, rotation=15, ha='right')
+    ax.set_ylabel('Computation time (s)')
+    ax.set_title('Computational Cost')
+    ax.grid(True, alpha=0.3, axis='y')
+
+    # 添加数值标签
+    for bar, val in zip(bars, values):
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., height,
+                f'{val:.3f}s', ha='center', va='bottom')
+
+    # 数值耗散分析（总水量变化）
+    ax = axes[1, 1]
+    ref_name = '一阶+Euler'
+    ref_result = results[ref_name]
+    ref_volume = np.sum(ref_result['h_final']) * (L / nx) * B
+
+    relative_volume = []
+    for name in names:
+        volume = np.sum(results[name]['h_final']) * (L / nx) * B
+        rel_diff = abs(volume - ref_volume) / ref_volume * 100
+        relative_volume.append(rel_diff)
+
+    ax.bar(range(len(names)), relative_volume, color=colors, alpha=0.7)
+    ax.set_xticks(range(len(names)))
+    ax.set_xticklabels(names, rotation=15, ha='right')
+    ax.set_ylabel('Volume difference (%)')
+    ax.set_title('Numerical Dissipation (vs 1st order)')
+    ax.grid(True, alpha=0.3, axis='y')
+
+    plt.tight_layout()
+    plt.savefig('test_high_order_accuracy.png', dpi=150)
+    print(f"\n图表保存: test_high_order_accuracy.png")
+
+    return results, times
+
+
+def test_convergence_rate():
+    """测试2: 收敛阶数验证"""
+    print("\n" + "=" * 80)
+    print("测试2: 收敛阶数验证")
+    print("=" * 80)
+
+    # 参数
+    L = 100.0
+    B = 10.0
+    S0 = 0.001
+    n = 0.025
+
+    # 网格细化序列
+    nx_values = [21, 41, 81, 161]
+    dx_values = [L / (nx - 1) for nx in nx_values]
+
+    methods = [
+        {'use_muscl': False, 'use_rk2': False, 'name': '一阶'},
+        {'use_muscl': True, 'use_rk2': True, 'name': '二阶 (MUSCL+RK2)'},
+    ]
+
+    results = {m['name']: {'errors': [], 'dx': dx_values} for m in methods}
+
+    # 参考解（最细网格）
+    print(f"\n计算参考解（nx=321）...")
+    solver_ref = HighOrderCanalSolver(
+        length=L, nx=321, B=B, S0=S0, n=n,
+        muscl_limiter='minmod'
+    )
+    solver_ref.h = np.ones(321) * 0.8
+    solver_ref.hu = np.ones(321) * 5.0 / B
+    result_ref = solver_ref.solve_transient_high_order(
+        t_end=10.0, dt=0.05, Q_upstream=5.0, h_downstream=0.8,
+        save_interval=20, verbose=False, use_muscl=True, use_rk2=True
+    )
+    h_ref = result_ref['h_final']
+    x_ref = result_ref['x']
+
+    # 对每个方法和网格测试
+    for method in methods:
+        print(f"\n测试 {method['name']}:")
+
+        for nx, dx in zip(nx_values, dx_values):
+            solver = HighOrderCanalSolver(
+                length=L, nx=nx, B=B, S0=S0, n=n,
+                muscl_limiter='minmod'
+            )
+            solver.h = np.ones(nx) * 0.8
+            solver.hu = np.ones(nx) * 5.0 / B
+
+            result = solver.solve_transient_high_order(
+                t_end=10.0, dt=0.05, Q_upstream=5.0, h_downstream=0.8,
+                save_interval=20, verbose=False,
+                use_muscl=method['use_muscl'],
+                use_rk2=method['use_rk2']
+            )
+
+            # 插值到参考网格
+            h_interp = np.interp(x_ref, result['x'], result['h_final'])
+
+            # L2误差
+            error_L2 = np.sqrt(np.mean((h_interp - h_ref)**2))
+            results[method['name']]['errors'].append(error_L2)
+
+            print(f"  nx={nx:3d}, dx={dx:.4f}, L2 error={error_L2:.6e}")
+
+    # 绘图
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+    # L2误差 vs 网格尺寸
+    ax = axes[0]
+    for method_name, data in results.items():
+        ax.loglog(data['dx'], data['errors'], 'o-', linewidth=2,
+                  markersize=8, label=method_name)
+
+    # 添加参考线
+    dx_ref = np.array(dx_values)
+    ax.loglog(dx_ref, 0.1 * dx_ref, 'k--', alpha=0.5, label='1st order')
+    ax.loglog(dx_ref, 0.01 * dx_ref**2, 'k:', alpha=0.5, label='2nd order')
+
+    ax.set_xlabel('Grid spacing Δx (m)')
+    ax.set_ylabel('L2 Error')
+    ax.set_title('Convergence Rate Analysis')
+    ax.legend()
+    ax.grid(True, alpha=0.3, which='both')
+
+    # 收敛阶数计算
+    ax = axes[1]
+    for method_name, data in results.items():
+        errors = np.array(data['errors'])
+        dx = np.array(data['dx'])
+
+        # 计算收敛阶数
+        orders = []
+        for i in range(len(errors) - 1):
+            order = np.log(errors[i+1] / errors[i]) / np.log(dx[i+1] / dx[i])
+            orders.append(order)
+
+        dx_mid = (dx[:-1] + dx[1:]) / 2
+        ax.plot(dx_mid, orders, 'o-', linewidth=2, markersize=8,
+                label=method_name)
+
+    ax.axhline(1.0, color='black', linestyle='--', alpha=0.5, label='1st order')
+    ax.axhline(2.0, color='black', linestyle=':', alpha=0.5, label='2nd order')
+    ax.set_xlabel('Grid spacing Δx (m)')
+    ax.set_ylabel('Convergence order p')
+    ax.set_title('Measured Convergence Order')
+    ax.set_ylim([0, 2.5])
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('test_convergence_order.png', dpi=150)
+    print(f"\n图表保存: test_convergence_order.png")
+
+    return results
+
+
+def test_limiter_comparison():
+    """测试3: 限制器对比"""
+    print("\n" + "=" * 80)
+    print("测试3: MUSCL限制器对比")
+    print("=" * 80)
+
+    L = 500.0
+    nx = 101
+    B = 10.0
+    S0 = 0.0
+    n = 0.015
+
+    limiters = ['minmod', 'superbee', 'vanleer']
+    results = {}
+
+    for limiter in limiters:
+        print(f"\n测试 {limiter} 限制器...")
+
+        solver = HighOrderCanalSolver(
+            length=L, nx=nx, B=B, S0=S0, n=n,
+            muscl_limiter=limiter
+        )
+
+        # 初始条件：尖锐间断
+        x_mid = L / 2
+        for i, x in enumerate(solver.x):
+            if x < x_mid:
+                solver.h[i] = 1.8
+                solver.hu[i] = 0.0
+            else:
+                solver.h[i] = 0.6
+                solver.hu[i] = 0.0
+
+        result = solver.solve_transient_high_order(
+            t_end=15.0,
+            dt=0.1,
+            Q_upstream=0.0,
+            h_downstream=0.6,
+            save_interval=5,
+            verbose=False,
+            use_muscl=True,
+            use_rk2=True
+        )
+
+        results[limiter] = result
+
+    # 绘图
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+    # 水深剖面
+    ax = axes[0]
+    colors = ['blue', 'red', 'green']
+    for (limiter, result), color in zip(results.items(), colors):
+        ax.plot(result['x'], result['h_final'], label=limiter.capitalize(),
+                linewidth=2, color=color, alpha=0.7)
+    ax.set_xlabel('Position (m)')
+    ax.set_ylabel('Water depth (m)')
+    ax.set_title('Water Depth Profiles (Different Limiters)')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # 放大间断附近
+    ax = axes[1]
+    x_min, x_max = 200, 300
+    for (limiter, result), color in zip(results.items(), colors):
+        mask = (result['x'] >= x_min) & (result['x'] <= x_max)
+        ax.plot(result['x'][mask], result['h_final'][mask],
+                label=limiter.capitalize(), linewidth=2,
+                color=color, alpha=0.7, marker='o', markersize=3)
+    ax.set_xlabel('Position (m)')
+    ax.set_ylabel('Water depth (m)')
+    ax.set_title('Zoom: Shock Region')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('test_limiters_comparison.png', dpi=150)
+    print(f"\n图表保存: test_limiters_comparison.png")
+
+    return results
+
+
+def main():
+    """运行所有测试"""
+    print("\n" + "" * 40)
+    print("高阶数值格式精度验证")
+    print("" * 40 + "\n")
+
+    # 测试1: 精度对比
+    try:
+        results1, times1 = test_accuracy_comparison()
+        print(f"\n 精度对比测试完成")
+    except Exception as e:
+        print(f"\n 精度对比测试失败: {e}")
+        import traceback
+        traceback.print_exc()
+
+    # 测试2: 收敛阶数
+    try:
+        results2 = test_convergence_rate()
+        print(f"\n 收敛阶数测试完成")
+    except Exception as e:
+        print(f"\n 收敛阶数测试失败: {e}")
+        import traceback
+        traceback.print_exc()
+
+    # 测试3: 限制器对比
+    try:
+        results3 = test_limiter_comparison()
+        print(f"\n 限制器对比测试完成")
+    except Exception as e:
+        print(f"\n 限制器对比测试失败: {e}")
+        import traceback
+        traceback.print_exc()
+
+    print("\n" + "=" * 80)
+    print("所有测试完成!")
+    print("=" * 80)
+
+    print("\n高阶格式特点：")
+    print("   MUSCL重构 - 空间二阶精度")
+    print("   RK2时间步进 - 时间二阶精度")
+    print("   3种限制器 - minmod/superbee/vanleer")
+    print("   TVD性质 - 无数值振荡")
+    print("   良平衡保持 - 静水重构基础")
+
+
+if __name__ == "__main__":
+    main()

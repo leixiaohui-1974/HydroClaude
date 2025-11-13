@@ -166,7 +166,7 @@ class TestDiversionCalculation:
             manning_n=0.020
         )
 
-        Q_inflow = 10.0  # 10 m³/s
+        Q_inflow = 10.0  # 10 m^3/s
         h_upstream = 103.0  # 堰顶上 1.0 m
 
         result = weir.compute_diversion(Q_inflow, h_upstream)

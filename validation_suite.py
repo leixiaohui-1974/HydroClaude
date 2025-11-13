@@ -49,15 +49,15 @@ class ValidationSuite:
             
             if result['status'] == 'PASS':
                 self.summary['passed_tests'] += 1
-                print(f"\n✅ 测试通过")
+                print(f"\n 测试通过")
             else:
                 self.summary['failed_tests'] += 1
-                print(f"\n❌ 测试失败")
+                print(f"\n 测试失败")
             
             self.summary['total_tests'] += 1
             
         except Exception as e:
-            print(f"\n❌ 测试异常: {e}")
+            print(f"\n 测试异常: {e}")
             self.results.append({
                 'test_name': test_name,
                 'category': category,
@@ -108,7 +108,7 @@ class ValidationSuite:
                 error_str = "N/A"
             
             status = result.get('status', 'UNKNOWN')
-            status_symbol = "✅" if status == 'PASS' else "❌"
+            status_symbol = "" if status == 'PASS' else ""
             
             print(f"{name:<40} {cat:<15} {error_str:<12} {status_symbol} {status}")
         
@@ -142,7 +142,7 @@ class ValidationSuite:
                 'results': self.results
             }, f, indent=2, ensure_ascii=False, default=str)
         
-        print(f"\n✅ 详细报告已保存: {report_path}")
+        print(f"\n 详细报告已保存: {report_path}")
         
         return self.summary
 

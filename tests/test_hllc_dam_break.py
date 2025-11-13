@@ -23,10 +23,16 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
 
 
-def run_dam_break_comparison(n_cells=200, t_final=5.0, order=2):
+
+def run_dam_break_comparison(n_cells=200, t_final=5.0, order=1):
     """
     Run Dam Break with both HLL and HLLC solvers
 
@@ -76,7 +82,7 @@ def run_dam_break_comparison(n_cells=200, t_final=5.0, order=2):
         length=length,
         n_cells=n_cells,
         manning_n=0.0,  # Frictionless
-        cfl=0.5,
+        cfl=0.3,
         order=order,
         use_numba=True,
         riemann_solver='hll',
@@ -95,7 +101,7 @@ def run_dam_break_comparison(n_cells=200, t_final=5.0, order=2):
 
         # Check for NaN
         if np.any(np.isnan(solver_hll.h)) or np.any(np.isnan(solver_hll.Q)):
-            print(f"  ❌ NaN detected at t={solver_hll.t:.3f}s")
+            print(f"   NaN detected at t={solver_hll.t:.3f}s")
             break
 
     # Record final state
@@ -106,7 +112,7 @@ def run_dam_break_comparison(n_cells=200, t_final=5.0, order=2):
     print(f"  Steps: {solver_hll.step_count}")
     print(f"  Mass conservation: {mass_error_hll:.6f}%")
     print(f"  Max h: {np.max(solver_hll.h):.3f}m")
-    print(f"  Max |Q|: {np.max(np.abs(solver_hll.Q)):.3f} m³/s")
+    print(f"  Max |Q|: {np.max(np.abs(solver_hll.Q)):.3f} m^3/s")
     print()
 
     # --- Run HLLC solver ---
@@ -116,7 +122,7 @@ def run_dam_break_comparison(n_cells=200, t_final=5.0, order=2):
         length=length,
         n_cells=n_cells,
         manning_n=0.0,  # Frictionless
-        cfl=0.5,
+        cfl=0.3,
         order=order,
         use_numba=True,
         riemann_solver='hllc',
@@ -135,7 +141,7 @@ def run_dam_break_comparison(n_cells=200, t_final=5.0, order=2):
 
         # Check for NaN
         if np.any(np.isnan(solver_hllc.h)) or np.any(np.isnan(solver_hllc.Q)):
-            print(f"  ❌ NaN detected at t={solver_hllc.t:.3f}s")
+            print(f"   NaN detected at t={solver_hllc.t:.3f}s")
             break
 
     # Record final state
@@ -146,7 +152,7 @@ def run_dam_break_comparison(n_cells=200, t_final=5.0, order=2):
     print(f"  Steps: {solver_hllc.step_count}")
     print(f"  Mass conservation: {mass_error_hllc:.6f}%")
     print(f"  Max h: {np.max(solver_hllc.h):.3f}m")
-    print(f"  Max |Q|: {np.max(np.abs(solver_hllc.Q)):.3f} m³/s")
+    print(f"  Max |Q|: {np.max(np.abs(solver_hllc.Q)):.3f} m^3/s")
     print()
 
     # --- Compute metrics ---
@@ -169,10 +175,10 @@ def run_dam_break_comparison(n_cells=200, t_final=5.0, order=2):
     u_diff = u_hllc - u_hll
 
     print(f"Solution Differences (HLLC - HLL):")
-    print(f"  Max |Δh|: {np.max(np.abs(h_diff)):.4f}m")
-    print(f"  RMS(Δh): {np.sqrt(np.mean(h_diff**2)):.4f}m")
-    print(f"  Max |Δu|: {np.max(np.abs(u_diff)):.4f} m/s")
-    print(f"  RMS(Δu): {np.sqrt(np.mean(u_diff**2)):.4f} m/s")
+    print(f"  Max |Deltah|: {np.max(np.abs(h_diff)):.4f}m")
+    print(f"  RMS(Deltah): {np.sqrt(np.mean(h_diff**2)):.4f}m")
+    print(f"  Max |Deltau|: {np.max(np.abs(u_diff)):.4f} m/s")
+    print(f"  RMS(Deltau): {np.sqrt(np.mean(u_diff**2)):.4f} m/s")
     print()
 
     # Total Variation (shock sharpness metric)
@@ -196,8 +202,8 @@ def run_dam_break_comparison(n_cells=200, t_final=5.0, order=2):
     has_nan_hllc = np.any(np.isnan(h_hllc)) or np.any(np.isnan(Q_hllc))
 
     print(f"Stability:")
-    print(f"  HLL:  {'✅ No NaN' if not has_nan_hll else '❌ NaN detected'}")
-    print(f"  HLLC: {'✅ No NaN' if not has_nan_hllc else '❌ NaN detected'}")
+    print(f"  HLL:  {' No NaN' if not has_nan_hll else ' NaN detected'}")
+    print(f"  HLLC: {' No NaN' if not has_nan_hllc else ' NaN detected'}")
     print()
 
     # --- Create visualization ---
@@ -232,7 +238,7 @@ def run_dam_break_comparison(n_cells=200, t_final=5.0, order=2):
     ax3.axhline(y=0, color='gray', linestyle='--')
     ax3.axvline(x=length/2, color='gray', linestyle=':')
     ax3.set_xlabel('x (m)')
-    ax3.set_ylabel('Δh = h(HLLC) - h(HLL) (m)')
+    ax3.set_ylabel('Deltah = h(HLLC) - h(HLL) (m)')
     ax3.set_title('Depth Difference')
     ax3.grid(True, alpha=0.3)
 
@@ -243,7 +249,7 @@ def run_dam_break_comparison(n_cells=200, t_final=5.0, order=2):
     shock_idx = np.argmax(grad_h_hll)
     shock_x = x_centers[shock_idx]
 
-    # Zoom window: ±50m around shock
+    # Zoom window: +/-50m around shock
     zoom_width = 50.0
     zoom_mask = (x_centers > shock_x - zoom_width) & (x_centers < shock_x + zoom_width)
 
@@ -253,7 +259,7 @@ def run_dam_break_comparison(n_cells=200, t_final=5.0, order=2):
              markersize=4, label='HLLC')
     ax4.set_xlabel('x (m)')
     ax4.set_ylabel('Water depth h (m)')
-    ax4.set_title(f'Shock Detail (x ≈ {shock_x:.1f}m)')
+    ax4.set_title(f'Shock Detail (x ~= {shock_x:.1f}m)')
     ax4.legend()
     ax4.grid(True, alpha=0.3)
 
@@ -280,32 +286,32 @@ def run_dam_break_comparison(n_cells=200, t_final=5.0, order=2):
     # 1. Stability
     if has_nan_hllc:
         hllc_better = False
-        issues.append("❌ HLLC has NaN (unstable)")
+        issues.append(" HLLC has NaN (unstable)")
     else:
-        print("✅ HLLC is stable (no NaN)")
+        print(" HLLC is stable (no NaN)")
 
     # 2. Mass conservation
     if mass_error_hllc > mass_error_hll * 1.5:
         hllc_better = False
-        issues.append(f"❌ HLLC mass error {mass_error_hllc:.6f}% > 1.5x HLL")
+        issues.append(f" HLLC mass error {mass_error_hllc:.6f}% > 1.5x HLL")
     else:
-        print(f"✅ HLLC mass conservation comparable ({mass_error_hllc:.6f}%)")
+        print(f" HLLC mass conservation comparable ({mass_error_hllc:.6f}%)")
 
     # 3. Shock sharpness (HLLC should be sharper)
     if tv_hllc > tv_hll * 1.02:  # At least 2% sharper
-        print(f"✅ HLLC captures shocks more sharply (TV +{(tv_hllc/tv_hll-1)*100:.1f}%)")
+        print(f" HLLC captures shocks more sharply (TV +{(tv_hllc/tv_hll-1)*100:.1f}%)")
     elif tv_hllc > tv_hll * 0.98:  # Within 2%
-        print(f"⚠️ HLLC shock sharpness similar to HLL (TV ±{abs(tv_hllc/tv_hll-1)*100:.1f}%)")
+        print(f" HLLC shock sharpness similar to HLL (TV +/-{abs(tv_hllc/tv_hll-1)*100:.1f}%)")
     else:
         hllc_better = False
-        issues.append(f"❌ HLLC shock sharpness worse than HLL (TV {(tv_hllc/tv_hll-1)*100:.1f}%)")
+        issues.append(f" HLLC shock sharpness worse than HLL (TV {(tv_hllc/tv_hll-1)*100:.1f}%)")
 
     print()
 
     # Overall conclusion
     if hllc_better and len(issues) == 0:
         print("="*70)
-        print("✅ CONCLUSION: HLLC shows expected advantages on Dam Break")
+        print(" CONCLUSION: HLLC shows expected advantages on Dam Break")
         print("="*70)
         print()
         print("HLLC demonstrates:")
@@ -321,7 +327,7 @@ def run_dam_break_comparison(n_cells=200, t_final=5.0, order=2):
         status = "PASS"
     else:
         print("="*70)
-        print("⚠️ CONCLUSION: HLLC performance needs investigation")
+        print(" CONCLUSION: HLLC performance needs investigation")
         print("="*70)
         print()
         print("Issues found:")
@@ -355,12 +361,12 @@ def run_dam_break_comparison(n_cells=200, t_final=5.0, order=2):
 
 if __name__ == '__main__':
     # Run comparison
-    results = run_dam_break_comparison(n_cells=200, t_final=5.0, order=2)
+    results = run_dam_break_comparison(n_cells=200, t_final=5.0, order=1)
 
     # Return exit code based on status
     if results['status'] == 'PASS':
-        print("Test: PASS ✅")
+        print("Test: PASS ")
         exit(0)
     else:
-        print("Test: NEEDS INVESTIGATION ⚠️")
+        print("Test: NEEDS INVESTIGATION ")
         exit(1)

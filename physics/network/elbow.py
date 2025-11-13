@@ -283,9 +283,9 @@ def test_elbow():
     print(f"  相对误差: {rel_error:.6f}%")
 
     if rel_error < 0.001:
-        print("  ✓ 导数验证通过！")
+        print("   导数验证通过！")
     else:
-        print(f"  ✗ 导数误差较大")
+        print(f"   导数误差较大")
 
     print()
 

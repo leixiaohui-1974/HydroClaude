@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 MPC性能诊断分析
 
@@ -275,14 +276,14 @@ def parameter_sweep_analysis():
     pid_result = test_pid_baseline()
     print(f"  PID: MAE={pid_result['mae']*100:.2f}cm, "
           f"调节时间={pid_result['settling_time']:.1f}s, "
-          f"平均Δu={pid_result['avg_du']*100:.2f}cm")
+          f"平均Deltau={pid_result['avg_du']*100:.2f}cm")
 
     # 测试默认MPC参数
     print("\n【步骤2】测试默认MPC参数 (Q=100, R=1, Qf=1000)...")
     default_mpc = test_mpc_with_params(Q=100.0, R=1.0, Qf=1000.0)
     print(f"  MPC: MAE={default_mpc['mae']*100:.2f}cm, "
           f"调节时间={default_mpc['settling_time']:.1f}s, "
-          f"平均Δu={default_mpc['avg_du']*100:.2f}cm")
+          f"平均Deltau={default_mpc['avg_du']*100:.2f}cm")
 
     # Q参数扫描
     print("\n【步骤3】Q参数扫描（跟踪误差权重）...")
@@ -293,7 +294,7 @@ def parameter_sweep_analysis():
         q_results.append(result)
         print(f"  Q={Q:7.1f}: MAE={result['mae']*100:6.2f}cm, "
               f"调节时间={result['settling_time']:5.1f}s, "
-              f"平均Δu={result['avg_du']*100:5.2f}cm")
+              f"平均Deltau={result['avg_du']*100:5.2f}cm")
 
     # R参数扫描
     print("\n【步骤4】R参数扫描（控制增量权重）...")
@@ -304,7 +305,7 @@ def parameter_sweep_analysis():
         r_results.append(result)
         print(f"  R={R:7.2f}: MAE={result['mae']*100:6.2f}cm, "
               f"调节时间={result['settling_time']:5.1f}s, "
-              f"平均Δu={result['avg_du']*100:5.2f}cm")
+              f"平均Deltau={result['avg_du']*100:5.2f}cm")
 
     # 预测时域扫描
     print("\n【步骤5】预测时域扫描...")
@@ -424,7 +425,7 @@ def visualize_comparison(pid_result, default_mpc, best_mpc,
     ax7.plot(default_mpc['time'][1:], default_mpc['du'][1:]*100, 'r--', linewidth=2, label='Default MPC')
     ax7.plot(best_mpc['time'][1:], best_mpc['du'][1:]*100, 'g-.', linewidth=2, label='Best MPC')
     ax7.set_xlabel('Time (s)')
-    ax7.set_ylabel('Control Increment |Δu| (cm)')
+    ax7.set_ylabel('Control Increment |Deltau| (cm)')
     ax7.set_title('Control Action Smoothness', fontweight='bold')
     ax7.legend()
     ax7.grid(True, alpha=0.3)
@@ -466,8 +467,8 @@ def visualize_comparison(pid_result, default_mpc, best_mpc,
     avg_du_values = [pid_result['avg_du']*100, default_mpc['avg_du']*100, best_mpc['avg_du']*100]
     max_du_values = [pid_result['max_du']*100, default_mpc['max_du']*100, best_mpc['max_du']*100]
 
-    bars3 = ax9.bar(x - width/2, avg_du_values, width, label='Average |Δu|', color='lightblue', alpha=0.8)
-    bars4 = ax9.bar(x + width/2, max_du_values, width, label='Max |Δu|', color='lightcoral', alpha=0.8)
+    bars3 = ax9.bar(x - width/2, avg_du_values, width, label='Average |Deltau|', color='lightblue', alpha=0.8)
+    bars4 = ax9.bar(x + width/2, max_du_values, width, label='Max |Deltau|', color='lightcoral', alpha=0.8)
 
     ax9.set_ylabel('Control Increment (cm)')
     ax9.set_xticks(x)
@@ -488,7 +489,7 @@ def visualize_comparison(pid_result, default_mpc, best_mpc,
 
     plt.tight_layout()
     plt.savefig('mpc_diagnosis.png', dpi=150, bbox_inches='tight')
-    print(f"\n✅ 诊断图已保存: mpc_diagnosis.png")
+    print(f"\n 诊断图已保存: mpc_diagnosis.png")
 
 
 def print_detailed_analysis(pid_result, default_mpc, best_mpc):
@@ -510,7 +511,7 @@ def print_detailed_analysis(pid_result, default_mpc, best_mpc):
 
     print("\n【2. 控制平滑度对比】")
     print("-" * 80)
-    print(f"{'控制器':<15} {'平均|Δu|(cm)':<15} {'最大|Δu|(cm)':<15}")
+    print(f"{'控制器':<15} {'平均|Deltau|(cm)':<15} {'最大|Deltau|(cm)':<15}")
     print("-" * 80)
     print(f"{'PID':<15} {pid_result['avg_du']*100:<15.2f} {pid_result['max_du']*100:<15.2f}")
     print(f"{'Default MPC':<15} {default_mpc['avg_du']*100:<15.2f} {default_mpc['max_du']*100:<15.2f}")
@@ -523,30 +524,30 @@ def print_detailed_analysis(pid_result, default_mpc, best_mpc):
     pid_vs_best = (best_mpc['mae'] - pid_result['mae']) / pid_result['mae'] * 100
 
     if mae_improvement > 5:
-        print(f"  ✅ MPC参数调优有效：MAE改善 {mae_improvement:.1f}%")
+        print(f"   MPC参数调优有效：MAE改善 {mae_improvement:.1f}%")
     else:
-        print(f"  ⚠️  MPC参数调优效果有限：MAE仅改善 {mae_improvement:.1f}%")
+        print(f"    MPC参数调优效果有限：MAE仅改善 {mae_improvement:.1f}%")
 
     if pid_vs_best > 0:
-        print(f"  ❌ 即使最佳MPC配置，仍比PID差 {pid_vs_best:.1f}%")
-        print(f"     → 原因可能：")
+        print(f"   即使最佳MPC配置，仍比PID差 {pid_vs_best:.1f}%")
+        print(f"     -> 原因可能：")
         print(f"       1. PID的积分作用能完全消除稳态误差")
         print(f"       2. MPC的一阶模型可能不够精确（无积分器）")
         print(f"       3. 测试场景（阶跃扰动）有利于PID")
     else:
-        print(f"  ✅ 最佳MPC配置超越PID {-pid_vs_best:.1f}%")
+        print(f"   最佳MPC配置超越PID {-pid_vs_best:.1f}%")
 
     print("\n【4. MPC局限性分析】")
     print("-" * 80)
-    print("  🔍 一阶MPC模型: H(s) = K/(τs+1)")
-    print("     → 无积分器，稳态增益有限")
-    print("     → 对常值扰动的抑制能力弱于带积分的PID")
+    print("   一阶MPC模型: H(s) = K/(taus+1)")
+    print("     -> 无积分器，稳态增益有限")
+    print("     -> 对常值扰动的抑制能力弱于带积分的PID")
     print()
-    print("  🔍 PID控制器: U(s)/E(s) = Kp + Ki/s")
-    print("     → 积分作用保证零稳态误差")
-    print("     → 对阶跃扰动有天然优势")
+    print("   PID控制器: U(s)/E(s) = Kp + Ki/s")
+    print("     -> 积分作用保证零稳态误差")
+    print("     -> 对阶跃扰动有天然优势")
     print()
-    print("  💡 改进方向：")
+    print("   改进方向：")
     print("     1. 使用IDZ模型的MPC（带积分器）")
     print("     2. 增加扰动观测器")
     print("     3. 偏移量自由设计（offset-free MPC）")

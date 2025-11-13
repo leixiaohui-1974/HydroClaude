@@ -243,7 +243,7 @@ class PerformanceProfiler:
             percentage = (metrics.total_time / total_time * 100)
             if percentage > 30:
                 suggestions.append(
-                    f"⚠ {func_name} 占用了 {percentage:.1f}% 的总时间，"
+                    f" {func_name} 占用了 {percentage:.1f}% 的总时间，"
                     f"建议重点优化此函数"
                 )
 
@@ -251,7 +251,7 @@ class PerformanceProfiler:
         for func_name, metrics in self.metrics.items():
             if metrics.call_count > 1000 and metrics.avg_time > 0.001:
                 suggestions.append(
-                    f"⚠ {func_name} 被调用了 {metrics.call_count} 次，"
+                    f" {func_name} 被调用了 {metrics.call_count} 次，"
                     f"平均耗时 {metrics.avg_time*1000:.2f}ms，"
                     f"考虑使用缓存或向量化优化"
                 )
@@ -271,12 +271,12 @@ class PerformanceProfiler:
             for func_name, metrics in self.metrics.items():
                 if metrics.memory_usage > 100:  # 超过100MB
                     suggestions.append(
-                        f"⚠ {func_name} 峰值内存使用 {metrics.memory_usage:.1f}MB，"
+                        f" {func_name} 峰值内存使用 {metrics.memory_usage:.1f}MB，"
                         f"建议检查是否有不必要的内存分配"
                     )
 
         if not suggestions:
-            suggestions.append("✓ 未发现明显的性能问题")
+            suggestions.append(" 未发现明显的性能问题")
 
         return suggestions
 
@@ -325,12 +325,12 @@ class SimulationOptimizer:
         # 稳定性检查
         if cfl >= 1.0:
             result['suggestions'].append(
-                f"⚠ CFL数 ({cfl:.3f}) >= 1.0，模拟可能不稳定！"
+                f" CFL数 ({cfl:.3f}) >= 1.0，模拟可能不稳定！"
                 f"建议减小dt至 {dx/c_max*0.9:.4f}s 或增大dx"
             )
         elif cfl > 0.9:
             result['suggestions'].append(
-                f"⚠ CFL数 ({cfl:.3f}) 接近上限，建议留有更多余量"
+                f" CFL数 ({cfl:.3f}) 接近上限，建议留有更多余量"
             )
         elif cfl < 0.3:
             result['suggestions'].append(
@@ -338,13 +338,13 @@ class SimulationOptimizer:
             )
         else:
             result['suggestions'].append(
-                f"✓ CFL数 ({cfl:.3f}) 合理，稳定性和效率平衡良好"
+                f" CFL数 ({cfl:.3f}) 合理，稳定性和效率平衡良好"
             )
 
         # 网格分辨率评估
         if nx < 50:
             result['suggestions'].append(
-                f"⚠ 网格点数 ({nx}) 较少，可能精度不足"
+                f" 网格点数 ({nx}) 较少，可能精度不足"
             )
         elif nx > 500:
             result['suggestions'].append(
@@ -531,7 +531,7 @@ if __name__ == "__main__":
     print("\n案例2 - 可能不稳定:")
     print(f"  效率评分: {result2['efficiency_score']:.1f}/100")
     print(f"  CFL数: {result2['cfl']:.3f}")
-    print(f"  稳定性: {'✓' if result2['is_stable'] else '✗'}")
+    print(f"  稳定性: {'' if result2['is_stable'] else ''}")
     print("  建议:")
     for sug in result2['suggestions']:
         print(f"    {sug}")

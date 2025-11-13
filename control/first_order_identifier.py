@@ -327,15 +327,15 @@ def test_first_order_identifier():
 
     plt.tight_layout()
     plt.savefig('first_order_identifier_test.png', dpi=150)
-    print(f"\n✅ 图片已保存: first_order_identifier_test.png")
+    print(f"\n 图片已保存: first_order_identifier_test.png")
 
     print("\n" + "=" * 80)
     if final_params and K_error < 20 and tau_error < 20:
-        print("✅ 测试通过：辨识精度优秀")
+        print(" 测试通过：辨识精度优秀")
     elif final_params and K_error < 50 and tau_error < 50:
         print("⭕ 测试通过：辨识精度可接受")
     else:
-        print("❌ 测试失败：辨识精度不足")
+        print(" 测试失败：辨识精度不足")
     print("=" * 80)
 
 

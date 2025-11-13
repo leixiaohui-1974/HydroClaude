@@ -303,11 +303,11 @@ class FrequencyAnalyzer:
         
         print("\n3. 稳定性评估:")
         if margins['gain_margin_db'] > 6 and margins['phase_margin_deg'] > 45:
-            print("  ✅ 系统稳定性良好（GM>6dB, PM>45°）")
+            print("   系统稳定性良好（GM>6dB, PM>45°）")
         elif margins['gain_margin_db'] > 3 and margins['phase_margin_deg'] > 30:
-            print("  ⚠️  系统稳定性一般（GM>3dB, PM>30°）")
+            print("  ️  系统稳定性一般（GM>3dB, PM>30°）")
         else:
-            print("  ❌ 系统稳定性差（GM<3dB 或 PM<30°）")
+            print("   系统稳定性差（GM<3dB 或 PM<30°）")
         
         print("="*60)
 
@@ -441,4 +441,4 @@ if __name__ == "__main__":
     # 完整报告
     analyzer.print_report()
     
-    print("\n✓ 测试完成")
+    print("\n 测试完成")

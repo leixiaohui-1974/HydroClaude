@@ -1,0 +1,219 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+MacCormack v2.0 - Dam Break验证
+
+对比Ritter解析解，评估非恒定流精度
+"""
+
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import sys
+sys.path.insert(0, '/workspace')
+
+from solvers.maccormack_solver_v2 import MacCormackSolverV2
+
+
+def ritter_solution(x, t, h_L, h_R, x_dam, g=9.81):
+    """
+    Ritter解析解（理想溃坝）
+    
+    Args:
+        x: 位置数组
+        t: 时间
+        h_L: 上游初始水深
+        h_R: 下游初始水深
+        x_dam: 坝位置
+        g: 重力加速度
+    
+    Returns:
+        h: 水深分布
+    """
+    h = np.zeros_like(x)
+    c_L = np.sqrt(g * h_L)
+    
+    # 波前位置
+    x_front = x_dam + 2.0 * c_L * t
+    
+    # 波尾位置
+    x_tail = x_dam - c_L * t
+    
+    for i, xi in enumerate(x):
+        if xi < x_tail:
+            # 上游未扰动区
+            h[i] = h_L
+        elif xi > x_front:
+            # 下游未扰动区
+            h[i] = h_R
+        else:
+            # 稀疏波区
+            h[i] = (1.0 / (9.0 * g)) * (2.0 * c_L - (xi - x_dam) / t)**2
+    
+    return h
+
+
+def test_dam_break():
+    """Dam Break测试"""
+    
+    print("="*80)
+    print("MacCormack v2.0 - Dam Break验证")
+    print("="*80)
+    
+    # 参数
+    width = 10.0
+    length = 200.0  # 200m渠道
+    n_cells = 200   # 精细网格
+    manning_n = 0.0  # 无摩阻（理想情况）
+    slope = 0.0      # 水平渠道
+    g = 9.81
+    
+    x_dam = length / 2.0  # 坝在中间
+    h_L = 10.0  # 上游10m
+    h_R = 1.0   # 下游1m
+    
+    print(f"\n配置:")
+    print(f"  渠道长度: {length} m")
+    print(f"  网格数: {n_cells}")
+    print(f"  dx = {length/n_cells:.2f} m")
+    print(f"  坝位置: x = {x_dam} m")
+    print(f"  上游水深: {h_L} m")
+    print(f"  下游水深: {h_R} m")
+    
+    # 创建求解器
+    solver = MacCormackSolverV2(
+        width=width,
+        length=length,
+        n_cells=n_cells,
+        manning_n=manning_n,
+        slope=slope,
+        g=g,
+        cfl=0.8
+    )
+    
+    # 初始条件：阶跃
+    x_centers = solver.x
+    h_init = np.where(x_centers < x_dam, h_L, h_R)
+    Q_init = np.zeros(n_cells)
+    
+    # 边界条件：自由（外推）
+    bc_left = {'type': 'h', 'value': h_L}
+    bc_right = {'type': 'h', 'value': h_R}
+    
+    solver.initialize(h_init, Q_init, bc_left, bc_right)
+    
+    # 时间推进
+    t_target = 2.0  # 2秒
+    
+    print(f"\n时间推进至 t={t_target}s:")
+    
+    step_count = 0
+    while solver.t < t_target and step_count < 10000:
+        h, Q = solver.step()
+        step_count += 1
+        
+        # 检查NaN
+        if np.any(np.isnan(h)) or np.any(np.isnan(Q)):
+            print(f"   步骤{step_count}出现NaN!")
+            break
+        
+        if step_count % 100 == 0:
+            state = solver.get_state()
+            print(f"  t={state['t']:5.2f}s, 步数={step_count}, "
+                  f"质量误差={state['mass_error']:.4f}%")
+    
+    # 最终状态
+    state = solver.get_state()
+    t_final = state['t']
+    h_numerical = state['h']
+    
+    print(f"\n数值求解完成:")
+    print(f"  最终时间: {t_final:.3f} s")
+    print(f"  总步数: {step_count}")
+    print(f"  质量误差: {state['mass_error']:.6f}%")
+    
+    # 计算解析解
+    h_analytical = ritter_solution(x_centers, t_final, h_L, h_R, x_dam, g)
+    
+    # 误差评估
+    # 波前位置（h > 1.5倍h_R的最右端）
+    idx_front_num = np.where(h_numerical > 1.5 * h_R)[0]
+    idx_front_ana = np.where(h_analytical > 1.5 * h_R)[0]
+    
+    if len(idx_front_num) > 0 and len(idx_front_ana) > 0:
+        x_front_num = x_centers[idx_front_num[-1]]
+        x_front_ana = x_centers[idx_front_ana[-1]]
+        front_error = abs(x_front_num - x_front_ana)
+        front_error_pct = front_error / x_front_ana * 100.0
+        
+        print(f"\n波前分析:")
+        print(f"  解析波前位置: {x_front_ana:.2f} m")
+        print(f"  数值波前位置: {x_front_num:.2f} m")
+        print(f"  波前误差: {front_error:.2f} m ({front_error_pct:.2f}%)")
+    
+    # RMSE
+    rmse = np.sqrt(np.mean((h_numerical - h_analytical)**2))
+    rmse_pct = rmse / h_L * 100.0
+    
+    print(f"\n整体误差:")
+    print(f"  RMSE: {rmse:.4f} m ({rmse_pct:.2f}%)")
+    
+    # 可视化
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8))
+    
+    # 水深对比
+    ax1.plot(x_centers, h_analytical, 'k-', linewidth=2, label='Ritter解析解')
+    ax1.plot(x_centers, h_numerical, 'r--', linewidth=1.5, label='MacCormack v2.0')
+    ax1.axvline(x_dam, color='gray', linestyle=':', label='坝位置')
+    ax1.set_xlabel('位置 (m)')
+    ax1.set_ylabel('水深 (m)')
+    ax1.set_title(f'Dam Break at t={t_final:.2f}s')
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+    
+    # 误差分布
+    error_profile = np.abs(h_numerical - h_analytical)
+    ax2.plot(x_centers, error_profile, 'b-', linewidth=1.5)
+    ax2.axvline(x_dam, color='gray', linestyle=':')
+    ax2.set_xlabel('位置 (m)')
+    ax2.set_ylabel('绝对误差 (m)')
+    ax2.set_title(f'误差分布 (RMSE={rmse:.4f}m, {rmse_pct:.2f}%)')
+    ax2.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.savefig('/workspace/maccormack_v2_dam_break.png', dpi=150)
+    print(f"\n  图像已保存: maccormack_v2_dam_break.png")
+    
+    # 成功标准
+    print(f"\n 成功标准评估:")
+    print(f"  质量守恒 < 1%: {'' if abs(state['mass_error']) < 1.0 else ''} ({state['mass_error']:.4f}%)")
+    print(f"  波前误差 < 20%: {'' if front_error_pct < 20 else ''} ({front_error_pct:.2f}%)")
+    print(f"  RMSE < 15%: {'' if rmse_pct < 15 else ''} ({rmse_pct:.2f}%)")
+    print(f"  数值稳定: {' 无NaN' if not np.any(np.isnan(h_numerical)) else ' 有NaN'}")
+    
+    # 总评
+    all_pass = (
+        abs(state['mass_error']) < 1.0 and
+        front_error_pct < 20 and
+        rmse_pct < 15 and
+        not np.any(np.isnan(h_numerical))
+    )
+    
+    print(f"\n{'='*80}")
+    if all_pass:
+        print(" MacCormack v2.0 - Dam Break测试 **通过** ")
+    else:
+        print("️ MacCormack v2.0 - Dam Break测试部分通过")
+    print("="*80)
+    
+    return all_pass
+
+
+if __name__ == "__main__":
+    success = test_dam_break()
+    
+    if success:
+        print("\n MacCormack v2.0已准备好用于Phase 0！")
+    else:
+        print("\n⏭️ 需要进一步调优")

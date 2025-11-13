@@ -3,6 +3,14 @@
 
 目的：验证通过配置文件系统，supercritical边界是否正常工作
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 import json
 import tempfile
 import numpy as np
@@ -28,10 +36,10 @@ def test_config_driven_supercritical():
     print("="*80)
     print(f"\n目标上游条件:")
     print(f"  水深 h = {h_upstream:.3f} m")
-    print(f"  流量 Q = {Q_upstream:.2f} m³/s")
+    print(f"  流量 Q = {Q_upstream:.2f} m^3/s")
     print(f"  流速 u = {u_upstream:.3f} m/s")
     print(f"  Froude数 Fr = {Fr_upstream:.3f}")
-    print(f"  状态: {'急流 ✅' if Fr_upstream > 1 else '缓流 ❌'}")
+    print(f"  状态: {'急流 ' if Fr_upstream > 1 else '缓流 '}")
 
     # 创建初始条件文件
     dx = L / n_cells
@@ -116,7 +124,7 @@ def test_config_driven_supercritical():
 
         print(f"\n初始状态:")
         print(f"  h[0] = {solver.h[0]:.6f} m")
-        print(f"  Q[0] = {solver.Q[0]:.6f} m³/s")
+        print(f"  Q[0] = {solver.Q[0]:.6f} m^3/s")
         h0 = solver.h[0]
         Q0 = solver.Q[0]
         u0 = Q0 / (h0 * B) if h0 > 1e-6 else 0.0
@@ -140,18 +148,18 @@ def test_config_driven_supercritical():
         print(f"最终结果 (t={solver.t:.2f}s):")
         print(f"="*80)
         print(f"  h[0] = {h_final:.6f} m (目标={h_upstream:.6f}, 误差={h_error:.2f}%)")
-        print(f"  Q[0] = {Q_final:.6f} m³/s (目标={Q_upstream:.6f}, 误差={Q_error:.2f}%)")
+        print(f"  Q[0] = {Q_final:.6f} m^3/s (目标={Q_upstream:.6f}, 误差={Q_error:.2f}%)")
         print(f"  u[0] = {u_final:.6f} m/s")
         print(f"  Fr[0] = {Fr_final:.6f}")
-        print(f"  状态: {'急流 ✅' if Fr_final > 0.9 else '缓流 ❌'}")
+        print(f"  状态: {'急流 ' if Fr_final > 0.9 else '缓流 '}")
 
         # 验收
         tolerance = 10.0
         if h_error < tolerance and Q_error < tolerance and Fr_final > 0.9:
-            print(f"\n✅ 配置驱动的Supercritical边界条件正常工作！")
+            print(f"\n 配置驱动的Supercritical边界条件正常工作！")
             return True
         else:
-            print(f"\n❌ 配置驱动的Supercritical边界条件失效！")
+            print(f"\n 配置驱动的Supercritical边界条件失效！")
             if h_error >= tolerance:
                 print(f"   水深误差: {h_error:.2f}% >= {tolerance}%")
             if Q_error >= tolerance:

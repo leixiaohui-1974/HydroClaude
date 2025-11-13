@@ -51,18 +51,18 @@ from output_helper import get_output_path, save_table, save_figure
     # Add save confirmations
     content = content.replace(
         'print(f"  保存图表: {fig_path}")',
-        'print(f"  ✓ Saved figure: {os.path.basename(fig_path)}")'
+        'print(f"   Saved figure: {os.path.basename(fig_path)}")'
     )
 
     content = content.replace(
         'print(f"  保存参数对比图: {fig_path}")',
-        'print(f"  ✓ Saved figure: {os.path.basename(fig_path)}")'
+        'print(f"   Saved figure: {os.path.basename(fig_path)}")'
     )
 
     with open(script_path, 'w') as f:
         f.write(content)
 
-    print(f"✓ Modified {script_path}")
+    print(f" Modified {script_path}")
 
 
 def modify_script_05():
@@ -100,13 +100,13 @@ from output_helper import get_output_path, save_table, save_figure
     # Add save confirmations
     content = content.replace(
         'print(f"  Saved: {fig_path}")',
-        'print(f"  ✓ Saved figure: {os.path.basename(fig_path)}")'
+        'print(f"   Saved figure: {os.path.basename(fig_path)}")'
     )
 
     with open(script_path, 'w') as f:
         f.write(content)
 
-    print(f"✓ Modified {script_path}")
+    print(f" Modified {script_path}")
 
 
 def modify_script_06():
@@ -159,7 +159,7 @@ from output_helper import get_output_path, save_animation
     with open(script_path, 'w') as f:
         f.write(content)
 
-    print(f"✓ Modified {script_path}")
+    print(f" Modified {script_path}")
 
 
 if __name__ == '__main__':
@@ -172,5 +172,5 @@ if __name__ == '__main__':
     modify_script_06()
 
     print("=" * 80)
-    print("✓ All scripts modified successfully!")
+    print(" All scripts modified successfully!")
     print("=" * 80)

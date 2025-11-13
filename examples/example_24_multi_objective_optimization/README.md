@@ -41,7 +41,9 @@ PYTHONPATH=../.. python demo_multi_objective.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_24_multi_objective_optimization_control.gif`
+
+![动画](outputs\animations\example_24_multi_objective_optimization_control.gif)
 
 ## 技术要点
 

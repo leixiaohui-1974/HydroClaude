@@ -6,13 +6,13 @@
 对比order=1 (一阶) vs order=2 (二阶MUSCL)对MacDonald场景质量守恒的影响
 
 背景：经过两次源项处理方法失败后的反思
-- Interface方法：61% → 114% ❌
-- Strang Splitting：61% → 65% ❌
+- Interface方法：61% -> 114% 
+- Strang Splitting：61% -> 65% 
 
 重要发现：源项处理方法可能不是主要问题！
 真正的问题可能是**空间离散精度太低**（一阶的数值耗散）
 
-目标：验证提高空间精度能否显著改善质量守恒（60% → 20-30%）
+目标：验证提高空间精度能否显著改善质量守恒（60% -> 20-30%）
 """
 
 import sys
@@ -20,7 +20,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_spatial_order_comparison():
@@ -43,8 +49,8 @@ def test_spatial_order_comparison():
     print(f"  单元数: {n_cells}")
     print(f"  底坡: 0.002")
     print(f"  Manning n: 0.03")
-    print(f"  边界: Q={Q_bc} m³/s, h={h_c:.4f} m (临界水深)")
-    print(f"\n预期：二阶精度应显著改善质量守恒（目标：60% → 20-30%）")
+    print(f"  边界: Q={Q_bc} m^3/s, h={h_c:.4f} m (临界水深)")
+    print(f"\n预期：二阶精度应显著改善质量守恒（目标：60% -> 20-30%）")
     print(f"\n理由：一阶精度的数值耗散是质量误差的主要来源")
 
     # 测试1: order=1（一阶精度）
@@ -91,7 +97,7 @@ def test_spatial_order_comparison():
 
     print(f"\n结果（order=1）:")
     print(f"  质量误差: {mass_error_1:.2f}%")
-    print(f"  平均流量: {Q_avg_1:.4f} m³/s (目标: {Q_bc})")
+    print(f"  平均流量: {Q_avg_1:.4f} m^3/s (目标: {Q_bc})")
     print(f"  平均水深: {h_avg_1:.4f} m")
     print(f"  流量误差: {abs(Q_avg_1 - Q_bc)/Q_bc*100:.2f}%")
 
@@ -131,7 +137,7 @@ def test_spatial_order_comparison():
 
     print(f"\n结果（order=2）:")
     print(f"  质量误差: {mass_error_2:.2f}%")
-    print(f"  平均流量: {Q_avg_2:.4f} m³/s (目标: {Q_bc})")
+    print(f"  平均流量: {Q_avg_2:.4f} m^3/s (目标: {Q_bc})")
     print(f"  平均水深: {h_avg_2:.4f} m")
     print(f"  流量误差: {abs(Q_avg_2 - Q_bc)/Q_bc*100:.2f}%")
 
@@ -157,33 +163,33 @@ def test_spatial_order_comparison():
 
     # 质量守恒评估
     if mass_error_2 < 5.0:
-        print(f"  ✅ 二阶精度达到优秀质量守恒！ (误差<5%)")
+        print(f"   二阶精度达到优秀质量守恒！ (误差<5%)")
     elif mass_error_2 < 20.0:
         if improvement_ratio > 50:
-            print(f"  ✅ 二阶精度显著改善质量守恒！ (误差<20%，改善>{improvement_ratio:.0f}%)")
+            print(f"   二阶精度显著改善质量守恒！ (误差<20%，改善>{improvement_ratio:.0f}%)")
         else:
-            print(f"  ✅ 二阶精度达到良好质量守恒 (误差<20%)")
+            print(f"   二阶精度达到良好质量守恒 (误差<20%)")
     elif mass_error_2 < 30.0:
         if improvement_ratio > 30:
-            print(f"  ✅ 二阶精度明显改善质量守恒 (误差<30%，改善>{improvement_ratio:.0f}%)")
+            print(f"   二阶精度明显改善质量守恒 (误差<30%，改善>{improvement_ratio:.0f}%)")
         else:
-            print(f"  ⚠️ 二阶精度有所改善但不够 (误差<30%)")
+            print(f"  ️ 二阶精度有所改善但不够 (误差<30%)")
     elif abs(mass_error_2) < abs(mass_error_1) * 0.7:
-        print(f"  ⚠️ 二阶精度略有改善 (改善<30%)")
+        print(f"  ️ 二阶精度略有改善 (改善<30%)")
     else:
-        print(f"  ✗ 二阶精度无明显改善")
+        print(f"   二阶精度无明显改善")
 
     # 流量守恒评估
     if abs(Q_avg_2 - Q_bc) / Q_bc < 0.05:
-        print(f"  ✅ 二阶精度流量守恒优秀 (<5%)")
+        print(f"   二阶精度流量守恒优秀 (<5%)")
     elif abs(Q_avg_2 - Q_bc) / Q_bc < 0.15:
-        print(f"  ✅ 二阶精度流量守恒良好 (<15%)")
+        print(f"   二阶精度流量守恒良好 (<15%)")
     elif abs(Q_avg_2 - Q_bc) < abs(Q_avg_1 - Q_bc) * 0.5:
-        print(f"  ✅ 二阶精度流量显著改善 (改善>50%)")
+        print(f"   二阶精度流量显著改善 (改善>50%)")
     elif abs(Q_avg_2 - Q_bc) < abs(Q_avg_1 - Q_bc):
-        print(f"  ⚠️ 二阶精度流量略有改善")
+        print(f"  ️ 二阶精度流量略有改善")
     else:
-        print(f"  ✗ 二阶精度流量无改善")
+        print(f"   二阶精度流量无改善")
 
     print("\n" + "="*80)
     print("技术分析:")

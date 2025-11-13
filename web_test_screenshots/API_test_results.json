@@ -1,0 +1,37 @@
+{
+  "timestamp": "2025-11-12T21:29:45.898811",
+  "tests": [
+    {
+      "name": "Health Check API",
+      "passed": true,
+      "details": "Status: healthy",
+      "timestamp": "2025-11-12T21:29:47.960814",
+      "response_status": 200,
+      "response_time": 2.059177
+    },
+    {
+      "name": "Engine Info API",
+      "passed": false,
+      "details": "HTTP 404",
+      "timestamp": "2025-11-12T21:29:50.019243"
+    },
+    {
+      "name": "Create Simulation Task API",
+      "passed": false,
+      "details": "HTTP 404: {\"detail\":\"Not Found\"}",
+      "timestamp": "2025-11-12T21:29:52.041740"
+    },
+    {
+      "name": "List Simulations API",
+      "passed": false,
+      "details": "HTTP 404",
+      "timestamp": "2025-11-12T21:29:54.108586"
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "passed": 1,
+    "failed": 3,
+    "success_rate": 25.0
+  }
+}

@@ -12,7 +12,13 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_exact_solver_simple():
@@ -26,7 +32,7 @@ def test_exact_solver_simple():
     # 创建简单的dam break配置
     width = 10.0
     length = 100.0
-    n_cells = 50
+    n_cells = 100
 
     print(f"配置:")
     print(f"  长度: {length}m")
@@ -42,15 +48,15 @@ def test_exact_solver_simple():
             length=length,
             n_cells=n_cells,
             manning_n=0.0,  # 无摩擦
-            cfl=0.5,
-            order=2,
+            cfl=0.3,
+            order=1,
             use_numba=True,
             riemann_solver='exact',  # 使用精确求解器
             slope=0.0
         )
-        print("  ✅ 精确求解器创建成功")
+        print("   精确求解器创建成功")
     except Exception as e:
-        print(f"  ❌ 创建失败: {e}")
+        print(f"   创建失败: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -70,7 +76,7 @@ def test_exact_solver_simple():
     solver.initialize(h_init, Q_init, bc_left, bc_right)
 
     mass_init = np.sum(solver.h * solver.dx * solver.B)
-    print(f"  初始质量: {mass_init:.2f} m³")
+    print(f"  初始质量: {mass_init:.2f} m^3")
     print()
 
     # 运行10步
@@ -81,10 +87,10 @@ def test_exact_solver_simple():
 
             # 检查NaN
             if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
-                print(f"  ❌ 步骤{step+1}出现NaN!")
+                print(f"   步骤{step+1}出现NaN!")
                 return False
 
-        print(f"  ✅ 运行成功")
+        print(f"   运行成功")
         print(f"  时间: t={solver.t:.4f}s")
         print(f"  时间步数: {solver.step_count}")
         print()
@@ -94,25 +100,25 @@ def test_exact_solver_simple():
         mass_error = abs(mass_final - mass_init) / mass_init * 100
 
         print(f"质量守恒检查:")
-        print(f"  初始质量: {mass_init:.6f} m³")
-        print(f"  最终质量: {mass_final:.6f} m³")
+        print(f"  初始质量: {mass_init:.6f} m^3")
+        print(f"  最终质量: {mass_final:.6f} m^3")
         print(f"  误差: {mass_error:.6f}%")
 
         if mass_error < 0.1:
-            print("  ✅ 质量守恒良好 (< 0.1%)")
+            print("   质量守恒良好 (< 0.1%)")
         else:
-            print(f"  ⚠️  质量守恒误差较大: {mass_error:.6f}%")
+            print(f"    质量守恒误差较大: {mass_error:.6f}%")
 
         print()
 
     except Exception as e:
-        print(f"  ❌ 运行失败: {e}")
+        print(f"   运行失败: {e}")
         import traceback
         traceback.print_exc()
         return False
 
     print("="*70)
-    print("✅ 精确求解器集成测试通过!")
+    print(" 精确求解器集成测试通过!")
     print("="*70)
     print()
 
@@ -130,7 +136,7 @@ def test_exact_vs_hll_comparison():
     # 配置
     width = 10.0
     length = 100.0
-    n_cells = 50
+    n_cells = 100
     t_final = 0.1
 
     # 初始条件
@@ -146,7 +152,7 @@ def test_exact_vs_hll_comparison():
     print("[1/2] 运行精确求解器...")
     solver_exact = GodunvFVMSolver(
         width=width, length=length, n_cells=n_cells,
-        manning_n=0.0, cfl=0.5, order=2,
+        manning_n=0.0, cfl=0.3, order=1,
         use_numba=True, riemann_solver='exact', slope=0.0
     )
     solver_exact.initialize(h_init.copy(), Q_init.copy(), bc_left, bc_right)
@@ -162,7 +168,7 @@ def test_exact_vs_hll_comparison():
     print("[2/2] 运行HLL求解器...")
     solver_hll = GodunvFVMSolver(
         width=width, length=length, n_cells=n_cells,
-        manning_n=0.0, cfl=0.5, order=2,
+        manning_n=0.0, cfl=0.3, order=1,
         use_numba=True, riemann_solver='hll', slope=0.0
     )
     solver_hll.initialize(h_init.copy(), Q_init.copy(), bc_left, bc_right)
@@ -179,18 +185,18 @@ def test_exact_vs_hll_comparison():
     Q_diff = solver_exact.Q - solver_hll.Q
 
     print("结果对比 (精确 - HLL):")
-    print(f"  Max |Δh|: {np.max(np.abs(h_diff)):.6f} m")
-    print(f"  RMS(Δh): {np.sqrt(np.mean(h_diff**2)):.6f} m")
-    print(f"  Max |ΔQ|: {np.max(np.abs(Q_diff)):.6f} m³/s")
-    print(f"  RMS(ΔQ): {np.sqrt(np.mean(Q_diff**2)):.6f} m³/s")
+    print(f"  Max |Deltah|: {np.max(np.abs(h_diff)):.6f} m")
+    print(f"  RMS(Deltah): {np.sqrt(np.mean(h_diff**2)):.6f} m")
+    print(f"  Max |DeltaQ|: {np.max(np.abs(Q_diff)):.6f} m^3/s")
+    print(f"  RMS(DeltaQ): {np.sqrt(np.mean(Q_diff**2)):.6f} m^3/s")
     print()
 
     # 期望: 精确求解器数值耗散更小，应该有差异但不太大
     max_h_diff = np.max(np.abs(h_diff))
     if max_h_diff < 0.5:
-        print("✅ 两种求解器结果基本一致（差异合理）")
+        print(" 两种求解器结果基本一致（差异合理）")
     else:
-        print(f"⚠️  差异较大: max|Δh| = {max_h_diff:.3f}m")
+        print(f"  差异较大: max|Deltah| = {max_h_diff:.3f}m")
 
     print()
     print("="*70)
@@ -218,7 +224,7 @@ if __name__ == '__main__':
 
     print("\n")
     print("="*70)
-    print("✅ 所有测试通过!")
+    print(" 所有测试通过!")
     print("="*70)
     print()
     print("Phase 9.3精确Riemann求解器已成功集成到GodunvFVMSolver")

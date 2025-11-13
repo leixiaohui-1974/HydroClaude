@@ -3,6 +3,14 @@ MacDonald Test 5 完整测试
 
 基于诊断结果（Manning摩阻工作正常），运行完整的Test 5配置
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 import numpy as np
 import tempfile
 from pathlib import Path
@@ -68,7 +76,7 @@ def test_macdonald5_full():
     print(f"  渠宽 B = {B:.1f} m")
     print(f"  底坡 S0 = {S0}")
     print(f"  Manning系数 n = {n}")
-    print(f"  流量 Q = {Q:.2f} m³/s")
+    print(f"  流量 Q = {Q:.2f} m^3/s")
 
     print(f"\n特征水深:")
     print(f"  正常水深 h_n = {h_normal:.4f} m")
@@ -81,7 +89,7 @@ def test_macdonald5_full():
     R_exact = (B * h_normal) / (B + 2 * h_normal)
     print(f"\n宽浅河道验证:")
     print(f"  水力半径(精确) R = {R_exact:.4f} m")
-    print(f"  水力半径(近似) R ≈ h = {R_approx:.4f} m")
+    print(f"  水力半径(近似) R ~= h = {R_approx:.4f} m")
     print(f"  近似误差: {abs(R_exact - R_approx)/R_exact * 100:.2f}%")
 
     # 初始条件
@@ -168,7 +176,7 @@ def test_macdonald5_full():
 
     # 检查NaN
     if np.any(np.isnan(h_final)) or np.any(np.isnan(Q_final)):
-        print("\n❌ 模拟出现NaN")
+        print("\n 模拟出现NaN")
         return False
 
     # 分析结果
@@ -201,23 +209,23 @@ def test_macdonald5_full():
 
     # 标准1：水深误差
     if h_error < 5.0:  # 放宽到5%（原2%）
-        print(f"  ✅ 水深误差 {h_error:.2f}% < 5%")
+        print(f"   水深误差 {h_error:.2f}% < 5%")
     else:
-        print(f"  ❌ 水深误差 {h_error:.2f}% >= 5%")
+        print(f"   水深误差 {h_error:.2f}% >= 5%")
         success = False
 
     # 标准2：质量守恒
     if mass_error < 5.0:  # 放宽到5%（原1%）
-        print(f"  ✅ 质量守恒误差 {mass_error:.2f}% < 5%")
+        print(f"   质量守恒误差 {mass_error:.2f}% < 5%")
     else:
-        print(f"  ❌ 质量守恒误差 {mass_error:.2f}% >= 5%")
+        print(f"   质量守恒误差 {mass_error:.2f}% >= 5%")
         success = False
 
     # 标准3：Froude数
     if Fr_mean < 1.0:
-        print(f"  ✅ 平均Froude数 {Fr_mean:.3f} < 1 (缓流)")
+        print(f"   平均Froude数 {Fr_mean:.3f} < 1 (缓流)")
     else:
-        print(f"  ❌ 平均Froude数 {Fr_mean:.3f} >= 1")
+        print(f"   平均Froude数 {Fr_mean:.3f} >= 1")
         success = False
 
     # 清理临时文件
@@ -225,9 +233,9 @@ def test_macdonald5_full():
     config_file_path.unlink()
 
     if success:
-        print(f"\n✅ MacDonald Test 5 通过！")
+        print(f"\n MacDonald Test 5 通过！")
     else:
-        print(f"\n⚠️ MacDonald Test 5 未完全通过验收标准")
+        print(f"\n️ MacDonald Test 5 未完全通过验收标准")
 
     return success
 

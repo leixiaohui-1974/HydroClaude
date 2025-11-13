@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
@@ -54,7 +57,7 @@ def example_pipe_rk4():
     ax.plot(time, flows, 'g-', linewidth=2)
     ax.axvline(x=10, color='r', linestyle='--', alpha=0.5)
     ax.set_xlabel('时间 (秒)')
-    ax.set_ylabel('流量 (m³/s)')
+    ax.set_ylabel('流量 (m^3/s)')
     ax.set_title('平均流量变化')
     ax.grid(True, alpha=0.3)
 
@@ -68,15 +71,15 @@ def example_pipe_rk4():
     ax = axes[1, 1]
     ax.plot(pipe.x, pipe.hydraulic_state.Q, 'g-', linewidth=2)
     ax.set_xlabel('距离 (m)')
-    ax.set_ylabel('流量 (m³/s)')
+    ax.set_ylabel('流量 (m^3/s)')
     ax.set_title('流量空间分布（最终时刻）')
     ax.grid(True, alpha=0.3)
 
     plt.tight_layout()
     plt.savefig('pipe_rk4_waterhammer.png', dpi=150, bbox_inches='tight')
-    print("\n✓ 图表已保存: pipe_rk4_waterhammer.png")
-    print(f"✓ 最大压力: {np.max(pressures):.2f} m")
-    print(f"✓ 压力波动: {np.max(pressures) - np.min(pressures):.2f} m")
+    print("\n 图表已保存: pipe_rk4_waterhammer.png")
+    print(f" 最大压力: {np.max(pressures):.2f} m")
+    print(f" 压力波动: {np.max(pressures) - np.min(pressures):.2f} m")
 
 if __name__ == "__main__":
     example_pipe_rk4()

@@ -4,7 +4,7 @@ import numpy as np
 
 class HardyCrossSolver:
     """
-    Hardy-Cross方法求解环状管网
+    Hardy-Cross
     """
 
     def __init__(self, max_iter: int = 50, tolerance: float = 1e-4):
@@ -14,7 +14,7 @@ class HardyCrossSolver:
     def solve(self, topology: NetworkTopology,
              head_loss_func: callable) -> Dict[str, float]:
         print("\n" + "="*60)
-        print("Hardy-Cross环路法求解")
+        print("Hardy-Cross")
         print("="*60)
 
         self._initialize_flows(topology)
@@ -32,12 +32,12 @@ class HardyCrossSolver:
                 max_correction = max(max_correction, abs(delta_Q))
 
             if max_correction < self.tolerance:
-                print(f"✓ 收敛于第 {iteration+1} 次迭代")
-                print(f"  最大流量修正: {max_correction:.6f} m³/s")
+                print(f"[OK]  {iteration+1} ")
+                print(f"  : {max_correction:.6f} m³/s")
                 break
 
             if iteration % 10 == 0:
-                print(f"  迭代 {iteration}: 最大修正 = {max_correction:.6f}")
+                print(f"   {iteration}:  = {max_correction:.6f}")
 
         print("="*60 + "\n")
 

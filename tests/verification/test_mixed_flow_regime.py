@@ -3,21 +3,21 @@
 """
 混合流态处理验证测试
 
-目标：验证求解器在Fr≈1过渡区的稳定性和准确性
+目标：验证求解器在Fr~=1过渡区的稳定性和准确性
 
 混合流态是一维水力学的经典难题：
 - Fr < 1: 缓流（亚临界）
 - Fr = 1: 临界流
 - Fr > 1: 急流（超临界）
-- Fr ≈ 1: 过渡区（数值不稳定高发区）
+- Fr ~= 1: 过渡区（数值不稳定高发区）
 
 商业软件（HEC-RAS, MIKE 11）承认："当流态经过临界深度时，
 大多数非恒定流求解算法会变得不稳定"
 
 测试内容：
 1. Fr=0.8-1.2过渡区稳定性
-2. 急流→缓流转换（水跃）
-3. 缓流→急流转换（临界流）
+2. 急流->缓流转换（水跃）
+3. 缓流->急流转换（临界流）
 4. 临界深自动识别
 
 参考：
@@ -41,13 +41,13 @@ class TestMixedFlowRegime:
 
     def test_critical_flow_transition(self):
         """
-        测试1：临界流过渡（Fr≈1）
+        测试1：临界流过渡（Fr~=1）
 
         场景：流过临界深度
         验证：数值稳定性、无振荡
         """
         print("\n" + "="*70)
-        print("混合流态 Test 1: 临界流过渡 (Fr≈1)")
+        print("混合流态 Test 1: 临界流过渡 (Fr~=1)")
         print("="*70)
 
         from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
@@ -89,7 +89,7 @@ class TestMixedFlowRegime:
         Fr_init = u_init / np.sqrt(g * h_init)
 
         print(f"\n初始状态:")
-        print(f"  初始水深: {h_init[0]:.3f}m (0.95 × h_c)")
+        print(f"  初始水深: {h_init[0]:.3f}m (0.95 x h_c)")
         print(f"  初始Froude数: Fr={Fr_init[0]:.3f} (超临界)")
 
         # 运行模拟
@@ -138,13 +138,13 @@ class TestMixedFlowRegime:
         assert h_variation < 0.5, f"水深变化过大: {h_variation*100}%"
 
         if crossed_critical:
-            print(f"\n✅ PASSED: 成功穿过临界流区域 (Fr≈1)，数值稳定")
+            print(f"\n PASSED: 成功穿过临界流区域 (Fr~=1)，数值稳定")
         else:
-            print(f"\n✅ PASSED: 数值稳定（未穿过临界区）")
+            print(f"\n PASSED: 数值稳定（未穿过临界区）")
 
     def test_subcritical_to_supercritical(self):
         """
-        测试2：缓流→急流转换
+        测试2：缓流->急流转换
 
         场景：渠道收缩或底坡增加导致流态转换
         验证：临界深自动识别
@@ -152,7 +152,7 @@ class TestMixedFlowRegime:
         更新：变坡度支持已实现（2025-10-31）
         """
         print("\n" + "="*70)
-        print("混合流态 Test 2: 缓流→急流转换")
+        print("混合流态 Test 2: 缓流->急流转换")
         print("="*70)
 
         from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
@@ -223,7 +223,7 @@ class TestMixedFlowRegime:
         u_final = solver.Q / A_final
         Fr_final = u_final / np.sqrt(g * h_final)
 
-        # 找到临界点位置（Fr≈1）
+        # 找到临界点位置（Fr~=1）
         critical_idx = np.argmin(np.abs(Fr_final - 1.0))
         h_critical = h_final[critical_idx]
         Fr_critical = Fr_final[critical_idx]
@@ -240,7 +240,7 @@ class TestMixedFlowRegime:
         assert Fr_final[-1] > 0.5, "下游流态正常"
         assert np.min(h_final) > 0, "无负水深"
 
-        print(f"\n✅ PASSED: 缓流→急流转换模拟成功")
+        print(f"\n PASSED: 缓流->急流转换模拟成功")
 
     def test_froude_number_range_stability(self):
         """
@@ -321,7 +321,7 @@ class TestMixedFlowRegime:
                 'Fr_final': Fr_mean
             })
 
-            status = "✅" if success else "❌"
+            status = "" if success else ""
             print(f"  Fr={Fr_target:.1f}: {status} (最终Fr={Fr_mean:.2f})")
 
         # 统计
@@ -333,7 +333,7 @@ class TestMixedFlowRegime:
         # 验证：至少80%通过
         assert n_success >= n_total * 0.8, f"稳定性不足: {n_success}/{n_total}"
 
-        print(f"\n✅ PASSED: Froude数范围稳定性测试通过 ({n_success}/{n_total})")
+        print(f"\n PASSED: Froude数范围稳定性测试通过 ({n_success}/{n_total})")
 
     def test_hydraulic_jump_realistic(self):
         """
@@ -418,14 +418,14 @@ class TestMixedFlowRegime:
         assert mass_error < 5.0, f"质量守恒误差过大: {mass_error}%"
         assert h_final.min() > 0, "出现负水深"
 
-        print(f"\n✅ PASSED: 真实水跃模拟成功，质量守恒{mass_error:.2f}%")
+        print(f"\n PASSED: 真实水跃模拟成功，质量守恒{mass_error:.2f}%")
 
 
 if __name__ == '__main__':
     print("="*70)
     print("混合流态处理验证测试套件")
     print("="*70)
-    print("目标: 验证Fr≈1过渡区的数值稳定性")
+    print("目标: 验证Fr~=1过渡区的数值稳定性")
     print("="*70)
 
     test = TestMixedFlowRegime()
@@ -437,16 +437,16 @@ if __name__ == '__main__':
         test.test_hydraulic_jump_realistic()
 
         print("\n" + "="*70)
-        print("✅ 所有混合流态测试通过！")
+        print(" 所有混合流态测试通过！")
         print("="*70)
         print("\n验证结论:")
-        print("  ✅ Fr≈1过渡区数值稳定")
-        print("  ✅ 缓流-急流转换正常")
-        print("  ✅ Froude数范围0.5-1.5稳定")
-        print("  ✅ 真实水跃（有摩阻）模拟成功")
+        print("   Fr~=1过渡区数值稳定")
+        print("   缓流-急流转换正常")
+        print("   Froude数范围0.5-1.5稳定")
+        print("   真实水跃（有摩阻）模拟成功")
         print("="*70)
 
     except AssertionError as e:
-        print(f"\n❌ 测试失败: {e}")
+        print(f"\n 测试失败: {e}")
         import traceback
         traceback.print_exc()

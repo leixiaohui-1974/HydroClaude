@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 线性化渠道仿真器
 
@@ -7,6 +8,14 @@
 作者：HydroClaude Team
 日期：2025-10-24
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,21 +27,21 @@ class LinearizedCanalSimulator:
     线性化渠道仿真器
 
     在工作点(h*, a*)附近线性化闸门过流方程：
-    Q_out ≈ Q* + (∂Q/∂a) * Δa + (∂Q/∂Δh) * ΔΔh
+    Q_out ~= Q* + (∂Q/∂a) * Deltaa + (∂Q/∂Deltah) * DeltaDeltah
 
     其中：
-    - ∂Q/∂a = Cd * W * sqrt(2*g*Δh*)
-    - ∂Q/∂Δh = Cd * a* * W * sqrt(2*g) / (2*sqrt(Δh*))
+    - ∂Q/∂a = Cd * W * sqrt(2*g*Deltah*)
+    - ∂Q/∂Deltah = Cd * a* * W * sqrt(2*g) / (2*sqrt(Deltah*))
 
     动态方程：
     A * dh/dt = Q_in - Q_out
 
-    传递函数（闸门开度→水位）：
-    H(s) / A(s) = -K / (τ*s + 1)
+    传递函数（闸门开度->水位）：
+    H(s) / A(s) = -K / (tau*s + 1)
 
     其中：
-    - K = -(∂Q/∂a) / (∂Q/∂Δh)  [稳态增益]
-    - τ = A / (∂Q/∂Δh)          [时间常数]
+    - K = -(∂Q/∂a) / (∂Q/∂Deltah)  [稳态增益]
+    - tau = A / (∂Q/∂Deltah)          [时间常数]
     """
 
     def __init__(self, h_work: float = 2.5, a_work: float = 2.0,
@@ -52,7 +61,7 @@ class LinearizedCanalSimulator:
         # 渠道几何参数
         self.L = 1000.0  # 渠道长度 (m)
         self.W = 10.0    # 渠道宽度 (m)
-        self.A_surface = self.L * self.W  # 水面面积 = 10000 m²
+        self.A_surface = self.L * self.W  # 水面面积 = 10000 m^2
 
         # 闸门参数
         self.Cd = 0.6    # 闸门流量系数
@@ -79,7 +88,7 @@ class LinearizedCanalSimulator:
 
         # 状态变量
         self.h = h_work  # 当前上游水位 (m)
-        self.Q_in = 20.0  # 上游流量 (m³/s)
+        self.Q_in = 20.0  # 上游流量 (m^3/s)
 
         # 打印系统参数
         print("=" * 80)
@@ -88,14 +97,14 @@ class LinearizedCanalSimulator:
         print(f"\n工作点:")
         print(f"  h* = {self.h_work:.2f}m")
         print(f"  a* = {self.a_work:.2f}m")
-        print(f"  Δh* = {self.delta_h_work:.3f}m")
-        print(f"  Q* = {self.Q_work:.2f} m³/s")
+        print(f"  Deltah* = {self.delta_h_work:.3f}m")
+        print(f"  Q* = {self.Q_work:.2f} m^3/s")
         print(f"\n线性化偏导数:")
-        print(f"  ∂Q/∂a = {self.dQ_da:.3f} m³/(s·m)")
-        print(f"  ∂Q/∂h = {self.dQ_dh:.3f} m²/s")
+        print(f"  ∂Q/∂a = {self.dQ_da:.3f} m^3/(s·m)")
+        print(f"  ∂Q/∂h = {self.dQ_dh:.3f} m^2/s")
         print(f"\n线性系统参数（IDZ一阶近似）:")
         print(f"  K = {self.K_linear:.4f} m/m")
-        print(f"  τ = {self.tau_linear:.1f}s")
+        print(f"  tau = {self.tau_linear:.1f}s")
         print(f"\n传递函数:")
         print(f"  H(s) / A(s) = {self.K_linear:.4f} / ({self.tau_linear:.1f}*s + 1)")
         print(f"\n模式: {'线性化' if use_linear else '非线性'}")
@@ -251,17 +260,17 @@ def compare_linear_vs_nonlinear():
 
     plt.tight_layout()
     plt.savefig('linear_vs_nonlinear_comparison.png', dpi=150, bbox_inches='tight')
-    print("\n✅ 对比图已保存: linear_vs_nonlinear_comparison.png")
+    print("\n 对比图已保存: linear_vs_nonlinear_comparison.png")
 
     # 判断线性化精度
     if max_error < 0.1:
-        print("\n✅ 线性化精度优秀（最大误差<0.1m）")
+        print("\n 线性化精度优秀（最大误差<0.1m）")
         print("   推荐：使用LinearizedCanalSimulator进行MPC基准测试")
     elif max_error < 0.2:
-        print("\n✓ 线性化精度良好（最大误差<0.2m）")
+        print("\n 线性化精度良好（最大误差<0.2m）")
         print("   推荐：使用LinearizedCanalSimulator进行MPC基准测试")
     else:
-        print("\n⚠️ 线性化误差较大（最大误差>0.2m）")
+        print("\n 线性化误差较大（最大误差>0.2m）")
         print("   建议：缩小工作范围或使用多点线性化")
 
     return sim_linear, sim_nonlinear
@@ -282,7 +291,7 @@ from control.mpc_controller import MPCController, MPCConfig
 # 基于LinearizedCanalSimulator的精确线性参数
 idz_params = IDZParameters(
     K={K:.4f},      # 稳态增益（负值，反向作用）
-    tau_z={tau*0.5:.1f},     # 零点时间常数（约τ/2）
+    tau_z={tau*0.5:.1f},     # 零点时间常数（约tau/2）
     tau_d={tau:.1f},     # 极点时间常数
     theta=4.0       # 纯延迟（约2*dt）
 )

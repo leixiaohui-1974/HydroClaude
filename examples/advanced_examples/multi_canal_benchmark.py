@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 多渠道自适应控制基准测试
 
@@ -11,12 +12,12 @@
 4. 缓坡渠道 (S0=0.00005, 低流速)
 
 工况变化：
-- 低流量 (10 m³/s) → 中流量 (25 m³/s) → 高流量 (40 m³/s)
-- 低水位 (1.5m) → 中水位 (2.5m) → 高水位 (3.5m)
+- 低流量 (10 m^3/s) -> 中流量 (25 m^3/s) -> 高流量 (40 m^3/s)
+- 低水位 (1.5m) -> 中水位 (2.5m) -> 高水位 (3.5m)
 
 评估指标：
 - 控制性能：MAE, RMSE, 超调量, 调节时间
-- 模型拟合：R², VAF, FIT
+- 模型拟合：R^2, VAF, FIT
 - 鲁棒性：跨工况适应性
 
 作者：HydroClaude Team
@@ -54,7 +55,7 @@ class CanalConfig:
 class WorkingPoint:
     """工况点"""
     name: str
-    flow: float  # m³/s
+    flow: float  # m^3/s
     target_depth: float  # m
     duration: float  # s
 
@@ -69,7 +70,7 @@ class BenchmarkResult:
     mae: float
     rmse: float
     max_error: float
-    settling_time: float  # 调节时间（到达±5%误差范围的时间）
+    settling_time: float  # 调节时间（到达+/-5%误差范围的时间）
 
     # 模型验证（仅自适应方法）
     validation_metrics: ValidationMetrics = None
@@ -87,7 +88,7 @@ class BenchmarkResult:
         s += f"  最大误差 = {self.max_error:.4f}m\n"
         s += f"  调节时间 = {self.settling_time:.1f}s\n"
         if self.validation_metrics:
-            s += f"  R² = {self.validation_metrics.r_squared:.4f}, "
+            s += f"  R^2 = {self.validation_metrics.r_squared:.4f}, "
             s += f"VAF = {self.validation_metrics.vaf:.2f}%\n"
         return s
 
@@ -347,7 +348,7 @@ def run_single_canal_test(canal_config: CanalConfig,
         if step % 20 == 0:
             adp_depth = methods['自适应IDZ']['data']['depth'][-1]
             print(f"  t={t:.0f}s, 目标={target_depth:.2f}m, "
-                  f"自适应深度={adp_depth:.2f}m, Q_up={q_upstream:.1f}m³/s")
+                  f"自适应深度={adp_depth:.2f}m, Q_up={q_upstream:.1f}m^3/s")
 
     # 计算性能指标
     print(f"\n计算性能指标...")
@@ -364,7 +365,7 @@ def run_single_canal_test(canal_config: CanalConfig,
         rmse = np.sqrt(np.mean(error_arr**2))
         max_error = np.max(np.abs(error_arr))
 
-        # 计算调节时间（到达±5%误差范围的时间）
+        # 计算调节时间（到达+/-5%误差范围的时间）
         settling_time = total_time  # 默认值
         threshold = 0.05  # 5%
         for i in range(len(error_arr)):
@@ -429,7 +430,7 @@ def visualize_canal_comparison(results: Dict[str, BenchmarkResult],
         ax2.plot(result.time_history, result.control_history,
                 label=method_name, color=colors.get(method_name, 'gray'),
                 linewidth=2)
-    ax2.set_ylabel('下游流量 (m³/s)', fontsize=12)
+    ax2.set_ylabel('下游流量 (m^3/s)', fontsize=12)
     ax2.legend(loc='upper right', fontsize=10)
     ax2.grid(True, alpha=0.3)
 
@@ -547,7 +548,7 @@ def run_multi_canal_benchmark():
         for method_name, result in results.items():
             print(f"  {method_name}: MAE={result.mae:.4f}m, RMSE={result.rmse:.4f}m")
 
-    print(f"\n✅ 基准测试完成！")
+    print(f"\n 基准测试完成！")
     print(f"{'='*80}")
 
 

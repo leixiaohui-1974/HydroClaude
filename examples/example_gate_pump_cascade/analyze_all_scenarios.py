@@ -4,6 +4,14 @@
 深度分析所有工况结果
 识别问题、验证物理合理性
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import os
 import numpy as np
@@ -36,18 +44,18 @@ def analyze_scenario(scenario_dir):
     # 检查1: 负流量
     min_q = q_history.min()
     if min_q < 0:
-        analysis['issues'].append(f"❌ 出现负流量: {min_q:.2f} m³/s")
+        analysis['issues'].append(f" 出现负流量: {min_q:.2f} m^3/s")
     
     # 检查2: 负水深
     min_h = h_history.min()
     if min_h < 0:
-        analysis['issues'].append(f"❌ 出现负水深: {min_h:.2f} m")
+        analysis['issues'].append(f" 出现负水深: {min_h:.2f} m")
     
     # 检查3: NaN或Inf
     if np.any(np.isnan(h_history)) or np.any(np.isnan(q_history)):
-        analysis['issues'].append(f"❌ 出现NaN值")
+        analysis['issues'].append(f" 出现NaN值")
     if np.any(np.isinf(h_history)) or np.any(np.isinf(q_history)):
-        analysis['issues'].append(f"❌ 出现Inf值")
+        analysis['issues'].append(f" 出现Inf值")
     
     # 检查4: 质量守恒
     Q_in = q_history[-1, 0]
@@ -64,9 +72,9 @@ def analyze_scenario(scenario_dir):
     analysis['metrics']['pump_head_max'] = max_head
     
     if min_head < 0:
-        analysis['issues'].append(f"❌ 泵站扬程为负: {min_head:.2f} m")
+        analysis['issues'].append(f" 泵站扬程为负: {min_head:.2f} m")
     if max_head > 10:
-        analysis['warnings'].append(f"⚠️ 泵站扬程过高: {max_head:.2f} m")
+        analysis['warnings'].append(f" 泵站扬程过高: {max_head:.2f} m")
     
     # 检查6: 水深范围
     analysis['metrics']['h_min'] = min_h
@@ -113,13 +121,13 @@ def main():
             
             # 打印关键指标
             m = analysis['metrics']
-            print(f"  流量范围: [{m['q_min']:.2f}, {m['q_max']:.2f}] m³/s")
+            print(f"  流量范围: [{m['q_min']:.2f}, {m['q_max']:.2f}] m^3/s")
             print(f"  水深范围: [{m['h_min']:.2f}, {m['h_max']:.2f}] m")
             print(f"  泵站扬程: [{m['pump_head_min']:.2f}, {m['pump_head_max']:.2f}] m")
-            print(f"  质量守恒: Q_in={m['Q_in']:.2f} - Q_out={m['Q_out']:.2f} = {m['storage_rate']:.2f} m³/s")
+            print(f"  质量守恒: Q_in={m['Q_in']:.2f} - Q_out={m['Q_out']:.2f} = {m['storage_rate']:.2f} m^3/s")
             
             if not analysis['issues'] and not analysis['warnings']:
-                print(f"  ✅ 物理合理，无问题")
+                print(f"   物理合理，无问题")
         
         print()
     
@@ -156,7 +164,7 @@ def main():
     
     create_comprehensive_report(all_analyses, base_dir)
     
-    print("✓ 分析完成")
+    print(" 分析完成")
     print("="*100 + "\n")
 
 
@@ -171,7 +179,7 @@ def create_comprehensive_report(all_analyses, base_dir):
         f.write(f"**工况总数**: {len(all_analyses)}\n\n")
         f.write("---\n\n")
         
-        f.write("## 📊 工况汇总\n\n")
+        f.write("##  工况汇总\n\n")
         f.write("| 工况 | 负流量 | 负水深 | 泵站扬程 | 质量守恒 | 状态 |\n")
         f.write("|------|:-----:|:-----:|:-------:|:-------:|:----:|\n")
         
@@ -183,18 +191,18 @@ def create_comprehensive_report(all_analyses, base_dir):
             head_ok = 0 <= m['pump_head_min'] <= 6 and 0 <= m['pump_head_max'] <= 6
             mass_ok = abs(m['storage_rate']) < 100
             
-            status = "✅" if not analysis['issues'] else "❌"
+            status = "" if not analysis['issues'] else ""
             
-            f.write(f"| {name} | {'❌' if has_neg_q else '✅'} | {'❌' if has_neg_h else '✅'} | "
-                   f"{'✅' if head_ok else '❌'} | {'✅' if mass_ok else '❌'} | {status} |\n")
+            f.write(f"| {name} | {'' if has_neg_q else ''} | {'' if has_neg_h else ''} | "
+                   f"{'' if head_ok else ''} | {'' if mass_ok else ''} | {status} |\n")
         
         f.write("\n---\n\n")
         
-        f.write("## 🔍 发现的问题\n\n")
+        f.write("##  发现的问题\n\n")
         
         total_issues = sum(len(a['issues']) for a in all_analyses)
         if total_issues == 0:
-            f.write("✅ **所有工况物理合理，无问题！**\n\n")
+            f.write(" **所有工况物理合理，无问题！**\n\n")
         else:
             f.write(f"发现 {total_issues} 个问题:\n\n")
             
@@ -214,17 +222,17 @@ def create_comprehensive_report(all_analyses, base_dir):
             nan_count = sum(1 for a in all_analyses if any('NaN' in i for i in a['issues']))
             
             if neg_flow_count > 0:
-                f.write(f"- **负流量**: {neg_flow_count} 个工况 ⚠️ 严重问题\n")
+                f.write(f"- **负流量**: {neg_flow_count} 个工况  严重问题\n")
             if neg_depth_count > 0:
-                f.write(f"- **负水深**: {neg_depth_count} 个工况 ⚠️ 严重问题\n")
+                f.write(f"- **负水深**: {neg_depth_count} 个工况  严重问题\n")
             if nan_count > 0:
-                f.write(f"- **NaN值**: {nan_count} 个工况 ⚠️ 严重问题\n")
+                f.write(f"- **NaN值**: {nan_count} 个工况  严重问题\n")
             
             f.write("\n")
         
         f.write("---\n\n")
         
-        f.write("## 📈 数值统计\n\n")
+        f.write("##  数值统计\n\n")
         f.write("| 工况 | 最小流量 | 最大流量 | 最小水深 | 最大水深 | 泵站扬程 |\n")
         f.write("|------|---------|---------|---------|---------|----------|\n")
         
@@ -237,7 +245,7 @@ def create_comprehensive_report(all_analyses, base_dir):
         
         f.write("\n---\n\n")
         
-        f.write("## 🎯 修复建议\n\n")
+        f.write("##  修复建议\n\n")
         
         if total_issues > 0:
             if neg_flow_count > 0:
@@ -255,15 +263,15 @@ def create_comprehensive_report(all_analyses, base_dir):
             f.write("**现象**: 多个工况稳态求解未收敛（499次迭代）\n\n")
             f.write("**影响**: 初值不准确，可能导致瞬态初期数值振荡\n\n")
             f.write("**修复方案**:\n")
-            f.write("1. 增加最大迭代次数（500→2000）\n")
+            f.write("1. 增加最大迭代次数（500->2000）\n")
             f.write("2. 改进收敛判据\n")
             f.write("3. 使用更好的初值猜测\n\n")
         
         f.write("---\n\n")
         f.write(f"**报告生成时间**: 2025-10-26\n")
-        f.write(f"**状态**: {'✅ 所有工况正常' if total_issues == 0 else '⚠️ 发现问题，需要修复'}\n")
+        f.write(f"**状态**: {' 所有工况正常' if total_issues == 0 else ' 发现问题，需要修复'}\n")
     
-    print(f"✓ 综合报告已保存: {report_path}")
+    print(f" 综合报告已保存: {report_path}")
 
 
 if __name__ == "__main__":

@@ -30,7 +30,7 @@
 
 ```bash
 cd examples/example_15_rls_identification
-PYTHONPATH=../.. python example_15_rls_identification.py
+PYTHONPATH=../.. python code/example_15_rls_identification.py
 ```
 
 ## 输出结果
@@ -41,7 +41,10 @@ PYTHONPATH=../.. python example_15_rls_identification.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_15_convergence_animation.gif`
+
+![动画](outputs\animations\example_15_convergence_animation.gif)
+- `outputs/animations/example_15_rls_identification_control.gif`
 
 ## 技术要点
 

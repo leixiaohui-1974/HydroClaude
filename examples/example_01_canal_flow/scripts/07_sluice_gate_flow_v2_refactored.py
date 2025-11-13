@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例1扩展：明渠闸门过流动力学分析（重构版 - 使用新工具）
 
@@ -6,9 +7,9 @@
 - 自动结果验证和报告生成
 
 **重构亮点**:
-- ✅ 使用ScriptHelper：路径设置从12行 → 1行
-- ✅ 使用PlotHelper：绘图代码减少60%
-- ✅ 代码更简洁、可读性更强
+-  使用ScriptHelper：路径设置从12行 -> 1行
+-  使用PlotHelper：绘图代码减少60%
+-  代码更简洁、可读性更强
 
 Author: Claude
 Date: 2025-10-23
@@ -73,7 +74,7 @@ def run_sluice_gate_dynamics():
     print(f"  闸门位置: {gate_position} m")
     print(f"  闸门开度: {gate_opening} m")
     print(f"  流量系数: {gate_Cd}")
-    print(f"  底坡: {bed_slope*1000:.2f}‰")
+    print(f"  底坡: {bed_slope*1000:.2f}[permille]")
     print(f"  曼宁糙率: {manning_n}")
     print()
 
@@ -105,7 +106,7 @@ def run_sluice_gate_dynamics():
     print("步骤1: 计算稳态（恒定流）")
     print("-" * 80)
 
-    Q_initial = 10.0  # 流量 (m³/s)
+    Q_initial = 10.0  # 流量 (m^3/s)
 
     # 初始化
     h_uniform = compute_steady_uniform_flow(Q_initial, canal_width, bed_slope, manning_n)
@@ -114,7 +115,7 @@ def run_sluice_gate_dynamics():
 
     print(f"初始条件:")
     print(f"  均匀流水深: {h_uniform:.4f} m")
-    print(f"  目标流量: {Q_initial:.2f} m³/s")
+    print(f"  目标流量: {Q_initial:.2f} m^3/s")
     print()
 
     # 稳态求解
@@ -143,7 +144,7 @@ def run_sluice_gate_dynamics():
     print(f"  闸前水深: {h_up:.4f} m")
     print(f"  闸后水深: {h_down:.4f} m")
     print(f"  水位差: {h_up - h_down:.4f} m")
-    print(f"  闸门流量: {Q_gate:.4f} m³/s")
+    print(f"  闸门流量: {Q_gate:.4f} m^3/s")
     print(f"  流态: {flow_type}")
     print()
 
@@ -190,10 +191,10 @@ def run_sluice_gate_dynamics():
         x_full / 1000,
         Q_steady,
         xlabel="Distance (km)",
-        ylabel="Flow Rate (m³/s)",
+        ylabel="Flow Rate (m^3/s)",
         title="Steady State - Flow Rate Distribution",
         structures=[(gate_position/1000, "Sluice Gate")],
-        reference_lines=[(Q_initial, f"Target Flow ({Q_initial:.1f} m³/s)")],
+        reference_lines=[(Q_initial, f"Target Flow ({Q_initial:.1f} m^3/s)")],
         save_path=helper.get_output_path("02_flow_rate_profile.png")
     )
 
@@ -204,7 +205,7 @@ def run_sluice_gate_dynamics():
         h_steady,
         Q_steady,
         ylabel1="Water Depth (m)",
-        ylabel2="Flow Rate (m³/s)",
+        ylabel2="Flow Rate (m^3/s)",
         xlabel="Distance (km)",
         title="Steady State - Water Depth and Flow Rate",
         structures=[(gate_position/1000, "Sluice Gate")],
@@ -212,7 +213,7 @@ def run_sluice_gate_dynamics():
     )
 
     print()
-    print(f"✓ 所有图表已保存到: {helper.get_output_dir()}")
+    print(f" 所有图表已保存到: {helper.get_output_dir()}")
     print()
 
     # ==================== 保存数据 ====================
@@ -230,16 +231,16 @@ def run_sluice_gate_dynamics():
         gate_position=gate_position,
         gate_opening=gate_opening
     )
-    print("  ✓ 数据已保存: steady_state_data.npz")
+    print("   数据已保存: steady_state_data.npz")
 
     # 保存CSV表格
     df = pd.DataFrame({
         'Distance (m)': x_full,
         'Water Depth (m)': h_steady,
-        'Flow Rate (m³/s)': Q_steady
+        'Flow Rate (m^3/s)': Q_steady
     })
     df.to_csv(helper.get_output_path("steady_state_data.csv"), index=False)
-    print("  ✓ 表格已保存: steady_state_data.csv")
+    print("   表格已保存: steady_state_data.csv")
     print()
 
     # ==================== 总结 ====================
@@ -248,25 +249,25 @@ def run_sluice_gate_dynamics():
     print("=" * 80)
     print()
     print("求解器性能:")
-    print(f"  ✓ 迭代次数: {result['iterations']}")
-    print(f"  ✓ 流量误差: {result.get('final_flow_error', 0):.6f}%")
-    print(f"  ✓ 收敛状态: {'成功' if result['converged'] else '未收敛'}")
+    print(f"   迭代次数: {result['iterations']}")
+    print(f"   流量误差: {result.get('final_flow_error', 0):.6f}%")
+    print(f"   收敛状态: {'成功' if result['converged'] else '未收敛'}")
     print()
 
     print("闸门性能:")
-    print(f"  ✓ 闸门流量: {Q_gate:.4f} m³/s")
-    print(f"  ✓ 流量误差: {abs(Q_gate - Q_initial)/Q_initial*100:.3f}%")
-    print(f"  ✓ 流态: {flow_type}")
+    print(f"   闸门流量: {Q_gate:.4f} m^3/s")
+    print(f"   流量误差: {abs(Q_gate - Q_initial)/Q_initial*100:.3f}%")
+    print(f"   流态: {flow_type}")
     print()
 
     print("代码统计（vs 原版）:")
-    print(f"  ✓ 路径设置: 12行 → 1行 (减少92%)")
-    print(f"  ✓ 绘图代码: ~120行 → ~40行 (减少67%)")
-    print(f"  ✓ 总行数: 303行 → ~250行 (减少17%)")
+    print(f"   路径设置: 12行 -> 1行 (减少92%)")
+    print(f"   绘图代码: ~120行 -> ~40行 (减少67%)")
+    print(f"   总行数: 303行 -> ~250行 (减少17%)")
     print()
 
     print("=" * 80)
-    print("✓ 闸门流动分析完成（重构版）")
+    print(" 闸门流动分析完成（重构版）")
     print("=" * 80)
     print()
 

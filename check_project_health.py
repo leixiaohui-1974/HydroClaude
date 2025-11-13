@@ -50,9 +50,9 @@ class ProjectHealthChecker:
         if self.verbose or level in ["ERROR", "WARNING", "SUCCESS"]:
             prefix = {
                 "INFO": "ℹ️ ",
-                "SUCCESS": "✅",
-                "WARNING": "⚠️ ",
-                "ERROR": "❌"
+                "SUCCESS": "",
+                "WARNING": "️ ",
+                "ERROR": ""
             }.get(level, "")
             print(f"{prefix} {message}")
 
@@ -125,7 +125,7 @@ class ProjectHealthChecker:
         for module_name in core_modules:
             try:
                 __import__(module_name)
-                self.log(f"  ✓ {module_name}", "SUCCESS")
+                self.log(f"   {module_name}", "SUCCESS")
             except ImportError as e:
                 import_errors.append({
                     'module': module_name,
@@ -169,10 +169,10 @@ class ProjectHealthChecker:
             doc_path = self.project_root / doc
             if doc_path.exists():
                 result['found'].append(doc)
-                self.log(f"  ✓ {doc}", "SUCCESS")
+                self.log(f"   {doc}", "SUCCESS")
             else:
                 missing_docs.append(doc)
-                self.log(f"  ✗ {doc} 缺失", "ERROR")
+                self.log(f"   {doc} 缺失", "ERROR")
 
         if missing_docs:
             result['status'] = 'warning'
@@ -244,10 +244,10 @@ class ProjectHealthChecker:
             try:
                 __import__(package)
                 installed.append(package)
-                self.log(f"  ✓ {package}", "SUCCESS")
+                self.log(f"   {package}", "SUCCESS")
             except ImportError:
                 missing.append(package)
-                self.log(f"  ✗ {package} 未安装", "ERROR")
+                self.log(f"   {package} 未安装", "ERROR")
 
         result['installed'] = installed
         result['missing'] = missing
@@ -290,10 +290,10 @@ class ProjectHealthChecker:
             dir_path = self.project_root / dir_name
             if dir_path.exists() and dir_path.is_dir():
                 result['found'].append(dir_name)
-                self.log(f"  ✓ {dir_name}/", "SUCCESS")
+                self.log(f"   {dir_name}/", "SUCCESS")
             else:
                 missing.append(dir_name)
-                self.log(f"  ✗ {dir_name}/ 缺失", "ERROR")
+                self.log(f"   {dir_name}/ 缺失", "ERROR")
 
         result['missing'] = missing
 
@@ -372,28 +372,28 @@ class ProjectHealthChecker:
 
         total_checks = len(self.passed) + len(self.warnings) + len(self.issues)
 
-        print(f"✅ 通过: {len(self.passed)}")
-        print(f"⚠️  警告: {len(self.warnings)}")
-        print(f"❌ 问题: {len(self.issues)}")
+        print(f" 通过: {len(self.passed)}")
+        print(f"️  警告: {len(self.warnings)}")
+        print(f" 问题: {len(self.issues)}")
 
         if self.issues:
             print("\n问题列表:")
             for issue in self.issues:
-                print(f"  ❌ {issue}")
+                print(f"   {issue}")
 
         if self.warnings:
             print("\n警告列表:")
             for warning in self.warnings:
-                print(f"  ⚠️  {warning}")
+                print(f"  ️  {warning}")
 
         if not self.issues:
-            print("\n🎉 项目健康状况良好！")
+            print("\n 项目健康状况良好！")
             return 0
         elif len(self.issues) <= 2:
-            print("\n⚠️  发现少量问题，建议修复")
+            print("\n️  发现少量问题，建议修复")
             return 1
         else:
-            print("\n❌ 发现多个问题，需要立即处理")
+            print("\n 发现多个问题，需要立即处理")
             return 2
 
     def generate_html_report(self, filename: str = "project_health_report.html"):
@@ -486,7 +486,7 @@ class ProjectHealthChecker:
 </head>
 <body>
     <div class="container">
-        <h1>🏥 HydroClaude 项目健康报告</h1>
+        <h1> HydroClaude 项目健康报告</h1>
         <p>生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
 
         <div class="summary">
@@ -504,12 +504,12 @@ class ProjectHealthChecker:
             </div>
         </div>
 
-        <h2>📋 通过的检查</h2>
+        <h2> 通过的检查</h2>
         <ul>
 """
 
         for item in self.passed:
-            html += f"            <li>✅ {item}</li>\n"
+            html += f"            <li> {item}</li>\n"
 
         html += """
         </ul>
@@ -517,11 +517,11 @@ class ProjectHealthChecker:
 
         if self.warnings:
             html += """
-        <h2>⚠️ 警告</h2>
+        <h2>️ 警告</h2>
         <ul>
 """
             for item in self.warnings:
-                html += f"            <li>⚠️ {item}</li>\n"
+                html += f"            <li>️ {item}</li>\n"
 
             html += """
         </ul>
@@ -529,11 +529,11 @@ class ProjectHealthChecker:
 
         if self.issues:
             html += """
-        <h2>❌ 需要解决的问题</h2>
+        <h2> 需要解决的问题</h2>
         <ul>
 """
             for item in self.issues:
-                html += f"            <li>❌ {item}</li>\n"
+                html += f"            <li> {item}</li>\n"
 
             html += """
         </ul>
@@ -550,7 +550,7 @@ class ProjectHealthChecker:
 
         output_path = Path(filename)
         output_path.write_text(html, encoding='utf-8')
-        self.log(f"✅ 报告已生成: {output_path}", "SUCCESS")
+        self.log(f" 报告已生成: {output_path}", "SUCCESS")
 
 
 def main():

@@ -17,7 +17,17 @@ import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.single_canal_solver import SingleCanalSolver
+try:
+    # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.single_canal_solver import SingleCanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.fvm_steady_solver import FVMSteadySolver
 from solvers.gate import SluiceGate
 
@@ -218,12 +228,12 @@ def plot_comparison(result_fdm, result_fvm):
     ax = axes[1]
     ax.plot(result_fdm['x'], result_fdm['Q'], 'b-', linewidth=2, label='FDM (Preissmann)', alpha=0.7)
     ax.plot(result_fvm['x'], result_fvm['Q'], 'r--', linewidth=2, label='FVM Steady (Newton)', alpha=0.7)
-    ax.axhline(Q_target, color='k', linestyle='--', linewidth=1.5, alpha=0.5, label=f'Target Q={Q_target} m³/s')
+    ax.axhline(Q_target, color='k', linestyle='--', linewidth=1.5, alpha=0.5, label=f'Target Q={Q_target} m^3/s')
     ax.axvline(2500, color='gray', linestyle=':', alpha=0.5)
     ax.axvline(5000, color='gray', linestyle=':', alpha=0.5)
     ax.axvline(7500, color='gray', linestyle=':', alpha=0.5)
     ax.set_xlabel('x [m]', fontsize=12)
-    ax.set_ylabel('Q [m³/s]', fontsize=12)
+    ax.set_ylabel('Q [m^3/s]', fontsize=12)
     ax.set_title(f'Discharge Comparison (FDM: {result_fdm["max_error"]:.4f}%, FVM: {result_fvm["max_error"]:.4f}%)',
                  fontsize=14, fontweight='bold')
     ax.legend(fontsize=11)
@@ -248,7 +258,7 @@ def plot_comparison(result_fdm, result_fvm):
 
     plt.tight_layout()
     plt.savefig('fvm_steady_comparison.png', dpi=150, bbox_inches='tight')
-    print("✓ Saved comparison plot: fvm_steady_comparison.png")
+    print(" Saved comparison plot: fvm_steady_comparison.png")
     print()
 
 
@@ -278,9 +288,9 @@ def main():
     print(f"{'Method':<30} {'Max Error':<15} {'Mean Error':<15} {'Converged':<10}")
     print("-" * 70)
     print(f"{'FDM (Preissmann)':<30} {result_fdm['max_error']:.4f}%{'':<8} "
-          f"{result_fdm['mean_error']:.4f}%{'':<8} {'✓' if result_fdm['converged'] else '✗'}")
+          f"{result_fdm['mean_error']:.4f}%{'':<8} {'' if result_fdm['converged'] else ''}")
     print(f"{'FVM Steady (Newton)':<30} {result_fvm['max_error']:.4f}%{'':<8} "
-          f"{result_fvm['mean_error']:.4f}%{'':<8} {'✓' if result_fvm['converged'] else '✗'}")
+          f"{result_fvm['mean_error']:.4f}%{'':<8} {'' if result_fvm['converged'] else ''}")
     print()
 
     # 计算改进效果
@@ -309,20 +319,20 @@ def main():
 
     # 最终评估
     if result_fvm['max_error'] < target:
-        print(f"✓✓✓✓ SUCCESS! FVM Steady achieved target precision {target}%!")
+        print(f" SUCCESS! FVM Steady achieved target precision {target}%!")
         print(f"     Improvement over FDM baseline: {fdm_baseline / result_fvm['max_error']:.2f}x")
     elif result_fvm['max_error'] < fdm_baseline:
         gap = target - result_fvm['max_error']
-        print(f"✓✓✓ EXCELLENT! FVM Steady improved precision (improvement: {improvement:.2f}x)")
+        print(f" EXCELLENT! FVM Steady improved precision (improvement: {improvement:.2f}x)")
         if result_fvm['max_error'] < 1.0:
             print(f"    Very close to target! Gap: {abs(gap):.4f}%")
         else:
             print(f"    Gap to target: {abs(gap):.4f}%")
     elif result_fvm['max_error'] < result_fdm['max_error']:
-        print(f"✓✓ GOOD! FVM Steady improved over FDM ({improvement:.2f}x), but target not reached")
+        print(f" GOOD! FVM Steady improved over FDM ({improvement:.2f}x), but target not reached")
         print(f"   Gap to target: {result_fvm['max_error'] - target:.4f}%")
     else:
-        print(f"⚠ FVM Steady did not improve precision")
+        print(f" FVM Steady did not improve precision")
         print(f"  FVM: {result_fvm['max_error']:.4f}% vs FDM: {result_fdm['max_error']:.4f}%")
 
     print()

@@ -16,6 +16,8 @@
 import sys, os
 import numpy as np
 import argparse
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 EXAMPLES_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -65,7 +67,7 @@ def run_example(args):
     
     axes[1].plot(t, q1, 'm-', linewidth=2, label='Pipe 1')
     axes[1].plot(t, q2, 'orange', linewidth=2, label='Pipe 2')
-    axes[1].set_ylabel('Flow Rate (m³/s)')
+    axes[1].set_ylabel('Flow Rate (m^3/s)')
     axes[1].set_xlabel('Time (s)')
     axes[1].set_title('Pipe Flow Rates')
     axes[1].legend()
@@ -76,7 +78,7 @@ def run_example(args):
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
     plt.close()
     
-    print(f"\n✓ 静态图表已保存: {fig_path}")
+    print(f"\n 静态图表已保存: {fig_path}")
     
     # 生成动画
     if args.animate:
@@ -91,11 +93,11 @@ def run_example(args):
                 filename='series_network_embedded.gif',
                 title='Series Network Dynamics'
             )
-            print(f"✓ 动画已保存: {os.path.basename(gif_path)}")
+            print(f" 动画已保存: {os.path.basename(gif_path)}")
         except Exception as e:
-            print(f"✗ 动画生成失败: {e}")
+            print(f" 动画生成失败: {e}")
     
-    print("\n✅ 示例10（增强版）运行成功")
+    print("\n 示例10（增强版）运行成功")
 
 if __name__ == "__main__":
     args = parse_args()

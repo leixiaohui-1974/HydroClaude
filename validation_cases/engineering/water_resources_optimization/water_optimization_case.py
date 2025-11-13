@@ -60,7 +60,7 @@ class WaterUser:
             user_type: Type (agriculture/industry/municipal/ecology)
             location: Location along river (m)
             priority: Priority level (1=highest, 4=lowest)
-            base_demand: Base demand (m³/s)
+            base_demand: Base demand (m^3/s)
             demand_pattern: Time-varying multiplier (optional)
         """
         self.user_id = user_id
@@ -78,7 +78,7 @@ class WaterUser:
             time_index: Time index
 
         Returns:
-            Demand (m³/s)
+            Demand (m^3/s)
         """
         if self.demand_pattern is not None and time_index < len(self.demand_pattern):
             return self.base_demand * self.demand_pattern[time_index]
@@ -125,11 +125,11 @@ class WaterResourcesOptimization:
         self.inflow: Optional[TimeSeriesBoundary] = None
 
         # Reservoir
-        self.reservoir_capacity = 10.0e6  # m³ (10 million m³)
-        self.reservoir_init = 5.0e6  # m³ (50% full)
+        self.reservoir_capacity = 10.0e6  # m^3 (10 million m^3)
+        self.reservoir_init = 5.0e6  # m^3 (50% full)
 
         # Environmental flow requirement
-        self.env_flow_min = 5.0  # m³/s
+        self.env_flow_min = 5.0  # m^3/s
 
         print(f"\n{'='*70}")
         print(f"Water Resources Optimization: {system_name}")
@@ -160,7 +160,7 @@ class WaterResourcesOptimization:
             user_type="municipal",
             location=10000.0,  # 10 km
             priority=1,  # Highest
-            base_demand=3.0,  # m³/s
+            base_demand=3.0,  # m^3/s
             demand_pattern=municipal_pattern
         )
         self.users.append(user1)
@@ -180,7 +180,7 @@ class WaterResourcesOptimization:
             user_type="industry",
             location=25000.0,  # 25 km
             priority=2,
-            base_demand=4.0,  # m³/s
+            base_demand=4.0,  # m^3/s
             demand_pattern=industrial_pattern
         )
         self.users.append(user2)
@@ -202,7 +202,7 @@ class WaterResourcesOptimization:
             user_type="agriculture",
             location=40000.0,  # 40 km
             priority=3,
-            base_demand=5.0,  # m³/s
+            base_demand=5.0,  # m^3/s
             demand_pattern=agricultural_pattern
         )
         self.users.append(user3)
@@ -215,7 +215,7 @@ class WaterResourcesOptimization:
             user_type="ecology",
             location=50000.0,  # 50 km (downstream)
             priority=4,
-            base_demand=5.0,  # m³/s (environmental flow requirement)
+            base_demand=5.0,  # m^3/s (environmental flow requirement)
             demand_pattern=ecology_pattern
         )
         self.users.append(user4)
@@ -225,7 +225,7 @@ class WaterResourcesOptimization:
             print(f"  {user.user_id}: Type={user.user_type}, "
                   f"Location={user.location/1000:.0f}km, "
                   f"Priority={user.priority}, "
-                  f"Base Demand={user.base_demand:.1f} m³/s")
+                  f"Base Demand={user.base_demand:.1f} m^3/s")
 
     def create_inflow_scenario(self):
         """
@@ -237,7 +237,7 @@ class WaterResourcesOptimization:
         inflow_data = np.zeros(self.nt)
 
         # Base flow + daily variation + weekly trend
-        base_flow = 15.0  # m³/s
+        base_flow = 15.0  # m^3/s
 
         for i in range(self.nt):
             # Daily cycle
@@ -261,9 +261,9 @@ class WaterResourcesOptimization:
         )
 
         print(f"\nRiver Inflow Created:")
-        print(f"  Mean: {np.mean(inflow_data):.2f} m³/s")
-        print(f"  Min: {np.min(inflow_data):.2f} m³/s")
-        print(f"  Max: {np.max(inflow_data):.2f} m³/s")
+        print(f"  Mean: {np.mean(inflow_data):.2f} m^3/s")
+        print(f"  Min: {np.min(inflow_data):.2f} m^3/s")
+        print(f"  Max: {np.max(inflow_data):.2f} m^3/s")
 
     def optimize_allocation(
         self,
@@ -352,7 +352,7 @@ class WaterResourcesOptimization:
             net_flow = Q_in - total_allocation
 
             # Update storage
-            storage_change = net_flow * self.dt * 3600  # m³
+            storage_change = net_flow * self.dt * 3600  # m^3
             storage = storage + storage_change
 
             # Constrain storage
@@ -374,7 +374,7 @@ class WaterResourcesOptimization:
             if i % (self.nt // 10) == 0:
                 progress = 100 * i / self.nt
                 print(f"  {progress:.0f}% | t={self.time[i]:.0f}h | "
-                      f"Q_in={Q_in:.1f} m³/s | Storage={storage/1e6:.2f} Mm³")
+                      f"Q_in={Q_in:.1f} m^3/s | Storage={storage/1e6:.2f} Mm^3")
 
         # Compute total cost (weighted shortage)
         weights = {
@@ -407,12 +407,12 @@ class WaterResourcesOptimization:
         print(f"{'='*70}")
 
         # Water balance
-        total_inflow = np.sum(results['inflow']) * self.dt * 3600 / 1e6  # Mm³
+        total_inflow = np.sum(results['inflow']) * self.dt * 3600 / 1e6  # Mm^3
         storage_change = (results['reservoir_storage'][-1] - results['reservoir_storage'][0]) / 1e6
 
         print(f"\nWater Balance:")
-        print(f"  Total Inflow: {total_inflow:.2f} Mm³")
-        print(f"  Storage Change: {storage_change:.2f} Mm³")
+        print(f"  Total Inflow: {total_inflow:.2f} Mm^3")
+        print(f"  Storage Change: {storage_change:.2f} Mm^3")
 
         # Allocation statistics
         print(f"\nAllocation Statistics:")
@@ -424,9 +424,9 @@ class WaterResourcesOptimization:
             satisfaction = 100 * allocation_total / demand_total if demand_total > 0 else 100
 
             print(f"\n  {user.user_id} ({user.user_type}):")
-            print(f"    Demand: {demand_total:.2f} Mm³")
-            print(f"    Allocated: {allocation_total:.2f} Mm³")
-            print(f"    Shortage: {shortage_total:.2f} Mm³")
+            print(f"    Demand: {demand_total:.2f} Mm^3")
+            print(f"    Allocated: {allocation_total:.2f} Mm^3")
+            print(f"    Shortage: {shortage_total:.2f} Mm^3")
             print(f"    Satisfaction: {satisfaction:.1f}%")
 
         # Reservoir statistics
@@ -435,16 +435,16 @@ class WaterResourcesOptimization:
         storage_max = np.max(results['reservoir_storage']) / 1e6
 
         print(f"\nReservoir Storage:")
-        print(f"  Mean: {storage_mean:.2f} Mm³ ({100*storage_mean/10:.0f}% of capacity)")
-        print(f"  Min: {storage_min:.2f} Mm³")
-        print(f"  Max: {storage_max:.2f} Mm³")
+        print(f"  Mean: {storage_mean:.2f} Mm^3 ({100*storage_mean/10:.0f}% of capacity)")
+        print(f"  Min: {storage_min:.2f} Mm^3")
+        print(f"  Max: {storage_max:.2f} Mm^3")
 
         # Environmental flow compliance
         env_violations = np.sum(results['allocations']['ECOLOGY-1'] < self.env_flow_min)
         compliance_rate = 100 * (1 - env_violations / self.nt)
 
         print(f"\nEnvironmental Flow Compliance:")
-        print(f"  Required: {self.env_flow_min:.1f} m³/s")
+        print(f"  Required: {self.env_flow_min:.1f} m^3/s")
         print(f"  Compliance Rate: {compliance_rate:.1f}%")
         print(f"  Violations: {env_violations} time steps")
 
@@ -471,7 +471,7 @@ class WaterResourcesOptimization:
         ax1.plot(time_days, total_demand, 'r--', linewidth=2, label='Total Demand')
         ax1.fill_between(time_days, results['inflow'], alpha=0.3, color='blue')
         ax1.set_xlabel('Time (days)', fontsize=11)
-        ax1.set_ylabel('Flow (m³/s)', fontsize=11)
+        ax1.set_ylabel('Flow (m^3/s)', fontsize=11)
         ax1.set_title('River Inflow vs Total Demand', fontsize=12, fontweight='bold')
         ax1.legend(fontsize=10)
         ax1.grid(True, alpha=0.3)
@@ -483,7 +483,7 @@ class WaterResourcesOptimization:
             ax2.plot(time_days, results['demands'][user.user_id], linewidth=2,
                     color=colors[i], label=user.user_id)
         ax2.set_xlabel('Time (days)', fontsize=11)
-        ax2.set_ylabel('Demand (m³/s)', fontsize=11)
+        ax2.set_ylabel('Demand (m^3/s)', fontsize=11)
         ax2.set_title('Water Demands by User', fontsize=12, fontweight='bold')
         ax2.legend(fontsize=9)
         ax2.grid(True, alpha=0.3)
@@ -494,7 +494,7 @@ class WaterResourcesOptimization:
             ax3.plot(time_days, results['allocations'][user.user_id], linewidth=2,
                     color=colors[i], label=user.user_id)
         ax3.set_xlabel('Time (days)', fontsize=11)
-        ax3.set_ylabel('Allocation (m³/s)', fontsize=11)
+        ax3.set_ylabel('Allocation (m^3/s)', fontsize=11)
         ax3.set_title('Optimized Water Allocations', fontsize=12, fontweight='bold')
         ax3.legend(fontsize=9)
         ax3.grid(True, alpha=0.3)
@@ -505,7 +505,7 @@ class WaterResourcesOptimization:
             ax4.plot(time_days, results['shortage'][user.user_id], linewidth=2,
                     color=colors[i], label=user.user_id)
         ax4.set_xlabel('Time (days)', fontsize=11)
-        ax4.set_ylabel('Shortage (m³/s)', fontsize=11)
+        ax4.set_ylabel('Shortage (m^3/s)', fontsize=11)
         ax4.set_title('Water Shortage by User', fontsize=12, fontweight='bold')
         ax4.legend(fontsize=9)
         ax4.grid(True, alpha=0.3)
@@ -517,7 +517,7 @@ class WaterResourcesOptimization:
                    linewidth=1.5, label='Capacity')
         ax5.fill_between(time_days, results['reservoir_storage'] / 1e6, alpha=0.3, color='green')
         ax5.set_xlabel('Time (days)', fontsize=11)
-        ax5.set_ylabel('Storage (million m³)', fontsize=11)
+        ax5.set_ylabel('Storage (million m^3)', fontsize=11)
         ax5.set_title('Reservoir Storage', fontsize=12, fontweight='bold')
         ax5.legend(fontsize=10)
         ax5.grid(True, alpha=0.3)
@@ -534,7 +534,7 @@ class WaterResourcesOptimization:
                         where=(results['allocations']['ECOLOGY-1'] < self.env_flow_min),
                         alpha=0.3, color='red', label='Violation')
         ax6.set_xlabel('Time (days)', fontsize=11)
-        ax6.set_ylabel('Flow (m³/s)', fontsize=11)
+        ax6.set_ylabel('Flow (m^3/s)', fontsize=11)
         ax6.set_title('Environmental Flow Compliance', fontsize=12, fontweight='bold')
         ax6.legend(fontsize=9)
         ax6.grid(True, alpha=0.3)
@@ -574,7 +574,7 @@ class WaterResourcesOptimization:
             ax8.plot(time_days, cumulative_allocation, linewidth=2,
                     color=colors[i], label=user.user_id)
         ax8.set_xlabel('Time (days)', fontsize=11)
-        ax8.set_ylabel('Cumulative Allocation (Mm³)', fontsize=11)
+        ax8.set_ylabel('Cumulative Allocation (Mm^3)', fontsize=11)
         ax8.set_title('Cumulative Water Allocation', fontsize=12, fontweight='bold')
         ax8.legend(fontsize=9)
         ax8.grid(True, alpha=0.3)
@@ -628,20 +628,20 @@ def main():
     print("Case Study Completed Successfully!")
     print("="*70)
     print("\nKey Achievements:")
-    print("  ✓ Modeled water allocation system with 4 users")
-    print("  ✓ Simulated 1-week operation (168 hours)")
-    print("  ✓ Implemented priority-based optimization")
-    print("  ✓ Managed reservoir storage (10 Mm³ capacity)")
-    print("  ✓ Enforced environmental flow constraints")
-    print("  ✓ Analyzed user satisfaction rates")
-    print("  ✓ Generated comprehensive visualizations")
+    print("   Modeled water allocation system with 4 users")
+    print("   Simulated 1-week operation (168 hours)")
+    print("   Implemented priority-based optimization")
+    print("   Managed reservoir storage (10 Mm^3 capacity)")
+    print("   Enforced environmental flow constraints")
+    print("   Analyzed user satisfaction rates")
+    print("   Generated comprehensive visualizations")
     print("\nThis case study demonstrates:")
-    print("  • Multi-user water allocation")
-    print("  • Time-varying demands")
-    print("  • Priority-based optimization")
-    print("  • Reservoir operation")
-    print("  • Environmental flow constraints")
-    print("  • MPC framework (simplified)")
+    print("  - Multi-user water allocation")
+    print("  - Time-varying demands")
+    print("  - Priority-based optimization")
+    print("  - Reservoir operation")
+    print("  - Environmental flow constraints")
+    print("  - MPC framework (simplified)")
     print("\n" + "="*70)
     print("STAGE 4 COMPLETE - 100% (12/12 tasks)")
     print("="*70 + "\n")

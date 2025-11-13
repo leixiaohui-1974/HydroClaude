@@ -248,7 +248,7 @@ class ResultValidator:
         if not converged:
             self.passed = False
 
-        status = "✓ 收敛" if converged else "✗ 未收敛"
+        status = " 收敛" if converged else " 未收敛"
         msg = f"[{status}] 迭代次数: {iterations} ({speed})"
         self.messages.append(msg)
         print(msg)
@@ -323,7 +323,7 @@ class ResultValidator:
 
         if save_path:
             fig.savefig(save_path, dpi=150, bbox_inches='tight')
-            print(f"  ✓ 图表已保存: {save_path}")
+            print(f"   图表已保存: {save_path}")
 
         return fig
 
@@ -344,7 +344,7 @@ class ResultValidator:
         lines.append("")
 
         # 总体结果
-        status = "✓ 通过" if self.passed else "✗ 失败"
+        status = " 通过" if self.passed else " 失败"
         lines.append(f"总体结果: {status}")
         lines.append("")
 
@@ -410,7 +410,7 @@ class ResultValidator:
         report = self.generate_report(print_report=False)
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(report)
-        print(f"✓ 报告已保存: {filepath}")
+        print(f" 报告已保存: {filepath}")
 
 
 # 便捷函数

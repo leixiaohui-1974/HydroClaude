@@ -11,13 +11,28 @@ import logging
 import sys
 import os
 
-from models.simulation import (
-    SimulationRequest,
-    SimulationResponse,
-    SimulationStatusResponse,
-    SimulationResultResponse,
-    SimulationMetrics
-)
+# 添加当前目录到path，以便导入models
+current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
+
+# 尝试相对导入，如果失败则使用绝对导入
+try:
+    from ..models.simulation import (
+        SimulationRequest,
+        SimulationResponse,
+        SimulationStatusResponse,
+        SimulationResultResponse,
+        SimulationMetrics
+    )
+except ImportError:
+    from models.simulation import (
+        SimulationRequest,
+        SimulationResponse,
+        SimulationStatusResponse,
+        SimulationResultResponse,
+        SimulationMetrics
+    )
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -43,14 +58,27 @@ def run_simulation_task(task_id: str, config: dict):
     Background task to run simulation
     Updates simulation_tasks with results
     """
+    import io
+    import sys as _sys
+    
+    # 在Windows上，完全屏蔽stdout/stderr以避免编码问题
+    # 必须在任何其他操作之前屏蔽，包括import
+    old_stdout = _sys.stdout
+    old_stderr = _sys.stderr
+    
+    # 立即屏蔽所有输出
+    if _sys.platform == 'win32':
+        _sys.stdout = io.StringIO()
+        _sys.stderr = io.StringIO()
+    
     try:
         # Update status to running
         simulation_tasks[task_id]['status'] = 'running'
         simulation_tasks[task_id]['started_at'] = datetime.now()
 
-        logger.info(f"Starting simulation task {task_id}")
+        # logger.info(f"Starting simulation task {task_id}")  # 禁用以避免编码问题
 
-        # Import engine
+        # Import engine (在屏蔽输出之后)
         from core.hydraulic_engine import HydraulicEngine
 
         # Create engine and run simulation
@@ -63,18 +91,33 @@ def run_simulation_task(task_id: str, config: dict):
             simulation_tasks[task_id]['result'] = result
             simulation_tasks[task_id]['completed_at'] = datetime.now()
             simulation_tasks[task_id]['duration'] = result.duration
-            logger.info(f"Simulation task {task_id} completed successfully")
+            # logger.info(f"Simulation task {task_id} completed successfully")  # 禁用
         else:
             simulation_tasks[task_id]['status'] = 'failed'
-            simulation_tasks[task_id]['error'] = result.error
+            # 安全地处理错误信息，移除任何可能的非ASCII字符
+            try:
+                error_msg = str(result.error).encode('ascii', 'ignore').decode('ascii') if result.error else "Unknown error"
+            except:
+                error_msg = "Unknown error (encoding issue)"
+            simulation_tasks[task_id]['error'] = error_msg
             simulation_tasks[task_id]['completed_at'] = datetime.now()
-            logger.error(f"Simulation task {task_id} failed: {result.error}")
+            # logger.error(f"Simulation task {task_id} failed: {result.error}")  # 禁用
 
     except Exception as e:
-        logger.error(f"Simulation task {task_id} encountered error: {e}", exc_info=True)
+        # logger.error(f"Simulation task {task_id} encountered error: {e}", exc_info=True)  # 禁用
         simulation_tasks[task_id]['status'] = 'failed'
-        simulation_tasks[task_id]['error'] = str(e)
+        # 安全地转换错误信息，移除任何可能的非ASCII字符
+        try:
+            error_msg = str(e).encode('ascii', 'ignore').decode('ascii')
+        except:
+            error_msg = "Unknown error (encoding issue)"
+        simulation_tasks[task_id]['error'] = error_msg
         simulation_tasks[task_id]['completed_at'] = datetime.now()
+    
+    finally:
+        # 恢复stdout/stderr
+        _sys.stdout = old_stdout
+        _sys.stderr = old_stderr
 
 
 @router.post("", response_model=SimulationResponse, status_code=201)

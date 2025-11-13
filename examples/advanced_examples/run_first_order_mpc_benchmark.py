@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 一阶MPC基准测试（配合LinearizedCanalSimulator）
 
@@ -12,6 +13,8 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from linearized_canal_simulator import LinearizedCanalSimulator
 
@@ -37,7 +40,7 @@ class SimpleFirstOrderMPC:
         self.u_max = u_max
         self.du_max = du_max
 
-        # 离散化：Δy[k+1] = a*Δy[k] + b*Δu[k]
+        # 离散化：Deltay[k+1] = a*Deltay[k] + b*Deltau[k]
         self.a = np.exp(-dt / tau)
         self.b = K * (1 - np.exp(-dt / tau))
 
@@ -45,7 +48,7 @@ class SimpleFirstOrderMPC:
         self.prob = None
 
         print(f"简单一阶MPC初始化:")
-        print(f"  K={K:.4f}, τ={tau:.1f}s, dt={dt}s")
+        print(f"  K={K:.4f}, tau={tau:.1f}s, dt={dt}s")
         print(f"  工作点: y_work={y_work}m, u_work={u_work}m")
         print(f"  离散参数: a={self.a:.6f}, b={self.b:.6f}")
 
@@ -81,7 +84,7 @@ class SimpleFirstOrderMPC:
                 constraints.append(du >= -self.du_max)
                 constraints.append(du <= self.du_max)
 
-            # 偏差模型：Δy[k+1] = a*Δy[k] + b*Δu[k]
+            # 偏差模型：Deltay[k+1] = a*Deltay[k] + b*Deltau[k]
             # 转换为绝对值：y[k+1] - y_work = a*(y[k] - y_work) + b*(u[k] - u_work)
             dy_k = y[k] - self.y_work
             du_k = u_k - self.u_work
@@ -120,7 +123,7 @@ class SimpleFirstOrderMPC:
                 'u_seq': self.u_var.value
             }
         else:
-            print(f"⚠️ 求解失败: {self.prob.status}")
+            print(f" 求解失败: {self.prob.status}")
             return self.u_prev, {'success': False, 'status': self.prob.status}
 
     def reset(self):
@@ -146,7 +149,7 @@ simulator = LinearizedCanalSimulator(h_work=h_work, a_work=a_work, dt=dt, use_li
 K, tau = simulator.get_system_params()
 print(f"\n从LinearizedCanalSimulator获取参数:")
 print(f"  K = {K:.4f}")
-print(f"  τ = {tau:.1f}s")
+print(f"  tau = {tau:.1f}s")
 
 # 创建一阶MPC控制器
 controller = SimpleFirstOrderMPC(
@@ -222,7 +225,7 @@ ax1.plot(time_hist, h_hist, 'b-', linewidth=2, label='实际水位h')
 ax1.axhline(setpoint, color='r', linestyle='--', linewidth=1.5, label=f'目标h={setpoint}m')
 ax1.axhline(h_work, color='k', linestyle=':', alpha=0.5, label=f'工作点h*={h_work}m')
 ax1.axvline(200, color='gray', linestyle='--', alpha=0.3)
-ax1.text(200, 2.65, '扰动：Q_in=20→25m³/s', fontsize=10)
+ax1.text(200, 2.65, '扰动：Q_in=20->25m^3/s', fontsize=10)
 ax1.set_ylabel('水位 (m)', fontsize=12)
 ax1.set_title(f'一阶MPC控制效果 (MAE={mae:.4f}m)', fontsize=14, fontweight='bold')
 ax1.legend()
@@ -239,12 +242,12 @@ ax2.grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('first_order_mpc_benchmark.png', dpi=150, bbox_inches='tight')
-print(f"\n✅ 图片已保存: first_order_mpc_benchmark.png")
+print(f"\n 图片已保存: first_order_mpc_benchmark.png")
 
 print("\n" + "=" * 80)
 print("结论")
 print("=" * 80)
 print(f"一阶MPC（无积分器）成功控制线性化渠道系统")
 print(f"MAE = {mae:.4f}m，控制效果良好")
-print(f"与Adaptive PI (MAE≈0.07m) 相比性能相当或更优")
+print(f"与Adaptive PI (MAE~=0.07m) 相比性能相当或更优")
 print("=" * 80)

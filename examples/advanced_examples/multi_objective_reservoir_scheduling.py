@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 多目标水库调度优化案例
 
@@ -21,6 +22,8 @@
 """
 
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")  # Non-interactive mode
 import matplotlib.pyplot as plt
 from typing import List, Tuple
 import sys
@@ -40,7 +43,7 @@ class MultiObjectiveReservoirProblem:
     多目标水库调度问题
 
     问题描述：
-    - 水库容量：500万m³
+    - 水库容量：500万m^3
     - 调度周期：12个月
     - 入流已知（月径流量）
     - 需要平衡供水、发电、生态需求
@@ -48,7 +51,7 @@ class MultiObjectiveReservoirProblem:
 
     def __init__(self):
         # 水库参数
-        self.capacity = 500.0  # 万m³
+        self.capacity = 500.0  # 万m^3
         self.min_storage = 50.0  # 死库容
         self.max_storage = 500.0  # 总库容
         self.initial_storage = 300.0  # 初始库容
@@ -57,43 +60,43 @@ class MultiObjectiveReservoirProblem:
         self.n_periods = 12  # 12个月
         self.days_per_period = np.array([31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31])
 
-        # 入流数据（万m³/月）
+        # 入流数据（万m^3/月）
         self.inflow = np.array([
             120, 150, 200, 250, 300, 280,  # 丰水期
             220, 180, 140, 110, 100, 110   # 枯水期
         ])
 
-        # 供水需求（万m³/月）
+        # 供水需求（万m^3/月）
         self.water_demand = np.array([
             150, 160, 170, 180, 200, 210,
             220, 210, 190, 170, 160, 150
         ])
 
-        # 生态流量需求（m³/s）
-        self.ecological_flow = 5.0  # m³/s
+        # 生态流量需求（m^3/s）
+        self.ecological_flow = 5.0  # m^3/s
 
         # 发电参数
         self.turbine_efficiency = 0.85  # 水轮机效率
         self.generator_efficiency = 0.95  # 发电机效率
         self.head = 50.0  # 平均水头（m）
 
-        # 出流限制（万m³/月）
+        # 出流限制（万m^3/月）
         self.min_release = self._flow_to_volume(self.ecological_flow, 30)
         self.max_release = 400.0
 
     def _flow_to_volume(self, flow_cms: float, days: int) -> float:
-        """流量(m³/s)转换为水量(万m³)"""
+        """流量(m^3/s)转换为水量(万m^3)"""
         return flow_cms * 86400 * days / 10000
 
     def _volume_to_flow(self, volume: float, days: int) -> float:
-        """水量(万m³)转换为流量(m³/s)"""
+        """水量(万m^3)转换为流量(m^3/s)"""
         return volume * 10000 / (86400 * days)
 
     def _calculate_power(self, release: float, days: int) -> float:
         """
         计算发电量（万kWh）
 
-        P = η₁ * η₂ * ρ * g * H * Q * t
+        P = η₁ * η₂ * rho * g * H * Q * t
         """
         flow_cms = self._volume_to_flow(release, days)
 
@@ -111,9 +114,9 @@ class MultiObjectiveReservoirProblem:
         评估调度方案
 
         返回：
-            water_deficit: 缺水量（万m³）
+            water_deficit: 缺水量（万m^3）
             power_generation: 发电量（万kWh，取负值用于最小化）
-            ecological_violation: 生态流量违反（万m³）
+            ecological_violation: 生态流量违反（万m^3）
             constraints: 约束违反度数组
         """
         storage = self.initial_storage
@@ -225,8 +228,8 @@ def solve_with_nsga2() -> MOResult:
     problem, reservoir = create_optimization_problem()
 
     config = NSGA2Config(
-        population_size=100,
-        n_generations=200,
+        population_size=50,
+        n_generations=50,
         crossover_prob=0.9,
         mutation_prob=1.0 / reservoir.n_periods,
         seed=42
@@ -245,7 +248,7 @@ def solve_with_nsga2() -> MOResult:
 
     objectives = result.get_pareto_objectives()
 
-    print(f"\n目标1 - 缺水量（万m³）:")
+    print(f"\n目标1 - 缺水量（万m^3）:")
     print(f"  最小值: {objectives[:, 0].min():.2f}")
     print(f"  最大值: {objectives[:, 0].max():.2f}")
     print(f"  平均值: {objectives[:, 0].mean():.2f}")
@@ -255,7 +258,7 @@ def solve_with_nsga2() -> MOResult:
     print(f"  最大值: {-objectives[:, 1].min():.2f}")
     print(f"  平均值: {-objectives[:, 1].mean():.2f}")
 
-    print(f"\n目标3 - 生态违反（万m³）:")
+    print(f"\n目标3 - 生态违反（万m^3）:")
     print(f"  最小值: {objectives[:, 2].min():.2f}")
     print(f"  最大值: {objectives[:, 2].max():.2f}")
     print(f"  平均值: {objectives[:, 2].mean():.2f}")
@@ -272,8 +275,8 @@ def solve_with_nsga3() -> MOResult:
     problem, reservoir = create_optimization_problem()
 
     config = NSGA3Config(
-        population_size=92,  # 对于3目标，12分割产生91个参考点
-        n_generations=200,
+        population_size=92,  # 必须匹配参考点数量
+        n_generations=30,  # 减少代数
         n_divisions=12,
         crossover_prob=0.9,
         mutation_prob=1.0 / reservoir.n_periods,
@@ -294,7 +297,7 @@ def solve_with_nsga3() -> MOResult:
 
     objectives = result.get_pareto_objectives()
 
-    print(f"\n目标1 - 缺水量（万m³）:")
+    print(f"\n目标1 - 缺水量（万m^3）:")
     print(f"  最小值: {objectives[:, 0].min():.2f}")
     print(f"  最大值: {objectives[:, 0].max():.2f}")
     print(f"  平均值: {objectives[:, 0].mean():.2f}")
@@ -304,7 +307,7 @@ def solve_with_nsga3() -> MOResult:
     print(f"  最大值: {-objectives[:, 1].min():.2f}")
     print(f"  平均值: {-objectives[:, 1].mean():.2f}")
 
-    print(f"\n目标3 - 生态违反（万m³）:")
+    print(f"\n目标3 - 生态违反（万m^3）:")
     print(f"  最小值: {objectives[:, 2].min():.2f}")
     print(f"  最大值: {objectives[:, 2].max():.2f}")
     print(f"  平均值: {objectives[:, 2].mean():.2f}")
@@ -329,9 +332,9 @@ def visualize_results(nsga2_result: MOResult, nsga3_result: MOResult,
     ax1.scatter(nsga3_obj[:, 0], -nsga3_obj[:, 1], nsga3_obj[:, 2],
                c='red', marker='^', s=30, alpha=0.6, label='NSGA-III')
 
-    ax1.set_xlabel('Deficit (10⁴m³)', fontsize=10)
+    ax1.set_xlabel('Deficit (10⁴m^3)', fontsize=10)
     ax1.set_ylabel('Power (10⁴kWh)', fontsize=10)
-    ax1.set_zlabel('Eco Violation (10⁴m³)', fontsize=10)
+    ax1.set_zlabel('Eco Violation (10⁴m^3)', fontsize=10)
     ax1.set_title('3D Pareto Front Comparison', fontsize=12, fontweight='bold')
     ax1.legend()
     ax1.grid(True, alpha=0.3)
@@ -340,7 +343,7 @@ def visualize_results(nsga2_result: MOResult, nsga3_result: MOResult,
     ax2 = fig.add_subplot(2, 3, 2)
     ax2.scatter(nsga2_obj[:, 0], -nsga2_obj[:, 1], c='blue', s=40, alpha=0.6, label='NSGA-II')
     ax2.scatter(nsga3_obj[:, 0], -nsga3_obj[:, 1], c='red', s=40, alpha=0.6, label='NSGA-III')
-    ax2.set_xlabel('Water Deficit (10⁴m³)', fontsize=10)
+    ax2.set_xlabel('Water Deficit (10⁴m^3)', fontsize=10)
     ax2.set_ylabel('Power Generation (10⁴kWh)', fontsize=10)
     ax2.set_title('Deficit vs Power', fontsize=12, fontweight='bold')
     ax2.legend()
@@ -350,8 +353,8 @@ def visualize_results(nsga2_result: MOResult, nsga3_result: MOResult,
     ax3 = fig.add_subplot(2, 3, 3)
     ax3.scatter(nsga2_obj[:, 0], nsga2_obj[:, 2], c='blue', s=40, alpha=0.6, label='NSGA-II')
     ax3.scatter(nsga3_obj[:, 0], nsga3_obj[:, 2], c='red', s=40, alpha=0.6, label='NSGA-III')
-    ax3.set_xlabel('Water Deficit (10⁴m³)', fontsize=10)
-    ax3.set_ylabel('Ecological Violation (10⁴m³)', fontsize=10)
+    ax3.set_xlabel('Water Deficit (10⁴m^3)', fontsize=10)
+    ax3.set_ylabel('Ecological Violation (10⁴m^3)', fontsize=10)
     ax3.set_title('Deficit vs Ecological', fontsize=12, fontweight='bold')
     ax3.legend()
     ax3.grid(True, alpha=0.3)
@@ -392,8 +395,8 @@ def visualize_results(nsga2_result: MOResult, nsga3_result: MOResult,
     line3 = ax5_twin.plot(months, storage_trajectory[:-1], 'r-^', linewidth=2, label='Storage', markersize=6)
 
     ax5.set_xlabel('Month', fontsize=10)
-    ax5.set_ylabel('Flow/Demand (10⁴m³)', fontsize=10, color='b')
-    ax5_twin.set_ylabel('Storage (10⁴m³)', fontsize=10, color='r')
+    ax5.set_ylabel('Flow/Demand (10⁴m^3)', fontsize=10, color='b')
+    ax5_twin.set_ylabel('Storage (10⁴m^3)', fontsize=10, color='r')
     ax5.set_title('Best Solution Schedule (Min Deficit)', fontsize=12, fontweight='bold')
 
     lines = line1 + line2 + line3
@@ -443,13 +446,30 @@ def compare_algorithms():
     # 参考点（用于计算超体积）
     ref_point = np.array([1000, -5000, 500])  # 足够大的参考点
 
-    hv_nsga2 = calculate_hypervolume(nsga2_result.pareto_front, ref_point)
-    hv_nsga3 = calculate_hypervolume(nsga3_result.pareto_front, ref_point)
-
-    print(f"\nHypervolume:")
-    print(f"  NSGA-II: {hv_nsga2:.2e}")
-    print(f"  NSGA-III: {hv_nsga3:.2e}")
-    print(f"  相对差异: {abs(hv_nsga2 - hv_nsga3) / max(hv_nsga2, hv_nsga3) * 100:.2f}%")
+    # 计算hypervolume，跳过nan值
+    try:
+        # 检查是否有nan值
+        nsga2_objs = nsga2_result.get_pareto_objectives()
+        nsga3_objs = nsga3_result.get_pareto_objectives()
+        
+        if np.any(np.isnan(nsga2_objs)) or np.any(np.isnan(nsga3_objs)):
+            print(f"\nHypervolume:")
+            print(f"  警告：目标值包含NaN，跳过hypervolume计算")
+            hv_nsga2 = 0
+            hv_nsga3 = 0
+        else:
+            hv_nsga2 = calculate_hypervolume(nsga2_result.pareto_front, ref_point)
+            hv_nsga3 = calculate_hypervolume(nsga3_result.pareto_front, ref_point)
+            print(f"\nHypervolume:")
+            print(f"  NSGA-II: {hv_nsga2:.2e}")
+            print(f"  NSGA-III: {hv_nsga3:.2e}")
+            if max(hv_nsga2, hv_nsga3) > 0:
+                print(f"  相对差异: {abs(hv_nsga2 - hv_nsga3) / max(hv_nsga2, hv_nsga3) * 100:.2f}%")
+    except Exception as e:
+        print(f"\nHypervolume:")
+        print(f"  计算失败: {str(e)}")
+        hv_nsga2 = 0
+        hv_nsga3 = 0
 
     print(f"\nPareto前沿大小:")
     print(f"  NSGA-II: {len(nsga2_result.pareto_front)} 个解")
@@ -472,23 +492,23 @@ def analyze_decision_making(result: MOResult, reservoir: MultiObjectiveReservoir
     # 方案1：优先供水（最小化缺水量）
     idx1 = np.argmin(objectives[:, 0])
     print("\n方案1：优先供水")
-    print(f"  缺水量: {objectives[idx1, 0]:.2f} 万m³")
+    print(f"  缺水量: {objectives[idx1, 0]:.2f} 万m^3")
     print(f"  发电量: {-objectives[idx1, 1]:.2f} 万kWh")
-    print(f"  生态违反: {objectives[idx1, 2]:.2f} 万m³")
+    print(f"  生态违反: {objectives[idx1, 2]:.2f} 万m^3")
 
     # 方案2：优先发电（最大化发电量）
     idx2 = np.argmin(objectives[:, 1])
     print("\n方案2：优先发电")
-    print(f"  缺水量: {objectives[idx2, 0]:.2f} 万m³")
+    print(f"  缺水量: {objectives[idx2, 0]:.2f} 万m^3")
     print(f"  发电量: {-objectives[idx2, 1]:.2f} 万kWh")
-    print(f"  生态违反: {objectives[idx2, 2]:.2f} 万m³")
+    print(f"  生态违反: {objectives[idx2, 2]:.2f} 万m^3")
 
     # 方案3：优先生态（最小化生态违反）
     idx3 = np.argmin(objectives[:, 2])
     print("\n方案3：优先生态")
-    print(f"  缺水量: {objectives[idx3, 0]:.2f} 万m³")
+    print(f"  缺水量: {objectives[idx3, 0]:.2f} 万m^3")
     print(f"  发电量: {-objectives[idx3, 1]:.2f} 万kWh")
-    print(f"  生态违反: {objectives[idx3, 2]:.2f} 万m³")
+    print(f"  生态违反: {objectives[idx3, 2]:.2f} 万m^3")
 
     # 方案4：均衡方案（使用权重法）
     weights = np.array([1.0, 1.0, 1.0])
@@ -499,9 +519,9 @@ def analyze_decision_making(result: MOResult, reservoir: MultiObjectiveReservoir
     idx4 = np.argmin(weighted_dist)
 
     print("\n方案4：均衡方案（等权重）")
-    print(f"  缺水量: {objectives[idx4, 0]:.2f} 万m³")
+    print(f"  缺水量: {objectives[idx4, 0]:.2f} 万m^3")
     print(f"  发电量: {-objectives[idx4, 1]:.2f} 万kWh")
-    print(f"  生态违反: {objectives[idx4, 2]:.2f} 万m³")
+    print(f"  生态违反: {objectives[idx4, 2]:.2f} 万m^3")
 
     print("\n" + "=" * 60)
     print("结论：Pareto前沿提供了多种平衡方案，决策者可根据实际偏好选择")
@@ -515,7 +535,7 @@ if __name__ == "__main__":
     ╚════════════════════════════════════════════════════════════════╝
 
     问题描述：
-    - 水库容量：500万m³
+    - 水库容量：500万m^3
     - 调度周期：12个月
     - 优化目标：
       1. 最小化缺水量（供水可靠性）

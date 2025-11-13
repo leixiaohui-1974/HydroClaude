@@ -61,7 +61,7 @@ def test_individual_dominance():
     assert ind1.dominates(ind3) == False
     assert ind3.dominates(ind1) == False
 
-    print("  ✓ 支配关系判断正确")
+    print("   支配关系判断正确")
 
 
 def test_fast_non_dominated_sort():
@@ -84,7 +84,7 @@ def test_fast_non_dominated_sort():
     assert len(fronts[1]) == 1  # 第2层有1个
     assert len(fronts[2]) == 1  # 第3层有1个
 
-    print(f"  ✓ 排序正确: {len(fronts)} 层")
+    print(f"   排序正确: {len(fronts)} 层")
     print(f"    第1层: {len(fronts[0])} 个解")
     print(f"    第2层: {len(fronts[1])} 个解")
     print(f"    第3层: {len(fronts[2])} 个解")
@@ -112,7 +112,7 @@ def test_crowding_distance():
     for ind in front[1:-1]:
         assert 0 < ind.crowding_distance < float('inf')
 
-    print("  ✓ 拥挤距离计算正确")
+    print("   拥挤距离计算正确")
     print(f"    边界点: inf")
     print(f"    中间点: {[f'{ind.crowding_distance:.4f}' for ind in front[1:-1]]}")
 
@@ -132,7 +132,7 @@ def test_reference_points():
     for point in ref_points:
         assert abs(np.sum(point) - 1.0) < 1e-10
 
-    print(f"  ✓ 生成了 {len(ref_points)} 个参考点")
+    print(f"   生成了 {len(ref_points)} 个参考点")
     print(f"    示例: {ref_points[0]}, 和={np.sum(ref_points[0]):.6f}")
 
 
@@ -156,7 +156,7 @@ def test_genetic_operators():
         assert bounds[i][0] <= child1.decision_variables[i] <= bounds[i][1]
         assert bounds[i][0] <= child2.decision_variables[i] <= bounds[i][1]
 
-    print("  ✓ 交叉算子正确")
+    print("   交叉算子正确")
 
     # 测试变异
     mutated = polynomial_mutation(child1, bounds, eta=20.0, mutation_prob=1.0)
@@ -167,7 +167,7 @@ def test_genetic_operators():
     for i in range(3):
         assert bounds[i][0] <= mutated.decision_variables[i] <= bounds[i][1]
 
-    print("  ✓ 变异算子正确")
+    print("   变异算子正确")
 
 
 def test_zdt1_problem():
@@ -205,7 +205,7 @@ def test_zdt1_problem():
     optimizer = NSGA2(problem, config)
     result = optimizer.optimize()
 
-    print(f"  ✓ NSGA-II 完成")
+    print(f"   NSGA-II 完成")
     print(f"    Pareto前沿: {len(result.pareto_front)} 个解")
     print(f"    运行代数: {result.n_generations}")
 
@@ -268,7 +268,7 @@ def test_dtlz2_problem():
     optimizer = NSGA3(problem, config)
     result = optimizer.optimize()
 
-    print(f"  ✓ NSGA-III 完成")
+    print(f"   NSGA-III 完成")
     print(f"    Pareto前沿: {len(result.pareto_front)} 个解")
     print(f"    参考点数: {len(optimizer.ref_points)}")
     print(f"    运行代数: {result.n_generations}")
@@ -277,7 +277,7 @@ def test_dtlz2_problem():
     assert len(result.convergence_history) == config.n_generations
     assert len(result.pareto_front) > 0
 
-    # DTLZ2的真实Pareto前沿在球面上：f1² + f2² + f3² = 1
+    # DTLZ2的真实Pareto前沿在球面上：f1^2 + f2^2 + f3^2 = 1
     objectives = result.get_pareto_objectives()
     radii = np.sqrt(np.sum(objectives ** 2, axis=1))
 
@@ -311,7 +311,7 @@ def test_hypervolume():
     # 总和应该是一个正值
     assert hv > 0
 
-    print(f"  ✓ 超体积 = {hv:.4f}")
+    print(f"   超体积 = {hv:.4f}")
 
 
 def run_all_tests():
@@ -331,13 +331,13 @@ def run_all_tests():
         test_hypervolume()
 
         print("\n" + "=" * 60)
-        print("✓ 所有测试通过！")
+        print(" 所有测试通过！")
         print("=" * 60)
 
         return True
 
     except AssertionError as e:
-        print(f"\n✗ 测试失败: {e}")
+        print(f"\n 测试失败: {e}")
         import traceback
         traceback.print_exc()
         return False

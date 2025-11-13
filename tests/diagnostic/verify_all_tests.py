@@ -39,14 +39,14 @@ def run_test(test_func, test_name):
 
     try:
         test_func()
-        print(f"\n✅ {test_name} 通过\n")
+        print(f"\n {test_name} 通过\n")
         return True, None
     except AssertionError as e:
-        print(f"\n❌ {test_name} 失败")
+        print(f"\n {test_name} 失败")
         print(f"断言错误: {str(e)}\n")
         return False, str(e)
     except Exception as e:
-        print(f"\n❌ {test_name} 异常")
+        print(f"\n {test_name} 异常")
         print(f"错误: {str(e)}")
         traceback.print_exc()
         return False, str(e)
@@ -95,7 +95,7 @@ def main():
     print("-"*80)
 
     for result in results:
-        status = "✅ 通过" if result['success'] else "❌ 失败"
+        status = " 通过" if result['success'] else " 失败"
         print(f"{result['name']:<45} {status}")
 
     print("-"*80)
@@ -105,12 +105,12 @@ def main():
     print(f"\n{'='*80}")
     print("MacDonald Test 4 状态")
     print(f"{'='*80}")
-    print("状态: ⚠️  已知限制（质量误差27.89%）")
+    print("状态: ️  已知限制（质量误差27.89%）")
     print("原因: WENO3+HLL算法对强激波+无摩阻问题的固有限制")
     print("决定: 接受为算法极限，不再优化")
     print("尝试:")
-    print("  1. 增强WENO3算法 → ❌ 失败（数值爆炸）")
-    print("  2. 参数优化 → ❌ 失败（<1%改善）")
+    print("  1. 增强WENO3算法 ->  失败（数值爆炸）")
+    print("  2. 参数优化 ->  失败（<1%改善）")
 
     # 最终评估
     print(f"\n{'='*80}")
@@ -118,16 +118,16 @@ def main():
     print(f"{'='*80}")
 
     if passed == total:
-        print(f"\n✅ 所有验证测试通过 ({passed}/{total})")
-        print(f"✅ MacDonald Tests 1-3, 5: 100% 通过率")
-        print(f"⚠️  包含Test 4: 80% 通过率 (4/5)")
+        print(f"\n 所有验证测试通过 ({passed}/{total})")
+        print(f" MacDonald Tests 1-3, 5: 100% 通过率")
+        print(f"️  包含Test 4: 80% 通过率 (4/5)")
         print(f"\n结论: 代码质量良好，无退化。Test 4限制已明确文档化。")
         print(f"\n软件定位: 学术/教学工具")
         print(f"  - 适用: 标准测试、算法研究、教学演示")
         print(f"  - 不适用: 关键工程应用（需100%通过率）")
         return 0
     else:
-        print(f"\n❌ 存在测试失败 ({passed}/{total})")
+        print(f"\n 存在测试失败 ({passed}/{total})")
         print(f"\n失败详情:")
         for result in results:
             if not result['success']:

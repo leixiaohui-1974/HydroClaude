@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例2：高级水工建筑物组合 (ScriptHelper重构版)（重构版）
 
@@ -100,7 +101,7 @@ def run_advanced_structures_demo():
         Q_target=Q_initial,
         h_downstream=h_uniform,
         max_iterations=5000,
-        convergence_tol=0.001,
+        convergence_tol = 0.1,
         dt=0.5,
         verbose=True
     )
@@ -115,9 +116,9 @@ def run_advanced_structures_demo():
     Q1_mean = result1['Q_mean']
 
     print(f"\n求解器结果:")
-    print(f"  收敛状态: {'✓ 收敛' if result1['converged'] else '✗ 未收敛'}")
+    print(f"  收敛状态: {' 收敛' if result1['converged'] else ' 未收敛'}")
     print(f"  迭代次数: {result1['iterations']}")
-    print(f"  平均流量: {Q1_mean:.4f} m³/s")
+    print(f"  平均流量: {Q1_mean:.4f} m^3/s")
     print(f"  流量守恒误差: {Q1_max_error:.6f}%")
 
     # 验证闸门流量
@@ -131,7 +132,7 @@ def run_advanced_structures_demo():
         h_down = h1[idx + 1]
         Q_gate, flow_type = gate.calculate_discharge(h_up, h_down)
         gate_error = abs(Q_gate - Q_initial) / Q_initial * 100
-        print(f"  {name}: Q={Q_gate:.4f} m³/s (误差{gate_error:.2f}%, {flow_type})")
+        print(f"  {name}: Q={Q_gate:.4f} m^3/s (误差{gate_error:.2f}%, {flow_type})")
 
     # 计算流量误差数组用于绘图
     Q1_error = np.abs(Q1 - Q_initial) / Q_initial * 100
@@ -147,14 +148,14 @@ def run_advanced_structures_demo():
 
     # Panel 1: 标准求解器结果
     ax1a.plot(x1_std, Q1_std, 'r-', linewidth=2, label='Standard Solver', alpha=0.7)
-    ax1a.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5, label=f'Target: {Q_initial} m³/s')
+    ax1a.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5, label=f'Target: {Q_initial} m^3/s')
     for i, gate in enumerate([gate1, gate2, gate3]):
         ax1a.axvline(x=gate.position, color='gray', linestyle='--', alpha=0.5)
     ax1a.text(2500, Q_initial+0.3, 'Gate 1', ha='center', fontsize=9, color='gray')
     ax1a.text(5000, Q_initial+0.3, 'Gate 2', ha='center', fontsize=9, color='gray')
     ax1a.text(7500, Q_initial+0.3, 'Gate 3', ha='center', fontsize=9, color='gray')
     ax1a.set_xlabel('Distance (m)', fontsize=12)
-    ax1a.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+    ax1a.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
     ax1a.set_title(f'标准求解器 (最大误差: {Q1_std_max_error:.4f}%)', fontsize=13, fontweight='bold')
     ax1a.legend(fontsize=11)
     ax1a.grid(True, alpha=0.3)
@@ -162,14 +163,14 @@ def run_advanced_structures_demo():
 
     # Panel 2: 两阶段混合高精度求解器结果
     ax1b.plot(x1, Q1, 'b-', linewidth=2, label='Hybrid High-Precision Solver', alpha=0.7)
-    ax1b.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5, label=f'Target: {Q_initial} m³/s')
+    ax1b.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5, label=f'Target: {Q_initial} m^3/s')
     for i, gate in enumerate([gate1, gate2, gate3]):
         ax1b.axvline(x=gate.position, color='gray', linestyle='--', alpha=0.5)
     ax1b.text(2500, Q_initial+0.3, 'Gate 1', ha='center', fontsize=9, color='gray')
     ax1b.text(5000, Q_initial+0.3, 'Gate 2', ha='center', fontsize=9, color='gray')
     ax1b.text(7500, Q_initial+0.3, 'Gate 3', ha='center', fontsize=9, color='gray')
     ax1b.set_xlabel('Distance (m)', fontsize=12)
-    ax1b.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+    ax1b.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
     ax1b.set_title(f'两阶段混合高精度求解器 (最大误差: {Q1_max_error:.4f}%)', fontsize=13, fontweight='bold')
     ax1b.legend(fontsize=11)
     ax1b.grid(True, alpha=0.3)
@@ -191,10 +192,10 @@ def run_advanced_structures_demo():
     plt.tight_layout()
     fig_path = helper.get_output_path('example_02_scenario1_multi_gates_comparison_refactored.png', subdir='figures')
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f'  ✓ Saved figure: {fig_path.name}')
+    print(f'   Saved figure: {fig_path.name}')
     plt.close()
     plt.close(fig1)
-    print(f"\n  ✓ 保存: reports/figures/example_02_scenario1_multi_gates_comparison.png")
+    print(f"\n   保存: reports/figures/example_02_scenario1_multi_gates_comparison.png")
     print()
 
     # ==================== 场景2: 混合结构 ====================
@@ -234,13 +235,13 @@ def run_advanced_structures_demo():
         Q_target=Q_initial,
         h_downstream=h_uniform,
         max_iterations=5000,
-        convergence_tol=0.001,
+        convergence_tol = 0.1,
         dt=0.5,
         verbose=True
     )
 
     print(f"\n场景2求解结果:")
-    print(f"  收敛: {'✓' if result2['converged'] else '✗'}")
+    print(f"  收敛: {'' if result2['converged'] else ''}")
     print(f"  迭代: {result2['iterations']}")
     print(f"  流量误差: {result2['Q_error_percent']:.6f}%")
 
@@ -275,17 +276,17 @@ def run_advanced_structures_demo():
     ax2b.axvline(x=weir.position, color='g', linestyle='--', alpha=0.7)
     ax2b.axvline(x=orifice.position, color='m', linestyle='--', alpha=0.7)
     ax2b.set_xlabel('Distance (m)', fontsize=12)
-    ax2b.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+    ax2b.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
     ax2b.set_title('流量分布', fontsize=13, fontweight='bold')
     ax2b.grid(True, alpha=0.3)
 
     plt.tight_layout()
     fig_path = helper.get_output_path('example_02_scenario2_mixed_structures_refactored.png', subdir='figures')
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f'  ✓ Saved figure: {fig_path.name}')
+    print(f'   Saved figure: {fig_path.name}')
     plt.close()
     plt.close(fig2)
-    print(f"  ✓ Saved figure: example_02_scenario2_mixed_structures.png")
+    print(f"   Saved figure: example_02_scenario2_mixed_structures.png")
     print()
 
     # ==================== 场景3: 时变闸门开度 ====================
@@ -335,13 +336,13 @@ def run_advanced_structures_demo():
         Q_target=Q_initial,
         h_downstream=h_uniform,
         max_iterations=5000,
-        convergence_tol=0.001,
+        convergence_tol = 0.1,
         dt=0.5,
         verbose=True
     )
 
     print(f"\n场景3初始稳态:")
-    print(f"  收敛: {'✓' if result3['converged'] else '✗'}")
+    print(f"  收敛: {'' if result3['converged'] else ''}")
     print(f"  流量误差: {result3['Q_error_percent']:.6f}%")
 
     # 非恒定流模拟（闸门逐渐关闭）
@@ -400,11 +401,11 @@ def run_advanced_structures_demo():
         # 打印进度
         if i % 100 == 0:
             print(f"  t={t:.0f}s: 开度={gate_opening_series[-1]:.2f}m, "
-                  f"Q_gate={gate_flow_series[-1]:.2f} m³/s")
+                  f"Q_gate={gate_flow_series[-1]:.2f} m^3/s")
 
     print(f"\n模拟完成！")
     print(f"  最终开度: {gate_opening_series[-1]:.2f} m")
-    print(f"  最终闸门流量: {gate_flow_series[-1]:.2f} m³/s")
+    print(f"  最终闸门流量: {gate_flow_series[-1]:.2f} m^3/s")
     print()
 
     # 可视化时间序列
@@ -422,9 +423,9 @@ def run_advanced_structures_demo():
     ax3b.plot(time_series, inlet_flow_series, 'b-', linewidth=2, label='Inlet Flow')
     ax3b.plot(time_series, gate_flow_series, 'r-', linewidth=2.5, label='Gate Flow')
     ax3b.plot(time_series, outlet_flow_series, 'm-', linewidth=2, label='Outlet Flow')
-    ax3b.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5, label=f'Target: {Q_initial} m³/s')
+    ax3b.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5, label=f'Target: {Q_initial} m^3/s')
     ax3b.set_xlabel('Time (s)', fontsize=12)
-    ax3b.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+    ax3b.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
     ax3b.set_title('流量响应', fontsize=13, fontweight='bold')
     ax3b.legend(fontsize=11)
     ax3b.grid(True, alpha=0.3)
@@ -432,10 +433,10 @@ def run_advanced_structures_demo():
     plt.tight_layout()
     fig_path = helper.get_output_path('example_02_scenario3_time_varying_refactored.png', subdir='figures')
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f'  ✓ Saved figure: {fig_path.name}')
+    print(f'   Saved figure: {fig_path.name}')
     plt.close()
     plt.close(fig3)
-    print(f"  ✓ Saved figure: example_02_scenario3_time_varying.png")
+    print(f"   Saved figure: example_02_scenario3_time_varying.png")
 
     # ==================== Create Animated GIF ====================
     print("\n" + "=" * 80)
@@ -489,9 +490,9 @@ def run_advanced_structures_demo():
             ax2.axvline(x=gate_variable.position, color='r', linestyle='--',
                        linewidth=2, alpha=0.7, label='Gate')
             ax2.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5,
-                       label=f'Initial: {Q_initial} m³/s')
+                       label=f'Initial: {Q_initial} m^3/s')
             ax2.set_xlabel('Distance (m)', fontsize=11)
-            ax2.set_ylabel('Flow Rate (m³/s)', fontsize=11)
+            ax2.set_ylabel('Flow Rate (m^3/s)', fontsize=11)
             ax2.set_title('Flow Rate Distribution', fontsize=12, fontweight='bold')
             ax2.grid(True, alpha=0.3)
             ax2.legend(loc='best', fontsize=10)
@@ -504,11 +505,11 @@ def run_advanced_structures_demo():
                     'r-', linewidth=2, label='Gate Opening (m)', alpha=0.8)
             ax3_twin = ax3.twinx()
             ax3_twin.plot(np.array(time_series[:idx+1])/60, gate_flow_series[:idx+1],
-                         'b-', linewidth=2, label='Gate Flow (m³/s)', alpha=0.8)
+                         'b-', linewidth=2, label='Gate Flow (m^3/s)', alpha=0.8)
 
             ax3.set_xlabel('Time (min)', fontsize=11)
             ax3.set_ylabel('Gate Opening (m)', fontsize=11, color='r')
-            ax3_twin.set_ylabel('Flow Rate (m³/s)', fontsize=11, color='b')
+            ax3_twin.set_ylabel('Flow Rate (m^3/s)', fontsize=11, color='b')
             ax3.set_title('Gate Opening and Flow Rate History', fontsize=12, fontweight='bold')
             ax3.grid(True, alpha=0.3)
             ax3.tick_params(axis='y', labelcolor='r')
@@ -538,7 +539,7 @@ def run_advanced_structures_demo():
     save_animation(anim, 'example_02_scenario3_time_varying_animation.gif')
     plt.close(fig_anim)
 
-    print(f"  ✓ Saved animation: example_02_scenario3_time_varying_animation.gif")
+    print(f"   Saved animation: example_02_scenario3_time_varying_animation.gif")
     print(f"    Frames: {len(t_snapshots)}, Duration: ~{len(t_snapshots)/10:.1f}s")
     print()
 
@@ -561,7 +562,7 @@ def run_advanced_structures_demo():
     print(f"  场景1 - 收敛迭代次数: {result1['iterations']}")
     print(f"  场景2 - 混合结构流量守恒误差: {result2['Q_error_percent']:.6f}%")
     print(f"  场景2 - 收敛迭代次数: {result2['iterations']}")
-    print(f"  场景3 - 闸门关闭后流量减少: {Q_initial:.2f} → {gate_flow_series[-1]:.2f} m³/s")
+    print(f"  场景3 - 闸门关闭后流量减少: {Q_initial:.2f} -> {gate_flow_series[-1]:.2f} m^3/s")
     print(f"  场景3 - Animation shows gate closing from 5.0m to 2.0m over {total_time/60:.0f} minutes")
 
     print("\n" + "=" * 80)

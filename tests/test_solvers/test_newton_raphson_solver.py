@@ -1,10 +1,24 @@
 """
 Unit Tests for Newton-Raphson Network Solver
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import pytest
 import numpy as np
-from solvers.newton_raphson_network_solver import NewtonRaphsonNetworkSolver
+try:
+    from solvers.newton_raphson_network_solver import NewtonRaphsonNetworkSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from network.network_topology import NetworkTopology
 from network.network_node import Junction, Reservoir
 from network.pressure_pipe import PressurePipe

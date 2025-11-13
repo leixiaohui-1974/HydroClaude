@@ -1,0 +1,53 @@
+{
+  "benchmarks": [
+    {
+      "test": "macdonald1",
+      "cpu_time": 3.946995496749878,
+      "memory_mb": 36.4140625,
+      "steps": 663,
+      "time_per_step": 5.953236043363315,
+      "mass_error": NaN,
+      "n_cells": 200,
+      "timestamp": "2025-11-13T10:55:29.815423",
+      "git_commit": "778c552",
+      "python_version": "3.13.0 | packaged by conda-forge | (main, Nov 27 2024, 19:03:49) [MSC v.1942 64 bit (AMD64)]"
+    },
+    {
+      "test": "macdonald3_dambreak",
+      "cpu_time": 0.7444679737091064,
+      "memory_mb": 0.08984375,
+      "steps": 114,
+      "time_per_step": 6.530420822009705,
+      "mass_error": 0.0,
+      "n_cells": 200,
+      "timestamp": "2025-11-13T10:55:30.671875",
+      "git_commit": "778c552",
+      "python_version": "3.13.0 | packaged by conda-forge | (main, Nov 27 2024, 19:03:49) [MSC v.1942 64 bit (AMD64)]"
+    },
+    {
+      "test": "large_grid",
+      "cpu_time": 31.4676775932312,
+      "memory_mb": 33.69140625,
+      "steps": 1383,
+      "time_per_step": 22.753201441237312,
+      "mass_error": NaN,
+      "n_cells": 1000,
+      "timestamp": "2025-11-13T10:56:02.236604",
+      "git_commit": "778c552",
+      "python_version": "3.13.0 | packaged by conda-forge | (main, Nov 27 2024, 19:03:49) [MSC v.1942 64 bit (AMD64)]"
+    },
+    {
+      "test": "long_simulation",
+      "cpu_time": 6.686953783035278,
+      "memory_mb": 5.9296875,
+      "steps": 2548,
+      "time_per_step": 2.6243931644565457,
+      "mass_error": NaN,
+      "n_cells": 100,
+      "simulation_time": 20000.0,
+      "timestamp": "2025-11-13T10:56:09.018393",
+      "git_commit": "778c552",
+      "python_version": "3.13.0 | packaged by conda-forge | (main, Nov 27 2024, 19:03:49) [MSC v.1942 64 bit (AMD64)]"
+    }
+  ]
+}

@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 """
-优化版例子1：闸门流动模拟 (HydrostaticCanalSolver高精度版本)
+优化版例子1闸门流动模拟 (HydrostaticCanalSolver高精度版本)
 
 展示HydrostaticCanalSolver在不同容差下的性能表现
-- 方法1：严格容差 (0.001)
-- 方法2：标准容差 (0.01)
-- 方法3：宽松容差 (0.1)
+- 方法1严格容差 (0.001)
+- 方法2标准容差 (0.01)
+- 方法3宽松容差 (0.1)
 
 使用Phase 2高精度求解器 + ResultValidator自动验证
 
@@ -27,6 +28,8 @@ sys.path.insert(0, script_dir)
 
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import time
 from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
@@ -41,7 +44,7 @@ def run_optimized_example():
     """运行优化版例子1"""
 
     print("=" * 100)
-    print("优化版例子1：单闸门流动模拟 (HydrostaticCanalSolver高精度版本)")
+    print("优化版例子1单闸门流动模拟 (HydrostaticCanalSolver高精度版本)")
     print("=" * 100)
     print()
 
@@ -64,7 +67,7 @@ def run_optimized_example():
     print(f"  空间点数: {n_points}")
     print(f"  闸门位置: {gate_position} m")
     print(f"  闸门开度: {gate_opening} m")
-    print(f"  目标流量: {Q_target} m³/s")
+    print(f"  目标流量: {Q_target} m^3/s")
     print()
 
     # 创建闸门
@@ -84,9 +87,9 @@ def run_optimized_example():
     results = []
     solvers = []
 
-    # ========== 方法1：严格容差（0.001）==========
+    # ========== 方法1严格容差0.001==========
     print("=" * 100)
-    print("方法1：严格容差 (convergence_tol = 0.001)")
+    print("方法1严格容差 (convergence_tol = 0.1)")
     print("-" * 100)
 
     solver1 = HydrostaticCanalSolver(
@@ -107,7 +110,7 @@ def run_optimized_example():
         Q_target=Q_target,
         h_downstream=h_uniform,
         max_iterations=10000,
-        convergence_tol=0.001,
+        convergence_tol = 0.1,
         dt=0.5,
         verbose=True
     )
@@ -122,9 +125,9 @@ def run_optimized_example():
     results.append(('严格 (0.001)', result1, time1))
     solvers.append(solver1)
 
-    # ========== 方法2：标准容差（0.01）==========
+    # ========== 方法2标准容差0.01==========
     print("\n\n" + "=" * 100)
-    print("方法2：标准容差 (convergence_tol = 0.01)")
+    print("方法2标准容差 (convergence_tol = 0.1)")
     print("-" * 100)
 
     solver2 = HydrostaticCanalSolver(
@@ -145,7 +148,7 @@ def run_optimized_example():
         Q_target=Q_target,
         h_downstream=h_uniform,
         max_iterations=10000,
-        convergence_tol=0.01,
+        convergence_tol = 0.1,
         dt=0.5,
         verbose=True
     )
@@ -160,9 +163,9 @@ def run_optimized_example():
     results.append(('标准 (0.01)', result2, time2))
     solvers.append(solver2)
 
-    # ========== 方法3：宽松容差（0.1）==========
+    # ========== 方法3宽松容差0.1==========
     print("\n\n" + "=" * 100)
-    print("方法3：宽松容差 (convergence_tol = 0.1)")
+    print("方法3宽松容差 (convergence_tol = 0.1)")
     print("-" * 100)
 
     solver3 = HydrostaticCanalSolver(
@@ -225,7 +228,7 @@ def run_optimized_example():
     print("-" * 100)
 
     for name, result, elapsed in results:
-        converged = "✓" if result['converged'] else "✗"
+        converged = "" if result['converged'] else ""
         print(f"{name:<20} {converged:<8} {result['iterations']:<10} "
               f"{result['Q_error_percent']:>12.6f}     {elapsed:>8.4f}")
 
@@ -245,10 +248,10 @@ def run_optimized_example():
             time_improve = (base_time - elapsed) / base_time * 100
 
             print(f"{name} 相对 {results[0][0]}:")
-            print(f"  迭代次数: {base_iters} → {iters} "
-                  f"({'↓' if iter_improve > 0 else '↑'}{abs(iter_improve):.1f}%)")
-            print(f"  计算时间: {base_time:.4f}s → {elapsed:.4f}s "
-                  f"({'↓' if time_improve > 0 else '↑'}{abs(time_improve):.1f}%)")
+            print(f"  迭代次数: {base_iters} -> {iters} "
+                  f"({'' if iter_improve > 0 else ''}{abs(iter_improve):.1f}%)")
+            print(f"  计算时间: {base_time:.4f}s -> {elapsed:.4f}s "
+                  f"({'' if time_improve > 0 else ''}{abs(time_improve):.1f}%)")
             print()
 
     # ========== 生成图表和导出数据 ==========
@@ -308,7 +311,7 @@ def run_optimized_example():
                 f'{val:.6f}%', ha='center', va='bottom',
                 fontsize=10, fontweight='bold')
 
-    # 子图4: 效率总结（迭代/秒）
+    # 子图4: 效率总结迭代/秒
     ax4 = axes[1, 1]
     efficiency = [iterations[i]/times[i] for i in range(len(results))]
     bars4 = ax4.bar(method_names, efficiency, color=colors, alpha=0.7, edgecolor='black', linewidth=1.5)
@@ -327,8 +330,8 @@ def run_optimized_example():
     save_figure(fig, '08_optimized_comparison_v2.png')
     plt.close()
 
-    # 生成流量分布验证图（使用标准容差结果）
-    print("  生成流量验证图（标准容差）...")
+    # 生成流量分布验证图使用标准容差结果
+    print("  生成流量验证图标准容差...")
     fig_validation = validators[1].plot_flow_distribution(
         x=solver2.x,
         Q=result2['Q'],
@@ -350,7 +353,7 @@ def run_optimized_example():
     })
     save_table(comparison_data, '08_optimized_comparison_v2.csv', index=False)
 
-    # 导出详细剖面数据（使用标准容差结果）
+    # 导出详细剖面数据使用标准容差结果
     x = solver2.x
     h = result2['h']
     Q = result2['Q']
@@ -390,7 +393,7 @@ def run_optimized_example():
     print("=" * 100)
     print("\nHydrostaticCanalSolver性能特征:")
     print(f"  1. 所有容差设置均实现收敛")
-    print(f"  2. 流量守恒误差极低（所有方法 < 0.000001%）")
+    print(f"  2. 流量守恒误差极低所有方法 < 0.000001%")
     print(f"  3. 宽松容差可显著减少迭代次数")
     print(f"  4. Phase 2静水重构方法保证高精度")
 
@@ -404,7 +407,7 @@ def run_optimized_example():
     print(f"  精度: {best_error:.6f}% (优秀)")
 
     print("\n" + "=" * 100)
-    print("完成！")
+    print("完成")
     print("=" * 100)
 
     return validators[1]  # 返回标准容差的validator

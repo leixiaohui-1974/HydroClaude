@@ -224,8 +224,8 @@ class TestPumpIdentifier(unittest.TestCase):
         self.assertGreater(self.identifier.K, 0)
 
     def test_pump_curve_equation(self):
-        """测试水泵特性曲线：H = H0 - K*Q²"""
-        Q = 10.0  # m³/s
+        """测试水泵特性曲线：H = H0 - K*Q^2"""
+        Q = 10.0  # m^3/s
         H = self.identifier.H0 - self.identifier.K * Q**2
 
         self.assertGreater(H, 0)
@@ -240,7 +240,7 @@ class TestPumpIdentifier(unittest.TestCase):
         # 生成测试数据
         np.random.seed(42)
         for i in range(50):
-            Q = 5.0 + 10.0 * np.random.rand()  # 5-15 m³/s
+            Q = 5.0 + 10.0 * np.random.rand()  # 5-15 m^3/s
 
             # 真实扬程
             H_true = true_H0 - true_K * Q**2
@@ -327,10 +327,10 @@ class TestTurbineIdentifier(unittest.TestCase):
     def test_turbine_power_equation(self):
         """测试水轮机功率公式：P = η * ρ * g * H * Q"""
         H = 50.0   # 50m水头
-        Q = 10.0   # 10 m³/s
+        Q = 10.0   # 10 m^3/s
 
-        rho = 1000.0  # kg/m³
-        g = 9.81      # m/s²
+        rho = 1000.0  # kg/m^3
+        g = 9.81      # m/s^2
 
         P = self.identifier.efficiency * rho * g * H * Q  # W
 
@@ -349,7 +349,7 @@ class TestTurbineIdentifier(unittest.TestCase):
 
         for i in range(50):
             H = 40.0 + 20.0 * np.random.rand()  # 40-60m
-            Q = 8.0 + 4.0 * np.random.rand()    # 8-12 m³/s
+            Q = 8.0 + 4.0 * np.random.rand()    # 8-12 m^3/s
 
             # 真实功率（单位：W，不是MW）
             P_true = true_efficiency * rho * g * H * Q

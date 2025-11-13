@@ -20,6 +20,8 @@ Date: 2025-10-22
 """
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import os
@@ -42,7 +44,7 @@ def demo_francis_turbine():
         position=0.0,
         rated_power=100.0,   # 100 MW
         rated_head=150.0,    # 150 m
-        rated_flow=80.0,     # 80 m³/s
+        rated_flow=80.0,     # 80 m^3/s
         rated_speed=250.0,   # 250 rpm
         runner_diameter=2.5, # 2.5 m
         max_efficiency=0.93
@@ -54,7 +56,7 @@ def demo_francis_turbine():
     # Test at different loads
     print("\nPerformance at Different Loads:")
     print("-" * 80)
-    print(f"{'Load (%)':>10} {'Flow (m³/s)':>15} {'Power (MW)':>15} {'Efficiency (%)':>15} {'Mode':>12}")
+    print(f"{'Load (%)':>10} {'Flow (m^3/s)':>15} {'Power (MW)':>15} {'Efficiency (%)':>15} {'Mode':>12}")
     print("-" * 80)
 
     loads = [30, 50, 70, 85, 100, 110]
@@ -84,7 +86,7 @@ def demo_kaplan_turbine():
         position=0.0,
         rated_power=50.0,    # 50 MW
         rated_head=25.0,     # 25 m (low head)
-        rated_flow=230.0,    # 230 m³/s (high flow)
+        rated_flow=230.0,    # 230 m^3/s (high flow)
         rated_speed=115.0,   # 115 rpm (lower speed)
         runner_diameter=5.0, # 5 m (larger runner)
         max_efficiency=0.94
@@ -96,7 +98,7 @@ def demo_kaplan_turbine():
     # Test at different loads (Kaplan maintains high efficiency at part load)
     print("\nPerformance at Different Loads (Note excellent part-load efficiency):")
     print("-" * 80)
-    print(f"{'Load (%)':>10} {'Flow (m³/s)':>15} {'Power (MW)':>15} {'Efficiency (%)':>15} {'Mode':>12}")
+    print(f"{'Load (%)':>10} {'Flow (m^3/s)':>15} {'Power (MW)':>15} {'Efficiency (%)':>15} {'Mode':>12}")
     print("-" * 80)
 
     loads = [30, 50, 70, 85, 100, 115]
@@ -126,7 +128,7 @@ def demo_pelton_turbine():
         position=0.0,
         rated_power=200.0,   # 200 MW
         rated_head=800.0,    # 800 m (high head)
-        rated_flow=28.0,     # 28 m³/s (low flow)
+        rated_flow=28.0,     # 28 m^3/s (low flow)
         rated_speed=500.0,   # 500 rpm (higher speed)
         runner_diameter=2.2, # 2.2 m (optimized for speed ratio)
         num_nozzles=4,       # 4 nozzles
@@ -149,7 +151,7 @@ def demo_pelton_turbine():
     # Test at different loads
     print("\nPerformance at Different Loads:")
     print("-" * 80)
-    print(f"{'Load (%)':>10} {'Flow (m³/s)':>15} {'Power (MW)':>15} {'Efficiency (%)':>15} {'Mode':>12}")
+    print(f"{'Load (%)':>10} {'Flow (m^3/s)':>15} {'Power (MW)':>15} {'Efficiency (%)':>15} {'Mode':>12}")
     print("-" * 80)
 
     loads = [30, 50, 70, 85, 100, 105]
@@ -203,7 +205,7 @@ def plot_efficiency_curves(francis_data, kaplan_data, pelton_data):
     ax2.legend()
 
     plt.tight_layout()
-    plt.savefig('/home/user/HydroClaude/examples/example_03_turbine_demo/turbine_comparison.png', dpi=150)
+    plt.savefig('examples/example_03_turbine_demo/turbine_comparison.png', dpi=150)
     print(f"\nEfficiency curves saved to: turbine_comparison.png")
 
 
@@ -251,7 +253,7 @@ def plot_hill_chart_concept(francis):
     ax.legend()
 
     plt.tight_layout()
-    plt.savefig('/home/user/HydroClaude/examples/example_03_turbine_demo/hill_chart.png', dpi=150)
+    plt.savefig('examples/example_03_turbine_demo/hill_chart.png', dpi=150)
     print(f"Hill chart saved to: hill_chart.png")
 
 
@@ -286,7 +288,7 @@ def turbine_selection_guide():
         ("Site C - Mountain storage", 650, 25, 16250)
     ]
 
-    print(f"{'Site':>25} {'Head (m)':>12} {'Flow (m³/s)':>15} {'Power (MW)':>12} {'Type':>15} {'ns':>8}")
+    print(f"{'Site':>25} {'Head (m)':>12} {'Flow (m^3/s)':>15} {'Power (MW)':>12} {'Type':>15} {'ns':>8}")
     print("-" * 80)
 
     for site_name, head, flow, power_annual in sites:

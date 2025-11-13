@@ -8,6 +8,14 @@
 
 import subprocess
 import sys
+import os
+
+# Add project root to Python path
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 import time
 from pathlib import Path
 from dataclasses import dataclass
@@ -146,7 +154,7 @@ def run_example(file_path: str, timeout: int = 120) -> ExampleTestResult:
 
     # 检查文件是否存在
     if not Path(file_path).exists():
-        print(f"✗ 文件不存在")
+        print(f" 文件不存在")
         return ExampleTestResult(
             example_id=example_id,
             name=name,
@@ -172,7 +180,7 @@ def run_example(file_path: str, timeout: int = 120) -> ExampleTestResult:
 
         # 检查返回码
         if result.returncode == 0:
-            print(f"✓ 成功 ({execution_time:.2f}s)")
+            print(f" 成功 ({execution_time:.2f}s)")
 
             # 查找输出文件
             output_dir = Path(file_path).parent
@@ -193,7 +201,7 @@ def run_example(file_path: str, timeout: int = 120) -> ExampleTestResult:
             # 提取最后几行错误信息
             error_msg = '\n'.join([line for line in error_lines[-10:] if line.strip()])
 
-            print(f"✗ 失败 ({execution_time:.2f}s)")
+            print(f" 失败 ({execution_time:.2f}s)")
             print(f"错误: {error_msg[:200]}...")
 
             return ExampleTestResult(
@@ -207,7 +215,7 @@ def run_example(file_path: str, timeout: int = 120) -> ExampleTestResult:
 
     except subprocess.TimeoutExpired:
         execution_time = time.time() - start_time
-        print(f"✗ 超时 ({timeout}s)")
+        print(f" 超时 ({timeout}s)")
 
         return ExampleTestResult(
             example_id=example_id,
@@ -220,7 +228,7 @@ def run_example(file_path: str, timeout: int = 120) -> ExampleTestResult:
 
     except Exception as e:
         execution_time = time.time() - start_time
-        print(f"✗ 异常: {e}")
+        print(f" 异常: {e}")
 
         return ExampleTestResult(
             example_id=example_id,
@@ -244,7 +252,7 @@ def generate_report(results: List[ExampleTestResult], output_file: str):
 
 **生成时间**: {time.strftime('%Y-%m-%d %H:%M:%S')}
 
-## 📊 总体统计
+##  总体统计
 
 - **总示例数**: {total}
 - **成功**: {success} ({success/total*100:.1f}%)
@@ -253,21 +261,21 @@ def generate_report(results: List[ExampleTestResult], output_file: str):
 
 ---
 
-## 📋 详细结果
+##  详细结果
 
 | ID | 名称 | 状态 | 耗时 | 错误信息 |
 |----|------|------|------|----------|
 """
 
     for r in results:
-        status = "✅ 成功" if r.success else "❌ 失败"
+        status = " 成功" if r.success else " 失败"
         error = r.error_message[:50] if r.error_message else "-"
         report += f"| {r.example_id} | {r.name} | {status} | {r.execution_time:.2f}s | {error} |\n"
 
     report += "\n---\n\n"
 
     # 成功的示例
-    report += "## ✅ 成功的示例\n\n"
+    report += "##  成功的示例\n\n"
     for r in results:
         if r.success:
             report += f"### {r.example_id}: {r.name}\n\n"
@@ -281,7 +289,7 @@ def generate_report(results: List[ExampleTestResult], output_file: str):
 
     # 失败的示例
     if failed > 0:
-        report += "## ❌ 失败的示例\n\n"
+        report += "##  失败的示例\n\n"
         for r in results:
             if not r.success:
                 report += f"### {r.example_id}: {r.name}\n\n"

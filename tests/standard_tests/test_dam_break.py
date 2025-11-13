@@ -57,7 +57,7 @@ class TestDamBreak:
             t: 时间 (s)
             x_dam: 溃坝位置 (m)
             h0: 初始水深 (m)
-            g: 重力加速度 (m/s²)
+            g: 重力加速度 (m/s^2)
 
         返回:
             h: 水深分布 (m)
@@ -254,8 +254,8 @@ class TestDamBreak:
             mass_error = abs(mass_final - mass_init) / mass_init * 100
 
             print(f"\n质量守恒:")
-            print(f"  初始质量: {mass_init:.2f} m³")
-            print(f"  最终质量: {mass_final:.2f} m³")
+            print(f"  初始质量: {mass_init:.2f} m^3")
+            print(f"  最终质量: {mass_final:.2f} m^3")
             print(f"  误差: {mass_error:.2f}%")
 
             # 验证
@@ -263,27 +263,27 @@ class TestDamBreak:
 
             # 1. 模拟完成
             assert solver.t >= t_final * 0.9, f"模拟未完成：t={solver.t:.2f}s < {t_final*0.9}s"
-            print(f"  ✅ 模拟完成：t={solver.t:.2f}s")
+            print(f"   模拟完成：t={solver.t:.2f}s")
 
             # 2. 波前位置（干湿界面最重要的指标）
             assert front_error < 10.0, f"波前误差过大：{front_error:.2f}% > 10%"
-            print(f"  ✅ 波前位置：误差{front_error:.2f}% < 10%")
+            print(f"   波前位置：误差{front_error:.2f}% < 10%")
 
             # 3. 水深RMSE（1阶Godunov对稀疏波数值耗散较大）
             # 注：1阶格式对Ritter解中的稀疏波区有固有耗散，RMSE~3.2m是正常值
             assert h_rmse < 3.5, f"水深RMSE过大：{h_rmse:.3f} > 3.5m"
-            print(f"  ✅ 水深精度：RMSE={h_rmse:.3f}m < 3.5m（1阶格式典型值）")
+            print(f"   水深精度：RMSE={h_rmse:.3f}m < 3.5m（1阶格式典型值）")
 
             # 4. 质量守恒
             assert mass_error < 5.0, f"质量误差过大：{mass_error:.2f}% > 5%"
-            print(f"  ✅ 质量守恒：{mass_error:.2f}% < 5%")
+            print(f"   质量守恒：{mass_error:.2f}% < 5%")
 
             # 5. 无负水深
             assert np.all(h_numerical >= -1e-6), "存在负水深"
-            print(f"  ✅ 无负水深（最小h={np.min(h_numerical):.2e}m）")
+            print(f"   无负水深（最小h={np.min(h_numerical):.2e}m）")
 
             print("\n" + "="*70)
-            print("✅ 溃坝测试通过：干湿界面处理正确")
+            print(" 溃坝测试通过：干湿界面处理正确")
             print("="*70)
 
         finally:

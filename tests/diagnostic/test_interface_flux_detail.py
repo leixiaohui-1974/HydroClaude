@@ -18,7 +18,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_interface_flux_detail():
@@ -64,7 +70,7 @@ def test_interface_flux_detail():
 
     solver.initialize(h_init, Q_init, bc_left, bc_right)
 
-    print(f"  初始质量 = {solver.initial_mass:.2f} m³")
+    print(f"  初始质量 = {solver.initial_mass:.2f} m^3")
 
     # 运行一步
     print(f"\n{'='*80}")
@@ -75,7 +81,7 @@ def test_interface_flux_detail():
     h_before = solver.h.copy()
     mass_before = np.sum(h_before * solver.dx * solver.B)
 
-    print(f"\n步前质量 = {mass_before:.6f} m³")
+    print(f"\n步前质量 = {mass_before:.6f} m^3")
 
     # 计算时间步长
     dt = solver.compute_dt()
@@ -89,14 +95,14 @@ def test_interface_flux_detail():
     mass_after = np.sum(h_after * solver.dx * solver.B)
     delta_mass = mass_after - mass_before
 
-    print(f"步后质量 = {mass_after:.6f} m³")
-    print(f"质量变化 = {delta_mass:.6f} m³")
+    print(f"步后质量 = {mass_after:.6f} m^3")
+    print(f"质量变化 = {delta_mass:.6f} m^3")
 
     # 获取界面通量
     F_h = solver.last_F_h
 
     if F_h is None:
-        print("\n❌ 错误：solver.last_F_h 是 None，未保存界面通量")
+        print("\n 错误：solver.last_F_h 是 None，未保存界面通量")
         return
 
     print(f"\n界面通量数组长度: {len(F_h)} (应为 {n_cells+1})")
@@ -106,7 +112,7 @@ def test_interface_flux_detail():
     print("所有界面通量（质量通量 F_h）")
     print("="*80)
 
-    print(f"\n{'界面':<10} {'F_h (m²/s)':<15} {'说明':<30}")
+    print(f"\n{'界面':<10} {'F_h (m^2/s)':<15} {'说明':<30}")
     print("-" * 60)
 
     for i in range(len(F_h)):
@@ -128,9 +134,9 @@ def test_interface_flux_detail():
     F_right = F_h[-1]
 
     print(f"\n边界通量：")
-    print(f"  F_left  (流入) = {F_left:.6f} m²/s")
-    print(f"  F_right (流出) = {F_right:.6f} m²/s")
-    print(f"  净边界通量 = {F_left - F_right:.6f} m²/s")
+    print(f"  F_left  (流入) = {F_left:.6f} m^2/s")
+    print(f"  F_right (流出) = {F_right:.6f} m^2/s")
+    print(f"  净边界通量 = {F_left - F_right:.6f} m^2/s")
 
     # 计算每个单元的通量差
     print(f"\n单元通量平衡：")
@@ -162,22 +168,22 @@ def test_interface_flux_detail():
     boundary_flux_diff = F_left - F_right
 
     print(f"\n方法1（单元求和）：")
-    print(f"  Σ(F_{{i-1/2}} - F_{{i+1/2}}) = {sum_flux_diff:.6f} m²/s")
+    print(f"  Σ(F_{{i-1/2}} - F_{{i+1/2}}) = {sum_flux_diff:.6f} m^2/s")
 
     print(f"\n方法2（边界差）：")
-    print(f"  F_left - F_right = {boundary_flux_diff:.6f} m²/s")
+    print(f"  F_left - F_right = {boundary_flux_diff:.6f} m^2/s")
 
     print(f"\n差异：")
     discrepancy = sum_flux_diff - boundary_flux_diff
-    print(f"  绝对差异 = {discrepancy:.9f} m²/s")
+    print(f"  绝对差异 = {discrepancy:.9f} m^2/s")
     print(f"  相对差异 = {abs(discrepancy)/abs(boundary_flux_diff)*100:.6f}%")
 
     # 质量平衡验证
     print(f"\n质量平衡验证：")
     delta_m_from_boundary = boundary_flux_diff * dt * B
-    print(f"  实际质量变化 = {delta_mass:.6f} m³")
-    print(f"  边界通量预期 = {delta_m_from_boundary:.6f} m³")
-    print(f"  差异 = {delta_mass - delta_m_from_boundary:.6f} m³")
+    print(f"  实际质量变化 = {delta_mass:.6f} m^3")
+    print(f"  边界通量预期 = {delta_m_from_boundary:.6f} m^3")
+    print(f"  差异 = {delta_mass - delta_m_from_boundary:.6f} m^3")
     print(f"  相对差异 = {abs(delta_mass - delta_m_from_boundary)/abs(delta_m_from_boundary)*100:.3f}%")
 
     # 诊断结论
@@ -186,17 +192,17 @@ def test_interface_flux_detail():
     print("="*80)
 
     if abs(discrepancy) / abs(boundary_flux_diff) < 1e-10:
-        print(f"\n✅ 通量求和完美守恒！")
+        print(f"\n 通量求和完美守恒！")
         print(f"   Σ(F_{{i+1/2}} - F_{{i-1/2}}) ≡ F_right - F_left")
         print(f"   差异 < 10^-10")
     else:
-        print(f"\n❌ 通量求和不守恒！")
-        print(f"   差异 = {discrepancy:.9f} m²/s ({abs(discrepancy)/abs(boundary_flux_diff)*100:.6f}%)")
+        print(f"\n 通量求和不守恒！")
+        print(f"   差异 = {discrepancy:.9f} m^2/s ({abs(discrepancy)/abs(boundary_flux_diff)*100:.6f}%)")
 
     mass_balance_error = abs(delta_mass - delta_m_from_boundary)/abs(delta_m_from_boundary)*100
     if mass_balance_error < 0.1:
-        print(f"\n✅ 单步质量平衡成立！")
-        print(f"   实际质量变化 ≈ 边界通量预期")
+        print(f"\n 单步质量平衡成立！")
+        print(f"   实际质量变化 ~= 边界通量预期")
         print(f"   差异 < 0.1%")
         print(f"\n这说明通量计算本身是守恒的")
         print(f"但为什么长时间运行后有3.675%的质量消失？")
@@ -205,7 +211,7 @@ def test_interface_flux_detail():
         print(f"  2. 干湿界面处理")
         print(f"  3. TVD-RK2时间积分的非守恒性")
     else:
-        print(f"\n❌ 单步质量平衡不成立！")
+        print(f"\n 单步质量平衡不成立！")
         print(f"   差异 = {mass_balance_error:.3f}%")
         print(f"\n问题定位：")
         print(f"  通量计算或时间积分有bug")
@@ -234,15 +240,15 @@ def test_interface_flux_detail():
             mass_current = np.sum(solver.h * solver.dx * solver.B)
             mass_theory = mass_initial + cumulative_inflow - cumulative_outflow
             error = abs(mass_current - mass_theory) / abs(mass_theory) * 100
-            print(f"  步数={step+1:3d}, t={solver.t:6.1f}s, 实际={mass_current:8.2f} m³, 理论={mass_theory:8.2f} m³, 差异={error:5.2f}%")
+            print(f"  步数={step+1:3d}, t={solver.t:6.1f}s, 实际={mass_current:8.2f} m^3, 理论={mass_theory:8.2f} m^3, 差异={error:5.2f}%")
 
     mass_final = np.sum(solver.h * solver.dx * solver.B)
     mass_theory_final = mass_initial + cumulative_inflow - cumulative_outflow
 
     print(f"\n500步后：")
-    print(f"  实际质量 = {mass_final:.2f} m³")
-    print(f"  理论质量 = {mass_theory_final:.2f} m³")
-    print(f"  差异 = {abs(mass_final - mass_theory_final):.2f} m³ ({abs(mass_final - mass_theory_final)/abs(mass_theory_final)*100:.2f}%)")
+    print(f"  实际质量 = {mass_final:.2f} m^3")
+    print(f"  理论质量 = {mass_theory_final:.2f} m^3")
+    print(f"  差异 = {abs(mass_final - mass_theory_final):.2f} m^3 ({abs(mass_final - mass_theory_final)/abs(mass_theory_final)*100:.2f}%)")
 
     print("\n" + "="*80)
     print("测试完成")

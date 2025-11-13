@@ -40,13 +40,13 @@ def compute_flow_manning(A: float, R: float, S0: float, n: float) -> float:
     Q = (1/n) * A * R^(2/3) * sqrt(S0)
 
     Args:
-        A: 过水面积 (m²)
+        A: 过水面积 (m^2)
         R: 水力半径 (m)
         S0: 底坡
         n: 曼宁系数
 
     Returns:
-        流量 Q (m³/s)
+        流量 Q (m^3/s)
     """
     Q = (1.0 / n) * A * (R ** (2.0/3.0)) * np.sqrt(S0)
     return Q
@@ -81,10 +81,10 @@ def rectangular_channel_test():
     print(f"  渠长 L = {L} m")
 
     print(f"\n理论计算:")
-    print(f"  面积 A = {A:.3f} m²")
+    print(f"  面积 A = {A:.3f} m^2")
     print(f"  湿周 P = {P:.3f} m")
     print(f"  水力半径 R = {R:.3f} m")
-    print(f"  理论流量 Q = {Q_theory:.3f} m³/s")
+    print(f"  理论流量 Q = {Q_theory:.3f} m^3/s")
 
     # 数值求解
     print(f"\nHydroClaude数值求解:")
@@ -97,7 +97,7 @@ def rectangular_channel_test():
         manning_n=n,
         slope=S0,
         g=g,
-        cfl=0.5
+        cfl = 0.3
     )
 
     # 初始条件：均匀流
@@ -137,7 +137,7 @@ def rectangular_channel_test():
 
     print(f"\n结果分析:")
     print(f"  水深: mean={h_mean:.4f}m, std={h_std:.4f}m, range=[{h_min:.4f}, {h_max:.4f}]")
-    print(f"  数值流量 Q = {Q_numerical:.3f} m³/s")
+    print(f"  数值流量 Q = {Q_numerical:.3f} m^3/s")
     print(f"  流量误差 = {error_Q:.3f}%")
     print(f"  质量守恒误差 = {mass_error:.4f}%")
 
@@ -148,21 +148,21 @@ def rectangular_channel_test():
     tolerance_mass = 0.1  # %
 
     if error_Q < tolerance_Q:
-        print(f"✓ 流量误差测试通过: {error_Q:.3f}% < {tolerance_Q}%")
+        print(f" 流量误差测试通过: {error_Q:.3f}% < {tolerance_Q}%")
     else:
-        print(f"✗ 流量误差测试失败: {error_Q:.3f}% >= {tolerance_Q}%")
+        print(f" 流量误差测试失败: {error_Q:.3f}% >= {tolerance_Q}%")
         passed = False
 
     if error_h < tolerance_h:
-        print(f"✓ 水深均匀性测试通过: std={error_h:.4f}m < {tolerance_h}m")
+        print(f" 水深均匀性测试通过: std={error_h:.4f}m < {tolerance_h}m")
     else:
-        print(f"✗ 水深均匀性测试失败: std={error_h:.4f}m >= {tolerance_h}m")
+        print(f" 水深均匀性测试失败: std={error_h:.4f}m >= {tolerance_h}m")
         passed = False
 
     if mass_error < tolerance_mass:
-        print(f"✓ 质量守恒测试通过: {mass_error:.4f}% < {tolerance_mass}%")
+        print(f" 质量守恒测试通过: {mass_error:.4f}% < {tolerance_mass}%")
     else:
-        print(f"✗ 质量守恒测试失败: {mass_error:.4f}% >= {tolerance_mass}%")
+        print(f" 质量守恒测试失败: {mass_error:.4f}% >= {tolerance_mass}%")
         passed = False
 
     return {
@@ -205,10 +205,10 @@ def trapezoidal_channel_test():
     print(f"  渠长 L = {L} m")
 
     print(f"\n理论计算:")
-    print(f"  面积 A = {A:.3f} m²")
+    print(f"  面积 A = {A:.3f} m^2")
     print(f"  湿周 P = {P:.3f} m")
     print(f"  水力半径 R = {R:.3f} m")
-    print(f"  理论流量 Q = {Q_theory:.3f} m³/s")
+    print(f"  理论流量 Q = {Q_theory:.3f} m^3/s")
 
     # 数值求解
     # 注意：当前GodunvFVMSolver只支持矩形断面
@@ -226,7 +226,7 @@ def trapezoidal_channel_test():
         manning_n=n,
         slope=S0,
         g=g,
-        cfl=0.5
+        cfl = 0.3
     )
 
     # 初始条件：均匀流
@@ -260,7 +260,7 @@ def trapezoidal_channel_test():
 
     print(f"\n结果分析:")
     print(f"  水深: mean={h_mean:.4f}m, std={h_std:.4f}m")
-    print(f"  数值流量 Q = {Q_numerical:.3f} m³/s")
+    print(f"  数值流量 Q = {Q_numerical:.3f} m^3/s")
     print(f"  流量误差 = {error_Q:.3f}%")
     print(f"  质量守恒误差 = {mass_error:.4f}%")
 
@@ -271,21 +271,21 @@ def trapezoidal_channel_test():
     tolerance_mass = 0.1
 
     if error_Q < tolerance_Q:
-        print(f"✓ 流量误差测试通过: {error_Q:.3f}% < {tolerance_Q}%")
+        print(f" 流量误差测试通过: {error_Q:.3f}% < {tolerance_Q}%")
     else:
-        print(f"✗ 流量误差测试失败: {error_Q:.3f}% >= {tolerance_Q}%")
+        print(f" 流量误差测试失败: {error_Q:.3f}% >= {tolerance_Q}%")
         passed = False
 
     if h_std < tolerance_h:
-        print(f"✓ 水深均匀性测试通过: std={h_std:.4f}m < {tolerance_h}m")
+        print(f" 水深均匀性测试通过: std={h_std:.4f}m < {tolerance_h}m")
     else:
-        print(f"✗ 水深均匀性测试失败: std={h_std:.4f}m >= {tolerance_h}m")
+        print(f" 水深均匀性测试失败: std={h_std:.4f}m >= {tolerance_h}m")
         passed = False
 
     if mass_error < tolerance_mass:
-        print(f"✓ 质量守恒测试通过: {mass_error:.4f}% < {tolerance_mass}%")
+        print(f" 质量守恒测试通过: {mass_error:.4f}% < {tolerance_mass}%")
     else:
-        print(f"✗ 质量守恒测试失败: {mass_error:.4f}% >= {tolerance_mass}%")
+        print(f" 质量守恒测试失败: {mass_error:.4f}% >= {tolerance_mass}%")
         passed = False
 
     return {
@@ -322,15 +322,15 @@ def main():
     all_passed = all(r['passed'] for r in results)
 
     for result in results:
-        status = "✓ 通过" if result['passed'] else "✗ 失败"
+        status = " 通过" if result['passed'] else " 失败"
         print(f"{result['test_name']:40s}: {status}")
 
     print("=" * 80)
 
     if all_passed:
-        print("🎉 所有恒定均匀流验证测试通过!")
+        print(" 所有恒定均匀流验证测试通过!")
     else:
-        print("❌ 部分验证测试失败!")
+        print(" 部分验证测试失败!")
 
     print("=" * 80 + "\n")
 

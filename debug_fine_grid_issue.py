@@ -64,7 +64,7 @@ while solver.t < t_target and step_count < 100000:
 
     # 检查异常
     if solver.dt < 1e-6:
-        print(f"\n⚠️  步{step_count}: dt崩溃为{solver.dt:.2e}s!")
+        print(f"\n️  步{step_count}: dt崩溃为{solver.dt:.2e}s!")
         print(f"  时间: {solver.t:.6f}s")
         print(f"  h range: [{np.min(solver.h):.6e}, {np.max(solver.h):.6f}]")
         print(f"  Q range: [{np.min(solver.Q):.6f}, {np.max(solver.Q):.6f}]")
@@ -131,4 +131,4 @@ axes[1, 1].grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('debug_fine_grid_dt_evolution.png', dpi=150, bbox_inches='tight')
-print(f"\n✅ 诊断图保存: debug_fine_grid_dt_evolution.png")
+print(f"\n 诊断图保存: debug_fine_grid_dt_evolution.png")

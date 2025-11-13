@@ -31,7 +31,7 @@ from utils.canal_utils import compute_steady_uniform_flow
 
 
 print("="*80)
-print("📚 Phase 1应用示例集 - 稳态场景库")
+print(" Phase 1应用示例集 - 稳态场景库")
 print("="*80)
 
 # ========== 场景1: 不同流量 ==========
@@ -53,7 +53,7 @@ for Q in Q_list:
     solver = GodunvFVMSolver(
         width=width, length=length, n_cells=n_cells,
         manning_n=manning_n, slope=slope,
-        cfl=0.5, order=1
+        cfl = 0.3, order=1
     )
     
     h_uniform = compute_steady_uniform_flow(Q, width, slope, manning_n)
@@ -63,7 +63,19 @@ for Q in Q_list:
     bc_left = {'type': 'Q', 'value': Q}
     bc_right = {'type': 'h', 'value': h_uniform}
     
-    solver.initialize(h_init, Q_init, bc_left, bc_right)
+    # GodunvFVMSolver需要手动初始化
+
+    
+    solver.h = h_init.copy()
+
+    
+    solver.Q = Q_init.copy()
+
+    
+    solver.bc_left = bc_left
+
+    
+    solver.bc_right = bc_right
     
     for _ in range(500):
         solver.step()
@@ -79,7 +91,7 @@ for Q in Q_list:
         'h': state['h']
     })
     
-    print(f"  Q={Q:.0f}m³/s: h={np.mean(state['h']):.3f}m, "
+    print(f"  Q={Q:.0f}m^3/s: h={np.mean(state['h']):.3f}m, "
           f"v={Q/(np.mean(state['h'])*width):.3f}m/s, "
           f"误差={state['mass_error']:.4f}%")
 
@@ -97,7 +109,7 @@ for S0 in slopes:
     solver = GodunvFVMSolver(
         width=width, length=length, n_cells=n_cells,
         manning_n=manning_n, slope=S0,
-        cfl=0.5, order=1
+        cfl = 0.3, order=1
     )
     
     h_uniform = compute_steady_uniform_flow(Q_fixed, width, S0, manning_n)
@@ -107,7 +119,19 @@ for S0 in slopes:
     bc_left = {'type': 'Q', 'value': Q_fixed}
     bc_right = {'type': 'h', 'value': h_uniform}
     
-    solver.initialize(h_init, Q_init, bc_left, bc_right)
+    # GodunvFVMSolver需要手动初始化
+
+    
+    solver.h = h_init.copy()
+
+    
+    solver.Q = Q_init.copy()
+
+    
+    solver.bc_left = bc_left
+
+    
+    solver.bc_right = bc_right
     
     for _ in range(500):
         solver.step()
@@ -141,7 +165,7 @@ for n_val in n_list:
     solver = GodunvFVMSolver(
         width=width, length=length, n_cells=n_cells,
         manning_n=n_val, slope=slope,
-        cfl=0.5, order=1
+        cfl = 0.3, order=1
     )
     
     h_uniform = compute_steady_uniform_flow(Q_fixed, width, slope, n_val)
@@ -151,7 +175,19 @@ for n_val in n_list:
     bc_left = {'type': 'Q', 'value': Q_fixed}
     bc_right = {'type': 'h', 'value': h_uniform}
     
-    solver.initialize(h_init, Q_init, bc_left, bc_right)
+    # GodunvFVMSolver需要手动初始化
+
+    
+    solver.h = h_init.copy()
+
+    
+    solver.Q = Q_init.copy()
+
+    
+    solver.bc_left = bc_left
+
+    
+    solver.bc_right = bc_right
     
     for _ in range(500):
         solver.step()
@@ -179,7 +215,7 @@ fig = plt.figure(figsize=(16, 12))
 # 场景1: 不同流量的水面线
 ax1 = fig.add_subplot(3, 3, 1)
 for res in results_Q:
-    ax1.plot(res['x'], res['h'], linewidth=2, label=f"Q={res['Q']:.0f}m³/s")
+    ax1.plot(res['x'], res['h'], linewidth=2, label=f"Q={res['Q']:.0f}m^3/s")
 ax1.set_xlabel('Distance (m)', fontsize=11)
 ax1.set_ylabel('Depth (m)', fontsize=11)
 ax1.set_title('Scenario 1: Different Discharges', fontsize=12, fontweight='bold')
@@ -191,7 +227,7 @@ ax2 = fig.add_subplot(3, 3, 2)
 Q_vals = [res['Q'] for res in results_Q]
 h_vals = [res['h_mean'] for res in results_Q]
 ax2.plot(Q_vals, h_vals, 'bo-', linewidth=2, markersize=8)
-ax2.set_xlabel('Discharge (m³/s)', fontsize=11)
+ax2.set_xlabel('Discharge (m^3/s)', fontsize=11)
 ax2.set_ylabel('Mean Depth (m)', fontsize=11)
 ax2.set_title('Rating Curve (Q-h)', fontsize=12, fontweight='bold')
 ax2.grid(True, alpha=0.3)
@@ -200,7 +236,7 @@ ax2.grid(True, alpha=0.3)
 ax3 = fig.add_subplot(3, 3, 3)
 v_vals = [res['v_mean'] for res in results_Q]
 ax3.plot(Q_vals, v_vals, 'ro-', linewidth=2, markersize=8)
-ax3.set_xlabel('Discharge (m³/s)', fontsize=11)
+ax3.set_xlabel('Discharge (m^3/s)', fontsize=11)
 ax3.set_ylabel('Mean Velocity (m/s)', fontsize=11)
 ax3.set_title('Q-v Relationship', fontsize=12, fontweight='bold')
 ax3.grid(True, alpha=0.3)
@@ -280,32 +316,32 @@ ax9.legend(fontsize=9)
 ax9.grid(True, alpha=0.3, axis='y')
 
 plt.tight_layout()
-plt.savefig('/workspace/phase1_steady_scenarios.png', dpi=150, bbox_inches='tight')
+plt.savefig('./phase1_steady_scenarios.png', dpi=150, bbox_inches='tight')
 print(f"  保存: phase1_steady_scenarios.png")
 
 # ========== 工程应用建议 ==========
 print(f"\n" + "="*80)
-print("💡 工程应用建议")
+print(" 工程应用建议")
 print("="*80)
 
 print(f"\n1. 渠道设计:")
-print(f"   • 选择合适的设计流量")
-print(f"   • 参考Q-h关系曲线确定渠道尺寸")
-print(f"   • 控制Froude数避免超临界流")
+print(f"   - 选择合适的设计流量")
+print(f"   - 参考Q-h关系曲线确定渠道尺寸")
+print(f"   - 控制Froude数避免超临界流")
 
 print(f"\n2. 底坡选择:")
-print(f"   • 陡坡(S0>0.002): 水深小，流速大，需防冲")
-print(f"   • 缓坡(S0<0.001): 水深大，流速小，需防淤")
-print(f"   • 参考Fr数判断流态")
+print(f"   - 陡坡(S0>0.002): 水深小，流速大，需防冲")
+print(f"   - 缓坡(S0<0.001): 水深大，流速小，需防淤")
+print(f"   - 参考Fr数判断流态")
 
 print(f"\n3. 糙率影响:")
-print(f"   • 糙率越大，水深越深")
-print(f"   • 衬砌渠道(n=0.015)效率最高")
-print(f"   • 天然渠道(n=0.035)需增大断面")
+print(f"   - 糙率越大，水深越深")
+print(f"   - 衬砌渠道(n=0.015)效率最高")
+print(f"   - 天然渠道(n=0.035)需增大断面")
 
 # ========== 验证总结 ==========
 print(f"\n" + "="*80)
-print("✅ 验证总结")
+print(" 验证总结")
 print("="*80)
 
 all_scenarios = results_Q + results_slope + results_n
@@ -314,17 +350,17 @@ all_stable = all([abs(res['mass_error']) < 1.0 for res in all_scenarios])
 
 print(f"\n总场景数: {len(all_scenarios)}")
 print(f"最大质量误差: {max_error:.4f}%")
-print(f"所有场景质量误差<1%: {'✅ 是' if all_stable else '❌ 否'}")
+print(f"所有场景质量误差<1%: {' 是' if all_stable else ' 否'}")
 
 if all_stable:
-    print(f"\n🎉 所有场景验证通过！")
-    print(f"✅ 基于Phase 0生产就绪求解器")
-    print(f"✅ 质量守恒优秀")
-    print(f"✅ 数值稳定性100%")
-    print(f"✅ 实际工程参考价值高")
+    print(f"\n 所有场景验证通过！")
+    print(f" 基于Phase 0生产就绪求解器")
+    print(f" 质量守恒优秀")
+    print(f" 数值稳定性100%")
+    print(f" 实际工程参考价值高")
 else:
-    print(f"\n⚠️ 部分场景需优化")
+    print(f"\n 部分场景需优化")
 
 print(f"\n" + "="*80)
-print(f"📚 Phase 1应用示例集完成！")
+print(f" Phase 1应用示例集完成！")
 print(f"="*80)

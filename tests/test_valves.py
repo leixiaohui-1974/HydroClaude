@@ -10,6 +10,14 @@
 Author: HydroClaude Development Team
 Date: 2025-01
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import pytest
 import numpy as np
@@ -110,7 +118,7 @@ class TestButterflyValveLossCoefficient:
         valve.set_opening(100.0)
         Kv = valve.get_loss_coefficient()
 
-        # 全开时，标准蝶阀 Kv ≈ 0.25
+        # 全开时，标准蝶阀 Kv ~= 0.25
         assert 0.2 < Kv < 0.3
 
     def test_loss_coefficient_increases_with_closure(self):
@@ -155,8 +163,8 @@ class TestButterflyValveLossCoefficient:
 
         # 根据经验数据验证
         Kv_90 = valve.get_loss_coefficient(100.0)  # 全开
-        Kv_70 = valve.get_loss_coefficient(78.0)   # 约70°
-        Kv_50 = valve.get_loss_coefficient(56.0)   # 约50°
+        Kv_70 = valve.get_loss_coefficient(78.0)   # 约70 deg
+        Kv_50 = valve.get_loss_coefficient(56.0)   # 约50 deg
 
         # 粗略验证范围
         assert 0.2 < Kv_90 < 0.5
@@ -172,13 +180,13 @@ class TestButterflyValveHeadLoss:
         valve = create_butterfly_valve(position=100.0, diameter=0.5)
         valve.set_opening(70.0)
 
-        Q = 0.2  # m³/s
+        Q = 0.2  # m^3/s
         hL = valve.compute_head_loss(Q)
 
         # 水头损失应为正
         assert hL > 0
 
-        # 粗略验证：70%开度，流量0.2 m³/s，损失应在0.1-1.0 m范围
+        # 粗略验证：70%开度，流量0.2 m^3/s，损失应在0.1-1.0 m范围
         assert 0.01 < hL < 2.0
 
     def test_head_loss_increases_with_flow(self):
@@ -190,7 +198,7 @@ class TestButterflyValveHeadLoss:
         hL_2 = valve.compute_head_loss(Q=0.2)
 
         # 水头损失与流量平方成正比
-        # hL_2 / hL_1 ≈ (Q_2 / Q_1)²  = (0.2/0.1)² = 4
+        # hL_2 / hL_1 ~= (Q_2 / Q_1)^2  = (0.2/0.1)^2 = 4
         ratio = hL_2 / hL_1
         assert 3.5 < ratio < 4.5
 
@@ -240,7 +248,7 @@ class TestButterflyValveFlowCoefficient:
         assert Cv > 0
 
         # 对于直径0.5m（约20英寸），全开Cv应在数千到数万
-        # 根据公式 Cv = 29.84 * D² / √Kv，大口径阀门Cv很大
+        # 根据公式 Cv = 29.84 * D^2 / sqrtKv，大口径阀门Cv很大
         assert 10000 < Cv < 30000
 
     def test_cv_decreases_with_closure(self):
@@ -331,7 +339,7 @@ class TestBallValveLossCoefficient:
 
         Kv = valve.get_loss_coefficient()
 
-        # 全通径球阀，Kv ≈ 0.05
+        # 全通径球阀，Kv ~= 0.05
         assert 0.03 < Kv < 0.07
 
     def test_reduced_port_loss_coefficient(self):
@@ -344,7 +352,7 @@ class TestBallValveLossCoefficient:
 
         Kv = valve.get_loss_coefficient()
 
-        # 缩径球阀，Kv ≈ 0.15
+        # 缩径球阀，Kv ~= 0.15
         assert 0.1 < Kv < 0.2
 
     def test_closed_valve_high_loss(self):
@@ -388,7 +396,7 @@ class TestBallValveHeadLoss:
             port_type='full_port'
         )
 
-        Q = 0.1  # m³/s
+        Q = 0.1  # m^3/s
         hL = valve.compute_head_loss(Q)
 
         # 全通径球阀全开时，损失极小
@@ -486,7 +494,7 @@ class TestPRVHeadLoss:
         prv = create_prv(position=100.0, diameter=0.4, target_pressure=30.0)
 
         p_upstream = 50.0  # m
-        Q = 0.15  # m³/s
+        Q = 0.15  # m^3/s
 
         hL = prv.compute_head_loss(p_upstream, Q)
 

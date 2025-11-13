@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 诊断SimplifiedCanalSimulator的问题
 
@@ -47,7 +48,7 @@ print("-" * 80)
 
 print("\n当前实现（错误）：")
 print("  dy = self.model.step(u_total)")
-print("  self.y = dy                      # ❌ 直接覆盖，丢失历史")
+print("  self.y = dy                      #  直接覆盖，丢失历史")
 print("  y_absolute = self.base_level + self.y")
 print()
 print("问题：")
@@ -99,7 +100,7 @@ print("  return base_level + self.y")
 print("\n测试方案A：")
 model.reset()
 setpoint = 2.2
-u_nominal = 0.022  # 名义控制量，使稳态输出≈2.2m
+u_nominal = 0.022  # 名义控制量，使稳态输出~=2.2m
 
 print(f"使用u_nominal={u_nominal} (根据K=100估算: y=K*u=2.2)")
 
@@ -110,16 +111,16 @@ for i in range(20):
     if i < 5 or i % 5 == 0:
         print(f"步骤 {i+1:2d}: y={y:8.4f}, error={error:8.4f}")
 
-print("\n观察：需要合适的u_nominal使稳态输出≈目标水位")
+print("\n观察：需要合适的u_nominal使稳态输出~=目标水位")
 
 # 总结
 print("\n" + "=" * 80)
 print("诊断总结")
 print("=" * 80)
 print("\n问题根源：")
-print("  1. ❌ IDZ模型输出是绝对水位，不应该再加base_level")
-print("  2. ❌ 控制量u和扰动Q的关系不清晰")
-print("  3. ❌ 没有明确的稳态工作点")
+print("  1.  IDZ模型输出是绝对水位，不应该再加base_level")
+print("  2.  控制量u和扰动Q的关系不清晰")
+print("  3.  没有明确的稳态工作点")
 print()
 print("解决方案：")
 print("  选项1：重新设计IDZ模型接口，使用增量形式")

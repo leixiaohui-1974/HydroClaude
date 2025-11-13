@@ -21,7 +21,13 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import time
 
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.mpc_scheduler_parallel import ParallelMPCScheduler
 from solvers.parameter_estimation import ParameterEstimator
 from solvers.predictive_maintenance import PredictiveMaintenanceSystem, SensorHealthPredictor
@@ -135,7 +141,7 @@ def test_parallel_mpc():
     print("并行MPC性能总结")
     print("=" * 80)
 
-    print(f"\n{'方法':<20} {'总耗时(s)':<12} {'加速比':<10} {'最终流量(m³/s)':<15}")
+    print(f"\n{'方法':<20} {'总耗时(s)':<12} {'加速比':<10} {'最终流量(m^3/s)':<15}")
     print("-" * 80)
 
     for key, data in results.items():
@@ -159,7 +165,7 @@ def test_parallel_mpc():
 
     ax.axhline(target_flow, color='k', linestyle='--', linewidth=2, alpha=0.5, label='目标')
     ax.set_xlabel('Time (s)')
-    ax.set_ylabel('Downstream flow (m³/s)')
+    ax.set_ylabel('Downstream flow (m^3/s)')
     ax.set_title('Flow Tracking - Parallel MPC')
     ax.legend()
     ax.grid(True, alpha=0.3)
@@ -309,7 +315,7 @@ def test_parameter_estimation():
     print(f"\n参数估计结果:")
     print(f"  真实糙率: {n_true:.4f}")
     print(f"  初始猜测: {n_initial_guess:.4f}")
-    print(f"  估计值: {n_estimated:.4f} ± {n_std_history[-1]:.4f}")
+    print(f"  估计值: {n_estimated:.4f} +/- {n_std_history[-1]:.4f}")
     print(f"  估计误差: {estimation_error:.2f}%")
 
     # 绘图
@@ -537,34 +543,34 @@ def test_predictive_maintenance():
 
 def main():
     """运行所有高级功能测试"""
-    print("\n" + "🚀" * 40)
+    print("\n" + "" * 40)
     print("高级功能综合测试")
-    print("🚀" * 40)
+    print("" * 40)
 
     # 测试1: 并行MPC
     try:
         mpc_results = test_parallel_mpc()
-        print("\n✅ 并行MPC测试完成")
+        print("\n 并行MPC测试完成")
     except Exception as e:
-        print(f"\n❌ 并行MPC测试失败: {e}")
+        print(f"\n 并行MPC测试失败: {e}")
         import traceback
         traceback.print_exc()
 
     # 测试2: 参数估计
     try:
         param_results = test_parameter_estimation()
-        print("\n✅ 参数估计测试完成")
+        print("\n 参数估计测试完成")
     except Exception as e:
-        print(f"\n❌ 参数估计测试失败: {e}")
+        print(f"\n 参数估计测试失败: {e}")
         import traceback
         traceback.print_exc()
 
     # 测试3: 预测性维护
     try:
         pm_results = test_predictive_maintenance()
-        print("\n✅ 预测性维护测试完成")
+        print("\n 预测性维护测试完成")
     except Exception as e:
-        print(f"\n❌ 预测性维护测试失败: {e}")
+        print(f"\n 预测性维护测试失败: {e}")
         import traceback
         traceback.print_exc()
 
@@ -573,9 +579,9 @@ def main():
     print("=" * 80)
 
     print("\n高级功能总结：")
-    print("  ✅ 并行MPC: 多核加速，PSO/DE优化")
-    print("  ✅ 参数估计: 糙率在线估计，增广EKF")
-    print("  ✅ 预测性维护: 传感器寿命预测，维护建议")
+    print("   并行MPC: 多核加速，PSO/DE优化")
+    print("   参数估计: 糙率在线估计，增广EKF")
+    print("   预测性维护: 传感器寿命预测，维护建议")
 
 
 if __name__ == "__main__":

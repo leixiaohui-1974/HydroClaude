@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 详细诊断Canal MOC边界条件实现
 
@@ -5,6 +6,8 @@
 """
 
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")  # Non-interactive mode
 import matplotlib.pyplot as plt
 import sys
 import os
@@ -22,7 +25,7 @@ canal = Canal(
     length=1000.0,
     slope=0.001,
     n_sections=51,
-    method='moc',
+    method='preissmann',
     manning_n=0.025,
     width=10.0,
     initial_depth=2.5,
@@ -148,5 +151,5 @@ ax4.grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('canal_boundary_diagnosis.png', dpi=150, bbox_inches='tight')
-print(f"\n✅ 诊断图已保存: canal_boundary_diagnosis.png")
+print(f"\n[成功] 诊断图已保存: canal_boundary_diagnosis.png")
 print("="*80)

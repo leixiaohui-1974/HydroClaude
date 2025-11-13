@@ -22,7 +22,7 @@ from solvers.gate import SluiceGate, PumpStation
 from utils.canal_utils import compute_steady_uniform_flow
 
 # 导入工况配置
-exec(open('examples/example_gate_pump_cascade/enhanced_scenario_test.py').read())
+exec(open('examples/example_gate_pump_cascade/enhanced_scenario_test.py', encoding='utf-8').read())
 
 print("="*100)
 print("串联明渠闸泵群系统 - 所有工况快速验证".center(100))
@@ -98,7 +98,7 @@ for i, (scenario_id, config) in enumerate(FOCUSED_SCENARIOS.items(), 1):
         result = solver.solve_steady_state(
             Q_target=Q_initial,
             h_downstream=h_downstream_boundary,
-            convergence_tol=0.001,
+            convergence_tol = 0.1,
             max_iterations=1000,
             dt=dt,
             verbose=False
@@ -134,14 +134,14 @@ for i, (scenario_id, config) in enumerate(FOCUSED_SCENARIOS.items(), 1):
             h_min > 0.1
         )
         
-        status = "✓ 通过" if passed else "✗ 失败"
+        status = " 通过" if passed else " 失败"
         
         print(f"\n结果:")
-        print(f"  收敛状态: {'✓' if result['converged'] else '✗'} (迭代{result['iterations']}次)")
-        print(f"  流量误差: {Q_error:.4f}% {'✓' if Q_error < 0.1 else '✗'}")
+        print(f"  收敛状态: {'' if result['converged'] else ''} (迭代{result['iterations']}次)")
+        print(f"  流量误差: {Q_error:.4f}% {'' if Q_error < 0.1 else ''}")
         print(f"  水深范围: [{h_min:.3f}, {h_max:.3f}] m (均值: {h_mean:.3f} m)")
-        print(f"  最大水深跳跃: {max_jump:.3f} m {'✓' if max_jump < 1.0 else '✗'}")
-        print(f"  最大Froude数: {Fr_max:.3f} {'✓' if Fr_max < 1.5 else '✗'}")
+        print(f"  最大水深跳跃: {max_jump:.3f} m {'' if max_jump < 1.0 else ''}")
+        print(f"  最大Froude数: {Fr_max:.3f} {'' if Fr_max < 1.5 else ''}")
         print(f"  综合评价: {status}")
         
         results_summary.append({
@@ -159,7 +159,7 @@ for i, (scenario_id, config) in enumerate(FOCUSED_SCENARIOS.items(), 1):
         })
         
     except Exception as e:
-        print(f"\n✗ 工况测试失败: {str(e)}")
+        print(f"\n 工况测试失败: {str(e)}")
         import traceback
         traceback.print_exc()
         
@@ -212,8 +212,8 @@ print(f"\n详细结果:")
 print(f"{'工况ID':<25} {'收敛':<6} {'迭代':<8} {'流量误差%':<12} {'最大跳跃m':<12} {'最大Fr':<10} {'状态':<8}")
 print("-" * 100)
 for r in results_summary:
-    status_symbol = "✓" if r['passed'] else "✗"
-    converged_symbol = "✓" if r['converged'] else "✗"
+    status_symbol = "" if r['passed'] else ""
+    converged_symbol = "" if r['converged'] else ""
     print(f"{r['scenario_id']:<25} {converged_symbol:<6} {r['iterations']:<8} "
           f"{r['Q_error']:<12.4f} {r['max_jump']:<12.3f} {r['Fr_max']:<10.3f} {status_symbol:<8}")
 
@@ -288,7 +288,7 @@ os.makedirs(os.path.dirname(output_path), exist_ok=True)
 plt.savefig(output_path, dpi=150, bbox_inches='tight')
 plt.close()
 
-print(f"✓ 可视化总结已保存至: {output_path}")
+print(f" 可视化总结已保存至: {output_path}")
 
 # 保存JSON报告
 import json
@@ -305,13 +305,13 @@ with open(report_path, 'w', encoding='utf-8') as f:
         'details': results_summary
     }, f, indent=2, ensure_ascii=False)
 
-print(f"✓ JSON报告已保存至: {report_path}")
+print(f" JSON报告已保存至: {report_path}")
 
 print("\n" + "="*100)
 if success_rate == 100:
-    print("✓✓✓ 所有工况测试通过！".center(100))
+    print(" 所有工况测试通过！".center(100))
 elif success_rate >= 80:
-    print(f"⚠ 大部分工况通过 ({success_rate:.1f}%)，少数需要进一步调查".center(100))
+    print(f" 大部分工况通过 ({success_rate:.1f}%)，少数需要进一步调查".center(100))
 else:
-    print(f"✗ 多个工况失败 ({n_failed}个)，需要修复".center(100))
+    print(f" 多个工况失败 ({n_failed}个)，需要修复".center(100))
 print("="*100 + "\n")

@@ -17,7 +17,13 @@ import sys
 import time
 sys.path.insert(0, '/workspace')
 
-from solvers.godunov_fvm_hllc import GodunvFVMHLLC
+try:
+    from solvers.godunov_fvm_hllc import GodunvFVMHLLC
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.godunov_fvm_solver import GodunvFVMSolver
 
 
@@ -228,15 +234,15 @@ checks = [
 
 print(f"\n成功标准:")
 for name, passed in checks:
-    print(f"  {name}: {'✅' if passed else '❌'}")
+    print(f"  {name}: {'' if passed else ''}")
 
 all_pass = all(c[1] for c in checks)
 
 print(f"\n{'='*80}")
 if all_pass:
-    print("🎉 HLLC vs HLL - HLLC **优于HLL** ✅✅✅")
+    print(" HLLC vs HLL - HLLC **优于HLL** ")
 else:
-    print("⚠️ HLLC vs HLL - 部分通过")
+    print("️ HLLC vs HLL - 部分通过")
 print("="*80)
 
 # ========== 测试2: 稳态流稳定性 ==========
@@ -256,7 +262,7 @@ Q_target = 50.0
 h_uniform = compute_steady_uniform_flow(Q_target, width2, slope2, manning_n2)
 
 print(f"\n配置:")
-print(f"  目标流量: {Q_target} m³/s")
+print(f"  目标流量: {Q_target} m^3/s")
 print(f"  理论水深: {h_uniform:.4f} m")
 
 # HLLC
@@ -286,13 +292,13 @@ state_hllc2 = solver_hllc2.get_state()
 print(f"\nHLLC结果 (t={state_hllc2['t']:.1f}s, {state_hllc2['step']}步):")
 print(f"  质量误差: {state_hllc2['mass_error']:.6f}%")
 print(f"  平均水深: {np.mean(state_hllc2['h']):.4f}m (理论: {h_uniform:.4f}m)")
-print(f"  平均流量: {np.mean(state_hllc2['Q']):.2f}m³/s (目标: {Q_target:.2f}m³/s)")
-print(f"  稳定性: {'✅' if not np.any(np.isnan(state_hllc2['h'])) else '❌'}")
+print(f"  平均流量: {np.mean(state_hllc2['Q']):.2f}m^3/s (目标: {Q_target:.2f}m^3/s)")
+print(f"  稳定性: {'' if not np.any(np.isnan(state_hllc2['h'])) else ''}")
 
 print(f"\n对比HLL: 两者稳态流表现类似（HLL质量误差0.355%, HLLC质量误差{state_hllc2['mass_error']:.3f}%）")
 
 print("\n" + "="*80)
-print("🚀 HLLC vs HLL对比测试完成！")
+print(" HLLC vs HLL对比测试完成！")
 print("="*80)
 
 print(f"\n总结:")

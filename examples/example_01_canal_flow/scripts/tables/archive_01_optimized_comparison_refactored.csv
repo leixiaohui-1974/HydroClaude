@@ -1,0 +1,4 @@
+Method,Converged,Iterations,Final_Error_%,Computation_Time_s,Iterations_per_Second
+Standard (0.5%),True,501,0.05627443195320936,2.1395111083984375,234.16564561566167
+Relaxed (1%),True,501,0.05627443195320936,2.0366647243499756,245.99041462747374
+Optimized Init (DISABLED),False,0,0.0,0.0,0.0

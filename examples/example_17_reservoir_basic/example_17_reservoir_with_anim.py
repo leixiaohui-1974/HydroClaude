@@ -16,6 +16,8 @@
 import sys, os
 import numpy as np
 import argparse
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 EXAMPLES_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -65,12 +67,12 @@ def run_example(args):
     fig, axes = plt.subplots(4, 1, figsize=(12, 12))
     
     axes[0].plot(hours, inflow, 'b-', linewidth=2)
-    axes[0].set_ylabel('Inflow (m³/s)')
+    axes[0].set_ylabel('Inflow (m^3/s)')
     axes[0].set_title('Reservoir Operation - Inflow')
     axes[0].grid(True, alpha=0.3)
     
     axes[1].plot(hours, outflow, 'r-', linewidth=2)
-    axes[1].set_ylabel('Outflow (m³/s)')
+    axes[1].set_ylabel('Outflow (m^3/s)')
     axes[1].set_title('Outflow (Power Generation)')
     axes[1].grid(True, alpha=0.3)
     
@@ -80,7 +82,7 @@ def run_example(args):
     axes[2].grid(True, alpha=0.3)
     
     axes[3].plot(hours, storage/1e6, 'm-', linewidth=2)
-    axes[3].set_ylabel('Storage (Million m³)')
+    axes[3].set_ylabel('Storage (Million m^3)')
     axes[3].set_xlabel('Time (hours)')
     axes[3].set_title('Water Storage')
     axes[3].grid(True, alpha=0.3)
@@ -90,7 +92,7 @@ def run_example(args):
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
     plt.close()
     
-    print(f"\n✓ 静态图表已保存: {fig_path}")
+    print(f"\n 静态图表已保存: {fig_path}")
     
     # 生成动画
     if args.animate:
@@ -110,18 +112,18 @@ def run_example(args):
                 title='Reservoir Operation (24h)',
                 xlabel='Time (hours)',
                 ylabels={
-                    'Inflow': 'Flow (m³/s)',
-                    'Outflow': 'Flow (m³/s)',
+                    'Inflow': 'Flow (m^3/s)',
+                    'Outflow': 'Flow (m^3/s)',
                     'Water Level': 'Level (m)',
-                    'Storage': 'Storage (Mm³)',
+                    'Storage': 'Storage (Mm^3)',
                 },
                 layout=(2, 2)
             )
-            print(f"✓ 动画已保存: {os.path.basename(gif_path)}")
+            print(f" 动画已保存: {os.path.basename(gif_path)}")
         except Exception as e:
-            print(f"✗ 动画生成失败: {e}")
+            print(f" 动画生成失败: {e}")
     
-    print("\n✅ 示例17（增强版）运行成功")
+    print("\n 示例17（增强版）运行成功")
 
 if __name__ == "__main__":
     args = parse_args()

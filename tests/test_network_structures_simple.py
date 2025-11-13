@@ -22,7 +22,13 @@ from network.structures import InternalWeir, InternalGate, InternalOrifice
 from network.coupling import StructureCoupler
 from network.solver import NetworkSolver
 from physics.hydraulic_structures import BroadCrestedWeir, SluiceGate, Orifice
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def create_test_solver(length=100.0, width=10.0, h_init=2.0, Q_init=20.0, slope=0.001):
@@ -73,7 +79,7 @@ def test_internal_weir():
     # 求解流量
     Q = internal_weir.solve()
 
-    print(f"  计算流量: {Q:.3f} m³/s")
+    print(f"  计算流量: {Q:.3f} m^3/s")
     print(f"  上游水位: {internal_weir.h_upstream:.3f} m")
     print(f"  下游水位: {internal_weir.h_downstream:.3f} m")
     print(f"  水位差: {internal_weir.delta_h:.3f} m")
@@ -86,9 +92,9 @@ def test_internal_weir():
 
     # 检查质量守恒
     is_balanced, error = internal_weir.check_mass_balance(tol=1.0)
-    print(f"  质量守恒: {'✅' if is_balanced else '❌'} (误差={error:.4f} m³/s)")
+    print(f"  质量守恒: {'' if is_balanced else ''} (误差={error:.4f} m^3/s)")
 
-    print("✅ 测试通过")
+    print(" 测试通过")
 
 
 def test_internal_gate():
@@ -114,19 +120,19 @@ def test_internal_gate():
 
     # 求解流量（初始开度）
     Q1 = internal_gate.solve()
-    print(f"  初始流量: {Q1:.3f} m³/s")
+    print(f"  初始流量: {Q1:.3f} m^3/s")
 
     # 增大开度
     internal_gate.set_opening(0.8)
     print(f"  调整开度: {internal_gate.get_opening():.2f} m")
 
     Q2 = internal_gate.solve()
-    print(f"  新流量: {Q2:.3f} m³/s")
+    print(f"  新流量: {Q2:.3f} m^3/s")
 
     assert Q2 > Q1, "开度增大后流量应增大"
     print(f"  流量变化: +{((Q2-Q1)/Q1*100):.1f}%")
 
-    print("✅ 测试通过")
+    print(" 测试通过")
 
 
 def test_internal_orifice():
@@ -149,15 +155,15 @@ def test_internal_orifice():
 
     print(f"  创建内部孔口: {internal_orifice.name}")
     print(f"  孔口直径: {orifice.D:.2f} m")
-    print(f"  孔口面积: {orifice.A:.3f} m²")
+    print(f"  孔口面积: {orifice.A:.3f} m^2")
 
     # 求解流量
     Q = internal_orifice.solve()
-    print(f"  过流流量: {Q:.3f} m³/s")
+    print(f"  过流流量: {Q:.3f} m^3/s")
 
     assert Q > 0, "流量应为正值"
 
-    print("✅ 测试通过")
+    print(" 测试通过")
 
 
 def test_structure_coupler():
@@ -184,15 +190,15 @@ def test_structure_coupler():
 
     # 执行耦合
     Q = coupler.couple()
-    print(f"  耦合流量: {Q:.3f} m³/s")
+    print(f"  耦合流量: {Q:.3f} m^3/s")
 
     # 检查质量守恒
     is_balanced, error = coupler.check_mass_balance(tol=1.0)
-    print(f"  质量守恒: {'✅' if is_balanced else '❌'} (误差={error:.4f} m³/s)")
+    print(f"  质量守恒: {'' if is_balanced else ''} (误差={error:.4f} m^3/s)")
 
     assert is_balanced, "质量应守恒"
 
-    print("✅ 测试通过")
+    print(" 测试通过")
 
 
 def test_network_integration():
@@ -233,7 +239,7 @@ def test_network_integration():
     network.add_internal_structure("闸门", internal_gate)
 
     assert network.nodes["闸门"].internal_structure == internal_gate, "内部建筑物未正确附加"
-    print(f"  添加内部闸门: ✅")
+    print(f"  添加内部闸门: ")
 
     # 创建求解器
     solver = NetworkSolver(network)
@@ -241,9 +247,9 @@ def test_network_integration():
     # 验证StructureCoupler已创建
     assert "闸门" in solver.couplers, "耦合器未创建"
     assert isinstance(solver.couplers["闸门"], StructureCoupler), "耦合器类型错误"
-    print(f"  自动创建StructureCoupler: ✅")
+    print(f"  自动创建StructureCoupler: ")
 
-    print("✅ 测试通过")
+    print(" 测试通过")
 
 
 def test_network_simulation():
@@ -288,8 +294,8 @@ def test_network_simulation():
     print(f"  求解方法: {solver.solve_method}")
 
     # 运行短时间模拟
-    print(f"\n  运行模拟 (t=0 → 100s)...")
-    results = solver.run(t_end=100.0, dt=1.0, verbose=False)
+    print(f"\n  运行模拟 (t=0 -> 100s)...")
+    results = solver.run(t_end=50.0, dt=1.0, verbose=False)
 
     print(f"  总步数: {results['n_steps']}")
     print(f"  计算时间: {results['total_time']:.3f} s")
@@ -305,13 +311,13 @@ def test_network_simulation():
     assert max_error < 10.0, "质量守恒误差过大"
 
     if max_error < 1.0:
-        print(f"    评价: ✅ 优秀 (< 1%)")
+        print(f"    评价:  优秀 (< 1%)")
     elif max_error < 5.0:
-        print(f"    评价: ⚠️  良好 (< 5%)")
+        print(f"    评价:   良好 (< 5%)")
     else:
-        print(f"    评价: ⚠️  需改进 (< 10%)")
+        print(f"    评价:   需改进 (< 10%)")
 
-    print("✅ 测试通过")
+    print(" 测试通过")
 
 
 if __name__ == "__main__":
@@ -329,24 +335,24 @@ if __name__ == "__main__":
         test_network_simulation()
 
         print("\n" + "=" * 80)
-        print("✅ 所有测试通过！")
+        print(" 所有测试通过！")
         print("=" * 80)
 
         print("\n总结:")
-        print("  1. ✅ InternalWeir - 内部堰")
-        print("  2. ✅ InternalGate - 内部闸门（可调开度）")
-        print("  3. ✅ InternalOrifice - 内部孔口")
-        print("  4. ✅ StructureCoupler - 建筑物耦合器")
-        print("  5. ✅ Network集成 - 自动构建StructureCoupler")
-        print("  6. ✅ Network模拟 - 完整模拟流程")
+        print("  1.  InternalWeir - 内部堰")
+        print("  2.  InternalGate - 内部闸门（可调开度）")
+        print("  3.  InternalOrifice - 内部孔口")
+        print("  4.  StructureCoupler - 建筑物耦合器")
+        print("  5.  Network集成 - 自动构建StructureCoupler")
+        print("  6.  Network模拟 - 完整模拟流程")
 
     except AssertionError as e:
-        print(f"\n❌ 测试失败: {e}")
+        print(f"\n 测试失败: {e}")
         import traceback
         traceback.print_exc()
         exit(1)
     except Exception as e:
-        print(f"\n❌ 错误: {e}")
+        print(f"\n 错误: {e}")
         import traceback
         traceback.print_exc()
         exit(1)

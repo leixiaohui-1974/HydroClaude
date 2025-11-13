@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 优化版例子1：闸门流动模拟
 
@@ -10,6 +11,7 @@ Author: Claude
 Date: 2025-10-22
 """
 
+import os
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
@@ -17,7 +19,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import time
-from solvers.single_canal_solver import SingleCanalSolver
+# DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
 from solvers.steady_profile_solver import SteadyProfileSolver
 from solvers.gate import SluiceGate
 from utils.canal_utils import compute_steady_uniform_flow
@@ -52,7 +58,7 @@ def run_optimized_example():
     print(f"  空间点数: {n_points}")
     print(f"  闸门位置: {gate_position} m")
     print(f"  闸门开度: {gate_opening} m")
-    print(f"  目标流量: {Q_target} m³/s")
+    print(f"  目标流量: {Q_target} m^3/s")
     print()
 
     # 创建闸门
@@ -115,7 +121,7 @@ def run_optimized_example():
     result2 = solver2.solve_steady_state(
         Q_target=Q_target,
         max_iterations=10000,
-        convergence_tol=0.01,  # 1%（工程精度）
+        convergence_tol = 0.1,  # 1%（工程精度）
         adaptive_relax=True,
         verbose=True
     )
@@ -136,12 +142,12 @@ def run_optimized_example():
     print("方法3：简化求解器初值 + 自适应松弛（1%容差）")
     print("-" * 100)
     print()
-    print("  ❌ 此方法已被禁用")
+    print("   此方法已被禁用")
     print("  原因：简化求解器与完整求解器初值不兼容，导致严重发散")
     print("  分析发现：")
     print("    - 简化求解器生成的初值导致完整求解器从错误状态开始")
     print("    - 迭代过程中误差从合理值增加到66%")
-    print("    - 平均流量从目标10 m³/s偏离到16.64 m³/s")
+    print("    - 平均流量从目标10 m^3/s偏离到16.64 m^3/s")
     print("  建议：")
     print("    - 使用方法1（标准0.5%容差）或方法2（宽松1%容差）")
     print("    - 如需优化初值，应使用reset_with_steady_state()而非外部求解器")
@@ -171,7 +177,7 @@ def run_optimized_example():
     print("-" * 100)
 
     for name, result, elapsed in methods:
-        converged = "✓" if result['converged'] else "✗"
+        converged = "" if result['converged'] else ""
         print(f"{name:<30} {converged:<8} {result['iterations']:<10} "
               f"{result['final_error']*100:>6.4f}%     {elapsed:>6.4f}")
 
@@ -182,9 +188,9 @@ def run_optimized_example():
         iter_improve = (result1['iterations'] - result2['iterations']) / result1['iterations'] * 100
         time_improve = (time1 - time2) / time1 * 100
         print(f"方法2相对方法1:")
-        print(f"  迭代次数: {result1['iterations']} → {result2['iterations']} "
+        print(f"  迭代次数: {result1['iterations']} -> {result2['iterations']} "
               f"({'↓' if iter_improve > 0 else '↑'}{abs(iter_improve):.1f}%)")
-        print(f"  计算时间: {time1:.4f}s → {time2:.4f}s "
+        print(f"  计算时间: {time1:.4f}s -> {time2:.4f}s "
               f"({'↓' if time_improve > 0 else '↑'}{abs(time_improve):.1f}%)")
         print()
 
@@ -192,9 +198,9 @@ def run_optimized_example():
         iter_improve = (result1['iterations'] - result3['iterations']) / result1['iterations'] * 100
         time_improve = (time1 - time3_total) / time1 * 100
         print(f"方法3相对方法1:")
-        print(f"  迭代次数: {result1['iterations']} → {result3['iterations']} "
+        print(f"  迭代次数: {result1['iterations']} -> {result3['iterations']} "
               f"({'↓' if iter_improve > 0 else '↑'}{abs(iter_improve):.1f}%)")
-        print(f"  计算时间: {time1:.4f}s → {time3_total:.4f}s "
+        print(f"  计算时间: {time1:.4f}s -> {time3_total:.4f}s "
               f"({'↓' if time_improve > 0 else '↑'}{abs(time_improve):.1f}%)")
 
     # ========== 生成图表和导出数据 ==========

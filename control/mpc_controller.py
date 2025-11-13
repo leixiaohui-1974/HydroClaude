@@ -584,7 +584,7 @@ def test_mpc_controller():
     print(f"  平均目标函数值: {diag['average_objective']:.4f}")
 
     print("\n" + "=" * 80)
-    print("✅ 测试完成！")
+    print(" 测试完成！")
     print("=" * 80)
 
     return {

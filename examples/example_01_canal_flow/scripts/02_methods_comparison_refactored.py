@@ -131,7 +131,7 @@ class CanalSolver:
             B: 渠道宽度 (m)
             S0: 底坡
             n: Manning糙率
-            g: 重力加速度 (m/s²)
+            g: 重力加速度 (m/s^2)
             method: 数值方法 ('explicit', 'preissmann', 'hll')
         """
         self.length = length
@@ -249,7 +249,7 @@ class CanalSolver:
         # 显式预估
         h_pred, Q_pred = self.step_explicit(dt, Q_upstream, h_downstream)
 
-        # θ加权校正
+        # theta加权校正
         self.h = self.omega * ((1 - self.theta) * h_old + self.theta * h_pred) + (1 - self.omega) * h_old
         self.Q = self.omega * ((1 - self.theta) * Q_old + self.theta * Q_pred) + (1 - self.omega) * Q_old
 
@@ -363,7 +363,7 @@ def run_standard_comparison_test():
     B = 10.0            # 渠道宽度 (m)
     S0 = 0.001          # 底坡 (无量纲)
     n = 0.025           # Manning糙率系数 (s/m^(1/3))
-    g = 9.81            # 重力加速度 (m/s²)
+    g = 9.81            # 重力加速度 (m/s^2)
 
     # 数值参数
     nx = 201            # 空间离散点数
@@ -372,7 +372,7 @@ def run_standard_comparison_test():
     n_steps = int(T_total / dt)
 
     # 边界条件（恒定）
-    Q_upstream = 8.0    # 上游流量 (m³/s)
+    Q_upstream = 8.0    # 上游流量 (m^3/s)
 
     # 计算下游水深（使用Manning公式保证兼容性）
     h_downstream = compute_steady_uniform_flow(Q_upstream, B, S0, n, g)
@@ -389,7 +389,7 @@ def run_standard_comparison_test():
     print(f"  Width B         = {B:.1f} m")
     print(f"  Bed Slope S0    = {S0:.4f}")
     print(f"  Manning's n     = {n:.3f} s/m^(1/3)")
-    print(f"  Gravity g       = {g:.2f} m/s²")
+    print(f"  Gravity g       = {g:.2f} m/s^2")
 
     print(f"\nNumerical Parameters:")
     print(f"  Grid Points nx  = {nx}")
@@ -399,11 +399,11 @@ def run_standard_comparison_test():
     print(f"  Total Steps     = {n_steps}")
 
     print(f"\nBoundary Conditions (Steady):")
-    print(f"  Upstream Q      = {Q_upstream:.2f} m³/s")
+    print(f"  Upstream Q      = {Q_upstream:.2f} m^3/s")
     print(f"  Downstream h    = {h_downstream:.4f} m (computed from Manning)")
 
     print(f"\nInitial Conditions (Uniform Flow):")
-    print(f"  Initial Q       = {Q_initial:.2f} m³/s")
+    print(f"  Initial Q       = {Q_initial:.2f} m^3/s")
     print(f"  Initial h       = {h_initial:.4f} m")
 
     # CFL条件检查
@@ -471,7 +471,7 @@ def run_standard_comparison_test():
                 Q_std = np.std(solver.Q)
                 print(f"  Step {step+1}/{n_steps}: t={t:.1f}s, "
                       f"h_mean={h_mean:.4f}m (std={h_std:.6f}m), "
-                      f"Q_mean={Q_mean:.4f}m³/s (std={Q_std:.6f}m³/s)")
+                      f"Q_mean={Q_mean:.4f}m^3/s (std={Q_std:.6f}m^3/s)")
 
         t_end = time.time()
         comp_time = t_end - t_start
@@ -498,8 +498,8 @@ def run_standard_comparison_test():
         print(f"    CV     = {h_cv:.6f} %")
         print(f"    Error  = {h_error:.6f} %")
         print(f"  Discharge:")
-        print(f"    Mean   = {Q_mean:.6f} m³/s")
-        print(f"    Std    = {Q_std:.8f} m³/s")
+        print(f"    Mean   = {Q_mean:.6f} m^3/s")
+        print(f"    Std    = {Q_std:.8f} m^3/s")
         print(f"    CV     = {Q_cv:.6f} %")
         print(f"    Error  = {Q_error:.6f} %")
         print(f"  Computation:")
@@ -537,7 +537,7 @@ def run_standard_comparison_test():
     print("=" * 80)
 
     print("\n{:<15} {:>15} {:>15} {:>15} {:>15}".format(
-        "Method", "h_mean (m)", "h_CV (%)", "Q_mean (m³/s)", "Q_CV (%)"))
+        "Method", "h_mean (m)", "h_CV (%)", "Q_mean (m^3/s)", "Q_CV (%)"))
     print("-" * 80)
     for method_name in methods:
         r = results[method_name]
@@ -596,7 +596,7 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
         ax.legend(loc='best', fontsize=9)
 
         # 设置合理的Y轴范围（避免科学计数法混淆）
-        h_margin = h_theory * 0.05  # ±5%
+        h_margin = h_theory * 0.05  # +/-5%
         ax.set_ylim([h_theory - h_margin, h_theory + h_margin])
 
         # 添加统计信息
@@ -623,7 +623,7 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
         ax.legend(loc='best', fontsize=9)
 
         # 设置合理的Y轴范围（避免科学计数法混淆）
-        Q_margin = Q_theory * 0.1  # ±10%
+        Q_margin = Q_theory * 0.1  # +/-10%
         ax.set_ylim([Q_theory - Q_margin, Q_theory + Q_margin])
 
         # 添加统计信息
@@ -635,7 +635,7 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
     plt.tight_layout()
     fig_path = helper.get_output_path('02_methods_spatial_comparison_refactored.png', subdir='figures')
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f'  ✓ Saved figure: {fig_path.name}')
+    print(f'   Saved figure: {fig_path.name}')
     plt.close()
     plt.close()
 
@@ -685,7 +685,7 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
     plt.tight_layout()
     fig_path = helper.get_output_path('02_methods_temporal_comparison_refactored.png', subdir='figures')
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f'  ✓ Saved figure: {fig_path.name}')
+    print(f'   Saved figure: {fig_path.name}')
     plt.close()
     plt.close()
 
@@ -765,7 +765,7 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
     plt.tight_layout()
     fig_path = helper.get_output_path('02_methods_performance_comparison_refactored.png', subdir='figures')
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f'  ✓ Saved figure: {fig_path.name}')
+    print(f'   Saved figure: {fig_path.name}')
     plt.close()
     plt.close()
 
@@ -807,11 +807,11 @@ def generate_comparison_plots(results, methods, h_theory, Q_theory, nx, T_total)
     plt.tight_layout()
     fig_path = helper.get_output_path('02_methods_overlay_comparison_refactored.png', subdir='figures')
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f'  ✓ Saved figure: {fig_path.name}')
+    print(f'   Saved figure: {fig_path.name}')
     plt.close()
     plt.close()
 
-    print("\n✓ All visualizations generated successfully!")
+    print("\n All visualizations generated successfully!")
 
 
 # ============================================================================
@@ -838,8 +838,8 @@ if __name__ == '__main__':
             'h_std (m)': r['h_std'],
             'h_CV (%)': r['h_cv'],
             'h_error (%)': r['h_error'],
-            'Q_mean (m³/s)': r['Q_mean'],
-            'Q_std (m³/s)': r['Q_std'],
+            'Q_mean (m^3/s)': r['Q_mean'],
+            'Q_std (m^3/s)': r['Q_std'],
             'Q_CV (%)': r['Q_cv'],
             'Q_error (%)': r['Q_error'],
             'Speed (step/s)': r['comp_speed'],
@@ -849,7 +849,7 @@ if __name__ == '__main__':
     df = pd.DataFrame(table_data)
     table_path = helper.get_output_path('02_methods_comparison_results_refactored.csv', subdir='tables')
     df.to_csv(table_path, index=False)
-    print(f'  ✓ Saved table: {table_path.name}')
+    print(f'   Saved table: {table_path.name}')
 
     # Save detailed statistics
     detailed_data = []
@@ -860,13 +860,13 @@ if __name__ == '__main__':
                 'Method': method,
                 'Position (m)': r['x'][i],
                 'Water_Depth (m)': r['h_final'][i],
-                'Discharge (m³/s)': r['Q_final'][i]
+                'Discharge (m^3/s)': r['Q_final'][i]
             })
 
     df_detailed = pd.DataFrame(detailed_data)
     table_path = helper.get_output_path('02_methods_detailed_profiles_refactored.csv', subdir='tables')
     df_detailed.to_csv(table_path, index=False)
-    print(f'  ✓ Saved table: {table_path.name}')
+    print(f'   Saved table: {table_path.name}')
 
     print("\n" + "=" * 80)
     print("STANDARD METHODS COMPARISON TEST COMPLETED!")

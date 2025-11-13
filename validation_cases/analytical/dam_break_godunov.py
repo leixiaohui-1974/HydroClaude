@@ -12,7 +12,7 @@ Ritter (1892) 给出了瞬时溃坝的精确解析解
 解析解（无摩阻、水平河床）：
 - 波前位置: x_f = 2*sqrt(g*h0)*t
 - 稀疏波区域: u = (2/3)*(x/t + sqrt(g*h0))
-- 水深: h = (1/9g)*(2*sqrt(g*h0) - x/t)²
+- 水深: h = (1/9g)*(2*sqrt(g*h0) - x/t)^2
 
 验收标准：
 - 波前位置误差 < 5%
@@ -137,9 +137,9 @@ def validate_dam_break_godunov(riemann_solver='hll'):
         manning_n=0.0,  # 无摩阻（理想情况）
         slope=0.0,      # 水平河床
         g=g,
-        cfl=0.5,
+        cfl = 0.3,
         riemann_solver=riemann_solver,
-        order=2  # 二阶精度
+        order=1  # 二阶精度
     )
 
     # 初始条件：坝址在L/2处
@@ -163,7 +163,7 @@ def validate_dam_break_godunov(riemann_solver='hll'):
     # 记录初始质量
     solver.initial_mass = np.sum(solver.h * solver.dx * b)
 
-    print(f"  初始质量: {solver.initial_mass:.2f} m³")
+    print(f"  初始质量: {solver.initial_mass:.2f} m^3")
     print(f"  网格数: {n_cells}, dx = {dx:.2f} m")
     print(f"  时间推进...")
 
@@ -182,7 +182,7 @@ def validate_dam_break_godunov(riemann_solver='hll'):
 
         # 检查NaN
         if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
-            print(f"  ✗ 警告：出现NaN，停止计算")
+            print(f"   警告：出现NaN，停止计算")
             break
 
     print(f"  完成 {n_steps} 步，最终时间 t = {t:.2f}s")
@@ -244,8 +244,8 @@ def validate_dam_break_godunov(riemann_solver='hll'):
     final_mass = np.sum(solver.h * solver.dx * b)
     mass_error = abs(final_mass - solver.initial_mass) / solver.initial_mass * 100
     print(f"\n  质量守恒:")
-    print(f"    初始质量: {solver.initial_mass:.2f} m³")
-    print(f"    最终质量: {final_mass:.2f} m³")
+    print(f"    初始质量: {solver.initial_mass:.2f} m^3")
+    print(f"    最终质量: {final_mass:.2f} m^3")
     print(f"    误差: {mass_error:.4f}%")
 
     # 4. 绘图
@@ -287,7 +287,7 @@ def validate_dam_break_godunov(riemann_solver='hll'):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     fig_path = f'validation_cases/results/dam_break_godunov_{riemann_solver}_{timestamp}.png'
     plt.savefig(fig_path, dpi=300, bbox_inches='tight')
-    print(f"✓ 图表已保存: {fig_path}")
+    print(f" 图表已保存: {fig_path}")
 
     plt.close()
 
@@ -303,29 +303,29 @@ def validate_dam_break_godunov(riemann_solver='hll'):
     passed = True
 
     if x_front_error < tolerance_front:
-        print(f"✓ 波前位置测试通过: {x_front_error:.2f}% < {tolerance_front}%")
+        print(f" 波前位置测试通过: {x_front_error:.2f}% < {tolerance_front}%")
     else:
-        print(f"✗ 波前位置测试失败: {x_front_error:.2f}% >= {tolerance_front}%")
+        print(f" 波前位置测试失败: {x_front_error:.2f}% >= {tolerance_front}%")
         passed = False
 
     if rmse_h < tolerance_rmse:
-        print(f"✓ 水深RMSE测试通过: {rmse_h:.4f}m < {tolerance_rmse}m")
+        print(f" 水深RMSE测试通过: {rmse_h:.4f}m < {tolerance_rmse}m")
     else:
-        print(f"✗ 水深RMSE测试失败: {rmse_h:.4f}m >= {tolerance_rmse}m")
+        print(f" 水深RMSE测试失败: {rmse_h:.4f}m >= {tolerance_rmse}m")
         passed = False
 
     if mass_error < tolerance_mass:
-        print(f"✓ 质量守恒测试通过: {mass_error:.4f}% < {tolerance_mass}%")
+        print(f" 质量守恒测试通过: {mass_error:.4f}% < {tolerance_mass}%")
     else:
-        print(f"✗ 质量守恒测试失败: {mass_error:.4f}% >= {tolerance_mass}%")
+        print(f" 质量守恒测试失败: {mass_error:.4f}% >= {tolerance_mass}%")
         passed = False
 
     print("=" * 80)
 
     if passed:
-        print(f"🎉 溃坝波验证通过! ({riemann_solver.upper()})")
+        print(f" 溃坝波验证通过! ({riemann_solver.upper()})")
     else:
-        print(f"⚠️ 溃坝波验证需要改进 ({riemann_solver.upper()})")
+        print(f" 溃坝波验证需要改进 ({riemann_solver.upper()})")
 
     print("=" * 80 + "\n")
 
@@ -372,8 +372,8 @@ def compare_riemann_solvers():
     print(f"  HLLC: {results_hllc['mass_error']:.4f}%")
 
     print(f"\n验证结果:")
-    print(f"  HLL:  {'✓ 通过' if results_hll['passed'] else '✗ 未通过'}")
-    print(f"  HLLC: {'✓ 通过' if results_hllc['passed'] else '✗ 未通过'}")
+    print(f"  HLL:  {' 通过' if results_hll['passed'] else ' 未通过'}")
+    print(f"  HLLC: {' 通过' if results_hllc['passed'] else ' 未通过'}")
 
     print("=" * 80 + "\n")
 

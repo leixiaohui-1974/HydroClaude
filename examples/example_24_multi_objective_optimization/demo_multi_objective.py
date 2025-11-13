@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 示例24: 水库多目标优化调度
 
@@ -17,6 +18,8 @@
 import sys
 import os
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from typing import Tuple, List, Dict
 from dataclasses import dataclass
@@ -44,12 +47,12 @@ class MultiObjectiveReservoirScheduler:
     """
 
     def __init__(self,
-                 total_capacity: float = 50e6,     # 总库容 (m³)
+                 total_capacity: float = 50e6,     # 总库容 (m^3)
                  min_level: float = 100.0,         # 最低水位 (m)
                  normal_level: float = 120.0,      # 正常水位 (m)
                  flood_level: float = 125.0,       # 防洪限制水位 (m)
                  turbine_capacity: float = 100.0,  # 装机容量 (MW)
-                 ecological_flow: float = 10.0):   # 生态流量 (m³/s)
+                 ecological_flow: float = 10.0):   # 生态流量 (m^3/s)
 
         self.total_capacity = total_capacity
         self.min_level = min_level
@@ -71,8 +74,8 @@ class MultiObjectiveReservoirScheduler:
         单次优化运行（给定权重）
 
         Args:
-            inflow_forecast: 入流预报序列 (m³/s)
-            initial_storage: 初始库容 (m³)
+            inflow_forecast: 入流预报序列 (m^3/s)
+            initial_storage: 初始库容 (m^3)
             weights: 目标权重
             dt: 时间步长 (s)
 
@@ -150,11 +153,11 @@ class MultiObjectiveReservoirScheduler:
 
         Args:
             level: 当前水位 (m)
-            inflow: 当前入流 (m³/s)
+            inflow: 当前入流 (m^3/s)
             weights: 目标权重
 
         Returns:
-            目标出流 (m³/s)
+            目标出流 (m^3/s)
         """
         # 基准出流
         base_outflow = inflow
@@ -188,7 +191,7 @@ class MultiObjectiveReservoirScheduler:
         计算发电功率
 
         Args:
-            outflow: 出流 (m³/s)
+            outflow: 出流 (m^3/s)
             head: 水头 (m)
 
         Returns:
@@ -288,7 +291,7 @@ def demo_multi_objective_optimization():
     # ========================================
 
     scheduler = MultiObjectiveReservoirScheduler(
-        total_capacity=50e6,      # 5000万m³
+        total_capacity=50e6,      # 5000万m^3
         min_level=100.0,
         normal_level=120.0,
         flood_level=125.0,
@@ -297,10 +300,10 @@ def demo_multi_objective_optimization():
     )
 
     print("【系统参数】")
-    print(f"  总库容: {scheduler.total_capacity/1e6:.0f} 万m³")
+    print(f"  总库容: {scheduler.total_capacity/1e6:.0f} 万m^3")
     print(f"  水位范围: {scheduler.min_level} - {scheduler.flood_level} m")
     print(f"  装机容量: {scheduler.turbine_capacity} MW")
-    print(f"  生态流量: {scheduler.ecological_flow} m³/s")
+    print(f"  生态流量: {scheduler.ecological_flow} m^3/s")
     print()
 
     # ========================================
@@ -312,7 +315,7 @@ def demo_multi_objective_optimization():
 
     # 生成变化的入流（包含洪水过程）
     time_hours = np.arange(n_steps)
-    base_inflow = 80.0  # m³/s
+    base_inflow = 80.0  # m^3/s
 
     # 添加洪水过程
     flood_peak_time = 48  # 第2天
@@ -328,8 +331,8 @@ def demo_multi_objective_optimization():
 
     print("【入流场景】")
     print(f"  仿真时长: {n_days} 天 ({n_steps} 小时)")
-    print(f"  基流: {base_inflow} m³/s")
-    print(f"  洪峰: {np.max(inflow_forecast):.1f} m³/s (第{flood_peak_time}小时)")
+    print(f"  基流: {base_inflow} m^3/s")
+    print(f"  洪峰: {np.max(inflow_forecast):.1f} m^3/s (第{flood_peak_time}小时)")
     print()
 
     # ========================================
@@ -430,7 +433,7 @@ def demo_multi_objective_optimization():
         ax.axhline(scheduler.ecological_flow, color='g', linestyle=':',
                   linewidth=1.5, label='Ecological Flow')
         ax.set_xlabel('Time (days)')
-        ax.set_ylabel('Flow (m³/s)')
+        ax.set_ylabel('Flow (m^3/s)')
         ax.set_title(f'{name} - Flow')
         ax.legend(fontsize=8)
         ax.grid(True, alpha=0.3)
@@ -452,7 +455,7 @@ def demo_multi_objective_optimization():
     plt.suptitle('Multi-Objective Reservoir Optimization',
                 fontsize=16, fontweight='bold', y=0.995)
 
-    output_path = '/home/user/HydroClaude/examples/example_24_multi_objective_optimization/multi_objective_optimization.png'
+    output_path = 'examples/example_24_multi_objective_optimization/multi_objective_optimization.png'
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
     print(f"图像已保存到: {output_path}")
     print()
@@ -466,28 +469,28 @@ def demo_multi_objective_optimization():
     print()
 
     print("1. 发电优先方案:")
-    print("   • 适用场景: 枯水期、电力紧张")
-    print("   • 优点: 发电量最大")
-    print("   • 缺点: 防洪风险较高")
+    print("   - 适用场景: 枯水期、电力紧张")
+    print("   - 优点: 发电量最大")
+    print("   - 缺点: 防洪风险较高")
     print()
 
     print("2. 平衡方案:")
-    print("   • 适用场景: 一般运行工况")
-    print("   • 优点: 兼顾发电和防洪")
-    print("   • 推荐: 大部分时间采用")
+    print("   - 适用场景: 一般运行工况")
+    print("   - 优点: 兼顾发电和防洪")
+    print("   - 推荐: 大部分时间采用")
     print()
 
     print("3. 防洪优先方案:")
-    print("   • 适用场景: 汛期、洪水预报")
-    print("   • 优点: 防洪安全性最高")
-    print("   • 缺点: 牺牲部分发电量")
+    print("   - 适用场景: 汛期、洪水预报")
+    print("   - 优点: 防洪安全性最高")
+    print("   - 缺点: 牺牲部分发电量")
     print()
 
     print("4. 动态调整策略:")
-    print("   • 根据来水预报动态选择方案")
-    print("   • 枯水期偏向发电优先")
-    print("   • 汛期偏向防洪优先")
-    print("   • 平时采用平衡方案")
+    print("   - 根据来水预报动态选择方案")
+    print("   - 枯水期偏向发电优先")
+    print("   - 汛期偏向防洪优先")
+    print("   - 平时采用平衡方案")
     print()
 
     return pareto_solutions
@@ -501,8 +504,8 @@ if __name__ == '__main__':
     print("="*80)
     print()
     print("关键成果:")
-    print("  ✓ Pareto前沿生成")
-    print("  ✓ 多目标权衡分析")
-    print("  ✓ 典型方案对比")
-    print("  ✓ 决策支持建议")
-    print("  ✓ 动态调整策略")
+    print("   Pareto前沿生成")
+    print("   多目标权衡分析")
+    print("   典型方案对比")
+    print("   决策支持建议")
+    print("   动态调整策略")

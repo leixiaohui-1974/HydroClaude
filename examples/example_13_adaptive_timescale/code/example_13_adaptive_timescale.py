@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例13: 时间尺度自适应仿真
 演示不同时间步长下自动选择合适的降阶模型
@@ -6,6 +7,8 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from models.timescale_selector import AdaptiveCanalModel, TimeScaleSelector
 
@@ -72,8 +75,8 @@ def run_example():
 
     print("\n" + "="*70)
     print("时间尺度自适应仿真完成!")
-    print("✓ 自动根据时间步长选择合适的降阶模型")
-    print("✓ 从高保真模型到水量平衡模型无缝切换")
+    print(" 自动根据时间步长选择合适的降阶模型")
+    print(" 从高保真模型到水量平衡模型无缝切换")
 
     # 可视化（如果有matplotlib）
     try:

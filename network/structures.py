@@ -173,7 +173,7 @@ class InternalStructure(ABC):
 
         # 质量平衡
         is_balanced, error = self.check_mass_balance()
-        print(f"  质量平衡: {'✅' if is_balanced else '❌'} (误差={error:.4f} m³/s)")
+        print(f"  质量平衡: {'' if is_balanced else ''} (误差={error:.4f} m³/s)")
 
 
 class InternalWeir(InternalStructure):

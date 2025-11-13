@@ -92,9 +92,9 @@ class BatchSimulator:
                 stderr = result.stderr
 
                 if success:
-                    print(f"  ✓ 成功")
+                    print(f"   成功")
                 else:
-                    print(f"  ✗ 失败 (返回码: {result.returncode})")
+                    print(f"   失败 (返回码: {result.returncode})")
                     if attempts < max_attempts:
                         time.sleep(2)  # 等待2秒后重试
 
@@ -105,7 +105,7 @@ class BatchSimulator:
                     time.sleep(2)
 
             except Exception as e:
-                print(f"  ❌ 异常: {e}")
+                print(f"   异常: {e}")
                 stderr = str(e)
                 if attempts < max_attempts:
                     time.sleep(2)
@@ -168,7 +168,7 @@ class BatchSimulator:
                         result = future.result()
                         self.results.append(result)
                     except Exception as e:
-                        print(f"✗ {config_file.name} 异常: {e}")
+                        print(f" {config_file.name} 异常: {e}")
                         self.results.append({
                             'config_file': str(config_file),
                             'name': config_file.stem,
@@ -202,7 +202,7 @@ class BatchSimulator:
         print("-" * 80)
 
         for r in self.results:
-            status = "✓ 成功" if r['success'] else "✗ 失败"
+            status = " 成功" if r['success'] else " 失败"
 
             sim_time = "N/A"
             wall_time = f"{r['wall_time']:.2f}s"
@@ -252,11 +252,11 @@ class BatchSimulator:
         # 总结
         print("="*80)
         if success_count == total_count:
-            print("✅ 所有仿真成功完成！")
+            print(" 所有仿真成功完成！")
         elif success_count > 0:
-            print(f"⚠️  部分仿真成功 ({success_count}/{total_count})")
+            print(f"️  部分仿真成功 ({success_count}/{total_count})")
         else:
-            print("❌ 所有仿真失败")
+            print(" 所有仿真失败")
         print("="*80)
 
 
@@ -302,7 +302,7 @@ def main():
             config_files.extend(matches)
 
     if not config_files:
-        print("❌ 错误: 未找到任何配置文件")
+        print(" 错误: 未找到任何配置文件")
         sys.exit(1)
 
     # 去重
@@ -313,11 +313,11 @@ def main():
         runner.run_all()
 
     except KeyboardInterrupt:
-        print("\n\n⚠️  批量运行被用户中断")
+        print("\n\n️  批量运行被用户中断")
         sys.exit(1)
 
     except Exception as e:
-        print(f"\n❌ 批量运行失败: {e}")
+        print(f"\n 批量运行失败: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)

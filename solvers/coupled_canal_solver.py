@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-带内部边界条件的耦合渠道求解器
 
-支持在渠道内部设置水工建筑物（闸门、堰等）作为内部边界条件
-通过迭代耦合确保流量守恒和水力连续性
 
-作者: Claude
-日期: 2025-10-22
+
+
+
+: Claude
+: 2025-10-22
 """
 
 import numpy as np
@@ -15,7 +15,7 @@ from typing import List, Dict, Optional
 import sys
 import os
 
-# 添加父目录到路径
+# 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from solvers.canal_solver import CanalSolver
@@ -25,10 +25,10 @@ from utils.canal_utils import compute_steady_uniform_flow
 
 class CoupledCanalSolver:
     """
-    耦合渠道求解器
+    
 
-    管理多段渠道及其之间的水工建筑物，通过迭代耦合求解
-    确保流量守恒和水力连续性
+    
+    
     """
 
     def __init__(self,
@@ -45,17 +45,17 @@ class CoupledCanalSolver:
                  coupling_relax: float = 0.3):
         """
         Args:
-            total_length: 渠道总长度 (m)
-            structures: 水工建筑物列表（按位置升序排列）
-            nx_total: 总空间点数
-            B: 渠道宽度 (m)
-            S0: 渠底坡度
-            n: Manning糙率
-            g: 重力加速度 (m/s²)
-            method: 数值方法 ('explicit', 'preissmann', 'hll')
-            coupling_max_iter: 耦合最大迭代次数
-            coupling_tol: 耦合收敛容差 (m³/s)
-            coupling_relax: 耦合松弛因子 (0-1)
+            total_length:  (m)
+            structures: 
+            nx_total: 
+            B:  (m)
+            S0: 
+            n: Manning
+            g:  (m/s²)
+            method:  ('explicit', 'preissmann', 'hll')
+            coupling_max_iter: 
+            coupling_tol:  (m³/s)
+            coupling_relax:  (0-1)
         """
         self.total_length = total_length
         self.structures = sorted(structures, key=lambda s: s.position)
@@ -66,33 +66,33 @@ class CoupledCanalSolver:
         self.g = g
         self.method = method
 
-        # 耦合参数
+        # 
         self.coupling_max_iter = coupling_max_iter
         self.coupling_tol = coupling_tol
         self.coupling_relax = coupling_relax
 
-        # 创建渠道段
+        # 
         self._create_segments()
 
-        # 闸门流量（用于耦合）
+        # 
         self.structure_flows = [0.0] * len(self.structures)
 
     def _create_segments(self):
-        """创建渠道段"""
-        # 确定分段点
+        """"""
+        # 
         positions = [0.0] + [s.position for s in self.structures] + [self.total_length]
 
         self.segments = []
         self.segment_lengths = []
 
-        # 按位置创建各段
+        # 
         for i in range(len(positions) - 1):
             length = positions[i+1] - positions[i]
             self.segment_lengths.append(length)
 
-            # 计算该段的点数（按长度比例分配）
+            # 
             nx_segment = max(11, int(self.nx_total * length / self.total_length))
-            if nx_segment % 2 == 0:  # 确保为奇数
+            if nx_segment % 2 == 0:  # 
                 nx_segment += 1
 
             segment = CanalSolver(
@@ -109,20 +109,20 @@ class CoupledCanalSolver:
 
     def reset_with_steady_state(self, Q0: float) -> float:
         """
-        使用恒定均匀流初始化所有渠道段
+        
 
         Args:
-            Q0: 初始流量 (m³/s)
+            Q0:  (m³/s)
 
         Returns:
-            恒定均匀流水深 (m)
+             (m)
         """
         h_uniform = compute_steady_uniform_flow(Q0, self.B, self.S0, self.n, self.g)
 
         for segment in self.segments:
             segment.reset_with_steady_state(Q0)
 
-        # 初始化闸门流量
+        # 
         self.structure_flows = [Q0] * len(self.structures)
 
         return h_uniform
@@ -130,49 +130,49 @@ class CoupledCanalSolver:
     def step_steady(self, dt: float, Q_upstream: float, h_downstream: float,
                    max_iterations: int = 500, verbose: bool = False) -> Dict:
         """
-        稳态求解（恒定流）
+        
 
-        通过迭代确保所有渠道段和闸门流量守恒
+        
 
         Args:
-            dt: 时间步长 (s)
-            Q_upstream: 上游边界流量 (m³/s)
-            h_downstream: 下游边界水深 (m) - 如果为None则自动计算
-            max_iterations: 最大迭代次数
-            verbose: 是否打印详细信息
+            dt:  (s)
+            Q_upstream:  (m³/s)
+            h_downstream:  (m) - None
+            max_iterations: 
+            verbose: 
 
         Returns:
-            收敛信息字典
+            
         """
-        # 如果未指定下游边界，使用均匀流水深
+        # 
         if h_downstream is None:
             h_downstream = compute_steady_uniform_flow(Q_upstream, self.B, self.S0, self.n, self.g)
 
         converged = False
 
         for iter_count in range(max_iterations):
-            # 从上游到下游逐段求解
+            # 
             Q_bc_up = Q_upstream
 
             for i, segment in enumerate(self.segments):
-                # 上游边界流量
+                # 
                 Q_up = Q_bc_up
 
-                # 下游边界条件
+                # 
                 if i == len(self.segments) - 1:
-                    # 最后一段：使用给定的下游边界
+                    # 
                     h_down = h_downstream
                 else:
-                    # 中间段：根据闸门流量反算所需水深
+                    # 
                     structure = self.structures[i]
                     Q_gate = self.structure_flows[i]
 
-                    # 获取下游段的水深作为闸门下游水深
+                    # 
                     h_gate_down = self.segments[i+1].h[0]
 
-                    # 从堰流公式反算所需的上游水深
+                    # 
                     if isinstance(structure, type(structure)) and hasattr(structure, 'opening'):
-                        # 平板闸门：Q = Cd * B * e * sqrt(2*g*delta_h)
+                        # Q = Cd * B * e * sqrt(2*g*delta_h)
                         C = structure.Cd * structure.width * structure.opening
                         if Q_gate > 1e-6:
                             delta_h = (Q_gate / C) ** 2 / (2 * structure.g)
@@ -180,13 +180,13 @@ class CoupledCanalSolver:
                             delta_h = 1e-4
                         h_down = h_gate_down + delta_h
                     else:
-                        # 其他类型，暂时使用简化处理
+                        # 
                         h_down = h_gate_down + 0.01
 
-                # 更新该段
+                # 
                 segment.step(dt, Q_up, h_down)
 
-                # 计算闸门流量（如果有）
+                # 
                 if i < len(self.structures):
                     structure = self.structures[i]
                     h_up = segment.h[-1]
@@ -194,10 +194,10 @@ class CoupledCanalSolver:
 
                     Q_gate_new, _ = structure.calculate_discharge(h_up, h_dn)
 
-                    # 检查收敛
+                    # 
                     Q_gate_old = self.structure_flows[i]
                     if abs(Q_gate_new - Q_gate_old) > self.coupling_tol:
-                        # 使用松弛更新
+                        # 
                         self.structure_flows[i] = (
                             Q_gate_old * (1 - self.coupling_relax) +
                             Q_gate_new * self.coupling_relax
@@ -205,11 +205,11 @@ class CoupledCanalSolver:
                     else:
                         self.structure_flows[i] = Q_gate_new
 
-                    # 下一段的上游流量
+                    # 
                     Q_bc_up = self.structure_flows[i]
 
-            # 检查全局收敛
-            if iter_count > 50:  # 至少迭代50次
+            # 
+            if iter_count > 50:  # 50
                 all_converged = True
                 for i, structure in enumerate(self.structures):
                     h_up = self.segments[i].h[-1]
@@ -221,7 +221,7 @@ class CoupledCanalSolver:
                         break
 
                 if all_converged:
-                    # 检查流量守恒
+                    # 
                     Q_errors = []
                     for seg in self.segments:
                         Q_avg = np.mean(seg.Q[1:-1])
@@ -230,7 +230,7 @@ class CoupledCanalSolver:
                     if max(Q_errors) < 0.001:  # < 0.1%
                         converged = True
                         if verbose:
-                            print(f"✓ 稳态收敛 (iter={iter_count+1})")
+                            print(f"[OK]  (iter={iter_count+1})")
                         break
 
         return {
@@ -242,45 +242,45 @@ class CoupledCanalSolver:
 
     def step(self, dt: float, Q_upstream: float, h_downstream: Optional[float] = None):
         """
-        非恒定流时间步进
+        
 
-        采用预估-校正方法进行耦合：
-        1. 预估：使用上一时刻的闸门流量设置边界条件
-        2. 校正：根据实际水位差更新闸门流量（带松弛）
-        3. 不恢复状态，让系统自然演化
+        -
+        1. 
+        2. 
+        3. 
 
         Args:
-            dt: 时间步长 (s)
-            Q_upstream: 上游边界流量 (m³/s)
-            h_downstream: 下游边界水深 (m) - 如果为None则根据流量自动计算
+            dt:  (s)
+            Q_upstream:  (m³/s)
+            h_downstream:  (m) - None
         """
-        # 预估：使用上一时刻的闸门流量
+        # 
         Q_gates_pred = self.structure_flows.copy()
 
-        # 从上游到下游求解各段
+        # 
         Q_bc_up = Q_upstream
 
         for i, segment in enumerate(self.segments):
-            # 上游流量边界
+            # 
             Q_up = Q_bc_up
 
-            # 下游边界条件
+            # 
             if i == len(self.segments) - 1:
-                # 最后一段：下游边界
+                # 
                 if h_downstream is None:
-                    # 使用当前段的平均流量计算正常水深
+                    # 
                     Q_avg = np.mean(segment.Q[1:-1])
                     h_down = compute_steady_uniform_flow(Q_avg, self.B, self.S0, self.n, self.g)
                 else:
                     h_down = h_downstream
             else:
-                # 中间段：闸门上游
-                # 使用预估的闸门流量反算所需的下游水深
+                # 
+                # 
                 structure = self.structures[i]
                 Q_gate_pred = Q_gates_pred[i]
                 h_gate_down = self.segments[i+1].h[0]
 
-                # 从堰流公式反算：给定Q_gate，h_down需要多少才能产生这个流量
+                # Q_gateh_down
                 if hasattr(structure, 'opening'):
                     C = structure.Cd * structure.width * structure.opening
                     if Q_gate_pred > 1e-6:
@@ -291,35 +291,35 @@ class CoupledCanalSolver:
                 else:
                     h_down = h_gate_down + 0.01
 
-            # 更新该段
+            # 
             segment.step(dt, Q_up, h_down)
 
-            # 计算闸门流量（校正）
+            # 
             if i < len(self.structures):
                 structure = self.structures[i]
                 h_up_actual = segment.h[-1]
                 h_dn_actual = self.segments[i+1].h[0]
 
-                # 根据实际水位差计算闸门流量
+                # 
                 Q_gate_calc, _ = structure.calculate_discharge(h_up_actual, h_dn_actual)
 
-                # 松弛更新：允许闸门流量逐渐调整，避免振荡
-                # 这是关键：不强制Q_gate等于预估值，而是让它根据实际水位差逐步调整
-                alpha = 0.5  # 更大的松弛因子以加快响应
+                # 
+                # Q_gate
+                alpha = 0.5  # 
                 Q_gate_new = Q_gates_pred[i] * (1 - alpha) + Q_gate_calc * alpha
 
-                # 更新闸门流量记录
+                # 
                 self.structure_flows[i] = Q_gate_new
 
-                # 下一段的上游流量
+                # 
                 Q_bc_up = Q_gate_new
 
     def get_full_profile(self) -> Dict[str, np.ndarray]:
         """
-        获取全渠道剖面数据
+        
 
         Returns:
-            包含x, h, Q的字典
+            x, h, Q
         """
         x_list = []
         h_list = []
@@ -327,7 +327,7 @@ class CoupledCanalSolver:
 
         x_offset = 0.0
         for i, segment in enumerate(self.segments):
-            # 除了最后一段，其他段去掉最后一个点（避免重复）
+            # 
             if i < len(self.segments) - 1:
                 x_list.append(segment.x[:-1] + x_offset)
                 h_list.append(segment.h[:-1])
@@ -346,7 +346,7 @@ class CoupledCanalSolver:
         }
 
     def clear_history(self):
-        """清空所有段的历史记录"""
+        """"""
         for segment in self.segments:
             segment.clear_history()
 

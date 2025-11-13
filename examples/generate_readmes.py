@@ -3,6 +3,14 @@
 """
 为所有示例生成README.md文档
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import os
 from pathlib import Path
@@ -356,7 +364,7 @@ class READMEGenerator:
         info = self.examples_info.get(example_name, {})
 
         if not info:
-            print(f"  ⚠️  未找到 {example_name} 的信息")
+            print(f"    未找到 {example_name} 的信息")
             return False
 
         # 查找脚本文件
@@ -392,7 +400,7 @@ class READMEGenerator:
         with open(readme_path, 'w', encoding='utf-8') as f:
             f.write(readme_content)
 
-        print(f"  ✓ README已生成: {readme_path}")
+        print(f"   README已生成: {readme_path}")
         return True
 
     def _generate_readme_content(self, example_name, info, scripts, figures, animations):

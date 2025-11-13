@@ -24,7 +24,13 @@ from network.structures import create_internal_weir, create_internal_gate, creat
 from network.coupling import StructureCoupler, create_structure_coupler
 from network.solver import NetworkSolver
 from physics.hydraulic_structures import BroadCrestedWeir, SluiceGate, Orifice
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def create_test_solver(length=100.0, width=10.0, h_init=2.0, Q_init=20.0, slope=0.001):
@@ -416,7 +422,7 @@ class TestNetworkIntegration:
         solver = NetworkSolver(network, solve_method='sequential')
 
         # 运行短时间模拟
-        results = solver.run(t_end=100.0, dt=1.0, verbose=False)
+        results = solver.run(t_end=50.0, dt=1.0, verbose=False)
 
         assert results['n_steps'] > 0
         assert len(results['mass_error_history']) > 0

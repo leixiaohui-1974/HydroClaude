@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 IDZ自适应控制基准测试
 
 使用UniversalModeler和HydrostaticCanalSolver进行基准测试
 
-对比：
+对比
 1. 静态PID控制
-2. 自适应PID控制（未来扩展）
+2. 自适应PID控制未来扩展
 3. Saint-Venant PDE基准
 
-运行方式：
+运行方式
     python run_idz_benchmark.py
 
-作者：Claude
-日期：2025-10-24
+作者Claude
+日期2025-10-24
 """
 
 import sys
@@ -41,11 +42,11 @@ def main():
     print("  - 控制方式: PID控制")
     print()
     print("测试工况:")
-    print("  - t=0-500s:     Q=18 m³/s, 目标h=1.8 m")
-    print("  - t=500-1000s:  Q=25 m³/s, 目标h=1.8 m")
-    print("  - t=1000-1500s: Q=32 m³/s, 目标h=2.3 m")
-    print("  - t=1500-1800s: Q=25 m³/s, 目标h=2.8 m")
-    print("  - t=1800-2100s: Q=18 m³/s, 目标h=2.3 m → 1.8 m")
+    print("  - t=0-500s:     Q=18 m^3/s, 目标h=1.8 m")
+    print("  - t=500-1000s:  Q=25 m^3/s, 目标h=1.8 m")
+    print("  - t=1000-1500s: Q=32 m^3/s, 目标h=2.3 m")
+    print("  - t=1500-1800s: Q=25 m^3/s, 目标h=2.8 m")
+    print("  - t=1800-2100s: Q=18 m^3/s, 目标h=2.3 m -> 1.8 m")
     print()
     print("控制目标:")
     print("  - 跟踪时变目标水位")
@@ -65,7 +66,7 @@ def main():
 
     print()
     print("=" * 80)
-    print("仿真完成！")
+    print("仿真完成")
     print("=" * 80)
     print()
 

@@ -36,7 +36,7 @@ def main():
     # 对比求解器
     hc, nr = compare_solvers(topology)
     
-    print("\n✓ 验证完成")
+    print("\n 验证完成")
     print("="*80 + "\n")
 
 

@@ -24,7 +24,13 @@ import matplotlib.pyplot as plt
 from typing import Dict
 
 # 导入新模块
-from solvers.dissolved_oxygen import (
+try:
+    from solvers.dissolved_oxygen import (
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
     DissolvedOxygenSolver,
     StreeterPhelpsAnalytical
 )
@@ -56,20 +62,20 @@ def test_streeter_phelps_verification():
     # 水动力参数
     h = 2.0     # 水深 2m
     u = 0.5     # 流速 0.5 m/s
-    T = 20.0    # 水温 20°C
+    T = 20.0    # 水温 20 degC
 
     # DO参数
     ka = 0.5    # 再曝气系数 1/day (对应h=2m, u=0.5m/s)
     kd = 0.3    # BOD衰减系数 1/day
-    SOD_20 = 1.0  # 底泥耗氧 g/m²/day
+    SOD_20 = 1.0  # 底泥耗氧 g/m^2/day
 
     # 初始条件
-    DO_sat = 9.09  # 饱和DO @ 20°C (mg/L)
+    DO_sat = 9.09  # 饱和DO @ 20 degC (mg/L)
     DO_0 = 6.0     # 初始DO (mg/L)
     BOD_0 = 10.0   # 初始BOD (mg/L)
 
     print(f"河道长度: {L/1000:.1f} km")
-    print(f"水深: {h} m, 流速: {u} m/s, 温度: {T}°C")
+    print(f"水深: {h} m, 流速: {u} m/s, 温度: {T} degC")
     print(f"Ka={ka:.2f} 1/day, Kd={kd:.2f} 1/day")
     print(f"初始: DO={DO_0} mg/L, BOD={BOD_0} mg/L, DO_sat={DO_sat:.2f} mg/L")
 
@@ -171,10 +177,10 @@ def test_streeter_phelps_verification():
 
     # 验证通过标准: RMSE < 1.0 mg/L (放宽标准,因为解析解是稳态假设)
     if rmse < 1.0:
-        print(f"\n✅ 测试通过! RMSE={rmse:.4f} < 1.0 mg/L")
+        print(f"\n 测试通过! RMSE={rmse:.4f} < 1.0 mg/L")
         return True
     else:
-        print(f"\n❌ 测试失败! RMSE={rmse:.4f} >= 1.0 mg/L")
+        print(f"\n 测试失败! RMSE={rmse:.4f} >= 1.0 mg/L")
         return False
 
 
@@ -189,11 +195,11 @@ def test_ice_cover_growth():
     print("="*70)
 
     # 参数设置
-    n_cells = 50
-    T_air = -10.0   # 恒定气温 -10°C
-    T_water_init = 0.0  # 初始水温 0°C
+    n_cells = 60
+    T_air = -10.0   # 恒定气温 -10 degC
+    T_water_init = 0.0  # 初始水温 0 degC
 
-    print(f"气温: {T_air}°C, 初始水温: {T_water_init}°C")
+    print(f"气温: {T_air} degC, 初始水温: {T_water_init} degC")
 
     # 创建冰盖求解器
     ice_solver = IceCoverSolver(n_cells=n_cells)
@@ -256,7 +262,7 @@ def test_ice_cover_growth():
                  linewidth=2, label='Stefan解析解')
     axes[0].set_xlabel('时间 (天)', fontsize=12)
     axes[0].set_ylabel('冰盖厚度 (cm)', fontsize=12)
-    axes[0].set_title(f'冰盖生长曲线 (气温={T_air}°C)', fontsize=14, fontweight='bold')
+    axes[0].set_title(f'冰盖生长曲线 (气温={T_air} degC)', fontsize=14, fontweight='bold')
     axes[0].legend(fontsize=10)
     axes[0].grid(True, alpha=0.3)
 
@@ -275,11 +281,11 @@ def test_ice_cover_growth():
     # 验证通过标准: 数值解产生了合理的冰盖厚度（>0且<1m）
     # 注意: 解析解是极度简化的模型，不应该作为严格标准
     if h_numerical[-1] > 0.01 and h_numerical[-1] < 1.0:
-        print(f"\n✅ 测试通过! 冰厚={h_numerical[-1]*100:.2f}cm 在合理范围内")
+        print(f"\n 测试通过! 冰厚={h_numerical[-1]*100:.2f}cm 在合理范围内")
         print(f"   (解析解对比仅供参考，不作为严格验收标准)")
         return True
     else:
-        print(f"\n❌ 测试失败! 冰厚={h_numerical[-1]*100:.2f}cm 不合理")
+        print(f"\n 测试失败! 冰厚={h_numerical[-1]*100:.2f}cm 不合理")
         return False
 
 
@@ -296,7 +302,7 @@ def test_ice_effects_on_do():
     print("="*70)
 
     # 参数
-    n_cells = 100
+    n_cells = 120
     dx = 1000.0  # 1km
     h = 2.0
     u = 0.3
@@ -326,7 +332,7 @@ def test_ice_effects_on_do():
     dt = 3600.0
     n_steps = int(t_end / dt)
 
-    print(f"模拟: 水深={h}m, 流速={u}m/s, 温度={T}°C, BOD={BOD_0}mg/L")
+    print(f"模拟: 水深={h}m, 流速={u}m/s, 温度={T} degC, BOD={BOD_0}mg/L")
     print(f"冰盖覆盖率: 50% (实验组) vs 0% (对照组)")
     print(f"模拟时间: 10天")
 
@@ -379,10 +385,10 @@ def test_ice_effects_on_do():
 
     # 验证: 冰盖应显著降低DO (至少10%)
     if difference > 0.5 and difference/DO_no_ice_final > 0.05:
-        print(f"\n✅ 测试通过! 冰盖显著降低DO (降低{difference/DO_no_ice_final*100:.1f}%)")
+        print(f"\n 测试通过! 冰盖显著降低DO (降低{difference/DO_no_ice_final*100:.1f}%)")
         return True
     else:
-        print(f"\n❌ 测试失败! 冰盖对DO影响不明显")
+        print(f"\n 测试失败! 冰盖对DO影响不明显")
         return False
 
 
@@ -400,21 +406,21 @@ def run_all_tests():
     try:
         results['Streeter-Phelps'] = test_streeter_phelps_verification()
     except Exception as e:
-        print(f"\n❌ 测试1异常: {e}")
+        print(f"\n 测试1异常: {e}")
         results['Streeter-Phelps'] = False
 
     # 测试2: 冰盖生长
     try:
         results['Ice Cover Growth'] = test_ice_cover_growth()
     except Exception as e:
-        print(f"\n❌ 测试2异常: {e}")
+        print(f"\n 测试2异常: {e}")
         results['Ice Cover Growth'] = False
 
     # 测试3: 冰盖对DO影响
     try:
         results['Ice Effects on DO'] = test_ice_effects_on_do()
     except Exception as e:
-        print(f"\n❌ 测试3异常: {e}")
+        print(f"\n 测试3异常: {e}")
         results['Ice Effects on DO'] = False
 
     # 汇总
@@ -426,7 +432,7 @@ def run_all_tests():
     total = len(results)
 
     for test_name, result in results.items():
-        status = "✅ PASS" if result else "❌ FAIL"
+        status = " PASS" if result else " FAIL"
         print(f"{test_name:30s} : {status}")
         if result:
             passed += 1
@@ -437,10 +443,10 @@ def run_all_tests():
     print("="*70)
 
     if passed == total:
-        print("\n🎉 所有测试通过! HydroClaude冰-水质模块验证成功!")
-        print("对标商业软件: QUAL2K, WASP, MIKE ICE - 精度达标 ✅")
+        print("\n 所有测试通过! HydroClaude冰-水质模块验证成功!")
+        print("对标商业软件: QUAL2K, WASP, MIKE ICE - 精度达标 ")
     else:
-        print(f"\n⚠️  {total-passed}个测试失败，需要进一步调试")
+        print(f"\n️  {total-passed}个测试失败，需要进一步调试")
 
     return passed == total
 

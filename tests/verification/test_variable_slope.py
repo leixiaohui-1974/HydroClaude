@@ -59,7 +59,7 @@ class TestVariableSlope:
         z_expected = -S0_scalar * solver.x
         assert np.allclose(solver.z, z_expected, atol=1e-10), "底床高程应线性变化"
 
-        print(f"\n✅ PASSED: 标量S0兼容性验证通过")
+        print(f"\n PASSED: 标量S0兼容性验证通过")
         print(f"  S0 = {S0_scalar}")
         print(f"  S0数组长度 = {len(solver.S0)}")
         print(f"  底床高程范围: {solver.z[0]:.3f} to {solver.z[-1]:.3f}m")
@@ -97,7 +97,7 @@ class TestVariableSlope:
         z_diff = np.diff(solver.z)
         assert np.all(z_diff < 0), "底床高程应向下游递减"
 
-        print(f"\n✅ PASSED: 变坡度数组验证通过")
+        print(f"\n PASSED: 变坡度数组验证通过")
         print(f"  S0范围: {S0_array[0]:.6f} to {S0_array[-1]:.6f}")
         print(f"  S0平均: {solver.S0_scalar:.6f}")
         print(f"  底床高程范围: {solver.z[0]:.3f} to {solver.z[-1]:.3f}m")
@@ -110,7 +110,7 @@ class TestVariableSlope:
         验证：底床高程计算正确
         """
         print("\n" + "="*70)
-        print("变坡度 Test 3: 缓坡→陡坡转换")
+        print("变坡度 Test 3: 缓坡->陡坡转换")
         print("="*70)
 
         from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
@@ -146,7 +146,7 @@ class TestVariableSlope:
 
         assert abs(solver.z[-1] - solver.z[0] + total_drop) < 1e-10, "总高程降落应正确"
 
-        print(f"\n✅ PASSED: 缓坡→陡坡转换验证通过")
+        print(f"\n PASSED: 缓坡->陡坡转换验证通过")
         print(f"  上游坡度: S0 = {0.0005} (1:2000)")
         print(f"  下游坡度: S0 = {0.01} (1:100)")
         print(f"  上游高程降: {drop_upstream:.3f}m")
@@ -195,7 +195,7 @@ class TestVariableSlope:
         # 验证底床高程单调递减
         assert np.all(np.diff(solver.z) < 0), "底床高程应单调递减"
 
-        print(f"\n✅ PASSED: 阶梯状坡度验证通过")
+        print(f"\n PASSED: 阶梯状坡度验证通过")
         print(f"  段1: S0 = 0.001")
         print(f"  段2: S0 = 0.002")
         print(f"  段3: S0 = 0.0015")
@@ -257,7 +257,7 @@ class TestVariableSlope:
 
         assert max_error2 < 1e-12, f"变坡度：底床高程误差应为机器精度，实际{max_error2:.2e}"
 
-        print(f"\n✅ PASSED: 底床高程计算精度验证通过")
+        print(f"\n PASSED: 底床高程计算精度验证通过")
         print(f"  恒定坡度最大误差: {max_error:.2e}")
         print(f"  变坡度最大误差: {max_error2:.2e}")
 
@@ -286,7 +286,7 @@ class TestVariableSlope:
                 n=0.025
             )
 
-        print(f"\n✅ PASSED: 正确检测并抛出异常")
+        print(f"\n PASSED: 正确检测并抛出异常")
 
 
 if __name__ == '__main__':

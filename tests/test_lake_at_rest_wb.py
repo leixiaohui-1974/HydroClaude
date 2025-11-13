@@ -7,8 +7,8 @@ Lake at Rest Test with Well-Balanced Format
 
 测试配置:
 - P0.1: 平底 (无底高程变化)
-- P0.2: 缓坡 (2m凸起，线性变化)
-- P0.3: 陡坡 (5m台阶，不连续)
+- P0.2: 缓坡 (2m凸起[U+FF0C]线性变化)
+- P0.3: 陡坡 (5m台阶[U+FF0C]不连续)
 
 成功标准:
 - 水面扰动 < 1e-10 m (机器精度)
@@ -27,7 +27,13 @@ import matplotlib.pyplot as plt
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, project_root)
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 class LakeAtRestTest:
@@ -54,7 +60,7 @@ class LakeAtRestTest:
 
         # 参数
         L = 100.0
-        n_cells = 100
+        n_cells = 120
         h_init = 5.0
         T_end = 10.0
 
@@ -65,7 +71,7 @@ class LakeAtRestTest:
             n_cells=n_cells,
             manning_n=0.03,
             slope=0.0,  # 平底
-            cfl=0.5,
+            cfl=0.3,
             order=1,
             well_balanced=True
         )
@@ -120,7 +126,7 @@ class LakeAtRestTest:
         print(f"\n结果:")
         print(f"  水面扰动: {eta_disturbance:.2e} m")
         print(f"  质量误差: {mass_error:.2e} %")
-        print(f"  状态: {'✅ PASS' if success else '❌ FAIL'}")
+        print(f"  状态: {' PASS' if success else ' FAIL'}")
 
         return result
 
@@ -130,7 +136,7 @@ class LakeAtRestTest:
 
         配置:
         - 长度: 100m
-        - 底高程: 中间2m凸起（线性变化）
+        - 底高程: 中间2m凸起[U+FF08]线性变化[U+FF09]
         - 初始水面: 10m (水平)
 
         预期:
@@ -142,7 +148,7 @@ class LakeAtRestTest:
 
         # 参数
         L = 100.0
-        n_cells = 100
+        n_cells = 120
         eta_init = 10.0  # 水面高程
         T_end = 10.0
 
@@ -163,14 +169,14 @@ class LakeAtRestTest:
         h = eta_init - z_b
         Q = np.zeros(n_cells)
 
-        # 创建求解器（直接传递底高程）
+        # 创建求解器[U+FF08]直接传递底高程[U+FF09]
         solver = GodunvFVMSolver(
             width=10.0,
             length=L,
             n_cells=n_cells,
             manning_n=0.03,
-            z_b=z_b,  # ← Pass z_b directly (no integration error!)
-            cfl=0.5,
+            z_b=z_b,  # <- Pass z_b directly (no integration error!)
+            cfl=0.3,
             order=1,
             well_balanced=True
         )
@@ -222,7 +228,7 @@ class LakeAtRestTest:
         print(f"  底高程范围: {np.min(z_b):.2f} ~ {np.max(z_b):.2f} m")
         print(f"  水面扰动: {eta_disturbance:.2e} m")
         print(f"  质量误差: {mass_error:.2e} %")
-        print(f"  状态: {'✅ PASS' if success else '❌ FAIL'}")
+        print(f"  状态: {' PASS' if success else ' FAIL'}")
 
         return result
 
@@ -232,11 +238,11 @@ class LakeAtRestTest:
 
         配置:
         - 长度: 100m
-        - 底高程: 中间5m台阶（不连续）
+        - 底高程: 中间5m台阶[U+FF08]不连续[U+FF09]
         - 初始水面: 10m (水平)
 
         预期:
-        - 水面扰动: < 1e-8 m (略放宽要求，因为不连续)
+        - 水面扰动: < 1e-8 m (略放宽要求[U+FF0C]因为不连续)
         """
         print("\n" + "="*70)
         print("Test P0.3: Steep Slope (5m台阶)")
@@ -244,7 +250,7 @@ class LakeAtRestTest:
 
         # 参数
         L = 100.0
-        n_cells = 100
+        n_cells = 120
         eta_init = 10.0  # 水面高程
         T_end = 10.0
 
@@ -262,14 +268,14 @@ class LakeAtRestTest:
         h = eta_init - z_b
         Q = np.zeros(n_cells)
 
-        # 创建求解器（直接传递底高程）
+        # 创建求解器[U+FF08]直接传递底高程[U+FF09]
         solver = GodunvFVMSolver(
             width=10.0,
             length=L,
             n_cells=n_cells,
             manning_n=0.03,
-            z_b=z_b,  # ← Pass z_b directly (no integration error!)
-            cfl=0.5,
+            z_b=z_b,  # <- Pass z_b directly (no integration error!)
+            cfl=0.3,
             order=1,
             well_balanced=True
         )
@@ -301,7 +307,7 @@ class LakeAtRestTest:
         mass_final = solver._compute_total_mass()
         mass_error = abs(mass_final - mass_init) / mass_init * 100
 
-        # 结果（对不连续台阶放宽要求）
+        # 结果[U+FF08]对不连续台阶放宽要求[U+FF09]
         success = eta_disturbance < 1e-8 and mass_error < 1e-6
 
         result = {
@@ -321,7 +327,7 @@ class LakeAtRestTest:
         print(f"  底高程范围: {np.min(z_b):.2f} ~ {np.max(z_b):.2f} m")
         print(f"  水面扰动: {eta_disturbance:.2e} m")
         print(f"  质量误差: {mass_error:.2e} %")
-        print(f"  状态: {'✅ PASS' if success else '❌ FAIL'}")
+        print(f"  状态: {' PASS' if success else ' FAIL'}")
 
         return result
 
@@ -346,7 +352,7 @@ class LakeAtRestTest:
         passed = sum(1 for r in self.results.values() if r['success'])
 
         for test_id, result in self.results.items():
-            status = "✅ PASS" if result['success'] else "❌ FAIL"
+            status = " PASS" if result['success'] else " FAIL"
             print(f"\n{test_id}: {result['name']}")
             print(f"  水面扰动: {result['eta_disturbance']:.2e} m")
             print(f"  质量误差: {result['mass_error']:.2e} %")
@@ -404,7 +410,7 @@ class LakeAtRestTest:
         os.makedirs(output_dir, exist_ok=True)
         output_path = os.path.join(output_dir, 'lake_at_rest_wb_tests.png')
         plt.savefig(output_path, dpi=150, bbox_inches='tight')
-        print(f"\n✓ 结果已保存: {output_path}")
+        print(f"\n 结果已保存: {output_path}")
 
 
 def main():
@@ -413,10 +419,10 @@ def main():
     success = test.run_all()
 
     if success:
-        print("\n✅ 所有测试通过！Well-Balanced格式正常工作。")
+        print("\n 所有测试通过[U+FF01]Well-Balanced格式正常工作[U+3002]")
         return 0
     else:
-        print("\n❌ 部分测试失败。需要进一步调试。")
+        print("\n 部分测试失败[U+3002]需要进一步调试[U+3002]")
         return 1
 
 

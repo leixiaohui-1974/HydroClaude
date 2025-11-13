@@ -3,7 +3,7 @@
 """
 测试延拓求解器的鲁棒性
 
-测试不同初值（好初值、差初值、极端初值）下的性能
+测试不同初值好初值差初值极端初值下的性能
 
 作者: Claude
 日期: 2025-10-22
@@ -15,7 +15,13 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 import time
 from physics.steady_saint_venant import SteadySaintVenantSystem
-from solvers.continuation_solver import ContinuationSolver
+try:
+    from solvers.continuation_solver import ContinuationSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.newton_solver import NewtonSolver
 from solvers.gate import SluiceGate
 from utils.canal_utils import compute_steady_uniform_flow
@@ -46,7 +52,7 @@ def run_initial_condition_test(name, h_init_func, Q_init_func, system, Q_target)
 
     print(f"初值范围:")
     print(f"  h: {h_init.min():.4f} - {h_init.max():.4f} m")
-    print(f"  Q: {Q_init.min():.4f} - {Q_init.max():.4f} m³/s")
+    print(f"  Q: {Q_init.min():.4f} - {Q_init.max():.4f} m^3/s")
     print()
 
     U_init = system.pack_state(h_init, Q_init)
@@ -61,7 +67,7 @@ def run_initial_condition_test(name, h_init_func, Q_init_func, system, Q_target)
 
     results = {}
 
-    # 测试1: 纯Newton（可能失败）
+    # 测试1: 纯Newton可能失败
     print("-" * 100)
     print("方法1: 纯Newton (pseudo_dt=0.1)")
     print("-" * 100)
@@ -99,7 +105,7 @@ def run_initial_condition_test(name, h_init_func, Q_init_func, system, Q_target)
             'Q_error': Q_error_newton
         }
 
-        print(f"  收敛: {'✅' if info_newton['converged'] else '❌'}")
+        print(f"  收敛: {'' if info_newton['converged'] else ''}")
         print(f"  迭代次数: {info_newton['iterations']}")
         print(f"  用时: {time_newton:.4f}s")
         print(f"  流量误差: {Q_error_newton:.4f}%")
@@ -109,13 +115,13 @@ def run_initial_condition_test(name, h_init_func, Q_init_func, system, Q_target)
             'converged': False,
             'error': str(e)
         }
-        print(f"  ❌ 失败: {e}")
+        print(f"   失败: {e}")
 
     print()
 
     # 测试2: 延拓求解器
     print("-" * 100)
-    print("方法2: 延拓求解器 (pseudo_dt: 10.0 → 1.0 → 0.1)")
+    print("方法2: 延拓求解器 (pseudo_dt: 10.0 -> 1.0 -> 0.1)")
     print("-" * 100)
 
     system_cont = SteadySaintVenantSystem(
@@ -153,7 +159,7 @@ def run_initial_condition_test(name, h_init_func, Q_init_func, system, Q_target)
             'stages': info_cont['num_stages']
         }
 
-        print(f"  收敛: {'✅' if info_cont['converged'] else '❌'}")
+        print(f"  收敛: {'' if info_cont['converged'] else ''}")
         print(f"  完成阶段: {info_cont['num_stages']}/3")
         print(f"  总迭代次数: {info_cont['total_iterations']}")
         print(f"  用时: {time_cont:.4f}s")
@@ -164,7 +170,7 @@ def run_initial_condition_test(name, h_init_func, Q_init_func, system, Q_target)
             'converged': False,
             'error': str(e)
         }
-        print(f"  ❌ 失败: {e}")
+        print(f"   失败: {e}")
 
     print()
     print("-" * 100)
@@ -196,11 +202,11 @@ def main():
 
     print(f"场景参数:")
     print(f"  网格: {nx}点, {length}m")
-    print(f"  流量: {Q_target} m³/s")
+    print(f"  流量: {Q_target} m^3/s")
     print(f"  均匀流水深: {h_uniform:.4f} m")
     print()
 
-    # 创建系统（用于测试）
+    # 创建系统用于测试
     system = SteadySaintVenantSystem(
         length, nx, B, S0, n,
         structures=[
@@ -218,36 +224,36 @@ def main():
 
     all_results = {}
 
-    # 测试1: 好初值（均匀流）
+    # 测试1: 好初值均匀流
     all_results['uniform'] = run_initial_condition_test(
-        name="均匀流（好初值）",
+        name="均匀流好初值",
         h_init_func=lambda nx: np.ones(nx) * h_uniform,
         Q_init_func=lambda nx: np.ones(nx) * Q_target,
         system=system,
         Q_target=Q_target
     )
 
-    # 测试2: 中等初值（线性插值）
+    # 测试2: 中等初值线性插值
     all_results['linear'] = run_initial_condition_test(
-        name="线性插值（中等初值）",
+        name="线性插值中等初值",
         h_init_func=lambda nx: np.linspace(h_uniform * 0.8, h_uniform * 1.2, nx),
         Q_init_func=lambda nx: np.linspace(Q_target * 0.8, Q_target * 1.2, nx),
         system=system,
         Q_target=Q_target
     )
 
-    # 测试3: 差初值（零初值）
+    # 测试3: 差初值零初值
     all_results['zero'] = run_initial_condition_test(
-        name="零初值（差初值）",
+        name="零初值差初值",
         h_init_func=lambda nx: np.ones(nx) * 0.1,
         Q_init_func=lambda nx: np.ones(nx) * 0.1,
         system=system,
         Q_target=Q_target
     )
 
-    # 测试4: 极端初值（大值）
+    # 测试4: 极端初值大值
     all_results['large'] = run_initial_condition_test(
-        name="大值初值（极端初值）",
+        name="大值初值极端初值",
         h_init_func=lambda nx: np.ones(nx) * h_uniform * 5.0,
         Q_init_func=lambda nx: np.ones(nx) * Q_target * 5.0,
         system=system,
@@ -267,7 +273,7 @@ def main():
         # 纯Newton
         if 'newton' in results and 'converged' in results['newton']:
             r = results['newton']
-            conv_status = '✅' if r['converged'] else '❌'
+            conv_status = '' if r['converged'] else ''
             iter_str = str(r['iterations']) if r['converged'] else 'N/A'
             time_str = f"{r['time']:.4f}" if r['converged'] else 'N/A'
             error_str = f"{r['Q_error']:.4f}" if r['converged'] and 'Q_error' in r else 'N/A'
@@ -277,7 +283,7 @@ def main():
         # 延拓
         if 'continuation' in results and 'converged' in results['continuation']:
             r = results['continuation']
-            conv_status = '✅' if r['converged'] else '❌'
+            conv_status = '' if r['converged'] else ''
             iter_str = str(r['iterations']) if r['converged'] else 'N/A'
             time_str = f"{r['time']:.4f}" if r['converged'] else 'N/A'
             error_str = f"{r['Q_error']:.4f}" if r['converged'] and 'Q_error' in r else 'N/A'
@@ -300,11 +306,11 @@ def main():
     print()
 
     if cont_success > newton_success:
-        print("✅ 延拓求解器比纯Newton更鲁棒")
+        print(" 延拓求解器比纯Newton更鲁棒")
     elif cont_success == newton_success and cont_success == len(all_results):
-        print("✅ 两种方法在所有测试中都成功，但延拓求解器提供更好的鲁棒性保证")
+        print(" 两种方法在所有测试中都成功但延拓求解器提供更好的鲁棒性保证")
     else:
-        print("⚠️ 需要进一步优化")
+        print(" 需要进一步优化")
 
     print()
 

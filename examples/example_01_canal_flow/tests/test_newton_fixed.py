@@ -9,6 +9,7 @@
 日期: 2025-10-22
 """
 
+import os
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
@@ -83,12 +84,12 @@ def test_newton_without_gate():
             # 解包结果
             h_sol, Q_sol = system.unpack_state(U_sol)
 
-            print(f"  收敛: {'✓' if info['converged'] else '✗'}")
+            print(f"  收敛: {'' if info['converged'] else ''}")
             print(f"  迭代次数: {info['iterations']}")
             print(f"  最终残差: {info['final_residual']:.2e}")
             print(f"  计算时间: {elapsed:.4f}s")
             print(f"  水深范围: {h_sol.min():.4f} - {h_sol.max():.4f} m")
-            print(f"  流量范围: {Q_sol.min():.4f} - {Q_sol.max():.4f} m³/s")
+            print(f"  流量范围: {Q_sol.min():.4f} - {Q_sol.max():.4f} m^3/s")
 
             # 检查Jacobian的条件数
             import scipy.sparse.linalg as spla
@@ -99,15 +100,15 @@ def test_newton_without_gate():
                     cond = np.linalg.cond(J_dense)
                     print(f"  Jacobian条件数: {cond:.2e}")
                     if cond < 1e10:
-                        print(f"  ✓ Jacobian well-conditioned（非奇异）")
+                        print(f"   Jacobian well-conditioned（非奇异）")
                     else:
-                        print(f"  ⚠ Jacobian ill-conditioned")
+                        print(f"   Jacobian ill-conditioned")
                 except:
-                    print(f"  ⚠ 无法计算条件数")
+                    print(f"   无法计算条件数")
 
         except Exception as e:
             elapsed = time.time() - start_time
-            print(f"  ✗ 求解失败: {e}")
+            print(f"   求解失败: {e}")
             print(f"  计算时间: {elapsed:.4f}s")
 
     print()
@@ -194,18 +195,18 @@ def test_newton_with_gate():
             # 找到闸门节点
             gate_idx = np.argmin(np.abs(system.x - gate_position))
 
-            print(f"  收敛: {'✓' if info['converged'] else '✗'}")
+            print(f"  收敛: {'' if info['converged'] else ''}")
             print(f"  迭代次数: {info['iterations']}")
             print(f"  最终残差: {info['final_residual']:.2e}")
             print(f"  计算时间: {elapsed:.4f}s")
             print(f"  水深范围: {h_sol.min():.4f} - {h_sol.max():.4f} m")
-            print(f"  流量范围: {Q_sol.min():.4f} - {Q_sol.max():.4f} m³/s")
+            print(f"  流量范围: {Q_sol.min():.4f} - {Q_sol.max():.4f} m^3/s")
             print(f"  闸门处水深: {h_sol[gate_idx]:.4f} m")
-            print(f"  闸门处流量: {Q_sol[gate_idx]:.4f} m³/s")
+            print(f"  闸门处流量: {Q_sol[gate_idx]:.4f} m^3/s")
 
         except Exception as e:
             elapsed = time.time() - start_time
-            print(f"  ✗ 求解失败: {e}")
+            print(f"   求解失败: {e}")
             print(f"  计算时间: {elapsed:.4f}s")
 
     print()
@@ -304,7 +305,7 @@ def test_continuation_strategy():
             # 解包结果
             h_sol, Q_sol = system.unpack_state(U_sol)
 
-            print(f"  收敛: {'✓' if info['converged'] else '✗'}")
+            print(f"  收敛: {'' if info['converged'] else ''}")
             print(f"  迭代次数: {info['iterations']}")
             print(f"  残差: {info['final_residual']:.2e}")
             print(f"  时间: {elapsed:.4f}s")
@@ -315,7 +316,7 @@ def test_continuation_strategy():
 
         except Exception as e:
             elapsed = time.time() - start_time
-            print(f"  ✗ 失败: {e}")
+            print(f"   失败: {e}")
             print()
             break
 
@@ -327,9 +328,9 @@ def test_continuation_strategy():
         h_final, Q_final = system.unpack_state(U_current)
         gate_idx = np.argmin(np.abs(system.x - gate_position))
         print(f"  最终水深范围: {h_final.min():.4f} - {h_final.max():.4f} m")
-        print(f"  最终流量范围: {Q_final.min():.4f} - {Q_final.max():.4f} m³/s")
+        print(f"  最终流量范围: {Q_final.min():.4f} - {Q_final.max():.4f} m^3/s")
         print(f"  闸门处水深: {h_final[gate_idx]:.4f} m")
-        print(f"  闸门处流量: {Q_final[gate_idx]:.4f} m³/s")
+        print(f"  闸门处流量: {Q_final[gate_idx]:.4f} m^3/s")
 
     print()
 
@@ -349,7 +350,7 @@ if __name__ == '__main__':
     print("=" * 100)
     print()
     print("修复内容：")
-    print("1. ✓ 修复了普通节点连续性方程Jacobian缺少伪瞬态项的bug")
+    print("1.  修复了普通节点连续性方程Jacobian缺少伪瞬态项的bug")
     print("   - 添加了 J[2*i, 2*i+1] = 1.0 / pseudo_dt")
     print("   - 这使得Jacobian矩阵不再奇异")
     print()

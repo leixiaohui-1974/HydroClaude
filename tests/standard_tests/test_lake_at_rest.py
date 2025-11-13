@@ -136,7 +136,7 @@ class TestLakeAtRest:
 
             print(f"\n=== Lake at Rest (平底) 测试结果 ===")
             print(f"最大水深扰动: {max_h_error:.2e} m")
-            print(f"最大流量扰动: {max_Q_error:.2e} m³/s")
+            print(f"最大流量扰动: {max_Q_error:.2e} m^3/s")
             print(f"最大速度扰动: {max_u_error:.2e} m/s")
 
             # P0 通过标准
@@ -152,7 +152,7 @@ class TestLakeAtRest:
                 if not np.isnan(mass_error):
                     assert abs(mass_error) < 1e-15, f"质量守恒误差 {mass_error:.2e} 超过阈值"
 
-            print("✅ 测试通过：求解器在平底情况下保持了机器精度的静水平衡")
+            print(" 测试通过：求解器在平底情况下保持了机器精度的静水平衡")
 
         finally:
             # 清理临时文件
@@ -209,7 +209,7 @@ class TestLakeAtRest:
                 'type': 'variable',
                 'channel_width': 10.0,
                 'channel_length': L,
-                'bottom_slope': 0.0,  # ⚠️ 使用0.0，实际z_b从IC文件推导
+                'bottom_slope': 0.0,  # ️ 使用0.0，实际z_b从IC文件推导
                 'manning_n': 0.03
             },
             'mesh': {
@@ -229,7 +229,7 @@ class TestLakeAtRest:
                 'riemann_solver': 'hll',
                 'use_numba': False,  # 禁用Numba（well-balanced修正未实现Numba版本）
                 'cfl': 0.5,
-                'well_balanced': True  # ✅ 必须启用well-balanced格式
+                'well_balanced': True  #  必须启用well-balanced格式
             },
             'simulation': {
                 'start_time': 0.0,
@@ -286,7 +286,7 @@ class TestLakeAtRest:
             print(f"底高程变化范围: [{np.min(z_b):.2f}, {np.max(z_b):.2f}] m")
             print(f"最大水面高程扰动: {max_eta_error:.2e} m")
             print(f"最大水深扰动: {np.max(np.abs(h_final - h_initial)):.2e} m")
-            print(f"最大流量扰动: {max_Q_error:.2e} m³/s")
+            print(f"最大流量扰动: {max_Q_error:.2e} m^3/s")
             print(f"最大速度扰动: {max_u_error:.2e} m/s")
 
             # P0 通过标准
@@ -301,7 +301,7 @@ class TestLakeAtRest:
             assert max_u_error < 1e-10, \
                 f"速度扰动 {max_u_error:.2e} 超过阈值 1e-10"
 
-            print("✅ 测试通过：求解器具有Well-Balanced性质，能够精确保持变底高程的静水平衡")
+            print(" 测试通过：求解器具有Well-Balanced性质，能够精确保持变底高程的静水平衡")
 
         finally:
             # 清理临时文件
@@ -355,7 +355,7 @@ class TestLakeAtRest:
                 'type': 'variable',
                 'channel_width': 10.0,
                 'channel_length': L,
-                'bottom_slope': 0.0,  # ⚠️ 使用0.0，实际z_b从IC文件推导
+                'bottom_slope': 0.0,  # ️ 使用0.0，实际z_b从IC文件推导
                 'manning_n': 0.03
             },
             'mesh': {
@@ -375,7 +375,7 @@ class TestLakeAtRest:
                 'riemann_solver': 'hll',
                 'use_numba': False,  # 禁用Numba（well-balanced修正未实现Numba版本）
                 'cfl': 0.3,  # 更保守的CFL数
-                'well_balanced': True  # ✅ 必须启用well-balanced格式
+                'well_balanced': True  #  必须启用well-balanced格式
             },
             'simulation': {
                 'start_time': 0.0,
@@ -422,7 +422,7 @@ class TestLakeAtRest:
             print(f"\n=== Lake at Rest (陡峭底坡) 测试结果 ===")
             print(f"底高程跳跃: {np.max(z_b) - np.min(z_b):.1f} m")
             print(f"最大水面高程扰动: {max_eta_error:.2e} m")
-            print(f"最大流量扰动: {max_Q_error:.2e} m³/s")
+            print(f"最大流量扰动: {max_Q_error:.2e} m^3/s")
             print(f"最大速度扰动: {max_u_error:.2e} m/s")
 
             # 陡峭底坡情况下，允许稍大的误差（但仍要远小于水深）
@@ -434,7 +434,7 @@ class TestLakeAtRest:
             assert max_u_error < 1e-10, \
                 f"速度扰动 {max_u_error:.2e} 超过阈值"
 
-            print("✅ 测试通过：求解器在陡峭底坡下仍保持良好的静水平衡")
+            print(" 测试通过：求解器在陡峭底坡下仍保持良好的静水平衡")
 
         finally:
             temp_file.unlink(missing_ok=True)
@@ -452,7 +452,7 @@ class TestLakeAtRestSolverComparison:
 
         测试HLL vs HLLC Riemann求解器
 
-        ⚠️ 当前状态：HLLC已禁用，测试跳过
+        ️ 当前状态：HLLC已禁用，测试跳过
         """
         n_cells = 100
         L = 1000.0
@@ -569,7 +569,7 @@ class TestLakeAtRestSolverComparison:
             for solver, result in results.items():
                 print(f"\n{solver.upper()} Riemann求解器:")
                 print(f"  水面高程误差: {result['max_eta_error']:.2e} m")
-                print(f"  流量误差: {result['max_Q_error']:.2e} m³/s")
+                print(f"  流量误差: {result['max_Q_error']:.2e} m^3/s")
                 print(f"  速度误差: {result['max_u_error']:.2e} m/s")
 
                 # 两种求解器都必须通过
@@ -580,7 +580,7 @@ class TestLakeAtRestSolverComparison:
                 assert result['max_u_error'] < 1e-12, \
                     f"{solver.upper()} 速度扰动 {result['max_u_error']:.2e} 超过阈值"
 
-            print("\n✅ 测试通过：两种Riemann求解器都具有良好的Well-Balanced性质")
+            print("\n 测试通过：两种Riemann求解器都具有良好的Well-Balanced性质")
 
         finally:
             # 清理临时初始条件文件

@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-正定性保持WENO3求解器 (Positivity-Preserving WENO3)
+WENO3 (Positivity-Preserving WENO3)
 
-实现Zhang-Shu (2010)正定性保持方法，解决：
-1. RP2对向流双激波过冲问题（90% → <30%）
-2. 极端工况下的数值振荡
-3. 确保水深h≥0恒成立
+Zhang-Shu (2010)
+1. RP290% → <30%
+2. 
+3. h≥0
 
-核心原理：
-- 混合高阶WENO3通量和一阶通量
-- 限制系数θ确保正定性
-- 在激波和极端工况处自动降阶
 
-参考文献：
+- WENO3
+- θ
+- 
+
+
 - Zhang, X., & Shu, C. W. (2010). "Positivity-preserving high order finite
   difference WENO schemes for compressible Euler equations."
   Journal of Computational Physics, 229(23), 8918-8934.
@@ -21,9 +21,9 @@
   and positivity-preserving high order schemes for conservation laws."
   SIAM Journal on Scientific Computing, 34(2), A627-A658.
 
-作者: HydroClaude Team
-日期: 2025-10-31
-阶段: Stage 8 - Phase 8.1
+: HydroClaude Team
+: 2025-10-31
+: Stage 8 - Phase 8.1
 """
 
 import sys
@@ -37,17 +37,17 @@ from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
 
 class PositivityPreservingWENO3(GodunvFVMWENO3):
     """
-    正定性保持WENO3求解器
+    WENO3
 
-    继承自GodunvFVMWENO3，添加正定性保持机制：
-    1. 在标准WENO3基础上添加限制器
-    2. 混合高阶和一阶通量
-    3. 确保水深h≥0恒成立
+    GodunvFVMWENO3
+    1. WENO3
+    2. 
+    3. h≥0
 
-    特性：
-    - 保持3阶精度（光滑区域）
-    - 自动降阶（强间断处）
-    - 鲁棒稳定（极端工况）
+    
+    - 3
+    - 
+    - 
     """
 
     def __init__(
@@ -66,15 +66,15 @@ class PositivityPreservingWENO3(GodunvFVMWENO3):
         **kwargs
     ):
         """
-        初始化正定性保持WENO3求解器
+        WENO3
 
         Args:
-            (基础参数与GodunvFVMWENO3相同)
-            eps_pp: 正定性保持阈值（h必须≥eps_pp）
-            theta_min: 最小限制系数（0-1之间，0=完全一阶，1=完全高阶）
-            use_pp: 是否启用正定性保持（调试开关）
+            (GodunvFVMWENO3)
+            eps_pp: h≥eps_pp
+            theta_min: 0-10=1=
+            use_pp: 
         """
-        # 调用父类初始化
+        # 
         super().__init__(
             width=width,
             length=length,
@@ -91,38 +91,38 @@ class PositivityPreservingWENO3(GodunvFVMWENO3):
         self.theta_min = theta_min
         self.use_pp = use_pp
 
-        # 统计信息
-        self.pp_activations = 0  # 正定性保持激活次数
-        self.theta_values = []    # 限制系数历史
+        # 
+        self.pp_activations = 0  # 
+        self.theta_values = []    # 
 
-        print(f"✨ 正定性保持WENO3求解器已启用")
-        print(f"  正定性阈值: eps_pp = {self.eps_pp}")
-        print(f"  最小限制系数: theta_min = {self.theta_min}")
-        print(f"  状态: {'启用' if use_pp else '禁用（仅测试）'}")
+        print(f" WENO3")
+        print(f"  : eps_pp = {self.eps_pp}")
+        print(f"  : theta_min = {self.theta_min}")
+        print(f"  : {'' if use_pp else ''}")
 
     def _compute_rhs(self, h: np.ndarray, Q: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
-        计算右端项（带正定性保持）
+        
 
-        覆盖父类方法，在WENO3基础上添加正定性保持：
-        1. 计算标准WENO3通量
-        2. 计算一阶HLL通量（保证正定性）
-        3. 混合通量确保h≥eps_pp
+        WENO3
+        1. WENO3
+        2. HLL
+        3. h≥eps_pp
 
         Returns:
-            dh_dt, dQ_dt: 时间导数
+            dh_dt, dQ_dt: 
         """
         n = len(h)
 
-        # 初始化
+        # 
         dh_dt = np.zeros(n)
         dQ_dt = np.zeros(n)
 
         if not self.use_pp:
-            # 调试模式：不使用正定性保持，直接返回标准WENO3
+            # WENO3
             return super()._compute_rhs(h, Q)
 
-        # ===== Step 1: 计算标准WENO3通量 =====
+        # ===== Step 1: WENO3 =====
         h_ext, Q_ext = self._extend_with_ghosts(h, Q)
         h_L_weno, h_R_weno = self._weno3_reconstruction(h_ext)
         Q_L_weno, Q_R_weno = self._weno3_reconstruction(Q_ext)
@@ -135,12 +135,12 @@ class PositivityPreservingWENO3(GodunvFVMWENO3):
                 h_L_weno[i], Q_L_weno[i], h_R_weno[i], Q_R_weno[i]
             )
 
-        # ===== Step 2: 计算一阶HLL通量（保证正定性）=====
+        # ===== Step 2: HLL=====
         F_h_first = np.zeros(n + 1)
         F_Q_first = np.zeros(n + 1)
 
         for i in range(n + 1):
-            # 一阶：直接使用cell平均值（无重构）
+            # cell
             if i == 0:
                 h_L_first = h[0]
                 Q_L_first = Q[0]
@@ -159,24 +159,24 @@ class PositivityPreservingWENO3(GodunvFVMWENO3):
                 h_L_first, Q_L_first, h_R_first, Q_R_first
             )
 
-        # ===== Step 3: 计算正定性保持限制系数θ =====
+        # ===== Step 3: θ =====
         theta = self._compute_positivity_limiter(
             h, Q, F_h_weno, F_Q_weno, F_h_first, F_Q_first
         )
 
-        # ===== Step 4: 混合通量 =====
+        # ===== Step 4:  =====
         F_h = theta * F_h_weno + (1 - theta) * F_h_first
         F_Q = theta * F_Q_weno + (1 - theta) * F_Q_first
 
-        # ===== Step 5: 计算时间导数 =====
+        # ===== Step 5:  =====
         for i in range(n):
             dh_dt[i] = -(F_h[i+1] - F_h[i]) / self.dx
             dQ_dt[i] = -(F_Q[i+1] - F_Q[i]) / self.dx
 
-            # 加上源项
+            # 
             dQ_dt[i] += self._compute_source_term(h[i], Q[i], i)
 
-        # 统计信息
+        # 
         if np.any(theta < 0.99):
             self.pp_activations += 1
             self.theta_values.append(np.min(theta))
@@ -193,43 +193,43 @@ class PositivityPreservingWENO3(GodunvFVMWENO3):
         F_Q_first: np.ndarray
     ) -> np.ndarray:
         """
-        计算正定性保持限制系数θ
+        θ
 
-        Zhang-Shu (2010)方法：
+        Zhang-Shu (2010)
         θ = min(1, (h_i - eps_pp) / (h_i - h_new_weno))
 
         Args:
-            h, Q: 当前守恒变量
-            F_h_weno, F_Q_weno: WENO3通量
-            F_h_first, F_Q_first: 一阶通量
+            h, Q: 
+            F_h_weno, F_Q_weno: WENO3
+            F_h_first, F_Q_first: 
 
         Returns:
-            theta: 限制系数数组 [n+1]，每个界面一个值
+            theta:  [n+1]
         """
         n = len(h)
-        theta = np.ones(n + 1)  # 默认全部使用高阶
+        theta = np.ones(n + 1)  # 
 
-        # 计算WENO3更新后的水深（仅用于判断）
+        # WENO3
         h_new_weno = h.copy()
         for i in range(n):
             h_new_weno[i] = h[i] - self.dt / self.dx * (F_h_weno[i+1] - F_h_weno[i])
 
-        # 计算一阶更新后的水深
+        # 
         h_new_first = h.copy()
         for i in range(n):
             h_new_first[i] = h[i] - self.dt / self.dx * (F_h_first[i+1] - F_h_first[i])
 
-        # 对每个cell计算限制系数
+        # cell
         for i in range(n):
             if h_new_weno[i] < self.eps_pp:
-                # WENO3会导致h < eps_pp，需要限制
+                # WENO3h < eps_pp
 
-                # 计算所需的限制系数
-                # 目标：h_new = h - dt/dx * (F_mixed[i+1] - F_mixed[i]) >= eps_pp
+                # 
+                # h_new = h - dt/dx * (F_mixed[i+1] - F_mixed[i]) >= eps_pp
                 # F_mixed = theta * F_weno + (1-theta) * F_first
 
                 if h_new_first[i] >= self.eps_pp:
-                    # 一阶通量足够安全，可以混合
+                    # 
                     numerator = h[i] - self.eps_pp
                     denominator = h[i] - h_new_weno[i]
 
@@ -239,10 +239,10 @@ class PositivityPreservingWENO3(GodunvFVMWENO3):
                     else:
                         theta_i = 1.0
                 else:
-                    # 即使一阶也不够，强制使用最小theta
+                    # theta
                     theta_i = self.theta_min
 
-                # 将限制应用到相关界面
+                # 
                 if i > 0:
                     theta[i] = min(theta[i], theta_i)
                 if i < n - 1:
@@ -252,10 +252,10 @@ class PositivityPreservingWENO3(GodunvFVMWENO3):
 
     def get_statistics(self) -> Dict[str, any]:
         """
-        获取正定性保持统计信息
+        
 
         Returns:
-            dict: 包含激活次数、平均theta等信息
+            dict: theta
         """
         stats = {
             'pp_activations': self.pp_activations,
@@ -276,34 +276,34 @@ class PositivityPreservingWENO3(GodunvFVMWENO3):
         return stats
 
     def print_statistics(self):
-        """打印正定性保持统计信息"""
+        """"""
         stats = self.get_statistics()
 
         print("\n" + "="*60)
-        print("正定性保持统计")
+        print("")
         print("="*60)
-        print(f"总时间步数: {stats['total_steps']}")
-        print(f"激活次数: {stats['pp_activations']}")
-        print(f"激活率: {stats['activation_rate']*100:.2f}%")
+        print(f": {stats['total_steps']}")
+        print(f": {stats['pp_activations']}")
+        print(f": {stats['activation_rate']*100:.2f}%")
 
         if len(self.theta_values) > 0:
-            print(f"最小θ: {stats['min_theta']:.6f}")
-            print(f"平均θ: {stats['avg_theta']:.6f}")
-            print(f"说明: θ=1.0为完全高阶，θ<1.0为混合，θ=0.0为完全一阶")
+            print(f"θ: {stats['min_theta']:.6f}")
+            print(f"θ: {stats['avg_theta']:.6f}")
+            print(f": θ=1.0θ<1.0θ=0.0")
         else:
-            print("未触发正定性保持（所有时间步都使用完全高阶）")
+            print("")
 
         print("="*60)
 
 
 class PositivityPreservingWENO3Enhanced(PositivityPreservingWENO3):
     """
-    增强版正定性保持WENO3
+    WENO3
 
-    添加额外特性：
-    1. 自适应eps_pp（根据局部流动调整）
-    2. 界面特定的限制器（更精细控制）
-    3. 干湿界面特殊处理
+    
+    1. eps_pp
+    2. 
+    3. 
     """
 
     def __init__(
@@ -318,11 +318,11 @@ class PositivityPreservingWENO3Enhanced(PositivityPreservingWENO3):
         **kwargs
     ):
         """
-        初始化增强版求解器
+        
 
         Args:
-            adaptive_eps: 是否使用自适应eps_pp
-            wet_dry_threshold: 湿干界面阈值
+            adaptive_eps: eps_pp
+            wet_dry_threshold: 
         """
         super().__init__(
             width=width,
@@ -336,23 +336,23 @@ class PositivityPreservingWENO3Enhanced(PositivityPreservingWENO3):
         self.adaptive_eps = adaptive_eps
         self.wet_dry_threshold = wet_dry_threshold
 
-        print(f"✨ 增强版正定性保持（自适应eps_pp + 湿干界面处理）")
+        print(f" eps_pp + ")
 
     def _detect_wet_dry_interface(self, h: np.ndarray) -> np.ndarray:
         """
-        检测湿干界面
+        
 
         Args:
-            h: 水深数组
+            h: 
 
         Returns:
-            mask: 布尔数组，True表示湿干界面附近
+            mask: True
         """
         n = len(h)
         mask = np.zeros(n, dtype=bool)
 
         for i in range(n):
-            # 检查当前cell和相邻cells
+            # cellcells
             cells_to_check = []
             if i > 0:
                 cells_to_check.append(h[i-1])
@@ -360,7 +360,7 @@ class PositivityPreservingWENO3Enhanced(PositivityPreservingWENO3):
             if i < n - 1:
                 cells_to_check.append(h[i+1])
 
-            # 判断：有水深小于阈值且有水深大于阈值
+            # 
             has_wet = any(h_val > self.wet_dry_threshold for h_val in cells_to_check)
             has_dry = any(h_val <= self.wet_dry_threshold for h_val in cells_to_check)
 
@@ -378,52 +378,52 @@ class PositivityPreservingWENO3Enhanced(PositivityPreservingWENO3):
         F_Q_first: np.ndarray
     ) -> np.ndarray:
         """
-        增强版限制器（湿干界面特殊处理）
+        
         """
-        # 先调用基础版本
+        # 
         theta = super()._compute_positivity_limiter(
             h, Q, F_h_weno, F_Q_weno, F_h_first, F_Q_first
         )
 
-        # 检测湿干界面
+        # 
         wd_mask = self._detect_wet_dry_interface(h)
 
-        # 在湿干界面附近强制使用更保守的限制
+        # 
         for i in range(len(h)):
             if wd_mask[i]:
-                # 湿干界面：强制降低theta，更倾向一阶
+                # theta
                 if i > 0:
-                    theta[i] = min(theta[i], 0.5)  # 50%混合
+                    theta[i] = min(theta[i], 0.5)  # 50%
                 if i < len(h) - 1:
                     theta[i+1] = min(theta[i+1], 0.5)
 
         return theta
 
 
-# ===== 便捷函数 =====
+# =====  =====
 
 def create_pp_weno3_solver(config: Dict) -> PositivityPreservingWENO3:
     """
-    从配置字典创建正定性保持WENO3求解器
+    WENO3
 
     Args:
-        config: 配置字典
+        config: 
 
     Returns:
-        solver: PositivityPreservingWENO3实例
+        solver: PositivityPreservingWENO3
     """
     return PositivityPreservingWENO3(**config)
 
 
 def test_positivity_preservation():
     """
-    快速测试：验证正定性保持功能
+    
     """
     print("\n" + "="*70)
-    print("正定性保持WENO3 - 快速测试")
+    print("WENO3 - ")
     print("="*70)
 
-    # 创建求解器
+    # 
     solver = PositivityPreservingWENO3(
         width=10.0,
         length=100.0,
@@ -432,10 +432,10 @@ def test_positivity_preservation():
         slope=0.0,
         cfl=0.2,
         eps_pp=1e-10,
-        use_numba=False  # 测试时不用Numba
+        use_numba=False  # Numba
     )
 
-    # RP2初值（对向流）
+    # RP2
     x_dam = 50.0
     h_L, u_L = 5.0, 5.0
     h_R, u_R = 5.0, -5.0
@@ -449,8 +449,8 @@ def test_positivity_preservation():
 
     solver.initialize(h_init, Q_init, bc_left, bc_right)
 
-    # 运行几步
-    print(f"\n初始水深范围: [{np.min(h_init):.6f}, {np.max(h_init):.6f}]")
+    # 
+    print(f"\n: [{np.min(h_init):.6f}, {np.max(h_init):.6f}]")
 
     for step in range(10):
         solver.step()
@@ -459,20 +459,20 @@ def test_positivity_preservation():
 
         print(f"Step {step+1}: h ∈ [{h_min:.6f}, {h_max:.6f}], t={solver.t:.4f}s")
 
-        # 检查正定性
+        # 
         if h_min < 0:
-            print(f"  ❌ 违反正定性！h_min = {h_min}")
+            print(f"   h_min = {h_min}")
             break
         else:
-            print(f"  ✅ 正定性保持")
+            print(f"   ")
 
-    # 打印统计
+    # 
     solver.print_statistics()
 
-    print("\n测试完成！")
+    print("\n")
     print("="*70)
 
 
 if __name__ == '__main__':
-    # 运行快速测试
+    # 
     test_positivity_preservation()

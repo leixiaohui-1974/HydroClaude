@@ -1,0 +1,136 @@
+{
+  "timestamp": "20251113_090829",
+  "total_tests": 12,
+  "passed": 10,
+  "failed": 1,
+  "errors": 1,
+  "duration_seconds": 3.5049359798431396,
+  "tests": [
+    {
+      "test": "1.1_flat_bottom_static",
+      "description": "Flat bottom static water",
+      "status": "ERROR",
+      "error": "'gbk' codec can't encode character '\\u2080' in position 9: illegal multibyte sequence",
+      "passed": false
+    },
+    {
+      "test": "1.2_dam_break",
+      "description": "Dam break with mass conservation check",
+      "status": "PASS",
+      "metrics": {
+        "mass_error_percent": 1.3229013843969865e-14,
+        "has_nan": false,
+        "final_time": 10.096375546923044,
+        "h_min": 1.0,
+        "h_max": 10.0
+      },
+      "passed": true
+    },
+    {
+      "test": "1.3_shock_propagation",
+      "description": "Shock propagation stability",
+      "status": "PASS",
+      "metrics": {
+        "has_nan": false,
+        "h_range": 1.0057329486219952,
+        "final_time": 5.045524360319609
+      },
+      "passed": true
+    },
+    {
+      "test": "2.1_lake_at_rest_gentle",
+      "description": "Lake at Rest with gentle 1% slope",
+      "status": "FAIL",
+      "metrics": {
+        "disturbance": 0.013595785083083456,
+        "max_Q": 46.3303308324294,
+        "time": 4.935453200883118
+      },
+      "passed": false
+    },
+    {
+      "test": "2.2_lake_at_rest_hump",
+      "description": "Lake at Rest with 2m hump",
+      "status": "PASS",
+      "metrics": {
+        "disturbance": 2.2941544818016784,
+        "mass_error_percent": 4.441092621258093,
+        "time": 10.047696305450376
+      },
+      "passed": true
+    },
+    {
+      "test": "2.3_well_balanced_friction",
+      "description": "Well-Balanced with Manning friction",
+      "status": "PASS",
+      "metrics": {
+        "has_nan": false,
+        "h_deviation": 1.3544270005870263,
+        "steps": 73,
+        "time": 100.99809494779657
+      },
+      "passed": true
+    },
+    {
+      "test": "3.1_bc_fixed_h",
+      "description": "Fixed h boundary condition",
+      "status": "PASS",
+      "metrics": {
+        "h_left": 3.0,
+        "h_right": 3.0
+      },
+      "passed": true
+    },
+    {
+      "test": "3.2_bc_fixed_q",
+      "description": "Fixed Q boundary condition",
+      "status": "PASS",
+      "metrics": {
+        "Q_left": 49.96062716098734,
+        "has_nan": false
+      },
+      "passed": true
+    },
+    {
+      "test": "3.3_bc_mixed",
+      "description": "Mixed boundary conditions (Q+h)",
+      "status": "PASS",
+      "metrics": {
+        "has_nan": false
+      },
+      "passed": true
+    },
+    {
+      "test": "4.1_mass_conservation",
+      "description": "Mass conservation over 100 steps",
+      "status": "PASS",
+      "metrics": {
+        "mass_init": 6500.0,
+        "mass_final": 6761.9623129588535,
+        "mass_error_percent": 4.0301894301362085
+      },
+      "passed": true
+    },
+    {
+      "test": "4.2_energy_dissipation",
+      "description": "Energy dissipation with friction",
+      "status": "PASS",
+      "metrics": {
+        "Q_init_avg": 100.0,
+        "Q_final_avg": 98.90255809866945,
+        "reduction_percent": 1.097441901330555
+      },
+      "passed": true
+    },
+    {
+      "test": "4.3_froude_number",
+      "description": "Froude number physical range",
+      "status": "PASS",
+      "metrics": {
+        "Fr_max": 0.33854627297156287,
+        "Fr_mean": 0.33854617292896705
+      },
+      "passed": true
+    }
+  ]
+}

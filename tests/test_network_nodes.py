@@ -42,7 +42,7 @@ def test_junction_node_creation():
     assert junction.junction_method == 'energy'
     assert junction.h_junction is None
 
-    print("✅ 汇流节点创建测试通过")
+    print(" 汇流节点创建测试通过")
 
 
 @pytest.mark.p1
@@ -51,7 +51,7 @@ def test_junction_invalid_method():
     with pytest.raises(ValueError, match="Invalid junction_method"):
         JunctionNode("J1", junction_method='invalid')
 
-    print("✅ 无效汇流方法检测通过")
+    print(" 无效汇流方法检测通过")
 
 
 @pytest.mark.p2
@@ -68,7 +68,7 @@ def test_junction_average_method():
     expected_h = 90.0 + np.mean(h_list)  # elevation + average depth
     assert h_junction == pytest.approx(expected_h, abs=0.01)
 
-    print("✅ 汇流节点简单平均方法测试通过")
+    print(" 汇流节点简单平均方法测试通过")
 
 
 @pytest.mark.p2
@@ -87,7 +87,7 @@ def test_junction_energy_method():
     assert h_junction > 90.0  # 水位应该在库底之上
     assert h_junction < 95.0  # 合理范围
 
-    print("✅ 汇流节点能量守恒方法测试通过")
+    print(" 汇流节点能量守恒方法测试通过")
 
 
 @pytest.mark.p2
@@ -104,7 +104,7 @@ def test_junction_distribute_outflow():
     assert all(Q == pytest.approx(10.0) for Q in Q_out_list)
     assert sum(Q_out_list) == pytest.approx(Q_total)
 
-    print("✅ 汇流节点出流分配测试通过")
+    print(" 汇流节点出流分配测试通过")
 
 
 # ============================================================================
@@ -121,7 +121,7 @@ def test_bifurcation_node_creation():
     assert bifurc.split_ratios == [0.3, 0.7]
     assert bifurc.split_method == 'fixed'
 
-    print("✅ 分流节点创建测试通过")
+    print(" 分流节点创建测试通过")
 
 
 @pytest.mark.p1
@@ -147,7 +147,7 @@ def test_bifurcation_invalid_ratios():
     with pytest.raises(ValueError, match="must be in"):
         BifurcationNode("B1", split_ratios=[-0.2, 1.2])
 
-    print("✅ 无效分流比例检测通过")
+    print(" 无效分流比例检测通过")
 
 
 @pytest.mark.p2
@@ -163,7 +163,7 @@ def test_bifurcation_fixed_split():
     assert Q_split[1] == pytest.approx(30.0)
     assert sum(Q_split) == pytest.approx(Q_total)
 
-    print("✅ 固定比例分流测试通过")
+    print(" 固定比例分流测试通过")
 
 
 @pytest.mark.p2
@@ -184,7 +184,7 @@ def test_bifurcation_dynamic_split():
     # 第一条（水头差大）流量应该更大
     assert Q_split[0] > Q_split[1]
 
-    print("✅ 动态分流测试通过")
+    print(" 动态分流测试通过")
 
 
 @pytest.mark.p2
@@ -200,7 +200,7 @@ def test_bifurcation_set_ratios():
     assert Q_split[0] == pytest.approx(10.0)
     assert Q_split[1] == pytest.approx(40.0)
 
-    print("✅ 分流比例设置测试通过")
+    print(" 分流比例设置测试通过")
 
 
 # ============================================================================
@@ -223,7 +223,7 @@ def test_reservoir_node_creation():
     # 初始水深应该是中间值
     assert reservoir.h == pytest.approx(10.0)
 
-    print("✅ 水库节点创建测试通过")
+    print(" 水库节点创建测试通过")
 
 
 @pytest.mark.p2
@@ -235,10 +235,10 @@ def test_reservoir_compute_volume():
     h = 5.0
     V = reservoir.compute_volume(h)
 
-    expected_V = 1e6 * 5.0  # = 5M m³
+    expected_V = 1e6 * 5.0  # = 5M m^3
     assert V == pytest.approx(expected_V)
 
-    print("✅ 水库库容计算测试通过")
+    print(" 水库库容计算测试通过")
 
 
 @pytest.mark.p2
@@ -251,14 +251,14 @@ def test_reservoir_update_volume():
     V_init = reservoir.volume
 
     # 更新：入流 > 出流
-    Q_in = 100.0  # m³/s
-    Q_out = 50.0  # m³/s
+    Q_in = 100.0  # m^3/s
+    Q_out = 50.0  # m^3/s
     dt = 3600.0  # 1小时 = 3600s
 
     h_new = reservoir.update_volume(Q_in, Q_out, dt)
 
     # 净入流
-    dV = (Q_in - Q_out) * dt  # = 50 * 3600 = 180000 m³
+    dV = (Q_in - Q_out) * dt  # = 50 * 3600 = 180000 m^3
     expected_V = V_init + dV
     expected_h = expected_V / reservoir.area
 
@@ -266,7 +266,7 @@ def test_reservoir_update_volume():
     assert reservoir.h == pytest.approx(expected_h, abs=0.01)
     assert h_new > h_init  # 水位应该上升
 
-    print("✅ 水库蓄水平衡更新测试通过")
+    print(" 水库蓄水平衡更新测试通过")
 
 
 @pytest.mark.p2
@@ -285,7 +285,7 @@ def test_reservoir_limits():
     assert reservoir.h == pytest.approx(reservoir.h_max)
     assert h_new == pytest.approx(reservoir.h_max)
 
-    print("✅ 水库水位限制测试通过")
+    print(" 水库水位限制测试通过")
 
 
 @pytest.mark.p3
@@ -302,10 +302,10 @@ def test_reservoir_custom_storage_curve():
     h = 4.0
     V = reservoir.compute_volume(h)
 
-    expected_V = 1e6 * (4.0 ** 1.5)  # = 1e6 * 8 = 8M m³
+    expected_V = 1e6 * (4.0 ** 1.5)  # = 1e6 * 8 = 8M m^3
     assert V == pytest.approx(expected_V)
 
-    print("✅ 自定义库容曲线测试通过")
+    print(" 自定义库容曲线测试通过")
 
 
 # ============================================================================
@@ -324,7 +324,7 @@ def test_boundary_node_creation():
     assert inflow.bc_variable == 'Q'
     assert inflow.bc_value == 50.0
 
-    print("✅ 边界节点创建测试通过")
+    print(" 边界节点创建测试通过")
 
 
 @pytest.mark.p1
@@ -336,7 +336,7 @@ def test_boundary_invalid_type():
     with pytest.raises(ValueError, match="Invalid bc_variable"):
         BoundaryNode("B1", bc_variable='invalid')
 
-    print("✅ 无效边界类型检测通过")
+    print(" 无效边界类型检测通过")
 
 
 @pytest.mark.p2
@@ -350,7 +350,7 @@ def test_boundary_constant_value():
     value = boundary.get_boundary_value(t=3600.0)
     assert value == pytest.approx(30.0)  # 常数
 
-    print("✅ 常数边界条件测试通过")
+    print(" 常数边界条件测试通过")
 
 
 @pytest.mark.p2
@@ -368,7 +368,7 @@ def test_boundary_time_varying():
     assert value_0 == pytest.approx(10.0)
     assert value_3600 == pytest.approx(46.0)  # 10 + 0.01*3600
 
-    print("✅ 时变边界条件测试通过")
+    print(" 时变边界条件测试通过")
 
 
 @pytest.mark.p2
@@ -381,10 +381,10 @@ def test_boundary_rating_curve():
     boundary = BoundaryNode("B1", bc_variable='rating', bc_value=rating_curve)
 
     Q = boundary.get_boundary_value(h=2.0)
-    expected_Q = 10.0 * (2.0 ** 1.5)  # ≈ 28.28
+    expected_Q = 10.0 * (2.0 ** 1.5)  # ~= 28.28
     assert Q == pytest.approx(expected_Q)
 
-    print("✅ Rating Curve边界条件测试通过")
+    print(" Rating Curve边界条件测试通过")
 
 
 @pytest.mark.p2
@@ -401,7 +401,7 @@ def test_boundary_set_condition():
     value = boundary.get_boundary_value()
     assert value == pytest.approx(2.5)
 
-    print("✅ 边界条件设置测试通过")
+    print(" 边界条件设置测试通过")
 
 
 # ============================================================================
@@ -433,7 +433,7 @@ def test_convenience_functions():
     assert outflow.boundary_type == 'outflow'
     assert outflow.bc_variable == 'h'
 
-    print("✅ 便捷函数测试通过")
+    print(" 便捷函数测试通过")
 
 
 if __name__ == "__main__":
@@ -481,19 +481,19 @@ if __name__ == "__main__":
         test_convenience_functions()
 
         print("\n" + "="*80)
-        print("✅ 所有节点类型测试通过！")
+        print(" 所有节点类型测试通过！")
         print("="*80)
 
         print("\n总结:")
-        print("  1. ✅ JunctionNode - 汇流节点（能量/动量/平均）")
-        print("  2. ✅ BifurcationNode - 分流节点（固定/动态）")
-        print("  3. ✅ ReservoirNode - 水库节点（蓄水平衡）")
-        print("  4. ✅ BoundaryNode - 边界节点（Q/h/Rating Curve）")
-        print("  5. ✅ 便捷函数 - create_*")
+        print("  1.  JunctionNode - 汇流节点（能量/动量/平均）")
+        print("  2.  BifurcationNode - 分流节点（固定/动态）")
+        print("  3.  ReservoirNode - 水库节点（蓄水平衡）")
+        print("  4.  BoundaryNode - 边界节点（Q/h/Rating Curve）")
+        print("  5.  便捷函数 - create_*")
         print("\nTask 3.1.2 测试完成！")
 
     except Exception as e:
-        print(f"\n❌ 测试失败: {e}")
+        print(f"\n 测试失败: {e}")
         import traceback
         traceback.print_exc()
         exit(1)

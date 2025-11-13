@@ -70,7 +70,7 @@ class TestTrapezoidalChannelBasics:
         """测试退化为矩形断面（m=0）"""
         channel = TrapezoidalChannel(
             bottom_width=5.0,
-            side_slope=0.0,  # m=0 → 矩形
+            side_slope=0.0,  # m=0 -> 矩形
             length=1000.0,
             bottom_slope=0.001,
             manning_n=0.020
@@ -120,7 +120,7 @@ class TestHydraulicGeometry:
     def test_area(self, standard_channel):
         """测试断面积计算"""
         h = 2.0
-        # A = (B + m*h) * h = (5 + 1.5*2) * 2 = 8 * 2 = 16 m²
+        # A = (B + m*h) * h = (5 + 1.5*2) * 2 = 8 * 2 = 16 m^2
         A_expected = (5.0 + 1.5 * 2.0) * 2.0
         A_calc = standard_channel.area(h)
 
@@ -140,8 +140,8 @@ class TestHydraulicGeometry:
     def test_wetted_perimeter(self, standard_channel):
         """测试湿周计算"""
         h = 2.0
-        # P = B_bottom + 2*h*√(1+m²) = 5 + 2*2*√(1+1.5²)
-        # √(1+2.25) = √3.25 ≈ 1.8028
+        # P = B_bottom + 2*h*√(1+m^2) = 5 + 2*2*√(1+1.5^2)
+        # √(1+2.25) = √3.25 ~= 1.8028
         # P = 5 + 4*1.8028 = 5 + 7.2111 = 12.2111 m
         slope_factor = np.sqrt(1.0 + 1.5**2)
         P_expected = 5.0 + 2.0 * 2.0 * slope_factor
@@ -153,9 +153,9 @@ class TestHydraulicGeometry:
     def test_hydraulic_radius(self, standard_channel):
         """测试水力半径计算"""
         h = 2.0
-        A = standard_channel.area(h)  # 16 m²
+        A = standard_channel.area(h)  # 16 m^2
         P = standard_channel.wetted_perimeter(h)  # 12.2111 m
-        R_expected = A / P  # 16 / 12.2111 ≈ 1.3102 m
+        R_expected = A / P  # 16 / 12.2111 ~= 1.3102 m
 
         R_calc = standard_channel.hydraulic_radius(h)
 
@@ -165,9 +165,9 @@ class TestHydraulicGeometry:
     def test_hydraulic_depth(self, standard_channel):
         """测试水力深度计算"""
         h = 2.0
-        A = standard_channel.area(h)  # 16 m²
+        A = standard_channel.area(h)  # 16 m^2
         B = standard_channel.top_width(h)  # 11 m
-        D_expected = A / B  # 16 / 11 ≈ 1.4545 m
+        D_expected = A / B  # 16 / 11 ~= 1.4545 m
 
         D_calc = standard_channel.hydraulic_depth(h)
 
@@ -233,7 +233,7 @@ class TestNormalDepth:
 
     def test_normal_depth_basic(self, test_channel):
         """测试正常水深基本计算"""
-        Q = 10.0  # m³/s
+        Q = 10.0  # m^3/s
 
         h_n = test_channel.normal_depth(Q)
 
@@ -294,12 +294,12 @@ class TestCriticalDepth:
 
     def test_critical_depth_basic(self, test_channel):
         """测试临界水深基本计算"""
-        Q = 10.0  # m³/s
+        Q = 10.0  # m^3/s
         g = 9.81
 
         h_c = test_channel.critical_depth(Q)
 
-        # 验证临界流条件：Q² = g * A³ / B
+        # 验证临界流条件：Q^2 = g * A^3 / B
         props = test_channel.properties(h_c)
         A = props['A']
         B = props['B']
@@ -312,7 +312,7 @@ class TestCriticalDepth:
 
     def test_critical_depth_froude_one(self, test_channel):
         """测试临界水深对应 Froude 数 = 1"""
-        Q = 10.0  # m³/s
+        Q = 10.0  # m^3/s
 
         h_c = test_channel.critical_depth(Q)
         Fr = test_channel.froude_number(Q, h_c)
@@ -363,7 +363,7 @@ class TestFroudeNumber:
     def test_subcritical_flow(self, test_channel):
         """测试亚临界流（Fr < 1）"""
         Q = 10.0
-        h = 3.0  # 较大水深 → 亚临界
+        h = 3.0  # 较大水深 -> 亚临界
 
         Fr = test_channel.froude_number(Q, h)
 
@@ -373,14 +373,14 @@ class TestFroudeNumber:
     def test_supercritical_flow(self, test_channel):
         """测试超临界流（Fr > 1）"""
         Q = 10.0
-        h = 0.5  # 较小水深 → 超临界
+        h = 0.5  # 较小水深 -> 超临界
 
         Fr = test_channel.froude_number(Q, h)
 
         assert Fr > 1.0
 
     def test_critical_flow(self, test_channel):
-        """测试临界流（Fr ≈ 1）"""
+        """测试临界流（Fr ~= 1）"""
         Q = 10.0
         h_c = test_channel.critical_depth(Q)
 
@@ -461,7 +461,7 @@ class TestEdgeCases:
     def test_very_large_flow(self):
         """测试极大流量"""
         channel = TrapezoidalChannel(5.0, 1.5, 1000.0, 0.001, 0.020)
-        Q = 100.0  # 100 m³/s
+        Q = 100.0  # 100 m^3/s
 
         h_n = channel.normal_depth(Q)
         h_c = channel.critical_depth(Q)

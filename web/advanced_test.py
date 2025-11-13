@@ -22,10 +22,10 @@ class AdvancedWebTester:
         
     def log(self, msg, status="info"):
         colors = {
-            "success": "\033[92m✅",
-            "error": "\033[91m❌",
+            "success": "\033[92m",
+            "error": "\033[91m",
             "info": "\033[94mℹ️",
-            "warning": "\033[93m⚠️"
+            "warning": "\033[93m️"
         }
         end = "\033[0m"
         print(f"{colors.get(status, colors['info'])} {msg}{end}")
@@ -404,9 +404,9 @@ class AdvancedWebTester:
         success = self.generate_report()
         
         if success:
-            self.log("\n🎉 深度测试通过！", "success")
+            self.log("\n 深度测试通过！", "success")
         else:
-            self.log("\n⚠️  深度测试完成，部分项目未通过", "warning")
+            self.log("\n️  深度测试完成，部分项目未通过", "warning")
             
         return success
 

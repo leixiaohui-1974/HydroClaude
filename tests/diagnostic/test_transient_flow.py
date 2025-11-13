@@ -14,7 +14,13 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append('.')
 
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 
 
@@ -39,13 +45,13 @@ def test_inflow_step_change():
         n=n
     )
 
-    # 初始条件：均匀流 Q=5 m³/s
+    # 初始条件：均匀流 Q=5 m^3/s
     Q_initial = 5.0
     h_initial = 0.60
     solver.h = np.ones(101) * h_initial
     solver.hu = np.ones(101) * Q_initial / B
 
-    # 计算Q=10 m³/s的均匀流水深
+    # 计算Q=10 m^3/s的均匀流水深
     def compute_uniform_h(Q, B, S0, n):
         from scipy.optimize import fsolve
         def residual(h):
@@ -59,10 +65,10 @@ def test_inflow_step_change():
         return h_result
 
     h_final = compute_uniform_h(10.0, B, S0, n)
-    print(f"  Q=5 m³/s均匀流水深：{h_initial:.3f} m")
-    print(f"  Q=10 m³/s均匀流水深：{h_final:.3f} m")
+    print(f"  Q=5 m^3/s均匀流水深：{h_initial:.3f} m")
+    print(f"  Q=10 m^3/s均匀流水深：{h_final:.3f} m")
 
-    # 边界条件：t=50s时流量从5增加到10 m³/s
+    # 边界条件：t=50s时流量从5增加到10 m^3/s
     def Q_upstream_func(t):
         if t < 50.0:
             return 5.0
@@ -91,10 +97,10 @@ def test_inflow_step_change():
 
     print(f"\n结果分析：")
     print(f"  时间步数：{len(result['t_history'])}")
-    print(f"  入口流量：{result['Q_final'][0]:.3f} m³/s")
-    print(f"  出口流量：{result['Q_final'][-1]:.3f} m³/s")
-    print(f"  平均流量：{np.mean(result['Q_final']):.3f} m³/s")
-    print(f"  预期流量：10.0 m³/s")
+    print(f"  入口流量：{result['Q_final'][0]:.3f} m^3/s")
+    print(f"  出口流量：{result['Q_final'][-1]:.3f} m^3/s")
+    print(f"  平均流量：{np.mean(result['Q_final']):.3f} m^3/s")
+    print(f"  预期流量：10.0 m^3/s")
 
     # 绘图
     fig, axes = plt.subplots(3, 1, figsize=(12, 10))
@@ -110,7 +116,7 @@ def test_inflow_step_change():
     ax.axhline(10.0, color='k', linestyle=':', alpha=0.3, label='Final')
     ax.axvline(50.0, color='r', linestyle='--', alpha=0.5, label='Step change')
     ax.set_xlabel('Time (s)')
-    ax.set_ylabel('Discharge (m³/s)')
+    ax.set_ylabel('Discharge (m^3/s)')
     ax.set_title('Discharge Evolution at Different Positions')
     ax.legend(loc='right')
     ax.grid(True, alpha=0.3)
@@ -160,7 +166,7 @@ def test_time_varying_gate():
     S0 = 0.001
     n = 0.025
 
-    # 闸门开度时间函数：0.3m → 0.6m (线性变化)
+    # 闸门开度时间函数：0.3m -> 0.6m (线性变化)
     def gate_opening_func(t):
         if t < 50.0:
             return 0.3
@@ -284,7 +290,7 @@ def test_flood_wave():
     solver.h = np.ones(201) * h_base
     solver.hu = np.ones(201) * Q_base / B
 
-    # 边界条件：洪水波 Q(t) = 5 + 10*sin²(πt/100)
+    # 边界条件：洪水波 Q(t) = 5 + 10*sin^2(πt/100)
     def Q_flood_wave(t):
         if t < 200.0:
             return Q_base + 10.0 * np.sin(np.pi * t / 100.0)**2
@@ -303,7 +309,7 @@ def test_flood_wave():
 
     print(f"\n结果分析：")
     print(f"  时间步数：{len(result['t_history'])}")
-    print(f"  最大流量：{result['Q_history'].max():.3f} m³/s")
+    print(f"  最大流量：{result['Q_history'].max():.3f} m^3/s")
     print(f"  最大水深：{result['h_history'].max():.3f} m")
 
     # 绘图
@@ -315,7 +321,7 @@ def test_flood_wave():
     Q_in_array = np.array([Q_flood_wave(t) for t in t_array])
     ax1.plot(t_array, Q_in_array, 'b-', linewidth=2)
     ax1.set_xlabel('Time (s)')
-    ax1.set_ylabel('Inflow discharge (m³/s)')
+    ax1.set_ylabel('Inflow discharge (m^3/s)')
     ax1.set_title('Flood Wave Input')
     ax1.grid(True, alpha=0.3)
 
@@ -326,7 +332,7 @@ def test_flood_wave():
         Q_at_pos = result['Q_history'][:, pos_idx]
         ax2.plot(t_array, Q_at_pos, label=f'x={solver.x[pos_idx]:.0f}m')
     ax2.set_xlabel('Time (s)')
-    ax2.set_ylabel('Discharge (m³/s)')
+    ax2.set_ylabel('Discharge (m^3/s)')
     ax2.set_title('Discharge Response at Different Positions')
     ax2.legend(loc='upper right')
     ax2.grid(True, alpha=0.3)

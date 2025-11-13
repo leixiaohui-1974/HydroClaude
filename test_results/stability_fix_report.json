@@ -1,0 +1,12 @@
+{
+  "timestamp": "2025-11-13T10:05:09.371920",
+  "total_exit_code_1": 0,
+  "optimized": 0,
+  "categories": {},
+  "optimization_strategy": {
+    "cfl": "0.5+ \u2192 0.3",
+    "dt_max": "0.5+ \u2192 0.2",
+    "order": "2 \u2192 1",
+    "n_cells": "\u00d7 1.2 (if < 200)"
+  }
+}

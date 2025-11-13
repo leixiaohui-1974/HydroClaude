@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 """
 Exact Riemann Solver for Shallow Water Equations
-精确Riemann求解器 - 浅水方程
+Riemann - 
 
-用于Godunov有限体积法的精确Riemann通量计算
+GodunovRiemann
 
 Reference:
 - Toro, E.F. (2009). Riemann Solvers and Numerical Methods for Fluid Dynamics.
@@ -185,10 +185,10 @@ def _solve_star_region_newton(
     wave_scale = c_L + c_R
     h_avg = 0.5 * (h_L + h_R)
 
-    # True Lake at Rest: h差异小 AND 速度都接近零
-    # 修复：溃坝(h_L≠h_R但u=0)不应该被当作静水！
+    # True Lake at Rest: h AND 
+    # (h_L≠h_Ru=0)
     if (abs(u_L) < 1e-6 and abs(u_R) < 1e-6 and dh < 1e-3 * h_avg):
-        # 真正的静水：深度差异<0.1%且速度为零
+        # <0.1%
         h_star = 0.5 * (h_L + h_R)
         u_star = 0.0
         return h_star, u_star
@@ -437,10 +437,10 @@ def _solve_star_region_numba(
     wave_scale = c_L + c_R
     h_avg = 0.5 * (h_L + h_R)
 
-    # True Lake at Rest: h差异小 AND 速度都接近零
-    # 修复：溃坝(h_L≠h_R但u=0)不应该被当作静水！
+    # True Lake at Rest: h AND 
+    # (h_L≠h_Ru=0)
     if (abs(u_L) < 1e-6 and abs(u_R) < 1e-6 and dh < 1e-3 * h_avg):
-        # 真正的静水：深度差异<0.1%且速度为零
+        # <0.1%
         h_star = 0.5 * (h_L + h_R)
         u_star = 0.0
         return h_star, u_star
@@ -641,9 +641,9 @@ if __name__ == '__main__':
     print()
 
     if NUMBA_AVAILABLE:
-        print("✅ Using Numba JIT-compiled version (fast)")
+        print(" Using Numba JIT-compiled version (fast)")
     else:
-        print("⚠️  Using pure Python version (slow)")
+        print("[WARN]  Using pure Python version (slow)")
 
     print()
     print("="*70)

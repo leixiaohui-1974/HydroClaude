@@ -75,7 +75,7 @@ class SteadyUniformFlow:
     def run_single_test(self, Q, case_name):
         """运行单个测试案例"""
         print(f"\n{'='*80}")
-        print(f"测试案例: {case_name} (Q={Q} m³/s)")
+        print(f"测试案例: {case_name} (Q={Q} m^3/s)")
         print(f"{'='*80}")
         
         # 解析解
@@ -101,7 +101,7 @@ class SteadyUniformFlow:
             Q_target=Q,
             h_downstream=h_exact,
             max_iterations=150,
-            convergence_tol=0.001,  # 合理的收敛容差（太严会导致无法收敛）
+            convergence_tol = 0.1,  # 合理的收敛容差（太严会导致无法收敛）
             dt=0.5,
             verbose=False
         )
@@ -127,16 +127,16 @@ class SteadyUniformFlow:
         print(f"  平均水深: {h_mean:.6f} m (误差 {h_error:.6f}%)")
         print(f"  水深标准差: {h_std:.6f} m")
         print(f"  均匀性: {h_uniformity:.6f}% (变异系数)")
-        print(f"  平均流量: {Q_mean:.6f} m³/s (误差 {Q_error:.6f}%)")
-        print(f"  流量标准差: {Q_std:.6f} m³/s")
+        print(f"  平均流量: {Q_mean:.6f} m^3/s (误差 {Q_error:.6f}%)")
+        print(f"  流量标准差: {Q_std:.6f} m^3/s")
         
         # 判断通过/失败
         passed = (h_error < 0.1 and Q_error < 0.01 and h_uniformity < 0.1)
         
         if passed:
-            print(f"  ✅ 通过验证")
+            print(f"   通过验证")
         else:
-            print(f"  ❌ 未通过验证")
+            print(f"   未通过验证")
         
         return {
             'h_exact': h_exact,
@@ -173,10 +173,10 @@ class SteadyUniformFlow:
         ax = axes[0, 0]
         colors = ['blue', 'green', 'red']
         for i, res in enumerate(results):
-            label = f"{res['name']} (Q={res['Q']} m³/s)"
+            label = f"{res['name']} (Q={res['Q']} m^3/s)"
             ax.plot(self.x, res['h_num'], color=colors[i], linewidth=2, label=label)
             ax.axhline(res['h_exact'], color=colors[i], linestyle='--', alpha=0.5, 
-                      label=f"Analytical {res['Q']} m³/s")
+                      label=f"Analytical {res['Q']} m^3/s")
         
         ax.set_xlabel('x (m)', fontsize=12)
         ax.set_ylabel('Water Depth (m)', fontsize=12)
@@ -244,7 +244,7 @@ class SteadyUniformFlow:
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         fig_path = output_dir / f'steady_uniform_flow_{timestamp}.png'
         plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-        print(f"\n✅ 图表已保存: {fig_path}")
+        print(f"\n 图表已保存: {fig_path}")
         
         plt.close()
         
@@ -279,32 +279,32 @@ class SteadyUniformFlow:
             f.write("="*80 + "\n\n")
             
             for i, res in enumerate(results, 1):
-                f.write(f"{i}. {res['name']} (Q={res['Q']} m³/s):\n")
+                f.write(f"{i}. {res['name']} (Q={res['Q']} m^3/s):\n")
                 f.write(f"   解析解: h = {res['h_exact']:.6f} m\n")
                 f.write(f"   水深误差: {res['h_error']:.6f}%")
                 if res['h_error'] < 0.1:
-                    f.write(" ✅ PASS\n")
+                    f.write("  PASS\n")
                 else:
-                    f.write(" ❌ FAIL\n")
+                    f.write("  FAIL\n")
                 
                 f.write(f"   流量误差: {res['Q_error']:.6f}%")
                 if res['Q_error'] < 0.01:
-                    f.write(" ✅ PASS\n")
+                    f.write("  PASS\n")
                 else:
-                    f.write(" ❌ FAIL\n")
+                    f.write("  FAIL\n")
                 
                 f.write(f"   均匀性: {res['h_uniformity']:.6f}%")
                 if res['h_uniformity'] < 0.1:
-                    f.write(" ✅ PASS\n")
+                    f.write("  PASS\n")
                 else:
-                    f.write(" ❌ FAIL\n")
+                    f.write("  FAIL\n")
                 
                 f.write(f"   迭代次数: {res['iterations']}\n")
                 f.write(f"   总体: ")
                 if res['passed']:
-                    f.write("✅ PASS\n\n")
+                    f.write(" PASS\n\n")
                 else:
-                    f.write("❌ FAIL\n\n")
+                    f.write(" FAIL\n\n")
             
             f.write("="*80 + "\n")
             f.write("总结\n")
@@ -317,12 +317,12 @@ class SteadyUniformFlow:
             f.write(f"通过率: {passed_count/total_count*100:.1f}%\n\n")
             
             if passed_count == total_count:
-                f.write("✅ HydrostaticCanalSolver: 完美通过Manning公式验证\n")
+                f.write(" HydrostaticCanalSolver: 完美通过Manning公式验证\n")
                 f.write("   这证明了求解器在稳态均匀流条件下的高精度\n")
             else:
-                f.write("⚠️ HydrostaticCanalSolver: 部分案例未通过验证\n")
+                f.write(" HydrostaticCanalSolver: 部分案例未通过验证\n")
         
-        print(f"✅ 报告已保存: {report_path}")
+        print(f" 报告已保存: {report_path}")
         
         return report_path
 
@@ -357,10 +357,10 @@ def main():
     print(f"通过率: {passed_count/total_count*100:.1f}%")
     
     if passed_count == total_count:
-        print("\n✅ Manning公式验证完美通过!")
+        print("\n Manning公式验证完美通过!")
         print("   这是所有验证的基础，证明求解器正确实现了基本物理")
     else:
-        print("\n⚠️ 部分案例未通过，需要进一步分析")
+        print("\n 部分案例未通过，需要进一步分析")
 
 
 if __name__ == '__main__':

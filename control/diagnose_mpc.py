@@ -93,7 +93,7 @@ def test_state_space_model():
 
     plt.tight_layout()
     plt.savefig('mpc_diagnosis_model_error.png', dpi=150)
-    print("\n✅ 图片已保存: mpc_diagnosis_model_error.png")
+    print("\n 图片已保存: mpc_diagnosis_model_error.png")
 
     return y_idz, y_mpc
 
@@ -129,7 +129,7 @@ def test_state_estimation():
         print(f"{k+1:5d} {u:8.3f} {y_true:10.4f} {x_true[0]:10.4f} {x_true[1]:10.4f} "
               f"{x_est[0]:10.4f} {x_est[1]:10.4f} {error:10.4f}")
 
-    print("\n⚠️  问题：简单的状态估计（x1≈y/K, x2≈0）误差很大！")
+    print("\n️  问题：简单的状态估计（x1≈y/K, x2≈0）误差很大！")
     print("建议：需要实现状态观测器（Luenberger或卡尔曼滤波）")
 
 
@@ -160,8 +160,8 @@ def test_integrator_behavior():
         print(f"  步骤 {k+1:2d}: y = {y:8.4f} (持续增长)")
         x = mpc.A @ x + mpc.B * u
 
-    print("\n✅ 确认：系统是积分器，常值输入u>0会导致输出无限增长")
-    print("💡 解决方案：")
+    print("\n 确认：系统是积分器，常值输入u>0会导致输出无限增长")
+    print(" 解决方案：")
     print("   1. 使用增量式MPC：优化Δu而不是u")
     print("   2. 添加积分反馈：在MPC中考虑累积误差")
     print("   3. 改进状态估计：使用观测器准确估计积分器状态")
@@ -258,13 +258,13 @@ def main():
     print("\n" + "=" * 80)
     print("诊断总结")
     print("=" * 80)
-    print("\n🔍 发现的问题：")
-    print("  1. ❌ 状态估计过于简化，无法准确捕捉积分器状态")
-    print("  2. ❌ IDZ模型包含积分器，常值输入会导致输出持续增长")
-    print("  3. ❌ 控制增量权重R太小，控制动作可能过大")
-    print("  4. ⚠️  MPC内部模型忽略了纯滞后（简化处理）")
+    print("\n 发现的问题：")
+    print("  1.  状态估计过于简化，无法准确捕捉积分器状态")
+    print("  2.  IDZ模型包含积分器，常值输入会导致输出持续增长")
+    print("  3.  控制增量权重R太小，控制动作可能过大")
+    print("  4. ️  MPC内部模型忽略了纯滞后（简化处理）")
 
-    print("\n💡 建议的解决方案：")
+    print("\n 建议的解决方案：")
     print("  1. 实现Luenberger状态观测器或卡尔曼滤波器")
     print("  2. 使用增量式MPC（优化Δu而不是u的绝对值）")
     print("  3. 增大控制增量权重R（从0.01提升到0.5-1.0）")

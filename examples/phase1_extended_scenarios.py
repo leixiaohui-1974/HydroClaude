@@ -88,7 +88,7 @@ for i, scenario in enumerate(scenarios, 1):
         solver = GodunvFVMSolver(
             width=B, length=1000.0, n_cells=100,
             manning_n=n, slope=S0,
-            cfl=0.5, order=1
+            cfl = 0.3, order=1
         )
         
         # 计算均匀流
@@ -101,7 +101,19 @@ for i, scenario in enumerate(scenarios, 1):
         bc_left = {'type': 'Q', 'value': Q}
         bc_right = {'type': 'h', 'value': h_uniform}
         
-        solver.initialize(h_init, Q_init, bc_left, bc_right)
+        # GodunvFVMSolver需要手动初始化
+
+        
+        solver.h = h_init.copy()
+
+        
+        solver.Q = Q_init.copy()
+
+        
+        solver.bc_left = bc_left
+
+        
+        solver.bc_right = bc_right
         
         # 推进500步
         for _ in range(500):
@@ -115,16 +127,16 @@ for i, scenario in enumerate(scenarios, 1):
         has_nan = np.any(np.isnan(state['h'])) or np.any(np.isnan(state['Q']))
         
         if has_nan:
-            status = "❌ NaN"
+            status = " NaN"
             success = False
         elif abs(mass_error) < 2.0:
-            status = "✅ 优秀"
+            status = " 优秀"
             success = True
         elif abs(mass_error) < 5.0:
             status = "🟡 良好"
             success = True
         else:
-            status = "⚠️ 偏大"
+            status = " 偏大"
             success = False
         
         results.append({
@@ -142,7 +154,7 @@ for i, scenario in enumerate(scenarios, 1):
         print(f"{name:<15} {Q:<8.1f} {B:<8.1f} {S0:<10.4f} {n:<8.3f} {mass_error:<12.4f}% {status:<10}")
         
     except Exception as e:
-        print(f"{name:<15} {Q:<8.1f} {B:<8.1f} {S0:<10.4f} {n:<8.3f} {'异常':<12} ❌ 失败")
+        print(f"{name:<15} {Q:<8.1f} {B:<8.1f} {S0:<10.4f} {n:<8.3f} {'异常':<12}  失败")
         results.append({
             'name': name,
             'Q': Q,
@@ -151,7 +163,7 @@ for i, scenario in enumerate(scenarios, 1):
             'n': n,
             'mass_error': float('nan'),
             'success': False,
-            'status': "❌ 异常",
+            'status': " 异常",
             'group': scenario['group']
         })
 
@@ -192,23 +204,23 @@ print("综合评价")
 print("=" * 80)
 
 if success_rate >= 95:
-    print(f"\n🎉 优秀！成功率{success_rate:.1f}%")
+    print(f"\n 优秀！成功率{success_rate:.1f}%")
 elif success_rate >= 90:
-    print(f"\n✅ 良好！成功率{success_rate:.1f}%")
+    print(f"\n 良好！成功率{success_rate:.1f}%")
 elif success_rate >= 80:
     print(f"\n🟡 可接受，成功率{success_rate:.1f}%")
 else:
-    print(f"\n⚠️ 需改进，成功率{success_rate:.1f}%")
+    print(f"\n 需改进，成功率{success_rate:.1f}%")
 
 print(f"\nPhase 1扩展场景库:")
-print(f"  • 场景数量: 12 → 20个 (+67%)")
-print(f"  • 成功率: {success_rate:.1f}%")
-print(f"  • 平均质量误差: {np.mean(valid_errors):.4f}%")
+print(f"  - 场景数量: 12 -> 20个 (+67%)")
+print(f"  - 成功率: {success_rate:.1f}%")
+print(f"  - 平均质量误差: {np.mean(valid_errors):.4f}%")
 
 if success_rate >= 90:
-    print(f"\n✅ Phase 1场景库完善成功！")
+    print(f"\n Phase 1场景库完善成功！")
 else:
-    print(f"\n⚠️ 仍有部分场景需要优化")
+    print(f"\n 仍有部分场景需要优化")
 
 # 可视化（可选）
 try:
@@ -256,7 +268,7 @@ try:
         ax3.scatter([r['Q'] for r in fail_results], [r['S0'] for r in fail_results], 
                    c='red', marker='x', s=100, label='失败', alpha=0.7)
     
-    ax3.set_xlabel('流量 Q (m³/s)')
+    ax3.set_xlabel('流量 Q (m^3/s)')
     ax3.set_ylabel('底坡 S0')
     ax3.set_title('参数空间覆盖（Q-S0）')
     ax3.legend()
@@ -274,9 +286,9 @@ try:
     ax4.set_title('总体成功率')
     
     plt.tight_layout()
-    plt.savefig('/workspace/phase1_extended_scenarios.png', dpi=150, bbox_inches='tight')
-    print(f"\n📊 图表已保存: phase1_extended_scenarios.png")
+    plt.savefig('./phase1_extended_scenarios.png', dpi=150, bbox_inches='tight')
+    print(f"\n 图表已保存: phase1_extended_scenarios.png")
 except Exception as e:
-    print(f"\n⚠️ 可视化失败: {str(e)}")
+    print(f"\n 可视化失败: {str(e)}")
 
 print("\n" + "=" * 80)

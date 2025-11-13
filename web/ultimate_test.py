@@ -24,11 +24,11 @@ class UltimateWebTester:
         
     def log(self, msg, status="info"):
         colors = {
-            "success": "\033[92m✅",
-            "error": "\033[91m❌",
+            "success": "\033[92m",
+            "error": "\033[91m",
             "info": "\033[94mℹ️",
-            "warning": "\033[93m⚠️",
-            "header": "\033[95m🎯"
+            "warning": "\033[93m️",
+            "header": "\033[95m"
         }
         end = "\033[0m"
         timestamp = datetime.now().strftime("%H:%M:%S")
@@ -477,9 +477,9 @@ class UltimateWebTester:
         success = self.generate_ultimate_report()
         
         if success:
-            self.log("\n🎉 终极测试通过！系统完美！", "success")
+            self.log("\n 终极测试通过！系统完美！", "success")
         else:
-            self.log("\n⚠️  测试完成，部分项目未达标", "warning")
+            self.log("\n️  测试完成，部分项目未达标", "warning")
             
         self.log(f"结束时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", "info")
         

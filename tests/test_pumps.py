@@ -11,6 +11,14 @@
 Author: HydroClaude Development Team
 Date: 2025-01
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import pytest
 import numpy as np
@@ -210,8 +218,8 @@ class TestPumpAffinityLaws:
         # 80%转速
         H_reduced = pump.compute_head(Q, speed=1160.0)
 
-        # H2/H1 ≈ (n2/n1)²
-        # (1160/1450)² = 0.8² = 0.64
+        # H2/H1 ~= (n2/n1)^2
+        # (1160/1450)^2 = 0.8^2 = 0.64
         speed_ratio_squared = (1160.0 / 1450.0) ** 2
         expected_ratio = speed_ratio_squared
 
@@ -315,8 +323,8 @@ class TestPumpPower:
         Q = 0.2
         P = pump.compute_power(Q)
 
-        # 功率 = ρ * g * Q * H / η / 1000
-        # P ≈ 1000 * 9.81 * 0.2 * 45 / 0.85 / 1000 ≈ 103.7 kW
+        # 功率 = rho * g * Q * H / η / 1000
+        # P ~= 1000 * 9.81 * 0.2 * 45 / 0.85 / 1000 ~= 103.7 kW
         assert 90 < P < 120
 
     def test_power_increases_with_flow(self):
@@ -431,10 +439,10 @@ class TestPumpArray:
         # 并联运行
         array = create_pump_array([pump1, pump2], configuration='parallel')
 
-        # 总流量0.4 m³/s，每台泵0.2 m³/s
+        # 总流量0.4 m^3/s，每台泵0.2 m^3/s
         H = array.compute_head(Q=0.4)
 
-        # 扬程应接近单泵在0.2 m³/s时的扬程
+        # 扬程应接近单泵在0.2 m^3/s时的扬程
         H_single = pump1.compute_head(Q=0.2)
         assert abs(H - H_single) < 1.0
 
@@ -639,7 +647,7 @@ class TestRealWorldCases:
 
     def test_typical_water_supply_pump(self):
         """测试典型供水泵"""
-        # 典型参数：流量200 m³/h = 0.0556 m³/s, 扬程50m
+        # 典型参数：流量200 m^3/h = 0.0556 m^3/s, 扬程50m
         pump = create_centrifugal_pump(
             position=0.0,
             H0=55.0,
@@ -680,7 +688,7 @@ class TestRealWorldCases:
 
         station = create_pump_array([pump1, pump2], configuration='parallel')
 
-        # 总流量约0.11 m³/s
+        # 总流量约0.11 m^3/s
         Q_total = 0.11
         H = station.compute_head(Q_total)
         P_total = station.compute_total_power(Q_total)

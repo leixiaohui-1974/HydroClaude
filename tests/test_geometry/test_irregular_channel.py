@@ -121,13 +121,13 @@ class TestSymmetricVChannel:
         V型断面面积解析解：
         A = 0.5 * B * h
         其中 B = 2 * 10 * (h/5) = 4h （两侧斜率相同）
-        所以 A = 0.5 * 4h * h = 2h²
+        所以 A = 0.5 * 4h * h = 2h^2
         """
         h = 2.0  # 水深2m
 
         A_calc = v_channel.area(h)
 
-        # 解析解：A = 2h² = 2 * 2² = 8 m²
+        # 解析解：A = 2h^2 = 2 * 2^2 = 8 m^2
         A_expected = 2.0 * h**2
 
         assert np.isclose(A_calc, A_expected, rtol=0.01)
@@ -151,7 +151,7 @@ class TestSymmetricVChannel:
     def test_wetted_perimeter_v_channel(self, v_channel):
         """测试V型断面湿周
 
-        湿周：P = 2 * √(10² + 5²) * (h/5)
+        湿周：P = 2 * √(10^2 + 5^2) * (h/5)
              = 2 * √125 * (h/5)
              = 2 * 11.18 * 0.4 = 8.94 m (for h=2m)
         """
@@ -160,7 +160,7 @@ class TestSymmetricVChannel:
         P_calc = v_channel.wetted_perimeter(h)
 
         # 斜边长度
-        slope_length = np.sqrt(10**2 + 5**2)  # √125 ≈ 11.18
+        slope_length = np.sqrt(10**2 + 5**2)  # √125 ~= 11.18
         # 水深比例
         ratio = h / 5.0  # 2/5 = 0.4
         # 湿周（两侧斜边）
@@ -199,7 +199,7 @@ class TestRectangularChannel:
         B = 5.0  # 底宽
 
         A_calc = rect_channel.area(h)
-        A_expected = B * h  # 5 * 2 = 10 m²
+        A_expected = B * h  # 5 * 2 = 10 m^2
 
         assert np.isclose(A_calc, A_expected, rtol=0.01)
 
@@ -299,7 +299,7 @@ class TestNormalDepth:
 
     def test_normal_depth_basic(self, test_channel):
         """测试正常水深基本计算"""
-        Q = 15.0  # m³/s
+        Q = 15.0  # m^3/s
 
         h_n = test_channel.normal_depth(Q)
 
@@ -368,7 +368,7 @@ class TestCriticalDepth:
 
     def test_critical_depth_basic(self, test_channel):
         """测试临界水深基本计算"""
-        Q = 15.0  # m³/s
+        Q = 15.0  # m^3/s
         g = 9.81
 
         h_c = test_channel.critical_depth(Q)
@@ -376,7 +376,7 @@ class TestCriticalDepth:
         # 验证临界水深为正值
         assert h_c > 0
 
-        # 验证临界流条件：Q² = g * A³ / B
+        # 验证临界流条件：Q^2 = g * A^3 / B
         props = test_channel.properties(h_c)
         A = props['A']
         B = props['B']
@@ -388,8 +388,8 @@ class TestCriticalDepth:
         assert np.isclose(lhs, rhs, rtol=0.01)
 
     def test_critical_depth_froude_one(self, test_channel):
-        """测试临界水深对应 Froude 数 ≈ 1"""
-        Q = 15.0  # m³/s
+        """测试临界水深对应 Froude 数 ~= 1"""
+        Q = 15.0  # m^3/s
 
         h_c = test_channel.critical_depth(Q)
         Fr = test_channel.froude_number(Q, h_c)
@@ -440,7 +440,7 @@ class TestFroudeNumber:
     def test_subcritical_flow(self, test_channel):
         """测试亚临界流（Fr < 1）"""
         Q = 15.0
-        h = 4.0  # 较大水深 → 亚临界
+        h = 4.0  # 较大水深 -> 亚临界
 
         Fr = test_channel.froude_number(Q, h)
 
@@ -450,14 +450,14 @@ class TestFroudeNumber:
     def test_supercritical_flow(self, test_channel):
         """测试超临界流（Fr > 1）"""
         Q = 15.0
-        h = 0.5  # 较小水深 → 超临界
+        h = 0.5  # 较小水深 -> 超临界
 
         Fr = test_channel.froude_number(Q, h)
 
         assert Fr > 1.0
 
     def test_critical_flow(self, test_channel):
-        """测试临界流（Fr ≈ 1）"""
+        """测试临界流（Fr ~= 1）"""
         Q = 15.0
         h_c = test_channel.critical_depth(Q)
 

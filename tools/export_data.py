@@ -114,7 +114,7 @@ class DataExporter:
                         row.append('N/A')
                 writer.writerow(row)
 
-        print(f"✓ CSV导出完成: {len(times)} 行, {len(variables)} 个变量")
+        print(f" CSV导出完成: {len(times)} 行, {len(variables)} 个变量")
         print()
 
         return output_file
@@ -207,7 +207,7 @@ class DataExporter:
         with open(output_file, 'w') as f:
             json.dump(json_data, f, indent=2)
 
-        print(f"✓ JSON导出完成")
+        print(f" JSON导出完成")
         print()
 
         return output_file
@@ -262,7 +262,7 @@ class DataExporter:
 
             exported.append(var)
 
-        print(f"✓ 导出了 {len(exported)} 个空间变量")
+        print(f" 导出了 {len(exported)} 个空间变量")
         print(f"  变量: {', '.join(exported)}")
         print()
 

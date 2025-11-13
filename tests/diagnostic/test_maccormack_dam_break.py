@@ -13,7 +13,13 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, '/workspace')
 
-from solvers.maccormack_solver_v2 import MacCormackSolverV2
+try:
+    from solvers.maccormack_solver_v2 import MacCormackSolverV2
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def ritter_solution(x, t, h_L, h_R, x_dam, g=9.81):
@@ -115,7 +121,7 @@ def test_dam_break():
         
         # 检查NaN
         if np.any(np.isnan(h)) or np.any(np.isnan(Q)):
-            print(f"  ❌ 步骤{step_count}出现NaN!")
+            print(f"   步骤{step_count}出现NaN!")
             break
         
         if step_count % 100 == 0:
@@ -186,11 +192,11 @@ def test_dam_break():
     print(f"\n  图像已保存: maccormack_v2_dam_break.png")
     
     # 成功标准
-    print(f"\n✅ 成功标准评估:")
-    print(f"  质量守恒 < 1%: {'✅' if abs(state['mass_error']) < 1.0 else '❌'} ({state['mass_error']:.4f}%)")
-    print(f"  波前误差 < 20%: {'✅' if front_error_pct < 20 else '❌'} ({front_error_pct:.2f}%)")
-    print(f"  RMSE < 15%: {'✅' if rmse_pct < 15 else '❌'} ({rmse_pct:.2f}%)")
-    print(f"  数值稳定: {'✅ 无NaN' if not np.any(np.isnan(h_numerical)) else '❌ 有NaN'}")
+    print(f"\n 成功标准评估:")
+    print(f"  质量守恒 < 1%: {'' if abs(state['mass_error']) < 1.0 else ''} ({state['mass_error']:.4f}%)")
+    print(f"  波前误差 < 20%: {'' if front_error_pct < 20 else ''} ({front_error_pct:.2f}%)")
+    print(f"  RMSE < 15%: {'' if rmse_pct < 15 else ''} ({rmse_pct:.2f}%)")
+    print(f"  数值稳定: {' 无NaN' if not np.any(np.isnan(h_numerical)) else ' 有NaN'}")
     
     # 总评
     all_pass = (
@@ -202,9 +208,9 @@ def test_dam_break():
     
     print(f"\n{'='*80}")
     if all_pass:
-        print("🎉 MacCormack v2.0 - Dam Break测试 **通过** ✅✅✅")
+        print(" MacCormack v2.0 - Dam Break测试 **通过** ")
     else:
-        print("⚠️ MacCormack v2.0 - Dam Break测试部分通过")
+        print("️ MacCormack v2.0 - Dam Break测试部分通过")
     print("="*80)
     
     return all_pass
@@ -214,6 +220,6 @@ if __name__ == "__main__":
     success = test_dam_break()
     
     if success:
-        print("\n🚀 MacCormack v2.0已准备好用于Phase 0！")
+        print("\n MacCormack v2.0已准备好用于Phase 0！")
     else:
         print("\n⏭️ 需要进一步调优")

@@ -34,14 +34,14 @@ class TestPierGeometry:
         """Test circular pier blockage area"""
         pier = Pier(shape='circular', width=1.0, count=3)
         blockage = pier.get_blockage_area()
-        expected = 3 * 1.0  # 3 piers × 1m width
+        expected = 3 * 1.0  # 3 piers x 1m width
         assert abs(blockage - expected) < 1e-10
 
     def test_rectangular_pier_blockage(self):
         """Test rectangular pier blockage area"""
         pier = Pier(shape='rectangular', width=1.5, length=4.0, count=2)
         blockage = pier.get_blockage_area()
-        expected = 2 * 1.5  # 2 piers × 1.5m width
+        expected = 2 * 1.5  # 2 piers x 1.5m width
         assert abs(blockage - expected) < 1e-10
 
     def test_streamlined_pier_blockage(self):
@@ -97,7 +97,7 @@ class TestBridgeGeometry:
         )
 
         effective_width = geom.get_effective_width()
-        # For 30° skew: W_eff = W / cos(30°) ≈ W / 0.866
+        # For 30 deg skew: W_eff = W / cos(30 deg) ~= W / 0.866
         expected = 20.0 / np.cos(np.radians(30))
         assert abs(effective_width - expected) < 0.01
 
@@ -112,7 +112,7 @@ class TestBridgeGeometry:
         )
 
         net_width = geom.get_net_width(depth=5.0)
-        expected = 20.0 - 3 * 1.0  # 20m - 3 piers × 1m
+        expected = 20.0 - 3 * 1.0  # 20m - 3 piers x 1m
         assert abs(net_width - expected) < 1e-10
 
     def test_invalid_skew_angle(self):
@@ -142,7 +142,7 @@ class TestBackwaterCalculations:
             approach_width=25.0
         )
 
-        Q = 100.0  # m³/s
+        Q = 100.0  # m^3/s
         h_normal = 5.0  # m
 
         h_up, h_br, flow_type = bridge.compute_backwater(Q, h_normal)
@@ -391,7 +391,7 @@ class TestBridgeTypes:
             skew_angle=0.0
         )
 
-        # Skewed bridge (30°)
+        # Skewed bridge (30 deg)
         piers = Pier(shape='circular', width=1.0, count=2)
         geom_skew = BridgeGeometry(
             position=100.0,
@@ -482,7 +482,7 @@ class TestValidation:
         - Bridge width: 20 m
         - Pier count: 3
         - Pier diameter: 1.0 m
-        - Discharge: 80 m³/s
+        - Discharge: 80 m^3/s
         - Normal depth: 5.0 m
         """
         bridge = create_simple_bridge(
@@ -526,7 +526,7 @@ class TestValidation:
         h_loss = bridge.get_total_headloss(Q, h_up, h_down)
 
         # Energy equation (simplified, ignoring velocity heads)
-        # h_up ≈ h_down + h_loss
+        # h_up ~= h_down + h_loss
         energy_balance = h_up - h_down - h_loss
 
         # Should be approximately zero (within velocity head difference)

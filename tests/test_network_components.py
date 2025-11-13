@@ -34,7 +34,7 @@ class TestNetworkComponents:
         flows = {"P1": 10.0, "P2": 6.0, "P3": 4.0}
         residual = tee.calculate_mass_balance(flows)
         assert abs(residual) < 1e-6, "质量守恒失败"
-        print("✓ 节点质量守恒测试通过")
+        print(" 节点质量守恒测试通过")
 
     def test_elbow(self):
         """测试弯头损失计算"""
@@ -42,14 +42,14 @@ class TestNetworkComponents:
         h_loss = elbow.calculate_head_loss(velocity=3.0)
         assert h_loss > 0, "弯头损失应为正值"
         assert 0.05 < h_loss < 0.15, f"弯头损失异常: {h_loss}"
-        print(f"✓ 弯头损失测试通过 (h_loss={h_loss:.4f}m)")
+        print(f" 弯头损失测试通过 (h_loss={h_loss:.4f}m)")
 
     def test_reducer(self):
         """测试渐缩管"""
         reducer = Reducer("R1", D1=0.5, D2=0.3)
         h_loss = reducer.calculate_head_loss(V1=3.0)
         assert h_loss > 0, "渐缩损失应为正值"
-        print(f"✓ 渐缩管测试通过 (h_loss={h_loss:.4f}m)")
+        print(f" 渐缩管测试通过 (h_loss={h_loss:.4f}m)")
 
     def test_air_vessel(self):
         """测试气压罐"""
@@ -59,7 +59,7 @@ class TestNetworkComponents:
 
         vessel.update_state(Q, dt=1.0, P_main=600000)
         assert vessel.pressure > 500000, "气压罐压力应升高"
-        print(f"✓ 气压罐测试通过 (P={vessel.pressure/1e5:.2f}bar)")
+        print(f" 气压罐测试通过 (P={vessel.pressure/1e5:.2f}bar)")
 
     def test_check_valve(self):
         """测试单向阀"""
@@ -72,7 +72,7 @@ class TestNetworkComponents:
         Q_reverse = valve.calculate_flow(P_up=400000, P_down=500000)
         assert Q_reverse == 0, "反向流动应无流量"
         assert not valve.is_open, "反向流动阀门应关闭"
-        print("✓ 单向阀测试通过")
+        print(" 单向阀测试通过")
 
     def test_relief_valve(self):
         """测试安全阀"""
@@ -85,7 +85,7 @@ class TestNetworkComponents:
         Q_overpressure = valve.calculate_relief_flow(pressure=650000)
         assert Q_overpressure > 0, "超压应泄压"
         assert valve.is_open, "超压阀门应打开"
-        print(f"✓ 安全阀测试通过 (Q_relief={Q_overpressure:.3f}m³/s)")
+        print(f" 安全阀测试通过 (Q_relief={Q_overpressure:.3f}m^3/s)")
 
 
 def run_all_tests():
@@ -111,15 +111,15 @@ def run_all_tests():
         try:
             func()
         except AssertionError as e:
-            print(f"✗ 测试失败: {e}")
+            print(f" 测试失败: {e}")
             return False
         except Exception as e:
-            print(f"✗ 异常: {e}")
+            print(f" 异常: {e}")
             return False
 
     print()
     print("=" * 80)
-    print("所有测试通过！✓")
+    print("所有测试通过！")
     print("=" * 80)
     return True
 

@@ -4,11 +4,11 @@
 修复版Preissmann四点隐式格式求解器
 
 修复内容:
-1. ✅ 正确的连续方程离散（分别计算节点i和i+1）
-2. ✅ 正确的动量方程离散（包含新旧时刻）
-3. ✅ 完整的Jacobian矩阵（所有导数项）
-4. ✅ 移除np.maximum截断（避免凭空添加质量）
-5. ✅ 信赖域Newton法（确保收敛）
+1.  正确的连续方程离散（分别计算节点i和i+1）
+2.  正确的动量方程离散（包含新旧时刻）
+3.  完整的Jacobian矩阵（所有导数项）
+4.  移除np.maximum截断（避免凭空添加质量）
+5.  信赖域Newton法（确保收敛）
 
 原bug总结:
 - Bug #1: 连续方程用中点平均而非分别计算 → 质量非守恒
@@ -117,7 +117,7 @@ class PreissmannSolverFixed:
         h_new = h_old.copy()
         Q_new = Q_old.copy()
         
-        # ✅ 确保初始值物理合理（但不添加质量！）
+        #  确保初始值物理合理（但不添加质量！）
         # 只在初始条件不合理时警告，不强制修改
         if np.any(h_new < 0):
             warnings.warn(f"初始水深有负值: min={np.min(h_new):.6f}")
@@ -147,7 +147,7 @@ class PreissmannSolverFixed:
                 dx_vector = spsolve(J.tocsr(), -R)
             except Exception as e:
                 if self.verbose:
-                    print(f"⚠️ 线性求解失败 (iter {iteration}): {e}")
+                    print(f"️ 线性求解失败 (iter {iteration}): {e}")
                 # 使用当前解作为最佳估计
                 break
             
@@ -155,7 +155,7 @@ class PreissmannSolverFixed:
             dh = dx_vector[:n]
             dQ = dx_vector[n:]
             
-            # ✅ 信赖域约束（Trust Region）
+            #  信赖域约束（Trust Region）
             if self.use_trust_region:
                 # 计算步长范数
                 step_norm = np.sqrt(np.sum(dh**2) + np.sum(dQ**2))
@@ -173,7 +173,7 @@ class PreissmannSolverFixed:
             h_new_trial = h_new + dh
             Q_new_trial = Q_new + dQ
             
-            # ✅ 检查物理合理性（但不强制修改，用回溯）
+            #  检查物理合理性（但不强制修改，用回溯）
             if np.any(h_new_trial < 0):
                 # 回溯线搜索
                 alpha = 1.0
@@ -207,7 +207,7 @@ class PreissmannSolverFixed:
             if residual_norm < self.tolerance:
                 self.last_iterations = iteration + 1
                 if self.verbose:
-                    print(f"✅ 收敛于第{iteration+1}次迭代")
+                    print(f" 收敛于第{iteration+1}次迭代")
                 break
         else:
             # 达到最大迭代次数
@@ -236,7 +236,7 @@ class PreissmannSolverFixed:
         """
         构建完整的Jacobian矩阵和残差向量
         
-        ✅ 修复要点:
+         修复要点:
         1. 连续方程: 分别计算节点i和i+1，系数1/(2*dt)
         2. 动量方程: 包含新旧时刻对流项，系数1/(2*dt)
         3. Jacobian: 包含所有导数项（8×8块矩阵）
@@ -251,7 +251,7 @@ class PreissmannSolverFixed:
         # 遍历每个空间单元 [i, i+1]
         for i in range(n-1):
             # ========== 连续方程 ==========
-            # ✅ 正确形式: 分别计算节点i和i+1
+            #  正确形式: 分别计算节点i和i+1
             
             # 时间导数项: ∂A/∂t
             dA_dt_i = (h_new[i] - h_old[i]) * width / (2.0 * dt)
@@ -284,10 +284,10 @@ class PreissmannSolverFixed:
             Q_theta = theta * Q_mid_new + (1.0 - theta) * Q_mid_old
             A_theta = h_theta * width
             
-            # ✅ 1. 时间导数: ∂Q/∂t（正确系数）
+            #  1. 时间导数: ∂Q/∂t（正确系数）
             dQ_dt = (Q_mid_new - Q_mid_old) / dt
             
-            # ✅ 2. 对流项: ∂(Q²/A)/∂x（包含新旧时刻）
+            #  2. 对流项: ∂(Q²/A)/∂x（包含新旧时刻）
             # 新时刻
             A_new_i = max(h_new[i] * width, self.min_depth * width)
             A_new_i1 = max(h_new[i+1] * width, self.min_depth * width)
@@ -306,12 +306,12 @@ class PreissmannSolverFixed:
                 (1.0 - theta) * (Q2_A_old_i1 - Q2_A_old_i) / dx
             )
             
-            # ✅ 3. 压力项: gA∂h/∂x
+            #  3. 压力项: gA∂h/∂x
             dh_dx = (h_new[i+1] - h_new[i]) / dx * theta + \
                     (h_old[i+1] - h_old[i]) / dx * (1.0 - theta)
             pressure_term = g * A_theta * dh_dx
             
-            # ✅ 4. 源项: gA(S₀ - Sf)
+            #  4. 源项: gA(S₀ - Sf)
             # 计算摩阻坡度Sf
             V_theta = Q_theta / A_theta if A_theta > 1e-10 else 0.0
             P_wetted = width + 2.0 * h_theta
@@ -332,7 +332,7 @@ class PreissmannSolverFixed:
             
             # ========== 动量方程Jacobian（完整版）==========
             
-            # ✅ ∂R_momentum/∂h_i
+            #  ∂R_momentum/∂h_i
             # 包含: 对流项导数 + 压力项导数
             if h_new[i] > self.min_depth:
                 # 对流项: ∂(Q²/A)/∂h = -Q²/(A² * width)
@@ -346,14 +346,14 @@ class PreissmannSolverFixed:
                 
                 J[n+i, i] = dQ2A_dh_i + pressure_dh_i
             
-            # ✅ ∂R_momentum/∂h_{i+1}
+            #  ∂R_momentum/∂h_{i+1}
             if h_new[i+1] > self.min_depth:
                 dQ2A_dh_i1 = theta * Q_new[i+1]**2 / (A_new_i1**2 * width) / dx
                 pressure_dh_i1 = g * width * theta / dx
                 
                 J[n+i, i+1] = dQ2A_dh_i1 + pressure_dh_i1
             
-            # ✅ ∂R_momentum/∂Q_i
+            #  ∂R_momentum/∂Q_i
             # 包含: 时间导数 + 对流项导数
             dQ_dt_dQ_i = 0.5 / dt
             
@@ -373,7 +373,7 @@ class PreissmannSolverFixed:
             
             J[n+i, n+i] = dQ_dt_dQ_i + dQ2A_dQ_i + friction_dQ_i
             
-            # ✅ ∂R_momentum/∂Q_{i+1}
+            #  ∂R_momentum/∂Q_{i+1}
             dQ_dt_dQ_i1 = 0.5 / dt
             
             if h_new[i+1] > self.min_depth:
@@ -521,7 +521,7 @@ if __name__ == "__main__":
     
     print(f"\n最终结果:")
     print(f"  质量误差: {mass_error:.8f}%")
-    print(f"  预期: < 0.01% ✅" if abs(mass_error) < 0.01 else f"  预期: < 0.01% ❌")
+    print(f"  预期: < 0.01% " if abs(mass_error) < 0.01 else f"  预期: < 0.01% ")
     
     print("\n" + "="*80)
     print("修复版Preissmann求解器测试完成！")

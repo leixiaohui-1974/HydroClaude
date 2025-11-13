@@ -44,10 +44,10 @@ class TestRectangularSection(unittest.TestCase):
         """测试正常水深"""
         geom = self.section.compute_geometry(2.0)
 
-        # 面积 = 宽度 × 深度
+        # 面积 = 宽度 x 深度
         self.assertAlmostEqual(geom.area, 20.0, places=5)
 
-        # 湿周 = 宽度 + 2×深度
+        # 湿周 = 宽度 + 2x深度
         self.assertAlmostEqual(geom.perimeter, 14.0, places=5)
 
         # 水力半径 = 面积/湿周
@@ -84,7 +84,7 @@ class TestTrapezoidalSection(unittest.TestCase):
         expected_A = (8.0 + 1.5 * 2.0) * 2.0
         self.assertAlmostEqual(geom.area, expected_A, places=5)
 
-        # 湿周 = b + 2*h*sqrt(1 + m²)
+        # 湿周 = b + 2*h*sqrt(1 + m^2)
         expected_P = 8.0 + 2 * 2.0 * np.sqrt(1 + 1.5**2)
         self.assertAlmostEqual(geom.perimeter, expected_P, places=5)
 

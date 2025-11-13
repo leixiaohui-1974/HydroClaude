@@ -4,6 +4,14 @@
 生成HTML示例索引页面
 创建一个美观的Web界面浏览所有示例
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import sys
 from pathlib import Path
@@ -307,7 +315,7 @@ class HTMLIndexGenerator:
 </head>
 <body>
     <header>
-        <h1>🌊 HydroClaude 示例库</h1>
+        <h1> HydroClaude 示例库</h1>
         <p class="subtitle">水利仿真框架 - 31个精选示例</p>
 
         <div class="stats">
@@ -393,18 +401,18 @@ class HTMLIndexGenerator:
 
                 badges = ""
                 if info['has_readme']:
-                    badges += '<span class="badge badge-readme">📖 README</span>'
+                    badges += '<span class="badge badge-readme"> README</span>'
                 if info['has_gif']:
-                    badges += f'<span class="badge badge-gif">🎬 {info["gif_count"]} GIF</span>'
+                    badges += f'<span class="badge badge-gif"> {info["gif_count"]} GIF</span>'
                 if info['has_png']:
-                    badges += f'<span class="badge badge-png">📊 {info["png_count"]} PNG</span>'
+                    badges += f'<span class="badge badge-png"> {info["png_count"]} PNG</span>'
 
                 examples_html += f"""
                 <div class="example-card">
                     <div class="example-title">{info['title']}</div>
                     <div class="example-description">{info['description']}</div>
                     <div class="example-badges">{badges}</div>
-                    <a href="{example_name}/README.md" class="example-link">查看详情 →</a>
+                    <a href="{example_name}/README.md" class="example-link">查看详情 -></a>
                 </div>
                 """
 

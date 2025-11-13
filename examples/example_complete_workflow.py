@@ -52,7 +52,7 @@ def demo_basic_solving():
     print("场景配置:")
     print(f"  渠道长度: {length} m")
     print(f"  网格点数: {nx}")
-    print(f"  目标流量: {Q_target} m³/s")
+    print(f"  目标流量: {Q_target} m^3/s")
     print(f"  闸门数量: 3个")
     print()
 
@@ -93,10 +93,10 @@ def demo_basic_solving():
 
     print()
     print("求解结果:")
-    print(f"  收敛状态: {'✅ 成功' if info['converged'] else '❌ 失败'}")
+    print(f"  收敛状态: {' 成功' if info['converged'] else ' 失败'}")
     print(f"  迭代次数: {info['iterations']}")
     print(f"  水深范围: {h_sol.min():.4f} - {h_sol.max():.4f} m")
-    print(f"  流量范围: {Q_sol.min():.4f} - {Q_sol.max():.4f} m³/s")
+    print(f"  流量范围: {Q_sol.min():.4f} - {Q_sol.max():.4f} m^3/s")
     print()
 
     return system, h_sol, Q_sol
@@ -272,24 +272,16 @@ def main():
     print("  2. 结果可视化（水深、流速、能量线等）")
     print("  3. 性能基准测试（求解器对比）")
     print("  4. 参数敏感性分析（闸门开度影响）")
-    print()
-
-    input("按Enter开始...")
+    print()# input() disabled for automated testing
 
     # 演示1: 基本求解
-    system, h_sol, Q_sol = demo_basic_solving()
-
-    input("\n按Enter继续到可视化...")
+    system, h_sol, Q_sol = demo_basic_solving()# input() disabled for automated testing
 
     # 演示2: 可视化
-    demo_visualization(system, h_sol, Q_sol)
-
-    input("\n按Enter继续到基准测试...")
+    demo_visualization(system, h_sol, Q_sol)# input() disabled for automated testing
 
     # 演示3: 基准测试
-    demo_benchmark()
-
-    input("\n按Enter继续到敏感性分析...")
+    demo_benchmark()# input() disabled for automated testing
 
     # 演示4: 敏感性分析
     demo_sensitivity()

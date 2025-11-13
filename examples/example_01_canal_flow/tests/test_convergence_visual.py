@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 """
 检查数值方法的实际收敛性 - 可视化时间序列
 """
+import os
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
@@ -116,7 +118,7 @@ for idx, method in enumerate(methods):
     ax.plot(data['time'], data['Qd'], 'g-', linewidth=1.5, label='下游流量')
     ax.axvline(x=200, color='r', linestyle='--', alpha=0.5, label='阶跃时刻')
     ax.set_xlabel('时间 (s)', fontsize=11)
-    ax.set_ylabel('流量 (m³/s)', fontsize=11)
+    ax.set_ylabel('流量 (m^3/s)', fontsize=11)
     ax.set_title(f'{method_names[method]} - 下游流量', fontsize=12, fontweight='bold')
     ax.grid(True, alpha=0.3)
     ax.legend()
@@ -159,20 +161,20 @@ for method in methods:
     print(f"  范围: [{np.min(hu_last):.4f}, {np.max(hu_last):.4f}] m")
 
     print(f"\n下游流量 (最后100步):")
-    print(f"  均值: {np.mean(Qd_last):.4f} m³/s")
-    print(f"  标准差: {np.std(Qd_last):.4f} m³/s")
+    print(f"  均值: {np.mean(Qd_last):.4f} m^3/s")
+    print(f"  标准差: {np.std(Qd_last):.4f} m^3/s")
     print(f"  变异系数: {np.std(Qd_last)/np.mean(Qd_last)*100:.3f}%")
-    print(f"  范围: [{np.min(Qd_last):.4f}, {np.max(Qd_last):.4f}] m³/s")
+    print(f"  范围: [{np.min(Qd_last):.4f}, {np.max(Qd_last):.4f}] m^3/s")
 
     # 判断是否收敛
     hu_cv = np.std(hu_last)/np.mean(hu_last)*100
     Qd_cv = np.std(Qd_last)/np.mean(Qd_last)*100
 
     if hu_cv < 1.0 and Qd_cv < 1.0:
-        print(f"\n✅ 收敛良好 (变异系数 < 1%)")
+        print(f"\n 收敛良好 (变异系数 < 1%)")
     elif hu_cv < 5.0 and Qd_cv < 5.0:
-        print(f"\n⚠️  基本收敛 (变异系数 < 5%)")
+        print(f"\n  基本收敛 (变异系数 < 5%)")
     else:
-        print(f"\n❌ 未收敛或有明显振荡 (变异系数 >= 5%)")
+        print(f"\n 未收敛或有明显振荡 (变异系数 >= 5%)")
 
 print("\n" + "="*80)

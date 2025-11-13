@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例9: 管道水击RK4高精度求解（增强版）
 
@@ -14,6 +15,8 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from physics.pipe import Pipe
@@ -76,7 +79,7 @@ def example_pipe_rk4():
 
         if step % 50 == 0 or step == n_steps - 1:
             print(f"  步 {step+1}/{n_steps}: 时间={step*dt:.1f}s, "
-                  f"压力={state.pressure:.2f}m, 流量={state.flow:.3f}m³/s")
+                  f"压力={state.pressure:.2f}m, 流量={state.flow:.3f}m^3/s")
 
     print("-" * 70)
     print(f"仿真完成!")
@@ -102,8 +105,8 @@ def example_pipe_rk4():
     print(f"  压力上升率: {(pressure_rise/pressures[0]*100):.1f}%")
     print()
 
-    # Joukowsky公式理论压力上升: ΔP = ρ * a * ΔV / g
-    # 简化估算: ΔH ≈ a * ΔV / g
+    # Joukowsky公式理论压力上升: DeltaP = rho * a * DeltaV / g
+    # 简化估算: DeltaH ~= a * DeltaV / g
     delta_v = 5.0 - 0.5  # 流速变化（简化，实际需除以截面积）
     area = np.pi * (diameter/2)**2
     v_initial = 5.0 / area
@@ -137,7 +140,7 @@ def example_pipe_rk4():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (2) 流量时间历程
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -147,7 +150,7 @@ def example_pipe_rk4():
     ax.axhline(y=flows[0], color='gray', linestyle=':', linewidth=1.5,
                alpha=0.6, label='Initial Flow')
     ax.set_xlabel('Time (s)', fontsize=12)
-    ax.set_ylabel('Average Flow Rate (m³/s)', fontsize=12)
+    ax.set_ylabel('Average Flow Rate (m^3/s)', fontsize=12)
     ax.set_title('Water Hammer - Flow Rate Time History', fontsize=14, fontweight='bold')
     ax.legend(loc='best', fontsize=11, framealpha=0.9)
     ax.grid(True, alpha=0.3, linestyle='--')
@@ -156,7 +159,7 @@ def example_pipe_rk4():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (3) 压力空间分布（最终时刻）
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -173,14 +176,14 @@ def example_pipe_rk4():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (4) 流量空间分布（最终时刻）
     fig, ax = plt.subplots(figsize=(12, 6))
     ax.plot(x, spatial_flow[-1], 's-', linewidth=2.5, markersize=5,
             color='#2ECC71', markeredgecolor='black', markeredgewidth=0.5)
     ax.set_xlabel('Distance along Pipe (m)', fontsize=12)
-    ax.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+    ax.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
     ax.set_title(f'Flow Spatial Distribution (Final Time: {n_steps*dt:.1f}s)',
                 fontsize=14, fontweight='bold')
     ax.grid(True, alpha=0.3, linestyle='--')
@@ -189,7 +192,7 @@ def example_pipe_rk4():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (5) 综合四子图
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
@@ -209,7 +212,7 @@ def example_pipe_rk4():
     ax.plot(time, flows, 'g-', linewidth=2)
     ax.axvline(x=valve_close_time, color='r', linestyle='--', alpha=0.5)
     ax.set_xlabel('Time (s)', fontsize=11)
-    ax.set_ylabel('Flow (m³/s)', fontsize=11)
+    ax.set_ylabel('Flow (m^3/s)', fontsize=11)
     ax.set_title('Average Flow', fontsize=12)
     ax.grid(True, alpha=0.3)
 
@@ -225,7 +228,7 @@ def example_pipe_rk4():
     ax = axes[1, 1]
     ax.plot(x, spatial_flow[-1], 'g-', linewidth=2)
     ax.set_xlabel('Distance (m)', fontsize=11)
-    ax.set_ylabel('Flow (m³/s)', fontsize=11)
+    ax.set_ylabel('Flow (m^3/s)', fontsize=11)
     ax.set_title('Flow Distribution', fontsize=12)
     ax.grid(True, alpha=0.3)
 
@@ -234,7 +237,7 @@ def example_pipe_rk4():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (6) 压力波传播动画
     print("  生成压力波传播动画...")
@@ -273,7 +276,7 @@ def example_pipe_rk4():
         ax.plot(x, spatial_flow[frame], 's-', linewidth=2.5, markersize=5,
                 color='#2ECC71', markeredgecolor='black', markeredgewidth=0.5)
         ax.set_xlabel('Distance (m)', fontsize=11)
-        ax.set_ylabel('Flow Rate (m³/s)', fontsize=11)
+        ax.set_ylabel('Flow Rate (m^3/s)', fontsize=11)
         ax.set_title(f'Flow Distribution', fontsize=12)
         ax.grid(True, alpha=0.3)
         ax.set_xlim([x[0], x[-1]])
@@ -295,7 +298,7 @@ def example_pipe_rk4():
     anim.save(gif_path, writer='pillow', fps=10, dpi=100)
     plt.close(fig)
     generated_images.append(gif_path)
-    print(f"  ✓ 生成动画: {os.path.basename(gif_path)}")
+    print(f"   生成动画: {os.path.basename(gif_path)}")
     print()
 
     # ====== 5. 生成报告 ======
@@ -329,19 +332,19 @@ def example_pipe_rk4():
 流体流速急剧变化，导致管道内压力大幅波动的瞬变现象。
 
 **物理机制**:
-1. 阀门关闭 → 流速降低
-2. 动能转化为压能 → 压力升高
+1. 阀门关闭 -> 流速降低
+2. 动能转化为压能 -> 压力升高
 3. 压力波以波速a传播
 4. 波在边界反射形成振荡
 
 **Joukowsky公式** (理论压升):
 ```
-ΔH = (a/g) * ΔV
+DeltaH = (a/g) * DeltaV
 ```
 其中:
 - a: 压力波速 ({wave_speed} m/s)
-- ΔV: 流速变化
-- g: 重力加速度 (9.81 m/s²)
+- DeltaV: 流速变化
+- g: 重力加速度 (9.81 m/s^2)
 
 **RK4求解**:
 采用四阶Runge-Kutta方法求解偏微分方程，
@@ -355,7 +358,7 @@ def example_pipe_rk4():
             'heading': '压力响应分析',
             'content': f"""### 压力时间历程
 
-阀门在t={valve_close_time}s时刻关闭（流量从5.0降至0.5 m³/s），
+阀门在t={valve_close_time}s时刻关闭（流量从5.0降至0.5 m^3/s），
 引起典型的水击压力振荡。
 
 **关键观察**:
@@ -466,7 +469,7 @@ def example_pipe_rk4():
 - 管道需按此压力设计安全系数
 
 **防护措施**:
-1. **缓闭阀**: 延长关闭时间，减小ΔV
+1. **缓闭阀**: 延长关闭时间，减小DeltaV
 2. **调压塔**: 吸收压力波动
 3. **安全阀**: 释放过高压力
 4. **空气阀**: 防止负压
@@ -484,10 +487,10 @@ def example_pipe_rk4():
 仿真成功完成！
 
 **主要成果**:
-- ✓ 成功模拟了管道水击现象
-- ✓ 压力上升: {pressure_rise:.2f} m ({(pressure_rise/pressures[0]*100):.1f}%)
-- ✓ 与Joukowsky理论吻合良好 (比值: {(pressure_rise/joukowsky_rise):.2f})
-- ✓ RK4方法表现出高精度和稳定性
+-  成功模拟了管道水击现象
+-  压力上升: {pressure_rise:.2f} m ({(pressure_rise/pressures[0]*100):.1f}%)
+-  与Joukowsky理论吻合良好 (比值: {(pressure_rise/joukowsky_rise):.2f})
+-  RK4方法表现出高精度和稳定性
 
 **物理验证**:
 - **压力峰值**: 符合Joukowsky公式预测
@@ -496,7 +499,7 @@ def example_pipe_rk4():
 - **传播特性**: 波动传播、反射、叠加正确
 
 **数值方法**:
-- **RK4精度**: 四阶精度，误差O(Δt⁴)
+- **RK4精度**: 四阶精度，误差O(Deltat⁴)
 - **稳定性**: 表现良好，无数值振荡
 - **效率**: 适合工程应用
 
@@ -515,7 +518,7 @@ def example_pipe_rk4():
         filename='example_09_simulation_report.md'
     )
 
-    print(f"  ✓ 报告已生成: {os.path.basename(report_path)}")
+    print(f"   报告已生成: {os.path.basename(report_path)}")
     print()
 
     # ====== 6. 总结 ======

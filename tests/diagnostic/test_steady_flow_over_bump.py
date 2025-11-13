@@ -13,7 +13,13 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append('.')
 
-from solvers.hydrostatic_reconstruction_v3 import WellBalancedSolverV3, BoundaryType
+try:
+    from solvers.hydrostatic_reconstruction_v3 import WellBalancedSolverV3, BoundaryType
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def steady_flow_over_bump():
@@ -23,7 +29,7 @@ def steady_flow_over_bump():
     设置：
     - 渠道长度：10m
     - 底床：中间有凸起
-    - 入流：Q = 1.0 m³/s（固定）
+    - 入流：Q = 1.0 m^3/s（固定）
     - 出流：h = 0.5m（固定水深）
     """
     print("=" * 70)
@@ -57,7 +63,7 @@ def steady_flow_over_bump():
     print(f"  凸起位置：4-6 m")
 
     # 初始条件：近似稳态
-    Q_target = 1.0  # 目标流量 (m³/s)
+    Q_target = 1.0  # 目标流量 (m^3/s)
     h_downstream = 0.5  # 下游水深 (m)
 
     # 初始猜测：简单外推
@@ -65,14 +71,14 @@ def steady_flow_over_bump():
     # 在凸起处增加水深（能量守恒粗略估计）
     for i in range(n_cells):
         if z[i] > 0:
-            # 伯努利方程粗略估计：h + z + u²/2g ≈ const
+            # 伯努利方程粗略估计：h + z + u^2/2g ~= const
             h[i] = h_downstream + 0.5 * z[i]
 
     # 初始流量：均匀分布
     hu = Q_target / B * np.ones(n_cells)
 
     print(f"\n边界条件：")
-    print(f"  入流流量：Q = {Q_target} m³/s")
+    print(f"  入流流量：Q = {Q_target} m^3/s")
     print(f"  出流水深：h = {h_downstream} m")
 
     # 创建求解器
@@ -140,8 +146,8 @@ def steady_flow_over_bump():
     Q_error = abs(Q_mean - Q_target) / Q_target * 100
 
     print(f"  流量守恒：")
-    print(f"    目标流量：{Q_target:.4f} m³/s")
-    print(f"    实际流量：{Q_mean:.4f} ± {Q_std:.4f} m³/s")
+    print(f"    目标流量：{Q_target:.4f} m^3/s")
+    print(f"    实际流量：{Q_mean:.4f} +/- {Q_std:.4f} m^3/s")
     print(f"    误差：{Q_error:.2f}%")
 
     # 水位
@@ -172,7 +178,7 @@ def steady_flow_over_bump():
     ax.plot(x, h + z, 'b-', linewidth=2, label='水面')
     ax.plot(x, h + z, 'b.', markersize=3)
     ax.set_ylabel('高程 (m)')
-    ax.set_title(f'凸起上的稳态流（Q={Q_target} m³/s）')
+    ax.set_title(f'凸起上的稳态流（Q={Q_target} m^3/s）')
     ax.legend()
     ax.grid(True, alpha=0.3)
 
@@ -180,7 +186,7 @@ def steady_flow_over_bump():
     ax = axes[1]
     ax.plot(x, Q_array, 'r-', linewidth=2, label=f'流量（目标{Q_target}）')
     ax.axhline(Q_target, color='k', linestyle='--', label='目标流量')
-    ax.set_ylabel('流量 (m³/s)')
+    ax.set_ylabel('流量 (m^3/s)')
     ax.set_title(f'流量守恒（误差{Q_error:.2f}%）')
     ax.legend()
     ax.grid(True, alpha=0.3)
@@ -204,11 +210,11 @@ def steady_flow_over_bump():
     subcritical_ok = Fr.max() < 1.0  # 亚临界流
 
     print(f"\n测试结果：")
-    print(f"  流量守恒：{'✓ PASS' if mass_conservation_ok else '✗ FAIL'} ({Q_error:.2f}% < 5%)")
-    print(f"  亚临界流：{'✓ PASS' if subcritical_ok else '✗ FAIL'} (Fr_max={Fr.max():.3f} < 1)")
+    print(f"  流量守恒：{' PASS' if mass_conservation_ok else ' FAIL'} ({Q_error:.2f}% < 5%)")
+    print(f"  亚临界流：{' PASS' if subcritical_ok else ' FAIL'} (Fr_max={Fr.max():.3f} < 1)")
 
     overall_pass = mass_conservation_ok and subcritical_ok
-    print(f"\n总体结论：{'✓✓✓ 测试通过' if overall_pass else '✗✗✗ 测试失败'}")
+    print(f"\n总体结论：{' 测试通过' if overall_pass else ' 测试失败'}")
 
     print("=" * 70)
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 GIS水网空间数据集成案例
 
@@ -127,7 +128,7 @@ def example_spatial_analysis():
     adapter.create_polygon_layer('service_areas', service_areas, service_properties)
 
     print(f"\n服务区域已创建:")
-    print(f"  面积: 约 {(bounds[2]-bounds[0]) * (bounds[3]-bounds[1]) * 111 * 111:.2f} km²")
+    print(f"  面积: 约 {(bounds[2]-bounds[0]) * (bounds[3]-bounds[1]) * 111 * 111:.2f} km^2")
 
     return adapter
 

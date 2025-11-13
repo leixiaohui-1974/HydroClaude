@@ -3,6 +3,14 @@
 """
 动画生成工具模块 - 用于嵌入到示例脚本中
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import numpy as np
 import matplotlib
@@ -387,7 +395,7 @@ class AnimationGenerator:
 
         ax_edges.set_xlim(t[0], t[-1])
         ax_edges.set_xlabel('Time (s)', fontsize=11)
-        ax_edges.set_ylabel('Flow Rate (m³/s)', fontsize=11)
+        ax_edges.set_ylabel('Flow Rate (m^3/s)', fontsize=11)
         ax_edges.set_title('Edge Flows', fontsize=12, fontweight='bold')
         ax_edges.grid(True, alpha=0.3)
         ax_edges.legend(loc='best')

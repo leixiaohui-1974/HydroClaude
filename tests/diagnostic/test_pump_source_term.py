@@ -7,7 +7,13 @@ import sys
 import numpy as np
 sys.path.insert(0, '/workspace')
 
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import PumpStation
 
 print("=" * 80)
@@ -30,7 +36,7 @@ solver = HydrostaticCanalSolver(
 
 # 设置均匀流初始条件
 solver.h[:] = 2.0
-solver.hu[:] = 1.0  # Q=10 m³/s
+solver.hu[:] = 1.0  # Q=10 m^3/s
 
 pump_idx = np.argmin(np.abs(solver.x - pump_pos))
 print(f"\n泵站信息:")
@@ -50,7 +56,7 @@ F_mass, F_momentum, S_mass, S_momentum = solver.compute_fluxes_and_sources(
 
 print(f"\n源项检查:")
 print(f"  dx = {dx_test:.1f} m")
-print(f"  预期源项强度: S_pump = g * H / dx = {solver.g * 5.0 / dx_test:.4f} N/m³")
+print(f"  预期源项强度: S_pump = g * H / dx = {solver.g * 5.0 / dx_test:.4f} N/m^3")
 
 # 检查泵站附近的源项
 print(f"\n泵站附近的动量源项:")
@@ -71,10 +77,10 @@ for i in range(max(0, pump_idx-3), min(nx, pump_idx+4)):
 pump_source = S_momentum[pump_idx]
 print(f"\n源项诊断:")
 if abs(pump_source) > 1e-6:
-    print(f"  ✓ 泵站源项已添加: {pump_source:.6f} N/m³")
+    print(f"   泵站源项已添加: {pump_source:.6f} N/m^3")
     print(f"  源项占比: {abs(pump_source) / (abs(S_momentum).max() + 1e-10) * 100:.1f}%")
 else:
-    print(f"  ✗ 泵站源项为零或极小")
+    print(f"   泵站源项为零或极小")
     print(f"  可能原因:")
     print(f"    1. 泵站索引不在有效范围")
     print(f"    2. 泵站未被识别为运行状态")

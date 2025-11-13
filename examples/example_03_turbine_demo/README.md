@@ -25,6 +25,7 @@
 ## 脚本文件
 
 - `example_03_turbine_comparison.py`
+- `example_03_turbine_with_anim.py`
 
 ## 运行方法
 
@@ -37,11 +38,14 @@ PYTHONPATH=../.. python example_03_turbine_comparison.py
 
 ### 图表
 
-- 待生成
+- `outputs/figures/hill_chart.png`
+- `outputs/figures/turbine_comparison.png`
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_03_turbine_demo_transient.gif`
+
+![动画](outputs\animations\example_03_turbine_demo_transient.gif)
 
 ## 技术要点
 

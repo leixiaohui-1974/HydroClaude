@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例21: 灌区配水优化调度
 
@@ -20,6 +21,8 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from typing import Dict, List, Tuple
@@ -36,7 +39,7 @@ class CropField:
     field_id: str
     crop_type: str        # 作物类型
     area: float           # 面积 (公顷)
-    water_demand: float   # 需水量 (m³/公顷/天)
+    water_demand: float   # 需水量 (m^3/公顷/天)
     priority: int         # 优先级 (1-5)
     growth_stage: str     # 生长阶段
     deficit_tolerance: float  # 缺水容忍度 (0-1)
@@ -47,7 +50,7 @@ class Canal:
     """渠道数据类"""
     canal_id: str
     canal_type: str       # 'main', 'branch', 'lateral'
-    capacity: float       # 输水能力 (m³/s)
+    capacity: float       # 输水能力 (m^3/s)
     length: float         # 长度 (km)
     loss_rate: float      # 损失率
     upstream_canal: str = None
@@ -60,7 +63,7 @@ class IrrigationSchedule:
     schedule_id: str
     rotation_days: int    # 轮灌周期 (天)
     daily_hours: int      # 每天灌溉小时数
-    flow_rate: float      # 灌溉流量 (m³/s)
+    flow_rate: float      # 灌溉流量 (m^3/s)
 
 
 class IrrigationSystem:
@@ -68,7 +71,7 @@ class IrrigationSystem:
     灌区配水系统
 
     系统架构:
-    水库 → 总干渠 → 干渠 → 支渠 → 斗渠 → 田块
+    水库 -> 总干渠 -> 干渠 -> 支渠 -> 斗渠 -> 田块
     """
 
     def __init__(self):
@@ -91,24 +94,24 @@ class IrrigationSystem:
         print(f"  灌溉面积: {self.total_area:.0f} 公顷")
         print(f"  渠道总长: {sum(c.length for c in self.canals):.1f} km")
         print(f"  田块数: {len(self.crop_fields)}")
-        print(f"  总需水: {self.total_demand:.0f} m³/天")
+        print(f"  总需水: {self.total_demand:.0f} m^3/天")
 
     def _create_water_source(self):
         """创建水源水库"""
         # 使用简化的水库模型（不依赖Reservoir类）
         self.reservoir = {
             'id': 'irrigation_reservoir',
-            'capacity': 5000e4,      # 5000万m³
-            'current_storage': 3000e4,  # 当前3000万m³
+            'capacity': 5000e4,      # 5000万m^3
+            'current_storage': 3000e4,  # 当前3000万m^3
             'min_storage': 500e4,
-            'max_release': 50.0,     # 最大放水 50 m³/s
-            'ecological_flow': 5.0   # 生态流量 5 m³/s
+            'max_release': 50.0,     # 最大放水 50 m^3/s
+            'ecological_flow': 5.0   # 生态流量 5 m^3/s
         }
 
         print(f"\n水源水库:")
-        print(f"  库容: {self.reservoir['capacity']/1e4:.0f} 万m³")
-        print(f"  当前蓄水: {self.reservoir['current_storage']/1e4:.0f} 万m³")
-        print(f"  最大放水: {self.reservoir['max_release']:.1f} m³/s")
+        print(f"  库容: {self.reservoir['capacity']/1e4:.0f} 万m^3")
+        print(f"  当前蓄水: {self.reservoir['current_storage']/1e4:.0f} 万m^3")
+        print(f"  最大放水: {self.reservoir['max_release']:.1f} m^3/s")
 
     def _create_canal_network(self):
         """创建渠系网络"""
@@ -117,7 +120,7 @@ class IrrigationSystem:
             {
                 'id': 'main_canal',
                 'type': 'main',
-                'capacity': 40.0,   # 40 m³/s
+                'capacity': 40.0,   # 40 m^3/s
                 'length': 15.0,     # 15 km
                 'loss_rate': 0.05,  # 5%损失
                 'upstream': None,
@@ -171,7 +174,7 @@ class IrrigationSystem:
             self.canals.append(canal)
 
             print(f"  {config['id']}:")
-            print(f"    容量: {config['capacity']:.1f} m³/s")
+            print(f"    容量: {config['capacity']:.1f} m^3/s")
             print(f"    长度: {config['length']:.1f} km")
 
     def _create_crop_fields(self):
@@ -299,7 +302,7 @@ class IrrigationSystem:
 
             # 计算可供水量（考虑水库约束）
             max_daily_release = min(
-                self.reservoir['max_release'] * 86400,  # 转换为m³/天
+                self.reservoir['max_release'] * 86400,  # 转换为m^3/天
                 current_storage - self.reservoir['min_storage']
             )
 
@@ -365,7 +368,7 @@ class IrrigationSystem:
 
             # 记录结果
             results['day'].append(day)
-            results['reservoir_storage'].append(current_storage / 1e4)  # 转换为万m³
+            results['reservoir_storage'].append(current_storage / 1e4)  # 转换为万m^3
             results['reservoir_release'].append(actual_release / 1e4)
             results['total_water_supply'].append(sum(allocations.values()) / 1e4)
             results['total_water_demand'].append(total_demand / 1e4)
@@ -389,8 +392,8 @@ class IrrigationSystem:
         total_supply = sum(results['total_water_supply']) * 1e4
         total_demand = sum(results['total_water_demand']) * 1e4
 
-        print(f"  总供水量: {total_supply/1e4:.2f} 万m³")
-        print(f"  总需水量: {total_demand/1e4:.2f} 万m³")
+        print(f"  总供水量: {total_supply/1e4:.2f} 万m^3")
+        print(f"  总需水量: {total_demand/1e4:.2f} 万m^3")
         print(f"  供水率: {total_supply/total_demand*100:.1f}%" if total_demand > 0 else "  供水率: 100.0%")
         print(f"  平均满意度: {np.mean(results['satisfaction_rate']):.1f}%")
 
@@ -398,9 +401,9 @@ class IrrigationSystem:
         final_storage = results['reservoir_storage'][-1]
         initial_storage = self.reservoir['current_storage'] / 1e4
         print(f"\n  水库状态:")
-        print(f"    初始库容: {initial_storage:.0f} 万m³")
-        print(f"    最终库容: {final_storage:.0f} 万m³")
-        print(f"    消耗水量: {initial_storage - final_storage:.0f} 万m³")
+        print(f"    初始库容: {initial_storage:.0f} 万m^3")
+        print(f"    最终库容: {final_storage:.0f} 万m^3")
+        print(f"    消耗水量: {initial_storage - final_storage:.0f} 万m^3")
 
         # 各作物统计
         print(f"\n  各作物配水:")
@@ -420,7 +423,7 @@ class IrrigationSystem:
 
         for crop, stats in crop_stats.items():
             supply_rate = stats['supply'] / stats['demand'] * 100 if stats['demand'] > 0 else 100
-            print(f"    {crop}: {stats['supply']/1e4:.2f}/{stats['demand']/1e4:.2f} 万m³ ({supply_rate:.1f}%)")
+            print(f"    {crop}: {stats['supply']/1e4:.2f}/{stats['demand']/1e4:.2f} 万m^3 ({supply_rate:.1f}%)")
 
 
 def visualize_results(results, system):
@@ -437,7 +440,7 @@ def visualize_results(results, system):
     ax1.plot(days, results['reservoir_storage'], 'b-', linewidth=2)
     ax1.axhline(system.reservoir['min_storage']/1e4, color='r',
                linestyle='--', label='死库容', alpha=0.7)
-    ax1.set_ylabel('库容 (万m³)', fontsize=12)
+    ax1.set_ylabel('库容 (万m^3)', fontsize=12)
     ax1.set_title('水库库容变化', fontsize=14, fontweight='bold')
     ax1.legend(loc='best')
     ax1.grid(True, alpha=0.3)
@@ -449,7 +452,7 @@ def visualize_results(results, system):
     ax2.plot(days, results['total_water_supply'], 'b-',
             label='供水', linewidth=2)
     ax2.set_xlabel('天数', fontsize=12)
-    ax2.set_ylabel('水量 (万m³/天)', fontsize=12)
+    ax2.set_ylabel('水量 (万m^3/天)', fontsize=12)
     ax2.set_title('供需平衡', fontsize=14, fontweight='bold')
     ax2.legend(loc='best')
     ax2.grid(True, alpha=0.3)
@@ -483,12 +486,12 @@ def visualize_results(results, system):
         bottom += allocation
 
     ax4.set_xlabel('天数', fontsize=12)
-    ax4.set_ylabel('配水量 (万m³/天)', fontsize=12)
+    ax4.set_ylabel('配水量 (万m^3/天)', fontsize=12)
     ax4.set_title('各作物配水分配', fontsize=14, fontweight='bold')
     ax4.legend(loc='best')
     ax4.grid(True, alpha=0.3, axis='y')
 
-    plt.savefig('/home/user/HydroClaude/examples/example_21_irrigation_optimization/irrigation_optimization.png',
+    plt.savefig('examples/example_21_irrigation_optimization/irrigation_optimization.png',
                 dpi=150, bbox_inches='tight')
     print(f"图像已保存到: irrigation_optimization.png")
 
@@ -508,8 +511,8 @@ if __name__ == "__main__":
     print("=" * 80)
 
     print("\n关键成果:")
-    print("  ✓ 多作物轮灌制度")
-    print("  ✓ 优先级配水策略")
-    print("  ✓ 水量平衡优化")
-    print("  ✓ 缺水容忍度考虑")
-    print("  ✓ 高满意度配水")
+    print("   多作物轮灌制度")
+    print("   优先级配水策略")
+    print("   水量平衡优化")
+    print("   缺水容忍度考虑")
+    print("   高满意度配水")

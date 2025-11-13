@@ -1,0 +1,8 @@
+﻿python : D:\Users\lxh\miniconda3\python.exe: can't open file 'E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\web\\
+backend\\api_gateway\\final_perfect_test.py': [Errno 2] No such file or directory
+所在位置 C:\Users\lxh\AppData\Local\Temp\ps-script-52cc69c1-9707-4684-9027-2e1487e9cb40.ps1:97 字符: 1
++ python final_perfect_test.py 2>&1 | Tee-Object -Variable testOutput;  ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (D:\Users\lxh\mi...le or directory:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

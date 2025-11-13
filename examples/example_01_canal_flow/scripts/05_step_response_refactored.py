@@ -287,8 +287,8 @@ def run_step_response_comparison():
     n_steps = int(T_total / dt)
 
     # 边界条件设置
-    Q_initial = 8.0      # 初始上游流量 (m³/s)
-    Q_step = 10.0        # 阶跃后流量 (m³/s)
+    Q_initial = 8.0      # 初始上游流量 (m^3/s)
+    Q_step = 10.0        # 阶跃后流量 (m^3/s)
     t_step = 100.0       # 阶跃时刻 (s)
 
     # 下游水位（初始时根据初始流量计算）
@@ -301,8 +301,8 @@ def run_step_response_comparison():
     print(f"  Manning's n    = {n}")
 
     print(f"\nBoundary Conditions:")
-    print(f"  Upstream Flow (initial)  = {Q_initial} m³/s")
-    print(f"  Upstream Flow (step)     = {Q_step} m³/s  (at t = {t_step} s)")
+    print(f"  Upstream Flow (initial)  = {Q_initial} m^3/s")
+    print(f"  Upstream Flow (step)     = {Q_step} m^3/s  (at t = {t_step} s)")
     print(f"  Downstream Depth (init)  = {h_downstream_initial:.4f} m")
 
     print(f"\nNumerical Parameters:")
@@ -366,7 +366,7 @@ def run_step_response_comparison():
                 print(f"  Step {step+1}/{n_steps}: t={t:.1f}s, "
                       f"h_up={solver.h[idx_upstream]:.4f}m, "
                       f"h_down={solver.h[idx_downstream]:.4f}m, "
-                      f"Q_up={solver.Q[idx_upstream]:.4f}m³/s")
+                      f"Q_up={solver.Q[idx_upstream]:.4f}m^3/s")
 
         t_end = time.time()
         comp_time = t_end - t_start
@@ -410,7 +410,7 @@ def run_step_response_comparison():
     ax1.axhline(Q_initial, color='gray', linestyle=':', linewidth=1, alpha=0.5)
     ax1.axhline(Q_step, color='gray', linestyle=':', linewidth=1, alpha=0.5)
     ax1.set_xlabel('Time (s)', fontsize=12)
-    ax1.set_ylabel('Discharge (m³/s)', fontsize=12)
+    ax1.set_ylabel('Discharge (m^3/s)', fontsize=12)
     ax1.grid(True, alpha=0.3)
     ax1.legend(fontsize=11, loc='best')
     ax1.set_ylim([Q_initial - 0.5, Q_step + 0.5])
@@ -453,12 +453,12 @@ def run_step_response_comparison():
             ax.legend(fontsize=10, loc='best')
 
     fig.suptitle('Step Response Comparison: 3 Numerical Methods\n' +
-                f'(Q: {Q_initial} → {Q_step} m³/s at t = {t_step}s)',
+                f'(Q: {Q_initial} -> {Q_step} m^3/s at t = {t_step}s)',
                 fontsize=16, fontweight='bold', y=0.995)
 
     fig_path = helper.get_output_path('05_step_response_methods_comparison_refactored.png', subdir='figures')
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f"  ✓ Saved figure: {fig_path.name}")
+    print(f"   Saved figure: {fig_path.name}")
     plt.close()
 
     # 创建详细对比图（叠加显示）
@@ -472,7 +472,7 @@ def run_step_response_comparison():
                label=method, alpha=0.7)
     ax.axvline(t_step, color='red', linestyle='--', linewidth=1.5, alpha=0.6)
     ax.set_xlabel('Time (s)', fontsize=11)
-    ax.set_ylabel('Upstream Discharge (m³/s)', fontsize=11)
+    ax.set_ylabel('Upstream Discharge (m^3/s)', fontsize=11)
     ax.set_title('Upstream Discharge Response', fontsize=12, fontweight='bold')
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize=10)
@@ -527,7 +527,7 @@ def run_step_response_comparison():
     plt.tight_layout()
     fig_path2 = helper.get_output_path('05_step_response_detailed_refactored.png', subdir='figures')
     plt.savefig(fig_path2, dpi=150, bbox_inches='tight')
-    print(f"  ✓ Saved figure: {fig_path2.name}")
+    print(f"   Saved figure: {fig_path2.name}")
     plt.close()
 
     print(f"\n{'='*80}")

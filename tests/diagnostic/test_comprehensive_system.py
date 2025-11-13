@@ -22,7 +22,13 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.godunov_fvm_hllc import GodunvFVMHLLC
 from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
 from utils.canal_utils import compute_steady_uniform_flow, compute_critical_depth
@@ -58,7 +64,7 @@ def test_case(name, func):
             'metrics': metrics
         })
         
-        status = "✅ 通过" if success else "❌ 失败"
+        status = " 通过" if success else " 失败"
         print(f"\n结果: {status}")
         print(f"耗时: {t_elapsed:.2f}秒")
         if message:
@@ -67,7 +73,7 @@ def test_case(name, func):
         return result
         
     except Exception as e:
-        print(f"\n❌ 异常: {str(e)}")
+        print(f"\n 异常: {str(e)}")
         test_results.append({
             'name': name,
             'success': False,
@@ -376,7 +382,7 @@ test_case("计算效率", test_computational_efficiency)
 
 # ========== 测试总结 ==========
 print("\n" + "="*80)
-print("📊 测试总结")
+print(" 测试总结")
 print("="*80)
 
 total_tests = len(test_results)
@@ -384,8 +390,8 @@ passed_tests = sum([1 for r in test_results if r['success']])
 failed_tests = total_tests - passed_tests
 
 print(f"\n总测试数: {total_tests}")
-print(f"通过: {passed_tests} ✅")
-print(f"失败: {failed_tests} {'❌' if failed_tests > 0 else ''}")
+print(f"通过: {passed_tests} ")
+print(f"失败: {failed_tests} {'' if failed_tests > 0 else ''}")
 print(f"通过率: {passed_tests/total_tests*100:.1f}%")
 
 print(f"\n详细结果:")
@@ -393,13 +399,13 @@ print(f"{'序号':<6} {'测试项':<30} {'状态':<8} {'耗时(s)':<10} {'说明
 print("-"*90)
 
 for i, result in enumerate(test_results, 1):
-    status = "✅ 通过" if result['success'] else "❌ 失败"
+    status = " 通过" if result['success'] else " 失败"
     message = result['message'][:28] if result['message'] else ''
     print(f"{i:<6} {result['name']:<30} {status:<8} {result['time']:<10.2f} {message:<30}")
 
 # 关键指标汇总
 print(f"\n" + "="*80)
-print("🎯 关键性能指标")
+print(" 关键性能指标")
 print("="*80)
 
 # 提取关键指标
@@ -427,23 +433,23 @@ for result in test_results:
 
 # 最终评价
 print(f"\n" + "="*80)
-print("✅ 综合评价")
+print(" 综合评价")
 print("="*80)
 
 if passed_tests == total_tests:
-    print(f"\n🎉 所有测试通过！系统功能完整，性能优秀！")
-    print(f"✅ HydroClaude已准备好投入生产使用")
+    print(f"\n 所有测试通过！系统功能完整，性能优秀！")
+    print(f" HydroClaude已准备好投入生产使用")
 elif passed_tests >= total_tests * 0.8:
-    print(f"\n✅ 大部分测试通过！核心功能稳定")
-    print(f"⚠️ 部分功能需要优化")
+    print(f"\n 大部分测试通过！核心功能稳定")
+    print(f"️ 部分功能需要优化")
 else:
-    print(f"\n⚠️ 较多测试失败，需要检查")
+    print(f"\n️ 较多测试失败，需要检查")
 
 print(f"\n推荐用途:")
-print(f"  ✅ 单渠道稳态/非恒定流模拟")
-print(f"  ✅ Dam Break应急分析")
-print(f"  ✅ 参数敏感性研究")
-print(f"  ✅ 工程设计优化")
+print(f"   单渠道稳态/非恒定流模拟")
+print(f"   Dam Break应急分析")
+print(f"   参数敏感性研究")
+print(f"   工程设计优化")
 
 print(f"\n" + "="*80)
 print(f"🧪 综合系统测试完成！")

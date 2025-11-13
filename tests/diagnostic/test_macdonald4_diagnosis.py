@@ -7,8 +7,22 @@ MacDonald Test 4 (水跃) 诊断测试
 3. 分析为什么上游急流无法维持
 4. 探索可能的解决方案
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_hydraulic_jump_basic():
@@ -63,7 +77,7 @@ def test_hydraulic_jump_basic():
 
     print(f"\n初始条件:")
     print(f"  h范围: [{h_init[0]:.3f}, {h_init[-1]:.3f}] m")
-    print(f"  Q: {Q:.1f} m³/s (均匀)")
+    print(f"  Q: {Q:.1f} m^3/s (均匀)")
 
     solver.initialize(h_init, Q_init, bc_left, bc_right)
 
@@ -86,13 +100,13 @@ def test_hydraulic_jump_basic():
             Fr_left = u_left / np.sqrt(g * h_left)
             mass_error = abs(solver.get_mass_conservation_error())
 
-            status = "✓"
+            status = ""
             if Fr_left < 1.0:
-                status = "⚠️ Fr<1"
+                status = "️ Fr<1"
             if mass_error > 10.0:
-                status = "⚠️ 质量"
+                status = "️ 质量"
             if np.any(np.isnan(solver.h)):
-                status = "❌ NaN"
+                status = " NaN"
                 print(f"{step+1:<8} {solver.t:<10.2f} {'NaN':<10} {'NaN':<10} {'NaN':<10} {'NaN':<12} {status:<10}")
                 break
 
@@ -116,7 +130,7 @@ def test_hydraulic_jump_basic():
         print(f"  范围 [{np.min(h_final):.4f}, {np.max(h_final):.4f}]m")
 
         print(f"\nFroude数分布:")
-        print(f"  上游 Fr[0] = {Fr_final[0]:.4f} (目标: >1, 实际: {'急流✓' if Fr_final[0] > 1 else '缓流✗'})")
+        print(f"  上游 Fr[0] = {Fr_final[0]:.4f} (目标: >1, 实际: {'急流' if Fr_final[0] > 1 else '缓流'})")
         print(f"  下游 Fr[-1] = {Fr_final[-1]:.4f}")
         print(f"  平均 Fr_mean = {np.mean(Fr_final):.4f}")
         print(f"  急流区域: {np.sum(Fr_final > 1)} / {n_cells} 单元")
@@ -131,21 +145,21 @@ def test_hydraulic_jump_basic():
         print("="*80)
 
         if Fr_final[0] < 1.0:
-            print("❌ 问题确认：上游失去急流状态")
+            print(" 问题确认：上游失去急流状态")
             print(f"   期望：Fr[0] > 1.0")
             print(f"   实际：Fr[0] = {Fr_final[0]:.4f} < 1.0")
             print(f"   原因：下游高水位({h_downstream}m)回传，'淹没'上游")
         else:
-            print("✅ 上游保持急流状态")
+            print(" 上游保持急流状态")
 
         if mass_error > 10.0:
-            print(f"❌ 质量守恒较差：{mass_error:.2f}%")
+            print(f" 质量守恒较差：{mass_error:.2f}%")
         else:
-            print(f"✅ 质量守恒可接受：{mass_error:.2f}%")
+            print(f" 质量守恒可接受：{mass_error:.2f}%")
 
         return Fr_final[0] > 1.0 and mass_error < 10.0
     else:
-        print("❌ 模拟出现NaN")
+        print(" 模拟出现NaN")
         return False
 
 
@@ -233,16 +247,16 @@ def test_hydraulic_jump_with_preformed_jump():
             mass_error = abs(solver.get_mass_conservation_error())
             supercritical_cells = np.sum(Fr > 1)
 
-            status = "✓"
+            status = ""
             if Fr_left < 1.0:
-                status = "⚠️ Fr<1"
+                status = "️ Fr<1"
             if mass_error > 10.0:
-                status = "⚠️ 质量"
+                status = "️ 质量"
 
             print(f"{step+1:<8} {solver.t:<10.2f} {Fr_left:<10.4f} {mass_error:<12.2f} {supercritical_cells:<10} {status:<10}")
 
             if np.any(np.isnan(solver.h)):
-                print("❌ 出现NaN")
+                print(" 出现NaN")
                 break
 
     # 最终分析
@@ -252,7 +266,7 @@ def test_hydraulic_jump_with_preformed_jump():
         Fr_final = u_final / np.sqrt(g * h_final)
 
         print(f"\n最终状态:")
-        print(f"  上游Fr[0] = {Fr_final[0]:.4f} ({'急流✓' if Fr_final[0] > 1 else '缓流✗'})")
+        print(f"  上游Fr[0] = {Fr_final[0]:.4f} ({'急流' if Fr_final[0] > 1 else '缓流'})")
         print(f"  质量误差: {abs(solver.get_mass_conservation_error()):.2f}%")
         print(f"  急流区域: {np.sum(Fr_final > 1)}/{n_cells}单元")
 
@@ -275,12 +289,12 @@ if __name__ == "__main__":
     print("\n" + "="*80)
     print("诊断总结")
     print("="*80)
-    print(f"测试1（线性初始条件）: {'✅ 通过' if result1 else '❌ 失败'}")
-    print(f"测试2（预形成水跃）: {'✅ 通过' if result2 else '❌ 失败'}")
+    print(f"测试1（线性初始条件）: {' 通过' if result1 else ' 失败'}")
+    print(f"测试2（预形成水跃）: {' 通过' if result2 else ' 失败'}")
 
     if not result1 and not result2:
-        print("\n⚠️ 两种方法都失败，水跃问题需要更深入研究")
+        print("\n️ 两种方法都失败，水跃问题需要更深入研究")
     elif not result1 and result2:
-        print("\n✅ 预形成水跃可行！建议Test 4使用此初始条件")
+        print("\n 预形成水跃可行！建议Test 4使用此初始条件")
     elif result1:
-        print("\n✅ 基础配置可行！")
+        print("\n 基础配置可行！")

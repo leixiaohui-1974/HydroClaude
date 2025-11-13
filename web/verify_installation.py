@@ -39,15 +39,15 @@ def print_header(text: str):
 
 def print_success(text: str):
     """打印成功消息"""
-    print(f"{Colors.OKGREEN}✅ {text}{Colors.ENDC}")
+    print(f"{Colors.OKGREEN} {text}{Colors.ENDC}")
 
 def print_error(text: str):
     """打印错误消息"""
-    print(f"{Colors.FAIL}❌ {text}{Colors.ENDC}")
+    print(f"{Colors.FAIL} {text}{Colors.ENDC}")
 
 def print_warning(text: str):
     """打印警告消息"""
-    print(f"{Colors.WARNING}⚠️  {text}{Colors.ENDC}")
+    print(f"{Colors.WARNING}️  {text}{Colors.ENDC}")
 
 def print_info(text: str):
     """打印信息"""
@@ -350,7 +350,7 @@ def print_summary(results: dict):
     print("-" * 50)
 
     for name, result in results.items():
-        status = "✅ PASS" if result else "❌ FAIL"
+        status = " PASS" if result else " FAIL"
         print(f"{name:<30} {status}")
 
     print("-" * 50)
@@ -358,13 +358,13 @@ def print_summary(results: dict):
     print(f"{'通过率:':<30} {passed/total*100:.1f}%\n")
 
     if failed == 0:
-        print_success("🎉 所有验证通过！系统运行正常。")
+        print_success(" 所有验证通过！系统运行正常。")
         print_info("\n下一步:")
         print_info("  1. 访问 http://localhost:5173 使用Web界面")
         print_info("  2. 阅读 PARAMETER_SELECTION_GUIDE.md 学习参数选择")
         print_info("  3. 尝试配置模板: config_templates/")
     else:
-        print_error(f"⚠️  {failed} 项验证失败，请检查上述错误。")
+        print_error(f"️  {failed} 项验证失败，请检查上述错误。")
         print_info("\n常见问题:")
         print_info("  1. 服务未启动 → 运行 start_server.sh")
         print_info("  2. 缺少包 → pip install -r requirements.txt")

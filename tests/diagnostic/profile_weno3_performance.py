@@ -18,7 +18,13 @@ import cProfile
 import pstats
 import io
 import numpy as np
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def run_weno3_benchmark():
@@ -38,14 +44,14 @@ def run_weno3_benchmark():
     n = 0.025        # Manning系数
     n_cells = 500    # 网格单元数（中等规模）
 
-    Q = 50.0         # 流量 (m³/s)
+    Q = 50.0         # 流量 (m^3/s)
     h_init = 2.0     # 初始水深 (m)
 
     print(f"\n测试参数:")
     print(f"  网格单元: {n_cells}")
     print(f"  渠道长度: {L} m")
     print(f"  dx: {L/n_cells:.2f} m")
-    print(f"  流量: {Q} m³/s")
+    print(f"  流量: {Q} m^3/s")
     print(f"  初始水深: {h_init} m")
 
     # 创建求解器
@@ -189,11 +195,11 @@ def analyze_bottlenecks(profiler):
     for func, time in sorted(bottlenecks.items(), key=lambda x: x[1], reverse=True):
         if time > 0:
             percentage = (time / total_time * 100) if total_time > 0 else 0
-            priority = "🔴 高" if percentage > 30 else "🟡 中" if percentage > 10 else "🟢 低"
+            priority = " 高" if percentage > 30 else "🟡 中" if percentage > 10 else "🟢 低"
             print(f"{func:<30} {time:<15.3f} {priority:<15} ({percentage:.1f}%)")
 
     print("\n优化建议:")
-    print("1. 🔴 WENO3重构 - 考虑NumPy向量化，减少Python循环")
+    print("1.  WENO3重构 - 考虑NumPy向量化，减少Python循环")
     print("2. 🟡 Ghost cells扩展 - 使用数组切片操作")
     print("3. 🟡 HLL通量计算 - 批量计算，避免逐个界面循环")
     print("4. 🟢 整体架构 - 考虑Numba JIT编译关键函数")
@@ -204,5 +210,5 @@ if __name__ == '__main__':
     analyze_bottlenecks(profiler)
 
     print("\n" + "="*80)
-    print("✅ 性能分析完成")
+    print(" 性能分析完成")
     print("="*80)

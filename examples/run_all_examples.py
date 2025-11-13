@@ -6,6 +6,14 @@
 - 生成图表、GIF动画
 - 创建README文档
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import os
 import sys
@@ -203,7 +211,7 @@ class ExampleRunner:
             }
 
         except subprocess.TimeoutExpired:
-            print(f"  ⚠️  超时（>300秒）")
+            print(f"    超时（>300秒）")
             return {
                 'success': False,
                 'elapsed_time': 300,
@@ -212,7 +220,7 @@ class ExampleRunner:
                 'returncode': -1
             }
         except Exception as e:
-            print(f"  ✗ 错误: {e}")
+            print(f"   错误: {e}")
             return {
                 'success': False,
                 'elapsed_time': time.time() - start_time,
@@ -255,7 +263,7 @@ class ExampleRunner:
                                and not f.name.startswith('test_')]
 
             if not core_scripts:
-                print(f"  ⚠️  未找到可运行脚本")
+                print(f"    未找到可运行脚本")
                 continue
 
             # 只运行第一个核心脚本（避免耗时过长）
@@ -263,10 +271,10 @@ class ExampleRunner:
             result = self.run_example(example_dir, script)
 
             if result['success']:
-                print(f"  ✓ 成功 ({result['elapsed_time']:.2f}秒)")
+                print(f"   成功 ({result['elapsed_time']:.2f}秒)")
                 success_count += 1
             else:
-                print(f"  ✗ 失败 (返回码: {result['returncode']})")
+                print(f"   失败 (返回码: {result['returncode']})")
                 if result['stderr']:
                     print(f"     错误: {result['stderr'][:200]}")
 

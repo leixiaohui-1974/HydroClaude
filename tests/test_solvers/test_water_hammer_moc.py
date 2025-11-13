@@ -15,7 +15,13 @@ import os
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from solvers.water_hammer_moc_solver import WaterHammerMOCSolver, WaterHammerBoundary
+try:
+    from solvers.water_hammer_moc_solver import WaterHammerMOCSolver, WaterHammerBoundary
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 class TestWaterHammerMOCSolver:
@@ -35,7 +41,7 @@ class TestWaterHammerMOCSolver:
         assert solver.f == 0.02
         assert solver.a == 1000.0
         assert abs(solver.A - np.pi * 0.5**2 / 4.0) < 1e-10
-        print("✓ 求解器初始化测试通过")
+        print(" 求解器初始化测试通过")
 
     def test_wave_speed_calculation(self):
         """测试波速计算"""
@@ -55,7 +61,7 @@ class TestWaterHammerMOCSolver:
 
         # 验证波速在合理范围内 (800-1400 m/s for steel pipes)
         assert 800 < a < 1400
-        print(f"✓ 波速计算测试通过: a = {a:.1f} m/s")
+        print(f" 波速计算测试通过: a = {a:.1f} m/s")
 
     def test_wave_speed_formula(self):
         """测试波速计算公式"""
@@ -74,7 +80,7 @@ class TestWaterHammerMOCSolver:
 
         # 弹性管中波速应低于刚性管
         assert a_elastic < a_rigid
-        print(f"✓ 波速公式验证通过: a_rigid={a_rigid:.1f}, a_elastic={a_elastic:.1f}")
+        print(f" 波速公式验证通过: a_rigid={a_rigid:.1f}, a_elastic={a_elastic:.1f}")
 
     def test_grid_setup(self):
         """测试网格设置"""
@@ -98,7 +104,7 @@ class TestWaterHammerMOCSolver:
         expected_R = solver.f * solver.dt / (2.0 * solver.D * solver.A)
         assert abs(solver.R - expected_R) < 1e-10
 
-        print("✓ 网格设置测试通过")
+        print(" 网格设置测试通过")
 
     def test_cfl_condition_violation(self):
         """测试CFL条件违反检测"""
@@ -113,7 +119,7 @@ class TestWaterHammerMOCSolver:
         with pytest.raises(ValueError, match="违反CFL条件"):
             solver.set_grid(nx=10, cfl=2.0)
 
-        print("✓ CFL条件违反检测测试通过")
+        print(" CFL条件违反检测测试通过")
 
     def test_joukowsky_formula(self):
         """测试Joukowsky公式"""
@@ -131,7 +137,7 @@ class TestWaterHammerMOCSolver:
         expected = 1000.0 * 2.0 / 9.81
         assert abs(delta_H - expected) < 0.1
 
-        print(f"✓ Joukowsky公式测试通过: ΔH = {delta_H:.2f} m")
+        print(f" Joukowsky公式测试通过: ΔH = {delta_H:.2f} m")
 
     def test_critical_closure_time(self):
         """测试临界关闭时间计算"""
@@ -148,7 +154,7 @@ class TestWaterHammerMOCSolver:
         expected = 2.0 * 1000.0 / 1000.0
         assert abs(T_critical - expected) < 1e-10
 
-        print(f"✓ 临界关闭时间测试通过: T_critical = {T_critical:.3f} s")
+        print(f" 临界关闭时间测试通过: T_critical = {T_critical:.3f} s")
 
     def test_max_pressure_estimate(self):
         """测试最大压力估算"""
@@ -171,7 +177,7 @@ class TestWaterHammerMOCSolver:
         delta_H_indirect = solver.max_pressure_estimate(V0, closure_time=5.0)
         assert delta_H_indirect < delta_H_direct  # 缓慢关闭压升更小
 
-        print("✓ 最大压力估算测试通过")
+        print(" 最大压力估算测试通过")
 
     def test_steady_state_solution(self):
         """测试稳态解（无扰动）"""
@@ -203,7 +209,7 @@ class TestWaterHammerMOCSolver:
         Q_final = result['Q'][-1, :]
         assert np.all(np.abs(Q_final - Q0) < 0.05)  # 流量应保持稳定
 
-        print("✓ 稳态解测试通过")
+        print(" 稳态解测试通过")
 
     def test_dead_end_boundary(self):
         """测试死端边界条件"""
@@ -232,7 +238,7 @@ class TestWaterHammerMOCSolver:
         Q_down_final = result['Q'][-1, -1]
         assert abs(Q_down_final) < 1e-2
 
-        print("✓ 死端边界条件测试通过")
+        print(" 死端边界条件测试通过")
 
     def test_valve_closure(self):
         """测试阀门关闭模拟"""
@@ -272,7 +278,7 @@ class TestWaterHammerMOCSolver:
         Q_final = result['Q'][-1, -1]
         assert abs(Q_final) < 0.01
 
-        print(f"✓ 阀门关闭模拟测试通过: H_max={H_max:.2f}m, ΔH_theory={delta_H_joukowsky:.2f}m")
+        print(f" 阀门关闭模拟测试通过: H_max={H_max:.2f}m, ΔH_theory={delta_H_joukowsky:.2f}m")
 
     def test_output_fields(self):
         """测试输出字段完整性"""
@@ -320,7 +326,7 @@ class TestWaterHammerMOCSolver:
         p_expected = 1000.0 * solver.g * result['H']
         assert np.allclose(result['p'], p_expected)
 
-        print("✓ 输出字段完整性测试通过")
+        print(" 输出字段完整性测试通过")
 
 
 class TestWaterHammerBoundary:
@@ -331,7 +337,7 @@ class TestWaterHammerBoundary:
         bc = WaterHammerBoundary('reservoir', value=100.0)
         assert bc.bc_type == 'reservoir'
         assert bc.value == 100.0
-        print("✓ 水库边界测试通过")
+        print(" 水库边界测试通过")
 
     def test_valve_boundary(self):
         """测试阀门边界"""
@@ -342,13 +348,13 @@ class TestWaterHammerBoundary:
         assert bc.closure_function(0) == 1.0
         assert bc.closure_function(5.0) == 0.0
         assert bc.closure_function(2.5) == 0.5
-        print("✓ 阀门边界测试通过")
+        print(" 阀门边界测试通过")
 
     def test_dead_end_boundary(self):
         """测试死端边界"""
         bc = WaterHammerBoundary('dead_end')
         assert bc.bc_type == 'dead_end'
-        print("✓ 死端边界测试通过")
+        print(" 死端边界测试通过")
 
 
 if __name__ == '__main__':

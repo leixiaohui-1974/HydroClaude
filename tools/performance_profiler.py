@@ -177,11 +177,11 @@ class PerformanceProfiler:
         print(f"加速比: {speedup:.2f}x")
 
         if speedup > 2.0:
-            print(f"✓ Numba 加速显著 ({speedup:.1f}x)，强烈推荐启用!")
+            print(f" Numba 加速显著 ({speedup:.1f}x)，强烈推荐启用!")
         elif speedup > 1.2:
-            print(f"✓ Numba 加速有效 ({speedup:.1f}x)，建议启用")
+            print(f" Numba 加速有效 ({speedup:.1f}x)，建议启用")
         else:
-            print(f"⚠ Numba 加速不明显 ({speedup:.1f}x)")
+            print(f" Numba 加速不明显 ({speedup:.1f}x)")
 
         self.results['numba_comparison'] = {
             'without_numba': results['without_numba'],
@@ -419,7 +419,7 @@ class PerformanceProfiler:
         if 'numba_comparison' in self.results:
             speedup = self.results['numba_comparison']['speedup']
             if speedup > 2.0:
-                recommendations += f"✓ Enable Numba: {speedup:.1f}x speedup!\n\n"
+                recommendations += f" Enable Numba: {speedup:.1f}x speedup!\n\n"
             else:
                 recommendations += f"• Numba speedup: {speedup:.1f}x (moderate)\n\n"
 
@@ -444,7 +444,7 @@ class PerformanceProfiler:
 
         plt.suptitle('HydroClaude Performance Analysis', fontsize=16, fontweight='bold')
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
-        print(f"✓ 图表已保存: {output_file}")
+        print(f" 图表已保存: {output_file}")
         plt.close()
 
 

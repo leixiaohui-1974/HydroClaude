@@ -4,6 +4,14 @@ Manning摩阻项诊断测试
 目标：定位MacDonald Test 5中出现的NaN问题
 策略：从简单到复杂逐步测试
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import pytest
 import numpy as np
@@ -131,7 +139,7 @@ class TestManningFriction:
             assert not np.any(np.isnan(Q_final)), \
                 f"流量出现NaN！位置：{np.where(np.isnan(Q_final))}"
 
-            print("✅ 短时间测试通过：无NaN")
+            print(" 短时间测试通过：无NaN")
 
         finally:
             ic_file_path.unlink(missing_ok=True)
@@ -247,7 +255,7 @@ class TestManningFriction:
             deviation = abs(np.mean(h_final) - h_n) / h_n * 100
             assert deviation < 5.0, f"未收敛到正常水深：偏差{deviation:.2f}%"
 
-            print("✅ 一阶格式测试通过：收敛到正常水深")
+            print(" 一阶格式测试通过：收敛到正常水深")
 
         finally:
             ic_file_path.unlink(missing_ok=True)
@@ -356,7 +364,7 @@ class TestManningFriction:
 
             assert not np.any(np.isnan(h_final)), "水深出现NaN"
 
-            print("✅ 无Numba测试通过")
+            print(" 无Numba测试通过")
 
         finally:
             ic_file_path.unlink(missing_ok=True)

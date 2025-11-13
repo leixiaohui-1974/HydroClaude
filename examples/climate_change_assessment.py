@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 气候变化对河流冰-水质的影响评估
 
 案例描述:
 评估未来气候变化情景下，冬季河流冰情和水质的响应特征。
-比较基准情景、温和增温（+2°C）和极端增温（+4°C）三种情景。
+比较基准情景、温和增温（+2 degC）和极端增温（+4 degC）三种情景。
 
 应用价值:
 - 气候变化风险评估
@@ -50,8 +51,8 @@ class ClimateChangeAssessment:
         # 场景定义
         self.scenarios = {
             'baseline': {'name': '基准情景', 'temp_offset': 0.0, 'color': 'blue'},
-            'moderate': {'name': '温和增温 (+2°C)', 'temp_offset': 2.0, 'color': 'orange'},
-            'extreme': {'name': '极端增温 (+4°C)', 'temp_offset': 4.0, 'color': 'red'}
+            'moderate': {'name': '温和增温 (+2 degC)', 'temp_offset': 2.0, 'color': 'orange'},
+            'extreme': {'name': '极端增温 (+4 degC)', 'temp_offset': 4.0, 'color': 'red'}
         }
 
         # 存储结果
@@ -66,7 +67,7 @@ class ClimateChangeAssessment:
         scenario_name : str
             情景名称
         temp_offset : float
-            温度偏移 (°C)
+            温度偏移 ( degC)
         n_days : int
             模拟天数
 
@@ -75,7 +76,7 @@ class ClimateChangeAssessment:
         results : dict
             模拟结果
         """
-        print(f"\n运行情景: {scenario_name} (温度偏移: +{temp_offset:.1f}°C)")
+        print(f"\n运行情景: {scenario_name} (温度偏移: +{temp_offset:.1f} degC)")
         print("=" * 70)
 
         # 初始化求解器
@@ -184,8 +185,8 @@ class ClimateChangeAssessment:
 
                 if step % (24 * 10) == 0:
                     print(f"  第 {int(time_days):3d} 天: "
-                          f"气温={T_air:6.2f}°C, "
-                          f"水温={T.mean():5.2f}°C, "
+                          f"气温={T_air:6.2f} degC, "
+                          f"水温={T.mean():5.2f} degC, "
                           f"冰厚={ice_state['h_ice'].mean()*100:5.2f}cm, "
                           f"DO={do_solver.DO.mean():5.2f}mg/L")
 
@@ -231,48 +232,48 @@ class ClimateChangeAssessment:
         print("-" * 70)
         print(f"  情景              | 结冰天数 | 最大冰厚 (cm) | 平均冰盖率")
         print(f"  基准情景          | {baseline['ice_on_days']:8d} | {baseline['ice_thickness'].max()*100:13.2f} | {baseline['ice_cover_fraction'].mean():10.2%}")
-        print(f"  温和增温 (+2°C)   | {moderate['ice_on_days']:8d} | {moderate['ice_thickness'].max()*100:13.2f} | {moderate['ice_cover_fraction'].mean():10.2%}")
-        print(f"  极端增温 (+4°C)   | {extreme['ice_on_days']:8d} | {extreme['ice_thickness'].max()*100:13.2f} | {extreme['ice_cover_fraction'].mean():10.2%}")
+        print(f"  温和增温 (+2 degC)   | {moderate['ice_on_days']:8d} | {moderate['ice_thickness'].max()*100:13.2f} | {moderate['ice_cover_fraction'].mean():10.2%}")
+        print(f"  极端增温 (+4 degC)   | {extreme['ice_on_days']:8d} | {extreme['ice_thickness'].max()*100:13.2f} | {extreme['ice_cover_fraction'].mean():10.2%}")
 
         ice_day_reduction_moderate = (baseline['ice_on_days'] - moderate['ice_on_days']) / baseline['ice_on_days'] * 100
         ice_day_reduction_extreme = (baseline['ice_on_days'] - extreme['ice_on_days']) / baseline['ice_on_days'] * 100
 
-        print(f"\n  → 温和增温情景: 结冰天数减少 {ice_day_reduction_moderate:.1f}%")
-        print(f"  → 极端增温情景: 结冰天数减少 {ice_day_reduction_extreme:.1f}%")
+        print(f"\n  -> 温和增温情景: 结冰天数减少 {ice_day_reduction_moderate:.1f}%")
+        print(f"  -> 极端增温情景: 结冰天数减少 {ice_day_reduction_extreme:.1f}%")
 
         print("\n2. 水温变化:")
         print("-" * 70)
-        print(f"  情景              | 平均水温 (°C) | 最低水温 (°C) | 最高水温 (°C)")
+        print(f"  情景              | 平均水温 ( degC) | 最低水温 ( degC) | 最高水温 ( degC)")
         print(f"  基准情景          | {baseline['water_temp'].mean():13.2f} | {baseline['water_temp'].min():13.2f} | {baseline['water_temp'].max():13.2f}")
-        print(f"  温和增温 (+2°C)   | {moderate['water_temp'].mean():13.2f} | {moderate['water_temp'].min():13.2f} | {moderate['water_temp'].max():13.2f}")
-        print(f"  极端增温 (+4°C)   | {extreme['water_temp'].mean():13.2f} | {extreme['water_temp'].min():13.2f} | {extreme['water_temp'].max():13.2f}")
+        print(f"  温和增温 (+2 degC)   | {moderate['water_temp'].mean():13.2f} | {moderate['water_temp'].min():13.2f} | {moderate['water_temp'].max():13.2f}")
+        print(f"  极端增温 (+4 degC)   | {extreme['water_temp'].mean():13.2f} | {extreme['water_temp'].min():13.2f} | {extreme['water_temp'].max():13.2f}")
 
         print("\n3. 溶解氧状况:")
         print("-" * 70)
         print(f"  情景              | 平均DO (mg/L) | 最低DO (mg/L) | 低氧天数 (<5mg/L)")
         print(f"  基准情景          | {baseline['DO'].mean():13.2f} | {baseline['DO'].min():13.2f} | {baseline['low_DO_days']:17d}")
-        print(f"  温和增温 (+2°C)   | {moderate['DO'].mean():13.2f} | {moderate['DO'].min():13.2f} | {moderate['low_DO_days']:17d}")
-        print(f"  极端增温 (+4°C)   | {extreme['DO'].mean():13.2f} | {extreme['DO'].min():13.2f} | {extreme['low_DO_days']:17d}")
+        print(f"  温和增温 (+2 degC)   | {moderate['DO'].mean():13.2f} | {moderate['DO'].min():13.2f} | {moderate['low_DO_days']:17d}")
+        print(f"  极端增温 (+4 degC)   | {extreme['DO'].mean():13.2f} | {extreme['DO'].min():13.2f} | {extreme['low_DO_days']:17d}")
 
         print("\n4. 营养盐和藻类:")
         print("-" * 70)
-        print(f"  情景              | 平均TN (mg/L) | 平均Chla (μg/L) | 高营养盐天数")
+        print(f"  情景              | 平均TN (mg/L) | 平均Chla (mug/L) | 高营养盐天数")
         print(f"  基准情景          | {baseline['TN'].mean():13.2f} | {baseline['Chla'].mean():15.2f} | {baseline['high_nutrient_days']:16d}")
-        print(f"  温和增温 (+2°C)   | {moderate['TN'].mean():13.2f} | {moderate['Chla'].mean():15.2f} | {moderate['high_nutrient_days']:16d}")
-        print(f"  极端增温 (+4°C)   | {extreme['TN'].mean():13.2f} | {extreme['Chla'].mean():15.2f} | {extreme['high_nutrient_days']:16d}")
+        print(f"  温和增温 (+2 degC)   | {moderate['TN'].mean():13.2f} | {moderate['Chla'].mean():15.2f} | {moderate['high_nutrient_days']:16d}")
+        print(f"  极端增温 (+4 degC)   | {extreme['TN'].mean():13.2f} | {extreme['Chla'].mean():15.2f} | {extreme['high_nutrient_days']:16d}")
 
         chla_increase_moderate = (moderate['Chla'].mean() - baseline['Chla'].mean()) / baseline['Chla'].mean() * 100
         chla_increase_extreme = (extreme['Chla'].mean() - baseline['Chla'].mean()) / baseline['Chla'].mean() * 100
 
-        print(f"\n  → 温和增温情景: 叶绿素增加 {chla_increase_moderate:.1f}%")
-        print(f"  → 极端增温情景: 叶绿素增加 {chla_increase_extreme:.1f}%")
+        print(f"\n  -> 温和增温情景: 叶绿素增加 {chla_increase_moderate:.1f}%")
+        print(f"  -> 极端增温情景: 叶绿素增加 {chla_increase_extreme:.1f}%")
 
         print("\n5. 主要结论:")
         print("-" * 70)
-        print("  ✓ 气候变暖将显著缩短结冰期，降低冰盖厚度")
-        print("  ✓ 水温升高导致DO饱和度下降，但生物活性增强")
-        print("  ✓ 藻类生长增强，富营养化风险增加")
-        print("  ✓ 极端增温情景下生态风险显著高于温和情景")
+        print("   气候变暖将显著缩短结冰期，降低冰盖厚度")
+        print("   水温升高导致DO饱和度下降，但生物活性增强")
+        print("   藻类生长增强，富营养化风险增加")
+        print("   极端增温情景下生态风险显著高于温和情景")
 
     def plot_results(self, output_file='climate_change_assessment.png'):
         """绘制结果对比图"""
@@ -292,7 +293,7 @@ class ClimateChangeAssessment:
                     linestyle='-', color=scenario_info['color'], linewidth=2,
                     label=f"{scenario_info['name']} (水温)")
         ax1.set_xlabel('时间 (天)')
-        ax1.set_ylabel('温度 (°C)')
+        ax1.set_ylabel('温度 ( degC)')
         ax1.legend(fontsize=8, ncol=2)
         ax1.grid(True, alpha=0.3)
         ax1.set_title('气温和水温对比')
@@ -345,7 +346,7 @@ class ClimateChangeAssessment:
                     color=scenario_info['color'], linewidth=2,
                     label=scenario_info['name'])
         ax5.set_xlabel('时间 (天)')
-        ax5.set_ylabel('叶绿素 a (μg/L)')
+        ax5.set_ylabel('叶绿素 a (mug/L)')
         ax5.legend()
         ax5.grid(True, alpha=0.3)
         ax5.set_title('叶绿素 a 对比')
@@ -393,9 +394,9 @@ class ClimateChangeAssessment:
 
         ax6.plot(angles, baseline_values, 'o-', linewidth=2, color='blue', label='基准')
         ax6.fill(angles, baseline_values, alpha=0.15, color='blue')
-        ax6.plot(angles, moderate_values, 'o-', linewidth=2, color='orange', label='+2°C')
+        ax6.plot(angles, moderate_values, 'o-', linewidth=2, color='orange', label='+2 degC')
         ax6.fill(angles, moderate_values, alpha=0.15, color='orange')
-        ax6.plot(angles, extreme_values, 'o-', linewidth=2, color='red', label='+4°C')
+        ax6.plot(angles, extreme_values, 'o-', linewidth=2, color='red', label='+4 degC')
         ax6.fill(angles, extreme_values, alpha=0.15, color='red')
 
         ax6.set_xticks(angles[:-1])
@@ -408,7 +409,7 @@ class ClimateChangeAssessment:
         plt.suptitle('气候变化对河流冰-水质的影响评估', fontsize=16, fontweight='bold')
 
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
-        print(f"✓ 图表已保存: {output_file}")
+        print(f" 图表已保存: {output_file}")
 
         plt.close()
 

@@ -70,7 +70,7 @@ def create_fire_protection_network():
 
     # 屋顶消防水箱（18m标高，水深3m）
     # 根据《消防给水及消火栓系统技术规范》GB50974-2014
-    # 高层建筑消防水箱设置高度应满足最不利点消火栓静压≥0.07MPa（7m）
+    # 高层建筑消防水箱设置高度应满足最不利点消火栓静压>=0.07MPa（7m）
     water_tank = Reservoir(
         node_id='Tank',
         elevation=18.0,    # 屋顶标高18m
@@ -119,27 +119,27 @@ def create_fire_protection_network():
     # 室内消火栓竖管管径不应小于DN100（0.1m）
     pipe_definitions = [
         # 竖向立管（从水箱到各层）
-        ('P1', 'Tank', 'V4', 0.1, 6.0, 1.0, '屋顶水箱→4层'),
-        ('P2', 'V4', 'V3', 0.1, 3.0, 0.5, '4层→3层'),
-        ('P3', 'V3', 'V2', 0.1, 3.0, 0.5, '3层→2层'),
-        ('P4', 'V2', 'V1', 0.1, 3.0, 0.5, '2层→1层'),
+        ('P1', 'Tank', 'V4', 0.1, 6.0, 1.0, '屋顶水箱->4层'),
+        ('P2', 'V4', 'V3', 0.1, 3.0, 0.5, '4层->3层'),
+        ('P3', 'V3', 'V2', 0.1, 3.0, 0.5, '3层->2层'),
+        ('P4', 'V2', 'V1', 0.1, 3.0, 0.5, '2层->1层'),
 
         # 各层横向支管（立管到消火栓）
-        ('P5', 'V1', 'H1A', 0.065, 10.0, 2.0, '1层立管→消火栓A'),
-        ('P6', 'V1', 'H1B', 0.065, 15.0, 2.0, '1层立管→消火栓B'),
-        ('P7', 'V2', 'H2A', 0.065, 10.0, 2.0, '2层立管→消火栓A'),
-        ('P8', 'V2', 'H2B', 0.065, 15.0, 2.0, '2层立管→消火栓B'),
-        ('P9', 'V3', 'H3A', 0.065, 10.0, 2.0, '3层立管→消火栓A'),
-        ('P10', 'V3', 'H3B', 0.065, 15.0, 2.0, '3层立管→消火栓B'),
-        ('P11', 'V4', 'H4A', 0.065, 10.0, 2.0, '4层立管→消火栓A'),
-        ('P12', 'V4', 'H4B', 0.065, 15.0, 2.0, '4层立管→消火栓B'),
+        ('P5', 'V1', 'H1A', 0.065, 10.0, 2.0, '1层立管->消火栓A'),
+        ('P6', 'V1', 'H1B', 0.065, 15.0, 2.0, '1层立管->消火栓B'),
+        ('P7', 'V2', 'H2A', 0.065, 10.0, 2.0, '2层立管->消火栓A'),
+        ('P8', 'V2', 'H2B', 0.065, 15.0, 2.0, '2层立管->消火栓B'),
+        ('P9', 'V3', 'H3A', 0.065, 10.0, 2.0, '3层立管->消火栓A'),
+        ('P10', 'V3', 'H3B', 0.065, 15.0, 2.0, '3层立管->消火栓B'),
+        ('P11', 'V4', 'H4A', 0.065, 10.0, 2.0, '4层立管->消火栓A'),
+        ('P12', 'V4', 'H4B', 0.065, 15.0, 2.0, '4层立管->消火栓B'),
     ]
 
     print("【管道信息】")
     for pid, from_node, to_node, D, L, K, desc in pipe_definitions:
         pipe = create_pressure_pipe(pid, D, L, material='steel', K_minor=K)
         topology.add_pipe(pipe, from_node, to_node)
-        print(f"  ✓ {pid}: {from_node}→{to_node}, D={int(D*1000)}mm, L={L}m ({desc})")
+        print(f"   {pid}: {from_node}->{to_node}, D={int(D*1000)}mm, L={L}m ({desc})")
 
     print(f"  管道数量: {len(pipe_definitions)}")
     print(f"  竖管管径: DN100 (100mm)")
@@ -167,7 +167,7 @@ def analyze_fire_scenarios(topology):
     print()
 
     # 消火栓流量（根据规范）
-    hydrant_flow = 5.0 / 1000  # 5 L/s = 0.005 m³/s
+    hydrant_flow = 5.0 / 1000  # 5 L/s = 0.005 m^3/s
 
     scenarios = {
         '4层火灾': {
@@ -207,7 +207,7 @@ def analyze_fire_scenarios(topology):
         try:
             flows, heads = solver.solve()
             converged = True
-            print(f"  ✓ 求解收敛")
+            print(f"   求解收敛")
 
             # 分析压力
             hydrant_pressures = {}
@@ -227,16 +227,16 @@ def analyze_fire_scenarios(topology):
             print(f"  最低压力: {min_pressure_m:.2f} m = {min_pressure_kPa:.1f} kPa")
 
             # 验证是否满足规范要求
-            # GB50974-2014要求：最不利点消火栓静压≥0.07MPa（7m），动压≥0.35MPa（35m）
+            # GB50974-2014要求：最不利点消火栓静压>=0.07MPa（7m），动压>=0.35MPa（35m）
             # 这里计算的是总压力，需要减去水头损失得到出口压力
             min_required_static = 7.0   # m，静压
             min_required_dynamic = 35.0  # m，动压（出口压力）
 
             # 简化判断：使用总压力与静压要求对比
             if min_pressure_m >= min_required_static:
-                print(f"  ✓ 满足静压要求 (≥{min_required_static}m)")
+                print(f"   满足静压要求 (>={min_required_static}m)")
             else:
-                print(f"  ✗ 不满足静压要求 (需≥{min_required_static}m)")
+                print(f"   不满足静压要求 (需>={min_required_static}m)")
                 print(f"    缺少: {min_required_static - min_pressure_m:.2f}m")
                 print(f"    建议: 提高水箱高度或增设消防泵")
 
@@ -256,7 +256,7 @@ def analyze_fire_scenarios(topology):
             }
 
         except Exception as e:
-            print(f"  ✗ 求解失败: {str(e)[:50]}")
+            print(f"   求解失败: {str(e)[:50]}")
             results[scenario_name] = {'converged': False}
 
         print()
@@ -309,14 +309,14 @@ def fire_pump_sizing_recommendation(results):
 
         print("【消防泵扬程计算】")
         print(f"  出口压力需求: {required_outlet_pressure:.0f} m (规范动压0.35MPa)")
-        print(f"  高程差: {height_difference:.0f} m (泵→最高层)")
+        print(f"  高程差: {height_difference:.0f} m (泵->最高层)")
         print(f"  管道损失: {pipe_loss:.0f} m (估算)")
         print(f"  安全余量: {safety_margin:.0f} m")
         print(f"  总扬程: H = {total_head:.0f} m")
         print()
 
         # 流量计算
-        # 根据GB50974-2014：建筑高度≤50m，室内消火栓用水量10L/s
+        # 根据GB50974-2014：建筑高度<=50m，室内消火栓用水量10L/s
         required_flow = 10.0  # L/s
 
         print("【消防泵流量】")
@@ -408,7 +408,7 @@ def plot_results(topology, results):
     # 保存图片
     output_path = 'examples/fire_protection_results.png'
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
-    print(f"📊 结果图表已保存: {output_path}")
+    print(f" 结果图表已保存: {output_path}")
 
 
 def main():
@@ -434,7 +434,7 @@ def main():
     plot_results(topology, results)
 
     print("="*80)
-    print("✅ 案例分析完成！")
+    print(" 案例分析完成！")
     print("="*80)
 
 

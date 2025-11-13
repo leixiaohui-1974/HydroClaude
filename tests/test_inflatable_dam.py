@@ -152,7 +152,7 @@ class TestDischargeCalculation:
         assert Q > 0
         assert info['is_deflated']
 
-        print(f"\n倒伏状态流量: Q = {Q:.2f} m³/s")
+        print(f"\n倒伏状态流量: Q = {Q:.2f} m^3/s")
 
     def test_inflated_overflow(self):
         """测试充气状态溢流"""
@@ -167,7 +167,7 @@ class TestDischargeCalculation:
         assert info['flow_type'] in ['free_overflow', 'submerged_overflow']
         assert info['H'] > 0
 
-        print(f"\n充气状态溢流: Q = {Q:.2f} m³/s, H = {info['H']:.2f}m")
+        print(f"\n充气状态溢流: Q = {Q:.2f} m^3/s, H = {info['H']:.2f}m")
 
     def test_no_overflow(self):
         """测试无溢流"""
@@ -196,7 +196,7 @@ class TestDischargeCalculation:
             assert Q < Q_prev
             Q_prev = Q
 
-            print(f"坝高 {height}m: Q = {Q:.2f} m³/s")
+            print(f"坝高 {height}m: Q = {Q:.2f} m^3/s")
 
 
 class TestDischargeCoefficient:
@@ -253,8 +253,8 @@ class TestDischargeCoefficient:
         assert info_s['Cd'] >= info_c['Cd']
         assert Q_streamlined >= Q_circular
 
-        print(f"\n圆弧形: Cd = {info_c['Cd']:.3f}, Q = {Q_circular:.2f} m³/s")
-        print(f"流线型: Cd = {info_s['Cd']:.3f}, Q = {Q_streamlined:.2f} m³/s")
+        print(f"\n圆弧形: Cd = {info_c['Cd']:.3f}, Q = {Q_circular:.2f} m^3/s")
+        print(f"流线型: Cd = {info_s['Cd']:.3f}, Q = {Q_streamlined:.2f} m^3/s")
 
 
 class TestTimeCalculation:
@@ -391,9 +391,9 @@ class TestStatus:
         assert abs(status['inflation_percent'] - 100.0) < 1e-6
 
         print(f"\n状态测试:")
-        print(f"  倒伏: ✓")
-        print(f"  半充气: ✓")
-        print(f"  满充气: ✓")
+        print(f"  倒伏: ")
+        print(f"  半充气: ")
+        print(f"  满充气: ")
 
 
 if __name__ == '__main__':

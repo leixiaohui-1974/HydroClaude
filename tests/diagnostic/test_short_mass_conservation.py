@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_short_mass():
@@ -48,9 +54,9 @@ def test_short_mass():
     solver.initialize(h_init, Q_init, bc_left, bc_right)
 
     print(f"\n配置：")
-    print(f"  bc_left: Q = {Q_bc} m³/s")
+    print(f"  bc_left: Q = {Q_bc} m^3/s")
     print(f"  bc_right: h = {h_bc} m")
-    print(f"  初始质量 = {solver.initial_mass:.2f} m³")
+    print(f"  初始质量 = {solver.initial_mass:.2f} m^3")
 
     # 运行100s
     t_end = 100.0
@@ -86,24 +92,24 @@ def test_short_mass():
     print(f"\n{'='*80}")
     print("最终结果")
     print("="*80)
-    print(f"  初始质量：{solver.initial_mass:.2f} m³")
-    print(f"  实际质量：{mass_final:.2f} m³")
-    print(f"  理论质量：{mass_theory_final:.2f} m³")
+    print(f"  初始质量：{solver.initial_mass:.2f} m^3")
+    print(f"  实际质量：{mass_final:.2f} m^3")
+    print(f"  理论质量：{mass_theory_final:.2f} m^3")
     print(f"  质量误差：{mass_error:.2f}%")
 
     print(f"\n边界通量检查：")
     if solver.last_F_h is not None:
-        print(f"  F_h[0] = {solver.last_F_h[0]:.3f} m²/s (应该≈{Q_bc})")
-        print(f"  F_h[-1] = {solver.last_F_h[-1]:.3f} m²/s")
+        print(f"  F_h[0] = {solver.last_F_h[0]:.3f} m^2/s (应该~={Q_bc})")
+        print(f"  F_h[-1] = {solver.last_F_h[-1]:.3f} m^2/s")
 
         left_ok = abs(solver.last_F_h[0] - Q_bc) < 0.01
-        print(f"\n  左边界强制：{'✓' if left_ok else '✗'}")
+        print(f"\n  左边界强制：{'' if left_ok else ''}")
 
     print(f"\n{'='*80}")
     if mass_error < 1.0:
-        print("✅ 质量守恒良好 (<1.0%)")
+        print(" 质量守恒良好 (<1.0%)")
     else:
-        print(f"❌ 质量守恒较差 ({mass_error:.2f}%)")
+        print(f" 质量守恒较差 ({mass_error:.2f}%)")
 
     print("="*80)
 

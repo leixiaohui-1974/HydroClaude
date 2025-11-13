@@ -13,7 +13,13 @@ import time
 sys.path.insert(0, '.')
 
 from physics.steady_saint_venant import SteadySaintVenantSystem
-from solvers.newton_solver import NewtonSolver
+try:
+    from solvers.newton_solver import NewtonSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from utils.canal_utils import compute_steady_uniform_flow
 
 print('='*80)
@@ -37,7 +43,7 @@ system = SteadySaintVenantSystem(
 h_uniform = compute_steady_uniform_flow(Q_target, B, S0, n)
 
 print(f'\n系统配置:')
-print(f'  目标流量: {Q_target} m³/s')
+print(f'  目标流量: {Q_target} m^3/s')
 print(f'  均匀流水深: {h_uniform:.3f} m')
 print(f'  pseudo_dt: {system.pseudo_dt}')
 
@@ -122,12 +128,12 @@ if info['converged']:
     h_sol, Q_sol = system.unpack_state(U_solution)
     print(f'\n最终解的物理检查:')
     print(f'  水深偏差: {np.abs(h_sol - h_uniform).max():.2e} m')
-    print(f'  流量偏差: {np.abs(Q_sol - Q_target).max():.2e} m³/s')
+    print(f'  流量偏差: {np.abs(Q_sol - Q_target).max():.2e} m^3/s')
 
     # 检查收敛速度
     residuals = info['residual_history']
     if len(residuals) >= 3:
-        # 计算收敛率（二次收敛时，log(r_{k+1}) ≈ 2*log(r_k)）
+        # 计算收敛率（二次收敛时，log(r_{k+1}) ~= 2*log(r_k)）
         rates = []
         for i in range(len(residuals)-2):
             if residuals[i] > 0 and residuals[i+1] > 0:
@@ -139,8 +145,8 @@ if info['converged']:
             print(f'\n收敛率分析:')
             print(f'  平均收敛率: {avg_rate:.2f}')
             if avg_rate > 1.5:
-                print(f'  ✓ 展现超线性/二次收敛特性')
+                print(f'   展现超线性/二次收敛特性')
             else:
-                print(f'  ✗ 收敛速度较慢（线性收敛）')
+                print(f'   收敛速度较慢（线性收敛）')
 
 print('='*80)

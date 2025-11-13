@@ -37,7 +37,7 @@ def main():
     config_file = sys.argv[1]
 
     if not Path(config_file).exists():
-        print(f"❌ 配置文件不存在: {config_file}")
+        print(f" 配置文件不存在: {config_file}")
         sys.exit(1)
 
     try:
@@ -49,15 +49,15 @@ def main():
         engine.validate()
 
         print("\n" + "="*80)
-        print("✅ 仿真完成！")
+        print(" 仿真完成！")
         print("="*80)
 
     except KeyboardInterrupt:
-        print("\n\n⚠️  仿真被用户中断")
+        print("\n\n️  仿真被用户中断")
         sys.exit(1)
 
     except Exception as e:
-        print(f"\n❌ 仿真失败: {e}")
+        print(f"\n 仿真失败: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)

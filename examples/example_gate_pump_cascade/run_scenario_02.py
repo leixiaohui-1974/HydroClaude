@@ -1,19 +1,27 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """工况2: 上游中等流量阶跃"""
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import os
 
 # 导入run_scenario模块
-exec(open(os.path.join(os.path.dirname(__file__), 'run_scenario.py')).read())
+exec(open(os.path.join(os.path.dirname(__file__), 'run_scenario.py'), encoding='utf-8').read())
 
 # 工况2: 中等流量阶跃
 scenario2 = {
     'name': 'Scenario 02: Medium Flow Step',
     'description': '''**工况类型**: 上游边界扰动（中等幅度）
 
-**初始状态**: Q = 30 m³/s
-**扰动**: t=300s, Q → 42 m³/s (+40%)
+**初始状态**: Q = 30 m^3/s
+**扰动**: t=300s, Q -> 42 m^3/s (+40%)
 **观测**: 泵站在能力范围内的响应、工作点求解''',
     'Q_initial': 30.0,
     'Q_upstream_func': lambda t: 42.0 if t >= 300 else 30.0

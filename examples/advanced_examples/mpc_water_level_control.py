@@ -17,9 +17,19 @@ MPC水位控制示例
 作者: Claude
 日期: 2025-10-24
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 from control.mpc_controller import MPCController, MPCConfig, AdaptiveMPCController
 from control.pid_controller import PIDController, PIDConfig
 
@@ -30,9 +40,9 @@ def simulate_water_tank(h, Q_in, Q_out, A, dt):
 
     Args:
         h: 当前水位 (m)
-        Q_in: 入流量 (m³/s)
-        Q_out: 出流量 (m³/s)
-        A: 水池面积 (m²)
+        Q_in: 入流量 (m^3/s)
+        Q_out: 出流量 (m^3/s)
+        A: 水池面积 (m^2)
         dt: 时间步长 (s)
 
     Returns:
@@ -58,7 +68,7 @@ def create_disturbance_scenario(t, scenario='periodic'):
         scenario: 扰动场景类型
 
     Returns:
-        入流量 (m³/s)
+        入流量 (m^3/s)
     """
     if scenario == 'periodic':
         # 周期性扰动（模拟日变化）
@@ -100,7 +110,7 @@ def compare_mpc_vs_pid():
     print("=" * 80)
 
     # 系统参数
-    A_tank = 100.0  # 水池面积 (m²)
+    A_tank = 100.0  # 水池面积 (m^2)
     h_target = 3.0  # 目标水位 (m)
     dt = 5.0        # 时间步长 (s)
     t_final = 500.0 # 模拟总时间 (s)
@@ -115,7 +125,7 @@ def compare_mpc_vs_pid():
         control_change_weight=0.2,  # 平滑控制变化
         control_min=0.0,        # 最小出流量
         control_max=20.0,       # 最大出流量
-        control_rate_min=-0.5,  # 最大降低速率 (m³/s per step)
+        control_rate_min=-0.5,  # 最大降低速率 (m^3/s per step)
         control_rate_max=0.5    # 最大增加速率
     )
 
@@ -138,7 +148,7 @@ def compare_mpc_vs_pid():
     pid.set_setpoint(h_target)
 
     # 为MPC设置简化的线性化模型
-    # 线性化点附近: h[k+1] ≈ h[k] + dt/A * (Q_in - Q_out)
+    # 线性化点附近: h[k+1] ~= h[k] + dt/A * (Q_in - Q_out)
     # h[k+1] = h[k] - (dt/A) * Q_out + (dt/A) * Q_in
     # 控制输入 u = Q_out
     # h[k+1] = 1.0 * h[k] + (-dt/A) * u
@@ -147,7 +157,7 @@ def compare_mpc_vs_pid():
     mpc.set_linear_model(A_model, B_model)
 
     print(f"\n系统参数:")
-    print(f"  水池面积: {A_tank} m²")
+    print(f"  水池面积: {A_tank} m^2")
     print(f"  目标水位: {h_target} m")
     print(f"  时间步长: {dt} s")
     print(f"  模拟时长: {t_final} s")
@@ -202,8 +212,8 @@ def compare_mpc_vs_pid():
         # 打印进度
         if k % 20 == 0:
             print(f"Step {k:3d} (t={t:6.1f}s): "
-                  f"MPC h={h_mpc[k]:5.3f}m Q_out={Q_out_mpc[k]:5.2f}m³/s | "
-                  f"PID h={h_pid[k]:5.3f}m Q_out={Q_out_pid[k]:5.2f}m³/s")
+                  f"MPC h={h_mpc[k]:5.3f}m Q_out={Q_out_mpc[k]:5.2f}m^3/s | "
+                  f"PID h={h_pid[k]:5.3f}m Q_out={Q_out_pid[k]:5.2f}m^3/s")
 
     time[n_steps] = t_final
 
@@ -249,7 +259,7 @@ def compare_mpc_vs_pid():
     axes[0].plot(time, h_pid, 'g-', linewidth=2, label='PID', alpha=0.8)
     axes[0].axhline(y=h_target, color='r', linestyle='--', linewidth=2, label='目标水位')
     axes[0].fill_between(time, h_target-0.1, h_target+0.1, alpha=0.2, color='gray',
-                         label='±0.1m 容差带')
+                         label='+/-0.1m 容差带')
     axes[0].set_ylabel('水位 (m)', fontsize=12)
     axes[0].set_title('MPC vs PID: 水位控制对比', fontsize=14, fontweight='bold')
     axes[0].legend(loc='best', fontsize=10)
@@ -259,7 +269,7 @@ def compare_mpc_vs_pid():
     axes[1].plot(time[:-1], Q_out_mpc, 'b-', linewidth=2, label='MPC 出流量', alpha=0.8)
     axes[1].plot(time[:-1], Q_out_pid, 'g-', linewidth=2, label='PID 出流量', alpha=0.8)
     axes[1].plot(time[:-1], Q_in_mpc, 'k--', linewidth=1.5, label='入流量（扰动）', alpha=0.6)
-    axes[1].set_ylabel('流量 (m³/s)', fontsize=12)
+    axes[1].set_ylabel('流量 (m^3/s)', fontsize=12)
     axes[1].set_title('控制输出和扰动', fontsize=12)
     axes[1].legend(loc='best', fontsize=10)
     axes[1].grid(True, alpha=0.3)
@@ -279,9 +289,9 @@ def compare_mpc_vs_pid():
 
     plt.tight_layout()
     plt.savefig('mpc_vs_pid_water_level.png', dpi=150, bbox_inches='tight')
-    print(f"\n✓ 对比结果已保存到: mpc_vs_pid_water_level.png")
+    print(f"\n 对比结果已保存到: mpc_vs_pid_water_level.png")
 
-    plt.show()
+    # plt.show()  # Disabled for automated testing
 
     print("\n" + "=" * 80)
 
@@ -318,11 +328,11 @@ def demonstrate_adaptive_mpc():
 
     # 初始模型参数（故意设置不准确）
     A_init = 1.0
-    B_init = -dt / 80.0  # 假设水池面积为80 m²（错误！）
+    B_init = -dt / 80.0  # 假设水池面积为80 m^2（错误！）
     ampc.set_linear_model(A_init, B_init)
 
-    print(f"\n真实系统参数: A_tank = {A_tank_real} m²")
-    print(f"初始模型参数: B = {B_init:.6f} (基于假设面积 80 m²)")
+    print(f"\n真实系统参数: A_tank = {A_tank_real} m^2")
+    print(f"初始模型参数: B = {B_init:.6f} (基于假设面积 80 m^2)")
     print(f"真实模型参数: B = {-dt/A_tank_real:.6f}")
 
     # 模拟
@@ -386,9 +396,9 @@ def demonstrate_adaptive_mpc():
 
     plt.tight_layout()
     plt.savefig('adaptive_mpc_water_level.png', dpi=150, bbox_inches='tight')
-    print(f"\n✓ 自适应MPC结果已保存到: adaptive_mpc_water_level.png")
+    print(f"\n 自适应MPC结果已保存到: adaptive_mpc_water_level.png")
 
-    plt.show()
+    # plt.show()  # Disabled for automated testing
 
     print(f"\n最终模型参数: B = {ampc.B_estimate:.6f}")
     print(f"真实模型参数: B = {-dt/A_tank_real:.6f}")

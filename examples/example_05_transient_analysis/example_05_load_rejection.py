@@ -24,6 +24,8 @@ Date: 2025-10-22
 """
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import os
@@ -48,7 +50,7 @@ class HydropowerTransientSimulator:
     Simplified dynamics:
     - Generator: J * dω/dt = T_turbine - T_load - T_friction
     - Surge tank: A * dZ/dt = Q_tunnel - Q_turbine
-    - Turbine: P = η(Q,H,y) * ρ * g * Q * H
+    - Turbine: P = η(Q,H,y) * rho * g * Q * H
     """
 
     def __init__(self):
@@ -66,7 +68,7 @@ class HydropowerTransientSimulator:
             position=0.0,
             rated_power=100.0,   # 100 MW
             rated_head=150.0,     # 150 m
-            rated_flow=75.0,      # 75 m³/s
+            rated_flow=75.0,      # 75 m^3/s
             rated_speed=250.0,    # 250 rpm
             runner_diameter=2.5,
             max_efficiency=0.93
@@ -97,10 +99,10 @@ class HydropowerTransientSimulator:
         self.tailwater_level = 330.0  # m
 
         # Moment of inertia (generator + turbine)
-        # J = GD² / 4, where GD² is flywheel effect (MN·m²)
-        # For 100 MW, ~250 rpm: GD² ≈ 600 MN·m²
-        self.GD2 = 600.0  # MN·m²
-        self.J = self.GD2 / 4.0 * 1e6  # kg·m²
+        # J = GD^2 / 4, where GD^2 is flywheel effect (MN·m^2)
+        # For 100 MW, ~250 rpm: GD^2 ~= 600 MN·m^2
+        self.GD2 = 600.0  # MN·m^2
+        self.J = self.GD2 / 4.0 * 1e6  # kg·m^2
 
         # Initial conditions
         self.speed = 250.0  # rpm
@@ -109,12 +111,12 @@ class HydropowerTransientSimulator:
 
         # Tunnel parameters
         self.tunnel_length = 5000.0  # m
-        self.tunnel_area = 50.0      # m²
+        self.tunnel_area = 50.0      # m^2
 
         print(f"Turbine:        {self.turbine}")
         print(f"Governor:       {self.governor}")
         print(f"Surge tank:     {self.surge_tank}")
-        print(f"Inertia (GD²):  {self.GD2:.0f} MN·m²")
+        print(f"Inertia (GD^2):  {self.GD2:.0f} MN·m^2")
         print(f"Initial speed:  {self.speed:.1f} rpm")
         print(f"Initial opening: {self.guide_vane_opening:.1%}")
         print("=" * 80)
@@ -124,7 +126,7 @@ class HydropowerTransientSimulator:
         Calculate turbine power and torque
 
         Args:
-            Q: Flow rate (m³/s)
+            Q: Flow rate (m^3/s)
             H: Net head (m)
             opening: Guide vane opening (p.u.)
 
@@ -183,7 +185,7 @@ class HydropowerTransientSimulator:
         H_net = self.surge_tank.water_level - self.tailwater_level
 
         # Flow through turbine (simplified)
-        # Q ∝ opening * √H
+        # Q ∝ opening * sqrtH
         Q_turbine = self.guide_vane_opening * 100.0 * np.sqrt(H_net / 150.0)
 
         # Tunnel flow (assumed constant for steady state approximation)
@@ -365,7 +367,7 @@ def plot_results(results: list):
     ax4.legend()
 
     plt.tight_layout()
-    plt.savefig('/home/user/HydroClaude/examples/example_05_transient_analysis/load_rejection.png', dpi=150)
+    plt.savefig('examples/example_05_transient_analysis/load_rejection.png', dpi=150)
     print("\nPlot saved to: load_rejection.png")
 
 
@@ -405,7 +407,7 @@ def main():
     print(f"\nSpeed Response:")
     print(f"  Maximum speed:       {max_speed:.2f} rpm ({overshoot:+.1f}% overshoot)")
     print(f"  Minimum speed:       {min_speed:.2f} rpm")
-    print(f"  Settling (±1%):      ~{results[-1]['time']:.1f}s")
+    print(f"  Settling (+/-1%):      ~{results[-1]['time']:.1f}s")
 
     print(f"\nSurge Tank:")
     print(f"  Initial level:       480.00 m")
@@ -425,11 +427,11 @@ def main():
     print("EXAMPLE COMPLETED SUCCESSFULLY")
     print("=" * 80)
     print("\nThis example demonstrates:")
-    print("  ✓ Governor PID control response")
-    print("  ✓ Speed overshoot and stabilization")
-    print("  ✓ Surge tank water level oscillation")
-    print("  ✓ Guide vane closure dynamics")
-    print("  ✓ Turbine-governor-surge tank interaction")
+    print("   Governor PID control response")
+    print("   Speed overshoot and stabilization")
+    print("   Surge tank water level oscillation")
+    print("   Guide vane closure dynamics")
+    print("   Turbine-governor-surge tank interaction")
     print("\nKey observations:")
     print(f"  - Speed overshoot: {overshoot:.1f}% (acceptable if < 15%)")
     print(f"  - Surge rise: {surge_rise:.2f} m (within tank capacity)")

@@ -1,28 +1,28 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Godunov-FVM求解器 - HLLC版本
+Godunov-FVM - HLLC
 
-关键改进：
-1. ✅ HLLC Riemann求解器 - 保留接触间断，降低耗散
-2. ✅ 精确捕捉激波和稀疏波
-3. ✅ 提高Dam Break精度
+
+1.  HLLC Riemann - 
+2.  
+3.  Dam Break
 
 HLLC vs HLL:
-- HLL: 2波模型（左波+右波），平均中间状态
-- HLLC: 3波模型（左波+接触间断+右波），保留接触间断
+- HLL: 2+
+- HLLC: 3++
 
-优势：
-- 更准确捕捉接触间断
-- 降低数值耗散
-- 提高激波精度
 
-参考：
+- 
+- 
+- 
+
+
 - Toro (2009) "Riemann Solvers and Numerical Methods"
 - Toro et al. (1994) "Restoration of the contact surface in the HLL Riemann solver"
 
-作者: HydroClaude Team
-日期: 2025-10-29
+: HydroClaude Team
+: 2025-10-29
 """
 
 import numpy as np
@@ -31,18 +31,18 @@ from typing import Tuple, Dict, Optional
 
 class GodunvFVMHLLC:
     """
-    Godunov-FVM求解器 with HLLC Riemann Solver
+    Godunov-FVM with HLLC Riemann Solver
     
-    HLLC三波模型：
-    - S_L: 左波速
-    - S_M: 中间波速（接触间断）
-    - S_R: 右波速
+    HLLC
+    - S_L: 
+    - S_M: 
+    - S_R: 
     
-    状态区域：
-    - 左: U_L
-    - 左*: U_L* (S_L和S_M之间)
-    - 右*: U_R* (S_M和S_R之间)
-    - 右: U_R
+    
+    - : U_L
+    - *: U_L* (S_LS_M)
+    - *: U_R* (S_MS_R)
+    - : U_R
     """
     
     def __init__(
@@ -57,7 +57,7 @@ class GodunvFVMHLLC:
         eps_dry: float = 1e-6,
         order: int = 1
     ):
-        """初始化HLLC求解器"""
+        """HLLC"""
         self.B = width
         self.L = length
         self.n_cells = n_cells
@@ -80,22 +80,22 @@ class GodunvFVMHLLC:
         self.initial_mass = 0.0
         self.step_count = 0
         
-        print(f"Godunov-FVM HLLC求解器:")
-        print(f"  单元数: {n_cells}, dx={self.dx:.3f}m")
-        print(f"  空间精度: {order}阶")
-        print(f"  Riemann求解器: HLLC (3-wave)")
+        print(f"Godunov-FVM HLLC:")
+        print(f"  : {n_cells}, dx={self.dx:.3f}m")
+        print(f"  : {order}")
+        print(f"  Riemann: HLLC (3-wave)")
     
     def initialize(self, h_init, Q_init, bc_left, bc_right):
-        """初始化"""
+        """"""
         self.h = h_init.copy()
         self.Q = Q_init.copy()
         self.bc_left = bc_left
         self.bc_right = bc_right
         self.initial_mass = np.sum(self.h * self.B * self.dx)
-        print(f"  初始质量: {self.initial_mass:.2f} m³")
+        print(f"  : {self.initial_mass:.2f} m³")
     
     def compute_dt(self) -> float:
-        """CFL条件"""
+        """CFL"""
         h_safe = np.maximum(self.h, self.eps_dry)
         u = self.Q / (h_safe * self.B)
         c = np.sqrt(self.g * h_safe)
@@ -103,7 +103,7 @@ class GodunvFVMHLLC:
         return self.cfl * self.dx / lambda_max if lambda_max > 1e-10 else 1.0
     
     def step(self, dt: Optional[float] = None):
-        """TVD-RK2时间步进"""
+        """TVD-RK2"""
         if dt is None:
             dt = self.compute_dt()
         self.dt = dt
@@ -111,7 +111,7 @@ class GodunvFVMHLLC:
         h_n = self.h.copy()
         Q_n = self.Q.copy()
         
-        # RK2步骤1
+        # RK21
         dh_dt, dQ_dt = self._compute_rhs(h_n, Q_n)
         h_star = h_n + dt * dh_dt
         Q_star = Q_n + dt * dQ_dt
@@ -119,7 +119,7 @@ class GodunvFVMHLLC:
         h_star, Q_star = self._apply_bc_to_state(h_star, Q_star)
         h_star = np.maximum(h_star, 0.0)
         
-        # RK2步骤2
+        # RK22
         dh_dt_star, dQ_dt_star = self._compute_rhs(h_star, Q_star)
         self.h = 0.5 * (h_n + h_star) + 0.5 * dt * dh_dt_star
         self.Q = 0.5 * (Q_n + Q_star) + 0.5 * dt * dQ_dt_star
@@ -133,14 +133,14 @@ class GodunvFVMHLLC:
         return self.h.copy(), self.Q.copy()
     
     def _compute_rhs(self, h, Q):
-        """计算右端项"""
+        """"""
         n = len(h)
         dh_dt = np.zeros(n)
         dQ_dt = np.zeros(n)
         
         h_ext, Q_ext = self._extend_with_ghosts(h, Q)
         
-        # 重构
+        # 
         if self.order == 2:
             h_L, h_R = self._muscl_reconstruction(h_ext)
             Q_L, Q_R = self._muscl_reconstruction(Q_ext)
@@ -150,14 +150,14 @@ class GodunvFVMHLLC:
             Q_L = Q_ext[:-1]
             Q_R = Q_ext[1:]
         
-        # HLLC通量
+        # HLLC
         F_h = np.zeros(n + 1)
         F_Q = np.zeros(n + 1)
         
         for i in range(n + 1):
             F_h[i], F_Q[i] = self._hllc_flux(h_L[i], Q_L[i], h_R[i], Q_R[i])
         
-        # 空间导数 + 源项
+        #  + 
         for i in range(n):
             dh_dt[i] = -(F_h[i+1] - F_h[i]) / self.dx
             dQ_dt[i] = -(F_Q[i+1] - F_Q[i]) / self.dx + self._compute_source_term(h[i], Q[i])
@@ -166,20 +166,20 @@ class GodunvFVMHLLC:
     
     def _hllc_flux(self, h_L, Q_L, h_R, Q_R):
         """
-        HLLC Riemann求解器
+        HLLC Riemann
         
-        三波模型：
-        1. 左波 S_L
-        2. 接触间断 S_M
-        3. 右波 S_R
         
-        返回界面通量
+        1.  S_L
+        2.  S_M
+        3.  S_R
+        
+        
         """
-        # 干床
+        # 
         if h_L < self.eps_dry and h_R < self.eps_dry:
             return 0.0, 0.0
         
-        # 左右状态
+        # 
         A_L = max(h_L * self.B, self.eps_dry * self.B)
         u_L = Q_L / A_L
         c_L = np.sqrt(self.g * max(h_L, 0.0))
@@ -188,13 +188,13 @@ class GodunvFVMHLLC:
         u_R = Q_R / A_R
         c_R = np.sqrt(self.g * max(h_R, 0.0))
         
-        # 波速估计（Davis）
+        # Davis
         S_L = min(u_L - c_L, u_R - c_R)
         S_R = max(u_L + c_L, u_R + c_R)
         
-        # 中间波速（接触间断）
+        # 
         # S_M = (Q_R - Q_L + S_L*h_L*B - S_R*h_R*B) / (h_L*B - h_R*B + S_L*h_L*B/S_L - S_R*h_R*B/S_R)
-        # 简化：
+        # 
         num = (S_R - u_R) * A_R - (S_L - u_L) * A_L
         den = A_R - A_L
         
@@ -203,22 +203,22 @@ class GodunvFVMHLLC:
         else:
             S_M = 0.5 * (u_L + u_R)
         
-        # 通量（左右）
+        # 
         F_h_L = Q_L
         F_Q_L = Q_L**2 / A_L + 0.5 * self.g * h_L**2 * self.B
         
         F_h_R = Q_R
         F_Q_R = Q_R**2 / A_R + 0.5 * self.g * h_R**2 * self.B
         
-        # HLLC通量选择
+        # HLLC
         if S_L >= 0:
-            # 超音速向右（左状态）
+            # 
             return F_h_L, F_Q_L
         elif S_R <= 0:
-            # 超音速向左（右状态）
+            # 
             return F_h_R, F_Q_R
         elif S_M >= 0:
-            # 亚音速，S_L < 0 < S_M < S_R（左*状态）
+            # S_L < 0 < S_M < S_R*
             # U_L* = [(S_L - u_L) / (S_L - S_M)] * [h_L, h_L*S_M]^T
             factor = (S_L - u_L) / (S_L - S_M)
             h_L_star = factor * h_L
@@ -230,7 +230,7 @@ class GodunvFVMHLLC:
             
             return F_h, F_Q
         else:
-            # 亚音速，S_L < S_M < 0 < S_R（右*状态）
+            # S_L < S_M < 0 < S_R*
             factor = (S_R - u_R) / (S_R - S_M)
             h_R_star = factor * h_R
             Q_R_star = factor * h_R * S_M * self.B
@@ -242,7 +242,7 @@ class GodunvFVMHLLC:
             return F_h, F_Q
     
     def _muscl_reconstruction(self, phi):
-        """MUSCL重构"""
+        """MUSCL"""
         n = len(phi) - 2
         phi_L = np.zeros(n + 1)
         phi_R = np.zeros(n + 1)
@@ -271,7 +271,7 @@ class GodunvFVMHLLC:
         return phi_L, phi_R
     
     def _compute_source_term(self, h, Q):
-        """源项"""
+        """"""
         A = max(h * self.B, self.eps_dry * self.B)
         P = self.B + 2.0 * h
         R = A / P if P > 1e-10 else 0.0
@@ -285,7 +285,7 @@ class GodunvFVMHLLC:
         return self.g * A * (self.S0 - Sf)
     
     def _extend_with_ghosts(self, h, Q):
-        """扩展ghost cells"""
+        """ghost cells"""
         n = len(h)
         h_ext = np.zeros(n + 2)
         Q_ext = np.zeros(n + 2)
@@ -314,7 +314,7 @@ class GodunvFVMHLLC:
         return h_ext, Q_ext
     
     def _apply_bc_to_state(self, h, Q):
-        """应用边界条件"""
+        """"""
         if self.bc_left['type'] == 'h':
             value = self.bc_left['value']
             h[0] = value if not callable(value) else value(self.t)
@@ -332,14 +332,14 @@ class GodunvFVMHLLC:
         return h, Q
     
     def get_mass_conservation_error(self):
-        """质量误差"""
+        """"""
         current_mass = np.sum(self.h * self.B * self.dx)
         if self.initial_mass > 1e-10:
             return (current_mass - self.initial_mass) / self.initial_mass * 100.0
         return 0.0
     
     def get_state(self):
-        """获取状态"""
+        """"""
         return {
             'x': self.x.copy(),
             'h': self.h.copy(),
@@ -356,11 +356,11 @@ if __name__ == "__main__":
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     
     print("="*80)
-    print("Godunov-FVM HLLC - 快速测试")
+    print("Godunov-FVM HLLC - ")
     print("="*80)
     
-    # Dam Break测试（关键测试）
-    print("\n测试: Dam Break (HLLC vs HLL)")
+    # Dam Break
+    print("\n: Dam Break (HLLC vs HLL)")
     
     solver_hllc = GodunvFVMHLLC(
         width=10.0, length=200.0, n_cells=200,
@@ -381,9 +381,9 @@ if __name__ == "__main__":
         solver_hllc.step()
     
     state = solver_hllc.get_state()
-    print(f"\n结果 (t={state['t']:.2f}s, {state['step']}步):")
-    print(f"  质量误差: {state['mass_error']:.6f}%")
-    print(f"  稳定性: {'✅' if not np.any(np.isnan(state['h'])) else '❌'}")
-    print(f"  目标<1%: {'✅' if abs(state['mass_error']) < 1.0 else '❌'}")
+    print(f"\n (t={state['t']:.2f}s, {state['step']}):")
+    print(f"  : {state['mass_error']:.6f}%")
+    print(f"  : {'' if not np.any(np.isnan(state['h'])) else ''}")
+    print(f"  <1%: {'' if abs(state['mass_error']) < 1.0 else ''}")
     
     print("\n" + "="*80)

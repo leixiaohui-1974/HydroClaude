@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 优化版例子2：多闸门和混合结构 (HydrostaticCanalSolver高精度版本 - Refactored)
 
@@ -8,8 +9,8 @@
 展示Phase 2高精度求解器在复杂场景下的稳定性和精度
 
 **重构亮点**:
-- ✅ 使用ScriptHelper：路径设置简化，输出管理统一
-- ✅ 保留所有matplotlib柱状图代码（性能对比类型）
+-  使用ScriptHelper：路径设置简化，输出管理统一
+-  保留所有matplotlib柱状图代码（性能对比类型）
 
 Author: Claude
 Date: 2025-10-23
@@ -65,7 +66,7 @@ def run_scenario(scenario_name, structures, structure_positions,
     print(f"场景：{scenario_name}")
     print("=" * 100)
     print(f"  结构数量: {len(structures)}")
-    print(f"  目标流量: {Q_target} m³/s")
+    print(f"  目标流量: {Q_target} m^3/s")
     print()
 
     # 计算下游边界条件
@@ -162,8 +163,8 @@ def run_optimized_example():
     print(f"  渠道长度: {canal_length} m")
     print(f"  渠道宽度: {canal_width} m")
     print(f"  空间点数: {n_points}")
-    print(f"  目标流量: {Q_target} m³/s")
-    print(f"  底坡: {bed_slope*1000:.2f}‰")
+    print(f"  目标流量: {Q_target} m^3/s")
+    print(f"  底坡: {bed_slope*1000:.2f}[permille]")
     print(f"  曼宁糙率: {manning_n}")
     print()
 
@@ -223,7 +224,7 @@ def run_optimized_example():
             result = res['result']
             elapsed = res['elapsed']
 
-            converged = "✓" if result['converged'] else "✗"
+            converged = "" if result['converged'] else ""
 
             name_col = scenario_name if i == 0 else ""
             print(f"{name_col:<20} {tol_name:<15} {converged:<8} {result['iterations']:<8} "
@@ -321,7 +322,7 @@ def run_optimized_example():
     fig_path = helper.get_output_path('12_advanced_optimized_comparison_v2_refactored.png')
     plt.savefig(fig_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"  ✓ 保存: {fig_path.name}")
+    print(f"   保存: {fig_path.name}")
 
     # 生成流量验证图（使用场景1标准容差）
     print("  生成流量验证图...")
@@ -338,7 +339,7 @@ def run_optimized_example():
         save_path=helper.get_output_path('12_flow_validation_v2_refactored.png')
     )
     plt.close(fig_validation)
-    print(f"  ✓ 保存: 12_flow_validation_v2_refactored.png")
+    print(f"   保存: 12_flow_validation_v2_refactored.png")
 
     # 导出性能对比表
     comparison_rows = []
@@ -357,7 +358,7 @@ def run_optimized_example():
     comparison_data = pd.DataFrame(comparison_rows)
     table_path1 = helper.get_output_path('12_advanced_optimized_comparison_v2_refactored.csv', subdir='tables')
     comparison_data.to_csv(table_path1, index=False)
-    print(f"  ✓ 保存: {table_path1.name}")
+    print(f"   保存: {table_path1.name}")
 
     # 导出场景1详细剖面（标准容差）
     x = solver1_std.x
@@ -377,13 +378,13 @@ def run_optimized_example():
     })
     table_path2 = helper.get_output_path('12_advanced_profile_v2_refactored.csv', subdir='tables')
     profile_data.to_csv(table_path2, index=False)
-    print(f"  ✓ 保存: {table_path2.name}")
+    print(f"   保存: {table_path2.name}")
 
     # 保存验证报告
     print("  保存验证报告...")
     report_path = helper.get_output_path('12_advanced_validation_report_refactored.txt', subdir='reports')
     scenario1_std['validator'].save_report(report_path)
-    print(f"  ✓ 保存: {report_path.name}")
+    print(f"   保存: {report_path.name}")
 
     print("\n生成的文件:")
     print(f"  Figures:")

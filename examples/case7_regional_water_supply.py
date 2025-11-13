@@ -69,18 +69,18 @@ def create_regional_network():
     # 北部水库（主水源）
     r1 = Reservoir('R1', elevation=100, head=135)
     topology.add_node(r1)
-    print(f"  ✓ 北部水库 R1: 标高={r1.elevation}m, 水位={r1.head}m")
+    print(f"   北部水库 R1: 标高={r1.elevation}m, 水位={r1.head}m")
 
     # 东部水库（辅助水源）
     r2 = Reservoir('R2', elevation=95, head=125)
     topology.add_node(r2)
-    print(f"  ✓ 东部水库 R2: 标高={r2.elevation}m, 水位={r2.head}m")
+    print(f"   东部水库 R2: 标高={r2.elevation}m, 水位={r2.head}m")
 
     # 中心水塔（调节水源）
     t1 = Tank('T1', elevation=80, diameter=15.0,
               min_level=0.0, max_level=50.0, initial_level=40.0)
     topology.add_node(t1)
-    print(f"  ✓ 中心水塔 T1: 底部标高={t1.elevation}m, 水位={t1.head}m")
+    print(f"   中心水塔 T1: 底部标高={t1.elevation}m, 水位={t1.head}m")
 
     print()
 
@@ -98,10 +98,10 @@ def create_regional_network():
 
     print("  北部居民区 (标高55-60m):")
     for nid, (elev, demand_ls, desc) in north_nodes.items():
-        demand = demand_ls / 1000  # L/s -> m³/s
+        demand = demand_ls / 1000  # L/s -> m^3/s
         node = Junction(nid, elevation=elev, demand=demand)
         topology.add_node(node)
-        print(f"    • {nid}: {desc}, 需水量={demand_ls:.1f}L/s")
+        print(f"    - {nid}: {desc}, 需水量={demand_ls:.1f}L/s")
 
     # 东部工业区 (East Industrial)
     east_nodes = {
@@ -115,7 +115,7 @@ def create_regional_network():
         demand = demand_ls / 1000
         node = Junction(nid, elevation=elev, demand=demand)
         topology.add_node(node)
-        print(f"    • {nid}: {desc}, 需水量={demand_ls:.1f}L/s")
+        print(f"    - {nid}: {desc}, 需水量={demand_ls:.1f}L/s")
 
     # 南部商业区 (South Commercial)
     south_nodes = {
@@ -130,7 +130,7 @@ def create_regional_network():
         demand = demand_ls / 1000
         node = Junction(nid, elevation=elev, demand=demand)
         topology.add_node(node)
-        print(f"    • {nid}: {desc}, 需水量={demand_ls:.1f}L/s")
+        print(f"    - {nid}: {desc}, 需水量={demand_ls:.1f}L/s")
 
     # 西部居民区 (West Residential)
     west_nodes = {
@@ -144,7 +144,7 @@ def create_regional_network():
         demand = demand_ls / 1000
         node = Junction(nid, elevation=elev, demand=demand)
         topology.add_node(node)
-        print(f"    • {nid}: {desc}, 需水量={demand_ls:.1f}L/s")
+        print(f"    - {nid}: {desc}, 需水量={demand_ls:.1f}L/s")
 
     print()
 
@@ -154,9 +154,9 @@ def create_regional_network():
     # 管道配置：(pipe_id, from_node, to_node, diameter_m, length_m, K_minor, description)
     pipe_configs = [
         # 主干线 (从水源到各区)
-        ('P1', 'R1', 'N1', 0.50, 1500, 1.0, "北水库→北区主干"),
-        ('P2', 'R2', 'E1', 0.45, 1200, 1.0, "东水库→东区主干"),
-        ('P3', 'T1', 'S1', 0.40, 800, 0.8, "水塔→南区主干"),
+        ('P1', 'R1', 'N1', 0.50, 1500, 1.0, "北水库->北区主干"),
+        ('P2', 'R2', 'E1', 0.45, 1200, 1.0, "东水库->东区主干"),
+        ('P3', 'T1', 'S1', 0.40, 800, 0.8, "水塔->南区主干"),
 
         # 北部居民区环路
         ('P4', 'N1', 'N2', 0.30, 600, 0.5, "北区环路1"),
@@ -182,22 +182,22 @@ def create_regional_network():
         ('P18', 'W3', 'W1', 0.25, 380, 0.5, "西区环路3"),
 
         # 区域连接管 (形成大环)
-        ('P19', 'N3', 'T1', 0.35, 700, 0.8, "北区→水塔连接"),
-        ('P20', 'E2', 'T1', 0.35, 650, 0.8, "东区→水塔连接"),
-        ('P21', 'S2', 'W1', 0.30, 600, 0.7, "南区→西区连接"),
-        ('P22', 'W1', 'N4', 0.30, 550, 0.7, "西区→北区连接"),
-        ('P23', 'E3', 'S4', 0.28, 580, 0.7, "东区→南区连接"),
+        ('P19', 'N3', 'T1', 0.35, 700, 0.8, "北区->水塔连接"),
+        ('P20', 'E2', 'T1', 0.35, 650, 0.8, "东区->水塔连接"),
+        ('P21', 'S2', 'W1', 0.30, 600, 0.7, "南区->西区连接"),
+        ('P22', 'W1', 'N4', 0.30, 550, 0.7, "西区->北区连接"),
+        ('P23', 'E3', 'S4', 0.28, 580, 0.7, "东区->南区连接"),
 
         # 冗余连接 (提高可靠性)
-        ('P24', 'N2', 'E1', 0.25, 800, 0.8, "北区→东区冗余"),
-        ('P25', 'S3', 'W2', 0.22, 650, 0.7, "南区→西区冗余"),
+        ('P24', 'N2', 'E1', 0.25, 800, 0.8, "北区->东区冗余"),
+        ('P25', 'S3', 'W2', 0.22, 650, 0.7, "南区->西区冗余"),
     ]
 
     for pid, from_node, to_node, D, L, K, desc in pipe_configs:
         pipe = create_pressure_pipe(pid, D, L, material='steel', K_minor=K)
         topology.add_pipe(pipe, from_node, to_node)
 
-    print(f"  ✓ 创建了 {len(pipe_configs)} 根管道")
+    print(f"   创建了 {len(pipe_configs)} 根管道")
     print(f"    - 主干线: 3根")
     print(f"    - 北部环路: 5根")
     print(f"    - 东部环路: 3根")
@@ -210,8 +210,8 @@ def create_regional_network():
     print()
     print("【网络验证】")
     loops = topology.find_loops()
-    print(f"  ✓ 检测到 {len(loops)} 个独立环路")
-    print(f"  ✓ 网络创建完成，共 {len(topology.nodes)} 个节点，{len(topology.pipes)} 根管道")
+    print(f"   检测到 {len(loops)} 个独立环路")
+    print(f"   网络创建完成，共 {len(topology.nodes)} 个节点，{len(topology.pipes)} 根管道")
 
     return topology
 
@@ -221,9 +221,9 @@ def analyze_demand_scenarios(topology):
     分析多种需水工况
 
     工况定义：
-    - 高峰工况：需水量 × 1.8（早晚高峰、夏季用水高峰）
-    - 平均工况：需水量 × 1.0（正常工作日）
-    - 低谷工况：需水量 × 0.4（夜间低谷）
+    - 高峰工况：需水量 x 1.8（早晚高峰、夏季用水高峰）
+    - 平均工况：需水量 x 1.0（正常工作日）
+    - 低谷工况：需水量 x 0.4（夜间低谷）
 
     Args:
         topology: 管网拓扑
@@ -263,7 +263,7 @@ def analyze_demand_scenarios(topology):
 
         # 计算总需水量
         total_demand = sum(original_demands.values()) * factor
-        print(f"  总需水量: {total_demand*1000:.1f} L/s ({total_demand*3600:.1f} m³/h)")
+        print(f"  总需水量: {total_demand*1000:.1f} L/s ({total_demand*3600:.1f} m^3/h)")
 
         # 求解
         try:
@@ -273,7 +273,7 @@ def analyze_demand_scenarios(topology):
             converged = solver.converged
 
             if converged:
-                print(f"  ✓ 求解收敛")
+                print(f"   求解收敛")
 
                 # 分析压力分布
                 pressures = []
@@ -291,11 +291,11 @@ def analyze_demand_scenarios(topology):
 
                 # 压力检查
                 if min_pressure < 15:
-                    print(f"    ⚠️ 最小压力 < 15m (不满足规范要求)")
+                    print(f"     最小压力 < 15m (不满足规范要求)")
                 elif min_pressure < 20:
-                    print(f"    ⚠️ 最小压力 < 20m (偏低)")
+                    print(f"     最小压力 < 20m (偏低)")
                 else:
-                    print(f"    ✓ 压力满足要求 (≥20m)")
+                    print(f"     压力满足要求 (>=20m)")
 
                 # 分析流速
                 velocities = []
@@ -312,11 +312,11 @@ def analyze_demand_scenarios(topology):
 
                 # 流速检查
                 if max_velocity > 3.0:
-                    print(f"    ⚠️ 最大流速 > 3.0m/s (可能产生水锤)")
+                    print(f"     最大流速 > 3.0m/s (可能产生水锤)")
                 elif max_velocity > 2.5:
-                    print(f"    ⚠️ 最大流速 > 2.5m/s (偏高)")
+                    print(f"     最大流速 > 2.5m/s (偏高)")
                 else:
-                    print(f"    ✓ 流速合理 (≤2.5m/s)")
+                    print(f"     流速合理 (<=2.5m/s)")
 
                 # 计算各水源供水量
                 source_flows = {}
@@ -341,11 +341,11 @@ def analyze_demand_scenarios(topology):
                     'total_demand': total_demand,
                 }
             else:
-                print(f"  ✗ 求解未收敛")
+                print(f"   求解未收敛")
                 results[scenario_name] = {'converged': False}
 
         except Exception as e:
-            print(f"  ✗ 求解失败: {e}")
+            print(f"   求解失败: {e}")
             results[scenario_name] = {'converged': False, 'error': str(e)}
 
         print()
@@ -417,16 +417,16 @@ def reliability_analysis(topology):
                             critical_node = nid
 
                 if min_pressure >= 15:
-                    print(f"  ✓ 系统正常工作，最小压力={min_pressure:.2f}m (节点{critical_node})")
+                    print(f"   系统正常工作，最小压力={min_pressure:.2f}m (节点{critical_node})")
                 elif min_pressure >= 10:
-                    print(f"  ⚠️ 系统降级运行，最小压力={min_pressure:.2f}m (节点{critical_node})")
+                    print(f"   系统降级运行，最小压力={min_pressure:.2f}m (节点{critical_node})")
                 else:
-                    print(f"  ✗ 系统供水不足，最小压力={min_pressure:.2f}m (节点{critical_node})")
+                    print(f"   系统供水不足，最小压力={min_pressure:.2f}m (节点{critical_node})")
             else:
-                print(f"  ✗ 求解未收敛，系统可能无法满足需求")
+                print(f"   求解未收敛，系统可能无法满足需求")
 
         except Exception as e:
-            print(f"  ✗ 分析失败: {e}")
+            print(f"   分析失败: {e}")
 
         # 恢复原始水头
         for source_id, original_head in original_heads.items():
@@ -445,37 +445,37 @@ def recommendations():
     print()
 
     print("【1. 水源配置】")
-    print("  • 主水源：北部水库R1，供水能力最强")
-    print("  • 辅助水源：东部水库R2，分担东部工业区负荷")
-    print("  • 调节水源：中心水塔T1，调节峰谷差异")
-    print("  • 建议：增加水塔容积，提高调节能力")
+    print("  - 主水源：北部水库R1，供水能力最强")
+    print("  - 辅助水源：东部水库R2，分担东部工业区负荷")
+    print("  - 调节水源：中心水塔T1，调节峰谷差异")
+    print("  - 建议：增加水塔容积，提高调节能力")
     print()
 
     print("【2. 管网优化】")
-    print("  • 主干线：适当增大管径，降低输水损失")
-    print("  • 环状网络：增加冗余连接，提高供水可靠性")
-    print("  • 分区供水：考虑高程差异，必要时设置减压阀")
-    print("  • 管材选择：主干线用球墨铸铁，支线用HDPE")
+    print("  - 主干线：适当增大管径，降低输水损失")
+    print("  - 环状网络：增加冗余连接，提高供水可靠性")
+    print("  - 分区供水：考虑高程差异，必要时设置减压阀")
+    print("  - 管材选择：主干线用球墨铸铁，支线用HDPE")
     print()
 
     print("【3. 压力控制】")
-    print("  • 高程点（W2, W3）：最小压力可能不足，建议设置局部增压")
-    print("  • 低程点（E3）：最大压力可能过高，建议设置减压阀")
-    print("  • 压力监测：在关键节点安装压力传感器")
+    print("  - 高程点（W2, W3）：最小压力可能不足，建议设置局部增压")
+    print("  - 低程点（E3）：最大压力可能过高，建议设置减压阀")
+    print("  - 压力监测：在关键节点安装压力传感器")
     print()
 
     print("【4. 可靠性提升】")
-    print("  • 水源冗余：确保任一水源失效时系统仍可运行")
-    print("  • 管网冗余：增加区域间连接管，形成多路供水")
-    print("  • 应急预案：制定水源切换、管道抢修预案")
-    print("  • 分区阀门：各区域设置隔离阀，便于维修")
+    print("  - 水源冗余：确保任一水源失效时系统仍可运行")
+    print("  - 管网冗余：增加区域间连接管，形成多路供水")
+    print("  - 应急预案：制定水源切换、管道抢修预案")
+    print("  - 分区阀门：各区域设置隔离阀，便于维修")
     print()
 
     print("【5. 运行调度】")
-    print("  • 高峰工况：全开R1+R2，T1供水")
-    print("  • 平均工况：R1为主，R2辅助，T1调节")
-    print("  • 低谷工况：R1单独供水，T1储水")
-    print("  • 经济运行：根据电价峰谷差，优化泵站运行")
+    print("  - 高峰工况：全开R1+R2，T1供水")
+    print("  - 平均工况：R1为主，R2辅助，T1调节")
+    print("  - 低谷工况：R1单独供水，T1储水")
+    print("  - 经济运行：根据电价峰谷差，优化泵站运行")
     print()
 
 
@@ -584,7 +584,7 @@ def plot_results(topology, results):
     # 保存图片
     output_path = os.path.join(os.path.dirname(__file__), 'regional_water_supply_results.png')
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
-    print(f"📊 结果图表已保存: {output_path}")
+    print(f" 结果图表已保存: {output_path}")
 
     plt.close()
 
@@ -616,7 +616,7 @@ def main():
     plot_results(topology, results)
 
     print("="*80)
-    print("✅ 案例分析完成！")
+    print(" 案例分析完成！")
     print("="*80)
     print()
 

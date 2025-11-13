@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 自适应一阶MPC测试
 
@@ -224,7 +225,7 @@ for k in range(n_steps):
         controller.update_model(params.K, params.tau)
         update_counter += 1
         if update_counter % 10 == 0:
-            print(f"  t={t:.0f}s: MPC模型更新 → K={params.K:.4f}, τ={params.tau:.1f}s")
+            print(f"  t={t:.0f}s: MPC模型更新 -> K={params.K:.4f}, τ={params.tau:.1f}s")
 
     # 记录
     time_hist.append(t)
@@ -305,14 +306,14 @@ ax4.grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('adaptive_first_order_mpc_test.png', dpi=150, bbox_inches='tight')
-print(f"\n✅ 图片已保存: adaptive_first_order_mpc_test.png")
+print(f"\n[成功] 图片已保存: adaptive_first_order_mpc_test.png")
 
 print("\n" + "=" * 80)
 print("测试完成")
 print("=" * 80)
 print("\n自适应MPC优势:")
-print("  ✅ 从错误的初始参数出发")
-print(f"  ✅ 通过在线辨识逐步收敛到真实参数")
-print(f"  ✅ {update_counter}次模型更新，自动适应系统变化")
-print(f"  ✅ 最终MAE={mae:.4f}m，性能优秀")
+print("  [成功] 从错误的初始参数出发")
+print(f"  [成功] 通过在线辨识逐步收敛到真实参数")
+print(f"  [成功] {update_counter}次模型更新，自动适应系统变化")
+print(f"  [成功] 最终MAE={mae:.4f}m，性能优秀")
 print("=" * 80)

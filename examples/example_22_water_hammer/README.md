@@ -41,7 +41,9 @@ PYTHONPATH=../.. python demo_water_hammer.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_22_water_hammer_pipe_flow.gif`
+
+![动画](outputs\animations\example_22_water_hammer_pipe_flow.gif)
 
 ## 技术要点
 

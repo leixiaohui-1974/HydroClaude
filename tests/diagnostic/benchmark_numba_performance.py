@@ -16,7 +16,13 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 import time
 import numpy as np
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def benchmark_with_without_numba(n_cells, n_steps, test_name):
@@ -136,16 +142,16 @@ def benchmark_with_without_numba(n_cells, n_steps, test_name):
     print(f"{'-'*50}")
     print(f"{'Numba JIT优化':<20} {time_numba:<15.3f} {results['Numba JIT优化']['ms_per_step']:<15.2f}")
     print(f"{'原生Python':<20} {time_python:<15.3f} {results['原生Python']['ms_per_step']:<15.2f}")
-    print(f"\n🚀 **加速比: {speedup:.2f}x**\n")
+    print(f"\n **加速比: {speedup:.2f}x**\n")
 
     if speedup >= 2.0:
-        print(f"✅ 优秀！达到2x以上加速")
+        print(f" 优秀！达到2x以上加速")
     elif speedup >= 1.5:
-        print(f"✅ 良好！达到1.5x以上加速")
+        print(f" 良好！达到1.5x以上加速")
     elif speedup >= 1.2:
-        print(f"⚠️  一般，仅1.2-1.5x加速")
+        print(f"️  一般，仅1.2-1.5x加速")
     else:
-        print(f"❌ 加速效果不明显（<1.2x）")
+        print(f" 加速效果不明显（<1.2x）")
 
     return speedup
 
@@ -186,11 +192,11 @@ def run_all_benchmarks():
     print(f"\n平均加速比: **{avg_speedup:.2f}x**")
 
     if avg_speedup >= 2.0:
-        print(f"\n🎉 **成功！** Numba JIT实现了{avg_speedup:.2f}x加速，达到预期目标（2-5x）")
+        print(f"\n **成功！** Numba JIT实现了{avg_speedup:.2f}x加速，达到预期目标（2-5x）")
     elif avg_speedup >= 1.5:
-        print(f"\n✅ **有效！** Numba JIT实现了{avg_speedup:.2f}x加速")
+        print(f"\n **有效！** Numba JIT实现了{avg_speedup:.2f}x加速")
     else:
-        print(f"\n⚠️  **改进有限** Numba JIT仅实现了{avg_speedup:.2f}x加速")
+        print(f"\n️  **改进有限** Numba JIT仅实现了{avg_speedup:.2f}x加速")
 
     print(f"\n{'='*80}")
 
@@ -198,5 +204,5 @@ def run_all_benchmarks():
 if __name__ == '__main__':
     run_all_benchmarks()
 
-    print(f"\n✅ Numba JIT性能基准测试完成")
+    print(f"\n Numba JIT性能基准测试完成")
     print(f"{'='*80}")

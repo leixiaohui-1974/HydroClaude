@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_natural_evolution():
@@ -62,11 +68,11 @@ def test_natural_evolution():
 
     print(f"\n初始状态:")
     print(f"  h[0] = {solver.h[0]:.6f} m (目标: {h_up})")
-    print(f"  Q[0] = {solver.Q[0]:.6f} m³/s (目标: {Q_up})")
-    print(f"  初始质量 = {solver._compute_total_mass():.2f} m³")
+    print(f"  Q[0] = {solver.Q[0]:.6f} m^3/s (目标: {Q_up})")
+    print(f"  初始质量 = {solver._compute_total_mass():.2f} m^3")
 
     print(f"\n演化过程（不强制左边界）:")
-    print(f"{'步骤':>5} {'h[0](m)':>10} {'Q[0](m³/s)':>12} {'h[1](m)':>10} {'质量(m³)':>12} {'误差(%)':>10}")
+    print(f"{'步骤':>5} {'h[0](m)':>10} {'Q[0](m^3/s)':>12} {'h[1](m)':>10} {'质量(m^3)':>12} {'误差(%)':>10}")
     print("-" * 75)
 
     for step in range(20):
@@ -78,18 +84,18 @@ def test_natural_evolution():
     print("\n" + "="*80)
     print("分析:")
     print(f"  最终 h[0] = {solver.h[0]:.6f} m (目标: {h_up})")
-    print(f"  最终 Q[0] = {solver.Q[0]:.6f} m³/s (目标: {Q_up})")
+    print(f"  最终 Q[0] = {solver.Q[0]:.6f} m^3/s (目标: {Q_up})")
     print(f"  质量误差 = {solver.get_mass_conservation_error():.4f}%")
 
     if abs(solver.h[0] - h_up) < 0.05 and abs(solver.Q[0] - Q_up) < 1.0:
-        print("  ✓ 边界值通过ghost cell控制保持稳定")
+        print("   边界值通过ghost cell控制保持稳定")
     else:
-        print("  ✗ 边界值漂移严重，需要强制")
+        print("   边界值漂移严重，需要强制")
 
     if abs(solver.get_mass_conservation_error()) < 1.0:
-        print("  ✓ 质量守恒良好")
+        print("   质量守恒良好")
     else:
-        print("  ✗ 质量守恒误差过大")
+        print("   质量守恒误差过大")
 
     print("="*80)
 

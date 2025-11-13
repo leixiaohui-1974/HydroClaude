@@ -6,11 +6,11 @@ HydroClaude 示例代码生成器
 自动生成符合开发规范的示例代码框架，确保从一开始就使用基础库。
 
 特点:
-- ✅ 自动包含所有必要的基础库导入
-- ✅ 遵循标准代码结构
-- ✅ 提供清晰的TODO标记
-- ✅ 自动创建输出目录
-- ✅ 支持多种模板类型
+-  自动包含所有必要的基础库导入
+-  遵循标准代码结构
+-  提供清晰的TODO标记
+-  自动创建输出目录
+-  支持多种模板类型
 
 用法:
     python tools/create_example.py <名称> <描述> [选项]
@@ -183,7 +183,7 @@ def main():
         save_path="results/profile.png"
     )
     plt.close(fig)
-    print("  ✓ 保存纵剖面图: results/profile.png")
+    print("   保存纵剖面图: results/profile.png")
     
     # 7.2 流量分布图（可选）
     # TODO: 如果需要流量验证图，取消注释
@@ -196,7 +196,7 @@ def main():
     #     save_path="results/flow.png"
     # )
     # plt.close(fig)
-    # print("  ✓ 保存流量分布图: results/flow.png")
+    # print("   保存流量分布图: results/flow.png")
     
     # ========== 8. 保存数据（可选）==========
     print("\\n8. 保存数据")
@@ -210,14 +210,14 @@ def main():
     #     'Q': result['Q']
     # }})
     # df.to_csv('results/data.csv', index=False)
-    # print("  ✓ 保存数据: results/data.csv")
+    # print("   保存数据: results/data.csv")
     
     # ========== 9. 总结 ==========
     print("\\n" + "=" * 80)
     print("完成！")
     print("=" * 80)
     print(f"\\n关键结果:")
-    print(f"  收敛状态: {{'✓' if result['converged'] else '✗'}}")
+    print(f"  收敛状态: {{'' if result['converged'] else ''}}")
     print(f"  迭代次数: {{result['iterations']}}")
     print(f"  流量误差: {{result['Q_error_percent']:.6f}}%")
     print(f"  最小水深: {{result['h_min']:.4f}} m")
@@ -381,7 +381,7 @@ def main():
         save_path="results/depth_evolution.png"
     )
     plt.close(fig)
-    print("  ✓ 保存时间序列图: results/depth_evolution.png")
+    print("   保存时间序列图: results/depth_evolution.png")
     
     # ========== 6. 总结 ==========
     print("\\n" + "=" * 80)
@@ -468,10 +468,10 @@ python {script_path}
 
 ## 注意事项
 
-- ✅ 已使用 HydrostaticCanalSolver（推荐求解器）
-- ✅ 已使用 ResultValidator 验证结果
-- ✅ 已使用 PlotHelper 生成图表
-- ✅ 已使用 canal_utils 计算水力学参数
+-  已使用 HydrostaticCanalSolver（推荐求解器）
+-  已使用 ResultValidator 验证结果
+-  已使用 PlotHelper 生成图表
+-  已使用 canal_utils 计算水力学参数
 
 不要修改基础库的导入和使用方式！
 """
@@ -526,11 +526,11 @@ def main():
         args.template
     )
     
-    print("✅ 示例生成成功！")
+    print(" 示例生成成功！")
     print(f"\n生成的文件:")
-    print(f"  📄 脚本: {script_path}")
-    print(f"  📖 文档: {readme_path}")
-    print(f"  📁 输出: {script_path.parent / 'results'}")
+    print(f"   脚本: {script_path}")
+    print(f"   文档: {readme_path}")
+    print(f"   输出: {script_path.parent / 'results'}")
     
     print(f"\n下一步:")
     print(f"  1. 编辑脚本: {script_path}")

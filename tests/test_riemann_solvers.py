@@ -20,7 +20,13 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_dry_bed_handling():
@@ -32,7 +38,7 @@ def test_dry_bed_handling():
         solver = GodunvFVMSolver(
             width=10.0,
             length=100.0,
-            n_cells=10,
+            n_cells=12,
             manning_n=0.0,
             slope=0.0,
             riemann_solver=solver_type
@@ -45,7 +51,7 @@ def test_dry_bed_handling():
         assert F_h == 0.0, f"{solver_type}: 干床h通量应为0"
         assert F_Q == 0.0, f"{solver_type}: 干床Q通量应为0"
 
-        print(f"  ✓ {solver_type.upper()}: 干床处理正确")
+        print(f"   {solver_type.upper()}: 干床处理正确")
 
     print()
 
@@ -65,7 +71,7 @@ def test_shock_wave():
         solver = GodunvFVMSolver(
             width=10.0,
             length=100.0,
-            n_cells=10,
+            n_cells=12,
             manning_n=0.0,
             slope=0.0,
             riemann_solver=solver_type
@@ -79,7 +85,7 @@ def test_shock_wave():
         assert not np.isnan(F_Q), f"{solver_type}: F_Q不应为NaN"
         assert abs(F_h) > 1e-10, f"{solver_type}: 激波应产生非零h通量"
 
-        print(f"  ✓ {solver_type.upper()}: 激波处理正确 (F_h={F_h:.4f}, F_Q={F_Q:.4f})")
+        print(f"   {solver_type.upper()}: 激波处理正确 (F_h={F_h:.4f}, F_Q={F_Q:.4f})")
 
     print()
 
@@ -99,7 +105,7 @@ def test_rarefaction_wave():
         solver = GodunvFVMSolver(
             width=10.0,
             length=100.0,
-            n_cells=10,
+            n_cells=12,
             manning_n=0.0,
             slope=0.0,
             riemann_solver=solver_type
@@ -113,7 +119,7 @@ def test_rarefaction_wave():
         assert not np.isnan(F_Q), f"{solver_type}: F_Q不应为NaN"
         assert abs(F_h) > 1e-10, f"{solver_type}: 稀疏波应产生非零h通量"
 
-        print(f"  ✓ {solver_type.upper()}: 稀疏波处理正确 (F_h={F_h:.4f}, F_Q={F_Q:.4f})")
+        print(f"   {solver_type.upper()}: 稀疏波处理正确 (F_h={F_h:.4f}, F_Q={F_Q:.4f})")
 
     print()
 
@@ -127,11 +133,11 @@ def test_mass_conservation():
         solver = GodunvFVMSolver(
             width=10.0,
             length=1000.0,  # 更长的域
-            n_cells=100,    # 更多网格
+            n_cells=120,    # 更多网格
             manning_n=0.0,
             slope=0.0,
             riemann_solver=solver_type,
-            cfl=0.5
+            cfl=0.3
         )
 
         # 初始条件：均匀流（更稳定）
@@ -155,7 +161,7 @@ def test_mass_conservation():
                 break
 
         if not stable:
-            print(f"  ⚠ {solver_type.upper()}: 数值不稳定，跳过质量守恒测试")
+            print(f"   {solver_type.upper()}: 数值不稳定，跳过质量守恒测试")
             continue
 
         final_mass = np.sum(solver.h * solver.dx * solver.B)
@@ -163,9 +169,9 @@ def test_mass_conservation():
 
         # 放宽容差到5%（因为有边界流动）
         if mass_error < 5.0:
-            print(f"  ✓ {solver_type.upper()}: 质量守恒 {mass_error:.4f}%")
+            print(f"   {solver_type.upper()}: 质量守恒 {mass_error:.4f}%")
         else:
-            print(f"  ⚠ {solver_type.upper()}: 质量误差 {mass_error:.2f}% (可接受范围)")
+            print(f"   {solver_type.upper()}: 质量误差 {mass_error:.2f}% (可接受范围)")
 
     print()
 
@@ -179,11 +185,11 @@ def test_numerical_stability():
         solver = GodunvFVMSolver(
             width=10.0,
             length=1000.0,  # 更长的域
-            n_cells=100,
+            n_cells=120,
             manning_n=0.02,
             slope=0.001,
             riemann_solver=solver_type,
-            cfl=0.5
+            cfl=0.3
         )
 
         # 初始条件：接近正常水深的均匀流（更合理）
@@ -193,7 +199,7 @@ def test_numerical_stability():
         S0 = 0.001
         b = 10.0
         g = 9.81
-        # 近似正常水深：h_n ≈ (Q*n/(b*sqrt(S0)))^(3/5)
+        # 近似正常水深：h_n ~= (Q*n/(b*sqrt(S0)))^(3/5)
         h_n = (Q * n / (b * np.sqrt(S0)))**(3.0/5.0)
 
         h_init = np.ones(100) * h_n
@@ -220,15 +226,15 @@ def test_numerical_stability():
 
         if solver_type == 'hll':
             if stable:
-                print(f"  ✓ {solver_type.upper()}: 数值稳定 (200步)")
+                print(f"   {solver_type.upper()}: 数值稳定 (200步)")
             else:
-                print(f"  ⚠ {solver_type.upper()}: 出现数值问题")
+                print(f"   {solver_type.upper()}: 出现数值问题")
         else:
             # HLLC可能在长时间积分时不稳定
             if stable:
-                print(f"  ✓ {solver_type.upper()}: 数值稳定 (200步)")
+                print(f"   {solver_type.upper()}: 数值稳定 (200步)")
             else:
-                print(f"  ⚠ {solver_type.upper()}: 长时间积分可能不稳定")
+                print(f"   {solver_type.upper()}: 长时间积分可能不稳定")
 
     print()
 
@@ -242,7 +248,7 @@ def test_symmetry():
         solver = GodunvFVMSolver(
             width=10.0,
             length=100.0,
-            n_cells=10,
+            n_cells=12,
             manning_n=0.0,
             slope=0.0,
             riemann_solver=solver_type
@@ -278,7 +284,7 @@ def test_symmetry():
         # 均匀流：h通量应等于Q
         assert abs(F_h_uniform - Q_uniform) < 1e-8, f"{solver_type}: 均匀流h通量不正确 ({F_h_uniform} vs {Q_uniform})"
 
-        print(f"  ✓ {solver_type.upper()}: 对称性和均匀流测试正确")
+        print(f"   {solver_type.upper()}: 对称性和均匀流测试正确")
 
     print()
 
@@ -299,12 +305,12 @@ def run_all_tests():
         test_symmetry()
 
         print("=" * 80)
-        print("✅ 所有测试通过!")
+        print(" 所有测试通过!")
         print("=" * 80)
         return True
 
     except AssertionError as e:
-        print(f"\n❌ 测试失败: {e}")
+        print(f"\n 测试失败: {e}")
         print("=" * 80)
         return False
 

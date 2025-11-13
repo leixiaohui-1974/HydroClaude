@@ -1,0 +1,436 @@
+"""
+测试内部水工建筑物
+
+验证堰、闸等内部建筑物的耦合功能。
+
+Stage 3 - Task 3.3.2 测试
+
+作者: HydroClaude Team
+日期: 2025-10-29
+"""
+
+import pytest
+import numpy as np
+import sys
+import os
+
+# 添加项目根目录到路径
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from network.topology import RiverNetwork, Node, Reach
+from network.nodes import create_inflow_boundary, create_outflow_boundary
+from network.structures import InternalWeir, InternalGate, InternalOrifice
+from network.structures import create_internal_weir, create_internal_gate, create_internal_orifice
+from network.coupling import StructureCoupler, create_structure_coupler
+from network.solver import NetworkSolver
+from physics.hydraulic_structures import BroadCrestedWeir, SluiceGate, Orifice
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+
+
+def create_test_solver(length=100.0, width=10.0, h_init=2.0, Q_init=20.0, slope=0.001):
+    """创建测试求解器"""
+    n_cells = max(10, int(length / 10))
+    solver = GodunvFVMSolver(
+        width=width,
+        length=length,
+        n_cells=n_cells,
+        manning_n=0.025,
+        slope=slope
+    )
+
+    h = np.ones(n_cells) * h_init
+    Q = np.ones(n_cells) * Q_init
+
+    solver.initialize(
+        h, Q,
+        {'type': 'Q', 'value': Q_init},
+        {'type': 'h', 'value': h_init}
+    )
+
+    return solver
+
+
+class TestInternalWeir:
+    """测试内部堰"""
+
+    def test_internal_weir_creation(self):
+        """测试创建内部堰"""
+        # 创建堰
+        weir = BroadCrestedWeir(crest_elevation=2.0, width=10.0)
+
+        # 创建河段和节点
+        solver1 = create_test_solver(Q_init=30.0)
+        solver2 = create_test_solver(Q_init=30.0)
+        reach1 = Reach("R1", "N1", "N2", solver1)
+        reach2 = Reach("R2", "N2", "N3", solver2)
+        node = Node("N2", "junction", elevation=100.0)
+
+        # 创建内部堰
+        internal_weir = InternalWeir(weir, reach1, reach2, node)
+
+        assert internal_weir.structure == weir
+        assert internal_weir.upstream == reach1
+        assert internal_weir.downstream == reach2
+        assert internal_weir.node == node
+        assert "Weir" in internal_weir.name
+
+    def test_internal_weir_discharge_calculation(self):
+        """测试内部堰流量计算"""
+        weir = BroadCrestedWeir(crest_elevation=2.0, width=10.0, discharge_coeff=1.7)
+
+        solver1 = create_test_solver(h_init=3.0, Q_init=30.0)
+        solver2 = create_test_solver(h_init=2.2, Q_init=30.0)
+        reach1 = Reach("R1", "N1", "N2", solver1)
+        reach2 = Reach("R2", "N2", "N3", solver2)
+        node = Node("N2", "junction", elevation=100.0)
+
+        internal_weir = InternalWeir(weir, reach1, reach2, node)
+
+        # 求解流量
+        Q = internal_weir.solve()
+
+        # 验证流量为正
+        assert Q > 0
+
+        # 验证BC已设置
+        assert solver1.bc_right['type'] == 'Q'
+        assert solver2.bc_left['type'] == 'Q'
+        assert solver1.bc_right['value'] == pytest.approx(Q, rel=1e-6)
+        assert solver2.bc_left['value'] == pytest.approx(Q, rel=1e-6)
+
+    def test_internal_weir_mass_balance(self):
+        """测试内部堰质量守恒"""
+        weir = BroadCrestedWeir(crest_elevation=2.0, width=10.0)
+
+        solver1 = create_test_solver(h_init=3.0, Q_init=30.0)
+        solver2 = create_test_solver(h_init=2.5, Q_init=30.0)
+        reach1 = Reach("R1", "N1", "N2", solver1)
+        reach2 = Reach("R2", "N2", "N3", solver2)
+        node = Node("N2", "junction", elevation=100.0)
+
+        internal_weir = InternalWeir(weir, reach1, reach2, node)
+        internal_weir.solve()
+
+        # 检查质量守恒
+        is_balanced, error = internal_weir.check_mass_balance(tol=1.0)
+        assert is_balanced
+        assert error < 1.0
+
+    def test_convenience_function(self):
+        """测试便捷函数 create_internal_weir"""
+        weir = BroadCrestedWeir(crest_elevation=2.0, width=10.0)
+
+        solver1 = create_test_solver()
+        solver2 = create_test_solver()
+        reach1 = Reach("R1", "N1", "N2", solver1)
+        reach2 = Reach("R2", "N2", "N3", solver2)
+        node = Node("N2", "junction", elevation=100.0)
+
+        internal_weir = create_internal_weir(weir, reach1, reach2, node)
+
+        assert isinstance(internal_weir, InternalWeir)
+        assert internal_weir.structure == weir
+
+
+class TestInternalGate:
+    """测试内部闸门"""
+
+    def test_internal_gate_creation(self):
+        """测试创建内部闸门"""
+        gate = SluiceGate(sill_elevation=0.0, width=8.0, opening=0.5)
+
+        solver1 = create_test_solver()
+        solver2 = create_test_solver()
+        reach1 = Reach("R1", "N1", "N2", solver1)
+        reach2 = Reach("R2", "N2", "N3", solver2)
+        node = Node("N2", "junction", elevation=100.0)
+
+        internal_gate = InternalGate(gate, reach1, reach2, node)
+
+        assert internal_gate.structure == gate
+        assert "Gate" in internal_gate.name
+
+    def test_internal_gate_discharge(self):
+        """测试内部闸门流量计算"""
+        gate = SluiceGate(sill_elevation=0.0, width=8.0, opening=0.5)
+
+        solver1 = create_test_solver(h_init=3.0, Q_init=25.0)
+        solver2 = create_test_solver(h_init=2.0, Q_init=25.0)
+        reach1 = Reach("R1", "N1", "N2", solver1)
+        reach2 = Reach("R2", "N2", "N3", solver2)
+        node = Node("N2", "junction", elevation=100.0)
+
+        internal_gate = InternalGate(gate, reach1, reach2, node)
+
+        Q = internal_gate.solve()
+
+        assert Q > 0
+        assert solver1.bc_right['type'] == 'Q'
+        assert solver2.bc_left['type'] == 'Q'
+
+    def test_gate_opening_control(self):
+        """测试闸门开度控制"""
+        gate = SluiceGate(sill_elevation=0.0, width=8.0, opening=0.3)
+
+        solver1 = create_test_solver(h_init=3.0)
+        solver2 = create_test_solver(h_init=2.0)
+        reach1 = Reach("R1", "N1", "N2", solver1)
+        reach2 = Reach("R2", "N2", "N3", solver2)
+        node = Node("N2", "junction", elevation=100.0)
+
+        internal_gate = InternalGate(gate, reach1, reach2, node)
+
+        # 初始开度
+        Q1 = internal_gate.solve()
+        assert internal_gate.get_opening() == 0.3
+
+        # 增大开度
+        internal_gate.set_opening(0.8)
+        Q2 = internal_gate.solve()
+        assert internal_gate.get_opening() == 0.8
+        assert Q2 > Q1  # 流量应增大
+
+    def test_convenience_function_gate(self):
+        """测试便捷函数 create_internal_gate"""
+        gate = SluiceGate(sill_elevation=0.0, width=8.0, opening=0.5)
+
+        solver1 = create_test_solver()
+        solver2 = create_test_solver()
+        reach1 = Reach("R1", "N1", "N2", solver1)
+        reach2 = Reach("R2", "N2", "N3", solver2)
+        node = Node("N2", "junction", elevation=100.0)
+
+        internal_gate = create_internal_gate(gate, reach1, reach2, node)
+
+        assert isinstance(internal_gate, InternalGate)
+
+
+class TestInternalOrifice:
+    """测试内部孔口"""
+
+    def test_internal_orifice_creation(self):
+        """测试创建内部孔口"""
+        orifice = Orifice(center_elevation=1.0, diameter=1.5)
+
+        solver1 = create_test_solver()
+        solver2 = create_test_solver()
+        reach1 = Reach("R1", "N1", "N2", solver1)
+        reach2 = Reach("R2", "N2", "N3", solver2)
+        node = Node("N2", "junction", elevation=100.0)
+
+        internal_orifice = InternalOrifice(orifice, reach1, reach2, node)
+
+        assert internal_orifice.structure == orifice
+        assert "Orifice" in internal_orifice.name
+
+    def test_internal_orifice_discharge(self):
+        """测试内部孔口流量计算"""
+        orifice = Orifice(center_elevation=1.0, diameter=1.5, discharge_coeff=0.62)
+
+        solver1 = create_test_solver(h_init=3.0, Q_init=15.0)
+        solver2 = create_test_solver(h_init=2.0, Q_init=15.0)
+        reach1 = Reach("R1", "N1", "N2", solver1)
+        reach2 = Reach("R2", "N2", "N3", solver2)
+        node = Node("N2", "junction", elevation=100.0)
+
+        internal_orifice = InternalOrifice(orifice, reach1, reach2, node)
+
+        Q = internal_orifice.solve()
+
+        assert Q > 0
+        assert solver1.bc_right['type'] == 'Q'
+        assert solver2.bc_left['type'] == 'Q'
+
+    def test_convenience_function_orifice(self):
+        """测试便捷函数 create_internal_orifice"""
+        orifice = Orifice(center_elevation=1.0, diameter=1.5)
+
+        solver1 = create_test_solver()
+        solver2 = create_test_solver()
+        reach1 = Reach("R1", "N1", "N2", solver1)
+        reach2 = Reach("R2", "N2", "N3", solver2)
+        node = Node("N2", "junction", elevation=100.0)
+
+        internal_orifice = create_internal_orifice(orifice, reach1, reach2, node)
+
+        assert isinstance(internal_orifice, InternalOrifice)
+
+
+class TestStructureCoupler:
+    """测试建筑物耦合器"""
+
+    def test_structure_coupler_with_weir(self):
+        """测试建筑物耦合器（堰）"""
+        weir = BroadCrestedWeir(crest_elevation=2.0, width=10.0)
+
+        solver1 = create_test_solver(h_init=3.0)
+        solver2 = create_test_solver(h_init=2.5)
+        reach1 = Reach("R1", "N1", "N2", solver1)
+        reach2 = Reach("R2", "N2", "N3", solver2)
+        node = Node("N2", "junction", elevation=100.0)
+
+        internal_weir = InternalWeir(weir, reach1, reach2, node)
+        coupler = StructureCoupler(internal_weir)
+
+        Q = coupler.couple()
+
+        assert Q > 0
+        assert coupler.upstream == reach1
+        assert coupler.downstream == reach2
+
+    def test_structure_coupler_mass_balance(self):
+        """测试建筑物耦合器质量守恒"""
+        gate = SluiceGate(sill_elevation=0.0, width=8.0, opening=0.6)
+
+        solver1 = create_test_solver(h_init=3.0, Q_init=30.0)
+        solver2 = create_test_solver(h_init=2.5, Q_init=30.0)
+        reach1 = Reach("R1", "N1", "N2", solver1)
+        reach2 = Reach("R2", "N2", "N3", solver2)
+        node = Node("N2", "junction", elevation=100.0)
+
+        internal_gate = InternalGate(gate, reach1, reach2, node)
+        coupler = StructureCoupler(internal_gate)
+
+        coupler.couple()
+
+        is_balanced, error = coupler.check_mass_balance(tol=1.0)
+        assert is_balanced
+        assert error < 1.0
+
+    def test_convenience_function_structure_coupler(self):
+        """测试便捷函数 create_structure_coupler"""
+        weir = BroadCrestedWeir(crest_elevation=2.0, width=10.0)
+
+        solver1 = create_test_solver()
+        solver2 = create_test_solver()
+        reach1 = Reach("R1", "N1", "N2", solver1)
+        reach2 = Reach("R2", "N2", "N3", solver2)
+        node = Node("N2", "junction", elevation=100.0)
+
+        internal_weir = InternalWeir(weir, reach1, reach2, node)
+        coupler = create_structure_coupler(internal_weir)
+
+        assert isinstance(coupler, StructureCoupler)
+
+
+class TestNetworkIntegration:
+    """测试网络集成"""
+
+    def test_add_internal_structure_to_network(self):
+        """测试向网络添加内部建筑物"""
+        network = RiverNetwork("测试网络")
+
+        # 添加节点
+        n1 = create_inflow_boundary("上游", Q=30.0, elevation=110.0)
+        n2 = Node("中间", "junction", elevation=105.0)
+        n3 = create_outflow_boundary("下游", h=2.0, elevation=100.0)
+
+        network.add_node(n1)
+        network.add_node(n2)
+        network.add_node(n3)
+
+        # 添加河段
+        s1 = create_test_solver(length=500.0, Q_init=30.0)
+        s2 = create_test_solver(length=500.0, Q_init=30.0)
+
+        r1 = Reach("R1", "上游", "中间", s1)
+        r2 = Reach("R2", "中间", "下游", s2)
+
+        network.add_reach(r1)
+        network.add_reach(r2)
+
+        # 创建并添加内部堰
+        weir = BroadCrestedWeir(crest_elevation=105.0, width=10.0)
+        internal_weir = InternalWeir(weir, r1, r2, n2)
+
+        network.add_internal_structure("中间", internal_weir)
+
+        assert network.nodes["中间"].internal_structure == internal_weir
+
+    def test_network_solver_with_internal_structure(self):
+        """测试网络求解器处理内部建筑物"""
+        network = RiverNetwork("串联闸门系统")
+
+        # 创建节点
+        n1 = create_inflow_boundary("IN", Q=30.0, elevation=110.0)
+        n2 = Node("GATE", "junction", elevation=105.0)
+        n3 = create_outflow_boundary("OUT", h=2.0, elevation=100.0)
+
+        network.add_node(n1)
+        network.add_node(n2)
+        network.add_node(n3)
+
+        # 创建河段
+        s1 = create_test_solver(length=500.0, width=15.0, h_init=3.0, Q_init=30.0)
+        s2 = create_test_solver(length=500.0, width=15.0, h_init=2.5, Q_init=30.0)
+
+        r1 = Reach("R1", "IN", "GATE", s1)
+        r2 = Reach("R2", "GATE", "OUT", s2)
+
+        network.add_reach(r1)
+        network.add_reach(r2)
+
+        # 添加闸门
+        gate = SluiceGate(sill_elevation=105.0, width=10.0, opening=0.5)
+        internal_gate = InternalGate(gate, r1, r2, n2)
+
+        network.add_internal_structure("GATE", internal_gate)
+
+        # 创建求解器
+        solver = NetworkSolver(network)
+
+        # 验证StructureCoupler已创建
+        assert "GATE" in solver.couplers
+        assert isinstance(solver.couplers["GATE"], StructureCoupler)
+
+    def test_network_simulation_with_internal_weir(self):
+        """测试带内部堰的网络模拟"""
+        network = RiverNetwork("堰控河道")
+
+        # 节点
+        n1 = create_inflow_boundary("上游", Q=40.0, elevation=110.0)
+        n2 = Node("堰", "junction", elevation=105.0)
+        n3 = create_outflow_boundary("下游", h=2.0, elevation=100.0)
+
+        network.add_node(n1)
+        network.add_node(n2)
+        network.add_node(n3)
+
+        # 河段
+        s1 = create_test_solver(length=800.0, width=15.0, h_init=3.0, Q_init=40.0)
+        s2 = create_test_solver(length=800.0, width=15.0, h_init=2.5, Q_init=40.0)
+
+        r1 = Reach("上游段", "上游", "堰", s1)
+        r2 = Reach("下游段", "堰", "下游", s2)
+
+        network.add_reach(r1)
+        network.add_reach(r2)
+
+        # 添加宽顶堰
+        weir = BroadCrestedWeir(crest_elevation=105.0, width=12.0, discharge_coeff=1.7)
+        internal_weir = InternalWeir(weir, r1, r2, n2)
+
+        network.add_internal_structure("堰", internal_weir)
+
+        # 运行模拟
+        solver = NetworkSolver(network, solve_method='sequential')
+
+        # 运行短时间模拟
+        results = solver.run(t_end=100.0, dt=1.0, verbose=False)
+
+        assert results['n_steps'] > 0
+        assert len(results['mass_error_history']) > 0
+
+        # 质量守恒
+        max_error = max(results['mass_error_history'])
+        assert max_error < 10.0  # 10%以内
+
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-v", "--tb=short"])

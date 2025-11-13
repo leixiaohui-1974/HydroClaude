@@ -30,7 +30,7 @@
 
 ```bash
 cd examples/example_09_pipe_rk4
-PYTHONPATH=../.. python example_09_pipe_rk4.py
+PYTHONPATH=../.. python code/example_09_pipe_rk4.py
 ```
 
 ## 输出结果
@@ -41,7 +41,9 @@ PYTHONPATH=../.. python example_09_pipe_rk4.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_09_pipe_rk4_pipe_flow.gif`
+
+![动画](outputs\animations\example_09_pipe_rk4_pipe_flow.gif)
 
 ## 技术要点
 

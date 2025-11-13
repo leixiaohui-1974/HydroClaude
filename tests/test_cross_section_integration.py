@@ -19,7 +19,13 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from physics.cross_section import RectangularSection, TrapezoidalSection
 
 
@@ -30,7 +36,7 @@ def test_backward_compatibility_no_cross_section():
     solver = GodunvFVMSolver(
         width=10.0,
         length=1000.0,
-        n_cells=100,
+        n_cells=120,
         manning_n=0.025,
         slope=0.001
     )
@@ -50,7 +56,7 @@ def test_backward_compatibility_no_cross_section():
     assert abs(geom.area - expected_area) < 1e-10
     assert abs(geom.perimeter - expected_perimeter) < 1e-10
 
-    print("✅ 向后兼容性测试通过")
+    print(" 向后兼容性测试通过")
 
 
 @pytest.mark.p1
@@ -61,7 +67,7 @@ def test_explicit_rectangular_section():
     solver = GodunvFVMSolver(
         width=10.0,
         length=1000.0,
-        n_cells=100,
+        n_cells=120,
         manning_n=0.025,
         slope=0.001,
         cross_section=section
@@ -86,7 +92,7 @@ def test_explicit_rectangular_section():
     expected_Fr = 1.0 / np.sqrt(9.81 * 2.0)
     assert abs(Fr[50] - expected_Fr) < 1e-3
 
-    print("✅ 显式矩形断面测试通过")
+    print(" 显式矩形断面测试通过")
 
 
 @pytest.mark.p2
@@ -99,7 +105,7 @@ def test_trapezoidal_section_integration():
         solver = GodunvFVMSolver(
             width=10.0,  # 这个参数仍需传入（向后兼容），但不会用于几何计算
             length=1000.0,
-            n_cells=100,
+            n_cells=120,
             manning_n=0.025,
             slope=0.001,
             cross_section=section
@@ -114,8 +120,8 @@ def test_trapezoidal_section_integration():
     solver.Q[:] = 20.0
 
     # 手动计算梯形几何参数
-    # A = (b + m*h) * h = (8 + 1.5*2) * 2 = 22 m²
-    # P = b + 2*h*sqrt(1+m²) = 8 + 2*2*sqrt(1+1.5²) = 8 + 7.211 = 15.211 m
+    # A = (b + m*h) * h = (8 + 1.5*2) * 2 = 22 m^2
+    # P = b + 2*h*sqrt(1+m^2) = 8 + 2*2*sqrt(1+1.5^2) = 8 + 7.211 = 15.211 m
     # R = A/P = 22/15.211 = 1.446 m
     geom = section.compute_geometry(h)
     expected_area = (8.0 + 1.5*2.0) * 2.0
@@ -142,8 +148,8 @@ def test_trapezoidal_section_integration():
 
     assert abs(Fr[50] - expected_Fr) < 1e-3
 
-    print("✅ 梯形断面集成测试通过")
-    print(f"   面积: {geom.area:.3f} m² (预期: {expected_area:.3f})")
+    print(" 梯形断面集成测试通过")
+    print(f"   面积: {geom.area:.3f} m^2 (预期: {expected_area:.3f})")
     print(f"   湿周: {geom.perimeter:.3f} m (预期: {expected_perimeter:.3f})")
     print(f"   水力半径: {geom.hydraulic_radius:.3f} m")
     print(f"   Fr: {Fr[50]:.3f} (预期: {expected_Fr:.3f})")
@@ -158,7 +164,7 @@ def test_friction_source_term_with_trapezoidal():
         solver = GodunvFVMSolver(
             width=10.0,
             length=1000.0,
-            n_cells=100,
+            n_cells=120,
             manning_n=0.025,
             slope=0.001,
             cross_section=section
@@ -179,7 +185,7 @@ def test_friction_source_term_with_trapezoidal():
 
     assert abs(S_friction - expected_S) < 1e-6
 
-    print("✅ 梯形断面摩阻源项测试通过")
+    print(" 梯形断面摩阻源项测试通过")
     print(f"   S_friction = {S_friction:.6f} (预期: {expected_S:.6f})")
 
 
@@ -192,7 +198,7 @@ def test_mass_conservation_with_trapezoidal():
         solver = GodunvFVMSolver(
             width=10.0,
             length=1000.0,
-            n_cells=100,
+            n_cells=120,
             manning_n=0.025,
             slope=0.001,
             cross_section=section
@@ -213,8 +219,8 @@ def test_mass_conservation_with_trapezoidal():
     # 应该完全一致
     assert abs(mass_solver - mass_manual) < 1e-9
 
-    print("✅ 梯形断面质量守恒计算测试通过")
-    print(f"   总质量 = {mass_solver:.6f} m³ (手动计算: {mass_manual:.6f})")
+    print(" 梯形断面质量守恒计算测试通过")
+    print(f"   总质量 = {mass_solver:.6f} m^3 (手动计算: {mass_manual:.6f})")
 
 
 if __name__ == "__main__":
@@ -230,5 +236,5 @@ if __name__ == "__main__":
     test_mass_conservation_with_trapezoidal()
 
     print("\n" + "="*80)
-    print("✅ 所有断面集成测试通过！")
+    print(" 所有断面集成测试通过！")
     print("="*80)

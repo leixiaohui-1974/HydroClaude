@@ -71,7 +71,7 @@ def validation_case_1_simple_tree_network():
     # 验证1: 拓扑连通性
     print("\n[测试1] 拓扑连通性")
     is_connected = topology.is_connected()
-    print(f"  网络是否连通: {'是' if is_connected else '否'} ✓" if is_connected else "  网络是否连通: 否 ✗")
+    print(f"  网络是否连通: {'是' if is_connected else '否'} " if is_connected else "  网络是否连通: 否 ")
     assert is_connected, "树状网络应该是连通的"
 
     # 验证2: 回路识别
@@ -80,12 +80,12 @@ def validation_case_1_simple_tree_network():
     print(f"  识别到的回路数: {len(loops)}")
     print(f"  预期回路数: 0 (树状网络无回路)")
     assert len(loops) == 0, "树状网络不应有回路"
-    print("  ✓ 回路数正确")
+    print("   回路数正确")
 
     # 验证3: 关联矩阵
     print("\n[测试3] 关联矩阵")
     A, node_ids, pipe_ids = topology.incidence_matrix()
-    print(f"  关联矩阵尺寸: {A.shape} (节点×管道)")
+    print(f"  关联矩阵尺寸: {A.shape} (节点x管道)")
     print(f"  理论尺寸: (5, 4)")
     assert A.shape == (5, 4), "关联矩阵尺寸不正确"
 
@@ -93,7 +93,7 @@ def validation_case_1_simple_tree_network():
     col_sums = np.sum(A, axis=0)
     print(f"  各列之和: {col_sums}")
     assert np.allclose(col_sums, 0.0), "关联矩阵各列之和应为0"
-    print("  ✓ 关联矩阵验证通过")
+    print("   关联矩阵验证通过")
 
     # 验证4: 最短路径
     print("\n[测试4] 最短路径搜索")
@@ -101,7 +101,7 @@ def validation_case_1_simple_tree_network():
     print(f"  R1 到 T1 的最短路径: {' -> '.join(path_r1_to_t1)}")
     print(f"  路径长度: {len(path_r1_to_t1)} 个节点")
     assert path_r1_to_t1 == ["R1", "J1", "J2", "J3", "T1"], "最短路径不正确"
-    print("  ✓ 最短路径正确")
+    print("   最短路径正确")
 
     # 验证5: 网络有效性
     print("\n[测试5] 网络有效性检查")
@@ -113,7 +113,7 @@ def validation_case_1_simple_tree_network():
     else:
         print("    无错误或警告")
     assert is_valid, "网络应该是有效的"
-    print("  ✓ 网络验证通过")
+    print("   网络验证通过")
 
     # 验证6: 网络摘要
     print("\n[测试6] 网络摘要统计")
@@ -128,7 +128,7 @@ def validation_case_1_simple_tree_network():
     print(f"  平均度数: {summary['average_degree']:.2f}")
 
     print("\n" + "=" * 80)
-    print("✓ 验证案例1: 所有测试通过")
+    print(" 验证案例1: 所有测试通过")
     print("=" * 80 + "\n")
 
     return topology
@@ -197,12 +197,12 @@ def validation_case_2_single_loop_network():
     expected_loops = len(topology.pipes) - len(topology.nodes) + 1
     print(f"  理论回路数: {expected_loops}")
     assert len(loops) == expected_loops, f"回路数不匹配: 实际{len(loops)} vs 理论{expected_loops}"
-    print("  ✓ 回路数正确")
+    print("   回路数正确")
 
     # 验证2: 回路矩阵
     print("\n[测试2] 回路矩阵")
     B, loop_nodes, pipe_ids = topology.loop_matrix()
-    print(f"  回路矩阵尺寸: {B.shape} (回路×管道)")
+    print(f"  回路矩阵尺寸: {B.shape} (回路x管道)")
     print(f"  理论尺寸: (1, 5)")
     assert B.shape[0] == 1, "应该有1个回路"
 
@@ -212,7 +212,7 @@ def validation_case_2_single_loop_network():
     for i in range(B.shape[0]):
         non_zero_count = np.count_nonzero(B[i, :])
         print(f"  回路{i+1} 包含 {non_zero_count} 根管道")
-    print("  ✓ 回路矩阵验证通过")
+    print("   回路矩阵验证通过")
 
     # 验证3: 关联矩阵
     print("\n[测试3] 关联矩阵")
@@ -224,7 +224,7 @@ def validation_case_2_single_loop_network():
     max_col_sum = np.max(np.abs(col_sums))
     print(f"  最大列和绝对值: {max_col_sum:.10f}")
     assert np.allclose(col_sums, 0.0), "关联矩阵各列之和应为0"
-    print("  ✓ 关联矩阵流量守恒")
+    print("   关联矩阵流量守恒")
 
     # 验证4: 最短路径（存在多条路径的情况）
     print("\n[测试4] 最短路径搜索")
@@ -233,7 +233,7 @@ def validation_case_2_single_loop_network():
     print(f"  路径长度: {len(path_j1_to_j4)} 个节点")
     # BFS应该找到最短路径（2跳）
     assert len(path_j1_to_j4) == 3, "J1到J4应该是3个节点（2跳）"
-    print("  ✓ 最短路径正确")
+    print("   最短路径正确")
 
     # 验证5: 网络摘要
     print("\n[测试5] 网络摘要")
@@ -243,10 +243,10 @@ def validation_case_2_single_loop_network():
     print(f"  回路数: {summary['num_loops']}")
     print(f"  理论回路数: {summary['expected_loops']}")
     assert summary['num_loops'] == summary['expected_loops'], "回路数与理论值不符"
-    print("  ✓ 网络摘要正确")
+    print("   网络摘要正确")
 
     print("\n" + "=" * 80)
-    print("✓ 验证案例2: 所有测试通过")
+    print(" 验证案例2: 所有测试通过")
     print("=" * 80 + "\n")
 
     return topology
@@ -316,7 +316,7 @@ def validation_case_3_hardy_cross_two_loop():
             print(f"  回路 {i+1}: {' -> '.join(loop)}")
 
     assert len(loops) == expected_loops, f"回路数不匹配"
-    print("  ✓ 回路数正确")
+    print("   回路数正确")
 
     # 验证2: 回路矩阵
     print("\n[测试2] 回路矩阵")
@@ -329,17 +329,17 @@ def validation_case_3_hardy_cross_two_loop():
         pipes_in_loop = np.count_nonzero(B[i, :])
         print(f"  回路 {i+1} 包含 {pipes_in_loop} 根管道")
         assert pipes_in_loop >= 3, "每个回路至少应包含3根管道"
-    print("  ✓ 回路矩阵验证通过")
+    print("   回路矩阵验证通过")
 
     # 验证3: 关联矩阵
     print("\n[测试3] 关联矩阵")
     A, node_ids, pipe_ids_A = topology.incidence_matrix()
-    print(f"  关联矩阵尺寸: {A.shape} (节点×管道)")
+    print(f"  关联矩阵尺寸: {A.shape} (节点x管道)")
 
     # 验证流量守恒
     col_sums = np.sum(A, axis=0)
     assert np.allclose(col_sums, 0.0), "流量守恒不满足"
-    print("  ✓ 流量守恒验证通过")
+    print("   流量守恒验证通过")
 
     # 验证4: 网络连通性和有效性
     print("\n[测试4] 网络连通性和有效性")
@@ -353,7 +353,7 @@ def validation_case_3_hardy_cross_two_loop():
         for issue in issues:
             print(f"    - {issue}")
     assert is_valid or len([i for i in issues if "错误" in i]) == 0, "网络应该是有效的"
-    print("  ✓ 网络验证通过")
+    print("   网络验证通过")
 
     # 验证5: 网络摘要
     print("\n[测试5] 网络摘要")
@@ -363,12 +363,12 @@ def validation_case_3_hardy_cross_two_loop():
     print(f"  管道总数: {summary['num_pipes']}")
     print(f"  回路数: {summary['num_loops']}")
     print(f"  平均度数: {summary['average_degree']:.2f}")
-    print("  ✓ 网络摘要统计完成")
+    print("   网络摘要统计完成")
 
     print("\n" + "=" * 80)
-    print("✓ 验证案例3: 所有测试通过")
+    print(" 验证案例3: 所有测试通过")
     print("=" * 80 + "\n")
-    print("  ⚠️  注意: 该拓扑结构为Hardy Cross求解器准备")
+    print("    注意: 该拓扑结构为Hardy Cross求解器准备")
     print("     Phase 5.3 将实现管网平差计算")
     print("=" * 80 + "\n")
 
@@ -433,7 +433,7 @@ def plot_network_topology(topology: NetworkTopology, filename: str = None):
             marker = 'o'  # 圆形
             size = 200
 
-        ax.scatter(x, y, s=size, c=color, marker=marker, zorder=2,
+        ax.scatter(x, y, s=size, c=color, marker=marker, zorder=1,
                   edgecolors='black', linewidths=2)
 
         # 标注节点ID
@@ -487,24 +487,24 @@ def main():
     # plot_network_topology(topology3, "two_loop_network.png")
 
     print("\n" + "="*80)
-    print("✓✓✓ 所有验证案例通过 - All Validation Cases Passed ✓✓✓")
+    print(" 所有验证案例通过 - All Validation Cases Passed ")
     print("="*80)
     print("\n摘要 Summary:")
     print("  - 验证案例1: 树状网络 (无回路)")
     print("  - 验证案例2: 单回路网络")
     print("  - 验证案例3: Hardy Cross双回路网络")
     print("\n功能验证 Functionality Validated:")
-    print("  ✓ 网络拓扑构建")
-    print("  ✓ 节点-管道连接")
-    print("  ✓ 回路识别算法")
-    print("  ✓ 关联矩阵构造")
-    print("  ✓ 回路矩阵构造")
-    print("  ✓ 最短路径搜索")
-    print("  ✓ 网络连通性检查")
-    print("  ✓ 网络有效性验证")
-    print("  ✓ 网络摘要统计")
+    print("   网络拓扑构建")
+    print("   节点-管道连接")
+    print("   回路识别算法")
+    print("   关联矩阵构造")
+    print("   回路矩阵构造")
+    print("   最短路径搜索")
+    print("   网络连通性检查")
+    print("   网络有效性验证")
+    print("   网络摘要统计")
     print("\n准备就绪 Ready for:")
-    print("  → Phase 5.3: Hardy Cross管网平差求解器")
+    print("  -> Phase 5.3: Hardy Cross管网平差求解器")
     print("="*80 + "\n")
 
 

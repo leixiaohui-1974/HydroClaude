@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 时变边界条件展示案例 - 运行所有配置
 
@@ -49,10 +50,10 @@ def print_bc_info(config_name, bc_config):
         base = bc_config.get('base', 0)
         amp = bc_config.get('amplitude', 0)
         period = bc_config.get('period', 0)
-        print(f"  基础值: {base} m³/s")
-        print(f"  振幅: ±{amp} m³/s")
+        print(f"  基础值: {base} m^3/s")
+        print(f"  振幅: +/-{amp} m^3/s")
         print(f"  周期: {period} s ({period/60:.1f} 分钟)")
-        print(f"  范围: {base-amp} - {base+amp} m³/s")
+        print(f"  范围: {base-amp} - {base+amp} m^3/s")
         print(f"  公式: Q(t) = {base} + {amp}*sin(2π*t/{period})")
 
     elif bc_type == 'step':
@@ -61,8 +62,8 @@ def print_bc_info(config_name, bc_config):
         after = bc_config.get('value_after', 0)
         increase = (after - before) / before * 100
         print(f"  阶跃时刻: {step_time} s ({step_time/60:.1f} 分钟)")
-        print(f"  阶跃前值: {before} m³/s")
-        print(f"  阶跃后值: {after} m³/s")
+        print(f"  阶跃前值: {before} m^3/s")
+        print(f"  阶跃后值: {after} m^3/s")
         print(f"  变化幅度: +{increase:.1f}%")
 
     elif bc_type == 'linear':
@@ -70,11 +71,11 @@ def print_bc_info(config_name, bc_config):
         end = bc_config.get('end_value', 0)
         duration = bc_config.get('duration', 0)
         rate = (end - start) / duration
-        print(f"  起始值: {start} m³/s")
-        print(f"  终止值: {end} m³/s")
+        print(f"  起始值: {start} m^3/s")
+        print(f"  终止值: {end} m^3/s")
         print(f"  变化时长: {duration} s ({duration/60:.1f} 分钟)")
-        print(f"  变化率: {rate:.4f} m³/s²")
-        print(f"  公式: Q(t) = {start} + {rate:.4f}*t (t ≤ {duration}s)")
+        print(f"  变化率: {rate:.4f} m^3/s^2")
+        print(f"  公式: Q(t) = {start} + {rate:.4f}*t (t <= {duration}s)")
 
 
 def run_case(config_file, case_name):
@@ -156,7 +157,7 @@ def main():
             results[case_name] = result
             print()
         except Exception as e:
-            print(f"\n✗ 案例 '{case_name}' 失败: {e}\n")
+            print(f"\n 案例 '{case_name}' 失败: {e}\n")
             import traceback
             traceback.print_exc()
 
@@ -165,7 +166,7 @@ def main():
     print(f"成功: {len(results)}/{len(configs)}")
     print()
     for case_name in results:
-        print(f"  ✓ {case_name}")
+        print(f"   {case_name}")
     print()
 
 

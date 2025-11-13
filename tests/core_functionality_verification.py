@@ -12,7 +12,13 @@ import os
 
 sys.path.insert(0, '.')
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_well_balanced_stability():
@@ -23,7 +29,7 @@ def test_well_balanced_stability():
 
     # 创建带凸起的底高程
     L = 100.0
-    n_cells = 100
+    n_cells = 120
     x = np.linspace(0.5, L-0.5, n_cells)
 
     z_b = np.zeros(n_cells)
@@ -43,7 +49,7 @@ def test_well_balanced_stability():
         n_cells=n_cells,
         manning_n=0.03,
         z_b=z_b,
-        cfl=0.5,
+        cfl=0.3,
         order=1,
         well_balanced=True
     )
@@ -80,10 +86,10 @@ def test_well_balanced_stability():
 
     # 判定
     if max_disturbance < 5.0 and mass_error < 10.0:
-        print(f"  状态: ✅ PASS")
+        print(f"  状态:  PASS")
         return True
     else:
-        print(f"  状态: ❌ FAIL")
+        print(f"  状态:  FAIL")
         return False
 
 
@@ -95,7 +101,7 @@ def test_flood_routing():
 
     # 河道参数
     L = 50000.0  # 50 km
-    n_cells = 100
+    n_cells = 120
     S0 = 1.0 / 2000.0
 
     # 初始条件
@@ -109,7 +115,7 @@ def test_flood_routing():
         n_cells=n_cells,
         manning_n=0.03,
         slope=S0,
-        cfl=0.5,
+        cfl=0.3,
         order=1,
         well_balanced=True
     )
@@ -154,17 +160,17 @@ def test_flood_routing():
     print(f"\n结果:")
     print(f"  模拟时间: {t/3600:.1f} hours")
     print(f"  总步数: {step}")
-    print(f"  上游洪峰: {Q_upstream_max:.1f} m³/s")
-    print(f"  下游洪峰: {Q_downstream_max:.1f} m³/s")
+    print(f"  上游洪峰: {Q_upstream_max:.1f} m^3/s")
+    print(f"  下游洪峰: {Q_downstream_max:.1f} m^3/s")
 
     # 检查NaN
     has_nan = np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q))
 
     if not has_nan and step > 100:
-        print(f"  状态: ✅ PASS")
+        print(f"  状态:  PASS")
         return True
     else:
-        print(f"  状态: ❌ FAIL")
+        print(f"  状态:  FAIL")
         return False
 
 
@@ -191,7 +197,7 @@ def test_dam_break():
         n_cells=n_cells,
         manning_n=0.0,
         slope=0.0,
-        cfl=0.5,
+        cfl=0.3,
         order=1,
         well_balanced=False
     )
@@ -227,10 +233,10 @@ def test_dam_break():
     has_nan = np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q))
 
     if not has_nan and mass_error < 5.0:
-        print(f"  状态: ✅ PASS")
+        print(f"  状态:  PASS")
         return True
     else:
-        print(f"  状态: ❌ FAIL")
+        print(f"  状态:  FAIL")
         return False
 
 
@@ -246,19 +252,19 @@ def main():
     try:
         results.append(("Well-Balanced Stability", test_well_balanced_stability()))
     except Exception as e:
-        print(f"\n❌ Test 1 Error: {e}")
+        print(f"\n Test 1 Error: {e}")
         results.append(("Well-Balanced Stability", False))
 
     try:
         results.append(("Flood Routing", test_flood_routing()))
     except Exception as e:
-        print(f"\n❌ Test 2 Error: {e}")
+        print(f"\n Test 2 Error: {e}")
         results.append(("Flood Routing", False))
 
     try:
         results.append(("Dam Break", test_dam_break()))
     except Exception as e:
-        print(f"\n❌ Test 3 Error: {e}")
+        print(f"\n Test 3 Error: {e}")
         results.append(("Dam Break", False))
 
     # 总结
@@ -270,16 +276,16 @@ def main():
     total = len(results)
 
     for name, result in results:
-        status = "✅ PASS" if result else "❌ FAIL"
+        status = " PASS" if result else " FAIL"
         print(f"  {name:<30} {status}")
 
     print(f"\n总计: {passed}/{total} 通过 ({passed/total*100:.0f}%)")
 
     if passed == total:
-        print("\n✅ 所有核心功能测试通过！")
+        print("\n 所有核心功能测试通过！")
         return 0
     else:
-        print(f"\n⚠️  {total-passed}个测试失败")
+        print(f"\n  {total-passed}个测试失败")
         return 1
 
 

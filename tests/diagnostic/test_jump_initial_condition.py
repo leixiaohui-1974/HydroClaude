@@ -7,7 +7,7 @@ MacDonald Test 4的真正挑战不是"捕捉"水跃，而是"维持"水跃。
 让我们从一个已经包含水跃的初始条件开始。
 
 水跃理论（动量方程）：
-h2/h1 = 0.5 * (√(1 + 8*Fr1²) - 1)
+h2/h1 = 0.5 * (√(1 + 8*Fr1^2) - 1)
 其中 Fr1 = Q/(B*h1*√(g*h1)) 是上游Froude数
 
 日期: 2025-10-29
@@ -18,7 +18,13 @@ import os
 sys.path.insert(0, os.path.dirname(__file__))
 
 import numpy as np
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 # Test 4参数
 L = 1000.0
@@ -90,12 +96,12 @@ for jump_rel_pos in jump_positions:
             dt = solver.compute_dt()
 
             if dt < 1e-6:
-                print(f"    ❌ 失败：t={solver.t:.2f}s时dt变为{dt:.2e}")
+                print(f"     失败：t={solver.t:.2f}s时dt变为{dt:.2e}")
                 failed = True
                 break
 
             if np.any(solver.h < 0) or np.any(np.isnan(solver.h)):
-                print(f"    ❌ 失败：t={solver.t:.2f}s出现非物理h值")
+                print(f"     失败：t={solver.t:.2f}s出现非物理h值")
                 failed = True
                 break
 
@@ -109,15 +115,15 @@ for jump_rel_pos in jump_positions:
             Fr_up = u_up_final / np.sqrt(g * h_up_final)
             n_negative = np.sum(solver.Q < 0)
 
-            print(f"    ✅ 成功：t={solver.t:.2f}s, 步数={step}")
+            print(f"     成功：t={solver.t:.2f}s, 步数={step}")
             print(f"       质量误差={mass_error:.2f}%, Fr={Fr_up:.3f}")
             print(f"       h范围=[{np.min(solver.h):.3f}, {np.max(solver.h):.3f}]")
 
             if n_negative > 0:
-                print(f"       ⚠️  {n_negative}个单元负流量")
+                print(f"       ️  {n_negative}个单元负流量")
 
             if mass_error < 5.0 and Fr_up > 1.0 and n_negative == 0:
-                print(f"       🎯 优秀！")
+                print(f"        优秀！")
                 break  # 找到好的配置，停止测试这个位置的其他CFL
         else:
             print(f"    最终：t={solver.t:.2f}s, 步数={step}")

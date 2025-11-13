@@ -3,13 +3,13 @@
 """
 工程案例5: 参数敏感性分析
 
-场景：分析渠道参数（糙率、底坡、宽度）对水深的影响
-目标：为渠道设计和改造提供参数优化建议
+场景分析渠道参数糙率底坡宽度对水深的影响
+目标为渠道设计和改造提供参数优化建议
 
-分析内容：
-1. 糙率敏感性（n=0.015-0.040）
-2. 底坡敏感性（S0=0.0005-0.002）
-3. 宽度敏感性（B=8-20m）
+分析内容
+1. 糙率敏感性n=0.015-0.040
+2. 底坡敏感性S0=0.0005-0.002
+3. 宽度敏感性B=8-20m
 4. 综合优化建议
 
 作者: HydroClaude Team
@@ -22,6 +22,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from solvers.godunov_fvm_solver import GodunvFVMSolver
 from utils.canal_utils import compute_steady_uniform_flow, compute_critical_depth, compute_froude_number
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 print("=" * 80)
@@ -34,7 +36,7 @@ L = 1500.0
 n_cells = 100
 
 print(f"\n基准参数:")
-print(f"  设计流量: {Q_design} m³/s")
+print(f"  设计流量: {Q_design} m^3/s")
 print(f"  渠道长度: {L/1000} km")
 print(f"  网格数: {n_cells}")
 
@@ -66,7 +68,7 @@ for n in n_values:
     solver = GodunvFVMSolver(
         width=B_base, length=L, n_cells=n_cells,
         manning_n=n, slope=S0_base,
-        cfl=0.5, order=1
+        cfl = 0.3, order=1
     )
     
     h_init = np.ones(n_cells) * h_uniform
@@ -75,7 +77,19 @@ for n in n_values:
     bc_left = {'type': 'Q', 'value': Q_design}
     bc_right = {'type': 'h', 'value': h_uniform}
     
-    solver.initialize(h_init, Q_init, bc_left, bc_right)
+    # GodunvFVMSolver需要手动初始化
+
+    
+    solver.h = h_init.copy()
+
+    
+    solver.Q = Q_init.copy()
+
+    
+    solver.bc_left = bc_left
+
+    
+    solver.bc_right = bc_right
     
     # 推进到稳态
     for _ in range(300):
@@ -125,7 +139,7 @@ for S0 in S0_values:
     solver = GodunvFVMSolver(
         width=B_base, length=L, n_cells=n_cells,
         manning_n=n_base, slope=S0,
-        cfl=0.5, order=1
+        cfl = 0.3, order=1
     )
     
     h_init = np.ones(n_cells) * h_uniform
@@ -134,7 +148,19 @@ for S0 in S0_values:
     bc_left = {'type': 'Q', 'value': Q_design}
     bc_right = {'type': 'h', 'value': h_uniform}
     
-    solver.initialize(h_init, Q_init, bc_left, bc_right)
+    # GodunvFVMSolver需要手动初始化
+
+    
+    solver.h = h_init.copy()
+
+    
+    solver.Q = Q_init.copy()
+
+    
+    solver.bc_left = bc_left
+
+    
+    solver.bc_right = bc_right
     
     # 推进到稳态
     for _ in range(300):
@@ -182,7 +208,7 @@ for B in B_values:
     solver = GodunvFVMSolver(
         width=B, length=L, n_cells=n_cells,
         manning_n=n_base, slope=S0_base,
-        cfl=0.5, order=1
+        cfl = 0.3, order=1
     )
     
     h_init = np.ones(n_cells) * h_uniform
@@ -191,7 +217,19 @@ for B in B_values:
     bc_left = {'type': 'Q', 'value': Q_design}
     bc_right = {'type': 'h', 'value': h_uniform}
     
-    solver.initialize(h_init, Q_init, bc_left, bc_right)
+    # GodunvFVMSolver需要手动初始化
+
+    
+    solver.h = h_init.copy()
+
+    
+    solver.Q = Q_init.copy()
+
+    
+    solver.bc_left = bc_left
+
+    
+    solver.bc_right = bc_right
     
     # 推进到稳态
     for _ in range(300):
@@ -225,8 +263,8 @@ n_max = results_n[-1]['h_avg']
 n_sensitivity = (n_max - n_min) / n_min * 100
 
 print(f"\n1. 糙率敏感性:")
-print(f"   n={n_values[0]} → {n_values[-1]}")
-print(f"   水深: {n_min:.3f}m → {n_max:.3f}m")
+print(f"   n={n_values[0]} -> {n_values[-1]}")
+print(f"   水深: {n_min:.3f}m -> {n_max:.3f}m")
 print(f"   变化幅度: {n_sensitivity:.1f}%")
 print(f"   结论: {'高敏感' if n_sensitivity > 30 else '中等敏感' if n_sensitivity > 15 else '低敏感'}")
 
@@ -236,8 +274,8 @@ S0_max = results_S0[-1]['h_avg']
 S0_sensitivity = abs(S0_max - S0_min) / S0_max * 100
 
 print(f"\n2. 底坡敏感性:")
-print(f"   S0={S0_values[0]} → {S0_values[-1]}")
-print(f"   水深: {S0_max:.3f}m → {S0_min:.3f}m")
+print(f"   S0={S0_values[0]} -> {S0_values[-1]}")
+print(f"   水深: {S0_max:.3f}m -> {S0_min:.3f}m")
 print(f"   变化幅度: {S0_sensitivity:.1f}%")
 print(f"   结论: {'高敏感' if S0_sensitivity > 30 else '中等敏感' if S0_sensitivity > 15 else '低敏感'}")
 
@@ -247,8 +285,8 @@ B_max = results_B[-1]['h_avg']
 B_sensitivity = abs(B_max - B_min) / B_max * 100
 
 print(f"\n3. 宽度敏感性:")
-print(f"   B={B_values[0]}m → {B_values[-1]}m")
-print(f"   水深: {B_min:.3f}m → {B_max:.3f}m")
+print(f"   B={B_values[0]}m -> {B_values[-1]}m")
+print(f"   水深: {B_min:.3f}m -> {B_max:.3f}m")
 print(f"   变化幅度: {B_sensitivity:.1f}%")
 print(f"   结论: {'高敏感' if B_sensitivity > 30 else '中等敏感' if B_sensitivity > 15 else '低敏感'}")
 
@@ -260,7 +298,7 @@ sensitivities = [
 ]
 sensitivities.sort(key=lambda x: x[1], reverse=True)
 
-print(f"\n敏感性排序（从高到低）:")
+print(f"\n敏感性排序从高到低:")
 for i, (param, sens) in enumerate(sensitivities, 1):
     print(f"  {i}. {param}: {sens:.1f}%")
 
@@ -316,10 +354,10 @@ try:
                 f'{val:.1f}%', ha='center', va='bottom', fontweight='bold')
     
     plt.tight_layout()
-    plt.savefig('/workspace/case_parameter_sensitivity.png', dpi=150, bbox_inches='tight')
-    print(f"\n📊 分析图表已保存: case_parameter_sensitivity.png")
+    plt.savefig('./case_parameter_sensitivity.png', dpi=150, bbox_inches='tight')
+    print(f"\n 分析图表已保存: case_parameter_sensitivity.png")
 except Exception as e:
-    print(f"\n⚠️ 可视化失败: {str(e)}")
+    print(f"\n 可视化失败: {str(e)}")
 
 # 工程建议
 print(f"\n" + "=" * 80)
@@ -328,38 +366,38 @@ print("=" * 80)
 
 print(f"\n1. 设计阶段:")
 if sensitivities[0][0] == '糙率':
-    print(f"   • 糙率是最敏感参数，必须精确确定")
-    print(f"   • 建议进行现场测试或查阅规范")
+    print(f"   - 糙率是最敏感参数必须精确确定")
+    print(f"   - 建议进行现场测试或查阅规范")
 elif sensitivities[0][0] == '底坡':
-    print(f"   • 底坡是最敏感参数，必须精确测量")
-    print(f"   • 建议进行地形测量")
+    print(f"   - 底坡是最敏感参数必须精确测量")
+    print(f"   - 建议进行地形测量")
 else:
-    print(f"   • 宽度是最敏感参数，需优化设计")
-    print(f"   • 建议进行多方案比选")
+    print(f"   - 宽度是最敏感参数需优化设计")
+    print(f"   - 建议进行多方案比选")
 
 print(f"\n2. 施工阶段:")
-print(f"   • 严格控制{sensitivities[0][0]}（最敏感参数）")
-print(f"   • 加强{sensitivities[1][0]}的质量控制")
-print(f"   • {sensitivities[2][0]}可适当放宽误差")
+print(f"   - 严格控制{sensitivities[0][0]}最敏感参数")
+print(f"   - 加强{sensitivities[1][0]}的质量控制")
+print(f"   - {sensitivities[2][0]}可适当放宽误差")
 
 print(f"\n3. 运行维护:")
-print(f"   • 定期检查糙率（清淤、除草）")
-print(f"   • 监测底坡变化（淤积、冲刷）")
-print(f"   • 评估宽度充足性")
+print(f"   - 定期检查糙率清淤除草")
+print(f"   - 监测底坡变化淤积冲刷")
+print(f"   - 评估宽度充足性")
 
 print(f"\n4. 改造优化:")
 most_sensitive = sensitivities[0][0]
 if most_sensitive == '糙率':
-    print(f"   • 优先考虑降低糙率（衬砌、维护）")
-    print(f"   • 性价比最高")
+    print(f"   - 优先考虑降低糙率衬砌维护")
+    print(f"   - 性价比最高")
 elif most_sensitive == '底坡':
-    print(f"   • 底坡改造成本高，需综合论证")
+    print(f"   - 底坡改造成本高需综合论证")
 else:
-    print(f"   • 优先考虑拓宽")
-    print(f"   • 降低水深，增加安全性")
+    print(f"   - 优先考虑拓宽")
+    print(f"   - 降低水深增加安全性")
 
 print(f"\n" + "=" * 80)
-print("✅ 参数敏感性分析完成！")
+print(" 参数敏感性分析完成")
 print("=" * 80)
 
 # 数值稳定性统计
@@ -375,4 +413,4 @@ print(f"\n数值稳定性:")
 print(f"  总测试数: {len(all_errors)}")
 print(f"  平均质量误差: {avg_error:.4f}%")
 print(f"  最大质量误差: {max_error:.4f}%")
-print(f"  数值稳定: {'✅ 优秀' if max_error < 2.0 else '⚠️ 一般'}")
+print(f"  数值稳定: {' 优秀' if max_error < 2.0 else ' 一般'}")

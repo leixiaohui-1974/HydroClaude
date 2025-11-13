@@ -3,7 +3,7 @@
 """
 Anderson vs Aitken 加速方法性能对比测试
 
-⚠️ 注意: 此测试已弃用
+️ 注意: 此测试已弃用
 原因: 简单的固定点迭代不适用于Saint-Venant方程，导致数值不稳定（overflow）
 替代方案: 使用ANDERSON_ACCELERATION_VERIFICATION.md中基于代码分析的验证方法
 
@@ -31,7 +31,13 @@ from typing import List, Optional, Dict, Any
 sys.path.insert(0, '.')
 
 from physics.steady_saint_venant import SteadySaintVenantSystem
-from solvers.continuation_solver import ContinuationSolver
+try:
+    from solvers.continuation_solver import ContinuationSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.fixed_point_iteration import (
     FixedPointIterationSolver,
     AitkenAcceleration,
@@ -307,7 +313,7 @@ def run_comprehensive_tests() -> List[AccelerationTestResult]:
                 scenario_results.append(result)
 
             except Exception as e:
-                print(f"✗ 测试失败: {method_name} - {e}")
+                print(f" 测试失败: {method_name} - {e}")
 
         # 场景小结
         print(f"\n{'='*70}")
@@ -344,7 +350,7 @@ def generate_report(results: List[AccelerationTestResult], output_file: str = "A
 
 **生成时间**: {time.strftime('%Y-%m-%d %H:%M:%S')}
 
-## 📊 测试概述
+##  测试概述
 
 本报告对比了以下加速方法在三个不同难度场景下的性能：
 - **无加速**（基准）
@@ -358,7 +364,7 @@ def generate_report(results: List[AccelerationTestResult], output_file: str = "A
 
 ---
 
-## 📋 详细测试结果
+##  详细测试结果
 
 """
 
@@ -369,14 +375,14 @@ def generate_report(results: List[AccelerationTestResult], output_file: str = "A
         report += f"|------|------|----------|----------|--------|----------|\n"
 
         for r in scenario_results:
-            converged = "✅" if r.converged else "❌"
+            converged = "" if r.converged else ""
             speedup = f"{r.speedup_ratio:.2f}x" if r.speedup_ratio else "-"
             report += f"| {r.method} | {converged} | {r.iterations} | {r.execution_time*1000:.1f} | {speedup} | {r.residual_norm:.2e} |\n"
 
         report += "\n"
 
     # 性能分析
-    report += "---\n\n## 📈 性能分析\n\n"
+    report += "---\n\n##  性能分析\n\n"
 
     # 1. 加速比统计
     report += "### 1. 加速比对比\n\n"
@@ -497,7 +503,7 @@ def generate_report(results: List[AccelerationTestResult], output_file: str = "A
     report += "\n"
 
     # 5. 使用建议
-    report += "---\n\n## 💡 使用建议\n\n"
+    report += "---\n\n##  使用建议\n\n"
 
     report += "### 推荐配置\n\n"
     report += "根据测试结果，推荐使用以下配置：\n\n"
@@ -535,7 +541,7 @@ def generate_report(results: List[AccelerationTestResult], output_file: str = "A
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(report)
 
-    print(f"✓ 报告已生成: {output_file}")
+    print(f" 报告已生成: {output_file}")
 
     return report
 

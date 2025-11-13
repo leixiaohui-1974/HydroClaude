@@ -589,14 +589,14 @@ if __name__ == "__main__":
     # 生成报告
     print("生成Markdown报告...")
     md_file = reporter.generate_markdown()
-    print(f"  ✓ {md_file}")
+    print(f"   {md_file}")
 
     print("\n生成HTML报告...")
     html_file = reporter.generate_html()
-    print(f"  ✓ {html_file}")
+    print(f"   {html_file}")
 
     print("\n生成JSON摘要...")
     json_file = reporter.generate_summary_json()
-    print(f"  ✓ {json_file}")
+    print(f"   {json_file}")
 
-    print("\n✓ 测试完成！")
+    print("\n 测试完成！")

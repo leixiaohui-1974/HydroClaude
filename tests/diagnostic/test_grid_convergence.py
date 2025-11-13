@@ -4,10 +4,10 @@
 网格收敛性测试 - MacDonald问题
 
 经过四次失败尝试后的基础验证：
-1. Interface方法：61% → 114% ❌
-2. Strang Splitting：61% → 65% ❌
-3. 空间精度order=2：61% → 66% ❌
-4. Well-Balanced：61% → 120% ❌（最糟糕！）
+1. Interface方法：61% -> 114% 
+2. Strang Splitting：61% -> 65% 
+3. 空间精度order=2：61% -> 66% 
+4. Well-Balanced：61% -> 120% （最糟糕！）
 
 关键洞察：
 - 所有"高级"方法都失败了
@@ -16,8 +16,8 @@
 
 本测试目的：
 检查质量守恒误差是否随网格加密而收敛
-- 如果收敛 → 数值方法正确，只是n_cells=20太粗
-- 如果不收敛 → 问题在边界条件、物理模型或其他地方
+- 如果收敛 -> 数值方法正确，只是n_cells=20太粗
+- 如果不收敛 -> 问题在边界条件、物理模型或其他地方
 
 这是数值方法验证的基础测试，应该最先做！
 """
@@ -28,7 +28,13 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
 import matplotlib.pyplot as plt
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_grid_convergence():
@@ -48,7 +54,7 @@ def test_grid_convergence():
     print(f"  渠道长度: {L} m")
     print(f"  底坡: 0.002")
     print(f"  Manning n: 0.03")
-    print(f"  边界: Q={Q_bc} m³/s, h={h_c:.4f} m (临界水深)")
+    print(f"  边界: Q={Q_bc} m^3/s, h={h_c:.4f} m (临界水深)")
     print(f"  模拟时间: 500s")
 
     # 测试不同网格分辨率
@@ -122,7 +128,7 @@ def test_grid_convergence():
         print(f"  最终时刻: t={solver.t:.1f}s")
         print(f"  总步数: {step_count}")
         print(f"  质量误差: {mass_error:.2f}%")
-        print(f"  平均流量: {Q_avg:.4f} m³/s (目标: {Q_bc})")
+        print(f"  平均流量: {Q_avg:.4f} m^3/s (目标: {Q_bc})")
         print(f"  平均水深: {h_avg:.4f} m")
         print(f"  流量误差: {abs(Q_avg - Q_bc)/Q_bc*100:.2f}%")
 
@@ -168,20 +174,20 @@ def test_grid_convergence():
         # error_ratio应该约等于0.5（对于一阶方法）
         theoretical_ratio = 1.0 / refinement
 
-        print(f"\n{prev['n_cells']} → {curr['n_cells']} (网格加密{refinement}x):")
+        print(f"\n{prev['n_cells']} -> {curr['n_cells']} (网格加密{refinement}x):")
         print(f"  质量误差比: {error_ratio:.4f}")
         print(f"  理论比值(一阶): {theoretical_ratio:.4f}")
 
         if error_ratio < 0.9:
-            print(f"  ✅ 误差减小 ({(1-error_ratio)*100:.1f}%)")
+            print(f"   误差减小 ({(1-error_ratio)*100:.1f}%)")
             if 0.4 < error_ratio < 0.6:
-                print(f"  ✅✅ 接近一阶收敛率！数值方法基本正确")
+                print(f"   接近一阶收敛率！数值方法基本正确")
             elif error_ratio < 0.4:
-                print(f"  ✅✅✅ 超线性收敛！可能接近二阶精度")
+                print(f"   超线性收敛！可能接近二阶精度")
         elif error_ratio < 1.1:
-            print(f"  ⚠️ 误差几乎不变（变化<10%）")
+            print(f"  ️ 误差几乎不变（变化<10%）")
         else:
-            print(f"  ❌ 误差反而增大 ({(error_ratio-1)*100:.1f}%)")
+            print(f"   误差反而增大 ({(error_ratio-1)*100:.1f}%)")
 
     # 总结
     print(f"\n{'='*80}")
@@ -203,44 +209,44 @@ def test_grid_convergence():
 
     print(f"\n1. 收敛性质:")
     if is_monotone_decreasing:
-        print(f"   ✅ 质量误差随网格加密单调递减")
-        print(f"   ✅ 这说明数值方法基本正确！")
+        print(f"    质量误差随网格加密单调递减")
+        print(f"    这说明数值方法基本正确！")
     else:
-        print(f"   ❌ 质量误差未单调递减")
-        print(f"   ❌ 数值方法可能存在问题")
+        print(f"    质量误差未单调递减")
+        print(f"    数值方法可能存在问题")
 
     print(f"\n2. 改善程度:")
     print(f"   从 n={n_cells_list[0]} 到 n={n_cells_list[-1]}:")
-    print(f"   质量误差: {mass_errors[0]:.2f}% → {mass_errors[-1]:.2f}%")
+    print(f"   质量误差: {mass_errors[0]:.2f}% -> {mass_errors[-1]:.2f}%")
     print(f"   改善: {error_improvement:.1f}%")
 
     if error_improvement > 50:
-        print(f"   ✅✅ 显著改善 (>50%)")
+        print(f"    显著改善 (>50%)")
     elif error_improvement > 25:
-        print(f"   ✅ 明显改善 (>25%)")
+        print(f"    明显改善 (>25%)")
     elif error_improvement > 10:
-        print(f"   ⚠️ 略有改善 (>10%)")
+        print(f"   ️ 略有改善 (>10%)")
     else:
-        print(f"   ❌ 改善很小 (<10%)")
+        print(f"    改善很小 (<10%)")
 
     print(f"\n3. 最细网格结果:")
     print(f"   n_cells = {n_cells_list[-1]}, dx = {results[-1]['dx']:.3f} m")
     print(f"   质量误差: {finest_error:.2f}%")
 
     if finest_error < 5:
-        print(f"   ✅✅✅ 优秀 (<5%)")
+        print(f"    优秀 (<5%)")
         conclusion = "SUCCESS"
     elif finest_error < 15:
-        print(f"   ✅✅ 良好 (<15%)")
+        print(f"    良好 (<15%)")
         conclusion = "GOOD"
     elif finest_error < 30:
-        print(f"   ✅ 可接受 (<30%)")
+        print(f"    可接受 (<30%)")
         conclusion = "ACCEPTABLE"
     elif finest_error < mass_errors[0] * 0.5:
-        print(f"   ⚠️ 仍有问题，但改善明显")
+        print(f"   ️ 仍有问题，但改善明显")
         conclusion = "IMPROVED"
     else:
-        print(f"   ❌ 质量守恒仍然很差")
+        print(f"    质量守恒仍然很差")
         conclusion = "POOR"
 
     # 绘图（如果matplotlib可用）
@@ -305,9 +311,9 @@ def test_grid_convergence():
 
         plt.tight_layout()
         plt.savefig('tests/diagnostic/grid_convergence_analysis.png', dpi=150)
-        print(f"\n✅ 收敛性分析图已保存: tests/diagnostic/grid_convergence_analysis.png")
+        print(f"\n 收敛性分析图已保存: tests/diagnostic/grid_convergence_analysis.png")
     except Exception as e:
-        print(f"\n⚠️ 无法生成图表: {e}")
+        print(f"\n️ 无法生成图表: {e}")
 
     # 最终判断和建议
     print(f"\n{'='*80}")
@@ -315,7 +321,7 @@ def test_grid_convergence():
     print("="*80)
 
     if conclusion in ["SUCCESS", "GOOD"]:
-        print(f"\n🎉 找到解决方案！")
+        print(f"\n 找到解决方案！")
         print(f"\n关键发现：")
         print(f"  - 质量守恒误差随网格加密显著改善")
         print(f"  - 数值方法本身是正确的")
@@ -328,7 +334,7 @@ def test_grid_convergence():
         print(f"  2. 重新运行所有benchmark测试")
         print(f"  3. 文档记录网格分辨率要求")
     elif conclusion == "ACCEPTABLE":
-        print(f"\n✅ 部分成功")
+        print(f"\n 部分成功")
         print(f"\n关键发现：")
         print(f"  - 质量守恒有改善但仍不理想")
         print(f"  - 可能需要更细的网格或其他改进")
@@ -337,7 +343,7 @@ def test_grid_convergence():
         print(f"  2. 结合二阶精度 (order=2) 测试")
         print(f"  3. 检查边界条件影响")
     elif conclusion == "IMPROVED":
-        print(f"\n⚠️ 有改善但问题仍存在")
+        print(f"\n️ 有改善但问题仍存在")
         print(f"\n关键发现：")
         print(f"  - 网格加密确实有帮助")
         print(f"  - 但还有其他因素影响质量守恒")
@@ -348,7 +354,7 @@ def test_grid_convergence():
         print(f"     - 时间积分格式")
         print(f"  2. 检查物理模型设置")
     else:
-        print(f"\n❌ 网格收敛性测试未能解决问题")
+        print(f"\n 网格收敛性测试未能解决问题")
         print(f"\n关键发现：")
         print(f"  - 质量误差不随网格加密明显改善")
         print(f"  - 问题可能不在网格分辨率")

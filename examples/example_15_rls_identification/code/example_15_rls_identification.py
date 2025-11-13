@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例15: RLS参数辨识
 演示递推最小二乘在线参数辨识
@@ -6,6 +7,8 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from identification.rls_identifier import ARXIdentifier
 
@@ -88,9 +91,9 @@ def run_example():
 
     print("\n" + "="*70)
     print("RLS参数辨识完成!")
-    print("✓ 在线递推参数估计")
-    print("✓ 自适应遗忘因子")
-    print("✓ 高精度参数收敛")
+    print(" 在线递推参数估计")
+    print(" 自适应遗忘因子")
+    print(" 高精度参数收敛")
 
     # 可视化
     try:

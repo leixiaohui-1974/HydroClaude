@@ -22,7 +22,13 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import time
 
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.digital_twin import DigitalTwin
 
 
@@ -458,9 +464,9 @@ def test_forecast():
 
 def main():
     """运行所有测试"""
-    print("\n" + "🔮" * 40)
+    print("\n" + "" * 40)
     print("数字孪生测试")
-    print("🔮" * 40)
+    print("" * 40)
 
     results = {}
 
@@ -469,11 +475,11 @@ def main():
         result1 = test_state_estimation()
         results['state_estimation'] = result1
         if result1['passed']:
-            print(f"\n✅ 测试1通过: RMSE = {result1['rmse']:.4f} m")
+            print(f"\n 测试1通过: RMSE = {result1['rmse']:.4f} m")
         else:
-            print(f"\n⚠️  测试1未达标: RMSE = {result1['rmse']:.4f} m")
+            print(f"\n️  测试1未达标: RMSE = {result1['rmse']:.4f} m")
     except Exception as e:
-        print(f"\n❌ 测试1失败: {e}")
+        print(f"\n 测试1失败: {e}")
         import traceback
         traceback.print_exc()
 
@@ -482,11 +488,11 @@ def main():
         result2 = test_forecast()
         results['forecast'] = result2
         if result2['passed']:
-            print(f"\n✅ 测试2通过: 预测RMSE = {result2['forecast_rmse']:.4f} m")
+            print(f"\n 测试2通过: 预测RMSE = {result2['forecast_rmse']:.4f} m")
         else:
-            print(f"\n⚠️  测试2未达标: 预测RMSE = {result2['forecast_rmse']:.4f} m")
+            print(f"\n️  测试2未达标: 预测RMSE = {result2['forecast_rmse']:.4f} m")
     except Exception as e:
-        print(f"\n❌ 测试2失败: {e}")
+        print(f"\n 测试2失败: {e}")
         import traceback
         traceback.print_exc()
 
@@ -496,11 +502,11 @@ def main():
     print("=" * 80)
 
     print("\n数字孪生特点：")
-    print("  ✅ 扩展卡尔曼滤波（EKF）状态估计")
-    print("  ✅ 传感器数据融合")
-    print("  ✅ 不确定性量化")
-    print("  ✅ 预测功能")
-    print("  ✅ 充分利用现有求解器作为物理模型")
+    print("   扩展卡尔曼滤波（EKF）状态估计")
+    print("   传感器数据融合")
+    print("   不确定性量化")
+    print("   预测功能")
+    print("   充分利用现有求解器作为物理模型")
 
     return results
 

@@ -12,6 +12,14 @@
 Author: HydroClaude Development Team
 Date: 2025-01
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import pytest
 import numpy as np
@@ -76,7 +84,7 @@ class TestRectangularWeirCalculations:
 
         # Q = Cd * b * sqrt(2g) * h^1.5
         # Q = 0.42 * 2.0 * sqrt(2*9.81) * 0.3^1.5
-        # Q ≈ 0.42 * 2.0 * 4.43 * 0.164 ≈ 0.61 m³/s
+        # Q ~= 0.42 * 2.0 * 4.43 * 0.164 ~= 0.61 m^3/s
         assert 0.55 < Q < 0.70
 
     def test_discharge_increases_with_head(self):
@@ -163,12 +171,12 @@ class TestTriangularWeirGeometry:
 
     def test_invalid_angle_too_small(self):
         """测试角度过小"""
-        with pytest.raises(ValueError, match="between 10° and 120°"):
+        with pytest.raises(ValueError, match="between 10 deg and 120 deg"):
             TriangularWeirGeometry(position=100.0, notch_angle=5.0)
 
     def test_invalid_angle_too_large(self):
         """测试角度过大"""
-        with pytest.raises(ValueError, match="between 10° and 120°"):
+        with pytest.raises(ValueError, match="between 10 deg and 120 deg"):
             TriangularWeirGeometry(position=100.0, notch_angle=150.0)
 
 
@@ -176,14 +184,14 @@ class TestTriangularWeirCalculations:
     """测试三角堰流量计算"""
 
     def test_discharge_calculation_90deg(self):
-        """测试90°三角堰流量计算"""
+        """测试90 deg三角堰流量计算"""
         weir = create_triangular_weir(position=100.0, notch_angle=90.0)
 
         Q = weir.compute_discharge(h=0.2)
 
-        # Q = (8/15) * Cd * tan(45°) * sqrt(2g) * h^2.5
+        # Q = (8/15) * Cd * tan(45 deg) * sqrt(2g) * h^2.5
         # Q = (8/15) * 0.58 * 1.0 * sqrt(19.62) * 0.2^2.5
-        # Q ≈ 0.309 * 4.43 * 0.0179 ≈ 0.0245 m³/s
+        # Q ~= 0.309 * 4.43 * 0.0179 ~= 0.0245 m^3/s
         assert 0.020 < Q < 0.030
 
     def test_discharge_increases_with_head(self):
@@ -197,7 +205,7 @@ class TestTriangularWeirCalculations:
         assert Q1 < Q2 < Q3
 
         # 验证h^2.5关系
-        # Q2/Q1 应该约等于 (0.2/0.1)^2.5 = 2^2.5 ≈ 5.66
+        # Q2/Q1 应该约等于 (0.2/0.1)^2.5 = 2^2.5 ~= 5.66
         ratio = Q2 / Q1
         assert 5.0 < ratio < 6.5
 
@@ -211,7 +219,7 @@ class TestTriangularWeirCalculations:
         Q_60 = weir_60.compute_discharge(h=0.2)
         Q_90 = weir_90.compute_discharge(h=0.2)
 
-        # 角度越大，流量越大（因为tan(θ/2)增大）
+        # 角度越大，流量越大（因为tan(theta/2)增大）
         assert Q_30 < Q_60 < Q_90
 
     def test_head_from_discharge(self):
@@ -236,7 +244,7 @@ class TestTriangularWeirCalculations:
         Q_small = weir.compute_discharge(h=0.05)
         Q_double_head = weir.compute_discharge(h=0.10)
 
-        # 水头翻倍，流量应该增加 2^2.5 ≈ 5.66 倍
+        # 水头翻倍，流量应该增加 2^2.5 ~= 5.66 倍
         ratio = Q_double_head / Q_small
         assert 5.0 < ratio < 6.5
 
@@ -318,7 +326,7 @@ class TestParshallFlumeCalculations:
         Q, condition = flume.compute_discharge(H_upstream=0.5)  # 0.5 ft head
 
         # 1 ft巴歇尔槽: Q = 4.0 * H^1.522
-        # Q = 4.0 * 0.5^1.522 ≈ 4.0 * 0.348 ≈ 1.39 ft³/s
+        # Q = 4.0 * 0.5^1.522 ~= 4.0 * 0.348 ~= 1.39 ft^3/s
         assert 1.2 < Q < 1.6
         assert condition == 'free'
 

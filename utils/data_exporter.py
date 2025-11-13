@@ -430,7 +430,7 @@ if __name__ == "__main__":
     )
 
     for fmt, path in files.items():
-        print(f"  ✓ {fmt.upper()}: {path}")
+        print(f"   {fmt.upper()}: {path}")
 
     # 导出空间剖面
     print("\n导出空间剖面数据...")
@@ -444,7 +444,7 @@ if __name__ == "__main__":
         filename='test_profile',
         format='csv'
     )
-    print(f"  ✓ CSV: {file}")
+    print(f"   CSV: {file}")
 
     # 导出汇总
     print("\n导出汇总信息...")
@@ -458,6 +458,6 @@ if __name__ == "__main__":
     }
 
     file = exporter.export_summary(summary, filename='test_summary', format='json')
-    print(f"  ✓ JSON: {file}")
+    print(f"   JSON: {file}")
 
-    print("\n✓ 测试完成！")
+    print("\n 测试完成！")

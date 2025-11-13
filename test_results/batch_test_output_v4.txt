@@ -1,0 +1,1159 @@
+================================================================================
+                        批量测试所有案例 - Batch Test All Cases                         
+================================================================================
+
+总共找到 541 个测试案例
+开始时间: 2025-11-13 14:06:22
+
+[1/541] 测试: 详细分析Well-Balanced重构的数值行为
+    ID: tests-analyze_well_balanced_details
+    文件: tests\analyze_well_balanced_details.py
+    状态: 通过 PASS (耗时: 2.81s)
+
+[2/541] 测试: 性能基准测试：牛顿法 vs 迭代法
+    ID: tests-benchmark_newton_vs_iterative
+    文件: tests\benchmark_newton_vs_iterative.py
+    状态: 失败 FAIL (错误码: 1)
+
+[3/541] 测试: Numba加速效果基准测试
+    ID: tests-benchmark_numba
+    文件: tests\benchmark_numba.py
+    状态: 失败 FAIL (错误码: 1)
+
+[4/541] 测试: Riemann求解器性能基准测试
+    ID: tests-benchmark_riemann_solvers
+    文件: tests\benchmark_riemann_solvers.py
+    状态: 失败 - 超时
+
+[5/541] 测试: 核心功能验证测试
+    ID: tests-core_functionality_verification
+    文件: tests\core_functionality_verification.py
+    状态: 失败 FAIL (错误码: 1)
+
+[6/541] 测试: 核心功能验证测试 V2 (改进版)
+    ID: tests-core_functionality_verification_v2
+    文件: tests\core_functionality_verification_v2.py
+    状态: 通过 PASS (耗时: 8.69s)
+
+[7/541] 测试: 高精度溃坝测试（Numba加速版本）
+    ID: tests-dam_break_high_res_numba
+    文件: tests\dam_break_high_res_numba.py
+    状态: 通过 PASS (耗时: 4.12s)
+
+[8/541] 测试: 快速溃坝测试（10秒，展示Numba威力）
+    ID: tests-dam_break_numba_10s
+    文件: tests\dam_break_numba_10s.py
+    状态: 通过 PASS (耗时: 3.92s)
+
+[9/541] 测试: 诊断精确Riemann求解器通量计算
+    ID: tests-debug_exact_flux
+    文件: tests\debug_exact_flux.py
+    状态: 失败 FAIL (错误码: 1)
+
+[10/541] 测试: 调试精确Riemann求解器采样逻辑
+    ID: tests-debug_exact_sampling
+    文件: tests\debug_exact_sampling.py
+    状态: 通过 PASS (耗时: 1.25s)
+
+[11/541] 测试: 调试闸门场景的Jacobian奇异性
+    ID: tests-debug_gate_jacobian
+    文件: tests\debug_gate_jacobian.py
+    状态: 通过 PASS (耗时: 2.57s)
+
+[12/541] 测试: Debug Well-Balanced NaN Issue
+    ID: tests-debug_wb_nan
+    文件: tests\debug_wb_nan.py
+    状态: 通过 PASS (耗时: 2.84s)
+
+[13/541] 测试: 精确求解器崩溃时间线诊断
+    ID: tests-diagnose_exact_crash_timeline
+    文件: tests\diagnose_exact_crash_timeline.py
+    状态: 失败 FAIL (错误码: 1)
+
+[14/541] 测试: 逐步通量诊断 - 精确求解器
+    ID: tests-diagnose_exact_flux_step_by_step
+    文件: tests\diagnose_exact_flux_step_by_step.py
+    状态: 失败 FAIL (错误码: 1)
+
+[15/541] 测试: 诊断精确求解器质量损失问题
+    ID: tests-diagnose_exact_mass_loss
+    文件: tests\diagnose_exact_mass_loss.py
+    状态: 通过 PASS (耗时: 5.61s)
+
+[16/541] 测试: 单界面精确通量诊断
+    ID: tests-diagnose_exact_single_interface
+    文件: tests\diagnose_exact_single_interface.py
+    状态: 通过 PASS (耗时: 1.16s)
+
+[17/541] 测试: Diagnose HLLC Numerical Instability
+    ID: tests-diagnose_hllc_instability
+    文件: tests\diagnose_hllc_instability.py
+    状态: 通过 PASS (耗时: 4.46s)
+
+[18/541] 测试: Newton求解器诊断
+    ID: tests-diagnose_newton_solver
+    文件: tests\diagnose_newton_solver.py
+    状态: 通过 PASS (耗时: 1.15s)
+
+[19/541] 测试: HLLC问题分析和修复方案
+    ID: tests-hllc_bug_analysis
+    文件: tests\hllc_bug_analysis.py
+    状态: 通过 PASS (耗时: 0.31s)
+
+[20/541] 测试: Numba JIT Performance Validation
+    ID: tests-numba_performance_validation
+    文件: tests\numba_performance_validation.py
+    状态: 通过 PASS (耗时: 32.00s)
+
+[21/541] 测试: HydroClaude Performance Benchmark Suite
+    ID: tests-performance_benchmark
+    文件: tests\performance_benchmark.py
+    状态: 通过 PASS (耗时: 8.93s)
+
+[22/541] 测试: 性能分析工具
+    ID: tests-profile_solver
+    文件: tests\profile_solver.py
+    状态: 通过 PASS (耗时: 8.75s)
+
+[23/541] 测试: Quick Lake at Rest Test
+    ID: tests-quick_lake_at_rest
+    文件: tests\quick_lake_at_rest.py
+    状态: 通过 PASS (耗时: 5.09s)
+
+[24/541] 测试: HydroClaude Comprehensive Regression Test Suite
+    ID: tests-regression_test_suite
+    文件: tests\regression_test_suite.py
+    状态: 失败 FAIL (错误码: 1)
+
+[25/541] 测试: 简化的求解器对比测试
+    ID: tests-simple_solver_comparison
+    文件: tests\simple_solver_comparison.py
+    状态: 通过 PASS (耗时: 8.01s)
+
+[26/541] 测试: 高级边界条件集成测试
+    ID: tests-test_advanced_boundary_conditions
+    文件: tests\test_advanced_boundary_conditions.py
+    状态: 通过 PASS (耗时: 1.48s)
+
+[27/541] 测试: Test suite for AGC and multi-unit coordination
+    ID: tests-test_agc_coordination
+    文件: tests\test_agc_coordination.py
+    状态: 通过 PASS (耗时: 2.52s)
+
+[28/541] 测试: 测试边界条件类
+    ID: tests-test_boundaries
+    文件: tests\test_boundaries.py
+    状态: 通过 PASS (耗时: 1.26s)
+
+[29/541] 测试: 特征线边界条件单元测试
+    ID: tests-test_boundary_conditions
+    文件: tests\test_boundary_conditions.py
+    状态: 失败 FAIL (错误码: 1)
+
+[30/541] 测试: 测试边界条件修复：验证Jacobian非奇异性
+    ID: tests-test_boundary_condition_fix
+    文件: tests\test_boundary_condition_fix.py
+    状态: 失败 FAIL (错误码: 1)
+
+[31/541] 测试: Test suite for Bridge hydraulic model
+    ID: tests-test_bridge
+    文件: tests\test_bridge.py
+    状态: 通过 PASS (耗时: 2.42s)
+
+[32/541] 测试: Components
+    ID: tests-test_components
+    文件: tests\test_components.py
+    状态: 通过 PASS (耗时: 0.99s)
+
+[33/541] 测试: 复合糙率功能测试
+    ID: tests-test_composite_roughness
+    文件: tests\test_composite_roughness.py
+    状态: 通过 PASS (耗时: 3.19s)
+
+[34/541] 测试: 配置驱动系统测试套件
+    ID: tests-test_config_driven
+    文件: tests\test_config_driven.py
+    状态: 通过 PASS (耗时: 7.95s)
+
+[35/541] 测试: 测试延拓求解器的鲁棒性
+    ID: tests-test_continuation_robustness
+    文件: tests\test_continuation_robustness.py
+    状态: 通过 PASS (耗时: 11.30s)
+
+[36/541] 测试: Controllers
+    ID: tests-test_controllers
+    文件: tests\test_controllers.py
+    状态: 通过 PASS (耗时: 0.34s)
+
+[37/541] 测试: 完整耦合求解器测试套件
+    ID: tests-test_coupled_solver
+    文件: tests\test_coupled_solver.py
+    状态: 通过 PASS (耗时: 5.47s)
+
+[38/541] 测试: 河道断面模块单元测试
+    ID: tests-test_cross_section
+    文件: tests\test_cross_section.py
+    状态: 通过 PASS (耗时: 1.26s)
+
+[39/541] 测试: 测试断面类集成到求解器
+    ID: tests-test_cross_section_integration
+    文件: tests\test_cross_section_integration.py
+    状态: 失败 FAIL (错误码: 1)
+
+[40/541] 测试: 测试断面类集成到求解器（简化版，无需pytest）
+    ID: tests-test_cross_section_integration_simple
+    文件: tests\test_cross_section_integration_simple.py
+    状态: 失败 FAIL (错误码: 1)
+
+[41/541] 测试: Test suite for Culvert hydraulic model
+    ID: tests-test_culvert
+    文件: tests\test_culvert.py
+    状态: 通过 PASS (耗时: 2.49s)
+
+[42/541] 测试: DO模型简化测试 - 调试用
+    ID: tests-test_do_simple
+    文件: tests\test_do_simple.py
+    状态: 通过 PASS (耗时: 2.97s)
+
+[43/541] 测试: 测试跌水结构水力计算
+    ID: tests-test_drop
+    文件: tests\test_drop.py
+    状态: 通过 PASS (耗时: 0.60s)
+
+[44/541] 测试: 测试不同边界条件策略对精确求解器的影响
+    ID: tests-test_exact_boundary_strategies
+    文件: tests\test_exact_boundary_strategies.py
+    状态: 失败 FAIL (错误码: 1)
+
+[45/541] 测试: 验证CFL=0.1时精确求解器的表现
+    ID: tests-test_exact_cfl_01_validation
+    文件: tests\test_exact_cfl_01_validation.py
+    状态: 失败 FAIL (错误码: 1)
+
+[46/541] 测试: 测试不同CFL数对精确求解器的影响
+    ID: tests-test_exact_cfl_sensitivity
+    文件: tests\test_exact_cfl_sensitivity.py
+    状态: 失败 FAIL (错误码: 1)
+
+[47/541] 测试: 精确Riemann求解器Lake at Rest测试
+    ID: tests-test_exact_lake_at_rest
+    文件: tests\test_exact_lake_at_rest.py
+    状态: 失败 FAIL (错误码: 1)
+
+[48/541] 测试: 测试精确Riemann求解器集成到GodunvFVMSolver
+    ID: tests-test_exact_solver_integration
+    文件: tests\test_exact_solver_integration.py
+    状态: 失败 FAIL (错误码: 1)
+
+[49/541] 测试: 测试流量测量设施
+    ID: tests-test_flow_measurement
+    文件: tests\test_flow_measurement.py
+    状态: 通过 PASS (耗时: 0.90s)
+
+[50/541] 测试: Frazil Ice和Ice Jam模块测试套件
+    ID: tests-test_frazil_ice_jam
+    文件: tests\test_frazil_ice_jam.py
+    状态: 失败 FAIL (错误码: 1)
+
+[51/541] 测试: 测试闸门流量对水深的导数计算
+    ID: tests-test_gate_derivatives
+    文件: tests\test_gate_derivatives.py
+    状态: 通过 PASS (耗时: 0.35s)
+
+[52/541] 测试: Test cases for Governor control systems
+    ID: tests-test_governor
+    文件: tests\test_governor.py
+    状态: 通过 PASS (耗时: 0.63s)
+
+[53/541] 测试: HLLC vs HLL Dam Break Comparison Test
+    ID: tests-test_hllc_dam_break
+    文件: tests\test_hllc_dam_break.py
+    状态: 通过 PASS (耗时: 7.76s)
+
+[54/541] 测试: 测试HLLC求解器在Lake at Rest问题上的表现
+    ID: tests-test_hllc_lake_at_rest
+    文件: tests\test_hllc_lake_at_rest.py
+    状态: 失败 FAIL (错误码: 1)
+
+[55/541] 测试: HLL vs HLLC Riemann求解器对比测试
+    ID: tests-test_hll_vs_hllc
+    文件: tests\test_hll_vs_hllc.py
+    状态: 失败 FAIL (错误码: 1)
+
+[56/541] 测试: 测试混合求解器 - 简单场景
+    ID: tests-test_hybrid_simple
+    文件: tests\test_hybrid_simple.py
+    状态: 通过 PASS (耗时: 2.74s)
+
+[57/541] 测试: Test cases for Hydraulic Structures (Spillway, Transition, Drop)
+    ID: tests-test_hydraulic_structures
+    文件: tests\test_hydraulic_structures.py
+    状态: 通过 PASS (耗时: 0.69s)
+
+[58/541] 测试: 冰-水质模拟模块测试套件
+    ID: tests-test_ice_water_quality
+    文件: tests\test_ice_water_quality.py
+    状态: 失败 FAIL (错误码: 1)
+
+[59/541] 测试: IDZ模型模块单元测试
+    ID: tests-test_idz_model
+    文件: tests\test_idz_model.py
+    状态: 通过 PASS (耗时: 1.98s)
+
+[60/541] 测试: 充气坝单元测试
+    ID: tests-test_inflatable_dam
+    文件: tests\test_inflatable_dam.py
+    状态: 通过 PASS (耗时: 2.63s)
+
+[61/541] 测试: 简化集成测试 - 验证核心功能
+    ID: tests-test_integration_simple
+    文件: tests\test_integration_simple.py
+    状态: 通过 PASS (耗时: 2.47s)
+
+[62/541] 测试: Lake at Rest Test with Well-Balanced Format
+    ID: tests-test_lake_at_rest_wb
+    文件: tests\test_lake_at_rest_wb.py
+    状态: 失败 FAIL (错误码: 1)
+
+[63/541] 测试: Moc Solver
+    ID: tests-test_moc_solver
+    文件: tests\test_moc_solver.py
+    状态: 通过 PASS (耗时: 0.44s)
+
+[64/541] 测试: 多目标优化算法单元测试
+    ID: tests-test_multi_objective
+    文件: tests\test_multi_objective.py
+    状态: 通过 PASS (耗时: 13.72s)
+
+[65/541] 测试: 多断面辨识模块单元测试
+    ID: tests-test_multi_section_identification
+    文件: tests\test_multi_section_identification.py
+    状态: 通过 PASS (耗时: 1.91s)
+
+[66/541] 测试: 管网组件单元测试
+    ID: tests-test_network_components
+    文件: tests\test_network_components.py
+    状态: 通过 PASS (耗时: 0.31s)
+
+[67/541] 测试: 网络集成测试套件
+    ID: tests-test_network_integration
+    文件: tests\test_network_integration.py
+    状态: 失败 FAIL (错误码: 1)
+
+[68/541] 测试: 节点类型测试
+    ID: tests-test_network_nodes
+    文件: tests\test_network_nodes.py
+    状态: 通过 PASS (耗时: 1.59s)
+
+[69/541] 测试: 测试内部水工建筑物
+    ID: tests-test_network_structures
+    文件: tests\test_network_structures.py
+    状态: 通过 PASS (耗时: 8.96s)
+
+[70/541] 测试: 简单测试内部水工建筑物（不使用pytest）
+    ID: tests-test_network_structures_simple
+    文件: tests\test_network_structures_simple.py
+    状态: 失败 FAIL (错误码: 1)
+
+[71/541] 测试: 网络拓扑测试
+    ID: tests-test_network_topology
+    文件: tests\test_network_topology.py
+    状态: 通过 PASS (耗时: 1.66s)
+
+[72/541] 测试: 网络验证工具测试
+    ID: tests-test_network_validation
+    文件: tests\test_network_validation.py
+    状态: 失败 FAIL (错误码: 1)
+
+[73/541] 测试: 测试牛顿法边界条件修复效果
+    ID: tests-test_newton_boundary_fix
+    文件: tests\test_newton_boundary_fix.py
+    状态: 失败 FAIL (错误码: 1)
+
+[74/541] 测试: 测试三闸门场景的牛顿法求解
+    ID: tests-test_newton_three_gates
+    文件: tests\test_newton_three_gates.py
+    状态: 通过 PASS (耗时: 2.68s)
+
+[75/541] 测试: 营养盐循环模块测试套件
+    ID: tests-test_nutrients
+    文件: tests\test_nutrients.py
+    状态: 通过 PASS (耗时: 6.07s)
+
+[76/541] 测试: 在线辨识模块单元测试
+    ID: tests-test_online_identification
+    文件: tests\test_online_identification.py
+    状态: 通过 PASS (耗时: 1.89s)
+
+[77/541] 测试: 藻类生长模块测试套件
+    ID: tests-test_phytoplankton
+    文件: tests\test_phytoplankton.py
+    状态: 通过 PASS (耗时: 7.14s)
+
+[78/541] 测试: 有压系统单元测试
+    ID: tests-test_pressurized_system
+    文件: tests\test_pressurized_system.py
+    状态: 失败 FAIL (错误码: 1)
+
+[79/541] 测试: 测试泵站水力计算
+    ID: tests-test_pumps
+    文件: tests\test_pumps.py
+    状态: 通过 PASS (耗时: 0.64s)
+
+[80/541] 测试: 弧形闸门单元测试
+    ID: tests-test_radial_gate
+    文件: tests\test_radial_gate.py
+    状态: 通过 PASS (耗时: 2.44s)
+
+[81/541] 测试: 水库组件测试
+    ID: tests-test_reservoir
+    文件: tests\test_reservoir.py
+    状态: 通过 PASS (耗时: 1.39s)
+
+[82/541] 测试: Riemann求解器单元测试
+    ID: tests-test_riemann_solvers
+    文件: tests\test_riemann_solvers.py
+    状态: 失败 FAIL (错误码: 1)
+
+[83/541] 测试: Test cases for Surge Tank and Inverted Siphon
+    ID: tests-test_surge_tank_siphon
+    文件: tests\test_surge_tank_siphon.py
+    状态: 失败 FAIL (错误码: 1)
+
+[84/541] 测试: Test cases for Hydraulic Turbines
+    ID: tests-test_turbine
+    文件: tests\test_turbine.py
+    状态: 失败 FAIL (错误码: 1)
+
+[85/541] 测试: Test cases for Valve classes
+    ID: tests-test_valve
+    文件: tests\test_valve.py
+    状态: 通过 PASS (耗时: 0.60s)
+
+[86/541] 测试: 测试阀门水力计算
+    ID: tests-test_valves
+    文件: tests\test_valves.py
+    状态: 通过 PASS (耗时: 0.68s)
+
+[87/541] 测试: 堰类组件单元测试
+    ID: tests-test_weirs
+    文件: tests\test_weirs.py
+    状态: 通过 PASS (耗时: 0.37s)
+
+[88/541] 测试: Well-Balanced格式测试
+    ID: tests-test_well_balanced
+    文件: tests\test_well_balanced.py
+    状态: 通过 PASS (耗时: 19.28s)
+
+[89/541] 测试: Test Different z_interface Selection Strategies for Well-Balanced Reconstruction
+    ID: tests-test_z_interface_strategies
+    文件: tests\test_z_interface_strategies.py
+    状态: 失败 FAIL (错误码: 1)
+
+[90/541] 测试: Numba JIT性能基准测试
+    ID: tests-diagnostic-benchmark_numba_performance
+    文件: tests\diagnostic\benchmark_numba_performance.py
+    状态: 通过 PASS (耗时: 13.81s)
+
+[91/541] 测试: 性能提升基准测试
+    ID: tests-diagnostic-benchmark_performance_improvement
+    文件: tests\diagnostic\benchmark_performance_improvement.py
+    状态: 通过 PASS (耗时: 16.38s)
+
+[92/541] 测试: 对比两种初始化方式的差异
+    ID: tests-diagnostic-compare_initialization
+    文件: tests\diagnostic\compare_initialization.py
+    状态: 失败 FAIL (错误码: 1)
+
+[93/541] 测试: 在33秒时对比两种方法的完整状态
+    ID: tests-diagnostic-compare_state_at_33s
+    文件: tests\diagnostic\compare_state_at_33s.py
+    状态: 失败 FAIL (错误码: 1)
+
+[94/541] 测试: 单步调试：在35秒前后详细追踪每一步
+    ID: tests-diagnostic-debug_step_by_step
+    文件: tests\diagnostic\debug_step_by_step.py
+    状态: 失败 FAIL (错误码: 1)
+
+[95/541] 测试: WENO3性能分析工具
+    ID: tests-diagnostic-profile_weno3_performance
+    文件: tests\diagnostic\profile_weno3_performance.py
+    状态: 失败 FAIL (错误码: 1)
+
+[96/541] 测试: 快速测试 n=0.02 工况
+    ID: tests-diagnostic-quick_test_n002
+    文件: tests\diagnostic\quick_test_n002.py
+    状态: 失败 FAIL (错误码: 1)
+
+[97/541] 测试: 自适应时间步性能测试
+    ID: tests-diagnostic-test_adaptive_timestep
+    文件: tests\diagnostic\test_adaptive_timestep.py
+    状态: 失败 FAIL (错误码: 1)
+
+[98/541] 测试: 高级功能综合测试
+    ID: tests-diagnostic-test_advanced_features
+    文件: tests\diagnostic\test_advanced_features.py
+    状态: 失败 FAIL (错误码: 1)
+
+[99/541] 测试: 自动测试所有示例（Examples 1-16）
+    ID: tests-diagnostic-test_all_examples
+    文件: tests\diagnostic\test_all_examples.py
+    状态: 失败 - 超时
+
+[100/541] 测试: 所有水工结构类型的综合测试
+    ID: tests-diagnostic-test_all_structures
+    文件: tests\diagnostic\test_all_structures.py
+    状态: 失败 FAIL (错误码: 1)
+
+[101/541] 测试: Anderson加速性能验证测试
+    ID: tests-diagnostic-test_anderson_performance
+    文件: tests\diagnostic\test_anderson_performance.py
+    状态: 失败 FAIL (错误码: 1)
+
+[102/541] 测试: 边界单元演化监控
+    ID: tests-diagnostic-test_boundary_cell_evolution
+    文件: tests\diagnostic\test_boundary_cell_evolution.py
+    状态: 通过 PASS (耗时: 2.28s)
+
+[103/541] 测试: 边界条件强制机制诊断测试
+    ID: tests-diagnostic-test_boundary_enforcement
+    文件: tests\diagnostic\test_boundary_enforcement.py
+    状态: 失败 FAIL (错误码: 1)
+
+[104/541] 测试: 边界单元演化测试
+    ID: tests-diagnostic-test_boundary_evolution
+    文件: tests\diagnostic\test_boundary_evolution.py
+    状态: 通过 PASS (耗时: 5.52s)
+
+[105/541] 测试: 边界自然演化测试
+    ID: tests-diagnostic-test_boundary_natural_evolution
+    文件: tests\diagnostic\test_boundary_natural_evolution.py
+    状态: 通过 PASS (耗时: 5.46s)
+
+[106/541] 测试: 渠系网络测试案例
+    ID: tests-diagnostic-test_canal_network
+    文件: tests\diagnostic\test_canal_network.py
+    状态: 失败 FAIL (错误码: 1)
+
+[107/541] 测试: 逐单元质量分析
+    ID: tests-diagnostic-test_cell_by_cell_mass
+    文件: tests\diagnostic\test_cell_by_cell_mass.py
+    状态: 通过 PASS (耗时: 5.76s)
+
+[108/541] 测试: CFL敏感性测试 - 找出无摩阻Test 4的稳定CFL数
+    ID: tests-diagnostic-test_cfl_sensitivity
+    文件: tests\diagnostic\test_cfl_sensitivity.py
+    状态: 失败 FAIL (错误码: 1)
+
+[109/541] 测试: HydroClaude综合系统测试
+    ID: tests-diagnostic-test_comprehensive_system
+    文件: tests\diagnostic\test_comprehensive_system.py
+    状态: 失败 FAIL (错误码: 1)
+
+[110/541] 测试: 测试配置驱动的supercritical边界条件
+    ID: tests-diagnostic-test_config_supercritical
+    文件: tests\diagnostic\test_config_supercritical.py
+    状态: 失败 FAIL (错误码: 1)
+
+[111/541] 测试: 测试使用'critical'边界条件类型
+    ID: tests-diagnostic-test_critical_bc_fix
+    文件: tests\diagnostic\test_critical_bc_fix.py
+    状态: 通过 PASS (耗时: 2.90s)
+
+[112/541] 测试: 直接质量守恒测试
+    ID: tests-diagnostic-test_direct_mass_conservation
+    文件: tests\diagnostic\test_direct_mass_conservation.py
+    状态: 通过 PASS (耗时: 2.58s)
+
+[113/541] 测试: 测试dt_max功能
+    ID: tests-diagnostic-test_dt_max_feature
+    文件: tests\diagnostic\test_dt_max_feature.py
+    状态: 失败 FAIL (错误码: 1)
+
+[114/541] 测试: 测试平坦底床的良平衡性
+    ID: tests-diagnostic-test_flat_bed
+    文件: tests\diagnostic\test_flat_bed.py
+    状态: 失败 FAIL (错误码: 1)
+
+[115/541] 测试: 测试洪水过程线模拟 - Phase 1问题修复
+    ID: tests-diagnostic-test_flood_hydrograph
+    文件: tests\diagnostic\test_flood_hydrograph.py
+    状态: 失败 FAIL (错误码: 1)
+
+[116/541] 测试: 通量守恒性诊断测试
+    ID: tests-diagnostic-test_flux_conservation
+    文件: tests\diagnostic\test_flux_conservation.py
+    状态: 失败 FAIL (错误码: 1)
+
+[117/541] 测试: 通量值诊断
+    ID: tests-diagnostic-test_flux_values
+    文件: tests\diagnostic\test_flux_values.py
+    状态: 通过 PASS (耗时: 2.42s)
+
+[118/541] 测试: Froude数分析
+    ID: tests-diagnostic-test_froude_analysis
+    文件: tests\diagnostic\test_froude_analysis.py
+    状态: 通过 PASS (耗时: 5.12s)
+
+[119/541] 测试: 简化闸门测试 - FVM求解器
+    ID: tests-diagnostic-test_fvm_simple_gate
+    文件: tests\diagnostic\test_fvm_simple_gate.py
+    状态: 失败 FAIL (错误码: 1)
+
+[120/541] 测试: FVM求解器验证测试
+    ID: tests-diagnostic-test_fvm_validation
+    文件: tests\diagnostic\test_fvm_validation.py
+    状态: 失败 FAIL (错误码: 1)
+
+[121/541] 测试: FVM求解器闸门测试
+    ID: tests-diagnostic-test_fvm_with_gate
+    文件: tests\diagnostic\test_fvm_with_gate.py
+    状态: 失败 FAIL (错误码: 1)
+
+[122/541] 测试: 简单闸门测试 - 验证闸门边界条件是否正确工作
+    ID: tests-diagnostic-test_gate_simple
+    文件: tests\diagnostic\test_gate_simple.py
+    状态: 失败 FAIL (错误码: 1)
+
+[123/541] 测试: Ghost Cells和边界通量诊断
+    ID: tests-diagnostic-test_ghost_cells_diagnosis
+    文件: tests\diagnostic\test_ghost_cells_diagnosis.py
+    状态: 通过 PASS (耗时: 1.94s)
+
+[124/541] 测试: Ghost Cell 一致性测试
+    ID: tests-diagnostic-test_ghost_cell_consistency
+    文件: tests\diagnostic\test_ghost_cell_consistency.py
+    状态: 通过 PASS (耗时: 2.52s)
+
+[125/541] 测试: Godunov-FVM求解器 - Dam Break完整验证
+    ID: tests-diagnostic-test_godunov_dam_break
+    文件: tests\diagnostic\test_godunov_dam_break.py
+    状态: 失败 FAIL (错误码: 1)
+
+[126/541] 测试: Godunov-FVM - MacDonald Test Case 1验证
+    ID: tests-diagnostic-test_godunov_macdonald
+    文件: tests\diagnostic\test_godunov_macdonald.py
+    状态: 失败 FAIL (错误码: 1)
+
+[127/541] 测试: Godunov-FVM - 稳态均匀流验证
+    ID: tests-diagnostic-test_godunov_steady_uniform
+    文件: tests\diagnostic\test_godunov_steady_uniform.py
+    状态: 失败 FAIL (错误码: 1)
+
+[128/541] 测试: Godunov-FVM + 闸门集成测试
+    ID: tests-diagnostic-test_godunov_with_gate
+    文件: tests\diagnostic\test_godunov_with_gate.py
+    状态: 失败 FAIL (错误码: 1)
+
+[129/541] 测试: 网格收敛性测试 - MacDonald问题
+    ID: tests-diagnostic-test_grid_convergence
+    文件: tests\diagnostic\test_grid_convergence.py
+    状态: 失败 FAIL (错误码: 1)
+
+[130/541] 测试: 高阶格式精度验证测试
+    ID: tests-diagnostic-test_high_order_accuracy
+    文件: tests\diagnostic\test_high_order_accuracy.py
+    状态: 失败 FAIL (错误码: 1)
+
+[131/541] 测试: HLL vs HLLC性能对比测试
+    ID: tests-diagnostic-test_hllc_comparison
+    文件: tests\diagnostic\test_hllc_comparison.py
+    状态: 失败 FAIL (错误码: 1)
+
+[132/541] 测试: HLLC vs HLL完整对比测试
+    ID: tests-diagnostic-test_hllc_vs_hll_comparison
+    文件: tests\diagnostic\test_hllc_vs_hll_comparison.py
+    状态: 失败 FAIL (错误码: 1)
+
+[133/541] 测试: 测试HydrostaticCanalSolver稳态求解
+    ID: tests-diagnostic-test_hydrostatic_solver
+    文件: tests\diagnostic\test_hydrostatic_solver.py
+    状态: 失败 FAIL (错误码: 1)
+
+[134/541] 测试: 简单测试 - 验证h边界条件修复
+    ID: tests-diagnostic-test_h_boundary_fix_simple
+    文件: tests\diagnostic\test_h_boundary_fix_simple.py
+    状态: 通过 PASS (耗时: 2.54s)
+
+[135/541] 测试: 界面通量详细诊断
+    ID: tests-diagnostic-test_interface_flux_detail
+    文件: tests\diagnostic\test_interface_flux_detail.py
+    状态: 通过 PASS (耗时: 2.63s)
+
+[136/541] 测试: 水跃初始条件测试 - 用包含水跃的初场替代线性初场
+    ID: tests-diagnostic-test_jump_initial_condition
+    文件: tests\diagnostic\test_jump_initial_condition.py
+    状态: 失败 FAIL (错误码: 1)
+
+[137/541] 测试: 测试长时间收敛 - 检查是否只是需要更长时间达到稳态
+    ID: tests-diagnostic-test_long_time_convergence
+    文件: tests\diagnostic\test_long_time_convergence.py
+    状态: 通过 PASS (耗时: 11.38s)
+
+[138/541] 测试: MacCormack v2.0 - Dam Break验证
+    ID: tests-diagnostic-test_maccormack_dam_break
+    文件: tests\diagnostic\test_maccormack_dam_break.py
+    状态: 失败 FAIL (错误码: 1)
+
+[139/541] 测试: MacCormack v3.0 Dam Break测试（带HLL+TVD）
+    ID: tests-diagnostic-test_maccormack_v3_dam_break
+    文件: tests\diagnostic\test_maccormack_v3_dam_break.py
+    状态: 失败 FAIL (错误码: 1)
+
+[140/541] 测试: MacDonald Test 4 对比测试：标准WENO3 vs 增强WENO3
+    ID: tests-diagnostic-test_macdonald4_comparison
+    文件: tests\diagnostic\test_macdonald4_comparison.py
+    状态: 失败 FAIL (错误码: 1)
+
+[141/541] 测试: MacDonald Test 4 (水跃) 诊断测试
+    ID: tests-diagnostic-test_macdonald4_diagnosis
+    文件: tests\diagnostic\test_macdonald4_diagnosis.py
+    状态: 失败 FAIL (错误码: 1)
+
+[142/541] 测试: MacDonald Test 4 - 增强版WENO3测试
+    ID: tests-diagnostic-test_macdonald4_enhanced_weno3
+    文件: tests\diagnostic\test_macdonald4_enhanced_weno3.py
+    状态: 失败 FAIL (错误码: 1)
+
+[143/541] 测试: MacDonald Test 4 with Entropy Fix
+    ID: tests-diagnostic-test_macdonald4_entropy_fix
+    文件: tests\diagnostic\test_macdonald4_entropy_fix.py
+    状态: 通过 PASS (耗时: 2.55s)
+
+[144/541] 测试: MacDonald Test 4简化测试 - 终极诊断
+    ID: tests-diagnostic-test_macdonald4_final
+    文件: tests\diagnostic\test_macdonald4_final.py
+    状态: 失败 FAIL (错误码: 1)
+
+[145/541] 测试: MacDonald Test 4 - 最终验证（WENO3，正确参数）
+    ID: tests-diagnostic-test_macdonald4_final_weno3
+    文件: tests\diagnostic\test_macdonald4_final_weno3.py
+    状态: 失败 FAIL (错误码: 1)
+
+[146/541] 测试: MacDonald Test 4 - 极细网格测试
+    ID: tests-diagnostic-test_macdonald4_fine_grid
+    文件: tests\diagnostic\test_macdonald4_fine_grid.py
+    状态: 失败 FAIL (错误码: 1)
+
+[147/541] 测试: MacDonald Test 4 - HLLC低耗散求解器测试
+    ID: tests-diagnostic-test_macdonald4_hllc
+    文件: tests\diagnostic\test_macdonald4_hllc.py
+    状态: 失败 FAIL (错误码: 1)
+
+[148/541] 测试: MacDonald Test 4 - 标准WENO3参数扫描优化
+    ID: tests-diagnostic-test_macdonald4_parameter_sweep
+    文件: tests\diagnostic\test_macdonald4_parameter_sweep.py
+    状态: 失败 FAIL (错误码: 1)
+
+[149/541] 测试: MacDonald Test 4 快速验证 - WENO3
+    ID: tests-diagnostic-test_macdonald4_quick_weno3
+    文件: tests\diagnostic\test_macdonald4_quick_weno3.py
+    状态: 失败 FAIL (错误码: 1)
+
+[150/541] 测试: MacDonald Test 4 - 超细网格测试（直接使用求解器）
+    ID: tests-diagnostic-test_macdonald4_ultra_fine_grid
+    文件: tests\diagnostic\test_macdonald4_ultra_fine_grid.py
+    状态: 失败 FAIL (错误码: 1)
+
+[151/541] 测试: MacDonald Test 4 - WENO3求解器测试
+    ID: tests-diagnostic-test_macdonald4_weno3
+    文件: tests\diagnostic\test_macdonald4_weno3.py
+    状态: 通过 PASS (耗时: 4.42s)
+
+[152/541] 测试: MacDonald Test 4 - WENO5高阶格式测试
+    ID: tests-diagnostic-test_macdonald4_weno5
+    文件: tests\diagnostic\test_macdonald4_weno5.py
+    状态: 失败 FAIL (错误码: 1)
+
+[153/541] 测试: MacDonald Test 5 精度改进诊断
+    ID: tests-diagnostic-test_macdonald5_accuracy
+    文件: tests\diagnostic\test_macdonald5_accuracy.py
+    状态: 失败 FAIL (错误码: 1)
+
+[154/541] 测试: MacDonald Test 5 诊断测试
+    ID: tests-diagnostic-test_macdonald5_diagnosis
+    文件: tests\diagnostic\test_macdonald5_diagnosis.py
+    状态: 失败 FAIL (错误码: 1)
+
+[155/541] 测试: MacDonald Test 5 时间步长限制测试
+    ID: tests-diagnostic-test_macdonald5_dt_limit
+    文件: tests\diagnostic\test_macdonald5_dt_limit.py
+    状态: 失败 FAIL (错误码: 1)
+
+[156/541] 测试: MacDonald Test 5 时间步长演化追踪
+    ID: tests-diagnostic-test_macdonald5_dt_trace
+    文件: tests\diagnostic\test_macdonald5_dt_trace.py
+    状态: 失败 FAIL (错误码: 1)
+
+[157/541] 测试: MacDonald Test 5 完整测试
+    ID: tests-diagnostic-test_macdonald5_full
+    文件: tests\diagnostic\test_macdonald5_full.py
+    状态: 失败 FAIL (错误码: 1)
+
+[158/541] 测试: MacDonald Test 5 稳定性诊断
+    ID: tests-diagnostic-test_macdonald5_stability
+    文件: tests\diagnostic\test_macdonald5_stability.py
+    状态: 失败 FAIL (错误码: 1)
+
+[159/541] 测试: MacDonald Test 2 详细质量平衡分析
+    ID: tests-diagnostic-test_macdonald_test2_detailed_mass
+    文件: tests\diagnostic\test_macdonald_test2_detailed_mass.py
+    状态: 失败 FAIL (错误码: 1)
+
+[160/541] 测试: MacDonald Test 2 - 使用完全相同的配置
+    ID: tests-diagnostic-test_macdonald_test2_exact_config
+    文件: tests\diagnostic\test_macdonald_test2_exact_config.py
+    状态: 通过 PASS (耗时: 5.28s)
+
+[161/541] 测试: MacDonald Test 2质量守恒问题诊断
+    ID: tests-diagnostic-test_macdonald_test2_mass
+    文件: tests\diagnostic\test_macdonald_test2_mass.py
+    状态: 通过 PASS (耗时: 4.25s)
+
+[162/541] 测试: 快速验证MacDonald Test 2的修改
+    ID: tests-diagnostic-test_macdonald_test2_quick_verify
+    文件: tests\diagnostic\test_macdonald_test2_quick_verify.py
+    状态: 通过 PASS (耗时: 4.97s)
+
+[163/541] 测试: Manning摩阻项诊断测试
+    ID: tests-diagnostic-test_manning_friction
+    文件: tests\diagnostic\test_manning_friction.py
+    状态: 失败 FAIL (错误码: 1)
+
+[164/541] 测试: 质量守恒计算验证测试
+    ID: tests-diagnostic-test_mass_balance_verification
+    文件: tests\diagnostic\test_mass_balance_verification.py
+    状态: 失败 FAIL (错误码: 1)
+
+[165/541] 测试: 质量通量分析
+    ID: tests-diagnostic-test_mass_flux_analysis
+    文件: tests\diagnostic\test_mass_flux_analysis.py
+    状态: 通过 PASS (耗时: 4.55s)
+
+[166/541] 测试: 检查Preis
+    ID: tests-diagnostic-test_matrix_structure
+    文件: tests\diagnostic\test_matrix_structure.py
+    状态: 失败 FAIL (错误码: 1)
+
+[167/541] 测试: MPC智能调度测试
+    ID: tests-diagnostic-test_mpc_scheduler
+    文件: tests\diagnostic\test_mpc_scheduler.py
+    状态: 失败 FAIL (错误码: 1)
+
+[168/541] 测试: MUSCL性能测试 - Dam Break
+    ID: tests-diagnostic-test_muscl_dambreak
+    文件: tests\diagnostic\test_muscl_dambreak.py
+    状态: 失败 FAIL (错误码: 1)
+
+[169/541] 测试: 简单测试MUSCL重构
+    ID: tests-diagnostic-test_muscl_simple
+    文件: tests\diagnostic\test_muscl_simple.py
+    状态: 失败 FAIL (错误码: 1)
+
+[170/541] 测试: MUSCL + 正确CFL测试
+    ID: tests-diagnostic-test_muscl_with_correct_cfl
+    文件: tests\diagnostic\test_muscl_with_correct_cfl.py
+    状态: 失败 FAIL (错误码: 1)
+
+[171/541] 测试: 测试网络求解器V2 - Y-split简单测试
+    ID: tests-diagnostic-test_network_v2_simple
+    文件: tests\diagnostic\test_network_v2_simple.py
+    状态: 失败 FAIL (错误码: 1)
+
+[172/541] 测试: 测试网络求解器V2 - 最简单串联测试
+    ID: tests-diagnostic-test_network_v2_串联
+    文件: tests\diagnostic\test_network_v2_串联.py
+    状态: 失败 FAIL (错误码: 1)
+
+[173/541] 测试: 测试牛顿法 + 延拓策略
+    ID: tests-diagnostic-test_newton_continuation
+    文件: tests\diagnostic\test_newton_continuation.py
+    状态: 通过 PASS (耗时: 2.20s)
+
+[174/541] 测试: 测试牛顿法 - 使用良好初值
+    ID: tests-diagnostic-test_newton_good_init
+    文件: tests\diagnostic\test_newton_good_init.py
+    状态: 通过 PASS (耗时: 2.07s)
+
+[175/541] 测试: 快速验证牛顿法边界条件修复
+    ID: tests-diagnostic-test_newton_quick
+    文件: tests\diagnostic\test_newton_quick.py
+    状态: 通过 PASS (耗时: 1.92s)
+
+[176/541] 测试: 调试Preissmann求解器的Jacobian矩阵问题
+    ID: tests-diagnostic-test_preissmann_debug
+    文件: tests\diagnostic\test_preissmann_debug.py
+    状态: 通过 PASS (耗时: 0.77s)
+
+[177/541] 测试: Preissmann v4.0 扩展测试
+    ID: tests-diagnostic-test_preissmann_v4_extended
+    文件: tests\diagnostic\test_preissmann_v4_extended.py
+    状态: 失败 FAIL (错误码: 1)
+
+[178/541] 测试: 测试泵站源项是否正确工作
+    ID: tests-diagnostic-test_pump_source_term
+    文件: tests\diagnostic\test_pump_source_term.py
+    状态: 失败 FAIL (错误码: 1)
+
+[179/541] 测试: Q边界诊断测试
+    ID: tests-diagnostic-test_q_boundary
+    文件: tests\diagnostic\test_q_boundary.py
+    状态: 通过 PASS (耗时: 1.85s)
+
+[180/541] 测试: 实际工况综合测试
+    ID: tests-diagnostic-test_realistic_cases
+    文件: tests\diagnostic\test_realistic_cases.py
+    状态: 失败 FAIL (错误码: 1)
+
+[181/541] 测试: TVD-RK2两个阶段的通量检查
+    ID: tests-diagnostic-test_rk2_flux
+    文件: tests\diagnostic\test_rk2_flux.py
+    状态: 通过 PASS (耗时: 1.77s)
+
+[182/541] 测试: RK时间积分性能测试 - Dam Break
+    ID: tests-diagnostic-test_rk_dambreak
+    文件: tests\diagnostic\test_rk_dambreak.py
+    状态: 失败 FAIL (错误码: 1)
+
+[183/541] 测试: 短期质量守恒测试
+    ID: tests-diagnostic-test_short_mass_conservation
+    文件: tests\diagnostic\test_short_mass_conservation.py
+    状态: 通过 PASS (耗时: 1.74s)
+
+[184/541] 测试: 简单边界条件检查
+    ID: tests-diagnostic-test_simple_bc_check
+    文件: tests\diagnostic\test_simple_bc_check.py
+    状态: 通过 PASS (耗时: 1.81s)
+
+[185/541] 测试: 简单急流测试
+    ID: tests-diagnostic-test_simple_supercritical
+    文件: tests\diagnostic\test_simple_supercritical.py
+    状态: 通过 PASS (耗时: 3.94s)
+
+[186/541] 测试: 最小化SimulationEngine测试 - 去除所有输出逻辑
+    ID: tests-diagnostic-test_simulation_engine_minimal
+    文件: tests\diagnostic\test_simulation_engine_minimal.py
+    状态: 失败 FAIL (错误码: 1)
+
+[187/541] 测试: 测试SimulationEngine是否正确创建WENO3求解器
+    ID: tests-diagnostic-test_simulation_engine_weno3
+    文件: tests\diagnostic\test_simulation_engine_weno3.py
+    状态: 失败 FAIL (错误码: 1)
+
+[188/541] 测试: 测试单个渠道 + 闸门的稳态求解
+    ID: tests-diagnostic-test_single_canal_with_gate
+    文件: tests\diagnostic\test_single_canal_with_gate.py
+    状态: 失败 FAIL (错误码: 1)
+
+[189/541] 测试: 单步质量详细诊断
+    ID: tests-diagnostic-test_single_step_mass
+    文件: tests\diagnostic\test_single_step_mass.py
+    状态: 通过 PASS (耗时: 2.35s)
+
+[190/541] 测试: 小摩阻系数测试 - 用极小摩阻替代完全无摩阻
+    ID: tests-diagnostic-test_small_friction
+    文件: tests\diagnostic\test_small_friction.py
+    状态: 失败 FAIL (错误码: 1)
+
+[191/541] 测试: 空间精度对质量守恒的影响测试
+    ID: tests-diagnostic-test_spatial_order
+    文件: tests\diagnostic\test_spatial_order.py
+    状态: 失败 FAIL (错误码: 1)
+
+[192/541] 测试: 静水测试
+    ID: tests-diagnostic-test_static_water
+    文件: tests\diagnostic\test_static_water.py
+    状态: 通过 PASS (耗时: 2.29s)
+
+[193/541] 测试: 测试静水重构法：凸起上的稳态流
+    ID: tests-diagnostic-test_steady_flow_over_bump
+    文件: tests\diagnostic\test_steady_flow_over_bump.py
+    状态: 失败 FAIL (错误码: 1)
+
+[194/541] 测试: 对比两种step()调用方式
+    ID: tests-diagnostic-test_step_with_and_without_dt
+    文件: tests\diagnostic\test_step_with_and_without_dt.py
+    状态: 失败 FAIL (错误码: 1)
+
+[195/541] 测试: Strang Splitting源项处理方法测试
+    ID: tests-diagnostic-test_strang_splitting
+    文件: tests\diagnostic\test_strang_splitting.py
+    状态: 失败 FAIL (错误码: 1)
+
+[196/541] 测试: 测试supercritical边界条件是否正确工作
+    ID: tests-diagnostic-test_supercritical_bc
+    文件: tests\diagnostic\test_supercritical_bc.py
+    状态: 失败 FAIL (错误码: 1)
+
+[197/541] 测试: 测试超临界流稳定性 - Phase 1问题修复
+    ID: tests-diagnostic-test_supercritical_flow
+    文件: tests\diagnostic\test_supercritical_flow.py
+    状态: 失败 FAIL (错误码: 1)
+
+[198/541] 测试: 三闸门系统测试 - 使用静水重构求解器
+    ID: tests-diagnostic-test_three_gates_hydrostatic
+    文件: tests\diagnostic\test_three_gates_hydrostatic.py
+    状态: 失败 FAIL (错误码: 1)
+
+[199/541] 测试: 瞬态流测试 - 验证HydrostaticCanalSolver的瞬态演化功能
+    ID: tests-diagnostic-test_transient_flow
+    文件: tests\diagnostic\test_transient_flow.py
+    状态: 失败 FAIL (错误码: 1)
+
+[200/541] 测试: 测试静水重构的良平衡性质
+    ID: tests-diagnostic-test_well_balanced
+    文件: tests\diagnostic\test_well_balanced.py
+    状态: 失败 FAIL (错误码: 1)
+
+[201/541] 测试: Well-Balanced模式对比测试
+    ID: tests-diagnostic-test_well_balanced_comparison
+    文件: tests\diagnostic\test_well_balanced_comparison.py
+    状态: 通过 PASS (耗时: 4.78s)
+
+[202/541] 测试: Well-Balanced Godunov-FVM完整验证
+    ID: tests-diagnostic-test_well_balanced_complete
+    文件: tests\diagnostic\test_well_balanced_complete.py
+    状态: 失败 FAIL (错误码: 1)
+
+[203/541] 测试: Well-Balanced格式对质量守恒的影响测试
+    ID: tests-diagnostic-test_well_balanced_solution
+    文件: tests\diagnostic\test_well_balanced_solution.py
+    状态: 失败 FAIL (错误码: 1)
+
+[204/541] 测试: WENO3长时间运行诊断 - 找出dt何时变成0
+    ID: tests-diagnostic-test_weno3_long_run
+    文件: tests\diagnostic\test_weno3_long_run.py
+    状态: 失败 FAIL (错误码: 1)
+
+[205/541] 测试: WENO epsilon敏感性测试 - 增加数值耗散
+    ID: tests-diagnostic-test_weno_epsilon_sensitivity
+    文件: tests\diagnostic\test_weno_epsilon_sensitivity.py
+    状态: 失败 FAIL (错误码: 1)
+
+[206/541] 测试: 全面测试验证脚本
+    ID: tests-diagnostic-verify_all_tests
+    文件: tests\diagnostic\verify_all_tests.py
+    状态: 失败 FAIL (错误码: 1)
+
+[207/541] 测试: 精细调优的自适应smooth_weight测试
+    ID: tests-legacy_diagnostic-test_adaptive_fine_tuned
+    文件: tests\legacy_diagnostic\test_adaptive_fine_tuned.py
+    状态: 失败 FAIL (错误码: 1)
+
+[208/541] 测试: 测试优化的自适应网格参数
+    ID: tests-legacy_diagnostic-test_adaptive_grid_optimized
+    文件: tests\legacy_diagnostic\test_adaptive_grid_optimized.py
+    状态: 失败 FAIL (错误码: 1)
+
+[209/541] 测试: 测试自适应网格求解器
+    ID: tests-legacy_diagnostic-test_adaptive_grid_solver
+    文件: tests\legacy_diagnostic\test_adaptive_grid_solver.py
+    状态: 失败 FAIL (错误码: 1)
+
+[210/541] 测试: 自适应平滑权重测试脚本
+    ID: tests-legacy_diagnostic-test_adaptive_smooth_weight
+    文件: tests\legacy_diagnostic\test_adaptive_smooth_weight.py
+    状态: 失败 FAIL (错误码: 1)
+
+[211/541] 测试: Anderson vs Aitken 加速方法性能对比测试
+    ID: tests-legacy_diagnostic-test_anderson_vs_aitken
+    文件: tests\legacy_diagnostic\test_anderson_vs_aitken.py
+    状态: 失败 FAIL (错误码: 1)
+
+[212/541] 测试: 数字孪生测试
+    ID: tests-legacy_diagnostic-test_digital_twin
+    文件: tests\legacy_diagnostic\test_digital_twin.py
+    状态: 失败 FAIL (错误码: 1)
+
+[213/541] 测试: 闸门精度最终优化测试
+    ID: tests-legacy_diagnostic-test_final_optimization
+    文件: tests\legacy_diagnostic\test_final_optimization.py
+    状态: 失败 FAIL (错误码: 1)
+
+[214/541] 测试: 快速测试修复后的求解器
+    ID: tests-legacy_diagnostic-test_fixes_quick
+    文件: tests\legacy_diagnostic\test_fixes_quick.py
+    状态: 失败 FAIL (错误码: 1)
+
+[215/541] 测试: FVM-FDM对比测试
+    ID: tests-legacy_diagnostic-test_fvm_fdm_comparison
+    文件: tests\legacy_diagnostic\test_fvm_fdm_comparison.py
+    状态: 失败 FAIL (错误码: 1)
+
+[216/541] 测试: 完整FVM隐式求解器 - 最终测试
+    ID: tests-legacy_diagnostic-test_fvm_full_final
+    文件: tests\legacy_diagnostic\test_fvm_full_final.py
+    状态: 失败 FAIL (错误码: 1)
+
+[217/541] 测试: FVM稳态求解器对比测试
+    ID: tests-legacy_diagnostic-test_fvm_steady_comparison
+    文件: tests\legacy_diagnostic\test_fvm_steady_comparison.py
+    状态: 失败 FAIL (错误码: 1)
+
+[218/541] 测试: 网格加密全面测试
+    ID: tests-legacy_diagnostic-test_grid_comprehensive
+    文件: tests\legacy_diagnostic\test_grid_comprehensive.py
+    状态: 失败 FAIL (错误码: 1)
+
+[219/541] 测试: 局部网格加密测试
+    ID: tests-legacy_diagnostic-test_grid_refinement
+    文件: tests\legacy_diagnostic\test_grid_refinement.py
+    状态: 失败 FAIL (错误码: 1)
+
+[220/541] 测试: 高精度求解器测试
+    ID: tests-legacy_diagnostic-test_high_precision_solver
+    文件: tests\legacy_diagnostic\test_high_precision_solver.py
+    状态: 失败 FAIL (错误码: 1)
+
+[221/541] 测试: 性能对比测试
+    ID: tests-legacy_diagnostic-test_performance_comparison
+    文件: tests\legacy_diagnostic\test_performance_comparison.py
+    状态: 失败 FAIL (错误码: 1)
+
+[222/541] 测试: Phase 2高精度求解器验证脚本
+    ID: tests-legacy_diagnostic-test_phase2_solver
+    文件: tests\legacy_diagnostic\test_phase2_solver.py
+    状态: 失败 FAIL (错误码: 1)
+
+[223/541] 测试: 测试SWMM风格omega=0.5的效果
+    ID: tests-legacy_diagnostic-test_swmm_omega
+    文件: tests\legacy_diagnostic\test_swmm_omega.py
+    状态: 失败 FAIL (错误码: 1)
+
+[224/541] 测试: 复式断面和自然断面测试
+    ID: tests-numerical_methods-test_compound_natural_sections
+    文件: tests\numerical_methods\test_compound_natural_sections.py
+    状态: 通过 PASS (耗时: 5.44s)
+
+[225/541] 测试: WENO3空间收敛性验证测试
+    ID: tests-numerical_methods-test_convergence
+    文件: tests\numerical_methods\test_convergence.py
+    状态: 失败 FAIL (错误码: 1)
+
+[226/541] 测试: 临界流测试（Critical Flow Test）
+    ID: tests-numerical_methods-test_critical_flow
+    文件: tests\numerical_methods\test_critical_flow.py
+    状态: 失败 FAIL (错误码: 1)
+
+[227/541] 测试: 测试临界流特殊处理
+    ID: tests-numerical_methods-test_critical_flow_treatment
+    文件: tests\numerical_methods\test_critical_flow_treatment.py
+    状态: 通过 PASS (耗时: 0.68s)
+
+[228/541] 测试: Froude数计算和临界流检测测试
+    ID: tests-numerical_methods-test_froude_number
+    文件: tests\numerical_methods\test_froude_number.py
+    状态: 通过 PASS (耗时: 0.63s)
+
+[229/541] 测试: 质量守恒验证测试（Mass Conservation Test）
+    ID: tests-numerical_methods-test_mass_conservation
+    文件: tests\numerical_methods\test_mass_conservation.py
+    状态: 通过 PASS (耗时: 0.56s)
+
+[230/541] 测试: 质量守恒深入验证测试
+    ID: tests-numerical_methods-test_mass_conservation_comprehensive
+    文件: tests\numerical_methods\test_mass_conservation_comprehensive.py
+    状态: 失败 FAIL (错误码: 1)
+
+[231/541] 测试: 混合流态综合测试
+    ID: tests-numerical_methods-test_mixed_flow_comprehensive

@@ -41,7 +41,7 @@ def run_script(script_path, description):
 
         if result.returncode == 0:
             print(result.stdout)
-            print(f"\n✅ SUCCESS - Completed in {elapsed:.1f}s")
+            print(f"\n SUCCESS - Completed in {elapsed:.1f}s")
             return {
                 'name': description,
                 'script': os.path.basename(script_path),
@@ -52,7 +52,7 @@ def run_script(script_path, description):
         else:
             print(result.stdout)
             print(result.stderr)
-            print(f"\n❌ FAILED - Error after {elapsed:.1f}s")
+            print(f"\n FAILED - Error after {elapsed:.1f}s")
             return {
                 'name': description,
                 'script': os.path.basename(script_path),
@@ -63,7 +63,7 @@ def run_script(script_path, description):
 
     except subprocess.TimeoutExpired:
         elapsed = time.time() - start_time
-        print(f"\n⏱️ TIMEOUT - Exceeded time limit ({elapsed:.1f}s)")
+        print(f"\n⏱ TIMEOUT - Exceeded time limit ({elapsed:.1f}s)")
         return {
             'name': description,
             'script': os.path.basename(script_path),
@@ -73,7 +73,7 @@ def run_script(script_path, description):
 
     except Exception as e:
         elapsed = time.time() - start_time
-        print(f"\n❌ ERROR - {str(e)}")
+        print(f"\n ERROR - {str(e)}")
         return {
             'name': description,
             'script': os.path.basename(script_path),
@@ -112,15 +112,15 @@ def generate_report(results, output_dir):
 
         for idx, result in enumerate(results, 1):
             status_emoji = {
-                'SUCCESS': '✅',
-                'FAILED': '❌',
-                'TIMEOUT': '⏱️',
-                'ERROR': '❌'
+                'SUCCESS': '',
+                'FAILED': '',
+                'TIMEOUT': '⏱',
+                'ERROR': ''
             }
 
             f.write(f"### {idx}. {result['name']}\n\n")
             f.write(f"- **Script:** `{result['script']}`\n")
-            f.write(f"- **Status:** {status_emoji.get(result['status'], '❓')} {result['status']}\n")
+            f.write(f"- **Status:** {status_emoji.get(result['status'], '')} {result['status']}\n")
             f.write(f"- **Time:** {result['time']:.1f}s\n")
 
             if result['status'] != 'SUCCESS' and 'error' in result:
@@ -151,7 +151,7 @@ def generate_report(results, output_dir):
         else:
             f.write("- No animations generated\n")
 
-    print(f"\n📄 Report saved: {report_path}")
+    print(f"\n Report saved: {report_path}")
     return report_path
 
 
@@ -185,16 +185,16 @@ def main():
     all_exist = True
     for script_path, desc in scripts:
         if os.path.exists(script_path):
-            print(f"  ✓ {os.path.basename(script_path)}")
+            print(f"   {os.path.basename(script_path)}")
         else:
-            print(f"  ✗ {os.path.basename(script_path)} - NOT FOUND")
+            print(f"   {os.path.basename(script_path)} - NOT FOUND")
             all_exist = False
 
     if not all_exist:
-        print("\n❌ Some scripts are missing. Aborting.")
+        print("\n Some scripts are missing. Aborting.")
         return
 
-    print(f"\n✓ All {len(scripts)} scripts found")
+    print(f"\n All {len(scripts)} scripts found")
 
     # Create output directories
     output_dir = os.path.join(base_dir, "outputs_new", "reports")
@@ -227,13 +227,13 @@ def main():
 
     print(f"\nResults: {success_count}/{total_count} scripts completed successfully")
     print(f"Total time: {total_time:.1f}s ({total_time/60:.1f}min)")
-    print(f"\n📄 Full report: {report_path}")
+    print(f"\n Full report: {report_path}")
 
     if success_count == total_count:
-        print("\n🎉 All scripts completed successfully!")
+        print("\n All scripts completed successfully!")
         return 0
     else:
-        print("\n⚠️ Some scripts failed. Check the report for details.")
+        print("\n Some scripts failed. Check the report for details.")
         return 1
 
 

@@ -482,9 +482,9 @@ def test_steady_saint_venant():
 
     print(f"  最大误差: {max_error:.3e}")
     if max_error < 1e-5:
-        print(f"  ✓ Jacobian验证通过！")
+        print(f"   Jacobian验证通过！")
     else:
-        print(f"  ✗ Jacobian误差较大，需检查")
+        print(f"   Jacobian误差较大，需检查")
 
     print("\n" + "=" * 80)
 

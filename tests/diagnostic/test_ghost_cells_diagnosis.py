@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_ghost_cells():
@@ -78,18 +84,18 @@ def test_ghost_cells():
         # 检查通量
         if solver.last_F_h is not None:
             print(f"\n界面通量（step后）：")
-            print(f"  F_h[0] (左边界) = {solver.last_F_h[0]:.3f} m²/s")
-            print(f"  F_h[-1] (右边界) = {solver.last_F_h[-1]:.3f} m²/s")
+            print(f"  F_h[0] (左边界) = {solver.last_F_h[0]:.3f} m^2/s")
+            print(f"  F_h[-1] (右边界) = {solver.last_F_h[-1]:.3f} m^2/s")
 
             print(f"\n通量检查：")
-            print(f"  左边界：F_h[0]应该≈Q_bc={Q_bc:.3f} → 实际={solver.last_F_h[0]:.3f} → {'✓' if abs(solver.last_F_h[0]-Q_bc)<0.01 else '✗'}")
-            print(f"  右边界：F_h[-1]应该≈Q[-1]={solver.Q[-1]:.3f} → 实际={solver.last_F_h[-1]:.3f} → {'✓' if abs(solver.last_F_h[-1]-solver.Q[-1])<0.01 else '✗'}")
+            print(f"  左边界：F_h[0]应该~=Q_bc={Q_bc:.3f} -> 实际={solver.last_F_h[0]:.3f} -> {'' if abs(solver.last_F_h[0]-Q_bc)<0.01 else ''}")
+            print(f"  右边界：F_h[-1]应该~=Q[-1]={solver.Q[-1]:.3f} -> 实际={solver.last_F_h[-1]:.3f} -> {'' if abs(solver.last_F_h[-1]-solver.Q[-1])<0.01 else ''}")
 
         print(f"\n质量变化：")
         mass_before = solver.initial_mass if step == 0 else mass_current
         mass_current = np.sum(solver.h * solver.dx * solver.B)
         delta_mass = mass_current - mass_before
-        print(f"  质量 = {mass_current:.2f} m³ (变化={delta_mass:+.2f} m³)")
+        print(f"  质量 = {mass_current:.2f} m^3 (变化={delta_mass:+.2f} m^3)")
 
     print(f"\n{'='*80}")
     print("诊断总结")
@@ -101,9 +107,9 @@ def test_ghost_cells():
         right_ok = abs(solver.last_F_h[-1] - right_Q) < 0.1  # 允许10%误差
 
         if left_ok and right_ok:
-            print("\n✅ 边界通量设置正确")
+            print("\n 边界通量设置正确")
         else:
-            print("\n❌ 边界通量有问题")
+            print("\n 边界通量有问题")
             if not left_ok:
                 print(f"   左边界：F_h[0]={solver.last_F_h[0]:.3f} ≠ Q_bc={Q_bc:.3f}")
             if not right_ok:

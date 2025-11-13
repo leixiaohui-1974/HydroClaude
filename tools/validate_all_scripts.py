@@ -59,7 +59,7 @@ class ScriptValidator:
 
             # 确定使用的求解器类型
             if analysis['uses_hydrostatic']:
-                analysis['solver_type'] = 'HydrostaticCanalSolver (✓ 最新)'
+                analysis['solver_type'] = 'HydrostaticCanalSolver ( 最新)'
             elif analysis['uses_single']:
                 analysis['solver_type'] = 'SingleCanalSolver (需迁移)'
             elif analysis['uses_canal']:
@@ -130,7 +130,7 @@ class ScriptValidator:
                 'stderr': result.stderr
             }
 
-            status = "✓ 成功" if success else "✗ 失败"
+            status = " 成功" if success else " 失败"
             print(f"状态: {status}")
             print(f"耗时: {elapsed_time:.2f}秒")
             if flow_error is not None:
@@ -142,7 +142,7 @@ class ScriptValidator:
 
         except subprocess.TimeoutExpired:
             elapsed_time = time.time() - start_time
-            print(f"✗ 超时 ({timeout}秒)")
+            print(f" 超时 ({timeout}秒)")
             return {
                 'success': False,
                 'timeout': True,
@@ -152,7 +152,7 @@ class ScriptValidator:
 
         except Exception as e:
             elapsed_time = time.time() - start_time
-            print(f"✗ 运行失败: {e}")
+            print(f" 运行失败: {e}")
             return {
                 'success': False,
                 'exception': True,
@@ -245,9 +245,9 @@ class ScriptValidator:
 
         # 按求解器类型分组
         for category, title in [
-            ('uses_hydrostatic', '✓ 已使用HydrostaticCanalSolver'),
-            ('uses_single', '⚠ 使用SingleCanalSolver（需迁移）'),
-            ('uses_canal', '⚠ 使用CanalSolver（需迁移）')
+            ('uses_hydrostatic', ' 已使用HydrostaticCanalSolver'),
+            ('uses_single', ' 使用SingleCanalSolver（需迁移）'),
+            ('uses_canal', ' 使用CanalSolver（需迁移）')
         ]:
             scripts = [k for k, v in self.results.items() if v.get(category, False)]
             if scripts:
@@ -260,7 +260,7 @@ class ScriptValidator:
                     status_parts = [f"  • {name}"]
 
                     if 'success' in result:
-                        status = "✓" if result['success'] else "✗"
+                        status = "" if result['success'] else ""
                         time_str = f"{result['elapsed_time']:.1f}s"
                         status_parts.append(f"[{status} {time_str}]")
 
@@ -307,14 +307,14 @@ class ScriptValidator:
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(report)
 
-        print(f"\n✓ 报告已保存: {filepath}")
+        print(f"\n 报告已保存: {filepath}")
 
         # 同时保存JSON格式
         json_path = os.path.join(self.output_dir, filename.replace('.txt', '.json'))
         with open(json_path, 'w', encoding='utf-8') as f:
             json.dump(self.results, f, indent=2, ensure_ascii=False)
 
-        print(f"✓ JSON数据已保存: {json_path}")
+        print(f" JSON数据已保存: {json_path}")
 
         return report
 

@@ -1,0 +1,528 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+藻类生长模块测试套件
+
+测试内容:
+1. 光限制 (Steele公式 + 冰盖遮蔽)
+2. 营养盐限制 (氮磷限制)
+3. 藻类生长周期 (生长-死亡-沉降)
+4. DO-藻类耦合 (光合作用产氧)
+
+对标: WASP Eutrophication, CE-QUAL-W2 Algae
+
+作者: HydroClaude Team
+日期: 2025-11-02
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+import numpy as np
+import matplotlib.pyplot as plt
+from typing import Dict
+
+# 导入模块
+try:
+    from solvers.phytoplankton import PhytoplanktonSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+
+
+def test_light_limitation():
+    """
+    测试1: 光限制 - Steele公式和冰盖遮蔽效应
+
+    场景: 不同光照强度和冰盖覆盖率下的藻类生长
+    """
+    print("\n" + "="*70)
+    print("测试1: 光限制 - Steele公式和冰盖遮蔽")
+    print("="*70)
+
+    # 参数
+    n_cells = 60
+    dx = 100.0
+
+    algae_solver = PhytoplanktonSolver(
+        n_cells=n_cells,
+        dx=dx,
+        I_s=100.0,  # 饱和光照100 W/m²
+        use_numba=False
+    )
+
+    # 初始条件
+    Chla_init = np.full(n_cells, 10.0)  # 10 μg/L
+    algae_solver.initialize(Chla_init)
+
+    # 水动力条件
+    u = np.full(n_cells, 0.1)
+    h = np.full(n_cells, 2.0)
+    T = np.full(n_cells, 20.0)  # 最优温度
+    NH4 = np.full(n_cells, 0.5)  # 充足营养盐
+    NO3 = np.full(n_cells, 2.0)
+    PO4 = np.full(n_cells, 0.1)
+
+    print(f"初始条件:")
+    print(f"  Chla: {Chla_init[0]:.1f} μg/L")
+    print(f"  水深: {h[0]} m")
+    print(f"  温度: {T[0]} °C (最优)")
+    print(f"  营养盐: 充足 (NH4={NH4[0]}, NO3={NO3[0]}, PO4={PO4[0]} mg/L)")
+
+    # 测试不同光照强度
+    I_values = np.linspace(0, 300, 50)  # 0-300 W/m²
+    f_I_no_ice = []
+    f_I_with_ice = []
+
+    ice_fraction = 0.8  # 80%冰盖覆盖
+
+    for I in I_values:
+        I_0 = np.full(n_cells, I)
+
+        # 无冰盖
+        f_I = algae_solver.compute_light_limitation(I_0, h, None)
+        f_I_no_ice.append(f_I[0])
+
+        # 有冰盖
+        ice_cover = np.full(n_cells, ice_fraction)
+        f_I_ice = algae_solver.compute_light_limitation(I_0, h, ice_cover)
+        f_I_with_ice.append(f_I_ice[0])
+
+    # 绘图
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+    # 子图1: Steele曲线
+    axes[0].plot(I_values, f_I_no_ice, 'b-', linewidth=2, label='开放水域')
+    axes[0].plot(I_values, f_I_with_ice, 'r--', linewidth=2, label=f'冰盖覆盖 ({ice_fraction*100:.0f}%)')
+    axes[0].axvline(100, color='g', linestyle=':', alpha=0.5, label='饱和光照 I_s')
+    axes[0].set_xlabel('光照强度 (W/m²)')
+    axes[0].set_ylabel('光限制因子 f_I')
+    axes[0].set_title('Steele公式: 光限制曲线')
+    axes[0].legend()
+    axes[0].grid(True, alpha=0.3)
+
+    # 子图2: 藻类生长模拟 (5天)
+    # 场景A: 高光照 (200 W/m²)
+    # 场景B: 低光照 (50 W/m²)
+    # 场景C: 冰盖下 (200 W/m² * 20% = 40 W/m²)
+    scenarios = [
+        ('高光照', 200.0, None),
+        ('低光照', 50.0, None),
+        ('冰盖下', 200.0, np.full(n_cells, 0.8))
+    ]
+
+    for scenario_name, I_val, ice_cover in scenarios:
+        # 重新初始化
+        algae_solver.initialize(Chla_init)
+
+        # 模拟5天
+        t_end = 5 * 86400.0
+        dt = 3600.0  # 1小时
+        n_steps = int(t_end / dt)
+
+        time_history = []
+        Chla_history = []
+
+        I_0 = np.full(n_cells, I_val)
+
+        for step in range(n_steps):
+            state = algae_solver.step(
+                dt, u, h, T, I_0, NH4, NO3, PO4, ice_cover
+            )
+
+            time_history.append((step + 1) * dt / 86400.0)
+            Chla_history.append(state['Chla'][n_cells//2])
+
+        axes[1].plot(time_history, Chla_history, linewidth=2, label=scenario_name)
+
+    axes[1].set_xlabel('时间 (days)')
+    axes[1].set_ylabel('叶绿素 Chla (μg/L)')
+    axes[1].set_title('不同光照条件下的藻类生长')
+    axes[1].legend()
+    axes[1].grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('test_phytoplankton_light.png', dpi=150)
+    print(f"\n图表已保存: test_phytoplankton_light.png")
+
+    # 验证: 高光照应生长最快，冰盖下生长最慢
+    # 使用小时间步长，模拟1天
+    algae_solver_test = PhytoplanktonSolver(n_cells=n_cells, dx=dx, I_s=100.0, use_numba=False)
+
+    # 场景A: 适中光照 (避免Steele公式的光抑制效应)
+    algae_solver_test.initialize(Chla_init)
+    I_0_high = np.full(n_cells, 120.0)  # 适中光照，不超过I_s太多
+    for _ in range(24):  # 24个小时
+        state = algae_solver_test.step(3600.0, u, h, T, I_0_high, NH4, NO3, PO4, None)
+    Chla_high = state['Chla'][n_cells//2]
+
+    # 检查光限制因子
+    f_I_high = algae_solver_test.compute_light_limitation(I_0_high, h, None)
+
+    # 场景B: 冰盖下 (同样光照，但被冰盖遮蔽)
+    algae_solver_test.initialize(Chla_init)
+    I_0_ice = np.full(n_cells, 120.0)
+    ice_cover = np.full(n_cells, 0.8)
+    for _ in range(24):  # 24个小时
+        state = algae_solver_test.step(3600.0, u, h, T, I_0_ice, NH4, NO3, PO4, ice_cover)
+    Chla_ice = state['Chla'][n_cells//2]
+
+    # 检查光限制因子
+    f_I_ice = algae_solver_test.compute_light_limitation(I_0_ice, h, ice_cover)
+
+    print(f"\n1天生长后:")
+    print(f"  高光照: {Chla_init[0]:.1f} → {Chla_high:.1f} μg/L (f_I={f_I_high[n_cells//2]:.3f})")
+    print(f"  冰盖下: {Chla_init[0]:.1f} → {Chla_ice:.1f} μg/L (f_I={f_I_ice[n_cells//2]:.3f})")
+
+    if Chla_high > Chla_init[0] and Chla_ice < Chla_high:
+        print(f"\n 测试通过! 光限制机制正常，冰盖抑制藻类生长")
+        return True
+    else:
+        print(f"\n 测试失败!")
+        if Chla_high <= Chla_init[0]:
+            print(f"  - 高光照未生长")
+        if Chla_ice >= Chla_high:
+            print(f"  - 冰盖下生长不低于高光照 ({Chla_ice:.1f} vs {Chla_high:.1f})")
+        return False
+
+
+def test_nutrient_limitation():
+    """
+    测试2: 营养盐限制 - 氮限制和磷限制
+
+    场景: 分别测试氮限制和磷限制条件
+    """
+    print("\n" + "="*70)
+    print("测试2: 营养盐限制 - 氮磷限制")
+    print("="*70)
+
+    n_cells = 36
+    dx = 100.0
+
+    algae_solver = PhytoplanktonSolver(
+        n_cells=n_cells,
+        dx=dx,
+        K_N=0.025,  # 氮半饱和常数
+        K_P=0.001,  # 磷半饱和常数
+        use_numba=False
+    )
+
+    # 水动力条件 (最优)
+    u = np.full(n_cells, 0.1)
+    h = np.full(n_cells, 2.0)
+    T = np.full(n_cells, 20.0)
+    I_0 = np.full(n_cells, 150.0)  # 充足光照
+
+    print(f"最优条件:")
+    print(f"  光照: {I_0[0]} W/m² (充足)")
+    print(f"  温度: {T[0]} °C (最优)")
+
+    # 场景1: 充足营养盐 (对照)
+    # 场景2: 氮限制 (低TIN)
+    # 场景3: 磷限制 (低PO4)
+    scenarios = [
+        ('充足营养盐', 0.5, 2.0, 0.1),     # NH4, NO3, PO4
+        ('氮限制', 0.01, 0.01, 0.1),       # 低氮
+        ('磷限制', 0.5, 2.0, 0.0005),      # 低磷
+    ]
+
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+    time_series = {}
+
+    for scenario_name, NH4_val, NO3_val, PO4_val in scenarios:
+        # 初始化
+        Chla_init = np.full(n_cells, 10.0)
+        algae_solver.initialize(Chla_init)
+
+        NH4 = np.full(n_cells, NH4_val)
+        NO3 = np.full(n_cells, NO3_val)
+        PO4 = np.full(n_cells, PO4_val)
+
+        print(f"\n{scenario_name}:")
+        print(f"  NH4: {NH4_val} mg/L, NO3: {NO3_val} mg/L")
+        print(f"  PO4: {PO4_val} mg/L")
+
+        # 计算限制因子
+        f_N, f_P = algae_solver.compute_nutrient_limitation(NH4, NO3, PO4)
+        print(f"  f_N: {f_N[0]:.3f}, f_P: {f_P[0]:.3f}")
+
+        # 模拟10天
+        t_end = 10 * 86400.0
+        dt = 3600.0
+        n_steps = int(t_end / dt)
+
+        time_history = []
+        Chla_history = []
+        growth_history = []
+
+        for step in range(n_steps):
+            state = algae_solver.step(dt, u, h, T, I_0, NH4, NO3, PO4, None)
+
+            time_history.append((step + 1) * dt / 86400.0)
+            Chla_history.append(state['Chla'][n_cells//2])
+            growth_history.append(state['growth_rate'][n_cells//2])
+
+        time_series[scenario_name] = (time_history, Chla_history, growth_history)
+
+        # 子图1: 叶绿素演化
+        axes[0, 0].plot(time_history, Chla_history, linewidth=2, label=scenario_name)
+
+    axes[0, 0].set_xlabel('时间 (days)')
+    axes[0, 0].set_ylabel('叶绿素 Chla (μg/L)')
+    axes[0, 0].set_title('不同营养盐条件下的藻类生长')
+    axes[0, 0].legend()
+    axes[0, 0].grid(True, alpha=0.3)
+
+    # 子图2: 营养盐限制因子
+    N_range = np.logspace(-3, 0, 50)  # 0.001 - 1 mg/L
+    P_range = np.logspace(-4, -1, 50)  # 0.0001 - 0.1 mg/L
+
+    f_N_curve = N_range / (0.025 + N_range)
+    f_P_curve = P_range / (0.001 + P_range)
+
+    axes[0, 1].semilogx(N_range, f_N_curve, 'b-', linewidth=2, label='氮限制 f_N')
+    axes[0, 1].semilogx(P_range, f_P_curve, 'r-', linewidth=2, label='磷限制 f_P')
+    axes[0, 1].axvline(0.025, color='b', linestyle=':', alpha=0.5, label='K_N')
+    axes[0, 1].axvline(0.001, color='r', linestyle=':', alpha=0.5, label='K_P')
+    axes[0, 1].set_xlabel('浓度 (mg/L)')
+    axes[0, 1].set_ylabel('限制因子')
+    axes[0, 1].set_title('Monod动力学: 营养盐限制曲线')
+    axes[0, 1].legend()
+    axes[0, 1].grid(True, alpha=0.3)
+
+    # 子图3和4: 生长速率
+    for idx, (scenario_name, _, _, _) in enumerate(scenarios[:2]):
+        time_hist, _, growth_hist = time_series[scenario_name]
+        row, col = (1, 0) if idx == 0 else (1, 1)
+        axes[row, col].plot(time_hist, growth_hist, linewidth=2)
+        axes[row, col].set_xlabel('时间 (days)')
+        axes[row, col].set_ylabel('生长速率 (μg/L/day)')
+        axes[row, col].set_title(f'生长速率: {scenario_name}')
+        axes[row, col].grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('test_phytoplankton_nutrients.png', dpi=150)
+    print(f"\n图表已保存: test_phytoplankton_nutrients.png")
+
+    # 验证: 充足营养盐 > 氮限制 > 磷限制
+    _, Chla_sufficient, _ = time_series['充足营养盐']
+    _, Chla_N_limited, _ = time_series['氮限制']
+    _, Chla_P_limited, _ = time_series['磷限制']
+
+    print(f"\n10天后叶绿素浓度:")
+    print(f"  充足营养盐: {Chla_sufficient[-1]:.1f} μg/L")
+    print(f"  氮限制: {Chla_N_limited[-1]:.1f} μg/L")
+    print(f"  磷限制: {Chla_P_limited[-1]:.1f} μg/L")
+
+    if Chla_sufficient[-1] > Chla_N_limited[-1] > Chla_P_limited[-1]:
+        print(f"\n 测试通过! 营养盐限制机制正常")
+        return True
+    else:
+        print(f"\n 测试失败!")
+        if Chla_sufficient[-1] <= Chla_N_limited[-1]:
+            print(f"  - 充足营养盐未表现最高生长")
+        if Chla_N_limited[-1] <= Chla_P_limited[-1]:
+            print(f"  - 氮限制和磷限制顺序错误")
+        return False
+
+
+def test_algae_do_coupling():
+    """
+    测试3: 藻类-DO耦合 - 光合作用产氧和呼吸耗氧
+
+    场景: 昼夜循环下的DO-藻类动态
+    """
+    print("\n" + "="*70)
+    print("测试3: 藻类-DO耦合 - 光合作用与呼吸")
+    print("="*70)
+
+    n_cells = 24
+    dx = 100.0
+
+    algae_solver = PhytoplanktonSolver(
+        n_cells=n_cells,
+        dx=dx,
+        use_numba=False
+    )
+
+    # 初始条件
+    Chla_init = np.full(n_cells, 50.0)  # 较高叶绿素
+    algae_solver.initialize(Chla_init)
+
+    # 水动力条件
+    u = np.full(n_cells, 0.1)
+    h = np.full(n_cells, 2.0)
+    T = np.full(n_cells, 20.0)
+    NH4 = np.full(n_cells, 0.5)
+    NO3 = np.full(n_cells, 2.0)
+    PO4 = np.full(n_cells, 0.1)
+
+    print(f"初始条件:")
+    print(f"  Chla: {Chla_init[0]:.1f} μg/L (藻华水平)")
+    print(f"  营养盐: 充足")
+
+    # 模拟3天，昼夜循环
+    # 白天 (6:00-18:00): 光照强度从0升到200再降到0 (正弦)
+    # 夜间: 光照=0
+    t_end = 3 * 86400.0
+    dt = 600.0  # 10分钟
+    n_steps = int(t_end / dt)
+
+    time_history = []
+    Chla_history = []
+    DO_production_history = []
+    I_history = []
+
+    for step in range(n_steps):
+        # 当前时间 (秒)
+        t_current = step * dt
+
+        # 一天中的时间 (小时)
+        hour_of_day = (t_current % 86400) / 3600.0
+
+        # 光照强度 (昼夜循环)
+        if 6 <= hour_of_day <= 18:
+            # 白天: 正弦曲线
+            I_0_val = 200.0 * np.sin(np.pi * (hour_of_day - 6) / 12)
+        else:
+            # 夜间
+            I_0_val = 0.0
+
+        I_0 = np.full(n_cells, I_0_val)
+
+        # 推进
+        state = algae_solver.step(dt, u, h, T, I_0, NH4, NO3, PO4, None)
+
+        # 记录
+        time_history.append(t_current / 86400.0)
+        Chla_history.append(state['Chla'][n_cells//2])
+        DO_production_history.append(state['DO_production'][n_cells//2])
+        I_history.append(I_0_val)
+
+    # 绘图
+    fig, axes = plt.subplots(3, 1, figsize=(12, 10))
+
+    # 子图1: 光照强度
+    axes[0].plot(time_history, I_history, 'orange', linewidth=1.5)
+    axes[0].fill_between(time_history, 0, I_history, alpha=0.3, color='yellow')
+    axes[0].set_ylabel('光照强度 (W/m²)')
+    axes[0].set_title('昼夜循环: 光照-藻类-DO动态')
+    axes[0].grid(True, alpha=0.3)
+
+    # 子图2: 叶绿素
+    axes[1].plot(time_history, Chla_history, 'g-', linewidth=2)
+    axes[1].set_ylabel('叶绿素 Chla (μg/L)')
+    axes[1].grid(True, alpha=0.3)
+
+    # 子图3: DO产生/消耗
+    axes[2].plot(time_history, DO_production_history, 'b-', linewidth=2)
+    axes[2].axhline(0, color='k', linestyle='--', alpha=0.5)
+    axes[2].fill_between(time_history, 0, DO_production_history,
+                         where=np.array(DO_production_history) > 0,
+                         alpha=0.3, color='green', label='产氧 (光合作用)')
+    axes[2].fill_between(time_history, 0, DO_production_history,
+                         where=np.array(DO_production_history) <= 0,
+                         alpha=0.3, color='red', label='耗氧 (呼吸)')
+    axes[2].set_xlabel('时间 (days)')
+    axes[2].set_ylabel('DO变化速率 (mg/L/day)')
+    axes[2].legend()
+    axes[2].grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('test_phytoplankton_do_coupling.png', dpi=150)
+    print(f"\n图表已保存: test_phytoplankton_do_coupling.png")
+
+    # 统计分析
+    DO_production_array = np.array(DO_production_history)
+    daytime_mask = np.array(I_history) > 0
+
+    DO_prod_day = np.mean(DO_production_array[daytime_mask])
+    DO_prod_night = np.mean(DO_production_array[~daytime_mask])
+
+    print(f"\nDO产生/消耗统计:")
+    print(f"  白天平均: {DO_prod_day:+.2f} mg/L/day (应为正，产氧)")
+    print(f"  夜间平均: {DO_prod_night:+.2f} mg/L/day (应为负，耗氧)")
+    print(f"  日均净产氧: {np.mean(DO_production_array):+.2f} mg/L/day")
+
+    if DO_prod_day > 0 and DO_prod_night < 0:
+        print(f"\n 测试通过! 藻类-DO耦合正常 (白天产氧，夜间耗氧)")
+        return True
+    else:
+        print(f"\n 测试失败!")
+        if DO_prod_day <= 0:
+            print(f"  - 白天未产氧")
+        if DO_prod_night >= 0:
+            print(f"  - 夜间未耗氧")
+        return False
+
+
+def run_all_tests():
+    """运行所有测试"""
+    print("\n" + "="*70)
+    print("HydroClaude 藻类生长模块测试套件 (Phase 4)")
+    print("="*70)
+    print("对标: WASP Eutrophication, CE-QUAL-W2 Algae")
+    print("="*70)
+
+    results = {}
+
+    # 测试1: 光限制
+    try:
+        results['Light Limitation'] = test_light_limitation()
+    except Exception as e:
+        print(f"\n 测试1异常: {e}")
+        import traceback
+        traceback.print_exc()
+        results['Light Limitation'] = False
+
+    # 测试2: 营养盐限制
+    try:
+        results['Nutrient Limitation'] = test_nutrient_limitation()
+    except Exception as e:
+        print(f"\n 测试2异常: {e}")
+        import traceback
+        traceback.print_exc()
+        results['Nutrient Limitation'] = False
+
+    # 测试3: 藻类-DO耦合
+    try:
+        results['Algae-DO Coupling'] = test_algae_do_coupling()
+    except Exception as e:
+        print(f"\n 测试3异常: {e}")
+        import traceback
+        traceback.print_exc()
+        results['Algae-DO Coupling'] = False
+
+    # 汇总
+    print("\n" + "="*70)
+    print("测试结果汇总")
+    print("="*70)
+    for test_name, passed in results.items():
+        status = " PASS" if passed else " FAIL"
+        print(f"{test_name:30s} : {status}")
+    print("="*70)
+
+    n_passed = sum(results.values())
+    n_total = len(results)
+    print(f"通过率: {n_passed}/{n_total} ({n_passed/n_total*100:.1f}%)")
+    print("="*70)
+
+    if n_passed == n_total:
+        print(f"\n 所有测试通过! HydroClaude Phase 4藻类模块验证成功!")
+        print(f"藻类生长模块对标商业软件: WASP, CE-QUAL-W2 ")
+    else:
+        print(f"\n️  {n_total - n_passed}个测试失败，需要进一步调试")
+
+    return n_passed == n_total
+
+
+if __name__ == '__main__':
+    # 运行测试
+    success = run_all_tests()
+
+    # 退出码
+    sys.exit(0 if success else 1)

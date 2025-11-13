@@ -302,7 +302,7 @@ class StabilityEvaluator:
             print(f"{'='*60}")
 
             if not result['success']:
-                print(f"❌ 数值计算失败: {result['message']}")
+                print(f" 数值计算失败: {result['message']}")
                 if 'score' in result:
                     print(f"综合评分: {result['score']:.1f}/100")
                 continue
@@ -318,13 +318,13 @@ class StabilityEvaluator:
             # 评价建议
             print(f"\n评价:")
             if result['score'] >= 90:
-                print(f"  ✅ 优秀 - 该方法数值稳定性极佳，推荐使用")
+                print(f"   优秀 - 该方法数值稳定性极佳，推荐使用")
             elif result['score'] >= 70:
-                print(f"  ✅ 良好 - 该方法数值稳定，可以使用")
+                print(f"   良好 - 该方法数值稳定，可以使用")
             elif result['score'] >= 50:
-                print(f"  ⚠️  一般 - 该方法基本稳定，建议优化参数")
+                print(f"  ️  一般 - 该方法基本稳定，建议优化参数")
             else:
-                print(f"  ❌ 较差 - 该方法存在稳定性问题，不推荐使用")
+                print(f"   较差 - 该方法存在稳定性问题，不推荐使用")
 
         print("\n" + "=" * 80)
 

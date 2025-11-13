@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 """
-优化版例子2：多闸门和混合结构 (HydrostaticCanalSolver高精度版本)
+优化版例子2多闸门和混合结构 (HydrostaticCanalSolver高精度版本)
 
-测试HydrostaticCanalSolver处理复杂场景的能力：
-- 场景1：三闸门串联
-- 场景2：混合结构（闸门 + 堰 + 孔口）
+测试HydrostaticCanalSolver处理复杂场景的能力
+- 场景1三闸门串联
+- 场景2混合结构闸门 + 堰 + 孔口
 
 展示Phase 2高精度求解器在复杂场景下的稳定性和精度
 
@@ -23,6 +24,8 @@ sys.path.insert(0, script_dir)
 
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import time
 from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
@@ -49,10 +52,10 @@ def run_scenario(scenario_name, structures, structure_positions,
         场景结果字典
     """
     print("=" * 100)
-    print(f"场景：{scenario_name}")
+    print(f"场景{scenario_name}")
     print("=" * 100)
     print(f"  结构数量: {len(structures)}")
-    print(f"  目标流量: {Q_target} m³/s")
+    print(f"  目标流量: {Q_target} m^3/s")
     print()
 
     # 计算下游边界条件
@@ -133,7 +136,7 @@ def run_optimized_example():
     """运行优化版例子2"""
 
     print("=" * 100)
-    print("优化版例子2：多闸门和混合结构 (HydrostaticCanalSolver高精度版本)")
+    print("优化版例子2多闸门和混合结构 (HydrostaticCanalSolver高精度版本)")
     print("=" * 100)
     print()
 
@@ -149,14 +152,14 @@ def run_optimized_example():
     print(f"  渠道长度: {canal_length} m")
     print(f"  渠道宽度: {canal_width} m")
     print(f"  空间点数: {n_points}")
-    print(f"  目标流量: {Q_target} m³/s")
-    print(f"  底坡: {bed_slope*1000:.2f}‰")
+    print(f"  目标流量: {Q_target} m^3/s")
+    print(f"  底坡: {bed_slope*1000:.2f}[permille]")
     print(f"  曼宁糙率: {manning_n}")
     print()
 
     all_scenarios = []
 
-    # ========== 场景1：三闸门串联 ==========
+    # ========== 场景1三闸门串联 ==========
     print("\n")
     gate1 = SluiceGate(position=2500.0, width=canal_width, opening=4.5, Cd=0.6)
     gate2 = SluiceGate(position=5000.0, width=canal_width, opening=4.0, Cd=0.6)
@@ -175,7 +178,7 @@ def run_optimized_example():
     )
     all_scenarios.append(scenario1)
 
-    # ========== 场景2：混合结构 ==========
+    # ========== 场景2混合结构 ==========
     print("\n")
     gate_mixed = SluiceGate(position=2500.0, width=canal_width, opening=3.5, Cd=0.6)
     weir = BroadCrestedWeir(position=5000.0, width=canal_width, crest_height=0.5, Cd=0.848)
@@ -210,7 +213,7 @@ def run_optimized_example():
             result = res['result']
             elapsed = res['elapsed']
 
-            converged = "✓" if result['converged'] else "✗"
+            converged = "" if result['converged'] else ""
 
             name_col = scenario_name if i == 0 else ""
             print(f"{name_col:<20} {tol_name:<15} {converged:<8} {result['iterations']:<8} "
@@ -306,7 +309,7 @@ def run_optimized_example():
     save_figure(fig, '12_advanced_optimized_comparison_v2.png')
     plt.close()
 
-    # 生成流量验证图（使用场景1标准容差）
+    # 生成流量验证图使用场景1标准容差
     print("  生成流量验证图...")
     scenario1_std = scenario1['results'][1]  # Standard tolerance
     solver1_std = scenario1_std['solver']
@@ -339,7 +342,7 @@ def run_optimized_example():
     comparison_data = pd.DataFrame(comparison_rows)
     save_table(comparison_data, '12_advanced_optimized_comparison_v2.csv', index=False)
 
-    # 导出场景1详细剖面（标准容差）
+    # 导出场景1详细剖面标准容差
     x = solver1_std.x
     h = result1_std['h']
     Q = result1_std['Q']
@@ -383,12 +386,12 @@ def run_optimized_example():
 
     # 判定最佳方法
     print(f"\n推荐配置:")
-    print(f"  - 复杂场景（3+结构）: 宽松容差 (0.1)")
+    print(f"  - 复杂场景3+结构: 宽松容差 (0.1)")
     print(f"  - 理由: 极快收敛 + 优秀精度")
     print(f"  - 对比旧求解器: 无需担心收敛失败")
 
     print("\n" + "=" * 100)
-    print("完成！")
+    print("完成")
     print("=" * 100)
 
     return scenario1_std['validator']

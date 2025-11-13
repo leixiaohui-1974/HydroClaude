@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_boundary_evolution():
@@ -45,7 +51,7 @@ def test_boundary_evolution():
     solver.initialize(h_init, Q_init, bc_left, bc_right)
 
     print(f"\n边界条件：")
-    print(f"  左：Q = {Q_bc} m³/s")
+    print(f"  左：Q = {Q_bc} m^3/s")
     print(f"  右：h = {h_bc} m")
 
     print(f"\n{'步骤':<6} {'h[0]':<10} {'h[-1]':<10} {'Q[0]':<10} {'Q[-1]':<10} {'质量':<12}")
@@ -74,11 +80,11 @@ def test_boundary_evolution():
         if step == 0:
             # 第一步：检查Q[0]是否被强制为Q_bc
             if abs(Q0_after - Q_bc) < 1e-6:
-                print(f"   ⚠️ Q[0]被强制为{Q_bc}")
+                print(f"   ️ Q[0]被强制为{Q_bc}")
 
             # 检查h[-1]是否被强制为h_bc
             if abs(h_1_after - h_bc) < 1e-6:
-                print(f"   ⚠️ h[-1]被强制为{h_bc}")
+                print(f"   ️ h[-1]被强制为{h_bc}")
 
     print("\n" + "="*80)
     print("分析：")

@@ -13,7 +13,13 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
-from solvers.gate import SluiceGate
+try:
+    from solvers.gate import SluiceGate
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 def test_gate_derivatives():
     """测试闸门流量对水深的导数"""
@@ -28,7 +34,7 @@ def test_gate_derivatives():
     e = 5.0
     gate = SluiceGate(position=50.0, width=B, opening=e, Cd=0.6)
 
-    # 测试场景：均匀流初值（delta_h = 0）
+    # 测试场景均匀流初值delta_h = 0
     h_up = 0.9298
     h_down = 0.9298
 
@@ -42,19 +48,19 @@ def test_gate_derivatives():
     print(f"水深条件:")
     print(f"  上游水深 h_up = {h_up:.4f} m")
     print(f"  下游水深 h_down = {h_down:.4f} m")
-    print(f"  水位差 Δh = {h_up - h_down:.6f} m")
+    print(f"  水位差 Deltah = {h_up - h_down:.6f} m")
     print()
 
     # 计算基准流量
     Q_0, flow_type = gate.calculate_discharge(h_up, h_down, t=0.0)
-    print(f"基准流量 Q_0 = {Q_0:.6f} m³/s, 流态 = {flow_type}")
+    print(f"基准流量 Q_0 = {Q_0:.6f} m^3/s, 流态 = {flow_type}")
     print()
 
     # 测试不同的eps值
     eps_values = [1e-6, 1e-5, 1e-4, 1e-3, 1e-2]
 
     print("=" * 100)
-    print("数值微分测试（扰动h_upstream）")
+    print("数值微分测试扰动h_upstream")
     print("=" * 100)
     print(f"{'eps':<15} {'Q(h+eps)':<20} {'dQ/dh_up':<20} {'说明':<30}")
     print("-" * 100)
@@ -63,7 +69,7 @@ def test_gate_derivatives():
         Q_h_up_plus, flow_type_plus = gate.calculate_discharge(h_up + eps, h_down, t=0.0)
         dQ_dh_up = (Q_h_up_plus - Q_0) / eps
 
-        # 理论导数（解析）
+        # 理论导数解析
         delta_h_eff = max(1e-4, h_up - h_down)
         if flow_type == 'submerged':
             # Q = Cd * B * e * sqrt(2g * delta_h_eff)
@@ -76,17 +82,17 @@ def test_gate_derivatives():
 
         note = ""
         if dQ_dh_up == 0:
-            note = "❌ 导数为零（max截断）"
+            note = " 导数为零max截断"
         elif abs(dQ_dh_up - dQ_dh_up_analytic) / dQ_dh_up_analytic < 0.01:
-            note = "✓ 导数正确"
+            note = " 导数正确"
         else:
-            note = f"⚠ 误差{abs(dQ_dh_up - dQ_dh_up_analytic) / dQ_dh_up_analytic * 100:.1f}%"
+            note = f" 误差{abs(dQ_dh_up - dQ_dh_up_analytic) / dQ_dh_up_analytic * 100:.1f}%"
 
         print(f"{eps:<15.2e} {Q_h_up_plus:<20.6f} {dQ_dh_up:<20.6f} {note:<30}")
 
     print()
     print("=" * 100)
-    print("数值微分测试（扰动h_downstream）")
+    print("数值微分测试扰动h_downstream")
     print("=" * 100)
     print(f"{'eps':<15} {'Q(h_down+eps)':<20} {'dQ/dh_down':<20} {'说明':<30}")
     print("-" * 100)
@@ -95,7 +101,7 @@ def test_gate_derivatives():
         Q_h_down_plus, flow_type_plus = gate.calculate_discharge(h_up, h_down + eps, t=0.0)
         dQ_dh_down = (Q_h_down_plus - Q_0) / eps
 
-        # 理论导数（解析）
+        # 理论导数解析
         delta_h_eff = max(1e-4, h_up - h_down)
         if flow_type == 'submerged':
             # Q = Cd * B * e * sqrt(2g * delta_h_eff)
@@ -107,11 +113,11 @@ def test_gate_derivatives():
 
         note = ""
         if dQ_dh_down == 0:
-            note = "❌ 导数为零（max截断）"
+            note = " 导数为零max截断"
         elif abs(dQ_dh_down - dQ_dh_down_analytic) < 1e-6:
-            note = "✓ 导数正确"
+            note = " 导数正确"
         else:
-            note = f"⚠ 误差{abs(dQ_dh_down - dQ_dh_down_analytic):.2e}"
+            note = f" 误差{abs(dQ_dh_down - dQ_dh_down_analytic):.2e}"
 
         print(f"{eps:<15.2e} {Q_h_down_plus:<20.6f} {dQ_dh_down:<20.6f} {note:<30}")
 
@@ -120,14 +126,14 @@ def test_gate_derivatives():
     print("问题诊断")
     print("=" * 100)
     print()
-    print("根本原因：")
+    print("根本原因")
     print("  calculate_discharge 中使用了 max(1e-4, delta_h) 来避免负值或零")
-    print("  当 delta_h < 1e-4 时，微小扰动 eps=1e-6 被截断，导致数值微分失败")
+    print("  当 delta_h < 1e-4 时微小扰动 eps=1e-6 被截断导致数值微分失败")
     print()
-    print("解决方案：")
-    print("  方案1：使用更大的扰动 eps（如 1e-3），但精度较低")
-    print("  方案2：解析计算导数（推荐）")
-    print("  方案3：改进 calculate_discharge，避免硬截断")
+    print("解决方案")
+    print("  方案1使用更大的扰动 eps如 1e-3但精度较低")
+    print("  方案2解析计算导数推荐")
+    print("  方案3改进 calculate_discharge避免硬截断")
     print()
 
 

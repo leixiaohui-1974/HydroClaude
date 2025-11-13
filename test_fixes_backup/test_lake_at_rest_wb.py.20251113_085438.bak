@@ -1,0 +1,424 @@
+# -*- coding: utf-8 -*-
+"""
+Lake at Rest Test with Well-Balanced Format
+============================================
+
+测试Well-Balanced格式是否能精确保持静水平衡(C-property)
+
+测试配置:
+- P0.1: 平底 (无底高程变化)
+- P0.2: 缓坡 (2m凸起，线性变化)
+- P0.3: 陡坡 (5m台阶，不连续)
+
+成功标准:
+- 水面扰动 < 1e-10 m (机器精度)
+- 质量守恒误差 < 1e-8 %
+
+Author: HydroClaude Team
+Date: 2025-10-31
+"""
+
+import sys
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Add project root to path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, project_root)
+
+from solvers.godunov_fvm_solver import GodunvFVMSolver
+
+
+class LakeAtRestTest:
+    """Lake at Rest测试套件"""
+
+    def __init__(self):
+        self.results = {}
+
+    def test_p0_1_flat_bottom(self):
+        """
+        P0.1: 平底静水测试
+
+        配置:
+        - 长度: 100m
+        - 初始水深: 5m (均匀)
+        - 底高程: 0m (平底)
+
+        预期:
+        - 水面扰动: ~1e-14 m (机器精度)
+        """
+        print("\n" + "="*70)
+        print("Test P0.1: Flat Bottom (平底)")
+        print("="*70)
+
+        # 参数
+        L = 100.0
+        n_cells = 100
+        h_init = 5.0
+        T_end = 10.0
+
+        # 创建求解器 (well_balanced=True)
+        solver = GodunvFVMSolver(
+            width=10.0,
+            length=L,
+            n_cells=n_cells,
+            manning_n=0.03,
+            slope=0.0,  # 平底
+            cfl=0.5,
+            order=1,
+            well_balanced=True
+        )
+
+        # 初始条件: 静水
+        h = np.ones(n_cells) * h_init
+        Q = np.zeros(n_cells)
+
+        # 边界条件
+        bc_left = {'type': 'h', 'value': h_init}
+        bc_right = {'type': 'h', 'value': h_init}
+
+        solver.initialize(h, Q, bc_left, bc_right)
+
+        # 记录初始质量
+        mass_init = solver._compute_total_mass()
+        eta_init = h_init  # 水面高程
+
+        # 运行模拟
+        t = 0.0
+        while t < T_end:
+            dt = solver.compute_dt()
+            solver.step(dt)
+            t += dt
+
+        # 检查结果
+        h_final = solver.h.copy()
+        eta_final = h_final + solver.z_b
+
+        # 水面扰动
+        eta_disturbance = np.max(np.abs(eta_final - eta_init))
+
+        # 质量守恒
+        mass_final = solver._compute_total_mass()
+        mass_error = abs(mass_final - mass_init) / mass_init * 100
+
+        # 结果
+        success = eta_disturbance < 1e-10 and mass_error < 1e-6
+
+        result = {
+            'name': 'P0.1 Flat Bottom',
+            'eta_disturbance': eta_disturbance,
+            'mass_error': mass_error,
+            'success': success,
+            'h_final': h_final,
+            'z_b': solver.z_b
+        }
+
+        self.results['P0.1'] = result
+
+        # 打印结果
+        print(f"\n结果:")
+        print(f"  水面扰动: {eta_disturbance:.2e} m")
+        print(f"  质量误差: {mass_error:.2e} %")
+        print(f"  状态: {' PASS' if success else ' FAIL'}")
+
+        return result
+
+    def test_p0_2_gentle_slope(self):
+        """
+        P0.2: 缓坡静水测试
+
+        配置:
+        - 长度: 100m
+        - 底高程: 中间2m凸起（线性变化）
+        - 初始水面: 10m (水平)
+
+        预期:
+        - 水面扰动: < 1e-10 m
+        """
+        print("\n" + "="*70)
+        print("Test P0.2: Gentle Slope (2m凸起)")
+        print("="*70)
+
+        # 参数
+        L = 100.0
+        n_cells = 100
+        eta_init = 10.0  # 水面高程
+        T_end = 10.0
+
+        # 创建底高程: 中间2m凸起
+        x = np.linspace(0, L, n_cells)
+        x_center = L / 2.0
+        hump_width = 20.0
+        hump_height = 2.0
+
+        z_b = np.zeros(n_cells)
+        for i in range(n_cells):
+            if abs(x[i] - x_center) < hump_width / 2:
+                # 线性凸起
+                dist_from_center = abs(x[i] - x_center)
+                z_b[i] = hump_height * (1.0 - 2.0 * dist_from_center / hump_width)
+
+        # 初始水深: h = eta - z_b
+        h = eta_init - z_b
+        Q = np.zeros(n_cells)
+
+        # 创建求解器（直接传递底高程）
+        solver = GodunvFVMSolver(
+            width=10.0,
+            length=L,
+            n_cells=n_cells,
+            manning_n=0.03,
+            z_b=z_b,  # ← Pass z_b directly (no integration error!)
+            cfl=0.5,
+            order=1,
+            well_balanced=True
+        )
+
+        # 边界条件
+        bc_left = {'type': 'h', 'value': h[0]}
+        bc_right = {'type': 'h', 'value': h[-1]}
+
+        solver.initialize(h, Q, bc_left, bc_right)
+
+        # 记录初始质量
+        mass_init = solver._compute_total_mass()
+
+        # 运行模拟
+        t = 0.0
+        while t < T_end:
+            dt = solver.compute_dt()
+            solver.step(dt)
+            t += dt
+
+        # 检查结果
+        h_final = solver.h.copy()
+        eta_final = h_final + solver.z_b
+
+        # 水面扰动
+        eta_disturbance = np.max(np.abs(eta_final - eta_init))
+
+        # 质量守恒
+        mass_final = solver._compute_total_mass()
+        mass_error = abs(mass_final - mass_init) / mass_init * 100
+
+        # 结果
+        success = eta_disturbance < 1e-10 and mass_error < 1e-6
+
+        result = {
+            'name': 'P0.2 Gentle Slope',
+            'eta_disturbance': eta_disturbance,
+            'mass_error': mass_error,
+            'success': success,
+            'h_final': h_final,
+            'z_b': solver.z_b,
+            'x': x
+        }
+
+        self.results['P0.2'] = result
+
+        # 打印结果
+        print(f"\n结果:")
+        print(f"  底高程范围: {np.min(z_b):.2f} ~ {np.max(z_b):.2f} m")
+        print(f"  水面扰动: {eta_disturbance:.2e} m")
+        print(f"  质量误差: {mass_error:.2e} %")
+        print(f"  状态: {' PASS' if success else ' FAIL'}")
+
+        return result
+
+    def test_p0_3_steep_slope(self):
+        """
+        P0.3: 陡坡静水测试
+
+        配置:
+        - 长度: 100m
+        - 底高程: 中间5m台阶（不连续）
+        - 初始水面: 10m (水平)
+
+        预期:
+        - 水面扰动: < 1e-8 m (略放宽要求，因为不连续)
+        """
+        print("\n" + "="*70)
+        print("Test P0.3: Steep Slope (5m台阶)")
+        print("="*70)
+
+        # 参数
+        L = 100.0
+        n_cells = 100
+        eta_init = 10.0  # 水面高程
+        T_end = 10.0
+
+        # 创建底高程: 中间5m台阶
+        x = np.linspace(0, L, n_cells)
+        x_center = L / 2.0
+        step_height = 5.0
+
+        z_b = np.zeros(n_cells)
+        for i in range(n_cells):
+            if x[i] > x_center:
+                z_b[i] = step_height
+
+        # 初始水深: h = eta - z_b
+        h = eta_init - z_b
+        Q = np.zeros(n_cells)
+
+        # 创建求解器（直接传递底高程）
+        solver = GodunvFVMSolver(
+            width=10.0,
+            length=L,
+            n_cells=n_cells,
+            manning_n=0.03,
+            z_b=z_b,  # ← Pass z_b directly (no integration error!)
+            cfl=0.5,
+            order=1,
+            well_balanced=True
+        )
+
+        # 边界条件
+        bc_left = {'type': 'h', 'value': h[0]}
+        bc_right = {'type': 'h', 'value': h[-1]}
+
+        solver.initialize(h, Q, bc_left, bc_right)
+
+        # 记录初始质量
+        mass_init = solver._compute_total_mass()
+
+        # 运行模拟
+        t = 0.0
+        while t < T_end:
+            dt = solver.compute_dt()
+            solver.step(dt)
+            t += dt
+
+        # 检查结果
+        h_final = solver.h.copy()
+        eta_final = h_final + solver.z_b
+
+        # 水面扰动
+        eta_disturbance = np.max(np.abs(eta_final - eta_init))
+
+        # 质量守恒
+        mass_final = solver._compute_total_mass()
+        mass_error = abs(mass_final - mass_init) / mass_init * 100
+
+        # 结果（对不连续台阶放宽要求）
+        success = eta_disturbance < 1e-8 and mass_error < 1e-6
+
+        result = {
+            'name': 'P0.3 Steep Slope',
+            'eta_disturbance': eta_disturbance,
+            'mass_error': mass_error,
+            'success': success,
+            'h_final': h_final,
+            'z_b': solver.z_b,
+            'x': x
+        }
+
+        self.results['P0.3'] = result
+
+        # 打印结果
+        print(f"\n结果:")
+        print(f"  底高程范围: {np.min(z_b):.2f} ~ {np.max(z_b):.2f} m")
+        print(f"  水面扰动: {eta_disturbance:.2e} m")
+        print(f"  质量误差: {mass_error:.2e} %")
+        print(f"  状态: {' PASS' if success else ' FAIL'}")
+
+        return result
+
+    def run_all(self):
+        """运行所有测试"""
+        print("\n" + "="*70)
+        print("Lake at Rest Tests with Well-Balanced Format")
+        print("静水平衡测试 (C-property验证)")
+        print("="*70)
+
+        # 运行所有测试
+        self.test_p0_1_flat_bottom()
+        self.test_p0_2_gentle_slope()
+        self.test_p0_3_steep_slope()
+
+        # 总结
+        print("\n" + "="*70)
+        print("测试总结")
+        print("="*70)
+
+        total = len(self.results)
+        passed = sum(1 for r in self.results.values() if r['success'])
+
+        for test_id, result in self.results.items():
+            status = " PASS" if result['success'] else " FAIL"
+            print(f"\n{test_id}: {result['name']}")
+            print(f"  水面扰动: {result['eta_disturbance']:.2e} m")
+            print(f"  质量误差: {result['mass_error']:.2e} %")
+            print(f"  {status}")
+
+        print(f"\n总体结果: {passed}/{total} 测试通过")
+        print(f"成功率: {passed/total*100:.1f}%")
+        print("="*70)
+
+        # 可视化
+        self._plot_results()
+
+        return passed == total
+
+    def _plot_results(self):
+        """可视化测试结果"""
+        fig, axes = plt.subplots(3, 2, figsize=(12, 10))
+        fig.suptitle('Lake at Rest Tests - Well-Balanced Format', fontsize=14, fontweight='bold')
+
+        test_ids = ['P0.1', 'P0.2', 'P0.3']
+
+        for idx, test_id in enumerate(test_ids):
+            if test_id not in self.results:
+                continue
+
+            result = self.results[test_id]
+            h_final = result['h_final']
+            z_b = result['z_b']
+            eta_final = h_final + z_b
+
+            x = result.get('x', np.linspace(0, 100, len(h_final)))
+
+            # 左图: 底高程和水面
+            ax1 = axes[idx, 0]
+            ax1.fill_between(x, 0, z_b, alpha=0.3, color='brown', label='Bottom')
+            ax1.plot(x, eta_final, 'b-', linewidth=2, label='Water Surface')
+            ax1.set_xlabel('x (m)')
+            ax1.set_ylabel('Elevation (m)')
+            ax1.set_title(f'{test_id}: {result["name"]}')
+            ax1.legend()
+            ax1.grid(True, alpha=0.3)
+
+            # 右图: 水深
+            ax2 = axes[idx, 1]
+            ax2.plot(x, h_final, 'b-', linewidth=2)
+            ax2.set_xlabel('x (m)')
+            ax2.set_ylabel('Water Depth (m)')
+            ax2.set_title(f'Water Depth (disturbance={result["eta_disturbance"]:.2e}m)')
+            ax2.grid(True, alpha=0.3)
+
+        plt.tight_layout()
+
+        # 保存
+        output_dir = os.path.join(project_root, 'examples', 'results')
+        os.makedirs(output_dir, exist_ok=True)
+        output_path = os.path.join(output_dir, 'lake_at_rest_wb_tests.png')
+        plt.savefig(output_path, dpi=150, bbox_inches='tight')
+        print(f"\n 结果已保存: {output_path}")
+
+
+def main():
+    """主函数"""
+    test = LakeAtRestTest()
+    success = test.run_all()
+
+    if success:
+        print("\n 所有测试通过！Well-Balanced格式正常工作。")
+        return 0
+    else:
+        print("\n 部分测试失败。需要进一步调试。")
+        return 1
+
+
+if __name__ == '__main__':
+    sys.exit(main())

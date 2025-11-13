@@ -18,6 +18,14 @@
 日期: 2025-10-29
 优先级: P1
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import pytest
 import numpy as np
@@ -92,26 +100,26 @@ class TestMassConservation:
         for test_case in test_cases:
             name = test_case['name']
             expected_error = test_case['expected_mass_error']
-            print(f"{name:<45} < {expected_error:>6.1f}%         ✅ 已验证")
+            print(f"{name:<45} < {expected_error:>6.1f}%          已验证")
 
         print("\\n" + "="*70)
         print("质量守恒性能总结")
         print("="*70)
 
-        print("\\n📊 **测试覆盖范围**:")
-        print("  ✅ 长时间稳态流动（MacDonald 1,2,5）")
-        print("  ✅ 激波传播（MacDonald 3）")
-        print("  ✅ 强激波/水跃（MacDonald 4 Realistic）")
-        print("  ✅ 干湿界面（Dam Break）")
-        print("  ✅ Well-balanced静水（Lake at Rest）")
+        print("\\n **测试覆盖范围**:")
+        print("   长时间稳态流动（MacDonald 1,2,5）")
+        print("   激波传播（MacDonald 3）")
+        print("   强激波/水跃（MacDonald 4 Realistic）")
+        print("   干湿界面（Dam Break）")
+        print("   Well-balanced静水（Lake at Rest）")
 
-        print("\\n🎯 **质量守恒性能**:")
-        print("  • 一般工况：质量误差 < 1%")
-        print("  • 强激波/水跃：质量误差 < 10%")
-        print("  • 干湿界面：质量误差 < 5%")
-        print("  • 静水工况：质量误差 < 0.001%（机器精度）")
+        print("\\n **质量守恒性能**:")
+        print("  - 一般工况：质量误差 < 1%")
+        print("  - 强激波/水跃：质量误差 < 10%")
+        print("  - 干湿界面：质量误差 < 5%")
+        print("  - 静水工况：质量误差 < 0.001%（机器精度）")
 
-        print("\\n✅ **结论**:")
+        print("\\n **结论**:")
         print("  HydroClaude的质量守恒性能达到商业级标准")
         print("  所有测试工况均通过质量守恒验证")
 

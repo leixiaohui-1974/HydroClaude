@@ -127,7 +127,7 @@ plt.tight_layout()
 # 保存图表
 output_path = 'examples/example_gate_pump_cascade/results/detailed_water_profile.png'
 fig.savefig(output_path, dpi=150, bbox_inches='tight')
-print(f'✓ 图表已保存: {output_path}')
+print(f' 图表已保存: {output_path}')
 
 # 创建第二个图：局部放大泵站区域
 fig2, ax2 = plt.subplots(figsize=(14, 8))
@@ -196,6 +196,6 @@ plt.tight_layout()
 
 output_path2 = 'examples/example_gate_pump_cascade/results/pump_region_detail.png'
 fig2.savefig(output_path2, dpi=150, bbox_inches='tight')
-print(f'✓ 局部放大图已保存: {output_path2}')
+print(f' 局部放大图已保存: {output_path2}')
 
 print('\n所有图表生成完成！')

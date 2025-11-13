@@ -11,7 +11,17 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import numpy as np
-from solvers.single_canal_solver import SingleCanalSolver
+try:
+    # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.single_canal_solver import SingleCanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 
 # 系统配置
@@ -83,8 +93,8 @@ print(f"  当前误差: {Q_max_error:.4f}%")
 print(f"  改善幅度: {improvement:.4f}% ({improvement_pct:.1f}%)")
 
 if Q_max_error < baseline:
-    print(f"\n✓ 成功！精度改善 {improvement:.4f}%")
+    print(f"\n 成功！精度改善 {improvement:.4f}%")
 elif Q_max_error < baseline * 1.1:
-    print(f"\n≈ 接近基准，误差在10%以内")
+    print(f"\n~= 接近基准，误差在10%以内")
 else:
-    print(f"\n⚠ 未改善，可能需要更多迭代或其他调整")
+    print(f"\n 未改善，可能需要更多迭代或其他调整")

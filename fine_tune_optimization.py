@@ -88,10 +88,10 @@ for i, sw in enumerate(smooth_weights, 1):
     results.append(result)
     
     if result['success']:
-        status = "✓"
+        status = ""
         error_str = f"{result['max_error']:.4f}%"
     else:
-        status = "✗"
+        status = ""
         error_str = "失败"
     
     print(f"[{i:2d}/{len(smooth_weights)}] sw={sw:.2f}: {status} 最大误差={error_str}")
@@ -104,7 +104,7 @@ successful = [r for r in results if r['success']]
 if successful:
     best = min(successful, key=lambda r: r['max_error'])
     
-    print(f"\n🎯 最优配置:")
+    print(f"\n 最优配置:")
     print(f"  smooth_weight = {best['smooth_weight']:.2f}")
     print(f"  最大误差 = {best['max_error']:.4f}%")
     print(f"  平均误差 = {best['mean_error']:.4f}%")
@@ -114,7 +114,7 @@ if successful:
     # 相比默认值的改善
     default_error = 9.14  # 从之前的测试得知
     improvement = default_error / best['max_error']
-    print(f"\n📈 改善效果:")
+    print(f"\n 改善效果:")
     print(f"  默认值(0.10)误差: {default_error:.2f}%")
     print(f"  优化后误差: {best['max_error']:.4f}%")
     print(f"  改善倍数: {improvement:.2f}x")
@@ -122,12 +122,12 @@ if successful:
     # 距离目标
     target = 0.5
     gap = best['max_error'] / target
-    print(f"\n🎯 距离目标(0.5%):")
+    print(f"\n 距离目标(0.5%):")
     print(f"  当前: {best['max_error']:.4f}%")
     print(f"  差距: {gap:.2f}x")
     
     # 显示前5名
-    print(f"\n📊 前5名配置:")
+    print(f"\n 前5名配置:")
     top5 = sorted(successful, key=lambda r: r['max_error'])[:5]
     for i, r in enumerate(top5, 1):
         print(f"  {i}. sw={r['smooth_weight']:.2f}: "

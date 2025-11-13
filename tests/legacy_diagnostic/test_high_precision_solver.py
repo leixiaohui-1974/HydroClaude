@@ -9,7 +9,17 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import numpy as np
-from solvers.single_canal_solver import SingleCanalSolver
+try:
+    # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.single_canal_solver import SingleCanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 
 def test_three_gates_comparison():
@@ -148,10 +158,10 @@ def test_three_gates_comparison():
     
     print(f"\n目标：所有误差 < {target_error:.0e} (0.01%)")
     print(f"\n高精度求解器结果:")
-    print(f"  全局误差: {result_hp['error_global']:.2e} {'✓' if result_hp['error_global'] < target_error else '✗'}")
-    print(f"  局部误差: {result_hp['error_local']:.2e} {'✓' if result_hp['error_local'] < target_error else '✗'}")
-    print(f"  结构误差: {result_hp['error_structure']:.2e} {'✓' if result_hp['error_structure'] < target_error else '✗'}")
-    print(f"  时间误差: {result_hp['error_temporal']:.2e} {'✓' if result_hp['error_temporal'] < target_error else '✗'}")
+    print(f"  全局误差: {result_hp['error_global']:.2e} {'' if result_hp['error_global'] < target_error else ''}")
+    print(f"  局部误差: {result_hp['error_local']:.2e} {'' if result_hp['error_local'] < target_error else ''}")
+    print(f"  结构误差: {result_hp['error_structure']:.2e} {'' if result_hp['error_structure'] < target_error else ''}")
+    print(f"  时间误差: {result_hp['error_temporal']:.2e} {'' if result_hp['error_temporal'] < target_error else ''}")
     
     all_passed = (result_hp['error_global'] < target_error and
                   result_hp['error_local'] < target_error and
@@ -160,9 +170,9 @@ def test_three_gates_comparison():
     
     print(f"\n{'='*80}")
     if all_passed:
-        print(f"✓✓✓ 成功达到10^-4精度目标！✓✓✓")
+        print(f" 成功达到10^-4精度目标！")
     else:
-        print(f"✗✗✗ 未完全达到目标，需要进一步优化 ✗✗✗")
+        print(f" 未完全达到目标，需要进一步优化 ")
     print(f"{'='*80}")
     
     return all_passed

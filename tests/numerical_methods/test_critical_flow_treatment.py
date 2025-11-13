@@ -21,7 +21,13 @@ from pathlib import Path
 # 添加项目路径
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from solvers.godunov_fvm_solver_wb import GodunvFVMSolverWB
+try:
+    from solvers.godunov_fvm_solver_wb import GodunvFVMSolverWB
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 class TestCriticalFlowTreatment:
@@ -49,7 +55,7 @@ class TestCriticalFlowTreatment:
         )
 
         assert solver1.critical_flow_treatment == False
-        print("\n✓ 临界流处理默认禁用")
+        print("\n 临界流处理默认禁用")
 
         # 测试2：启用临界流处理
         solver2 = GodunvFVMSolverWB(
@@ -62,7 +68,7 @@ class TestCriticalFlowTreatment:
         )
 
         assert solver2.critical_flow_treatment == True
-        print("✓ 临界流处理可以启用")
+        print(" 临界流处理可以启用")
 
         # 测试3：与entropy fix共存
         solver3 = GodunvFVMSolverWB(
@@ -77,7 +83,7 @@ class TestCriticalFlowTreatment:
 
         assert solver3.entropy_fix == True
         assert solver3.critical_flow_treatment == True
-        print("✓ Entropy fix与临界流处理可以共存")
+        print(" Entropy fix与临界流处理可以共存")
 
         print(f"\n{'='*70}")
         print("测试通过：临界流处理初始化正确")
@@ -106,14 +112,14 @@ class TestCriticalFlowTreatment:
         )
 
         # 设置接近临界流的状态
-        # Fr ≈ 1.0: Q = B*h*sqrt(g*h)
+        # Fr ~= 1.0: Q = B*h*sqrt(g*h)
         h_test = 1.0
         Q_test = solver.B * h_test * np.sqrt(solver.g * h_test)  # Fr = 1.0
 
         print(f"\n测试条件：")
         print(f"  水深 h = {h_test:.2f} m")
-        print(f"  流量 Q = {Q_test:.2f} m³/s")
-        print(f"  理论 Fr ≈ 1.0 (临界流)")
+        print(f"  流量 Q = {Q_test:.2f} m^3/s")
+        print(f"  理论 Fr ~= 1.0 (临界流)")
 
         # 设置左右状态（模拟界面）
         h_L = h_test
@@ -125,19 +131,19 @@ class TestCriticalFlowTreatment:
         try:
             F_h, F_Q = solver._hll_flux(h_L, Q_L, h_R, Q_R)
             flux_computed = True
-            print(f"\n✓ 临界流通量计算成功")
+            print(f"\n 临界流通量计算成功")
             print(f"  F_h = {F_h:.6f}")
             print(f"  F_Q = {F_Q:.6f}")
         except Exception as e:
             flux_computed = False
-            print(f"\n✗ 临界流通量计算失败: {e}")
+            print(f"\n 临界流通量计算失败: {e}")
 
         assert flux_computed, "临界流通量计算应该成功"
 
         # 验证通量是有限的
         assert np.isfinite(F_h), "F_h应该是有限值"
         assert np.isfinite(F_Q), "F_Q应该是有限值"
-        print(f"✓ 通量值有限且合理")
+        print(f" 通量值有限且合理")
 
         print(f"\n{'='*70}")
         print("测试通过：临界流通量计算正常")
@@ -171,7 +177,7 @@ class TestCriticalFlowTreatment:
             {"name": "超临界流", "h": 0.5, "Q": 50.0, "Fr_expected": 4.52},
         ]
 
-        print(f"\n{'流态':<12} {'h(m)':<8} {'Q(m³/s)':<10} {'Fr期望':<8} {'通量计算':<12}")
+        print(f"\n{'流态':<12} {'h(m)':<8} {'Q(m^3/s)':<10} {'Fr期望':<8} {'通量计算':<12}")
         print("-" * 60)
 
         for case in test_cases:
@@ -181,14 +187,14 @@ class TestCriticalFlowTreatment:
             # 计算通量
             try:
                 F_h, F_Q = solver._hll_flux(h, Q, h, Q)
-                status = "✓ 成功"
+                status = " 成功"
                 assert np.isfinite(F_h) and np.isfinite(F_Q)
             except Exception as e:
-                status = f"✗ 失败: {e}"
+                status = f" 失败: {e}"
 
             print(f"{case['name']:<12} {h:<8.2f} {Q:<10.2f} {case['Fr_expected']:<8.3f} {status:<12}")
 
-        print(f"\n✓ 所有流态的通量计算均成功")
+        print(f"\n 所有流态的通量计算均成功")
 
         print(f"\n{'='*70}")
         print("测试通过：临界流处理在各流态下均正常")
@@ -228,12 +234,12 @@ class TestCriticalFlowTreatment:
 
         # 测试亚临界流（应该基本相同）
         h = 2.0
-        Q = 10.0  # Fr ≈ 0.113
+        Q = 10.0  # Fr ~= 0.113
 
         F_h_with, F_Q_with = solver_with._hll_flux(h, Q, h, Q)
         F_h_without, F_Q_without = solver_without._hll_flux(h, Q, h, Q)
 
-        print(f"\n亚临界流 (Fr ≈ 0.113):")
+        print(f"\n亚临界流 (Fr ~= 0.113):")
         print(f"  无处理: F_h={F_h_without:.6f}, F_Q={F_Q_without:.6f}")
         print(f"  有处理: F_h={F_h_with:.6f}, F_Q={F_Q_with:.6f}")
 
@@ -246,16 +252,16 @@ class TestCriticalFlowTreatment:
         # 差异应该很小（因为Fr=0.113远离临界流范围0.9-1.1）
         assert diff_h < 1e-10, "亚临界流时F_h应该基本相同"
         assert diff_Q < 1e-10, "亚临界流时F_Q应该基本相同"
-        print(f"  ✓ 非临界流区域两者一致（临界流处理不激活）")
+        print(f"   非临界流区域两者一致（临界流处理不激活）")
 
         # 测试临界流（应该有差异）
         h_crit = 1.0
-        Q_crit = 31.3  # Fr ≈ 1.0
+        Q_crit = 31.3  # Fr ~= 1.0
 
         F_h_with_crit, F_Q_with_crit = solver_with._hll_flux(h_crit, Q_crit, h_crit, Q_crit)
         F_h_without_crit, F_Q_without_crit = solver_without._hll_flux(h_crit, Q_crit, h_crit, Q_crit)
 
-        print(f"\n临界流 (Fr ≈ 1.0):")
+        print(f"\n临界流 (Fr ~= 1.0):")
         print(f"  无处理: F_h={F_h_without_crit:.6f}, F_Q={F_Q_without_crit:.6f}")
         print(f"  有处理: F_h={F_h_with_crit:.6f}, F_Q={F_Q_with_crit:.6f}")
 
@@ -266,7 +272,7 @@ class TestCriticalFlowTreatment:
 
         # 临界流时应该有明显差异（因为临界流处理激活）
         # 注意：如果界面两侧状态相同，可能没有耗散
-        print(f"  ✓ 临界流区域计算成功")
+        print(f"   临界流区域计算成功")
 
         print(f"\n{'='*70}")
         print("测试通过：临界流处理启用/禁用对比正常")
@@ -282,25 +288,25 @@ if __name__ == "__main__":
     try:
         test.test_critical_flow_treatment_initialization()
     except AssertionError as e:
-        print(f"\n✗ 初始化测试失败: {e}")
+        print(f"\n 初始化测试失败: {e}")
         sys.exit(1)
 
     try:
         test.test_critical_flow_flux_computation()
     except AssertionError as e:
-        print(f"\n✗ 通量计算测试失败: {e}")
+        print(f"\n 通量计算测试失败: {e}")
         sys.exit(1)
 
     try:
         test.test_critical_flow_with_different_regimes()
     except AssertionError as e:
-        print(f"\n✗ 不同流态测试失败: {e}")
+        print(f"\n 不同流态测试失败: {e}")
         sys.exit(1)
 
     try:
         test.test_critical_flow_treatment_vs_no_treatment()
     except AssertionError as e:
-        print(f"\n✗ 对比测试失败: {e}")
+        print(f"\n 对比测试失败: {e}")
         sys.exit(1)
 
     print("\n" + "="*70)

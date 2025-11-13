@@ -68,9 +68,9 @@ class TestWENO3BoundaryOptimization:
         assert np.allclose(h_ext[2:n_cells+2], h), "物理域应正确复制"
         assert np.allclose(Q_ext[2:n_cells+2], Q), "物理域应正确复制"
 
-        print(f"\n✅ PASSED: Ghost cells数组大小验证")
-        print(f"  增强模式: n+4 = {len(h_ext)} ✓")
-        print(f"  物理域索引: [2:{n_cells+2}] ✓")
+        print(f"\n PASSED: Ghost cells数组大小验证")
+        print(f"  增强模式: n+4 = {len(h_ext)} ")
+        print(f"  物理域索引: [2:{n_cells+2}] ")
 
         # 测试标准模式
         solver_standard = GodunvFVMWENO3(
@@ -87,7 +87,7 @@ class TestWENO3BoundaryOptimization:
 
         assert len(h_ext_std) == n_cells + 2, f"标准模式应为n+2={n_cells+2}，实际{len(h_ext_std)}"
 
-        print(f"  标准模式: n+2 = {len(h_ext_std)} ✓")
+        print(f"  标准模式: n+2 = {len(h_ext_std)} ")
 
     def test_transmissive_bc_ghost_filling(self):
         """
@@ -132,9 +132,9 @@ class TestWENO3BoundaryOptimization:
         assert np.isclose(Q_ext[n_cells+2], Q[-1]), "右ghost[1]应等于Q[-1]"
         assert np.isclose(Q_ext[n_cells+3], Q[-1]), "右ghost[2]应等于Q[-1]"
 
-        print(f"\n✅ PASSED: 透射边界验证通过")
-        print(f"  左边界: h_ghost = {h_ext[0]:.3f} = h[0] = {h[0]:.3f} ✓")
-        print(f"  右边界: h_ghost = {h_ext[-1]:.3f} = h[-1] = {h[-1]:.3f} ✓")
+        print(f"\n PASSED: 透射边界验证通过")
+        print(f"  左边界: h_ghost = {h_ext[0]:.3f} = h[0] = {h[0]:.3f} ")
+        print(f"  右边界: h_ghost = {h_ext[-1]:.3f} = h[-1] = {h[-1]:.3f} ")
 
     def test_fixed_bc_ghost_filling(self):
         """
@@ -187,9 +187,9 @@ class TestWENO3BoundaryOptimization:
         Q_extrap_expected = 2*Q[-1] - Q[-2]
         assert np.isclose(Q_ext[n_cells+2], Q_extrap_expected, rtol=0.1), "右ghost Q应为外推值"
 
-        print(f"\n✅ PASSED: 固定边界验证通过")
-        print(f"  左边界: Q_ghost = {Q_ext[1]:.2f} = Q_bc = {Q_bc_left:.2f} ✓")
-        print(f"  右边界: h_ghost = {h_ext[-1]:.3f} = h_bc = {h_bc_right:.3f} ✓")
+        print(f"\n PASSED: 固定边界验证通过")
+        print(f"  左边界: Q_ghost = {Q_ext[1]:.2f} = Q_bc = {Q_bc_left:.2f} ")
+        print(f"  右边界: h_ghost = {h_ext[-1]:.3f} = h_bc = {h_bc_right:.3f} ")
 
     def test_reflective_bc_ghost_filling(self):
         """
@@ -234,9 +234,9 @@ class TestWENO3BoundaryOptimization:
         assert np.isclose(Q_ext[n_cells+2], -Q[-1]), "右ghost[1] Q应反向"
         assert np.isclose(Q_ext[n_cells+3], -Q[-2]), "右ghost[2] Q应反向"
 
-        print(f"\n✅ PASSED: 反射边界验证通过")
-        print(f"  左边界: Q_ghost = {Q_ext[0]:.2f} = -Q[1] = {-Q[1]:.2f} ✓")
-        print(f"  右边界: Q_ghost = {Q_ext[-1]:.2f} = -Q[-2] = {-Q[-2]:.2f} ✓")
+        print(f"\n PASSED: 反射边界验证通过")
+        print(f"  左边界: Q_ghost = {Q_ext[0]:.2f} = -Q[1] = {-Q[1]:.2f} ")
+        print(f"  右边界: Q_ghost = {Q_ext[-1]:.2f} = -Q[-2] = {-Q[-2]:.2f} ")
 
     def test_weno3_reconstruction_uniform_stencil(self):
         """
@@ -289,11 +289,11 @@ class TestWENO3BoundaryOptimization:
         assert np.all(h_R >= h_min - margin), "右重构值应在合理范围"
         assert np.all(h_R <= h_max + margin), "右重构值应在合理范围"
 
-        print(f"\n✅ PASSED: 统一模板重构验证通过")
-        print(f"  界面数: {len(h_L)} ✓")
-        print(f"  h_L范围: [{h_L.min():.3f}, {h_L.max():.3f}] ✓")
-        print(f"  h_R范围: [{h_R.min():.3f}, {h_R.max():.3f}] ✓")
-        print(f"  无NaN/Inf ✓")
+        print(f"\n PASSED: 统一模板重构验证通过")
+        print(f"  界面数: {len(h_L)} ")
+        print(f"  h_L范围: [{h_L.min():.3f}, {h_L.max():.3f}] ")
+        print(f"  h_R范围: [{h_R.min():.3f}, {h_R.max():.3f}] ")
+        print(f"  无NaN/Inf ")
 
     def test_boundary_accuracy_improvement(self):
         """
@@ -359,13 +359,13 @@ class TestWENO3BoundaryOptimization:
         improvement_left = diff_left_standard.max() / max(diff_left_enhanced.max(), 1e-10)
         improvement_right = diff_right_standard.max() / max(diff_right_enhanced.max(), 1e-10)
 
-        print(f"\n✅ PASSED: 边界精度对比")
+        print(f"\n PASSED: 边界精度对比")
         print(f"  标准模式左边界最大偏差: {diff_left_standard.max():.6f}")
         print(f"  增强模式左边界最大偏差: {diff_left_enhanced.max():.6f}")
-        print(f"  左边界精度提升: {improvement_left:.1f}x ✨")
+        print(f"  左边界精度提升: {improvement_left:.1f}x ")
         print(f"  标准模式右边界最大偏差: {diff_right_standard.max():.6f}")
         print(f"  增强模式右边界最大偏差: {diff_right_enhanced.max():.6f}")
-        print(f"  右边界精度提升: {improvement_right:.1f}x ✨")
+        print(f"  右边界精度提升: {improvement_right:.1f}x ")
 
         # 验证：增强模式应该更准确（至少不更差）
         assert diff_left_enhanced.max() <= diff_left_standard.max(), "增强模式左边界应不差于标准模式"
@@ -373,7 +373,7 @@ class TestWENO3BoundaryOptimization:
 
         # 如果有显著提升（>2x），报告成功
         if improvement_left > 2.0 or improvement_right > 2.0:
-            print(f"  🎉 边界精度显著提升！")
+            print(f"   边界精度显著提升！")
 
     def test_backward_compatibility(self):
         """
@@ -420,10 +420,10 @@ class TestWENO3BoundaryOptimization:
 
         assert np.all(np.isfinite(solver.h)), "标准模式应正常运行"
 
-        print(f"\n✅ PASSED: 向后兼容性验证通过")
-        print(f"  标准模式ghost cells: n+2 = {len(h_ext)} ✓")
-        print(f"  重构正常 ✓")
-        print(f"  模拟正常运行 ✓")
+        print(f"\n PASSED: 向后兼容性验证通过")
+        print(f"  标准模式ghost cells: n+2 = {len(h_ext)} ")
+        print(f"  重构正常 ")
+        print(f"  模拟正常运行 ")
 
     def test_grid_refinement_convergence(self):
         """
@@ -479,7 +479,7 @@ class TestWENO3BoundaryOptimization:
             errors_enhanced.append(error_enh)
             errors_standard.append(error_std)
 
-        print(f"\n✅ 网格细化精度收敛测试完成")
+        print(f"\n 网格细化精度收敛测试完成")
         print(f"\n{'网格':<10} {'增强模式误差':<15} {'标准模式误差':<15}")
         print("-" * 40)
         for n, e_enh, e_std in zip(n_cells_list, errors_enhanced, errors_standard):

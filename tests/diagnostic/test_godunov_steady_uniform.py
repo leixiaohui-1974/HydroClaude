@@ -13,7 +13,13 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, '/workspace')
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from utils.canal_utils import compute_steady_uniform_flow
 
 
@@ -27,14 +33,14 @@ length = 1000.0
 n_cells = 100
 manning_n = 0.025
 slope = 0.001
-Q_target = 50.0  # m³/s
+Q_target = 50.0  # m^3/s
 
 print(f"\n配置:")
 print(f"  长度: {length}m, 单元: {n_cells}, dx={length/n_cells:.2f}m")
 print(f"  宽度: {width}m")
 print(f"  Manning n: {manning_n}")
 print(f"  坡度: {slope}")
-print(f"  目标流量: {Q_target} m³/s")
+print(f"  目标流量: {Q_target} m^3/s")
 
 # 理论均匀流水深
 h_uniform = compute_steady_uniform_flow(
@@ -92,7 +98,7 @@ for order in [1, 2]:
         
         # NaN检测
         if np.any(np.isnan(h)) or np.any(np.isnan(Q)):
-            print(f"  ❌ 步{solver.step_count}出现NaN!")
+            print(f"   步{solver.step_count}出现NaN!")
             break
         
         # 记录
@@ -106,7 +112,7 @@ for order in [1, 2]:
             if solver.step_count % 500 == 0:
                 print(f"  t={state['t']:6.1f}s, 步{state['step']:4d}, "
                       f"<h>={np.mean(state['h']):.4f}m, "
-                      f"<Q>={np.mean(state['Q']):.2f}m³/s, "
+                      f"<Q>={np.mean(state['Q']):.2f}m^3/s, "
                       f"质量误差={state['mass_error']:.4f}%")
     
     # 最终结果
@@ -131,7 +137,7 @@ for order in [1, 2]:
     print(f"\n稳态结果 (t={state['t']:.1f}s, {state['step']}步):")
     print(f"  质量误差: {state['mass_error']:.6f}%")
     print(f"  平均水深: {h_mean:.4f}m (理论: {h_uniform:.4f}m, 误差: {h_error:.2f}%)")
-    print(f"  平均流量: {Q_mean:.2f}m³/s (目标: {Q_target:.2f}m³/s, 误差: {Q_error:.2f}%)")
+    print(f"  平均流量: {Q_mean:.2f}m^3/s (目标: {Q_target:.2f}m^3/s, 误差: {Q_error:.2f}%)")
     print(f"  水深均匀性: {h_uniformity:.4f}% (标准差/均值)")
     print(f"  流量均匀性: {Q_uniformity:.4f}%")
     
@@ -146,7 +152,7 @@ for order in [1, 2]:
     
     print(f"\n评估:")
     for name, passed in checks:
-        print(f"  {name}: {'✅' if passed else '❌'}")
+        print(f"  {name}: {'' if passed else ''}")
     
     all_pass = all(c[1] for c in checks)
     
@@ -159,7 +165,7 @@ for order in [1, 2]:
     ax1.plot(solver.x, h_final, 'b-', lw=1.5, label='Numerical')
     ax1.axhline(h_uniform, color='r', ls='--', lw=2, label=f'Uniform ({h_uniform:.4f}m)')
     ax1.fill_between(solver.x, h_uniform - 0.01, h_uniform + 0.01, 
-                      color='red', alpha=0.2, label='±1cm tolerance')
+                      color='red', alpha=0.2, label='+/-1cm tolerance')
     ax1.set_xlabel('x (m)', fontsize=11)
     ax1.set_ylabel('h (m)', fontsize=11)
     ax1.set_title('Water Depth Profile', fontsize=12)
@@ -169,11 +175,11 @@ for order in [1, 2]:
     # 流量剖面
     ax2 = fig.add_subplot(gs[0, 1])
     ax2.plot(solver.x, Q_final, 'g-', lw=1.5, label='Numerical')
-    ax2.axhline(Q_target, color='r', ls='--', lw=2, label=f'Target ({Q_target:.1f}m³/s)')
+    ax2.axhline(Q_target, color='r', ls='--', lw=2, label=f'Target ({Q_target:.1f}m^3/s)')
     ax2.fill_between(solver.x, Q_target * 0.99, Q_target * 1.01,
-                      color='red', alpha=0.2, label='±1% tolerance')
+                      color='red', alpha=0.2, label='+/-1% tolerance')
     ax2.set_xlabel('x (m)', fontsize=11)
-    ax2.set_ylabel('Q (m³/s)', fontsize=11)
+    ax2.set_ylabel('Q (m^3/s)', fontsize=11)
     ax2.set_title('Discharge Profile', fontsize=12)
     ax2.legend(fontsize=10)
     ax2.grid(True, alpha=0.3)
@@ -224,11 +230,11 @@ for order in [1, 2]:
     
     print(f"\n{'='*80}")
     if all_pass:
-        print(f"🎉 稳态均匀流 (Order {order}) **通过** ✅✅✅")
+        print(f" 稳态均匀流 (Order {order}) **通过** ")
     else:
-        print(f"⚠️ 稳态均匀流 (Order {order}) 部分通过")
+        print(f"️ 稳态均匀流 (Order {order}) 部分通过")
     print("="*80)
 
 print("\n\n" + "="*80)
-print("🚀 稳态均匀流验证完成！")
+print(" 稳态均匀流验证完成！")
 print("="*80)

@@ -455,4 +455,4 @@ if __name__ == "__main__":
     print(f"  VAF: {metrics['vaf']:.2f}%")
     print(f"  FIT: {metrics['fit']:.2f}%")
     
-    print("\n✓ 测试完成")
+    print("\n 测试完成")

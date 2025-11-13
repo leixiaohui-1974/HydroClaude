@@ -1,0 +1,99 @@
+{
+  "passed_files": [
+    "examples/advanced_examples/comprehensive_solver_audit.py",
+    "examples/advanced_examples/diagnose_hydraulic_model.py",
+    "examples/advanced_examples/diagnose_simulator.py",
+    "examples/advanced_examples/epanet_water_distribution_system.py",
+    "examples/advanced_examples/identify_true_idz_params.py",
+    "examples/advanced_examples/idz_saint_venant_integration.py",
+    "examples/advanced_examples/idz_saint_venant_moc_integration.py",
+    "examples/advanced_examples/linearized_canal_simulator.py",
+    "examples/advanced_examples/multi_canal_benchmark.py",
+    "examples/advanced_examples/multi_canal_benchmark_improved.py",
+    "examples/advanced_examples/realtime_monitor_demo.py",
+    "examples/advanced_examples/realtime_scada_monitoring.py",
+    "examples/case1_urban_water_supply.py",
+    "examples/case2_pump_water_hammer.py",
+    "examples/case3_industrial_cooling_system.py",
+    "examples/case4_fire_protection_system.py",
+    "examples/case5_irrigation_system.py",
+    "examples/case6_highrise_water_supply.py",
+    "examples/case7_regional_water_supply.py",
+    "examples/case8_network_optimization.py",
+    "examples/case_channel_renovation.py",
+    "examples/case_library/case_04_urban_drainage.py",
+    "examples/case_library/case_05_river_network.py"
+  ],
+  "failed_files": {
+    "examples/advanced_animation_generator.py": {
+      "status": "TIMEOUT",
+      "error": "Exceeded 20s"
+    },
+    "examples/advanced_examples/compare_canal_solvers.py": {
+      "status": "FAIL",
+      "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\advanced_examples\\compare_canal_solvers.py\", line 26, in <module>\n    from solvers.canal import Canal\n"
+    },
+    "examples/advanced_examples/complete_benchmark_suite.py": {
+      "status": "FAIL",
+      "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\advanced_examples\\complete_benchmark_suite.py\", line 33, in <module>\n    from control.first_order_mpc "
+    },
+    "examples/advanced_examples/debug_saint_venant.py": {
+      "status": "FAIL",
+      "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\advanced_examples\\debug_saint_venant.py\", line 13, in <module>\n    from solvers.canal import Canal\nMod"
+    },
+    "examples/advanced_examples/diagnose_canal_boundary.py": {
+      "status": "FAIL",
+      "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\advanced_examples\\diagnose_canal_boundary.py\", line 15, in <module>\n    from solvers.canal import Cana"
+    },
+    "examples/advanced_examples/integrated_smart_water_system.py": {
+      "status": "TIMEOUT",
+      "error": "Exceeded 20s"
+    },
+    "examples/advanced_examples/multi_objective_reservoir_scheduling.py": {
+      "status": "TIMEOUT",
+      "error": "Exceeded 20s"
+    },
+    "examples/advanced_examples/optimize_preissmann.py": {
+      "status": "FAIL",
+      "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\advanced_examples\\optimize_preissmann.py\", line 14, in <module>\n    from solvers.canal import Canal\nMo"
+    },
+    "examples/case_gate_operation.py": {
+      "status": "FAIL",
+      "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\case_gate_operation.py\", line 134, in <module>\n    solver.initialize(h_init, Q_init)\n    ^^^^^^^^^^^^^"
+    },
+    "examples/case_irrigation_scheduling.py": {
+      "status": "FAIL",
+      "error": "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\case_irrigation_scheduling.py:105: UserWarning: \n================================================================================\n[WARN]  Well-Ba"
+    },
+    "examples/case_library/benchmark_performance.py": {
+      "status": "TIMEOUT",
+      "error": "Exceeded 20s"
+    },
+    "examples/case_library/case_01_dam_break/dam_break_comparison.py": {
+      "status": "FAIL",
+      "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\case_library\\case_01_dam_break\\dam_break_comparison.py\", line 29, in <module>\n    from solvers.godunov"
+    },
+    "examples/case_library/case_01_hydropower_plant.py": {
+      "status": "FAIL",
+      "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\case_library\\case_01_hydropower_plant.py\", line 39, in <module>\n    from solvers.canal import Canal\nMo"
+    },
+    "examples/case_library/case_02_flood_routing/flood_routing_simulation.py": {
+      "status": "FAIL",
+      "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\case_library\\case_02_flood_routing\\flood_routing_simulation.py\", line 390, in <module>\n    main()\n    "
+    },
+    "examples/case_library/case_02_water_supply_network.py": {
+      "status": "FAIL",
+      "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\case_library\\case_02_water_supply_network.py\", line 815, in <module>\n    main()\n    ~~~~^^\n  File \"E:\\"
+    },
+    "examples/case_library/case_03_irrigation_canal.py": {
+      "status": "FAIL",
+      "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\case_library\\case_03_irrigation_canal.py\", line 35, in <module>\n    from solvers.canal import Canal\nMo"
+    },
+    "examples/case_library/run_all_cases.py": {
+      "status": "FAIL",
+      "error": "Exception in thread Thread-7 (_readerthread):\nTraceback (most recent call last):\n  File \"D:\\Users\\lxh\\miniconda3\\Lib\\threading.py\", line 1041, in _bootstrap_inner\n    self.run()\n    ~~~~~~~~^^\n  File "
+    }
+  },
+  "current_batch": 2,
+  "last_update": "2025-11-13T15:04:19.996287"
+}

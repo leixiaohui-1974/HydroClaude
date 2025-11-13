@@ -24,6 +24,14 @@ Ritter解析解 - Dam Break on Dry Bed
 日期: 2025-10-31
 Phase: Stage 7.1 - SWASHES Benchmark
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import numpy as np
 from typing import Tuple
@@ -44,7 +52,7 @@ def ritter_solution(
         t: 时间 (s)
         h_L: 上游初始水深 (m)
         x_dam: 坝址位置 (m)
-        g: 重力加速度 (m/s²)
+        g: 重力加速度 (m/s^2)
 
     Returns:
         (h, u): 水深和流速数组
@@ -258,4 +266,4 @@ if __name__ == '__main__':
     plt.tight_layout()
     plt.savefig('ritter_solution_test.png', dpi=150, bbox_inches='tight')
     print(f"\n图像已保存: ritter_solution_test.png")
-    print("✅ Ritter解析解测试完成!")
+    print(" Ritter解析解测试完成!")

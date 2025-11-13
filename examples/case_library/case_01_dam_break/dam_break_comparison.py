@@ -22,6 +22,8 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")  # Non-interactive mode
 import matplotlib.pyplot as plt
 from typing import Dict, List, Tuple
 
@@ -230,7 +232,15 @@ def run_dam_break_simulation(
 
     bc_left = {'type': 'transmissive'}
     bc_right = {'type': 'transmissive'}
-    solver.initialize(h_init, Q_init, bc_left, bc_right)
+    # GodunvFVMSolver需要手动初始化
+
+    solver.h = h_init.copy()
+
+    solver.Q = Q_init.copy()
+
+    solver.bc_left = bc_left
+
+    solver.bc_right = bc_right
 
     # 记录初始质量
     initial_mass = np.sum(solver.h * solver.dx * solver.B)
@@ -318,9 +328,9 @@ def run_dam_break_simulation(
     h_min_all = np.min(h_min_history)
     result['h_min_all'] = h_min_all
     if h_min_all >= 0.0:
-        print(f"\n✅ 正定性保持成功: h_min = {h_min_all:.6e} ≥ 0")
+        print(f"\n 正定性保持成功: h_min = {h_min_all:.6e} >= 0")
     else:
-        print(f"\n❌ 正定性违背: h_min = {h_min_all:.6e} < 0")
+        print(f"\n 正定性违背: h_min = {h_min_all:.6e} < 0")
 
     return result
 
@@ -459,7 +469,7 @@ def main():
         'channel_length': 2000.0,
         'channel_width': 50.0,
         'n_cells': 500,
-        't_end': 10.0,  # 降低目标时长: 30s→10s (更实际的测试)
+        't_end': 10.0,  # 降低目标时长: 30s->10s (更实际的测试)
         'cfl': 0.3
     }
 
@@ -485,7 +495,7 @@ def main():
             'kwargs': {
                 'eps_pp': 1e-10,
                 'theta_min': 0.0,
-                'wet_dry_threshold': 1e-3,  # 放宽检测阈值: 1e-4→1e-3
+                'wet_dry_threshold': 1e-3,  # 放宽检测阈值: 1e-4->1e-3
                 'interface_theta_max': 0.3,
                 'use_pp': True,
                 'use_wd_flux': True
@@ -510,7 +520,7 @@ def main():
             )
             results.append(result)
         except Exception as e:
-            print(f"\n❌ {solver_config['name']} 失败: {e}")
+            print(f"\n {solver_config['name']} 失败: {e}")
             import traceback
             traceback.print_exc()
 
@@ -542,8 +552,8 @@ def main():
             mass_phase82 = results[2]['mass_error']
             mass_improve = (mass_orig - mass_phase82) / mass_orig * 100 if mass_orig > 0 else 0
 
-            print(f"L2误差改进:    {l2_orig:.2f}% → {l2_phase82:.2f}% ({l2_improve:.1f}%↓)")
-            print(f"质量守恒改进:  {mass_orig:.4f}% → {mass_phase82:.4f}% ({mass_improve:.1f}%↓)")
+            print(f"L2误差改进:    {l2_orig:.2f}% -> {l2_phase82:.2f}% ({l2_improve:.1f}%↓)")
+            print(f"质量守恒改进:  {mass_orig:.4f}% -> {mass_phase82:.4f}% ({mass_improve:.1f}%↓)")
 
         # 绘制对比图
         print("\n\n生成对比图...")
@@ -562,4 +572,4 @@ def main():
 
 if __name__ == '__main__':
     results = main()
-    plt.show()
+    plt.savefig("output.png", dpi=100, bbox_inches="tight"); plt.close("all")  # 保存并关闭

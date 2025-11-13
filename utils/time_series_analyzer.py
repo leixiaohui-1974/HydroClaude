@@ -433,6 +433,6 @@ if __name__ == "__main__":
     # 生成报告
     print("\n生成分析报告...")
     output_file = analyzer.generate_analysis_report('test_analysis.png')
-    print(f"  ✓ {output_file}")
+    print(f"   {output_file}")
 
-    print("\n✓ 测试完成！")
+    print("\n 测试完成！")

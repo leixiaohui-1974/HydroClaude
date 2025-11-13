@@ -19,10 +19,16 @@ from io import StringIO
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
 
 
-def benchmark_dam_break(n_cells=100, n_steps=1000, enable_profiling=False):
+
+def benchmark_dam_break(n_cells=120, n_steps=1000, enable_profiling=False):
     """
     基准测试：溃坝问题
 
@@ -47,7 +53,7 @@ def benchmark_dam_break(n_cells=100, n_steps=1000, enable_profiling=False):
     solver = GodunvFVMSolver(
         width=b, length=L, n_cells=n_cells,
         manning_n=0.0, slope=0.0,
-        g=9.81, cfl=0.5, order=2
+        g=9.81, cfl=0.3, order=1
     )
 
     # 初始条件
@@ -189,7 +195,7 @@ if __name__ == '__main__':
 
     # 1. 快速基准测试
     print("\n【第1步】快速基准测试（100网格，1000步）")
-    benchmark_dam_break(n_cells=100, n_steps=1000, enable_profiling=False)
+    benchmark_dam_break(n_cells=120, n_steps=1000, enable_profiling=False)
 
     # 2. 可扩展性测试
     print("\n【第2步】可扩展性测试")
@@ -201,7 +207,7 @@ if __name__ == '__main__':
 
     print("\n")
     print("=" * 80)
-    print("✅ 性能分析完成！")
+    print(" 性能分析完成！")
     print("=" * 80)
     print()
     print("建议：")

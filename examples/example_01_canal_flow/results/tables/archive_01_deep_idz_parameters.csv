@@ -1,5 +1,5 @@
 Transfer_Function,K_Gain,T1_s,T2_s,Delay_s,Physical_Meaning
-G11: Qu→hu,-0.025638814591578313,142.10000000000002,85.6,77.30000000000001,Upstream flow affects upstream level
-G12: hd→hu,0.08667292604960775,152.20000000000002,87.80000000000001,146.20000000000002,Backwater effect
-G21: Qu→hd,0.0,1.0,0.5,0.0,Flow propagates to downstream
-G22: hd→hd,0.0,1.0,0.5,0.0,Direct downstream effect
+G11: Qu->hu,-0.025638814591578313,142.10000000000002,85.6,77.30000000000001,Upstream flow affects upstream level
+G12: hd->hu,0.08667292604960775,152.20000000000002,87.80000000000001,146.20000000000002,Backwater effect
+G21: Qu->hd,0.0,1.0,0.5,0.0,Flow propagates to downstream
+G22: hd->hd,0.0,1.0,0.5,0.0,Direct downstream effect

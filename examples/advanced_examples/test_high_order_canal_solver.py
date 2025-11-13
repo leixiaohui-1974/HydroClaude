@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 测试HighOrderCanalSolver的精度
 
@@ -37,13 +38,13 @@ print(f"\n测试配置:")
 print(f"  渠道长度: {canal_length}m")
 print(f"  渠道宽度: {canal_width}m")
 print(f"  初始水深: {initial_depth}m")
-print(f"  入流: {Q_in} m³/s")
-print(f"  出流: {Q_out} m³/s")
-print(f"  净入流: {Q_in - Q_out} m³/s")
+print(f"  入流: {Q_in} m^3/s")
+print(f"  出流: {Q_out} m^3/s")
+print(f"  净入流: {Q_in - Q_out} m^3/s")
 print(f"  仿真时间: {sim_time}s")
-print(f"  理论Δh: {expected_delta_h:.4f}m")
+print(f"  理论Deltah: {expected_delta_h:.4f}m")
 
-# ========== 测试1: HighOrderCanalSolver（MUSCL+RK2） ==========
+# ========== 测试1: HighOrderCanalSolverMUSCL+RK2 ==========
 print("\n" + "="*80)
 print("测试1: HighOrderCanalSolver (MUSCL+RK2)")
 print("="*80)
@@ -66,9 +67,9 @@ def Q_upstream_func(t):
     return Q_in
 
 def h_downstream_func(t):
-    # 使用流量推算水深（简化：假设恒定流速）
+    # 使用流量推算水深简化假设恒定流速
     # Q = V*A = V*B*h
-    # 对于已知Q_out，假设流速 V ≈ initial_flow / (width * initial_depth)
+    # 对于已知Q_out假设流速 V ~= initial_flow / (width * initial_depth)
     V_est = initial_flow / (canal_width * initial_depth)
     if V_est > 0:
         h_est = Q_out / (canal_width * V_est)
@@ -95,13 +96,13 @@ actual_delta_h_ho = final_h_ho - initial_h_ho
 h_error_ho = abs(actual_delta_h_ho - expected_delta_h)
 h_error_pct_ho = h_error_ho / expected_delta_h * 100
 
-print(f"  ✅ 测试完成")
-print(f"     理论Δh: {expected_delta_h:.4f}m")
-print(f"     实际Δh: {actual_delta_h_ho:.4f}m")
+print(f"   测试完成")
+print(f"     理论Deltah: {expected_delta_h:.4f}m")
+print(f"     实际Deltah: {actual_delta_h_ho:.4f}m")
 print(f"     误差: {h_error_ho:.4f}m ({h_error_pct_ho:.1f}%)")
 print(f"     质量守恒误差: {h_error_pct_ho:.1f}%")
 
-# ========== 测试2: HighOrderCanalSolver（一阶方法） ==========
+# ========== 测试2: HighOrderCanalSolver一阶方法 ==========
 print("\n" + "="*80)
 print("测试2: HighOrderCanalSolver (1st-order)")
 print("="*80)
@@ -119,7 +120,7 @@ solver_1st = HighOrderCanalSolver(
 solver_1st.h = np.ones(51) * initial_depth
 solver_1st.hu = np.ones(51) * initial_flow / canal_width
 
-# 运行瞬态求解（使用一阶方法）
+# 运行瞬态求解使用一阶方法
 result_1st = solver_1st.solve_transient_high_order(
     t_end=sim_time,
     dt=dt,
@@ -138,13 +139,13 @@ actual_delta_h_1st = final_h_1st - initial_h_1st
 h_error_1st = abs(actual_delta_h_1st - expected_delta_h)
 h_error_pct_1st = h_error_1st / expected_delta_h * 100
 
-print(f"  ✅ 测试完成")
-print(f"     理论Δh: {expected_delta_h:.4f}m")
-print(f"     实际Δh: {actual_delta_h_1st:.4f}m")
+print(f"   测试完成")
+print(f"     理论Deltah: {expected_delta_h:.4f}m")
+print(f"     实际Deltah: {actual_delta_h_1st:.4f}m")
 print(f"     误差: {h_error_1st:.4f}m ({h_error_pct_1st:.1f}%)")
 print(f"     质量守恒误差: {h_error_pct_1st:.1f}%")
 
-# ========== 测试3: Canal类的Preissmann求解器（对比基准） ==========
+# ========== 测试3: Canal类的Preissmann求解器对比基准 ==========
 print("\n" + "="*80)
 print("测试3: Canal Preissmann (基准)")
 print("="*80)
@@ -179,9 +180,9 @@ actual_delta_h_preissmann = final_h_preissmann - initial_h_preissmann
 h_error_preissmann = abs(actual_delta_h_preissmann - expected_delta_h)
 h_error_pct_preissmann = h_error_preissmann / expected_delta_h * 100
 
-print(f"  ✅ 测试完成")
-print(f"     理论Δh: {expected_delta_h:.4f}m")
-print(f"     实际Δh: {actual_delta_h_preissmann:.4f}m")
+print(f"   测试完成")
+print(f"     理论Deltah: {expected_delta_h:.4f}m")
+print(f"     实际Deltah: {actual_delta_h_preissmann:.4f}m")
 print(f"     误差: {h_error_preissmann:.4f}m ({h_error_pct_preissmann:.1f}%)")
 print(f"     质量守恒误差: {h_error_pct_preissmann:.1f}%")
 
@@ -199,12 +200,12 @@ results = [
 results_sorted = sorted(results, key=lambda x: x[1])
 
 for i, (name, error_pct, error_m) in enumerate(results_sorted, 1):
-    stars = "⭐" * max(1, 6 - i)
+    stars = "" * max(1, 6 - i)
     print(f"  {i}. {name:<40} {error_pct:>7.1f}% ({error_m:.4f}m) {stars}")
 
 print("\n" + "="*80)
 best_name, best_error_pct, _ = results_sorted[0]
-print(f"🏆 最优求解器: {best_name}")
+print(f" 最优求解器: {best_name}")
 print(f"   误差: {best_error_pct:.1f}%")
 print("="*80)
 
@@ -228,7 +229,7 @@ output_data = {
     }
 }
 
-with open('high_order_solver_test_results.json', 'w') as f:
+with open('high_order_solver_test_results.json', 'w', encoding='utf-8') as f:
     json.dump(output_data, f, indent=2)
 
-print("\n✅ 详细结果已保存到: high_order_solver_test_results.json")
+print("\n 详细结果已保存到: high_order_solver_test_results.json")

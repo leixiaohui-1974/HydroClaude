@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 HydroClaude 性能基准测试
 
@@ -120,7 +121,7 @@ for config in test_configs:
     simulated_time = n_steps * dt / 86400.0  # days
     speedup = simulated_time / (elapsed_time / 86400.0)  # 倍速
 
-    print(f"✓ 完成!")
+    print(f" 完成!")
     print(f"  总时间: {elapsed_time:.2f} s")
     print(f"  每步时间: {time_per_step:.2f} ms")
     print(f"  模拟时间: {simulated_time:.1f} 天")
@@ -159,10 +160,10 @@ print()
 # 优化建议
 print("优化建议:")
 print("-" * 70)
-print("✓ 启用Numba加速: use_numba=True (预计提速2-5倍)")
-print("✓ 使用自适应时间步长: 在稳定区域使用更大的dt")
-print("✓ 多核并行: 使用MPI进行空间分解")
-print("✓ GPU加速: 使用CuPy/JAX进行GPU计算")
+print(" 启用Numba加速: use_numba=True (预计提速2-5倍)")
+print(" 使用自适应时间步长: 在稳定区域使用更大的dt")
+print(" 多核并行: 使用MPI进行空间分解")
+print(" GPU加速: 使用CuPy/JAX进行GPU计算")
 print()
 
 print("=" * 70)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Stage 5 综合验证案例（简化版）
+Stage 5 综合验证案例简化版
 Stage 5 Comprehensive Validation (Simplified)
 
 快速演示Stage 5所有核心组件的功能
@@ -39,27 +39,27 @@ def test_all_stage5_components():
     # ========================================
     # 1. PressurePipe - 单管道水力计算
     # ========================================
-    print("【1/7】测试 PressurePipe - 单管道水力计算")
+    print("1/7测试 PressurePipe - 单管道水力计算")
     try:
         pipe = create_pressure_pipe('P1', 0.3, 500, 'cast_iron_new')
-        Q = 0.1  # m³/s
+        Q = 0.1  # m^3/s
         h_loss = pipe.head_loss(Q)
 
         assert h_loss > 0, "水头损失应为正值"
         assert h_loss < 100, "水头损失应合理"
 
-        print(f"  ✓ 管道创建成功: D={pipe.D}m, L={pipe.L}m")
-        print(f"  ✓ 水头损失计算: Q={Q}m³/s, h_f={h_loss:.3f}m")
+        print(f"   管道创建成功: D={pipe.D}m, L={pipe.L}m")
+        print(f"   水头损失计算: Q={Q}m^3/s, h_f={h_loss:.3f}m")
         results['PressurePipe'] = 'PASS'
     except Exception as e:
-        print(f"  ✗ 失败: {e}")
+        print(f"   失败: {e}")
         results['PressurePipe'] = 'FAIL'
     print()
 
     # ========================================
     # 2. NetworkNode - 管网节点
     # ========================================
-    print("【2/7】测试 NetworkNode - 管网节点")
+    print("2/7测试 NetworkNode - 管网节点")
     try:
         reservoir = Reservoir('R1', elevation=100.0, head=120.0)
         tank = Tank('T1', elevation=100.0, diameter=10, min_level=0, max_level=20, initial_level=10)
@@ -69,19 +69,19 @@ def test_all_stage5_components():
         assert tank.level == 10.0, "水箱水位应正确"
         assert junction.demand == 0.05, "节点需水量应正确"
 
-        print(f"  ✓ Reservoir创建: H={reservoir.head}m")
-        print(f"  ✓ Tank创建: Level={tank.level}m")
-        print(f"  ✓ Junction创建: Demand={junction.demand}m³/s")
+        print(f"   Reservoir创建: H={reservoir.head}m")
+        print(f"   Tank创建: Level={tank.level}m")
+        print(f"   Junction创建: Demand={junction.demand}m^3/s")
         results['NetworkNode'] = 'PASS'
     except Exception as e:
-        print(f"  ✗ 失败: {e}")
+        print(f"   失败: {e}")
         results['NetworkNode'] = 'FAIL'
     print()
 
     # ========================================
     # 3. NetworkTopology - 拓扑分析
     # ========================================
-    print("【3/7】测试 NetworkTopology - 拓扑分析")
+    print("3/7测试 NetworkTopology - 拓扑分析")
     try:
         topology = NetworkTopology()
 
@@ -113,18 +113,18 @@ def test_all_stage5_components():
         assert len(topology.pipes) == 4, "管道数应为4"
         assert len(loops) >= 1, "应识别出至少1个环路"
 
-        print(f"  ✓ 拓扑创建: {len(topology.nodes)}节点, {len(topology.pipes)}管道")
-        print(f"  ✓ 环路识别: 找到{len(loops)}个环路")
+        print(f"   拓扑创建: {len(topology.nodes)}节点, {len(topology.pipes)}管道")
+        print(f"   环路识别: 找到{len(loops)}个环路")
         results['NetworkTopology'] = 'PASS'
     except Exception as e:
-        print(f"  ✗ 失败: {e}")
+        print(f"   失败: {e}")
         results['NetworkTopology'] = 'FAIL'
     print()
 
     # ========================================
     # 4. HardyCrossSolver - 管网平差
     # ========================================
-    print("【4/7】测试 HardyCrossSolver - 管网平差")
+    print("4/7测试 HardyCrossSolver - 管网平差")
     try:
         # Hardy-Cross求解器从网络拓扑中读取节点属性
         solver = HardyCrossSolver(topology, max_iter=50, tol=1e-6, verbose=False)
@@ -133,20 +133,20 @@ def test_all_stage5_components():
         assert solver.converged, "Hardy Cross应收敛"
         assert len(flows) == 4, "应有4个管道流量"
 
-        print(f"  ✓ 求解收敛: {solver.iteration_count}次迭代")
-        print(f"  ✓ 流量范围: {min(flows.values()):.4f} ~ {max(flows.values()):.4f} m³/s")
+        print(f"   求解收敛: {solver.iteration_count}次迭代")
+        print(f"   流量范围: {min(flows.values()):.4f} ~ {max(flows.values()):.4f} m^3/s")
         results['HardyCross'] = 'PASS'
     except Exception as e:
-        print(f"  ✗ 失败: {e}")
+        print(f"   失败: {e}")
         results['HardyCross'] = 'FAIL'
     print()
 
     # ========================================
     # 5. NewtonRaphsonSolver - 全局法求解
     # ========================================
-    print("【5/7】测试 NewtonRaphsonSolver - 全局法求解")
+    print("5/7测试 NewtonRaphsonSolver - 全局法求解")
     try:
-        # Newton-Raphson求解器with优化（HC初始化+自适应阻尼）
+        # Newton-Raphson求解器with优化HC初始化+自适应阻尼
         nr_solver = NewtonRaphsonNetworkSolver(
             topology,
             max_iter=100,
@@ -164,28 +164,28 @@ def test_all_stage5_components():
             converged = False
 
         # 验证求解器功能
-        print(f"  ✓ 求解器创建成功")
-        print(f"  ✓ HC初始化集成正常")
-        print(f"  ✓ 自适应阻尼实现完成")
+        print(f"   求解器创建成功")
+        print(f"   HC初始化集成正常")
+        print(f"   自适应阻尼实现完成")
 
         if converged:
             # 与Hardy Cross结果对比
             max_diff = max(abs(flows[pid] - flows_nr[pid]) for pid in flows.keys())
-            print(f"  ✓ 求解收敛: {nr_solver.iteration_count}次迭代")
-            print(f"  ✓ 与HC对比: 最大差异{max_diff:.2e}m³/s")
+            print(f"   求解收敛: {nr_solver.iteration_count}次迭代")
+            print(f"   与HC对比: 最大差异{max_diff:.2e}m^3/s")
         else:
-            print(f"  ℹ 注：NR法对管网问题收敛性不如Hardy Cross（已知特性）")
+            print(f"  [INFO] 注NR法对管网问题收敛性不如Hardy Cross已知特性")
 
         results['NewtonRaphson'] = 'PASS'
     except Exception as e:
-        print(f"  ✗ 失败: {e}")
+        print(f"   失败: {e}")
         results['NewtonRaphson'] = 'FAIL'
     print()
 
     # ========================================
     # 6. DualFlowPipe - 明满流转换
     # ========================================
-    print("【6/7】测试 DualFlowPipe - 明满流转换")
+    print("6/7测试 DualFlowPipe - 明满流转换")
     try:
         dual_pipe = DualFlowPipe(diameter=0.5, length=100, roughness=0.26e-3)
 
@@ -203,19 +203,19 @@ def test_all_stage5_components():
         assert 'open' in flow_types or 'transitional' in flow_types, "应有明流状态"
         assert 'pressurized' in flow_types or 'transitional' in flow_types, "应有满流状态"
 
-        print(f"  ✓ 管道参数: D={dual_pipe.D}m, L={dual_pipe.L}m")
-        print(f"  ✓ 虚拟狭缝: b={dual_pipe.b_slot:.4f}m")
-        print(f"  ✓ 流态识别: {set(flow_types)}")
+        print(f"   管道参数: D={dual_pipe.D}m, L={dual_pipe.L}m")
+        print(f"   虚拟狭缝: b={dual_pipe.b_slot:.4f}m")
+        print(f"   流态识别: {set(flow_types)}")
         results['DualFlowPipe'] = 'PASS'
     except Exception as e:
-        print(f"  ✗ 失败: {e}")
+        print(f"   失败: {e}")
         results['DualFlowPipe'] = 'FAIL'
     print()
 
     # ========================================
     # 7. WaterHammerMOC - 水锤分析
     # ========================================
-    print("【7/7】测试 WaterHammerMOCSolver - 水锤分析")
+    print("7/7测试 WaterHammerMOCSolver - 水锤分析")
     try:
         wh_solver = WaterHammerMOCSolver(
             L=500.0,
@@ -249,13 +249,13 @@ def test_all_stage5_components():
         assert 'Q' in result, "应有流量场"
         assert H_max > 100.0, "应有压力升高"
 
-        print(f"  ✓ 波速: a={wh_solver.a:.1f}m/s")
-        print(f"  ✓ Joukowsky压升: ΔH={delta_H:.2f}m")
-        print(f"  ✓ 临界时间: T_c={T_critical:.3f}s")
-        print(f"  ✓ 数值最大水头: H_max={H_max:.2f}m")
+        print(f"   波速: a={wh_solver.a:.1f}m/s")
+        print(f"   Joukowsky压升: DeltaH={delta_H:.2f}m")
+        print(f"   临界时间: T_c={T_critical:.3f}s")
+        print(f"   数值最大水头: H_max={H_max:.2f}m")
         results['WaterHammer'] = 'PASS'
     except Exception as e:
-        print(f"  ✗ 失败: {e}")
+        print(f"   失败: {e}")
         results['WaterHammer'] = 'FAIL'
     print()
 
@@ -272,7 +272,7 @@ def test_all_stage5_components():
 
     print("组件测试结果:")
     for component, status in results.items():
-        symbol = "✅" if status == "PASS" else "❌"
+        symbol = "" if status == "PASS" else ""
         print(f"  {symbol} {component}: {status}")
 
     print()
@@ -280,11 +280,11 @@ def test_all_stage5_components():
     print()
 
     if passed == total:
-        print("🎉 所有Stage 5组件测试通过!")
-        print("✅ HydroClaude Stage 5 功能验证成功!")
+        print(" 所有Stage 5组件测试通过!")
+        print(" HydroClaude Stage 5 功能验证成功!")
         return True
     else:
-        print("⚠️ 部分组件测试失败，需要检查")
+        print(" 部分组件测试失败需要检查")
         return False
 
 

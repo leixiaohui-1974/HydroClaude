@@ -18,7 +18,13 @@ from typing import Dict, List, Tuple
 sys.path.insert(0, '.')
 
 from physics.steady_saint_venant import SteadySaintVenantSystem
-from solvers.anderson_acceleration import AndersonAcceleration
+try:
+    from solvers.anderson_acceleration import AndersonAcceleration
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from utils.canal_utils import compute_steady_uniform_flow
 
 
@@ -65,7 +71,7 @@ def fixed_point_iteration_with_anderson(
         # 检查收敛
         if residual_norm < tol:
             if verbose:
-                print(f"  ✓ Converged at iteration {iteration}")
+                print(f"   Converged at iteration {iteration}")
             return U, {
                 'converged': True,
                 'iterations': iteration + 1,
@@ -84,7 +90,7 @@ def fixed_point_iteration_with_anderson(
 
     # 未收敛
     if verbose:
-        print(f"  ✗ Did not converge in {max_iter} iterations")
+        print(f"   Did not converge in {max_iter} iterations")
     return U, {
         'converged': False,
         'iterations': max_iter,
@@ -344,7 +350,7 @@ def run_comprehensive_tests() -> List[Dict]:
                 scenario_results.append(result)
 
             except Exception as e:
-                print(f"✗ 测试失败: {method_name} - {e}")
+                print(f" 测试失败: {method_name} - {e}")
                 import traceback
                 traceback.print_exc()
 
@@ -384,7 +390,7 @@ def generate_report(results: List[Dict], output_file: str = "ANDERSON_ACCELERATI
 **生成时间**: {time.strftime('%Y-%m-%d %H:%M:%S')}
 **测试工具**: test_anderson_performance.py
 
-## 📊 测试概述
+##  测试概述
 
 本报告验证了Anderson加速算法在Saint-Venant方程固定点迭代求解中的性能表现。
 
@@ -399,7 +405,7 @@ def generate_report(results: List[Dict], output_file: str = "ANDERSON_ACCELERATI
 
 ---
 
-## 📋 详细测试结果
+##  详细测试结果
 
 """
 
@@ -410,14 +416,14 @@ def generate_report(results: List[Dict], output_file: str = "ANDERSON_ACCELERATI
         report += f"|------|------|----------|----------|--------|----------|\n"
 
         for r in scenario_results:
-            converged = "✅" if r['converged'] else "❌"
+            converged = "" if r['converged'] else ""
             speedup = f"{r.get('speedup_ratio', 0):.2f}x" if r.get('speedup_ratio') else "-"
             report += f"| {r['method']} | {converged} | {r['iterations']} | {r['execution_time']*1000:.1f} | {speedup} | {r['residual_norm']:.2e} |\n"
 
         report += "\n"
 
     # 性能分析
-    report += "---\n\n## 📈 性能分析\n\n"
+    report += "---\n\n##  性能分析\n\n"
 
     # 1. 加速比统计
     report += "### 1. 加速效果对比\n\n"
@@ -526,7 +532,7 @@ def generate_report(results: List[Dict], output_file: str = "ANDERSON_ACCELERATI
     report += "\n"
 
     # 4. 使用建议
-    report += "---\n\n## 💡 使用建议\n\n"
+    report += "---\n\n##  使用建议\n\n"
 
     if best_method:
         report += "### 推荐配置\n\n"
@@ -534,7 +540,13 @@ def generate_report(results: List[Dict], output_file: str = "ANDERSON_ACCELERATI
         config = [r for r in results if r['method'] == best_method[0]][0]['config']
         if config:
             report += f"```python\n"
-            report += f"from solvers.anderson_acceleration import AndersonAcceleration\n\n"
+            report += f"try:
+    from solvers.anderson_acceleration import AndersonAcceleration
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+\n\n"
             report += f"anderson = AndersonAcceleration(\n"
             report += f"    m={config['m']},  # 历史深度\n"
             report += f"    beta={config['beta']}  # 松弛因子\n"
@@ -567,7 +579,7 @@ def generate_report(results: List[Dict], output_file: str = "ANDERSON_ACCELERATI
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(report)
 
-    print(f"✓ 报告已生成: {output_file}")
+    print(f" 报告已生成: {output_file}")
 
     return report
 

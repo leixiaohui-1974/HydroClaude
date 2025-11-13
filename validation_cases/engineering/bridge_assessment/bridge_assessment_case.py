@@ -220,7 +220,7 @@ class BridgeHydraulicAssessment:
         使用标准步长法计算壅水曲线。
 
         Args:
-            Q: Discharge (m³/s)
+            Q: Discharge (m^3/s)
             h_downstream: Downstream water depth (m)
             dx: Spatial step (m)
 
@@ -303,7 +303,7 @@ class BridgeHydraulicAssessment:
         分析多个洪水事件。
 
         Args:
-            flood_discharges: List of flood discharges (m³/s)
+            flood_discharges: List of flood discharges (m^3/s)
             return_periods: List of return periods (years)
 
         Returns:
@@ -358,7 +358,7 @@ class BridgeHydraulicAssessment:
             results['flow_regimes'].append(regime)
             results['head_losses'].append(head_loss)
 
-            print(f"\n{T}-Year Flood (Q = {Q:.0f} m³/s):")
+            print(f"\n{T}-Year Flood (Q = {Q:.0f} m^3/s):")
             print(f"  Normal Depth: {h_normal:.2f} m")
             print(f"  Upstream Depth at Bridge: {h_upstream_bridge:.2f} m")
             print(f"  Backwater Height: {backwater:.2f} m")
@@ -381,7 +381,7 @@ class BridgeHydraulicAssessment:
         对比不同桥梁设计方案。
 
         Args:
-            Q: Design discharge (m³/s)
+            Q: Design discharge (m^3/s)
             return_period: Return period (years)
 
         Returns:
@@ -390,7 +390,7 @@ class BridgeHydraulicAssessment:
         print(f"\n{'='*70}")
         print(f"Design Scenario Comparison ({return_period}-Year Flood)")
         print(f"{'='*70}")
-        print(f"Design Discharge: {Q:.0f} m³/s\n")
+        print(f"Design Discharge: {Q:.0f} m^3/s\n")
 
         h_normal = self.channel.normal_depth(Q)
 
@@ -432,7 +432,7 @@ class BridgeHydraulicAssessment:
 
             backwater = h_up - h_normal
 
-            # Relative cost index (width × height)
+            # Relative cost index (width x height)
             cost = scenario['total_width'] * scenario['opening_height'] / (50.0 * 5.0)
 
             comparison['scenarios'].append(scenario['name'])
@@ -502,7 +502,7 @@ class BridgeHydraulicAssessment:
         ax3 = plt.subplot(3, 2, 3)
         ax3.plot(flood_results['discharges'], flood_results['max_velocities'],
                 'go-', linewidth=2, markersize=8)
-        ax3.set_xlabel('Discharge (m³/s)', fontsize=11)
+        ax3.set_xlabel('Discharge (m^3/s)', fontsize=11)
         ax3.set_ylabel('Bridge Velocity (m/s)', fontsize=11)
         ax3.set_title('Flow Velocity at Bridge', fontsize=12, fontweight='bold')
         ax3.grid(True, alpha=0.3)
@@ -607,7 +607,7 @@ def main():
     bridge_assess.create_design_scenarios()
 
     # Step 5: Analyze flood events
-    flood_Q = [200, 350, 500, 650, 800]  # m³/s
+    flood_Q = [200, 350, 500, 650, 800]  # m^3/s
     return_periods = [10, 25, 50, 75, 100]  # years
 
     flood_results = bridge_assess.analyze_flood_events(flood_Q, return_periods)
@@ -624,18 +624,18 @@ def main():
     print("Case Study Completed Successfully!")
     print("="*70)
     print("\nKey Achievements:")
-    print("  ✓ Modeled 5 km river reach with bridge")
-    print("  ✓ Computed backwater profiles")
-    print("  ✓ Analyzed 5 flood events (10 to 100-year)")
-    print("  ✓ Compared 4 design scenarios")
-    print("  ✓ Evaluated cost-performance trade-offs")
-    print("  ✓ Generated comprehensive visualizations")
+    print("   Modeled 5 km river reach with bridge")
+    print("   Computed backwater profiles")
+    print("   Analyzed 5 flood events (10 to 100-year)")
+    print("   Compared 4 design scenarios")
+    print("   Evaluated cost-performance trade-offs")
+    print("   Generated comprehensive visualizations")
     print("\nThis case study demonstrates:")
-    print("  • Bridge hydraulic impact analysis")
-    print("  • Backwater computation")
-    print("  • Multiple flood event assessment")
-    print("  • Design optimization")
-    print("  • Cost-benefit analysis")
+    print("  - Bridge hydraulic impact analysis")
+    print("  - Backwater computation")
+    print("  - Multiple flood event assessment")
+    print("  - Design optimization")
+    print("  - Cost-benefit analysis")
     print("="*70 + "\n")
 
 

@@ -127,7 +127,7 @@ class TestDischargeCalculation:
         assert not info['is_submerged']
         assert 0.6 <= info['Cd'] <= 0.75
 
-        print(f"\n自由出流: Q = {Q:.2f} m³/s, Cd = {info['Cd']:.3f}")
+        print(f"\n自由出流: Q = {Q:.2f} m^3/s, Cd = {info['Cd']:.3f}")
 
     def test_submerged_flow_discharge(self):
         """测试淹没出流流量"""
@@ -145,8 +145,8 @@ class TestDischargeCalculation:
         Q_free, _ = self.gate.compute_discharge(h_up, 101.0, opening, 'absolute')
         assert Q < Q_free
 
-        print(f"\n淹没出流: Q = {Q:.2f} m³/s, Cd = {info['Cd']:.3f}")
-        print(f"自由出流: Q = {Q_free:.2f} m³/s")
+        print(f"\n淹没出流: Q = {Q:.2f} m^3/s, Cd = {info['Cd']:.3f}")
+        print(f"自由出流: Q = {Q_free:.2f} m^3/s")
         print(f"流量比: {Q/Q_free:.3f}")
 
     def test_zero_opening(self):
@@ -182,7 +182,7 @@ class TestDischargeCalculation:
         # 两种表示方式应该给出相同结果
         assert abs(Q_percent - Q_absolute) < 1e-6
 
-        print(f"\n50%开度: Q = {Q_percent:.2f} m³/s")
+        print(f"\n50%开度: Q = {Q_percent:.2f} m^3/s")
 
 
 class TestOpeningIncreaseFlow:
@@ -205,7 +205,7 @@ class TestOpeningIncreaseFlow:
             Q, _ = gate.compute_discharge(h_up, h_down, opening, 'absolute')
             assert Q > Q_prev
             Q_prev = Q
-            print(f"开度 {opening}m: Q = {Q:.2f} m³/s")
+            print(f"开度 {opening}m: Q = {Q:.2f} m^3/s")
 
 
 class TestInverseCalculation:
@@ -239,9 +239,9 @@ class TestInverseCalculation:
 
         assert error < 1.0  # 误差小于1%
 
-        print(f"\n目标流量: {Q_target:.2f} m³/s")
+        print(f"\n目标流量: {Q_target:.2f} m^3/s")
         print(f"所需开度: {opening:.3f}m")
-        print(f"验证流量: {Q_check:.2f} m³/s")
+        print(f"验证流量: {Q_check:.2f} m^3/s")
         print(f"误差: {error:.3f}%")
 
     def test_inverse_convergence(self):

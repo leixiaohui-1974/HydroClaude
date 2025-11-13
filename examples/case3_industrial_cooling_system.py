@@ -26,7 +26,9 @@ Date: 2025-10-30
 import sys
 import os
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 from matplotlib import rcParams
 
 # 添加项目路径
@@ -86,7 +88,7 @@ def create_industrial_cooling_network():
     topology.add_node(j3)
 
     # 用水点（6个车间）
-    workshop1 = Junction('W1', elevation=0.0, demand=50.0/1000)   # 50 L/s = 0.050 m³/s
+    workshop1 = Junction('W1', elevation=0.0, demand=50.0/1000)   # 50 L/s = 0.050 m^3/s
     workshop2 = Junction('W2', elevation=0.0, demand=60.0/1000)   # 60 L/s
     workshop3 = Junction('W3', elevation=0.0, demand=70.0/1000)   # 70 L/s
     workshop4 = Junction('W4', elevation=0.0, demand=55.0/1000)   # 55 L/s
@@ -104,7 +106,7 @@ def create_industrial_cooling_network():
     print(f"  水源: R1 (水头 {water_tank.head}m，模拟泵后压力)")
     print(f"  环网节点: J1, J2, J3")
     print(f"  用水点: W1-W6")
-    print(f"  总用水量: {(50+60+70+55+45+80):.0f} L/s = {(50+60+70+55+45+80)/1000:.3f} m³/s")
+    print(f"  总用水量: {(50+60+70+55+45+80):.0f} L/s = {(50+60+70+55+45+80)/1000:.3f} m^3/s")
     print()
 
     # 管道定义（管道ID, 起点, 终点, 管径, 长度, 局部损失系数）
@@ -131,7 +133,7 @@ def create_industrial_cooling_network():
         topology.add_pipe(pipe, from_node, to_node)
 
         total_length += L
-        print(f"  ✓ {pid}: {from_node}→{to_node}, D={int(D*1000)}mm, L={L}m ({desc})")
+        print(f"   {pid}: {from_node}->{to_node}, D={int(D*1000)}mm, L={L}m ({desc})")
 
     print(f"  管道数量: {len(pipe_definitions)}")
     print(f"  管径范围: 250-500mm")
@@ -214,7 +216,7 @@ def simulate_pump_scenarios(topology):
         try:
             flows, heads = solver.solve()
             converged = True
-            print(f"  ✓ 求解收敛")
+            print(f"   求解收敛")
 
             # 计算各车间压力
             workshop_ids = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6']
@@ -236,20 +238,20 @@ def simulate_pump_scenarios(topology):
             # 检查压力要求（工业供水一般要求>15m）
             min_required = 15.0
             if min_pressure < min_required:
-                print(f"  ⚠️ 最低压力{min_pressure:.1f}m < 要求{min_required}m")
+                print(f"   最低压力{min_pressure:.1f}m < 要求{min_required}m")
             else:
-                print(f"  ✓ 最低压力满足要求 (>{min_required}m)")
+                print(f"   最低压力满足要求 (>{min_required}m)")
 
             # 计算供水流量（P1管道流量，从水源流出）
             supply_flow = abs(flows['P1']) * 1000  # 转换为L/s
             print(f"  供水流量: {supply_flow:.1f} L/s")
 
             # 估算能耗（简化计算）
-            # 功率 P = ρ * g * Q * H / η (W)
+            # 功率 P = rho * g * Q * H / η (W)
             # 假设泵效率 η = 0.75
-            rho = 1000  # kg/m³
-            g = 9.81    # m/s²
-            Q = abs(flows['P1'])  # m³/s
+            rho = 1000  # kg/m^3
+            g = 9.81    # m/s^2
+            Q = abs(flows['P1'])  # m^3/s
             H = params['source_head'] - 5.0  # 泵扬程（水源水头 - 原始水池水位5m）
             eta = 0.75
 
@@ -259,7 +261,7 @@ def simulate_pump_scenarios(topology):
             num_pumps = 1 if '低负荷' in scenario_name else 2
             if num_pumps == 2:
                 power_per_pump = power_kw / 2
-                print(f"  总功率: {power_kw:.1f} kW (单泵 {power_per_pump:.1f} kW × 2)")
+                print(f"  总功率: {power_kw:.1f} kW (单泵 {power_per_pump:.1f} kW x 2)")
             else:
                 print(f"  运行功率: {power_kw:.1f} kW (单泵)")
 
@@ -279,7 +281,7 @@ def simulate_pump_scenarios(topology):
                 'daily_energy': daily_energy
             }
         except Exception as e:
-            print(f"  ✗ 求解失败: {str(e)[:50]}")
+            print(f"   求解失败: {str(e)[:50]}")
             results[scenario_name] = {'converged': False}
 
         print()
@@ -463,9 +465,9 @@ def plot_results(topology, results):
     # 保存图片
     output_path = 'examples/industrial_water_supply_results.png'
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
-    print(f"📊 结果图表已保存: {output_path}")
+    print(f" 结果图表已保存: {output_path}")
 
-    # plt.show()
+    # # plt.show()  # Disabled for automated testing
 
 
 def main():
@@ -491,7 +493,7 @@ def main():
     plot_results(topology, results)
 
     print("="*80)
-    print("✅ 案例分析完成！")
+    print(" 案例分析完成！")
     print("="*80)
 
 

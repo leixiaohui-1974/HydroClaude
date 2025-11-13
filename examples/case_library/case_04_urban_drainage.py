@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 HydroClaude Engineering Case 04: Urban Drainage System
 HydroClaude 工程案例 04: 城市排涝系统
@@ -25,7 +26,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 try:
     import numpy as np
-    import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
     from scipy.interpolate import interp1d
     from scipy.integrate import odeint
 except ImportError as e:
@@ -136,9 +139,9 @@ class RationalMethodRunoff:
             intensity: Rainfall intensity (mm/hr) / 降雨强度
 
         Returns:
-            Runoff flow rate (m³/s) / 径流流量
+            Runoff flow rate (m^3/s) / 径流流量
         """
-        # Q (m³/s) = C * i (mm/hr) * A (ha) / 360
+        # Q (m^3/s) = C * i (mm/hr) * A (ha) / 360
         q = catchment.runoff_coef * intensity * catchment.area / 360.0
         return max(0.0, q)
 
@@ -197,7 +200,7 @@ class PreissmannSlotPipe:
             depth: Water depth (m) / 水深
 
         Returns:
-            Area (m²) / 面积
+            Area (m^2) / 面积
         """
         if depth <= 0:
             return 0.0
@@ -268,7 +271,7 @@ class PreissmannSlotPipe:
         使用曼宁公式计算正常水深
 
         Args:
-            flow: Flow rate (m³/s) / 流量
+            flow: Flow rate (m^3/s) / 流量
 
         Returns:
             Normal depth (m) / 正常水深
@@ -316,7 +319,7 @@ class DrainagePumpStation:
 
         Args:
             n_pumps: Number of pumps / 水泵数量
-            pump_capacity: Capacity per pump (m³/s) / 单泵流量
+            pump_capacity: Capacity per pump (m^3/s) / 单泵流量
             design_head: Design head (m) / 设计扬程
             start_level: Water level to start pumps (m) / 启泵水位
             stop_level: Water level to stop pumps (m) / 停泵水位
@@ -338,7 +341,7 @@ class DrainagePumpStation:
             dt: Time step (s) / 时间步长
 
         Returns:
-            Total pump discharge (m³/s) / 总抽排流量
+            Total pump discharge (m^3/s) / 总抽排流量
         """
         # Start/stop logic with hysteresis / 启停逻辑（带滞后）
         if water_level >= self.h_start:
@@ -420,7 +423,7 @@ class UrbanDrainageSystem:
             )
             self.catchments.append(catchment)
 
-        print(f"✓ Created {len(self.catchments)} catchments")
+        print(f" Created {len(self.catchments)} catchments")
         total_area = sum(c.area for c in self.catchments)
         avg_imperv = np.mean([c.imperviousness for c in self.catchments])
         print(f"  Total catchment area: {total_area:.1f} ha")
@@ -459,13 +462,13 @@ class UrbanDrainageSystem:
             self.nodes.append({
                 'id': i,
                 'elevation': 10.0 - i * 0.5,  # Gradually decreasing elevation
-                'storage_area': 20.0,  # Surface storage area (m²)
+                'storage_area': 20.0,  # Surface storage area (m^2)
                 'depth': 0.0,
                 'inflow': 0.0,
                 'flooding': 0.0
             })
 
-        print(f"✓ Created {len(self.pipes)} pipes and {len(self.nodes)} nodes")
+        print(f" Created {len(self.pipes)} pipes and {len(self.nodes)} nodes")
 
     def _setup_pump_stations(self):
         """
@@ -475,7 +478,7 @@ class UrbanDrainageSystem:
         # Main pump station at outfall / 出水口主泵站
         main_station = DrainagePumpStation(
             n_pumps=4,
-            pump_capacity=2.5,  # m³/s per pump
+            pump_capacity=2.5,  # m^3/s per pump
             design_head=8.0,
             start_level=2.0,
             stop_level=0.5
@@ -485,16 +488,16 @@ class UrbanDrainageSystem:
         # Secondary pump station / 辅助泵站
         secondary_station = DrainagePumpStation(
             n_pumps=2,
-            pump_capacity=1.5,  # m³/s per pump
+            pump_capacity=1.5,  # m^3/s per pump
             design_head=6.0,
             start_level=1.8,
             stop_level=0.4
         )
         self.pump_stations.append(secondary_station)
 
-        print(f"✓ Created {len(self.pump_stations)} pump stations")
+        print(f" Created {len(self.pump_stations)} pump stations")
         total_capacity = sum(ps.n_pumps * ps.Q_pump for ps in self.pump_stations)
-        print(f"  Total pumping capacity: {total_capacity:.1f} m³/s")
+        print(f"  Total pumping capacity: {total_capacity:.1f} m^3/s")
 
     def simulate_rainfall_event(self,
                                 rainfall: RainfallEvent,
@@ -604,11 +607,11 @@ class UrbanDrainageSystem:
             if step % 20 == 0:
                 progress = (step + 1) / n_steps * 100
                 print(f"Progress: {progress:5.1f}% | Time: {t/60:6.1f} min | "
-                      f"Inflow: {total_runoff:6.2f} m³/s | "
+                      f"Inflow: {total_runoff:6.2f} m^3/s | "
                       f"Max depth: {max_depths[step]:5.2f} m | "
                       f"Pumps: {sum(ps.pumps_running for ps in self.pump_stations)} units")
 
-        print(f"\n✓ Simulation completed\n")
+        print(f"\n Simulation completed\n")
 
         # Store results / 存储结果
         self.results = {
@@ -645,10 +648,10 @@ class UrbanDrainageSystem:
         peak_depth = np.max(results['max_depths'])
         total_flooding = np.sum(results['flooding_rates']) * (results['times'][1] - results['times'][0])
 
-        print(f"Peak Inflow / 峰值入流:           {peak_inflow:.2f} m³/s")
-        print(f"Peak Pump Flow / 峰值抽排:        {peak_pump_flow:.2f} m³/s")
+        print(f"Peak Inflow / 峰值入流:           {peak_inflow:.2f} m^3/s")
+        print(f"Peak Pump Flow / 峰值抽排:        {peak_pump_flow:.2f} m^3/s")
         print(f"Peak Depth / 峰值水深:            {peak_depth:.2f} m")
-        print(f"Total Flooding / 总积水量:        {total_flooding:.1f} m³")
+        print(f"Total Flooding / 总积水量:        {total_flooding:.1f} m^3")
 
         # Pipe performance / 管道性能
         print(f"\nPipe Performance / 管道性能:")
@@ -661,8 +664,8 @@ class UrbanDrainageSystem:
         # Pump station performance / 泵站性能
         print(f"\nPump Station Performance / 泵站性能:")
         for i, ps in enumerate(self.pump_stations):
-            print(f"  Station {i+1}: {ps.n_pumps} pumps × {ps.Q_pump:.1f} m³/s, "
-                  f"Total capacity: {ps.n_pumps * ps.Q_pump:.1f} m³/s")
+            print(f"  Station {i+1}: {ps.n_pumps} pumps x {ps.Q_pump:.1f} m^3/s, "
+                  f"Total capacity: {ps.n_pumps * ps.Q_pump:.1f} m^3/s")
 
         print(f"\n{'='*70}\n")
 
@@ -699,7 +702,7 @@ class UrbanDrainageSystem:
         ax.plot(times_min, results['inflows'], 'r-', linewidth=2, label='Inflow / 入流')
         ax.plot(times_min, results['pump_flows'], 'g-', linewidth=2, label='Pump flow / 抽排')
         ax.set_xlabel('Time / 时间 (min)')
-        ax.set_ylabel('Flow / 流量 (m³/s)')
+        ax.set_ylabel('Flow / 流量 (m^3/s)')
         ax.set_title('System Flows / 系统流量')
         ax.legend()
         ax.grid(True, alpha=0.3)
@@ -720,7 +723,7 @@ class UrbanDrainageSystem:
         ax.plot(times_min, results['flooding_rates'], 'darkred', linewidth=2)
         ax.fill_between(times_min, 0, results['flooding_rates'], alpha=0.3, color='red')
         ax.set_xlabel('Time / 时间 (min)')
-        ax.set_ylabel('Flooding rate / 积水率 (m³/s)')
+        ax.set_ylabel('Flooding rate / 积水率 (m^3/s)')
         ax.set_title('Surface Flooding / 地表积水')
         ax.grid(True, alpha=0.3)
 
@@ -747,7 +750,7 @@ class UrbanDrainageSystem:
         ax.plot(times_min, cum_pump, 'g-', linewidth=2, label='Cumulative pumped / 累积抽排')
         ax.plot(times_min, cum_flooding, 'darkred', linewidth=2, label='Cumulative flooding / 累积积水')
         ax.set_xlabel('Time / 时间 (min)')
-        ax.set_ylabel('Volume / 水量 (m³)')
+        ax.set_ylabel('Volume / 水量 (m^3)')
         ax.set_title('Cumulative Volumes / 累积水量')
         ax.legend()
         ax.grid(True, alpha=0.3)
@@ -756,10 +759,10 @@ class UrbanDrainageSystem:
 
         if save_path:
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
-            print(f"✓ Figure saved to: {save_path}")
+            print(f" Figure saved to: {save_path}")
         else:
             plt.savefig('case_04_urban_drainage_results.png', dpi=300, bbox_inches='tight')
-            print(f"✓ Figure saved to: case_04_urban_drainage_results.png")
+            print(f" Figure saved to: case_04_urban_drainage_results.png")
 
         plt.close()
 
@@ -811,8 +814,8 @@ def main():
     drainage.plot_results()
 
     print("\n" + "="*70)
-    print("✓ Case 04 simulation completed successfully!")
-    print("✓ 案例04模拟成功完成!")
+    print(" Case 04 simulation completed successfully!")
+    print(" 案例04模拟成功完成!")
     print("="*70 + "\n")
 
     # Additional scenario: Extreme storm / 额外场景：极端暴雨
@@ -841,9 +844,9 @@ def main():
     drainage2.plot_results(save_path='case_04_urban_drainage_extreme.png')
 
     print("\n" + "="*70)
-    print("✓ All simulations completed!")
-    print("✓ 所有模拟完成!")
-    print("\n📊 Output files:")
+    print(" All simulations completed!")
+    print(" 所有模拟完成!")
+    print("\n Output files:")
     print("  - case_04_urban_drainage_results.png (Design storm / 设计暴雨)")
     print("  - case_04_urban_drainage_extreme.png (Extreme storm / 极端暴雨)")
     print("="*70 + "\n")

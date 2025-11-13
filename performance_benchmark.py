@@ -63,7 +63,7 @@ class PerformanceBenchmark:
         print(f"  迭代次数: {iterations}")
         print(f"  每次迭代: {time_per_iteration:.2f} ms")
         print(f"  每单元时间: {time_per_cell:.2f} μs")
-        print(f"  收敛: {'✅ 是' if converged else '❌ 否'}")
+        print(f"  收敛: {' 是' if converged else ' 否'}")
         
         # 保存结果
         benchmark_result = {
@@ -108,7 +108,7 @@ class PerformanceBenchmark:
                 nx = res['nx']
                 solve_time = res['solve_time_ms']
                 iterations = res['iterations']
-                converged = "✅" if res['converged'] else "❌"
+                converged = "" if res['converged'] else ""
                 
                 print(f"{name:<30} {nx:<10} {solve_time:>10.2f} ms {iterations:<6} {converged}")
         
@@ -148,7 +148,7 @@ class PerformanceBenchmark:
                 'results': self.results
             }, f, indent=2)
         
-        print(f"\n✅ 详细报告已保存: {report_path}")
+        print(f"\n 详细报告已保存: {report_path}")
 
 
 # ==================== 基准测试案例定义 ====================

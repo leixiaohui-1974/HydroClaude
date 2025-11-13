@@ -550,5 +550,5 @@ if __name__ == "__main__":
         print(f"  t={hr:.0f}h: Q={Q:.1f} m³/s")
 
     print("\n" + "="*80)
-    print("✅ 所有测试通过！")
+    print(" 所有测试通过！")
     print("="*80)

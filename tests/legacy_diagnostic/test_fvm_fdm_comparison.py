@@ -6,7 +6,7 @@ FVM-FDM对比测试
 测试系统：
 - 渠道长度：10000m
 - 3个闸门（positions: 2500m, 5000m, 7500m）
-- 目标流量：10 m³/s
+- 目标流量：10 m^3/s
 - 网格：301点
 
 对比方案：
@@ -24,7 +24,17 @@ import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.single_canal_solver import SingleCanalSolver
+try:
+    # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.single_canal_solver import SingleCanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 
 
@@ -198,11 +208,11 @@ def run_improved_fvm_fdm_test():
             # 获取闸门流量
             gate_flows = [solver_improved.Q[idx] for idx in solver_improved.structure_indices]
             gate_str = ', '.join([f"Q{j+1}={gf:.3f}" for j, gf in enumerate(gate_flows)])
-            print(f"  t={t:.0f}s: Q_avg={Q_avg:.4f} m³/s, 误差={Q_error*100:.4f}%, {gate_str}")
+            print(f"  t={t:.0f}s: Q_avg={Q_avg:.4f} m^3/s, 误差={Q_error*100:.4f}%, {gate_str}")
 
             if Q_error < 0.001:
                 converged = True
-                print(f"\n✓ 达到稳态 (i={i}, t={t:.0f}s)")
+                print(f"\n 达到稳态 (i={i}, t={t:.0f}s)")
                 break
 
     # 获取结果
@@ -264,12 +274,12 @@ def plot_comparison(result_fdm, result_fvm):
     ax = axes[1]
     ax.plot(result_fdm['x'], result_fdm['Q'], 'b-', linewidth=2, label='原始FDM', alpha=0.7)
     ax.plot(result_fvm['x'], result_fvm['Q'], 'r--', linewidth=2, label='改进FVM-FDM', alpha=0.7)
-    ax.axhline(Q_target, color='k', linestyle='--', linewidth=1.5, alpha=0.5, label=f'目标流量({Q_target} m³/s)')
+    ax.axhline(Q_target, color='k', linestyle='--', linewidth=1.5, alpha=0.5, label=f'目标流量({Q_target} m^3/s)')
     ax.axvline(2500, color='gray', linestyle=':', alpha=0.5)
     ax.axvline(5000, color='gray', linestyle=':', alpha=0.5)
     ax.axvline(7500, color='gray', linestyle=':', alpha=0.5)
     ax.set_xlabel('x [m]')
-    ax.set_ylabel('Q [m³/s]')
+    ax.set_ylabel('Q [m^3/s]')
     ax.set_title(f'流量剖面对比 (FDM误差: {result_fdm["max_error"]:.4f}%, FVM-FDM误差: {result_fvm["max_error"]:.4f}%)')
     ax.legend()
     ax.grid(True, alpha=0.3)
@@ -292,7 +302,7 @@ def plot_comparison(result_fdm, result_fvm):
 
     plt.tight_layout()
     plt.savefig('fvm_fdm_comparison.png', dpi=150, bbox_inches='tight')
-    print("✓ 保存对比图: fvm_fdm_comparison.png")
+    print(" 保存对比图: fvm_fdm_comparison.png")
     print()
 
 
@@ -321,8 +331,8 @@ def main():
 
     print(f"{'方法':<20} {'最大误差':<15} {'平均误差':<15} {'收敛':<10}")
     print("-" * 70)
-    print(f"{'原始FDM':<20} {result_fdm['max_error']:.4f}%{'':<8} {result_fdm['mean_error']:.4f}%{'':<8} {'✓' if result_fdm['converged'] else '✗'}")
-    print(f"{'改进FVM-FDM':<20} {result_fvm['max_error']:.4f}%{'':<8} {result_fvm['mean_error']:.4f}%{'':<8} {'✓' if result_fvm['converged'] else '✗'}")
+    print(f"{'原始FDM':<20} {result_fdm['max_error']:.4f}%{'':<8} {result_fdm['mean_error']:.4f}%{'':<8} {'' if result_fdm['converged'] else ''}")
+    print(f"{'改进FVM-FDM':<20} {result_fvm['max_error']:.4f}%{'':<8} {result_fvm['mean_error']:.4f}%{'':<8} {'' if result_fvm['converged'] else ''}")
     print()
 
     # 计算改进倍数
@@ -346,11 +356,11 @@ def main():
     print()
 
     if result_fvm['max_error'] < target:
-        print(f"✓✓✓ 成功！FVM-FDM达到目标精度 {target}%！")
+        print(f" 成功！FVM-FDM达到目标精度 {target}%！")
     elif result_fvm['max_error'] < result_fdm['max_error']:
-        print(f"✓✓ FVM-FDM改善了精度（改善{improvement:.2f}x），但未达到{target}%目标")
+        print(f" FVM-FDM改善了精度（改善{improvement:.2f}x），但未达到{target}%目标")
     else:
-        print(f"⚠ FVM-FDM未改善精度")
+        print(f" FVM-FDM未改善精度")
 
     print()
     print("=" * 70)

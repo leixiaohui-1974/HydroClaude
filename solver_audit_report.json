@@ -8,22 +8,20 @@
   "results": {
     "Canal-Preissmann": {
       "status": "success",
-      "error_pct": 36.274509803921354,
-      "error_m": 0.036274509803921356,
-      "actual_dh": 0.06372549019607865,
+      "error_pct": 100.0,
+      "error_m": 0.1,
+      "actual_dh": 0.0,
       "stable": true
     },
     "Canal-FVM": {
-      "status": "unstable",
-      "error": "Numerical overflow (NaN)",
+      "status": "failed",
+      "error": "\u4e0d\u652f\u6301\u7684\u6c42\u89e3\u65b9\u6cd5'fvm'\u4ec5\u652f\u6301'preissmann'",
       "stable": false
     },
     "Canal-MOC": {
-      "status": "success",
-      "error_pct": 6782.479988146173,
-      "error_m": 6.782479988146173,
-      "actual_dh": 6.882479988146173,
-      "stable": true
+      "status": "failed",
+      "error": "\u4e0d\u652f\u6301\u7684\u6c42\u89e3\u65b9\u6cd5'moc'\u4ec5\u652f\u6301'preissmann'",
+      "stable": false
     },
     "HighOrderCanalSolver": {
       "status": "success",
@@ -34,20 +32,18 @@
     },
     "HydrostaticCanalSolver": {
       "status": "success",
-      "error_pct": 2600.0,
-      "error_m": 2.6,
-      "actual_dh": -2.5,
+      "error_pct": 1.4239837602986626e+305,
+      "error_m": 1.4239837602986626e+302,
+      "actual_dh": 1.4239837602986626e+302,
       "stable": true
     }
   },
   "recommendations": {
-    "keep": [
-      "Canal-Preissmann"
-    ],
+    "keep": [],
     "delete": [
-      "Canal-FVM",
       "HighOrderCanalSolver",
       "HydrostaticCanalSolver",
+      "Canal-FVM",
       "Canal-MOC"
     ]
   }

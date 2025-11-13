@@ -10,10 +10,24 @@
 2. 简单的静水（h边界）
 3. 检查每个时间步后边界值是否保持
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import numpy as np
 import pytest
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 class TestBoundaryEnforcement:
@@ -24,7 +38,7 @@ class TestBoundaryEnforcement:
         测试Q边界是否被正确强制
 
         设置：
-        - 上游：Q = 10.0 m³/s（固定）
+        - 上游：Q = 10.0 m^3/s（固定）
         - 下游：h = 2.0 m（固定）
         - 检查每步后Q[0]是否保持为10.0
         """
@@ -53,7 +67,7 @@ class TestBoundaryEnforcement:
         solver.initialize(h_init, Q_init, bc_left, bc_right)
 
         print(f"\n初始状态:")
-        print(f"  Q[0] = {solver.Q[0]:.6f} m³/s (目标: 10.0)")
+        print(f"  Q[0] = {solver.Q[0]:.6f} m^3/s (目标: 10.0)")
         print(f"  h[-1] = {solver.h[-1]:.6f} m (目标: 2.0)")
 
         # 推进100步，每步检查边界
@@ -84,7 +98,7 @@ class TestBoundaryEnforcement:
                 })
 
         print(f"\n完成100步时间推进")
-        print(f"  Q[0] = {solver.Q[0]:.6f} m³/s (目标: 10.0)")
+        print(f"  Q[0] = {solver.Q[0]:.6f} m^3/s (目标: 10.0)")
         print(f"  h[-1] = {solver.h[-1]:.6f} m (目标: 2.0)")
 
         # 报告违规
@@ -96,24 +110,24 @@ class TestBoundaryEnforcement:
             if len(violations) > 10:
                 print(f"  ... 还有 {len(violations) - 10} 次偏离")
         else:
-            print("\n✅ 所有时间步边界条件都被正确强制")
+            print("\n 所有时间步边界条件都被正确强制")
 
         # 检查最终收敛状态（更重要）
         final_Q_error = abs(solver.Q[0] - 10.0)
         final_h_error = abs(solver.h[-1] - 2.0)
 
         print(f"\n最终收敛状态（步骤100）:")
-        print(f"  Q[0]误差: {final_Q_error:.6f} m³/s")
+        print(f"  Q[0]误差: {final_Q_error:.6f} m^3/s")
         print(f"  h[-1]误差: {final_h_error:.6f} m")
 
         # 断言：使用relaxation方法后，关注最终收敛而非暂态行为
         # 允许暂态偏离，但要求最终收敛
         assert final_Q_error < 0.5 or np.isnan(final_Q_error), \
-            f"Q边界最终未收敛到目标值，误差={final_Q_error:.6f} m³/s"
+            f"Q边界最终未收敛到目标值，误差={final_Q_error:.6f} m^3/s"
         assert final_h_error < 0.1 or np.isnan(final_h_error), \
             f"h边界最终未收敛到目标值，误差={final_h_error:.6f} m"
 
-        print("\n✅ Q边界强制测试通过（允许暂态偏离，验证最终收敛）")
+        print("\n Q边界强制测试通过（允许暂态偏离，验证最终收敛）")
 
     def test_h_boundary_enforcement(self):
         """
@@ -180,24 +194,24 @@ class TestBoundaryEnforcement:
         print(f"  h[-1] = {solver.h[-1]:.6f} m (目标: 2.0)")
 
         if violations:
-            print(f"\n❌ 发现 {len(violations)} 次边界条件违规")
+            print(f"\n 发现 {len(violations)} 次边界条件违规")
             for v in violations[:10]:
                 print(f"  步骤{v['step']}, {v['boundary']}边界: "
                       f"h = {v['value']:.6e}, 误差 = {v['error']:.6e}")
         else:
-            print("\n✅ 所有时间步边界条件都被正确强制")
+            print("\n 所有时间步边界条件都被正确强制")
 
         assert len(violations) == 0, \
             f"h边界在时间推进中被违反 {len(violations)} 次"
 
-        print("\n✅ h边界强制测试通过")
+        print("\n h边界强制测试通过")
 
     def test_supercritical_boundary_enforcement(self):
         """
         测试supercritical边界是否被正确强制
 
         设置：
-        - 上游：supercritical (h=0.5m, Q=10m³/s, Fr>1)
+        - 上游：supercritical (h=0.5m, Q=10m^3/s, Fr>1)
         - 下游：h = 2.0 m
         - 检查上游h和Q是否都被保持
         """
@@ -236,9 +250,9 @@ class TestBoundaryEnforcement:
 
         print(f"\n上游条件:")
         print(f"  h = {h_upstream} m")
-        print(f"  Q = {Q_upstream} m³/s")
+        print(f"  Q = {Q_upstream} m^3/s")
         print(f"  u = {u_upstream:.2f} m/s")
-        print(f"  Fr = {Fr_upstream:.2f} {'(急流 ✓)' if Fr_upstream > 1 else '(缓流 ✗)'}")
+        print(f"  Fr = {Fr_upstream:.2f} {'(急流 )' if Fr_upstream > 1 else '(缓流 )'}")
 
         assert Fr_upstream > 1.0, "上游必须是急流"
 
@@ -260,7 +274,7 @@ class TestBoundaryEnforcement:
 
         print(f"\n完成50步时间推进")
         print(f"  h[0] = {solver.h[0]:.6f} m (目标: {h_upstream})")
-        print(f"  Q[0] = {solver.Q[0]:.6f} m³/s (目标: {Q_upstream})")
+        print(f"  Q[0] = {solver.Q[0]:.6f} m^3/s (目标: {Q_upstream})")
 
         u_final = solver.Q[0] / (B * solver.h[0]) if solver.h[0] > 1e-10 else 0.0
         Fr_final = u_final / np.sqrt(g * solver.h[0]) if solver.h[0] > 1e-10 else 0.0
@@ -269,7 +283,7 @@ class TestBoundaryEnforcement:
         total_violations = len(h_violations) + len(Q_violations)
 
         if total_violations > 0:
-            print(f"\n❌ 边界条件违规：")
+            print(f"\n 边界条件违规：")
             print(f"  h违规: {len(h_violations)}次")
             print(f"  Q违规: {len(Q_violations)}次")
 
@@ -283,7 +297,7 @@ class TestBoundaryEnforcement:
                 for v in Q_violations[:5]:
                     print(f"    步骤{v['step']}: Q = {v['value']:.6f}, 误差 = {v['error']:.6e}")
         else:
-            print("\n✅ 所有时间步边界条件都被正确强制")
+            print("\n 所有时间步边界条件都被正确强制")
 
         # 检查质量守恒
         mass_error = abs(solver.get_mass_conservation_error())
@@ -301,7 +315,7 @@ class TestBoundaryEnforcement:
         assert mass_error < 15.0, \
             f"质量守恒误差过大: {mass_error:.2f}%"
 
-        print("\n✅ Supercritical边界强制测试通过")
+        print("\n Supercritical边界强制测试通过")
 
 
 if __name__ == "__main__":

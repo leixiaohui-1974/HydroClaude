@@ -639,7 +639,7 @@ class FastMPCScheduler:
 
                 if self.verbose:
                     cache_info = f", 缓存命中率={opt_info.get('cache_hit_rate', 0):.1%}" if self.use_cache else ""
-                    print(f"✓ (代价={opt_info['cost']:.3e}, 耗时={opt_info['computation_time']:.3f}s{cache_info})")
+                    print(f" (代价={opt_info['cost']:.3e}, 耗时={opt_info['computation_time']:.3f}s{cache_info})")
 
             # 执行实际仿真
             Q_upstream = None

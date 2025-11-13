@@ -9,6 +9,14 @@ All outputs go to the results/ directory.
 Author: Claude
 Date: 2025-10-22
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import os
 import pandas as pd
@@ -53,7 +61,7 @@ def save_figure(fig, filename):
     """
     path = get_output_path('figures', filename)
     fig.savefig(path, dpi=150, bbox_inches='tight')
-    print(f"  ✓ Saved figure: {filename}")
+    print(f"   Saved figure: {filename}")
     return path
 
 
@@ -84,7 +92,7 @@ def save_animation(anim, filename, fps=20, dpi=100, writer='pillow'):
 
     # Get file size
     size_mb = os.path.getsize(path) / (1024 * 1024)
-    print(f"  ✓ Saved animation: {filename} ({size_mb:.2f} MB)")
+    print(f"   Saved animation: {filename} ({size_mb:.2f} MB)")
     return path
 
 
@@ -114,7 +122,7 @@ def save_table(data, filename, format='csv', **kwargs):
         with open(path, 'w') as f:
             f.write(data.to_markdown(**kwargs))
 
-    print(f"  ✓ Saved table: {filename}")
+    print(f"   Saved table: {filename}")
     return path
 
 
@@ -134,7 +142,7 @@ def save_report(content, filename):
     with open(path, 'w') as f:
         f.write(content)
 
-    print(f"  ✓ Saved report: {filename}")
+    print(f"   Saved report: {filename}")
     return path
 
 

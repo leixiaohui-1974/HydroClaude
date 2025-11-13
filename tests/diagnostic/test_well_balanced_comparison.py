@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_well_balanced_comparison():
@@ -34,7 +40,7 @@ def test_well_balanced_comparison():
     print(f"  单元数: {n_cells}")
     print(f"  底坡: 0.002")
     print(f"  Manning n: 0.03")
-    print(f"  边界: Q={Q_bc} m³/s, h={h_c:.4f} m")
+    print(f"  边界: Q={Q_bc} m^3/s, h={h_c:.4f} m")
 
     # 测试1: well_balanced=False（当前MacDonald使用的）
     print(f"\n{'='*80}")
@@ -78,7 +84,7 @@ def test_well_balanced_comparison():
 
     print(f"\n结果（well_balanced=False）:")
     print(f"  质量误差: {mass_error_1:.2f}%")
-    print(f"  平均流量: {Q_avg_1:.4f} m³/s (目标: {Q_bc})")
+    print(f"  平均流量: {Q_avg_1:.4f} m^3/s (目标: {Q_bc})")
     print(f"  流量误差: {abs(Q_avg_1 - Q_bc)/Q_bc*100:.2f}%")
 
     # 测试2: well_balanced=True
@@ -115,7 +121,7 @@ def test_well_balanced_comparison():
 
     print(f"\n结果（well_balanced=True）:")
     print(f"  质量误差: {mass_error_2:.2f}%")
-    print(f"  平均流量: {Q_avg_2:.4f} m³/s (目标: {Q_bc})")
+    print(f"  平均流量: {Q_avg_2:.4f} m^3/s (目标: {Q_bc})")
     print(f"  流量误差: {abs(Q_avg_2 - Q_bc)/Q_bc*100:.2f}%")
 
     # 对比
@@ -136,18 +142,18 @@ def test_well_balanced_comparison():
 
     print(f"\n总结:")
     if abs(mass_error_2) < abs(mass_error_1) * 0.5:
-        print(f"  ✅ Well-Balanced格式显著改善质量守恒")
+        print(f"   Well-Balanced格式显著改善质量守恒")
     elif abs(mass_error_2) < abs(mass_error_1):
-        print(f"  ⚠️ Well-Balanced格式略有改善")
+        print(f"  ️ Well-Balanced格式略有改善")
     else:
-        print(f"  ✗ Well-Balanced格式无改善或变差")
+        print(f"   Well-Balanced格式无改善或变差")
 
     if abs(Q_avg_2 - Q_bc) < abs(Q_avg_1 - Q_bc) * 0.5:
-        print(f"  ✅ Well-Balanced格式显著改善流量守恒")
+        print(f"   Well-Balanced格式显著改善流量守恒")
     elif abs(Q_avg_2 - Q_bc) < abs(Q_avg_1 - Q_bc):
-        print(f"  ⚠️ Well-Balanced格式略有改善流量")
+        print(f"  ️ Well-Balanced格式略有改善流量")
     else:
-        print(f"  ✗ Well-Balanced格式无改善或变差流量")
+        print(f"   Well-Balanced格式无改善或变差流量")
 
     print("="*80)
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """测试MPC不使用观测器"""
 
 import sys
@@ -38,9 +39,9 @@ print(f"  当前水位 y = {y_current}m")
 print(f"  目标水位 = {setpoint}m")
 print(f"  误差 = {error:.1f}m (过高)")
 print(f"\n  物理分析：")
-print(f"    K=-0.3：Δu=+1m → Δh=-0.3m")
-print(f"    降低0.5m需要：Δu = -0.5 / (-0.3) = +1.67m")
-print(f"    所以应该：u ≈ 2.0 + 1.67 = 3.67m")
+print(f"    K=-0.3：Deltau=+1m -> Deltah=-0.3m")
+print(f"    降低0.5m需要：Deltau = -0.5 / (-0.3) = +1.67m")
+print(f"    所以应该：u ~= 2.0 + 1.67 = 3.67m")
 
 u_optimal, diagnostics = controller.compute_control(y_current, setpoint)
 
@@ -56,9 +57,9 @@ if diagnostics['success']:
         print(f"    k={k}: y_pred={pred_traj[k]:.4f}m, u={ctrl_seq[k]:.4f}m")
 
 if u_optimal > 2.5:
-    print(f"\n  ✓ MPC方向正确！(u > 2.5)")
+    print(f"\n   MPC方向正确！(u > 2.5)")
 else:
-    print(f"\n  ✗ MPC方向错误！(u = {u_optimal:.2f}, 应该 > 2.5)")
+    print(f"\n   MPC方向错误！(u = {u_optimal:.2f}, 应该 > 2.5)")
 
 # 测试场景2：y=2.0m, setpoint=2.2m（水位过低）
 print("\n【测试2】水位过低")
@@ -74,9 +75,9 @@ print(f"  当前水位 y = {y_current}m")
 print(f"  目标水位 = {setpoint}m")
 print(f"  误差 = {error:.1f}m (过低)")
 print(f"\n  物理分析：")
-print(f"    K=-0.3：Δu=-1m → Δh=+0.3m")
-print(f"    提高0.2m需要：Δu = -0.2 / (-0.3) = -0.67m")
-print(f"    所以应该：u ≈ 2.0 - 0.67 = 1.33m")
+print(f"    K=-0.3：Deltau=-1m -> Deltah=+0.3m")
+print(f"    提高0.2m需要：Deltau = -0.2 / (-0.3) = -0.67m")
+print(f"    所以应该：u ~= 2.0 - 0.67 = 1.33m")
 
 u_optimal, diagnostics = controller.compute_control(y_current, setpoint)
 
@@ -92,8 +93,8 @@ if diagnostics['success']:
         print(f"    k={k}: y_pred={pred_traj[k]:.4f}m, u={ctrl_seq[k]:.4f}m")
 
 if 1.0 < u_optimal < 2.0:
-    print(f"\n  ✓ MPC方向正确！(1.0 < u < 2.0)")
+    print(f"\n   MPC方向正确！(1.0 < u < 2.0)")
 else:
-    print(f"\n  ✗ MPC方向错误！(u = {u_optimal:.2f}, 应该在1.0-2.0之间)")
+    print(f"\n   MPC方向错误！(u = {u_optimal:.2f}, 应该在1.0-2.0之间)")
 
 print("\n" + "=" * 80)

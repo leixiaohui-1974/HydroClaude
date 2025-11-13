@@ -1,6 +1,6 @@
 # 示例2: 泵站系统仿真结果报告
 
-**生成时间**: 2025-10-22 12:29:17
+**生成时间**: 2025-11-13 23:03:57
 
 ---
 
@@ -20,8 +20,8 @@
 | 水池2初始水位 (m) | 5.000 |
 | 水池2最终水位 (m) | 5.000 |
 | 水池2水位变化 (m) | 0.000 |
-| 平均流量 (m³/s) | 10.000 |
-| 最大流量 (m³/s) | 10.000 |
+| 平均流量 (m^3/s) | 10.000 |
+| 最大流量 (m^3/s) | 10.000 |
 | 平均功率 (kW) | 0.0 |
 | 最大功率 (kW) | 0.0 |
 | 总能耗 (kWh) | 0.00 |
@@ -37,7 +37,7 @@
 水池1的水位随时间下降（供水），水池2的水位随时间上升（受水）。
 泵以恒定转速运行，维持稳定的输水流量。
 
-![example_02_tank_levels.png](figures/example_02_tank_levels.png)
+![example_02_tank_levels.png](figures\example_02_tank_levels.png)
 
 ## 泵站运行分析
 
@@ -45,7 +45,7 @@
 
 泵以60 Hz转速运行，提供稳定的流量输送。
 
-![example_02_pump_flow.png](figures/example_02_pump_flow.png)
+![example_02_pump_flow.png](figures\example_02_pump_flow.png)
 
 ## 能耗分析
 
@@ -59,7 +59,7 @@
 - 峰值功率: 0.0 kW
 - 总能耗: 0.00 kWh
 
-![example_02_pump_power.png](figures/example_02_pump_power.png)
+![example_02_pump_power.png](figures\example_02_pump_power.png)
 
 ## 动态演化过程
 
@@ -68,7 +68,7 @@
 显示两个水池的水位随时间的动态变化过程。
 可以清晰看到水池1水位下降、水池2水位上升的过程。
 
-![example_02_tank_animation.gif](figures/example_02_tank_animation.gif)
+![example_02_tank_animation.gif](figures\example_02_tank_animation.gif)
 
 ## 结论
 
@@ -78,15 +78,15 @@
 **主要结果**:
 - 水池1水位变化: 0.000 m (下降)
 - 水池2水位变化: 0.000 m (上升)
-- 平均流量: 10.000 m³/s
+- 平均流量: 10.000 m^3/s
 - 总能耗: 0.00 kWh
 - 系统表现稳定，泵站运行正常
 
 **验证**:
-- ✓ 质量守恒 (水池1流出 = 水池2流入)
-- ✓ 泵流量稳定
-- ✓ 功率计算合理
-- ✓ 数值稳定
+-  质量守恒 (水池1流出 = 水池2流入)
+-  泵流量稳定
+-  功率计算合理
+-  数值稳定
 
 
 ---

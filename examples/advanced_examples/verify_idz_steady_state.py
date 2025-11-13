@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 验证IDZ模型的稳态增益
 
@@ -75,10 +76,10 @@ print(f"\n最后10步响应（稳态）:")
 for i in range(max(0, len(t)-10), len(t)):
     print(f"  t={t[i]:.1f}s: y={y_step[i][0]:.6f}")
 
-print(f"\n稳态值: y_ss ≈ {y_step[-1][0]:.6f}")
+print(f"\n稳态值: y_ss ~= {y_step[-1][0]:.6f}")
 
 # 理论上，有积分器的系统，单位阶跃响应会持续积分
-print(f"\n⚠️ 注意：IDZ模型有积分器（极点在s=0）")
+print(f"\n 注意：IDZ模型有积分器（极点在s=0）")
 print(f"   单位阶跃输入会导致输出持续增长（或减小）")
 print(f"   这是UNSTABLE或MARGINALLY STABLE系统！")
 
@@ -102,15 +103,15 @@ for i in range(max(0, len(t)-5), len(t)):
 
 # 检查增益符号
 if y_step[10][0] < 0:
-    print(f"\n✓ 增益符号正确：u=+1 → y<0 (K={K}<0)")
+    print(f"\n 增益符号正确：u=+1 -> y<0 (K={K}<0)")
 else:
-    print(f"\n✗ 增益符号错误：u=+1 → y>0 (但K={K}<0)")
+    print(f"\n 增益符号错误：u=+1 -> y>0 (但K={K}<0)")
 
 print(f"\n" + "=" * 80)
 print("结论")
 print("=" * 80)
-print(f"IDZ模型 G(s) = K*(1+τ_z*s)/(s*(1+τ_d*s)) 有积分器")
+print(f"IDZ模型 G(s) = K*(1+tau_z*s)/(s*(1+tau_d*s)) 有积分器")
 print(f"这意味着系统对恒定输入会持续积分，导致输出发散")
 print(f"这可能不适合建模水渠系统（水位应该稳定在某个值）")
-print(f"\n推荐使用一阶模型：H(s) = K/(τ*s+1)")
+print(f"\n推荐使用一阶模型：H(s) = K/(tau*s+1)")
 print("=" * 80)

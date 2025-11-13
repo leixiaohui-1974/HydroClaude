@@ -1,0 +1,99 @@
+"""
+测试dt_max功能
+
+验证GodunvFVMSolver的dt_max参数是否正常工作
+"""
+import numpy as np
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+
+
+def test_dt_max_limit():
+    """测试dt_max限制是否生效"""
+    print("\n" + "="*80)
+    print("测试dt_max限制功能")
+    print("="*80)
+
+    L = 1000.0
+    B = 50.0
+    S0 = 0.0
+    n = 0.0
+    Q = 20.0
+    n_cells = 50
+    h_init = 1.0
+
+    # 测试1：无dt_max限制
+    print("\n--- 测试1：无dt_max限制 (dt_max=None) ---")
+    solver1 = GodunvFVMSolver(
+        width=B, length=L, n_cells=n_cells,
+        manning_n=n, slope=S0, cfl=0.5, order=1,
+        riemann_solver='hll', use_numba=True,
+        dt_max=None
+    )
+
+    bc_left = {'type': 'Q', 'value': Q}
+    bc_right = {'type': 'h', 'value': h_init}
+    h_init_arr = np.ones(n_cells) * h_init
+    Q_init_arr = np.ones(n_cells) * Q
+    solver1.initialize(h_init_arr, Q_init_arr, bc_left, bc_right)
+
+    dt1 = solver1.compute_dt()
+    print(f"计算的dt: {dt1:.6f} s")
+    print(f"dt_max设置: None (无限制)")
+    print(f" dt未被限制")
+
+    # 测试2：有dt_max限制
+    print("\n--- 测试2：dt_max=0.5s ---")
+    solver2 = GodunvFVMSolver(
+        width=B, length=L, n_cells=n_cells,
+        manning_n=n, slope=S0, cfl=0.5, order=1,
+        riemann_solver='hll', use_numba=True,
+        dt_max=0.5
+    )
+    solver2.initialize(h_init_arr, Q_init_arr, bc_left, bc_right)
+
+    dt2 = solver2.compute_dt()
+    print(f"计算的dt（限制前）: {dt1:.6f} s")
+    print(f"dt_max设置: 0.5 s")
+    print(f"实际返回的dt: {dt2:.6f} s")
+
+    if dt2 <= 0.5:
+        print(f" dt被正确限制到 {dt2:.6f}s <= 0.5s")
+    else:
+        print(f" dt限制失败: {dt2:.6f}s > 0.5s")
+        return False
+
+    # 测试3：dt_max大于CFL计算的dt
+    print("\n--- 测试3：dt_max=10.0s (大于CFL计算的dt) ---")
+    solver3 = GodunvFVMSolver(
+        width=B, length=L, n_cells=n_cells,
+        manning_n=n, slope=S0, cfl=0.5, order=1,
+        riemann_solver='hll', use_numba=True,
+        dt_max=10.0
+    )
+    solver3.initialize(h_init_arr, Q_init_arr, bc_left, bc_right)
+
+    dt3 = solver3.compute_dt()
+    print(f"CFL计算的dt: {dt1:.6f} s")
+    print(f"dt_max设置: 10.0 s")
+    print(f"实际返回的dt: {dt3:.6f} s")
+
+    if abs(dt3 - dt1) < 1e-6:
+        print(f" dt未被限制（CFL < dt_max）")
+    else:
+        print(f" dt异常: 应该等于{dt1:.6f}s，实际{dt3:.6f}s")
+        return False
+
+    print("\n" + "="*80)
+    print(" dt_max功能测试全部通过")
+    print("="*80)
+    return True
+
+
+if __name__ == "__main__":
+    test_dt_max_limit()

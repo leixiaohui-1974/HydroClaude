@@ -6,7 +6,7 @@
 测试求解器在Froude数接近1时的稳定性和准确性。
 
 测试场景：
-1. 渐缩喉道（Contraction）: 亚临界 → 临界 → 超临界
+1. 渐缩喉道（Contraction）: 亚临界 -> 临界 -> 超临界
 2. 临界流通过喉道（Critical Flow over Hump）
 3. 跨临界流稳定性（Transcritical Flow Stability）
 
@@ -46,21 +46,21 @@ class TestCriticalFlow:
         """
         测试1: 临界流检测
 
-        验证求解器能正确识别和处理Fr ≈ 1的情况
+        验证求解器能正确识别和处理Fr ~= 1的情况
 
         已知问题：当前测试设置（S0=0.001, n=0.03）在物理上不会产生稳定的临界流。
-        流动会在摩阻和坡度作用下调整到亚临界状态（Fr≈0.08）。
+        流动会在摩阻和坡度作用下调整到亚临界状态（Fr~=0.08）。
         需要重新设计测试场景（如喉道收缩或堰流）来真正测试临界流。
         """
         pytest.skip("测试设置需重新设计：当前配置不产生稳定临界流（见test_critical_flow_treatment.py的实际临界流测试）")
-        # 参数设置：设计一个Fr≈1的稳态流
+        # 参数设置：设计一个Fr~=1的稳态流
         L = 1000.0
         B = 10.0
         Q = 10.0  # 固定流量
         S0 = 0.001  # 小坡度
         n = 0.03
 
-        # 临界水深: h_c = (Q²/(g*B²))^(1/3)
+        # 临界水深: h_c = (Q^2/(g*B^2))^(1/3)
         g = 9.81
         h_critical = (Q**2 / (g * B**2))**(1/3)
         u_critical = Q / (B * h_critical)
@@ -77,7 +77,7 @@ class TestCriticalFlow:
         x = np.linspace(dx/2, L - dx/2, n_cells)
 
         # 初始条件：在临界深度附近略微变化
-        h_init = h_critical * (1.0 + 0.01 * np.sin(2*np.pi*x/L))  # ±1%扰动
+        h_init = h_critical * (1.0 + 0.01 * np.sin(2*np.pi*x/L))  # +/-1%扰动
         Q_init = np.ones(n_cells) * Q
 
         # 保存初始条件
@@ -187,27 +187,27 @@ class TestCriticalFlow:
 
             # 1. 模拟完成
             assert solver.t >= 90.0, f"模拟未完成：t={solver.t:.2f}s < 90s"
-            print(f"  ✅ 模拟稳定完成：t={solver.t:.2f}s >= 90s")
+            print(f"   模拟稳定完成：t={solver.t:.2f}s >= 90s")
 
             # 2. 质量守恒（临界流允许稍大误差）
             assert mass_error < 5.0, f"质量误差过大：{mass_error:.2f}% > 5%"
-            print(f"  ✅ 质量守恒：{mass_error:.2f}% < 5%")
+            print(f"   质量守恒：{mass_error:.2f}% < 5%")
 
             # 3. Fr保持在临界流附近（允许一定范围）
             assert 0.8 < Fr_mean < 1.2, f"Fr偏离临界值：{Fr_mean:.4f} not in [0.8, 1.2]"
-            print(f"  ✅ Fr接近临界：{Fr_mean:.4f} in [0.8, 1.2]")
+            print(f"   Fr接近临界：{Fr_mean:.4f} in [0.8, 1.2]")
 
             # 4. 解不应该产生巨大振荡
             assert Fr_std < 0.3, f"Fr振荡过大：std={Fr_std:.4f} > 0.3"
-            print(f"  ✅ Fr稳定：std={Fr_std:.4f} < 0.3")
+            print(f"   Fr稳定：std={Fr_std:.4f} < 0.3")
 
             # 5. 无负流量
             n_negative = np.sum(Q_final < 0)
             assert n_negative == 0, f"存在{n_negative}个负流量单元"
-            print(f"  ✅ 无负流量")
+            print(f"   无负流量")
 
             print("\n" + "="*70)
-            print("✅ 临界流测试通过：求解器在Fr≈1时保持稳定")
+            print(" 临界流测试通过：求解器在Fr~=1时保持稳定")
             print("="*70)
 
         finally:
@@ -220,7 +220,7 @@ class TestCriticalFlow:
         """
         测试2: 跨临界流通过凸起（经典测试）
 
-        流态变化：亚临界 → 临界（凸起顶部） → 超临界
+        流态变化：亚临界 -> 临界（凸起顶部） -> 超临界
 
         这是测试Entropy Fix的标准案例
         """

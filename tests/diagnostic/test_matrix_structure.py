@@ -70,7 +70,7 @@ def test_matrix_structure():
         n_nonzero = np.count_nonzero(J_dense[i, :])
         print(f"    方程{i}: {n_nonzero}个非零元素", end='')
         if n_nonzero == 0:
-            print(" ❌ 全零行！")
+            print("  全零行！")
         elif n_nonzero == 1:
             print(f" (对角元素={J_dense[i, i]:.3f})")
         else:
@@ -82,7 +82,7 @@ def test_matrix_structure():
         condition_number = cond(J_dense)
         print(f"\n矩阵条件数: {condition_number:.2e}")
         if condition_number > 1e10:
-            print("  ⚠️ 条件数过大，矩阵接近奇异")
+            print("  ️ 条件数过大，矩阵接近奇异")
     except:
         print("\n矩阵奇异，无法计算条件数")
     
@@ -92,7 +92,7 @@ def test_matrix_structure():
         determinant = det(J_dense)
         print(f"行列式: {determinant:.6e}")
         if abs(determinant) < 1e-10:
-            print("  ❌ 行列式接近0，矩阵奇异")
+            print("   行列式接近0，矩阵奇异")
     except:
         print("无法计算行列式")
     
@@ -126,10 +126,10 @@ def test_matrix_structure():
     try:
         from scipy.sparse.linalg import spsolve
         dx_vec = spsolve(J.tocsr(), -R)
-        print(f"✅ 求解成功")
+        print(f" 求解成功")
         print(f"  ||dx|| = {np.linalg.norm(dx_vec):.6e}")
     except Exception as e:
-        print(f"❌ 求解失败: {e}")
+        print(f" 求解失败: {e}")
 
 
 if __name__ == "__main__":

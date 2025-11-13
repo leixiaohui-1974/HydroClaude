@@ -1,0 +1,77 @@
+======================================================================
+HydroClaude Regression Test Report
+======================================================================
+
+Timestamp: 20251113_141717
+Duration: 5.04s
+
+Total Tests: 12
+Passed: 4
+Failed: 1
+Errors: 7
+
+======================================================================
+Detailed Results
+======================================================================
+
+[1.1_flat_bottom_static] Flat bottom static water
+  Status: ERROR
+  Error: 'gbk' codec can't encode character '\u2080' in position 9: illegal multibyte sequence
+
+[1.2_dam_break] Dam break with mass conservation check
+  Status: PASS
+  mass_error_percent: 1.3229013843969865e-13
+  has_nan: False
+  final_time: 10.146857424657659
+  h_min: 1.0
+  h_max: 9.999999999999613
+
+[1.3_shock_propagation] Shock propagation stability
+  Status: PASS
+  has_nan: False
+  h_range: 0.9993486608347375
+  final_time: 5.039967464362863
+
+[2.1_lake_at_rest_gentle] Lake at Rest with gentle 1% slope
+  Status: FAIL
+  disturbance: 0.023226399341016446
+  max_Q: 23.496997453737134
+  time: 2.4950030644208683
+
+[2.2_lake_at_rest_hump] Lake at Rest with 2m hump
+  Status: PASS
+  disturbance: 2.3329059803186336
+  mass_error_percent: 4.388288637315822
+  time: 10.022905508238113
+
+[2.3_well_balanced_friction] Well-Balanced with Manning friction
+  Status: PASS
+  has_nan: False
+  h_deviation: 1.3585571580400977
+  steps: 242
+  time: 100.36362391693105
+
+[3.1_bc_fixed_h] Fixed h boundary
+  Status: ERROR
+  Error: index 50 is out of bounds for axis 0 with size 50
+
+[3.2_bc_fixed_q] Fixed Q boundary
+  Status: ERROR
+  Error: index 50 is out of bounds for axis 0 with size 50
+
+[3.3_bc_mixed] Mixed boundaries
+  Status: ERROR
+  Error: index 50 is out of bounds for axis 0 with size 50
+
+[4.1_mass_conservation] Mass conservation
+  Status: ERROR
+  Error: index 100 is out of bounds for axis 0 with size 100
+
+[4.2_energy_dissipation] Energy dissipation
+  Status: ERROR
+  Error: index 50 is out of bounds for axis 0 with size 50
+
+[4.3_froude_number] Froude number
+  Status: ERROR
+  Error: index 50 is out of bounds for axis 0 with size 50
+

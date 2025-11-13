@@ -176,7 +176,7 @@ class ReachCoupler:
         is_compatible, metrics = self.check_compatibility()
         print(f"  水位连续性: Δh = {metrics['delta_h']:.4f}m ({metrics['error_h_percent']:.2f}%)")
         print(f"  流量连续性: ΔQ = {metrics['delta_Q']:.4f}m³/s ({metrics['error_Q_percent']:.2f}%)")
-        print(f"  兼容性: {'✅ 兼容' if is_compatible else '❌ 不兼容'}")
+        print(f"  兼容性: {' 兼容' if is_compatible else ' 不兼容'}")
 
 
 class JunctionCoupler:

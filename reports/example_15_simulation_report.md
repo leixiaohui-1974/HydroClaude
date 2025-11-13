@@ -1,6 +1,6 @@
 # 示例15: RLS参数辨识结果报告
 
-**生成时间**: 2025-10-22 12:30:29
+**生成时间**: 2025-11-13 11:19:44
 
 ---
 
@@ -36,12 +36,12 @@ y[k] = 0.8*y[k-1] + -0.3*y[k-2] + 1.5*u[k-1] + 0.7*u[k-2]
 | a2真值 | -0.300 |
 | b1真值 | 1.500 |
 | b2真值 | 0.700 |
-| a1估计 | 1.052 |
-| a2估计 | -0.534 |
-| b1估计 | 0.878 |
-| b2估计 | 0.374 |
-| a参数误差 | 0.3438 |
-| b参数误差 | 0.7022 |
+| a1估计 | 0.791 |
+| a2估计 | -0.298 |
+| b1估计 | 1.477 |
+| b2估计 | 0.698 |
+| a参数误差 | 0.0093 |
+| b参数误差 | 0.0228 |
 
 
 
@@ -52,13 +52,13 @@ y[k] = 0.8*y[k-1] + -0.3*y[k-2] + 1.5*u[k-1] + 0.7*u[k-2]
 a参数反映了系统输出的自回归特性。
 
 **辨识性能**:
-- a1: 0.800 → 1.052 (误差: 0.2523)
-- a2: -0.300 → -0.534 (误差: 0.2335)
-- 总体L2误差: 0.3438
+- a1: 0.800 -> 0.791 (误差: 0.0090)
+- a2: -0.300 -> -0.298 (误差: 0.0022)
+- 总体L2误差: 0.0093
 
 RLS算法快速收敛到真实参数附近，并保持稳定。
 
-![example_15_a_convergence.png](figures/example_15_a_convergence.png)
+![example_15_a_convergence.png](figures\example_15_a_convergence.png)
 
 ## b参数辨识结果
 
@@ -67,13 +67,13 @@ RLS算法快速收敛到真实参数附近，并保持稳定。
 b参数表示输入对输出的影响。
 
 **辨识性能**:
-- b1: 1.500 → 0.878 (误差: 0.6218)
-- b2: 0.700 → 0.374 (误差: 0.3263)
-- 总体L2误差: 0.7022
+- b1: 1.500 -> 1.477 (误差: 0.0227)
+- b2: 0.700 -> 0.698 (误差: 0.0018)
+- 总体L2误差: 0.0228
 
 b参数的收敛同样迅速且稳定。
 
-![example_15_b_convergence.png](figures/example_15_b_convergence.png)
+![example_15_b_convergence.png](figures\example_15_b_convergence.png)
 
 ## 参数估计误差分析
 
@@ -88,7 +88,7 @@ b参数的收敛同样迅速且稳定。
 
 这是RLS算法的典型收敛行为，遗忘因子保证了对新数据的持续跟踪能力。
 
-![example_15_parameter_error.png](figures/example_15_parameter_error.png)
+![example_15_parameter_error.png](figures\example_15_parameter_error.png)
 
 ## 预测误差评估
 
@@ -103,7 +103,7 @@ b参数的收敛同样迅速且稳定。
 
 对数坐标显示误差最终收敛到噪声水平（约0.01）。
 
-![example_15_prediction_error.png](figures/example_15_prediction_error.png)
+![example_15_prediction_error.png](figures\example_15_prediction_error.png)
 
 ## 输入输出数据
 
@@ -118,7 +118,7 @@ b参数的收敛同样迅速且稳定。
 
 充分的激励是保证参数辨识精度的关键。
 
-![example_15_io_data.png](figures/example_15_io_data.png)
+![example_15_io_data.png](figures\example_15_io_data.png)
 
 ## 综合性能视图
 
@@ -131,7 +131,7 @@ b参数的收敛同样迅速且稳定。
 - 误差曲线表现正常
 - 算法稳定可靠
 
-![example_15_comprehensive.png](figures/example_15_comprehensive.png)
+![example_15_comprehensive.png](figures\example_15_comprehensive.png)
 
 ## 动态收敛过程
 
@@ -146,7 +146,7 @@ b参数的收敛同样迅速且稳定。
 
 清晰展示了参数从初始值逐步逼近真值的过程。
 
-![example_15_convergence_animation.gif](figures/example_15_convergence_animation.gif)
+![example_15_convergence_animation.gif](figures\example_15_convergence_animation.gif)
 
 ## 结论
 
@@ -154,10 +154,10 @@ b参数的收敛同样迅速且稳定。
 仿真成功完成！
 
 **主要成果**:
-- ✓ 成功辨识ARX(2,2,1)模型参数
-- ✓ a参数误差: 0.3438
-- ✓ b参数误差: 0.7022
-- ✓ 验证了RLS算法的有效性和鲁棒性
+-  成功辨识ARX(2,2,1)模型参数
+-  a参数误差: 0.0093
+-  b参数误差: 0.0228
+-  验证了RLS算法的有效性和鲁棒性
 
 **算法特点**:
 - **实时性**: 在线递推更新，计算量小

@@ -541,7 +541,7 @@ class BatchScenarioRunner:
                     fontsize=16, fontweight='bold')
 
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
-        print(f"✓ 图表已保存: {output_file}")
+        print(f" 图表已保存: {output_file}")
         plt.close()
 
     def save_results(self, output_file='outputs/batch_results.json'):
@@ -559,7 +559,7 @@ class BatchScenarioRunner:
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(output_data, f, indent=2, ensure_ascii=False)
 
-        print(f"✓ 结果已保存: {output_file}")
+        print(f" 结果已保存: {output_file}")
 
 
 def main():

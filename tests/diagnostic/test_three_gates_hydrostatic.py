@@ -9,7 +9,7 @@
 配置：
 - 渠道长度：10000m
 - 三个闸门：x=2500m, 5000m, 7500m
-- 流量：10 m³/s
+- 流量：10 m^3/s
 """
 
 import numpy as np
@@ -17,7 +17,13 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append('.')
 
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 
 
@@ -69,7 +75,7 @@ def test_three_gates():
     print(f"  宽度：{B} m")
     print(f"  底坡：{S0}")
     print(f"  Manning糙率：{n}")
-    print(f"  目标流量：{Q_target} m³/s")
+    print(f"  目标流量：{Q_target} m^3/s")
     print(f"  均匀流水深：{h_uniform:.4f} m")
 
     print(f"\n闸门配置：")
@@ -118,13 +124,13 @@ def test_three_gates():
     print(f"\n=" * 80)
     print(f"结果分析")
     print(f"=" * 80)
-    print(f"  收敛状态：{'✓ 收敛' if result['converged'] else '✗ 未收敛'}")
+    print(f"  收敛状态：{' 收敛' if result['converged'] else ' 未收敛'}")
     print(f"  迭代次数：{result['iterations']}")
 
     # 流量守恒
     print(f"\n流量守恒：")
-    print(f"  目标流量：{Q_target:.4f} m³/s")
-    print(f"  实际流量：{result['Q_mean']:.4f} m³/s")
+    print(f"  目标流量：{Q_target:.4f} m^3/s")
+    print(f"  实际流量：{result['Q_mean']:.4f} m^3/s")
     print(f"  误差：{result['Q_error_percent']:.4f}%")
 
     # 验证每个闸门
@@ -143,7 +149,7 @@ def test_three_gates():
         print(f"    上游水深：{h_up:.4f} m")
         print(f"    下游水深：{h_down:.4f} m")
         print(f"    水位差：{h_up - h_down:.4f} m")
-        print(f"    流量：{Q_gate:.4f} m³/s（误差{gate_error:.2f}%）")
+        print(f"    流量：{Q_gate:.4f} m^3/s（误差{gate_error:.2f}%）")
         print(f"    流态：{flow_type}")
 
     # 水深分布统计
@@ -156,11 +162,11 @@ def test_three_gates():
     converged_ok = result['converged']
 
     print(f"\n测试结果：")
-    print(f"  流量守恒：{'✓ PASS' if mass_ok else '✗ FAIL'} ({result['Q_error_percent']:.4f}% < 0.5%)")
-    print(f"  收敛性：{'✓ PASS' if converged_ok else '✗ FAIL'}")
+    print(f"  流量守恒：{' PASS' if mass_ok else ' FAIL'} ({result['Q_error_percent']:.4f}% < 0.5%)")
+    print(f"  收敛性：{' PASS' if converged_ok else ' FAIL'}")
 
     overall = mass_ok and converged_ok
-    print(f"\n总体结论：{'✓✓✓ 达到目标精度！' if overall else '✗ 未达目标'}")
+    print(f"\n总体结论：{' 达到目标精度！' if overall else ' 未达目标'}")
     print("=" * 80)
 
     # 绘图
@@ -178,7 +184,7 @@ def test_three_gates():
         ax.axvline(gate_pos, color='gray', linestyle=':', alpha=0.5)
         ax.text(gate_pos, ax.get_ylim()[1]*0.95, name, ha='center', fontsize=9)
     ax.set_ylabel('Water depth (m)')
-    ax.set_title(f'Three Gates System: Steady State (Q={Q_target} m³/s)')
+    ax.set_title(f'Three Gates System: Steady State (Q={Q_target} m^3/s)')
     ax.legend()
     ax.grid(True, alpha=0.3)
 
@@ -186,10 +192,10 @@ def test_three_gates():
     ax = axes[1]
     ax.plot(x, result['Q'], 'g-', linewidth=2, label='Discharge')
     ax.axhline(Q_target, color='k', linestyle='--', linewidth=1.5,
-               label=f'Target ({Q_target} m³/s)')
+               label=f'Target ({Q_target} m^3/s)')
     for gate_pos in [gate1_pos, gate2_pos, gate3_pos]:
         ax.axvline(gate_pos, color='gray', linestyle=':', alpha=0.5)
-    ax.set_ylabel('Discharge (m³/s)')
+    ax.set_ylabel('Discharge (m^3/s)')
     ax.set_title(f'Discharge Distribution (error={result["Q_error_percent"]:.4f}%)')
     ax.legend()
     ax.grid(True, alpha=0.3)

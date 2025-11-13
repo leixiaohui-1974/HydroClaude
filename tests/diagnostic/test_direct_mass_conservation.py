@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_direct_mass():
@@ -47,7 +53,7 @@ def test_direct_mass():
     mass_initial = np.sum(h_init * dx * B)
 
     print(f"\n场景1：封闭系统（左右h边界，静水）")
-    print(f"  初始质量 = {mass_initial:.3f} m³")
+    print(f"  初始质量 = {mass_initial:.3f} m^3")
     print(f"  理论：封闭系统质量应守恒")
 
     # 运行100步
@@ -58,13 +64,13 @@ def test_direct_mass():
     delta_mass = mass_final - mass_initial
     error = abs(delta_mass) / mass_initial * 100
 
-    print(f"\n  最终质量 = {mass_final:.3f} m³")
-    print(f"  质量变化 = {delta_mass:.3f} m³ ({error:.2f}%)")
+    print(f"\n  最终质量 = {mass_final:.3f} m^3")
+    print(f"  质量变化 = {delta_mass:.3f} m^3 ({error:.2f}%)")
 
     if error < 0.1:
-        print(f"\n  ✅ 质量守恒成立（封闭系统）")
+        print(f"\n   质量守恒成立（封闭系统）")
     else:
-        print(f"\n  ❌ 质量守恒失败（封闭系统）")
+        print(f"\n   质量守恒失败（封闭系统）")
 
     # 场景2：有流动的系统
     print(f"\n{'='*80}")
@@ -90,7 +96,7 @@ def test_direct_mass():
     solver2.initialize(h_init2, Q_init2, bc_left2, bc_right2)
 
     mass_initial2 = np.sum(h_init2 * dx * B)
-    print(f"  初始质量 = {mass_initial2:.3f} m³")
+    print(f"  初始质量 = {mass_initial2:.3f} m^3")
 
     # 运行10步
     for _ in range(10):
@@ -99,8 +105,8 @@ def test_direct_mass():
     mass_final2 = np.sum(solver2.h * dx * B)
     delta_mass2 = mass_final2 - mass_initial2
 
-    print(f"  最终质量 = {mass_final2:.3f} m³")
-    print(f"  质量变化 = {delta_mass2:.3f} m³")
+    print(f"  最终质量 = {mass_final2:.3f} m^3")
+    print(f"  质量变化 = {delta_mass2:.3f} m^3")
     print(f"\n  注：开放系统质量应该变化（有流入流出）")
 
     # 场景3：单步详细检查
@@ -152,9 +158,9 @@ def test_direct_mass():
     mass_final3 = np.sum(h_final * dx * B)
     delta_mass3 = mass_final3 - mass_n
 
-    print(f"  初始质量 = {mass_n:.3f} m³")
-    print(f"  手动RK2后质量 = {mass_final3:.3f} m³")
-    print(f"  质量变化 = {delta_mass3:.3f} m³")
+    print(f"  初始质量 = {mass_n:.3f} m^3")
+    print(f"  手动RK2后质量 = {mass_final3:.3f} m^3")
+    print(f"  质量变化 = {delta_mass3:.3f} m^3")
 
     # 现在调用solver.step()看看
     solver3.h = h_n.copy()
@@ -164,16 +170,16 @@ def test_direct_mass():
     mass_after_step = np.sum(solver3.h * dx * B)
     delta_mass_step = mass_after_step - mass_n
 
-    print(f"\n  solver.step()后质量 = {mass_after_step:.3f} m³")
-    print(f"  质量变化 = {delta_mass_step:.3f} m³")
+    print(f"\n  solver.step()后质量 = {mass_after_step:.3f} m^3")
+    print(f"  质量变化 = {delta_mass_step:.3f} m^3")
 
     diff = abs(mass_final3 - mass_after_step)
-    print(f"\n  差异 = {diff:.6f} m³")
+    print(f"\n  差异 = {diff:.6f} m^3")
 
     if diff < 1e-6:
-        print(f"  ✅ 手动RK2和solver.step()结果一致")
+        print(f"   手动RK2和solver.step()结果一致")
     else:
-        print(f"  ❌ 手动RK2和solver.step()结果不一致")
+        print(f"   手动RK2和solver.step()结果不一致")
         print(f"     这说明solver.step()中有额外操作影响质量")
 
     print("\n" + "="*80)

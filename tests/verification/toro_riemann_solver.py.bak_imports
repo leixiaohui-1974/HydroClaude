@@ -1,0 +1,363 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Toro精确Riemann求解器 (Shallow Water Equations)
+
+实现Toro (2001)书中的精确Riemann求解器，用于验证数值格式。
+
+参考文献:
+- Toro, E.F. (2001). Shock-Capturing Methods for Free-Surface Shallow Flows.
+  Wiley, ISBN: 0-471-98766-2
+- Toro, E.F. (2009). Riemann Solvers and Numerical Methods for Fluid Dynamics.
+  Springer, 3rd Edition
+
+精确Riemann解的结构（4种可能）:
+1. 左稀疏波 + 右稀疏波
+2. 左稀疏波 + 右激波
+3. 左激波 + 右稀疏波
+4. 左激波 + 右激波
+
+求解方法:
+- 迭代求解中间状态水深 h_star
+- 通过Riemann不变量和Rankine-Hugoniot条件计算
+"""
+
+import numpy as np
+from typing import Tuple, Dict
+from scipy.optimize import fsolve
+
+
+def exact_riemann_solution(
+    x: np.ndarray,
+    t: float,
+    h_L: float,
+    u_L: float,
+    h_R: float,
+    u_R: float,
+    x_0: float = 0.0,
+    g: float = 9.81
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    计算浅水方程Riemann问题的精确解
+
+    Args:
+        x: 空间坐标数组 (m)
+        t: 时间 (s)
+        h_L: 左侧初始水深 (m)
+        u_L: 左侧初始流速 (m/s)
+        h_R: 右侧初始水深 (m)
+        u_R: 右侧初始流速 (m/s)
+        x_0: 初始间断位置 (m)
+        g: 重力加速度 (m/s^2)
+
+    Returns:
+        h: 水深数组 (m)
+        u: 流速数组 (m/s)
+    """
+    # 输入验证
+    if t <= 0:
+        raise ValueError(f"时间必须 > 0, 得到 t={t}")
+    if h_L < 0 or h_R < 0:
+        raise ValueError(f"水深必须 >= 0, 得到 h_L={h_L}, h_R={h_R}")
+
+    # 处理干床情况
+    if h_L == 0 and h_R == 0:
+        return np.zeros_like(x), np.zeros_like(x)
+
+    # 初始化解数组
+    h = np.zeros_like(x, dtype=float)
+    u = np.zeros_like(x, dtype=float)
+
+    # 计算特征波速
+    c_L = np.sqrt(g * h_L) if h_L > 0 else 0.0
+    c_R = np.sqrt(g * h_R) if h_R > 0 else 0.0
+
+    # 求解中间状态
+    h_star, u_star = _solve_star_region(h_L, u_L, h_R, u_R, g)
+    c_star = np.sqrt(g * h_star) if h_star > 0 else 0.0
+
+    # 相对坐标 xi = (x - x_0) / t
+    xi = (x - x_0) / t
+
+    # 判断左波类型（稀疏波或激波）
+    if h_star > h_L:
+        # 左激波
+        S_L = u_L - c_L * np.sqrt((h_star + h_L) / (2.0 * h_L))  # 激波速度
+
+        for i, xi_i in enumerate(xi):
+            if xi_i < S_L:
+                # 左侧未扰动区
+                h[i] = h_L
+                u[i] = u_L
+            else:
+                # 中间星号区或右侧
+                h[i] = h_star
+                u[i] = u_star
+    else:
+        # 左稀疏波
+        lambda_L_tail = u_L - c_L  # 稀疏波尾部速度
+        lambda_L_head = u_star - c_star  # 稀疏波头部速度
+
+        for i, xi_i in enumerate(xi):
+            if xi_i < lambda_L_tail:
+                # 左侧未扰动区
+                h[i] = h_L
+                u[i] = u_L
+            elif xi_i < lambda_L_head:
+                # 左稀疏波扇形区
+                u[i] = (u_L + 2.0 * c_L + 2.0 * xi_i) / 3.0
+                c_i = (u_L + 2.0 * c_L - xi_i) / 3.0
+                h[i] = c_i**2 / g
+            else:
+                # 中间星号区或右侧
+                h[i] = h_star
+                u[i] = u_star
+
+    # 判断右波类型（稀疏波或激波）
+    if h_star > h_R:
+        # 右激波
+        S_R = u_R + c_R * np.sqrt((h_star + h_R) / (2.0 * h_R))  # 激波速度
+
+        for i, xi_i in enumerate(xi):
+            if h[i] == 0:  # 还未被左波设置
+                if xi_i < S_R:
+                    h[i] = h_star
+                    u[i] = u_star
+                else:
+                    h[i] = h_R
+                    u[i] = u_R
+            elif xi_i >= S_R:
+                # 激波右侧
+                h[i] = h_R
+                u[i] = u_R
+    else:
+        # 右稀疏波
+        lambda_R_head = u_star + c_star  # 稀疏波头部速度
+        lambda_R_tail = u_R + c_R  # 稀疏波尾部速度
+
+        for i, xi_i in enumerate(xi):
+            if h[i] == 0:  # 还未被左波设置
+                if xi_i < lambda_R_head:
+                    h[i] = h_star
+                    u[i] = u_star
+                elif xi_i < lambda_R_tail:
+                    # 右稀疏波扇形区
+                    u[i] = (u_R - 2.0 * c_R + 2.0 * xi_i) / 3.0
+                    c_i = (-u_R + 2.0 * c_R + xi_i) / 3.0
+                    h[i] = c_i**2 / g
+                else:
+                    h[i] = h_R
+                    u[i] = u_R
+            elif xi_i >= lambda_R_head:
+                # 检查是否进入右稀疏波或右侧
+                if xi_i < lambda_R_tail:
+                    # 右稀疏波扇形区
+                    u[i] = (u_R - 2.0 * c_R + 2.0 * xi_i) / 3.0
+                    c_i = (-u_R + 2.0 * c_R + xi_i) / 3.0
+                    h[i] = c_i**2 / g
+                else:
+                    # 右侧未扰动区
+                    h[i] = h_R
+                    u[i] = u_R
+
+    return h, u
+
+
+def _solve_star_region(
+    h_L: float,
+    u_L: float,
+    h_R: float,
+    u_R: float,
+    g: float
+) -> Tuple[float, float]:
+    """
+    求解星号区域的水深和流速 (h_star, u_star)
+
+    通过迭代求解以下方程组:
+    - 左波关系: f_L(h_star) + u_star = u_L
+    - 右波关系: f_R(h_star) - u_star = u_R
+
+    其中 f_K 根据波类型（稀疏波或激波）定义
+
+    Args:
+        h_L, u_L: 左侧状态
+        h_R, u_R: 右侧状态
+        g: 重力加速度
+
+    Returns:
+        h_star: 中间状态水深
+        u_star: 中间状态流速
+    """
+    # 特殊情况：干床
+    if h_L == 0 and h_R == 0:
+        return 0.0, 0.0
+
+    # 初值猜测：两侧水深平均值
+    h_guess = 0.5 * (h_L + h_R)
+
+    def equation(h_star):
+        """待求解方程 f(h_star) = 0"""
+        if h_star <= 0:
+            return 1e10  # 惩罚负值
+
+        c_L = np.sqrt(g * h_L) if h_L > 0 else 0.0
+        c_R = np.sqrt(g * h_R) if h_R > 0 else 0.0
+        c_star = np.sqrt(g * h_star)
+
+        # 左波函数
+        if h_star > h_L:
+            # 左激波
+            f_L = (h_star - h_L) * np.sqrt(0.5 * g * (h_star + h_L) / (h_L * h_star))
+        else:
+            # 左稀疏波
+            f_L = 2.0 * (c_star - c_L)
+
+        # 右波函数
+        if h_star > h_R:
+            # 右激波
+            f_R = (h_star - h_R) * np.sqrt(0.5 * g * (h_star + h_R) / (h_R * h_star))
+        else:
+            # 右稀疏波
+            f_R = 2.0 * (c_star - c_R)
+
+        # 组合方程
+        return f_L + f_R + u_R - u_L
+
+    # 使用fsolve求解
+    h_star_sol = fsolve(equation, h_guess)[0]
+
+    # 计算u_star（使用左波关系）
+    c_L = np.sqrt(g * h_L) if h_L > 0 else 0.0
+    c_star = np.sqrt(g * h_star_sol)
+
+    if h_star_sol > h_L:
+        # 左激波
+        f_L = (h_star_sol - h_L) * np.sqrt(0.5 * g * (h_star_sol + h_L) / (h_L * h_star_sol))
+    else:
+        # 左稀疏波
+        f_L = 2.0 * (c_star - c_L)
+
+    u_star = u_L - f_L
+
+    return h_star_sol, u_star
+
+
+def riemann_structure(
+    h_L: float,
+    u_L: float,
+    h_R: float,
+    u_R: float,
+    g: float = 9.81
+) -> Dict:
+    """
+    分析Riemann问题的波结构
+
+    Args:
+        h_L, u_L: 左侧状态
+        h_R, u_R: 右侧状态
+        g: 重力加速度
+
+    Returns:
+        dict: 包含波结构信息
+            - h_star, u_star: 中间状态
+            - wave_type_L: 'shock' 或 'rarefaction'
+            - wave_type_R: 'shock' 或 'rarefaction'
+            - S_L, S_R: 波速（如果是激波）
+            - lambda_L_head, lambda_L_tail: 稀疏波速度（如果是稀疏波）
+    """
+    h_star, u_star = _solve_star_region(h_L, u_L, h_R, u_R, g)
+    c_star = np.sqrt(g * h_star) if h_star > 0 else 0.0
+
+    c_L = np.sqrt(g * h_L) if h_L > 0 else 0.0
+    c_R = np.sqrt(g * h_R) if h_R > 0 else 0.0
+
+    structure = {
+        'h_star': h_star,
+        'u_star': u_star,
+        'c_star': c_star,
+    }
+
+    # 左波分析
+    if h_star > h_L:
+        # 左激波
+        S_L = u_L - c_L * np.sqrt((h_star + h_L) / (2.0 * h_L))
+        structure['wave_type_L'] = 'shock'
+        structure['S_L'] = S_L
+    else:
+        # 左稀疏波
+        structure['wave_type_L'] = 'rarefaction'
+        structure['lambda_L_tail'] = u_L - c_L
+        structure['lambda_L_head'] = u_star - c_star
+
+    # 右波分析
+    if h_star > h_R:
+        # 右激波
+        S_R = u_R + c_R * np.sqrt((h_star + h_R) / (2.0 * h_R))
+        structure['wave_type_R'] = 'shock'
+        structure['S_R'] = S_R
+    else:
+        # 右稀疏波
+        structure['wave_type_R'] = 'rarefaction'
+        structure['lambda_R_head'] = u_star + c_star
+        structure['lambda_R_tail'] = u_R + c_R
+
+    return structure
+
+
+if __name__ == '__main__':
+    """测试精确Riemann求解器"""
+    import matplotlib.pyplot as plt
+
+    # 测试案例：Toro RP1 (双激波)
+    print("=" * 70)
+    print("测试精确Riemann求解器 - Toro RP1")
+    print("=" * 70)
+
+    h_L = 10.0
+    u_L = 0.0
+    h_R = 5.0
+    u_R = 0.0
+    t = 1.0
+
+    # 分析波结构
+    structure = riemann_structure(h_L, u_L, h_R, u_R)
+    print(f"\n波结构分析:")
+    print(f"  中间状态: h* = {structure['h_star']:.4f} m, u* = {structure['u_star']:.4f} m/s")
+    print(f"  左波类型: {structure['wave_type_L']}")
+    print(f"  右波类型: {structure['wave_type_R']}")
+
+    if structure['wave_type_L'] == 'shock':
+        print(f"  左激波速度: S_L = {structure['S_L']:.4f} m/s")
+    else:
+        print(f"  左稀疏波: λ_tail = {structure['lambda_L_tail']:.4f}, λ_head = {structure['lambda_L_head']:.4f} m/s")
+
+    if structure['wave_type_R'] == 'shock':
+        print(f"  右激波速度: S_R = {structure['S_R']:.4f} m/s")
+    else:
+        print(f"  右稀疏波: λ_head = {structure['lambda_R_head']:.4f}, λ_tail = {structure['lambda_R_tail']:.4f} m/s")
+
+    # 计算解
+    x = np.linspace(-50, 50, 1000)
+    h, u = exact_riemann_solution(x, t, h_L, u_L, h_R, u_R)
+
+    # 绘图
+    fig, axes = plt.subplots(2, 1, figsize=(12, 8))
+
+    # 水深
+    axes[0].plot(x, h, 'b-', linewidth=2)
+    axes[0].axvline(0, color='k', linestyle=':', label='Initial discontinuity')
+    axes[0].set_ylabel('Water Depth h (m)', fontsize=12)
+    axes[0].set_title(f'Exact Riemann Solution - t={t}s', fontsize=14, weight='bold')
+    axes[0].legend()
+    axes[0].grid(True, alpha=0.3)
+
+    # 流速
+    axes[1].plot(x, u, 'r-', linewidth=2)
+    axes[1].axvline(0, color='k', linestyle=':')
+    axes[1].set_xlabel('Distance x (m)', fontsize=12)
+    axes[1].set_ylabel('Velocity u (m/s)', fontsize=12)
+    axes[1].grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('toro_riemann_test.png', dpi=150, bbox_inches='tight')
+    print(f"\n 测试图保存: toro_riemann_test.png")

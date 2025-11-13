@@ -52,8 +52,8 @@ class TestSimpleSurgeTank:
         )
 
         # Case 1: Inflow > Outflow (level rises)
-        Q_in = 100.0   # m³/s
-        Q_out = 80.0   # m³/s
+        Q_in = 100.0   # m^3/s
+        Q_out = 80.0   # m^3/s
 
         dZ_dt = tank.calculate_water_level_derivative(Q_in, Q_out)
 
@@ -77,7 +77,7 @@ class TestSimpleSurgeTank:
         )
 
         tunnel_length = 5000.0  # m
-        tunnel_area = 50.0      # m²
+        tunnel_area = 50.0      # m^2
 
         T = tank.calculate_surge_period(tunnel_length, tunnel_area)
 
@@ -107,7 +107,7 @@ class TestSimpleSurgeTank:
             tank.update_water_level(dt, Q_in, Q_out)
 
         assert tank.water_level > Z_initial, "Water level should increase"
-        print(f"  Water level after 10s: {Z_initial:.2f}m → {tank.water_level:.2f}m")
+        print(f"  Water level after 10s: {Z_initial:.2f}m -> {tank.water_level:.2f}m")
 
 
 class TestThrottledSurgeTank:
@@ -140,7 +140,7 @@ class TestThrottledSurgeTank:
             loss_coefficient=2.0
         )
 
-        Q = 50.0  # m³/s
+        Q = 50.0  # m^3/s
         h_loss = tank.calculate_head_loss(Q)
 
         # Should be positive and reasonable
@@ -151,7 +151,7 @@ class TestThrottledSurgeTank:
         h_loss_neg = tank.calculate_head_loss(-Q)
         assert h_loss_neg < 0, "Head loss should be negative for reverse flow"
 
-        print(f"  Head loss @ Q={Q}m³/s: {h_loss:.3f}m")
+        print(f"  Head loss @ Q={Q}m^3/s: {h_loss:.3f}m")
 
     def test_longer_period(self):
         """Test that throttled tank has longer period than simple tank"""
@@ -212,7 +212,7 @@ class TestDifferentialSurgeTank:
         A_above = tank.get_effective_area(470.0)
         assert abs(A_above - tank.area_upper) < 1e-6
 
-        print(f"  Effective area: below={A_below:.1f}m², above={A_above:.1f}m²")
+        print(f"  Effective area: below={A_below:.1f}m^2, above={A_above:.1f}m^2")
 
 
 class TestInvertedSiphon:
@@ -247,7 +247,7 @@ class TestInvertedSiphon:
             num_barrels=2
         )
 
-        Q = 20.0  # m³/s
+        Q = 20.0  # m^3/s
         h_loss, breakdown = siphon.calculate_head_loss(Q)
 
         # Check components
@@ -260,7 +260,7 @@ class TestInvertedSiphon:
         total_check = breakdown['entrance'] + breakdown['friction'] + breakdown['exit']
         assert abs(total_check - h_loss) / h_loss < 0.01
 
-        print(f"  Head loss @ Q={Q}m³/s: {h_loss:.3f}m")
+        print(f"  Head loss @ Q={Q}m^3/s: {h_loss:.3f}m")
         print(f"    Entrance: {breakdown['entrance']:.3f}m ({breakdown['entrance']/h_loss*100:.1f}%)")
         print(f"    Friction: {breakdown['friction']:.3f}m ({breakdown['friction']/h_loss*100:.1f}%)")
         print(f"    Exit: {breakdown['exit']:.3f}m ({breakdown['exit']/h_loss*100:.1f}%)")
@@ -291,7 +291,7 @@ class TestInvertedSiphon:
 
         assert energy_residual < 0.01, f"Energy balance error: {energy_residual:.4f}m"
 
-        print(f"  Discharge: {Q:.2f}m³/s, flow_type={flow_type}")
+        print(f"  Discharge: {Q:.2f}m^3/s, flow_type={flow_type}")
         print(f"  Energy balance check: {energy_residual:.4e}m (should be ~0)")
 
     def test_cavitation_check(self):
@@ -312,7 +312,7 @@ class TestInvertedSiphon:
         assert isinstance(at_risk, (bool, np.bool_))
         assert isinstance(margin, (float, np.floating))
 
-        print(f"  Cavitation check @ Q={Q}m³/s: risk={at_risk}, margin={margin/1000:.1f}kPa")
+        print(f"  Cavitation check @ Q={Q}m^3/s: risk={at_risk}, margin={margin/1000:.1f}kPa")
 
     def test_friction_factor(self):
         """Test friction factor calculation"""
@@ -348,7 +348,7 @@ class TestUtilityFunctions:
         )
 
         assert A_crit > 0
-        print(f"  Critical section area: {A_crit:.2f}m²")
+        print(f"  Critical section area: {A_crit:.2f}m^2")
 
     def test_max_surge_height(self):
         """Test maximum surge height estimation"""
@@ -376,7 +376,7 @@ class TestUtilityFunctions:
         assert design['num_barrels'] == 3
         assert design['design_velocity'] <= 2.5
 
-        print(f"  Siphon design for Q=50m³/s:")
+        print(f"  Siphon design for Q=50m^3/s:")
         print(f"    Diameter: {design['diameter']}m")
         print(f"    Barrels: {design['num_barrels']}")
         print(f"    Velocity: {design['design_velocity']:.2f}m/s")

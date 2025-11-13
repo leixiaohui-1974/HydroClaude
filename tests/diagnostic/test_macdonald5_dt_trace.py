@@ -3,8 +3,22 @@ MacDonald Test 5 时间步长演化追踪
 
 目的：跟踪自适应dt的演化，找出失败原因
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def compute_normal_depth(Q, B, S0, n, h_guess=1.0, tol=1e-6, max_iter=100):
@@ -82,7 +96,7 @@ def test_dt_evolution_trace():
 
         # 检查dt
         if dt <= 0 or np.isnan(dt) or np.isinf(dt):
-            print(f"{step+1:<6} {solver.t:<10.2f} {dt:<10.6f} {'---':<10} {'---':<10} {'---':<10} {'---':<10} ❌ dt异常")
+            print(f"{step+1:<6} {solver.t:<10.2f} {dt:<10.6f} {'---':<10} {'---':<10} {'---':<10} {'---':<10}  dt异常")
             break
 
         # 执行时间步
@@ -95,7 +109,7 @@ def test_dt_evolution_trace():
             h_mean = np.nanmean(solver.h)
             u = solver.Q / (B * solver.h)
             u_max = np.nanmax(np.abs(u))
-            print(f"{step+1:<6} {solver.t:<10.2f} {dt:<10.6f} {h_min:<10.4f} {h_max:<10.4f} {h_mean:<10.4f} {u_max:<10.4f} ❌ NaN")
+            print(f"{step+1:<6} {solver.t:<10.2f} {dt:<10.6f} {h_min:<10.4f} {h_max:<10.4f} {h_mean:<10.4f} {u_max:<10.4f}  NaN")
             break
 
         # 正常输出
@@ -105,20 +119,20 @@ def test_dt_evolution_trace():
         u = solver.Q / (B * solver.h)
         u_max = np.max(np.abs(u))
 
-        status = "✓"
+        status = ""
 
         # 检查异常迹象
         if dt < 0.1:
-            status = "⚠ dt小"
+            status = " dt小"
         if h_min < 0.1:
-            status = "⚠ h小"
+            status = " h小"
         if h_max > 10.0:
-            status = "⚠ h大"
+            status = " h大"
         if u_max > 10.0:
-            status = "⚠ u大"
+            status = " u大"
 
         # 每步输出
-        if step < 50 or step % 10 == 0 or status != "✓":
+        if step < 50 or step % 10 == 0 or status != "":
             print(f"{step+1:<6} {solver.t:<10.2f} {dt:<10.6f} {h_min:<10.4f} {h_max:<10.4f} {h_mean:<10.4f} {u_max:<10.4f} {status:<10}")
 
     print("\n" + "="*80)
@@ -134,9 +148,9 @@ def test_dt_evolution_trace():
             max_change_idx = np.argmax(dt_changes)
             max_change = dt_changes[max_change_idx]
             if max_change > 0.5:
-                print(f"\n⚠️  dt最大突变:")
-                print(f"  位置: 步骤{max_change_idx+1} → {max_change_idx+2}")
-                print(f"  dt变化: {dt_history[max_change_idx]:.6f} → {dt_history[max_change_idx+1]:.6f}")
+                print(f"\n️  dt最大突变:")
+                print(f"  位置: 步骤{max_change_idx+1} -> {max_change_idx+2}")
+                print(f"  dt变化: {dt_history[max_change_idx]:.6f} -> {dt_history[max_change_idx+1]:.6f}")
                 print(f"  变化量: {max_change:.6f} s")
 
     print("="*80)
@@ -179,12 +193,12 @@ def test_fixed_vs_adaptive():
     for step in range(n_steps):
         solver1.step(dt_fixed)
         if np.any(np.isnan(solver1.h)):
-            print(f"❌ 固定dt失败于第{step+1}步 (t={solver1.t:.2f}s)")
+            print(f" 固定dt失败于第{step+1}步 (t={solver1.t:.2f}s)")
             failed1 = True
             break
 
     if not failed1:
-        print(f"✅ 固定dt成功：{n_steps}步 (t={solver1.t:.2f}s)")
+        print(f" 固定dt成功：{n_steps}步 (t={solver1.t:.2f}s)")
         print(f"   h_mean={np.mean(solver1.h):.4f}m, 质量误差={abs(solver1.get_mass_conservation_error()):.2f}%")
 
     # 测试2：自适应dt, CFL=0.5
@@ -202,12 +216,12 @@ def test_fixed_vs_adaptive():
         dt = solver2.compute_dt()
         solver2.step(dt)
         if np.any(np.isnan(solver2.h)):
-            print(f"❌ 自适应dt失败于第{step+1}步 (t={solver2.t:.2f}s, dt={dt:.6f}s)")
+            print(f" 自适应dt失败于第{step+1}步 (t={solver2.t:.2f}s, dt={dt:.6f}s)")
             failed2 = True
             break
 
     if not failed2:
-        print(f"✅ 自适应dt成功：{n_steps}步 (t={solver2.t:.2f}s)")
+        print(f" 自适应dt成功：{n_steps}步 (t={solver2.t:.2f}s)")
         print(f"   h_mean={np.mean(solver2.h):.4f}m, 质量误差={abs(solver2.get_mass_conservation_error()):.2f}%")
 
 

@@ -1,0 +1,252 @@
+{
+  "timestamp": "2025-11-13T07:05:23.400214",
+  "test_type": "Comprehensive Validation - Commercial Software Benchmark",
+  "total_tests": 22,
+  "total_passed": 3,
+  "total_failed": 19,
+  "pass_rate": "13.6%",
+  "categories": {
+    "标准测试 (Standard Tests)": {
+      "cases": [
+        {
+          "name": "溃坝测试 (Dam Break)",
+          "path": "tests/standard_tests/test_dam_break.py",
+          "result": {
+            "passed": false,
+            "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\tests\\standard_tests\\test_dam_break.py\", line 298, in <module>\n    test.test_dam_break_ritter()\n    ~~~~~~~~~~~",
+            "exit_code": 1
+          }
+        },
+        {
+          "name": "静水平衡 (Lake at Rest)",
+          "path": "tests/standard_tests/test_lake_at_rest.py",
+          "result": {
+            "passed": true,
+            "output_lines": 83
+          }
+        },
+        {
+          "name": "MacDonald标准案例",
+          "path": "tests/standard_tests/test_macdonald.py",
+          "result": {
+            "passed": true,
+            "output_lines": 211
+          }
+        }
+      ],
+      "passed": 2,
+      "total": 3,
+      "pass_rate": "66.7%"
+    },
+    "解析解验证 (Analytical Validation)": {
+      "cases": [
+        {
+          "name": "Ritter溃坝解析解",
+          "path": "validation_cases/analytical/dam_break_ritter.py",
+          "result": {
+            "passed": false,
+            "reason": "Timeout"
+          }
+        },
+        {
+          "name": "Godunov溃坝解析解",
+          "path": "validation_cases/analytical/dam_break_godunov.py",
+          "result": {
+            "passed": false,
+            "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\validation_cases\\analytical\\dam_break_godunov.py\", line 394, in <module>\n    compare_riemann_solvers()\n    ~~~~",
+            "exit_code": 1
+          }
+        },
+        {
+          "name": "均匀流解析解",
+          "path": "validation_cases/analytical/steady_uniform_flow.py",
+          "result": {
+            "passed": false,
+            "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\validation_cases\\analytical\\steady_uniform_flow.py\", line 367, in <module>\n    main()\n    ~~~~^^\n  File \"E:\\One",
+            "exit_code": 1
+          }
+        },
+        {
+          "name": "渐变流解析解",
+          "path": "validation_cases/analytical/gradually_varied_flow.py",
+          "result": {
+            "passed": false,
+            "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\validation_cases\\analytical\\gradually_varied_flow.py\", line 359, in <module>\n    result = validate_M1_curve()\n ",
+            "exit_code": 1
+          }
+        },
+        {
+          "name": "水跃解析解",
+          "path": "validation_cases/analytical/hydraulic_jump.py",
+          "result": {
+            "passed": false,
+            "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\validation_cases\\analytical\\hydraulic_jump.py\", line 419, in <module>\n    result = validate_hydraulic_jump()\n  ",
+            "exit_code": 1
+          }
+        }
+      ],
+      "passed": 0,
+      "total": 5,
+      "pass_rate": "0.0%"
+    },
+    "明渠流动 (Open Channel Flow)": {
+      "cases": [
+        {
+          "name": "基本明渠流",
+          "path": "examples/example_01_canal_flow/scripts/01_basic_v2.py",
+          "result": {
+            "passed": false,
+            "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_01_canal_flow\\scripts\\01_basic_v2.py\", line 376, in <module>\n    validator = main()\n  File \"E:",
+            "exit_code": 1
+          }
+        },
+        {
+          "name": "闸门明渠流",
+          "path": "examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2.py",
+          "result": {
+            "passed": false,
+            "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_01_canal_flow\\scripts\\07_sluice_gate_flow_v2.py\", line 303, in <module>\n    validator = run_sl",
+            "exit_code": 1
+          }
+        }
+      ],
+      "passed": 0,
+      "total": 2,
+      "pass_rate": "0.0%"
+    },
+    "水工结构 (Hydraulic Structures)": {
+      "cases": [
+        {
+          "name": "侧堰",
+          "path": "examples/example_side_weir.py",
+          "result": {
+            "passed": false,
+            "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_side_weir.py\", line 492, in <module>\n    main()\n    ~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHu",
+            "exit_code": 1
+          }
+        },
+        {
+          "name": "泵站",
+          "path": "examples/example_pump_station.py",
+          "result": {
+            "passed": false,
+            "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_pump_station.py\", line 310, in <module>\n    main()\n    ~~~~^^\n  File \"E:\\OneDrive\\Documents\\Gi",
+            "exit_code": 1
+          }
+        },
+        {
+          "name": "闸门模块（导入测试）",
+          "path": "solvers/gate.py",
+          "result": {
+            "passed": true,
+            "output_lines": 1
+          }
+        },
+        {
+          "name": "宽顶堰模块",
+          "path": "physics/weirs/broad_crested_weir.py",
+          "result": {
+            "passed": false,
+            "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\physics\\weirs\\broad_crested_weir.py\", line 276, in <module>\n    test_broad_crested_weir()\n    ~~~~~~~~~~~~~~~~~",
+            "exit_code": 1
+          }
+        }
+      ],
+      "passed": 1,
+      "total": 4,
+      "pass_rate": "25.0%"
+    },
+    "有压管道 (Pressurized Flow)": {
+      "cases": [
+        {
+          "name": "单管验证",
+          "path": "validation_cases/pressure_network/single_pipe_validation.py",
+          "result": {
+            "passed": false,
+            "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\validation_cases\\pressure_network\\single_pipe_validation.py\", line 472, in <module>\n    run_all_validations()\n ",
+            "exit_code": 1
+          }
+        },
+        {
+          "name": "水锤验证",
+          "path": "validation_cases/pressure_network/water_hammer_validation.py",
+          "result": {
+            "passed": false,
+            "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\validation_cases\\pressure_network\\water_hammer_validation.py\", line 336, in <module>\n    results = valve_closur",
+            "exit_code": 1
+          }
+        },
+        {
+          "name": "Hardy-Cross验证",
+          "path": "validation_cases/pressure_network/hardy_cross_validation.py",
+          "result": {
+            "passed": false,
+            "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\validation_cases\\pressure_network\\hardy_cross_validation.py\", line 94, in <module>\n    main()\n    ~~~~^^\n  File",
+            "exit_code": 1
+          }
+        }
+      ],
+      "passed": 0,
+      "total": 3,
+      "pass_rate": "0.0%"
+    },
+    "工程案例 (Engineering Cases)": {
+      "cases": [
+        {
+          "name": "灌溉渠道",
+          "path": "validation_cases/engineering/irrigation_canal/irrigation_canal_case.py",
+          "result": {
+            "passed": false,
+            "error": "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\geometry\\trapezoidal_channel.py:3: SyntaxWarning: invalid escape sequence '\\ '\n  \"\"\"\nE:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\geometry\\irregular_chan",
+            "exit_code": 1
+          }
+        },
+        {
+          "name": "洪水演进",
+          "path": "validation_cases/engineering/flood_routing/flood_routing_case.py",
+          "result": {
+            "passed": false,
+            "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\validation_cases\\engineering\\flood_routing\\flood_routing_case.py\", line 814, in <module>\n    main()\n    ~~~~^^\n",
+            "exit_code": 1
+          }
+        },
+        {
+          "name": "城市排水",
+          "path": "validation_cases/engineering/urban_drainage/urban_drainage_case.py",
+          "result": {
+            "passed": false,
+            "error": "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\validation_cases\\engineering\\urban_drainage\\urban_drainage_case.py:322: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the ",
+            "exit_code": 1
+          }
+        }
+      ],
+      "passed": 0,
+      "total": 3,
+      "pass_rate": "0.0%"
+    },
+    "控制系统 (Control Systems)": {
+      "cases": [
+        {
+          "name": "闸门操作",
+          "path": "examples/case_gate_operation.py",
+          "result": {
+            "passed": false,
+            "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\case_gate_operation.py\", line 57, in <module>\n    print(f\"\\n: {Q_design} m\\xb3/s\")\n    ~~~~~^^^^^^^^^^",
+            "exit_code": 1
+          }
+        },
+        {
+          "name": "简单闸门控制",
+          "path": "examples/phase1_simple_gate_control.py",
+          "result": {
+            "passed": false,
+            "error": "'gbk' codec can't encode character '\\u04e6' in position 187: illegal multibyte sequence"
+          }
+        }
+      ],
+      "passed": 0,
+      "total": 2,
+      "pass_rate": "0.0%"
+    }
+  }
+}

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 快速验证脚本 - 测试所有新增案例
 
@@ -44,22 +45,22 @@ def print_header(text: str):
 
 def print_success(text: str):
     """打印成功信息"""
-    print(f"{Colors.GREEN}✓{Colors.ENDC} {text}")
+    print(f"{Colors.GREEN}{Colors.ENDC} {text}")
 
 
 def print_error(text: str):
     """打印错误信息"""
-    print(f"{Colors.RED}✗{Colors.ENDC} {text}")
+    print(f"{Colors.RED}{Colors.ENDC} {text}")
 
 
 def print_warning(text: str):
     """打印警告信息"""
-    print(f"{Colors.YELLOW}⚠{Colors.ENDC} {text}")
+    print(f"{Colors.YELLOW}{Colors.ENDC} {text}")
 
 
 def print_info(text: str):
     """打印信息"""
-    print(f"{Colors.BLUE}ℹ{Colors.ENDC} {text}")
+    print(f"{Colors.BLUE}[INFO]{Colors.ENDC} {text}")
 
 
 def run_test(name: str, command: List[str], cwd: Path = None, timeout: int = 120) -> Tuple[bool, float, str]:
@@ -127,9 +128,7 @@ def main():
     print("6. 文件边界条件（1个）")
     print()
     print("总计: 15个测试")
-    print()
-
-    input("按Enter开始测试...")
+    print()# input() disabled for automated testing
 
     # 定义所有测试
     tests = [
@@ -317,13 +316,13 @@ def main():
         print(f"{category}: {passed}/{total} 通过")
 
         for name, success, elapsed in category_results:
-            status = f"{Colors.GREEN}✓{Colors.ENDC}" if success else f"{Colors.RED}✗{Colors.ENDC}"
+            status = f"{Colors.GREEN}{Colors.ENDC}" if success else f"{Colors.RED}{Colors.ENDC}"
             print(f"  {status} {name} ({elapsed:.1f}s)")
         print()
 
     # 最终结果
     if passed_tests == total_tests:
-        print_success(f"所有{total_tests}个测试通过！ 🎉")
+        print_success(f"所有{total_tests}个测试通过！ ")
         return 0
     else:
         print_error(f"{total_tests - passed_tests}个测试失败")

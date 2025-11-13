@@ -8,7 +8,13 @@ import sys
 sys.path.insert(0, '/workspace')
 
 import numpy as np
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 # 创建求解器
 solver = HydrostaticCanalSolver(use_muscl=True, muscl_limiter='minmod')

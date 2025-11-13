@@ -20,7 +20,13 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append('.')
 
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 
 
@@ -44,7 +50,7 @@ def test_single_canal_with_gate():
     gate_Cd = 0.6          # 流量系数
 
     # 流动条件
-    Q_target = 5.0         # 目标流量 (m³/s)
+    Q_target = 5.0         # 目标流量 (m^3/s)
     h_downstream = 1.5     # 下游水深 (m)
 
     print(f"\n渠道参数：")
@@ -59,7 +65,7 @@ def test_single_canal_with_gate():
     print(f"  流量系数：{gate_Cd}")
 
     print(f"\n流动条件：")
-    print(f"  目标流量：{Q_target} m³/s")
+    print(f"  目标流量：{Q_target} m^3/s")
     print(f"  下游水深：{h_downstream} m")
 
     # 创建闸门对象
@@ -101,13 +107,13 @@ def test_single_canal_with_gate():
 
     # 分析结果
     print(f"\n结果分析：")
-    print(f"  收敛状态：{'✓ 收敛' if result['converged'] else '✗ 未收敛'}）")
+    print(f"  收敛状态：{' 收敛' if result['converged'] else ' 未收敛'}）")
     print(f"  迭代次数：{result['iterations']}")
 
     # 流量守恒
     print(f"\n流量守恒：")
-    print(f"  目标流量：{Q_target:.3f} m³/s")
-    print(f"  实际流量：{result['Q_mean']:.3f} m³/s")
+    print(f"  目标流量：{Q_target:.3f} m^3/s")
+    print(f"  实际流量：{result['Q_mean']:.3f} m^3/s")
     print(f"  误差：{result['Q_error_percent']:.2f}%")
 
     # 闸门处流量验证
@@ -120,7 +126,7 @@ def test_single_canal_with_gate():
     print(f"  上游水深：{h_up:.3f} m")
     print(f"  下游水深：{h_down:.3f} m")
     print(f"  水位差：{h_up - h_down:.3f} m")
-    print(f"  闸门流量：{Q_gate:.3f} m³/s")
+    print(f"  闸门流量：{Q_gate:.3f} m^3/s")
     print(f"  流态：{flow_type}")
     print(f"  与目标流量误差：{abs(Q_gate - Q_target) / Q_target * 100:.2f}%")
 
@@ -143,7 +149,7 @@ def test_single_canal_with_gate():
     ax.axvline(gate_position, color='r', linestyle='--', linewidth=1.5,
                label=f'Gate (e={gate_opening}m)', alpha=0.7)
     ax.set_ylabel('Water depth (m)')
-    ax.set_title(f'Single Canal + Gate: Steady State (Q={Q_target} m³/s)')
+    ax.set_title(f'Single Canal + Gate: Steady State (Q={Q_target} m^3/s)')
     ax.legend()
     ax.grid(True, alpha=0.3)
 
@@ -151,11 +157,11 @@ def test_single_canal_with_gate():
     ax = axes[1]
     ax.plot(x, result['Q'], 'g-', linewidth=2, label='Discharge')
     ax.axhline(Q_target, color='k', linestyle='--', linewidth=1.5,
-               label=f'Target ({Q_target} m³/s)')
+               label=f'Target ({Q_target} m^3/s)')
     ax.axhline(Q_gate, color='r', linestyle=':', linewidth=1.5,
-               label=f'Gate discharge ({Q_gate:.2f} m³/s)')
+               label=f'Gate discharge ({Q_gate:.2f} m^3/s)')
     ax.axvline(gate_position, color='r', linestyle='--', linewidth=1.5, alpha=0.3)
-    ax.set_ylabel('Discharge (m³/s)')
+    ax.set_ylabel('Discharge (m^3/s)')
     ax.set_title(f'Discharge Distribution (error={result["Q_error_percent"]:.2f}%)')
     ax.legend()
     ax.grid(True, alpha=0.3)
@@ -184,14 +190,14 @@ def test_single_canal_with_gate():
     water_level_ok = h_up > h_down  # 上游水位应高于下游
 
     print(f"\n测试结果：")
-    print(f"  流量守恒：{'✓ PASS' if mass_ok else '✗ FAIL'} ({result['Q_error_percent']:.2f}% < 5%)")
-    print(f"  收敛性：{'✓ PASS' if converged_ok else '✗ FAIL'}")
-    print(f"  闸门流量：{'✓ PASS' if gate_flow_ok else '✗ FAIL'} ({abs(Q_gate - Q_target) / Q_target * 100:.2f}% < 5%)")
-    print(f"  水位关系：{'✓ PASS' if water_level_ok else '✗ FAIL'} (上游 > 下游)")
+    print(f"  流量守恒：{' PASS' if mass_ok else ' FAIL'} ({result['Q_error_percent']:.2f}% < 5%)")
+    print(f"  收敛性：{' PASS' if converged_ok else ' FAIL'}")
+    print(f"  闸门流量：{' PASS' if gate_flow_ok else ' FAIL'} ({abs(Q_gate - Q_target) / Q_target * 100:.2f}% < 5%)")
+    print(f"  水位关系：{' PASS' if water_level_ok else ' FAIL'} (上游 > 下游)")
 
     overall_pass = mass_ok and converged_ok and gate_flow_ok and water_level_ok
 
-    print(f"\n总体结论：{'✓✓✓ 测试通过' if overall_pass else '✗✗✗ 测试失败'}）")
+    print(f"\n总体结论：{' 测试通过' if overall_pass else ' 测试失败'}）")
     print("=" * 70)
 
     return overall_pass, result

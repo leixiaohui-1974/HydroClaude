@@ -21,9 +21,11 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 from solvers.godunov_fvm_solver import GodunvFVMSolver
-from solvers.godunov_fvm_weno3_v2 import GodunvFVMWENO3V2
+from solvers.godunov_fvm_weno3_v2 import GodunovFVMWENO3V2
 
 
 def run_dambreak(solver, solver_name: str, T_sim: float = 5.0):
@@ -45,7 +47,7 @@ def run_dambreak(solver, solver_name: str, T_sim: float = 5.0):
     # 初始条件：Dam Break
     # 左侧：h=2.0m（高水位）
     # 右侧：h=0.5m（低水位）
-    # 瞬间移除水坝 → 激波+稀疏波
+    # 瞬间移除水坝 -> 激波+稀疏波
     
     n_cells = solver.n_cells
     x_mid = solver.L / 2.0
@@ -65,7 +67,19 @@ def run_dambreak(solver, solver_name: str, T_sim: float = 5.0):
     bc_left = {'type': 'transmissive'}
     bc_right = {'type': 'transmissive'}
     
-    solver.initialize(h_init, Q_init, bc_left, bc_right)
+    # GodunvFVMSolver需要手动初始化
+
+    
+    solver.h = h_init.copy()
+
+    
+    solver.Q = Q_init.copy()
+
+    
+    solver.bc_left = bc_left
+
+    
+    solver.bc_right = bc_right
     
     print(f"  初始条件: 左侧h={2.0}m, 右侧h={0.5}m (Dam Break)")
     print(f"  模拟时间: {T_sim}s")
@@ -87,7 +101,7 @@ def run_dambreak(solver, solver_name: str, T_sim: float = 5.0):
             
             # 检查NaN
             if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
-                print(f"  ⚠️ 第{step}步出现NaN，模拟终止")
+                print(f"   第{step}步出现NaN，模拟终止")
                 success = False
                 break
             
@@ -99,12 +113,12 @@ def run_dambreak(solver, solver_name: str, T_sim: float = 5.0):
                       f"mass_err={mass_error:.4f}%")
         
         except Exception as e:
-            print(f"  ❌ 求解器错误: {e}")
+            print(f"   求解器错误: {e}")
             success = False
             break
     
     if success:
-        print(f"  ✅ 模拟成功完成")
+        print(f"   模拟成功完成")
         mass_current = np.sum(solver.h * solver.B * solver.dx)
         mass_error = (mass_current - solver.initial_mass) / solver.initial_mass * 100
         print(f"  最终: t={t:.2f}s, 步{step}")
@@ -135,14 +149,14 @@ def main():
         n_cells=n_cells,
         manning_n=n,
         slope=S0,
-        cfl=0.5,
+        cfl = 0.3,
         order=1  # 一阶
     )
     
     t1, x1, h1, Q1, success1 = run_dambreak(solver1, "Phase 1 (一阶FVM)", T_sim=5.0)
     
     # ===== 2. WENO-3 求解器 =====
-    solver3 = GodunvFVMWENO3V2(
+    solver3 = GodunovFVMWENO3V2(
         width=B,
         length=L,
         n_cells=n_cells,
@@ -160,13 +174,13 @@ def main():
     print(f"{'='*70}")
     
     print(f"\n一阶FVM:")
-    print(f"  成功: {'✅' if success1 else '❌'}")
+    print(f"  成功: {'' if success1 else ''}")
     if success1:
         mass_error1 = (np.sum(solver1.h * solver1.B * solver1.dx) - solver1.initial_mass) / solver1.initial_mass * 100
         print(f"  质量误差: {mass_error1:.4f}%")
     
     print(f"\nWENO-3:")
-    print(f"  成功: {'✅' if success3 else '❌'}")
+    print(f"  成功: {'' if success3 else ''}")
     if success3:
         mass_error3 = (np.sum(solver3.h * solver3.B * solver3.dx) - solver3.initial_mass) / solver3.initial_mass * 100
         print(f"  质量误差: {mass_error3:.4f}%")
@@ -198,7 +212,7 @@ def main():
         
         ax.axvline(L/2, color='k', linestyle=':', alpha=0.5, label='初始Dam位置')
         ax.set_xlabel('x (m)', fontsize=12)
-        ax.set_ylabel('流量 Q (m³/s)', fontsize=12)
+        ax.set_ylabel('流量 Q (m^3/s)', fontsize=12)
         ax.set_title('Dam Break - 流量分布', fontsize=14, fontweight='bold')
         ax.legend(fontsize=11)
         ax.grid(True, alpha=0.3)
@@ -208,10 +222,10 @@ def main():
         # 保存
         output_path = 'weno3_dambreak_comparison.png'
         plt.savefig(output_path, dpi=150, bbox_inches='tight')
-        print(f"\n✅ 图表已保存: {output_path}")
+        print(f"\n 图表已保存: {output_path}")
         
         # 显示（如果在交互环境）
-        # plt.show()
+        # # plt.show()  # Disabled for automated testing
     
     # ===== 5. 总结 =====
     print(f"\n{'='*70}")
@@ -219,7 +233,7 @@ def main():
     print(f"{'='*70}")
     
     if success1 and success3:
-        print("✅ 两种求解器均成功完成Dam Break模拟")
+        print(" 两种求解器均成功完成Dam Break模拟")
         print("\n精度对比:")
         mass_error1 = (np.sum(solver1.h * solver1.B * solver1.dx) - solver1.initial_mass) / solver1.initial_mass * 100
         mass_error3 = (np.sum(solver3.h * solver3.B * solver3.dx) - solver3.initial_mass) / solver3.initial_mass * 100
@@ -227,21 +241,21 @@ def main():
         print(f"  WENO-3:   质量误差 {mass_error3:.4f}%")
         
         if abs(mass_error3) < abs(mass_error1):
-            print("\n🎉 WENO-3精度优于一阶FVM!")
+            print("\n WENO-3精度优于一阶FVM!")
         else:
-            print("\n⚠️ WENO-3精度未体现优势，可能需要进一步调优")
+            print("\n WENO-3精度未体现优势，可能需要进一步调优")
     
     elif success1 and not success3:
-        print("⚠️ 一阶FVM成功，但WENO-3失败")
-        print("   → WENO-3仍需调试")
+        print(" 一阶FVM成功，但WENO-3失败")
+        print("   -> WENO-3仍需调试")
     
     elif not success1 and success3:
-        print("✅ WENO-3成功，一阶FVM失败")
-        print("   → WENO-3在极端条件下更稳定!")
+        print(" WENO-3成功，一阶FVM失败")
+        print("   -> WENO-3在极端条件下更稳定!")
     
     else:
-        print("❌ 两种求解器均失败")
-        print("   → 问题可能在测试参数设置")
+        print(" 两种求解器均失败")
+        print("   -> 问题可能在测试参数设置")
 
 
 if __name__ == '__main__':

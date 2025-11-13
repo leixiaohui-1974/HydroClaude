@@ -20,7 +20,7 @@ def cmd_init():
     """Initialize database (create tables)"""
     print("Initializing database...")
     init_db()
-    print("✓ Database initialized successfully")
+    print("[OK] Database initialized successfully")
 
 
 def cmd_drop():
@@ -29,7 +29,7 @@ def cmd_drop():
     if response.lower() == 'yes':
         print("Dropping all tables...")
         drop_db()
-        print("✓ All tables dropped")
+        print("[OK] All tables dropped")
     else:
         print("Cancelled")
 
@@ -40,7 +40,7 @@ def cmd_reset():
     if response.lower() == 'yes':
         print("Resetting database...")
         reset_db()
-        print("✓ Database reset successfully")
+        print("[OK] Database reset successfully")
     else:
         print("Cancelled")
 
@@ -167,7 +167,7 @@ def cmd_delete(task_id):
         response = input(f"Delete simulation '{sim.name}' ({task_id})? (yes/no): ")
         if response.lower() == 'yes':
             crud.delete_simulation(db, task_id)
-            print(f"✓ Simulation {task_id} deleted")
+            print(f"[OK] Simulation {task_id} deleted")
         else:
             print("Cancelled")
 

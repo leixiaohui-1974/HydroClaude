@@ -128,11 +128,11 @@ class SteadyEstimator:
 
         if result['converged']:
             if verbose:
-                print(f"\n✓ 稳态求解成功收敛")
+                print(f"\n 稳态求解成功收敛")
                 print(f"  迭代次数: {result['iterations']}")
                 print(f"  流量误差: {result.get('final_flow_error', 0):.6f}%")
         else:
-            print(f"\n⚠ 稳态求解未完全收敛，但可作为初值")
+            print(f"\n 稳态求解未完全收敛，但可作为初值")
             print(f"  已执行迭代: {result['iterations']}")
 
         if verbose:

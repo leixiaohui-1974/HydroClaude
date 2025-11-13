@@ -49,7 +49,7 @@ class TestMacDonald:
         - 底坡: 0.002 (S0 = 0.002)
         - Manning系数: 0.03
         - 下游边界: 固定水深 h = 3.0 m
-        - 上游边界: 固定流量 Q = 2.0 m³/s
+        - 上游边界: 固定流量 Q = 2.0 m^3/s
 
         物理现象：
         - 下游水深大于临界水深和正常水深
@@ -69,7 +69,7 @@ class TestMacDonald:
         B = 1.0      # 渠宽 (m)
         S0 = 0.002   # 底坡
         n = 0.03     # Manning系数
-        Q = 2.0      # 上游流量 (m³/s)
+        Q = 2.0      # 上游流量 (m^3/s)
         h_d = 3.0    # 下游水深 (m)
 
         n_cells = 100  # 网格单元数
@@ -78,7 +78,7 @@ class TestMacDonald:
         # 计算特征水深
         g = 9.81
 
-        # 临界水深: h_c = (Q²/(g*B²))^(1/3)
+        # 临界水深: h_c = (Q^2/(g*B^2))^(1/3)
         h_c = (Q**2 / (g * B**2))**(1/3)
 
         # 正常水深: 使用Manning公式迭代求解
@@ -95,13 +95,13 @@ class TestMacDonald:
         print(f"  底坡 S0 = {S0}")
         print(f"  Manning系数 n = {n}")
         print(f"\n边界条件:")
-        print(f"  上游流量 Q = {Q:.2f} m³/s")
+        print(f"  上游流量 Q = {Q:.2f} m^3/s")
         print(f"  下游水深 h = {h_d:.2f} m")
         print(f"\n特征水深:")
         print(f"  临界水深 h_c = {h_c:.3f} m")
         print(f"  正常水深 h_n = {h_n:.3f} m")
         print(f"  下游水深 h_d = {h_d:.3f} m")
-        print(f"\n分析：h_d > h_n > h_c → M1曲线（缓流区壅水）")
+        print(f"\n分析：h_d > h_n > h_c -> M1曲线（缓流区壅水）")
         print()
 
         # 验证这是M1曲线
@@ -250,11 +250,11 @@ class TestMacDonald:
             # 1. 物理合理性检查
             assert np.all(Fr < 1.0), \
                 f"应该全部为缓流(Fr < 1)，但发现急流区域"
-            print("✅ 物理合理性：全部为缓流区域 (Fr < 1)")
+            print(" 物理合理性：全部为缓流区域 (Fr < 1)")
 
             assert h_final[-1] > h_final[0], \
                 f"下游水深应高于上游，但实际：下游={h_final[-1]:.3f} < 上游={h_final[0]:.3f}"
-            print("✅ 水面形态：下游高于上游（壅水曲线）")
+            print(" 水面形态：下游高于上游（壅水曲线）")
 
             # 2. 边界条件检查
             # 下游h边界：允许一定偏差（< 5%或0.1m）
@@ -262,35 +262,35 @@ class TestMacDonald:
             h_boundary_error_pct = h_boundary_error / h_d * 100
             assert h_boundary_error < 0.1 or h_boundary_error_pct < 5.0, \
                 f"下游水深偏差过大：{h_final[-1]:.3f} vs {h_d:.3f} (偏差{h_boundary_error:.4f}m, {h_boundary_error_pct:.2f}%)"
-            print(f"✅ 下游边界：h = {h_final[-1]:.3f} m (目标 {h_d:.3f} m, 偏差 {h_boundary_error:.4f}m)")
+            print(f" 下游边界：h = {h_final[-1]:.3f} m (目标 {h_d:.3f} m, 偏差 {h_boundary_error:.4f}m)")
 
             Q_avg = np.mean(Q_final)
             assert abs(Q_avg - Q) / Q < 0.01, \
                 f"流量守恒不满足：平均流量 {Q_avg:.3f} ≠ {Q:.3f}"
-            print(f"✅ 流量守恒：Q = {Q_avg:.3f} m³/s (目标 {Q:.3f} m³/s)")
+            print(f" 流量守恒：Q = {Q_avg:.3f} m^3/s (目标 {Q:.3f} m^3/s)")
 
             # 3. 数值精度检查
             # Test 1 也有h边界，质量会因为边界维持而变化
             # 放宽标准到10%，重点验证物理性质正确性
             print(f"\n质量守恒分析:")
-            print(f"  初始质量: {initial_mass:.2f} m³")
-            print(f"  最终质量: {final_mass:.2f} m³")
-            print(f"  质量变化: {(final_mass - initial_mass):.2f} m³ ({mass_error:.2f}%)")
+            print(f"  初始质量: {initial_mass:.2f} m^3")
+            print(f"  最终质量: {final_mass:.2f} m^3")
+            print(f"  质量变化: {(final_mass - initial_mass):.2f} m^3 ({mass_error:.2f}%)")
 
             assert mass_error < 10.0, \
                 f"质量守恒误差过大：{mass_error:.6f}% > 10.0%"
             if mass_error < 2.0:
-                print(f"✅ 质量守恒：误差 {mass_error:.6f}% < 2.0% (优秀)")
+                print(f" 质量守恒：误差 {mass_error:.6f}% < 2.0% (优秀)")
             else:
-                print(f"⚠️  质量守恒：误差 {mass_error:.6f}% < 10.0% (可接受，h边界影响)")
+                print(f"️  质量守恒：误差 {mass_error:.6f}% < 10.0% (可接受，h边界影响)")
 
             if h_analytical is not None:
                 assert np.max(rel_error) < 2.0, \
                     f"与解析解误差过大：{np.max(rel_error):.2f}% > 2.0%"
-                print(f"✅ 数值精度：最大相对误差 {np.max(rel_error):.2f}% < 2.0%")
+                print(f" 数值精度：最大相对误差 {np.max(rel_error):.2f}% < 2.0%")
 
             print("\n" + "="*80)
-            print("✅ MacDonald Test 1 通过：M1壅水曲线计算准确")
+            print(" MacDonald Test 1 通过：M1壅水曲线计算准确")
             print("="*80)
 
         finally:
@@ -354,7 +354,7 @@ class TestMacDonald:
         计算壅水曲线的解析解（使用直接步长法 Direct Step Method）
 
         基于水面曲线方程：
-        dh/dx = (S0 - Sf) / (1 - Fr²)
+        dh/dx = (S0 - Sf) / (1 - Fr^2)
 
         从下游已知水深向上游逐步积分
         """
@@ -377,7 +377,7 @@ class TestMacDonald:
             u = Q / A
             Fr = u / np.sqrt(g * h)
 
-            # 摩阻坡度 Sf = (n*u)² / R^(4/3)
+            # 摩阻坡度 Sf = (n*u)^2 / R^(4/3)
             Sf = (n * u)**2 / R**(4/3)
 
             # 水面曲线方程
@@ -406,7 +406,7 @@ class TestMacDonald:
         - 渠宽: 1.0 m (矩形断面)
         - 底坡: 0.002 (S0 = 0.002, 缓坡)
         - Manning系数: 0.03
-        - 上游边界: 固定流量 Q = 2.0 m³/s
+        - 上游边界: 固定流量 Q = 2.0 m^3/s
         - 下游边界: 临界水深 h = h_c
 
         物理现象：
@@ -418,7 +418,7 @@ class TestMacDonald:
         验证标准：
         - 与解析解对比，相对误差 < 2%
         - 质量守恒误差 < 2%
-        - Froude数分布合理 (上游Fr→0, 下游Fr→1)
+        - Froude数分布合理 (上游Fr->0, 下游Fr->1)
 
         参考：MacDonald et al. (1997) Figure 3
         """
@@ -428,7 +428,7 @@ class TestMacDonald:
         B = 1.0      # 渠宽 (m)
         S0 = 0.002   # 底坡
         n = 0.03     # Manning系数
-        Q = 2.0      # 流量 (m³/s)
+        Q = 2.0      # 流量 (m^3/s)
 
         n_cells = 100  # 网格单元数
         dx = L / n_cells
@@ -451,12 +451,12 @@ class TestMacDonald:
         print(f"  底坡 S0 = {S0}")
         print(f"  Manning系数 n = {n}")
         print(f"\n边界条件:")
-        print(f"  上游流量 Q = {Q:.2f} m³/s")
+        print(f"  上游流量 Q = {Q:.2f} m^3/s")
         print(f"  下游水深 h = {h_c:.3f} m (临界水深)")
         print(f"\n特征水深:")
         print(f"  临界水深 h_c = {h_c:.3f} m")
         print(f"  正常水深 h_n = {h_n:.3f} m")
-        print(f"\n分析：h_n > h > h_c → M2曲线（缓流区下降）")
+        print(f"\n分析：h_n > h > h_c -> M2曲线（缓流区下降）")
         print()
 
         # 验证这是M2曲线的条件
@@ -514,7 +514,7 @@ class TestMacDonald:
             },
             'simulation': {
                 'start_time': 0.0,
-                'end_time': 8000.0,  # M2曲线需要较长时间达到稳态（τ_total ≈ 5000-7500s）
+                'end_time': 8000.0,  # M2曲线需要较长时间达到稳态（τ_total ~= 5000-7500s）
                 'max_steps': 200000,
                 'output_interval': 400.0
             },
@@ -605,35 +605,35 @@ class TestMacDonald:
             # M2曲线：水深从上游向下游降低
             assert h_final[0] > h_final[-1], \
                 f"上游水深应高于下游，但实际：上游={h_final[0]:.3f} < 下游={h_final[-1]:.3f}"
-            print("✅ 水面形态：上游高于下游（下降曲线）")
+            print(" 水面形态：上游高于下游（下降曲线）")
 
             # 水深应该在h_c和h_n之间
             assert np.all(h_final >= h_c * 0.95), \
                 f"水深不应低于临界水深，最小值={np.min(h_final):.3f} < h_c={h_c:.3f}"
             assert np.all(h_final <= h_n * 1.05), \
                 f"水深不应高于正常水深，最大值={np.max(h_final):.3f} > h_n={h_n:.3f}"
-            print(f"✅ 水深范围：h_c ({h_c:.3f}m) < h < h_n ({h_n:.3f}m)")
+            print(f" 水深范围：h_c ({h_c:.3f}m) < h < h_n ({h_n:.3f}m)")
 
             # Froude数应该从小于1逐渐接近1
             assert Fr[0] < Fr[-1], \
                 f"Froude数应该向下游增大，但实际：上游={Fr[0]:.3f} > 下游={Fr[-1]:.3f}"
             assert Fr[-1] > 0.5, \
                 f"下游Froude数应较高（接近临界），但实际={Fr[-1]:.3f}"
-            print(f"✅ Froude数分布：上游 {Fr[0]:.3f} → 下游 {Fr[-1]:.3f} (向临界过渡)")
+            print(f" Froude数分布：上游 {Fr[0]:.3f} -> 下游 {Fr[-1]:.3f} (向临界过渡)")
 
             # 2. 边界条件检查
             # 使用Q-Q边界条件，下游水深应自然趋向临界水深
             assert abs(h_final[-1] - h_c) / h_c < 0.15, \
                 f"下游水深应接近临界水深：{h_final[-1]:.3f} vs h_c={h_c:.3f}"
-            print(f"✅ 下游边界：h = {h_final[-1]:.3f} m (接近h_c={h_c:.3f}m)")
+            print(f" 下游边界：h = {h_final[-1]:.3f} m (接近h_c={h_c:.3f}m)")
 
             Q_avg = np.mean(Q_final)
             assert abs(Q_avg - Q) / Q < 0.02, \
                 f"流量守恒不满足：平均流量 {Q_avg:.3f} ≠ {Q:.3f}"
-            print(f"✅ 流量守恒：Q = {Q_avg:.3f} m³/s (目标 {Q:.3f} m³/s)")
+            print(f" 流量守恒：Q = {Q_avg:.3f} m^3/s (目标 {Q:.3f} m^3/s)")
 
             # 3. 数值精度检查
-            # M2曲线收敛到稳态需要很长时间（τ_total ≈ 5000-7500s）
+            # M2曲线收敛到稳态需要很长时间（τ_total ~= 5000-7500s）
             # 在过渡期，质量会因为流入≠流出而变化，这是正常物理现象
             # 真正的数值误差（通量守恒）< 1%，已通过诊断验证
             # 参考：docs/MACDONALD_TEST2_FINAL_DIAGNOSIS.md
@@ -644,9 +644,9 @@ class TestMacDonald:
             # 3. 数值方法稳定（不出现非物理振荡）
 
             print(f"\n质量守恒分析:")
-            print(f"  初始质量: {initial_mass:.2f} m³")
-            print(f"  最终质量: {final_mass:.2f} m³")
-            print(f"  质量变化: {(final_mass - initial_mass):.2f} m³ ({mass_error:.2f}%)")
+            print(f"  初始质量: {initial_mass:.2f} m^3")
+            print(f"  最终质量: {final_mass:.2f} m^3")
+            print(f"  质量变化: {(final_mass - initial_mass):.2f} m^3 ({mass_error:.2f}%)")
             print(f"  说明: 质量变化是h边界维持临界水深的正常物理行为")
             print(f"  参考: docs/MACDONALD_TEST2_FINAL_DIAGNOSIS.md")
 
@@ -655,15 +655,15 @@ class TestMacDonald:
                 f"质量异常减少：{final_mass} < {initial_mass * 0.5}"
             assert final_mass < initial_mass * 5.0, \
                 f"质量异常增加：{final_mass} > {initial_mass * 5.0}"
-            print(f"✅ 质量变化合理：在预期范围内")
+            print(f" 质量变化合理：在预期范围内")
 
             if h_analytical is not None:
                 assert np.max(rel_error) < 5.0, \
                     f"与解析解误差过大：{np.max(rel_error):.2f}% > 5.0%"
-                print(f"✅ 数值精度：最大相对误差 {np.max(rel_error):.2f}% < 5.0%")
+                print(f" 数值精度：最大相对误差 {np.max(rel_error):.2f}% < 5.0%")
 
             print("\n" + "="*80)
-            print("✅ MacDonald Test 2 通过：M2下降曲线计算准确")
+            print(" MacDonald Test 2 通过：M2下降曲线计算准确")
             print("="*80)
 
         finally:
@@ -708,7 +708,7 @@ class TestMacDonald:
             # 摩阻坡度
             Sf = (n * u)**2 / R**(4/3)
 
-            # 水面曲线方程：dh/dx = (S0 - Sf) / (1 - Fr²)
+            # 水面曲线方程：dh/dx = (S0 - Sf) / (1 - Fr^2)
             dh_dx = (S0 - Sf) / (1 - Fr**2)
 
             # 向下游推进
@@ -926,23 +926,23 @@ class TestMacDonald:
             # 1. 物理合理性检查
             assert np.max(h_final) <= h_left * 1.05, \
                 f"最大水深不应超过初始水深：{np.max(h_final):.3f} > {h_left:.3f}"
-            print(f"✅ 物理合理性：最大水深 {np.max(h_final):.3f}m <= 初始水深 {h_left:.3f}m")
+            print(f" 物理合理性：最大水深 {np.max(h_final):.3f}m <= 初始水深 {h_left:.3f}m")
 
             # 检查是否有接近初始干床深度的区域（考虑极浅水初始条件）
             assert np.any(h_final < h_right * 2), \
                 f"应该仍有近干床区域存在（h < {h_right*2}）"
-            print(f"✅ 干湿边界：成功保持近干床区域（最小h={np.min(h_final):.6f}m）")
+            print(f" 干湿边界：成功保持近干床区域（最小h={np.min(h_final):.6f}m）")
 
             # 2. 波传播验证
             wet_front_error_percent = abs(wet_front_numerical - wet_front_theory) / wet_front_theory * 100
             assert wet_front_error_percent < 10.0, \
                 f"湿前缘位置误差过大：{wet_front_error_percent:.2f}% > 10%"
-            print(f"✅ 波传播：湿前缘位置误差 {wet_front_error_percent:.2f}% < 10%")
+            print(f" 波传播：湿前缘位置误差 {wet_front_error_percent:.2f}% < 10%")
 
             # 3. 数值精度检查
             assert mass_error < 1.0, \
                 f"质量守恒误差过大：{mass_error:.6f}% > 1.0%"
-            print(f"✅ 质量守恒：误差 {mass_error:.6f}% < 1.0%")
+            print(f" 质量守恒：误差 {mass_error:.6f}% < 1.0%")
 
             if h_analytical is not None and np.any(wet_mask):
                 # 溃坝问题：一阶格式数值扩散大，浅水区相对误差高，放宽标准
@@ -950,10 +950,10 @@ class TestMacDonald:
                 rms_error_percent = np.sqrt(np.mean(abs_error**2)) / h_left * 100
                 assert rms_error_percent < 50.0, \
                     f"RMS误差过大：{rms_error_percent:.2f}% > 50%"
-                print(f"✅ 数值精度：RMS误差 {np.sqrt(np.mean(abs_error**2)):.3f}m ({rms_error_percent:.1f}% of h0)")
+                print(f" 数值精度：RMS误差 {np.sqrt(np.mean(abs_error**2)):.3f}m ({rms_error_percent:.1f}% of h0)")
 
             print("\n" + "="*80)
-            print("✅ MacDonald Test 3 通过：溃坝波与干湿边界处理正确")
+            print(" MacDonald Test 3 通过：溃坝波与干湿边界处理正确")
             print("="*80)
 
         finally:
@@ -1025,9 +1025,9 @@ MacDonald Test 4（无摩阻水跃）需要混合流态求解器，WENO3格式�
    - 明确承认"当流态经过临界深度时，大多数非恒定流求解算法会变得不稳定"
 
 **WENO3适用范围**：
-✅ 实际河道（有摩阻，n≥0.01）- 质量误差<5%
-✅ MacDonald Tests 1,2,3,5（通过率100%）
-❌ 无摩阻强水跃（病态工况，不代表实际应用）
+ 实际河道（有摩阻，n>=0.01）- 质量误差<5%
+ MacDonald Tests 1,2,3,5（通过率100%）
+ 无摩阻强水跃（病态工况，不代表实际应用）
 
 **解决方案**：
 - 短期：文档化局限性（已完成）
@@ -1043,13 +1043,13 @@ MacDonald Test 4（无摩阻水跃）需要混合流态求解器，WENO3格式�
         - 渠宽: 10.0 m (矩形断面)
         - 底坡: 0.0 (水平河床)
         - Manning系数: 0.0 (无摩阻，理想情况)
-        - 上游边界: 急流 h=0.5m, Q=20m³/s (Fr>1)
+        - 上游边界: 急流 h=0.5m, Q=20m^3/s (Fr>1)
         - 下游边界: 缓流 h=2.5m (Fr<1)
 
         物理现象：
         - 急流向缓流转换
         - 形成驻波激波（水跃）
-        - 满足Belanger方程：h2/h1 = 0.5*(-1+sqrt(1+8*Fr1²))
+        - 满足Belanger方程：h2/h1 = 0.5*(-1+sqrt(1+8*Fr1^2))
         - 能量耗散
 
         验证标准：
@@ -1071,7 +1071,7 @@ MacDonald Test 4（无摩阻水跃）需要混合流态求解器，WENO3格式�
 
         # 上游条件：急流（调整参数以获得更稳定的边界条件）
         h_upstream = 0.7   # 上游水深 (m)
-        Q = 20.0           # 流量 (m³/s)
+        Q = 20.0           # 流量 (m^3/s)
 
         # 下游条件：缓流
         h_downstream = 2.8  # 下游水深 (m)
@@ -1097,7 +1097,7 @@ MacDonald Test 4（无摩阻水跃）需要混合流态求解器，WENO3格式�
         print(f"  底坡 S0 = {S0}")
         print(f"  Manning系数 n = {n} (无摩阻)")
         print(f"\n流动条件:")
-        print(f"  流量 Q = {Q:.1f} m³/s")
+        print(f"  流量 Q = {Q:.1f} m^3/s")
         print(f"  上游水深 h1 = {h_upstream:.2f} m")
         print(f"  下游水深 h3 = {h_downstream:.2f} m")
         print(f"\n上游Froude数分析:")
@@ -1245,7 +1245,7 @@ MacDonald Test 4（无摩阻水跃）需要混合流态求解器，WENO3格式�
             print(f"  下游状态: {'急流 (Fr > 1)' if Fr[-20:].mean() > 1 else '缓流 (Fr < 1)'}")
 
             print(f"\n水跃特征:")
-            print(f"  水跃位置: x ≈ {jump_position:.1f} m")
+            print(f"  水跃位置: x ~= {jump_position:.1f} m")
             print(f"  跃前水深: h1 = {h_before_jump:.3f} m")
             print(f"  跃后水深: h2 = {h_after_jump:.3f} m")
             print(f"  水深比: h2/h1 = {h_after_jump/h_before_jump:.3f}")
@@ -1268,30 +1268,30 @@ MacDonald Test 4（无摩阻水跃）需要混合流态求解器，WENO3格式�
 
             assert Fr_upstream_avg > 0.8, \
                 f"上游应为急流或接近临界：Fr={Fr_upstream_avg:.3f} < 0.8"
-            print(f"✅ 上游流态：Fr = {Fr_upstream_avg:.3f} (急流或接近临界)")
+            print(f" 上游流态：Fr = {Fr_upstream_avg:.3f} (急流或接近临界)")
 
             assert Fr_downstream_avg < 1.2, \
                 f"下游应为缓流或接近临界：Fr={Fr_downstream_avg:.3f} > 1.2"
-            print(f"✅ 下游流态：Fr = {Fr_downstream_avg:.3f} (缓流或接近临界)")
+            print(f" 下游流态：Fr = {Fr_downstream_avg:.3f} (缓流或接近临界)")
 
             # 2. 水跃特征检查
             assert h_after_jump > h_before_jump, \
                 f"跃后水深应大于跃前：h2={h_after_jump:.3f} <= h1={h_before_jump:.3f}"
-            print(f"✅ 水跃形态：h2 ({h_after_jump:.3f}m) > h1 ({h_before_jump:.3f}m)")
+            print(f" 水跃形态：h2 ({h_after_jump:.3f}m) > h1 ({h_before_jump:.3f}m)")
 
             # 3. Belanger方程验证（放宽标准，因为有数值扩散）
             belanger_error = abs(h_after_jump - h2_theory) / h2_theory * 100
             assert belanger_error < 30.0, \
                 f"Belanger方程误差过大：{belanger_error:.1f}% > 30%"
-            print(f"✅ Belanger关系：误差 {belanger_error:.1f}% < 30%")
+            print(f" Belanger关系：误差 {belanger_error:.1f}% < 30%")
 
             # 4. 质量守恒
             assert mass_error < 1.0, \
                 f"质量守恒误差过大：{mass_error:.6f}% > 1.0%"
-            print(f"✅ 质量守恒：误差 {mass_error:.6f}% < 1.0%")
+            print(f" 质量守恒：误差 {mass_error:.6f}% < 1.0%")
 
             print("\n" + "="*80)
-            print("✅ MacDonald Test 4 通过：水跃激波捕捉正确")
+            print(" MacDonald Test 4 通过：水跃激波捕捉正确")
             print("="*80)
 
         finally:
@@ -1313,7 +1313,7 @@ MacDonald Test 4（无摩阻水跃）需要混合流态求解器，WENO3格式�
         - 渠宽: 10.0 m (矩形断面)
         - 底坡: 0.0 (水平河床)
         - Manning系数: 0.03 (实际河道摩阻)
-        - 上游边界: 急流 h=0.7m, Q=20m³/s (Fr>1)
+        - 上游边界: 急流 h=0.7m, Q=20m^3/s (Fr>1)
         - 下游边界: 缓流 h=2.8m (Fr<1)
 
         预期结果：
@@ -1350,7 +1350,7 @@ MacDonald Test 4（无摩阻水跃）需要混合流态求解器，WENO3格式�
         print(f"  底坡 S0 = {S0}")
         print(f"  Manning系数 n = {n} (实际河道)")
         print(f"\n流动条件:")
-        print(f"  流量 Q = {Q:.1f} m³/s")
+        print(f"  流量 Q = {Q:.1f} m^3/s")
         print(f"  上游水深 h1 = {h_upstream:.2f} m")
         print(f"  下游水深 h3 = {h_downstream:.2f} m")
         print(f"\n上游Froude数分析:")
@@ -1360,8 +1360,8 @@ MacDonald Test 4（无摩阻水跃）需要混合流态求解器，WENO3格式�
         print(f"\n理论水跃后水深（Belanger方程）:")
         print(f"  h2 = {h2_theory:.3f} m")
         print(f"\n关键区别:")
-        print(f"  ✅ 使用n={n}（实际河道）而非n=0（理想工况）")
-        print(f"  ✅ 摩阻提供物理耗散，有助于数值稳定")
+        print(f"   使用n={n}（实际河道）而非n=0（理想工况）")
+        print(f"   摩阻提供物理耗散，有助于数值稳定")
         print("="*80)
 
         # 创建初始条件文件
@@ -1470,8 +1470,8 @@ MacDonald Test 4（无摩阻水跃）需要混合流态求解器，WENO3格式�
             mass_error = abs(mass_final - mass_init) / mass_init * 100
 
             print(f"\n质量守恒:")
-            print(f"  初始质量: {mass_init:.2f} m³")
-            print(f"  最终质量: {mass_final:.2f} m³")
+            print(f"  初始质量: {mass_init:.2f} m^3")
+            print(f"  最终质量: {mass_final:.2f} m^3")
             print(f"  误差: {mass_error:.2f}%")
 
             # 2. 上游Froude数
@@ -1483,7 +1483,7 @@ MacDonald Test 4（无摩阻水跃）需要混合流态求解器，WENO3格式�
             print(f"  h = {h_up_final:.3f} m")
             print(f"  u = {u_up_final:.3f} m/s")
             print(f"  Fr = {Fr_up_final:.3f}")
-            print(f"  状态: {'急流 ✅' if Fr_up_final > 1.0 else '缓流 ❌'}")
+            print(f"  状态: {'急流 ' if Fr_up_final > 1.0 else '缓流 '}")
 
             # 3. 下游状态
             h_down_final = h_final[-1]
@@ -1494,51 +1494,51 @@ MacDonald Test 4（无摩阻水跃）需要混合流态求解器，WENO3格式�
             print(f"  h = {h_down_final:.3f} m")
             print(f"  u = {u_down_final:.3f} m/s")
             print(f"  Fr = {Fr_down_final:.3f}")
-            print(f"  状态: {'缓流 ✅' if Fr_down_final < 1.0 else '急流 ❌'}")
+            print(f"  状态: {'缓流 ' if Fr_down_final < 1.0 else '急流 '}")
 
             # 4. 检查负流量
             n_negative = np.sum(Q_final < 0)
             min_Q = np.min(Q_final)
 
             if n_negative > 0:
-                print(f"\n⚠️  警告: {n_negative}个单元出现负流量（最小Q={min_Q:.3f}）")
+                print(f"\n️  警告: {n_negative}个单元出现负流量（最小Q={min_Q:.3f}）")
             else:
-                print(f"\n✅ 无负流量（最小Q={min_Q:.3f}）")
+                print(f"\n 无负流量（最小Q={min_Q:.3f}）")
 
             # 5. h和Q范围
             print(f"\n最终场统计:")
             print(f"  h范围: [{np.min(h_final):.3f}, {np.max(h_final):.3f}] m")
-            print(f"  Q范围: [{np.min(Q_final):.3f}, {np.max(Q_final):.3f}] m³/s")
+            print(f"  Q范围: [{np.min(Q_final):.3f}, {np.max(Q_final):.3f}] m^3/s")
 
             # 验证
             print(f"\n验证标准（实际工况）:")
 
             # 1. 模拟完成
             assert solver.t >= 45.0, f"模拟未完成：t={solver.t:.2f}s < 45s"
-            print(f"  ✅ 模拟稳定完成：t={solver.t:.2f}s >= 45s")
+            print(f"   模拟稳定完成：t={solver.t:.2f}s >= 45s")
 
             # 2. 质量守恒（实际工况放宽到10%，因为有摩阻和水跃）
             assert mass_error < 10.0, f"质量误差过大：{mass_error:.2f}% > 10%"
-            print(f"  ✅ 质量守恒：{mass_error:.2f}% < 10%")
+            print(f"   质量守恒：{mass_error:.2f}% < 10%")
 
             # 3. 上游超临界
             assert Fr_up_final > 1.0, f"上游应为急流：Fr={Fr_up_final:.3f} < 1.0"
-            print(f"  ✅ 上游超临界：Fr={Fr_up_final:.3f} > 1.0")
+            print(f"   上游超临界：Fr={Fr_up_final:.3f} > 1.0")
 
             # 4. 下游亚临界
             assert Fr_down_final < 1.0, f"下游应为缓流：Fr={Fr_down_final:.3f} > 1.0"
-            print(f"  ✅ 下游亚临界：Fr={Fr_down_final:.3f} < 1.0")
+            print(f"   下游亚临界：Fr={Fr_down_final:.3f} < 1.0")
 
             # 5. 无负流量
             assert n_negative == 0, f"存在{n_negative}个负流量单元"
-            print(f"  ✅ 无负流量")
+            print(f"   无负流量")
 
             print("\n" + "="*80)
-            print("✅ MacDonald Test 4 (现实工况) 通过：WENO3成功捕捉有摩阻水跃")
+            print(" MacDonald Test 4 (现实工况) 通过：WENO3成功捕捉有摩阻水跃")
             print("="*80)
-            print(f"\n💡 对比:")
-            print(f"  原Test 4 (n=0.0):  质量误差~29%, 大量负流量, WENO3失败 ❌")
-            print(f"  现实工况 (n={n}): 质量误差~{mass_error:.1f}%, 无负流量, WENO3成功 ✅")
+            print(f"\n 对比:")
+            print(f"  原Test 4 (n=0.0):  质量误差~29%, 大量负流量, WENO3失败 ")
+            print(f"  现实工况 (n={n}): 质量误差~{mass_error:.1f}%, 无负流量, WENO3成功 ")
             print(f"\n结论: WENO3完全适用于实际工程应用（有摩阻）")
             print("="*80)
 
@@ -1557,12 +1557,12 @@ MacDonald Test 4（无摩阻水跃）需要混合流态求解器，WENO3格式�
         - 渠宽: 100.0 m (宽浅河道, B >> h)
         - 底坡: 0.001 (S0 = 0.001)
         - Manning系数: 0.025
-        - 上游边界: 固定流量 Q = 10.0 m³/s
+        - 上游边界: 固定流量 Q = 10.0 m^3/s
         - 下游边界: 正常水深 h_n (从Manning方程计算)
 
         物理现象：
-        - 宽浅河道：R ≈ h (水力半径近似等于水深)
-        - 均匀流：dh/dx ≈ 0
+        - 宽浅河道：R ~= h (水力半径近似等于水深)
+        - 均匀流：dh/dx ~= 0
         - Manning方程：Q = (1/n) * A * R^(2/3) * S0^(1/2)
         - 收敛到正常水深
 
@@ -1582,7 +1582,7 @@ MacDonald Test 4（无摩阻水跃）需要混合流态求解器，WENO3格式�
         B = 50.0      # 渠宽 (m) - 宽浅河道
         S0 = 0.001    # 底坡
         n = 0.025     # Manning系数
-        Q = 20.0      # 流量 (m³/s)
+        Q = 20.0      # 流量 (m^3/s)
 
         n_cells = 50  # 网格单元数 - 减少以提高稳定性
         dx = L / n_cells
@@ -1608,17 +1608,17 @@ MacDonald Test 4（无摩阻水跃）需要混合流态求解器，WENO3格式�
         print(f"  底坡 S0 = {S0}")
         print(f"  Manning系数 n = {n}")
         print(f"\n流动条件:")
-        print(f"  流量 Q = {Q:.2f} m³/s")
+        print(f"  流量 Q = {Q:.2f} m^3/s")
         print(f"\n特征水深:")
         print(f"  正常水深 h_n = {h_normal:.4f} m")
         print(f"  临界水深 h_c = {h_critical:.4f} m")
         print(f"  正常Froude数 Fr_n = {Fr_normal:.3f}")
         print(f"  流态: {'缓流 (Fr < 1)' if Fr_normal < 1 else '急流 (Fr > 1)'}")
         print(f"\n宽浅河道验证:")
-        R_approx = h_normal  # 宽浅河道：R ≈ h
+        R_approx = h_normal  # 宽浅河道：R ~= h
         R_exact = (B * h_normal) / (B + 2 * h_normal)
         print(f"  水力半径(精确) R = {R_exact:.4f} m")
-        print(f"  水力半径(近似) R ≈ h = {R_approx:.4f} m")
+        print(f"  水力半径(近似) R ~= h = {R_approx:.4f} m")
         print(f"  近似误差: {abs(R_exact - R_approx)/R_exact * 100:.2f}%")
         print()
 
@@ -1762,28 +1762,28 @@ MacDonald Test 4（无摩阻水跃）需要混合流态求解器，WENO3格式�
             # 1. 正常水深检查（放宽到20%，反映实际数值精度）
             assert np.mean(h_deviation) < 20.0, \
                 f"平均水深偏离正常水深过大：{np.mean(h_deviation):.3f}% > 20.0%"
-            print(f"✅ 正常水深：平均偏差 {np.mean(h_deviation):.3f}% < 20.0%")
+            print(f" 正常水深：平均偏差 {np.mean(h_deviation):.3f}% < 20.0%")
 
             assert np.max(h_deviation) < 40.0, \
                 f"最大水深偏离正常水深过大：{np.max(h_deviation):.3f}% > 40.0%"
-            print(f"✅ 水深均匀性：最大偏差 {np.max(h_deviation):.3f}% < 40.0%")
+            print(f" 水深均匀性：最大偏差 {np.max(h_deviation):.3f}% < 40.0%")
 
             # 2. 流态检查
             assert np.all(Fr < 1.0), \
                 f"应为全域缓流：最大Fr={np.max(Fr):.3f} >= 1.0"
-            print(f"✅ 流态：全域缓流 (Fr_max = {np.max(Fr):.3f} < 1.0)")
+            print(f" 流态：全域缓流 (Fr_max = {np.max(Fr):.3f} < 1.0)")
 
             assert abs(Fr.mean() - Fr_normal) / Fr_normal < 0.10, \
                 f"Froude数与理论值偏差过大：{abs(Fr.mean() - Fr_normal) / Fr_normal * 100:.1f}% > 10%"
-            print(f"✅ Froude数：Fr = {Fr.mean():.4f} ≈ Fr_n = {Fr_normal:.4f}")
+            print(f" Froude数：Fr = {Fr.mean():.4f} ~= Fr_n = {Fr_normal:.4f}")
 
             # 3. 质量守恒（放宽到10%）
             assert mass_error < 10.0, \
                 f"质量守恒误差过大：{mass_error:.6f}% > 10.0%"
-            print(f"✅ 质量守恒：误差 {mass_error:.6f}% < 10.0%")
+            print(f" 质量守恒：误差 {mass_error:.6f}% < 10.0%")
 
             print("\n" + "="*80)
-            print("✅ MacDonald Test 5 通过：宽浅河道正常水深计算准确")
+            print(" MacDonald Test 5 通过：宽浅河道正常水深计算准确")
             print("="*80)
 
         finally:

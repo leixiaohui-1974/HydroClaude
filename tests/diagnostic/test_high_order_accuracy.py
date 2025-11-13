@@ -12,11 +12,25 @@
 作者: Claude
 日期: 2025-10-23
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-from solvers.high_order_solver import HighOrderCanalSolver
+try:
+    from solvers.high_order_solver import HighOrderCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def analytical_solution_dam_break(x, t, h_L=2.0, h_R=1.0):
@@ -383,34 +397,34 @@ def test_limiter_comparison():
 
 def main():
     """运行所有测试"""
-    print("\n" + "🔬" * 40)
+    print("\n" + "" * 40)
     print("高阶数值格式精度验证")
-    print("🔬" * 40 + "\n")
+    print("" * 40 + "\n")
 
     # 测试1: 精度对比
     try:
         results1, times1 = test_accuracy_comparison()
-        print(f"\n✅ 精度对比测试完成")
+        print(f"\n 精度对比测试完成")
     except Exception as e:
-        print(f"\n❌ 精度对比测试失败: {e}")
+        print(f"\n 精度对比测试失败: {e}")
         import traceback
         traceback.print_exc()
 
     # 测试2: 收敛阶数
     try:
         results2 = test_convergence_rate()
-        print(f"\n✅ 收敛阶数测试完成")
+        print(f"\n 收敛阶数测试完成")
     except Exception as e:
-        print(f"\n❌ 收敛阶数测试失败: {e}")
+        print(f"\n 收敛阶数测试失败: {e}")
         import traceback
         traceback.print_exc()
 
     # 测试3: 限制器对比
     try:
         results3 = test_limiter_comparison()
-        print(f"\n✅ 限制器对比测试完成")
+        print(f"\n 限制器对比测试完成")
     except Exception as e:
-        print(f"\n❌ 限制器对比测试失败: {e}")
+        print(f"\n 限制器对比测试失败: {e}")
         import traceback
         traceback.print_exc()
 
@@ -419,11 +433,11 @@ def main():
     print("=" * 80)
 
     print("\n高阶格式特点：")
-    print("  ✅ MUSCL重构 - 空间二阶精度")
-    print("  ✅ RK2时间步进 - 时间二阶精度")
-    print("  ✅ 3种限制器 - minmod/superbee/vanleer")
-    print("  ✅ TVD性质 - 无数值振荡")
-    print("  ✅ 良平衡保持 - 静水重构基础")
+    print("   MUSCL重构 - 空间二阶精度")
+    print("   RK2时间步进 - 时间二阶精度")
+    print("   3种限制器 - minmod/superbee/vanleer")
+    print("   TVD性质 - 无数值振荡")
+    print("   良平衡保持 - 静水重构基础")
 
 
 if __name__ == "__main__":

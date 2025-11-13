@@ -19,7 +19,7 @@ import matplotlib.font_manager as fm
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
-# 设置中文字体（尝试使用系统字体）
+# 设置中文字体尝试使用系统字体
 def setup_chinese_font():
     """设置中文字体支持"""
     try:
@@ -32,7 +32,7 @@ def setup_chinese_font():
                 return font
             except:
                 continue
-        # 如果都失败，使用默认字体但禁用中文
+        # 如果都失败使用默认字体但禁用中文
         plt.rcParams['font.sans-serif'] = ['DejaVu Sans']
         return 'DejaVu Sans'
     except:
@@ -49,13 +49,13 @@ class AdvancedAnimationGenerator:
         self.font_name = setup_chinese_font()
 
     def generate_canal_animation(self, example_dir):
-        """生成明渠流动动画（从实际仿真）"""
+        """生成明渠流动动画从实际仿真"""
         print(f"  运行明渠仿真并生成动画...")
 
         sys.path.insert(0, str(self.examples_root.parent))
 
         try:
-            from solvers.canal_solver import CanalSolver
+            from physics.canal_solver import CanalSolver
             from utils.canal_utils import compute_steady_uniform_flow
 
             # 参数设置
@@ -88,7 +88,7 @@ class AdvancedAnimationGenerator:
             u_init = np.full(nx, Q_upstream / (B * h_downstream))
 
             # 运行仿真
-            t_end = 100.0  # 缩短时间
+            t_end = 50.0  # 缩短时间
             dt = 0.5
             result = solver.solve(
                 h_init=h_init,
@@ -104,7 +104,7 @@ class AdvancedAnimationGenerator:
             u_history = result['u_history']
             t_history = result['t_history']
 
-            # 采样（每5帧取1帧）
+            # 采样每5帧取1帧
             frame_stride = max(1, len(t_history) // 80)
             t_frames = t_history[::frame_stride]
             h_frames = [h_history[i] for i in range(0, len(h_history), frame_stride)]
@@ -170,11 +170,11 @@ class AdvancedAnimationGenerator:
             anim.save(str(gif_path), writer=writer, dpi=100)
             plt.close(fig)
 
-            print(f"    ✓ 明渠动画已保存: {gif_path.name}")
+            print(f"    [OK] 明渠动画已保存: {gif_path.name}")
             return str(gif_path)
 
         except Exception as e:
-            print(f"    ✗ 生成失败: {e}")
+            print(f"     生成失败: {e}")
             import traceback
             traceback.print_exc()
             return None
@@ -264,7 +264,7 @@ class AdvancedAnimationGenerator:
         anim.save(str(gif_path), writer=writer, dpi=100)
         plt.close(fig)
 
-        print(f"    ✓ 管网动画已保存: {gif_path.name}")
+        print(f"    [OK] 管网动画已保存: {gif_path.name}")
         return str(gif_path)
 
     def generate_reservoir_animation(self, example_dir):
@@ -274,7 +274,7 @@ class AdvancedAnimationGenerator:
         # 模拟72小时调度过程
         hours = np.arange(72)
 
-        # 入流过程（洪水过程）
+        # 入流过程洪水过程
         flood_peak_time = 24
         inflow = 500 + 1500 * np.exp(-0.5 * ((hours - flood_peak_time) / 10) ** 2)
 
@@ -352,7 +352,7 @@ class AdvancedAnimationGenerator:
         anim.save(str(gif_path), writer=writer, dpi=100)
         plt.close(fig)
 
-        print(f"    ✓ 水库动画已保存: {gif_path.name}")
+        print(f"    [OK] 水库动画已保存: {gif_path.name}")
         return str(gif_path)
 
     def generate_batch_animations(self):
@@ -375,9 +375,8 @@ class AdvancedAnimationGenerator:
 
             if not example_dir.exists():
                 print(f"\n[{i}/{len(animations_to_generate)}] {example_name}")
-                print(f"  ✗ 目录不存在")
-                self.failed_count += 1
-                continue
+                print(f"   目录不存在，跳过")
+                continue  # 跳过而不计为失败
 
             print(f"\n[{i}/{len(animations_to_generate)}] {example_name}")
 
@@ -386,7 +385,7 @@ class AdvancedAnimationGenerator:
             if animations_dir.exists():
                 existing_gifs = list(animations_dir.glob('*.gif'))
                 if len(existing_gifs) >= 2:  # 已经有足够的动画
-                    print(f"  ✓ 已有 {len(existing_gifs)} 个动画，跳过")
+                    print(f"  [OK] 已有 {len(existing_gifs)} 个动画跳过")
                     self.success_count += 1
                     continue
 
@@ -396,7 +395,7 @@ class AdvancedAnimationGenerator:
                 elif anim_type == 'reservoir':
                     gif_path = self.generate_reservoir_animation(example_dir)
                 else:
-                    print(f"  ⚠️  未知类型: {anim_type}")
+                    print(f"  [WARN]  未知类型: {anim_type}")
                     self.failed_count += 1
                     continue
 
@@ -406,7 +405,7 @@ class AdvancedAnimationGenerator:
                     self.failed_count += 1
 
             except Exception as e:
-                print(f"  ✗ 错误: {e}")
+                print(f"   错误: {e}")
                 self.failed_count += 1
 
         print(f"\n{'='*80}")
@@ -426,7 +425,7 @@ def main():
     # 批量生成动画
     generator.generate_batch_animations()
 
-    # 可选：生成明渠的高质量动画
+    # 可选生成明渠的高质量动画
     # example_01 = examples_root / 'example_01_canal_flow'
     # if example_01.exists():
     #     generator.generate_canal_animation(example_01)

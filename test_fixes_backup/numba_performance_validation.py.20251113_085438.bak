@@ -1,0 +1,322 @@
+#!/usr/bin/env python3
+"""
+Numba JIT Performance Validation
+=================================
+
+Purpose:
+- Validate Numba JIT compilation performance gains
+- Include warmup runs to exclude JIT compilation overhead
+- Measure pure execution time after compilation
+
+Author: HydroClaude Development Team
+Date: 2025-10-31
+Phase: 8.4 - Performance Optimization
+"""
+
+import numpy as np
+import sys
+import os
+import time
+from typing import Dict, Tuple
+
+sys.path.insert(0, '.')
+
+from solvers.godunov_fvm_solver import GodunvFVMSolver
+
+
+class NumbaPerformanceValidator:
+    """Validates Numba JIT performance improvements with proper warmup"""
+
+    def __init__(self):
+        self.results = {}
+
+    def run_single_benchmark(
+        self,
+        name: str,
+        setup_fn,
+        n_cells: int,
+        duration: float,
+        use_numba: bool,
+        n_runs: int = 3,
+        warmup: bool = True
+    ) -> Dict:
+        """
+        Run a single benchmark with optional warmup
+
+        Args:
+            name: Benchmark name
+            setup_fn: Function that returns (solver, h_init, Q_init, bc_left, bc_right)
+            n_cells: Number of grid cells
+            duration: Simulation duration (s)
+            use_numba: Whether to use Numba
+            n_runs: Number of runs to average
+            warmup: Whether to do warmup run
+
+        Returns:
+            Performance metrics
+        """
+        times = []
+
+        # Warmup run (if enabled and using Numba)
+        if warmup and use_numba:
+            print(f"\n  [Warmup] Compiling Numba functions...")
+            solver, h_init, Q_init, bc_left, bc_right = setup_fn(n_cells, use_numba)
+            solver.initialize(h_init, Q_init, bc_left, bc_right)
+
+            # Run a short warmup to trigger JIT compilation
+            warmup_time = duration * 0.1  # 10% of full duration
+            while solver.t < warmup_time:
+                solver.step()
+            print(f"  [Warmup] JIT compilation complete!")
+
+        # Actual benchmark runs
+        for run_idx in range(n_runs):
+            solver, h_init, Q_init, bc_left, bc_right = setup_fn(n_cells, use_numba)
+            solver.initialize(h_init, Q_init, bc_left, bc_right)
+
+            start_time = time.perf_counter()
+            step_count = 0
+
+            while solver.t < duration:
+                solver.step()
+                step_count += 1
+
+            wall_time = time.perf_counter() - start_time
+            times.append(wall_time)
+
+            if n_runs > 1:
+                print(f"  [Run {run_idx+1}/{n_runs}] Steps: {step_count}, Time: {wall_time:.3f}s")
+
+        # Statistics
+        mean_time = np.mean(times)
+        std_time = np.std(times)
+
+        return {
+            'name': name,
+            'n_cells': n_cells,
+            'duration': duration,
+            'numba': use_numba,
+            'n_runs': n_runs,
+            'mean_time': mean_time,
+            'std_time': std_time,
+            'steps': step_count,
+            'time_per_step_ms': mean_time / step_count * 1000,
+        }
+
+    def benchmark_dam_break(
+        self,
+        n_cells: int = 400,
+        duration: float = 10.0,
+        n_runs: int = 3
+    ) -> Tuple[Dict, Dict]:
+        """Benchmark dam break with and without Numba"""
+
+        def setup(n_cells, use_numba):
+            L = 2000.0
+            h_L, h_R = 10.0, 1.0
+
+            solver = GodunvFVMSolver(
+                width=10.0,
+                length=L,
+                n_cells=n_cells,
+                manning_n=0.0,
+                slope=0.0,
+                cfl=0.5,
+                order=1,
+                use_numba=use_numba
+            )
+
+            h_init = np.where(solver.x < L/2, h_L, h_R)
+            Q_init = np.zeros(n_cells)
+            bc_left = {'type': 'h', 'value': h_L}
+            bc_right = {'type': 'h', 'value': h_R}
+
+            return solver, h_init, Q_init, bc_left, bc_right
+
+        print("\n" + "="*70)
+        print("Benchmark 1: Dam Break")
+        print("="*70)
+
+        # Without Numba
+        print("\n[Pure Python] Running...")
+        result_python = self.run_single_benchmark(
+            'dam_break_python', setup, n_cells, duration, use_numba=False,
+            n_runs=n_runs, warmup=False
+        )
+
+        # With Numba
+        print("\n[Numba JIT] Running...")
+        result_numba = self.run_single_benchmark(
+            'dam_break_numba', setup, n_cells, duration, use_numba=True,
+            n_runs=n_runs, warmup=True
+        )
+
+        return result_python, result_numba
+
+    def benchmark_lake_at_rest(
+        self,
+        n_cells: int = 100,
+        duration: float = 10.0,
+        n_runs: int = 3
+    ) -> Tuple[Dict, Dict]:
+        """Benchmark lake at rest (well-balanced test)"""
+
+        def setup(n_cells, use_numba):
+            L = 100.0
+            h0 = 10.0
+
+            # Create parabolic topography
+            x = np.linspace(0, L, n_cells)
+            z_b = 2.0 * (x - L/2)**2 / (L/2)**2  # Parabolic bump (max 2m)
+
+            solver = GodunvFVMSolver(
+                width=10.0,
+                length=L,
+                n_cells=n_cells,
+                manning_n=0.03,
+                z_b=z_b,
+                cfl=0.5,
+                order=1,
+                well_balanced=True,
+                use_numba=use_numba
+            )
+
+            h_init = np.full(n_cells, h0) - z_b  # Flat water surface
+            Q_init = np.zeros(n_cells)
+            bc_left = {'type': 'wall'}
+            bc_right = {'type': 'wall'}
+
+            return solver, h_init, Q_init, bc_left, bc_right
+
+        print("\n" + "="*70)
+        print("Benchmark 2: Lake at Rest (Well-Balanced)")
+        print("="*70)
+
+        # Without Numba
+        print("\n[Pure Python] Running...")
+        result_python = self.run_single_benchmark(
+            'lake_at_rest_python', setup, n_cells, duration, use_numba=False,
+            n_runs=n_runs, warmup=False
+        )
+
+        # With Numba
+        print("\n[Numba JIT] Running...")
+        result_numba = self.run_single_benchmark(
+            'lake_at_rest_numba', setup, n_cells, duration, use_numba=True,
+            n_runs=n_runs, warmup=True
+        )
+
+        return result_python, result_numba
+
+    def benchmark_long_channel(
+        self,
+        n_cells: int = 1000,
+        duration: float = 100.0,
+        n_runs: int = 2
+    ) -> Tuple[Dict, Dict]:
+        """Benchmark long channel flow (stress test)"""
+
+        def setup(n_cells, use_numba):
+            L = 10000.0
+            h0 = 5.0
+
+            solver = GodunvFVMSolver(
+                width=10.0,
+                length=L,
+                n_cells=n_cells,
+                manning_n=0.025,
+                slope=0.001,
+                cfl=0.5,
+                order=2,  # Higher order
+                use_numba=use_numba
+            )
+
+            h_init = np.full(n_cells, h0)
+            Q_init = np.full(n_cells, 10.0)
+            bc_left = {'type': 'Q', 'value': 20.0}
+            bc_right = {'type': 'h', 'value': h0}
+
+            return solver, h_init, Q_init, bc_left, bc_right
+
+        print("\n" + "="*70)
+        print("Benchmark 3: Long Channel Flow (Stress Test)")
+        print("="*70)
+
+        # Without Numba
+        print("\n[Pure Python] Running...")
+        result_python = self.run_single_benchmark(
+            'long_channel_python', setup, n_cells, duration, use_numba=False,
+            n_runs=n_runs, warmup=False
+        )
+
+        # With Numba
+        print("\n[Numba JIT] Running...")
+        result_numba = self.run_single_benchmark(
+            'long_channel_numba', setup, n_cells, duration, use_numba=True,
+            n_runs=n_runs, warmup=True
+        )
+
+        return result_python, result_numba
+
+    def print_summary(self):
+        """Print summary of all benchmarks"""
+        print("\n" + "="*70)
+        print("PERFORMANCE SUMMARY")
+        print("="*70)
+
+        print(f"\n{'Benchmark':<25} {'Python (ms)':<15} {'Numba (ms)':<15} {'Speedup':<10}")
+        print("-" * 70)
+
+        for bench_name, data in self.results.items():
+            python_time = data['python']['time_per_step_ms']
+            numba_time = data['numba']['time_per_step_ms']
+            speedup = python_time / numba_time
+
+            print(f"{bench_name:<25} {python_time:>10.3f}      {numba_time:>10.3f}      {speedup:>6.2f}x")
+
+        print("\n" + "="*70)
+
+        # Overall statistics
+        speedups = [
+            data['python']['time_per_step_ms'] / data['numba']['time_per_step_ms']
+            for data in self.results.values()
+        ]
+
+        print(f"\nAverage Speedup: {np.mean(speedups):.2f}x")
+        print(f"Max Speedup: {np.max(speedups):.2f}x")
+        print(f"Min Speedup: {np.min(speedups):.2f}x")
+        print("\n Numba JIT Optimization Validated!")
+        print("="*70)
+
+    def run_all(self):
+        """Run all benchmarks"""
+        print("\n" + "="*70)
+        print("HydroClaude Numba JIT Performance Validation")
+        print("="*70)
+
+        try:
+            import numba
+            print(f"\n Numba {numba.__version__} detected")
+        except ImportError:
+            print("\n Numba not available - cannot run benchmarks")
+            return
+
+        # Benchmark 1: Dam Break (medium grid)
+        python_1, numba_1 = self.benchmark_dam_break(n_cells=400, duration=10.0, n_runs=3)
+        self.results['dam_break'] = {'python': python_1, 'numba': numba_1}
+
+        # Benchmark 2: Lake at Rest (well-balanced)
+        python_2, numba_2 = self.benchmark_lake_at_rest(n_cells=100, duration=10.0, n_runs=3)
+        self.results['lake_at_rest'] = {'python': python_2, 'numba': numba_2}
+
+        # Benchmark 3: Long Channel (stress test)
+        python_3, numba_3 = self.benchmark_long_channel(n_cells=1000, duration=50.0, n_runs=2)
+        self.results['long_channel'] = {'python': python_3, 'numba': numba_3}
+
+        # Print summary
+        self.print_summary()
+
+
+if __name__ == '__main__':
+    validator = NumbaPerformanceValidator()
+    validator.run_all()

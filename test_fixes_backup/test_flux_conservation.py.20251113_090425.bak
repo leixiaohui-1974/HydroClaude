@@ -1,0 +1,275 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+通量守恒性诊断测试
+
+根据质量平衡验证的发现：有5.5%的质量在内部消失
+这个测试将详细诊断通量计算，找出那消失的质量
+
+核心验证：
+1. 对于守恒律：∂U/∂t = -1/dx*(F_{i+1/2} - F_{i-1/2}) + S
+2. 对于质量守恒：∂h/∂t = -1/dx*(F_h,i+1/2 - F_h,i-1/2)
+3. 源项S只应出现在动量方程，不应出现在连续性方程！
+
+检查点：
+- Σ(F_{i+1/2} - F_{i-1/2}) 是否等于 F_right - F_left？
+- dh/dt 是否包含了源项？（不应该！）
+- 每个单元的质量变化是否等于通量差？
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
+
+import numpy as np
+from solvers.godunov_fvm_solver import GodunvFVMSolver
+
+
+def test_flux_conservation_diagnosis():
+    """详细诊断通量守恒性"""
+
+    print("\n" + "="*80)
+    print("通量守恒性诊断测试")
+    print("="*80)
+
+    print("\n目标：找出那消失的5.5%质量")
+    print("\n检查：")
+    print("  1. 通量求和：Σ(F_{i+1/2} - F_{i-1/2}) = F_right - F_left")
+    print("  2. 源项隔离：dh/dt 不应包含源项")
+    print("  3. 质量变化：Δm_i = -dt/dx * (F_{i+1/2} - F_{i-1/2}) * B")
+
+    # 简单设置（便于调试）
+    B = 1.0
+    L = 1000.0
+    n_cells = 20
+    Q_bc = 2.0
+    g = 9.81
+    h_c = (Q_bc**2 / (g * B**2))**(1/3)
+
+    print(f"\n测试参数：")
+    print(f"  n_cells = {n_cells}")
+    print(f"  dx = {L/n_cells:.1f} m")
+
+    # 创建求解器
+    solver = GodunvFVMSolver(
+        width=B,
+        length=L,
+        n_cells=n_cells,
+        manning_n=0.03,
+        slope=0.002,
+        cfl=0.4,
+        order=1,
+        well_balanced=False,
+        use_numba=False  # 不用numba，方便调试
+    )
+
+    # 初始化
+    h_init = np.linspace(h_c * 1.5, h_c, n_cells)
+    Q_init = np.ones(n_cells) * Q_bc
+
+    bc_left = {'type': 'Q', 'value': Q_bc}
+    bc_right = {'type': 'h', 'value': h_c}
+
+    solver.initialize(h_init, Q_init, bc_left, bc_right)
+
+    print(f"  初始质量 = {solver.initial_mass:.2f} m³")
+
+    # 运行一步，详细记录
+    print(f"\n{'='*80}")
+    print("单步详细诊断")
+    print("="*80)
+
+    # 保存初始状态
+    h_before = solver.h.copy()
+    Q_before = solver.Q.copy()
+    mass_before = np.sum(h_before * solver.dx * solver.B)
+
+    print(f"\n步前状态：")
+    print(f"  总质量 = {mass_before:.6f} m³")
+
+    # 计算时间步长
+    dt = solver.compute_dt()
+    print(f"  时间步长 dt = {dt:.6f} s")
+
+    # 手动调用_compute_rhs来获取详细信息
+    # 我们需要修改代码来输出通量，或者直接读取源码实现
+
+    # 先执行一步
+    solver.step()
+
+    # 步后状态
+    h_after = solver.h.copy()
+    Q_after = solver.Q.copy()
+    mass_after = np.sum(h_after * solver.dx * solver.B)
+
+    print(f"\n步后状态：")
+    print(f"  总质量 = {mass_after:.6f} m³")
+    print(f"  质量变化 = {mass_after - mass_before:.6f} m³")
+
+    # 分析每个单元
+    print(f"\n{'='*80}")
+    print("单元级诊断（前5个和后5个单元）")
+    print("="*80)
+
+    print(f"\n{'单元':<6} {'h_before':<10} {'h_after':<10} {'Δh':<10} {'Δm (m³)':<12}")
+    print("-" * 60)
+
+    # 前5个单元
+    for i in range(min(5, n_cells)):
+        dh = h_after[i] - h_before[i]
+        dm = dh * solver.dx * solver.B
+        print(f"{i:<6} {h_before[i]:>9.4f} {h_after[i]:>9.4f} {dh:>9.6f} {dm:>11.6f}")
+
+    if n_cells > 10:
+        print("  ...")
+        # 后5个单元
+        for i in range(n_cells-5, n_cells):
+            dh = h_after[i] - h_before[i]
+            dm = dh * solver.dx * solver.B
+            print(f"{i:<6} {h_before[i]:>9.4f} {h_after[i]:>9.4f} {dh:>9.6f} {dm:>11.6f}")
+
+    # 总质量变化分析
+    delta_mass = mass_after - mass_before
+    print(f"\n总质量变化 = {delta_mass:.6f} m³")
+
+    # 边界通量估算
+    Q_left = Q_before[0]
+    Q_right = Q_before[-1]
+    flux_in = Q_left * dt
+    flux_out = Q_right * dt
+    net_flux = flux_in - flux_out
+
+    print(f"\n边界通量（基于单元值）：")
+    print(f"  流入（左）= {flux_in:.6f} m³")
+    print(f"  流出（右）= {flux_out:.6f} m³")
+    print(f"  净通量   = {net_flux:.6f} m³")
+
+    # 对比
+    discrepancy = delta_mass - net_flux
+    discrepancy_pct = abs(discrepancy) / abs(net_flux) * 100 if net_flux != 0 else 0
+
+    print(f"\n质量平衡检查：")
+    print(f"  实际质量变化 = {delta_mass:.6f} m³")
+    print(f"  边界净通量   = {net_flux:.6f} m³")
+    print(f"  差异         = {discrepancy:.6f} m³ ({discrepancy_pct:.2f}%)")
+
+    if abs(discrepancy_pct) > 1.0:
+        print(f"\n 单步质量平衡不成立！")
+        print(f"   即使在单个时间步，质量也不守恒")
+        print(f"   差异 = {discrepancy_pct:.2f}%")
+    else:
+        print(f"\n 单步质量平衡基本成立")
+        print(f"   差异 < 1%，可能是数值误差")
+
+    # 运行更多步，观察累积效应
+    print(f"\n{'='*80}")
+    print("多步累积测试（100步）")
+    print("="*80)
+
+    # 重新初始化
+    solver.initialize(h_init, Q_init, bc_left, bc_right)
+
+    total_flux_in = 0.0
+    total_flux_out = 0.0
+    mass_initial = solver.initial_mass
+
+    for step in range(100):
+        # 步前
+        Q_left_before = solver.Q[0]
+        Q_right_before = solver.Q[-1]
+        dt = solver.compute_dt()
+
+        # 累积通量
+        total_flux_in += Q_left_before * dt
+        total_flux_out += Q_right_before * dt
+
+        # 执行一步
+        solver.step()
+
+    mass_final = np.sum(solver.h * solver.dx * solver.B)
+    delta_mass_100 = mass_final - mass_initial
+    net_flux_100 = total_flux_in - total_flux_out
+
+    print(f"\n100步后：")
+    print(f"  初始质量     = {mass_initial:.4f} m³")
+    print(f"  最终质量     = {mass_final:.4f} m³")
+    print(f"  质量变化     = {delta_mass_100:.4f} m³")
+    print(f"  累积流入     = {total_flux_in:.4f} m³")
+    print(f"  累积流出     = {total_flux_out:.4f} m³")
+    print(f"  净通量       = {net_flux_100:.4f} m³")
+    print(f"  差异         = {delta_mass_100 - net_flux_100:.4f} m³")
+    print(f"  差异百分比   = {abs(delta_mass_100 - net_flux_100)/abs(net_flux_100)*100:.2f}%")
+
+    discrepancy_100 = delta_mass_100 - net_flux_100
+    discrepancy_100_pct = abs(discrepancy_100) / abs(net_flux_100) * 100
+
+    # 检查源项是否影响了连续性方程
+    print(f"\n{'='*80}")
+    print("源项诊断")
+    print("="*80)
+
+    print("\n检查：dh/dt 是否错误地包含了源项？")
+    print("\n理论：")
+    print("  连续性方程：∂h/∂t = -1/dx * ∂Q/∂x")
+    print("  动量方程：  ∂Q/∂t = ... + S_Q")
+    print("  源项 S_Q 只应出现在动量方程！")
+
+    print("\n需要检查代码：")
+    print("  1. _compute_rhs() 中，dh_dt 是否只包含通量项")
+    print("  2. _compute_source_term() 是否只用于 dQ_dt")
+    print("  3. 是否有地方错误地将源项加到了 dh_dt")
+
+    # 总结诊断结果
+    print(f"\n{'='*80}")
+    print("诊断总结")
+    print("="*80)
+
+    if discrepancy_100_pct > 5:
+        print(f"\n 发现严重问题！")
+        print(f"   100步累积差异 = {discrepancy_100_pct:.2f}%")
+        print(f"   这与500s测试的5.5%差异一致")
+        print(f"\n 问题定位：")
+        print(f"   质量不守恒的根源在于：")
+        print(f"   1. 通量计算不守恒（F_{i+1/2}不一致）")
+        print(f"   2. 或源项错误地影响了dh/dt")
+        print(f"   3. 或边界通量处理有问题")
+
+        print(f"\n建议：")
+        print(f"   1. 检查 _compute_rhs() 的通量求和逻辑")
+        print(f"   2. 打印每个界面的通量值")
+        print(f"   3. 验证 Σ(F_{i+1/2} - F_{i-1/2}) = F_right - F_left")
+
+    elif discrepancy_100_pct > 1:
+        print(f"\n️ 发现问题")
+        print(f"   100步累积差异 = {discrepancy_100_pct:.2f}%")
+        print(f"   虽然单步较小，但长时间累积显著")
+
+    else:
+        print(f"\n 质量守恒良好")
+        print(f"   100步累积差异 = {discrepancy_100_pct:.2f}%")
+        print(f"   问题可能在其他地方")
+
+    # 建议下一步测试
+    print(f"\n{'='*80}")
+    print("下一步行动")
+    print("="*80)
+
+    print(f"\n推荐测试：")
+    print(f"  1. 打印界面通量值，检查守恒性")
+    print(f"  2. 检查源项是否只加到dQ_dt")
+    print(f"  3. 对比numba和非numba版本")
+    print(f"  4. 简化测试（平底+无摩阻）")
+
+    return {
+        'single_step_discrepancy_pct': discrepancy_pct,
+        '100_step_discrepancy_pct': discrepancy_100_pct,
+        'problem_severity': 'SEVERE' if discrepancy_100_pct > 5 else 'MODERATE' if discrepancy_100_pct > 1 else 'MINOR'
+    }
+
+
+if __name__ == "__main__":
+    result = test_flux_conservation_diagnosis()
+
+    print("\n" + "="*80)
+    print(f"测试结果：{result['problem_severity']}")
+    print("="*80)

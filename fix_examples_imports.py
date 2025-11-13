@@ -134,7 +134,7 @@ def add_syspath_to_file(filepath: Path, dry_run: bool = False) -> Tuple[bool, st
     try:
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(new_content)
-        return True, f"✓ 已修复（深度={depth}）"
+        return True, f" 已修复（深度={depth}）"
     except Exception as e:
         return False, f"写入失败: {e}"
 
@@ -161,7 +161,7 @@ def main():
         filepath = examples_dir / rel_path
         success, message = add_syspath_to_file(filepath, dry_run=True)
 
-        status = "✓" if success else "✗"
+        status = "" if success else ""
         print(f"  {status} {rel_path}")
         print(f"     {message}")
 
@@ -194,7 +194,7 @@ def main():
         rel_path = filepath.relative_to(examples_dir)
         success, message = add_syspath_to_file(filepath, dry_run=False)
 
-        status = "✓" if success else "✗"
+        status = "" if success else ""
         print(f"  {status} {rel_path}: {message}")
 
         if success:

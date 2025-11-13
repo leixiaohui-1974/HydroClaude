@@ -1,6 +1,6 @@
 # 示例13: 时间尺度自适应仿真结果报告
 
-**生成时间**: 2025-10-22 12:30:15
+**生成时间**: 2025-11-13 15:59:15
 
 ---
 
@@ -35,9 +35,9 @@
 HydroClaude的`TimeScaleSelector`根据时间步长自动推荐合适的模型：
 
 - **dt < 60s**: 高保真模型 (FVM) - 捕捉快速瞬态和波动传播
-- **60s ≤ dt < 600s**: 传递函数模型 - 平衡精度和效率
-- **600s ≤ dt < 1800s**: IDZ模型 - 适合中长期调度
-- **dt ≥ 1800s**: 水量平衡模型 - 适合长期规划
+- **60s <= dt < 600s**: 传递函数模型 - 平衡精度和效率
+- **600s <= dt < 1800s**: IDZ模型 - 适合中长期调度
+- **dt >= 1800s**: 水量平衡模型 - 适合长期规划
 
 这种自适应机制使得用户无需手动选择模型，系统自动保证仿真精度和效率的最优平衡。
 
@@ -56,16 +56,16 @@ HydroClaude的`TimeScaleSelector`根据时间步长自动推荐合适的模型�
 
 所有模型都能正确反映系统的基本行为，但时间分辨率不同。
 
-![example_13_model_comparison.png](figures/example_13_model_comparison.png)
+![example_13_model_comparison.png](figures\example_13_model_comparison.png)
 
 ## 流量分析
 
 ### 入流和出流对比
 
-入流采用正弦波扰动 (5.0 + 1.0·sin(t))，出流保持恒定 (5.0 m³/s)。
+入流采用正弦波扰动 (5.0 + 1.0·sin(t))，出流保持恒定 (5.0 m^3/s)。
 不同模型对流量变化的响应特性略有不同。
 
-![example_13_flow_comparison.png](figures/example_13_flow_comparison.png)
+![example_13_flow_comparison.png](figures\example_13_flow_comparison.png)
 
 ## 统一对比视图
 
@@ -79,7 +79,7 @@ HydroClaude的`TimeScaleSelector`根据时间步长自动推荐合适的模型�
 
 这验证了HydroClaude的多时间尺度建模框架的正确性。
 
-![example_13_unified_comparison.png](figures/example_13_unified_comparison.png)
+![example_13_unified_comparison.png](figures\example_13_unified_comparison.png)
 
 ## 性能评估
 
@@ -87,7 +87,7 @@ HydroClaude的`TimeScaleSelector`根据时间步长自动推荐合适的模型�
 
 下表汇总了各模型的定量性能指标：
 
-![example_13_performance_table.png](figures/example_13_performance_table.png)
+![example_13_performance_table.png](figures\example_13_performance_table.png)
 
 ## 结论
 
@@ -95,10 +95,10 @@ HydroClaude的`TimeScaleSelector`根据时间步长自动推荐合适的模型�
 仿真成功完成！
 
 **主要成果**:
-- ✓ 成功演示了4种不同时间尺度的模型
-- ✓ 验证了自动模型选择机制
-- ✓ 所有模型都表现出良好的数值稳定性
-- ✓ 不同模型的预测趋势一致
+-  成功演示了4种不同时间尺度的模型
+-  验证了自动模型选择机制
+-  所有模型都表现出良好的数值稳定性
+-  不同模型的预测趋势一致
 
 **适用场景**:
 - **实时控制**: 使用高保真模型(dt < 60s)

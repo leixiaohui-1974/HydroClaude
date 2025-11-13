@@ -253,9 +253,9 @@ class AlgorithmSelector:
                 print(f"  • {reason}")
 
         if recommendation.get('warnings'):
-            print("\n⚠ 警告:")
+            print("\n 警告:")
             for warning in recommendation['warnings']:
-                print(f"  ⚠ {warning}")
+                print(f"   {warning}")
 
         print("=" * 80)
 

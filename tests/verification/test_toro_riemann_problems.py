@@ -33,7 +33,13 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from tests.verification.toro_riemann_solver import exact_riemann_solution, riemann_structure
 
 
@@ -162,7 +168,7 @@ def run_riemann_test(
         if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
             raise RuntimeError(f"数值爆炸在t={solver.t:.3f}s, 步数={solver.step_count}")
 
-    print(f"\n✅ 模拟完成:")
+    print(f"\n 模拟完成:")
     print(f"  总步数: {solver.step_count}")
     print(f"  最终时间: {solver.t:.6f} s")
 
@@ -224,7 +230,7 @@ class TestToroRiemannProblems:
     @pytest.mark.skip(reason="已知限制：WENO3在对向流双激波问题上系统性过冲（误差~90%）。需要正定性保持限制器（Stage 8计划）")
     def test_rp2_double_rarefaction(self):
         """
-        RP2: 对向流双激波问题 ⚠️ 已知限制
+        RP2: 对向流双激波问题 ️ 已知限制
 
         配置:
         - 左侧: h=5m, u=5m/s
@@ -312,7 +318,7 @@ class TestToroRiemannProblems:
     @pytest.mark.skip(reason="已知限制：干床问题误差>400%。与Phase 7.1 DB1相同的湿干界面数值振荡问题")
     def test_rp5_dry_bed_left(self):
         """
-        RP5: 干床问题（左侧干床） ⚠️ 已知限制
+        RP5: 干床问题（左侧干床） ️ 已知限制
 
         配置:
         - 左侧: h=0m, u=0
@@ -340,7 +346,7 @@ class TestToroRiemannProblems:
     @pytest.mark.skip(reason="已知限制：干床问题误差>400%。与RP5相同的湿干界面问题")
     def test_rp6_dry_bed_right(self):
         """
-        RP6: 干床问题（右侧干床） ⚠️ 已知限制
+        RP6: 干床问题（右侧干床） ️ 已知限制
 
         配置:
         - 左侧: h=5m, u=5m/s
@@ -365,7 +371,7 @@ class TestToroRiemannProblems:
     @pytest.mark.skip(reason="已知限制：近真空问题导致湿干界面振荡")
     def test_rp7_near_vacuum(self):
         """
-        RP7: 近真空问题（双向稀疏波导致中间真空） ⚠️ 已知限制
+        RP7: 近真空问题（双向稀疏波导致中间真空） ️ 已知限制
 
         配置:
         - 左侧: h=1m, u=-10m/s
@@ -373,7 +379,7 @@ class TestToroRiemannProblems:
         - 波结构: 强双向稀疏波
 
         已知限制:
-        - 中间区域接近真空（h→0）
+        - 中间区域接近真空（h->0）
         - 类似干床问题的湿干界面振荡
 
         当前状态: SKIP
@@ -518,10 +524,10 @@ if __name__ == '__main__':
 
     plt.tight_layout()
     plt.savefig('toro_rp1_comparison.png', dpi=150, bbox_inches='tight')
-    print(f"\n✅ 结果图保存: toro_rp1_comparison.png")
+    print(f"\n 结果图保存: toro_rp1_comparison.png")
 
     print(f"\n" + "="*80)
-    print(f"✅ 示例测试完成!")
+    print(f" 示例测试完成!")
     print(f"   水深L2误差: {errors['h_L2_rel']:.2f}%")
     print(f"   验收标准: < 5%")
     print(f"   状态: {'通过' if errors['h_L2_rel'] < 5.0 else '失败'}")

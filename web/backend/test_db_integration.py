@@ -47,7 +47,7 @@ def test_database_persistence():
 
     task_data = response.json()
     task_id = task_data['task_id']
-    print(f"✓ Simulation created with task_id: {task_id}")
+    print(f"[OK] Simulation created with task_id: {task_id}")
 
     # Test 2: Check if simulation is in database
     print("\nTest 2: Query simulation status from database...")
@@ -57,7 +57,7 @@ def test_database_persistence():
     assert response.status_code == 200, "Failed to query status"
 
     status_data = response.json()
-    print(f"✓ Status from database: {status_data['status']}")
+    print(f"[OK] Status from database: {status_data['status']}")
     print(f"  Created at: {status_data['created_at']}")
 
     # Test 3: Wait for completion
@@ -69,10 +69,10 @@ def test_database_persistence():
         status_data = response.json()
 
         if status_data['status'] == 'completed':
-            print(f"✓ Simulation completed in {status_data['duration']:.3f}s")
+            print(f"[OK] Simulation completed in {status_data['duration']:.3f}s")
             break
         elif status_data['status'] == 'failed':
-            print(f"✗ Simulation failed: {status_data.get('error')}")
+            print(f"[FAIL] Simulation failed: {status_data.get('error')}")
             return False
 
         time.sleep(1)
@@ -80,7 +80,7 @@ def test_database_persistence():
         print(".", end="", flush=True)
 
     if waited >= max_wait:
-        print("\n✗ Simulation timeout")
+        print("\n[FAIL] Simulation timeout")
         return False
 
     # Test 4: Retrieve results from database
@@ -89,7 +89,7 @@ def test_database_persistence():
     assert response.status_code == 200, "Failed to get results"
 
     result_data = response.json()
-    print(f"✓ Results retrieved from database")
+    print(f"[OK] Results retrieved from database")
     print(f"  Task ID: {result_data['task_id']}")
     print(f"  Status: {result_data['status']}")
     print(f"  Time steps: {len(result_data['time'])}")
@@ -105,7 +105,7 @@ def test_database_persistence():
     assert metrics['mass_conservation_error'] < 1e-6, "Mass conservation error too large"
     assert metrics['max_velocity'] < 0.001, "Velocity should be near zero"
     assert metrics['converged'], "Simulation should converge"
-    print("✓ All metrics validated")
+    print("[OK] All metrics validated")
 
     # Test 6: List simulations
     print("\nTest 6: List all simulations from database...")
@@ -113,7 +113,7 @@ def test_database_persistence():
     assert response.status_code == 200, "Failed to list simulations"
 
     simulations = response.json()
-    print(f"✓ Found {len(simulations)} simulation(s) in database")
+    print(f"[OK] Found {len(simulations)} simulation(s) in database")
 
     # Test 7: Create another simulation
     print("\nTest 7: Create second simulation...")
@@ -122,7 +122,7 @@ def test_database_persistence():
     assert response.status_code == 201, "Failed to create second simulation"
 
     task_id_2 = response.json()['task_id']
-    print(f"✓ Second simulation created: {task_id_2}")
+    print(f"[OK] Second simulation created: {task_id_2}")
 
     # Test 8: List again and verify count
     print("\nTest 8: Verify database contains both simulations...")
@@ -131,27 +131,27 @@ def test_database_persistence():
     response = requests.get(f"{API_URL}/api/v1/simulations")
     simulations = response.json()
     assert len(simulations) >= 2, "Should have at least 2 simulations"
-    print(f"✓ Database contains {len(simulations)} simulation(s)")
+    print(f"[OK] Database contains {len(simulations)} simulation(s)")
 
     # Test 9: Filter by status
     print("\nTest 9: Test status filtering...")
     response = requests.get(f"{API_URL}/api/v1/simulations?status=completed")
     completed_sims = response.json()
-    print(f"✓ Found {len(completed_sims)} completed simulation(s)")
+    print(f"[OK] Found {len(completed_sims)} completed simulation(s)")
 
     # Test 10: Delete simulation
     print("\nTest 10: Delete first simulation from database...")
     response = requests.delete(f"{API_URL}/api/v1/simulations/{task_id}")
     assert response.status_code == 200, "Failed to delete simulation"
-    print(f"✓ Simulation {task_id} deleted from database")
+    print(f"[OK] Simulation {task_id} deleted from database")
 
     # Verify deletion
     response = requests.get(f"{API_URL}/api/v1/simulations/{task_id}/status")
     assert response.status_code == 404, "Simulation should not exist"
-    print("✓ Verified deletion")
+    print("[OK] Verified deletion")
 
     print("\n" + "="*60)
-    print("✅ All database persistence tests PASSED!")
+    print(" All database persistence tests PASSED!")
     print("="*60 + "\n")
 
     return True
@@ -162,7 +162,7 @@ if __name__ == "__main__":
         # Check backend is running
         response = requests.get(f"{API_URL}/health", timeout=2)
         if response.status_code != 200:
-            print("❌ Backend server is not running!")
+            print(" Backend server is not running!")
             print("Please start it with: cd web/backend && ./start_server.sh")
             exit(1)
 
@@ -171,11 +171,11 @@ if __name__ == "__main__":
         exit(0 if success else 1)
 
     except requests.exceptions.ConnectionError:
-        print("❌ Cannot connect to backend server!")
+        print(" Cannot connect to backend server!")
         print("Please start it with: cd web/backend && ./start_server.sh")
         exit(1)
     except Exception as e:
-        print(f"❌ Test failed: {e}")
+        print(f" Test failed: {e}")
         import traceback
         traceback.print_exc()
         exit(1)

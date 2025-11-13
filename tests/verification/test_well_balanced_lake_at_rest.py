@@ -74,7 +74,7 @@ class TestWellBalancedLakeAtRest:
         print(f"  网格点数: {nx}")
         print(f"  底坡: {S0} (平底)")
         print(f"  初始水深: {h0}m (均匀)")
-        print(f"  初始流量: 0 m³/s (静水)")
+        print(f"  初始流量: 0 m^3/s (静水)")
 
         # 运行模拟
         dt = 1.0
@@ -99,14 +99,14 @@ class TestWellBalancedLakeAtRest:
 
         print(f"\n结果:")
         print(f"  水深最大变化: {h_max_change:.2e} m")
-        print(f"  流量最大变化: {Q_max_change:.2e} m³/s")
+        print(f"  流量最大变化: {Q_max_change:.2e} m^3/s")
         print(f"  机器精度: ~1e-14")
 
         # 验证：变化应该极小（机器精度）
         assert h_max_change < 1e-10, f"水深变化 {h_max_change} 超过容差 1e-10"
         assert Q_max_change < 1e-10, f"流量变化 {Q_max_change} 超过容差 1e-10"
 
-        print(f"\n✅ PASSED: 平底静水精确保持（误差 < 1e-10）")
+        print(f"\n PASSED: 平底静水精确保持（误差 < 1e-10）")
 
     def test_lake_at_rest_sloped_bottom(self):
         """
@@ -161,7 +161,7 @@ class TestWellBalancedLakeAtRest:
         print(f"  底床高程范围: {z_bed.min():.2f}m - {z_bed.max():.2f}m")
         print(f"  水面高程: {z_surface:.2f}m (水平)")
         print(f"  水深范围: {h_init.min():.2f}m - {h_init.max():.2f}m")
-        print(f"  初始流量: 0 m³/s (静水)")
+        print(f"  初始流量: 0 m^3/s (静水)")
 
         # 运行模拟
         dt = 1.0
@@ -188,7 +188,7 @@ class TestWellBalancedLakeAtRest:
         print(f"\n结果:")
         print(f"  水深最大变化: {h_max_change:.2e} m")
         print(f"  水深平均变化: {h_mean_change:.2e} m")
-        print(f"  流量最大变化: {Q_max_change:.2e} m³/s")
+        print(f"  流量最大变化: {Q_max_change:.2e} m^3/s")
 
         # Well-Balanced格式应该保持静水（误差<1e-10）
         # 如果不是Well-Balanced，会看到明显的虚假流动
@@ -196,10 +196,10 @@ class TestWellBalancedLakeAtRest:
         tolerance_Q = 1e-8
 
         if h_max_change < tolerance_h and Q_max_change < tolerance_Q:
-            print(f"\n✅ PASSED: 斜底静水精确保持（Well-Balanced格式验证成功）")
+            print(f"\n PASSED: 斜底静水精确保持（Well-Balanced格式验证成功）")
             print(f"   底坡源项与压力梯度完美平衡！")
         else:
-            print(f"\n⚠️  WARNING: 静水未精确保持")
+            print(f"\n️  WARNING: 静水未精确保持")
             print(f"   这表明求解器可能不是Well-Balanced格式")
             print(f"   或者源项处理存在问题")
 
@@ -266,7 +266,7 @@ class TestWellBalancedLakeAtRest:
         print(f"  扰动幅度: {perturbation_amplitude*1000:.0f}mm")
         print(f"  扰动位置: x={x_center:.0f}m")
         print(f"  理论波速: c={np.sqrt(9.81*h0):.2f}m/s")
-        print(f"  初始质量: {mass_initial:.2f} m³")
+        print(f"  初始质量: {mass_initial:.2f} m^3")
 
         # 运行模拟
         dt = 0.5
@@ -298,7 +298,7 @@ class TestWellBalancedLakeAtRest:
         assert min_h > 0, f"出现负水深: {min_h}"
         assert mass_error < 0.05, f"质量守恒误差 {mass_error}% 过大（动态情况，容差0.05%）"
 
-        print(f"\n✅ PASSED: 小扰动传播正常，无虚假振荡，质量守恒")
+        print(f"\n PASSED: 小扰动传播正常，无虚假振荡，质量守恒")
 
     def test_lake_at_rest_steep_slope(self):
         """
@@ -363,13 +363,13 @@ class TestWellBalancedLakeAtRest:
 
         print(f"\n结果:")
         print(f"  水深最大变化: {h_max_change:.2e} m")
-        print(f"  流量最大变化: {Q_max_change:.2e} m³/s")
+        print(f"  流量最大变化: {Q_max_change:.2e} m^3/s")
 
         # 陡坡情况下略微放宽容差
         assert h_max_change < 1e-6, f"水深变化过大: {h_max_change}"
         assert Q_max_change < 1e-6, f"流量变化过大: {Q_max_change}"
 
-        print(f"\n✅ PASSED: 陡坡静水保持良好")
+        print(f"\n PASSED: 陡坡静水保持良好")
 
 
 if __name__ == '__main__':
@@ -389,14 +389,14 @@ if __name__ == '__main__':
         test.test_lake_at_rest_steep_slope()
 
         print("\n" + "="*70)
-        print("✅ 所有Well-Balanced测试通过！")
+        print(" 所有Well-Balanced测试通过！")
         print("="*70)
-        print("\n求解器验证: Well-Balanced格式 ✅")
-        print("底坡源项与压力梯度完美平衡 ✅")
-        print("满足Audusse et al. (2004)标准 ✅")
+        print("\n求解器验证: Well-Balanced格式 ")
+        print("底坡源项与压力梯度完美平衡 ")
+        print("满足Audusse et al. (2004)标准 ")
         print("="*70)
 
     except AssertionError as e:
-        print(f"\n❌ 测试失败: {e}")
+        print(f"\n 测试失败: {e}")
         import traceback
         traceback.print_exc()

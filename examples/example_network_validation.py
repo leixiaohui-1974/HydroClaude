@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 网络验证工具使用示例
 
@@ -83,9 +84,9 @@ def example_1_basic_validation():
     is_valid, health_score = validate_network(network, verbose=True)
 
     if is_valid:
-        print("\n✅ 网络验证通过！")
+        print("\n 网络验证通过！")
     else:
-        print("\n❌ 网络验证失败！")
+        print("\n 网络验证失败！")
 
     return network
 
@@ -199,15 +200,15 @@ def example_3_health_score():
         is_valid, score = validator.validate_all(verbose=False)
 
         if score >= 90:
-            rating = "优秀 ⭐⭐⭐⭐⭐"
+            rating = "优秀 *****"
         elif score >= 75:
-            rating = "良好 ⭐⭐⭐⭐"
+            rating = "良好 ****"
         elif score >= 60:
-            rating = "合格 ⭐⭐⭐"
+            rating = "合格 ***"
         elif score >= 40:
-            rating = "需改进 ⭐⭐"
+            rating = "需改进 **"
         else:
-            rating = "不合格 ⭐"
+            rating = "不合格 *"
 
         print(f"{name:^20} {score:^12.1f} {rating:^15}")
 
@@ -269,11 +270,11 @@ def example_4_elevation_profile():
         fig = visualizer.plot_elevation_profile()
 
         if fig:
-            print("✅ 高程剖面图已生成")
+            print(" 高程剖面图已生成")
             # fig.savefig('elevation_profile.png', dpi=150, bbox_inches='tight')
             # print("  已保存到: elevation_profile.png")
     except Exception as e:
-        print(f"⚠️  可视化需要matplotlib: {e}")
+        print(f"  可视化需要matplotlib: {e}")
 
     return network
 
@@ -314,7 +315,7 @@ def example_5_comprehensive_analysis():
     summary = validator.get_validation_summary()
 
     print(f"\n验证结果:")
-    print(f"  通过: {'✅ 是' if summary['is_valid'] else '❌ 否'}")
+    print(f"  通过: {' 是' if summary['is_valid'] else ' 否'}")
     print(f"  健康评分: {summary['health_score']:.1f}/100")
     print(f"  错误: {len(summary['errors'])}")
     print(f"  警告: {len(summary['warnings'])}")
@@ -323,8 +324,8 @@ def example_5_comprehensive_analysis():
     # 质量平衡
     print("\n【质量平衡】")
     Q_in, Q_out, error = network.check_global_mass_balance()
-    print(f"  总入流: {Q_in:.2f} m³/s")
-    print(f"  总出流: {Q_out:.2f} m³/s")
+    print(f"  总入流: {Q_in:.2f} m^3/s")
+    print(f"  总出流: {Q_out:.2f} m^3/s")
     print(f"  误差: {error:.4f}%")
 
     # 可视化
@@ -342,10 +343,10 @@ def example_5_comprehensive_analysis():
         print("  生成综合摘要图...")
         fig3 = visualize_network(network, plot_type='summary')
 
-        print("✅ 所有图表已生成")
+        print(" 所有图表已生成")
 
     except Exception as e:
-        print(f"⚠️  可视化需要matplotlib和networkx: {e}")
+        print(f"  可视化需要matplotlib和networkx: {e}")
 
     return network
 
@@ -373,12 +374,12 @@ if __name__ == "__main__":
     net5 = example_5_comprehensive_analysis()
 
     print("\n" + "="*80)
-    print("✅ 所有网络验证示例运行完成！")
+    print(" 所有网络验证示例运行完成！")
     print("="*80)
 
     print("\n总结:")
     print("  Stage 3 网络验证工具:")
-    print("  1. ✅ NetworkValidator - 全面验证")
+    print("  1.  NetworkValidator - 全面验证")
     print("     - 拓扑完整性检查")
     print("     - 高程一致性验证")
     print("     - 孤立节点检测")
@@ -386,12 +387,12 @@ if __name__ == "__main__":
     print("     - 边界条件检查")
     print("     - 初始条件验证")
     print("     - 健康评分（0-100）")
-    print("  2. ✅ NetworkVisualizer - 增强可视化")
+    print("  2.  NetworkVisualizer - 增强可视化")
     print("     - 拓扑图")
     print("     - 高程剖面图")
     print("     - 流量分布图")
     print("     - 综合摘要图")
-    print("  3. ✅ 便捷函数")
+    print("  3.  便捷函数")
     print("     - validate_network()")
     print("     - visualize_network()")
     print("\n  应用价值:")

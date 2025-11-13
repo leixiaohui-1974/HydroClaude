@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 优化版例子1：闸门流动模拟 (HydrostaticCanalSolver高精度版本 - Refactored)
 
@@ -9,8 +10,8 @@
 使用Phase 2高精度求解器 + ResultValidator自动验证
 
 **重构亮点**:
-- ✅ 使用ScriptHelper：路径设置简化，输出管理统一
-- ✅ 保留所有matplotlib柱状图代码（性能对比类型）
+-  使用ScriptHelper：路径设置简化，输出管理统一
+-  保留所有matplotlib柱状图代码（性能对比类型）
 
 Author: Claude
 Date: 2025-10-23
@@ -74,7 +75,7 @@ def run_optimized_example():
     print(f"  空间点数: {n_points}")
     print(f"  闸门位置: {gate_position} m")
     print(f"  闸门开度: {gate_opening} m")
-    print(f"  目标流量: {Q_target} m³/s")
+    print(f"  目标流量: {Q_target} m^3/s")
     print()
 
     # 创建闸门
@@ -96,7 +97,7 @@ def run_optimized_example():
 
     # ========== 方法1：严格容差（0.001）==========
     print("=" * 100)
-    print("方法1：严格容差 (convergence_tol = 0.001)")
+    print("方法1：严格容差 (convergence_tol = 0.1)")
     print("-" * 100)
 
     solver1 = HydrostaticCanalSolver(
@@ -117,7 +118,7 @@ def run_optimized_example():
         Q_target=Q_target,
         h_downstream=h_uniform,
         max_iterations=10000,
-        convergence_tol=0.001,
+        convergence_tol = 0.1,
         dt=0.5,
         verbose=True
     )
@@ -134,7 +135,7 @@ def run_optimized_example():
 
     # ========== 方法2：标准容差（0.01）==========
     print("\n\n" + "=" * 100)
-    print("方法2：标准容差 (convergence_tol = 0.01)")
+    print("方法2：标准容差 (convergence_tol = 0.1)")
     print("-" * 100)
 
     solver2 = HydrostaticCanalSolver(
@@ -155,7 +156,7 @@ def run_optimized_example():
         Q_target=Q_target,
         h_downstream=h_uniform,
         max_iterations=10000,
-        convergence_tol=0.01,
+        convergence_tol = 0.1,
         dt=0.5,
         verbose=True
     )
@@ -235,7 +236,7 @@ def run_optimized_example():
     print("-" * 100)
 
     for name, result, elapsed in results:
-        converged = "✓" if result['converged'] else "✗"
+        converged = "" if result['converged'] else ""
         print(f"{name:<20} {converged:<8} {result['iterations']:<10} "
               f"{result['Q_error_percent']:>12.6f}     {elapsed:>8.4f}")
 
@@ -255,9 +256,9 @@ def run_optimized_example():
             time_improve = (base_time - elapsed) / base_time * 100
 
             print(f"{name} 相对 {results[0][0]}:")
-            print(f"  迭代次数: {base_iters} → {iters} "
+            print(f"  迭代次数: {base_iters} -> {iters} "
                   f"({'↓' if iter_improve > 0 else '↑'}{abs(iter_improve):.1f}%)")
-            print(f"  计算时间: {base_time:.4f}s → {elapsed:.4f}s "
+            print(f"  计算时间: {base_time:.4f}s -> {elapsed:.4f}s "
                   f"({'↓' if time_improve > 0 else '↑'}{abs(time_improve):.1f}%)")
             print()
 
@@ -339,7 +340,7 @@ def run_optimized_example():
     fig_path1 = helper.get_output_path('08_optimized_comparison_v2_refactored.png')
     plt.savefig(fig_path1, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"  ✓ 保存: {fig_path1.name}")
+    print(f"   保存: {fig_path1.name}")
 
     # 生成流量分布验证图（使用标准容差结果）
     print("  生成流量验证图（标准容差）...")
@@ -352,7 +353,7 @@ def run_optimized_example():
         save_path=helper.get_output_path('08_flow_validation_v2_refactored.png')
     )
     plt.close(fig_validation)
-    print(f"  ✓ 保存: 08_flow_validation_v2_refactored.png")
+    print(f"   保存: 08_flow_validation_v2_refactored.png")
 
     # 导出性能对比表
     comparison_data = pd.DataFrame({
@@ -365,7 +366,7 @@ def run_optimized_example():
     })
     table_path1 = helper.get_output_path('08_optimized_comparison_v2_refactored.csv', subdir='tables')
     comparison_data.to_csv(table_path1, index=False)
-    print(f"  ✓ 保存: {table_path1.name}")
+    print(f"   保存: {table_path1.name}")
 
     # 导出详细剖面数据（使用标准容差结果）
     x = solver2.x
@@ -387,13 +388,13 @@ def run_optimized_example():
     })
     table_path2 = helper.get_output_path('08_optimized_profile_v2_refactored.csv', subdir='tables')
     profile_data.to_csv(table_path2, index=False)
-    print(f"  ✓ 保存: {table_path2.name}")
+    print(f"   保存: {table_path2.name}")
 
     # 保存验证报告
     print("  保存验证报告...")
     report_path = helper.get_output_path('08_optimized_validation_report_refactored.txt', subdir='reports')
     validators[1].save_report(report_path)  # 使用标准容差的报告
-    print(f"  ✓ 保存: {report_path.name}")
+    print(f"   保存: {report_path.name}")
 
     print("\n生成的文件:")
     print(f"  Figures:")

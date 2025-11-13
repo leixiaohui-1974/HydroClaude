@@ -17,7 +17,11 @@ import pandas as pd
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
-from solvers.canal_solver import CanalSolver
+# DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as CanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as CanalSolver
 from utils.canal_utils import compute_steady_uniform_flow, get_convergence_metrics
 from visualization.canal_visualizer import CanalVisualizer
 from analysis.stability_evaluator import StabilityEvaluator
@@ -47,7 +51,7 @@ def main():
     nx = 201         # 空间网格数
 
     # 边界条件
-    Q_upstream = 8.0  # 上游流量 (m³/s)
+    Q_upstream = 8.0  # 上游流量 (m^3/s)
 
     # 计算理论水深
     h_downstream = compute_steady_uniform_flow(Q_upstream, B, S0, n)
@@ -57,7 +61,7 @@ def main():
     print(f"渠底坡度: {S0}")
     print(f"Manning糙率: {n}")
     print(f"网格数: {nx}")
-    print(f"上游流量: {Q_upstream} m³/s")
+    print(f"上游流量: {Q_upstream} m^3/s")
     print(f"理论水深: {h_downstream:.6f} m")
 
     # 时间参数
@@ -115,7 +119,7 @@ def main():
             if (i+1) % 100 == 0:
                 h_avg = np.mean(h)
                 Q_avg = np.mean(Q)
-                print(f"  Step {i+1}/{n_steps}: h_avg={h_avg:.6f} m, Q_avg={Q_avg:.6f} m³/s")
+                print(f"  Step {i+1}/{n_steps}: h_avg={h_avg:.6f} m, Q_avg={Q_avg:.6f} m^3/s")
 
         # 保存结果
         results[method] = {
@@ -124,7 +128,7 @@ def main():
             'history': solver.get_history()
         }
 
-        print(f"✓ {method} 完成")
+        print(f" {method} 完成")
 
     # ========================================================================
     # 4. 稳定性评估
@@ -179,7 +183,7 @@ def main():
         title="Methods Comparison - Final State",
         save_path=save_path
     )
-    print(f"  ✓ Saved figure: 01_basic_comparison.png")
+    print(f"   Saved figure: 01_basic_comparison.png")
 
     # 单个方法的时空分布
     for method in methods:
@@ -195,7 +199,7 @@ def main():
             h_margin=0.01,
             Q_margin=0.05
         )
-        print(f"  ✓ Saved figure: 01_basic_{method.lower()}.png")
+        print(f"   Saved figure: 01_basic_{method.lower()}.png")
 
     # ========================================================================
     # 6. 收敛性分析
@@ -217,7 +221,7 @@ def main():
         print(f"  上游流量CV: {metrics['cv_Q_upstream']:.6f}%")
         print(f"  下游流量CV: {metrics['cv_Q_downstream']:.6f}%")
         print(f"  最大CV: {metrics['max_cv']:.6f}%")
-        print(f"  收敛状态: {'✓ 收敛' if metrics['converged'] else '✗ 未收敛'}")
+        print(f"  收敛状态: {' 收敛' if metrics['converged'] else ' 未收敛'}")
 
     # ========================================================================
     # 7. 保存数据表
@@ -258,7 +262,7 @@ def main():
                 'Method': method,
                 'Position (m)': x[i],
                 'Water_Depth (m)': h[i],
-                'Discharge (m³/s)': Q[i]
+                'Discharge (m^3/s)': Q[i]
             })
 
     df_dist = pd.DataFrame(distribution_data)
@@ -273,7 +277,7 @@ def main():
     print(f"\n所有输出已保存到: results/")
     print("  Figures: results/figures/")
     print("  Tables: results/tables/")
-    print("\n✅ 例子1（重构版）运行成功")
+    print("\n 例子1（重构版）运行成功")
 
 
 if __name__ == '__main__':

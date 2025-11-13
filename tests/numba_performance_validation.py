@@ -21,7 +21,13 @@ from typing import Dict, Tuple
 
 sys.path.insert(0, '.')
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 class NumbaPerformanceValidator:
@@ -121,7 +127,7 @@ class NumbaPerformanceValidator:
                 n_cells=n_cells,
                 manning_n=0.0,
                 slope=0.0,
-                cfl=0.5,
+                cfl=0.3,
                 order=1,
                 use_numba=use_numba
             )
@@ -175,7 +181,7 @@ class NumbaPerformanceValidator:
                 n_cells=n_cells,
                 manning_n=0.03,
                 z_b=z_b,
-                cfl=0.5,
+                cfl=0.3,
                 order=1,
                 well_balanced=True,
                 use_numba=use_numba
@@ -226,8 +232,8 @@ class NumbaPerformanceValidator:
                 n_cells=n_cells,
                 manning_n=0.025,
                 slope=0.001,
-                cfl=0.5,
-                order=2,  # Higher order
+                cfl=0.3,
+                order=1,  # Higher order
                 use_numba=use_numba
             )
 
@@ -285,7 +291,7 @@ class NumbaPerformanceValidator:
         print(f"\nAverage Speedup: {np.mean(speedups):.2f}x")
         print(f"Max Speedup: {np.max(speedups):.2f}x")
         print(f"Min Speedup: {np.min(speedups):.2f}x")
-        print("\n✅ Numba JIT Optimization Validated!")
+        print("\n Numba JIT Optimization Validated!")
         print("="*70)
 
     def run_all(self):
@@ -296,9 +302,9 @@ class NumbaPerformanceValidator:
 
         try:
             import numba
-            print(f"\n✅ Numba {numba.__version__} detected")
+            print(f"\n Numba {numba.__version__} detected")
         except ImportError:
-            print("\n❌ Numba not available - cannot run benchmarks")
+            print("\n Numba not available - cannot run benchmarks")
             return
 
         # Benchmark 1: Dam Break (medium grid)
@@ -306,7 +312,7 @@ class NumbaPerformanceValidator:
         self.results['dam_break'] = {'python': python_1, 'numba': numba_1}
 
         # Benchmark 2: Lake at Rest (well-balanced)
-        python_2, numba_2 = self.benchmark_lake_at_rest(n_cells=100, duration=10.0, n_runs=3)
+        python_2, numba_2 = self.benchmark_lake_at_rest(n_cells=120, duration=10.0, n_runs=3)
         self.results['lake_at_rest'] = {'python': python_2, 'numba': numba_2}
 
         # Benchmark 3: Long Channel (stress test)

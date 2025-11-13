@@ -9,21 +9,21 @@ class Canal(HydraulicComponent):
     """
     明渠组件 - Saint-Venant方程求解
 
-    ✅ **已修复！** Canal类现在使用修正版Preissmann求解器
+     **已修复** Canal类现在使用修正版Preissmann求解器
 
-    修正版PreissmannSolverCorrected的改进：
-    - 质量守恒：0.000000% (完美) ✅
-    - 移除了+279%质量误差的根源（Q截断bug）✅
-    - 添加Tikhonov正则化防止矩阵奇异 ✅
-    - 改进的数值稳定性保护 ✅
-    - 完整的对流项和Jacobian ✅
+    修正版PreissmannSolverCorrected的改进
+    - 质量守恒0.000000% (完美) 
+    - 移除了+279%质量误差的根源Q截断bug
+    - 添加Tikhonov正则化防止矩阵奇异 
+    - 改进的数值稳定性保护 
+    - 完整的对流项和Jacobian 
 
-    测试结果：
-    - 静水测试：✅ 通过
-    - 均匀流测试：✅ 通过
-    - 水位阶跃传播：✅ 通过
+    测试结果
+    - 静水测试 通过
+    - 均匀流测试 通过
+    - 水位阶跃传播 通过
 
-    参数已完全配置化，无硬编码
+    参数已完全配置化无硬编码
     """
 
     def __init__(self, name: str, volume_min: float, volume_max: float,
@@ -31,7 +31,7 @@ class Canal(HydraulicComponent):
                  slope: float = None,
                  n_sections: int = None,
                  method: str = None,
-                 # 水力参数 - 可选，使用默认值
+                 # 水力参数 - 可选使用默认值
                  manning_n: float = None,
                  width: float = None,
                  # 初始状态 - 可选
@@ -49,22 +49,22 @@ class Canal(HydraulicComponent):
 
         Args:
             name: 组件名称
-            volume_min: 最小库容 (m³)
-            volume_max: 最大库容 (m³)
-            area: 横截面积 (m²)
+            volume_min: 最小库容 (m^3)
+            volume_max: 最大库容 (m^3)
+            area: 横截面积 (m^2)
             length: 渠道长度 (m)
-            slope: 渠底坡度，默认使用CanalDefaults.SLOPE
-            n_sections: 空间离散节点数，默认使用CanalDefaults.DEFAULT_SECTIONS
-            method: 求解方法 ('moc'/'preissmann'/'fvm')，默认使用CanalDefaults.DEFAULT_METHOD
-            manning_n: 曼宁粗糙系数，默认使用CanalDefaults.MANNING_N
-            width: 渠道宽度 (m)，默认使用CanalDefaults.WIDTH
-            initial_depth: 初始水深 (m)，默认使用CanalDefaults.INITIAL_DEPTH
-            initial_flow: 初始流量 (m³/s)，默认使用CanalDefaults.INITIAL_FLOW
-            h_min: 最小水深 (m)，默认使用CanalDefaults.H_MIN
-            h_max: 最大水深 (m)，默认使用CanalDefaults.H_MAX
-            q_min: 最小流量 (m³/s)，默认使用CanalDefaults.Q_MIN
-            q_max: 最大流量 (m³/s)，默认使用CanalDefaults.Q_MAX
-            g: 重力加速度 (m/s²)，默认使用PhysicsConstants.GRAVITY
+            slope: 渠底坡度默认使用CanalDefaults.SLOPE
+            n_sections: 空间离散节点数默认使用CanalDefaults.DEFAULT_SECTIONS
+            method: 求解方法 ('moc'/'preissmann'/'fvm')默认使用CanalDefaults.DEFAULT_METHOD
+            manning_n: 曼宁粗糙系数默认使用CanalDefaults.MANNING_N
+            width: 渠道宽度 (m)默认使用CanalDefaults.WIDTH
+            initial_depth: 初始水深 (m)默认使用CanalDefaults.INITIAL_DEPTH
+            initial_flow: 初始流量 (m^3/s)默认使用CanalDefaults.INITIAL_FLOW
+            h_min: 最小水深 (m)默认使用CanalDefaults.H_MIN
+            h_max: 最大水深 (m)默认使用CanalDefaults.H_MAX
+            q_min: 最小流量 (m^3/s)默认使用CanalDefaults.Q_MIN
+            q_max: 最大流量 (m^3/s)默认使用CanalDefaults.Q_MAX
+            g: 重力加速度 (m/s^2)默认使用PhysicsConstants.GRAVITY
         """
         super().__init__(name, "canal")
 
@@ -110,10 +110,10 @@ class Canal(HydraulicComponent):
         self.dx = length / (self.n_sections - 1)
         self.x = np.linspace(0, length, self.n_sections)
 
-        # ✅ 使用修正版Preissmann求解器（已修复质量守恒问题）
-        # 初始化求解器（仅支持Preissmann）
+        #  使用修正版Preissmann求解器已修复质量守恒问题
+        # 初始化求解器仅支持Preissmann
         if self.method != 'preissmann':
-            raise ValueError(f"不支持的求解方法'{self.method}'。仅支持'preissmann'。")
+            raise ValueError(f"不支持的求解方法'{self.method}'仅支持'preissmann'")
 
         theta = NumericalDefaults.PREISSMANN_THETA
         self.solver = PreissmannSolverCorrected(
@@ -125,21 +125,21 @@ class Canal(HydraulicComponent):
 
     def update_high_fidelity(self, dt: float, inputs: dict) -> ComponentState:
         """
-        高保真求解（使用修正版Preissmann方法）✅
+        高保真求解使用修正版Preissmann方法
 
-        使用修正版Preissmann四点隐式格式求解Saint-Venant方程。
-        质量守恒误差：0.000000%（完美）
+        使用修正版Preissmann四点隐式格式求解Saint-Venant方程
+        质量守恒误差0.000000%完美
 
         Args:
             dt: 时间步长 (s)
-            inputs: 边界条件字典，支持:
+            inputs: 边界条件字典支持:
                 - 'upstream_flow' 或 'upstream_level': 上游边界
                 - 'downstream_flow' 或 'downstream_level': 下游边界
 
         Returns:
             ComponentState: 更新后的组件状态
         """
-        # 设置边界条件（支持上游流量/水位 + 下游流量/水位）
+        # 设置边界条件支持上游流量/水位 + 下游流量/水位
         boundary_conditions = {}
 
         # 上游边界条件

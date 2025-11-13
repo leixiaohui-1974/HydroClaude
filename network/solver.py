@@ -388,11 +388,11 @@ class NetworkSolver:
             print(f"  平均误差: {avg_error:.4f}%")
 
             if max_error < 1.0:
-                print(f"  评价: ✅ 优秀 (< 1%)")
+                print(f"  评价:  优秀 (< 1%)")
             elif max_error < 5.0:
-                print(f"  评价: ⚠️  良好 (< 5%)")
+                print(f"  评价: ️  良好 (< 5%)")
             else:
-                print(f"  评价: ❌ 需改进 (> 5%)")
+                print(f"  评价:  需改进 (> 5%)")
 
     def _get_results(self) -> Dict:
         """获取模拟结果"""
@@ -448,9 +448,9 @@ class NetworkSolver:
         if verbose:
             print(f"\n网络一致性检查:")
             if is_consistent:
-                print(f"  ✅ 所有耦合器一致")
+                print(f"   所有耦合器一致")
             else:
-                print(f"  ❌ 发现 {len(problems)} 个问题:")
+                print(f"   发现 {len(problems)} 个问题:")
                 for problem in problems:
                     print(f"    - {problem}")
 

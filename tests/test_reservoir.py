@@ -8,6 +8,14 @@
 """
 
 import sys
+import os
+
+# Add project root to path
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 sys.path.append('/home/user/HydroClaude')
 
 import numpy as np
@@ -69,8 +77,8 @@ class TestReservoir:
 
         initial_storage = reservoir.state.storage
         dt = 3600.0  # 1小时
-        inflow = 100.0  # m³/s
-        outflow_target = 80.0  # m³/s
+        inflow = 100.0  # m^3/s
+        outflow_target = 80.0  # m^3/s
 
         state = reservoir.update_high_fidelity(dt, {
             'inflow': inflow,
@@ -128,7 +136,7 @@ class TestReservoir:
         )
 
         dt = 3600.0
-        turbine_discharge = 100.0  # m³/s
+        turbine_discharge = 100.0  # m^3/s
 
         state = reservoir.update_high_fidelity(dt, {
             'inflow': 100.0,
@@ -401,10 +409,10 @@ def run_all_tests():
     for name, test_func in tests:
         try:
             test_func()
-            print(f"  ✓ {name}")
+            print(f"   {name}")
             passed += 1
         except Exception as e:
-            print(f"  ✗ {name}: {e}")
+            print(f"   {name}: {e}")
             failed += 1
 
     # 运行梯级测试
@@ -423,10 +431,10 @@ def run_all_tests():
     for name, test_func in cascade_tests:
         try:
             test_func()
-            print(f"  ✓ {name}")
+            print(f"   {name}")
             passed += 1
         except Exception as e:
-            print(f"  ✗ {name}: {e}")
+            print(f"   {name}: {e}")
             failed += 1
 
     # 总结

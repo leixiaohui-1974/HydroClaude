@@ -324,7 +324,7 @@ class ConfigGenerator:
         if validate:
             is_valid, errors = self.validate_config(config)
             if not is_valid:
-                print("❌ 配置验证失败:")
+                print(" 配置验证失败:")
                 for error in errors:
                     print(f"  - {error}")
                 return False
@@ -335,7 +335,7 @@ class ConfigGenerator:
             yaml.dump(config, f, default_flow_style=False,
                      allow_unicode=True, sort_keys=False)
 
-        print(f"✅ 配置已保存: {output_path}")
+        print(f" 配置已保存: {output_path}")
         return True
 
     def load_template(self, template_name: str) -> Dict:
@@ -433,7 +433,7 @@ class ConfigGenerator:
             template_name = template_keys[int(choice) - 1]
             config = self.load_template(template_name)
 
-            print(f"\n✅ 已加载模板: {self.TEMPLATES[template_name]['name']}")
+            print(f"\n 已加载模板: {self.TEMPLATES[template_name]['name']}")
             print("\n配置预览:")
             print(json.dumps(config, indent=2, ensure_ascii=False))
 

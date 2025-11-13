@@ -14,7 +14,7 @@ MacDonald Test 2 详细质量平衡分析
 关键问题：
 - 左边界Q=2.0：流入量应该准确控制
 - 右边界h=h_c：流出量由Riemann求解器决定
-- 如果理论≈实际，说明数值方法正确，质量变化是物理行为
+- 如果理论~=实际，说明数值方法正确，质量变化是物理行为
 - 如果理论≠实际，说明有数值bug
 """
 
@@ -23,7 +23,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_macdonald_test2_detailed_mass():
@@ -47,7 +53,7 @@ def test_macdonald_test2_detailed_mass():
     print(f"\n测试参数：")
     print(f"  河道：L={L}m, B={B}m, n={n}, S0={S0}")
     print(f"  边界条件：")
-    print(f"    左：Q = {Q_bc} m³/s (固定流量)")
+    print(f"    左：Q = {Q_bc} m^3/s (固定流量)")
     print(f"    右：h = {h_c:.4f} m (临界水深)")
     print(f"\n边界条件类型：")
     print(f"  左边界（Q边界）：流入量受控")
@@ -79,9 +85,9 @@ def test_macdonald_test2_detailed_mass():
     mass_initial = solver.initial_mass
 
     print(f"\n初始状态：")
-    print(f"  初始质量 = {mass_initial:.4f} m³")
+    print(f"  初始质量 = {mass_initial:.4f} m^3")
     print(f"  h范围：[{solver.h.min():.4f}, {solver.h.max():.4f}] m")
-    print(f"  Q范围：[{solver.Q.min():.4f}, {solver.Q.max():.4f}] m³/s")
+    print(f"  Q范围：[{solver.Q.min():.4f}, {solver.Q.max():.4f}] m^3/s")
 
     # 运行模拟
     t_end = 500.0
@@ -150,20 +156,20 @@ def test_macdonald_test2_detailed_mass():
     print("="*80)
 
     print(f"\n1. 初始和最终状态：")
-    print(f"   初始质量：{mass_initial:.4f} m³")
-    print(f"   最终质量：{mass_final:.4f} m³")
-    print(f"   实际变化：{delta_mass_actual:.4f} m³")
+    print(f"   初始质量：{mass_initial:.4f} m^3")
+    print(f"   最终质量：{mass_final:.4f} m^3")
+    print(f"   实际变化：{delta_mass_actual:.4f} m^3")
 
     print(f"\n2. 边界通量统计：")
-    print(f"   累积流入 ：{cumulative_inflow:.4f} m³")
-    print(f"   累积流出 ：{cumulative_outflow:.4f} m³")
-    print(f"   净通量   ：{cumulative_inflow - cumulative_outflow:.4f} m³")
-    print(f"   理论变化：{delta_mass_theory:.4f} m³")
+    print(f"   累积流入 ：{cumulative_inflow:.4f} m^3")
+    print(f"   累积流出 ：{cumulative_outflow:.4f} m^3")
+    print(f"   净通量   ：{cumulative_inflow - cumulative_outflow:.4f} m^3")
+    print(f"   理论变化：{delta_mass_theory:.4f} m^3")
 
     print(f"\n3. 质量平衡检查：")
-    print(f"   实际质量变化：{delta_mass_actual:.4f} m³")
-    print(f"   理论质量变化：{delta_mass_theory:.4f} m³")
-    print(f"   差异         ：{discrepancy:.4f} m³ ({discrepancy_pct:.2f}%)")
+    print(f"   实际质量变化：{delta_mass_actual:.4f} m^3")
+    print(f"   理论质量变化：{delta_mass_theory:.4f} m^3")
+    print(f"   差异         ：{discrepancy:.4f} m^3 ({discrepancy_pct:.2f}%)")
 
     # 检查左边界通量强制
     if len(F_left_history) > 0:
@@ -172,18 +178,18 @@ def test_macdonald_test2_detailed_mass():
         F_left_min = np.min(F_left_history)
         F_left_max = np.max(F_left_history)
 
-        print(f"\n4. 左边界通量分析（应该≈{Q_bc} m²/s）：")
-        print(f"   平均：{F_left_avg:.4f} m²/s")
-        print(f"   标准差：{F_left_std:.4f} m²/s")
-        print(f"   范围：[{F_left_min:.4f}, {F_left_max:.4f}] m²/s")
+        print(f"\n4. 左边界通量分析（应该~={Q_bc} m^2/s）：")
+        print(f"   平均：{F_left_avg:.4f} m^2/s")
+        print(f"   标准差：{F_left_std:.4f} m^2/s")
+        print(f"   范围：[{F_left_min:.4f}, {F_left_max:.4f}] m^2/s")
 
         left_error = abs(F_left_avg - Q_bc) / Q_bc * 100
         print(f"   误差：{left_error:.2f}%")
 
         if left_error > 1.0:
-            print(f"   ⚠️ 左边界通量未被正确控制！")
+            print(f"   ️ 左边界通量未被正确控制！")
         else:
-            print(f"   ✓ 左边界通量控制良好")
+            print(f"    左边界通量控制良好")
 
     # 检查右边界通量
     if len(F_right_history) > 0:
@@ -193,9 +199,9 @@ def test_macdonald_test2_detailed_mass():
         F_right_max = np.max(F_right_history)
 
         print(f"\n5. 右边界通量分析（由Riemann求解器决定）：")
-        print(f"   平均：{F_right_avg:.4f} m²/s")
-        print(f"   标准差：{F_right_std:.4f} m²/s")
-        print(f"   范围：[{F_right_min:.4f}, {F_right_max:.4f}] m²/s")
+        print(f"   平均：{F_right_avg:.4f} m^2/s")
+        print(f"   标准差：{F_right_std:.4f} m^2/s")
+        print(f"   范围：[{F_right_min:.4f}, {F_right_max:.4f}] m^2/s")
 
     # 计算通量守恒性
     print(f"\n6. 通量守恒性检查：")
@@ -229,9 +235,9 @@ def test_macdonald_test2_detailed_mass():
             print(f"     最大：{max_step_error:.2f}%")
 
             if avg_step_error > 1.0:
-                print(f"   ❌ 单步质量不守恒（每步都有累积误差）")
+                print(f"    单步质量不守恒（每步都有累积误差）")
             else:
-                print(f"   ✓ 单步质量基本守恒")
+                print(f"    单步质量基本守恒")
 
     # 最终判断
     print(f"\n{'='*80}")
@@ -239,44 +245,44 @@ def test_macdonald_test2_detailed_mass():
     print("="*80)
 
     if discrepancy_pct < 1.0:
-        print(f"\n✅ 质量守恒良好 ({discrepancy_pct:.2f}%)")
+        print(f"\n 质量守恒良好 ({discrepancy_pct:.2f}%)")
         print(f"\n结论：")
         print(f"  - 实际质量变化与理论质量变化一致")
         print(f"  - 数值方法正确")
         print(f"  - 质量变化是h边界的物理行为（正确！）")
 
     elif discrepancy_pct < 5.0:
-        print(f"\n⚠️ 质量守恒较好，但有轻微差异 ({discrepancy_pct:.2f}%)")
+        print(f"\n️ 质量守恒较好，但有轻微差异 ({discrepancy_pct:.2f}%)")
         print(f"\n可能原因：")
         print(f"  - 数值耗散")
         print(f"  - 时间积分截断误差")
         print(f"  - 边界条件处理的小误差")
 
     else:
-        print(f"\n❌ 质量守恒有明显问题 ({discrepancy_pct:.2f}%)")
+        print(f"\n 质量守恒有明显问题 ({discrepancy_pct:.2f}%)")
         print(f"\n问题定位：")
 
         # 检查左边界
         if len(F_left_history) > 0:
             left_error = abs(np.mean(F_left_history) - Q_bc) / Q_bc * 100
             if left_error > 1.0:
-                print(f"  1. ❌ 左边界流入未被正确控制 ({left_error:.2f}%误差)")
-                print(f"     → 检查Q边界条件的实现")
+                print(f"  1.  左边界流入未被正确控制 ({left_error:.2f}%误差)")
+                print(f"     -> 检查Q边界条件的实现")
             else:
-                print(f"  1. ✓ 左边界流入正确")
+                print(f"  1.  左边界流入正确")
 
         # 检查单步守恒性
         if len(step_errors) > 0 and np.mean(step_errors) > 1.0:
-            print(f"  2. ❌ 单步质量不守恒 (平均{np.mean(step_errors):.2f}%误差)")
-            print(f"     → 检查通量计算和时间积分")
+            print(f"  2.  单步质量不守恒 (平均{np.mean(step_errors):.2f}%误差)")
+            print(f"     -> 检查通量计算和时间积分")
         else:
-            print(f"  2. ✓ 单步质量守恒")
+            print(f"  2.  单步质量守恒")
 
         # 如果上述都正确，问题可能在别处
         if len(F_left_history) > 0 and left_error < 1.0 and (len(step_errors) == 0 or np.mean(step_errors) < 1.0):
-            print(f"  3. ⚠️ 左边界和单步都正确，但总体不守恒")
-            print(f"     → 可能是长时间累积的数值误差")
-            print(f"     → 或者边界条件与内部格式的不一致")
+            print(f"  3. ️ 左边界和单步都正确，但总体不守恒")
+            print(f"     -> 可能是长时间累积的数值误差")
+            print(f"     -> 或者边界条件与内部格式的不一致")
 
     print("\n" + "="*80)
 
@@ -299,8 +305,8 @@ if __name__ == "__main__":
     print(f"  质量差异：{result['discrepancy_pct']:.2f}%")
 
     if result['discrepancy_pct'] < 1.0:
-        print(f"  状态：✅ 优秀")
+        print(f"  状态： 优秀")
     elif result['discrepancy_pct'] < 5.0:
-        print(f"  状态：⚠️ 良好")
+        print(f"  状态：️ 良好")
     else:
-        print(f"  状态：❌ 需要修复")
+        print(f"  状态： 需要修复")

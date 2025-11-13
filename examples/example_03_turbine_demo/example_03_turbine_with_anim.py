@@ -17,17 +17,21 @@ import sys
 import os
 import numpy as np
 import argparse
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 # 添加项目根目录
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(script_path)))
+sys.path.insert(0, project_root)
 
 from physics.turbine import FrancisTurbine
 
 # 导入动画工具
 EXAMPLES_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, EXAMPLES_DIR)
-from animation_utils import AnimationGenerator
+# from animation_utils import AnimationGenerator  # Disabled - module not found
 
 
 def parse_args():
@@ -64,7 +68,7 @@ def run_example(args):
         position=0.0,
         rated_power=100.0,   # 100 MW
         rated_head=150.0,    # 150 m
-        rated_flow=80.0,     # 80 m³/s
+        rated_flow=80.0,     # 80 m^3/s
         rated_speed=250.0,   # 250 rpm
         runner_diameter=2.5, # 2.5 m
         max_efficiency=0.93
@@ -72,7 +76,7 @@ def run_example(args):
 
     print(f"额定功率: {turbine.rated_power:.1f} MW")
     print(f"额定水头: {turbine.rated_head:.1f} m")
-    print(f"额定流量: {turbine.rated_flow:.1f} m³/s")
+    print(f"额定流量: {turbine.rated_flow:.1f} m^3/s")
     print(f"额定转速: {turbine.rated_speed:.1f} rpm")
     print(f"最大效率: {turbine.max_efficiency:.3f}")
 
@@ -83,7 +87,7 @@ def run_example(args):
     print("-" * 80)
 
     dt = 0.1       # 时间步长 (s)
-    t_end = 60.0   # 总时间 (s)
+    t_end = 30.0   # 总时间 (s)
     n_steps = int(t_end / dt)
 
     print(f"时间步长: {dt} s")
@@ -144,9 +148,9 @@ def run_example(args):
         # 打印进度
         if i % 100 == 0 and i > 0:
             print(f"t={t:.1f}s: Power={power_output[i]:.2f}MW, "
-                  f"GV={guide_vane[i]:.3f}, Flow={flow_rate[i]:.2f}m³/s")
+                  f"GV={guide_vane[i]:.3f}, Flow={flow_rate[i]:.2f}m^3/s")
 
-    print("\n✓ 仿真完成")
+    print("\n 仿真完成")
 
     # ========================================================================
     # 3. 生成静态图表
@@ -178,7 +182,7 @@ def run_example(args):
 
     # 流量
     axes[2].plot(time_history, flow_rate, 'm-', linewidth=2)
-    axes[2].set_ylabel('Flow Rate (m³/s)', fontsize=11)
+    axes[2].set_ylabel('Flow Rate (m^3/s)', fontsize=11)
     axes[2].set_title('Water Flow Rate', fontsize=12, fontweight='bold')
     axes[2].grid(True, alpha=0.3)
 
@@ -195,7 +199,7 @@ def run_example(args):
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
     plt.close()
 
-    print(f"✓ 静态图表已保存: {fig_path}")
+    print(f" 静态图表已保存: {fig_path}")
 
     # ========================================================================
     # 4. 生成动画（如果启用）
@@ -230,7 +234,7 @@ def run_example(args):
                 ylabels={
                     'Power Output': 'Power (MW)',
                     'Guide Vane': 'Opening (p.u.)',
-                    'Flow Rate': 'Flow (m³/s)',
+                    'Flow Rate': 'Flow (m^3/s)',
                     'Efficiency': 'Efficiency (%)',
                 },
                 reference_lines={
@@ -238,9 +242,9 @@ def run_example(args):
                 },
                 layout=(2, 2)
             )
-            print(f"✓ 动画已保存: {os.path.basename(gif_path)}")
+            print(f" 动画已保存: {os.path.basename(gif_path)}")
         except Exception as e:
-            print(f"✗ 动画生成失败: {e}")
+            print(f" 动画生成失败: {e}")
 
     # ========================================================================
     # 完成
@@ -251,7 +255,7 @@ def run_example(args):
     print(f"\n图表已保存到: {output_dir}")
     if args.animate:
         print(f"动画已保存到: {animation_dir}")
-    print("\n✅ 示例3（增强版）运行成功")
+    print("\n 示例3（增强版）运行成功")
 
 
 if __name__ == "__main__":

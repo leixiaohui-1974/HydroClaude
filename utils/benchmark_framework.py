@@ -165,7 +165,7 @@ class BenchmarkFramework:
             )
 
             if verbose:
-                status = "✅" if result.converged else "❌"
+                status = "" if result.converged else ""
                 print(f"{status} {result.iterations}iter, {result.time:.4f}s")
 
         except Exception as e:
@@ -185,7 +185,7 @@ class BenchmarkFramework:
             )
 
             if verbose:
-                print(f"❌ 失败: {e}")
+                print(f" 失败: {e}")
 
         return result
 
@@ -242,7 +242,7 @@ class BenchmarkFramework:
         for scenario in self.scenarios:
             results = self.get_results_by_scenario(scenario.name)
             for result in results:
-                conv_status = '✅' if result.converged else '❌'
+                conv_status = '' if result.converged else ''
                 iter_str = str(result.iterations) if result.converged else 'N/A'
                 time_str = f"{result.time:.4f}" if result.converged else 'N/A'
                 error_str = f"{result.Q_error:.4f}" if result.converged and result.Q_error != float('inf') else 'N/A'

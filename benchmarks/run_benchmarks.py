@@ -605,7 +605,7 @@ class PerformanceBenchmark:
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
 
-        print(f"✓ 结果已保存: {output_file}")
+        print(f" 结果已保存: {output_file}")
 
     def plot_comparison(self):
         """生成对比图"""
@@ -657,7 +657,7 @@ class PerformanceBenchmark:
         # 保存图片
         output_file = Path(__file__).parent / "benchmark_comparison.png"
         plt.savefig(output_file, dpi=150, bbox_inches='tight')
-        print(f"✓ 对比图已保存: {output_file}")
+        print(f" 对比图已保存: {output_file}")
 
         plt.close()
 

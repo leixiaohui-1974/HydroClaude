@@ -82,7 +82,7 @@ def fix_syspath_in_file(file_path: Path, dry_run: bool = False) -> bool:
         with open(file_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
     except Exception as e:
-        print(f"  ✗ 无法读取文件: {e}")
+        print(f"   无法读取文件: {e}")
         return False
 
     # 计算正确的深度
@@ -120,7 +120,7 @@ def fix_syspath_in_file(file_path: Path, dry_run: bool = False) -> bool:
             if line.strip() != new_line.strip():
                 new_lines.append(new_line)
                 modified = True
-                print(f"  ✓ 修复第 {i+1} 行")
+                print(f"   修复第 {i+1} 行")
                 print(f"    原: {line.strip()}")
                 print(f"    新: {new_line.strip()}")
             else:
@@ -146,10 +146,10 @@ def fix_syspath_in_file(file_path: Path, dry_run: bool = False) -> bool:
             new_lines.insert(insert_pos, "import sys, os\n")
             new_lines.insert(insert_pos + 1, correct_code + "\n")
             new_lines.insert(insert_pos + 2, "\n")
-            print(f"  ✓ 添加sys.path设置（第 {insert_pos+1} 行）")
+            print(f"   添加sys.path设置（第 {insert_pos+1} 行）")
         else:
             new_lines.insert(insert_pos, correct_code + "\n")
-            print(f"  ✓ 添加sys.path设置（第 {insert_pos+1} 行）")
+            print(f"   添加sys.path设置（第 {insert_pos+1} 行）")
 
         modified = True
 
@@ -160,7 +160,7 @@ def fix_syspath_in_file(file_path: Path, dry_run: bool = False) -> bool:
                 f.writelines(new_lines)
             return True
         except Exception as e:
-            print(f"  ✗ 无法写入文件: {e}")
+            print(f"   无法写入文件: {e}")
             return False
 
     return modified
@@ -197,7 +197,7 @@ def main():
             else:
                 unchanged_count += 1
         except Exception as e:
-            print(f"  ✗ 修复失败: {e}")
+            print(f"   修复失败: {e}")
             failed_count += 1
 
     # 打印总结

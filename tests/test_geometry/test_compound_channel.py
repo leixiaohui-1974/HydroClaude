@@ -232,7 +232,7 @@ class TestNormalDepth:
 
     def test_normal_depth_divided_method(self, compound_channel):
         """测试使用分区法计算正常水深"""
-        Q = 50.0  # m³/s
+        Q = 50.0  # m^3/s
 
         h_n = compound_channel.normal_depth(Q, method='divided')
 
@@ -247,7 +247,7 @@ class TestNormalDepth:
 
     def test_normal_depth_equivalent_method(self, compound_channel):
         """测试使用等效法计算正常水深"""
-        Q = 50.0  # m³/s
+        Q = 50.0  # m^3/s
 
         h_n = compound_channel.normal_depth(Q, method='equivalent')
 
@@ -301,7 +301,7 @@ class TestCriticalDepth:
 
     def test_critical_depth_basic(self, compound_channel):
         """测试临界水深基本计算"""
-        Q = 50.0  # m³/s
+        Q = 50.0  # m^3/s
         g = 9.81
 
         h_c = compound_channel.critical_depth(Q)
@@ -309,7 +309,7 @@ class TestCriticalDepth:
         # 验证临界水深为正
         assert h_c > 0
 
-        # 验证临界流条件：Q² = g * A³ / B
+        # 验证临界流条件：Q^2 = g * A^3 / B
         props = compound_channel.properties(h_c)
         A = props['A']
         B = props['B']
@@ -321,8 +321,8 @@ class TestCriticalDepth:
         assert np.isclose(lhs, rhs, rtol=0.02)
 
     def test_critical_depth_froude_one(self, compound_channel):
-        """测试临界水深对应 Froude 数 ≈ 1"""
-        Q = 50.0  # m³/s
+        """测试临界水深对应 Froude 数 ~= 1"""
+        Q = 50.0  # m^3/s
 
         h_c = compound_channel.critical_depth(Q)
         Fr = compound_channel.froude_number(Q, h_c)

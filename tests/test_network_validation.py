@@ -22,7 +22,13 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from network.topology import Node, Reach, RiverNetwork
 from network.nodes import create_inflow_boundary, create_outflow_boundary
 from network.validation import NetworkValidator, NetworkVisualizer, validate_network
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 # Helper function to create test solver
@@ -64,7 +70,7 @@ def test_validator_creation():
     assert len(validator.warnings) == 0
     assert len(validator.info) == 0
 
-    print("✅ 验证器创建测试通过")
+    print(" 验证器创建测试通过")
 
 
 @pytest.mark.p1
@@ -79,7 +85,7 @@ def test_validate_empty_network():
     assert len(validator.errors) > 0
     assert score < 100
 
-    print("✅ 空网络验证测试通过")
+    print(" 空网络验证测试通过")
 
 
 @pytest.mark.p2
@@ -111,7 +117,7 @@ def test_validate_simple_network():
     assert score >= 80  # 健康评分应该不错
     assert len(validator.errors) == 0
 
-    print("✅ 简单网络验证测试通过")
+    print(" 简单网络验证测试通过")
 
 
 @pytest.mark.p2
@@ -137,7 +143,7 @@ def test_detect_elevation_inconsistency():
     assert len(validator.errors) > 0
     assert any("elevation" in str(e).lower() for e in validator.errors)
 
-    print("✅ 高程不一致检测测试通过")
+    print(" 高程不一致检测测试通过")
 
 
 @pytest.mark.p2
@@ -160,7 +166,7 @@ def test_detect_isolated_node():
     assert not is_valid
     assert any("isolated" in str(e).lower() for e in validator.errors)
 
-    print("✅ 孤立节点检测测试通过")
+    print(" 孤立节点检测测试通过")
 
 
 @pytest.mark.p2
@@ -185,7 +191,7 @@ def test_detect_cycle():
     assert not is_valid
     assert any("cycle" in str(e).lower() for e in validator.errors)
 
-    print("✅ 环路检测测试通过")
+    print(" 环路检测测试通过")
 
 
 @pytest.mark.p3
@@ -211,7 +217,7 @@ def test_health_score_calculation():
     assert score > 0
     assert len(validator.warnings) > 0
 
-    print("✅ 健康评分计算测试通过")
+    print(" 健康评分计算测试通过")
 
 
 @pytest.mark.p3
@@ -234,7 +240,7 @@ def test_validation_summary():
     assert isinstance(summary['health_score'], float)
     assert isinstance(summary['is_valid'], bool)
 
-    print("✅ 验证摘要测试通过")
+    print(" 验证摘要测试通过")
 
 
 # ============================================================================
@@ -249,7 +255,7 @@ def test_visualizer_creation():
 
     assert visualizer.network is network
 
-    print("✅ 可视化工具创建测试通过")
+    print(" 可视化工具创建测试通过")
 
 
 @pytest.mark.p3
@@ -272,9 +278,9 @@ def test_plot_elevation_profile():
     try:
         fig = visualizer.plot_elevation_profile()
         assert fig is not None
-        print("✅ 高程剖面图测试通过")
+        print(" 高程剖面图测试通过")
     except Exception as e:
-        print(f"⚠️  高程剖面图测试跳过（可能缺少matplotlib）: {e}")
+        print(f"  高程剖面图测试跳过（可能缺少matplotlib）: {e}")
 
 
 @pytest.mark.p3
@@ -294,9 +300,9 @@ def test_plot_flow_distribution():
     try:
         fig = visualizer.plot_flow_distribution()
         assert fig is not None
-        print("✅ 流量分布图测试通过")
+        print(" 流量分布图测试通过")
     except Exception as e:
-        print(f"⚠️  流量分布图测试跳过（可能缺少matplotlib）: {e}")
+        print(f"  流量分布图测试跳过（可能缺少matplotlib）: {e}")
 
 
 # ============================================================================
@@ -322,7 +328,7 @@ def test_validate_network_function():
     assert isinstance(score, float)
     assert 0 <= score <= 100
 
-    print("✅ 便捷验证函数测试通过")
+    print(" 便捷验证函数测试通过")
 
 
 if __name__ == "__main__":
@@ -354,24 +360,24 @@ if __name__ == "__main__":
         test_validate_network_function()
 
         print("\n" + "="*80)
-        print("✅ 所有网络验证工具测试通过！")
+        print(" 所有网络验证工具测试通过！")
         print("="*80)
 
         print("\n总结:")
-        print("  1. ✅ NetworkValidator - 拓扑和物理验证")
+        print("  1.  NetworkValidator - 拓扑和物理验证")
         print("     - 空网络检测")
         print("     - 高程一致性")
         print("     - 孤立节点")
         print("     - 环路检测")
         print("     - 健康评分")
-        print("  2. ✅ NetworkVisualizer - 增强可视化")
+        print("  2.  NetworkVisualizer - 增强可视化")
         print("     - 高程剖面图")
         print("     - 流量分布图")
-        print("  3. ✅ 便捷函数")
+        print("  3.  便捷函数")
         print("\nTask 3.1.3 测试完成！")
 
     except Exception as e:
-        print(f"\n❌ 测试失败: {e}")
+        print(f"\n 测试失败: {e}")
         import traceback
         traceback.print_exc()
         exit(1)

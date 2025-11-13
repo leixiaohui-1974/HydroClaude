@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 HydroClaude 应用案例: 春季融冰期模拟
 
@@ -9,7 +10,7 @@ HydroClaude 应用案例: 春季融冰期模拟
 - 光照逐渐增强
 - 藻类开始复苏
 
-应用: 春季水质预测、生态恢复评估
+应用: 春季水质预测生态恢复评估
 
 作者: HydroClaude Team
 日期: 2025-11-02
@@ -47,7 +48,7 @@ print(f"网格数: {n_cells}")
 print()
 
 # 水力条件
-u = np.full(n_cells, 0.4)  # 融雪径流，流速增加
+u = np.full(n_cells, 0.4)  # 融雪径流流速增加
 h = np.full(n_cells, 3.5)  # 水深增加
 manning_n = np.full(n_cells, 0.03)
 print(f"流速: {u[0]:.1f} m/s (融雪径流)")
@@ -67,8 +68,8 @@ print("[2] 初始条件: 早春冰封期末")
 print("-" * 70)
 
 # 水温: 接近冰点
-T_init = np.full(n_cells, 0.5)  # °C
-print(f"初始水温: {T_init[0]:.1f} °C (接近冰点)")
+T_init = np.full(n_cells, 0.5)  #  degC
+print(f"初始水温: {T_init[0]:.1f}  degC (接近冰点)")
 
 # DO: 冰封期DO较高
 DO_init = np.full(n_cells, 13.0)  # mg/L
@@ -90,8 +91,8 @@ print(f"总氮TN: {TN:.2f} mg/L")
 print(f"总磷TP: {TP:.3f} mg/L")
 
 # 叶绿素: 冬季很低
-Chla_init = np.full(n_cells, 3.0)  # μg/L
-print(f"初始叶绿素: {Chla_init[0]:.1f} μg/L (冬季低水平)")
+Chla_init = np.full(n_cells, 3.0)  # mug/L
+print(f"初始叶绿素: {Chla_init[0]:.1f} mug/L (冬季低水平)")
 print()
 
 # ==================== 气象条件 ====================
@@ -102,18 +103,18 @@ def get_spring_forcing(day):
     """春季气象强迫"""
     hour = (day - int(day)) * 24
 
-    # 气温: 从-5°C逐渐上升到15°C
+    # 气温: 从-5 degC逐渐上升到15 degC
     T_start = -5.0
     T_end = 15.0
     T_mean = T_start + (T_end - T_start) * day / n_days
 
     # 日变化
-    T_amplitude = 5.0  # °C
+    T_amplitude = 5.0  #  degC
     T_air = T_mean + T_amplitude * np.sin(2 * np.pi * (hour - 6) / 24)
 
     # 太阳辐射: 春季逐渐增强
     if 6 <= hour <= 18:  # 白天12小时
-        # 最大辐射从200逐渐增加到500 W/m²
+        # 最大辐射从200逐渐增加到500 W/m^2
         max_rad_start = 200.0
         max_rad_end = 500.0
         max_radiation = max_rad_start + (max_rad_end - max_rad_start) * day / n_days
@@ -128,8 +129,8 @@ wind_speed = 4.0  # m/s (春季多风)
 relative_humidity = 0.65
 cloud_cover = 0.2
 
-print(f"气温变化: -5°C → 15°C (21天)")
-print(f"太阳辐射: 200 → 500 W/m² (逐渐增强)")
+print(f"气温变化: -5 degC -> 15 degC (21天)")
+print(f"太阳辐射: 200 -> 500 W/m^2 (逐渐增强)")
 print(f"白天时长: 12 小时")
 print(f"风速: {wind_speed:.1f} m/s")
 print()
@@ -164,7 +165,7 @@ nutrients_solver.OrgP = OrgP_init.copy()
 algae_solver = PhytoplanktonSolver(n_cells, dx, use_numba=False)
 algae_solver.Chla = Chla_init.copy()
 
-print("✓ 所有求解器初始化完成")
+print(" 所有求解器初始化完成")
 print()
 
 # ==================== 时间积分 ====================
@@ -173,7 +174,7 @@ print("-" * 70)
 print(f"开始模拟 {n_days} 天...")
 print()
 
-# 输出存储（每天输出）
+# 输出存储每天输出
 output_interval = 24
 output_times = []
 output_T = []
@@ -212,7 +213,7 @@ for step in range(n_steps):
         ice_cover_fraction=ice_solver.ice_cover_fraction
     )
 
-    # Step 2: 冰盖（融化过程）
+    # Step 2: 冰盖融化过程
     ice_state = ice_solver.step(dt, T_air, T)
 
     # Step 3: 营养盐
@@ -257,12 +258,12 @@ for step in range(n_steps):
         T_air_now, _ = get_spring_forcing(day)
         output_Tair.append(T_air_now)
 
-        print(f"Day {day:4.0f}: Tair={T_air_now:6.1f}°C, T={T.mean():5.2f}°C, "
+        print(f"Day {day:4.0f}: Tair={T_air_now:6.1f} degC, T={T.mean():5.2f} degC, "
               f"Ice={ice_solver.ice_thickness.mean()*100:5.1f}cm, "
-              f"Chla={algae_solver.Chla.mean():5.1f}μg/L")
+              f"Chla={algae_solver.Chla.mean():5.1f}mug/L")
 
 print()
-print("✓ 模拟完成!")
+print(" 模拟完成!")
 print()
 
 # ==================== 结果分析 ====================
@@ -278,18 +279,18 @@ output_Chla = np.array(output_Chla)
 output_Tair = np.array(output_Tair)
 
 print(f"初始状态:")
-print(f"  气温: {output_Tair[0]:.1f} °C")
-print(f"  水温: {output_T[0]:.1f} °C")
+print(f"  气温: {output_Tair[0]:.1f}  degC")
+print(f"  水温: {output_T[0]:.1f}  degC")
 print(f"  冰厚: {output_ice_thickness[0]*100:.0f} cm")
-print(f"  叶绿素: {output_Chla[0]:.1f} μg/L")
+print(f"  叶绿素: {output_Chla[0]:.1f} mug/L")
 print()
 
 print(f"最终状态 (Day {n_days}):")
-print(f"  气温: {output_Tair[-1]:.1f} °C")
-print(f"  水温: {output_T[-1]:.1f} °C")
+print(f"  气温: {output_Tair[-1]:.1f}  degC")
+print(f"  水温: {output_T[-1]:.1f}  degC")
 print(f"  冰厚: {output_ice_thickness[-1]*100:.1f} cm")
 print(f"  冰盖覆盖率: {output_ice_fraction[-1]*100:.1f}%")
-print(f"  叶绿素: {output_Chla[-1]:.1f} μg/L")
+print(f"  叶绿素: {output_Chla[-1]:.1f} mug/L")
 print()
 
 # 融冰进程
@@ -306,7 +307,7 @@ else:
 print()
 
 print("变化量:")
-print(f"  水温上升: {output_T[-1] - output_T[0]:+.1f} °C")
+print(f"  水温上升: {output_T[-1] - output_T[0]:+.1f}  degC")
 print(f"  冰厚减少: {(output_ice_thickness[0] - output_ice_thickness[-1])*100:.1f} cm")
 print(f"  藻类恢复: {output_Chla[-1] / output_Chla[0]:.1f} 倍")
 print()
@@ -323,7 +324,7 @@ ax.plot(output_times, output_Tair, 'r--', linewidth=2, label='Air Temp')
 ax.plot(output_times, output_T, 'b-', linewidth=2, label='Water Temp')
 ax.axhline(0, color='gray', linestyle='--', linewidth=1)
 ax.set_xlabel('Time (days)')
-ax.set_ylabel('Temperature (°C)')
+ax.set_ylabel('Temperature ( degC)')
 ax.set_title('(a) Temperature Recovery')
 ax.legend()
 ax.grid(True, alpha=0.3)
@@ -353,7 +354,7 @@ ax.grid(True, alpha=0.3)
 ax = axes[1, 1]
 ax.plot(output_times, output_Chla, 'g-', linewidth=2.5)
 ax.set_xlabel('Time (days)')
-ax.set_ylabel('Chlorophyll-a (μg/L)')
+ax.set_ylabel('Chlorophyll-a (mug/L)')
 ax.set_title('(d) Algal Recovery')
 ax.grid(True, alpha=0.3)
 
@@ -386,30 +387,30 @@ ax.grid(True, alpha=0.3)
 plt.tight_layout()
 output_file = 'spring_ice_breakup_results.png'
 plt.savefig(output_file, dpi=150, bbox_inches='tight')
-print(f"✓ 图表已保存: {output_file}")
+print(f" 图表已保存: {output_file}")
 print()
 
 # ==================== 总结 ====================
 print("[8] 模拟总结")
 print("=" * 70)
 print()
-print("✅ 成功模拟了春季融冰期生态恢复过程")
+print(" 成功模拟了春季融冰期生态恢复过程")
 print()
 print("主要发现:")
-print(f"  1. 气温回升: {output_Tair[0]:.1f} → {output_Tair[-1]:.1f} °C")
-print(f"  2. 水温恢复: {output_T[0]:.1f} → {output_T[-1]:.1f} °C")
-print(f"  3. 冰盖融化: {output_ice_thickness[0]*100:.0f} → {output_ice_thickness[-1]*100:.1f} cm")
+print(f"  1. 气温回升: {output_Tair[0]:.1f} -> {output_Tair[-1]:.1f}  degC")
+print(f"  2. 水温恢复: {output_T[0]:.1f} -> {output_T[-1]:.1f}  degC")
+print(f"  3. 冰盖融化: {output_ice_thickness[0]*100:.0f} -> {output_ice_thickness[-1]*100:.1f} cm")
 if ice_free_day:
     print(f"  4. 解冻时间: Day {ice_free_day:.0f}")
-print(f"  5. 藻类恢复: {output_Chla[0]:.1f} → {output_Chla[-1]:.1f} μg/L ({output_Chla[-1]/output_Chla[0]:.1f}倍)")
+print(f"  5. 藻类恢复: {output_Chla[0]:.1f} -> {output_Chla[-1]:.1f} mug/L ({output_Chla[-1]/output_Chla[0]:.1f}倍)")
 print()
 print("生态过程:")
-print("  ✓ 气温回升 → 冰盖融化")
-print("  ✓ 冰盖融化 → 光照增强")
-print("  ✓ 水温回升 + 光照增强 → 藻类复苏")
-print("  ✓ 冰盖消失 → 大气复氧恢复")
-print("  ✓ 春季是生态系统从冬眠到活跃的关键转换期")
+print("   气温回升 -> 冰盖融化")
+print("   冰盖融化 -> 光照增强")
+print("   水温回升 + 光照增强 -> 藻类复苏")
+print("   冰盖消失 -> 大气复氧恢复")
+print("   春季是生态系统从冬眠到活跃的关键转换期")
 print()
 print("=" * 70)
-print("HydroClaude v1.0 - 春季生态恢复评估工具 ✨")
+print("HydroClaude v1.0 - 春季生态恢复评估工具 ")
 print("=" * 70)

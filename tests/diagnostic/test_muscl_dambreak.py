@@ -13,7 +13,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def run_dam_break(use_muscl=False, limiter='minmod', nx=501, dt=0.1, T=50.0):
@@ -220,7 +226,7 @@ def main():
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     fig_path = f'/workspace/validation_cases/results/muscl_comparison_{timestamp}.png'
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f"\n✅ 图表已保存: {fig_path}")
+    print(f"\n 图表已保存: {fig_path}")
     plt.close()
 
 

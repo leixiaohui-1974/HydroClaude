@@ -14,7 +14,13 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 import numpy as np
 import matplotlib.pyplot as plt
 
-from solvers.dissolved_oxygen import DissolvedOxygenSolver
+try:
+    from solvers.dissolved_oxygen import DissolvedOxygenSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 def test_do_simple():
     """简化DO测试 - 验证基本功能"""
@@ -24,7 +30,7 @@ def test_do_simple():
     print("="*70)
 
     # 简单场景: 10个单元, 1小时模拟
-    n_cells = 10
+    n_cells = 12
     dx = 1000.0  # 1km
 
     # 创建DO求解器
@@ -44,7 +50,7 @@ def test_do_simple():
     # 水动力条件 (恒定)
     u = np.full(n_cells, 0.5)  # 0.5 m/s
     h = np.full(n_cells, 2.0)  # 2 m
-    T = np.full(n_cells, 20.0)  # 20°C
+    T = np.full(n_cells, 20.0)  # 20 degC
 
     # 计算DO饱和度和再曝气系数
     DO_sat = do_solver.compute_DO_saturation(T)
@@ -125,10 +131,10 @@ def test_do_simple():
 
     # 验证: DO应该略有上升(因为初始DO < DO_sat)
     if DO_final >= DO_init[0] * 0.95 and DO_final > 0:
-        print(f"\n✅ 测试通过! DO保持合理值")
+        print(f"\n 测试通过! DO保持合理值")
         return True
     else:
-        print(f"\n❌ 测试失败! DO异常下降")
+        print(f"\n 测试失败! DO异常下降")
         return False
 
 if __name__ == '__main__':

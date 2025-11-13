@@ -16,7 +16,13 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 import time
 import numpy as np
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def benchmark_weno3(n_cells, n_steps, config_name, use_enhanced_bc=True):
@@ -135,7 +141,7 @@ def run_benchmarks():
 
         print(f"\n  对比:")
         if enhancement_overhead < 1.1:
-            print(f"    增强版本开销: +{(enhancement_overhead-1)*100:.1f}% (可接受) ✅")
+            print(f"    增强版本开销: +{(enhancement_overhead-1)*100:.1f}% (可接受) ")
         elif enhancement_overhead < 1.3:
             print(f"    增强版本开销: +{(enhancement_overhead-1)*100:.1f}% (轻微)")
         else:
@@ -158,12 +164,12 @@ def run_benchmarks():
     print(f"  平均增强版本开销: {(avg_overhead-1)*100:.1f}%")
 
     if avg_overhead < 1.1:
-        print(f"  ✅ 向量化优化完全抵消了增强边界的额外开销")
-        print(f"  ✅ 用户获得3阶边界精度且无性能损失")
+        print(f"   向量化优化完全抵消了增强边界的额外开销")
+        print(f"   用户获得3阶边界精度且无性能损失")
     elif avg_overhead < 1.3:
-        print(f"  ✅ 轻微开销(<30%)换取3阶边界精度，值得")
+        print(f"   轻微开销(<30%)换取3阶边界精度，值得")
     else:
-        print(f"  ⚠️  开销较大，需要进一步优化")
+        print(f"  ️  开销较大，需要进一步优化")
 
     # 向量化的直接收益估算
     print(f"\n向量化收益估算:")
@@ -181,5 +187,5 @@ if __name__ == '__main__':
     run_benchmarks()
 
     print(f"\n{'='*80}")
-    print("✅ 性能基准测试完成")
+    print(" 性能基准测试完成")
     print(f"{'='*80}")

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
@@ -9,7 +10,7 @@ def example_series_network():
     """示例1: 串联网络"""
     print("\n" + "="*60)
     print("示例1: 串联网络 (Series Network)")
-    print("水库 → 渠道1 → 闸门 → 渠道2 → 泵站 → 管道 → 水池")
+    print("水库 -> 渠道1 -> 闸门 -> 渠道2 -> 泵站 -> 管道 -> 水池")
     print("="*60)
 
     topology = NetworkTopology()
@@ -42,7 +43,7 @@ def example_series_network():
         print(f"  {node_id}: {head:.2f} m")
     print("\n管段流量:")
     for edge_id, flow in results['edges'].items():
-        print(f"  {edge_id}: {flow:.2f} m³/s")
+        print(f"  {edge_id}: {flow:.2f} m^3/s")
 
 if __name__ == "__main__":
     example_series_network()

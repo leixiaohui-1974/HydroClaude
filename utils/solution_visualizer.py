@@ -379,22 +379,22 @@ class SolutionVisualizer:
         print("  1/5 流态剖面图...", end=" ", flush=True)
         plots['profile'] = self.plot_profile(system, h, Q,
                                             title=f"{scenario_name} - Flow Profile")
-        print("✅")
+        print("")
 
         print("  2/5 流速分布图...", end=" ", flush=True)
         plots['velocity'] = self.plot_velocity(system, h, Q,
                                               title=f"{scenario_name} - Velocity Distribution")
-        print("✅")
+        print("")
 
         print("  3/5 Froude数分布...", end=" ", flush=True)
         plots['froude'] = self.plot_froude_number(system, h, Q,
                                                   title=f"{scenario_name} - Froude Number")
-        print("✅")
+        print("")
 
         print("  4/5 能量线图...", end=" ", flush=True)
         plots['energy'] = self.plot_energy_grade_line(system, h, Q,
                                                       title=f"{scenario_name} - Energy Grade Line")
-        print("✅")
+        print("")
 
         print()
         print(f"所有图表已保存到: {self.output_dir}")
@@ -459,7 +459,7 @@ def main():
     )
 
     h_sol, Q_sol = system.unpack_state(U_sol)
-    print(f"✅ 收敛: {info['converged']}, 迭代: {info['iterations']}次\n")
+    print(f" 收敛: {info['converged']}, 迭代: {info['iterations']}次\n")
 
     # 可视化
     visualizer = SolutionVisualizer(output_dir="visualization_results")

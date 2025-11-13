@@ -415,7 +415,7 @@ class FVMSteadyFullSolver:
             # 检查收敛
             if R_norm < tol:
                 if verbose:
-                    print(f"\n✓ Newton迭代收敛！(iter={iter_count}, ||R||={R_norm:.6e})")
+                    print(f"\n Newton迭代收敛！(iter={iter_count}, ||R||={R_norm:.6e})")
                     print(f"  最终流量误差: {Q_error:.4f}%")
                 return True
 
@@ -430,7 +430,7 @@ class FVMSteadyFullSolver:
                 dU = spsolve(J, -R)
             except:
                 if verbose:
-                    print(f"\n⚠ Jacobian矩阵奇异，迭代终止")
+                    print(f"\n Jacobian矩阵奇异，迭代终止")
                 return False
 
             # 线搜索
@@ -447,7 +447,7 @@ class FVMSteadyFullSolver:
                 self.U_vec[2*i] = max(self.U_vec[2*i], self.B * 0.01)  # A > 0
 
         if verbose:
-            print(f"\n⚠ Newton迭代未收敛（达到最大迭代次数{max_iter}）")
+            print(f"\n Newton迭代未收敛（达到最大迭代次数{max_iter}）")
             print(f"  最终残差: ||R||={R_norm:.6e}")
             print(f"  最终流量误差: {Q_error:.4f}%")
 

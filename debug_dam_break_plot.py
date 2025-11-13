@@ -54,7 +54,7 @@ while solver.t < t_end:
     if step_count % 5 == 0:
         print(f"  Step {step_count}: t={solver.t:.3f}s, dt={solver.dt:.4f}s")
 
-print(f"✅ Simulation completed: {step_count} steps, t={solver.t:.3f}s")
+print(f" Simulation completed: {step_count} steps, t={solver.t:.3f}s")
 
 # Get numerical solution
 h_num = solver.h
@@ -90,7 +90,7 @@ axes[1].set_xlim([0, L])
 
 plt.tight_layout()
 plt.savefig('debug_dam_break_comparison.png', dpi=150, bbox_inches='tight')
-print(f"\n✅ Plot saved: debug_dam_break_comparison.png")
+print(f"\n Plot saved: debug_dam_break_comparison.png")
 
 # Compute and print errors
 mask = (h_exact > 1e-6) | (h_num > 1e-6)

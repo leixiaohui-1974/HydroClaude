@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例19: 长距离调水工程
 
@@ -19,6 +20,8 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from typing import Dict, List
@@ -69,21 +72,21 @@ class WaterTransferSystem:
         """创建源水库（类似丹江口水库）"""
         self.source_reservoir = Reservoir(
             reservoir_id="source_reservoir",
-            total_capacity=200000e4,  # 200亿m³
-            dead_storage=20000e4,     # 20亿m³
+            total_capacity=200000e4,  # 200亿m^3
+            dead_storage=20000e4,     # 20亿m^3
             min_level=140.0,          # 死水位
             normal_level=170.0,       # 正常蓄水位
             flood_limit_level=165.0,  # 防洪限制水位
             design_level=176.5,       # 设计洪水位
-            catchment_area=95000.0,   # 集水面积 95000 km²
-            ecological_flow=300.0,    # 生态流量 300 m³/s
-            max_discharge=5000.0,     # 最大泄流 5000 m³/s
+            catchment_area=95000.0,   # 集水面积 95000 km^2
+            ecological_flow=300.0,    # 生态流量 300 m^3/s
+            max_discharge=5000.0,     # 最大泄流 5000 m^3/s
             has_spillway=True,
             has_turbine=False  # 专用于供水，不发电
         )
 
         print(f"\n源水库参数:")
-        print(f"  库容: {self.source_reservoir.total_capacity/1e8:.0f} 亿m³")
+        print(f"  库容: {self.source_reservoir.total_capacity/1e8:.0f} 亿m^3")
         print(f"  水位范围: {self.source_reservoir.min_level:.1f} - {self.source_reservoir.design_level:.1f} m")
 
     def _create_pump_stations(self):
@@ -93,7 +96,7 @@ class WaterTransferSystem:
             {
                 "id": "pump_station_1",
                 "lift": 50.0,      # 提升高度 50m
-                "rated_flow": 350.0,  # 额定流量 350 m³/s
+                "rated_flow": 350.0,  # 额定流量 350 m^3/s
                 "rated_head": 55.0,
                 "efficiency": 0.82,
                 "power": 200.0     # 装机功率 200 MW
@@ -132,7 +135,7 @@ class WaterTransferSystem:
 
             print(f"  {config['id']}:")
             print(f"    提升高度: {config['lift']:.0f} m")
-            print(f"    额定流量: {config['rated_flow']:.0f} m³/s")
+            print(f"    额定流量: {config['rated_flow']:.0f} m^3/s")
             print(f"    装机功率: {config['power']:.0f} MW")
 
     def _create_pipelines(self):
@@ -181,12 +184,12 @@ class WaterTransferSystem:
         self.regulation_tank = Tank(
             tank_id="regulation_tank",
             volume_min=0.0,      # 最小容积
-            volume_max=5e6,      # 最大容积 500万m³
-            area=250000.0        # 面积 25万m²
+            volume_max=5e6,      # 最大容积 500万m^3
+            area=250000.0        # 面积 25万m^2
         )
 
         print(f"\n调蓄池参数:")
-        print(f"  容积: {self.regulation_tank.volume/1e6:.0f} 万m³")
+        print(f"  容积: {self.regulation_tank.volume/1e6:.0f} 万m^3")
         print(f"  调蓄能力: {self.regulation_tank.volume_max/self.regulation_tank.area:.0f} m")
 
     def simulate_daily_operation(
@@ -201,8 +204,8 @@ class WaterTransferSystem:
 
         参数:
             n_days: 仿真天数
-            source_inflow: 源水库入流序列 (m³/s)
-            target_demand: 目标需水序列 (m³/s)
+            source_inflow: 源水库入流序列 (m^3/s)
+            target_demand: 目标需水序列 (m^3/s)
             electricity_prices: 电价序列 (相对值)
         """
         print("\n" + "=" * 80)
@@ -245,8 +248,8 @@ class WaterTransferSystem:
 
         print(f"\n仿真参数:")
         print(f"  仿真时长: {n_days} 天 ({n_hours} 小时)")
-        print(f"  源水库入流: {np.mean(source_inflow):.0f} m³/s (平均)")
-        print(f"  目标需水: {np.mean(target_demand):.0f} m³/s (平均)")
+        print(f"  源水库入流: {np.mean(source_inflow):.0f} m^3/s (平均)")
+        print(f"  目标需水: {np.mean(target_demand):.0f} m^3/s (平均)")
         print(f"  电价变化: {np.min(electricity_prices):.1f} - {np.max(electricity_prices):.1f} (相对值)")
 
         # 结果存储
@@ -365,8 +368,8 @@ class WaterTransferSystem:
 
         # 统计结果
         print(f"\n仿真结果统计:")
-        print(f"  总调水量: {np.sum(results['tank_outflow']) * dt / 1e8:.2f} 亿m³")
-        print(f"  平均供水: {np.mean(results['tank_outflow']):.0f} m³/s")
+        print(f"  总调水量: {np.sum(results['tank_outflow']) * dt / 1e8:.2f} 亿m^3")
+        print(f"  平均供水: {np.mean(results['tank_outflow']):.0f} m^3/s")
         print(f"  平均功率: {np.mean(results['total_power']):.0f} MW")
         print(f"  总能耗: {np.sum(results['total_power']):.0f} MWh")
         print(f"  总电费: {np.sum(results['electricity_cost']):.0f} (相对单位)")
@@ -400,7 +403,7 @@ def visualize_results(results):
     ax2.plot(time_hours, results['pump1_flow'], label='泵站1', linewidth=2)
     ax2.plot(time_hours, results['pump2_flow'], label='泵站2', linewidth=2)
     ax2.plot(time_hours, results['pump3_flow'], label='泵站3', linewidth=2)
-    ax2.set_ylabel('流量 (m³/s)', fontsize=12)
+    ax2.set_ylabel('流量 (m^3/s)', fontsize=12)
     ax2.set_title('各级泵站流量', fontsize=14, fontweight='bold')
     ax2.legend(loc='best', ncol=3)
     ax2.grid(True, alpha=0.3)
@@ -435,7 +438,7 @@ def visualize_results(results):
         ax5.fill_between(time_hours, 0, results['shortage'],
                         color='red', alpha=0.3, label='缺水')
     ax5.set_xlabel('时间 (小时)', fontsize=12)
-    ax5.set_ylabel('流量 (m³/s)', fontsize=12)
+    ax5.set_ylabel('流量 (m^3/s)', fontsize=12)
     ax5.set_title('供水与需水', fontsize=14, fontweight='bold')
     ax5.legend(loc='best')
     ax5.grid(True, alpha=0.3)
@@ -462,7 +465,7 @@ def visualize_results(results):
     ax6.legend(lines, labels, loc='upper right')
     ax6.grid(True, alpha=0.3, axis='y')
 
-    plt.savefig('/home/user/HydroClaude/examples/example_19_water_transfer/water_transfer_simulation.png',
+    plt.savefig('examples/example_19_water_transfer/water_transfer_simulation.png',
                 dpi=150, bbox_inches='tight')
     print(f"图像已保存到: water_transfer_simulation.png")
 
@@ -474,16 +477,16 @@ def analyze_energy_efficiency(results):
     print("=" * 80)
 
     # 计算单位水量能耗
-    total_water = np.sum(results['tank_outflow']) * 3600  # m³
+    total_water = np.sum(results['tank_outflow']) * 3600  # m^3
     total_energy = np.sum(results['total_power'])  # MWh
 
     unit_energy = total_energy / (total_water / 1e6) if total_water > 0 else 0
 
     print(f"\n能效指标:")
-    print(f"  总调水量: {total_water/1e8:.3f} 亿m³")
+    print(f"  总调水量: {total_water/1e8:.3f} 亿m^3")
     print(f"  总能耗: {total_energy:.0f} MWh")
-    print(f"  单位水量能耗: {unit_energy:.4f} kWh/m³")
-    print(f"  相当于提升100m: {unit_energy * 100 / 150:.4f} kWh/m³/100m")
+    print(f"  单位水量能耗: {unit_energy:.4f} kWh/m^3")
+    print(f"  相当于提升100m: {unit_energy * 100 / 150:.4f} kWh/m^3/100m")
 
     # 分析峰谷错峰效果
     high_price_hours = np.array(results['electricity_price']) > 1.2
@@ -526,8 +529,8 @@ if __name__ == "__main__":
     print("=" * 80)
 
     print("\n关键成果:")
-    print("  ✓ 成功仿真7天调水运行")
-    print("  ✓ 实现多级泵站联合优化")
-    print("  ✓ 峰谷电价错峰调度")
-    print("  ✓ 调蓄池削峰填谷")
-    print("  ✓ 能源效率分析")
+    print("   成功仿真7天调水运行")
+    print("   实现多级泵站联合优化")
+    print("   峰谷电价错峰调度")
+    print("   调蓄池削峰填谷")
+    print("   能源效率分析")

@@ -17,7 +17,17 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.single_canal_solver import SingleCanalSolver
+try:
+    # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.single_canal_solver import SingleCanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 from solvers.adaptive_smooth_config import (
     AdaptiveSmoothConfig,
@@ -106,7 +116,7 @@ def test_config(config_name, config, verbose=True):
 
     except Exception as e:
         if verbose:
-            print(f"\n✗ 求解失败: {e}")
+            print(f"\n 求解失败: {e}")
 
         return {
             'success': False,
@@ -155,13 +165,13 @@ def main():
         results.append(result)
 
         if result['success']:
-            print(f"\n✓ 成功")
+            print(f"\n 成功")
             print(f"  最大误差: {result['max_error']:.4f}%")
             print(f"  平均误差: {result['mean_error']:.4f}%")
             print(f"  最大闸门误差: {result['max_gate_error']:.4f}%")
             print(f"  迭代次数: {result['iterations']}")
         else:
-            print(f"\n✗ 失败")
+            print(f"\n 失败")
 
     # 汇总结果
     print("\n" + "=" * 80)
@@ -173,7 +183,7 @@ def main():
     successful = [r for r in results if r['success']]
 
     if not successful:
-        print("✗ 所有测试都失败了！")
+        print(" 所有测试都失败了！")
         return
 
     # 表格输出
@@ -210,15 +220,15 @@ def main():
 
     print()
     if target_1_0_percent:
-        print(f"✓✓✓ 有 {len(target_1_0_percent)} 个配置达到了1.0%目标！")
+        print(f" 有 {len(target_1_0_percent)} 个配置达到了1.0%目标！")
         for r in target_1_0_percent:
             print(f"  - {r['config_name']}: {r['max_error']:.4f}%")
     elif target_1_5_percent:
-        print(f"✓✓ 有 {len(target_1_5_percent)} 个配置达到了1.5%目标！")
+        print(f" 有 {len(target_1_5_percent)} 个配置达到了1.5%目标！")
         for r in target_1_5_percent:
             print(f"  - {r['config_name']}: {r['max_error']:.4f}%")
     else:
-        print(f"⚠ 未达到1.5%目标，最佳: {best['max_error']:.4f}%")
+        print(f" 未达到1.5%目标，最佳: {best['max_error']:.4f}%")
 
     print("\n" + "=" * 80)
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-明渠串联闸泵群系统 - 使用高精度泵站模型（完整特性曲线）
+明渠串联闸泵群系统 - 使用高精度泵站模型完整特性曲线
 
-使用PumpStationAdvanced模型：
+使用PumpStationAdvanced模型
 - 真实的泵特性曲线 H = f(Q)
 - 考虑管路特性曲线
 - 迭代求解工作点
@@ -31,15 +31,15 @@ from utils.visualization_templates import VisualizationTemplates
 
 
 def main():
-    """主函数：使用高精度泵站模型"""
+    """主函数使用高精度泵站模型"""
     
     print("=" * 90)
-    print("明渠串联闸泵群系统（高精度泵站模型 - 完整特性曲线）".center(90))
+    print("明渠串联闸泵群系统高精度泵站模型 - 完整特性曲线".center(90))
     print("=" * 90)
     print()
     
     # ==================== 1. 参数设置 ====================
-    print("▶ 1. 系统参数设置")
+    print(" 1. 系统参数设置")
     print("-" * 90)
     
     SCENARIO = "mountain"
@@ -64,7 +64,7 @@ def main():
     gate_opening = 5.0
     gate_Cd = 0.6
     
-    # 泵站参数（高精度模型）
+    # 泵站参数高精度模型
     pump_rated_flow = 30.0
     pump_rated_head = 5.0
     pump_shutoff_head = 6.0  # 关阀扬程
@@ -73,24 +73,24 @@ def main():
     
     # 瞬态模拟参数
     t_total = 3600.0
-    dt = 0.5  # 减小时间步长，提高稳定性
+    dt = 0.5  # 减小时间步长提高稳定性
     
     print(f"渠道参数:")
     print(f"  总长度: {L_total/1000:.1f} km")
     print(f"  渠道宽度: {B:.1f} m")
-    print(f"  底坡: {S0*10000:.2f}‰")
-    print(f"  网格: {nx}点, Δx={L_total/(nx-1):.1f}m")
+    print(f"  底坡: {S0*10000:.2f}[permille]")
+    print(f"  网格: {nx}点, Deltax={L_total/(nx-1):.1f}m")
     print()
     
-    print(f"泵站模型: PumpStationAdvanced（高精度 - 完整特性曲线）")
-    print(f"  额定流量: {pump_rated_flow} m³/s")
+    print(f"泵站模型: PumpStationAdvanced高精度 - 完整特性曲线")
+    print(f"  额定流量: {pump_rated_flow} m^3/s")
     print(f"  额定扬程: {pump_rated_head} m")
     print(f"  关阀扬程: {pump_shutoff_head} m")
     print(f"  特点: 真实泵特性曲线 + 工作点求解")
     print()
     
     # ==================== 2. 创建求解器和结构物 ====================
-    print("▶ 2. 创建求解器和结构物")
+    print(" 2. 创建求解器和结构物")
     print("-" * 90)
     
     # 创建闸门
@@ -130,7 +130,7 @@ def main():
     )
     
     print(f"求解器: HydrostaticCanalSolver")
-    print(f"  网格: {solver.nx}点, Δx={solver.dx:.1f}m")
+    print(f"  网格: {solver.nx}点, Deltax={solver.dx:.1f}m")
     print()
     
     # 均匀流水深
@@ -139,7 +139,7 @@ def main():
     print()
     
     # ==================== 3. 场景配置 ====================
-    print(f"▶ 3. 场景配置: {SCENARIO.upper()}")
+    print(f" 3. 场景配置: {SCENARIO.upper()}")
     print("-" * 90)
     
     pump_idx = np.argmin(np.abs(solver.x - pump_pos))
@@ -156,7 +156,7 @@ def main():
     
     # ==================== 4. 稳态求解 ====================
     print("=" * 90)
-    print("▶ 4. 稳态求解（初始流量 30 m³/s）")
+    print(" 4. 稳态求解初始流量 30 m^3/s")
     print("-" * 90)
     
     solver.h[:] = h_uniform
@@ -174,7 +174,7 @@ def main():
     
     print()
     if result_steady['converged']:
-        print(f"✓ 稳态求解成功")
+        print(f" 稳态求解成功")
         print(f"  迭代: {result_steady['iterations']}")
         print(f"  流量误差: {result_steady.get('final_flow_error', 0):.6f}%")
     print()
@@ -183,12 +183,12 @@ def main():
     hu_steady = solver.hu.copy()
     
     # 验证
-    validator = quick_validate_steady_state(solver, result_steady, Q_initial, "稳态解（高精度模型）")
+    validator = quick_validate_steady_state(solver, result_steady, Q_initial, "稳态解高精度模型")
     print()
     
     # ==================== 5. 瞬态模拟 ====================
     print("=" * 90)
-    print("▶ 5. 瞬态模拟（流量阶跃 30→55 m³/s）")
+    print(" 5. 瞬态模拟流量阶跃 30->55 m^3/s")
     print("-" * 90)
     
     solver.h[:] = h_steady
@@ -255,12 +255,12 @@ def main():
             save_idx += 1
     
     print()
-    print("✓ 瞬态模拟完成")
+    print(" 瞬态模拟完成")
     print()
     
     # ==================== 6. 详细可视化 ====================
     print("=" * 90)
-    print("▶ 6. 结果可视化（高精度模型）")
+    print(" 6. 结果可视化高精度模型")
     print("-" * 90)
     
     output_dir = os.path.join(project_root, "examples", "example_gate_pump_cascade", "results")
@@ -279,7 +279,7 @@ def main():
     ax1.fill_between(solver.x / 1000, z_bed, eta_steady, alpha=0.3, color='cyan')
     ax1.plot(solver.x / 1000, z_bed, 'k-', linewidth=1.5, label='Bed Level')
     ax1.set_ylabel('Elevation (m)', fontsize=12)
-    ax1.set_title(f'Steady-State Profile (Q={Q_initial} m³/s) - Advanced Pump Model', fontsize=14, fontweight='bold')
+    ax1.set_title(f'Steady-State Profile (Q={Q_initial} m^3/s) - Advanced Pump Model', fontsize=14, fontweight='bold')
     ax1.grid(True, alpha=0.3)
     ax1.legend(fontsize=11)
     
@@ -292,7 +292,7 @@ def main():
     ax2.plot(solver.x / 1000, q_steady, 'g-', linewidth=2)
     ax2.axhline(Q_initial, color='gray', linestyle='--', linewidth=1, alpha=0.5)
     ax2.set_xlabel('Distance (km)', fontsize=12)
-    ax2.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+    ax2.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
     ax2.grid(True, alpha=0.3)
     
     for pos in [gate1_pos/1000, pump_pos/1000, gate2_pos/1000]:
@@ -301,7 +301,7 @@ def main():
     fig1.tight_layout()
     fig1.savefig(os.path.join(output_dir, "ADVANCED_01_steady_state.png"), dpi=150, bbox_inches='tight')
     plt.close(fig1)
-    print("  ✓ 保存: ADVANCED_01_steady_state.png")
+    print("   保存: ADVANCED_01_steady_state.png")
     
     # 图2: 水位时空演化
     print("生成图2: 水位时空演化...")
@@ -326,13 +326,13 @@ def main():
     fig2.tight_layout()
     fig2.savefig(os.path.join(output_dir, "ADVANCED_02_water_level_spacetime.png"), dpi=150, bbox_inches='tight')
     plt.close(fig2)
-    print("  ✓ 保存: ADVANCED_02_water_level_spacetime.png")
+    print("   保存: ADVANCED_02_water_level_spacetime.png")
     
     # 图3: 流量时空演化
     print("生成图3: 流量时空演化...")
     fig3, ax = plt.subplots(figsize=(16, 10))
     contour = ax.contourf(X, T, q_history, levels=20, cmap='plasma')
-    plt.colorbar(contour, ax=ax, label='Flow Rate (m³/s)')
+    plt.colorbar(contour, ax=ax, label='Flow Rate (m^3/s)')
     
     for pos, name in [(gate1_pos/1000, "Gate1"), (pump_pos/1000, "Pump"), (gate2_pos/1000, "Gate2")]:
         ax.axvline(pos, color='cyan', linestyle='--', linewidth=1.5, alpha=0.7)
@@ -346,7 +346,7 @@ def main():
     fig3.tight_layout()
     fig3.savefig(os.path.join(output_dir, "ADVANCED_03_flow_rate_spacetime.png"), dpi=150, bbox_inches='tight')
     plt.close(fig3)
-    print("  ✓ 保存: ADVANCED_03_flow_rate_spacetime.png")
+    print("   保存: ADVANCED_03_flow_rate_spacetime.png")
     
     # 图4: 关键位置时间序列
     print("生成图4: 关键位置时间序列...")
@@ -356,9 +356,9 @@ def main():
     ax1.plot(time_history/60, q_history[:, pump_idx-1], 'b-', linewidth=2, label='Pump Inlet')
     ax1.plot(time_history/60, q_history[:, pump_idx], 'r-', linewidth=2.5, label='Pump')
     ax1.plot(time_history/60, q_history[:, pump_idx+1], 'g-', linewidth=2, label='Pump Outlet')
-    ax1.axhline(pump_rated_flow, color='gray', linestyle='--', alpha=0.5, label=f'Rated ({pump_rated_flow} m³/s)')
+    ax1.axhline(pump_rated_flow, color='gray', linestyle='--', alpha=0.5, label=f'Rated ({pump_rated_flow} m^3/s)')
     ax1.set_xlabel('Time (min)', fontsize=11)
-    ax1.set_ylabel('Flow Rate (m³/s)', fontsize=11)
+    ax1.set_ylabel('Flow Rate (m^3/s)', fontsize=11)
     ax1.set_title('Pump Station Flow Rate', fontsize=12, fontweight='bold')
     ax1.legend(fontsize=10)
     ax1.grid(True, alpha=0.3)
@@ -391,7 +391,7 @@ def main():
     ax4.plot(time_history/60, q_out, 'r-', linewidth=2, label='Outlet')
     ax4.plot(time_history/60, q_diff, 'g--', linewidth=2, label='Storage Rate')
     ax4.set_xlabel('Time (min)', fontsize=11)
-    ax4.set_ylabel('Flow Rate (m³/s)', fontsize=11)
+    ax4.set_ylabel('Flow Rate (m^3/s)', fontsize=11)
     ax4.set_title('Mass Conservation Check', fontsize=12, fontweight='bold')
     ax4.legend(fontsize=10)
     ax4.grid(True, alpha=0.3)
@@ -399,7 +399,7 @@ def main():
     fig4.tight_layout()
     fig4.savefig(os.path.join(output_dir, "ADVANCED_04_time_series.png"), dpi=150, bbox_inches='tight')
     plt.close(fig4)
-    print("  ✓ 保存: ADVANCED_04_time_series.png")
+    print("   保存: ADVANCED_04_time_series.png")
     
     # 图5: 纵断面动画
     print("生成图5: 纵断面动画...")
@@ -425,7 +425,7 @@ def main():
         dpi=80
     )
     plt.close(fig_anim)
-    print("  ✓ 保存: ADVANCED_05_animation.gif")
+    print("   保存: ADVANCED_05_animation.gif")
     
     # 保存数据
     np.savez(
@@ -440,12 +440,12 @@ def main():
         Q_step=Q_step,
         pump_pos=pump_pos
     )
-    print("  ✓ 保存: advanced_model_data.npz")
+    print("   保存: advanced_model_data.npz")
     print()
     
     # ==================== 7. 分析总结 ====================
     print("=" * 90)
-    print("▶ 7. 模拟总结（高精度泵站模型）")
+    print(" 7. 模拟总结高精度泵站模型")
     print("=" * 90)
     print()
     
@@ -453,27 +453,27 @@ def main():
     print("-" * 90)
     # 获取泵特性曲线
     Q_curve, H_curve = pump.get_pump_curve_data(50)
-    print(f"泵特性曲线（部分）:")
+    print(f"泵特性曲线部分:")
     print(f"  Q=0: H={H_curve[0]:.2f}m (关阀扬程)")
-    print(f"  Q={pump_rated_flow}m³/s: H={pump.calculate_pump_head(pump_rated_flow):.2f}m (额定点)")
+    print(f"  Q={pump_rated_flow}m^3/s: H={pump.calculate_pump_head(pump_rated_flow):.2f}m (额定点)")
     print()
     
     print("最终结果:")
-    print(f"  泵前流量: {q_history[-1, pump_idx-1]:.2f} m³/s")
-    print(f"  泵站流量: {q_history[-1, pump_idx]:.2f} m³/s")
-    print(f"  泵后流量: {q_history[-1, pump_idx+1]:.2f} m³/s")
+    print(f"  泵前流量: {q_history[-1, pump_idx-1]:.2f} m^3/s")
+    print(f"  泵站流量: {q_history[-1, pump_idx]:.2f} m^3/s")
+    print(f"  泵后流量: {q_history[-1, pump_idx+1]:.2f} m^3/s")
     print(f"  泵站扬程: {pump_head_history[-1]:.3f} m")
     print(f"  泵前水深: {h_history[-1, pump_idx-1]:.3f} m")
     print()
     
     print("质量守恒:")
-    print(f"  渠首流入: {q_history[-1, 0]:.2f} m³/s")
-    print(f"  渠尾流出: {q_history[-1, -1]:.2f} m³/s")
-    print(f"  蓄水速率: {q_history[-1, 0] - q_history[-1, -1]:.2f} m³/s")
+    print(f"  渠首流入: {q_history[-1, 0]:.2f} m^3/s")
+    print(f"  渠尾流出: {q_history[-1, -1]:.2f} m^3/s")
+    print(f"  蓄水速率: {q_history[-1, 0] - q_history[-1, -1]:.2f} m^3/s")
     print()
     
     print("=" * 90)
-    print("✓ 高精度模型模拟完成！")
+    print(" 高精度模型模拟完成")
     print("=" * 90)
     print()
     

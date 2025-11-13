@@ -472,7 +472,7 @@ if __name__ == "__main__":
 
     # 验证：对于湖面静止，通量应产生与源项相等的效果
     # 这需要在完整的求解器中测试
-    print(f"\n质量守恒：{'✓ PASS' if is_well_balanced_mass else '✗ FAIL'} (质量通量=0)")
+    print(f"\n质量守恒：{' PASS' if is_well_balanced_mass else ' FAIL'} (质量通量=0)")
     print(f"良平衡性：需要在完整求解器中验证通量梯度+源项=0")
 
     # 测试2: 带流动的情况
@@ -523,7 +523,7 @@ if __name__ == "__main__":
 
     print(f"\n良平衡性验证：")
     print(f"  最大通量误差：{max_error:.2e}")
-    print(f"  结果：{'✓ PASS' if is_wb else '✗ FAIL'} (阈值 1e-12)")
+    print(f"  结果：{' PASS' if is_wb else ' FAIL'} (阈值 1e-12)")
 
     print("\n" + "=" * 70)
     print("测试完成！")

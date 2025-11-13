@@ -3,7 +3,7 @@
 Debug Well-Balanced NaN Issue
 调试Well-Balanced格式NaN问题
 
-简化P0.2测试，添加详细诊断输出
+简化P0.2测试添加详细诊断输出
 """
 
 import sys
@@ -13,7 +13,13 @@ import numpy as np
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, project_root)
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def debug_p0_2():
@@ -24,7 +30,7 @@ def debug_p0_2():
 
     # 参数
     L = 100.0
-    n_cells = 100
+    n_cells = 120
     eta_init = 10.0
 
     # 创建底高程: 中间2m凸起
@@ -54,14 +60,14 @@ def debug_p0_2():
     print(f"  eta deviation: {np.max(np.abs(eta_check - eta_init)):.3e} m")
     print(f"  Any h < 0? {np.any(h < 0)}")
 
-    # 创建求解器（直接传递底高程z_b）
+    # 创建求解器直接传递底高程z_b
     solver = GodunvFVMSolver(
         width=10.0,
         length=L,
         n_cells=n_cells,
         manning_n=0.03,
-        z_b=z_b,  # ← Pass z_b directly (no integration error!)
-        cfl=0.5,
+        z_b=z_b,  # <- Pass z_b directly (no integration error!)
+        cfl=0.3,
         order=1,
         well_balanced=True
     )
@@ -73,7 +79,7 @@ def debug_p0_2():
     solver.initialize(h, Q, bc_left, bc_right)
 
     print(f"\n初始化后:")
-    print(f"  Mass = {solver._compute_total_mass():.2f} m³")
+    print(f"  Mass = {solver._compute_total_mass():.2f} m^3")
     print(f"  h range: {np.min(solver.h):.3f} ~ {np.max(solver.h):.3f} m")
 
     # Check z_b reconstruction accuracy
@@ -98,7 +104,7 @@ def debug_p0_2():
         print(f"  Any NaN in dQ_dt? {np.any(np.isnan(dQ_dt))}")
 
         if np.any(np.isnan(dh_dt)) or np.any(np.isnan(dQ_dt)):
-            print(f"\n❌ NaN detected in RHS!")
+            print(f"\n NaN detected in RHS!")
             print(f"  NaN locations in dh_dt: {np.where(np.isnan(dh_dt))[0]}")
             print(f"  NaN locations in dQ_dt: {np.where(np.isnan(dQ_dt))[0]}")
 
@@ -114,10 +120,10 @@ def debug_p0_2():
                     nan_idx = np.where(np.isnan(solver.last_F_h))[0]
                     print(f"    NaN in F_h at interfaces: {nan_idx}")
         else:
-            print(f"  ✅ No NaN in RHS")
+            print(f"   No NaN in RHS")
 
     except Exception as e:
-        print(f"  ❌ Exception: {e}")
+        print(f"   Exception: {e}")
         import traceback
         traceback.print_exc()
 
@@ -134,7 +140,7 @@ def debug_p0_2():
         try:
             solver.step(dt)
         except Exception as e:
-            print(f"\n❌ Exception at step {step}, t={t:.6f}:")
+            print(f"\n Exception at step {step}, t={t:.6f}:")
             print(f"  {e}")
             break
 
@@ -143,7 +149,7 @@ def debug_p0_2():
 
         # 检查NaN
         if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
-            print(f"\n❌ NaN detected at step {step}, t={t:.6f}:")
+            print(f"\n NaN detected at step {step}, t={t:.6f}:")
             print(f"  h range: {np.nanmin(solver.h):.6e} ~ {np.nanmax(solver.h):.6e}")
             print(f"  Q range: {np.nanmin(solver.Q):.6e} ~ {np.nanmax(solver.Q):.6e}")
             print(f"  NaN in h: {np.sum(np.isnan(solver.h))} cells")
@@ -166,9 +172,9 @@ def debug_p0_2():
             print(f"  Step {step:3d}, t={t:.6f}s: h=[{h_min:.6f}, {h_max:.6f}], Q=[{Q_min:.6e}, {Q_max:.6e}]")
 
     if step == max_steps:
-        print(f"\n✅ Completed {step} steps without NaN")
+        print(f"\n Completed {step} steps without NaN")
     elif not (np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q))):
-        print(f"\n✅ Reached t={t:.6f}s without NaN")
+        print(f"\n Reached t={t:.6f}s without NaN")
 
     print("\n" + "="*70)
 

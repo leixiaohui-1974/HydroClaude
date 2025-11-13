@@ -548,7 +548,7 @@ class MPCScheduler:
                 u_prev = optimal_u
 
                 if self.verbose:
-                    print(f"✓ (代价={opt_info['cost']:.3e})")
+                    print(f" (代价={opt_info['cost']:.3e})")
 
             # 执行一步实际仿真
             Q_upstream = None

@@ -175,7 +175,7 @@ class BenchmarkSuite:
         except Exception as e:
             result.status = 'failed'
             result.error_message = str(e)
-            print(f"  ❌ 失败: {e}")
+            print(f"   失败: {e}")
 
         # 停止性能分析并获取结果
         perf_stats = self.profiler.stop()
@@ -185,7 +185,7 @@ class BenchmarkSuite:
 
         # 打印结果
         if result.status == 'success':
-            print(f"  ✅ 成功")
+            print(f"   成功")
         print(f"  执行时间: {result.execution_time:.3f}s")
         print(f"  峰值内存: {result.memory_peak:.2f} MB")
         print(f"  CPU使用率: {result.cpu_usage:.1f}%")
@@ -224,8 +224,8 @@ class BenchmarkSuite:
         timeout = sum(1 for r in self.results if r.status == 'timeout')
 
         print(f"总计: {total}")
-        print(f"  ✅ 成功: {success}")
-        print(f"  ❌ 失败: {failed}")
+        print(f"   成功: {success}")
+        print(f"   失败: {failed}")
         print(f"  ⏱️  超时: {timeout}")
         print(f"\n成功率: {success/total*100:.1f}%")
 
@@ -379,7 +379,7 @@ class BenchmarkSuite:
 </head>
 <body>
     <div class="container">
-        <h1>🏆 {self.name}</h1>
+        <h1> {self.name}</h1>
         <p>生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
 
         <div class="summary">
@@ -401,7 +401,7 @@ class BenchmarkSuite:
             </div>
         </div>
 
-        <h2>📊 详细结果</h2>
+        <h2> 详细结果</h2>
         <table>
             <thead>
                 <tr>
@@ -687,7 +687,7 @@ def main():
     # 生成HTML报告
     suite.generate_report("benchmark_report.html")
 
-    print("\n✅ 基准测试完成！")
+    print("\n 基准测试完成！")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,31 @@
+{
+"type": "FeatureCollection",
+"name": "complex_network_links",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": "L_ring_1", "diameter": 0.6 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.05, 30.0 ], [ 120.043301270189218, 30.025 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_radial_1", "diameter": 0.8 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.0, 30.0 ], [ 120.05, 30.0 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_ring_2", "diameter": 0.6 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.043301270189218, 30.025 ], [ 120.025, 30.043301270189222 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_radial_2", "diameter": 0.8 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.0, 30.0 ], [ 120.043301270189218, 30.025 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_ring_3", "diameter": 0.6 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.025, 30.043301270189222 ], [ 120.0, 30.05 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_radial_3", "diameter": 0.8 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.0, 30.0 ], [ 120.025, 30.043301270189222 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_ring_4", "diameter": 0.6 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.0, 30.05 ], [ 119.975, 30.043301270189222 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_radial_4", "diameter": 0.8 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.0, 30.0 ], [ 120.0, 30.05 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_ring_5", "diameter": 0.6 }, "geometry": { "type": "LineString", "coordinates": [ [ 119.975, 30.043301270189222 ], [ 119.956698729810782, 30.025 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_radial_5", "diameter": 0.8 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.0, 30.0 ], [ 119.975, 30.043301270189222 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_ring_6", "diameter": 0.6 }, "geometry": { "type": "LineString", "coordinates": [ [ 119.956698729810782, 30.025 ], [ 119.95, 30.0 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_radial_6", "diameter": 0.8 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.0, 30.0 ], [ 119.956698729810782, 30.025 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_ring_7", "diameter": 0.6 }, "geometry": { "type": "LineString", "coordinates": [ [ 119.95, 30.0 ], [ 119.956698729810782, 29.975 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_radial_7", "diameter": 0.8 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.0, 30.0 ], [ 119.95, 30.0 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_ring_8", "diameter": 0.6 }, "geometry": { "type": "LineString", "coordinates": [ [ 119.956698729810782, 29.975 ], [ 119.975, 29.956698729810778 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_radial_8", "diameter": 0.8 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.0, 30.0 ], [ 119.956698729810782, 29.975 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_ring_9", "diameter": 0.6 }, "geometry": { "type": "LineString", "coordinates": [ [ 119.975, 29.956698729810778 ], [ 120.0, 29.95 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_radial_9", "diameter": 0.8 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.0, 30.0 ], [ 119.975, 29.956698729810778 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_ring_10", "diameter": 0.6 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.0, 29.95 ], [ 120.025, 29.956698729810778 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_radial_10", "diameter": 0.8 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.0, 30.0 ], [ 120.0, 29.95 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_ring_11", "diameter": 0.6 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.025, 29.956698729810778 ], [ 120.043301270189218, 29.975 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_radial_11", "diameter": 0.8 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.0, 30.0 ], [ 120.025, 29.956698729810778 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_ring_12", "diameter": 0.6 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.043301270189218, 29.975 ], [ 120.05, 30.0 ] ] } },
+{ "type": "Feature", "properties": { "id": "L_radial_12", "diameter": 0.8 }, "geometry": { "type": "LineString", "coordinates": [ [ 120.0, 30.0 ], [ 120.043301270189218, 29.975 ] ] } }
+]
+}

@@ -24,9 +24,9 @@ try:
     from solvers.godunov_fvm_solver import GodunvFVMSolver
     from physics.cross_section import RectangularSection
     from core.base import HydraulicComponent
-    print("  ✅ Core modules imported successfully")
+    print("   Core modules imported successfully")
 except ImportError as e:
-    print(f"  ❌ Import failed: {e}")
+    print(f"   Import failed: {e}")
     sys.exit(1)
 
 # Test 2: Create solver instance
@@ -41,9 +41,9 @@ try:
         cfl=0.5,
         order=1
     )
-    print(f"  ✅ Solver created: {solver.n} cells, dx={solver.dx:.2f}m")
+    print(f"   Solver created: {solver.n} cells, dx={solver.dx:.2f}m")
 except Exception as e:
-    print(f"  ❌ Solver creation failed: {e}")
+    print(f"   Solver creation failed: {e}")
     sys.exit(1)
 
 # Test 3: Run simple simulation
@@ -70,13 +70,13 @@ try:
     # Check for NaN
     has_nan = np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q))
     if has_nan:
-        print(f"  ❌ Simulation produced NaN values")
+        print(f"   Simulation produced NaN values")
         sys.exit(1)
 
-    print(f"  ✅ Simulation successful: t={solver.t:.3f}s, {step_count} steps")
+    print(f"   Simulation successful: t={solver.t:.3f}s, {step_count} steps")
 
 except Exception as e:
-    print(f"  ❌ Simulation failed: {e}")
+    print(f"   Simulation failed: {e}")
     import traceback
     traceback.print_exc()
     sys.exit(1)
@@ -121,13 +121,13 @@ try:
     # Check stability
     has_nan = np.any(np.isnan(solver_wb.h)) or np.any(np.isnan(solver_wb.Q))
     if has_nan:
-        print(f"  ❌ Well-Balanced simulation produced NaN")
+        print(f"   Well-Balanced simulation produced NaN")
         sys.exit(1)
 
-    print(f"  ✅ Well-Balanced format working: t={solver_wb.t:.3f}s")
+    print(f"   Well-Balanced format working: t={solver_wb.t:.3f}s")
 
 except Exception as e:
-    print(f"  ❌ Well-Balanced test failed: {e}")
+    print(f"   Well-Balanced test failed: {e}")
     import traceback
     traceback.print_exc()
     sys.exit(1)
@@ -137,25 +137,25 @@ print("\n[5/5] Checking optional dependencies...")
 
 try:
     import numba
-    print("  ✅ Numba available (JIT acceleration enabled)")
+    print("   Numba available (JIT acceleration enabled)")
 except ImportError:
-    print("  ⚠️  Numba not available (running in pure Python mode)")
+    print("  ️  Numba not available (running in pure Python mode)")
 
 try:
     import matplotlib
-    print("  ✅ Matplotlib available (visualization enabled)")
+    print("   Matplotlib available (visualization enabled)")
 except ImportError:
-    print("  ⚠️  Matplotlib not available (no visualization)")
+    print("  ️  Matplotlib not available (no visualization)")
 
 try:
     import scipy
-    print("  ✅ SciPy available (optimization enabled)")
+    print("   SciPy available (optimization enabled)")
 except ImportError:
-    print("  ⚠️  SciPy not available (limited optimization)")
+    print("  ️  SciPy not available (limited optimization)")
 
 # Success!
 print("\n" + "="*70)
-print("✅ All core tests passed!")
+print(" All core tests passed!")
 print("="*70)
 print("\nHydroClaude is correctly installed and working.")
 print("\nNext steps:")

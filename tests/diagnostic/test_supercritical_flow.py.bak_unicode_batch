@@ -1,0 +1,160 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+测试超临界流稳定性 - Phase 1问题修复
+
+Phase 1问题：S0>0.004时NaN
+目标：支持S0≤0.01
+
+改进：
+1. 降低干床阈值（1e-4 → 1e-3）
+2. 使用HLLC求解器（更适合超临界）
+3. 降低CFL（0.5 → 0.3）
+
+作者: HydroClaude Team
+日期: 2025-10-27
+"""
+
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    from solvers.godunov_fvm_hllc import GodunvFVMHLLC
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+from utils.canal_utils import compute_steady_uniform_flow, compute_critical_depth
+import numpy as np
+
+print("=" * 80)
+print("超临界流稳定性测试")
+print("=" * 80)
+
+# 测试不同底坡
+slopes = [0.001, 0.002, 0.004, 0.006, 0.008, 0.010]
+results = []
+
+for S0 in slopes:
+    print(f"\n{'=' * 80}")
+    print(f"测试: S0 = {S0}")
+    print(f"{'=' * 80}")
+    
+    # 使用HLLC（更适合激波）
+    solver = GodunvFVMHLLC(
+        width=10.0, length=1000.0, n_cells=200,  # 更细网格
+        manning_n=0.025, slope=S0,
+        cfl=0.3,  # 降低CFL提高稳定性
+        order=1
+    )
+    
+    # 初始条件
+    Q = 50.0
+    try:
+        h_uniform = compute_steady_uniform_flow(Q, 10.0, S0, 0.025)
+    except:
+        h_uniform = 1.5
+    
+    # 计算Froude数
+    v = Q / (10.0 * h_uniform)
+    Fr = v / np.sqrt(9.81 * h_uniform)
+    
+    flow_type = "超临界" if Fr > 1.0 else "亚临界"
+    
+    print(f"  流量: {Q} m³/s")
+    print(f"  均匀流水深: {h_uniform:.3f} m")
+    print(f"  Froude数: {Fr:.3f}")
+    print(f"  流态: {flow_type}")
+    
+    # 初始化
+    h_init = np.ones(200) * h_uniform
+    Q_init = np.ones(200) * Q
+    
+    bc_left = {'type': 'Q', 'value': Q}
+    bc_right = {'type': 'h', 'value': h_uniform}
+    
+    solver.initialize(h_init, Q_init, bc_left, bc_right)
+    
+    # 推进
+    max_steps = 500
+    has_nan = False
+    
+    print(f"\n  推进{max_steps}步...")
+    
+    for i in range(max_steps):
+        solver.step()
+        
+        # 检查NaN
+        if i % 100 == 0:
+            state = solver.get_state()
+            if np.any(np.isnan(state['h'])) or np.any(np.isnan(state['Q'])):
+                has_nan = True
+                print(f"   步数{i+1}: 出现NaN")
+                break
+            
+            print(f"  步数{i+1:3d}, t={state['t']:6.1f}s, 质量误差={state['mass_error']:+.3f}%")
+    
+    # 最终结果
+    if not has_nan:
+        state = solver.get_state()
+        mass_error = state['mass_error']
+        
+        print(f"\n   完成{max_steps}步")
+        print(f"  最终质量误差: {mass_error:.4f}%")
+        
+        status = " 稳定" if abs(mass_error) < 5.0 else "️ 误差偏大"
+    else:
+        mass_error = float('nan')
+        status = " NaN"
+    
+    results.append({
+        'S0': S0,
+        'Fr': Fr,
+        'flow_type': flow_type,
+        'has_nan': has_nan,
+        'mass_error': mass_error,
+        'status': status
+    })
+
+# 总结
+print("\n" + "=" * 80)
+print("测试总结")
+print("=" * 80)
+
+print(f"\n{'底坡':<8} {'Froude':<8} {'流态':<10} {'质量误差':<12} {'状态':<15}")
+print("-" * 60)
+
+for r in results:
+    mass_str = f"{r['mass_error']:.3f}%" if not np.isnan(r['mass_error']) else "NaN"
+    print(f"{r['S0']:<8.4f} {r['Fr']:<8.3f} {r['flow_type']:<10} {mass_str:<12} {r['status']:<15}")
+
+# 评价
+print("\n" + "=" * 80)
+print("综合评价")
+print("=" * 80)
+
+stable_count = sum([1 for r in results if not r['has_nan']])
+total_count = len(results)
+
+print(f"\n稳定性统计：")
+print(f"  测试总数: {total_count}")
+print(f"  稳定数量: {stable_count}")
+print(f"  稳定率: {stable_count/total_count*100:.1f}%")
+
+# 找出最大稳定底坡
+max_stable_S0 = 0.0
+for r in results:
+    if not r['has_nan']:
+        max_stable_S0 = max(max_stable_S0, r['S0'])
+
+print(f"\n最大稳定底坡: S0 = {max_stable_S0}")
+
+if max_stable_S0 >= 0.010:
+    print(f" 达标！支持S0≤0.01")
+elif max_stable_S0 >= 0.006:
+    print(f"️ 接近目标（S0≤{max_stable_S0}）")
+else:
+    print(f" 未达标（仅支持S0≤{max_stable_S0}）")
+
+print("\n" + "=" * 80)

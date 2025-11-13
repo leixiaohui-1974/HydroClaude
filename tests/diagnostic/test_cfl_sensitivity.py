@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.dirname(__file__))
 
 import numpy as np
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 # Test 4参数（无摩阻）
 L = 1000.0
@@ -57,13 +63,13 @@ for cfl in cfl_values:
 
         # 检查dt异常
         if dt < 1e-6:
-            print(f"  ❌ 失败：t={solver.t:.2f}s时dt变为{dt:.2e}")
+            print(f"   失败：t={solver.t:.2f}s时dt变为{dt:.2e}")
             failed = True
             break
 
         # 检查非物理值
         if np.any(solver.h < 0) or np.any(np.isnan(solver.h)):
-            print(f"  ❌ 失败：t={solver.t:.2f}s出现非物理h值")
+            print(f"   失败：t={solver.t:.2f}s出现非物理h值")
             failed = True
             break
 
@@ -79,14 +85,14 @@ for cfl in cfl_values:
         u_up_final = solver.Q[0] / (h_up_final * B)
         Fr_up = u_up_final / np.sqrt(g * h_up_final)
 
-        print(f"  ✅ 成功：t={solver.t:.2f}s, 步数={step}")
+        print(f"   成功：t={solver.t:.2f}s, 步数={step}")
         print(f"     质量误差={mass_error:.2f}%, 上游Fr={Fr_up:.3f}")
         print(f"     h范围=[{np.min(solver.h):.3f}, {np.max(solver.h):.3f}]")
         print(f"     Q范围=[{np.min(solver.Q):.3f}, {np.max(solver.Q):.3f}]")
 
         # 检查是否有负流量
         if np.any(solver.Q < 0):
-            print(f"     ⚠️  有{np.sum(solver.Q < 0)}个单元出现负流量")
+            print(f"     ️  有{np.sum(solver.Q < 0)}个单元出现负流量")
     else:
         print(f"  最终：t={solver.t:.2f}s, 步数={step}")
 

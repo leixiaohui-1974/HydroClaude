@@ -1,0 +1,213 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+空间精度对质量守恒的影响测试
+
+对比order=1 (一阶) vs order=2 (二阶MUSCL)对MacDonald场景质量守恒的影响
+
+背景：经过两次源项处理方法失败后的反思
+- Interface方法：61% → 114% 
+- Strang Splitting：61% → 65% 
+
+重要发现：源项处理方法可能不是主要问题！
+真正的问题可能是**空间离散精度太低**（一阶的数值耗散）
+
+目标：验证提高空间精度能否显著改善质量守恒（60% → 20-30%）
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
+
+import numpy as np
+from solvers.godunov_fvm_solver import GodunvFVMSolver
+
+
+def test_spatial_order_comparison():
+    """对比一阶 vs 二阶空间精度对质量守恒的影响"""
+
+    print("\n" + "="*80)
+    print("空间精度对质量守恒的影响测试")
+    print("="*80)
+
+    B = 1.0
+    L = 1000.0
+    n_cells = 20
+
+    Q_bc = 2.0
+    g = 9.81
+    h_c = (Q_bc**2 / (g * B**2))**(1/3)
+
+    print(f"\n测试场景（MacDonald类型）:")
+    print(f"  渠道长度: {L} m")
+    print(f"  单元数: {n_cells}")
+    print(f"  底坡: 0.002")
+    print(f"  Manning n: 0.03")
+    print(f"  边界: Q={Q_bc} m³/s, h={h_c:.4f} m (临界水深)")
+    print(f"\n预期：二阶精度应显著改善质量守恒（目标：60% → 20-30%）")
+    print(f"\n理由：一阶精度的数值耗散是质量误差的主要来源")
+
+    # 测试1: order=1（一阶精度）
+    print(f"\n{'='*80}")
+    print("测试1: order=1 (一阶空间精度)")
+    print("="*80)
+
+    solver1 = GodunvFVMSolver(
+        width=B,
+        length=L,
+        n_cells=n_cells,
+        manning_n=0.03,
+        slope=0.002,
+        cfl=0.4,
+        order=1,  # 一阶精度
+        well_balanced=False,
+        use_numba=False
+    )
+
+    h_init = np.linspace(h_c * 1.5, h_c, n_cells)
+    Q_init = np.ones(n_cells) * Q_bc
+
+    bc_left = {'type': 'Q', 'value': Q_bc}
+    bc_right = {'type': 'h', 'value': h_c}
+
+    solver1.initialize(h_init, Q_init, bc_left, bc_right)
+
+    # 运行500s
+    t_final = 500.0
+    print(f"\n运行到 t={t_final}s...")
+
+    step_count = 0
+    while solver1.t < t_final and step_count < 5000:
+        solver1.step()
+        step_count += 1
+
+        if step_count % 50 == 0:
+            mass_error = solver1.get_mass_conservation_error()
+            print(f"  t={solver1.t:6.1f}s, 步数={step_count:4d}, 质量误差={mass_error:7.3f}%")
+
+    mass_error_1 = solver1.get_mass_conservation_error()
+    Q_avg_1 = np.mean(solver1.Q)
+    h_avg_1 = np.mean(solver1.h)
+
+    print(f"\n结果（order=1）:")
+    print(f"  质量误差: {mass_error_1:.2f}%")
+    print(f"  平均流量: {Q_avg_1:.4f} m³/s (目标: {Q_bc})")
+    print(f"  平均水深: {h_avg_1:.4f} m")
+    print(f"  流量误差: {abs(Q_avg_1 - Q_bc)/Q_bc*100:.2f}%")
+
+    # 测试2: order=2（二阶MUSCL精度）
+    print(f"\n{'='*80}")
+    print("测试2: order=2 (二阶MUSCL空间精度)")
+    print("="*80)
+
+    solver2 = GodunvFVMSolver(
+        width=B,
+        length=L,
+        n_cells=n_cells,
+        manning_n=0.03,
+        slope=0.002,
+        cfl=0.4,
+        order=2,  # 二阶MUSCL精度
+        well_balanced=False,
+        use_numba=False
+    )
+
+    solver2.initialize(h_init, Q_init, bc_left, bc_right)
+
+    print(f"\n运行到 t={t_final}s...")
+
+    step_count = 0
+    while solver2.t < t_final and step_count < 5000:
+        solver2.step()
+        step_count += 1
+
+        if step_count % 50 == 0:
+            mass_error = solver2.get_mass_conservation_error()
+            print(f"  t={solver2.t:6.1f}s, 步数={step_count:4d}, 质量误差={mass_error:7.3f}%")
+
+    mass_error_2 = solver2.get_mass_conservation_error()
+    Q_avg_2 = np.mean(solver2.Q)
+    h_avg_2 = np.mean(solver2.h)
+
+    print(f"\n结果（order=2）:")
+    print(f"  质量误差: {mass_error_2:.2f}%")
+    print(f"  平均流量: {Q_avg_2:.4f} m³/s (目标: {Q_bc})")
+    print(f"  平均水深: {h_avg_2:.4f} m")
+    print(f"  流量误差: {abs(Q_avg_2 - Q_bc)/Q_bc*100:.2f}%")
+
+    # 对比
+    print(f"\n{'='*80}")
+    print("对比结果")
+    print("="*80)
+
+    print(f"\n{'空间精度':<25} {'质量误差':>12} {'流量误差':>12} {'改善':>12}")
+    print("-" * 65)
+    print(f"{'order=1 (一阶)':<25} {mass_error_1:11.2f}% {abs(Q_avg_1-Q_bc)/Q_bc*100:11.2f}%")
+    print(f"{'order=2 (二阶MUSCL)':<25} {mass_error_2:11.2f}% {abs(Q_avg_2-Q_bc)/Q_bc*100:11.2f}%")
+
+    mass_improvement = mass_error_1 - mass_error_2
+    flow_improvement = abs(Q_avg_1-Q_bc)/Q_bc*100 - abs(Q_avg_2-Q_bc)/Q_bc*100
+
+    print("-" * 65)
+    print(f"{'改善':<25} {mass_improvement:11.2f}% {flow_improvement:11.2f}%")
+
+    improvement_ratio = mass_improvement / abs(mass_error_1) * 100 if mass_error_1 != 0 else 0
+
+    print(f"\n总结:")
+
+    # 质量守恒评估
+    if mass_error_2 < 5.0:
+        print(f"   二阶精度达到优秀质量守恒！ (误差<5%)")
+    elif mass_error_2 < 20.0:
+        if improvement_ratio > 50:
+            print(f"   二阶精度显著改善质量守恒！ (误差<20%，改善>{improvement_ratio:.0f}%)")
+        else:
+            print(f"   二阶精度达到良好质量守恒 (误差<20%)")
+    elif mass_error_2 < 30.0:
+        if improvement_ratio > 30:
+            print(f"   二阶精度明显改善质量守恒 (误差<30%，改善>{improvement_ratio:.0f}%)")
+        else:
+            print(f"  ️ 二阶精度有所改善但不够 (误差<30%)")
+    elif abs(mass_error_2) < abs(mass_error_1) * 0.7:
+        print(f"  ️ 二阶精度略有改善 (改善<30%)")
+    else:
+        print(f"   二阶精度无明显改善")
+
+    # 流量守恒评估
+    if abs(Q_avg_2 - Q_bc) / Q_bc < 0.05:
+        print(f"   二阶精度流量守恒优秀 (<5%)")
+    elif abs(Q_avg_2 - Q_bc) / Q_bc < 0.15:
+        print(f"   二阶精度流量守恒良好 (<15%)")
+    elif abs(Q_avg_2 - Q_bc) < abs(Q_avg_1 - Q_bc) * 0.5:
+        print(f"   二阶精度流量显著改善 (改善>50%)")
+    elif abs(Q_avg_2 - Q_bc) < abs(Q_avg_1 - Q_bc):
+        print(f"  ️ 二阶精度流量略有改善")
+    else:
+        print(f"   二阶精度流量无改善")
+
+    print("\n" + "="*80)
+    print("技术分析:")
+    print("="*80)
+    print("\n一阶精度（order=1）:")
+    print("  空间离散: 一阶迎风 / 分片常数")
+    print("  问题：强数值耗散，导致质量和动量损失")
+    print("  适用：激波捕捉、粗网格快速计算")
+    print("\n二阶精度（order=2 MUSCL）:")
+    print("  空间离散: MUSCL重构 + Minmod限制器")
+    print("  优点：低耗散、高精度、保持单调性（TVD）")
+    print("  适用：需要精确守恒的稳态/非稳态流动")
+
+    print("\n关键洞察（两次失败后的发现）:")
+    print("  经过Interface方法和Strang Splitting两次失败，我们发现：")
+    print("  - 改变源项处理方法无效（甚至恶化）")
+    print("  - 真正的问题可能是**空间离散精度**太低")
+    print("  - 一阶精度的数值耗散导致质量持续泄漏")
+    print("  - 提高到二阶精度可能是最直接有效的改进")
+
+    print("="*80)
+
+    return mass_error_1, mass_error_2, mass_improvement
+
+
+if __name__ == "__main__":
+    test_spatial_order_comparison()

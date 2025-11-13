@@ -1,0 +1,169 @@
+"""
+测试配置驱动的supercritical边界条件
+
+目的：验证通过配置文件系统，supercritical边界是否正常工作
+"""
+import json
+import tempfile
+import numpy as np
+from pathlib import Path
+from engine.simulation_engine import SimulationEngine
+
+def test_config_driven_supercritical():
+    """测试配置驱动的supercritical边界条件"""
+
+    L = 1000.0
+    B = 10.0
+    n_cells = 100
+
+    # 上游急流条件
+    h_upstream = 0.7
+    Q_upstream = 20.0
+    u_upstream = Q_upstream / (B * h_upstream)
+    g = 9.81
+    Fr_upstream = u_upstream / np.sqrt(g * h_upstream)
+
+    print("\n" + "="*80)
+    print("配置驱动的Supercritical边界条件诊断测试")
+    print("="*80)
+    print(f"\n目标上游条件:")
+    print(f"  水深 h = {h_upstream:.3f} m")
+    print(f"  流量 Q = {Q_upstream:.2f} m^3/s")
+    print(f"  流速 u = {u_upstream:.3f} m/s")
+    print(f"  Froude数 Fr = {Fr_upstream:.3f}")
+    print(f"  状态: {'急流 ' if Fr_upstream > 1 else '缓流 '}")
+
+    # 创建初始条件文件
+    dx = L / n_cells
+    x = np.linspace(dx/2, L - dx/2, n_cells)
+    h_init = np.ones(n_cells) * h_upstream
+    Q_init = np.ones(n_cells) * Q_upstream
+
+    ic_data = np.column_stack([x, h_init, Q_init])
+    ic_file = tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False)
+    ic_file.write('x,h,Q\n')
+    np.savetxt(ic_file, ic_data, delimiter=',')
+    ic_file.close()
+    ic_file_path = Path(ic_file.name)
+
+    # 创建配置文件
+    config = {
+        'project': {
+            'name': 'Supercritical BC Test',
+            'description': '诊断测试：supercritical边界条件'
+        },
+        'geometry': {
+            'type': 'uniform',
+            'channel_width': B,
+            'channel_length': L,
+            'bottom_slope': 0.0,
+            'manning_n': 0.0
+        },
+        'mesh': {
+            'n_cells': n_cells
+        },
+        'initial_conditions': {
+            'type': 'from_file',
+            'file': str(ic_file_path)
+        },
+        'boundary_conditions': {
+            'left': {'type': 'supercritical', 'h': h_upstream, 'Q': Q_upstream},
+            'right': {'type': 'h', 'value': 2.0}
+        },
+        'solver': {
+            'type': 'godunov_fvm',
+            'spatial_order': 1,
+            'riemann_solver': 'hll',
+            'use_numba': True,
+            'cfl': 0.4
+        },
+        'simulation': {
+            'start_time': 0.0,
+            'end_time': 10.0,
+            'max_steps': 10000,
+            'output_interval': 1.0
+        },
+        'output': {
+            'directory': 'test_output',
+            'formats': ['json'],
+            'variables': ['h', 'Q', 'u'],
+            'statistics': False,
+            'plots': {'enabled': False}
+        },
+        'validation': {
+            'enabled': False
+        }
+    }
+
+    # 创建临时配置文件
+    config_file = tempfile.NamedTemporaryFile(
+        mode='w', suffix='.json', delete=False, encoding='utf-8'
+    )
+    json.dump(config, config_file, indent=2, ensure_ascii=False)
+    config_file.close()
+    config_file_path = Path(config_file.name)
+
+    try:
+        # 运行仿真
+        engine = SimulationEngine(str(config_file_path))
+        engine.initialize()
+
+        # 检查初始边界条件
+        solver = engine.solver
+        print(f"\n初始化后边界条件:")
+        print(f"  bc_left = {solver.bc_left}")
+        print(f"  bc_right = {solver.bc_right}")
+
+        print(f"\n初始状态:")
+        print(f"  h[0] = {solver.h[0]:.6f} m")
+        print(f"  Q[0] = {solver.Q[0]:.6f} m^3/s")
+        h0 = solver.h[0]
+        Q0 = solver.Q[0]
+        u0 = Q0 / (h0 * B) if h0 > 1e-6 else 0.0
+        Fr0 = u0 / np.sqrt(g * h0) if h0 > 1e-6 else 0.0
+        print(f"  u[0] = {u0:.6f} m/s")
+        print(f"  Fr[0] = {Fr0:.6f}")
+
+        # 运行仿真
+        engine.run()
+
+        # 最终状态
+        h_final = solver.h[0]
+        Q_final = solver.Q[0]
+        u_final = Q_final / (h_final * B)
+        Fr_final = u_final / np.sqrt(g * h_final)
+
+        h_error = abs(h_final - h_upstream) / h_upstream * 100
+        Q_error = abs(Q_final - Q_upstream) / Q_upstream * 100
+
+        print(f"\n" + "="*80)
+        print(f"最终结果 (t={solver.t:.2f}s):")
+        print(f"="*80)
+        print(f"  h[0] = {h_final:.6f} m (目标={h_upstream:.6f}, 误差={h_error:.2f}%)")
+        print(f"  Q[0] = {Q_final:.6f} m^3/s (目标={Q_upstream:.6f}, 误差={Q_error:.2f}%)")
+        print(f"  u[0] = {u_final:.6f} m/s")
+        print(f"  Fr[0] = {Fr_final:.6f}")
+        print(f"  状态: {'急流 ' if Fr_final > 0.9 else '缓流 '}")
+
+        # 验收
+        tolerance = 10.0
+        if h_error < tolerance and Q_error < tolerance and Fr_final > 0.9:
+            print(f"\n 配置驱动的Supercritical边界条件正常工作！")
+            return True
+        else:
+            print(f"\n 配置驱动的Supercritical边界条件失效！")
+            if h_error >= tolerance:
+                print(f"   水深误差: {h_error:.2f}% >= {tolerance}%")
+            if Q_error >= tolerance:
+                print(f"   流量误差: {Q_error:.2f}% >= {tolerance}%")
+            if Fr_final <= 0.9:
+                print(f"   Fr偏离急流: {Fr_final:.3f} < 1.0")
+            return False
+
+    finally:
+        # 清理临时文件
+        ic_file_path.unlink(missing_ok=True)
+        config_file_path.unlink(missing_ok=True)
+
+if __name__ == '__main__':
+    test_config_driven_supercritical()

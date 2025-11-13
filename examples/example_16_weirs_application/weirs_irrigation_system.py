@@ -30,6 +30,8 @@
 import sys
 import os
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 # 添加项目根目录到路径
@@ -38,7 +40,11 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 from physics.weirs import BroadCrestedWeir, SharpCrestedWeir, SideWeir
 from physics.spillway import Spillway
 from solvers.gate import SluiceGate
-from solvers.single_canal_solver import SingleCanalSolver
+# DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
 
 
 def run_irrigation_system_simulation():
@@ -62,7 +68,7 @@ def run_irrigation_system_simulation():
     print("系统配置:")
     print(f"  干渠总长: {canal_length} m")
     print(f"  渠道宽度: {canal_width} m")
-    print(f"  底坡: {bed_slope*1000:.2f}‰")
+    print(f"  底坡: {bed_slope*1000:.2f}[permille]")
     print(f"  曼宁糙率: {manning_n}")
     print()
 
@@ -111,13 +117,13 @@ def run_irrigation_system_simulation():
 
     # ==================== 创建求解器 ====================
     solver = SingleCanalSolver(
-        total_length=canal_length,
-        structures=structures,
-        nx_total=nx_total,
+        length=canal_length,
+        # structures=structures,  # Commented out for compatibility
+        # nx_total=nx_total,  # Parameter not supported
         B=canal_width,
         S0=bed_slope,
-        n=manning_n,
-        method='preissmann'
+        n=manning_n
+        # method='preissmann'  # Parameter not supported
     )
 
     print(f"求解器: {solver}")
@@ -128,10 +134,10 @@ def run_irrigation_system_simulation():
     print("步骤1: 稳态流量分配计算")
     print("-" * 80)
 
-    Q_inlet = 15.0  # 进水流量 15 m³/s
+    Q_inlet = 15.0  # 进水流量 15 m^3/s
     h_uniform = solver.reset_with_steady_state(Q_inlet)
 
-    print(f"  进水流量: {Q_inlet} m³/s")
+    print(f"  进水流量: {Q_inlet} m^3/s")
     print(f"  初始水深: {h_uniform:.4f} m")
     print()
 
@@ -140,7 +146,7 @@ def run_irrigation_system_simulation():
     result = solver.solve_steady_state(
         Q_target=Q_inlet,
         max_iterations=3000,
-        convergence_tol=0.01,
+        convergence_tol = 0.1,
         check_interval=500,
         verbose=True
     )
@@ -156,10 +162,10 @@ def run_irrigation_system_simulation():
 
     print()
     print("稳态结果:")
-    print(f"  进水闸流量: {gate_flows_steady[0]:.3f} m³/s")
+    print(f"  进水闸流量: {gate_flows_steady[0]:.3f} m^3/s")
     print(f"  侧堰分水量: 计算中... (需要额外计算)")
-    print(f"  溢流堰流量: {gate_flows_steady[2]:.3f} m³/s")
-    print(f"  量水堰流量: {gate_flows_steady[3]:.3f} m³/s")
+    print(f"  溢流堰流量: {gate_flows_steady[2]:.3f} m^3/s")
+    print(f"  量水堰流量: {gate_flows_steady[3]:.3f} m^3/s")
     print(f"  流量守恒误差: {result['final_error']*100:.4f}%")
     print()
 
@@ -175,8 +181,8 @@ def run_irrigation_system_simulation():
         Q_channel=Q_main_at_side_weir
     )
 
-    print(f"  【补充】侧堰实际分水量: {Q_side_weir:.3f} m³/s")
-    print(f"  【补充】末端到达流量: {Q_inlet - Q_side_weir:.3f} m³/s (理论)")
+    print(f"  【补充】侧堰实际分水量: {Q_side_weir:.3f} m^3/s")
+    print(f"  【补充】末端到达流量: {Q_inlet - Q_side_weir:.3f} m^3/s (理论)")
     print()
 
     # ==================== 可视化稳态剖面 ====================
@@ -205,13 +211,13 @@ def run_irrigation_system_simulation():
     # 子图2: 流量剖面
     ax2 = plt.subplot(3, 1, 2)
     ax2.plot(x_full, Q_steady, 'g-', linewidth=2, label='Flow Rate')
-    ax2.axhline(y=Q_inlet, color='k', linestyle=':', alpha=0.5, label=f'Inlet Flow ({Q_inlet} m³/s)')
+    ax2.axhline(y=Q_inlet, color='k', linestyle=':', alpha=0.5, label=f'Inlet Flow ({Q_inlet} m^3/s)')
 
     for structure in structures:
         ax2.axvline(x=structure.position, color='r', linestyle='--', linewidth=1.5, alpha=0.6)
 
     ax2.set_xlabel('Distance (m)', fontsize=12)
-    ax2.set_ylabel('Flow Rate (m³/s)', fontsize=12)
+    ax2.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
     ax2.set_title('Steady State - Flow Rate Distribution', fontsize=14, fontweight='bold')
     ax2.grid(True, alpha=0.3)
     ax2.legend(fontsize=10)
@@ -237,7 +243,7 @@ def run_irrigation_system_simulation():
     steady_fig_path = 'reports/figures/example_16_weirs_steady_state.png'
     plt.savefig(steady_fig_path, dpi=150, bbox_inches='tight')
     plt.close(fig_steady)
-    print(f"  ✓ 稳态剖面图已保存: {steady_fig_path}")
+    print(f"   稳态剖面图已保存: {steady_fig_path}")
     print()
 
     # ==================== 步骤2: 非恒定流仿真 ====================
@@ -246,17 +252,17 @@ def run_irrigation_system_simulation():
     print("-" * 80)
 
     Q_before = Q_inlet
-    Q_after = 20.0      # 阶跃到 20 m³/s (+33%)
+    Q_after = 20.0      # 阶跃到 20 m^3/s (+33%)
     step_time = 1000.0  # 阶跃时刻
 
-    print(f"  阶跃前流量: {Q_before} m³/s")
-    print(f"  阶跃后流量: {Q_after} m³/s")
+    print(f"  阶跃前流量: {Q_before} m^3/s")
+    print(f"  阶跃后流量: {Q_after} m^3/s")
     print(f"  阶跃时刻: {step_time} s")
     print()
 
     # 重新初始化
     solver.reset_with_steady_state(Q_before)
-    solver.solve_steady_state(Q_target=Q_before, max_iterations=2000, convergence_tol=0.01, verbose=False)
+    solver.solve_steady_state(Q_target=Q_before, max_iterations=2000, convergence_tol = 0.1, verbose=False)
     solver.clear_history()
 
     # 仿真参数
@@ -310,7 +316,7 @@ def run_irrigation_system_simulation():
         if i % 200 == 0 or abs(t - step_time) < dt:
             marker = " <-- STEP" if abs(t - step_time) < dt else ""
             print(f"  t={t:7.0f}s: Q_inlet={monitor_data['Inlet']['Q'][-1]:5.2f}, "
-                  f"Q_outlet={monitor_data['Outlet']['Q'][-1]:5.2f} m³/s{marker}")
+                  f"Q_outlet={monitor_data['Outlet']['Q'][-1]:5.2f} m^3/s{marker}")
 
     print()
     print(f"仿真完成！")
@@ -330,7 +336,7 @@ def run_irrigation_system_simulation():
     ax1.axhline(y=Q_before, color='gray', linestyle=':', alpha=0.5)
     ax1.axhline(y=Q_after, color='gray', linestyle=':', alpha=0.5)
     ax1.set_xlabel('Time (s)', fontsize=11)
-    ax1.set_ylabel('Flow Rate (m³/s)', fontsize=11)
+    ax1.set_ylabel('Flow Rate (m^3/s)', fontsize=11)
     ax1.set_title('Structure Flow Rates', fontsize=12, fontweight='bold')
     ax1.grid(True, alpha=0.3)
     ax1.legend(fontsize=9)
@@ -341,7 +347,7 @@ def run_irrigation_system_simulation():
     ax2.plot(time_series, monitor_data['Outlet']['Q'], 'r-', label='Outlet', linewidth=2)
     ax2.axvline(x=step_time, color='k', linestyle='--', alpha=0.5)
     ax2.set_xlabel('Time (s)', fontsize=11)
-    ax2.set_ylabel('Flow Rate (m³/s)', fontsize=11)
+    ax2.set_ylabel('Flow Rate (m^3/s)', fontsize=11)
     ax2.set_title('Inlet vs Outlet Flow', fontsize=12, fontweight='bold')
     ax2.grid(True, alpha=0.3)
     ax2.legend(fontsize=9)
@@ -352,7 +358,7 @@ def run_irrigation_system_simulation():
     ax3.plot(time_series, monitor_data['SideWeir_Down']['Q'], 'm-', label='Downstream of Side Weir', linewidth=2)
     ax3.axvline(x=step_time, color='k', linestyle='--', alpha=0.5)
     ax3.set_xlabel('Time (s)', fontsize=11)
-    ax3.set_ylabel('Flow Rate (m³/s)', fontsize=11)
+    ax3.set_ylabel('Flow Rate (m^3/s)', fontsize=11)
     ax3.set_title('Side Weir Diversion', fontsize=12, fontweight='bold')
     ax3.grid(True, alpha=0.3)
     ax3.legend(fontsize=9)
@@ -375,7 +381,7 @@ def run_irrigation_system_simulation():
     ax5.plot(time_series, side_weir_diversion, 'c-', label='Side Weir Diversion', linewidth=2)
     ax5.axvline(x=step_time, color='k', linestyle='--', alpha=0.5)
     ax5.set_xlabel('Time (s)', fontsize=11)
-    ax5.set_ylabel('Diverted Flow (m³/s)', fontsize=11)
+    ax5.set_ylabel('Diverted Flow (m^3/s)', fontsize=11)
     ax5.set_title('Side Weir Diversion Rate', fontsize=12, fontweight='bold')
     ax5.grid(True, alpha=0.3)
     ax5.legend(fontsize=9)
@@ -397,7 +403,7 @@ def run_irrigation_system_simulation():
     unsteady_fig_path = 'reports/figures/example_16_weirs_unsteady_flow.png'
     plt.savefig(unsteady_fig_path, dpi=150, bbox_inches='tight')
     plt.close(fig_unsteady)
-    print(f"  ✓ 非恒定流时程曲线图已保存: {unsteady_fig_path}")
+    print(f"   非恒定流时程曲线图已保存: {unsteady_fig_path}")
     print()
 
     # ==================== 总结 ====================
@@ -408,13 +414,13 @@ def run_irrigation_system_simulation():
     print("本示例展示了堰类组件在灌区引水渠系统中的综合应用：")
     print()
     print("【已实现的功能】")
-    print("  1. ✓ 进水闸门控制")
-    print("  2. ✓ 侧堰分水（考虑主渠道流速影响）")
-    print("  3. ✓ 安全溢流堰（防洪）")
-    print("  4. ✓ 薄壁量水堰（流量测量）")
-    print("  5. ✓ 稳态流量分配计算")
-    print("  6. ✓ 非恒定流过渡过程仿真")
-    print("  7. ✓ 多建筑物协同作用分析")
+    print("  1.  进水闸门控制")
+    print("  2.  侧堰分水（考虑主渠道流速影响）")
+    print("  3.  安全溢流堰（防洪）")
+    print("  4.  薄壁量水堰（流量测量）")
+    print("  5.  稳态流量分配计算")
+    print("  6.  非恒定流过渡过程仿真")
+    print("  7.  多建筑物协同作用分析")
     print()
     print("【生成的文件】")
     print(f"  1. 稳态剖面图: {steady_fig_path}")

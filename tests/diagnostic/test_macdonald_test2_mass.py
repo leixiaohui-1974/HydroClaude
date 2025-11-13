@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_macdonald_test2_mass():
@@ -37,7 +43,7 @@ def test_macdonald_test2_mass():
     h_n = 2.414  # 从测试输出获取
 
     print(f"\n参数：")
-    print(f"  Q = {Q} m³/s")
+    print(f"  Q = {Q} m^3/s")
     print(f"  h_c = {h_c:.3f} m")
     print(f"  h_n = {h_n:.3f} m")
     print(f"  n_cells = {n_cells}")
@@ -64,7 +70,7 @@ def test_macdonald_test2_mass():
 
     solver.initialize(h_init, Q_init, bc_left, bc_right)
 
-    print(f"\n初始质量 = {solver.initial_mass:.2f} m³")
+    print(f"\n初始质量 = {solver.initial_mass:.2f} m^3")
 
     # 运行到稳态
     t_end = 3000.0
@@ -100,33 +106,33 @@ def test_macdonald_test2_mass():
     print(f"\n{'='*80}")
     print("最终结果")
     print("="*80)
-    print(f"  初始质量：{solver.initial_mass:.2f} m³")
-    print(f"  实际质量：{mass_final:.2f} m³")
-    print(f"  理论质量：{mass_theory_final:.2f} m³")
-    print(f"  累积流入：{cumulative_inflow:.2f} m³")
-    print(f"  累积流出：{cumulative_outflow:.2f} m³")
+    print(f"  初始质量：{solver.initial_mass:.2f} m^3")
+    print(f"  实际质量：{mass_final:.2f} m^3")
+    print(f"  理论质量：{mass_theory_final:.2f} m^3")
+    print(f"  累积流入：{cumulative_inflow:.2f} m^3")
+    print(f"  累积流出：{cumulative_outflow:.2f} m^3")
     print(f"  质量误差：{mass_error:.2f}%")
 
     print(f"\n边界单元状态：")
     print(f"  h[0] = {solver.h[0]:.3f} m")
     print(f"  h[-1] = {solver.h[-1]:.3f} m (目标={h_c:.3f} m)")
-    print(f"  Q[0] = {solver.Q[0]:.3f} m³/s (目标={Q:.3f} m³/s)")
-    print(f"  Q[-1] = {solver.Q[-1]:.3f} m³/s")
+    print(f"  Q[0] = {solver.Q[0]:.3f} m^3/s (目标={Q:.3f} m^3/s)")
+    print(f"  Q[-1] = {solver.Q[-1]:.3f} m^3/s")
 
     # 检查边界通量
     if solver.last_F_h is not None:
         print(f"\n最后一步的边界通量：")
-        print(f"  F_h[0] (左) = {solver.last_F_h[0]:.3f} m²/s")
-        print(f"  F_h[-1] (右) = {solver.last_F_h[-1]:.3f} m²/s")
-        print(f"  Q[0] (期望) = {Q:.3f} m³/s")
-        print(f"  Q[-1] * 1 = {solver.Q[-1]:.3f} m³/s")
+        print(f"  F_h[0] (左) = {solver.last_F_h[0]:.3f} m^2/s")
+        print(f"  F_h[-1] (右) = {solver.last_F_h[-1]:.3f} m^2/s")
+        print(f"  Q[0] (期望) = {Q:.3f} m^3/s")
+        print(f"  Q[-1] * 1 = {solver.Q[-1]:.3f} m^3/s")
 
     # 质量守恒评估
     print(f"\n{'='*80}")
     if mass_error < 1.0:
-        print("✅ 质量守恒良好 (<1.0%)")
+        print(" 质量守恒良好 (<1.0%)")
     else:
-        print(f"❌ 质量守恒较差 ({mass_error:.2f}%)")
+        print(f" 质量守恒较差 ({mass_error:.2f}%)")
         print(f"\n可能原因：")
         print(f"  1. 右边界h={h_c:.3f}是临界水深，流动不稳定")
         print(f"  2. 边界单元h[-1]={solver.h[-1]:.3f}偏离目标，影响通量计算")

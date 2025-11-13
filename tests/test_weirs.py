@@ -45,21 +45,21 @@ class TestBroadCrestedWeir:
         Q, flow_type = self.weir.calculate_discharge(1.8, 1.5)
         assert Q == 0.0
         assert flow_type == 'no_flow'
-        print("✓ 宽顶堰：无流量条件测试通过")
+        print(" 宽顶堰：无流量条件测试通过")
 
     def test_free_flow(self):
         """测试自由流"""
         Q, flow_type = self.weir.calculate_discharge(2.5, 1.5)
         assert Q > 0
         assert flow_type == 'free'
-        print(f"✓ 宽顶堰：自由流测试通过 (Q={Q:.3f} m³/s)")
+        print(f" 宽顶堰：自由流测试通过 (Q={Q:.3f} m^3/s)")
 
     def test_submerged_flow(self):
         """测试淹没流"""
         Q, flow_type = self.weir.calculate_discharge(2.8, 2.7)
         assert Q > 0
         assert flow_type == 'submerged'
-        print(f"✓ 宽顶堰：淹没流测试通过 (Q={Q:.3f} m³/s)")
+        print(f" 宽顶堰：淹没流测试通过 (Q={Q:.3f} m^3/s)")
 
     def test_derivative_accuracy(self):
         """测试导数精度"""
@@ -75,7 +75,7 @@ class TestBroadCrestedWeir:
         # 相对误差应小于0.01%
         rel_error = abs(dQ_dh_up_analytical - dQ_dh_up_numerical) / abs(dQ_dh_up_numerical)
         assert rel_error < 1e-4
-        print(f"✓ 宽顶堰：导数精度测试通过 (相对误差={rel_error*100:.6f}%)")
+        print(f" 宽顶堰：导数精度测试通过 (相对误差={rel_error*100:.6f}%)")
 
 
 class TestSharpCrestedWeir:
@@ -105,14 +105,14 @@ class TestSharpCrestedWeir:
         Q, flow_type = self.weir_rect.calculate_discharge(1.5, 0.5)
         assert Q > 0
         assert flow_type == 'free'
-        print(f"✓ 矩形薄壁堰：流量测试通过 (Q={Q:.4f} m³/s)")
+        print(f" 矩形薄壁堰：流量测试通过 (Q={Q:.4f} m^3/s)")
 
     def test_triangular_weir(self):
         """测试三角堰"""
         Q, flow_type = self.weir_tri.calculate_discharge(1.5, 0.5)
         assert Q > 0
         assert flow_type == 'free'
-        print(f"✓ 三角薄壁堰：流量测试通过 (Q={Q:.4f} m³/s)")
+        print(f" 三角薄壁堰：流量测试通过 (Q={Q:.4f} m^3/s)")
 
     def test_low_flow_sensitivity(self):
         """测试三角堰对小流量的敏感性"""
@@ -124,7 +124,7 @@ class TestSharpCrestedWeir:
 
         # 三角堰流量应远小于矩形堰
         assert Q_tri < Q_rect * 0.2
-        print(f"✓ 薄壁堰：低流量敏感性测试通过 (Q_tri/Q_rect={Q_tri/Q_rect:.3f})")
+        print(f" 薄壁堰：低流量敏感性测试通过 (Q_tri/Q_rect={Q_tri/Q_rect:.3f})")
 
     def test_derivative_accuracy(self):
         """测试导数精度"""
@@ -138,7 +138,7 @@ class TestSharpCrestedWeir:
 
         rel_error = abs(dQ_dh_up_analytical - dQ_dh_up_numerical) / abs(dQ_dh_up_numerical)
         assert rel_error < 1e-4
-        print(f"✓ 薄壁堰：导数精度测试通过 (相对误差={rel_error*100:.6f}%)")
+        print(f" 薄壁堰：导数精度测试通过 (相对误差={rel_error*100:.6f}%)")
 
 
 class TestSideWeir:
@@ -159,14 +159,14 @@ class TestSideWeir:
         Q, flow_type = self.weir.calculate_discharge(2.0, 1.5)
         assert Q == 0.0
         assert flow_type == 'no_flow'
-        print("✓ 侧堰：无流量条件测试通过")
+        print(" 侧堰：无流量条件测试通过")
 
     def test_static_water(self):
         """测试静水溢流（无主渠道流速）"""
         Q, flow_type = self.weir.calculate_discharge(3.0, 1.5, Q_channel=None)
         assert Q > 0
         assert flow_type == 'normal_flow'
-        print(f"✓ 侧堰：静水溢流测试通过 (Q={Q:.3f} m³/s)")
+        print(f" 侧堰：静水溢流测试通过 (Q={Q:.3f} m^3/s)")
 
     def test_froude_correction(self):
         """测试弗劳德数修正"""
@@ -180,7 +180,7 @@ class TestSideWeir:
 
         # 高流速时侧向溢流应明显减小
         assert Q_high < Q_low * 0.8
-        print(f"✓ 侧堰：弗劳德数修正测试通过 (高速/低速={Q_high/Q_low:.3f})")
+        print(f" 侧堰：弗劳德数修正测试通过 (高速/低速={Q_high/Q_low:.3f})")
 
     def test_derivative_accuracy(self):
         """测试导数精度（简化解析导数）"""
@@ -197,7 +197,7 @@ class TestSideWeir:
         # 由于简化了φ的依赖性，允许较大误差（10%以内）
         rel_error = abs(dQ_dh_up_analytical - dQ_dh_up_numerical) / abs(dQ_dh_up_numerical)
         assert rel_error < 0.1
-        print(f"✓ 侧堰：导数精度测试通过 (相对误差={rel_error*100:.2f}%)")
+        print(f" 侧堰：导数精度测试通过 (相对误差={rel_error*100:.2f}%)")
 
 
 def run_all_tests():
@@ -241,7 +241,7 @@ def run_all_tests():
     print()
 
     print("=" * 80)
-    print("所有测试通过！✓")
+    print("所有测试通过！")
     print("=" * 80)
 
 

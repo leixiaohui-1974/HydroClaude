@@ -17,7 +17,13 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
 from physics.steady_saint_venant import SteadySaintVenantSystem
-from solvers.newton_solver import NewtonSolver
+try:
+    from solvers.newton_solver import NewtonSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 from utils.canal_utils import compute_steady_uniform_flow
 
@@ -45,7 +51,7 @@ def test_jacobian_rank_after_fix():
     print(f"  nx = {nx}")
     print(f"  总变量数 = {2*nx}")
     print(f"  理论满秩 = {2*nx}")
-    print(f"  目标流量 = {Q_target} m³/s")
+    print(f"  目标流量 = {Q_target} m^3/s")
     print(f"  均匀流水深 = {h_uniform:.4f} m")
     print()
 
@@ -77,9 +83,9 @@ def test_jacobian_rank_after_fix():
 
     # 验证满秩
     if rank == expected_rank:
-        print(f"  ✅ Jacobian满秩（非奇异）")
+        print(f"   Jacobian满秩（非奇异）")
     else:
-        print(f"  ❌ Jacobian欠秩（奇异）")
+        print(f"   Jacobian欠秩（奇异）")
         print(f"  缺少 {expected_rank - rank} 个独立方程")
 
     # 计算条件数
@@ -87,11 +93,11 @@ def test_jacobian_rank_after_fix():
         cond = np.linalg.cond(J_dense)
         print(f"  条件数: {cond:.2e}")
         if cond < 1e10:
-            print(f"  ✅ 条件数良好（well-conditioned）")
+            print(f"   条件数良好（well-conditioned）")
         else:
-            print(f"  ⚠️ 条件数较大（ill-conditioned）")
+            print(f"   条件数较大（ill-conditioned）")
     except:
-        print(f"  ❌ 无法计算条件数（可能奇异）")
+        print(f"   无法计算条件数（可能奇异）")
 
     # 计算奇异值
     s = np.linalg.svd(J_dense, compute_uv=False)
@@ -108,9 +114,9 @@ def test_jacobian_rank_after_fix():
     print(f"  零元素数: {zero_diag_count} / {2*nx}")
 
     if zero_diag_count == 0:
-        print(f"  ✅ 所有对角元素非零")
+        print(f"   所有对角元素非零")
     else:
-        print(f"  ⚠️ 存在零对角元素")
+        print(f"   存在零对角元素")
 
     print()
 
@@ -174,7 +180,7 @@ def test_newton_convergence_no_gate():
 
         print()
         print("求解结果:")
-        print(f"  收敛: {'✅' if info['converged'] else '❌'}")
+        print(f"  收敛: {'' if info['converged'] else ''}")
         print(f"  迭代次数: {info['iterations']}")
         print(f"  最终残差: {info['final_residual']:.2e}")
 
@@ -182,14 +188,14 @@ def test_newton_convergence_no_gate():
             # 解包结果
             h_sol, Q_sol = system.unpack_state(U_sol)
             print(f"  水深范围: {h_sol.min():.4f} - {h_sol.max():.4f} m")
-            print(f"  流量范围: {Q_sol.min():.4f} - {Q_sol.max():.4f} m³/s")
+            print(f"  流量范围: {Q_sol.min():.4f} - {Q_sol.max():.4f} m^3/s")
             print(f"  水深误差: {np.abs(h_sol - h_uniform).max():.2e} m")
-            print(f"  流量误差: {np.abs(Q_sol - Q_target).max():.2e} m³/s")
+            print(f"  流量误差: {np.abs(Q_sol - Q_target).max():.2e} m^3/s")
 
         return info['converged']
 
     except Exception as e:
-        print(f"❌ 求解失败: {e}")
+        print(f" 求解失败: {e}")
         return False
 
 
@@ -261,7 +267,7 @@ def test_newton_convergence_with_gate():
 
         print()
         print("求解结果:")
-        print(f"  收敛: {'✅' if info['converged'] else '❌'}")
+        print(f"  收敛: {'' if info['converged'] else ''}")
         print(f"  迭代次数: {info['iterations']}")
         print(f"  最终残差: {info['final_residual']:.2e}")
 
@@ -271,14 +277,14 @@ def test_newton_convergence_with_gate():
             gate_idx = np.argmin(np.abs(system.x - gate_position))
 
             print(f"  水深范围: {h_sol.min():.4f} - {h_sol.max():.4f} m")
-            print(f"  流量范围: {Q_sol.min():.4f} - {Q_sol.max():.4f} m³/s")
+            print(f"  流量范围: {Q_sol.min():.4f} - {Q_sol.max():.4f} m^3/s")
             print(f"  闸门处水深: {h_sol[gate_idx]:.4f} m")
-            print(f"  闸门处流量: {Q_sol[gate_idx]:.4f} m³/s")
+            print(f"  闸门处流量: {Q_sol[gate_idx]:.4f} m^3/s")
 
         return info['converged']
 
     except Exception as e:
-        print(f"❌ 求解失败: {e}")
+        print(f" 求解失败: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -312,14 +318,14 @@ def run_all_tests():
     all_passed = all(results.values())
 
     for test_name, passed in results.items():
-        status = "✅ 通过" if passed else "❌ 失败"
+        status = " 通过" if passed else " 失败"
         print(f"{test_name:25s}: {status}")
 
     print()
     if all_passed:
-        print("🎉 所有测试通过！边界条件修复成功！")
+        print(" 所有测试通过！边界条件修复成功！")
     else:
-        print("⚠️ 部分测试失败，需要进一步调试")
+        print(" 部分测试失败，需要进一步调试")
 
     return all_passed
 

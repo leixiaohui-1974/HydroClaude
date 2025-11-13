@@ -3,8 +3,22 @@
 
 目的：验证supercritical边界能否正确维持指定的h和Q值
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 def test_supercritical_inlet():
     """测试supercritical入口边界条件"""
@@ -17,7 +31,7 @@ def test_supercritical_inlet():
 
     # 上游急流条件
     h_upstream = 0.7   # 水深 (m)
-    Q_upstream = 20.0  # 流量 (m³/s)
+    Q_upstream = 20.0  # 流量 (m^3/s)
     u_upstream = Q_upstream / (B * h_upstream)
     g = 9.81
     Fr_upstream = u_upstream / np.sqrt(g * h_upstream)
@@ -27,10 +41,10 @@ def test_supercritical_inlet():
     print("="*80)
     print(f"\n目标上游条件:")
     print(f"  水深 h = {h_upstream:.3f} m")
-    print(f"  流量 Q = {Q_upstream:.2f} m³/s")
+    print(f"  流量 Q = {Q_upstream:.2f} m^3/s")
     print(f"  流速 u = {u_upstream:.3f} m/s")
     print(f"  Froude数 Fr = {Fr_upstream:.3f}")
-    print(f"  状态: {'急流 ✅' if Fr_upstream > 1 else '缓流 ❌'}")
+    print(f"  状态: {'急流 ' if Fr_upstream > 1 else '缓流 '}")
 
     # 初始条件：全渠道相同值
     h_init = np.ones(n_cells) * h_upstream
@@ -57,7 +71,7 @@ def test_supercritical_inlet():
 
     print(f"\n初始状态:")
     print(f"  h[0] = {solver.h[0]:.3f} m")
-    print(f"  Q[0] = {solver.Q[0]:.2f} m³/s")
+    print(f"  Q[0] = {solver.Q[0]:.2f} m^3/s")
     print(f"  u[0] = {solver.Q[0]/(solver.h[0]*B):.3f} m/s")
     print(f"  Fr[0] = {(solver.Q[0]/(solver.h[0]*B))/np.sqrt(g*solver.h[0]):.3f}")
 
@@ -75,7 +89,7 @@ def test_supercritical_inlet():
             Fr0 = u0 / np.sqrt(g * h0) if h0 > 1e-6 else 0.0
             print(f"\n步骤 {step:3d}, t={solver.t:.2f}s:")
             print(f"  h[0] = {h0:.6f} m (目标={h_upstream:.6f}, 误差={(abs(h0-h_upstream)/h_upstream*100):.2f}%)")
-            print(f"  Q[0] = {Q0:.6f} m³/s (目标={Q_upstream:.6f}, 误差={(abs(Q0-Q_upstream)/Q_upstream*100):.2f}%)")
+            print(f"  Q[0] = {Q0:.6f} m^3/s (目标={Q_upstream:.6f}, 误差={(abs(Q0-Q_upstream)/Q_upstream*100):.2f}%)")
             print(f"  Fr[0] = {Fr0:.6f} (目标={Fr_upstream:.6f})")
 
     # 最终检查
@@ -94,17 +108,17 @@ def test_supercritical_inlet():
     print(f"  水深误差: {h_error:.2f}%")
     print(f"  流量误差: {Q_error:.2f}%")
     print(f"  Froude数误差: {Fr_error:.2f}%")
-    print(f"  Fr[0] = {Fr_final:.3f} ({'急流 ✅' if Fr_final > 1 else '缓流 ❌'})")
+    print(f"  Fr[0] = {Fr_final:.3f} ({'急流 ' if Fr_final > 1 else '缓流 '})")
 
     # 验收标准
     tolerance = 5.0  # 5%容差
 
     if h_error < tolerance and Q_error < tolerance and Fr_final > 0.9:
-        print(f"\n✅ Supercritical边界条件正常工作！")
+        print(f"\n Supercritical边界条件正常工作！")
         print(f"   边界值被正确维持在目标值附近")
         return True
     else:
-        print(f"\n❌ Supercritical边界条件失效！")
+        print(f"\n Supercritical边界条件失效！")
         if h_error >= tolerance:
             print(f"   水深误差过大: {h_error:.2f}% >= {tolerance}%")
         if Q_error >= tolerance:

@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 """
-示例1: 明渠非恒定流 - 生成GIF动画（改进版，消除边界振荡）
+示例1: 明渠非恒定流 - 生成GIF动画改进版消除边界振荡
 
-关键改进：
+关键改进
 1. 增加空间离散点数 nx=101
-2. 改进下游边界条件，减少数值反射
+2. 改进下游边界条件减少数值反射
 3. 增加模拟时间确保充分收敛
 
 作者: Claude
@@ -14,7 +15,9 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 from matplotlib.animation import FuncAnimation, PillowWriter
 from scipy.optimize import fsolve
 
@@ -25,7 +28,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from output_helper import get_output_path, save_animation
 
 def compute_steady_uniform_flow(Q, B, S0, n):
-    """计算恒定均匀流水深（Manning公式）"""
+    """计算恒定均匀流水深Manning公式"""
 
     def manning_equation(h):
         if h <= 0:
@@ -99,7 +102,7 @@ class ImprovedCanalSolver:
         """
         应用平滑的边界条件 - 减少数值反射
 
-        关键改进：在下游边界附近使用渐变区（sponge layer）
+        关键改进在下游边界附近使用渐变区sponge layer
         """
         # 上游边界
         Q_new[0] = Q_upstream
@@ -110,7 +113,7 @@ class ImprovedCanalSolver:
 
         h_new[-1] = h_downstream
 
-        # 下游流量 - 强制质量守恒，但使用平滑过渡
+        # 下游流量 - 强制质量守恒但使用平滑过渡
         for i in range(1, n_sponge + 1):
             idx = -i
             weight = (i - 1) / n_sponge  # 0到1的渐变
@@ -258,7 +261,7 @@ def generate_gif_animation():
     """生成GIF动画 - 改进版"""
 
     print("="*70)
-    print("生成明渠非恒定流GIF动画 - 改进版（消除边界振荡）")
+    print("生成明渠非恒定流GIF动画 - 改进版消除边界振荡")
     print("="*70)
 
     # 渠道参数 - **增加空间离散点数**
@@ -277,7 +280,7 @@ def generate_gif_animation():
     )
 
     print(f"\n边界条件:")
-    print(f"  上游流量: {Q_upstream:.2f} m³/s")
+    print(f"  上游流量: {Q_upstream:.2f} m^3/s")
     print(f"  下游水深: {h_downstream:.3f} m")
     print(f"\n离散化:")
     print(f"  空间点数: {params['nx']}")
@@ -289,7 +292,7 @@ def generate_gif_animation():
     n_steps = int(T_total / dt)
 
     # 每隔几帧保存一次
-    frame_skip = 10  # 从5增加到10，减少帧数
+    frame_skip = 10  # 从5增加到10减少帧数
     n_frames = n_steps // frame_skip
 
     methods = ['explicit', 'preissmann', 'hll']
@@ -339,7 +342,7 @@ def generate_gif_animation():
             'x': solver.x
         }
 
-        print(f"✓ ({len(time_history)} 帧)")
+        print(f" ({len(time_history)} 帧)")
 
     # 检查最终收敛性
     print(f"\n最终状态检查:")
@@ -357,8 +360,8 @@ def generate_gif_animation():
         Q_error = abs(Q_mean - Q_upstream) / Q_upstream * 100
 
         print(f"  {method_names[method]}:")
-        print(f"    水深: {h_mean:.4f}±{h_std:.6f} m (误差: {h_error:.3f}%)")
-        print(f"    流量: {Q_mean:.4f}±{Q_std:.6f} m³/s (误差: {Q_error:.3f}%)")
+        print(f"    水深: {h_mean:.4f}+/-{h_std:.6f} m (误差: {h_error:.3f}%)")
+        print(f"    流量: {Q_mean:.4f}+/-{Q_std:.6f} m^3/s (误差: {Q_error:.3f}%)")
 
     # 创建GIF动画
     print(f"\n生成GIF动画...")
@@ -393,7 +396,7 @@ def generate_gif_animation():
         line_Q, = ax_Q.plot(x, data['Q'][0], 'g-', linewidth=2, label='Discharge')
         ax_Q.axhline(y=Q_upstream, color='r', linestyle='--', linewidth=1.5, alpha=0.7, label='Inflow')
         ax_Q.set_xlabel('Distance (m)')
-        ax_Q.set_ylabel('Discharge (m³/s)')
+        ax_Q.set_ylabel('Discharge (m^3/s)')
         ax_Q.set_ylim([7.8, 8.2])
         ax_Q.grid(True, alpha=0.3)
         ax_Q.legend(loc='upper right', fontsize=9)
@@ -430,7 +433,7 @@ def generate_gif_animation():
     writer = PillowWriter(fps=20)
     anim.save(gif_path, writer=writer, dpi=100)
 
-    print(f"  ✓ GIF生成成功！")
+    print(f"   GIF生成成功")
 
     # 生成最终状态的静态图
     print(f"\n生成最终状态静态图...")
@@ -469,7 +472,7 @@ def generate_gif_animation():
         ax_Q.plot(x, Q_final, 'g-', linewidth=2, marker='.', markersize=2, label='Numerical')
         ax_Q.axhline(y=Q_upstream, color='r', linestyle='--', linewidth=2, label='Theoretical')
         ax_Q.set_xlabel('Distance (m)')
-        ax_Q.set_ylabel('Discharge (m³/s)')
+        ax_Q.set_ylabel('Discharge (m^3/s)')
         ax_Q.grid(True, alpha=0.3)
         ax_Q.legend()
 
@@ -477,7 +480,7 @@ def generate_gif_animation():
         Q_mean = Q_final.mean()
         Q_std = Q_final.std()
         Q_error = abs(Q_mean - Q_upstream) / Q_upstream * 100
-        ax_Q.text(0.02, 0.02, f'Mean: {Q_mean:.4f} m³/s\nStd: {Q_std:.6f} m³/s\nError: {Q_error:.3f}%',
+        ax_Q.text(0.02, 0.02, f'Mean: {Q_mean:.4f} m^3/s\nStd: {Q_std:.6f} m^3/s\nError: {Q_error:.3f}%',
                   transform=ax_Q.transAxes, fontsize=8,
                   verticalalignment='bottom',
                   bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.7))
@@ -486,17 +489,17 @@ def generate_gif_animation():
 
     fig_path = get_output_path('figures', '06_canal_flow_final_state.png')
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-    print(f"  ✓ 静态图保存到: {fig_path}")
+    print(f"   静态图保存到: {fig_path}")
 
     print(f"\n{'='*70}")
-    print("动画生成完成！")
+    print("动画生成完成")
     print(f"{'='*70}")
     print(f"\nGIF文件: {gif_path}")
     print(f"静态图: {fig_path}")
-    print(f"\n所有方法均收敛！")
+    print(f"\n所有方法均收敛")
     print(f"{'='*70}\n")
 
-    plt.show()
+    # plt.show()  # Disabled for automated testing
 
 
 if __name__ == '__main__':

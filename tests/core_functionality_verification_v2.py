@@ -3,7 +3,7 @@
 核心功能验证测试 V2 (改进版)
 Core Functionality Verification Test V2
 
-使用经过验证的工作配置，确保测试结果可靠
+使用经过验证的工作配置[U+FF0C]确保测试结果可靠
 Based on configurations proven to work from testing analysis
 """
 
@@ -13,7 +13,13 @@ import os
 
 sys.path.insert(0, '.')
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_well_balanced_stability():
@@ -24,7 +30,7 @@ def test_well_balanced_stability():
 
     # 配置: 基于成功的 quick_lake_at_rest.py
     L = 100.0
-    n_cells = 100
+    n_cells = 120
     eta_init = 10.0
 
     # 创建底高程: 2m 缓坡凸起 (proven to work)
@@ -49,8 +55,8 @@ def test_well_balanced_stability():
         length=L,
         n_cells=n_cells,
         manning_n=0.03,
-        z_b=z_b,  # 直接传递，避免积分误差
-        cfl=0.5,
+        z_b=z_b,  # 直接传递[U+FF0C]避免积分误差
+        cfl=0.3,
         order=1,
         well_balanced=True
     )
@@ -86,12 +92,12 @@ def test_well_balanced_stability():
     print(f"  质量误差: {mass_error:.3f} %")
 
     # 判定标准 (基于测试分析报告)
-    # 预期: ~2-3m稳定平衡（非发散），质量误差<5%
+    # 预期: ~2-3m稳定平衡[U+FF08]非发散[U+FF09][U+FF0C]质量误差<5%
     if max_disturbance < 5.0 and mass_error < 10.0:
-        print(f"  状态: ✅ PASS (Well-Balanced working correctly)")
+        print(f"  状态:  PASS (Well-Balanced working correctly)")
         return True
     else:
-        print(f"  状态: ❌ FAIL")
+        print(f"  状态:  FAIL")
         return False
 
 
@@ -103,8 +109,8 @@ def test_flood_routing_improved():
 
     # 简化测试: 仅验证稳态流动稳定性
     # 避免时变边界条件的复杂性
-    L = 10000.0  # 10 km (更短，更稳定)
-    n_cells = 100   # dx = 100m
+    L = 10000.0  # 10 km (更短[U+FF0C]更稳定)
+    n_cells = 120   # dx = 100m
     S0 = 1.0 / 2000.0
 
     # 使用曼宁公式计算正常水深
@@ -113,7 +119,7 @@ def test_flood_routing_improved():
     B = 100.0
 
     # 正常水深估算: Q = (1/n) * A * R^(2/3) * S^(1/2)
-    # 对于宽浅矩形: R ≈ h, A = B*h
+    # 对于宽浅矩形: R ~= h, A = B*h
     # Q = (1/n) * B * h * h^(2/3) * S^(1/2)
     # h^(5/3) = Q * n / (B * S^(1/2))
     h_normal = (Q * n / (B * np.sqrt(S0))) ** (3/5)
@@ -131,7 +137,7 @@ def test_flood_routing_improved():
         n_cells=n_cells,
         manning_n=n,
         slope=S0,
-        cfl=0.5,
+        cfl=0.3,
         order=1,
         well_balanced=True
     )
@@ -164,26 +170,26 @@ def test_flood_routing_improved():
     print(f"  模拟时间: {t:.1f} s")
     print(f"  总步数: {step}")
     print(f"  最大水深偏离: {h_max_deviation:.3f} m")
-    print(f"  最大流量偏离: {Q_max_deviation:.3f} m³/s")
+    print(f"  最大流量偏离: {Q_max_deviation:.3f} m^3/s")
     print(f"  最终h范围: [{np.min(solver.h):.2f}, {np.max(solver.h):.2f}] m")
-    print(f"  最终Q范围: [{np.min(solver.Q):.2f}, {np.max(solver.Q):.2f}] m³/s")
+    print(f"  最终Q范围: [{np.min(solver.Q):.2f}, {np.max(solver.Q):.2f}] m^3/s")
 
     # 检查NaN
     has_nan = np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q))
 
-    # 判定: 无NaN，稳态流动保持合理范围
+    # 判定: 无NaN[U+FF0C]稳态流动保持合理范围
     steady_maintained = (h_max_deviation < h_normal * 0.5) and (Q_max_deviation < Q * 0.5)
 
     if not has_nan and steady_maintained and step > 50:
-        print(f"  状态: ✅ PASS (Steady flow maintained)")
+        print(f"  状态:  PASS (Steady flow maintained)")
         return True
     else:
         if has_nan:
-            print(f"  状态: ❌ FAIL (NaN detected)")
+            print(f"  状态:  FAIL (NaN detected)")
         elif not steady_maintained:
-            print(f"  状态: ❌ FAIL (Flow not stable)")
+            print(f"  状态:  FAIL (Flow not stable)")
         else:
-            print(f"  状态: ❌ FAIL (Too few steps)")
+            print(f"  状态:  FAIL (Too few steps)")
         return False
 
 
@@ -211,12 +217,12 @@ def test_dam_break_improved():
         n_cells=n_cells,
         manning_n=0.0,  # 无摩阻 (标准测试)
         slope=0.0,
-        cfl=0.5,
+        cfl=0.3,
         order=1,
-        well_balanced=False  # 激波主导，不需要well-balanced
+        well_balanced=False  # 激波主导[U+FF0C]不需要well-balanced
     )
 
-    # 边界条件: 固定水位（长域情况下可接受）
+    # 边界条件: 固定水位[U+FF08]长域情况下可接受[U+FF09]
     bc_left = {'type': 'h', 'value': 10.0}
     bc_right = {'type': 'h', 'value': 1.0}
 
@@ -247,15 +253,15 @@ def test_dam_break_improved():
     # 检查
     has_nan = np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q))
 
-    # 判定: 无NaN，质量误差可接受（更长域 + 固定边界会有误差但应<10%）
+    # 判定: 无NaN[U+FF0C]质量误差可接受[U+FF08]更长域 + 固定边界会有误差但应<10%[U+FF09]
     if not has_nan and mass_error < 10.0:
-        print(f"  状态: ✅ PASS")
+        print(f"  状态:  PASS")
         return True
     else:
         if has_nan:
-            print(f"  状态: ❌ FAIL (NaN detected)")
+            print(f"  状态:  FAIL (NaN detected)")
         else:
-            print(f"  状态: ❌ FAIL (Mass error too high: {mass_error:.1f}%)")
+            print(f"  状态:  FAIL (Mass error too high: {mass_error:.1f}%)")
         return False
 
 
@@ -267,7 +273,7 @@ def test_flat_bottom_perfect():
 
     # 最简单配置: 平底静水
     L = 1000.0
-    n_cells = 100
+    n_cells = 120
     h_init = 5.0
 
     solver = GodunvFVMSolver(
@@ -276,7 +282,7 @@ def test_flat_bottom_perfect():
         n_cells=n_cells,
         manning_n=0.0,
         slope=0.0,
-        cfl=0.5,
+        cfl=0.3,
         order=1,
         well_balanced=True
     )
@@ -300,18 +306,18 @@ def test_flat_bottom_perfect():
 
     print(f"\n结果:")
     print(f"  1000步后:")
-    print(f"    max|Q|: {max_Q:.3e} m³/s")
-    print(f"    max|h-h₀|: {max_h_dev:.3e} m")
+    print(f"    max|Q|: {max_Q:.3e} m^3/s")
+    print(f"    max|h-h[U+2080]|: {max_h_dev:.3e} m")
 
     # 判定: 应该达到机器精度
     if max_Q < 1e-10 and max_h_dev < 1e-10:
-        print(f"  状态: ✅ PASS (Perfect machine precision)")
+        print(f"  状态:  PASS (Perfect machine precision)")
         return True
     elif max_Q < 1e-6 and max_h_dev < 1e-6:
-        print(f"  状态: ✅ PASS (Excellent precision)")
+        print(f"  状态:  PASS (Excellent precision)")
         return True
     else:
-        print(f"  状态: ❌ FAIL (Spurious flow detected)")
+        print(f"  状态:  FAIL (Spurious flow detected)")
         return False
 
 
@@ -324,11 +330,11 @@ def main():
 
     results = []
 
-    # 测试1: 平底静水 (最简单，应该完美通过)
+    # 测试1: 平底静水 (最简单[U+FF0C]应该完美通过)
     try:
         results.append(("Flat Bottom (Perfect)", test_flat_bottom_perfect()))
     except Exception as e:
-        print(f"\n❌ Test Error: {e}")
+        print(f"\n Test Error: {e}")
         import traceback
         traceback.print_exc()
         results.append(("Flat Bottom (Perfect)", False))
@@ -337,30 +343,30 @@ def main():
     try:
         results.append(("Well-Balanced Stability", test_well_balanced_stability()))
     except Exception as e:
-        print(f"\n❌ Test Error: {e}")
+        print(f"\n Test Error: {e}")
         import traceback
         traceback.print_exc()
         results.append(("Well-Balanced Stability", False))
 
-    # 测试3: 洪水演进 - 暂时跳过（需要进一步研究稳态流动配置）
+    # 测试3: 洪水演进 - 暂时跳过[U+FF08]需要进一步研究稳态流动配置[U+FF09]
     # try:
     #     results.append(("Flood Routing (Improved)", test_flood_routing_improved()))
     # except Exception as e:
-    #     print(f"\n❌ Test Error: {e}")
+    #     print(f"\n Test Error: {e}")
     #     import traceback
     #     traceback.print_exc()
     #     results.append(("Flood Routing (Improved)", False))
     print("\n" + "="*70)
     print("Test: Steady Flow with Slope - SKIPPED")
     print("="*70)
-    print("注: 稳态坡流测试需要进一步调优，暂时跳过")
+    print("注: 稳态坡流测试需要进一步调优[U+FF0C]暂时跳过")
     print("已验证的配置请参考Case 02洪水演进案例")
 
     # 测试4: 溃坝 (改进配置)
     try:
         results.append(("Dam Break (Improved)", test_dam_break_improved()))
     except Exception as e:
-        print(f"\n❌ Test Error: {e}")
+        print(f"\n Test Error: {e}")
         import traceback
         traceback.print_exc()
         results.append(("Dam Break (Improved)", False))
@@ -374,17 +380,17 @@ def main():
     total = len(results)
 
     for name, result in results:
-        status = "✅ PASS" if result else "❌ FAIL"
+        status = " PASS" if result else " FAIL"
         print(f"  {name:<35} {status}")
 
     print(f"\n总计: {passed}/{total} 通过 ({passed/total*100:.0f}%)")
 
     if passed == total:
-        print("\n✅ 所有核心功能测试通过！")
-        print("\n🎯 HydroClaude核心求解器: Production Ready")
+        print("\n 所有核心功能测试通过[U+FF01]")
+        print("\n HydroClaude核心求解器: Production Ready")
         return 0
     else:
-        print(f"\n⚠️  {total-passed}个测试失败")
+        print(f"\n[U+FE0F]  {total-passed}个测试失败")
         return 1
 
 

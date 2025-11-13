@@ -4,7 +4,7 @@
 Phase 1 超级场景库（30个稳态场景）
 
 扩展覆盖范围：
-- 流量组（5个）: Q=20-150 m³/s
+- 流量组（5个）: Q=20-150 m^3/s
 - 底坡组（5个）: S0=0.0005-0.003  
 - 糙率组（5个）: n=0.015-0.050
 - 宽度组（5个）: B=5-15m（避免极端值）
@@ -149,7 +149,7 @@ for idx, scenario in enumerate(scenarios, 1):
             n_cells=n_cells,
             manning_n=scenario['n'],
             slope=scenario['S0'],
-            cfl=0.5,
+            cfl = 0.3,
             order=1
         )
         
@@ -160,7 +160,19 @@ for idx, scenario in enumerate(scenarios, 1):
         bc_left = {'type': 'Q', 'value': scenario['Q']}
         bc_right = {'type': 'h', 'value': h_uniform}
         
-        solver.initialize(h_init, Q_init, bc_left, bc_right)
+        # GodunvFVMSolver需要手动初始化
+
+        
+        solver.h = h_init.copy()
+
+        
+        solver.Q = Q_init.copy()
+
+        
+        solver.bc_left = bc_left
+
+        
+        solver.bc_right = bc_right
         
         # 推进到稳态
         for _ in range(400):
@@ -176,13 +188,13 @@ for idx, scenario in enumerate(scenarios, 1):
         has_nan = np.any(np.isnan(state['h']))
         
         if not has_nan and mass_error < 10.0:
-            status = "✅"
+            status = ""
             success = True
             print(f"  结果: {status} 成功")
             print(f"    平均水深: {h_avg:.3f} m")
             print(f"    质量误差: {mass_error:.4f}%")
         else:
-            status = "❌"
+            status = ""
             success = False
             if has_nan:
                 print(f"  结果: {status} 失败（NaN）")
@@ -199,7 +211,7 @@ for idx, scenario in enumerate(scenarios, 1):
         })
         
     except Exception as e:
-        print(f"  结果: ❌ 异常: {str(e)[:50]}")
+        print(f"  结果:  异常: {str(e)[:50]}")
         results.append({
             'scenario': scenario,
             'success': False,
@@ -233,7 +245,7 @@ for group_name in groups.keys():
     group_success = [r for r in group_results if r['success']]
     group_rate = len(group_success) / len(group_results) * 100
     
-    status_icon = "✅" if group_rate >= 80 else "⚠️" if group_rate >= 60 else "❌"
+    status_icon = "" if group_rate >= 80 else "" if group_rate >= 60 else ""
     print(f"  {status_icon} {group_name}组: {len(group_success)}/{len(group_results)} ({group_rate:.0f}%)")
 
 # 质量误差统计
@@ -252,7 +264,7 @@ if len(failed) > 0:
     print(f"\n失败场景分析:")
     for r in failed:
         scenario = r['scenario']
-        print(f"  • {scenario['name']} (ID: {scenario['id']})")
+        print(f"  - {scenario['name']} (ID: {scenario['id']})")
         print(f"    参数: Q={scenario['Q']}, B={scenario['B']}, S0={scenario['S0']}, n={scenario['n']}")
         if r.get('has_nan'):
             print(f"    原因: NaN")
@@ -265,16 +277,16 @@ print(f"最终评价")
 print(f"{'=' * 80}")
 
 if success_rate >= 90:
-    grade = "⭐⭐⭐⭐⭐ 优秀"
+    grade = "***** 优秀"
     comment = "超越预期！覆盖广泛，稳定性强"
 elif success_rate >= 80:
-    grade = "⭐⭐⭐⭐ 良好"
+    grade = "**** 良好"
     comment = "达到目标，部分参数需优化"
 elif success_rate >= 70:
-    grade = "⭐⭐⭐ 及格"
+    grade = "*** 及格"
     comment = "基本可用，仍有改进空间"
 else:
-    grade = "⚠️ 需改进"
+    grade = " 需改进"
     comment = "稳定性不足，需进一步优化"
 
 print(f"\n成功率: {success_rate:.1f}%")
@@ -282,6 +294,6 @@ print(f"评级: {grade}")
 print(f"评价: {comment}")
 
 print(f"\n" + "=" * 80)
-print(f"✅ 超级场景库测试完成！")
-print(f"✅ 最终成功率: {success_rate:.1f}% ({len(successful)}/{total})")
+print(f" 超级场景库测试完成！")
+print(f" 最终成功率: {success_rate:.1f}% ({len(successful)}/{total})")
 print(f"{'=' * 80}")

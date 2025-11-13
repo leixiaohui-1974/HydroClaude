@@ -25,6 +25,7 @@
 ## 脚本文件
 
 - `demo_reservoir.py`
+- `example_17_reservoir_with_anim.py`
 
 ## 运行方法
 
@@ -37,11 +38,14 @@ PYTHONPATH=../.. python demo_reservoir.py
 
 ### 图表
 
-- 待生成
+- `outputs/figures/reservoir_operation.png`
 
 ### 动画
 
-- 待生成
+- `outputs/animations/reservoir_operation.gif`
+
+![动画](outputs\animations\reservoir_operation.gif)
+- `outputs/animations/reservoir_operation_embedded.gif`
 
 ## 技术要点
 

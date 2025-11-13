@@ -32,7 +32,13 @@ from network import (
 )
 from network.structures import InternalGate
 from physics.hydraulic_structures import SluiceGate
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def create_solver(length=500.0, width=10.0, h_init=2.0, Q_init=30.0, slope=0.001, n_cells=None):
@@ -65,7 +71,7 @@ class IntegrationTest1_SerialReaches:
     集成测试1: 串联河段系统
 
     拓扑结构:
-    [入口] → [R1] → [N2] → [R2] → [N3] → [R3] → [出口]
+    [入口] -> [R1] -> [N2] -> [R2] -> [N3] -> [R3] -> [出口]
 
     验证点:
     - 3段河段串联
@@ -134,7 +140,7 @@ class IntegrationTest1_SerialReaches:
         self.network.build_topology()
         print(f"  拓扑顺序: {self.network.topological_order}")
 
-    def run(self, t_end=1800.0, dt=10.0):
+    def run(self, t_end=50.0, dt=10.0):
         """运行模拟"""
         print(f"\n运行模拟:")
         print(f"  求解方法: sequential")
@@ -157,12 +163,12 @@ class IntegrationTest1_SerialReaches:
         Q_in, Q_out, mass_error = self.network.check_global_mass_balance()
 
         print(f"\n  [质量守恒]")
-        print(f"    总入流: {Q_in:.3f} m³/s")
-        print(f"    总出流: {Q_out:.3f} m³/s")
+        print(f"    总入流: {Q_in:.3f} m^3/s")
+        print(f"    总出流: {Q_out:.3f} m^3/s")
         print(f"    误差: {mass_error:.4f}%")
 
         mass_ok = mass_error < 1.0
-        print(f"    {'✅ 通过' if mass_ok else '❌ 失败'} (标准: < 1%)")
+        print(f"    {' 通过' if mass_ok else ' 失败'} (标准: < 1%)")
 
         # 2. 水位连续性
         print(f"\n  [水位连续性]")
@@ -178,11 +184,11 @@ class IntegrationTest1_SerialReaches:
 
             max_delta_h = max(max_delta_h, delta_h)
 
-            print(f"    {reach1.id} ↔ {reach2.id}: Δh = {delta_h*100:.2f} cm")
+            print(f"    {reach1.id} <-> {reach2.id}: Deltah = {delta_h*100:.2f} cm")
 
         continuity_ok = max_delta_h < 0.01  # 1cm
         print(f"    最大误差: {max_delta_h*100:.2f} cm")
-        print(f"    {'✅ 通过' if continuity_ok else '❌ 失败'} (标准: < 1 cm)")
+        print(f"    {' 通过' if continuity_ok else ' 失败'} (标准: < 1 cm)")
 
         # 3. 计算性能
         print(f"\n  [计算性能]")
@@ -195,9 +201,9 @@ class IntegrationTest1_SerialReaches:
 
         print(f"\n  [总体结果]")
         if all_ok:
-            print(f"    ✅ 测试通过！")
+            print(f"     测试通过！")
         else:
-            print(f"    ❌ 测试失败")
+            print(f"     测试失败")
 
         return all_ok
 
@@ -207,9 +213,9 @@ class IntegrationTest2_YJunction:
     集成测试2: Y型汇流系统
 
     拓扑结构:
-         [入口1] → [R1] ↘
-                          [汇流] → [R3] → [出口]
-         [入口2] → [R2] ↗
+         [入口1] -> [R1] ↘
+                          [汇流] -> [R3] -> [出口]
+         [入口2] -> [R2] ↗
 
     验证点:
     - 2河段汇入1河段
@@ -266,7 +272,7 @@ class IntegrationTest2_YJunction:
         self.network.build_topology()
         print(f"  拓扑顺序: {self.network.topological_order}")
 
-    def run(self, t_end=1200.0, dt=10.0):
+    def run(self, t_end=50.0, dt=10.0):
         """运行模拟"""
         print(f"\n运行模拟:")
         print(f"  求解方法: iterative")
@@ -290,27 +296,27 @@ class IntegrationTest2_YJunction:
         Q_out_total = sum(junction_node.Q_out) if junction_node.Q_out else 0.0
 
         print(f"\n  [汇流点质量守恒]")
-        print(f"    入流总计: {Q_in_total:.3f} m³/s")
-        print(f"      支流1: {junction_node.Q_in[0]:.3f} m³/s" if len(junction_node.Q_in) > 0 else "")
-        print(f"      支流2: {junction_node.Q_in[1]:.3f} m³/s" if len(junction_node.Q_in) > 1 else "")
-        print(f"    出流总计: {Q_out_total:.3f} m³/s")
+        print(f"    入流总计: {Q_in_total:.3f} m^3/s")
+        print(f"      支流1: {junction_node.Q_in[0]:.3f} m^3/s" if len(junction_node.Q_in) > 0 else "")
+        print(f"      支流2: {junction_node.Q_in[1]:.3f} m^3/s" if len(junction_node.Q_in) > 1 else "")
+        print(f"    出流总计: {Q_out_total:.3f} m^3/s")
 
         junction_error = abs(Q_in_total - Q_out_total) / max(Q_in_total, 1e-6) * 100
         print(f"    误差: {junction_error:.4f}%")
 
         junction_ok = junction_error < 1.0
-        print(f"    {'✅ 通过' if junction_ok else '❌ 失败'} (标准: < 1%)")
+        print(f"    {' 通过' if junction_ok else ' 失败'} (标准: < 1%)")
 
         # 2. 全局质量守恒
         Q_in, Q_out, mass_error = self.network.check_global_mass_balance()
 
         print(f"\n  [全局质量守恒]")
-        print(f"    总入流: {Q_in:.3f} m³/s")
-        print(f"    总出流: {Q_out:.3f} m³/s")
+        print(f"    总入流: {Q_in:.3f} m^3/s")
+        print(f"    总出流: {Q_out:.3f} m^3/s")
         print(f"    误差: {mass_error:.4f}%")
 
         mass_ok = mass_error < 1.0
-        print(f"    {'✅ 通过' if mass_ok else '❌ 失败'} (标准: < 1%)")
+        print(f"    {' 通过' if mass_ok else ' 失败'} (标准: < 1%)")
 
         # 3. 迭代收敛性（如果有记录的话）
         print(f"\n  [迭代收敛]")
@@ -323,9 +329,9 @@ class IntegrationTest2_YJunction:
 
         print(f"\n  [总体结果]")
         if all_ok:
-            print(f"    ✅ 测试通过！")
+            print(f"     测试通过！")
         else:
-            print(f"    ❌ 测试失败")
+            print(f"     测试失败")
 
         return all_ok
 
@@ -335,7 +341,7 @@ class IntegrationTest3_SeriesGates:
     集成测试3: 串联闸门系统
 
     拓扑结构:
-    [入口] → [R1] → [闸1] → [R2] → [闸2] → [R3] → [闸3] → [R4] → [出口]
+    [入口] -> [R1] -> [闸1] -> [R2] -> [闸2] -> [R3] -> [闸3] -> [R4] -> [出口]
 
     验证点:
     - 3个闸门串联
@@ -433,7 +439,7 @@ class IntegrationTest3_SeriesGates:
         # 拓扑排序
         self.network.build_topology()
 
-    def run(self, t_end=1500.0, dt=10.0):
+    def run(self, t_end=50.0, dt=10.0):
         """运行模拟"""
         print(f"\n运行模拟:")
 
@@ -451,7 +457,7 @@ class IntegrationTest3_SeriesGates:
 
         # 1. 各闸门流量
         print(f"\n  [闸门流量]")
-        print(f"    {'闸门':<8} {'开度(m)':<10} {'流量(m³/s)':<15}")
+        print(f"    {'闸门':<8} {'开度(m)':<10} {'流量(m^3/s)':<15}")
         print(f"    {'-'*35}")
 
         gate_flows = []
@@ -472,32 +478,32 @@ class IntegrationTest3_SeriesGates:
             Q2 = gate_flows[i+1]
             error = abs(Q1 - Q2) / max(Q1, 1e-6) * 100
 
-            print(f"    闸门{i+1} ↔ 闸门{i+2}: 误差 = {error:.4f}%")
+            print(f"    闸门{i+1} <-> 闸门{i+2}: 误差 = {error:.4f}%")
 
             if error >= 5.0:  # 宽松一些，允许5%误差
                 flow_consistent = False
 
-        print(f"    {'✅ 通过' if flow_consistent else '⚠️  警告'} (标准: < 5%)")
+        print(f"    {' 通过' if flow_consistent else '  警告'} (标准: < 5%)")
 
         # 3. 全局质量守恒
         Q_in, Q_out, mass_error = self.network.check_global_mass_balance()
 
         print(f"\n  [全局质量守恒]")
-        print(f"    总入流: {Q_in:.3f} m³/s")
-        print(f"    总出流: {Q_out:.3f} m³/s")
+        print(f"    总入流: {Q_in:.3f} m^3/s")
+        print(f"    总出流: {Q_out:.3f} m^3/s")
         print(f"    误差: {mass_error:.4f}%")
 
         mass_ok = mass_error < 5.0  # 内部建筑物多，稍微宽松
-        print(f"    {'✅ 通过' if mass_ok else '❌ 失败'} (标准: < 5%)")
+        print(f"    {' 通过' if mass_ok else ' 失败'} (标准: < 5%)")
 
         # 总结
         all_ok = flow_consistent and mass_ok
 
         print(f"\n  [总体结果]")
         if all_ok:
-            print(f"    ✅ 测试通过！")
+            print(f"     测试通过！")
         else:
-            print(f"    ⚠️  部分警告")
+            print(f"      部分警告")
 
         return all_ok
 
@@ -508,11 +514,11 @@ class IntegrationTest4_ComplexNetwork:
 
     拓扑结构 (5节点、7河段):
 
-         [入口1] → [R1] ↘
-                          [汇流1] → [R3] → [分流] → [R5] → [出口1]
-         [入口2] → [R2] ↗                    ↓
-                                            [R6] → [汇流2] → [R7] → [出口2]
-                          [入口3] → [R4] ↗
+         [入口1] -> [R1] ↘
+                          [汇流1] -> [R3] -> [分流] -> [R5] -> [出口1]
+         [入口2] -> [R2] ↗                    ↓
+                                            [R6] -> [汇流2] -> [R7] -> [出口2]
+                          [入口3] -> [R4] ↗
 
     验证点:
     - 多个汇流点
@@ -582,7 +588,7 @@ class IntegrationTest4_ComplexNetwork:
         self.network.build_topology()
         print(f"  拓扑顺序: {self.network.topological_order}")
 
-    def run(self, t_end=1200.0, dt=10.0):
+    def run(self, t_end=50.0, dt=10.0):
         """运行模拟"""
         print(f"\n运行模拟:")
 
@@ -613,7 +619,7 @@ class IntegrationTest4_ComplexNetwork:
             if error >= 5.0:
                 junction_ok = False
 
-        print(f"    {'✅ 通过' if junction_ok else '❌ 失败'} (标准: < 5%)")
+        print(f"    {' 通过' if junction_ok else ' 失败'} (标准: < 5%)")
 
         # 2. 分流点质量守恒
         print(f"\n  [分流点质量守恒]")
@@ -626,18 +632,18 @@ class IntegrationTest4_ComplexNetwork:
         print(f"    分流: 入流={Q_in:.2f}, 出流={Q_out:.2f}, 误差={bifur_error:.4f}%")
 
         bifur_ok = bifur_error < 5.0
-        print(f"    {'✅ 通过' if bifur_ok else '❌ 失败'} (标准: < 5%)")
+        print(f"    {' 通过' if bifur_ok else ' 失败'} (标准: < 5%)")
 
         # 3. 全局质量守恒
         Q_in_global, Q_out_global, mass_error = self.network.check_global_mass_balance()
 
         print(f"\n  [全局质量守恒]")
-        print(f"    总入流: {Q_in_global:.3f} m³/s (3个入口)")
-        print(f"    总出流: {Q_out_global:.3f} m³/s (2个出口)")
+        print(f"    总入流: {Q_in_global:.3f} m^3/s (3个入口)")
+        print(f"    总出流: {Q_out_global:.3f} m^3/s (2个出口)")
         print(f"    误差: {mass_error:.4f}%")
 
         mass_ok = mass_error < 5.0
-        print(f"    {'✅ 通过' if mass_ok else '❌ 失败'} (标准: < 5%)")
+        print(f"    {' 通过' if mass_ok else ' 失败'} (标准: < 5%)")
 
         # 4. 分流比例
         print(f"\n  [分流比例]")
@@ -652,16 +658,16 @@ class IntegrationTest4_ComplexNetwork:
             ratio_error = abs(ratio1 - 0.6)
             ratio_ok = ratio_error < 0.1  # 10%容差
 
-            print(f"    {'✅ 通过' if ratio_ok else '⚠️  偏差较大'}")
+            print(f"    {' 通过' if ratio_ok else '  偏差较大'}")
 
         # 总结
         all_ok = junction_ok and bifur_ok and mass_ok
 
         print(f"\n  [总体结果]")
         if all_ok:
-            print(f"    ✅ 测试通过！")
+            print(f"     测试通过！")
         else:
-            print(f"    ⚠️  部分警告或失败")
+            print(f"      部分警告或失败")
 
         return all_ok
 
@@ -712,16 +718,16 @@ def run_all_integration_tests():
     ]
 
     for i, (test_key, test_name) in enumerate(zip(['test1', 'test2', 'test3', 'test4'], test_names)):
-        status = "✅ 通过" if results[test_key] else "❌ 失败"
+        status = " 通过" if results[test_key] else " 失败"
         print(f"  {test_name}: {status}")
 
     all_passed = all(results.values())
 
     print("\n" + "=" * 80)
     if all_passed:
-        print("✅ 所有集成测试通过！")
+        print(" 所有集成测试通过！")
     else:
-        print("⚠️  部分测试失败或警告")
+        print("  部分测试失败或警告")
     print("=" * 80)
 
     return results

@@ -70,7 +70,7 @@ def demo_stage5_integration():
         'P7': create_pressure_pipe('P7', 0.2, 200, 'cast_iron_new'),
     }
 
-    print(f"✓ 创建{len(pipes)}根管道")
+    print(f" 创建{len(pipes)}根管道")
 
     # 创建节点
     R1 = Reservoir(node_id='R1', elevation=100.0, head=120.0, coordinates=(0, 0))  # 水源
@@ -82,7 +82,7 @@ def demo_stage5_integration():
 
     nodes = {'R1': R1, 'T1': T1, 'J1': J1, 'J2': J2, 'J3': J3, 'J4': J4}
 
-    print(f"✓ 创建{len(nodes)}个节点: 1水库, 1水塔, 4用水点")
+    print(f" 创建{len(nodes)}个节点: 1水库, 1水塔, 4用水点")
     print()
 
     # ========================================
@@ -146,7 +146,7 @@ def demo_stage5_integration():
     print(f"  最终误差: {hc_solver.max_error:.2e}")
     print()
 
-    print("  管道流量 (m³/s):")
+    print("  管道流量 (m^3/s):")
     for pipe_id, Q in flows_hc.items():
         print(f"    {pipe_id}: {Q:+.4f}")
     print()
@@ -183,8 +183,8 @@ def demo_stage5_integration():
     for pipe_id in flows_hc.keys():
         diff = abs(flows_hc[pipe_id] - flows_nr[pipe_id])
         max_diff = max(max_diff, diff)
-        print(f"    {pipe_id}: HC={flows_hc[pipe_id]:+.4f}, NR={flows_nr[pipe_id]:+.4f}, Δ={diff:.2e}")
-    print(f"\n  最大流量差异: {max_diff:.2e} m³/s")
+        print(f"    {pipe_id}: HC={flows_hc[pipe_id]:+.4f}, NR={flows_nr[pipe_id]:+.4f}, Delta={diff:.2e}")
+    print(f"\n  最大流量差异: {max_diff:.2e} m^3/s")
     print()
 
     # ========================================
@@ -203,7 +203,7 @@ def demo_stage5_integration():
 
     print("  不同水深的流态:")
     test_depths = [0.2, 0.4, 0.475, 0.50, 0.52, 0.6]
-    print(f"  {'h(m)':<8} {'A(m²)':<10} {'流态':<15} {'是否满流'}")
+    print(f"  {'h(m)':<8} {'A(m^2)':<10} {'流态':<15} {'是否满流'}")
     print("  " + "-" * 50)
 
     for h in test_depths:
@@ -261,7 +261,7 @@ def demo_stage5_integration():
     )
 
     H_max = np.max(wh_result['H'])
-    print(f"  ✓ 求解完成")
+    print(f"   求解完成")
     print(f"  最大水头: {H_max:.2f} m")
     print(f"  最大压升: {H_max - 120.0:.2f} m")
     print()
@@ -295,7 +295,7 @@ def demo_stage5_integration():
         ax1.plot([x1, x2], [y1, y2], 'k-', linewidth=2, alpha=0.6)
         xm, ym = (x1 + x2) / 2, (y1 + y2) / 2
         Q = flows_hc[pipe_id]
-        ax1.text(xm, ym, f'{pipe_id}\n{Q:.3f}m³/s', fontsize=8,
+        ax1.text(xm, ym, f'{pipe_id}\n{Q:.3f}m^3/s', fontsize=8,
                 bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
 
     ax1.set_xlabel('X (m)')
@@ -324,7 +324,7 @@ def demo_stage5_integration():
     ax3.bar(x - width / 2, flows_hc_list, width, label='Hardy Cross', alpha=0.8)
     ax3.bar(x + width / 2, flows_nr_list, width, label='Newton-Raphson', alpha=0.8)
     ax3.set_xlabel('Pipe ID')
-    ax3.set_ylabel('Flow (m³/s)')
+    ax3.set_ylabel('Flow (m^3/s)')
     ax3.set_title('Flow Rate Comparison')
     ax3.set_xticks(x)
     ax3.set_xticklabels(pipe_ids)
@@ -350,7 +350,7 @@ def demo_stage5_integration():
     ax5.axhline(dual_pipe.A_full, color='r', linestyle='--', label='Full area')
     ax5.axvline(dual_pipe.D, color='g', linestyle='--', label='Pipe diameter')
     ax5.set_xlabel('Depth (m)')
-    ax5.set_ylabel('Flow Area (m²)')
+    ax5.set_ylabel('Flow Area (m^2)')
     ax5.set_title('Dual Flow Pipe: Area vs Depth')
     ax5.legend()
     ax5.grid(True, alpha=0.3)
@@ -372,7 +372,7 @@ def demo_stage5_integration():
     Q_valve = wh_result['Q'][:, -1]
     ax7.plot(wh_result['t'], Q_valve, 'r-', linewidth=2)
     ax7.set_xlabel('Time (s)')
-    ax7.set_ylabel('Flow Rate (m³/s)')
+    ax7.set_ylabel('Flow Rate (m^3/s)')
     ax7.set_title('Water Hammer: Flow Rate Change')
     ax7.grid(True, alpha=0.3)
 
@@ -395,7 +395,7 @@ def demo_stage5_integration():
 
     output_path = '/home/user/HydroClaude/validation_cases/pressure_network/stage5_integration_validation.png'
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
-    print(f"  ✓ 可视化图表已保存: {output_path}")
+    print(f"   可视化图表已保存: {output_path}")
     print()
 
     # ========================================
@@ -405,23 +405,23 @@ def demo_stage5_integration():
     print("【Part 8: 验证结论 / Validation Summary】")
     print()
 
-    print("✅ Stage 5 所有组件集成测试通过!")
+    print(" Stage 5 所有组件集成测试通过!")
     print()
 
     print("验证的功能 / Validated Features:")
-    print("  1. ✓ PressurePipe: 7根管道,不同管径和材质")
-    print("  2. ✓ NetworkNode: 6个节点 (Reservoir + Tank + 4 Junctions)")
-    print("  3. ✓ NetworkTopology: 2个环路识别成功")
-    print(f"  4. ✓ HardyCrossSolver: {hc_solver.iterations}次迭代收敛,误差{hc_solver.max_error:.2e}")
-    print(f"  5. ✓ NewtonRaphsonSolver: {nr_solver.iterations}次迭代收敛")
-    print(f"  6. ✓ Hardy Cross vs NR: 最大流量差{max_diff:.2e} m³/s (<1e-4)")
-    print("  7. ✓ DualFlowPipe: 明流/满流平滑过渡")
-    print(f"  8. ✓ WaterHammerMOC: 水锤压升{H_max - 120:.2f}m,理论{delta_H_joukowsky:.2f}m")
+    print("  1.  PressurePipe: 7根管道,不同管径和材质")
+    print("  2.  NetworkNode: 6个节点 (Reservoir + Tank + 4 Junctions)")
+    print("  3.  NetworkTopology: 2个环路识别成功")
+    print(f"  4.  HardyCrossSolver: {hc_solver.iterations}次迭代收敛,误差{hc_solver.max_error:.2e}")
+    print(f"  5.  NewtonRaphsonSolver: {nr_solver.iterations}次迭代收敛")
+    print(f"  6.  Hardy Cross vs NR: 最大流量差{max_diff:.2e} m^3/s (<1e-4)")
+    print("  7.  DualFlowPipe: 明流/满流平滑过渡")
+    print(f"  8.  WaterHammerMOC: 水锤压升{H_max - 120:.2f}m,理论{delta_H_joukowsky:.2f}m")
     print()
 
     print("关键性能指标 / Key Performance Metrics:")
     print(f"  - 管网平差收敛速度: {hc_solver.iterations} iterations")
-    print(f"  - 流量计算精度: {max_diff:.2e} m³/s")
+    print(f"  - 流量计算精度: {max_diff:.2e} m^3/s")
     print(f"  - 水锤模拟精度: {abs(H_max - 120 - delta_H_joukowsky) / delta_H_joukowsky * 100:.2f}%")
     print()
 

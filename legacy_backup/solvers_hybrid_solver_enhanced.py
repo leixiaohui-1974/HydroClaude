@@ -151,7 +151,7 @@ class HybridSolverEnhanced:
                     total_time = time.time() - start_time
 
                     self.logger.info("="*60)
-                    self.logger.info(f"✓ 求解成功！使用策略: {strategy.value}")
+                    self.logger.info(f" 求解成功！使用策略: {strategy.value}")
                     self.logger.info(f"  迭代次数: {attempt.iterations}")
                     self.logger.info(f"  最终残差: {attempt.final_residual:.2e}")
                     self.logger.info(f"  单步用时: {attempt.time:.4f}s")
@@ -172,10 +172,10 @@ class HybridSolverEnhanced:
                     return U_solution, info
 
                 else:
-                    self.logger.warning(f"✗ 策略失败: {attempt.error_message}")
+                    self.logger.warning(f" 策略失败: {attempt.error_message}")
 
             except Exception as e:
-                self.logger.error(f"✗ 策略异常: {e}")
+                self.logger.error(f" 策略异常: {e}")
                 self.attempts.append(SolverAttempt(
                     strategy=strategy,
                     success=False,
@@ -189,7 +189,7 @@ class HybridSolverEnhanced:
         total_time = time.time() - start_time
 
         self.logger.error("="*60)
-        self.logger.error("✗ 求解失败！所有策略都未能收敛")
+        self.logger.error(" 求解失败！所有策略都未能收敛")
         self.logger.error(f"  尝试策略数: {len(self.attempts)}")
         self.logger.error(f"  总用时: {total_time:.4f}s")
         self.logger.error("="*60)

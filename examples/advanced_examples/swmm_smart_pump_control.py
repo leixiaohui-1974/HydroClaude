@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 SWMM智能泵站控制完整案例
 
@@ -41,8 +42,8 @@ class FixedLevelPumpController:
     固定水位泵站控制器（传统方式）
 
     控制逻辑：
-    - 水位 > 高水位 → 开启泵站
-    - 水位 < 低水位 → 关闭泵站
+    - 水位 > 高水位 -> 开启泵站
+    - 水位 < 低水位 -> 关闭泵站
     """
 
     def __init__(self, pump_id: str, storage_id: str,
@@ -382,8 +383,8 @@ def simulate_fixed_level_control():
     pump_status = np.zeros(n_steps)
 
     level[0] = 2.0  # 初始水位
-    storage_area = 1000.0  # m²
-    pump_capacity = 0.3  # m³/s
+    storage_area = 1000.0  # m^2
+    pump_capacity = 0.3  # m^3/s
 
     pump_on = False
 
@@ -638,7 +639,7 @@ def visualize_comparison(t1, l1, p1, t2, l2, p2, t3, l3, p3):
     ax2.plot(t2, p2, 'g-', linewidth=2, label='PID', alpha=0.8)
     ax2.plot(t3, p3, 'r-', linewidth=2, label='MPC', alpha=0.8)
     ax2.set_xlabel('Time (hours)', fontsize=11)
-    ax2.set_ylabel('Pump Flow (m³/s)', fontsize=11)
+    ax2.set_ylabel('Pump Flow (m^3/s)', fontsize=11)
     ax2.set_title('Pump Flow Comparison', fontsize=12, fontweight='bold')
     ax2.legend(loc='upper right')
     ax2.grid(True, alpha=0.3)

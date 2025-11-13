@@ -1,22 +1,5 @@
 {
-  "cleaned": [
-    "/home/user/HydroClaude/examples/example_01_canal_flow/code/_deprecated",
-    "Moved test_newton_fixed.py",
-    "Moved test_adaptive_relax.py",
-    "Moved test_anderson_tuning.py",
-    "Moved test_convergence_visual.py",
-    "Moved test_jacobian_rank.py",
-    "Moved test_anderson_vs_aitken.py",
-    "Moved test_performance_comparison.py",
-    "Moved test_anderson_simple.py",
-    "Moved analyze_jacobian.py",
-    "Archived example_01_simple_canal_enhanced.py",
-    "Archived example_01_sluice_gate_flow.py",
-    "Archived example_02_advanced_structures.py",
-    "Archived example_01_optimized.py",
-    "Archived example_01_canal_deep_analysis_v2.py",
-    "Archived example_02_optimized.py"
-  ],
+  "cleaned": [],
   "organized": [
     "example_01_canal_flow",
     "example_02_pump_system",
@@ -48,7 +31,15 @@
     "example_21_irrigation_optimization",
     "example_22_water_hammer",
     "example_23_control_comparison",
-    "example_24_multi_objective_optimization"
+    "example_24_multi_objective_optimization",
+    "example_control",
+    "example_file_boundary_condition",
+    "example_gate_pump_cascade",
+    "example_simple_canal",
+    "example_structure_showcase",
+    "example_structures",
+    "example_time_varying_bc",
+    "example_unsteady"
   ],
   "errors": []
 }

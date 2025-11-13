@@ -157,11 +157,11 @@ def run_scenario(scenario_name, scenario_config):
                 progress = (step / n_steps) * 100
                 print(f"  进度: {progress:5.1f}% | t={t_current:6.0f}s | "
                       f"泵前h={solver.h[pump_idx-1]:.2f}m | "
-                      f"泵站Q={(solver.hu[pump_idx]*B):.2f}m³/s")
+                      f"泵站Q={(solver.hu[pump_idx]*B):.2f}m^3/s")
             
             save_idx += 1
     
-    print("  ✓ 瞬态模拟完成")
+    print("   瞬态模拟完成")
     
     # 创建输出目录
     output_dir = os.path.join(
@@ -178,7 +178,7 @@ def run_scenario(scenario_name, scenario_config):
         pump_head_history, scenario_config, gate1_pos, gate2_pos, pump_pos
     )
     
-    print(f"\n✓ 工况完成: {scenario_name}")
+    print(f"\n 工况完成: {scenario_name}")
     print(f"  结果位置: {output_dir}")
     print("="*90 + "\n")
     
@@ -212,7 +212,7 @@ def create_outputs(output_dir, solver, time_history, h_history, q_history,
     ax2.set_xlabel('Distance (km)', fontsize=11)
     ax2.set_ylabel('Time (s)', fontsize=11)
     ax2.set_title('Flow Rate Evolution', fontsize=12, fontweight='bold')
-    plt.colorbar(im2, ax=ax2, label='Flow (m³/s)')
+    plt.colorbar(im2, ax=ax2, label='Flow (m^3/s)')
     
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, "spatiotemporal.png"), dpi=150, bbox_inches='tight')
@@ -232,7 +232,7 @@ def create_outputs(output_dir, solver, time_history, h_history, q_history,
     
     ax2.plot(time_history/60, q_history[:, pump_idx], 'r-', linewidth=2)
     ax2.set_xlabel('Time (min)', fontsize=10)
-    ax2.set_ylabel('Flow Rate (m³/s)', fontsize=10)
+    ax2.set_ylabel('Flow Rate (m^3/s)', fontsize=10)
     ax2.set_title('Pump Station Flow', fontsize=11, fontweight='bold')
     ax2.grid(True, alpha=0.3)
     
@@ -246,7 +246,7 @@ def create_outputs(output_dir, solver, time_history, h_history, q_history,
     ax4.plot(time_history/60, q_history[:, 0], 'b-', linewidth=2, label='Upstream')
     ax4.plot(time_history/60, q_history[:, -1], 'r-', linewidth=2, label='Downstream')
     ax4.set_xlabel('Time (min)', fontsize=10)
-    ax4.set_ylabel('Flow Rate (m³/s)', fontsize=10)
+    ax4.set_ylabel('Flow Rate (m^3/s)', fontsize=10)
     ax4.set_title('Boundary Flow Rates', fontsize=11, fontweight='bold')
     ax4.legend()
     ax4.grid(True, alpha=0.3)
@@ -274,18 +274,18 @@ def create_outputs(output_dir, solver, time_history, h_history, q_history,
         f.write(f"## 工况说明\n\n{config['description']}\n\n")
         f.write(f"## 最终结果 (t={time_history[-1]:.0f}s)\n\n")
         f.write(f"- 泵前水深: {h_history[-1, pump_idx-1]:.3f} m\n")
-        f.write(f"- 泵站流量: {q_history[-1, pump_idx]:.2f} m³/s\n")
+        f.write(f"- 泵站流量: {q_history[-1, pump_idx]:.2f} m^3/s\n")
         f.write(f"- 泵站扬程: {pump_head_history[-1]:.3f} m\n")
-        f.write(f"- 渠首流量: {q_history[-1, 0]:.2f} m³/s\n")
-        f.write(f"- 渠尾流量: {q_history[-1, -1]:.2f} m³/s\n")
-        f.write(f"- 蓄水速率: {(q_history[-1, 0] - q_history[-1, -1]):.2f} m³/s\n\n")
+        f.write(f"- 渠首流量: {q_history[-1, 0]:.2f} m^3/s\n")
+        f.write(f"- 渠尾流量: {q_history[-1, -1]:.2f} m^3/s\n")
+        f.write(f"- 蓄水速率: {(q_history[-1, 0] - q_history[-1, -1]):.2f} m^3/s\n\n")
         f.write(f"## 输出文件\n\n")
-        f.write(f"- `animation_water_level.gif` - 水位纵剖面动画 ⚠️\n")
+        f.write(f"- `animation_water_level.gif` - 水位纵剖面动画 \n")
         f.write(f"- `spatiotemporal.png` - 时空演化图\n")
         f.write(f"- `time_series.png` - 关键位置时间序列\n")
         f.write(f"- `scenario_data.npz` - 完整数据\n")
     
-    print("  ✓ 所有结果已生成")
+    print("   所有结果已生成")
 
 
 def create_water_level_animation(output_dir, x, z, time, h_history, gate1_pos, gate2_pos, pump_pos):
@@ -333,8 +333,8 @@ if __name__ == "__main__":
         'name': 'Scenario 02: Medium Flow Step',
         'description': '''**工况类型**: 上游边界扰动（中等幅度）
 
-**初始状态**: Q = 30 m³/s
-**扰动**: t=300s, Q → 42 m³/s (+40%)
+**初始状态**: Q = 30 m^3/s
+**扰动**: t=300s, Q -> 42 m^3/s (+40%)
 **观测**: 泵站在能力范围内的响应、工作点求解''',
         'Q_initial': 30.0,
         'Q_upstream_func': lambda t: 42.0 if t >= 300 else 30.0

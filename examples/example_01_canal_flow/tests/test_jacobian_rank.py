@@ -9,6 +9,7 @@
 日期: 2025-10-22
 """
 
+import os
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
@@ -87,7 +88,7 @@ def test_jacobian_rank():
 
         # 判断是否奇异
         is_singular = (rank < expected_rank)
-        singular_str = "✗ 奇异" if is_singular else "✓ 非奇异"
+        singular_str = " 奇异" if is_singular else " 非奇异"
 
         print(f"{dt_label:<15} {rank:<12} {expected_rank:<12} {cond_str:<20} {singular_str:<15}")
 
@@ -149,10 +150,10 @@ def test_jacobian_rank():
     # 检查是否包含伪瞬态项（应该在 J[2*i, 2*i+1]）
     expected_pseudo_idx = 2 * i + 1
     if expected_pseudo_idx in nonzero_indices:
-        print(f"\n  ✓ 包含伪瞬态项 J[{row_idx},{expected_pseudo_idx}] = {row[expected_pseudo_idx]:.6f}")
+        print(f"\n   包含伪瞬态项 J[{row_idx},{expected_pseudo_idx}] = {row[expected_pseudo_idx]:.6f}")
         print(f"    预期值: 1/pseudo_dt = {1.0/0.1:.6f}")
     else:
-        print(f"\n  ✗ 缺少伪瞬态项 J[{row_idx},{expected_pseudo_idx}]")
+        print(f"\n   缺少伪瞬态项 J[{row_idx},{expected_pseudo_idx}]")
 
     print()
 

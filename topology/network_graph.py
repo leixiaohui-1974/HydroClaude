@@ -86,11 +86,11 @@ class NetworkTopology:
         self.is_loop = len(self.loops) > 0
 
         if self.is_loop:
-            print(f"✓ 环状网络: 检测到 {len(self.loops)} 个环路")
+            print(f" 环状网络: 检测到 {len(self.loops)} 个环路")
             for i, loop in enumerate(self.loops):
                 print(f"  环路{i+1}: {' -> '.join(loop)}")
         else:
-            print("✓ 树状网络: 无环路")
+            print(" 树状网络: 无环路")
             self.is_tree = True
 
         node_stats = defaultdict(int)

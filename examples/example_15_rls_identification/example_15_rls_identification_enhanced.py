@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例15: RLS参数辨识（增强版）
 
@@ -13,6 +14,8 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from identification.rls_identifier import ARXIdentifier
@@ -157,7 +160,7 @@ def run_example():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (2) b参数收敛图
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -180,7 +183,7 @@ def run_example():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (3) 参数误差图（对数坐标）
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -202,7 +205,7 @@ def run_example():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (4) 预测误差图
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -218,7 +221,7 @@ def run_example():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (5) 输入输出数据图
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -238,7 +241,7 @@ def run_example():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (6) 综合四子图
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
@@ -292,7 +295,7 @@ def run_example():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (7) 参数收敛动画
     print("  生成参数收敛动画...")
@@ -350,7 +353,7 @@ def run_example():
     anim.save(gif_path, writer='pillow', fps=3, dpi=100)
     plt.close(fig)
     generated_images.append(gif_path)
-    print(f"  ✓ 生成动画: {os.path.basename(gif_path)}")
+    print(f"   生成动画: {os.path.basename(gif_path)}")
     print()
 
     # ====== 6. 生成报告 ======
@@ -409,8 +412,8 @@ y[k] = {a_true[0]:.1f}*y[k-1] + {a_true[1]:.1f}*y[k-2] + {b_true[0]:.1f}*u[k-1] 
 a参数反映了系统输出的自回归特性。
 
 **辨识性能**:
-- a1: {a_true[0]:.3f} → {a_final[0]:.3f} (误差: {abs(a_final[0] - a_true[0]):.4f})
-- a2: {a_true[1]:.3f} → {a_final[1]:.3f} (误差: {abs(a_final[1] - a_true[1]):.4f})
+- a1: {a_true[0]:.3f} -> {a_final[0]:.3f} (误差: {abs(a_final[0] - a_true[0]):.4f})
+- a2: {a_true[1]:.3f} -> {a_final[1]:.3f} (误差: {abs(a_final[1] - a_true[1]):.4f})
 - 总体L2误差: {np.linalg.norm(a_final - a_true):.4f}
 
 RLS算法快速收敛到真实参数附近，并保持稳定。""",
@@ -423,8 +426,8 @@ RLS算法快速收敛到真实参数附近，并保持稳定。""",
 b参数表示输入对输出的影响。
 
 **辨识性能**:
-- b1: {b_true[0]:.3f} → {b_final[0]:.3f} (误差: {abs(b_final[0] - b_true[0]):.4f})
-- b2: {b_true[1]:.3f} → {b_final[1]:.3f} (误差: {abs(b_final[1] - b_true[1]):.4f})
+- b1: {b_true[0]:.3f} -> {b_final[0]:.3f} (误差: {abs(b_final[0] - b_true[0]):.4f})
+- b2: {b_true[1]:.3f} -> {b_final[1]:.3f} (误差: {abs(b_final[1] - b_true[1]):.4f})
 - 总体L2误差: {np.linalg.norm(b_final - b_true):.4f}
 
 b参数的收敛同样迅速且稳定。""",
@@ -504,10 +507,10 @@ b参数的收敛同样迅速且稳定。""",
 仿真成功完成！
 
 **主要成果**:
-- ✓ 成功辨识ARX(2,2,1)模型参数
-- ✓ a参数误差: {np.linalg.norm(a_final - a_true):.4f}
-- ✓ b参数误差: {np.linalg.norm(b_final - b_true):.4f}
-- ✓ 验证了RLS算法的有效性和鲁棒性
+-  成功辨识ARX(2,2,1)模型参数
+-  a参数误差: {np.linalg.norm(a_final - a_true):.4f}
+-  b参数误差: {np.linalg.norm(b_final - b_true):.4f}
+-  验证了RLS算法的有效性和鲁棒性
 
 **算法特点**:
 - **实时性**: 在线递推更新，计算量小
@@ -530,7 +533,7 @@ b参数的收敛同样迅速且稳定。""",
         filename='example_15_simulation_report.md'
     )
 
-    print(f"  ✓ 报告已生成: {os.path.basename(report_path)}")
+    print(f"   报告已生成: {os.path.basename(report_path)}")
     print()
 
     # ====== 7. 总结 ======

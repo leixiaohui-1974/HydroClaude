@@ -1,0 +1,234 @@
+"""
+测试断面类集成到求解器
+
+验证：
+1. 向后兼容性 - 不传cross_section参数时行为不变
+2. 矩形断面 - 显式传入RectangularSection
+3. 梯形断面 - 验证摩阻、质量、Froude数计算
+
+Phase 2.3 - Task 2.3.2验证
+
+作者: HydroClaude Team
+日期: 2025-10-29
+"""
+
+import pytest
+import numpy as np
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from solvers.godunov_fvm_solver import GodunvFVMSolver
+from physics.cross_section import RectangularSection, TrapezoidalSection
+
+
+@pytest.mark.p1
+def test_backward_compatibility_no_cross_section():
+    """测试向后兼容性 - 不传cross_section参数"""
+    # 不传cross_section参数，应自动创建RectangularSection
+    solver = GodunvFVMSolver(
+        width=10.0,
+        length=1000.0,
+        n_cells=100,
+        manning_n=0.025,
+        slope=0.001
+    )
+
+    # 验证自动创建了矩形断面
+    assert solver.cross_section is not None
+    assert solver.cross_section.section_type.value == "rectangular"
+    assert solver.cross_section.width == 10.0
+
+    # 验证几何计算
+    h = 2.0
+    geom = solver.cross_section.compute_geometry(h)
+
+    expected_area = 10.0 * 2.0  # 矩形 A = B*h
+    expected_perimeter = 10.0 + 2*2.0  # P = B + 2h
+
+    assert abs(geom.area - expected_area) < 1e-10
+    assert abs(geom.perimeter - expected_perimeter) < 1e-10
+
+    print(" 向后兼容性测试通过")
+
+
+@pytest.mark.p1
+def test_explicit_rectangular_section():
+    """测试显式传入矩形断面"""
+    section = RectangularSection("test_rect", width=10.0)
+
+    solver = GodunvFVMSolver(
+        width=10.0,
+        length=1000.0,
+        n_cells=100,
+        manning_n=0.025,
+        slope=0.001,
+        cross_section=section
+    )
+
+    assert solver.cross_section is section
+
+    # 设置初始条件
+    solver.h[:] = 2.0
+    solver.Q[:] = 20.0
+
+    # 验证质量计算
+    mass = solver._compute_total_mass()
+    expected_mass = 10.0 * 2.0 * 1000.0  # A * L = B*h*L
+    assert abs(mass - expected_mass) < 1e-6
+
+    # 验证Froude数计算
+    Fr = solver.compute_froude_number()
+    # u = Q/A = 20/(10*2) = 1 m/s
+    # c = sqrt(g*h) = sqrt(9.81*2) = 4.429 m/s
+    # Fr = u/c = 1/4.429 = 0.226
+    expected_Fr = 1.0 / np.sqrt(9.81 * 2.0)
+    assert abs(Fr[50] - expected_Fr) < 1e-3
+
+    print(" 显式矩形断面测试通过")
+
+
+@pytest.mark.p2
+def test_trapezoidal_section_integration():
+    """测试梯形断面集成"""
+    # 梯形断面：底宽8m，边坡1.5
+    section = TrapezoidalSection("test_trap", bottom_width=8.0, side_slope=1.5)
+
+    with pytest.warns(UserWarning, match="非矩形断面支持"):
+        solver = GodunvFVMSolver(
+            width=10.0,  # 这个参数仍需传入（向后兼容），但不会用于几何计算
+            length=1000.0,
+            n_cells=100,
+            manning_n=0.025,
+            slope=0.001,
+            cross_section=section
+        )
+
+    assert solver.cross_section is section
+    assert solver.cross_section.section_type.value == "trapezoidal"
+
+    # 设置初始条件
+    h = 2.0
+    solver.h[:] = h
+    solver.Q[:] = 20.0
+
+    # 手动计算梯形几何参数
+    # A = (b + m*h) * h = (8 + 1.5*2) * 2 = 22 m²
+    # P = b + 2*h*sqrt(1+m²) = 8 + 2*2*sqrt(1+1.5²) = 8 + 7.211 = 15.211 m
+    # R = A/P = 22/15.211 = 1.446 m
+    geom = section.compute_geometry(h)
+    expected_area = (8.0 + 1.5*2.0) * 2.0
+    expected_perimeter = 8.0 + 2*2.0*np.sqrt(1 + 1.5**2)
+
+    assert abs(geom.area - expected_area) < 1e-6
+    assert abs(geom.perimeter - expected_perimeter) < 1e-6
+
+    # 验证质量计算（使用梯形面积）
+    mass = solver._compute_total_mass()
+    expected_mass = expected_area * 1000.0  # A * L
+    assert abs(mass - expected_mass) < 1e-3
+
+    # 验证Froude数计算（使用水力深度）
+    Fr = solver.compute_froude_number()
+    # u = Q/A = 20/22 = 0.909 m/s
+    # B_top = b + 2*m*h = 8 + 2*1.5*2 = 14 m
+    # h_d = A/B_top = 22/14 = 1.571 m (水力深度)
+    # c = sqrt(g*h_d) = sqrt(9.81*1.571) = 3.926 m/s
+    # Fr = u/c = 0.909/3.926 = 0.232
+    B_top = 8.0 + 2*1.5*2.0
+    h_d = expected_area / B_top
+    expected_Fr = (20.0/expected_area) / np.sqrt(9.81 * h_d)
+
+    assert abs(Fr[50] - expected_Fr) < 1e-3
+
+    print(" 梯形断面集成测试通过")
+    print(f"   面积: {geom.area:.3f} m² (预期: {expected_area:.3f})")
+    print(f"   湿周: {geom.perimeter:.3f} m (预期: {expected_perimeter:.3f})")
+    print(f"   水力半径: {geom.hydraulic_radius:.3f} m")
+    print(f"   Fr: {Fr[50]:.3f} (预期: {expected_Fr:.3f})")
+
+
+@pytest.mark.p2
+def test_friction_source_term_with_trapezoidal():
+    """测试梯形断面的摩阻源项计算"""
+    section = TrapezoidalSection("test_trap", bottom_width=8.0, side_slope=1.5)
+
+    with pytest.warns(UserWarning):
+        solver = GodunvFVMSolver(
+            width=10.0,
+            length=1000.0,
+            n_cells=100,
+            manning_n=0.025,
+            slope=0.001,
+            cross_section=section
+        )
+
+    # 计算摩阻源项
+    h = 2.0
+    Q = 20.0
+    S_friction = solver._compute_friction_source_term(h, Q, cell_idx=50)
+
+    # 手动计算验证
+    geom = section.compute_geometry(h)
+    A = geom.area
+    R = geom.hydraulic_radius
+
+    Sf = solver.n**2 * Q**2 / (A**2 * R**(4.0/3.0))
+    expected_S = -solver.g * A * Sf
+
+    assert abs(S_friction - expected_S) < 1e-6
+
+    print(" 梯形断面摩阻源项测试通过")
+    print(f"   S_friction = {S_friction:.6f} (预期: {expected_S:.6f})")
+
+
+@pytest.mark.p2
+def test_mass_conservation_with_trapezoidal():
+    """测试梯形断面的质量守恒计算"""
+    section = TrapezoidalSection("test_trap", bottom_width=8.0, side_slope=1.5)
+
+    with pytest.warns(UserWarning):
+        solver = GodunvFVMSolver(
+            width=10.0,
+            length=1000.0,
+            n_cells=100,
+            manning_n=0.025,
+            slope=0.001,
+            cross_section=section
+        )
+
+    # 设置非均匀水深
+    solver.h[:] = 2.0 + 0.1 * np.sin(2 * np.pi * solver.x / solver.L)
+
+    # 手动计算总质量
+    mass_manual = 0.0
+    for i in range(len(solver.h)):
+        geom = section.compute_geometry(solver.h[i])
+        mass_manual += geom.area * solver.dx
+
+    # 使用求解器方法计算
+    mass_solver = solver._compute_total_mass()
+
+    # 应该完全一致
+    assert abs(mass_solver - mass_manual) < 1e-9
+
+    print(" 梯形断面质量守恒计算测试通过")
+    print(f"   总质量 = {mass_solver:.6f} m³ (手动计算: {mass_manual:.6f})")
+
+
+if __name__ == "__main__":
+    """直接运行测试"""
+    print("="*80)
+    print("断面集成测试 - Phase 2.3 Task 2.3.2")
+    print("="*80)
+
+    test_backward_compatibility_no_cross_section()
+    test_explicit_rectangular_section()
+    test_trapezoidal_section_integration()
+    test_friction_source_term_with_trapezoidal()
+    test_mass_conservation_with_trapezoidal()
+
+    print("\n" + "="*80)
+    print(" 所有断面集成测试通过！")
+    print("="*80)

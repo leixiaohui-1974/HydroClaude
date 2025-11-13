@@ -161,7 +161,7 @@ class LegacyCodeCleaner:
                 'count': len(using_files)
             }
 
-            print(f"  ✗ {solver_path}")
+            print(f"   {solver_path}")
             print(f"    使用数: {len(using_files)}")
             if using_files:
                 for f in using_files[:5]:  # 只显示前5个
@@ -183,7 +183,7 @@ class LegacyCodeCleaner:
             if analysis['action'] == 'skip':
                 continue
             elif analysis['action'] == 'keep':
-                print(f"  ✓ {group_name}: {analysis['reason']}")
+                print(f"   {group_name}: {analysis['reason']}")
                 report['total_to_keep'] += 1
             elif analysis['action'] == 'consolidate':
                 print(f"  ⟳ {group_name}:")
@@ -208,7 +208,7 @@ class LegacyCodeCleaner:
         os.makedirs(self.backup_dir, exist_ok=True)
         backup_path = os.path.join(self.backup_dir, filepath.replace('/', '_'))
         shutil.copy2(filepath, backup_path)
-        print(f"    ✓ 备份到: {backup_path}")
+        print(f"     备份到: {backup_path}")
 
     def delete_legacy_solvers(self, dry_run: bool = False):
         """
@@ -231,9 +231,9 @@ class LegacyCodeCleaner:
                 self.backup_file(solver_path)
                 os.remove(solver_path)
                 self.deleted_files.append(solver_path)
-                print(f"    ✗ 已删除")
+                print(f"     已删除")
             else:
-                print(f"    ⚠ 试运行 - 将删除")
+                print(f"     试运行 - 将删除")
 
     def consolidate_versions(self, dry_run: bool = False):
         """
@@ -262,9 +262,9 @@ class LegacyCodeCleaner:
                     self.backup_file(old_file)
                     os.remove(old_file)
                     self.deleted_files.append(old_file)
-                    print(f"    ✗ 已删除")
+                    print(f"     已删除")
                 else:
-                    print(f"    ⚠ 试运行 - 将删除")
+                    print(f"     试运行 - 将删除")
 
     def generate_migration_guide(self) -> str:
         """
@@ -335,7 +335,7 @@ class LegacyCodeCleaner:
         with open(filename, 'w', encoding='utf-8') as f:
             f.write(report_text)
 
-        print(f"\n✓ 清理报告已保存: {filename}")
+        print(f"\n 清理报告已保存: {filename}")
         return report_text
 
 

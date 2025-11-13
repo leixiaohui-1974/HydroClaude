@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Preissmann v4.0 扩展测试
-- Test 1: 静止水体（已通过）✅
+- Test 1: 静止水体（已通过）
 - Test 2: 恒定流
 - Test 3: 简单非恒定流
 """
@@ -17,7 +17,7 @@ from physics.numerical_methods.legacy_preissmann.preissmann_solver_v4_linear imp
 def test_steady_flow():
     """Test 2: 恒定流"""
     print("\n" + "="*80)
-    print("Test 2: 恒定流 - Q=10 m³/s")
+    print("Test 2: 恒定流 - Q=10 m^3/s")
     print("="*80)
     
     solver = PreissmannSolverV4Linear(verbose=False, tolerance=1e-4)
@@ -44,7 +44,7 @@ def test_steady_flow():
         A += 0.1 * (Q_target - Q_manning) / width
     
     h_uniform = A / width
-    print(f"  目标流量: {Q_target} m³/s")
+    print(f"  目标流量: {Q_target} m^3/s")
     print(f"  均匀流水深: {h_uniform:.3f} m")
     
     # 初始条件：均匀流
@@ -90,8 +90,8 @@ def test_steady_flow():
     Q_error = abs(Q_avg - Q_target) / Q_target * 100
     
     print(f"\n最终结果:")
-    print(f"  质量守恒: {mass_error:.6f}% {'✅' if abs(mass_error) < 0.5 else '❌'}")
-    print(f"  流量误差: {Q_error:.2f}% {'✅' if Q_error < 5 else '❌'}")
+    print(f"  质量守恒: {mass_error:.6f}% {'' if abs(mass_error) < 0.5 else ''}")
+    print(f"  流量误差: {Q_error:.2f}% {'' if Q_error < 5 else ''}")
     print(f"  收敛迭代: {solver.last_iterations}")
 
 
@@ -128,7 +128,7 @@ def test_dam_break_simple():
     h = h_init.copy()
     Q = Q_init.copy()
     
-    print(f"  初始质量: {initial_mass:.2f} m³")
+    print(f"  初始质量: {initial_mass:.2f} m^3")
     print(f"  初始上游: {h[0]:.2f} m, 下游: {h[-1]:.2f} m")
     
     # 时间推进
@@ -143,7 +143,7 @@ def test_dam_break_simple():
         )
         
         if np.any(np.isnan(h)) or np.any(np.isnan(Q)):
-            print(f"  ❌ 步骤{step+1}出现NaN")
+            print(f"   步骤{step+1}出现NaN")
             break
         
         if step % 10 == 0:
@@ -157,8 +157,8 @@ def test_dam_break_simple():
     mass_error = (current_mass - initial_mass) / initial_mass * 100
     
     print(f"\n最终结果:")
-    print(f"  质量守恒: {mass_error:.6f}% {'✅' if abs(mass_error) < 2 else '⚠️'}")
-    print(f"  稳定性: {'✅ 无NaN' if not np.any(np.isnan(h)) else '❌ 有NaN'}")
+    print(f"  质量守恒: {mass_error:.6f}% {'' if abs(mass_error) < 2 else '️'}")
+    print(f"  稳定性: {' 无NaN' if not np.any(np.isnan(h)) else ' 有NaN'}")
 
 
 if __name__ == "__main__":

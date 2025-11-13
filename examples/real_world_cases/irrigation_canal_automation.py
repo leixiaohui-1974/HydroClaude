@@ -4,11 +4,11 @@
 实际工程案例：灌溉渠道自动化控制系统
 
 工程背景：
-某农业灌区主干渠全长5000米，设计流量20 m³/s，
+某农业灌区主干渠全长5000米，设计流量20 m^3/s，
 沿线有3个分水闸和1个末端调节池。
 系统需要满足：
 1. 沿线各分水口按需供水
-2. 末端水位保持稳定（±0.1m）
+2. 末端水位保持稳定（+/-0.1m）
 3. 闸门调整平稳，避免频繁动作
 4. 应对上游来水波动
 
@@ -23,7 +23,9 @@
 """
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 from typing import List, Tuple
 from dataclasses import dataclass
 
@@ -48,7 +50,7 @@ class CanalSection:
 class OfftakeGate:
     """分水闸"""
     position: float        # 位置 (m from start)
-    design_flow: float     # 设计流量 (m³/s)
+    design_flow: float     # 设计流量 (m^3/s)
     section_index: int     # 所在分段索引
 
 
@@ -56,7 +58,7 @@ class OfftakeGate:
 class IrrigationDemand:
     """灌溉需求"""
     offtake_index: int     # 分水口索引
-    demand: float          # 需求流量 (m³/s)
+    demand: float          # 需求流量 (m^3/s)
     start_time: float      # 开始时间 (s)
     duration: float        # 持续时间 (s)
 
@@ -95,7 +97,7 @@ class IrrigationCanalSystem:
         self.gate_openings = np.ones(len(offtakes))
 
         # 上游入流
-        self.inflow = 20.0  # m³/s
+        self.inflow = 20.0  # m^3/s
 
         # 计算传播时延
         self.propagation_delays = self._calculate_delays()
@@ -126,8 +128,8 @@ class IrrigationCanalSystem:
         更新系统状态
 
         Args:
-            Q_in: 上游入流 (m³/s)
-            offtake_flows: 各分水口流量 (m³/s)
+            Q_in: 上游入流 (m^3/s)
+            offtake_flows: 各分水口流量 (m^3/s)
 
         Returns:
             更新后的水深
@@ -203,7 +205,7 @@ def run_irrigation_canal_control():
     print(f"  渠道总长: {sum(s.length for s in sections)} m")
     print(f"  分段数: {len(sections)}")
     print(f"  分水闸数: {len(offtakes)}")
-    print(f"  设计总流量: 20 m³/s")
+    print(f"  设计总流量: 20 m^3/s")
 
     # 创建渠道系统
     dt = 10.0  # 10秒时间步长
@@ -239,7 +241,7 @@ def run_irrigation_canal_control():
 
     print(f"\n末端调节池:")
     print(f"  目标水深: {target_depth} m")
-    print(f"  池子尺寸: {section_end.length}m × {section_end.width}m")
+    print(f"  池子尺寸: {section_end.length}m x {section_end.width}m")
     print(f"  MPC预测时域: {mpc_config.prediction_horizon} 步 "
           f"({mpc_config.prediction_horizon * dt / 60:.1f} 分钟)")
 
@@ -286,7 +288,7 @@ def run_irrigation_canal_control():
         offtake_flows_history[k] = current_demands
 
         # 上游来水（模拟波动）
-        Q_in = 20.0 + 2.0 * np.sin(2 * np.pi * t / 1800)  # ±2 m³/s 波动
+        Q_in = 20.0 + 2.0 * np.sin(2 * np.pi * t / 1800)  # +/-2 m^3/s 波动
         inflow_history[k] = Q_in
 
         # MPC控制末端出流
@@ -306,8 +308,8 @@ def run_irrigation_canal_control():
         # 打印进度
         if k % 60 == 0:  # 每10分钟
             print(f"t={t/60:6.1f}min: 末端水深={current_end_depth:5.3f}m, "
-                  f"MPC出流={Q_end_outlet:5.2f}m³/s, "
-                  f"分水总量={sum(current_demands):5.2f}m³/s")
+                  f"MPC出流={Q_end_outlet:5.2f}m^3/s, "
+                  f"分水总量={sum(current_demands):5.2f}m^3/s")
 
     print("-" * 80)
 
@@ -329,11 +331,11 @@ def run_irrigation_canal_control():
     )
 
     print(f"\n水量平衡:")
-    print(f"  总入流: {total_inflow:.2f} m³")
-    print(f"  总分水: {total_offtake:.2f} m³")
-    print(f"  末端出流: {total_outlet:.2f} m³")
-    print(f"  蓄量变化: {storage_change:.2f} m³")
-    print(f"  平衡误差: {abs(total_inflow - total_offtake - total_outlet - storage_change):.2f} m³")
+    print(f"  总入流: {total_inflow:.2f} m^3")
+    print(f"  总分水: {total_offtake:.2f} m^3")
+    print(f"  末端出流: {total_outlet:.2f} m^3")
+    print(f"  蓄量变化: {storage_change:.2f} m^3")
+    print(f"  平衡误差: {abs(total_inflow - total_offtake - total_outlet - storage_change):.2f} m^3")
 
     # 绘图
     fig = plt.figure(figsize=(16, 12))
@@ -343,7 +345,7 @@ def run_irrigation_canal_control():
     ax1.plot(time/60, end_depth_history, 'b-', linewidth=2, label='实际水深')
     ax1.axhline(y=target_depth, color='r', linestyle='--', linewidth=2, label='目标水深')
     ax1.fill_between(time/60, target_depth-0.1, target_depth+0.1,
-                     alpha=0.2, color='gray', label='±0.1m 容差')
+                     alpha=0.2, color='gray', label='+/-0.1m 容差')
     ax1.set_ylabel('水深 (m)', fontsize=11)
     ax1.set_title('灌溉渠道自动化控制 - 末端水位控制', fontsize=13, fontweight='bold')
     ax1.legend(loc='best')
@@ -356,7 +358,7 @@ def run_irrigation_canal_control():
         ax2.plot(time/60, offtake_flows_history[:, i],
                 linewidth=1.5, label=f'分水闸{i+1}', alpha=0.8)
     ax2.plot(time/60, mpc_output_history, 'r-', linewidth=2, label='末端出流(MPC)', alpha=0.8)
-    ax2.set_ylabel('流量 (m³/s)', fontsize=11)
+    ax2.set_ylabel('流量 (m^3/s)', fontsize=11)
     ax2.set_title('流量分配', fontsize=11)
     ax2.legend(loc='best', ncol=3)
     ax2.grid(True, alpha=0.3)
@@ -375,7 +377,7 @@ def run_irrigation_canal_control():
     errors = target_depth - end_depth_history
     ax4.plot(time/60, errors, 'r-', linewidth=2, label='水位误差')
     ax4.axhline(y=0, color='k', linestyle='-', alpha=0.3)
-    ax4.fill_between(time/60, -0.05, 0.05, alpha=0.2, color='green', label='±5cm 精度')
+    ax4.fill_between(time/60, -0.05, 0.05, alpha=0.2, color='green', label='+/-5cm 精度')
     ax4.set_xlabel('时间 (分钟)', fontsize=11)
     ax4.set_ylabel('误差 (m)', fontsize=11)
     ax4.set_title('水位控制误差', fontsize=11)
@@ -384,17 +386,17 @@ def run_irrigation_canal_control():
 
     plt.tight_layout()
     plt.savefig('irrigation_canal_automation.png', dpi=150, bbox_inches='tight')
-    print(f"\n✓ 结果已保存到: irrigation_canal_automation.png")
+    print(f"\n 结果已保存到: irrigation_canal_automation.png")
 
-    plt.show()
+    # plt.show()  # Disabled for automated testing
 
     print("\n" + "=" * 80)
     print("仿真完成！")
     print("\n关键结论:")
-    print("  ✓ MPC成功维持末端水位稳定（±0.1m以内）")
-    print("  ✓ 系统能够应对灌溉需求变化和上游来水波动")
-    print("  ✓ 控制输出平滑，避免闸门频繁动作")
-    print("  ✓ 水量平衡误差小于1%")
+    print("   MPC成功维持末端水位稳定（+/-0.1m以内）")
+    print("   系统能够应对灌溉需求变化和上游来水波动")
+    print("   控制输出平滑，避免闸门频繁动作")
+    print("   水量平衡误差小于1%")
     print("=" * 80)
 
 

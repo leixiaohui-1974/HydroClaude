@@ -9,7 +9,13 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, '/workspace')
 
-from solvers.maccormack_solver_v3 import MacCormackSolverV3
+try:
+    from solvers.maccormack_solver_v3 import MacCormackSolverV3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def ritter_solution(x, t, h_L, h_R, x_dam, g=9.81):
@@ -65,7 +71,7 @@ while solver.t < t_target and step < 10000:
     step += 1
     
     if np.any(np.isnan(h)):
-        print(f"  ❌ 步{step}出现NaN!")
+        print(f"   步{step}出现NaN!")
         break
     
     if step % 500 == 0:
@@ -107,7 +113,7 @@ checks = [
 
 print(f"\n评估:")
 for name, passed in checks:
-    print(f"  {name}: {'✅' if passed else '❌'}")
+    print(f"  {name}: {'' if passed else ''}")
 
 all_pass = all(c[1] for c in checks)
 
@@ -127,7 +133,7 @@ print(f"\n  图: maccormack_v3_dam_break.png")
 
 print(f"\n{'='*80}")
 if all_pass:
-    print("🎉 MacCormack v3.0 通过 ✅✅✅")
+    print(" MacCormack v3.0 通过 ")
 else:
-    print("⚠️ MacCormack v3.0 部分通过")
+    print("️ MacCormack v3.0 部分通过")
 print("="*80)

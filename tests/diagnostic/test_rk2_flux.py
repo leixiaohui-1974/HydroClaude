@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_rk2_flux():
@@ -44,7 +50,7 @@ def test_rk2_flux():
     solver.initialize(h_n, Q_n, bc_left, bc_right)
 
     mass_n = np.sum(h_n) * dx * B
-    print(f"\n初始质量 = {mass_n:.3f} m³")
+    print(f"\n初始质量 = {mass_n:.3f} m^3")
 
     # 第1步
     print(f"\n{'='*80}")
@@ -56,10 +62,10 @@ def test_rk2_flux():
     F1_right = solver.last_F_h[-1]
     net_flux1 = (F1_left - F1_right) * B
 
-    print(f"  F_left = {F1_left:.3f} m²/s")
-    print(f"  F_right = {F1_right:.3f} m²/s")
-    print(f"  净通量 * B = {net_flux1:.3f} m³/s")
-    print(f"  Σ(dh_dt) * dx * B = {np.sum(dh_dt1) * dx * B:.3f} m³/s")
+    print(f"  F_left = {F1_left:.3f} m^2/s")
+    print(f"  F_right = {F1_right:.3f} m^2/s")
+    print(f"  净通量 * B = {net_flux1:.3f} m^3/s")
+    print(f"  Σ(dh_dt) * dx * B = {np.sum(dh_dt1) * dx * B:.3f} m^3/s")
 
     dt = solver.compute_dt()
     print(f"\n  时间步长 dt = {dt:.3f} s")
@@ -72,10 +78,10 @@ def test_rk2_flux():
     delta_mass1 = mass_star - mass_n
     delta_mass1_theory = dt * net_flux1
 
-    print(f"\n  中间状态 h* 质量 = {mass_star:.3f} m³")
-    print(f"  质量变化（实际）= {delta_mass1:.3f} m³")
-    print(f"  质量变化（理论）= {delta_mass1_theory:.3f} m³")
-    print(f"  第1步守恒：{('✓' if abs(delta_mass1 - delta_mass1_theory) < 0.01 else '✗')}")
+    print(f"\n  中间状态 h* 质量 = {mass_star:.3f} m^3")
+    print(f"  质量变化（实际）= {delta_mass1:.3f} m^3")
+    print(f"  质量变化（理论）= {delta_mass1_theory:.3f} m^3")
+    print(f"  第1步守恒：{('' if abs(delta_mass1 - delta_mass1_theory) < 0.01 else '')}")
 
     # 第2步
     print(f"\n{'='*80}")
@@ -87,10 +93,10 @@ def test_rk2_flux():
     F2_right = solver.last_F_h[-1]
     net_flux2 = (F2_left - F2_right) * B
 
-    print(f"  F_left = {F2_left:.3f} m²/s")
-    print(f"  F_right = {F2_right:.3f} m²/s")
-    print(f"  净通量 * B = {net_flux2:.3f} m³/s")
-    print(f"  Σ(dh_dt) * dx * B = {np.sum(dh_dt2) * dx * B:.3f} m³/s")
+    print(f"  F_left = {F2_left:.3f} m^2/s")
+    print(f"  F_right = {F2_right:.3f} m^2/s")
+    print(f"  净通量 * B = {net_flux2:.3f} m^3/s")
+    print(f"  Σ(dh_dt) * dx * B = {np.sum(dh_dt2) * dx * B:.3f} m^3/s")
 
     # 最终状态
     h_final = 0.5 * (h_n + h_star) + 0.5 * dt * dh_dt2
@@ -104,18 +110,18 @@ def test_rk2_flux():
     print(f"\n{'='*80}")
     print("RK2 总体")
     print("="*80)
-    print(f"  最终质量 = {mass_final:.3f} m³")
-    print(f"  总质量变化（实际）= {delta_mass_total:.3f} m³")
-    print(f"  总质量变化（理论）= {delta_mass_total_theory:.3f} m³")
-    print(f"  差异 = {abs(delta_mass_total - delta_mass_total_theory):.3f} m³")
+    print(f"  最终质量 = {mass_final:.3f} m^3")
+    print(f"  总质量变化（实际）= {delta_mass_total:.3f} m^3")
+    print(f"  总质量变化（理论）= {delta_mass_total_theory:.3f} m^3")
+    print(f"  差异 = {abs(delta_mass_total - delta_mass_total_theory):.3f} m^3")
 
     error = abs(delta_mass_total - delta_mass_total_theory) / abs(delta_mass_total_theory) * 100
 
     print(f"\n{'='*80}")
     if error < 0.1:
-        print("✅ TVD-RK2质量守恒成立")
+        print(" TVD-RK2质量守恒成立")
     else:
-        print(f"❌ TVD-RK2质量守恒有问题（误差{error:.1f}%）")
+        print(f" TVD-RK2质量守恒有问题（误差{error:.1f}%）")
 
     print("="*80)
 

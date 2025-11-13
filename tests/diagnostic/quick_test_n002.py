@@ -7,7 +7,13 @@ import os
 sys.path.insert(0, os.path.dirname(__file__))
 
 import numpy as np
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 # 参数
 L = 1000.0
@@ -44,11 +50,11 @@ while solver.t < target_time and step < max_steps:
     dt = solver.compute_dt()
 
     if dt < 1e-6:
-        print(f"❌ 失败：t={solver.t:.2f}s时dt变为{dt:.2e}")
+        print(f" 失败：t={solver.t:.2f}s时dt变为{dt:.2e}")
         break
 
     if np.any(np.isnan(solver.h)) or np.any(np.isinf(solver.h)):
-        print(f"❌ 失败：t={solver.t:.2f}s出现NaN/Inf")
+        print(f" 失败：t={solver.t:.2f}s出现NaN/Inf")
         print(f"   h范围: [{np.min(solver.h):.3f}, {np.max(solver.h):.3f}]")
         break
 
@@ -71,6 +77,6 @@ if solver.t >= target_time * 0.9:
     print(f"  质量误差={mass_error:.2f}%")
     print(f"  Fr={Fr_up:.3f}")
     print(f"  负流量单元={n_negative}个")
-    print(f"  ✅ 成功")
+    print(f"   成功")
 else:
-    print(f"  ❌ 失败")
+    print(f"   失败")

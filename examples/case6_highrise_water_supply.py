@@ -76,7 +76,7 @@ def create_highrise_supply_network():
     # 高区：22层、26层、29层
 
     # 每户用水量约0.5 L/s，每层假设4户
-    floor_demand = 4 * 0.5 / 1000  # m³/s
+    floor_demand = 4 * 0.5 / 1000  # m^3/s
 
     # 低区节点
     f2 = Junction('F2', elevation=6.0, demand=floor_demand)
@@ -100,32 +100,32 @@ def create_highrise_supply_network():
     print(f"  低区 (1-10层):  水箱标高 {tank_low.elevation}m")
     print(f"  中区 (11-20层): 水箱标高 {tank_mid.elevation}m")
     print(f"  高区 (21-30层): 水箱标高 {tank_high.elevation}m")
-    print(f"  每层需水量: {floor_demand*1000:.1f} L/s (4户×0.5L/s)")
+    print(f"  每层需水量: {floor_demand*1000:.1f} L/s (4户x0.5L/s)")
     print()
 
     # 管道定义（竖管DN100，支管DN50）
     pipe_definitions = [
         # 低区竖管及支管
-        ('P1', 'TL', 'F9', 0.1, 6.0, 0.5, '低区水箱→9层'),
-        ('P2', 'F9', 'F6', 0.1, 9.0, 0.5, '9层→6层'),
-        ('P3', 'F6', 'F2', 0.1, 12.0, 0.5, '6层→2层'),
+        ('P1', 'TL', 'F9', 0.1, 6.0, 0.5, '低区水箱->9层'),
+        ('P2', 'F9', 'F6', 0.1, 9.0, 0.5, '9层->6层'),
+        ('P3', 'F6', 'F2', 0.1, 12.0, 0.5, '6层->2层'),
 
         # 中区竖管及支管
-        ('P4', 'TM', 'F19', 0.1, 6.0, 0.5, '中区水箱→19层'),
-        ('P5', 'F19', 'F16', 0.1, 9.0, 0.5, '19层→16层'),
-        ('P6', 'F16', 'F12', 0.1, 12.0, 0.5, '16层→12层'),
+        ('P4', 'TM', 'F19', 0.1, 6.0, 0.5, '中区水箱->19层'),
+        ('P5', 'F19', 'F16', 0.1, 9.0, 0.5, '19层->16层'),
+        ('P6', 'F16', 'F12', 0.1, 12.0, 0.5, '16层->12层'),
 
         # 高区竖管及支管
-        ('P7', 'TH', 'F29', 0.1, 6.0, 0.5, '高区水箱→29层'),
-        ('P8', 'F29', 'F26', 0.1, 9.0, 0.5, '29层→26层'),
-        ('P9', 'F26', 'F22', 0.1, 12.0, 0.5, '26层→22层'),
+        ('P7', 'TH', 'F29', 0.1, 6.0, 0.5, '高区水箱->29层'),
+        ('P8', 'F29', 'F26', 0.1, 9.0, 0.5, '29层->26层'),
+        ('P9', 'F26', 'F22', 0.1, 12.0, 0.5, '26层->22层'),
     ]
 
     print("【管道信息】")
     for pid, from_node, to_node, D, L, K, desc in pipe_definitions:
         pipe = create_pressure_pipe(pid, D, L, material='steel', K_minor=K)
         topology.add_pipe(pipe, from_node, to_node)
-        print(f"  ✓ {pid}: {from_node}→{to_node}, D={int(D*1000)}mm ({desc})")
+        print(f"   {pid}: {from_node}->{to_node}, D={int(D*1000)}mm ({desc})")
 
     print()
     return topology
@@ -206,11 +206,11 @@ def analyze_pressure_zones(topology):
         print(f"  压力范围: {min_p:.2f} ~ {max_p:.2f} m")
 
         if min_p < 5.0:
-            print(f"  ⚠️ 最低压力不足 (需≥5m)")
+            print(f"   最低压力不足 (需>=5m)")
         elif max_p > 35.0:
-            print(f"  ⚠️ 最高压力过大 (需≤35m)，建议设置减压阀")
+            print(f"   最高压力过大 (需<=35m)，建议设置减压阀")
         else:
-            print(f"  ✓ 压力范围合理 (5-35m)")
+            print(f"   压力范围合理 (5-35m)")
 
         all_results['低区'] = {
             'floors': zone_pressures,
@@ -218,7 +218,7 @@ def analyze_pressure_zones(topology):
             'max_pressure': max_p
         }
     except Exception as e:
-        print(f"  ✗ 求解失败: {e}")
+        print(f"   求解失败: {e}")
 
     print()
 
@@ -246,11 +246,11 @@ def analyze_pressure_zones(topology):
         print(f"  压力范围: {min_p:.2f} ~ {max_p:.2f} m")
 
         if min_p < 5.0:
-            print(f"  ⚠️ 最低压力不足 (需≥5m)")
+            print(f"   最低压力不足 (需>=5m)")
         elif max_p > 35.0:
-            print(f"  ⚠️ 最高压力过大 (需≤35m)，建议设置减压阀")
+            print(f"   最高压力过大 (需<=35m)，建议设置减压阀")
         else:
-            print(f"  ✓ 压力范围合理 (5-35m)")
+            print(f"   压力范围合理 (5-35m)")
 
         all_results['中区'] = {
             'floors': zone_pressures,
@@ -258,7 +258,7 @@ def analyze_pressure_zones(topology):
             'max_pressure': max_p
         }
     except Exception as e:
-        print(f"  ✗ 求解失败: {e}")
+        print(f"   求解失败: {e}")
 
     print()
 
@@ -286,11 +286,11 @@ def analyze_pressure_zones(topology):
         print(f"  压力范围: {min_p:.2f} ~ {max_p:.2f} m")
 
         if min_p < 5.0:
-            print(f"  ⚠️ 最低压力不足 (需≥5m)")
+            print(f"   最低压力不足 (需>=5m)")
         elif max_p > 35.0:
-            print(f"  ⚠️ 最高压力过大 (需≤35m)，建议设置减压阀")
+            print(f"   最高压力过大 (需<=35m)，建议设置减压阀")
         else:
-            print(f"  ✓ 压力范围合理 (5-35m)")
+            print(f"   压力范围合理 (5-35m)")
 
         all_results['高区'] = {
             'floors': zone_pressures,
@@ -298,7 +298,7 @@ def analyze_pressure_zones(topology):
             'max_pressure': max_p
         }
     except Exception as e:
-        print(f"  ✗ 求解失败: {e}")
+        print(f"   求解失败: {e}")
 
     print()
 
@@ -315,40 +315,40 @@ def pressure_control_recommendations():
     print()
 
     print("【1. 分区供水原则】")
-    print("  • 垂直分区：每区高度不超过50m")
-    print("  • 压力分区：入户压力控制在0.05-0.35MPa")
-    print("  • 独立系统：各区独立水箱和泵站")
-    print("  • 互为备用：相邻区可紧急连通")
+    print("  - 垂直分区：每区高度不超过50m")
+    print("  - 压力分区：入户压力控制在0.05-0.35MPa")
+    print("  - 独立系统：各区独立水箱和泵站")
+    print("  - 互为备用：相邻区可紧急连通")
     print()
 
     print("【2. 减压措施】")
-    print("  • 低区底层：安装减压阀或减压孔板")
-    print("  • 减压阀设置：楼层压力>0.35MPa时必须设置")
-    print("  • 串联减压：压差大时采用串联减压")
-    print("  • 支管减压：在各户支管上设置")
+    print("  - 低区底层：安装减压阀或减压孔板")
+    print("  - 减压阀设置：楼层压力>0.35MPa时必须设置")
+    print("  - 串联减压：压差大时采用串联减压")
+    print("  - 支管减压：在各户支管上设置")
     print()
 
     print("【3. 泵站设计】")
-    print("  • 中高区泵站：采用变频调速泵")
-    print("  • 配置方案：一用一备或两用一备")
-    print("  • 扬程计算：H = H1 + H2 + H3")
+    print("  - 中高区泵站：采用变频调速泵")
+    print("  - 配置方案：一用一备或两用一备")
+    print("  - 扬程计算：H = H1 + H2 + H3")
     print("    H1: 最高层压力要求 (15m)")
     print("    H2: 提升高度 (分区高差)")
     print("    H3: 管道损失 (5-8m)")
     print()
 
     print("【4. 水箱设置】")
-    print("  • 有效容积：满足该区1-2小时用水")
-    print("  • 设置位置：各区最高层顶部")
-    print("  • 水位控制：浮球阀+液位传感器")
-    print("  • 溢流排空：安全装置必须完善")
+    print("  - 有效容积：满足该区1-2小时用水")
+    print("  - 设置位置：各区最高层顶部")
+    print("  - 水位控制：浮球阀+液位传感器")
+    print("  - 溢流排空：安全装置必须完善")
     print()
 
     print("【5. 节能措施】")
-    print("  • 变频泵：根据用水量自动调节")
-    print("  • 分时供水：夜间低负荷运行")
-    print("  • 管网优化：减少管道弯头和阀门")
-    print("  • 漏损控制：定期检漏，及时维修")
+    print("  - 变频泵：根据用水量自动调节")
+    print("  - 分时供水：夜间低负荷运行")
+    print("  - 管网优化：减少管道弯头和阀门")
+    print("  - 漏损控制：定期检漏，及时维修")
     print()
 
 
@@ -405,7 +405,7 @@ def plot_results(results):
 
     output_path = 'examples/highrise_water_supply_results.png'
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
-    print(f"📊 结果图表已保存: {output_path}")
+    print(f" 结果图表已保存: {output_path}")
 
 
 def main():
@@ -431,7 +431,7 @@ def main():
     plot_results(results)
 
     print("="*80)
-    print("✅ 案例分析完成！")
+    print(" 案例分析完成！")
     print("="*80)
 
 

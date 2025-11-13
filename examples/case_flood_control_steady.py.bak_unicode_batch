@@ -1,0 +1,365 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+工程案例2: 防洪能力评估（稳态分析）
+
+场景：评估渠道在不同洪水流量下的防洪能力
+目标：确定安全流量范围，制定调度策略
+
+包含：
+1. 方案A: Q=80 m³/s （常遇洪水）
+2. 方案B: Q=120 m³/s（10年一遇）
+3. 方案C: Q=150 m³/s（20年一遇）
+4. 方案D: Q=180 m³/s（50年一遇）
+
+分析：
+- 各流量下的水深
+- 与堤顶高度对比
+- 安全余量分析
+- 推荐调度策略
+
+作者: HydroClaude Team
+日期: 2025-10-27
+"""
+
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from solvers.godunov_fvm_solver import GodunvFVMSolver
+from utils.canal_utils import compute_steady_uniform_flow, compute_critical_depth
+from utils.hydraulic_tools import HydraulicTools
+import numpy as np
+import matplotlib.pyplot as plt
+
+print("=" * 80)
+print("工程案例2: 渠道防洪能力评估")
+print("=" * 80)
+
+# 渠道参数（调整为更稳定的参数）
+B = 20.0  # 宽度20m（加宽以降低水深）
+L = 3000.0  # 长度3km
+n_cells = 150
+n = 0.025  # 糙率
+S0 = 0.0012  # 底坡（增大以降低水深）
+h_bank = 5.0  # 堤顶高度5m（设计）
+
+print(f"\n渠道参数:")
+print(f"  宽度: {B} m")
+print(f"  长度: {L/1000} km")
+print(f"  底坡: {S0}")
+print(f"  糙率: {n}")
+print(f"  堤顶高度: {h_bank} m")
+
+# 四个洪水方案
+schemes = [
+    {
+        'name': '方案A',
+        'description': '常遇洪水',
+        'Q': 60.0,
+        'frequency': '5年一遇',
+        'color': 'green'
+    },
+    {
+        'name': '方案B',
+        'description': '中等洪水',
+        'Q': 90.0,
+        'frequency': '10年一遇',
+        'color': 'blue'
+    },
+    {
+        'name': '方案C',
+        'description': '较大洪水',
+        'Q': 120.0,
+        'frequency': '20年一遇',
+        'color': 'orange'
+    },
+    {
+        'name': '方案D',
+        'description': '设计洪水',
+        'Q': 150.0,
+        'frequency': '50年一遇',
+        'color': 'red'
+    }
+]
+
+print(f"\n洪水方案:")
+for i, scheme in enumerate(schemes, 1):
+    print(f"\n{i}. {scheme['name']}: {scheme['description']}")
+    print(f"   流量: {scheme['Q']} m³/s ({scheme['frequency']})")
+
+# 运行每个方案
+results = []
+tools = HydraulicTools()
+
+print(f"\n{'=' * 80}")
+print(f"逐方案稳态模拟")
+print(f"{'=' * 80}")
+
+for scheme in schemes:
+    print(f"\n{'=' * 80}")
+    print(f"{scheme['name']}: {scheme['description']} (Q={scheme['Q']} m³/s)")
+    print(f"{'=' * 80}")
+    
+    Q = scheme['Q']
+    
+    # 创建求解器
+    solver = GodunvFVMSolver(
+        width=B, length=L, n_cells=n_cells,
+        manning_n=n, slope=S0,
+        cfl=0.5, order=1
+    )
+    
+    # 计算均匀流水深
+    h_uniform = compute_steady_uniform_flow(Q, B, S0, n)
+    h_critical = compute_critical_depth(Q, B)
+    
+    print(f"\n理论水深:")
+    print(f"  均匀流水深: {h_uniform:.3f} m")
+    print(f"  临界水深: {h_critical:.3f} m")
+    
+    # 初始化
+    h_init = np.ones(n_cells) * h_uniform
+    Q_init = np.ones(n_cells) * Q
+    
+    bc_left = {'type': 'Q', 'value': Q}
+    bc_right = {'type': 'h', 'value': h_uniform}
+    
+    solver.initialize(h_init, Q_init, bc_left, bc_right)
+    
+    # 推进到稳态
+    for _ in range(500):
+        solver.step()
+    
+    # 获取结果
+    state = solver.get_state()
+    h_max = np.max(state['h'])
+    h_avg = np.mean(state['h'])
+    mass_error = state['mass_error']
+    
+    # 安全评估
+    freeboard = h_bank - h_max  # 超高（安全余量）
+    freeboard_ratio = freeboard / h_bank * 100
+    
+    if freeboard > 1.0:
+        risk_level = " 安全"
+        risk_color = "green"
+    elif freeboard > 0.5:
+        risk_level = "🟡 中等"
+        risk_color = "yellow"
+    elif freeboard > 0:
+        risk_level = "🟠 较高"
+        risk_color = "orange"
+    else:
+        risk_level = " 危险"
+        risk_color = "red"
+    
+    print(f"\n数值模拟结果:")
+    print(f"  最大水深: {h_max:.3f} m")
+    print(f"  平均水深: {h_avg:.3f} m")
+    print(f"  质量误差: {mass_error:.4f}%")
+    print(f"  数值稳定: {'' if abs(mass_error) < 2.0 else '️'}")
+    
+    print(f"\n安全评估:")
+    print(f"  超高: {freeboard:.3f} m")
+    print(f"  安全余量: {freeboard_ratio:.1f}%")
+    print(f"  风险等级: {risk_level}")
+    
+    results.append({
+        'scheme': scheme,
+        'Q': Q,
+        'h_uniform': h_uniform,
+        'h_critical': h_critical,
+        'h_max': h_max,
+        'h_avg': h_avg,
+        'freeboard': freeboard,
+        'freeboard_ratio': freeboard_ratio,
+        'risk_level': risk_level,
+        'risk_color': risk_color,
+        'mass_error': mass_error,
+        'x': state['x'],
+        'h': state['h']
+    })
+
+# 综合对比
+print(f"\n" + "=" * 80)
+print("综合对比分析")
+print("=" * 80)
+
+print(f"\n{'方案':<12} {'流量':<12} {'最大水深':<12} {'超高':<12} {'安全余量':<12} {'风险等级':<12}")
+print(f"{'':12} {'(m³/s)':<12} {'(m)':<12} {'(m)':<12} {'(%)':<12} {'':<12}")
+print("-" * 80)
+
+for result in results:
+    name = result['scheme']['name']
+    Q = result['Q']
+    h_max = result['h_max']
+    freeboard = result['freeboard']
+    freeboard_ratio = result['freeboard_ratio']
+    risk_level = result['risk_level']
+    
+    print(f"{name:<12} {Q:<12.1f} {h_max:<12.3f} {freeboard:<12.3f} {freeboard_ratio:<12.1f} {risk_level:<12}")
+
+# 确定安全流量上限
+print(f"\n安全流量分析:")
+
+safe_schemes = [r for r in results if r['freeboard'] > 1.0]
+marginal_schemes = [r for r in results if 0.5 < r['freeboard'] <= 1.0]
+risky_schemes = [r for r in results if r['freeboard'] <= 0.5]
+
+if safe_schemes:
+    max_safe_Q = max([r['Q'] for r in safe_schemes])
+    print(f"  安全流量上限: {max_safe_Q} m³/s (超高>1.0m)")
+else:
+    print(f"  ️ 无完全安全方案")
+
+if marginal_schemes:
+    print(f"  中等风险流量: {min([r['Q'] for r in marginal_schemes])}-{max([r['Q'] for r in marginal_schemes])} m³/s")
+
+if risky_schemes:
+    print(f"  高风险流量: >{min([r['Q'] for r in risky_schemes])} m³/s")
+
+# 推荐调度策略
+print(f"\n" + "=" * 80)
+print("推荐调度策略")
+print("=" * 80)
+
+print(f"\n1. 正常运行（绿色区）")
+if safe_schemes:
+    print(f"   • 流量范围: 0-{max_safe_Q} m³/s")
+    print(f"   • 对应洪水: {', '.join([r['scheme']['frequency'] for r in safe_schemes])}")
+    print(f"   • 管理措施: 常规监测")
+
+print(f"\n2. 谨慎运行（黄色区）")
+if marginal_schemes:
+    print(f"   • 流量范围: {min([r['Q'] for r in marginal_schemes])}-{max([r['Q'] for r in marginal_schemes])} m³/s")
+    print(f"   • 对应洪水: {', '.join([r['scheme']['frequency'] for r in marginal_schemes])}")
+    print(f"   • 管理措施: 加强巡查，准备应急")
+
+print(f"\n3. 危险运行（红色区）")
+if risky_schemes:
+    print(f"   • 流量范围: >{min([r['Q'] for r in risky_schemes])} m³/s")
+    print(f"   • 对应洪水: {', '.join([r['scheme']['frequency'] for r in risky_schemes])}")
+    print(f"   • 管理措施: 启动应急预案，考虑分洪")
+
+# 可视化
+try:
+    fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+    
+    # 子图1: 纵断面水深对比
+    ax1 = axes[0, 0]
+    for result in results:
+        ax1.plot(result['x']/1000, result['h'], 
+                label=f"{result['scheme']['name']} (Q={result['Q']:.0f})",
+                color=result['scheme']['color'], linewidth=2)
+    ax1.axhline(y=h_bank, color='black', linestyle='--', linewidth=2, label='堤顶高度')
+    ax1.set_xlabel('距离 (km)')
+    ax1.set_ylabel('水深 (m)')
+    ax1.set_title('纵断面水深对比')
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+    
+    # 子图2: 最大水深 vs 流量
+    ax2 = axes[0, 1]
+    Qs = [r['Q'] for r in results]
+    h_maxs = [r['h_max'] for r in results]
+    colors = [r['scheme']['color'] for r in results]
+    
+    ax2.scatter(Qs, h_maxs, c=colors, s=200, alpha=0.7, edgecolors='black', linewidths=2)
+    ax2.axhline(y=h_bank, color='black', linestyle='--', linewidth=2, label='堤顶高度')
+    ax2.axhline(y=h_bank-1.0, color='green', linestyle=':', linewidth=1.5, alpha=0.5, label='安全线')
+    ax2.set_xlabel('流量 (m³/s)')
+    ax2.set_ylabel('最大水深 (m)')
+    ax2.set_title('流量-水深关系')
+    ax2.legend()
+    ax2.grid(True, alpha=0.3)
+    
+    # 子图3: 超高（安全余量）对比
+    ax3 = axes[1, 0]
+    names = [r['scheme']['name'] for r in results]
+    freeboards = [r['freeboard'] for r in results]
+    colors = [r['scheme']['color'] for r in results]
+    
+    bars = ax3.bar(range(len(names)), freeboards, color=colors, alpha=0.7, edgecolor='black', linewidth=2)
+    ax3.axhline(y=1.0, color='green', linestyle='--', linewidth=2, label='安全阈值(1.0m)')
+    ax3.axhline(y=0.5, color='orange', linestyle='--', linewidth=1.5, label='警戒阈值(0.5m)')
+    ax3.set_xticks(range(len(names)))
+    ax3.set_xticklabels(names)
+    ax3.set_ylabel('超高（安全余量） (m)')
+    ax3.set_title('安全余量对比')
+    ax3.legend()
+    ax3.grid(True, alpha=0.3, axis='y')
+    
+    for bar, val in zip(bars, freeboards):
+        ax3.text(bar.get_x() + bar.get_width()/2, val + 0.1,
+                f'{val:.2f}m', ha='center', va='bottom', fontweight='bold')
+    
+    # 子图4: 风险评估雷达图
+    ax4 = axes[1, 1]
+    ax4.axis('off')
+    
+    # 创建风险统计表
+    y_pos = 0.9
+    ax4.text(0.5, y_pos, '风险等级统计', ha='center', fontsize=14, fontweight='bold')
+    y_pos -= 0.15
+    
+    risk_counts = {}
+    for result in results:
+        level = result['risk_level']
+        risk_counts[level] = risk_counts.get(level, 0) + 1
+    
+    for risk_level, count in risk_counts.items():
+        ax4.text(0.1, y_pos, f"{risk_level}: {count}个方案", fontsize=12)
+        y_pos -= 0.12
+    
+    y_pos -= 0.1
+    ax4.text(0.5, y_pos, '关键指标', ha='center', fontsize=14, fontweight='bold')
+    y_pos -= 0.15
+    
+    if safe_schemes:
+        max_safe_Q = max([r['Q'] for r in safe_schemes])
+        ax4.text(0.1, y_pos, f" 安全流量上限: {max_safe_Q} m³/s", fontsize=11, color='green')
+    else:
+        ax4.text(0.1, y_pos, f"️ 无完全安全方案", fontsize=11, color='red')
+    y_pos -= 0.12
+    
+    min_freeboard = min([r['freeboard'] for r in results])
+    ax4.text(0.1, y_pos, f"最小超高: {min_freeboard:.2f} m", fontsize=11)
+    y_pos -= 0.12
+    
+    max_h = max([r['h_max'] for r in results])
+    ax4.text(0.1, y_pos, f"最大水深: {max_h:.2f} m", fontsize=11)
+    
+    plt.tight_layout()
+    plt.savefig('/workspace/case_flood_control_steady.png', dpi=150, bbox_inches='tight')
+    print(f"\n 分析图表已保存: case_flood_control_steady.png")
+except Exception as e:
+    print(f"\n️ 可视化失败: {str(e)}")
+
+# 工程建议
+print(f"\n" + "=" * 80)
+print("工程建议")
+print("=" * 80)
+
+print(f"\n1. 堤防加固（如需要）:")
+if risky_schemes:
+    max_h = max([r['h_max'] for r in results])
+    required_height = max_h + 1.0  # 保证1m超高
+    print(f"   • 建议堤顶高度: {required_height:.1f} m（当前{h_bank:.1f}m）")
+    print(f"   • 加固长度: 全线{L/1000:.1f}km")
+else:
+    print(f"   • 现有堤防满足要求")
+
+print(f"\n2. 监测预警:")
+print(f"   • 设置水位监测站（每500m）")
+print(f"   • 水深达到{h_bank-1.0:.1f}m时黄色预警")
+print(f"   • 水深达到{h_bank-0.5:.1f}m时红色预警")
+
+print(f"\n3. 应急措施:")
+print(f"   • 准备分洪通道")
+print(f"   • 制定疏散预案")
+if safe_schemes:
+    print(f"   • 流量超过{max([r['Q'] for r in safe_schemes])} m³/s时启动")
+
+print(f"\n" + "=" * 80)
+print(" 防洪能力评估完成！")
+print("=" * 80)

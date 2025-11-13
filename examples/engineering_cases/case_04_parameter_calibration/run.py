@@ -71,7 +71,7 @@ def create_synthetic_data(solver, true_roughness, num_steps=100, dt=10.0):
         obs = {}
 
         for loc in sensor_locations:
-            # 水位观测（添加±1cm的噪声）
+            # 水位观测（添加+/-1cm的噪声）
             h_obs = solver.h[loc] + 0.01 * np.random.randn()
             obs[f'level_{loc}'] = h_obs
 
@@ -80,8 +80,8 @@ def create_synthetic_data(solver, true_roughness, num_steps=100, dt=10.0):
             'observations': obs
         })
 
-    print(f"      ✓ 已生成 {num_steps} 个时间步的观测数据")
-    print(f"      ✓ 传感器位置: {sensor_locations}")
+    print(f"       已生成 {num_steps} 个时间步的观测数据")
+    print(f"       传感器位置: {sensor_locations}")
 
     return measurements
 
@@ -107,7 +107,7 @@ def run_parameter_calibration():
     true_roughness = 0.028   # 真实糙率（未知）
     initial_guess = 0.020    # 初始猜测（偏差较大）
 
-    Q_in = 10.0          # 上游流量 (m³/s)
+    Q_in = 10.0          # 上游流量 (m^3/s)
     h_downstream = 1.5   # 下游水深 (m)
 
     # ========================================
@@ -164,9 +164,9 @@ def run_parameter_calibration():
         verbose=False
     )
 
-    print(f"      ✓ 初始糙率猜测: n = {initial_guess:.4f}")
-    print(f"      ✓ 真实糙率值: n = {true_roughness:.4f}")
-    print(f"      ✓ 初始误差: {abs(initial_guess - true_roughness) / true_roughness * 100:.1f}%")
+    print(f"       初始糙率猜测: n = {initial_guess:.4f}")
+    print(f"       真实糙率值: n = {true_roughness:.4f}")
+    print(f"       初始误差: {abs(initial_guess - true_roughness) / true_roughness * 100:.1f}%")
 
     # ========================================
     # 第3步: 在线参数估计
@@ -210,7 +210,7 @@ def run_parameter_calibration():
             error = abs(current_roughness - true_roughness) / true_roughness * 100
             print(f"      步数 {step:3d}: n = {current_roughness:.5f}, 误差 = {error:.2f}%")
 
-    print(f"      ✓ 估计完成")
+    print(f"       估计完成")
 
     # ========================================
     # 第4步: 结果分析和可视化
@@ -256,13 +256,13 @@ def run_parameter_calibration():
 
     output_file = os.path.join(output_dir, 'parameter_calibration.png')
     plt.savefig(output_file, dpi=150, bbox_inches='tight')
-    print(f"\n✓ 结果图保存至: {output_file}")
+    print(f"\n 结果图保存至: {output_file}")
 
     plt.close()
 
     print()
     print("=" * 90)
-    print("✓ 参数校准完成！")
+    print(" 参数校准完成！")
     print("=" * 90)
 
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 长距离调水工程案例
 
@@ -59,7 +60,7 @@ class PumpStationConfig:
     id: int
     location_km: float  # 位置 (km)
     downstream_pool_id: int  # 下游池段ID
-    rated_flow: float  # 额定流量 (m³/s)
+    rated_flow: float  # 额定流量 (m^3/s)
     rated_head: float  # 额定扬程 (m)
     rated_power: float  # 额定功率 (kW)
     efficiency: float  # 效率
@@ -128,10 +129,10 @@ class PumpStation:
         运行泵站
 
         Args:
-            target_flow: 目标流量 (m³/s)
+            target_flow: 目标流量 (m^3/s)
 
         Returns:
-            实际流量 (m³/s)
+            实际流量 (m^3/s)
         """
         # 限制在额定范围内
         actual_flow = np.clip(target_flow, 0, self.config.rated_flow)
@@ -141,8 +142,8 @@ class PumpStation:
             self.current_flow = actual_flow
 
             # 简化的功率计算：P = ρ*g*Q*H/η
-            rho = 1000  # kg/m³
-            g = 9.81    # m/s²
+            rho = 1000  # kg/m^3
+            g = 9.81    # m/s^2
             self.current_power = (rho * g * actual_flow * self.config.rated_head /
                                  self.config.efficiency) / 1000  # kW
         else:
@@ -181,7 +182,7 @@ class Gate:
             upstream_depth: 上游水深 (m)
 
         Returns:
-            实际流量 (m³/s)
+            实际流量 (m^3/s)
         """
         # 限制开度
         self.opening = np.clip(opening, 0, self.config.max_opening)
@@ -253,18 +254,18 @@ class WaterTransferSystem:
         """创建3个泵站（30km、60km、90km处）"""
         stations = {}
 
-        # 泵站1：30km处，池2→池3
+        # 泵站1：30km处，池2->池3
         stations[0] = PumpStation(PumpStationConfig(
             id=0,
             location_km=30.0,
             downstream_pool_id=3,
-            rated_flow=50.0,  # m³/s
+            rated_flow=50.0,  # m^3/s
             rated_head=15.0,  # m
             rated_power=8000.0,  # kW
             efficiency=0.85
         ))
 
-        # 泵站2：60km处，池5→池6
+        # 泵站2：60km处，池5->池6
         stations[1] = PumpStation(PumpStationConfig(
             id=1,
             location_km=60.0,
@@ -275,7 +276,7 @@ class WaterTransferSystem:
             efficiency=0.85
         ))
 
-        # 泵站3：90km处，池8→池9
+        # 泵站3：90km处，池8->池9
         stations[2] = PumpStation(PumpStationConfig(
             id=2,
             location_km=90.0,
@@ -312,7 +313,7 @@ class WaterTransferSystem:
         系统时间步进
 
         Args:
-            q_source: 源头流量 (m³/s)
+            q_source: 源头流量 (m^3/s)
             pump_flows: 各泵站流量设定值 {pump_id: flow}
             gate_openings: 各闸门开度设定值 {gate_id: opening}
         """
@@ -419,7 +420,7 @@ class SimpleHierarchicalController:
         计算控制指令
 
         Args:
-            downstream_demand: 下游用水需求 (m³/s)
+            downstream_demand: 下游用水需求 (m^3/s)
 
         Returns:
             (pump_flows, gate_openings)
@@ -488,7 +489,7 @@ def run_water_transfer_simulation():
     print(f"\n开始仿真...")
 
     # 源头流量（恒定）
-    q_source = 40.0  # m³/s
+    q_source = 40.0  # m^3/s
 
     # 下游需水量变化场景
     for step in range(n_steps):
@@ -531,7 +532,7 @@ def run_water_transfer_simulation():
     print(f"\n生成可视化图表...")
     visualize_results(system)
 
-    print("\n✅ 示例运行完成！")
+    print("\n 示例运行完成！")
     print("=" * 80)
 
 

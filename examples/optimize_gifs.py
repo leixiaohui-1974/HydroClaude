@@ -11,7 +11,7 @@ GIF动画优化工具
     python optimize_gifs.py --colors 64      # 使用64色
 
 优化策略:
-1. 降低颜色数量（256 → 128 → 64）
+1. 降低颜色数量（256 -> 128 -> 64）
 2. 降低分辨率（如果需要）
 3. 减少帧数（如果需要）
 4. PIL optimize选项
@@ -19,6 +19,14 @@ GIF动画优化工具
 作者: Claude
 日期: 2025-10-22
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import sys
 import os
@@ -169,17 +177,17 @@ def auto_optimize_gif(input_path, output_path=None, target_kb=1024, max_iteratio
         )
 
         if success:
-            print(f"    结果: {orig:.1f} KB → {new:.1f} KB ({ratio:.1f}% 压缩)")
+            print(f"    结果: {orig:.1f} KB -> {new:.1f} KB ({ratio:.1f}% 压缩)")
             best_result = (success, orig, new, ratio)
 
             # 达到目标，停止
             if new <= target_kb:
-                print(f"    ✓ 达到目标 ({new:.1f} KB ≤ {target_kb} KB)")
+                print(f"     达到目标 ({new:.1f} KB <= {target_kb} KB)")
                 return best_result
 
     # 未达到目标，但返回最好的结果
     if best_result:
-        print(f"    ⚠ 未达到目标，但已尽力优化")
+        print(f"     未达到目标，但已尽力优化")
         return best_result
 
     return False, original_size_kb, original_size_kb, 0
@@ -233,7 +241,7 @@ def batch_optimize(examples_dir='.', target_kb=1024, dry_run=False):
 
         # 如果已经很小，跳过
         if original_size_kb <= target_kb:
-            print(f"  ✓ 已经小于目标 ({target_kb} KB)，跳过")
+            print(f"   已经小于目标 ({target_kb} KB)，跳过")
             total_new_size += original_size_kb
             already_small_count += 1
             continue
@@ -251,7 +259,7 @@ def batch_optimize(examples_dir='.', target_kb=1024, dry_run=False):
             if new <= target_kb:
                 optimized_count += 1
             else:
-                print(f"  ⚠ 未达目标，但已优化 {ratio:.1f}%")
+                print(f"   未达目标，但已优化 {ratio:.1f}%")
         else:
             total_new_size += original_size_kb
             failed_count += 1
@@ -264,7 +272,7 @@ def batch_optimize(examples_dir='.', target_kb=1024, dry_run=False):
     print(f"已达目标: {optimized_count}")
     print(f"本来就小: {already_small_count}")
     print(f"优化失败: {failed_count}")
-    print(f"总大小: {total_original_size/1024:.2f} MB → {total_new_size/1024:.2f} MB")
+    print(f"总大小: {total_original_size/1024:.2f} MB -> {total_new_size/1024:.2f} MB")
     compression = (1 - total_new_size/total_original_size) * 100
     print(f"总压缩率: {compression:.1f}%")
     print("="*80)

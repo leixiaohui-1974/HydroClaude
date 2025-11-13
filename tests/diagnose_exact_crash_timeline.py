@@ -16,7 +16,13 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('.'))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 def diagnose_crash_timeline(cfl=0.1, target_time=2.0):
     """
@@ -32,7 +38,7 @@ def diagnose_crash_timeline(cfl=0.1, target_time=2.0):
 
     width = 10.0
     length = 100.0
-    n_cells = 50
+    n_cells = 100
     dx = length / n_cells
 
     # 溃坝初始条件
@@ -53,7 +59,7 @@ def diagnose_crash_timeline(cfl=0.1, target_time=2.0):
     solver.initialize(h_init.copy(), Q_init.copy(), bc_left, bc_right)
     mass_0 = np.sum(solver.h * solver.B * dx)
 
-    print(f"\n初始质量: {mass_0:.6f} m³")
+    print(f"\n初始质量: {mass_0:.6f} m^3")
     print(f"单元数: {n_cells}, dx={dx:.2f}m")
 
     # 记录检查点
@@ -85,7 +91,7 @@ def diagnose_crash_timeline(cfl=0.1, target_time=2.0):
         except Exception as e:
             crashed = True
             crash_time = solver.t
-            print(f"\n❌ 步进异常于t={crash_time:.4f}s: {str(e)}")
+            print(f"\n 步进异常于t={crash_time:.4f}s: {str(e)}")
             break
 
         # 检查质量守恒
@@ -97,7 +103,7 @@ def diagnose_crash_timeline(cfl=0.1, target_time=2.0):
         if np.any(np.isnan(solver.h)) or np.any(solver.h < 0):
             crashed = True
             crash_time = solver.t
-            print(f"{solver.t:<10.4f} {solver.step_count:<8} {mass_error:<15.6f} [{h_min:.3f}, {h_max:.3f}] {'❌崩溃':<10}")
+            print(f"{solver.t:<10.4f} {solver.step_count:<8} {mass_error:<15.6f} [{h_min:.3f}, {h_max:.3f}] {'崩溃':<10}")
             break
 
         # 检查是否到达检查点
@@ -113,7 +119,7 @@ def diagnose_crash_timeline(cfl=0.1, target_time=2.0):
                 'mass_error': mass_error
             }
 
-            status = "✅" if mass_error < 0.1 else ("⚠️" if mass_error < 1.0 else "❌")
+            status = "" if mass_error < 0.1 else ("" if mass_error < 1.0 else "")
             print(f"{solver.t:<10.4f} {solver.step_count:<8} {mass_error:<15.6f} [{h_min:.3f}, {h_max:.3f}] {status:<10}")
 
             next_checkpoint_idx += 1
@@ -122,7 +128,7 @@ def diagnose_crash_timeline(cfl=0.1, target_time=2.0):
         if mass_error > 100:
             crashed = True
             crash_time = solver.t
-            print(f"{solver.t:<10.4f} {solver.step_count:<8} {mass_error:<15.6f} [{h_min:.3f}, {h_max:.3f}] {'❌质量爆炸':<10}")
+            print(f"{solver.t:<10.4f} {solver.step_count:<8} {mass_error:<15.6f} [{h_min:.3f}, {h_max:.3f}] {'质量爆炸':<10}")
 
             # 保存崩溃时刻快照
             snapshots['crash'] = {
@@ -161,11 +167,11 @@ def diagnose_crash_timeline(cfl=0.1, target_time=2.0):
         # 检查异常值
         if np.any(h < 0):
             neg_cells = np.where(h < 0)[0]
-            print(f"  ⚠️  负深度单元: {neg_cells}")
+            print(f"    负深度单元: {neg_cells}")
 
         if np.any(np.abs(u) > 10):
             high_u_cells = np.where(np.abs(u) > 10)[0]
-            print(f"  ⚠️  高速度单元: {high_u_cells}")
+            print(f"    高速度单元: {high_u_cells}")
 
         # 边界单元状态
         print(f"  边界: h[0]={h[0]:.4f}, h[-1]={h[-1]:.4f}, Q[0]={Q[0]:.4f}, Q[-1]={Q[-1]:.4f}")
@@ -225,7 +231,7 @@ def diagnose_crash_timeline(cfl=0.1, target_time=2.0):
 
             print(f"\n  从t={prev_t:.1f}s到崩溃，变化最大的5个单元:")
             for idx in top_change_idx:
-                print(f"    单元{idx}: Δh={h_change[idx]:.6f} ({h_prev[idx]:.4f} → {h_crash[idx]:.4f})")
+                print(f"    单元{idx}: Deltah={h_change[idx]:.6f} ({h_prev[idx]:.4f} -> {h_crash[idx]:.4f})")
 
     # 结论
     print("\n" + "=" * 80)
@@ -233,22 +239,22 @@ def diagnose_crash_timeline(cfl=0.1, target_time=2.0):
     print("=" * 80)
 
     if crashed:
-        print(f"\n✅ 成功捕获崩溃时刻: t={crash_time:.4f}s")
+        print(f"\n 成功捕获崩溃时刻: t={crash_time:.4f}s")
         print(f"   步数: {snapshots.get('crash', snapshots[sorted_times[-1]])['step']}")
 
         if 'crash' in snapshots:
             h_c = snapshots['crash']['h']
             if np.any(h_c < 0):
-                print(f"\n📊 崩溃原因: 负深度出现")
-                print(f"   → 可能是边界条件与精确求解器的通量冲突")
+                print(f"\n 崩溃原因: 负深度出现")
+                print(f"   -> 可能是边界条件与精确求解器的通量冲突")
             elif np.any(np.isnan(h_c)):
-                print(f"\n📊 崩溃原因: NaN值出现")
-                print(f"   → 可能是Newton求解器在极端状态下失败")
+                print(f"\n 崩溃原因: NaN值出现")
+                print(f"   -> 可能是Newton求解器在极端状态下失败")
             elif snapshots['crash']['mass_error'] > 100:
-                print(f"\n📊 崩溃原因: 质量守恒严重失败")
-                print(f"   → 质量误差={snapshots['crash']['mass_error']:.2f}%")
+                print(f"\n 崩溃原因: 质量守恒严重失败")
+                print(f"   -> 质量误差={snapshots['crash']['mass_error']:.2f}%")
     else:
-        print(f"\n✅ 未崩溃，成功到达t={solver.t:.4f}s")
+        print(f"\n 未崩溃，成功到达t={solver.t:.4f}s")
 
     return snapshots, crashed, crash_time
 

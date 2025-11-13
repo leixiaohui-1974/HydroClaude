@@ -18,6 +18,8 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")  # Non-interactive mode
 import matplotlib.pyplot as plt
 from typing import Dict, Tuple
 
@@ -36,8 +38,8 @@ class FloodRoutingSimulation:
     - 坡度: 1/2000 (更缓)
 
     洪水过程:
-    - 基流: 100 m³/s
-    - 洪峰流量: 500 m³/s (降低以提高稳定性)
+    - 基流: 100 m^3/s
+    - 洪峰流量: 500 m^3/s (降低以提高稳定性)
     - 涨洪历时: 6 hours
     - 落洪历时: 12 hours
     """
@@ -55,16 +57,16 @@ class FloodRoutingSimulation:
         self.cfl = 0.3  # 降低CFL以提高稳定性
 
         # 洪水参数
-        self.Q_base = 100.0   # 基流 (m³/s)
-        self.Q_peak = 500.0   # 洪峰流量 (m³/s，降低)
+        self.Q_base = 100.0   # 基流 (m^3/s)
+        self.Q_peak = 500.0   # 洪峰流量 (m^3/s，降低)
         self.T_rise = 6.0 * 3600  # 涨洪历时 (s)
         self.T_fall = 12.0 * 3600  # 落洪历时 (s)
         self.T_total = self.T_rise + self.T_fall  # 总时长 (s)
 
         # 计算初始水深（使用曼宁公式的均匀流）
         # Q = (1/n) * A * R^(2/3) * S0^(1/2)
-        # 对于矩形断面宽浅渠道：R ≈ h
-        # 简化：Q ≈ (1/n) * B * h * h^(2/3) * S0^(1/2)
+        # 对于矩形断面宽浅渠道：R ~= h
+        # 简化：Q ~= (1/n) * B * h * h^(2/3) * S0^(1/2)
         # 求解得到合理初始水深
         self.h0 = 2.0  # m (初始估计)
         # 迭代求解精确初始水深
@@ -85,14 +87,14 @@ class FloodRoutingSimulation:
         创建上游入流过程
 
         采用三角形洪水过程:
-        - 0 → T_rise: 线性上涨到洪峰
-        - T_rise → T_total: 线性下降到基流
+        - 0 -> T_rise: 线性上涨到洪峰
+        - T_rise -> T_total: 线性下降到基流
 
         Args:
             t: 时间 (s)
 
         Returns:
-            流量 (m³/s)
+            流量 (m^3/s)
         """
         if t <= 0:
             return self.Q_base
@@ -135,13 +137,11 @@ class FloodRoutingSimulation:
         # 下游：水深边界（自由出流，使用初始水深）
         bc_right = {'type': 'h', 'value': self.h0}
 
-        # 初始化
-        solver.initialize(
-            h_init=h_init,
-            Q_init=Q_init_array,
-            bc_left=bc_left,
-            bc_right=bc_right
-        )
+        # 手动初始化Godunov求解器
+        solver.h = h_init.copy()
+        solver.Q = Q_init_array.copy()
+        solver.bc_left = bc_left
+        solver.bc_right = bc_right
 
         return solver
 
@@ -160,7 +160,7 @@ class FloodRoutingSimulation:
         print("="*70)
         print(f"河道长度: {self.L/1000:.1f} km")
         print(f"网格数: {self.n_cells}")
-        print(f"洪峰流量: {self.Q_peak:.1f} m³/s")
+        print(f"洪峰流量: {self.Q_peak:.1f} m^3/s")
         print(f"总时长: {self.T_total/3600:.1f} hours")
         print("="*70 + "\n")
 
@@ -216,7 +216,7 @@ class FloodRoutingSimulation:
                 Q_up = solver.Q[0]
                 Q_down = solver.Q[-1]
                 h_max = np.max(solver.h)
-                print(f"t={hours:6.2f}h | Q_上={Q_up:7.1f}m³/s | Q_下={Q_down:7.1f}m³/s | h_max={h_max:5.2f}m")
+                print(f"t={hours:6.2f}h | Q_上={Q_up:7.1f}m^3/s | Q_下={Q_down:7.1f}m^3/s | h_max={h_max:5.2f}m")
 
         print(f"\n模拟完成！总步数: {step}, 最终时间: {t/3600:.2f} hours\n")
 
@@ -253,9 +253,9 @@ class FloodRoutingSimulation:
         print("="*70)
         print("洪峰削减分析")
         print("="*70)
-        print(f"上游洪峰: {Q_up_max:.1f} m³/s")
-        print(f"下游洪峰: {Q_down_max:.1f} m³/s")
-        print(f"削减幅度: {Q_up_max - Q_down_max:.1f} m³/s ({reduction_rate:.1f}%)")
+        print(f"上游洪峰: {Q_up_max:.1f} m^3/s")
+        print(f"下游洪峰: {Q_down_max:.1f} m^3/s")
+        print(f"削减幅度: {Q_up_max - Q_down_max:.1f} m^3/s ({reduction_rate:.1f}%)")
         print(f"洪峰传播时间: {travel_time:.2f} hours")
         print(f"平均波速: {self.L / (travel_time * 3600):.2f} m/s")
         print("="*70 + "\n")
@@ -276,7 +276,7 @@ class FloodRoutingSimulation:
         ax1.plot(time_hours, results['Q_upstream'], 'b-', linewidth=2, label='Upstream')
         ax1.plot(time_hours, results['Q_downstream'], 'r-', linewidth=2, label='Downstream')
         ax1.set_xlabel('Time (hours)', fontsize=12, fontweight='bold')
-        ax1.set_ylabel('Discharge (m³/s)', fontsize=12, fontweight='bold')
+        ax1.set_ylabel('Discharge (m^3/s)', fontsize=12, fontweight='bold')
         ax1.set_title('Flood Hydrograph', fontsize=13, fontweight='bold')
         ax1.legend(fontsize=11)
         ax1.grid(True, alpha=0.3)
@@ -299,9 +299,9 @@ class FloodRoutingSimulation:
         ax3.bar(['Upstream', 'Downstream'], [Q_up_max, Q_down_max],
                 color=['blue', 'red'], alpha=0.7, width=0.5)
         ax3.axhline(Q_up_max, color='blue', linestyle='--', alpha=0.5)
-        ax3.text(0.5, Q_up_max + 20, f'Reduction: {reduction:.1f} m³/s',
+        ax3.text(0.5, Q_up_max + 20, f'Reduction: {reduction:.1f} m^3/s',
                 ha='center', fontsize=11, fontweight='bold')
-        ax3.set_ylabel('Peak Discharge (m³/s)', fontsize=12, fontweight='bold')
+        ax3.set_ylabel('Peak Discharge (m^3/s)', fontsize=12, fontweight='bold')
         ax3.set_title('Peak Reduction', fontsize=13, fontweight='bold')
         ax3.grid(True, alpha=0.3, axis='y')
 
@@ -334,7 +334,7 @@ class FloodRoutingSimulation:
                     linewidth=2, label=f't={t_h:.1f}h')
 
         ax5.set_xlabel('Distance (km)', fontsize=12, fontweight='bold')
-        ax5.set_ylabel('Discharge (m³/s)', fontsize=12, fontweight='bold')
+        ax5.set_ylabel('Discharge (m^3/s)', fontsize=12, fontweight='bold')
         ax5.set_title('Discharge Profile', fontsize=13, fontweight='bold')
         ax5.legend(fontsize=10, ncol=2)
         ax5.grid(True, alpha=0.3)
@@ -347,7 +347,7 @@ class FloodRoutingSimulation:
         T_matrix, X_matrix = np.meshgrid(time_hours, x_km)
 
         contour = ax6.contourf(T_matrix, X_matrix, Q_matrix.T, levels=15, cmap='jet')
-        plt.colorbar(contour, ax=ax6, label='Discharge (m³/s)')
+        plt.colorbar(contour, ax=ax6, label='Discharge (m^3/s)')
         ax6.set_xlabel('Time (hours)', fontsize=12, fontweight='bold')
         ax6.set_ylabel('Distance (km)', fontsize=12, fontweight='bold')
         ax6.set_title('Spatio-Temporal Distribution', fontsize=13, fontweight='bold')
@@ -358,7 +358,7 @@ class FloodRoutingSimulation:
 
         if save_path:
             plt.savefig(save_path, dpi=150, bbox_inches='tight')
-            print(f"✓ 结果已保存: {save_path}\n")
+            print(f" 结果已保存: {save_path}\n")
 
         return fig
 
@@ -381,7 +381,7 @@ def main():
     simulation.visualize_results(results, save_path=save_path)
 
     print("="*70)
-    print("✅ Case 02: 河道洪水演进模拟完成！")
+    print(" Case 02: 河道洪水演进模拟完成！")
     print("="*70)
 
 

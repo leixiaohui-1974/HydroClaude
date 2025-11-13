@@ -9,7 +9,7 @@ from scipy.sparse.linalg import spsolve
 import warnings
 
 class CoupledNetworkSolver:
-    """全局耦合求解器"""
+    """"""
 
     def __init__(self, topology: NetworkTopology):
         self.topology = topology
@@ -25,30 +25,30 @@ class CoupledNetworkSolver:
 
     def _solve_tree_network(self, dt: float) -> Dict:
         """
-        树状网络求解 - 从源节点到汇节点按拓扑顺序求解
-        1. 初始化源节点水头和供水流量
-        2. 按拓扑顺序计算每个管段的流量和水头损失
-        3. 计算每个节点的水头
+         - 
+        1. 
+        2. 
+        3. 
         """
         sorted_nodes = self._topological_sort()
 
-        # 初始化源节点
+        # 
         for node_id in sorted_nodes:
             node = self.topology.nodes[node_id]
             if node.node_type == NodeType.SOURCE:
-                node.head = node.elevation + 10.0  # 源节点水头 = 高程 + 10m
-                # 从源节点出发的初始流量设为供水量
+                node.head = node.elevation + 10.0  #  =  + 10m
+                # 
                 for edge_id in node.outgoing_edges:
                     self.topology.edges[edge_id].flow = node.supply
 
-        # 按拓扑顺序求解
+        # 
         for node_id in sorted_nodes:
             node = self.topology.nodes[node_id]
 
             if node.node_type == NodeType.SOURCE:
                 continue
 
-            # 计算节点水头（从上游节点和水头损失）
+            # 
             if node.incoming_edges:
                 total_inflow = 0
                 weighted_head = 0
@@ -57,7 +57,7 @@ class CoupledNetworkSolver:
                     edge = self.topology.edges[edge_id]
                     upstream_node = self.topology.nodes[edge.start_node]
 
-                    # 计算水头损失
+                    # 
                     Q = edge.flow
                     L = edge.length
                     D = 1.0
@@ -71,7 +71,7 @@ class CoupledNetworkSolver:
 
                     edge.head_loss = h_loss
 
-                    # 节点水头 = 上游节点水头 - 水头损失
+                    #  =  - 
                     node_head = upstream_node.head - h_loss
 
                     total_inflow += edge.flow
@@ -82,16 +82,16 @@ class CoupledNetworkSolver:
                 else:
                     node.head = 0
 
-            # 处理不同类型的节点
+            # 
             if node.node_type == NodeType.JUNCTION:
-                # 连接节点：流量守恒
+                # 
                 total_outflow = sum(self.topology.edges[e].flow for e in node.incoming_edges)
                 if node.outgoing_edges:
                     for edge_id in node.outgoing_edges:
                         self.topology.edges[edge_id].flow = total_outflow
 
             elif node.node_type == NodeType.BRANCH:
-                # 分支节点：流量分配
+                # 
                 total_inflow = sum(self.topology.edges[e].flow for e in node.incoming_edges)
                 n_out = len(node.outgoing_edges)
                 if n_out > 0:
@@ -100,13 +100,13 @@ class CoupledNetworkSolver:
                         self.topology.edges[edge_id].flow = flow_per_branch
 
             elif node.node_type == NodeType.MERGE:
-                # 汇合节点：流量汇总
+                # 
                 total_inflow = sum(self.topology.edges[e].flow for e in node.incoming_edges)
                 for edge_id in node.outgoing_edges:
                     self.topology.edges[edge_id].flow = total_inflow
 
             elif node.node_type == NodeType.SINK:
-                # 汇节点：终点
+                # 
                 pass
 
         return self._collect_results()
@@ -150,10 +150,10 @@ class CoupledNetworkSolver:
                 x += dx
 
                 if np.linalg.norm(R) < 1e-6:
-                    print(f"全局Newton收敛于第 {iteration+1} 次迭代")
+                    print(f"Newton {iteration+1} ")
                     break
             except:
-                print("全局Newton求解失败")
+                print("Newton")
                 break
 
         for i, node in enumerate(self.topology.nodes.values()):
@@ -177,16 +177,16 @@ class CoupledNetworkSolver:
         node_idx = {node_id: i for i, node_id in enumerate(node_list)}
         edge_idx = {edge_id: i for i, edge_id in enumerate(edge_list)}
 
-        # 节点流量平衡方程 (前n_nodes个方程)
+        #  (n_nodes)
         for i, node_id in enumerate(node_list):
             node = self.topology.nodes[node_id]
 
             if node.node_type == NodeType.SOURCE:
-                # 源节点：固定水头
+                # 
                 J[i, i] = 1.0
-                R[i] = x[i] - (node.elevation + 10.0)  # 假设源头10m水头
+                R[i] = x[i] - (node.elevation + 10.0)  # 10m
             else:
-                # 其他节点：流量连续性
+                # 
                 Q_in = 0
                 Q_out = 0
 
@@ -209,7 +209,7 @@ class CoupledNetworkSolver:
                 else:
                     R[i] = Q_in - Q_out
 
-        # 管段能量方程 (后n_edges个方程)
+        #  (n_edges)
         for j, edge_id in enumerate(edge_list):
             edge = self.topology.edges[edge_id]
             eq_i = n_nodes + j
@@ -221,10 +221,10 @@ class CoupledNetworkSolver:
             H_end = x[end_node_i]
             Q = x[n_nodes + j]
 
-            # 水头损失计算 (Hazen-Williams公式)
+            #  (Hazen-Williams)
             L = edge.length
-            D = 1.0  # 假设直径1m
-            C = 100  # Hazen-Williams系数
+            D = 1.0  # 1m
+            C = 100  # Hazen-Williams
 
             K = 10.67 * L / (C**1.852 * D**4.87)
 
@@ -235,10 +235,10 @@ class CoupledNetworkSolver:
                 h_loss = 0
                 dh_dQ = 0
 
-            # 方程: H_start - H_end - h_loss = 0
+            # : H_start - H_end - h_loss = 0
             R[eq_i] = H_start - H_end - h_loss
 
-            # 雅可比矩阵
+            # 
             J[eq_i, start_node_i] = 1.0
             J[eq_i, end_node_i] = -1.0
             J[eq_i, n_nodes + j] = -dh_dQ

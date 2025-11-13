@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例2: 泵站系统仿真（增强版）
 
@@ -51,9 +52,9 @@ def run_example():
 
     # ====== 4. 运行仿真 ======
     print(f"仿真参数:")
-    print(f"  水池1: 面积={tank1.area} m², 容量范围=[{tank1.volume_min}, {tank1.volume_max}] m³")
-    print(f"  水池2: 面积={tank2.area} m², 容量范围=[{tank2.volume_min}, {tank2.volume_max}] m³")
-    print(f"  泵站: 最大流量={pump.max_flow} m³/s, 额定扬程={pump.rated_head} m")
+    print(f"  水池1: 面积={tank1.area} m^2, 容量范围=[{tank1.volume_min}, {tank1.volume_max}] m^3")
+    print(f"  水池2: 面积={tank2.area} m^2, 容量范围=[{tank2.volume_min}, {tank2.volume_max}] m^3")
+    print(f"  泵站: 最大流量={pump.max_flow} m^3/s, 额定扬程={pump.rated_head} m")
     print(f"  管道: 长度={pipe.length} m, 直径={pipe.diameter} m")
     print(f"  时间步长: {dt} s")
     print(f"  总步数: {n_steps}")
@@ -81,7 +82,7 @@ def run_example():
         tank2_level_history.append(tank2_state.level)
         pump_flow_history.append(pump_state.flow)
 
-        # 计算泵功率 (估算: P = ρ*g*Q*H)
+        # 计算泵功率 (估算: P = rho*g*Q*H)
         # 假设扬程为水池高度差
         head = abs(tank2_state.level - tank1_state.level)
         power = 1000 * 9.81 * pump_state.flow * head / 1000  # kW
@@ -92,7 +93,7 @@ def run_example():
             print(f"步 {i+1:2d}/{n_steps}: 时间={i*dt:6.1f}s, "
                   f"水池1={tank1_state.level:.2f}m, "
                   f"水池2={tank2_state.level:.2f}m, "
-                  f"泵流量={pump_state.flow:.2f}m³/s, "
+                  f"泵流量={pump_state.flow:.2f}m^3/s, "
                   f"功率={power:.1f}kW")
 
     print("-" * 70)
@@ -124,18 +125,18 @@ def run_example():
         filename='example_02_tank_levels.png'
     )
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (2) 时间序列图 - 泵流量
     img_path = visualizer.plot_time_series(
         time=time_history,
         data={'Pump Flow': pump_flow_history},
         title='Pump Flow Rate Evolution',
-        ylabel='Flow Rate (m³/s)',
+        ylabel='Flow Rate (m^3/s)',
         filename='example_02_pump_flow.png'
     )
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (3) 时间序列图 - 泵功率
     img_path = visualizer.plot_time_series(
@@ -146,13 +147,15 @@ def run_example():
         filename='example_02_pump_power.png'
     )
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (4) 柱状图动画 - 水池水位对比
     # 创建简单的柱状图动画显示两个水池的水位变化
     print("  生成动态GIF动画...")
 
-    import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
     import matplotlib.animation as animation
 
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -186,7 +189,7 @@ def run_example():
     plt.close(fig)
 
     generated_images.append(gif_path)
-    print(f"  ✓ 生成动画: {os.path.basename(gif_path)}")
+    print(f"   生成动画: {os.path.basename(gif_path)}")
     print()
 
     # ====== 7. 生成报告 ======
@@ -201,8 +204,8 @@ def run_example():
         '水池2初始水位 (m)': f"{tank2_level_history[0]:.3f}",
         '水池2最终水位 (m)': f"{tank2_level_history[-1]:.3f}",
         '水池2水位变化 (m)': f"{tank2_level_history[-1] - tank2_level_history[0]:.3f}",
-        '平均流量 (m³/s)': f"{pump_flow_history.mean():.3f}",
-        '最大流量 (m³/s)': f"{pump_flow_history.max():.3f}",
+        '平均流量 (m^3/s)': f"{pump_flow_history.mean():.3f}",
+        '最大流量 (m^3/s)': f"{pump_flow_history.max():.3f}",
         '平均功率 (kW)': f"{pump_power_history.mean():.1f}",
         '最大功率 (kW)': f"{pump_power_history.max():.1f}",
         '总能耗 (kWh)': f"{(pump_power_history.sum() * dt / 3600):.2f}",
@@ -267,15 +270,15 @@ def run_example():
 **主要结果**:
 - 水池1水位变化: {tank1_level_history[-1] - tank1_level_history[0]:.3f} m (下降)
 - 水池2水位变化: {tank2_level_history[-1] - tank2_level_history[0]:.3f} m (上升)
-- 平均流量: {pump_flow_history.mean():.3f} m³/s
+- 平均流量: {pump_flow_history.mean():.3f} m^3/s
 - 总能耗: {(pump_power_history.sum() * dt / 3600):.2f} kWh
 - 系统表现稳定，泵站运行正常
 
 **验证**:
-- ✓ 质量守恒 (水池1流出 = 水池2流入)
-- ✓ 泵流量稳定
-- ✓ 功率计算合理
-- ✓ 数值稳定
+-  质量守恒 (水池1流出 = 水池2流入)
+-  泵流量稳定
+-  功率计算合理
+-  数值稳定
 """
         }
     ]
@@ -286,18 +289,18 @@ def run_example():
         filename='example_02_simulation_report.md'
     )
 
-    print(f"  ✓ 报告已生成: {os.path.basename(report_path)}")
+    print(f"   报告已生成: {os.path.basename(report_path)}")
     print()
 
     # ====== 8. 总结 ======
     print("=" * 70)
     print("仿真结果总结")
     print("=" * 70)
-    print(f"水池1: {tank1_level_history[0]:.3f} m → {tank1_level_history[-1]:.3f} m "
+    print(f"水池1: {tank1_level_history[0]:.3f} m -> {tank1_level_history[-1]:.3f} m "
           f"(变化: {tank1_level_history[-1] - tank1_level_history[0]:.3f} m)")
-    print(f"水池2: {tank2_level_history[0]:.3f} m → {tank2_level_history[-1]:.3f} m "
+    print(f"水池2: {tank2_level_history[0]:.3f} m -> {tank2_level_history[-1]:.3f} m "
           f"(变化: {tank2_level_history[-1] - tank2_level_history[0]:.3f} m)")
-    print(f"平均流量: {pump_flow_history.mean():.3f} m³/s")
+    print(f"平均流量: {pump_flow_history.mean():.3f} m^3/s")
     print(f"总能耗: {(pump_power_history.sum() * dt / 3600):.2f} kWh")
     print()
     print(f"生成文件:")

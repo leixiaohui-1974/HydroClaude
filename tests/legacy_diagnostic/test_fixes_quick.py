@@ -12,7 +12,17 @@ import numpy as np
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.single_canal_solver import SingleCanalSolver
+try:
+    # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.single_canal_solver import SingleCanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 
 print("="*80)
@@ -55,7 +65,7 @@ max_error_1 = max(errors_1)
 
 print(f"\n结果:")
 print(f"  最大误差: {max_error_1:.4f}%")
-print(f"  收敛状态: {'✓' if result1['converged'] else '✗'}")
+print(f"  收敛状态: {'' if result1['converged'] else ''}")
 print(f"  迭代次数: {result1['iterations']}")
 print()
 
@@ -89,7 +99,7 @@ max_error_2 = max(errors_2)
 
 print(f"\n结果:")
 print(f"  最大误差: {max_error_2:.4f}%")
-print(f"  收敛状态: {'✓' if result2['converged'] else '✗'}")
+print(f"  收敛状态: {'' if result2['converged'] else ''}")
 print(f"  迭代次数: {result2['iterations']}")
 print()
 
@@ -123,7 +133,7 @@ max_error_3 = max(errors_3)
 
 print(f"\n结果:")
 print(f"  最大误差: {max_error_3:.4f}%")
-print(f"  收敛状态: {'✓' if result3['converged'] else '✗'}")
+print(f"  收敛状态: {'' if result3['converged'] else ''}")
 print(f"  迭代次数: {result3['iterations']}")
 print()
 
@@ -150,11 +160,11 @@ print()
 
 # 判断是否达到目标
 if max_error_3 < 0.5:
-    print("✅ ✅ ✅ 达到阶段1目标（<0.5%）！")
+    print("   达到阶段1目标（<0.5%）！")
 elif max_error_3 < 1.0:
-    print("⚠️  接近阶段1目标，还需小幅改进")
+    print("️  接近阶段1目标，还需小幅改进")
 else:
-    print("❌ 未达到阶段1目标，需要进一步优化")
+    print(" 未达到阶段1目标，需要进一步优化")
 
 print()
 print("="*80)

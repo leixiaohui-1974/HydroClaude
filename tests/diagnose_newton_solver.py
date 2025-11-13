@@ -12,7 +12,13 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('.'))
 
-from solvers.riemann_exact import exact_riemann_flux, _solve_star_region_newton
+try:
+    from solvers.riemann_exact import exact_riemann_flux, _solve_star_region_newton
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 def test_newton_outputs():
     """测试Newton求解器的输出是否合理"""
@@ -61,11 +67,11 @@ def test_newton_outputs():
         # 标记异常
         flag = ""
         if h_star < 0.5 * h_min or h_star > 2.0 * h_max:
-            flag += "❌h"
+            flag += "h"
         if abs(u_star) > max(abs(u_L), abs(u_R), c_L, c_R):
-            flag += "❌u"
+            flag += "u"
         if abs(F_h) > 100:
-            flag += "❌F"
+            flag += "F"
 
         print(f"{name:<12} {h_L:<8.2f} {u_L:<8.2f} {h_R:<8.2f} {u_R:<8.2f} {h_star:<10.4f} {u_star:<10.4f} {F_h:<12.4f} {flag}")
 
@@ -98,13 +104,13 @@ def test_extreme_cases():
 
             # 检查收敛性
             if h_star > 0 and np.isfinite(h_star) and np.isfinite(u_star):
-                status = "✅"
+                status = ""
             else:
-                status = "❌非物理"
+                status = "非物理"
 
             print(f"{name:<12} {h_L:<8.2f} {u_L:<8.4f} {h_R:<8.2f} {u_R:<8.4f} {h_star:<10.4f} {u_star:<10.4f} {status:<10}")
         except Exception as e:
-            print(f"{name:<12} {h_L:<8.2f} {u_L:<8.4f} {h_R:<8.2f} {u_R:<8.4f} {'ERROR':<10} {'ERROR':<10} ❌异常")
+            print(f"{name:<12} {h_L:<8.2f} {u_L:<8.4f} {h_R:<8.2f} {u_R:<8.4f} {'ERROR':<10} {'ERROR':<10} 异常")
 
 if __name__ == "__main__":
     test_newton_outputs()

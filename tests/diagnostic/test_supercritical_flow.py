@@ -4,12 +4,12 @@
 测试超临界流稳定性 - Phase 1问题修复
 
 Phase 1问题：S0>0.004时NaN
-目标：支持S0≤0.01
+目标：支持S0<=0.01
 
 改进：
-1. 降低干床阈值（1e-4 → 1e-3）
+1. 降低干床阈值（1e-4 -> 1e-3）
 2. 使用HLLC求解器（更适合超临界）
-3. 降低CFL（0.5 → 0.3）
+3. 降低CFL（0.5 -> 0.3）
 
 作者: HydroClaude Team
 日期: 2025-10-27
@@ -18,7 +18,13 @@ Phase 1问题：S0>0.004时NaN
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.godunov_fvm_hllc import GodunvFVMHLLC
+try:
+    from solvers.godunov_fvm_hllc import GodunvFVMHLLC
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from utils.canal_utils import compute_steady_uniform_flow, compute_critical_depth
 import numpy as np
 
@@ -56,7 +62,7 @@ for S0 in slopes:
     
     flow_type = "超临界" if Fr > 1.0 else "亚临界"
     
-    print(f"  流量: {Q} m³/s")
+    print(f"  流量: {Q} m^3/s")
     print(f"  均匀流水深: {h_uniform:.3f} m")
     print(f"  Froude数: {Fr:.3f}")
     print(f"  流态: {flow_type}")
@@ -84,7 +90,7 @@ for S0 in slopes:
             state = solver.get_state()
             if np.any(np.isnan(state['h'])) or np.any(np.isnan(state['Q'])):
                 has_nan = True
-                print(f"  ❌ 步数{i+1}: 出现NaN")
+                print(f"   步数{i+1}: 出现NaN")
                 break
             
             print(f"  步数{i+1:3d}, t={state['t']:6.1f}s, 质量误差={state['mass_error']:+.3f}%")
@@ -94,13 +100,13 @@ for S0 in slopes:
         state = solver.get_state()
         mass_error = state['mass_error']
         
-        print(f"\n  ✅ 完成{max_steps}步")
+        print(f"\n   完成{max_steps}步")
         print(f"  最终质量误差: {mass_error:.4f}%")
         
-        status = "✅ 稳定" if abs(mass_error) < 5.0 else "⚠️ 误差偏大"
+        status = " 稳定" if abs(mass_error) < 5.0 else "️ 误差偏大"
     else:
         mass_error = float('nan')
-        status = "❌ NaN"
+        status = " NaN"
     
     results.append({
         'S0': S0,
@@ -145,10 +151,10 @@ for r in results:
 print(f"\n最大稳定底坡: S0 = {max_stable_S0}")
 
 if max_stable_S0 >= 0.010:
-    print(f"✅ 达标！支持S0≤0.01")
+    print(f" 达标！支持S0<=0.01")
 elif max_stable_S0 >= 0.006:
-    print(f"⚠️ 接近目标（S0≤{max_stable_S0}）")
+    print(f"️ 接近目标（S0<={max_stable_S0}）")
 else:
-    print(f"❌ 未达标（仅支持S0≤{max_stable_S0}）")
+    print(f" 未达标（仅支持S0<={max_stable_S0}）")
 
 print("\n" + "=" * 80)

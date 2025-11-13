@@ -1,32 +1,32 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Godunov有限体积法求解器（标准守恒格式）
+Godunov
 
-核心：
-1. ✅ 有限体积法（FVM）- 真正守恒
-2. ✅ HLL Riemann求解器 - 计算界面通量
-3. ✅ TVD-RK2 时间积分 - 高精度+稳定
-4. ✅ Minmod限制器 - 二阶精度+单调性
 
-这是国际标准的1D水动力学求解器实现！
+1.  FVM- 
+2.  HLL Riemann - 
+3.  TVD-RK2  - +
+4.  Minmod - +
 
-参考: Toro (2009) "Riemann Solvers and Numerical Methods for Fluid Dynamics"
+1D
 
-作者: HydroClaude Team
-日期: 2025-10-29
+: Toro (2009) "Riemann Solvers and Numerical Methods for Fluid Dynamics"
+
+: HydroClaude Team
+: 2025-10-29
 """
 
 import numpy as np
 from typing import Tuple, Dict, Optional
 
-# 导入特征线边界条件
+# 
 from .boundary_conditions import CharacteristicBC
 
-# 导入断面类
+# 
 from physics.cross_section import CrossSection, RectangularSection
 
-# 尝试导入Numba加速函数
+# Numba
 try:
     from .riemann_numba import (
         hll_flux_numba,
@@ -38,7 +38,7 @@ try:
 except ImportError:
     NUMBA_AVAILABLE = False
 
-# 导入HLLC Riemann求解器（Phase 9.2）
+# HLLC RiemannPhase 9.2
 try:
     from .riemann_hllc import (
         hllc_flux_numba,
@@ -48,7 +48,7 @@ try:
 except ImportError:
     HLLC_AVAILABLE = False
 
-# 导入精确Riemann求解器（Phase 9.3）
+# RiemannPhase 9.3
 try:
     from .riemann_exact import (
         exact_riemann_flux_numba,
@@ -58,7 +58,7 @@ try:
 except ImportError:
     EXACT_AVAILABLE = False
 
-# 导入Numba JIT内核（Phase 6.5）
+# Numba JITPhase 6.5
 try:
     from .numba_kernels import (
         hll_flux_kernel,
@@ -73,20 +73,20 @@ except ImportError:
 
 class GodunvFVMSolver:
     """
-    Godunov有限体积法求解器
+    Godunov
     
-    求解Saint-Venant方程守恒律形式:
+    Saint-Venant:
     ∂U/∂t + ∂F/∂x = S
     
-    其中:
-    U = [h, Q]^T  (守恒变量)
-    F = [Q, Q²/A + 0.5*g*h²*B]^T  (通量)
-    S = [0, g*A*(S0 - Sf)]^T  (源项)
+    :
+    U = [h, Q]^T  ()
+    F = [Q, Q²/A + 0.5*g*h²*B]^T  ()
+    S = [0, g*A*(S0 - Sf)]^T  ()
     
-    离散（有限体积）:
+    :
     dU_i/dt = -1/dx * (F_{i+1/2} - F_{i-1/2}) + S_i
     
-    其中 F_{i+1/2} 用HLL Riemann求解器计算
+     F_{i+1/2} HLL Riemann
     """
     
     def __init__(
@@ -112,109 +112,109 @@ class GodunvFVMSolver:
         cross_section: Optional[CrossSection] = None
     ):
         """
-        初始化
+        
 
         Args:
-            width: 渠宽 (m)
-            length: 渠长 (m)
-            n_cells: 单元数
-            manning_n: Manning系数
-            slope: 坡度 (可以是标量或数组，与z_b二选一)
-            z_b: 底高程数组 (直接指定，与slope二选一，推荐用于Well-Balanced)
-            g: 重力加速度
-            cfl: CFL数 (建议0.5-0.8)
-            eps_dry: 干床阈值
-            order: 空间精度 (1=一阶, 2=二阶MUSCL)
-            riemann_solver: Riemann求解器类型 ('hll' 或 'hllc')
-                          默认'hll'（更稳定）
-                          'hllc'在短时间激波捕捉上更精确，但长时间积分稳定性需改进
-            well_balanced: 是否使用well-balanced格式 (默认False)
-                          True时使用hydrostatic reconstruction，提高稳定性
-            use_numba: 是否使用Numba JIT加速 (默认True)
-                      True时使用编译版本，速度提升10-50倍
-            source_term_method: 源项计算方法 ('standard' 或 'interface')
-                              'standard': 点值法 S = g*A*(S0 - Sf)
-                              'interface': 界面法（Zhou's Surface Gradient Method启发）
-                                         底坡源项从界面值计算，更精确平衡
-            source_term_treatment: 源项时间积分方法 ('coupled' 或 'strang_splitting')
-                                 'coupled': 通量和源项耦合求解（标准TVD-RK2）
-                                 'strang_splitting': Strang算子分裂法
-                                                    分步求解：通量(dt/2) → 源项(dt) → 通量(dt/2)
-                                                    优点：解耦通量-源项，减少数值误差
-            dt_max: 最大时间步长限制 (秒，可选)
-                   None表示无限制，使用完全自适应时间步长
-                   设置此参数可防止大时间步导致的数值不稳定
-                   推荐值：0.5-1.0s（取决于问题尺度）
-            entropy_fix: 是否使用Harten-Hyman entropy修正 (默认False)
-                        True时在跨音速区域应用entropy修正，防止数值振荡
-            critical_flow_treatment: 是否使用临界流特殊处理 (默认False)
-                                   True时在临界流区域(0.9<Fr<1.1)增加数值耗散
-            cross_section: 断面对象 (可选)
-                         None时自动创建RectangularSection(width)保持向后兼容
-                         可传入TrapezoidalSection, CompoundSection, NaturalSection等
+            width:  (m)
+            length:  (m)
+            n_cells: 
+            manning_n: Manning
+            slope:  (z_b)
+            z_b:  (slopeWell-Balanced)
+            g: 
+            cfl: CFL (0.5-0.8)
+            eps_dry: 
+            order:  (1=, 2=MUSCL)
+            riemann_solver: Riemann ('hll'  'hllc')
+                          'hll'
+                          'hllc'
+            well_balanced: well-balanced (False)
+                          Truehydrostatic reconstruction
+            use_numba: Numba JIT (True)
+                      True10-50
+            source_term_method:  ('standard'  'interface')
+                              'standard':  S = g*A*(S0 - Sf)
+                              'interface': Zhou's Surface Gradient Method
+                                         
+            source_term_treatment:  ('coupled'  'strang_splitting')
+                                 'coupled': TVD-RK2
+                                 'strang_splitting': Strang
+                                                    (dt/2) → (dt) → (dt/2)
+                                                    -
+            dt_max:  ()
+                   None
+                   
+                   0.5-1.0s
+            entropy_fix: Harten-Hyman entropy (False)
+                        Trueentropy
+            critical_flow_treatment:  (False)
+                                   True(0.9<Fr<1.1)
+            cross_section:  ()
+                         NoneRectangularSection(width)
+                         TrapezoidalSection, CompoundSection, NaturalSection
         """
-        # 断面设置：支持任意断面类型
+        # 
         if cross_section is None:
-            # 向后兼容：自动创建矩形断面
+            # 
             self.cross_section = RectangularSection("default", width)
         else:
             self.cross_section = cross_section
-            # ⚠️  Phase 2.3 部分实现警告
-            # 当前实现已支持：
-            # 1. ✅ 摩阻源项计算（使用断面的A, P, R）
-            # 2. ✅ 质量守恒计算（使用断面的A）
-            # 3. ✅ Froude数计算（使用断面的水力深度）
+            # [WARN]  Phase 2.3 
+            # 
+            # 1.  A, P, R
+            # 2.  A
+            # 3.  Froude
             #
-            # 尚未完全支持（仍使用矩形假设）：
-            # 1. ⚠️  动量通量压力项 (0.5*g*h²*B) - 需要断面压力积分方法
-            # 2. ⚠️  边界条件通量计算 - 依赖压力项
-            # 3. ⚠️  临界水深计算 (CharacteristicBC) - 需要断面方法
+            # 
+            # 1. [WARN]   (0.5*g*h²*B) - 
+            # 2. [WARN]   - 
+            # 3. [WARN]   (CharacteristicBC) - 
             #
-            # 对于梯形/复式/自然断面：
-            # - 摩阻计算：准确 ✅
-            # - 质量守恒：准确 ✅
-            # - Froude数：准确 ✅
-            # - 动量方程：近似（使用矩形压力项）⚠️
+            # //
+            # -  
+            # -  
+            # - Froude 
+            # - [WARN]
             #
-            # 建议：当前版本适用于缓流、摩阻主导的问题
-            #       激波/急流问题需要完整实现动量通量
+            # 
+            #       /
             import warnings
             warnings.warn(
-                "\n⚠️  非矩形断面支持：部分实现 (Phase 2.3)\n"
-                "已支持：摩阻、质量、Froude数\n"
-                "未完全支持：动量通量压力项（使用矩形近似）\n"
-                "适用场景：缓流、摩阻主导问题\n"
-                "详见: docs/STAGE2_PHASE2_3_COMPLETION_REPORT.md",
+                "\n[WARN]   (Phase 2.3)\n"
+                "Froude\n"
+                "\n"
+                "\n"
+                ": docs/STAGE2_PHASE2_3_COMPLETION_REPORT.md",
                 UserWarning
             )
 
-        # 保留self.B用于向后兼容 (某些代码可能直接访问)
+        # self.B ()
         self.B = width
         self.L = length
         self.n_cells = n_cells
         self.dx = length / n_cells
         self.n = manning_n
 
-        # 支持slope或z_b两种输入方式
+        # slopez_b
         if slope is None and z_b is None:
-            raise ValueError("必须指定slope或z_b参数之一")
+            raise ValueError("slopez_b")
         if slope is not None and z_b is not None:
-            raise ValueError("slope和z_b参数不能同时指定")
+            raise ValueError("slopez_b")
 
         if slope is not None:
-            # 传统方式：从坡度计算底高程
+            # 
             if isinstance(slope, (int, float)):
                 self.S0 = np.ones(n_cells) * slope
             else:
                 self.S0 = np.asarray(slope)
                 if len(self.S0) != n_cells:
-                    raise ValueError(f"slope数组长度({len(self.S0)})必须等于单元数({n_cells})")
+                    raise ValueError(f"slope({len(self.S0)})({n_cells})")
         else:
-            # 新方式：直接使用底高程（推荐用于Well-Balanced）
+            # Well-Balanced
             self.z_b = np.asarray(z_b)
             if len(self.z_b) != n_cells:
-                raise ValueError(f"z_b数组长度({len(self.z_b)})必须等于单元数({n_cells})")
-            # 反算S0（用于摩阻计算）
+                raise ValueError(f"z_b({len(self.z_b)})({n_cells})")
+            # S0
             self.S0 = np.zeros(n_cells)
             for i in range(n_cells):
                 if i == 0:
@@ -234,220 +234,221 @@ class GodunvFVMSolver:
         self.entropy_fix = entropy_fix
         self.critical_flow_treatment = critical_flow_treatment
 
-        # 验证source_term_method参数
+        # source_term_method
         if self.source_term_method not in ['standard', 'interface']:
-            raise ValueError(f"source_term_method必须是'standard'或'interface'，当前值: {source_term_method}")
+            raise ValueError(f"source_term_method'standard''interface': {source_term_method}")
 
-        # 验证source_term_treatment参数
+        # source_term_treatment
         if self.source_term_treatment not in ['coupled', 'strang_splitting']:
-            raise ValueError(f"source_term_treatment必须是'coupled'或'strang_splitting'，当前值: {source_term_treatment}")
+            raise ValueError(f"source_term_treatment'coupled''strang_splitting': {source_term_treatment}")
 
-        # ⚠️ Interface方法当前禁用（2025-10-29测试失败）
+        # [WARN] Interface2025-10-29
         if self.source_term_method == 'interface':
             raise NotImplementedError(
                 "\n" + "="*80 + "\n"
-                "❌ Interface Source Method当前禁用\n"
+                " Interface Source Method\n"
                 "="*80 + "\n"
-                "原因: 简单的界面法实现导致质量守恒恶化（61% → 114%）\n"
+                ": 61% → 114%\n"
                 "\n"
-                "测试结果（MacDonald场景）:\n"
-                "  - Standard方法: 质量误差 61.41%\n"
-                "  - Interface方法: 质量误差 114.17% ❌ 恶化52.76%\n"
+                "MacDonald:\n"
+                "  - Standard:  61.41%\n"
+                "  - Interface:  114.17%  52.76%\n"
                 "\n"
-                "问题根源:\n"
-                "  Zhou's Surface Gradient Method需要完整实现:\n"
-                "  1. 重构水面高程 η = h + z_b (NOT IMPLEMENTED)\n"
-                "  2. 从η还原界面水深 h_L, h_R (NOT IMPLEMENTED)\n"
-                "  3. 底坡源项自动平衡 (INCORRECTLY IMPLEMENTED)\n"
+                ":\n"
+                "  Zhou's Surface Gradient Method:\n"
+                "  1.  η = h + z_b (NOT IMPLEMENTED)\n"
+                "  2. η h_L, h_R (NOT IMPLEMENTED)\n"
+                "  3.  (INCORRECTLY IMPLEMENTED)\n"
                 "\n"
-                "当前实现只做了第3步，导致通量和源项不一致，破坏守恒性。\n"
+                "3\n"
                 "\n"
-                "正确实现需要:\n"
-                "  - 修改_compute_rhs的reconstruction逻辑\n"
-                "  - 添加η重构分支\n"
-                "  - 完整测试验证\n"
+                ":\n"
+                "  - _compute_rhsreconstruction\n"
+                "  - η\n"
+                "  - \n"
                 "\n"
-                "临时方案: 使用 source_term_method='standard'\n"
-                "长期修复: 完整实现Zhou's SGM或使用其他方法\n"
+                ":  source_term_method='standard'\n"
+                ": Zhou's SGM\n"
                 "\n"
-                "参考文档:\n"
+                ":\n"
                 "  - docs/INTERFACE_SOURCE_METHOD_FAILURE_ANALYSIS.md\n"
                 "  - Zhou et al. (2001) JCP 168(1):1-25\n"
                 "="*80
             )
 
-        # Numba加速
+        # Numba
         self.use_numba = use_numba and NUMBA_AVAILABLE
         if use_numba and not NUMBA_AVAILABLE:
-            print("  ⚠️  Numba未安装，回退到纯Python版本")
+            print("  [WARN]  NumbaPython")
 
         if self.riemann_solver not in ['hll', 'hllc', 'exact']:
-            raise ValueError(f"Riemann求解器必须是'hll', 'hllc'或'exact'，当前值: {riemann_solver}")
+            raise ValueError(f"Riemann'hll', 'hllc''exact': {riemann_solver}")
 
-        # Phase 9.2: HLLC求解器 - EXPERIMENTAL, NOT PRODUCTION READY
-        # ⚠️  WARNING: HLLC存在严重数值不稳定性问题
-        # - Dam Break测试在t=1.69s崩溃产生NaN
-        # - 干湿界面处理缺陷导致速度爆炸
-        # - Lake at Rest性能比HLL差141%
-        # 详见: docs/PHASE_9_2_CRITICAL_FINDINGS.md
-        # 推荐: 生产环境使用HLL (默认)
+        # Phase 9.2: HLLC - EXPERIMENTAL, NOT PRODUCTION READY
+        # [WARN]  WARNING: HLLC
+        # - Dam Breakt=1.69sNaN
+        # - 
+        # - Lake at RestHLL141%
+        # : docs/PHASE_9_2_CRITICAL_FINDINGS.md
+        # : HLL ()
         if self.riemann_solver == 'hllc':
             if not HLLC_AVAILABLE:
                 raise ImportError(
-                    "HLLC求解器需要riemann_hllc模块\n"
-                    "请确保solvers/riemann_hllc.py文件存在并可导入"
+                    "HLLCriemann_hllc\n"
+                    "solvers/riemann_hllc.py"
                 )
 
-            # 发出明确警告
+            # 
             import warnings
             warnings.warn(
                 "\n" + "="*80 + "\n"
-                "⚠️⚠️⚠️  HLLC求解器警告 - NOT PRODUCTION READY  ⚠️⚠️⚠️\n"
+                "[WARN][WARN][WARN]  HLLC - NOT PRODUCTION READY  [WARN][WARN][WARN]\n"
                 "="*80 + "\n"
-                "HLLC求解器存在严重数值不稳定性问题:\n"
-                "  - Dam Break测试在t=1.69s崩溃产生NaN\n"
-                "  - 干湿界面处理缺陷导致流量爆炸到10^75量级\n"
-                "  - Lake at Rest性能比HLL差141%\n"
+                "HLLC:\n"
+                "  - Dam Breakt=1.69sNaN\n"
+                "  - 10^75\n"
+                "  - Lake at RestHLL141%\n"
                 "\n"
-                "⚠️  强烈建议:\n"
-                "  - 生产环境使用 riemann_solver='hll' (默认)\n"
-                "  - HLLC仅用于研究和测试目的\n"
+                "[WARN]  :\n"
+                "  -  riemann_solver='hll' ()\n"
+                "  - HLLC\n"
                 "\n"
-                "详细技术分析: docs/PHASE_9_2_CRITICAL_FINDINGS.md\n"
+                ": docs/PHASE_9_2_CRITICAL_FINDINGS.md\n"
                 "="*80 + "\n",
                 UserWarning,
                 stacklevel=2
             )
 
-        # Phase 9.3: 精确Riemann求解器 - ❌❌❌ DO NOT USE ❌❌❌
-        # ⚠️⚠️⚠️ 严重问题: 质量守恒失败 (42%误差)
-        # ⚠️⚠️⚠️ 水深爆炸, 数值不稳定
-        # ❌ 状态: 实验性代码，已知严重bug，禁止使用
+        # Phase 9.3: Riemann -  DO NOT USE 
+        # [WARN][WARN][WARN] :  (42%)
+        # [WARN][WARN][WARN] , 
+        #  : bug
         if self.riemann_solver == 'exact':
             if not EXACT_AVAILABLE:
                 raise ImportError(
-                    "精确求解器需要riemann_exact模块\n"
-                    "请确保solvers/riemann_exact.py文件存在并可导入"
+                    "riemann_exact\n"
+                    "solvers/riemann_exact.py"
                 )
 
-            # ❌❌❌ 严重警告 ❌❌❌
+            #   
             import warnings
             warnings.warn(
                 "\n" + "="*80 + "\n"
-                "❌❌❌  精确求解器警告 - DO NOT USE  ❌❌❌\n"
+                "   - DO NOT USE  \n"
                 "="*80 + "\n"
-                "精确Riemann求解器存在严重数值问题:\n"
-                "  - 质量守恒完全失败 (10步后误差42%)\n"
-                "  - 水深从2m爆炸到14.5m (完全非物理)\n"
-                "  - Well-Balanced组合在t=0.3s崩溃\n"
-                "  - 根本原因未明，可能是通量计算或边界条件bug\n"
+                "Riemann:\n"
+                "  -  (1042%)\n"
+                "  - 2m14.5m ()\n"
+                "  - Well-Balancedt=0.3s\n"
+                "  - bug\n"
                 "\n"
-                "❌❌❌ 严重建议:\n"
-                "  - 请勿使用此求解器\n"
-                "  - 生产环境使用 riemann_solver='hll' (稳定可靠)\n"
-                "  - 此代码仅供研究调试用途\n"
+                " :\n"
+                "  - \n"
+                "  -  riemann_solver='hll' ()\n"
+                "  - \n"
                 "\n"
-                "详细分析: docs/PHASE_9_3_EXACT_RIEMANN_SOLVER.md\n"
-                "质量守恒诊断: tests/diagnose_exact_mass_loss.py\n"
+                ": docs/PHASE_9_3_EXACT_RIEMANN_SOLVER.md\n"
+                ": tests/diagnose_exact_mass_loss.py\n"
                 "="*80 + "\n",
                 UserWarning,
                 stacklevel=2
             )
 
-            print("⚠️  使用精确Riemann求解器 (Phase 9.3) - 实验性")
-            print("   ❌ 已知严重问题: 质量守恒失败")
-            print("   ❌ 请勿用于生产")
-            print("   ✅ 推荐: 使用riemann_solver='hll'代替\n")
+            print("[WARN]  Riemann (Phase 9.3) - ")
+            print("    : ")
+            print("    ")
+            print("    : riemann_solver='hll'\n")
 
-        # 单元中心守恒变量
-        self.h = np.zeros(n_cells)  # 水深
-        self.Q = np.zeros(n_cells)  # 流量
+        # 
+        self.h = np.zeros(n_cells)  # 
+        self.Q = np.zeros(n_cells)  # 
 
-        # 单元中心坐标
+        # 
         self.x = np.linspace(0.5*self.dx, length - 0.5*self.dx, n_cells)
 
-        # 计算单元中心底高程（用于well-balanced格式）
-        # 如果未直接提供z_b，则从S0积分计算
+        # well-balanced
+        # z_bS0
         if slope is not None:
-            # 从下游（x=0）开始积分：z_b(x) = z_0 - ∫S0(ξ)dξ
-            # 这里假设下游底高程为0
+            # x=0z_b(x) = z_0 - ∫S0(ξ)dξ
+            # 0
             self.z_b = np.zeros(n_cells)
             for i in range(n_cells):
                 if i == 0:
-                    self.z_b[i] = self.S0[i] * self.x[i]  # 从x=0到x[0]
+                    self.z_b[i] = self.S0[i] * self.x[i]  # x=0x[0]
                 else:
-                    # 使用梯形积分
+                    # 
                     self.z_b[i] = self.z_b[i-1] + 0.5 * (self.S0[i-1] + self.S0[i]) * self.dx
-        # else: z_b已经在上面直接赋值
+        # else: z_b
 
-        # 检查是否有变化的底高程
+        # 
         z_b_range = np.max(self.z_b) - np.min(self.z_b)
-        has_variable_bottom = z_b_range > 1e-10  # 底高程变化 > 0.1mm
+        has_variable_bottom = z_b_range > 1e-10  #  > 0.1mm
 
-        # WARNING: 变底高程但未启用well-balanced格式
+        # WARNING: well-balanced
         if has_variable_bottom and not self.well_balanced:
             import warnings
             warnings.warn(
                 "\n" + "="*80 + "\n"
-                "⚠️  检测到变化的底高程，但未启用Well-Balanced格式！\n"
+                "[WARN]  Well-Balanced\n"
                 "="*80 + "\n"
-                f"底高程变化范围: {np.min(self.z_b):.2f} ~ {np.max(self.z_b):.2f} m "
-                f"(总变化 {z_b_range:.2f} m)\n"
-                "当前设置: well_balanced=False\n"
+                f": {np.min(self.z_b):.2f} ~ {np.max(self.z_b):.2f} m "
+                f"( {z_b_range:.2f} m)\n"
+                ": well_balanced=False\n"
                 "\n"
-                "Lake at Rest P0测试结果显示:\n"
-                "  - 变底高程（2m凸起）: 水面扰动 3.99 m ❌\n"
-                "  - 陡峭底坡（5m台阶）: 水面扰动 11.35 m ❌\n"
-                "  - 质量守恒误差: 0.01% ~ 2%\n"
+                "Lake at Rest P0:\n"
+                "  - 2m:  3.99 m \n"
+                "  - 5m:  11.35 m \n"
+                "  - : 0.01% ~ 2%\n"
                 "\n"
-                "这意味着当前求解器可能产生:\n"
-                "  1. 虚假的水流（静水状态下出现流速）\n"
-                "  2. 非物理的水面扰动（米级误差）\n"
-                "  3. 质量守恒恶化\n"
+                ":\n"
+                "  1. \n"
+                "  2. \n"
+                "  3. \n"
                 "\n"
-                "建议操作:\n"
-                "  1. 如果是静水或缓流问题，设置 well_balanced=True\n"
-                "     （需要先实现Hydrostatic Reconstruction - 开发中）\n"
-                "  2. 如果底坡很小（< 0.001），可以忽略此警告\n"
-                "  3. 如果是激波/溃坝问题，当前格式可能适用\n"
+                ":\n"
+                "  1.  well_balanced=True\n"
+                "     Hydrostatic Reconstruction - \n"
+                "  2. < 0.001\n"
+                "  3. /\n"
                 "\n"
-                "参考文档:\n"
-                "  - LAKE_AT_REST_TEST_REPORT.md (详细测试结果)\n"
-                "  - DEVELOPMENT_STANDARDS.md (质量标准)\n"
+                ":\n"
+                "  - LAKE_AT_REST_TEST_REPORT.md ()\n"
+                "  - DEVELOPMENT_STANDARDS.md ()\n"
                 "="*80,
                 UserWarning,
                 stacklevel=2
             )
 
-        # 时间
+        # 
         self.t = 0.0
         self.dt = 0.0
 
-        # 边界条件
+        # 
         self.bc_left = None
         self.bc_right = None
 
-        # 特征线边界条件处理器
+        # 
         self.characteristic_bc = CharacteristicBC(g=g)
 
-        # 统计
+        # 
         self.initial_mass = 0.0
         self.step_count = 0
         
-        print(f"Godunov-FVM求解器初始化:")
-        print(f"  单元数: {n_cells}")
-        print(f"  dx = {self.dx:.3f} m")
-        print(f"  空间精度: {order}阶")
-        print(f"  时间积分: TVD-RK2")
-        print(f"  Riemann求解器: {self.riemann_solver.upper()}")
-        if self.well_balanced:
-            print(f"  Well-Balanced: 启用 (Hydrostatic Reconstruction)")
-        if self.entropy_fix:
-            print(f"  Entropy Fix: 启用 (Harten-Hyman)")
-        if self.critical_flow_treatment:
-            print(f"  Critical Flow Treatment: 启用 (Lax-Friedrichs耗散)")
-        if self.use_numba:
-            print(f"  🚀 Numba JIT: 启用 (高性能模式)")
+        # 禁用打印以避免Windows编码问题
+        # print(f"Godunov-FVM:")
+        # print(f"  : {n_cells}")
+        # print(f"  dx = {self.dx:.3f} m")
+        # print(f"  : {order}")
+        # print(f"  : TVD-RK2")
+        # print(f"  Riemann: {self.riemann_solver.upper()}")
+        # if self.well_balanced:
+        #     print(f"  Well-Balanced:  (Hydrostatic Reconstruction)")
+        # if self.entropy_fix:
+        #     print(f"  Entropy Fix:  (Harten-Hyman)")
+        # if self.critical_flow_treatment:
+        #     print(f"  Critical Flow Treatment:  (Lax-Friedrichs)")
+        # if self.use_numba:
+        #     print(f"  [JIT] Numba JIT: Enabled (High Performance Mode)")
     
     def initialize(
         self,
@@ -456,42 +457,42 @@ class GodunvFVMSolver:
         bc_left: Dict,
         bc_right: Dict
     ):
-        """初始化（单元平均值）"""
+        """"""
         self.h = h_init.copy()
         self.Q = Q_init.copy()
         self.bc_left = bc_left
         self.bc_right = bc_right
-        self.t = 0.0  # 初始时间
+        self.t = 0.0  # 
 
-        # 诊断变量（用于调试和验证）
-        self.last_F_h = None  # 最近一次计算的质量通量 [n+1]
-        self.last_F_Q = None  # 最近一次计算的动量通量 [n+1]
+        # 
+        self.last_F_h = None  #  [n+1]
+        self.last_F_Q = None  #  [n+1]
 
-        # 计算初始质量
+        # 
         self.initial_mass = self._compute_total_mass(exclude_boundary_cells=False)
 
-        print(f"  初始质量: {self.initial_mass:.2f} m³")
+        # print(f"  : {self.initial_mass:.2f} m³")  # Disabled for Windows compatibility
     
     def compute_dt(self) -> float:
         """
-        CFL条件计算时间步长（干床安全版本）
+        CFL
 
         Returns:
-            dt: 时间步长（秒），如果设置了dt_max则会被限制
+            dt: dt_max
         """
         lambda_max = 0.0
 
-        # 只在湿区计算波速，避免干床处的数值问题
+        # 
         for i in range(self.n_cells):
             if self.h[i] > self.eps_dry:
-                # 湿区：计算u+c
+                # u+c
                 A = self.h[i] * self.B
                 u = self.Q[i] / A
                 c = np.sqrt(self.g * self.h[i])
                 speed = abs(u) + c
                 lambda_max = max(lambda_max, speed)
             else:
-                # 干床：使用邻居cell的波速估计
+                # cell
                 c_neighbor = 0.0
                 if i > 0 and self.h[i-1] > self.eps_dry:
                     c_neighbor = max(c_neighbor, np.sqrt(self.g * self.h[i-1]))
@@ -499,13 +500,13 @@ class GodunvFVMSolver:
                     c_neighbor = max(c_neighbor, np.sqrt(self.g * self.h[i+1]))
                 lambda_max = max(lambda_max, c_neighbor)
 
-        # 确保lambda_max > 0
+        # lambda_max > 0
         if lambda_max < 1e-6:
-            lambda_max = np.sqrt(self.g * 1.0)  # 使用1m水深的默认波速
+            lambda_max = np.sqrt(self.g * 1.0)  # 1m
 
         dt = self.cfl * self.dx / lambda_max
 
-        # 应用dt_max限制（如果设置）
+        # dt_max
         if self.dt_max is not None:
             dt = min(dt, self.dt_max)
 
@@ -513,18 +514,18 @@ class GodunvFVMSolver:
     
     def step(self, dt: Optional[float] = None) -> Tuple[np.ndarray, np.ndarray]:
         """
-        时间步进
+        
 
-        根据source_term_treatment选择不同的时间积分方法：
-        - 'coupled': TVD-RK2（通量和源项耦合）
-        - 'strang_splitting': Strang算子分裂法
+        source_term_treatment
+        - 'coupled': TVD-RK2
+        - 'strang_splitting': Strang
         """
         if dt is None:
             dt = self.compute_dt()
 
         self.dt = dt
 
-        # 选择时间积分方法
+        # 
         if self.source_term_treatment == 'strang_splitting':
             self._step_strang_splitting(dt)
         else:  # coupled
@@ -537,85 +538,85 @@ class GodunvFVMSolver:
 
     def _step_coupled_rk2(self, dt: float):
         """
-        标准TVD-RK2时间步进（通量和源项耦合）
+        TVD-RK2
 
         RK2 (Heun's method):
         1. U* = U^n + dt * L(U^n)
         2. U^{n+1} = 0.5*(U^n + U*) + 0.5*dt*L(U*)
 
-        其中 L(U) = -1/dx*(F_{i+1/2} - F_{i-1/2}) + S
+         L(U) = -1/dx*(F_{i+1/2} - F_{i-1/2}) + S
         """
-        # 保存初值
+        # 
         h_n = self.h.copy()
         Q_n = self.Q.copy()
 
-        # === 第1步：前向欧拉 ===
+        # === 1 ===
         dh_dt, dQ_dt = self._compute_rhs(h_n, Q_n)
         h_star = h_n + dt * dh_dt
         Q_star = Q_n + dt * dQ_dt
 
-        # 不在中间步骤强制边界条件（避免质量泄漏）
+        # 
         # h_star, Q_star = self._apply_bc(h_star, Q_star)
 
-        # 干床处理
+        # 
         h_star = np.maximum(h_star, 0.0)
 
-        # === 第2步：梯形修正 ===
+        # === 2 ===
         dh_dt_star, dQ_dt_star = self._compute_rhs(h_star, Q_star)
         self.h = 0.5 * (h_n + h_star) + 0.5 * dt * dh_dt_star
         self.Q = 0.5 * (Q_n + Q_star) + 0.5 * dt * dQ_dt_star
 
-        # 只在最后强制边界条件
+        # 
         self.h, self.Q = self._apply_bc(self.h, self.Q)
 
-        # 干床
+        # 
         self.h = np.maximum(self.h, 0.0)
 
     def _step_strang_splitting(self, dt: float):
         """
-        Strang算子分裂法时间步进
+        Strang
 
-        分步求解：
-        1. 通量步(dt/2): dU/dt = -∂F/∂x
-        2. 源项步(dt):   dU/dt = S
-        3. 通量步(dt/2): dU/dt = -∂F/∂x
+        
+        1. (dt/2): dU/dt = -∂F/∂x
+        2. (dt):   dU/dt = S
+        3. (dt/2): dU/dt = -∂F/∂x
 
-        优点：解耦通量和源项，减少数值误差，保持二阶精度
+        
         """
-        # 保存初值
+        # 
         h_n = self.h.copy()
         Q_n = self.Q.copy()
 
-        # === 步骤1：通量步 dt/2 ===
-        # 计算只有通量的RHS（不包含源项）
+        # === 1 dt/2 ===
+        # RHS
         dh_dt, dQ_dt = self._compute_flux_only_rhs(h_n, Q_n)
         h_half = h_n + 0.5 * dt * dh_dt
         Q_half = Q_n + 0.5 * dt * dQ_dt
 
-        # 边界条件
+        # 
         h_half, Q_half = self._apply_bc(h_half, Q_half)
         h_half = np.maximum(h_half, 0.0)
 
-        # === 步骤2：源项步 dt ===
-        # 求解dU/dt = S从t到t+dt
+        # === 2 dt ===
+        # dU/dt = Stt+dt
         h_source, Q_source = self._solve_source_ode(h_half, Q_half, dt)
 
-        # 边界条件
+        # 
         h_source, Q_source = self._apply_bc(h_source, Q_source)
         h_source = np.maximum(h_source, 0.0)
 
-        # === 步骤3：通量步 dt/2 ===
+        # === 3 dt/2 ===
         dh_dt, dQ_dt = self._compute_flux_only_rhs(h_source, Q_source)
         self.h = h_source + 0.5 * dt * dh_dt
         self.Q = Q_source + 0.5 * dt * dQ_dt
 
-        # 边界条件
+        # 
         self.h, self.Q = self._apply_bc(self.h, self.Q)
         self.h = np.maximum(self.h, 0.0)
     
     def _compute_rhs(self, h: np.ndarray, Q: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
-        计算右端项（空间导数+源项）
+        +
 
         dU/dt = L(U) = -1/dx*(F_{i+1/2} - F_{i-1/2}) + S
 
@@ -636,67 +637,67 @@ class GodunvFVMSolver:
             print(f"  z_b[39:42]: {self.z_b[39:42]}")
             print(f"  h[39:42]: {h[39:42]}")
 
-        # 初始化
+        # 
         dh_dt = np.zeros(n)
         dQ_dt = np.zeros(n)
         
-        # 扩展数组（ghost cells）
+        # ghost cells
         h_ext, Q_ext = self._extend_with_ghosts(h, Q)
 
-        # Well-balanced: 重构水面高程 η = h + z_b
+        # Well-balanced:  η = h + z_b
         if self.well_balanced:
-            # 计算水面高程（cell centers）
+            # cell centers
             eta = h + self.z_b
 
-            # 扩展eta到ghost cells
+            # etaghost cells
             eta_ext = np.zeros(n + 2)
             eta_ext[1:n+1] = eta
 
-            # 左ghost：外推eta（而非重构 h_bc + z_b_ghost）
-            # 关键：对于Lake at Rest，eta应该恒定，所以ghost的eta应该从内部外推
+            # ghosteta h_bc + z_b_ghost
+            # Lake at Restetaghosteta
             if self.bc_left['type'] == 'h':
-                # 🔧 BUG修复：不能用 eta = h_bc + z_b_ghost（z_b_ghost≠z_b_boundary）
-                # 正确做法：外推eta从边界单元
-                # 边界单元eta = h_bc + z_b[0]，ghost应该保持这个eta
+                #  BUG eta = h_bc + z_b_ghostz_b_ghost≠z_b_boundary
+                # eta
+                # eta = h_bc + z_b[0]ghosteta
                 value = self.bc_left['value']
                 h_bc = value if not callable(value) else value(self.t)
-                eta_bc = h_bc + self.z_b[0]  # 边界单元的水面高程
-                # 对于Lake at Rest：保持eta恒定
+                eta_bc = h_bc + self.z_b[0]  # 
+                # Lake at Resteta
                 eta_ext[0] = eta_bc
             else:  # Q boundary
-                # 使用内部eta外推
+                # eta
                 eta_ext[0] = eta[0]
 
-            # 右ghost：同样外推eta
+            # ghosteta
             if self.bc_right['type'] == 'h':
                 value = self.bc_right['value']
                 h_bc = value if not callable(value) else value(self.t)
-                eta_bc = h_bc + self.z_b[n-1]  # 边界单元的水面高程
-                # 对于Lake at Rest：保持eta恒定
+                eta_bc = h_bc + self.z_b[n-1]  # 
+                # Lake at Resteta
                 eta_ext[n+1] = eta_bc
             else:  # Q boundary
                 eta_ext[n+1] = eta[n-1]
 
-            # 重构水面高程
+            # 
             if self.order == 2:
                 eta_L, eta_R = self._muscl_reconstruction(eta_ext)
             else:
                 eta_L = eta_ext[:-1]
                 eta_R = eta_ext[1:]
 
-            # 获取界面底高程（使用单元中心值）
-            # 注意：z_b不需要边界条件，直接外推
+            # 
+            # z_b
             z_b_ext = np.zeros(n + 2)
             z_b_ext[1:n+1] = self.z_b
-            # 左ghost: 外推（假设坡度连续）
+            # ghost: 
             z_b_ext[0] = self.z_b[0] - (self.z_b[1] - self.z_b[0]) if n > 1 else self.z_b[0]
-            # 右ghost: 外推
+            # ghost: 
             z_b_ext[n+1] = self.z_b[n-1] + (self.z_b[n-1] - self.z_b[n-2]) if n > 1 else self.z_b[n-1]
 
-            # 界面底高程：取左右单元的最大值（Audusse et al. 2004）
+            # Audusse et al. 2004
             z_b_interface = np.maximum(z_b_ext[:-1], z_b_ext[1:])
 
-            # 应用hydrostatic reconstruction
+            # hydrostatic reconstruction
             h_L = np.maximum(0.0, eta_L - z_b_interface)
             h_R = np.maximum(0.0, eta_R - z_b_interface)
 
@@ -711,17 +712,17 @@ class GodunvFVMSolver:
                 print(f"  h_L - h_R [40:45]: {h_L[40:45] - h_R[40:45]}")
                 print(f"  max(|h_L - h_R|): {np.max(np.abs(h_L - h_R)):.3e}")
 
-            # 重构流量（不变）
+            # 
             if self.order == 2:
                 Q_L, Q_R = self._muscl_reconstruction(Q_ext)
             else:
                 Q_L = Q_ext[:-1]
                 Q_R = Q_ext[1:]
         else:
-            # 标准格式：直接重构h和Q
-            # 使用Numba加速版本（支持HLL、HLLC和精确求解器）
+            # hQ
+            # NumbaHLLHLLC
             if self.use_numba and self.riemann_solver in ['hll', 'hllc', 'exact']:
-                # 🚀 Numba加速路径
+                # [JIT] Numba acceleration path
                 if self.order == 2:
                     h_L, h_R = muscl_reconstruction_numba(h_ext)
                     Q_L, Q_R = muscl_reconstruction_numba(Q_ext)
@@ -731,9 +732,9 @@ class GodunvFVMSolver:
                     Q_L = Q_ext[:-1]
                     Q_R = Q_ext[1:]
 
-                # 计算所有通量（Numba版本）
+                # Numba
                 if self.riemann_solver == 'hllc':
-                    # HLLC求解器（Phase 9.2）
+                    # HLLCPhase 9.2
                     F_h = np.zeros(len(h_L))
                     F_Q = np.zeros(len(h_L))
                     for i in range(len(h_L)):
@@ -742,7 +743,7 @@ class GodunvFVMSolver:
                             self.B, self.g, self.eps_dry
                         )
                 elif self.riemann_solver == 'exact':
-                    # 精确求解器（Phase 9.3）
+                    # Phase 9.3
                     F_h = np.zeros(len(h_L))
                     F_Q = np.zeros(len(h_L))
                     for i in range(len(h_L)):
@@ -752,27 +753,27 @@ class GodunvFVMSolver:
                             max_iter=50, tol=1e-10
                         )
                 else:
-                    # HLL求解器（默认）
+                    # HLL
                     F_h, F_Q = compute_all_fluxes_numba(
                         h_L, h_R, Q_L, Q_R, self.B, self.g, self.eps_dry
                     )
 
-                # 不强制边界通量 - 完全依赖ghost cells
-                # （强制通量会导致与TVD-RK2不一致，破坏质量守恒）
+                #  - ghost cells
+                # TVD-RK2
                 # self._enforce_boundary_fluxes(F_h, F_Q, h, Q)
 
-                # 保存通量用于诊断
+                # 
                 self.last_F_h = F_h.copy()
                 self.last_F_Q = F_Q.copy()
 
-                # 计算空间导数+源项（Numba版本）
+                # +Numba
                 dh_dt, dQ_dt = compute_spatial_derivatives_numba(
                     F_h, F_Q, self.S0, h, Q, self.B, self.g, self.n, self.eps_dry, self.dx
                 )
 
                 return dh_dt, dQ_dt
             else:
-                # 标准Python版本
+                # Python
                 if self.order == 2:
                     h_L, h_R = self._muscl_reconstruction(h_ext)
                     Q_L, Q_R = self._muscl_reconstruction(Q_ext)
@@ -782,7 +783,7 @@ class GodunvFVMSolver:
                     Q_L = Q_ext[:-1]
                     Q_R = Q_ext[1:]
 
-        # 计算所有界面通量（Python版本）
+        # Python
         F_h = np.zeros(n + 1)
         F_Q = np.zeros(n + 1)
 
@@ -795,8 +796,8 @@ class GodunvFVMSolver:
             print(f"  Q_R: {Q_R}")
 
         for i in range(n + 1):
-            # 界面i位于单元i-1和单元i之间
-            # 计算通量（h_L, h_R已经通过hydrostatic reconstruction调整）
+            # ii-1i
+            # h_L, h_Rhydrostatic reconstruction
             if self.riemann_solver == 'hllc':
                 F_h[i], F_Q[i] = self._hllc_flux(
                     h_L[i], Q_L[i], h_R[i], Q_R[i]
@@ -810,11 +811,11 @@ class GodunvFVMSolver:
                     h_L[i], Q_L[i], h_R[i], Q_R[i]
                 )
 
-        # 不强制边界通量 - 完全依赖ghost cells
-        # （强制通量会导致与TVD-RK2不一致，破坏质量守恒）
+        #  - ghost cells
+        # TVD-RK2
         # self._enforce_boundary_fluxes(F_h, F_Q, h, Q)
 
-        # 保存通量用于诊断
+        # 
         self.last_F_h = F_h.copy()
         self.last_F_Q = F_Q.copy()
 
@@ -824,53 +825,53 @@ class GodunvFVMSolver:
             print(f"  F_h: {F_h}")
             print(f"  F_Q: {F_Q}")
 
-        # 如果使用界面法源项，预计算z_b界面值
+        # z_b
         z_b_interface_for_source = None
         if self.source_term_method == 'interface' and not self.well_balanced:
             z_b_ext = np.zeros(n + 2)
             z_b_ext[1:n+1] = self.z_b
-            # 左ghost: 外推（假设坡度连续）
+            # ghost: 
             z_b_ext[0] = self.z_b[0] - (self.z_b[1] - self.z_b[0]) if n > 1 else self.z_b[0]
-            # 右ghost: 外推
+            # ghost: 
             z_b_ext[n+1] = self.z_b[n-1] + (self.z_b[n-1] - self.z_b[n-2]) if n > 1 else self.z_b[n-1]
-            # 界面底高程：平均值
+            # 
             z_b_interface_for_source = 0.5 * (z_b_ext[:-1] + z_b_ext[1:])
 
-        # 计算每个单元的空间导数（Python版本）
+        # Python
         for i in range(n):
-            # 单元i的通量差
+            # i
             dh_dt[i] = -(F_h[i+1] - F_h[i]) / self.dx
             dQ_dt[i] = -(F_Q[i+1] - F_Q[i]) / self.dx
 
-            # Well-balanced: 源项只需摩阻（底坡已在reconstruction中处理）
+            # Well-balanced: reconstruction
             #
-            # 重要：Audusse的Hydrostatic Reconstruction方法中，
-            # 底坡源项通过界面重构 h* = max(0, eta - z_interface) 隐式处理
-            # 不需要显式几何源项！
+            # AudusseHydrostatic Reconstruction
+            #  h* = max(0, eta - z_interface) 
+            # 
             #
-            # 原来706-724行添加的S_geo是错误的，会导致数值不稳定
+            # 706-724S_geo
 
-            # 界面法源项（Zhou's Surface Gradient Method启发）
-            # 当source_term_method='interface'时，底坡源项从界面值计算
+            # Zhou's Surface Gradient Method
+            # source_term_method='interface'
             if self.source_term_method == 'interface' and not self.well_balanced:
-                # 从界面计算底坡源项（Zhou方法）
+                # Zhou
                 # S_bed = -g * h * B * ∂z_b/∂x
-                # 离散: S_bed = -g * h * B * (z_b[i+1/2] - z_b[i-1/2]) / dx
+                # : S_bed = -g * h * B * (z_b[i+1/2] - z_b[i-1/2]) / dx
                 dz = z_b_interface_for_source[i+1] - z_b_interface_for_source[i]
-                h_for_source = h[i]  # 使用单元中心水深
+                h_for_source = h[i]  # 
                 S_bed_interface = -self.g * h_for_source * self.B * dz / self.dx
 
-                # 摩阻源项仍用点值法
+                # 
                 S_friction = self._compute_friction_source_term(h[i], Q[i], i)
 
-                # 总源项
+                # 
                 dQ_dt[i] += S_bed_interface + S_friction
 
-            # 标准法源项（点值法）
+            # 
             elif self.source_term_method == 'standard' and not self.well_balanced:
                 dQ_dt[i] += self._compute_source_term(h[i], Q[i], i)
 
-            # Well-balanced模式下，摩阻源项单独添加
+            # Well-balanced
             elif self.well_balanced:
                 dQ_dt[i] += self._compute_source_term(h[i], Q[i], i)
 
@@ -878,32 +879,32 @@ class GodunvFVMSolver:
 
     def _compute_flux_only_rhs(self, h: np.ndarray, Q: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
-        计算只有通量的右端项（不包含源项）
+        
 
-        用于Strang Splitting的通量步
+        Strang Splitting
 
         dU/dt = -1/dx*(F_{i+1/2} - F_{i-1/2})
 
         Returns:
-            dh/dt, dQ/dt (只包含通量导数)
+            dh/dt, dQ/dt ()
         """
         n = len(h)
 
-        # 初始化
+        # 
         dh_dt = np.zeros(n)
         dQ_dt = np.zeros(n)
 
-        # 扩展数组（ghost cells）
+        # ghost cells
         h_ext, Q_ext = self._extend_with_ghosts(h, Q)
 
-        # Well-balanced重构
+        # Well-balanced
         if self.well_balanced:
-            # 计算水面高程
+            # 
             eta = h + self.z_b
             eta_ext = np.zeros(n + 2)
             eta_ext[1:n+1] = eta
 
-            # 左ghost
+            # ghost
             if self.bc_left['type'] == 'h':
                 value = self.bc_left['value']
                 h_bc = value if not callable(value) else value(self.t)
@@ -912,7 +913,7 @@ class GodunvFVMSolver:
             else:  # Q boundary
                 eta_ext[0] = eta[0]
 
-            # 右ghost
+            # ghost
             if self.bc_right['type'] == 'h':
                 value = self.bc_right['value']
                 h_bc = value if not callable(value) else value(self.t)
@@ -921,32 +922,32 @@ class GodunvFVMSolver:
             else:  # Q boundary
                 eta_ext[n+1] = eta[n-1]
 
-            # 重构η
+            # η
             if self.order == 2:
                 eta_L, eta_R = self._muscl_reconstruction(eta_ext)
             else:
                 eta_L = eta_ext[:-1]
                 eta_R = eta_ext[1:]
 
-            # 获取界面底高程
+            # 
             z_b_ext = np.zeros(n + 2)
             z_b_ext[1:n+1] = self.z_b
             z_b_ext[0] = self.z_b[0] - (self.z_b[1] - self.z_b[0]) if n > 1 else self.z_b[0]
             z_b_ext[n+1] = self.z_b[n-1] + (self.z_b[n-1] - self.z_b[n-2]) if n > 1 else self.z_b[n-1]
             z_b_interface = np.maximum(z_b_ext[:-1], z_b_ext[1:])
 
-            # 从η还原h
+            # ηh
             h_L = np.maximum(0.0, eta_L - z_b_interface)
             h_R = np.maximum(0.0, eta_R - z_b_interface)
 
-            # 重构Q
+            # Q
             if self.order == 2:
                 Q_L, Q_R = self._muscl_reconstruction(Q_ext)
             else:
                 Q_L = Q_ext[:-1]
                 Q_R = Q_ext[1:]
         else:
-            # 标准重构
+            # 
             if self.use_numba and (self.riemann_solver == 'hll' or self.riemann_solver == 'hllc'):
                 if self.order == 2:
                     h_L, h_R = muscl_reconstruction_numba(h_ext)
@@ -957,9 +958,9 @@ class GodunvFVMSolver:
                     Q_L = Q_ext[:-1]
                     Q_R = Q_ext[1:]
 
-                # 计算通量
+                # 
                 if self.riemann_solver == 'hllc':
-                    # HLLC求解器（Phase 9.2）
+                    # HLLCPhase 9.2
                     F_h = np.zeros(len(h_L))
                     F_Q = np.zeros(len(h_L))
                     for i in range(len(h_L)):
@@ -968,17 +969,17 @@ class GodunvFVMSolver:
                             self.B, self.g, self.eps_dry
                         )
                 else:
-                    # HLL求解器（默认）
+                    # HLL
                     F_h, F_Q = compute_all_fluxes_numba(
                         h_L, h_R, Q_L, Q_R, self.B, self.g, self.eps_dry
                     )
 
-                # 计算空间导数（只通量，无源项）
+                # 
                 for i in range(n):
                     dh_dt[i] = -(F_h[i+1] - F_h[i]) / self.dx
                     dQ_dt[i] = -(F_Q[i+1] - F_Q[i]) / self.dx
 
-                    # Well-balanced几何源项
+                    # Well-balanced
                     if self.well_balanced:
                         h_star_left = 0.5 * (h_L[i] + h_R[i])
                         h_star_right = 0.5 * (h_L[i+1] + h_R[i+1])
@@ -998,7 +999,7 @@ class GodunvFVMSolver:
                     Q_L = Q_ext[:-1]
                     Q_R = Q_ext[1:]
 
-        # 计算通量（Python版本）
+        # Python
         F_h = np.zeros(n + 1)
         F_Q = np.zeros(n + 1)
 
@@ -1012,16 +1013,16 @@ class GodunvFVMSolver:
                     h_L[i], Q_L[i], h_R[i], Q_R[i]
                 )
 
-        # 保存通量用于诊断
+        # 
         self.last_F_h = F_h.copy()
         self.last_F_Q = F_Q.copy()
 
-        # 计算空间导数（只通量，无源项）
+        # 
         for i in range(n):
             dh_dt[i] = -(F_h[i+1] - F_h[i]) / self.dx
             dQ_dt[i] = -(F_Q[i+1] - F_Q[i]) / self.dx
 
-            # Well-balanced几何源项
+            # Well-balanced
             if self.well_balanced:
                 h_star_left = 0.5 * (h_L[i] + h_R[i])
                 h_star_right = 0.5 * (h_L[i+1] + h_R[i+1])
@@ -1034,58 +1035,58 @@ class GodunvFVMSolver:
 
     def _solve_source_ode(self, h: np.ndarray, Q: np.ndarray, dt: float) -> Tuple[np.ndarray, np.ndarray]:
         """
-        求解纯源项ODE
+        ODE
 
-        用于Strang Splitting的源项步
+        Strang Splitting
 
-        dh/dt = 0  (连续性方程无源项)
+        dh/dt = 0  ()
         dQ/dt = S_Q = g*A*(S0 - Sf)
 
-        使用显式欧拉法求解
+        
 
         Args:
-            h: 初始水深
-            Q: 初始流量
-            dt: 时间步长
+            h: 
+            Q: 
+            dt: 
 
         Returns:
-            h_new, Q_new (源项更新后的值)
+            h_new, Q_new ()
         """
         n = len(h)
 
-        # 连续性方程无源项，h保持不变
+        # h
         h_new = h.copy()
         Q_new = Q.copy()
 
-        # 对每个单元求解Q的ODE
+        # QODE
         for i in range(n):
-            # 计算源项
+            # 
             S_Q = self._compute_source_term(h[i], Q[i], i)
 
-            # 显式欧拉更新
+            # 
             Q_new[i] = Q[i] + dt * S_Q
 
         return h_new, Q_new
 
     def _muscl_reconstruction(self, phi: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
-        MUSCL重构（二阶精度+TVD）
+        MUSCL+TVD
         
-        从单元平均值phi_i重构界面左右值phi_{i-1/2}^R 和 phi_{i+1/2}^L
+        phi_iphi_{i-1/2}^R  phi_{i+1/2}^L
         
         Args:
-            phi: 扩展变量数组 [n+2] (包含ghost cells)
+            phi:  [n+2] (ghost cells)
         
         Returns:
-            phi_L: 所有界面的左值 [n+1]
-            phi_R: 所有界面的右值 [n+1]
+            phi_L:  [n+1]
+            phi_R:  [n+1]
         """
-        n = len(phi) - 2  # 内部单元数
+        n = len(phi) - 2  # 
         
         phi_L = np.zeros(n + 1)
         phi_R = np.zeros(n + 1)
         
-        # Minmod斜率限制器
+        # Minmod
         def minmod(a, b):
             if a * b <= 0:
                 return 0.0
@@ -1095,11 +1096,11 @@ class GodunvFVMSolver:
                 return b
         
         for i in range(n + 1):
-            # 界面i位于单元i-1和i之间
-            # 左单元: i-1+1 = i (扩展数组索引)
-            # 右单元: i+1 (扩展数组索引)
+            # ii-1i
+            # : i-1+1 = i ()
+            # : i+1 ()
             
-            # 左单元i的重构（右界面值）
+            # i
             if i > 0:
                 slope_L = minmod(
                     phi[i+1] - phi[i],
@@ -1109,7 +1110,7 @@ class GodunvFVMSolver:
             else:
                 phi_L[i] = phi[i]
             
-            # 右单元i+1的重构（左界面值）
+            # i+1
             if i < n:
                 slope_R = minmod(
                     phi[i+2] - phi[i+1],
@@ -1131,31 +1132,31 @@ class GodunvFVMSolver:
         """
         Hydrostatic Reconstruction (Audusse et al. 2004)
 
-        核心思想：重构水面高程η=h+z_b而不是水深h
-        确保水静止时(Q=0, ∂η/∂x=0)通量为0
+        η=h+z_bh
+        (Q=0, ∂η/∂x=0)0
 
-        方法：
-        1. 定义界面底高程 z*= max(z_b_L, z_b_R)
-        2. 调整水深：h*_L = max(0, η_L - z*), h*_R = max(0, η_R - z*)
-        3. 使用h*计算通量
+        
+        1.  z*= max(z_b_L, z_b_R)
+        2. h*_L = max(0, η_L - z*), h*_R = max(0, η_R - z*)
+        3. h*
 
         Args:
-            h_L: 左侧水深
-            h_R: 右侧水深
-            z_b_L: 左侧底高程
-            z_b_R: 右侧底高程
+            h_L: 
+            h_R: 
+            z_b_L: 
+            z_b_R: 
 
         Returns:
-            h*_L, h*_R: 调整后的水深
+            h*_L, h*_R: 
         """
-        # 计算水面高程
+        # 
         eta_L = h_L + z_b_L
         eta_R = h_R + z_b_R
 
-        # 界面底高程取max（保守处理）
+        # max
         z_interface = max(z_b_L, z_b_R)
 
-        # 调整水深（确保非负）
+        # 
         h_star_L = max(0.0, eta_L - z_interface)
         h_star_R = max(0.0, eta_R - z_interface)
 
@@ -1169,20 +1170,20 @@ class GodunvFVMSolver:
         Q_R: float
     ) -> Tuple[float, float]:
         """
-        HLLC Riemann求解器（界面通量）- Phase 9.2新实现
+        HLLC Riemann- Phase 9.2
 
         HLLC = HLL with Contact wave
-        相比HLL，能分辨接触间断，显著降低数值耗散
-        对Lake at Rest测试提供更好的精度
+        HLL
+        Lake at Rest
 
-        新实现特点:
-        - 修复了旧版本的NaN问题
-        - 正确处理接触波计算
-        - 星区状态计算遵循Toro (2009)标准公式
+        :
+        - NaN
+        - 
+        - Toro (2009)
 
-        参考: Toro (2009) "Riemann Solvers", Chapter 10.3
+        : Toro (2009) "Riemann Solvers", Chapter 10.3
         """
-        # 调用新的Numba优化HLLC实现
+        # NumbaHLLC
         return hllc_flux_numba(h_L, Q_L, h_R, Q_R, self.B, self.g, self.eps_dry)
 
     def _exact_flux(
@@ -1193,24 +1194,24 @@ class GodunvFVMSolver:
         Q_R: float
     ) -> Tuple[float, float]:
         """
-        精确Riemann求解器（界面通量）- Phase 9.3新实现
+        Riemann- Phase 9.3
 
-        精确求解浅水方程Riemann问题，迭代计算星区状态
+        Riemann
 
-        优势:
-        - 机器精度（无近似误差）
-        - 零数值耗散（理论精确）
-        - 精确分辨接触间断、激波和稀疏波
-        - Lake at Rest可达到机器精度
+        :
+        - 
+        - 
+        - 
+        - Lake at Rest
 
-        性能:
-        - 比HLL慢约2-3倍（Newton迭代求解）
-        - 比HLLC慢约2倍
-        - 推荐用于高精度问题和验证
+        :
+        - HLL2-3Newton
+        - HLLC2
+        - 
 
-        参考: Toro (2009) "Riemann Solvers", Chapter 13
+        : Toro (2009) "Riemann Solvers", Chapter 13
         """
-        # 调用精确Riemann求解器
+        # Riemann
         return exact_riemann_flux(
             h_L, Q_L, h_R, Q_R,
             self.B, self.g, self.eps_dry,
@@ -1225,16 +1226,16 @@ class GodunvFVMSolver:
         Q_R: float
     ) -> Tuple[float, float]:
         """
-        HLL Riemann求解器（界面通量）
+        HLL Riemann
 
-        保证：
-        1. 守恒性
-        2. 熵条件
-        3. 干床稳定性
+        
+        1. 
+        2. 
+        3. 
 
-        Phase 6.5: 使用Numba JIT加速（2-5x性能提升）
+        Phase 6.5: Numba JIT2-5x
         """
-        # 使用Numba JIT内核（如果可用）- Phase 6.5优化
+        # Numba JIT- Phase 6.5
         if self.use_numba and NUMBA_KERNELS_AVAILABLE:
             return hll_flux_kernel(
                 h_L, Q_L, h_R, Q_R,
@@ -1242,52 +1243,52 @@ class GodunvFVMSolver:
                 self.entropy_fix, self.critical_flow_treatment
             )
 
-        # 否则使用原Python实现（向后兼容）
-        # 干床检测
+        # Python
+        # 
         if h_L < self.eps_dry and h_R < self.eps_dry:
             return 0.0, 0.0
 
-        # 左状态
+        # 
         A_L = max(h_L * self.B, self.eps_dry * self.B)
         u_L = Q_L / A_L
         c_L = np.sqrt(self.g * max(h_L, 0.0))
 
-        # 右状态
+        # 
         A_R = max(h_R * self.B, self.eps_dry * self.B)
         u_R = Q_R / A_R
         c_R = np.sqrt(self.g * max(h_R, 0.0))
 
-        # 波速估计（Davis估计）
+        # Davis
         S_L = min(u_L - c_L, u_R - c_R)
         S_R = max(u_L + c_L, u_R + c_R)
 
-        # Entropy修正（如果启用）
+        # Entropy
         if self.entropy_fix:
-            # 计算delta（通常取最大波速的10%）
+            # delta10%
             delta = 0.1 * max(abs(S_L), abs(S_R), 1e-10)
 
-            # 对两个波速都应用entropy修正
+            # entropy
             S_L = self._entropy_fix(S_L, delta)
             S_R = self._entropy_fix(S_R, delta)
 
-        # 通量（左右）
+        # 
         F_h_L = Q_L
         F_Q_L = Q_L**2 / A_L + 0.5 * self.g * h_L**2 * self.B
 
         F_h_R = Q_R
         F_Q_R = Q_R**2 / A_R + 0.5 * self.g * h_R**2 * self.B
 
-        # HLL通量
+        # HLL
         if S_L >= 0:
-            # 超音速向右
+            # 
             F_h = F_h_L
             F_Q = F_Q_L
         elif S_R <= 0:
-            # 超音速向左
+            # 
             F_h = F_h_R
             F_Q = F_Q_R
         else:
-            # 跨音速（HLL平均）
+            # HLL
             U_h_L = h_L
             U_h_R = h_R
             U_Q_L = Q_L
@@ -1296,25 +1297,25 @@ class GodunvFVMSolver:
             F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / (S_R - S_L)
             F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / (S_R - S_L)
 
-        # 临界流特殊处理（如果启用）
+        # 
         if self.critical_flow_treatment:
-            # 计算左右Froude数
+            # Froude
             Fr_L = abs(u_L) / c_L if c_L > 1e-10 else 0.0
             Fr_R = abs(u_R) / c_R if c_R > 1e-10 else 0.0
 
-            # 平均Froude数
+            # Froude
             Fr_avg = 0.5 * (Fr_L + Fr_R)
 
-            # 如果接近临界流（0.9 < Fr < 1.1），增加数值耗散
+            # 0.9 < Fr < 1.1
             if 0.9 < Fr_avg < 1.1:
-                # 耗散强度随着接近Fr=1而增加
-                # alpha在Fr=1时最大（0.5），在Fr=0.9或1.1时为0
+                # Fr=1
+                # alphaFr=10.5Fr=0.91.10
                 alpha = 0.5 * (1.0 - abs(Fr_avg - 1.0) / 0.1)
 
-                # Lax-Friedrichs型耗散
+                # Lax-Friedrichs
                 max_speed = max(abs(u_L) + c_L, abs(u_R) + c_R, 1e-10)
 
-                # 增加耗散项（类似于人工粘性）
+                # 
                 dissipation_h = alpha * max_speed * (h_R - h_L)
                 dissipation_Q = alpha * max_speed * (Q_R - Q_L)
 
@@ -1325,76 +1326,76 @@ class GodunvFVMSolver:
     
     def _compute_friction_source_term(self, h: float, Q: float, cell_idx: int) -> float:
         """
-        仅计算摩阻源项（用于interface方法）
+        interface
 
         Args:
-            h: 水深 (m)
-            Q: 流量 (m³/s)
-            cell_idx: 单元索引
+            h:  (m)
+            Q:  (m³/s)
+            cell_idx: 
 
         Returns:
-            摩阻源项值
+            
         """
-        # 使用断面对象计算几何参数
+        # 
         h_safe = max(h, self.eps_dry)
         geom = self.cross_section.compute_geometry(h_safe)
         A = geom.area
         R = geom.hydraulic_radius
 
-        # 摩阻坡度
+        # 
         if R > 1e-10 and abs(Q) > 1e-6:
             Sf = self.n**2 * Q**2 / (A**2 * R**(4.0/3.0))
             Sf = np.sign(Q) * Sf
         else:
             Sf = 0.0
 
-        # 返回摩阻源项
+        # 
         return -self.g * A * Sf
 
     def _compute_source_term(self, h: float, Q: float, cell_idx: int) -> float:
         """
-        源项（重力+摩阻）
+        +
 
-        标准格式：S_Q = g*A*(S0 - Sf)
-        Well-balanced格式：S_Q = -g*A*Sf （底坡项已在通量中处理）
+        S_Q = g*A*(S0 - Sf)
+        Well-balancedS_Q = -g*A*Sf 
 
         Args:
-            h: 水深 (m)
-            Q: 流量 (m³/s)
-            cell_idx: 单元索引
+            h:  (m)
+            Q:  (m³/s)
+            cell_idx: 
 
         Returns:
-            源项值
+            
 
-        Phase 6.5: 使用Numba JIT加速（2-5x性能提升）
+        Phase 6.5: Numba JIT2-5x
         """
-        # 使用断面对象计算几何参数
+        # 
         h_safe = max(h, self.eps_dry)
         geom = self.cross_section.compute_geometry(h_safe)
         A = geom.area
         R = geom.hydraulic_radius
 
-        # 使用Numba JIT内核（如果可用）- Phase 6.5优化
+        # Numba JIT- Phase 6.5
         if self.use_numba and NUMBA_KERNELS_AVAILABLE:
             return compute_source_term_kernel(
                 h, Q, A, R, self.n, self.g,
                 self.S0[cell_idx], self.well_balanced
             )
 
-        # 否则使用原Python实现（向后兼容）
-        # 摩阻坡度
+        # Python
+        # 
         if R > 1e-10 and abs(Q) > 1e-6:
             Sf = self.n**2 * Q**2 / (A**2 * R**(4.0/3.0))
             Sf = np.sign(Q) * Sf
         else:
             Sf = 0.0
 
-        # Well-balanced格式：底坡源项已通过hydrostatic reconstruction处理
-        # 只需要添加摩阻项
+        # Well-balancedhydrostatic reconstruction
+        # 
         if self.well_balanced:
             return -self.g * A * Sf
         else:
-            # 标准格式：包含底坡和摩阻
+            # 
             return self.g * A * (self.S0[cell_idx] - Sf)
     
     def _extend_with_ghosts(
@@ -1402,43 +1403,43 @@ class GodunvFVMSolver:
         h: np.ndarray,
         Q: np.ndarray
     ) -> Tuple[np.ndarray, np.ndarray]:
-        """扩展数组（ghost cells）"""
+        """ghost cells"""
         n = len(h)
         h_ext = np.zeros(n + 2)
         Q_ext = np.zeros(n + 2)
 
-        # 内部
+        # 
         h_ext[1:n+1] = h
         Q_ext[1:n+1] = Q
 
-        # 左ghost（外推）
+        # ghost
         if self.bc_left['type'] == 'wall':
             # Reflective (wall/no-penetration) boundary
-            # 镜像反射：h相同，Q反向
+            # hQ
             h_ext[0] = h[0]
             Q_ext[0] = -Q[0]  # Reflective
         elif self.bc_left['type'] == 'h':
             value = self.bc_left['value']
             h_ext[0] = value if not callable(value) else value(self.t)
-            Q_ext[0] = Q[0]  # 外推
+            Q_ext[0] = Q[0]  # 
         elif self.bc_left['type'] == 'Q':
             h_ext[0] = h[0]
             value = self.bc_left['value']
             Q_ext[0] = value if not callable(value) else value(self.t)
         elif self.bc_left['type'] == 'critical':
-            # 临界流边界条件：仅指定h_c，Q通过内部值外推
+            # h_cQ
             if self.bc_right['type'] == 'Q':
-                # 使用对侧固定Q边界值计算临界水深
+                # Q
                 Q_boundary = self.bc_right['value'] if not callable(self.bc_right['value']) else self.bc_right['value'](self.t)
             else:
-                # 使用内部流量估算
+                # 
                 Q_boundary = np.mean(Q[:min(10, n)])
             h_c, u_c = self.characteristic_bc.apply_critical_depth_bc(Q=Q_boundary, B=self.B)
-            # 只设置h，Q从内部外推
+            # hQ
             h_ext[0] = h_c
-            Q_ext[0] = Q[0]  # 外推流量
+            Q_ext[0] = Q[0]  # 
         elif self.bc_left['type'] == 'supercritical':
-            # 急流入口：同时指定h和Q
+            # hQ
             h_bc_value = self.bc_left['h']
             Q_bc_value = self.bc_left['Q']
             h_bc, u_bc = self.characteristic_bc.apply_supercritical_inlet(
@@ -1447,34 +1448,34 @@ class GodunvFVMSolver:
             h_ext[0] = h_bc
             Q_ext[0] = Q_bc_value
 
-        # 右ghost
+        # ghost
         if self.bc_right['type'] == 'wall':
             # Reflective (wall/no-penetration) boundary
-            # 镜像反射：h相同，Q反向
+            # hQ
             h_ext[n+1] = h[n-1]
             Q_ext[n+1] = -Q[n-1]  # Reflective
         elif self.bc_right['type'] == 'h':
             value = self.bc_right['value']
             h_ext[n+1] = value if not callable(value) else value(self.t)
-            Q_ext[n+1] = Q[n-1]  # 简单外推流量
+            Q_ext[n+1] = Q[n-1]  # 
         elif self.bc_right['type'] == 'Q':
             h_ext[n+1] = h[n-1]
             value = self.bc_right['value']
             Q_ext[n+1] = value if not callable(value) else value(self.t)
         elif self.bc_right['type'] == 'critical':
-            # 临界流边界条件：仅指定h_c，Q通过内部值外推
+            # h_cQ
             if self.bc_left['type'] == 'Q':
-                # 使用对侧固定Q边界值计算临界水深
+                # Q
                 Q_boundary = self.bc_left['value'] if not callable(self.bc_left['value']) else self.bc_left['value'](self.t)
             else:
-                # 使用内部流量估算
+                # 
                 Q_boundary = np.mean(Q[-min(10, n):])
             h_c, u_c = self.characteristic_bc.apply_critical_depth_bc(Q=Q_boundary, B=self.B)
-            # 只设置h，Q从内部外推（避免over-constrain）
+            # hQover-constrain
             h_ext[n+1] = h_c
-            Q_ext[n+1] = Q[n-1]  # 外推流量
+            Q_ext[n+1] = Q[n-1]  # 
         elif self.bc_right['type'] == 'supercritical':
-            # 急流出口：完全外推（所有特征线向外）
+            # 
             h_bc, u_bc = self.characteristic_bc.apply_supercritical_outlet(
                 h_interior=h[n-1], u_interior=Q[n-1]/(h[n-1]*self.B) if h[n-1] > self.eps_dry else 0.0
             )
@@ -1489,34 +1490,34 @@ class GodunvFVMSolver:
         Q: np.ndarray
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
-        边界条件处理
+        
 
-        **改进方案（平衡质量守恒与边界精度）**：
-        使用松弛法（relaxation）而非完全强制或完全自由演化
+        ****
+        relaxation
 
-        方法：
-        - supercritical: 完全强制（所有特征线方向确定）
-        - h/Q边界: 温和松弛朝目标值，relaxation_factor=0.2
-        - critical: 温和松弛朝临界水深
+        
+        - supercritical: 
+        - h/Q: relaxation_factor=0.2
+        - critical: 
 
-        优点：
-        1. 保持良好的质量守恒（松弛只修正20%）
-        2. 边界条件精度随时间收敛到目标值
-        3. 数值稳定
+        
+        1. 20%
+        2. 
+        3. 
         """
-        # 边界条件处理策略（权衡边界精度与质量守恒）
+        # 
         #
-        # 对于Dirichlet边界（'h'或'Q'类型）：
-        # - 不强制边界单元值，让其通过守恒律演化
-        # - 边界条件通过ghost cells施加
-        # - 优点：完美质量守恒（误差~0.2%）
-        # - 缺点：边界单元可能偏离目标值（~1-5%）
+        # Dirichlet'h''Q'
+        # - 
+        # - ghost cells
+        # - ~0.2%
+        # - ~1-5%
         #
-        # 对于supercritical边界：
-        # - 完全强制（所有特征线方向确定）
-        # - 数学上严格正确
+        # supercritical
+        # - 
+        # - 
 
-        # 仅对supercritical边界强制
+        # supercritical
         if self.bc_left['type'] == 'supercritical':
             h_bc_value = self.bc_left['h']
             Q_bc_value = self.bc_left['Q']
@@ -1534,11 +1535,11 @@ class GodunvFVMSolver:
             h[-1] = h_bc
             Q[-1] = u_bc * h_bc * self.B
 
-        # 对于其他边界类型（'h', 'Q', 'critical'）：
-        # 使用relaxation方法温和地将边界单元值推向目标
-        relaxation_factor = 0.5  # 每步调整50%（平衡收敛速度和质量守恒）
+        # 'h', 'Q', 'critical'
+        # relaxation
+        relaxation_factor = 0.5  # 50%
 
-        # 左边界relaxation
+        # relaxation
         if self.bc_left['type'] == 'h':
             value = self.bc_left['value']
             h_target = value if not callable(value) else value(self.t)
@@ -1555,7 +1556,7 @@ class GodunvFVMSolver:
             h_c, u_c = self.characteristic_bc.apply_critical_depth_bc(Q=Q_boundary, B=self.B)
             h[0] = h[0] + relaxation_factor * (h_c - h[0])
 
-        # 右边界relaxation
+        # relaxation
         if self.bc_right['type'] == 'h':
             value = self.bc_right['value']
             h_target = value if not callable(value) else value(self.t)
@@ -1582,26 +1583,26 @@ class GodunvFVMSolver:
         Q: np.ndarray
     ):
         """
-        强制边界通量与边界条件一致
+        
 
-        关键思路：边界通量应该由边界条件决定，而不是由Riemann求解器计算。
-        这解决了边界单元与相邻单元通量不一致导致的质量守恒问题。
+        Riemann
+        
 
         Args:
-            F_h: 质量通量数组 [n+1]（会被修改）
-            F_Q: 动量通量数组 [n+1]（会被修改）
-            h: 当前水深数组 [n]
-            Q: 当前流量数组 [n]
+            F_h:  [n+1]
+            F_Q:  [n+1]
+            h:  [n]
+            Q:  [n]
         """
         n = len(h)
 
-        # 左边界通量（界面0，位于ghost cell和单元0之间）
+        # 0ghost cell0
         if self.bc_left['type'] == 'Q':
-            # Q边界：流量固定
+            # Q
             Q_bc = self.bc_left['value'] if not callable(self.bc_left['value']) else self.bc_left['value'](self.t)
-            h_bc = h[0]  # 水深从内部单元获取
+            h_bc = h[0]  # 
 
-            # 计算通量
+            # 
             if h_bc > self.eps_dry:
                 u_bc = Q_bc / (self.B * h_bc)
                 F_h[0] = Q_bc
@@ -1611,13 +1612,13 @@ class GodunvFVMSolver:
                 F_Q[0] = 0.0
 
         elif self.bc_left['type'] == 'h':
-            # h边界：不强制通量（让Riemann求解器计算）
-            # 因为h边界只指定水深，流量Q未知，
-            # 强制通量会导致质量泄漏
+            # hRiemann
+            # hQ
+            # 
             pass
 
         elif self.bc_left['type'] == 'supercritical':
-            # 急流边界：h和Q都固定（所有特征线向内）
+            # hQ
             h_bc = self.bc_left['h']
             Q_bc = self.bc_left['Q']
 
@@ -1630,7 +1631,7 @@ class GodunvFVMSolver:
                 F_Q[0] = 0.0
 
         elif self.bc_left['type'] == 'critical':
-            # 临界流边界：根据流量计算临界水深
+            # 
             if self.bc_right['type'] == 'Q':
                 Q_bc = self.bc_right['value'] if not callable(self.bc_right['value']) else self.bc_right['value'](self.t)
             else:
@@ -1645,9 +1646,9 @@ class GodunvFVMSolver:
                 F_h[0] = 0.0
                 F_Q[0] = 0.0
 
-        # 右边界通量（界面n，位于单元n-1和ghost cell之间）
+        # nn-1ghost cell
         if self.bc_right['type'] == 'Q':
-            # Q边界：流量固定
+            # Q
             Q_bc = self.bc_right['value'] if not callable(self.bc_right['value']) else self.bc_right['value'](self.t)
             h_bc = h[n-1]
 
@@ -1660,13 +1661,13 @@ class GodunvFVMSolver:
                 F_Q[n] = 0.0
 
         elif self.bc_right['type'] == 'h':
-            # h边界：不强制通量（让Riemann求解器计算）
-            # 因为h边界只指定水深，流量Q未知，
-            # 强制通量会导致质量泄漏
+            # hRiemann
+            # hQ
+            # 
             pass
 
         elif self.bc_right['type'] == 'supercritical':
-            # 急流出口：完全外推（所有特征线向外）
+            # 
             h_bc = h[n-1]
             Q_bc = Q[n-1]
 
@@ -1679,7 +1680,7 @@ class GodunvFVMSolver:
                 F_Q[n] = 0.0
 
         elif self.bc_right['type'] == 'critical':
-            # 临界流边界
+            # 
             if self.bc_left['type'] == 'Q':
                 Q_bc = self.bc_left['value'] if not callable(self.bc_left['value']) else self.bc_left['value'](self.t)
             else:
@@ -1696,30 +1697,30 @@ class GodunvFVMSolver:
 
     def _compute_total_mass(self, exclude_boundary_cells=False) -> float:
         """
-        计算总质量
+        
 
         Args:
-            exclude_boundary_cells: 是否排除边界单元
-                - True: 只计算内部单元质量（适用于强制边界）
-                - False: 计算所有单元质量（默认）
+            exclude_boundary_cells: 
+                - True: 
+                - False: 
         """
         if exclude_boundary_cells:
-            # 判断哪些边界被强制
+            # 
             exclude_left = self.bc_left['type'] in ['supercritical', 'h', 'Q', 'critical']
             exclude_right = self.bc_right['type'] in ['supercritical', 'h', 'Q', 'critical']
 
-            # 确定计算域范围
+            # 
             start_idx = 1 if exclude_left else 0
             end_idx = len(self.h) - 1 if exclude_right else len(self.h)
 
-            # 只计算内部单元 - 使用断面对象计算面积
+            #  - 
             mass = 0.0
             for i in range(start_idx, end_idx):
                 geom = self.cross_section.compute_geometry(max(self.h[i], 0.0))
                 mass += geom.area * self.dx
             return mass
         else:
-            # 计算所有单元 - 使用断面对象计算面积
+            #  - 
             mass = 0.0
             for i in range(len(self.h)):
                 geom = self.cross_section.compute_geometry(max(self.h[i], 0.0))
@@ -1728,12 +1729,12 @@ class GodunvFVMSolver:
     
     def get_mass_conservation_error(self, exclude_boundary_cells=False) -> float:
         """
-        质量守恒误差 (%)
+         (%)
 
         Args:
-            exclude_boundary_cells: 是否排除边界单元（默认False）
-                - True: 只检查内部计算域的质量守恒
-                - False: 检查包括边界在内的所有单元
+            exclude_boundary_cells: False
+                - True: 
+                - False: 
         """
         current_mass = self._compute_total_mass(exclude_boundary_cells=exclude_boundary_cells)
         if self.initial_mass > 1e-10:
@@ -1741,7 +1742,7 @@ class GodunvFVMSolver:
         return 0.0
     
     def get_state(self) -> Dict:
-        """获取当前状态"""
+        """"""
         return {
             'x': self.x.copy(),
             'h': self.h.copy(),
@@ -1754,16 +1755,16 @@ class GodunvFVMSolver:
 
     def _entropy_fix(self, lambda_val: float, delta: float) -> float:
         """
-        Harten-Hyman Entropy修正
+        Harten-Hyman Entropy
 
-        在跨音速区域平滑波速，防止数值振荡
+        
 
         Args:
-            lambda_val: 原始波速
-            delta: 修正参数（通常为最大波速的10%）
+            lambda_val: 
+            delta: 10%
 
         Returns:
-            修正后的波速
+            
         """
         if abs(lambda_val) >= delta:
             return lambda_val
@@ -1772,17 +1773,17 @@ class GodunvFVMSolver:
 
     def compute_froude_number(self, h=None, Q=None) -> np.ndarray:
         """
-        计算Froude数
+        Froude
 
         Fr = u / sqrt(g*h_d)
-        其中 h_d = 水力深度 = A/B (断面面积/水面宽度)
+         h_d =  = A/B (/)
 
         Args:
-            h: 水深数组（默认使用self.h）
-            Q: 流量数组（默认使用self.Q）
+            h: self.h
+            Q: self.Q
 
         Returns:
-            Froude数数组
+            Froude
         """
         if h is None:
             h = self.h
@@ -1792,11 +1793,11 @@ class GodunvFVMSolver:
         Fr = np.zeros_like(h)
         for i in range(len(h)):
             if h[i] > self.eps_dry:
-                # 使用断面对象计算几何参数
+                # 
                 geom = self.cross_section.compute_geometry(h[i])
                 if geom.area > self.eps_dry:
                     u = Q[i] / geom.area
-                    # 使用水力深度计算Froude数
+                    # Froude
                     c = np.sqrt(self.g * geom.hydraulic_depth)
                     Fr[i] = u / c if c > 1e-10 else 0.0
                 else:
@@ -1807,16 +1808,16 @@ class GodunvFVMSolver:
 
     def is_critical_flow(self, Fr=None, threshold=0.1) -> np.ndarray:
         """
-        检测临界流区域
+        
 
-        临界流定义为 |Fr - 1.0| < threshold
+         |Fr - 1.0| < threshold
 
         Args:
-            Fr: Froude数数组（默认自动计算）
-            threshold: 临界流阈值（默认0.1）
+            Fr: Froude
+            threshold: 0.1
 
         Returns:
-            布尔数组，True表示临界流
+            True
         """
         if Fr is None:
             Fr = self.compute_froude_number()
@@ -1824,31 +1825,31 @@ class GodunvFVMSolver:
 
     def get_flow_regime(self, Fr=None) -> np.ndarray:
         """
-        流态分类
+        
 
         Args:
-            Fr: Froude数数组（默认自动计算）
+            Fr: Froude
 
         Returns:
-            整数数组：0=亚临界, 1=临界, 2=超临界
+            0=, 1=, 2=
         """
         if Fr is None:
             Fr = self.compute_froude_number()
 
         regime = np.zeros_like(Fr, dtype=int)
-        regime[Fr < 0.9] = 0  # 亚临界
-        regime[(Fr >= 0.9) & (Fr <= 1.1)] = 1  # 临界
-        regime[Fr > 1.1] = 2  # 超临界
+        regime[Fr < 0.9] = 0  # 
+        regime[(Fr >= 0.9) & (Fr <= 1.1)] = 1  # 
+        regime[Fr > 1.1] = 2  # 
         return regime
 
 
 if __name__ == "__main__":
     print("="*80)
-    print("Godunov-FVM求解器 - 快速测试")
+    print("Godunov-FVM - ")
     print("="*80)
     
-    # 测试：静止水体
-    print("\n测试1: 静止水体（质量守恒）")
+    # 
+    print("\n1: ")
     print("-"*80)
     
     solver = GodunvFVMSolver(
@@ -1868,15 +1869,15 @@ if __name__ == "__main__":
     
     solver.initialize(h_init, Q_init, bc_left, bc_right)
     
-    # 推进100步
+    # 100
     for _ in range(100):
         solver.step()
     
     state = solver.get_state()
-    print(f"\n结果 (100步):")
-    print(f"  质量误差: {state['mass_error']:.6f}%")
+    print(f"\n (100):")
+    print(f"  : {state['mass_error']:.6f}%")
     print(f"  max|h-2.0|: {np.max(np.abs(state['h'] - 2.0)):.6e} m")
     print(f"  max|Q|: {np.max(np.abs(state['Q'])):.6e} m³/s")
-    print(f"  目标<0.5%: {'✅' if abs(state['mass_error']) < 0.5 else '❌'}")
+    print(f"  <0.5%: {'' if abs(state['mass_error']) < 0.5 else ''}")
     
     print("\n" + "="*80)

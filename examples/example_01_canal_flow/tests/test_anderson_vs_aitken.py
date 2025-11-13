@@ -12,13 +12,18 @@ Anderson加速 vs Aitken加速性能对比
 日期: 2025-10-22
 """
 
+import os
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
 import time
-from solvers.canal_solver import CanalSolver
-from solvers.canal_solver_anderson import CanalSolverAnderson
+# DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as CanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as CanalSolver
+from solvers.hydrostatic_canal_solver_anderson import CanalSolverAnderson
 from solvers.gate import SluiceGate, BroadCrestedWeir, Orifice
 
 
@@ -134,7 +139,7 @@ def compare_acceleration_methods():
         }
         results.append(result_aitken)
 
-        print(f"  收敛: {'✓' if success else '✗'}")
+        print(f"  收敛: {'' if success else ''}")
         print(f"  迭代次数: {solver.steady_iteration_count}")
         print(f"  最终误差: {error:.4f}%")
         print(f"  计算时间: {elapsed:.4f}s")
@@ -179,7 +184,7 @@ def compare_acceleration_methods():
 
         result_anderson1 = {
             'scenario': scenario['name'],
-            'method': 'Anderson(m=5,β=1.0)',
+            'method': 'Anderson(m=5,beta=1.0)',
             'converged': success,
             'iterations': solver_anderson1.steady_iteration_count,
             'error': error,
@@ -188,7 +193,7 @@ def compare_acceleration_methods():
         }
         results.append(result_anderson1)
 
-        print(f"  收敛: {'✓' if success else '✗'}")
+        print(f"  收敛: {'' if success else ''}")
         print(f"  迭代次数: {solver_anderson1.steady_iteration_count}")
         print(f"  最终误差: {error:.4f}%")
         print(f"  计算时间: {elapsed:.4f}s")
@@ -234,7 +239,7 @@ def compare_acceleration_methods():
 
         result_anderson2 = {
             'scenario': scenario['name'],
-            'method': 'Anderson(m=3,β=0.7)',
+            'method': 'Anderson(m=3,beta=0.7)',
             'converged': success,
             'iterations': solver_anderson2.steady_iteration_count,
             'error': error,
@@ -243,7 +248,7 @@ def compare_acceleration_methods():
         }
         results.append(result_anderson2)
 
-        print(f"  收敛: {'✓' if success else '✗'}")
+        print(f"  收敛: {'' if success else ''}")
         print(f"  迭代次数: {solver_anderson2.steady_iteration_count}")
         print(f"  最终误差: {error:.4f}%")
         print(f"  计算时间: {elapsed:.4f}s")
@@ -257,7 +262,7 @@ def compare_acceleration_methods():
         print("-" * 100)
 
         for r in results:
-            converged_str = '✓' if r['converged'] else '✗'
+            converged_str = '' if r['converged'] else ''
             rel_perf = ""
             if r['method'] != 'Aitken' and result_aitken['time'] > 0:
                 speedup = (result_aitken['time'] - r['time']) / result_aitken['time'] * 100
@@ -281,7 +286,7 @@ def compare_acceleration_methods():
     print("-" * 100)
 
     for r in all_results:
-        converged_str = '✓' if r['converged'] else '✗'
+        converged_str = '' if r['converged'] else ''
         print(f"{r['scenario']:<15} {r['method']:<25} {converged_str:<8} {r['iterations']:<12} {r['error']:<12.4f} {r['time']:<10.4f}")
 
     print()
@@ -293,7 +298,7 @@ def compare_acceleration_methods():
     print()
 
     # 按方法分组
-    methods = ['Aitken', 'Anderson(m=5,β=1.0)', 'Anderson(m=3,β=0.7)']
+    methods = ['Aitken', 'Anderson(m=5,beta=1.0)', 'Anderson(m=3,beta=0.7)']
     for method in methods:
         method_results = [r for r in all_results if r['method'] == method]
         if method_results:
@@ -314,8 +319,8 @@ def compare_acceleration_methods():
     print()
 
     aitken_results = [r for r in all_results if r['method'] == 'Aitken']
-    anderson1_results = [r for r in all_results if r['method'] == 'Anderson(m=5,β=1.0)']
-    anderson2_results = [r for r in all_results if r['method'] == 'Anderson(m=3,β=0.7)']
+    anderson1_results = [r for r in all_results if r['method'] == 'Anderson(m=5,beta=1.0)']
+    anderson2_results = [r for r in all_results if r['method'] == 'Anderson(m=3,beta=0.7)']
 
     if aitken_results and anderson1_results:
         aitken_avg_time = np.mean([r['time'] for r in aitken_results])
@@ -323,9 +328,9 @@ def compare_acceleration_methods():
         speedup1 = (aitken_avg_time - anderson1_avg_time) / aitken_avg_time * 100
 
         if speedup1 > 0:
-            print(f"✓ Anderson加速（m=5, beta=1.0）平均快 {speedup1:.1f}%")
+            print(f" Anderson加速（m=5, beta=1.0）平均快 {speedup1:.1f}%")
         else:
-            print(f"✗ Anderson加速（m=5, beta=1.0）平均慢 {-speedup1:.1f}%")
+            print(f" Anderson加速（m=5, beta=1.0）平均慢 {-speedup1:.1f}%")
 
     if aitken_results and anderson2_results:
         aitken_avg_time = np.mean([r['time'] for r in aitken_results])
@@ -333,9 +338,9 @@ def compare_acceleration_methods():
         speedup2 = (aitken_avg_time - anderson2_avg_time) / aitken_avg_time * 100
 
         if speedup2 > 0:
-            print(f"✓ Anderson加速（m=3, beta=0.7）平均快 {speedup2:.1f}%")
+            print(f" Anderson加速（m=3, beta=0.7）平均快 {speedup2:.1f}%")
         else:
-            print(f"✗ Anderson加速（m=3, beta=0.7）平均慢 {-speedup2:.1f}%")
+            print(f" Anderson加速（m=3, beta=0.7）平均慢 {-speedup2:.1f}%")
 
     print()
     print("建议：")

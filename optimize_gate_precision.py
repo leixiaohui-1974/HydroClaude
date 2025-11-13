@@ -110,7 +110,7 @@ def test_smooth_weight(smooth_weight, verbose=False):
 
     except Exception as e:
         if verbose:
-            print(f"  ✗ 求解失败: {e}")
+            print(f"   求解失败: {e}")
 
         # 恢复原始权重
         if original_smooth_weight is not None:
@@ -157,13 +157,13 @@ def main():
         results.append(result)
 
         if result['success']:
-            print(f"  ✓ 成功")
+            print(f"   成功")
             print(f"    最大误差: {result['max_error']:.4f}%")
             print(f"    平均误差: {result['mean_error']:.4f}%")
             print(f"    最大闸门误差: {result['max_gate_error']:.4f}%")
             print(f"    迭代次数: {result['iterations']}")
         else:
-            print(f"  ✗ 失败: {result.get('error', 'Unknown error')}")
+            print(f"   失败: {result.get('error', 'Unknown error')}")
 
         print()
 
@@ -177,7 +177,7 @@ def main():
     successful_results = [r for r in results if r['success']]
 
     if not successful_results:
-        print("✗ 所有测试都失败了！")
+        print(" 所有测试都失败了！")
         return
 
     # 找到最佳配置
@@ -227,13 +227,13 @@ def main():
     achieving_target = [r for r in successful_results if r['max_error'] < target_error]
 
     if achieving_target:
-        print(f"✓ 有 {len(achieving_target)} 个配置达到了 {target_error}% 的目标误差！")
+        print(f" 有 {len(achieving_target)} 个配置达到了 {target_error}% 的目标误差！")
         for r in achieving_target:
             print(f"  - smooth_weight = {r['smooth_weight']:.2f}: "
                   f"最大误差 = {r['max_error']:.4f}%")
     else:
         best = min(successful_results, key=lambda r: r['max_error'])
-        print(f"✗ 没有配置达到 {target_error}% 的目标")
+        print(f" 没有配置达到 {target_error}% 的目标")
         print(f"  最接近的配置: smooth_weight = {best['smooth_weight']:.2f}, "
               f"最大误差 = {best['max_error']:.4f}%")
         print(f"  距离目标还有: {best['max_error'] / target_error:.2f}x")

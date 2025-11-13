@@ -163,7 +163,7 @@ def run_macdonald_test4_realistic(critical_flow_treatment=False):
         }
 
     except Exception as e:
-        print(f"\n✗ 仿真失败: {e}")
+        print(f"\n 仿真失败: {e}")
         import traceback
         traceback.print_exc()
         results = {
@@ -224,26 +224,26 @@ def main():
         print(f"{'='*80}")
 
         if mass_diff > 0:
-            print(f"✓ 临界流处理改善了质量守恒: {mass_diff:.4f}% 减少")
+            print(f" 临界流处理改善了质量守恒: {mass_diff:.4f}% 减少")
         elif mass_diff < -0.1:
-            print(f"✗ 临界流处理略微增加了质量误差: {abs(mass_diff):.4f}%")
+            print(f" 临界流处理略微增加了质量误差: {abs(mass_diff):.4f}%")
         else:
             print(f"≈ 临界流处理对质量守恒影响很小: {abs(mass_diff):.4f}%")
 
         if not results_off['has_negative_depth'] and not results_on['has_negative_depth']:
-            print("✓ 两种配置均无负水深")
+            print(" 两种配置均无负水深")
         elif results_off['has_negative_depth'] and not results_on['has_negative_depth']:
-            print("✓ 临界流处理消除了负水深")
+            print(" 临界流处理消除了负水深")
 
         # 总体评估
         print(f"\n总体评估:")
         if results_on['mass_error'] < 5.0 and not results_on['has_negative_depth']:
-            print("✓ 启用临界流处理后求解器表现良好")
+            print(" 启用临界流处理后求解器表现良好")
         else:
-            print("⚠ 仍需进一步优化")
+            print(" 仍需进一步优化")
 
     else:
-        print("\n⚠ 部分测试失败，无法完成对比")
+        print("\n 部分测试失败，无法完成对比")
         if not results_off['success']:
             print(f"  禁用临界流处理: 失败 - {results_off.get('error', 'Unknown')}")
         if not results_on['success']:

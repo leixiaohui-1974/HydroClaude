@@ -98,7 +98,7 @@ class AdaptiveRefiner:
             x_new, h_new, hu_new: 细化后的网格和解
         """
         if self.current_level >= self.max_refinement_level:
-            print(f"⚠ 已达到最大细化层级 {self.max_refinement_level}，跳过细化")
+            print(f" 已达到最大细化层级 {self.max_refinement_level}，跳过细化")
             return x, h, hu
 
         # 计算细化指示器
@@ -106,7 +106,7 @@ class AdaptiveRefiner:
         refine_mask = self.identify_refine_cells(indicator)
 
         if not np.any(refine_mask):
-            print("✓ 无需细化")
+            print(" 无需细化")
             return x, h, hu
 
         # 在需要细化的单元中间插入新点
@@ -136,7 +136,7 @@ class AdaptiveRefiner:
 
         self.current_level += 1
         n_refined = np.sum(refine_mask)
-        print(f"✓ 细化完成: 在{n_refined}个单元插入新点，网格点数: {len(x)} → {len(x_new)}")
+        print(f" 细化完成: 在{n_refined}个单元插入新点，网格点数: {len(x)} → {len(x_new)}")
 
         return np.array(x_new), np.array(h_new), np.array(hu_new)
 
@@ -154,7 +154,7 @@ class AdaptiveRefiner:
             x_new, h_new, hu_new: 粗化后的网格和解
         """
         if self.current_level <= 0:
-            print("✓ 已是基础网格，无需粗化")
+            print(" 已是基础网格，无需粗化")
             return x, h, hu
 
         # 计算细化指示器
@@ -162,7 +162,7 @@ class AdaptiveRefiner:
         coarsen_mask = self.identify_coarsen_cells(indicator)
 
         if not np.any(coarsen_mask):
-            print("✓ 无可粗化单元")
+            print(" 无可粗化单元")
             return x, h, hu
 
         # 移除可粗化的点（每隔一个点移除）
@@ -178,7 +178,7 @@ class AdaptiveRefiner:
 
         self.current_level = max(0, self.current_level - 1)
         n_removed = len(x) - len(x_new)
-        print(f"✓ 粗化完成: 移除{n_removed}个点，网格点数: {len(x)} → {len(x_new)}")
+        print(f" 粗化完成: 移除{n_removed}个点，网格点数: {len(x)} → {len(x_new)}")
 
         return x_new, h_new, hu_new
 
@@ -217,7 +217,7 @@ class AdaptiveRefiner:
             refine_mask = self.identify_refine_cells(indicator)
 
             if not np.any(refine_mask):
-                print("✓ 达到收敛，无需进一步细化")
+                print(" 达到收敛，无需进一步细化")
                 break
 
             # 细化
@@ -230,7 +230,7 @@ class AdaptiveRefiner:
         stats['final_points'] = len(x_current)
         stats['refinement_ratio'] = stats['final_points'] / stats['initial_points']
 
-        print(f"\n✓ 自适应细化完成:")
+        print(f"\n 自适应细化完成:")
         print(f"  迭代次数: {stats['iterations']}")
         print(f"  网格点数: {stats['initial_points']} → {stats['final_points']}")
         print(f"  细化倍率: {stats['refinement_ratio']:.2f}x")

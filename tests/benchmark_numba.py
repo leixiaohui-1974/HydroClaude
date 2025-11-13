@@ -16,10 +16,16 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
 
 
-def benchmark_comparison(n_cells=100, n_steps=1000):
+
+def benchmark_comparison(n_cells=120, n_steps=1000):
     """对比Python vs Numba性能"""
     print("=" * 80)
     print(f"Numba加速效果基准测试")
@@ -37,7 +43,7 @@ def benchmark_comparison(n_cells=100, n_steps=1000):
     results = {}
 
     for use_numba in [False, True]:
-        mode = "Numba JIT 🚀" if use_numba else "纯Python"
+        mode = "Numba JIT " if use_numba else "纯Python"
         print(f"\n{'-'*80}")
         print(f"测试模式: {mode}")
         print(f"{'-'*80}")
@@ -45,7 +51,7 @@ def benchmark_comparison(n_cells=100, n_steps=1000):
         solver = GodunvFVMSolver(
             width=b, length=L, n_cells=n_cells,
             manning_n=0.0, slope=0.0,
-            g=9.81, cfl=0.5, order=2,
+            g=9.81, cfl=0.3, order=1,
             use_numba=use_numba
         )
 
@@ -64,13 +70,13 @@ def benchmark_comparison(n_cells=100, n_steps=1000):
             print("  预热Numba编译...")
             for _ in range(10):
                 solver.step()
-            print("  ✅ 编译完成")
+            print("   编译完成")
 
             # 重置求解器
             solver = GodunvFVMSolver(
                 width=b, length=L, n_cells=n_cells,
                 manning_n=0.0, slope=0.0,
-                g=9.81, cfl=0.5, order=2,
+                g=9.81, cfl=0.3, order=1,
                 use_numba=use_numba
             )
             solver.initialize(
@@ -120,12 +126,12 @@ def benchmark_comparison(n_cells=100, n_steps=1000):
     numba_time = results[True]['total_time']
     speedup = python_time / numba_time
 
-    print(f"\n⏱️  时间对比:")
+    print(f"\n⏱  时间对比:")
     print(f"  纯Python: {python_time:.3f} s")
     print(f"  Numba JIT: {numba_time:.3f} s")
-    print(f"  加速比: {speedup:.1f}x 🚀")
+    print(f"  加速比: {speedup:.1f}x ")
 
-    print(f"\n📊 吞吐量对比:")
+    print(f"\n 吞吐量对比:")
     print(f"  纯Python: {results[False]['steps_per_second']:.1f} steps/s")
     print(f"  Numba JIT: {results[True]['steps_per_second']:.1f} steps/s")
     print(f"  提升: {speedup:.1f}x")
@@ -134,16 +140,16 @@ def benchmark_comparison(n_cells=100, n_steps=1000):
     h_diff = np.max(np.abs(results[True]['h_final'] - results[False]['h_final']))
     Q_diff = np.max(np.abs(results[True]['Q_final'] - results[False]['Q_final']))
 
-    print(f"\n✅ 精度验证:")
+    print(f"\n 精度验证:")
     print(f"  h差异: {h_diff:.3e} m (max)")
-    print(f"  Q差异: {Q_diff:.3e} m³/s (max)")
+    print(f"  Q差异: {Q_diff:.3e} m^3/s (max)")
 
     if h_diff < 1e-10 and Q_diff < 1e-10:
-        print(f"  ✅✅✅ Numba结果与Python完全一致！")
+        print(f"   Numba结果与Python完全一致！")
     elif h_diff < 1e-6 and Q_diff < 1e-3:
-        print(f"  ✅ Numba结果与Python高度一致")
+        print(f"   Numba结果与Python高度一致")
     else:
-        print(f"  ⚠️  结果有差异，需要检查")
+        print(f"    结果有差异，需要检查")
 
     print()
 
@@ -183,7 +189,7 @@ def scaling_benchmark():
         print(f"{n_cells:<10} {python_ms:<15.3f} {numba_ms:<15.3f} {speedups[i]:<10.1f}x")
 
     avg_speedup = np.mean(speedups)
-    print(f"\n平均加速比: {avg_speedup:.1f}x 🚀")
+    print(f"\n平均加速比: {avg_speedup:.1f}x ")
     print()
 
 
@@ -202,12 +208,12 @@ if __name__ == '__main__':
 
     print("\n" + "=" * 80)
     if speedup > 10:
-        print(f"✅✅✅ Numba加速非常成功！加速比: {speedup:.1f}x")
+        print(f" Numba加速非常成功！加速比: {speedup:.1f}x")
     elif speedup > 5:
-        print(f"✅✅ Numba加速成功！加速比: {speedup:.1f}x")
+        print(f" Numba加速成功！加速比: {speedup:.1f}x")
     elif speedup > 2:
-        print(f"✅ Numba加速有效！加速比: {speedup:.1f}x")
+        print(f" Numba加速有效！加速比: {speedup:.1f}x")
     else:
-        print(f"⚠️  加速效果不明显: {speedup:.1f}x")
+        print(f"  加速效果不明显: {speedup:.1f}x")
     print("=" * 80)
     print()

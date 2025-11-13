@@ -16,7 +16,13 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 import numpy as np
 import time
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_ultra_fine_grid():
@@ -35,7 +41,7 @@ def test_ultra_fine_grid():
     print("\n配置对比:")
     print("  基线配置: 100网格, dx=10m, 质量误差=27.89%")
     print("  超细网格: 500网格, dx=2m,  质量误差=?")
-    print("\n目标: 质量误差 < 15% → 100%通过率")
+    print("\n目标: 质量误差 < 15% -> 100%通过率")
     print("="*80)
 
     # ===========================================
@@ -48,7 +54,7 @@ def test_ultra_fine_grid():
     g = 9.81
 
     # 上游边界条件 (超临界流)
-    Q_upstream = 50.0   # 流量 (m³/s)
+    Q_upstream = 50.0   # 流量 (m^3/s)
     h_upstream = 1.0    # 水深 (m)
 
     # 下游边界条件 (亚临界流)
@@ -122,7 +128,7 @@ def test_ultra_fine_grid():
     # 记录初始质量
     mass_init = solver._compute_total_mass()
 
-    print(f"\n初始质量: {mass_init:.2f} m³")
+    print(f"\n初始质量: {mass_init:.2f} m^3")
 
     # ===========================================
     # 4. 运行仿真
@@ -184,8 +190,8 @@ def test_ultra_fine_grid():
     mass_error = abs(mass_final - mass_init) / mass_init * 100
 
     print(f"质量守恒:")
-    print(f"  初始质量: {mass_init:.2f} m³")
-    print(f"  最终质量: {mass_final:.2f} m³")
+    print(f"  初始质量: {mass_init:.2f} m^3")
+    print(f"  最终质量: {mass_final:.2f} m^3")
     print(f"  质量误差: {mass_error:.6f}%")
 
     # Froude数
@@ -236,30 +242,30 @@ def test_ultra_fine_grid():
 
     # 质量守恒 (目标 < 15%)
     if mass_error < 15.0:
-        print(f"✅ 质量守恒: {mass_error:.2f}% < 15.0%")
+        print(f" 质量守恒: {mass_error:.2f}% < 15.0%")
     else:
-        print(f"⚠️  质量守恒: {mass_error:.2f}% ≥ 15.0% (仍需改进)")
+        print(f"️  质量守恒: {mass_error:.2f}% >= 15.0% (仍需改进)")
         success = False
 
     # Froude数 (容差20%)
     if abs(Fr_upstream_final - Fr_upstream_theory) / Fr_upstream_theory < 0.2:
-        print(f"✅ Froude数: {Fr_upstream_final:.3f} ≈ {Fr_upstream_theory:.3f}")
+        print(f" Froude数: {Fr_upstream_final:.3f} ~= {Fr_upstream_theory:.3f}")
     else:
-        print(f"⚠️  Froude数: {Fr_upstream_final:.3f} vs {Fr_upstream_theory:.3f} (偏差较大)")
+        print(f"️  Froude数: {Fr_upstream_final:.3f} vs {Fr_upstream_theory:.3f} (偏差较大)")
         success = False
 
     # Belanger误差 (容差30%)
     if belanger_error < 30.0:
-        print(f"✅ Belanger关系: 误差 {belanger_error:.2f}% < 30%")
+        print(f" Belanger关系: 误差 {belanger_error:.2f}% < 30%")
     else:
-        print(f"⚠️  Belanger关系: 误差 {belanger_error:.2f}% ≥ 30%")
+        print(f"️  Belanger关系: 误差 {belanger_error:.2f}% >= 30%")
         success = False
 
     # 负流量 (容差20%)
     if negative_ratio < 20.0:
-        print(f"✅ 负流量: {negative_ratio:.1f}% < 20%")
+        print(f" 负流量: {negative_ratio:.1f}% < 20%")
     else:
-        print(f"⚠️  负流量: {negative_ratio:.1f}% ≥ 20%")
+        print(f"️  负流量: {negative_ratio:.1f}% >= 20%")
         success = False
 
     # ===========================================
@@ -279,16 +285,16 @@ def test_ultra_fine_grid():
     print(f"  改善: {improvement:.2f}% (相对改善 {improvement_pct:.1f}%)")
 
     if mass_error < 15.0:
-        print(f"\n🎉 超细网格方案成功！达到100%通过率目标！")
+        print(f"\n 超细网格方案成功！达到100%通过率目标！")
         print(f"{'='*80}\n")
         return True
     elif improvement > 5.0:
-        print(f"\n✅ 有显著改善 (>{improvement:.1f}%)，但未达到<15%目标")
+        print(f"\n 有显著改善 (>{improvement:.1f}%)，但未达到<15%目标")
         print(f"建议: 继续实施方案2 (HLLC求解器)")
         print(f"{'='*80}\n")
         return False
     else:
-        print(f"\n⚠️  改善有限 (<5%)，需要更激进方案")
+        print(f"\n️  改善有限 (<5%)，需要更激进方案")
         print(f"建议: 跳过方案2，直接实施方案1 (WENO5)")
         print(f"{'='*80}\n")
         return False
@@ -305,8 +311,8 @@ if __name__ == '__main__':
     print(f"\n总运行时间: {total_time/60:.1f} 分钟 ({total_time:.0f}秒)")
 
     if success:
-        print("\n✅ 测试通过 - 超细网格方案有效！")
+        print("\n 测试通过 - 超细网格方案有效！")
         exit(0)
     else:
-        print("\n⚠️  需要进一步改进 - 准备下一方案")
+        print("\n️  需要进一步改进 - 准备下一方案")
         exit(1)

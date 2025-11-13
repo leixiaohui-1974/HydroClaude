@@ -309,7 +309,7 @@ class IDZMPC:
         res = self.prob.solve()
 
         if res.info.status != 'solved':
-            print(f"⚠️  OSQP求解失败: {res.info.status}")
+            print(f"️  OSQP求解失败: {res.info.status}")
             # 应急控制：简单P控制
             delta_u = -0.1 * error  # 简单比例控制
             delta_u = np.clip(delta_u, -self.config.du_max, self.config.du_max)
@@ -370,7 +370,7 @@ def main():
 
     controller = IDZMPC(K=K, tau_z=tau_z, tau_d=tau_d, config=config)
 
-    print("\n测试完成！✅")
+    print("\n测试完成！")
 
 
 if __name__ == "__main__":

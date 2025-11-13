@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例1: 简单明渠仿真（增强版）
 
@@ -109,7 +110,7 @@ def run_example():
             time_points.append(i * dt)
 
         # 打印进度
-        print(f"步 {i+1:2d}/{n_steps}: 时间={i*dt:6.1f}s, 水深={level:.3f}m, 流量={flow:.3f}m³/s, 体积={volume:.1f}m³")
+        print(f"步 {i+1:2d}/{n_steps}: 时间={i*dt:6.1f}s, 水深={level:.3f}m, 流量={flow:.3f}m^3/s, 体积={volume:.1f}m^3")
 
     print("-" * 70)
     print(f"仿真完成!")
@@ -146,18 +147,18 @@ def run_example():
         filename='archive_01_simple_depth_time.png'
     )
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (2) 时间序列图 - 流量
     img_path = visualizer.plot_time_series(
         time=time_history,
         data={'Flow Rate': flow_history},
         title='Canal Flow Rate Evolution',
-        ylabel='Flow Rate (m³/s)',
+        ylabel='Flow Rate (m^3/s)',
         filename='archive_01_simple_flow_time.png'
     )
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (3) 空间剖面图 - 最终状态
     img_path = visualizer.plot_spatial_profile(
@@ -171,7 +172,7 @@ def run_example():
         filename='archive_01_simple_depth_profile.png'
     )
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (4) 动态GIF - 水深演化
     print("  生成动态GIF动画...")
@@ -190,7 +191,7 @@ def run_example():
         fps=2  # 2帧/秒
     )
     generated_images.append(img_path)
-    print(f"  ✓ 生成动画: {os.path.basename(img_path)}")
+    print(f"   生成动画: {os.path.basename(img_path)}")
 
     # (5) 动态GIF - 流量演化
     img_path = visualizer_anim.create_animation_gif(
@@ -198,12 +199,12 @@ def run_example():
         time_data=spatial_profiles_flow,
         time_points=time_points,
         title='Canal Flow Rate Animation',
-        ylabel='Flow Rate (m³/s)',
+        ylabel='Flow Rate (m^3/s)',
         filename='archive_01_simple_flow_animation.gif',
         fps=2
     )
     generated_images.append(img_path)
-    print(f"  ✓ 生成动画: {os.path.basename(img_path)}")
+    print(f"   生成动画: {os.path.basename(img_path)}")
 
     print()
 
@@ -240,9 +241,9 @@ def run_example():
         '初始水深 (m)': f"{level_history[0]:.3f}",
         '最终水深 (m)': f"{level_history[-1]:.3f}",
         '水深变化 (m)': f"{level_history[-1] - level_history[0]:.3f}",
-        '平均流量 (m³/s)': f"{flow_history.mean():.3f}",
-        '最大流量 (m³/s)': f"{flow_history.max():.3f}",
-        '最小流量 (m³/s)': f"{flow_history.min():.3f}",
+        '平均流量 (m^3/s)': f"{flow_history.mean():.3f}",
+        '最大流量 (m^3/s)': f"{flow_history.max():.3f}",
+        '最小流量 (m^3/s)': f"{flow_history.min():.3f}",
         '仿真总时间 (s)': f"{total_time:.1f}",
         '时间步数': f"{n_steps}"
     }
@@ -291,13 +292,13 @@ def run_example():
 
 **主要结果**:
 - 水深变化: {level_history[-1] - level_history[0]:.3f} m
-- 平均流量: {flow_history.mean():.3f} m³/s
+- 平均流量: {flow_history.mean():.3f} m^3/s
 - 系统表现稳定，数值方法收敛
 
 **验证**:
-- ✓ 质量守恒
-- ✓ 数值稳定
-- ✓ 物理合理
+-  质量守恒
+-  数值稳定
+-  物理合理
 """
         }
     ]
@@ -308,7 +309,7 @@ def run_example():
         filename='archive_01_simple_simulation_report.md'
     )
 
-    print(f"  ✓ 报告已生成: {os.path.basename(report_path)}")
+    print(f"   报告已生成: {os.path.basename(report_path)}")
     print()
 
     # ====== 8. 总结 ======
@@ -318,7 +319,7 @@ def run_example():
     print(f"初始水深: {level_history[0]:.3f} m")
     print(f"最终水深: {level_history[-1]:.3f} m")
     print(f"水深变化: {level_history[-1] - level_history[0]:.3f} m")
-    print(f"平均流量: {flow_history.mean():.3f} m³/s")
+    print(f"平均流量: {flow_history.mean():.3f} m^3/s")
     print()
     print(f"生成文件:")
     print("  Figures (3):")

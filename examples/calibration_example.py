@@ -83,8 +83,8 @@ def main():
     BOD_obs = np.array(BOD_obs_mean)
 
     print(f"  生成了 {len(obs_times)} 天的观测数据")
-    print(f"  初始DO: {DO_obs[0]:.2f} mg/L → 最终DO: {DO_obs[-1]:.2f} mg/L")
-    print(f"  初始BOD: {BOD_obs[0]:.2f} mg/L → 最终BOD: {BOD_obs[-1]:.2f} mg/L")
+    print(f"  初始DO: {DO_obs[0]:.2f} mg/L -> 最终DO: {DO_obs[-1]:.2f} mg/L")
+    print(f"  初始BOD: {BOD_obs[0]:.2f} mg/L -> 最终BOD: {BOD_obs[-1]:.2f} mg/L")
     print()
 
     # ======================
@@ -241,7 +241,7 @@ def main():
 
     print()
     print("=" * 70)
-    print("校准示例完成! ✓")
+    print("校准示例完成! ")
     print("=" * 70)
     print()
     print("生成的文件:")

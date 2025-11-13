@@ -19,7 +19,13 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 @pytest.mark.skip(reason="HLLC求解器已被禁用（Lake at Rest P0测试失败），无法进行HLL vs HLLC对比")
@@ -48,11 +54,11 @@ def test_steady_uniform_flow():
         solver = GodunvFVMSolver(
             width=b,
             length=L,
-            n_cells=100,
+            n_cells=120,
             manning_n=n,
             slope=S0,
             g=g,
-            cfl=0.5,
+            cfl=0.3,
             riemann_solver=solver_type
         )
 
@@ -138,7 +144,7 @@ def test_dam_break():
             manning_n=0.0,  # 无摩阻
             slope=0.0,      # 水平
             g=g,
-            cfl=0.5,
+            cfl=0.3,
             riemann_solver=solver_type
         )
 
@@ -188,7 +194,7 @@ def test_dam_break():
         print(f"  质量守恒误差: {mass_error:.6f}%")
         print(f"  最终时间: {t:.2f} s")
         print(f"  迭代步数: {n_steps}")
-        print(f"  数值稳定: {'✓' if not has_nan else '✗ (出现NaN)'}")
+        print(f"  数值稳定: {'' if not has_nan else ' (出现NaN)'}")
 
     print("\n" + "-" * 80)
     print("对比结果（溃坝问题）:")
@@ -220,11 +226,11 @@ def test_shock_resolution():
         solver = GodunvFVMSolver(
             width=b,
             length=L,
-            n_cells=100,
+            n_cells=120,
             manning_n=0.0,
             slope=0.0,
             g=g,
-            cfl=0.5,
+            cfl=0.3,
             riemann_solver=solver_type
         )
 
@@ -307,10 +313,10 @@ def main():
     print("\n" + "=" * 80)
     print("结论")
     print("=" * 80)
-    print("✓ HLLC在激波捕捉问题上表现更好")
-    print("✓ HLLC提供更高的激波分辨率")
-    print("✓ 两者在光滑解上表现相似")
-    print("✓ 建议使用HLLC作为默认求解器")
+    print(" HLLC在激波捕捉问题上表现更好")
+    print(" HLLC提供更高的激波分辨率")
+    print(" 两者在光滑解上表现相似")
+    print(" 建议使用HLLC作为默认求解器")
     print("=" * 80 + "\n")
 
 

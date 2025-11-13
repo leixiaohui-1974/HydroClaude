@@ -10,6 +10,14 @@ This module contains comprehensive unit tests for:
 Author: HydroClaude Development Team
 Date: 2025-10-30
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import pytest
 import numpy as np
@@ -288,7 +296,7 @@ class TestJunctionNode:
         )
 
         # Q = C * √P (L/s)
-        # P = 25 m, Q = 100 * √25 = 500 L/s = 0.5 m³/s
+        # P = 25 m, Q = 100 * √25 = 500 L/s = 0.5 m^3/s
         Q_emitter = junction.emitter_flow(pressure=25.0)
 
         assert abs(Q_emitter - 0.5) < 1e-3
@@ -438,7 +446,7 @@ class TestTankNode:
             geometry="cylindrical"
         )
 
-        # 底面积 = π * (D/2)²
+        # 底面积 = π * (D/2)^2
         expected_area = np.pi * 5.0**2
         assert abs(tank.base_area - expected_area) < 1e-6
 
@@ -450,7 +458,7 @@ class TestTankNode:
             geometry="prismatic"
         )
 
-        # 底面积 = D²
+        # 底面积 = D^2
         expected_area = 10.0**2
         assert abs(tank.base_area - expected_area) < 1e-6
 
@@ -486,8 +494,8 @@ class TestTankNode:
 
         initial_volume = tank.volume
 
-        # 净流入 0.1 m³/s，持续 60 秒
-        # 体积增加 = 0.1 * 60 = 6.0 m³
+        # 净流入 0.1 m^3/s，持续 60 秒
+        # 体积增加 = 0.1 * 60 = 6.0 m^3
         new_level = tank.update_volume(dt=60.0, net_inflow=0.1)
 
         expected_dV = 0.1 * 60.0
@@ -576,7 +584,7 @@ class TestTankNode:
             area_curve=area_curve
         )
 
-        # 在2.5m处面积应为75 m²
+        # 在2.5m处面积应为75 m^2
         area = tank.area_at_level(2.5)
         assert abs(area - 75.0) < 1e-3
 

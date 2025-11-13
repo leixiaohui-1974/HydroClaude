@@ -54,7 +54,7 @@ def example_1_basic_geometry():
     depths = [0.5, 1.0, 1.5, 2.0, 2.5]
 
     print(f"\n水力几何要素：")
-    print(f"{'h(m)':>8} {'A(m²)':>10} {'B(m)':>10} {'P(m)':>10} {'R(m)':>10} {'D(m)':>10}")
+    print(f"{'h(m)':>8} {'A(m^2)':>10} {'B(m)':>10} {'P(m)':>10} {'R(m)':>10} {'D(m)':>10}")
     print("-" * 70)
 
     for h in depths:
@@ -63,7 +63,7 @@ def example_1_basic_geometry():
               f"{props['P']:>10.3f} {props['R']:>10.3f} {props['D']:>10.3f}")
 
     print("\n说明：")
-    print("  A: 过水断面积 (m²)")
+    print("  A: 过水断面积 (m^2)")
     print("  B: 水面宽度 (m)")
     print("  P: 湿周 (m)")
     print("  R: 水力半径 R=A/P (m)")
@@ -91,7 +91,7 @@ def example_2_normal_and_critical_depth():
 
     print(f"\n渠道类型：缓坡渠道（S0 = {mild_channel.S0}）")
     print(f"\n流量-水深关系：")
-    print(f"{'Q(m³/s)':>12} {'h_n(m)':>12} {'h_c(m)':>12} {'h_n/h_c':>12} {'流态':>12}")
+    print(f"{'Q(m^3/s)':>12} {'h_n(m)':>12} {'h_c(m)':>12} {'h_n/h_c':>12} {'流态':>12}")
     print("-" * 72)
 
     flow_rates = [5.0, 10.0, 15.0, 20.0, 25.0]
@@ -122,7 +122,7 @@ def example_3_steep_vs_mild_slope():
     print("示例3：缓坡 vs 陡坡渠道对比")
     print("="*80)
 
-    Q = 10.0  # 固定流量 10 m³/s
+    Q = 10.0  # 固定流量 10 m^3/s
 
     # 缓坡渠道
     mild_channel = TrapezoidalChannel(
@@ -142,7 +142,7 @@ def example_3_steep_vs_mild_slope():
         manning_n=0.020
     )
 
-    print(f"\n固定流量 Q = {Q:.2f} m³/s")
+    print(f"\n固定流量 Q = {Q:.2f} m^3/s")
     print(f"\n{'渠道类型':>12} {'S0':>12} {'h_n(m)':>12} {'h_c(m)':>12} {'Fr_n':>12} {'流态':>12}")
     print("-" * 84)
 
@@ -180,12 +180,12 @@ def example_4_design_application():
     print("="*80)
 
     # 设计要求
-    Q_design = 15.0  # 设计流量 15 m³/s
+    Q_design = 15.0  # 设计流量 15 m^3/s
     v_max = 1.5      # 最大允许流速 1.5 m/s（防冲刷）
     v_min = 0.6      # 最小流速 0.6 m/s（防淤积）
 
     print(f"\n设计要求：")
-    print(f"  设计流量 Q = {Q_design:.2f} m³/s")
+    print(f"  设计流量 Q = {Q_design:.2f} m^3/s")
     print(f"  最大流速 v_max = {v_max:.2f} m/s（防冲刷）")
     print(f"  最小流速 v_min = {v_min:.2f} m/s（防淤积）")
 
@@ -196,7 +196,7 @@ def example_4_design_application():
     n = 0.022    # 土质衬砌
 
     print(f"\n断面参数：m = {side_slope}:1, S0 = {S0}, n = {n}")
-    print(f"\n{'B(m)':>8} {'h_n(m)':>12} {'A(m²)':>12} {'v(m/s)':>12} {'Fr':>12} {'评价':>12}")
+    print(f"\n{'B(m)':>8} {'h_n(m)':>12} {'A(m^2)':>12} {'v(m/s)':>12} {'Fr':>12} {'评价':>12}")
     print("-" * 80)
 
     suitable_designs = []
@@ -212,12 +212,12 @@ def example_4_design_application():
 
         # 评价
         if v_min <= v <= v_max:
-            evaluation = "✓ 合格"
+            evaluation = " 合格"
             suitable_designs.append((B, h_n, v))
         elif v > v_max:
-            evaluation = "✗ 流速过大"
+            evaluation = " 流速过大"
         else:
-            evaluation = "✗ 流速过小"
+            evaluation = " 流速过小"
 
         print(f"{B:>8.2f} {h_n:>12.3f} {A:>12.3f} {v:>12.3f} {Fr:>12.3f} {evaluation:>12}")
 
@@ -250,7 +250,7 @@ def example_5_hydraulic_jump():
     Q = 10.0  # 流量
 
     print(f"\n渠道参数：B = {channel.B_bottom} m, m = {channel.m}:1")
-    print(f"流量 Q = {Q:.2f} m³/s")
+    print(f"流量 Q = {Q:.2f} m^3/s")
 
     # 临界水深
     h_c = channel.critical_depth(Q)
@@ -264,7 +264,7 @@ def example_5_hydraulic_jump():
 
     # 水跃后（亚临界）估算
     # 使用共轭水深近似公式（矩形渠道）
-    # h2/h1 ≈ 0.5 * (-1 + √(1 + 8*Fr1²))
+    # h2/h1 ~= 0.5 * (-1 + sqrt(1 + 8*Fr1^2))
     h2_approx = h1 * 0.5 * (-1.0 + np.sqrt(1.0 + 8.0 * Fr1**2))
     Fr2 = channel.froude_number(Q, h2_approx)
     v2 = Q / channel.area(h2_approx)
@@ -285,7 +285,7 @@ def example_5_hydraulic_jump():
     print(f"\n能量分析：")
     print(f"  跃前比能 E1 = {E1:.3f} m")
     print(f"  跃后比能 E2 = {E2:.3f} m")
-    print(f"  能量损失 ΔE = {delta_E:.3f} m ({100-efficiency:.1f}%)")
+    print(f"  能量损失 DeltaE = {delta_E:.3f} m ({100-efficiency:.1f}%)")
 
     print(f"\n说明：")
     print(f"  水跃导致水深增加 {(h2_approx-h1):.3f} m")

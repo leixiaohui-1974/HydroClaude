@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例13: 时间尺度自适应仿真（增强版）
 
@@ -13,6 +14,8 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from models.timescale_selector import AdaptiveCanalModel, TimeScaleSelector
 from utils.visualization import SimulationVisualizer, ReportGenerator
@@ -104,8 +107,8 @@ def run_example():
     print()
     print("-" * 70)
     print("时间尺度自适应仿真完成!")
-    print("✓ 自动根据时间步长选择合适的降阶模型")
-    print("✓ 从高保真模型到水量平衡模型无缝切换")
+    print(" 自动根据时间步长选择合适的降阶模型")
+    print(" 从高保真模型到水量平衡模型无缝切换")
     print()
 
     # ====== 3. 生成可视化 ======
@@ -133,7 +136,7 @@ def run_example():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (2) 流量对比图
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
@@ -147,7 +150,7 @@ def run_example():
         ax.plot(time_min, result['flows_out'], '^-', linewidth=2, markersize=6,
                 color='#EE5A6F', label='出流', markeredgecolor='black', markeredgewidth=0.5)
         ax.set_xlabel('时间 (分钟)', fontsize=11)
-        ax.set_ylabel('流量 (m³/s)', fontsize=11)
+        ax.set_ylabel('流量 (m^3/s)', fontsize=11)
         ax.set_title(f"流量演化 - {result['description']}", fontsize=12)
         ax.legend(loc='best', fontsize=10)
         ax.grid(True, alpha=0.3, linestyle='--')
@@ -157,7 +160,7 @@ def run_example():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (3) 所有模型对比在一个图上
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -182,7 +185,7 @@ def run_example():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (4) 模型性能对比表（作为图表）
     fig, ax = plt.subplots(figsize=(12, 4))
@@ -230,7 +233,7 @@ def run_example():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     print()
 
@@ -273,9 +276,9 @@ def run_example():
 HydroClaude的`TimeScaleSelector`根据时间步长自动推荐合适的模型：
 
 - **dt < 60s**: 高保真模型 (FVM) - 捕捉快速瞬态和波动传播
-- **60s ≤ dt < 600s**: 传递函数模型 - 平衡精度和效率
-- **600s ≤ dt < 1800s**: IDZ模型 - 适合中长期调度
-- **dt ≥ 1800s**: 水量平衡模型 - 适合长期规划
+- **60s <= dt < 600s**: 传递函数模型 - 平衡精度和效率
+- **600s <= dt < 1800s**: IDZ模型 - 适合中长期调度
+- **dt >= 1800s**: 水量平衡模型 - 适合长期规划
 
 这种自适应机制使得用户无需手动选择模型，系统自动保证仿真精度和效率的最优平衡。
 """
@@ -299,7 +302,7 @@ HydroClaude的`TimeScaleSelector`根据时间步长自动推荐合适的模型�
             'heading': '流量分析',
             'content': """### 入流和出流对比
 
-入流采用正弦波扰动 (5.0 + 1.0·sin(t))，出流保持恒定 (5.0 m³/s)。
+入流采用正弦波扰动 (5.0 + 1.0·sin(t))，出流保持恒定 (5.0 m^3/s)。
 不同模型对流量变化的响应特性略有不同。""",
             'images': [generated_images[1]]
         },
@@ -329,10 +332,10 @@ HydroClaude的`TimeScaleSelector`根据时间步长自动推荐合适的模型�
 仿真成功完成！
 
 **主要成果**:
-- ✓ 成功演示了4种不同时间尺度的模型
-- ✓ 验证了自动模型选择机制
-- ✓ 所有模型都表现出良好的数值稳定性
-- ✓ 不同模型的预测趋势一致
+-  成功演示了4种不同时间尺度的模型
+-  验证了自动模型选择机制
+-  所有模型都表现出良好的数值稳定性
+-  不同模型的预测趋势一致
 
 **适用场景**:
 - **实时控制**: 使用高保真模型(dt < 60s)
@@ -354,7 +357,7 @@ HydroClaude的`TimeScaleSelector`根据时间步长自动推荐合适的模型�
         filename='example_13_simulation_report.md'
     )
 
-    print(f"  ✓ 报告已生成: {os.path.basename(report_path)}")
+    print(f"   报告已生成: {os.path.basename(report_path)}")
     print()
 
     # ====== 5. 总结 ======

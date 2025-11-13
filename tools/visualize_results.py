@@ -117,7 +117,7 @@ class ResultsVisualizer:
         variables = valid_vars
 
         if len(variables) == 0:
-            print("⚠ 没有有效变量可绘制")
+            print(" 没有有效变量可绘制")
             return
 
         print(f"绘制时间序列图: {len(variables)} 个变量")
@@ -164,7 +164,7 @@ class ResultsVisualizer:
         if save:
             output_file = self.output_dir / 'timeseries.png'
             plt.savefig(output_file, dpi=300, bbox_inches='tight')
-            print(f"✓ 保存: {output_file}")
+            print(f" 保存: {output_file}")
 
         plt.close()
 
@@ -217,7 +217,7 @@ class ResultsVisualizer:
         if save:
             output_file = self.output_dir / 'dashboard.png'
             plt.savefig(output_file, dpi=300, bbox_inches='tight')
-            print(f"✓ 保存: {output_file}")
+            print(f" 保存: {output_file}")
 
         plt.close()
 
@@ -418,7 +418,7 @@ class ResultsVisualizer:
                 spatial_vars.append(var)
 
         if len(spatial_vars) == 0:
-            print("⚠ 没有空间分布数据")
+            print(" 没有空间分布数据")
             return
 
         if variables is not None:
@@ -450,7 +450,7 @@ class ResultsVisualizer:
         if save:
             output_file = self.output_dir / f'spatial_t{time_index:04d}.png'
             plt.savefig(output_file, dpi=300, bbox_inches='tight')
-            print(f"✓ 保存: {output_file}")
+            print(f" 保存: {output_file}")
 
         plt.close()
 

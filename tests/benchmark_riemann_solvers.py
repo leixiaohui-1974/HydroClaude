@@ -27,11 +27,17 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def benchmark_dam_break(
-    n_cells=100,
+    n_cells=120,
     t_final=2.0,
     h_L=5.0,
     h_R=1.0,
@@ -84,7 +90,7 @@ def benchmark_dam_break(
     print("[1/3] 运行HLL求解器...")
     solver_hll = GodunvFVMSolver(
         width=width, length=length, n_cells=n_cells,
-        manning_n=0.0, cfl=0.5, order=2,
+        manning_n=0.0, cfl=0.3, order=1,
         use_numba=True, riemann_solver='hll',
         well_balanced=False, slope=0.0
     )
@@ -123,7 +129,7 @@ def benchmark_dam_break(
 
         solver_hllc = GodunvFVMSolver(
             width=width, length=length, n_cells=n_cells,
-            manning_n=0.0, cfl=0.5, order=2,
+            manning_n=0.0, cfl=0.3, order=1,
             use_numba=True, riemann_solver='hllc',
             well_balanced=False, slope=0.0
         )
@@ -137,11 +143,11 @@ def benchmark_dam_break(
 
                 # 检查NaN
                 if np.any(np.isnan(solver_hllc.h)) or np.any(np.isnan(solver_hllc.Q)):
-                    print(f"  ⚠️  HLLC在t={solver_hllc.t:.2f}s出现NaN, 停止模拟")
+                    print(f"    HLLC在t={solver_hllc.t:.2f}s出现NaN, 停止模拟")
                     hllc_success = False
                     break
         except Exception as e:
-            print(f"  ⚠️  HLLC运行失败: {e}")
+            print(f"    HLLC运行失败: {e}")
             hllc_success = False
 
         t_hllc = time.time() - t_start
@@ -170,7 +176,7 @@ def benchmark_dam_break(
             'time': t_hllc,
             'error': 'NaN or crash'
         }
-        print(f"  ❌ HLLC失败")
+        print(f"   HLLC失败")
 
     print()
 
@@ -178,7 +184,7 @@ def benchmark_dam_break(
     print("[3/3] 运行精确求解器...")
     solver_exact = GodunvFVMSolver(
         width=width, length=length, n_cells=n_cells,
-        manning_n=0.0, cfl=0.5, order=2,
+        manning_n=0.0, cfl=0.3, order=1,
         use_numba=True, riemann_solver='exact',
         well_balanced=False, slope=0.0
     )
@@ -238,8 +244,8 @@ def benchmark_dam_break(
     rms_h_diff_hll = np.sqrt(np.mean(h_diff_hll**2))
 
     print(f"  HLL:")
-    print(f"    Max |Δh|: {max_h_diff_hll:.6f} m")
-    print(f"    RMS(Δh):  {rms_h_diff_hll:.6f} m")
+    print(f"    Max |Deltah|: {max_h_diff_hll:.6f} m")
+    print(f"    RMS(Deltah):  {rms_h_diff_hll:.6f} m")
 
     # HLLC vs 精确
     if results['hllc'].get('success', False):
@@ -248,17 +254,17 @@ def benchmark_dam_break(
         rms_h_diff_hllc = np.sqrt(np.mean(h_diff_hllc**2))
 
         print(f"  HLLC:")
-        print(f"    Max |Δh|: {max_h_diff_hllc:.6f} m")
-        print(f"    RMS(Δh):  {rms_h_diff_hllc:.6f} m")
+        print(f"    Max |Deltah|: {max_h_diff_hllc:.6f} m")
+        print(f"    RMS(Deltah):  {rms_h_diff_hllc:.6f} m")
         print()
 
         # 精度提升
         if max_h_diff_hllc < max_h_diff_hll:
             improvement = (max_h_diff_hll - max_h_diff_hllc) / max_h_diff_hll * 100
-            print(f"  ✅ HLLC比HLL精度提升: {improvement:.1f}%")
+            print(f"   HLLC比HLL精度提升: {improvement:.1f}%")
         else:
             degradation = (max_h_diff_hllc - max_h_diff_hll) / max_h_diff_hll * 100
-            print(f"  ⚠️  HLLC比HLL精度下降: {degradation:.1f}%")
+            print(f"    HLLC比HLL精度下降: {degradation:.1f}%")
 
     print()
 
@@ -299,7 +305,7 @@ def benchmark_dam_break(
             ax3.plot(x, h_diff_hllc, 'g--', linewidth=2, label='HLLC - 精确')
         ax3.axhline(0, color='gray', linestyle=':', alpha=0.5)
         ax3.set_xlabel('位置 x (m)', fontsize=12)
-        ax3.set_ylabel('水深误差 Δh (m)', fontsize=12)
+        ax3.set_ylabel('水深误差 Deltah (m)', fontsize=12)
         ax3.set_title('误差分布 (vs 精确解)', fontsize=13, weight='bold')
         ax3.legend(loc='best')
         ax3.grid(True, alpha=0.3)
@@ -353,7 +359,7 @@ def print_summary_table(results):
     print("="*70)
     print()
 
-    print("| 求解器 | 计算时间 | 相对速度 | 步数 | 质量误差(%) | Max|Δh|(vs精确) |")
+    print("| 求解器 | 计算时间 | 相对速度 | 步数 | 质量误差(%) | Max|Deltah|(vs精确) |")
     print("|--------|----------|----------|------|-------------|----------------|")
 
     # HLL
@@ -383,7 +389,7 @@ def print_summary_table(results):
     if results['hllc'].get('success', False):
         print("  - HLLC: 实验性, 存在稳定性问题")
     else:
-        print("  - HLLC: ❌ 不稳定, 不推荐")
+        print("  - HLLC:  不稳定, 不推荐")
 
     print()
     print("="*70)
@@ -395,7 +401,7 @@ if __name__ == '__main__':
 
     # 运行基准测试
     results = benchmark_dam_break(
-        n_cells=100,
+        n_cells=120,
         t_final=2.0,
         h_L=5.0,
         h_R=1.0,
@@ -405,7 +411,7 @@ if __name__ == '__main__':
     # 打印汇总表格
     print_summary_table(results)
 
-    print("✅ 基准测试完成!")
+    print(" 基准测试完成!")
     print()
 
     sys.exit(0)

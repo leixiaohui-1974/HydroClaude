@@ -622,11 +622,11 @@ class RiverNetwork:
         # 拓扑验证
         is_valid, errors = self.validate_topology()
         if is_valid:
-            print("✅ Topology: Valid")
+            print(" Topology: Valid")
             if self._topology_built:
-                print(f"✅ Topological order: {len(self.topological_order)} reaches")
+                print(f" Topological order: {len(self.topological_order)} reaches")
         else:
-            print("❌ Topology: Invalid")
+            print(" Topology: Invalid")
             for error in errors:
                 print(f"   - {error}")
 
@@ -691,4 +691,4 @@ if __name__ == "__main__":
     print()
 
     # 测试通过
-    print("✅ Network topology module test passed!")
+    print(" Network topology module test passed!")

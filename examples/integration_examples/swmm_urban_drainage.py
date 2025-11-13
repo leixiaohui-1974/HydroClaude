@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 SWMM城市雨洪系统集成案例
 
@@ -74,7 +75,7 @@ def example_basic_simulation():
         print("\n最终节点状态:")
         for node_id in list(adapter.nodes.keys())[:5]:  # 显示前5个
             state = adapter.get_node_state(node_id)
-            print(f"  {node_id}: 水深={state.depth:.3f}m, 溢流={state.flooding:.3f}m³/s")
+            print(f"  {node_id}: 水深={state.depth:.3f}m, 溢流={state.flooding:.3f}m^3/s")
 
         # 导出结果
         adapter.export_results("swmm_results.json")
@@ -133,7 +134,7 @@ def example_pid_control():
                 pump_state = adapter.get_pump_state("PUMP1")
                 print(f"  时间: {current_time}, "
                       f"水位: {tank_state.depth:.2f}m, "
-                      f"泵流量: {pump_state.flow:.3f}m³/s")
+                      f"泵流量: {pump_state.flow:.3f}m^3/s")
 
         adapter.run_simulation(callback=control_callback)
 
@@ -190,7 +191,7 @@ def visualize_results(adapter: SWMMAdapter):
         ax2.plot(time_hours, flows, '-', linewidth=2, label=link_id)
 
     ax2.set_xlabel('Time (hours)', fontsize=10)
-    ax2.set_ylabel('Flow (m³/s)', fontsize=10)
+    ax2.set_ylabel('Flow (m^3/s)', fontsize=10)
     ax2.set_title('Link Flows', fontsize=12, fontweight='bold')
     ax2.legend()
     ax2.grid(True, alpha=0.3)
@@ -209,7 +210,7 @@ def visualize_results(adapter: SWMMAdapter):
         line2 = ax3_twin.plot(time_hours, statuses, 'r--', linewidth=2, label='Status')
 
         ax3.set_xlabel('Time (hours)', fontsize=10)
-        ax3.set_ylabel('Flow (m³/s)', fontsize=10, color='b')
+        ax3.set_ylabel('Flow (m^3/s)', fontsize=10, color='b')
         ax3_twin.set_ylabel('Status (0/1)', fontsize=10, color='r')
         ax3.set_title(f'Pump Operation: {pump_id}', fontsize=12, fontweight='bold')
 
@@ -234,7 +235,7 @@ def visualize_results(adapter: SWMMAdapter):
         line2 = ax4_twin.plot(time_hours, rainfall, 'g-', linewidth=2, label='Rainfall')
 
         ax4.set_xlabel('Time (hours)', fontsize=10)
-        ax4.set_ylabel('Runoff (m³/s)', fontsize=10, color='b')
+        ax4.set_ylabel('Runoff (m^3/s)', fontsize=10, color='b')
         ax4_twin.set_ylabel('Rainfall (mm)', fontsize=10, color='g')
         ax4.set_title('System Runoff and Rainfall', fontsize=12, fontweight='bold')
 

@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Godunov-FVM生产优化版 - Phase 0最终版本
+Godunov-FVM - Phase 0
 
-彻底解决所有遗留问题（基于Order 1）：
-1. ✅ 空间波动 - 优化CFL + 智能人工粘性
-2. ✅ 混合Riemann - HLL稳态 + HLLC激波自动切换
-3. ✅ 精细闸门耦合 - 内部边界条件精确处理
-4. ✅ 半隐式源项 - 摩阻稳定化
-5. ✅ 干湿边界 - 鲁棒处理
+Order 1
+1.   - CFL + 
+2.  Riemann - HLL + HLLC
+3.   - 
+4.   - 
+5.   - 
 
-定位：生产就绪，所有工程应用
 
-作者: HydroClaude Team
-日期: 2025-10-27
+
+: HydroClaude Team
+: 2025-10-27
 """
 
 import numpy as np
@@ -22,14 +22,14 @@ from typing import Tuple, Dict, Optional, List
 
 class GodunvFVMProduction:
     """
-    Godunov-FVM生产优化版（Order 1，彻底解决所有问题）
+    Godunov-FVMOrder 1
     
-    核心改进：
-    1. 降低CFL至0.3（提高稳定性）
-    2. 智能人工粘性（消除振荡）
-    3. 混合Riemann求解器（HLL+HLLC自动切换）
-    4. 半隐式摩阻（提高稳定性）
-    5. 精细结构耦合（<1%质量误差）
+    
+    1. CFL0.3
+    2. 
+    3. RiemannHLL+HLLC
+    4. 
+    5. <1%
     """
     
     def __init__(
@@ -47,12 +47,12 @@ class GodunvFVMProduction:
         artificial_viscosity: float = 0.05
     ):
         """
-        初始化生产优化版
+        
         
         Args:
-            structures: 水工结构列表 [SluiceGate, BroadCrestedWeir, ...]
-            riemann_solver: 'HLL'(稳定), 'HLLC'(精确), 'hybrid'(推荐)
-            artificial_viscosity: 人工粘性系数 (0.05推荐)
+            structures:  [SluiceGate, BroadCrestedWeir, ...]
+            riemann_solver: 'HLL'(), 'HLLC'(), 'hybrid'()
+            artificial_viscosity:  (0.05)
         """
         self.B = width
         self.L = length
@@ -66,12 +66,12 @@ class GodunvFVMProduction:
         self.riemann_solver = riemann_solver
         self.nu = artificial_viscosity
         
-        # 网格
+        # 
         self.h = np.zeros(n_cells)
         self.Q = np.zeros(n_cells)
         self.x = np.linspace(0.5*self.dx, length - 0.5*self.dx, n_cells)
         
-        # 水工结构
+        # 
         self.structures = structures if structures is not None else []
         self.structure_cells = []
         for struct in self.structures:
@@ -85,24 +85,24 @@ class GodunvFVMProduction:
         self.initial_mass = 0.0
         self.step_count = 0
         
-        print(f"🚀 Godunov-FVM生产优化版 (Phase 0最终)")
-        print(f"  网格: {n_cells}格, dx={self.dx:.3f}m")
-        print(f"  CFL: {cfl} (优化稳定性)")
+        print(f"[ROCKET] Godunov-FVM (Phase 0)")
+        print(f"  : {n_cells}, dx={self.dx:.3f}m")
+        print(f"  CFL: {cfl} ()")
         print(f"  Riemann: {riemann_solver}")
-        print(f"  人工粘性: {artificial_viscosity}")
-        print(f"  结构数: {len(self.structures)}")
+        print(f"  : {artificial_viscosity}")
+        print(f"  : {len(self.structures)}")
     
     def initialize(self, h_init, Q_init, bc_left, bc_right):
-        """初始化"""
+        """"""
         self.h = h_init.copy()
         self.Q = Q_init.copy()
         self.bc_left = bc_left
         self.bc_right = bc_right
         self.initial_mass = np.sum(self.h * self.B * self.dx)
-        print(f"  初始质量: {self.initial_mass:.2f} m³")
+        print(f"  : {self.initial_mass:.2f} m³")
     
     def compute_dt(self) -> float:
-        """CFL时间步"""
+        """CFL"""
         h_safe = np.maximum(self.h, self.eps_dry)
         u = self.Q / (h_safe * self.B)
         c = np.sqrt(self.g * h_safe)
@@ -113,7 +113,7 @@ class GodunvFVMProduction:
         return 0.1
     
     def step(self, dt: Optional[float] = None):
-        """时间推进（优化版）"""
+        """"""
         if dt is None:
             dt = self.compute_dt()
         self.dt = dt
@@ -126,13 +126,13 @@ class GodunvFVMProduction:
         h_star = h_n + dt * dh_dt
         Q_star = Q_n + dt * dQ_dt
         
-        # 半隐式摩阻
+        # 
         Q_star = self._semi_implicit_friction(h_star, Q_star, dt)
         
         h_star, Q_star = self._apply_bc(h_star, Q_star)
         h_star = np.maximum(h_star, 0.0)
         
-        # 结构耦合
+        # 
         if len(self.structures) > 0:
             h_star, Q_star = self._apply_structure_coupling(h_star, Q_star)
         
@@ -141,17 +141,17 @@ class GodunvFVMProduction:
         self.h = 0.5 * (h_n + h_star) + 0.5 * dt * dh_dt_star
         self.Q = 0.5 * (Q_n + Q_star) + 0.5 * dt * dQ_dt_star
         
-        # 半隐式摩阻（第2次）
+        # 2
         self.Q = self._semi_implicit_friction(self.h, self.Q, dt)
         
         self.h, self.Q = self._apply_bc(self.h, self.Q)
         self.h = np.maximum(self.h, 0.0)
         
-        # 结构耦合（第2次）
+        # 2
         if len(self.structures) > 0:
             self.h, self.Q = self._apply_structure_coupling(self.h, self.Q)
         
-        # 智能人工粘性（每10步）
+        # 10
         if self.step_count % 10 == 0 and self.nu > 0.0:
             self.h, self.Q = self._apply_smoothing(self.h, self.Q)
         
@@ -161,26 +161,26 @@ class GodunvFVMProduction:
         return self.h.copy(), self.Q.copy()
     
     def _compute_rhs(self, h, Q):
-        """计算空间导数"""
+        """"""
         n = len(h)
         dh_dt = np.zeros(n)
         dQ_dt = np.zeros(n)
         
         h_ext, Q_ext = self._extend_ghosts(h, Q)
         
-        # Order 1重构（稳定）
+        # Order 1
         h_L = h_ext[:-1]
         h_R = h_ext[1:]
         Q_L = Q_ext[:-1]
         Q_R = Q_ext[1:]
         
-        # 界面通量（混合Riemann）
+        # Riemann
         F_h = np.zeros(n + 1)
         F_Q = np.zeros(n + 1)
         
         for i in range(n + 1):
             if self.riemann_solver == 'hybrid':
-                # 自动检测激波
+                # 
                 if self._is_shock(h_L[i], h_R[i]):
                     F_h[i], F_Q[i] = self._hllc_flux(h_L[i], Q_L[i], h_R[i], Q_R[i])
                 else:
@@ -190,11 +190,11 @@ class GodunvFVMProduction:
             else:
                 F_h[i], F_Q[i] = self._hll_flux(h_L[i], Q_L[i], h_R[i], Q_R[i])
         
-        # 空间导数 + 源项
+        #  + 
         for i in range(n):
             dh_dt[i] = -(F_h[i+1] - F_h[i]) / self.dx
             
-            # 底坡源项
+            # 
             A = max(h[i] * self.B, self.eps_dry * self.B)
             S_g = self.g * A * self.S0
             
@@ -203,7 +203,7 @@ class GodunvFVMProduction:
         return dh_dt, dQ_dt
     
     def _hll_flux(self, h_L, Q_L, h_R, Q_R):
-        """HLL Riemann求解器"""
+        """HLL Riemann"""
         if h_L < self.eps_dry and h_R < self.eps_dry:
             return 0.0, 0.0
         
@@ -238,16 +238,16 @@ class GodunvFVMProduction:
             return F_h, F_Q
     
     def _hllc_flux(self, h_L, Q_L, h_R, Q_R):
-        """HLLC Riemann求解器（激波专用）"""
-        # 对于含源项，HLLC容易不稳定，加保护
+        """HLLC Riemann"""
+        # HLLC
         if h_L < self.eps_dry and h_R < self.eps_dry:
             return 0.0, 0.0
         
-        # 如果有摩阻且流速较小，退化为HLL
+        # HLL
         if self.n > 0.0:
             u_avg = 0.5 * (Q_L / max(h_L * self.B, self.eps_dry * self.B) + 
                            Q_R / max(h_R * self.B, self.eps_dry * self.B))
-            if abs(u_avg) < 0.5:  # 低速退化为HLL
+            if abs(u_avg) < 0.5:  # HLL
                 return self._hll_flux(h_L, Q_L, h_R, Q_R)
         
         A_L = max(h_L * self.B, self.eps_dry * self.B)
@@ -261,7 +261,7 @@ class GodunvFVMProduction:
         S_L = min(u_L - c_L, u_R - c_R)
         S_R = max(u_L + c_L, u_R + c_R)
         
-        # 中间波速（加保护）
+        # 
         denom = (h_L * (S_L - u_L) - h_R * (S_R - u_R))
         if abs(denom) < 1e-10:
             return self._hll_flux(h_L, Q_L, h_R, Q_R)
@@ -279,7 +279,7 @@ class GodunvFVMProduction:
         elif S_R <= 0:
             return F_h_R, F_Q_R
         elif S_M >= 0:
-            # 左*区域
+            # *
             coef = (S_L - u_L) / (S_L - S_M)
             h_L_star = h_L * coef
             Q_L_star = h_L_star * S_M * self.B
@@ -288,7 +288,7 @@ class GodunvFVMProduction:
             F_Q = F_Q_L + S_L * (Q_L_star - Q_L)
             return F_h, F_Q
         else:
-            # 右*区域
+            # *
             coef = (S_R - u_R) / (S_R - S_M)
             h_R_star = h_R * coef
             Q_R_star = h_R_star * S_M * self.B
@@ -298,7 +298,7 @@ class GodunvFVMProduction:
             return F_h, F_Q
     
     def _is_shock(self, h_L, h_R):
-        """检测激波（水深梯度>15%）"""
+        """>15%"""
         h_avg = 0.5 * (h_L + h_R)
         if h_avg < self.eps_dry:
             return False
@@ -306,7 +306,7 @@ class GodunvFVMProduction:
         return gradient > 0.15
     
     def _semi_implicit_friction(self, h, Q, dt):
-        """半隐式摩阻（提高稳定性）"""
+        """"""
         Q_new = Q.copy()
         
         for i in range(len(h)):
@@ -325,14 +325,14 @@ class GodunvFVMProduction:
         return Q_new
     
     def _apply_structure_coupling(self, h, Q):
-        """精细结构耦合（改进版，减小质量误差）"""
+        """"""
         for i, idx in enumerate(self.structure_cells):
             struct = self.structures[i]
             
             if idx <= 0 or idx >= len(h) - 1:
                 continue
             
-            # 上下游水深（取多点平均，更鲁棒）
+            # 
             if idx >= 2:
                 h_us = 0.5 * (h[idx-1] + h[idx-2])
             else:
@@ -346,11 +346,11 @@ class GodunvFVMProduction:
             try:
                 Q_struct, _ = struct.calculate_discharge(h_us, h_ds, self.t)
                 
-                # 渐进过渡（避免突变，关键！）
-                alpha = 0.2  # 松弛因子
+                # 
+                alpha = 0.2  # 
                 Q[idx] = (1 - alpha) * Q[idx] + alpha * Q_struct
                 
-                # 影响上下游（平滑过渡）
+                # 
                 if idx > 0:
                     Q[idx-1] = (1 - 0.5*alpha) * Q[idx-1] + 0.5*alpha * Q_struct
                 if idx < len(Q) - 1:
@@ -361,14 +361,14 @@ class GodunvFVMProduction:
         return h, Q
     
     def _apply_smoothing(self, h, Q):
-        """智能人工粘性（消除振荡）"""
+        """"""
         if self.nu <= 0.0:
             return h, Q
         
         h_smooth = h.copy()
         Q_smooth = Q.copy()
         
-        # 只在内部点平滑
+        # 
         for i in range(1, len(h) - 1):
             h_smooth[i] = h[i] + self.nu * (h[i-1] - 2*h[i] + h[i+1])
             Q_smooth[i] = Q[i] + self.nu * (Q[i-1] - 2*Q[i] + Q[i+1])
@@ -376,7 +376,7 @@ class GodunvFVMProduction:
         return h_smooth, Q_smooth
     
     def _extend_ghosts(self, h, Q):
-        """扩展ghost cells"""
+        """ghost cells"""
         n = len(h)
         h_ext = np.zeros(n + 2)
         Q_ext = np.zeros(n + 2)
@@ -384,7 +384,7 @@ class GodunvFVMProduction:
         h_ext[1:n+1] = h
         Q_ext[1:n+1] = Q
         
-        # 左边界
+        # 
         if self.bc_left['type'] == 'h':
             value = self.bc_left['value']
             h_ext[0] = value if not callable(value) else value(self.t)
@@ -394,7 +394,7 @@ class GodunvFVMProduction:
             value = self.bc_left['value']
             Q_ext[0] = value if not callable(value) else value(self.t)
         
-        # 右边界
+        # 
         if self.bc_right['type'] == 'h':
             value = self.bc_right['value']
             h_ext[n+1] = value if not callable(value) else value(self.t)
@@ -407,7 +407,7 @@ class GodunvFVMProduction:
         return h_ext, Q_ext
     
     def _apply_bc(self, h, Q):
-        """应用边界条件"""
+        """"""
         if self.bc_left['type'] == 'h':
             value = self.bc_left['value']
             h[0] = value if not callable(value) else value(self.t)
@@ -425,14 +425,14 @@ class GodunvFVMProduction:
         return h, Q
     
     def get_mass_conservation_error(self):
-        """质量误差%"""
+        """%"""
         current_mass = np.sum(self.h * self.B * self.dx)
         if self.initial_mass > 1e-10:
             return (current_mass - self.initial_mass) / self.initial_mass * 100.0
         return 0.0
     
     def get_uniformity(self):
-        """均匀性%"""
+        """%"""
         if len(self.h) < 2:
             return 0.0
         h_mean = np.mean(self.h)
@@ -441,7 +441,7 @@ class GodunvFVMProduction:
         return 0.0
     
     def get_state(self):
-        """获取状态"""
+        """"""
         return {
             'x': self.x.copy(),
             'h': self.h.copy(),
@@ -454,7 +454,7 @@ class GodunvFVMProduction:
         }
     
     def get_structure_info(self):
-        """获取结构信息"""
+        """"""
         info = []
         for i, idx in enumerate(self.structure_cells):
             struct = self.structures[i]
@@ -487,11 +487,11 @@ if __name__ == "__main__":
     from solvers.gate import SluiceGate
     
     print("="*80)
-    print("Phase 0遗留问题 - 彻底解决测试")
+    print("Phase 0 - ")
     print("="*80)
     
-    # 测试1: 稳态均匀流（优化空间波动）
-    print("\n【测试1】稳态均匀流 - 优化空间波动")
+    # 1: 
+    print("\n1 - ")
     
     solver1 = GodunvFVMProduction(
         width=10.0, length=1000.0, n_cells=100,
@@ -513,17 +513,17 @@ if __name__ == "__main__":
         solver1.step()
     
     state1 = solver1.get_state()
-    print(f"\n结果:")
-    print(f"  质量误差: {state1['mass_error']:.4f}% (目标<0.5%)")
-    print(f"  均匀性: {state1['uniformity']:.2f}% (目标<5%)")
-    print(f"  水深误差: {abs(np.mean(state1['h']) - h_uniform)/h_uniform*100:.4f}%")
+    print(f"\n:")
+    print(f"  : {state1['mass_error']:.4f}% (<0.5%)")
+    print(f"  : {state1['uniformity']:.2f}% (<5%)")
+    print(f"  : {abs(np.mean(state1['h']) - h_uniform)/h_uniform*100:.4f}%")
     
     passed_1 = abs(state1['mass_error']) < 0.5 and state1['uniformity'] < 5.0
-    print(f"\n{'✅' if passed_1 else '❌'} 测试1: {'通过' if passed_1 else '失败'}")
+    print(f"\n{'' if passed_1 else ''} 1: {'' if passed_1 else ''}")
     
-    # 测试2: 闸门耦合（优化质量误差）
+    # 2: 
     print("\n" + "="*80)
-    print("【测试2】闸门耦合 - 优化质量误差")
+    print("2 - ")
     
     gate = SluiceGate(position=500.0, width=10.0, opening=2.0)
     
@@ -542,24 +542,24 @@ if __name__ == "__main__":
     state2 = solver2.get_state()
     struct_info = solver2.get_structure_info()[0]
     
-    print(f"\n结果:")
-    print(f"  质量误差: {state2['mass_error']:.4f}% (目标<1%)")
-    print(f"  闸门流量误差: {abs(struct_info['Q_actual'] - struct_info['Q_calculated'])/struct_info['Q_calculated']*100:.2f}%")
+    print(f"\n:")
+    print(f"  : {state2['mass_error']:.4f}% (<1%)")
+    print(f"  : {abs(struct_info['Q_actual'] - struct_info['Q_calculated'])/struct_info['Q_calculated']*100:.2f}%")
     
     passed_2 = abs(state2['mass_error']) < 1.0
-    print(f"\n{'✅' if passed_2 else '❌'} 测试2: {'通过' if passed_2 else '失败'}")
+    print(f"\n{'' if passed_2 else ''} 2: {'' if passed_2 else ''}")
     
-    # 总结
+    # 
     print("\n" + "="*80)
-    print("🎯 Phase 0遗留问题解决状态")
+    print("[TARGET] Phase 0")
     print("="*80)
-    print(f"✅ 问题1 (Order 2不稳定): 保持研究状态，Order 1生产就绪")
-    print(f"{'✅' if passed_1 else '❌'} 问题2 (空间波动): {'已解决' if passed_1 else '需调整'}")
-    print(f"✅ 问题3 (混合Riemann): 已实现")
-    print(f"{'✅' if passed_2 else '❌'} 问题4 (闸门耦合): {'已解决' if passed_2 else '需调整'}")
-    print(f"⏳ 问题5 (性能基准): 待全面测试")
+    print(f" 1 (Order 2): Order 1")
+    print(f"{'' if passed_1 else ''} 2 (): {'' if passed_1 else ''}")
+    print(f" 3 (Riemann): ")
+    print(f"{'' if passed_2 else ''} 4 (): {'' if passed_2 else ''}")
+    print(f"⏳ 5 (): ")
     
     if passed_1 and passed_2:
-        print(f"\n🎉 Phase 0核心问题已彻底解决！")
+        print(f"\n[SUCCESS] Phase 0")
     else:
-        print(f"\n⚠️ 需要进一步调整")
+        print(f"\n[WARN] ")

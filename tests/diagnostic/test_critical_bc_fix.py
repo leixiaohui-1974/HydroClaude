@@ -9,7 +9,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_critical_bc():
@@ -29,7 +35,7 @@ def test_critical_bc():
     h_c = (Q_bc**2 / (g * B**2))**(1/3)
 
     print(f"\n参数：")
-    print(f"  Q_left = {Q_bc} m³/s")
+    print(f"  Q_left = {Q_bc} m^3/s")
     print(f"  边界条件类型: 'critical' (而不是'h')")
 
     # 创建求解器
@@ -94,8 +100,8 @@ def test_critical_bc():
     print(f"  总步数：{step_count}")
     print(f"  质量误差：{mass_error_pct:.2f}%")
     print(f"  通量守恒：{discrepancy_pct:.2f}%")
-    print(f"  累积流入：{cumulative_inflow:.2f} m³")
-    print(f"  累积流出：{cumulative_outflow:.2f} m³")
+    print(f"  累积流入：{cumulative_inflow:.2f} m^3")
+    print(f"  累积流出：{cumulative_outflow:.2f} m^3")
     print(f"  流入/流出比：{inflow_outflow_ratio:.2f}")
 
     # 最终边界状态
@@ -104,19 +110,19 @@ def test_critical_bc():
         Fr = abs(u) / np.sqrt(g * solver.h[-1])
         print(f"\n最终边界状态：")
         print(f"  h[-1] = {solver.h[-1]:.6f} m")
-        print(f"  Q[-1] = {solver.Q[-1]:.6f} m³/s")
+        print(f"  Q[-1] = {solver.Q[-1]:.6f} m^3/s")
         print(f"  Fr[-1] = {Fr:.6f}")
 
     print(f"\n判断：")
     if mass_error_pct < 5.0:
-        print(f"  ✅ 质量守恒良好 ({mass_error_pct:.2f}%)")
+        print(f"   质量守恒良好 ({mass_error_pct:.2f}%)")
     else:
-        print(f"  ❌ 质量误差过大 ({mass_error_pct:.2f}%)")
+        print(f"   质量误差过大 ({mass_error_pct:.2f}%)")
 
     if 0.9 < inflow_outflow_ratio < 1.1:
-        print(f"  ✅ 流量平衡 (比值={inflow_outflow_ratio:.2f})")
+        print(f"   流量平衡 (比值={inflow_outflow_ratio:.2f})")
     else:
-        print(f"  ❌ 流量不平衡 (比值={inflow_outflow_ratio:.2f})")
+        print(f"   流量不平衡 (比值={inflow_outflow_ratio:.2f})")
 
     # 对比h边界条件
     print(f"\n对比：")

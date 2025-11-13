@@ -134,7 +134,7 @@ class IDZIdentifier:
 
         except Exception as e:
             # 拟合失败时返回初始估计
-            print(f"    ⚠️  参数拟合失败: {e}")
+            print(f"    ️  参数拟合失败: {e}")
             print(f"    使用初始估计: K={K_est:.6f}, tau={tau_est:.2f}, T={T_est:.2f}")
             return np.array(initial_guess), 0.0
 
@@ -258,13 +258,13 @@ class IDZIdentifier:
         for key, data in results.items():
             r2 = data['R2']
             if r2 >= 0.95:
-                quality = "优秀 ✅"
+                quality = "优秀 "
             elif r2 >= 0.85:
-                quality = "良好 ✓"
+                quality = "良好 "
             elif r2 >= 0.70:
                 quality = "一般 ~"
             else:
-                quality = "较差 ✗"
+                quality = "较差 "
 
             print(f"  {data['name']:<40} R²={r2:.4f} ({quality})")
 
@@ -336,8 +336,8 @@ if __name__ == '__main__':
     print(f"  R² = {r2:.6f}")
 
     if r2 > 0.99:
-        print("\n✅ 辨识精度优秀")
+        print("\n 辨识精度优秀")
     elif r2 > 0.95:
-        print("\n✓ 辨识精度良好")
+        print("\n 辨识精度良好")
     else:
-        print("\n⚠️  辨识精度一般")
+        print("\n️  辨识精度一般")

@@ -42,15 +42,15 @@ def print_section(text):
 
 def print_success(text):
     """成功消息"""
-    print(f"{Colors.OKGREEN}✅ {text}{Colors.ENDC}")
+    print(f"{Colors.OKGREEN} {text}{Colors.ENDC}")
 
 def print_error(text):
     """错误消息"""
-    print(f"{Colors.FAIL}❌ {text}{Colors.ENDC}")
+    print(f"{Colors.FAIL} {text}{Colors.ENDC}")
 
 def print_warning(text):
     """警告消息"""
-    print(f"{Colors.WARNING}⚠️  {text}{Colors.ENDC}")
+    print(f"{Colors.WARNING}️  {text}{Colors.ENDC}")
 
 def print_info(text):
     """信息消息"""
@@ -58,7 +58,7 @@ def print_info(text):
 
 def print_test(name, passed, details=""):
     """打印测试结果"""
-    status = f"{Colors.OKGREEN}✅ PASS{Colors.ENDC}" if passed else f"{Colors.FAIL}❌ FAIL{Colors.ENDC}"
+    status = f"{Colors.OKGREEN} PASS{Colors.ENDC}" if passed else f"{Colors.FAIL} FAIL{Colors.ENDC}"
     print(f"  {name:60s} {status}")
     if details and not passed:
         print(f"     {Colors.FAIL}↳ {details}{Colors.ENDC}")
@@ -642,11 +642,11 @@ class WebSystemTester:
         print_header("测试结论")
         
         if success_rate >= 90:
-            print_success("🎉 系统测试通过！系统运行良好，可以进行生产使用。")
+            print_success(" 系统测试通过！系统运行良好，可以进行生产使用。")
         elif success_rate >= 70:
-            print_warning("⚠️  系统基本可用，但存在一些问题需要修复。")
+            print_warning("️  系统基本可用，但存在一些问题需要修复。")
         else:
-            print_error("❌ 系统存在严重问题，需要进行修复。")
+            print_error(" 系统存在严重问题，需要进行修复。")
             
     def generate_markdown_report(self):
         """生成Markdown格式的测试报告"""
@@ -659,8 +659,8 @@ class WebSystemTester:
             
             f.write("## 测试摘要\n\n")
             f.write(f"- 总测试数: {self.test_count}\n")
-            f.write(f"- ✅ 通过: {self.passed_count}\n")
-            f.write(f"- ❌ 失败: {self.failed_count}\n")
+            f.write(f"-  通过: {self.passed_count}\n")
+            f.write(f"-  失败: {self.failed_count}\n")
             success_rate = (self.passed_count / self.test_count * 100) if self.test_count > 0 else 0
             f.write(f"- 成功率: {success_rate:.1f}%\n\n")
             
@@ -684,7 +684,7 @@ class WebSystemTester:
                 for name, result in self.results.items():
                     if category.lower() in name.lower() or \
                        (category == "环境检查" and any(x in name for x in ["Python", "依赖", "模块"])):
-                        status = "✅ PASS" if result['passed'] else "❌ FAIL"
+                        status = " PASS" if result['passed'] else " FAIL"
                         details = result.get('details', '')
                         f.write(f"| {name} | {status} | {details} |\n")
                         
@@ -693,14 +693,14 @@ class WebSystemTester:
             f.write("## 建议\n\n")
             
             if success_rate >= 90:
-                f.write("- ✅ 系统运行良好，可以进行生产部署\n")
+                f.write("-  系统运行良好，可以进行生产部署\n")
                 f.write("- 建议进行浏览器兼容性测试\n")
                 f.write("- 建议进行压力测试\n")
             elif success_rate >= 70:
-                f.write("- ⚠️  修复失败的测试项\n")
+                f.write("- ️  修复失败的测试项\n")
                 f.write("- 重新运行完整测试\n")
             else:
-                f.write("- ❌ 优先修复关键错误\n")
+                f.write("-  优先修复关键错误\n")
                 f.write("- 检查环境配置\n")
                 f.write("- 验证依赖安装\n")
                 

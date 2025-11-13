@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
@@ -41,7 +42,7 @@ def run_example():
         print(f"  {node_id}: {head:.2f} m")
     print("\n管段流量:")
     for edge_id, flow in list(results['edges'].items())[:5]:
-        print(f"  {edge_id}: {flow:.2f} m³/s")
+        print(f"  {edge_id}: {flow:.2f} m^3/s")
 
 if __name__ == "__main__":
     run_example()

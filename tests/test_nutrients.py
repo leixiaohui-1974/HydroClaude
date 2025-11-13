@@ -24,7 +24,13 @@ import matplotlib.pyplot as plt
 from typing import Dict
 
 # 导入模块
-from solvers.nutrients import NutrientsSolver
+try:
+    from solvers.nutrients import NutrientsSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_nitrogen_cycle():
@@ -38,7 +44,7 @@ def test_nitrogen_cycle():
     print("="*70)
 
     # 参数
-    n_cells = 50
+    n_cells = 60
     dx = 100.0  # 100m
 
     # 创建营养盐求解器
@@ -61,7 +67,7 @@ def test_nitrogen_cycle():
     # 水动力条件
     u = np.full(n_cells, 0.3)  # 0.3 m/s
     h = np.full(n_cells, 2.0)  # 2 m
-    T = np.full(n_cells, 20.0)  # 20°C
+    T = np.full(n_cells, 20.0)  # 20 degC
     DO = np.full(n_cells, 8.0)  # 8 mg/L (充足DO)
 
     print(f"初始条件:")
@@ -69,7 +75,7 @@ def test_nitrogen_cycle():
     print(f"  NO3: {NO3_init[0]:.2f} mg/L")
     print(f"  OrgN: {OrgN_init[0]:.2f} mg/L")
     print(f"  DO: {DO[0]:.2f} mg/L (有氧)")
-    print(f"  T: {T[0]:.2f}°C")
+    print(f"  T: {T[0]:.2f} degC")
 
     # 模拟10天
     t_end = 10 * 86400.0  # s
@@ -107,10 +113,10 @@ def test_nitrogen_cycle():
 
     # 结果分析
     print(f"\n最终状态 (Day {time_history[-1]:.0f}):")
-    print(f"  NH4: {NH4_init[0]:.3f} → {NH4_history[-1]:.3f} mg/L")
-    print(f"  NO3: {NO3_init[0]:.3f} → {NO3_history[-1]:.3f} mg/L")
-    print(f"  OrgN: {OrgN_init[0]:.3f} → {OrgN_history[-1]:.3f} mg/L")
-    print(f"  TN: {TN_history[0]:.3f} → {TN_history[-1]:.3f} mg/L (守恒)")
+    print(f"  NH4: {NH4_init[0]:.3f} -> {NH4_history[-1]:.3f} mg/L")
+    print(f"  NO3: {NO3_init[0]:.3f} -> {NO3_history[-1]:.3f} mg/L")
+    print(f"  OrgN: {OrgN_init[0]:.3f} -> {OrgN_history[-1]:.3f} mg/L")
+    print(f"  TN: {TN_history[0]:.3f} -> {TN_history[-1]:.3f} mg/L (守恒)")
 
     # 质量守恒检查
     TN_change = abs(TN_history[-1] - TN_history[0])
@@ -152,10 +158,10 @@ def test_nitrogen_cycle():
     TN_conserved = TN_conservation < 5.0  # 5%误差容限
 
     if NH4_decreased and NO3_increased and TN_conserved:
-        print(f"\n✅ 测试通过! 硝化过程正常，TN守恒")
+        print(f"\n 测试通过! 硝化过程正常，TN守恒")
         return True
     else:
-        print(f"\n❌ 测试失败!")
+        print(f"\n 测试失败!")
         if not NH4_decreased:
             print(f"  - NH4未减少")
         if not NO3_increased:
@@ -176,13 +182,13 @@ def test_phosphorus_cycle():
     print("="*70)
 
     # 参数
-    n_cells = 30
+    n_cells = 36
     dx = 100.0
 
     nutrient_solver = NutrientsSolver(
         n_cells=n_cells,
         dx=dx,
-        P_release_20=5.0,  # 底泥磷释放 5 mg/m²/day
+        P_release_20=5.0,  # 底泥磷释放 5 mg/m^2/day
         use_numba=False
     )
 
@@ -209,7 +215,7 @@ def test_phosphorus_cycle():
     print(f"  OrgP: {OrgP_init[0]:.3f} mg/L")
     print(f"  DO: {DO[0]:.2f} mg/L (厌氧)")
     print(f"  h: {h[0]:.1f} m")
-    print(f"  T: {T[0]:.1f}°C")
+    print(f"  T: {T[0]:.1f} degC")
 
     # 模拟7天
     t_end = 7 * 86400.0
@@ -240,8 +246,8 @@ def test_phosphorus_cycle():
 
     # 结果分析
     print(f"\n最终状态 (Day {time_history[-1]:.0f}):")
-    print(f"  PO4: {PO4_init[0]:.3f} → {PO4_history[-1]:.3f} mg/L")
-    print(f"  OrgP: {OrgP_init[0]:.3f} → {OrgP_history[-1]:.3f} mg/L")
+    print(f"  PO4: {PO4_init[0]:.3f} -> {PO4_history[-1]:.3f} mg/L")
+    print(f"  OrgP: {OrgP_init[0]:.3f} -> {OrgP_history[-1]:.3f} mg/L")
     print(f"  TP增长: {TP_history[-1] - TP_history[0]:.3f} mg/L (底泥释放)")
 
     # 绘图
@@ -271,10 +277,10 @@ def test_phosphorus_cycle():
     PO4_increased = PO4_history[-1] > PO4_history[0]
 
     if PO4_increased:
-        print(f"\n✅ 测试通过! 底泥磷释放正常")
+        print(f"\n 测试通过! 底泥磷释放正常")
         return True
     else:
-        print(f"\n❌ 测试失败! PO4未增加")
+        print(f"\n 测试失败! PO4未增加")
         return False
 
 
@@ -289,7 +295,7 @@ def test_nutrients_transport():
     print("="*70)
 
     # 参数
-    n_cells = 100
+    n_cells = 120
     dx = 100.0  # 100m
 
     nutrient_solver = NutrientsSolver(
@@ -341,7 +347,7 @@ def test_nutrients_transport():
 
         if step in snapshots:
             NH4_distributions.append(nutrient_solver.NH4.copy())
-            # 计算总质量 (浓度 × 体积)
+            # 计算总质量 (浓度 x 体积)
             total_mass = np.sum(nutrient_solver.NH4 * h[0] * dx)
             total_mass_history.append(total_mass)
 
@@ -369,7 +375,7 @@ def test_nutrients_transport():
     print(f"\n峰值浓度变化:")
     print(f"  初始峰值: {peak_initial:.2f} mg/L")
     print(f"  最终峰值: {peak_final:.2f} mg/L")
-    print(f"  峰值位置: {np.argmax(NH4_distributions[0])*dx/1000:.2f} → {np.argmax(NH4_distributions[-1])*dx/1000:.2f} km")
+    print(f"  峰值位置: {np.argmax(NH4_distributions[0])*dx/1000:.2f} -> {np.argmax(NH4_distributions[-1])*dx/1000:.2f} km")
 
     print(f"\n质量守恒:")
     print(f"  初始总质量: {total_mass_history[0]:.2f} g")
@@ -383,14 +389,14 @@ def test_nutrients_transport():
     peak_pos_initial = np.argmax(NH4_distributions[0]) * dx / 1000.0
     peak_pos_final = np.argmax(NH4_distributions[-1]) * dx / 1000.0
     peak_moved = peak_pos_final > peak_pos_initial
-    mass_conserved = abs(mass_change_pct) < 50  # 允许矿化导致的±50%变化
+    mass_conserved = abs(mass_change_pct) < 50  # 允许矿化导致的+/-50%变化
 
     if peak_moved and mass_conserved:
-        print(f"\n✅ 测试通过! 营养盐输运正常")
-        print(f"   峰值移动: {peak_pos_initial:.1f} → {peak_pos_final:.1f} km")
+        print(f"\n 测试通过! 营养盐输运正常")
+        print(f"   峰值移动: {peak_pos_initial:.1f} -> {peak_pos_final:.1f} km")
         return True
     else:
-        print(f"\n❌ 测试失败!")
+        print(f"\n 测试失败!")
         if not peak_moved:
             print(f"  - 峰值未向下游移动")
         if not mass_conserved:
@@ -412,7 +418,7 @@ def run_all_tests():
     try:
         results['Nitrogen Cycle'] = test_nitrogen_cycle()
     except Exception as e:
-        print(f"\n❌ 测试1异常: {e}")
+        print(f"\n 测试1异常: {e}")
         import traceback
         traceback.print_exc()
         results['Nitrogen Cycle'] = False
@@ -421,7 +427,7 @@ def run_all_tests():
     try:
         results['Phosphorus Cycle'] = test_phosphorus_cycle()
     except Exception as e:
-        print(f"\n❌ 测试2异常: {e}")
+        print(f"\n 测试2异常: {e}")
         import traceback
         traceback.print_exc()
         results['Phosphorus Cycle'] = False
@@ -430,7 +436,7 @@ def run_all_tests():
     try:
         results['Nutrients Transport'] = test_nutrients_transport()
     except Exception as e:
-        print(f"\n❌ 测试3异常: {e}")
+        print(f"\n 测试3异常: {e}")
         import traceback
         traceback.print_exc()
         results['Nutrients Transport'] = False
@@ -444,7 +450,7 @@ def run_all_tests():
     total = len(results)
 
     for test_name, result in results.items():
-        status = "✅ PASS" if result else "❌ FAIL"
+        status = " PASS" if result else " FAIL"
         print(f"{test_name:30s} : {status}")
         if result:
             passed += 1
@@ -455,10 +461,10 @@ def run_all_tests():
     print("="*70)
 
     if passed == total:
-        print("\n🎉 所有测试通过! HydroClaude Phase 3验证成功!")
-        print("营养盐循环模块对标商业软件: WASP, CE-QUAL-W2 ✅")
+        print("\n 所有测试通过! HydroClaude Phase 3验证成功!")
+        print("营养盐循环模块对标商业软件: WASP, CE-QUAL-W2 ")
     else:
-        print(f"\n⚠️  {total-passed}个测试失败，需要进一步调试")
+        print(f"\n️  {total-passed}个测试失败，需要进一步调试")
 
     return passed == total
 

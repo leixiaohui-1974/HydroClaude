@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例14: 自适应MPC控制（增强版）
 
@@ -13,6 +14,8 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from control.adaptive_mpc import AdaptiveMPC, AdaptiveMPCConfig
@@ -161,7 +164,7 @@ def run_example():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (2) 控制输入图
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -177,7 +180,7 @@ def run_example():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (3) 模型参数误差图
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -196,7 +199,7 @@ def run_example():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (4) 跟踪误差图
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -211,7 +214,7 @@ def run_example():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (5) 四子图综合视图
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
@@ -260,7 +263,7 @@ def run_example():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (6) 参数收敛动画 (GIF)
     print("  生成参数收敛动画...")
@@ -300,7 +303,7 @@ def run_example():
     anim.save(gif_path, writer='pillow', fps=2, dpi=100)
     plt.close(fig)
     generated_images.append(gif_path)
-    print(f"  ✓ 生成动画: {os.path.basename(gif_path)}")
+    print(f"   生成动画: {os.path.basename(gif_path)}")
     print()
 
     # ====== 6. 生成报告 ======
@@ -377,8 +380,8 @@ def run_example():
 自适应算法从测量数据中持续学习，逐步修正模型参数。
 
 **辨识性能**:
-- A矩阵误差: {np.linalg.norm(A_init - A_true):.4f} → {A_errors[-1]:.4f} (降低 {stats['A误差降低率']})
-- B矩阵误差: {np.linalg.norm(B_init - B_true):.4f} → {B_errors[-1]:.4f} (降低 {stats['B误差降低率']})
+- A矩阵误差: {np.linalg.norm(A_init - A_true):.4f} -> {A_errors[-1]:.4f} (降低 {stats['A误差降低率']})
+- B矩阵误差: {np.linalg.norm(B_init - B_true):.4f} -> {B_errors[-1]:.4f} (降低 {stats['B误差降低率']})
 
 参数误差在对数坐标下呈现指数衰减，表明自适应算法具有良好的收敛性。""",
             'images': [generated_images[2]]
@@ -427,11 +430,11 @@ def run_example():
 仿真成功完成！
 
 **主要成果**:
-- ✓ 成功实现在线参数辨识
-- ✓ A矩阵误差降低 {stats['A误差降低率']}
-- ✓ B矩阵误差降低 {stats['B误差降低率']}
-- ✓ 最终跟踪误差仅 {tracking_errors[-1]:.4f}
-- ✓ 验证了自适应MPC的有效性
+-  成功实现在线参数辨识
+-  A矩阵误差降低 {stats['A误差降低率']}
+-  B矩阵误差降低 {stats['B误差降低率']}
+-  最终跟踪误差仅 {tracking_errors[-1]:.4f}
+-  验证了自适应MPC的有效性
 
 **技术优势**:
 - **自适应性**: 无需精确初始模型
@@ -454,7 +457,7 @@ def run_example():
         filename='example_14_simulation_report.md'
     )
 
-    print(f"  ✓ 报告已生成: {os.path.basename(report_path)}")
+    print(f"   报告已生成: {os.path.basename(report_path)}")
     print()
 
     # ====== 7. 总结 ======
@@ -462,14 +465,14 @@ def run_example():
     print("仿真结果总结")
     print("=" * 70)
     print(f"参数辨识性能:")
-    print(f"  A矩阵误差: {np.linalg.norm(A_init - A_true):.4f} → {A_errors[-1]:.4f} (降低 {stats['A误差降低率']})")
-    print(f"  B矩阵误差: {np.linalg.norm(B_init - B_true):.4f} → {B_errors[-1]:.4f} (降低 {stats['B误差降低率']})")
+    print(f"  A矩阵误差: {np.linalg.norm(A_init - A_true):.4f} -> {A_errors[-1]:.4f} (降低 {stats['A误差降低率']})")
+    print(f"  B矩阵误差: {np.linalg.norm(B_init - B_true):.4f} -> {B_errors[-1]:.4f} (降低 {stats['B误差降低率']})")
     print()
     print(f"跟踪控制性能:")
     print(f"  初始状态: [{states[0, 0]:.2f}, {states[0, 1]:.2f}]")
     print(f"  最终状态: [{states[-1, 0]:.2f}, {states[-1, 1]:.2f}]")
     print(f"  参考状态: [{reference[0,0]:.2f}, {reference[1,0]:.2f}]")
-    print(f"  跟踪误差: {tracking_errors[0]:.4f} → {tracking_errors[-1]:.4f}")
+    print(f"  跟踪误差: {tracking_errors[0]:.4f} -> {tracking_errors[-1]:.4f}")
     print()
     print(f"生成文件:")
     for img in generated_images:

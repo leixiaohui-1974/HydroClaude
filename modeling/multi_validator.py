@@ -92,7 +92,7 @@ class MultiValidator:
             struct_result['passed']
         ])
 
-        print(f"\n总体结果: {'✓ 全部通过' if self.all_passed else '⚠ 存在问题'}")
+        print(f"\n总体结果: {' 全部通过' if self.all_passed else ' 存在问题'}")
 
         return self.validation_results
 
@@ -122,7 +122,7 @@ class MultiValidator:
             'passed': passed
         }
 
-        status = "✓ 通过" if passed else "✗ 未通过"
+        status = " 通过" if passed else " 未通过"
         print(f"  物理合理性: {status}")
         print(f"    水深范围: [{result['h_min']:.3f}, {result['h_max']:.3f}] m")
         print(f"    Froude数范围: [{result['Fr_min']:.3f}, {result['Fr_max']:.3f}]")
@@ -158,7 +158,7 @@ class MultiValidator:
             'passed': passed
         }
 
-        status = "✓ 通过" if passed else "✗ 未通过"
+        status = " 通过" if passed else " 未通过"
         print(f"  数值稳定性: {status}")
         print(f"    NaN/Inf检查: {'无' if not (has_nan or has_inf) else '存在'}")
         print(f"    有界性: {'是' if bounded else '否'}")
@@ -188,7 +188,7 @@ class MultiValidator:
             )
             passed = gate_result.get('all_passed', True)
         except Exception as e:
-            print(f"  ⚠ 结构物验证失败: {e}")
+            print(f"   结构物验证失败: {e}")
             passed = False
             gate_result = {'error': str(e)}
 
@@ -221,7 +221,7 @@ class MultiValidator:
                 f.write(f"  平均流量: {r['Q_mean']:.4f} m³/s\n")
                 f.write(f"  相对误差: {r['error_percent']:.6f}%\n")
                 f.write(f"  评级: {r['grade']}\n")
-                f.write(f"  状态: {'✓ 通过' if r['passed'] else '✗ 未通过'}\n\n")
+                f.write(f"  状态: {' 通过' if r['passed'] else ' 未通过'}\n\n")
 
             # 2. 物理合理性
             if 'physical' in self.validation_results:
@@ -231,7 +231,7 @@ class MultiValidator:
                 f.write(f"  水深范围: [{r['h_min']:.3f}, {r['h_max']:.3f}] m\n")
                 f.write(f"  Froude数范围: [{r['Fr_min']:.3f}, {r['Fr_max']:.3f}]\n")
                 f.write(f"  流速范围: [{r['u_min']:.3f}, {r['u_max']:.3f}] m/s\n")
-                f.write(f"  状态: {'✓ 通过' if r['passed'] else '✗ 未通过'}\n\n")
+                f.write(f"  状态: {' 通过' if r['passed'] else ' 未通过'}\n\n")
 
             # 3. 数值稳定性
             if 'stability' in self.validation_results:
@@ -241,7 +241,7 @@ class MultiValidator:
                 f.write(f"  NaN/Inf: {'无' if not (r['has_nan'] or r['has_inf']) else '存在'}\n")
                 f.write(f"  有界性: {'是' if r['bounded'] else '否'}\n")
                 f.write(f"  归一化总变差: {r['tv_normalized']:.6f}\n")
-                f.write(f"  状态: {'✓ 通过' if r['passed'] else '✗ 未通过'}\n\n")
+                f.write(f"  状态: {' 通过' if r['passed'] else ' 未通过'}\n\n")
 
             # 4. 结构物
             if 'structures' in self.validation_results:
@@ -249,14 +249,14 @@ class MultiValidator:
                 f.write("4. 结构物验证\n")
                 f.write("-" * 80 + "\n")
                 f.write(f"  结构物数量: {r['n_structures']}\n")
-                f.write(f"  状态: {'✓ 通过' if r['passed'] else '✗ 未通过'}\n\n")
+                f.write(f"  状态: {' 通过' if r['passed'] else ' 未通过'}\n\n")
 
             # 总结
             f.write("=" * 80 + "\n")
-            f.write(f"总体结果: {'✓ 全部通过' if self.all_passed else '⚠ 存在问题'}\n")
+            f.write(f"总体结果: {' 全部通过' if self.all_passed else ' 存在问题'}\n")
             f.write("=" * 80 + "\n")
 
-        print(f"\n✓ 验证报告已保存: {filepath}")
+        print(f"\n 验证报告已保存: {filepath}")
 
     def __repr__(self) -> str:
         return f"MultiValidator(passed={self.all_passed})"

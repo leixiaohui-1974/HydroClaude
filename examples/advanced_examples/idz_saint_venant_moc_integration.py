@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 IDZ-Saint-Venant深度集成示例（真实物理模型版）
 
@@ -5,10 +6,10 @@ IDZ-Saint-Venant深度集成示例（真实物理模型版）
 结合在线辨识和自适应控制。
 
 改进点：
-1. ✅ 使用真实Saint-Venant求解器（physics.canal.Canal）
-2. ✅ 支持多种数值方法（MOC、Preissmann、FVM）
-3. ✅ 空间分布式水力模型（非集总参数）
-4. ✅ 更真实的非线性动力学特性
+1.  使用真实Saint-Venant求解器（physics.canal.Canal）
+2.  支持多种数值方法（MOC、Preissmann、FVM）
+3.  空间分布式水力模型（非集总参数）
+4.  更真实的非线性动力学特性
 
 系统架构：
 ┌─────────────────────────────────────────────────────┐
@@ -79,7 +80,7 @@ class IDZCanalIntegration:
 
         # 工作点（用于计算变化量）
         self.depth_nominal = np.mean(canal.hydraulic_state.h)
-        self.flow_nominal = 20.0  # 标称流量 (m³/s)
+        self.flow_nominal = 20.0  # 标称流量 (m^3/s)
 
         # 数据缓冲
         self.u_buffer = []  # 控制输入历史
@@ -113,7 +114,7 @@ class IDZCanalIntegration:
         更新在线辨识
 
         Args:
-            u: 控制输入（流量 m³/s）- 绝对值
+            u: 控制输入（流量 m^3/s）- 绝对值
             y: 系统输出（水位 m）- 绝对值
         """
         # 添加到缓冲
@@ -196,11 +197,11 @@ class AdaptivePIController:
         # 动态调整lambda（小K值需要更激进的控制）
         # 当K较小时，系统响应慢，需要更小的lambda（更激进的控制）
         if abs(params.K) < 50.0:
-            lambda_c = 30.0  # 小增益→激进控制
+            lambda_c = 30.0  # 小增益->激进控制
         elif abs(params.K) < 200.0:
-            lambda_c = 50.0  # 中增益→中等控制
+            lambda_c = 50.0  # 中增益->中等控制
         else:
-            lambda_c = 80.0  # 大增益→保守控制
+            lambda_c = 80.0  # 大增益->保守控制
 
         # 防止除零
         K_safe = max(abs(params.K), 1.0)
@@ -261,10 +262,10 @@ def run_moc_comparison_simulation():
     运行对比仿真：静态IDZ vs 自适应IDZ（使用真实MOC求解器）
 
     场景（5阶段）：
-    1. 初始流量20 m³/s，目标水深2.0m
-    2. 300s时流量扰动增加到28 m³/s
+    1. 初始流量20 m^3/s，目标水深2.0m
+    2. 300s时流量扰动增加到28 m^3/s
     3. 600s时目标水深改变为2.5m
-    4. 900s时流量扰动降至15 m³/s
+    4. 900s时流量扰动降至15 m^3/s
     5. 1200s时目标水深改变为1.8m
     6. 仿真时长：1800s（30分钟）
     """
@@ -288,7 +289,7 @@ def run_moc_comparison_simulation():
     # 系统1：静态IDZ参数
     canal_length = 2000.0
     canal_width = 10.0
-    canal_area = canal_length * canal_width  # 水面面积 = 长度 × 宽度
+    canal_area = canal_length * canal_width  # 水面面积 = 长度 x 宽度
 
     canal_static = Canal(
         name="canal_static",
@@ -511,7 +512,7 @@ def run_moc_comparison_simulation():
         kp_adaptive_history, ki_adaptive_history
     )
 
-    print("\n✅ 示例运行完成！")
+    print("\n 示例运行完成！")
     print("=" * 80)
 
 
@@ -549,7 +550,7 @@ def visualize_comparison(time, depth_static, control_static,
     ax2.plot(time, control_static, 'b-', linewidth=2, label='静态IDZ控制')
     ax2.plot(time, control_adaptive, 'r-', linewidth=2, label='自适应IDZ控制')
     ax2.plot(time, disturbance, 'g--', linewidth=1.5, alpha=0.7, label='上游扰动')
-    ax2.set_ylabel('下游流量 (m³/s)', fontsize=11)
+    ax2.set_ylabel('下游流量 (m^3/s)', fontsize=11)
     ax2.legend(loc='upper right', fontsize=10)
     ax2.grid(True, alpha=0.3)
 

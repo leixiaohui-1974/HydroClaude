@@ -349,4 +349,4 @@ def visualize_network(topology: 'NetworkTopology', results: Dict = None):
     plt.axis('off')
     plt.tight_layout()
     plt.savefig('network_topology.png', dpi=150, bbox_inches='tight')
-    print("\n✓ 拓扑图已保存: network_topology.png")
+    print("\n 拓扑图已保存: network_topology.png")

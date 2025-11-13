@@ -179,7 +179,7 @@ class PerformanceBenchmark:
 
     def _print_result(self, result: BenchmarkResult):
         """Print individual result / 打印单个结果"""
-        status = "✓ SUCCESS" if result.success else "✗ FAILED"
+        status = " SUCCESS" if result.success else " FAILED"
         print(f"\nResult / 结果: {status}")
         print(f"  Execution Time / 执行时间:     {result.execution_time:.2f}s")
         print(f"  Peak Memory / 峰值内存:        {result.peak_memory_mb:.2f} MB")
@@ -275,7 +275,7 @@ class PerformanceBenchmark:
         if failed:
             print("Failed Cases / 失败的案例:")
             for result in failed:
-                print(f"  ✗ Case {result.case_id}: {result.case_name}")
+                print(f"   Case {result.case_id}: {result.case_name}")
                 if result.error_message:
                     print(f"    Error: {result.error_message[:100]}")
             print()
@@ -312,7 +312,7 @@ class PerformanceBenchmark:
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
 
-        print(f"✓ Results saved to: {output_file}")
+        print(f" Results saved to: {output_file}")
         print()
 
 

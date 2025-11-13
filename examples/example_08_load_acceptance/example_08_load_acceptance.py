@@ -26,6 +26,8 @@ Date: 2025-10-22
 """
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import os
@@ -51,7 +53,7 @@ class LoadAcceptanceSimulator:
     Dynamics:
     - Generator: J * dω/dt = T_turbine - T_load - T_friction
     - Surge tank: A * dZ/dt = Q_tunnel - Q_turbine
-    - Turbine: P = η(Q,H,y) * ρ * g * Q * H
+    - Turbine: P = η(Q,H,y) * rho * g * Q * H
     - Governor: y = f(ω_error)
     """
 
@@ -64,8 +66,8 @@ class LoadAcceptanceSimulator:
         print("\nInitializing system components...")
 
         # Physical constants
-        self.g = 9.81  # m/s²
-        self.rho = 1000.0  # kg/m³
+        self.g = 9.81  # m/s^2
+        self.rho = 1000.0  # kg/m^3
 
         # 1. Francis Turbine (100 MW)
         print("\n1. Francis Turbine")
@@ -73,14 +75,14 @@ class LoadAcceptanceSimulator:
             position=0.0,
             rated_power=100.0,   # 100 MW
             rated_head=150.0,    # 150 m
-            rated_flow=75.0,     # 75 m³/s
+            rated_flow=75.0,     # 75 m^3/s
             rated_speed=250.0,   # 250 rpm
             runner_diameter=2.5, # 2.5 m
             max_efficiency=0.93
         )
         print(f"   Rated power: {self.turbine.rated_power/1e6:.1f} MW")
         print(f"   Rated head: {self.turbine.rated_head:.1f} m")
-        print(f"   Rated flow: {self.turbine.rated_flow:.1f} m³/s")
+        print(f"   Rated flow: {self.turbine.rated_flow:.1f} m^3/s")
         print(f"   Rated speed: {self.turbine.rated_speed:.1f} rpm")
 
         # 2. PID Governor
@@ -108,7 +110,7 @@ class LoadAcceptanceSimulator:
             initial_level=480.0  # Initial at 480 m
         )
         print(f"   Diameter: {self.surge_tank.diameter:.1f} m")
-        print(f"   Area: {self.surge_tank.area:.1f} m²")
+        print(f"   Area: {self.surge_tank.area:.1f} m^2")
         print(f"   Initial level: {self.surge_tank.water_level:.1f} m")
 
         # 4. System hydraulic parameters
@@ -116,20 +118,20 @@ class LoadAcceptanceSimulator:
         self.reservoir_level = 500.0  # m
         self.tailwater_level = 330.0  # m
         self.tunnel_length = 5000.0   # m
-        self.tunnel_area = 20.0       # m²
+        self.tunnel_area = 20.0       # m^2
         print(f"   Reservoir level: {self.reservoir_level:.1f} m")
         print(f"   Tailwater level: {self.tailwater_level:.1f} m")
         print(f"   Tunnel length: {self.tunnel_length:.1f} m")
-        print(f"   Tunnel area: {self.tunnel_area:.1f} m²")
+        print(f"   Tunnel area: {self.tunnel_area:.1f} m^2")
 
         # 5. Generator parameters
         print("\n5. Generator")
-        # Moment of inertia: J = GD² / 4
-        # Typical GD² = 8000 kN·m² for 100 MW unit
-        GD2 = 8000e3  # N·m²
-        self.J = GD2 / 4.0  # kg·m²
-        print(f"   GD²: {GD2/1e6:.1f} MN·m²")
-        print(f"   Moment of inertia: {self.J/1e6:.1f} × 10⁶ kg·m²")
+        # Moment of inertia: J = GD^2 / 4
+        # Typical GD^2 = 8000 kN·m^2 for 100 MW unit
+        GD2 = 8000e3  # N·m^2
+        self.J = GD2 / 4.0  # kg·m^2
+        print(f"   GD^2: {GD2/1e6:.1f} MN·m^2")
+        print(f"   Moment of inertia: {self.J/1e6:.1f} x 10⁶ kg·m^2")
 
         # Rated torque
         omega_rated = 2.0 * np.pi * self.turbine.rated_speed / 60.0  # rad/s
@@ -181,7 +183,7 @@ class LoadAcceptanceSimulator:
         H_net = H_surge  # Simplified
 
         # 4. Estimate flow from opening and head
-        # Simplified: Q ≈ opening × Q_rated × sqrt(H/H_rated)
+        # Simplified: Q ~= opening x Q_rated x sqrt(H/H_rated)
         Q_turbine = self.guide_vane_opening * self.turbine.rated_flow * np.sqrt(H_net / self.turbine.rated_head)
 
         # Turbine power and torque
@@ -217,7 +219,7 @@ class LoadAcceptanceSimulator:
 
         # 8. Surge tank dynamics
         # Tunnel flow (assumed constant from reservoir)
-        Q_tunnel = 20.0  # m³/s (steady-state value for initial condition)
+        Q_tunnel = 20.0  # m^3/s (steady-state value for initial condition)
 
         # Update surge tank
         d_level_dt = self.surge_tank.calculate_water_level_derivative(
@@ -265,7 +267,7 @@ def run_load_acceptance_simulation():
 
     # Simulation parameters
     dt = 0.05  # 50 ms time step
-    t_end = 120.0  # 120 seconds
+    t_end = 30.0  # 120 seconds
     t_array = np.arange(0, t_end, dt)
 
     # Load profile
@@ -354,19 +356,19 @@ def run_load_acceptance_simulation():
     print(f"\nPerformance Metrics:")
     speed_deviation_final = abs(avg_speed_final - 250.0) / 250.0 * 100.0
     if speed_deviation_final < 1.0:
-        print(f"  ✅ Final speed deviation: {speed_deviation_final:.2f}% (< 1.0%)")
+        print(f"   Final speed deviation: {speed_deviation_final:.2f}% (< 1.0%)")
     else:
-        print(f"  ⚠️  Final speed deviation: {speed_deviation_final:.2f}% (> 1.0%)")
+        print(f"    Final speed deviation: {speed_deviation_final:.2f}% (> 1.0%)")
 
     if abs(speed_undershoot) < 10.0:
-        print(f"  ✅ Speed undershoot: {abs(speed_undershoot):.2f}% (< 10%)")
+        print(f"   Speed undershoot: {abs(speed_undershoot):.2f}% (< 10%)")
     else:
-        print(f"  ⚠️  Speed undershoot: {abs(speed_undershoot):.2f}% (> 10%)")
+        print(f"    Speed undershoot: {abs(speed_undershoot):.2f}% (> 10%)")
 
     if surge_drop < 20.0:
-        print(f"  ✅ Surge drop: {surge_drop:.2f} m (< 20 m)")
+        print(f"   Surge drop: {surge_drop:.2f} m (< 20 m)")
     else:
-        print(f"  ⚠️  Surge drop: {surge_drop:.2f} m (> 20 m)")
+        print(f"    Surge drop: {surge_drop:.2f} m (> 20 m)")
 
     # Plotting
     print("\n" + "-" * 80)

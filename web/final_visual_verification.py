@@ -28,7 +28,7 @@ def final_verification():
         page.goto("http://localhost:5174", wait_until="networkidle")
         time.sleep(3)
         page.screenshot(path=str(screenshots_dir / "01_homepage.png"), full_page=True)
-        print("   ✅ 首页截图已保存")
+        print("    首页截图已保存")
         
         # 2. 建模工作台
         print("\n2. 建模工作台...")
@@ -41,7 +41,7 @@ def final_verification():
         body_text = page.locator('body').inner_text()
         has_components = "明渠" in body_text or "矩形明渠" in body_text
         print(f"   建模组件可见: {has_components}")
-        print("   ✅ 建模工作台截图已保存")
+        print("    建模工作台截图已保存")
         
         # 3. 仿真管理 - 关键！
         print("\n3. 仿真管理...")
@@ -57,9 +57,9 @@ def final_verification():
         # 等待仿真配置表单出现
         try:
             page.wait_for_selector('text=仿真配置', timeout=10000)
-            print("   ✅ 仿真配置表单已加载")
+            print("    仿真配置表单已加载")
         except:
-            print("   ⚠️  仿真配置表单未找到")
+            print("   ️  仿真配置表单未找到")
             
         # 再等待一段时间确保完全渲染
         time.sleep(8)
@@ -77,11 +77,11 @@ def final_verification():
         print(f"   建模组件存在: {has_modeling_components} (应该是False)")
         
         if has_simulation_config and has_single_scenario and not has_modeling_components:
-            print("   ✅ 仿真管理页面正确显示！")
+            print("    仿真管理页面正确显示！")
         else:
-            print("   ⚠️  仿真管理页面可能有问题")
+            print("   ️  仿真管理页面可能有问题")
             
-        print("   ✅ 仿真管理截图已保存")
+        print("    仿真管理截图已保存")
         
         # 4. 单场景结果标签
         print("\n4. 检查单场景结果子标签...")
@@ -91,11 +91,11 @@ def final_verification():
                 single_tab.first.click()
                 time.sleep(3)
                 page.screenshot(path=str(screenshots_dir / "04_single_scenario.png"), full_page=True)
-                print("   ✅ 单场景结果截图已保存")
+                print("    单场景结果截图已保存")
             else:
                 print("   ℹ️  单场景结果标签未找到（可能已经是默认显示）")
         except Exception as e:
-            print(f"   ⚠️  单场景结果标签测试失败: {e}")
+            print(f"   ️  单场景结果标签测试失败: {e}")
             
         # 5. 多场景对比标签
         print("\n5. 检查多场景对比子标签...")
@@ -105,11 +105,11 @@ def final_verification():
                 comparison_tab.first.click()
                 time.sleep(3)
                 page.screenshot(path=str(screenshots_dir / "05_comparison.png"), full_page=True)
-                print("   ✅ 多场景对比截图已保存")
+                print("    多场景对比截图已保存")
             else:
                 print("   ℹ️  多场景对比标签未找到")
         except Exception as e:
-            print(f"   ⚠️  多场景对比标签测试失败: {e}")
+            print(f"   ️  多场景对比标签测试失败: {e}")
             
         # 6. 返回建模工作台验证
         print("\n6. 返回建模工作台...")
@@ -117,7 +117,7 @@ def final_verification():
         page.wait_for_selector('.react-flow', timeout=10000)
         time.sleep(5)
         page.screenshot(path=str(screenshots_dir / "06_back_to_modeling.png"), full_page=True)
-        print("   ✅ 返回建模工作台截图已保存")
+        print("    返回建模工作台截图已保存")
         
         browser.close()
         

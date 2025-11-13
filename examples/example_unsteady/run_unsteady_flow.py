@@ -43,7 +43,7 @@ def main():
     success = modeler.run()
 
     if not success:
-        print("\n✗ 模拟失败")
+        print("\n 模拟失败")
         return False
 
     # ========================================================================
@@ -75,12 +75,12 @@ def main():
         print(f"\n稳定性检查：")
         print(f"  最后两个时间步的最大水深变化: {max_change:.6f} m")
         if max_change < 0.001:
-            print(f"  状态: ✓ 已基本达到稳态")
+            print(f"  状态:  已基本达到稳态")
         else:
             print(f"  状态: >> 仍在演化中")
 
     print("\n" + "=" * 90)
-    print(f"✓ 模拟完成！")
+    print(f" 模拟完成！")
     print(f"  结果目录: {modeler.output_dir}")
     print(f"  数据文件: {modeler.output_dir}/unsteady_flow_data.npz")
     print(f"  时间序列图: {modeler.output_dir}/unsteady_flow_time_series.png")

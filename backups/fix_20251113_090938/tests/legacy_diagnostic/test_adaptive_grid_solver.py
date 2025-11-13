@@ -1,0 +1,184 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+测试自适应网格求解器
+
+对比均匀网格vs自适应网格在三闸门场景下的精度提升
+
+作者: Claude
+日期: 2025-10-23
+"""
+
+import sys
+import os
+import numpy as np
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    # DEPRECATED: Use HydrostaticCanalSolver instead
+# from solvers.single_canal_solver import SingleCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+from solvers.gate import SluiceGate
+
+
+def test_adaptive_grid_precision():
+    """
+    测试自适应网格的精度提升效果
+    """
+
+    print("=" * 80)
+    print("自适应网格精度测试")
+    print("=" * 80)
+    print()
+
+    # 系统配置
+    canal_length = 10000.0
+    canal_width = 10.0
+    bed_slope = 0.0005
+    manning_n = 0.025
+    Q_initial = 10.0
+
+    # 创建三个闸门
+    gate1 = SluiceGate(position=2500.0, width=canal_width, opening=4.5, Cd=0.6)
+    gate2 = SluiceGate(position=5000.0, width=canal_width, opening=4.0, Cd=0.6)
+    gate3 = SluiceGate(position=7500.0, width=canal_width, opening=5.0, Cd=0.6)
+
+    print("测试场景: 三个闸门串联")
+    print(f"  闸门1: 位置={gate1.position}m, 开度={gate1.get_opening(0)}m")
+    print(f"  闸门2: 位置={gate2.position}m, 开度={gate2.get_opening(0)}m (最小)")
+    print(f"  闸门3: 位置={gate3.position}m, 开度={gate3.get_opening(0)}m")
+    print()
+
+    # ==================== 测试1: 均匀网格（基准） ====================
+    print("=" * 80)
+    print("测试1: 均匀网格求解器 (基准)")
+    print("=" * 80)
+
+    solver_uniform = SingleCanalSolver(
+        total_length=canal_length,
+        structures=[gate1, gate2, gate3],
+        nx_total=301,
+        B=canal_width,
+        S0=bed_slope,
+        n=manning_n,
+        use_adaptive_grid=False  # 均匀网格
+    )
+
+    solver_uniform.reset_with_steady_state(Q_initial)
+
+    result_uniform = solver_uniform.solve_steady_state(
+        Q_target=Q_initial,
+        max_iterations=5000,
+        convergence_tol=0.001,
+        check_interval=500,
+        verbose=True
+    )
+
+    # 获取流量分布
+    profile_uniform = solver_uniform.get_full_profile()
+    Q_uniform = profile_uniform['Q']
+    x_uniform = profile_uniform['x']
+
+    # 计算误差
+    Q_error_uniform = np.abs(Q_uniform - Q_initial) / Q_initial * 100
+    max_error_uniform = np.max(Q_error_uniform)
+
+    # 闸门位置的流量
+    gate_flows_uniform = solver_uniform.get_gate_flows()
+
+    print(f"\n均匀网格结果:")
+    print(f"  网格点数: {len(x_uniform)}")
+    print(f"  平均间距: {(x_uniform[-1]-x_uniform[0])/(len(x_uniform)-1):.2f} m")
+    print(f"  最大相对误差: {max_error_uniform:.4f}%")
+    print(f"  闸门1流量: {gate_flows_uniform[0]:.4f} m³/s (误差: {abs(gate_flows_uniform[0]-Q_initial)/Q_initial*100:.4f}%)")
+    print(f"  闸门2流量: {gate_flows_uniform[1]:.4f} m³/s (误差: {abs(gate_flows_uniform[1]-Q_initial)/Q_initial*100:.4f}%)")
+    print(f"  闸门3流量: {gate_flows_uniform[2]:.4f} m³/s (误差: {abs(gate_flows_uniform[2]-Q_initial)/Q_initial*100:.4f}%)")
+
+    # ==================== 测试2: 自适应网格 ====================
+    print("\n" + "=" * 80)
+    print("测试2: 自适应网格求解器")
+    print("=" * 80)
+
+    solver_adaptive = SingleCanalSolver(
+        total_length=canal_length,
+        structures=[gate1, gate2, gate3],
+        nx_total=301,  # 这个参数在自适应网格时会被覆盖
+        B=canal_width,
+        S0=bed_slope,
+        n=manning_n,
+        use_adaptive_grid=True,  # 启用自适应网格
+        refinement_radius=200.0,  # 闸门±200m范围加密
+        dx_fine=5.0,              # 加密区5m间距
+        dx_coarse=33.0            # 粗网格33m间距
+    )
+
+    solver_adaptive.reset_with_steady_state(Q_initial)
+
+    result_adaptive = solver_adaptive.solve_steady_state(
+        Q_target=Q_initial,
+        max_iterations=5000,
+        convergence_tol=0.001,
+        check_interval=500,
+        verbose=True
+    )
+
+    # 获取流量分布
+    profile_adaptive = solver_adaptive.get_full_profile()
+    Q_adaptive = profile_adaptive['Q']
+    x_adaptive = profile_adaptive['x']
+
+    # 计算误差
+    Q_error_adaptive = np.abs(Q_adaptive - Q_initial) / Q_initial * 100
+    max_error_adaptive = np.max(Q_error_adaptive)
+
+    # 闸门位置的流量
+    gate_flows_adaptive = solver_adaptive.get_gate_flows()
+
+    print(f"\n自适应网格结果:")
+    print(f"  网格点数: {len(x_adaptive)}")
+    print(f"  间距范围: 5.0 - 33.0 m (自适应)")
+    print(f"  最大相对误差: {max_error_adaptive:.4f}%")
+    print(f"  闸门1流量: {gate_flows_adaptive[0]:.4f} m³/s (误差: {abs(gate_flows_adaptive[0]-Q_initial)/Q_initial*100:.4f}%)")
+    print(f"  闸门2流量: {gate_flows_adaptive[1]:.4f} m³/s (误差: {abs(gate_flows_adaptive[1]-Q_initial)/Q_initial*100:.4f}%)")
+    print(f"  闸门3流量: {gate_flows_adaptive[2]:.4f} m³/s (误差: {abs(gate_flows_adaptive[2]-Q_initial)/Q_initial*100:.4f}%)")
+
+    # ==================== 对比分析 ====================
+    print("\n" + "=" * 80)
+    print("精度对比分析")
+    print("=" * 80)
+
+    improvement_factor = max_error_uniform / max_error_adaptive if max_error_adaptive > 0 else float('inf')
+
+    print(f"\n网格对比:")
+    print(f"  均匀网格: {len(x_uniform)} 点")
+    print(f"  自适应网格: {len(x_adaptive)} 点")
+    print(f"  点数增加: {len(x_adaptive)/len(x_uniform):.2f}x")
+
+    print(f"\n误差对比:")
+    print(f"  均匀网格最大误差: {max_error_uniform:.4f}%")
+    print(f"  自适应网格最大误差: {max_error_adaptive:.4f}%")
+    print(f"  精度提升: {improvement_factor:.2f}x")
+
+    print(f"\n收敛性对比:")
+    print(f"  均匀网格迭代次数: {result_uniform['iterations']}")
+    print(f"  自适应网格迭代次数: {result_adaptive['iterations']}")
+
+    # 判断是否达到阶段1目标
+    print(f"\n阶段1目标检验:")
+    print(f"  目标: 0.1-0.5% 精度")
+    print(f"  自适应网格误差: {max_error_adaptive:.4f}%")
+    if max_error_adaptive < 0.5:
+        print(f"   达到阶段1目标！")
+    else:
+        print(f"   未达到阶段1目标，需要进一步优化")
+
+    print("\n" + "=" * 80)
+
+
+if __name__ == "__main__":
+    test_adaptive_grid_precision()

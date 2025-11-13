@@ -123,7 +123,7 @@ ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('sensitivity_DO_kd.png', dpi=150)
-print("✓ 图表已保存: sensitivity_DO_kd.png")
+print(" 图表已保存: sensitivity_DO_kd.png")
 print()
 
 # ==================== 案例2: 藻类生长参数敏感性 ====================
@@ -222,7 +222,7 @@ ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('sensitivity_Chla_mu_max.png', dpi=150)
-print("✓ 图表已保存: sensitivity_Chla_mu_max.png")
+print(" 图表已保存: sensitivity_Chla_mu_max.png")
 print()
 
 # ==================== 案例3: 光照强度敏感性 ====================
@@ -294,7 +294,7 @@ ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('sensitivity_Chla_light.png', dpi=150)
-print("✓ 图表已保存: sensitivity_Chla_light.png")
+print(" 图表已保存: sensitivity_Chla_light.png")
 print()
 
 # ==================== 总结 ====================
@@ -323,10 +323,10 @@ print()
 
 print("参数校准建议:")
 print("-" * 70)
-print("✓ 优先校准高敏感性参数 (mu_max, I_s)")
-print("✓ 使用实测数据验证中等敏感性参数 (kd, Ka)")
-print("✓ 低敏感性参数可使用文献值")
-print("✓ 进行不确定性分析评估参数影响")
+print(" 优先校准高敏感性参数 (mu_max, I_s)")
+print(" 使用实测数据验证中等敏感性参数 (kd, Ka)")
+print(" 低敏感性参数可使用文献值")
+print(" 进行不确定性分析评估参数影响")
 print()
 
 print("=" * 70)

@@ -20,7 +20,13 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import time
 
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.mpc_scheduler import MPCScheduler
 from solvers.mpc_scheduler_fast import FastMPCScheduler
 from solvers.digital_twin import DigitalTwin
@@ -186,7 +192,7 @@ def test_mpc_performance_comparison():
     print("MPC性能对比总结")
     print("=" * 80)
 
-    print(f"\n{'方法':<20} {'总耗时(s)':<12} {'加速比':<10} {'最终流量(m³/s)':<15}")
+    print(f"\n{'方法':<20} {'总耗时(s)':<12} {'加速比':<10} {'最终流量(m^3/s)':<15}")
     print("-" * 80)
 
     for key, data in results.items():
@@ -210,7 +216,7 @@ def test_mpc_performance_comparison():
 
     ax.axhline(target_flow, color='k', linestyle='--', linewidth=2, alpha=0.5, label='目标')
     ax.set_xlabel('Time (s)')
-    ax.set_ylabel('Downstream flow (m³/s)')
+    ax.set_ylabel('Downstream flow (m^3/s)')
     ax.set_title('Flow Tracking Comparison')
     ax.legend()
     ax.grid(True, alpha=0.3)
@@ -255,7 +261,7 @@ def test_mpc_performance_comparison():
     speedups = [data.get('speedup', 1.0) for data in results.values()]
     bars = ax.bar(names, speedups, color=colors, alpha=0.7)
     ax.axhline(1.0, color='k', linestyle='--', alpha=0.5)
-    ax.set_ylabel('Speedup (×)')
+    ax.set_ylabel('Speedup (x)')
     ax.set_title('Speedup vs Standard MPC')
     ax.grid(True, alpha=0.3, axis='y')
 
@@ -540,25 +546,25 @@ def test_digital_twin_sensor_network():
 
 def main():
     """运行所有性能对比测试"""
-    print("\n" + "🚀" * 40)
+    print("\n" + "" * 40)
     print("性能优化测试")
-    print("🚀" * 40)
+    print("" * 40)
 
     # 测试1: MPC性能对比
     try:
         mpc_results = test_mpc_performance_comparison()
-        print("\n✅ MPC性能对比完成")
+        print("\n MPC性能对比完成")
     except Exception as e:
-        print(f"\n❌ MPC测试失败: {e}")
+        print(f"\n MPC测试失败: {e}")
         import traceback
         traceback.print_exc()
 
     # 测试2: 高级数字孪生
     try:
         twin_results = test_digital_twin_sensor_network()
-        print("\n✅ 数字孪生传感器网络测试完成")
+        print("\n 数字孪生传感器网络测试完成")
     except Exception as e:
-        print(f"\n❌ 数字孪生测试失败: {e}")
+        print(f"\n 数字孪生测试失败: {e}")
         import traceback
         traceback.print_exc()
 
@@ -567,10 +573,10 @@ def main():
     print("=" * 80)
 
     print("\n性能优化总结：")
-    print("  ✅ MPC: 粗网格预测实现2-4倍加速")
-    print("  ✅ 数字孪生: 传感器网络+故障检测")
-    print("  ✅ 自适应噪声估计")
-    print("  ✅ 多传感器融合")
+    print("   MPC: 粗网格预测实现2-4倍加速")
+    print("   数字孪生: 传感器网络+故障检测")
+    print("   自适应噪声估计")
+    print("   多传感器融合")
 
 
 if __name__ == "__main__":

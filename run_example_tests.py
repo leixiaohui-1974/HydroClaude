@@ -59,7 +59,7 @@ class ConfigDrivenTester:
 
         # 检查文件是否存在
         if not example_path.exists():
-            print(f"❌ 文件不存在")
+            print(f" 文件不存在")
             result['status'] = 'file_not_found'
             result['error'] = f"文件不存在: {example_path}"
             return result
@@ -79,7 +79,7 @@ class ConfigDrivenTester:
             result['execution_time'] = time.time() - start_time
 
             if process.returncode == 0:
-                print(f"✅ 成功 ({result['execution_time']:.1f}s)")
+                print(f" 成功 ({result['execution_time']:.1f}s)")
                 result['status'] = 'success'
 
                 # 检查预期输出
@@ -91,11 +91,11 @@ class ConfigDrivenTester:
                             missing_outputs.append(output)
 
                     if missing_outputs:
-                        print(f"⚠️  缺失预期输出: {', '.join(missing_outputs)}")
+                        print(f"️  缺失预期输出: {', '.join(missing_outputs)}")
                         result['missing_outputs'] = missing_outputs
 
             else:
-                print(f"❌ 失败 ({result['execution_time']:.1f}s)")
+                print(f" 失败 ({result['execution_time']:.1f}s)")
                 result['status'] = 'failed'
                 result['error'] = process.stderr[-500:] if process.stderr else "Unknown error"
                 print(f"错误: {result['error'][:200]}")
@@ -110,7 +110,7 @@ class ConfigDrivenTester:
             result['execution_time'] = time.time() - start_time
             result['status'] = 'error'
             result['error'] = str(e)
-            print(f"❌ 异常: {e}")
+            print(f" 异常: {e}")
 
         return result
 
@@ -158,7 +158,7 @@ class ConfigDrivenTester:
             print(f"{'#'*80}")
 
             for dep_ex in self.config['deprecated_examples']:
-                print(f"\n⚠️  {dep_ex['id']}")
+                print(f"\n️  {dep_ex['id']}")
                 print(f"   路径: {dep_ex['path']}")
                 print(f"   原因: {dep_ex['reason']}")
                 print(f"   建议: {dep_ex['action']}")
@@ -191,9 +191,9 @@ class ConfigDrivenTester:
                     file_not_found += 1
 
         report.append(f"总计: {total} 个examples")
-        report.append(f"  ✅ 成功: {success}")
-        report.append(f"  ❌ 失败: {failed}")
-        report.append(f"  📁 文件不存在: {file_not_found}")
+        report.append(f"   成功: {success}")
+        report.append(f"   失败: {failed}")
+        report.append(f"   文件不存在: {file_not_found}")
         if total > 0:
             report.append(f"  成功率: {success/total*100:.1f}%")
         report.append("")
@@ -207,12 +207,12 @@ class ConfigDrivenTester:
 
             for r in results:
                 status_icon = {
-                    'success': '✅',
-                    'failed': '❌',
+                    'success': '',
+                    'failed': '',
                     'timeout': '⏱️',
-                    'file_not_found': '📁',
-                    'error': '⚠️'
-                }.get(r['status'], '❓')
+                    'file_not_found': '',
+                    'error': '️'
+                }.get(r['status'], '')
 
                 report.append(f"{status_icon} {r['id']}")
                 report.append(f"   描述: {r['description']}")
@@ -224,7 +224,7 @@ class ConfigDrivenTester:
                     report.append(f"   错误: {r['error'][:200]}")
 
                 if r.get('missing_outputs'):
-                    report.append(f"   ⚠️  缺失输出: {', '.join(r['missing_outputs'])}")
+                    report.append(f"   ️  缺失输出: {', '.join(r['missing_outputs'])}")
 
                 report.append("")
 
@@ -238,14 +238,14 @@ class ConfigDrivenTester:
         with open(report_path, 'w', encoding='utf-8') as f:
             f.write(report)
 
-        print(f"\n📄 报告已保存: {report_path}")
+        print(f"\n 报告已保存: {report_path}")
 
         # 保存JSON
         json_path = PROJECT_ROOT / filename.replace('.txt', '.json')
         with open(json_path, 'w', encoding='utf-8') as f:
             json.dump(self.results, f, indent=2, ensure_ascii=False)
 
-        print(f"📄 JSON已保存: {json_path}")
+        print(f" JSON已保存: {json_path}")
 
         return report_path
 

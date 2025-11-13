@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def quick_verify():
@@ -38,7 +44,7 @@ def quick_verify():
     print(f"  L = {L} m (原5000m)")
     print(f"  n_cells = 50 (原100)")
     print(f"  t_end = 3000s (快速验证)")
-    print(f"  Q = {Q_bc} m³/s")
+    print(f"  Q = {Q_bc} m^3/s")
     print(f"  h_c = {h_c:.4f} m")
     print(f"  h_n = {h_n:.4f} m")
 
@@ -106,44 +112,44 @@ def quick_verify():
 
     # 1. 水面形态
     if solver.h[0] > solver.h[-1]:
-        print(f"  ✅ 水面形态：上游高于下游（下降曲线）")
+        print(f"   水面形态：上游高于下游（下降曲线）")
     else:
-        print(f"  ❌ 水面形态：上游不高于下游")
+        print(f"   水面形态：上游不高于下游")
 
     # 2. 水深范围
     if np.all(solver.h >= h_c * 0.95) and np.all(solver.h <= h_n * 1.05):
-        print(f"  ✅ 水深范围：h_c < h < h_n")
+        print(f"   水深范围：h_c < h < h_n")
     else:
-        print(f"  ❌ 水深范围：超出预期")
+        print(f"   水深范围：超出预期")
 
     # 3. Froude数分布
     if Fr[0] < Fr[-1] and Fr[-1] > 0.5:
-        print(f"  ✅ Froude数分布：向临界过渡")
+        print(f"   Froude数分布：向临界过渡")
     else:
-        print(f"  ❌ Froude数分布：不符合预期")
+        print(f"   Froude数分布：不符合预期")
 
     # 4. 质量守恒（新标准）
     if mass_error_pct < 15.0:
         if mass_error_pct < 5.0:
-            print(f"  ✅ 质量守恒：{mass_error_pct:.2f}% < 5% (优秀)")
+            print(f"   质量守恒：{mass_error_pct:.2f}% < 5% (优秀)")
         else:
-            print(f"  ⚠️  质量守恒：{mass_error_pct:.2f}% < 15% (可接受)")
+            print(f"  ️  质量守恒：{mass_error_pct:.2f}% < 15% (可接受)")
     else:
-        print(f"  ❌ 质量守恒：{mass_error_pct:.2f}% > 15% (过大)")
+        print(f"   质量守恒：{mass_error_pct:.2f}% > 15% (过大)")
 
     # 5. 流量守恒
     Q_avg = np.mean(solver.Q)
     if abs(Q_avg - Q_bc) / Q_bc < 0.02:
-        print(f"  ✅ 流量守恒：Q_avg = {Q_avg:.4f} m³/s")
+        print(f"   流量守恒：Q_avg = {Q_avg:.4f} m^3/s")
     else:
-        print(f"  ❌ 流量守恒：Q_avg = {Q_avg:.4f} ≠ {Q_bc} m³/s")
+        print(f"   流量守恒：Q_avg = {Q_avg:.4f} ≠ {Q_bc} m^3/s")
 
     print(f"\n整体评估：")
     if mass_error_pct < 15.0 and solver.h[0] > solver.h[-1]:
-        print(f"  ✅ 测试预期通过")
+        print(f"   测试预期通过")
         print(f"  预计完整测试（L=5000m, t=8000s）将通过")
     else:
-        print(f"  ❌ 测试可能失败")
+        print(f"   测试可能失败")
         print(f"  需要进一步调整")
 
     print("\n" + "="*80)

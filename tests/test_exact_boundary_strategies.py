@@ -15,7 +15,13 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('.'))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 def test_boundary_relaxation(relaxation_factor, max_steps=10):
     """
@@ -31,7 +37,7 @@ def test_boundary_relaxation(relaxation_factor, max_steps=10):
     # 简单溃坝设置
     width = 10.0
     length = 100.0
-    n_cells = 50
+    n_cells = 100
     dx = length / n_cells
 
     # 初始条件
@@ -51,7 +57,7 @@ def test_boundary_relaxation(relaxation_factor, max_steps=10):
         n_cells=n_cells,
         manning_n=0.0,
         slope=0.0,
-        cfl=0.5,
+        cfl=0.3,
         order=1,
         riemann_solver='exact',
         use_numba=False  # 关闭Numba便于调试
@@ -189,9 +195,9 @@ def main():
         all_results.append(results)
 
         # 打印结果
-        print(f"\n初始质量: 1500.00 m³")
+        print(f"\n初始质量: 1500.00 m^3")
         print(f"Relaxation Factor: {rf}")
-        print(f"\n{'步骤':<6} {'时间(s)':<10} {'质量(m³)':<15} {'误差(%)':<12} {'h_max(m)':<10} {'状态':<10}")
+        print(f"\n{'步骤':<6} {'时间(s)':<10} {'质量(m^3)':<15} {'误差(%)':<12} {'h_max(m)':<10} {'状态':<10}")
         print("-" * 80)
 
         for i, step in enumerate(results['steps']):
@@ -200,20 +206,20 @@ def main():
             error = results['mass_error_pct'][i]
             h_max = results['h_max'][i]
 
-            status = "✅" if error < 1.0 else ("⚠️" if error < 10 else "❌")
+            status = "" if error < 1.0 else ("" if error < 10 else "")
 
             print(f"{step:<6} {time:<10.3f} {mass:<15.6f} {error:<12.6f} {h_max:<10.3f} {status:<10}")
 
         if results['crashed']:
-            print(f"\n❌ 模拟崩溃于步骤 {results['crash_step']}")
+            print(f"\n 模拟崩溃于步骤 {results['crash_step']}")
         else:
             final_error = results['mass_error_pct'][-1]
             if final_error < 1.0:
-                print(f"\n✅ 模拟稳定完成，最终误差: {final_error:.4f}%")
+                print(f"\n 模拟稳定完成，最终误差: {final_error:.4f}%")
             elif final_error < 10:
-                print(f"\n⚠️  模拟完成但质量误差较大: {final_error:.4f}%")
+                print(f"\n  模拟完成但质量误差较大: {final_error:.4f}%")
             else:
-                print(f"\n❌ 质量守恒失败: {final_error:.4f}%")
+                print(f"\n 质量守恒失败: {final_error:.4f}%")
 
     # 总结对比
     print("\n" + "=" * 80)
@@ -230,16 +236,16 @@ def main():
             final_error = results['mass_error_pct'][-1]
 
             if results['crashed']:
-                status = f"❌ 崩溃@{results['crash_step']}"
+                status = f" 崩溃@{results['crash_step']}"
             elif final_error < 1.0:
-                status = "✅ 稳定"
+                status = " 稳定"
             elif final_error < 10:
-                status = "⚠️  可用"
+                status = "  可用"
             else:
-                status = "❌ 失败"
+                status = " 失败"
         else:
             final_error = float('nan')
-            status = "❌ 立即崩溃"
+            status = " 立即崩溃"
 
         print(f"{name:<20} {rf:<6.1f} {max_steps:<10} {final_error:<15.6f} {status:<10}")
 
@@ -262,18 +268,18 @@ def main():
                 best_steps = len(results['steps'])
 
     if best_rf is not None:
-        print(f"\n✅ 最优配置: relaxation_factor = {best_rf}")
+        print(f"\n 最优配置: relaxation_factor = {best_rf}")
         print(f"   - 完成步数: {best_steps}")
         print(f"   - 最终误差: {best_error:.6f}%")
 
         if best_error < 1.0:
-            print(f"   - 评估: 可用于生产 ✅")
+            print(f"   - 评估: 可用于生产 ")
         elif best_error < 10:
-            print(f"   - 评估: 可用但需注意质量误差 ⚠️")
+            print(f"   - 评估: 可用但需注意质量误差 ")
         else:
-            print(f"   - 评估: 不推荐使用 ❌")
+            print(f"   - 评估: 不推荐使用 ")
     else:
-        print("\n❌ 所有配置都失败")
+        print("\n 所有配置都失败")
         print("   精确求解器需要重新设计边界条件策略")
 
 if __name__ == "__main__":

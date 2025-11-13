@@ -305,10 +305,10 @@ if __name__ == '__main__':
     print()
 
     if speedup > 10:
-        print(f"✅ 性能优化成功！加速 {speedup:.1f} 倍")
+        print(f" 性能优化成功！加速 {speedup:.1f} 倍")
     elif speedup > 5:
-        print(f"✅ 性能提升明显！加速 {speedup:.1f} 倍")
+        print(f" 性能提升明显！加速 {speedup:.1f} 倍")
     else:
-        print(f"⚠️ 性能提升有限，加速 {speedup:.1f} 倍")
+        print(f"️ 性能提升有限，加速 {speedup:.1f} 倍")
 
     print("="*80)

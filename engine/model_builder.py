@@ -454,7 +454,7 @@ if __name__ == '__main__':
         builder = ModelBuilder.from_config_file(test_file)
         solver = builder.build_solver()
 
-        print("\n✅ 模型构建成功！")
+        print("\n 模型构建成功！")
         print(f"  求解器类型: {type(solver).__name__}")
         print(f"  网格数: {solver.n_cells}")
         print(f"  初始质量: {solver.initial_mass:.2f} m³")
@@ -465,9 +465,9 @@ if __name__ == '__main__':
         h_ana, u_ana = builder.get_analytical_solution(t=10.0, x=x)
         if h_ana is not None:
             print(f"  t=10s时最大水深: {np.max(h_ana):.3f} m")
-            print(f"  ✅ 解析解可用")
+            print(f"   解析解可用")
 
     except Exception as e:
-        print(f"\n❌ 模型构建失败:\n{e}")
+        print(f"\n 模型构建失败:\n{e}")
         import traceback
         traceback.print_exc()

@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_boundary_evolution():
@@ -49,12 +55,12 @@ def test_boundary_evolution():
 
     print(f"\n初始状态:")
     print(f"  h[0] = {solver.h[0]:.6f} m")
-    print(f"  Q[0] = {solver.Q[0]:.6f} m³/s")
+    print(f"  Q[0] = {solver.Q[0]:.6f} m^3/s")
     print(f"  h[-1] = {solver.h[-1]:.6f} m")
 
     # 推进5步，观察边界值变化
     print(f"\n时间演化:")
-    print(f"{'步骤':>5} {'h[0](m)':>12} {'Q[0](m³/s)':>15} {'h[-1](m)':>12} {'变化':>10}")
+    print(f"{'步骤':>5} {'h[0](m)':>12} {'Q[0](m^3/s)':>15} {'h[-1](m)':>12} {'变化':>10}")
     print("-" * 60)
 
     h0_prev = solver.h[0]
@@ -63,7 +69,7 @@ def test_boundary_evolution():
         solver.step()
 
         h0_change = solver.h[0] - h0_prev
-        change_marker = "✓变化" if abs(h0_change) > 1e-6 else "✗固定"
+        change_marker = "变化" if abs(h0_change) > 1e-6 else "固定"
 
         print(f"{step+1:5d} {solver.h[0]:12.6f} {solver.Q[0]:15.6f} {solver.h[-1]:12.6f} {change_marker:>10}")
 

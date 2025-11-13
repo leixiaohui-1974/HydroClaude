@@ -12,7 +12,13 @@ import os
 sys.path.insert(0, os.path.dirname(__file__))
 
 import numpy as np
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 # Test 4参数
 L = 1000.0
@@ -93,14 +99,14 @@ while solver.t < target_t and step_count < 100:
     c = np.sqrt(solver.g * h_safe)
     lambda_max = np.max(np.abs(u) + c)
 
-    print(f"步{step_count:3d}: t={t_before:7.3f}→{t_after:7.3f}, "
+    print(f"步{step_count:3d}: t={t_before:7.3f}->{t_after:7.3f}, "
           f"dt={dt_computed:.6f}, Δt={dt_actual:.6f}, "
           f"λ_max={lambda_max:.4f}, "
           f"Δh={h_change:.2e}, ΔQ={Q_change:.2e}")
 
     # 检测异常
     if dt_computed < 1e-6:
-        print(f"\n❌ dt变成极小值！")
+        print(f"\n dt变成极小值！")
         print(f"  dt_computed={dt_computed:.10f}")
         print(f"  CFL*dx/lambda_max = {solver.cfl * solver.dx / lambda_max:.10f}")
         print(f"  dt_max = {solver.dt_max}")
@@ -114,15 +120,15 @@ while solver.t < target_t and step_count < 100:
         # 检查NaN/Inf
         if np.any(np.isnan(h_after)):
             nan_indices = np.where(np.isnan(h_after))[0]
-            print(f"  ⚠️  h中有NaN，位置: {nan_indices[:10]}")
+            print(f"  ️  h中有NaN，位置: {nan_indices[:10]}")
         if np.any(np.isinf(h_after)):
             inf_indices = np.where(np.isinf(h_after))[0]
-            print(f"  ⚠️  h中有Inf，位置: {inf_indices[:10]}")
+            print(f"  ️  h中有Inf，位置: {inf_indices[:10]}")
 
         break
 
     if dt_actual < 1e-10:
-        print(f"\n⚠️  时间没有推进！dt_actual={dt_actual:.2e}")
+        print(f"\n️  时间没有推进！dt_actual={dt_actual:.2e}")
         print(f"  可能原因：数值舍入或状态未更新")
         break
 

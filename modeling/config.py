@@ -274,7 +274,7 @@ def create_template_config(output_file: str):
     with open(output_file, 'w', encoding='utf-8') as f:
         yaml.dump(template, f, default_flow_style=False, allow_unicode=True)
 
-    print(f"✓ 模板配置文件已创建: {output_file}")
+    print(f" 模板配置文件已创建: {output_file}")
 
 
 if __name__ == "__main__":

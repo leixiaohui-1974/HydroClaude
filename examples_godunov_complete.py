@@ -112,7 +112,7 @@ plt.tight_layout()
 plt.savefig('/workspace/example1_flood_routing.png', dpi=150)
 print(f"  图像: example1_flood_routing.png")
 
-print(f"✅ 示例1完成")
+print(f" 示例1完成")
 
 # ========== 示例2: 渠道稳态设计 ==========
 print("\n" + "="*80)
@@ -169,7 +169,7 @@ for B in widths_test:
     print(f"  B={B}m: h={h_mean:.3f}m, Fr={Fr:.3f}, v={Q_design/(B*h_mean):.2f}m/s")
 
 print(f"\n推荐设计: B=12m (Fr≈0.5-0.6, 安全流态)")
-print(f"✅ 示例2完成")
+print(f" 示例2完成")
 
 # ========== 示例3: 溃坝应急响应 ==========
 print("\n" + "="*80)
@@ -221,7 +221,7 @@ for x_monitor, t_arrival in arrival_times.items():
     else:
         print(f"  {x_monitor/1000:.0f}km处: 未到达")
 
-print(f"✅ 示例3完成")
+print(f" 示例3完成")
 
 # ========== 示例4: 多场景对比 ==========
 print("\n" + "="*80)
@@ -271,7 +271,7 @@ for name, params in scenarios.items():
     
     print(f"  {name}: 波前={x_front:.1f}m, 质量误差={state['mass_error']:.4f}%, 步数={state['step']}")
 
-print(f"✅ 示例4完成")
+print(f" 示例4完成")
 
 # ========== 示例5: 实时控制模拟 ==========
 print("\n" + "="*80)
@@ -325,24 +325,24 @@ while solver_control.t < t_end_ctrl and solver_control.step_count < 3000:
         history_control['Q_in'].append(Q_in)
         history_control['gate_opening'].append(opening)
 
-print(f"✅ 示例5完成")
+print(f" 示例5完成")
 
 # ========== 总结 ==========
 print("\n" + "="*80)
-print("🚀 全部5个应用示例完成！")
+print(" 全部5个应用示例完成！")
 print("="*80)
 
 print(f"\n示例清单:")
-print(f"  1. ✅ 洪水演进模拟 - 5km河道, 4小时过程")
-print(f"  2. ✅ 渠道稳态设计 - 4种宽度对比")
-print(f"  3. ✅ 溃坝应急响应 - 10km影响范围")
-print(f"  4. ✅ 多场景对比 - 4种摩阻条件")
-print(f"  5. ✅ 实时控制模拟 - 30分钟P控制")
+print(f"  1.  洪水演进模拟 - 5km河道, 4小时过程")
+print(f"  2.  渠道稳态设计 - 4种宽度对比")
+print(f"  3.  溃坝应急响应 - 10km影响范围")
+print(f"  4.  多场景对比 - 4种摩阻条件")
+print(f"  5.  实时控制模拟 - 30分钟P控制")
 
 print(f"\n生成的图像:")
 print(f"  - example1_flood_routing.png")
 
 print(f"\n应用价值:")
-print(f"  ✅ 覆盖洪水、设计、应急、对比、控制5大类")
-print(f"  ✅ 展示Godunov-FVM的实用性")
-print(f"  ✅ 提供可复用的代码模板")
+print(f"   覆盖洪水、设计、应急、对比、控制5大类")
+print(f"   展示Godunov-FVM的实用性")
+print(f"   提供可复用的代码模板")

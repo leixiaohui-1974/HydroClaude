@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 完整的控制器基准测试套件
 
@@ -18,6 +19,8 @@
 """
 
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")  # 非交互模式
 import matplotlib.pyplot as plt
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
@@ -336,7 +339,7 @@ class ControllerBenchmark:
                 result = self.run_test(controller, ctrl_name, scenario)
                 self.results.append(result)
 
-                print(f"  ✅ MAE={result.mae*100:.2f}cm, "
+                print(f"  [成功] MAE={result.mae*100:.2f}cm, "
                       f"计算时间={result.avg_compute_time:.3f}ms")
 
         print(f"\n{'='*80}")
@@ -449,7 +452,7 @@ class ControllerBenchmark:
             # 子图6：性能雷达图
             ax6 = plt.subplot(2, 3, 6, projection='polar')
 
-            # 归一化指标（越小越好 → 越大越好）
+            # 归一化指标（越小越好 -> 越大越好）
             categories = ['MAE', 'RMSE', 'Max Err', 'Speed']
             N = len(categories)
 
@@ -484,7 +487,7 @@ class ControllerBenchmark:
             plt.tight_layout()
             filename = f'benchmark_{scenario.lower()}.png'
             plt.savefig(filename, dpi=150, bbox_inches='tight')
-            print(f"✅ 图片已保存: {filename}")
+            print(f"[成功] 图片已保存: {filename}")
 
         # 创建总结对比图
         self._create_summary_figure()
@@ -576,13 +579,13 @@ class ControllerBenchmark:
         ax4 = axes[1, 1]
         ax4.axis('off')
 
-        recommendation_text = "🎯 控制器选择建议\n\n"
+        recommendation_text = "[目标] 控制器选择建议\n\n"
 
         # 分析每个场景的最佳控制器
         for scenario in scenarios:
             scenario_results = [r for r in self.results if r.scenario_name == scenario]
             best = min(scenario_results, key=lambda r: r.mae)
-            recommendation_text += f"✓ {scenario}场景:\n  → {best.controller_name}\n  (MAE={best.mae*100:.2f}cm)\n\n"
+            recommendation_text += f"OK {scenario}场景:\n  -> {best.controller_name}\n  (MAE={best.mae*100:.2f}cm)\n\n"
 
         # 总体推荐
         all_results_by_ctrl = {}
@@ -601,7 +604,7 @@ class ControllerBenchmark:
 
         plt.tight_layout()
         plt.savefig('benchmark_summary.png', dpi=150, bbox_inches='tight')
-        print(f"✅ 总结图已保存: benchmark_summary.png")
+        print(f"[成功] 总结图已保存: benchmark_summary.png")
 
 
 def main():
@@ -634,7 +637,7 @@ def main():
     benchmark.visualize_results()
 
     print("\n"+ "="*80)
-    print("基准测试完成！✅")
+    print("基准测试完成！[成功]")
     print("="*80)
 
 

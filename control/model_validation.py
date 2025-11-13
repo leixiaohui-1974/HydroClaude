@@ -364,7 +364,7 @@ def test_model_validator():
             print(f"  R² = {metrics.r_squared:.4f}")
             print(f"  VAF = {metrics.vaf:.2f}%")
 
-    print("\n✅ 测试完成！")
+    print("\n 测试完成！")
     print("=" * 80)
 
 

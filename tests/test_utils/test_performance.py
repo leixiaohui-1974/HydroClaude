@@ -9,6 +9,14 @@ Test Performance Optimization Module
 Author: HydroClaude Team
 Date: 2025-10-30
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import pytest
 import numpy as np

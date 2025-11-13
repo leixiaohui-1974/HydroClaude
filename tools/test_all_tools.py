@@ -36,7 +36,7 @@ def print_section(title):
 
 def print_result(name, passed, message=""):
     """打印测试结果"""
-    status = "✅ 通过" if passed else "❌ 失败"
+    status = " 通过" if passed else " 失败"
     print(f"{status}: {name}")
     if message:
         print(f"   {message}")
@@ -265,21 +265,21 @@ def run_all_tests():
     failed = total - passed
     
     print(f"\n总计: {total} 个测试")
-    print(f"✅ 通过: {passed} ({passed/total*100:.1f}%)")
-    print(f"❌ 失败: {failed}")
+    print(f" 通过: {passed} ({passed/total*100:.1f}%)")
+    print(f" 失败: {failed}")
     
     if failed > 0:
         print("\n失败的测试:")
         for name, passed, message in RESULTS:
             if not passed:
-                print(f"  ❌ {name}")
+                print(f"   {name}")
                 if message:
                     print(f"     {message}")
     
     print("\n" + "=" * 80)
     
     if failed == 0:
-        print("🎉 所有测试通过！工具安装成功！")
+        print(" 所有测试通过！工具安装成功！")
         print("\n下一步:")
         print("  1. 查阅 AI_DEVELOPMENT_TOOLS.md 了解使用方法")
         print("  2. 查阅 EXAMPLES_INDEX.md 找到参考代码")
@@ -287,7 +287,7 @@ def run_all_tests():
         print("  4. 使用 check_library_usage.py 检查代码")
         return 0
     else:
-        print("⚠️  部分测试失败，请检查安装")
+        print("️  部分测试失败，请检查安装")
         return 1
 
 def main():

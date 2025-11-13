@@ -24,7 +24,13 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from physics.cross_section import CompoundSection, NaturalSection
 
 
@@ -47,7 +53,7 @@ def test_compound_section_geometry():
     h1 = 2.0
     geom1 = section.compute_geometry(h1)
 
-    # 主槽梯形: A = (b + m*h)*h = (10 + 1*2)*2 = 24 m²
+    # 主槽梯形: A = (b + m*h)*h = (10 + 1*2)*2 = 24 m^2
     expected_A1 = (10.0 + 1.0*2.0) * 2.0
     assert abs(geom1.area - expected_A1) < 1e-6
 
@@ -55,18 +61,18 @@ def test_compound_section_geometry():
     h2 = 4.0
     geom2 = section.compute_geometry(h2)
 
-    # 主槽满水: A_main = (10 + 1*3)*3 = 39 m²
-    # 滩地: A_flood = (20+20)*(4-3) = 40 m²
-    # 总计: A_total = 39 + 40 = 79 m²
+    # 主槽满水: A_main = (10 + 1*3)*3 = 39 m^2
+    # 滩地: A_flood = (20+20)*(4-3) = 40 m^2
+    # 总计: A_total = 39 + 40 = 79 m^2
     A_main = (10.0 + 1.0*3.0) * 3.0
     A_flood = (20.0 + 20.0) * (4.0 - 3.0)
     expected_A2 = A_main + A_flood
 
     assert abs(geom2.area - expected_A2) < 1e-6
 
-    print(f"✅ 复式断面几何计算准确")
-    print(f"   主槽内 (h={h1}m): A={geom1.area:.3f} m² (预期:{expected_A1:.3f})")
-    print(f"   漫滩 (h={h2}m): A={geom2.area:.3f} m² (预期:{expected_A2:.3f})")
+    print(f" 复式断面几何计算准确")
+    print(f"   主槽内 (h={h1}m): A={geom1.area:.3f} m^2 (预期:{expected_A1:.3f})")
+    print(f"   漫滩 (h={h2}m): A={geom2.area:.3f} m^2 (预期:{expected_A2:.3f})")
 
 
 @pytest.mark.p2
@@ -116,9 +122,9 @@ def test_compound_section_with_solver():
 
     assert abs(Fr[50] - expected_Fr) < 1e-3
 
-    print(f"✅ 复式断面求解器集成正常")
+    print(f" 复式断面求解器集成正常")
     print(f"   漫滩深度: h={h}m")
-    print(f"   总面积: A={geom.area:.3f} m²")
+    print(f"   总面积: A={geom.area:.3f} m^2")
     print(f"   Froude数: Fr={Fr[50]:.3f}")
 
 
@@ -152,7 +158,7 @@ def test_compound_section_composite_roughness():
     # 等效糙率应该介于主槽(0.025)和滩地(0.060)之间
     assert 0.025 < n_eq < 0.060
 
-    print(f"✅ 复式断面复合糙率计算正常")
+    print(f" 复式断面复合糙率计算正常")
     print(f"   主槽糙率: n=0.025")
     print(f"   滩地糙率: n=0.060")
     print(f"   等效糙率: n_eq={n_eq:.4f}")
@@ -186,10 +192,10 @@ def test_natural_section_geometry():
     geom3 = section.compute_geometry(h3)
     assert geom3.area > geom2.area
 
-    print(f"✅ 自然断面几何计算正常")
-    print(f"   h={h1}m: A={geom1.area:.3f} m², B={geom1.width:.3f} m")
-    print(f"   h={h2}m: A={geom2.area:.3f} m², B={geom2.width:.3f} m")
-    print(f"   h={h3}m: A={geom3.area:.3f} m², B={geom3.width:.3f} m")
+    print(f" 自然断面几何计算正常")
+    print(f"   h={h1}m: A={geom1.area:.3f} m^2, B={geom1.width:.3f} m")
+    print(f"   h={h2}m: A={geom2.area:.3f} m^2, B={geom2.width:.3f} m")
+    print(f"   h={h3}m: A={geom3.area:.3f} m^2, B={geom3.width:.3f} m")
 
 
 @pytest.mark.p2
@@ -231,9 +237,9 @@ def test_natural_section_with_solver():
 
     assert abs(Fr[50] - expected_Fr) < 1e-3
 
-    print(f"✅ 自然断面求解器集成正常")
+    print(f" 自然断面求解器集成正常")
     print(f"   水深: h={h}m")
-    print(f"   面积: A={geom.area:.3f} m²")
+    print(f"   面积: A={geom.area:.3f} m^2")
     print(f"   Froude数: Fr={Fr[50]:.3f}")
 
 
@@ -274,7 +280,7 @@ def test_friction_with_compound_section():
     assert S2 < 0.0
 
     # 漫滩时面积更大，相同流速下摩阻可能不同
-    print(f"✅ 复式断面摩阻计算正常")
+    print(f" 复式断面摩阻计算正常")
     print(f"   主槽内 (h={h1}m, Q={Q1}): S={S1:.6f}")
     print(f"   漫滩 (h={h2}m, Q={Q2}): S={S2:.6f}")
 

@@ -4,11 +4,11 @@
 Preissmann四点隐式格式求解器 - 修正版
 
 修复内容：
-1. ✅ 移除Q的np.maximum截断（+279%质量误差的根源）
-2. ✅ 修正连续方程：分别计算节点i和i+1的面积变化
-3. ✅ 修正动量方程：添加完整的对流项（新旧时刻）
-4. ✅ 修正Jacobian系数
-5. ✅ 改进边界条件处理
+1.  移除Q的np.maximum截断（+279%质量误差的根源）
+2.  修正连续方程：分别计算节点i和i+1的面积变化
+3.  修正动量方程：添加完整的对流项（新旧时刻）
+4.  修正Jacobian系数
+5.  改进边界条件处理
 
 理论基础：
 Saint-Venant方程的Preissmann四点隐式格式离散
@@ -83,7 +83,7 @@ class PreissmannSolverCorrected:
         h_new = h_old.copy()
         Q_new = Q_old.copy()
 
-        # ⚠️ 关键修复#1: 不使用np.maximum强制正值
+        # ️ 关键修复#1: 不使用np.maximum强制正值
         # 允许负流量（回流）和小水深，避免凭空添加质量
         # 只在非常小的情况下设置下限，防止除零
         h_new = np.where(h_new < 1e-4, 1e-4, h_new)
@@ -126,7 +126,7 @@ class PreissmannSolverCorrected:
 
             except Exception as e:
                 if self.verbose:
-                    print(f"  ⚠️ 求解失败（迭代{iteration}）: {e}")
+                    print(f"  ️ 求解失败（迭代{iteration}）: {e}")
                 break
 
             # 提取增量
@@ -147,14 +147,14 @@ class PreissmannSolverCorrected:
             # 检测数值爆炸
             if max_dh > 10.0 or max_dQ > 100.0:
                 if self.verbose:
-                    print(f"  ⚠️ 数值爆炸：dh={max_dh:.2f}, dQ={max_dQ:.2f}")
+                    print(f"  ️ 数值爆炸：dh={max_dh:.2f}, dQ={max_dQ:.2f}")
                 break
 
             # 更新解
             h_new += alpha * dh
             Q_new += alpha * dQ
 
-            # ⚠️ 关键修复#1（续）: 只设置极小的物理下限，不强制正值
+            # ️ 关键修复#1（续）: 只设置极小的物理下限，不强制正值
             h_new = np.where(h_new < 1e-4, 1e-4, h_new)
             # Q允许负值（不设下限）
 
@@ -179,7 +179,7 @@ class PreissmannSolverCorrected:
             if residual_norm < self.tolerance:
                 self.last_iterations = iteration + 1
                 if self.verbose:
-                    print(f"  ✅ 收敛于迭代{iteration+1}")
+                    print(f"   收敛于迭代{iteration+1}")
                 break
         else:
             self.last_iterations = self.max_iter
@@ -194,9 +194,9 @@ class PreissmannSolverCorrected:
         """
         构建Jacobian矩阵和残差向量
 
-        ⚠️ 关键修复#2: 正确的连续方程离散（分别计算节点i和i+1）
-        ⚠️ 关键修复#3: 完整的动量方程（包含旧时刻对流项）
-        ⚠️ 关键修复#4: 正确的Jacobian系数
+        ️ 关键修复#2: 正确的连续方程离散（分别计算节点i和i+1）
+        ️ 关键修复#3: 完整的动量方程（包含旧时刻对流项）
+        ️ 关键修复#4: 正确的Jacobian系数
         """
         n = len(h_old)
         theta = self.theta
@@ -207,7 +207,7 @@ class PreissmannSolverCorrected:
         # 对每个单元格（i到i+1）
         for i in range(n-1):
             # ========== 连续方程 ==========
-            # ⚠️ 修复#2: 分别计算节点i和i+1的面积时间导数
+            # ️ 修复#2: 分别计算节点i和i+1的面积时间导数
             A_old_i = h_old[i] * width
             A_new_i = h_new[i] * width
             A_old_i1 = h_old[i+1] * width
@@ -246,7 +246,7 @@ class PreissmannSolverCorrected:
             # 时间导数
             dQ_dt = (Q_mid_new - Q_mid_old) / dt
 
-            # ⚠️ 修复#3: 对流项（新旧时刻）
+            # ️ 修复#3: 对流项（新旧时刻）
             # Q²/A在节点i和i+1的值（添加数值保护防止溢出）
             A_new_i_safe = max(A_new_i, 1e-3 * width)
             A_new_i1_safe = max(A_new_i1, 1e-3 * width)
@@ -294,7 +294,7 @@ class PreissmannSolverCorrected:
             R[n+i] = dQ_dt + d_Q2A_dx + pressure_term - source_term
 
             # ========== 动量方程Jacobian ==========
-            # ⚠️ 修复#4: 正确的系数
+            # ️ 修复#4: 正确的系数
 
             # 对h的导数
             J[n+i, i] = theta * (-0.5 * g * width / dx)
@@ -317,7 +317,7 @@ class PreissmannSolverCorrected:
         """
         应用边界条件
 
-        ⚠️ 修复#5: 改进的边界条件处理
+        ️ 修复#5: 改进的边界条件处理
         """
         J_lil = lil_matrix(J)
 
@@ -404,7 +404,7 @@ if __name__ == "__main__":
         )
 
         if np.any(np.isnan(h)) or np.any(np.isnan(Q)):
-            print("  ❌ 出现NaN")
+            print("   出现NaN")
             break
 
         current_mass = np.sum(h[:-1] * width * dx)
@@ -416,5 +416,5 @@ if __name__ == "__main__":
         print(f"  max|Q|: {np.max(np.abs(Q)):.6e}")
 
     print(f"\n最终: 质量误差 {mass_error:.6f}%")
-    print(f"  目标 < 1%: {'✅' if abs(mass_error) < 1.0 else '❌'}")
+    print(f"  目标 < 1%: {'' if abs(mass_error) < 1.0 else ''}")
     print("="*80)

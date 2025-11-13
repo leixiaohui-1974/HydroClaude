@@ -327,28 +327,28 @@ class BenchmarkVisualizer:
         print("生成可视化图表...")
         print("  1/5 迭代次数对比...", end=" ", flush=True)
         plots['iterations'] = self.plot_iterations_comparison()
-        print("✅")
+        print("")
 
         print("  2/5 计算时间对比...", end=" ", flush=True)
         plots['time'] = self.plot_time_comparison()
-        print("✅")
+        print("")
 
         # 选择基线求解器（第一个求解器）
         solvers = list(set(r.solver_name for r in self.framework.results))
         if len(solvers) > 1:
             print("  3/5 加速比分析...", end=" ", flush=True)
             plots['speedup'] = self.plot_speedup(baseline_solver=solvers[0])
-            print("✅")
+            print("")
         else:
             print("  3/5 加速比分析... ⏭️ (需要至少2个求解器)")
 
         print("  4/5 成功率统计...", end=" ", flush=True)
         plots['success_rate'] = self.plot_success_rate()
-        print("✅")
+        print("")
 
         print("  5/5 可扩展性分析...", end=" ", flush=True)
         plots['scalability'] = self.plot_scalability()
-        print("✅")
+        print("")
 
         print()
         print(f"所有图表已保存到: {self.output_dir}")

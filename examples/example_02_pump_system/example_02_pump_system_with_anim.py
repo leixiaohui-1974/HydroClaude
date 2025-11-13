@@ -17,6 +17,8 @@ import sys
 import os
 import numpy as np
 import argparse
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 # 添加项目根目录
@@ -73,7 +75,7 @@ def run_example(args):
 
     print(f"水池1初始水位: {tank1.level:.2f} m")
     print(f"水池2初始水位: {tank2.level:.2f} m")
-    print(f"泵额定流量: {pump.max_flow:.2f} m³/s")
+    print(f"泵额定流量: {pump.max_flow:.2f} m^3/s")
     print(f"泵额定扬程: {pump.rated_head:.2f} m")
     print(f"管道长度: {pipe.length:.2f} m")
     print(f"管道直径: {pipe.diameter:.2f} m")
@@ -127,7 +129,7 @@ def run_example(args):
             print(f"Step {i+1}/{n_steps}: t={t:.1f}s, "
                   f"Tank1={states['Tank1'].level:.2f}m, "
                   f"Tank2={states['Tank2'].level:.2f}m, "
-                  f"Flow={flow:.2f}m³/s")
+                  f"Flow={flow:.2f}m^3/s")
 
     # 转换为numpy数组
     time_history = np.array(time_history)
@@ -136,7 +138,7 @@ def run_example(args):
     pump_flow = np.array(pump_flow)
     pump_speed = np.array(pump_speed)
 
-    print("\n✓ 仿真完成")
+    print("\n 仿真完成")
 
     # ========================================================================
     # 3. 生成静态图表
@@ -162,7 +164,7 @@ def run_example(args):
 
     # 流量
     axes[1].plot(time_history, pump_flow, 'g-', linewidth=2)
-    axes[1].set_ylabel('Flow Rate (m³/s)', fontsize=11)
+    axes[1].set_ylabel('Flow Rate (m^3/s)', fontsize=11)
     axes[1].set_title('Pump Flow Rate', fontsize=12, fontweight='bold')
     axes[1].grid(True, alpha=0.3)
 
@@ -179,7 +181,7 @@ def run_example(args):
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
     plt.close()
 
-    print(f"✓ 静态图表已保存: {fig_path}")
+    print(f" 静态图表已保存: {fig_path}")
 
     # ========================================================================
     # 4. 生成动画（如果启用）
@@ -214,14 +216,14 @@ def run_example(args):
                 ylabels={
                     'Tank 1 Level': 'Level (m)',
                     'Tank 2 Level': 'Level (m)',
-                    'Pump Flow': 'Flow (m³/s)',
+                    'Pump Flow': 'Flow (m^3/s)',
                     'Pump Speed': 'Speed (rpm)',
                 },
                 layout=(2, 2)
             )
-            print(f"✓ 动画已保存: {os.path.basename(gif_path)}")
+            print(f" 动画已保存: {os.path.basename(gif_path)}")
         except Exception as e:
-            print(f"✗ 动画生成失败: {e}")
+            print(f" 动画生成失败: {e}")
 
     # ========================================================================
     # 完成
@@ -232,7 +234,7 @@ def run_example(args):
     print(f"\n图表已保存到: {output_dir}")
     if args.animate:
         print(f"动画已保存到: {animation_dir}")
-    print("\n✅ 示例2（增强版）运行成功")
+    print("\n 示例2（增强版）运行成功")
 
 
 if __name__ == "__main__":

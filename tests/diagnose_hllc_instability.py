@@ -17,7 +17,13 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def diagnose_hllc_instability():
@@ -57,15 +63,15 @@ def diagnose_hllc_instability():
         length=length,
         n_cells=n_cells,
         manning_n=0.0,
-        cfl=0.5,
-        order=2,
+        cfl=0.3,
+        order=1,
         use_numba=True,
         riemann_solver='hllc',
         slope=0.0
     )
 
     solver.initialize(h_init, Q_init, bc_left, bc_right)
-    print(f"Initial mass: {np.sum(solver.h * solver.dx * solver.B):.2f} m³")
+    print(f"Initial mass: {np.sum(solver.h * solver.dx * solver.B):.2f} m^3")
     print()
 
     # Run with diagnostic output
@@ -102,7 +108,7 @@ def diagnose_hllc_instability():
                 'Q_before': Q_before
             }
 
-            print(f"❌ NaN DETECTED at step {step_count}, t={solver.t:.3f}s")
+            print(f" NaN DETECTED at step {step_count}, t={solver.t:.3f}s")
             print()
             break
 
@@ -120,7 +126,7 @@ def diagnose_hllc_instability():
             max_Q = np.max(np.abs(solver.Q))
             min_h = np.min(solver.h)
             print(f"Step {step_count:3d}: t={solver.t:6.3f}s, dt={solver.dt:.4f}s, "
-                  f"h=[{min_h:.3f}, {max_h:.3f}]m, max|Q|={max_Q:.1f}m³/s")
+                  f"h=[{min_h:.3f}, {max_h:.3f}]m, max|Q|={max_Q:.1f}m^3/s")
 
     print()
 
@@ -164,12 +170,12 @@ def diagnose_hllc_instability():
             Q_bf = first_nan_state['Q_before']
 
             print("State BEFORE time step:")
-            window = 2  # Show ±2 cells
+            window = 2  # Show +/-2 cells
             for offset in range(-window, window+1):
                 idx = first_nan_i + offset
                 if 0 <= idx < n_cells:
-                    marker = " ← NaN" if idx == first_nan_i else ""
-                    print(f"  Cell {idx:3d}: h={h_bf[idx]:8.4f}m, Q={Q_bf[idx]:9.3f}m³/s{marker}")
+                    marker = " <- NaN" if idx == first_nan_i else ""
+                    print(f"  Cell {idx:3d}: h={h_bf[idx]:8.4f}m, Q={Q_bf[idx]:9.3f}m^3/s{marker}")
             print()
 
             # State after NaN
@@ -180,12 +186,12 @@ def diagnose_hllc_instability():
             for offset in range(-window, window+1):
                 idx = first_nan_i + offset
                 if 0 <= idx < n_cells:
-                    marker = " ← NaN" if idx == first_nan_i else ""
+                    marker = " <- NaN" if idx == first_nan_i else ""
                     h_val = h_af[idx]
                     Q_val = Q_af[idx]
                     h_str = f"{h_val:8.4f}" if not np.isnan(h_val) else "    NaN"
                     Q_str = f"{Q_val:9.3f}" if not np.isnan(Q_val) else "      NaN"
-                    print(f"  Cell {idx:3d}: h={h_str}m, Q={Q_str}m³/s{marker}")
+                    print(f"  Cell {idx:3d}: h={h_str}m, Q={Q_str}m^3/s{marker}")
             print()
 
             # Compute velocities
@@ -194,7 +200,7 @@ def diagnose_hllc_instability():
                 idx = first_nan_i + offset
                 if 0 <= idx < n_cells:
                     u = Q_bf[idx] / (h_bf[idx] * width + 1e-10)
-                    marker = " ← NaN" if idx == first_nan_i else ""
+                    marker = " <- NaN" if idx == first_nan_i else ""
                     print(f"  Cell {idx:3d}: u={u:8.3f}m/s{marker}")
             print()
 
@@ -204,7 +210,7 @@ def diagnose_hllc_instability():
                 idx = first_nan_i + offset
                 if 0 <= idx < n_cells:
                     is_dry = h_bf[idx] < 0.01
-                    marker = " ← DRY" if is_dry else ""
+                    marker = " <- DRY" if is_dry else ""
                     print(f"  Cell {idx:3d}: h={h_bf[idx]:8.4f}m{marker}")
             print()
 
@@ -214,7 +220,7 @@ def diagnose_hllc_instability():
             print(f"  t = {last_good_state['t']:.3f}s")
             print(f"  dt = {last_good_state['dt']:.4f}s")
             print(f"  h: [{np.min(last_good_state['h']):.3f}, {np.max(last_good_state['h']):.3f}]m")
-            print(f"  Q: [{np.min(last_good_state['Q']):.3f}, {np.max(last_good_state['Q']):.3f}]m³/s")
+            print(f"  Q: [{np.min(last_good_state['Q']):.3f}, {np.max(last_good_state['Q']):.3f}]m^3/s")
             print()
 
         print("="*70)
@@ -230,34 +236,34 @@ def diagnose_hllc_instability():
         if last_good_state is not None:
             min_h = np.min(last_good_state['h'])
             if min_h < 0:
-                print(f"❌ Negative depth detected: min(h) = {min_h:.6f}m")
-                print("   → sqrt(g*h) will produce NaN")
+                print(f" Negative depth detected: min(h) = {min_h:.6f}m")
+                print("   -> sqrt(g*h) will produce NaN")
             else:
-                print(f"✅ No negative depths (min h = {min_h:.6f}m)")
+                print(f" No negative depths (min h = {min_h:.6f}m)")
 
         # 2. Dry cells
         if last_good_state is not None:
             dry_cells = np.sum(last_good_state['h'] < 0.01)
             if dry_cells > 0:
-                print(f"⚠️ {dry_cells} dry cells (h < 0.01m) detected")
-                print("   → Potential division by zero in HLLC")
+                print(f" {dry_cells} dry cells (h < 0.01m) detected")
+                print("   -> Potential division by zero in HLLC")
             else:
-                print("✅ No dry cells")
+                print(" No dry cells")
 
         # 3. Extreme velocities
         if last_good_state is not None:
             u = last_good_state['Q'] / (last_good_state['h'] * width + 1e-10)
             max_u = np.max(np.abs(u))
             if max_u > 20.0:  # Unrealistic for shallow water
-                print(f"⚠️ Extreme velocities detected: max|u| = {max_u:.1f}m/s")
-                print("   → Possible numerical instability")
+                print(f" Extreme velocities detected: max|u| = {max_u:.1f}m/s")
+                print("   -> Possible numerical instability")
             else:
-                print(f"✅ Velocities reasonable (max|u| = {max_u:.1f}m/s)")
+                print(f" Velocities reasonable (max|u| = {max_u:.1f}m/s)")
 
         print()
 
     else:
-        print("✅ Simulation completed without NaN")
+        print(" Simulation completed without NaN")
         print(f"   Final time: {solver.t:.3f}s")
         print(f"   Total steps: {step_count}")
 

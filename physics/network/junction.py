@@ -282,9 +282,9 @@ def test_junction():
     print(f"质量平衡残差: {residual:.6f} m³/s")
 
     if abs(residual) < 1e-6:
-        print("  ✓ 质量守恒满足！")
+        print("   质量守恒满足！")
     else:
-        print(f"  ✗ 质量不守恒，残差 = {residual}")
+        print(f"   质量不守恒，残差 = {residual}")
     print()
 
     # 测试局部损失
@@ -332,9 +332,9 @@ def test_junction():
     print(f"质量平衡残差: {residual_cross:.6f} m³/s")
 
     if abs(residual_cross) < 1e-6:
-        print("  ✓ 质量守恒满足！")
+        print("   质量守恒满足！")
     else:
-        print(f"  ✗ 质量不守恒，残差 = {residual_cross}")
+        print(f"   质量不守恒，残差 = {residual_cross}")
     print()
 
     # 测试3: 节点压力更新

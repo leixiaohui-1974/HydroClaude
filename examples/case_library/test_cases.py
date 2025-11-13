@@ -47,7 +47,7 @@ class CaseTestRunner:
             test_func()
             elapsed = time.time() - start_time
 
-            print(f"\n✓ {case_name} PASSED ({elapsed:.2f}s)")
+            print(f"\n {case_name} PASSED ({elapsed:.2f}s)")
             self.results['passed'].append({
                 'name': case_name,
                 'time': elapsed
@@ -55,7 +55,7 @@ class CaseTestRunner:
             return True
 
         except ImportError as e:
-            print(f"\n⊘ {case_name} SKIPPED (Missing dependency: {e})")
+            print(f"\n {case_name} SKIPPED (Missing dependency: {e})")
             self.results['skipped'].append({
                 'name': case_name,
                 'reason': str(e)
@@ -63,7 +63,7 @@ class CaseTestRunner:
             return None
 
         except Exception as e:
-            print(f"\n✗ {case_name} FAILED")
+            print(f"\n {case_name} FAILED")
             print(f"Error: {e}")
             print(f"\nTraceback:")
             traceback.print_exc()
@@ -83,25 +83,25 @@ class CaseTestRunner:
         total = len(self.results['passed']) + len(self.results['failed']) + len(self.results['skipped'])
 
         print(f"Total Tests: {total}")
-        print(f"✓ Passed:  {len(self.results['passed'])}")
-        print(f"✗ Failed:  {len(self.results['failed'])}")
-        print(f"⊘ Skipped: {len(self.results['skipped'])}")
+        print(f" Passed:  {len(self.results['passed'])}")
+        print(f" Failed:  {len(self.results['failed'])}")
+        print(f" Skipped: {len(self.results['skipped'])}")
 
         if self.results['passed']:
             print(f"\nPassed Tests:")
             for result in self.results['passed']:
-                print(f"  ✓ {result['name']} ({result['time']:.2f}s)")
+                print(f"   {result['name']} ({result['time']:.2f}s)")
 
         if self.results['failed']:
             print(f"\nFailed Tests:")
             for result in self.results['failed']:
-                print(f"  ✗ {result['name']}")
+                print(f"   {result['name']}")
                 print(f"     Error: {result['error']}")
 
         if self.results['skipped']:
             print(f"\nSkipped Tests:")
             for result in self.results['skipped']:
-                print(f"  ⊘ {result['name']}")
+                print(f"   {result['name']}")
                 print(f"     Reason: {result['reason']}")
 
         print(f"\n{'#'*70}\n")
@@ -132,9 +132,9 @@ def test_case_01_hydropower_basic():
     assert plant.turbine.rated_power == 100e6, "Turbine power incorrect"
     assert plant.reservoir.catchment_area == 5e6, "Reservoir catchment area incorrect"
 
-    print("✓ All components created successfully")
-    print(f"✓ Turbine: {plant.turbine.rated_power/1e6:.0f} MW")
-    print(f"✓ Reservoir: {plant.reservoir.catchment_area/1e6:.1f} km²")
+    print(" All components created successfully")
+    print(f" Turbine: {plant.turbine.rated_power/1e6:.0f} MW")
+    print(f" Reservoir: {plant.reservoir.catchment_area/1e6:.1f} km^2")
 
 
 def test_case_01_hydropower_simulation():
@@ -155,8 +155,8 @@ def test_case_01_hydropower_simulation():
     max_power = max(plant.state_history['turbine_power'])
     assert 0 < max_power < 150, f"Power out of range: {max_power} MW"
 
-    print(f"✓ Simulation completed: {len(plant.state_history['time'])} steps")
-    print(f"✓ Max power: {max_power:.1f} MW")
+    print(f" Simulation completed: {len(plant.state_history['time'])} steps")
+    print(f" Max power: {max_power:.1f} MW")
 
 
 def test_case_01_hydropower_load_rejection():
@@ -178,8 +178,8 @@ def test_case_01_hydropower_load_rejection():
     assert plant.surge_tank.min_level < min_level, "Surge tank below minimum"
     assert max_level < plant.surge_tank.max_level, "Surge tank above maximum"
 
-    print(f"✓ Load rejection simulation completed")
-    print(f"✓ Surge tank range: {min_level:.1f} - {max_level:.1f} m")
+    print(f" Load rejection simulation completed")
+    print(f" Surge tank range: {min_level:.1f} - {max_level:.1f} m")
 
 
 def test_case_02_water_supply_basic():
@@ -195,8 +195,8 @@ def test_case_02_water_supply_basic():
     assert len(network.pumps) > 0, "No pumps created"
     assert network.water_tower is not None, "Water tower not created"
 
-    print(f"✓ Network created: {len(network.nodes)} nodes, {len(network.pipes)} pipes")
-    print(f"✓ Pumps: {len(network.pumps)}")
+    print(f" Network created: {len(network.nodes)} nodes, {len(network.pipes)} pipes")
+    print(f" Pumps: {len(network.pumps)}")
 
 
 def test_case_02_water_supply_demand_pattern():
@@ -221,9 +221,9 @@ def test_case_02_water_supply_demand_pattern():
 
     assert total_demand > 0, "Total demand is zero"
 
-    print(f"✓ Demand pattern working")
-    print(f"✓ Midnight: {demand_at_midnight:.2f}x, Morning: {demand_at_morning_peak:.2f}x")
-    print(f"✓ Total demand at 8am: {total_demand*1000:.1f} L/s")
+    print(f" Demand pattern working")
+    print(f" Midnight: {demand_at_midnight:.2f}x, Morning: {demand_at_morning_peak:.2f}x")
+    print(f" Total demand at 8am: {total_demand*1000:.1f} L/s")
 
 
 def test_physics_turbine():
@@ -250,8 +250,8 @@ def test_physics_turbine():
     assert P > 0, "Power is zero"
     assert 0 < eta < 1, f"Efficiency out of range: {eta}"
 
-    print(f"✓ Turbine power: {P/1e6:.1f} MW")
-    print(f"✓ Efficiency: {eta*100:.1f}%")
+    print(f" Turbine power: {P/1e6:.1f} MW")
+    print(f" Efficiency: {eta*100:.1f}%")
 
 
 def test_physics_pump():
@@ -276,8 +276,8 @@ def test_physics_pump():
     eta = pump.calculate_efficiency(Q=100.0, n=1500.0)
     assert 0 < eta < 1, f"Efficiency out of range: {eta}"
 
-    print(f"✓ Pump head at 80 m³/s: {H:.1f} m")
-    print(f"✓ Efficiency at rated point: {eta*100:.1f}%")
+    print(f" Pump head at 80 m^3/s: {H:.1f} m")
+    print(f" Efficiency at rated point: {eta*100:.1f}%")
 
 
 def test_physics_valve():
@@ -303,8 +303,8 @@ def test_physics_valve():
 
     assert Q > 0, "Flow is zero"
 
-    print(f"✓ Valve Cv at 50%: {Cv_50}")
-    print(f"✓ Flow at 400kPa drop: {Q:.3f} m³/s")
+    print(f" Valve Cv at 50%: {Cv_50}")
+    print(f" Flow at 400kPa drop: {Q:.3f} m^3/s")
 
 
 def test_physics_surge_tank():
@@ -314,7 +314,7 @@ def test_physics_surge_tank():
 
     # Create surge tank
     # Note: SimpleSurgeTank uses diameter, not area
-    # If we want area = 100 m², then diameter = sqrt(4 * 100 / π) ≈ 11.28 m
+    # If we want area = 100 m^2, then diameter = sqrt(4 * 100 / pi) ~= 11.28 m
     diameter = math.sqrt(4 * 100.0 / math.pi)
 
     tank = SimpleSurgeTank(
@@ -340,8 +340,8 @@ def test_physics_surge_tank():
     expected_level = 80.0 + (Q_in - Q_out) * dt / tank.area
     assert abs(tank.water_level - expected_level) < 0.01, "Level calculation incorrect"
 
-    print(f"✓ Initial level: 80.0 m")
-    print(f"✓ After 1s: {tank.water_level:.2f} m")
+    print(f" Initial level: 80.0 m")
+    print(f" After 1s: {tank.water_level:.2f} m")
 
 
 def test_case_04_urban_drainage_basic():
@@ -357,10 +357,10 @@ def test_case_04_urban_drainage_basic():
     assert len(drainage.pump_stations) > 0, "No pump stations created"
     assert len(drainage.nodes) > 0, "No nodes created"
 
-    print(f"✓ Drainage system created")
-    print(f"✓ Catchments: {len(drainage.catchments)}")
-    print(f"✓ Pipes: {len(drainage.pipes)}")
-    print(f"✓ Pump stations: {len(drainage.pump_stations)}")
+    print(f" Drainage system created")
+    print(f" Catchments: {len(drainage.catchments)}")
+    print(f" Pipes: {len(drainage.pipes)}")
+    print(f" Pump stations: {len(drainage.pump_stations)}")
 
 
 def test_case_04_urban_drainage_rainfall():
@@ -398,9 +398,9 @@ def test_case_04_urban_drainage_rainfall():
     runoff = RationalMethodRunoff.calculate_runoff(catchment, intensity_peak)
     assert runoff > 0, "Runoff should be positive"
 
-    print(f"✓ Rainfall event created")
-    print(f"✓ Peak intensity: {intensity_peak:.1f} mm/hr")
-    print(f"✓ Runoff at peak: {runoff:.2f} m³/s")
+    print(f" Rainfall event created")
+    print(f" Peak intensity: {intensity_peak:.1f} mm/hr")
+    print(f" Runoff at peak: {runoff:.2f} m^3/s")
 
 
 def test_case_04_urban_drainage_preissmann():
@@ -435,9 +435,9 @@ def test_case_04_urban_drainage_preissmann():
     normal_depth = pipe.get_normal_depth(flow=2.0)
     assert 0 < normal_depth <= pipe.D, "Normal depth out of range"
 
-    print(f"✓ Preissmann Slot pipe created")
-    print(f"✓ Pipe diameter: {pipe.D:.1f} m")
-    print(f"✓ Normal depth at 2 m³/s: {normal_depth:.2f} m")
+    print(f" Preissmann Slot pipe created")
+    print(f" Pipe diameter: {pipe.D:.1f} m")
+    print(f" Normal depth at 2 m^3/s: {normal_depth:.2f} m")
 
 
 def test_case_05_river_network_basic():
@@ -458,9 +458,9 @@ def test_case_05_river_network_basic():
     assert 'main_middle' in river_network.reaches, "Main middle not found"
     assert 'main_lower' in river_network.reaches, "Main lower not found"
 
-    print(f"✓ River network created")
-    print(f"✓ River reaches: {len(river_network.reaches)}")
-    print(f"✓ Flood gates: {len(river_network.gates)}")
+    print(f" River network created")
+    print(f" River reaches: {len(river_network.reaches)}")
+    print(f" Flood gates: {len(river_network.gates)}")
 
 
 def test_case_05_river_network_compound_channel():
@@ -493,9 +493,9 @@ def test_case_05_river_network_compound_channel():
     K_flood = channel.get_conveyance(depth_flood, slope=0.001)
     assert K_flood > K_main, "Floodplain conveyance should be larger"
 
-    print(f"✓ Compound channel created")
-    print(f"✓ Main channel area at 2m: {area_main:.1f} m²")
-    print(f"✓ Total area at 5m: {area_flood:.1f} m²")
+    print(f" Compound channel created")
+    print(f" Main channel area at 2m: {area_main:.1f} m^2")
+    print(f" Total area at 5m: {area_flood:.1f} m^2")
 
 
 def test_case_05_river_network_flood_gate():
@@ -520,9 +520,9 @@ def test_case_05_river_network_flood_gate():
     # Gate should start opening
     assert gate.opening > 0, "Gate should open above trigger"
 
-    print(f"✓ Flood gate created")
-    print(f"✓ Gate opening at 105m stage: {gate.opening:.2f} m")
-    print(f"✓ Diversion flow: {flow_high:.2f} m³/s")
+    print(f" Flood gate created")
+    print(f" Gate opening at 105m stage: {gate.opening:.2f} m")
+    print(f" Diversion flow: {flow_high:.2f} m^3/s")
 
 
 def main():
@@ -564,10 +564,10 @@ def main():
     all_passed = runner.print_summary()
 
     if all_passed:
-        print("🎉 All tests passed!")
+        print(" All tests passed!")
         return 0
     else:
-        print("⚠️  Some tests failed. Please check the errors above.")
+        print("  Some tests failed. Please check the errors above.")
         return 1
 
 

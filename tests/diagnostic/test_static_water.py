@@ -11,7 +11,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_static_water():
@@ -49,7 +55,7 @@ def test_static_water():
     print(f"\n初始状态：")
     print(f"  h = {h_init}")
     print(f"  Q = {Q_init}")
-    print(f"  质量 = {mass_initial:.3f} m³")
+    print(f"  质量 = {mass_initial:.3f} m^3")
 
     print(f"\n运行10步...")
     print(f"\n{'步':<6} {'max|Q|':<12} {'max|Δh|':<12} {'质量':<12} {'Δm':<12}")
@@ -83,9 +89,9 @@ def test_static_water():
     print(f"  质量误差 = {mass_error:.2f}%")
 
     if max_Q_final < 1e-10 and mass_error < 0.01:
-        print(f"\n✅ Lake at Rest成立")
+        print(f"\n Lake at Rest成立")
     else:
-        print(f"\n❌ Lake at Rest失败")
+        print(f"\n Lake at Rest失败")
         if max_Q_final > 1e-10:
             print(f"   静水产生了流动")
         if mass_error > 0.01:

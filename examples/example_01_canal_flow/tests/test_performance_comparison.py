@@ -16,13 +16,18 @@
 日期: 2025-10-22
 """
 
+import os
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
 import time
 import matplotlib.pyplot as plt
-from solvers.single_canal_solver import SingleCanalSolver
+# DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
 from solvers.gate import SluiceGate, BroadCrestedWeir, Orifice
 
 
@@ -196,7 +201,7 @@ def run_performance_comparison():
 
     for scenario_name, scenario_results in all_results.items():
         for method_name, method_results in scenario_results.items():
-            converged_str = "✓" if method_results['converged'] else "✗"
+            converged_str = "" if method_results['converged'] else ""
             print(f"{scenario_name:<20} {method_name:<15} {converged_str:<8} {method_results['iterations']:<10} "
                   f"{method_results['final_error']*100:>6.4f}%     "
                   f"{method_results['elapsed_time']:>6.2f}s")
@@ -222,9 +227,9 @@ def run_performance_comparison():
             }
 
             print(f"\n{scenario_name}:")
-            print(f"  迭代次数: {fixed['iterations']} → {adaptive['iterations']} "
+            print(f"  迭代次数: {fixed['iterations']} -> {adaptive['iterations']} "
                   f"({'↓' if iter_improvement > 0 else '↑'}{abs(iter_improvement):.1f}%)")
-            print(f"  计算时间: {fixed['elapsed_time']:.2f}s → {adaptive['elapsed_time']:.2f}s "
+            print(f"  计算时间: {fixed['elapsed_time']:.2f}s -> {adaptive['elapsed_time']:.2f}s "
                   f"({'↓' if time_improvement > 0 else '↑'}{abs(time_improvement):.1f}%)")
         elif not fixed['converged'] and adaptive['converged']:
             print(f"\n{scenario_name}:")
@@ -304,7 +309,7 @@ def run_performance_comparison():
     plt.savefig(fig_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
 
-    print(f"  ✓ 性能对比图已保存: {fig_path}")
+    print(f"   性能对比图已保存: {fig_path}")
 
     print("\n" + "=" * 100)
     print("测试完成！")

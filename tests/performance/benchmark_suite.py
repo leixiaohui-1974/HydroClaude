@@ -67,7 +67,7 @@ class BenchmarkSuite:
         with open(self.benchmark_db_file, 'w') as f:
             json.dump(db, f, indent=2)
 
-        print(f"\n✅ 基准结果已保存到: {self.benchmark_db_file}")
+        print(f"\n 基准结果已保存到: {self.benchmark_db_file}")
 
     def load_baseline(self, test_name):
         """加载基线基准数据"""
@@ -211,9 +211,9 @@ class BenchmarkSuite:
                 print(f"\nvs 基线:")
                 print(f"  速度变化: {speedup:.2f}x")
                 if speedup > 1.1:
-                    print(f"  ✅ 性能提升 {(speedup-1)*100:.1f}%")
+                    print(f"   性能提升 {(speedup-1)*100:.1f}%")
                 elif speedup < 0.9:
-                    print(f"  ⚠️  性能下降 {(1-speedup)*100:.1f}%")
+                    print(f"  ️  性能下降 {(1-speedup)*100:.1f}%")
                 else:
                     print(f"  ~ 性能相当")
 
@@ -559,5 +559,5 @@ if __name__ == "__main__":
     suite.test_benchmark_long_simulation()
 
     print("\n" + "="*70)
-    print("\n✅ 所有基准测试完成")
+    print("\n 所有基准测试完成")
     print(f"结果已保存到: {suite.benchmark_db_file}")

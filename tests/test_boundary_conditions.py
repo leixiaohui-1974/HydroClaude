@@ -17,7 +17,13 @@ from pathlib import Path
 # 添加项目路径
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from solvers.boundary_conditions import (
+try:
+    from solvers.boundary_conditions import (
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
     CharacteristicBC,
     FlowRegime,
     BoundaryConditionType
@@ -93,7 +99,7 @@ class TestCharacteristicBC:
     def test_subcritical_inlet_Q(self):
         """测试缓流入口边界条件（指定流量Q）"""
         h_interior = 2.0
-        u_interior = 1.0  # Fr ≈ 0.23 < 1
+        u_interior = 1.0  # Fr ~= 0.23 < 1
         Q_bc = 30.0
         B = 10.0
 
@@ -154,7 +160,7 @@ class TestCharacteristicBC:
 
         # 检查Froude数 = 1
         Fr = self.bc.compute_froude_number(h_c, u_c)
-        assert abs(Fr - 1.0) < 0.01, f"临界流Froude数应≈1: {Fr}"
+        assert abs(Fr - 1.0) < 0.01, f"临界流Froude数应~=1: {Fr}"
 
         # 检查流量
         Q_result = u_c * h_c * B

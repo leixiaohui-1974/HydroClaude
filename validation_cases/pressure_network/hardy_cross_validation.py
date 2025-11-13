@@ -64,13 +64,13 @@ def validation_case_1_two_loop_network():
     print("\n[结果验证]")
     total_demand = 6 * 0.015
     Q_source = abs(flows["P0"])
-    print(f"  总需水量: {total_demand:.6f} m³/s")
-    print(f"  水源流量: {Q_source:.6f} m³/s")
-    print(f"  流量误差: {abs(Q_source - total_demand):.8f} m³/s")
+    print(f"  总需水量: {total_demand:.6f} m^3/s")
+    print(f"  水源流量: {Q_source:.6f} m^3/s")
+    print(f"  流量误差: {abs(Q_source - total_demand):.8f} m^3/s")
     
     assert abs(Q_source - total_demand) < 0.001, "流量平衡不满足"
     
-    print("\n  ✓ 验证案例1通过")
+    print("\n   验证案例1通过")
     print("=" * 80 + "\n")
     
     return flows, heads
@@ -86,7 +86,7 @@ def main():
     validation_case_1_two_loop_network()
     
     print("\n" + "="*80)
-    print("✓✓✓ 所有验证案例通过 ✓✓✓")
+    print(" 所有验证案例通过 ")
     print("="*80 + "\n")
 
 

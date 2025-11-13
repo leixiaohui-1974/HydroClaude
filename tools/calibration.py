@@ -136,7 +136,7 @@ class ParameterCalibrator:
         try:
             results = self.model_function(params_dict)
         except Exception as e:
-            print(f"  ⚠ 模型运行错误: {e}")
+            print(f"   模型运行错误: {e}")
             return 1e10
 
         # 计算所有变量的目标函数
@@ -168,7 +168,7 @@ class ParameterCalibrator:
         if self.best_score is None or avg_score < self.best_score:
             self.best_score = avg_score
             self.best_params = params_dict.copy()
-            print(f"  ✓ 第 {self.n_evaluations} 次评估: 新最优解 = {avg_score:.6f}")
+            print(f"   第 {self.n_evaluations} 次评估: 新最优解 = {avg_score:.6f}")
             print(f"    参数: {params_dict}")
 
         return avg_score
@@ -470,7 +470,7 @@ class ParameterCalibrator:
             json.dump(output_data, f, indent=2, ensure_ascii=False)
 
         print()
-        print(f"✓ 结果已保存到: {output_file}")
+        print(f" 结果已保存到: {output_file}")
 
     def plot_convergence(self,
                         save_file: str = 'calibration_convergence.png') -> None:
@@ -485,11 +485,11 @@ class ParameterCalibrator:
         try:
             import matplotlib.pyplot as plt
         except ImportError:
-            print("⚠ 需要安装matplotlib才能绘图")
+            print(" 需要安装matplotlib才能绘图")
             return
 
         if len(self.optimization_history) == 0:
-            print("⚠ 没有优化历史数据")
+            print(" 没有优化历史数据")
             return
 
         # 提取目标函数值
@@ -517,7 +517,7 @@ class ParameterCalibrator:
         plt.savefig(save_file, dpi=300, bbox_inches='tight')
         plt.close()
 
-        print(f"✓ 收敛曲线已保存到: {save_file}")
+        print(f" 收敛曲线已保存到: {save_file}")
 
     def plot_parameter_uncertainty(self,
                                   uncertainty: Dict,
@@ -535,7 +535,7 @@ class ParameterCalibrator:
         try:
             import matplotlib.pyplot as plt
         except ImportError:
-            print("⚠ 需要安装matplotlib才能绘图")
+            print(" 需要安装matplotlib才能绘图")
             return
 
         param_stats = uncertainty['parameter_stats']
@@ -576,7 +576,7 @@ class ParameterCalibrator:
         plt.savefig(save_file, dpi=300, bbox_inches='tight')
         plt.close()
 
-        print(f"✓ 参数不确定性图已保存到: {save_file}")
+        print(f" 参数不确定性图已保存到: {save_file}")
 
 
 def create_example_calibration():

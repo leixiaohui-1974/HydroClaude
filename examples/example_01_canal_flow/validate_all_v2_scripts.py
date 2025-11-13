@@ -9,6 +9,14 @@
 Author: Claude
 Date: 2025-10-23
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import subprocess
 import sys
@@ -131,7 +139,7 @@ def main():
     script_dir = Path(__file__).parent / "scripts"
 
     if not script_dir.exists():
-        print(f"❌ 错误: 脚本目录不存在: {script_dir}")
+        print(f" 错误: 脚本目录不存在: {script_dir}")
         return 1
 
     # 验证所有脚本存在
@@ -141,12 +149,12 @@ def main():
             missing.append(script)
 
     if missing:
-        print("❌ 以下脚本不存在:")
+        print(" 以下脚本不存在:")
         for s in missing:
             print(f"  - {s}")
         return 1
 
-    print("✓ 所有脚本文件已确认存在\n")
+    print(" 所有脚本文件已确认存在\n")
 
     # 运行所有脚本
     results = []
@@ -155,7 +163,7 @@ def main():
         results.append(result)
 
         # 打印即时结果
-        status = "✓ 成功" if result['success'] else "✗ 失败"
+        status = " 成功" if result['success'] else " 失败"
         print(f"\n{status} - 耗时: {result['elapsed']:.2f}秒")
         if result['flow_error']:
             print(f"  流量误差: {result['flow_error']}%")
@@ -177,8 +185,8 @@ def main():
     total_time = sum(r['elapsed'] for r in results)
 
     print(f"总脚本数: {total}")
-    print(f"✓ 成功: {success_count} ({success_count/total*100:.1f}%)")
-    print(f"✗ 失败: {fail_count} ({fail_count/total*100:.1f}%)")
+    print(f" 成功: {success_count} ({success_count/total*100:.1f}%)")
+    print(f" 失败: {fail_count} ({fail_count/total*100:.1f}%)")
     print(f"总耗时: {total_time:.2f}秒")
     print(f"平均耗时: {total_time/total:.2f}秒")
     print()
@@ -188,7 +196,7 @@ def main():
     print("-" * 80)
 
     for r in results:
-        status = "✓ 成功" if r['success'] else "✗ 失败"
+        status = " 成功" if r['success'] else " 失败"
         flow_err = f"{r['flow_error']}%" if r['flow_error'] else "N/A"
         iters = r['iterations'] if r['iterations'] else "N/A"
 
@@ -217,22 +225,22 @@ def main():
         f.write(f"**验证脚本数**: {total}\n\n")
         f.write("---\n\n")
 
-        f.write("## 📊 总体统计\n\n")
+        f.write("##  总体统计\n\n")
         f.write(f"| 指标 | 数值 |\n")
         f.write(f"|-----|------|\n")
         f.write(f"| 总脚本数 | {total} |\n")
-        f.write(f"| ✓ 成功 | {success_count} ({success_count/total*100:.1f}%) |\n")
-        f.write(f"| ✗ 失败 | {fail_count} ({fail_count/total*100:.1f}%) |\n")
+        f.write(f"|  成功 | {success_count} ({success_count/total*100:.1f}%) |\n")
+        f.write(f"|  失败 | {fail_count} ({fail_count/total*100:.1f}%) |\n")
         f.write(f"| 总耗时 | {total_time:.2f}秒 |\n")
         f.write(f"| 平均耗时 | {total_time/total:.2f}秒 |\n")
         f.write("\n---\n\n")
 
-        f.write("## 📋 详细结果\n\n")
+        f.write("##  详细结果\n\n")
         f.write(f"| 脚本 | 状态 | 耗时(s) | 流量误差 | 迭代次数 |\n")
         f.write(f"|------|------|---------|---------|----------|\n")
 
         for r in results:
-            status = "✓" if r['success'] else "✗"
+            status = "" if r['success'] else ""
             flow_err = f"{r['flow_error']}%" if r['flow_error'] else "N/A"
             iters = r['iterations'] if r['iterations'] else "N/A"
 
@@ -240,7 +248,7 @@ def main():
 
         if fail_count > 0:
             f.write("\n---\n\n")
-            f.write("## ⚠️ 失败详情\n\n")
+            f.write("##  失败详情\n\n")
             for r in results:
                 if not r['success']:
                     f.write(f"### {r['script']}\n\n")
@@ -251,7 +259,7 @@ def main():
         f.write("**Generated with Claude Code**\n")
         f.write("**Co-Authored-By: Claude <noreply@anthropic.com>**\n")
 
-    print(f"\n✓ 验证报告已保存: {report_path}")
+    print(f"\n 验证报告已保存: {report_path}")
 
     # 返回状态码
     return 0 if fail_count == 0 else 1

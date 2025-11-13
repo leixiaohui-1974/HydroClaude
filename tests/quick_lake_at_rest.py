@@ -13,7 +13,13 @@ import os
 # 添加路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_short_time(T_end=1.0):
@@ -24,7 +30,7 @@ def test_short_time(T_end=1.0):
 
     # 参数
     L = 100.0
-    n_cells = 100
+    n_cells = 120
     eta_init = 10.0
 
     # 创建底高程: 2m凸起
@@ -50,7 +56,7 @@ def test_short_time(T_end=1.0):
         n_cells=n_cells,
         manning_n=0.03,
         z_b=z_b,
-        cfl=0.5,
+        cfl=0.3,
         order=1,
         well_balanced=True
     )

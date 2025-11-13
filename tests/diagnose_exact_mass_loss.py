@@ -9,7 +9,13 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def diagnose_mass_loss():
@@ -23,7 +29,7 @@ def diagnose_mass_loss():
     # 配置
     length = 100.0
     width = 10.0
-    n_cells = 50
+    n_cells = 100
     dx = length / n_cells
 
     # 初始条件
@@ -39,7 +45,7 @@ def diagnose_mass_loss():
     # 创建精确求解器
     solver = GodunvFVMSolver(
         width=width, length=length, n_cells=n_cells,
-        manning_n=0.0, cfl=0.5, order=1,
+        manning_n=0.0, cfl=0.3, order=1,
         use_numba=True, riemann_solver='exact',
         well_balanced=False, slope=0.0
     )
@@ -47,13 +53,13 @@ def diagnose_mass_loss():
     solver.initialize(h_init.copy(), Q_init.copy(), bc_left, bc_right)
 
     mass_init = np.sum(solver.h * dx * width)
-    print(f"初始质量: {mass_init:.6f} m³")
+    print(f"初始质量: {mass_init:.6f} m^3")
     print(f"初始h范围: [{np.min(solver.h):.3f}, {np.max(solver.h):.3f}] m")
     print()
 
     # 逐步模拟,监控质量
     print("逐步监控:")
-    print(f"{'步骤':<6} {'时间(s)':<10} {'质量(m³)':<15} {'误差(%)':<10} {'Max h':<10}")
+    print(f"{'步骤':<6} {'时间(s)':<10} {'质量(m^3)':<15} {'误差(%)':<10} {'Max h':<10}")
     print("-"*60)
 
     for step in range(10):
@@ -67,15 +73,15 @@ def diagnose_mass_loss():
 
         # 检查异常
         if np.any(np.isnan(solver.h)):
-            print(f"\n❌ 步骤{step+1}出现NaN!")
+            print(f"\n 步骤{step+1}出现NaN!")
             break
 
         if mass_error > 50:
-            print(f"\n❌ 步骤{step+1}质量误差超过50%!")
+            print(f"\n 步骤{step+1}质量误差超过50%!")
             break
 
         if max_h > 100:
-            print(f"\n❌ 步骤{step+1}水深爆炸: max_h={max_h:.1f}m!")
+            print(f"\n 步骤{step+1}水深爆炸: max_h={max_h:.1f}m!")
             break
 
     print()
@@ -86,13 +92,13 @@ def diagnose_mass_loss():
 
     print(f"最终状态:")
     print(f"  时间: t={solver.t:.3f}s")
-    print(f"  质量: {mass_final:.6f} m³")
+    print(f"  质量: {mass_final:.6f} m^3")
     print(f"  误差: {mass_error:.6f}%")
     print(f"  h范围: [{np.min(solver.h):.3f}, {np.max(solver.h):.3f}] m")
     print()
 
     if mass_error > 1.0:
-        print(f"❌ 质量守恒失败: {mass_error:.2f}% > 1%")
+        print(f" 质量守恒失败: {mass_error:.2f}% > 1%")
         print()
         print("可能原因:")
         print("  1. 边界条件处理不当")
@@ -106,7 +112,7 @@ def diagnose_mass_loss():
         print(f"  后5: {solver.h[-5:]}")
 
     else:
-        print(f"✅ 质量守恒良好: {mass_error:.6f}%")
+        print(f" 质量守恒良好: {mass_error:.6f}%")
 
     print()
     print("="*70)

@@ -36,7 +36,7 @@ def test_gate_boundary():
     assert isinstance(Q, (float, np.ndarray))
 
     print(f"  闸门边界计算: h={h:.2f}, Q={Q:.2f}")
-    print("  ✓ GateBoundary test passed")
+    print("   GateBoundary test passed")
 
 def test_valve_boundary():
     """测试阀门边界条件"""
@@ -62,13 +62,13 @@ def test_valve_boundary():
     assert isinstance(Q, (float, np.ndarray))
 
     print(f"  阀门边界计算: H={H:.2f}, Q={Q:.2f}")
-    print("  ✓ ValveBoundary test passed")
+    print("   ValveBoundary test passed")
 
 def test_pump_boundary():
     """测试泵边界条件"""
     print("\n测试 PumpBoundary...")
 
-    # 创建泵边界条件（H = a*Q² + b*Q + c）
+    # 创建泵边界条件（H = a*Q^2 + b*Q + c）
     pump_bc = PumpBoundary(a=-0.01, b=0.1, c=50.0)
 
     assert pump_bc.a == -0.01
@@ -88,7 +88,7 @@ def test_pump_boundary():
     assert isinstance(Q, (float, np.ndarray))
 
     print(f"  泵边界计算: H={H:.2f}, Q={Q:.2f}")
-    print("  ✓ PumpBoundary test passed")
+    print("   PumpBoundary test passed")
 
 if __name__ == "__main__":
     print("="*80)
@@ -105,7 +105,7 @@ if __name__ == "__main__":
         print("="*80)
 
     except Exception as e:
-        print(f"\n✗ 测试失败: {e}")
+        print(f"\n 测试失败: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)

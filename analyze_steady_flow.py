@@ -96,9 +96,9 @@ print(f'    水位差: Δη = {eta[pump_idx+1] - eta[pump_idx-1]:.3f} m (应为5
 print(f'    流量变化: ΔQ = {q[pump_idx+1] - q[pump_idx-1]:.3f} m³/s (应为0)')
 print()
 if eta[pump_idx+1] > eta[pump_idx-1]:
-    print(f'  ✅ 验证: 泵后水位 ({eta[pump_idx+1]:.3f}m) > 泵前水位 ({eta[pump_idx-1]:.3f}m)')
+    print(f'   验证: 泵后水位 ({eta[pump_idx+1]:.3f}m) > 泵前水位 ({eta[pump_idx-1]:.3f}m)')
 else:
-    print(f'  ❌ 问题: 泵后水位 ({eta[pump_idx+1]:.3f}m) <= 泵前水位 ({eta[pump_idx-1]:.3f}m)')
+    print(f'   问题: 泵后水位 ({eta[pump_idx+1]:.3f}m) <= 泵前水位 ({eta[pump_idx-1]:.3f}m)')
 print()
 
 # 5. 泵站后到闸门2
@@ -147,11 +147,11 @@ if eta[-1] < eta[pump_idx+1]:
     print(f'  分析: 渠尾水位 < 泵后水位')
     print(f'       原因: 泵后到渠尾有50km距离，底坡使底床下降约{S0*50000:.1f}m')
     print(f'            闸门2造成一定的水位损失')
-    print(f'       结论: ✅ 这是正常的，符合明渠水力学规律')
+    print(f'       结论:  这是正常的，符合明渠水力学规律')
 elif eta[-1] > eta[pump_idx+1]:
     print(f'  分析: 渠尾水位 > 泵后水位')
     print(f'       原因: 下游边界条件或闸门2造成回水')
-    print(f'       结论: ⚠️ 需要检查下游边界条件设置')
+    print(f'       结论: ️ 需要检查下游边界条件设置')
 else:
     print(f'  分析: 渠尾水位 = 泵后水位（特殊情况）')
 print()
@@ -219,7 +219,7 @@ checks.append(('渠尾水位合理（考虑底坡）', check5, f'水位下降={e
 
 print()
 for i, (desc, passed, detail) in enumerate(checks, 1):
-    status = '✅ 通过' if passed else '❌ 不通过'
+    status = ' 通过' if passed else ' 不通过'
     print(f'  {status}  检查{i}: {desc}')
     print(f'          {detail}')
     print()
@@ -227,13 +227,13 @@ for i, (desc, passed, detail) in enumerate(checks, 1):
 all_passed = all(check[1] for check in checks)
 print('=' * 90)
 if all_passed:
-    print('✅ 总体结论: 恒定流结果完全合理！')
+    print(' 总体结论: 恒定流结果完全合理！')
     print()
     print('核心验证:')
-    print('  ✓ 泵站正确地将水位抬高了5m')
-    print('  ✓ 泵前后水深基本不变（山区泵站特征）')
-    print('  ✓ 流量完全守恒')
-    print('  ✓ 渠尾水位合理（考虑了底坡和闸门影响）')
+    print('   泵站正确地将水位抬高了5m')
+    print('   泵前后水深基本不变（山区泵站特征）')
+    print('   流量完全守恒')
+    print('   渠尾水位合理（考虑了底坡和闸门影响）')
 else:
-    print('⚠️  总体结论: 存在一些需要关注的问题')
+    print('️  总体结论: 存在一些需要关注的问题')
 print('=' * 90)

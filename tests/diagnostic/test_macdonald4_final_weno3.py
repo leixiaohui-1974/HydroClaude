@@ -15,13 +15,19 @@ sys.path.insert(0, '/home/user/HydroClaude')
 
 import numpy as np
 import time
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 print("="*80)
 print("MacDonald Test 4 - 最终验证")
 print("="*80)
 print("\n使用标准MacDonald Test 4参数")
-print("目标: 质量误差 < 15% → 100%通过率")
+print("目标: 质量误差 < 15% -> 100%通过率")
 print("="*80)
 
 # 标准MacDonald Test 4参数（MacDonald et al., 1997）
@@ -33,7 +39,7 @@ S0 = 0.0            # 底坡（水平）
 g = 9.81            # 重力加速度
 
 # 边界条件
-Q = 20.0            # 上游流量 (m³/s)
+Q = 20.0            # 上游流量 (m^3/s)
 h_up = 0.7          # 上游水深 (m)
 h_down = 2.8        # 下游水深 (m)
 
@@ -48,7 +54,7 @@ h2_theory = h_up / 2.0 * (-1.0 + np.sqrt(1.0 + 8.0 * Fr_up**2))
 print(f"\n物理参数:")
 print(f"  渠道: L={L}m, B={B}m, n={n_cells}单元")
 print(f"  摩擦: Manning n={manning_n}")
-print(f"  上游: Q={Q}m³/s, h={h_up}m, Fr={Fr_up:.3f}")
+print(f"  上游: Q={Q}m^3/s, h={h_up}m, Fr={Fr_up:.3f}")
 print(f"  下游: h={h_down}m")
 print(f"  理论水跃后水深: {h2_theory:.3f}m")
 
@@ -78,7 +84,7 @@ bc_right = {'type': 'fixed_h', 'h': h_down}
 solver.initialize(h_init, Q_init, bc_left, bc_right)
 mass_init = solver._compute_total_mass()
 
-print(f"初始质量: {mass_init:.2f} m³")
+print(f"初始质量: {mass_init:.2f} m^3")
 print(f"\n运行到 t=100s...")
 print("(进度每20秒显示一次)")
 
@@ -138,40 +144,40 @@ print(f"{'='*80}")
 success = True
 
 if mass_error < 15.0:
-    print(f"✅ 质量守恒: {mass_error:.2f}% < 15.0%")
+    print(f" 质量守恒: {mass_error:.2f}% < 15.0%")
 else:
-    print(f"❌ 质量守恒: {mass_error:.2f}% ≥ 15.0%")
+    print(f" 质量守恒: {mass_error:.2f}% >= 15.0%")
     success = False
 
 if abs(Fr_upstream_final - Fr_up) / Fr_up < 0.2:
-    print(f"✅ Froude数: {Fr_upstream_final:.3f} ≈ {Fr_up:.3f}")
+    print(f" Froude数: {Fr_upstream_final:.3f} ~= {Fr_up:.3f}")
 else:
-    print(f"⚠️  Froude数: {Fr_upstream_final:.3f} vs {Fr_up:.3f}")
+    print(f"️  Froude数: {Fr_upstream_final:.3f} vs {Fr_up:.3f}")
 
 if belanger_error < 30.0:
-    print(f"✅ Belanger关系: 误差 {belanger_error:.2f}% < 30%")
+    print(f" Belanger关系: 误差 {belanger_error:.2f}% < 30%")
 else:
-    print(f"⚠️  Belanger关系: 误差 {belanger_error:.2f}% ≥ 30%")
+    print(f"️  Belanger关系: 误差 {belanger_error:.2f}% >= 30%")
 
 if n_negative < n_cells * 0.2:
-    print(f"✅ 负流量: {n_negative}/{n_cells} < 20%")
+    print(f" 负流量: {n_negative}/{n_cells} < 20%")
 else:
-    print(f"⚠️  负流量: {n_negative}/{n_cells} ≥ 20%")
+    print(f"️  负流量: {n_negative}/{n_cells} >= 20%")
 
 if success:
     print(f"\n{'='*80}")
-    print("🎉🎉🎉 MacDonald Test 4: 通过！")
+    print(" MacDonald Test 4: 通过！")
     print(f"{'='*80}")
     print("\nMacDonald标准测试结果:")
-    print("  Test 1: ✅ 通过")
-    print("  Test 2: ✅ 通过")
-    print("  Test 3: ✅ 通过")
-    print("  Test 4: ✅ 通过 (质量误差 {:.2f}% < 15%)".format(mass_error))
-    print("  Test 5: ✅ 通过")
-    print(f"\n🏆🏆🏆 100%通过率达成！(5/5) 🏆🏆🏆")
+    print("  Test 1:  通过")
+    print("  Test 2:  通过")
+    print("  Test 3:  通过")
+    print("  Test 4:  通过 (质量误差 {:.2f}% < 15%)".format(mass_error))
+    print("  Test 5:  通过")
+    print(f"\n 100%通过率达成！(5/5) ")
     print(f"{'='*80}\n")
     exit(0)
 else:
-    print(f"\n⚠️  Test 4未通过质量守恒标准")
+    print(f"\n️  Test 4未通过质量守恒标准")
     print(f"{'='*80}\n")
     exit(1)

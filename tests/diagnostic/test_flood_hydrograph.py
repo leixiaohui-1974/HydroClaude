@@ -6,8 +6,8 @@
 目标：使用流量限速器避免NaN
 
 Phase 1问题：
-- 快速变化边界 → NaN ❌
-- 使用限速器 → 稳定 ✅
+- 快速变化边界 -> NaN 
+- 使用限速器 -> 稳定 
 
 作者: HydroClaude Team
 日期: 2025-10-27
@@ -16,7 +16,13 @@ Phase 1问题：
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from utils.canal_utils import compute_steady_uniform_flow
 from utils.dynamic_bc import RateLimitedBC, create_flood_hydrograph
 import numpy as np
@@ -39,8 +45,8 @@ Q_peak = 80.0
 h_base = compute_steady_uniform_flow(Q_base, 10.0, 0.001, 0.025)
 
 print(f"\n洪水参数：")
-print(f"  基流: {Q_base} m³/s")
-print(f"  峰值: {Q_peak} m³/s")
+print(f"  基流: {Q_base} m^3/s")
+print(f"  峰值: {Q_peak} m^3/s")
 print(f"  基流水深: {h_base:.3f} m")
 
 # 初始化
@@ -72,10 +78,10 @@ print(f"  总时长: {t_total/3600:.1f}小时")
 print(f"  采样点: {len(Q_hydrograph)}个")
 
 # 创建流量限速器
-rate_limiter = RateLimitedBC(max_rate=15.0)  # 15 m³/s per second
+rate_limiter = RateLimitedBC(max_rate=15.0)  # 15 m^3/s per second
 
 print(f"\n推进模拟...")
-print(f"  流量限速器: 最大15 m³/s/s")
+print(f"  流量限速器: 最大15 m^3/s/s")
 
 # 记录
 t_record = []
@@ -144,7 +150,7 @@ print(f"  质量误差: {mass_error:.4f}%")
 
 # 检查NaN
 has_nan = np.any(np.isnan(state['h'])) or np.any(np.isnan(state['Q']))
-print(f"  数值稳定: {'❌ NaN' if has_nan else '✅ 稳定'}")
+print(f"  数值稳定: {' NaN' if has_nan else ' 稳定'}")
 
 # 评价
 print("\n" + "=" * 80)
@@ -154,13 +160,13 @@ print("=" * 80)
 success = True
 
 if has_nan:
-    print("\n❌ 测试失败: 出现NaN")
+    print("\n 测试失败: 出现NaN")
     success = False
 elif abs(mass_error) > 3.0:
-    print(f"\n⚠️ 质量误差偏大: {abs(mass_error):.2f}% > 3%")
+    print(f"\n️ 质量误差偏大: {abs(mass_error):.2f}% > 3%")
     success = False
 else:
-    print(f"\n✅ 测试通过！")
+    print(f"\n 测试通过！")
     print(f"   质量误差 {abs(mass_error):.4f}% < 3%")
     print(f"   无NaN崩溃")
     print(f"   流量限速器有效！")
@@ -174,7 +180,7 @@ try:
     ax1.plot(np.array(t_record)/60, Q_target_record, 'r--', label='目标流量', linewidth=2)
     ax1.plot(np.array(t_record)/60, Q_actual_record, 'b-', label='实际流量（限速后）', linewidth=2)
     ax1.set_xlabel('时间 (分钟)')
-    ax1.set_ylabel('流量 (m³/s)')
+    ax1.set_ylabel('流量 (m^3/s)')
     ax1.set_title('洪水过程线 - 流量限速效果')
     ax1.legend()
     ax1.grid(True, alpha=0.3)
@@ -183,7 +189,7 @@ try:
     ax2 = axes[1]
     ax2.plot(np.array(t_record)/60, mass_error_record, 'g-', linewidth=2)
     ax2.axhline(y=0, color='k', linestyle='--', alpha=0.3)
-    ax2.axhline(y=3, color='r', linestyle='--', alpha=0.3, label='±3%阈值')
+    ax2.axhline(y=3, color='r', linestyle='--', alpha=0.3, label='+/-3%阈值')
     ax2.axhline(y=-3, color='r', linestyle='--', alpha=0.3)
     ax2.set_xlabel('时间 (分钟)')
     ax2.set_ylabel('质量误差 (%)')
@@ -201,8 +207,8 @@ try:
     
     plt.tight_layout()
     plt.savefig('/workspace/flood_hydrograph_test.png', dpi=150, bbox_inches='tight')
-    print(f"\n📊 图表已保存: flood_hydrograph_test.png")
+    print(f"\n 图表已保存: flood_hydrograph_test.png")
 except Exception as e:
-    print(f"\n⚠️ 可视化失败: {str(e)}")
+    print(f"\n️ 可视化失败: {str(e)}")
 
 print("\n" + "=" * 80)

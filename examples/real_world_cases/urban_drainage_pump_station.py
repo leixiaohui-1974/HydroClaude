@@ -4,9 +4,9 @@
 实际工程案例：城市排水泵站智能调度系统
 
 工程背景：
-某城市排水泵站负责2.5 km²汇水区域的排涝任务，
-配置3台水泵（Q1=2.0 m³/s, Q2=2.5 m³/s, Q3=3.0 m³/s），
-集水池有效容积8000 m³。
+某城市排水泵站负责2.5 km^2汇水区域的排涝任务，
+配置3台水泵（Q1=2.0 m^3/s, Q2=2.5 m^3/s, Q3=3.0 m^3/s），
+集水池有效容积8000 m^3。
 
 设计要求：
 1. 汛期暴雨工况下保证不溢流
@@ -26,7 +26,9 @@
 """
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 from typing import List, Tuple
 from dataclasses import dataclass
 from enum import Enum
@@ -48,7 +50,7 @@ class PumpStatus(Enum):
 class Pump:
     """水泵配置"""
     id: int
-    capacity: float        # 额定流量 (m³/s)
+    capacity: float        # 额定流量 (m^3/s)
     power: float           # 额定功率 (kW)
     efficiency: float      # 效率
     min_runtime: float     # 最小运行时间 (s)
@@ -74,14 +76,14 @@ class CollectionPool:
     """集水池模型"""
 
     def __init__(self,
-                 area: float = 500.0,  # 池底面积 (m²)
+                 area: float = 500.0,  # 池底面积 (m^2)
                  max_depth: float = 5.0,  # 最大水深 (m)
                  initial_depth: float = 2.0):  # 初始水深 (m)
         """
         初始化集水池
 
         Args:
-            area: 池底面积 (m²)
+            area: 池底面积 (m^2)
             max_depth: 最大水深 (m)
             initial_depth: 初始水深 (m)
         """
@@ -94,8 +96,8 @@ class CollectionPool:
         更新水位
 
         Args:
-            Q_in: 入流量 (m³/s)
-            Q_out: 出流量 (m³/s)
+            Q_in: 入流量 (m^3/s)
+            Q_out: 出流量 (m^3/s)
             dt: 时间步长 (s)
 
         Returns:
@@ -113,7 +115,7 @@ class CollectionPool:
         return self.depth
 
     def get_volume(self) -> float:
-        """获取当前蓄水量 (m³)"""
+        """获取当前蓄水量 (m^3)"""
         return self.area * self.depth
 
     def is_overflow_risk(self, threshold: float = 4.0) -> bool:
@@ -127,7 +129,7 @@ class DrainagePumpStation:
     def __init__(self,
                  pumps: List[Pump],
                  pool: CollectionPool,
-                 catchment_area: float = 2.5e6,  # 汇水面积 (m²)
+                 catchment_area: float = 2.5e6,  # 汇水面积 (m^2)
                  runoff_coefficient: float = 0.6):  # 径流系数
         """
         初始化泵站系统
@@ -135,7 +137,7 @@ class DrainagePumpStation:
         Args:
             pumps: 水泵列表
             pool: 集水池
-            catchment_area: 汇水面积 (m²)
+            catchment_area: 汇水面积 (m^2)
             runoff_coefficient: 径流系数
         """
         self.pumps = pumps
@@ -145,8 +147,8 @@ class DrainagePumpStation:
 
         # 统计数据
         self.total_energy = 0.0  # 总耗电量 (kWh)
-        self.total_inflow = 0.0   # 总入流量 (m³)
-        self.total_pumped = 0.0   # 总抽排量 (m³)
+        self.total_inflow = 0.0   # 总入流量 (m^3)
+        self.total_pumped = 0.0   # 总抽排量 (m^3)
         self.overflow_duration = 0.0  # 溢流持续时间 (s)
 
     def calculate_inflow(self, rainfall_intensity: float) -> float:
@@ -157,7 +159,7 @@ class DrainagePumpStation:
             rainfall_intensity: 降雨强度 (mm/h)
 
         Returns:
-            入流量 (m³/s)
+            入流量 (m^3/s)
         """
         # Q = ψ * i * A
         # i 转换为 m/s
@@ -347,17 +349,17 @@ def run_pump_station_simulation():
     station = DrainagePumpStation(
         pumps=pumps,
         pool=pool,
-        catchment_area=2.5e6,  # 2.5 km²
+        catchment_area=2.5e6,  # 2.5 km^2
         runoff_coefficient=0.6
     )
 
     print("\n系统配置:")
-    print(f"  汇水面积: {station.catchment_area/1e6:.2f} km²")
+    print(f"  汇水面积: {station.catchment_area/1e6:.2f} km^2")
     print(f"  径流系数: {station.runoff_coefficient}")
-    print(f"  集水池容积: {pool.area * pool.max_depth:.0f} m³")
+    print(f"  集水池容积: {pool.area * pool.max_depth:.0f} m^3")
     print(f"  泵组配置:")
     for pump in pumps:
-        print(f"    {pump.id}号泵: Q={pump.capacity} m³/s, P={pump.power} kW")
+        print(f"    {pump.id}号泵: Q={pump.capacity} m^3/s, P={pump.power} kW")
 
     # 创建降雨场景
     rainfall_events = create_rainfall_scenario('storm')
@@ -420,8 +422,8 @@ def run_pump_station_simulation():
         if k % 40 == 0:  # 每20分钟
             print(f"t={t/60:5.1f}min: 水位={current_depth:4.2f}m, "
                   f"雨强={rainfall:5.1f}mm/h, "
-                  f"入流={inflow_history[k]:5.2f}m³/s, "
-                  f"出流={outflow_history[k]:4.1f}m³/s, "
+                  f"入流={inflow_history[k]:5.2f}m^3/s, "
+                  f"出流={outflow_history[k]:4.1f}m^3/s, "
                   f"泵运行={[i+1 for i,p in enumerate(pumps) if p.status==PumpStatus.ON]}")
 
     print("-" * 80)
@@ -430,8 +432,8 @@ def run_pump_station_simulation():
     stats = station.get_statistics()
 
     print("\n运行统计:")
-    print(f"  总入流量: {stats['total_inflow']:.2f} m³")
-    print(f"  总抽排量: {stats['total_pumped']:.2f} m³")
+    print(f"  总入流量: {stats['total_inflow']:.2f} m^3")
+    print(f"  总抽排量: {stats['total_pumped']:.2f} m^3")
     print(f"  总能耗: {stats['total_energy']:.2f} kWh")
     print(f"  溢流持续时间: {stats['overflow_duration']/60:.2f} 分钟")
     print(f"  泵启动次数: {stats['pump_starts']}")
@@ -445,7 +447,7 @@ def run_pump_station_simulation():
     print(f"\n水位控制:")
     print(f"  最高水位: {max_depth:.2f} m")
     print(f"  最低水位: {min_depth:.2f} m")
-    print(f"  高水位(≥4.0m)持续: {overflow_risk:.2f} 分钟")
+    print(f"  高水位(>=4.0m)持续: {overflow_risk:.2f} 分钟")
 
     # 绘图
     fig = plt.figure(figsize=(16, 12))
@@ -469,7 +471,7 @@ def run_pump_station_simulation():
     ax2.plot(time/60, outflow_history, 'g-', linewidth=2, label='出流量(泵排)', alpha=0.7)
     ax2_rain.bar(time/60, rainfall_history, width=1.0, alpha=0.3,
                  color='skyblue', label='降雨强度')
-    ax2.set_ylabel('流量 (m³/s)', fontsize=11)
+    ax2.set_ylabel('流量 (m^3/s)', fontsize=11)
     ax2_rain.set_ylabel('降雨强度 (mm/h)', fontsize=11)
     ax2.set_title('流量和降雨', fontsize=11)
     ax2.legend(loc='upper left')
@@ -481,7 +483,7 @@ def run_pump_station_simulation():
     for i in range(len(pumps)):
         offset = i * 1.5
         ax3.fill_between(time/60, offset, offset + pump_status_history[:, i],
-                        alpha=0.6, label=f'{i+1}号泵 ({pumps[i].capacity} m³/s)',
+                        alpha=0.6, label=f'{i+1}号泵 ({pumps[i].capacity} m^3/s)',
                         step='post')
     ax3.set_ylabel('泵运行状态', fontsize=11)
     ax3.set_title('泵组运行状态', fontsize=11)
@@ -500,22 +502,22 @@ def run_pump_station_simulation():
 
     plt.tight_layout()
     plt.savefig('urban_drainage_pump_station.png', dpi=150, bbox_inches='tight')
-    print(f"\n✓ 结果已保存到: urban_drainage_pump_station.png")
+    print(f"\n 结果已保存到: urban_drainage_pump_station.png")
 
-    plt.show()
+    # plt.show()  # Disabled for automated testing
 
     print("\n" + "=" * 80)
     print("仿真完成！")
     print("\n关键结论:")
     if max_depth < 4.0:
-        print("  ✓ 成功防止溢流，最高水位未超过警戒线")
+        print("   成功防止溢流，最高水位未超过警戒线")
     else:
-        print(f"  ✗ 出现高水位风险，最高{max_depth:.2f}m")
+        print(f"   出现高水位风险，最高{max_depth:.2f}m")
 
     avg_energy_per_m3 = stats['total_energy'] / stats['total_pumped'] if stats['total_pumped'] > 0 else 0
-    print(f"  ✓ 单位抽排能耗: {avg_energy_per_m3:.4f} kWh/m³")
-    print(f"  ✓ 泵组启动总次数: {sum(stats['pump_starts'])} 次（平均{sum(stats['pump_starts'])/len(pumps):.1f}次/泵）")
-    print(f"  ✓ 水量平衡误差: {abs(stats['total_inflow']-stats['total_pumped']-(station.pool.get_volume()-pool.area*2.0))/stats['total_inflow']*100:.2f}%")
+    print(f"   单位抽排能耗: {avg_energy_per_m3:.4f} kWh/m^3")
+    print(f"   泵组启动总次数: {sum(stats['pump_starts'])} 次（平均{sum(stats['pump_starts'])/len(pumps):.1f}次/泵）")
+    print(f"   水量平衡误差: {abs(stats['total_inflow']-stats['total_pumped']-(station.pool.get_volume()-pool.area*2.0))/stats['total_inflow']*100:.2f}%")
     print("=" * 80)
 
 

@@ -59,7 +59,7 @@ F = 0.5 * g * h**2  # 压力通量
 print(f"\n通量：F = gh²/2 = {F:.3f} m³/s²（所有界面相同）")
 print("通量梯度：∂F/∂x = (F[i+1/2] - F[i-1/2])/dx = 0")
 print("源项：S = -gh∂z/∂x = 0（平坦底床）")
-print("残差：R = -∂F/∂x + S = 0 ✓")
+print("残差：R = -∂F/∂x + S = 0 ")
 
 print("\n【测试算例2】")
 print("台阶地形，湖面静止：η=10m everywhere, u=0")
@@ -99,6 +99,6 @@ print(f"\n良平衡条件验证：")
 print(f"  R = -∂F/∂x + S")
 print(f"    = -{dF_dx:.3f} + {S:.3f}")
 print(f"    = {R:.3e}")
-print(f"  结果：{'✓ 平衡' if abs(R) < 1e-10 else '✗ 不平衡'}")
+print(f"  结果：{' 平衡' if abs(R) < 1e-10 else ' 不平衡'}")
 
 print("\n" + "="*70)

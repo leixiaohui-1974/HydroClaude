@@ -29,7 +29,7 @@ def test_health_check():
 
     assert response.status_code == 200
     assert response.json()["status"] == "healthy"
-    print("✅ PASSED")
+    print(" PASSED")
 
 
 def test_root_endpoint():
@@ -44,7 +44,7 @@ def test_root_endpoint():
 
     assert response.status_code == 200
     assert "service" in response.json()
-    print("✅ PASSED")
+    print(" PASSED")
 
 
 def test_engine_info():
@@ -59,7 +59,7 @@ def test_engine_info():
 
     assert response.status_code == 200
     assert "engine_version" in response.json()
-    print("✅ PASSED")
+    print(" PASSED")
 
 
 def test_create_simulation():
@@ -105,7 +105,7 @@ def test_create_simulation():
     assert response.json()["status"] == "queued"
 
     task_id = response.json()["task_id"]
-    print(f"✅ PASSED - Task ID: {task_id}")
+    print(f" PASSED - Task ID: {task_id}")
 
     return task_id
 
@@ -128,7 +128,7 @@ def test_get_simulation_status(task_id):
 
     assert response.status_code == 200
     assert response.json()["task_id"] == task_id
-    print(f"✅ PASSED - Status: {response.json()['status']}")
+    print(f" PASSED - Status: {response.json()['status']}")
 
     return response.json()["status"]
 
@@ -153,7 +153,7 @@ def test_get_simulation_results(task_id):
         if status == "completed":
             break
         elif status == "failed":
-            print(f"❌ Simulation failed!")
+            print(f" Simulation failed!")
             return
 
         time.sleep(wait_interval)
@@ -185,10 +185,10 @@ def test_get_simulation_results(task_id):
         assert metrics['max_velocity'] < 0.001, "Velocity should be near zero for static uniform flow!"
         assert abs(metrics['mean_depth_final'] - 5.0) < 0.01, "Final depth should be ~5.0m!"
 
-        print("✅ PASSED - Results validated!")
+        print(" PASSED - Results validated!")
     else:
         print(f"Response: {response.text}")
-        print(f"❌ FAILED")
+        print(f" FAILED")
 
 
 def test_list_simulations():
@@ -203,14 +203,14 @@ def test_list_simulations():
 
     assert response.status_code == 200
     assert isinstance(response.json(), list)
-    print("✅ PASSED")
+    print(" PASSED")
 
 
 def run_all_tests():
     """Run all tests"""
-    print("\n" + "🚀" * 30)
+    print("\n" + "[ROCKET]" * 30)
     print("HydroClaude Web API Test Suite")
-    print("🚀" * 30)
+    print("[ROCKET]" * 30)
 
     try:
         test_health_check()
@@ -221,15 +221,15 @@ def run_all_tests():
         test_get_simulation_results(task_id)
         test_list_simulations()
 
-        print("\n" + "✅" * 30)
+        print("\n" + "" * 30)
         print("ALL TESTS PASSED!")
-        print("✅" * 30)
+        print("" * 30)
 
     except AssertionError as e:
-        print(f"\n❌ Test failed: {e}")
+        print(f"\n Test failed: {e}")
         raise
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n Error: {e}")
         raise
 
 

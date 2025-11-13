@@ -143,4 +143,4 @@ if __name__ == "__main__":
     vessel.update_state(Q_in, dt, P_main)
     print(f"  更新后: {vessel}")
     print(f"  阻尼系数: {vessel.get_damping_coefficient():.6f} m³/Pa")
-    print("  ✓ 气压罐组件测试通过")
+    print("   气压罐组件测试通过")

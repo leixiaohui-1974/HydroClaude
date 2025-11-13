@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 示例8: Preissmann格式 vs 有限体积法对比（增强版）
 
@@ -14,6 +15,8 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from physics.canal import Canal
@@ -62,7 +65,7 @@ def example_preissmann_vs_fvm():
 
         if step % 20 == 0 or step == n_steps - 1:
             print(f"  步 {step+1}/{n_steps}: 水位={canal_p.state.level:.3f}m, "
-                  f"流量={canal_p.state.flow:.3f}m³/s")
+                  f"流量={canal_p.state.flow:.3f}m^3/s")
 
     print(f"Preissmann方法完成!")
     print()
@@ -85,7 +88,7 @@ def example_preissmann_vs_fvm():
 
         if step % 20 == 0 or step == n_steps - 1:
             print(f"  步 {step+1}/{n_steps}: 水位={canal_f.state.level:.3f}m, "
-                  f"流量={canal_f.state.flow:.3f}m³/s")
+                  f"流量={canal_f.state.flow:.3f}m^3/s")
 
     print(f"FVM方法完成!")
     print()
@@ -111,8 +114,8 @@ def example_preissmann_vs_fvm():
     print("误差统计:")
     print(f"  水位RMSE: {rmse_level:.6f} m")
     print(f"  水位最大差异: {max_level_error:.6f} m")
-    print(f"  流量RMSE: {rmse_flow:.6f} m³/s")
-    print(f"  流量最大差异: {max_flow_error:.6f} m³/s")
+    print(f"  流量RMSE: {rmse_flow:.6f} m^3/s")
+    print(f"  流量最大差异: {max_flow_error:.6f} m^3/s")
     print()
 
     # ====== 5. 生成可视化 ======
@@ -136,7 +139,7 @@ def example_preissmann_vs_fvm():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (2) 流量时间历程对比
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -145,7 +148,7 @@ def example_preissmann_vs_fvm():
     ax.plot(time, flows_f, 's--', linewidth=2.5, markersize=4,
             color='#E74C3C', label='FVM', markeredgecolor='none', alpha=0.8)
     ax.set_xlabel('Time (minutes)', fontsize=12)
-    ax.set_ylabel('Average Flow Rate (m³/s)', fontsize=12)
+    ax.set_ylabel('Average Flow Rate (m^3/s)', fontsize=12)
     ax.set_title('Flow Rate Time History Comparison', fontsize=14, fontweight='bold')
     ax.legend(loc='best', fontsize=11, framealpha=0.9)
     ax.grid(True, alpha=0.3, linestyle='--')
@@ -154,7 +157,7 @@ def example_preissmann_vs_fvm():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (3) 空间分布对比（最终时刻）
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -174,7 +177,7 @@ def example_preissmann_vs_fvm():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (4) 误差分析图
     fig, axes = plt.subplots(2, 1, figsize=(12, 10))
@@ -198,8 +201,8 @@ def example_preissmann_vs_fvm():
     ax.axhline(y=0, color='r', linestyle='--', linewidth=2, alpha=0.5)
     ax.fill_between(time, flow_errors, 0, alpha=0.3, color='#F39C12')
     ax.set_xlabel('Time (minutes)', fontsize=12)
-    ax.set_ylabel('Flow Difference (m³/s)', fontsize=12)
-    ax.set_title(f'Flow Rate Difference: Preissmann - FVM (RMSE={rmse_flow:.6f}m³/s)',
+    ax.set_ylabel('Flow Difference (m^3/s)', fontsize=12)
+    ax.set_title(f'Flow Rate Difference: Preissmann - FVM (RMSE={rmse_flow:.6f}m^3/s)',
                 fontsize=13, fontweight='bold')
     ax.grid(True, alpha=0.3, linestyle='--')
 
@@ -208,7 +211,7 @@ def example_preissmann_vs_fvm():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (5) 综合四子图
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
@@ -228,7 +231,7 @@ def example_preissmann_vs_fvm():
     ax.plot(time, flows_p, 'b-', linewidth=2, label='Preissmann')
     ax.plot(time, flows_f, 'r--', linewidth=2, label='FVM')
     ax.set_xlabel('Time (min)', fontsize=11)
-    ax.set_ylabel('Flow (m³/s)', fontsize=11)
+    ax.set_ylabel('Flow (m^3/s)', fontsize=11)
     ax.set_title('Flow Rate', fontsize=12)
     ax.legend(fontsize=9)
     ax.grid(True, alpha=0.3)
@@ -257,7 +260,7 @@ def example_preissmann_vs_fvm():
     plt.savefig(img_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
     generated_images.append(img_path)
-    print(f"  ✓ 生成图表: {os.path.basename(img_path)}")
+    print(f"   生成图表: {os.path.basename(img_path)}")
 
     # (6) 空间分布演化动画
     print("  生成空间分布演化动画...")
@@ -297,7 +300,7 @@ def example_preissmann_vs_fvm():
     anim.save(gif_path, writer='pillow', fps=2.5, dpi=100)
     plt.close(fig)
     generated_images.append(gif_path)
-    print(f"  ✓ 生成动画: {os.path.basename(gif_path)}")
+    print(f"   生成动画: {os.path.basename(gif_path)}")
     print()
 
     # ====== 6. 生成报告 ======
@@ -313,8 +316,8 @@ def example_preissmann_vs_fvm():
         '总时间 (s)': f"{total_time}",
         '水位RMSE (m)': f"{rmse_level:.6f}",
         '水位最大误差 (m)': f"{max_level_error:.6f}",
-        '流量RMSE (m³/s)': f"{rmse_flow:.6f}",
-        '流量最大误差 (m³/s)': f"{max_flow_error:.6f}",
+        '流量RMSE (m^3/s)': f"{rmse_flow:.6f}",
+        '流量最大误差 (m^3/s)': f"{max_flow_error:.6f}",
         '相对误差 (%)': f"{(rmse_level/np.mean(levels_p)*100):.4f}"
     }
 
@@ -367,8 +370,8 @@ def example_preissmann_vs_fvm():
 流量的预测结果同样高度吻合。
 
 **性能指标**:
-- RMSE: {rmse_flow:.6f} m³/s
-- 最大偏差: {max_flow_error:.6f} m³/s
+- RMSE: {rmse_flow:.6f} m^3/s
+- 最大偏差: {max_flow_error:.6f} m^3/s
 - 相对误差极小
 
 两种方法在流量计算上同样表现出excellent agreement。""",
@@ -400,8 +403,8 @@ def example_preissmann_vs_fvm():
 - 误差时间分布: 相对平稳
 
 **流量误差特性**:
-- RMSE: {rmse_flow:.6f} m³/s
-- 误差量级: 10^-5 ~ 10^-6 m³/s
+- RMSE: {rmse_flow:.6f} m^3/s
+- 误差量级: 10^-5 ~ 10^-6 m^3/s
 - 误差时间分布: 相对平稳
 
 **误差来源分析**:
@@ -472,7 +475,7 @@ def example_preissmann_vs_fvm():
 
 **本例结果**:
 - RMSE水位: {rmse_level:.6f} m
-- RMSE流量: {rmse_flow:.6f} m³/s
+- RMSE流量: {rmse_flow:.6f} m^3/s
 - **结论**: 在本缓流问题中，两种方法精度相当
 
 **选择建议**:
@@ -488,10 +491,10 @@ def example_preissmann_vs_fvm():
 仿真成功完成！
 
 **主要成果**:
-- ✓ 成功对比了Preissmann和FVM两种方法
-- ✓ 水位RMSE: {rmse_level:.6f} m (相对误差 {(rmse_level/np.mean(levels_p)*100):.4f}%)
-- ✓ 流量RMSE: {rmse_flow:.6f} m³/s
-- ✓ 验证了两种方法的等价性
+-  成功对比了Preissmann和FVM两种方法
+-  水位RMSE: {rmse_level:.6f} m (相对误差 {(rmse_level/np.mean(levels_p)*100):.4f}%)
+-  流量RMSE: {rmse_flow:.6f} m^3/s
+-  验证了两种方法的等价性
 
 **技术验证**:
 - **一致性**: 两种方法预测高度一致
@@ -520,7 +523,7 @@ def example_preissmann_vs_fvm():
         filename='example_08_simulation_report.md'
     )
 
-    print(f"  ✓ 报告已生成: {os.path.basename(report_path)}")
+    print(f"   报告已生成: {os.path.basename(report_path)}")
     print()
 
     # ====== 7. 总结 ======
@@ -530,8 +533,8 @@ def example_preissmann_vs_fvm():
     print(f"方法对比性能:")
     print(f"  水位RMSE: {rmse_level:.6f} m (相对误差: {(rmse_level/np.mean(levels_p)*100):.4f}%)")
     print(f"  水位最大差异: {max_level_error:.6f} m")
-    print(f"  流量RMSE: {rmse_flow:.6f} m³/s")
-    print(f"  流量最大差异: {max_flow_error:.6f} m³/s")
+    print(f"  流量RMSE: {rmse_flow:.6f} m^3/s")
+    print(f"  流量最大差异: {max_flow_error:.6f} m^3/s")
     print()
     print(f"结论: 两种方法在缓流问题中精度相当，误差可忽略")
     print()

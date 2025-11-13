@@ -407,14 +407,14 @@ if __name__ == "__main__":
     print("测试1: 简单纵剖面图")
     fig1 = helper.plot_profile(x, y1, xlabel="Distance (km)", ylabel="Water Depth (m)",
                                title="Test Profile")
-    print("  ✓ 纵剖面图创建成功")
+    print("   纵剖面图创建成功")
     plt.close(fig1)
 
     print("测试2: 带结构物的纵剖面图")
     structures = [(25, "Gate 1"), (50, "Pump"), (75, "Gate 2")]
     fig2 = helper.plot_profile(x, y1, structures=structures,
                                title="Profile with Structures")
-    print("  ✓ 带结构物的纵剖面图创建成功")
+    print("   带结构物的纵剖面图创建成功")
     plt.close(fig2)
 
     print("测试3: 双剖面图")
@@ -422,7 +422,7 @@ if __name__ == "__main__":
                                     ylabel1="Water Depth (m)",
                                     ylabel2="Flow Rate (m³/s)",
                                     structures=structures)
-    print("  ✓ 双剖面图创建成功")
+    print("   双剖面图创建成功")
     plt.close(fig3)
 
     print("测试4: 时间序列图")
@@ -432,7 +432,7 @@ if __name__ == "__main__":
     fig4 = helper.plot_time_series(time, data, labels=labels,
                                    xlabel="Time (s)",
                                    title="Time Series")
-    print("  ✓ 时间序列图创建成功")
+    print("   时间序列图创建成功")
     plt.close(fig4)
 
     print("测试5: 等值线图")
@@ -442,9 +442,9 @@ if __name__ == "__main__":
                                ylabel="Time (min)",
                                zlabel="Water Depth (m)",
                                vlines=structures)
-    print("  ✓ 等值线图创建成功")
+    print("   等值线图创建成功")
     plt.close(fig5)
 
     print()
-    print("✓ PlotHelper测试完成！")
+    print(" PlotHelper测试完成！")
     print("=" * 80)

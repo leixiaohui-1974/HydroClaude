@@ -9,7 +9,13 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 import numpy as np
-from solvers.godunov_fvm_solver import GodunvFVMSolver
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_h_boundary_fix():
@@ -32,7 +38,7 @@ def test_h_boundary_fix():
 
     print(f"\n参数：")
     print(f"  L = {L} m (短河道，快速测试)")
-    print(f"  Q_left = {Q_bc} m³/s")
+    print(f"  Q_left = {Q_bc} m^3/s")
     print(f"  h_right = {h_c:.6f} m (临界水深)")
 
     # 创建求解器（禁用numba加速）
@@ -97,27 +103,27 @@ def test_h_boundary_fix():
     print(f"  总步数：{step_count}")
     print(f"  质量误差：{mass_error_pct:.2f}%")
     print(f"  通量守恒：{discrepancy_pct:.2f}%")
-    print(f"  累积流入：{cumulative_inflow:.2f} m³")
-    print(f"  累积流出：{cumulative_outflow:.2f} m³")
+    print(f"  累积流入：{cumulative_inflow:.2f} m^3")
+    print(f"  累积流出：{cumulative_outflow:.2f} m^3")
     print(f"  流入/流出比：{inflow_outflow_ratio:.2f}")
 
     print(f"\n判断：")
     if mass_error_pct < 5.0:
-        print(f"  ✅ 质量守恒良好 ({mass_error_pct:.2f}%)")
+        print(f"   质量守恒良好 ({mass_error_pct:.2f}%)")
     else:
-        print(f"  ❌ 质量误差过大 ({mass_error_pct:.2f}%)")
+        print(f"   质量误差过大 ({mass_error_pct:.2f}%)")
 
     if 0.9 < inflow_outflow_ratio < 1.1:
-        print(f"  ✅ 流量平衡 (比值={inflow_outflow_ratio:.2f})")
+        print(f"   流量平衡 (比值={inflow_outflow_ratio:.2f})")
     else:
-        print(f"  ❌ 流量不平衡 (比值={inflow_outflow_ratio:.2f}, 应该≈1.0)")
+        print(f"   流量不平衡 (比值={inflow_outflow_ratio:.2f}, 应该~=1.0)")
 
     # 整体判断
     print(f"\n{'='*80}")
     if mass_error_pct < 5.0 and 0.9 < inflow_outflow_ratio < 1.1:
-        print("✅ 修复成功！")
+        print(" 修复成功！")
     else:
-        print("❌ 修复未完全生效")
+        print(" 修复未完全生效")
 
         # 调试信息
         print(f"\n可能原因：")

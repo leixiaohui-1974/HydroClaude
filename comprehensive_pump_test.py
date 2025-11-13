@@ -62,12 +62,12 @@ def test_case_1_steady_different_flows():
             'precision': precision
         })
         
-        status = "✅" if 95 <= precision <= 105 else "❌"
+        status = "" if 95 <= precision <= 105 else ""
         print(f"  Q={Q:5.1f} m³/s: 扬程={actual_head:.4f}m, 精度={precision:6.2f}% {status}")
     
     # 判断
     all_passed = all(95 <= r['precision'] <= 105 for r in results)
-    print(f"\n结果: {'✅ 全部通过' if all_passed else '❌ 部分失败'}")
+    print(f"\n结果: {' 全部通过' if all_passed else ' 部分失败'}")
     return all_passed
 
 
@@ -113,7 +113,7 @@ def test_case_2_pump_startup():
     
     # 判断：泵站启动后水深应上升
     passed = delta_h > 2.0  # 至少上升2m
-    print(f"\n结果: {'✅ 通过' if passed else '❌ 失败'} (水深上升 {delta_h:.2f}m)")
+    print(f"\n结果: {' 通过' if passed else ' 失败'} (水深上升 {delta_h:.2f}m)")
     return passed
 
 
@@ -157,7 +157,7 @@ def test_case_3_pump_shutdown():
     print(f"  水深下降: {delta_h:.4f} m")
     
     passed = delta_h > 2.0
-    print(f"\n结果: {'✅ 通过' if passed else '❌ 失败'} (水深下降 {delta_h:.2f}m)")
+    print(f"\n结果: {' 通过' if passed else ' 失败'} (水深下降 {delta_h:.2f}m)")
     return passed
 
 
@@ -201,7 +201,7 @@ def test_case_4_flow_step_change():
     precision_final = head_final / 5.0 * 100
     
     passed = (90 <= precision_initial <= 110) and (90 <= precision_final <= 110)
-    print(f"\n结果: {'✅ 通过' if passed else '❌ 失败'}")
+    print(f"\n结果: {' 通过' if passed else ' 失败'}")
     print(f"  初始精度: {precision_initial:.1f}%")
     print(f"  最终精度: {precision_final:.1f}%")
     return passed
@@ -245,12 +245,12 @@ def test_case_5_two_pumps():
             'precision': precision
         })
         
-        status = "✅" if 90 <= precision <= 110 else "❌"
+        status = "" if 90 <= precision <= 110 else ""
         print(f"  泵站{pump_pos/1000:.0f}km: 扬程={actual_head:.4f}m (额定{rated_head}m), "
               f"精度={precision:.1f}% {status}")
     
     passed = all(90 <= r['precision'] <= 110 for r in results)
-    print(f"\n结果: {'✅ 全部通过' if passed else '❌ 部分失败'}")
+    print(f"\n结果: {' 全部通过' if passed else ' 部分失败'}")
     return passed
 
 
@@ -290,7 +290,7 @@ def test_case_6_gate_pump_interaction():
     print(f"  流量守恒: {Q_actual:.4f} m³/s (误差 {Q_error:.3f}%)")
     
     passed = (90 <= precision <= 110) and (Q_error < 1.0)
-    print(f"\n结果: {'✅ 通过' if passed else '❌ 失败'}")
+    print(f"\n结果: {' 通过' if passed else ' 失败'}")
     return passed
 
 
@@ -317,7 +317,7 @@ def main():
             passed = test_func()
             results.append((name, passed))
         except Exception as e:
-            print(f"\n❌ 测试异常: {e}")
+            print(f"\n 测试异常: {e}")
             import traceback
             traceback.print_exc()
             results.append((name, False))
@@ -328,7 +328,7 @@ def main():
     print("=" * 80)
     
     for name, passed in results:
-        status = "✅ 通过" if passed else "❌ 失败"
+        status = " 通过" if passed else " 失败"
         print(f"  {name:20s}: {status}")
     
     all_passed = all(r[1] for r in results)
@@ -337,10 +337,10 @@ def main():
     
     print("\n" + "=" * 80)
     if all_passed:
-        print(f"🎉 全部测试通过！({passed_count}/{total_count})")
+        print(f" 全部测试通过！({passed_count}/{total_count})")
         print("   各种工况下精度都满足要求")
     else:
-        print(f"⚠️  部分测试失败 ({passed_count}/{total_count})")
+        print(f"️  部分测试失败 ({passed_count}/{total_count})")
         print("   需要进一步优化")
     print("=" * 80)
     

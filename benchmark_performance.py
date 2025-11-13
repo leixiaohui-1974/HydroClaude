@@ -80,7 +80,7 @@ def benchmark_no_gate():
         print(f"  流量误差: {result['Q_error_percent']:.6f}%")
         print(f"  迭代次数: {result['iterations']}")
         print(f"  计算时间: {elapsed:.4f}秒")
-        print(f"  收敛: {'✓' if result['converged'] else '✗'}")
+        print(f"  收敛: {'' if result['converged'] else ''}")
 
     return results
 
@@ -154,7 +154,7 @@ def benchmark_single_gate():
         print(f"  闸门误差: {gate_error:.4f}%")
         print(f"  迭代次数: {result['iterations']}")
         print(f"  计算时间: {elapsed:.4f}秒")
-        print(f"  收敛: {'✓' if result['converged'] else '✗'}")
+        print(f"  收敛: {'' if result['converged'] else ''}")
 
     return results
 
@@ -236,7 +236,7 @@ def benchmark_multi_gate():
         print(f"  闸门误差: 平均{avg_gate_error:.4f}%, 最大{max_gate_error:.4f}%")
         print(f"  迭代次数: {result['iterations']}")
         print(f"  计算时间: {elapsed:.4f}秒")
-        print(f"  收敛: {'✓' if result['converged'] else '✗'}")
+        print(f"  收敛: {'' if result['converged'] else ''}")
 
     return results
 
@@ -304,9 +304,9 @@ def print_summary(results_no_gate, results_single, results_multi):
     print(f"  最慢: {np.max(all_times):.4f}秒")
     print(f"  平均: {np.mean(all_times):.4f}秒")
 
-    print(f"\n✅ 所有测试场景收敛率: 100%")
-    print(f"✅ 流量守恒平均精度: {np.mean(all_Q_errors):.6f}% (目标<0.5%)")
-    print(f"✅ 闸门控制平均精度: {np.mean(all_gate_errors):.4f}% (目标<5%)")
+    print(f"\n 所有测试场景收敛率: 100%")
+    print(f" 流量守恒平均精度: {np.mean(all_Q_errors):.6f}% (目标<0.5%)")
+    print(f" 闸门控制平均精度: {np.mean(all_gate_errors):.4f}% (目标<5%)")
 
     print("\n" + "=" * 80)
 

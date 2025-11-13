@@ -38,7 +38,7 @@ class HydroClaudeCLI:
 
     def run_simulation(self, config_file: str, **kwargs):
         """运行模拟"""
-        print(f"🚀 运行模拟: {config_file}")
+        print(f" 运行模拟: {config_file}")
 
         from modeling.universal_modeler import UniversalModeler
 
@@ -46,17 +46,17 @@ class HydroClaudeCLI:
             modeler = UniversalModeler(config_file)
             results = modeler.run()
 
-            print(f"✅ 模拟完成")
+            print(f" 模拟完成")
             print(f"   模拟时间: {results.get('time', [])[-1] if 'time' in results and len(results['time']) > 0 else 'N/A'} s")
 
             return 0
         except Exception as e:
-            print(f"❌ 模拟失败: {e}")
+            print(f" 模拟失败: {e}")
             return 1
 
     def create_config(self, **kwargs):
         """创建配置文件"""
-        print("📝 配置文件生成向导")
+        print(" 配置文件生成向导")
 
         from utils.config_generator import ConfigGenerator
 
@@ -70,10 +70,10 @@ class HydroClaudeCLI:
             try:
                 config = gen.load_template(template_name)
                 gen.save_config(config, output)
-                print(f"✅ 配置已创建: {output}")
+                print(f" 配置已创建: {output}")
                 return 0
             except Exception as e:
-                print(f"❌ 创建失败: {e}")
+                print(f" 创建失败: {e}")
                 return 1
         else:
             # 交互式向导
@@ -82,7 +82,7 @@ class HydroClaudeCLI:
 
     def validate_examples(self, **kwargs):
         """验证示例"""
-        print("🔍 验证示例案例")
+        print(" 验证示例案例")
 
         cmd = [sys.executable, str(self.project_root / "examples" / "validate_new_examples.py")]
 
@@ -109,7 +109,7 @@ class HydroClaudeCLI:
         elif test_type == 'all':
             cmd = [sys.executable, '-m', 'pytest', 'unit_tests/', 'integration_tests/', '-v']
         else:
-            print(f"❌ 未知测试类型: {test_type}")
+            print(f" 未知测试类型: {test_type}")
             return 1
 
         if kwargs.get('coverage'):
@@ -120,7 +120,7 @@ class HydroClaudeCLI:
 
     def run_benchmark(self, **kwargs):
         """运行性能测试"""
-        print("⚡ 运行性能基准测试")
+        print(" 运行性能基准测试")
 
         cmd = [sys.executable, '-m', 'utils.benchmark']
 
@@ -129,7 +129,7 @@ class HydroClaudeCLI:
 
     def health_check(self, **kwargs):
         """项目健康检查"""
-        print("🏥 项目健康检查")
+        print(" 项目健康检查")
 
         cmd = [sys.executable, str(self.project_root / "check_project_health.py")]
 
@@ -143,7 +143,7 @@ class HydroClaudeCLI:
 
     def show_docs(self, **kwargs):
         """显示文档"""
-        print("📚 HydroClaude 文档")
+        print(" HydroClaude 文档")
         print("\n可用文档:")
         print("  - README.md: 项目总览")
         print("  - QUICKSTART.md: 快速入门")
@@ -175,7 +175,7 @@ class HydroClaudeCLI:
                 else:  # Linux
                     subprocess.run(['xdg-open', str(doc_path)])
             else:
-                print(f"❌ 文档不存在: {doc_path}")
+                print(f" 文档不存在: {doc_path}")
                 return 1
 
         return 0
@@ -189,7 +189,7 @@ class HydroClaudeCLI:
 
     def list_examples(self):
         """列出所有示例"""
-        print("📋 可用示例案例\n")
+        print(" 可用示例案例\n")
 
         examples_dir = self.project_root / "examples"
 
@@ -216,14 +216,14 @@ class HydroClaudeCLI:
 
     def export_data(self, input_file: str, **kwargs):
         """导出数据"""
-        print(f"📤 导出数据: {input_file}")
+        print(f" 导出数据: {input_file}")
 
         from utils.data_exporter import DataExporter
         import numpy as np
 
         # 加载数据
         if not Path(input_file).exists():
-            print(f"❌ 文件不存在: {input_file}")
+            print(f" 文件不存在: {input_file}")
             return 1
 
         try:
@@ -243,18 +243,18 @@ class HydroClaudeCLI:
                             filename=key,
                             formats=formats
                         )
-                        print(f"✅ 导出 {key}: {list(files.keys())}")
+                        print(f" 导出 {key}: {list(files.keys())}")
             else:
-                print("⚠️  数据中没有time字段，使用索引")
+                print("️  数据中没有time字段，使用索引")
 
             return 0
         except Exception as e:
-            print(f"❌ 导出失败: {e}")
+            print(f" 导出失败: {e}")
             return 1
 
     def generate_report(self, **kwargs):
         """生成报告"""
-        print("📊 生成报告")
+        print(" 生成报告")
 
         from utils.report_generator import ReportGenerator
 
@@ -272,10 +272,10 @@ class HydroClaudeCLI:
         elif format_type == 'markdown':
             reporter.generate_markdown(output)
         else:
-            print(f"❌ 未知格式: {format_type}")
+            print(f" 未知格式: {format_type}")
             return 1
 
-        print(f"✅ 报告已生成: {output}")
+        print(f" 报告已生成: {output}")
         return 0
 
 

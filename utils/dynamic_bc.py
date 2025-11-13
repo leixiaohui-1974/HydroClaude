@@ -51,7 +51,7 @@ class RateLimitedBC:
         self.current_value = None
         self.initialized = False
         
-        print(f"🚦 流量限速器初始化: 最大变化率={max_rate} 单位/s")
+        print(f" 流量限速器初始化: 最大变化率={max_rate} 单位/s")
     
     def update(self, target_value: float, dt: float) -> float:
         """
@@ -272,7 +272,7 @@ if __name__ == '__main__':
     print(f"  左: Q = {bc_left['value']} m³/s")
     print(f"  右: h = {bc_right['value']} m")
     print(f"\n兼容性检查:")
-    print(f"  兼容: {'✅ 是' if result['compatible'] else '❌ 否'}")
+    print(f"  兼容: {' 是' if result['compatible'] else ' 否'}")
     print(f"  误差: {result['error']:.2f}%")
     print(f"  消息: {result['message']}")
     
@@ -300,5 +300,5 @@ if __name__ == '__main__':
         print(f"  t={t_min:4d}min: Q={Q[i]:6.2f} m³/s")
     
     print("\n" + "=" * 80)
-    print("✅ 动态边界条件工具测试完成")
+    print(" 动态边界条件工具测试完成")
     print("=" * 80)

@@ -3,6 +3,14 @@
 """
 综合动画生成器 - 为所有剩余示例生成GIF动画
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import sys
 from pathlib import Path
@@ -157,7 +165,7 @@ class ComprehensiveAnimationGenerator:
         anim.save(str(gif_path), writer=writer, dpi=100)
         plt.close(fig)
 
-        print(f"    ✓ 动画已保存: {gif_path.name}")
+        print(f"     动画已保存: {gif_path.name}")
         return str(gif_path)
 
     def generate_control_animation(self, example_dir, example_name):
@@ -335,7 +343,7 @@ class ComprehensiveAnimationGenerator:
         anim.save(str(gif_path), writer=writer, dpi=100)
         plt.close(fig)
 
-        print(f"    ✓ 动画已保存: {gif_path.name}")
+        print(f"     动画已保存: {gif_path.name}")
         return str(gif_path)
 
     def generate_pipe_flow_animation(self, example_dir, example_name):
@@ -383,7 +391,7 @@ class ComprehensiveAnimationGenerator:
             velocity_wave = np.array(velocity_wave)
 
             ylabel1 = 'Pressure (MPa)'
-            ylabel2 = 'Flow Rate (m³/s)'
+            ylabel2 = 'Flow Rate (m^3/s)'
             title_text = 'Pipe Flow Dynamics'
 
         # 创建动画
@@ -435,7 +443,7 @@ class ComprehensiveAnimationGenerator:
         anim.save(str(gif_path), writer=writer, dpi=100)
         plt.close(fig)
 
-        print(f"    ✓ 动画已保存: {gif_path.name}")
+        print(f"     动画已保存: {gif_path.name}")
         return str(gif_path)
 
     def generate_water_resource_animation(self, example_dir, example_name):
@@ -459,7 +467,7 @@ class ComprehensiveAnimationGenerator:
             line1, = axes[0].plot([], [], 'b-', linewidth=2.5)
             axes[0].set_xlim(0, 24)
             axes[0].set_ylim(0, 100)
-            axes[0].set_ylabel('Inflow (m³/s)', fontsize=11)
+            axes[0].set_ylabel('Inflow (m^3/s)', fontsize=11)
             axes[0].set_title('Weir Operation', fontsize=12, fontweight='bold')
             axes[0].grid(True, alpha=0.3)
 
@@ -472,7 +480,7 @@ class ComprehensiveAnimationGenerator:
             line3, = axes[2].plot([], [], 'r-', linewidth=2.5)
             axes[2].set_xlim(0, 24)
             axes[2].set_ylim(0, 100)
-            axes[2].set_ylabel('Discharge (m³/s)', fontsize=11)
+            axes[2].set_ylabel('Discharge (m^3/s)', fontsize=11)
             axes[2].set_xlabel('Time (hours)', fontsize=11)
             axes[2].grid(True, alpha=0.3)
 
@@ -491,7 +499,7 @@ class ComprehensiveAnimationGenerator:
             line1b, = axes[0].plot([], [], 'r--', linewidth=2, label='Supply')
             axes[0].set_xlim(0, 24)
             axes[0].set_ylim(50, 150)
-            axes[0].set_ylabel('Flow Rate (m³/s)', fontsize=11)
+            axes[0].set_ylabel('Flow Rate (m^3/s)', fontsize=11)
             axes[0].set_title('Water Resource Management', fontsize=12, fontweight='bold')
             axes[0].grid(True, alpha=0.3)
             axes[0].legend()
@@ -500,14 +508,14 @@ class ComprehensiveAnimationGenerator:
             line2, = axes[1].plot([], [], 'orange', linewidth=2.5)
             axes[1].set_xlim(0, 24)
             axes[1].set_ylim(-20, 20)
-            axes[1].set_ylabel('Supply Deficit (m³/s)', fontsize=11)
+            axes[1].set_ylabel('Supply Deficit (m^3/s)', fontsize=11)
             axes[1].grid(True, alpha=0.3)
             axes[1].axhline(y=0, color='k', linestyle='-', alpha=0.3)
 
             line3, = axes[2].plot([], [], 'g-', linewidth=2.5)
             axes[2].set_xlim(0, 24)
             axes[2].set_ylim(storage.min()-50, storage.max()+50)
-            axes[2].set_ylabel('Storage (m³)', fontsize=11)
+            axes[2].set_ylabel('Storage (m^3)', fontsize=11)
             axes[2].set_xlabel('Time (hours)', fontsize=11)
             axes[2].grid(True, alpha=0.3)
 
@@ -562,7 +570,7 @@ class ComprehensiveAnimationGenerator:
         anim.save(str(gif_path), writer=writer, dpi=100)
         plt.close(fig)
 
-        print(f"    ✓ 动画已保存: {gif_path.name}")
+        print(f"     动画已保存: {gif_path.name}")
         return str(gif_path)
 
     def process_example(self, example_name):
@@ -570,7 +578,7 @@ class ComprehensiveAnimationGenerator:
         example_dir = self.examples_root / example_name
 
         if not example_dir.exists():
-            print(f"  ✗ 目录不存在")
+            print(f"   目录不存在")
             self.failed_count += 1
             return
 
@@ -589,11 +597,11 @@ class ComprehensiveAnimationGenerator:
                 self.generate_water_resource_animation(example_dir, example_name)
                 self.success_count += 1
             else:
-                print(f"  ⚠️  未分类的示例")
+                print(f"    未分类的示例")
                 self.failed_count += 1
 
         except Exception as e:
-            print(f"  ✗ 生成失败: {e}")
+            print(f"   生成失败: {e}")
             self.failed_count += 1
 
     def generate_batch(self):

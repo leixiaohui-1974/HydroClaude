@@ -30,7 +30,7 @@
 
 ```bash
 cd examples/example_13_adaptive_timescale
-PYTHONPATH=../.. python example_13_adaptive_timescale.py
+PYTHONPATH=../.. python code/example_13_adaptive_timescale.py
 ```
 
 ## 输出结果
@@ -41,7 +41,9 @@ PYTHONPATH=../.. python example_13_adaptive_timescale.py
 
 ### 动画
 
-- 待生成
+- `outputs/animations/example_13_adaptive_timescale_control.gif`
+
+![动画](outputs\animations\example_13_adaptive_timescale_control.gif)
 
 ## 技术要点
 

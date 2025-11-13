@@ -3,20 +3,30 @@ HydroClaude Web API Gateway
 FastAPI application entry point for hydraulic simulation management
 """
 
+# ========== 关键：首先应用Windows编码补丁 ==========
+# 必须在其他任何导入之前执行
+import encoding_patch  # 自动修复Windows GBK编码问题
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from datetime import datetime
 import uvicorn
 
-# Add project root to Python path
+# Add project root and api_gateway to Python path
 import sys
-sys.path.insert(0, "/workspace")
+import os
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
+api_gateway_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, project_root)
+sys.path.insert(0, api_gateway_dir)
 
 import logging
 
 # Import routers
 from routers import simulation_router
+from routers import test_cases
+from routers import test_runner
 
 # Configure logging
 logging.basicConfig(
@@ -52,6 +62,8 @@ app.add_middleware(
 
 # Include routers
 app.include_router(simulation_router)
+app.include_router(test_cases.router)
+app.include_router(test_runner.router)
 
 
 # Global exception handler

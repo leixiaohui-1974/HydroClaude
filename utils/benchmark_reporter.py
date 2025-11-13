@@ -81,7 +81,7 @@ class BenchmarkReporter:
             for scenario in self.framework.scenarios:
                 results = self.framework.get_results_by_scenario(scenario.name)
                 for result in results:
-                    conv = "✅" if result.converged else "❌"
+                    conv = "" if result.converged else ""
                     iter_str = str(result.iterations) if result.converged else "N/A"
                     time_str = f"{result.time:.4f}" if result.converged else "N/A"
                     error_str = f"{result.Q_error:.4f}" if result.converged and result.Q_error != float('inf') else "N/A"
@@ -361,7 +361,7 @@ class BenchmarkReporter:
                 results = self.framework.get_results_by_scenario(scenario.name)
                 for result in results:
                     conv_class = "success" if result.converged else "fail"
-                    conv_symbol = "✅" if result.converged else "❌"
+                    conv_symbol = "" if result.converged else ""
                     iter_str = str(result.iterations) if result.converged else "N/A"
                     time_str = f"{result.time:.4f}" if result.converged else "N/A"
                     error_str = f"{result.Q_error:.4f}" if result.converged and result.Q_error != float('inf') else "N/A"
@@ -397,7 +397,7 @@ class BenchmarkReporter:
 
             if avg_times:
                 fastest = min(avg_times, key=avg_times.get)
-                f.write(f"<p>🚀 <strong>{fastest}</strong> 是平均速度最快的求解器 (平均时间: {avg_times[fastest]:.4f}s)</p>\n")
+                f.write(f"<p> <strong>{fastest}</strong> 是平均速度最快的求解器 (平均时间: {avg_times[fastest]:.4f}s)</p>\n")
 
             f.write("</div>\n")
 
@@ -461,7 +461,7 @@ def main():
     # 运行测试
     print("运行基准测试...")
     framework.run_all_benchmarks(solvers, verbose=False)
-    print("✅ 测试完成\n")
+    print(" 测试完成\n")
 
     # 生成可视化
     print("生成可视化图表...")
@@ -474,10 +474,10 @@ def main():
     reporter = BenchmarkReporter(framework, plots)
 
     md_path = reporter.generate_markdown_report()
-    print(f"✅ Markdown报告: {md_path}")
+    print(f" Markdown报告: {md_path}")
 
     html_path = reporter.generate_html_report()
-    print(f"✅ HTML报告: {html_path}")
+    print(f" HTML报告: {html_path}")
 
     print()
     print("=" * 100)

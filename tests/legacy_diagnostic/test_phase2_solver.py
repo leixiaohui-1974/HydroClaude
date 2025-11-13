@@ -14,7 +14,17 @@ import numpy as np
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from solvers.single_canal_solver import SingleCanalSolver
+try:
+    # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # DEPRECATED: Use HydrostaticCanalSolver instead
+# # from solvers.single_canal_solver import SingleCanalSolver  # 已废弃
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 
 def test_phase2_precision():
@@ -41,7 +51,7 @@ def test_phase2_precision():
     print("测试配置:")
     print(f"  渠道长度: {canal_length} m")
     print(f"  网格点数: {n_points}")
-    print(f"  目标流量: {Q_initial} m³/s")
+    print(f"  目标流量: {Q_initial} m^3/s")
     print(f"  闸门1: 位置={gate1.position}m, 开度={gate1.get_opening(0)}m")
     print(f"  闸门2: 位置={gate2.position}m, 开度={gate2.get_opening(0)}m")
     print(f"  闸门3: 位置={gate3.position}m, 开度={gate3.get_opening(0)}m")
@@ -142,14 +152,14 @@ def test_phase2_precision():
 
     print(f"\n性能提升:")
     print(f"  精度提升: {precision_improvement:.2f}x")
-    print(f"  是否达到目标(0.5%): {'✓ 是' if Q_phase2_max_error < 0.5 else '✗ 否'}")
+    print(f"  是否达到目标(0.5%): {' 是' if Q_phase2_max_error < 0.5 else ' 否'}")
 
     # 判断测试成功与否
     if Q_phase2_max_error < Q_baseline_max_error:
-        print("\n✓✓✓ Phase 2求解器精度提升成功！")
+        print("\n Phase 2求解器精度提升成功！")
         return True
     else:
-        print("\n✗✗✗ Phase 2求解器未能提升精度")
+        print("\n Phase 2求解器未能提升精度")
         return False
 
 

@@ -249,5 +249,5 @@ if __name__ == "__main__":
     print(f"  {helper2}")
     print()
 
-    print("✓ ScriptHelper测试完成！")
+    print(" ScriptHelper测试完成！")
     print("=" * 80)

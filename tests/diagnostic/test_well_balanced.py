@@ -9,7 +9,13 @@ import numpy as np
 import sys
 sys.path.append('.')
 
-from solvers.hydrostatic_reconstruction import HydrostaticFluxCalculator
+try:
+    from solvers.hydrostatic_reconstruction import HydrostaticFluxCalculator
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 
 
 def test_well_balanced_property():
@@ -23,7 +29,7 @@ def test_well_balanced_property():
 
     验证：
     - 质量方程：∂(hu)/∂x = 0
-    - 动量方程：∂(hu² + 0.5*g*h²)/∂x + g*h*∂z/∂x = 0
+    - 动量方程：∂(hu^2 + 0.5*g*h^2)/∂x + g*h*∂z/∂x = 0
     """
     print("=" * 70)
     print("良平衡性质完整测试")
@@ -91,8 +97,8 @@ def test_well_balanced_property():
                            0.5 * g * h[n_cells-1]**2) if h[n_cells-1] > 0 else 0.0
 
     print(f"\n通量计算：")
-    print(f"  质量通量范围：[{F_mass.min():.2e}, {F_mass.max():.2e}] m²/s")
-    print(f"  动量通量范围：[{F_momentum.min():.2e}, {F_momentum.max():.2e}] m³/s²")
+    print(f"  质量通量范围：[{F_mass.min():.2e}, {F_mass.max():.2e}] m^2/s")
+    print(f"  动量通量范围：[{F_momentum.min():.2e}, {F_momentum.max():.2e}] m^3/s^2")
 
     # 计算所有源项
     n_manning = 0.0  # 无摩擦
@@ -100,7 +106,7 @@ def test_well_balanced_property():
 
     print(f"\n源项计算：")
     print(f"  质量源项范围：[{S_mass.min():.2e}, {S_mass.max():.2e}] m/s")
-    print(f"  动量源项范围：[{S_momentum.min():.2e}, {S_momentum.max():.2e}] m²/s²")
+    print(f"  动量源项范围：[{S_momentum.min():.2e}, {S_momentum.max():.2e}] m^2/s^2")
 
     # 计算通量梯度
     dF_mass_dx = np.zeros(n_cells)
@@ -112,7 +118,7 @@ def test_well_balanced_property():
 
     print(f"\n通量梯度：")
     print(f"  ∂F_mass/∂x 范围：[{dF_mass_dx.min():.2e}, {dF_mass_dx.max():.2e}] m/s")
-    print(f"  ∂F_momentum/∂x 范围：[{dF_momentum_dx.min():.2e}, {dF_momentum_dx.max():.2e}] m²/s²")
+    print(f"  ∂F_momentum/∂x 范围：[{dF_momentum_dx.min():.2e}, {dF_momentum_dx.max():.2e}] m^2/s^2")
 
     # 计算残差：Residual = ∂F/∂x - S（应为0）
     R_mass = dF_mass_dx - S_mass
@@ -134,12 +140,12 @@ def test_well_balanced_property():
     is_momentum_balanced = np.max(np.abs(R_momentum)) < tol
 
     print(f"\n良平衡性验证（阈值 {tol:.0e}）：")
-    print(f"  质量方程：{'✓ PASS' if is_mass_balanced else '✗ FAIL'}")
-    print(f"  动量方程：{'✓ PASS' if is_momentum_balanced else '✗ FAIL'}")
+    print(f"  质量方程：{' PASS' if is_mass_balanced else ' FAIL'}")
+    print(f"  动量方程：{' PASS' if is_momentum_balanced else ' FAIL'}")
 
     overall_pass = is_mass_balanced and is_momentum_balanced
 
-    print(f"\n总体结论：{'✓✓✓ 良平衡性质验证成功！' if overall_pass else '✗✗✗ 良平衡性质验证失败'}")
+    print(f"\n总体结论：{' 良平衡性质验证成功！' if overall_pass else ' 良平衡性质验证失败'}")
 
     # 详细诊断（如果失败）
     if not overall_pass:

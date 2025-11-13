@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 实时SCADA监控系统完整案例
 
@@ -57,16 +58,16 @@ class WaterTreatmentPlant:
         self.raw_water_level = 5.0  # 原水池水位 (m)
         self.clear_water_level = 4.0  # 清水池水位 (m)
         self.pump_pressure = 0.45  # 泵出口压力 (MPa)
-        self.flow_rate = 0.15  # 送水流量 (m³/s)
+        self.flow_rate = 0.15  # 送水流量 (m^3/s)
         self.chlorine = 0.8  # 余氯 (mg/L)
 
         # 入流和出流
-        self.inflow = 0.12  # m³/s
-        self.demand = 0.15  # m³/s
+        self.inflow = 0.12  # m^3/s
+        self.demand = 0.15  # m^3/s
 
         # 池子参数
-        self.raw_pool_area = 500.0  # m²
-        self.clear_pool_area = 800.0  # m²
+        self.raw_pool_area = 500.0  # m^2
+        self.clear_pool_area = 800.0  # m^2
 
         # 泵站参数
         self.pump_on = True
@@ -164,7 +165,7 @@ def example1_scada_basic():
             point_id='AI_FLOW_RATE',
             point_type='AI',
             description='送水流量',
-            unit='m³/s',
+            unit='m^3/s',
             min_value=0,
             max_value=0.5,
             alarm_enabled=False
@@ -273,7 +274,7 @@ def example2_timeseries_database():
             ('RAW_LEVEL', plant.raw_water_level, 'm'),
             ('CLEAR_LEVEL', plant.clear_water_level, 'm'),
             ('PUMP_PRESSURE', plant.pump_pressure, 'MPa'),
-            ('FLOW_RATE', plant.flow_rate, 'm³/s'),
+            ('FLOW_RATE', plant.flow_rate, 'm^3/s'),
             ('CHLORINE', plant.chlorine, 'mg/L'),
         ]
 
@@ -441,7 +442,7 @@ def visualize_scada_data(history):
     # 4. 送水流量
     ax4 = axes[1, 1]
     ax4.plot(time_min, history['flow'], 'c-', linewidth=2)
-    ax4.set_ylabel('Flow Rate (m³/s)', fontsize=10)
+    ax4.set_ylabel('Flow Rate (m^3/s)', fontsize=10)
     ax4.set_title('Water Supply Flow Rate', fontsize=11, fontweight='bold')
     ax4.grid(True, alpha=0.3)
 
@@ -475,7 +476,7 @@ def visualize_scada_data(history):
 
     Pump Station:
       Average Pressure: {np.mean(history['pressure']):.3f} MPa
-      Average Flow:     {np.mean(history['flow']):.3f} m³/s
+      Average Flow:     {np.mean(history['flow']):.3f} m^3/s
 
     Water Quality:
       Average Chlorine: {np.mean(history['chlorine']):.3f} mg/L

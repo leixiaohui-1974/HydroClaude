@@ -271,7 +271,7 @@ for scenario in extreme_scenarios:
         
         success = not has_nan and mass_error < 10.0
         
-        print(f"  结果: {'✅ 成功' if success else '❌ 失败'}")
+        print(f"  结果: {' 成功' if success else ' 失败'}")
         print(f"  质量误差: {mass_error:.4f}%" if not has_nan else "  NaN")
         
         robustness_results.append({
@@ -283,7 +283,7 @@ for scenario in extreme_scenarios:
         })
         
     except Exception as e:
-        print(f"  结果: ❌ 异常: {str(e)[:50]}")
+        print(f"  结果:  异常: {str(e)[:50]}")
         robustness_results.append({
             'scenario': scenario['name'],
             'params': scenario,
@@ -371,24 +371,24 @@ print("=" * 80)
 print(f"\n1. 计算效率:")
 print(f"   100格: {efficiency_results[1]['steps_per_sec']:.0f} 步/秒")
 print(f"   200格: {efficiency_results[2]['steps_per_sec']:.0f} 步/秒")
-print(f"   性能等级: {'✅ 优秀' if efficiency_results[1]['steps_per_sec'] > 500 else '⚠️ 一般'}")
+print(f"   性能等级: {' 优秀' if efficiency_results[1]['steps_per_sec'] > 500 else '️ 一般'}")
 
 print(f"\n2. 质量守恒:")
 print(f"   平均误差: {avg_error:.4f}%")
 print(f"   最大误差: {max_error:.4f}%")
-print(f"   精度等级: {'✅ 优秀' if avg_error < 2.0 else '⚠️ 一般'}")
+print(f"   精度等级: {' 优秀' if avg_error < 2.0 else '️ 一般'}")
 
 print(f"\n3. 长时间稳定性:")
 print(f"   10000s误差: {stability_results[-1]['mass_error']:.4f}%")
-print(f"   稳定性等级: {'✅ 优秀' if stability_results[-1]['mass_error'] < 2.0 else '⚠️ 一般'}")
+print(f"   稳定性等级: {' 优秀' if stability_results[-1]['mass_error'] < 2.0 else '️ 一般'}")
 
 print(f"\n4. 鲁棒性:")
 print(f"   成功率: {success_rate:.1f}%")
-print(f"   鲁棒性等级: {'✅ 优秀' if success_rate >= 80 else '⚠️ 一般'}")
+print(f"   鲁棒性等级: {' 优秀' if success_rate >= 80 else '️ 一般'}")
 
 print(f"\n5. 理论对比:")
 print(f"   平均误差: {avg_theory_error:.4f}%")
-print(f"   准确性等级: {'✅ 优秀' if avg_theory_error < 1.0 else '⚠️ 一般'}")
+print(f"   准确性等级: {' 优秀' if avg_theory_error < 1.0 else '️ 一般'}")
 
 # 综合评分
 scores = {
@@ -410,7 +410,7 @@ elif overall_score >= 85:
 elif overall_score >= 75:
     grade = "⭐⭐⭐ 良好"
 else:
-    grade = "⚠️ 需改进"
+    grade = "️ 需改进"
 
 print(f"评级: {grade}")
 
@@ -425,8 +425,8 @@ output_file = '/workspace/benchmark_results_comprehensive.json'
 with open(output_file, 'w') as f:
     json.dump(results, f, indent=2)
 
-print(f"\n📊 基准测试结果已保存: {output_file}")
+print(f"\n 基准测试结果已保存: {output_file}")
 
 print(f"\n" + "=" * 80)
-print("✅ 综合性能基准测试完成！")
+print(" 综合性能基准测试完成！")
 print("=" * 80)

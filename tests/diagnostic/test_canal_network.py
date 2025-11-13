@@ -11,10 +11,24 @@
 作者: Claude
 日期: 2025-10-23
 """
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
 
 import numpy as np
 import matplotlib.pyplot as plt
-from solvers.canal_network_solver import CanalNetworkSolver
+try:
+    from solvers.canal_network_solver import CanalNetworkSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
 from solvers.gate import SluiceGate
 
 
@@ -75,7 +89,7 @@ def test_series_network():
 
     ax.axhline(12.0, color='red', linestyle='--', alpha=0.5, label='Target')
     ax.set_xlabel('Position (m)')
-    ax.set_ylabel('Discharge (m³/s)')
+    ax.set_ylabel('Discharge (m^3/s)')
     ax.set_title('Discharge Distribution')
     ax.legend()
     ax.grid(True, alpha=0.3)
@@ -95,7 +109,7 @@ def test_parallel_network():
     print("""
     网络拓扑:
                   ┌─ C2 (B=8m) ─┐
-    Source → C1 ─┤              ├─ C4 → Sink
+    Source -> C1 ─┤              ├─ C4 -> Sink
                   └─ C3 (B=6m) ─┘
     """)
 
@@ -128,9 +142,9 @@ def test_parallel_network():
     Q_C3 = np.mean(state['segments']['C3']['Q'])
     Q_total = Q_C2 + Q_C3
     print(f"\n分流分析：")
-    print(f"  C2 (B=10m): {Q_C2:.3f} m³/s ({Q_C2/Q_total*100:.1f}%)")
-    print(f"  C3 (B=8m):  {Q_C3:.3f} m³/s ({Q_C3/Q_total*100:.1f}%)")
-    print(f"  总流量:     {Q_total:.3f} m³/s")
+    print(f"  C2 (B=10m): {Q_C2:.3f} m^3/s ({Q_C2/Q_total*100:.1f}%)")
+    print(f"  C3 (B=8m):  {Q_C3:.3f} m^3/s ({Q_C3/Q_total*100:.1f}%)")
+    print(f"  总流量:     {Q_total:.3f} m^3/s")
 
     # 绘图
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
@@ -172,7 +186,7 @@ def test_parallel_network():
     colors = ['blue', 'green', 'red', 'purple']
     bars = ax.bar(canals, Q_means, color=colors, alpha=0.7)
     ax.axhline(15.0, color='black', linestyle='--', alpha=0.5, label='Total')
-    ax.set_ylabel('Discharge (m³/s)')
+    ax.set_ylabel('Discharge (m^3/s)')
     ax.set_title('Flow Distribution')
     ax.legend()
     ax.grid(True, alpha=0.3, axis='y')
@@ -197,10 +211,10 @@ def test_tree_network():
     print("=" * 80)
     print("""
     网络拓扑:
-                    ┌─ C2 → Sink1
-    Source → C1 → J1┤
-                    └─ C3 → J2 ┬─ C4 → Sink2
-                                └─ C5 → Sink3
+                    ┌─ C2 -> Sink1
+    Source -> C1 -> J1┤
+                    └─ C3 -> J2 ┬─ C4 -> Sink2
+                                └─ C5 -> Sink3
     """)
 
     network = CanalNetworkSolver()
@@ -233,18 +247,18 @@ def test_tree_network():
     # 流量分配分析
     state = network.get_network_state()
     print(f"\n流量分配分析：")
-    print(f"  总入流 (C1): {np.mean(state['segments']['C1']['Q']):.3f} m³/s")
+    print(f"  总入流 (C1): {np.mean(state['segments']['C1']['Q']):.3f} m^3/s")
     print(f"  第一级分流:")
     Q_C2 = np.mean(state['segments']['C2']['Q'])
     Q_C3 = np.mean(state['segments']['C3']['Q'])
-    print(f"    → C2 (B=8m):  {Q_C2:.3f} m³/s → Sink1")
-    print(f"    → C3 (B=12m): {Q_C3:.3f} m³/s → J2")
+    print(f"    -> C2 (B=8m):  {Q_C2:.3f} m^3/s -> Sink1")
+    print(f"    -> C3 (B=12m): {Q_C3:.3f} m^3/s -> J2")
     print(f"  第二级分流:")
     Q_C4 = np.mean(state['segments']['C4']['Q'])
     Q_C5 = np.mean(state['segments']['C5']['Q'])
-    print(f"    → C4 (B=7m):  {Q_C4:.3f} m³/s → Sink2")
-    print(f"    → C5 (B=6m):  {Q_C5:.3f} m³/s → Sink3")
-    print(f"  质量守恒检验: {Q_C2 + Q_C4 + Q_C5:.3f} m³/s")
+    print(f"    -> C4 (B=7m):  {Q_C4:.3f} m^3/s -> Sink2")
+    print(f"    -> C5 (B=6m):  {Q_C5:.3f} m^3/s -> Sink3")
+    print(f"  质量守恒检验: {Q_C2 + Q_C4 + Q_C5:.3f} m^3/s")
 
     # 绘图
     fig = plt.figure(figsize=(14, 10))
@@ -266,7 +280,7 @@ def test_tree_network():
     seg = state['segments']['C2']
     ax2.plot(seg['x'], seg['h'], 'g-', linewidth=2)
     ax2.set_ylabel('h (m)')
-    ax2.set_title('C2 → Sink1')
+    ax2.set_title('C2 -> Sink1')
     ax2.grid(True, alpha=0.3)
 
     # C3 (第二主干)
@@ -284,7 +298,7 @@ def test_tree_network():
     ax4.plot(seg['x'], seg['h'], 'r-', linewidth=2)
     ax4.set_xlabel('Position (m)')
     ax4.set_ylabel('h (m)')
-    ax4.set_title('C4 → Sink2')
+    ax4.set_title('C4 -> Sink2')
     ax4.grid(True, alpha=0.3)
 
     # C5 (第二级分支2)
@@ -293,7 +307,7 @@ def test_tree_network():
     ax5.plot(seg['x'], seg['h'], 'purple', linewidth=2)
     ax5.set_xlabel('Position (m)')
     ax5.set_ylabel('h (m)')
-    ax5.set_title('C5 → Sink3')
+    ax5.set_title('C5 -> Sink3')
     ax5.grid(True, alpha=0.3)
 
     # 流量分布柱状图
@@ -302,7 +316,7 @@ def test_tree_network():
     Q_values = [np.mean(state['segments'][c]['Q']) for c in canals]
     colors = ['blue', 'green', 'orange', 'red', 'purple']
     ax6.barh(canals, Q_values, color=colors, alpha=0.7)
-    ax6.set_xlabel('Q (m³/s)')
+    ax6.set_xlabel('Q (m^3/s)')
     ax6.set_title('Flow Distribution')
     ax6.grid(True, alpha=0.3, axis='x')
 
@@ -314,9 +328,9 @@ def test_tree_network():
 
 def main():
     """运行所有测试"""
-    print("\n" + "🌊" * 40)
+    print("\n" + "" * 40)
     print("渠系网络综合测试")
-    print("🌊" * 40 + "\n")
+    print("" * 40 + "\n")
 
     results = {}
 
@@ -324,21 +338,21 @@ def main():
     try:
         results['series'] = test_series_network()
     except Exception as e:
-        print(f"❌ 串联网络测试失败: {e}")
+        print(f" 串联网络测试失败: {e}")
         results['series'] = False
 
     # 测试2
     try:
         results['parallel'] = test_parallel_network()
     except Exception as e:
-        print(f"❌ 并联网络测试失败: {e}")
+        print(f" 并联网络测试失败: {e}")
         results['parallel'] = False
 
     # 测试3
     try:
         results['tree'] = test_tree_network()
     except Exception as e:
-        print(f"❌ 树状网络测试失败: {e}")
+        print(f" 树状网络测试失败: {e}")
         results['tree'] = False
 
     # 总结
@@ -353,7 +367,7 @@ def main():
     }
 
     for key, name in test_names.items():
-        status = "✅ PASS" if results.get(key, False) else "❌ FAIL"
+        status = " PASS" if results.get(key, False) else " FAIL"
         print(f"  {name}: {status}")
 
     print("\n" + "=" * 80)

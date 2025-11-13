@@ -45,7 +45,7 @@ class TestConfigParser:
         incomplete_config = {
             'project': {'name': 'Test'},
             'geometry': {},  # 缺少必需字段
-            'mesh': {'n_cells': 100}
+            'mesh': {'n_cells': 120}
         }
 
         temp_file = Path('/tmp/test_incomplete.json')
@@ -72,7 +72,7 @@ class TestConfigParser:
                 'bottom_slope': 0.001,
                 'manning_n': 0.025
             },
-            'mesh': {'n_cells': 100},
+            'mesh': {'n_cells': 120},
             'solver': {'type': 'godunov_fvm'},
             'initial_conditions': {'type': 'uniform', 'h': 2.0, 'Q': 10.0},
             'boundary_conditions': {
@@ -242,7 +242,7 @@ class TestPerformance:
                 'bottom_slope': 0.001,
                 'manning_n': 0.025
             },
-            'mesh': {'n_cells': 100},
+            'mesh': {'n_cells': 120},
             'solver': {
                 'type': 'godunov_fvm',
                 'use_numba': True  # 将被修改
@@ -349,7 +349,7 @@ class TestBoundaryConditions:
                 'bottom_slope': 0.0,
                 'manning_n': 0.03
             },
-            'mesh': {'n_cells': 50},
+            'mesh': {'n_cells': 60},
             'solver': {'type': 'godunov_fvm', 'use_numba': True},
             'initial_conditions': {'type': 'uniform', 'h': 2.0, 'Q': 0.0},
             'boundary_conditions': {
@@ -398,7 +398,7 @@ class TestBoundaryConditions:
                 'bottom_slope': 0.001,
                 'manning_n': 0.03
             },
-            'mesh': {'n_cells': 50},
+            'mesh': {'n_cells': 60},
             'solver': {'type': 'godunov_fvm', 'use_numba': True},
             'initial_conditions': {'type': 'uniform', 'h': 2.0, 'Q': 20.0},
             'boundary_conditions': {
@@ -447,7 +447,7 @@ class TestBoundaryConditions:
                 'bottom_slope': 0.001,
                 'manning_n': 0.03
             },
-            'mesh': {'n_cells': 50},
+            'mesh': {'n_cells': 60},
             'solver': {'type': 'godunov_fvm', 'use_numba': True},
             'initial_conditions': {'type': 'uniform', 'h': 2.0, 'Q': 20.0},
             'boundary_conditions': {
@@ -494,7 +494,7 @@ class TestBoundaryConditions:
                 'bottom_slope': 0.001,
                 'manning_n': 0.03
             },
-            'mesh': {'n_cells': 50},
+            'mesh': {'n_cells': 60},
             'solver': {'type': 'godunov_fvm', 'use_numba': True},
             'initial_conditions': {'type': 'uniform', 'h': 2.0, 'Q': 20.0},
             'boundary_conditions': {

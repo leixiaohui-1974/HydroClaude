@@ -145,10 +145,10 @@ class DamBreakRitter:
                     print(f"  Step {step}/{n_steps}, t={t:.1f}s, h_max={np.max(solver.h):.3f}m")
                     
             except Exception as e:
-                print(f"❌ 步进失败 at t={t:.1f}s: {e}")
+                print(f" 步进失败 at t={t:.1f}s: {e}")
                 break
         
-        print(f"✅ 完成时间步进")
+        print(f" 完成时间步进")
         
         return {
             'h_final': solver.h,
@@ -214,10 +214,10 @@ class DamBreakRitter:
                     print(f"  Step {step}/{n_steps}, t={t:.1f}s, h_max={h_max:.3f}m")
                     
             except Exception as e:
-                print(f"❌ 步进失败 at t={t:.1f}s: {e}")
+                print(f" 步进失败 at t={t:.1f}s: {e}")
                 break
         
-        print(f"✅ 完成时间步进")
+        print(f" 完成时间步进")
         
         return {
             'h_final': canal.hydraulic_state.h,
@@ -346,7 +346,7 @@ class DamBreakRitter:
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         fig_path = output_dir / f'dam_break_ritter_{timestamp}.png'
         plt.savefig(fig_path, dpi=150, bbox_inches='tight')
-        print(f"\n✅ 图表已保存: {fig_path}")
+        print(f"\n 图表已保存: {fig_path}")
         
         plt.close()
         
@@ -394,44 +394,44 @@ class DamBreakRitter:
             f.write("1. HydrostaticCanalSolver:\n")
             f.write(f"   波前位置误差: {err_front_hydro:.2f}%")
             if err_front_hydro < 5:
-                f.write(" ✅ PASS\n")
+                f.write("  PASS\n")
             else:
-                f.write(" ❌ FAIL\n")
+                f.write("  FAIL\n")
             
             f.write(f"   水深RMSE: {rmse_h_hydro:.4f} m")
             if rmse_h_hydro < 0.5:
-                f.write(" ✅ PASS\n")
+                f.write("  PASS\n")
             else:
-                f.write(" ❌ FAIL\n")
+                f.write("  FAIL\n")
             
             f.write("\n2. Canal-Preissmann:\n")
             f.write(f"   波前位置误差: {err_front_canal:.2f}%")
             if err_front_canal < 5:
-                f.write(" ✅ PASS\n")
+                f.write("  PASS\n")
             else:
-                f.write(" ❌ FAIL\n")
+                f.write("  FAIL\n")
             
             f.write(f"   水深RMSE: {rmse_h_canal:.4f} m")
             if rmse_h_canal < 0.5:
-                f.write(" ✅ PASS\n")
+                f.write("  PASS\n")
             else:
-                f.write(" ❌ FAIL\n")
+                f.write("  FAIL\n")
             
             f.write("\n" + "="*80 + "\n")
             f.write("结论\n")
             f.write("="*80 + "\n\n")
             
             if err_front_hydro < 5 and rmse_h_hydro < 0.5:
-                f.write("✅ HydrostaticCanalSolver: 通过验证\n")
+                f.write(" HydrostaticCanalSolver: 通过验证\n")
             else:
-                f.write("❌ HydrostaticCanalSolver: 未通过验证\n")
+                f.write(" HydrostaticCanalSolver: 未通过验证\n")
             
             if err_front_canal < 5 and rmse_h_canal < 0.5:
-                f.write("✅ Canal-Preissmann: 通过验证\n")
+                f.write(" Canal-Preissmann: 通过验证\n")
             else:
-                f.write("❌ Canal-Preissmann: 未通过验证\n")
+                f.write(" Canal-Preissmann: 未通过验证\n")
         
-        print(f"✅ 报告已保存: {report_path}")
+        print(f" 报告已保存: {report_path}")
 
 
 def main():
@@ -447,13 +447,13 @@ def main():
     try:
         results_hydro = case.run_hydrostatic_solver()
     except Exception as e:
-        print(f"❌ HydrostaticSolver失败: {e}")
+        print(f" HydrostaticSolver失败: {e}")
         results_hydro = None
     
     try:
         results_canal = case.run_canal_preissmann()
     except Exception as e:
-        print(f"❌ Canal-Preissmann失败: {e}")
+        print(f" Canal-Preissmann失败: {e}")
         results_canal = None
     
     # 对比分析
@@ -463,10 +463,10 @@ def main():
         print("\n" + "="*80)
         print("最终结论")
         print("="*80)
-        print(f"✅ Dam Break标准案例测试完成")
+        print(f" Dam Break标准案例测试完成")
         print(f"详细结果请查看: validation_cases/results/")
     else:
-        print("\n❌ 测试失败，无法生成对比报告")
+        print("\n 测试失败，无法生成对比报告")
 
 
 if __name__ == '__main__':

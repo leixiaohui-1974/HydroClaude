@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Preissmann求解器参数优化
 
@@ -88,10 +89,10 @@ print("="*80)
 print("Preissmann求解器参数优化")
 print("="*80)
 
-# 参数范围
-n_sections_list = [21, 51, 101, 201]  # 空间离散
-dt_list = [20.0, 10.0, 5.0, 2.5]      # 时间步长
-theta_list = [0.50, 0.55, 0.60, 0.65, 0.70]  # 时间加权
+# 参数范围（减少以加速测试）
+n_sections_list = [21, 51]  # 空间离散
+dt_list = [20.0, 10.0]      # 时间步长
+theta_list = [0.55, 0.60, 0.65]  # 时间加权
 
 print(f"\n测试参数空间:")
 print(f"  n_sections: {n_sections_list}")
@@ -117,7 +118,7 @@ for n_sections, dt, theta in product(n_sections_list, dt_list, theta_list):
     if result['converged']:
         print(f" 误差={result['error_pct']:.1f}%")
     else:
-        print(f" ❌ 失败: {result['error_msg']}")
+        print(f"  失败: {result['error_msg']}")
 
 print("-"*80)
 
@@ -125,9 +126,9 @@ print("-"*80)
 results_sorted = sorted([r for r in results if r['converged']],
                        key=lambda x: x['error_pct'])
 
-print("\n🏆 Top 10 最优配置:")
+print("\n Top 10 最优配置:")
 print("-"*80)
-print(f"{'排名':<5} {'n_sections':<12} {'dt(s)':<8} {'theta':<8} {'误差%':<10} {'实际Δh':<10}")
+print(f"{'排名':<5} {'n_sections':<12} {'dt(s)':<8} {'theta':<8} {'误差%':<10} {'实际Deltah':<10}")
 print("-"*80)
 
 for i, r in enumerate(results_sorted[:10], 1):
@@ -141,7 +142,7 @@ print(f"  n_sections = {best['n_sections']}")
 print(f"  dt = {best['dt']}s")
 print(f"  theta = {best['theta']}")
 print(f"  误差 = {best['error_pct']:.2f}%")
-print(f"  实际Δh = {best['actual_dh']:.4f}m (理论 {best['expected_dh']:.4f}m)")
+print(f"  实际Deltah = {best['actual_dh']:.4f}m (理论 {best['expected_dh']:.4f}m)")
 
 # 对比基准配置
 baseline = next((r for r in results if r['n_sections']==51 and r['dt']==10.0 and r['theta']==0.60), None)
@@ -157,6 +158,6 @@ print("="*80)
 
 # 保存结果
 import json
-with open('preissmann_optimization_results.json', 'w') as f:
+with open('preissmann_optimization_results.json', 'w', encoding='utf-8') as f:
     json.dump(results, f, indent=2)
-print("\n✅ 详细结果已保存到: preissmann_optimization_results.json")
+print("\n 详细结果已保存到: preissmann_optimization_results.json")
