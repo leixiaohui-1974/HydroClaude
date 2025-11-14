@@ -219,7 +219,7 @@ def run_irrigation_canal_control():
         prediction_horizon=20,
         control_horizon=15,
         dt=dt,
-        state_weight=50.0,       # 高权重确保水位稳定
+        Q_weight=50.0,       # 高权重确保水位稳定
         control_weight=1.0,
         control_change_weight=2.0,  # 平滑闸门动作
         control_min=0.0,         # 最小流量

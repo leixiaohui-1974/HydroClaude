@@ -88,7 +88,6 @@ def build_cascade_system():
     reservoir1 = ReservoirNode(
         "水库1",
         elevation=480.0,
-        storage_curve_type='linear',
         surface_area=2e6,  # 200万 m^2
         h_min=0.0,
         h_max=50.0,
@@ -104,7 +103,6 @@ def build_cascade_system():
     reservoir2 = ReservoirNode(
         "水库2",
         elevation=450.0,
-        storage_curve_type='linear',
         surface_area=1.5e6,  # 150万 m^2
         h_min=0.0,
         h_max=40.0,
@@ -120,7 +118,6 @@ def build_cascade_system():
     reservoir3 = ReservoirNode(
         "水库3",
         elevation=420.0,
-        storage_curve_type='linear',
         surface_area=1e6,  # 100万 m^2
         h_min=0.0,
         h_max=30.0,
