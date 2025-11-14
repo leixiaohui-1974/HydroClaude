@@ -210,6 +210,7 @@ class WaterSupplySystem:
         self.energy_history.append(self.pump.total_energy)
 
     def run_simulation(self, t_final: float):
+        if self.dt is None: self.dt = 1.0
         """
         运行完整仿真
 

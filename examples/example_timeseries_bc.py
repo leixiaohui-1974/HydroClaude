@@ -209,9 +209,9 @@ def example_4_reservoir_operation():
     print("="*80)
 
     # 水库调度计划（阶梯式变化）
-    time_hours = [0, 2, 2, 4, 4, 8, 8, 10, 10, 12]
+    time_hours = [0, 2, 4, 8, 10, 12]  # 去除重复时间点
     time_seconds = [t * 3600 for t in time_hours]
-    discharge = [20.0, 20.0, 50.0, 50.0, 80.0, 80.0, 30.0, 30.0, 20.0, 20.0]
+    discharge = [20.0, 50.0, 80.0, 30.0, 20.0, 20.0]  # 对应的流量
 
     # 使用前向保持插值（阶跃变化）
     bc_reservoir = TimeSeriesBoundary(
@@ -353,6 +353,7 @@ def example_6_extrapolation_comparison():
     print("-" * 75)
 
     test_times = [0, 5, 10, 20, 30, 35, 40]
+    times = list(dict.fromkeys(times))  # 去重
     times = list(dict.fromkeys(times))  # 去重
     for t in test_times:
         v_const = bc_const.get_value(t)

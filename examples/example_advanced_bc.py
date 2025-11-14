@@ -98,8 +98,8 @@ def example_1_flood_hydrograph():
     # 分析结果
     print(f"\n洪水传播分析:")
     for i, state in enumerate(states[::6]):  # 每小时一个点
-        t_hr = state.get('t', 0) if isinstance(state, dict) else (state['t'] if hasattr(state, '__getitem__') else 0) / 3600
-        Q_upstream = flood(state.get('t', 0) if isinstance(state, dict) else (state['t'] if hasattr(state, '__getitem__') else 0))
+        t_hr = state.get('t', 0) if isinstance(state, dict) else ((state.get('t', 0) if isinstance(state, dict) else 0) if hasattr(state, '__getitem__') else 0) / 3600
+        Q_upstream = flood(state.get('t', 0) if isinstance(state, dict) else ((state.get('t', 0) if isinstance(state, dict) else 0) if hasattr(state, '__getitem__') else 0))
         h_max = np.max(state['h'])
         Q_max = np.max(state['Q'])
         print(f"  t={t_hr:4.1f}h: Q_in={Q_upstream:5.1f} m^3/s, "
@@ -172,8 +172,8 @@ def example_2_tidal_boundary():
     # 分析结果 - 上下游水位差变化
     print(f"\n潮汐影响分析:")
     for i, state in enumerate(states[::4]):  # 每2小时
-        t_hr = state.get('t', 0) if isinstance(state, dict) else (state['t'] if hasattr(state, '__getitem__') else 0) / 3600
-        h_downstream = tidal(state.get('t', 0) if isinstance(state, dict) else (state['t'] if hasattr(state, '__getitem__') else 0))
+        t_hr = state.get('t', 0) if isinstance(state, dict) else ((state.get('t', 0) if isinstance(state, dict) else 0) if hasattr(state, '__getitem__') else 0) / 3600
+        h_downstream = tidal(state.get('t', 0) if isinstance(state, dict) else ((state.get('t', 0) if isinstance(state, dict) else 0) if hasattr(state, '__getitem__') else 0))
         h_upstream = state['h'][0]
         delta_h = h_downstream - h_upstream
         print(f"  t={t_hr:4.1f}h: h_下游={h_downstream:.2f}m, "

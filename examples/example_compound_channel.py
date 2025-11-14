@@ -39,7 +39,7 @@ def example_1_basic_compound_channel():
     stations = [0, 20, 25, 25, 55, 60, 80]
     stations = sorted(set(stations))  # 去重并排序
     elevations = [105, 105, 100, 100, 100, 105, 105]
-
+    assert len(stations) == len(elevations), "桩号和高程数量必须一致"
     bankfull_elevation = 104.0  # 主槽设计水位
 
     # 创建复合断面
@@ -95,6 +95,7 @@ def example_2_flood_stage_analysis():
     # 自然河道断面
     stations = [0, 15, 20, 20, 50, 55, 70]
     elevations = [108, 108, 103, 103, 103, 108, 108]
+    assert len(stations) == len(elevations), "桩号和高程数量必须一致"
     bankfull_elevation = 107.0
 
     channel = CompoundChannel(
@@ -167,6 +168,7 @@ def example_3_method_comparison():
 
     stations = [0, 10, 15, 15, 45, 50, 60]
     elevations = [110, 110, 105, 105, 105, 110, 110]
+    assert len(stations) == len(elevations), "桩号和高程数量必须一致"
     bankfull_elevation = 109.0
 
     channel = CompoundChannel(
@@ -239,6 +241,7 @@ def example_4_flood_design():
     # 现有河道断面
     stations = [0, 25, 35, 35, 75, 85, 110]
     elevations = [112, 112, 106, 106, 106, 112, 112]
+    assert len(stations) == len(elevations), "桩号和高程数量必须一致"
     bankfull_elevation = 111.0
 
     channel = CompoundChannel(
@@ -331,6 +334,7 @@ def example_5_manning_sensitivity():
 
     stations = [0, 20, 30, 30, 70, 80, 100]
     elevations = [115, 115, 110, 110, 110, 115, 115]
+    assert len(stations) == len(elevations), "桩号和高程数量必须一致"
     bankfull_elevation = 114.0
 
     Q = 200.0  # 固定流量
@@ -402,6 +406,7 @@ def example_6_subdivision_details():
 
     stations = [0, 15, 20, 20, 60, 65, 80]
     elevations = [108, 108, 103, 103, 103, 108, 108]
+    assert len(stations) == len(elevations), "桩号和高程数量必须一致"
     bankfull_elevation = 107.0
 
     channel = CompoundChannel(

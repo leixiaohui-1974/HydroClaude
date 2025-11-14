@@ -409,7 +409,7 @@ class VisualizationTemplates:
         """
         # 计算渠底高程（如果没有提供，则根据S0计算）
         if z_bed is None:
-            z_bed = (canal_length - x) * S0
+            z_bed = np.linspace(canal_length * S0, 0, len(x))
 
         # 预计算范围
         all_z_surfaces = [z_bed + h for h in h_snapshots]
@@ -857,7 +857,7 @@ class VisualizationTemplates:
         fig, ax = plt.subplots(figsize=self.DEFAULT_FIGSIZE_SINGLE)
 
         # 计算高程
-        z_bed = (canal_length - x) * S0
+        z_bed = np.linspace(canal_length * S0, 0, len(x))
         z_surface = z_bed + h
 
         # 绘制水面线
@@ -993,7 +993,7 @@ class VisualizationTemplates:
         fig, ax = plt.subplots(figsize=self.DEFAULT_FIGSIZE_SINGLE)
 
         # 计算高程
-        z_bed = (canal_length - x) * S0
+        z_bed = np.linspace(canal_length * S0, 0, len(x))
         z_surface = z_bed + h
         E_total = z_surface + v**2 / (2 * g)  # 总能量线
 

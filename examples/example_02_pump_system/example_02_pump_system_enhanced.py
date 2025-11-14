@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 # -*- coding: utf-8 -*-
 """
 示例2: 泵站系统仿真（增强版）

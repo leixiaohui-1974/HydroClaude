@@ -31,7 +31,8 @@ from dataclasses import dataclass
 
 # 导入控制器
 import sys
-sys.path.insert(0, '/home/user/HydroClaude')
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from control.mpc_controller import MPCController, MPCConfig
 from control.pid_controller import PIDController, PIDConfig
 

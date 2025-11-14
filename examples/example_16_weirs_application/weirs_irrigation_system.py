@@ -149,6 +149,7 @@ def run_irrigation_system_simulation():
     print("  求解稳态...")
     result = solver.solve_steady_state(
         Q_target=Q_inlet,
+        h_downstream=2.5,  # 添加必需参数
         max_iterations=3000,
         convergence_tol = 0.1,
         # check_interval=500,  # 不支持的参数
@@ -266,7 +267,7 @@ def run_irrigation_system_simulation():
 
     # 重新初始化
     solver.initialize_steady_state(Q_before)
-    solver.solve_steady_state(Q_target=Q_before, max_iterations=2000, convergence_tol = 0.1, verbose=False)
+    solver.solve_steady_state(Q_target=Q_before, h_downstream=2.5, max_iterations=2000, convergence_tol = 0.1, verbose=False)
     solver.clear_history()
 
     # 仿真参数
