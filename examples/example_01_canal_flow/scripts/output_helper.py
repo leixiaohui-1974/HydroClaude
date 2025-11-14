@@ -1,0 +1,219 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Output Helper for Example 01
+
+Provides unified output directory management for all scripts.
+All outputs go to the results/ directory.
+
+Author: Claude
+Date: 2025-10-22
+"""
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
+
+import os
+import pandas as pd
+import numpy as np
+
+
+def get_results_dir():
+    """Get the results directory path"""
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    example_dir = os.path.dirname(script_dir)
+    results_dir = os.path.join(example_dir, 'results')
+    return results_dir
+
+
+def get_output_path(output_type, filename):
+    """
+    Get output path for a specific file
+
+    Parameters:
+        output_type: 'figures', 'animations', 'tables', or 'reports'
+        filename: name of the output file
+
+    Returns:
+        Absolute path to the output file
+    """
+    results_dir = get_results_dir()
+    output_dir = os.path.join(results_dir, output_type)
+    os.makedirs(output_dir, exist_ok=True)
+    return os.path.join(output_dir, filename)
+
+
+def save_figure(fig, filename):
+    """
+    Save a matplotlib figure to results/figures/
+
+    Parameters:
+        fig: matplotlib figure object
+        filename: output filename (e.g., 'plot.png')
+
+    Returns:
+        Path where the figure was saved
+    """
+    path = get_output_path('figures', filename)
+    fig.savefig(path, dpi=150, bbox_inches='tight')
+    print(f"   Saved figure: {filename}")
+    return path
+
+
+def save_animation(anim, filename, fps=20, dpi=100, writer='pillow'):
+    """
+    Save a matplotlib animation to results/animations/
+
+    Parameters:
+        anim: matplotlib animation object
+        filename: output filename (e.g., 'animation.gif')
+        fps: frames per second
+        dpi: resolution
+        writer: animation writer ('pillow' for GIF)
+
+    Returns:
+        Path where the animation was saved
+    """
+    from matplotlib.animation import PillowWriter
+
+    path = get_output_path('animations', filename)
+
+    if writer == 'pillow':
+        writer_obj = PillowWriter(fps=fps)
+    else:
+        writer_obj = writer
+
+    anim.save(path, writer=writer_obj, dpi=dpi)
+
+    # Get file size
+    size_mb = os.path.getsize(path) / (1024 * 1024)
+    print(f"   Saved animation: {filename} ({size_mb:.2f} MB)")
+    return path
+
+
+def save_table(data, filename, format='csv', **kwargs):
+    """
+    Save data table to results/tables/
+
+    Parameters:
+        data: pandas DataFrame or dict
+        filename: output filename (e.g., 'results.csv')
+        format: 'csv', 'excel', or 'markdown'
+        **kwargs: additional arguments for pandas save functions
+
+    Returns:
+        Path where the table was saved
+    """
+    if not isinstance(data, pd.DataFrame):
+        data = pd.DataFrame(data)
+
+    path = get_output_path('tables', filename)
+
+    if format == 'csv':
+        data.to_csv(path, **kwargs)
+    elif format == 'excel':
+        data.to_excel(path, **kwargs)
+    elif format == 'markdown':
+        with open(path, 'w') as f:
+            f.write(data.to_markdown(**kwargs))
+
+    print(f"   Saved table: {filename}")
+    return path
+
+
+def save_report(content, filename):
+    """
+    Save text report to results/reports/
+
+    Parameters:
+        content: text content (string)
+        filename: output filename (e.g., 'report.txt')
+
+    Returns:
+        Path where the report was saved
+    """
+    path = get_output_path('reports', filename)
+
+    with open(path, 'w') as f:
+        f.write(content)
+
+    print(f"   Saved report: {filename}")
+    return path
+
+
+def save_results_summary(results_dict, filename='results_summary.txt'):
+    """
+    Save a dictionary of results as a formatted text summary
+
+    Parameters:
+        results_dict: dictionary of results
+        filename: output filename
+
+    Returns:
+        Path where the summary was saved
+    """
+    content = []
+    content.append("=" * 80)
+    content.append("RESULTS SUMMARY")
+    content.append("=" * 80)
+    content.append("")
+
+    def format_value(v):
+        if isinstance(v, (int, float, np.number)):
+            if isinstance(v, (int, np.integer)):
+                return f"{v}"
+            else:
+                return f"{v:.6f}"
+        elif isinstance(v, np.ndarray):
+            return f"array({v.shape})"
+        elif isinstance(v, dict):
+            return f"dict({len(v)} items)"
+        else:
+            return str(v)
+
+    for key, value in results_dict.items():
+        content.append(f"{key}: {format_value(value)}")
+
+    content.append("")
+    content.append("=" * 80)
+
+    text = "\n".join(content)
+    return save_report(text, filename)
+
+
+# Convenience functions
+def figures_dir():
+    """Get path to figures directory"""
+    return get_output_path('figures', '')
+
+
+def animations_dir():
+    """Get path to animations directory"""
+    return get_output_path('animations', '')
+
+
+def tables_dir():
+    """Get path to tables directory"""
+    return get_output_path('tables', '')
+
+
+def reports_dir():
+    """Get path to reports directory"""
+    return get_output_path('reports', '')
+
+
+if __name__ == '__main__':
+    # Test the helper functions
+    print("Output Helper Test")
+    print("=" * 80)
+    print(f"Results dir: {get_results_dir()}")
+    print(f"Figures dir: {figures_dir()}")
+    print(f"Animations dir: {animations_dir()}")
+    print(f"Tables dir: {tables_dir()}")
+    print(f"Reports dir: {reports_dir()}")
+    print("=" * 80)

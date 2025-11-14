@@ -1,0 +1,114 @@
+{
+  "level1": [
+    {
+      "file": "examples/example_01_canal_flow/scripts/01_basic_v2.py",
+      "title": "01 - 第一个模拟：明渠均匀流",
+      "duration": "5分钟",
+      "objective": "理解最基本的明渠流动模拟，学会运行脚本",
+      "difficulty": "⭐☆☆"
+    },
+    {
+      "file": "examples/example_01_canal_flow/scripts/02_methods_comparison.py",
+      "title": "02 - 参数影响：坡度和糙率",
+      "duration": "5分钟",
+      "objective": "理解坡度和糙率对流动的影响",
+      "difficulty": "⭐☆☆"
+    },
+    {
+      "file": "examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2.py",
+      "title": "03 - 添加结构：单个闸门",
+      "duration": "10分钟",
+      "objective": "学习如何在渠道中添加闸门结构",
+      "difficulty": "⭐☆☆"
+    },
+    {
+      "file": "examples/example_01_canal_flow/scripts/04_boundary_conditions_v2.py",
+      "title": "04 - 边界条件：不同边界设置",
+      "duration": "10分钟",
+      "objective": "掌握不同边界条件的设置方法",
+      "difficulty": "⭐⭐☆"
+    },
+    {
+      "file": "examples/example_01_canal_flow/scripts/06_animation.py",
+      "title": "05 - 可视化：动画和图表",
+      "duration": "5分钟",
+      "objective": "学会生成动画和结果图表",
+      "difficulty": "⭐☆☆"
+    }
+  ],
+  "level2": [
+    {
+      "file": "examples/example_01_canal_flow/scripts/05_step_response.py",
+      "title": "06 - 非恒定流：阶跃响应",
+      "duration": "15分钟",
+      "objective": "理解非恒定流动和系统动态响应",
+      "difficulty": "⭐⭐☆"
+    },
+    {
+      "file": "examples/example_01_canal_flow/scripts/08_optimized_steady_solving_v2.py",
+      "title": "07 - 优化求解：快速稳态计算",
+      "duration": "10分钟",
+      "objective": "掌握高效的稳态求解方法",
+      "difficulty": "⭐⭐☆"
+    },
+    {
+      "file": "examples/example_01_canal_flow/scripts/11_advanced_structures.py",
+      "title": "08 - 多个结构：闸门和堰组合",
+      "duration": "20分钟",
+      "objective": "学习处理多个水工结构的系统",
+      "difficulty": "⭐⭐☆"
+    },
+    {
+      "file": "examples/example_01_canal_flow/scripts/12_advanced_optimized_v2.py",
+      "title": "09 - 复杂系统：多结构优化",
+      "duration": "30分钟",
+      "objective": "掌握复杂系统的建模和优化",
+      "difficulty": "⭐⭐⭐"
+    },
+    {
+      "file": "examples/example_01_canal_flow/scripts/03_idz_identification.py",
+      "title": "10 - 系统辨识：参数估计",
+      "duration": "20分钟",
+      "objective": "理解系统辨识和参数估计方法",
+      "difficulty": "⭐⭐⭐"
+    }
+  ],
+  "level3": [
+    {
+      "file": "examples/example_gate_pump_cascade/run_scenario_01.py",
+      "title": "11 - 闸泵级联：多级系统",
+      "duration": "30分钟",
+      "objective": "学习闸门泵站级联系统的模拟",
+      "difficulty": "⭐⭐⭐"
+    },
+    {
+      "file": "examples/case5_irrigation_system.py",
+      "title": "12 - 实际案例：灌溉系统",
+      "duration": "45分钟",
+      "objective": "应用到真实灌溉系统案例",
+      "difficulty": "⭐⭐⭐"
+    },
+    {
+      "file": "examples/example_network_solver.py",
+      "title": "13 - 管网系统：复杂拓扑",
+      "duration": "60分钟",
+      "objective": "掌握复杂管网系统的建模",
+      "difficulty": "⭐⭐⭐"
+    },
+    {
+      "file": "examples/example_pump_station.py",
+      "title": "14 - 泵站控制：自动化运行",
+      "duration": "45分钟",
+      "objective": "学习泵站的自动化控制策略",
+      "difficulty": "⭐⭐⭐"
+    },
+    {
+      "file": "examples/case_flood_control.py",
+      "title": "15 - 综合项目：防洪调度",
+      "duration": "90分钟",
+      "objective": "完成一个完整的工程项目",
+      "difficulty": "⭐⭐⭐"
+    }
+  ],
+  "total": 15
+}
