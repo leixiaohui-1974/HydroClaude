@@ -27,9 +27,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 try:
     import numpy as np
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
     from scipy.interpolate import interp1d
     from scipy.integrate import solve_ivp
 except ImportError as e:

@@ -272,11 +272,8 @@ def example_3_complex_network():
         h = np.ones(n_cells) * 2.0
         Q = np.ones(n_cells) * (width * 2.0 * 1.0)  # Q = B*h*v, v=1 m/s
 
-        solver.set_initial_conditions(
-            h, Q,
-            {'type': 'Q', 'value': Q[0]},
-            {'type': 'h', 'value': h[-1]}
-        )
+        solver.h = h
+        solver.Q = Q
 
         network.add_reach(Reach(reach_id, up, down, solver))
 

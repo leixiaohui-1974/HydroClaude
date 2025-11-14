@@ -1,0 +1,67 @@
+{
+  "import_errors": {
+    "psutil": [
+      "examples/benchmark_examples.py",
+      "examples/case_library/benchmark_performance.py"
+    ],
+    "networkx": [
+      "examples/example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py"
+    ],
+    "cvxpy": [
+      "examples/real_world_cases/urban_drainage_pump_station.py",
+      "examples/real_world_cases/irrigation_canal_automation.py"
+    ],
+    "animation_utils": [
+      "examples/example_17_reservoir_basic/example_17_reservoir_with_anim.py"
+    ]
+  },
+  "file_errors": [
+    "examples/case5_irrigation_system.py",
+    "examples/case6_highrise_water_supply.py",
+    "examples/case4_fire_protection_system.py",
+    "examples/case3_industrial_cooling_system.py",
+    "examples/case2_pump_water_hammer.py",
+    "examples/example_22_water_hammer/demo_water_hammer.py",
+    "examples/example_06_complete_hydropower_system/example_06_complete_system.py",
+    "examples/example_gate_pump_cascade/test_all_scenarios_quick.py",
+    "examples/example_05_transient_analysis/example_05_load_rejection.py",
+    "examples/example_07_multi_unit_agc/example_07_multi_unit_agc.py",
+    "examples/example_17_reservoir_basic/demo_reservoir.py"
+  ],
+  "deprecated_api": [],
+  "runtime_errors": {
+    "AttributeError": [
+      "examples/example_internal_structures.py",
+      "examples/example_network_solver.py",
+      "examples/example_network_topology.py",
+      "examples/example_network_validation.py",
+      "examples/phase1_simple_gate_control.py",
+      "examples/example_irrigation_network.py",
+      "examples/example_advanced_bc.py",
+      "examples/example_16_weirs_application/weirs_irrigation_system.py",
+      "examples/pressurized_examples/water_supply_network.py"
+    ],
+    "IndentationError": [
+      "examples/case_gate_operation.py"
+    ],
+    "TypeError": [
+      "examples/example_cascade_reservoirs.py"
+    ],
+    "ValueError": [
+      "examples/example_timeseries_bc.py",
+      "examples/example_irregular_channel.py",
+      "examples/example_compound_channel.py",
+      "examples/example_pump_station.py",
+      "examples/example_structures/run_spillway.py",
+      "examples/example_unsteady/run_unsteady_flow.py"
+    ],
+    "SyntaxError": [
+      "examples/case_library/case_05_river_network.py",
+      "examples/case_library/test_cases.py",
+      "examples/case_library/case_04_urban_drainage.py"
+    ]
+  },
+  "other_errors": [
+    "examples/validate_new_examples.py"
+  ]
+}

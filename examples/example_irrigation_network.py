@@ -64,11 +64,8 @@ def create_solver(length, width, Q_init, slope=0.002, manning_n=0.020):
     h = np.ones(n_cells) * h_init
     Q = np.ones(n_cells) * Q_init
 
-    solver.set_initial_conditions(
-        h, Q,
-        {'type': 'Q', 'value': Q_init},
-        {'type': 'h', 'value': h_init}
-    )
+    solver.h = h
+    solver.Q = Q
 
     return solver
 

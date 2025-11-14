@@ -135,7 +135,7 @@ def run_irrigation_system_simulation():
     print("-" * 80)
 
     Q_inlet = 15.0  # 进水流量 15 m^3/s
-    h_uniform = solver.reset_with_steady_state(Q_inlet)
+    h_uniform = solver.initialize_steady_state(Q_inlet)
 
     print(f"  进水流量: {Q_inlet} m^3/s")
     print(f"  初始水深: {h_uniform:.4f} m")
@@ -261,7 +261,7 @@ def run_irrigation_system_simulation():
     print()
 
     # 重新初始化
-    solver.reset_with_steady_state(Q_before)
+    solver.initialize_steady_state(Q_before)
     solver.solve_steady_state(Q_target=Q_before, max_iterations=2000, convergence_tol = 0.1, verbose=False)
     solver.clear_history()
 

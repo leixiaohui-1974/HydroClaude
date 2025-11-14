@@ -1,22 +1,36 @@
 {
-  "timestamp": "2025-11-13T14:53:11.357846",
+  "timestamp": "2025-11-14T02:46:35.176665",
   "system_info": {
-    "cpu_count": 16,
-    "memory_total_gb": 63.73994445800781
+    "cpu_count": 4,
+    "memory_total_gb": 15.642253875732422
   },
   "results": [
     {
       "example": "example_02_pump_system",
       "script": "code/example_02_pump_system.py",
       "iterations": 3,
-      "avg_time": 0.386508305867513,
-      "min_time": 0.37259626388549805,
-      "max_time": 0.3936583995819092,
-      "avg_memory_mb": 0.09505208333333333,
+      "avg_time": 0.06643279393513997,
+      "min_time": 0.06259751319885254,
+      "max_time": 0.0714409351348877,
+      "avg_memory_mb": 0.07421875,
       "times": [
-        0.39327025413513184,
-        0.37259626388549805,
-        0.3936583995819092
+        0.0714409351348877,
+        0.06525993347167969,
+        0.06259751319885254
+      ]
+    },
+    {
+      "example": "example_08_load_acceptance",
+      "script": "example_08_load_acceptance.py",
+      "iterations": 3,
+      "avg_time": 0.7951090335845947,
+      "min_time": 0.7946701049804688,
+      "max_time": 0.7959353923797607,
+      "avg_memory_mb": 0.0,
+      "times": [
+        0.7959353923797607,
+        0.7946701049804688,
+        0.7947216033935547
       ]
     }
   ]

@@ -133,8 +133,8 @@ for scheme in schemes:
     Q_init = np.ones(n_cells) * Q_design
     
     # # GodunvFVMSolver需要手动初始化
- solver.h = h_init.copy()
- solver.Q = Q_init)  # Manual initialization preferred
+    solver.h = h_init.copy()
+    solver.Q = Q_init.copy()  # Manual initialization preferred
     
     # 稳态求解
     print(f"\n求解稳态...")

@@ -1,0 +1,61 @@
+{
+  "FileNotFoundError": [
+    "examples/case5_irrigation_system.py",
+    "examples/case6_highrise_water_supply.py",
+    "examples/case4_fire_protection_system.py",
+    "examples/case3_industrial_cooling_system.py",
+    "examples/case2_pump_water_hammer.py",
+    "examples/example_22_water_hammer/demo_water_hammer.py",
+    "examples/example_06_complete_hydropower_system/example_06_complete_system.py"
+  ],
+  "AttributeError": [
+    "examples/phase1_simple_gate_control.py",
+    "examples/example_advanced_bc.py",
+    "examples/example_16_weirs_application/weirs_irrigation_system.py"
+  ],
+  "ValueError": [
+    "examples/example_timeseries_bc.py",
+    "examples/example_irregular_channel.py",
+    "examples/example_compound_channel.py",
+    "examples/example_pump_station.py",
+    "examples/example_structures/run_spillway.py"
+  ],
+  "TypeError": [
+    "examples/example_internal_structures.py",
+    "examples/example_network_solver.py",
+    "examples/example_cascade_reservoirs.py"
+  ],
+  "ImportError": [
+    "examples/test_weno3_dambreak.py"
+  ],
+  "SyntaxError": [],
+  "IndentationError": [
+    "examples/example_network_topology.py",
+    "examples/case_gate_operation.py"
+  ],
+  "RuntimeError": [],
+  "KeyError": [],
+  "Timeout": [
+    "examples/comprehensive_animation_generator.py",
+    "examples/advanced_animation_generator.py",
+    "examples/example_structure_showcase/run.py",
+    "examples/example_gate_pump_cascade/run_scenario_05.py",
+    "examples/example_gate_pump_cascade/test_fix.py",
+    "examples/example_gate_pump_cascade/comprehensive_scenario_test.py",
+    "examples/example_gate_pump_cascade/quick_scenario_test.py",
+    "examples/example_gate_pump_cascade/standard_multi_scenario_test.py",
+    "examples/example_gate_pump_cascade/run_scenario_04.py",
+    "examples/example_gate_pump_cascade/run_scenario_02.py",
+    "examples/example_gate_pump_cascade/enhanced_scenario_test.py",
+    "examples/example_gate_pump_cascade/gate_pump_cascade_advanced.py",
+    "examples/example_gate_pump_cascade/run_scenario.py",
+    "examples/example_gate_pump_cascade/temp_scenario.py",
+    "examples/example_gate_pump_cascade/run_scenario_03.py",
+    "examples/example_gate_pump_cascade/run_scenario_01.py",
+    "examples/example_gate_pump_cascade/test_fixed_solver.py"
+  ],
+  "Other": [
+    "examples/validate_new_examples.py",
+    "examples/__init__.py"
+  ]
+}

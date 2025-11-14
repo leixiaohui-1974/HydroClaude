@@ -73,7 +73,8 @@ def example_1_flood_hydrograph():
     bc_left = {'type': 'Q', 'value': flood}  # 上游洪水过程线时变
     bc_right = {'type': 'h', 'value': 2.0}   # 下游固定水位
 
-    solver.set_initial_conditions(h_init, Q_init, bc_left, bc_right)
+    solver.h = h_init
+    solver.Q = Q_init
 
     print(f"\n初始条件:")
     print(f"  初始水深: {np.mean(h_init):.2f} m")
@@ -146,7 +147,8 @@ def example_2_tidal_boundary():
     bc_left = {'type': 'Q', 'value': 100.0}  # 上游稳定径流
     bc_right = {'type': 'h', 'value': tidal}  # 下游潮汐水位时变
 
-    solver.set_initial_conditions(h_init, Q_init, bc_left, bc_right)
+    solver.h = h_init
+    solver.Q = Q_init
 
     print(f"\n初始条件:")
     print(f"  河流径流: {bc_left['value']:.1f} m^3/s (上游)")
@@ -217,7 +219,8 @@ def example_3_weir_controlled():
     bc_left = {'type': 'Q', 'value': 30.0}   # 上游流量 30 m^3/s
     bc_right = {'type': 'h', 'value': 1.0}   # 下游堰顶高程简化
 
-    solver.set_initial_conditions(h_init, Q_init, bc_left, bc_right)
+    solver.h = h_init
+    solver.Q = Q_init
 
     print(f"\n边界条件:")
     print(f"  上游: Q={bc_left['value']:.1f} m^3/s")

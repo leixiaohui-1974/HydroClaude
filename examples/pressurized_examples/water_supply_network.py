@@ -159,7 +159,7 @@ class WaterSupplySystem:
         # 考虑泵站扬程
         H0 = H_reservoir + self.pump.rated_head * 0.8
 
-        self.solver.initialize_steady_state(Q0, H0)
+        self.solver.solve_steady_state(Q0, H0)
 
         print("供水系统初始化:")
         print(f"  水库水头: {H_reservoir} m")
@@ -222,7 +222,7 @@ class WaterSupplySystem:
         print("-" * 80)
 
         # 初始化
-        self.initialize_steady_state()
+        self.solve_steady_state()
 
         # 设置边界条件
         H_reservoir = 100.0
