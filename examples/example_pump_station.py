@@ -25,13 +25,23 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from network.topology import (
     Node,
     RiverNetwork, 
-    Reach,
-    create_inflow_boundary, 
-    create_outflow_boundary,
-    NetworkSolver
+    Reach
 )
-from network.pump_station import create_pump_station
 from solvers.godunov_fvm_solver import GodunvFVMSolver
+from network.pump_station import create_pump_station
+
+# 创建缺失的边界函数
+def create_inflow_boundary(name, Q, elevation):
+    """创建入流边界节点"""
+    node = Node(node_id=name, node_type='boundary', elevation=elevation)
+    node.boundary_Q = Q  # 固定流量
+    return node
+
+def create_outflow_boundary(name, h, elevation):
+    """创建出流边界节点"""
+    node = Node(node_id=name, node_type='boundary', elevation=elevation)
+    node.boundary_h = h  # 固定水深
+    return node
 
 
 def create_solver(length, width, Q_init, slope=0.001):
