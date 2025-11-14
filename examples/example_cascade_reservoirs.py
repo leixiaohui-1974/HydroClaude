@@ -87,8 +87,7 @@ def build_cascade_system():
     # 水库1
     reservoir1 = ReservoirNode(
         "水库1",
-        elevation=480.0,
-        surface_area=2e6,  # 200万 m^2
+        elevation=480.0,  # 200万 m^2
         h_min=0.0,
         h_max=50.0,
         volume_init=5e7  # 初始库容 5000万 m^3
@@ -102,8 +101,7 @@ def build_cascade_system():
     # 水库2
     reservoir2 = ReservoirNode(
         "水库2",
-        elevation=450.0,
-        surface_area=1.5e6,  # 150万 m^2
+        elevation=450.0,  # 150万 m^2
         h_min=0.0,
         h_max=40.0,
         volume_init=3e7  # 初始库容 3000万 m^3
@@ -117,8 +115,7 @@ def build_cascade_system():
     # 水库3
     reservoir3 = ReservoirNode(
         "水库3",
-        elevation=420.0,
-        surface_area=1e6,  # 100万 m^2
+        elevation=420.0,  # 100万 m^2
         h_min=0.0,
         h_max=30.0,
         volume_init=2e7  # 初始库容 2000万 m^3

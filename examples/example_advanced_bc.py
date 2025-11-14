@@ -85,7 +85,7 @@ def example_1_flood_hydrograph():
     # 模拟10小时
     print(f"\n开始模拟 (t_end=10小时)...")
     t_end = 10 * 3600
-    dt, states = solver.step(save_interval=600)  # 每10分钟保存一次
+    dt, states = solver.step()  # 每10分钟保存一次
 
     print(f" 模拟完成")
     print(f"  总步数: {solver.step_count}")
@@ -157,7 +157,7 @@ def example_2_tidal_boundary():
     # 模拟24小时2个潮周期
     print(f"\n开始模拟 (t_end=24小时)...")
     t_end = 24 * 3600
-    dt, states = solver.step(save_interval=1800)  # 每30分钟保存
+    dt, states = solver.step()  # 每30分钟保存
 
     print(f" 模拟完成")
     print(f"  总步数: {solver.step_count}")
@@ -229,7 +229,7 @@ def example_3_weir_controlled():
     # 模拟到稳态
     print(f"\n开始模拟 (t_end=2小时趋向稳态)...")
     t_end = 2 * 3600
-    dt, states = solver.step(save_interval=600)
+    dt, states = solver.step()
 
     print(f" 模拟完成")
 
