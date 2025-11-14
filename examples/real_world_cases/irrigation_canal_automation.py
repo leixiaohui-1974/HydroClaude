@@ -229,15 +229,11 @@ def run_irrigation_canal_control():
     from control.idz_model import IDZParameters
     dummy_idz = IDZParameters(K=1.0, tau_z=60.0, tau_d=300.0, theta=0.0)
     mpc = MPCController(dummy_idz, mpc_config)
-    mpc.set_setpoint(target_depth)
-
-    # 设置MPC模型（简化）
-    # h[k+1] = h[k] + dt/(L*W) * (Q_in - Q_out)
+    
+    # 新API不再需要set_setpoint和set_linear_model
+    # 目标值将在compute_control中直接传递
+    
     section_end = sections[-1]
-    A_end = section_end.length * section_end.width
-    A_model = 1.0
-    B_model = -dt / A_end
-    mpc.set_linear_model(A_model, B_model)
 
     print(f"\n末端调节池:")
     print(f"  目标水深: {target_depth} m")
