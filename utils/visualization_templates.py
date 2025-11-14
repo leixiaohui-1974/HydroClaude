@@ -82,8 +82,8 @@ class VisualizationTemplates:
         """
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=self.DEFAULT_FIGSIZE_MULTI)
 
-        # 计算高程
-        z_bed = (canal_length - x) * S0
+        # 计算高程 - 修复数组维度
+        z_bed = np.linspace(canal_length * S0, 0, len(x))
         z_surface = z_bed + h
 
         # 子图1: 水面+渠底纵剖面

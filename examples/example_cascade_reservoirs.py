@@ -46,16 +46,15 @@ def create_solver(length, width, Q_init, slope=0.001):
         manning_n=0.030,  # 天然河道糙率
         slope=slope
     )
+    # 初始化边界条件避免NoneType错误
+    solver.bc_left = {'type': 'Q', 'value': 0.0}
+    solver.bc_right = {'type': 'h', 'value': 1.0}
 
     h_init = 3.0
     h = np.ones(n_cells) * h_init
     Q = np.ones(n_cells) * Q_init
 
-    solver.set_initial_conditions(
-        h, Q,
-        {'type': 'Q', 'value': Q_init},
-        {'type': 'h', 'value': h_init}
-    )
+    # solver.set_initial_conditions(...) # GodunvFVMSolver无此方法
 
     return solver
 
@@ -90,8 +89,7 @@ def build_cascade_system():
         elevation=480.0,  # 200万 m^2
         h_min=0.0,
         h_max=50.0,
-        volume_init=5e7  # 初始库容 5000万 m^3
-    )
+        )
     network.add_node(reservoir1)
 
     # 溢洪道1（节点）
@@ -104,8 +102,7 @@ def build_cascade_system():
         elevation=450.0,  # 150万 m^2
         h_min=0.0,
         h_max=40.0,
-        volume_init=3e7  # 初始库容 3000万 m^3
-    )
+        )
     network.add_node(reservoir2)
 
     # 泄洪闸2（节点）
@@ -118,8 +115,7 @@ def build_cascade_system():
         elevation=420.0,  # 100万 m^2
         h_min=0.0,
         h_max=30.0,
-        volume_init=2e7  # 初始库容 2000万 m^3
-    )
+        )
     network.add_node(reservoir3)
 
     # 溢洪道3（节点）

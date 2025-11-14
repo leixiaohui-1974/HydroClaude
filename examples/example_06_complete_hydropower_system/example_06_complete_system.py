@@ -381,7 +381,7 @@ class CompleteHydropowerSystem:
         ax4.legend()
 
         plt.tight_layout()
-        plt.savefig('examples/example_06_complete_hydropower_system/complete_system_performance.png', dpi=150)
+        plt.savefig(os.path.join(os.path.dirname(__file__), r'complete_system_performance.png'), dpi=150)
         print("\nPerformance curves saved to: complete_system_performance.png")
 
         return results

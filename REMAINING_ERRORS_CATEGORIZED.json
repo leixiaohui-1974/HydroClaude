@@ -1,0 +1,150 @@
+{
+  "TypeError": [
+    [
+      "examples/example_internal_structures.py",
+      "TypeError: 'NoneType' object is not subscriptable"
+    ],
+    [
+      "examples/example_network_solver.py",
+      "TypeError: 'NoneType' object is not subscriptable"
+    ],
+    [
+      "examples/example_advanced_bc.py",
+      "TypeError: 'NoneType' object is not subscriptable"
+    ],
+    [
+      "examples/example_16_weirs_application/weirs_irrigation_system.py",
+      "TypeError: 'float' object is not subscriptable"
+    ],
+    [
+      "examples/real_world_cases/irrigation_canal_automation.py",
+      "TypeError: MPCConfig.__init__() got an unexpected keyword argument 'control_change_weight'"
+    ],
+    [
+      "examples/pressurized_examples/water_supply_network.py",
+      "TypeError: unsupported operand type(s) for /: 'int' and 'NoneType'"
+    ],
+    [
+      "examples/advanced_examples/mpc_water_level_control.py",
+      "TypeError: MPCConfig.__init__() got an unexpected keyword argument 'state_weight'"
+    ]
+  ],
+  "SyntaxError": [
+    [
+      "examples/example_network_topology.py",
+      "SyntaxError: invalid syntax"
+    ],
+    [
+      "examples/example_irregular_channel.py",
+      "SyntaxError: invalid syntax. Perhaps you forgot a comma?"
+    ]
+  ],
+  "AttributeError": [
+    [
+      "examples/example_cascade_reservoirs.py",
+      "AttributeError: 'GodunvFVMSolver' object has no attribute 'set_initial_conditions'"
+    ],
+    [
+      "examples/example_02_pump_system/example_02_pump_system_with_anim.py",
+      "AttributeError: 'Tank' object has no attribute 'level'"
+    ]
+  ],
+  "ValueError": [
+    [
+      "examples/example_timeseries_bc.py",
+      "ValueError: Time series cannot have duplicate time points"
+    ],
+    [
+      "examples/example_compound_channel.py",
+      "ValueError: 桩号和高程数量必须一致"
+    ],
+    [
+      "examples/example_pump_station.py",
+      "ValueError: Invalid node type: pump_station. Must be one of ['boundary', 'junction', 'bifurcation', 'reservoir']"
+    ],
+    [
+      "examples/example_structures/run_spillway.py",
+      "ValueError: operands could not be broadcast together with shapes (101,) (100,)"
+    ],
+    [
+      "examples/example_unsteady/run_unsteady_flow.py",
+      "ValueError: operands could not be broadcast together with shapes (101,) (100,)"
+    ],
+    [
+      "examples/example_simple_canal/run_simple_canal.py",
+      "ValueError: operands could not be broadcast together with shapes (101,) (100,)"
+    ],
+    [
+      "examples/example_control/run_mpc_control.py",
+      "ValueError: operands could not be broadcast together with shapes (101,) (100,)"
+    ]
+  ],
+  "IndentationError": [
+    [
+      "examples/phase1_simple_gate_control.py",
+      "IndentationError: unexpected indent"
+    ]
+  ],
+  "Other": [
+    [
+      "examples/validate_new_examples.py",
+      ""
+    ],
+    [
+      "examples/case_library/benchmark_performance.py",
+      ""
+    ],
+    [
+      "examples/config_driven/simulate.py",
+      "用法: python simulate.py config.json"
+    ]
+  ],
+  "FileNotFoundError": [
+    [
+      "examples/example_22_water_hammer/demo_water_hammer.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_22_water_hammer/water_hammer_analysis.png'"
+    ],
+    [
+      "examples/example_gate_pump_cascade/test_all_scenarios_quick.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_gate_pump_cascade/enhanced_scenario_test.py'"
+    ],
+    [
+      "examples/example_24_multi_objective_optimization/demo_multi_objective.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_24_multi_objective_optimization/multi_objective_optimization.png'"
+    ],
+    [
+      "examples/example_23_control_comparison/demo_control_comparison.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_23_control_comparison/control_comparison.png'"
+    ],
+    [
+      "examples/example_18_cascade_hydropower/demo_cascade.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_18_cascade_hydropower/cascade_simulation.png'"
+    ]
+  ],
+  "NameError": [
+    [
+      "examples/example_02_pump_system/example_02_pump_system_enhanced.py",
+      "NameError: name 'plt' is not defined"
+    ],
+    [
+      "examples/advanced_examples/integrated_smart_water_system.py",
+      "NameError: name 'gpd' is not defined"
+    ],
+    [
+      "examples/integration_examples/gis_water_network.py",
+      "NameError: name 'gpd' is not defined"
+    ]
+  ],
+  "ImportError": [
+    [
+      "examples/example_10_series_network/example_10_series_network_with_anim.py",
+      "ImportError: cannot import name 'AnimationGenerator' from 'animation_utils' (/workspace/examples/example_10_series_network/animation_utils.py)"
+    ]
+  ],
+  "Timeout": [
+    [
+      "examples/example_control/run_pid_control.py",
+      "TIMEOUT"
+    ]
+  ]
+}

@@ -83,8 +83,14 @@ def example_1_simple_serial():
     bc_left2 = {'type': 'Q', 'value': 30.0}
     bc_right2 = {'type': 'h', 'value': 1.8}
 
-    solver1.set_initial_conditions(h_init1, Q_init1, bc_left1, bc_right1)
-    solver2.set_initial_conditions(h_init2, Q_init2, bc_left2, bc_right2)
+    solver1.h = h_init1
+    solver1.Q = Q_init1
+    solver1.bc_left = bc_left1
+    solver1.bc_right = bc_right1
+    solver2.h = h_init2
+    solver2.Q = Q_init2
+    solver2.bc_left = bc_left2
+    solver2.bc_right = bc_right2
 
     # 4. 添加河段
     r1 = Reach("河段1", "上游", "中游", solver1)
@@ -156,11 +162,11 @@ def example_2_y_junction():
     )
     h1 = np.ones(40) * 1.5
     Q1 = np.ones(40) * 15.0
-    solver1.set_initial_conditions(
-        h1, Q1,
-        {'type': 'Q', 'value': 15.0},
-        {'type': 'h', 'value': 1.5}
-    )
+    solver1.h = h1
+    solver1.Q = Q1
+    solver1.bc_left = {'type': 'Q', 'value': 15.0}
+    solver1.bc_right = {'type': 'h', 'value': 1.5}
+    
 
     # 支流2 (窄河)
     solver2 = GodunvFVMSolver(
@@ -169,11 +175,11 @@ def example_2_y_junction():
     )
     h2 = np.ones(40) * 1.5
     Q2 = np.ones(40) * 15.0
-    solver2.set_initial_conditions(
-        h2, Q2,
-        {'type': 'Q', 'value': 15.0},
-        {'type': 'h', 'value': 1.5}
-    )
+    solver2.h = h2
+    solver2.Q = Q2
+    solver2.bc_left = {'type': 'Q', 'value': 15.0}
+    solver2.bc_right = {'type': 'h', 'value': 1.5}
+    
 
     # 主河 (宽河)
     solver3 = GodunvFVMSolver(
@@ -182,11 +188,13 @@ def example_2_y_junction():
     )
     h3 = np.ones(50) * 2.0
     Q3 = np.ones(50) * 30.0
-    solver3.set_initial_conditions(
-        h3, Q3,
-        {'type': 'Q', 'value': 30.0},
+    solver3.h = 
+        h3
+    solver3.Q = Q3
+    solver3.bc_left = {'type': 'Q'
+    solver3.bc_right = 'value': 30.0},
         {'type': 'h', 'value': 1.8}
-    )
+    
 
     # 添加河段
     network.add_reach(Reach("支流1", "支流1上游", "汇流点", solver1))

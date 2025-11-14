@@ -135,7 +135,11 @@ def run_irrigation_system_simulation():
     print("-" * 80)
 
     Q_inlet = 15.0  # 进水流量 15 m^3/s
-    h_uniform = solver.initialize_steady_state(Q_inlet)
+    # 手动初始化
+    from utils.canal_utils import compute_steady_uniform_flow
+    h_uniform = compute_steady_uniform_flow(Q_inlet if isinstance(Q_inlet, (int, float)) else Q_inlet[0], (solver.B[0] if hasattr(solver.B, "__getitem__") else solver.B), solver.S0[0], (solver.n[0] if hasattr(solver.n, "__getitem__") else solver.n))
+    solver.h[:] = h_uniform
+    solver.Q[:] = Q_inlet
 
     print(f"  进水流量: {Q_inlet} m^3/s")
     print(f"  初始水深: {h_uniform:.4f} m")
@@ -147,7 +151,7 @@ def run_irrigation_system_simulation():
         Q_target=Q_inlet,
         max_iterations=3000,
         convergence_tol = 0.1,
-        check_interval=500,
+        # check_interval=500,  # 不支持的参数
         verbose=True
     )
 

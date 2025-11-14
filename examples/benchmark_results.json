@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-11-14T05:39:42.278680",
+  "timestamp": "2025-11-14T06:51:15.667813",
   "system_info": {
     "cpu_count": 4,
     "memory_total_gb": 15.642253875732422
@@ -9,28 +9,70 @@
       "example": "example_02_pump_system",
       "script": "code/example_02_pump_system.py",
       "iterations": 3,
-      "avg_time": 0.06457805633544922,
-      "min_time": 0.061095476150512695,
-      "max_time": 0.07062029838562012,
+      "avg_time": 0.0636146068572998,
+      "min_time": 0.06179523468017578,
+      "max_time": 0.06455349922180176,
       "avg_memory_mb": 0.0,
       "times": [
-        0.062018394470214844,
-        0.07062029838562012,
-        0.061095476150512695
+        0.06455349922180176,
+        0.06449508666992188,
+        0.06179523468017578
+      ]
+    },
+    {
+      "example": "example_03_turbine_demo",
+      "script": "example_03_turbine_comparison.py",
+      "iterations": 3,
+      "avg_time": 0.7387406826019287,
+      "min_time": 0.7333698272705078,
+      "max_time": 0.7437241077423096,
+      "avg_memory_mb": 0.0,
+      "times": [
+        0.7333698272705078,
+        0.7437241077423096,
+        0.7391281127929688
+      ]
+    },
+    {
+      "example": "example_05_transient_analysis",
+      "script": "example_05_load_rejection.py",
+      "iterations": 3,
+      "avg_time": 0.8240510622660319,
+      "min_time": 0.8168032169342041,
+      "max_time": 0.8306107521057129,
+      "avg_memory_mb": 0.0,
+      "times": [
+        0.8247392177581787,
+        0.8306107521057129,
+        0.8168032169342041
       ]
     },
     {
       "example": "example_08_load_acceptance",
       "script": "example_08_load_acceptance.py",
       "iterations": 3,
-      "avg_time": 0.7970208326975504,
-      "min_time": 0.7944865226745605,
-      "max_time": 0.7989001274108887,
+      "avg_time": 0.7945079803466797,
+      "min_time": 0.7837591171264648,
+      "max_time": 0.8026421070098877,
       "avg_memory_mb": 0.0,
       "times": [
-        0.7944865226745605,
-        0.7989001274108887,
-        0.7976758480072021
+        0.7837591171264648,
+        0.8026421070098877,
+        0.7971227169036865
+      ]
+    },
+    {
+      "example": "example_17_reservoir_basic",
+      "script": "demo_reservoir.py",
+      "iterations": 3,
+      "avg_time": 0.8145503203074137,
+      "min_time": 0.8020479679107666,
+      "max_time": 0.8246498107910156,
+      "avg_memory_mb": 0.0,
+      "times": [
+        0.8246498107910156,
+        0.8020479679107666,
+        0.816953182220459
       ]
     }
   ]

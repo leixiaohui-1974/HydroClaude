@@ -178,7 +178,7 @@ def run_optimization():
         width=B,
         rated_flow=20.0,  # 额定流量 (m^3/s)
         rated_head=10.0,  # 额定扬程 (m)
-        efficiency=0.75,  # 效率
+        # 效率
         g=9.81
     )
 

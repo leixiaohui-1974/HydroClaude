@@ -22,7 +22,7 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from network import (
+from network import (, Node
     RiverNetwork, Reach,
     create_inflow_boundary, create_outflow_boundary,
     NetworkSolver

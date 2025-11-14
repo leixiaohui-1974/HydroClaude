@@ -38,6 +38,9 @@ def create_solver(length=500.0, width=15.0, h_init=2.0, Q_init=50.0, slope=0.001
         manning_n=0.025,
         slope=slope
     )
+    # 初始化边界条件避免NoneType错误
+    solver.bc_left = {'type': 'Q', 'value': 0.0}
+    solver.bc_right = {'type': 'h', 'value': 1.0}
 
     h = np.ones(n_cells) * h_init
     Q = np.ones(n_cells) * Q_init

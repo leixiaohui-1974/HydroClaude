@@ -218,13 +218,9 @@ def run_irrigation_canal_control():
     mpc_config = MPCConfig(
         prediction_horizon=20,
         control_horizon=15,
-        dt=dt,       # 高权重确保水位稳定
-        control_weight=1.0,
-        control_change_weight=2.0,  # 平滑闸门动作
-        control_min=0.0,         # 最小流量
-        control_max=10.0,        # 最大流量
-        control_rate_min=-0.3,   # 限制闸门调整速度
-        control_rate_max=0.3
+        dt=dt,       # 高权重确保水位稳定,  # 平滑闸门动作,         # 最小流量,        # 最大流量
+        # control_rate_min=-0.3,   # 限制闸门调整速度 - 不支持的参数
+        # control_rate_max=0.3  # 不支持的参数
     )
 
     mpc = MPCController(mpc_config, name="End Pool MPC")

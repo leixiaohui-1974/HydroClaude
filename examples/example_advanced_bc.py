@@ -64,6 +64,9 @@ def example_1_flood_hydrograph():
         slope=0.001,
         cfl = 0.3
     )
+    # 初始化边界条件避免NoneType错误
+    solver.bc_left = {'type': 'Q', 'value': 0.0}
+    solver.bc_right = {'type': 'h', 'value': 1.0}
 
     # 初始条件
     h_init = np.ones(100) * 2.0  # 初始水深 2m
@@ -138,6 +141,9 @@ def example_2_tidal_boundary():
         slope=0.0001,      # 河口段坡度很小
         cfl = 0.3
     )
+    # 初始化边界条件避免NoneType错误
+    solver.bc_left = {'type': 'Q', 'value': 0.0}
+    solver.bc_right = {'type': 'h', 'value': 1.0}
 
     # 初始条件平均潮位
     h_init = np.ones(100) * 1.0
@@ -208,6 +214,9 @@ def example_3_weir_controlled():
         slope=0.002,
         cfl = 0.3
     )
+    # 初始化边界条件避免NoneType错误
+    solver.bc_left = {'type': 'Q', 'value': 0.0}
+    solver.bc_right = {'type': 'h', 'value': 1.0}
 
     # 初始条件
     h_init = np.ones(50) * 1.5  # 初始水深 1.5m

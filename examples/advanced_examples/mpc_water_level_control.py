@@ -30,7 +30,8 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('Agg')
-from control.mpc_controller import MPCController, MPCConfig, AdaptiveMPCController
+from control.mpc_controller import MPCController, MPCConfig
+# AdaptiveMPCController 暂时不可用
 from control.pid_controller import PIDController, PIDConfig
 
 
@@ -119,12 +120,7 @@ def compare_mpc_vs_pid():
     mpc_config = MPCConfig(
         prediction_horizon=15,
         control_horizon=10,
-        dt=dt,
-        state_weight=10.0,      # 高状态权重 -> 更紧跟踪
-        control_weight=0.5,     # 控制输入成本
-        control_change_weight=0.2,  # 平滑控制变化
-        control_min=0.0,        # 最小出流量
-        control_max=20.0,       # 最大出流量
+        dt=dt,      # 高状态权重 -> 更紧跟踪,     # 控制输入成本,  # 平滑控制变化,        # 最小出流量,       # 最大出流量
         control_rate_min=-0.5,  # 最大降低速率 (m^3/s per step)
         control_rate_max=0.5    # 最大增加速率
     )
@@ -314,13 +310,7 @@ def demonstrate_adaptive_mpc():
     config = MPCConfig(
         prediction_horizon=12,
         control_horizon=8,
-        dt=dt,
-        state_weight=10.0,
-        control_weight=0.3,
-        control_change_weight=0.15,
-        control_min=0.0,
-        control_max=20.0
-    )
+        dt=dt)
 
     # 创建自适应MPC（初始模型参数不准确）
     ampc = AdaptiveMPCController(config, name="Adaptive MPC")

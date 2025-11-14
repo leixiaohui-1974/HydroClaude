@@ -36,9 +36,12 @@ def example_1_v_shaped_valley():
 
     # 创建V型断面
     # 形状：两侧对称的斜坡
+    stations = [0, 25, 50, 75, 100]
+    stations = sorted(set(stations))  # 去重并排序
+    elevations = [10, 5, 0, 5, 10]  # 最大深度10m
     channel = IrregularChannel(
-        stations=[0, 25, 50, 75, 100],      # 总宽100m
-        elevations=[10, 5, 0, 5, 10],       # 最大深度10m
+        stations=stations,      # 总宽100m
+        elevations=elevations,
         length=2000.0,
         bottom_slope=0.003,                  # 较陡底坡（山区河流）
         manning_n=0.035,                     # 较大粗糙度（卵石河床）

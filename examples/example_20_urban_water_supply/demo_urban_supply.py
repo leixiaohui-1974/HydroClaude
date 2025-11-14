@@ -550,7 +550,7 @@ def visualize_results(results, system):
     ax5.legend(loc='best')
     ax5.grid(True, alpha=0.3)
 
-    plt.savefig('examples/example_20_urban_water_supply/urban_supply_simulation.png',
+    plt.savefig(os.path.join(os.path.dirname(__file__), r'urban_supply_simulation.png'),
                 dpi=150, bbox_inches='tight')
     print(f"图像已保存到: urban_supply_simulation.png")
 

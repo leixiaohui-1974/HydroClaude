@@ -195,7 +195,7 @@ def demo_basic_reservoir():
     axes[3].grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig('examples/example_17_reservoir_basic/reservoir_simulation.png', dpi=150)
+    plt.savefig(os.path.join(os.path.dirname(__file__), r'reservoir_simulation.png'), dpi=150)
     print(f"\n图像已保存到: reservoir_simulation.png")
 
     return reservoir, results

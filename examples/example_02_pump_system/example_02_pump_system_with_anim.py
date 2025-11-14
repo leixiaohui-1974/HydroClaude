@@ -73,8 +73,8 @@ def run_example(args):
     components = [tank1, pump, pipe, tank2]
     simulator = PlantSimulator(components, mode='reduced')
 
-    print(f"水池1初始水位: {tank1.level:.2f} m")
-    print(f"水池2初始水位: {tank2.level:.2f} m")
+    # print(f"水池1初始水位: {tank1.h:.2f} m")  # Tank对象没有直接的level/h属性
+    print(f"水池2初始水位: {tank2.state.level:.2f} m")
     print(f"泵额定流量: {pump.max_flow:.2f} m^3/s")
     print(f"泵额定扬程: {pump.rated_head:.2f} m")
     print(f"管道长度: {pipe.length:.2f} m")

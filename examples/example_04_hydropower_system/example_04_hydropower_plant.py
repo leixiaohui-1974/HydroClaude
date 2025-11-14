@@ -298,7 +298,7 @@ class HydropowerPlant:
         ax4.legend()
 
         plt.tight_layout()
-        plt.savefig('examples/example_04_hydropower_system/plant_performance.png', dpi=150)
+        plt.savefig(os.path.join(os.path.dirname(__file__), r'plant_performance.png'), dpi=150)
         print(f"\nPerformance curves saved to: plant_performance.png")
 
         return Q_range, powers, efficiencies

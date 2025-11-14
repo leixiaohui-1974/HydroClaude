@@ -216,7 +216,7 @@ def test_case_02_water_supply_demand_pattern():
 
     # Update demands
     network.update_demands(8.0)  # Morning peak
-    total_demand = sum(node['current_demand'] for node_id, node in network.nodes.items()
+    total_demand = sum(getattr(node, 'current_demand', 0) for node_id, node in network.nodes.items()
                       if node_id not in ['SOURCE', 'TOWER'])
 
     assert total_demand > 0, "Total demand is zero"

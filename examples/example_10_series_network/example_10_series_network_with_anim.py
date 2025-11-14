@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 
 EXAMPLES_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, EXAMPLES_DIR)
-from animation_utils import AnimationGenerator
+from animation_utils import AnimationGenerator, save_animation
 
 def parse_args():
     parser = argparse.ArgumentParser(description='串联管网仿真 - 嵌入式动画版本')

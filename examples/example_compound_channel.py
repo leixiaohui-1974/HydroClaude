@@ -37,6 +37,7 @@ def example_1_basic_compound_channel():
     # 定义断面测点（站号，高程）
     # 左滩地 - 主槽 - 右滩地
     stations = [0, 20, 25, 25, 55, 60, 80]
+    stations = sorted(set(stations))  # 去重并排序
     elevations = [105, 105, 100, 100, 100, 105, 105]
 
     bankfull_elevation = 104.0  # 主槽设计水位

@@ -242,7 +242,7 @@ class SpillwayCascadeSystem:
         plt.legend()
 
         plt.tight_layout()
-        plt.savefig('examples/example_02_spillway_cascade/rating_curve.png', dpi=150)
+        plt.savefig(os.path.join(os.path.dirname(__file__), r'rating_curve.png'), dpi=150)
         print(f"\nRating curve saved to: rating_curve.png")
 
         # Print summary table

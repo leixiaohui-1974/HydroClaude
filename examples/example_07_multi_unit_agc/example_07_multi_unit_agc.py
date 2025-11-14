@@ -232,7 +232,7 @@ def simulate_frequency_disturbance():
     axes[3].grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig('examples/example_07_multi_unit_agc/scenario1_frequency_disturbance.png', dpi=150)
+    plt.savefig(os.path.join(os.path.dirname(__file__), r'scenario1_frequency_disturbance.png'), dpi=150)
     print("\nPlot saved: scenario1_frequency_disturbance.png")
 
 
@@ -383,7 +383,7 @@ def simulate_load_variation():
     axes[2].grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig('examples/example_07_multi_unit_agc/scenario2_load_variation.png', dpi=150)
+    plt.savefig(os.path.join(os.path.dirname(__file__), r'scenario2_load_variation.png'), dpi=150)
     print("\nPlot saved: scenario2_load_variation.png")
 
 
@@ -536,7 +536,7 @@ def simulate_tie_line_control():
     axes[2].grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig('examples/example_07_multi_unit_agc/scenario3_tie_line_control.png', dpi=150)
+    plt.savefig(os.path.join(os.path.dirname(__file__), r'scenario3_tie_line_control.png'), dpi=150)
     print("\nPlot saved: scenario3_tie_line_control.png")
 
 

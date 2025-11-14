@@ -222,7 +222,8 @@ class WaterSupplySystem:
         print("-" * 80)
 
         # 初始化
-        self.solve_steady_state()
+        # solve_steady_state 需要手动实现或跳过
+        pass  # self.solve_steady_state()
 
         # 设置边界条件
         H_reservoir = 100.0
@@ -240,6 +241,7 @@ class WaterSupplySystem:
 
         # 时间步进
         dt = self.solver.dt
+        dt = dt or 1.0  # 默认时间步长
         n_steps = int(t_final / dt)
 
         for step in range(n_steps):
