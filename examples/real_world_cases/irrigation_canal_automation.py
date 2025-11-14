@@ -287,9 +287,9 @@ def run_irrigation_canal_control():
         Q_in = 20.0 + 2.0 * np.sin(2 * np.pi * t / 1800)  # +/-2 m^3/s 波动
         inflow_history[k] = Q_in
 
-        # MPC控制末端出流
+        # MPC控制末端出流 - 使用新API
         current_end_depth = canal.get_end_depth()
-        Q_end_outlet = mpc.compute(current_end_depth)
+        Q_end_outlet, _ = mpc.compute_control(current_end_depth, target_depth)
         mpc_output_history[k] = Q_end_outlet
 
         # 更新系统状态
