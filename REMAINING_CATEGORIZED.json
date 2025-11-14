@@ -1,0 +1,112 @@
+{
+  "data_validation": [
+    [
+      "examples/example_timeseries_bc.py",
+      "ValueError: Time series cannot have duplicate time points"
+    ],
+    [
+      "examples/example_irregular_channel.py",
+      "ValueError: 桩号必须严格单调递增"
+    ],
+    [
+      "examples/example_compound_channel.py",
+      "ValueError: 桩号和高程数量必须一致"
+    ]
+  ],
+  "api_mismatch": [
+    [
+      "examples/real_world_cases/irrigation_canal_automation.py",
+      "TypeError: MPCController.__init__() got an unexpected keyword argument 'name'"
+    ],
+    [
+      "examples/advanced_examples/mpc_water_level_control.py",
+      "TypeError: MPCConfig.__init__() got an unexpected keyword argument 'control_rate_min'"
+    ]
+  ],
+  "file_missing": [
+    [
+      "examples/example_22_water_hammer/demo_water_hammer.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_22_water_hammer/water_hammer_analysis.png'"
+    ],
+    [
+      "examples/example_gate_pump_cascade/test_all_scenarios_quick.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_gate_pump_cascade/enhanced_scenario_test.py'"
+    ],
+    [
+      "examples/example_24_multi_objective_optimization/demo_multi_objective.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_24_multi_objective_optimization/multi_objective_optimization.png'"
+    ],
+    [
+      "examples/example_23_control_comparison/demo_control_comparison.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_23_control_comparison/control_comparison.png'"
+    ]
+  ],
+  "syntax": [
+    [
+      "examples/example_network_topology.py",
+      "SyntaxError: invalid syntax"
+    ],
+    [
+      "examples/example_pump_station.py",
+      "SyntaxError: invalid syntax"
+    ]
+  ],
+  "other": [
+    [
+      "examples/validate_new_examples.py",
+      ""
+    ],
+    [
+      "examples/example_advanced_bc.py",
+      "IndexError: invalid index to scalar variable."
+    ],
+    [
+      "examples/example_16_weirs_application/weirs_irrigation_system.py",
+      "TypeError: HydrostaticCanalSolver.solve_steady_state() missing 1 required positional argument: 'h_downstream'"
+    ],
+    [
+      "examples/example_structures/run_spillway.py",
+      "ValueError: operands could not be broadcast together with shapes (101,100) (101,)"
+    ],
+    [
+      "examples/example_unsteady/run_unsteady_flow.py",
+      "ValueError: operands could not be broadcast together with shapes (101,100) (101,)"
+    ],
+    [
+      "examples/case_library/benchmark_performance.py",
+      ""
+    ],
+    [
+      "examples/pressurized_examples/water_supply_network.py",
+      "TypeError: 'NoneType' object is not subscriptable"
+    ],
+    [
+      "examples/example_02_pump_system/example_02_pump_system_enhanced.py",
+      "NameError: name 'plt' is not defined"
+    ],
+    [
+      "examples/advanced_examples/integrated_smart_water_system.py",
+      "NameError: name 'gpd' is not defined"
+    ],
+    [
+      "examples/integration_examples/gis_water_network.py",
+      "NameError: name 'gpd' is not defined"
+    ],
+    [
+      "examples/example_simple_canal/run_simple_canal.py",
+      "ValueError: operands could not be broadcast together with shapes (101,100) (101,)"
+    ],
+    [
+      "examples/config_driven/simulate.py",
+      "用法: python simulate.py config.json"
+    ],
+    [
+      "examples/example_control/run_pid_control.py",
+      "TIMEOUT"
+    ],
+    [
+      "examples/example_control/run_mpc_control.py",
+      "ValueError: operands could not be broadcast together with shapes (101,100) (101,)"
+    ]
+  ]
+}

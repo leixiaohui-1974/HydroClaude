@@ -188,12 +188,10 @@ def example_2_y_junction():
     )
     h3 = np.ones(50) * 2.0
     Q3 = np.ones(50) * 30.0
-    solver3.h = 
-        h3
+    solver3.h = h3
     solver3.Q = Q3
-    solver3.bc_left = {'type': 'Q'
-    solver3.bc_right = 'value': 30.0},
-        {'type': 'h', 'value': 1.8}
+    solver3.bc_left = {'type': 'Q', 'value': 30.0}
+    solver3.bc_right = {'type': 'h', 'value': 1.8}
     
 
     # 添加河段

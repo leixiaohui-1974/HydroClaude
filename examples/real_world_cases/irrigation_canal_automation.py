@@ -223,7 +223,7 @@ def run_irrigation_canal_control():
         # control_rate_max=0.3  # 不支持的参数
     )
 
-    mpc = MPCController(mpc_config, name="End Pool MPC")
+    mpc = MPCController(mpc_config)  # name参数不支持
     mpc.set_setpoint(target_depth)
 
     # 设置MPC模型（简化）

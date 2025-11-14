@@ -1,0 +1,30 @@
+{
+  "passed": [],
+  "failed": [
+    "examples/advanced_examples/integrated_smart_water_system.py",
+    "examples/advanced_examples/mpc_water_level_control.py",
+    "examples/case_library/benchmark_performance.py",
+    "examples/config_driven/simulate.py",
+    "examples/example_02_pump_system/example_02_pump_system_enhanced.py",
+    "examples/example_16_weirs_application/weirs_irrigation_system.py",
+    "examples/example_22_water_hammer/demo_water_hammer.py",
+    "examples/example_23_control_comparison/demo_control_comparison.py",
+    "examples/example_24_multi_objective_optimization/demo_multi_objective.py",
+    "examples/example_advanced_bc.py",
+    "examples/example_compound_channel.py",
+    "examples/example_control/run_mpc_control.py",
+    "examples/example_control/run_pid_control.py",
+    "examples/example_gate_pump_cascade/test_all_scenarios_quick.py",
+    "examples/example_irregular_channel.py",
+    "examples/example_network_topology.py",
+    "examples/example_pump_station.py",
+    "examples/example_simple_canal/run_simple_canal.py",
+    "examples/example_structures/run_spillway.py",
+    "examples/example_timeseries_bc.py",
+    "examples/example_unsteady/run_unsteady_flow.py",
+    "examples/integration_examples/gis_water_network.py",
+    "examples/pressurized_examples/water_supply_network.py",
+    "examples/real_world_cases/irrigation_canal_automation.py",
+    "examples/validate_new_examples.py"
+  ]
+}

@@ -120,9 +120,9 @@ def compare_mpc_vs_pid():
     mpc_config = MPCConfig(
         prediction_horizon=15,
         control_horizon=10,
-        dt=dt,      # 高状态权重 -> 更紧跟踪,     # 控制输入成本,  # 平滑控制变化,        # 最小出流量,       # 最大出流量
-        control_rate_min=-0.5,  # 最大降低速率 (m^3/s per step)
-        control_rate_max=0.5    # 最大增加速率
+        dt=dt      # 高状态权重 -> 更紧跟踪,     # 控制输入成本,  # 平滑控制变化,        # 最小出流量,       # 最大出流量
+        # control_rate_min=-0.5,  # 最大降低速率 (不支持的参数)
+        # control_rate_max=0.5    # 最大增加速率 (不支持的参数)
     )
 
     # 配置PID
