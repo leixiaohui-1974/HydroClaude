@@ -37,8 +37,12 @@ def example_1_v_shaped_valley():
     # 创建V型断面
     # 形状：两侧对称的斜坡
     stations = [0, 25, 50, 75, 100]
-    stations = sorted(set(stations))  # 去重并排序
     elevations = [10, 5, 0, 5, 10]  # 最大深度10m
+    
+    # 确保数据有效性
+    stations = sorted(list(set(stations)))  # 去重并排序
+    assert len(stations) == len(elevations), "桩号和高程数量必须一致"
+    
     channel = IrregularChannel(
         stations=stations,      # 总宽100m
         elevations=elevations,
@@ -328,9 +332,11 @@ def example_6_channel_comparison():
     )
 
     # 梯形（通过不规则断面模拟）
+    trap_stations = [0, 15, 35, 50, 65, 85, 100]  # 去除重复
+    trap_elevations = [10, 0, 0, 0, 0, 0, 10]
     trap_channel = IrregularChannel(
-        stations=[0, 0, 15, 35, 50, 65, 85, 100, 100],
-        elevations=[10, 5, 0, 0, 0, 0, 0, 5, 10],
+        stations=trap_stations,
+        elevations=trap_elevations,
         length=1000.0,
         bottom_slope=0.001,
         manning_n=0.030,

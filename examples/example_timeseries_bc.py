@@ -353,8 +353,6 @@ def example_6_extrapolation_comparison():
     print("-" * 75)
 
     test_times = [0, 5, 10, 20, 30, 35, 40]
-    times = list(dict.fromkeys(times))  # 去重
-    times = list(dict.fromkeys(times))  # 去重
     for t in test_times:
         v_const = bc_const.get_value(t)
         v_linear = bc_linear.get_value(t)

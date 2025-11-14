@@ -36,9 +36,8 @@ def example_1_basic_compound_channel():
 
     # 定义断面测点（站号，高程）
     # 左滩地 - 主槽 - 右滩地
-    stations = [0, 20, 25, 25, 55, 60, 80]
-    stations = sorted(set(stations))  # 去重并排序
-    elevations = [105, 105, 100, 100, 100, 105, 105]
+    stations = [0, 20, 25, 55, 60, 80]  # 去除重复桩号
+    elevations = [105, 105, 100, 100, 105, 105]  # 对应调整
     assert len(stations) == len(elevations), "桩号和高程数量必须一致"
     bankfull_elevation = 104.0  # 主槽设计水位
 
@@ -93,8 +92,8 @@ def example_2_flood_stage_analysis():
     print("="*80)
 
     # 自然河道断面
-    stations = [0, 15, 20, 20, 50, 55, 70]
-    elevations = [108, 108, 103, 103, 103, 108, 108]
+    stations = [0, 15, 20, 50, 55, 70]
+    elevations = [108, 108, 103, 103, 108, 108]
     assert len(stations) == len(elevations), "桩号和高程数量必须一致"
     bankfull_elevation = 107.0
 
@@ -166,8 +165,8 @@ def example_3_method_comparison():
     print("示例3：计算方法对比")
     print("="*80)
 
-    stations = [0, 10, 15, 15, 45, 50, 60]
-    elevations = [110, 110, 105, 105, 105, 110, 110]
+    stations = [0, 10, 15, 45, 50, 60]
+    elevations = [110, 110, 105, 105, 110, 110]
     assert len(stations) == len(elevations), "桩号和高程数量必须一致"
     bankfull_elevation = 109.0
 
@@ -239,8 +238,8 @@ def example_4_flood_design():
     print(f"  最大允许流速: v_max = {v_max:.2f} m/s")
 
     # 现有河道断面
-    stations = [0, 25, 35, 35, 75, 85, 110]
-    elevations = [112, 112, 106, 106, 106, 112, 112]
+    stations = [0, 25, 35, 75, 85, 110]
+    elevations = [112, 112, 106, 106, 112, 112]
     assert len(stations) == len(elevations), "桩号和高程数量必须一致"
     bankfull_elevation = 111.0
 
@@ -332,8 +331,8 @@ def example_5_manning_sensitivity():
     print("示例5：Manning系数敏感性分析")
     print("="*80)
 
-    stations = [0, 20, 30, 30, 70, 80, 100]
-    elevations = [115, 115, 110, 110, 110, 115, 115]
+    stations = [0, 20, 30, 70, 80, 100]
+    elevations = [115, 115, 110, 110, 115, 115]
     assert len(stations) == len(elevations), "桩号和高程数量必须一致"
     bankfull_elevation = 114.0
 
@@ -404,8 +403,8 @@ def example_6_subdivision_details():
     print("示例6：分区详细水力信息")
     print("="*80)
 
-    stations = [0, 15, 20, 20, 60, 65, 80]
-    elevations = [108, 108, 103, 103, 103, 108, 108]
+    stations = [0, 15, 20, 60, 65, 80]
+    elevations = [108, 108, 103, 103, 108, 108]
     assert len(stations) == len(elevations), "桩号和高程数量必须一致"
     bankfull_elevation = 107.0
 
