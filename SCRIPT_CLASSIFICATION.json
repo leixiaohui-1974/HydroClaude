@@ -1,0 +1,112 @@
+{
+  "deprecated": [],
+  "fixable": [
+    {
+      "path": "examples/real_world_cases/irrigation_canal_automation.py",
+      "name": "irrigation_canal_automation.py",
+      "reason": "MPCController参数问题 - 可重写"
+    },
+    {
+      "path": "examples/advanced_examples/mpc_water_level_control.py",
+      "name": "mpc_water_level_control.py",
+      "reason": "MPCController参数问题 - 可重写"
+    }
+  ],
+  "other": [
+    {
+      "path": "examples/example_compound_channel.py",
+      "name": "example_compound_channel.py",
+      "reason": "KeyError: 'main'"
+    },
+    {
+      "path": "examples/validate_new_examples.py",
+      "name": "validate_new_examples.py",
+      "reason": "Unknown"
+    },
+    {
+      "path": "examples/example_pump_station.py",
+      "name": "example_pump_station.py",
+      "reason": "ImportError: cannot import name 'create_inflow_boundary' from 'network.topology'"
+    },
+    {
+      "path": "examples/example_advanced_bc.py",
+      "name": "example_advanced_bc.py",
+      "reason": "IndexError: invalid index to scalar variable."
+    },
+    {
+      "path": "examples/example_22_water_hammer/demo_water_hammer.py",
+      "name": "demo_water_hammer.py",
+      "reason": "FileNotFoundError - 缺少输出目录或文件"
+    },
+    {
+      "path": "examples/example_16_weirs_application/weirs_irrigation_system.py",
+      "name": "weirs_irrigation_system.py",
+      "reason": "AttributeError: 'HydrostaticCanalSolver' object has no attribute 'get_full_profi"
+    },
+    {
+      "path": "examples/example_structures/run_spillway.py",
+      "name": "run_spillway.py",
+      "reason": "ValueError: operands could not be broadcast together with shapes (101,100) (101,"
+    },
+    {
+      "path": "examples/example_gate_pump_cascade/test_all_scenarios_quick.py",
+      "name": "test_all_scenarios_quick.py",
+      "reason": "FileNotFoundError - 缺少输出目录或文件"
+    },
+    {
+      "path": "examples/example_unsteady/run_unsteady_flow.py",
+      "name": "run_unsteady_flow.py",
+      "reason": "ValueError: operands could not be broadcast together with shapes (101,100) (101,"
+    },
+    {
+      "path": "examples/case_library/benchmark_performance.py",
+      "name": "benchmark_performance.py",
+      "reason": "Unknown"
+    },
+    {
+      "path": "examples/pressurized_examples/water_supply_network.py",
+      "name": "water_supply_network.py",
+      "reason": "AttributeError: 'WaterSupplySystem' object has no attribute 'dt'"
+    },
+    {
+      "path": "examples/advanced_examples/integrated_smart_water_system.py",
+      "name": "integrated_smart_water_system.py",
+      "reason": "AttributeError: 'NoneType' object has no attribute 'GeoDataFrame'"
+    },
+    {
+      "path": "examples/integration_examples/gis_water_network.py",
+      "name": "gis_water_network.py",
+      "reason": "AttributeError: 'NoneType' object has no attribute 'GeoDataFrame'"
+    },
+    {
+      "path": "examples/example_simple_canal/run_simple_canal.py",
+      "name": "run_simple_canal.py",
+      "reason": "ValueError: operands could not be broadcast together with shapes (101,100) (101,"
+    },
+    {
+      "path": "examples/config_driven/simulate.py",
+      "name": "simulate.py",
+      "reason": "用法: python simulate.py config.json"
+    },
+    {
+      "path": "examples/example_control/run_pid_control.py",
+      "name": "run_pid_control.py",
+      "reason": "Timeout"
+    },
+    {
+      "path": "examples/example_control/run_mpc_control.py",
+      "name": "run_mpc_control.py",
+      "reason": "ValueError: operands could not be broadcast together with shapes (101,100) (101,"
+    },
+    {
+      "path": "examples/example_24_multi_objective_optimization/demo_multi_objective.py",
+      "name": "demo_multi_objective.py",
+      "reason": "FileNotFoundError - 缺少输出目录或文件"
+    },
+    {
+      "path": "examples/example_23_control_comparison/demo_control_comparison.py",
+      "name": "demo_control_comparison.py",
+      "reason": "FileNotFoundError - 缺少输出目录或文件"
+    }
+  ]
+}
