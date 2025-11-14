@@ -136,8 +136,8 @@ def compare_mpc_vs_pid():
     )
 
     # 创建控制器
-    mpc = MPCController(mpc_config, name="Water Level MPC")
-    pid = PIDController(pid_config, name="Water Level PID")
+    mpc = MPCController(mpc_config)
+    pid = PIDController(pid_config)
 
     # 设置目标
     mpc.set_setpoint(h_target)
@@ -313,7 +313,7 @@ def demonstrate_adaptive_mpc():
         dt=dt)
 
     # 创建自适应MPC（初始模型参数不准确）
-    ampc = AdaptiveMPCController(config, name="Adaptive MPC")
+    ampc = AdaptiveMPCController(config)
     ampc.set_setpoint(h_target)
 
     # 初始模型参数（故意设置不准确）

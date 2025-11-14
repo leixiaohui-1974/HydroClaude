@@ -1,0 +1,152 @@
+{
+  "examples/example_network_topology.py": {
+    "name": "example_network_topology.py",
+    "error_type": "",
+    "error_msg": "",
+    "full_stderr": "issing from font(s) DejaVu Sans.\n  plt.tight_layout()\n/workspace/network/topology.py:605: UserWarning: Glyph 32593 (\\N{CJK UNIFIED IDEOGRAPH-7F51}) missing from font(s) DejaVu Sans.\n  plt.tight_layout()\n/workspace/network/topology.py:605: UserWarning: Glyph 31995 (\\N{CJK UNIFIED IDEOGRAPH-7CFB}) missing from font(s) DejaVu Sans.\n  plt.tight_layout()\n/workspace/network/topology.py:605: UserWarning: Glyph 32479 (\\N{CJK UNIFIED IDEOGRAPH-7EDF}) missing from font(s) DejaVu Sans.\n  plt.tight_layout()"
+  },
+  "examples/example_timeseries_bc.py": {
+    "name": "example_timeseries_bc.py",
+    "error_type": "ValueError",
+    "error_msg": "ValueError: Time series cannot have duplicate time points",
+    "full_stderr": "module>\n    main()\n  File \"/workspace/examples/example_timeseries_bc.py\", line 455, in main\n    example_4_reservoir_operation()\n  File \"/workspace/examples/example_timeseries_bc.py\", line 217, in example_4_reservoir_operation\n    bc_reservoir = TimeSeriesBoundary(\n                   ^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/boundary/timeseries_bc.py\", line 100, in __init__\n    raise ValueError(\"Time series cannot have duplicate time points\")\nValueError: Time series cannot have duplicate time points"
+  },
+  "examples/example_irregular_channel.py": {
+    "name": "example_irregular_channel.py",
+    "error_type": "ValueError",
+    "error_msg": "ValueError: 桩号必须严格单调递增",
+    "full_stderr": "/workspace/examples/example_irregular_channel.py\", line 389, in <module>\n    main()\n  File \"/workspace/examples/example_irregular_channel.py\", line 375, in main\n    example_6_channel_comparison()\n  File \"/workspace/examples/example_irregular_channel.py\", line 331, in example_6_channel_comparison\n    trap_channel = IrregularChannel(\n                   ^^^^^^^^^^^^^^^^^\n  File \"/workspace/geometry/irregular_channel.py\", line 92, in __init__\n    raise ValueError(\"桩号必须严格单调递增\")\nValueError: 桩号必须严格单调递增"
+  },
+  "examples/example_compound_channel.py": {
+    "name": "example_compound_channel.py",
+    "error_type": "ValueError",
+    "error_msg": "ValueError: 桩号和高程数量必须一致",
+    "full_stderr": "ile \"/workspace/examples/example_compound_channel.py\", line 496, in <module>\n    main()\n  File \"/workspace/examples/example_compound_channel.py\", line 483, in main\n    example_1_basic_compound_channel()\n  File \"/workspace/examples/example_compound_channel.py\", line 46, in example_1_basic_compound_channel\n    channel = CompoundChannel(\n              ^^^^^^^^^^^^^^^^\n  File \"/workspace/geometry/compound_channel.py\", line 100, in __init__\n    raise ValueError(f\"桩号和高程数量必须一致\")\nValueError: 桩号和高程数量必须一致"
+  },
+  "examples/validate_new_examples.py": {
+    "name": "validate_new_examples.py",
+    "error_type": "",
+    "error_msg": "",
+    "full_stderr": ""
+  },
+  "examples/example_pump_station.py": {
+    "name": "example_pump_station.py",
+    "error_type": "IndentationError",
+    "error_msg": "IndentationError: unexpected indent",
+    "full_stderr": "File \"/workspace/examples/example_pump_station.py\", line 26\n    RiverNetwork, Reach,\nIndentationError: unexpected indent"
+  },
+  "examples/example_advanced_bc.py": {
+    "name": "example_advanced_bc.py",
+    "error_type": "IndexError",
+    "error_msg": "IndexError: invalid index to scalar variable.",
+    "full_stderr": "  - LAKE_AT_REST_TEST_REPORT.md ()\n  - DEVELOPMENT_STANDARDS.md ()\n=\n  solver = GodunvFVMSolver(\nTraceback (most recent call last):\n  File \"/workspace/examples/example_advanced_bc.py\", line 342, in <module>\n    solver1, states1 = example_1_flood_hydrograph()\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/examples/example_advanced_bc.py\", line 101, in example_1_flood_hydrograph\n    t_hr = state['t'] / 3600\n           ~~~~~^^^^^\nIndexError: invalid index to scalar variable."
+  },
+  "examples/example_22_water_hammer/demo_water_hammer.py": {
+    "name": "demo_water_hammer.py",
+    "error_type": "FileNotFoundError",
+    "error_msg": "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_22_water_hammer/water_hammer_analysis.png'",
+    "full_stderr": "tlib/backends/backend_agg.py\", line 430, in _print_pil\n    mpl.image.imsave(\n  File \"/home/ubuntu/.local/lib/python3.12/site-packages/matplotlib/image.py\", line 1657, in imsave\n    image.save(fname, **pil_kwargs)\n  File \"/home/ubuntu/.local/lib/python3.12/site-packages/PIL/Image.py\", line 2566, in save\n    fp = builtins.open(filename, \"w+b\")\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'examples/example_22_water_hammer/water_hammer_analysis.png'"
+  },
+  "examples/example_16_weirs_application/weirs_irrigation_system.py": {
+    "name": "weirs_irrigation_system.py",
+    "error_type": "TypeError",
+    "error_msg": "TypeError: HydrostaticCanalSolver.solve_steady_state() missing 1 required positional argument: 'h_downstream'",
+    "full_stderr": "ceback (most recent call last):\n  File \"/workspace/examples/example_16_weirs_application/weirs_irrigation_system.py\", line 444, in <module>\n    run_irrigation_system_simulation()\n  File \"/workspace/examples/example_16_weirs_application/weirs_irrigation_system.py\", line 150, in run_irrigation_system_simulation\n    result = solver.solve_steady_state(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: HydrostaticCanalSolver.solve_steady_state() missing 1 required positional argument: 'h_downstream'"
+  },
+  "examples/example_structures/run_spillway.py": {
+    "name": "run_spillway.py",
+    "error_type": "ValueError",
+    "error_msg": "ValueError: operands could not be broadcast together with shapes (101,100) (101,)",
+    "full_stderr": " call last):\n  File \"/workspace/modeling/universal_modeler.py\", line 1090, in run\n    self.generate_outputs()\n  File \"/workspace/modeling/universal_modeler.py\", line 896, in generate_outputs\n    fig1 = viz.plot_longitudinal_profile(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/utils/visualization_templates.py\", line 87, in plot_longitudinal_profile\n    z_surface = z_bed + h\n                ~~~~~~^~~\nValueError: operands could not be broadcast together with shapes (101,100) (101,)"
+  },
+  "examples/example_gate_pump_cascade/test_all_scenarios_quick.py": {
+    "name": "test_all_scenarios_quick.py",
+    "error_type": "FileNotFoundError",
+    "error_msg": "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_gate_pump_cascade/enhanced_scenario_test.py'",
+    "full_stderr": "Traceback (most recent call last):\n  File \"/workspace/examples/example_gate_pump_cascade/test_all_scenarios_quick.py\", line 25, in <module>\n    exec(open('examples/example_gate_pump_cascade/enhanced_scenario_test.py', encoding='utf-8').read())\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'examples/example_gate_pump_cascade/enhanced_scenario_test.py'"
+  },
+  "examples/example_unsteady/run_unsteady_flow.py": {
+    "name": "run_unsteady_flow.py",
+    "error_type": "ValueError",
+    "error_msg": "ValueError: operands could not be broadcast together with shapes (101,100) (101,)",
+    "full_stderr": "r.py\", line 915, in generate_outputs\n    self._generate_unsteady_outputs(viz, prefix, canal_params)\n  File \"/workspace/modeling/universal_modeler.py\", line 924, in _generate_unsteady_outputs\n    fig1 = viz.plot_longitudinal_profile(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/utils/visualization_templates.py\", line 87, in plot_longitudinal_profile\n    z_surface = z_bed + h\n                ~~~~~~^~~\nValueError: operands could not be broadcast together with shapes (101,100) (101,)"
+  },
+  "examples/real_world_cases/irrigation_canal_automation.py": {
+    "name": "irrigation_canal_automation.py",
+    "error_type": "TypeError",
+    "error_msg": "TypeError: MPCController.__init__() missing 1 required positional argument: 'config'",
+    "full_stderr": "Traceback (most recent call last):\n  File \"/workspace/examples/real_world_cases/irrigation_canal_automation.py\", line 399, in <module>\n    run_irrigation_canal_control()\n  File \"/workspace/examples/real_world_cases/irrigation_canal_automation.py\", line 226, in run_irrigation_canal_control\n    mpc = MPCController(mpc_config)  # name参数不支持\n          ^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: MPCController.__init__() missing 1 required positional argument: 'config'"
+  },
+  "examples/case_library/benchmark_performance.py": {
+    "name": "benchmark_performance.py",
+    "error_type": "",
+    "error_msg": "",
+    "full_stderr": ""
+  },
+  "examples/pressurized_examples/water_supply_network.py": {
+    "name": "water_supply_network.py",
+    "error_type": "TypeError",
+    "error_msg": "TypeError: 'NoneType' object is not subscriptable",
+    "full_stderr": "les/water_supply_network.py\", line 251, in run_simulation\n    self.control_loop(t, dt)\n  File \"/workspace/examples/pressurized_examples/water_supply_network.py\", line 179, in control_loop\n    P_user = self.solver.get_pressure_at(self.pipe_config.length)  # 末端压力\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/core/pressurized_solver.py\", line 449, in get_pressure_at\n    return self.H[idx]\n           ~~~~~~^^^^^\nTypeError: 'NoneType' object is not subscriptable"
+  },
+  "examples/example_02_pump_system/example_02_pump_system_enhanced.py": {
+    "name": "example_02_pump_system_enhanced.py",
+    "error_type": "NameError",
+    "error_msg": "NameError: name 'plt' is not defined",
+    "full_stderr": "Traceback (most recent call last):\n  File \"/workspace/examples/example_02_pump_system/example_02_pump_system_enhanced.py\", line 312, in <module>\n    run_example()\n  File \"/workspace/examples/example_02_pump_system/example_02_pump_system_enhanced.py\", line 158, in run_example\n    fig, ax = plt.subplots(figsize=(10, 6))\n              ^^^\nNameError: name 'plt' is not defined"
+  },
+  "examples/advanced_examples/mpc_water_level_control.py": {
+    "name": "mpc_water_level_control.py",
+    "error_type": "TypeError",
+    "error_msg": "TypeError: MPCController.__init__() got an unexpected keyword argument 'name'",
+    "full_stderr": "Traceback (most recent call last):\n  File \"/workspace/examples/advanced_examples/mpc_water_level_control.py\", line 406, in <module>\n    compare_mpc_vs_pid()\n  File \"/workspace/examples/advanced_examples/mpc_water_level_control.py\", line 139, in compare_mpc_vs_pid\n    mpc = MPCController(mpc_config, name=\"Water Level MPC\")\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: MPCController.__init__() got an unexpected keyword argument 'name'"
+  },
+  "examples/advanced_examples/integrated_smart_water_system.py": {
+    "name": "integrated_smart_water_system.py",
+    "error_type": "NameError",
+    "error_msg": "NameError: name 'gpd' is not defined",
+    "full_stderr": "xamples/integrated_smart_water_system.py\", line 50, in <module>\n    from integration.gis_adapter import (\n  File \"/workspace/integration/gis_adapter.py\", line 66, in <module>\n    class GISAdapter:\n  File \"/workspace/integration/gis_adapter.py\", line 86, in GISAdapter\n    def load_shapefile(self, shapefile_path: str, layer_name: Optional[str] = None) -> gpd.GeoDataFrame:\n                                                                                       ^^^\nNameError: name 'gpd' is not defined"
+  },
+  "examples/integration_examples/gis_water_network.py": {
+    "name": "gis_water_network.py",
+    "error_type": "NameError",
+    "error_msg": "NameError: name 'gpd' is not defined",
+    "full_stderr": "ntegration_examples/gis_water_network.py\", line 25, in <module>\n    from integration.gis_adapter import (\n  File \"/workspace/integration/gis_adapter.py\", line 66, in <module>\n    class GISAdapter:\n  File \"/workspace/integration/gis_adapter.py\", line 86, in GISAdapter\n    def load_shapefile(self, shapefile_path: str, layer_name: Optional[str] = None) -> gpd.GeoDataFrame:\n                                                                                       ^^^\nNameError: name 'gpd' is not defined"
+  },
+  "examples/example_simple_canal/run_simple_canal.py": {
+    "name": "run_simple_canal.py",
+    "error_type": "ValueError",
+    "error_msg": "ValueError: operands could not be broadcast together with shapes (101,100) (101,)",
+    "full_stderr": " call last):\n  File \"/workspace/modeling/universal_modeler.py\", line 1090, in run\n    self.generate_outputs()\n  File \"/workspace/modeling/universal_modeler.py\", line 896, in generate_outputs\n    fig1 = viz.plot_longitudinal_profile(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/utils/visualization_templates.py\", line 87, in plot_longitudinal_profile\n    z_surface = z_bed + h\n                ~~~~~~^~~\nValueError: operands could not be broadcast together with shapes (101,100) (101,)"
+  },
+  "examples/config_driven/simulate.py": {
+    "name": "simulate.py",
+    "error_type": "",
+    "error_msg": "",
+    "full_stderr": "用法: python simulate.py config.json"
+  },
+  "examples/example_control/run_pid_control.py": {
+    "name": "run_pid_control.py",
+    "error_type": "TIMEOUT",
+    "error_msg": "Script timed out",
+    "full_stderr": ""
+  },
+  "examples/example_control/run_mpc_control.py": {
+    "name": "run_mpc_control.py",
+    "error_type": "ValueError",
+    "error_msg": "ValueError: operands could not be broadcast together with shapes (101,100) (101,)",
+    "full_stderr": "er.py\", line 911, in generate_outputs\n    self._generate_control_outputs(viz, prefix, canal_params)\n  File \"/workspace/modeling/universal_modeler.py\", line 1048, in _generate_control_outputs\n    fig2 = viz.plot_longitudinal_profile(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/utils/visualization_templates.py\", line 87, in plot_longitudinal_profile\n    z_surface = z_bed + h\n                ~~~~~~^~~\nValueError: operands could not be broadcast together with shapes (101,100) (101,)"
+  },
+  "examples/example_24_multi_objective_optimization/demo_multi_objective.py": {
+    "name": "demo_multi_objective.py",
+    "error_type": "FileNotFoundError",
+    "error_msg": "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_24_multi_objective_optimization/multi_objective_optimization.png'",
+    "full_stderr": "gg.py\", line 430, in _print_pil\n    mpl.image.imsave(\n  File \"/home/ubuntu/.local/lib/python3.12/site-packages/matplotlib/image.py\", line 1657, in imsave\n    image.save(fname, **pil_kwargs)\n  File \"/home/ubuntu/.local/lib/python3.12/site-packages/PIL/Image.py\", line 2566, in save\n    fp = builtins.open(filename, \"w+b\")\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'examples/example_24_multi_objective_optimization/multi_objective_optimization.png'"
+  },
+  "examples/example_23_control_comparison/demo_control_comparison.py": {
+    "name": "demo_control_comparison.py",
+    "error_type": "FileNotFoundError",
+    "error_msg": "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_23_control_comparison/control_comparison.png'",
+    "full_stderr": "b/backends/backend_agg.py\", line 430, in _print_pil\n    mpl.image.imsave(\n  File \"/home/ubuntu/.local/lib/python3.12/site-packages/matplotlib/image.py\", line 1657, in imsave\n    image.save(fname, **pil_kwargs)\n  File \"/home/ubuntu/.local/lib/python3.12/site-packages/PIL/Image.py\", line 2566, in save\n    fp = builtins.open(filename, \"w+b\")\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'examples/example_23_control_comparison/control_comparison.png'"
+  }
+}
