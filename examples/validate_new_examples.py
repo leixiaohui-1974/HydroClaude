@@ -1,3 +1,7 @@
+print("="*80)
+print("验证新示例脚本")
+print("="*80)
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
