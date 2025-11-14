@@ -29,6 +29,7 @@ from network.topology import (
 )
 from solvers.godunov_fvm_solver import GodunvFVMSolver
 from network.pump_station import create_pump_station
+from network.solver import NetworkSolver
 
 # 创建缺失的边界函数
 def create_inflow_boundary(name, Q, elevation):
@@ -63,9 +64,9 @@ def create_solver(length, width, Q_init, slope=0.001):
     # GodunvFVMSolver的API已更改，直接设置状态
     solver.h = h.copy()
     solver.Q = Q.copy()
-    # 设置边界条件
-    solver.upstream_bc = {'type': 'Q', 'value': Q_init}
-    solver.downstream_bc = {'type': 'h', 'value': h_init}
+    # 设置边界条件（使用bc_left和bc_right）
+    solver.bc_left = {'type': 'Q', 'value': Q_init}
+    solver.bc_right = {'type': 'h', 'value': h_init}
 
     return solver
 
