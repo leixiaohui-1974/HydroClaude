@@ -1,0 +1,110 @@
+{
+  "complex": [
+    {
+      "path": "examples/example_compound_channel.py",
+      "name": "example_compound_channel.py",
+      "complexity": "complex",
+      "reason": "KeyError（底层库问题）"
+    },
+    {
+      "path": "examples/validate_new_examples.py",
+      "name": "validate_new_examples.py",
+      "complexity": "complex",
+      "reason": "无错误输出或未知问题"
+    },
+    {
+      "path": "examples/example_unsteady/run_unsteady_flow.py",
+      "name": "run_unsteady_flow.py",
+      "complexity": "complex",
+      "reason": "Timeout（可能是无限循环）"
+    },
+    {
+      "path": "examples/case_library/benchmark_performance.py",
+      "name": "benchmark_performance.py",
+      "complexity": "complex",
+      "reason": "Timeout（可能是无限循环）"
+    },
+    {
+      "path": "examples/example_control/run_pid_control.py",
+      "name": "run_pid_control.py",
+      "complexity": "complex",
+      "reason": "Timeout（可能是无限循环）"
+    }
+  ],
+  "simple": [
+    {
+      "path": "examples/example_gate_pump_cascade/test_all_scenarios_quick.py",
+      "name": "test_all_scenarios_quick.py",
+      "complexity": "simple",
+      "reason": "FileNotFoundError（输出目录）"
+    },
+    {
+      "path": "examples/example_24_multi_objective_optimization/demo_multi_objective.py",
+      "name": "demo_multi_objective.py",
+      "complexity": "simple",
+      "reason": "FileNotFoundError（输出目录）"
+    },
+    {
+      "path": "examples/example_23_control_comparison/demo_control_comparison.py",
+      "name": "demo_control_comparison.py",
+      "complexity": "simple",
+      "reason": "FileNotFoundError（输出目录）"
+    }
+  ],
+  "medium": [
+    {
+      "path": "examples/example_pump_station.py",
+      "name": "example_pump_station.py",
+      "complexity": "medium",
+      "reason": "ImportError: ImportError: cannot import name 'create_inflow_boundary' from 'network.topology' (/workspace/network"
+    },
+    {
+      "path": "examples/example_structures/run_spillway.py",
+      "name": "run_spillway.py",
+      "complexity": "medium",
+      "reason": "ValueError: operands could not be broadcast together with shapes (101,100) (101,"
+    },
+    {
+      "path": "examples/real_world_cases/irrigation_canal_automation.py",
+      "name": "irrigation_canal_automation.py",
+      "complexity": "medium",
+      "reason": "MPC参数问题"
+    },
+    {
+      "path": "examples/advanced_examples/mpc_water_level_control.py",
+      "name": "mpc_water_level_control.py",
+      "complexity": "medium",
+      "reason": "MPC参数问题"
+    },
+    {
+      "path": "examples/advanced_examples/integrated_smart_water_system.py",
+      "name": "integrated_smart_water_system.py",
+      "complexity": "medium",
+      "reason": "AttributeError: 'NoneType' object has no attribute 'GeoDataFrame'"
+    },
+    {
+      "path": "examples/integration_examples/gis_water_network.py",
+      "name": "gis_water_network.py",
+      "complexity": "medium",
+      "reason": "AttributeError: 'NoneType' object has no attribute 'GeoDataFrame'"
+    },
+    {
+      "path": "examples/example_simple_canal/run_simple_canal.py",
+      "name": "run_simple_canal.py",
+      "complexity": "medium",
+      "reason": "ValueError: operands could not be broadcast together with shapes (101,100) (101,"
+    },
+    {
+      "path": "examples/config_driven/simulate.py",
+      "name": "simulate.py",
+      "complexity": "medium",
+      "reason": ""
+    },
+    {
+      "path": "examples/example_control/run_mpc_control.py",
+      "name": "run_mpc_control.py",
+      "complexity": "medium",
+      "reason": "ValueError: operands could not be broadcast together with shapes (101,100) (101,"
+    }
+  ]
+}
