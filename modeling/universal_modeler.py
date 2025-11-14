@@ -893,6 +893,10 @@ class UniversalModeler:
 
             if sim_type == 'steady':
                 # 稳态：纵剖面图
+                # Debug: 打印形状
+                print(f"  Debug: x.shape={self.solver.x.shape}, h.shape={self.solver.h.shape}")
+                print(f"  Debug: S0={self.solver.S0}, canal_length={canal_params['length']}")
+                
                 fig1 = viz.plot_longitudinal_profile(
                     x=self.solver.x,
                     h=self.solver.h,

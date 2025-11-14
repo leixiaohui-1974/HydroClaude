@@ -83,7 +83,17 @@ class VisualizationTemplates:
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=self.DEFAULT_FIGSIZE_MULTI)
 
         # 计算高程 - 修复数组维度
-        z_bed = np.linspace(canal_length * S0, 0, len(x))
+        # 确保x和h都是1维数组
+        x = np.asarray(x).ravel()  # 强制转为1维
+        h = np.asarray(h).ravel()  # 强制转为1维
+        
+        # 确保S0是标量
+        if isinstance(S0, (list, np.ndarray)):
+            S0_scalar = float(np.mean(S0))  # 如果是数组，取平均值
+        else:
+            S0_scalar = float(S0)
+        
+        z_bed = np.linspace(canal_length * S0_scalar, 0, len(x))
         z_surface = z_bed + h
 
         # 子图1: 水面+渠底纵剖面
