@@ -102,15 +102,29 @@ def print_hydraulic_analysis(modeler):
     # 整体流量
     print(f"流量分析:")
     print(f"  平均流量: {result['Q_mean']:.3f} m^3/s")
-    print(f"  流量标准差: {result['Q_std']:.6f} m^3/s")
+    # Q_std可能不存在，安全访问
+    if 'Q_std' in result:
+        print(f"  流量标准差: {result['Q_std']:.6f} m^3/s")
+    elif 'Q' in result:
+        import numpy as np
+        Q_std = np.std(result['Q'])
+        print(f"  流量标准差: {Q_std:.6f} m^3/s")
     print(f"  流量误差: {result['Q_error_percent']:.6f}%")
     print()
 
     # 水深范围
     print(f"水深分析:")
-    print(f"  最小水深: {result['h_min']:.3f} m")
-    print(f"  最大水深: {result['h_max']:.3f} m")
-    print(f"  水深范围: {result['h_max'] - result['h_min']:.3f} m")
+    if 'h_min' in result and 'h_max' in result:
+        print(f"  最小水深: {result['h_min']:.3f} m")
+        print(f"  最大水深: {result['h_max']:.3f} m")
+        print(f"  水深范围: {result['h_max'] - result['h_min']:.3f} m")
+    elif 'h' in result:
+        import numpy as np
+        h_min = np.min(result['h'])
+        h_max = np.max(result['h'])
+        print(f"  最小水深: {h_min:.3f} m")
+        print(f"  最大水深: {h_max:.3f} m")
+        print(f"  水深范围: {h_max - h_min:.3f} m")
     print()
 
     # 各结构物处流态

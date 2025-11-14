@@ -60,11 +60,12 @@ def create_solver(length, width, Q_init, slope=0.001):
     h = np.ones(n_cells) * h_init
     Q = np.ones(n_cells) * Q_init
 
-    solver.set_initial_conditions(
-        h, Q,
-        {'type': 'Q', 'value': Q_init},
-        {'type': 'h', 'value': h_init}
-    )
+    # GodunvFVMSolver的API已更改，直接设置状态
+    solver.h = h.copy()
+    solver.Q = Q.copy()
+    # 设置边界条件
+    solver.upstream_bc = {'type': 'Q', 'value': Q_init}
+    solver.downstream_bc = {'type': 'h', 'value': h_init}
 
     return solver
 
