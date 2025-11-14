@@ -1,0 +1,41 @@
+{
+  "deprecated_api": [],
+  "missing_module": [
+    "benchmark_examples.py",
+    "example_14_adaptive_mpc_enhanced.py"
+  ],
+  "file_not_found": [
+    "case5_irrigation_system.py",
+    "case6_highrise_water_supply.py",
+    "case4_fire_protection_system.py",
+    "case3_industrial_cooling_system.py",
+    "case2_pump_water_hammer.py",
+    "demo_water_hammer.py",
+    "example_06_complete_system.py",
+    "test_all_scenarios_quick.py",
+    "example_05_load_rejection.py"
+  ],
+  "import_error": [
+    "test_weno3_dambreak.py"
+  ],
+  "runtime_error": [
+    "example_internal_structures.py",
+    "example_network_solver.py",
+    "example_network_topology.py",
+    "example_network_validation.py",
+    "case_gate_operation.py",
+    "example_cascade_reservoirs.py",
+    "example_timeseries_bc.py",
+    "example_irregular_channel.py",
+    "phase1_simple_gate_control.py",
+    "example_compound_channel.py",
+    "example_irrigation_network.py",
+    "validate_new_examples.py",
+    "example_pump_station.py",
+    "example_advanced_bc.py",
+    "weirs_irrigation_system.py",
+    "run_spillway.py",
+    "run_unsteady_flow.py"
+  ],
+  "other": []
+}
