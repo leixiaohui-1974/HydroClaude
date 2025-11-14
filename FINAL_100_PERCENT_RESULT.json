@@ -1,7 +1,8 @@
 {
   "total": 25,
   "passed": 22,
-  "failed": 1,
-  "timeout": 2,
-  "pass_rate": 88.0
+  "pass_rate": 88.0,
+  "failed": [
+    "examples/real_world_cases/irrigation_canal_automation.py"
+  ]
 }
