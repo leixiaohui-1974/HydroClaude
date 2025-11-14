@@ -224,7 +224,11 @@ def run_irrigation_canal_control():
         # control_rate_max=0.3  # 不支持的参数
     )
 
-    mpc = MPCController(mpc_config)  # name参数不支持
+    # 注意：MPCController需要IDZ参数，这里用占位符
+    # 创建简单的IDZ参数
+    from control.idz_model import IDZParameters
+    dummy_idz = IDZParameters(K=1.0, tau_z=60.0, tau_d=300.0, theta=0.0)
+    mpc = MPCController(dummy_idz, mpc_config)
     mpc.set_setpoint(target_depth)
 
     # 设置MPC模型（简化）

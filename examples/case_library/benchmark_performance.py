@@ -62,13 +62,25 @@ class PerformanceBenchmark:
         self.output_dir = output_dir or (self.case_dir / 'benchmark_results')
         self.output_dir.mkdir(exist_ok=True)
 
-        self.cases = {
+        all_cases = {
             1: 'case_01_hydropower_plant.py',
             2: 'case_02_water_supply_network.py',
             3: 'case_03_irrigation_canal.py',
             4: 'case_04_urban_drainage.py',
             5: 'case_05_river_network.py'
         }
+        
+        # 只保留存在的案例文件
+        self.cases = {}
+        for case_id, case_file in all_cases.items():
+            if (self.case_dir / case_file).exists():
+                self.cases[case_id] = case_file
+            else:
+                print(f"⚠️  跳过不存在的案例 {case_id}: {case_file}")
+        
+        if not self.cases:
+            print("❌ 没有找到任何可测试的案例文件")
+            sys.exit(1)
 
         self.results: List[BenchmarkResult] = []
 

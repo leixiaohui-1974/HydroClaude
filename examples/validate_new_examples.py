@@ -142,31 +142,31 @@ def main():
             'tests': [
                 {
                     'name': 'Case 1: 灌溉渠道设计',
-                    'command': ['python', 'run.py'],
+                    'command': ['python3', 'run.py'],
                     'cwd': project_root / 'examples/engineering_cases/case_01_irrigation_design',
                     'timeout': 30
                 },
                 {
                     'name': 'Case 2: 防洪应急响应',
-                    'command': ['python', 'run.py'],
+                    'command': ['python3', 'run.py'],
                     'cwd': project_root / 'examples/engineering_cases/case_02_flood_emergency',
                     'timeout': 60
                 },
                 {
                     'name': 'Case 3: 多闸门协同控制',
-                    'command': ['python', 'run.py'],
+                    'command': ['python3', 'run.py'],
                     'cwd': project_root / 'examples/engineering_cases/case_03_multi_gate_control',
                     'timeout': 120
                 },
                 {
                     'name': 'Case 4: 参数在线估计（增广EKF）',
-                    'command': ['python', 'run.py'],
+                    'command': ['python3', 'run.py'],
                     'cwd': project_root / 'examples/engineering_cases/case_04_parameter_calibration',
                     'timeout': 60
                 },
                 {
                     'name': 'Case 5: 水资源优化调度（峰谷电价）',
-                    'command': ['python', 'run.py'],
+                    'command': ['python3', 'run.py'],
                     'cwd': project_root / 'examples/engineering_cases/case_05_water_resource_optimization',
                     'timeout': 45
                 }
@@ -179,14 +179,14 @@ def main():
             'tests': [
                 {
                     'name': 'PID水位控制',
-                    'command': ['python', '-m', 'modeling.universal_modeler',
+                    'command': ['python3', '-m', 'modeling.universal_modeler',
                                'examples/example_control/config_pid_water_level.yaml'],
                     'cwd': project_root,
                     'timeout': 60
                 },
                 {
                     'name': 'MPC水位控制（调优版）',
-                    'command': ['python', '-m', 'modeling.universal_modeler',
+                    'command': ['python3', '-m', 'modeling.universal_modeler',
                                'examples/example_control/config_mpc_tuned.yaml'],
                     'cwd': project_root,
                     'timeout': 60
@@ -200,19 +200,19 @@ def main():
             'tests': [
                 {
                     'name': 'Strategy 1: PID扰动响应',
-                    'command': ['python', 'run_01_pid_disturbance.py'],
+                    'command': ['python3', 'run_01_pid_disturbance.py'],
                     'cwd': project_root / 'examples/example_gate_pump_cascade/control_strategies',
                     'timeout': 60
                 },
                 {
                     'name': 'Strategy 2: MPC预测控制',
-                    'command': ['python', 'run_02_mpc_predictive.py'],
+                    'command': ['python3', 'run_02_mpc_predictive.py'],
                     'cwd': project_root / 'examples/example_gate_pump_cascade/control_strategies',
                     'timeout': 60
                 },
                 {
                     'name': 'Strategy 3: 分层控制',
-                    'command': ['python', 'run_03_hierarchical.py'],
+                    'command': ['python3', 'run_03_hierarchical.py'],
                     'cwd': project_root / 'examples/example_gate_pump_cascade/control_strategies',
                     'timeout': 60
                 }
@@ -225,7 +225,7 @@ def main():
             'tests': [
                 {
                     'name': '7种结构类型综合展示',
-                    'command': ['python', 'run.py'],
+                    'command': ['python3', 'run.py'],
                     'cwd': project_root / 'examples/example_structure_showcase',
                     'timeout': 30
                 }
@@ -238,21 +238,21 @@ def main():
             'tests': [
                 {
                     'name': 'Sinusoidal（正弦波动）',
-                    'command': ['python', '-m', 'modeling.universal_modeler',
+                    'command': ['python3', '-m', 'modeling.universal_modeler',
                                'examples/example_time_varying_bc/config_sinusoidal.yaml'],
                     'cwd': project_root,
                     'timeout': 60
                 },
                 {
                     'name': 'Step（阶跃变化）',
-                    'command': ['python', '-m', 'modeling.universal_modeler',
+                    'command': ['python3', '-m', 'modeling.universal_modeler',
                                'examples/example_time_varying_bc/config_step.yaml'],
                     'cwd': project_root,
                     'timeout': 60
                 },
                 {
                     'name': 'Linear（线性变化）',
-                    'command': ['python', '-m', 'modeling.universal_modeler',
+                    'command': ['python3', '-m', 'modeling.universal_modeler',
                                'examples/example_time_varying_bc/config_linear.yaml'],
                     'cwd': project_root,
                     'timeout': 60
@@ -266,7 +266,7 @@ def main():
             'tests': [
                 {
                     'name': 'File（CSV文件读取）',
-                    'command': ['python', 'run.py'],
+                    'command': ['python3', 'run.py'],
                     'cwd': project_root / 'examples/example_file_boundary_condition',
                     'timeout': 30
                 }

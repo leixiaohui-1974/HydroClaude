@@ -22,7 +22,7 @@ import os
 
 # ========== 路径设置 ==========
 script_path = os.path.abspath(__file__)
-project_root = os.path.dirname(os.path.dirname(script_path))
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(script_path)))
 sys.path.insert(0, project_root)
 
 
@@ -136,7 +136,10 @@ def compare_mpc_vs_pid():
     )
 
     # 创建控制器
-    mpc = MPCController(mpc_config)
+    # MPCController需要IDZ参数
+    from control.idz_model import IDZParameters
+    idz_params = IDZParameters(K=1.0, tau_z=60.0, tau_d=300.0, theta=0.0)
+    mpc = MPCController(idz_params, mpc_config)
     pid = PIDController(pid_config)
 
     # 设置目标
