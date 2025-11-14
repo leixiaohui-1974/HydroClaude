@@ -1,0 +1,838 @@
+{
+  "timestamp": "2025-11-14T00:35:03.920946",
+  "total": 207,
+  "passed": 101,
+  "failed": 71,
+  "timeout": 16,
+  "elapsed_seconds": 2055.3461701869965,
+  "results": {
+    "passed": [
+      "examples/example_side_weir.py",
+      "examples/spring_ice_breakup.py",
+      "examples/case5_irrigation_system.py",
+      "examples/example_complete_workflow.py",
+      "examples/summer_eutrophication.py",
+      "examples/case_flood_control.py",
+      "examples/example_culvert_structure.py",
+      "examples/case_flood_control_steady.py",
+      "examples/case6_highrise_water_supply.py",
+      "examples/case8_network_optimization.py",
+      "examples/example_bridge_structure.py",
+      "examples/example_network_nodes.py",
+      "examples/case4_fire_protection_system.py",
+      "examples/case_parameter_sensitivity.py",
+      "examples/phase1_flood_routing.py",
+      "examples/phase1_steady_scenarios.py",
+      "examples/phase1_extended_scenarios.py",
+      "examples/example_trapezoidal_channel.py",
+      "examples/climate_change_assessment.py",
+      "examples/case_irrigation_scheduling.py",
+      "examples/case02_flood_risk_assessment.py",
+      "examples/calibration_example.py",
+      "examples/example_rating_curve_bc.py",
+      "examples/case1_urban_water_supply.py",
+      "examples/phase1_mega_scenarios.py",
+      "examples/case7_regional_water_supply.py",
+      "examples/winter_river_simulation.py",
+      "examples/case3_industrial_cooling_system.py",
+      "examples/case2_pump_water_hammer.py",
+      "examples/benchmark_performance.py",
+      "examples/case_channel_renovation.py",
+      "examples/example_22_water_hammer/demo_water_hammer.py",
+      "examples/example_06_complete_hydropower_system/example_06_complete_system.py",
+      "examples/example_gate_pump_cascade/diagnose_negative_flow.py",
+      "examples/example_file_boundary_condition/run.py",
+      "examples/example_05_transient_analysis/example_05_load_rejection.py",
+      "examples/real_world_cases/long_distance_water_transfer.py",
+      "examples/case_library/case_02_water_supply_network.py",
+      "examples/example_07_multi_unit_agc/example_07_multi_unit_agc.py",
+      "examples/example_17_reservoir_basic/example_17_reservoir_with_anim.py",
+      "examples/example_17_reservoir_basic/demo_reservoir.py",
+      "examples/example_08_load_acceptance/example_08_load_acceptance.py",
+      "examples/advanced_examples/swmm_smart_pump_control.py",
+      "examples/advanced_examples/constrained_mpc_canal_demo.py",
+      "examples/advanced_examples/run_idz_benchmark.py",
+      "examples/advanced_examples/water_quality_chlorine_decay.py",
+      "examples/advanced_examples/simple_state_estimation_demo.py",
+      "examples/advanced_examples/diagnose_hydraulic_model.py",
+      "examples/advanced_examples/state_estimation_canal_control.py",
+      "examples/advanced_examples/diagnose_controller_mismatch.py",
+      "examples/advanced_examples/diagnose_simulator.py",
+      "examples/advanced_examples/idz_saint_venant_integration.py",
+      "examples/advanced_examples/identify_true_idz_params.py",
+      "examples/advanced_examples/benchmark_controllers.py",
+      "examples/advanced_examples/epanet_water_distribution_system.py",
+      "examples/advanced_examples/realtime_scada_monitoring.py",
+      "examples/advanced_examples/multi_canal_benchmark_improved.py",
+      "examples/advanced_examples/verify_idz_steady_state.py",
+      "examples/advanced_examples/linearized_canal_simulator.py",
+      "examples/advanced_examples/test_idz_identification_negative_gain.py",
+      "examples/advanced_examples/robust_control_demo.py",
+      "examples/integration_examples/swmm_urban_drainage.py",
+      "examples/example_04_hydropower_system/example_04_hydropower_plant.py",
+      "examples/example_02_spillway_cascade/example_02_spillway_system.py",
+      "examples/example_02_spillway_cascade/example_02_spillway_simple.py",
+      "examples/example_10_series_network/example_10_series_network_with_anim.py",
+      "examples/example_20_urban_water_supply/demo_urban_supply.py",
+      "examples/example_24_multi_objective_optimization/demo_multi_objective.py",
+      "examples/example_19_water_transfer/demo_water_transfer.py",
+      "examples/example_23_control_comparison/demo_control_comparison.py",
+      "examples/example_03_turbine_demo/example_03_turbine_comparison.py",
+      "examples/example_03_turbine_demo/example_03_turbine_with_anim.py",
+      "examples/example_21_irrigation_optimization/demo_irrigation.py",
+      "examples/example_14_adaptive_mpc/code/example_14_adaptive_mpc.py",
+      "examples/example_11_tree_network/code/example_11_tree_network.py",
+      "examples/case_library/case_01_dam_break/dam_break_comparison.py",
+      "examples/case_library/case_02_flood_routing/flood_routing_simulation.py",
+      "examples/example_02_pump_system/code/example_02_pump_system.py",
+      "examples/example_13_adaptive_timescale/code/example_13_adaptive_timescale.py",
+      "examples/example_03_complex_network/code/example_03_complex_network.py",
+      "examples/example_09_pipe_rk4/code/example_09_pipe_rk4.py",
+      "examples/example_10_series_network/code/example_10_series_network.py",
+      "examples/example_04_moc_boundary/code/example_04_moc_boundary.py",
+      "examples/engineering_cases/case_03_multi_gate_control/run.py",
+      "examples/example_15_rls_identification/code/example_15_rls_identification.py",
+      "examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2.py",
+      "examples/example_01_canal_flow/scripts/12_advanced_optimized_v2_refactored.py",
+      "examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2_refactored.py",
+      "examples/example_01_canal_flow/scripts/04_boundary_conditions_v2.py",
+      "examples/example_01_canal_flow/scripts/01_basic_v2.py",
+      "examples/example_01_canal_flow/scripts/12_advanced_optimized_v2.py",
+      "examples/example_01_canal_flow/scripts/04_boundary_conditions_v2_refactored.py",
+      "examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py",
+      "examples/example_01_canal_flow/scripts/11_advanced_structures.py",
+      "examples/example_01_canal_flow/scripts/08_optimized_steady_solving_v2_refactored.py",
+      "examples/example_01_canal_flow/scripts/03_idz_identification.py",
+      "examples/example_01_canal_flow/scripts/08_optimized_steady_solving_v2.py",
+      "examples/example_01_canal_flow/scripts/02_methods_comparison.py",
+      "examples/example_01_canal_flow/scripts/05_step_response.py",
+      "examples/example_01_canal_flow/scripts/06_animation.py",
+      "examples/example_01_canal_flow/tests/test_script10_stability.py"
+    ],
+    "failed": [],
+    "timeout": [
+      "examples/example_structure_showcase/run.py",
+      "examples/example_gate_pump_cascade/run_scenario_05.py",
+      "examples/example_gate_pump_cascade/test_fix.py",
+      "examples/example_gate_pump_cascade/comprehensive_scenario_test.py",
+      "examples/example_gate_pump_cascade/quick_scenario_test.py",
+      "examples/example_gate_pump_cascade/standard_multi_scenario_test.py",
+      "examples/example_gate_pump_cascade/run_scenario_04.py",
+      "examples/example_gate_pump_cascade/run_scenario_02.py",
+      "examples/example_gate_pump_cascade/enhanced_scenario_test.py",
+      "examples/example_gate_pump_cascade/gate_pump_cascade_advanced.py",
+      "examples/example_gate_pump_cascade/run_scenario.py",
+      "examples/example_gate_pump_cascade/temp_scenario.py",
+      "examples/example_gate_pump_cascade/run_scenario_03.py",
+      "examples/example_gate_pump_cascade/run_scenario_01.py",
+      "examples/example_gate_pump_cascade/test_fixed_solver.py",
+      "examples/example_gate_pump_cascade/test_all_scenarios_quick.py"
+    ],
+    "import_error": [
+      {
+        "path": "examples/benchmark_examples.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/benchmark_examples.py\", line 22, in <module>",
+          "    import psutil",
+          "ModuleNotFoundError: No module named 'psutil'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/test_weno3_dambreak.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/test_weno3_dambreak.py\", line 28, in <module>",
+          "    from solvers.godunov_fvm_weno3_v2 import GodunovFVMWENO3V2",
+          "ImportError: cannot import name 'GodunovFVMWENO3V2' from 'solvers.godunov_fvm_weno3_v2' (/workspace/solvers/godunov_fvm_weno3_v2.py). Did you mean: 'GodunvFVMWENO3V2'?",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py",
+        "error": [
+          "    from utils.visualization import SimulationVisualizer, ReportGenerator",
+          "  File \"/workspace/utils/visualization.py\", line 13, in <module>",
+          "    import networkx as nx",
+          "ModuleNotFoundError: No module named 'networkx'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/real_world_cases/urban_drainage_pump_station.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/real_world_cases/urban_drainage_pump_station.py\", line 38, in <module>",
+          "    from control.mpc_controller import MPCController, MPCConfig",
+          "ModuleNotFoundError: No module named 'control'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/real_world_cases/irrigation_canal_automation.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/real_world_cases/irrigation_canal_automation.py\", line 35, in <module>",
+          "    from control.mpc_controller import MPCController, MPCConfig",
+          "ModuleNotFoundError: No module named 'control'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/case_library/benchmark_performance.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/case_library/benchmark_performance.py\", line 23, in <module>",
+          "    import psutil",
+          "ModuleNotFoundError: No module named 'psutil'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/pressurized_examples/water_supply_network.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/pressurized_examples/water_supply_network.py\", line 35, in <module>",
+          "    from core.pressurized_solver import PressurizedFlowSolver, PipelineConfig",
+          "ModuleNotFoundError: No module named 'core'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_08_load_acceptance/example_08_load_acceptance_with_anim.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/example_08_load_acceptance/example_08_load_acceptance_with_anim.py\", line 30, in <module>",
+          "    from animation_utils import AnimationGenerator",
+          "ModuleNotFoundError: No module named 'animation_utils'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_02_pump_system/example_02_pump_system_with_anim.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/example_02_pump_system/example_02_pump_system_with_anim.py\", line 27, in <module>",
+          "    from physics.tank import Tank",
+          "ModuleNotFoundError: No module named 'physics'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/advanced_examples/debug_mpc_observer.py",
+        "error": [
+          "    from control.mpc_controller import MPCController, MPCConfig",
+          "  File \"/workspace/control/mpc_controller.py\", line 18, in <module>",
+          "    import cvxpy as cp",
+          "ModuleNotFoundError: No module named 'cvxpy'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/advanced_examples/multi_objective_reservoir_scheduling.py",
+        "error": [
+          "    from .utils import (",
+          "  File \"/workspace/optimization/utils.py\", line 9, in <module>",
+          "    from pyomo.environ import SolverFactory, value",
+          "ModuleNotFoundError: No module named 'pyomo'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/advanced_examples/diagnose_mpc_performance.py",
+        "error": [
+          "    from control.first_order_mpc import FirstOrderMPC, FirstOrderMPCConfig",
+          "  File \"/workspace/control/first_order_mpc.py\", line 12, in <module>",
+          "    import cvxpy as cp",
+          "ModuleNotFoundError: No module named 'cvxpy'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/advanced_examples/mpc_nonlinear_test.py",
+        "error": [
+          "    from control.first_order_mpc import FirstOrderMPC, FirstOrderMPCConfig",
+          "  File \"/workspace/control/first_order_mpc.py\", line 12, in <module>",
+          "    import cvxpy as cp",
+          "ModuleNotFoundError: No module named 'cvxpy'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/advanced_examples/test_mpc_no_observer.py",
+        "error": [
+          "    from control.mpc_controller import MPCController, MPCConfig",
+          "  File \"/workspace/control/mpc_controller.py\", line 18, in <module>",
+          "    import cvxpy as cp",
+          "ModuleNotFoundError: No module named 'cvxpy'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/advanced_examples/test_first_order_mpc.py",
+        "error": [
+          "    from control.first_order_mpc import FirstOrderMPC, FirstOrderMPCConfig",
+          "  File \"/workspace/control/first_order_mpc.py\", line 12, in <module>",
+          "    import cvxpy as cp",
+          "ModuleNotFoundError: No module named 'cvxpy'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/advanced_examples/run_mpc_benchmark.py",
+        "error": [
+          "    from control.mpc_controller import MPCController, MPCConfig",
+          "  File \"/workspace/control/mpc_controller.py\", line 18, in <module>",
+          "    import cvxpy as cp",
+          "ModuleNotFoundError: No module named 'cvxpy'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/advanced_examples/mpc_robustness_analysis.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/advanced_examples/mpc_robustness_analysis.py\", line 26, in <module>",
+          "    import cvxpy as cp",
+          "ModuleNotFoundError: No module named 'cvxpy'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/advanced_examples/mpc_water_level_control.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/advanced_examples/mpc_water_level_control.py\", line 33, in <module>",
+          "    from control.mpc_controller import MPCController, MPCConfig, AdaptiveMPCController",
+          "ModuleNotFoundError: No module named 'control'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/advanced_examples/test_idz_mpc_performance.py",
+        "error": [
+          "    from control.first_order_mpc import FirstOrderMPC, FirstOrderMPCConfig",
+          "  File \"/workspace/control/first_order_mpc.py\", line 12, in <module>",
+          "    import cvxpy as cp",
+          "ModuleNotFoundError: No module named 'cvxpy'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/advanced_examples/complete_benchmark_suite.py",
+        "error": [
+          "    from control.first_order_mpc import FirstOrderMPC, FirstOrderMPCConfig",
+          "  File \"/workspace/control/first_order_mpc.py\", line 12, in <module>",
+          "    import cvxpy as cp",
+          "ModuleNotFoundError: No module named 'cvxpy'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/advanced_examples/adaptive_first_order_mpc_test.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/advanced_examples/adaptive_first_order_mpc_test.py\", line 24, in <module>",
+          "    import cvxpy as cp",
+          "ModuleNotFoundError: No module named 'cvxpy'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/advanced_examples/test_mpc_direction.py",
+        "error": [
+          "    from control.mpc_controller import MPCController, MPCConfig",
+          "  File \"/workspace/control/mpc_controller.py\", line 18, in <module>",
+          "    import cvxpy as cp",
+          "ModuleNotFoundError: No module named 'cvxpy'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/advanced_examples/integrated_smart_water_system.py",
+        "error": [
+          "    from .utils import (",
+          "  File \"/workspace/optimization/utils.py\", line 9, in <module>",
+          "    from pyomo.environ import SolverFactory, value",
+          "ModuleNotFoundError: No module named 'pyomo'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/advanced_examples/run_first_order_mpc_benchmark.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/advanced_examples/run_first_order_mpc_benchmark.py\", line 22, in <module>",
+          "    import cvxpy as cp",
+          "ModuleNotFoundError: No module named 'cvxpy'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/advanced_examples/gain_scheduled_mpc.py",
+        "error": [
+          "    from control.first_order_mpc import FirstOrderMPC, FirstOrderMPCConfig",
+          "  File \"/workspace/control/first_order_mpc.py\", line 12, in <module>",
+          "    import cvxpy as cp",
+          "ModuleNotFoundError: No module named 'cvxpy'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_13_adaptive_timescale/example_13_adaptive_timescale_enhanced.py",
+        "error": [
+          "    from utils.visualization import SimulationVisualizer, ReportGenerator",
+          "  File \"/workspace/utils/visualization.py\", line 13, in <module>",
+          "    import networkx as nx",
+          "ModuleNotFoundError: No module named 'networkx'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_09_pipe_rk4/example_09_pipe_rk4_enhanced.py",
+        "error": [
+          "    from utils.visualization import SimulationVisualizer, ReportGenerator",
+          "  File \"/workspace/utils/visualization.py\", line 13, in <module>",
+          "    import networkx as nx",
+          "ModuleNotFoundError: No module named 'networkx'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_15_rls_identification/example_15_rls_identification_enhanced.py",
+        "error": [
+          "    from utils.visualization import SimulationVisualizer, ReportGenerator",
+          "  File \"/workspace/utils/visualization.py\", line 13, in <module>",
+          "    import networkx as nx",
+          "ModuleNotFoundError: No module named 'networkx'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_12_loop_network/code/example_12_loop_network.py",
+        "error": [
+          "    from utils.visualization import visualize_network",
+          "  File \"/workspace/utils/visualization.py\", line 13, in <module>",
+          "    import networkx as nx",
+          "ModuleNotFoundError: No module named 'networkx'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_07_fault_test/code/example_07_fault_test.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/example_07_fault_test/code/example_07_fault_test.py\", line 7, in <module>",
+          "    from disturbance.disturbance_generator import DisturbanceGenerator",
+          "ImportError: cannot import name 'DisturbanceGenerator' from 'disturbance.disturbance_generator' (/workspace/disturbance/disturbance_generator.py)",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/test_anderson_tuning.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/example_01_canal_flow/tests/test_anderson_tuning.py\", line 21, in <module>",
+          "    from structures.sluice_gate import SluiceGate",
+          "ModuleNotFoundError: No module named 'structures'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/test_newton_fixed.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/example_01_canal_flow/tests/test_newton_fixed.py\", line 18, in <module>",
+          "    from physics.steady_saint_venant import SteadySaintVenantSystem",
+          "ModuleNotFoundError: No module named 'physics'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/test_anderson_simple.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/example_01_canal_flow/tests/test_anderson_simple.py\", line 17, in <module>",
+          "    from solvers.anderson_acceleration import AndersonAcceleration",
+          "ModuleNotFoundError: No module named 'solvers'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/analyze_jacobian.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/example_01_canal_flow/tests/analyze_jacobian.py\", line 17, in <module>",
+          "    from physics.steady_saint_venant import SteadySaintVenantSystem",
+          "ModuleNotFoundError: No module named 'physics'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/test_anderson_vs_aitken.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/example_01_canal_flow/tests/test_anderson_vs_aitken.py\", line 25, in <module>",
+          "    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as CanalSolver",
+          "ModuleNotFoundError: No module named 'solvers'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/test_performance_comparison.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/example_01_canal_flow/tests/test_performance_comparison.py\", line 30, in <module>",
+          "    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver",
+          "ModuleNotFoundError: No module named 'solvers'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/test_jacobian_rank.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/example_01_canal_flow/tests/test_jacobian_rank.py\", line 17, in <module>",
+          "    from physics.steady_saint_venant import SteadySaintVenantSystem",
+          "ModuleNotFoundError: No module named 'physics'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/test_convergence_visual.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/example_01_canal_flow/tests/test_convergence_visual.py\", line 11, in <module>",
+          "    from example_01_canal_stability_test import ImprovedCanalSolver",
+          "ModuleNotFoundError: No module named 'example_01_canal_stability_test'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/test_adaptive_relax.py",
+        "error": [
+          "Traceback (most recent call last):",
+          "  File \"/workspace/examples/example_01_canal_flow/tests/test_adaptive_relax.py\", line 24, in <module>",
+          "    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver",
+          "ModuleNotFoundError: No module named 'solvers'",
+          ""
+        ]
+      }
+    ],
+    "runtime_error": [
+      {
+        "path": "examples/example_internal_structures.py",
+        "error": [
+          "  File \"/workspace/examples/example_internal_structures.py\", line 48, in create_solver",
+          "    solver.set_initial_conditions(",
+          "    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "AttributeError: 'GodunvFVMSolver' object has no attribute 'set_initial_conditions'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_network_solver.py",
+        "error": [
+          "  File \"/workspace/examples/example_network_solver.py\", line 45, in create_solver",
+          "    solver.set_initial_conditions(",
+          "    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "AttributeError: 'GodunvFVMSolver' object has no attribute 'set_initial_conditions'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_network_topology.py",
+        "error": [
+          "  File \"/workspace/examples/example_network_topology.py\", line 86, in example_1_simple_serial",
+          "    solver1.set_initial_conditions(h_init1, Q_init1, bc_left1, bc_right1)",
+          "    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "AttributeError: 'GodunvFVMSolver' object has no attribute 'set_initial_conditions'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_network_validation.py",
+        "error": [
+          "  File \"/workspace/examples/example_network_validation.py\", line 44, in create_test_solver",
+          "    solver.set_initial_conditions(",
+          "    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "AttributeError: 'GodunvFVMSolver' object has no attribute 'set_initial_conditions'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/case_gate_operation.py",
+        "error": [
+          "  File \"/workspace/examples/case_gate_operation.py\", line 136",
+          "    solver.h = h_init.copy()",
+          "                            ^",
+          "IndentationError: unindent does not match any outer indentation level",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_cascade_reservoirs.py",
+        "error": [
+          "  File \"/workspace/examples/example_cascade_reservoirs.py\", line 88, in build_cascade_system",
+          "    reservoir1 = ReservoirNode(",
+          "                 ^^^^^^^^^^^^^^",
+          "TypeError: ReservoirNode.__init__() got an unexpected keyword argument 'storage_curve_type'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_timeseries_bc.py",
+        "error": [
+          "                   ^^^^^^^^^^^^^^^^^^^",
+          "  File \"/workspace/boundary/timeseries_bc.py\", line 100, in __init__",
+          "    raise ValueError(\"Time series cannot have duplicate time points\")",
+          "ValueError: Time series cannot have duplicate time points",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_irregular_channel.py",
+        "error": [
+          "                   ^^^^^^^^^^^^^^^^^",
+          "  File \"/workspace/geometry/irregular_channel.py\", line 92, in __init__",
+          "    raise ValueError(\"桩号必须严格单调递增\")",
+          "ValueError: 桩号必须严格单调递增",
+          ""
+        ]
+      },
+      {
+        "path": "examples/phase1_simple_gate_control.py",
+        "error": [
+          "  File \"/workspace/examples/phase1_simple_gate_control.py\", line 72, in <module>",
+          "    solver1.initialize_steady_state(h_init, Q_init, bc_left, bc_right)",
+          "    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "AttributeError: 'GodunvFVMSolver' object has no attribute 'initialize_steady_state'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_compound_channel.py",
+        "error": [
+          "              ^^^^^^^^^^^^^^^^",
+          "  File \"/workspace/geometry/compound_channel.py\", line 106, in __init__",
+          "    raise ValueError(\"桩号必须严格单调递增\")",
+          "ValueError: 桩号必须严格单调递增",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_irrigation_network.py",
+        "error": [
+          "  File \"/workspace/examples/example_irrigation_network.py\", line 67, in create_solver",
+          "    solver.set_initial_conditions(",
+          "    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "AttributeError: 'GodunvFVMSolver' object has no attribute 'set_initial_conditions'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/validate_new_examples.py",
+        "error": [
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_pump_station.py",
+        "error": [
+          "    super().__init__(node_id, \"pump_station\", elevation, x, y)",
+          "  File \"/workspace/network/topology.py\", line 60, in __init__",
+          "    raise ValueError(f\"Invalid node type: {node_type}. \"",
+          "ValueError: Invalid node type: pump_station. Must be one of ['boundary', 'junction', 'bifurcation', 'reservoir']",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_advanced_bc.py",
+        "error": [
+          "  File \"/workspace/examples/example_advanced_bc.py\", line 76, in example_1_flood_hydrograph",
+          "    solver.set_initial_conditions(h_init, Q_init, bc_left, bc_right)",
+          "    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "AttributeError: 'GodunvFVMSolver' object has no attribute 'set_initial_conditions'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_16_weirs_application/weirs_irrigation_system.py",
+        "error": [
+          "  File \"/workspace/examples/example_16_weirs_application/weirs_irrigation_system.py\", line 138, in run_irrigation_system_simulation",
+          "    h_uniform = solver.reset_with_steady_state(Q_inlet)",
+          "                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "AttributeError: 'HydrostaticCanalSolver' object has no attribute 'reset_with_steady_state'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_structures/run_spillway.py",
+        "error": [
+          "  File \"/workspace/utils/visualization_templates.py\", line 86, in plot_longitudinal_profile",
+          "    z_bed = (canal_length - x) * S0",
+          "            ~~~~~~~~~~~~~~~~~~~^~~~",
+          "ValueError: operands could not be broadcast together with shapes (101,) (100,) ",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/analyze_all_scenarios.py",
+        "error": [
+          "  File \"/workspace/examples/example_gate_pump_cascade/analyze_all_scenarios.py\", line 99, in main",
+          "    scenarios = sorted([d for d in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, d))])",
+          "                                   ^^^^^^^^^^^^^^^^^^^^",
+          "FileNotFoundError: [Errno 2] No such file or directory: '/workspace/examples/example_gate_pump_cascade/results_advanced'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_unsteady/run_unsteady_flow.py",
+        "error": [
+          "  File \"/workspace/utils/visualization_templates.py\", line 86, in plot_longitudinal_profile",
+          "    z_bed = (canal_length - x) * S0",
+          "            ~~~~~~~~~~~~~~~~~~~^~~~",
+          "ValueError: operands could not be broadcast together with shapes (101,) (100,) ",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_unsteady/run_time_varying_bc.py",
+        "error": [
+          "  File \"/workspace/utils/visualization_templates.py\", line 86, in plot_longitudinal_profile",
+          "    z_bed = (canal_length - x) * S0",
+          "            ~~~~~~~~~~~~~~~~~~~^~~~",
+          "ValueError: operands could not be broadcast together with shapes (101,) (100,) ",
+          ""
+        ]
+      },
+      {
+        "path": "examples/case_library/case_05_river_network.py",
+        "error": [
+          "  File \"/workspace/examples/case_library/case_05_river_network.py\", line 30",
+          "    import matplotlib",
+          "    ^^^^^^",
+          "SyntaxError: expected 'except' or 'finally' block",
+          ""
+        ]
+      },
+      {
+        "path": "examples/case_library/test_cases.py",
+        "error": [
+          "  File \"/workspace/examples/case_library/case_05_river_network.py\", line 30",
+          "    import matplotlib",
+          "    ^^^^^^",
+          "SyntaxError: expected 'except' or 'finally' block",
+          ""
+        ]
+      },
+      {
+        "path": "examples/case_library/case_04_urban_drainage.py",
+        "error": [
+          "  File \"/workspace/examples/case_library/case_04_urban_drainage.py\", line 29",
+          "    import matplotlib",
+          "    ^^^^^^",
+          "SyntaxError: expected 'except' or 'finally' block",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_02_pump_system/example_02_pump_system_enhanced.py",
+        "error": [
+          "  File \"/workspace/examples/example_02_pump_system/example_02_pump_system_enhanced.py\", line 159",
+          "    import matplotlib.animation as animation",
+          "IndentationError: unexpected indent",
+          ""
+        ]
+      },
+      {
+        "path": "examples/advanced_examples/realtime_monitor_demo.py",
+        "error": [
+          "  File \"/workspace/examples/advanced_examples/realtime_monitor_demo.py\", line 203",
+          "    response =# input() disabled for automated testing: \")",
+          "              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "SyntaxError: invalid syntax",
+          ""
+        ]
+      },
+      {
+        "path": "examples/integration_examples/gis_water_network.py",
+        "error": [
+          "  File \"/workspace/integration/gis_adapter.py\", line 86, in GISAdapter",
+          "    def load_shapefile(self, shapefile_path: str, layer_name: Optional[str] = None) -> gpd.GeoDataFrame:",
+          "                                                                                       ^^^",
+          "NameError: name 'gpd' is not defined",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_simple_canal/run_simple_canal.py",
+        "error": [
+          "  File \"/workspace/utils/visualization_templates.py\", line 86, in plot_longitudinal_profile",
+          "    z_bed = (canal_length - x) * S0",
+          "            ~~~~~~~~~~~~~~~~~~~^~~~",
+          "ValueError: operands could not be broadcast together with shapes (101,) (100,) ",
+          ""
+        ]
+      },
+      {
+        "path": "examples/config_driven/simulate.py",
+        "error": [
+          "用法: python simulate.py config.json",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_control/run_pid_control.py",
+        "error": [
+          "  File \"/workspace/utils/visualization_templates.py\", line 86, in plot_longitudinal_profile",
+          "    z_bed = (canal_length - x) * S0",
+          "            ~~~~~~~~~~~~~~~~~~~^~~~",
+          "ValueError: operands could not be broadcast together with shapes (101,) (100,) ",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_control/run_mpc_control.py",
+        "error": [
+          "  File \"/workspace/utils/visualization_templates.py\", line 86, in plot_longitudinal_profile",
+          "    z_bed = (canal_length - x) * S0",
+          "            ~~~~~~~~~~~~~~~~~~~^~~~",
+          "ValueError: operands could not be broadcast together with shapes (101,) (100,) ",
+          ""
+        ]
+      },
+      {
+        "path": "examples/example_18_cascade_hydropower/demo_cascade.py",
+        "error": [
+          "  File \"/workspace/examples/example_18_cascade_hydropower/demo_cascade.py\", line 17, in <module>",
+          "    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))",
+          "                       ^^",
+          "NameError: name 'os' is not defined. Did you forget to import 'os'?",
+          ""
+        ]
+      },
+      {
+        "path": "examples/engineering_cases/case_04_parameter_calibration/run.py",
+        "error": [
+          "  File \"/workspace/examples/engineering_cases/case_04_parameter_calibration/run.py\", line 65, in create_synthetic_data",
+          "    h_new, hu_new = solver.step_preissmann(dt, theta=0.6)",
+          "                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "TypeError: HydrostaticCanalSolver.step_preissmann() got an unexpected keyword argument 'theta'",
+          ""
+        ]
+      },
+      {
+        "path": "examples/engineering_cases/case_05_water_resource_optimization/run.py",
+        "error": [
+          "  File \"/workspace/examples/engineering_cases/case_05_water_resource_optimization/run.py\", line 176, in run_optimization",
+          "    pump = PumpStation(",
+          "           ^^^^^^^^^^^^",
+          "TypeError: PumpStation.__init__() got an unexpected keyword argument 'efficiency'",
+          ""
+        ]
+      }
+    ]
+  }
+}
