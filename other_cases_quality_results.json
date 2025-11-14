@@ -1,0 +1,142 @@
+[
+  {
+    "script": "example_side_weir.py",
+    "grade": "C",
+    "flux_error": null,
+    "iterations": null,
+    "stable": true
+  },
+  {
+    "script": "spring_ice_breakup.py",
+    "grade": "C",
+    "flux_error": null,
+    "iterations": null,
+    "stable": true
+  },
+  {
+    "script": "example_complete_workflow.py",
+    "grade": "C",
+    "flux_error": null,
+    "iterations": 5,
+    "stable": true
+  },
+  {
+    "script": "summer_eutrophication.py",
+    "grade": "C",
+    "flux_error": null,
+    "iterations": null,
+    "stable": true
+  },
+  {
+    "script": "case_flood_control.py",
+    "grade": "C",
+    "flux_error": null,
+    "iterations": null,
+    "stable": true
+  },
+  {
+    "script": "example_culvert_structure.py",
+    "grade": "C",
+    "flux_error": null,
+    "iterations": null,
+    "stable": true
+  },
+  {
+    "script": "case_flood_control_steady.py",
+    "grade": "F",
+    "flux_error": null,
+    "iterations": null,
+    "stable": false
+  },
+  {
+    "script": "case8_network_optimization.py",
+    "grade": "C",
+    "flux_error": null,
+    "iterations": null,
+    "stable": true
+  },
+  {
+    "script": "example_bridge_structure.py",
+    "grade": "C",
+    "flux_error": null,
+    "iterations": null,
+    "stable": true
+  },
+  {
+    "script": "example_network_nodes.py",
+    "grade": "F",
+    "flux_error": null,
+    "iterations": null,
+    "stable": false
+  },
+  {
+    "script": "case_parameter_sensitivity.py",
+    "grade": "C",
+    "flux_error": null,
+    "iterations": null,
+    "stable": true
+  },
+  {
+    "script": "phase1_flood_routing.py",
+    "grade": "C",
+    "flux_error": null,
+    "iterations": null,
+    "stable": true
+  },
+  {
+    "script": "phase1_steady_scenarios.py",
+    "grade": "F",
+    "flux_error": null,
+    "iterations": null,
+    "stable": false
+  },
+  {
+    "script": "phase1_extended_scenarios.py",
+    "grade": "F",
+    "flux_error": null,
+    "iterations": null,
+    "stable": false
+  },
+  {
+    "script": "example_trapezoidal_channel.py",
+    "grade": "C",
+    "flux_error": null,
+    "iterations": null,
+    "stable": true
+  },
+  {
+    "script": "climate_change_assessment.py",
+    "grade": "C",
+    "flux_error": null,
+    "iterations": null,
+    "stable": true
+  },
+  {
+    "script": "case_irrigation_scheduling.py",
+    "grade": "C",
+    "flux_error": null,
+    "iterations": null,
+    "stable": true
+  },
+  {
+    "script": "case02_flood_risk_assessment.py",
+    "grade": "C",
+    "flux_error": null,
+    "iterations": null,
+    "stable": true
+  },
+  {
+    "script": "calibration_example.py",
+    "grade": "C",
+    "flux_error": null,
+    "iterations": 37,
+    "stable": true
+  },
+  {
+    "script": "example_rating_curve_bc.py",
+    "grade": "C",
+    "flux_error": null,
+    "iterations": null,
+    "stable": true
+  }
+]
