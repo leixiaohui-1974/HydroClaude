@@ -1,18 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-例子1：明渠非恒定流 - 重构版（简化）
+例子1：明渠非恒定流 - 嵌入动画版本
 
-使用新的基础库框架，代码更简洁、可维护
+展示如何在示例脚本中嵌入动画生成功能，可通过--animate参数控制
+
+使用方法:
+    python 01_basic_with_animation.py              # 不生成动画
+    python 01_basic_with_animation.py --animate    # 生成动画
+    python 01_basic_with_animation.py --animate --animation-fps 15  # 自定义帧率
 
 作者: Claude
-日期: 2025-10-21
+日期: 2025-10-22
 """
 
 import sys
 import os
 import numpy as np
-import pandas as pd
 
 from pathlib import Path
 # ScriptHelper path setup
@@ -21,24 +25,63 @@ project_root = script_path.parents[3]
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 from utils.script_helper import ScriptHelper
-# Initialize ScriptHelper
-helper = ScriptHelper(__file__)
+EXAMPLES_DIR = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(EXAMPLES_DIR))
 
-from solvers_canal_solver import CanalSolver
+from solvers.hydrostatic_canal_solver import CanalSolver
 from utils.canal_utils import compute_steady_uniform_flow, get_convergence_metrics
 from visualization.canal_visualizer import CanalVisualizer
 from analysis.stability_evaluator import StabilityEvaluator
 
 
+import argparse
 
 # 添加项目根目录到路径
+EXAMPLES_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from animation_utils import AnimationGenerator
+def parse_args():
+    """解析命令行参数"""
+    parser = argparse.ArgumentParser(
+        description='明渠非恒定流仿真 - 嵌入动画版本'
+    )
+    parser.add_argument(
+        '--animate',
+        action='store_true',
+        help='生成动画（默认：不生成）'
+    )
+    parser.add_argument(
+        '--animation-fps',
+        type=int,
+        default=10,
+        help='动画帧率 (默认: 10)'
+    )
+    parser.add_argument(
+        '--animation-dpi',
+        type=int,
+        default=100,
+        help='动画DPI (默认: 100)'
+    )
+    return parser.parse_args()
+
+
 def main():
     """主函数"""
+    args = parse_args()
+
     print("=" * 80)
-    print("例子1：明渠非恒定流仿真 - 重构版")
+    print("例子1：明渠非恒定流仿真 - 嵌入动画版本")
     print("=" * 80)
+    if args.animate:
+        print(f"动画生成：已启用 (FPS={args.animation_fps}, DPI={args.animation_dpi})")
+    else:
+        print("动画生成：未启用（使用 --animate 参数启用）")
+
+    # ========================================================================
+    # 1. 参数设置
+    # ========================================================================
     print("\n1. 参数设置")
     print("-" * 80)
+
     # 渠道参数
     length = 1000.0  # 渠道长度 (m)
     B = 10.0         # 渠道宽度 (m)
@@ -160,6 +203,12 @@ def main():
     print("\n5. 生成可视化图表")
     print("-" * 80)
 
+    output_dir = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "..", "figures"
+    )
+    os.makedirs(output_dir, exist_ok=True)
+
     viz = CanalVisualizer(use_chinese=False)  # 使用英文以避免字体问题
 
     # 方法对比图
@@ -170,7 +219,7 @@ def main():
             'Q': results[method]['Q']
         }
 
-    save_path = helper.get_output_path('01_basic_comparison_refactored.png', subdir='figures')
+    save_path = os.path.join(output_dir, "example_01_with_anim_comparison.png")
     viz.plot_methods_comparison(
         x=solvers['PREISSMANN'].x,
         results=comparison_data,
@@ -179,11 +228,10 @@ def main():
         title="Methods Comparison - Final State",
         save_path=save_path
     )
-    print(f"   Saved figure: 01_basic_comparison.png")
 
     # 单个方法的时空分布
     for method in methods:
-        save_path = get_output_path('figures', f"01_basic_{method.lower()}.png")
+        save_path = os.path.join(output_dir, f"example_01_with_anim_{method.lower()}.png")
         viz.plot_spatial_distribution(
             x=solvers[method].x,
             h=results[method]['h'],
@@ -195,12 +243,108 @@ def main():
             h_margin=0.01,
             Q_margin=0.05
         )
-        print(f"   Saved figure: 01_basic_{method.lower()}.png")
 
     # ========================================================================
-    # 6. 收敛性分析
+    # 6. 生成动画（如果启用）
     # ========================================================================
-    print("\n6. 收敛性分析")
+    if args.animate:
+        print("\n6. 生成动画")
+        print("-" * 80)
+
+        animation_dir = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "..", "outputs", "animations"
+        )
+
+        anim_gen = AnimationGenerator(
+            output_dir=animation_dir,
+            fps=args.animation_fps,
+            dpi=args.animation_dpi
+        )
+
+        # 为每个方法生成动画
+        for method in methods:
+            print(f"\n生成 {method} 方法的动画...")
+            history = results[method]['history']
+
+            # 提取时间序列数据（选取3个代表性位置：上游、中游、下游）
+            time = history['time']
+            h_history = history['h_history']
+            Q_history = history['Q_history']
+
+            nx_points = h_history.shape[1]
+            idx_upstream = 0
+            idx_midstream = nx_points // 2
+            idx_downstream = -1
+
+            # 时间序列动画
+            try:
+                gif_path = anim_gen.create_timeseries_animation(
+                    t=time,
+                    data={
+                        'Upstream h': h_history[:, idx_upstream],
+                        'Midstream h': h_history[:, idx_midstream],
+                        'Downstream h': h_history[:, idx_downstream],
+                        'Upstream Q': Q_history[:, idx_upstream],
+                        'Midstream Q': Q_history[:, idx_midstream],
+                        'Downstream Q': Q_history[:, idx_downstream],
+                    },
+                    filename=f'{method}_timeseries.gif',
+                    title=f'{method} Method - Time Series',
+                    xlabel='Time (s)',
+                    ylabels={
+                        'Upstream h': 'Water Depth (m)',
+                        'Midstream h': 'Water Depth (m)',
+                        'Downstream h': 'Water Depth (m)',
+                        'Upstream Q': 'Flow Rate (m^3/s)',
+                        'Midstream Q': 'Flow Rate (m^3/s)',
+                        'Downstream Q': 'Flow Rate (m^3/s)',
+                    },
+                    reference_lines={
+                        'Upstream h': h_downstream,
+                        'Midstream h': h_downstream,
+                        'Downstream h': h_downstream,
+                        'Upstream Q': Q_upstream,
+                        'Midstream Q': Q_upstream,
+                        'Downstream Q': Q_upstream,
+                    },
+                    layout=(2, 3)
+                )
+                print(f"   时间序列动画已保存: {os.path.basename(gif_path)}")
+            except Exception as e:
+                print(f"   时间序列动画生成失败: {e}")
+
+            # 空间分布动画
+            try:
+                # 准备二维数据 (时间 x 空间)
+                x = solvers[method].x
+
+                gif_path = anim_gen.create_spatial_animation(
+                    x=x,
+                    t=time,
+                    data={
+                        'Water Depth': h_history,
+                        'Flow Rate': Q_history,
+                    },
+                    filename=f'{method}_spatial.gif',
+                    title=f'{method} Method - Spatial Distribution',
+                    xlabel='Distance (m)',
+                    ylabels={
+                        'Water Depth': 'h (m)',
+                        'Flow Rate': 'Q (m^3/s)',
+                    },
+                    layout=(2, 1)
+                )
+                print(f"   空间分布动画已保存: {os.path.basename(gif_path)}")
+            except Exception as e:
+                print(f"   空间分布动画生成失败: {e}")
+
+        print(f"\n所有动画已保存到: {animation_dir}")
+
+    # ========================================================================
+    # 7. 收敛性分析
+    # ========================================================================
+    print("\n7. 收敛性分析")
     print("-" * 80)
 
     for method in methods:
@@ -220,68 +364,15 @@ def main():
         print(f"  收敛状态: {' 收敛' if metrics['converged'] else ' 未收敛'}")
 
     # ========================================================================
-    # 7. 保存数据表
-    # ========================================================================
-    print("\n7. 保存数据表")
-    print("-" * 80)
-
-    # 保存收敛性结果表
-    convergence_data = []
-    for method in methods:
-        history = results[method]['history']
-        metrics = get_convergence_metrics(
-            time=history['time'],
-            h_history=history['h_history'],
-            Q_history=history['Q_history']
-        )
-        convergence_data.append({
-            'Method': method,
-            'h_CV_upstream (%)': metrics['cv_h_upstream'],
-            'h_CV_downstream (%)': metrics['cv_h_downstream'],
-            'Q_CV_upstream (%)': metrics['cv_Q_upstream'],
-            'Q_CV_downstream (%)': metrics['cv_Q_downstream'],
-            'Max_CV (%)': metrics['max_cv'],
-            'Converged': metrics['converged']
-        })
-
-    df = pd.DataFrame(convergence_data)
-    table_path = helper.get_output_path('01_basic_convergence_refactored.csv', subdir='tables')
-
-    df.to_csv(table_path, index=False)
-
-    print(f'   Saved: {table_path.name}')
-
-    # 保存最终分布数据
-    distribution_data = []
-    for method in methods:
-        x = solvers[method].x
-        h = results[method]['h']
-        Q = results[method]['Q']
-        for i in range(len(x)):
-            distribution_data.append({
-                'Method': method,
-                'Position (m)': x[i],
-                'Water_Depth (m)': h[i],
-                'Discharge (m^3/s)': Q[i]
-            })
-
-    df_dist = pd.DataFrame(distribution_data)
-    table_path = helper.get_output_path('01_basic_distribution_refactored.csv', subdir='tables')
-
-    df_dist.to_csv(table_path, index=False)
-
-    print(f'   Saved: {table_path.name}')
-
-    # ========================================================================
     # 完成
     # ========================================================================
     print("\n" + "=" * 80)
     print("仿真完成！")
     print("=" * 80)
-    print(f"\n所有输出已保存到: results/")
-    print("  Figures: results/figures/")
-    print("  Tables: results/tables/")
-    print("\n 例子1（重构版）运行成功")
+    print(f"\n所有图表已保存到: {output_dir}")
+    if args.animate:
+        print(f"所有动画已保存到: {animation_dir}")
+    print("\n 例子1（嵌入动画版本）运行成功")
 
 
 if __name__ == '__main__':
