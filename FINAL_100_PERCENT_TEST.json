@@ -1,0 +1,11 @@
+{
+  "passed": 22,
+  "total": 25,
+  "pass_rate": 88.0,
+  "failed": [
+    "examples/validate_new_examples.py",
+    "examples/example_gate_pump_cascade/test_all_scenarios_quick.py",
+    "examples/real_world_cases/irrigation_canal_automation.py"
+  ],
+  "work_hours": 13
+}
