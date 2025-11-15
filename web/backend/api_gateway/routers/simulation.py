@@ -60,6 +60,18 @@ def run_simulation_task(task_id: str, config: dict):
     """
     import io
     import sys as _sys
+    import os as _os
+    
+    # 关键修复：后台任务需要重新设置路径
+    # 使用多种方法确保找到backend目录
+    possible_paths = [
+        '/workspace/web/backend',  # 绝对路径（Linux）
+        _os.path.abspath(_os.path.join(_os.path.dirname(__file__), '../../..')),  # 相对路径
+        _os.environ.get('PYTHONPATH', '').split(':')[0] if _os.environ.get('PYTHONPATH') else None
+    ]
+    for path in possible_paths:
+        if path and _os.path.exists(path) and path not in _sys.path:
+            _sys.path.insert(0, path)
     
     # 在Windows上，完全屏蔽stdout/stderr以避免编码问题
     # 必须在任何其他操作之前屏蔽，包括import
@@ -78,7 +90,7 @@ def run_simulation_task(task_id: str, config: dict):
 
         # logger.info(f"Starting simulation task {task_id}")  # 禁用以避免编码问题
 
-        # Import engine - 现在backend已安装为包，可以直接导入
+        # Import engine
         from core.hydraulic_engine import HydraulicEngine
 
         # Create engine and run simulation

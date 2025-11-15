@@ -1,0 +1,69 @@
+{
+  "timestamp": "2025-11-15T02:32:14.005115",
+  "total": 5,
+  "passed": 5,
+  "failed": 0,
+  "success_rate": 100.0,
+  "results": [
+    {
+      "id": "tc1",
+      "name": "静态均匀流",
+      "status": "success",
+      "metrics": {
+        "mass_error": 0.0,
+        "converged": true,
+        "mean_depth": 5.0,
+        "max_velocity": 0.10425870355290558,
+        "duration": 0.022931
+      }
+    },
+    {
+      "id": "tc2",
+      "name": "均匀流动",
+      "status": "success",
+      "metrics": {
+        "mass_error": 0.005019778610669299,
+        "converged": true,
+        "mean_depth": 4.974901106946654,
+        "max_velocity": 0.4474066423829941,
+        "duration": 0.02284
+      }
+    },
+    {
+      "id": "tc3",
+      "name": "浅层流动",
+      "status": "success",
+      "metrics": {
+        "mass_error": 0.004285494254607832,
+        "converged": true,
+        "mean_depth": 0.995714505745392,
+        "max_velocity": 0.5819076500202904,
+        "duration": 0.012112
+      }
+    },
+    {
+      "id": "tc4",
+      "name": "深层流动",
+      "status": "success",
+      "metrics": {
+        "mass_error": 0.004894652910223226,
+        "converged": true,
+        "mean_depth": 9.951053470897767,
+        "max_velocity": 0.931481736844819,
+        "duration": 0.031487
+      }
+    },
+    {
+      "id": "tc5",
+      "name": "大流量",
+      "status": "success",
+      "metrics": {
+        "mass_error": 0.004285265539283855,
+        "converged": true,
+        "mean_depth": 4.978573672303581,
+        "max_velocity": 1.0903529738582922,
+        "duration": 0.025632
+      }
+    }
+  ]
+}
