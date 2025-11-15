@@ -540,13 +540,12 @@ def generate_report(results: List[Dict], output_file: str = "ANDERSON_ACCELERATI
         config = [r for r in results if r['method'] == best_method[0]][0]['config']
         if config:
             report += f"```python\n"
-            report += f"try:
-    from solvers.anderson_acceleration import AndersonAcceleration
-except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
-\n\n"
+            report += "try:\n"
+            report += "    from solvers.anderson_acceleration import AndersonAcceleration\n"
+            report += "except ImportError as e:\n"
+            report += "    print(f\"Import error: {e}\")\n"
+            report += "    print(\"Make sure project root is in sys.path\")\n"
+            report += "    sys.exit(1)\n\n"
             report += f"anderson = AndersonAcceleration(\n"
             report += f"    m={config['m']},  # 历史深度\n"
             report += f"    beta={config['beta']}  # 松弛因子\n"
