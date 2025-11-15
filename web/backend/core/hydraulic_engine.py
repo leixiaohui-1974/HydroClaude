@@ -25,6 +25,20 @@ os.environ['NUMBA_DISABLE_PERFORMANCE_WARNINGS'] = '1'
 # 导入HydroClaude核心模块
 from solvers.godunov_fvm_solver import GodunvFVMSolver
 
+# 导入水工结构模块（Week 1-2新增）
+try:
+    from web.backend.core.structures.pump_station import PumpStation, PumpCurve, PumpType, ControlMode
+    from web.backend.core.structures.advanced_gates import SluiceGate, RadialGate, GateType, FlowRegime
+except ImportError:
+    # 备用导入路径
+    import sys
+    from pathlib import Path
+    backend_path = Path(__file__).parent.parent
+    if str(backend_path) not in sys.path:
+        sys.path.insert(0, str(backend_path))
+    from core.structures.pump_station import PumpStation, PumpCurve, PumpType, ControlMode
+    from core.structures.advanced_gates import SluiceGate, RadialGate, GateType, FlowRegime
+
 
 @dataclass
 class SimulationResult:
@@ -54,7 +68,7 @@ class HydraulicEngine:
 
     def __init__(self):
         """初始化引擎"""
-        self.version = "1.0.0"
+        self.version = "2.0.0"  # 升级到v2.0，支持泵站、闸门等结构
         self.engine_path = HYDROCLAUDE_PATH
 
     def run_canal_simulation(
