@@ -18,11 +18,11 @@ import matplotlib.pyplot as plt
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 try:
-    # DEPRECATED: Use HydrostaticCanalSolver instead
-# # DEPRECATED: Use HydrostaticCanalSolver instead
-# # DEPRECATED: Use HydrostaticCanalSolver instead
-# # from solvers.single_canal_solver import SingleCanalSolver  # 已废弃
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
+        # DEPRECATED: Use HydrostaticCanalSolver instead
+    # # DEPRECATED: Use HydrostaticCanalSolver instead
+    # # DEPRECATED: Use HydrostaticCanalSolver instead
+    # # from solvers.single_canal_solver import SingleCanalSolver  # 已废弃
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
 except ImportError as e:
     print(f"Import error: {e}")
     print("Make sure project root is in sys.path")

@@ -1,7 +1,7 @@
 {
   "total": 50,
-  "passed": 31,
-  "failed": 19,
+  "passed": 32,
+  "failed": 18,
   "failures": [
     {
       "file": "tests/diagnostic/test_manning_friction.py",
@@ -25,8 +25,8 @@
     },
     {
       "file": "tests/legacy_diagnostic/test_fvm_full_final.py",
-      "category": "other_error",
-      "error_snippet": "  File \"/workspace/tests/legacy_diagnostic/test_fvm_full_final.py\", line 28\n    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver\n    ^\nIndentationError: expected an indented block after 'try' statement on line 23\n"
+      "category": "missing_dependency",
+      "error_snippet": "Import error: No module named 'solvers'\nMake sure project root is in sys.path\n"
     },
     {
       "file": "tests/test_lake_at_rest_wb.py",
@@ -47,11 +47,6 @@
       "file": "examples/example_02_pump_system/example_02_pump_system_with_anim.py",
       "category": "missing_dependency",
       "error_snippet": "Traceback (most recent call last):\n  File \"/workspace/examples/example_02_pump_system/example_02_pump_system_with_anim.py\", line 27, in <module>\n    from physics.tank import Tank\nModuleNotFoundError: No module named 'physics'\n"
-    },
-    {
-      "file": "tests/test_examples/test_case_examples.py",
-      "category": "other_error",
-      "error_snippet": "  File \"/workspace/tests/test_examples/test_case_examples.py\", line 93\n    from solvers.hardy_cross_solver import HardyCrossSolver\nIndentationError: expected an indented block after 'try' statement on line 92\n"
     },
     {
       "file": "tests/diagnostic/profile_weno3_performance.py",
@@ -85,8 +80,8 @@
     },
     {
       "file": "tests/legacy_diagnostic/test_fvm_fdm_comparison.py",
-      "category": "other_error",
-      "error_snippet": "  File \"/workspace/tests/legacy_diagnostic/test_fvm_fdm_comparison.py\", line 32\n    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver\n    ^\nIndentationError: expected an indented block after 'try' statement on line 27\n"
+      "category": "missing_dependency",
+      "error_snippet": "Import error: No module named 'solvers'\nMake sure project root is in sys.path\n"
     },
     {
       "file": "tests/diagnostic/test_hllc_comparison.py",
@@ -95,14 +90,14 @@
     },
     {
       "file": "tests/legacy_diagnostic/test_fvm_steady_comparison.py",
-      "category": "other_error",
-      "error_snippet": "  File \"/workspace/tests/legacy_diagnostic/test_fvm_steady_comparison.py\", line 25\n    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver\n    ^\nIndentationError: expected an indented block after 'try' statement on line 20\n"
+      "category": "missing_dependency",
+      "error_snippet": "Import error: No module named 'solvers'\nMake sure project root is in sys.path\n"
     }
   ],
   "error_categories": {
-    "missing_dependency": 4,
+    "missing_dependency": 7,
     "timeout": 5,
     "file_path_error": 3,
-    "other_error": 7
+    "other_error": 3
   }
 }
