@@ -1,0 +1,406 @@
+{
+  "summary": {
+    "total": 45,
+    "passed": 24,
+    "failed": 21,
+    "pass_rate": 0.5333333333333333
+  },
+  "categories": [
+    {
+      "category": "canal_flow",
+      "total": 31,
+      "tested": 5,
+      "passed": 2,
+      "failed": 3,
+      "cases": [
+        {
+          "file": "examples/advanced_examples/state_estimation_canal_control.py",
+          "name": "state_estimation_canal_control",
+          "success": true,
+          "message": "PASS",
+          "time": 1.4236783981323242
+        },
+        {
+          "file": "examples/example_trapezoidal_channel.py",
+          "name": "example_trapezoidal_channel",
+          "success": true,
+          "message": "PASS",
+          "time": 0.06919503211975098
+        },
+        {
+          "file": "tests/test_geometry/test_compound_channel.py",
+          "name": "test_compound_channel",
+          "success": false,
+          "message": "输出包含错误: ============================= test session starts ==============================\nplatform linux -- Python 3.12.3, pytest-7.4.3, pluggy-1.6.0 -- /usr/bin/python3\nrootdir: /workspace\nconfigfile: pytest.",
+          "time": 0.3640620708465576
+        },
+        {
+          "file": "examples/example_01_canal_flow/scripts/03_idz_identification.py",
+          "name": "03_idz_identification",
+          "success": false,
+          "message": "退出码1: Traceback (most recent call last):\n  File \"/workspace/examples/example_01_canal_flow/scripts/03_idz_identification.py\", line 22, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'\n",
+          "time": 0.622859001159668
+        },
+        {
+          "file": "examples/example_01_canal_flow/scripts/08_optimized_steady_solving_v2.py",
+          "name": "08_optimized_steady_solving_v2",
+          "success": false,
+          "message": "退出码1: Traceback (most recent call last):\n  File \"/workspace/examples/example_01_canal_flow/scripts/08_optimized_steady_solving_v2.py\", line 30, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'\n",
+          "time": 0.05749821662902832
+        }
+      ]
+    },
+    {
+      "category": "pump_system",
+      "total": 17,
+      "tested": 5,
+      "passed": 1,
+      "failed": 4,
+      "cases": [
+        {
+          "file": "examples/example_02_pump_system/code/example_02_pump_system.py",
+          "name": "example_02_pump_system",
+          "success": true,
+          "message": "PASS",
+          "time": 0.06682252883911133
+        },
+        {
+          "file": "examples/real_world_cases/urban_drainage_pump_station.py",
+          "name": "urban_drainage_pump_station",
+          "success": false,
+          "message": "退出码1: Traceback (most recent call last):\n  File \"/workspace/examples/real_world_cases/urban_drainage_pump_station.py\", line 38, in <module>\n    from control.mpc_controller import MPCController, MPCConfig\nModuleNotFoundError: No module named 'control'\n",
+          "time": 0.301544189453125
+        },
+        {
+          "file": "examples/example_gate_pump_cascade/run_scenario.py",
+          "name": "run_scenario",
+          "success": false,
+          "message": "超时(60秒)",
+          "time": 60.03002095222473
+        },
+        {
+          "file": "examples/case2_pump_water_hammer.py",
+          "name": "case2_pump_water_hammer",
+          "success": false,
+          "message": "退出码1: Traceback (most recent call last):\n  File \"/workspace/examples/case2_pump_water_hammer.py\", line 381, in <module>\n    main()\n  File \"/workspace/examples/case2_pump_water_hammer.py\", line 370, in main\n    plot_results(solver, result, Q0, H0_up, delta_H_jouk)\n  File \"/workspace/examples/case2_pump_water_hammer.py\", line 303, in plot_results\n    plt.savefig('examples/pump_water_hammer_results.png', dpi=150, bbox_inches='tight')\n  File \"/home/ubuntu/.local/lib/python3.12/site-packages/matplotlib/pyp",
+          "time": 0.6882188320159912
+        },
+        {
+          "file": "tests/test_solvers/test_pump_boundary.py",
+          "name": "test_pump_boundary",
+          "success": false,
+          "message": "退出码1:   File \"/workspace/tests/test_solvers/test_pump_boundary.py\", line 24\n    except ImportError as e:\n    ^^^^^^\nSyntaxError: invalid syntax\n",
+          "time": 0.009229183197021484
+        }
+      ]
+    },
+    {
+      "category": "hydropower",
+      "total": 7,
+      "tested": 5,
+      "passed": 4,
+      "failed": 1,
+      "cases": [
+        {
+          "file": "web/backend/examples/complete_hydropower_system_example.py",
+          "name": "complete_hydropower_system_example",
+          "success": true,
+          "message": "PASS",
+          "time": 0.3389167785644531
+        },
+        {
+          "file": "tests/test_turbine.py",
+          "name": "test_turbine",
+          "success": false,
+          "message": "输出包含错误: ================================================================================\nTURBINE TEST SUITE\n================================================================================\n\nTestFrancisTurbine",
+          "time": 0.17643070220947266
+        },
+        {
+          "file": "examples/example_18_cascade_hydropower/demo_cascade.py",
+          "name": "demo_cascade",
+          "success": true,
+          "message": "PASS",
+          "time": 1.0494961738586426
+        },
+        {
+          "file": "examples/example_03_turbine_demo/example_03_turbine_comparison.py",
+          "name": "example_03_turbine_comparison",
+          "success": true,
+          "message": "PASS",
+          "time": 0.7392024993896484
+        },
+        {
+          "file": "examples/example_04_hydropower_system/example_04_hydropower_plant.py",
+          "name": "example_04_hydropower_plant",
+          "success": true,
+          "message": "PASS",
+          "time": 0.7004458904266357
+        }
+      ]
+    },
+    {
+      "category": "network",
+      "total": 29,
+      "tested": 5,
+      "passed": 3,
+      "failed": 2,
+      "cases": [
+        {
+          "file": "tests/test_network_topology.py",
+          "name": "test_network_topology",
+          "success": true,
+          "message": "PASS",
+          "time": 0.3844141960144043
+        },
+        {
+          "file": "examples/example_10_series_network/example_10_series_network_with_anim.py",
+          "name": "example_10_series_network_with_anim",
+          "success": true,
+          "message": "PASS",
+          "time": 0.5325188636779785
+        },
+        {
+          "file": "examples/example_network_solver.py",
+          "name": "example_network_solver",
+          "success": false,
+          "message": "输出包含错误: ================================================================================\n网络求解器使用示例集\nStage 3 - Network Solver Examples\n==========================================================================",
+          "time": 0.5199666023254395
+        },
+        {
+          "file": "examples/case_library/case_02_water_supply_network.py",
+          "name": "case_02_water_supply_network",
+          "success": true,
+          "message": "PASS",
+          "time": 2.875887393951416
+        },
+        {
+          "file": "tests/test_network_integration.py",
+          "name": "test_network_integration",
+          "success": false,
+          "message": "退出码1: /workspace/tests/test_network_integration.py:49: UserWarning: \n================================================================================\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balance",
+          "time": 0.4827237129211426
+        }
+      ]
+    },
+    {
+      "category": "gate_weir",
+      "total": 11,
+      "tested": 5,
+      "passed": 3,
+      "failed": 2,
+      "cases": [
+        {
+          "file": "tests/test_gate_derivatives.py",
+          "name": "test_gate_derivatives",
+          "success": true,
+          "message": "PASS",
+          "time": 0.056883811950683594
+        },
+        {
+          "file": "examples/example_side_weir.py",
+          "name": "example_side_weir",
+          "success": true,
+          "message": "PASS",
+          "time": 0.3131105899810791
+        },
+        {
+          "file": "tests/diagnostic/test_fvm_simple_gate.py",
+          "name": "test_fvm_simple_gate",
+          "success": false,
+          "message": "退出码1: 未知错误",
+          "time": 0.29898667335510254
+        },
+        {
+          "file": "examples/engineering_cases/case_03_multi_gate_control/run.py",
+          "name": "run",
+          "success": false,
+          "message": "输出包含错误: ================================================================================\n工程案例3: 多闸门协同控制\n================================================================================\n\n系统配置:\n  - 渠道长度: 12 km\n",
+          "time": 23.4898784160614
+        },
+        {
+          "file": "tests/test_radial_gate.py",
+          "name": "test_radial_gate",
+          "success": true,
+          "message": "PASS",
+          "time": 0.2794816493988037
+        }
+      ]
+    },
+    {
+      "category": "reservoir",
+      "total": 5,
+      "tested": 5,
+      "passed": 4,
+      "failed": 1,
+      "cases": [
+        {
+          "file": "examples/example_cascade_reservoirs.py",
+          "name": "example_cascade_reservoirs",
+          "success": true,
+          "message": "PASS",
+          "time": 0.5120096206665039
+        },
+        {
+          "file": "examples/example_17_reservoir_basic/example_17_reservoir_with_anim.py",
+          "name": "example_17_reservoir_with_anim",
+          "success": true,
+          "message": "PASS",
+          "time": 0.645169734954834
+        },
+        {
+          "file": "examples/example_17_reservoir_basic/demo_reservoir.py",
+          "name": "demo_reservoir",
+          "success": true,
+          "message": "PASS",
+          "time": 0.828258752822876
+        },
+        {
+          "file": "examples/advanced_examples/multi_objective_reservoir_scheduling.py",
+          "name": "multi_objective_reservoir_scheduling",
+          "success": false,
+          "message": "退出码1: Traceback (most recent call last):\n  File \"/workspace/examples/advanced_examples/multi_objective_reservoir_scheduling.py\", line 35, in <module>\n    from optimization.multi_objective import (\n  File \"/workspace/optimization/__init__.py\", line 33, in <module>\n    from .utils import (\n  File \"/workspace/optimization/utils.py\", line 9, in <module>\n    from pyomo.environ import SolverFactory, value\nModuleNotFoundError: No module named 'pyomo'\n",
+          "time": 0.3058946132659912
+        },
+        {
+          "file": "tests/test_reservoir.py",
+          "name": "test_reservoir",
+          "success": true,
+          "message": "PASS",
+          "time": 0.2799973487854004
+        }
+      ]
+    },
+    {
+      "category": "numerical",
+      "total": 14,
+      "tested": 5,
+      "passed": 2,
+      "failed": 3,
+      "cases": [
+        {
+          "file": "tests/numerical_methods/test_weno3_stability.py",
+          "name": "test_weno3_stability",
+          "success": false,
+          "message": "退出码1: /workspace/solvers/godunov_fvm_weno3.py:78: UserWarning: \n================================================================================\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[",
+          "time": 2.2019221782684326
+        },
+        {
+          "file": "tests/diagnostic/test_long_time_convergence.py",
+          "name": "test_long_time_convergence",
+          "success": true,
+          "message": "PASS",
+          "time": 2.5039267539978027
+        },
+        {
+          "file": "tests/numerical_methods/test_convergence.py",
+          "name": "test_convergence",
+          "success": false,
+          "message": "退出码1: Traceback (most recent call last):\n  File \"/workspace/tests/numerical_methods/test_convergence.py\", line 434, in <module>\n    test.test_weno3_convergence_rate_smooth_wave()\n  File \"/workspace/tests/numerical_methods/test_convergence.py\", line 130, in test_weno3_convergence_rate_smooth_wave\n    engine.initialize()\n  File \"/workspace/engine/simulation_engine.py\", line 77, in initialize\n    self.solver = self.builder.build_solver()\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/en",
+          "time": 0.3431370258331299
+        },
+        {
+          "file": "tests/numerical_methods/test_weno3_accuracy.py",
+          "name": "test_weno3_accuracy",
+          "success": false,
+          "message": "退出码1: Traceback (most recent call last):\n  File \"/workspace/tests/numerical_methods/test_weno3_accuracy.py\", line 310, in <module>\n    test.test_weno3_convergence_rate()\n  File \"/workspace/tests/numerical_methods/test_weno3_accuracy.py\", line 249, in test_weno3_convergence_rate\n    x, h_numerical, h_analytical, dx = self.run_simulation(n_cells, t_final)\n                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/tests/numerical_methods/test_weno3_accuracy.py\", line ",
+          "time": 0.32822179794311523
+        },
+        {
+          "file": "tests/numerical_methods/test_critical_flow_treatment.py",
+          "name": "test_critical_flow_treatment",
+          "success": true,
+          "message": "PASS",
+          "time": 0.13836383819580078
+        }
+      ]
+    },
+    {
+      "category": "integration",
+      "total": 7,
+      "tested": 5,
+      "passed": 4,
+      "failed": 1,
+      "cases": [
+        {
+          "file": "tests/test_integration_simple.py",
+          "name": "test_integration_simple",
+          "success": true,
+          "message": "PASS",
+          "time": 0.3864452838897705
+        },
+        {
+          "file": "examples/integration_examples/swmm_urban_drainage.py",
+          "name": "swmm_urban_drainage",
+          "success": true,
+          "message": "PASS",
+          "time": 0.30974340438842773
+        },
+        {
+          "file": "tests/test_cross_section_integration.py",
+          "name": "test_cross_section_integration",
+          "success": false,
+          "message": "退出码1: /workspace/tests/test_cross_section_integration.py:36: UserWarning: \n================================================================================\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-B",
+          "time": 0.3054020404815674
+        },
+        {
+          "file": "examples/example_complete_workflow.py",
+          "name": "example_complete_workflow",
+          "success": true,
+          "message": "PASS",
+          "time": 3.2745308876037598
+        },
+        {
+          "file": "tests/test_exact_solver_integration.py",
+          "name": "test_exact_solver_integration",
+          "success": true,
+          "message": "PASS",
+          "time": 0.28669023513793945
+        }
+      ]
+    },
+    {
+      "category": "other",
+      "total": 249,
+      "tested": 5,
+      "passed": 1,
+      "failed": 4,
+      "cases": [
+        {
+          "file": "examples/example_23_control_comparison/demo_control_comparison.py",
+          "name": "demo_control_comparison",
+          "success": false,
+          "message": "退出码1: Traceback (most recent call last):\n  File \"/workspace/examples/example_23_control_comparison/demo_control_comparison.py\", line 528, in <module>\n    results = run_control_comparison()\n              ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/examples/example_23_control_comparison/demo_control_comparison.py\", line 472, in run_control_comparison\n    plt.savefig(output_path, dpi=150, bbox_inches='tight')\n  File \"/home/ubuntu/.local/lib/python3.12/site-packages/matplotlib/pyplot.py\", line 1250, in sa",
+          "time": 1.0876860618591309
+        },
+        {
+          "file": "examples/example_13_adaptive_timescale/code/example_13_adaptive_timescale.py",
+          "name": "example_13_adaptive_timescale",
+          "success": true,
+          "message": "PASS",
+          "time": 1.0507380962371826
+        },
+        {
+          "file": "tests/diagnostic/test_hydrostatic_solver.py",
+          "name": "test_hydrostatic_solver",
+          "success": false,
+          "message": "退出码1: 未知错误",
+          "time": 0.3040444850921631
+        },
+        {
+          "file": "tests/diagnose_newton_solver.py",
+          "name": "diagnose_newton_solver",
+          "success": false,
+          "message": "退出码1: 未知错误",
+          "time": 0.054251670837402344
+        },
+        {
+          "file": "tests/core_functionality_verification.py",
+          "name": "core_functionality_verification",
+          "success": false,
+          "message": "退出码1: 未知错误",
+          "time": 0.055211782455444336
+        }
+      ]
+    }
+  ]
+}
