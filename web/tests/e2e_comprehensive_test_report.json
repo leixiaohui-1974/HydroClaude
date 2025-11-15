@@ -1,0 +1,218 @@
+{
+  "start_time": "2025-11-15T06:28:52.343905",
+  "total_tests": 26,
+  "passed": 24,
+  "failed": 2,
+  "skipped": 0,
+  "test_details": [
+    {
+      "category": "Backend",
+      "name": "模块导入测试",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "成功导入20个模块",
+      "duration": 0.04349160194396973
+    },
+    {
+      "category": "Original",
+      "name": "泵站 (PumpStation)",
+      "status": "FAIL",
+      "icon": "❌",
+      "details": "The number of derivatives at boundaries does not match: expected 1, got 0+0",
+      "duration": 0.20365095138549805
+    },
+    {
+      "category": "Original",
+      "name": "闸门 (SluiceGate)",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "Q=195.30m³/s, 流态=free",
+      "duration": 4.410743713378906e-05
+    },
+    {
+      "category": "Original",
+      "name": "闸门 (RadialGate)",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "Q=259.29m³/s, 流态=free",
+      "duration": 2.384185791015625e-05
+    },
+    {
+      "category": "Original",
+      "name": "闸门 (VerticalLiftGate)",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "Q=211.57m³/s, 流态=free",
+      "duration": 1.8358230590820312e-05
+    },
+    {
+      "category": "Original",
+      "name": "闸门 (RollerGate)",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "Q=205.06m³/s, 流态=free",
+      "duration": 1.1444091796875e-05
+    },
+    {
+      "category": "Original",
+      "name": "闸门 (FlapGate)",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "Q=7.56m³/s, 流态=weir",
+      "duration": 2.0742416381835938e-05
+    },
+    {
+      "category": "Original",
+      "name": "堰 (SharpCrestedWeir)",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "Q=76.49m³/s",
+      "duration": 1.621246337890625e-05
+    },
+    {
+      "category": "Original",
+      "name": "堰 (BroadCrestedWeir)",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "Q=221.34m³/s",
+      "duration": 1.3589859008789062e-05
+    },
+    {
+      "category": "Original",
+      "name": "堰 (VNotchWeir)",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "Q=51.56m³/s",
+      "duration": 2.288818359375e-05
+    },
+    {
+      "category": "Original",
+      "name": "堰 (RectangularWeir)",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "Q=70.67m³/s",
+      "duration": 1.1682510375976562e-05
+    },
+    {
+      "category": "Original",
+      "name": "堰 (TrapezoidalWeir)",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "Q=91.77m³/s",
+      "duration": 9.775161743164062e-06
+    },
+    {
+      "category": "Original",
+      "name": "堰 (OgeeWeir)",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "Q=87.30m³/s",
+      "duration": 1.049041748046875e-05
+    },
+    {
+      "category": "Original",
+      "name": "Culvert",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "计算正常",
+      "duration": 1.33514404296875e-05
+    },
+    {
+      "category": "Original",
+      "name": "SideWeir",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "计算正常",
+      "duration": 8.344650268554688e-06
+    },
+    {
+      "category": "Original",
+      "name": "Storage",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "计算正常",
+      "duration": 4.76837158203125e-05
+    },
+    {
+      "category": "Original",
+      "name": "DropStructure",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "计算正常",
+      "duration": 1.2636184692382812e-05
+    },
+    {
+      "category": "Original",
+      "name": "Bridge",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "计算正常",
+      "duration": 9.775161743164062e-06
+    },
+    {
+      "category": "New",
+      "name": "水轮机 (Turbine-Francis)",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "P=45.62MW, η=93.0%",
+      "duration": 1.33514404296875e-05
+    },
+    {
+      "category": "New",
+      "name": "阀门 (蝶阀)",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "Q=1417.42m³/s (开度80%)",
+      "duration": 8.58306884765625e-06
+    },
+    {
+      "category": "New",
+      "name": "阀门 (球阀)",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "Q=1771.78m³/s (开度80%)",
+      "duration": 5.245208740234375e-06
+    },
+    {
+      "category": "New",
+      "name": "阀门 (闸阀)",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "Q=1584.73m³/s (开度80%)",
+      "duration": 3.5762786865234375e-06
+    },
+    {
+      "category": "New",
+      "name": "调压井 (SurgeTank)",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "水位=101.00m",
+      "duration": 5.245208740234375e-06
+    },
+    {
+      "category": "Integration",
+      "name": "水电站系统集成",
+      "status": "FAIL",
+      "icon": "❌",
+      "details": "阀门开度异常",
+      "duration": 1.33514404296875e-05
+    },
+    {
+      "category": "Performance",
+      "name": "批量计算性能",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "1000次计算耗时0.000s, 平均0.000ms",
+      "duration": 0.0002048015594482422
+    },
+    {
+      "category": "Accuracy",
+      "name": "堰流量计算精度",
+      "status": "PASS",
+      "icon": "✅",
+      "details": "误差=0.000% (< 1%)",
+      "duration": 2.6226043701171875e-06
+    }
+  ],
+  "end_time": "2025-11-15T06:28:52.591748"
+}
