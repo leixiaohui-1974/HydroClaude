@@ -1,6 +1,6 @@
 import { useState, lazy, Suspense } from 'react';
 import { Layout, Typography, Space, Tabs, Spin, Modal } from 'antd';
-import { AppstoreOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, PlayCircleOutlined, ExperimentOutlined } from '@ant-design/icons';
 import QuickActionsToolbar from './components/QuickActionsToolbar';
 import { useKeyboardShortcuts, DEFAULT_SHORTCUTS } from './hooks/useKeyboardShortcuts';
 import './App.css';
@@ -8,12 +8,13 @@ import './App.css';
 // Lazy load workspace components for code splitting
 const SimulationWorkspace = lazy(() => import('./features/simulation/SimulationWorkspace'));
 const ModelingWorkspace = lazy(() => import('./features/modeling/ModelingWorkspace'));
+const TestCaseLibrary = lazy(() => import('./features/test-cases/TestCaseLibrary'));
 
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
 
 function App() {
-  const [activeTab, setActiveTab] = useState('modeling');
+  const [activeTab, setActiveTab] = useState('test-cases');
   const [helpModalVisible, setHelpModalVisible] = useState(false);
 
   // Global keyboard shortcuts
@@ -37,11 +38,25 @@ function App() {
 
   const tabItems = [
     {
+      key: 'test-cases',
+      label: (
+        <span>
+          <ExperimentOutlined />
+          案例库
+        </span>
+      ),
+      children: (
+        <Suspense fallback={<div style={{ textAlign: 'center', padding: '50px' }}><Spin size="large" tip="加载中..." /></div>}>
+          <TestCaseLibrary />
+        </Suspense>
+      )
+    },
+    {
       key: 'modeling',
       label: (
         <span>
           <AppstoreOutlined />
-          建模工作台
+          建模工作区
         </span>
       ),
       children: (
