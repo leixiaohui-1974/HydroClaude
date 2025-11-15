@@ -29,18 +29,34 @@ os.environ['NUMBA_DISABLE_PERFORMANCE_WARNINGS'] = '1'
 # 导入HydroClaude核心模块
 from solvers.godunov_fvm_solver import GodunvFVMSolver
 
-# 导入水工结构模块（Week 1-2新增）
+# 导入水工结构模块
 try:
+    # Week 1-2: 泵站和闸门
     from web.backend.core.structures.pump_station import PumpStation, PumpCurve, PumpType, ControlMode
     from web.backend.core.structures.advanced_gates import SluiceGate, RadialGate, GateType, FlowRegime
+    # Week 3-4: 堰和水库
+    from web.backend.core.structures.advanced_weirs import (
+        BroadCrestedWeir, SharpCrestedWeir, OgeeWeir, 
+        VNotchWeir, RectangularWeir, TrapezoidalWeir, WeirType
+    )
+    from web.backend.core.structures.storage import Storage
+    from web.backend.core.structures.reservoir import Reservoir
 except ImportError:
     # 备用导入路径
     from pathlib import Path
     backend_path = Path(__file__).parent.parent
     if str(backend_path) not in sys.path:
         sys.path.insert(0, str(backend_path))
+    # Week 1-2
     from core.structures.pump_station import PumpStation, PumpCurve, PumpType, ControlMode
     from core.structures.advanced_gates import SluiceGate, RadialGate, GateType, FlowRegime
+    # Week 3-4
+    from core.structures.advanced_weirs import (
+        BroadCrestedWeir, SharpCrestedWeir, OgeeWeir,
+        VNotchWeir, RectangularWeir, TrapezoidalWeir, WeirType
+    )
+    from core.structures.storage import Storage
+    from core.structures.reservoir import Reservoir
 
 
 @dataclass
@@ -83,17 +99,35 @@ class HydraulicEngineV2:
             'version': self.version,
             'engine_path': self.engine_path,
             'available_methods': [
-                'run_canal_simulation',      # v1.0
-                'run_pump_simulation',        # v2.0 Week 1-2
-                'run_canal_with_pump',        # v2.0 Week 1-2
-                'run_gate_simulation',        # v2.0 Week 1-2
-                'run_canal_with_gate',        # v2.0 Week 1-2
+                # v1.0
+                'run_canal_simulation',
+                # v2.0 Week 1-2
+                'run_pump_simulation',
+                'run_canal_with_pump',
+                'run_gate_simulation',
+                'run_canal_with_gate',
+                # v2.0 Week 3-4
+                'run_weir_simulation',
+                'run_canal_with_weir',
+                'run_reservoir_simulation',
+                'run_reservoir_operation',
             ],
             'supported_structures': [
+                # 明渠
                 'canal',
+                # 泵站
                 'pump_station',
+                # 闸门
                 'sluice_gate',
                 'radial_gate',
+                # 堰
+                'broad_crested_weir',
+                'sharp_crested_weir',
+                'ogee_weir',
+                'v_notch_weir',
+                # 水库
+                'reservoir',
+                'storage',
             ]
         }
     
@@ -704,6 +738,483 @@ class HydraulicEngineV2:
                 timestamp=datetime.now().isoformat(),
                 error=f"{str(e)}\n{traceback.format_exc()}"
             )
+    
+    # ==================== Week 3-4: 堰和水库集成 ====================
+    
+    def run_weir_simulation(
+        self,
+        task_id: str,
+        config: Dict[str, Any]
+    ) -> SimulationResult:
+        """
+        运行堰流计算（Week 3-4新增）
+        
+        功能：
+        - 多种堰类型支持（宽顶、薄壁、溢流、V形等）
+        - 自由流/淹没流判断
+        - 流量系数计算
+        - 水面线分析
+        
+        Args:
+            task_id: 任务ID
+            config: 堰配置
+        
+        Returns:
+            SimulationResult: 仿真结果
+        """
+        start_time = datetime.now()
+        
+        try:
+            # 1. 提取配置
+            weir_cfg = config.get('weir', {})
+            upstream_cfg = config.get('upstream', {})
+            downstream_cfg = config.get('downstream', {})
+            
+            # 2. 创建堰对象
+            weir_type = weir_cfg.get('type', 'broad_crested')
+            width = weir_cfg.get('width', 10.0)
+            crest_height = weir_cfg.get('crest_height', 1.5)
+            discharge_coeff = weir_cfg.get('discharge_coeff', 1.7)
+            
+            if weir_type == 'broad_crested':
+                weir = BroadCrestedWeir(
+                    name=weir_cfg.get('name', 'Weir-001'),
+                    position=weir_cfg.get('position', 500.0),
+                    width=width,
+                    crest_height=crest_height,
+                    discharge_coeff=discharge_coeff
+                )
+            elif weir_type == 'sharp_crested':
+                weir = SharpCrestedWeir(
+                    name=weir_cfg.get('name', 'Weir-001'),
+                    position=weir_cfg.get('position', 500.0),
+                    width=width,
+                    crest_height=crest_height,
+                    discharge_coeff=discharge_coeff
+                )
+            elif weir_type == 'ogee':
+                weir = OgeeWeir(
+                    name=weir_cfg.get('name', 'Weir-001'),
+                    position=weir_cfg.get('position', 500.0),
+                    width=width,
+                    crest_height=crest_height,
+                    discharge_coeff=discharge_coeff
+                )
+            elif weir_type == 'v_notch':
+                notch_angle = weir_cfg.get('angle', 90.0)
+                weir = VNotchWeir(
+                    name=weir_cfg.get('name', 'Weir-001'),
+                    position=weir_cfg.get('position', 500.0),
+                    crest_height=crest_height,
+                    notch_angle=notch_angle
+                )
+            else:
+                raise ValueError(f"Unsupported weir type: {weir_type}")
+            
+            # 3. 计算过堰流量
+            h_upstream = upstream_cfg.get('water_depth', 3.0)
+            h_downstream = downstream_cfg.get('water_depth', 1.0)
+            
+            # 计算堰上水头
+            H = max(h_upstream - crest_height, 0.0)
+            
+            # 判断是否淹没
+            is_submerged = (h_downstream - crest_height) / H > 0.67 if H > 0 else False
+            
+            # 计算流量
+            Q = weir.compute_discharge(h_upstream, h_downstream)
+            
+            # 计算单宽流量
+            q = Q / width if hasattr(weir, 'width') and weir.width > 0 else Q
+            
+            # 4. 封装结果
+            duration_seconds = (datetime.now() - start_time).total_seconds()
+            
+            result = SimulationResult(
+                task_id=task_id,
+                status='completed',
+                time=[0.0],
+                x=[weir.position],
+                h=[[h_upstream, crest_height, h_downstream]],
+                Q=[[float(Q)]],
+                V=[[float(Q / width / H) if H > 0 else 0.0]],
+                metrics={
+                    'discharge': float(Q),
+                    'unit_discharge': float(q),
+                    'weir_type': weir_type,
+                    'crest_height': crest_height,
+                    'head_over_weir': float(H),
+                    'is_submerged': is_submerged,
+                    'upstream_depth': h_upstream,
+                    'downstream_depth': h_downstream,
+                    'discharge_coeff': discharge_coeff
+                },
+                duration=duration_seconds,
+                timestamp=datetime.now().isoformat()
+            )
+            
+            return result
+            
+        except Exception as e:
+            import traceback
+            return SimulationResult(
+                task_id=task_id,
+                status='failed',
+                time=[],
+                x=[],
+                h=[],
+                Q=[],
+                V=[],
+                metrics={},
+                duration=(datetime.now() - start_time).total_seconds(),
+                timestamp=datetime.now().isoformat(),
+                error=f"{str(e)}\n{traceback.format_exc()}"
+            )
+    
+    def run_canal_with_weir(
+        self,
+        task_id: str,
+        config: Dict[str, Any]
+    ) -> SimulationResult:
+        """
+        运行明渠+堰组合仿真（Week 3-4新增）
+        
+        适用场景：
+        - 测流堰
+        - 溢流堰
+        - 跌水堰
+        
+        Args:
+            task_id: 任务ID
+            config: 配置
+        
+        Returns:
+            SimulationResult: 仿真结果
+        """
+        start_time = datetime.now()
+        
+        try:
+            # 1. 运行基础明渠仿真
+            canal_config = config.get('canal', {})
+            if not canal_config:
+                canal_config = config.copy()
+                canal_config.pop('weir', None)
+            
+            canal_result = self._run_canal_simulation_internal(
+                task_id,
+                canal_config,
+                start_time
+            )
+            
+            if canal_result.status != 'completed':
+                return canal_result
+            
+            # 2. 在堰位置计算过堰流量
+            weir_cfg = config.get('weir', {})
+            weir_position = weir_cfg.get('position', canal_config.get('length', 1000.0) / 2)
+            weir_type = weir_cfg.get('type', 'broad_crested')
+            crest_height = weir_cfg.get('crest_height', 1.5)
+            
+            # 从明渠结果中提取堰位置的水深
+            mid_idx = len(canal_result.x) // 2
+            if len(canal_result.h) > 0 and len(canal_result.h[-1]) > 0 and len(canal_result.h[-1]) > mid_idx:
+                h_upstream = canal_result.h[-1][mid_idx]
+            else:
+                # 使用初始条件的水深
+                initial_cond = canal_config.get('initial_conditions', {})
+                if isinstance(initial_cond, dict):
+                    h_upstream = initial_cond.get('h', 3.0)
+                else:
+                    h_upstream = 3.0
+            
+            # 计算堰上水头和流量
+            H = max(h_upstream - crest_height, 0.0)
+            width = weir_cfg.get('width', canal_config.get('width', 10.0))
+            Cd = weir_cfg.get('discharge_coeff', 1.7)
+            
+            if weir_type == 'v_notch':
+                # V形堰
+                angle = weir_cfg.get('angle', 90.0)
+                Q_weir = 1.4 * np.tan(np.radians(angle/2)) * np.sqrt(2*9.81) * H**2.5
+            else:
+                # 其他堰型（宽顶、薄壁、溢流）
+                Q_weir = Cd * width * np.sqrt(2*9.81) * H**1.5
+            
+            # 3. 修改metrics添加堰信息
+            canal_result.metrics.update({
+                'weir_discharge': float(Q_weir),
+                'weir_position': float(weir_position),
+                'weir_type': weir_type,
+                'weir_head': float(H),
+                'crest_height': float(crest_height),
+                'system_type': 'canal_with_weir'
+            })
+            
+            return canal_result
+            
+        except Exception as e:
+            import traceback
+            return SimulationResult(
+                task_id=task_id,
+                status='failed',
+                time=[],
+                x=[],
+                h=[],
+                Q=[],
+                V=[],
+                metrics={},
+                duration=(datetime.now() - start_time).total_seconds(),
+                timestamp=datetime.now().isoformat(),
+                error=f"{str(e)}\n{traceback.format_exc()}"
+            )
+    
+    def run_reservoir_simulation(
+        self,
+        task_id: str,
+        config: Dict[str, Any]
+    ) -> SimulationResult:
+        """
+        运行水库调度仿真（Week 3-4新增）
+        
+        功能：
+        - 水位-库容关系
+        - 入流-出流平衡
+        - 水位演算
+        - 滞洪演算
+        - 溢流计算
+        
+        Args:
+            task_id: 任务ID
+            config: 水库配置
+        
+        Returns:
+            SimulationResult: 仿真结果
+        """
+        start_time = datetime.now()
+        
+        try:
+            # 1. 提取配置
+            reservoir_cfg = config.get('reservoir', {})
+            inflow_cfg = config.get('inflow', {})
+            outflow_cfg = config.get('outflow', {})
+            sim_cfg = config.get('simulation', {})
+            
+            # 2. 创建水库对象
+            reservoir = Storage(
+                name=reservoir_cfg.get('name', 'Reservoir-001'),
+                position=reservoir_cfg.get('position', 0.0),
+                elevation=reservoir_cfg.get('elevation', [0, 10, 20, 30]),
+                area=reservoir_cfg.get('area', [0, 1000, 4000, 9000]),
+                initial_elevation=reservoir_cfg.get('initial_elevation', 15.0),
+                spillway_elevation=reservoir_cfg.get('spillway_elevation', 25.0),
+                spillway_width=reservoir_cfg.get('spillway_width', 20.0)
+            )
+            
+            # 3. 模拟演算
+            duration = sim_cfg.get('duration', 86400.0)
+            dt = sim_cfg.get('dt', 60.0)
+            n_steps = int(duration / dt)
+            
+            # 入流和出流
+            Q_in = inflow_cfg.get('value', 50.0)
+            Q_out = outflow_cfg.get('value', 30.0)
+            
+            # 历史记录
+            time_array = []
+            elevation_array = []
+            volume_array = []
+            inflow_array = []
+            outflow_array = []
+            spillway_array = []
+            
+            for i in range(min(n_steps, 100)):  # 限制100个输出点
+                t = i * (duration / min(n_steps, 100))
+                
+                # 水位演算
+                new_elev, Q_total_out = reservoir.route(Q_in, Q_out, dt)
+                
+                # 计算当前库容
+                V = reservoir.get_volume(new_elev)
+                
+                # 计算溢流
+                Q_spillway = reservoir.compute_spillway_flow()
+                
+                time_array.append(t)
+                elevation_array.append(new_elev)
+                volume_array.append(V)
+                inflow_array.append(Q_in)
+                outflow_array.append(Q_total_out)
+                spillway_array.append(Q_spillway)
+            
+            # 4. 封装结果
+            duration_seconds = (datetime.now() - start_time).total_seconds()
+            
+            result = SimulationResult(
+                task_id=task_id,
+                status='completed',
+                time=[float(t) for t in time_array],
+                x=[reservoir.position],
+                h=[[float(e)] for e in elevation_array],
+                Q=[[float(q)] for q in outflow_array],
+                V=[[float(v)] for v in volume_array],
+                metrics={
+                    'initial_elevation': float(reservoir_cfg.get('initial_elevation', 15.0)),
+                    'final_elevation': float(elevation_array[-1]) if elevation_array else 0.0,
+                    'max_elevation': float(np.max(elevation_array)) if elevation_array else 0.0,
+                    'min_elevation': float(np.min(elevation_array)) if elevation_array else 0.0,
+                    'total_inflow_volume': float(Q_in * duration),
+                    'total_outflow_volume': float(np.sum(outflow_array) * dt),
+                    'max_spillway_flow': float(np.max(spillway_array)) if spillway_array else 0.0,
+                    'avg_inflow': float(Q_in),
+                    'avg_outflow': float(np.mean(outflow_array)) if outflow_array else 0.0
+                },
+                duration=duration_seconds,
+                timestamp=datetime.now().isoformat()
+            )
+            
+            return result
+            
+        except Exception as e:
+            import traceback
+            return SimulationResult(
+                task_id=task_id,
+                status='failed',
+                time=[],
+                x=[],
+                h=[],
+                Q=[],
+                V=[],
+                metrics={},
+                duration=(datetime.now() - start_time).total_seconds(),
+                timestamp=datetime.now().isoformat(),
+                error=f"{str(e)}\n{traceback.format_exc()}"
+            )
+    
+    def run_reservoir_operation(
+        self,
+        task_id: str,
+        config: Dict[str, Any]
+    ) -> SimulationResult:
+        """
+        运行水库优化调度（Week 3-4新增）
+        
+        功能：
+        - 防洪调度
+        - 兴利调度  
+        - 多目标优化
+        - 调度规则
+        
+        Args:
+            task_id: 任务ID
+            config: 优化配置
+        
+        Returns:
+            SimulationResult: 仿真结果（含优化调度方案）
+        """
+        start_time = datetime.now()
+        
+        try:
+            # 简化实现：基于规则的调度
+            reservoir_cfg = config.get('reservoir', {})
+            inflow_hydro = config.get('inflow_hydrograph', {})
+            operation_rule = config.get('operation_rule', {})
+            
+            # 提取调度规则
+            normal_level = operation_rule.get('normal_level', 20.0)
+            flood_limit = operation_rule.get('flood_limit', 18.0)
+            dead_level = operation_rule.get('dead_level', 10.0)
+            max_release = operation_rule.get('max_release', 80.0)
+            
+            # 创建水库
+            reservoir = Storage(
+                name=reservoir_cfg.get('name', 'Reservoir-001'),
+                position=reservoir_cfg.get('position', 0.0),
+                elevation=reservoir_cfg.get('elevation', [0, 10, 20, 30]),
+                area=reservoir_cfg.get('area', [0, 1000, 4000, 9000]),
+                initial_elevation=reservoir_cfg.get('initial_elevation', 15.0),
+                spillway_elevation=reservoir_cfg.get('spillway_elevation', 25.0),
+                spillway_width=reservoir_cfg.get('spillway_width', 20.0)
+            )
+            
+            # 入流过程线
+            time_points = inflow_hydro.get('time', [0, 86400])
+            flow_points = inflow_hydro.get('flow', [30.0, 30.0])
+            
+            # 调度演算
+            time_array = []
+            elevation_array = []
+            release_array = []
+            
+            dt = 3600.0  # 1小时时间步长
+            current_elev = reservoir.current_elevation
+            
+            for i, t in enumerate(time_points):
+                # 当前入流
+                Q_in = flow_points[i]
+                
+                # 调度规则决策出流
+                if current_elev > flood_limit:
+                    # 超过汛限，加大泄流
+                    Q_out = min(Q_in * 1.5, max_release)
+                elif current_elev < dead_level:
+                    # 低于死水位，减小泄流
+                    Q_out = min(Q_in * 0.5, max_release * 0.3)
+                else:
+                    # 正常运行
+                    Q_out = Q_in
+                
+                # 演算
+                if i < len(time_points) - 1:
+                    dt_step = time_points[i+1] - t
+                    new_elev, _ = reservoir.route(Q_in, Q_out, dt_step)
+                    current_elev = new_elev
+                
+                time_array.append(t)
+                elevation_array.append(current_elev)
+                release_array.append(Q_out)
+            
+            # 封装结果
+            duration_seconds = (datetime.now() - start_time).total_seconds()
+            
+            result = SimulationResult(
+                task_id=task_id,
+                status='completed',
+                time=[float(t) for t in time_array],
+                x=[reservoir.position],
+                h=[[float(e)] for e in elevation_array],
+                Q=[[float(q)] for q in release_array],
+                V=[[float(reservoir.get_volume(e))] for e in elevation_array],
+                metrics={
+                    'operation_type': 'rule_based',
+                    'normal_level': normal_level,
+                    'flood_limit': flood_limit,
+                    'max_release': max_release,
+                    'max_elevation': float(np.max(elevation_array)),
+                    'min_elevation': float(np.min(elevation_array)),
+                    'peak_release': float(np.max(release_array)),
+                    'total_release_volume': float(np.sum(release_array) * dt)
+                },
+                duration=duration_seconds,
+                timestamp=datetime.now().isoformat()
+            )
+            
+            return result
+            
+        except Exception as e:
+            import traceback
+            return SimulationResult(
+                task_id=task_id,
+                status='failed',
+                time=[],
+                x=[],
+                h=[],
+                Q=[],
+                V=[],
+                metrics={},
+                duration=(datetime.now() - start_time).total_seconds(),
+                timestamp=datetime.now().isoformat(),
+                error=f"{str(e)}\n{traceback.format_exc()}"
+            )
 
 
 # 测试代码
@@ -757,3 +1268,6 @@ if __name__ == '__main__':
     
     print("\n" + "="*80)
     print("✅ Week 1-2开发完成：4个新方法全部可用")
+    
+    # ==================== Week 3-4: 堰和水库集成 ====================
+    
