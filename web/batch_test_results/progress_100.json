@@ -1,0 +1,707 @@
+{
+  "progress": "100/541",
+  "success": 0,
+  "failed": 100,
+  "results": [
+    {
+      "id": "tests-analyze_well_balanced_details",
+      "name": "详细分析Well-Balanced重构的数值行为",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-benchmark_newton_vs_iterative",
+      "name": "性能基准测试：牛顿法 vs 迭代法",
+      "category": "benchmark",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-benchmark_numba",
+      "name": "Numba加速效果基准测试",
+      "category": "benchmark",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-benchmark_riemann_solvers",
+      "name": "Riemann求解器性能基准测试",
+      "category": "benchmark",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-core_functionality_verification",
+      "name": "核心功能验证测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-core_functionality_verification_v2",
+      "name": "核心功能验证测试 V2 (改进版)",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-dam_break_high_res_numba",
+      "name": "高精度溃坝测试（Numba加速版本）",
+      "category": "dam_break",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-dam_break_numba_10s",
+      "name": "快速溃坝测试（10秒，展示Numba威力）",
+      "category": "dam_break",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-debug_exact_flux",
+      "name": "诊断精确Riemann求解器通量计算",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-debug_exact_sampling",
+      "name": "调试精确Riemann求解器采样逻辑",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-debug_gate_jacobian",
+      "name": "调试闸门场景的Jacobian奇异性",
+      "category": "structures",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-debug_wb_nan",
+      "name": "Debug Well-Balanced NaN Issue",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-diagnose_exact_crash_timeline",
+      "name": "精确求解器崩溃时间线诊断",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-diagnose_exact_flux_step_by_step",
+      "name": "逐步通量诊断 - 精确求解器",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-diagnose_exact_mass_loss",
+      "name": "诊断精确求解器质量损失问题",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-diagnose_exact_single_interface",
+      "name": "单界面精确通量诊断",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-diagnose_hllc_instability",
+      "name": "Diagnose HLLC Numerical Instability",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-diagnose_newton_solver",
+      "name": "Newton求解器诊断",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-hllc_bug_analysis",
+      "name": "HLLC问题分析和修复方案",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-numba_performance_validation",
+      "name": "Numba JIT Performance Validation",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-performance_benchmark",
+      "name": "HydroClaude Performance Benchmark Suite",
+      "category": "benchmark",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-profile_solver",
+      "name": "性能分析工具",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-quick_lake_at_rest",
+      "name": "Quick Lake at Rest Test",
+      "category": "lake_at_rest",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-regression_test_suite",
+      "name": "HydroClaude Comprehensive Regression Test Suite",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-simple_solver_comparison",
+      "name": "简化的求解器对比测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_advanced_boundary_conditions",
+      "name": "高级边界条件集成测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_agc_coordination",
+      "name": "Test suite for AGC and multi-unit coordination",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_boundaries",
+      "name": "测试边界条件类",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_boundary_conditions",
+      "name": "特征线边界条件单元测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_boundary_condition_fix",
+      "name": "测试边界条件修复：验证Jacobian非奇异性",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_bridge",
+      "name": "Test suite for Bridge hydraulic model",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_components",
+      "name": "Components",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_composite_roughness",
+      "name": "复合糙率功能测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_config_driven",
+      "name": "配置驱动系统测试套件",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_continuation_robustness",
+      "name": "测试延拓求解器的鲁棒性",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_controllers",
+      "name": "Controllers",
+      "category": "control",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_coupled_solver",
+      "name": "完整耦合求解器测试套件",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_cross_section",
+      "name": "河道断面模块单元测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_cross_section_integration",
+      "name": "测试断面类集成到求解器",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_cross_section_integration_simple",
+      "name": "测试断面类集成到求解器（简化版，无需pytest）",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_culvert",
+      "name": "Test suite for Culvert hydraulic model",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_do_simple",
+      "name": "DO模型简化测试 - 调试用",
+      "category": "water_quality",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_drop",
+      "name": "测试跌水结构水力计算",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_exact_boundary_strategies",
+      "name": "测试不同边界条件策略对精确求解器的影响",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_exact_cfl_01_validation",
+      "name": "验证CFL=0.1时精确求解器的表现",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_exact_cfl_sensitivity",
+      "name": "测试不同CFL数对精确求解器的影响",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_exact_lake_at_rest",
+      "name": "精确Riemann求解器Lake at Rest测试",
+      "category": "lake_at_rest",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_exact_solver_integration",
+      "name": "测试精确Riemann求解器集成到GodunvFVMSolver",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_flow_measurement",
+      "name": "测试流量测量设施",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_frazil_ice_jam",
+      "name": "Frazil Ice和Ice Jam模块测试套件",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_gate_derivatives",
+      "name": "测试闸门流量对水深的导数计算",
+      "category": "structures",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_governor",
+      "name": "Test cases for Governor control systems",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_hllc_dam_break",
+      "name": "HLLC vs HLL Dam Break Comparison Test",
+      "category": "dam_break",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_hllc_lake_at_rest",
+      "name": "测试HLLC求解器在Lake at Rest问题上的表现",
+      "category": "lake_at_rest",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_hll_vs_hllc",
+      "name": "HLL vs HLLC Riemann求解器对比测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_hybrid_simple",
+      "name": "测试混合求解器 - 简单场景",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_hydraulic_structures",
+      "name": "Test cases for Hydraulic Structures (Spillway, Transition, Drop)",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_ice_water_quality",
+      "name": "冰-水质模拟模块测试套件",
+      "category": "water_quality",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_idz_model",
+      "name": "IDZ模型模块单元测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_inflatable_dam",
+      "name": "充气坝单元测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_integration_simple",
+      "name": "简化集成测试 - 验证核心功能",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_lake_at_rest_wb",
+      "name": "Lake at Rest Test with Well-Balanced Format",
+      "category": "lake_at_rest",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_moc_solver",
+      "name": "Moc Solver",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_multi_objective",
+      "name": "多目标优化算法单元测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_multi_section_identification",
+      "name": "多断面辨识模块单元测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_network_components",
+      "name": "管网组件单元测试",
+      "category": "network",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_network_integration",
+      "name": "网络集成测试套件",
+      "category": "network",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_network_nodes",
+      "name": "节点类型测试",
+      "category": "network",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_network_structures",
+      "name": "测试内部水工建筑物",
+      "category": "network",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_network_structures_simple",
+      "name": "简单测试内部水工建筑物（不使用pytest）",
+      "category": "network",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_network_topology",
+      "name": "网络拓扑测试",
+      "category": "network",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_network_validation",
+      "name": "网络验证工具测试",
+      "category": "network",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_newton_boundary_fix",
+      "name": "测试牛顿法边界条件修复效果",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_newton_three_gates",
+      "name": "测试三闸门场景的牛顿法求解",
+      "category": "structures",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_nutrients",
+      "name": "营养盐循环模块测试套件",
+      "category": "water_quality",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_online_identification",
+      "name": "在线辨识模块单元测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_phytoplankton",
+      "name": "藻类生长模块测试套件",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_pressurized_system",
+      "name": "有压系统单元测试",
+      "category": "pressurized",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_pumps",
+      "name": "测试泵站水力计算",
+      "category": "structures",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_radial_gate",
+      "name": "弧形闸门单元测试",
+      "category": "structures",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_reservoir",
+      "name": "水库组件测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_riemann_solvers",
+      "name": "Riemann求解器单元测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_surge_tank_siphon",
+      "name": "Test cases for Surge Tank and Inverted Siphon",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_turbine",
+      "name": "Test cases for Hydraulic Turbines",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_valve",
+      "name": "Test cases for Valve classes",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_valves",
+      "name": "测试阀门水力计算",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_weirs",
+      "name": "堰类组件单元测试",
+      "category": "structures",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_well_balanced",
+      "name": "Well-Balanced格式测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-test_z_interface_strategies",
+      "name": "Test Different z_interface Selection Strategies for Well-Balanced Reconstruction",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-diagnostic-benchmark_numba_performance",
+      "name": "Numba JIT性能基准测试",
+      "category": "benchmark",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-diagnostic-benchmark_performance_improvement",
+      "name": "性能提升基准测试",
+      "category": "benchmark",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-diagnostic-compare_initialization",
+      "name": "对比两种初始化方式的差异",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-diagnostic-compare_state_at_33s",
+      "name": "在33秒时对比两种方法的完整状态",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-diagnostic-debug_step_by_step",
+      "name": "单步调试：在35秒前后详细追踪每一步",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-diagnostic-profile_weno3_performance",
+      "name": "WENO3性能分析工具",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-diagnostic-quick_test_n002",
+      "name": "快速测试 n=0.02 工况",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-diagnostic-test_adaptive_timestep",
+      "name": "自适应时间步性能测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-diagnostic-test_advanced_features",
+      "name": "高级功能综合测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-diagnostic-test_all_examples",
+      "name": "自动测试所有示例（Examples 1-16）",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    },
+    {
+      "id": "tests-diagnostic-test_all_structures",
+      "name": "所有水工结构类型的综合测试",
+      "category": "general",
+      "success": false,
+      "error": "Timeout (>3s)"
+    }
+  ]
+}

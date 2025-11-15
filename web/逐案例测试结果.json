@@ -1,0 +1,93 @@
+{
+  "timestamp": "2025-11-15 03:21:51",
+  "total": 5,
+  "api_success": 5,
+  "web_verified": 5,
+  "results": [
+    {
+      "id": "tc1",
+      "name": "静态均匀流",
+      "stages": {
+        "api_submit": "success",
+        "calculation": "success",
+        "workspace": "success",
+        "simulation_mgmt": "success"
+      },
+      "screenshots": [
+        "tc1_01_workspace.png",
+        "tc1_02_simulation_mgmt.png"
+      ],
+      "api_success": true,
+      "web_verified": true,
+      "task_id": "3290b120-1312-4751-a0b8-a0db79948e65"
+    },
+    {
+      "id": "tc2",
+      "name": "均匀流动",
+      "stages": {
+        "api_submit": "success",
+        "calculation": "success",
+        "workspace": "success",
+        "simulation_mgmt": "success"
+      },
+      "screenshots": [
+        "tc2_01_workspace.png",
+        "tc2_02_simulation_mgmt.png"
+      ],
+      "api_success": true,
+      "web_verified": true,
+      "task_id": "0c2e6f0c-4f99-43ce-893f-1a3c34bbbdf6"
+    },
+    {
+      "id": "tc3",
+      "name": "浅层流动",
+      "stages": {
+        "api_submit": "success",
+        "calculation": "success",
+        "workspace": "success",
+        "simulation_mgmt": "success"
+      },
+      "screenshots": [
+        "tc3_01_workspace.png",
+        "tc3_02_simulation_mgmt.png"
+      ],
+      "api_success": true,
+      "web_verified": true,
+      "task_id": "96840957-e052-43c2-880d-3140e1e84fd9"
+    },
+    {
+      "id": "tc4",
+      "name": "深层流动",
+      "stages": {
+        "api_submit": "success",
+        "calculation": "success",
+        "workspace": "success",
+        "simulation_mgmt": "success"
+      },
+      "screenshots": [
+        "tc4_01_workspace.png",
+        "tc4_02_simulation_mgmt.png"
+      ],
+      "api_success": true,
+      "web_verified": true,
+      "task_id": "468c8c5b-ba5c-4888-92db-6a13af025040"
+    },
+    {
+      "id": "tc5",
+      "name": "大流量",
+      "stages": {
+        "api_submit": "success",
+        "calculation": "success",
+        "workspace": "success",
+        "simulation_mgmt": "success"
+      },
+      "screenshots": [
+        "tc5_01_workspace.png",
+        "tc5_02_simulation_mgmt.png"
+      ],
+      "api_success": true,
+      "web_verified": true,
+      "task_id": "91e9cf99-89fe-4360-854b-848e26c4624c"
+    }
+  ]
+}

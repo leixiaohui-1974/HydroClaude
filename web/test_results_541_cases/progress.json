@@ -1,0 +1,4083 @@
+{
+  "start_time": "2025-11-15T03:44:30.633969",
+  "total_cases": 432,
+  "tested": 432,
+  "passed": 361,
+  "failed": 71,
+  "skipped": 0,
+  "results_by_category": {
+    "general": {
+      "total": 316,
+      "passed": 260,
+      "failed": 56
+    },
+    "benchmark": {
+      "total": 7,
+      "passed": 4,
+      "failed": 3
+    },
+    "dam_break": {
+      "total": 14,
+      "passed": 4,
+      "failed": 10
+    },
+    "structures": {
+      "total": 34,
+      "passed": 34,
+      "failed": 0
+    },
+    "lake_at_rest": {
+      "total": 6,
+      "passed": 5,
+      "failed": 1
+    },
+    "water_quality": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0
+    },
+    "network": {
+      "total": 20,
+      "passed": 19,
+      "failed": 1
+    },
+    "pressurized": {
+      "total": 12,
+      "passed": 12,
+      "failed": 0
+    },
+    "control": {
+      "total": 19,
+      "passed": 19,
+      "failed": 0
+    }
+  },
+  "failed_cases": [
+    {
+      "case_id": "tests-analyze_well_balanced_details",
+      "name": "详细分析Well-Balanced重构的数值行为",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-benchmark_numba",
+      "name": "Numba加速效果基准测试",
+      "category": "benchmark",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-benchmark_riemann_solvers",
+      "name": "Riemann求解器性能基准测试",
+      "category": "benchmark",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-dam_break_high_res_numba",
+      "name": "高精度溃坝测试（Numba加速版本）",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-dam_break_numba_10s",
+      "name": "快速溃坝测试（10秒，展示Numba威力）",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-debug_exact_flux",
+      "name": "诊断精确Riemann求解器通量计算",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnose_exact_crash_timeline",
+      "name": "精确求解器崩溃时间线诊断",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnose_exact_flux_step_by_step",
+      "name": "逐步通量诊断 - 精确求解器",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnose_exact_mass_loss",
+      "name": "诊断精确求解器质量损失问题",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnose_hllc_instability",
+      "name": "Diagnose HLLC Numerical Instability",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-numba_performance_validation",
+      "name": "Numba JIT Performance Validation",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-performance_benchmark",
+      "name": "HydroClaude Performance Benchmark Suite",
+      "category": "benchmark",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-profile_solver",
+      "name": "性能分析工具",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-regression_test_suite",
+      "name": "HydroClaude Comprehensive Regression Test Suite",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-simple_solver_comparison",
+      "name": "简化的求解器对比测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_cross_section",
+      "name": "河道断面模块单元测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_exact_boundary_strategies",
+      "name": "测试不同边界条件策略对精确求解器的影响",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_exact_cfl_01_validation",
+      "name": "验证CFL=0.1时精确求解器的表现",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_exact_cfl_sensitivity",
+      "name": "测试不同CFL数对精确求解器的影响",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_exact_lake_at_rest",
+      "name": "精确Riemann求解器Lake at Rest测试",
+      "category": "lake_at_rest",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_exact_solver_integration",
+      "name": "测试精确Riemann求解器集成到GodunvFVMSolver",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_hllc_dam_break",
+      "name": "HLLC vs HLL Dam Break Comparison Test",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_hll_vs_hllc",
+      "name": "HLL vs HLLC Riemann求解器对比测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_multi_section_identification",
+      "name": "多断面辨识模块单元测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_riemann_solvers",
+      "name": "Riemann求解器单元测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_well_balanced",
+      "name": "Well-Balanced格式测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_z_interface_strategies",
+      "name": "Test Different z_interface Selection Strategies for Well-Balanced Reconstruction",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-compare_initialization",
+      "name": "对比两种初始化方式的差异",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-compare_state_at_33s",
+      "name": "在33秒时对比两种方法的完整状态",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_boundary_cell_evolution",
+      "name": "边界单元演化监控",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_boundary_evolution",
+      "name": "边界单元演化测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_boundary_natural_evolution",
+      "name": "边界自然演化测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_cell_by_cell_mass",
+      "name": "逐单元质量分析",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_cfl_sensitivity",
+      "name": "CFL敏感性测试 - 找出无摩阻Test 4的稳定CFL数",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_direct_mass_conservation",
+      "name": "直接质量守恒测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_flux_values",
+      "name": "通量值诊断",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_froude_analysis",
+      "name": "Froude数分析",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_ghost_cell_consistency",
+      "name": "Ghost Cell 一致性测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_godunov_dam_break",
+      "name": "Godunov-FVM求解器 - Dam Break完整验证",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_godunov_macdonald",
+      "name": "Godunov-FVM - MacDonald Test Case 1验证",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_hllc_vs_hll_comparison",
+      "name": "HLLC vs HLL完整对比测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_jump_initial_condition",
+      "name": "水跃初始条件测试 - 用包含水跃的初场替代线性初场",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_maccormack_dam_break",
+      "name": "MacCormack v2.0 - Dam Break验证",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_maccormack_v3_dam_break",
+      "name": "MacCormack v3.0 Dam Break测试（带HLL+TVD）",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald4_hllc",
+      "name": "MacDonald Test 4 - HLLC低耗散求解器测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald4_weno5",
+      "name": "MacDonald Test 4 - WENO5高阶格式测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_mass_flux_analysis",
+      "name": "质量通量分析",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_matrix_structure",
+      "name": "检查Preis",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_preissmann_debug",
+      "name": "调试Preissmann求解器的Jacobian矩阵问题",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_q_boundary",
+      "name": "Q边界诊断测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_rk2_flux",
+      "name": "TVD-RK2两个阶段的通量检查",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_simple_bc_check",
+      "name": "简单边界条件检查",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_simple_supercritical",
+      "name": "简单急流测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_single_step_mass",
+      "name": "单步质量详细诊断",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_static_water",
+      "name": "静水测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_supercritical_bc",
+      "name": "测试supercritical边界条件是否正确工作",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_weno_epsilon_sensitivity",
+      "name": "WENO epsilon敏感性测试 - 增加数值耗散",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-numerical_methods-test_compound_natural_sections",
+      "name": "复式断面和自然断面测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_geometry-test_trapezoidal_channel",
+      "name": "梯形断面渠道单元测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-verification-test_dam_break_swashes",
+      "name": "SWASHES Dam Break Benchmark Tests",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-verification-test_rp2_positivity_preserving",
+      "name": "RP2测试（正定性保持改进版）",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-verification-test_rp567_wet_dry",
+      "name": "RP5-RP7干床问题测试套件（Phase 8.2）",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-verification-test_toro_riemann_problems",
+      "name": "Toro标准Riemann问题测试套件",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "examples-example_trapezoidal_channel",
+      "name": "梯形断面渠道示例",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "examples-case_library-case_05_river_network",
+      "name": "HydroClaude Engineering Case 05: River Network System",
+      "category": "network",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "examples-case_library-case_01_dam_break-dam_break_comparison",
+      "name": "案例1: 溃坝模拟 - 方法对比",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "validation_cases-analytical-dam_break_godunov",
+      "name": "溃坝波验证 - Godunov-FVM求解器 (Ritter解析解)",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "validation_cases-analytical-dam_break_ritter",
+      "name": "标准验证案例1: Dam Break with Dry Bed (Ritter Solution)",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "validation_cases-engineering-bridge_assessment-bridge_assessment_case",
+      "name": "HydroClaude Engineering Case Study 3: Bridge Hydraulic Capacity Assessment",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "validation_cases-engineering-irrigation_canal-irrigation_canal_case",
+      "name": "HydroClaude Engineering Case Study 1: Trapezoidal Irrigation Canal System",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "validation_cases-engineering-urban_drainage-urban_drainage_case",
+      "name": "HydroClaude Engineering Case Study 4: Urban Drainage System",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    }
+  ],
+  "all_results": [
+    {
+      "case_id": "tests-analyze_well_balanced_details",
+      "name": "详细分析Well-Balanced重构的数值行为",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-benchmark_newton_vs_iterative",
+      "name": "性能基准测试：牛顿法 vs 迭代法",
+      "category": "benchmark",
+      "status": "passed",
+      "error": null,
+      "task_id": "48209faa-8460-4b00-bcb1-6015b5ff5b19"
+    },
+    {
+      "case_id": "tests-benchmark_numba",
+      "name": "Numba加速效果基准测试",
+      "category": "benchmark",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-benchmark_riemann_solvers",
+      "name": "Riemann求解器性能基准测试",
+      "category": "benchmark",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-core_functionality_verification",
+      "name": "核心功能验证测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "f4040618-9839-472d-85fe-d7b72bf588d4"
+    },
+    {
+      "case_id": "tests-core_functionality_verification_v2",
+      "name": "核心功能验证测试 V2 (改进版)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "77ad4c95-f226-49be-925c-f89cdea99b55"
+    },
+    {
+      "case_id": "tests-dam_break_high_res_numba",
+      "name": "高精度溃坝测试（Numba加速版本）",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-dam_break_numba_10s",
+      "name": "快速溃坝测试（10秒，展示Numba威力）",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-debug_exact_flux",
+      "name": "诊断精确Riemann求解器通量计算",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-debug_gate_jacobian",
+      "name": "调试闸门场景的Jacobian奇异性",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "8c645b60-8f04-4589-83ed-5fbfa2b88091"
+    },
+    {
+      "case_id": "tests-debug_wb_nan",
+      "name": "Debug Well-Balanced NaN Issue",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "3dad47c3-74da-4c70-ae49-46ab2d975bb7"
+    },
+    {
+      "case_id": "tests-diagnose_exact_crash_timeline",
+      "name": "精确求解器崩溃时间线诊断",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnose_exact_flux_step_by_step",
+      "name": "逐步通量诊断 - 精确求解器",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnose_exact_mass_loss",
+      "name": "诊断精确求解器质量损失问题",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnose_hllc_instability",
+      "name": "Diagnose HLLC Numerical Instability",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-numba_performance_validation",
+      "name": "Numba JIT Performance Validation",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-performance_benchmark",
+      "name": "HydroClaude Performance Benchmark Suite",
+      "category": "benchmark",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-profile_solver",
+      "name": "性能分析工具",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-quick_lake_at_rest",
+      "name": "Quick Lake at Rest Test",
+      "category": "lake_at_rest",
+      "status": "passed",
+      "error": null,
+      "task_id": "12e93600-5a8c-4da1-9be8-3772009a6022"
+    },
+    {
+      "case_id": "tests-regression_test_suite",
+      "name": "HydroClaude Comprehensive Regression Test Suite",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-simple_solver_comparison",
+      "name": "简化的求解器对比测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_advanced_boundary_conditions",
+      "name": "高级边界条件集成测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "078a4ad8-74bf-42a1-9289-f5c81a9ee943"
+    },
+    {
+      "case_id": "tests-test_boundaries",
+      "name": "测试边界条件类",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "4f66a4a4-40b7-4268-b9ef-6be7d0a558c5"
+    },
+    {
+      "case_id": "tests-test_boundary_condition_fix",
+      "name": "测试边界条件修复：验证Jacobian非奇异性",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "e2b12d0d-e05d-403e-a9c3-da8b921d5c24"
+    },
+    {
+      "case_id": "tests-test_bridge",
+      "name": "Test suite for Bridge hydraulic model",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "4b06201c-cbd0-4e8a-8c41-7ff1a50b77f7"
+    },
+    {
+      "case_id": "tests-test_components",
+      "name": "Components",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "3fd3f476-7cd0-4469-bc01-5cecb41f163c"
+    },
+    {
+      "case_id": "tests-test_composite_roughness",
+      "name": "复合糙率功能测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "c5689a5e-658d-404d-844c-f8fe63042138"
+    },
+    {
+      "case_id": "tests-test_continuation_robustness",
+      "name": "测试延拓求解器的鲁棒性",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "a1482e8f-fb3b-46f7-8b7a-5c759c412e0a"
+    },
+    {
+      "case_id": "tests-test_coupled_solver",
+      "name": "完整耦合求解器测试套件",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "b4112997-6e53-4002-ba0a-5145de3d11fd"
+    },
+    {
+      "case_id": "tests-test_cross_section",
+      "name": "河道断面模块单元测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_cross_section_integration",
+      "name": "测试断面类集成到求解器",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "43f21fea-196b-442f-922c-92c33147750b"
+    },
+    {
+      "case_id": "tests-test_cross_section_integration_simple",
+      "name": "测试断面类集成到求解器（简化版，无需pytest）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "884701b3-c536-4f9e-9476-32188bcafff9"
+    },
+    {
+      "case_id": "tests-test_culvert",
+      "name": "Test suite for Culvert hydraulic model",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "4e95ca73-2881-4994-b78a-4d9b2d4edb5e"
+    },
+    {
+      "case_id": "tests-test_do_simple",
+      "name": "DO模型简化测试 - 调试用",
+      "category": "water_quality",
+      "status": "passed",
+      "error": null,
+      "task_id": "10184ca0-b7a2-4c9f-8ea0-f6c191264084"
+    },
+    {
+      "case_id": "tests-test_drop",
+      "name": "测试跌水结构水力计算",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "259c2eda-2481-466b-89f3-41793e3e71c8"
+    },
+    {
+      "case_id": "tests-test_exact_boundary_strategies",
+      "name": "测试不同边界条件策略对精确求解器的影响",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_exact_cfl_01_validation",
+      "name": "验证CFL=0.1时精确求解器的表现",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_exact_cfl_sensitivity",
+      "name": "测试不同CFL数对精确求解器的影响",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_exact_lake_at_rest",
+      "name": "精确Riemann求解器Lake at Rest测试",
+      "category": "lake_at_rest",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_exact_solver_integration",
+      "name": "测试精确Riemann求解器集成到GodunvFVMSolver",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_flow_measurement",
+      "name": "测试流量测量设施",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "f901a4dd-d698-435a-95e5-5553609eb2b2"
+    },
+    {
+      "case_id": "tests-test_frazil_ice_jam",
+      "name": "Frazil Ice和Ice Jam模块测试套件",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "9b952d69-f7b5-4a88-bff5-8118594fad69"
+    },
+    {
+      "case_id": "tests-test_hllc_dam_break",
+      "name": "HLLC vs HLL Dam Break Comparison Test",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_hllc_lake_at_rest",
+      "name": "测试HLLC求解器在Lake at Rest问题上的表现",
+      "category": "lake_at_rest",
+      "status": "passed",
+      "error": null,
+      "task_id": "49ea2a2a-0d3c-4a79-9f5b-bf884a81ce89"
+    },
+    {
+      "case_id": "tests-test_hll_vs_hllc",
+      "name": "HLL vs HLLC Riemann求解器对比测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_hybrid_simple",
+      "name": "测试混合求解器 - 简单场景",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "ce193fc9-ba0f-4b9d-a4a1-b5dac3dc2f55"
+    },
+    {
+      "case_id": "tests-test_hydraulic_structures",
+      "name": "Test cases for Hydraulic Structures (Spillway, Transition, Drop)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "1de8d56e-4c84-4043-a37a-3f5262ae745a"
+    },
+    {
+      "case_id": "tests-test_ice_water_quality",
+      "name": "冰-水质模拟模块测试套件",
+      "category": "water_quality",
+      "status": "passed",
+      "error": null,
+      "task_id": "e5634656-350d-4238-b61d-1663fb713af6"
+    },
+    {
+      "case_id": "tests-test_idz_model",
+      "name": "IDZ模型模块单元测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "0b1c7bf5-f8ee-4c97-a4a5-e53d46b633b9"
+    },
+    {
+      "case_id": "tests-test_inflatable_dam",
+      "name": "充气坝单元测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "2905c0d8-a91c-4bf0-9964-d2276df42d06"
+    },
+    {
+      "case_id": "tests-test_integration_simple",
+      "name": "简化集成测试 - 验证核心功能",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "a8250e87-bbff-4599-946e-a72df105af07"
+    },
+    {
+      "case_id": "tests-test_lake_at_rest_wb",
+      "name": "Lake at Rest Test with Well-Balanced Format",
+      "category": "lake_at_rest",
+      "status": "passed",
+      "error": null,
+      "task_id": "154e126a-cd7a-4a62-8063-c38b25bf9df5"
+    },
+    {
+      "case_id": "tests-test_multi_section_identification",
+      "name": "多断面辨识模块单元测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_network_integration",
+      "name": "网络集成测试套件",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "c56cb5aa-3126-491f-b13c-8d10ed434c4c"
+    },
+    {
+      "case_id": "tests-test_network_structures",
+      "name": "测试内部水工建筑物",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "4d52c975-599b-4c44-afd4-cc506d270089"
+    },
+    {
+      "case_id": "tests-test_network_structures_simple",
+      "name": "简单测试内部水工建筑物（不使用pytest）",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "8bd1d04c-6877-4691-a6f8-02b13fd49032"
+    },
+    {
+      "case_id": "tests-test_network_topology",
+      "name": "网络拓扑测试",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "78f0c715-e350-45db-a081-ee36d0f741b9"
+    },
+    {
+      "case_id": "tests-test_network_validation",
+      "name": "网络验证工具测试",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "666ace29-6a84-427c-84ff-791db8346d27"
+    },
+    {
+      "case_id": "tests-test_newton_boundary_fix",
+      "name": "测试牛顿法边界条件修复效果",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "c5ce6a7f-5023-4cee-bdc6-51babfec625e"
+    },
+    {
+      "case_id": "tests-test_newton_three_gates",
+      "name": "测试三闸门场景的牛顿法求解",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "c2031e7d-714c-470a-b8dc-780e654addcd"
+    },
+    {
+      "case_id": "tests-test_nutrients",
+      "name": "营养盐循环模块测试套件",
+      "category": "water_quality",
+      "status": "passed",
+      "error": null,
+      "task_id": "d0474c01-2f5d-4bd0-b642-9259288e2097"
+    },
+    {
+      "case_id": "tests-test_online_identification",
+      "name": "在线辨识模块单元测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "1bb68f0d-31f9-4166-af55-4d5f352f06f9"
+    },
+    {
+      "case_id": "tests-test_phytoplankton",
+      "name": "藻类生长模块测试套件",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "7d0d901e-1522-4588-99d4-b14610b867d8"
+    },
+    {
+      "case_id": "tests-test_pressurized_system",
+      "name": "有压系统单元测试",
+      "category": "pressurized",
+      "status": "passed",
+      "error": null,
+      "task_id": "bbea19a8-336e-4fe6-85da-a9043a8c972d"
+    },
+    {
+      "case_id": "tests-test_radial_gate",
+      "name": "弧形闸门单元测试",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "02c379bd-e322-480b-92eb-eea5f1a041b5"
+    },
+    {
+      "case_id": "tests-test_riemann_solvers",
+      "name": "Riemann求解器单元测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_surge_tank_siphon",
+      "name": "Test cases for Surge Tank and Inverted Siphon",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "9ac6b10b-e79e-49b9-aa3b-31a7ea6bb881"
+    },
+    {
+      "case_id": "tests-test_weirs",
+      "name": "堰类组件单元测试",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "e588d655-11a4-43e2-aa82-38210bb0abd9"
+    },
+    {
+      "case_id": "tests-test_well_balanced",
+      "name": "Well-Balanced格式测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_z_interface_strategies",
+      "name": "Test Different z_interface Selection Strategies for Well-Balanced Reconstruction",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-compare_initialization",
+      "name": "对比两种初始化方式的差异",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-compare_state_at_33s",
+      "name": "在33秒时对比两种方法的完整状态",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-debug_step_by_step",
+      "name": "单步调试：在35秒前后详细追踪每一步",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "48e183aa-07d7-4713-9544-134d14c96518"
+    },
+    {
+      "case_id": "tests-diagnostic-profile_weno3_performance",
+      "name": "WENO3性能分析工具",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "d00283ef-0f20-4a97-878e-31d6e5f63a2b"
+    },
+    {
+      "case_id": "tests-diagnostic-quick_test_n002",
+      "name": "快速测试 n=0.02 工况",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "4182b809-a56b-4152-a2d6-d82bd816a9d4"
+    },
+    {
+      "case_id": "tests-diagnostic-test_adaptive_timestep",
+      "name": "自适应时间步性能测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "11adcb01-1054-4481-8120-fb2d902c91a5"
+    },
+    {
+      "case_id": "tests-diagnostic-test_advanced_features",
+      "name": "高级功能综合测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "daf83b0d-c948-4e20-90d1-405cc764b7bf"
+    },
+    {
+      "case_id": "tests-diagnostic-test_all_structures",
+      "name": "所有水工结构类型的综合测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "e2544130-dfbc-44cf-9558-aafa352164fa"
+    },
+    {
+      "case_id": "tests-diagnostic-test_anderson_performance",
+      "name": "Anderson加速性能验证测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "a449ef87-8358-4587-85b1-8f0df2e26947"
+    },
+    {
+      "case_id": "tests-diagnostic-test_boundary_cell_evolution",
+      "name": "边界单元演化监控",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_boundary_enforcement",
+      "name": "边界条件强制机制诊断测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "666dc9f2-84d5-44bb-995c-5ad1656ed7ab"
+    },
+    {
+      "case_id": "tests-diagnostic-test_boundary_evolution",
+      "name": "边界单元演化测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_boundary_natural_evolution",
+      "name": "边界自然演化测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_canal_network",
+      "name": "渠系网络测试案例",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "3073bae8-a144-4144-9249-f004d688665a"
+    },
+    {
+      "case_id": "tests-diagnostic-test_cell_by_cell_mass",
+      "name": "逐单元质量分析",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_cfl_sensitivity",
+      "name": "CFL敏感性测试 - 找出无摩阻Test 4的稳定CFL数",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_comprehensive_system",
+      "name": "HydroClaude综合系统测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "ce86ccdf-7a0d-4beb-9284-a9cc78fea97a"
+    },
+    {
+      "case_id": "tests-diagnostic-test_config_supercritical",
+      "name": "测试配置驱动的supercritical边界条件",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "e6e027a9-e064-4b69-b492-9e665877581d"
+    },
+    {
+      "case_id": "tests-diagnostic-test_critical_bc_fix",
+      "name": "测试使用'critical'边界条件类型",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "d63dd22e-5be9-4211-afeb-7b3f55cbe2a9"
+    },
+    {
+      "case_id": "tests-diagnostic-test_direct_mass_conservation",
+      "name": "直接质量守恒测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_dt_max_feature",
+      "name": "测试dt_max功能",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "304c0d91-3296-45e2-941b-f891a1228f86"
+    },
+    {
+      "case_id": "tests-diagnostic-test_flat_bed",
+      "name": "测试平坦底床的良平衡性",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "8a3ed5ab-9b78-4375-8184-2992563373c2"
+    },
+    {
+      "case_id": "tests-diagnostic-test_flood_hydrograph",
+      "name": "测试洪水过程线模拟 - Phase 1问题修复",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "acc60146-bd71-4ba7-af8b-f8d601c7ed38"
+    },
+    {
+      "case_id": "tests-diagnostic-test_flux_conservation",
+      "name": "通量守恒性诊断测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "c639d761-891d-442b-aa5a-d0a3bd8b5edd"
+    },
+    {
+      "case_id": "tests-diagnostic-test_flux_values",
+      "name": "通量值诊断",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_froude_analysis",
+      "name": "Froude数分析",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_fvm_simple_gate",
+      "name": "简化闸门测试 - FVM求解器",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "709340b0-6f24-4b5e-a49a-ca8b29f53abe"
+    },
+    {
+      "case_id": "tests-diagnostic-test_fvm_validation",
+      "name": "FVM求解器验证测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "f205ac1c-0d69-477b-8b65-74121fd7ab4e"
+    },
+    {
+      "case_id": "tests-diagnostic-test_fvm_with_gate",
+      "name": "FVM求解器闸门测试",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "10907ce2-0ff1-44d9-a102-a30585332c8a"
+    },
+    {
+      "case_id": "tests-diagnostic-test_ghost_cells_diagnosis",
+      "name": "Ghost Cells和边界通量诊断",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "31fd93e5-7194-4d76-b777-e109962a2bd1"
+    },
+    {
+      "case_id": "tests-diagnostic-test_ghost_cell_consistency",
+      "name": "Ghost Cell 一致性测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_godunov_dam_break",
+      "name": "Godunov-FVM求解器 - Dam Break完整验证",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_godunov_macdonald",
+      "name": "Godunov-FVM - MacDonald Test Case 1验证",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_godunov_steady_uniform",
+      "name": "Godunov-FVM - 稳态均匀流验证",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "18f56e98-cb51-433a-8aec-d1220b3ae3af"
+    },
+    {
+      "case_id": "tests-diagnostic-test_godunov_with_gate",
+      "name": "Godunov-FVM + 闸门集成测试",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "39d4b995-282f-4014-b0a7-47c3c5686131"
+    },
+    {
+      "case_id": "tests-diagnostic-test_grid_convergence",
+      "name": "网格收敛性测试 - MacDonald问题",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "0d1008b3-ca7b-414e-9932-c3d0aad2e5a3"
+    },
+    {
+      "case_id": "tests-diagnostic-test_high_order_accuracy",
+      "name": "高阶格式精度验证测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "8af3fee1-5221-4eff-a278-24a7ac2eaa17"
+    },
+    {
+      "case_id": "tests-diagnostic-test_hllc_vs_hll_comparison",
+      "name": "HLLC vs HLL完整对比测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_hydrostatic_solver",
+      "name": "测试HydrostaticCanalSolver稳态求解",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "3b2ff2b2-41a4-4ea3-a808-0f0db0bc5512"
+    },
+    {
+      "case_id": "tests-diagnostic-test_h_boundary_fix_simple",
+      "name": "简单测试 - 验证h边界条件修复",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "abc629e8-63ce-4eab-99a6-8c58685ede41"
+    },
+    {
+      "case_id": "tests-diagnostic-test_interface_flux_detail",
+      "name": "界面通量详细诊断",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "3290aa85-0a09-4aba-872b-b6e51c389e99"
+    },
+    {
+      "case_id": "tests-diagnostic-test_jump_initial_condition",
+      "name": "水跃初始条件测试 - 用包含水跃的初场替代线性初场",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_long_time_convergence",
+      "name": "测试长时间收敛 - 检查是否只是需要更长时间达到稳态",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "7b3ea726-6f4d-4667-a317-6bbeb233fd24"
+    },
+    {
+      "case_id": "tests-diagnostic-test_maccormack_dam_break",
+      "name": "MacCormack v2.0 - Dam Break验证",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_maccormack_v3_dam_break",
+      "name": "MacCormack v3.0 Dam Break测试（带HLL+TVD）",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald4_comparison",
+      "name": "MacDonald Test 4 对比测试：标准WENO3 vs 增强WENO3",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "e3dbbe55-3409-48cb-81fa-ded8e891f92f"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald4_diagnosis",
+      "name": "MacDonald Test 4 (水跃) 诊断测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "db2010e0-4a3b-43ae-8f53-85e6471a6d82"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald4_enhanced_weno3",
+      "name": "MacDonald Test 4 - 增强版WENO3测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "f6917b25-f9c0-4554-a02f-1fa92827dca4"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald4_entropy_fix",
+      "name": "MacDonald Test 4 with Entropy Fix",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "81bbd37d-07bd-4125-824f-e3611572623c"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald4_final",
+      "name": "MacDonald Test 4简化测试 - 终极诊断",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "7e024f8b-1315-4e3b-863c-da8c4bee47de"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald4_final_weno3",
+      "name": "MacDonald Test 4 - 最终验证（WENO3，正确参数）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "f029ae7b-295c-4205-8aac-c36676512317"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald4_fine_grid",
+      "name": "MacDonald Test 4 - 极细网格测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "d55910fb-9988-4db1-8e96-93b05351a5d9"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald4_hllc",
+      "name": "MacDonald Test 4 - HLLC低耗散求解器测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald4_quick_weno3",
+      "name": "MacDonald Test 4 快速验证 - WENO3",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "badfd9db-74e3-4082-af52-b4f356e77300"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald4_ultra_fine_grid",
+      "name": "MacDonald Test 4 - 超细网格测试（直接使用求解器）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "73ec117f-024a-42a5-9cd0-858990b96ad5"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald4_weno3",
+      "name": "MacDonald Test 4 - WENO3求解器测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "a42d57a1-2350-4c14-81c8-4b46af193940"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald4_weno5",
+      "name": "MacDonald Test 4 - WENO5高阶格式测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald5_accuracy",
+      "name": "MacDonald Test 5 精度改进诊断",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "d5a8845d-3e7e-4f3c-9ca6-dd56fc57a77d"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald5_diagnosis",
+      "name": "MacDonald Test 5 诊断测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "561bb9a5-70c3-4778-936c-a90f19ff6b61"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald5_dt_limit",
+      "name": "MacDonald Test 5 时间步长限制测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "5c65b394-c38e-4197-b95f-3330f7f607e8"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald5_dt_trace",
+      "name": "MacDonald Test 5 时间步长演化追踪",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "b57b3e07-4d93-4f4c-90b9-3c9de18f6e12"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald5_full",
+      "name": "MacDonald Test 5 完整测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "861dd692-91c7-46bf-b47f-6803be17d5e5"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald5_stability",
+      "name": "MacDonald Test 5 稳定性诊断",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "bde9fbd1-2e88-48ab-85b6-5186722f89a8"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald_test2_detailed_mass",
+      "name": "MacDonald Test 2 详细质量平衡分析",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "a15d5797-6e21-4463-86cd-8a646cba18ac"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald_test2_exact_config",
+      "name": "MacDonald Test 2 - 使用完全相同的配置",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "a0ad349f-4cd9-4c23-b91a-f944ce4c9bb8"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald_test2_mass",
+      "name": "MacDonald Test 2质量守恒问题诊断",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "85a87b82-045a-4810-9b79-4eb04899c4b4"
+    },
+    {
+      "case_id": "tests-diagnostic-test_macdonald_test2_quick_verify",
+      "name": "快速验证MacDonald Test 2的修改",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "b5e09d09-7c06-4dc9-a8c4-4727689775c2"
+    },
+    {
+      "case_id": "tests-diagnostic-test_manning_friction",
+      "name": "Manning摩阻项诊断测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "506ef89f-8e89-4a30-b260-692779d50718"
+    },
+    {
+      "case_id": "tests-diagnostic-test_mass_balance_verification",
+      "name": "质量守恒计算验证测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "16d0dec9-66dc-4671-9c8d-2f74e5f5627b"
+    },
+    {
+      "case_id": "tests-diagnostic-test_mass_flux_analysis",
+      "name": "质量通量分析",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_matrix_structure",
+      "name": "检查Preis",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_mpc_scheduler",
+      "name": "MPC智能调度测试",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "92258235-da61-47ed-9a23-476229856cc6"
+    },
+    {
+      "case_id": "tests-diagnostic-test_muscl_dambreak",
+      "name": "MUSCL性能测试 - Dam Break",
+      "category": "dam_break",
+      "status": "passed",
+      "error": null,
+      "task_id": "03d89100-bea3-4f70-9d2c-1a0e3da8b6de"
+    },
+    {
+      "case_id": "tests-diagnostic-test_muscl_with_correct_cfl",
+      "name": "MUSCL + 正确CFL测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "5498efc2-56b1-4f7f-a3cc-174f6a254279"
+    },
+    {
+      "case_id": "tests-diagnostic-test_network_v2_simple",
+      "name": "测试网络求解器V2 - Y-split简单测试",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "fb36e411-1a08-4e76-893f-0c7e5b83a1e6"
+    },
+    {
+      "case_id": "tests-diagnostic-test_network_v2_串联",
+      "name": "测试网络求解器V2 - 最简单串联测试",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "452c01b6-ccbc-4e7c-b344-cebb9259ef1f"
+    },
+    {
+      "case_id": "tests-diagnostic-test_newton_continuation",
+      "name": "测试牛顿法 + 延拓策略",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "6836d64c-4544-4ff2-a165-67b0d6580a09"
+    },
+    {
+      "case_id": "tests-diagnostic-test_newton_good_init",
+      "name": "测试牛顿法 - 使用良好初值",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "271e27c7-e405-42a1-a394-e010fe044ddf"
+    },
+    {
+      "case_id": "tests-diagnostic-test_newton_quick",
+      "name": "快速验证牛顿法边界条件修复",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "e94a3dee-9ea9-4a2d-83ab-505fc22b5181"
+    },
+    {
+      "case_id": "tests-diagnostic-test_preissmann_debug",
+      "name": "调试Preissmann求解器的Jacobian矩阵问题",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_preissmann_v4_extended",
+      "name": "Preissmann v4.0 扩展测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "69881b9c-5a5b-48ca-a68b-5ca719fc3da8"
+    },
+    {
+      "case_id": "tests-diagnostic-test_pump_source_term",
+      "name": "测试泵站源项是否正确工作",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "fb7534c2-53fd-4b04-acce-728f400195c5"
+    },
+    {
+      "case_id": "tests-diagnostic-test_q_boundary",
+      "name": "Q边界诊断测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_realistic_cases",
+      "name": "实际工况综合测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "8458a39a-e2b4-4553-98ea-d4f08498f53b"
+    },
+    {
+      "case_id": "tests-diagnostic-test_rk2_flux",
+      "name": "TVD-RK2两个阶段的通量检查",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_rk_dambreak",
+      "name": "RK时间积分性能测试 - Dam Break",
+      "category": "dam_break",
+      "status": "passed",
+      "error": null,
+      "task_id": "339629a8-4874-4f7e-9bbe-7637501f6912"
+    },
+    {
+      "case_id": "tests-diagnostic-test_short_mass_conservation",
+      "name": "短期质量守恒测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "63c57e1b-109f-4170-8ac9-5f8f88f4875e"
+    },
+    {
+      "case_id": "tests-diagnostic-test_simple_bc_check",
+      "name": "简单边界条件检查",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_simple_supercritical",
+      "name": "简单急流测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_simulation_engine_minimal",
+      "name": "最小化SimulationEngine测试 - 去除所有输出逻辑",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "fa072d24-f2d3-41ab-bf8c-aa120e354e25"
+    },
+    {
+      "case_id": "tests-diagnostic-test_single_canal_with_gate",
+      "name": "测试单个渠道 + 闸门的稳态求解",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "a1462972-737a-4531-bfaa-1fa087b5dc92"
+    },
+    {
+      "case_id": "tests-diagnostic-test_single_step_mass",
+      "name": "单步质量详细诊断",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_small_friction",
+      "name": "小摩阻系数测试 - 用极小摩阻替代完全无摩阻",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "c92cbfa2-49fa-4997-8910-013544d0bcd6"
+    },
+    {
+      "case_id": "tests-diagnostic-test_spatial_order",
+      "name": "空间精度对质量守恒的影响测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "205f05e9-5b6a-4169-9f1c-d971fa52bba7"
+    },
+    {
+      "case_id": "tests-diagnostic-test_static_water",
+      "name": "静水测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_steady_flow_over_bump",
+      "name": "测试静水重构法：凸起上的稳态流",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "64b217e9-fc3a-4495-96c4-a5a8192ca8d3"
+    },
+    {
+      "case_id": "tests-diagnostic-test_step_with_and_without_dt",
+      "name": "对比两种step()调用方式",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "a0715abe-69d6-414a-a17f-28ddd8f3d298"
+    },
+    {
+      "case_id": "tests-diagnostic-test_strang_splitting",
+      "name": "Strang Splitting源项处理方法测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "66c4ac9a-0bce-4dbf-8983-9e395e68c2e0"
+    },
+    {
+      "case_id": "tests-diagnostic-test_supercritical_bc",
+      "name": "测试supercritical边界条件是否正确工作",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-diagnostic-test_supercritical_flow",
+      "name": "测试超临界流稳定性 - Phase 1问题修复",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "152e1ba0-1721-49c9-8c9e-3734bb8a17c2"
+    },
+    {
+      "case_id": "tests-diagnostic-test_three_gates_hydrostatic",
+      "name": "三闸门系统测试 - 使用静水重构求解器",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "936420d1-8c46-4c54-a28f-a2d10d2728d7"
+    },
+    {
+      "case_id": "tests-diagnostic-test_transient_flow",
+      "name": "瞬态流测试 - 验证HydrostaticCanalSolver的瞬态演化功能",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "ba81262d-b745-4e31-b2f0-a5e01489d261"
+    },
+    {
+      "case_id": "tests-diagnostic-test_well_balanced",
+      "name": "测试静水重构的良平衡性质",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "a936fe17-2161-4edb-9e76-4f731f305bb5"
+    },
+    {
+      "case_id": "tests-diagnostic-test_well_balanced_comparison",
+      "name": "Well-Balanced模式对比测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "2a1fe61a-f507-4848-8f1c-70e9064e3865"
+    },
+    {
+      "case_id": "tests-diagnostic-test_well_balanced_complete",
+      "name": "Well-Balanced Godunov-FVM完整验证",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "3ff884c6-97c0-41f4-947a-8463d67d259b"
+    },
+    {
+      "case_id": "tests-diagnostic-test_well_balanced_solution",
+      "name": "Well-Balanced格式对质量守恒的影响测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "0d1cb8d9-9865-4226-8fee-93ff4313cc19"
+    },
+    {
+      "case_id": "tests-diagnostic-test_weno3_long_run",
+      "name": "WENO3长时间运行诊断 - 找出dt何时变成0",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "bb7a9a0c-b6f7-44ba-8525-77613ad7a642"
+    },
+    {
+      "case_id": "tests-diagnostic-test_weno_epsilon_sensitivity",
+      "name": "WENO epsilon敏感性测试 - 增加数值耗散",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-legacy_diagnostic-test_adaptive_fine_tuned",
+      "name": "精细调优的自适应smooth_weight测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "e2051a20-3b59-490c-8310-a5f32b62bca1"
+    },
+    {
+      "case_id": "tests-legacy_diagnostic-test_adaptive_grid_optimized",
+      "name": "测试优化的自适应网格参数",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "1f784b18-ffd8-4a0e-9591-c9859c5bc059"
+    },
+    {
+      "case_id": "tests-legacy_diagnostic-test_adaptive_grid_solver",
+      "name": "测试自适应网格求解器",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "3f5f63e3-402e-4ca2-81e7-8f1f1db2c3f3"
+    },
+    {
+      "case_id": "tests-legacy_diagnostic-test_adaptive_smooth_weight",
+      "name": "自适应平滑权重测试脚本",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "3caf0522-2aa2-4b6a-abcc-456e563992d3"
+    },
+    {
+      "case_id": "tests-legacy_diagnostic-test_anderson_vs_aitken",
+      "name": "Anderson vs Aitken 加速方法性能对比测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "92865e6d-f961-4e60-a52b-444c19bd90a3"
+    },
+    {
+      "case_id": "tests-legacy_diagnostic-test_digital_twin",
+      "name": "数字孪生测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "421822c3-4ef5-4e7f-9969-cf0631b567f5"
+    },
+    {
+      "case_id": "tests-legacy_diagnostic-test_final_optimization",
+      "name": "闸门精度最终优化测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "09efdd4b-f011-4b58-b445-81811a022569"
+    },
+    {
+      "case_id": "tests-legacy_diagnostic-test_fixes_quick",
+      "name": "快速测试修复后的求解器",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "4ec2d1d7-434f-4b0c-af91-551d458b8bb9"
+    },
+    {
+      "case_id": "tests-legacy_diagnostic-test_fvm_fdm_comparison",
+      "name": "FVM-FDM对比测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "af8f3277-906f-4b88-bf0f-8a47b4e12eea"
+    },
+    {
+      "case_id": "tests-legacy_diagnostic-test_fvm_full_final",
+      "name": "完整FVM隐式求解器 - 最终测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "ab1436d3-a5e3-4ef7-ba0d-8b38a08761b1"
+    },
+    {
+      "case_id": "tests-legacy_diagnostic-test_fvm_steady_comparison",
+      "name": "FVM稳态求解器对比测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "8f9f760c-47c0-43ea-acbd-97b28bbe2df8"
+    },
+    {
+      "case_id": "tests-legacy_diagnostic-test_grid_comprehensive",
+      "name": "网格加密全面测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "69d47565-3051-45cd-8851-c583c6d9c4ae"
+    },
+    {
+      "case_id": "tests-legacy_diagnostic-test_grid_refinement",
+      "name": "局部网格加密测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "98de304a-157d-435c-af38-eb47d307796f"
+    },
+    {
+      "case_id": "tests-legacy_diagnostic-test_high_precision_solver",
+      "name": "高精度求解器测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "a4e7096a-5ec8-488e-97b1-a05dfd9626cd"
+    },
+    {
+      "case_id": "tests-legacy_diagnostic-test_performance_comparison",
+      "name": "性能对比测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "03cb9cd1-1747-4110-b416-0ccdc8acf8c7"
+    },
+    {
+      "case_id": "tests-legacy_diagnostic-test_phase2_solver",
+      "name": "Phase 2高精度求解器验证脚本",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "60c02445-497d-4f11-a7f9-550717d7a48a"
+    },
+    {
+      "case_id": "tests-legacy_diagnostic-test_swmm_omega",
+      "name": "测试SWMM风格omega=0.5的效果",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "e593db75-b902-4361-9f72-994aeb244aa0"
+    },
+    {
+      "case_id": "tests-numerical_methods-test_compound_natural_sections",
+      "name": "复式断面和自然断面测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-numerical_methods-test_critical_flow",
+      "name": "临界流测试（Critical Flow Test）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "0f984c90-f0cf-4bf8-93a5-a94cf9cce70d"
+    },
+    {
+      "case_id": "tests-numerical_methods-test_critical_flow_treatment",
+      "name": "测试临界流特殊处理",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "fec20bf4-b5c0-4a79-8b01-9aac4eebd3db"
+    },
+    {
+      "case_id": "tests-numerical_methods-test_froude_number",
+      "name": "Froude数计算和临界流检测测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "b811206a-dab7-4537-9e44-7dbfec198ec3"
+    },
+    {
+      "case_id": "tests-numerical_methods-test_weno3_boundary",
+      "name": "WENO3边界处理优化测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "b1a536b1-b16e-4e43-ba7c-795a6e8f9a3d"
+    },
+    {
+      "case_id": "tests-standard_tests-test_dam_break",
+      "name": "溃坝测试（Dam Break Test）- 干湿界面验证",
+      "category": "dam_break",
+      "status": "passed",
+      "error": null,
+      "task_id": "6a2884cb-4bc4-43ad-bb93-d11937672d4d"
+    },
+    {
+      "case_id": "tests-standard_tests-test_lake_at_rest",
+      "name": "Lake at Rest 测试（静水平衡测试）",
+      "category": "lake_at_rest",
+      "status": "passed",
+      "error": null,
+      "task_id": "da0cdeff-1a0f-43cd-b23f-72bee336f77f"
+    },
+    {
+      "case_id": "tests-standard_tests-test_macdonald",
+      "name": "MacDonald标准测试套件",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "2c94412d-8747-48ad-92a8-3a8b110e320c"
+    },
+    {
+      "case_id": "tests-test_geometry-test_compound_channel",
+      "name": "复合断面渠道单元测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "347bb159-04b9-4f17-86a6-a3e2c0086920"
+    },
+    {
+      "case_id": "tests-test_geometry-test_irregular_channel",
+      "name": "天然不规则断面渠道单元测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "5497c0a5-3c4b-450d-91f0-0550312a8937"
+    },
+    {
+      "case_id": "tests-test_geometry-test_trapezoidal_channel",
+      "name": "梯形断面渠道单元测试",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-test_network-test_bridge_structure",
+      "name": "桥梁水工建筑物单元测试",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "97a66882-3c90-4dfa-bc07-308242e088b7"
+    },
+    {
+      "case_id": "tests-test_network-test_culvert_structure",
+      "name": "涵洞/倒虹吸水工建筑物单元测试",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "4da71a50-c3fd-47d8-a9e7-71b579667afd"
+    },
+    {
+      "case_id": "tests-test_network-test_dual_flow_pipe",
+      "name": "Unit Tests for Dual Flow Pipe - 明满流管道单元测试",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "d96119e8-d904-41e1-aedc-315b673d8103"
+    },
+    {
+      "case_id": "tests-test_network-test_network_topology",
+      "name": "Unit Tests for Network Topology Module - 管网拓扑模块单元测试",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "29f6f99f-4bf5-4397-a22c-036cd1d843dc"
+    },
+    {
+      "case_id": "tests-test_network-test_pressure_pipe",
+      "name": "PressurePipe类单元测试 - Unit Tests for PressurePipe Class",
+      "category": "pressurized",
+      "status": "passed",
+      "error": null,
+      "task_id": "65dc98a1-f7b1-4d16-afce-da8b18337755"
+    },
+    {
+      "case_id": "tests-test_network-test_side_weir",
+      "name": "侧堰水工建筑物单元测试",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "cbb555c2-88a8-4b3e-816b-05b17fc647cd"
+    },
+    {
+      "case_id": "tests-test_solvers-test_hardy_cross_solver",
+      "name": "Unit Tests for Hardy Cross Solver - Hardy Cross求解器单元测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "08c929ea-173c-4ec2-8b5d-62e2245b89d5"
+    },
+    {
+      "case_id": "tests-test_solvers-test_newton_raphson_solver",
+      "name": "Unit Tests for Newton-Raphson Network Solver",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "b5265ee5-8ec5-4366-9cd6-c80bd783955e"
+    },
+    {
+      "case_id": "tests-test_solvers-test_pump_boundary",
+      "name": "离心泵边界条件测试",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "61a9dc44-9ec9-4e92-a6af-fbad1f692362"
+    },
+    {
+      "case_id": "tests-verification-ritter_solution",
+      "name": "Ritter解析解 - Dam Break on Dry Bed",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "89c7006e-0931-4c42-bfc0-8597f0bddf0b"
+    },
+    {
+      "case_id": "tests-verification-stoker_solution",
+      "name": "Stoker溃坝解析解 (1957)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "723383fe-1ee8-4ed3-8322-1e4bce1c6160"
+    },
+    {
+      "case_id": "tests-verification-test_dam_break_swashes",
+      "name": "SWASHES Dam Break Benchmark Tests",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-verification-test_rp2_positivity_preserving",
+      "name": "RP2测试（正定性保持改进版）",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-verification-test_rp567_wet_dry",
+      "name": "RP5-RP7干床问题测试套件（Phase 8.2）",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-verification-test_toro_riemann_problems",
+      "name": "Toro标准Riemann问题测试套件",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "tests-verification-test_variable_slope",
+      "name": "变坡度支持验证测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "c8130d6e-14db-460f-8b76-9b8fe850b987"
+    },
+    {
+      "case_id": "tests-verification-test_well_balanced_lake_at_rest",
+      "name": "Well-Balanced验证：Lake at Rest测试",
+      "category": "lake_at_rest",
+      "status": "passed",
+      "error": null,
+      "task_id": "a715e729-0811-4195-a2d5-b57737d2cc54"
+    },
+    {
+      "case_id": "tests-verification-test_wetting_drying",
+      "name": "干湿界面处理验证测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "00636c0f-5c8c-4f15-b0d0-a2a30a7f6962"
+    },
+    {
+      "case_id": "tests-verification-toro_riemann_solver",
+      "name": "Toro精确Riemann求解器 (Shallow Water Equations)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "0cfeefc6-2493-4e34-8b5c-3507a94a839b"
+    },
+    {
+      "case_id": "examples-advanced_animation_generator",
+      "name": "高级动画生成器 - 从实际运行结果生成GIF",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "b28b5361-1682-4f09-8f26-70e779d3943d"
+    },
+    {
+      "case_id": "examples-animation_utils",
+      "name": "动画生成工具模块 - 用于嵌入到示例脚本中",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "ffffde6b-fae4-44a9-82dd-0ed30b78fa0e"
+    },
+    {
+      "case_id": "examples-batch_generate_animations",
+      "name": "批量为示例生成GIF动画",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "b1328d1a-209a-408f-9a46-5e73cf135658"
+    },
+    {
+      "case_id": "examples-calibration_example",
+      "name": "HydroClaude DO求解器参数校准示例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "25a2279d-8e3c-4112-9541-69b76b460d7f"
+    },
+    {
+      "case_id": "examples-case02_flood_risk_assessment",
+      "name": "工程案例2: 渠道防洪风险评估（稳态分析）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "5e2dda03-e90d-4cb2-9fa6-da93256f9609"
+    },
+    {
+      "case_id": "examples-case1_urban_water_supply",
+      "name": "城市供水管网分析案例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "d8a8c659-5dc6-48f6-b095-b045cc3c4ec4"
+    },
+    {
+      "case_id": "examples-case2_pump_water_hammer",
+      "name": "泵站水锤分析案例",
+      "category": "pressurized",
+      "status": "passed",
+      "error": null,
+      "task_id": "bdd978e1-7076-4b95-bbf3-0b64bb4da526"
+    },
+    {
+      "case_id": "examples-case3_industrial_cooling_system",
+      "name": "案例3：工业供水系统分析",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "d66f5152-d23c-4540-b23f-3841182d4747"
+    },
+    {
+      "case_id": "examples-case4_fire_protection_system",
+      "name": "案例4：消防供水系统分析",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "0881b21f-4205-4fee-9eb5-8d59ee87cf17"
+    },
+    {
+      "case_id": "examples-case5_irrigation_system",
+      "name": "案例5：农业灌溉系统分析",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "658dd7df-c4ba-4bfa-bb7b-4ea366ea1433"
+    },
+    {
+      "case_id": "examples-case6_highrise_water_supply",
+      "name": "案例6：高层建筑分区供水系统",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "1bd83ae1-3008-4aa6-a475-878983817ffd"
+    },
+    {
+      "case_id": "examples-case7_regional_water_supply",
+      "name": "案例7：区域供水管网系统",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "51b3faaf-d710-4cf0-b1ab-9376d6df59b7"
+    },
+    {
+      "case_id": "examples-case8_network_optimization",
+      "name": "案例8：管网优化与管径选型",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "2c1b6aae-8a78-4fa3-b938-4d57f28e99d0"
+    },
+    {
+      "case_id": "examples-case_channel_renovation",
+      "name": "工程案例3: 渠道改造方案对比",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "eb93c850-acd1-42a9-84bb-43760b4e8b71"
+    },
+    {
+      "case_id": "examples-case_flood_control",
+      "name": "工程案例2: 防洪调度优化",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "62a3e120-ea64-4c43-8cc6-b959f51e7ae1"
+    },
+    {
+      "case_id": "examples-case_flood_control_steady",
+      "name": "工程案例2: 防洪能力评估（稳态分析）",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "753514e1-a415-47be-97cb-c76a70e46edf"
+    },
+    {
+      "case_id": "examples-case_gate_operation",
+      "name": "工程案例4: 闸门调度优化",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "49a7bcf3-c150-421b-b8ba-732b1227232d"
+    },
+    {
+      "case_id": "examples-case_irrigation_scheduling",
+      "name": "实际工程案例 - 灌区渠系调度优化",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "17300957-e604-484e-8b02-4ff3b1bc2631"
+    },
+    {
+      "case_id": "examples-case_parameter_sensitivity",
+      "name": "工程案例5: 参数敏感性分析",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "bf0e6be7-00aa-4f68-8633-0cbe3d8e76f0"
+    },
+    {
+      "case_id": "examples-climate_change_assessment",
+      "name": "气候变化对河流冰-水质的影响评估",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "62fb4338-0bca-4434-89ee-4bb23b586f4b"
+    },
+    {
+      "case_id": "examples-comprehensive_animation_generator",
+      "name": "综合动画生成器 - 为所有剩余示例生成GIF动画",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "8e7fdc5f-4e69-4405-8964-d91a537843b6"
+    },
+    {
+      "case_id": "examples-example_advanced_bc",
+      "name": "高级边界条件使用示例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "fbd00cff-480c-423f-b467-88b63f3b85ca"
+    },
+    {
+      "case_id": "examples-example_bridge_structure",
+      "name": "桥梁水工建筑物示例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "62f46de9-a4ce-47aa-9c34-c8b762a6a8c2"
+    },
+    {
+      "case_id": "examples-example_cascade_reservoirs",
+      "name": "梯级水库完整示例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "919fba3f-574e-4247-989d-cc0bd458a95d"
+    },
+    {
+      "case_id": "examples-example_complete_workflow",
+      "name": "完整工作流程示例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "1a8305ff-6aec-4b10-b27f-259fd2e53685"
+    },
+    {
+      "case_id": "examples-example_compound_channel",
+      "name": "复合断面渠道示例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "5fba0ff7-37f4-42c4-8428-aa9b44b2e2ca"
+    },
+    {
+      "case_id": "examples-example_culvert_structure",
+      "name": "涵洞/倒虹吸水工建筑物示例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "d7c35f09-16ee-46b1-9a84-1fd48eff2d4d"
+    },
+    {
+      "case_id": "examples-example_internal_structures",
+      "name": "内部水工建筑物使用示例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "742f9279-4bf2-4608-80e8-aa5c656efbcb"
+    },
+    {
+      "case_id": "examples-example_irregular_channel",
+      "name": "天然不规则断面渠道示例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "dd224d5f-d20e-4fa1-882f-3f0ed16f4779"
+    },
+    {
+      "case_id": "examples-example_irrigation_network",
+      "name": "灌溉渠系网络完整示例",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "b380d0c3-4bc5-4aa1-9fee-31a0c87bdff2"
+    },
+    {
+      "case_id": "examples-example_network_solver",
+      "name": "网络求解器使用示例",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "2f4b314c-0793-4b3c-8aba-ed2beb257481"
+    },
+    {
+      "case_id": "examples-example_network_topology",
+      "name": "网络拓扑使用示例",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "e49c0101-10f5-4e6d-9d74-581fed32027f"
+    },
+    {
+      "case_id": "examples-example_network_validation",
+      "name": "网络验证工具使用示例",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "e56cd562-dc10-4665-a37a-1945de9be797"
+    },
+    {
+      "case_id": "examples-example_pump_station",
+      "name": "泵站提水灌溉示例",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "638ff668-9cc9-4f3e-b352-354d36a526fb"
+    },
+    {
+      "case_id": "examples-example_side_weir",
+      "name": "侧堰水工建筑物示例",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "070cda40-d33b-46d1-86c1-67f894a8cc50"
+    },
+    {
+      "case_id": "examples-example_trapezoidal_channel",
+      "name": "梯形断面渠道示例",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "examples-generate_animations",
+      "name": "为所有示例生成动态GIF动画",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "ccdff6cf-f8f2-47ce-9280-6aafd0be25c2"
+    },
+    {
+      "case_id": "examples-phase1_extended_scenarios",
+      "name": "Phase 1扩展场景库 - 20个场景完整版",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "4d59a896-7ff6-42e0-a9a5-37b666cde1c4"
+    },
+    {
+      "case_id": "examples-phase1_flood_routing",
+      "name": "Phase 1应用示例 - 洪水演进模拟",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "9af4f1c0-fe20-48dc-aebd-9105c81265b4"
+    },
+    {
+      "case_id": "examples-phase1_mega_scenarios",
+      "name": "Phase 1 超级场景库（30个稳态场景）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "14b52e9e-17b7-4ee8-9b34-439014399056"
+    },
+    {
+      "case_id": "examples-phase1_simple_gate_control",
+      "name": "Phase 1应用示例 - 闸门调度控制（简化版）",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "229293e7-9b0a-43b1-9a60-7d3b61809aff"
+    },
+    {
+      "case_id": "examples-phase1_steady_scenarios",
+      "name": "Phase 1应用示例集 - 稳态场景库",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "9b4608ce-e0d8-45be-8b9a-02eec8f9f749"
+    },
+    {
+      "case_id": "examples-spring_ice_breakup",
+      "name": "HydroClaude 应用案例: 春季融冰期模拟",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "a95dd1c9-a0b5-45cc-9ff8-7a550914945e"
+    },
+    {
+      "case_id": "examples-summer_eutrophication",
+      "name": "HydroClaude 应用案例: 夏季富营养化模拟",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "2a839727-a019-4682-b2a6-8e1988f082ad"
+    },
+    {
+      "case_id": "examples-test_weno3_dambreak",
+      "name": "WENO-3求解器 - Dam Break经典测试",
+      "category": "dam_break",
+      "status": "passed",
+      "error": null,
+      "task_id": "8249741f-76d2-4c37-912f-82927cb4962a"
+    },
+    {
+      "case_id": "examples-winter_river_simulation",
+      "name": "HydroClaude 端到端应用示例: 冬季河流冰-水质模拟",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "09fcf6fe-0605-4f72-9eee-ba5c3dd6b172"
+    },
+    {
+      "case_id": "examples-advanced_examples-adaptive_first_order_mpc_test",
+      "name": "自适应一阶MPC测试",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "89604add-0484-42f1-9af8-831635cc5e91"
+    },
+    {
+      "case_id": "examples-advanced_examples-compare_canal_solvers",
+      "name": "对比不同Saint-Venant求解器的精度",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "3a90bd9a-0eed-4525-a71e-ccc223c268c4"
+    },
+    {
+      "case_id": "examples-advanced_examples-complete_benchmark_suite",
+      "name": "完整的控制器基准测试套件",
+      "category": "benchmark",
+      "status": "passed",
+      "error": null,
+      "task_id": "965ca77d-86ec-4e95-ae1e-76f72d921333"
+    },
+    {
+      "case_id": "examples-advanced_examples-comprehensive_solver_audit",
+      "name": "非恒定流求解器全面审计",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "ddae3fb8-0654-4ea3-ba17-1cc1530fc150"
+    },
+    {
+      "case_id": "examples-advanced_examples-constrained_mpc_canal_demo",
+      "name": "约束MPC渠道控制示例",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "71f7d57e-0381-456f-ae57-66d74a5b7bba"
+    },
+    {
+      "case_id": "examples-advanced_examples-debug_saint_venant",
+      "name": "Saint-Venant模型简化诊断脚本",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "5a0df7a2-9aa5-4430-b1ae-0999876728ba"
+    },
+    {
+      "case_id": "examples-advanced_examples-diagnose_canal_boundary",
+      "name": "详细诊断Canal MOC边界条件实现",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "cb79c3d7-5529-4e8a-9f74-672c035834d0"
+    },
+    {
+      "case_id": "examples-advanced_examples-diagnose_mpc_performance",
+      "name": "MPC性能诊断分析",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "3e291704-1978-4269-8b42-a53145c47409"
+    },
+    {
+      "case_id": "examples-advanced_examples-epanet_water_distribution_system",
+      "name": "EPANET供水管网系统完整案例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "05f1a40a-443c-4a54-adb6-b6722f50b509"
+    },
+    {
+      "case_id": "examples-advanced_examples-gain_scheduled_mpc",
+      "name": "多工作点分段线性化MPC（增益调度MPC）",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "3539a7a0-b9b5-45fa-bacc-45e7dd7f9b06"
+    },
+    {
+      "case_id": "examples-advanced_examples-identify_true_idz_params",
+      "name": "从SimplifiedCanalSimulator辨识真实IDZ参数",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "917c220a-62e8-44f2-b681-ccd721b1d00b"
+    },
+    {
+      "case_id": "examples-advanced_examples-idz_saint_venant_integration",
+      "name": "IDZ-Saint-Venant深度集成示例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "5a7c8930-bc29-4573-bbfa-f633258eebda"
+    },
+    {
+      "case_id": "examples-advanced_examples-idz_saint_venant_moc_integration",
+      "name": "IDZ-Saint-Venant深度集成示例（真实物理模型版）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "a30f7bce-e66e-46fd-9d0c-1d35ec468b1b"
+    },
+    {
+      "case_id": "examples-advanced_examples-integrated_smart_water_system",
+      "name": "智慧供水系统综合集成案例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "2a15c2b6-9d7a-48fb-87bd-707f29a30ea6"
+    },
+    {
+      "case_id": "examples-advanced_examples-linearized_canal_simulator",
+      "name": "线性化渠道仿真器",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "9541eec6-0f81-4787-a8ea-5460421794c8"
+    },
+    {
+      "case_id": "examples-advanced_examples-mpc_nonlinear_test",
+      "name": "一阶MPC在非线性模型上的性能测试",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "5a33ed45-e006-4c4d-8f23-863c3ca761cc"
+    },
+    {
+      "case_id": "examples-advanced_examples-mpc_robustness_analysis",
+      "name": "MPC鲁棒性分析",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "5840126b-3e0e-413c-9969-009171836c84"
+    },
+    {
+      "case_id": "examples-advanced_examples-mpc_saint_venant_test",
+      "name": "一阶MPC在Saint-Venant高保真模型上的性能测试",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "f9475018-98be-4b1f-89e5-45cfc1a4956e"
+    },
+    {
+      "case_id": "examples-advanced_examples-mpc_water_level_control",
+      "name": "MPC水位控制示例",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "9e471523-c381-4ff2-9152-c61f7a1ac4aa"
+    },
+    {
+      "case_id": "examples-advanced_examples-multi_canal_benchmark",
+      "name": "多渠道自适应控制基准测试",
+      "category": "benchmark",
+      "status": "passed",
+      "error": null,
+      "task_id": "97a93d89-0db5-4f0a-89a5-0f75bfb186e4"
+    },
+    {
+      "case_id": "examples-advanced_examples-multi_canal_benchmark_improved",
+      "name": "多渠道自适应控制基准测试（改进版）",
+      "category": "benchmark",
+      "status": "passed",
+      "error": null,
+      "task_id": "971f5528-0449-4b9f-bf4d-b6746c49ba76"
+    },
+    {
+      "case_id": "examples-advanced_examples-multi_objective_reservoir_scheduling",
+      "name": "多目标水库调度优化案例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "43eac8f2-249c-48a7-bec6-092d2380c6c7"
+    },
+    {
+      "case_id": "examples-advanced_examples-optimize_preissmann",
+      "name": "Preissmann求解器参数优化",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "598af0fe-e59f-4201-8dec-9079ad7a36c9"
+    },
+    {
+      "case_id": "examples-advanced_examples-realtime_scada_monitoring",
+      "name": "实时SCADA监控系统完整案例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "d5d3e12f-beb8-4c03-97f2-e69b3787dd1c"
+    },
+    {
+      "case_id": "examples-advanced_examples-robust_control_demo",
+      "name": "鲁棒控制策略演示",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "0dbdf9a6-5512-462b-bd52-df13bcc5df16"
+    },
+    {
+      "case_id": "examples-advanced_examples-run_first_order_mpc_benchmark",
+      "name": "一阶MPC基准测试（配合LinearizedCanalSimulator）",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "ea2abc29-ec86-4da1-b1fc-99e1bf593327"
+    },
+    {
+      "case_id": "examples-advanced_examples-run_mpc_benchmark",
+      "name": "MPC控制器基准测试",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "4554442b-f065-4b37-a441-dceb00b9c799"
+    },
+    {
+      "case_id": "examples-advanced_examples-series_gate_pump_adaptive_control",
+      "name": "串联闸泵群明渠系统自适应控制案例",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "19377f83-b9aa-495e-b016-4cf200861b0c"
+    },
+    {
+      "case_id": "examples-advanced_examples-simple_state_estimation_demo",
+      "name": "状态估计简化示例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "1416b330-ae85-4ee5-a003-5a51b5995b2e"
+    },
+    {
+      "case_id": "examples-advanced_examples-state_estimation_canal_control",
+      "name": "渠道控制中的状态估计示例",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "abd7437b-a5f1-4da0-9c55-dd67d6c4c9af"
+    },
+    {
+      "case_id": "examples-advanced_examples-swmm_smart_pump_control",
+      "name": "SWMM智能泵站控制完整案例",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "1e7c657a-e040-40cc-ba9a-30352a7691b8"
+    },
+    {
+      "case_id": "examples-advanced_examples-test_high_order_canal_solver",
+      "name": "测试HighOrderCanalSolver的精度",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "1faaa1e5-7f15-49c1-a9fe-2ebbe5b838db"
+    },
+    {
+      "case_id": "examples-advanced_examples-test_idz_identification_negative_gain",
+      "name": "测试IDZ在线辨识对负增益系统的修复",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "fddca98a-86eb-4592-820c-ee0fe69f1b8b"
+    },
+    {
+      "case_id": "examples-advanced_examples-test_idz_mpc_performance",
+      "name": "IDZ MPC性能测试",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "819f25a6-55ae-49ce-a414-633e85492aae"
+    },
+    {
+      "case_id": "examples-advanced_examples-water_quality_chlorine_decay",
+      "name": "供水管网余氯衰减模拟案例",
+      "category": "water_quality",
+      "status": "passed",
+      "error": null,
+      "task_id": "1f2dd7c0-20bd-4848-9eb7-d7705ab21727"
+    },
+    {
+      "case_id": "examples-case_library-case_01_hydropower_plant",
+      "name": "Complete Hydropower Plant System - 完整水电站系统",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "72f3c535-6e9d-4f40-8499-8e13f9ed3b88"
+    },
+    {
+      "case_id": "examples-case_library-case_02_water_supply_network",
+      "name": "Urban Water Supply Network - 城市供水管网系统",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "f7fafabc-8d90-478e-b8a3-db849b472b7e"
+    },
+    {
+      "case_id": "examples-case_library-case_03_irrigation_canal",
+      "name": "Irrigation Canal System - 灌溉渠系统",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "7600c73e-5cef-42bb-ac18-15a2f244986f"
+    },
+    {
+      "case_id": "examples-case_library-case_04_urban_drainage",
+      "name": "HydroClaude Engineering Case 04: Urban Drainage System",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "74b76f02-2a4c-4f92-b03d-c29ae8746559"
+    },
+    {
+      "case_id": "examples-case_library-case_05_river_network",
+      "name": "HydroClaude Engineering Case 05: River Network System",
+      "category": "network",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "examples-case_library-test_cases",
+      "name": "Test Suite for Engineering Cases - 工程案例测试套件",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "21e56fcb-f378-4f3a-a711-67daa5aebb27"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-test_script10_stability",
+      "name": "Quick test for script 10 numerical stability",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "1e79ef27-53dd-419b-8a58-2d61bc5e7dfa"
+    },
+    {
+      "case_id": "examples-example_02_pump_system-example_02_pump_system_enhanced",
+      "name": "示例2: 泵站系统仿真（增强版）",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "250ae17e-a036-48ac-bfbd-9975f727e4d5"
+    },
+    {
+      "case_id": "examples-example_02_pump_system-example_02_pump_system_with_anim",
+      "name": "示例2: 泵站系统 - 增强版（嵌入式动画）",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "e2050876-3a94-4780-b16b-81f9b461e408"
+    },
+    {
+      "case_id": "examples-example_02_spillway_cascade-example_02_spillway_simple",
+      "name": "Example 02: Hydraulic Structures Demonstration",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "c56d75bf-374e-4e72-b28f-ab49a788f0f7"
+    },
+    {
+      "case_id": "examples-example_02_spillway_cascade-example_02_spillway_system",
+      "name": "Example 02: Spillway Cascade System",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "1b53b9d3-d557-4175-be91-d648e8f3cb25"
+    },
+    {
+      "case_id": "examples-example_03_turbine_demo-example_03_turbine_comparison",
+      "name": "Example 03: Hydraulic Turbine Comparison",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "eb4b8875-605a-48bd-80cc-2543dd1e6710"
+    },
+    {
+      "case_id": "examples-example_03_turbine_demo-example_03_turbine_with_anim",
+      "name": "示例3: 水轮机暂态响应 - 增强版（嵌入式动画）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "1d6faea4-a915-4c07-82e9-c963883278d2"
+    },
+    {
+      "case_id": "examples-example_04_hydropower_system-example_04_hydropower_plant",
+      "name": "Example 04: Complete Hydropower Plant System",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "ca52e9d3-d0d9-442b-9f8b-6fb181cebc5f"
+    },
+    {
+      "case_id": "examples-example_05_transient_analysis-example_05_load_rejection",
+      "name": "Example 05: Hydropower Plant Transient Analysis - Load Rejection",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "26ca8d45-50f1-4225-a484-2e2c9b768064"
+    },
+    {
+      "case_id": "examples-example_06_complete_hydropower_system-example_06_complete_system",
+      "name": "Example 06: Complete Hydropower Plant System Integration",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "8adde591-81c0-408d-a8f3-eaa16f5dbf45"
+    },
+    {
+      "case_id": "examples-example_07_multi_unit_agc-example_07_multi_unit_agc",
+      "name": "Example 07: Multi-Unit Hydropower Plant with AGC",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "bdcf9a3e-49c7-451a-97e6-0b5205f92200"
+    },
+    {
+      "case_id": "examples-example_08_load_acceptance-example_08_load_acceptance",
+      "name": "Example 08: Hydropower Plant Transient Analysis - Load Acceptance",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "85a2e1d8-a1f0-4ffd-9658-ba7b05b6676c"
+    },
+    {
+      "case_id": "examples-example_08_load_acceptance-example_08_load_acceptance_with_anim",
+      "name": "示例8: 水轮机接受负荷 - 增强版（嵌入式动画）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "93de9da3-861c-49a0-a733-007cd191cbaf"
+    },
+    {
+      "case_id": "examples-example_08_preissmann_vs_fvm-example_08_preissmann_demo",
+      "name": "示例8: Preissmann求解器演示（简化版）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "a605f958-1595-420f-85b1-a4066bbc404c"
+    },
+    {
+      "case_id": "examples-example_08_preissmann_vs_fvm-example_08_preissmann_vs_fvm_enhanced",
+      "name": "示例8: Preissmann格式 vs 有限体积法对比（增强版）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "6e179c12-86d4-48e3-b100-b9757e128c00"
+    },
+    {
+      "case_id": "examples-example_09_pipe_rk4-example_09_pipe_rk4_enhanced",
+      "name": "示例9: 管道水击RK4高精度求解（增强版）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "27cb864d-a1b5-48b5-8954-6ffd03a5d227"
+    },
+    {
+      "case_id": "examples-example_10_series_network-example_10_series_network_with_anim",
+      "name": "示例10: 串联管网系统 - 增强版（嵌入式动画）",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "03bd3561-c1e4-4035-bf77-9f9eda28e5a1"
+    },
+    {
+      "case_id": "examples-example_13_adaptive_timescale-example_13_adaptive_timescale_enhanced",
+      "name": "示例13: 时间尺度自适应仿真（增强版）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "568b448c-8f68-49f5-8284-54c33df76433"
+    },
+    {
+      "case_id": "examples-example_14_adaptive_mpc-example_14_adaptive_mpc_enhanced",
+      "name": "示例14: 自适应MPC控制（增强版）",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "aa489b52-9cb3-47ad-8867-008a5a21cf5a"
+    },
+    {
+      "case_id": "examples-example_15_rls_identification-example_15_rls_identification_enhanced",
+      "name": "示例15: RLS参数辨识（增强版）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "18e4a3c6-7efd-49fe-b354-95cbd19e6c9f"
+    },
+    {
+      "case_id": "examples-example_16_weirs_application-weirs_irrigation_system",
+      "name": "示例16：堰类组件在灌区引水渠系统中的应用",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "8506fd4d-454d-45ef-8651-7e5d2176b6ff"
+    },
+    {
+      "case_id": "examples-example_17_reservoir_basic-demo_reservoir",
+      "name": "示例17: 水库基础示例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "d1fa02a6-19cd-4b53-8bbc-3efea07a7ba2"
+    },
+    {
+      "case_id": "examples-example_17_reservoir_basic-example_17_reservoir_with_anim",
+      "name": "示例17: 水库调度 - 增强版（嵌入式动画）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "f22a6a36-4e4e-428a-914a-476d74d90d97"
+    },
+    {
+      "case_id": "examples-example_18_cascade_hydropower-demo_cascade",
+      "name": "示例18: 梯级水电站调度",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "ef0102dc-a2c6-4124-8d91-9375fe2ff075"
+    },
+    {
+      "case_id": "examples-example_19_water_transfer-demo_water_transfer",
+      "name": "示例19: 长距离调水工程",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "98fac526-4040-4915-8c0c-3ec95179e352"
+    },
+    {
+      "case_id": "examples-example_20_urban_water_supply-demo_urban_supply",
+      "name": "示例20: 城市供水管网优化调度",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "8c6e341f-2949-480a-9dcd-cfe847110421"
+    },
+    {
+      "case_id": "examples-example_21_irrigation_optimization-demo_irrigation",
+      "name": "示例21: 灌区配水优化调度",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "63f1e8d3-216e-4afd-9b57-5d6c489c3c70"
+    },
+    {
+      "case_id": "examples-example_22_water_hammer-demo_water_hammer",
+      "name": "示例22: 水锤效应分析",
+      "category": "pressurized",
+      "status": "passed",
+      "error": null,
+      "task_id": "f70b92d7-7f24-4fa5-81e1-3f27f6e84fee"
+    },
+    {
+      "case_id": "examples-example_23_control_comparison-demo_control_comparison",
+      "name": "示例23: 控制策略性能对比 (PID vs MPC)",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "ad501d37-7a73-4856-a30f-73a9330a1d0e"
+    },
+    {
+      "case_id": "examples-example_24_multi_objective_optimization-demo_multi_objective",
+      "name": "示例24: 水库多目标优化调度",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "8f26beb3-1903-4a2e-bfa8-1d8c0cd26c80"
+    },
+    {
+      "case_id": "examples-example_gate_pump_cascade-comprehensive_scenario_test",
+      "name": "串联明渠闸泵群系统 - 综合工况测试",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "f08950d4-f04d-4110-bb64-e4cc696cb79e"
+    },
+    {
+      "case_id": "examples-example_gate_pump_cascade-enhanced_scenario_test",
+      "name": "串联明渠闸泵群系统 - 增强版工况测试",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "2941b8c9-6325-436c-9858-a7250d4a3cf9"
+    },
+    {
+      "case_id": "examples-example_gate_pump_cascade-gate_pump_cascade_advanced",
+      "name": "明渠串联闸泵群系统 - 使用高精度泵站模型（完整特性曲线）",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "cddd858f-b54f-42e9-bd11-ed27c228afac"
+    },
+    {
+      "case_id": "examples-example_gate_pump_cascade-run_scenario",
+      "name": "快速运行工况的辅助脚本",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "97a4bf05-9099-4d69-bded-2344fc3bde01"
+    },
+    {
+      "case_id": "examples-example_gate_pump_cascade-standard_multi_scenario_test",
+      "name": "串联明渠闸泵群系统 - 标准多工况测试（遵守开发规范）",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "f034f9fe-af8c-4c64-bbfb-85d8f6e1b08e"
+    },
+    {
+      "case_id": "examples-example_gate_pump_cascade-test_all_scenarios_quick",
+      "name": "快速测试所有工况的初始恒定流状态",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "a6537bc2-7c03-47ce-bdb3-95f775bf1c28"
+    },
+    {
+      "case_id": "examples-example_unsteady-run_time_varying_bc",
+      "name": "时变边界条件示例 - 正弦波动流量",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "bbbcf04e-e378-4881-8e3a-262603bb8413"
+    },
+    {
+      "case_id": "examples-integration_examples-swmm_urban_drainage",
+      "name": "SWMM城市雨洪系统集成案例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "c17ab6ca-79ca-47a0-8d03-9c1a747f2d11"
+    },
+    {
+      "case_id": "examples-pressurized_examples-water_supply_network",
+      "name": "实际工程案例：城市供水管网系统",
+      "category": "pressurized",
+      "status": "passed",
+      "error": null,
+      "task_id": "b4aeff19-0024-4f8a-a90a-702262583e58"
+    },
+    {
+      "case_id": "examples-real_world_cases-irrigation_canal_automation",
+      "name": "实际工程案例：灌溉渠道自动化控制系统",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "46746a13-142d-4c0b-9582-6601774317b5"
+    },
+    {
+      "case_id": "examples-real_world_cases-long_distance_water_transfer",
+      "name": "长距离调水工程案例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "6284e0ca-1e15-45d9-acf6-95f719e7aae8"
+    },
+    {
+      "case_id": "examples-real_world_cases-urban_drainage_pump_station",
+      "name": "实际工程案例：城市排水泵站智能调度系统",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "1b7fbba3-33ae-4881-bc30-85493d533952"
+    },
+    {
+      "case_id": "examples-example_15_rls_identification-code-example_15_rls_identification",
+      "name": "示例15: RLS参数辨识",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "66353645-7376-47ed-a84c-b260442cf4c5"
+    },
+    {
+      "case_id": "examples-example_14_adaptive_mpc-code-example_14_adaptive_mpc",
+      "name": "示例14: 自适应MPC控制",
+      "category": "control",
+      "status": "passed",
+      "error": null,
+      "task_id": "dcbe84fe-71cd-43b3-979f-966d9ca3faa2"
+    },
+    {
+      "case_id": "examples-example_13_adaptive_timescale-code-example_13_adaptive_timescale",
+      "name": "示例13: 时间尺度自适应仿真",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "fa345adf-f155-414e-9517-4d3ade420f72"
+    },
+    {
+      "case_id": "examples-example_09_pipe_rk4-code-example_09_pipe_rk4",
+      "name": "示例：管道RK4高精度求解",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "6bcad4b4-6f70-4a16-b857-b0110d7c26ad"
+    },
+    {
+      "case_id": "examples-example_08_preissmann_vs_fvm-code-example_08_preissmann_vs_fvm",
+      "name": "示例：Preissmann vs FVM对比",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "204a2eaf-a41e-4b26-b35e-c53f8811e807"
+    },
+    {
+      "case_id": "examples-example_07_fault_test-code-example_07_fault_test",
+      "name": "Example 07 Fault Test",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "da5e0feb-35e4-417a-90b9-1543f43fdf87"
+    },
+    {
+      "case_id": "examples-example_04_moc_boundary-code-example_04_moc_boundary",
+      "name": "Example 04 Moc Boundary",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "58f8f542-be11-4172-b5ce-d30a2f9594a8"
+    },
+    {
+      "case_id": "examples-example_02_pump_system-code-example_02_pump_system",
+      "name": "Example 02 Pump System",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "8f98f60b-544d-4599-93ae-466838c37300"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-01_basic",
+      "name": "例子1：明渠非恒定流 - 重构版（简化）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "8b153f06-44ba-4a5e-8591-84333dfa84e3"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-01_basic_refactored",
+      "name": "例子1：明渠非恒定流 - 重构版（简化）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "185568e6-b903-4aa5-988c-1c8bcc2bf9de"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-01_basic_v2",
+      "name": "例子1：明渠流动基础示例 (HydrostaticCanalSolver高精度版本)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "c86dff67-042b-4e82-92e4-16cb0fc712d6"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-01_basic_v2_refactored",
+      "name": "例子1：明渠流动基础示例 (HydrostaticCanalSolver高精度版本)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "1cc41924-efdb-4a7a-bbf5-78070b369c7f"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-01_basic_with_animation",
+      "name": "例子1：明渠非恒定流 - 嵌入动画版本",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "bc531507-56cf-403d-985c-a057b5769e20"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-01_basic_with_animation_refactored",
+      "name": "例子1：明渠非恒定流 - 嵌入动画版本",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "8a10ffa2-9839-4356-9407-b4515d790dd3"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-02_methods_comparison",
+      "name": "例子1：明渠非恒定流 - 三种数值方法标准对比测试",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "ca1f0027-401e-49ff-80cd-b0903ea939d4"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-02_methods_comparison_refactored",
+      "name": "例子1：明渠非恒定流 - 三种数值方法标准对比测试 (ScriptHelper重构版)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "335e13a3-5376-4eb6-8358-f50ef41c13ab"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-03_idz_identification",
+      "name": "例子1: 明渠非恒定流 - IDZ参数辨识",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "5dc8121e-69a7-484f-9b3b-9217eaf2319d"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-03_idz_identification_refactored",
+      "name": "例子1: 明渠非恒定流 - IDZ参数辨识 (ScriptHelper重构版)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "868940e3-cd68-43ef-ac32-1a1e0515e794"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-04_boundary_conditions",
+      "name": "例子1扩展：不同下游边界条件的影响研究（完全收敛版）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "a46fa532-5f40-4683-8a60-5d56f4901ac4"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-04_boundary_conditions_refactored",
+      "name": "例子1扩展：不同下游边界条件的影响研究（完全收敛版）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "83b49b89-d095-4966-9ffe-f34f732f1fb5"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-04_boundary_conditions_v2",
+      "name": "例子1扩展：不同下游边界条件的影响研究 (HydrostaticCanalSolver高精度版本)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "0a8170e4-49d4-4a70-b310-66c34d189b03"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-04_boundary_conditions_v2_refactored",
+      "name": "例子1扩展：不同下游边界条件的影响研究 (HydrostaticCanalSolver高精度版本 - Refactored)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "17933c9f-f037-4c83-8841-25b147c0ba9c"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-05_step_response",
+      "name": "例子1：明渠非恒定流 - 阶跃响应三种方法对比",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "0885e9b1-3065-444e-b754-b5241936e97f"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-05_step_response_refactored",
+      "name": "例子1：明渠非恒定流 - 阶跃响应三种方法对比 (ScriptHelper重构版)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "badf705e-8595-4f31-bbeb-700759359e26"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-06_animation",
+      "name": "示例1: 明渠非恒定流 - 生成GIF动画（改进版，消除边界振荡）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "1970385b-a8ea-4534-94dc-9694c9474824"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-06_animation_refactored",
+      "name": "示例1: 明渠非恒定流 - 生成GIF动画 (ScriptHelper重构版)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "c60e9081-f632-40f6-86ac-a33529aac3a9"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-07_sluice_gate_flow",
+      "name": "示例1扩展：明渠闸门过流动力学分析（单一求解器版本）",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "e1f315f7-105b-4f46-aae5-448d39d90858"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-07_sluice_gate_flow_refactored",
+      "name": "示例1扩展：明渠闸门过流动力学分析（单一求解器版本）",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "7ae6e213-b9d8-4626-a880-6734a040cd09"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-07_sluice_gate_flow_refactored_v2",
+      "name": "示例1扩展：明渠闸门过流动力学分析（单一求解器版本）",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "edab8659-f0a1-436e-8a84-032d8908aecf"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-07_sluice_gate_flow_v2",
+      "name": "示例1扩展：明渠闸门过流动力学分析（高精度版本）",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "184e3d10-de14-405e-b348-d4d762629e14"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-07_sluice_gate_flow_v2_refactored",
+      "name": "示例1扩展：明渠闸门过流动力学分析（重构版 - 使用新工具）",
+      "category": "structures",
+      "status": "passed",
+      "error": null,
+      "task_id": "6e789eab-1b50-49a7-bcef-f3988e311daf"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-08_optimized_steady_solving",
+      "name": "优化版例子1：闸门流动模拟",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "a7548f85-83c1-4ebe-9249-389143bc19d2"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-08_optimized_steady_solving_refactored",
+      "name": "优化版例子1：闸门流动模拟",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "14158410-84c6-4296-892b-41b38ae7a252"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-08_optimized_steady_solving_v2",
+      "name": "优化版例子1：闸门流动模拟 (HydrostaticCanalSolver高精度版本)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "6d3f6585-835a-4836-b23d-8c307cc593bb"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-08_optimized_steady_solving_v2_refactored",
+      "name": "优化版例子1：闸门流动模拟 (HydrostaticCanalSolver高精度版本 - Refactored)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "0974e9a3-d632-4ad7-8371-131c211d734f"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-09_simple_canal_enhanced",
+      "name": "示例1: 简单明渠仿真（增强版）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "8b7869b0-f4e3-442f-83b3-4253d4d2e90b"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-09_simple_canal_enhanced_refactored",
+      "name": "示例1: 简单明渠仿真（增强版）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "31baab4a-c33f-4fc0-abc7-fcaa4d3ce00f"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-10_canal_deep_analysis",
+      "name": "示例1: 明渠深入分析 v2（边界条件、阶跃响应、IDZ模型辨识）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "3965b568-4b4b-4fff-ade9-560156b4b58c"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-10_canal_deep_analysis_refactored",
+      "name": "示例1: 明渠深入分析 (ScriptHelper重构版) v2（边界条件、阶跃响应、IDZ模型辨识）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "b35eebd1-d7bb-49e8-be61-c86d6b940cb1"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-11_advanced_structures",
+      "name": "示例2：高级水工建筑物组合（重构版）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "0abf064a-d615-4783-89b9-5bc58648b94e"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-11_advanced_structures_refactored",
+      "name": "示例2：高级水工建筑物组合 (ScriptHelper重构版)（重构版）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "1a85161c-0145-42a9-b780-8346d20a7264"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-12_advanced_optimized",
+      "name": "优化版例子2：三闸门串联和混合结构",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "c8e7baa0-3d90-409b-8024-606457c2702f"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-12_advanced_optimized_refactored",
+      "name": "优化版例子2：三闸门串联和混合结构",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "6811a10f-e777-4596-a443-6dd382d61595"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-12_advanced_optimized_v2",
+      "name": "优化版例子2：多闸门和混合结构 (HydrostaticCanalSolver高精度版本)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "6b898c4f-875b-46a9-877d-3a7a4ea7ddac"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-12_advanced_optimized_v2_refactored",
+      "name": "优化版例子2：多闸门和混合结构 (HydrostaticCanalSolver高精度版本 - Refactored)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "521fc7cb-2fa2-45c6-a77e-d22b8d6efd21"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-_local_canal_solver",
+      "name": "明渠非恒定流求解器",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "669a0278-560f-451b-b8f6-3308c34b8d61"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-_local_single_canal_solver",
+      "name": "单一求解器版本的渠道-闸门耦合求解器（重构版）",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "d7952c52-814f-49bb-b54b-bdcfeaefa302"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-tests-analyze_jacobian",
+      "name": "详细分析Jacobian矩阵结构",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "192cb3bd-1e63-4c80-a7e2-e3516997794d"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-tests-test_adaptive_relax",
+      "name": "性能对比测试：自适应松弛因子 vs 固定松弛因子",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "d2f0358c-1ca7-4386-bace-b2a911d62586"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-tests-test_anderson_tuning",
+      "name": "Anderson加速参数调优",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "25cf4351-5815-41ca-9cc6-646622727e57"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-tests-test_anderson_vs_aitken",
+      "name": "Anderson加速 vs Aitken加速性能对比",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "bf4c9e52-8389-4a5f-a83b-9f7ba784c44b"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-tests-test_convergence_visual",
+      "name": "检查数值方法的实际收敛性 - 可视化时间序列",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "1945e8e4-9822-487f-9adf-8be3ae623348"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-tests-test_jacobian_rank",
+      "name": "测试Jacobian矩阵的秩和条件数",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "0275faf0-1b90-4d0d-8a16-81185201247f"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-tests-test_newton_fixed",
+      "name": "测试修复后的牛顿法求解器",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "45057fe0-366f-4c69-8725-6e8e34f5e48b"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-tests-test_performance_comparison",
+      "name": "性能对比测试：全面评估不同求解策略",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "ab4d76d1-1509-4887-ba1b-25c316557a59"
+    },
+    {
+      "case_id": "examples-engineering_cases-case_04_parameter_calibration-run",
+      "name": "工程案例4: 参数在线校准",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "08aedd8d-953c-46b2-b5ef-30964cf4dbee"
+    },
+    {
+      "case_id": "examples-engineering_cases-case_05_water_resource_optimization-run",
+      "name": "工程案例5: 水资源优化调度",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "d4f3eef6-54a8-4655-b6b5-e8778d754a9c"
+    },
+    {
+      "case_id": "examples-case_library-case_01_dam_break-dam_break_comparison",
+      "name": "案例1: 溃坝模拟 - 方法对比",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "examples-case_library-case_02_flood_routing-flood_routing_simulation",
+      "name": "案例2: 河道洪水演进模拟",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "39e09b2c-c466-42d8-8b8b-bc07c4702689"
+    },
+    {
+      "case_id": "validation_cases-analytical-dam_break_godunov",
+      "name": "溃坝波验证 - Godunov-FVM求解器 (Ritter解析解)",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "validation_cases-analytical-dam_break_ritter",
+      "name": "标准验证案例1: Dam Break with Dry Bed (Ritter Solution)",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "validation_cases-analytical-gradually_varied_flow",
+      "name": "渐变流水面线解析解验证 (Gradually Varied Flow)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "f6a47dfd-b242-480d-a128-828d1b72956e"
+    },
+    {
+      "case_id": "validation_cases-analytical-hydraulic_jump",
+      "name": "水跃验证 (Hydraulic Jump)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "2bb8645a-5b4d-4deb-9283-db9838a48476"
+    },
+    {
+      "case_id": "validation_cases-analytical-steady_uniform_flow",
+      "name": "标准验证案例3: Steady Uniform Flow (Manning公式验证)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "3e016efb-0f98-46e7-8dc6-f55e7c9909ec"
+    },
+    {
+      "case_id": "validation_cases-analytical-steady_uniform_flow_comprehensive",
+      "name": "恒定均匀流验证 (Steady Uniform Flow)",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "7d3d8657-5e45-40f7-bd82-ea699ed4f15a"
+    },
+    {
+      "case_id": "validation_cases-literature-macdonald_case1",
+      "name": "标准验证案例2: MacDonald Test Case 1 - Steady Flow with Shock",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "8e518214-10c0-4370-a015-ae5ab3b2c670"
+    },
+    {
+      "case_id": "validation_cases-pressure_network-dual_flow_validation",
+      "name": "Dual Flow Pipe Validation - 明满流转换验证",
+      "category": "pressurized",
+      "status": "passed",
+      "error": null,
+      "task_id": "9faee0e7-597d-49b5-8baf-c7129a2794cf"
+    },
+    {
+      "case_id": "validation_cases-pressure_network-simple_network_topology_validation",
+      "name": "Simple Network Topology Validation - 简单管网拓扑验证案例",
+      "category": "pressurized",
+      "status": "passed",
+      "error": null,
+      "task_id": "795b1d10-e842-47e1-b170-3ed4857ac149"
+    },
+    {
+      "case_id": "validation_cases-pressure_network-single_pipe_validation",
+      "name": "单管道验证案例集 - Single Pipe Validation Cases",
+      "category": "pressurized",
+      "status": "passed",
+      "error": null,
+      "task_id": "ade3505c-a98d-4e19-9978-e9ae6cb9996c"
+    },
+    {
+      "case_id": "validation_cases-pressure_network-solver_comparison",
+      "name": "Solver Comparison - 求解器对比验证",
+      "category": "pressurized",
+      "status": "passed",
+      "error": null,
+      "task_id": "337c6879-056a-4ca1-af6f-9020036380f1"
+    },
+    {
+      "case_id": "validation_cases-pressure_network-stage5_integration_validation",
+      "name": "Stage 5 综合验证案例 / Stage 5 Integration Validation Case",
+      "category": "pressurized",
+      "status": "passed",
+      "error": null,
+      "task_id": "7952efe0-b58a-49f8-b69e-7fc49cf31f31"
+    },
+    {
+      "case_id": "validation_cases-pressure_network-stage5_quick_validation",
+      "name": "Stage 5 综合验证案例（简化版）",
+      "category": "pressurized",
+      "status": "passed",
+      "error": null,
+      "task_id": "61aeef61-4bfe-49ca-a06d-a57cf6501e89"
+    },
+    {
+      "case_id": "validation_cases-pressure_network-water_hammer_validation",
+      "name": "水锤分析验证案例 / Water Hammer Validation Case",
+      "category": "pressurized",
+      "status": "passed",
+      "error": null,
+      "task_id": "abf5520f-4eb3-423d-acb5-2544b65fe710"
+    },
+    {
+      "case_id": "validation_cases-engineering-bridge_assessment-bridge_assessment_case",
+      "name": "HydroClaude Engineering Case Study 3: Bridge Hydraulic Capacity Assessment",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "validation_cases-engineering-flood_routing-flood_routing_case",
+      "name": "HydroClaude Engineering Case Study 2: Natural River Flood Routing",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "f72f0833-c61d-41a3-9710-4b42a697949d"
+    },
+    {
+      "case_id": "validation_cases-engineering-irrigation_canal-irrigation_canal_case",
+      "name": "HydroClaude Engineering Case Study 1: Trapezoidal Irrigation Canal System",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "validation_cases-engineering-urban_drainage-urban_drainage_case",
+      "name": "HydroClaude Engineering Case Study 4: Urban Drainage System",
+      "category": "general",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "validation_cases-engineering-water_resources_optimization-water_optimization_case",
+      "name": "HydroClaude Engineering Case Study 5: Water Resources Optimization",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "40cbfc52-2b13-4ecd-9ab0-895563e35ea8"
+    }
+  ]
+}
