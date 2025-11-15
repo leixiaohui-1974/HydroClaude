@@ -293,6 +293,11 @@ class ModelBuilder:
             Q_value = bc_dict['Q']
             return {'type': 'supercritical', 'h': h_value, 'Q': Q_value}
 
+        elif bc_type == 'discharge':
+            # 流量边界条件（discharge是flow的别名）
+            Q_val = bc_dict.get('value', bc_dict.get('Q', 0.0))
+            return {'type': 'Q', 'value': Q_val}
+
         elif bc_type == 'rating_curve':
             # 水位-流量关系
             # TODO: 实现rating curve
