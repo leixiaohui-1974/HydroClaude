@@ -1,0 +1,58 @@
+{
+  "name": "hydroclaude-webapp",
+  "version": "2.0.0",
+  "description": "HydroClaude Web Application - Modern GUI for Hydraulic Simulation",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0",
+    "zustand": "^4.4.7",
+    "@tanstack/react-query": "^5.12.0",
+    "antd": "^5.12.0",
+    "plotly.js": "^2.27.0",
+    "react-plotly.js": "^2.6.0",
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^4.2.1",
+    "axios": "^1.6.2",
+    "dayjs": "^1.11.10",
+    "json-schema": "^0.4.0",
+    "monaco-editor": "^0.45.0",
+    "@monaco-editor/react": "^4.6.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@types/plotly.js": "^2.12.29",
+    "@types/leaflet": "^1.9.8",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.8"
+  },
+  "keywords": [
+    "hydraulics",
+    "simulation",
+    "1d-flow",
+    "open-source",
+    "react",
+    "gui"
+  ],
+  "author": "HydroClaude Development Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hydroclaude/hydroclaude.git"
+  }
+}
