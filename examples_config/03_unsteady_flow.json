@@ -1,0 +1,63 @@
+{
+  "metadata": {
+    "title": "Unsteady Canal Flow Evolution",
+    "description": "非恒定流演化过程 - 演示时间序列功能",
+    "author": "HydroClaude Team",
+    "date": "2025-11-15"
+  },
+  
+  "simulation": {
+    "type": "unsteady",
+    "mode": "single_canal",
+    "time": {
+      "start": 0.0,
+      "end": 100.0,
+      "dt": 0.5,
+      "output_interval": 2.0
+    }
+  },
+  
+  "canal": {
+    "length": 1000.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "manning_n": 0.025,
+    "grid": {
+      "nx": 201,
+      "type": "uniform"
+    }
+  },
+  
+  "boundary_conditions": {
+    "upstream": {
+      "type": "flow",
+      "value": 8.0
+    },
+    "downstream": {
+      "type": "depth",
+      "method": "uniform_flow"
+    }
+  },
+  
+  "solver": {
+    "method": "hydrostatic",
+    "parameters": {
+      "dt": 0.5,
+      "theta": 0.6
+    }
+  },
+  
+  "initial_conditions": {
+    "depth": "uniform_flow",
+    "flow": 8.0
+  },
+  
+  "output": {
+    "directory": "results/03_unsteady_flow",
+    "formats": ["json", "csv"],
+    "plots": {
+      "enabled": true,
+      "types": ["profile", "time_series"]
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "metadata": {
+    "title": "Sluice Gate Controlled Flow",
+    "description": "闸门控制下的稳态流动 - 演示水工结构功能",
+    "author": "HydroClaude Team",
+    "date": "2025-11-15"
+  },
+  
+  "simulation": {
+    "type": "steady",
+    "mode": "single_canal"
+  },
+  
+  "canal": {
+    "length": 10000.0,
+    "width": 10.0,
+    "slope": 0.0005,
+    "manning_n": 0.025,
+    "grid": {
+      "nx": 201,
+      "type": "uniform"
+    }
+  },
+  
+  "structures": [
+    {
+      "type": "sluice_gate",
+      "name": "Main_Gate",
+      "position": 5000.0,
+      "parameters": {
+        "width": 10.0,
+        "opening": 2.0,
+        "discharge_coefficient": 0.6
+      }
+    }
+  ],
+  
+  "boundary_conditions": {
+    "upstream": {
+      "type": "flow",
+      "value": 50.0
+    },
+    "downstream": {
+      "type": "depth",
+      "method": "uniform_flow"
+    }
+  },
+  
+  "solver": {
+    "method": "hydrostatic",
+    "parameters": {
+      "max_iterations": 10000,
+      "convergence_tol": 0.1
+    }
+  },
+  
+  "initial_conditions": {
+    "depth": "uniform_flow",
+    "flow": 50.0
+  },
+  
+  "output": {
+    "directory": "results/02_gate_flow",
+    "formats": ["json", "csv"],
+    "plots": {
+      "enabled": true,
+      "types": ["profile"]
+    }
+  }
+}
