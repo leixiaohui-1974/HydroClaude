@@ -62,7 +62,7 @@ def create_synthetic_data(solver, true_roughness, num_steps=100, dt=10.0):
             solver.Q_in = 10.0 * flow_variation
 
         # 时间推进
-        h_new, hu_new = solver.step_preissmann(dt, theta=0.6)
+        h_new, hu_new = solver.step_preissmann(dt)
         solver.h = h_new
         solver.hu = hu_new
 
@@ -187,7 +187,7 @@ def run_parameter_calibration():
     # 在线估计循环
     for step, meas in enumerate(measurements):
         # 预测步
-        estimator.predict_step(dt=10.0)
+        estimator.predict_step(10.0)
 
         # 准备观测数据
         obs_data = {}

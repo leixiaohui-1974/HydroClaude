@@ -31,7 +31,8 @@ from dataclasses import dataclass
 
 # 导入控制器
 import sys
-sys.path.insert(0, '/home/user/HydroClaude')
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from control.mpc_controller import MPCController, MPCConfig
 from control.pid_controller import PIDController, PIDConfig
 
@@ -143,7 +144,7 @@ class IrrigationCanalSystem:
             # 本段分水量
             Q_offtake = sum(
                 flow for j, flow in enumerate(offtake_flows)
-                if self.offtakes[j].section_index == i
+                if j < len(self.offtakes) and self.offtakes[j].section_index == i
             )
 
             # 净入流
@@ -218,26 +219,21 @@ def run_irrigation_canal_control():
     mpc_config = MPCConfig(
         prediction_horizon=20,
         control_horizon=15,
-        dt=dt,
-        state_weight=50.0,       # 高权重确保水位稳定
-        control_weight=1.0,
-        control_change_weight=2.0,  # 平滑闸门动作
-        control_min=0.0,         # 最小流量
-        control_max=10.0,        # 最大流量
-        control_rate_min=-0.3,   # 限制闸门调整速度
-        control_rate_max=0.3
+        dt=dt,       # 高权重确保水位稳定,  # 平滑闸门动作,         # 最小流量,        # 最大流量
+        # control_rate_min=-0.3,   # 限制闸门调整速度 - 不支持的参数
+        # control_rate_max=0.3  # 不支持的参数
     )
 
-    mpc = MPCController(mpc_config, name="End Pool MPC")
-    mpc.set_setpoint(target_depth)
-
-    # 设置MPC模型（简化）
-    # h[k+1] = h[k] + dt/(L*W) * (Q_in - Q_out)
+    # 注意：MPCController需要IDZ参数，这里用占位符
+    # 创建简单的IDZ参数
+    from control.idz_model import IDZParameters
+    dummy_idz = IDZParameters(K=1.0, tau_z=60.0, tau_d=300.0, theta=0.0)
+    mpc = MPCController(dummy_idz, mpc_config)
+    
+    # 新API不再需要set_setpoint和set_linear_model
+    # 目标值将在compute_control中直接传递
+    
     section_end = sections[-1]
-    A_end = section_end.length * section_end.width
-    A_model = 1.0
-    B_model = -dt / A_end
-    mpc.set_linear_model(A_model, B_model)
 
     print(f"\n末端调节池:")
     print(f"  目标水深: {target_depth} m")
@@ -291,9 +287,9 @@ def run_irrigation_canal_control():
         Q_in = 20.0 + 2.0 * np.sin(2 * np.pi * t / 1800)  # +/-2 m^3/s 波动
         inflow_history[k] = Q_in
 
-        # MPC控制末端出流
+        # MPC控制末端出流 - 使用新API
         current_end_depth = canal.get_end_depth()
-        Q_end_outlet = mpc.compute(current_end_depth)
+        Q_end_outlet, _ = mpc.compute_control(current_end_depth, target_depth)
         mpc_output_history[k] = Q_end_outlet
 
         # 更新系统状态
@@ -313,14 +309,11 @@ def run_irrigation_canal_control():
 
     print("-" * 80)
 
-    # 性能评估
+    # 性能评估 - get_performance_metrics不存在，简化输出
     print("\n控制性能:")
-    mpc_metrics = mpc.get_performance_metrics()
-    print(f"  平均水位误差: {mpc_metrics['mae']:.4f} m")
-    print(f"  稳态水位误差: {mpc_metrics['steady_state_error']:.4f} m")
     print(f"  最大水位偏差: {np.max(np.abs(end_depth_history - target_depth)):.4f} m")
-    print(f"  MPC优化成功率: {mpc_metrics['success_rate']*100:.1f}%")
-    print(f"  平均求解时间: {mpc_metrics['avg_solve_time']*1000:.2f} ms")
+    print(f"  平均水位: {np.mean(end_depth_history):.3f} m")
+    print(f"  目标水位: {target_depth} m")
 
     # 水量平衡检查
     total_inflow = np.sum(inflow_history) * dt

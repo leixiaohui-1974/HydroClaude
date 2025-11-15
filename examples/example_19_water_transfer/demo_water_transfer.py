@@ -465,7 +465,7 @@ def visualize_results(results):
     ax6.legend(lines, labels, loc='upper right')
     ax6.grid(True, alpha=0.3, axis='y')
 
-    plt.savefig('examples/example_19_water_transfer/water_transfer_simulation.png',
+    plt.savefig(os.path.join(os.path.dirname(__file__), r'water_transfer_simulation.png'),
                 dpi=150, bbox_inches='tight')
     print(f"图像已保存到: water_transfer_simulation.png")
 

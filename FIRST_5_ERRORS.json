@@ -1,0 +1,37 @@
+[
+  {
+    "script": "example_compound_channel.py",
+    "path": "examples/example_compound_channel.py",
+    "returncode": 1,
+    "error": "KeyError: 'main'",
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/workspace/examples/example_compound_channel.py\", line 500, in <module>\n    main()\n  File \"/workspace/examples/example_compound_channel.py\", line 488, in main\n    example_2_flood_stage_analysis()\n  File \"/workspace/examples/example_compound_channel.py\", line 137, in example_2_flood_stage_analysis\n    Q_main = info['main']['Q']\n             ~~~~^^^^^^^^\nKeyError: 'main'\n"
+  },
+  {
+    "script": "validate_new_examples.py",
+    "path": "examples/validate_new_examples.py",
+    "returncode": 1,
+    "error": "",
+    "stderr_tail": ""
+  },
+  {
+    "script": "example_pump_station.py",
+    "path": "examples/example_pump_station.py",
+    "returncode": 1,
+    "error": "ImportError: cannot import name 'create_inflow_boundary' from 'network.topology' (/workspace/network/topology.py)",
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/workspace/examples/example_pump_station.py\", line 25, in <module>\n    from network.topology import (\nImportError: cannot import name 'create_inflow_boundary' from 'network.topology' (/workspace/network/topology.py)\n"
+  },
+  {
+    "script": "run_spillway.py",
+    "path": "examples/example_structures/run_spillway.py",
+    "returncode": 1,
+    "error": "ValueError: operands could not be broadcast together with shapes (101,100) (101,)",
+    "stderr_tail": "all last):\n  File \"/workspace/modeling/universal_modeler.py\", line 1090, in run\n    self.generate_outputs()\n  File \"/workspace/modeling/universal_modeler.py\", line 896, in generate_outputs\n    fig1 = viz.plot_longitudinal_profile(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/utils/visualization_templates.py\", line 87, in plot_longitudinal_profile\n    z_surface = z_bed + h\n                ~~~~~~^~~\nValueError: operands could not be broadcast together with shapes (101,100) (101,) \n"
+  },
+  {
+    "script": "test_all_scenarios_quick.py",
+    "path": "examples/example_gate_pump_cascade/test_all_scenarios_quick.py",
+    "returncode": -1,
+    "error": "Timeout after 30s",
+    "stderr_tail": ""
+  }
+]

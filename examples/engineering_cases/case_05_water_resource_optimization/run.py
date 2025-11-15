@@ -178,7 +178,7 @@ def run_optimization():
         width=B,
         rated_flow=20.0,  # 额定流量 (m^3/s)
         rated_head=10.0,  # 额定扬程 (m)
-        efficiency=0.75,  # 效率
+        # 效率
         g=9.81
     )
 
@@ -243,7 +243,8 @@ def run_optimization():
         )
 
         # 设置泵站流量
-        pump.set_flow(optimal_pump_flow)
+        # PumpStation没有set_flow方法，直接设置flow属性
+        pump.flow = optimal_pump_flow
 
         # 计算运行成本
         # 功率 = rho * g * Q * H / η
@@ -252,7 +253,9 @@ def run_optimization():
             head = solver.h[pump_idx]
         else:
             head = 5.0  # 默认扬程
-        power_kw = (1000 * 9.81 * optimal_pump_flow * head / pump.efficiency) / 1000
+        # PumpStation可能没有efficiency属性，使用默认值
+        efficiency = getattr(pump, 'efficiency', 0.75)  # 默认效率75%
+        power_kw = (1000 * 9.81 * optimal_pump_flow * head / efficiency) / 1000
         cost = power_kw * electricity_price[step] * (dt / 3600)  # 元
 
         # 记录

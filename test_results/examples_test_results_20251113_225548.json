@@ -1,0 +1,51 @@
+{
+  "test_time": "2025-11-13T22:55:48.843909",
+  "platform": "linux",
+  "python_version": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+  "total_tests": 3,
+  "results": [
+    {
+      "name": "明渠流动/01_basic",
+      "path": "/workspace/examples/example_01_canal_flow/scripts/01_basic.py",
+      "category": "basic",
+      "start_time": "2025-11-13T22:55:48.803200",
+      "status": "failed",
+      "duration": 0.010297298431396484,
+      "error": "脚本返回非零退出码: 1",
+      "output": "\nTraceback (most recent call last):\n  File \"/workspace/examples/example_01_canal_flow/scripts/01_basic.py\", line 14, in <module>\n    import numpy as np\nModuleNotFoundError: No module named 'numpy'\n",
+      "returncode": 1
+    },
+    {
+      "name": "明渠流动/01_basic_v2",
+      "path": "/workspace/examples/example_01_canal_flow/scripts/01_basic_v2.py",
+      "category": "basic",
+      "start_time": "2025-11-13T22:55:48.813742",
+      "status": "failed",
+      "duration": 0.011102437973022461,
+      "error": "脚本返回非零退出码: 1",
+      "output": "\nTraceback (most recent call last):\n  File \"/workspace/examples/example_01_canal_flow/scripts/01_basic_v2.py\", line 17, in <module>\n    import numpy as np\nModuleNotFoundError: No module named 'numpy'\n",
+      "returncode": 1
+    },
+    {
+      "name": "明渠流动/01_basic_v2_refactored",
+      "path": "/workspace/examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py",
+      "category": "basic",
+      "start_time": "2025-11-13T22:55:48.825092",
+      "status": "failed",
+      "duration": 0.018779754638671875,
+      "error": "脚本返回非零退出码: 1",
+      "output": "\nTraceback (most recent call last):\n  File \"/workspace/examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py\", line 18, in <module>\n    import numpy as np\nModuleNotFoundError: No module named 'numpy'\n",
+      "returncode": 1
+    }
+  ],
+  "summary": {
+    "passed": 0,
+    "failed": 3,
+    "timeout": 0,
+    "error": 0,
+    "passed_with_warnings": 0,
+    "unknown": 0,
+    "total_duration": 0.04017949104309082,
+    "success_rate": 0.0
+  }
+}

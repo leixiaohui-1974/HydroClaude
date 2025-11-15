@@ -367,7 +367,7 @@ def plot_results(results: list):
     ax4.legend()
 
     plt.tight_layout()
-    plt.savefig('examples/example_05_transient_analysis/load_rejection.png', dpi=150)
+    plt.savefig(os.path.join(os.path.dirname(__file__), r'load_rejection.png'), dpi=150)
     print("\nPlot saved to: load_rejection.png")
 
 

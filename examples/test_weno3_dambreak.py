@@ -25,7 +25,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('Agg')
 from solvers.godunov_fvm_solver import GodunvFVMSolver
-from solvers.godunov_fvm_weno3_v2 import GodunovFVMWENO3V2
+from solvers.godunov_fvm_weno3_v2 import GodunvFVMWENO3V2
 
 
 def run_dambreak(solver, solver_name: str, T_sim: float = 5.0):
@@ -156,7 +156,7 @@ def main():
     t1, x1, h1, Q1, success1 = run_dambreak(solver1, "Phase 1 (一阶FVM)", T_sim=5.0)
     
     # ===== 2. WENO-3 求解器 =====
-    solver3 = GodunovFVMWENO3V2(
+    solver3 = GodunvFVMWENO3V2(
         width=B,
         length=L,
         n_cells=n_cells,

@@ -1,0 +1,32 @@
+{
+  "passed": [
+    "examples/example_compound_channel.py",
+    "examples/example_pump_station.py",
+    "examples/example_structures/run_spillway.py",
+    "examples/example_unsteady/run_unsteady_flow.py",
+    "examples/case_library/benchmark_performance.py",
+    "examples/advanced_examples/mpc_water_level_control.py",
+    "examples/advanced_examples/integrated_smart_water_system.py",
+    "examples/integration_examples/gis_water_network.py",
+    "examples/example_simple_canal/run_simple_canal.py",
+    "examples/config_driven/simulate.py",
+    "examples/example_control/run_pid_control.py",
+    "examples/example_control/run_mpc_control.py",
+    "examples/example_24_multi_objective_optimization/demo_multi_objective.py",
+    "examples/example_23_control_comparison/demo_control_comparison.py",
+    "examples/example_structure_showcase/run.py",
+    "examples/example_file_boundary_condition/run.py",
+    "examples/engineering_cases/case_03_multi_gate_control/run.py",
+    "examples/engineering_cases/case_05_water_resource_optimization/run.py",
+    "examples/example_01_canal_flow/scripts/04_boundary_conditions_v2.py",
+    "examples/example_01_canal_flow/scripts/04_boundary_conditions_v2_refactored.py",
+    "examples/example_01_canal_flow/scripts/11_advanced_structures.py",
+    "examples/example_01_canal_flow/scripts/06_animation.py"
+  ],
+  "failed": [
+    "examples/validate_new_examples.py",
+    "examples/example_gate_pump_cascade/test_all_scenarios_quick.py",
+    "examples/real_world_cases/irrigation_canal_automation.py"
+  ],
+  "pass_rate": 88.0
+}

@@ -205,7 +205,7 @@ def plot_efficiency_curves(francis_data, kaplan_data, pelton_data):
     ax2.legend()
 
     plt.tight_layout()
-    plt.savefig('examples/example_03_turbine_demo/turbine_comparison.png', dpi=150)
+    plt.savefig(os.path.join(os.path.dirname(__file__), r'turbine_comparison.png'), dpi=150)
     print(f"\nEfficiency curves saved to: turbine_comparison.png")
 
 
@@ -253,7 +253,7 @@ def plot_hill_chart_concept(francis):
     ax.legend()
 
     plt.tight_layout()
-    plt.savefig('examples/example_03_turbine_demo/hill_chart.png', dpi=150)
+    plt.savefig(os.path.join(os.path.dirname(__file__), r'hill_chart.png'), dpi=150)
     print(f"Hill chart saved to: hill_chart.png")
 
 

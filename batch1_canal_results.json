@@ -1,0 +1,70 @@
+{
+  "category": "01_明渠流动",
+  "total": 15,
+  "passed": 15,
+  "failed": 0,
+  "timeout": 0,
+  "success_rate": 100.0,
+  "results": [
+    {
+      "script": "examples/example_01_canal_flow/scripts/01_basic_v2.py",
+      "status": "passed"
+    },
+    {
+      "script": "examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py",
+      "status": "passed"
+    },
+    {
+      "script": "examples/example_01_canal_flow/scripts/02_methods_comparison.py",
+      "status": "passed"
+    },
+    {
+      "script": "examples/example_01_canal_flow/scripts/03_idz_identification.py",
+      "status": "passed"
+    },
+    {
+      "script": "examples/example_01_canal_flow/scripts/04_boundary_conditions_v2.py",
+      "status": "passed"
+    },
+    {
+      "script": "examples/example_01_canal_flow/scripts/04_boundary_conditions_v2_refactored.py",
+      "status": "passed"
+    },
+    {
+      "script": "examples/example_01_canal_flow/scripts/05_step_response.py",
+      "status": "passed"
+    },
+    {
+      "script": "examples/example_01_canal_flow/scripts/06_animation.py",
+      "status": "passed"
+    },
+    {
+      "script": "examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2.py",
+      "status": "passed"
+    },
+    {
+      "script": "examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2_refactored.py",
+      "status": "passed"
+    },
+    {
+      "script": "examples/example_01_canal_flow/scripts/08_optimized_steady_solving_v2.py",
+      "status": "passed"
+    },
+    {
+      "script": "examples/example_01_canal_flow/scripts/08_optimized_steady_solving_v2_refactored.py",
+      "status": "passed"
+    },
+    {
+      "script": "examples/example_01_canal_flow/scripts/11_advanced_structures.py",
+      "status": "passed"
+    },
+    {
+      "script": "examples/example_01_canal_flow/scripts/12_advanced_optimized_v2.py",
+      "status": "passed"
+    },
+    {
+      "script": "examples/example_01_canal_flow/scripts/12_advanced_optimized_v2_refactored.py",
+      "status": "passed"
+    }
+  ]
+}

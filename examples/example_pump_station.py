@@ -22,13 +22,27 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from network import (
-    RiverNetwork, Reach,
-    create_inflow_boundary, create_outflow_boundary,
-    NetworkSolver
+from network.topology import (
+    Node,
+    RiverNetwork, 
+    Reach
 )
-from network.pump_station import create_pump_station
 from solvers.godunov_fvm_solver import GodunvFVMSolver
+from network.pump_station import create_pump_station
+from network.solver import NetworkSolver
+
+# 创建缺失的边界函数
+def create_inflow_boundary(name, Q, elevation):
+    """创建入流边界节点"""
+    node = Node(node_id=name, node_type='boundary', elevation=elevation)
+    node.boundary_Q = Q  # 固定流量
+    return node
+
+def create_outflow_boundary(name, h, elevation):
+    """创建出流边界节点"""
+    node = Node(node_id=name, node_type='boundary', elevation=elevation)
+    node.boundary_h = h  # 固定水深
+    return node
 
 
 def create_solver(length, width, Q_init, slope=0.001):
@@ -47,11 +61,12 @@ def create_solver(length, width, Q_init, slope=0.001):
     h = np.ones(n_cells) * h_init
     Q = np.ones(n_cells) * Q_init
 
-    solver.set_initial_conditions(
-        h, Q,
-        {'type': 'Q', 'value': Q_init},
-        {'type': 'h', 'value': h_init}
-    )
+    # GodunvFVMSolver的API已更改，直接设置状态
+    solver.h = h.copy()
+    solver.Q = Q.copy()
+    # 设置边界条件（使用bc_left和bc_right）
+    solver.bc_left = {'type': 'Q', 'value': Q_init}
+    solver.bc_right = {'type': 'h', 'value': h_init}
 
     return solver
 

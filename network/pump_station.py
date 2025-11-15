@@ -71,7 +71,8 @@ class PumpStationNode(Node):
             target_flow: 目标流量 (m³/s)
             target_head: 目标扬程 (m)
         """
-        super().__init__(node_id, "pump_station", elevation, x, y)
+        # 使用'junction'类型，因为pump_station不是Node的有效类型
+        super().__init__(node_id, "junction", elevation, x, y)
 
         # 控制参数
         self.control_mode = control_mode

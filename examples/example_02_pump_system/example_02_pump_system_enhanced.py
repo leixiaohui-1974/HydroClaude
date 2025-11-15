@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 # -*- coding: utf-8 -*-
 """
 示例2: 泵站系统仿真（增强版）
@@ -153,9 +154,6 @@ def run_example():
     # 创建简单的柱状图动画显示两个水池的水位变化
     print("  生成动态GIF动画...")
 
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
     import matplotlib.animation as animation
 
     fig, ax = plt.subplots(figsize=(10, 6))

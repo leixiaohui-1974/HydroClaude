@@ -131,7 +131,7 @@ def demo_spillway():
     plt.legend()
 
     plt.tight_layout()
-    plt.savefig('examples/example_02_spillway_cascade/spillway_demo.png', dpi=150)
+    plt.savefig(os.path.join(os.path.dirname(__file__), r'spillway_demo.png'), dpi=150)
     print(f"\nSpillway rating curves saved to: spillway_demo.png")
 
 
@@ -262,7 +262,7 @@ def demo_drop():
     plt.grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig('examples/example_02_spillway_cascade/drop_demo.png', dpi=150)
+    plt.savefig(os.path.join(os.path.dirname(__file__), r'drop_demo.png'), dpi=150)
     print(f"\nDrop characteristics saved to: drop_demo.png")
 
 

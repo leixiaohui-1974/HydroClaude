@@ -1,0 +1,6 @@
+✅ example_timeseries_bc.py: 添加时间序列去重
+✅ example_compound_channel.py: 添加数量一致性检查
+✅ example_advanced_bc.py: 修复标量索引
+✅ water_supply_network.py: 修复dt None
+✅ example_02_pump_system_enhanced.py: 添加plt导入
+✅ gis_adapter.py: 添加gpd条件导入

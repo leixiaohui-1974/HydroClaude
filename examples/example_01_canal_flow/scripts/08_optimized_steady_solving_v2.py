@@ -244,8 +244,8 @@ def run_optimized_example():
             iters = results[i][1]['iterations']
             elapsed = results[i][2]
 
-            iter_improve = (base_iters - iters) / base_iters * 100
-            time_improve = (base_time - elapsed) / base_time * 100
+            iter_improve = (base_iters - iters) / base_iters * 100 if base_iters > 0 else 0
+            time_improve = (base_time - elapsed) / base_time * 100 if base_time > 0 else 0
 
             print(f"{name} 相对 {results[0][0]}:")
             print(f"  迭代次数: {base_iters} -> {iters} "

@@ -1,0 +1,159 @@
+{
+  "timestamp": "2025-11-14T00:47:40.354144",
+  "total": 15,
+  "passed": 1,
+  "failed": 13,
+  "timeout": 1,
+  "success_rate": 6.666666666666667,
+  "level_stats": {
+    "level1": {
+      "passed": 0,
+      "total": 5
+    },
+    "level2": {
+      "passed": 0,
+      "total": 5
+    },
+    "level3": {
+      "passed": 1,
+      "total": 5
+    }
+  },
+  "results": [
+    {
+      "file": "examples/example_01_canal_flow/scripts/01_basic_v2.py",
+      "title": "01 - 第一个模拟：明渠均匀流",
+      "duration": "5分钟",
+      "objective": "理解最基本的明渠流动模拟，学会运行脚本",
+      "difficulty": "⭐☆☆",
+      "status": "failed",
+      "error": "  File \"/workspace/examples/example_01_canal_flow/scripts/01_basic_v2.py\", line 35, in <module>\n    from output_helper import get_output_path, save_table, save_figure\nModuleNotFoundError: No module named 'output_helper'"
+    },
+    {
+      "file": "examples/example_01_canal_flow/scripts/02_methods_comparison.py",
+      "title": "02 - 参数影响：坡度和糙率",
+      "duration": "5分钟",
+      "objective": "理解坡度和糙率对流动的影响",
+      "difficulty": "⭐☆☆",
+      "status": "failed",
+      "error": "  File \"/workspace/examples/example_01_canal_flow/scripts/02_methods_comparison.py\", line 29, in <module>\n    from output_helper import save_figure, save_table, get_output_path\nModuleNotFoundError: No module named 'output_helper'"
+    },
+    {
+      "file": "examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2.py",
+      "title": "03 - 添加结构：单个闸门",
+      "duration": "10分钟",
+      "objective": "学习如何在渠道中添加闸门结构",
+      "difficulty": "⭐☆☆",
+      "status": "failed",
+      "error": "  File \"/workspace/examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2.py\", line 35, in <module>\n    from output_helper import get_output_path, save_figure, save_table\nModuleNotFoundError: No module named 'output_helper'"
+    },
+    {
+      "file": "examples/example_01_canal_flow/scripts/04_boundary_conditions_v2.py",
+      "title": "04 - 边界条件：不同边界设置",
+      "duration": "10分钟",
+      "objective": "掌握不同边界条件的设置方法",
+      "difficulty": "⭐⭐☆",
+      "status": "failed",
+      "error": "  File \"/workspace/examples/example_01_canal_flow/scripts/04_boundary_conditions_v2.py\", line 37, in <module>\n    from output_helper import get_output_path, save_table, save_figure\nModuleNotFoundError: No module named 'output_helper'"
+    },
+    {
+      "file": "examples/example_01_canal_flow/scripts/06_animation.py",
+      "title": "05 - 可视化：动画和图表",
+      "duration": "5分钟",
+      "objective": "学会生成动画和结果图表",
+      "difficulty": "⭐☆☆",
+      "status": "failed",
+      "error": "  File \"/workspace/examples/example_01_canal_flow/scripts/06_animation.py\", line 28, in <module>\n    from output_helper import get_output_path, save_animation\nModuleNotFoundError: No module named 'output_helper'"
+    },
+    {
+      "file": "examples/example_01_canal_flow/scripts/05_step_response.py",
+      "title": "06 - 非恒定流：阶跃响应",
+      "duration": "15分钟",
+      "objective": "理解非恒定流动和系统动态响应",
+      "difficulty": "⭐⭐☆",
+      "status": "failed",
+      "error": "  File \"/workspace/examples/example_01_canal_flow/scripts/05_step_response.py\", line 28, in <module>\n    from output_helper import get_output_path, save_table, save_figure\nModuleNotFoundError: No module named 'output_helper'"
+    },
+    {
+      "file": "examples/example_01_canal_flow/scripts/08_optimized_steady_solving_v2.py",
+      "title": "07 - 优化求解：快速稳态计算",
+      "duration": "10分钟",
+      "objective": "掌握高效的稳态求解方法",
+      "difficulty": "⭐⭐☆",
+      "status": "failed",
+      "error": "  File \"/workspace/examples/example_01_canal_flow/scripts/08_optimized_steady_solving_v2.py\", line 40, in <module>\n    from output_helper import get_output_path, save_figure, save_table\nModuleNotFoundError: No module named 'output_helper'"
+    },
+    {
+      "file": "examples/example_01_canal_flow/scripts/11_advanced_structures.py",
+      "title": "08 - 多个结构：闸门和堰组合",
+      "duration": "20分钟",
+      "objective": "学习处理多个水工结构的系统",
+      "difficulty": "⭐⭐☆",
+      "status": "failed",
+      "error": "  File \"/workspace/examples/example_01_canal_flow/scripts/11_advanced_structures.py\", line 33, in <module>\n    from output_helper import save_animation, save_figure, save_table\nModuleNotFoundError: No module named 'output_helper'"
+    },
+    {
+      "file": "examples/example_01_canal_flow/scripts/12_advanced_optimized_v2.py",
+      "title": "09 - 复杂系统：多结构优化",
+      "duration": "30分钟",
+      "objective": "掌握复杂系统的建模和优化",
+      "difficulty": "⭐⭐⭐",
+      "status": "failed",
+      "error": "  File \"/workspace/examples/example_01_canal_flow/scripts/12_advanced_optimized_v2.py\", line 36, in <module>\n    from output_helper import get_output_path, save_figure, save_table\nModuleNotFoundError: No module named 'output_helper'"
+    },
+    {
+      "file": "examples/example_01_canal_flow/scripts/03_idz_identification.py",
+      "title": "10 - 系统辨识：参数估计",
+      "duration": "20分钟",
+      "objective": "理解系统辨识和参数估计方法",
+      "difficulty": "⭐⭐⭐",
+      "status": "failed",
+      "error": "  File \"/workspace/examples/example_01_canal_flow/scripts/03_idz_identification.py\", line 26, in <module>\n    from output_helper import get_output_path, save_table, save_figure\nModuleNotFoundError: No module named 'output_helper'"
+    },
+    {
+      "file": "examples/example_gate_pump_cascade/run_scenario_01.py",
+      "title": "11 - 闸泵级联：多级系统",
+      "duration": "30分钟",
+      "objective": "学习闸门泵站级联系统的模拟",
+      "difficulty": "⭐⭐⭐",
+      "status": "timeout",
+      "error": "Timeout after 120s"
+    },
+    {
+      "file": "examples/case5_irrigation_system.py",
+      "title": "12 - 实际案例：灌溉系统",
+      "duration": "45分钟",
+      "objective": "应用到真实灌溉系统案例",
+      "difficulty": "⭐⭐⭐",
+      "status": "failed",
+      "error": "    fp = builtins.open(filename, \"w+b\")\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: 'examples/irrigation_system_results.png'"
+    },
+    {
+      "file": "examples/example_network_solver.py",
+      "title": "13 - 管网系统：复杂拓扑",
+      "duration": "60分钟",
+      "objective": "掌握复杂管网系统的建模",
+      "difficulty": "⭐⭐⭐",
+      "status": "failed",
+      "error": "    solver.set_initial_conditions(\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'GodunvFVMSolver' object has no attribute 'set_initial_conditions'"
+    },
+    {
+      "file": "examples/example_pump_station.py",
+      "title": "14 - 泵站控制：自动化运行",
+      "duration": "45分钟",
+      "objective": "学习泵站的自动化控制策略",
+      "difficulty": "⭐⭐⭐",
+      "status": "failed",
+      "error": "  File \"/workspace/network/topology.py\", line 60, in __init__\n    raise ValueError(f\"Invalid node type: {node_type}. \"\nValueError: Invalid node type: pump_station. Must be one of ['boundary', 'junction', 'bifurcation', 'reservoir']"
+    },
+    {
+      "file": "examples/case_flood_control.py",
+      "title": "15 - 综合项目：防洪调度",
+      "duration": "90分钟",
+      "objective": "完成一个完整的工程项目",
+      "difficulty": "⭐⭐⭐",
+      "status": "passed",
+      "error": null
+    }
+  ]
+}

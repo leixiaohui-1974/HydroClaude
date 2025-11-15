@@ -1,0 +1,72 @@
+{
+  "timestamp": "2025-11-14T12:06:18.848295",
+  "total": 9,
+  "passed": 0,
+  "failed": 9,
+  "pass_rate": 0.0,
+  "tests": [
+    {
+      "name": "健康检查",
+      "method": "GET",
+      "path": "/health",
+      "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f1ac82b0890>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+      "passed": false
+    },
+    {
+      "name": "API根路径",
+      "method": "GET",
+      "path": "/",
+      "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f1ac90c89e0>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+      "passed": false
+    },
+    {
+      "name": "API文档",
+      "method": "GET",
+      "path": "/docs",
+      "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /docs (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f1ac82b1040>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+      "passed": false
+    },
+    {
+      "name": "引擎信息",
+      "method": "GET",
+      "path": "/api/v1/engine/info",
+      "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /api/v1/engine/info (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f1ac82b1700>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+      "passed": false
+    },
+    {
+      "name": "引擎能力",
+      "method": "GET",
+      "path": "/api/v1/engine/capabilities",
+      "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /api/v1/engine/capabilities (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f1ac82b1e80>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+      "passed": false
+    },
+    {
+      "name": "列出仿真",
+      "method": "GET",
+      "path": "/api/v1/simulations",
+      "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /api/v1/simulations (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f1ac82b25a0>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+      "passed": false
+    },
+    {
+      "name": "创建仿真",
+      "method": "POST",
+      "path": "/api/v1/simulations",
+      "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /api/v1/simulations (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f1ac8273c20>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+      "passed": false
+    },
+    {
+      "name": "列出案例",
+      "method": "GET",
+      "path": "/api/v1/cases",
+      "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /api/v1/cases (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f1ac82b1ac0>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+      "passed": false
+    },
+    {
+      "name": "获取案例分类",
+      "method": "GET",
+      "path": "/api/v1/cases/categories",
+      "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /api/v1/cases/categories (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f1ac82b1730>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+      "passed": false
+    }
+  ]
+}

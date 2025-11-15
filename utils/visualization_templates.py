@@ -82,8 +82,18 @@ class VisualizationTemplates:
         """
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=self.DEFAULT_FIGSIZE_MULTI)
 
-        # 计算高程
-        z_bed = (canal_length - x) * S0
+        # 计算高程 - 修复数组维度
+        # 确保x和h都是1维数组
+        x = np.asarray(x).ravel()  # 强制转为1维
+        h = np.asarray(h).ravel()  # 强制转为1维
+        
+        # 确保S0是标量
+        if isinstance(S0, (list, np.ndarray)):
+            S0_scalar = float(np.mean(S0))  # 如果是数组，取平均值
+        else:
+            S0_scalar = float(S0)
+        
+        z_bed = np.linspace(canal_length * S0_scalar, 0, len(x))
         z_surface = z_bed + h
 
         # 子图1: 水面+渠底纵剖面
@@ -409,7 +419,7 @@ class VisualizationTemplates:
         """
         # 计算渠底高程（如果没有提供，则根据S0计算）
         if z_bed is None:
-            z_bed = (canal_length - x) * S0
+            z_bed = np.linspace(canal_length * S0, 0, len(x))
 
         # 预计算范围
         all_z_surfaces = [z_bed + h for h in h_snapshots]
@@ -857,7 +867,7 @@ class VisualizationTemplates:
         fig, ax = plt.subplots(figsize=self.DEFAULT_FIGSIZE_SINGLE)
 
         # 计算高程
-        z_bed = (canal_length - x) * S0
+        z_bed = np.linspace(canal_length * S0, 0, len(x))
         z_surface = z_bed + h
 
         # 绘制水面线
@@ -993,7 +1003,7 @@ class VisualizationTemplates:
         fig, ax = plt.subplots(figsize=self.DEFAULT_FIGSIZE_SINGLE)
 
         # 计算高程
-        z_bed = (canal_length - x) * S0
+        z_bed = np.linspace(canal_length * S0, 0, len(x))
         z_surface = z_bed + h
         E_total = z_surface + v**2 / (2 * g)  # 总能量线
 

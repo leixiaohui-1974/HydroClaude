@@ -491,7 +491,7 @@ def visualize_results(results, system):
     ax4.legend(loc='best')
     ax4.grid(True, alpha=0.3, axis='y')
 
-    plt.savefig('examples/example_21_irrigation_optimization/irrigation_optimization.png',
+    plt.savefig(os.path.join(os.path.dirname(__file__), r'irrigation_optimization.png'),
                 dpi=150, bbox_inches='tight')
     print(f"图像已保存到: irrigation_optimization.png")
 

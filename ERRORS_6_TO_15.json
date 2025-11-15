@@ -1,0 +1,62 @@
+[
+  {
+    "script": "run_unsteady_flow.py",
+    "path": "examples/example_unsteady/run_unsteady_flow.py",
+    "returncode": 1,
+    "error": "ValueError: operands could not be broadcast together with shapes (101,100) (101,)"
+  },
+  {
+    "script": "irrigation_canal_automation.py",
+    "path": "examples/real_world_cases/irrigation_canal_automation.py",
+    "returncode": 1,
+    "error": "TypeError: MPCController.__init__() missing 1 required positional argument: 'config'"
+  },
+  {
+    "script": "benchmark_performance.py",
+    "path": "examples/case_library/benchmark_performance.py",
+    "returncode": 1,
+    "error": ""
+  },
+  {
+    "script": "mpc_water_level_control.py",
+    "path": "examples/advanced_examples/mpc_water_level_control.py",
+    "returncode": 1,
+    "error": "ModuleNotFoundError: No module named 'control'"
+  },
+  {
+    "script": "integrated_smart_water_system.py",
+    "path": "examples/advanced_examples/integrated_smart_water_system.py",
+    "returncode": 1,
+    "error": "AttributeError: 'NoneType' object has no attribute 'GeoDataFrame'"
+  },
+  {
+    "script": "gis_water_network.py",
+    "path": "examples/integration_examples/gis_water_network.py",
+    "returncode": 1,
+    "error": "AttributeError: 'NoneType' object has no attribute 'GeoDataFrame'"
+  },
+  {
+    "script": "run_simple_canal.py",
+    "path": "examples/example_simple_canal/run_simple_canal.py",
+    "returncode": 1,
+    "error": "ValueError: operands could not be broadcast together with shapes (101,100) (101,)"
+  },
+  {
+    "script": "simulate.py",
+    "path": "examples/config_driven/simulate.py",
+    "returncode": 1,
+    "error": "\u7528\u6cd5: python simulate.py config.json"
+  },
+  {
+    "script": "run_pid_control.py",
+    "path": "examples/example_control/run_pid_control.py",
+    "returncode": 1,
+    "error": "ValueError: operands could not be broadcast together with shapes (101,100) (101,)"
+  },
+  {
+    "script": "run_mpc_control.py",
+    "path": "examples/example_control/run_mpc_control.py",
+    "returncode": 1,
+    "error": "ValueError: operands could not be broadcast together with shapes (101,100) (101,)"
+  }
+]

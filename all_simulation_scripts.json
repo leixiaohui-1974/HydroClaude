@@ -1,0 +1,1746 @@
+{
+  "total": 247,
+  "categories": {
+    "06_其他": [
+      {
+        "path": "examples/optimize_gifs.py",
+        "rel_path": "optimize_gifs.py",
+        "name": "optimize_gifs.py",
+        "category": "06_其他",
+        "size": 9402
+      },
+      {
+        "path": "examples/example_side_weir.py",
+        "rel_path": "example_side_weir.py",
+        "name": "example_side_weir.py",
+        "category": "06_其他",
+        "size": 15226
+      },
+      {
+        "path": "examples/spring_ice_breakup.py",
+        "rel_path": "spring_ice_breakup.py",
+        "name": "spring_ice_breakup.py",
+        "category": "06_其他",
+        "size": 12890
+      },
+      {
+        "path": "examples/example_internal_structures.py",
+        "rel_path": "example_internal_structures.py",
+        "name": "example_internal_structures.py",
+        "category": "06_其他",
+        "size": 15481
+      },
+      {
+        "path": "examples/generate_readmes.py",
+        "rel_path": "generate_readmes.py",
+        "name": "generate_readmes.py",
+        "category": "06_其他",
+        "size": 22436
+      },
+      {
+        "path": "examples/example_complete_workflow.py",
+        "rel_path": "example_complete_workflow.py",
+        "name": "example_complete_workflow.py",
+        "category": "06_其他",
+        "size": 9041
+      },
+      {
+        "path": "examples/summer_eutrophication.py",
+        "rel_path": "summer_eutrophication.py",
+        "name": "summer_eutrophication.py",
+        "category": "06_其他",
+        "size": 12135
+      },
+      {
+        "path": "examples/example_culvert_structure.py",
+        "rel_path": "example_culvert_structure.py",
+        "name": "example_culvert_structure.py",
+        "category": "06_其他",
+        "size": 16671
+      },
+      {
+        "path": "examples/comprehensive_animation_generator.py",
+        "rel_path": "comprehensive_animation_generator.py",
+        "name": "comprehensive_animation_generator.py",
+        "category": "06_其他",
+        "size": 23611
+      },
+      {
+        "path": "examples/generate_animations.py",
+        "rel_path": "generate_animations.py",
+        "name": "generate_animations.py",
+        "category": "06_其他",
+        "size": 8144
+      },
+      {
+        "path": "examples/example_bridge_structure.py",
+        "rel_path": "example_bridge_structure.py",
+        "name": "example_bridge_structure.py",
+        "category": "06_其他",
+        "size": 15534
+      },
+      {
+        "path": "examples/animation_utils.py",
+        "rel_path": "animation_utils.py",
+        "name": "animation_utils.py",
+        "category": "06_其他",
+        "size": 17322
+      },
+      {
+        "path": "examples/example_cascade_reservoirs.py",
+        "rel_path": "example_cascade_reservoirs.py",
+        "name": "example_cascade_reservoirs.py",
+        "category": "06_其他",
+        "size": 11753
+      },
+      {
+        "path": "examples/phase1_flood_routing.py",
+        "rel_path": "phase1_flood_routing.py",
+        "name": "phase1_flood_routing.py",
+        "category": "06_其他",
+        "size": 7802
+      },
+      {
+        "path": "examples/phase1_steady_scenarios.py",
+        "rel_path": "phase1_steady_scenarios.py",
+        "name": "phase1_steady_scenarios.py",
+        "category": "06_其他",
+        "size": 10709
+      },
+      {
+        "path": "examples/phase1_extended_scenarios.py",
+        "rel_path": "phase1_extended_scenarios.py",
+        "name": "phase1_extended_scenarios.py",
+        "category": "06_其他",
+        "size": 10039
+      },
+      {
+        "path": "examples/example_timeseries_bc.py",
+        "rel_path": "example_timeseries_bc.py",
+        "name": "example_timeseries_bc.py",
+        "category": "06_其他",
+        "size": 13559
+      },
+      {
+        "path": "examples/supplement_readmes.py",
+        "rel_path": "supplement_readmes.py",
+        "name": "supplement_readmes.py",
+        "category": "06_其他",
+        "size": 8809
+      },
+      {
+        "path": "examples/example_irregular_channel.py",
+        "rel_path": "example_irregular_channel.py",
+        "name": "example_irregular_channel.py",
+        "category": "06_其他",
+        "size": 11462
+      },
+      {
+        "path": "examples/example_trapezoidal_channel.py",
+        "rel_path": "example_trapezoidal_channel.py",
+        "name": "example_trapezoidal_channel.py",
+        "category": "06_其他",
+        "size": 9325
+      },
+      {
+        "path": "examples/climate_change_assessment.py",
+        "rel_path": "climate_change_assessment.py",
+        "name": "climate_change_assessment.py",
+        "category": "06_其他",
+        "size": 18253
+      },
+      {
+        "path": "examples/phase1_simple_gate_control.py",
+        "rel_path": "phase1_simple_gate_control.py",
+        "name": "phase1_simple_gate_control.py",
+        "category": "06_其他",
+        "size": 9453
+      },
+      {
+        "path": "examples/organize_examples.py",
+        "rel_path": "organize_examples.py",
+        "name": "organize_examples.py",
+        "category": "06_其他",
+        "size": 7262
+      },
+      {
+        "path": "examples/benchmark_examples.py",
+        "rel_path": "benchmark_examples.py",
+        "name": "benchmark_examples.py",
+        "category": "06_其他",
+        "size": 6429
+      },
+      {
+        "path": "examples/calibration_example.py",
+        "rel_path": "calibration_example.py",
+        "name": "calibration_example.py",
+        "category": "06_其他",
+        "size": 6903
+      },
+      {
+        "path": "examples/example_rating_curve_bc.py",
+        "rel_path": "example_rating_curve_bc.py",
+        "name": "example_rating_curve_bc.py",
+        "category": "06_其他",
+        "size": 13477
+      },
+      {
+        "path": "examples/run_all_examples.py",
+        "rel_path": "run_all_examples.py",
+        "name": "run_all_examples.py",
+        "category": "06_其他",
+        "size": 13021
+      },
+      {
+        "path": "examples/phase1_mega_scenarios.py",
+        "rel_path": "phase1_mega_scenarios.py",
+        "name": "phase1_mega_scenarios.py",
+        "category": "06_其他",
+        "size": 8655
+      },
+      {
+        "path": "examples/example_compound_channel.py",
+        "rel_path": "example_compound_channel.py",
+        "name": "example_compound_channel.py",
+        "category": "06_其他",
+        "size": 15443
+      },
+      {
+        "path": "examples/example_irrigation_network.py",
+        "rel_path": "example_irrigation_network.py",
+        "name": "example_irrigation_network.py",
+        "category": "06_其他",
+        "size": 13246
+      },
+      {
+        "path": "examples/advanced_animation_generator.py",
+        "rel_path": "advanced_animation_generator.py",
+        "name": "advanced_animation_generator.py",
+        "category": "06_其他",
+        "size": 14465
+      },
+      {
+        "path": "examples/validate_new_examples.py",
+        "rel_path": "validate_new_examples.py",
+        "name": "validate_new_examples.py",
+        "category": "06_其他",
+        "size": 10509
+      },
+      {
+        "path": "examples/example_pump_station.py",
+        "rel_path": "example_pump_station.py",
+        "name": "example_pump_station.py",
+        "category": "06_其他",
+        "size": 8586
+      },
+      {
+        "path": "examples/generate_html_index.py",
+        "rel_path": "generate_html_index.py",
+        "name": "generate_html_index.py",
+        "category": "06_其他",
+        "size": 13117
+      },
+      {
+        "path": "examples/winter_river_simulation.py",
+        "rel_path": "winter_river_simulation.py",
+        "name": "winter_river_simulation.py",
+        "category": "06_其他",
+        "size": 15316
+      },
+      {
+        "path": "examples/preview_animations.py",
+        "rel_path": "preview_animations.py",
+        "name": "preview_animations.py",
+        "category": "06_其他",
+        "size": 14656
+      },
+      {
+        "path": "examples/test_weno3_dambreak.py",
+        "rel_path": "test_weno3_dambreak.py",
+        "name": "test_weno3_dambreak.py",
+        "category": "06_其他",
+        "size": 7954
+      },
+      {
+        "path": "examples/benchmark_performance.py",
+        "rel_path": "benchmark_performance.py",
+        "name": "benchmark_performance.py",
+        "category": "06_其他",
+        "size": 4914
+      },
+      {
+        "path": "examples/batch_generate_animations.py",
+        "rel_path": "batch_generate_animations.py",
+        "name": "batch_generate_animations.py",
+        "category": "06_其他",
+        "size": 10546
+      },
+      {
+        "path": "examples/example_advanced_bc.py",
+        "rel_path": "example_advanced_bc.py",
+        "name": "example_advanced_bc.py",
+        "category": "06_其他",
+        "size": 10075
+      },
+      {
+        "path": "examples/example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py",
+        "rel_path": "example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py",
+        "name": "example_14_adaptive_mpc_enhanced.py",
+        "category": "06_其他",
+        "size": 18164
+      },
+      {
+        "path": "examples/example_22_water_hammer/demo_water_hammer.py",
+        "rel_path": "example_22_water_hammer/demo_water_hammer.py",
+        "name": "demo_water_hammer.py",
+        "category": "06_其他",
+        "size": 12062
+      },
+      {
+        "path": "examples/example_16_weirs_application/weirs_irrigation_system.py",
+        "rel_path": "example_16_weirs_application/weirs_irrigation_system.py",
+        "name": "weirs_irrigation_system.py",
+        "category": "06_其他",
+        "size": 16117
+      },
+      {
+        "path": "examples/example_06_complete_hydropower_system/example_06_complete_system.py",
+        "rel_path": "example_06_complete_hydropower_system/example_06_complete_system.py",
+        "name": "example_06_complete_system.py",
+        "category": "06_其他",
+        "size": 16059
+      },
+      {
+        "path": "examples/example_unsteady/run_unsteady_flow.py",
+        "rel_path": "example_unsteady/run_unsteady_flow.py",
+        "name": "run_unsteady_flow.py",
+        "category": "06_其他",
+        "size": 3118
+      },
+      {
+        "path": "examples/example_unsteady/run_time_varying_bc.py",
+        "rel_path": "example_unsteady/run_time_varying_bc.py",
+        "name": "run_time_varying_bc.py",
+        "category": "06_其他",
+        "size": 3102
+      },
+      {
+        "path": "examples/example_time_varying_bc/run_all.py",
+        "rel_path": "example_time_varying_bc/run_all.py",
+        "name": "run_all.py",
+        "category": "06_其他",
+        "size": 5585
+      },
+      {
+        "path": "examples/example_file_boundary_condition/run.py",
+        "rel_path": "example_file_boundary_condition/run.py",
+        "name": "run.py",
+        "category": "06_其他",
+        "size": 1174
+      },
+      {
+        "path": "examples/example_05_transient_analysis/example_05_load_rejection.py",
+        "rel_path": "example_05_transient_analysis/example_05_load_rejection.py",
+        "name": "example_05_load_rejection.py",
+        "category": "06_其他",
+        "size": 14601
+      },
+      {
+        "path": "examples/example_07_multi_unit_agc/example_07_multi_unit_agc.py",
+        "rel_path": "example_07_multi_unit_agc/example_07_multi_unit_agc.py",
+        "name": "example_07_multi_unit_agc.py",
+        "category": "06_其他",
+        "size": 19155
+      },
+      {
+        "path": "examples/pressurized_examples/water_supply_network.py",
+        "rel_path": "pressurized_examples/water_supply_network.py",
+        "name": "water_supply_network.py",
+        "category": "06_其他",
+        "size": 13535
+      },
+      {
+        "path": "examples/example_17_reservoir_basic/example_17_reservoir_with_anim.py",
+        "rel_path": "example_17_reservoir_basic/example_17_reservoir_with_anim.py",
+        "name": "example_17_reservoir_with_anim.py",
+        "category": "06_其他",
+        "size": 4458
+      },
+      {
+        "path": "examples/example_17_reservoir_basic/demo_reservoir.py",
+        "rel_path": "example_17_reservoir_basic/demo_reservoir.py",
+        "name": "demo_reservoir.py",
+        "category": "06_其他",
+        "size": 9767
+      },
+      {
+        "path": "examples/example_08_load_acceptance/example_08_load_acceptance.py",
+        "rel_path": "example_08_load_acceptance/example_08_load_acceptance.py",
+        "name": "example_08_load_acceptance.py",
+        "category": "06_其他",
+        "size": 16306
+      },
+      {
+        "path": "examples/example_08_load_acceptance/example_08_load_acceptance_with_anim.py",
+        "rel_path": "example_08_load_acceptance/example_08_load_acceptance_with_anim.py",
+        "name": "example_08_load_acceptance_with_anim.py",
+        "category": "06_其他",
+        "size": 4989
+      },
+      {
+        "path": "examples/tests/test_examples.py",
+        "rel_path": "tests/test_examples.py",
+        "name": "test_examples.py",
+        "category": "06_其他",
+        "size": 8247
+      },
+      {
+        "path": "examples/example_02_pump_system/example_02_pump_system_enhanced.py",
+        "rel_path": "example_02_pump_system/example_02_pump_system_enhanced.py",
+        "name": "example_02_pump_system_enhanced.py",
+        "category": "06_其他",
+        "size": 11028
+      },
+      {
+        "path": "examples/example_02_pump_system/example_02_pump_system_with_anim.py",
+        "rel_path": "example_02_pump_system/example_02_pump_system_with_anim.py",
+        "name": "example_02_pump_system_with_anim.py",
+        "category": "06_其他",
+        "size": 8214
+      },
+      {
+        "path": "examples/advanced_examples/debug_mpc_observer.py",
+        "rel_path": "advanced_examples/debug_mpc_observer.py",
+        "name": "debug_mpc_observer.py",
+        "category": "06_其他",
+        "size": 3279
+      },
+      {
+        "path": "examples/advanced_examples/swmm_smart_pump_control.py",
+        "rel_path": "advanced_examples/swmm_smart_pump_control.py",
+        "name": "swmm_smart_pump_control.py",
+        "category": "06_其他",
+        "size": 21920
+      },
+      {
+        "path": "examples/advanced_examples/multi_objective_reservoir_scheduling.py",
+        "rel_path": "advanced_examples/multi_objective_reservoir_scheduling.py",
+        "name": "multi_objective_reservoir_scheduling.py",
+        "category": "06_其他",
+        "size": 19634
+      },
+      {
+        "path": "examples/advanced_examples/constrained_mpc_canal_demo.py",
+        "rel_path": "advanced_examples/constrained_mpc_canal_demo.py",
+        "name": "constrained_mpc_canal_demo.py",
+        "category": "06_其他",
+        "size": 11994
+      },
+      {
+        "path": "examples/advanced_examples/series_gate_pump_adaptive_control.py",
+        "rel_path": "advanced_examples/series_gate_pump_adaptive_control.py",
+        "name": "series_gate_pump_adaptive_control.py",
+        "category": "06_其他",
+        "size": 21634
+      },
+      {
+        "path": "examples/advanced_examples/diagnose_mpc_performance.py",
+        "rel_path": "advanced_examples/diagnose_mpc_performance.py",
+        "name": "diagnose_mpc_performance.py",
+        "category": "06_其他",
+        "size": 19219
+      },
+      {
+        "path": "examples/advanced_examples/compare_canal_solvers.py",
+        "rel_path": "advanced_examples/compare_canal_solvers.py",
+        "name": "compare_canal_solvers.py",
+        "category": "06_其他",
+        "size": 8653
+      },
+      {
+        "path": "examples/advanced_examples/idz_saint_venant_moc_integration.py",
+        "rel_path": "advanced_examples/idz_saint_venant_moc_integration.py",
+        "name": "idz_saint_venant_moc_integration.py",
+        "category": "06_其他",
+        "size": 22855
+      },
+      {
+        "path": "examples/advanced_examples/run_idz_benchmark.py",
+        "rel_path": "advanced_examples/run_idz_benchmark.py",
+        "name": "run_idz_benchmark.py",
+        "category": "06_其他",
+        "size": 3251
+      },
+      {
+        "path": "examples/advanced_examples/water_quality_chlorine_decay.py",
+        "rel_path": "advanced_examples/water_quality_chlorine_decay.py",
+        "name": "water_quality_chlorine_decay.py",
+        "category": "06_其他",
+        "size": 12355
+      },
+      {
+        "path": "examples/advanced_examples/comprehensive_solver_audit.py",
+        "rel_path": "advanced_examples/comprehensive_solver_audit.py",
+        "name": "comprehensive_solver_audit.py",
+        "category": "06_其他",
+        "size": 15514
+      },
+      {
+        "path": "examples/advanced_examples/mpc_nonlinear_test.py",
+        "rel_path": "advanced_examples/mpc_nonlinear_test.py",
+        "name": "mpc_nonlinear_test.py",
+        "category": "06_其他",
+        "size": 11193
+      },
+      {
+        "path": "examples/advanced_examples/simple_state_estimation_demo.py",
+        "rel_path": "advanced_examples/simple_state_estimation_demo.py",
+        "name": "simple_state_estimation_demo.py",
+        "category": "06_其他",
+        "size": 10394
+      },
+      {
+        "path": "examples/advanced_examples/test_mpc_no_observer.py",
+        "rel_path": "advanced_examples/test_mpc_no_observer.py",
+        "name": "test_mpc_no_observer.py",
+        "category": "06_其他",
+        "size": 3178
+      },
+      {
+        "path": "examples/advanced_examples/diagnose_hydraulic_model.py",
+        "rel_path": "advanced_examples/diagnose_hydraulic_model.py",
+        "name": "diagnose_hydraulic_model.py",
+        "category": "06_其他",
+        "size": 6595
+      },
+      {
+        "path": "examples/advanced_examples/test_first_order_mpc.py",
+        "rel_path": "advanced_examples/test_first_order_mpc.py",
+        "name": "test_first_order_mpc.py",
+        "category": "06_其他",
+        "size": 4472
+      },
+      {
+        "path": "examples/advanced_examples/state_estimation_canal_control.py",
+        "rel_path": "advanced_examples/state_estimation_canal_control.py",
+        "name": "state_estimation_canal_control.py",
+        "category": "06_其他",
+        "size": 15264
+      },
+      {
+        "path": "examples/advanced_examples/diagnose_controller_mismatch.py",
+        "rel_path": "advanced_examples/diagnose_controller_mismatch.py",
+        "name": "diagnose_controller_mismatch.py",
+        "category": "06_其他",
+        "size": 4031
+      },
+      {
+        "path": "examples/advanced_examples/run_mpc_benchmark.py",
+        "rel_path": "advanced_examples/run_mpc_benchmark.py",
+        "name": "run_mpc_benchmark.py",
+        "category": "06_其他",
+        "size": 19543
+      },
+      {
+        "path": "examples/advanced_examples/diagnose_simulator.py",
+        "rel_path": "advanced_examples/diagnose_simulator.py",
+        "name": "diagnose_simulator.py",
+        "category": "06_其他",
+        "size": 4005
+      },
+      {
+        "path": "examples/advanced_examples/mpc_robustness_analysis.py",
+        "rel_path": "advanced_examples/mpc_robustness_analysis.py",
+        "name": "mpc_robustness_analysis.py",
+        "category": "06_其他",
+        "size": 15839
+      },
+      {
+        "path": "examples/advanced_examples/mpc_water_level_control.py",
+        "rel_path": "advanced_examples/mpc_water_level_control.py",
+        "name": "mpc_water_level_control.py",
+        "category": "06_其他",
+        "size": 12907
+      },
+      {
+        "path": "examples/advanced_examples/test_high_order_canal_solver.py",
+        "rel_path": "advanced_examples/test_high_order_canal_solver.py",
+        "name": "test_high_order_canal_solver.py",
+        "category": "06_其他",
+        "size": 6776
+      },
+      {
+        "path": "examples/advanced_examples/idz_saint_venant_integration.py",
+        "rel_path": "advanced_examples/idz_saint_venant_integration.py",
+        "name": "idz_saint_venant_integration.py",
+        "category": "06_其他",
+        "size": 18912
+      },
+      {
+        "path": "examples/advanced_examples/test_idz_mpc_performance.py",
+        "rel_path": "advanced_examples/test_idz_mpc_performance.py",
+        "name": "test_idz_mpc_performance.py",
+        "category": "06_其他",
+        "size": 17074
+      },
+      {
+        "path": "examples/advanced_examples/identify_true_idz_params.py",
+        "rel_path": "advanced_examples/identify_true_idz_params.py",
+        "name": "identify_true_idz_params.py",
+        "category": "06_其他",
+        "size": 7212
+      },
+      {
+        "path": "examples/advanced_examples/complete_benchmark_suite.py",
+        "rel_path": "advanced_examples/complete_benchmark_suite.py",
+        "name": "complete_benchmark_suite.py",
+        "category": "06_其他",
+        "size": 23778
+      },
+      {
+        "path": "examples/advanced_examples/adaptive_first_order_mpc_test.py",
+        "rel_path": "advanced_examples/adaptive_first_order_mpc_test.py",
+        "name": "adaptive_first_order_mpc_test.py",
+        "category": "06_其他",
+        "size": 9680
+      },
+      {
+        "path": "examples/advanced_examples/realtime_monitor_demo.py",
+        "rel_path": "advanced_examples/realtime_monitor_demo.py",
+        "name": "realtime_monitor_demo.py",
+        "category": "06_其他",
+        "size": 8222
+      },
+      {
+        "path": "examples/advanced_examples/benchmark_controllers.py",
+        "rel_path": "advanced_examples/benchmark_controllers.py",
+        "name": "benchmark_controllers.py",
+        "category": "06_其他",
+        "size": 11933
+      },
+      {
+        "path": "examples/advanced_examples/epanet_water_distribution_system.py",
+        "rel_path": "advanced_examples/epanet_water_distribution_system.py",
+        "name": "epanet_water_distribution_system.py",
+        "category": "06_其他",
+        "size": 15262
+      },
+      {
+        "path": "examples/advanced_examples/mpc_saint_venant_test.py",
+        "rel_path": "advanced_examples/mpc_saint_venant_test.py",
+        "name": "mpc_saint_venant_test.py",
+        "category": "06_其他",
+        "size": 21311
+      },
+      {
+        "path": "examples/advanced_examples/optimize_preissmann.py",
+        "rel_path": "advanced_examples/optimize_preissmann.py",
+        "name": "optimize_preissmann.py",
+        "category": "06_其他",
+        "size": 4954
+      },
+      {
+        "path": "examples/advanced_examples/realtime_scada_monitoring.py",
+        "rel_path": "advanced_examples/realtime_scada_monitoring.py",
+        "name": "realtime_scada_monitoring.py",
+        "category": "06_其他",
+        "size": 16736
+      },
+      {
+        "path": "examples/advanced_examples/multi_canal_benchmark_improved.py",
+        "rel_path": "advanced_examples/multi_canal_benchmark_improved.py",
+        "name": "multi_canal_benchmark_improved.py",
+        "category": "06_其他",
+        "size": 20994
+      },
+      {
+        "path": "examples/advanced_examples/diagnose_canal_boundary.py",
+        "rel_path": "advanced_examples/diagnose_canal_boundary.py",
+        "name": "diagnose_canal_boundary.py",
+        "category": "06_其他",
+        "size": 4642
+      },
+      {
+        "path": "examples/advanced_examples/test_mpc_direction.py",
+        "rel_path": "advanced_examples/test_mpc_direction.py",
+        "name": "test_mpc_direction.py",
+        "category": "06_其他",
+        "size": 2774
+      },
+      {
+        "path": "examples/advanced_examples/debug_saint_venant.py",
+        "rel_path": "advanced_examples/debug_saint_venant.py",
+        "name": "debug_saint_venant.py",
+        "category": "06_其他",
+        "size": 2355
+      },
+      {
+        "path": "examples/advanced_examples/verify_idz_steady_state.py",
+        "rel_path": "advanced_examples/verify_idz_steady_state.py",
+        "name": "verify_idz_steady_state.py",
+        "category": "06_其他",
+        "size": 3176
+      },
+      {
+        "path": "examples/advanced_examples/linearized_canal_simulator.py",
+        "rel_path": "advanced_examples/linearized_canal_simulator.py",
+        "name": "linearized_canal_simulator.py",
+        "category": "06_其他",
+        "size": 10009
+      },
+      {
+        "path": "examples/advanced_examples/multi_canal_benchmark.py",
+        "rel_path": "advanced_examples/multi_canal_benchmark.py",
+        "name": "multi_canal_benchmark.py",
+        "category": "06_其他",
+        "size": 18098
+      },
+      {
+        "path": "examples/advanced_examples/test_idz_identification_negative_gain.py",
+        "rel_path": "advanced_examples/test_idz_identification_negative_gain.py",
+        "name": "test_idz_identification_negative_gain.py",
+        "category": "06_其他",
+        "size": 6836
+      },
+      {
+        "path": "examples/advanced_examples/integrated_smart_water_system.py",
+        "rel_path": "advanced_examples/integrated_smart_water_system.py",
+        "name": "integrated_smart_water_system.py",
+        "category": "06_其他",
+        "size": 20235
+      },
+      {
+        "path": "examples/advanced_examples/robust_control_demo.py",
+        "rel_path": "advanced_examples/robust_control_demo.py",
+        "name": "robust_control_demo.py",
+        "category": "06_其他",
+        "size": 13466
+      },
+      {
+        "path": "examples/advanced_examples/run_first_order_mpc_benchmark.py",
+        "rel_path": "advanced_examples/run_first_order_mpc_benchmark.py",
+        "name": "run_first_order_mpc_benchmark.py",
+        "category": "06_其他",
+        "size": 7479
+      },
+      {
+        "path": "examples/advanced_examples/gain_scheduled_mpc.py",
+        "rel_path": "advanced_examples/gain_scheduled_mpc.py",
+        "name": "gain_scheduled_mpc.py",
+        "category": "06_其他",
+        "size": 24685
+      },
+      {
+        "path": "examples/integration_examples/gis_water_network.py",
+        "rel_path": "integration_examples/gis_water_network.py",
+        "name": "gis_water_network.py",
+        "category": "06_其他",
+        "size": 10628
+      },
+      {
+        "path": "examples/integration_examples/swmm_urban_drainage.py",
+        "rel_path": "integration_examples/swmm_urban_drainage.py",
+        "name": "swmm_urban_drainage.py",
+        "category": "06_其他",
+        "size": 9589
+      },
+      {
+        "path": "examples/example_08_preissmann_vs_fvm/example_08_preissmann_vs_fvm_enhanced.py",
+        "rel_path": "example_08_preissmann_vs_fvm/example_08_preissmann_vs_fvm_enhanced.py",
+        "name": "example_08_preissmann_vs_fvm_enhanced.py",
+        "category": "06_其他",
+        "size": 18589
+      },
+      {
+        "path": "examples/example_08_preissmann_vs_fvm/example_08_preissmann_demo.py",
+        "rel_path": "example_08_preissmann_vs_fvm/example_08_preissmann_demo.py",
+        "name": "example_08_preissmann_demo.py",
+        "category": "06_其他",
+        "size": 6334
+      },
+      {
+        "path": "examples/example_simple_canal/run_simple_canal.py",
+        "rel_path": "example_simple_canal/run_simple_canal.py",
+        "name": "run_simple_canal.py",
+        "category": "06_其他",
+        "size": 1643
+      },
+      {
+        "path": "examples/example_13_adaptive_timescale/example_13_adaptive_timescale_enhanced.py",
+        "rel_path": "example_13_adaptive_timescale/example_13_adaptive_timescale_enhanced.py",
+        "name": "example_13_adaptive_timescale_enhanced.py",
+        "category": "06_其他",
+        "size": 13505
+      },
+      {
+        "path": "examples/example_04_hydropower_system/example_04_hydropower_plant.py",
+        "rel_path": "example_04_hydropower_system/example_04_hydropower_plant.py",
+        "name": "example_04_hydropower_plant.py",
+        "category": "06_其他",
+        "size": 13994
+      },
+      {
+        "path": "examples/example_02_spillway_cascade/example_02_spillway_system.py",
+        "rel_path": "example_02_spillway_cascade/example_02_spillway_system.py",
+        "name": "example_02_spillway_system.py",
+        "category": "06_其他",
+        "size": 11122
+      },
+      {
+        "path": "examples/example_02_spillway_cascade/example_02_spillway_simple.py",
+        "rel_path": "example_02_spillway_cascade/example_02_spillway_simple.py",
+        "name": "example_02_spillway_simple.py",
+        "category": "06_其他",
+        "size": 10167
+      },
+      {
+        "path": "examples/example_09_pipe_rk4/example_09_pipe_rk4_enhanced.py",
+        "rel_path": "example_09_pipe_rk4/example_09_pipe_rk4_enhanced.py",
+        "name": "example_09_pipe_rk4_enhanced.py",
+        "category": "06_其他",
+        "size": 19090
+      },
+      {
+        "path": "examples/example_10_series_network/example_10_series_network_with_anim.py",
+        "rel_path": "example_10_series_network/example_10_series_network_with_anim.py",
+        "name": "example_10_series_network_with_anim.py",
+        "category": "06_其他",
+        "size": 3631
+      },
+      {
+        "path": "examples/example_20_urban_water_supply/demo_urban_supply.py",
+        "rel_path": "example_20_urban_water_supply/demo_urban_supply.py",
+        "name": "demo_urban_supply.py",
+        "category": "06_其他",
+        "size": 20274
+      },
+      {
+        "path": "examples/config_driven/simulate.py",
+        "rel_path": "config_driven/simulate.py",
+        "name": "simulate.py",
+        "category": "06_其他",
+        "size": 1062
+      },
+      {
+        "path": "examples/example_control/run_pid_control.py",
+        "rel_path": "example_control/run_pid_control.py",
+        "name": "run_pid_control.py",
+        "category": "06_其他",
+        "size": 2969
+      },
+      {
+        "path": "examples/example_control/run_mpc_control.py",
+        "rel_path": "example_control/run_mpc_control.py",
+        "name": "run_mpc_control.py",
+        "category": "06_其他",
+        "size": 4299
+      },
+      {
+        "path": "examples/example_24_multi_objective_optimization/demo_multi_objective.py",
+        "rel_path": "example_24_multi_objective_optimization/demo_multi_objective.py",
+        "name": "demo_multi_objective.py",
+        "category": "06_其他",
+        "size": 16628
+      },
+      {
+        "path": "examples/example_19_water_transfer/demo_water_transfer.py",
+        "rel_path": "example_19_water_transfer/demo_water_transfer.py",
+        "name": "demo_water_transfer.py",
+        "category": "06_其他",
+        "size": 20231
+      },
+      {
+        "path": "examples/example_23_control_comparison/demo_control_comparison.py",
+        "rel_path": "example_23_control_comparison/demo_control_comparison.py",
+        "name": "demo_control_comparison.py",
+        "category": "06_其他",
+        "size": 15904
+      },
+      {
+        "path": "examples/example_18_cascade_hydropower/demo_cascade.py",
+        "rel_path": "example_18_cascade_hydropower/demo_cascade.py",
+        "name": "demo_cascade.py",
+        "category": "06_其他",
+        "size": 15822
+      },
+      {
+        "path": "examples/example_15_rls_identification/example_15_rls_identification_enhanced.py",
+        "rel_path": "example_15_rls_identification/example_15_rls_identification_enhanced.py",
+        "name": "example_15_rls_identification_enhanced.py",
+        "category": "06_其他",
+        "size": 20401
+      },
+      {
+        "path": "examples/example_03_turbine_demo/example_03_turbine_comparison.py",
+        "rel_path": "example_03_turbine_demo/example_03_turbine_comparison.py",
+        "name": "example_03_turbine_comparison.py",
+        "category": "06_其他",
+        "size": 13052
+      },
+      {
+        "path": "examples/example_03_turbine_demo/example_03_turbine_with_anim.py",
+        "rel_path": "example_03_turbine_demo/example_03_turbine_with_anim.py",
+        "name": "example_03_turbine_with_anim.py",
+        "category": "06_其他",
+        "size": 9054
+      },
+      {
+        "path": "examples/example_21_irrigation_optimization/demo_irrigation.py",
+        "rel_path": "example_21_irrigation_optimization/demo_irrigation.py",
+        "name": "demo_irrigation.py",
+        "category": "06_其他",
+        "size": 19333
+      },
+      {
+        "path": "examples/example_14_adaptive_mpc/code/example_14_adaptive_mpc.py",
+        "rel_path": "example_14_adaptive_mpc/code/example_14_adaptive_mpc.py",
+        "name": "example_14_adaptive_mpc.py",
+        "category": "06_其他",
+        "size": 4773
+      },
+      {
+        "path": "examples/example_05_mode_comparison/code/example_05_mode_comparison.py",
+        "rel_path": "example_05_mode_comparison/code/example_05_mode_comparison.py",
+        "name": "example_05_mode_comparison.py",
+        "category": "06_其他",
+        "size": 1077
+      },
+      {
+        "path": "examples/example_02_pump_system/code/example_02_pump_system.py",
+        "rel_path": "example_02_pump_system/code/example_02_pump_system.py",
+        "name": "example_02_pump_system.py",
+        "category": "06_其他",
+        "size": 1212
+      },
+      {
+        "path": "examples/example_06_sil_basic/code/example_06_sil_basic.py",
+        "rel_path": "example_06_sil_basic/code/example_06_sil_basic.py",
+        "name": "example_06_sil_basic.py",
+        "category": "06_其他",
+        "size": 1426
+      },
+      {
+        "path": "examples/example_08_preissmann_vs_fvm/code/example_08_preissmann_vs_fvm.py",
+        "rel_path": "example_08_preissmann_vs_fvm/code/example_08_preissmann_vs_fvm.py",
+        "name": "example_08_preissmann_vs_fvm.py",
+        "category": "06_其他",
+        "size": 3198
+      },
+      {
+        "path": "examples/example_13_adaptive_timescale/code/example_13_adaptive_timescale.py",
+        "rel_path": "example_13_adaptive_timescale/code/example_13_adaptive_timescale.py",
+        "name": "example_13_adaptive_timescale.py",
+        "category": "06_其他",
+        "size": 3150
+      },
+      {
+        "path": "examples/example_03_complex_network/code/example_03_complex_network.py",
+        "rel_path": "example_03_complex_network/code/example_03_complex_network.py",
+        "name": "example_03_complex_network.py",
+        "category": "06_其他",
+        "size": 2027
+      },
+      {
+        "path": "examples/example_09_pipe_rk4/code/example_09_pipe_rk4.py",
+        "rel_path": "example_09_pipe_rk4/code/example_09_pipe_rk4.py",
+        "name": "example_09_pipe_rk4.py",
+        "category": "06_其他",
+        "size": 2610
+      },
+      {
+        "path": "examples/example_10_series_network/code/example_10_series_network.py",
+        "rel_path": "example_10_series_network/code/example_10_series_network.py",
+        "name": "example_10_series_network.py",
+        "category": "06_其他",
+        "size": 2140
+      },
+      {
+        "path": "examples/example_04_moc_boundary/code/example_04_moc_boundary.py",
+        "rel_path": "example_04_moc_boundary/code/example_04_moc_boundary.py",
+        "name": "example_04_moc_boundary.py",
+        "category": "06_其他",
+        "size": 1009
+      },
+      {
+        "path": "examples/example_07_fault_test/code/example_07_fault_test.py",
+        "rel_path": "example_07_fault_test/code/example_07_fault_test.py",
+        "name": "example_07_fault_test.py",
+        "category": "06_其他",
+        "size": 1375
+      },
+      {
+        "path": "examples/example_15_rls_identification/code/example_15_rls_identification.py",
+        "rel_path": "example_15_rls_identification/code/example_15_rls_identification.py",
+        "name": "example_15_rls_identification.py",
+        "category": "06_其他",
+        "size": 5197
+      }
+    ],
+    "05_综合案例": [
+      {
+        "path": "examples/case5_irrigation_system.py",
+        "rel_path": "case5_irrigation_system.py",
+        "name": "case5_irrigation_system.py",
+        "category": "05_综合案例",
+        "size": 14235
+      },
+      {
+        "path": "examples/case_flood_control.py",
+        "rel_path": "case_flood_control.py",
+        "name": "case_flood_control.py",
+        "category": "05_综合案例",
+        "size": 10033
+      },
+      {
+        "path": "examples/case_flood_control_steady.py",
+        "rel_path": "case_flood_control_steady.py",
+        "name": "case_flood_control_steady.py",
+        "category": "05_综合案例",
+        "size": 11727
+      },
+      {
+        "path": "examples/case6_highrise_water_supply.py",
+        "rel_path": "case6_highrise_water_supply.py",
+        "name": "case6_highrise_water_supply.py",
+        "category": "05_综合案例",
+        "size": 14550
+      },
+      {
+        "path": "examples/case8_network_optimization.py",
+        "rel_path": "case8_network_optimization.py",
+        "name": "case8_network_optimization.py",
+        "category": "05_综合案例",
+        "size": 21131
+      },
+      {
+        "path": "examples/case4_fire_protection_system.py",
+        "rel_path": "case4_fire_protection_system.py",
+        "name": "case4_fire_protection_system.py",
+        "category": "05_综合案例",
+        "size": 15914
+      },
+      {
+        "path": "examples/case_parameter_sensitivity.py",
+        "rel_path": "case_parameter_sensitivity.py",
+        "name": "case_parameter_sensitivity.py",
+        "category": "05_综合案例",
+        "size": 11678
+      },
+      {
+        "path": "examples/case_gate_operation.py",
+        "rel_path": "case_gate_operation.py",
+        "name": "case_gate_operation.py",
+        "category": "05_综合案例",
+        "size": 13826
+      },
+      {
+        "path": "examples/case_irrigation_scheduling.py",
+        "rel_path": "case_irrigation_scheduling.py",
+        "name": "case_irrigation_scheduling.py",
+        "category": "05_综合案例",
+        "size": 11634
+      },
+      {
+        "path": "examples/case02_flood_risk_assessment.py",
+        "rel_path": "case02_flood_risk_assessment.py",
+        "name": "case02_flood_risk_assessment.py",
+        "category": "05_综合案例",
+        "size": 11825
+      },
+      {
+        "path": "examples/case1_urban_water_supply.py",
+        "rel_path": "case1_urban_water_supply.py",
+        "name": "case1_urban_water_supply.py",
+        "category": "05_综合案例",
+        "size": 12857
+      },
+      {
+        "path": "examples/case7_regional_water_supply.py",
+        "rel_path": "case7_regional_water_supply.py",
+        "name": "case7_regional_water_supply.py",
+        "category": "05_综合案例",
+        "size": 22381
+      },
+      {
+        "path": "examples/case3_industrial_cooling_system.py",
+        "rel_path": "case3_industrial_cooling_system.py",
+        "name": "case3_industrial_cooling_system.py",
+        "category": "05_综合案例",
+        "size": 17595
+      },
+      {
+        "path": "examples/case2_pump_water_hammer.py",
+        "rel_path": "case2_pump_water_hammer.py",
+        "name": "case2_pump_water_hammer.py",
+        "category": "05_综合案例",
+        "size": 12386
+      },
+      {
+        "path": "examples/case_channel_renovation.py",
+        "rel_path": "case_channel_renovation.py",
+        "name": "case_channel_renovation.py",
+        "category": "05_综合案例",
+        "size": 10436
+      },
+      {
+        "path": "examples/real_world_cases/long_distance_water_transfer.py",
+        "rel_path": "real_world_cases/long_distance_water_transfer.py",
+        "name": "long_distance_water_transfer.py",
+        "category": "05_综合案例",
+        "size": 18035
+      },
+      {
+        "path": "examples/real_world_cases/urban_drainage_pump_station.py",
+        "rel_path": "real_world_cases/urban_drainage_pump_station.py",
+        "name": "urban_drainage_pump_station.py",
+        "category": "05_综合案例",
+        "size": 17301
+      },
+      {
+        "path": "examples/real_world_cases/irrigation_canal_automation.py",
+        "rel_path": "real_world_cases/irrigation_canal_automation.py",
+        "name": "irrigation_canal_automation.py",
+        "category": "05_综合案例",
+        "size": 13633
+      },
+      {
+        "path": "examples/case_library/case_01_hydropower_plant.py",
+        "rel_path": "case_library/case_01_hydropower_plant.py",
+        "name": "case_01_hydropower_plant.py",
+        "category": "05_综合案例",
+        "size": 21934
+      },
+      {
+        "path": "examples/case_library/case_03_irrigation_canal.py",
+        "rel_path": "case_library/case_03_irrigation_canal.py",
+        "name": "case_03_irrigation_canal.py",
+        "category": "05_综合案例",
+        "size": 21326
+      },
+      {
+        "path": "examples/case_library/case_05_river_network.py",
+        "rel_path": "case_library/case_05_river_network.py",
+        "name": "case_05_river_network.py",
+        "category": "05_综合案例",
+        "size": 33461
+      },
+      {
+        "path": "examples/case_library/case_02_water_supply_network.py",
+        "rel_path": "case_library/case_02_water_supply_network.py",
+        "name": "case_02_water_supply_network.py",
+        "category": "05_综合案例",
+        "size": 28199
+      },
+      {
+        "path": "examples/case_library/test_cases.py",
+        "rel_path": "case_library/test_cases.py",
+        "name": "test_cases.py",
+        "category": "05_综合案例",
+        "size": 18916
+      },
+      {
+        "path": "examples/case_library/benchmark_performance.py",
+        "rel_path": "case_library/benchmark_performance.py",
+        "name": "benchmark_performance.py",
+        "category": "05_综合案例",
+        "size": 12075
+      },
+      {
+        "path": "examples/case_library/run_all_cases.py",
+        "rel_path": "case_library/run_all_cases.py",
+        "name": "run_all_cases.py",
+        "category": "05_综合案例",
+        "size": 12964
+      },
+      {
+        "path": "examples/case_library/case_04_urban_drainage.py",
+        "rel_path": "case_library/case_04_urban_drainage.py",
+        "name": "case_04_urban_drainage.py",
+        "category": "05_综合案例",
+        "size": 31329
+      },
+      {
+        "path": "examples/case_library/case_01_dam_break/dam_break_comparison.py",
+        "rel_path": "case_library/case_01_dam_break/dam_break_comparison.py",
+        "name": "dam_break_comparison.py",
+        "category": "05_综合案例",
+        "size": 17385
+      },
+      {
+        "path": "examples/case_library/case_02_flood_routing/flood_routing_simulation.py",
+        "rel_path": "case_library/case_02_flood_routing/flood_routing_simulation.py",
+        "name": "flood_routing_simulation.py",
+        "category": "05_综合案例",
+        "size": 13345
+      },
+      {
+        "path": "examples/engineering_cases/case_04_parameter_calibration/run.py",
+        "rel_path": "engineering_cases/case_04_parameter_calibration/run.py",
+        "name": "run.py",
+        "category": "05_综合案例",
+        "size": 8616
+      },
+      {
+        "path": "examples/engineering_cases/case_03_multi_gate_control/run.py",
+        "rel_path": "engineering_cases/case_03_multi_gate_control/run.py",
+        "name": "run.py",
+        "category": "05_综合案例",
+        "size": 3561
+      },
+      {
+        "path": "examples/engineering_cases/case_05_water_resource_optimization/run.py",
+        "rel_path": "engineering_cases/case_05_water_resource_optimization/run.py",
+        "name": "run.py",
+        "category": "05_综合案例",
+        "size": 11168
+      }
+    ],
+    "03_管网系统": [
+      {
+        "path": "examples/example_network_solver.py",
+        "rel_path": "example_network_solver.py",
+        "name": "example_network_solver.py",
+        "category": "03_管网系统",
+        "size": 9915
+      },
+      {
+        "path": "examples/example_network_nodes.py",
+        "rel_path": "example_network_nodes.py",
+        "name": "example_network_nodes.py",
+        "category": "03_管网系统",
+        "size": 13741
+      },
+      {
+        "path": "examples/example_network_topology.py",
+        "rel_path": "example_network_topology.py",
+        "name": "example_network_topology.py",
+        "category": "03_管网系统",
+        "size": 9323
+      },
+      {
+        "path": "examples/example_network_validation.py",
+        "rel_path": "example_network_validation.py",
+        "name": "example_network_validation.py",
+        "category": "03_管网系统",
+        "size": 12679
+      },
+      {
+        "path": "examples/example_12_loop_network/code/example_12_loop_network.py",
+        "rel_path": "example_12_loop_network/code/example_12_loop_network.py",
+        "name": "example_12_loop_network.py",
+        "category": "03_管网系统",
+        "size": 1629
+      },
+      {
+        "path": "examples/example_11_tree_network/code/example_11_tree_network.py",
+        "rel_path": "example_11_tree_network/code/example_11_tree_network.py",
+        "name": "example_11_tree_network.py",
+        "category": "03_管网系统",
+        "size": 2416
+      }
+    ],
+    "04_水工结构": [
+      {
+        "path": "examples/example_structure_showcase/run.py",
+        "rel_path": "example_structure_showcase/run.py",
+        "name": "run.py",
+        "category": "04_水工结构",
+        "size": 5672
+      },
+      {
+        "path": "examples/example_structures/run_spillway.py",
+        "rel_path": "example_structures/run_spillway.py",
+        "name": "run_spillway.py",
+        "category": "04_水工结构",
+        "size": 1939
+      }
+    ],
+    "02_闸门泵站": [
+      {
+        "path": "examples/example_gate_pump_cascade/run_scenario_05.py",
+        "rel_path": "example_gate_pump_cascade/run_scenario_05.py",
+        "name": "run_scenario_05.py",
+        "category": "02_闸门泵站",
+        "size": 783
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/test_fix.py",
+        "rel_path": "example_gate_pump_cascade/test_fix.py",
+        "name": "test_fix.py",
+        "category": "02_闸门泵站",
+        "size": 795
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/analyze_all_scenarios.py",
+        "rel_path": "example_gate_pump_cascade/analyze_all_scenarios.py",
+        "name": "analyze_all_scenarios.py",
+        "category": "02_闸门泵站",
+        "size": 10041
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/comprehensive_scenario_test.py",
+        "rel_path": "example_gate_pump_cascade/comprehensive_scenario_test.py",
+        "name": "comprehensive_scenario_test.py",
+        "category": "02_闸门泵站",
+        "size": 44124
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/run_all_advanced_scenarios.py",
+        "rel_path": "example_gate_pump_cascade/run_all_advanced_scenarios.py",
+        "name": "run_all_advanced_scenarios.py",
+        "category": "02_闸门泵站",
+        "size": 4726
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/quick_scenario_test.py",
+        "rel_path": "example_gate_pump_cascade/quick_scenario_test.py",
+        "name": "quick_scenario_test.py",
+        "category": "02_闸门泵站",
+        "size": 20848
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/standard_multi_scenario_test.py",
+        "rel_path": "example_gate_pump_cascade/standard_multi_scenario_test.py",
+        "name": "standard_multi_scenario_test.py",
+        "category": "02_闸门泵站",
+        "size": 24134
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/run_scenario_04.py",
+        "rel_path": "example_gate_pump_cascade/run_scenario_04.py",
+        "name": "run_scenario_04.py",
+        "category": "02_闸门泵站",
+        "size": 853
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/run_scenario_02.py",
+        "rel_path": "example_gate_pump_cascade/run_scenario_02.py",
+        "name": "run_scenario_02.py",
+        "category": "02_闸门泵站",
+        "size": 869
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/batch_run_all_scenarios.py",
+        "rel_path": "example_gate_pump_cascade/batch_run_all_scenarios.py",
+        "name": "batch_run_all_scenarios.py",
+        "category": "02_闸门泵站",
+        "size": 6661
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/enhanced_scenario_test.py",
+        "rel_path": "example_gate_pump_cascade/enhanced_scenario_test.py",
+        "name": "enhanced_scenario_test.py",
+        "category": "02_闸门泵站",
+        "size": 35074
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/gate_pump_cascade_advanced.py",
+        "rel_path": "example_gate_pump_cascade/gate_pump_cascade_advanced.py",
+        "name": "gate_pump_cascade_advanced.py",
+        "category": "02_闸门泵站",
+        "size": 17733
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/run_scenario.py",
+        "rel_path": "example_gate_pump_cascade/run_scenario.py",
+        "name": "run_scenario.py",
+        "category": "02_闸门泵站",
+        "size": 12081
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/diagnose_negative_flow.py",
+        "rel_path": "example_gate_pump_cascade/diagnose_negative_flow.py",
+        "name": "diagnose_negative_flow.py",
+        "category": "02_闸门泵站",
+        "size": 4497
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/temp_scenario.py",
+        "rel_path": "example_gate_pump_cascade/temp_scenario.py",
+        "name": "temp_scenario.py",
+        "category": "02_闸门泵站",
+        "size": 17733
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/run_scenario_03.py",
+        "rel_path": "example_gate_pump_cascade/run_scenario_03.py",
+        "name": "run_scenario_03.py",
+        "category": "02_闸门泵站",
+        "size": 870
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/run_scenario_01.py",
+        "rel_path": "example_gate_pump_cascade/run_scenario_01.py",
+        "name": "run_scenario_01.py",
+        "category": "02_闸门泵站",
+        "size": 855
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/test_fixed_solver.py",
+        "rel_path": "example_gate_pump_cascade/test_fixed_solver.py",
+        "name": "test_fixed_solver.py",
+        "category": "02_闸门泵站",
+        "size": 780
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/test_all_scenarios_quick.py",
+        "rel_path": "example_gate_pump_cascade/test_all_scenarios_quick.py",
+        "name": "test_all_scenarios_quick.py",
+        "category": "02_闸门泵站",
+        "size": 11146
+      }
+    ],
+    "01_明渠流动": [
+      {
+        "path": "examples/example_01_canal_flow/run_all.py",
+        "rel_path": "example_01_canal_flow/run_all.py",
+        "name": "run_all.py",
+        "category": "01_明渠流动",
+        "size": 7748
+      },
+      {
+        "path": "examples/example_01_canal_flow/validate_all_v2_scripts.py",
+        "rel_path": "example_01_canal_flow/validate_all_v2_scripts.py",
+        "name": "validate_all_v2_scripts.py",
+        "category": "01_明渠流动",
+        "size": 8526
+      },
+      {
+        "path": "examples/example_01_canal_flow/batch_modify_scripts.py",
+        "rel_path": "example_01_canal_flow/batch_modify_scripts.py",
+        "name": "batch_modify_scripts.py",
+        "category": "01_明渠流动",
+        "size": 4935
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2.py",
+        "rel_path": "example_01_canal_flow/scripts/07_sluice_gate_flow_v2.py",
+        "name": "07_sluice_gate_flow_v2.py",
+        "category": "01_明渠流动",
+        "size": 10731
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/12_advanced_optimized_v2_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/12_advanced_optimized_v2_refactored.py",
+        "name": "12_advanced_optimized_v2_refactored.py",
+        "category": "01_明渠流动",
+        "size": 15037
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/02_methods_comparison_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/02_methods_comparison_refactored.py",
+        "name": "02_methods_comparison_refactored.py",
+        "category": "01_明渠流动",
+        "size": 31599
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/01_basic_with_animation_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/01_basic_with_animation_refactored.py",
+        "name": "01_basic_with_animation_refactored.py",
+        "category": "01_明渠流动",
+        "size": 12704
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/07_sluice_gate_flow_v2_refactored.py",
+        "name": "07_sluice_gate_flow_v2_refactored.py",
+        "category": "01_明渠流动",
+        "size": 8637
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/07_sluice_gate_flow_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/07_sluice_gate_flow_refactored.py",
+        "name": "07_sluice_gate_flow_refactored.py",
+        "category": "01_明渠流动",
+        "size": 21798
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/04_boundary_conditions_v2.py",
+        "rel_path": "example_01_canal_flow/scripts/04_boundary_conditions_v2.py",
+        "name": "04_boundary_conditions_v2.py",
+        "category": "01_明渠流动",
+        "size": 16288
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/04_boundary_conditions_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/04_boundary_conditions_refactored.py",
+        "name": "04_boundary_conditions_refactored.py",
+        "category": "01_明渠流动",
+        "size": 14347
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/09_simple_canal_enhanced.py",
+        "rel_path": "example_01_canal_flow/scripts/09_simple_canal_enhanced.py",
+        "name": "09_simple_canal_enhanced.py",
+        "category": "01_明渠流动",
+        "size": 11394
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/01_basic_v2.py",
+        "rel_path": "example_01_canal_flow/scripts/01_basic_v2.py",
+        "name": "01_basic_v2.py",
+        "category": "01_明渠流动",
+        "size": 12856
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/01_basic_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/01_basic_refactored.py",
+        "name": "01_basic_refactored.py",
+        "category": "01_明渠流动",
+        "size": 9153
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/01_basic.py",
+        "rel_path": "example_01_canal_flow/scripts/01_basic.py",
+        "name": "01_basic.py",
+        "category": "01_明渠流动",
+        "size": 9304
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/output_helper.py",
+        "rel_path": "example_01_canal_flow/scripts/output_helper.py",
+        "name": "output_helper.py",
+        "category": "01_明渠流动",
+        "size": 5537
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/03_idz_identification_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/03_idz_identification_refactored.py",
+        "name": "03_idz_identification_refactored.py",
+        "category": "01_明渠流动",
+        "size": 31923
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/12_advanced_optimized_v2.py",
+        "rel_path": "example_01_canal_flow/scripts/12_advanced_optimized_v2.py",
+        "name": "12_advanced_optimized_v2.py",
+        "category": "01_明渠流动",
+        "size": 13948
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/05_step_response_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/05_step_response_refactored.py",
+        "name": "05_step_response_refactored.py",
+        "category": "01_明渠流动",
+        "size": 18904
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/09_simple_canal_enhanced_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/09_simple_canal_enhanced_refactored.py",
+        "name": "09_simple_canal_enhanced_refactored.py",
+        "category": "01_明渠流动",
+        "size": 11692
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/04_boundary_conditions_v2_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/04_boundary_conditions_v2_refactored.py",
+        "name": "04_boundary_conditions_v2_refactored.py",
+        "category": "01_明渠流动",
+        "size": 16916
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/11_advanced_structures_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/11_advanced_structures_refactored.py",
+        "name": "11_advanced_structures_refactored.py",
+        "category": "01_明渠流动",
+        "size": 21940
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/12_advanced_optimized_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/12_advanced_optimized_refactored.py",
+        "name": "12_advanced_optimized_refactored.py",
+        "category": "01_明渠流动",
+        "size": 8828
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/08_optimized_steady_solving.py",
+        "rel_path": "example_01_canal_flow/scripts/08_optimized_steady_solving.py",
+        "name": "08_optimized_steady_solving.py",
+        "category": "01_明渠流动",
+        "size": 12389
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/07_sluice_gate_flow.py",
+        "rel_path": "example_01_canal_flow/scripts/07_sluice_gate_flow.py",
+        "name": "07_sluice_gate_flow.py",
+        "category": "01_明渠流动",
+        "size": 21495
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/10_canal_deep_analysis_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/10_canal_deep_analysis_refactored.py",
+        "name": "10_canal_deep_analysis_refactored.py",
+        "category": "01_明渠流动",
+        "size": 22497
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/01_basic_v2_refactored.py",
+        "name": "01_basic_v2_refactored.py",
+        "category": "01_明渠流动",
+        "size": 13344
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/11_advanced_structures.py",
+        "rel_path": "example_01_canal_flow/scripts/11_advanced_structures.py",
+        "name": "11_advanced_structures.py",
+        "category": "01_明渠流动",
+        "size": 21433
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/12_advanced_optimized.py",
+        "rel_path": "example_01_canal_flow/scripts/12_advanced_optimized.py",
+        "name": "12_advanced_optimized.py",
+        "category": "01_明渠流动",
+        "size": 8991
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/08_optimized_steady_solving_v2_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/08_optimized_steady_solving_v2_refactored.py",
+        "name": "08_optimized_steady_solving_v2_refactored.py",
+        "category": "01_明渠流动",
+        "size": 14971
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/03_idz_identification.py",
+        "rel_path": "example_01_canal_flow/scripts/03_idz_identification.py",
+        "name": "03_idz_identification.py",
+        "category": "01_明渠流动",
+        "size": 31522
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/04_boundary_conditions.py",
+        "rel_path": "example_01_canal_flow/scripts/04_boundary_conditions.py",
+        "name": "04_boundary_conditions.py",
+        "category": "01_明渠流动",
+        "size": 14498
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/08_optimized_steady_solving_v2.py",
+        "rel_path": "example_01_canal_flow/scripts/08_optimized_steady_solving_v2.py",
+        "name": "08_optimized_steady_solving_v2.py",
+        "category": "01_明渠流动",
+        "size": 13949
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/02_methods_comparison.py",
+        "rel_path": "example_01_canal_flow/scripts/02_methods_comparison.py",
+        "name": "02_methods_comparison.py",
+        "category": "01_明渠流动",
+        "size": 30471
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/05_step_response.py",
+        "rel_path": "example_01_canal_flow/scripts/05_step_response.py",
+        "name": "05_step_response.py",
+        "category": "01_明渠流动",
+        "size": 18793
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/06_animation_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/06_animation_refactored.py",
+        "name": "06_animation_refactored.py",
+        "category": "01_明渠流动",
+        "size": 16127
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/08_optimized_steady_solving_refactored.py",
+        "rel_path": "example_01_canal_flow/scripts/08_optimized_steady_solving_refactored.py",
+        "name": "08_optimized_steady_solving_refactored.py",
+        "category": "01_明渠流动",
+        "size": 12599
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/01_basic_with_animation.py",
+        "rel_path": "example_01_canal_flow/scripts/01_basic_with_animation.py",
+        "name": "01_basic_with_animation.py",
+        "category": "01_明渠流动",
+        "size": 12875
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/06_animation.py",
+        "rel_path": "example_01_canal_flow/scripts/06_animation.py",
+        "name": "06_animation.py",
+        "category": "01_明渠流动",
+        "size": 15936
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/10_canal_deep_analysis.py",
+        "rel_path": "example_01_canal_flow/scripts/10_canal_deep_analysis.py",
+        "name": "10_canal_deep_analysis.py",
+        "category": "01_明渠流动",
+        "size": 21746
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/test_anderson_tuning.py",
+        "rel_path": "example_01_canal_flow/tests/test_anderson_tuning.py",
+        "name": "test_anderson_tuning.py",
+        "category": "01_明渠流动",
+        "size": 11499
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/test_newton_fixed.py",
+        "rel_path": "example_01_canal_flow/tests/test_newton_fixed.py",
+        "name": "test_newton_fixed.py",
+        "category": "01_明渠流动",
+        "size": 11563
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/test_script10_stability.py",
+        "rel_path": "example_01_canal_flow/tests/test_script10_stability.py",
+        "name": "test_script10_stability.py",
+        "category": "01_明渠流动",
+        "size": 3296
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/test_anderson_simple.py",
+        "rel_path": "example_01_canal_flow/tests/test_anderson_simple.py",
+        "name": "test_anderson_simple.py",
+        "category": "01_明渠流动",
+        "size": 9619
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/analyze_jacobian.py",
+        "rel_path": "example_01_canal_flow/tests/analyze_jacobian.py",
+        "name": "analyze_jacobian.py",
+        "category": "01_明渠流动",
+        "size": 4865
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/test_anderson_vs_aitken.py",
+        "rel_path": "example_01_canal_flow/tests/test_anderson_vs_aitken.py",
+        "name": "test_anderson_vs_aitken.py",
+        "category": "01_明渠流动",
+        "size": 12130
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/test_performance_comparison.py",
+        "rel_path": "example_01_canal_flow/tests/test_performance_comparison.py",
+        "name": "test_performance_comparison.py",
+        "category": "01_明渠流动",
+        "size": 11861
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/test_jacobian_rank.py",
+        "rel_path": "example_01_canal_flow/tests/test_jacobian_rank.py",
+        "name": "test_jacobian_rank.py",
+        "category": "01_明渠流动",
+        "size": 5172
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/test_convergence_visual.py",
+        "rel_path": "example_01_canal_flow/tests/test_convergence_visual.py",
+        "name": "test_convergence_visual.py",
+        "category": "01_明渠流动",
+        "size": 5510
+      },
+      {
+        "path": "examples/example_01_canal_flow/tests/test_adaptive_relax.py",
+        "rel_path": "example_01_canal_flow/tests/test_adaptive_relax.py",
+        "name": "test_adaptive_relax.py",
+        "category": "01_明渠流动",
+        "size": 7405
+      }
+    ]
+  }
+}

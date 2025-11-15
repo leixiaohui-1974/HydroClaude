@@ -1,0 +1,357 @@
+{
+  "passed": [],
+  "failed": [
+    {
+      "path": "examples/example_side_weir.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_side_weir.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/spring_ice_breakup.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/spring_ice_breakup.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_internal_structures.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_internal_structures.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/case5_irrigation_system.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/case5_irrigation_system.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_complete_workflow.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_complete_workflow.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/summer_eutrophication.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/summer_eutrophication.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/case_flood_control.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/case_flood_control.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_culvert_structure.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_culvert_structure.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/case_flood_control_steady.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/case_flood_control_steady.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/comprehensive_animation_generator.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/comprehensive_animation_generator.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/case6_highrise_water_supply.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/case6_highrise_water_supply.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/case8_network_optimization.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/case8_network_optimization.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_network_solver.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_network_solver.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_bridge_structure.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_bridge_structure.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_network_nodes.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_network_nodes.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/case4_fire_protection_system.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/case4_fire_protection_system.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/case_parameter_sensitivity.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/case_parameter_sensitivity.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_network_topology.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_network_topology.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_network_validation.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_network_validation.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/case_gate_operation.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/case_gate_operation.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_cascade_reservoirs.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_cascade_reservoirs.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/phase1_flood_routing.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/phase1_flood_routing.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/phase1_steady_scenarios.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/phase1_steady_scenarios.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/phase1_extended_scenarios.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/phase1_extended_scenarios.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_timeseries_bc.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_timeseries_bc.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_irregular_channel.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_irregular_channel.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_trapezoidal_channel.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_trapezoidal_channel.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/climate_change_assessment.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/climate_change_assessment.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/phase1_simple_gate_control.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/phase1_simple_gate_control.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/case_irrigation_scheduling.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/case_irrigation_scheduling.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/case02_flood_risk_assessment.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/case02_flood_risk_assessment.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/benchmark_examples.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/benchmark_examples.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/calibration_example.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/calibration_example.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_rating_curve_bc.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_rating_curve_bc.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/case1_urban_water_supply.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/case1_urban_water_supply.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/phase1_mega_scenarios.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/phase1_mega_scenarios.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_compound_channel.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_compound_channel.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_irrigation_network.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_irrigation_network.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/advanced_animation_generator.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/advanced_animation_generator.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/validate_new_examples.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/validate_new_examples.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/case7_regional_water_supply.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/case7_regional_water_supply.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_pump_station.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_pump_station.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/winter_river_simulation.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/winter_river_simulation.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/test_weno3_dambreak.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/test_weno3_dambreak.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/case3_industrial_cooling_system.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/case3_industrial_cooling_system.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/case2_pump_water_hammer.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/case2_pump_water_hammer.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/benchmark_performance.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/benchmark_performance.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/case_channel_renovation.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/case_channel_renovation.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_advanced_bc.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/examples/example_advanced_bc.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    },
+    {
+      "path": "examples/example_structure_showcase/run.py",
+      "error": [
+        "/usr/bin/python3: can't open file '/workspace/examples/example_structure_showcase/examples/example_structure_showcase/run.py': [Errno 2] No such file or directory",
+        ""
+      ]
+    }
+  ],
+  "timeout": [],
+  "error": []
+}

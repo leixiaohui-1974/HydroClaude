@@ -1,0 +1,122 @@
+{
+  "file_not_found": [
+    [
+      "examples/example_22_water_hammer/demo_water_hammer.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_22_water_hammer/water_hammer_analysis.png'"
+    ],
+    [
+      "examples/example_06_complete_hydropower_system/example_06_complete_system.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_06_complete_hydropower_system/complete_system_performance.png'"
+    ],
+    [
+      "examples/example_gate_pump_cascade/test_all_scenarios_quick.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_gate_pump_cascade/enhanced_scenario_test.py'"
+    ],
+    [
+      "examples/example_05_transient_analysis/example_05_load_rejection.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_05_transient_analysis/load_rejection.png'"
+    ],
+    [
+      "examples/example_07_multi_unit_agc/example_07_multi_unit_agc.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_07_multi_unit_agc/scenario1_frequency_disturbance.png'"
+    ],
+    [
+      "examples/example_17_reservoir_basic/demo_reservoir.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_17_reservoir_basic/reservoir_simulation.png'"
+    ],
+    [
+      "examples/example_04_hydropower_system/example_04_hydropower_plant.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_04_hydropower_system/plant_performance.png'"
+    ],
+    [
+      "examples/example_02_spillway_cascade/example_02_spillway_system.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_02_spillway_cascade/rating_curve.png'"
+    ],
+    [
+      "examples/example_02_spillway_cascade/example_02_spillway_simple.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_02_spillway_cascade/spillway_demo.png'"
+    ],
+    [
+      "examples/example_20_urban_water_supply/demo_urban_supply.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_20_urban_water_supply/urban_supply_simulation.png'"
+    ],
+    [
+      "examples/example_24_multi_objective_optimization/demo_multi_objective.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_24_multi_objective_optimization/multi_objective_optimization.png'"
+    ],
+    [
+      "examples/example_19_water_transfer/demo_water_transfer.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_19_water_transfer/water_transfer_simulation.png'"
+    ],
+    [
+      "examples/example_23_control_comparison/demo_control_comparison.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_23_control_comparison/control_comparison.png'"
+    ],
+    [
+      "examples/example_03_turbine_demo/example_03_turbine_comparison.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_03_turbine_demo/turbine_comparison.png'"
+    ],
+    [
+      "examples/example_21_irrigation_optimization/demo_irrigation.py",
+      "FileNotFoundError: [Errno 2] No such file or directory: 'examples/example_21_irrigation_optimization/irrigation_optimization.png'"
+    ]
+  ],
+  "import_error": [
+    [
+      "examples/test_weno3_dambreak.py",
+      "ImportError: cannot import name 'GodunovFVMWENO3V2' from 'solvers.godunov_fvm_weno3_v2' (/workspace/solvers/godunov_fvm_weno3_v2.py). Did you mean: 'GodunvFVMWENO3V2'?"
+    ],
+    [
+      "examples/example_17_reservoir_basic/example_17_reservoir_with_anim.py",
+      "ImportError: cannot import name 'AnimationGenerator' from 'animation_utils' (/workspace/examples/example_17_reservoir_basic/animation_utils.py)"
+    ],
+    [
+      "examples/example_08_load_acceptance/example_08_load_acceptance_with_anim.py",
+      "ModuleNotFoundError: No module named 'animation_utils'"
+    ],
+    [
+      "examples/example_02_pump_system/example_02_pump_system_with_anim.py",
+      "ModuleNotFoundError: No module named 'animation_utils'"
+    ],
+    [
+      "examples/advanced_examples/multi_objective_reservoir_scheduling.py",
+      "ModuleNotFoundError: No module named 'pyomo'"
+    ],
+    [
+      "examples/advanced_examples/mpc_water_level_control.py",
+      "ImportError: cannot import name 'AdaptiveMPCController' from 'control.mpc_controller' (/workspace/control/mpc_controller.py)"
+    ],
+    [
+      "examples/advanced_examples/integrated_smart_water_system.py",
+      "ModuleNotFoundError: No module named 'pyomo'"
+    ],
+    [
+      "examples/example_10_series_network/example_10_series_network_with_anim.py",
+      "ModuleNotFoundError: No module named 'animation_utils'"
+    ],
+    [
+      "examples/example_07_fault_test/code/example_07_fault_test.py",
+      "ImportError: cannot import name 'DisturbanceGenerator' from 'disturbance.disturbance_generator' (/workspace/disturbance/disturbance_generator.py)"
+    ]
+  ],
+  "syntax_error": [
+    [
+      "examples/case_gate_operation.py",
+      "SyntaxError: '(' was never closed"
+    ],
+    [
+      "examples/example_advanced_bc.py",
+      "SyntaxError: unmatched ')'"
+    ],
+    [
+      "examples/advanced_examples/realtime_monitor_demo.py",
+      "SyntaxError: invalid syntax"
+    ]
+  ],
+  "indentation_error": [
+    [
+      "examples/example_02_pump_system/example_02_pump_system_enhanced.py",
+      "IndentationError: unexpected indent"
+    ]
+  ]
+}

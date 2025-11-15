@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import sys
+
 # -*- coding: utf-8 -*-
 """
 示例18: 梯级水电站调度
@@ -367,7 +372,7 @@ def visualize_cascade_results(results, cascade):
     ax5.legend(loc='best')
     ax5.grid(True, alpha=0.3)
 
-    plt.savefig('examples/example_18_cascade_hydropower/cascade_simulation.png', dpi=150)
+    plt.savefig(os.path.join(os.path.dirname(__file__), 'cascade_simulation.png'), dpi=150)
     print(f"图像已保存到: cascade_simulation.png")
 
 
@@ -424,7 +429,7 @@ def demo_flood_control(cascade):
     ax.grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig('examples/example_18_cascade_hydropower/flood_control.png', dpi=150)
+    plt.savefig(os.path.join(os.path.dirname(__file__), 'flood_control.png'), dpi=150)
     print(f"\n防洪控制图像已保存到: flood_control.png")
 
 

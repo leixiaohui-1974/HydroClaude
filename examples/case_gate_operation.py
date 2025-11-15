@@ -133,17 +133,18 @@ for scheme in schemes:
     Q_init = np.ones(n_cells) * Q_design
     
     # # GodunvFVMSolver需要手动初始化
- solver.h = h_init.copy()
- solver.Q = Q_init)  # Manual initialization preferred
+    solver.h = h_init.copy()
+    solver.Q = Q_init.copy()  # Manual initialization preferred
     
     # 稳态求解
     print(f"\n求解稳态...")
     try:
         result = solver.solve_steady_state(
-            Q_target=Q_design.copy()
- solver.bc_left = h_downstream=h_uniform
- solver.bc_right = max_iter=100,
+            Q_target=Q_design.copy(),
+            h_downstream=h_uniform,
+            max_iter=100,
             convergence_tol=0.5
+        )
         
         success = result['converged']
         iterations = result['iterations']

@@ -200,7 +200,7 @@ def interactive_monitor_demo():
     print("\n说明: 此演示需要matplotlib的交互式后端")
     print("如果在无GUI环境中运行，请跳过此演示\n")
 
-    response =# input() disabled for automated testing: ")
+    response = "y"  # input() disabled for automated testing
     if response.lower() != 'y':
         print("已跳过交互式演示")
         return

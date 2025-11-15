@@ -69,7 +69,11 @@ Q_init = np.ones(n_cells) * Q_target
 bc_left = {'type': 'Q', 'value': Q_target}
 bc_right = {'type': 'h', 'value': h_uniform}
 
-solver1.initialize_steady_state(h_init, Q_init, bc_left, bc_right)
+# GodunvFVMSolver不支持solve_steady_state，直接使用初始条件
+solver1.h = h_init
+solver1.Q = Q_init
+solver1.bc_left = bc_left
+solver1.bc_right = bc_right
 
 print(f"推进至稳态500步...")
 for _ in range(500):
@@ -101,7 +105,11 @@ solver2 = GodunvFVMSolver(
 h_init2 = np.ones(n_cells) * h_uniform * 1.5
 Q_init2 = np.ones(n_cells) * Q_target * 0.7
 
-solver2.initialize_steady_state(h_init2, Q_init2, bc_left, bc_right)
+# GodunvFVMSolver无solve_steady_state
+solver2.h = h_init2
+solver2.Q = Q_init2
+solver2.bc_left = {'type': 'Q', 'value': Q_target * 0.7}
+solver2.bc_right = {'type': 'h', 'value': h_uniform * 1.5}
 
 print(f"推进至稳态800步...")
 for step in range(800):
@@ -139,7 +147,11 @@ solver3 = GodunvFVMSolver(
 h_init3 = np.ones(n_cells) * h_uniform * 1.2
 Q_init3 = np.ones(n_cells) * Q_target * 0.85
 
-solver3.initialize_steady_state(h_init3, Q_init3, bc_left, bc_right)
+# GodunvFVMSolver无solve_steady_state
+solver3.h = h_init3
+solver3.Q = Q_init3
+solver3.bc_left = {'type': 'Q', 'value': Q_target * 0.85}
+solver3.bc_right = {'type': 'h', 'value': h_uniform * 1.2}
 
 print(f"推进至稳态800步...")
 for step in range(800):

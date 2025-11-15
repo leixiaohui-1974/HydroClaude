@@ -1,0 +1,50 @@
+{
+  "calibration_info": {
+    "timestamp": "2025-11-14T10:03:10.203334",
+    "objective_function": "RMSE",
+    "observed_variables": [
+      "DO",
+      "BOD"
+    ],
+    "n_observations": {
+      "DO": 7,
+      "BOD": 7
+    }
+  },
+  "calibration_results": {
+    "optimal_params": {
+      "kd_20": 0.19934686796775541,
+      "SOD_20": 1.4021839148907334
+    },
+    "objective_value": 0.14471209204617846,
+    "n_iterations": 37,
+    "n_evaluations": 73,
+    "method": "Nelder-Mead",
+    "success": true
+  },
+  "uncertainty_analysis": {
+    "parameter_stats": {
+      "kd_20": {
+        "optimal": 0.19934686796775541,
+        "mean": 0.1945153019646267,
+        "std": 0.03871924018393945,
+        "ci_lower": 0.12423573003588875,
+        "ci_upper": 0.265590357210472
+      },
+      "SOD_20": {
+        "optimal": 1.4021839148907334,
+        "mean": 1.4275610522486455,
+        "std": 0.26200056804419297,
+        "ci_lower": 0.9908967865679281,
+        "ci_upper": 1.9856010477193615
+      }
+    },
+    "objective_stats": {
+      "optimal": 0.14606307552908,
+      "mean": 0.25662053670551854,
+      "std": 0.09978278064702928,
+      "ci_lower": 0.14955222038015856,
+      "ci_upper": 0.4758115095771409
+    }
+  }
+}

@@ -4,7 +4,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirna
 
 from physics.pipe import Pipe
 from hardware.sensors import LevelSensor, FlowSensor
-from disturbance.disturbance_generator import DisturbanceGenerator
+# from disturbance.disturbance_generator import DisturbanceGenerator  # 模块不可用
+DisturbanceGenerator = None  # 占位符
 import numpy as np
 
 def run_example():

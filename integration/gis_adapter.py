@@ -1,4 +1,13 @@
 """
+GIS数据适配器
+"""
+try:
+    import geopandas as gpd
+except ImportError:
+    gpd = None
+    print("Warning: geopandas not installed, GIS features disabled")
+
+"""
 GIS集成模块
 
 本模块提供地理信息系统(GIS)数据的读写和可视化功能

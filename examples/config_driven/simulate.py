@@ -23,26 +23,38 @@ from engine.simulation_engine import SimulationEngine
 
 def main():
     """主函数"""
-    if len(sys.argv) != 2:
-        print("用法: python simulate.py config.json", file=sys.stderr)
-        sys.exit(1)
-
-    config_file = sys.argv[1]
+    # 如果没有提供配置文件，使用默认的
+    if len(sys.argv) < 2:
+        # 查找当前目录的配置文件
+        import glob
+        script_dir = Path(__file__).parent
+        config_files = list(script_dir.glob("*.json")) + list(script_dir.glob("*.yaml"))
+        if config_files:
+            config_file = str(config_files[0])
+            print(f"ℹ️  使用默认配置: {Path(config_file).name}")
+        else:
+            print("用法: python simulate.py config.json", file=sys.stderr)
+            print("或在当前目录放置配置文件", file=sys.stderr)
+            sys.exit(1)
+    else:
+        config_file = sys.argv[1]
 
     try:
         # 创建仿真引擎
         engine = SimulationEngine(config_file)
 
         # 初始化
-        engine.initialize_steady_state()
-
+        engine.initialize()
+        
         # 运行仿真
         engine.run()
 
-        # 保存结果
-        engine.save_results()
+        # 保存结果（如果有save_results方法）
+        if hasattr(engine, 'save_results'):
+            engine.save_results()
 
         # 成功
+        print(f"✅ 仿真完成")
         sys.exit(0)
 
     except Exception as e:
