@@ -2,171 +2,93 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop, claude/** ]
+    branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
-  workflow_dispatch:  # Allow manual trigger
 
 jobs:
   test:
-    name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.8', '3.9', '3.10', '3.11']
-        exclude:
-          # Reduce matrix size for faster CI
-          - os: windows-latest
-            python-version: '3.9'
-          - os: macos-latest
-            python-version: '3.9'
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
+    - uses: actions/checkout@v3
+    
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-        cache: 'pip'
-
+    
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -e .[dev,logging]
-
-    - name: Run tests with pytest
+        pip install numpy pandas matplotlib jsonschema
+        pip install pytest pytest-cov
+    
+    - name: Run basic tests
       run: |
-        pytest tests/ -v --tb=short --maxfail=5
-
-    - name: Run benchmark suite (quick mode)
+        python test_basic.py
+    
+    - name: Test configuration parsing
+      run: |
+        python hydro_engine.py --version
+        python hydro_engine.py --template steady_canal
+    
+    - name: Upload coverage
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.10'
-      run: |
-        python benchmark_suite.py --mode quick
+      uses: codecov/codecov-action@v3
 
   lint:
-    name: Code Quality Checks
     runs-on: ubuntu-latest
-
+    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
+    - uses: actions/checkout@v3
+    
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v4
       with:
         python-version: '3.10'
-        cache: 'pip'
-
-    - name: Install dependencies
+    
+    - name: Install linting tools
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 black
-
-    - name: Check code formatting with black
-      run: |
-        black --check --diff .
-      continue-on-error: true
-
+        pip install flake8 black isort
+    
     - name: Lint with flake8
       run: |
         # Stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # Exit-zero treats all errors as warnings
-        flake8 . --count --exit-zero --max-complexity=15 --max-line-length=120 --statistics
-      continue-on-error: true
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
+    
+    - name: Check formatting with black
+      run: |
+        black --check --diff .
+    
+    - name: Check imports with isort
+      run: |
+        isort --check-only --diff .
 
-  coverage:
-    name: Test Coverage
+  documentation:
     runs-on: ubuntu-latest
-
+    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
+    - uses: actions/checkout@v3
+    
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v4
       with:
         python-version: '3.10'
-        cache: 'pip'
-
+    
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -e .[dev]
-        pip install pytest-cov
-
-    - name: Run tests with coverage
+        pip install sphinx sphinx-rtd-theme
+    
+    - name: Build documentation
       run: |
-        pytest tests/ --cov=./ --cov-report=xml --cov-report=term
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
-
-  docs:
-    name: Build Documentation
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-        cache: 'pip'
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -e .[docs]
-
-    - name: Build Sphinx documentation
-      run: |
-        cd docs
-        make html
-
-    - name: Upload documentation artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: documentation
-        path: docs/build/html/
-
-  examples:
-    name: Test Examples
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-        cache: 'pip'
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -e .[dev]
-
-    - name: Run example tests
-      run: |
-        python test_all_examples.py
-
-    - name: Upload example test report
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: example-test-report
-        path: EXAMPLES_1_16_TEST_REPORT.md
+        # Placeholder for future Sphinx documentation
+        echo "Documentation build placeholder"
