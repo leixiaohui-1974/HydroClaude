@@ -32,6 +32,11 @@ class HydropowerConfig:
     
     # 引水系统
     intake_elevation: float         # 进水口高程 (m)
+    
+    # 尾水系统
+    tailrace_elevation: float       # 尾水位高程 (m)
+    
+    # 以下为有默认值的字段
     intake_loss_coeff: float = 0.5  # 进水口损失系数
     
     # 压力管道
@@ -39,8 +44,7 @@ class HydropowerConfig:
     penstock_diameter: float = 3.0     # 压力管道直径 (m)
     penstock_roughness: float = 0.0002 # 粗糙度 (m)
     
-    # 尾水系统
-    tailrace_elevation: float       # 尾水位高程 (m)
+    # 尾水管
     tailrace_loss_coeff: float = 1.0 # 尾水管损失系数
 
 
