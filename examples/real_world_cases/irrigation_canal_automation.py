@@ -144,7 +144,7 @@ class IrrigationCanalSystem:
             # 本段分水量
             Q_offtake = sum(
                 flow for j, flow in enumerate(offtake_flows)
-                if self.offtakes[j].section_index == i
+                if j < len(self.offtakes) and self.offtakes[j].section_index == i
             )
 
             # 净入流
@@ -309,14 +309,11 @@ def run_irrigation_canal_control():
 
     print("-" * 80)
 
-    # 性能评估
+    # 性能评估 - get_performance_metrics不存在，简化输出
     print("\n控制性能:")
-    mpc_metrics = mpc.get_performance_metrics()
-    print(f"  平均水位误差: {mpc_metrics['mae']:.4f} m")
-    print(f"  稳态水位误差: {mpc_metrics['steady_state_error']:.4f} m")
     print(f"  最大水位偏差: {np.max(np.abs(end_depth_history - target_depth)):.4f} m")
-    print(f"  MPC优化成功率: {mpc_metrics['success_rate']*100:.1f}%")
-    print(f"  平均求解时间: {mpc_metrics['avg_solve_time']*1000:.2f} ms")
+    print(f"  平均水位: {np.mean(end_depth_history):.3f} m")
+    print(f"  目标水位: {target_depth} m")
 
     # 水量平衡检查
     total_inflow = np.sum(inflow_history) * dt
