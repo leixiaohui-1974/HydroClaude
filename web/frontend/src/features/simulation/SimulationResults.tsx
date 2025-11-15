@@ -7,6 +7,7 @@ import AnimationController from './components/AnimationController';
 import Plot3D from './components/Plot3D';
 import EnhancedCharts from './components/EnhancedCharts';
 import ResultsExport from './components/ResultsExport';
+import { ResultAnalysis } from '@/features/analysis';
 import { useKeyboardShortcuts, DEFAULT_SHORTCUTS } from '@/hooks/useKeyboardShortcuts';
 
 const { Text } = Typography;
@@ -174,6 +175,26 @@ const SimulationResults = ({ result }: SimulationResultsProps) => {
 
   // Visualization tabs
   const visualizationTabs = [
+    {
+      key: 'analysis',
+      label: '🔍 自动分析',
+      children: (
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <Alert
+            message="🎉 专业结果分析（对标商业软件）"
+            description="自动分析水力特性、守恒性、关键事件，提供质量评级和可视化建议。"
+            type="success"
+            showIcon
+            closable
+          />
+          <ResultAnalysis
+            result={result}
+            taskId={result.task_id}
+            autoAnalyze={true}
+          />
+        </Space>
+      )
+    },
     {
       key: 'classic',
       label: '📊 经典视图',
