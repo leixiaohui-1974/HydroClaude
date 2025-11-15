@@ -416,12 +416,55 @@ class OutputManager:
         if self.verbose:
             print(f"  ✅ {report_file}")
     
+    def _copy_web_templates(self):
+        """复制Web模板文件到输出目录"""
+        template_dir = os.path.join(project_root, 'templates')
+        
+        if not os.path.exists(template_dir):
+            if self.verbose:
+                print(f"  ⚠️  模板目录不存在: {template_dir}")
+            return
+        
+        # 需要复制的文件
+        files_to_copy = ['hydro_viewer.js', 'styles.css']
+        
+        for filename in files_to_copy:
+            src = os.path.join(template_dir, filename)
+            dst = os.path.join(self.web_dir, filename)
+            
+            if os.path.exists(src):
+                import shutil
+                shutil.copy2(src, dst)
+                if self.verbose:
+                    print(f"  ✅ 复制模板: {filename}")
+            else:
+                if self.verbose:
+                    print(f"  ⚠️  模板文件不存在: {filename}")
+    
     def generate_web_dashboard(self):
-        """生成Web仪表板（简化版）"""
-        # 保存一个简单的HTML文件，显示结果摘要
+        """生成Web仪表板（完整版）"""
+        # 1. 复制模板文件
+        self._copy_web_templates()
+        
+        # 2. 生成HTML文件
         html_file = os.path.join(self.web_dir, 'index.html')
         
-        html_content = f"""<!DOCTYPE html>
+        # 读取模板
+        template_file = os.path.join(project_root, 'templates', 'index_template.html')
+        
+        if os.path.exists(template_file):
+            # 使用模板
+            with open(template_file, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            
+            # 替换标题
+            html_content = html_content.replace('{{title}}', self.results['metadata']['title'])
+        else:
+            # 降级：使用简化版
+            if self.verbose:
+                print(f"  ⚠️  模板文件不存在，使用简化版: {template_file}")
+            
+            html_content = f"""<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -649,8 +692,14 @@ class OutputManager:
         with open(html_file, 'w', encoding='utf-8') as f:
             f.write(html_content)
         
+        # 3. 保存results.json到web目录
+        results_json = os.path.join(self.web_dir, 'results.json')
+        with open(results_json, 'w', encoding='utf-8') as f:
+            json.dump(self.results, f, indent=2, ensure_ascii=False)
+        
         if self.verbose:
             print(f"  ✅ {html_file}")
+            print(f"  ✅ {results_json}")
     
     def generate_file_manifest(self):
         """生成文件清单"""
