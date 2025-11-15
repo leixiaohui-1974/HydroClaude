@@ -1,0 +1,341 @@
+{
+  "component_tests": [
+    {
+      "name": "滑动闸门 - 多工况测试",
+      "status": "PASS",
+      "details": {
+        "scenarios": 3,
+        "results": [
+          {
+            "scenario": "小开度",
+            "discharge": 118.85453293837809,
+            "regime": "FlowRegime.FREE_FLOW"
+          },
+          {
+            "scenario": "中开度",
+            "discharge": 130.1986175041809,
+            "regime": "FlowRegime.FREE_FLOW"
+          },
+          {
+            "scenario": "大开度",
+            "discharge": 150.34041372831194,
+            "regime": "FlowRegime.FREE_FLOW"
+          }
+        ]
+      },
+      "timestamp": 1763189734.3258727
+    },
+    {
+      "name": "径向闸门 - 多工况测试",
+      "status": "PASS",
+      "details": {
+        "scenarios": 3,
+        "results": [
+          {
+            "scenario": "小开度",
+            "discharge": 149.06339339354918,
+            "regime": "FlowRegime.FREE_FLOW"
+          },
+          {
+            "scenario": "中开度",
+            "discharge": 163.29076611982686,
+            "regime": "FlowRegime.FREE_FLOW"
+          },
+          {
+            "scenario": "大开度",
+            "discharge": 188.55193555092453,
+            "regime": "FlowRegime.FREE_FLOW"
+          }
+        ]
+      },
+      "timestamp": 1763189734.325894
+    },
+    {
+      "name": "垂直提升闸门 - 多工况测试",
+      "status": "PASS",
+      "details": {
+        "scenarios": 3,
+        "results": [
+          {
+            "scenario": "小开度",
+            "discharge": 128.7590773499096,
+            "regime": "FlowRegime.ORIFICE"
+          },
+          {
+            "scenario": "中开度",
+            "discharge": 141.04850229619598,
+            "regime": "FlowRegime.ORIFICE"
+          },
+          {
+            "scenario": "大开度",
+            "discharge": 162.8687815390046,
+            "regime": "FlowRegime.ORIFICE"
+          }
+        ]
+      },
+      "timestamp": 1763189734.3259053
+    },
+    {
+      "name": "滚轮闸门 - 多工况测试",
+      "status": "PASS",
+      "details": {
+        "scenarios": 3,
+        "results": [
+          {
+            "scenario": "小开度",
+            "discharge": 124.79725958529698,
+            "regime": "FlowRegime.FREE_FLOW"
+          },
+          {
+            "scenario": "中开度",
+            "discharge": 136.70854837938995,
+            "regime": "FlowRegime.FREE_FLOW"
+          },
+          {
+            "scenario": "大开度",
+            "discharge": 157.85743441472752,
+            "regime": "FlowRegime.FREE_FLOW"
+          }
+        ]
+      },
+      "timestamp": 1763189734.3259141
+    },
+    {
+      "name": "翻板闸门 - 多工况测试",
+      "status": "PASS",
+      "details": {
+        "scenarios": 3,
+        "results": [
+          {
+            "scenario": "小开度",
+            "discharge": 0.2772728489801173,
+            "regime": "FlowRegime.WEIR"
+          },
+          {
+            "scenario": "中开度",
+            "discharge": 5.031673151140326,
+            "regime": "FlowRegime.WEIR"
+          },
+          {
+            "scenario": "大开度",
+            "discharge": 8.706287591973755,
+            "regime": "FlowRegime.WEIR"
+          }
+        ]
+      },
+      "timestamp": 1763189734.3259394
+    },
+    {
+      "name": "天然河道 - 多流量工况",
+      "status": "PASS",
+      "details": {
+        "flows": 5,
+        "results": [
+          {
+            "flow": 10.0,
+            "normal_depth": 0.8119859884483337,
+            "critical_depth": 0.29427746106680286,
+            "froude": 0.21817887491981203,
+            "regime": "subcritical"
+          },
+          {
+            "flow": 20.0,
+            "normal_depth": 1.250399931419338,
+            "critical_depth": 0.4671363512679737,
+            "froude": 0.22834530394953526,
+            "regime": "subcritical"
+          },
+          {
+            "flow": 30.0,
+            "normal_depth": 1.6152828017683303,
+            "critical_depth": 0.6121217862538432,
+            "froude": 0.23328343513934188,
+            "regime": "subcritical"
+          },
+          {
+            "flow": 50.0,
+            "normal_depth": 2.241187296854297,
+            "critical_depth": 0.8604725161155776,
+            "froude": 0.2378966227326435,
+            "regime": "subcritical"
+          },
+          {
+            "flow": 100.0,
+            "normal_depth": 3.5364331536919194,
+            "critical_depth": 1.3659149772715913,
+            "froude": 0.2400420464151517,
+            "regime": "subcritical"
+          }
+        ]
+      },
+      "timestamp": 1763189734.3262708
+    },
+    {
+      "name": "人工渠道 - 多流量工况",
+      "status": "PASS",
+      "details": {
+        "flows": 5,
+        "results": [
+          {
+            "flow": 10.0,
+            "normal_depth": 0.8571009687049788,
+            "critical_depth": 0.4591196083418896,
+            "froude": 0.3356043391586999,
+            "regime": "subcritical"
+          },
+          {
+            "flow": 20.0,
+            "normal_depth": 1.285184177799737,
+            "critical_depth": 0.7184632751585509,
+            "froude": 0.33644045387149446,
+            "regime": "subcritical"
+          },
+          {
+            "flow": 30.0,
+            "normal_depth": 1.6234397768008193,
+            "critical_depth": 0.9309030015789547,
+            "froude": 0.33392999286797315,
+            "regime": "subcritical"
+          },
+          {
+            "flow": 50.0,
+            "normal_depth": 2.1686418643921552,
+            "critical_depth": 1.2700596903506334,
+            "froude": 0.3276304636446884,
+            "regime": "subcritical"
+          },
+          {
+            "flow": 100.0,
+            "normal_depth": 3.1777170790646263,
+            "critical_depth": 1.9445296859473071,
+            "froude": 0.3141036358205877,
+            "regime": "subcritical"
+          }
+        ]
+      },
+      "timestamp": 1763189734.3264968
+    },
+    {
+      "name": "压力管道 - 多流量工况",
+      "status": "FAIL",
+      "details": {
+        "error": "'>' not supported between instances of 'NoneType' and 'int'"
+      },
+      "timestamp": 1763189734.3265395
+    },
+    {
+      "name": "水库洪水演算 - 多工况",
+      "status": "PASS",
+      "details": {
+        "scenarios": 3,
+        "results": [
+          {
+            "scenario": "小洪水",
+            "max_level": 145.0818181818182,
+            "final_level": 145.0818181818182,
+            "status": "超防洪限制水位 ⚠️"
+          },
+          {
+            "scenario": "中洪水",
+            "max_level": 145.20454545454547,
+            "final_level": 145.20454545454547,
+            "status": "超防洪限制水位 ⚠️"
+          },
+          {
+            "scenario": "大洪水",
+            "max_level": 145.57272727272726,
+            "final_level": 145.57272727272726,
+            "status": "超防洪限制水位 ⚠️"
+          }
+        ]
+      },
+      "timestamp": 1763189734.326904
+    },
+    {
+      "name": "Francis混流式 - 多水头工况",
+      "status": "FAIL",
+      "details": {
+        "error": "float() argument must be a string or a real number, not 'tuple'"
+      },
+      "timestamp": 1763189734.3277116
+    },
+    {
+      "name": "Kaplan轴流式 - 多水头工况",
+      "status": "FAIL",
+      "details": {
+        "error": "float() argument must be a string or a real number, not 'tuple'"
+      },
+      "timestamp": 1763189734.327726
+    },
+    {
+      "name": "Pelton冲击式 - 多水头工况",
+      "status": "FAIL",
+      "details": {
+        "error": "float() argument must be a string or a real number, not 'tuple'"
+      },
+      "timestamp": 1763189734.3277345
+    }
+  ],
+  "scenario_tests": [
+    {
+      "name": "灌溉系统场景",
+      "status": "PASS",
+      "details": {
+        "reservoir_level": 74.904,
+        "canal_depth": 0.9495498140051283,
+        "gate_discharge": 22.264819084513505,
+        "regime": "FlowRegime.FREE_FLOW"
+      },
+      "timestamp": 1763189734.3278093
+    },
+    {
+      "name": "水电站系统场景",
+      "status": "FAIL",
+      "details": {
+        "error": "float() argument must be a string or a real number, not 'tuple'"
+      },
+      "timestamp": 1763189734.3281755
+    },
+    {
+      "name": "防洪系统场景",
+      "status": "PASS",
+      "details": {
+        "max_reservoir_level": 196.2,
+        "final_level": 196.2,
+        "total_outflow": 0.0,
+        "status": "超防洪限制水位 ⚠️"
+      },
+      "timestamp": 1763189734.328247
+    },
+    {
+      "name": "城市排水系统场景",
+      "status": "FAIL",
+      "details": {
+        "error": "PumpStation.__init__() got an unexpected keyword argument 'speed'"
+      },
+      "timestamp": 1763189734.3282602
+    }
+  ],
+  "integration_tests": [
+    {
+      "name": "完整水系统集成",
+      "status": "FAIL",
+      "details": {
+        "error": "float() argument must be a string or a real number, not 'tuple'"
+      },
+      "timestamp": 1763189734.3283312
+    }
+  ],
+  "performance_tests": [
+    {
+      "name": "大规模系统性能",
+      "status": "PASS",
+      "details": {
+        "num_components": 100,
+        "elapsed_time": 0.000423431396484375,
+        "avg_time_per_component": 4.23431396484375e-06
+      },
+      "timestamp": 1763189734.328762
+    }
+  ]
+}
