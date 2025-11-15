@@ -7,6 +7,13 @@ FastAPI application entry point for hydraulic simulation management
 # 必须在其他任何导入之前执行
 import encoding_patch  # 自动修复Windows GBK编码问题
 
+# ========== 设置环境变量，确保后台任务也能找到模块 ==========
+import os
+backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+current_pythonpath = os.environ.get('PYTHONPATH', '')
+if backend_dir not in current_pythonpath:
+    os.environ['PYTHONPATH'] = f"{backend_dir}:{current_pythonpath}" if current_pythonpath else backend_dir
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -15,7 +22,6 @@ import uvicorn
 
 # Add project root and api_gateway to Python path
 import sys
-import os
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
 api_gateway_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, project_root)

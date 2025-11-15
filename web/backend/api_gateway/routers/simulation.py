@@ -61,12 +61,6 @@ def run_simulation_task(task_id: str, config: dict):
     import io
     import sys as _sys
     
-    # 确保backend路径在sys.path中（后台任务需要重新设置）
-    # 使用固定路径
-    backend_path = "/workspace/web/backend"
-    if backend_path not in _sys.path:
-        _sys.path.insert(0, backend_path)
-    
     # 在Windows上，完全屏蔽stdout/stderr以避免编码问题
     # 必须在任何其他操作之前屏蔽，包括import
     old_stdout = _sys.stdout
@@ -84,7 +78,7 @@ def run_simulation_task(task_id: str, config: dict):
 
         # logger.info(f"Starting simulation task {task_id}")  # 禁用以避免编码问题
 
-        # Import engine (在屏蔽输出之后)
+        # Import engine - 现在backend已安装为包，可以直接导入
         from core.hydraulic_engine import HydraulicEngine
 
         # Create engine and run simulation
