@@ -1,0 +1,901 @@
+{
+  "start_time": "2025-11-15T03:50:04.886176",
+  "total_cases": 91,
+  "tested": 91,
+  "passed": 88,
+  "failed": 3,
+  "results_by_category": {
+    "structures": {
+      "total": 7,
+      "passed": 7,
+      "failed": 0
+    },
+    "general": {
+      "total": 58,
+      "passed": 57,
+      "failed": 1
+    },
+    "control": {
+      "total": 14,
+      "passed": 14,
+      "failed": 0
+    },
+    "network": {
+      "total": 6,
+      "passed": 5,
+      "failed": 1
+    },
+    "dam_break": {
+      "total": 2,
+      "passed": 1,
+      "failed": 1
+    },
+    "pressurized": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "water_quality": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "benchmark": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    }
+  },
+  "failed_cases": [
+    {
+      "case_id": "examples-example_trapezoidal_channel",
+      "name": "梯形断面渠道示例",
+      "category": "general",
+      "backend_script": "examples/example_trapezoidal_channel.py",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "examples-case_library-case_05_river_network",
+      "name": "HydroClaude Engineering Case 05: River Network System",
+      "category": "network",
+      "backend_script": "examples/case_library/case_05_river_network.py",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "examples-case_library-case_01_dam_break-dam_break_comparison",
+      "name": "案例1: 溃坝模拟 - 方法对比",
+      "category": "dam_break",
+      "backend_script": "examples/case_library/case_01_dam_break/dam_break_comparison.py",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    }
+  ],
+  "all_results": [
+    {
+      "case_id": "examples-example_side_weir",
+      "name": "侧堰水工建筑物示例",
+      "category": "structures",
+      "backend_script": "examples/example_side_weir.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "f554a70f-8af6-44e4-a5ac-552bfb4dbf3a"
+    },
+    {
+      "case_id": "examples-spring_ice_breakup",
+      "name": "HydroClaude 应用案例: 春季融冰期模拟",
+      "category": "general",
+      "backend_script": "examples/spring_ice_breakup.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "0d1c6a06-fe60-4863-8719-0cfe7ebda5a3"
+    },
+    {
+      "case_id": "examples-case5_irrigation_system",
+      "name": "案例5：农业灌溉系统分析",
+      "category": "general",
+      "backend_script": "examples/case5_irrigation_system.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "063ee4ea-2b89-4376-b9db-a61967eda33f"
+    },
+    {
+      "case_id": "examples-example_complete_workflow",
+      "name": "完整工作流程示例",
+      "category": "general",
+      "backend_script": "examples/example_complete_workflow.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "bd69ea44-ed8a-439d-b8e3-310d79827c2b"
+    },
+    {
+      "case_id": "examples-summer_eutrophication",
+      "name": "HydroClaude 应用案例: 夏季富营养化模拟",
+      "category": "general",
+      "backend_script": "examples/summer_eutrophication.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "968b97d2-d9ed-4859-84f3-d850cbf00960"
+    },
+    {
+      "case_id": "examples-case_flood_control",
+      "name": "工程案例2: 防洪调度优化",
+      "category": "control",
+      "backend_script": "examples/case_flood_control.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "c1ae8fbf-64ab-4a5b-b2d6-fa1bc9a2d935"
+    },
+    {
+      "case_id": "examples-example_culvert_structure",
+      "name": "涵洞/倒虹吸水工建筑物示例",
+      "category": "general",
+      "backend_script": "examples/example_culvert_structure.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "601be5b2-698b-44ae-912a-b1e2cf97df20"
+    },
+    {
+      "case_id": "examples-case_flood_control_steady",
+      "name": "工程案例2: 防洪能力评估（稳态分析）",
+      "category": "control",
+      "backend_script": "examples/case_flood_control_steady.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "4e4132a2-c4ec-4a70-98f7-573be4556cd6"
+    },
+    {
+      "case_id": "examples-case6_highrise_water_supply",
+      "name": "案例6：高层建筑分区供水系统",
+      "category": "general",
+      "backend_script": "examples/case6_highrise_water_supply.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "a65e388e-9ffa-4517-8690-f31508e72a7b"
+    },
+    {
+      "case_id": "examples-case8_network_optimization",
+      "name": "案例8：管网优化与管径选型",
+      "category": "network",
+      "backend_script": "examples/case8_network_optimization.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "a629ad8e-f924-4d98-8105-c8413919761b"
+    },
+    {
+      "case_id": "examples-example_bridge_structure",
+      "name": "桥梁水工建筑物示例",
+      "category": "general",
+      "backend_script": "examples/example_bridge_structure.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "aca4a979-050a-4550-ae92-3905f25053ce"
+    },
+    {
+      "case_id": "examples-case4_fire_protection_system",
+      "name": "案例4：消防供水系统分析",
+      "category": "general",
+      "backend_script": "examples/case4_fire_protection_system.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "7fdbfd79-eb2f-4f0c-9e6a-23879a5879c3"
+    },
+    {
+      "case_id": "examples-case_parameter_sensitivity",
+      "name": "工程案例5: 参数敏感性分析",
+      "category": "general",
+      "backend_script": "examples/case_parameter_sensitivity.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "a7494cb9-a41c-4a21-b448-ad91299b64b7"
+    },
+    {
+      "case_id": "examples-example_network_validation",
+      "name": "网络验证工具使用示例",
+      "category": "network",
+      "backend_script": "examples/example_network_validation.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "a3472878-895c-430b-b589-91b96b289a57"
+    },
+    {
+      "case_id": "examples-case_gate_operation",
+      "name": "工程案例4: 闸门调度优化",
+      "category": "structures",
+      "backend_script": "examples/case_gate_operation.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "5678827b-5e24-4d9f-be76-50e39903376e"
+    },
+    {
+      "case_id": "examples-phase1_flood_routing",
+      "name": "Phase 1应用示例 - 洪水演进模拟",
+      "category": "general",
+      "backend_script": "examples/phase1_flood_routing.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "9d5c1437-a475-4f73-af3c-a2fe5f0ec197"
+    },
+    {
+      "case_id": "examples-phase1_steady_scenarios",
+      "name": "Phase 1应用示例集 - 稳态场景库",
+      "category": "general",
+      "backend_script": "examples/phase1_steady_scenarios.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "b53b7a06-95c7-4822-b86c-8bb50a7ee870"
+    },
+    {
+      "case_id": "examples-phase1_extended_scenarios",
+      "name": "Phase 1扩展场景库 - 20个场景完整版",
+      "category": "general",
+      "backend_script": "examples/phase1_extended_scenarios.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "4cfee6da-2733-47e3-b06d-5aba1a86495a"
+    },
+    {
+      "case_id": "examples-example_trapezoidal_channel",
+      "name": "梯形断面渠道示例",
+      "category": "general",
+      "backend_script": "examples/example_trapezoidal_channel.py",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "examples-climate_change_assessment",
+      "name": "气候变化对河流冰-水质的影响评估",
+      "category": "general",
+      "backend_script": "examples/climate_change_assessment.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "5cae7440-1ab6-44c7-a966-cbef281e2cf0"
+    },
+    {
+      "case_id": "examples-case_irrigation_scheduling",
+      "name": "实际工程案例 - 灌区渠系调度优化",
+      "category": "general",
+      "backend_script": "examples/case_irrigation_scheduling.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "4b0e287d-f714-466b-9fb7-31f2a3fd7821"
+    },
+    {
+      "case_id": "examples-case02_flood_risk_assessment",
+      "name": "工程案例2: 渠道防洪风险评估（稳态分析）",
+      "category": "general",
+      "backend_script": "examples/case02_flood_risk_assessment.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "967e21fe-0742-4b06-a6ca-e7a11a2b8bd8"
+    },
+    {
+      "case_id": "examples-calibration_example",
+      "name": "HydroClaude DO求解器参数校准示例",
+      "category": "general",
+      "backend_script": "examples/calibration_example.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "41d62c92-6aa4-47cc-93bc-2d2f4162e681"
+    },
+    {
+      "case_id": "examples-case1_urban_water_supply",
+      "name": "城市供水管网分析案例",
+      "category": "general",
+      "backend_script": "examples/case1_urban_water_supply.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "1b69058f-4de8-46d2-805e-f8e882787c57"
+    },
+    {
+      "case_id": "examples-phase1_mega_scenarios",
+      "name": "Phase 1 超级场景库（30个稳态场景）",
+      "category": "general",
+      "backend_script": "examples/phase1_mega_scenarios.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "9fdcf5fc-14d4-4d4c-bfbe-a49d3ad24723"
+    },
+    {
+      "case_id": "examples-example_irrigation_network",
+      "name": "灌溉渠系网络完整示例",
+      "category": "network",
+      "backend_script": "examples/example_irrigation_network.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "5bedfe48-5f6f-4561-a048-4d158910faa8"
+    },
+    {
+      "case_id": "examples-case7_regional_water_supply",
+      "name": "案例7：区域供水管网系统",
+      "category": "general",
+      "backend_script": "examples/case7_regional_water_supply.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "0e50c1b1-0988-42a7-a88e-2253caf0bbf2"
+    },
+    {
+      "case_id": "examples-winter_river_simulation",
+      "name": "HydroClaude 端到端应用示例: 冬季河流冰-水质模拟",
+      "category": "general",
+      "backend_script": "examples/winter_river_simulation.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "86fdd964-942d-4e40-8091-f532bcad2b67"
+    },
+    {
+      "case_id": "examples-test_weno3_dambreak",
+      "name": "WENO-3求解器 - Dam Break经典测试",
+      "category": "dam_break",
+      "backend_script": "examples/test_weno3_dambreak.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "e80ed601-b627-4cf9-a759-16c2cdf623d5"
+    },
+    {
+      "case_id": "examples-case3_industrial_cooling_system",
+      "name": "案例3：工业供水系统分析",
+      "category": "general",
+      "backend_script": "examples/case3_industrial_cooling_system.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "bf4ad67e-2b44-437c-ba52-83ede75e170f"
+    },
+    {
+      "case_id": "examples-case2_pump_water_hammer",
+      "name": "泵站水锤分析案例",
+      "category": "pressurized",
+      "backend_script": "examples/case2_pump_water_hammer.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "6f4237a2-43a5-4353-bbce-3b77dcb019cc"
+    },
+    {
+      "case_id": "examples-case_channel_renovation",
+      "name": "工程案例3: 渠道改造方案对比",
+      "category": "general",
+      "backend_script": "examples/case_channel_renovation.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "8b28212a-daa4-4980-9874-309e365c994c"
+    },
+    {
+      "case_id": "examples-example_14_adaptive_mpc-example_14_adaptive_mpc_enhanced",
+      "name": "示例14: 自适应MPC控制（增强版）",
+      "category": "control",
+      "backend_script": "examples/example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "3427e214-0311-4da4-929e-610971361b90"
+    },
+    {
+      "case_id": "examples-real_world_cases-long_distance_water_transfer",
+      "name": "长距离调水工程案例",
+      "category": "general",
+      "backend_script": "examples/real_world_cases/long_distance_water_transfer.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "b788ebd7-eeeb-4638-96a6-27137fa39425"
+    },
+    {
+      "case_id": "examples-real_world_cases-urban_drainage_pump_station",
+      "name": "实际工程案例：城市排水泵站智能调度系统",
+      "category": "structures",
+      "backend_script": "examples/real_world_cases/urban_drainage_pump_station.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "20dccdfc-f3ee-440b-91f5-d4801219b9ee"
+    },
+    {
+      "case_id": "examples-case_library-case_05_river_network",
+      "name": "HydroClaude Engineering Case 05: River Network System",
+      "category": "network",
+      "backend_script": "examples/case_library/case_05_river_network.py",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "examples-case_library-case_02_water_supply_network",
+      "name": "Urban Water Supply Network - 城市供水管网系统",
+      "category": "network",
+      "backend_script": "examples/case_library/case_02_water_supply_network.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "86b58974-32d2-4115-b712-0f01cd365a4a"
+    },
+    {
+      "case_id": "examples-case_library-case_04_urban_drainage",
+      "name": "HydroClaude Engineering Case 04: Urban Drainage System",
+      "category": "general",
+      "backend_script": "examples/case_library/case_04_urban_drainage.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "98586e04-30c8-42f4-b8e7-1b4f4fadcbce"
+    },
+    {
+      "case_id": "examples-example_17_reservoir_basic-example_17_reservoir_with_anim",
+      "name": "示例17: 水库调度 - 增强版（嵌入式动画）",
+      "category": "general",
+      "backend_script": "examples/example_17_reservoir_basic/example_17_reservoir_with_anim.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "5f70d088-8293-4abb-9dc9-a2a1949ef21e"
+    },
+    {
+      "case_id": "examples-animation_utils",
+      "name": "动画生成工具模块 - 用于嵌入到示例脚本中",
+      "category": "general",
+      "backend_script": "examples/example_17_reservoir_basic/animation_utils.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "2c17d165-9760-414c-bfec-318f51688cc4"
+    },
+    {
+      "case_id": "examples-example_08_load_acceptance-example_08_load_acceptance",
+      "name": "Example 08: Hydropower Plant Transient Analysis - Load Acceptance",
+      "category": "general",
+      "backend_script": "examples/example_08_load_acceptance/example_08_load_acceptance.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "edf5c68f-e2f6-4352-9d66-8cebac2504d9"
+    },
+    {
+      "case_id": "examples-animation_utils",
+      "name": "动画生成工具模块 - 用于嵌入到示例脚本中",
+      "category": "general",
+      "backend_script": "examples/example_08_load_acceptance/animation_utils.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "01359764-ae08-47cf-9ef4-d4a7040783b4"
+    },
+    {
+      "case_id": "examples-example_08_load_acceptance-example_08_load_acceptance_with_anim",
+      "name": "示例8: 水轮机接受负荷 - 增强版（嵌入式动画）",
+      "category": "general",
+      "backend_script": "examples/example_08_load_acceptance/example_08_load_acceptance_with_anim.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "870d8d68-c471-4f56-9825-11ad9ad53cab"
+    },
+    {
+      "case_id": "examples-animation_utils",
+      "name": "动画生成工具模块 - 用于嵌入到示例脚本中",
+      "category": "general",
+      "backend_script": "examples/example_02_pump_system/animation_utils.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "0629d2b1-ec3e-4f71-93a5-38047f07c25a"
+    },
+    {
+      "case_id": "examples-advanced_examples-swmm_smart_pump_control",
+      "name": "SWMM智能泵站控制完整案例",
+      "category": "structures",
+      "backend_script": "examples/advanced_examples/swmm_smart_pump_control.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "63b9bb85-66fe-4973-b031-fafd3597e258"
+    },
+    {
+      "case_id": "examples-advanced_examples-multi_objective_reservoir_scheduling",
+      "name": "多目标水库调度优化案例",
+      "category": "general",
+      "backend_script": "examples/advanced_examples/multi_objective_reservoir_scheduling.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "e1469a6f-97d4-49bb-be8e-e3bf0107a56c"
+    },
+    {
+      "case_id": "examples-advanced_examples-constrained_mpc_canal_demo",
+      "name": "约束MPC渠道控制示例",
+      "category": "control",
+      "backend_script": "examples/advanced_examples/constrained_mpc_canal_demo.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "a5d49f85-b826-4878-aa53-d0a3a464bd89"
+    },
+    {
+      "case_id": "examples-advanced_examples-diagnose_mpc_performance",
+      "name": "MPC性能诊断分析",
+      "category": "control",
+      "backend_script": "examples/advanced_examples/diagnose_mpc_performance.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "5df43535-d7ff-433e-86f1-4f82004c930a"
+    },
+    {
+      "case_id": "examples-advanced_examples-water_quality_chlorine_decay",
+      "name": "供水管网余氯衰减模拟案例",
+      "category": "water_quality",
+      "backend_script": "examples/advanced_examples/water_quality_chlorine_decay.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "584eaf6e-409c-4fd5-99a9-35fa6d723399"
+    },
+    {
+      "case_id": "examples-advanced_examples-mpc_nonlinear_test",
+      "name": "一阶MPC在非线性模型上的性能测试",
+      "category": "control",
+      "backend_script": "examples/advanced_examples/mpc_nonlinear_test.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "6062a2ce-ba0c-412e-a2ee-72e2cdd4ba5f"
+    },
+    {
+      "case_id": "examples-advanced_examples-simple_state_estimation_demo",
+      "name": "状态估计简化示例",
+      "category": "general",
+      "backend_script": "examples/advanced_examples/simple_state_estimation_demo.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "7ac27875-96b8-420b-a0f7-fe326da74f84"
+    },
+    {
+      "case_id": "examples-advanced_examples-state_estimation_canal_control",
+      "name": "渠道控制中的状态估计示例",
+      "category": "control",
+      "backend_script": "examples/advanced_examples/state_estimation_canal_control.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "cd76d123-f284-482f-91ec-df23d5340d23"
+    },
+    {
+      "case_id": "examples-advanced_examples-run_mpc_benchmark",
+      "name": "MPC控制器基准测试",
+      "category": "control",
+      "backend_script": "examples/advanced_examples/run_mpc_benchmark.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "7a1456d1-3e99-4dc7-8a0f-ea31821217d1"
+    },
+    {
+      "case_id": "examples-advanced_examples-idz_saint_venant_integration",
+      "name": "IDZ-Saint-Venant深度集成示例",
+      "category": "general",
+      "backend_script": "examples/advanced_examples/idz_saint_venant_integration.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "2222c904-4601-4804-bb9a-f7b00bcdf5c7"
+    },
+    {
+      "case_id": "examples-advanced_examples-test_idz_mpc_performance",
+      "name": "IDZ MPC性能测试",
+      "category": "control",
+      "backend_script": "examples/advanced_examples/test_idz_mpc_performance.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "8c75695f-f057-4220-ac58-2b730c6bbc7b"
+    },
+    {
+      "case_id": "examples-advanced_examples-identify_true_idz_params",
+      "name": "从SimplifiedCanalSimulator辨识真实IDZ参数",
+      "category": "general",
+      "backend_script": "examples/advanced_examples/identify_true_idz_params.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "0a38bc78-1a5a-4ab4-a9f2-c05fc5ad5549"
+    },
+    {
+      "case_id": "examples-advanced_examples-complete_benchmark_suite",
+      "name": "完整的控制器基准测试套件",
+      "category": "benchmark",
+      "backend_script": "examples/advanced_examples/complete_benchmark_suite.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "c9ac1eee-5605-45e2-b451-e4add445e1dd"
+    },
+    {
+      "case_id": "examples-advanced_examples-adaptive_first_order_mpc_test",
+      "name": "自适应一阶MPC测试",
+      "category": "control",
+      "backend_script": "examples/advanced_examples/adaptive_first_order_mpc_test.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "6931a8e7-cbce-46ef-aa75-c1e361a97a1d"
+    },
+    {
+      "case_id": "examples-advanced_examples-epanet_water_distribution_system",
+      "name": "EPANET供水管网系统完整案例",
+      "category": "general",
+      "backend_script": "examples/advanced_examples/epanet_water_distribution_system.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "e18b2dde-93e7-4251-8b9c-8ab20057ffe8"
+    },
+    {
+      "case_id": "examples-advanced_examples-realtime_scada_monitoring",
+      "name": "实时SCADA监控系统完整案例",
+      "category": "general",
+      "backend_script": "examples/advanced_examples/realtime_scada_monitoring.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "bff32d06-155b-4424-91e4-a60b2ddd4c59"
+    },
+    {
+      "case_id": "examples-advanced_examples-multi_canal_benchmark_improved",
+      "name": "多渠道自适应控制基准测试（改进版）",
+      "category": "benchmark",
+      "backend_script": "examples/advanced_examples/multi_canal_benchmark_improved.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "fe7c3394-9732-468e-9a88-afb5b1cd19b1"
+    },
+    {
+      "case_id": "examples-advanced_examples-linearized_canal_simulator",
+      "name": "线性化渠道仿真器",
+      "category": "general",
+      "backend_script": "examples/advanced_examples/linearized_canal_simulator.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "f0146ad1-7cc1-49c5-b032-c667bc9cfba5"
+    },
+    {
+      "case_id": "examples-advanced_examples-test_idz_identification_negative_gain",
+      "name": "测试IDZ在线辨识对负增益系统的修复",
+      "category": "general",
+      "backend_script": "examples/advanced_examples/test_idz_identification_negative_gain.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "18c18804-6082-4703-a4ca-0c22834c175f"
+    },
+    {
+      "case_id": "examples-advanced_examples-robust_control_demo",
+      "name": "鲁棒控制策略演示",
+      "category": "control",
+      "backend_script": "examples/advanced_examples/robust_control_demo.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "7c384a65-e376-4144-bc7f-648005eb9d2c"
+    },
+    {
+      "case_id": "examples-advanced_examples-run_first_order_mpc_benchmark",
+      "name": "一阶MPC基准测试（配合LinearizedCanalSimulator）",
+      "category": "control",
+      "backend_script": "examples/advanced_examples/run_first_order_mpc_benchmark.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "51554659-d974-43a8-8285-aad39086d5c2"
+    },
+    {
+      "case_id": "examples-advanced_examples-gain_scheduled_mpc",
+      "name": "多工作点分段线性化MPC（增益调度MPC）",
+      "category": "control",
+      "backend_script": "examples/advanced_examples/gain_scheduled_mpc.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "140b0ea2-1647-4092-a481-3b8ae4f22cda"
+    },
+    {
+      "case_id": "examples-integration_examples-swmm_urban_drainage",
+      "name": "SWMM城市雨洪系统集成案例",
+      "category": "general",
+      "backend_script": "examples/integration_examples/swmm_urban_drainage.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "44a21d40-f32a-445e-a270-ed158c620591"
+    },
+    {
+      "case_id": "examples-example_13_adaptive_timescale-example_13_adaptive_timescale_enhanced",
+      "name": "示例13: 时间尺度自适应仿真（增强版）",
+      "category": "general",
+      "backend_script": "examples/example_13_adaptive_timescale/example_13_adaptive_timescale_enhanced.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "c1a0af43-05e2-4844-be19-5f538b8b774d"
+    },
+    {
+      "case_id": "examples-animation_utils",
+      "name": "动画生成工具模块 - 用于嵌入到示例脚本中",
+      "category": "general",
+      "backend_script": "examples/example_10_series_network/animation_utils.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "79026214-4e6f-4ba8-82b0-58a4b0eea21e"
+    },
+    {
+      "case_id": "examples-example_15_rls_identification-example_15_rls_identification_enhanced",
+      "name": "示例15: RLS参数辨识（增强版）",
+      "category": "general",
+      "backend_script": "examples/example_15_rls_identification/example_15_rls_identification_enhanced.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "479f456e-f0cf-4666-a27b-d62381a478ec"
+    },
+    {
+      "case_id": "examples-example_03_turbine_demo-example_03_turbine_with_anim",
+      "name": "示例3: 水轮机暂态响应 - 增强版（嵌入式动画）",
+      "category": "general",
+      "backend_script": "examples/example_03_turbine_demo/example_03_turbine_with_anim.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "f1663d20-a05b-443f-b614-131141780ccf"
+    },
+    {
+      "case_id": "examples-example_14_adaptive_mpc-example_14_adaptive_mpc_enhanced",
+      "name": "示例14: 自适应MPC控制（增强版）",
+      "category": "control",
+      "backend_script": "examples/example_14_adaptive_mpc/code/example_14_adaptive_mpc.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "0fa6d1cd-0cd2-4eff-bd2e-74f348a384e6"
+    },
+    {
+      "case_id": "examples-case_library-case_01_dam_break-dam_break_comparison",
+      "name": "案例1: 溃坝模拟 - 方法对比",
+      "category": "dam_break",
+      "backend_script": "examples/case_library/case_01_dam_break/dam_break_comparison.py",
+      "status": "failed",
+      "error": "HTTP 422",
+      "task_id": null
+    },
+    {
+      "case_id": "examples-case_library-case_02_flood_routing-flood_routing_simulation",
+      "name": "案例2: 河道洪水演进模拟",
+      "category": "general",
+      "backend_script": "examples/case_library/case_02_flood_routing/flood_routing_simulation.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "150a9fcc-d843-46ac-89ea-93783cfee382"
+    },
+    {
+      "case_id": "examples-example_02_pump_system-example_02_pump_system_enhanced",
+      "name": "示例2: 泵站系统仿真（增强版）",
+      "category": "structures",
+      "backend_script": "examples/example_02_pump_system/code/example_02_pump_system.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "5aa47948-24d6-4387-87d3-eb313199fde6"
+    },
+    {
+      "case_id": "examples-example_13_adaptive_timescale-example_13_adaptive_timescale_enhanced",
+      "name": "示例13: 时间尺度自适应仿真（增强版）",
+      "category": "general",
+      "backend_script": "examples/example_13_adaptive_timescale/code/example_13_adaptive_timescale.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "8a7876a0-a5be-455c-a568-ad1255e05cd5"
+    },
+    {
+      "case_id": "examples-example_09_pipe_rk4-example_09_pipe_rk4_enhanced",
+      "name": "示例9: 管道水击RK4高精度求解（增强版）",
+      "category": "general",
+      "backend_script": "examples/example_09_pipe_rk4/code/example_09_pipe_rk4.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "5ad93fa9-ce90-4a08-bf29-5cc605d4ea49"
+    },
+    {
+      "case_id": "examples-example_10_series_network-example_10_series_network_with_anim",
+      "name": "示例10: 串联管网系统 - 增强版（嵌入式动画）",
+      "category": "network",
+      "backend_script": "examples/example_10_series_network/code/example_10_series_network.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "cda58764-1d32-48e3-b537-d7df79e07f23"
+    },
+    {
+      "case_id": "examples-example_04_moc_boundary-code-example_04_moc_boundary",
+      "name": "Example 04 Moc Boundary",
+      "category": "general",
+      "backend_script": "examples/example_04_moc_boundary/code/example_04_moc_boundary.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "a49c1ab9-a726-4e1a-9777-9a5b8a116e4c"
+    },
+    {
+      "case_id": "examples-example_15_rls_identification-example_15_rls_identification_enhanced",
+      "name": "示例15: RLS参数辨识（增强版）",
+      "category": "general",
+      "backend_script": "examples/example_15_rls_identification/code/example_15_rls_identification.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "eaf78f7a-8a87-4272-8e73-57d3dd0188f1"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-07_sluice_gate_flow_v2",
+      "name": "示例1扩展：明渠闸门过流动力学分析（高精度版本）",
+      "category": "structures",
+      "backend_script": "examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "066f9e4f-d8f7-442c-8248-2dfac89286af"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-12_advanced_optimized_v2_refactored",
+      "name": "优化版例子2：多闸门和混合结构 (HydrostaticCanalSolver高精度版本 - Refactored)",
+      "category": "general",
+      "backend_script": "examples/example_01_canal_flow/scripts/12_advanced_optimized_v2_refactored.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "d77d506f-398f-4776-84af-1a86909484d1"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-07_sluice_gate_flow_v2_refactored",
+      "name": "示例1扩展：明渠闸门过流动力学分析（重构版 - 使用新工具）",
+      "category": "structures",
+      "backend_script": "examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2_refactored.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "bb24b16b-3213-4a2b-8e6b-78cfd6e359a9"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-01_basic_v2",
+      "name": "例子1：明渠流动基础示例 (HydrostaticCanalSolver高精度版本)",
+      "category": "general",
+      "backend_script": "examples/example_01_canal_flow/scripts/01_basic_v2.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "77b9dafa-bfa3-49eb-a06a-9c54ba5b95c4"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-12_advanced_optimized_v2",
+      "name": "优化版例子2：多闸门和混合结构 (HydrostaticCanalSolver高精度版本)",
+      "category": "general",
+      "backend_script": "examples/example_01_canal_flow/scripts/12_advanced_optimized_v2.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "71809cb2-d624-4c89-b9ae-a3dcf96b0f11"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-01_basic_v2_refactored",
+      "name": "例子1：明渠流动基础示例 (HydrostaticCanalSolver高精度版本)",
+      "category": "general",
+      "backend_script": "examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "74ef7bed-a948-4ff3-af62-058b447de21f"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-08_optimized_steady_solving_v2_refactored",
+      "name": "优化版例子1：闸门流动模拟 (HydrostaticCanalSolver高精度版本 - Refactored)",
+      "category": "general",
+      "backend_script": "examples/example_01_canal_flow/scripts/08_optimized_steady_solving_v2_refactored.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "64dac315-4702-466e-85ac-b3c1aa9b6148"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-03_idz_identification",
+      "name": "例子1: 明渠非恒定流 - IDZ参数辨识",
+      "category": "general",
+      "backend_script": "examples/example_01_canal_flow/scripts/03_idz_identification.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "d46f86c0-c6de-4030-b2bd-0af9eec9ece4"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-08_optimized_steady_solving_v2",
+      "name": "优化版例子1：闸门流动模拟 (HydrostaticCanalSolver高精度版本)",
+      "category": "general",
+      "backend_script": "examples/example_01_canal_flow/scripts/08_optimized_steady_solving_v2.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "47b025d8-5e7e-475d-958f-f8b4608550a2"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-02_methods_comparison",
+      "name": "例子1：明渠非恒定流 - 三种数值方法标准对比测试",
+      "category": "general",
+      "backend_script": "examples/example_01_canal_flow/scripts/02_methods_comparison.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "8532ccaf-9788-4714-970d-807b38cdbe1a"
+    },
+    {
+      "case_id": "examples-example_01_canal_flow-scripts-05_step_response",
+      "name": "例子1：明渠非恒定流 - 阶跃响应三种方法对比",
+      "category": "general",
+      "backend_script": "examples/example_01_canal_flow/scripts/05_step_response.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "76e973ec-9214-4f3e-ac1c-cbecc2b1c592"
+    }
+  ],
+  "end_time": "2025-11-15T03:50:42.401372",
+  "duration_seconds": 37.515196
+}
