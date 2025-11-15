@@ -55,81 +55,79 @@ if backend_path not in sys.path:
 
 def run_simulation_task(task_id: str, config: dict):
     """
-    Background task to run simulation
+    Background task to run simulation using subprocess worker
     Updates simulation_tasks with results
+    
+    修复方案：使用独立的worker进程运行仿真，避免FastAPI BackgroundTasks的模块导入问题
     """
-    import io
-    import sys as _sys
-    import os as _os
-    
-    # 关键修复：后台任务需要重新设置路径
-    # 使用多种方法确保找到backend目录
-    possible_paths = [
-        '/workspace/web/backend',  # 绝对路径（Linux）
-        _os.path.abspath(_os.path.join(_os.path.dirname(__file__), '../../..')),  # 相对路径
-        _os.environ.get('PYTHONPATH', '').split(':')[0] if _os.environ.get('PYTHONPATH') else None
-    ]
-    for path in possible_paths:
-        if path and _os.path.exists(path) and path not in _sys.path:
-            _sys.path.insert(0, path)
-    
-    # 在Windows上，完全屏蔽stdout/stderr以避免编码问题
-    # 必须在任何其他操作之前屏蔽，包括import
-    old_stdout = _sys.stdout
-    old_stderr = _sys.stderr
-    
-    # 立即屏蔽所有输出
-    if _sys.platform == 'win32':
-        _sys.stdout = io.StringIO()
-        _sys.stderr = io.StringIO()
+    import subprocess
+    import json
+    import tempfile
     
     try:
         # Update status to running
         simulation_tasks[task_id]['status'] = 'running'
         simulation_tasks[task_id]['started_at'] = datetime.now()
-
-        # logger.info(f"Starting simulation task {task_id}")  # 禁用以避免编码问题
-
-        # Import engine
-        from core.hydraulic_engine import HydraulicEngine
-
-        # Create engine and run simulation
-        engine = HydraulicEngine()
-        result = engine.run_canal_simulation(task_id, config)
-
-        # Update task with results
-        if result.status == 'completed':
-            simulation_tasks[task_id]['status'] = 'completed'
-            simulation_tasks[task_id]['result'] = result
-            simulation_tasks[task_id]['completed_at'] = datetime.now()
-            simulation_tasks[task_id]['duration'] = result.duration
-            # logger.info(f"Simulation task {task_id} completed successfully")  # 禁用
-        else:
-            simulation_tasks[task_id]['status'] = 'failed'
-            # 安全地处理错误信息，移除任何可能的非ASCII字符
-            try:
-                error_msg = str(result.error).encode('ascii', 'ignore').decode('ascii') if result.error else "Unknown error"
-            except:
-                error_msg = "Unknown error (encoding issue)"
-            simulation_tasks[task_id]['error'] = error_msg
-            simulation_tasks[task_id]['completed_at'] = datetime.now()
-            # logger.error(f"Simulation task {task_id} failed: {result.error}")  # 禁用
-
-    except Exception as e:
-        # logger.error(f"Simulation task {task_id} encountered error: {e}", exc_info=True)  # 禁用
-        simulation_tasks[task_id]['status'] = 'failed'
-        # 安全地转换错误信息，移除任何可能的非ASCII字符
+        
+        # 准备worker脚本路径
+        backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        worker_script = os.path.join(backend_dir, 'run_simulation_worker.py')
+        
+        # 创建临时文件存储结果
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False, encoding='utf-8') as tmp_file:
+            tmp_path = tmp_file.name
+        
         try:
-            error_msg = str(e).encode('ascii', 'ignore').decode('ascii')
-        except:
-            error_msg = "Unknown error (encoding issue)"
-        simulation_tasks[task_id]['error'] = error_msg
+            # 准备配置JSON
+            config_json = json.dumps(config, ensure_ascii=False)
+            
+            # 调用worker脚本
+            result = subprocess.run(
+                [
+                    'python3',
+                    worker_script,
+                    '--task-id', task_id,
+                    '--config', config_json,
+                    '--output', tmp_path
+                ],
+                cwd=backend_dir,
+                capture_output=True,
+                text=True,
+                timeout=300  # 5分钟超时
+            )
+            
+            # 读取结果
+            with open(tmp_path, 'r', encoding='utf-8') as f:
+                worker_result = json.load(f)
+            
+            # 更新任务状态
+            if worker_result['status'] == 'completed':
+                simulation_tasks[task_id]['status'] = 'completed'
+                simulation_tasks[task_id]['result'] = worker_result['result']
+                simulation_tasks[task_id]['completed_at'] = datetime.now()
+                # 计算持续时间
+                started = datetime.fromisoformat(worker_result['started_at'])
+                completed = datetime.fromisoformat(worker_result['completed_at'])
+                simulation_tasks[task_id]['duration'] = (completed - started).total_seconds()
+            else:
+                simulation_tasks[task_id]['status'] = 'failed'
+                simulation_tasks[task_id]['error'] = worker_result.get('error', 'Unknown error')
+                simulation_tasks[task_id]['completed_at'] = datetime.now()
+        
+        finally:
+            # 清理临时文件
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+    
+    except subprocess.TimeoutExpired:
+        simulation_tasks[task_id]['status'] = 'failed'
+        simulation_tasks[task_id]['error'] = 'Simulation timeout (exceeded 5 minutes)'
         simulation_tasks[task_id]['completed_at'] = datetime.now()
     
-    finally:
-        # 恢复stdout/stderr
-        _sys.stdout = old_stdout
-        _sys.stderr = old_stderr
+    except Exception as e:
+        simulation_tasks[task_id]['status'] = 'failed'
+        simulation_tasks[task_id]['error'] = f'Worker error: {str(e)}'
+        simulation_tasks[task_id]['completed_at'] = datetime.now()
 
 
 @router.post("", response_model=SimulationResponse, status_code=201)
