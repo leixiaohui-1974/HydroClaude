@@ -1,0 +1,120 @@
+{
+  "summary": {
+    "total_missing": 12,
+    "components": 5,
+    "scenarios": 0,
+    "combinations": 7
+  },
+  "high_priority": [
+    "组件: StorageBasin",
+    "组合: 水库-渠道-闸门灌溉系统",
+    "组合: 水库-钢管-水轮机发电系统",
+    "组合: 管道-泵站-阀门供水系统",
+    "组合: 河道-桥梁-堰防洪系统",
+    "组合: 水库-调压井-水电站",
+    "组合: 渠道-侧堰-调蓄池",
+    "组合: 复杂阀门系统"
+  ],
+  "medium_priority": [
+    "组件: GlobeValve",
+    "组件: NeedleValve",
+    "组件: ConeValve",
+    "组件: HydropowerStation"
+  ],
+  "detailed": {
+    "components": [
+      {
+        "component": "GlobeValve",
+        "category": "valves",
+        "priority": "medium"
+      },
+      {
+        "component": "NeedleValve",
+        "category": "valves",
+        "priority": "medium"
+      },
+      {
+        "component": "ConeValve",
+        "category": "valves",
+        "priority": "medium"
+      },
+      {
+        "component": "StorageBasin",
+        "category": "reservoirs",
+        "priority": "high"
+      },
+      {
+        "component": "HydropowerStation",
+        "category": "others",
+        "priority": "medium"
+      }
+    ],
+    "scenarios": [],
+    "combinations": [
+      {
+        "components": [
+          "Reservoir",
+          "Canal",
+          "SluiceGate"
+        ],
+        "description": "水库-渠道-闸门灌溉系统",
+        "priority": "high"
+      },
+      {
+        "components": [
+          "Reservoir",
+          "Penstock",
+          "FrancisTurbine"
+        ],
+        "description": "水库-钢管-水轮机发电系统",
+        "priority": "high"
+      },
+      {
+        "components": [
+          "Pipe",
+          "PumpStation",
+          "Valve"
+        ],
+        "description": "管道-泵站-阀门供水系统",
+        "priority": "high"
+      },
+      {
+        "components": [
+          "River",
+          "Bridge",
+          "Weir"
+        ],
+        "description": "河道-桥梁-堰防洪系统",
+        "priority": "high"
+      },
+      {
+        "components": [
+          "Reservoir",
+          "SurgeTank",
+          "HydropowerStation"
+        ],
+        "description": "水库-调压井-水电站",
+        "priority": "high"
+      },
+      {
+        "components": [
+          "Canal",
+          "SideWeir",
+          "Reservoir"
+        ],
+        "description": "渠道-侧堰-调蓄池",
+        "priority": "high"
+      },
+      {
+        "components": [
+          "Pipe",
+          "Valve",
+          "ButterflyValve",
+          "CheckValve"
+        ],
+        "description": "复杂阀门系统",
+        "priority": "high"
+      }
+    ]
+  }
+}

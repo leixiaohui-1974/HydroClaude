@@ -1,0 +1,25 @@
+{
+  "unmatched": [
+    "examples/example_network_nodes.py",
+    "examples/benchmark_examples.py",
+    "examples/example_rating_curve_bc.py",
+    "examples/benchmark_performance.py",
+    "examples/example_gate_pump_cascade/analyze_all_scenarios.py",
+    "examples/example_gate_pump_cascade/diagnose_negative_flow.py",
+    "examples/tests/test_examples.py",
+    "examples/advanced_examples/debug_mpc_observer.py",
+    "examples/advanced_examples/run_idz_benchmark.py",
+    "examples/advanced_examples/test_mpc_no_observer.py",
+    "examples/advanced_examples/diagnose_hydraulic_model.py",
+    "examples/advanced_examples/test_first_order_mpc.py",
+    "examples/advanced_examples/diagnose_controller_mismatch.py",
+    "examples/advanced_examples/diagnose_simulator.py",
+    "examples/advanced_examples/test_mpc_direction.py",
+    "examples/advanced_examples/verify_idz_steady_state.py",
+    "examples/example_12_loop_network/code/example_12_loop_network.py",
+    "examples/example_11_tree_network/code/example_11_tree_network.py",
+    "examples/example_03_complex_network/code/example_03_complex_network.py",
+    "examples/example_01_canal_flow/scripts/output_helper.py"
+  ],
+  "total": 20
+}

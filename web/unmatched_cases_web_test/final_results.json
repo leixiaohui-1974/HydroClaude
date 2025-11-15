@@ -1,0 +1,171 @@
+{
+  "start_time": "2025-11-15T03:55:27.419004",
+  "total_cases": 20,
+  "tested": 20,
+  "passed": 20,
+  "failed": 0,
+  "all_results": [
+    {
+      "case_id": "unmatched-example_network_nodes",
+      "name": "Example Network Nodes",
+      "backend_script": "examples/example_network_nodes.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "fb4c8b53-0530-4c5e-a6f5-63f4c52ecbb9"
+    },
+    {
+      "case_id": "unmatched-benchmark_examples",
+      "name": "Benchmark Examples",
+      "backend_script": "examples/benchmark_examples.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "337c19b2-3abb-42e0-8603-63b64922e665"
+    },
+    {
+      "case_id": "unmatched-example_rating_curve_bc",
+      "name": "Example Rating Curve Bc",
+      "backend_script": "examples/example_rating_curve_bc.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "7949c901-1d46-4757-98b8-c22ca2a91793"
+    },
+    {
+      "case_id": "unmatched-benchmark_performance",
+      "name": "Benchmark Performance",
+      "backend_script": "examples/benchmark_performance.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "522589cd-7963-4c1d-9207-13f8a240ee44"
+    },
+    {
+      "case_id": "unmatched-analyze_all_scenarios",
+      "name": "Analyze All Scenarios",
+      "backend_script": "examples/example_gate_pump_cascade/analyze_all_scenarios.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "f1361fad-2f06-45e2-bc0d-b948b8165bd1"
+    },
+    {
+      "case_id": "unmatched-diagnose_negative_flow",
+      "name": "Diagnose Negative Flow",
+      "backend_script": "examples/example_gate_pump_cascade/diagnose_negative_flow.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "f536e2c3-e1d0-4573-b817-e9ca381c4a9f"
+    },
+    {
+      "case_id": "unmatched-test_examples",
+      "name": "Test Examples",
+      "backend_script": "examples/tests/test_examples.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "545e4a32-ac8e-49b1-8233-3827faa34899"
+    },
+    {
+      "case_id": "unmatched-debug_mpc_observer",
+      "name": "Debug Mpc Observer",
+      "backend_script": "examples/advanced_examples/debug_mpc_observer.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "360d8f6d-9245-4a53-9ffa-df778cf01622"
+    },
+    {
+      "case_id": "unmatched-run_idz_benchmark",
+      "name": "Run Idz Benchmark",
+      "backend_script": "examples/advanced_examples/run_idz_benchmark.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "729acff7-62b4-480a-8070-0b6fe199e2c4"
+    },
+    {
+      "case_id": "unmatched-test_mpc_no_observer",
+      "name": "Test Mpc No Observer",
+      "backend_script": "examples/advanced_examples/test_mpc_no_observer.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "aa4517e8-9676-4977-b99c-0df2e50a3eaf"
+    },
+    {
+      "case_id": "unmatched-diagnose_hydraulic_model",
+      "name": "Diagnose Hydraulic Model",
+      "backend_script": "examples/advanced_examples/diagnose_hydraulic_model.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "e945005c-3fea-40dd-bb9e-51610ac8e74e"
+    },
+    {
+      "case_id": "unmatched-test_first_order_mpc",
+      "name": "Test First Order Mpc",
+      "backend_script": "examples/advanced_examples/test_first_order_mpc.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "e3bded2d-ca87-4bea-a19c-541f73d8b5e9"
+    },
+    {
+      "case_id": "unmatched-diagnose_controller_mismatch",
+      "name": "Diagnose Controller Mismatch",
+      "backend_script": "examples/advanced_examples/diagnose_controller_mismatch.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "5ccd32e3-afd4-43b8-9cfd-0e2fdb0dc002"
+    },
+    {
+      "case_id": "unmatched-diagnose_simulator",
+      "name": "Diagnose Simulator",
+      "backend_script": "examples/advanced_examples/diagnose_simulator.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "c23eeeef-a7db-4b98-8230-58745dad10ee"
+    },
+    {
+      "case_id": "unmatched-test_mpc_direction",
+      "name": "Test Mpc Direction",
+      "backend_script": "examples/advanced_examples/test_mpc_direction.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "a16d2b17-0e38-4dc2-bed8-f0e11b712580"
+    },
+    {
+      "case_id": "unmatched-verify_idz_steady_state",
+      "name": "Verify Idz Steady State",
+      "backend_script": "examples/advanced_examples/verify_idz_steady_state.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "61b336e5-b1c2-4179-a99e-890732bcd221"
+    },
+    {
+      "case_id": "unmatched-example_12_loop_network",
+      "name": "Example 12 Loop Network",
+      "backend_script": "examples/example_12_loop_network/code/example_12_loop_network.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "03b226cf-d907-4b9e-bbf8-9e491775ba25"
+    },
+    {
+      "case_id": "unmatched-example_11_tree_network",
+      "name": "Example 11 Tree Network",
+      "backend_script": "examples/example_11_tree_network/code/example_11_tree_network.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "a6992038-674f-4969-ab1a-0d655c100083"
+    },
+    {
+      "case_id": "unmatched-example_03_complex_network",
+      "name": "Example 03 Complex Network",
+      "backend_script": "examples/example_03_complex_network/code/example_03_complex_network.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "372fda52-c235-4b7e-8793-9eb5e2497686"
+    },
+    {
+      "case_id": "unmatched-output_helper",
+      "name": "Output Helper",
+      "backend_script": "examples/example_01_canal_flow/scripts/output_helper.py",
+      "status": "passed",
+      "error": null,
+      "task_id": "5e9d11cd-6cb9-4fac-a00f-6d334dc46317"
+    }
+  ],
+  "end_time": "2025-11-15T03:55:36.774672",
+  "duration_seconds": 9.355668
+}

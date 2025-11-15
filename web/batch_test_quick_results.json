@@ -1,0 +1,103 @@
+{
+  "total": 50,
+  "passed": 32,
+  "failed": 18,
+  "failures": [
+    {
+      "file": "tests/diagnostic/test_manning_friction.py",
+      "category": "missing_dependency",
+      "error_snippet": "Traceback (most recent call last):\n  File \"/workspace/tests/diagnostic/test_manning_friction.py\", line 20, in <module>\n    from engine.simulation_engine import SimulationEngine\nModuleNotFoundError: No module named 'engine'\n"
+    },
+    {
+      "file": "examples/example_gate_pump_cascade/quick_scenario_test.py",
+      "category": "timeout",
+      "error_snippet": "测试超时（30秒）"
+    },
+    {
+      "file": "tests/diagnostic/test_muscl_with_correct_cfl.py",
+      "category": "file_path_error",
+      "error_snippet": "/workspace/tests/diagnostic/test_muscl_with_correct_cfl.py:310: UserWarning: Glyph 27491 (\\N{CJK UNIFIED IDEOGRAPH-6B63}) missing from font(s) DejaVu Sans.\n  plt.tight_layout()\n/workspace/tests/diagnostic/test_muscl_with_correct_cfl.py:310: UserWarning: Glyph 30830 (\\N{CJK UNIFIED IDEOGRAPH-786E}) missing from font(s) DejaVu Sans.\n  plt.tight_layout()\n/workspace/tests/diagnostic/test_muscl_with_correct_cfl.py:310: UserWarning: Glyph 29702 (\\N{CJK UNIFIED IDEOGRAPH-7406}) missing from font(s) Dej"
+    },
+    {
+      "file": "tests/diagnostic/test_advanced_features.py",
+      "category": "missing_dependency",
+      "error_snippet": "Import error: No module named 'solvers'\nMake sure project root is in sys.path\n"
+    },
+    {
+      "file": "tests/legacy_diagnostic/test_fvm_full_final.py",
+      "category": "missing_dependency",
+      "error_snippet": "Import error: No module named 'solvers'\nMake sure project root is in sys.path\n"
+    },
+    {
+      "file": "tests/test_lake_at_rest_wb.py",
+      "category": "other_error",
+      "error_snippet": "\n======================================================================\nLake at Rest Tests with Well-Balanced Format\n静水平衡测试 (C-property验证)\n======================================================================\n\n======================================================================\nTest P0.1: Flat Bottom (平底)\n======================================================================\n\n结果:\n  水面扰动: 0.00e+00 m\n  质量误差: 0.00e+00 %\n  状态:  PASS\n\n==============================================================="
+    },
+    {
+      "file": "examples/advanced_animation_generator.py",
+      "category": "timeout",
+      "error_snippet": "测试超时（30秒）"
+    },
+    {
+      "file": "examples/validate_new_examples.py",
+      "category": "timeout",
+      "error_snippet": "测试超时（30秒）"
+    },
+    {
+      "file": "examples/example_02_pump_system/example_02_pump_system_with_anim.py",
+      "category": "missing_dependency",
+      "error_snippet": "Traceback (most recent call last):\n  File \"/workspace/examples/example_02_pump_system/example_02_pump_system_with_anim.py\", line 27, in <module>\n    from physics.tank import Tank\nModuleNotFoundError: No module named 'physics'\n"
+    },
+    {
+      "file": "tests/diagnostic/profile_weno3_performance.py",
+      "category": "file_path_error",
+      "error_snippet": "/workspace/tests/diagnostic/../../solvers/godunov_fvm_weno3.py:78: UserWarning: \n================================================================================\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[WARN]  Well-Balanced\n=\n[W"
+    },
+    {
+      "file": "tests/diagnostic/test_anderson_performance.py",
+      "category": "other_error",
+      "error_snippet": "/home/ubuntu/.local/lib/python3.12/site-packages/numpy/linalg/_linalg.py:2792: RuntimeWarning: overflow encountered in dot\n  sqnorm = x.dot(x)\n/workspace/physics/steady_saint_venant.py:171: RuntimeWarning: overflow encountered in square\n  Sf = (self.n * V)**2 / R**(4/3)\n/workspace/physics/steady_saint_venant.py:240: RuntimeWarning: overflow encountered in scalar power\n  momentum_flux_i = Q[i]**2 / A[i]\n/workspace/physics/steady_saint_venant.py:241: RuntimeWarning: overflow encountered in scalar "
+    },
+    {
+      "file": "tests/diagnostic/test_mpc_scheduler.py",
+      "category": "missing_dependency",
+      "error_snippet": "Import error: No module named 'solvers'\nMake sure project root is in sys.path\n"
+    },
+    {
+      "file": "tests/diagnostic/test_muscl_dambreak.py",
+      "category": "file_path_error",
+      "error_snippet": "/workspace/solvers/hydrostatic_canal_solver.py:265: RuntimeWarning: overflow encountered in scalar multiply\n  if a * b <= 0:\n/workspace/solvers/hydrostatic_canal_solver.py:402: RuntimeWarning: overflow encountered in scalar power\n  F_mom_R = hu_R * u_R + 0.5 * self.g * h_R**2\n/workspace/solvers/hydrostatic_canal_solver.py:444: RuntimeWarning: invalid value encountered in scalar multiply\n  hu_star_R = h_star_R * s_star\n/workspace/solvers/hydrostatic_canal_solver.py:395: RuntimeWarning: overflow e"
+    },
+    {
+      "file": "examples/example_gate_pump_cascade/run_scenario.py",
+      "category": "timeout",
+      "error_snippet": "测试超时（30秒）"
+    },
+    {
+      "file": "tests/diagnostic/test_macdonald4_fine_grid.py",
+      "category": "other_error",
+      "error_snippet": "Traceback (most recent call last):\n  File \"/workspace/tests/diagnostic/test_macdonald4_fine_grid.py\", line 311, in <module>\n    success = test_macdonald4_fine_grid()\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/tests/diagnostic/test_macdonald4_fine_grid.py\", line 160, in test_macdonald4_fine_grid\n    engine.initialize()  # ⭐ 添加初始化步骤\n    ^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/engine/simulation_engine.py\", line 77, in initialize\n    self.solver = self.builder.build_solver()\n       "
+    },
+    {
+      "file": "tests/legacy_diagnostic/test_fvm_fdm_comparison.py",
+      "category": "missing_dependency",
+      "error_snippet": "Import error: No module named 'solvers'\nMake sure project root is in sys.path\n"
+    },
+    {
+      "file": "tests/diagnostic/test_hllc_comparison.py",
+      "category": "timeout",
+      "error_snippet": "测试超时（30秒）"
+    },
+    {
+      "file": "tests/legacy_diagnostic/test_fvm_steady_comparison.py",
+      "category": "missing_dependency",
+      "error_snippet": "Import error: No module named 'solvers'\nMake sure project root is in sys.path\n"
+    }
+  ],
+  "error_categories": {
+    "missing_dependency": 7,
+    "timeout": 5,
+    "file_path_error": 3,
+    "other_error": 3
+  }
+}

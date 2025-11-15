@@ -1,0 +1,33 @@
+{
+  "start_time": "2025-11-15T03:56:32.019535",
+  "tested": 3,
+  "passed": 2,
+  "failed": 1,
+  "all_results": [
+    {
+      "case_id": "examples-example_trapezoidal_channel",
+      "name": "梯形断面渠道示例",
+      "category": "general",
+      "status": "passed",
+      "error": null,
+      "task_id": "0a41f87e-4db9-48a2-84f7-9936b1b291f0"
+    },
+    {
+      "case_id": "examples-case_library-case_05_river_network",
+      "name": "River Network System",
+      "category": "network",
+      "status": "passed",
+      "error": null,
+      "task_id": "efbe9e22-ab6e-4b63-9d1f-a7813e88bb90"
+    },
+    {
+      "case_id": "examples-case_library-case_01_dam_break-dam_break_comparison",
+      "name": "溃坝模拟 - 方法对比",
+      "category": "dam_break",
+      "status": "failed",
+      "error": "HTTP 422: {\"detail\":[{\"type\":\"greater_than_equal\",\"loc\":[\"body\",\"config\",\"manning_n\"],\"msg\":\"Input should be g",
+      "task_id": null
+    }
+  ],
+  "end_time": "2025-11-15T03:56:33.746784"
+}

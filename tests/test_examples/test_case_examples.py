@@ -90,11 +90,11 @@ class TestUrbanWaterSupplyCase:
         """测试压力要求"""
         from examples.case1_urban_water_supply import create_urban_water_network
         try:
-    from solvers.hardy_cross_solver import HardyCrossSolver
-except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
+            from solvers.hardy_cross_solver import HardyCrossSolver
+        except ImportError as e:
+            print(f"Import error: {e}")
+            print("Make sure project root is in sys.path")
+            sys.exit(1)
 
 
         topology = create_urban_water_network()
@@ -120,11 +120,11 @@ except ImportError as e:
         """测试流量守恒"""
         from examples.case1_urban_water_supply import create_urban_water_network
         try:
-    from solvers.hardy_cross_solver import HardyCrossSolver
-except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
+            from solvers.hardy_cross_solver import HardyCrossSolver
+        except ImportError as e:
+            print(f"Import error: {e}")
+            print("Make sure project root is in sys.path")
+            sys.exit(1)
 
 
         topology = create_urban_water_network()

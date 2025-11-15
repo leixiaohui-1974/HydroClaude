@@ -488,13 +488,16 @@ def generate_report(results: List[Dict], output_file: str = "ANDERSON_ACCELERATI
 
     if anderson_methods:
         best_method = min(anderson_methods.items(),
-                         key=lambda x: x[1]['avg_iterations'] if x[1]['converged_count'] > 0 else float('inf'))
+                         key=lambda x: x[1].get('avg_iterations', float('inf')))
 
         report += f"**综合最佳配置**: {best_method[0]}\n\n"
-        report += f"- 平均迭代次数: {best_method[1]['avg_iterations']:.1f}\n"
-        report += f"- 平均加速比: {best_method[1]['avg_speedup']:.2f}x\n"
-        report += f"- 平均时间: {best_method[1]['avg_time']*1000:.1f}ms\n"
-        report += f"- 成功率: {best_method[1]['success_rate']:.1f}%\n\n"
+        if 'avg_iterations' in best_method[1]:
+            report += f"- 平均迭代次数: {best_method[1]['avg_iterations']:.1f}\n"
+            report += f"- 平均加速比: {best_method[1].get('avg_speedup', 0):.2f}x\n"
+            report += f"- 平均时间: {best_method[1]['avg_time']*1000:.1f}ms\n"
+            report += f"- 成功率: {best_method[1]['success_rate']:.1f}%\n\n"
+        else:
+            report += "- 所有测试均未收敛，无法生成统计数据\n\n"
 
     # 3. 参数敏感性分析
     report += "### 3. Anderson参数敏感性\n\n"
@@ -540,13 +543,12 @@ def generate_report(results: List[Dict], output_file: str = "ANDERSON_ACCELERATI
         config = [r for r in results if r['method'] == best_method[0]][0]['config']
         if config:
             report += f"```python\n"
-            report += f"try:
-    from solvers.anderson_acceleration import AndersonAcceleration
-except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
-\n\n"
+            report += "try:\n"
+            report += "    from solvers.anderson_acceleration import AndersonAcceleration\n"
+            report += "except ImportError as e:\n"
+            report += "    print(f\"Import error: {e}\")\n"
+            report += "    print(\"Make sure project root is in sys.path\")\n"
+            report += "    sys.exit(1)\n\n"
             report += f"anderson = AndersonAcceleration(\n"
             report += f"    m={config['m']},  # 历史深度\n"
             report += f"    beta={config['beta']}  # 松弛因子\n"

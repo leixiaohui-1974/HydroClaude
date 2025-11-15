@@ -1,15 +1,13 @@
-#root {
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: left;
+.logo {
+  height: 32px;
+  margin: 16px;
+  background: rgba(255, 255, 255, 0.3);
 }
 
-.ant-layout-header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+.site-layout .site-layout-background {
+  background: #fff;
 }
 
-.ant-layout-content {
-  background: #f0f2f5;
+[data-theme='dark'] .site-layout .site-layout-background {
+  background: #141414;
 }

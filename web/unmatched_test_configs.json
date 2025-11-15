@@ -1,0 +1,265 @@
+{
+  "total": 20,
+  "cases": [
+    {
+      "backend_script": "examples/example_network_nodes.py",
+      "case_id": "unmatched-example_network_nodes",
+      "name": "Example Network Nodes",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/benchmark_examples.py",
+      "case_id": "unmatched-benchmark_examples",
+      "name": "Benchmark Examples",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/example_rating_curve_bc.py",
+      "case_id": "unmatched-example_rating_curve_bc",
+      "name": "Example Rating Curve Bc",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/benchmark_performance.py",
+      "case_id": "unmatched-benchmark_performance",
+      "name": "Benchmark Performance",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/example_gate_pump_cascade/analyze_all_scenarios.py",
+      "case_id": "unmatched-analyze_all_scenarios",
+      "name": "Analyze All Scenarios",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/example_gate_pump_cascade/diagnose_negative_flow.py",
+      "case_id": "unmatched-diagnose_negative_flow",
+      "name": "Diagnose Negative Flow",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/tests/test_examples.py",
+      "case_id": "unmatched-test_examples",
+      "name": "Test Examples",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/advanced_examples/debug_mpc_observer.py",
+      "case_id": "unmatched-debug_mpc_observer",
+      "name": "Debug Mpc Observer",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/advanced_examples/run_idz_benchmark.py",
+      "case_id": "unmatched-run_idz_benchmark",
+      "name": "Run Idz Benchmark",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/advanced_examples/test_mpc_no_observer.py",
+      "case_id": "unmatched-test_mpc_no_observer",
+      "name": "Test Mpc No Observer",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/advanced_examples/diagnose_hydraulic_model.py",
+      "case_id": "unmatched-diagnose_hydraulic_model",
+      "name": "Diagnose Hydraulic Model",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/advanced_examples/test_first_order_mpc.py",
+      "case_id": "unmatched-test_first_order_mpc",
+      "name": "Test First Order Mpc",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/advanced_examples/diagnose_controller_mismatch.py",
+      "case_id": "unmatched-diagnose_controller_mismatch",
+      "name": "Diagnose Controller Mismatch",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/advanced_examples/diagnose_simulator.py",
+      "case_id": "unmatched-diagnose_simulator",
+      "name": "Diagnose Simulator",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/advanced_examples/test_mpc_direction.py",
+      "case_id": "unmatched-test_mpc_direction",
+      "name": "Test Mpc Direction",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/advanced_examples/verify_idz_steady_state.py",
+      "case_id": "unmatched-verify_idz_steady_state",
+      "name": "Verify Idz Steady State",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/example_12_loop_network/code/example_12_loop_network.py",
+      "case_id": "unmatched-example_12_loop_network",
+      "name": "Example 12 Loop Network",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/example_11_tree_network/code/example_11_tree_network.py",
+      "case_id": "unmatched-example_11_tree_network",
+      "name": "Example 11 Tree Network",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/example_03_complex_network/code/example_03_complex_network.py",
+      "case_id": "unmatched-example_03_complex_network",
+      "name": "Example 03 Complex Network",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    },
+    {
+      "backend_script": "examples/example_01_canal_flow/scripts/output_helper.py",
+      "case_id": "unmatched-output_helper",
+      "name": "Output Helper",
+      "category": "general",
+      "config": {
+        "width": 10.0,
+        "length": 1000.0,
+        "nCells": 100,
+        "manning": 0.025,
+        "slope": 0.001
+      }
+    }
+  ]
+}
