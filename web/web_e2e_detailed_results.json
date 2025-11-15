@@ -1,0 +1,141 @@
+{
+  "start_time": "2025-11-15T04:01:54.762157",
+  "test_cases": [
+    {
+      "case_id": "examples-example_17_reservoir_basic-example_17_reservoir_with_anim",
+      "name": "示例17: 水库调度 - 增强版（嵌入式动画）",
+      "category": "general",
+      "stages": {
+        "modeling_workspace": "success",
+        "submit_simulation": "success",
+        "wait_completion": "success",
+        "simulation_management": "success",
+        "view_results": "warning",
+        "validate_data": "failed"
+      },
+      "screenshots": [
+        "web_e2e_screenshots/01_01_modeling.png",
+        "web_e2e_screenshots/01_02_simulation_mgmt.png",
+        "web_e2e_screenshots/01_03_results.png"
+      ],
+      "status": "partial",
+      "errors": [
+        "结果页面无明显内容",
+        "获取数据失败: HTTP 404"
+      ],
+      "task_id": "17f5b654-3821-4998-8067-6f790c46e624",
+      "charts_count": 0,
+      "tables_count": 0,
+      "result_indicators": 0
+    },
+    {
+      "case_id": "examples-case_flood_control",
+      "name": "工程案例2: 防洪调度优化",
+      "category": "control",
+      "stages": {
+        "modeling_workspace": "success",
+        "submit_simulation": "success",
+        "wait_completion": "success",
+        "simulation_management": "success",
+        "view_results": "warning",
+        "validate_data": "failed"
+      },
+      "screenshots": [
+        "web_e2e_screenshots/02_01_modeling.png",
+        "web_e2e_screenshots/02_02_simulation_mgmt.png",
+        "web_e2e_screenshots/02_03_results.png"
+      ],
+      "status": "partial",
+      "errors": [
+        "结果页面无明显内容",
+        "获取数据失败: HTTP 404"
+      ],
+      "task_id": "69635506-c909-41a7-9e0d-6f30685418c2",
+      "charts_count": 0,
+      "tables_count": 0,
+      "result_indicators": 0
+    },
+    {
+      "case_id": "examples-example_side_weir",
+      "name": "侧堰水工建筑物示例",
+      "category": "structures",
+      "stages": {
+        "modeling_workspace": "success",
+        "submit_simulation": "success",
+        "wait_completion": "success",
+        "simulation_management": "success",
+        "view_results": "warning",
+        "validate_data": "failed"
+      },
+      "screenshots": [
+        "web_e2e_screenshots/03_01_modeling.png",
+        "web_e2e_screenshots/03_02_simulation_mgmt.png",
+        "web_e2e_screenshots/03_03_results.png"
+      ],
+      "status": "partial",
+      "errors": [
+        "结果页面无明显内容",
+        "获取数据失败: HTTP 404"
+      ],
+      "task_id": "58b3c74a-7bd8-4326-beb0-aec9e584de74",
+      "charts_count": 0,
+      "tables_count": 0,
+      "result_indicators": 0
+    },
+    {
+      "case_id": "examples-case8_network_optimization",
+      "name": "案例8：管网优化与管径选型",
+      "category": "network",
+      "stages": {
+        "modeling_workspace": "success",
+        "submit_simulation": "success",
+        "wait_completion": "success",
+        "simulation_management": "success",
+        "view_results": "warning",
+        "validate_data": "failed"
+      },
+      "screenshots": [
+        "web_e2e_screenshots/04_01_modeling.png",
+        "web_e2e_screenshots/04_02_simulation_mgmt.png",
+        "web_e2e_screenshots/04_03_results.png"
+      ],
+      "status": "partial",
+      "errors": [
+        "结果页面无明显内容",
+        "获取数据失败: HTTP 404"
+      ],
+      "task_id": "a9c1c653-1938-4a49-9462-220078ac9510",
+      "charts_count": 0,
+      "tables_count": 0,
+      "result_indicators": 0
+    },
+    {
+      "case_id": "examples-spring_ice_breakup",
+      "name": "HydroClaude 应用案例: 春季融冰期模拟",
+      "category": "general",
+      "stages": {
+        "modeling_workspace": "success",
+        "submit_simulation": "success",
+        "wait_completion": "success",
+        "simulation_management": "success",
+        "view_results": "warning",
+        "validate_data": "failed"
+      },
+      "screenshots": [
+        "web_e2e_screenshots/05_01_modeling.png",
+        "web_e2e_screenshots/05_02_simulation_mgmt.png",
+        "web_e2e_screenshots/05_03_results.png"
+      ],
+      "status": "partial",
+      "errors": [
+        "结果页面无明显内容",
+        "获取数据失败: HTTP 404"
+      ],
+      "task_id": "cc3aade1-e27e-48a6-935e-945c0c94c46e",
+      "charts_count": 0,
+      "tables_count": 0,
+      "result_indicators": 0
+    }
+  ],
+  "end_time": "2025-11-15T04:02:42.174104"
+}

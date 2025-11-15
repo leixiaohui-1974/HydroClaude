@@ -1,0 +1,55 @@
+{
+  "cases": [
+    {
+      "backend_script": "examples/example_17_reservoir_basic/example_17_reservoir_with_anim.py",
+      "case_id": "examples-example_17_reservoir_basic-example_17_reservoir_with_anim",
+      "name": "示例17: 水库调度 - 增强版（嵌入式动画）",
+      "category": "general",
+      "config": {
+        "width": 2.0
+      }
+    },
+    {
+      "backend_script": "examples/case_flood_control.py",
+      "case_id": "examples-case_flood_control",
+      "name": "工程案例2: 防洪调度优化",
+      "category": "control",
+      "config": {
+        "nCells": 200,
+        "width": 2.0
+      }
+    },
+    {
+      "backend_script": "examples/example_side_weir.py",
+      "case_id": "examples-example_side_weir",
+      "name": "侧堰水工建筑物示例",
+      "category": "structures",
+      "config": {
+        "domainLength": 50.0,
+        "manning": 0.02,
+        "slope": 0.001,
+        "width": 5.0
+      }
+    },
+    {
+      "backend_script": "examples/case8_network_optimization.py",
+      "case_id": "examples-case8_network_optimization",
+      "name": "案例8：管网优化与管径选型",
+      "category": "network",
+      "config": {
+        "domainLength": 0.0,
+        "width": 0.35
+      }
+    },
+    {
+      "backend_script": "examples/spring_ice_breakup.py",
+      "case_id": "examples-spring_ice_breakup",
+      "name": "HydroClaude 应用案例: 春季融冰期模拟",
+      "category": "general",
+      "config": {
+        "nCells": 150,
+        "width": 2.0
+      }
+    }
+  ]
+}
