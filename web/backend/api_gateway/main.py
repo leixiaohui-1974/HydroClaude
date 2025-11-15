@@ -34,6 +34,7 @@ from routers import simulation_router
 # from routers import simulation_sync  # Synchronous API - 暂时禁用
 from routers import test_cases
 from routers import test_runner
+from routers import analysis
 
 # Configure logging
 logging.basicConfig(
@@ -72,6 +73,7 @@ app.include_router(simulation_router)
 # app.include_router(simulation_sync.router)  # Synchronous API - 暂时禁用
 app.include_router(test_cases.router)
 app.include_router(test_runner.router)
+app.include_router(analysis.router)
 
 
 # Global exception handler

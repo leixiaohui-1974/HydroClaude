@@ -1,0 +1,75 @@
+{
+  "config_analysis": {
+    "is_valid": true,
+    "quality_score": 99.0,
+    "estimated_time": 0.1,
+    "estimated_memory": 1.0,
+    "issues_count": 1,
+    "recommendations_count": 0
+  },
+  "simulation": {
+    "duration": 0.1,
+    "time_steps": 11
+  },
+  "result_analysis": {
+    "quality": "excellent",
+    "quality_score": 100.0,
+    "hydraulics": {
+      "h_mean": 4.999881833835321,
+      "Q_mean": 10.00011355402255,
+      "V_mean": 0.20000777769462993,
+      "Fr_mean": 0.028558407959901014,
+      "subcritical_percentage": 100.0
+    },
+    "warnings_count": 0,
+    "errors_count": 0,
+    "key_events_count": 1
+  },
+  "visualization_recommendations": [
+    {
+      "title": "水深纵剖面图",
+      "type": "longitudinal_profile",
+      "priority": "high",
+      "description": "显示最终时刻的水深沿程分布",
+      "data": {
+        "x": "x",
+        "y": "h[-1]"
+      }
+    },
+    {
+      "title": "流量沿程分布",
+      "type": "discharge_profile",
+      "priority": "high",
+      "description": "显示最终时刻的流量沿程分布",
+      "data": {
+        "x": "x",
+        "y": "Q[-1]"
+      }
+    },
+    {
+      "title": "关键位置时程图",
+      "type": "time_series",
+      "priority": "medium",
+      "description": "显示入口、中点、出口的水深时程",
+      "data": {
+        "locations": [
+          0,
+          50,
+          -1
+        ]
+      }
+    },
+    {
+      "title": "能量线和水面线",
+      "type": "energy_profile",
+      "priority": "medium",
+      "description": "显示总水头线、水面线和底坡",
+      "data": {
+        "x": "x",
+        "h": "h",
+        "V": "V",
+        "z": "bed_elevation"
+      }
+    }
+  ]
+}
