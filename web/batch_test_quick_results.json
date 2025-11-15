@@ -1,22 +1,12 @@
 {
   "total": 50,
-  "passed": 28,
-  "failed": 22,
+  "passed": 31,
+  "failed": 19,
   "failures": [
     {
       "file": "tests/diagnostic/test_manning_friction.py",
       "category": "missing_dependency",
       "error_snippet": "Traceback (most recent call last):\n  File \"/workspace/tests/diagnostic/test_manning_friction.py\", line 20, in <module>\n    from engine.simulation_engine import SimulationEngine\nModuleNotFoundError: No module named 'engine'\n"
-    },
-    {
-      "file": "examples/advanced_examples/test_idz_mpc_performance.py",
-      "category": "missing_dependency",
-      "error_snippet": "Traceback (most recent call last):\n  File \"/workspace/examples/advanced_examples/test_idz_mpc_performance.py\", line 26, in <module>\n    from control.first_order_mpc import FirstOrderMPC, FirstOrderMPCConfig\n  File \"/workspace/control/first_order_mpc.py\", line 12, in <module>\n    import cvxpy as cp\nModuleNotFoundError: No module named 'cvxpy'\n"
-    },
-    {
-      "file": "examples/advanced_examples/diagnose_mpc_performance.py",
-      "category": "missing_dependency",
-      "error_snippet": "Traceback (most recent call last):\n  File \"/workspace/examples/advanced_examples/diagnose_mpc_performance.py\", line 24, in <module>\n    from control.first_order_mpc import FirstOrderMPC, FirstOrderMPCConfig\n  File \"/workspace/control/first_order_mpc.py\", line 12, in <module>\n    import cvxpy as cp\nModuleNotFoundError: No module named 'cvxpy'\n"
     },
     {
       "file": "examples/example_gate_pump_cascade/quick_scenario_test.py",
@@ -70,18 +60,13 @@
     },
     {
       "file": "tests/diagnostic/test_anderson_performance.py",
-      "category": "syntax_error",
-      "error_snippet": "  File \"/workspace/tests/diagnostic/test_anderson_performance.py\", line 545\n    except ImportError as e:\n    ^^^^^^\nSyntaxError: invalid syntax\n"
+      "category": "other_error",
+      "error_snippet": "/home/ubuntu/.local/lib/python3.12/site-packages/numpy/linalg/_linalg.py:2792: RuntimeWarning: overflow encountered in dot\n  sqnorm = x.dot(x)\n/workspace/physics/steady_saint_venant.py:171: RuntimeWarning: overflow encountered in square\n  Sf = (self.n * V)**2 / R**(4/3)\n/workspace/physics/steady_saint_venant.py:240: RuntimeWarning: overflow encountered in scalar power\n  momentum_flux_i = Q[i]**2 / A[i]\n/workspace/physics/steady_saint_venant.py:241: RuntimeWarning: overflow encountered in scalar "
     },
     {
       "file": "tests/diagnostic/test_mpc_scheduler.py",
       "category": "missing_dependency",
       "error_snippet": "Import error: No module named 'solvers'\nMake sure project root is in sys.path\n"
-    },
-    {
-      "file": "examples/advanced_examples/complete_benchmark_suite.py",
-      "category": "missing_dependency",
-      "error_snippet": "Traceback (most recent call last):\n  File \"/workspace/examples/advanced_examples/complete_benchmark_suite.py\", line 35, in <module>\n    from control.first_order_mpc import FirstOrderMPC, FirstOrderMPCConfig\n  File \"/workspace/control/first_order_mpc.py\", line 12, in <module>\n    import cvxpy as cp\nModuleNotFoundError: No module named 'cvxpy'\n"
     },
     {
       "file": "tests/diagnostic/test_muscl_dambreak.py",
@@ -115,10 +100,9 @@
     }
   ],
   "error_categories": {
-    "missing_dependency": 7,
+    "missing_dependency": 4,
     "timeout": 5,
     "file_path_error": 3,
-    "other_error": 6,
-    "syntax_error": 1
+    "other_error": 7
   }
 }
