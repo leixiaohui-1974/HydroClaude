@@ -53,6 +53,7 @@ import PropertyPanel from './components/PropertyPanel';
 import ModelIO from './components/ModelIO';
 import ModelLibrary from './components/ModelLibrary';
 import TemplateGallery from './components/TemplateGallery';
+import { ConfigAnalysis } from '@/features/analysis';
 import { ComponentTemplate, HydraulicModel } from './types/model.types';
 
 import './ModelingWorkspace.css';
@@ -65,6 +66,8 @@ const ModelingWorkspace: React.FC = () => {
   // Local state for model library modal
   const [showModelLibrary, setShowModelLibrary] = useState(false);
   const [showTemplateGallery, setShowTemplateGallery] = useState(false);
+  const [showConfigAnalysis, setShowConfigAnalysis] = useState(false);
+  const [simulationConfig, setSimulationConfig] = useState<any>(null);
 
   // Redux状态
   const canUndo = useAppSelector(selectCanUndo);

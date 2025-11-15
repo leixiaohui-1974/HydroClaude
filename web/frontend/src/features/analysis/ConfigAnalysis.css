@@ -1,0 +1,47 @@
+/**
+ * Config Analysis Component Styles
+ */
+
+.config-analysis-container {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.config-analysis-summary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.config-analysis-summary h3 {
+  color: white;
+  margin-bottom: 12px;
+}
+
+.quality-score-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.issue-card {
+  transition: all 0.3s ease;
+}
+
+.issue-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.recommendation-card {
+  border-left: 4px solid #1890ff;
+  transition: all 0.3s ease;
+}
+
+.recommendation-card:hover {
+  border-left-color: #40a9ff;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2);
+}

@@ -1,0 +1,89 @@
+/**
+ * Result Analysis Component Styles
+ */
+
+.result-analysis-container {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.quality-badge-excellent {
+  background: linear-gradient(135deg, #52c41a 0%, #95de64 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+.quality-badge-good {
+  background: linear-gradient(135deg, #73d13d 0%, #b7eb8f 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+.quality-badge-acceptable {
+  background: linear-gradient(135deg, #faad14 0%, #ffd666 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+.quality-badge-poor {
+  background: linear-gradient(135deg, #ff7875 0%, #ffa39e 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+.hydraulic-stat-card {
+  border-left: 4px solid #1890ff;
+  transition: all 0.3s ease;
+}
+
+.hydraulic-stat-card:hover {
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2);
+}
+
+.flow-regime-chart {
+  position: relative;
+  height: 200px;
+}
+
+.event-timeline {
+  border-left: 2px solid #e8e8e8;
+  padding-left: 20px;
+  margin-left: 10px;
+}
+
+.event-timeline-item {
+  position: relative;
+  padding-bottom: 20px;
+}
+
+.event-timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -26px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #1890ff;
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px #1890ff;
+}
+
+.visualization-recommendation {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.visualization-recommendation:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
