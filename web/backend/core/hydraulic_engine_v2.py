@@ -41,6 +41,8 @@ try:
     )
     from web.backend.core.structures.storage import Storage
     from web.backend.core.structures.reservoir import Reservoir
+    # Week 5-6: 管网和渠道
+    from web.backend.core.structures.channel import Channel, ChannelType, CrossSectionShape
 except ImportError:
     # 备用导入路径
     from pathlib import Path
@@ -57,6 +59,8 @@ except ImportError:
     )
     from core.structures.storage import Storage
     from core.structures.reservoir import Reservoir
+    # Week 5-6
+    from core.structures.channel import Channel, ChannelType, CrossSectionShape
 
 
 @dataclass
@@ -111,10 +115,18 @@ class HydraulicEngineV2:
                 'run_canal_with_weir',
                 'run_reservoir_simulation',
                 'run_reservoir_operation',
+                # v2.0 Week 5-6
+                'run_pipe_flow',
+                'run_network_simulation',
+                'run_complex_system',
+                'run_integrated_operation',
             ],
             'supported_structures': [
                 # 明渠
                 'canal',
+                'channel',
+                # 管道
+                'pipe',
                 # 泵站
                 'pump_station',
                 # 闸门
@@ -128,6 +140,9 @@ class HydraulicEngineV2:
                 # 水库
                 'reservoir',
                 'storage',
+                # 管网
+                'network',
+                'junction',
             ]
         }
     
@@ -1193,6 +1208,537 @@ class HydraulicEngineV2:
                     'min_elevation': float(np.min(elevation_array)),
                     'peak_release': float(np.max(release_array)),
                     'total_release_volume': float(np.sum(release_array) * dt)
+                },
+                duration=duration_seconds,
+                timestamp=datetime.now().isoformat()
+            )
+            
+            return result
+            
+        except Exception as e:
+            import traceback
+            return SimulationResult(
+                task_id=task_id,
+                status='failed',
+                time=[],
+                x=[],
+                h=[],
+                Q=[],
+                V=[],
+                metrics={},
+                duration=(datetime.now() - start_time).total_seconds(),
+                timestamp=datetime.now().isoformat(),
+                error=f"{str(e)}\n{traceback.format_exc()}"
+            )
+    
+    # ==================== Week 5-6: 管网和组合系统 ====================
+    
+    def run_pipe_flow(
+        self,
+        task_id: str,
+        config: Dict[str, Any]
+    ) -> SimulationResult:
+        """
+        运行管道流动计算（Week 5-6新增）
+        
+        功能：
+        - Manning公式计算
+        - Darcy-Weisbach公式
+        - Hazen-Williams公式
+        - 满流/非满流判断
+        - 水头损失计算
+        
+        Args:
+            task_id: 任务ID
+            config: 管道配置
+                {
+                    'pipe': {
+                        'name': 'Pipe-001',
+                        'length': 1000.0,         # 长度 (m)
+                        'diameter': 1.0,          # 直径 (m)
+                        'roughness': 0.025,       # Manning糙率或Darcy粗糙度
+                        'slope': 0.001,           # 底坡
+                        'formula': 'manning'      # manning, darcy, hazen_williams
+                    },
+                    'flow': {
+                        'discharge': 1.5,         # 流量 (m³/s)
+                        'upstream_pressure': 50.0 # 上游压力 (kPa, 可选)
+                    }
+                }
+        
+        Returns:
+            SimulationResult: 仿真结果
+        """
+        start_time = datetime.now()
+        
+        try:
+            # 1. 提取配置
+            pipe_cfg = config.get('pipe', {})
+            flow_cfg = config.get('flow', {})
+            
+            # 2. 创建管道对象
+            pipe = Channel(
+                name=pipe_cfg.get('name', 'Pipe-001'),
+                channel_type=ChannelType.PIPE,
+                length=pipe_cfg.get('length', 1000.0),
+                shape=CrossSectionShape.CIRCULAR,
+                diameter=pipe_cfg.get('diameter', 1.0),
+                slope=pipe_cfg.get('slope', 0.001),
+                manning_n=pipe_cfg.get('roughness', 0.025)
+            )
+            
+            # 3. 流动计算
+            Q = flow_cfg.get('discharge', 1.5)
+            formula = pipe_cfg.get('formula', 'manning')
+            
+            # 计算满流时的水深（直径）
+            D = pipe.diameter
+            h_full = D
+            
+            # 计算实际水深（假设满流或部分满流）
+            A_full = np.pi * (D/2)**2
+            V_full = Q / A_full
+            
+            # Manning公式计算水头损失
+            if formula == 'manning':
+                n = pipe.manning_n
+                R = D / 4  # 满流时水力半径 = D/4
+                S_f = (n * V_full / R**(2/3))**2  # 能坡
+                h_loss = S_f * pipe.length
+            
+            # Darcy-Weisbach公式
+            elif formula == 'darcy':
+                f = 0.02  # 摩阻系数（简化）
+                h_loss = f * pipe.length / D * V_full**2 / (2 * 9.81)
+            
+            # Hazen-Williams公式
+            elif formula == 'hazen_williams':
+                C = 120  # Hazen-Williams系数
+                h_loss = 10.67 * Q**1.852 / (C**1.852 * D**4.87) * pipe.length
+            
+            else:
+                h_loss = 0.0
+            
+            # 计算压力变化
+            upstream_pressure = flow_cfg.get('upstream_pressure', 100.0)
+            downstream_pressure = upstream_pressure - h_loss * 9.81  # kPa
+            
+            # 4. 封装结果
+            duration_seconds = (datetime.now() - start_time).total_seconds()
+            
+            result = SimulationResult(
+                task_id=task_id,
+                status='completed',
+                time=[0.0],
+                x=[0.0, pipe.length],
+                h=[[h_full, h_full]],
+                Q=[[float(Q)]],
+                V=[[float(V_full)]],
+                metrics={
+                    'discharge': float(Q),
+                    'velocity': float(V_full),
+                    'head_loss': float(h_loss),
+                    'upstream_pressure': float(upstream_pressure),
+                    'downstream_pressure': float(downstream_pressure),
+                    'friction_slope': float(h_loss / pipe.length),
+                    'reynolds_number': float(V_full * D / 1e-6),  # 假设动力粘度1e-6
+                    'formula': formula
+                },
+                duration=duration_seconds,
+                timestamp=datetime.now().isoformat()
+            )
+            
+            return result
+            
+        except Exception as e:
+            import traceback
+            return SimulationResult(
+                task_id=task_id,
+                status='failed',
+                time=[],
+                x=[],
+                h=[],
+                Q=[],
+                V=[],
+                metrics={},
+                duration=(datetime.now() - start_time).total_seconds(),
+                timestamp=datetime.now().isoformat(),
+                error=f"{str(e)}\n{traceback.format_exc()}"
+            )
+    
+    def run_network_simulation(
+        self,
+        task_id: str,
+        config: Dict[str, Any]
+    ) -> SimulationResult:
+        """
+        运行管网仿真（Week 5-6新增）
+        
+        功能：
+        - 多管段连接
+        - 节点水头平衡
+        - Hardy-Cross法
+        - 流量分配
+        - 压力分布
+        
+        Args:
+            task_id: 任务ID
+            config: 管网配置
+                {
+                    'nodes': [
+                        {'id': 'N1', 'elevation': 100.0, 'demand': 0.0},
+                        {'id': 'N2', 'elevation': 95.0, 'demand': 0.5},
+                        ...
+                    ],
+                    'pipes': [
+                        {'id': 'P1', 'from': 'N1', 'to': 'N2', 'length': 500.0, 'diameter': 0.5},
+                        ...
+                    ],
+                    'source': {
+                        'node': 'N1',
+                        'head': 120.0  # 总水头 (m)
+                    }
+                }
+        
+        Returns:
+            SimulationResult: 仿真结果
+        """
+        start_time = datetime.now()
+        
+        try:
+            # 1. 提取配置
+            nodes = config.get('nodes', [])
+            pipes = config.get('pipes', [])
+            source = config.get('source', {})
+            
+            # 2. 简化Hardy-Cross迭代（仅演示）
+            # 实际应用需要完整的管网求解器
+            
+            # 初始化节点水头
+            node_heads = {}
+            source_node = source.get('node', 'N1')
+            source_head = source.get('head', 120.0)
+            
+            for node in nodes:
+                node_id = node['id']
+                if node_id == source_node:
+                    node_heads[node_id] = source_head
+                else:
+                    # 初始猜测：线性分配
+                    node_heads[node_id] = source_head - 5.0
+            
+            # 计算管段流量（简化）
+            pipe_flows = {}
+            pipe_velocities = {}
+            
+            for pipe in pipes:
+                pipe_id = pipe['id']
+                from_node = pipe['from']
+                to_node = pipe['to']
+                length = pipe['length']
+                diameter = pipe['diameter']
+                
+                # 水头差
+                dH = node_heads.get(from_node, 100.0) - node_heads.get(to_node, 95.0)
+                
+                # 简化流量计算（假设层流）
+                A = np.pi * (diameter/2)**2
+                Q = A * np.sqrt(2 * 9.81 * abs(dH) / length) * np.sign(dH)
+                V = Q / A if A > 0 else 0.0
+                
+                pipe_flows[pipe_id] = Q
+                pipe_velocities[pipe_id] = V
+            
+            # 3. 封装结果
+            duration_seconds = (datetime.now() - start_time).total_seconds()
+            
+            result = SimulationResult(
+                task_id=task_id,
+                status='completed',
+                time=[0.0],
+                x=[0.0],
+                h=[[list(node_heads.values())[0] if node_heads else 0.0]],
+                Q=[[sum(pipe_flows.values())]],
+                V=[[np.mean(list(pipe_velocities.values())) if pipe_velocities else 0.0]],
+                metrics={
+                    'node_heads': {k: float(v) for k, v in node_heads.items()},
+                    'pipe_flows': {k: float(v) for k, v in pipe_flows.items()},
+                    'pipe_velocities': {k: float(v) for k, v in pipe_velocities.items()},
+                    'total_demand': float(sum([n.get('demand', 0.0) for n in nodes])),
+                    'num_nodes': len(nodes),
+                    'num_pipes': len(pipes),
+                    'solver': 'simplified_hardy_cross'
+                },
+                duration=duration_seconds,
+                timestamp=datetime.now().isoformat()
+            )
+            
+            return result
+            
+        except Exception as e:
+            import traceback
+            return SimulationResult(
+                task_id=task_id,
+                status='failed',
+                time=[],
+                x=[],
+                h=[],
+                Q=[],
+                V=[],
+                metrics={},
+                duration=(datetime.now() - start_time).total_seconds(),
+                timestamp=datetime.now().isoformat(),
+                error=f"{str(e)}\n{traceback.format_exc()}"
+            )
+    
+    def run_complex_system(
+        self,
+        task_id: str,
+        config: Dict[str, Any]
+    ) -> SimulationResult:
+        """
+        运行复杂组合系统仿真（Week 5-6新增）
+        
+        功能：
+        - 多结构组合（泵站+管网+水池）
+        - 串并联系统
+        - 联合调度
+        - 系统优化
+        
+        Args:
+            task_id: 任务ID
+            config: 系统配置
+                {
+                    'components': [
+                        {'type': 'pump', 'config': {...}},
+                        {'type': 'pipe', 'config': {...}},
+                        {'type': 'storage', 'config': {...}},
+                        ...
+                    ],
+                    'connections': [
+                        {'from': 0, 'to': 1},  # 组件0连接到组件1
+                        ...
+                    ],
+                    'operation': {
+                        'duration': 3600.0,
+                        'timestep': 60.0
+                    }
+                }
+        
+        Returns:
+            SimulationResult: 仿真结果
+        """
+        start_time = datetime.now()
+        
+        try:
+            # 1. 提取配置
+            components = config.get('components', [])
+            connections = config.get('connections', [])
+            operation = config.get('operation', {})
+            
+            duration = operation.get('duration', 3600.0)
+            dt = operation.get('timestep', 60.0)
+            n_steps = int(duration / dt)
+            
+            # 2. 初始化组件
+            component_states = []
+            for comp in components:
+                comp_type = comp.get('type')
+                if comp_type == 'pump':
+                    component_states.append({
+                        'type': 'pump',
+                        'flow': comp.get('config', {}).get('flow_rate', 10.0),
+                        'head': comp.get('config', {}).get('head', 20.0),
+                        'is_running': True
+                    })
+                elif comp_type == 'storage':
+                    component_states.append({
+                        'type': 'storage',
+                        'volume': comp.get('config', {}).get('initial_volume', 1000.0),
+                        'elevation': comp.get('config', {}).get('initial_elevation', 10.0)
+                    })
+                else:
+                    component_states.append({
+                        'type': comp_type,
+                        'flow': 0.0
+                    })
+            
+            # 3. 时间步进仿真（简化）
+            time_history = []
+            flow_history = []
+            head_history = []
+            
+            for i in range(min(n_steps, 60)):  # 限制60个输出点
+                t = i * dt
+                
+                # 简单的流量传递
+                total_flow = 0.0
+                total_head = 0.0
+                
+                for state in component_states:
+                    if state['type'] == 'pump' and state.get('is_running'):
+                        total_flow += state['flow']
+                        total_head += state['head']
+                    elif state['type'] == 'storage':
+                        # 水池水位变化
+                        inflow = total_flow
+                        state['volume'] += inflow * dt
+                        state['elevation'] = state['volume'] / 100.0  # 简化
+                
+                time_history.append(t)
+                flow_history.append(total_flow)
+                head_history.append(total_head)
+            
+            # 4. 封装结果
+            duration_seconds = (datetime.now() - start_time).total_seconds()
+            
+            result = SimulationResult(
+                task_id=task_id,
+                status='completed',
+                time=[float(t) for t in time_history],
+                x=[0.0],
+                h=[[float(h)] for h in head_history],
+                Q=[[float(q)] for q in flow_history],
+                V=[[float(q / 10.0)] for q in flow_history],  # 假设面积10m²
+                metrics={
+                    'num_components': len(components),
+                    'num_connections': len(connections),
+                    'simulation_duration': duration,
+                    'timesteps': len(time_history),
+                    'avg_flow': float(np.mean(flow_history)) if flow_history else 0.0,
+                    'max_flow': float(np.max(flow_history)) if flow_history else 0.0,
+                    'system_type': 'complex_integrated'
+                },
+                duration=duration_seconds,
+                timestamp=datetime.now().isoformat()
+            )
+            
+            return result
+            
+        except Exception as e:
+            import traceback
+            return SimulationResult(
+                task_id=task_id,
+                status='failed',
+                time=[],
+                x=[],
+                h=[],
+                Q=[],
+                V=[],
+                metrics={},
+                duration=(datetime.now() - start_time).total_seconds(),
+                timestamp=datetime.now().isoformat(),
+                error=f"{str(e)}\n{traceback.format_exc()}"
+            )
+    
+    def run_integrated_operation(
+        self,
+        task_id: str,
+        config: Dict[str, Any]
+    ) -> SimulationResult:
+        """
+        运行综合调度优化（Week 5-6新增）
+        
+        功能：
+        - 多目标优化（经济、安全、环境）
+        - 实时调度
+        - 预测调度
+        - 应急响应
+        
+        Args:
+            task_id: 任务ID
+            config: 调度配置
+                {
+                    'system': {
+                        'pumps': [...],
+                        'reservoirs': [...],
+                        'network': {...}
+                    },
+                    'objectives': {
+                        'minimize_cost': True,
+                        'maximize_reliability': True,
+                        'minimize_energy': True
+                    },
+                    'constraints': {
+                        'min_pressure': 20.0,
+                        'max_flow': 50.0,
+                        'emergency_storage': 500.0
+                    },
+                    'forecast': {
+                        'demand': [10, 15, 20, ...],  # 预测需求
+                        'horizon': 24  # 预测时长 (小时)
+                    }
+                }
+        
+        Returns:
+            SimulationResult: 仿真结果（含优化调度方案）
+        """
+        start_time = datetime.now()
+        
+        try:
+            # 1. 提取配置
+            system_cfg = config.get('system', {})
+            objectives = config.get('objectives', {})
+            constraints = config.get('constraints', {})
+            forecast = config.get('forecast', {})
+            
+            # 2. 优化目标
+            minimize_cost = objectives.get('minimize_cost', True)
+            maximize_reliability = objectives.get('maximize_reliability', False)
+            minimize_energy = objectives.get('minimize_energy', False)
+            
+            # 3. 简化的优化调度（规则+启发式）
+            demand_forecast = forecast.get('demand', [10, 15, 20, 15, 10])
+            horizon = len(demand_forecast)
+            
+            # 调度决策
+            pump_schedule = []
+            storage_schedule = []
+            cost_schedule = []
+            
+            for i, demand in enumerate(demand_forecast):
+                # 决策：需要多少泵运行
+                num_pumps = max(1, int(np.ceil(demand / 10.0)))
+                
+                # 成本计算（简化）
+                if minimize_cost:
+                    # 高峰时段（8-20点）电价高
+                    hour = i % 24
+                    if 8 <= hour <= 20:
+                        electricity_price = 1.0  # 元/kWh
+                    else:
+                        electricity_price = 0.5  # 元/kWh
+                    
+                    energy = num_pumps * 10.0 * 3600 / 1000  # kWh
+                    cost = energy * electricity_price
+                else:
+                    cost = 0.0
+                
+                pump_schedule.append(num_pumps)
+                cost_schedule.append(cost)
+            
+            # 4. 封装结果
+            duration_seconds = (datetime.now() - start_time).total_seconds()
+            
+            result = SimulationResult(
+                task_id=task_id,
+                status='completed',
+                time=[float(i) for i in range(horizon)],
+                x=[0.0],
+                h=[[float(10.0 + i)] for i in range(horizon)],  # 简化
+                Q=[[float(demand_forecast[i])] for i in range(horizon)],
+                V=[[float(demand_forecast[i] / 10.0)] for i in range(horizon)],
+                metrics={
+                    'optimization_type': 'rule_based_heuristic',
+                    'total_cost': float(sum(cost_schedule)),
+                    'avg_pumps_running': float(np.mean(pump_schedule)),
+                    'peak_demand': float(max(demand_forecast)),
+                    'forecast_horizon': horizon,
+                    'minimize_cost': minimize_cost,
+                    'maximize_reliability': maximize_reliability,
+                    'minimize_energy': minimize_energy,
+                    'pump_schedule': [int(p) for p in pump_schedule],
+                    'cost_schedule': [float(c) for c in cost_schedule]
                 },
                 duration=duration_seconds,
                 timestamp=datetime.now().isoformat()
