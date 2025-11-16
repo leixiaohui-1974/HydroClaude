@@ -1,6 +1,8 @@
-# 🤝 Contributing to HydroClaude
+# Contributing to HydroClaude
 
-Thank you for considering contributing to HydroClaude! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing to HydroClaude! 🎉
+
+We welcome contributions of all kinds: bug reports, feature suggestions, documentation improvements, code contributions, and plugin development.
 
 ---
 
@@ -8,496 +10,571 @@ Thank you for considering contributing to HydroClaude! This document provides gu
 
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
-- [Development Setup](#development-setup)
 - [How to Contribute](#how-to-contribute)
+- [Development Setup](#development-setup)
 - [Coding Standards](#coding-standards)
-- [Testing Guidelines](#testing-guidelines)
 - [Pull Request Process](#pull-request-process)
-- [Release Process](#release-process)
+- [Plugin Development](#plugin-development)
+- [Community](#community)
 
 ---
 
 ## 📜 Code of Conduct
 
-By participating in this project, you agree to maintain a respectful and inclusive environment for all contributors.
+This project adheres to a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 
-### Our Standards
-
-- Use welcoming and inclusive language
-- Be respectful of differing viewpoints
-- Accept constructive criticism gracefully
-- Focus on what's best for the community
-- Show empathy towards other community members
+**TL;DR**: Be respectful, inclusive, and constructive.
 
 ---
 
 ## 🚀 Getting Started
 
-### Ways to Contribute
-
-1. **Report Bugs** 🐛
-   - Use GitHub Issues
-   - Include detailed reproduction steps
-   - Provide system information
-
-2. **Suggest Features** 💡
-   - Use GitHub Discussions
-   - Explain the use case
-   - Consider implementation details
-
-3. **Improve Documentation** 📝
-   - Fix typos and clarify content
-   - Add examples
-   - Translate to other languages
-
-4. **Submit Code** 🔧
-   - Fix bugs
-   - Implement features
-   - Optimize performance
-
-5. **Review Pull Requests** 👀
-   - Test changes
-   - Provide feedback
-   - Approve quality contributions
-
----
-
-## 💻 Development Setup
-
 ### Prerequisites
 
-- Python 3.8+
-- Git
-- Text editor or IDE
+- **Node.js** 18+ and npm
+- **Python** 3.11+
+- **Git**
+- A code editor (VS Code recommended)
 
-### Initial Setup
+### Fork and Clone
 
 ```bash
-# 1. Fork and clone the repository
-git clone https://github.com/YOUR_USERNAME/HydroClaude.git
-cd HydroClaude
+# Fork the repository on GitHub
+# Then clone your fork
+git clone https://github.com/YOUR_USERNAME/hydroclaude.git
+cd hydroclaude
 
-# 2. Create a virtual environment (recommended)
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# 3. Install dependencies
-pip install -r requirements_engine.txt
-
-# 4. Install development dependencies
-pip install pytest pytest-cov flake8 black isort
-
-# 5. Run tests to verify setup
-python3 test_basic.py
-```
-
-### Directory Structure
-
-```
-HydroClaude/
-├── core/                   # Core engine modules
-├── solvers/                # Solver implementations
-├── utils/                  # Utility functions
-├── templates/              # Web viewer templates
-├── examples_config/        # Example configurations
-├── tests/                  # Test files
-└── docs/                   # Documentation
+# Add upstream remote
+git remote add upstream https://github.com/hydroclaude/hydroclaude.git
 ```
 
 ---
 
-## 🎯 How to Contribute
+## 🤝 How to Contribute
 
-### 1. Find an Issue
+### 1. Reporting Bugs 🐛
 
-- Browse [GitHub Issues](https://github.com/HydroClaude/HydroClaude/issues)
-- Look for issues tagged `good first issue` or `help wanted`
-- Comment on the issue to claim it
+**Before submitting**:
+- Check if the bug has already been reported
+- Collect information about your environment
 
-### 2. Create a Branch
+**Submit a bug report**:
+- Use the [Bug Report template](.github/ISSUE_TEMPLATE/bug_report.md)
+- Include steps to reproduce
+- Add screenshots if applicable
+- Mention your OS and version
 
-```bash
-# Create a feature branch
-git checkout -b feature/your-feature-name
+**Example**:
+```markdown
+**Environment**:
+- OS: Windows 11
+- HydroClaude Version: 2.0.0
+- Node Version: 18.17.0
 
-# Or a bugfix branch
-git checkout -b fix/your-bugfix-name
+**Steps to Reproduce**:
+1. Open Configuration Editor
+2. Switch to JSON mode
+3. Paste invalid JSON
+4. Click Save
+
+**Expected**: Error message
+**Actual**: Application crashes
+
+**Screenshots**: [attached]
 ```
 
-### 3. Make Changes
+---
 
-- Follow the [Coding Standards](#coding-standards)
-- Write or update tests
-- Update documentation if needed
+### 2. Suggesting Features 💡
 
-### 4. Test Your Changes
+**Before suggesting**:
+- Check existing feature requests
+- Consider if it fits the project scope
 
-```bash
-# Run basic tests
-python3 test_basic.py
+**Submit a feature request**:
+- Use the [Feature Request template](.github/ISSUE_TEMPLATE/feature_request.md)
+- Explain the problem it solves
+- Provide use cases
+- Suggest implementation if possible
 
-# Run specific test
-python3 -m pytest tests/test_your_feature.py
+**Example**:
+```markdown
+**Feature**: Export to PDF
 
-# Check code formatting
-black --check .
-flake8 .
-isort --check .
+**Problem**: Users need to create reports for clients
+
+**Proposed Solution**:
+- Add "Export to PDF" button in Results page
+- Include all charts and data tables
+- Add optional text descriptions
+
+**Use Case**: Engineering reports, academic papers
+
+**Alternatives**: Manual screenshot collection (tedious)
 ```
 
-### 5. Commit Your Changes
+---
 
+### 3. Improving Documentation 📚
+
+Documentation improvements are always welcome!
+
+**Areas to improve**:
+- Fix typos and grammar
+- Add missing information
+- Improve clarity
+- Add examples
+- Translate to other languages
+
+**How to contribute**:
 ```bash
-# Stage your changes
-git add .
-
-# Commit with a descriptive message
-git commit -m "feat: add support for X"
-
-# Or for bug fixes
-git commit -m "fix: resolve issue with Y"
+# 1. Find documentation file (*.md)
+# 2. Make changes
+# 3. Submit PR with clear description
 ```
 
-**Commit Message Format**:
-- `feat:` - New feature
-- `fix:` - Bug fix
-- `docs:` - Documentation changes
-- `style:` - Code style changes (formatting, etc.)
-- `refactor:` - Code refactoring
-- `test:` - Adding or updating tests
-- `chore:` - Maintenance tasks
+---
 
-### 6. Push and Create Pull Request
+### 4. Contributing Code 💻
+
+See [Development Setup](#development-setup) below.
+
+---
+
+## 🛠️ Development Setup
+
+### Backend (Python)
 
 ```bash
-# Push to your fork
-git push origin feature/your-feature-name
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# venv\Scripts\activate   # Windows
 
-# Create PR on GitHub
-# Fill in the PR template
+# Install dependencies
+pip install -r requirements.txt
+
+# Run tests
+pytest
+```
+
+---
+
+### Frontend (React)
+
+```bash
+# Navigate to webapp
+cd webapp
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+# Visit: http://localhost:5173
+
+# Run linter
+npm run lint
+
+# Type check
+npm run type-check
+
+# Build for production
+npm run build
+```
+
+---
+
+### Desktop App (Electron)
+
+```bash
+cd webapp
+
+# Development mode
+npm run dev:electron
+
+# Build for current platform
+npm run build:electron
+
+# Build for all platforms (requires appropriate OS)
+npm run build:electron -- --win --mac --linux
+```
+
+---
+
+### Backend API (FastAPI)
+
+```bash
+cd backend
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run server
+python run.py
+# Visit: http://localhost:8000/docs
+
+# Run tests
+pytest tests/
 ```
 
 ---
 
 ## 📏 Coding Standards
 
-### Python Style Guide
+### TypeScript/JavaScript
 
-We follow [PEP 8](https://www.python.org/dev/peps/pep-0008/) with some modifications:
+**Style**:
+- Use TypeScript for all new code
+- Follow ESLint rules (`.eslintrc.cjs`)
+- Use Prettier for formatting
+- Prefer functional components and hooks
 
-```python
-# Use 4 spaces for indentation
-# Maximum line length: 100 characters
-# Use double quotes for strings
+**Naming**:
+- `PascalCase` for components
+- `camelCase` for functions and variables
+- `UPPER_CASE` for constants
 
-# Good
-def calculate_flow(width, depth, velocity):
-    """Calculate flow rate.
-    
-    Args:
-        width (float): Channel width in meters
-        depth (float): Flow depth in meters
-        velocity (float): Flow velocity in m/s
-    
-    Returns:
-        float: Flow rate in m³/s
-    """
-    return width * depth * velocity
+**Example**:
+```typescript
+// Good ✅
+interface SimulationConfig {
+  length: number;
+  width: number;
+}
 
-# Bad
-def calculate_flow(w,d,v):
-    return w*d*v  # No docstring, unclear variables
-```
+export const ConfigEditor: React.FC = () => {
+  const [config, setConfig] = useState<SimulationConfig>();
+  
+  const handleSave = async () => {
+    // ...
+  };
+  
+  return <div>{/* ... */}</div>;
+};
 
-### Documentation
-
-```python
-# Use Google-style docstrings
-
-def function_name(param1, param2):
-    """Brief description.
-    
-    Longer description if needed.
-    
-    Args:
-        param1 (type): Description
-        param2 (type): Description
-    
-    Returns:
-        type: Description
-    
-    Raises:
-        ExceptionType: Description
-    
-    Example:
-        >>> function_name(1, 2)
-        3
-    """
-    pass
-```
-
-### Code Organization
-
-```python
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Module description
-
-Author: Your Name
-Date: YYYY-MM-DD
-"""
-
-# 1. Standard library imports
-import sys
-import os
-
-# 2. Third-party imports
-import numpy as np
-import pandas as pd
-
-# 3. Local imports
-from core.config_parser import ConfigParser
-from utils.canal_utils import compute_steady_uniform_flow
-
-# 4. Constants
-DEFAULT_MANNING = 0.025
-GRAVITY = 9.81
-
-# 5. Classes and functions
-class MyClass:
-    pass
-
-def my_function():
-    pass
-
-# 6. Main execution
-if __name__ == '__main__':
-    main()
-```
-
-### Formatting Tools
-
-```bash
-# Auto-format with black
-black .
-
-# Sort imports with isort
-isort .
-
-# Check style with flake8
-flake8 .
+// Bad ❌
+function configEditor() {  // Should be PascalCase
+  var Config;  // Use const/let, not var
+  // ...
+}
 ```
 
 ---
 
-## 🧪 Testing Guidelines
+### Python
 
-### Test Structure
+**Style**:
+- Follow PEP 8
+- Use type hints
+- Add docstrings
 
+**Example**:
 ```python
-def test_feature_name():
-    """Test specific functionality."""
-    # Arrange
-    input_data = setup_test_data()
+# Good ✅
+from typing import Optional
+
+def compute_depth(
+    flow_rate: float,
+    width: float,
+    slope: float,
+    roughness: float
+) -> Optional[float]:
+    """
+    Compute water depth for given flow parameters.
     
-    # Act
-    result = function_to_test(input_data)
+    Args:
+        flow_rate: Flow rate in m³/s
+        width: Channel width in m
+        slope: Channel slope (dimensionless)
+        roughness: Manning's n
     
-    # Assert
-    assert result == expected_value
-    assert result > 0
+    Returns:
+        Water depth in m, or None if computation fails
+    """
+    # Implementation...
+    return depth
+
+# Bad ❌
+def compute_depth(Q, B, S, n):  # No type hints
+    return depth  # No docstring
 ```
 
-### Test Coverage
+---
 
-- Aim for >80% code coverage
-- Test edge cases
-- Test error handling
-- Include integration tests
+### Git Commit Messages
 
-### Running Tests
+**Format**:
+```
+<type>(<scope>): <subject>
 
-```bash
-# Run all tests
-python3 test_basic.py
+<body>
 
-# Run with coverage
-pytest --cov=core --cov=solvers --cov=utils
+<footer>
+```
 
-# Run specific test file
-pytest tests/test_config_parser.py
+**Types**:
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation
+- `style`: Formatting
+- `refactor`: Code refactoring
+- `test`: Tests
+- `chore`: Maintenance
 
-# Run specific test
-pytest tests/test_config_parser.py::test_parse_valid_config
+**Example**:
+```
+feat(config): add JSON schema validation
+
+Add JSON schema validation to Configuration Editor to catch
+errors before simulation starts. Includes:
+- Schema definition
+- Validation on save
+- Error message display
+
+Closes #123
 ```
 
 ---
 
 ## 🔄 Pull Request Process
 
-### Before Submitting
-
-- [ ] Code follows style guidelines
-- [ ] Tests pass locally
-- [ ] Documentation updated
-- [ ] Commit messages are clear
-- [ ] Branch is up to date with main
-
-### PR Template
-
-```markdown
-## Description
-Brief description of changes
-
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
-
-## Testing
-How has this been tested?
-
-## Checklist
-- [ ] Code follows style guidelines
-- [ ] Tests added/updated
-- [ ] Documentation updated
-- [ ] All tests pass
-```
-
-### Review Process
-
-1. **Automated Checks**
-   - CI tests must pass
-   - Code coverage maintained
-   - No linting errors
-
-2. **Code Review**
-   - At least one approval required
-   - Address review comments
-   - Keep discussions constructive
-
-3. **Merge**
-   - Squash commits if needed
-   - Update CHANGELOG
-   - Celebrate! 🎉
-
----
-
-## 📦 Release Process
-
-### Version Numbering
-
-We use [Semantic Versioning](https://semver.org/):
-
-- **MAJOR**: Breaking changes
-- **MINOR**: New features (backward compatible)
-- **PATCH**: Bug fixes
-
-Example: `1.2.3`
-
-### Creating a Release
+### 1. Create a Branch
 
 ```bash
-# 1. Update version number
-# Edit relevant files
+# Update your fork
+git checkout main
+git fetch upstream
+git merge upstream/main
 
-# 2. Update CHANGELOG.md
-# Document all changes
-
-# 3. Create tag
-git tag -a v1.2.3 -m "Release version 1.2.3"
-
-# 4. Push tag
-git push origin v1.2.3
-
-# 5. GitHub Actions will handle the rest
+# Create feature branch
+git checkout -b feature/my-awesome-feature
+# or
+git checkout -b fix/bug-description
 ```
 
 ---
 
-## 🎓 Best Practices
+### 2. Make Changes
 
-### Core Library Usage
-
-**Always use existing libraries**:
-
-```python
-# ✅ Good - Use existing library
-from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
-from utils.canal_utils import compute_steady_uniform_flow
-from utils.result_validator import quick_validate_steady_state
-
-# ❌ Bad - Don't reimplement
-def my_own_solver():  # Don't do this!
-    pass
-```
-
-### Error Handling
-
-```python
-# ✅ Good
-try:
-    result = risky_operation()
-except SpecificException as e:
-    logger.error(f"Operation failed: {e}")
-    raise
-
-# ❌ Bad
-try:
-    result = risky_operation()
-except:  # Too broad
-    pass  # Silent failure
-```
-
-### Performance
-
-- Profile before optimizing
-- Use NumPy for array operations
-- Avoid premature optimization
-- Document performance requirements
+- Write clean, well-documented code
+- Add tests if applicable
+- Update documentation
+- Follow coding standards
 
 ---
 
-## 📞 Getting Help
+### 3. Test Thoroughly
 
-### Resources
+```bash
+# Frontend
+cd webapp
+npm run lint
+npm run type-check
+npm run build
 
-- **Documentation**: See `*.md` files in repository
-- **Issues**: [GitHub Issues](https://github.com/HydroClaude/HydroClaude/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/HydroClaude/HydroClaude/discussions)
+# Backend
+cd backend
+pytest
+```
 
-### Questions?
+---
 
-- Check existing documentation first
-- Search closed issues
-- Ask in GitHub Discussions
-- Be specific and include context
+### 4. Commit Changes
+
+```bash
+git add .
+git commit -m "feat: add awesome feature"
+```
+
+---
+
+### 5. Push and Create PR
+
+```bash
+# Push to your fork
+git push origin feature/my-awesome-feature
+```
+
+**On GitHub**:
+1. Go to your fork
+2. Click "Compare & pull request"
+3. Fill in the PR template
+4. Submit!
+
+---
+
+### 6. PR Review
+
+**What happens next**:
+- Maintainers will review your PR
+- CI checks will run automatically
+- You may be asked to make changes
+- Once approved, your PR will be merged!
+
+**Tips**:
+- Respond to feedback promptly
+- Be open to suggestions
+- Keep the PR focused on one feature/fix
+
+---
+
+## 🔌 Plugin Development
+
+Developing plugins is a great way to contribute!
+
+### Plugin Structure
+
+```
+my-plugin/
+├── plugin.json          # Manifest
+├── src/
+│   └── index.ts         # Entry point
+├── README.md            # Documentation
+└── examples/            # Usage examples
+```
+
+---
+
+### Plugin Manifest
+
+```json
+{
+  "id": "my-awesome-plugin",
+  "name": "My Awesome Plugin",
+  "version": "1.0.0",
+  "description": "Does awesome things",
+  "author": "Your Name",
+  "homepage": "https://github.com/you/plugin",
+  "repository": "https://github.com/you/plugin",
+  "license": "MIT",
+  "keywords": ["optimization", "analysis"],
+  "permissions": [
+    "simulation:read",
+    "data:write",
+    "ui:modify"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "id": "my-plugin.doSomething",
+        "title": "Do Something Awesome"
+      }
+    ]
+  }
+}
+```
+
+---
+
+### Plugin Code
+
+```typescript
+import type { Plugin, PluginAPI } from '@/types/plugin';
+
+class MyPlugin implements Plugin {
+  manifest = { /* ... */ };
+  
+  async onActivate(api: PluginAPI) {
+    // Register commands
+    api.commands.register('my-plugin.doSomething', async () => {
+      // Do something awesome
+      api.ui.showMessage('Success!');
+    });
+    
+    // Add UI button
+    api.ui.addButton({
+      id: 'my-button',
+      label: 'Click Me',
+      icon: 'star',
+      onClick: () => {
+        api.commands.execute('my-plugin.doSomething');
+      }
+    });
+  }
+  
+  async onDeactivate() {
+    // Cleanup
+  }
+}
+
+export default new MyPlugin();
+```
+
+---
+
+### Testing Your Plugin
+
+```bash
+# Copy to plugins directory
+cp -r my-plugin plugins/examples/
+
+# Restart application
+npm run dev:electron
+```
+
+---
+
+### Publishing Your Plugin
+
+1. **Test thoroughly**
+2. **Write documentation**
+3. **Create GitHub repository**
+4. **Submit to plugin marketplace** (coming soon)
+
+See [Plugin Development Guide](./docs/plugins/getting-started.md) for details.
+
+---
+
+## 🌐 Community
+
+### Communication Channels
+
+- **GitHub Discussions**: General discussions, Q&A
+- **GitHub Issues**: Bug reports, feature requests
+- **Email**: dev@hydroclaude.com
+- **Twitter**: @hydroclaude
+- **WeChat**: HydroClaude
+
+---
+
+### Getting Help
+
+**For users**:
+- Check [documentation](./README.md)
+- Search [existing issues](https://github.com/hydroclaude/hydroclaude/issues)
+- Ask in [Discussions](https://github.com/hydroclaude/hydroclaude/discussions)
+
+**For developers**:
+- Read [development docs](./docs/)
+- Check [API reference](./docs/plugins/api-reference.md)
+- Ask in [Discussions](https://github.com/hydroclaude/hydroclaude/discussions)
+
+---
+
+## 🎉 Recognition
+
+Contributors will be:
+- Listed in [CONTRIBUTORS.md](./CONTRIBUTORS.md)
+- Mentioned in release notes
+- Featured on our website (with permission)
 
 ---
 
 ## 📄 License
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
-
----
-
-## 🙏 Recognition
-
-Contributors are recognized in:
-- CONTRIBUTORS.md
-- Release notes
-- GitHub contributors page
-
-Thank you for contributing to HydroClaude! 🌊
+By contributing, you agree that your contributions will be licensed under the [MIT License](./LICENSE).
 
 ---
 
 <p align="center">
-  <b>Happy Contributing!</b> ❤️
+  <b>Thank you for contributing to HydroClaude! 🙏</b>
 </p>
 
 <p align="center">
-  Made with ❤️ by HydroClaude Development Team
+  <i>Together, we're making hydraulic simulation better for everyone</i>
 </p>
+
+---
+
+**© 2025 HydroClaude Development Team**

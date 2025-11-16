@@ -3,44 +3,132 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - 'v*.*.*'
 
 jobs:
-  release:
+  # Create GitHub Release
+  create-release:
     runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+    - name: Get version
+      id: get_version
+      run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
     
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install build twine
-    
-    - name: Build package
-      run: |
-        python -m build
-    
-    - name: Create GitHub Release
+    - name: Create Release
+      id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        release_name: HydroClaude v${{ steps.get_version.outputs.version }}
+        body_path: RELEASE_NOTES_v${{ steps.get_version.outputs.version }}.md
         draft: false
         prerelease: false
+
+  # Build and Release Desktop Apps
+  build-desktop:
+    needs: create-release
+    runs-on: ${{ matrix.os }}
     
-    - name: Publish to PyPI
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            platform: win
+          - os: macos-latest
+            platform: mac
+          - os: ubuntu-latest
+            platform: linux
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: webapp/package-lock.json
+    
+    - name: Install dependencies
+      working-directory: ./webapp
+      run: npm ci
+    
+    - name: Build Electron App
+      working-directory: ./webapp
+      run: npm run build:electron
       env:
-        TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-      run: |
-        # Uncomment when ready to publish
-        # twine upload dist/*
-        echo "PyPI upload placeholder"
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Upload Windows Installer
+      if: matrix.platform == 'win'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./webapp/release/${{ needs.create-release.outputs.version }}/HydroClaude-Setup-${{ needs.create-release.outputs.version }}.exe
+        asset_name: HydroClaude-Setup-${{ needs.create-release.outputs.version }}.exe
+        asset_content_type: application/x-msdownload
+    
+    - name: Upload Windows Portable
+      if: matrix.platform == 'win'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./webapp/release/${{ needs.create-release.outputs.version }}/HydroClaude-${{ needs.create-release.outputs.version }}-portable.exe
+        asset_name: HydroClaude-${{ needs.create-release.outputs.version }}-portable.exe
+        asset_content_type: application/x-msdownload
+    
+    - name: Upload macOS DMG
+      if: matrix.platform == 'mac'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./webapp/release/${{ needs.create-release.outputs.version }}/HydroClaude-${{ needs.create-release.outputs.version }}.dmg
+        asset_name: HydroClaude-${{ needs.create-release.outputs.version }}.dmg
+        asset_content_type: application/x-apple-diskimage
+    
+    - name: Upload Linux AppImage
+      if: matrix.platform == 'linux'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./webapp/release/${{ needs.create-release.outputs.version }}/HydroClaude-${{ needs.create-release.outputs.version }}.AppImage
+        asset_name: HydroClaude-${{ needs.create-release.outputs.version }}.AppImage
+        asset_content_type: application/x-executable
+    
+    - name: Upload Linux deb
+      if: matrix.platform == 'linux'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./webapp/release/${{ needs.create-release.outputs.version }}/hydroclaude_${{ needs.create-release.outputs.version }}_amd64.deb
+        asset_name: hydroclaude_${{ needs.create-release.outputs.version }}_amd64.deb
+        asset_content_type: application/x-debian-package
+    
+    - name: Upload Linux rpm
+      if: matrix.platform == 'linux'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./webapp/release/${{ needs.create-release.outputs.version }}/hydroclaude-${{ needs.create-release.outputs.version }}.x86_64.rpm
+        asset_name: hydroclaude-${{ needs.create-release.outputs.version }}.x86_64.rpm
+        asset_content_type: application/x-rpm
