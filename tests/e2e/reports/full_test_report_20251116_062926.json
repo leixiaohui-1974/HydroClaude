@@ -1,0 +1,3525 @@
+{
+  "timestamp": "2025-11-16T06:29:26.252080",
+  "test_environment": {
+    "platform": "Windows 10/11",
+    "language": "zh-CN",
+    "browser": "Chromium",
+    "test_framework": "Playwright + pytest"
+  },
+  "summary": {
+    "total": 111,
+    "passed": 98,
+    "failed": 13,
+    "pass_rate": "88.3%",
+    "avg_score": 85.7,
+    "total_duration": 2038.8,
+    "avg_duration": 18.4
+  },
+  "grade_distribution": {
+    "A": 40,
+    "B": 46,
+    "C": 16,
+    "D": 9
+  },
+  "by_category": {
+    "basic_flow": {
+      "total": 20,
+      "passed": 17,
+      "pass_rate": "85.0%",
+      "avg_score": 87.0
+    },
+    "structures": {
+      "total": 20,
+      "passed": 18,
+      "pass_rate": "90.0%",
+      "avg_score": 83.6
+    },
+    "unsteady": {
+      "total": 7,
+      "passed": 6,
+      "pass_rate": "85.7%",
+      "avg_score": 90.1
+    },
+    "network": {
+      "total": 20,
+      "passed": 16,
+      "pass_rate": "80.0%",
+      "avg_score": 80.6
+    },
+    "optimization": {
+      "total": 18,
+      "passed": 15,
+      "pass_rate": "83.3%",
+      "avg_score": 80.4
+    },
+    "benchmark": {
+      "total": 6,
+      "passed": 6,
+      "pass_rate": "100.0%",
+      "avg_score": 93.8
+    },
+    "other": {
+      "total": 20,
+      "passed": 20,
+      "pass_rate": "100.0%",
+      "avg_score": 92.4
+    }
+  },
+  "hydraulic_validation": {
+    "flow_conservation": {
+      "passed": 98,
+      "total": 111,
+      "pass_rate": "88%",
+      "avg_error": 0.398
+    },
+    "manning_equation": {
+      "passed": 98,
+      "total": 111,
+      "pass_rate": "88%",
+      "avg_error": 2.48
+    }
+  },
+  "results": [
+    {
+      "id": 1,
+      "name": "example_complete_workflow",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "failed",
+      "duration": 19.91,
+      "score": 70.8,
+      "grade": "C",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.306
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 1.22
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.377,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "case_flood_control",
+      "category": "basic_flow",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 11.59,
+      "score": 86.5,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.745
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.31
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.94,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "comprehensive_scenario_test",
+      "category": "basic_flow",
+      "complexity": "medium",
+      "status": "failed",
+      "duration": 16.97,
+      "score": 66.0,
+      "grade": "D",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.029
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 3.6
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 1.188,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "quick_scenario_test",
+      "category": "basic_flow",
+      "complexity": "medium",
+      "status": "passed",
+      "duration": 24.63,
+      "score": 91.3,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.225
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.97
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.964,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "name": "standard_multi_scenario_test",
+      "category": "basic_flow",
+      "complexity": "medium",
+      "status": "passed",
+      "duration": 12.86,
+      "score": 84.0,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.312
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 4.03
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.431,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "enhanced_scenario_test",
+      "category": "basic_flow",
+      "complexity": "medium",
+      "status": "passed",
+      "duration": 10.78,
+      "score": 92.2,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.554
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.59
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.045,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "name": "run_scenario",
+      "category": "basic_flow",
+      "complexity": "medium",
+      "status": "passed",
+      "duration": 23.63,
+      "score": 92.2,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.228
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 4.04
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.032,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "temp_scenario",
+      "category": "basic_flow",
+      "complexity": "medium",
+      "status": "passed",
+      "duration": 16.97,
+      "score": 91.4,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.307
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 4.19
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.751,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "name": "test_all_scenarios_quick",
+      "category": "basic_flow",
+      "complexity": "medium",
+      "status": "passed",
+      "duration": 12.84,
+      "score": 90.6,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.299
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.69
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.807,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "case_flood_control_steady",
+      "category": "basic_flow",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 18.06,
+      "score": 79.7,
+      "grade": "C",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.252
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 0.74
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.516,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 11,
+      "name": "case_02_water_supply_network",
+      "category": "basic_flow",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 20.67,
+      "score": 82.0,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.321
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.65
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.864,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 12,
+      "name": "case_04_urban_drainage",
+      "category": "basic_flow",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 16.08,
+      "score": 63.8,
+      "grade": "D",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.027
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 0.64
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.882,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 13,
+      "name": "case_parameter_sensitivity",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 23.02,
+      "score": 91.3,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.636
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.17
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.208,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 14,
+      "name": "case_gate_operation",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 23.1,
+      "score": 88.1,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.52
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.63
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.778,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 15,
+      "name": "phase1_steady_scenarios",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 18.44,
+      "score": 93.5,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.148
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.35
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.393,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 16,
+      "name": "phase1_extended_scenarios",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 23.41,
+      "score": 96.3,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.292
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 4.35
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.529,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 17,
+      "name": "case_irrigation_scheduling",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 20.44,
+      "score": 93.0,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.529
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.23
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.706,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 18,
+      "name": "case02_flood_risk_assessment",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 19.27,
+      "score": 96.9,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.474
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.17
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.406,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 19,
+      "name": "phase1_mega_scenarios",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 23.53,
+      "score": 96.9,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.598
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 0.94
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.073,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 20,
+      "name": "case_channel_renovation",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 17.31,
+      "score": 93.8,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.321
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 0.56
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.601,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 21,
+      "name": "example_side_weir",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 23.11,
+      "score": 85.5,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.533
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.42
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.253,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 22,
+      "name": "example_internal_structures",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 18.83,
+      "score": 74.0,
+      "grade": "C",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.101
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 2.98
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.405,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 23,
+      "name": "case5_irrigation_system",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 21.35,
+      "score": 85.1,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.025
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.68
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.035,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 24,
+      "name": "analyze_all_scenarios",
+      "category": "structures",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 19.12,
+      "score": 94.0,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.268
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.56
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.724,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 25,
+      "name": "run_scenario_04",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 19.79,
+      "score": 87.8,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.402
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.52
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.626,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 26,
+      "name": "example_bridge_structure",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 19.59,
+      "score": 88.9,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.78
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 4.71
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.374,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 27,
+      "name": "case_05_river_network",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 23.69,
+      "score": 80.7,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.235
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 0.96
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.303,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 28,
+      "name": "test_cases",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 15.95,
+      "score": 83.0,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.525
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.28
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.363,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 29,
+      "name": "case4_fire_protection_system",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 20.57,
+      "score": 88.1,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.599
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.08
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.871,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 30,
+      "name": "example_cascade_reservoirs",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 10.11,
+      "score": 78.0,
+      "grade": "C",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.167
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.18
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.82,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 31,
+      "name": "test_examples",
+      "category": "structures",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 19.49,
+      "score": 96.2,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.712
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 4.43
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.067,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 32,
+      "name": "example_02_pump_system",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 14.02,
+      "score": 85.6,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.581
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.15
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.734,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 33,
+      "name": "example_02_pump_system_enhanced",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 22.3,
+      "score": 80.6,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.719
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.94
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.3,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 34,
+      "name": "example_02_pump_system_with_anim",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 17.72,
+      "score": 78.5,
+      "grade": "C",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.333
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.74
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.448,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 35,
+      "name": "mpc_nonlinear_test",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 17.6,
+      "score": 83.6,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.654
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.27
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.538,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 36,
+      "name": "test_idz_mpc_performance",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 16.54,
+      "score": 83.9,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.582
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 4.19
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.263,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 37,
+      "name": "complete_benchmark_suite",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 18.83,
+      "score": 85.9,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.141
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.23
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.739,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 38,
+      "name": "adaptive_first_order_mpc_test",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 15.97,
+      "score": 78.7,
+      "grade": "C",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.751
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.18
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.095,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 39,
+      "name": "test_idz_identification_negative_gain",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 15.79,
+      "score": 62.3,
+      "grade": "D",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.017
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 2.88
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.999,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 40,
+      "name": "benchmark_examples",
+      "category": "structures",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 13.74,
+      "score": 92.5,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.132
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 4.51
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.671,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 41,
+      "name": "example_06_complete_system",
+      "category": "unsteady",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 18.22,
+      "score": 74.0,
+      "grade": "C",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.709
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 1.38
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.574,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 42,
+      "name": "example_05_load_rejection",
+      "category": "unsteady",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 12.61,
+      "score": 89.8,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.397
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.22
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.754,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 43,
+      "name": "example_08_load_acceptance",
+      "category": "unsteady",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 19.15,
+      "score": 85.9,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.334
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.54
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.216,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 44,
+      "name": "example_08_load_acceptance_with_anim",
+      "category": "unsteady",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 16.81,
+      "score": 97.8,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.433
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.86
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.185,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 45,
+      "name": "example_04_hydropower_plant",
+      "category": "unsteady",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 24.1,
+      "score": 95.4,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.147
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 4.8
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.028,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 46,
+      "name": "test_water_hammer_moc",
+      "category": "unsteady",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 11.28,
+      "score": 97.1,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.189
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.51
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.162,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 47,
+      "name": "test_high_order_accuracy",
+      "category": "unsteady",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 20.49,
+      "score": 90.3,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.473
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 0.77
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.508,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 48,
+      "name": "example_12_loop_network",
+      "category": "network",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 14.39,
+      "score": 81.3,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.757
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 4.02
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.368,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 49,
+      "name": "example_culvert_structure",
+      "category": "network",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 15.65,
+      "score": 80.9,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.423
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.8
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.667,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 50,
+      "name": "example_11_tree_network",
+      "category": "network",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 19.9,
+      "score": 69.9,
+      "grade": "D",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.618
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 2.31
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.468,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 51,
+      "name": "case6_highrise_water_supply",
+      "category": "network",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 15.45,
+      "score": 80.0,
+      "grade": "C",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.332
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.67
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.176,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 52,
+      "name": "case8_network_optimization",
+      "category": "network",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 15.32,
+      "score": 83.5,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.66
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.43
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.858,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 53,
+      "name": "example_network_solver",
+      "category": "network",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 23.28,
+      "score": 69.8,
+      "grade": "D",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.335
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 2.33
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.898,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 54,
+      "name": "benchmark_performance",
+      "category": "network",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 19.55,
+      "score": 79.1,
+      "grade": "C",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.755
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.58
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.165,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 55,
+      "name": "example_network_nodes",
+      "category": "network",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 14.76,
+      "score": 83.7,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.175
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.61
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.183,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 56,
+      "name": "example_network_topology",
+      "category": "network",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 23.15,
+      "score": 79.9,
+      "grade": "C",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.032
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.16
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.06,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 57,
+      "name": "example_network_validation",
+      "category": "network",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 19.59,
+      "score": 87.2,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.372
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.11
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.656,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 58,
+      "name": "case1_urban_water_supply",
+      "category": "network",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 24.06,
+      "score": 88.1,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.561
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 0.94
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.028,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 59,
+      "name": "example_03_complex_network",
+      "category": "network",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 12.02,
+      "score": 84.6,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.483
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.66
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.32,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 60,
+      "name": "example_10_series_network",
+      "category": "network",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 20.77,
+      "score": 78.4,
+      "grade": "C",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.203
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.35
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.955,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 61,
+      "name": "example_10_series_network_with_anim",
+      "category": "network",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 22.06,
+      "score": 84.2,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.744
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.29
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.895,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 62,
+      "name": "case7_regional_water_supply",
+      "category": "network",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 22.72,
+      "score": 86.0,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.249
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 0.78
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.195,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 63,
+      "name": "test_network_nodes",
+      "category": "network",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 15.22,
+      "score": 81.2,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.344
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.81
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.87,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 64,
+      "name": "test_performance",
+      "category": "network",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 22.55,
+      "score": 89.2,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.398
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.79
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.02,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 65,
+      "name": "test_newton_raphson_solver",
+      "category": "network",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 23.1,
+      "score": 74.9,
+      "grade": "C",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.16
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 0.67
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 1.002,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 66,
+      "name": "test_hardy_cross_solver",
+      "category": "network",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 11.32,
+      "score": 87.0,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.499
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.91
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.972,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 67,
+      "name": "test_newton_raphson_improvement",
+      "category": "network",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 18.24,
+      "score": 62.5,
+      "grade": "D",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.757
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 0.89
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.323,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 68,
+      "name": "example_14_adaptive_mpc",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 21.12,
+      "score": 64.9,
+      "grade": "D",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.377
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 0.92
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.736,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 69,
+      "name": "example_14_adaptive_mpc_enhanced",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 13.39,
+      "score": 84.1,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.644
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.81
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.176,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 70,
+      "name": "example_07_multi_unit_agc",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 14.05,
+      "score": 64.2,
+      "grade": "D",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.122
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 4.59
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.811,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 71,
+      "name": "run_idz_benchmark",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 15.55,
+      "score": 78.1,
+      "grade": "C",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.347
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.31
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.742,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 72,
+      "name": "test_mpc_no_observer",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 21.0,
+      "score": 82.7,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.708
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.98
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.659,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 73,
+      "name": "test_first_order_mpc",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 14.14,
+      "score": 83.9,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.146
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.5
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.666,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 74,
+      "name": "run_mpc_benchmark",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 23.86,
+      "score": 66.2,
+      "grade": "D",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.3
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 2.68
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.424,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 75,
+      "name": "benchmark_controllers",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 24.34,
+      "score": 82.4,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.616
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 4.17
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.776,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 76,
+      "name": "multi_canal_benchmark_improved",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 23.44,
+      "score": 78.0,
+      "grade": "C",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.355
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.45
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.07,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 77,
+      "name": "test_mpc_direction",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 20.22,
+      "score": 89.0,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.605
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.0
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.931,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 78,
+      "name": "run_first_order_mpc_benchmark",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 18.72,
+      "score": 80.4,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.589
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 4.7
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.855,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 79,
+      "name": "test_governor",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 12.65,
+      "score": 86.2,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.031
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 0.55
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.124,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 80,
+      "name": "test_reservoir",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 14.99,
+      "score": 79.5,
+      "grade": "C",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.603
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 0.91
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.938,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 81,
+      "name": "test_culvert",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 11.02,
+      "score": 89.2,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.394
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 0.85
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.155,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 82,
+      "name": "test_advanced_features",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 15.11,
+      "score": 88.1,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.066
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.81
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.884,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 83,
+      "name": "test_multi_section_identification",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 22.18,
+      "score": 87.0,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.164
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.01
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.905,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 84,
+      "name": "test_agc_coordination",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 24.92,
+      "score": 84.8,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.468
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.77
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.759,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 85,
+      "name": "test_controllers",
+      "category": "optimization",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 18.77,
+      "score": 79.2,
+      "grade": "C",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.342
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.14
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.497,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 86,
+      "name": "benchmark_performance",
+      "category": "benchmark",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 16.42,
+      "score": 97.4,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.272
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.7
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.903,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 87,
+      "name": "benchmark_riemann_solvers",
+      "category": "benchmark",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 22.44,
+      "score": 91.0,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.76
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.85
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.012,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 88,
+      "name": "performance_benchmark",
+      "category": "benchmark",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 19.13,
+      "score": 88.0,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.544
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.52
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.866,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 89,
+      "name": "benchmark_numba_performance",
+      "category": "benchmark",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 20.64,
+      "score": 94.1,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.166
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.42
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.76,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 90,
+      "name": "benchmark_performance_improvement",
+      "category": "benchmark",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 21.55,
+      "score": 96.1,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.173
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.51
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.465,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 91,
+      "name": "benchmark_numba",
+      "category": "benchmark",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 13.96,
+      "score": 95.9,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.561
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.34
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.255,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 92,
+      "name": "run_scenario_05",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 16.44,
+      "score": 94.3,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.234
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.32
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.936,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 93,
+      "name": "test_fix",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 15.91,
+      "score": 93.1,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.684
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.64
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.663,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 94,
+      "name": "run_scenario_02",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 23.56,
+      "score": 93.5,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.198
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 4.07
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.469,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 95,
+      "name": "run_scenario_03",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 23.52,
+      "score": 90.3,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.042
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.36
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.006,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 96,
+      "name": "run_scenario_01",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 22.09,
+      "score": 95.4,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.526
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.76
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.833,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 97,
+      "name": "test_fixed_solver",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 21.8,
+      "score": 91.8,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.732
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.77
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.314,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 98,
+      "name": "example_17_reservoir_with_anim",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 23.37,
+      "score": 93.3,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.759
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 0.67
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.115,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 99,
+      "name": "example_timeseries_bc",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 20.03,
+      "score": 92.6,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.086
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.03
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.799,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 100,
+      "name": "example_irregular_channel",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 12.97,
+      "score": 93.7,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.502
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.98
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.521,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 101,
+      "name": "example_trapezoidal_channel",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 21.58,
+      "score": 88.0,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.067
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.5
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.231,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 102,
+      "name": "calibration_example",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 12.86,
+      "score": 93.2,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.191
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.4
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.91,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 103,
+      "name": "example_13_adaptive_timescale",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 11.79,
+      "score": 93.4,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.463
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.83
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.72,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 104,
+      "name": "example_13_adaptive_timescale_enhanced",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 12.53,
+      "score": 90.1,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.513
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.44
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 1.043,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 105,
+      "name": "example_rating_curve_bc",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 21.81,
+      "score": 95.1,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.555
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.86
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.233,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 106,
+      "name": "example_compound_channel",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 10.97,
+      "score": 96.8,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.315
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.72
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.318,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 107,
+      "name": "example_09_pipe_rk4",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 17.04,
+      "score": 92.1,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.525
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.94
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.501,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 108,
+      "name": "example_09_pipe_rk4_enhanced",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 15.05,
+      "score": 92.7,
+      "grade": "A",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.536
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.3
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.929,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 109,
+      "name": "simulate",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 23.0,
+      "score": 89.6,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.166
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.17
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.416,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 110,
+      "name": "example_04_moc_boundary",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 21.11,
+      "score": 89.6,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.699
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.89
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.957,
+          "flow_regime": "supercritical"
+        }
+      }
+    },
+    {
+      "id": 111,
+      "name": "test_weno3_dambreak",
+      "category": "other",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 14.39,
+      "score": 89.6,
+      "grade": "B",
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.154
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.44
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.369,
+          "flow_regime": "supercritical"
+        }
+      }
+    }
+  ]
+}
