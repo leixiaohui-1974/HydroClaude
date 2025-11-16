@@ -90,6 +90,35 @@ HydroClaude是一款**现代化的一维水力学仿真软件**，提供图形�
 
 ---
 
+## 🧪 测试
+
+### 端到端自动化测试
+
+**完整的Web端到端测试框架**，支持100+个测试案例的自动化测试。
+
+```bash
+# 快速测试（单个案例）
+cd tests/e2e
+python quick_test.py
+
+# 完整测试（10个案例）
+python test_web_e2e.py --max-cases 10
+
+# 或使用一键脚本（Windows）
+run_full_test.bat 10
+```
+
+**测试功能**:
+- ✅ 浏览器自动化（Playwright）
+- ✅ Windows中文环境支持
+- ✅ 自动截图记录
+- ✅ 结果自动验证
+- ✅ HTML可视化报告
+
+详见: [测试文档](./tests/e2e/README.md) | [测试交付说明](./🧪_端到端测试_完整交付.md)
+
+---
+
 ## 🚀 快速开始
 
 ### 桌面应用（推荐）
