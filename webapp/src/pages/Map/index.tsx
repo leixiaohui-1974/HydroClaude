@@ -8,6 +8,7 @@ import {
   FolderOpenOutlined,
 } from '@ant-design/icons';
 import MapViewer from '@/components/MapViewer';
+import CanalDrawTool from '@/components/CanalDrawTool';
 import type { LatLngExpression } from 'leaflet';
 
 const { Content } = Layout;
@@ -94,20 +95,21 @@ const MapPage: React.FC = () => {
               key="draw"
               style={{ height: '100%' }}
             >
-              <div style={{ padding: '24px', textAlign: 'center' }}>
-                <MapViewer
-                  center={mapCenter}
-                  zoom={mapZoom}
-                  height="calc(100vh - 230px)"
-                  showControls
-                  showBaseMapSelector
-                >
-                  {/* TODO: 添加渠道绘制工具 */}
-                </MapViewer>
-                <p style={{ marginTop: '16px', color: '#999' }}>
-                  渠道绘制工具正在开发中...
-                </p>
-              </div>
+              <MapViewer
+                center={mapCenter}
+                zoom={mapZoom}
+                height="calc(100vh - 230px)"
+                showControls
+                showBaseMapSelector
+                defaultBaseMap="cartoLight"
+              >
+                <CanalDrawTool
+                  onSave={(data) => {
+                    console.log('保存的GeoJSON:', data);
+                    message.success('渠道已保存！');
+                  }}
+                />
+              </MapViewer>
             </TabPane>
 
             {/* 结果叠加 */}
