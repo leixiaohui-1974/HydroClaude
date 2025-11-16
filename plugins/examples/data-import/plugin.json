@@ -1,0 +1,83 @@
+{
+  "id": "data-import-excel",
+  "name": "Excel数据导入插件",
+  "version": "2.0.0",
+  "description": "从Excel、CSV、JSON等格式导入渠道几何、边界条件和其他仿真数据",
+  "author": "Community Contributors",
+  "email": "community@hydroclaude.com",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "icon": "icon.png",
+  "keywords": ["导入", "Excel", "CSV", "数据", "文件"],
+  "category": "import-export",
+  "displayName": "数据导入",
+  "permissions": [
+    "data:read",
+    "data:write",
+    "ui:modify",
+    "filesystem:read",
+    "storage:write"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "id": "data-import.importExcel",
+        "title": "导入Excel文件",
+        "category": "数据",
+        "icon": "file-excel"
+      },
+      {
+        "id": "data-import.importCSV",
+        "title": "导入CSV文件",
+        "category": "数据",
+        "icon": "file-text"
+      },
+      {
+        "id": "data-import.importJSON",
+        "title": "导入JSON文件",
+        "category": "数据",
+        "icon": "file-code"
+      }
+    ],
+    "menus": [
+      {
+        "id": "import-menu",
+        "label": "导入数据",
+        "position": "toolbar",
+        "icon": "upload"
+      }
+    ],
+    "settings": [
+      {
+        "key": "autoDetectHeaders",
+        "type": "boolean",
+        "default": true,
+        "title": "自动检测表头",
+        "description": "自动检测Excel/CSV文件的表头"
+      },
+      {
+        "key": "skipEmptyRows",
+        "type": "boolean",
+        "default": true,
+        "title": "跳过空行",
+        "description": "导入时跳过空行"
+      },
+      {
+        "key": "encoding",
+        "type": "string",
+        "default": "utf-8",
+        "title": "文件编码",
+        "description": "文件编码格式",
+        "enum": ["utf-8", "gbk", "gb2312"]
+      }
+    ]
+  },
+  "hooks": [],
+  "engines": {
+    "hydroclaude": ">=2.0.0"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5",
+    "papaparse": "^5.4.1"
+  }
+}

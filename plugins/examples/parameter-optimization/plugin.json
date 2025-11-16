@@ -1,0 +1,95 @@
+{
+  "id": "parameter-optimization",
+  "name": "参数优化插件",
+  "version": "1.0.0",
+  "description": "使用遗传算法和梯度下降法优化渠道参数，自动寻找最优解",
+  "author": "HydroClaude Team",
+  "email": "team@hydroclaude.com",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "icon": "icon.png",
+  "keywords": ["优化", "遗传算法", "参数", "自动化"],
+  "category": "optimization",
+  "displayName": "参数优化",
+  "permissions": [
+    "simulation:read",
+    "simulation:write",
+    "simulation:execute",
+    "ui:modify",
+    "storage:read",
+    "storage:write"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "id": "parameter-optimization.optimize",
+        "title": "开始参数优化",
+        "category": "优化",
+        "icon": "target"
+      },
+      {
+        "id": "parameter-optimization.stop",
+        "title": "停止优化",
+        "category": "优化",
+        "icon": "stop"
+      },
+      {
+        "id": "parameter-optimization.viewHistory",
+        "title": "查看优化历史",
+        "category": "优化",
+        "icon": "history"
+      }
+    ],
+    "menus": [
+      {
+        "id": "optimize-menu",
+        "label": "参数优化",
+        "position": "toolbar",
+        "icon": "target"
+      }
+    ],
+    "settings": [
+      {
+        "key": "algorithm",
+        "type": "string",
+        "default": "genetic",
+        "title": "优化算法",
+        "description": "选择优化算法",
+        "enum": ["genetic", "gradient", "hybrid"]
+      },
+      {
+        "key": "populationSize",
+        "type": "number",
+        "default": 50,
+        "title": "种群大小",
+        "description": "遗传算法的种群大小",
+        "minimum": 10,
+        "maximum": 200
+      },
+      {
+        "key": "generations",
+        "type": "number",
+        "default": 100,
+        "title": "迭代代数",
+        "description": "最大迭代代数",
+        "minimum": 10,
+        "maximum": 1000
+      },
+      {
+        "key": "mutationRate",
+        "type": "number",
+        "default": 0.1,
+        "title": "变异率",
+        "description": "遗传算法的变异率",
+        "minimum": 0.01,
+        "maximum": 0.5
+      }
+    ]
+  },
+  "hooks": [
+    "afterSimulation"
+  ],
+  "engines": {
+    "hydroclaude": ">=2.0.0"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "id": "custom-visualization",
+  "name": "自定义可视化插件",
+  "version": "1.0.0",
+  "description": "添加新的图表类型：热力图、等值线图、3D表面图等",
+  "author": "VizTeam",
+  "email": "viz@hydroclaude.com",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "icon": "icon.png",
+  "keywords": ["可视化", "图表", "热力图", "3D"],
+  "category": "visualization",
+  "displayName": "自定义可视化",
+  "permissions": [
+    "visualization:read",
+    "visualization:create",
+    "data:read",
+    "ui:modify"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "id": "custom-viz.createHeatmap",
+        "title": "创建热力图",
+        "category": "可视化",
+        "icon": "heat"
+      },
+      {
+        "id": "custom-viz.createContour",
+        "title": "创建等值线图",
+        "category": "可视化",
+        "icon": "contour"
+      },
+      {
+        "id": "custom-viz.create3DSurface",
+        "title": "创建3D表面图",
+        "category": "可视化",
+        "icon": "cube"
+      }
+    ],
+    "menus": [
+      {
+        "id": "viz-menu",
+        "label": "自定义图表",
+        "position": "toolbar",
+        "icon": "chart"
+      }
+    ]
+  },
+  "hooks": [
+    "afterSimulation"
+  ],
+  "engines": {
+    "hydroclaude": ">=2.0.0"
+  }
+}
