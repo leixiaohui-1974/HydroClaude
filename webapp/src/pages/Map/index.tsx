@@ -9,6 +9,7 @@ import {
 } from '@ant-design/icons';
 import MapViewer from '@/components/MapViewer';
 import CanalDrawTool from '@/components/CanalDrawTool';
+import ResultsOverlay from '@/components/ResultsOverlay';
 import type { LatLngExpression } from 'leaflet';
 
 const { Content } = Layout;
@@ -123,20 +124,33 @@ const MapPage: React.FC = () => {
               key="overlay"
               style={{ height: '100%' }}
             >
-              <div style={{ padding: '24px', textAlign: 'center' }}>
-                <MapViewer
-                  center={mapCenter}
-                  zoom={mapZoom}
-                  height="calc(100vh - 230px)"
-                  showControls
-                  showBaseMapSelector
-                >
-                  {/* TODO: 添加结果叠加层 */}
-                </MapViewer>
-                <p style={{ marginTop: '16px', color: '#999' }}>
-                  结果叠加功能正在开发中...
-                </p>
-              </div>
+              <MapViewer
+                center={mapCenter}
+                zoom={mapZoom}
+                height="calc(100vh - 230px)"
+                showControls
+                showBaseMapSelector
+                defaultBaseMap="cartoLight"
+              >
+                <ResultsOverlay
+                  data={{
+                    coordinates: [
+                      [116.404, 39.915],
+                      [116.405, 39.916],
+                      [116.406, 39.917],
+                      [116.407, 39.918],
+                      [116.408, 39.919],
+                    ],
+                    depths: [3.0, 2.9, 2.8, 2.7, 2.6],
+                    velocities: [1.5, 1.6, 1.7, 1.8, 1.9],
+                    positions: [0, 150, 300, 450, 600],
+                    froudeNumbers: [0.85, 0.92, 0.99, 1.05, 1.12],
+                  }}
+                  showDepth
+                  showVelocity={false}
+                  showVelocityVectors={false}
+                />
+              </MapViewer>
             </TabPane>
           </Tabs>
         </Card>
