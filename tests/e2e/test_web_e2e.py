@@ -19,6 +19,14 @@ from datetime import datetime
 import pytest
 from playwright.sync_api import sync_playwright, Page, Browser, BrowserContext
 
+# 导入增强验证器
+try:
+    from enhanced_validator import HydraulicValidator
+    VALIDATOR_AVAILABLE = True
+except ImportError:
+    VALIDATOR_AVAILABLE = False
+    print("⚠️  警告: 增强验证器不可用，将跳过水力学验证")
+
 
 class WebE2ETester:
     """Web端到端测试器"""

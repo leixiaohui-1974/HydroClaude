@@ -1,0 +1,34 @@
+{
+  "version": "2.0.0",
+  "name": "high_roughness_flow",
+  "description": "高糙率流动 - 粗糙河床",
+  "type": "high_roughness",
+  "canal": {
+    "length": 10000.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "roughness": 0.05,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": ["json", "csv"]
+  },
+  "expected_results": {
+    "flow_rate_error": 0.01,
+    "convergence": true,
+    "max_iterations": 10,
+    "higher_depth_than_standard": true
+  }
+}

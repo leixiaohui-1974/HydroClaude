@@ -1,34 +1,125 @@
 {
-  "total": 3,
+  "total": 10,
   "created": "2025-11-15T10:00:00",
+  "updated": "2025-11-15T12:00:00",
   "description": "HydroClaude Web端到端测试案例索引",
+  "categories": {
+    "basic": "基础流动",
+    "structures": "水工结构",
+    "slope": "不同坡度",
+    "geometry": "几何变化",
+    "roughness": "糙率变化"
+  },
   "cases": [
     {
       "id": 1,
       "name": "basic_uniform_flow",
       "type": "steady_flow",
+      "category": "basic",
       "description": "基础均匀流 - 矩形明渠稳态流动",
       "file": "test_case_001_basic_uniform_flow.json",
       "difficulty": "easy",
-      "expected_duration": 10
+      "expected_duration": 10,
+      "validates": ["基本求解器", "均匀流计算", "Web基础功能"]
     },
     {
       "id": 2,
       "name": "sluice_gate_flow",
       "type": "sluice_gate",
+      "category": "structures",
       "description": "闸门流动 - 单个平板闸门控制流动",
       "file": "test_case_002_sluice_gate.json",
       "difficulty": "medium",
-      "expected_duration": 15
+      "expected_duration": 15,
+      "validates": ["闸门模型", "壅水计算", "结构处理"]
     },
     {
       "id": 3,
       "name": "broad_crested_weir",
       "type": "weir",
+      "category": "structures",
       "description": "宽顶堰 - 堰流控制",
       "file": "test_case_003_weir.json",
       "difficulty": "medium",
-      "expected_duration": 15
+      "expected_duration": 15,
+      "validates": ["堰流模型", "临界流", "结构处理"]
+    },
+    {
+      "id": 4,
+      "name": "multiple_gates",
+      "type": "multiple_structures",
+      "category": "structures",
+      "description": "多个闸门 - 串联闸门控制流动",
+      "file": "test_case_004_multiple_gates.json",
+      "difficulty": "hard",
+      "expected_duration": 20,
+      "validates": ["多结构处理", "复杂壅水", "稳定性"]
+    },
+    {
+      "id": 5,
+      "name": "steep_slope_flow",
+      "type": "steep_slope",
+      "category": "slope",
+      "description": "陡坡流动 - 大坡度超临界流",
+      "file": "test_case_005_steep_slope.json",
+      "difficulty": "medium",
+      "expected_duration": 12,
+      "validates": ["超临界流", "Froude数计算", "陡坡算法"]
+    },
+    {
+      "id": 6,
+      "name": "mild_slope_flow",
+      "type": "mild_slope",
+      "category": "slope",
+      "description": "缓坡流动 - 小坡度亚临界流",
+      "file": "test_case_006_mild_slope.json",
+      "difficulty": "easy",
+      "expected_duration": 12,
+      "validates": ["亚临界流", "缓坡算法", "收敛性"]
+    },
+    {
+      "id": 7,
+      "name": "gate_and_weir",
+      "type": "combined_structures",
+      "category": "structures",
+      "description": "闸门和堰组合 - 复杂水工结构",
+      "file": "test_case_007_gate_and_weir.json",
+      "difficulty": "hard",
+      "expected_duration": 20,
+      "validates": ["混合结构", "流态转换", "算法鲁棒性"]
+    },
+    {
+      "id": 8,
+      "name": "wide_canal_flow",
+      "type": "wide_canal",
+      "category": "geometry",
+      "description": "宽渠道流动 - 大宽度低水深",
+      "file": "test_case_008_wide_canal.json",
+      "difficulty": "easy",
+      "expected_duration": 12,
+      "validates": ["宽浅渠道", "水力半径", "几何适应性"]
+    },
+    {
+      "id": 9,
+      "name": "narrow_canal_flow",
+      "type": "narrow_canal",
+      "category": "geometry",
+      "description": "窄渠道流动 - 小宽度高水深",
+      "file": "test_case_009_narrow_canal.json",
+      "difficulty": "easy",
+      "expected_duration": 12,
+      "validates": ["窄深渠道", "边界影响", "几何适应性"]
+    },
+    {
+      "id": 10,
+      "name": "high_roughness_flow",
+      "type": "high_roughness",
+      "category": "roughness",
+      "description": "高糙率流动 - 粗糙河床",
+      "file": "test_case_010_high_roughness.json",
+      "difficulty": "medium",
+      "expected_duration": 12,
+      "validates": ["糙率影响", "阻力计算", "Manning公式"]
     }
   ]
 }
