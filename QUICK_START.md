@@ -1,421 +1,398 @@
-# 🚀 HydroClaude Web 快速开始指南
-# Quick Start Guide
+# 🚀 HydroClaude Quick Start
 
-**版本**: v1.4.2
-**最后更新**: 2025-11-11
-
-欢迎使用 HydroClaude Web！这是一个强大的水文水动力模拟与可视化平台。本指南将帮助您在 5 分钟内快速上手。
-
-Welcome to HydroClaude Web! This is a powerful hydrodynamic simulation and visualization platform. This guide will help you get started in 5 minutes.
+**Get up and running in 5 minutes!**
 
 ---
 
-## 📖 目录 (Table of Contents)
+## Step 1: Install Dependencies (1 minute)
 
-1. [系统要求](#系统要求)
-2. [快速安装](#快速安装)
-3. [启动应用](#启动应用)
-4. [核心功能](#核心功能)
-5. [第一个仿真](#第一个仿真)
-6. [常见问题](#常见问题)
-7. [下一步](#下一步)
-
----
-
-## 🖥️ 系统要求
-
-### 最低配置
-- **浏览器**: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
-- **内存**: 4GB RAM
-- **网络**: 稳定的互联网连接（首次加载约 300KB）
-
-### 推荐配置
-- **浏览器**: Chrome 最新版（最佳性能）
-- **内存**: 8GB+ RAM
-- **显卡**: 支持 WebGL 2.0（用于 3D 可视化）
-- **屏幕**: 1920x1080 或更高分辨率
-
-### 开发环境要求（仅开发者）
-- **Node.js**: v18 或更高
-- **npm**: v9 或更高
-- **操作系统**: Windows, macOS, Linux
-
----
-
-## ⚡ 快速安装
-
-### 选项 1: 在线访问（推荐用户）
-
-如果您的团队已部署 HydroClaude Web 到生产环境：
-
-1. 打开浏览器，访问您的 HydroClaude URL
-2. 开始使用！无需安装
-
-### 选项 2: 本地开发（开发者）
-
-#### 步骤 1: 克隆项目
+### Option A: Quick Install (Recommended)
 
 ```bash
-git clone https://github.com/yourusername/HydroClaude.git
-cd HydroClaude/web/frontend
+pip install numpy pandas matplotlib jsonschema
 ```
 
-#### 步骤 2: 安装依赖
+### Option B: Use Installation Script
 
 ```bash
-npm install
+chmod +x install.sh
+./install.sh
 ```
 
-*首次安装可能需要 3-5 分钟，取决于网络速度。*
-
-#### 步骤 3: 配置环境
-
-创建环境配置文件（可选）：
+### Option C: Install Everything (including optional)
 
 ```bash
-# 开发环境（默认配置已可用）
-cp .env.development .env
+pip install numpy pandas matplotlib jsonschema h5py scipy
 ```
 
-如需自定义 API 地址，编辑 `.env` 文件：
+---
+
+## Step 2: Generate a Configuration (30 seconds)
 
 ```bash
-VITE_API_URL=http://your-api-server:8000
+python3 hydro_engine.py --template steady_canal
 ```
+
+This creates `config_template_steady_canal.json` with default parameters.
 
 ---
 
-## 🎯 启动应用
-
-### 开发模式
+## Step 3: Run Your First Simulation (1 minute)
 
 ```bash
-npm run dev
+python3 hydro_engine.py config_template_steady_canal.json
 ```
 
-**预期输出**:
+You'll see:
+
 ```
-  VITE v4.x.x  ready in 500 ms
+================================================================================
+  HydroClaude Hydraulic Simulation Engine
+  Version: 1.0.0
+================================================================================
 
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: http://192.168.x.x:5173/
+✅ Configuration loaded: config_template_steady_canal.json
+✅ Simulation completed: steady state
+✅ Results saved to: results/steady_canal
+
+📊 Output Files:
+   - results.json        (Universal data model)
+   - data/*.csv          (Data tables)
+   - plots/*.png         (Figures)
+   - reports/*.txt       (Validation reports)
+   - web/index.html      (Interactive viewer)
+
+✅ Simulation completed successfully
 ```
 
-在浏览器中打开 `http://localhost:5173`，您将看到 HydroClaude 界面。
+---
 
-### 生产构建（可选）
+## Step 4: View Results (1 minute)
+
+### Option A: Web Viewer (Recommended)
 
 ```bash
-npm run build        # 构建生产版本
-npm run preview      # 预览生产版本
+# macOS
+open results/steady_canal/web/index.html
+
+# Linux
+xdg-open results/steady_canal/web/index.html
+
+# Windows
+start results/steady_canal/web/index.html
+```
+
+### Option B: Check Output Files
+
+```bash
+# View results summary
+cat results/steady_canal/results.json
+
+# View validation report
+cat results/steady_canal/reports/validation_report.txt
+
+# View data
+head results/steady_canal/data/spatial_profile.csv
 ```
 
 ---
 
-## 🎨 核心功能
+## Step 5: Customize Your Simulation (2 minutes)
 
-HydroClaude Web v1.4.2 提供以下核心功能：
+Edit the generated `config_template_steady_canal.json`:
 
-### 1️⃣ 建模工作台 (Modeling Workspace)
-- 📐 **可视化建模**: 拖拽式创建水文模型
-- 🧩 **组件库**: 预置河道、水库、流域等组件
-- 🔗 **连接管理**: 直观的节点连接系统
-- ✅ **验证检查**: 实时模型验证
+```json
+{
+  "simulation": {
+    "type": "steady",
+    "mode": "single_canal"
+  },
+  "canal": {
+    "length": 1000,        // Change this
+    "width": 10,           // Change this
+    "slope": 0.001,        // Change this
+    "manning_n": 0.025
+  },
+  "boundary_conditions": {
+    "upstream": {
+      "type": "flow",
+      "value": 8.0         // Change this
+    },
+    "downstream": {
+      "type": "depth",
+      "method": "uniform_flow"
+    }
+  },
+  "output": {
+    "directory": "results/my_custom_case"  // Change this
+  }
+}
+```
 
-### 2️⃣ 仿真管理 (Simulation Management)
-- ⚙️ **参数配置**: 时间步长、边界条件、初始状态
-- 🚀 **一键运行**: 快速启动仿真计算
-- 📊 **进度追踪**: 实时查看仿真进度
-- 💾 **结果管理**: 自动保存和加载历史结果
+Then run again:
 
-### 3️⃣ 3D 可视化 (3D Visualization)
-- 🌊 **表面绘制**: WebGL 加速的 3D 水面渲染
-- 🎨 **多配色方案**: Viridis, Jet, Rainbow 等
-- 🔍 **交互操作**: 旋转、缩放、平移
-- 📸 **导出功能**: 保存为图片
-
-### 4️⃣ 多维分析 (Multi-dimensional Analysis)
-- 📈 **等高线图**: 等值线分布
-- 🔥 **热力图**: 密度分布
-- 📉 **时序图**: 时间序列分析
-- 📊 **统计图**: 数据统计分布
-
-### 5️⃣ 动画控制 (Animation Control)
-- ▶️ **播放/暂停**: 流畅的动画播放
-- ⏩ **速度调节**: 1x - 8x 可调速度
-- 🎞️ **帧控制**: 精确的帧级控制
-- 🔁 **循环播放**: 支持自动循环
-
----
-
-## 🎓 第一个仿真：5 分钟快速教程
-
-跟随以下步骤创建并运行您的第一个仿真：
-
-### 步骤 1: 切换到建模工作台
-
-1. 启动应用后，默认显示"建模工作台"标签
-2. 如果在其他标签，点击顶部的 **"建模工作台"** 标签
-
-### 步骤 2: 创建模型组件
-
-1. 在左侧组件面板中，找到组件库
-2. 拖拽 **"河道"** 组件到画布中央
-3. 添加 **"入流边界"** 和 **"出流边界"**
-4. 连接组件：
-   - 点击入流边界的输出端点
-   - 拖动到河道的输入端点
-   - 同样连接河道到出流边界
-
-### 步骤 3: 配置参数
-
-1. 点击 **"河道"** 组件
-2. 在右侧属性面板中设置：
-   - 长度: `1000` 米
-   - 宽度: `50` 米
-   - 粗糙度: `0.03` (Manning系数)
-3. 点击 **"入流边界"**，设置流量: `100` m³/s
-
-### 步骤 4: 启动仿真
-
-1. 点击顶部的 **"仿真管理"** 标签
-2. 在参数配置区域：
-   - 时间步长: `60` 秒
-   - 总时长: `3600` 秒 (1小时)
-3. 点击 **"运行仿真"** 按钮
-4. 等待仿真完成（通常 10-30 秒）
-
-### 步骤 5: 查看结果
-
-1. 仿真完成后，自动显示结果
-2. 查看 **3D 可视化**：
-   - 旋转视角：鼠标左键拖动
-   - 缩放：滚轮
-   - 平移：鼠标右键拖动
-3. 切换配色方案：点击配色下拉菜单
-4. 播放动画：
-   - 点击 ▶️ 播放按钮
-   - 调整播放速度
-   - 观察水位随时间的变化
-
-### 🎉 恭喜！
-
-您已经成功创建并运行了第一个仿真！
+```bash
+python3 hydro_engine.py config_template_steady_canal.json
+```
 
 ---
 
-## ❓ 常见问题
+## 🎉 Congratulations!
 
-### Q1: 页面加载很慢怎么办？
-
-**A**: HydroClaude v1.4.2 已经优化到初始加载仅需约 **300KB**（gzipped）。如果仍然慢：
-- 检查网络连接
-- 清除浏览器缓存
-- 尝试使用 Chrome 浏览器（推荐）
-
-### Q2: 3D 可视化无法显示？
-
-**A**: 可能是 WebGL 问题：
-1. 确认浏览器支持 WebGL 2.0：访问 `https://get.webgl.org/webgl2/`
-2. 更新显卡驱动
-3. 尝试在浏览器设置中启用硬件加速
-4. 切换到其他浏览器测试
-
-### Q3: 动画播放卡顿？
-
-**A**: HydroClaude v1.4.2 已优化到 **60+ FPS**：
-- 关闭其他浏览器标签页
-- 减少数据点数量（降低网格分辨率）
-- 使用性能更好的设备
-- 检查系统资源占用
-
-### Q4: 如何保存我的模型？
-
-**A**: 当前版本支持：
-- 仿真结果自动保存在浏览器本地存储
-- 模型导出功能（计划中，见 NEXT_STEPS.md）
-
-### Q5: 可以导出仿真结果吗？
-
-**A**:
-- **图表导出**: 点击图表右上角的相机图标
-- **数据导出**: 计划在 v1.5.0 中支持（见 NEXT_STEPS.md）
-
-### Q6: 支持并行计算吗？
-
-**A**:
-- 当前版本为单线程计算
-- 高性能计算支持计划在后续版本中（见 NEXT_STEPS.md）
-
-### Q7: 遇到错误怎么办？
-
-**A**:
-1. 检查浏览器控制台（F12）查看错误信息
-2. 刷新页面重试
-3. 查看详细文档: `README.md`
-4. 报告问题到 GitHub Issues
+You've successfully:
+- ✅ Installed HydroClaude
+- ✅ Generated a configuration
+- ✅ Run your first simulation
+- ✅ Viewed the results
+- ✅ Customized parameters
 
 ---
 
-## 📚 下一步
+## Next Steps
 
-### 进阶学习
+### Try More Examples
 
-1. **深入功能探索**
-   - 阅读完整的 `README.md`
-   - 探索更多组件类型
-   - 尝试复杂模型构建
+```bash
+# Sluice gate simulation
+python3 hydro_engine.py --template gate
+python3 hydro_engine.py config_template_gate.json
 
-2. **性能优化**
-   - 阅读 `PERFORMANCE_TESTING.md`
-   - 了解性能最佳实践
-   - 测量和优化您的工作流
+# Unsteady flow simulation
+python3 hydro_engine.py --template unsteady_canal
+python3 hydro_engine.py config_template_unsteady_canal.json
+```
 
-3. **测试和验证**
-   - 参考 `UAT_TEST_PLAN.md`
-   - 执行完整的功能测试
-   - 验证浏览器兼容性（见 `BROWSER_COMPATIBILITY_MATRIX.md`）
+### Explore Example Configurations
 
-4. **生产部署**
-   - 阅读 `PRODUCTION_DEPLOYMENT_CHECKLIST.md`
-   - 配置生产环境
-   - 设置监控和日志
+```bash
+cd examples_config/
+cat README.md
 
-### 参与开发
+# Run pre-made examples
+python3 ../hydro_engine.py 01_steady_canal.json
+python3 ../hydro_engine.py 02_gate_flow.json
+python3 ../hydro_engine.py 03_unsteady_flow.json
+```
 
-如果您是开发者，欢迎参与贡献：
+### Read the Documentation
 
-1. **了解项目结构**
-   ```
-   web/frontend/
-   ├── src/
-   │   ├── features/        # 功能模块
-   │   ├── components/      # 通用组件
-   │   ├── store/          # Redux store
-   │   └── utils/          # 工具函数
-   ├── tests/              # 测试文件
-   └── docs/               # 文档
-   ```
-
-2. **运行测试**
-   ```bash
-   npm run test          # 交互式测试
-   npm run test:run      # 运行所有测试（CI模式）
-   npm run test:coverage # 生成覆盖率报告
-   ```
-
-3. **代码风格**
-   ```bash
-   npm run lint          # 检查代码风格
-   npm run format        # 格式化代码（如配置）
-   ```
-
-4. **构建和部署**
-   ```bash
-   npm run build         # 生产构建
-   npm run preview       # 预览构建结果
-   ```
-
-### 查看更多文档
-
-| 文档 | 描述 |
-|------|------|
-| `README.md` | 完整项目文档 |
-| `NEXT_STEPS.md` | 后续开发计划 |
-| `PROJECT_STATUS_2025_11_11_FINAL.md` | 项目状态报告 |
-| `UAT_TEST_PLAN.md` | 用户验收测试计划 |
-| `BROWSER_COMPATIBILITY_MATRIX.md` | 浏览器兼容性矩阵 |
-| `PERFORMANCE_TESTING.md` | 性能测试指南 |
-| `PRODUCTION_DEPLOYMENT_CHECKLIST.md` | 生产部署清单 |
-| `CHANGELOG.md` | 版本变更历史 |
+- **README.md** - Complete project overview
+- **COMMERCIAL_ARCHITECTURE_V2.md** - Architecture details
+- **LIBRARY_REFERENCE.md** - Solver API reference
+- **CONTRIBUTING.md** - How to contribute
 
 ---
 
-## 🎯 性能亮点 (v1.4.2)
+## Common Commands Cheat Sheet
 
-HydroClaude Web v1.4.2 带来了显著的性能提升：
+```bash
+# Generate templates
+python3 hydro_engine.py --template steady_canal
+python3 hydro_engine.py --template gate
+python3 hydro_engine.py --template unsteady_canal
 
-### 加载性能
-- ✅ **初始加载减少 84%**: 从 1,801KB → 289KB (gzipped)
-- ✅ **代码分割**: 15个优化的chunks
-- ✅ **懒加载**: 按需加载组件
+# Run simulation
+python3 hydro_engine.py config.json
 
-### 渲染性能
-- ✅ **FPS 提升 660%**: 从 8.7 FPS → 66+ FPS
-- ✅ **组件优化**: React.memo() 防止不必要的重渲染
-- ✅ **流畅动画**: 60 FPS 目标帧率
+# Validate configuration only
+python3 hydro_engine.py config.json --validate
 
-### 测试质量
-- ✅ **100% 测试通过**: 152/152 测试用例
-- ✅ **全面覆盖**: 单元测试 + 集成测试
-- ✅ **CI/CD 就绪**: 自动化测试框架
+# View configuration summary
+python3 hydro_engine.py config.json --summary
 
----
+# Verbose output
+python3 hydro_engine.py config.json --verbose
 
-## 💡 提示和技巧
+# Custom output directory
+python3 hydro_engine.py config.json -o my_results
 
-### 提高工作效率
+# Version information
+python3 hydro_engine.py --version
 
-1. **使用键盘快捷键**（计划中）
-   - 未来版本将支持快捷键操作
-
-2. **优化模型性能**
-   - 从小网格开始（10x10）
-   - 逐步增加复杂度
-   - 监控浏览器内存使用
-
-3. **保存工作进度**
-   - 定期导出模型配置
-   - 保存重要的仿真结果截图
-
-4. **充分利用可视化**
-   - 尝试不同的配色方案
-   - 使用多视图对比分析
-   - 利用动画理解动态过程
+# Help
+python3 hydro_engine.py -h
+```
 
 ---
 
-## 🤝 获取帮助
+## Troubleshooting
 
-### 文档资源
-- 📖 在线文档：项目 GitHub 仓库
-- 📝 问题追踪：GitHub Issues
-- 💬 讨论区：GitHub Discussions（如果有）
+### Issue: "python3: command not found"
 
-### 技术支持
-- 🐛 报告 Bug：提交 GitHub Issue
-- 💡 功能建议：提交 Feature Request
-- ❓ 使用问题：查看文档或提问
+**Solution**: Install Python 3.8+ from [python.org](https://www.python.org/)
 
-### 社区
-- 🌟 关注项目获取更新
-- 🍴 Fork 和贡献代码
-- 📢 分享您的使用案例
+### Issue: "ModuleNotFoundError: No module named 'numpy'"
+
+**Solution**:
+
+```bash
+pip install numpy pandas matplotlib jsonschema
+```
+
+### Issue: "Permission denied: install.sh"
+
+**Solution**:
+
+```bash
+chmod +x install.sh
+./install.sh
+```
+
+### Issue: Configuration validation fails
+
+**Solution**:
+
+```bash
+# Check your JSON syntax
+python3 -m json.tool config.json
+
+# Use verbose mode to see detailed errors
+python3 hydro_engine.py config.json --verbose --validate
+```
+
+### Issue: Web viewer doesn't display
+
+**Solution**:
+- Use a modern browser (Chrome, Firefox, Edge, Safari)
+- Check browser console for JavaScript errors
+- Ensure `results.json` exists in the web directory
 
 ---
 
-## 📄 许可证
+## Performance Tips
 
-本项目使用 MIT 许可证。详见 `LICENSE` 文件。
+### For Large Simulations
+
+```json
+{
+  "numerical": {
+    "n_cells": 500,           // Reduce if too slow
+    "cfl": 0.5,               // Increase for stability
+    "max_iterations": 100     // Increase if not converging
+  }
+}
+```
+
+### For Faster Iterations
+
+```json
+{
+  "output": {
+    "save_plots": false,      // Skip plot generation
+    "save_hdf5": false,       // Skip HDF5 (if installed)
+    "generate_web": false     // Skip web viewer
+  }
+}
+```
 
 ---
 
-## 🎉 开始您的水文模拟之旅！
+## Example Output Structure
 
-现在您已经准备好开始使用 HydroClaude Web 了。记住：
-
-1. ✅ **从简单开始** - 先熟悉基本功能
-2. ✅ **多多实践** - 实践是最好的学习方式
-3. ✅ **探索文档** - 深入了解高级特性
-4. ✅ **参与社区** - 分享经验，共同进步
-
-**祝您使用愉快！** 🚀
+```
+results/steady_canal/
+├── results.json              # Universal data model (main result)
+├── data/
+│   ├── spatial_profile.csv   # Water depth, velocity, etc.
+│   └── results.h5            # HDF5 format (if h5py installed)
+├── plots/
+│   ├── water_surface_profile.png
+│   ├── velocity_profile.png
+│   └── froude_number_profile.png
+├── reports/
+│   └── validation_report.txt
+└── web/
+    ├── index.html            # Web viewer (open this!)
+    ├── hydro_viewer.js
+    ├── styles.css
+    └── results.json          # Copy for web viewer
+```
 
 ---
 
-**版本历史**:
-- v1.0 - 2025-11-11 - 初始版本
-- 对应 HydroClaude Web v1.4.2
+## Configuration File Structure
 
-**维护者**: HydroClaude Team
-**最后更新**: 2025-11-11
+All configuration files follow this structure:
+
+```json
+{
+  "simulation": {
+    "type": "steady|unsteady",
+    "mode": "single_canal|network"
+  },
+  "canal": {
+    "length": 1000,
+    "width": 10,
+    "slope": 0.001,
+    "manning_n": 0.025
+  },
+  "solver": {
+    "method": "hydrostatic|godunov"
+  },
+  "boundary_conditions": {
+    "upstream": {...},
+    "downstream": {...}
+  },
+  "structures": [...],         // Optional
+  "numerical": {...},          // Optional (uses defaults)
+  "output": {...},             // Optional (uses defaults)
+  "metadata": {...}            // Optional
+}
+```
+
+See `examples_config/` for complete examples.
+
+---
+
+## Getting Help
+
+### Quick Reference
+- **⭐ START_HERE.md** - 30-second overview
+- **This file** - 5-minute tutorial
+
+### Detailed Documentation
+- **README.md** - Complete project overview
+- **COMMERCIAL_ARCHITECTURE_V2.md** - Architecture design
+- **LIBRARY_REFERENCE.md** - API reference
+
+### Community
+- GitHub Issues - Report bugs
+- GitHub Discussions - Ask questions
+- CONTRIBUTING.md - Contribute code
+
+---
+
+## What's Next?
+
+Now that you've completed the quick start, you can:
+
+1. **Explore Advanced Features**
+   - Add hydraulic structures (gates, weirs)
+   - Run unsteady flow simulations
+   - Optimize parameters
+
+2. **Integrate into Your Workflow**
+   - Create custom configuration templates
+   - Automate batch simulations
+   - Export data for further analysis
+
+3. **Contribute**
+   - Report bugs or suggest features
+   - Improve documentation
+   - Submit pull requests
+
+---
+
+<p align="center">
+  <b>Welcome to HydroClaude!</b> 🌊
+</p>
+
+<p align="center">
+  <a href="README.md">Full Documentation</a> •
+  <a href="examples_config/README.md">Examples</a> •
+  <a href="CONTRIBUTING.md">Contribute</a>
+</p>
+
+<p align="center">
+  Made with ❤️ by HydroClaude Development Team
+</p>

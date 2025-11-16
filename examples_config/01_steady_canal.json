@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "title": "Simple Canal Steady Flow",
+    "description": "基础明渠稳态流动计算 - 演示统一架构的基础功能",
+    "author": "HydroClaude Team",
+    "date": "2025-11-15",
+    "version": "1.0"
+  },
+  
+  "simulation": {
+    "type": "steady",
+    "mode": "single_canal"
+  },
+  
+  "canal": {
+    "length": 1000.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "manning_n": 0.025,
+    "grid": {
+      "nx": 201,
+      "type": "uniform"
+    }
+  },
+  
+  "boundary_conditions": {
+    "upstream": {
+      "type": "flow",
+      "value": 8.0
+    },
+    "downstream": {
+      "type": "depth",
+      "value": null,
+      "method": "uniform_flow"
+    }
+  },
+  
+  "solver": {
+    "method": "hydrostatic",
+    "parameters": {
+      "max_iterations": 5000,
+      "convergence_tol": 0.1
+    }
+  },
+  
+  "initial_conditions": {
+    "depth": "uniform_flow",
+    "flow": 8.0
+  },
+  
+  "output": {
+    "directory": "results/01_steady_canal",
+    "formats": ["json", "csv"],
+    "variables": ["depth", "flow", "velocity", "elevation"],
+    "plots": {
+      "enabled": true,
+      "types": ["profile"]
+    }
+  }
+}

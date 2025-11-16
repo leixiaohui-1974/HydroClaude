@@ -1,0 +1,17 @@
+.results-overlay-controls {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.results-overlay-legend {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.results-overlay-legend .ant-card-head {
+  padding: 8px 12px;
+  min-height: auto;
+}
+
+.results-overlay-legend .ant-card-head-title {
+  font-size: 13px;
+  font-weight: 600;
+}

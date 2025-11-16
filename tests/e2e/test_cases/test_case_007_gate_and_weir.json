@@ -1,0 +1,48 @@
+{
+  "version": "2.0.0",
+  "name": "gate_and_weir",
+  "description": "闸门和堰组合 - 复杂水工结构",
+  "type": "combined_structures",
+  "canal": {
+    "length": 12000.0,
+    "width": 10.0,
+    "slope": 0.0005,
+    "roughness": 0.025,
+    "nx": 600
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [
+    {
+      "type": "sluice_gate",
+      "position": 4000.0,
+      "width": 10.0,
+      "opening": 2.0,
+      "discharge_coefficient": 0.6
+    },
+    {
+      "type": "broad_crested_weir",
+      "position": 8000.0,
+      "width": 10.0,
+      "crest_height": 0.5,
+      "discharge_coefficient": 1.7
+    }
+  ],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 150,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": ["json", "csv"]
+  },
+  "expected_results": {
+    "flow_rate_error": 1.0,
+    "convergence": true,
+    "max_iterations": 100
+  }
+}

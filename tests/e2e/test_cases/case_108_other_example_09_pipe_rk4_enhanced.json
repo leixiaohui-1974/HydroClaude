@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "example_09_pipe_rk4_enhanced",
+  "description": "示例9: 管道水击RK4高精度求解（增强版）  模拟管道阀门突然关闭引起的水击现象  增强功能： - 压力和流量时间历程 - 空间分布可视化 - 压力波传播动画（GIF） - 水击特性分析",
+  "type": "steady_flow",
+  "canal": {
+    "length": 3000.0,
+    "width": 2.0,
+    "slope": 0.001,
+    "roughness": 0.025,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/example_09_pipe_rk4/example_09_pipe_rk4_enhanced.py",
+    "category": "other",
+    "complexity": "easy",
+    "converted_at": "2025-11-16T06:08:08.545999"
+  }
+}

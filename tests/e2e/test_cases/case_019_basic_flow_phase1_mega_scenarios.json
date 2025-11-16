@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "phase1_mega_scenarios",
+  "description": "Phase 1 超级场景库（30个稳态场景）  扩展覆盖范围： - 流量组（5个）: Q=20-150 m^3/s - 底坡组（5个）: S0=0.0005-0.003 - 糙率组（5个）: n=0.015-0.050 - 宽度组（5个）: B=5-15m（避免极端值） - 混合组A（5个）: 低流量+高底坡 - 混合组B（5个）: 高流量+低底坡",
+  "type": "steady_flow",
+  "canal": {
+    "length": 2000.0,
+    "width": 5.0,
+    "slope": 0.001,
+    "roughness": 0.015,
+    "nx": 100.0
+  },
+  "flow": {
+    "flow_rate": 20.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/phase1_mega_scenarios.py",
+    "category": "basic_flow",
+    "complexity": "easy",
+    "converted_at": "2025-11-16T06:08:08.474877"
+  }
+}

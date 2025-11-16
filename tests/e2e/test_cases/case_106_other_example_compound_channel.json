@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "example_compound_channel",
+  "description": "复合断面渠道示例  演示 CompoundChannel 类的使用，包括： 1. 主槽和滩地的分区计算 2. 漫滩流量分析 3. 分区流速法 vs 等效糙率法对比 4. 防洪设计应用 5. Manning系数敏感性分析",
+  "type": "steady_flow",
+  "canal": {
+    "length": 2000.0,
+    "width": 10.0,
+    "slope": 0.0005,
+    "roughness": 104.0,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 200.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/example_compound_channel.py",
+    "category": "other",
+    "complexity": "easy",
+    "converted_at": "2025-11-16T06:08:08.544362"
+  }
+}

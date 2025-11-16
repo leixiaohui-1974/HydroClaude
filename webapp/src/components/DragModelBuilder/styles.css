@@ -1,0 +1,34 @@
+.drag-model-builder {
+  padding: 20px;
+}
+
+.canal-config,
+.flow-config {
+  margin-bottom: 16px;
+}
+
+.canal-config h4,
+.flow-config h4 {
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.structure-tool {
+  user-select: none;
+  transition: all 0.3s ease;
+}
+
+.structure-tool:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.structure-tool:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+canvas {
+  display: block;
+}

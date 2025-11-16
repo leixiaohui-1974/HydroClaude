@@ -1,0 +1,52 @@
+{
+  "version": "2.0.0",
+  "name": "example_internal_structures",
+  "description": "内部水工建筑物使用示例  演示如何使用内部堰、闸门等建筑物： 1. 串联河段+宽顶堰 2. 串联河段+闸门（可调开度） 3. 串联河段+孔口 4. 多闸门串联系统 5. 堰闸组合控制",
+  "type": "steady_flow",
+  "canal": {
+    "length": 500.0,
+    "width": 15.0,
+    "slope": 0.001,
+    "roughness": 0.025,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [
+    {
+      "type": "sluice_gate",
+      "position": 250.0,
+      "width": 15.0,
+      "opening": 0.5,
+      "discharge_coefficient": 0.6
+    },
+    {
+      "type": "broad_crested_weir",
+      "position": 250.0,
+      "width": 15.0,
+      "crest_height": 0.5,
+      "discharge_coefficient": 1.7
+    }
+  ],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/example_internal_structures.py",
+    "category": "structures",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.476319"
+  }
+}

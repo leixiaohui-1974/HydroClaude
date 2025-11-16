@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "test_advanced_features",
+  "description": "高级功能综合测试  测试三大高级功能： 1. 并行MPC（多核加速） 2. 参数在线估计（糙率估计） 3. 预测性维护（传感器寿命预测）  作者: Claude 日期: 2025-10-23",
+  "type": "steady_flow",
+  "canal": {
+    "length": 200.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "roughness": 0.025,
+    "nx": 21.0
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "tests/diagnostic/test_advanced_features.py",
+    "category": "optimization",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.531306"
+  }
+}

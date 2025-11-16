@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-11-16T06:08:08.547728",
+  "total_scanned": 348,
+  "converted": 111,
+  "failed": 0,
+  "conversion_rate": 31.896551724137932,
+  "by_category": {
+    "basic_flow": 20,
+    "structures": 20,
+    "unsteady": 7,
+    "network": 20,
+    "optimization": 18,
+    "benchmark": 6,
+    "other": 20
+  }
+}

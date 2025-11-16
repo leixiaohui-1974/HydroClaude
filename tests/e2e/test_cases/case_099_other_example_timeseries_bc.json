@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "example_timeseries_bc",
+  "description": "时间序列边界条件示例  演示 TimeSeriesBoundary 类的使用，包括： 1. 基本时间序列边界条件 2. 洪水过程模拟 3. 潮汐边界条件 4. 水库调度过程 5. 不同插值方法对比 6. 外推方法比较",
+  "type": "steady_flow",
+  "canal": {
+    "length": 2.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "roughness": 0.025,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/example_timeseries_bc.py",
+    "category": "other",
+    "complexity": "easy",
+    "converted_at": "2025-11-16T06:08:08.539797"
+  }
+}

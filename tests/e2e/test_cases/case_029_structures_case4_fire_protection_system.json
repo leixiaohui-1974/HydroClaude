@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "case4_fire_protection_system",
+  "description": "案例4：消防供水系统分析 Case 4: Fire Protection Water Supply System Analysis  本案例展示建筑消防供水系统的水力分析，包括： 1. 高位消防水箱供水 2. 室内外消火栓系统 3. 自动喷淋系统 4. 消防泵扬程校核 5. 不利点压力验证",
+  "type": "steady_flow",
+  "canal": {
+    "length": 1.0,
+    "width": 2.0,
+    "slope": 0.001,
+    "roughness": 18.0,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/case4_fire_protection_system.py",
+    "category": "structures",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.483964"
+  }
+}

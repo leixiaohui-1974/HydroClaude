@@ -1,0 +1,3182 @@
+{
+  "scan_time": "2025-11-16T06:07:15.130805",
+  "total_cases": 348,
+  "categories": {
+    "basic_flow": {
+      "count": 84,
+      "cases": [
+        {
+          "file_path": "examples/example_complete_workflow.py",
+          "file_name": "example_complete_workflow.py",
+          "category": "basic_flow",
+          "description": "完整工作流程示例  演示如何使用HydroClaude的所有功能： 1. 求解稳态流动问题 2. 可视化结果 3. 性能基准测试 4. 参数敏感性分析  作者: Claude",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/case_flood_control.py",
+          "file_name": "case_flood_control.py",
+          "category": "basic_flow",
+          "description": "工程案例2: 防洪调度优化  场景水库泄洪对下游渠道的影响分析 目标对比不同泄洪方案选择最优策略  包含 1. 方案A: 快速泄洪大流量短时间 2. 方案B: 缓慢泄洪小流量长时间 3. 方案C: 渐变泄洪逐步增加",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_gate_pump_cascade/comprehensive_scenario_test.py",
+          "file_name": "comprehensive_scenario_test.py",
+          "category": "basic_flow",
+          "description": "串联明渠闸泵群系统 - 综合工况测试 =====================  测试目标： 1. 恒定流模拟引擎的正确性 2. 非恒定流模拟引擎的正确性 3. 系统的通用性和稳定性 4. 各种边界条件下的响应",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "medium"
+        },
+        {
+          "file_path": "examples/example_gate_pump_cascade/quick_scenario_test.py",
+          "file_name": "quick_scenario_test.py",
+          "category": "basic_flow",
+          "description": "串联明渠闸泵群系统 - 快速工况测试（精简版）  优化： 1. 减少模拟时间到 1200秒（20分钟） 2. 选择8个代表性工况 3. 减少网格点数到 301 4. 增大时间步长到 1.0s  作者: Claude",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "medium"
+        },
+        {
+          "file_path": "examples/example_gate_pump_cascade/standard_multi_scenario_test.py",
+          "file_name": "standard_multi_scenario_test.py",
+          "category": "basic_flow",
+          "description": "串联明渠闸泵群系统 - 标准多工况测试（遵守开发规范）  严格遵守开发规范： 1. 使用 HydrostaticCanalSolver（正确的求解器） 2. 使用 PumpStationAdvanced（高精度泵站模型） 3. 使用 ResultValidator（自动验证） 4. 使用 VisualizationTemplates（标准可视化） 5. 使用 canal_utils（水力计算）",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "medium"
+        },
+        {
+          "file_path": "examples/example_gate_pump_cascade/enhanced_scenario_test.py",
+          "file_name": "enhanced_scenario_test.py",
+          "category": "basic_flow",
+          "description": "串联明渠闸泵群系统 - 增强版工况测试  改进点： 1. 动画中显示边界条件和控制条件的实时变化 2. 详细的初始恒定流状态分析 3. 深入的数值稳定性分析（包括CFL条件、质量守恒） 4. 增强的可视化输出 5. 聚焦重点工况进行精细化分析",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "medium"
+        },
+        {
+          "file_path": "examples/example_gate_pump_cascade/run_scenario.py",
+          "file_name": "run_scenario.py",
+          "category": "basic_flow",
+          "description": "快速运行工况的辅助脚本 通过参数化方式运行不同工况",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "medium"
+        },
+        {
+          "file_path": "examples/example_gate_pump_cascade/temp_scenario.py",
+          "file_name": "temp_scenario.py",
+          "category": "basic_flow",
+          "description": "明渠串联闸泵群系统 - 使用高精度泵站模型完整特性曲线  使用PumpStationAdvanced模型 - 真实的泵特性曲线 H = f(Q) - 考虑管路特性曲线 - 迭代求解工作点 - 泵前水位影响流量  作者: Claude",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "medium"
+        },
+        {
+          "file_path": "examples/example_gate_pump_cascade/test_all_scenarios_quick.py",
+          "file_name": "test_all_scenarios_quick.py",
+          "category": "basic_flow",
+          "description": "快速测试所有工况的初始恒定流状态 验证修复后的泵站是否在所有工况中都正常工作",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "medium"
+        },
+        {
+          "file_path": "examples/case_flood_control_steady.py",
+          "file_name": "case_flood_control_steady.py",
+          "category": "basic_flow",
+          "description": "工程案例2: 防洪能力评估稳态分析  场景评估渠道在不同洪水流量下的防洪能力 目标确定安全流量范围制定调度策略  包含 1. 方案A: Q=80 m^3/s 常遇洪水 2. 方案B: Q=120 m^3/s10年一遇 3. 方案C: Q=150 m^3/s20年一遇",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/case_library/case_02_water_supply_network.py",
+          "file_name": "case_02_water_supply_network.py",
+          "category": "basic_flow",
+          "description": "Urban Water Supply Network - 城市供水管网系统 ================================================  System Components / 系统组成: - Water Treatment Plant (水厂): 源头供水 - Primary Pump Stations (一级泵站): 加压送水 - Main Pipelin",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/case_library/case_04_urban_drainage.py",
+          "file_name": "case_04_urban_drainage.py",
+          "category": "basic_flow",
+          "description": "HydroClaude Engineering Case 04: Urban Drainage System HydroClaude 工程案例 04: 城市排涝系统  This case demonstrates: 此案例演示: - Urban stormwater drainage network / 城市雨洪排水管网 - Preissmann Slot method for free-surf",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/case_parameter_sensitivity.py",
+          "file_name": "case_parameter_sensitivity.py",
+          "category": "basic_flow",
+          "description": "工程案例5: 参数敏感性分析  场景分析渠道参数糙率底坡宽度对水深的影响 目标为渠道设计和改造提供参数优化建议  分析内容 1. 糙率敏感性n=0.015-0.040 2. 底坡敏感性S0=0.0005-0.002 3. 宽度敏感性B=8-20m",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/case_gate_operation.py",
+          "file_name": "case_gate_operation.py",
+          "category": "basic_flow",
+          "description": "工程案例4: 闸门调度优化  场景渠道中游设有一座闸门用于控制流量和水位 目标对比不同开度优化闸门调度方案  方案对比 - 方案A: 全开 (a=4.0m) - 方案B: 开80% (a=3.2m) - 方案C: 开60% (a=2.4m)",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/phase1_steady_scenarios.py",
+          "file_name": "phase1_steady_scenarios.py",
+          "category": "basic_flow",
+          "description": "Phase 1应用示例集 - 稳态场景库  基于Phase 0生产就绪的求解器，展示多种实际工程场景  场景： 1. 不同流量下的均匀流 2. 不同底坡的水面线 3. 不同糙率的流速分布",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/phase1_extended_scenarios.py",
+          "file_name": "phase1_extended_scenarios.py",
+          "category": "basic_flow",
+          "description": "Phase 1扩展场景库 - 20个场景完整版  Phase 1完善：从12个扩充到20个场景 新增场景： - 不同渠道宽度（4个） - 组合参数（4个）  目标：展示HydroClaude的广泛适用性",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/case_irrigation_scheduling.py",
+          "file_name": "case_irrigation_scheduling.py",
+          "category": "basic_flow",
+          "description": "实际工程案例 - 灌区渠系调度优化  场景某灌区主渠道+3条支渠的配水优化  工程问题 1. 主渠道设计流量100 m^3/s 2. 3条支渠分别需水30, 40, 30 m^3/s 3. 需要确定各支渠取水口位置和渠道参数 4. 优化配水方案确保公平性和效率",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/case02_flood_risk_assessment.py",
+          "file_name": "case02_flood_risk_assessment.py",
+          "category": "basic_flow",
+          "description": "工程案例2: 渠道防洪风险评估稳态分析  场景评估渠道在不同设计流量下的安全性 目标确定安全流量上限制定风险等级  包含4个设计工况 1. 设计流量75%: Q=45 m^3/s 2. 设计流量100%: Q=60 m^3/s 3. 设计流量125%: Q=75 m^3/s",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/phase1_mega_scenarios.py",
+          "file_name": "phase1_mega_scenarios.py",
+          "category": "basic_flow",
+          "description": "Phase 1 超级场景库（30个稳态场景）  扩展覆盖范围： - 流量组（5个）: Q=20-150 m^3/s - 底坡组（5个）: S0=0.0005-0.003 - 糙率组（5个）: n=0.015-0.050 - 宽度组（5个）: B=5-15m（避免极端值） - 混合组A（5个）: 低流量+高底坡 - 混合组B（5个）: 高流量+低底坡",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/case_channel_renovation.py",
+          "file_name": "case_channel_renovation.py",
+          "category": "basic_flow",
+          "description": "工程案例3: 渠道改造方案对比  场景某老旧渠道需要改造提升过流能力 目标评估不同改造方案选择最优方案  方案对比 - 原方案B=8m, n=0.035老旧混凝土 - 方案A拓宽 B=12m, n=0.035保持原糙率 - 方案B衬砌 B=8m, n=0.020新混凝土",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_riemann_solvers.py",
+          "file_name": "test_riemann_solvers.py",
+          "category": "basic_flow",
+          "description": "Riemann求解器单元测试  测试HLL和HLLC求解器的基本功能： 1. 干床处理 2. 激波捕捉 3. 稀疏波处理 4. 数值稳定性 5. 质量守恒",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/benchmark_newton_vs_iterative.py",
+          "file_name": "benchmark_newton_vs_iterative.py",
+          "category": "basic_flow",
+          "description": "性能基准测试：牛顿法 vs 迭代法  对比在不同场景下牛顿法和迭代法的性能  作者: Claude 日期: 2025-10-22",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "medium"
+        },
+        {
+          "file_path": "tests/numerical_methods/test_convergence.py",
+          "file_name": "test_convergence.py",
+          "category": "basic_flow",
+          "description": "WENO3空间收敛性验证测试  测试WENO3在光滑解上的收敛性： 1. 光滑解收敛率测试（小扰动波传播） 2. 制造解法（MMS）验证 3. 网格细化研究  理论背景： - WENO3在光滑区域应达到3阶精度",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/numerical_methods/test_weno3_accuracy.py",
+          "file_name": "test_weno3_accuracy.py",
+          "category": "basic_flow",
+          "description": "WENO3重构精度测试（WENO3 Reconstruction Accuracy Test）  验证WENO3格式在光滑解上达到3阶空间精度。  测试方法： 1. 使用光滑的高斯波包作为初始条件 2. 在多个网格分辨率下运行模拟 3. 计算每个分辨率的L2误差 4. 验证收敛率 ~= 3.0（3阶精度）",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/numerical_methods/test_weno3_stability.py",
+          "file_name": "test_weno3_stability.py",
+          "category": "basic_flow",
+          "description": "WENO3稳定性分析测试  测试WENO3格式的稳定性特性： 1. CFL数敏感性测试 2. 长时间稳定性测试 3. 极端条件稳定性测试  理论背景： - WENO格式的稳定性取决于CFL条件、TVD性质",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/numerical_methods/test_weno3_boundary.py",
+          "file_name": "test_weno3_boundary.py",
+          "category": "basic_flow",
+          "description": "WENO3边界处理优化测试  目标：验证Ghost Cell方法对边界精度的提升  测试内容： 1. Ghost cells正确创建（n+4数组） 2. 不同边界条件下的ghost cells填充 3. 边界精度提升验证（1阶 vs 3阶） 4. 向后兼容性测试",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/numerical_methods/test_critical_flow.py",
+          "file_name": "test_critical_flow.py",
+          "category": "basic_flow",
+          "description": "临界流测试（Critical Flow Test）  测试求解器在Froude数接近1时的稳定性和准确性。  测试场景： 1. 渐缩喉道（Contraction）: 亚临界 -> 临界 -> 超临界 2. 临界流通过喉道（Critical Flow over Hump） 3. 跨临界流稳定性（Transcritical Flow Stability）",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/numerical_methods/test_shock_capturing.py",
+          "file_name": "test_shock_capturing.py",
+          "category": "basic_flow",
+          "description": "WENO3激波捕捉验证测试  测试WENO3格式在激波问题上的性能： 1. MacDonald Test 3 (溃坝) - 详细分析 2. MacDonald Test 4 Realistic (有摩阻水跃) - 详细分析 3. 激波传播速度验证 4. WENO3 vs 1阶格式对比  物理背景：",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/numerical_methods/test_mixed_flow_comprehensive.py",
+          "file_name": "test_mixed_flow_comprehensive.py",
+          "category": "basic_flow",
+          "description": "混合流态综合测试  测试entropy fix和critical flow treatment在各种流态转换中的表现： 1. 跨临界流综合测试 - 喉道/卡口流动（亚临界->临界->超临界） - 陡坡变缓坡（超临界->临界->亚临界） - 堰流（淹没流->自由流转换） 2. Entropy Fix效果对比 - 有无entropy fix的质量守恒对比",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/numerical_methods/test_mass_conservation_comprehensive.py",
+          "file_name": "test_mass_conservation_comprehensive.py",
+          "category": "basic_flow",
+          "description": "质量守恒深入验证测试  系统验证质量守恒在各种场景下的表现： 1. 长时间质量守恒 2. 干湿界面质量守恒 3. 边界条件质量守恒 4. 极端条件质量守恒  物理背景：",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/regression_test_suite.py",
+          "file_name": "regression_test_suite.py",
+          "category": "basic_flow",
+          "description": "HydroClaude Comprehensive Regression Test Suite 综合回归测试套件  Purpose: - Run comprehensive tests across all major components - Generate detailed test reports - Track regression issues - CI/CD integration ",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_idz_model.py",
+          "file_name": "test_idz_model.py",
+          "category": "basic_flow",
+          "description": "IDZ模型模块单元测试  测试覆盖： - IDZ参数验证 - 从水力学参数计算IDZ参数 - 单池IDZ模型离散化 - IDZ模型仿真（单步和多步） - 串联池IDZ模型",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_hybrid_simple.py",
+          "file_name": "test_hybrid_simple.py",
+          "category": "basic_flow",
+          "description": "测试混合求解器 - 简单场景  作者: Claude 日期: 2025-10-22",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/standard_tests/test_dam_break.py",
+          "file_name": "test_dam_break.py",
+          "category": "basic_flow",
+          "description": "溃坝测试（Dam Break Test）- 干湿界面验证  这是标准的Ritter溃坝问题，用于验证： 1. 干床处理（Dry Bed Handling） 2. Wetting过程（干床变湿） 3. 稀疏波传播（Rarefaction Wave） 4. 波前捕捉（Shock Front Capture）  测试场景：",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/standard_tests/test_lake_at_rest.py",
+          "file_name": "test_lake_at_rest.py",
+          "category": "basic_flow",
+          "description": "Lake at Rest 测试（静水平衡测试）  这是国际标准测试之一，验证求解器的well-balanced性质。 求解器必须能够在机器精度内保持静水状态不变。  测试场景： - 渠道底部有变化的高程 - 初始水位完全水平（静止） - 无外力作用",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/standard_tests/test_macdonald.py",
+          "file_name": "test_macdonald.py",
+          "category": "basic_flow",
+          "description": "MacDonald标准测试套件  基于MacDonald et al. (1997) \"Analytic Benchmark Solutions for Open-Channel Flows\" J. Hydraul. Eng., ASCE  这是国际公认的开渠水力学数值方法验证标准。  作者: HydroClaude Team 日期: 2025-10-29",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/performance/benchmark_suite.py",
+          "file_name": "benchmark_suite.py",
+          "category": "basic_flow",
+          "description": "性能基准测试套件  建立系统的性能基准，用于回归测试和性能监控： 1. MacDonald Test 1 (平稳流) - 基线 2. MacDonald Test 3 (激波) - 计算密集 3. 大规模网格 (10000单元) - 内存测试 4. 长时间模拟 (10000步+) - 稳定性测试  性能指标：",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/verification/test_mixed_flow_regime.py",
+          "file_name": "test_mixed_flow_regime.py",
+          "category": "basic_flow",
+          "description": "混合流态处理验证测试  目标：验证求解器在Fr~=1过渡区的稳定性和准确性  混合流态是一维水力学的经典难题： - Fr < 1: 缓流（亚临界） - Fr = 1: 临界流 - Fr > 1: 急流（超临界） - Fr ~= 1: 过渡区（数值不稳定高发区）",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/verification/test_variable_slope.py",
+          "file_name": "test_variable_slope.py",
+          "category": "basic_flow",
+          "description": "变坡度支持验证测试  目标：验证求解器对变坡度(S0数组)的支持  测试内容： 1. 恒定坡度兼容性测试（标量S0） 2. 变坡度数组测试（数组S0） 3. 缓坡到陡坡转换 4. 阶梯状坡度",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_boundary_condition_fix.py",
+          "file_name": "test_boundary_condition_fix.py",
+          "category": "basic_flow",
+          "description": "测试边界条件修复：验证Jacobian非奇异性  验证修复后的上游边界条件（同时指定Q和h）能够： 1. 使Jacobian满秩（秩=2*nx） 2. 条件数合理（<1e10） 3. 牛顿法能够收敛  作者: Claude 日期: 2025-10-22",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_network_v2_串联.py",
+          "file_name": "test_network_v2_串联.py",
+          "category": "basic_flow",
+          "description": "测试网络求解器V2 - 最简单串联测试  先确保串联（一入一出）能正常工作  作者: HydroClaude Team 日期: 2025-10-27",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/diagnostic/test_realistic_cases.py",
+          "file_name": "test_realistic_cases.py",
+          "category": "basic_flow",
+          "description": "实际工况综合测试  测试HydrostaticCanalSolver在实际水利工程场景下的性能",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_all_structures.py",
+          "file_name": "test_all_structures.py",
+          "category": "basic_flow",
+          "description": "所有水工结构类型的综合测试  测试内容： 1. 宽顶堰 (BroadCrestedWeir) 2. 薄壁堰/溢洪道 (Spillway) 3. 跌水 (Drop) 4. 渐变段 (Transition) 5. 孔口 (Orifice)",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald4_parameter_sweep.py",
+          "file_name": "test_macdonald4_parameter_sweep.py",
+          "category": "basic_flow",
+          "description": "MacDonald Test 4 - 标准WENO3参数扫描优化  基于经验教训： - 放弃复杂的增强算法 - 专注于稳定算法的参数优化 - 系统地测试CFL、网格、epsilon的组合  目标: 从28%质量误差改善到15%以下",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_hydrostatic_solver.py",
+          "file_name": "test_hydrostatic_solver.py",
+          "category": "basic_flow",
+          "description": "测试HydrostaticCanalSolver稳态求解  测试案例： 1. 简单渠道稳态流（无闸门） 2. 与理论解对比 3. 流量守恒验证",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_anderson_performance.py",
+          "file_name": "test_anderson_performance.py",
+          "category": "basic_flow",
+          "description": "Anderson加速性能验证测试  测试Anderson加速在不同参数配置下的性能表现 对比无加速基准和不同的Anderson参数组合  作者: Claude 日期: 2025-10-22",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_transient_flow.py",
+          "file_name": "test_transient_flow.py",
+          "category": "basic_flow",
+          "description": "瞬态流测试 - 验证HydrostaticCanalSolver的瞬态演化功能  测试场景： 1. 入流流量阶跃变化 2. 闸门开度时变 3. 洪水波传播",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/diagnostic/test_flood_hydrograph.py",
+          "file_name": "test_flood_hydrograph.py",
+          "category": "basic_flow",
+          "description": "测试洪水过程线模拟 - Phase 1问题修复  目标：使用流量限速器避免NaN  Phase 1问题： - 快速变化边界 -> NaN - 使用限速器 -> 稳定  作者: HydroClaude Team",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald4_final.py",
+          "file_name": "test_macdonald4_final.py",
+          "category": "basic_flow",
+          "description": "MacDonald Test 4简化测试 - 终极诊断  完全复制pytest配置但简化输出 日期: 2025-10-29",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_gate_simple.py",
+          "file_name": "test_gate_simple.py",
+          "category": "basic_flow",
+          "description": "简单闸门测试 - 验证闸门边界条件是否正确工作  测试策略： 1. 使用合理的下游边界条件（均匀流水深） 2. 验证闸门流量公式是否满足 3. 验证流量守恒",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_supercritical_flow.py",
+          "file_name": "test_supercritical_flow.py",
+          "category": "basic_flow",
+          "description": "测试超临界流稳定性 - Phase 1问题修复  Phase 1问题：S0>0.004时NaN 目标：支持S0<=0.01  改进： 1. 降低干床阈值（1e-4 -> 1e-3） 2. 使用HLLC求解器（更适合超临界） 3. 降低CFL（0.5 -> 0.3）",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_hllc_vs_hll_comparison.py",
+          "file_name": "test_hllc_vs_hll_comparison.py",
+          "category": "basic_flow",
+          "description": "HLLC vs HLL完整对比测试  对比项： 1. Dam Break - 精度和耗散 2. 稳态均匀流 - 稳定性 3. 计算效率",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald5_full.py",
+          "file_name": "test_macdonald5_full.py",
+          "category": "basic_flow",
+          "description": "MacDonald Test 5 完整测试  基于诊断结果（Manning摩阻工作正常），运行完整的Test 5配置",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_newton_continuation.py",
+          "file_name": "test_newton_continuation.py",
+          "category": "basic_flow",
+          "description": "测试牛顿法 + 延拓策略  使用伪时间延拓逐渐逼近稳态解",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_comprehensive_system.py",
+          "file_name": "test_comprehensive_system.py",
+          "category": "basic_flow",
+          "description": "HydroClaude综合系统测试  测试所有核心功能： 1. Phase 0求解器（3个） 2. Phase 1工具库 3. 工程案例 4. 质量守恒 5. 数值稳定性 6. 性能基准",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_godunov_with_gate.py",
+          "file_name": "test_godunov_with_gate.py",
+          "category": "basic_flow",
+          "description": "Godunov-FVM + 闸门集成测试  测试场景： 1. 闸门完全开启（稳态流） 2. 闸门突然关闭（非恒定流） 3. 闸门逐渐调节（控制）",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_godunov_steady_uniform.py",
+          "file_name": "test_godunov_steady_uniform.py",
+          "category": "basic_flow",
+          "description": "Godunov-FVM - 稳态均匀流验证  测试Godunov-FVM能否达到稳态均匀流，并与理论值对比",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_newton_quick.py",
+          "file_name": "test_newton_quick.py",
+          "category": "basic_flow",
+          "description": "快速验证牛顿法边界条件修复  import numpy as np import sys import time  sys.path.insert(0, '.')  from physics.steady_saint_venant import SteadySaintVenantSystem try:",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_simulation_engine_minimal.py",
+          "file_name": "test_simulation_engine_minimal.py",
+          "category": "basic_flow",
+          "description": "最小化SimulationEngine测试 - 去除所有输出逻辑  只保留纯模拟循环，找出真正的问题 日期: 2025-10-29",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_preissmann_v4_extended.py",
+          "file_name": "test_preissmann_v4_extended.py",
+          "category": "basic_flow",
+          "description": "Preissmann v4.0 扩展测试 - Test 1: 静止水体（已通过） - Test 2: 恒定流 - Test 3: 简单非恒定流",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_well_balanced_complete.py",
+          "file_name": "test_well_balanced_complete.py",
+          "category": "basic_flow",
+          "description": "Well-Balanced Godunov-FVM完整验证  测试： 1. 稳态均匀流（长时间）- 关键测试 2. Dam Break（无摩阻） 3. MacDonald Case 1（激波）",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_manning_friction.py",
+          "file_name": "test_manning_friction.py",
+          "category": "basic_flow",
+          "description": "Manning摩阻项诊断测试  目标：定位MacDonald Test 5中出现的NaN问题 策略：从简单到复杂逐步测试",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_step_with_and_without_dt.py",
+          "file_name": "test_step_with_and_without_dt.py",
+          "category": "basic_flow",
+          "description": "对比两种step()调用方式  1. step() - 让solver内部计算dt 2. dt = compute_dt(); step(dt) - 显式传递dt  日期: 2025-10-29",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_fvm_simple_gate.py",
+          "file_name": "test_fvm_simple_gate.py",
+          "category": "basic_flow",
+          "description": "简化闸门测试 - FVM求解器  测试FVM求解器在单闸门问题上的表现  Author: Claude Date: 2025-10-23",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_simulation_engine_weno3.py",
+          "file_name": "test_simulation_engine_weno3.py",
+          "category": "basic_flow",
+          "description": "测试SimulationEngine是否正确创建WENO3求解器  日期: 2025-10-29",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald4_fine_grid.py",
+          "file_name": "test_macdonald4_fine_grid.py",
+          "category": "basic_flow",
+          "description": "MacDonald Test 4 - 极细网格测试  目标: 通过暴力提升网格分辨率改善质量守恒 策略: dx=2m (500网格) vs 之前的dx=10m (100网格) 预期: 质量误差 27.89% -> 15-20% 或更好  作者: HydroClaude Team 日期: 2025-10-30",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_newton_good_init.py",
+          "file_name": "test_newton_good_init.py",
+          "category": "basic_flow",
+          "description": "测试牛顿法 - 使用良好初值  验证牛顿法在良好初值下的二次收敛特性",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_fvm_with_gate.py",
+          "file_name": "test_fvm_with_gate.py",
+          "category": "basic_flow",
+          "description": "FVM求解器闸门测试  测试带闸门边界条件的FVM求解器  Author: Claude Date: 2025-10-23",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald4_enhanced_weno3.py",
+          "file_name": "test_macdonald4_enhanced_weno3.py",
+          "category": "basic_flow",
+          "description": "MacDonald Test 4 - 增强版WENO3测试  目标: 使用增强版WENO3求解器来改善水跃问题的求解 特别是质量守恒和激波捕捉性能  增强特性: 1. 改进的WENO3重构（更好的平滑度指示器） 2. 熵修正（Harten-Hyman） 3. Well-Balanced静水重构",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald4_comparison.py",
+          "file_name": "test_macdonald4_comparison.py",
+          "category": "basic_flow",
+          "description": "MacDonald Test 4 对比测试：标准WENO3 vs 增强WENO3  目标：对比两种求解器在相同配置下的性能 - 标准WENO3 - 增强WENO3  重点指标： 1. 质量守恒误差 2. 负流量问题",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_three_gates_hydrostatic.py",
+          "file_name": "test_three_gates_hydrostatic.py",
+          "category": "basic_flow",
+          "description": "三闸门系统测试 - 使用静水重构求解器  验证HydrostaticCanalSolver能否处理三闸门复杂系统 目标：流量误差 < 0.5%  配置： - 渠道长度：10000m - 三个闸门：x=2500m, 5000m, 7500m - 流量：10 m^3/s",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/legacy_diagnostic/test_grid_refinement.py",
+          "file_name": "test_grid_refinement.py",
+          "category": "basic_flow",
+          "description": "局部网格加密测试  测试不同的网格加密配置对精度的影响  Author: Claude Date: 2025-10-23",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/legacy_diagnostic/test_fvm_fdm_comparison.py",
+          "file_name": "test_fvm_fdm_comparison.py",
+          "category": "basic_flow",
+          "description": "FVM-FDM对比测试  对比Phase 3改进方案与原始FDM在3闸门问题上的精度  测试系统： - 渠道长度：10000m - 3个闸门（positions: 2500m, 5000m, 7500m） - 目标流量：10 m^3/s - 网格：301点",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/legacy_diagnostic/test_fvm_steady_comparison.py",
+          "file_name": "test_fvm_steady_comparison.py",
+          "category": "basic_flow",
+          "description": "FVM稳态求解器对比测试  对比三种方法在3闸门问题上的精度： 1. 原始FDM（Preissmann + 平滑）- 基准 2. FVM隐式稳态求解（Newton迭代）- 新方法 3. 目标精度：0.5%  Author: Claude Date: 2025-10-23",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/legacy_diagnostic/test_adaptive_grid_solver.py",
+          "file_name": "test_adaptive_grid_solver.py",
+          "category": "basic_flow",
+          "description": "测试自适应网格求解器  对比均匀网格vs自适应网格在三闸门场景下的精度提升  作者: Claude 日期: 2025-10-23",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/legacy_diagnostic/test_anderson_vs_aitken.py",
+          "file_name": "test_anderson_vs_aitken.py",
+          "category": "basic_flow",
+          "description": "Anderson vs Aitken 加速方法性能对比测试  ️ 注意: 此测试已弃用 原因: 简单的固定点迭代不适用于Saint-Venant方程，导致数值不稳定（overflow） 替代方案: 使用ANDERSON_ACCELERATION_VERIFICATION.md中基于代码分析的验证方法  测试场景: 1. 单闸门系统（简单） 2. 三闸门串联（中等）",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/legacy_diagnostic/test_grid_comprehensive.py",
+          "file_name": "test_grid_comprehensive.py",
+          "category": "basic_flow",
+          "description": "网格加密全面测试  充分测试各种网格配置，生成完整的性能对比报告  作者: Claude 日期: 2025-10-23",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_continuation_robustness.py",
+          "file_name": "test_continuation_robustness.py",
+          "category": "basic_flow",
+          "description": "测试延拓求解器的鲁棒性  测试不同初值好初值差初值极端初值下的性能  作者: Claude 日期: 2025-10-22",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_newton_three_gates.py",
+          "file_name": "test_newton_three_gates.py",
+          "category": "basic_flow",
+          "description": "测试三闸门场景的牛顿法求解  验证解析导数修复后牛顿法能否解决三闸门问题  作者: Claude 日期: 2025-10-22",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_newton_boundary_fix.py",
+          "file_name": "test_newton_boundary_fix.py",
+          "category": "basic_flow",
+          "description": "测试牛顿法边界条件修复效果  验证Jacobian满秩和牛顿法收敛性",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_hll_vs_hllc.py",
+          "file_name": "test_hll_vs_hllc.py",
+          "category": "basic_flow",
+          "description": "HLL vs HLLC Riemann求解器对比测试  对比两种求解器在不同场景下的性能： 1. 恒定均匀流（光滑解） 2. 溃坝问题（激波） 3. 水跃问题（强激波）  作者：HydroClaude Team 日期：2025-10-28",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_geometry/test_compound_channel.py",
+          "file_name": "test_compound_channel.py",
+          "category": "basic_flow",
+          "description": "复合断面渠道单元测试  测试 CompoundChannel 类的所有功能： - 分区水力几何计算 - 分区流速法 - 等效Manning系数法 - 正常水深和临界水深 - 漫滩判断",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/e2e/convert_test_cases.py",
+          "file_name": "convert_test_cases.py",
+          "category": "basic_flow",
+          "description": "将后端测试案例转换为Web端到端测试输入格式  Author: HydroClaude Team Date: 2025-11-15",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/e2e/scan_all_test_cases.py",
+          "file_name": "scan_all_test_cases.py",
+          "category": "basic_flow",
+          "description": "扫描并整理所有后端测试案例  系统化地从整个项目中找到所有测试案例，生成完整的测试清单  Author: HydroClaude Team Date: 2025-11-15",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "hard"
+        }
+      ]
+    },
+    "structures": {
+      "count": 64,
+      "cases": [
+        {
+          "file_path": "examples/example_side_weir.py",
+          "file_name": "example_side_weir.py",
+          "category": "structures",
+          "description": "侧堰水工建筑物示例  演示 SideWeir 类的使用，包括： 1. 基本侧堰分流计算 2. 薄壁堰 vs 宽顶堰对比 3. 沿程水位和流量变化 4. 侧堰长度设计 5. 灌溉分水应用 6. 防洪溢流堰",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_internal_structures.py",
+          "file_name": "example_internal_structures.py",
+          "category": "structures",
+          "description": "内部水工建筑物使用示例  演示如何使用内部堰、闸门等建筑物： 1. 串联河段+宽顶堰 2. 串联河段+闸门（可调开度） 3. 串联河段+孔口 4. 多闸门串联系统 5. 堰闸组合控制",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/case5_irrigation_system.py",
+          "file_name": "case5_irrigation_system.py",
+          "category": "structures",
+          "description": "案例5：农业灌溉系统分析 Case 5: Agricultural Irrigation System Analysis  本案例展示农业灌溉系统的水力分析，包括： 1. 大面积农田灌溉管网 2. 多个灌溉分区 3. 不同作物需水量 4. 季节性用水变化 5. 喷灌和滴灌工况",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_gate_pump_cascade/analyze_all_scenarios.py",
+          "file_name": "analyze_all_scenarios.py",
+          "category": "structures",
+          "description": "深度分析所有工况结果 识别问题、验证物理合理性",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_gate_pump_cascade/run_scenario_04.py",
+          "file_name": "run_scenario_04.py",
+          "category": "structures",
+          "description": "工况4: 闸门开度调控 import sys import os  # ========== 路径设置 ========== script_path = os.path.abspath(__file__) project_root = os.path.dirname(os.path.dirname(script_path)) sys.path.insert(0, project_root)",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_bridge_structure.py",
+          "file_name": "example_bridge_structure.py",
+          "category": "structures",
+          "description": "桥梁水工建筑物示例  演示 Bridge 类的使用，包括： 1. 基本桥梁过流计算 2. 流态转换分析（自由流 vs 压力流） 3. 桥梁壅水效应 4. 洪水位计算 5. 桥梁过流能力评估 6. 桥墩影响分析",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/case_library/case_05_river_network.py",
+          "file_name": "case_05_river_network.py",
+          "category": "structures",
+          "description": "HydroClaude Engineering Case 05: River Network System HydroClaude 工程案例 05: 河网系统  This case demonstrates: 此案例演示: - Natural river network with multiple tributaries / 多支流天然河网 - Flood routing and propagat",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/case_library/test_cases.py",
+          "file_name": "test_cases.py",
+          "category": "structures",
+          "description": "Test Suite for Engineering Cases - 工程案例测试套件 ==================================================  Tests all engineering cases to ensure they run correctly and produce reasonable results.  Author: Claude",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/case4_fire_protection_system.py",
+          "file_name": "case4_fire_protection_system.py",
+          "category": "structures",
+          "description": "案例4：消防供水系统分析 Case 4: Fire Protection Water Supply System Analysis  本案例展示建筑消防供水系统的水力分析，包括： 1. 高位消防水箱供水 2. 室内外消火栓系统 3. 自动喷淋系统 4. 消防泵扬程校核 5. 不利点压力验证",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_cascade_reservoirs.py",
+          "file_name": "example_cascade_reservoirs.py",
+          "category": "structures",
+          "description": "梯级水库完整示例  模拟梯级水库系统，包含： - 3个串联水库 - 水库间连接河段 - 溢洪道（堰） - 泄洪闸 - 联合调度",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/tests/test_examples.py",
+          "file_name": "test_examples.py",
+          "category": "structures",
+          "description": "Examples测试套件 使用pytest进行自动化测试",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_02_pump_system/code/example_02_pump_system.py",
+          "file_name": "example_02_pump_system.py",
+          "category": "structures",
+          "description": "-*- coding: utf-8 -*-",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_02_pump_system/example_02_pump_system_enhanced.py",
+          "file_name": "example_02_pump_system_enhanced.py",
+          "category": "structures",
+          "description": "示例2: 泵站系统仿真（增强版）  增强功能： - 自动生成结果图表 - 生成动态GIF动画（水池水位变化） - 自动生成仿真报告 - 嵌入可视化结果",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_02_pump_system/example_02_pump_system_with_anim.py",
+          "file_name": "example_02_pump_system_with_anim.py",
+          "category": "structures",
+          "description": "示例2: 泵站系统 - 增强版（嵌入式动画）  演示泵站启动过程的动态行为  使用方法: python example_02_pump_system_with_anim.py              # 不生成动画 python example_02_pump_system_with_anim.py --animate    # 生成动画  作者: Claude",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/advanced_examples/mpc_nonlinear_test.py",
+          "file_name": "mpc_nonlinear_test.py",
+          "category": "structures",
+          "description": "一阶MPC在非线性模型上的性能测试  测试目标： 1. 验证线性化MPC在非线性模型上的控制效果 2. 对比线性化模型与非线性模型的性能差异 3. 评估非线性失配的影响  非线性模型：使用非线性闸门方程Q = Cd*a*W*sqrt(2*g*Deltah) 线性化模型：工作点线性化的一阶模型H(s) = K/(taus+1)",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/advanced_examples/test_idz_mpc_performance.py",
+          "file_name": "test_idz_mpc_performance.py",
+          "category": "structures",
+          "description": "IDZ MPC性能测试  对比三种控制器： 1. PID (带积分器) 2. First-Order MPC (无积分器) 3. IDZ MPC (带积分器)  测试目标： 验证IDZ MPC是否能通过积分器实现零稳态误差，从而达到或超越PID性能",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/advanced_examples/complete_benchmark_suite.py",
+          "file_name": "complete_benchmark_suite.py",
+          "category": "structures",
+          "description": "完整的控制器基准测试套件  集成所有已开发的控制器，在统一测试框架下进行全面性能对比： 1. PID控制器 2. 自适应PI控制器 3. 一阶MPC（单工作点） 4. 增益调度MPC（多工作点）  测试场景：",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/advanced_examples/adaptive_first_order_mpc_test.py",
+          "file_name": "adaptive_first_order_mpc_test.py",
+          "category": "structures",
+          "description": "自适应一阶MPC测试  结合FirstOrderIdentifier进行在线参数更新  特点： 1. 在线辨识一阶系统参数（K, τ） 2. 动态更新MPC内部模型 3. 适应工况变化和参数漂移",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/advanced_examples/test_idz_identification_negative_gain.py",
+          "file_name": "test_idz_identification_negative_gain.py",
+          "category": "structures",
+          "description": "测试IDZ在线辨识对负增益系统的修复  验证修复后的IDZIdentifier能够正确辨识反向作用系统（K<0）  作者：HydroClaude Team 日期：2025-10-24",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/benchmark_examples.py",
+          "file_name": "benchmark_examples.py",
+          "category": "structures",
+          "description": "示例性能基准测试 测试各个示例的运行时间和资源使用",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_02_spillway_cascade/example_02_spillway_system.py",
+          "file_name": "example_02_spillway_system.py",
+          "category": "structures",
+          "description": "Example 02: Spillway Cascade System ====================================  Demonstrates the simulation of a multi-structure hydraulic system including: - WES spillway - Channel transition (expansion) -",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_02_spillway_cascade/example_02_spillway_simple.py",
+          "file_name": "example_02_spillway_simple.py",
+          "category": "structures",
+          "description": "Example 02: Hydraulic Structures Demonstration ==============================================  Demonstrates the new hydraulic structures: - Spillway (WES, Ogee, Broad-crested) - Transition (Expansion/",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_irrigation_network.py",
+          "file_name": "example_irrigation_network.py",
+          "category": "structures",
+          "description": "灌溉渠系网络完整示例  模拟典型灌溉渠系，包含： - 主渠道 - 多级分水口 - 支渠网络 - 闸门控制  拓扑结构:",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/validate_new_examples.py",
+          "file_name": "validate_new_examples.py",
+          "category": "structures",
+          "description": "快速验证脚本 - 测试所有新增案例  本脚本快速测试本版本新增的所有示例案例，确保它们正常工作。  运行方式： python examples/validate_new_examples.py  或者： cd examples && python validate_new_examples.py",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_pump_station.py",
+          "file_name": "example_pump_station.py",
+          "category": "structures",
+          "description": "泵站提水灌溉示例  演示泵站在河网系统中的应用： 1. 提水灌溉系统 2. 泵站控制策略 3. 能耗计算  拓扑结构: [水源] -> [进水渠] -> [泵站] -> [出水渠] -> [高位池]",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/case3_industrial_cooling_system.py",
+          "file_name": "case3_industrial_cooling_system.py",
+          "category": "structures",
+          "description": "案例3：工业供水系统分析 Case 3: Industrial Water Supply System Analysis  本案例展示工业供水系统的水力分析，包括： 1. 环状+树状混合管网 2. 多个用水点压力保证 3. 不同运行工况对比（低负荷/正常/高峰） 4. 能耗分析与优化建议 5. 泵站运行策略优化",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/case2_pump_water_hammer.py",
+          "file_name": "case2_pump_water_hammer.py",
+          "category": "structures",
+          "description": "泵站水锤分析案例 Pump Station Water Hammer Analysis Case Study  案例背景 Case Background: 某水厂配水泵站，泵出流量1.0 m^3/s，扬程80m。 输水管道长度5000m，直径800mm。 分析停电工况下的水锤压力变化。  分析内容 Analysis Content:",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_surge_tank_siphon.py",
+          "file_name": "test_surge_tank_siphon.py",
+          "category": "structures",
+          "description": "Test cases for Surge Tank and Inverted Siphon  Tests: - Surge tanks (Simple, Throttled, Differential) - Inverted siphons - Integration scenarios  Author: Claude Date: 2025-10-22",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_gate_derivatives.py",
+          "file_name": "test_gate_derivatives.py",
+          "category": "structures",
+          "description": "测试闸门流量对水深的导数计算  调试为什么数值微分计算出零导数  作者: Claude 日期: 2025-10-22",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_pumps.py",
+          "file_name": "test_pumps.py",
+          "category": "structures",
+          "description": "测试泵站水力计算  测试内容： - 离心泵特性曲线 - 效率和功率计算 - 变速运行（相似定律） - 泵组串并联运行 - 工况点计算",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_network_integration.py",
+          "file_name": "test_network_integration.py",
+          "category": "structures",
+          "description": "网络集成测试套件  验证Stage 3的完整功能： 1. 串联河段系统（3段河段） 2. Y型汇流系统（2入1出） 3. 串联闸门系统（3个闸门） 4. 复杂河网（5节点、7河段）  验收标准:",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_pressurized_system.py",
+          "file_name": "test_pressurized_system.py",
+          "category": "structures",
+          "description": "有压系统单元测试  测试内容： 1. 有压管道求解器基本功能 2. 结构物功能（阀门、泵站等） 3. 系统辨识算法 4. 边界条件设置  作者: Claude",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_network_structures.py",
+          "file_name": "test_network_structures.py",
+          "category": "structures",
+          "description": "测试内部水工建筑物  验证堰、闸等内部建筑物的耦合功能。  Stage 3 - Task 3.3.2 测试  作者: HydroClaude Team 日期: 2025-10-29",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_radial_gate.py",
+          "file_name": "test_radial_gate.py",
+          "category": "structures",
+          "description": "弧形闸门单元测试  测试内容： 1. 基本参数 2. 流量系数计算 3. 淹没判别 4. 自由出流 5. 淹没出流 6. 反算开度",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_flow_measurement.py",
+          "file_name": "test_flow_measurement.py",
+          "category": "structures",
+          "description": "测试流量测量设施  测试内容： - 矩形堰流量计算 - 三角堰流量计算 - 巴歇尔槽流量计算 - 各种边界情况 - 反算水头功能 - 淹没条件判别",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_hydraulic_structures.py",
+          "file_name": "test_hydraulic_structures.py",
+          "category": "structures",
+          "description": "Test cases for Hydraulic Structures (Spillway, Transition, Drop)  Tests the newly added water control structures: - Spillway (WES, Ogee, Broad-crested) - Transition (Expansion/Contraction) - Drop (Hyd",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_solvers/test_pump_boundary.py",
+          "file_name": "test_pump_boundary.py",
+          "category": "structures",
+          "description": "离心泵边界条件测试 Test Pump Boundary Conditions  作者: HydroClaude Team 日期: 2025-10-30",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_boundaries.py",
+          "file_name": "test_boundaries.py",
+          "category": "structures",
+          "description": "测试边界条件类  验证GateBoundary, ValveBoundary, PumpBoundary的基本功能",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_valve.py",
+          "file_name": "test_valve.py",
+          "category": "structures",
+          "description": "Test cases for Valve classes  Tests: 1. Valve characteristic curves 2. Flow calculation 3. Analytical derivatives (for Jacobian) 4. Dynamic response 5. Integration with hydraulic systems",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_drop.py",
+          "file_name": "test_drop.py",
+          "category": "structures",
+          "description": "测试跌水结构水力计算  测试内容： - 几何参数验证 - 自由流流量计算 - 淹没流流量计算 - 尾水深度计算 - 能量消散计算 - 临界水深计算",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_network/test_pressure_pipe.py",
+          "file_name": "test_pressure_pipe.py",
+          "category": "structures",
+          "description": "PressurePipe类单元测试 - Unit Tests for PressurePipe Class  测试覆盖: 1. 基本初始化和参数验证 2. 雷诺数计算 3. 摩阻系数计算（层流和湍流） 4. Colebrook-White迭代收敛性 5. Darcy-Weisbach水头损失 6. Hazen-Williams水头损失",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_network/test_side_weir.py",
+          "file_name": "test_side_weir.py",
+          "category": "structures",
+          "description": "侧堰水工建筑物单元测试  测试 SideWeir 类的各项功能，包括： 1. 基本初始化和参数验证 2. De Marchi 公式分流计算 3. 分流比计算 4. 沿程水位变化 5. 所需长度计算 6. 淹没效应",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_network/test_bridge_structure.py",
+          "file_name": "test_bridge_structure.py",
+          "category": "structures",
+          "description": "桥梁水工建筑物单元测试  测试 Bridge 类的各项功能，包括： 1. 基本初始化和参数验证 2. 流态判断（自由流/压力流） 3. 堰流计算 4. 自由孔流计算 5. 压力流计算 6. 壅水效应计算",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_online_identification.py",
+          "file_name": "test_online_identification.py",
+          "category": "structures",
+          "description": "在线辨识模块单元测试  测试覆盖： - 递归最小二乘法（RLS） - IDZ参数辨识 - 闸门特性辨识 - 水泵特性辨识 - 阀门特性辨识 - 水轮机特性辨识",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_network_structures_simple.py",
+          "file_name": "test_network_structures_simple.py",
+          "category": "structures",
+          "description": "简单测试内部水工建筑物（不使用pytest）  验证堰、闸等内部建筑物的耦合功能。  Stage 3 - Task 3.3.2 测试  作者: HydroClaude Team 日期: 2025-10-29",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/diagnostic/test_canal_network.py",
+          "file_name": "test_canal_network.py",
+          "category": "structures",
+          "description": "渠系网络测试案例  测试复杂拓扑结构： 1. 串联网络 2. 并联网络（分流-汇合） 3. 树状网络  作者: Claude 日期: 2025-10-23",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/diagnostic/test_all_examples.py",
+          "file_name": "test_all_examples.py",
+          "category": "structures",
+          "description": "自动测试所有示例（Examples 1-16）  逐个运行示例，记录结果，生成测试报告",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/diagnostic/test_pump_source_term.py",
+          "file_name": "test_pump_source_term.py",
+          "category": "structures",
+          "description": "测试泵站源项是否正确工作",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_adaptive_timestep.py",
+          "file_name": "test_adaptive_timestep.py",
+          "category": "structures",
+          "description": "自适应时间步性能测试  比较固定时间步和自适应时间步的性能差异： 1. 计算速度 2. 数值精度 3. 稳定性  作者: Claude 日期: 2025-10-23",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_mpc_scheduler.py",
+          "file_name": "test_mpc_scheduler.py",
+          "category": "structures",
+          "description": "MPC智能调度测试  测试模型预测控制（MPC）在渠道水位和流量调度中的应用： 1. 水位调节 - 通过控制闸门达到目标水位 2. 流量调度 - 通过控制入流达到目标流量分布 3. 多目标优化 - 同时优化水位和流量  作者: Claude 日期: 2025-10-23",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/diagnostic/test_single_canal_with_gate.py",
+          "file_name": "test_single_canal_with_gate.py",
+          "category": "structures",
+          "description": "测试单个渠道 + 闸门的稳态求解  测试场景： - 单个渠道，中间有一个闸门 - 上游入流流量固定 - 下游水深固定 - 求解稳态水深分布  验证：",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/legacy_diagnostic/test_adaptive_fine_tuned.py",
+          "file_name": "test_adaptive_fine_tuned.py",
+          "category": "structures",
+          "description": "精细调优的自适应smooth_weight测试  基于之前的参数扫描结果(0.45-0.60最优)，优化自适应配置  Author: Claude Date: 2025-10-23",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/legacy_diagnostic/test_adaptive_grid_optimized.py",
+          "file_name": "test_adaptive_grid_optimized.py",
+          "category": "structures",
+          "description": "测试优化的自适应网格参数  尝试更精细的网格参数以达到阶段1目标（0.1-0.5%精度）  作者: Claude 日期: 2025-10-23",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/legacy_diagnostic/test_fixes_quick.py",
+          "file_name": "test_fixes_quick.py",
+          "category": "structures",
+          "description": "快速测试修复后的求解器  对比修复前后的精度改进",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/legacy_diagnostic/test_high_precision_solver.py",
+          "file_name": "test_high_precision_solver.py",
+          "category": "structures",
+          "description": "高精度求解器测试  对比标准求解器 vs 高精度求解器的精度差异",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/legacy_diagnostic/test_phase2_solver.py",
+          "file_name": "test_phase2_solver.py",
+          "category": "structures",
+          "description": "Phase 2高精度求解器验证脚本  测试三阶段收敛策略的精度提升效果  Author: Claude Date: 2025-10-23",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/legacy_diagnostic/test_final_optimization.py",
+          "file_name": "test_final_optimization.py",
+          "category": "structures",
+          "description": "闸门精度最终优化测试  测试非常大的smooth_weight值以验证趋势预测  Author: Claude Date: 2025-10-23",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/legacy_diagnostic/test_swmm_omega.py",
+          "file_name": "test_swmm_omega.py",
+          "category": "structures",
+          "description": "测试SWMM风格omega=0.5的效果 使用更长的迭代时间来确保收敛  作者: Claude 日期: 2025-10-23",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/legacy_diagnostic/test_adaptive_smooth_weight.py",
+          "file_name": "test_adaptive_smooth_weight.py",
+          "category": "structures",
+          "description": "自适应平滑权重测试脚本  对比不同的平滑权重策略： 1. 固定权重 smooth_weight=0.55 (基准) 2. 残差自适应模式 3. 距离自适应模式 4. 混合自适应模式（推荐）  Author: Claude",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/legacy_diagnostic/test_fvm_full_final.py",
+          "file_name": "test_fvm_full_final.py",
+          "category": "structures",
+          "description": "完整FVM隐式求解器 - 最终测试  对比三种方法： 1. FDM基准（2.32%） 2. FVM简化Newton（失败） 3. FVM完整Jacobian（本测试）  关键改进：从FDM解作为初值",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_advanced_boundary_conditions.py",
+          "file_name": "test_advanced_boundary_conditions.py",
+          "category": "structures",
+          "description": "高级边界条件集成测试  验证 1. 时变边界条件在求解器中的应用 2. Rating Curve边界条件 3. 潮汐边界条件 4. 洪水过程线 5. 水工建筑物堰闸边界",
+          "has_solver": true,
+          "has_structures": true,
+          "complexity": "medium"
+        },
+        {
+          "file_path": "tests/test_examples/test_case_examples.py",
+          "file_name": "test_case_examples.py",
+          "category": "structures",
+          "description": "案例示例验证测试 Case Examples Validation Tests  验证案例库中的示例能够正确运行并产生合理结果  Author: HydroClaude Team Date: 2025-10-30",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_weirs.py",
+          "file_name": "test_weirs.py",
+          "category": "structures",
+          "description": "堰类组件单元测试  测试所有堰类组件的功能： - BroadCrestedWeir (宽顶堰) - SharpCrestedWeir (薄壁堰) - SideWeir (侧堰)  验证： 1. 流量计算正确性",
+          "has_solver": false,
+          "has_structures": true,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/e2e/test_web_e2e.py",
+          "file_name": "test_web_e2e.py",
+          "category": "structures",
+          "description": "Web端到端自动化测试  使用Playwright进行浏览器自动化测试  Author: HydroClaude Team Date: 2025-11-15",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        }
+      ]
+    },
+    "network": {
+      "count": 30,
+      "cases": [
+        {
+          "file_path": "examples/example_12_loop_network/code/example_12_loop_network.py",
+          "file_name": "example_12_loop_network.py",
+          "category": "network",
+          "description": "示例3: 环状网络 print(\"\\n\" + \"=\"*60) print(\"示例3: 环状网络 (Loop Network)\") print(\"     N1 ---- E1 ---- N2\") print(\"     |               |\") print(\"     E4             E2\") print(\"     |               |\") print(",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_culvert_structure.py",
+          "file_name": "example_culvert_structure.py",
+          "category": "network",
+          "description": "涵洞/倒虹吸水工建筑物示例  演示 Culvert 类的使用，包括： 1. 基本涵洞过流计算（圆形和矩形） 2. 进口控制 vs 出口控制对比 3. 能量损失分析 4. 多孔并联涵洞 5. 倒虹吸应用 6. 道路涵洞设计",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_11_tree_network/code/example_11_tree_network.py",
+          "file_name": "example_11_tree_network.py",
+          "category": "network",
+          "description": "示例2: 树杈型网络 print(\"\\n\" + \"=\"*60) print(\"示例2: 树杈型网络 (Tree Network)\") print(\"           水库\") print(\"            |\") print(\"          主干渠\") print(\"         /  |  \\\\\") print(\"      支渠1 支渠2 支渠3\") print(\"   ",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/case6_highrise_water_supply.py",
+          "file_name": "case6_highrise_water_supply.py",
+          "category": "network",
+          "description": "案例6：高层建筑分区供水系统 Case 6: High-Rise Building Zoned Water Supply System  本案例展示高层建筑分区供水系统的水力分析，包括： 1. 三区供水（低区/中区/高区） 2. 各区独立水箱供水 3. 不同楼层用水分析 4. 压力分区控制 5. 减压和增压措施",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/case8_network_optimization.py",
+          "file_name": "case8_network_optimization.py",
+          "category": "network",
+          "description": "案例8：管网优化与管径选型 Case 8: Network Optimization and Pipe Sizing  本案例展示如何通过对比不同管径方案来优化管网设计： - 基准方案 vs 优化方案 - 水力性能对比（压力、流速） - 经济性分析（投资成本、运行成本） - 优化建议",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_network_solver.py",
+          "file_name": "example_network_solver.py",
+          "category": "network",
+          "description": "网络求解器使用示例  演示如何使用NetworkSolver求解完整的河网系统： 1. 简单串联河段求解 2. Y型汇流网络求解 3. 复杂河网系统求解 4. 质量守恒验证  Stage 3 - Phase 3.2 示例",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/case_library/benchmark_performance.py",
+          "file_name": "benchmark_performance.py",
+          "category": "network",
+          "description": "HydroClaude Performance Benchmark Tool - 性能基准测试工具 ======================================================  Comprehensive performance benchmarking for all engineering cases. 对所有工程案例进行全面的性能基准测试。  Measure",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_network_nodes.py",
+          "file_name": "example_network_nodes.py",
+          "category": "network",
+          "description": "节点类型使用示例  演示如何使用各种专业化的节点类型 1. JunctionNode - 汇流节点示例 2. BifurcationNode - 分流节点示例 3. ReservoirNode - 水库节点示例 4. BoundaryNode - 边界节点示例  Stage 3 - Task 3.1.2 示例",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_network_topology.py",
+          "file_name": "example_network_topology.py",
+          "category": "network",
+          "description": "网络拓扑使用示例  演示如何创建和管理河网拓扑结构： 1. 简单串联网络（3节点2河段） 2. Y型汇流网络（4节点3河段） 3. 复杂河网（5节点4河段）  Stage 3 - Task 3.1.1 示例",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_network_validation.py",
+          "file_name": "example_network_validation.py",
+          "category": "network",
+          "description": "网络验证工具使用示例  演示如何使用验证和可视化工具： 1. 基本网络验证 2. 检测和修复常见问题 3. 网络健康评分 4. 高程剖面可视化 5. 流量分布可视化",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/case1_urban_water_supply.py",
+          "file_name": "case1_urban_water_supply.py",
+          "category": "network",
+          "description": "城市供水管网分析案例 Urban Water Supply Network Analysis Case Study  案例背景 Case Background: 某小型城市供水系统，包含1个水库、1个水塔、6个用水节点。 管网呈环状布置，总共8根管道。  分析内容 Analysis Content: 1. 管网稳态水力计算",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_03_complex_network/code/example_03_complex_network.py",
+          "file_name": "example_03_complex_network.py",
+          "category": "network",
+          "description": "-*- coding: utf-8 -*-",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_10_series_network/code/example_10_series_network.py",
+          "file_name": "example_10_series_network.py",
+          "category": "network",
+          "description": "示例1: 串联网络 print(\"\\n\" + \"=\"*60) print(\"示例1: 串联网络 (Series Network)\") print(\"水库 -> 渠道1 -> 闸门 -> 渠道2 -> 泵站 -> 管道 -> 水池\") print(\"=\"*60)  topology = NetworkTopology()  topology.add_node(Node(\"N0_水库\", NodeTy",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_10_series_network/example_10_series_network_with_anim.py",
+          "file_name": "example_10_series_network_with_anim.py",
+          "category": "network",
+          "description": "示例10: 串联管网系统 - 增强版（嵌入式动画）  演示串联管网的压力和流量动态变化  使用方法: python example_10_series_network_with_anim.py              # 不生成动画 python example_10_series_network_with_anim.py --animate    # 生成动画  作者: Claude",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/case7_regional_water_supply.py",
+          "file_name": "case7_regional_water_supply.py",
+          "category": "network",
+          "description": "案例7：区域供水管网系统 Case 7: Regional Water Supply Network System  本案例展示大规模区域供水管网的水力分析： - 多水源供水（2个水库 + 1个高位水塔） - 复杂环状拓扑（18个节点 + 25根管道） - 分区供水（居民区、商业区、工业区） - 多工况分析（高峰/平均/低谷） - 供水可靠性分析",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_network_nodes.py",
+          "file_name": "test_network_nodes.py",
+          "category": "network",
+          "description": "节点类型测试  测试network.nodes模块的功能： 1. JunctionNode - 汇流节点 2. BifurcationNode - 分流节点 3. ReservoirNode - 水库节点 4. BoundaryNode - 边界节点  Stage 3 - Task 3.1.2 测试",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_utils/test_performance.py",
+          "file_name": "test_performance.py",
+          "category": "network",
+          "description": "性能优化模块测试 Test Performance Optimization Module  验证Numba JIT加速函数的正确性  Author: HydroClaude Team Date: 2025-10-30",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_solvers/test_newton_raphson_solver.py",
+          "file_name": "test_newton_raphson_solver.py",
+          "category": "network",
+          "description": "Unit Tests for Newton-Raphson Network Solver",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_solvers/test_hardy_cross_solver.py",
+          "file_name": "test_hardy_cross_solver.py",
+          "category": "network",
+          "description": "Unit Tests for Hardy Cross Solver - Hardy Cross求解器单元测试  This module contains comprehensive unit tests for: - HardyCrossSolver initialization - Network solving (tree, single-loop, multi-loop) - Converg",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_solvers/test_newton_raphson_improvement.py",
+          "file_name": "test_newton_raphson_improvement.py",
+          "category": "network",
+          "description": "Newton-Raphson求解器优化测试 Test Newton-Raphson solver improvements  测试use_hardy_cross_init参数是否提高了收敛性  作者: HydroClaude Team 日期: 2025-10-30",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_network_validation.py",
+          "file_name": "test_network_validation.py",
+          "category": "network",
+          "description": "网络验证工具测试  测试network.validation模块的功能： 1. NetworkValidator - 拓扑验证 2. NetworkVisualizer - 可视化 3. 便捷函数  Stage 3 - Task 3.1.3 测试",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_network/test_network_node_boundaries.py",
+          "file_name": "test_network_node_boundaries.py",
+          "category": "network",
+          "description": "Network Node Boundary Tests - 网络节点边界测试  测试network_node模块的边界情况和错误处理  Author: HydroClaude Development Team Date: 2025-10-30",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_network/test_network_node.py",
+          "file_name": "test_network_node.py",
+          "category": "network",
+          "description": "Unit Tests for Network Node Module - 管网节点模块单元测试  This module contains comprehensive unit tests for: - NetworkNode base class - Junction nodes - Reservoir nodes - Tank nodes  Author: HydroClaude Develo",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_network/test_dual_flow_pipe.py",
+          "file_name": "test_dual_flow_pipe.py",
+          "category": "network",
+          "description": "Unit Tests for Dual Flow Pipe - 明满流管道单元测试",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_network/test_culvert_structure.py",
+          "file_name": "test_culvert_structure.py",
+          "category": "network",
+          "description": "涵洞/倒虹吸水工建筑物单元测试  测试 Culvert 类的各项功能，包括： 1. 基本初始化和参数验证 2. 圆形和矩形断面 3. 流态判断（进口控制/出口控制） 4. 进口控制流计算 5. 出口控制流计算 6. 多孔并联",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_network/test_network_topology.py",
+          "file_name": "test_network_topology.py",
+          "category": "network",
+          "description": "Unit Tests for Network Topology Module - 管网拓扑模块单元测试  This module contains comprehensive unit tests for: - NetworkTopology class - Node-pipe connectivity - Loop identification - Incidence matrix constr",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_network_components.py",
+          "file_name": "test_network_components.py",
+          "category": "network",
+          "description": "管网组件单元测试  测试所有管网组件： - 节点 (Junction) - 弯头 (Elbow) - 渐变管 (Reducer/Expander) - 气压罐 (AirVessel) - 单向阀 (CheckValve) - 安全阀 (ReliefValve)",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/diagnostic/test_network_v2_simple.py",
+          "file_name": "test_network_v2_simple.py",
+          "category": "network",
+          "description": "测试网络求解器V2 - Y-split简单测试  测试目标：验证守恒改进效果 - Phase 1问题：质量误差9-22% - 目标：质量误差<1%  作者: HydroClaude Team 日期: 2025-10-27",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/legacy_diagnostic/test_performance_comparison.py",
+          "file_name": "test_performance_comparison.py",
+          "category": "network",
+          "description": "性能对比测试  对比以下功能的性能提升： 1. 标准MPC vs 快速MPC（粗网格预测） 2. 基础数字孪生 vs 高级数字孪生（传感器网络）  作者: Claude 日期: 2025-10-23",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_network_topology.py",
+          "file_name": "test_network_topology.py",
+          "category": "network",
+          "description": "网络拓扑测试  测试network.topology模块的功能： 1. 节点添加和管理 2. 河段添加和管理 3. 拓扑排序 4. 拓扑验证 5. 质量平衡检查",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        }
+      ]
+    },
+    "unsteady": {
+      "count": 7,
+      "cases": [
+        {
+          "file_path": "examples/example_06_complete_hydropower_system/example_06_complete_system.py",
+          "file_name": "example_06_complete_system.py",
+          "category": "unsteady",
+          "description": "Example 06: Complete Hydropower Plant System Integration =========================================================  Demonstrates a complete modern hydropower plant with ALL components:  System Layout:",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_05_transient_analysis/example_05_load_rejection.py",
+          "file_name": "example_05_load_rejection.py",
+          "category": "unsteady",
+          "description": "Example 05: Hydropower Plant Transient Analysis - Load Rejection ================================================================  Simulates load rejection scenario with governor control.  Scenario: F",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_08_load_acceptance/example_08_load_acceptance.py",
+          "file_name": "example_08_load_acceptance.py",
+          "category": "unsteady",
+          "description": "Example 08: Hydropower Plant Transient Analysis - Load Acceptance ==================================================================  Simulates load acceptance (sudden load increase) scenario with gov",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_08_load_acceptance/example_08_load_acceptance_with_anim.py",
+          "file_name": "example_08_load_acceptance_with_anim.py",
+          "category": "unsteady",
+          "description": "示例8: 水轮机接受负荷 - 增强版（嵌入式动画）  演示水轮机从空载接受满负荷的暂态过程  使用方法: python example_08_load_acceptance_with_anim.py              # 不生成动画 python example_08_load_acceptance_with_anim.py --animate    # 生成动画  作者: Claude",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_04_hydropower_system/example_04_hydropower_plant.py",
+          "file_name": "example_04_hydropower_plant.py",
+          "category": "unsteady",
+          "description": "Example 04: Complete Hydropower Plant System ============================================  Demonstrates a complete hydropower plant with all components: - Reservoir (水库) - Headrace tunnel (引水隧洞) - Sur",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_solvers/test_water_hammer_moc.py",
+          "file_name": "test_water_hammer_moc.py",
+          "category": "unsteady",
+          "description": "水锤MOC求解器单元测试 / Unit Tests for Water Hammer MOC Solver  作者: HydroClaude Team 日期: 2025-10-30",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_high_order_accuracy.py",
+          "file_name": "test_high_order_accuracy.py",
+          "category": "unsteady",
+          "description": "高阶格式精度验证测试  对比不同数值格式的精度： 1. 一阶格式（原始静水重构） 2. MUSCL + Euler 3. 一阶 + RK2 4. MUSCL + RK2（完全二阶）  作者: Claude",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        }
+      ]
+    },
+    "optimization": {
+      "count": 18,
+      "cases": [
+        {
+          "file_path": "examples/example_14_adaptive_mpc/code/example_14_adaptive_mpc.py",
+          "file_name": "example_14_adaptive_mpc.py",
+          "category": "optimization",
+          "description": "示例14: 自适应MPC控制 演示自适应MPC在线参数辨识和控制",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py",
+          "file_name": "example_14_adaptive_mpc_enhanced.py",
+          "category": "optimization",
+          "description": "示例14: 自适应MPC控制（增强版）  演示自适应MPC在线参数辨识和控制  增强功能： - 自动生成对比图表 - 生成参数收敛动画（GIF） - 生成详细仿真报告 - 嵌入可视化结果",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_07_multi_unit_agc/example_07_multi_unit_agc.py",
+          "file_name": "example_07_multi_unit_agc.py",
+          "category": "optimization",
+          "description": "Example 07: Multi-Unit Hydropower Plant with AGC  This example demonstrates a multi-unit hydropower plant with: 1. Three generating units (100 MW, 120 MW, 150 MW) 2. Primary frequency control (governo",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/advanced_examples/run_idz_benchmark.py",
+          "file_name": "run_idz_benchmark.py",
+          "category": "optimization",
+          "description": "IDZ自适应控制基准测试  使用UniversalModeler和HydrostaticCanalSolver进行基准测试  对比 1. 静态PID控制 2. 自适应PID控制未来扩展 3. Saint-Venant PDE基准",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/advanced_examples/test_mpc_no_observer.py",
+          "file_name": "test_mpc_no_observer.py",
+          "category": "optimization",
+          "description": "测试MPC不使用观测器  import sys import os sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))  import numpy as np from control.idz_model import IDZParameters from control.mpc",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/advanced_examples/test_first_order_mpc.py",
+          "file_name": "test_first_order_mpc.py",
+          "category": "optimization",
+          "description": "测试一阶MPC控制方向  import sys import os sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))  import numpy as np from control.first_order_mpc import FirstOrderMPC, FirstOrde",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/advanced_examples/run_mpc_benchmark.py",
+          "file_name": "run_mpc_benchmark.py",
+          "category": "optimization",
+          "description": "MPC控制器基准测试  对比三种控制策略的性能： 1. 传统PID控制 2. 自适应PI控制（基于在线IDZ辨识） 3. 模型预测控制（MPC，使用CVXPY）  测试场景： - 多个工况点切换（流量20->25->18->23 m^3/s）",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/advanced_examples/benchmark_controllers.py",
+          "file_name": "benchmark_controllers.py",
+          "category": "optimization",
+          "description": "控制器性能基准测试示例  对比不同控制策略的性能： 1. PID控制器 2. MPC控制器 3. 自适应MPC控制器  使用标准测试场景： - 阶跃响应",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/advanced_examples/multi_canal_benchmark_improved.py",
+          "file_name": "multi_canal_benchmark_improved.py",
+          "category": "optimization",
+          "description": "多渠道自适应控制基准测试改进版  修复的问题 1.  调整工况跨度1.8m-2.8m更合理 2.  改进初始IDZ参数估计基于实际工况 3.  优化控制器调谐策略 4.  添加参数收敛性检查 5.  改进K值下限逻辑",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/advanced_examples/test_mpc_direction.py",
+          "file_name": "test_mpc_direction.py",
+          "category": "optimization",
+          "description": "测试MPC控制方向  import sys import os sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))  import numpy as np from control.idz_model import IDZParameters from control.mpc_c",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/advanced_examples/run_first_order_mpc_benchmark.py",
+          "file_name": "run_first_order_mpc_benchmark.py",
+          "category": "optimization",
+          "description": "一阶MPC基准测试（配合LinearizedCanalSimulator）  使用正确的偏差模型进行MPC控制  作者：HydroClaude Team 日期：2025-10-24",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_governor.py",
+          "file_name": "test_governor.py",
+          "category": "optimization",
+          "description": "Test cases for Governor control systems  Tests: - PID controller - Servo system - PID governor - Electro-hydraulic governor - Dead band - Rate limits",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_reservoir.py",
+          "file_name": "test_reservoir.py",
+          "category": "optimization",
+          "description": "水库组件测试  测试水库和梯级系统的核心功能  作者: HydroClaude Team 日期: 2025-10-22",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_culvert.py",
+          "file_name": "test_culvert.py",
+          "category": "optimization",
+          "description": "Test suite for Culvert hydraulic model  Tests cover: - Geometry calculations - Flow calculations (inlet and outlet control) - Different cross-section shapes - Head loss calculations - Derivative calcu",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/diagnostic/test_advanced_features.py",
+          "file_name": "test_advanced_features.py",
+          "category": "optimization",
+          "description": "高级功能综合测试  测试三大高级功能： 1. 并行MPC（多核加速） 2. 参数在线估计（糙率估计） 3. 预测性维护（传感器寿命预测）  作者: Claude 日期: 2025-10-23",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_multi_section_identification.py",
+          "file_name": "test_multi_section_identification.py",
+          "category": "optimization",
+          "description": "多断面辨识模块单元测试  测试覆盖： - SimpleKMeans聚类 - 等效断面法 - 断面聚类法 - 分段模型法 - 数据驱动辨识法",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_agc_coordination.py",
+          "file_name": "test_agc_coordination.py",
+          "category": "optimization",
+          "description": "Test suite for AGC and multi-unit coordination  Tests: 1. Primary frequency control 2. Secondary frequency control (AGC) 3. Multi-unit load allocation 4. Integrated AGC system 5. Frequency disturbance",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_controllers.py",
+          "file_name": "test_controllers.py",
+          "category": "optimization",
+          "description": "Add project root to path",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        }
+      ]
+    },
+    "benchmark": {
+      "count": 6,
+      "cases": [
+        {
+          "file_path": "examples/benchmark_performance.py",
+          "file_name": "benchmark_performance.py",
+          "category": "benchmark",
+          "description": "HydroClaude 性能基准测试  测试不同网格规模的计算性能，为实际应用提供参考  作者: HydroClaude Team 日期: 2025-11-02 版本: v1.0",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/benchmark_riemann_solvers.py",
+          "file_name": "benchmark_riemann_solvers.py",
+          "category": "benchmark",
+          "description": "Riemann求解器性能基准测试  Purpose: 对比HLL, HLLC, Exact三种Riemann求解器的: - 精度 (vs 解析解/高分辨率解) - 性能 (计算时间) - 质量守恒 - 数值耗散",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/performance_benchmark.py",
+          "file_name": "performance_benchmark.py",
+          "category": "benchmark",
+          "description": "HydroClaude Performance Benchmark Suite 性能基准测试套件  Purpose: - Measure solver performance across different configurations - Identify performance bottlenecks - Track optimization progress - Compare with/",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/benchmark_numba_performance.py",
+          "file_name": "benchmark_numba_performance.py",
+          "category": "benchmark",
+          "description": "Numba JIT性能基准测试  对比有/无Numba JIT的性能差异  作者: HydroClaude Team 日期: 2025-10-31 Phase: 6.5 - Numba JIT性能优化",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/benchmark_performance_improvement.py",
+          "file_name": "benchmark_performance_improvement.py",
+          "category": "benchmark",
+          "description": "性能提升基准测试  对比优化前后的性能提升  作者: HydroClaude Team 日期: 2025-10-31 Phase: 6.4 - 性能优化",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/benchmark_numba.py",
+          "file_name": "benchmark_numba.py",
+          "category": "benchmark",
+          "description": "Numba加速效果基准测试  对比纯Python vs Numba JIT的性能提升  作者: HydroClaude Team 日期: 2025-10-29",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        }
+      ]
+    },
+    "other": {
+      "count": 139,
+      "cases": [
+        {
+          "file_path": "examples/example_gate_pump_cascade/run_scenario_05.py",
+          "file_name": "run_scenario_05.py",
+          "category": "other",
+          "description": "工况5: 极端流量测试 import sys import os  # ========== 路径设置 ========== script_path = os.path.abspath(__file__) project_root = os.path.dirname(os.path.dirname(script_path)) sys.path.insert(0, project_root)",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_gate_pump_cascade/test_fix.py",
+          "file_name": "test_fix.py",
+          "category": "other",
+          "description": "import os import sys  # 添加项目根目录 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) sys.path.insert(0, project_root)  # 导入run_scenario函数",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_gate_pump_cascade/run_scenario_02.py",
+          "file_name": "run_scenario_02.py",
+          "category": "other",
+          "description": "工况2: 上游中等流量阶跃 import sys import os  # ========== 路径设置 ========== script_path = os.path.abspath(__file__) project_root = os.path.dirname(os.path.dirname(script_path)) sys.path.insert(0, project_root)",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_gate_pump_cascade/run_scenario_03.py",
+          "file_name": "run_scenario_03.py",
+          "category": "other",
+          "description": "工况3: 下游水位阶跃 import sys import os  # ========== 路径设置 ========== script_path = os.path.abspath(__file__) project_root = os.path.dirname(os.path.dirname(script_path)) sys.path.insert(0, project_root)",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_gate_pump_cascade/run_scenario_01.py",
+          "file_name": "run_scenario_01.py",
+          "category": "other",
+          "description": "工况1: 上游大流量阶跃 import sys import os  # ========== 路径设置 ========== script_path = os.path.abspath(__file__) project_root = os.path.dirname(os.path.dirname(script_path)) sys.path.insert(0, project_root)",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_gate_pump_cascade/test_fixed_solver.py",
+          "file_name": "test_fixed_solver.py",
+          "category": "other",
+          "description": "import sys import os project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) sys.path.insert(0, project_root)  # 导入run_scenario模块 exec(open(os.path.join(os.path.dir",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_17_reservoir_basic/example_17_reservoir_with_anim.py",
+          "file_name": "example_17_reservoir_with_anim.py",
+          "category": "other",
+          "description": "示例17: 水库调度 - 增强版（嵌入式动画）  演示水库的入流、出流和水位动态变化  使用方法: python example_17_reservoir_with_anim.py              # 不生成动画 python example_17_reservoir_with_anim.py --animate    # 生成动画  作者: Claude",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_timeseries_bc.py",
+          "file_name": "example_timeseries_bc.py",
+          "category": "other",
+          "description": "时间序列边界条件示例  演示 TimeSeriesBoundary 类的使用，包括： 1. 基本时间序列边界条件 2. 洪水过程模拟 3. 潮汐边界条件 4. 水库调度过程 5. 不同插值方法对比 6. 外推方法比较",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_irregular_channel.py",
+          "file_name": "example_irregular_channel.py",
+          "category": "other",
+          "description": "天然不规则断面渠道示例  演示 IrregularChannel 类的使用，包括： 1. V型河谷断面 2. U型河谷断面 3. 复式断面（主槽+滩地） 4. 实测断面数据应用 5. 断面对比分析",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_trapezoidal_channel.py",
+          "file_name": "example_trapezoidal_channel.py",
+          "category": "other",
+          "description": "梯形断面渠道示例  演示 TrapezoidalChannel 类的使用，包括： 1. 水力几何计算 2. 正常水深计算 3. 临界水深计算 4. 流态判断  作者: HydroClaude Team",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/calibration_example.py",
+          "file_name": "calibration_example.py",
+          "category": "other",
+          "description": "HydroClaude DO求解器参数校准示例  演示如何使用真实的DissolvedOxygenSolver进行参数校准  作者: HydroClaude Team 创建日期: 2025-11-02",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_13_adaptive_timescale/code/example_13_adaptive_timescale.py",
+          "file_name": "example_13_adaptive_timescale.py",
+          "category": "other",
+          "description": "示例13: 时间尺度自适应仿真 演示不同时间步长下自动选择合适的降阶模型",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_13_adaptive_timescale/example_13_adaptive_timescale_enhanced.py",
+          "file_name": "example_13_adaptive_timescale_enhanced.py",
+          "category": "other",
+          "description": "示例13: 时间尺度自适应仿真（增强版）  演示不同时间步长下自动选择合适的降阶模型  增强功能： - 自动生成对比图表 - 生成模型性能对比表 - 生成详细仿真报告 - 嵌入可视化结果",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_rating_curve_bc.py",
+          "file_name": "example_rating_curve_bc.py",
+          "category": "other",
+          "description": "Rating Curve 边界条件示例  演示 RatingCurveBoundary 类的使用，包括： 1. 基本 Rating Curve 边界条件 2. 双向转换（h -> Q 和 Q -> h） 3. 幂律拟合 4. 水文站应用 5. 不同插值方法 6. 外推方法比较",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_compound_channel.py",
+          "file_name": "example_compound_channel.py",
+          "category": "other",
+          "description": "复合断面渠道示例  演示 CompoundChannel 类的使用，包括： 1. 主槽和滩地的分区计算 2. 漫滩流量分析 3. 分区流速法 vs 等效糙率法对比 4. 防洪设计应用 5. Manning系数敏感性分析",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_09_pipe_rk4/code/example_09_pipe_rk4.py",
+          "file_name": "example_09_pipe_rk4.py",
+          "category": "other",
+          "description": "示例：管道RK4高精度求解 print(\"\\n\" + \"=\"*60) print(\"示例：管道水击RK4高精度求解\") print(\"=\"*60)  pipe = Pipe( \"管道1\", length=3000, diameter=1.0, wave_speed=1000, n_sections=51, method='rk4' )",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_09_pipe_rk4/example_09_pipe_rk4_enhanced.py",
+          "file_name": "example_09_pipe_rk4_enhanced.py",
+          "category": "other",
+          "description": "示例9: 管道水击RK4高精度求解（增强版）  模拟管道阀门突然关闭引起的水击现象  增强功能： - 压力和流量时间历程 - 空间分布可视化 - 压力波传播动画（GIF） - 水击特性分析",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/config_driven/simulate.py",
+          "file_name": "simulate.py",
+          "category": "other",
+          "description": "单配置文件仿真运行器  用于批量仿真工具调用  用法: python simulate.py config.json  作者: HydroClaude Team 日期: 2025-10-28",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_04_moc_boundary/code/example_04_moc_boundary.py",
+          "file_name": "example_04_moc_boundary.py",
+          "category": "other",
+          "description": "-*- coding: utf-8 -*-",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/test_weno3_dambreak.py",
+          "file_name": "test_weno3_dambreak.py",
+          "category": "other",
+          "description": "WENO-3求解器 - Dam Break经典测试  Dam Break是测试WENO的**标准场景**： - 有明显间断（水坝溃决瞬间） - WENO优势可充分体现 - 不同于均匀流，更适合高阶格式  对比： - Phase 1 (一阶FVM)",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_07_fault_test/code/example_07_fault_test.py",
+          "file_name": "example_07_fault_test.py",
+          "category": "other",
+          "description": "-*- coding: utf-8 -*-",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_15_rls_identification/code/example_15_rls_identification.py",
+          "file_name": "example_15_rls_identification.py",
+          "category": "other",
+          "description": "示例15: RLS参数辨识 演示递推最小二乘在线参数辨识",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_15_rls_identification/example_15_rls_identification_enhanced.py",
+          "file_name": "example_15_rls_identification_enhanced.py",
+          "category": "other",
+          "description": "示例15: RLS参数辨识（增强版）  演示递推最小二乘在线参数辨识  增强功能： - 自动生成参数收敛图表 - 生成参数演化动画（GIF） - 生成详细仿真报告 - 嵌入可视化结果",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "examples/example_03_turbine_demo/example_03_turbine_comparison.py",
+          "file_name": "example_03_turbine_comparison.py",
+          "category": "other",
+          "description": "Example 03: Hydraulic Turbine Comparison ========================================  Demonstrates and compares three types of hydraulic turbines: - Francis turbine (medium head: 40-600m) - Kaplan turbin",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "examples/example_03_turbine_demo/example_03_turbine_with_anim.py",
+          "file_name": "example_03_turbine_with_anim.py",
+          "category": "other",
+          "description": "示例3: 水轮机暂态响应 - 增强版（嵌入式动画）  演示Francis水轮机的负荷变化暂态响应  使用方法: python example_03_turbine_with_anim.py              # 不生成动画 python example_03_turbine_with_anim.py --animate    # 生成动画  作者: Claude",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_integration_simple.py",
+          "file_name": "test_integration_simple.py",
+          "category": "other",
+          "description": "简化集成测试 - 验证核心功能  测试策略： 1. 单模块测试（确保每个模块可独立运行） 2. 双模块耦合（测试简单耦合） 3. 完整系统（所有模块集成）  作者: HydroClaude Team 日期: 2025-11-02",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_exact_cfl_01_validation.py",
+          "file_name": "test_exact_cfl_01_validation.py",
+          "category": "other",
+          "description": "验证CFL=0.1时精确求解器的表现 Validation of Exact solver with CFL=0.1  重大发现：CFL=0.1时精确求解器完美工作！",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_hllc_dam_break.py",
+          "file_name": "test_hllc_dam_break.py",
+          "category": "other",
+          "description": "HLLC vs HLL Dam Break Comparison Test  Purpose: Verify HLLC performance on dynamic shock problems (Dam Break)  Expected Results: - HLLC should capture shocks more sharply (less dissipation) - HLLC sho",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_frazil_ice_jam.py",
+          "file_name": "test_frazil_ice_jam.py",
+          "category": "other",
+          "description": "Frazil Ice和Ice Jam模块测试套件  测试内容: 1. Frazil ice成核与生长 2. Frazil ice粒径分布演化 3. 冰塞形成条件判断 4. 冰塞壅水效应  对标: MIKE ICE, CRISSP, RIVICE",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_ice_water_quality.py",
+          "file_name": "test_ice_water_quality.py",
+          "category": "other",
+          "description": "冰-水质模拟模块测试套件  测试内容: 1. DO模块: Streeter-Phelps解析解验证 2. 冰盖模块: Stefan方程验证 3. 水温模块: 热平衡验证 4. 集成测试: 水动力+冰+水质耦合  对标: QUAL2K, WASP, MIKE ICE验证案例",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_cross_section_integration_simple.py",
+          "file_name": "test_cross_section_integration_simple.py",
+          "category": "other",
+          "description": "测试断面类集成到求解器（简化版，无需pytest）  验证： 1. 向后兼容性 - 不传cross_section参数时行为不变 2. 矩形断面 - 显式传入RectangularSection 3. 梯形断面 - 验证摩阻、质量、Froude数计算  Phase 2.3 - Task 2.3.2验证",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_exact_solver_integration.py",
+          "file_name": "test_exact_solver_integration.py",
+          "category": "other",
+          "description": "测试精确Riemann求解器集成到GodunvFVMSolver  Purpose: 验证Phase 9.3精确求解器能正确工作",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_exact_boundary_strategies.py",
+          "file_name": "test_exact_boundary_strategies.py",
+          "category": "other",
+          "description": "测试不同边界条件策略对精确求解器的影响 Test different boundary condition strategies for Exact Riemann solver  目标： 1. 对比不同relaxation_factor值 2. 评估质量守恒和数值稳定性 3. 找到最优边界条件策略",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_valves.py",
+          "file_name": "test_valves.py",
+          "category": "other",
+          "description": "测试阀门水力计算  测试内容： - 蝶阀水力损失和开度控制 - 球阀开关操作 - 减压阀压力控制 - 各种边界情况  Author: HydroClaude Development Team",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_bridge.py",
+          "file_name": "test_bridge.py",
+          "category": "other",
+          "description": "Test suite for Bridge hydraulic model  Tests cover: - Pier geometry calculations - Bridge geometry calculations - Backwater calculations (Yarnell equation) - Pressure flow calculations - Scour depth e",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/numerical_methods/test_compound_natural_sections.py",
+          "file_name": "test_compound_natural_sections.py",
+          "category": "other",
+          "description": "复式断面和自然断面测试  验证求解器对以下断面类型的支持： 1. 复式断面 (CompoundSection) - 主槽+滩地 2. 自然河道断面 (NaturalSection) - 基于实测点  测试重点： - 几何参数计算准确性 - 摩阻计算（分区糙率）",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/numerical_methods/test_froude_number.py",
+          "file_name": "test_froude_number.py",
+          "category": "other",
+          "description": "Froude数计算和临界流检测测试  验证: 1. Froude数计算准确性 2. 临界流检测功能 3. 流态分类功能  作者: HydroClaude Team 日期: 2025-10-29",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/numerical_methods/test_mass_conservation.py",
+          "file_name": "test_mass_conservation.py",
+          "category": "other",
+          "description": "质量守恒验证测试（Mass Conservation Test）  验证数值格式在各种工况下的质量守恒性能。  测试场景： 1. MacDonald Test 1 - 壅水曲线（长时间积分） 2. MacDonald Test 3 - 溃坝问题（大梯度） 3. Dam Break - 干湿界面（wetting/drying）",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/numerical_methods/test_critical_flow_treatment.py",
+          "file_name": "test_critical_flow_treatment.py",
+          "category": "other",
+          "description": "测试临界流特殊处理  Critical Flow Treatment Verification  验证: 1. 临界流特殊通量计算不会崩溃 2. Entropy fix与临界流处理可以共存 3. 临界流处理可以正确启用/禁用",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_do_simple.py",
+          "file_name": "test_do_simple.py",
+          "category": "other",
+          "description": "DO模型简化测试 - 调试用  作者: HydroClaude Team 日期: 2025-11-02",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_composite_roughness.py",
+          "file_name": "test_composite_roughness.py",
+          "category": "other",
+          "description": "复合糙率功能测试  测试复式断面的分区糙率计算，确保： 1. 不同计算方法结果合理 2. 与手算结果对比 3. 流量分配正确（质量守恒） 4. 等效糙率系数合理  作者：HydroClaude Team",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_lake_at_rest_wb.py",
+          "file_name": "test_lake_at_rest_wb.py",
+          "category": "other",
+          "description": "Lake at Rest Test with Well-Balanced Format ============================================  测试Well-Balanced格式是否能精确保持静水平衡(C-property)  测试配置: - P0.1: 平底 (无底高程变化) - P0.2: 缓坡 (2m凸起[U+FF0C]线性变化) - P0.3: 陡坡 (",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_components.py",
+          "file_name": "test_components.py",
+          "category": "other",
+          "description": "Level should change slightly",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_cross_section_integration.py",
+          "file_name": "test_cross_section_integration.py",
+          "category": "other",
+          "description": "测试断面类集成到求解器  验证： 1. 向后兼容性 - 不传cross_section参数时行为不变 2. 矩形断面 - 显式传入RectangularSection 3. 梯形断面 - 验证摩阻、质量、Froude数计算  Phase 2.3 - Task 2.3.2验证",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_inflatable_dam.py",
+          "file_name": "test_inflatable_dam.py",
+          "category": "other",
+          "description": "充气坝单元测试  测试内容： 1. 基本参数 2. 充气/放气操作 3. 流量计算 4. 高度控制 5. 时间计算 6. 应急场景",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_well_balanced.py",
+          "file_name": "test_well_balanced.py",
+          "category": "other",
+          "description": "Well-Balanced格式测试  测试hydrostatic reconstruction是否能保持water-at-rest 这是well-balanced格式的关键性质  测试场景: 1. 水静止在变化的底床上 (Q=0, /x=0) 2. 理论应该永远保持静止 (Q=0, h不变) 3. 数值如果不是well-balanced会产生spurious flow",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_exact_cfl_sensitivity.py",
+          "file_name": "test_exact_cfl_sensitivity.py",
+          "category": "other",
+          "description": "测试不同CFL数对精确求解器的影响 Test CFL number sensitivity for Exact Riemann solver",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_moc_solver.py",
+          "file_name": "test_moc_solver.py",
+          "category": "other",
+          "description": "Test that MOC solver can handle basic characteristic equations",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/verification/test_rp2_positivity_preserving.py",
+          "file_name": "test_rp2_positivity_preserving.py",
+          "category": "other",
+          "description": "RP2测试（正定性保持改进版）  测试目标： - 原始WENO3: RP2误差 90.55% - 正定性保持WENO3: RP2误差 <30% (目标)  RP2配置： - 对向流双激波 - h_L=5.0, u_L=5.0 (向右)",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/verification/test_well_balanced_lake_at_rest.py",
+          "file_name": "test_well_balanced_lake_at_rest.py",
+          "category": "other",
+          "description": "Well-Balanced验证：Lake at Rest测试  目标：验证求解器能否精确保持静水解（机器精度）  Lake at Rest测试是Well-Balanced格式的标准验证： - 初始条件：静水（u=0，水面水平） - 底床：任意地形（可以有坡度） - 预期：静水状态应该精确保持（到机器精度）",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/verification/test_dam_break_swashes.py",
+          "file_name": "test_dam_break_swashes.py",
+          "category": "other",
+          "description": "SWASHES Dam Break Benchmark Tests  实现SWASHES benchmark中的Dam Break标准测试： - DB1: 平底干床溃坝（Ritter解析解） - DB2: Stoker解（下游有水） - DB3: 坡度溃坝  参考文献: - Delestre et al. (2013) \"SWASHES: A compilation of shallow wate",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/verification/test_wetting_drying.py",
+          "file_name": "test_wetting_drying.py",
+          "category": "other",
+          "description": "干湿界面处理验证测试  目标：验证求解器在干/湿界面处理的稳定性和准确性  干湿界面是一维水力学的经典挑战： - 干河床启动（初始h=0） - 溃坝问题（激波+干湿界面） - 潮汐涨落（干湿交替） - 负水深避免（正定性保持）",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/verification/test_rp567_wet_dry.py",
+          "file_name": "test_rp567_wet_dry.py",
+          "category": "other",
+          "description": "RP5-RP7干床问题测试套件（Phase 8.2）  测试目标： - 原始WENO3: RP5-RP7误差 >400% - Phase 8.1 PP-WENO3: RP5-RP7误差 ~250-300% - Phase 8.2湿干增强: RP5-RP7误差 <50% (目标)  测试配置： - RP5: 左侧干床 (h_L=0, u_L=0, h_R=5, u_R=0)",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/verification/test_toro_riemann_problems.py",
+          "file_name": "test_toro_riemann_problems.py",
+          "category": "other",
+          "description": "Toro标准Riemann问题测试套件  实现Toro (2001)书中的10个标准Riemann问题，用于验证HydroClaude的激波捕捉能力。  参考文献: - Toro, E.F. (2001). Shock-Capturing Methods for Free-Surface Shallow Flows. Wiley, Chapter 5, Section 5.3 (Test Prob",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_boundary/test_timeseries_bc.py",
+          "file_name": "test_timeseries_bc.py",
+          "category": "other",
+          "description": "时间序列边界条件单元测试  测试 TimeSeriesBoundary 类的各项功能，包括： 1. 基本初始化和参数验证 2. 线性插值 3. 三次样条插值 4. 前向/后向保持 5. 外推方法 6. 文件读写",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_boundary/test_rating_curve_bc.py",
+          "file_name": "test_rating_curve_bc.py",
+          "category": "other",
+          "description": "Rating Curve 边界条件单元测试  测试 RatingCurveBoundary 类的各项功能，包括： 1. 基本初始化和参数验证 2. h -> Q 转换 3. Q -> h 反向转换 4. 线性插值 5. 样条插值 6. 幂律拟合",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_static_water.py",
+          "file_name": "test_static_water.py",
+          "category": "other",
+          "description": "静水测试  检查完全静止的水是否保持静止（Lake at Rest）",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_ghost_cells_diagnosis.py",
+          "file_name": "test_ghost_cells_diagnosis.py",
+          "category": "other",
+          "description": "Ghost Cells和边界通量诊断  检查ghost cells设置和边界通量计算是否正确",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_flux_conservation.py",
+          "file_name": "test_flux_conservation.py",
+          "category": "other",
+          "description": "通量守恒性诊断测试  根据质量平衡验证的发现：有5.5%的质量在内部消失 这个测试将详细诊断通量计算，找出那消失的质量  核心验证： 1. 对于守恒律：∂U/∂t = -1/dx*(F_{i+1/2} - F_{i-1/2}) + S 2. 对于质量守恒：∂h/∂t = -1/dx*(F_h,i+1/2 - F_h,i-1/2) 3. 源项S只应出现在动量方程，不应出现在连续性方程！",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_weno3_long_run.py",
+          "file_name": "test_weno3_long_run.py",
+          "category": "other",
+          "description": "WENO3长时间运行诊断 - 找出dt何时变成0  日期: 2025-10-29",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald_test2_detailed_mass.py",
+          "file_name": "test_macdonald_test2_detailed_mass.py",
+          "category": "other",
+          "description": "MacDonald Test 2 详细质量平衡分析  目标：判断33.6%的质量\"误差\"是物理正确还是数值bug  分析方法： 1. 记录左右边界的通量演化 2. 计算理论质量变化 = 初始质量 + 累积流入 - 累积流出 3. 计算实际质量变化 = 最终质量 - 初始质量 4. 对比差异",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald4_hllc.py",
+          "file_name": "test_macdonald4_hllc.py",
+          "category": "other",
+          "description": "MacDonald Test 4 - HLLC低耗散求解器测试  目标: 使用HLLC替代HLL，降低数值耗散，改善质量守恒 预期: 质量误差从27.89%降低到15%以下  作者: HydroClaude Team 日期: 2025-10-31",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/verify_all_tests.py",
+          "file_name": "verify_all_tests.py",
+          "category": "other",
+          "description": "全面测试验证脚本  在完成MacDonald Test 4优化尝试后，验证其他测试(1-3, 5)无退化  目标: - 确认Tests 1, 2, 3, 5 全部通过 - 验证80%通过率 (4/5) - 确保近期代码更改无负面影响",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_steady_flow_over_bump.py",
+          "file_name": "test_steady_flow_over_bump.py",
+          "category": "other",
+          "description": "测试静水重构法：凸起上的稳态流  经典CFD测试案例：渠道中有凸起（台阶），亚临界稳态流动 验证： 1. 质量守恒（流量恒定） 2. 稳态精度 3. 与理论解对比",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald4_final_weno3.py",
+          "file_name": "test_macdonald4_final_weno3.py",
+          "category": "other",
+          "description": "MacDonald Test 4 - 最终验证（WENO3，正确参数）  目标: 验证WENO3在正确MacDonald Test 4参数下达到100%通过率 期望: 质量误差 < 15%  作者: HydroClaude Team 日期: 2025-10-31",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_dt_max_feature.py",
+          "file_name": "test_dt_max_feature.py",
+          "category": "other",
+          "description": "测试dt_max功能  验证GodunvFVMSolver的dt_max参数是否正常工作",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_godunov_macdonald.py",
+          "file_name": "test_godunov_macdonald.py",
+          "category": "other",
+          "description": "Godunov-FVM - MacDonald Test Case 1验证  MacDonald Test Case 1: - 标准激波管问题 - 上游: h=10m, u=0m/s - 下游: h=5m, u=0m/s - 测试激波和稀疏波捕捉能力  参考: MacDonald et al. (1997) \"A new approach to Godunov's method\"",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/quick_test_n002.py",
+          "file_name": "quick_test_n002.py",
+          "category": "other",
+          "description": "快速测试 n=0.02 工况  import sys import os sys.path.insert(0, os.path.dirname(__file__))  import numpy as np try: from solvers.godunov_fvm_weno3 import GodunvFVMWENO3 except ImportError as e:",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_grid_convergence.py",
+          "file_name": "test_grid_convergence.py",
+          "category": "other",
+          "description": "网格收敛性测试 - MacDonald问题  经过四次失败尝试后的基础验证： 1. Interface方法：61% -> 114% 2. Strang Splitting：61% -> 65% 3. 空间精度order=2：61% -> 66% 4. Well-Balanced：61% -> 120% （最糟糕！）  关键洞察：",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_cell_by_cell_mass.py",
+          "file_name": "test_cell_by_cell_mass.py",
+          "category": "other",
+          "description": "逐单元质量分析  找出哪个单元在泄漏质量",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_h_boundary_fix_simple.py",
+          "file_name": "test_h_boundary_fix_simple.py",
+          "category": "other",
+          "description": "简单测试 - 验证h边界条件修复",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_rk_dambreak.py",
+          "file_name": "test_rk_dambreak.py",
+          "category": "other",
+          "description": "RK时间积分性能测试 - Dam Break  测试Euler, RK2, RK3对Dam Break精度的改进",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_mass_balance_verification.py",
+          "file_name": "test_mass_balance_verification.py",
+          "category": "other",
+          "description": "质量守恒计算验证测试  经过五次失败后的关键检查：是否质量守恒计算本身有bug？  测试方法： 1. 记录每个时间步的边界通量 2. 计算理论质量：mass(t) = mass(0) + ∫(Q_in - Q_out)dt 3. 对比with实际质量：mass_actual = Σ(h * dx * B) 4. 如果两者一致 -> get_mass_conservation_error()有bug",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_weno_epsilon_sensitivity.py",
+          "file_name": "test_weno_epsilon_sensitivity.py",
+          "category": "other",
+          "description": "WENO epsilon敏感性测试 - 增加数值耗散  较大的epsilon会让WENO在光滑区域更接近线性格式（更耗散）， 有助于抑制非物理振荡  日期: 2025-10-29",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_long_time_convergence.py",
+          "file_name": "test_long_time_convergence.py",
+          "category": "other",
+          "description": "测试长时间收敛 - 检查是否只是需要更长时间达到稳态",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_spatial_order.py",
+          "file_name": "test_spatial_order.py",
+          "category": "other",
+          "description": "空间精度对质量守恒的影响测试  对比order=1 (一阶) vs order=2 (二阶MUSCL)对MacDonald场景质量守恒的影响  背景：经过两次源项处理方法失败后的反思 - Interface方法：61% -> 114% - Strang Splitting：61% -> 65%  重要发现：源项处理方法可能不是主要问题！",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_fvm_validation.py",
+          "file_name": "test_fvm_validation.py",
+          "category": "other",
+          "description": "FVM求解器验证测试  测试FVM求解器的关键性质： 1. 静水平衡（Well-balanced） 2. Dam break（守恒性和激波捕捉） 3. 精度收敛性  Author: Claude Date: 2025-10-23",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_mass_flux_analysis.py",
+          "file_name": "test_mass_flux_analysis.py",
+          "category": "other",
+          "description": "质量通量分析  目的：追踪边界处的质量流入流出，找出质量泄漏的位置  策略： 1. 手动计算边界通量 2. 与求解器内部通量对比 3. 检查是否有不一致",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald5_dt_limit.py",
+          "file_name": "test_macdonald5_dt_limit.py",
+          "category": "other",
+          "description": "MacDonald Test 5 时间步长限制测试  测试手动限制dt_max是否能解决不稳定问题",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_froude_analysis.py",
+          "file_name": "test_froude_analysis.py",
+          "category": "other",
+          "description": "Froude数分析  检查急缓流转换区域",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_interface_flux_detail.py",
+          "file_name": "test_interface_flux_detail.py",
+          "category": "other",
+          "description": "界面通量详细诊断  根据质量平衡验证的发现：3.675%的质量在消失 本测试将打印所有界面通量，检查守恒性  核心验证： 对于守恒律：dm_i/dt = (F_{i-1/2} - F_{i+1/2}) * B 全域求和：d(Σm_i)/dt = (F_{-1/2} - F_{n+1/2}) * B = (F_left - F_right) * B",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_maccormack_dam_break.py",
+          "file_name": "test_maccormack_dam_break.py",
+          "category": "other",
+          "description": "MacCormack v2.0 - Dam Break验证  对比Ritter解析解，评估非恒定流精度",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald4_weno5.py",
+          "file_name": "test_macdonald4_weno5.py",
+          "category": "other",
+          "description": "MacDonald Test 4 - WENO5高阶格式测试  目标: 使用WENO5（5阶精度）替代WENO3（3阶），达到100%通过率 策略: 5阶空间精度 + 极低数值耗散 预期: 质量误差从27.89%降低到15%以下  作者: HydroClaude Team 日期: 2025-10-31",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_simple_supercritical.py",
+          "file_name": "test_simple_supercritical.py",
+          "category": "other",
+          "description": "简单急流测试  纯急流，避免水跃",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_muscl_simple.py",
+          "file_name": "test_muscl_simple.py",
+          "category": "other",
+          "description": "简单测试MUSCL重构",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_godunov_dam_break.py",
+          "file_name": "test_godunov_dam_break.py",
+          "category": "other",
+          "description": "Godunov-FVM求解器 - Dam Break完整验证  import numpy as np import matplotlib matplotlib.use('Agg') import matplotlib.pyplot as plt import sys sys.path.insert(0, '/workspace')  try:",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald4_quick_weno3.py",
+          "file_name": "test_macdonald4_quick_weno3.py",
+          "category": "other",
+          "description": "MacDonald Test 4 快速验证 - WENO3 运行30秒快速验证WENO3是否改善Test 4质量守恒  日期: 2025-10-29",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_supercritical_bc.py",
+          "file_name": "test_supercritical_bc.py",
+          "category": "other",
+          "description": "测试supercritical边界条件是否正确工作  目的：验证supercritical边界能否正确维持指定的h和Q值",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_cfl_sensitivity.py",
+          "file_name": "test_cfl_sensitivity.py",
+          "category": "other",
+          "description": "CFL敏感性测试 - 找出无摩阻Test 4的稳定CFL数  日期: 2025-10-29",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_boundary_natural_evolution.py",
+          "file_name": "test_boundary_natural_evolution.py",
+          "category": "other",
+          "description": "边界自然演化测试  测试不强制边界单元，只通过ghost cell控制的效果",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_preissmann_debug.py",
+          "file_name": "test_preissmann_debug.py",
+          "category": "other",
+          "description": "调试Preissmann求解器的Jacobian矩阵问题",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_single_step_mass.py",
+          "file_name": "test_single_step_mass.py",
+          "category": "other",
+          "description": "单步质量详细诊断  检查一个时间步内质量是如何变化的",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_rk2_flux.py",
+          "file_name": "test_rk2_flux.py",
+          "category": "other",
+          "description": "TVD-RK2两个阶段的通量检查  检查RK2的两个阶段是否使用了一致的通量",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_maccormack_v3_dam_break.py",
+          "file_name": "test_maccormack_v3_dam_break.py",
+          "category": "other",
+          "description": "MacCormack v3.0 Dam Break测试（带HLL+TVD）  import numpy as np import matplotlib matplotlib.use('Agg') import matplotlib.pyplot as plt import sys sys.path.insert(0, '/workspace')  try:",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald5_diagnosis.py",
+          "file_name": "test_macdonald5_diagnosis.py",
+          "category": "other",
+          "description": "MacDonald Test 5 诊断测试  目的：诊断为什么Test 5出现NaN 策略：从最简单配置开始，逐步增加复杂度",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_well_balanced.py",
+          "file_name": "test_well_balanced.py",
+          "category": "other",
+          "description": "测试静水重构的良平衡性质  良平衡性定义：对于湖面静止状态（η=const, u=0）， 数值格式应满足：∂F/∂x - S = 0（精确平衡，机器精度）",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_muscl_with_correct_cfl.py",
+          "file_name": "test_muscl_with_correct_cfl.py",
+          "category": "other",
+          "description": "MUSCL + 正确CFL测试  重新测试MUSCL，使用正确的CFL条件",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_boundary_evolution.py",
+          "file_name": "test_boundary_evolution.py",
+          "category": "other",
+          "description": "边界单元演化测试  检查边界单元的值是否会随时间演化",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_small_friction.py",
+          "file_name": "test_small_friction.py",
+          "category": "other",
+          "description": "小摩阻系数测试 - 用极小摩阻替代完全无摩阻  商业软件通常避免n=0的工况，因为： 1. 物理上不现实（所有渠道都有摩阻） 2. 数值上难以稳定（缺少耗散）  日期: 2025-10-29",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_ghost_cell_consistency.py",
+          "file_name": "test_ghost_cell_consistency.py",
+          "category": "other",
+          "description": "Ghost Cell 一致性测试  检查ghost cell的设置是否与Riemann求解器的通量计算一致",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_boundary_cell_evolution.py",
+          "file_name": "test_boundary_cell_evolution.py",
+          "category": "other",
+          "description": "边界单元演化监控  检查边界单元是否被强制覆盖",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_q_boundary.py",
+          "file_name": "test_q_boundary.py",
+          "category": "other",
+          "description": "Q边界诊断测试  专门测试Q（流量）边界条件的质量守恒和通量平衡",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald_test2_quick_verify.py",
+          "file_name": "test_macdonald_test2_quick_verify.py",
+          "category": "other",
+          "description": "快速验证MacDonald Test 2的修改  使用较小的网格和较短的时间来快速验证",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald5_dt_trace.py",
+          "file_name": "test_macdonald5_dt_trace.py",
+          "category": "other",
+          "description": "MacDonald Test 5 时间步长演化追踪  目的：跟踪自适应dt的演化，找出失败原因",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald4_ultra_fine_grid.py",
+          "file_name": "test_macdonald4_ultra_fine_grid.py",
+          "category": "other",
+          "description": "MacDonald Test 4 - 超细网格测试（直接使用求解器）  策略: 使用500网格单元 (dx=2m) vs 基线100网格 (dx=10m) 目标: 质量误差 < 15%，达到100%通过率  作者: HydroClaude Team 日期: 2025-10-30",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald5_accuracy.py",
+          "file_name": "test_macdonald5_accuracy.py",
+          "category": "other",
+          "description": "MacDonald Test 5 精度改进诊断  目的：探索提升Test 5精度的方法 当前状态：平均偏差17.6%，目标：<10%  策略： 1. 增加模拟时间（更充分收敛） 2. 细化网格 3. 使用二阶格式",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald_test2_mass.py",
+          "file_name": "test_macdonald_test2_mass.py",
+          "category": "other",
+          "description": "MacDonald Test 2质量守恒问题诊断  Test 2在修复后质量误差33.6%，需要诊断原因",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_flux_values.py",
+          "file_name": "test_flux_values.py",
+          "category": "other",
+          "description": "通量值诊断  打印每个界面的通量值，找出质量泄漏的位置",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_direct_mass_conservation.py",
+          "file_name": "test_direct_mass_conservation.py",
+          "category": "other",
+          "description": "直接质量守恒测试  不依赖通量累积，直接比较初始和最终质量",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald4_entropy_fix.py",
+          "file_name": "test_macdonald4_entropy_fix.py",
+          "category": "other",
+          "description": "MacDonald Test 4 with Entropy Fix  测试entropy_fix对无摩阻水跃的改善效果  作者: HydroClaude Team 日期: 2025-10-31 Phase: 6.3 - 混合流态求解器",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald4_diagnosis.py",
+          "file_name": "test_macdonald4_diagnosis.py",
+          "category": "other",
+          "description": "MacDonald Test 4 (水跃) 诊断测试  目的： 1. 实际运行Test 4配置，观察失败模式 2. 验证supercritical BC是否被正确应用 3. 分析为什么上游急流无法维持 4. 探索可能的解决方案",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_matrix_structure.py",
+          "file_name": "test_matrix_structure.py",
+          "category": "other",
+          "description": "检查Preis  smann v2的矩阵结构",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_hllc_comparison.py",
+          "file_name": "test_hllc_comparison.py",
+          "category": "other",
+          "description": "HLL vs HLLC性能对比测试  测试不同参数配置下HLL和HLLC的性能差异",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_boundary_enforcement.py",
+          "file_name": "test_boundary_enforcement.py",
+          "category": "other",
+          "description": "边界条件强制机制诊断测试  目的：检查边界条件是否在时间推进过程中被正确保持  测试策略： 1. 简单的均匀流（Q边界） 2. 简单的静水（h边界） 3. 检查每个时间步后边界值是否保持",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald5_stability.py",
+          "file_name": "test_macdonald5_stability.py",
+          "category": "other",
+          "description": "MacDonald Test 5 稳定性诊断  目的：找出NaN出现的临界时间点 策略：逐步增加模拟时间，定位失败点",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_critical_bc_fix.py",
+          "file_name": "test_critical_bc_fix.py",
+          "category": "other",
+          "description": "测试使用'critical'边界条件类型",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_macdonald4_weno3.py",
+          "file_name": "test_macdonald4_weno3.py",
+          "category": "other",
+          "description": "MacDonald Test 4 - WENO3求解器测试  目标: 用WENO3 shock-capturing方法修复Test 4（水跃问题）  测试内容: 1. WENO3 + 线性初始条件 2. WENO3 + 预形成水跃 3. 质量守恒验证 4. 超临界区域维持验证",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_strang_splitting.py",
+          "file_name": "test_strang_splitting.py",
+          "category": "other",
+          "description": "Strang Splitting源项处理方法测试  对比coupled RK2 vs Strang Splitting对MacDonald场景质量守恒的影响  目标：验证Strang Splitting能否改善质量守恒（60% -> 30-40%）",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_simple_bc_check.py",
+          "file_name": "test_simple_bc_check.py",
+          "category": "other",
+          "description": "简单边界条件检查  测试左Q右h的通量设置",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_short_mass_conservation.py",
+          "file_name": "test_short_mass_conservation.py",
+          "category": "other",
+          "description": "短期质量守恒测试  快速验证Q边界强制是否有效",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_muscl_dambreak.py",
+          "file_name": "test_muscl_dambreak.py",
+          "category": "other",
+          "description": "MUSCL性能测试 - Dam Break  测试MUSCL二阶重构对Dam Break精度的改进",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_jump_initial_condition.py",
+          "file_name": "test_jump_initial_condition.py",
+          "category": "other",
+          "description": "水跃初始条件测试 - 用包含水跃的初场替代线性初场  MacDonald Test 4的真正挑战不是\"捕捉\"水跃，而是\"维持\"水跃。 让我们从一个已经包含水跃的初始条件开始。  水跃理论（动量方程）： h2/h1 = 0.5 * (√(1 + 8*Fr1^2) - 1) 其中 Fr1 = Q/(B*h1*√(g*h1)) 是上游Froude数",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_well_balanced_solution.py",
+          "file_name": "test_well_balanced_solution.py",
+          "category": "other",
+          "description": "Well-Balanced格式对质量守恒的影响测试  经过三次失败尝试后的关键发现： 1. Interface方法：61% -> 114% 2. Strang Splitting：61% -> 65% 3. 空间精度order=2：61% -> 66%  所有测试都出现了同一个警告： ️  检测到变化的底高程，但未启用Well-Balanced格式！",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_well_balanced_comparison.py",
+          "file_name": "test_well_balanced_comparison.py",
+          "category": "other",
+          "description": "Well-Balanced模式对比测试  对比well_balanced=True和False对MacDonald场景质量守恒的影响",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/diagnostic/test_flat_bed.py",
+          "file_name": "test_flat_bed.py",
+          "category": "other",
+          "description": "测试平坦底床的良平衡性  import numpy as np import sys sys.path.append('.')  try: from solvers.hydrostatic_reconstruction_v2 import WellBalancedSolver except ImportError as e: print(f\"Import error: {e}\")",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_nutrients.py",
+          "file_name": "test_nutrients.py",
+          "category": "other",
+          "description": "营养盐循环模块测试套件  测试内容: 1. 氮循环: 硝化-反硝化 2. 磷循环: 矿化-释放 3. 营养盐输运 4. DO-营养盐耦合  对标: WASP营养盐模块, CE-QUAL-W2",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/legacy_diagnostic/test_digital_twin.py",
+          "file_name": "test_digital_twin.py",
+          "category": "other",
+          "description": "数字孪生测试  测试数字孪生功能： 1. 状态估计（EKF） 2. 数据同化（传感器融合） 3. 不确定性量化 4. 预测功能  作者: Claude",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_hllc_lake_at_rest.py",
+          "file_name": "test_hllc_lake_at_rest.py",
+          "category": "other",
+          "description": "测试HLLC求解器在Lake at Rest问题上的表现  Phase 9.2: 验证新的HLLC实现能否显著降低数值耗散 达到比HLL更好的精度  作者: HydroClaude Team 日期: 2025-10-31",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_z_interface_strategies.py",
+          "file_name": "test_z_interface_strategies.py",
+          "category": "other",
+          "description": "Test Different z_interface Selection Strategies for Well-Balanced Reconstruction  研究目标： 找到最优的z_interface选择方法，使Lake at Rest达到机器精度  测试策略： 1. MAX (current):     z* = max(z_b_L, z_b_R)  - 最保守 2. AVERAGE: ",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_multi_objective.py",
+          "file_name": "test_multi_objective.py",
+          "category": "other",
+          "description": "多目标优化算法单元测试  测试NSGA-II和NSGA-III算法的核心功能",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "hard"
+        },
+        {
+          "file_path": "tests/test_phytoplankton.py",
+          "file_name": "test_phytoplankton.py",
+          "category": "other",
+          "description": "藻类生长模块测试套件  测试内容: 1. 光限制 (Steele公式 + 冰盖遮蔽) 2. 营养盐限制 (氮磷限制) 3. 藻类生长周期 (生长-死亡-沉降) 4. DO-藻类耦合 (光合作用产氧)  对标: WASP Eutrophication, CE-QUAL-W2 Algae",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_exact_lake_at_rest.py",
+          "file_name": "test_exact_lake_at_rest.py",
+          "category": "other",
+          "description": "精确Riemann求解器Lake at Rest测试  Purpose: 验证精确求解器在Well-Balanced格式下是否达到机器精度  Expected: 精确求解器 + Well-Balanced应该达到机器精度 (~1e-12m) HLL + Well-Balanced: ~0.8m (Phase 9.1结果) HLLC + Well-Balanced: ~2m (Phase 9.2结果",
+          "has_solver": true,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_cross_section.py",
+          "file_name": "test_cross_section.py",
+          "category": "other",
+          "description": "河道断面模块单元测试  测试覆盖： - 矩形断面 - 梯形断面 - 复式断面 - 自然河道断面 - IDZ参数计算",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_geometry/test_trapezoidal_channel.py",
+          "file_name": "test_trapezoidal_channel.py",
+          "category": "other",
+          "description": "梯形断面渠道单元测试  测试 TrapezoidalChannel 类的所有功能： - 水力几何计算 - 正常水深计算 - 临界水深计算 - Froude数计算 - 边界情况处理",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_geometry/test_irregular_channel.py",
+          "file_name": "test_irregular_channel.py",
+          "category": "other",
+          "description": "天然不规则断面渠道单元测试  测试 IrregularChannel 类的所有功能： - 水力几何计算 - 正常水深计算 - 临界水深计算 - 边界情况处理 - 特殊断面形状",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_turbine.py",
+          "file_name": "test_turbine.py",
+          "category": "other",
+          "description": "Test cases for Hydraulic Turbines  Tests the three turbine types: - Francis (medium head) - Kaplan (low head) - Pelton (high head)  Author: Claude Date: 2025-10-22",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_boundary_conditions.py",
+          "file_name": "test_boundary_conditions.py",
+          "category": "other",
+          "description": "特征线边界条件单元测试  测试solvers/boundary_conditions.py中的所有边界条件功能  作者: HydroClaude Team 日期: 2025-10-29",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/e2e/quick_test.py",
+          "file_name": "quick_test.py",
+          "category": "other",
+          "description": "快速测试脚本 - 测试单个案例  用于快速验证测试框架是否正常工作  Author: HydroClaude Team Date: 2025-11-15",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        },
+        {
+          "file_path": "tests/test_coupled_solver.py",
+          "file_name": "test_coupled_solver.py",
+          "category": "other",
+          "description": "完整耦合求解器测试套件  测试内容: 1. 模块集成测试 2. 耦合关系验证 (DO-藻类, 营养盐-藻类, 冰盖-光照) 3. 质量守恒 4. 性能测试  对标: MIKE ICE + WASP +  CE-QUAL-W2 完整耦合",
+          "has_solver": false,
+          "has_structures": false,
+          "complexity": "easy"
+        }
+      ]
+    }
+  },
+  "summary": {
+    "basic_flow": 84,
+    "structures": 64,
+    "network": 30,
+    "unsteady": 7,
+    "optimization": 18,
+    "benchmark": 6,
+    "other": 139
+  }
+}

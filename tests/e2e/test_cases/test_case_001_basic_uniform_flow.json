@@ -1,0 +1,33 @@
+{
+  "version": "2.0.0",
+  "name": "basic_uniform_flow",
+  "description": "基础均匀流 - 矩形明渠稳态流动",
+  "type": "steady_flow",
+  "canal": {
+    "length": 10000.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "roughness": 0.025,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": ["json", "csv"]
+  },
+  "expected_results": {
+    "flow_rate_error": 0.01,
+    "convergence": true,
+    "max_iterations": 10
+  }
+}

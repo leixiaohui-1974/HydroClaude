@@ -1,0 +1,42 @@
+{
+  "version": "2.0.0",
+  "name": "sluice_gate_flow",
+  "description": "闸门流动 - 单个平板闸门控制流动",
+  "type": "sluice_gate",
+  "canal": {
+    "length": 10000.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "roughness": 0.025,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [
+    {
+      "type": "sluice_gate",
+      "position": 5000.0,
+      "width": 10.0,
+      "opening": 2.0,
+      "discharge_coefficient": 0.6
+    }
+  ],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": ["json", "csv"]
+  },
+  "expected_results": {
+    "flow_rate_error": 1.0,
+    "convergence": true,
+    "max_iterations": 50,
+    "upstream_depth_increase": true
+  }
+}

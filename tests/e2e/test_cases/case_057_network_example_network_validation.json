@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "example_network_validation",
+  "description": "网络验证工具使用示例  演示如何使用验证和可视化工具： 1. 基本网络验证 2. 检测和修复常见问题 3. 网络健康评分 4. 高程剖面可视化 5. 流量分布可视化",
+  "type": "steady_flow",
+  "canal": {
+    "length": 100.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "roughness": 0.025,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/example_network_validation.py",
+    "category": "network",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.509863"
+  }
+}

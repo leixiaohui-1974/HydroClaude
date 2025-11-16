@@ -1,0 +1,19 @@
+{
+  "name": "hydroclaud-e2e-tests",
+  "version": "1.0.0",
+  "description": "HydroClaude端到端测试套件",
+  "main": "mcp_full_test.js",
+  "scripts": {
+    "test": "node mcp_full_test.js",
+    "test:5": "node mcp_full_test_limited.js 5",
+    "test:20": "node mcp_full_test_limited.js 20",
+    "test:all": "node mcp_full_test.js",
+    "setup": "bash setup_mcp_test.sh"
+  },
+  "keywords": ["e2e", "testing", "puppeteer", "mcp"],
+  "author": "HydroClaude Team",
+  "license": "MIT",
+  "dependencies": {
+    "puppeteer": "^21.0.0"
+  }
+}

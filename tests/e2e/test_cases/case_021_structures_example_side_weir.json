@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "example_side_weir",
+  "description": "侧堰水工建筑物示例  演示 SideWeir 类的使用，包括： 1. 基本侧堰分流计算 2. 薄壁堰 vs 宽顶堰对比 3. 沿程水位和流量变化 4. 侧堰长度设计 5. 灌溉分水应用 6. 防洪溢流堰",
+  "type": "steady_flow",
+  "canal": {
+    "length": 50.0,
+    "width": 5.0,
+    "slope": 0.001,
+    "roughness": 102.0,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/example_side_weir.py",
+    "category": "structures",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.475852"
+  }
+}

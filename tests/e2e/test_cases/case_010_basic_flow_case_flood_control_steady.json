@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "case_flood_control_steady",
+  "description": "工程案例2: 防洪能力评估稳态分析  场景评估渠道在不同洪水流量下的防洪能力 目标确定安全流量范围制定调度策略  包含 1. 方案A: Q=80 m^3/s 常遇洪水 2. 方案B: Q=120 m^3/s10年一遇 3. 方案C: Q=150 m^3/s20年一遇",
+  "type": "steady_flow",
+  "canal": {
+    "length": 3000.0,
+    "width": 20.0,
+    "slope": 0.0012,
+    "roughness": 0.025,
+    "nx": 150.0
+  },
+  "flow": {
+    "flow_rate": 80.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/case_flood_control_steady.py",
+    "category": "basic_flow",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.466638"
+  }
+}

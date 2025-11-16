@@ -1,0 +1,29 @@
+.canal-draw-controls {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.canal-node-icon {
+  background: transparent;
+  border: none;
+}
+
+.canal-draw-controls .ant-input-number {
+  width: 100%;
+}
+
+.canal-draw-controls label {
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* 节点悬停效果 */
+.leaflet-marker-icon:hover {
+  transform: scale(1.2);
+  transition: transform 0.2s;
+}
+
+/* 绘制模式下的鼠标样式 */
+.leaflet-container.leaflet-crosshair {
+  cursor: crosshair;
+}

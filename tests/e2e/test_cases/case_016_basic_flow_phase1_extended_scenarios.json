@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "phase1_extended_scenarios",
+  "description": "Phase 1扩展场景库 - 20个场景完整版  Phase 1完善：从12个扩充到20个场景 新增场景： - 不同渠道宽度（4个） - 组合参数（4个）  目标：展示HydroClaude的广泛适用性",
+  "type": "steady_flow",
+  "canal": {
+    "length": 1000.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "roughness": 45.0,
+    "nx": 100.0
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/phase1_extended_scenarios.py",
+    "category": "basic_flow",
+    "complexity": "easy",
+    "converted_at": "2025-11-16T06:08:08.473648"
+  }
+}

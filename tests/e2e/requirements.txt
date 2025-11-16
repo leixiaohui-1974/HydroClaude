@@ -1,0 +1,23 @@
+# 端到端测试依赖
+
+# 测试框架
+pytest==7.4.3
+pytest-html==4.1.1
+pytest-xdist==3.5.0
+
+# 浏览器自动化
+playwright==1.40.0
+selenium==4.15.2
+
+# 数据处理
+pandas==2.1.4
+numpy==1.26.2
+
+# 报告生成
+jinja2==3.1.2
+pillow==10.1.0
+
+# 工具
+python-dotenv==1.0.0
+colorama==0.4.6
+tqdm==4.66.1

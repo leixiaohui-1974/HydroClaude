@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "name": "case_gate_operation",
+  "description": "工程案例4: 闸门调度优化  场景渠道中游设有一座闸门用于控制流量和水位 目标对比不同开度优化闸门调度方案  方案对比 - 方案A: 全开 (a=4.0m) - 方案B: 开80% (a=3.2m) - 方案C: 开60% (a=2.4m)",
+  "type": "steady_flow",
+  "canal": {
+    "length": 2000.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "roughness": 0.025,
+    "nx": 100.0
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [
+    {
+      "type": "sluice_gate",
+      "position": 1000.0,
+      "width": 10.0,
+      "opening": 2.0,
+      "discharge_coefficient": 0.6
+    }
+  ],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/case_gate_operation.py",
+    "category": "basic_flow",
+    "complexity": "easy",
+    "converted_at": "2025-11-16T06:08:08.472137"
+  }
+}

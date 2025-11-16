@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "name": "test_all_scenarios_quick",
+  "description": "快速测试所有工况的初始恒定流状态 验证修复后的泵站是否在所有工况中都正常工作",
+  "type": "steady_flow",
+  "canal": {
+    "length": 100000.0,
+    "width": 15.0,
+    "slope": 0.0001,
+    "roughness": 0.025,
+    "nx": 151.0
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [
+    {
+      "type": "sluice_gate",
+      "position": 50000.0,
+      "width": 15.0,
+      "opening": 2.0,
+      "discharge_coefficient": 0.6
+    }
+  ],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/example_gate_pump_cascade/test_all_scenarios_quick.py",
+    "category": "basic_flow",
+    "complexity": "medium",
+    "converted_at": "2025-11-16T06:08:08.466243"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "version": "2.0.0",
+  "name": "example_cascade_reservoirs",
+  "description": "梯级水库完整示例  模拟梯级水库系统，包含： - 3个串联水库 - 水库间连接河段 - 溢洪道（堰） - 泄洪闸 - 联合调度",
+  "type": "steady_flow",
+  "canal": {
+    "length": 2000.0,
+    "width": 50.0,
+    "slope": 0.001,
+    "roughness": 0.03,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 200.0,
+    "type": "steady"
+  },
+  "structures": [
+    {
+      "type": "sluice_gate",
+      "position": 1000.0,
+      "width": 50.0,
+      "opening": 3.0,
+      "discharge_coefficient": 0.6
+    },
+    {
+      "type": "broad_crested_weir",
+      "position": 1000.0,
+      "width": 50.0,
+      "crest_height": 0.5,
+      "discharge_coefficient": 1.7
+    }
+  ],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/example_cascade_reservoirs.py",
+    "category": "structures",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.484421"
+  }
+}

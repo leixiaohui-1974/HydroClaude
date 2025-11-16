@@ -1,0 +1,925 @@
+{
+  "total": 111,
+  "created": "2025-11-16T06:08:08.547171",
+  "description": "HydroClaude 完整测试案例索引 - 从348个后端案例转换",
+  "categories": {
+    "basic_flow": {
+      "count": 20,
+      "description": "基础流动 - 均匀流、明渠流动基础"
+    },
+    "structures": {
+      "count": 20,
+      "description": "水工结构 - 闸门、堰、泵站等"
+    },
+    "unsteady": {
+      "count": 7,
+      "description": "非稳态流 - 瞬态分析、水锤等"
+    },
+    "network": {
+      "count": 20,
+      "description": "管网系统 - 复杂管网、树形/环形网络"
+    },
+    "optimization": {
+      "count": 18,
+      "description": "优化控制 - MPC、优化调度"
+    },
+    "benchmark": {
+      "count": 6,
+      "description": "性能基准 - 算法性能测试"
+    },
+    "other": {
+      "count": 20,
+      "description": "其他案例"
+    }
+  },
+  "cases": [
+    {
+      "id": 1,
+      "name": "example_complete_workflow",
+      "category": "basic_flow",
+      "file": "case_001_basic_flow_example_complete_workflow.json",
+      "source": "examples/example_complete_workflow.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 2,
+      "name": "case_flood_control",
+      "category": "basic_flow",
+      "file": "case_002_basic_flow_case_flood_control.json",
+      "source": "examples/case_flood_control.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 3,
+      "name": "comprehensive_scenario_test",
+      "category": "basic_flow",
+      "file": "case_003_basic_flow_comprehensive_scenario_test.json",
+      "source": "examples/example_gate_pump_cascade/comprehensive_scenario_test.py",
+      "complexity": "medium"
+    },
+    {
+      "id": 4,
+      "name": "quick_scenario_test",
+      "category": "basic_flow",
+      "file": "case_004_basic_flow_quick_scenario_test.json",
+      "source": "examples/example_gate_pump_cascade/quick_scenario_test.py",
+      "complexity": "medium"
+    },
+    {
+      "id": 5,
+      "name": "standard_multi_scenario_test",
+      "category": "basic_flow",
+      "file": "case_005_basic_flow_standard_multi_scenario_test.json",
+      "source": "examples/example_gate_pump_cascade/standard_multi_scenario_test.py",
+      "complexity": "medium"
+    },
+    {
+      "id": 6,
+      "name": "enhanced_scenario_test",
+      "category": "basic_flow",
+      "file": "case_006_basic_flow_enhanced_scenario_test.json",
+      "source": "examples/example_gate_pump_cascade/enhanced_scenario_test.py",
+      "complexity": "medium"
+    },
+    {
+      "id": 7,
+      "name": "run_scenario",
+      "category": "basic_flow",
+      "file": "case_007_basic_flow_run_scenario.json",
+      "source": "examples/example_gate_pump_cascade/run_scenario.py",
+      "complexity": "medium"
+    },
+    {
+      "id": 8,
+      "name": "temp_scenario",
+      "category": "basic_flow",
+      "file": "case_008_basic_flow_temp_scenario.json",
+      "source": "examples/example_gate_pump_cascade/temp_scenario.py",
+      "complexity": "medium"
+    },
+    {
+      "id": 9,
+      "name": "test_all_scenarios_quick",
+      "category": "basic_flow",
+      "file": "case_009_basic_flow_test_all_scenarios_quick.json",
+      "source": "examples/example_gate_pump_cascade/test_all_scenarios_quick.py",
+      "complexity": "medium"
+    },
+    {
+      "id": 10,
+      "name": "case_flood_control_steady",
+      "category": "basic_flow",
+      "file": "case_010_basic_flow_case_flood_control_steady.json",
+      "source": "examples/case_flood_control_steady.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 11,
+      "name": "case_02_water_supply_network",
+      "category": "basic_flow",
+      "file": "case_011_basic_flow_case_02_water_supply_network.json",
+      "source": "examples/case_library/case_02_water_supply_network.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 12,
+      "name": "case_04_urban_drainage",
+      "category": "basic_flow",
+      "file": "case_012_basic_flow_case_04_urban_drainage.json",
+      "source": "examples/case_library/case_04_urban_drainage.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 13,
+      "name": "case_parameter_sensitivity",
+      "category": "basic_flow",
+      "file": "case_013_basic_flow_case_parameter_sensitivity.json",
+      "source": "examples/case_parameter_sensitivity.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 14,
+      "name": "case_gate_operation",
+      "category": "basic_flow",
+      "file": "case_014_basic_flow_case_gate_operation.json",
+      "source": "examples/case_gate_operation.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 15,
+      "name": "phase1_steady_scenarios",
+      "category": "basic_flow",
+      "file": "case_015_basic_flow_phase1_steady_scenarios.json",
+      "source": "examples/phase1_steady_scenarios.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 16,
+      "name": "phase1_extended_scenarios",
+      "category": "basic_flow",
+      "file": "case_016_basic_flow_phase1_extended_scenarios.json",
+      "source": "examples/phase1_extended_scenarios.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 17,
+      "name": "case_irrigation_scheduling",
+      "category": "basic_flow",
+      "file": "case_017_basic_flow_case_irrigation_scheduling.json",
+      "source": "examples/case_irrigation_scheduling.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 18,
+      "name": "case02_flood_risk_assessment",
+      "category": "basic_flow",
+      "file": "case_018_basic_flow_case02_flood_risk_assessment.json",
+      "source": "examples/case02_flood_risk_assessment.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 19,
+      "name": "phase1_mega_scenarios",
+      "category": "basic_flow",
+      "file": "case_019_basic_flow_phase1_mega_scenarios.json",
+      "source": "examples/phase1_mega_scenarios.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 20,
+      "name": "case_channel_renovation",
+      "category": "basic_flow",
+      "file": "case_020_basic_flow_case_channel_renovation.json",
+      "source": "examples/case_channel_renovation.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 21,
+      "name": "example_side_weir",
+      "category": "structures",
+      "file": "case_021_structures_example_side_weir.json",
+      "source": "examples/example_side_weir.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 22,
+      "name": "example_internal_structures",
+      "category": "structures",
+      "file": "case_022_structures_example_internal_structures.json",
+      "source": "examples/example_internal_structures.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 23,
+      "name": "case5_irrigation_system",
+      "category": "structures",
+      "file": "case_023_structures_case5_irrigation_system.json",
+      "source": "examples/case5_irrigation_system.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 24,
+      "name": "analyze_all_scenarios",
+      "category": "structures",
+      "file": "case_024_structures_analyze_all_scenarios.json",
+      "source": "examples/example_gate_pump_cascade/analyze_all_scenarios.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 25,
+      "name": "run_scenario_04",
+      "category": "structures",
+      "file": "case_025_structures_run_scenario_04.json",
+      "source": "examples/example_gate_pump_cascade/run_scenario_04.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 26,
+      "name": "example_bridge_structure",
+      "category": "structures",
+      "file": "case_026_structures_example_bridge_structure.json",
+      "source": "examples/example_bridge_structure.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 27,
+      "name": "case_05_river_network",
+      "category": "structures",
+      "file": "case_027_structures_case_05_river_network.json",
+      "source": "examples/case_library/case_05_river_network.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 28,
+      "name": "test_cases",
+      "category": "structures",
+      "file": "case_028_structures_test_cases.json",
+      "source": "examples/case_library/test_cases.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 29,
+      "name": "case4_fire_protection_system",
+      "category": "structures",
+      "file": "case_029_structures_case4_fire_protection_system.json",
+      "source": "examples/case4_fire_protection_system.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 30,
+      "name": "example_cascade_reservoirs",
+      "category": "structures",
+      "file": "case_030_structures_example_cascade_reservoirs.json",
+      "source": "examples/example_cascade_reservoirs.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 31,
+      "name": "test_examples",
+      "category": "structures",
+      "file": "case_031_structures_test_examples.json",
+      "source": "examples/tests/test_examples.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 32,
+      "name": "example_02_pump_system",
+      "category": "structures",
+      "file": "case_032_structures_example_02_pump_system.json",
+      "source": "examples/example_02_pump_system/code/example_02_pump_system.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 33,
+      "name": "example_02_pump_system_enhanced",
+      "category": "structures",
+      "file": "case_033_structures_example_02_pump_system_enhanced.json",
+      "source": "examples/example_02_pump_system/example_02_pump_system_enhanced.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 34,
+      "name": "example_02_pump_system_with_anim",
+      "category": "structures",
+      "file": "case_034_structures_example_02_pump_system_with_anim.json",
+      "source": "examples/example_02_pump_system/example_02_pump_system_with_anim.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 35,
+      "name": "mpc_nonlinear_test",
+      "category": "structures",
+      "file": "case_035_structures_mpc_nonlinear_test.json",
+      "source": "examples/advanced_examples/mpc_nonlinear_test.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 36,
+      "name": "test_idz_mpc_performance",
+      "category": "structures",
+      "file": "case_036_structures_test_idz_mpc_performance.json",
+      "source": "examples/advanced_examples/test_idz_mpc_performance.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 37,
+      "name": "complete_benchmark_suite",
+      "category": "structures",
+      "file": "case_037_structures_complete_benchmark_suite.json",
+      "source": "examples/advanced_examples/complete_benchmark_suite.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 38,
+      "name": "adaptive_first_order_mpc_test",
+      "category": "structures",
+      "file": "case_038_structures_adaptive_first_order_mpc_test.json",
+      "source": "examples/advanced_examples/adaptive_first_order_mpc_test.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 39,
+      "name": "test_idz_identification_negative_gain",
+      "category": "structures",
+      "file": "case_039_structures_test_idz_identification_negative_gain.json",
+      "source": "examples/advanced_examples/test_idz_identification_negative_gain.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 40,
+      "name": "benchmark_examples",
+      "category": "structures",
+      "file": "case_040_structures_benchmark_examples.json",
+      "source": "examples/benchmark_examples.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 41,
+      "name": "example_06_complete_system",
+      "category": "unsteady",
+      "file": "case_041_unsteady_example_06_complete_system.json",
+      "source": "examples/example_06_complete_hydropower_system/example_06_complete_system.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 42,
+      "name": "example_05_load_rejection",
+      "category": "unsteady",
+      "file": "case_042_unsteady_example_05_load_rejection.json",
+      "source": "examples/example_05_transient_analysis/example_05_load_rejection.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 43,
+      "name": "example_08_load_acceptance",
+      "category": "unsteady",
+      "file": "case_043_unsteady_example_08_load_acceptance.json",
+      "source": "examples/example_08_load_acceptance/example_08_load_acceptance.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 44,
+      "name": "example_08_load_acceptance_with_anim",
+      "category": "unsteady",
+      "file": "case_044_unsteady_example_08_load_acceptance_with_anim.json",
+      "source": "examples/example_08_load_acceptance/example_08_load_acceptance_with_anim.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 45,
+      "name": "example_04_hydropower_plant",
+      "category": "unsteady",
+      "file": "case_045_unsteady_example_04_hydropower_plant.json",
+      "source": "examples/example_04_hydropower_system/example_04_hydropower_plant.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 46,
+      "name": "test_water_hammer_moc",
+      "category": "unsteady",
+      "file": "case_046_unsteady_test_water_hammer_moc.json",
+      "source": "tests/test_solvers/test_water_hammer_moc.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 47,
+      "name": "test_high_order_accuracy",
+      "category": "unsteady",
+      "file": "case_047_unsteady_test_high_order_accuracy.json",
+      "source": "tests/diagnostic/test_high_order_accuracy.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 48,
+      "name": "example_12_loop_network",
+      "category": "network",
+      "file": "case_048_network_example_12_loop_network.json",
+      "source": "examples/example_12_loop_network/code/example_12_loop_network.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 49,
+      "name": "example_culvert_structure",
+      "category": "network",
+      "file": "case_049_network_example_culvert_structure.json",
+      "source": "examples/example_culvert_structure.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 50,
+      "name": "example_11_tree_network",
+      "category": "network",
+      "file": "case_050_network_example_11_tree_network.json",
+      "source": "examples/example_11_tree_network/code/example_11_tree_network.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 51,
+      "name": "case6_highrise_water_supply",
+      "category": "network",
+      "file": "case_051_network_case6_highrise_water_supply.json",
+      "source": "examples/case6_highrise_water_supply.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 52,
+      "name": "case8_network_optimization",
+      "category": "network",
+      "file": "case_052_network_case8_network_optimization.json",
+      "source": "examples/case8_network_optimization.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 53,
+      "name": "example_network_solver",
+      "category": "network",
+      "file": "case_053_network_example_network_solver.json",
+      "source": "examples/example_network_solver.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 54,
+      "name": "benchmark_performance",
+      "category": "network",
+      "file": "case_054_network_benchmark_performance.json",
+      "source": "examples/case_library/benchmark_performance.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 55,
+      "name": "example_network_nodes",
+      "category": "network",
+      "file": "case_055_network_example_network_nodes.json",
+      "source": "examples/example_network_nodes.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 56,
+      "name": "example_network_topology",
+      "category": "network",
+      "file": "case_056_network_example_network_topology.json",
+      "source": "examples/example_network_topology.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 57,
+      "name": "example_network_validation",
+      "category": "network",
+      "file": "case_057_network_example_network_validation.json",
+      "source": "examples/example_network_validation.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 58,
+      "name": "case1_urban_water_supply",
+      "category": "network",
+      "file": "case_058_network_case1_urban_water_supply.json",
+      "source": "examples/case1_urban_water_supply.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 59,
+      "name": "example_03_complex_network",
+      "category": "network",
+      "file": "case_059_network_example_03_complex_network.json",
+      "source": "examples/example_03_complex_network/code/example_03_complex_network.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 60,
+      "name": "example_10_series_network",
+      "category": "network",
+      "file": "case_060_network_example_10_series_network.json",
+      "source": "examples/example_10_series_network/code/example_10_series_network.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 61,
+      "name": "example_10_series_network_with_anim",
+      "category": "network",
+      "file": "case_061_network_example_10_series_network_with_anim.json",
+      "source": "examples/example_10_series_network/example_10_series_network_with_anim.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 62,
+      "name": "case7_regional_water_supply",
+      "category": "network",
+      "file": "case_062_network_case7_regional_water_supply.json",
+      "source": "examples/case7_regional_water_supply.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 63,
+      "name": "test_network_nodes",
+      "category": "network",
+      "file": "case_063_network_test_network_nodes.json",
+      "source": "tests/test_network_nodes.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 64,
+      "name": "test_performance",
+      "category": "network",
+      "file": "case_064_network_test_performance.json",
+      "source": "tests/test_utils/test_performance.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 65,
+      "name": "test_newton_raphson_solver",
+      "category": "network",
+      "file": "case_065_network_test_newton_raphson_solver.json",
+      "source": "tests/test_solvers/test_newton_raphson_solver.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 66,
+      "name": "test_hardy_cross_solver",
+      "category": "network",
+      "file": "case_066_network_test_hardy_cross_solver.json",
+      "source": "tests/test_solvers/test_hardy_cross_solver.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 67,
+      "name": "test_newton_raphson_improvement",
+      "category": "network",
+      "file": "case_067_network_test_newton_raphson_improvement.json",
+      "source": "tests/test_solvers/test_newton_raphson_improvement.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 68,
+      "name": "example_14_adaptive_mpc",
+      "category": "optimization",
+      "file": "case_068_optimization_example_14_adaptive_mpc.json",
+      "source": "examples/example_14_adaptive_mpc/code/example_14_adaptive_mpc.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 69,
+      "name": "example_14_adaptive_mpc_enhanced",
+      "category": "optimization",
+      "file": "case_069_optimization_example_14_adaptive_mpc_enhanced.json",
+      "source": "examples/example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 70,
+      "name": "example_07_multi_unit_agc",
+      "category": "optimization",
+      "file": "case_070_optimization_example_07_multi_unit_agc.json",
+      "source": "examples/example_07_multi_unit_agc/example_07_multi_unit_agc.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 71,
+      "name": "run_idz_benchmark",
+      "category": "optimization",
+      "file": "case_071_optimization_run_idz_benchmark.json",
+      "source": "examples/advanced_examples/run_idz_benchmark.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 72,
+      "name": "test_mpc_no_observer",
+      "category": "optimization",
+      "file": "case_072_optimization_test_mpc_no_observer.json",
+      "source": "examples/advanced_examples/test_mpc_no_observer.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 73,
+      "name": "test_first_order_mpc",
+      "category": "optimization",
+      "file": "case_073_optimization_test_first_order_mpc.json",
+      "source": "examples/advanced_examples/test_first_order_mpc.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 74,
+      "name": "run_mpc_benchmark",
+      "category": "optimization",
+      "file": "case_074_optimization_run_mpc_benchmark.json",
+      "source": "examples/advanced_examples/run_mpc_benchmark.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 75,
+      "name": "benchmark_controllers",
+      "category": "optimization",
+      "file": "case_075_optimization_benchmark_controllers.json",
+      "source": "examples/advanced_examples/benchmark_controllers.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 76,
+      "name": "multi_canal_benchmark_improved",
+      "category": "optimization",
+      "file": "case_076_optimization_multi_canal_benchmark_improved.json",
+      "source": "examples/advanced_examples/multi_canal_benchmark_improved.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 77,
+      "name": "test_mpc_direction",
+      "category": "optimization",
+      "file": "case_077_optimization_test_mpc_direction.json",
+      "source": "examples/advanced_examples/test_mpc_direction.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 78,
+      "name": "run_first_order_mpc_benchmark",
+      "category": "optimization",
+      "file": "case_078_optimization_run_first_order_mpc_benchmark.json",
+      "source": "examples/advanced_examples/run_first_order_mpc_benchmark.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 79,
+      "name": "test_governor",
+      "category": "optimization",
+      "file": "case_079_optimization_test_governor.json",
+      "source": "tests/test_governor.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 80,
+      "name": "test_reservoir",
+      "category": "optimization",
+      "file": "case_080_optimization_test_reservoir.json",
+      "source": "tests/test_reservoir.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 81,
+      "name": "test_culvert",
+      "category": "optimization",
+      "file": "case_081_optimization_test_culvert.json",
+      "source": "tests/test_culvert.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 82,
+      "name": "test_advanced_features",
+      "category": "optimization",
+      "file": "case_082_optimization_test_advanced_features.json",
+      "source": "tests/diagnostic/test_advanced_features.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 83,
+      "name": "test_multi_section_identification",
+      "category": "optimization",
+      "file": "case_083_optimization_test_multi_section_identification.json",
+      "source": "tests/test_multi_section_identification.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 84,
+      "name": "test_agc_coordination",
+      "category": "optimization",
+      "file": "case_084_optimization_test_agc_coordination.json",
+      "source": "tests/test_agc_coordination.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 85,
+      "name": "test_controllers",
+      "category": "optimization",
+      "file": "case_085_optimization_test_controllers.json",
+      "source": "tests/test_controllers.py",
+      "complexity": "hard"
+    },
+    {
+      "id": 86,
+      "name": "benchmark_performance",
+      "category": "benchmark",
+      "file": "case_086_benchmark_benchmark_performance.json",
+      "source": "examples/benchmark_performance.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 87,
+      "name": "benchmark_riemann_solvers",
+      "category": "benchmark",
+      "file": "case_087_benchmark_benchmark_riemann_solvers.json",
+      "source": "tests/benchmark_riemann_solvers.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 88,
+      "name": "performance_benchmark",
+      "category": "benchmark",
+      "file": "case_088_benchmark_performance_benchmark.json",
+      "source": "tests/performance_benchmark.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 89,
+      "name": "benchmark_numba_performance",
+      "category": "benchmark",
+      "file": "case_089_benchmark_benchmark_numba_performance.json",
+      "source": "tests/diagnostic/benchmark_numba_performance.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 90,
+      "name": "benchmark_performance_improvement",
+      "category": "benchmark",
+      "file": "case_090_benchmark_benchmark_performance_improvement.json",
+      "source": "tests/diagnostic/benchmark_performance_improvement.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 91,
+      "name": "benchmark_numba",
+      "category": "benchmark",
+      "file": "case_091_benchmark_benchmark_numba.json",
+      "source": "tests/benchmark_numba.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 92,
+      "name": "run_scenario_05",
+      "category": "other",
+      "file": "case_092_other_run_scenario_05.json",
+      "source": "examples/example_gate_pump_cascade/run_scenario_05.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 93,
+      "name": "test_fix",
+      "category": "other",
+      "file": "case_093_other_test_fix.json",
+      "source": "examples/example_gate_pump_cascade/test_fix.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 94,
+      "name": "run_scenario_02",
+      "category": "other",
+      "file": "case_094_other_run_scenario_02.json",
+      "source": "examples/example_gate_pump_cascade/run_scenario_02.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 95,
+      "name": "run_scenario_03",
+      "category": "other",
+      "file": "case_095_other_run_scenario_03.json",
+      "source": "examples/example_gate_pump_cascade/run_scenario_03.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 96,
+      "name": "run_scenario_01",
+      "category": "other",
+      "file": "case_096_other_run_scenario_01.json",
+      "source": "examples/example_gate_pump_cascade/run_scenario_01.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 97,
+      "name": "test_fixed_solver",
+      "category": "other",
+      "file": "case_097_other_test_fixed_solver.json",
+      "source": "examples/example_gate_pump_cascade/test_fixed_solver.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 98,
+      "name": "example_17_reservoir_with_anim",
+      "category": "other",
+      "file": "case_098_other_example_17_reservoir_with_anim.json",
+      "source": "examples/example_17_reservoir_basic/example_17_reservoir_with_anim.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 99,
+      "name": "example_timeseries_bc",
+      "category": "other",
+      "file": "case_099_other_example_timeseries_bc.json",
+      "source": "examples/example_timeseries_bc.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 100,
+      "name": "example_irregular_channel",
+      "category": "other",
+      "file": "case_100_other_example_irregular_channel.json",
+      "source": "examples/example_irregular_channel.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 101,
+      "name": "example_trapezoidal_channel",
+      "category": "other",
+      "file": "case_101_other_example_trapezoidal_channel.json",
+      "source": "examples/example_trapezoidal_channel.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 102,
+      "name": "calibration_example",
+      "category": "other",
+      "file": "case_102_other_calibration_example.json",
+      "source": "examples/calibration_example.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 103,
+      "name": "example_13_adaptive_timescale",
+      "category": "other",
+      "file": "case_103_other_example_13_adaptive_timescale.json",
+      "source": "examples/example_13_adaptive_timescale/code/example_13_adaptive_timescale.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 104,
+      "name": "example_13_adaptive_timescale_enhanced",
+      "category": "other",
+      "file": "case_104_other_example_13_adaptive_timescale_enhanced.json",
+      "source": "examples/example_13_adaptive_timescale/example_13_adaptive_timescale_enhanced.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 105,
+      "name": "example_rating_curve_bc",
+      "category": "other",
+      "file": "case_105_other_example_rating_curve_bc.json",
+      "source": "examples/example_rating_curve_bc.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 106,
+      "name": "example_compound_channel",
+      "category": "other",
+      "file": "case_106_other_example_compound_channel.json",
+      "source": "examples/example_compound_channel.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 107,
+      "name": "example_09_pipe_rk4",
+      "category": "other",
+      "file": "case_107_other_example_09_pipe_rk4.json",
+      "source": "examples/example_09_pipe_rk4/code/example_09_pipe_rk4.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 108,
+      "name": "example_09_pipe_rk4_enhanced",
+      "category": "other",
+      "file": "case_108_other_example_09_pipe_rk4_enhanced.json",
+      "source": "examples/example_09_pipe_rk4/example_09_pipe_rk4_enhanced.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 109,
+      "name": "simulate",
+      "category": "other",
+      "file": "case_109_other_simulate.json",
+      "source": "examples/config_driven/simulate.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 110,
+      "name": "example_04_moc_boundary",
+      "category": "other",
+      "file": "case_110_other_example_04_moc_boundary.json",
+      "source": "examples/example_04_moc_boundary/code/example_04_moc_boundary.py",
+      "complexity": "easy"
+    },
+    {
+      "id": 111,
+      "name": "test_weno3_dambreak",
+      "category": "other",
+      "file": "case_111_other_test_weno3_dambreak.json",
+      "source": "examples/test_weno3_dambreak.py",
+      "complexity": "easy"
+    }
+  ]
+}

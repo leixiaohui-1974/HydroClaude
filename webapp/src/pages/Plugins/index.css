@@ -1,0 +1,35 @@
+.plugins-page {
+  min-height: 100%;
+  background: #f0f2f5;
+}
+
+.plugins-content {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.plugins-stats {
+  margin-bottom: 24px;
+  border-radius: 8px;
+}
+
+.plugins-search {
+  margin-bottom: 24px;
+  border-radius: 8px;
+}
+
+.plugins-list {
+  min-height: 400px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .plugins-content {
+    padding: 16px;
+  }
+
+  .plugins-stats .ant-col {
+    margin-bottom: 16px;
+  }
+}

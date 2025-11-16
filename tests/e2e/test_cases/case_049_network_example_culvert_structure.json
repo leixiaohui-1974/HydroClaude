@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "example_culvert_structure",
+  "description": "涵洞/倒虹吸水工建筑物示例  演示 Culvert 类的使用，包括： 1. 基本涵洞过流计算（圆形和矩形） 2. 进口控制 vs 出口控制对比 3. 能量损失分析 4. 多孔并联涵洞 5. 倒虹吸应用 6. 道路涵洞设计",
+  "type": "steady_flow",
+  "canal": {
+    "length": 50.0,
+    "width": 2.5,
+    "slope": 0.05,
+    "roughness": 100.0,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/example_culvert_structure.py",
+    "category": "network",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.503527"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "example_09_pipe_rk4",
+  "description": "示例：管道RK4高精度求解 print(\"\\n\" + \"=\"*60) print(\"示例：管道水击RK4高精度求解\") print(\"=\"*60)  pipe = Pipe( \"管道1\", length=3000, diameter=1.0, wave_speed=1000, n_sections=51, method='rk4' )",
+  "type": "steady_flow",
+  "canal": {
+    "length": 3000.0,
+    "width": 2.0,
+    "slope": 0.001,
+    "roughness": 0.025,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/example_09_pipe_rk4/code/example_09_pipe_rk4.py",
+    "category": "other",
+    "complexity": "easy",
+    "converted_at": "2025-11-16T06:08:08.544706"
+  }
+}

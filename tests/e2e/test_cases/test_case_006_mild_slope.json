@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "name": "mild_slope_flow",
+  "description": "缓坡流动 - 小坡度亚临界流",
+  "type": "mild_slope",
+  "canal": {
+    "length": 10000.0,
+    "width": 12.0,
+    "slope": 0.0001,
+    "roughness": 0.03,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 60.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": ["json", "csv"]
+  },
+  "expected_results": {
+    "flow_rate_error": 0.01,
+    "convergence": true,
+    "max_iterations": 10,
+    "flow_regime": "subcritical",
+    "froude_number_less_than": 1.0
+  }
+}

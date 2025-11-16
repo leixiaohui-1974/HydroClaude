@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "case5_irrigation_system",
+  "description": "案例5：农业灌溉系统分析 Case 5: Agricultural Irrigation System Analysis  本案例展示农业灌溉系统的水力分析，包括： 1. 大面积农田灌溉管网 2. 多个灌溉分区 3. 不同作物需水量 4. 季节性用水变化 5. 喷灌和滴灌工况",
+  "type": "steady_flow",
+  "canal": {
+    "length": 1.0,
+    "width": 0.35,
+    "slope": 0.001,
+    "roughness": 0.0,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/case5_irrigation_system.py",
+    "category": "structures",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.477385"
+  }
+}

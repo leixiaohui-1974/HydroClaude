@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "run_mpc_benchmark",
+  "description": "MPC控制器基准测试  对比三种控制策略的性能： 1. 传统PID控制 2. 自适应PI控制（基于在线IDZ辨识） 3. 模型预测控制（MPC，使用CVXPY）  测试场景： - 多个工况点切换（流量20->25->18->23 m^3/s）",
+  "type": "steady_flow",
+  "canal": {
+    "length": 1000.0,
+    "width": 2.0,
+    "slope": 0.001,
+    "roughness": 0.1,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 100.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/advanced_examples/run_mpc_benchmark.py",
+    "category": "optimization",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.523469"
+  }
+}

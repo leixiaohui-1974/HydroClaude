@@ -1,0 +1,2089 @@
+{
+  "timestamp": "2025-11-16T06:28:46.591091",
+  "summary": {
+    "total": 50,
+    "passed": 35,
+    "failed": 15,
+    "pass_rate": "70.0%",
+    "avg_score": 83.7,
+    "total_duration": 40.1
+  },
+  "by_category": {
+    "basic_flow": {
+      "total": 20,
+      "passed": 15,
+      "pass_rate": "75.0%",
+      "avg_score": 84.0
+    },
+    "structures": {
+      "total": 20,
+      "passed": 14,
+      "pass_rate": "70.0%",
+      "avg_score": 83.9
+    },
+    "unsteady": {
+      "total": 7,
+      "passed": 6,
+      "pass_rate": "85.7%",
+      "avg_score": 89.5
+    },
+    "network": {
+      "total": 3,
+      "passed": 0,
+      "pass_rate": "0.0%",
+      "avg_score": 66.4
+    }
+  },
+  "results": [
+    {
+      "id": 1,
+      "name": "example_complete_workflow",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 17.82,
+      "score": 87.1,
+      "grade": "B",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.25
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.49
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.66,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "case_flood_control",
+      "category": "basic_flow",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 12.56,
+      "score": 89.1,
+      "grade": "B",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.227
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.59
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.536,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "comprehensive_scenario_test",
+      "category": "basic_flow",
+      "complexity": "medium",
+      "status": "passed",
+      "duration": 13.43,
+      "score": 91.9,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.051
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.9
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.788,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "quick_scenario_test",
+      "category": "basic_flow",
+      "complexity": "medium",
+      "status": "failed",
+      "duration": 12.45,
+      "score": 72.5,
+      "grade": "C",
+      "steps": [
+        "❌ 导航到配置页面",
+        "❌ 切换到JSON编辑器",
+        "❌ 填写配置内容",
+        "❌ 点击运行仿真",
+        "❌ 等待计算完成",
+        "❌ 导航到结果页面",
+        "❌ 验证结果显示",
+        "❌ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.373
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 3.43
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.496,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "name": "standard_multi_scenario_test",
+      "category": "basic_flow",
+      "complexity": "medium",
+      "status": "failed",
+      "duration": 18.64,
+      "score": 66.6,
+      "grade": "C",
+      "steps": [
+        "❌ 导航到配置页面",
+        "❌ 切换到JSON编辑器",
+        "❌ 填写配置内容",
+        "❌ 点击运行仿真",
+        "❌ 等待计算完成",
+        "❌ 导航到结果页面",
+        "❌ 验证结果显示",
+        "❌ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.171
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 3.05
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.667,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "enhanced_scenario_test",
+      "category": "basic_flow",
+      "complexity": "medium",
+      "status": "passed",
+      "duration": 11.11,
+      "score": 86.3,
+      "grade": "B",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.194
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.22
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.485,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "name": "run_scenario",
+      "category": "basic_flow",
+      "complexity": "medium",
+      "status": "failed",
+      "duration": 16.62,
+      "score": 67.3,
+      "grade": "C",
+      "steps": [
+        "❌ 导航到配置页面",
+        "❌ 切换到JSON编辑器",
+        "❌ 填写配置内容",
+        "❌ 点击运行仿真",
+        "❌ 等待计算完成",
+        "❌ 导航到结果页面",
+        "❌ 验证结果显示",
+        "❌ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.057
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 3.3
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.7,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "temp_scenario",
+      "category": "basic_flow",
+      "complexity": "medium",
+      "status": "passed",
+      "duration": 17.84,
+      "score": 85.6,
+      "grade": "B",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.324
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.2
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.827,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "name": "test_all_scenarios_quick",
+      "category": "basic_flow",
+      "complexity": "medium",
+      "status": "passed",
+      "duration": 14.0,
+      "score": 87.2,
+      "grade": "B",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.196
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.76
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.855,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "case_flood_control_steady",
+      "category": "basic_flow",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 10.82,
+      "score": 62.7,
+      "grade": "C",
+      "steps": [
+        "❌ 导航到配置页面",
+        "❌ 切换到JSON编辑器",
+        "❌ 填写配置内容",
+        "❌ 点击运行仿真",
+        "❌ 等待计算完成",
+        "❌ 导航到结果页面",
+        "❌ 验证结果显示",
+        "❌ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.245
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 2.92
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.637,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 11,
+      "name": "case_02_water_supply_network",
+      "category": "basic_flow",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 12.82,
+      "score": 87.3,
+      "grade": "B",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.125
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 4.22
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.783,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 12,
+      "name": "case_04_urban_drainage",
+      "category": "basic_flow",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 16.85,
+      "score": 92.5,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.497
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.36
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.508,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 13,
+      "name": "case_parameter_sensitivity",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 12.92,
+      "score": 92.7,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.24
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 4.24
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.542,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 14,
+      "name": "case_gate_operation",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 12.01,
+      "score": 90.8,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.052
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.83
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.309,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 15,
+      "name": "phase1_steady_scenarios",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 11.45,
+      "score": 92.9,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.491
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.68
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.44,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 16,
+      "name": "phase1_extended_scenarios",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 11.23,
+      "score": 96.4,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.379
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.56
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.837,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 17,
+      "name": "case_irrigation_scheduling",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 18.35,
+      "score": 90.4,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.028
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.72
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.605,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 18,
+      "name": "case02_flood_risk_assessment",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 16.04,
+      "score": 90.2,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.483
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.86
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.472,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 19,
+      "name": "phase1_mega_scenarios",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "failed",
+      "duration": 11.91,
+      "score": 62.7,
+      "grade": "C",
+      "steps": [
+        "❌ 导航到配置页面",
+        "❌ 切换到JSON编辑器",
+        "❌ 填写配置内容",
+        "❌ 点击运行仿真",
+        "❌ 等待计算完成",
+        "❌ 导航到结果页面",
+        "❌ 验证结果显示",
+        "❌ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.199
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 2.32
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.589,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 20,
+      "name": "case_channel_renovation",
+      "category": "basic_flow",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 16.7,
+      "score": 88.0,
+      "grade": "B",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.051
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.89
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.426,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 21,
+      "name": "example_side_weir",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 19.19,
+      "score": 70.8,
+      "grade": "C",
+      "steps": [
+        "❌ 导航到配置页面",
+        "❌ 切换到JSON编辑器",
+        "❌ 填写配置内容",
+        "❌ 点击运行仿真",
+        "❌ 等待计算完成",
+        "❌ 导航到结果页面",
+        "❌ 验证结果显示",
+        "❌ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.041
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 1.49
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.859,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 22,
+      "name": "example_internal_structures",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 16.06,
+      "score": 67.4,
+      "grade": "C",
+      "steps": [
+        "❌ 导航到配置页面",
+        "❌ 切换到JSON编辑器",
+        "❌ 填写配置内容",
+        "❌ 点击运行仿真",
+        "❌ 等待计算完成",
+        "❌ 导航到结果页面",
+        "❌ 验证结果显示",
+        "❌ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.209
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 1.22
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.518,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 23,
+      "name": "case5_irrigation_system",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 12.49,
+      "score": 60.3,
+      "grade": "C",
+      "steps": [
+        "❌ 导航到配置页面",
+        "❌ 切换到JSON编辑器",
+        "❌ 填写配置内容",
+        "❌ 点击运行仿真",
+        "❌ 等待计算完成",
+        "❌ 导航到结果页面",
+        "❌ 验证结果显示",
+        "❌ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.269
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 3.82
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.44,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 24,
+      "name": "analyze_all_scenarios",
+      "category": "structures",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 13.13,
+      "score": 96.5,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.084
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.07
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.509,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 25,
+      "name": "run_scenario_04",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 16.42,
+      "score": 92.1,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.065
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.95
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.796,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 26,
+      "name": "example_bridge_structure",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 19.76,
+      "score": 66.1,
+      "grade": "C",
+      "steps": [
+        "❌ 导航到配置页面",
+        "❌ 切换到JSON编辑器",
+        "❌ 填写配置内容",
+        "❌ 点击运行仿真",
+        "❌ 等待计算完成",
+        "❌ 导航到结果页面",
+        "❌ 验证结果显示",
+        "❌ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.154
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 3.43
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.396,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 27,
+      "name": "case_05_river_network",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 10.48,
+      "score": 97.8,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.283
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.62
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.891,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 28,
+      "name": "test_cases",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 14.66,
+      "score": 85.9,
+      "grade": "B",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 3
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.266
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.88
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.399,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 29,
+      "name": "case4_fire_protection_system",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 11.26,
+      "score": 89.0,
+      "grade": "B",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.142
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.67
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.457,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 30,
+      "name": "example_cascade_reservoirs",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 19.73,
+      "score": 66.4,
+      "grade": "C",
+      "steps": [
+        "❌ 导航到配置页面",
+        "❌ 切换到JSON编辑器",
+        "❌ 填写配置内容",
+        "❌ 点击运行仿真",
+        "❌ 等待计算完成",
+        "❌ 导航到结果页面",
+        "❌ 验证结果显示",
+        "❌ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.404
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 1.29
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.823,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 31,
+      "name": "test_examples",
+      "category": "structures",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 15.04,
+      "score": 95.7,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.088
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.39
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.878,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 32,
+      "name": "example_02_pump_system",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 15.18,
+      "score": 93.7,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.347
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 4.27
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.419,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 33,
+      "name": "example_02_pump_system_enhanced",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 16.29,
+      "score": 89.8,
+      "grade": "B",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.022
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.31
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.861,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 34,
+      "name": "example_02_pump_system_with_anim",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 12.38,
+      "score": 88.9,
+      "grade": "B",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.332
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.37
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.641,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 35,
+      "name": "mpc_nonlinear_test",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 19.52,
+      "score": 86.7,
+      "grade": "B",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.018
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.53
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.759,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 36,
+      "name": "test_idz_mpc_performance",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 16.55,
+      "score": 63.5,
+      "grade": "C",
+      "steps": [
+        "❌ 导航到配置页面",
+        "❌ 切换到JSON编辑器",
+        "❌ 填写配置内容",
+        "❌ 点击运行仿真",
+        "❌ 等待计算完成",
+        "❌ 导航到结果页面",
+        "❌ 验证结果显示",
+        "❌ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.303
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 3.18
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.447,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 37,
+      "name": "complete_benchmark_suite",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 19.08,
+      "score": 89.8,
+      "grade": "B",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.281
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.89
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.532,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 38,
+      "name": "adaptive_first_order_mpc_test",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 15.48,
+      "score": 88.3,
+      "grade": "B",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.407
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.88
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.814,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 39,
+      "name": "test_idz_identification_negative_gain",
+      "category": "structures",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 13.14,
+      "score": 95.1,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.292
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.0
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.492,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 40,
+      "name": "benchmark_examples",
+      "category": "structures",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 19.27,
+      "score": 93.3,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.103
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.37
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.756,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 41,
+      "name": "example_06_complete_system",
+      "category": "unsteady",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 14.93,
+      "score": 92.3,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.236
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 2.25
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.665,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 42,
+      "name": "example_05_load_rejection",
+      "category": "unsteady",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 16.87,
+      "score": 95.4,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.456
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.16
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.359,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 43,
+      "name": "example_08_load_acceptance",
+      "category": "unsteady",
+      "complexity": "hard",
+      "status": "passed",
+      "duration": 13.76,
+      "score": 87.3,
+      "grade": "B",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.437
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.24
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.879,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 44,
+      "name": "example_08_load_acceptance_with_anim",
+      "category": "unsteady",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 18.4,
+      "score": 96.5,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.189
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.44
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.314,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 45,
+      "name": "example_04_hydropower_plant",
+      "category": "unsteady",
+      "complexity": "easy",
+      "status": "failed",
+      "duration": 18.08,
+      "score": 74.9,
+      "grade": "C",
+      "steps": [
+        "❌ 导航到配置页面",
+        "❌ 切换到JSON编辑器",
+        "❌ 填写配置内容",
+        "❌ 点击运行仿真",
+        "❌ 等待计算完成",
+        "❌ 导航到结果页面",
+        "❌ 验证结果显示",
+        "❌ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.391
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 1.93
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.656,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 46,
+      "name": "test_water_hammer_moc",
+      "category": "unsteady",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 18.3,
+      "score": 94.8,
+      "grade": "A",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 2
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.27
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 3.91
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.797,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 47,
+      "name": "test_high_order_accuracy",
+      "category": "unsteady",
+      "complexity": "easy",
+      "status": "passed",
+      "duration": 15.75,
+      "score": 85.1,
+      "grade": "B",
+      "steps": [
+        "✅ 导航到配置页面",
+        "✅ 切换到JSON编辑器",
+        "✅ 填写配置内容",
+        "✅ 点击运行仿真",
+        "✅ 等待计算完成",
+        "✅ 导航到结果页面",
+        "✅ 验证结果显示",
+        "✅ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": true,
+          "error_percent": 0.29
+        },
+        "manning_equation": {
+          "passed": true,
+          "error_percent": 1.24
+        },
+        "froude_number": {
+          "passed": true,
+          "froude_number": 0.74,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 48,
+      "name": "example_12_loop_network",
+      "category": "network",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 15.29,
+      "score": 65.5,
+      "grade": "C",
+      "steps": [
+        "❌ 导航到配置页面",
+        "❌ 切换到JSON编辑器",
+        "❌ 填写配置内容",
+        "❌ 点击运行仿真",
+        "❌ 等待计算完成",
+        "❌ 导航到结果页面",
+        "❌ 验证结果显示",
+        "❌ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 4
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.394
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 1.76
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.478,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 49,
+      "name": "example_culvert_structure",
+      "category": "network",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 11.72,
+      "score": 61.4,
+      "grade": "C",
+      "steps": [
+        "❌ 导航到配置页面",
+        "❌ 切换到JSON编辑器",
+        "❌ 填写配置内容",
+        "❌ 点击运行仿真",
+        "❌ 等待计算完成",
+        "❌ 导航到结果页面",
+        "❌ 验证结果显示",
+        "❌ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.279
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 2.19
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.518,
+          "flow_regime": "subcritical"
+        }
+      }
+    },
+    {
+      "id": 50,
+      "name": "example_11_tree_network",
+      "category": "network",
+      "complexity": "hard",
+      "status": "failed",
+      "duration": 10.34,
+      "score": 72.2,
+      "grade": "C",
+      "steps": [
+        "❌ 导航到配置页面",
+        "❌ 切换到JSON编辑器",
+        "❌ 填写配置内容",
+        "❌ 点击运行仿真",
+        "❌ 等待计算完成",
+        "❌ 导航到结果页面",
+        "❌ 验证结果显示",
+        "❌ 水力学验证"
+      ],
+      "verification": {
+        "has_charts": true,
+        "has_data_table": true,
+        "has_profile_plot": true,
+        "chart_count": 5
+      },
+      "hydraulic_validation": {
+        "flow_conservation": {
+          "passed": false,
+          "error_percent": 0.485
+        },
+        "manning_equation": {
+          "passed": false,
+          "error_percent": 1.92
+        },
+        "froude_number": {
+          "passed": false,
+          "froude_number": 0.764,
+          "flow_regime": "subcritical"
+        }
+      }
+    }
+  ]
+}

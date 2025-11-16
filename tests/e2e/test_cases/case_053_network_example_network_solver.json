@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "example_network_solver",
+  "description": "网络求解器使用示例  演示如何使用NetworkSolver求解完整的河网系统： 1. 简单串联河段求解 2. Y型汇流网络求解 3. 复杂河网系统求解 4. 质量守恒验证  Stage 3 - Phase 3.2 示例",
+  "type": "steady_flow",
+  "canal": {
+    "length": 500.0,
+    "width": 15.0,
+    "slope": 0.001,
+    "roughness": 0.025,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/example_network_solver.py",
+    "category": "network",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.506899"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "test_hardy_cross_solver",
+  "description": "Unit Tests for Hardy Cross Solver - Hardy Cross求解器单元测试  This module contains comprehensive unit tests for: - HardyCrossSolver initialization - Network solving (tree, single-loop, multi-loop) - Converg",
+  "type": "steady_flow",
+  "canal": {
+    "length": 100.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "roughness": 50.0,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "tests/test_solvers/test_hardy_cross_solver.py",
+    "category": "network",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.517297"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "case1_urban_water_supply",
+  "description": "城市供水管网分析案例 Urban Water Supply Network Analysis Case Study  案例背景 Case Background: 某小型城市供水系统，包含1个水库、1个水塔、6个用水节点。 管网呈环状布置，总共8根管道。  分析内容 Analysis Content: 1. 管网稳态水力计算",
+  "type": "steady_flow",
+  "canal": {
+    "length": 2.0,
+    "width": 0.25,
+    "slope": 0.001,
+    "roughness": 100.0,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/case1_urban_water_supply.py",
+    "category": "network",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.511392"
+  }
+}

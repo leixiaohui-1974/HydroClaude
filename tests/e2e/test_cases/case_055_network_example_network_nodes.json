@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "example_network_nodes",
+  "description": "节点类型使用示例  演示如何使用各种专业化的节点类型 1. JunctionNode - 汇流节点示例 2. BifurcationNode - 分流节点示例 3. ReservoirNode - 水库节点示例 4. BoundaryNode - 边界节点示例  Stage 3 - Task 3.1.2 示例",
+  "type": "steady_flow",
+  "canal": {
+    "length": 10000.0,
+    "width": 20.0,
+    "slope": 0.001,
+    "roughness": 95.0,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 15.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/example_network_nodes.py",
+    "category": "network",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.508934"
+  }
+}
