@@ -1,0 +1,420 @@
+{
+  "timestamp": "2025-11-16T06:56:29.188704",
+  "mode": "demo",
+  "note": "这是测试流程的演示模拟，真实测试需要Web服务运行",
+  "summary": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "pass_rate": "100.0%",
+    "total_duration": 10.0,
+    "avg_duration": 2.0
+  },
+  "results": [
+    {
+      "id": 1,
+      "name": "example_complete_workflow",
+      "category": "unknown",
+      "status": "passed",
+      "steps": [
+        {
+          "step": 1,
+          "name": "导航到首页",
+          "status": "success",
+          "duration": 1.2,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_001_example_complete_workflow/01_homepage.png"
+        },
+        {
+          "step": 2,
+          "name": "进入配置页面",
+          "status": "success",
+          "duration": 0.8,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_001_example_complete_workflow/02_config_page.png"
+        },
+        {
+          "step": 3,
+          "name": "切换到JSON编辑器",
+          "status": "success",
+          "duration": 0.5,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_001_example_complete_workflow/03_json_editor.png"
+        },
+        {
+          "step": 4,
+          "name": "填写配置内容",
+          "status": "success",
+          "duration": 2.0,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_001_example_complete_workflow/04_config_filled.png"
+        },
+        {
+          "step": 5,
+          "name": "提交计算任务",
+          "status": "success",
+          "duration": 0.6,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_001_example_complete_workflow/05_submit_clicked.png"
+        },
+        {
+          "step": 6,
+          "name": "等待计算完成",
+          "status": "success",
+          "duration": 3.5,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_001_example_complete_workflow/06_calculation_complete.png"
+        },
+        {
+          "step": 7,
+          "name": "导航到结果页面",
+          "status": "success",
+          "duration": 1.0,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_001_example_complete_workflow/07_results_page.png"
+        },
+        {
+          "step": 8,
+          "name": "验证结果展示 - 图表",
+          "status": "success",
+          "duration": 1.5,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_001_example_complete_workflow/08_results_charts.png"
+        },
+        {
+          "step": 9,
+          "name": "验证结果展示 - 数据",
+          "status": "success",
+          "duration": 1.0,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_001_example_complete_workflow/09_results_data.png"
+        },
+        {
+          "step": 10,
+          "name": "生成报告",
+          "status": "success",
+          "duration": 0.8,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_001_example_complete_workflow/10_report_view.png"
+        }
+      ],
+      "start_time": 1763276176.6691527,
+      "end_time": 1763276178.673724,
+      "duration": 2.0045711994171143
+    },
+    {
+      "id": 2,
+      "name": "case_flood_control",
+      "category": "unknown",
+      "status": "passed",
+      "steps": [
+        {
+          "step": 1,
+          "name": "导航到首页",
+          "status": "success",
+          "duration": 1.2,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_002_case_flood_control/01_homepage.png"
+        },
+        {
+          "step": 2,
+          "name": "进入配置页面",
+          "status": "success",
+          "duration": 0.8,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_002_case_flood_control/02_config_page.png"
+        },
+        {
+          "step": 3,
+          "name": "切换到JSON编辑器",
+          "status": "success",
+          "duration": 0.5,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_002_case_flood_control/03_json_editor.png"
+        },
+        {
+          "step": 4,
+          "name": "填写配置内容",
+          "status": "success",
+          "duration": 2.0,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_002_case_flood_control/04_config_filled.png"
+        },
+        {
+          "step": 5,
+          "name": "提交计算任务",
+          "status": "success",
+          "duration": 0.6,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_002_case_flood_control/05_submit_clicked.png"
+        },
+        {
+          "step": 6,
+          "name": "等待计算完成",
+          "status": "success",
+          "duration": 3.5,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_002_case_flood_control/06_calculation_complete.png"
+        },
+        {
+          "step": 7,
+          "name": "导航到结果页面",
+          "status": "success",
+          "duration": 1.0,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_002_case_flood_control/07_results_page.png"
+        },
+        {
+          "step": 8,
+          "name": "验证结果展示 - 图表",
+          "status": "success",
+          "duration": 1.5,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_002_case_flood_control/08_results_charts.png"
+        },
+        {
+          "step": 9,
+          "name": "验证结果展示 - 数据",
+          "status": "success",
+          "duration": 1.0,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_002_case_flood_control/09_results_data.png"
+        },
+        {
+          "step": 10,
+          "name": "生成报告",
+          "status": "success",
+          "duration": 0.8,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_002_case_flood_control/10_report_view.png"
+        }
+      ],
+      "start_time": 1763276179.1740406,
+      "end_time": 1763276181.1772969,
+      "duration": 2.003256320953369
+    },
+    {
+      "id": 3,
+      "name": "comprehensive_scenario_test",
+      "category": "unknown",
+      "status": "passed",
+      "steps": [
+        {
+          "step": 1,
+          "name": "导航到首页",
+          "status": "success",
+          "duration": 1.2,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_003_comprehensive_scenario_test/01_homepage.png"
+        },
+        {
+          "step": 2,
+          "name": "进入配置页面",
+          "status": "success",
+          "duration": 0.8,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_003_comprehensive_scenario_test/02_config_page.png"
+        },
+        {
+          "step": 3,
+          "name": "切换到JSON编辑器",
+          "status": "success",
+          "duration": 0.5,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_003_comprehensive_scenario_test/03_json_editor.png"
+        },
+        {
+          "step": 4,
+          "name": "填写配置内容",
+          "status": "success",
+          "duration": 2.0,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_003_comprehensive_scenario_test/04_config_filled.png"
+        },
+        {
+          "step": 5,
+          "name": "提交计算任务",
+          "status": "success",
+          "duration": 0.6,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_003_comprehensive_scenario_test/05_submit_clicked.png"
+        },
+        {
+          "step": 6,
+          "name": "等待计算完成",
+          "status": "success",
+          "duration": 3.5,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_003_comprehensive_scenario_test/06_calculation_complete.png"
+        },
+        {
+          "step": 7,
+          "name": "导航到结果页面",
+          "status": "success",
+          "duration": 1.0,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_003_comprehensive_scenario_test/07_results_page.png"
+        },
+        {
+          "step": 8,
+          "name": "验证结果展示 - 图表",
+          "status": "success",
+          "duration": 1.5,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_003_comprehensive_scenario_test/08_results_charts.png"
+        },
+        {
+          "step": 9,
+          "name": "验证结果展示 - 数据",
+          "status": "success",
+          "duration": 1.0,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_003_comprehensive_scenario_test/09_results_data.png"
+        },
+        {
+          "step": 10,
+          "name": "生成报告",
+          "status": "success",
+          "duration": 0.8,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_003_comprehensive_scenario_test/10_report_view.png"
+        }
+      ],
+      "start_time": 1763276181.6776154,
+      "end_time": 1763276183.681133,
+      "duration": 2.0035176277160645
+    },
+    {
+      "id": 4,
+      "name": "quick_scenario_test",
+      "category": "unknown",
+      "status": "passed",
+      "steps": [
+        {
+          "step": 1,
+          "name": "导航到首页",
+          "status": "success",
+          "duration": 1.2,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_004_quick_scenario_test/01_homepage.png"
+        },
+        {
+          "step": 2,
+          "name": "进入配置页面",
+          "status": "success",
+          "duration": 0.8,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_004_quick_scenario_test/02_config_page.png"
+        },
+        {
+          "step": 3,
+          "name": "切换到JSON编辑器",
+          "status": "success",
+          "duration": 0.5,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_004_quick_scenario_test/03_json_editor.png"
+        },
+        {
+          "step": 4,
+          "name": "填写配置内容",
+          "status": "success",
+          "duration": 2.0,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_004_quick_scenario_test/04_config_filled.png"
+        },
+        {
+          "step": 5,
+          "name": "提交计算任务",
+          "status": "success",
+          "duration": 0.6,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_004_quick_scenario_test/05_submit_clicked.png"
+        },
+        {
+          "step": 6,
+          "name": "等待计算完成",
+          "status": "success",
+          "duration": 3.5,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_004_quick_scenario_test/06_calculation_complete.png"
+        },
+        {
+          "step": 7,
+          "name": "导航到结果页面",
+          "status": "success",
+          "duration": 1.0,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_004_quick_scenario_test/07_results_page.png"
+        },
+        {
+          "step": 8,
+          "name": "验证结果展示 - 图表",
+          "status": "success",
+          "duration": 1.5,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_004_quick_scenario_test/08_results_charts.png"
+        },
+        {
+          "step": 9,
+          "name": "验证结果展示 - 数据",
+          "status": "success",
+          "duration": 1.0,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_004_quick_scenario_test/09_results_data.png"
+        },
+        {
+          "step": 10,
+          "name": "生成报告",
+          "status": "success",
+          "duration": 0.8,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_004_quick_scenario_test/10_report_view.png"
+        }
+      ],
+      "start_time": 1763276184.1814513,
+      "end_time": 1763276186.184684,
+      "duration": 2.003232717514038
+    },
+    {
+      "id": 5,
+      "name": "standard_multi_scenario_test",
+      "category": "unknown",
+      "status": "passed",
+      "steps": [
+        {
+          "step": 1,
+          "name": "导航到首页",
+          "status": "success",
+          "duration": 1.2,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_005_standard_multi_scenario_test/01_homepage.png"
+        },
+        {
+          "step": 2,
+          "name": "进入配置页面",
+          "status": "success",
+          "duration": 0.8,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_005_standard_multi_scenario_test/02_config_page.png"
+        },
+        {
+          "step": 3,
+          "name": "切换到JSON编辑器",
+          "status": "success",
+          "duration": 0.5,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_005_standard_multi_scenario_test/03_json_editor.png"
+        },
+        {
+          "step": 4,
+          "name": "填写配置内容",
+          "status": "success",
+          "duration": 2.0,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_005_standard_multi_scenario_test/04_config_filled.png"
+        },
+        {
+          "step": 5,
+          "name": "提交计算任务",
+          "status": "success",
+          "duration": 0.6,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_005_standard_multi_scenario_test/05_submit_clicked.png"
+        },
+        {
+          "step": 6,
+          "name": "等待计算完成",
+          "status": "success",
+          "duration": 3.5,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_005_standard_multi_scenario_test/06_calculation_complete.png"
+        },
+        {
+          "step": 7,
+          "name": "导航到结果页面",
+          "status": "success",
+          "duration": 1.0,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_005_standard_multi_scenario_test/07_results_page.png"
+        },
+        {
+          "step": 8,
+          "name": "验证结果展示 - 图表",
+          "status": "success",
+          "duration": 1.5,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_005_standard_multi_scenario_test/08_results_charts.png"
+        },
+        {
+          "step": 9,
+          "name": "验证结果展示 - 数据",
+          "status": "success",
+          "duration": 1.0,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_005_standard_multi_scenario_test/09_results_data.png"
+        },
+        {
+          "step": 10,
+          "name": "生成报告",
+          "status": "success",
+          "duration": 0.8,
+          "screenshot": "/workspace/tests/e2e/screenshots_demo/case_005_standard_multi_scenario_test/10_report_view.png"
+        }
+      ],
+      "start_time": 1763276186.6849585,
+      "end_time": 1763276188.6883423,
+      "duration": 2.0033838748931885
+    }
+  ]
+}
