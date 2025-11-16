@@ -1,0 +1,66 @@
+.plugin-card {
+  height: 100%;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.plugin-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+}
+
+.plugin-card-icon {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 16px;
+}
+
+.plugin-card-icon img {
+  max-width: 80px;
+  max-height: 80px;
+  object-fit: contain;
+}
+
+.plugin-card-icon-placeholder {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.plugin-card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.plugin-card .ant-card-meta-title {
+  margin-bottom: 8px !important;
+}
+
+.plugin-card .ant-card-meta-description {
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.plugin-card .ant-card-actions {
+  background: #fafafa;
+}
+
+.plugin-card .ant-card-actions > li {
+  margin: 8px 0;
+}
+
+.plugin-card .ant-card-actions > li > span {
+  font-size: 18px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.plugin-card .ant-card-actions > li > span:hover {
+  color: #1890ff;
+}
