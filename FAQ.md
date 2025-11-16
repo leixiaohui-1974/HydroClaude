@@ -1,958 +1,792 @@
-# HydroClaude Frequently Asked Questions (FAQ)
+# ❓ HydroClaude 常见问题解答 (FAQ)
 
-**Version**: v1.3.0
-**Last Updated**: 2025-11-11
-
-This document answers the most common questions about HydroClaude installation, configuration, usage, and troubleshooting.
+**版本**: 2.0.0  
+**更新日期**: 2025-11-15
 
 ---
 
-## Table of Contents
+## 📋 目录
 
-- [General Questions](#general-questions)
-- [Installation & Setup](#installation--setup)
-- [Configuration & Parameters](#configuration--parameters)
-- [Simulation Issues](#simulation-issues)
-- [Performance & Optimization](#performance--optimization)
-- [API & Web Interface](#api--web-interface)
-- [Results & Interpretation](#results--interpretation)
-- [Troubleshooting](#troubleshooting)
-- [Advanced Topics](#advanced-topics)
+- [安装与设置](#安装与设置)
+- [基础使用](#基础使用)
+- [功能问题](#功能问题)
+- [技术问题](#技术问题)
+- [开发相关](#开发相关)
+- [性能优化](#性能优化)
+- [故障排除](#故障排除)
 
 ---
 
-## General Questions
+## 安装与设置
 
-### Q: What is HydroClaude?
+### Q1: 支持哪些操作系统？
 
-**A**: HydroClaude is an open-source hydraulic modeling platform for simulating 1D shallow water flow in rivers, canals, and channels. It uses advanced numerical methods (Godunov finite volume, HLL Riemann solver) to solve the Saint-Venant equations with high accuracy and numerical stability.
+**A**: HydroClaude支持以下操作系统：
 
-**Key Features**:
-- Web-based interface (React + FastAPI)
-- Numba JIT acceleration (8.8x speedup)
-- Perfect mass conservation (0.0% error)
-- 100% test coverage
-- Production-ready quality (A-grade)
-
----
-
-### Q: What can I simulate with HydroClaude?
-
-**A**: HydroClaude v1.3.0 supports:
-
-✅ **Steady Flow**:
-- Uniform flow in canals
-- Water surface profiles
-- Normal depth calculations
-
-✅ **Unsteady Flow**:
-- Dam break scenarios
-- Flood wave propagation
-- Flow routing
-
-✅ **Hydraulic Structures**:
-- Gates (partial opening)
-- Weirs
-- Control structures
-
-**Coming Soon** (see ROADMAP.md):
-- Sediment transport (v2.1)
-- Water quality (v2.1)
-- 2D modeling (v2.1)
+- **Windows**: Windows 10及以上
+- **macOS**: macOS 10.13 (High Sierra)及以上
+- **Linux**: 
+  - Ubuntu 18.04+
+  - Fedora 32+
+  - Debian 10+
+  - 其他现代Linux发行版（通过AppImage）
 
 ---
 
-### Q: Is HydroClaude suitable for production use?
+### Q2: 如何安装HydroClaude？
 
-**A**: **Yes**, for many applications:
+**A**: 
 
-✅ **Ready for Production** (90%):
-- Research and education
-- Design verification
-- Preliminary analysis
-- Internal company use
+**方式1: 桌面应用（推荐）**
 
-⚠️ **Not Yet Ready**:
-- Multi-user commercial deployment (planned v2.0)
-- Real-time critical systems (planned v3.0)
-- Regulated safety analysis (needs validation)
+1. 访问 [GitHub Releases](https://github.com/hydroclaude/hydroclaude/releases)
+2. 下载适合你系统的安装包
+3. 双击安装
 
-**Quality Metrics**:
-- Test pass rate: 100%
-- Mass conservation: 0.0% error
-- Code quality: A-grade
-- Documentation: 95% complete
-
----
-
-### Q: How accurate is HydroClaude?
-
-**A**: Very accurate for 1D shallow water applications:
-
-**Mass Conservation**: 0.0% error (perfect conservation)
-**Numerical Method**: Second-order accurate in space (with MUSCL), second-order in time (TVD-RK2)
-**Validation**: Tested against analytical solutions
-
-**Limitations**:
-- 1D assumption (no lateral variations)
-- Shallow water assumption (horizontal flow)
-- Rectangular cross-sections only (v1.3.0)
-
----
-
-### Q: What license is HydroClaude released under?
-
-**A**: Check the `LICENSE` file in the repository. Typically open-source projects use MIT, GPL, or Apache licenses.
-
----
-
-## Installation & Setup
-
-### Q: What are the system requirements?
-
-**A**:
-
-**Minimum**:
-- OS: Linux, macOS, or Windows
-- Python: 3.8+
-- RAM: 4 GB
-- CPU: Any modern processor
-
-**Recommended**:
-- Python: 3.9 or 3.10
-- RAM: 8 GB+
-- CPU: Multi-core processor
-- Numba installed (for 8.8x speedup)
-
-**For Web Interface**:
-- Node.js: 16+
-- Modern browser (Chrome, Firefox, Edge)
-
----
-
-### Q: How do I install HydroClaude?
-
-**A**:
+**方式2: 从源码**
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/YOUR_ORG/HydroClaude.git
-cd HydroClaude
-
-# 2. Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# 3. Install Python dependencies
-pip install -r requirements.txt
-
-# 4. Install frontend dependencies (for web interface)
-cd web/frontend
+git clone https://github.com/hydroclaude/hydroclaude.git
+cd hydroclaude/webapp
 npm install
-cd ../..
-
-# 5. Verify installation
-python web/verify_installation.py
+npm run dev:electron
 ```
 
-**See**: `README.md` for detailed instructions
+---
+
+### Q3: 安装包多大？
+
+**A**: 
+
+- Windows安装程序: ~80MB
+- macOS DMG: ~85MB
+- Linux AppImage: ~85MB
+
+首次启动后总共占用约150-200MB磁盘空间。
 
 ---
 
-### Q: Installation fails with "package not found" error. What should I do?
+### Q4: 需要安装Python吗？
 
-**A**:
+**A**: 
 
-1. **Update pip**:
-   ```bash
-   pip install --upgrade pip
-   ```
-
-2. **Install dependencies one by one** to identify the problematic package:
-   ```bash
-   pip install numpy
-   pip install scipy
-   pip install matplotlib
-   # etc.
-   ```
-
-3. **Check Python version**:
-   ```bash
-   python --version  # Should be 3.8+
-   ```
-
-4. **Use conda** if pip fails:
-   ```bash
-   conda create -n hydroclaude python=3.9
-   conda activate hydroclaude
-   conda install numpy scipy matplotlib
-   ```
+- **桌面应用**: 不需要，所有依赖已打包
+- **从源码运行**: 需要Python 3.11+（用于后端API，可选）
 
 ---
 
-### Q: Do I need Numba? What happens if I don't install it?
+### Q5: 为什么启动很慢？
 
-**A**:
+**A**: 
 
-**Numba is optional but highly recommended**:
-- **With Numba**: 8.8x faster (0.173s for 100 cells, 30s simulation)
-- **Without Numba**: Slower but still works (1.5s for same simulation)
+首次启动可能需要2-5秒，这是正常的。原因：
+- Electron加载
+- React应用初始化
+- 检查更新
 
-**Installation**:
-```bash
-pip install numba
-```
+后续启动会更快（< 2秒）。
 
-**Note**: Numba requires a compatible compiler. If installation fails, the solver will automatically fall back to pure NumPy (slower but functional).
-
----
-
-### Q: The web interface won't start. What should I check?
-
-**A**:
-
-**Backend Issues**:
-```bash
-# Check if backend is running
-curl http://localhost:8000/health
-
-# If not, start backend
-cd web/backend
-./start_server.sh
-
-# Check logs
-cat web/backend/server.log
-```
-
-**Frontend Issues**:
-```bash
-# Check if frontend is running
-curl http://localhost:5173
-
-# If not, start frontend
-cd web/frontend
-npm run dev
-
-# Check for errors in terminal output
-```
-
-**Common Issues**:
-- Port already in use: Kill existing process or change port
-- Dependencies not installed: Run `npm install` in frontend directory
-- Python packages missing: Run `pip install -r requirements.txt`
+**优化建议**:
+- 关闭不必要的启动项
+- 使用SSD硬盘
+- 确保有足够内存（建议4GB+）
 
 ---
 
-## Configuration & Parameters
+## 基础使用
 
-### Q: Which configuration template should I use?
+### Q6: 如何创建第一个仿真？
 
-**A**:
+**A**: 
 
-| Your Application | Recommended Template | Why |
-|------------------|---------------------|-----|
-| **Learning/Testing** | `basic_steady_flow.json` | Simple, stable, well-documented |
-| **CI/CD Pipeline** | `quick_test.json` | Fast (<0.1s), minimal resources |
-| **Dam Break Study** | `dam_break_stable.json` | Conservative params, validated |
-| **Flood Routing** | `flood_routing.json` | Longer channel, realistic |
-
-**Templates Location**: `web/config_templates/`
-
-**See**: `web/config_templates/README.md` for detailed comparison
-
----
-
-### Q: What CFL number should I use?
-
-**A**:
-
-**Quick Decision Table**:
-
-| Your Situation | CFL | Order |
-|----------------|-----|-------|
-| **First time user** | 0.3 | 1 |
-| **Standard simulation** | 0.3-0.4 | 1 |
-| **Need more speed** | 0.4-0.5 | 1 |
-| **Need high accuracy** | 0.3 | 2 |
-| **Large flow rate (>100 m³/s)** | 0.3 | 1 |
-| **Steep slope or supercritical** | 0.3 | 1 |
-
-**Golden Rules**:
-- ✅ Start with CFL = 0.3 (safest)
-- ✅ CFL ≤ 0.5 for order=2
-- ❌ Never use CFL > 0.8
-- ❌ Never use CFL > 0.5 with order=2
-
-**See**: `PARAMETER_SELECTION_GUIDE.md` for detailed guide
+1. 启动HydroClaude
+2. 点击"配置"标签
+3. 选择"可视化编辑"模式
+4. 填写基本参数:
+   - 渠道长度: 10000 m
+   - 渠道宽度: 10 m
+   - 底坡: 0.001
+   - 糙率: 0.025
+   - 流量: 50 m³/s
+5. 点击"运行仿真"
+6. 查看结果
 
 ---
 
-### Q: What's the difference between order=1 and order=2?
+### Q7: 配置文件保存在哪里？
 
-**A**:
+**A**: 
 
-**Order 1** (First-order accurate):
-- ✅ More stable
-- ✅ Works with higher CFL (up to 0.8)
-- ✅ Recommended for beginners
-- ❌ More numerical diffusion (smooths sharp features)
+**桌面应用**:
+- Windows: `C:\Users\用户名\Documents\HydroClaude\`
+- macOS: `~/Documents/HydroClaude/`
+- Linux: `~/Documents/HydroClaude/`
 
-**Order 2** (Second-order accurate):
-- ✅ More accurate (less diffusion)
-- ✅ Better captures sharp features (dam breaks, hydraulic jumps)
-- ❌ Less stable
-- ❌ Requires lower CFL (≤ 0.5)
-
-**Recommendation**: Start with order=1, switch to order=2 only if you need the extra accuracy and are comfortable with stability considerations.
+可以在"文件 → 打开项目"中查看和管理。
 
 ---
 
-### Q: How many grid cells should I use?
+### Q8: 如何导出结果？
 
-**A**:
+**A**: 
 
-**Rule of Thumb**:
-- Grid spacing `dx = length / n_cells`
-- Typical range: **1-50 meters**
+**导出图表**:
+1. 进入"结果"页面
+2. 右键点击任意图表
+3. 选择"下载图片"或"导出数据"
 
-**Examples**:
+**导出格式**:
+- 图片: PNG (高分辨率)
+- 数据: CSV, JSON, HDF5
 
-| Channel Length | n_cells | dx | Use Case |
-|----------------|---------|-----|----------|
-| 1000 m | 100 | 10 m | Standard |
-| 1000 m | 200 | 5 m | Higher resolution |
-| 5000 m | 500 | 10 m | Long channel |
-| 500 m | 50 | 10 m | Short channel |
-
-**Trade-offs**:
-- **More cells**: Higher accuracy, longer compute time
-- **Fewer cells**: Faster, but less accurate
-
-**Validation API enforces**: 0.1 m ≤ dx ≤ 1000 m
+**批量导出**:
+- 点击"导出全部"按钮
+- 选择导出格式和位置
 
 ---
 
-### Q: What Manning's n value should I use?
+### Q9: 支持哪些单位制？
 
-**A**:
+**A**: 
 
-**Common Values**:
+目前使用**国际单位制(SI)**:
+- 长度: 米(m)
+- 时间: 秒(s)
+- 流量: 立方米/秒(m³/s)
+- 流速: 米/秒(m/s)
 
-| Channel Type | Manning's n |
-|--------------|-------------|
-| **Concrete (smooth)** | 0.011 - 0.013 |
-| **Concrete (rough)** | 0.014 - 0.017 |
-| **Earth, clean** | 0.020 - 0.025 |
-| **Earth, weedy** | 0.025 - 0.035 |
-| **Natural stream, clean** | 0.030 - 0.040 |
-| **Natural stream, weedy** | 0.035 - 0.050 |
-| **Floodplain, vegetated** | 0.040 - 0.100 |
-
-**v1.3.0 Validation**: Minimum value is 0.001 (frictionless flow not allowed)
-
-**Reference**: Chow, V. T. (1959). Open-channel hydraulics.
+**未来计划**: v2.2.0将支持单位转换。
 
 ---
 
-### Q: What's the difference between boundary condition types?
+### Q10: 可以模拟多长时间？
 
-**A**:
+**A**: 
 
-**Upstream Boundary**:
-- **`Q` (flow rate)**: Specify discharge (m³/s) - most common
-- **`h` (depth)**: Specify water depth (m)
-- **`closed`**: No flow through boundary
+- **稳态**: 无时间限制，直到收敛
+- **非稳态**: 理论上无限制，但建议< 10000秒
 
-**Downstream Boundary**:
-- **`h` (depth)**: Specify water depth (m) - most common
-- **`Q` (flow rate)**: Specify discharge (m³/s)
-- **`open`**: Free outflow (natural boundary)
+实际限制取决于:
+- 网格数量
+- 时间步长
+- 计算机性能
 
-**Common Combinations**:
-- Steady flow: Upstream `Q` + Downstream `h`
-- Dam break: Use `dam_break` initial condition
-- Reservoir: Upstream `closed` + Downstream `open`
+典型仿真时间: 几秒到几分钟。
 
 ---
 
-## Simulation Issues
+## 功能问题
 
-### Q: Simulation fails with "Numerical instability detected". What should I do?
+### Q11: 支持哪些水工结构？
 
-**A**:
+**A**: 
 
-**Immediate Fix** (90% of cases):
+目前支持:
+- ✅ 闸门 (Sluice Gate)
+- ✅ 堰 (Weir)
+- ✅ 孔口 (Orifice)
 
-1. **Lower CFL**:
-   ```json
-   "cfl": 0.3  // Change from 0.5 or higher
-   ```
-
-2. **Use first-order**:
-   ```json
-   "order": 1  // Change from 2
-   ```
-
-3. **Increase friction**:
-   ```json
-   "manning_n": 0.030  // Increase from lower value
-   ```
-
-**If still fails**:
-
-4. **Reduce flow rate** (if very large):
-   ```json
-   "Q": 20.0  // Reduce from 100+
-   ```
-
-5. **Use finer grid**:
-   ```json
-   "n_cells": 200  // Increase from 100
-   ```
-
-**See**: `QUICK_REFERENCE_v1.3.0.md` → "Problem 1: Numerical instability"
-
----
-
-### Q: I get "Field required" validation error. What's wrong?
-
-**A**:
-
-**v1.3.0 Breaking Change**: Several fields are now **required** (previously optional).
-
-**Required Fields**:
-- `width`
-- `length`
-- `n_cells`
-- `initial_conditions`
-- `boundary_conditions`
-
-**Fix**:
+**添加方法**:
 ```json
 {
-  "name": "my_simulation",
-  "config": {
-    "width": 10.0,              // ADD THIS
-    "length": 1000.0,           // ADD THIS
-    "n_cells": 100,             // ADD THIS
-    "initial_conditions": {...}, // ADD THIS
-    "boundary_conditions": {...} // ADD THIS
-  }
-}
-```
-
-**Migration Guide**: See `RELEASE_NOTES_v1.3.0.md` Section 3.0
-
----
-
-### Q: Why is my mass conservation error > 1%?
-
-**A**:
-
-**Good mass conservation** (< 0.5%) indicates:
-- Numerical scheme is working correctly
-- Grid resolution is adequate
-- Parameters are appropriate
-
-**Poor mass conservation** (> 1%) suggests:
-
-1. **Grid too coarse**:
-   ```json
-   "n_cells": 200  // Increase from 50 or 100
-   ```
-
-2. **CFL too high**:
-   ```json
-   "cfl": 0.3  // Reduce from 0.5+
-   ```
-
-3. **Time step too large**: Solver auto-adjusts, but check simulation duration
-
-**Our Templates**: All achieve < 0.5% (most achieve 0.0%)
-
----
-
-### Q: Simulation runs very slowly. How can I speed it up?
-
-**A**:
-
-**Quick Fixes**:
-
-1. **Install Numba** (8.8x speedup):
-   ```bash
-   pip install numba
-   ```
-
-2. **Reduce grid cells**:
-   ```json
-   "n_cells": 100  // Down from 500
-   ```
-
-3. **Reduce simulation time**:
-   ```json
-   "t_end": 30.0  // Down from 300.0
-   ```
-
-4. **Increase CFL** (if stable):
-   ```json
-   "cfl": 0.5  // Up from 0.3 (test stability first)
-   ```
-
-**Performance Benchmarks**:
-- 100 cells, 30s: 0.173s (with Numba)
-- 500 cells, 60s: ~1.5s (with Numba)
-
-**See**: `QUICK_REFERENCE_v1.3.0.md` → "Performance Benchmarks"
-
----
-
-## Performance & Optimization
-
-### Q: How can I maximize performance?
-
-**A**:
-
-**Priority 1 - Install Numba** (8.8x speedup):
-```bash
-pip install numba
-```
-
-**Priority 2 - Optimize Parameters**:
-- Use minimum necessary `n_cells` for your accuracy needs
-- Use maximum stable `cfl` (test with 0.3, increase to 0.4-0.5 if stable)
-- Reduce `t_end` to minimum needed
-
-**Priority 3 - Hardware**:
-- Use faster CPU (Numba is CPU-bound)
-- Close other applications
-- Use local deployment (not over network)
-
-**Scaling**:
-```
-Compute time ≈ n_cells × t_end × 0.00003 seconds (with Numba)
-```
-
----
-
-### Q: Can I run simulations in parallel?
-
-**A**:
-
-**Yes!** The API is asynchronous:
-
-```python
-import requests
-import concurrent.futures
-
-# Submit multiple simulations
-task_ids = []
-for config in my_configs:
-    response = requests.post('http://localhost:8000/api/v1/simulations', json=config)
-    task_ids.append(response.json()['task_id'])
-
-# Poll all in parallel
-def get_results(task_id):
-    # Wait for completion
-    while True:
-        status = requests.get(f'http://localhost:8000/api/v1/simulations/{task_id}/status')
-        if status.json()['status'] == 'completed':
-            break
-        time.sleep(1)
-
-    # Get results
-    return requests.get(f'http://localhost:8000/api/v1/simulations/{task_id}/results').json()
-
-# Use thread pool
-with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-    results = list(executor.map(get_results, task_ids))
-```
-
-**Note**: v1.3.0 processes simulations sequentially. v2.0 will add distributed task queue (Celery) for true parallel processing.
-
----
-
-## API & Web Interface
-
-### Q: How do I use the API from Python?
-
-**A**:
-
-```python
-import requests
-import time
-
-BASE_URL = "http://localhost:8000/api/v1"
-
-# 1. Submit simulation
-config = {
-    "name": "My Simulation",
-    "config": {
-        "width": 10.0,
-        "length": 1000.0,
-        "n_cells": 100,
-        "initial_conditions": {"type": "uniform", "h": 5.0, "Q": 20.0},
-        "boundary_conditions": {
-            "upstream": {"type": "Q", "value": 20.0},
-            "downstream": {"type": "h", "value": 5.0}
-        }
+  "structures": [
+    {
+      "type": "sluice_gate",
+      "position": 5000,
+      "width": 10,
+      "opening": 2.0
     }
+  ]
 }
-
-response = requests.post(f"{BASE_URL}/simulations", json=config)
-task_id = response.json()['task_id']
-
-# 2. Poll for completion
-while True:
-    status_response = requests.get(f"{BASE_URL}/simulations/{task_id}/status")
-    status = status_response.json()['status']
-
-    if status == 'completed':
-        break
-    elif status == 'failed':
-        print(f"Error: {status_response.json()['error']}")
-        exit(1)
-
-    time.sleep(1)
-
-# 3. Get results
-results = requests.get(f"{BASE_URL}/simulations/{task_id}/results").json()
-print(f"Mass conservation error: {results['mass_conservation_error']:.6f}%")
 ```
+
+**未来计划**: v2.2.0将增加更多结构类型。
 
 ---
 
-### Q: Can I use the API from other languages?
+### Q12: 如何绘制复杂的渠道形状？
 
-**A**:
+**A**: 
 
-**Yes!** The API is language-agnostic (REST + JSON).
+1. 进入"地图"页面
+2. 选择"渠道绘制"工具
+3. 点击地图绘制路径
+4. 编辑节点调整形状
+5. 自动计算长度和坡度
+6. 导出GeoJSON
 
-**JavaScript/Node.js**:
-```javascript
-const axios = require('axios');
+**限制**: 目前仅支持矩形断面。
 
-async function runSimulation(config) {
-    const response = await axios.post('http://localhost:8000/api/v1/simulations', config);
-    const taskId = response.data.task_id;
+**未来计划**: v2.5.0将支持复杂断面。
 
-    // Poll for completion
-    while (true) {
-        const status = await axios.get(`http://localhost:8000/api/v1/simulations/${taskId}/status`);
-        if (status.data.status === 'completed') break;
-        await new Promise(resolve => setTimeout(resolve, 1000));
-    }
+---
 
-    // Get results
-    const results = await axios.get(`http://localhost:8000/api/v1/simulations/${taskId}/results`);
-    return results.data;
+### Q13: GIS地图需要联网吗？
+
+**A**: 
+
+- **在线地图**: 需要联网（OpenStreetMap等）
+- **离线使用**: 可以使用缓存的瓦片
+
+**建议**: 首次使用时联网缓存地图，之后可离线使用。
+
+---
+
+### Q14: 如何安装插件？
+
+**A**: 
+
+**方式1: 从插件市场（未来）**
+1. 进入"插件"页面
+2. 浏览或搜索插件
+3. 点击"安装"
+
+**方式2: 手动安装**
+1. 下载插件文件夹
+2. 复制到 `plugins/` 目录
+3. 重启应用
+4. 在"插件"页面激活
+
+---
+
+### Q15: 可以自定义图表样式吗？
+
+**A**: 
+
+**内置选项**:
+- 颜色主题
+- 线条样式
+- 标记类型
+
+**高级定制**:
+- 开发自定义可视化插件
+- 参考: `plugins/examples/custom-visualization/`
+
+---
+
+## 技术问题
+
+### Q16: 使用什么数值方法？
+
+**A**: 
+
+HydroClaude提供两种求解器:
+
+**1. HydrostaticCanalSolver (推荐)**
+- 方法: 静水压力假设
+- 优点: 快速、稳定
+- 适用: 稳态和缓变流
+- 误差: < 0.01%
+
+**2. GodunvFVMSolver**
+- 方法: Godunov有限体积法
+- 优点: 通用、精确
+- 适用: 非稳态和激波
+- 误差: < 1%
+
+---
+
+### Q17: 如何提高计算精度？
+
+**A**: 
+
+1. **增加网格数**:
+   ```json
+   {
+     "nx": 1000  // 默认500
+   }
+   ```
+
+2. **减小时间步长**:
+   ```json
+   {
+     "dt": 0.1  // 默认1.0
+   }
+   ```
+
+3. **调整收敛容差**:
+   ```json
+   {
+     "convergence_tol": 0.01  // 默认0.1
+   }
+   ```
+
+**注意**: 精度提高会增加计算时间。
+
+---
+
+### Q18: 收敛问题怎么办？
+
+**A**: 
+
+**症状**: "求解器未收敛"错误
+
+**解决方法**:
+
+1. **检查参数合理性**:
+   - 流量是否过大/过小？
+   - 坡度是否合理？
+   - 糙率是否合理？
+
+2. **调整求解器参数**:
+   ```json
+   {
+     "max_iter": 200,  // 增加迭代次数
+     "convergence_tol": 1.0,  // 放宽容差
+     "relaxation": 0.5  // 添加松弛因子
+   }
+   ```
+
+3. **改进初始条件**:
+   - 使用均匀流作为初始值
+   - 逐步增加流量
+
+---
+
+### Q19: 数据格式是什么？
+
+**A**: 
+
+**输入格式**: JSON
+```json
+{
+  "length": 10000,
+  "width": 10,
+  "slope": 0.001,
+  "roughness": 0.025,
+  "flow_rate": 50
 }
 ```
 
-**curl** (command line):
+**输出格式**:
+- **JSON**: 轻量，易读
+- **CSV**: 表格数据，Excel兼容
+- **HDF5**: 大数据，高效压缩
+
+**验证**: 自动JSON Schema验证。
+
+---
+
+### Q20: 可以批量运行吗？
+
+**A**: 
+
+可以！使用Python SDK:
+
+```python
+from hydro_sdk import HydroClient
+
+client = HydroClient("http://localhost:8000")
+
+# 批量配置
+configs = [
+  {"flow_rate": 50, ...},
+  {"flow_rate": 100, ...},
+  {"flow_rate": 150, ...}
+]
+
+# 批量运行
+results = client.batch_run(configs)
+```
+
+参考: `examples/batch_processing/`
+
+---
+
+## 开发相关
+
+### Q21: 如何开发插件？
+
+**A**: 
+
+**步骤**:
+
+1. **阅读文档**:
+   ```bash
+   docs/plugins/getting-started.md
+   ```
+
+2. **创建插件**:
+   ```
+   my-plugin/
+   ├── plugin.json
+   ├── src/index.ts
+   └── README.md
+   ```
+
+3. **实现功能**:
+   ```typescript
+   class MyPlugin implements Plugin {
+     async onActivate(api: PluginAPI) {
+       // 你的代码
+     }
+   }
+   ```
+
+4. **测试**:
+   ```bash
+   cp -r my-plugin plugins/examples/
+   npm run dev:electron
+   ```
+
+**完整示例**: `plugins/examples/`
+
+---
+
+### Q22: 插件有哪些API？
+
+**A**: 
+
+8个标准API:
+
+```typescript
+api.simulation      // 仿真控制
+api.visualization   // 图表扩展
+api.data            // 数据处理
+api.ui              // 界面扩展
+api.utils           // 工具函数
+api.storage         // 数据存储
+api.events          // 事件系统
+api.commands        // 命令系统
+```
+
+**详细文档**: `docs/plugins/api-reference.md`
+
+---
+
+### Q23: 如何贡献代码？
+
+**A**: 
+
+1. **Fork仓库**
+2. **创建分支**: `git checkout -b feature/my-feature`
+3. **开发和测试**
+4. **提交**: `git commit -m "feat: add my feature"`
+5. **推送**: `git push origin feature/my-feature`
+6. **创建PR**
+
+**详细指南**: `CONTRIBUTING.md`
+
+---
+
+### Q24: 如何报告Bug？
+
+**A**: 
+
+1. 访问 [GitHub Issues](https://github.com/hydroclaude/hydroclaude/issues)
+2. 点击"New Issue"
+3. 选择"Bug Report"模板
+4. 填写详细信息:
+   - 环境（OS, 版本）
+   - 复现步骤
+   - 期望结果
+   - 实际结果
+   - 截图（如有）
+
+---
+
+### Q25: 后端API在哪里？
+
+**A**: 
+
+**启动后端**:
 ```bash
-# Submit
-curl -X POST http://localhost:8000/api/v1/simulations \
-  -H "Content-Type: application/json" \
-  -d @my_config.json
-
-# Get status
-curl http://localhost:8000/api/v1/simulations/{task_id}/status
-
-# Get results
-curl http://localhost:8000/api/v1/simulations/{task_id}/results
+cd backend
+pip install -r requirements.txt
+python run.py
 ```
 
----
+**访问API文档**:
+```
+http://localhost:8000/docs
+```
 
-### Q: What does each API status mean?
-
-**A**:
-
-| Status | Meaning | Action |
-|--------|---------|--------|
-| `pending` | Queued, not started yet | Keep polling |
-| `running` | Currently executing | Keep polling |
-| `completed` | Finished successfully | Fetch results |
-| `failed` | Error occurred | Check error field |
-
-**Error Handling**:
+**Python SDK**:
 ```python
-status_response = requests.get(f"{BASE_URL}/simulations/{task_id}/status")
-data = status_response.json()
-
-if data['status'] == 'failed':
-    error_msg = data.get('error', 'Unknown error')
-    print(f"Simulation failed: {error_msg}")
+from hydro_sdk import HydroClient
+client = HydroClient("http://localhost:8000")
 ```
 
 ---
 
-## Results & Interpretation
+## 性能优化
 
-### Q: How do I interpret the results?
+### Q26: 如何加快计算速度？
 
-**A**:
+**A**: 
 
-**Key Result Fields**:
+1. **减少网格数**:
+   ```json
+   {"nx": 200}  // 默认500
+   ```
 
-```python
-results = {
-    't': [...],  # Time points (s)
-    'x': [...],  # Spatial positions (m)
-    'h': [[...]],  # Water depth (m) - shape: (n_time, n_cells)
-    'Q': [[...]],  # Flow rate (m³/s) - shape: (n_time, n_cells)
-    'mass_conservation_error': 0.0,  # Percent error
-    'compute_time': 0.173,  # Seconds
-    'max_froude': 0.97,  # Maximum Froude number
-}
-```
+2. **使用静水压力求解器**:
+   ```json
+   {"solver": "hydrostatic"}
+   ```
 
-**Analysis**:
+3. **增大时间步长**:
+   ```json
+   {"dt": 1.0}  // 根据CFL条件
+   ```
 
-```python
-import numpy as np
-
-# Final state
-h_final = np.array(results['h'][-1])
-Q_final = np.array(results['Q'][-1])
-
-# Calculate velocity
-width = 10.0  # Your channel width
-u = Q_final / (width * h_final)
-
-# Calculate Froude number
-g = 9.81
-Fr = u / np.sqrt(g * h_final)
-
-print(f"Average depth: {np.mean(h_final):.2f} m")
-print(f"Average velocity: {np.mean(u):.2f} m/s")
-print(f"Flow regime: {'Subcritical' if np.mean(Fr) < 1 else 'Supercritical'}")
-```
+4. **启用并行计算**（未来）:
+   ```json
+   {"parallel": true}
+   ```
 
 ---
 
-### Q: What Froude number values are normal?
+### Q27: 内存占用太高怎么办？
 
-**A**:
+**A**: 
 
-**Froude Number** = `u / sqrt(g * h)`
+**正常内存占用**:
+- 桌面应用: ~150MB
+- Web应用: ~100MB
 
-**Interpretation**:
-- **Fr < 1**: **Subcritical** (tranquil) flow - normal for mild slopes
-- **Fr = 1**: **Critical** flow - transition point
-- **Fr > 1**: **Supercritical** (rapid) flow - steep slopes, dam breaks
+**如果过高**:
 
-**Typical Values**:
-- Rivers: 0.1 - 0.5 (subcritical)
-- Irrigation canals: 0.2 - 0.4 (subcritical)
-- Steep mountain streams: 0.5 - 2.0 (may be supercritical)
-- Dam break wave: 1.0 - 3.0 (supercritical)
+1. **减少网格数**
+2. **关闭实时预览**
+3. **清理缓存数据**
+4. **重启应用**
 
-**Design Considerations**:
-- Subcritical: Flow controlled from downstream (use downstream h boundary)
-- Supercritical: Flow controlled from upstream (use upstream Q boundary)
-
----
-
-### Q: What does "mass conservation error" tell me?
-
-**A**:
-
-**Mass Conservation Error** = (Final Mass - Initial Mass) / Initial Mass × 100%
-
-**Quality Assessment**:
-- **< 0.1%**: Excellent (our templates achieve 0.0%)
-- **0.1% - 0.5%**: Good (acceptable for most applications)
-- **0.5% - 1.0%**: Fair (consider refining grid or parameters)
-- **> 1.0%**: Poor (refine grid, lower CFL, or check configuration)
-
-**Causes of Poor Conservation**:
-- Grid too coarse
-- CFL too high
-- Simulation too long (errors accumulate)
-- Inappropriate boundary conditions
+**内存监控**:
+- Windows: 任务管理器
+- macOS: 活动监视器
+- Linux: htop
 
 ---
 
-## Troubleshooting
+### Q28: 大规模仿真建议？
 
-### Q: Backend starts but API requests fail with 500 error
+**A**: 
 
-**A**:
+**网格数 > 10000**:
+- 使用HDF5格式
+- 启用数据压缩
+- 分段处理结果
 
-1. **Check logs**:
+**时间步数 > 10000**:
+- 减少保存频率
+- 使用后处理分析
+- 考虑云计算（v3.0）
+
+---
+
+## 故障排除
+
+### Q29: 无法启动怎么办？
+
+**A**: 
+
+**Windows**:
+1. 检查防病毒软件
+2. 以管理员身份运行
+3. 重新安装
+
+**macOS**:
+1. 系统偏好设置 → 安全性
+2. 允许"来自身份不明开发者"的应用
+3. 或: `xattr -cr /Applications/HydroClaude.app`
+
+**Linux**:
+1. 检查执行权限: `chmod +x HydroClaude.AppImage`
+2. 安装依赖: `sudo apt install libfuse2`
+
+---
+
+### Q30: 计算结果不合理？
+
+**A**: 
+
+**检查清单**:
+
+1. **参数合理性**:
+   - 流量: 1-1000 m³/s
+   - 坡度: 0.0001-0.01
+   - 糙率: 0.010-0.035
+   - 宽度: 1-100 m
+
+2. **边界条件**:
+   - 上游: 流量或水深
+   - 下游: 水深或自由出流
+
+3. **数值稳定性**:
+   - CFL条件
+   - 网格质量
+
+4. **验证**:
+   - 查看流量验证图
+   - 检查Froude数
+
+**仍有问题**: 在GitHub提Issue。
+
+---
+
+### Q31: 更新失败？
+
+**A**: 
+
+**症状**: "更新下载失败"
+
+**解决**:
+
+1. **检查网络连接**
+2. **手动下载**:
+   - 访问 GitHub Releases
+   - 下载最新版
+   - 手动安装
+3. **关闭防火墙/代理**
+
+**跳过自动更新**:
+- 设置 → 取消"自动检查更新"
+
+---
+
+### Q32: 数据丢失？
+
+**A**: 
+
+**自动备份**:
+- 每次保存自动创建备份
+- 位置: `Documents/HydroClaude/backups/`
+
+**恢复数据**:
+1. 文件 → 打开项目
+2. 浏览到备份文件夹
+3. 选择最近的备份
+
+**建议**:
+- 定期导出重要项目
+- 使用版本控制（Git）
+
+---
+
+### Q33: 插件不工作？
+
+**A**: 
+
+**检查**:
+
+1. **插件清单**:
+   - `plugin.json`格式正确
+   - 所有必需字段都有
+
+2. **权限**:
+   - 检查`permissions`数组
+   - 确保有必要权限
+
+3. **代码错误**:
+   - 打开开发者工具 (Ctrl+Shift+I)
+   - 查看控制台错误
+
+4. **版本兼容**:
+   - 检查`minVersion`和`maxVersion`
+
+---
+
+### Q34: Web界面空白？
+
+**A**: 
+
+**可能原因**:
+
+1. **浏览器不兼容**:
+   - 推荐: Chrome 90+, Firefox 88+
+   - 升级浏览器
+
+2. **JavaScript被禁用**:
+   - 检查浏览器设置
+   - 启用JavaScript
+
+3. **缓存问题**:
+   - 清除浏览器缓存
+   - 硬刷新 (Ctrl+Shift+R)
+
+4. **端口冲突**:
+   - 默认端口5173
+   - 更改: `npm run dev -- --port 3000`
+
+---
+
+### Q35: 无法连接后端API？
+
+**A**: 
+
+**检查**:
+
+1. **后端是否运行**:
    ```bash
-   cat web/backend/server.log
+   cd backend
+   python run.py
    ```
 
-2. **Common causes**:
-   - Missing Python packages: `pip install -r requirements.txt`
-   - Validation error: Check required fields
-   - Solver crash: Reduce CFL, check parameters
+2. **端口是否正确**:
+   - 默认: 8000
+   - 访问: http://localhost:8000/health
 
-3. **Test with simple configuration**:
-   ```bash
-   # Use verified template
-   curl -X POST http://localhost:8000/api/v1/simulations \
-     -H "Content-Type: application/json" \
-     -d @web/config_templates/basic_steady_flow.json
-   ```
+3. **防火墙**:
+   - 允许端口8000
+
+4. **CORS设置**:
+   - 检查`backend/.env`
+   - `CORS_ORIGINS`包含前端地址
 
 ---
 
-### Q: Frontend shows "Network Error" or "Connection Refused"
+## 📞 获取更多帮助
 
-**A**:
+### 文档资源
 
-1. **Check backend is running**:
-   ```bash
-   curl http://localhost:8000/health
-   # Should return: {"status": "healthy"}
-   ```
-
-2. **Check CORS configuration** (in `web/backend/main.py`):
-   ```python
-   app.add_middleware(
-       CORSMiddleware,
-       allow_origins=["http://localhost:5173"],  # Frontend URL
-       allow_methods=["*"],
-       allow_headers=["*"],
-   )
-   ```
-
-3. **Check browser console** (F12) for detailed error messages
+- [用户手册](./README.md)
+- [插件开发指南](./docs/plugins/getting-started.md)
+- [API参考](./docs/plugins/api-reference.md)
+- [贡献指南](./CONTRIBUTING.md)
 
 ---
 
-### Q: Results look physically unrealistic. What should I check?
+### 社区支持
 
-**A**:
-
-**Checklist**:
-
-1. **Boundary conditions consistent with initial conditions?**
-   - Example: Don't start with h=5m but set downstream h=1m (creates discontinuity)
-
-2. **Manning's n realistic?**
-   - Check table in "Configuration & Parameters" section
-
-3. **Bed slope reasonable?**
-   - Typical: 0.0001 - 0.01 for rivers/canals
-   - Too steep: May cause supercritical flow
-
-4. **Flow rate reasonable for channel size?**
-   - Large Q in small channel → very high velocity
-   - Check: velocity = Q / (width × depth) < 5 m/s typically
-
-5. **Simulation time long enough to reach steady state?**
-   - Try longer `t_end`
+- **GitHub Issues**: https://github.com/hydroclaude/hydroclaude/issues
+- **Discussions**: https://github.com/hydroclaude/hydroclaude/discussions
+- **Email**: dev@hydroclaude.com
+- **Twitter**: @hydroclaude
 
 ---
 
-## Advanced Topics
+### 快速链接
 
-### Q: Can I implement custom boundary conditions?
-
-**A**:
-
-**v1.3.0**: Only built-in types supported (Q, h, open, closed).
-
-**v2.0+**: Custom boundary conditions via plugins (planned feature).
-
-**Workaround**: Modify source code in `hydraulic_solver/boundary/` and submit pull request.
+- [下载安装](https://github.com/hydroclaude/hydroclaude/releases)
+- [源代码](https://github.com/hydroclaude/hydroclaude)
+- [报告Bug](https://github.com/hydroclaude/hydroclaude/issues/new?template=bug_report.md)
+- [请求功能](https://github.com/hydroclaude/hydroclaude/issues/new?template=feature_request.md)
 
 ---
 
-### Q: How do I cite HydroClaude in my research?
+## 💡 没有找到答案？
 
-**A**:
+如果你的问题没有在这里找到答案：
 
-**Suggested Citation**:
+1. **搜索已有Issue**: 可能有人已经问过
+2. **创建新Issue**: 详细描述你的问题
+3. **加入讨论区**: 与社区交流
+4. **发邮件**: dev@hydroclaude.com
 
-```
-HydroClaude Development Team (2025). HydroClaude: Open-Source Hydraulic Modeling Platform.
-Version 1.3.0. Available at: https://github.com/YOUR_ORG/HydroClaude
-```
-
-**BibTeX**:
-```bibtex
-@software{hydroclaude2025,
-  title = {HydroClaude: Open-Source Hydraulic Modeling Platform},
-  author = {{HydroClaude Development Team}},
-  year = {2025},
-  version = {1.3.0},
-  url = {https://github.com/YOUR_ORG/HydroClaude}
-}
-```
+我们会尽快回复！
 
 ---
 
-### Q: How can I contribute to HydroClaude?
+<p align="center">
+  <b>💬 还有问题？欢迎提问！</b>
+</p>
 
-**A**:
-
-**We welcome contributions!**
-
-1. **Read**: `CONTRIBUTING.md` for detailed guidelines
-
-2. **Ways to contribute**:
-   - Report bugs (GitHub Issues)
-   - Request features (GitHub Issues)
-   - Improve documentation
-   - Submit code (Pull Requests)
-   - Share use cases
-
-3. **Process**:
-   - Fork repository
-   - Create feature branch
-   - Make changes + tests
-   - Submit pull request
-
-**Community**: GitHub Discussions for questions and ideas
+<p align="center">
+  <i>HydroClaude - 让水力学仿真更简单</i>
+</p>
 
 ---
 
-### Q: What's planned for future versions?
-
-**A**:
-
-**See**: `ROADMAP.md` for complete details
-
-**Highlights**:
-- **v1.4.0** (2026 Q1): Enhanced visualization (animations, 3D plots)
-- **v2.0.0** (2026 Q2-Q3): Multi-user platform (auth, database, scalability)
-- **v2.1.0** (2026 Q4): Advanced physics (sediment, water quality, 2D)
-- **v3.0.0** (2027+): Real-time forecasting system
-
----
-
-## Still Have Questions?
-
-### Documentation Resources
-
-- **Quick Start**: `QUICK_REFERENCE_v1.3.0.md`
-- **Parameter Guide**: `PARAMETER_SELECTION_GUIDE.md`
-- **Examples**: `web/EXAMPLE_USE_CASES.md`
-- **API Docs**: `README.md` → API section
-- **Release Notes**: `RELEASE_NOTES_v1.3.0.md`
-
-### Getting Help
-
-1. **Check Documentation**: Most questions answered in guides above
-2. **Search GitHub Issues**: Someone may have asked already
-3. **Create Issue**: Use "question" label
-4. **GitHub Discussions**: For general topics
-
-### Reporting Bugs
-
-Use GitHub Issues with:
-- Configuration file
-- Error messages
-- Environment details (OS, Python version)
-- Steps to reproduce
-
----
-
-**Last Updated**: 2025-11-11
-**Version**: v1.3.0
-**Document Version**: 1.0
+**© 2025 HydroClaude Development Team**  
+**Last Updated: 2025-11-15**
