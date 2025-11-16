@@ -7,6 +7,7 @@ import {
   EditOutlined,
   PlayCircleOutlined,
   BarChartOutlined,
+  EnvironmentOutlined,
   AppstoreOutlined,
   UserOutlined,
   SettingOutlined,
@@ -56,6 +57,12 @@ const MainLayout: React.FC = () => {
       icon: <BarChartOutlined />,
       label: '结果查看',
       onClick: () => navigate('/results/latest'),
+    },
+    {
+      key: '/map',
+      icon: <EnvironmentOutlined />,
+      label: '地图工具',
+      onClick: () => navigate('/map'),
     },
     {
       key: '/plugins',

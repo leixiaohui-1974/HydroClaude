@@ -6,6 +6,7 @@ import ProjectsPage from './pages/Projects';
 import EditorPage from './pages/Editor';
 import SimulationPage from './pages/Simulation';
 import ResultsPage from './pages/Results';
+import MapPage from './pages/Map';
 import PluginsPage from './pages/Plugins';
 import NotFoundPage from './pages/NotFound';
 
@@ -18,6 +19,7 @@ const App: React.FC = () => {
         <Route path="editor/:projectId?" element={<EditorPage />} />
         <Route path="simulation/:jobId?" element={<SimulationPage />} />
         <Route path="results/:jobId" element={<ResultsPage />} />
+        <Route path="map" element={<MapPage />} />
         <Route path="plugins" element={<PluginsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
