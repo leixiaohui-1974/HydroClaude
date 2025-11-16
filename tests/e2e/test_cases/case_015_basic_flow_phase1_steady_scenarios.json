@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "phase1_steady_scenarios",
+  "description": "Phase 1应用示例集 - 稳态场景库  基于Phase 0生产就绪的求解器，展示多种实际工程场景  场景： 1. 不同流量下的均匀流 2. 不同底坡的水面线 3. 不同糙率的流速分布",
+  "type": "steady_flow",
+  "canal": {
+    "length": 1000.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "roughness": 0.025,
+    "nx": 100.0
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/phase1_steady_scenarios.py",
+    "category": "basic_flow",
+    "complexity": "easy",
+    "converted_at": "2025-11-16T06:08:08.472676"
+  }
+}

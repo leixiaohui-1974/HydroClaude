@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "name": "example_complete_workflow",
+  "description": "完整工作流程示例  演示如何使用HydroClaude的所有功能： 1. 求解稳态流动问题 2. 可视化结果 3. 性能基准测试 4. 参数敏感性分析  作者: Claude",
+  "type": "steady_flow",
+  "canal": {
+    "length": 1000.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "roughness": 0.025,
+    "nx": 101.0
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [
+    {
+      "type": "sluice_gate",
+      "position": 250.0,
+      "width": 10.0,
+      "opening": 4.5,
+      "discharge_coefficient": 0.6
+    }
+  ],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/example_complete_workflow.py",
+    "category": "basic_flow",
+    "complexity": "easy",
+    "converted_at": "2025-11-16T06:08:08.457822"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "name": "quick_scenario_test",
+  "description": "串联明渠闸泵群系统 - 快速工况测试（精简版）  优化： 1. 减少模拟时间到 1200秒（20分钟） 2. 选择8个代表性工况 3. 减少网格点数到 301 4. 增大时间步长到 1.0s  作者: Claude",
+  "type": "steady_flow",
+  "canal": {
+    "length": 100000.0,
+    "width": 15.0,
+    "slope": 0.0001,
+    "roughness": 0.025,
+    "nx": 301.0
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [
+    {
+      "type": "sluice_gate",
+      "position": 50000.0,
+      "width": 15.0,
+      "opening": 2.0,
+      "discharge_coefficient": 0.6
+    }
+  ],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/example_gate_pump_cascade/quick_scenario_test.py",
+    "category": "basic_flow",
+    "complexity": "medium",
+    "converted_at": "2025-11-16T06:08:08.461181"
+  }
+}

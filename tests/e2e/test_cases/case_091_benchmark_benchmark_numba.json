@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "benchmark_numba",
+  "description": "Numba加速效果基准测试  对比纯Python vs Numba JIT的性能提升  作者: HydroClaude Team 日期: 2025-10-29",
+  "type": "steady_flow",
+  "canal": {
+    "length": 2000.0,
+    "width": 10.0,
+    "slope": 0.0,
+    "roughness": 0.0,
+    "nx": 120.0
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "tests/benchmark_numba.py",
+    "category": "benchmark",
+    "complexity": "easy",
+    "converted_at": "2025-11-16T06:08:08.536772"
+  }
+}

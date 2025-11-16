@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "case_parameter_sensitivity",
+  "description": "工程案例5: 参数敏感性分析  场景分析渠道参数糙率底坡宽度对水深的影响 目标为渠道设计和改造提供参数优化建议  分析内容 1. 糙率敏感性n=0.015-0.040 2. 底坡敏感性S0=0.0005-0.002 3. 宽度敏感性B=8-20m",
+  "type": "steady_flow",
+  "canal": {
+    "length": 1500.0,
+    "width": 8.0,
+    "slope": 0.001,
+    "roughness": 0.015,
+    "nx": 100.0
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/case_parameter_sensitivity.py",
+    "category": "basic_flow",
+    "complexity": "easy",
+    "converted_at": "2025-11-16T06:08:08.471502"
+  }
+}

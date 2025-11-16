@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "mpc_nonlinear_test",
+  "description": "一阶MPC在非线性模型上的性能测试  测试目标： 1. 验证线性化MPC在非线性模型上的控制效果 2. 对比线性化模型与非线性模型的性能差异 3. 评估非线性失配的影响  非线性模型：使用非线性闸门方程Q = Cd*a*W*sqrt(2*g*Deltah) 线性化模型：工作点线性化的一阶模型H(s) = K/(taus+1)",
+  "type": "steady_flow",
+  "canal": {
+    "length": 10000.0,
+    "width": 2.0,
+    "slope": 0.001,
+    "roughness": 15.0,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 100.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/advanced_examples/mpc_nonlinear_test.py",
+    "category": "structures",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.487881"
+  }
+}

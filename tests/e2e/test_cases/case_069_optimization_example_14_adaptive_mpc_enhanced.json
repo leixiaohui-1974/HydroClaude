@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "example_14_adaptive_mpc_enhanced",
+  "description": "示例14: 自适应MPC控制（增强版）  演示自适应MPC在线参数辨识和控制  增强功能： - 自动生成对比图表 - 生成参数收敛动画（GIF） - 生成详细仿真报告 - 嵌入可视化结果",
+  "type": "steady_flow",
+  "canal": {
+    "length": 500.0,
+    "width": 2.5,
+    "slope": 0.001,
+    "roughness": 10.0,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py",
+    "category": "optimization",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.519532"
+  }
+}

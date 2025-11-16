@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "case_02_water_supply_network",
+  "description": "Urban Water Supply Network - 城市供水管网系统 ================================================  System Components / 系统组成: - Water Treatment Plant (水厂): 源头供水 - Primary Pump Stations (一级泵站): 加压送水 - Main Pipelin",
+  "type": "steady_flow",
+  "canal": {
+    "length": 500.0,
+    "width": 2.0,
+    "slope": 0.001,
+    "roughness": 5.0,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 0.3,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/case_library/case_02_water_supply_network.py",
+    "category": "basic_flow",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.468613"
+  }
+}

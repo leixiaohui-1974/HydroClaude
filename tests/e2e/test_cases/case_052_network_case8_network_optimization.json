@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "case8_network_optimization",
+  "description": "案例8：管网优化与管径选型 Case 8: Network Optimization and Pipe Sizing  本案例展示如何通过对比不同管径方案来优化管网设计： - 基准方案 vs 优化方案 - 水力性能对比（压力、流速） - 经济性分析（投资成本、运行成本） - 优化建议",
+  "type": "steady_flow",
+  "canal": {
+    "length": 1.0,
+    "width": 0.35,
+    "slope": 0.001,
+    "roughness": 100.0,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/case8_network_optimization.py",
+    "category": "network",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.506511"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "test_culvert",
+  "description": "Test suite for Culvert hydraulic model  Tests cover: - Geometry calculations - Flow calculations (inlet and outlet control) - Different cross-section shapes - Head loss calculations - Derivative calcu",
+  "type": "steady_flow",
+  "canal": {
+    "length": 20.0,
+    "width": 2.0,
+    "slope": -0.01,
+    "roughness": 100.0,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 2.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "tests/test_culvert.py",
+    "category": "optimization",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.530615"
+  }
+}

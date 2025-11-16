@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "adaptive_first_order_mpc_test",
+  "description": "自适应一阶MPC测试  结合FirstOrderIdentifier进行在线参数更新  特点： 1. 在线辨识一阶系统参数（K, τ） 2. 动态更新MPC内部模型 3. 适应工况变化和参数漂移",
+  "type": "steady_flow",
+  "canal": {
+    "length": 20.0,
+    "width": 2.0,
+    "slope": 0.001,
+    "roughness": 0.1,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 100.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/advanced_examples/adaptive_first_order_mpc_test.py",
+    "category": "structures",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.491397"
+  }
+}

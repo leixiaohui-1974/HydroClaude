@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "benchmark_examples",
+  "description": "示例性能基准测试 测试各个示例的运行时间和资源使用",
+  "type": "steady_flow",
+  "canal": {
+    "length": 10000.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "roughness": 0.025,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/benchmark_examples.py",
+    "category": "structures",
+    "complexity": "easy",
+    "converted_at": "2025-11-16T06:08:08.492998"
+  }
+}

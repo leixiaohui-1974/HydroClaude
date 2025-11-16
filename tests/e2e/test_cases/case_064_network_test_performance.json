@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "test_performance",
+  "description": "性能优化模块测试 Test Performance Optimization Module  验证Numba JIT加速函数的正确性  Author: HydroClaude Team Date: 2025-10-30",
+  "type": "steady_flow",
+  "canal": {
+    "length": 100.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "roughness": 0.0,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 0.0001,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "tests/test_utils/test_performance.py",
+    "category": "network",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.515656"
+  }
+}

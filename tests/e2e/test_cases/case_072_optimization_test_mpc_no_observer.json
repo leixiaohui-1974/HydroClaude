@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "test_mpc_no_observer",
+  "description": "测试MPC不使用观测器  import sys import os sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))  import numpy as np from control.idz_model import IDZParameters from control.mpc",
+  "type": "steady_flow",
+  "canal": {
+    "length": 10000.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "roughness": 15.0,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 100.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/advanced_examples/test_mpc_no_observer.py",
+    "category": "optimization",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.521900"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "name": "example_03_complex_network",
+  "description": "-*- coding: utf-8 -*-",
+  "type": "steady_flow",
+  "canal": {
+    "length": 10000.0,
+    "width": 10.0,
+    "slope": 0.001,
+    "roughness": 100.0,
+    "nx": 500
+  },
+  "flow": {
+    "flow_rate": 50.0,
+    "type": "steady"
+  },
+  "structures": [],
+  "solver": {
+    "type": "hydrostatic",
+    "max_iter": 100,
+    "convergence_tol": 0.1
+  },
+  "output": {
+    "save_plots": true,
+    "save_data": true,
+    "formats": [
+      "json",
+      "csv"
+    ]
+  },
+  "_metadata": {
+    "source_file": "examples/example_03_complex_network/code/example_03_complex_network.py",
+    "category": "network",
+    "complexity": "hard",
+    "converted_at": "2025-11-16T06:08:08.511733"
+  }
+}
