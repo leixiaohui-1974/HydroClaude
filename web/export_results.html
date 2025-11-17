@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydroClaude - 结果导出工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .data-preview {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 400px;
+            overflow: auto;
+            margin-top: 15px;
+        }
+        
+        .data-preview pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 结果导出工具</h1>
+        <p class="subtitle">运行仿真 → 查看结果 → 导出数据（CSV/JSON/PDF）</p>
+        
+        <!-- 运行仿真 -->
+        <div class="section">
+            <h2>1️⃣ 运行仿真</h2>
+            <p>选择一个场景运行仿真，然后导出结果</p>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="runSimulation('pump')">🚰 泵站仿真</button>
+                <button class="btn btn-primary" onclick="runSimulation('turbine')">⚡ 水轮机仿真</button>
+                <button class="btn btn-primary" onclick="runSimulation('gate')">🚪 闸门仿真</button>
+            </div>
+            <div id="simulationResult"></div>
+        </div>
+        
+        <!-- 导出选项 -->
+        <div class="section" id="exportSection" style="display: none;">
+            <h2>2️⃣ 导出结果</h2>
+            <p>选择导出格式</p>
+            <div class="button-group">
+                <button class="btn btn-success" onclick="exportData('json')">📄 导出JSON</button>
+                <button class="btn btn-success" onclick="exportData('csv')">📊 导出CSV</button>
+                <button class="btn btn-info" onclick="exportData('txt')">📝 导出TXT</button>
+                <button class="btn btn-info" onclick="copyToClipboard()">📋 复制到剪贴板</button>
+            </div>
+            <div id="exportMessage"></div>
+        </div>
+        
+        <!-- 数据预览 -->
+        <div class="section" id="previewSection" style="display: none;">
+            <h2>3️⃣ 数据预览</h2>
+            <div class="stats" id="statsCards"></div>
+            <div class="data-preview">
+                <pre id="dataPreview"></pre>
+            </div>
+        </div>
+        
+        <!-- 历史记录 -->
+        <div class="section">
+            <h2>4️⃣ 仿真历史</h2>
+            <p>最近的仿真记录</p>
+            <table id="historyTable">
+                <thead>
+                    <tr>
+                        <th>时间</th>
+                        <th>类型</th>
+                        <th>关键指标</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #999;">暂无记录</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let currentResult = null;
+        let history = JSON.parse(localStorage.getItem('simulationHistory') || '[]');
+        
+        // 运行仿真
+        async function runSimulation(type) {
+            const configs = {
+                pump: {
+                    endpoint: '/api/structures/pump',
+                    data: {
+                        pump: {flow_rate: 10, head: 15, num_pumps: 2, pump_type: 'parallel'},
+                        upstream: {water_level: 5},
+                        downstream: {elevation: 20},
+                        operation: {duration: 100}
+                    },
+                    name: '泵站仿真'
+                },
+                turbine: {
+                    endpoint: '/api/structures/turbine',
+                    data: {
+                        turbine: {type: 'francis', rated_power: 50, rated_head: 100, rated_flow: 60},
+                        operation: {head: 100, flow: 60}
+                    },
+                    name: '水轮机仿真'
+                },
+                gate: {
+                    endpoint: '/api/structures/gate',
+                    data: {
+                        gate: {type: 'sluice', width: 10, opening: 2},
+                        upstream: {water_depth: 5},
+                        downstream: {water_depth: 2}
+                    },
+                    name: '闸门仿真'
+                }
+            };
+            
+            const config = configs[type];
+            const resultDiv = document.getElementById('simulationResult');
+            
+            resultDiv.innerHTML = '<div class="alert alert-info">🔄 正在运行仿真...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}${config.endpoint}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(config.data)
+                });
+                
+                if (!response.ok) throw new Error('仿真失败');
+                
+                currentResult = await response.json();
+                currentResult.simulationType = config.name;
+                currentResult.timestamp = new Date().toISOString();
+                
+                // 添加到历史
+                addToHistory(currentResult);
+                
+                resultDiv.innerHTML = '<div class="alert alert-success">✅ 仿真成功！任务ID: ' + currentResult.task_id + '</div>';
+                
+                // 显示导出和预览区域
+                document.getElementById('exportSection').style.display = 'block';
+                document.getElementById('previewSection').style.display = 'block';
+                
+                // 更新预览
+                updatePreview();
+                
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="alert alert-warning">❌ 仿真失败: ' + error.message + '</div>';
+            }
+        }
+        
+        // 更新预览
+        function updatePreview() {
+            if (!currentResult) return;
+            
+            // 更新统计卡片
+            const statsDiv = document.getElementById('statsCards');
+            const metrics = currentResult.metrics || {};
+            
+            let statsHTML = '';
+            const metricList = [
+                {key: 'avg_flow', label: '平均流量', unit: 'm³/s'},
+                {key: 'avg_efficiency', label: '平均效率', unit: '%', multiplier: 100},
+                {key: 'power_MW', label: '发电功率', unit: 'MW'},
+                {key: 'discharge', label: '流量', unit: 'm³/s'}
+            ];
+            
+            metricList.forEach(metric => {
+                if (metrics[metric.key] !== undefined) {
+                    const value = metric.multiplier ? 
+                        (metrics[metric.key] * metric.multiplier).toFixed(2) : 
+                        metrics[metric.key].toFixed(4);
+                    
+                    statsHTML += `
+                        <div class="stat-card">
+                            <div class="stat-value">${value}</div>
+                            <div class="stat-label">${metric.label} (${metric.unit})</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            statsDiv.innerHTML = statsHTML || '<p style="color: #999;">暂无指标数据</p>';
+            
+            // 更新JSON预览
+            document.getElementById('dataPreview').textContent = JSON.stringify(currentResult, null, 2);
+        }
+        
+        // 导出数据
+        function exportData(format) {
+            if (!currentResult) {
+                alert('请先运行仿真');
+                return;
+            }
+            
+            const messageDiv = document.getElementById('exportMessage');
+            let content, filename, mimeType;
+            
+            switch (format) {
+                case 'json':
+                    content = JSON.stringify(currentResult, null, 2);
+                    filename = `simulation_${currentResult.task_id}.json`;
+                    mimeType = 'application/json';
+                    break;
+                    
+                case 'csv':
+                    const metrics = currentResult.metrics || {};
+                    content = 'Key,Value\n';
+                    Object.entries(metrics).forEach(([key, value]) => {
+                        content += `${key},${value}\n`;
+                    });
+                    filename = `simulation_${currentResult.task_id}.csv`;
+                    mimeType = 'text/csv';
+                    break;
+                    
+                case 'txt':
+                    content = `仿真结果报告\n`;
+                    content += `=================\n\n`;
+                    content += `类型: ${currentResult.simulationType}\n`;
+                    content += `任务ID: ${currentResult.task_id}\n`;
+                    content += `时间: ${currentResult.timestamp}\n`;
+                    content += `状态: ${currentResult.status}\n\n`;
+                    content += `指标:\n`;
+                    const metrics2 = currentResult.metrics || {};
+                    Object.entries(metrics2).forEach(([key, value]) => {
+                        content += `  ${key}: ${value}\n`;
+                    });
+                    filename = `simulation_${currentResult.task_id}.txt`;
+                    mimeType = 'text/plain';
+                    break;
+            }
+            
+            // 创建下载
+            const blob = new Blob([content], {type: mimeType});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            messageDiv.innerHTML = `<div class="alert alert-success">✅ 已导出: ${filename}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 3000);
+        }
+        
+        // 复制到剪贴板
+        function copyToClipboard() {
+            if (!currentResult) {
+                alert('请先运行仿真');
+                return;
+            }
+            
+            const text = JSON.stringify(currentResult, null, 2);
+            navigator.clipboard.writeText(text).then(() => {
+                document.getElementById('exportMessage').innerHTML = 
+                    '<div class="alert alert-success">✅ 已复制到剪贴板</div>';
+                setTimeout(() => {
+                    document.getElementById('exportMessage').innerHTML = '';
+                }, 3000);
+            });
+        }
+        
+        // 添加到历史
+        function addToHistory(result) {
+            const record = {
+                time: new Date().toLocaleString(),
+                type: result.simulationType,
+                taskId: result.task_id,
+                metrics: result.metrics
+            };
+            
+            history.unshift(record);
+            if (history.length > 10) history = history.slice(0, 10);
+            
+            localStorage.setItem('simulationHistory', JSON.stringify(history));
+            updateHistoryTable();
+        }
+        
+        // 更新历史表格
+        function updateHistoryTable() {
+            const tbody = document.getElementById('historyBody');
+            
+            if (history.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999;">暂无记录</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = history.map(record => {
+                const firstMetric = Object.entries(record.metrics)[0];
+                const metricText = firstMetric ? 
+                    `${firstMetric[0]}: ${firstMetric[1].toFixed(4)}` : 
+                    '暂无数据';
+                
+                return `
+                    <tr>
+                        <td>${record.time}</td>
+                        <td>${record.type}</td>
+                        <td>${metricText}</td>
+                        <td>
+                            <button class="btn btn-info" style="padding: 5px 10px; font-size: 12px;" 
+                                    onclick="viewHistory('${record.taskId}')">
+                                查看
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        // 查看历史记录
+        function viewHistory(taskId) {
+            const record = history.find(h => h.taskId === taskId);
+            if (record) {
+                alert(`任务ID: ${record.taskId}\n类型: ${record.type}\n时间: ${record.time}\n\n` +
+                      JSON.stringify(record.metrics, null, 2));
+            }
+        }
+        
+        // 页面加载时更新历史
+        window.onload = function() {
+            updateHistoryTable();
+        };
+    </script>
+</body>
+</html>
