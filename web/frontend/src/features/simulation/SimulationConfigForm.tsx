@@ -18,7 +18,7 @@ import {
   getSimulationResults,
   SimulationRequest,
   SimulationResultResponse
-} from '@/services/api';
+} from '@/services/simulation-api';
 
 const { Option } = Select;
 
