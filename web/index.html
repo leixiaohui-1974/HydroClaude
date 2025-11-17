@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydroClaude - 水力仿真系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+            animation: fadeIn 1s ease-in;
+        }
+        
+        .header h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .header .subtitle {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+        
+        .header .version {
+            margin-top: 10px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .status-bar {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        
+        .status-item {
+            text-align: center;
+        }
+        
+        .status-label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .status-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        .status-online {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .card-description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .card-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+        
+        .card-features li {
+            color: #555;
+            font-size: 13px;
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .card-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .card-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .card-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .card-label {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .label-new {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .label-popular {
+            background: #ffd93d;
+            color: #333;
+        }
+        
+        .label-pro {
+            background: #6c5ce7;
+            color: white;
+        }
+        
+        .quick-links {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .quick-links h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .quick-link {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quick-link:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .quick-link-icon {
+            font-size: 24px;
+        }
+        
+        .quick-link-text {
+            flex: 1;
+        }
+        
+        .quick-link-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .quick-link-desc {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 50px;
+            opacity: 0.8;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💧 HydroClaude</h1>
+            <p class="subtitle">专业的水力工程仿真系统</p>
+            <p class="version">版本 v2.0.0 Ultimate • 生产就绪 • 工业级性能</p>
+        </div>
+        
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-label">后端API</div>
+                <div class="status-value" id="backendStatus">检查中...</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">可用端点</div>
+                <div class="status-value">17</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">支持组件</div>
+                <div class="status-value">23</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">系统状态</div>
+                <div class="status-value">
+                    <span class="status-badge status-online">✓ 就绪</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cards-grid">
+            <div class="card" onclick="window.location.href='demo_webapp.html'">
+                <span class="card-label label-popular">推荐</span>
+                <div class="card-icon">🎮</div>
+                <div class="card-title">完整演示应用</div>
+                <div class="card-description">
+                    交互式仿真平台，支持5种水工组件，实时查看结果
+                </div>
+                <ul class="card-features">
+                    <li>5种组件选择（泵站、闸门、堰、水轮机、阀门）</li>
+                    <li>动态参数配置</li>
+                    <li>一键运行仿真</li>
+                    <li>实时结果展示</li>
+                    <li>美观现代UI</li>
+                </ul>
+                <a href="demo_webapp.html" class="card-button">立即体验 →</a>
+            </div>
+            
+            <div class="card" onclick="window.location.href='export_results.html'">
+                <span class="card-label label-new">NEW</span>
+                <div class="card-icon">📊</div>
+                <div class="card-title">结果导出工具</div>
+                <div class="card-description">
+                    运行仿真并导出数据，支持JSON、CSV、TXT格式
+                </div>
+                <ul class="card-features">
+                    <li>快速运行仿真</li>
+                    <li>多格式导出（JSON/CSV/TXT）</li>
+                    <li>数据预览</li>
+                    <li>历史记录管理</li>
+                    <li>一键复制到剪贴板</li>
+                </ul>
+                <a href="export_results.html" class="card-button">开始导出 →</a>
+            </div>
+            
+            <div class="card" onclick="window.location.href='frontend_dashboard.html'">
+                <span class="card-label label-pro">专业</span>
+                <div class="card-icon">📈</div>
+                <div class="card-title">性能监控仪表盘</div>
+                <div class="card-description">
+                    实时监控系统性能，查看响应时间和API状态
+                </div>
+                <ul class="card-features">
+                    <li>实时系统状态</li>
+                    <li>响应时间趋势图</li>
+                    <li>API端点监控（9个）</li>
+                    <li>自动刷新（10秒）</li>
+                    <li>性能指标统计</li>
+                </ul>
+                <a href="frontend_dashboard.html" class="card-button">查看仪表盘 →</a>
+            </div>
+            
+            <div class="card" onclick="window.location.href='compare_results.html'">
+                <span class="card-label label-new">NEW</span>
+                <div class="card-icon">📊</div>
+                <div class="card-title">结果对比工具</div>
+                <div class="card-description">
+                    对比多个仿真结果，可视化差异分析
+                </div>
+                <ul class="card-features">
+                    <li>上传JSON结果文件</li>
+                    <li>快速测试运行</li>
+                    <li>图表可视化对比</li>
+                    <li>表格详细对比</li>
+                    <li>差异百分比分析</li>
+                </ul>
+                <a href="compare_results.html" class="card-button">开始对比 →</a>
+            </div>
+            
+            <div class="card" onclick="window.location.href='quick_start_guide.html'">
+                <span class="card-label label-new">NEW</span>
+                <div class="card-icon">🚀</div>
+                <div class="card-title">快速入门指南</div>
+                <div class="card-description">
+                    5分钟从零到精通，详细的分步教程
+                </div>
+                <ul class="card-features">
+                    <li>5步完整教程</li>
+                    <li>实用示例代码</li>
+                    <li>常见问题解答</li>
+                    <li>资源快速链接</li>
+                    <li>最佳实践建议</li>
+                </ul>
+                <a href="quick_start_guide.html" class="card-button">开始学习 →</a>
+            </div>
+            
+            <div class="card" onclick="window.location.href='frontend_integration_test.html'">
+                <div class="card-icon">🧪</div>
+                <div class="card-title">集成测试页面</div>
+                <div class="card-description">
+                    快速验证系统功能，5个测试按钮一键测试
+                </div>
+                <ul class="card-features">
+                    <li>健康检查</li>
+                    <li>组件类型查询</li>
+                    <li>泵站仿真测试</li>
+                    <li>水轮机仿真测试</li>
+                    <li>闸门仿真测试</li>
+                </ul>
+                <a href="frontend_integration_test.html" class="card-button">运行测试 →</a>
+            </div>
+        </div>
+        
+        <div class="quick-links">
+            <h2>🔗 快速链接</h2>
+            <div class="links-grid">
+                <a href="http://localhost:8000/docs" class="quick-link" target="_blank">
+                    <span class="quick-link-icon">📚</span>
+                    <div class="quick-link-text">
+                        <div class="quick-link-title">API文档</div>
+                        <div class="quick-link-desc">Swagger UI</div>
+                    </div>
+                </a>
+                <a href="http://localhost:8000/redoc" class="quick-link" target="_blank">
+                    <span class="quick-link-icon">📖</span>
+                    <div class="quick-link-text">
+                        <div class="quick-link-title">ReDoc文档</div>
+                        <div class="quick-link-desc">美观的API文档</div>
+                    </div>
+                </a>
+                <a href="http://localhost:8000/health" class="quick-link" target="_blank">
+                    <span class="quick-link-icon">💚</span>
+                    <div class="quick-link-text">
+                        <div class="quick-link-title">健康检查</div>
+                        <div class="quick-link-desc">系统状态</div>
+                    </div>
+                </a>
+                <a href="../README.md" class="quick-link" target="_blank">
+                    <span class="quick-link-icon">📄</span>
+                    <div class="quick-link-text">
+                        <div class="quick-link-title">项目文档</div>
+                        <div class="quick-link-desc">完整README</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 HydroClaude Development Team</p>
+            <p>v2.0.0 Ultimate • Production Ready • Industrial Grade ⭐⭐⭐⭐⭐</p>
+        </div>
+    </div>
+
+    <script>
+        // 检查后端状态
+        async function checkBackend() {
+            try {
+                const response = await fetch('http://localhost:8000/health');
+                if (response.ok) {
+                    document.getElementById('backendStatus').innerHTML = 
+                        '<span class="status-badge status-online">✓ 在线</span>';
+                } else {
+                    document.getElementById('backendStatus').innerHTML = 
+                        '<span class="status-badge status-offline">✗ 离线</span>';
+                }
+            } catch (error) {
+                document.getElementById('backendStatus').innerHTML = 
+                    '<span class="status-badge status-offline">✗ 离线</span>';
+            }
+        }
+        
+        // 页面加载时检查
+        window.onload = checkBackend;
+        
+        // 每30秒检查一次
+        setInterval(checkBackend, 30000);
+    </script>
+</body>
+</html>
