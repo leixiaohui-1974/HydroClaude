@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydroClaude - 性能监控仪表盘</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .status-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .status-card {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .status-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .status-card.online {
+            border-left: 5px solid #28a745;
+        }
+        
+        .status-card.offline {
+            border-left: 5px solid #dc3545;
+        }
+        
+        .status-card h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .status-card .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .metric-card h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .metric-value {
+            font-size: 36px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .metric-label {
+            color: #999;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .chart-container h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .chart {
+            height: 300px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        
+        .api-list {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .api-list h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .api-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s ease;
+        }
+        
+        .api-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .api-item:last-child {
+            border-bottom: none;
+        }
+        
+        .api-name {
+            flex: 1;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .api-method {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .api-method.get {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .api-method.post {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .api-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .api-status.ok {
+            background: #28a745;
+        }
+        
+        .api-status.error {
+            background: #dc3545;
+        }
+        
+        .api-status.pending {
+            background: #ffc107;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .refresh-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .auto-refresh {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .toggle {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+        
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 26px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .updating {
+            animation: pulse 1s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>🚀 HydroClaude 性能监控仪表盘</h1>
+            <p class="subtitle">实时监控系统状态和性能指标</p>
+        </div>
+        
+        <div class="refresh-bar">
+            <div class="auto-refresh">
+                <span>自动刷新</span>
+                <label class="toggle">
+                    <input type="checkbox" id="autoRefresh" checked>
+                    <span class="slider"></span>
+                </label>
+                <span id="lastUpdate">从未更新</span>
+            </div>
+            <button class="btn" onclick="refreshAll()">🔄 立即刷新</button>
+        </div>
+        
+        <div class="status-bar">
+            <div class="status-card online" id="backendStatus">
+                <h3>后端API状态</h3>
+                <div class="value" id="backendValue">检查中...</div>
+            </div>
+            <div class="status-card online" id="frontendStatus">
+                <h3>前端服务状态</h3>
+                <div class="value" id="frontendValue">检查中...</div>
+            </div>
+            <div class="status-card online">
+                <h3>系统总览</h3>
+                <div class="value" id="systemValue">初始化...</div>
+            </div>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <h3>API端点总数</h3>
+                <div class="metric-value" id="totalEndpoints">--</div>
+                <div class="metric-label">个端点</div>
+            </div>
+            <div class="metric-card">
+                <h3>平均响应时间</h3>
+                <div class="metric-value" id="avgResponseTime">--</div>
+                <div class="metric-label">毫秒</div>
+            </div>
+            <div class="metric-card">
+                <h3>成功率</h3>
+                <div class="metric-value" id="successRate">--</div>
+                <div class="metric-label">百分比</div>
+            </div>
+            <div class="metric-card">
+                <h3>支持组件</h3>
+                <div class="metric-value" id="totalComponents">--</div>
+                <div class="metric-label">种组件</div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h2>📊 响应时间趋势</h2>
+            <div class="chart">
+                <canvas id="responseChart" width="1200" height="260"></canvas>
+            </div>
+        </div>
+        
+        <div class="api-list">
+            <h2>📡 API端点状态</h2>
+            <div id="apiListContainer">
+                <div style="text-align: center; padding: 40px; color: #999;">
+                    正在加载API端点...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let autoRefreshInterval;
+        let responseTimeHistory = [];
+        
+        const apiEndpoints = [
+            { method: 'GET', path: '/health', name: '健康检查' },
+            { method: 'GET', path: '/api/structures/types', name: '组件类型列表' },
+            { method: 'GET', path: '/api/structures/version', name: '版本信息' },
+            { method: 'POST', path: '/api/structures/pump', name: '泵站仿真' },
+            { method: 'POST', path: '/api/structures/gate', name: '闸门仿真' },
+            { method: 'POST', path: '/api/structures/weir', name: '堰仿真' },
+            { method: 'POST', path: '/api/structures/turbine', name: '水轮机仿真' },
+            { method: 'POST', path: '/api/structures/valve', name: '阀门仿真' },
+            { method: 'POST', path: '/api/structures/canal', name: '明渠仿真' },
+        ];
+        
+        async function checkBackend() {
+            const startTime = Date.now();
+            try {
+                const response = await fetch(`${API_BASE}/health`, { timeout: 5000 });
+                const elapsed = Date.now() - startTime;
+                
+                if (response.ok) {
+                    document.getElementById('backendStatus').className = 'status-card online';
+                    document.getElementById('backendValue').textContent = '✅ 正常';
+                    return { status: 'ok', time: elapsed };
+                } else {
+                    throw new Error('响应异常');
+                }
+            } catch (error) {
+                document.getElementById('backendStatus').className = 'status-card offline';
+                document.getElementById('backendValue').textContent = '❌ 离线';
+                return { status: 'error', time: 0 };
+            }
+        }
+        
+        async function checkFrontend() {
+            try {
+                const response = await fetch('/frontend_integration_test.html', { timeout: 5000 });
+                if (response.ok) {
+                    document.getElementById('frontendStatus').className = 'status-card online';
+                    document.getElementById('frontendValue').textContent = '✅ 正常';
+                    return { status: 'ok' };
+                } else {
+                    throw new Error('响应异常');
+                }
+            } catch (error) {
+                document.getElementById('frontendStatus').className = 'status-card offline';
+                document.getElementById('frontendValue').textContent = '❌ 离线';
+                return { status: 'error' };
+            }
+        }
+        
+        async function getComponentTypes() {
+            try {
+                const response = await fetch(`${API_BASE}/api/structures/types`);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('totalComponents').textContent = data.total_components || 23;
+                }
+            } catch (error) {
+                console.error('获取组件类型失败:', error);
+            }
+        }
+        
+        async function testAllEndpoints() {
+            const container = document.getElementById('apiListContainer');
+            container.innerHTML = '';
+            
+            let successCount = 0;
+            let totalTime = 0;
+            
+            for (const endpoint of apiEndpoints) {
+                const item = document.createElement('div');
+                item.className = 'api-item';
+                
+                const status = document.createElement('div');
+                status.className = 'api-status pending';
+                
+                const method = document.createElement('span');
+                method.className = `api-method ${endpoint.method.toLowerCase()}`;
+                method.textContent = endpoint.method;
+                
+                const name = document.createElement('div');
+                name.className = 'api-name';
+                name.textContent = `${endpoint.name} - ${endpoint.path}`;
+                
+                const time = document.createElement('span');
+                time.style.color = '#999';
+                time.style.fontSize = '12px';
+                time.textContent = '测试中...';
+                
+                item.appendChild(status);
+                item.appendChild(method);
+                item.appendChild(name);
+                item.appendChild(time);
+                container.appendChild(item);
+                
+                // 测试端点
+                const startTime = Date.now();
+                try {
+                    let response;
+                    if (endpoint.method === 'GET') {
+                        response = await fetch(`${API_BASE}${endpoint.path}`);
+                    } else {
+                        const testData = getTestData(endpoint.path);
+                        response = await fetch(`${API_BASE}${endpoint.path}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(testData)
+                        });
+                    }
+                    
+                    const elapsed = Date.now() - startTime;
+                    totalTime += elapsed;
+                    
+                    if (response.ok) {
+                        status.className = 'api-status ok';
+                        time.textContent = `${elapsed}ms`;
+                        time.style.color = '#28a745';
+                        successCount++;
+                    } else {
+                        status.className = 'api-status error';
+                        time.textContent = `失败 (${response.status})`;
+                        time.style.color = '#dc3545';
+                    }
+                } catch (error) {
+                    status.className = 'api-status error';
+                    time.textContent = '错误';
+                    time.style.color = '#dc3545';
+                }
+            }
+            
+            // 更新指标
+            document.getElementById('totalEndpoints').textContent = apiEndpoints.length;
+            document.getElementById('avgResponseTime').textContent = 
+                (totalTime / apiEndpoints.length).toFixed(1);
+            document.getElementById('successRate').textContent = 
+                ((successCount / apiEndpoints.length) * 100).toFixed(1) + '%';
+            
+            // 更新趋势图
+            responseTimeHistory.push(totalTime / apiEndpoints.length);
+            if (responseTimeHistory.length > 20) {
+                responseTimeHistory.shift();
+            }
+            drawChart();
+        }
+        
+        function getTestData(path) {
+            const testDataMap = {
+                '/api/structures/pump': {
+                    pump: { flow_rate: 10, head: 15, num_pumps: 2, pump_type: 'parallel' },
+                    upstream: { water_level: 5 },
+                    downstream: { elevation: 20 },
+                    operation: { duration: 100 }
+                },
+                '/api/structures/gate': {
+                    gate: { type: 'sluice', width: 10, opening: 2 },
+                    upstream: { water_depth: 5 },
+                    downstream: { water_depth: 2 }
+                },
+                '/api/structures/weir': {
+                    weir: { type: 'broad_crested', width: 10, crest_height: 0.5 },
+                    flow: { discharge: 50 }
+                },
+                '/api/structures/turbine': {
+                    turbine: { type: 'francis', rated_power: 50, rated_head: 100, rated_flow: 60 },
+                    operation: { head: 100, flow: 60 }
+                },
+                '/api/structures/valve': {
+                    valve: { type: 'butterfly', diameter: 2.0, opening: 0.8 },
+                    flow: { velocity: 3.0, pressure_upstream: 500 }
+                },
+                '/api/structures/canal': {
+                    geometry: { length: 1000, width: 10, slope: 0.001, roughness: 0.025 },
+                    discharge: 50
+                }
+            };
+            return testDataMap[path] || {};
+        }
+        
+        function drawChart() {
+            const canvas = document.getElementById('responseChart');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            if (responseTimeHistory.length === 0) {
+                ctx.fillStyle = '#999';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('等待数据...', width / 2, height / 2);
+                return;
+            }
+            
+            const maxValue = Math.max(...responseTimeHistory, 100);
+            const padding = 40;
+            const chartWidth = width - 2 * padding;
+            const chartHeight = height - 2 * padding;
+            
+            // 绘制网格
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+                
+                ctx.fillStyle = '#999';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText(`${(maxValue - (maxValue / 5) * i).toFixed(0)}ms`, padding - 10, y + 4);
+            }
+            
+            // 绘制折线
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            responseTimeHistory.forEach((value, index) => {
+                const x = padding + (chartWidth / (responseTimeHistory.length - 1 || 1)) * index;
+                const y = padding + chartHeight - (value / maxValue) * chartHeight;
+                
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            
+            ctx.stroke();
+            
+            // 绘制数据点
+            responseTimeHistory.forEach((value, index) => {
+                const x = padding + (chartWidth / (responseTimeHistory.length - 1 || 1)) * index;
+                const y = padding + chartHeight - (value / maxValue) * chartHeight;
+                
+                ctx.fillStyle = '#764ba2';
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+        
+        async function refreshAll() {
+            document.getElementById('systemValue').textContent = '更新中...';
+            document.getElementById('systemValue').classList.add('updating');
+            
+            const backendResult = await checkBackend();
+            await checkFrontend();
+            await getComponentTypes();
+            await testAllEndpoints();
+            
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = 
+                `最后更新: ${now.toLocaleTimeString()}`;
+            
+            if (backendResult.status === 'ok') {
+                document.getElementById('systemValue').textContent = '✅ 运行正常';
+            } else {
+                document.getElementById('systemValue').textContent = '⚠️ 部分异常';
+            }
+            document.getElementById('systemValue').classList.remove('updating');
+        }
+        
+        // 自动刷新控制
+        document.getElementById('autoRefresh').addEventListener('change', function(e) {
+            if (e.target.checked) {
+                autoRefreshInterval = setInterval(refreshAll, 10000); // 10秒刷新
+            } else {
+                clearInterval(autoRefreshInterval);
+            }
+        });
+        
+        // 初始化
+        window.onload = function() {
+            refreshAll();
+            autoRefreshInterval = setInterval(refreshAll, 10000);
+        };
+    </script>
+</body>
+</html>
