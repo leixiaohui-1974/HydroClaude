@@ -695,6 +695,84 @@ class BridgeSimulationRequest(BaseModel):
     upstream: Dict[str, float] = Field({"water_depth": 5.0}, description="上游水深")
 
 
+@router.get("/version", summary="获取版本信息")
+async def get_version():
+    """获取API和引擎版本信息"""
+    return {
+        "api_version": "2.0.0",
+        "engine_version": engine.version,
+        "supported_structures": 23,
+        "endpoints": 17
+    }
+
+
+@router.post("/weir", response_model=SimulationResponse, summary="堰仿真（通用）")
+async def run_weir_simulation(request: WeirSimulationRequest):
+    """通用堰仿真 - 根据type自动选择"""
+    weir_type = request.weir.type
+    if weir_type == "broad_crested":
+        return await run_broad_crested_weir(request)
+    elif weir_type == "sharp_crested":
+        return await run_sharp_crested_weir(request)
+    elif weir_type == "v_notch":
+        return await run_v_notch_weir(request)
+    else:
+        # 默认使用宽顶堰
+        return await run_broad_crested_weir(request)
+
+
+class CanalConfig(BaseModel):
+    """明渠配置"""
+    shape: str = Field("rectangular", description="渠道形状")
+    width: float = Field(10.0, description="渠道宽度 (m)")
+    slope: float = Field(0.001, description="渠道坡度")
+    roughness: float = Field(0.013, description="粗糙系数")
+    length: float = Field(1000.0, description="渠道长度 (m)")
+
+
+class CanalSimulationRequest(BaseModel):
+    """明渠仿真请求"""
+    canal: CanalConfig
+    flow: Dict[str, float] = Field({"discharge": 50.0}, description="流量条件")
+
+
+@router.post("/canal", response_model=SimulationResponse, summary="明渠仿真")
+async def run_canal_simulation_endpoint(request: CanalSimulationRequest):
+    """明渠流动仿真"""
+    try:
+        task_id = str(uuid.uuid4())
+        config = request.canal.model_dump()
+        config['discharge'] = request.flow.get('discharge', 50.0)
+        
+        result = engine.run_canal_simulation(task_id, config)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class CanalWithWeirRequest(BaseModel):
+    """明渠+堰组合请求"""
+    canal: Dict[str, float]
+    weir: WeirConfig
+    boundary: Dict[str, float]
+
+
+@router.post("/canal-with-weir", response_model=SimulationResponse, summary="明渠+堰组合仿真")
+async def run_canal_with_weir(request: CanalWithWeirRequest):
+    """明渠与堰组合仿真"""
+    try:
+        task_id = str(uuid.uuid4())
+        config = {
+            'canal': request.canal,
+            'weir': request.weir.model_dump()
+        }
+        
+        result = engine.run_canal_with_weir(task_id, config)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/bridge", response_model=SimulationResponse, summary="桥梁壅水计算")
 async def run_bridge_simulation(request: BridgeSimulationRequest):
     """桥梁壅水分析"""
