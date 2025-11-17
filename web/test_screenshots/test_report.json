@@ -1,0 +1,55 @@
+{
+  "start_time": "2025-11-17T09:22:44.113202",
+  "environment": {
+    "has_requests": false,
+    "python_version": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]"
+  },
+  "tests": [
+    {
+      "category": "Backend",
+      "name": "组件导入",
+      "status": "FAIL",
+      "icon": "❌",
+      "details": "导入失败: No module named 'numpy'",
+      "duration": 0.0040531158447265625,
+      "data": null,
+      "timestamp": "2025-11-17T09:22:44.117398"
+    },
+    {
+      "category": "Engine",
+      "name": "引擎初始化",
+      "status": "FAIL",
+      "icon": "❌",
+      "details": "失败: No module named 'numpy'",
+      "duration": 0.00040149688720703125,
+      "data": null,
+      "timestamp": "2025-11-17T09:22:44.117839"
+    },
+    {
+      "category": "WebAPI",
+      "name": "API测试",
+      "status": "SKIP",
+      "icon": "⚠️",
+      "details": "requests库未安装，跳过Web API测试",
+      "duration": 0.0,
+      "data": null,
+      "timestamp": "2025-11-17T09:22:44.119494"
+    },
+    {
+      "category": "Calculation",
+      "name": "堰流量计算",
+      "status": "FAIL",
+      "icon": "❌",
+      "details": "错误: No module named 'numpy'",
+      "duration": 0.0,
+      "data": null,
+      "timestamp": "2025-11-17T09:22:44.119814"
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "passed": 0,
+    "failed": 3,
+    "skipped": 1
+  }
+}
