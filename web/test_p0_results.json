@@ -7,7 +7,7 @@
     {
       "name": "泵站仿真",
       "status": "passed",
-      "duration": 4e-05,
+      "duration": 3.3e-05,
       "metrics": {
         "avg_flow": 10.0,
         "total_volume": 1000.0,
@@ -21,7 +21,7 @@
     {
       "name": "滑动闸门",
       "status": "passed",
-      "duration": 1.3e-05,
+      "duration": 1.4e-05,
       "metrics": {
         "discharge": 118.85453293837809,
         "flow_regime": "free",
