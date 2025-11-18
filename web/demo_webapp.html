@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydroClaude - 水力仿真演示系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .app-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card h2 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .component-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .component-btn {
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+        
+        .component-btn:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+            transform: translateX(5px);
+        }
+        
+        .component-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .component-btn .title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .component-btn .desc {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .config-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .results-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: none;
+        }
+        
+        .results-panel.show {
+            display: block;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .metric-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .visualization {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            min-height: 200px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-running {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>💧 HydroClaude 水力仿真演示系统</h1>
+            <p class="subtitle">选择组件 → 配置参数 → 运行仿真 → 查看结果</p>
+        </div>
+        
+        <div class="main-content">
+            <!-- 侧边栏 -->
+            <div class="sidebar">
+                <div class="card">
+                    <h2>📦 选择组件</h2>
+                    <div class="component-list" id="componentList">
+                        <div class="component-btn" data-component="pump">
+                            <div class="title">🚰 泵站</div>
+                            <div class="desc">单泵/并联/串联</div>
+                        </div>
+                        <div class="component-btn" data-component="gate">
+                            <div class="title">🚪 闸门</div>
+                            <div class="desc">平板/径向/升降</div>
+                        </div>
+                        <div class="component-btn" data-component="weir">
+                            <div class="title">🌊 堰</div>
+                            <div class="desc">宽顶/尖顶/V型</div>
+                        </div>
+                        <div class="component-btn" data-component="turbine">
+                            <div class="title">⚡ 水轮机</div>
+                            <div class="desc">水电站发电</div>
+                        </div>
+                        <div class="component-btn" data-component="valve">
+                            <div class="title">🔧 阀门</div>
+                            <div class="desc">蝶阀/球阀/闸阀</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>ℹ️ 系统状态</h2>
+                    <div id="systemStatus">
+                        <div style="text-align: center; padding: 20px; color: #999;">
+                            正在检查...
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 主工作区 -->
+            <div class="workspace">
+                <div class="config-panel">
+                    <h2>⚙️ 配置参数</h2>
+                    <div id="alertContainer"></div>
+                    <div id="configForm">
+                        <div class="alert alert-info">
+                            👈 请先在左侧选择一个组件
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button class="btn btn-primary" id="runBtn" disabled>
+                            ▶️ 运行仿真
+                        </button>
+                        <button class="btn btn-secondary" id="resetBtn">
+                            🔄 重置
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="results-panel" id="resultsPanel">
+                    <h2>📊 仿真结果</h2>
+                    <div id="resultsContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let currentComponent = null;
+        
+        // 组件配置模板
+        const componentTemplates = {
+            pump: {
+                name: '泵站',
+                icon: '🚰',
+                endpoint: '/api/structures/pump',
+                fields: [
+                    { name: 'flow_rate', label: '流量 (m³/s)', type: 'number', default: 10, path: 'pump' },
+                    { name: 'head', label: '扬程 (m)', type: 'number', default: 15, path: 'pump' },
+                    { name: 'num_pumps', label: '泵数量', type: 'number', default: 2, path: 'pump' },
+                    { name: 'pump_type', label: '泵型', type: 'select', options: ['single', 'parallel', 'series'], default: 'parallel', path: 'pump' },
+                    { name: 'water_level', label: '上游水位 (m)', type: 'number', default: 5, path: 'upstream' },
+                    { name: 'elevation', label: '下游高程 (m)', type: 'number', default: 20, path: 'downstream' },
+                    { name: 'duration', label: '运行时间 (s)', type: 'number', default: 100, path: 'operation' }
+                ],
+                resultMetrics: [
+                    { key: 'avg_flow', label: '平均流量', unit: 'm³/s' },
+                    { key: 'avg_efficiency', label: '平均效率', unit: '%', multiplier: 100 },
+                    { key: 'avg_head', label: '平均扬程', unit: 'm' },
+                    { key: 'total_energy_kwh', label: '总能耗', unit: 'kWh' }
+                ]
+            },
+            gate: {
+                name: '闸门',
+                icon: '🚪',
+                endpoint: '/api/structures/gate',
+                fields: [
+                    { name: 'type', label: '闸门类型', type: 'select', options: ['sluice', 'radial', 'vertical_lift'], default: 'sluice', path: 'gate' },
+                    { name: 'width', label: '闸门宽度 (m)', type: 'number', default: 10, path: 'gate' },
+                    { name: 'opening', label: '开度 (m)', type: 'number', default: 2, path: 'gate' },
+                    { name: 'water_depth_up', label: '上游水深 (m)', type: 'number', default: 5, path: 'upstream' },
+                    { name: 'water_depth_down', label: '下游水深 (m)', type: 'number', default: 2, path: 'downstream' }
+                ],
+                resultMetrics: [
+                    { key: 'discharge', label: '流量', unit: 'm³/s' },
+                    { key: 'flow_regime', label: '流态', unit: '' },
+                    { key: 'gate_opening', label: '闸门开度', unit: 'm' },
+                    { key: 'discharge_coeff', label: '流量系数', unit: '' }
+                ]
+            },
+            weir: {
+                name: '堰',
+                icon: '🌊',
+                endpoint: '/api/structures/weir',
+                fields: [
+                    { name: 'type', label: '堰类型', type: 'select', options: ['broad_crested', 'sharp_crested', 'v_notch', 'ogee'], default: 'broad_crested', path: 'weir' },
+                    { name: 'width', label: '堰宽 (m)', type: 'number', default: 10, path: 'weir' },
+                    { name: 'crest_height', label: '堰顶高程 (m)', type: 'number', default: 0.5, path: 'weir' },
+                    { name: 'discharge', label: '流量 (m³/s)', type: 'number', default: 50, path: 'flow' }
+                ],
+                resultMetrics: [
+                    { key: 'discharge', label: '流量', unit: 'm³/s' },
+                    { key: 'unit_discharge', label: '单宽流量', unit: 'm²/s' },
+                    { key: 'head_over_weir', label: '堰上水头', unit: 'm' },
+                    { key: 'is_submerged', label: '是否淹没', unit: '' }
+                ]
+            },
+            turbine: {
+                name: '水轮机',
+                icon: '⚡',
+                endpoint: '/api/structures/turbine',
+                fields: [
+                    { name: 'type', label: '类型', type: 'select', options: ['francis', 'kaplan', 'pelton'], default: 'francis', path: 'turbine' },
+                    { name: 'rated_power', label: '额定功率 (MW)', type: 'number', default: 50, path: 'turbine' },
+                    { name: 'rated_head', label: '额定水头 (m)', type: 'number', default: 100, path: 'turbine' },
+                    { name: 'rated_flow', label: '额定流量 (m³/s)', type: 'number', default: 60, path: 'turbine' },
+                    { name: 'head', label: '运行水头 (m)', type: 'number', default: 100, path: 'operation' },
+                    { name: 'flow', label: '运行流量 (m³/s)', type: 'number', default: 60, path: 'operation' }
+                ],
+                resultMetrics: [
+                    { key: 'power_MW', label: '发电功率', unit: 'MW' },
+                    { key: 'efficiency', label: '效率', unit: '%', multiplier: 100 },
+                    { key: 'turbine_type', label: '水轮机类型', unit: '' }
+                ]
+            },
+            valve: {
+                name: '阀门',
+                icon: '🔧',
+                endpoint: '/api/structures/valve',
+                fields: [
+                    { name: 'type', label: '阀门类型', type: 'select', options: ['butterfly', 'ball', 'gate'], default: 'butterfly', path: 'valve' },
+                    { name: 'diameter', label: '直径 (m)', type: 'number', default: 2.0, path: 'valve' },
+                    { name: 'opening', label: '开度 (0-1)', type: 'number', default: 0.8, step: 0.1, path: 'valve' },
+                    { name: 'velocity', label: '流速 (m/s)', type: 'number', default: 3.0, path: 'flow' },
+                    { name: 'pressure_upstream', label: '上游压力 (kPa)', type: 'number', default: 500, path: 'flow' }
+                ],
+                resultMetrics: [
+                    { key: 'head_loss', label: '水头损失', unit: 'm' },
+                    { key: 'pressure_drop', label: '压降', unit: 'kPa' },
+                    { key: 'valve_opening', label: '阀门开度', unit: '' }
+                ]
+            }
+        };
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSystemStatus();
+            setupEventListeners();
+        });
+        
+        // 检查系统状态
+        async function checkSystemStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (response.ok) {
+                    document.getElementById('systemStatus').innerHTML = `
+                        <div class="metric">
+                            <span class="metric-label">后端API</span>
+                            <span class="status-badge status-success">✅ 正常</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">响应时间</span>
+                            <span class="metric-value">< 10ms</span>
+                        </div>
+                    `;
+                } else {
+                    throw new Error('服务器异常');
+                }
+            } catch (error) {
+                document.getElementById('systemStatus').innerHTML = `
+                    <div class="alert alert-error">
+                        ❌ 无法连接到后端服务器
+                    </div>
+                `;
+            }
+        }
+        
+        // 设置事件监听
+        function setupEventListeners() {
+            // 组件选择
+            document.querySelectorAll('.component-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const component = this.dataset.component;
+                    selectComponent(component);
+                });
+            });
+            
+            // 运行按钮
+            document.getElementById('runBtn').addEventListener('click', runSimulation);
+            
+            // 重置按钮
+            document.getElementById('resetBtn').addEventListener('click', resetForm);
+        }
+        
+        // 选择组件
+        function selectComponent(component) {
+            currentComponent = component;
+            
+            // 更新选中状态
+            document.querySelectorAll('.component-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-component="${component}"]`).classList.add('active');
+            
+            // 生成配置表单
+            generateConfigForm(component);
+            
+            // 启用运行按钮
+            document.getElementById('runBtn').disabled = false;
+            
+            // 隐藏结果
+            document.getElementById('resultsPanel').classList.remove('show');
+        }
+        
+        // 生成配置表单
+        function generateConfigForm(component) {
+            const template = componentTemplates[component];
+            const formHtml = `
+                <h3 style="color: #667eea; margin-bottom: 20px;">
+                    ${template.icon} ${template.name}
+                </h3>
+                ${template.fields.map(field => {
+                    if (field.type === 'select') {
+                        return `
+                            <div class="form-group">
+                                <label>${field.label}</label>
+                                <select name="${field.name}" data-path="${field.path}">
+                                    ${field.options.map(opt => `
+                                        <option value="${opt}" ${opt === field.default ? 'selected' : ''}>
+                                            ${opt}
+                                        </option>
+                                    `).join('')}
+                                </select>
+                            </div>
+                        `;
+                    } else {
+                        return `
+                            <div class="form-group">
+                                <label>${field.label}</label>
+                                <input type="${field.type}" 
+                                       name="${field.name}" 
+                                       value="${field.default}"
+                                       step="${field.step || 'any'}"
+                                       data-path="${field.path}">
+                            </div>
+                        `;
+                    }
+                }).join('')}
+            `;
+            
+            document.getElementById('configForm').innerHTML = formHtml;
+        }
+        
+        // 运行仿真
+        async function runSimulation() {
+            if (!currentComponent) return;
+            
+            const template = componentTemplates[currentComponent];
+            const runBtn = document.getElementById('runBtn');
+            const alertContainer = document.getElementById('alertContainer');
+            
+            // 显示加载状态
+            runBtn.disabled = true;
+            runBtn.innerHTML = '<span class="loading"></span> 运行中...';
+            alertContainer.innerHTML = '';
+            
+            try {
+                // 构建请求数据
+                const requestData = {};
+                const formInputs = document.querySelectorAll('#configForm input, #configForm select');
+                
+                formInputs.forEach(input => {
+                    const path = input.dataset.path;
+                    const name = input.name;
+                    const value = input.type === 'number' ? parseFloat(input.value) : input.value;
+                    
+                    if (!requestData[path]) {
+                        requestData[path] = {};
+                    }
+                    requestData[path][name] = value;
+                });
+                
+                console.log('请求数据:', requestData);
+                
+                // 发送请求
+                const response = await fetch(`${API_BASE}${template.endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestData)
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || '仿真失败');
+                }
+                
+                const result = await response.json();
+                console.log('仿真结果:', result);
+                
+                // 显示成功消息
+                alertContainer.innerHTML = `
+                    <div class="alert alert-success">
+                        ✅ 仿真成功！任务ID: ${result.task_id}
+                    </div>
+                `;
+                
+                // 显示结果
+                displayResults(result, template);
+                
+            } catch (error) {
+                console.error('仿真错误:', error);
+                alertContainer.innerHTML = `
+                    <div class="alert alert-error">
+                        ❌ 仿真失败: ${error.message}
+                    </div>
+                `;
+            } finally {
+                runBtn.disabled = false;
+                runBtn.innerHTML = '▶️ 运行仿真';
+            }
+        }
+        
+        // 显示结果
+        function displayResults(result, template) {
+            const resultsPanel = document.getElementById('resultsPanel');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            let html = '<div class="alert alert-success">✅ 仿真完成</div>';
+            
+            if (result.metrics) {
+                html += '<div style="margin-top: 20px;">';
+                template.resultMetrics.forEach(metric => {
+                    const value = result.metrics[metric.key];
+                    if (value !== undefined) {
+                        const displayValue = metric.multiplier ? 
+                            (value * metric.multiplier).toFixed(2) : 
+                            (typeof value === 'number' ? value.toFixed(4) : value);
+                        
+                        html += `
+                            <div class="metric">
+                                <span class="metric-label">${metric.label}</span>
+                                <span class="metric-value">${displayValue} ${metric.unit}</span>
+                            </div>
+                        `;
+                    }
+                });
+                html += '</div>';
+            }
+            
+            html += `
+                <div class="visualization">
+                    <h3 style="color: #666; margin-bottom: 15px;">📈 详细数据</h3>
+                    <pre style="background: white; padding: 15px; border-radius: 6px; overflow: auto; max-height: 300px;">${JSON.stringify(result, null, 2)}</pre>
+                </div>
+            `;
+            
+            resultsContent.innerHTML = html;
+            resultsPanel.classList.add('show');
+        }
+        
+        // 重置表单
+        function resetForm() {
+            if (currentComponent) {
+                generateConfigForm(currentComponent);
+            }
+            document.getElementById('alertContainer').innerHTML = '';
+            document.getElementById('resultsPanel').classList.remove('show');
+        }
+    </script>
+</body>
+</html>

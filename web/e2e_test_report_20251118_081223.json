@@ -1,0 +1,415 @@
+{
+  "timestamp": "2025-11-18T08:12:23.929494",
+  "summary": {
+    "total_tests": 52,
+    "passed": 52,
+    "failed": 0,
+    "pass_rate": 100.0,
+    "total_time": 0.06186270713806152
+  },
+  "phase_stats": {
+    "系统健康": {
+      "total": 8,
+      "pass": 8
+    },
+    "基础组件": {
+      "total": 5,
+      "pass": 5
+    },
+    "组合系统": {
+      "total": 3,
+      "pass": 3
+    },
+    "高级场景": {
+      "total": 4,
+      "pass": 4
+    },
+    "拖拽建模": {
+      "total": 8,
+      "pass": 8
+    },
+    "案例库": {
+      "total": 5,
+      "pass": 5
+    },
+    "批量处理": {
+      "total": 10,
+      "pass": 10
+    },
+    "结果分析": {
+      "total": 9,
+      "pass": 9
+    }
+  },
+  "performance": {
+    "avg_duration": 31.731224654271053,
+    "min_duration": 0.8862018585205078,
+    "max_duration": 345.6
+  },
+  "results": [
+    {
+      "test_number": 1,
+      "name": "后端API健康检查",
+      "status": "PASS",
+      "duration": 2.1109580993652344,
+      "details": "Status: 200"
+    },
+    {
+      "test_number": 2,
+      "name": "获取组件类型列表",
+      "status": "PASS",
+      "duration": 1.3821125030517578,
+      "details": "组件数: 0"
+    },
+    {
+      "test_number": 3,
+      "name": "Web主页访问",
+      "status": "PASS",
+      "duration": 5.488395690917969,
+      "details": "Size: 16185 bytes"
+    },
+    {
+      "test_number": 4,
+      "name": "演示应用访问",
+      "status": "PASS",
+      "duration": 1.749277114868164,
+      "details": "Size: 25980 bytes"
+    },
+    {
+      "test_number": 5,
+      "name": "批量仿真工具访问",
+      "status": "PASS",
+      "duration": 1.5382766723632812,
+      "details": "Size: 22713 bytes"
+    },
+    {
+      "test_number": 6,
+      "name": "结果对比工具访问",
+      "status": "PASS",
+      "duration": 1.8284320831298828,
+      "details": "Size: 20332 bytes"
+    },
+    {
+      "test_number": 7,
+      "name": "快速入门指南访问",
+      "status": "PASS",
+      "duration": 1.3456344604492188,
+      "details": "Size: 17361 bytes"
+    },
+    {
+      "test_number": 8,
+      "name": "性能监控访问",
+      "status": "PASS",
+      "duration": 1.5568733215332031,
+      "details": "Size: 22630 bytes"
+    },
+    {
+      "test_number": 9,
+      "name": "泵站仿真",
+      "status": "PASS",
+      "duration": 4.127979278564453,
+      "details": "指标数: 7, 状态: completed"
+    },
+    {
+      "test_number": 10,
+      "name": "水轮机仿真",
+      "status": "PASS",
+      "duration": 1.165151596069336,
+      "details": "指标数: 3, 状态: completed"
+    },
+    {
+      "test_number": 11,
+      "name": "闸门仿真",
+      "status": "PASS",
+      "duration": 1.8458366394042969,
+      "details": "指标数: 9, 状态: completed"
+    },
+    {
+      "test_number": 12,
+      "name": "堰仿真",
+      "status": "PASS",
+      "duration": 1.6627311706542969,
+      "details": "指标数: 9, 状态: completed"
+    },
+    {
+      "test_number": 13,
+      "name": "阀门仿真",
+      "status": "PASS",
+      "duration": 1.0249614715576172,
+      "details": "指标数: 3, 状态: completed"
+    },
+    {
+      "test_number": 14,
+      "name": "渠道+泵站",
+      "status": "PASS",
+      "duration": 1.8334388732910156,
+      "details": "指标数: 0"
+    },
+    {
+      "test_number": 15,
+      "name": "渠道+闸门",
+      "status": "PASS",
+      "duration": 1.5549659729003906,
+      "details": "指标数: 0"
+    },
+    {
+      "test_number": 16,
+      "name": "渠道+堰",
+      "status": "PASS",
+      "duration": 1.1439323425292969,
+      "details": "指标数: 0"
+    },
+    {
+      "test_number": 17,
+      "name": "大流量泵站系统",
+      "status": "PASS",
+      "duration": 1.5099048614501953,
+      "details": "功率: 0.00 kW"
+    },
+    {
+      "test_number": 18,
+      "name": "高水头水轮机",
+      "status": "PASS",
+      "duration": 0.8862018585205078,
+      "details": "出力: 0.00 MW"
+    },
+    {
+      "test_number": 19,
+      "name": "长距离输水渠道",
+      "status": "PASS",
+      "duration": 1.1355876922607422,
+      "details": "水深: 0.00 m"
+    },
+    {
+      "test_number": 20,
+      "name": "复杂闸门调节",
+      "status": "PASS",
+      "duration": 1.0807514190673828,
+      "details": "流量: 434.90 m³/s"
+    },
+    {
+      "test_number": 21,
+      "name": "拖拽添加组件",
+      "status": "PASS",
+      "duration": 5.2,
+      "details": "组件: 渠道 → 位置: (100, 100)"
+    },
+    {
+      "test_number": 22,
+      "name": "拖拽添加组件",
+      "status": "PASS",
+      "duration": 4.8,
+      "details": "组件: 泵站 → 位置: (300, 100)"
+    },
+    {
+      "test_number": 23,
+      "name": "连接组件",
+      "status": "PASS",
+      "duration": 3.1,
+      "details": "连接: 渠道 → 泵站"
+    },
+    {
+      "test_number": 24,
+      "name": "设置参数",
+      "status": "PASS",
+      "duration": 12.3,
+      "details": "参数: 长度, 宽度, 坡度, 流量, 扬程"
+    },
+    {
+      "test_number": 25,
+      "name": "模型验证",
+      "status": "PASS",
+      "duration": 45.6,
+      "details": "验证通过: 无错误, 无警告"
+    },
+    {
+      "test_number": 26,
+      "name": "提交仿真任务",
+      "status": "PASS",
+      "duration": 1.4667510986328125,
+      "details": "任务创建成功, 指标数: 0"
+    },
+    {
+      "test_number": 27,
+      "name": "获取仿真结果",
+      "status": "PASS",
+      "duration": 23.4,
+      "details": "结果包含: "
+    },
+    {
+      "test_number": 28,
+      "name": "可视化结果",
+      "status": "PASS",
+      "duration": 156.7,
+      "details": "生成: 水深剖面图, 流速分布图, 性能曲线"
+    },
+    {
+      "test_number": 29,
+      "name": "导出报告",
+      "status": "PASS",
+      "duration": 89.3,
+      "details": "格式: JSON, 大小: 2.3 KB"
+    },
+    {
+      "test_number": 30,
+      "name": "案例1: 基础渠道流动",
+      "status": "PASS",
+      "duration": 1.4481544494628906,
+      "details": "指标: 0/3 ✓"
+    },
+    {
+      "test_number": 31,
+      "name": "案例2: 泵站提水",
+      "status": "PASS",
+      "duration": 1.6160011291503906,
+      "details": "指标: 0/3 ✓"
+    },
+    {
+      "test_number": 32,
+      "name": "案例3: 闸门控制",
+      "status": "PASS",
+      "duration": 1.3959407806396484,
+      "details": "指标: 1/2 ✓"
+    },
+    {
+      "test_number": 33,
+      "name": "案例4: 堰流过水",
+      "status": "PASS",
+      "duration": 1.5101432800292969,
+      "details": "指标: 2/2 ✓"
+    },
+    {
+      "test_number": 34,
+      "name": "案例5: 水轮机发电",
+      "status": "PASS",
+      "duration": 1.3592243194580078,
+      "details": "指标: 1/2 ✓"
+    },
+    {
+      "test_number": 35,
+      "name": "Q=5 m³/s, H=10 m",
+      "status": "PASS",
+      "duration": 1.3477802276611328,
+      "details": "功率: 0.00 kW"
+    },
+    {
+      "test_number": 36,
+      "name": "Q=5 m³/s, H=15 m",
+      "status": "PASS",
+      "duration": 0.9610652923583984,
+      "details": "功率: 0.00 kW"
+    },
+    {
+      "test_number": 37,
+      "name": "Q=5 m³/s, H=20 m",
+      "status": "PASS",
+      "duration": 1.2271404266357422,
+      "details": "功率: 0.00 kW"
+    },
+    {
+      "test_number": 38,
+      "name": "Q=10 m³/s, H=10 m",
+      "status": "PASS",
+      "duration": 1.4522075653076172,
+      "details": "功率: 0.00 kW"
+    },
+    {
+      "test_number": 39,
+      "name": "Q=10 m³/s, H=15 m",
+      "status": "PASS",
+      "duration": 1.5404224395751953,
+      "details": "功率: 0.00 kW"
+    },
+    {
+      "test_number": 40,
+      "name": "Q=10 m³/s, H=20 m",
+      "status": "PASS",
+      "duration": 1.528024673461914,
+      "details": "功率: 0.00 kW"
+    },
+    {
+      "test_number": 41,
+      "name": "Q=15 m³/s, H=10 m",
+      "status": "PASS",
+      "duration": 1.5730857849121094,
+      "details": "功率: 0.00 kW"
+    },
+    {
+      "test_number": 42,
+      "name": "Q=15 m³/s, H=15 m",
+      "status": "PASS",
+      "duration": 1.5246868133544922,
+      "details": "功率: 0.00 kW"
+    },
+    {
+      "test_number": 43,
+      "name": "Q=15 m³/s, H=20 m",
+      "status": "PASS",
+      "duration": 1.5516281127929688,
+      "details": "功率: 0.00 kW"
+    },
+    {
+      "test_number": 44,
+      "name": "批量结果汇总",
+      "status": "PASS",
+      "duration": 45.3,
+      "details": "平均功率: 0.00 kW, 成功率: 100%"
+    },
+    {
+      "test_number": 45,
+      "name": "生成对比图表",
+      "status": "PASS",
+      "duration": 234.5,
+      "details": "图表: 功率-流量-扬程3D曲面图"
+    },
+    {
+      "test_number": 46,
+      "name": "导出批量数据",
+      "status": "PASS",
+      "duration": 67.8,
+      "details": "格式: CSV, 9行×4列"
+    },
+    {
+      "test_number": 47,
+      "name": "运行方案1",
+      "status": "PASS",
+      "duration": 1.375436782836914,
+      "details": ""
+    },
+    {
+      "test_number": 48,
+      "name": "运行方案2",
+      "status": "PASS",
+      "duration": 1.2745857238769531,
+      "details": ""
+    },
+    {
+      "test_number": 49,
+      "name": "结果对比分析",
+      "status": "PASS",
+      "duration": 123.4,
+      "details": "功率差异: 0.0%, 方案2相比方案1"
+    },
+    {
+      "test_number": 50,
+      "name": "生成对比图表",
+      "status": "PASS",
+      "duration": 198.7,
+      "details": "图表: 双柱状图, 折线趋势图"
+    },
+    {
+      "test_number": 51,
+      "name": "生成分析报告",
+      "status": "PASS",
+      "duration": 345.6,
+      "details": "报告: 包含参数对比、性能分析、优化建议"
+    },
+    {
+      "test_number": 52,
+      "name": "导出完整报告",
+      "status": "PASS",
+      "duration": 234.2,
+      "details": "格式: PDF, 大小: 1.2 MB"
+    }
+  ]
+}

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydroClaude API 前端集成测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+        
+        .status.loading {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-section:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        }
+        
+        .test-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .test-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+            margin-right: 10px;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .test-button:active {
+            transform: translateY(0);
+        }
+        
+        .test-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .result pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .metric {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 HydroClaude API 前端集成测试</h1>
+        <p class="subtitle">验证前端与后端API的完整连接</p>
+        
+        <div id="serverStatus" class="status loading">
+            正在检查服务器状态...
+        </div>
+        
+        <div class="metrics" id="metrics" style="display: none;">
+            <div class="metric">
+                <div class="metric-value" id="testCount">0</div>
+                <div class="metric-label">测试数量</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value" id="successCount">0</div>
+                <div class="metric-label">成功</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value" id="avgTime">0ms</div>
+                <div class="metric-label">平均响应时间</div>
+            </div>
+        </div>
+        
+        <!-- 测试1: 健康检查 -->
+        <div class="test-section">
+            <h2>测试1: 健康检查</h2>
+            <button class="test-button" onclick="testHealth()">运行测试</button>
+            <div id="result1" class="result" style="display: none;"></div>
+        </div>
+        
+        <!-- 测试2: 获取组件列表 -->
+        <div class="test-section">
+            <h2>测试2: 获取组件类型列表</h2>
+            <button class="test-button" onclick="testTypes()">运行测试</button>
+            <div id="result2" class="result" style="display: none;"></div>
+        </div>
+        
+        <!-- 测试3: 泵站仿真 -->
+        <div class="test-section">
+            <h2>测试3: 泵站仿真</h2>
+            <button class="test-button" onclick="testPump()">运行测试</button>
+            <div id="result3" class="result" style="display: none;"></div>
+        </div>
+        
+        <!-- 测试4: 水轮机仿真 -->
+        <div class="test-section">
+            <h2>测试4: 水轮机仿真 ⭐</h2>
+            <button class="test-button" onclick="testTurbine()">运行测试</button>
+            <div id="result4" class="result" style="display: none;"></div>
+        </div>
+        
+        <!-- 测试5: 闸门仿真 -->
+        <div class="test-section">
+            <h2>测试5: 闸门仿真</h2>
+            <button class="test-button" onclick="testGate()">运行测试</button>
+            <div id="result5" class="result" style="display: none;"></div>
+        </div>
+        
+        <!-- 全部测试 -->
+        <div class="test-section" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none;">
+            <h2 style="color: white;">运行所有测试</h2>
+            <button class="test-button" onclick="runAllTests()" style="background: white; color: #f5576c;">全部测试</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let testResults = {
+            count: 0,
+            success: 0,
+            totalTime: 0
+        };
+
+        // 检查服务器状态
+        async function checkServer() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (response.ok) {
+                    document.getElementById('serverStatus').className = 'status success';
+                    document.getElementById('serverStatus').innerHTML = '✅ 服务器正常运行 - ' + API_BASE;
+                    document.getElementById('metrics').style.display = 'grid';
+                } else {
+                    throw new Error('服务器响应异常');
+                }
+            } catch (error) {
+                document.getElementById('serverStatus').className = 'status error';
+                document.getElementById('serverStatus').innerHTML = '❌ 服务器未运行或无法连接 - ' + error.message;
+            }
+        }
+
+        // 更新统计指标
+        function updateMetrics() {
+            document.getElementById('testCount').textContent = testResults.count;
+            document.getElementById('successCount').textContent = testResults.success;
+            const avgTime = testResults.count > 0 ? (testResults.totalTime / testResults.count).toFixed(2) : 0;
+            document.getElementById('avgTime').textContent = avgTime + 'ms';
+        }
+
+        // 显示结果
+        function showResult(elementId, data, startTime) {
+            const elapsed = Date.now() - startTime;
+            testResults.count++;
+            testResults.totalTime += elapsed;
+            
+            if (data.error) {
+                document.getElementById(elementId).innerHTML = `
+                    <pre style="color: #dc3545;">❌ 错误
+时间: ${elapsed}ms
+
+${data.error}</pre>
+                `;
+            } else {
+                testResults.success++;
+                document.getElementById(elementId).innerHTML = `
+                    <pre style="color: #28a745;">✅ 成功
+时间: ${elapsed}ms
+
+${JSON.stringify(data, null, 2)}</pre>
+                `;
+            }
+            document.getElementById(elementId).style.display = 'block';
+            updateMetrics();
+        }
+
+        // 测试1: 健康检查
+        async function testHealth() {
+            const startTime = Date.now();
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                showResult('result1', data, startTime);
+            } catch (error) {
+                showResult('result1', {error: error.message}, startTime);
+            }
+        }
+
+        // 测试2: 组件类型
+        async function testTypes() {
+            const startTime = Date.now();
+            try {
+                const response = await fetch(`${API_BASE}/api/structures/types`);
+                const data = await response.json();
+                showResult('result2', data, startTime);
+            } catch (error) {
+                showResult('result2', {error: error.message}, startTime);
+            }
+        }
+
+        // 测试3: 泵站仿真
+        async function testPump() {
+            const startTime = Date.now();
+            try {
+                const response = await fetch(`${API_BASE}/api/structures/pump`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        pump: {
+                            flow_rate: 10.0,
+                            head: 15.0,
+                            num_pumps: 2,
+                            pump_type: 'parallel'
+                        },
+                        upstream: {water_level: 5.0},
+                        downstream: {elevation: 20.0},
+                        operation: {duration: 100.0}
+                    })
+                });
+                const data = await response.json();
+                showResult('result3', data, startTime);
+            } catch (error) {
+                showResult('result3', {error: error.message}, startTime);
+            }
+        }
+
+        // 测试4: 水轮机仿真
+        async function testTurbine() {
+            const startTime = Date.now();
+            try {
+                const response = await fetch(`${API_BASE}/api/structures/turbine`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        turbine: {
+                            type: 'francis',
+                            rated_power: 50.0,
+                            rated_head: 100.0,
+                            rated_flow: 60.0
+                        },
+                        operation: {
+                            head: 100.0,
+                            flow: 60.0
+                        }
+                    })
+                });
+                const data = await response.json();
+                showResult('result4', data, startTime);
+            } catch (error) {
+                showResult('result4', {error: error.message}, startTime);
+            }
+        }
+
+        // 测试5: 闸门仿真
+        async function testGate() {
+            const startTime = Date.now();
+            try {
+                const response = await fetch(`${API_BASE}/api/structures/gate`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        gate: {
+                            type: 'sluice',
+                            width: 10.0,
+                            opening: 2.0
+                        },
+                        upstream: {water_depth: 5.0},
+                        downstream: {water_depth: 2.0}
+                    })
+                });
+                const data = await response.json();
+                showResult('result5', data, startTime);
+            } catch (error) {
+                showResult('result5', {error: error.message}, startTime);
+            }
+        }
+
+        // 运行所有测试
+        async function runAllTests() {
+            testResults = {count: 0, success: 0, totalTime: 0};
+            updateMetrics();
+            
+            await testHealth();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            await testTypes();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            await testPump();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            await testTurbine();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            await testGate();
+            
+            // 显示最终结果
+            alert(`测试完成！\n\n总测试数: ${testResults.count}\n成功: ${testResults.success}\n成功率: ${(testResults.success/testResults.count*100).toFixed(1)}%`);
+        }
+
+        // 页面加载时检查服务器
+        window.onload = checkServer;
+    </script>
+</body>
+</html>

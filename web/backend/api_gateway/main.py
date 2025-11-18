@@ -5,7 +5,10 @@ FastAPI application entry point for hydraulic simulation management
 
 # ========== 关键：首先应用Windows编码补丁 ==========
 # 必须在其他任何导入之前执行
-import encoding_patch  # 自动修复Windows GBK编码问题
+try:
+    import encoding_patch  # 自动修复Windows GBK编码问题
+except ImportError:
+    pass  # Linux环境下不需要
 
 # ========== 设置环境变量，确保后台任务也能找到模块 ==========
 import os

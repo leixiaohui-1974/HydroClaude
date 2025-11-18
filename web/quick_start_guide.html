@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydroClaude - 快速入门指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .hero .subtitle {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .step {
+            margin-bottom: 40px;
+            padding: 30px;
+            border-left: 5px solid #667eea;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            font-size: 20px;
+            margin-right: 15px;
+        }
+        
+        .step-title {
+            display: inline-block;
+            font-size: 24px;
+            color: #333;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+        
+        .step-content {
+            margin-top: 20px;
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .code-block pre {
+            margin: 0;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-left: 4px solid #ffc107;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .highlight-success {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        
+        .highlight-info {
+            background: #d1ecf1;
+            border-left-color: #17a2b8;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .feature-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .feature-desc {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .checklist {
+            list-style: none;
+            margin: 15px 0;
+        }
+        
+        .checklist li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #555;
+        }
+        
+        .checklist li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>🚀 HydroClaude 快速入门</h1>
+            <p class="subtitle">5分钟从零到精通</p>
+        </div>
+        
+        <div class="content">
+            <!-- 第一步 -->
+            <div class="step">
+                <div>
+                    <span class="step-number">1</span>
+                    <span class="step-title">检查系统状态</span>
+                </div>
+                <div class="step-content">
+                    <p>首先确保后端服务正常运行：</p>
+                    <div class="code-block">
+                        <pre># 检查后端服务
+curl http://localhost:8000/health
+
+# 或在浏览器中访问
+http://localhost:8000/health</pre>
+                    </div>
+                    
+                    <div class="highlight highlight-success">
+                        <strong>✅ 预期响应：</strong><br>
+                        {"status": "healthy", "timestamp": "2025-11-17 13:30:00"}
+                    </div>
+                    
+                    <p>如果服务未运行，使用以下命令启动：</p>
+                    <div class="code-block">
+                        <pre>cd /workspace/web
+bash manage_servers.sh start</pre>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 第二步 -->
+            <div class="step">
+                <div>
+                    <span class="step-number">2</span>
+                    <span class="step-title">选择适合的工具</span>
+                </div>
+                <div class="step-content">
+                    <p>根据您的需求选择合适的前端应用：</p>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">🎮</div>
+                            <div class="feature-title">完整演示应用</div>
+                            <div class="feature-desc">适合日常仿真工作</div>
+                            <a href="demo_webapp.html" class="btn btn-primary">打开</a>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">🔄</div>
+                            <div class="feature-title">批量仿真工具</div>
+                            <div class="feature-desc">参数扫描和优化</div>
+                            <a href="batch_simulation.html" class="btn btn-primary">打开</a>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">📊</div>
+                            <div class="feature-title">结果对比工具</div>
+                            <div class="feature-desc">方案对比分析</div>
+                            <a href="compare_results.html" class="btn btn-primary">打开</a>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">📁</div>
+                            <div class="feature-title">结果导出工具</div>
+                            <div class="feature-desc">数据导出备份</div>
+                            <a href="export_results.html" class="btn btn-primary">打开</a>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">📈</div>
+                            <div class="feature-title">性能监控</div>
+                            <div class="feature-desc">系统状态监控</div>
+                            <a href="frontend_dashboard.html" class="btn btn-primary">打开</a>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">🧪</div>
+                            <div class="feature-title">集成测试</div>
+                            <div class="feature-desc">功能验证测试</div>
+                            <a href="frontend_integration_test.html" class="btn btn-primary">打开</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 第三步 -->
+            <div class="step">
+                <div>
+                    <span class="step-number">3</span>
+                    <span class="step-title">运行第一个仿真</span>
+                </div>
+                <div class="step-content">
+                    <p>使用<strong>完整演示应用</strong>运行您的第一个仿真：</p>
+                    
+                    <ul class="checklist">
+                        <li>打开 <a href="demo_webapp.html" target="_blank">完整演示应用</a></li>
+                        <li>从左侧选择一个组件（推荐：泵站）</li>
+                        <li>在右侧配置参数（使用默认值即可）</li>
+                        <li>点击"运行仿真"按钮</li>
+                        <li>查看结果和性能指标</li>
+                    </ul>
+                    
+                    <div class="highlight highlight-info">
+                        <strong>💡 提示：</strong> 所有组件都预设了合理的默认参数，您可以直接运行，然后再调整参数观察变化。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 第四步 -->
+            <div class="step">
+                <div>
+                    <span class="step-number">4</span>
+                    <span class="step-title">尝试批量仿真</span>
+                </div>
+                <div class="step-content">
+                    <p>使用<strong>批量仿真工具</strong>进行参数扫描：</p>
+                    
+                    <ol style="list-style: decimal; margin-left: 20px; color: #555; line-height: 2;">
+                        <li>打开 <a href="batch_simulation.html" target="_blank">批量仿真工具</a></li>
+                        <li>选择仿真类型（如：泵站）</li>
+                        <li>在批量参数框中输入：
+                            <div class="code-block">
+                                <pre>流量=5,10,15,20
+扬程=10,15,20</pre>
+                            </div>
+                        </li>
+                        <li>点击"生成批量任务"</li>
+                        <li>点击"运行批量仿真"</li>
+                        <li>等待完成后查看对比结果</li>
+                        <li>导出CSV数据进行进一步分析</li>
+                    </ol>
+                    
+                    <div class="highlight highlight-success">
+                        <strong>✅ 成功标志：</strong> 系统会自动生成 5×3=15 个任务组合，并依次执行，最终显示对比表格。
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 第五步 -->
+            <div class="step">
+                <div>
+                    <span class="step-number">5</span>
+                    <span class="step-title">使用API进行集成</span>
+                </div>
+                <div class="step-content">
+                    <p>如需在自己的程序中调用，可使用REST API：</p>
+                    
+                    <div class="code-block">
+                        <pre># Python示例
+import requests
+
+# 运行泵站仿真
+response = requests.post(
+    'http://localhost:8000/api/structures/pump',
+    json={
+        'pump': {'flow_rate': 10, 'head': 15, 'num_pumps': 2},
+        'upstream': {'water_level': 5},
+        'downstream': {'elevation': 20},
+        'operation': {'duration': 100}
+    }
+)
+
+result = response.json()
+print(result)</pre>
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
+                        <a href="http://localhost:8000/docs" target="_blank" class="btn btn-primary">查看完整API文档</a>
+                        <a href="http://localhost:8000/redoc" target="_blank" class="btn btn-success">查看ReDoc文档</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 常见问题 -->
+            <div class="step">
+                <div>
+                    <span class="step-number">?</span>
+                    <span class="step-title">常见问题</span>
+                </div>
+                <div class="step-content">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">Q1: 无法连接到后端服务？</h3>
+                    <p><strong>A:</strong> 请确保后端服务已启动。运行 <code>bash manage_servers.sh status</code> 检查状态。</p>
+                    
+                    <h3 style="color: #667eea; margin: 20px 0 15px;">Q2: 仿真结果不准确？</h3>
+                    <p><strong>A:</strong> 检查输入参数是否合理。参考示例数据或查看API文档中的参数说明。</p>
+                    
+                    <h3 style="color: #667eea; margin: 20px 0 15px;">Q3: 如何查看详细日志？</h3>
+                    <p><strong>A:</strong> 运行 <code>bash manage_servers.sh logs backend</code> 查看后端日志。</p>
+                    
+                    <h3 style="color: #667eea; margin: 20px 0 15px;">Q4: 支持哪些水工组件？</h3>
+                    <p><strong>A:</strong> 系统支持23种组件，包括泵站、水轮机、闸门、堰、阀门、调压井、渠道、水库等。</p>
+                </div>
+            </div>
+            
+            <!-- 资源链接 -->
+            <div class="step">
+                <div>
+                    <span class="step-number">📚</span>
+                    <span class="step-title">更多资源</span>
+                </div>
+                <div class="step-content">
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">📄</div>
+                            <div class="feature-title">项目文档</div>
+                            <a href="../README.md" target="_blank" class="btn btn-primary">查看</a>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">🔧</div>
+                            <div class="feature-title">服务器管理</div>
+                            <div class="code-block" style="text-align: left; font-size: 12px;">
+                                <pre>manage_servers.sh</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">🧪</div>
+                            <div class="feature-title">测试脚本</div>
+                            <div class="code-block" style="text-align: left; font-size: 12px;">
+                                <pre>complete_api_test.py</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">📊</div>
+                            <div class="feature-title">组件映射表</div>
+                            <a href="../🎯_完整组件API映射表.md" target="_blank" class="btn btn-primary">查看</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <h3>🎉 现在就开始您的水力仿真之旅！</h3>
+            <p style="margin: 15px 0;">遇到问题？查看完整文档或运行测试脚本验证系统状态</p>
+            <a href="index.html" class="btn btn-primary">返回主页</a>
+        </div>
+    </div>
+</body>
+</html>
