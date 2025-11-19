@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 147,
+    "batch_end_index": 148,
+    "test_run_at": "2025-11-19T06:05:05.871571",
+    "batch_duration_seconds": 0.17,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./diagnose_failed_simulation.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 0.17,
+      "stdout": "======================================================================\nDIAGNOSING FAILED SIMULATION TESTS\n======================================================================\n\n[1/6] examples/advanced_examples/advanced_animation_generator.py\n\n[2/6] examples/advanced_examples/benchmark_examples.py\n\n[3/6] examples/advanced_examples/calibration_example.py\n\n[4/6] examples/advanced_examples/case_gate_operation.py\n\n[5/6] examples/advanced_examples/case_irrigation_scheduling.py\n\n[6/6] examples/climate_change/climate_change_assessment.py\n\n======================================================================",
+      "stderr": ""
+    }
+  ]
+}

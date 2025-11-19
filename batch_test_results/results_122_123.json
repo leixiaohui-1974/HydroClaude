@@ -1,0 +1,15 @@
+{
+  "metadata": {
+    "batch_start_index": 122,
+    "batch_end_index": 123,
+    "test_run_at": "2025-11-19T00:37:00.898297",
+    "batch_duration_seconds": 60.03,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./batch_test_incremental.py",
+      "status": "timeout",
+      "return_code": -1,
+      "duration_seconds": 60.03,
+      "stdout":

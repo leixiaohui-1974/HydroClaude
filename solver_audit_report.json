@@ -32,9 +32,9 @@
     },
     "HydrostaticCanalSolver": {
       "status": "success",
-      "error_pct": 1.4239837602986626e+305,
-      "error_m": 1.4239837602986626e+302,
-      "actual_dh": 1.4239837602986626e+302,
+      "error_pct": 1.4239837603011375e+305,
+      "error_m": 1.4239837603011375e+302,
+      "actual_dh": 1.4239837603011375e+302,
       "stable": true
     }
   },

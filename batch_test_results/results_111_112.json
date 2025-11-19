@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 111,
+    "batch_end_index": 112,
+    "test_run_at": "2025-11-19T00:35:53.319940",
+    "batch_duration_seconds": 0.15,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/test_scripts/tests/test_anderson_tuning.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.15,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./backups/test_scripts/tests/test_anderson_tuning.py\", line 21, in <module>\n    from structures.sluice_gate import SluiceGate\nModuleNotFoundError: No module named 'structures'"
+    }
+  ]
+}

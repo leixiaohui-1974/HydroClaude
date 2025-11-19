@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 112,
+    "batch_end_index": 113,
+    "test_run_at": "2025-11-19T00:35:53.756529",
+    "batch_duration_seconds": 0.15,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/test_scripts/tests/test_anderson_vs_aitken.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.15,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./backups/test_scripts/tests/test_anderson_vs_aitken.py\", line 26, in <module>\n    from solvers.hydrostatic_canal_solver_anderson import CanalSolverAnderson\nModuleNotFoundError: No module named 'solvers.hydrostatic_canal_solver_anderson'"
+    }
+  ]
+}

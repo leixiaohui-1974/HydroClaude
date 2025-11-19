@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 156,
+    "batch_end_index": 157,
+    "test_run_at": "2025-11-19T06:07:35.653423",
+    "batch_duration_seconds": 1.42,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/advanced_examples/debug_mpc_observer.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.42,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./examples/advanced_examples/debug_mpc_observer.py\", line 17, in <module>\n    from control.mpc_controller import MPCController, MPCConfig\n  File \"/app/control/mpc_controller.py\", line 18, in <module>\n    import cvxpy as cp\nModuleNotFoundError: No module named 'cvxpy'"
+    }
+  ]
+}

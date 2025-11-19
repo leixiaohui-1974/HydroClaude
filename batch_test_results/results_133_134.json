@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 133,
+    "batch_end_index": 134,
+    "test_run_at": "2025-11-19T00:39:39.741074",
+    "batch_duration_seconds": 0.05,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./check_test_status.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 0.05,
+      "stdout": "============================================================\n第三轮测试状态\n============================================================\n进度: 0/541 (0.0%)\n通过: 0\n失败: 0\n============================================================",
+      "stderr": ""
+    }
+  ]
+}

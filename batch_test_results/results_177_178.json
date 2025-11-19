@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 177,
+    "batch_end_index": 178,
+    "test_run_at": "2025-11-19T06:08:18.642854",
+    "batch_duration_seconds": 0.91,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/advanced_examples/run_mpc_benchmark.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.91,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./examples/advanced_examples/run_mpc_benchmark.py\", line 32, in <module>\n    import yaml\nModuleNotFoundError: No module named 'yaml'"
+    }
+  ]
+}

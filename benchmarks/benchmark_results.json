@@ -1,10 +1,10 @@
 {
-  "timestamp": "2025-10-24 03:55:49",
+  "timestamp": "2025-11-19 00:39:35",
   "results": [
     {
       "name": "simple_canal",
       "description": "简单渠道（无结构物）",
-      "execution_time": 0.02475595474243164,
+      "execution_time": 0.05952334403991699,
       "iterations": 0,
       "flow_error": 0.0,
       "grid_points": 201,
@@ -14,7 +14,7 @@
     {
       "name": "single_gate",
       "description": "单闸门渠道",
-      "execution_time": 0.025198698043823242,
+      "execution_time": 0.05922698974609375,
       "iterations": 0,
       "flow_error": 0.0,
       "grid_points": 201,
@@ -24,7 +24,7 @@
     {
       "name": "three_gates",
       "description": "三闸门渠道",
-      "execution_time": 0.025449275970458984,
+      "execution_time": 0.06021523475646973,
       "iterations": 0,
       "flow_error": 0.0,
       "grid_points": 201,
@@ -34,7 +34,7 @@
     {
       "name": "fine_grid",
       "description": "细网格（1001个点）",
-      "execution_time": 0.12728095054626465,
+      "execution_time": 0.2906327247619629,
       "iterations": 0,
       "flow_error": 0.0,
       "grid_points": 1001,
@@ -44,27 +44,27 @@
     {
       "name": "unsteady_short",
       "description": "非稳态（60秒物理时间）",
-      "execution_time": 1.5108602046966553,
+      "execution_time": 3.468404531478882,
       "iterations": 60,
-      "flow_error": 5.794783343036194,
+      "flow_error": 5.615677149569294,
       "grid_points": 201,
       "structures": 1,
-      "performance_ratio": 39.712476252590534
+      "performance_ratio": 17.299020185058055
     },
     {
       "name": "unsteady_medium",
       "description": "非稳态（600秒物理时间）",
-      "execution_time": 15.072708368301392,
+      "execution_time": 34.65435242652893,
       "iterations": 600,
-      "flow_error": 61.25675344319795,
+      "flow_error": 61.50005689266165,
       "grid_points": 201,
       "structures": 1,
-      "performance_ratio": 39.807046307737764
+      "performance_ratio": 17.31384250425878
     },
     {
       "name": "scalability",
       "description": "可扩展性（50km，1001点，3闸门）",
-      "execution_time": 0.12522125244140625,
+      "execution_time": 0.4375903606414795,
       "iterations": 0,
       "flow_error": 0.0,
       "grid_points": 1001,
@@ -74,7 +74,7 @@
   ],
   "summary": {
     "total_benchmarks": 7,
-    "total_time": 16.91147470474243,
-    "average_time": 2.4159249578203474
+    "total_time": 39.029945611953735,
+    "average_time": 5.5757065159933905
   }
 }

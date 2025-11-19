@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 150,
+    "batch_end_index": 151,
+    "test_run_at": "2025-11-19T06:05:17.165059",
+    "batch_duration_seconds": 1.09,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./engine/simulation_engine.py",
+      "status": "fail",
+      "return_code": 2,
+      "duration_seconds": 1.09,
+      "stdout": "",
+      "stderr": "usage: simulation_engine.py [-h] [--no-plots] [--validate] config\nsimulation_engine.py: error: the following arguments are required: config"
+    }
+  ]
+}

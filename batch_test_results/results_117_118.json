@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 117,
+    "batch_end_index": 118,
+    "test_run_at": "2025-11-19T00:35:59.163463",
+    "batch_duration_seconds": 0.16,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/test_scripts/tests/test_script10_stability.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 0.16,
+      "stdout": "================================================================================\nScript 10 Stability Test - First 50 time steps\n================================================================================\n\nTime step: 0.1s (FIXED from 1.0s)\nCFL number: 0.0098\nGrid spacing: 20.41m\n\nRunning 50 time steps...\n  t= 0.0s: h=[5.00, 5.00]m, Q=[5.00, 5.05]m^3/s\n  t= 1.0s: h=[5.00, 5.00]m, Q=[5.00, 5.54]m^3/s\n  t= 2.0s: h=[5.00, 5.00]m, Q=[5.00, 6.03]m^3/s\n  t= 3.0s: h=[4.99, 5.00]m, Q=[5.00, 6.52]m^3/s\n  t= 4.0s: h=[4.99, 5.00]m, Q=[5.00, 7.01]m^3/s\n\n All 50 time steps completed successfully!\n No unphysical values detected\n Water depth remains in reasonable range\n Flow rate remains in reasonable range\n\n=== STABILITY TEST PASSED ===\n================================================================================",
+      "stderr": ""
+    }
+  ]
+}

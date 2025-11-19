@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 152,
+    "batch_end_index": 153,
+    "test_run_at": "2025-11-19T06:06:18.643263",
+    "batch_duration_seconds": 1.18,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/advanced_examples/adaptive_first_order_mpc_test.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.18,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./examples/advanced_examples/adaptive_first_order_mpc_test.py\", line 24, in <module>\n    import cvxpy as cp\nModuleNotFoundError: No module named 'cvxpy'"
+    }
+  ]
+}

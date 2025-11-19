@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 131,
+    "batch_end_index": 132,
+    "test_run_at": "2025-11-19T00:39:38.694716",
+    "batch_duration_seconds": 0.08,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./check_test_completion.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 0.08,
+      "stdout": "============================================================\n               TEST COMPLETION CHECK\n============================================================\n\nLast test number found: 541/541\nProgress: 100.0%\n\n[OK] All 541 tests have been processed\n\nPASS count: 267\nFAIL count: 515\nTotal counted: 782\nPass rate: 34.1%\nFail rate: 65.9%\n\n[WARN] No completion marker found\n\n------------------------------------------------------------\nLast 10 lines of log:\n------------------------------------------------------------\n[FAILED] HydroClaude Engineering Case Study 5: Water Resources Optimization\n    ID: validation_cases-engineering-water_resources_optimization-water_optimization_case\n    閿欒: Exit code: 1\nTraceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\validation_cases\\engineering\\water_resources_o\n澶辫触妗堜緥宸蹭繚瀛樺埌: E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\test_results\\failed_cases_20251113_11481\nMarkdown鎶ュ憡宸蹭繚瀛樺埌: E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\test_results\\batch_test_report_2025\n\n============================================================",
+      "stderr": ""
+    }
+  ]
+}

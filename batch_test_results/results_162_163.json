@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 162,
+    "batch_end_index": 163,
+    "test_run_at": "2025-11-19T06:07:44.703224",
+    "batch_duration_seconds": 0.9,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/advanced_examples/gain_scheduled_mpc.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.9,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./examples/advanced_examples/gain_scheduled_mpc.py\", line 31, in <module>\n    from control.first_order_mpc import FirstOrderMPC, FirstOrderMPCConfig\n  File \"/app/control/first_order_mpc.py\", line 12, in <module>\n    import cvxpy as cp\nModuleNotFoundError: No module named 'cvxpy'"
+    }
+  ]
+}

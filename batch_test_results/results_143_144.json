@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 143,
+    "batch_end_index": 144,
+    "test_run_at": "2025-11-19T06:05:05.392302",
+    "batch_duration_seconds": 0.06,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./comprehensive_web_e2e_test.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.06,
+      "stdout": "错误: 需要安装 selenium\n请运行: pip install selenium",
+      "stderr": ""
+    }
+  ]
+}

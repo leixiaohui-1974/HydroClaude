@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 116,
+    "batch_end_index": 117,
+    "test_run_at": "2025-11-19T00:35:58.715148",
+    "batch_duration_seconds": 0.81,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/test_scripts/tests/test_performance_comparison.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.81,
+      "stdout": "====================================================================================================\n性能对比测试：自适应松弛 vs 固定松弛\n====================================================================================================\n\n\n====================================================================================================\n测试1：单闸门（例子1）\n====================================================================================================\n\n固定松弛:\n----------------------------------------------------------------------------------------------------",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./backups/test_scripts/tests/test_performance_comparison.py\", line 320, in <module>\n    run_performance_comparison()\n  File \"/app/./backups/test_scripts/tests/test_performance_comparison.py\", line 64, in run_performance_comparison\n    solver = SingleCanalSolver(\n             ^^^^^^^^^^^^^^^^^^\nTypeError: HydrostaticCanalSolver.__init__() got an unexpected keyword argument 'total_length'"
+    }
+  ]
+}

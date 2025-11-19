@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 134,
+    "batch_end_index": 135,
+    "test_run_at": "2025-11-19T00:39:40.059903",
+    "batch_duration_seconds": 0.03,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./commercial_grade_test.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.03,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./commercial_grade_test.py\", line 8, in <module>\n    import requests\nModuleNotFoundError: No module named 'requests'"
+    }
+  ]
+}

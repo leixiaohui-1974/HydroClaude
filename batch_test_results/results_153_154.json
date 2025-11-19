@@ -1,0 +1,15 @@
+{
+  "metadata": {
+    "batch_start_index": 153,
+    "batch_end_index": 154,
+    "test_run_at": "2025-11-19T06:07:18.731187",
+    "batch_duration_seconds": 60.03,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/advanced_examples/benchmark_controllers.py",
+      "status": "timeout",
+      "return_code": -1,
+      "duration_seconds": 60.03,
+      "stdout":

@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 215,
+    "batch_end_index": 216,
+    "test_run_at": "2025-11-19T07:30:39.594605",
+    "batch_duration_seconds": 0.06,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/engineering_cases/case_03_multi_gate_control/run.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.06,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./examples/engineering_cases/case_03_multi_gate_control/run.py\", line 21, in <module>\n    from modeling.universal_modeler import UniversalModeler\n  File \"/app/modeling/__init__.py\", line 36, in <module>\n    from modeling.config import ModelConfig\n  File \"/app/modeling/config.py\", line 12, in <module>\n    import yaml\nModuleNotFoundError: No module named 'yaml'"
+    }
+  ]
+}

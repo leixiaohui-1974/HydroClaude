@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 119,
+    "batch_end_index": 120,
+    "test_run_at": "2025-11-19T00:35:59.866870",
+    "batch_duration_seconds": 0.07,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/utility_scripts/run_all_cases.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 0.07,
+      "stdout": "================================================================================\nHydroClaude Engineering Cases Runner\nHydroClaude 工程案例运行器\n================================================================================\n\n Error: Case file not found: /app/backups/utility_scripts/case_01_hydropower_plant.py\n Error: Case file not found: /app/backups/utility_scripts/case_02_water_supply_network.py\n Error: Case file not found: /app/backups/utility_scripts/case_03_irrigation_canal.py\n Error: Case file not found: /app/backups/utility_scripts/case_04_urban_drainage.py\n Error: Case file not found: /app/backups/utility_scripts/case_05_river_network.py\n\n================================================================================\nEXECUTION SUMMARY / 执行总结\n================================================================================\n\nTotal Cases Run / 运行案例总数:    0\nPassed / 通过:                     0\nFailed / 失败:                     0\nTotal Time / 总时间:               0.00s (0.0 min)\n\nSuccess Rate / 成功率: 0.0% \n\n Many cases failed. Please check the errors above.\n 许多案例失败。请检查上面的错误。",
+      "stderr": ""
+    }
+  ]
+}

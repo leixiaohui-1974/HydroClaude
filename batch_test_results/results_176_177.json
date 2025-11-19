@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 176,
+    "batch_end_index": 177,
+    "test_run_at": "2025-11-19T06:08:17.628897",
+    "batch_duration_seconds": 0.06,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/advanced_examples/run_idz_benchmark.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.06,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./examples/advanced_examples/run_idz_benchmark.py\", line 27, in <module>\n    from modeling.universal_modeler import UniversalModeler\n  File \"/app/modeling/__init__.py\", line 36, in <module>\n    from modeling.config import ModelConfig\n  File \"/app/modeling/config.py\", line 12, in <module>\n    import yaml\nModuleNotFoundError: No module named 'yaml'"
+    }
+  ]
+}

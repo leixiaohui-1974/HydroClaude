@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 106,
+    "batch_end_index": 107,
+    "test_run_at": "2025-11-19T00:35:50.296748",
+    "batch_duration_seconds": 0.02,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/fix_20251113_101343/tests/legacy_diagnostic/test_phase2_solver.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.02,
+      "stdout": "",
+      "stderr": "File \"/app/./backups/fix_20251113_101343/tests/legacy_diagnostic/test_phase2_solver.py\", line 21\n    except ImportError as e:\n    ^^^^^^\nIndentationError: expected an indented block after 'try' statement on line 17"
+    }
+  ]
+}

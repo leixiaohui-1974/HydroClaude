@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 139,
+    "batch_end_index": 140,
+    "test_run_at": "2025-11-19T00:41:42.445630",
+    "batch_duration_seconds": 0.07,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./comprehensive_full_test_suite.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.07,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./comprehensive_full_test_suite.py\", line 15, in <module>\n    import requests\nModuleNotFoundError: No module named 'requests'"
+    }
+  ]
+}

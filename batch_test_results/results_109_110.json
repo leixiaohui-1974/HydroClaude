@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 109,
+    "batch_end_index": 110,
+    "test_run_at": "2025-11-19T00:35:52.343919",
+    "batch_duration_seconds": 0.15,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/test_scripts/tests/test_adaptive_relax.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.15,
+      "stdout": "================================================================================\n自适应松弛因子性能对比测试\n================================================================================\n\n测试目标：\n  - 对比固定松弛因子和自适应松弛因子（Aitken加速）的收敛性能\n  - 目标收敛精度：< 0.5%\n  - 最大迭代次数：10000\n\n\n================================================================================\n场景: 单闸门\n================================================================================\n\n固定松弛:\n--------------------------------------------------------------------------------",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./backups/test_scripts/tests/test_adaptive_relax.py\", line 206, in <module>\n    main()\n  File \"/app/./backups/test_scripts/tests/test_adaptive_relax.py\", line 118, in main\n    results1 = test_scenario(\n               ^^^^^^^^^^^^^^\n  File \"/app/./backups/test_scripts/tests/test_adaptive_relax.py\", line 49, in test_scenario\n    solver = SingleCanalSolver(\n             ^^^^^^^^^^^^^^^^^^\nTypeError: HydrostaticCanalSolver.__init__() got an unexpected keyword argument 'total_length'"
+    }
+  ]
+}

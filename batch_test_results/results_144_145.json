@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 144,
+    "batch_end_index": 145,
+    "test_run_at": "2025-11-19T06:05:05.479909",
+    "batch_duration_seconds": 0.03,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./comprehensive_workflow_test.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.03,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./comprehensive_workflow_test.py\", line 8, in <module>\n    from selenium import webdriver\nModuleNotFoundError: No module named 'selenium'"
+    }
+  ]
+}
