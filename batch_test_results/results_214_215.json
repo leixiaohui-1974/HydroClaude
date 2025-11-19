@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 214,
+    "batch_end_index": 215,
+    "test_run_at": "2025-11-19T07:30:39.469288",
+    "batch_duration_seconds": 60.11,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/comprehensive_animation_generator.py",
+      "status": "timeout",
+      "return_code": -1,
+      "duration_seconds": 60.11,
+      "stdout": "",
+      "stderr": "Process timed out after 60 seconds."
+    }
+  ]
+}

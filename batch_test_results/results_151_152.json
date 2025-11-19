@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "batch_start_index": 151,
+    "batch_end_index": 152,
+    "test_run_at": "2025-11-19T06:06:17.311081",
+    "batch_duration_seconds": 60.09,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/advanced_animation_generator.py",
+      "status": "timeout",
+      "return_code": -1,
+      "duration_seconds": 60.09,
+      "stdout": "",
+      "stderr":

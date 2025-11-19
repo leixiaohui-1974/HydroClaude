@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 120,
+    "batch_end_index": 121,
+    "test_run_at": "2025-11-19T00:36:00.222471",
+    "batch_duration_seconds": 0.06,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/utility_scripts/run_all_examples.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 0.06,
+      "stdout": "================================================================================\n开始运行所有示例\n================================================================================\n\n================================================================================\n运行完成: 0/0 成功\n================================================================================\n\n运行结果已保存到: /app/backups/utility_scripts/run_results.json",
+      "stderr": ""
+    }
+  ]
+}

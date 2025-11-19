@@ -1,0 +1,712 @@
+{
+  "timestamp": "2025-11-19T00:32:37.968780",
+  "total": 207,
+  "passed": 0,
+  "failed": 174,
+  "timeout": 0,
+  "elapsed_seconds": 0.10208630561828613,
+  "results": {
+    "passed": [],
+    "failed": [
+      {
+        "path": "examples/example_side_weir.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/spring_ice_breakup.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_internal_structures.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case5_irrigation_system.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_complete_workflow.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/summer_eutrophication.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case_flood_control.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_culvert_structure.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case_flood_control_steady.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case6_highrise_water_supply.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case8_network_optimization.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_network_solver.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_bridge_structure.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_network_nodes.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case4_fire_protection_system.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case_parameter_sensitivity.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_network_topology.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_network_validation.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case_gate_operation.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_cascade_reservoirs.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/phase1_flood_routing.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/phase1_steady_scenarios.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/phase1_extended_scenarios.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_timeseries_bc.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_irregular_channel.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_trapezoidal_channel.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/climate_change_assessment.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/phase1_simple_gate_control.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case_irrigation_scheduling.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case02_flood_risk_assessment.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/benchmark_examples.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/calibration_example.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_rating_curve_bc.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case1_urban_water_supply.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/phase1_mega_scenarios.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_compound_channel.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_irrigation_network.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/validate_new_examples.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case7_regional_water_supply.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_pump_station.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/winter_river_simulation.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/test_weno3_dambreak.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case3_industrial_cooling_system.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case2_pump_water_hammer.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/benchmark_performance.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case_channel_renovation.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_structure_showcase/run.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_06_complete_hydropower_system/example_06_complete_system.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_structures/run_spillway.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/run_scenario_05.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/test_fix.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/analyze_all_scenarios.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/comprehensive_scenario_test.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/quick_scenario_test.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/standard_multi_scenario_test.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/run_scenario_04.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/run_scenario_02.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/enhanced_scenario_test.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/gate_pump_cascade_advanced.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/run_scenario.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/diagnose_negative_flow.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/temp_scenario.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/run_scenario_03.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/run_scenario_01.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/test_fixed_solver.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_gate_pump_cascade/test_all_scenarios_quick.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_unsteady/run_unsteady_flow.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_unsteady/run_time_varying_bc.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_file_boundary_condition/run.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_05_transient_analysis/example_05_load_rejection.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/real_world_cases/long_distance_water_transfer.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/real_world_cases/urban_drainage_pump_station.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/real_world_cases/irrigation_canal_automation.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case_library/case_05_river_network.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case_library/case_02_water_supply_network.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case_library/test_cases.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case_library/benchmark_performance.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case_library/case_04_urban_drainage.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_07_multi_unit_agc/example_07_multi_unit_agc.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_17_reservoir_basic/example_17_reservoir_with_anim.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_17_reservoir_basic/demo_reservoir.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_08_load_acceptance/example_08_load_acceptance.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_08_load_acceptance/example_08_load_acceptance_with_anim.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_02_pump_system/example_02_pump_system_enhanced.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_02_pump_system/example_02_pump_system_with_anim.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/debug_mpc_observer.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/swmm_smart_pump_control.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/multi_objective_reservoir_scheduling.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/constrained_mpc_canal_demo.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/diagnose_mpc_performance.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/run_idz_benchmark.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/water_quality_chlorine_decay.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/mpc_nonlinear_test.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/simple_state_estimation_demo.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/test_mpc_no_observer.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/diagnose_hydraulic_model.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/test_first_order_mpc.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/state_estimation_canal_control.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/diagnose_controller_mismatch.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/run_mpc_benchmark.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/diagnose_simulator.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/mpc_robustness_analysis.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/mpc_water_level_control.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/idz_saint_venant_integration.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/test_idz_mpc_performance.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/identify_true_idz_params.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/complete_benchmark_suite.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/adaptive_first_order_mpc_test.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/realtime_monitor_demo.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/benchmark_controllers.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/epanet_water_distribution_system.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/realtime_scada_monitoring.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/multi_canal_benchmark_improved.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/test_mpc_direction.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/verify_idz_steady_state.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/linearized_canal_simulator.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/test_idz_identification_negative_gain.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/integrated_smart_water_system.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/robust_control_demo.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/run_first_order_mpc_benchmark.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/advanced_examples/gain_scheduled_mpc.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/integration_examples/gis_water_network.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/integration_examples/swmm_urban_drainage.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_simple_canal/run_simple_canal.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_13_adaptive_timescale/example_13_adaptive_timescale_enhanced.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_04_hydropower_system/example_04_hydropower_plant.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_02_spillway_cascade/example_02_spillway_system.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_02_spillway_cascade/example_02_spillway_simple.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_09_pipe_rk4/example_09_pipe_rk4_enhanced.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_10_series_network/example_10_series_network_with_anim.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_20_urban_water_supply/demo_urban_supply.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/config_driven/simulate.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_control/run_pid_control.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_control/run_mpc_control.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_24_multi_objective_optimization/demo_multi_objective.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_19_water_transfer/demo_water_transfer.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_23_control_comparison/demo_control_comparison.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_18_cascade_hydropower/demo_cascade.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_15_rls_identification/example_15_rls_identification_enhanced.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_03_turbine_demo/example_03_turbine_comparison.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_03_turbine_demo/example_03_turbine_with_anim.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_21_irrigation_optimization/demo_irrigation.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_14_adaptive_mpc/code/example_14_adaptive_mpc.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_12_loop_network/code/example_12_loop_network.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_11_tree_network/code/example_11_tree_network.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case_library/case_01_dam_break/dam_break_comparison.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/case_library/case_02_flood_routing/flood_routing_simulation.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_02_pump_system/code/example_02_pump_system.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_13_adaptive_timescale/code/example_13_adaptive_timescale.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_03_complex_network/code/example_03_complex_network.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_09_pipe_rk4/code/example_09_pipe_rk4.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_10_series_network/code/example_10_series_network.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_04_moc_boundary/code/example_04_moc_boundary.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/engineering_cases/case_04_parameter_calibration/run.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/engineering_cases/case_03_multi_gate_control/run.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/engineering_cases/case_05_water_resource_optimization/run.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_07_fault_test/code/example_07_fault_test.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_15_rls_identification/code/example_15_rls_identification.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/12_advanced_optimized_v2_refactored.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/07_sluice_gate_flow_v2_refactored.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/04_boundary_conditions_v2.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/01_basic_v2.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/12_advanced_optimized_v2.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/04_boundary_conditions_v2_refactored.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/01_basic_v2_refactored.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/11_advanced_structures.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/08_optimized_steady_solving_v2_refactored.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/03_idz_identification.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/08_optimized_steady_solving_v2.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/02_methods_comparison.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/05_step_response.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      },
+      {
+        "path": "examples/example_01_canal_flow/scripts/06_animation.py",
+        "error": "[Errno 2] No such file or directory: '/workspace'"
+      }
+    ],
+    "timeout": [],
+    "import_error": [],
+    "runtime_error": []
+  }
+}

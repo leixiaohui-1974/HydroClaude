@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 169,
+    "batch_end_index": 170,
+    "test_run_at": "2025-11-19T06:07:59.717526",
+    "batch_duration_seconds": 0.9,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/advanced_examples/mpc_water_level_control.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.9,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./examples/advanced_examples/mpc_water_level_control.py\", line 33, in <module>\n    from control.mpc_controller import MPCController, MPCConfig\n  File \"/app/control/mpc_controller.py\", line 18, in <module>\n    import cvxpy as cp\nModuleNotFoundError: No module named 'cvxpy'"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 102,
+    "batch_end_index": 103,
+    "test_run_at": "2025-11-19T00:35:49.004686",
+    "batch_duration_seconds": 0.03,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/fix_20251113_101343/tests/legacy_diagnostic/test_fvm_steady_comparison.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.03,
+      "stdout": "",
+      "stderr": "File \"/app/./backups/fix_20251113_101343/tests/legacy_diagnostic/test_fvm_steady_comparison.py\", line 24\n    except ImportError as e:\n    ^^^^^^\nIndentationError: expected an indented block after 'try' statement on line 20"
+    }
+  ]
+}

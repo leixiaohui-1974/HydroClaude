@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 149,
+    "batch_end_index": 150,
+    "test_run_at": "2025-11-19T06:05:16.016252",
+    "batch_duration_seconds": 0.02,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./diagnose_simulation_loading.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.02,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./diagnose_simulation_loading.py\", line 7, in <module>\n    import requests\nModuleNotFoundError: No module named 'requests'"
+    }
+  ]
+}

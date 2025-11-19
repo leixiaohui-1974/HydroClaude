@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 165,
+    "batch_end_index": 166,
+    "test_run_at": "2025-11-19T06:07:54.618993",
+    "batch_duration_seconds": 0.98,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/advanced_examples/integrated_smart_water_system.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.98,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./examples/advanced_examples/integrated_smart_water_system.py\", line 36, in <module>\n    from optimization.multi_objective import (\n  File \"/app/optimization/__init__.py\", line 33, in <module>\n    from .utils import (\n  File \"/app/optimization/utils.py\", line 9, in <module>\n    from pyomo.environ import SolverFactory, value\nModuleNotFoundError: No module named 'pyomo'"
+    }
+  ]
+}

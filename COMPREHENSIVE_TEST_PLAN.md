@@ -1,556 +1,320 @@
-# HydroClaude 项目深度全面测试方案
-**制定日期**: 2025-11-12
+# HydroClaude 全面测试方案 (Comprehensive Test Plan)
+
 **版本**: 1.0
+**日期**: 2025-11-18
+**作者**: Jules
 
 ---
 
-## 📋 测试目标
+## 1. 简介与目标
 
-### 主要目标
-1. **后台算法测试**: 验证所有核心算法和求解器的正确性
-2. **Web界面测试**: 验证前后端集成和所有功能模块的可用性
-3. **端到端测试**: 完整工作流的验证
-4. **性能测试**: 确保系统响应时间和计算效率
-5. **兼容性测试**: 验证浏览器兼容性
+本方案旨在为 HydroClaude 项目建立一个世界级的、全面的、自动化的测试体系。其核心目标是：
 
-### 测试范围
-- ✅ 核心求解器（GodunvFVMSolver, HydrostaticCanalSolver, Preissmann）
-- ✅ 水工结构（闸门、堰、泵站）
-- ✅ Web API接口
-- ✅ 前端UI组件
-- ✅ 数据库集成
-- ✅ 可视化功能
-- ✅ 文件导入导出
+- **确保软件质量**: 保证从底层算法到前端UI的每一行代码都正确、可靠。
+- **提升开发效率**: 通过自动化测试，快速获得代码变更的反馈，减少手动回归测试的成本。
+- **增强系统健-壮性**: 覆盖边界条件、异常处理和真实世界的复杂场景。
+- **对标商业软件**: 建立与业界领先的商业软件相匹配的质量保证流程。
+
+## 2. 测试策略：测试金字塔
+
+我们将采用经典的“测试金字塔”模型，该模型将测试分为多个层次，从底层快速、廉价的单元测试到顶层缓慢、昂贵的端到-端测试。
+
+```
+      /▲\
+     /   \   L5: UI 端到端测试 (E2E UI Tests)
+    /-----\
+   /       \ L4: 前端组件测试 (Component Tests)
+  /---------\
+ /           \ L3: API 端点测试 (E2E API Tests)
+/-------------\
+/               \ L2: 集成测试 (Integration Tests)
+/-----------------\
+/                   \ L1: 单元测试 (Unit Tests)
+---------------------
+```
+
+- **投资重点**: 我们的时间和精力将主要投入在金字塔的底部（L1, L2），以建立一个快速、稳定和可靠的测试基础。
+- **自动化**: 所有 L1 到 L5 的测试都应被设计为完全自动化的，并集成到CI/CD流程中。
 
 ---
 
-## 🏗️ 测试架构
+## 3. L1 - 单元测试 (Unit Tests)
 
-### Phase 1: 后台算法测试（预计30分钟）
-```
-├── 1.1 核心求解器测试
-│   ├── GodunvFVMSolver (非恒定流)
-│   ├── HydrostaticCanalSolver (稳态流)
-│   └── Preissmann (非恒定流)
-├── 1.2 水工结构测试
-│   ├── 闸门流量计算
-│   ├── 堰流量计算
-│   └── 边界条件处理
-├── 1.3 水力学工具测试
-│   ├── 均匀流计算
-│   ├── 临界水深计算
-│   └── Froude数计算
-└── 1.4 验证工具测试
-    ├── ResultValidator
-    └── 流量守恒验证
-```
+**目标**: 验证最小的可测试代码单元（单个函数、方法或类）的行为是否符合预期。
 
-### Phase 2: Web后端测试（预计20分钟）
-```
-├── 2.1 API服务测试
-│   ├── 健康检查接口
-│   ├── 引擎信息接口
-│   └── CORS配置验证
-├── 2.2 仿真API测试
-│   ├── 创建仿真
-│   ├── 运行仿真
-│   ├── 查询结果
-│   └── 删除仿真
-├── 2.3 数据库集成测试
-│   ├── 模型保存
-│   ├── 模型读取
-│   └── 数据持久化
-└── 2.4 异常处理测试
-    ├── 无效输入
-    ├── 边界情况
-    └── 错误恢复
-```
+**范围**:
+- **后端**:
+    - `models/` 目录下的所有物理模型类（例如 `SluiceGateModel`）。
+    - `core/` 目录下的核心算法和数据结构。
+    - `utils/` 目录下的所有工具函数。
+- **前端**:
+    - 独立的React组件中的业务逻辑函数。
+    - Redux/Zustand中的状态管理逻辑。
 
-### Phase 3: Web前端测试（预计25分钟）
-```
-├── 3.1 页面加载测试
-│   ├── 首页加载
-│   ├── 资源加载
-│   └── 样式渲染
-├── 3.2 功能模块测试
-│   ├── 模型编辑器
-│   │   ├── 参数输入
-│   │   ├── 结构添加
-│   │   └── 配置保存
-│   ├── 仿真运行
-│   │   ├── 参数配置
-│   │   ├── 开始仿真
-│   │   └── 进度显示
-│   ├── 结果可视化
-│   │   ├── 图表渲染
-│   │   ├── 数据展示
-│   │   └── 交互功能
-│   └── 数据管理
-│       ├── 导入配置
-│       ├── 导出结果
-│       └── 历史记录
-├── 3.3 UI交互测试
-│   ├── 按钮点击
-│   ├── 表单验证
-│   ├── 导航切换
-│   └── 响应式布局
-└── 3.4 错误处理测试
-    ├── 网络错误提示
-    ├── 验证错误提示
-    └── 用户友好提示
-```
+**工具**:
+- **后端**: `pytest`
+- **前端**: `Jest`, `React Testing Library`
 
-### Phase 4: 端到端集成测试（预计15分钟）
-```
-└── 4.1 完整工作流
-    ├── 场景1: 基础渠道流动
-    │   ├── 创建模型
-    │   ├── 运行仿真
-    │   ├── 查看结果
-    │   └── 导出数据
-    ├── 场景2: 含闸门的渠道
-    │   ├── 添加闸门结构
-    │   ├── 配置开度
-    │   ├── 运行仿真
-    │   └── 验证流量
-    └── 场景3: 非恒定流
-        ├── 配置时变边界
-        ├── 运行动态仿真
-        ├── 查看演化过程
-        └── 分析结果
-```
+**示例代码 (后端 - `pytest`)**:
+这是验证 `SluiceGateModel` 在自由流条件下计算是否正确的测试。
 
----
-
-## 🔧 测试工具和环境
-
-### 测试工具
-- **Python测试**: pytest, unittest
-- **Web API测试**: httpx, requests
-- **浏览器测试**: Selenium WebDriver (Chrome)
-- **截图工具**: selenium screenshot
-- **性能监控**: time, psutil
-
-### 环境要求
-- Python 3.8+
-- Node.js 16+
-- Chrome浏览器
-- 后端服务: http://localhost:8000
-- 前端服务: http://localhost:5173
-
----
-
-## 📝 测试用例清单
-
-### 1. 后台算法测试用例
-
-#### 1.1 GodunvFVMSolver测试
 ```python
-测试用例 1.1.1: 静止水体测试
-- 输入: h=10m (均匀), Q=0
-- 预期: 质量误差 < 0.001%, 水深保持10m
-- 优先级: 高
+# tests/models/test_gate_model.py
 
-测试用例 1.1.2: Dam Break测试
-- 输入: h_left=10m, h_right=1m
-- 预期: 质量误差 < 1%, 波前位置误差 < 20%
-- 优先级: 高
+import pytest
+from models.gate import SluiceGateModel
 
-测试用例 1.1.3: 稳态均匀流测试
-- 输入: Q=50m³/s, S0=0.001, n=0.025
-- 预期: 水深误差 < 1%, 流量误差 < 0.1%
-- 优先级: 高
+def test_sluice_gate_free_flow():
+    """测试平板闸门在自由流条件下的计算"""
+    gate = SluiceGateModel(width=5.0, opening=1.0, discharge_coeff=0.6)
+    result = gate.calculate_discharge(upstream_depth=4.0, downstream_depth=0.8)
+
+    assert result["flow_regime"] == "free"
+    # 理论计算: Q = 0.6 * 5.0 * 1.0 * sqrt(2 * 9.81 * 4.0) = 26.57
+    assert result["discharge"] == pytest.approx(26.57, rel=1e-2)
+    assert result["error"] is None
 ```
 
-#### 1.2 HydrostaticCanalSolver测试
+---
+
+## 4. L2 - 集成测试 (Integration Tests)
+
+**目标**: 验证多个单元协同工作时是否正确。
+
+**范围**:
+- **后端**:
+    - **服务层与模型层**: 验证 `services/simulation_service.py` 能否正确调用 `models` 中的物理模型。
+    - **API层与服务层**: 验证 `routers/structures.py` 中的API端点能否正确地调用 `services` 层。
+    - **核心引擎与求解器**: 验证 `core/simulation_engine.py` 能否正确地加载和运行 `solvers/` 目录下的求解器。
+- **前端**:
+    - 验证包含多个子组件的复杂组件的行为。
+    - 验证组件与状态管理库（如Redux）的交互。
+
+**工具**: `pytest` (后端), `React Testing Library` (前端)
+
+**示例代码 (后端 - `pytest`)**:
+这是一个测试 `simulation_service` 是否能成功调用 `SimulationEngine` 并返回预期结果的集成测试。
+
 ```python
-测试用例 1.2.1: 简单渠道稳态流
-- 输入: L=10km, Q=10m³/s, S0=0.0005
-- 预期: 流量误差 < 0.000001%, 迭代次数 < 5
-- 优先级: 高
+# tests/services/test_simulation_service.py
 
-测试用例 1.2.2: 含单闸门流动
-- 输入: 闸门位置5km, 开度5m
-- 预期: 流量误差 < 0.01%, 上下游水深跃升合理
-- 优先级: 高
+from services.simulation_service import simulation_service
 
-测试用例 1.2.3: 多结构串联
-- 输入: 3个闸门串联
-- 预期: 流量误差 < 0.01%, 收敛稳定
-- 优先级: 中
+def test_service_runs_steady_simulation():
+    """测试服务层能否成功运行一个稳态流仿真"""
+    config = {
+        "simulation": {"type": "steady", "mode": "standard"},
+        "canal": {"length": 1000, "width": 10, ...},
+        "structures": [{"type": "sluice_gate", ...}],
+        "boundary_conditions": {...},
+        ...
+    }
+
+    results = simulation_service.run_simulation_from_config(config)
+
+    assert results["status"] == "completed"
+    assert "hydro_result" in results
+    assert results["simulation"]["type"] == "steady"
 ```
 
-#### 1.3 Preissmann求解器测试
+---
+
+## 5. L3 - API 端点测试 (E2E API Tests)
+
+**目标**: 从外部客户端的角度，验证API端点的请求和响应是否完全符合规范。这是对整个后端应用的“黑盒”测试。
+
+**范围**:
+- `web/backend/api_gateway/routers/` 目录下的所有API端点。
+- 测试内容应包括：
+    - 成功的请求 (`200 OK`)。
+    - 错误的客户端输入 (`4xx Bad Request`)。
+    - 服务器内部错误 (`5xx Internal Server Error`)。
+    - 认证和授权（如果未来添加）。
+
+**工具**: `pytest` + `httpx` (或 `fastapi.testclient.TestClient`)
+
+**示例代码 (后端 - `pytest` + `httpx`)**:
+这个测试模拟一个真实的HTTP客户端，向正在运行的API服务发送POST请求。
+
 ```python
-测试用例 1.3.1: 非恒定流演化
-- 输入: 初始h=2m, 上游Q=20m³/s变化
-- 预期: 质量误差 < 40%, 稳定收敛
-- 优先级: 中
+# tests/api/test_api_endpoints.py
 
-测试用例 1.3.2: 边界条件测试
-- 输入: 时变上游流量
-- 预期: 边界处理正确，无振荡
-- 优先级: 中
-```
+import pytest
+import httpx
 
-### 2. Web后端测试用例
+BASE_URL = "http://localhost:8000" # 假设API服务正在运行
 
-#### 2.1 健康检查
-```python
-测试用例 2.1.1: GET /health
-- 预期: status_code=200, status="healthy"
-- 优先级: 高
-```
+def test_api_gate_endpoint():
+    """测试 /api/structures/gate 端点"""
+    request_data = {
+        "gate": { "type": "sluice", "width": 5.0, "opening": 1.5, "discharge_coeff": 0.62 },
+        "upstream_depth": 4.0,
+        "downstream_depth": 2.0
+    }
 
-#### 2.2 仿真API
-```python
-测试用例 2.2.1: POST /api/v1/simulations/run
-- 输入: 基础渠道配置
-- 预期: 返回simulation_id, 结果正确
-- 优先级: 高
+    with httpx.Client() as client:
+        response = client.post(f"{BASE_URL}/api/structures/gate", json=request_data)
 
-测试用例 2.2.2: GET /api/v1/simulations/{id}
-- 预期: 返回完整仿真结果
-- 优先级: 高
-
-测试用例 2.2.3: 异常输入处理
-- 输入: 无效参数
-- 预期: 返回400错误，错误信息清晰
-- 优先级: 中
-```
-
-### 3. Web前端测试用例
-
-#### 3.1 页面加载
-```python
-测试用例 3.1.1: 首页加载
-- 操作: 访问 http://localhost:5173
-- 预期: 页面完整加载，无404错误
-- 截图: homepage.png
-- 优先级: 高
-```
-
-#### 3.2 模型编辑器
-```python
-测试用例 3.2.1: 参数输入
-- 操作: 输入渠道长度、宽度等参数
-- 预期: 输入框可用，验证正确
-- 截图: model_editor.png
-- 优先级: 高
-
-测试用例 3.2.2: 添加闸门
-- 操作: 点击"添加闸门"按钮
-- 预期: 闸门表单出现，可输入参数
-- 截图: add_gate.png
-- 优先级: 高
-```
-
-#### 3.3 仿真运行
-```python
-测试用例 3.3.1: 开始仿真
-- 操作: 点击"运行仿真"按钮
-- 预期: 显示进度条，最终显示成功
-- 截图: simulation_running.png, simulation_success.png
-- 优先级: 高
-```
-
-#### 3.4 结果可视化
-```python
-测试用例 3.4.1: 水深剖面图
-- 预期: Plotly图表正确渲染，交互功能正常
-- 截图: result_profile.png
-- 优先级: 高
-
-测试用例 3.4.2: 流量分布图
-- 预期: 图表显示流量分布，数值正确
-- 截图: result_flow.png
-- 优先级: 中
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "completed"
+    assert data["metrics"]["discharge"] == pytest.approx(20.30, rel=1e-2)
 ```
 
 ---
 
-## 🚀 测试执行计划
+## 6. L4 - 前端组件测试 (Component Tests)
 
-### 阶段1: 环境准备（5分钟）
-```bash
-# 1. 检查Python环境
-python --version
-pip list | grep -E "numpy|scipy|matplotlib"
+**目标**: 在一个模拟的浏览器环境中，独立地测试React组件的渲染和交互行为。
 
-# 2. 检查Node.js环境
-node --version
-npm --version
+**范围**:
+- 所有位于 `frontend/components/` 目录下的React组件。
+- 测试内容应包括：
+    - 组件是否根据传入的 `props` 正确渲染。
+    - 当用户与组件交互（如点击、输入）时，是否触发了预期的回调函数。
+    - 组件是否能正确地处理从API获取的数据。
 
-# 3. 安装测试依赖
-pip install pytest selenium webdriver-manager
+**工具**: `Jest` + `React Testing Library`
 
-# 4. 检查Chrome浏览器
-google-chrome --version
-```
+**示例代码 (前端 - `Jest`)**:
+这个测试验证一个 `ParameterInput` 组件是否能正确地显示标签，并响应用户的输入。
 
-### 阶段2: 后台算法测试（30分钟）
-```bash
-# 1. 运行核心求解器测试
-pytest tests/test_solvers/ -v --tb=short
+```javascript
+// frontend/components/ParameterInput.test.js
 
-# 2. 运行水工结构测试
-pytest tests/test_network/ -v --tb=short
+import { render, screen, fireEvent } from '@testing-library/react';
+import ParameterInput from './ParameterInput';
 
-# 3. 运行示例脚本验证
-python run_example_tests.py
+test('renders input and responds to change', () => {
+  const handleChange = jest.fn();
 
-# 4. 生成测试报告
-pytest tests/ --html=backend_test_report.html
-```
+  render(<ParameterInput label="Flow Rate" value={10} onChange={handleChange} />);
 
-### 阶段3: Web服务测试（45分钟）
-```bash
-# 1. 启动服务
-cd web
-./start_servers.sh
+  // 验证标签是否正确渲染
+  const labelElement = screen.getByText(/Flow Rate/i);
+  expect(labelElement).toBeInTheDocument();
 
-# 2. 等待服务就绪（15秒）
-sleep 15
+  // 模拟用户输入
+  const inputElement = screen.getByRole('textbox');
+  fireEvent.change(inputElement, { target: { value: '20' } });
 
-# 3. 运行后端API测试
-python web/backend/tests/test_cases.py
-
-# 4. 运行前端自动化测试（包含截图）
-python comprehensive_web_test_with_screenshots.py
-
-# 5. 生成完整测试报告
-```
-
-### 阶段4: 报告生成（5分钟）
-```bash
-# 1. 汇总所有测试结果
-python generate_comprehensive_report.py
-
-# 2. 生成可视化报告
-python visualize_test_results.py
-
-# 3. 打包测试截图
-tar -czf test_screenshots.tar.gz screenshots/
+  // 验证 onChange 回调是否被正确调用
+  expect(handleChange).toHaveBeenCalledWith('20');
+});
 ```
 
 ---
 
-## 📊 测试验收标准
+## 7. L5 - UI 端到端测试 (E2E UI Tests)
 
-### 后台算法
-- ✅ 所有核心测试用例通过率 ≥ 95%
-- ✅ GodunvFVMSolver质量误差 < 1%
-- ✅ HydrostaticCanalSolver流量误差 < 0.01%
-- ✅ 无严重性能退化（与基准对比 < 10%）
+**目标**: 模拟真实用户在浏览器中的完整操作流程，以验证整个系统（前端+后端）是否协同工作。
 
-### Web后端
-- ✅ 所有API端点响应正常（200或预期状态码）
-- ✅ 仿真API功能完整可用
-- ✅ 数据库操作无错误
-- ✅ 异常处理机制有效
+**范围**:
+- 核心用户工作流，例如：
+    1.  打开网页。
+    2.  从下拉菜单中选择一个水工结构（如“闸门”）。
+    3.  在表单中填写所有参数。
+    4.  点击“运行仿真”按钮。
+    5.  验证结果（如图表、数据显示）是否正确地显示在页面上。
 
-### Web前端
-- ✅ 所有页面正常加载（无白屏、无404）
-- ✅ 核心功能模块可用（编辑、运行、查看）
-- ✅ 至少10个关键截图验证UI正确
-- ✅ 无JavaScript控制台错误（除警告外）
+**工具**: `Playwright` (推荐) 或 `Cypress`
 
-### 端到端
-- ✅ 至少3个完整工作流成功执行
-- ✅ 数据一致性验证通过
-- ✅ 用户体验流畅（无卡顿、无崩溃）
+**示例代码 (`Playwright`)**:
 
----
+```javascript
+// e2e_tests/simulation.spec.js
 
-## 🐛 故障排查指南
+const { test, expect } = require('@playwright/test');
 
-### 后台测试失败
-```bash
-# 1. 检查依赖
-pip install -r requirements.txt
+test('completes a full gate simulation workflow', async ({ page }) => {
+  // 1. 访问网页
+  await page.goto('http://localhost:8080/demo_webapp.html');
 
-# 2. 检查路径
-python -c "import sys; print(sys.path)"
+  // 2. 选择结构
+  await page.selectOption('select#component-select', 'gate');
 
-# 3. 运行单个测试调试
-pytest tests/test_xxx.py -v -s
+  // 3. 填写表单
+  await page.fill('input#gate-width', '5.0');
+  await page.fill('input#gate-opening', '1.5');
+  // ... 填写其他参数
+
+  // 4. 点击运行
+  await page.click('button#run-simulation');
+
+  // 5. 验证结果
+  // 等待结果区域出现
+  await page.waitForSelector('#results-container');
+
+  // 验证结果中的某个关键数值是否正确显示
+  const dischargeResult = await page.textContent('#result-discharge');
+  expect(dischargeResult).toContain('20.30'); // 假设这是预期的流量结果
+});
+
+### 7.1. 视觉回归测试 (Visual Regression Testing)
+
+**目标**: 自动捕捉用户界面的视觉变化（VRT），确保代码变更不会意外破坏页面布局、样式、颜色或图表渲染。
+
+**原理**:
+1.  **生成基准截图**: 在一个已知的、正确的版本上，运行测试并为关键页面或组件状态生成“基准”截图。
+2.  **对比与差异分析**: 当代码发生变更后，重新运行测试，生成新的截图。
+3.  **像素级对比**: 自动化工具会逐像素地对比新截图和基准截图。如果发现差异，测试将失败，并生成一个高亮显示差异的可视化报告。
+
+**工具**: `Playwright` 内置的截图断言 (`toHaveScreenshot`)
+
+**示例代码 (`Playwright`)**:
+这个测试会在模拟用户操作后，对结果图表区域进行截图，并与之前存储的基准图片进行对比。
+
+```javascript
+// e2e_tests/visual_validation.spec.js
+
+const { test, expect } = require('@playwright/test');
+
+test('validates the visual appearance of the results chart', async ({ page }) => {
+  // ... 执行与上面测试相同的仿真步骤 ...
+  await page.goto('http://localhost:8080/demo_webapp.html');
+  await page.selectOption('select#component-select', 'gate');
+  await page.fill('input#gate-width', '5.0');
+  await page.fill('input#gate-opening', '1.5');
+  await page.click('button#run-simulation');
+  await page.waitForSelector('#results-container');
+
+  // 选取图表所在的容器元素
+  const chartContainer = await page.$('#chart-container');
+
+  // 断言该元素的截图与名为 'simulation-chart.png' 的基准截图匹配
+  // 第一次运行时，Playwright 会提示找不到基准，并自动创建它。
+  // 后续运行时，它将进行对比。
+  // `maxDiffPixels` 允许有少量像素差异，以应对抗锯齿等渲染波动。
+  await expect(chartContainer).toHaveScreenshot('simulation-chart.png', {
+    maxDiffPixels: 100
+  });
+});
 ```
-
-### Web服务启动失败
-```bash
-# 1. 检查端口占用
-lsof -i :8000
-lsof -i :5173
-
-# 2. 查看日志
-tail -f /tmp/hydroclaude_backend.log
-tail -f /tmp/hydroclaude_frontend.log
-
-# 3. 重启服务
-./stop_servers.sh
-./start_servers.sh
-```
-
-### 浏览器测试失败
-```bash
-# 1. 检查Chrome驱动
-python -c "from selenium import webdriver; webdriver.Chrome()"
-
-# 2. 手动验证服务
-curl http://localhost:8000/health
-curl http://localhost:5173
-
-# 3. 降级到手动测试
-# 打开浏览器手动访问并截图
-```
-
----
-
-## 📂 测试输出文件
-
-### 测试报告
-```
-├── COMPREHENSIVE_TEST_REPORT.md          # 综合测试报告
-├── backend_test_report.html              # 后台测试HTML报告
-├── backend_test_report.json              # 后台测试JSON数据
-├── web_test_report.json                  # Web测试JSON数据
-└── test_summary.txt                      # 测试摘要
-```
-
-### 测试截图
-```
-screenshots/
-├── 01_homepage.png                       # 首页
-├── 02_model_editor_empty.png            # 空模型编辑器
-├── 03_model_editor_filled.png           # 填充后的编辑器
-├── 04_add_gate_dialog.png               # 添加闸门对话框
-├── 05_simulation_config.png             # 仿真配置
-├── 06_simulation_running.png            # 仿真运行中
-├── 07_simulation_success.png            # 仿真成功
-├── 08_result_profile.png                # 结果剖面图
-├── 09_result_flow.png                   # 流量分布图
-├── 10_result_data_table.png             # 结果数据表
-├── 11_export_dialog.png                 # 导出对话框
-└── 12_error_handling.png                # 错误处理示例
-```
-
-### 测试数据
-```
-test_data/
-├── test_config_1.json                    # 测试配置1
-├── test_config_2.json                    # 测试配置2
-├── test_results_1.json                   # 测试结果1
-└── performance_metrics.json              # 性能指标
 ```
 
 ---
 
-## 🔍 测试检查清单
+## 8. 性能与兼容性测试
 
-### 测试前检查
-- [ ] Python环境正常（3.8+）
-- [ ] Node.js环境正常（16+）
-- [ ] Chrome浏览器已安装
-- [ ] 项目依赖已安装
-- [ ] 端口8000和5173未被占用
-- [ ] 测试配置文件准备完毕
+### 性能测试
+- **后端压力测试**: 使用 `locust` 或 `k6` 等工具，模拟大量并发用户向API发送请求，以测试系统的吞吐量（QPS）、响应时间和稳定性。
+- **前端性能测试**: 使用 `Google Lighthouse` 或 `Playwright` 的性能追踪功能，分析页面的加载速度、首次内容绘制（FCP）等关键指标。
 
-### 测试中检查
-- [ ] 后台所有测试用例执行完成
-- [ ] Web服务成功启动
-- [ ] 浏览器自动化测试运行
-- [ ] 截图自动保存
-- [ ] 日志文件正常记录
-
-### 测试后检查
-- [ ] 测试报告生成完整
-- [ ] 截图文件齐全（≥10张）
-- [ ] 通过率达标（≥95%）
-- [ ] 关键功能验证通过
-- [ ] 性能指标正常
-- [ ] 错误已记录并分类
+### 兼容性测试
+- **操作系统兼容性**: 在CI/CD流程中，应包含在不同操作系统（Linux, Windows）上运行测试的步骤。特别注意Windows中文环境下的文件路径、编码和命令行执行。
+- **浏览器兼容性**: E2E测试应配置为在主流浏览器（Chrome, Firefox, Safari）上运行，以确保跨浏览器的一致性。
 
 ---
 
-## 📈 测试指标
+## 9. 回归测试策略
 
-### 定量指标
-- **测试覆盖率**: 目标 ≥ 85%
-- **通过率**: 目标 ≥ 95%
-- **平均响应时间**: 目标 < 2s
-- **仿真计算时间**: 目标 < 30s（基础场景）
+**目标**: 确保新的代码变更没有破坏任何现有功能。
 
-### 定性指标
-- **算法正确性**: 流量误差、质量守恒
-- **UI易用性**: 操作流畅性、提示清晰度
-- **错误处理**: 友好提示、恢复能力
-- **文档完整性**: 测试报告、截图说明
+**策略**:
+- **CI/CD 集成**: 所有测试（L1-L5）都应被集成到项目的CI/CD流程中（如 GitHub Actions）。
+- **触发机制**:
+    - **每次提交 (On Push)**: 自动运行所有 L1 单元测试和 L2 集成测试。这能提供最快速的反馈。
+    - **创建合并请求 (On Pull Request)**: 自动运行所有 L1, L2, L3 (API) 和 L4 (组件) 测试。
+    - **合并到主分支后/每日构建 (Nightly Build)**: 运行所有测试，包括最耗时的 L5 E2E UI 测试和性能测试。
 
----
-
-## 🎯 测试优先级
-
-### P0 - 必须通过（阻塞发布）
-- GodunvFVMSolver核心功能
-- HydrostaticCanalSolver稳态求解
-- Web API基础功能
-- 前端页面加载
-- 仿真运行流程
-
-### P1 - 应该通过（影响体验）
-- 水工结构计算
-- 结果可视化
-- 数据导入导出
-- 错误提示
-
-### P2 - 可以通过（增强功能）
-- 高级求解器功能
-- 复杂场景测试
-- 性能优化验证
-- UI美化
-
----
-
-## 📝 测试执行记录
-
-### 执行信息
-- **执行人**: [待填写]
-- **执行日期**: [待填写]
-- **执行环境**: [待填写]
-- **Python版本**: [待填写]
-- **Node.js版本**: [待填写]
-
-### 执行结果
-- **后台测试**: [通过/失败]
-- **Web后端测试**: [通过/失败]
-- **Web前端测试**: [通过/失败]
-- **端到端测试**: [通过/失败]
-
-### 问题记录
-| 序号 | 问题描述 | 严重程度 | 状态 | 备注 |
-|------|---------|---------|------|------|
-| 1    |         |         |      |      |
-| 2    |         |         |      |      |
-
----
-
-## ✅ 下一步行动
-
-1. **立即执行**: 运行自动化测试脚本
-2. **收集结果**: 汇总所有测试输出
-3. **分析问题**: 对失败用例进行根因分析
-4. **生成报告**: 创建完整的测试报告文档
-5. **展示演示**: 准备测试结果演示材料
-
----
-
-**文档维护**: HydroClaude开发团队  
-**最后更新**: 2025-11-12  
-**版本**: 1.0
-
-
-
-
-
-
-
+通过实施这一全面的测试方案，HydroClaude 项目将能够建立起强大的质量壁垒，确保每一次发布都是高质量、高可靠性的。

@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 171,
+    "batch_end_index": 172,
+    "test_run_at": "2025-11-19T06:08:05.337991",
+    "batch_duration_seconds": 0.89,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/advanced_examples/multi_objective_reservoir_scheduling.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.89,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./examples/advanced_examples/multi_objective_reservoir_scheduling.py\", line 35, in <module>\n    from optimization.multi_objective import (\n  File \"/app/optimization/__init__.py\", line 33, in <module>\n    from .utils import (\n  File \"/app/optimization/utils.py\", line 9, in <module>\n    from pyomo.environ import SolverFactory, value\nModuleNotFoundError: No module named 'pyomo'"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 158,
+    "batch_end_index": 159,
+    "test_run_at": "2025-11-19T06:07:38.110092",
+    "batch_duration_seconds": 0.91,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/advanced_examples/diagnose_hydraulic_model.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 0.91,
+      "stdout": "================================================================================\nSimplifiedCanalSimulator物理特性诊断\n================================================================================\n\n系统参数\n渠道长度 L = 1000.0m\n渠道宽度 W = 10.0m\n水面面积 A = 10000.0m^2\n闸门系数 Cd = 0.6\n下游水位 h_down = 2.2m\n上游流量 Q_in = 20.0m^3/s\n\n系统方程\n非线性闸门方程\n  Q_out = Cd * a * W * sqrt(2*g*(h - h_down))\n  Q_out = 0.6 * a * 10 * sqrt(2*9.81*Deltah)\n  Q_out = 6 * a * sqrt(19.62*Deltah)\n  Q_out ~= 6 * a * 4.43 * sqrt(Deltah)\n  Q_out ~= 26.6 * a * sqrt(Deltah)  (m^3/s)\n\n水量平衡方程\n  dV/dt = Q_in - Q_out\n  A * dh/dt = Q_in - Q_out\n  10000 * dh/dt = 20 - 26.6*a*sqrt(Deltah)\n  dh/dt = (20 - 26.6*a*sqrt(Deltah)) / 10000\n  dh/dt = 0.002 - 0.00266*a*sqrt(Deltah)  (m/s)\n\n稳态分析\n稳态条件dh/dt = 0即 Q_in = Q_out\n  20 = 26.6 * a * sqrt(Deltah)\n  a * sqrt(Deltah) = 20 / 26.6 = 0.752\n\n对于不同的闸门开度a稳态水位差Deltah\n  a = 0.5m -> Deltah = 2.261m -> h = 4.461m\n  a = 1.0m -> Deltah = 0.565m -> h = 2.765m\n  a = 1.5m -> Deltah = 0.251m -> h = 2.451m\n  a = 2.0m -> Deltah = 0.141m -> h = 2.341m\n  a = 2.5m -> Deltah = 0.090m -> h = 2.290m\n  a = 3.0m -> Deltah = 0.063m -> h = 2.263m\n  a = 4.0m -> Deltah = 0.035m -> h = 2.235m\n\n线性化分析\n在工作点 (h*, a*) 附近线性化\n\n工作点h* = 2.5m, a* = 2.0m, Deltah* = 0.2999999999999998m\n\n偏导数:\n  Q_out/h = -48.522 m^2/s  (负值水位高->出流大)\n  Q_out/a = 14.557 m^3/(sm)  (正值开度大->出流大)\n\n线性化IDZ参数一阶:\n  K = Deltah/Deltaa = -0.300  (m/m)\n  tau = A / |Q/h| = 206.1s\n\n   K < 0确认反向作用a -> h\n\n与在线辨识对比:\n  在线辨识: K = 50.0 (正值错误)\n  线性化计算: K = -0.3 (负值正确)\n  差异: 50.3\n\n  在线辨识: tau_d = 217.7s\n  线性化计算: tau = 206.1s\n  差异: 11.6s\n\n关键发现\n 问题1在线辨识的K值符号错误\n   - 在线辨识: K=+50 (正向)\n   - 物理推导: K~=-22 (反向)\n   - 原因: 在线辨识算法对反向系统的理解有误\n\n 问题2SimplifiedCanalSimulator不完全符合IDZ假设\n   - SimplifiedCanalSimulator: 非线性闸门方程\n   - IDZ模型: 线性传递函数\n   - 影响: 在不同工作点K值不同时间常数也变化\n\n 问题3SimplifiedCanalSimulator过于简化\n   - 忽略了渠道动力学水流惯性摩擦等\n   - 只有集总参数水量平衡\n   - 没有空间分布效应\n   - 不适合测试高级控制算法\n\n解决方案\n方案1修正在线辨识算法推荐\n  - 确保IDZIdentifier能正确辨识反向系统\n  - 或者在SimplifiedCanalSimulator中反转u的定义\n\n方案2使用Saint-Venant高保真模型最佳\n  - 完整的偏微分方程\n  - 真实的水力学特性\n  - 适合测试所有控制算法\n\n方案3修改SimplifiedCanalSimulator定义\n  - 将u定义为'期望出流量'而不是'闸门开度'\n  - 这样可以得到u->h通过Q_out=u的正确方向\n\n时间尺度分析\n系统响应时间tau ~= 206s\n采样时间dt = 2.0s\n比值tau/dt = 103.0\n\n 采样频率充足tau >> dt\n\n推荐的MPC/自适应PI配置\n基于线性化分析推荐参数\n  K = -0.3  (注意负值)\n  tau_z = 103.0s  (约tau/2)\n  tau_d = 206.1s\n  theta = 4.0s  (约2*dt)\n\n================================================================================\n结论\n1. SimplifiedCanalSimulator的K值应该是负的约-22\n2. 在线辨识返回正值是因为算法未正确处理反向系统\n3. 推荐使用Saint-Venant高保真模型进行基准测试\n================================================================================\n\n不同工作点的线性增益\n验证非线性效应\n\n  h=2.3m, a=1.5m -> K=-0.13, tau=159s\n  h=2.3m, a=2.0m -> K=-0.10, tau=119s\n  h=2.3m, a=2.5m -> K=-0.08, tau=95s\n  h=2.3m, a=3.0m -> K=-0.07, tau=79s\n  h=2.5m, a=1.5m -> K=-0.40, tau=275s\n  h=2.5m, a=2.0m -> K=-0.30, tau=206s\n  h=2.5m, a=2.5m -> K=-0.24, tau=165s\n  h=2.5m, a=3.0m -> K=-0.20, tau=137s\n  h=2.7m, a=1.5m -> K=-0.67, tau=355s\n  h=2.7m, a=2.0m -> K=-0.50, tau=266s\n  h=2.7m, a=2.5m -> K=-0.40, tau=213s\n  h=2.7m, a=3.0m -> K=-0.33, tau=177s\n  h=3.0m, a=1.5m -> K=-1.07, tau=449s\n  h=3.0m, a=2.0m -> K=-0.80, tau=337s\n  h=3.0m, a=2.5m -> K=-0.64, tau=269s\n  h=3.0m, a=3.0m -> K=-0.53, tau=224s\n\n观察K和tau随工作点变化明显 -> 非线性系统\n       这解释了为什么自适应IDZ在不同工况下性能不稳定\n\n================================================================================",
+      "stderr": ""
+    }
+  ]
+}

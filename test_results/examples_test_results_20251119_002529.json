@@ -1,0 +1,29 @@
+{
+  "test_time": "2025-11-19T00:25:29.717269",
+  "platform": "linux",
+  "python_version": "3.12.12 (main, Nov  7 2025, 00:07:10) [GCC 13.3.0]",
+  "total_tests": 1,
+  "results": [
+    {
+      "name": "明渠流动/01_basic_v2",
+      "path": "/app/examples/example_01_canal_flow/scripts/01_basic_v2.py",
+      "category": "basic",
+      "start_time": "2025-11-19T00:25:14.476128",
+      "status": "passed",
+      "duration": 15.240910053253174,
+      "error": null,
+      "output": "================================================================================\n例子1[U+FF1A]明渠流动基础示例 (HydrostaticCanalSolver高精度版本)\n================================================================================\n\n1. 参数设置\n--------------------------------------------------------------------------------\n渠道长度: 1000.0 m\n渠道宽度: 10.0 m\n渠底坡度: 0.001\nManning糙率: 0.025\n网格数: 201\n目标流量: 8.0 m^3/s\n均匀流水深: 0.806483 m\n\n2. 高精度稳态求解 (Phase 2静水重构方法)\n--------------------------------------------------------------------------------\n开始稳态求解...\n\n  8.000 m³/s\n  0.806 m\n  0.806 m\n   0: dh=5.0056e-03, dhu=0.0000e+00, Q=8.000 (0.00%)\n   0\n\n\n  8.000 m³/s0.00%\n  [0.801, 0.809] m\n\n稳态求解结果:\n  收敛: 是\n  迭代次数: 0\n  流量误差: 0.000000%\n\n稳态结果验证:\n--------------------------------------------------------------------------------\n\n================================================================================\n脚本01 - 基础示例稳态\n================================================================================\n\n[ 收敛] 迭代次数: 0 (极快 (1次))\n[优秀 (Excellent)] Overall 流量守恒: 0.000000% (目标=8.0000, 平均=8.0000)\n\n\n3. 非恒定流演化到稳态\n--------------------------------------------------------------------------------\n初始状态:\n  水深: 0.9678 m (理论值的120%)\n  流量: 8.0 m^3/s\n\n非恒定流参数:\n  时间步长: 0.5 s\n  总时间: 100.0 s\n  总步数: 200\n\n运行非恒定流仿真...\n  t=25.0s: h_avg=0.874157 m, Q_avg=0.992660 m^3/s\n  t=50.0s: h_avg=0.809557 m, Q_avg=0.872862 m^3/s\n  t=75.0s: h_avg=0.783409 m, Q_avg=0.823906 m^3/s\n  t=100.0s: h_avg=0.772807 m, Q_avg=0.803472 m^3/s\n 非恒定流仿真完成\n\n4. 生成可视化图表\n--------------------------------------------------------------------------------\n  生成稳态纵剖面图...\n   Saved figure: 01_basic_steady_profile_v2.png\n  生成非恒定流演化图...\n   Saved figure: 01_basic_unsteady_evolution_v2.png\n  生成快照对比图...\n   Saved figure: 01_basic_unsteady_snapshots_v2.png\n\n5. 保存数据表\n--------------------------------------------------------------------------------\n   Saved table: 01_basic_steady_profile_v2.csv\n   稳态剖面数据: 01_basic_steady_profile_v2.csv (201 rows)\n   Saved table: 01_basic_unsteady_evolution_v2.csv\n   非恒定流演化数据: 01_basic_unsteady_evolution_v2.csv (200 rows)\n  保存验证报告...\n 报告已保存: /app/examples/example_01_canal_flow/results/reports/01_basic_validation_report.txt\n   验证报告: 01_basic_validation_report.txt\n\n================================================================================\n仿真完成[U+FF01]\n================================================================================\n\n生成的文件:\n  Figures:\n    - 01_basic_steady_profile_v2.png (稳态纵剖面)\n    - 01_basic_unsteady_evolution_v2.png (非恒定流演化)\n    - 01_basic_unsteady_snapshots_v2.png (快照对比)\n  Tables:\n    - 01_basic_steady_profile_v2.csv\n    - 01_basic_unsteady_evolution_v2.csv\n  Reports:\n    - 01_basic_validation_report.txt\n\n关键结果:\n  稳态流量误差: 0.000000% (优秀)\n  稳态收敛迭代: 0 (极快)\n  非恒定流演化: 100s内稳定\n\n 例子1 (HydrostaticCanalSolver版) 运行成功\n================================================================================\n\n",
+      "returncode": 0
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 0,
+    "timeout": 0,
+    "error": 0,
+    "passed_with_warnings": 0,
+    "unknown": 0,
+    "total_duration": 15.240910053253174,
+    "success_rate": 100.0
+  }
+}

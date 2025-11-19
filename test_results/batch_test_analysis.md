@@ -1,7 +1,7 @@
 # HydroClaude 批量测试结果分析报告
 # Batch Test Results Analysis Report
 
-**生成时间 / Generated**: 2025-11-13 09:18:23
+**生成时间 / Generated**: 2025-11-19 00:18:04
 **测试案例总数 / Total Cases**: 541
 
 ---
@@ -507,4 +507,4 @@ Traceback (most recent call last):
 
 ---
 
-**报告生成完成 / Report Generated**: 2025-11-13 09:18:23
+**报告生成完成 / Report Generated**: 2025-11-19 00:18:04

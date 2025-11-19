@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 188,
+    "batch_end_index": 189,
+    "test_run_at": "2025-11-19T06:08:40.139665",
+    "batch_duration_seconds": 0.06,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/benchmark_examples.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.06,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./examples/benchmark_examples.py\", line 22, in <module>\n    import psutil\nModuleNotFoundError: No module named 'psutil'"
+    }
+  ]
+}

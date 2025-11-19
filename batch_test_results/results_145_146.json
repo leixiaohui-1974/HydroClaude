@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 145,
+    "batch_end_index": 146,
+    "test_run_at": "2025-11-19T06:05:05.562330",
+    "batch_duration_seconds": 0.03,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./continue_simulation_tests.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.03,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./continue_simulation_tests.py\", line 8, in <module>\n    import requests\nModuleNotFoundError: No module named 'requests'"
+    }
+  ]
+}

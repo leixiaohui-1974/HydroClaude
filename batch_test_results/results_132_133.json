@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 132,
+    "batch_end_index": 133,
+    "test_run_at": "2025-11-19T00:39:39.299461",
+    "batch_duration_seconds": 0.11,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./check_test_progress.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 0.11,
+      "stdout": "Progress: 541/541 (100.0%)\nSuccess: 0 (0.0%)\nFailed: 434 (80.2%)\nError: 1 (0.2%)",
+      "stderr": ""
+    }
+  ]
+}

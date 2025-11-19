@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 130,
+    "batch_end_index": 131,
+    "test_run_at": "2025-11-19T00:39:38.138646",
+    "batch_duration_seconds": 0.05,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./browser_test_real.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.05,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/app/./browser_test_real.py\", line 8, in <module>\n    from selenium import webdriver\nModuleNotFoundError: No module named 'selenium'"
+    }
+  ]
+}
