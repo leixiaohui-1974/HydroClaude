@@ -1,0 +1,33 @@
+# 测试框架
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+pytest-html==4.1.1
+pytest-xdist==3.5.0
+
+# API测试
+httpx==0.25.2
+faker==20.1.0
+
+# 浏览器自动化
+playwright==1.40.0
+pytest-playwright==0.4.3
+
+# 图像处理
+Pillow==10.1.0
+opencv-python==4.8.1.78
+
+# 性能测试
+locust==2.18.3
+
+# 报告生成
+allure-pytest==2.13.2
+
+# 数据分析
+pandas==2.1.0
+matplotlib==3.8.0
+
+# 已有依赖
+httpx>=0.24.1
+numpy>=1.24.0
+scipy>=1.10.0
