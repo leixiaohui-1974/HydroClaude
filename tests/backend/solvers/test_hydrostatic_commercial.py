@@ -64,9 +64,9 @@ class TestHydrostatic商业对标:
         solver = HydrostaticCanalSolver(
             nx=100,
             length=params["length"],
-            width=params["width"],
-            slope=params["slope"],
-            manning=params["manning_n"],
+            B=params["width"],
+            S0=params["slope"],
+            n=params["manning_n"],
             g=9.81
         )
         
@@ -217,9 +217,9 @@ class TestHydrostatic商业对标:
         solver = HydrostaticCanalSolver(
             nx=100,
             length=params["length"],
-            width=params["width"],
-            slope=params["slope"],
-            manning=params["manning_n"]
+            B=params["width"],
+            S0=params["slope"],
+            n=params["manning_n"]
         )
         
         # 3. 创建闸门（使用基础库）
@@ -360,9 +360,9 @@ class TestHydrostatic商业对标:
         solver = HydrostaticCanalSolver(
             nx=100,
             length=params["length"],
-            width=params["width"],
-            slope=params["slope"],
-            manning=params["manning_n"]
+            B=params["width"],
+            S0=params["slope"],
+            n=params["manning_n"]
         )
         
         # 3. 使用 canal_utils 计算理论水深（基础库）
