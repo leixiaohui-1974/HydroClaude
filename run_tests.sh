@@ -1,76 +1,146 @@
 #!/bin/bash
 # HydroClaude 测试执行脚本
-# 按照 Spec-Kit 规范编写
-# Spec: 001-comprehensive-review-and-testing
+# 版本: v1.0
+# 日期: 2025-11-20
 
-echo "=========================================="
-echo "HydroClaude 测试套件"
-echo "Powered by Spec-Kit"
-echo "=========================================="
-echo ""
+set -e
 
-# 检查 pytest 是否安装
-if ! command -v pytest &> /dev/null; then
-    echo "❌ pytest 未安装，正在安装..."
-    pip install -r requirements_test.txt
-fi
+# 颜色定义
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
-echo "📋 可用的测试命令:"
-echo ""
-echo "1. 运行所有测试:"
-echo "   pytest -v"
-echo ""
-echo "2. 运行商业对标测试:"
-echo "   pytest -m commercial -v"
-echo ""
-echo "3. 运行后端测试:"
-echo "   pytest -m backend -v"
-echo ""
-echo "4. 运行单个测试文件:"
-echo "   pytest tests/backend/solvers/test_godunov_commercial.py -v -s"
-echo ""
-echo "5. 生成 HTML 报告:"
-echo "   pytest --html=reports/html/test_report.html --self-contained-html"
-echo ""
-echo "6. 生成覆盖率报告:"
-echo "   pytest --cov --cov-report=html"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "      🏆 HydroClaude 测试执行脚本"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-read -p "选择要执行的测试 (1-6, 或按 Enter 跳过): " choice
+# 进入项目目录
+cd /workspace
+
+# 显示菜单
+echo -e "${BLUE}请选择测试选项:${NC}"
+echo ""
+echo "  1) 运行所有测试 (68个测试, ~14秒)"
+echo "  2) 运行基础测试 (4个测试, ~1秒)"
+echo "  3) 运行多场景测试 (11个测试, ~2秒)"
+echo "  4) 运行极端场景测试 (11个测试, ~1秒)"
+echo "  5) 运行水力学函数测试 (15个测试, ~1秒)"
+echo "  6) 运行水工结构测试 (15个测试, ~1秒)"
+echo "  7) 运行集成测试 (6个测试, ~2秒)"
+echo "  8) 运行性能基准测试 (6个测试, ~8秒)"
+echo "  9) 生成HTML测试报告"
+echo " 10) 生成覆盖率报告"
+echo "  0) 退出"
+echo ""
+read -p "请输入选项 [1-10]: " choice
 
 case $choice in
     1)
-        echo "运行所有测试..."
-        pytest -v
+        echo ""
+        echo -e "${YELLOW}运行所有测试...${NC}"
+        echo ""
+        python3 -m pytest \
+            tests/backend/solvers/test_hydrostatic_simple.py \
+            tests/backend/solvers/test_hydrostatic_scenarios.py \
+            tests/backend/solvers/test_hydrostatic_extreme.py \
+            tests/backend/utils/test_canal_utils.py \
+            tests/backend/structures/test_gate_simple.py \
+            tests/backend/integration/test_solver_with_structures.py \
+            tests/backend/benchmarks/test_performance_benchmark.py \
+            -v
         ;;
     2)
-        echo "运行商业对标测试..."
-        pytest -m commercial -v -s
+        echo ""
+        echo -e "${YELLOW}运行基础测试...${NC}"
+        echo ""
+        python3 -m pytest tests/backend/solvers/test_hydrostatic_simple.py -v
         ;;
     3)
-        echo "运行后端测试..."
-        pytest -m backend -v
+        echo ""
+        echo -e "${YELLOW}运行多场景测试...${NC}"
+        echo ""
+        python3 -m pytest tests/backend/solvers/test_hydrostatic_scenarios.py -v
         ;;
     4)
-        echo "运行 GodunvFVMSolver 对标测试..."
-        pytest tests/backend/solvers/test_godunov_commercial.py -v -s
+        echo ""
+        echo -e "${YELLOW}运行极端场景测试...${NC}"
+        echo ""
+        python3 -m pytest tests/backend/solvers/test_hydrostatic_extreme.py -v
         ;;
     5)
-        echo "生成 HTML 报告..."
-        pytest --html=reports/html/test_report.html --self-contained-html
-        echo "报告已生成: reports/html/test_report.html"
+        echo ""
+        echo -e "${YELLOW}运行水力学函数测试...${NC}"
+        echo ""
+        python3 -m pytest tests/backend/utils/test_canal_utils.py -v
         ;;
     6)
-        echo "生成覆盖率报告..."
-        pytest --cov --cov-report=html
-        echo "覆盖率报告: reports/html/coverage/index.html"
+        echo ""
+        echo -e "${YELLOW}运行水工结构测试...${NC}"
+        echo ""
+        python3 -m pytest tests/backend/structures/test_gate_simple.py -v
+        ;;
+    7)
+        echo ""
+        echo -e "${YELLOW}运行集成测试...${NC}"
+        echo ""
+        python3 -m pytest tests/backend/integration/test_solver_with_structures.py -v
+        ;;
+    8)
+        echo ""
+        echo -e "${YELLOW}运行性能基准测试...${NC}"
+        echo ""
+        python3 -m pytest tests/backend/benchmarks/test_performance_benchmark.py -v
+        ;;
+    9)
+        echo ""
+        echo -e "${YELLOW}生成HTML测试报告...${NC}"
+        echo ""
+        python3 -m pytest \
+            tests/backend/solvers/test_hydrostatic_*.py \
+            tests/backend/utils/test_canal_utils.py \
+            tests/backend/structures/test_gate_simple.py \
+            tests/backend/integration/test_solver_with_structures.py \
+            tests/backend/benchmarks/test_performance_benchmark.py \
+            --html=reports/html/test_report_$(date +%Y%m%d_%H%M%S).html \
+            --self-contained-html
+        echo ""
+        echo -e "${GREEN}✅ HTML报告已生成到 reports/html/目录${NC}"
+        ;;
+    10)
+        echo ""
+        echo -e "${YELLOW}生成覆盖率报告...${NC}"
+        echo ""
+        python3 -m pytest \
+            tests/backend/solvers/test_hydrostatic_*.py \
+            tests/backend/utils/test_canal_utils.py \
+            tests/backend/structures/test_gate_simple.py \
+            tests/backend/integration/test_solver_with_structures.py \
+            tests/backend/benchmarks/test_performance_benchmark.py \
+            --cov=solvers.hydrostatic_canal_solver \
+            --cov=utils.canal_utils \
+            --cov=solvers.gate \
+            --cov-report=html:reports/coverage \
+            --cov-report=term
+        echo ""
+        echo -e "${GREEN}✅ 覆盖率报告已生成到 reports/coverage/index.html${NC}"
+        ;;
+    0)
+        echo ""
+        echo -e "${BLUE}退出${NC}"
+        exit 0
         ;;
     *)
-        echo "跳过测试执行"
+        echo ""
+        echo -e "${RED}无效选项！${NC}"
+        exit 1
         ;;
 esac
 
 echo ""
-echo "=========================================="
-echo "测试套件准备完成！"
-echo "=========================================="
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo -e "${GREEN}✅ 测试执行完成！${NC}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
