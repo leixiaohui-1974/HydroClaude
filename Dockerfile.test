@@ -1,0 +1,60 @@
+# Dockerfile for HydroClaude Testing
+# 用于在 Docker 容器中运行完整测试套件
+# 按照 Spec-Kit 规范编写
+
+FROM python:3.11-slim
+
+# 设置工作目录
+WORKDIR /app
+
+# 安装系统依赖
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    curl \
+    nodejs \
+    npm \
+    && rm -rf /var/lib/apt/lists/*
+
+# 升级 pip
+RUN pip install --upgrade pip
+
+# 复制 requirements.txt
+COPY requirements.txt .
+
+# 安装 Python 依赖
+RUN pip install -r requirements.txt
+
+# 安装测试依赖
+RUN pip install \
+    pytest==7.4.0 \
+    pytest-asyncio==0.21.1 \
+    pytest-cov==4.1.0 \
+    pytest-html==3.2.0 \
+    pytest-xdist==3.3.1 \
+    httpx==0.24.1 \
+    locust==2.15.1 \
+    playwright==1.40.0
+
+# 安装 Playwright 浏览器
+RUN playwright install --with-deps chromium firefox webkit
+
+# 安装 Node.js 依赖（前端测试）
+COPY package.json package-lock.json* ./
+RUN npm install || echo "No package.json found"
+
+# 复制项目文件
+COPY . .
+
+# 设置环境变量
+ENV PYTHONPATH=/app
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
+# 创建测试报告目录
+RUN mkdir -p reports/screenshots reports/html reports/coverage
+
+# 暴露端口
+EXPOSE 8000 8089
+
+# 默认命令：运行所有测试
+CMD ["pytest", "tests/", "-v", "--html=reports/html/test_report.html", "--cov=.", "--cov-report=html:reports/coverage/"]
