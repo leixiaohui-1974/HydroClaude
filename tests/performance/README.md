@@ -1,0 +1,357 @@
+# HydroClaude 性能测试
+
+**Phase 5: 性能测试完整指南**
+
+---
+
+## 📊 测试概述
+
+使用 **Locust** 进行负载测试和性能基准测试，覆盖：
+- ✅ API 压力测试
+- ✅ 前端页面负载测试
+- ✅ 大规模模拟测试
+- ✅ 并发测试
+
+---
+
+## 🚀 快速开始
+
+### 1. 安装依赖
+
+```bash
+pip install locust
+```
+
+### 2. 启动测试
+
+#### Web UI 模式 (推荐)
+
+```bash
+# 启动 Locust Web UI
+locust -f locustfile.py --host=http://localhost:8000
+
+# 访问: http://localhost:8089
+# 设置用户数和孵化率
+```
+
+#### 无头模式 (CI/CD)
+
+```bash
+# 50 个用户, 每秒孵化 5 个, 运行 60 秒
+locust -f locustfile.py --host=http://localhost:8000 --headless \
+       --users 50 --spawn-rate 5 --run-time 60s
+```
+
+---
+
+## 📂 测试文件结构
+
+```
+/
+├── locustfile.py                       # 主配置文件
+└── tests/performance/
+    ├── test_api_load.py               # API 负载测试
+    └── README.md                       # 本文件
+```
+
+---
+
+## 🎯 测试场景
+
+### 1. 主测试场景 (locustfile.py)
+
+#### HydroClaude User (综合用户)
+
+模拟真实用户的混合行为：
+- ✅ API 调用 (知识库, 学习进度, 案例)
+- ✅ 页面访问 (首页, 建模, 案例)
+- ✅ 计算任务 (稳态流动求解)
+
+**权重分配**:
+```
+首页访问:       15
+知识库 API:     10
+学习进度 API:   8
+案例 API:       6
+健康检查:       5
+建模页面:       4
+案例页面:       3
+计算任务:       3
+统计信息:       2
+```
+
+**运行**:
+```bash
+locust -f locustfile.py --host=http://localhost:8000
+```
+
+---
+
+#### API Only User (纯 API 用户)
+
+专门测试 API 性能：
+- ✅ 健康检查
+- ✅ 知识库查询
+
+**运行**:
+```bash
+locust -f locustfile.py --host=http://localhost:8000 --tags api-only
+```
+
+---
+
+#### Heavy User (重负载用户)
+
+测试计算密集型操作：
+- ✅ 复杂模拟 (大数据量)
+- ✅ 多结构求解
+
+**运行**:
+```bash
+locust -f locustfile.py --host=http://localhost:8000 --tags heavy
+```
+
+---
+
+### 2. API 负载测试 (test_api_load.py)
+
+专门测试 API 端点的负载能力。
+
+#### API Load Test
+
+- ✅ 读操作 (知识库, 进度, 案例)
+- ✅ 写操作 (创建模拟)
+- ✅ 计算操作 (求解)
+
+**运行**:
+```bash
+locust -f tests/performance/test_api_load.py --host=http://localhost:8000 --headless \
+       --users 50 --spawn-rate 5 --run-time 60s --tags api
+```
+
+---
+
+#### High Concurrency Test
+
+测试高并发场景：
+- ✅ 快速连续请求
+- ✅ 极短等待时间 (0.1-0.5s)
+
+**运行**:
+```bash
+locust -f tests/performance/test_api_load.py --host=http://localhost:8000 --headless \
+       --users 100 --spawn-rate 10 --run-time 30s
+```
+
+---
+
+#### Sustained Load Test
+
+测试长时间运行稳定性：
+- ✅ 正常 API 调用
+- ✅ 偶尔的计算任务
+- ✅ 较长等待时间 (2-5s)
+
+**运行**:
+```bash
+locust -f tests/performance/test_api_load.py --host=http://localhost:8000 --headless \
+       --users 30 --spawn-rate 3 --run-time 300s
+```
+
+---
+
+## 🎨 预定义测试场景
+
+### Quick Test (快速测试)
+
+快速验证系统是否正常。
+
+```bash
+locust -f locustfile.py --host=http://localhost:8000 --headless \
+       --users 10 --spawn-rate 2 --run-time 30s
+```
+
+---
+
+### Steady Load (稳定负载)
+
+模拟正常业务负载。
+
+```bash
+locust -f locustfile.py --host=http://localhost:8000 --headless \
+       --users 50 --spawn-rate 5 --run-time 120s
+```
+
+---
+
+### Spike Load (峰值负载)
+
+模拟突发流量。
+
+```bash
+locust -f locustfile.py --host=http://localhost:8000 --headless \
+       --users 200 --spawn-rate 20 --run-time 60s
+```
+
+---
+
+## 📊 性能指标
+
+Locust 会自动收集以下指标：
+
+- **RPS** (Requests Per Second): 每秒请求数
+- **响应时间**: 平均、最小、最大、P50、P90、P95、P99
+- **成功率**: 成功请求占比
+- **并发用户数**: 同时在线用户数
+- **失败请求**: 失败原因统计
+
+---
+
+## 🎯 性能基准
+
+### API 响应时间目标
+
+| 端点类型 | P50 | P95 | P99 |
+|---------|-----|-----|-----|
+| 读操作 (GET) | < 100ms | < 500ms | < 1s |
+| 写操作 (POST) | < 200ms | < 1s | < 2s |
+| 计算操作 | < 1s | < 5s | < 10s |
+
+### 吞吐量目标
+
+- **轻量级 API**: > 100 RPS
+- **中等 API**: > 50 RPS
+- **计算密集型**: > 10 RPS
+
+### 并发支持
+
+- **正常负载**: 50-100 并发用户
+- **峰值负载**: 200-500 并发用户
+
+---
+
+## 📈 报告生成
+
+### HTML 报告
+
+Locust 会自动生成 HTML 报告：
+
+```bash
+locust -f locustfile.py --host=http://localhost:8000 --headless \
+       --users 100 --spawn-rate 10 --run-time 60s \
+       --html=reports/locust_report.html
+```
+
+### CSV 报告
+
+导出详细数据：
+
+```bash
+locust -f locustfile.py --host=http://localhost:8000 --headless \
+       --users 100 --spawn-rate 10 --run-time 60s \
+       --csv=reports/locust_stats
+```
+
+这会生成：
+- `locust_stats_stats.csv` - 请求统计
+- `locust_stats_failures.csv` - 失败记录
+- `locust_stats_stats_history.csv` - 历史数据
+
+---
+
+## 🔧 高级用法
+
+### 使用标签过滤
+
+```bash
+# 只测试 API
+locust -f locustfile.py --host=http://localhost:8000 --tags api
+
+# 只测试前端
+locust -f locustfile.py --host=http://localhost:8000 --tags frontend
+
+# 排除某些标签
+locust -f locustfile.py --host=http://localhost:8000 --exclude-tags heavy
+```
+
+### 分布式测试
+
+#### Master 节点
+
+```bash
+locust -f locustfile.py --master --host=http://localhost:8000
+```
+
+#### Worker 节点 (多个)
+
+```bash
+locust -f locustfile.py --worker --master-host=<master-ip>
+locust -f locustfile.py --worker --master-host=<master-ip>
+...
+```
+
+---
+
+## 🎉 测试检查清单
+
+运行性能测试前，确保：
+
+- [ ] 后端服务已启动 (`http://localhost:8000`)
+- [ ] 前端应用已启动 (`http://localhost:3000`)
+- [ ] 数据库连接正常
+- [ ] 日志级别已调整 (避免过多日志影响性能)
+- [ ] 系统资源充足 (CPU, 内存, 磁盘)
+
+---
+
+## 📝 测试报告模板
+
+### 性能测试报告
+
+**测试时间**: YYYY-MM-DD HH:MM  
+**测试场景**: [场景名称]  
+**测试环境**: [开发/测试/生产]
+
+#### 测试参数
+
+- 并发用户数: 100
+- 孵化率: 10 users/s
+- 测试时长: 60s
+- 目标主机: http://localhost:8000
+
+#### 测试结果
+
+| 指标 | 值 |
+|------|-----|
+| 总请求数 | 12,345 |
+| 失败请求数 | 12 |
+| 成功率 | 99.9% |
+| RPS | 205.75 |
+| 平均响应时间 | 125 ms |
+| P95 响应时间 | 450 ms |
+| P99 响应时间 | 980 ms |
+
+#### 瓶颈分析
+
+1. [瓶颈描述]
+2. [瓶颈描述]
+
+#### 优化建议
+
+1. [建议 1]
+2. [建议 2]
+
+---
+
+## 🎯 下一步
+
+完成性能测试后，继续：
+- ⏳ Phase 6: 报告生成
+- ⏳ 性能优化
+- ⏳ 持续集成 (CI/CD)
+
+---
+
+**Generated by HydroClaude Development Team**  
+**Powered by Locust**  
+**Date: 2025-11-20**

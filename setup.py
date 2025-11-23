@@ -1,88 +1,92 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-HydroClaude 安装脚本
+HydroClaude - 世界级水力学仿真平台
 
-使用方法:
-    pip install -e .           # 开发模式安装（推荐）
-    pip install .              # 正式安装
-    python setup.py install    # 传统安装
+Setup script for Python package installation.
 """
 
 from setuptools import setup, find_packages
-from pathlib import Path
+import os
 
-# 读取README
-readme_file = Path(__file__).parent / 'README.md'
-if readme_file.exists():
-    with open(readme_file, 'r', encoding='utf-8') as f:
-        long_description = f.read()
-else:
-    long_description = 'HydroClaude - 水力学仿真与优化框架'
+# Read the contents of README file
+this_directory = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
+# Read version from __init__.py
+version = {}
+with open(os.path.join(this_directory, '__init__.py'), encoding='utf-8') as f:
+    exec(f.read(), version)
 
 setup(
-    name="HydroClaude",
-    version="0.2.0",
-    author="leixiaohui-1974",
-    author_email="",
-    description="专业的水力学仿真与优化框架 - 明渠流动、管网系统、梯级水库调度",
+    name='hydroclaude',
+    version='2.0.0',
+    author='HydroClaude Development Team',
+    author_email='dev@hydroclaude.org',
+    description='世界级水力学仿真平台',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/leixiaohui-1974/HydroClaude',
+    url='https://github.com/your-org/hydroclaude',
     project_urls={
-        'Bug Tracker': 'https://github.com/leixiaohui-1974/HydroClaude/issues',
-        'Documentation': 'https://github.com/leixiaohui-1974/HydroClaude/blob/main/README.md',
-        'Source Code': 'https://github.com/leixiaohui-1974/HydroClaude',
+        'Bug Reports': 'https://github.com/your-org/hydroclaude/issues',
+        'Source': 'https://github.com/your-org/hydroclaude',
+        'Documentation': 'https://hydroclaude.org/docs',
+        'Changelog': 'https://github.com/your-org/hydroclaude/blob/main/CHANGELOG.md',
     },
-    packages=find_packages(exclude=['tests*', 'docs*', 'examples*', 'benchmark_results*']),
+    packages=find_packages(exclude=['tests', 'tests.*', 'examples', 'examples.*', 'web', 'web.*']),
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Intended Audience :: Science/Research',
+        'Intended Audience :: Education',
+        'Intended Audience :: Developers',
+        'Topic :: Scientific/Engineering',
+        'Topic :: Scientific/Engineering :: Physics',
+        'Topic :: Scientific/Engineering :: Hydrology',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3 :: Only',
+        'Operating System :: OS Independent',
+        'Natural Language :: Chinese (Simplified)',
+        'Natural Language :: English',
+    ],
+    keywords='hydraulics, simulation, open-channel-flow, pipe-network, water-hammer, engineering',
+    python_requires='>=3.12',
     install_requires=[
-        "numpy>=1.21.0",
-        "scipy>=1.7.0",
-        "matplotlib>=3.4.0",
-        "networkx>=2.6.0",
-        "pyyaml>=5.4.0",
+        'numpy>=1.24.0',
+        'scipy>=1.10.0',
+        'matplotlib>=3.7.0',
+        'fastapi>=0.100.0',
+        'uvicorn>=0.23.0',
+        'pydantic>=2.0.0',
     ],
     extras_require={
         'dev': [
-            'pytest>=7.0.0',
-            'pytest-cov>=3.0.0',
-            'black>=22.0.0',
-            'flake8>=4.0.0',
+            'pytest>=7.4.0',
+            'pytest-cov>=4.1.0',
+            'pytest-html>=3.2.0',
+            'black>=23.0.0',
+            'pylint>=2.17.0',
+            'mypy>=1.4.0',
+        ],
+        'test': [
+            'pytest>=7.4.0',
+            'pytest-cov>=4.1.0',
+            'pytest-html>=3.2.0',
+            'requests>=2.31.0',
         ],
         'docs': [
-            'sphinx>=4.0.0',
-            'sphinx-rtd-theme>=1.0.0',
-        ],
-        'logging': [
-            'colorlog>=6.0.0',
+            'sphinx>=7.0.0',
+            'sphinx-rtd-theme>=1.3.0',
+            'myst-parser>=2.0.0',
         ],
     },
     entry_points={
         'console_scripts': [
-            'hydroclaude-benchmark=benchmark_suite:main',
+            'hydroclaude=main:main',
         ],
     },
-    python_requires='>=3.8',
-    classifiers=[
-        "Development Status :: 4 - Beta",
-        "Intended Audience :: Science/Research",
-        "Intended Audience :: Education",
-        "Topic :: Scientific/Engineering",
-        "Topic :: Scientific/Engineering :: Hydrology",
-        "Topic :: Scientific/Engineering :: Mathematics",
-        "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "Operating System :: OS Independent",
-    ],
-    keywords=[
-        'hydraulics', 'hydrology', 'saint-venant',
-        'open-channel-flow', 'reservoir', 'optimization',
-        'control', 'simulation', 'water-resources',
-    ],
     include_package_data=True,
     zip_safe=False,
 )

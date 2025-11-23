@@ -1,0 +1,108 @@
+# Docker Compose for HydroClaude Testing
+# 用于启动完整测试环境
+# 按照 Spec-Kit 规范编写
+
+version: '3.8'
+
+services:
+  # 后端服务
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: hydroclaude-backend-test
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - ./reports:/app/reports
+    environment:
+      - PYTHONPATH=/app
+      - TESTING=true
+    command: >
+      sh -c "
+        echo '启动 FastAPI 后端服务...' &&
+        uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+      "
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 测试运行器
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: hydroclaude-test-runner
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - ./reports:/app/reports
+    environment:
+      - PYTHONPATH=/app
+      - API_BASE_URL=http://backend:8000
+      - TESTING=true
+    command: >
+      sh -c "
+        echo '等待后端服务...' &&
+        sleep 5 &&
+        echo '运行后端测试...' &&
+        pytest tests/backend/ -v --html=reports/html/backend_test_report.html --cov=solvers --cov=utils --cov-report=html:reports/coverage/backend/ &&
+        echo '运行 API 测试...' &&
+        pytest tests/backend/api/ -v --html=reports/html/api_test_report.html &&
+        echo '测试完成！'
+      "
+    networks:
+      - test-network
+
+  # Locust 性能测试
+  locust-master:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: hydroclaude-locust-master
+    ports:
+      - "8089:8089"
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+    command: >
+      locust -f locustfile.py --host=http://backend:8000 --master
+    networks:
+      - test-network
+
+  # Locust Worker
+  locust-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: hydroclaude-locust-worker
+    depends_on:
+      - locust-master
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+    command: >
+      locust -f locustfile.py --worker --master-host=locust-master
+    networks:
+      - test-network
+    deploy:
+      replicas: 2
+
+networks:
+  test-network:
+    driver: bridge
+
+volumes:
+  reports:

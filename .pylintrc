@@ -1,0 +1,102 @@
+[MASTER]
+# HydroClaude v2.0 - Pylint配置文件
+
+# Python代码分析工具
+init-hook='import sys; sys.path.append(".")'
+
+# 使用多进程加速
+jobs=4
+
+# 允许的文件扩展名
+extension-pkg-whitelist=numpy,scipy
+
+[MESSAGES CONTROL]
+
+# 禁用的检查
+disable=
+    C0103,  # invalid-name (变量名不符合规范)
+    C0114,  # missing-module-docstring
+    C0115,  # missing-class-docstring
+    C0116,  # missing-function-docstring
+    R0902,  # too-many-instance-attributes
+    R0913,  # too-many-arguments
+    R0914,  # too-many-locals
+    R0915,  # too-many-statements
+    W0212,  # protected-access
+    W0511,  # fixme (TODO注释)
+    E1101,  # no-member (NumPy数组属性检测问题)
+
+[REPORTS]
+
+# 输出格式
+output-format=colorized
+
+# 评分
+score=yes
+
+[BASIC]
+
+# 命名规范
+good-names=i,j,k,x,y,z,dx,dy,dt,Q,h,S0,n,g,A,P,R,v
+
+# 变量名规范
+variable-rgx=[a-z_][a-z0-9_]{0,30}$
+
+# 函数名规范
+function-rgx=[a-z_][a-z0-9_]{2,50}$
+
+# 类名规范
+class-rgx=[A-Z_][a-zA-Z0-9]+$
+
+# 常量名规范
+const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
+
+[FORMAT]
+
+# 最大行长度
+max-line-length=120
+
+# 缩进
+indent-string='    '
+
+# 单行最大字符数
+single-line-if-stmt=no
+
+[DESIGN]
+
+# 最大属性数
+max-attributes=15
+
+# 最大参数数
+max-args=10
+
+# 最大局部变量数
+max-locals=25
+
+# 最大分支数
+max-branches=15
+
+# 最大语句数
+max-statements=100
+
+[SIMILARITIES]
+
+# 最小相似行数
+min-similarity-lines=4
+
+# 忽略注释
+ignore-comments=yes
+
+# 忽略文档字符串
+ignore-docstrings=yes
+
+# 忽略导入
+ignore-imports=yes
+
+[TYPECHECK]
+
+# 忽略的模块
+ignored-modules=numpy,scipy,matplotlib
+
+# 忽略的类
+ignored-classes=numpy,scipy.interpolate

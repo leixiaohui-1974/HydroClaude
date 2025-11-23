@@ -1,386 +1,301 @@
-# 🔒 Security Policy
+# 安全政策
 
-## Supported Versions
+## 🔒 支持的版本
 
-| Version | Supported          |
+我们为以下版本提供安全更新：
+
+| 版本 | 支持状态 |
 | ------- | ------------------ |
-| 2.0.x   | :white_check_mark: |
-| < 2.0   | :x:                |
+| 2.0.x   | ✅ 支持 |
+| 1.x.x   | ❌ 不再支持 |
+| < 1.0   | ❌ 不再支持 |
 
 ---
 
-## Reporting a Vulnerability
+## 🐛 报告漏洞
 
-We take the security of HydroClaude seriously. If you discover a security vulnerability, please follow these steps:
+我们非常重视 HydroClaude 的安全性。如果你发现了安全漏洞，请负责任地披露。
 
-### 1. Do NOT create a public issue
+### 报告流程
 
-Security vulnerabilities should not be disclosed publicly until they have been addressed.
+**请不要公开披露安全漏洞**。相反，请通过以下方式私下报告：
 
-### 2. Report privately
+1. **邮件报告**（推荐）
+   - 发送邮件至：security@hydroclaude.org
+   - 使用PGP加密（可选）
+   - PGP Key: [待添加]
 
-**Email**: security@hydroclaude.com
+2. **GitHub Security Advisory**
+   - 访问：https://github.com/your-org/hydroclaude/security/advisories
+   - 点击"Report a vulnerability"
 
-**Include**:
-- Description of the vulnerability
-- Steps to reproduce
-- Potential impact
-- Suggested fix (if any)
-- Your contact information
+### 报告内容
 
-### 3. Response timeline
+请在报告中包含以下信息：
 
-- **Initial response**: Within 48 hours
-- **Status update**: Within 1 week
-- **Fix released**: Varies based on severity
-  - Critical: 1-3 days
-  - High: 1-2 weeks
-  - Medium: 2-4 weeks
-  - Low: Next release
+- **漏洞类型**：例如XSS、SQL注入、认证绕过等
+- **影响范围**：哪些版本受影响
+- **重现步骤**：详细的步骤说明
+- **概念验证**：如果可能，提供PoC代码
+- **影响评估**：漏洞的潜在影响
+- **建议修复**：如果有想法，请分享
 
-### 4. Disclosure
+**示例模板**：
 
-We follow **responsible disclosure**:
+```
+标题: [安全] XXX漏洞允许YYY
 
-1. We confirm the vulnerability
-2. We develop and test a fix
-3. We release the fix
-4. We publicly disclose (with credit to reporter, if desired)
+描述:
+在HydroClaude v2.0.0中发现了一个XXX漏洞...
 
----
+受影响版本:
+- v2.0.0
+- v2.0.1
 
-## Security Best Practices
+重现步骤:
+1. ...
+2. ...
+3. ...
 
-### For Users
+概念验证:
+[代码或截图]
 
-#### Desktop Application
+影响:
+攻击者可以...
 
-1. **Download from official sources only**
-   - GitHub Releases
-   - Official website
-   - DO NOT download from third-party sites
+建议修复:
+...
 
-2. **Verify signatures** (coming soon)
-   ```bash
-   # Will be available in future releases
-   gpg --verify HydroClaude-Setup-2.0.0.exe.sig
-   ```
-
-3. **Keep updated**
-   - Enable automatic updates
-   - Check for updates regularly
-
-4. **Review permissions**
-   - Plugins require permissions
-   - Review before installing
-
-#### Configuration Files
-
-1. **Do not share sensitive data**
-   - Remove API keys before sharing
-   - Remove database credentials
-   - Use environment variables
-
-2. **Use strong passwords**
-   - For community platform accounts
-   - Enable 2FA when available
-
-#### API Usage
-
-1. **Secure API keys**
-   - Store in environment variables
-   - Never commit to version control
-   - Rotate regularly
-
-2. **Use HTTPS**
-   - Always use HTTPS in production
-   - Validate SSL certificates
+其他信息:
+...
+```
 
 ---
 
-### For Developers
+## ⏱️ 响应时间
 
-#### Code Security
+我们承诺：
 
-1. **Input validation**
-   ```python
-   # Always validate user input
-   from pydantic import BaseModel, validator
-   
-   class Config(BaseModel):
-       length: float
-       
-       @validator('length')
-       def validate_length(cls, v):
-           if v <= 0:
-               raise ValueError('Length must be positive')
-           return v
-   ```
+- **24小时内**确认收到报告
+- **7天内**提供初步评估
+- **30天内**发布修复（取决于复杂度）
 
-2. **SQL injection prevention**
-   ```python
-   # Use ORM (SQLAlchemy)
-   # NEVER use string concatenation
-   
-   # Good ✅
-   user = db.query(User).filter(User.username == username).first()
-   
-   # Bad ❌
-   # query = f"SELECT * FROM users WHERE username = '{username}'"
-   ```
+### 处理流程
 
-3. **XSS prevention**
-   ```typescript
-   // Use React's built-in escaping
-   // React automatically escapes by default
-   
-   // Additional sanitization if needed
-   import DOMPurify from 'dompurify';
-   const clean = DOMPurify.sanitize(dirty);
-   ```
+1. **接收报告**（0-24小时）
+   - 确认收到
+   - 分配编号
+   - 初步评估
 
-4. **CSRF protection**
-   ```python
-   # FastAPI includes CSRF protection
-   from fastapi.middleware.csrf import CSRFMiddleware
-   
-   app.add_middleware(CSRFMiddleware)
-   ```
+2. **验证漏洞**（1-7天）
+   - 复现问题
+   - 评估影响
+   - 确定严重等级
 
-#### Authentication
+3. **开发修复**（7-30天）
+   - 开发补丁
+   - 内部测试
+   - 准备发布
 
-1. **Password hashing**
-   ```python
-   # Use bcrypt
-   from passlib.context import CryptContext
-   
-   pwd_context = CryptContext(schemes=["bcrypt"])
-   hashed = pwd_context.hash(password)
-   ```
-
-2. **JWT tokens**
-   ```python
-   # Set appropriate expiration
-   ACCESS_TOKEN_EXPIRE_MINUTES = 15  # Short-lived
-   REFRESH_TOKEN_EXPIRE_DAYS = 7     # Long-lived refresh
-   ```
-
-3. **Rate limiting**
-   ```python
-   # Implement rate limiting
-   from slowapi import Limiter
-   
-   limiter = Limiter(key_func=get_remote_address)
-   
-   @app.post("/api/auth/login")
-   @limiter.limit("5/minute")
-   async def login(...):
-       ...
-   ```
-
-#### Dependencies
-
-1. **Keep updated**
-   ```bash
-   # Check for updates
-   npm audit
-   pip-audit
-   ```
-
-2. **Review new dependencies**
-   - Check maintainer reputation
-   - Review code if possible
-   - Check for known vulnerabilities
-
-3. **Lock versions**
-   ```json
-   // package-lock.json
-   // Commit to version control
-   ```
-
-#### Electron Security
-
-1. **Context isolation**
-   ```typescript
-   // Always enable context isolation
-   new BrowserWindow({
-     webPreferences: {
-       contextIsolation: true,
-       nodeIntegration: false
-     }
-   });
-   ```
-
-2. **Secure IPC**
-   ```typescript
-   // Validate all IPC messages
-   ipcMain.handle('api-call', async (event, data) => {
-     // Validate data
-     if (!isValid(data)) {
-       throw new Error('Invalid data');
-     }
-     // Process...
-   });
-   ```
+4. **发布修复**（完成后）
+   - 发布安全更新
+   - 发布安全公告
+   - 感谢报告者
 
 ---
 
-## Known Security Considerations
+## 🏆 安全名人堂
 
-### Current Implementation
+感谢以下安全研究人员对 HydroClaude 安全性的贡献：
 
-#### ✅ Implemented
+（目前暂无）
 
-- Password hashing (bcrypt)
-- JWT authentication
-- Input validation (Pydantic)
-- CORS protection
-- SQL injection prevention (SQLAlchemy)
-- Context isolation (Electron)
-- Secure IPC (Electron)
-
-#### 🚧 In Progress
-
-- Rate limiting (planned for v2.1.0)
-- 2FA (planned for v2.2.0)
-- API key encryption (planned for v2.1.0)
-
-#### ⚠️ Limitations
-
-1. **Local storage**
-   - Desktop app stores data locally
-   - No encryption at rest (yet)
-   - Planned for v2.3.0
-
-2. **Plugin sandboxing**
-   - Basic permission system
-   - Not fully sandboxed
-   - Enhanced sandboxing planned
+如果你报告了漏洞，我们会在修复后（经你同意）将你的名字列在这里。
 
 ---
 
-## Security Features by Version
+## 🛡️ 安全最佳实践
 
-### v2.0.0 (Current)
+### 对于用户
 
-- ✅ BCrypt password hashing
-- ✅ JWT authentication
-- ✅ CORS protection
-- ✅ Input validation
-- ✅ SQL injection prevention
-- ✅ XSS prevention
-- ✅ Secure IPC (Electron)
+1. **保持更新**
+   - 始终使用最新版本
+   - 订阅安全公告
 
-### v2.1.0 (Planned)
+2. **安全配置**
+   - 不要在生产环境使用默认配置
+   - 定期审查权限设置
+   - 启用所有安全功能
 
-- [ ] Rate limiting
-- [ ] API key encryption
-- [ ] Enhanced logging
-- [ ] Security audit
+3. **数据保护**
+   - 定期备份数据
+   - 加密敏感数据
+   - 使用强密码
 
-### v2.2.0 (Planned)
+4. **监控**
+   - 监控异常行为
+   - 记录审计日志
+   - 定期安全检查
 
-- [ ] Two-factor authentication
-- [ ] OAuth integration
-- [ ] Enhanced plugin sandboxing
-- [ ] Penetration testing
+### 对于开发者
 
-### v2.3.0 (Planned)
+1. **代码审查**
+   - 所有PR需要审查
+   - 关注安全相关变更
+   - 使用静态分析工具
 
-- [ ] End-to-end encryption
-- [ ] Data at rest encryption
-- [ ] Security compliance reports
+2. **依赖管理**
+   - 定期更新依赖
+   - 审查依赖安全性
+   - 使用依赖扫描工具
 
----
+3. **测试**
+   - 编写安全测试
+   - 进行渗透测试
+   - 模糊测试
 
-## Security Checklist
-
-### Before Release
-
-- [ ] Dependency audit (`npm audit`, `pip-audit`)
-- [ ] Code review for security issues
-- [ ] Input validation review
-- [ ] Authentication/authorization review
-- [ ] SQL injection test
-- [ ] XSS test
-- [ ] CSRF test
-- [ ] Rate limiting test
-- [ ] Error message review (no sensitive data)
-- [ ] Logging review (no sensitive data)
+4. **文档**
+   - 文档化安全功能
+   - 提供安全指南
+   - 更新安全策略
 
 ---
 
-## Compliance
+## 🔍 已知漏洞
 
-### GDPR
+我们会在这里列出已知但尚未修复的漏洞（如果有）：
 
-For users in EU:
-- We don't collect personal data without consent
-- Users can export their data
-- Users can delete their account
-- See [Privacy Policy](./PRIVACY.md) (coming soon)
-
-### OWASP Top 10
-
-We follow [OWASP Top 10](https://owasp.org/www-project-top-ten/) guidelines:
-
-1. ✅ Broken Access Control - Implemented
-2. ✅ Cryptographic Failures - Addressed
-3. ✅ Injection - Prevented
-4. 🚧 Insecure Design - Ongoing
-5. 🚧 Security Misconfiguration - Ongoing
-6. 🚧 Vulnerable Components - Monitored
-7. ✅ Authentication Failures - Addressed
-8. 🚧 Software and Data Integrity - Ongoing
-9. 🚧 Logging and Monitoring - Basic
-10. 🚧 SSRF - Addressed
+（目前暂无）
 
 ---
 
-## Security Resources
+## 📋 安全检查清单
 
-### Documentation
+### 发布前检查
+
+在发布新版本前，我们会进行以下安全检查：
+
+- [ ] 依赖安全扫描
+- [ ] 代码静态分析
+- [ ] 安全测试通过
+- [ ] 权限检查
+- [ ] 输入验证审查
+- [ ] 输出编码审查
+- [ ] 认证授权检查
+- [ ] 加密实现检查
+- [ ] 日志敏感信息检查
+- [ ] 错误信息泄露检查
+
+---
+
+## 🚨 安全公告
+
+我们会通过以下渠道发布安全公告：
+
+1. **GitHub Security Advisories**
+   - https://github.com/your-org/hydroclaude/security/advisories
+
+2. **邮件列表**
+   - 订阅：security-announce@hydroclaude.org
+
+3. **官方网站**
+   - https://hydroclaude.org/security
+
+4. **CHANGELOG.md**
+   - 在版本说明中标注安全修复
+
+---
+
+## 📜 负责任的披露政策
+
+我们遵循负责任的披露原则：
+
+### 我们的承诺
+
+- ✅ 认真对待所有安全报告
+- ✅ 快速响应和修复
+- ✅ 及时通知报告者进展
+- ✅ 在修复后感谢报告者（经同意）
+- ✅ 不对善意的安全研究采取法律行动
+
+### 我们期望
+
+- ✅ 给我们合理的时间修复问题
+- ✅ 不公开披露未修复的漏洞
+- ✅ 不利用漏洞造成损害
+- ✅ 不访问或修改他人数据
+- ✅ 负责任地进行安全研究
+
+---
+
+## 🔐 加密和认证
+
+### 密码策略
+
+- 使用强密码哈希算法（bcrypt, Argon2）
+- 支持双因素认证（2FA）
+- 实施密码复杂度要求
+- 定期提醒用户更换密码
+
+### 数据加密
+
+- 传输加密：使用TLS 1.2+
+- 存储加密：敏感数据加密存储
+- 密钥管理：安全的密钥存储和轮换
+
+### API安全
+
+- 使用API密钥认证
+- 实施速率限制
+- 输入验证和消毒
+- CORS配置
+
+---
+
+## 🆘 紧急联系
+
+**安全紧急情况**：
+
+- **邮件**：security@hydroclaude.org
+- **紧急电话**：[待添加]
+- **PGP Key**：[待添加]
+
+**响应时间**：
+
+- 关键漏洞：24小时内响应
+- 高危漏洞：48小时内响应
+- 中危漏洞：7天内响应
+- 低危漏洞：30天内响应
+
+---
+
+## 📚 相关资源
 
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [OWASP Web Security Testing Guide](https://owasp.org/www-project-web-security-testing-guide/)
 - [CWE Top 25](https://cwe.mitre.org/top25/)
-
-### Tools
-
-- [npm audit](https://docs.npmjs.com/cli/v8/commands/npm-audit)
-- [pip-audit](https://github.com/pypa/pip-audit)
-- [Snyk](https://snyk.io/)
-- [OWASP ZAP](https://www.zaproxy.org/)
+- [CVE](https://cve.mitre.org/)
+- [NVD](https://nvd.nist.gov/)
 
 ---
 
-## Hall of Fame
+## 🙏 致谢
 
-We recognize security researchers who help make HydroClaude more secure:
-
-<!-- Will be updated when we receive security reports -->
-
-**Be the first security researcher!**
+我们感谢所有帮助提高 HydroClaude 安全性的安全研究人员和用户。
 
 ---
 
-## Contact
+## 📝 更新历史
 
-**Security Team**: security@hydroclaude.com
-
-**PGP Key**: Coming soon
+- 2025-11-20: 创建安全政策
 
 ---
 
-<p align="center">
-  <b>🔒 Security is a community effort</b>
-</p>
+**保持安全，保持警惕！** 🔒
 
-<p align="center">
-  <i>Report responsibly | Help us improve | Keep everyone safe</i>
-</p>
+如有任何安全问题或疑虑，请随时联系我们。
 
 ---
 
-**© 2025 HydroClaude Development Team**  
-**Last Updated: 2025-11-15**
+**HydroClaude Security Team**  
+**Email**: security@hydroclaude.org  
+**Last Updated**: 2025-11-20

@@ -1,98 +1,68 @@
 ---
-name: Bug Report
-about: Create a report to help us improve
+name: Bug报告
+about: 创建一个报告来帮助我们改进
 title: '[BUG] '
-labels: bug
+labels: 'bug'
 assignees: ''
 ---
 
-## 🐛 Bug Description
+## 🐛 Bug描述
 
-A clear and concise description of what the bug is.
+简要描述遇到的Bug
 
----
+## 📋 重现步骤
 
-## 📋 Environment
+详细描述如何重现这个Bug：
 
-**HydroClaude Version**: (e.g., 2.0.0)
+1. 执行 '...'
+2. 点击 '...'
+3. 滚动到 '...'
+4. 看到错误
 
-**Platform**: (check one)
-- [ ] Desktop App - Windows
-- [ ] Desktop App - macOS
-- [ ] Desktop App - Linux
-- [ ] Web Browser
+## ✅ 预期行为
 
-**OS Version**: (e.g., Windows 11, macOS 13, Ubuntu 22.04)
+描述你期望发生的行为
 
-**Browser** (if web): (e.g., Chrome 120, Firefox 121)
+## ❌ 实际行为
 
-**Node.js Version** (if development): (e.g., 18.17.0)
+描述实际发生的行为
 
-**Python Version** (if backend): (e.g., 3.11.5)
+## 📸 截图
 
----
+如果适用，添加截图来帮助解释你的问题
 
-## 🔄 Steps to Reproduce
+## 💻 系统信息
 
-1. Go to '...'
-2. Click on '...'
-3. Scroll down to '...'
-4. See error
+**桌面环境 (请完成以下信息):**
+ - 操作系统: [例如 Ubuntu 20.04, macOS 12.0, Windows 10]
+ - Python版本: [例如 3.12.0]
+ - HydroClaude版本: [例如 2.0.0]
+ - 浏览器: [例如 Chrome 120, Firefox 121]
 
----
+**移动环境 (如适用):**
+ - 设备: [例如 iPhone 14, Samsung Galaxy S21]
+ - 操作系统: [例如 iOS 16.0, Android 13]
+ - 浏览器: [例如 Safari, Chrome]
 
-## ✅ Expected Behavior
+## 📝 额外上下文
 
-A clear and concise description of what you expected to happen.
+在这里添加任何其他关于问题的上下文
 
----
+## 🔍 错误日志
 
-## ❌ Actual Behavior
+如果有错误日志，请粘贴在这里：
 
-A clear and concise description of what actually happened.
-
----
-
-## 📸 Screenshots
-
-If applicable, add screenshots to help explain your problem.
-
----
-
-## 📝 Additional Context
-
-Add any other context about the problem here.
-
-**Configuration** (if relevant):
-```json
-{
-  "length": 10000,
-  "width": 10,
-  ...
-}
+```
+粘贴错误日志
 ```
 
-**Error Messages** (if any):
-```
-Error message here...
-```
+## ✔️ 检查清单
 
-**Console Output** (if applicable):
-```
-Console output here...
-```
+- [ ] 我已经搜索了现有的Issues，确认这不是重复的问题
+- [ ] 我已经阅读了[文档](../README.md)
+- [ ] 我已经尝试了最新版本
+- [ ] 我可以稳定地重现这个问题
 
----
+## 🙏 其他信息
 
-## 🔍 Possible Solution
-
-(Optional) If you have an idea of what might be causing the issue or how to fix it.
-
----
-
-## ✅ Checklist
-
-- [ ] I have searched for similar issues
-- [ ] I have included all relevant information
-- [ ] I have attached screenshots (if applicable)
-- [ ] I have included error messages (if any)
+如果你有任何想法或建议来修复这个Bug，请在这里分享

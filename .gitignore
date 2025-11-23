@@ -42,3 +42,8 @@ htmlcov/
 coverage.xml
 *.cover
 .pytest_cache/
+
+# Spec-Kit & AI Agent folders
+.claude/
+.specify/memory/*.tmp
+specs/*/tmp/

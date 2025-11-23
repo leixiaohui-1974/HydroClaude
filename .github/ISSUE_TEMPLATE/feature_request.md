@@ -1,122 +1,79 @@
 ---
-name: Feature Request
-about: Suggest an idea for this project
+name: 功能请求
+about: 为这个项目提出一个想法
 title: '[FEATURE] '
-labels: enhancement
+labels: 'enhancement'
 assignees: ''
 ---
 
-## 💡 Feature Summary
+## 💡 功能描述
 
-A clear and concise description of the feature you'd like to see.
+简要描述你想要的功能
 
----
+## 🎯 问题和动机
 
-## 🎯 Problem Statement
+**你的功能请求是否与某个问题相关？请描述。**
 
-**Is your feature request related to a problem?**
+清晰简洁地描述问题是什么。例如：当我尝试做[...]时总是感到沮丧
 
-A clear and concise description of what the problem is.
-Example: "I'm always frustrated when [...]"
+## 🚀 提议的解决方案
 
----
+**描述你想要的解决方案**
 
-## ✨ Proposed Solution
+清晰简洁地描述你希望发生什么
 
-A clear and concise description of what you want to happen.
+## 🔄 替代方案
 
-**User Story**:
-> As a [type of user],
-> I want to [do something],
-> So that [desired outcome].
+**描述你考虑过的替代方案**
 
----
+清晰简洁地描述你考虑过的任何替代解决方案或功能
 
-## 🎨 Design/Mockup
+## 📊 使用场景
 
-(Optional) If you have a design or mockup, please attach it here.
+描述这个功能的具体使用场景：
 
----
+**场景1:**
+- 用户类型: [例如 研究人员, 工程师, 学生]
+- 需求: 
+- 期望结果:
 
-## 🔧 Implementation Ideas
-
-(Optional) If you have ideas about how this could be implemented:
-
-**Technical Approach**:
-- ...
+**场景2:**
 - ...
 
-**API Changes** (if applicable):
-```typescript
-// Proposed API
-api.newFeature.doSomething();
-```
+## 🎨 UI/UX建议
 
----
+如果这是一个前端功能，请描述或画出你期望的界面
 
-## 📊 Use Cases
+可以附上设计草图、原型或参考截图
 
-Describe specific scenarios where this feature would be useful:
+## 📈 优先级
 
-**Use Case 1**:
-- Context: ...
-- Action: ...
-- Benefit: ...
+你认为这个功能的优先级如何？
 
-**Use Case 2**:
-- Context: ...
-- Action: ...
-- Benefit: ...
+- [ ] 紧急 - 阻碍主要功能
+- [ ] 高 - 严重影响用户体验
+- [ ] 中 - 有用但不紧急
+- [ ] 低 - 很好拥有但可以等待
 
----
+## 🔗 相关资源
 
-## 🔀 Alternatives Considered
+- 相关文档链接
+- 参考其他软件的类似功能
+- 学术论文或技术规范
 
-A clear and concise description of any alternative solutions or features you've considered.
+## 💭 额外上下文
 
----
+在这里添加关于功能请求的任何其他上下文或截图
 
-## 🎓 Target Users
+## ✔️ 检查清单
 
-Who would benefit from this feature?
+- [ ] 我已经搜索了现有的Issues，确认这不是重复的请求
+- [ ] 我已经阅读了[路线图](../../ROADMAP.md)，确认这个功能还未规划
+- [ ] 我愿意贡献这个功能的实现（可选）
 
-- [ ] Students
-- [ ] Researchers
-- [ ] Engineers
-- [ ] Plugin Developers
-- [ ] All Users
+## 🤝 贡献意愿
 
----
-
-## 📈 Priority
-
-How important is this feature to you?
-
-- [ ] Critical - I can't use HydroClaude without this
-- [ ] High - Would significantly improve my workflow
-- [ ] Medium - Would be nice to have
-- [ ] Low - Just an idea
-
----
-
-## 📝 Additional Context
-
-Add any other context, screenshots, or examples about the feature request here.
-
-**Similar Features in Other Software**:
-- Software X has [feature description]
-- Software Y does [something similar]
-
-**Related Issues/PRs**:
-- #123
-- #456
-
----
-
-## ✅ Checklist
-
-- [ ] I have searched for similar feature requests
-- [ ] I have provided a clear description
-- [ ] I have described use cases
-- [ ] I have considered alternatives
-- [ ] I am willing to help implement this (optional)
+- [ ] 我愿意自己实现这个功能
+- [ ] 我可以提供测试和反馈
+- [ ] 我可以帮助编写文档
+- [ ] 我只是提出建议
