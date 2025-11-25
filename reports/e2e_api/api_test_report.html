@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydroClaude API E2E 测试报告</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        h1 { color: #333; border-bottom: 3px solid #667eea; padding-bottom: 15px; margin-bottom: 30px; }
+        .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin: 30px 0; }
+        .stat { padding: 25px; border-radius: 12px; text-align: center; transition: transform 0.3s; }
+        .stat:hover { transform: translateY(-5px); }
+        .stat.total { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .stat.passed { background: linear-gradient(135deg, #11998e, #38ef7d); color: white; }
+        .stat.failed { background: linear-gradient(135deg, #eb3349, #f45c43); color: white; }
+        .stat.rate { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+        .stat h2 { margin: 0; font-size: 2.5em; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        .stat p { margin: 10px 0 0 0; font-size: 1.1em; opacity: 0.9; }
+        h2 { color: #444; margin-top: 40px; }
+        .test { border: 1px solid #e0e0e0; margin: 15px 0; border-radius: 12px; overflow: hidden; transition: box-shadow 0.3s; }
+        .test:hover { box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .test-header { padding: 15px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; }
+        .test-header.passed { background: linear-gradient(90deg, #e8f5e9, white); border-left: 5px solid #4CAF50; }
+        .test-header.failed { background: linear-gradient(90deg, #ffebee, white); border-left: 5px solid #f44336; }
+        .test-name { font-weight: 600; flex: 1; color: #333; }
+        .test-status { padding: 6px 16px; border-radius: 20px; color: white; font-weight: 600; font-size: 0.85em; }
+        .test-status.passed { background: #4CAF50; }
+        .test-status.failed { background: #f44336; }
+        .test-details { padding: 20px; background: #fafafa; display: none; }
+        .test-details.show { display: block; }
+        .test-details p { margin: 8px 0; color: #555; }
+        .test-details pre { background: #263238; color: #aed581; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 0.9em; }
+        .timestamp { color: #666; font-size: 14px; margin-bottom: 20px; }
+        .progress-bar { height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden; margin: 20px 0; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #11998e, #38ef7d); transition: width 0.5s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HydroClaude API E2E 测试报告</h1>
+
+        <p class="timestamp">
+            <strong>开始时间:</strong> 2025-11-25T07:24:04.042273<br>
+            <strong>结束时间:</strong> 2025-11-25T07:24:04.917281
+        </p>
+
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 64.0%"></div>
+        </div>
+
+        <div class="summary">
+            <div class="stat total">
+                <h2>25</h2>
+                <p>总测试数</p>
+            </div>
+            <div class="stat passed">
+                <h2>16</h2>
+                <p>通过</p>
+            </div>
+            <div class="stat failed">
+                <h2>9</h2>
+                <p>失败</p>
+            </div>
+            <div class="stat rate">
+                <h2>64.0%</h2>
+                <p>通过率</p>
+            </div>
+        </div>
+
+        <h2>测试详情</h2>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header passed">
+                <span class="test-name">GET /</span>
+                <span class="test-status passed">PASSED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> API Version: 2.2.0-service-layer</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.145263</p>
+                <pre>{'message': 'Welcome to HydroClaude API. Visit /docs for documentation.', 'api_version': '2.2.0-service-layer', 'available_modules': ['structures', 'simulations', 'simulations-sync', 'reservoir', 'network', 'analysis', 'test-cases', 'test-runner']}</pre>
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header passed">
+                <span class="test-name">GET /docs</span>
+                <span class="test-status passed">PASSED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> Swagger UI 可用</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.147936</p>
+                
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header passed">
+                <span class="test-name">GET /openapi.json</span>
+                <span class="test-status passed">PASSED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> API 端点数: 46</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.152949</p>
+                <pre>{'paths_count': 46}</pre>
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header passed">
+                <span class="test-name">GET /api/structures/types</span>
+                <span class="test-status passed">PASSED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> 结构类型: {'pumps': ['single', 'parallel', 'series'], 'gates': ['sluice', 'radial'], 'weirs': ['broad_crested', 'sharp_crested', 'v_notch'], 'turbines': ['simplified', 'francis'], 'valves': ['general', 'butterfly'], 'canal_structures': ['sluice_gate', 'pump', 'weir']}</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.244254</p>
+                <pre>{'pumps': ['single', 'parallel', 'series'], 'gates': ['sluice', 'radial'], 'weirs': ['broad_crested', 'sharp_crested', 'v_notch'], 'turbines': ['simplified', 'francis'], 'valves': ['general', 'butterfly'], 'canal_structures': ['sluice_gate', 'pump', 'weir']}</pre>
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header passed">
+                <span class="test-name">GET /api/structures/health</span>
+                <span class="test-status passed">PASSED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> 健康检查通过</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.246693</p>
+                
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header failed">
+                <span class="test-name">POST /api/structures/gate</span>
+                <span class="test-status failed">FAILED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> Status: 422, {"detail":[{"type":"missing","loc":["body","gate"],"msg":"Field required","input":{"gate_type":"slui</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.249557</p>
+                
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header failed">
+                <span class="test-name">POST /api/structures/weir</span>
+                <span class="test-status failed">FAILED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> Status: 422, {"detail":[{"type":"missing","loc":["body","weir"],"msg":"Field required","input":{"weir_type":"broa</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.252033</p>
+                
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header failed">
+                <span class="test-name">POST /api/structures/pump</span>
+                <span class="test-status failed">FAILED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> Status: 422, {"detail":[{"type":"missing","loc":["body","pump"],"msg":"Field required","input":{"pump_type":"cent</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.254484</p>
+                
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header failed">
+                <span class="test-name">POST /api/v1/simulations-sync</span>
+                <span class="test-status failed">FAILED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> Status: 422, {"detail":[{"type":"missing","loc":["body","name"],"msg":"Field required","input":{"length":1000.0,"</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.346877</p>
+                
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header failed">
+                <span class="test-name">POST /api/v1/simulations</span>
+                <span class="test-status failed">FAILED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> Status: 422, {"detail":[{"type":"missing","loc":["body","name"],"msg":"Field required","input":{"length":1000.0,"</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.349625</p>
+                
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header passed">
+                <span class="test-name">GET /api/v1/simulations</span>
+                <span class="test-status passed">PASSED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> 仿真列表: 0 项</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.351746</p>
+                
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header passed">
+                <span class="test-name">GET /reservoir/health</span>
+                <span class="test-status passed">PASSED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> 健康检查通过</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.441784</p>
+                
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header passed">
+                <span class="test-name">GET /reservoir/weir-types</span>
+                <span class="test-status passed">PASSED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> 堰类型: {'weir_types': [{'type': 'broad_crested', 'name': '宽顶堰', 'description': '堰顶较宽，水流达到临界流，适用于大流量', 'discharge_coeff_range': [1.6, 1.7]}, {'type': 'sharp_crested', 'name': '尖顶堰（薄壁堰）', 'description': '堰顶尖锐，流量公式精确，常用于测流', 'discharge_coeff_range': [1.7, 1.84]}, {'type': 'ogee', 'name': '溢流堰', 'description': '优化堰面曲线，泄流能力强，用于水坝溢洪道', 'discharge_coeff_range': [1.8, 2.2]}, {'type': 'v_notch', 'name': 'V形堰', 'description': '三角形缺口，小流量测量精度高', 'angle_range': [30, 120]}], 'total': 4}</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.446486</p>
+                <pre>{'weir_types': [{'type': 'broad_crested', 'name': '宽顶堰', 'description': '堰顶较宽，水流达到临界流，适用于大流量', 'discharge_coeff_range': [1.6, 1.7]}, {'type': 'sharp_crested', 'name': '尖顶堰（薄壁堰）', 'description': '堰顶尖锐，流量公式精确，常用于测流', 'discharge_coeff_range': [1.7, 1.84]}, {'type': 'ogee', 'name': '溢流堰', 'description': '优化堰面曲线，泄流能力强，用于水坝溢洪道', 'discharge_coeff_range': [1.8, 2.2]}, {'type': 'v_notch', 'name': 'V形堰', 'description': '三角形缺口，小流量测量精度高', 'angle_range': [30, 120]}], 'total': 4}</pre>
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header failed">
+                <span class="test-name">POST /reservoir/weir</span>
+                <span class="test-status failed">FAILED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> Status: 422, {"detail":[{"type":"missing","loc":["body","weir"],"msg":"Field required","input":{"weir_type":"broa</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.449237</p>
+                
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header passed">
+                <span class="test-name">GET /network/health</span>
+                <span class="test-status passed">PASSED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> 健康检查通过</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.532835</p>
+                
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header passed">
+                <span class="test-name">GET /network/formulas</span>
+                <span class="test-status passed">PASSED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> 公式: {'formulas': [{'name': 'manning', 'full_name': 'Manning公式', 'description': '明渠/管道均匀流计算，适用于重力流', 'formula': 'Q = (1/n) * A * R^(2/3) * S^(1/2)', 'parameters': ['n (糙率)', 'A (面积)', 'R (水力半径)', 'S (坡度)']}, {'name': 'darcy', 'full_name': 'Darcy-Weisbach公式', 'description': '压力管道水头损失计算，理论基础最严密', 'formula': 'hf = f * (L/D) * (V²/2g)', 'parameters': ['f (摩阻系数)', 'L (长度)', 'D (直径)', 'V (流速)']}, {'name': 'hazen_williams', 'full_name': 'Hazen-Williams公式', 'description': '给水管网常用，计算简便', 'formula': 'hf = 10.67 * Q^1.852 / (C^1.852 * D^4.87) * L', 'parameters': ['C (Hazen-Williams系数)', 'Q (流量)', 'D (直径)', 'L (长度)']}], 'total': 3}</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.534928</p>
+                <pre>{'formulas': [{'name': 'manning', 'full_name': 'Manning公式', 'description': '明渠/管道均匀流计算，适用于重力流', 'formula': 'Q = (1/n) * A * R^(2/3) * S^(1/2)', 'parameters': ['n (糙率)', 'A (面积)', 'R (水力半径)', 'S (坡度)']}, {'name': 'darcy', 'full_name': 'Darcy-Weisbach公式', 'description': '压力管道水头损失计算，理论基础最严密', 'formula': 'hf = f * (L/D) * (V²/2g)', 'parameters': ['f (摩阻系数)', 'L (长度)', 'D (直径)', 'V (流速)']}, {'name': 'hazen_williams', 'full_name': 'Hazen-Williams公式', 'description': '给水管网常用，计算简便', 'formula': 'hf = 10.6</pre>
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header failed">
+                <span class="test-name">POST /network/pipe-flow</span>
+                <span class="test-status failed">FAILED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> Status: 422, {"detail":[{"type":"missing","loc":["body","pipe"],"msg":"Field required","input":{"diameter":0.3,"l</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.537462</p>
+                
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header passed">
+                <span class="test-name">GET /analysis/health</span>
+                <span class="test-status passed">PASSED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> 健康检查通过</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.628922</p>
+                
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header passed">
+                <span class="test-name">POST /analysis/config</span>
+                <span class="test-status passed">PASSED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> 配置分析成功</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.631707</p>
+                <pre>{'is_valid': False, 'quality_score': 19.0, 'estimated_time': 0.1, 'estimated_memory': 1.0, 'estimated_iterations': 100, 'spatial_resolution': {'dx': 0, 'cells_per_width': 0, 'aspect_ratio': 100.0, 'total_cells': 0}, 'temporal_resolution': {}, 'numerical_stability': {'cfl': 0, 'order': 1, 'scheme': '1阶精度', 'estimated_velocity': 3.6986223885946474, 'estimated_froude': 0.528105254185894, 'flow_regime': '亚临界', 'peclet_number': 9.999999999999998}, 'physical_validity': {'manning_n': 0.025, 'slope': 0.</pre>
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header passed">
+                <span class="test-name">GET /api/v1/test-cases/</span>
+                <span class="test-status passed">PASSED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> 测试用例: 541 项</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.732212</p>
+                <pre>{'total': 541, 'categories': {'general': 381, 'benchmark': 14, 'dam_break': 14, 'structures': 50, 'lake_at_rest': 6, 'control': 28, 'water_quality': 4, 'network': 30, 'pressurized': 14}, 'cases': [{'metadata': {'id': 'tests-analyze_well_balanced_details', 'name': '详细分析Well-Balanced重构的数值行为', 'nameCN': '详细分析Well-Balanced重构的数值行为', 'category': 'general', 'subcategory': 'General', 'difficulty': 'intermediate', 'tags': ['godunov', 'riemann'], 'author': 'HydroClaude Test Suite', 'version': '1.0.0', 're</pre>
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header passed">
+                <span class="test-name">GET /api/v1/test-cases/categories</span>
+                <span class="test-status passed">PASSED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> 分类: {'general': 381, 'benchmark': 14, 'dam_break': 14, 'structures': 50, 'lake_at_rest': 6, 'control': 28, 'water_quality': 4, 'network': 30, 'pressurized': 14}</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.734400</p>
+                <pre>{'general': 381, 'benchmark': 14, 'dam_break': 14, 'structures': 50, 'lake_at_rest': 6, 'control': 28, 'water_quality': 4, 'network': 30, 'pressurized': 14}</pre>
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header passed">
+                <span class="test-name">GET /api/v1/test-cases/statistics</span>
+                <span class="test-status passed">PASSED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> 统计信息获取成功</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.736350</p>
+                <pre>{'total': 541, 'categories': {'general': 381, 'benchmark': 14, 'dam_break': 14, 'structures': 50, 'lake_at_rest': 6, 'control': 28, 'water_quality': 4, 'network': 30, 'pressurized': 14}, 'difficulty': {'beginner': 28, 'intermediate': 430, 'advanced': 83}, 'topTags': {'godunov': 167, 'gate': 126, 'control': 91, 'riemann': 84, 'network': 77, 'pump': 57, 'mpc': 49, 'pid': 45, 'dam-break': 41, 'weno': 40}}</pre>
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header passed">
+                <span class="test-name">GET / (Frontend)</span>
+                <span class="test-status passed">PASSED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> 前端加载成功 (React: True, Script: True)</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.825645</p>
+                
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header failed">
+                <span class="test-name">工作流-创建仿真</span>
+                <span class="test-status failed">FAILED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> Status: 422</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.913530</p>
+                
+            </div>
+        </div>
+
+        <div class="test" onclick="this.querySelector('.test-details').classList.toggle('show')">
+            <div class="test-header failed">
+                <span class="test-name">工作流-渠道+闸门仿真</span>
+                <span class="test-status failed">FAILED</span>
+            </div>
+            <div class="test-details">
+                <p><strong>详情:</strong> Status: 422, {"detail":[{"type":"missing","loc":["body","structure_type"],"msg":"Field required","input":{"canal"</p>
+                <p><strong>时间:</strong> 2025-11-25T07:24:04.915686</p>
+                
+            </div>
+        </div>
+
+    </div>
+    <script>
+        // 自动展开失败的测试
+        document.querySelectorAll('.test-header.failed').forEach(el => {
+            el.parentElement.querySelector('.test-details').classList.add('show');
+        });
+    </script>
+</body>
+</html>
