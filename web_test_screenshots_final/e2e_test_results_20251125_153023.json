@@ -1,0 +1,256 @@
+{
+  "startTime": "2025-11-25T15:28:19.749737",
+  "durationSeconds": 124.162455,
+  "config": {
+    "base_url": "http://localhost:3000",
+    "backend_api_url": "http://localhost:8000/api/v1",
+    "timeout": 120,
+    "screenshot_delay": 2.0
+  },
+  "totalTests": 20,
+  "screenshots": 21,
+  "results": [
+    {
+      "test_id": "tests-analyze_well_balanced_details",
+      "name": "详细分析Well-Balanced重构的数值行为",
+      "status": "failed",
+      "duration": 17.38977313041687,
+      "screenshots": [
+        "/app/web_test_screenshots_final/002_tests-analyze_well_balanced_details_error_152840.png"
+      ],
+      "notes": [
+        "成功从UI选择案例。",
+        "已点击运行按钮。",
+        "测试失败 (元素查找超时或不存在): Message: \nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c766c4 <unknown>\n#3 0x564935c76901 <unknown>\n#4 0x564935cc58b4 <unknown>\n#5 0x564935cc2c87 <unknown>\n#6 0x564935c68aca <unknown>\n#7 0x564935c697d1 <unknown>\n#8 0x56493619ea99 <unknown>\n#9 0x5649361a1a6c <unknown>\n#10 0x564936187d29 <unknown>\n#11 0x5649361a2665 <unknown>\n#12 0x56493616f6a3 <unknown>\n#13 0x5649361c47b8 <unknown>\n#14 0x5649361c4993 <unknown>\n#15 0x5649361d6a63 <unknown>\n#16 0x7f010b64faa4 <unknown>\n#17 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-benchmark_newton_vs_iterative",
+      "name": "性能基准测试：牛顿法 vs 迭代法",
+      "status": "failed",
+      "duration": 5.338685512542725,
+      "screenshots": [
+        "/app/web_test_screenshots_final/003_tests-benchmark_newton_vs_iterative_error_152846.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-benchmark_numba",
+      "name": "加速效果基准测试",
+      "status": "failed",
+      "duration": 5.357460260391235,
+      "screenshots": [
+        "/app/web_test_screenshots_final/004_tests-benchmark_numba_error_152851.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-benchmark_riemann_solvers",
+      "name": "求解器性能基准测试",
+      "status": "failed",
+      "duration": 5.298153877258301,
+      "screenshots": [
+        "/app/web_test_screenshots_final/005_tests-benchmark_riemann_solvers_error_152856.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-core_functionality_verification",
+      "name": "核心功能验证测试",
+      "status": "failed",
+      "duration": 5.280908823013306,
+      "screenshots": [
+        "/app/web_test_screenshots_final/006_tests-core_functionality_verification_error_152902.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-core_functionality_verification_v2",
+      "name": "核心功能验证测试 V2 (改进版)",
+      "status": "failed",
+      "duration": 5.2836525440216064,
+      "screenshots": [
+        "/app/web_test_screenshots_final/007_tests-core_functionality_verification_v2_error_152907.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-dam_break_high_res_numba",
+      "name": "高精度溃坝测试（Numba加速版本）",
+      "status": "failed",
+      "duration": 5.2914137840271,
+      "screenshots": [
+        "/app/web_test_screenshots_final/008_tests-dam_break_high_res_numba_error_152912.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-dam_break_numba_10s",
+      "name": "快速溃坝测试（10秒，展示Numba威力）",
+      "status": "failed",
+      "duration": 5.289061784744263,
+      "screenshots": [
+        "/app/web_test_screenshots_final/009_tests-dam_break_numba_10s_error_152917.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-debug_exact_flux",
+      "name": "诊断精确Riemann求解器通量计算",
+      "status": "failed",
+      "duration": 5.305652141571045,
+      "screenshots": [
+        "/app/web_test_screenshots_final/010_tests-debug_exact_flux_error_152923.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-debug_exact_sampling",
+      "name": "调试精确Riemann求解器采样逻辑",
+      "status": "failed",
+      "duration": 5.34149694442749,
+      "screenshots": [
+        "/app/web_test_screenshots_final/011_tests-debug_exact_sampling_error_152928.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-debug_gate_jacobian",
+      "name": "调试闸门场景的Jacobian奇异性",
+      "status": "failed",
+      "duration": 5.441246271133423,
+      "screenshots": [
+        "/app/web_test_screenshots_final/012_tests-debug_gate_jacobian_error_152934.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-debug_wb_nan",
+      "name": "调试Well-Balanced格式NaN问题",
+      "status": "failed",
+      "duration": 5.3160240650177,
+      "screenshots": [
+        "/app/web_test_screenshots_final/013_tests-debug_wb_nan_error_152939.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_exact_crash_timeline",
+      "name": "精确求解器崩溃时间线诊断",
+      "status": "failed",
+      "duration": 5.335618257522583,
+      "screenshots": [
+        "/app/web_test_screenshots_final/014_tests-diagnose_exact_crash_timeline_error_152944.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_exact_flux_step_by_step",
+      "name": "逐步通量诊断 - 精确求解器",
+      "status": "failed",
+      "duration": 5.299252510070801,
+      "screenshots": [
+        "/app/web_test_screenshots_final/015_tests-diagnose_exact_flux_step_by_step_error_152950.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_exact_mass_loss",
+      "name": "诊断精确求解器质量损失问题",
+      "status": "failed",
+      "duration": 5.278919696807861,
+      "screenshots": [
+        "/app/web_test_screenshots_final/016_tests-diagnose_exact_mass_loss_error_152955.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_exact_single_interface",
+      "name": "单界面精确通量诊断",
+      "status": "failed",
+      "duration": 5.3169026374816895,
+      "screenshots": [
+        "/app/web_test_screenshots_final/017_tests-diagnose_exact_single_interface_error_153000.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_hllc_instability",
+      "name": "Diagnose HLLC Numerical Instability",
+      "status": "failed",
+      "duration": 5.302929401397705,
+      "screenshots": [
+        "/app/web_test_screenshots_final/018_tests-diagnose_hllc_instability_error_153005.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_newton_solver",
+      "name": "求解器诊断",
+      "status": "failed",
+      "duration": 5.278185129165649,
+      "screenshots": [
+        "/app/web_test_screenshots_final/019_tests-diagnose_newton_solver_error_153011.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-hllc_bug_analysis",
+      "name": "问题分析和修复方案",
+      "status": "failed",
+      "duration": 5.285138130187988,
+      "screenshots": [
+        "/app/web_test_screenshots_final/020_tests-hllc_bug_analysis_error_153016.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-numba_performance_validation",
+      "name": "Numba JIT Performance Validation",
+      "status": "failed",
+      "duration": 5.321580171585083,
+      "screenshots": [
+        "/app/web_test_screenshots_final/021_tests-numba_performance_validation_error_153021.png"
+      ],
+      "notes": [
+        "测试失败 (未知异常): Message: element click intercepted: Element <input type=\"search\" id=\"test-case-selector\" autocomplete=\"off\" class=\"ant-select-selection-search-input\" role=\"combobox\" aria-expanded=\"false\" aria-haspopup=\"listbox\" aria-owns=\"test-case-selector_list\" aria-autocomplete=\"list\" aria-controls=\"test-case-selector_list\" value=\"\"> is not clickable at point (583, 472). Other element would receive the click: <span class=\"ant-select-selection-item\" title=\"...\">详细分析Well-Balanced重构的数值行为 (tests-analyze_well_balanced_details)</span>\n  (Session info: chrome=142.0.7444.175); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementclickinterceptedexception\nStacktrace:\n#0 0x5649361d7aca <unknown>\n#1 0x564935c23cdb <unknown>\n#2 0x564935c7d5ac <unknown>\n#3 0x564935c7b402 <unknown>\n#4 0x564935c78a92 <unknown>\n#5 0x564935c7812f <unknown>\n#6 0x564935c6aa0b <unknown>\n#7 0x564935c6a387 <unknown>\n#8 0x564935cc2c87 <unknown>\n#9 0x564935c68aca <unknown>\n#10 0x564935c697d1 <unknown>\n#11 0x56493619ea99 <unknown>\n#12 0x5649361a1a6c <unknown>\n#13 0x564936187d29 <unknown>\n#14 0x5649361a2665 <unknown>\n#15 0x56493616f6a3 <unknown>\n#16 0x5649361c47b8 <unknown>\n#17 0x5649361c4993 <unknown>\n#18 0x5649361d6a63 <unknown>\n#19 0x7f010b64faa4 <unknown>\n#20 0x7f010b6dcc6c <unknown>\n"
+      ]
+    }
+  ]
+}
