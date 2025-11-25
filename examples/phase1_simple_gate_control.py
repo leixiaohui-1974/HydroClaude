@@ -16,6 +16,8 @@ Phase 1应用示例 - 闸门调度控制简化版
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib.pyplot as plt
 import sys
 import os

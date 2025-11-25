@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 330,
+    "batch_end_index": 331,
+    "test_run_at": "2025-11-25T16:51:46.864943",
+    "batch_duration_seconds": 60.04,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./final_batch1_test.py",
+      "status": "timeout",
+      "return_code": -1,
+      "duration_seconds": 60.04,
+      "stdout": "======================================================================\nBATCH 1 FINAL TEST - ALL 17 FILES\n======================================================================\n\n[ 1/14] advanced_animation_generator.py",
+      "stderr": "Process timed out after 60 seconds."
+    }
+  ]
+}

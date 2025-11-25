@@ -12,6 +12,8 @@ Diagnose timeline of Exact solver crash at t~1.8s
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import os
 sys.path.insert(0, os.path.abspath('.'))

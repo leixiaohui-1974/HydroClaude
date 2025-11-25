@@ -9,12 +9,14 @@
 日期：2025-10-24
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========
 script_path = os.path.abspath(__file__)
 project_root = os.path.dirname(os.path.dirname(script_path))
-sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 
 import numpy as np

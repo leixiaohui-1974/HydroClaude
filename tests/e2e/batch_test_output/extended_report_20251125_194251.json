@@ -1,0 +1,438 @@
+{
+  "timestamp": "2025-11-25T19:42:51.485894",
+  "summary": {
+    "total": 50,
+    "passed": 50,
+    "failed": 0,
+    "errors": 0
+  },
+  "by_category": {
+    "基础明渠流动": {
+      "passed": 10,
+      "failed": 0,
+      "error": 0
+    },
+    "边界条件变化": {
+      "passed": 10,
+      "failed": 0,
+      "error": 0
+    },
+    "几何参数变化": {
+      "passed": 10,
+      "failed": 0,
+      "error": 0
+    },
+    "物理参数变化": {
+      "passed": 10,
+      "failed": 0,
+      "error": 0
+    },
+    "特殊工况": {
+      "passed": 10,
+      "failed": 0,
+      "error": 0
+    }
+  },
+  "results": [
+    {
+      "id": "B001",
+      "name": "静水初始条件",
+      "category": "基础明渠流动",
+      "status": "passed",
+      "duration": 9.900422811508179,
+      "error": null
+    },
+    {
+      "id": "B002",
+      "name": "均匀流-低流量",
+      "category": "基础明渠流动",
+      "status": "passed",
+      "duration": 13.001922607421875,
+      "error": null
+    },
+    {
+      "id": "B003",
+      "name": "均匀流-中流量",
+      "category": "基础明渠流动",
+      "status": "passed",
+      "duration": 18.20278286933899,
+      "error": null
+    },
+    {
+      "id": "B004",
+      "name": "均匀流-高流量",
+      "category": "基础明渠流动",
+      "status": "passed",
+      "duration": 40.70232582092285,
+      "error": null
+    },
+    {
+      "id": "B005",
+      "name": "缓流状态",
+      "category": "基础明渠流动",
+      "status": "passed",
+      "duration": 15.574220418930054,
+      "error": null
+    },
+    {
+      "id": "B006",
+      "name": "临界流附近",
+      "category": "基础明渠流动",
+      "status": "passed",
+      "duration": 24.905667304992676,
+      "error": null
+    },
+    {
+      "id": "B007",
+      "name": "急流状态",
+      "category": "基础明渠流动",
+      "status": "passed",
+      "duration": 27.019542455673218,
+      "error": null
+    },
+    {
+      "id": "B008",
+      "name": "壅水曲线M1",
+      "category": "基础明渠流动",
+      "status": "passed",
+      "duration": 14.604072332382202,
+      "error": null
+    },
+    {
+      "id": "B009",
+      "name": "降水曲线M2",
+      "category": "基础明渠流动",
+      "status": "passed",
+      "duration": 16.13496494293213,
+      "error": null
+    },
+    {
+      "id": "B010",
+      "name": "混合边界",
+      "category": "基础明渠流动",
+      "status": "passed",
+      "duration": 15.73925256729126,
+      "error": null
+    },
+    {
+      "id": "BC001",
+      "name": "流量边界Q=5m³/s",
+      "category": "边界条件变化",
+      "status": "passed",
+      "duration": 8.686085939407349,
+      "error": null
+    },
+    {
+      "id": "BC002",
+      "name": "流量边界Q=20m³/s",
+      "category": "边界条件变化",
+      "status": "passed",
+      "duration": 10.735387086868286,
+      "error": null
+    },
+    {
+      "id": "BC003",
+      "name": "流量边界Q=40m³/s",
+      "category": "边界条件变化",
+      "status": "passed",
+      "duration": 14.211122751235962,
+      "error": null
+    },
+    {
+      "id": "BC004",
+      "name": "流量边界Q=60m³/s",
+      "category": "边界条件变化",
+      "status": "passed",
+      "duration": 14.13486361503601,
+      "error": null
+    },
+    {
+      "id": "BC005",
+      "name": "流量边界Q=80m³/s",
+      "category": "边界条件变化",
+      "status": "passed",
+      "duration": 15.962021589279175,
+      "error": null
+    },
+    {
+      "id": "BC006",
+      "name": "流量边界Q=100m³/s",
+      "category": "边界条件变化",
+      "status": "passed",
+      "duration": 18.026301383972168,
+      "error": null
+    },
+    {
+      "id": "BC007",
+      "name": "流量边界Q=150m³/s",
+      "category": "边界条件变化",
+      "status": "passed",
+      "duration": 24.258655309677124,
+      "error": null
+    },
+    {
+      "id": "BC008",
+      "name": "流量边界Q=200m³/s",
+      "category": "边界条件变化",
+      "status": "passed",
+      "duration": 28.918598651885986,
+      "error": null
+    },
+    {
+      "id": "BC009",
+      "name": "流量边界Q=300m³/s",
+      "category": "边界条件变化",
+      "status": "passed",
+      "duration": 51.322185039520264,
+      "error": null
+    },
+    {
+      "id": "BC010",
+      "name": "流量边界Q=500m³/s",
+      "category": "边界条件变化",
+      "status": "passed",
+      "duration": 97.9860291481018,
+      "error": null
+    },
+    {
+      "id": "G001",
+      "name": "渠道长度L=100m",
+      "category": "几何参数变化",
+      "status": "passed",
+      "duration": 4.7330546379089355,
+      "error": null
+    },
+    {
+      "id": "G002",
+      "name": "渠道长度L=500m",
+      "category": "几何参数变化",
+      "status": "passed",
+      "duration": 12.251262664794922,
+      "error": null
+    },
+    {
+      "id": "G003",
+      "name": "渠道长度L=1000m",
+      "category": "几何参数变化",
+      "status": "passed",
+      "duration": 20.6221764087677,
+      "error": null
+    },
+    {
+      "id": "G004",
+      "name": "渠道长度L=2000m",
+      "category": "几何参数变化",
+      "status": "passed",
+      "duration": 44.102752447128296,
+      "error": null
+    },
+    {
+      "id": "G005",
+      "name": "渠道长度L=5000m",
+      "category": "几何参数变化",
+      "status": "passed",
+      "duration": 21.375502586364746,
+      "error": null
+    },
+    {
+      "id": "G006",
+      "name": "渠道宽度W=2m",
+      "category": "几何参数变化",
+      "status": "passed",
+      "duration": 10.702473640441895,
+      "error": null
+    },
+    {
+      "id": "G007",
+      "name": "渠道宽度W=5m",
+      "category": "几何参数变化",
+      "status": "passed",
+      "duration": 11.740922451019287,
+      "error": null
+    },
+    {
+      "id": "G008",
+      "name": "渠道宽度W=10m",
+      "category": "几何参数变化",
+      "status": "passed",
+      "duration": 19.359450817108154,
+      "error": null
+    },
+    {
+      "id": "G009",
+      "name": "渠道宽度W=20m",
+      "category": "几何参数变化",
+      "status": "passed",
+      "duration": 20.71121096611023,
+      "error": null
+    },
+    {
+      "id": "G010",
+      "name": "渠道宽度W=50m",
+      "category": "几何参数变化",
+      "status": "passed",
+      "duration": 39.15467166900635,
+      "error": null
+    },
+    {
+      "id": "P001",
+      "name": "底坡S=0.0001",
+      "category": "物理参数变化",
+      "status": "passed",
+      "duration": 15.70165467262268,
+      "error": null
+    },
+    {
+      "id": "P002",
+      "name": "底坡S=0.0005",
+      "category": "物理参数变化",
+      "status": "passed",
+      "duration": 15.701069355010986,
+      "error": null
+    },
+    {
+      "id": "P003",
+      "name": "底坡S=0.001",
+      "category": "物理参数变化",
+      "status": "passed",
+      "duration": 16.536177158355713,
+      "error": null
+    },
+    {
+      "id": "P004",
+      "name": "底坡S=0.002",
+      "category": "物理参数变化",
+      "status": "passed",
+      "duration": 15.19021463394165,
+      "error": null
+    },
+    {
+      "id": "P005",
+      "name": "底坡S=0.005",
+      "category": "物理参数变化",
+      "status": "passed",
+      "duration": 15.095034837722778,
+      "error": null
+    },
+    {
+      "id": "P006",
+      "name": "糙率n=0.01",
+      "category": "物理参数变化",
+      "status": "passed",
+      "duration": 14.140023231506348,
+      "error": null
+    },
+    {
+      "id": "P007",
+      "name": "糙率n=0.015",
+      "category": "物理参数变化",
+      "status": "passed",
+      "duration": 15.885124444961548,
+      "error": null
+    },
+    {
+      "id": "P008",
+      "name": "糙率n=0.02",
+      "category": "物理参数变化",
+      "status": "passed",
+      "duration": 16.61782932281494,
+      "error": null
+    },
+    {
+      "id": "P009",
+      "name": "糙率n=0.03",
+      "category": "物理参数变化",
+      "status": "passed",
+      "duration": 17.52452301979065,
+      "error": null
+    },
+    {
+      "id": "P010",
+      "name": "糙率n=0.05",
+      "category": "物理参数变化",
+      "status": "passed",
+      "duration": 16.01548171043396,
+      "error": null
+    },
+    {
+      "id": "S001",
+      "name": "极浅水流",
+      "category": "特殊工况",
+      "status": "passed",
+      "duration": 24.761340856552124,
+      "error": null
+    },
+    {
+      "id": "S002",
+      "name": "深水流动",
+      "category": "特殊工况",
+      "status": "passed",
+      "duration": 17.539409399032593,
+      "error": null
+    },
+    {
+      "id": "S003",
+      "name": "高速水流",
+      "category": "特殊工况",
+      "status": "passed",
+      "duration": 35.83128547668457,
+      "error": null
+    },
+    {
+      "id": "S004",
+      "name": "低速水流",
+      "category": "特殊工况",
+      "status": "passed",
+      "duration": 10.2511568069458,
+      "error": null
+    },
+    {
+      "id": "S005",
+      "name": "大流量宽渠",
+      "category": "特殊工况",
+      "status": "passed",
+      "duration": 160.01050686836243,
+      "error": null
+    },
+    {
+      "id": "S006",
+      "name": "小流量窄渠",
+      "category": "特殊工况",
+      "status": "passed",
+      "duration": 8.959854125976562,
+      "error": null
+    },
+    {
+      "id": "S007",
+      "name": "零坡渠道",
+      "category": "特殊工况",
+      "status": "passed",
+      "duration": 12.477408170700073,
+      "error": null
+    },
+    {
+      "id": "S008",
+      "name": "陡坡渠道",
+      "category": "特殊工况",
+      "status": "passed",
+      "duration": 21.435343503952026,
+      "error": null
+    },
+    {
+      "id": "S009",
+      "name": "粗糙底面",
+      "category": "特殊工况",
+      "status": "passed",
+      "duration": 22.96941113471985,
+      "error": null
+    },
+    {
+      "id": "S010",
+      "name": "光滑底面",
+      "category": "特殊工况",
+      "status": "passed",
+      "duration": 19.7535719871521,
+      "error": null
+    }
+  ]
+}

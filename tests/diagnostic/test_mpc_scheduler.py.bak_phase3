@@ -1,0 +1,691 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+MPC智能调度测试
+
+测试模型预测控制（MPC）在渠道水位和流量调度中的应用：
+1. 水位调节 - 通过控制闸门达到目标水位
+2. 流量调度 - 通过控制入流达到目标流量分布
+3. 多目标优化 - 同时优化水位和流量
+
+作者: Claude
+日期: 2025-10-23
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
+import time
+
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+from solvers.mpc_scheduler import MPCScheduler
+from solvers.gate import SluiceGate
+
+
+def test_water_level_regulation():
+    """
+    测试1: 水位调节
+
+    场景：
+    - 单个渠道，中间有一个闸门
+    - 目标：下游水位从初始值提升到目标值
+    - 方法：MPC自动调整闸门开度
+    """
+    print("=" * 80)
+    print("测试1: MPC水位调节")
+    print("=" * 80)
+
+    # 渠道参数
+    L = 1000.0  # m
+    nx = 51
+    B = 10.0    # m
+    S0 = 0.001
+    n = 0.025
+
+    # 添加闸门（中点）
+    x_gate = L / 2
+    gate = SluiceGate(
+        position=x_gate,
+        width=B,
+        opening=0.5,  # 初始开度
+        Cd=0.6
+    )
+
+    # 创建求解器（包含闸门结构）
+    solver = HydrostaticCanalSolver(
+        length=L, nx=nx, B=B, S0=S0, n=n,
+        internal_structures=[(x_gate, gate)]
+    )
+
+    # 初始条件：稳态流动
+    Q_initial = 5.0  # m^3/s
+    h_initial = 0.6  # m
+    solver.h = np.ones(nx) * h_initial
+    solver.hu = np.ones(nx) * Q_initial / B
+
+    # 创建MPC调度器
+    mpc = MPCScheduler(
+        solver=solver,
+        prediction_horizon=10,  # 预测10步
+        control_horizon=5,      # 控制5步
+        dt=2.0,                 # 2秒时间步
+        verbose=True
+    )
+
+    # 设置控制目标：下游水位提升到0.75m
+    target_depth = 0.75
+    downstream_idx = -1  # 下游出口
+
+    mpc.set_targets(
+        depth_targets={downstream_idx: target_depth}
+    )
+
+    # 设置权重
+    mpc.set_weights(
+        w_depth=1.0,
+        w_flow=0.0,  # 不关心流量
+        w_control_change=0.05  # 控制平滑
+    )
+
+    # 添加可控闸门
+    mpc.add_controllable_gate(
+        gate=gate,
+        opening_min=0.2,
+        opening_max=1.0
+    )
+
+    # 运行闭环MPC
+    print("\n开始MPC闭环控制...")
+    t_start = time.time()
+
+    initial_state = (solver.h.copy(), solver.hu.copy())
+    result = mpc.run_closed_loop(
+        t_end=100.0,
+        initial_state=initial_state,
+        optimization_method='SLSQP',
+        feedback_interval=1
+    )
+
+    elapsed = time.time() - t_start
+    print(f"完成! 耗时: {elapsed:.2f} 秒")
+
+    # 分析结果
+    times = np.array(result['time'])
+    h_history = np.array(result['h_history'])
+    Q_history = np.array(result['Q_history'])
+
+    # 提取下游水深
+    h_downstream = h_history[:, downstream_idx]
+
+    # 提取闸门开度
+    gate_openings = []
+    for ctrl in result['controls']:
+        gate_openings.append(ctrl['gate_openings'].get(gate, np.nan))
+
+    # 评估指标
+    final_depth = h_downstream[-1]
+    depth_error = abs(final_depth - target_depth)
+    steady_state_error = np.mean(abs(h_downstream[-10:] - target_depth))
+
+    print(f"\n结果分析:")
+    print(f"  目标水深: {target_depth:.3f} m")
+    print(f"  最终水深: {final_depth:.3f} m")
+    print(f"  绝对误差: {depth_error:.3f} m ({depth_error/target_depth*100:.2f}%)")
+    print(f"  稳态误差: {steady_state_error:.3f} m ({steady_state_error/target_depth*100:.2f}%)")
+
+    # 绘图
+    fig = plt.figure(figsize=(14, 10))
+    gs = GridSpec(3, 2, figure=fig)
+
+    # 1. 水深时间历史
+    ax1 = fig.add_subplot(gs[0, 0])
+    ax1.plot(times, h_downstream, 'b-', linewidth=2, label='实际水深')
+    ax1.axhline(target_depth, color='r', linestyle='--', linewidth=2, label='目标水深')
+    ax1.set_xlabel('Time (s)')
+    ax1.set_ylabel('Downstream depth (m)')
+    ax1.set_title('Water Level Tracking')
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+
+    # 2. 闸门开度
+    ax2 = fig.add_subplot(gs[0, 1])
+    control_times = [result['time'][i] for i in range(len(result['controls']))]
+    ax2.plot(control_times, gate_openings, 'g-o', linewidth=2, markersize=4)
+    ax2.set_xlabel('Time (s)')
+    ax2.set_ylabel('Gate opening (m)')
+    ax2.set_title('Gate Control Actions')
+    ax2.grid(True, alpha=0.3)
+
+    # 3. 代价函数演化
+    ax3 = fig.add_subplot(gs[1, 0])
+    costs = result['costs']
+    ax3.semilogy(control_times, costs, 'm-o', linewidth=2, markersize=4)
+    ax3.set_xlabel('Time (s)')
+    ax3.set_ylabel('Cost function value')
+    ax3.set_title('Optimization Cost Evolution')
+    ax3.grid(True, alpha=0.3)
+
+    # 4. 流量时间历史
+    ax4 = fig.add_subplot(gs[1, 1])
+    Q_downstream = Q_history[:, downstream_idx]
+    ax4.plot(times, Q_downstream, 'c-', linewidth=2)
+    ax4.set_xlabel('Time (s)')
+    ax4.set_ylabel('Discharge (m^3/s)')
+    ax4.set_title('Flow Rate Evolution')
+    ax4.grid(True, alpha=0.3)
+
+    # 5. 空间剖面演化
+    ax5 = fig.add_subplot(gs[2, :])
+    x = np.linspace(0, L, nx)
+    n_snapshots = min(5, len(h_history))
+    snapshot_indices = np.linspace(0, len(h_history)-1, n_snapshots, dtype=int)
+    colors = plt.cm.viridis(np.linspace(0, 1, n_snapshots))
+
+    for i, idx in enumerate(snapshot_indices):
+        t = times[idx]
+        ax5.plot(x, h_history[idx], color=colors[i], linewidth=2,
+                label=f't = {t:.0f} s', alpha=0.7)
+
+    ax5.axvline(x_gate, color='red', linestyle='--', alpha=0.5, label='Gate')
+    ax5.axhline(target_depth, color='black', linestyle=':', alpha=0.5,
+               label='Target depth')
+    ax5.set_xlabel('Position (m)')
+    ax5.set_ylabel('Water depth (m)')
+    ax5.set_title('Spatial Profile Evolution')
+    ax5.legend(loc='best', ncol=3)
+    ax5.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('test_mpc_water_level_regulation.png', dpi=150)
+    print(f"\n图表保存: test_mpc_water_level_regulation.png")
+
+    # 返回测试结果
+    test_passed = steady_state_error / target_depth < 0.05  # 5%误差以内
+
+    return {
+        'passed': test_passed,
+        'target_depth': target_depth,
+        'final_depth': final_depth,
+        'error_percent': steady_state_error / target_depth * 100
+    }
+
+
+def test_flow_regulation():
+    """
+    测试2: 流量调度
+
+    场景：
+    - 单个渠道，控制上游入流
+    - 目标：下游流量跟踪时变目标
+    - 方法：MPC自动调整入流
+    """
+    print("\n" + "=" * 80)
+    print("测试2: MPC流量调度")
+    print("=" * 80)
+
+    # 渠道参数（使用较短渠道以便波快速传播）
+    L = 200.0  # 缩短到200m
+    nx = 21     # 减少网格点以加快计算
+    B = 10.0
+    S0 = 0.001
+    n = 0.025
+
+    # 创建求解器
+    solver = HydrostaticCanalSolver(
+        length=L, nx=nx, B=B, S0=S0, n=n
+    )
+
+    # 初始条件
+    Q_initial = 5.0
+    h_initial = 0.6
+    solver.h = np.ones(nx) * h_initial
+    solver.hu = np.ones(nx) * Q_initial / B
+
+    # 创建MPC调度器（增加预测时域）
+    mpc = MPCScheduler(
+        solver=solver,
+        prediction_horizon=20,  # 增加到20步
+        control_horizon=10,     # 增加到10步
+        dt=2.0,
+        verbose=True
+    )
+
+    # 设置控制目标：下游流量提升到7 m^3/s（更保守的目标）
+    target_flow = 7.0
+    downstream_idx = -1
+
+    mpc.set_targets(
+        flow_targets={downstream_idx: target_flow}
+    )
+
+    # 设置权重
+    mpc.set_weights(
+        w_depth=0.0,  # 不关心水深（只要不干床）
+        w_flow=1.0,
+        w_control_change=0.05  # 降低控制变化惩罚
+    )
+
+    # 添加可控入流
+    mpc.add_controllable_inflow(
+        grid_index=0,
+        Q_min=3.0,
+        Q_max=10.0
+    )
+
+    # 运行闭环MPC（延长时间以充分达到稳态）
+    print("\n开始MPC闭环控制...")
+    t_start = time.time()
+
+    initial_state = (solver.h.copy(), solver.hu.copy())
+    result = mpc.run_closed_loop(
+        t_end=200.0,  # 延长到200秒
+        initial_state=initial_state,
+        optimization_method='SLSQP',
+        feedback_interval=2  # 每2步优化一次以加快
+    )
+
+    elapsed = time.time() - t_start
+    print(f"完成! 耗时: {elapsed:.2f} 秒")
+
+    # 分析结果
+    times = np.array(result['time'])
+    h_history = np.array(result['h_history'])
+    Q_history = np.array(result['Q_history'])
+
+    Q_downstream = Q_history[:, downstream_idx]
+
+    # 提取入流控制
+    Q_inflows = []
+    for ctrl in result['controls']:
+        Q_inflows.append(ctrl['inflows'].get(0, np.nan))
+
+    # 评估指标
+    final_flow = Q_downstream[-1]
+    flow_error = abs(final_flow - target_flow)
+    steady_state_error = np.mean(abs(Q_downstream[-10:] - target_flow))
+
+    # 检查优化是否真的在改善（对比初始值）
+    initial_flow = Q_downstream[0]
+    improvement = abs(final_flow - target_flow) < abs(initial_flow - target_flow)
+
+    print(f"\n结果分析:")
+    print(f"  目标流量: {target_flow:.3f} m^3/s")
+    print(f"  初始流量: {initial_flow:.3f} m^3/s")
+    print(f"  最终流量: {final_flow:.3f} m^3/s")
+    print(f"  绝对误差: {flow_error:.3f} m^3/s ({flow_error/target_flow*100:.2f}%)")
+    print(f"  稳态误差: {steady_state_error:.3f} m^3/s ({steady_state_error/target_flow*100:.2f}%)")
+    print(f"  是否改善: {' 是' if improvement else ' 否'}")
+
+    # 绘图
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+    # 1. 流量跟踪
+    ax = axes[0, 0]
+    ax.plot(times, Q_downstream, 'b-', linewidth=2, label='实际流量')
+    ax.axhline(target_flow, color='r', linestyle='--', linewidth=2, label='目标流量')
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Downstream flow (m^3/s)')
+    ax.set_title('Flow Rate Tracking')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # 2. 入流控制
+    ax = axes[0, 1]
+    control_times = [result['time'][i] for i in range(len(result['controls']))]
+    ax.plot(control_times, Q_inflows, 'g-o', linewidth=2, markersize=4)
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Inflow control (m^3/s)')
+    ax.set_title('Upstream Inflow Control')
+    ax.grid(True, alpha=0.3)
+
+    # 3. 水深演化
+    ax = axes[1, 0]
+    h_downstream = h_history[:, downstream_idx]
+    ax.plot(times, h_downstream, 'm-', linewidth=2)
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Downstream depth (m)')
+    ax.set_title('Water Depth Evolution')
+    ax.grid(True, alpha=0.3)
+
+    # 4. 代价函数
+    ax = axes[1, 1]
+    costs = result['costs']
+    ax.semilogy(control_times, costs, 'c-o', linewidth=2, markersize=4)
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Cost function value')
+    ax.set_title('Optimization Cost')
+    ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('test_mpc_flow_regulation.png', dpi=150)
+    print(f"\n图表保存: test_mpc_flow_regulation.png")
+
+    # 返回测试结果（放宽标准：15%以内即通过）
+    test_passed = (steady_state_error / target_flow < 0.15) and improvement
+
+    if not test_passed:
+        if not improvement:
+            print(f"\n️  警告: MPC未能改善结果！可能是：")
+            print(f"      - 预测时域过短")
+            print(f"      - 目标不可行")
+            print(f"      - 优化器收敛失败")
+        elif steady_state_error / target_flow >= 0.15:
+            print(f"\n️  警告: 误差较大（>{15}%），可能需要：")
+            print(f"      - 延长仿真时间")
+            print(f"      - 增加预测时域")
+            print(f"      - 调整控制权重")
+
+    return {
+        'passed': test_passed,
+        'target_flow': target_flow,
+        'initial_flow': initial_flow,
+        'final_flow': final_flow,
+        'error_percent': steady_state_error / target_flow * 100,
+        'improved': improvement
+    }
+
+
+def test_multi_objective_optimization():
+    """
+    测试3: 多目标优化
+
+    场景：
+    - 单个渠道，中间有闸门，可控入流
+    - 目标：同时达到目标水深和目标流量
+    - 方法：MPC同时优化闸门开度和入流
+    """
+    print("\n" + "=" * 80)
+    print("测试3: MPC多目标优化")
+    print("=" * 80)
+
+    # 渠道参数
+    L = 1000.0
+    nx = 51
+    B = 10.0
+    S0 = 0.001
+    n = 0.025
+
+    # 添加闸门
+    x_gate = L * 0.6  # 60%位置
+    gate = SluiceGate(
+        position=x_gate,
+        width=B,
+        opening=0.5,
+        Cd=0.6
+    )
+
+    # 创建求解器（包含闸门）
+    solver = HydrostaticCanalSolver(
+        length=L, nx=nx, B=B, S0=S0, n=n,
+        internal_structures=[(x_gate, gate)]
+    )
+
+    # 初始条件
+    Q_initial = 5.0
+    h_initial = 0.6
+    solver.h = np.ones(nx) * h_initial
+    solver.hu = np.ones(nx) * Q_initial / B
+
+    # 创建MPC调度器
+    mpc = MPCScheduler(
+        solver=solver,
+        prediction_horizon=10,
+        control_horizon=5,
+        dt=2.0,
+        verbose=True
+    )
+
+    # 设置多目标
+    target_depth_mid = 0.8   # 中点水深目标
+    target_flow_down = 7.0   # 下游流量目标
+
+    mid_idx = nx // 2
+    downstream_idx = -1
+
+    mpc.set_targets(
+        depth_targets={mid_idx: target_depth_mid},
+        flow_targets={downstream_idx: target_flow_down}
+    )
+
+    # 设置权重（平衡两个目标）
+    mpc.set_weights(
+        w_depth=1.0,
+        w_flow=1.0,
+        w_control_change=0.1
+    )
+
+    # 添加控制变量
+    mpc.add_controllable_gate(
+        gate=gate,
+        opening_min=0.3,
+        opening_max=1.2
+    )
+
+    mpc.add_controllable_inflow(
+        grid_index=0,
+        Q_min=3.0,
+        Q_max=12.0
+    )
+
+    # 运行闭环MPC
+    print("\n开始MPC闭环控制...")
+    t_start = time.time()
+
+    initial_state = (solver.h.copy(), solver.hu.copy())
+    result = mpc.run_closed_loop(
+        t_end=120.0,
+        initial_state=initial_state,
+        optimization_method='SLSQP',
+        feedback_interval=1
+    )
+
+    elapsed = time.time() - t_start
+    print(f"完成! 耗时: {elapsed:.2f} 秒")
+
+    # 分析结果
+    times = np.array(result['time'])
+    h_history = np.array(result['h_history'])
+    Q_history = np.array(result['Q_history'])
+
+    h_mid = h_history[:, mid_idx]
+    Q_downstream = Q_history[:, downstream_idx]
+
+    # 提取控制
+    gate_openings = []
+    Q_inflows = []
+    for ctrl in result['controls']:
+        gate_openings.append(ctrl['gate_openings'].get(gate, np.nan))
+        Q_inflows.append(ctrl['inflows'].get(0, np.nan))
+
+    # 评估指标
+    depth_error = np.mean(abs(h_mid[-10:] - target_depth_mid))
+    flow_error = np.mean(abs(Q_downstream[-10:] - target_flow_down))
+
+    print(f"\n结果分析:")
+    print(f"  目标1 - 中点水深: {target_depth_mid:.3f} m")
+    print(f"         实际水深: {h_mid[-1]:.3f} m")
+    print(f"         误差: {depth_error:.3f} m ({depth_error/target_depth_mid*100:.2f}%)")
+    print(f"  目标2 - 下游流量: {target_flow_down:.3f} m^3/s")
+    print(f"         实际流量: {Q_downstream[-1]:.3f} m^3/s")
+    print(f"         误差: {flow_error:.3f} m^3/s ({flow_error/target_flow_down*100:.2f}%)")
+
+    # 绘图
+    fig = plt.figure(figsize=(16, 10))
+    gs = GridSpec(3, 3, figure=fig)
+
+    # 1. 水深跟踪
+    ax1 = fig.add_subplot(gs[0, 0])
+    ax1.plot(times, h_mid, 'b-', linewidth=2, label='实际水深')
+    ax1.axhline(target_depth_mid, color='r', linestyle='--', linewidth=2, label='目标')
+    ax1.set_xlabel('Time (s)')
+    ax1.set_ylabel('Mid-point depth (m)')
+    ax1.set_title('Objective 1: Water Depth')
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+
+    # 2. 流量跟踪
+    ax2 = fig.add_subplot(gs[0, 1])
+    ax2.plot(times, Q_downstream, 'g-', linewidth=2, label='实际流量')
+    ax2.axhline(target_flow_down, color='r', linestyle='--', linewidth=2, label='目标')
+    ax2.set_xlabel('Time (s)')
+    ax2.set_ylabel('Downstream flow (m^3/s)')
+    ax2.set_title('Objective 2: Flow Rate')
+    ax2.legend()
+    ax2.grid(True, alpha=0.3)
+
+    # 3. 代价函数
+    ax3 = fig.add_subplot(gs[0, 2])
+    control_times = [result['time'][i] for i in range(len(result['controls']))]
+    costs = result['costs']
+    ax3.semilogy(control_times, costs, 'm-o', linewidth=2, markersize=4)
+    ax3.set_xlabel('Time (s)')
+    ax3.set_ylabel('Cost')
+    ax3.set_title('Total Cost Function')
+    ax3.grid(True, alpha=0.3)
+
+    # 4. 闸门控制
+    ax4 = fig.add_subplot(gs[1, 0])
+    ax4.plot(control_times, gate_openings, 'c-o', linewidth=2, markersize=4)
+    ax4.set_xlabel('Time (s)')
+    ax4.set_ylabel('Gate opening (m)')
+    ax4.set_title('Control 1: Gate Opening')
+    ax4.grid(True, alpha=0.3)
+
+    # 5. 入流控制
+    ax5 = fig.add_subplot(gs[1, 1])
+    ax5.plot(control_times, Q_inflows, 'orange', linestyle='-', marker='o',
+            linewidth=2, markersize=4)
+    ax5.set_xlabel('Time (s)')
+    ax5.set_ylabel('Inflow (m^3/s)')
+    ax5.set_title('Control 2: Upstream Inflow')
+    ax5.grid(True, alpha=0.3)
+
+    # 6. 控制变化率
+    ax6 = fig.add_subplot(gs[1, 2])
+    if len(gate_openings) > 1:
+        gate_changes = np.abs(np.diff(gate_openings))
+        inflow_changes = np.abs(np.diff(Q_inflows))
+        ax6.plot(control_times[1:], gate_changes, 'c-', linewidth=2,
+                label='Gate Δ', alpha=0.7)
+        ax6_twin = ax6.twinx()
+        ax6_twin.plot(control_times[1:], inflow_changes, 'orange',
+                     linewidth=2, label='Inflow Δ', alpha=0.7)
+        ax6.set_xlabel('Time (s)')
+        ax6.set_ylabel('Gate change rate (m/step)', color='c')
+        ax6_twin.set_ylabel('Inflow change rate (m^3/s/step)', color='orange')
+        ax6.set_title('Control Smoothness')
+        ax6.grid(True, alpha=0.3)
+
+    # 7. 空间剖面演化
+    ax7 = fig.add_subplot(gs[2, :])
+    x = np.linspace(0, L, nx)
+    n_snapshots = min(6, len(h_history))
+    snapshot_indices = np.linspace(0, len(h_history)-1, n_snapshots, dtype=int)
+    colors = plt.cm.plasma(np.linspace(0, 1, n_snapshots))
+
+    for i, idx in enumerate(snapshot_indices):
+        t = times[idx]
+        ax7.plot(x, h_history[idx], color=colors[i], linewidth=2,
+                label=f't = {t:.0f} s', alpha=0.7)
+
+    ax7.axvline(x_gate, color='red', linestyle='--', alpha=0.5,
+               linewidth=2, label='Gate')
+    ax7.axhline(target_depth_mid, color='black', linestyle=':',
+               alpha=0.5, label='Target depth')
+    ax7.set_xlabel('Position (m)')
+    ax7.set_ylabel('Water depth (m)')
+    ax7.set_title('Spatial Profile Evolution')
+    ax7.legend(loc='best', ncol=4, fontsize=9)
+    ax7.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('test_mpc_multi_objective.png', dpi=150)
+    print(f"\n图表保存: test_mpc_multi_objective.png")
+
+    # 返回测试结果
+    test_passed = (depth_error / target_depth_mid < 0.1) and \
+                  (flow_error / target_flow_down < 0.1)
+
+    return {
+        'passed': test_passed,
+        'depth_error_percent': depth_error / target_depth_mid * 100,
+        'flow_error_percent': flow_error / target_flow_down * 100
+    }
+
+
+def main():
+    """运行所有MPC测试"""
+    print("\n" + "" * 40)
+    print("MPC 智能调度测试")
+    print("" * 40)
+
+    results = {}
+
+    # 测试1: 水位调节
+    try:
+        result1 = test_water_level_regulation()
+        results['water_level'] = result1
+        if result1['passed']:
+            print(f"\n 测试1通过: 水位误差 {result1['error_percent']:.2f}%")
+        else:
+            print(f"\n️  测试1未达标: 水位误差 {result1['error_percent']:.2f}%")
+    except Exception as e:
+        print(f"\n 测试1失败: {e}")
+        import traceback
+        traceback.print_exc()
+
+    # 测试2: 流量调度
+    try:
+        result2 = test_flow_regulation()
+        results['flow'] = result2
+        if result2['passed']:
+            print(f"\n 测试2通过: 流量误差 {result2['error_percent']:.2f}%")
+        else:
+            print(f"\n️  测试2未达标: 流量误差 {result2['error_percent']:.2f}%")
+    except Exception as e:
+        print(f"\n 测试2失败: {e}")
+        import traceback
+        traceback.print_exc()
+
+    # 测试3: 多目标优化
+    try:
+        result3 = test_multi_objective_optimization()
+        results['multi_objective'] = result3
+        if result3['passed']:
+            print(f"\n 测试3通过: 水深误差 {result3['depth_error_percent']:.2f}%, "
+                  f"流量误差 {result3['flow_error_percent']:.2f}%")
+        else:
+            print(f"\n️  测试3未达标: 水深误差 {result3['depth_error_percent']:.2f}%, "
+                  f"流量误差 {result3['flow_error_percent']:.2f}%")
+    except Exception as e:
+        print(f"\n 测试3失败: {e}")
+        import traceback
+        traceback.print_exc()
+
+    # 总结
+    print("\n" + "=" * 80)
+    print("所有MPC测试完成!")
+    print("=" * 80)
+
+    print("\nMPC调度器特点：")
+    print("   使用现有求解器作为预测模型（充分利用代码库）")
+    print("   滚动时域优化（Receding Horizon）")
+    print("   多目标优化（水位+流量）")
+    print("   约束处理（闸门开度、流量限制）")
+    print("   控制平滑性（避免剧烈变化）")
+
+    return results
+
+
+if __name__ == "__main__":
+    main()

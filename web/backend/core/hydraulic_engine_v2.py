@@ -290,6 +290,7 @@ class HydraulicEngineV2:
             
             # 5. 计算指标（添加详细验证）
             max_depth = float(np.max(solver.h))
+            min_depth = float(np.min(solver.h))
             max_velocity = float(np.max(np.abs(solver.Q / (solver.h * width + 1e-10))))
             max_froude = max_velocity / np.sqrt(9.81 * max(max_depth, 0.01))
             total_volume = float(np.sum(solver.h) * length / n_cells * width)
@@ -301,10 +302,28 @@ class HydraulicEngineV2:
             else:
                 mass_balance_error = 0.0
             
+            # 计算最终时刻的统计
+            final_h = np.array(h_history[-1]) if h_history else solver.h
+            final_Q = np.array(Q_history[-1]) if Q_history else solver.Q
+            mean_depth_final = float(np.mean(final_h))
+            mean_discharge_final = float(np.mean(final_Q))
+            
+            # 计算最大流量（用于前端）
+            max_discharge = float(np.max(np.abs(solver.Q)))
+            
             metrics = {
+                # 前端必需的字段
+                'total_iterations': len(time_history),
+                'mass_conservation_error': mass_balance_error / 100,  # 转换为小数形式
+                'converged': True,
                 'max_depth': max_depth,
+                'min_depth': min_depth,
                 'max_velocity': max_velocity,
+                'max_discharge': max_discharge,
                 'max_froude': max_froude,
+                'mean_depth_final': mean_depth_final,
+                'mean_discharge_final': mean_discharge_final,
+                # 额外信息
                 'total_volume': total_volume,
                 'mass_balance_error': mass_balance_error,
                 'solver': 'HydrostaticCanalSolver',

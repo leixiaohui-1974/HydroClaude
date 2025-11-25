@@ -13,6 +13,8 @@ Phase 2.3 - Task 2.3.2验证
 """
 
 import pytest
+import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
 import sys
 import os

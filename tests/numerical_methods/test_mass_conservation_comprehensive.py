@@ -24,6 +24,8 @@
 """
 
 import pytest
+import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
 import tempfile
 import json

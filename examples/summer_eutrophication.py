@@ -18,11 +18,13 @@ HydroClaude 应用案例: 夏季富营养化模拟
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib.pyplot as plt
 from pathlib import Path
 import sys
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from solvers.water_temperature import WaterTemperatureSolver
 from solvers.dissolved_oxygen import DissolvedOxygenSolver

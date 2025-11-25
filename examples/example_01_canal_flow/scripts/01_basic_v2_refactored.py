@@ -14,6 +14,8 @@ Refactored: 2025-10-23 (使用ScriptHelper和PlotHelper)
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -23,7 +25,7 @@ import matplotlib.pyplot as plt
 script_path = Path(__file__).resolve()
 project_root = script_path.parents[3]  # 向上3层
 if str(project_root) not in sys.path:
-    sys.path.insert(0, str(project_root))
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 # 导入新工具
 from utils.script_helper import ScriptHelper

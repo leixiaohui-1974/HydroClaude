@@ -10,6 +10,8 @@ Numba加速效果基准测试
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import os
 import time

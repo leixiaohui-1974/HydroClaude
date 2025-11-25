@@ -1,0 +1,544 @@
+# -*- coding: utf-8 -*-
+"""
+实时SCADA监控系统完整案例
+
+本案例展示HydroClaude的实时数据集成功能，模拟完整的SCADA监控系统
+
+应用场景：
+- 水厂SCADA系统
+- 泵站远程监控
+- 管网实时监测
+- 数据采集与存储
+
+功能展示：
+1. SCADA数据点管理
+2. 实时数据采集
+3. 报警检查
+4. 时序数据库存储
+5. 实时可视化
+
+作者：HydroClaude Team
+日期：2025-10-24
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+from datetime import datetime, timedelta
+import time
+import sys
+import os
+
+# 添加项目根目录
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+from integration.realtime_data import (
+    SCADAAdapter,
+    SCADAPoint,
+    TimeSeriesDatabase,
+    SensorData,
+    MQTTAdapter
+)
+
+
+class WaterTreatmentPlant:
+    """
+    水厂SCADA系统模拟
+
+    包含：
+    - 原水池水位
+    - 清水池水位
+    - 送水泵压力
+    - 送水流量
+    - 余氯浓度
+    """
+
+    def __init__(self):
+        # 系统状态变量
+        self.raw_water_level = 5.0  # 原水池水位 (m)
+        self.clear_water_level = 4.0  # 清水池水位 (m)
+        self.pump_pressure = 0.45  # 泵出口压力 (MPa)
+        self.flow_rate = 0.15  # 送水流量 (m^3/s)
+        self.chlorine = 0.8  # 余氯 (mg/L)
+
+        # 入流和出流
+        self.inflow = 0.12  # m^3/s
+        self.demand = 0.15  # m^3/s
+
+        # 池子参数
+        self.raw_pool_area = 500.0  # m^2
+        self.clear_pool_area = 800.0  # m^2
+
+        # 泵站参数
+        self.pump_on = True
+
+    def update(self, dt: float):
+        """更新系统状态"""
+
+        # 1. 原水池水位变化
+        raw_inflow = self.inflow
+        raw_outflow = self.flow_rate if self.pump_on else 0.0
+        dV_raw = (raw_inflow - raw_outflow) * dt
+        self.raw_water_level += dV_raw / self.raw_pool_area
+
+        # 限制范围
+        self.raw_water_level = np.clip(self.raw_water_level, 1.0, 8.0)
+
+        # 2. 清水池水位变化
+        clear_inflow = raw_outflow  # 从原水池来
+        clear_outflow = self.demand
+        dV_clear = (clear_inflow - clear_outflow) * dt
+        self.clear_water_level += dV_clear / self.clear_pool_area
+
+        self.clear_water_level = np.clip(self.clear_water_level, 1.0, 7.0)
+
+        # 3. 泵压力（与流量相关）
+        if self.pump_on:
+            target_pressure = 0.4 + 0.5 * (self.flow_rate / 0.2)
+            self.pump_pressure += 0.1 * (target_pressure - self.pump_pressure)
+        else:
+            self.pump_pressure *= 0.9
+
+        # 4. 余氯衰减
+        decay_rate = 0.01 / 3600  # 1%/hour
+        self.chlorine *= (1 - decay_rate * dt)
+
+        # 5. 添加噪声
+        self.raw_water_level += np.random.normal(0, 0.01)
+        self.clear_water_level += np.random.normal(0, 0.01)
+        self.pump_pressure += np.random.normal(0, 0.002)
+        self.flow_rate += np.random.normal(0, 0.002)
+        self.chlorine += np.random.normal(0, 0.01)
+
+        # 自动控制逻辑
+        if self.clear_water_level < 2.5:
+            self.pump_on = True
+        elif self.clear_water_level > 6.0:
+            self.pump_on = False
+
+
+def example1_scada_basic():
+    """示例1：基本SCADA功能"""
+    print("=" * 60)
+    print("示例1：SCADA数据采集与监控")
+    print("=" * 60)
+
+    # 创建SCADA适配器
+    scada = SCADAAdapter()
+
+    # 添加数据点
+    points = [
+        SCADAPoint(
+            point_id='AI_RAW_LEVEL',
+            point_type='AI',
+            description='原水池水位',
+            unit='m',
+            min_value=0,
+            max_value=10,
+            alarm_enabled=True,
+            alarm_high=7.5,
+            alarm_low=2.0
+        ),
+        SCADAPoint(
+            point_id='AI_CLEAR_LEVEL',
+            point_type='AI',
+            description='清水池水位',
+            unit='m',
+            min_value=0,
+            max_value=10,
+            alarm_enabled=True,
+            alarm_high=6.5,
+            alarm_low=2.5
+        ),
+        SCADAPoint(
+            point_id='AI_PUMP_PRESSURE',
+            point_type='AI',
+            description='泵出口压力',
+            unit='MPa',
+            min_value=0,
+            max_value=1.0,
+            alarm_enabled=True,
+            alarm_high=0.8,
+            alarm_low=0.2
+        ),
+        SCADAPoint(
+            point_id='AI_FLOW_RATE',
+            point_type='AI',
+            description='送水流量',
+            unit='m^3/s',
+            min_value=0,
+            max_value=0.5,
+            alarm_enabled=False
+        ),
+        SCADAPoint(
+            point_id='AI_CHLORINE',
+            point_type='AI',
+            description='余氯浓度',
+            unit='mg/L',
+            min_value=0,
+            max_value=5.0,
+            alarm_enabled=True,
+            alarm_high=2.0,
+            alarm_low=0.3
+        ),
+        SCADAPoint(
+            point_id='DO_PUMP_STATUS',
+            point_type='DO',
+            description='泵站运行状态',
+            unit='',
+            min_value=0,
+            max_value=1
+        ),
+    ]
+
+    for point in points:
+        scada.add_point(point)
+
+    print(f"\n已配置 {len(points)} 个SCADA数据点")
+    print(f"  模拟量(AI): {sum(1 for p in points if p.point_type == 'AI')}")
+    print(f"  数字量(DO): {sum(1 for p in points if p.point_type == 'DO')}")
+
+    # 连接SCADA
+    scada.connect("192.168.1.100", 502)
+
+    # 模拟数据采集
+    print("\n开始数据采集...")
+
+    plant = WaterTreatmentPlant()
+
+    # 采集100个样本
+    history = {
+        'time': [],
+        'raw_level': [],
+        'clear_level': [],
+        'pressure': [],
+        'flow': [],
+        'chlorine': []
+    }
+
+    for i in range(100):
+        # 更新水厂状态
+        plant.update(dt=60)  # 1分钟
+
+        # 读写SCADA数据
+        scada.write_point('AI_RAW_LEVEL', plant.raw_water_level)
+        scada.write_point('AI_CLEAR_LEVEL', plant.clear_water_level)
+        scada.write_point('AI_PUMP_PRESSURE', plant.pump_pressure)
+        scada.write_point('AI_FLOW_RATE', plant.flow_rate)
+        scada.write_point('AI_CHLORINE', plant.chlorine)
+        scada.write_point('DO_PUMP_STATUS', 1.0 if plant.pump_on else 0.0)
+
+        # 记录历史
+        history['time'].append(i)
+        history['raw_level'].append(plant.raw_water_level)
+        history['clear_level'].append(plant.clear_water_level)
+        history['pressure'].append(plant.pump_pressure)
+        history['flow'].append(plant.flow_rate)
+        history['chlorine'].append(plant.chlorine)
+
+        if (i + 1) % 20 == 0:
+            print(f"  采集 {i+1}/100 个样本")
+
+    print("\n数据采集完成！")
+
+    # 断开连接
+    scada.disconnect()
+
+    return scada, history
+
+
+def example2_timeseries_database():
+    """示例2：时序数据库存储"""
+    print("\n" + "=" * 60)
+    print("示例2：时序数据库存储与查询")
+    print("=" * 60)
+
+    # 创建时序数据库
+    tsdb = TimeSeriesDatabase(db_name="water_plant")
+
+    print("\n时序数据库已创建")
+
+    # 生成测试数据
+    print("\n写入测试数据...")
+
+    start_time = datetime.now()
+    plant = WaterTreatmentPlant()
+
+    for i in range(1000):
+        plant.update(dt=60)
+
+        current_time = start_time + timedelta(minutes=i)
+
+        # 写入传感器数据
+        sensors = [
+            ('RAW_LEVEL', plant.raw_water_level, 'm'),
+            ('CLEAR_LEVEL', plant.clear_water_level, 'm'),
+            ('PUMP_PRESSURE', plant.pump_pressure, 'MPa'),
+            ('FLOW_RATE', plant.flow_rate, 'm^3/s'),
+            ('CHLORINE', plant.chlorine, 'mg/L'),
+        ]
+
+        for sensor_id, value, unit in sensors:
+            data = SensorData(
+                sensor_id=sensor_id,
+                timestamp=current_time,
+                value=value,
+                unit=unit
+            )
+            tsdb.write(data)
+
+        if (i + 1) % 200 == 0:
+            print(f"  已写入 {i+1}/1000 条数据")
+
+    print("数据写入完成！")
+
+    # 查询数据
+    print("\n" + "=" * 60)
+    print("数据查询测试")
+    print("=" * 60)
+
+    query_start = start_time + timedelta(hours=2)
+    query_end = start_time + timedelta(hours=4)
+
+    print(f"\n查询时间范围: {query_start.strftime('%H:%M')} - {query_end.strftime('%H:%M')}")
+
+    for sensor_id in ['RAW_LEVEL', 'CLEAR_LEVEL', 'PUMP_PRESSURE']:
+        data = tsdb.query(sensor_id, query_start, query_end)
+        print(f"\n{sensor_id}:")
+        print(f"  数据点数: {len(data)}")
+
+        if data:
+            values = [d.value for d in data]
+            print(f"  平均值: {np.mean(values):.3f}")
+            print(f"  最小值: {np.min(values):.3f}")
+            print(f"  最大值: {np.max(values):.3f}")
+
+    # 聚合查询
+    print("\n" + "=" * 60)
+    print("聚合查询测试")
+    print("=" * 60)
+
+    agg_start = start_time
+    agg_end = start_time + timedelta(hours=16)
+
+    print(f"\n聚合时间范围: 16小时")
+
+    for sensor_id in ['RAW_LEVEL', 'CLEAR_LEVEL', 'FLOW_RATE']:
+        mean_val = tsdb.aggregate(sensor_id, agg_start, agg_end, 'mean')
+        max_val = tsdb.aggregate(sensor_id, agg_start, agg_end, 'max')
+        min_val = tsdb.aggregate(sensor_id, agg_start, agg_end, 'min')
+
+        print(f"\n{sensor_id}:")
+        print(f"  平均: {mean_val:.3f}")
+        print(f"  最大: {max_val:.3f}")
+        print(f"  最小: {min_val:.3f}")
+
+    return tsdb
+
+
+def example3_mqtt_communication():
+    """示例3：MQTT消息队列"""
+    print("\n" + "=" * 60)
+    print("示例3：MQTT消息队列通信")
+    print("=" * 60)
+
+    # 创建MQTT适配器
+    mqtt = MQTTAdapter(broker="mqtt.example.com", port=1883)
+
+    print("\n连接MQTT代理...")
+    mqtt.connect()
+
+    # 定义回调函数
+    received_messages = []
+
+    def on_water_level_message(topic, message):
+        """水位消息回调"""
+        received_messages.append(('water_level', message))
+        print(f"  收到水位消息: {message[:50]}...")
+
+    def on_alarm_message(topic, message):
+        """报警消息回调"""
+        received_messages.append(('alarm', message))
+        print(f"  收到报警消息: {message[:50]}...")
+
+    # 订阅主题
+    mqtt.subscribe('water_plant/sensors/level', on_water_level_message)
+    mqtt.subscribe('water_plant/alarms', on_alarm_message)
+
+    print("\n已订阅主题:")
+    print("  - water_plant/sensors/level")
+    print("  - water_plant/alarms")
+
+    # 模拟发布消息
+    print("\n发布测试消息...")
+
+    plant = WaterTreatmentPlant()
+
+    for i in range(10):
+        plant.update(dt=300)  # 5分钟
+
+        # 发布水位数据
+        level_msg = f'{{"timestamp": "{datetime.now().isoformat()}", "raw_level": {plant.raw_water_level:.2f}, "clear_level": {plant.clear_water_level:.2f}}}'
+        mqtt.publish('water_plant/sensors/level', level_msg)
+
+        # 检查报警
+        if plant.clear_water_level < 2.5:
+            alarm_msg = f'{{"timestamp": "{datetime.now().isoformat()}", "type": "LOW_LEVEL", "value": {plant.clear_water_level:.2f}, "severity": "HIGH"}}'
+            mqtt.publish('water_plant/alarms', alarm_msg)
+
+        time.sleep(0.1)  # 模拟延迟
+
+    print(f"\n共发布 10 条消息")
+
+    # 断开连接
+    mqtt.disconnect()
+
+    return mqtt, received_messages
+
+
+def visualize_scada_data(history):
+    """可视化SCADA数据"""
+    print("\n" + "=" * 60)
+    print("生成SCADA监控面板")
+    print("=" * 60)
+
+    fig, axes = plt.subplots(3, 2, figsize=(14, 12))
+    fig.suptitle('Water Treatment Plant SCADA Dashboard', fontsize=14, fontweight='bold')
+
+    time_min = np.array(history['time'])
+
+    # 1. 原水池水位
+    ax1 = axes[0, 0]
+    ax1.plot(time_min, history['raw_level'], 'b-', linewidth=2)
+    ax1.axhline(y=7.5, color='r', linestyle='--', label='High Alarm', linewidth=1)
+    ax1.axhline(y=2.0, color='orange', linestyle='--', label='Low Alarm', linewidth=1)
+    ax1.fill_between(time_min, 2.0, 7.5, alpha=0.1, color='green')
+    ax1.set_ylabel('Level (m)', fontsize=10)
+    ax1.set_title('Raw Water Tank Level', fontsize=11, fontweight='bold')
+    ax1.legend(fontsize=9)
+    ax1.grid(True, alpha=0.3)
+
+    # 2. 清水池水位
+    ax2 = axes[0, 1]
+    ax2.plot(time_min, history['clear_level'], 'g-', linewidth=2)
+    ax2.axhline(y=6.5, color='r', linestyle='--', label='High Alarm', linewidth=1)
+    ax2.axhline(y=2.5, color='orange', linestyle='--', label='Low Alarm', linewidth=1)
+    ax2.fill_between(time_min, 2.5, 6.5, alpha=0.1, color='green')
+    ax2.set_ylabel('Level (m)', fontsize=10)
+    ax2.set_title('Clear Water Tank Level', fontsize=11, fontweight='bold')
+    ax2.legend(fontsize=9)
+    ax2.grid(True, alpha=0.3)
+
+    # 3. 泵出口压力
+    ax3 = axes[1, 0]
+    ax3.plot(time_min, history['pressure'], 'r-', linewidth=2)
+    ax3.axhline(y=0.8, color='r', linestyle='--', label='High Alarm', linewidth=1)
+    ax3.axhline(y=0.2, color='orange', linestyle='--', label='Low Alarm', linewidth=1)
+    ax3.set_ylabel('Pressure (MPa)', fontsize=10)
+    ax3.set_title('Pump Outlet Pressure', fontsize=11, fontweight='bold')
+    ax3.legend(fontsize=9)
+    ax3.grid(True, alpha=0.3)
+
+    # 4. 送水流量
+    ax4 = axes[1, 1]
+    ax4.plot(time_min, history['flow'], 'c-', linewidth=2)
+    ax4.set_ylabel('Flow Rate (m^3/s)', fontsize=10)
+    ax4.set_title('Water Supply Flow Rate', fontsize=11, fontweight='bold')
+    ax4.grid(True, alpha=0.3)
+
+    # 5. 余氯浓度
+    ax5 = axes[2, 0]
+    ax5.plot(time_min, history['chlorine'], 'm-', linewidth=2)
+    ax5.axhline(y=2.0, color='r', linestyle='--', label='High Alarm', linewidth=1)
+    ax5.axhline(y=0.3, color='orange', linestyle='--', label='Low Alarm', linewidth=1)
+    ax5.fill_between(time_min, 0.3, 2.0, alpha=0.1, color='green')
+    ax5.set_xlabel('Time (min)', fontsize=10)
+    ax5.set_ylabel('Chlorine (mg/L)', fontsize=10)
+    ax5.set_title('Residual Chlorine Concentration', fontsize=11, fontweight='bold')
+    ax5.legend(fontsize=9)
+    ax5.grid(True, alpha=0.3)
+
+    # 6. 系统状态统计
+    ax6 = axes[2, 1]
+    ax6.axis('off')
+
+    stats_text = f"""
+    System Statistics
+    {'=' * 35}
+
+    Original Water Tank:
+      Average Level:  {np.mean(history['raw_level']):.2f} m
+      Level Range:    [{np.min(history['raw_level']):.2f}, {np.max(history['raw_level']):.2f}] m
+
+    Clean Water Tank:
+      Average Level:  {np.mean(history['clear_level']):.2f} m
+      Level Range:    [{np.min(history['clear_level']):.2f}, {np.max(history['clear_level']):.2f}] m
+
+    Pump Station:
+      Average Pressure: {np.mean(history['pressure']):.3f} MPa
+      Average Flow:     {np.mean(history['flow']):.3f} m^3/s
+
+    Water Quality:
+      Average Chlorine: {np.mean(history['chlorine']):.3f} mg/L
+      Min Chlorine:     {np.min(history['chlorine']):.3f} mg/L
+    """
+
+    ax6.text(0.1, 0.5, stats_text, fontsize=9, family='monospace',
+            verticalalignment='center', transform=ax6.transAxes)
+
+    plt.tight_layout()
+    plt.savefig('scada_monitoring_dashboard.png', dpi=300, bbox_inches='tight')
+    print("\nSCADA监控面板已保存: scada_monitoring_dashboard.png")
+
+
+def main():
+    """主函数"""
+    print("""
+    ╔════════════════════════════════════════════════════════════════╗
+    ║           实时SCADA监控系统完整案例                           ║
+    ╚════════════════════════════════════════════════════════════════╝
+
+    本案例展示HydroClaude的实时数据集成功能
+
+    模拟场景：
+    - 水厂SCADA系统
+    - 实时数据采集
+    - 报警检查
+    - 时序数据库
+    - MQTT通信
+
+    功能展示：
+    1. SCADA数据点管理
+    2. 实时数据采集与存储
+    3. 时序数据库查询
+    4. MQTT消息队列
+    5. 监控面板可视化
+    """)
+
+    # 运行示例
+    scada, history = example1_scada_basic()
+    tsdb = example2_timeseries_database()
+    mqtt, messages = example3_mqtt_communication()
+
+    # 可视化
+    visualize_scada_data(history)
+
+    print("\n" + "=" * 60)
+    print("案例运行完成！")
+    print("=" * 60)
+
+    print("\n技术特点:")
+    print("- 完整的SCADA适配器")
+    print("- 高效的时序数据库")
+    print("- 灵活的MQTT通信")
+    print("- 实时监控面板")
+
+    print("\n实际应用:")
+    print("- 水厂自动化改造")
+    print("- 泵站远程监控")
+    print("- 管网实时监测")
+    print("- 智慧水务平台")
+
+
+if __name__ == "__main__":
+    main()

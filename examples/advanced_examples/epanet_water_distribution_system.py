@@ -21,12 +21,14 @@ EPANET供水管网系统完整案例
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib.pyplot as plt
 import sys
 import os
 
 # 添加项目根目录
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from integration.epanet_adapter import (
     EPANETAdapter,

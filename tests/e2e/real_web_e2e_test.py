@@ -11,6 +11,8 @@ Date: 2025-11-16
 """
 
 import json
+import warnings
+warnings.filterwarnings("ignore")
 import time
 import asyncio
 from pathlib import Path

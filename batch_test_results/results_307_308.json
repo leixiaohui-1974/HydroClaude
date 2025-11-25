@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 307,
+    "batch_end_index": 308,
+    "test_run_at": "2025-11-25T16:41:42.183146",
+    "batch_duration_seconds": 60.03,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_structure_showcase/run.py",
+      "status": "timeout",
+      "return_code": -1,
+      "duration_seconds": 60.03,
+      "stdout": "",
+      "stderr": "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\solvers\\gate.py:480: RuntimeWarning: invalid value encountered in scalar power\n  submergence_factor = (1.0 - submergence_ratio ** 1.5) ** 0.385\nE:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\solvers\\hydrostatic_canal_solver.py:486: RuntimeWarning: overflow encountered in scalar multiply\n  F_mom_L = hu_L * u_L + 0.5 * self.g * h_L**2\nE:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\solvers\\hydrostatic_canal_solver.py:511: RuntimeWarning: overflow encountered in scalar multiply\n  s_star = (s_R * hu_R - s_L * hu_L + F_mom_L - F_mom_R) / (s_R * h_R - s_L * h_L)\nE:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\solvers\\hydrostatic_canal_solver.py:511: RuntimeWarning: invalid value encountered in scalar add\n  s_star = (s_R * hu_R - s_L * hu_L + F_mom_L - F_mom_R) / (s_R * h_R - s_L * h_L)\nE:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\solvers\\hydrostatic_canal_solver.py:713: RuntimeWarning: overflow encountered in scalar multiply\n  S_friction = -self.g * self.n**2 * abs(u_i) * hu[i] / (R_i**(4/3))\nE:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\solvers\\hydrostatic_canal_solver.py:457: RuntimeWarning: overflow encountered in scalar divide\n  u_L = hu_L / h_L if h_L > self.eps_dry else 0.0\nE:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\solvers\\hydrostatic_canal_solver.py:711: RuntimeWarning: overflow encountered in scalar divide\n  u_i = hu[i] / h[i]\nE:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\solvers\\hydrostatic_canal_solver.py:713: RuntimeWarning: overflow encountered in scalar divide\n  S_friction = -self.g * self.n**2 * abs(u_i) * hu[i] / (R_i**(4/3))\nE:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\solvers\\hydrostatic_canal_solver.py:687: RuntimeWarning: invalid value encountered in scalar multiply\n  hu_star_R = hu_R * (h_star_R / h_R)"
+    }
+  ]
+}

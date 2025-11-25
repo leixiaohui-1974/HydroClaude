@@ -2,8 +2,8 @@
   "metadata": {
     "batch_start_index": 142,
     "batch_end_index": 143,
-    "test_run_at": "2025-11-19T06:05:05.267557",
-    "batch_duration_seconds": 60.06,
+    "test_run_at": "2025-11-25T16:58:48.591091",
+    "batch_duration_seconds": 60.01,
     "total_scripts_in_batch": 1
   },
   "results": [
@@ -11,7 +11,7 @@
       "script_path": "./comprehensive_validation_test.py",
       "status": "timeout",
       "return_code": -1,
-      "duration_seconds": 60.06,
+      "duration_seconds": 60.01,
       "stdout": "",
       "stderr": "Process timed out after 60 seconds."
     }

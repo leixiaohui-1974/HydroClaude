@@ -1,0 +1,90 @@
+{
+  "summary": {
+    "total_tests": 4,
+    "passed": 3,
+    "failed": 1,
+    "pass_rate": 75.0,
+    "duration_seconds": 33.52,
+    "start_time": "2025-11-25T16:59:24.070504",
+    "end_time": "2025-11-25T16:59:57.591303"
+  },
+  "backend_tests": {
+    "start_time": "2025-11-25T16:59:24.071091",
+    "tests": [
+      {
+        "name": "GodunvFVMSolver",
+        "status": "passed",
+        "message": "质量守恒误差: 0.336433%",
+        "metrics": {
+          "mass_error": 0.3364325465749971,
+          "steps": 10,
+          "time": 7.225690625816245
+        }
+      },
+      {
+        "name": "HydrostaticCanalSolver",
+        "status": "passed",
+        "message": "收敛: True, 流量误差: 0.000000%",
+        "metrics": {
+          "converged": true,
+          "iterations": 0,
+          "Q_error_percent": 0.0
+        }
+      },
+      {
+        "name": "canal_utils",
+        "status": "failed",
+        "message": "错误: compute_froude_number() missing 1 required positional argument: 'B'",
+        "error": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\run_comprehensive_test.py\", line 205, in _test_canal_utils\n    Fr = compute_froude_number(h_uniform, 1.0)\nTypeError: compute_froude_number() missing 1 required positional argument: 'B'\n"
+      },
+      {
+        "name": "ResultValidator",
+        "status": "passed",
+        "message": "等级: 优秀 (Excellent), 误差: 0.000000%",
+        "metrics": {
+          "grade": "优秀 (Excellent)",
+          "error_percent": 0.0
+        }
+      }
+    ],
+    "summary": {
+      "total": 4,
+      "passed": 3,
+      "failed": 1
+    },
+    "end_time": "2025-11-25T16:59:29.217821"
+  },
+  "web_api_tests": {
+    "start_time": "2025-11-25T16:59:29.217844",
+    "tests": [
+      {
+        "name": "Backend Service",
+        "status": "failed",
+        "message": "无法启动后端服务"
+      }
+    ],
+    "summary": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0
+    }
+  },
+  "web_ui_tests": {
+    "start_time": "2025-11-25T16:59:53.564120",
+    "tests": [
+      {
+        "name": "Frontend Service",
+        "status": "skipped",
+        "message": "前端服务未运行"
+      }
+    ],
+    "summary": {
+      "total": 0,
+      "passed": 0,
+      "failed": 0
+    },
+    "screenshots": []
+  },
+  "e2e_tests": {},
+  "screenshots": []
+}

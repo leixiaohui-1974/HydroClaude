@@ -25,6 +25,8 @@
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 import time
 import json
@@ -32,7 +34,7 @@ from datetime import datetime
 
 # 路径设置
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
 import matplotlib

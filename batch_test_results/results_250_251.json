@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 250,
+    "batch_end_index": 251,
+    "test_run_at": "2025-11-25T16:31:29.842523",
+    "batch_duration_seconds": 2.51,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_08_load_acceptance/example_08_load_acceptance_with_anim.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 2.51,
+      "stdout": "================================================================================\nʾ��8: ˮ�ֻ����ܸ��� - ��ǿ�棨Ƕ��ʽ������\n================================================================================\n\n ��̬ͼ���ѱ���: E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_08_load_acceptance\\outputs\\figures\\load_acceptance.png\n\n ʾ��8����ǿ�棩���гɹ�",
+      "stderr": ""
+    }
+  ]
+}

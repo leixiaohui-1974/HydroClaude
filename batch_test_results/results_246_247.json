@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 246,
+    "batch_end_index": 247,
+    "test_run_at": "2025-11-25T16:31:11.224919",
+    "batch_duration_seconds": 1.15,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_06_complete_hydropower_system/example_06_complete_system.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.15,
+      "stdout": "==========================================================================================\nEXAMPLE 06: COMPLETE HYDROPOWER PLANT SYSTEM INTEGRATION\n==========================================================================================\n\nThis is the most comprehensive example, demonstrating:\n   Complete hydraulic system (Reservoir -> Tunnel -> Siphon -> Surge Tank -> Penstock -> Turbine)\n   Inverted Siphon for river crossing\n   Surge tank for pressure control\n   Francis turbine with governor\n   All hydraulic losses quantified\n   Performance optimization\n==========================================================================================\n==========================================================================================\nCOMPLETE HYDROPOWER PLANT SYSTEM\n==========================================================================================\n\nInitializing comprehensive 120 MW Francis turbine plant...\n------------------------------------------------------------------------------------------\n\nComponent                 Specification                                               \n------------------------------------------------------------------------------------------\nReservoir                 Level: 500.0 m",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_06_complete_hydropower_system\\example_06_complete_system.py\", line 454, in <module>\n    main()\n    ~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_06_complete_hydropower_system\\example_06_complete_system.py\", line 406, in main\n    system = CompleteHydropowerSystem()\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_06_complete_hydropower_system\\example_06_complete_system.py\", line 167, in __init__\n    print(f\"{'Headrace Tunnel':<25} L={self.tunnel['length']/1000:.1f} km, \\xd8{self.tunnel['diameter']:.1f} m, ��={self.tunnel['roughness']*1000:.1f} mm\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'gbk' codec can't encode character '\\xd8' in position 36: illegal multibyte sequence"
+    }
+  ]
+}

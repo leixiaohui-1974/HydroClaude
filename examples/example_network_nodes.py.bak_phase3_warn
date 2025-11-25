@@ -1,0 +1,442 @@
+# -*- coding: utf-8 -*-
+"""
+节点类型使用示例
+
+演示如何使用各种专业化的节点类型
+1. JunctionNode - 汇流节点示例
+2. BifurcationNode - 分流节点示例
+3. ReservoirNode - 水库节点示例
+4. BoundaryNode - 边界节点示例
+
+Stage 3 - Task 3.1.2 示例
+
+作者: HydroClaude Team
+日期: 2025-10-29
+"""
+
+import numpy as np
+import sys
+import os
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from network.nodes import (
+    JunctionNode, BifurcationNode, ReservoirNode, BoundaryNode,
+    create_junction, create_bifurcation, create_reservoir,
+    create_inflow_boundary, create_outflow_boundary
+)
+
+
+def example_1_junction_node():
+    """
+    示例1: 汇流节点
+
+    场景两条支流汇入主河
+    - 支流1: Q=15 m^3/s, h=1.5m
+    - 支流2: Q=25 m^3/s, h=2.0m
+    - 主河: 汇流后计算水位
+    """
+    print("\n" + "="*80)
+    print("示例1: 汇流节点")
+    print("="*80)
+
+    # 创建汇流节点使用能量守恒方法
+    junction = JunctionNode(
+        node_id="汇流点",
+        elevation=95.0,  # 汇流点高程
+        junction_method='energy'  # 使用能量守恒
+    )
+
+    print(f"\n创建汇流节点: {junction}")
+
+    # 模拟上游河段数据
+    # 支流1
+    h1 = 1.5  # 水深 (m)
+    Q1 = 15.0  # 流量 (m^3/s)
+    A1 = 15.0  # 断面积 (m^2)
+
+    # 支流2
+    h2 = 2.0
+    Q2 = 25.0
+    A2 = 25.0
+
+    h_list = [h1, h2]
+    Q_list = [Q1, Q2]
+    A_list = [A1, A2]
+
+    # 计算汇流点水位
+    h_junction = junction.compute_junction_water_level(h_list, Q_list, A_list)
+
+    print(f"\n上游河段:")
+    print(f"  支流1: Q={Q1:.1f} m^3/s, h={h1:.2f}m, A={A1:.1f}m^2")
+    print(f"  支流2: Q={Q2:.1f} m^3/s, h={h2:.2f}m, A={A2:.1f}m^2")
+
+    print(f"\n汇流点:")
+    print(f"  水位: {h_junction:.2f}m (高程)")
+    print(f"  水深: {h_junction - junction.elevation:.2f}m (相对于库底)")
+    print(f"  总流量: {sum(Q_list):.1f} m^3/s")
+
+    # 分配下游流量假设只有1条下游河段
+    Q_out_list = junction.distribute_outflow(sum(Q_list), n_outflows=1)
+    print(f"  下游流量: {Q_out_list[0]:.1f} m^3/s")
+
+    # 质量平衡检查
+    junction.Q_in = Q_list
+    junction.Q_out = Q_out_list
+    is_balanced, error = junction.check_mass_balance()
+    print(f"\n质量平衡: {' 平衡' if is_balanced else ' 不平衡'}")
+    print(f"  误差: {error:.6f} m^3/s")
+
+    return junction
+
+
+def example_2_bifurcation_node():
+    """
+    示例2: 分流节点
+
+    场景主渠分为两条支渠灌溉系统
+    - 主渠: Q=60 m^3/s
+    - 支渠1: 30% 流量
+    - 支渠2: 70% 流量
+    """
+    print("\n" + "="*80)
+    print("示例2: 分流节点")
+    print("="*80)
+
+    # 创建分流节点固定比例
+    bifurc = BifurcationNode(
+        node_id="分水口",
+        split_ratios=[0.3, 0.7],  # 30%-70%分流
+        elevation=100.0,
+        split_method='fixed'
+    )
+
+    print(f"\n创建分流节点: {bifurc}")
+
+    # 主渠流量
+    Q_main = 60.0  # m^3/s
+
+    # 计算分流
+    Q_split = bifurc.compute_split_flows(Q_main)
+
+    print(f"\n主渠:")
+    print(f"  流量: {Q_main:.1f} m^3/s")
+
+    print(f"\n分流结果:")
+    print(f"  支渠1 (30%): {Q_split[0]:.1f} m^3/s")
+    print(f"  支渠2 (70%): {Q_split[1]:.1f} m^3/s")
+    print(f"  总和: {sum(Q_split):.1f} m^3/s")
+
+    # 质量平衡检查
+    print(f"\n质量平衡: {' 平衡' if abs(sum(Q_split) - Q_main) < 1e-6 else ' 不平衡'}")
+
+    # 演示动态分流
+    print("\n" + "-"*60)
+    print("动态分流示例 (基于下游水位)")
+
+    bifurc_dynamic = BifurcationNode(
+        node_id="动态分水口",
+        split_ratios=[0.5, 0.5],  # 初始均分
+        elevation=100.0,
+        split_method='dynamic'
+    )
+
+    # 下游水位不同第一条水位低流量会更大
+    h_downstream = [92.0, 95.0]  # 第一条水头差8m第二条5m
+
+    Q_split_dynamic = bifurc_dynamic.compute_split_flows(Q_main, h_downstream)
+
+    print(f"\n下游河段水位:")
+    print(f"  支渠1: {h_downstream[0]:.1f}m (水头差 {bifurc_dynamic.elevation - h_downstream[0]:.1f}m)")
+    print(f"  支渠2: {h_downstream[1]:.1f}m (水头差 {bifurc_dynamic.elevation - h_downstream[1]:.1f}m)")
+
+    print(f"\n动态分流结果:")
+    print(f"  支渠1: {Q_split_dynamic[0]:.1f} m^3/s ({Q_split_dynamic[0]/Q_main*100:.1f}%)")
+    print(f"  支渠2: {Q_split_dynamic[1]:.1f} m^3/s ({Q_split_dynamic[1]/Q_main*100:.1f}%)")
+
+    return bifurc, bifurc_dynamic
+
+
+def example_3_reservoir_node():
+    """
+    示例3: 水库节点
+
+    场景水库蓄水模拟
+    - 库容: 10 km^2 水面
+    - 初始水位: 中等水位
+    - 模拟24小时入库出库过程
+    """
+    print("\n" + "="*80)
+    print("示例3: 水库节点")
+    print("="*80)
+
+    # 创建水库节点
+    reservoir = ReservoirNode(
+        node_id="三峡水库",
+        area=10e6,  # 10 km^2 = 10,000,000 m^2
+        elevation=80.0,  # 库底高程 80m
+        h_min=0.0,  # 最低水深 0m
+        h_max=50.0   # 最高水深 50m
+    )
+
+    print(f"\n创建水库节点: {reservoir}")
+    print(f"  水面面积: {reservoir.area/1e6:.2f} km^2")
+    print(f"  库底高程: {reservoir.elevation:.0f}m")
+    print(f"  水位范围: {reservoir.elevation + reservoir.h_min:.0f}m - "
+          f"{reservoir.elevation + reservoir.h_max:.0f}m")
+
+    # 初始状态
+    print(f"\n初始状态:")
+    print(f"  水深: {reservoir.h:.2f}m")
+    print(f"  水位: {reservoir.get_absolute_water_level():.2f}m")
+    print(f"  库容: {reservoir.volume/1e6:.2f} M m^3")
+
+    # 模拟24小时
+    print(f"\n模拟24小时蓄水过程:")
+    print(f"{'时刻(h)':>10} {'入流(m^3/s)':>12} {'出流(m^3/s)':>12} "
+          f"{'水深(m)':>10} {'水位(m)':>10} {'库容(M m^3)':>12}")
+    print("-"*80)
+
+    dt = 3600.0  # 1小时时间步长
+
+    for hour in range(0, 25, 2):  # 每2小时输出一次
+        t = hour * 3600.0
+
+        # 时变入流白天多晚上少
+        if 6 <= hour < 18:
+            Q_in = 200.0  # 白天入流 200 m^3/s
+        else:
+            Q_in = 100.0  # 夜间入流 100 m^3/s
+
+        # 出流发电需求
+        Q_out = 150.0  # 恒定出流
+
+        # 更新水库
+        if hour < 24:
+            reservoir.update_volume(Q_in, Q_out, dt)
+
+        # 输出
+        print(f"{hour:>10.0f} {Q_in:>12.1f} {Q_out:>12.1f} "
+              f"{reservoir.h:>10.2f} {reservoir.get_absolute_water_level():>10.2f} "
+              f"{reservoir.volume/1e6:>12.2f}")
+
+    # 24小时总结
+    print(f"\n24小时总结:")
+    Q_in_avg = (200.0 * 12 + 100.0 * 12) / 24  # 平均入流
+    Q_out_avg = 150.0  # 平均出流
+    net_flow = Q_in_avg - Q_out_avg
+
+    print(f"  平均入流: {Q_in_avg:.1f} m^3/s")
+    print(f"  平均出流: {Q_out_avg:.1f} m^3/s")
+    print(f"  净入流: {net_flow:+.1f} m^3/s")
+    print(f"  24小时蓄水量: {net_flow * 24 * 3600 / 1e6:.2f} M m^3")
+
+    return reservoir
+
+
+def example_4_boundary_nodes():
+    """
+    示例4: 边界节点
+
+    演示各种边界条件类型:
+    1. 常数流量边界
+    2. 时变流量边界
+    3. 常数水位边界
+    4. Rating Curve边界
+    """
+    print("\n" + "="*80)
+    print("示例4: 边界节点")
+    print("="*80)
+
+    # 1. 常数流量边界上游
+    print("\n1. 常数流量边界")
+    inflow_const = create_inflow_boundary("上游入口", Q=50.0, elevation=120.0)
+    print(f"   {inflow_const}")
+    print(f"   t=0s: Q={inflow_const.get_boundary_value(t=0):.1f} m^3/s")
+    print(f"   t=3600s: Q={inflow_const.get_boundary_value(t=3600):.1f} m^3/s (恒定)")
+
+    # 2. 时变流量边界洪水过程
+    print("\n2. 时变流量边界洪水过程")
+
+    def flood_hydrograph(t):
+        """三角形洪水过程线"""
+        t_peak = 2 * 3600  # 2小时到达洪峰
+        t_base = 8 * 3600  # 8小时退至基流
+        Q_base = 20.0
+        Q_peak = 150.0
+
+        if t <= 0:
+            return Q_base
+        elif t < t_peak:
+            # 涨洪段
+            return Q_base + (Q_peak - Q_base) * (t / t_peak)
+        elif t < t_base:
+            # 退洪段
+            return Q_peak - (Q_peak - Q_base) * ((t - t_peak) / (t_base - t_peak))
+        else:
+            return Q_base
+
+    inflow_varying = BoundaryNode("洪水入口", boundary_type='inflow',
+                                  bc_variable='Q', bc_value=flood_hydrograph,
+                                  elevation=120.0)
+
+    print(f"   {inflow_varying}")
+    print(f"   洪水过程线:")
+    for hour in [0, 1, 2, 4, 6, 8, 10]:
+        t = hour * 3600
+        Q = inflow_varying.get_boundary_value(t=t)
+        print(f"     t={hour:2d}h: Q={Q:6.1f} m^3/s")
+
+    # 3. 常数水位边界下游
+    print("\n3. 常数水位边界")
+    outflow_const = create_outflow_boundary("下游出口", h=2.0, elevation=90.0)
+    print(f"   {outflow_const}")
+    print(f"   h={outflow_const.get_boundary_value():.1f}m (恒定)")
+
+    # 4. Rating Curve边界
+    print("\n4. Rating Curve边界 (Q-h关系)")
+
+    def rating_curve(h):
+        """水位-流量关系: Q = C * B * H^(3/2)"""
+        C = 1.7  # 堰流系数
+        B = 20.0  # 堰宽 (m)
+        H = max(0.0, h - 1.0)  # 堰上水头 (堰顶高程1m)
+        return C * B * (H ** 1.5)
+
+    outflow_rating = BoundaryNode("堰控出口", boundary_type='outflow',
+                                  bc_variable='rating', bc_value=rating_curve,
+                                  elevation=90.0)
+
+    print(f"   {outflow_rating}")
+    print(f"   水位-流量关系:")
+    for h in [1.0, 1.5, 2.0, 2.5, 3.0]:
+        Q = outflow_rating.get_boundary_value(h=h)
+        print(f"     h={h:.1f}m -> Q={Q:6.1f} m^3/s")
+
+    return inflow_const, inflow_varying, outflow_const, outflow_rating
+
+
+def example_5_integrated_system():
+    """
+    示例5: 综合系统
+
+    演示多种节点类型协同工作:
+    - 2个入流边界
+    - 1个汇流节点
+    - 1个分流节点
+    - 1个水库节点
+    - 1个出流边界
+    """
+    print("\n" + "="*80)
+    print("示例5: 综合系统")
+    print("="*80)
+
+    print("\n系统拓扑:")
+    print("  入口1 (50 m^3/s) ")
+    print("                     汇流点 -> 分水口 -> 水库 -> 出口")
+    print("  入口2 (30 m^3/s)             ")
+    print("                            灌溉(20%)")
+
+    # 创建所有节点
+    inflow1 = create_inflow_boundary("入口1", Q=50.0, elevation=120.0)
+    inflow2 = create_inflow_boundary("入口2", Q=30.0, elevation=120.0)
+    junction = create_junction("汇流点", elevation=110.0, method='energy')
+    bifurc = create_bifurcation("分水口", split_ratios=[0.2, 0.8], elevation=105.0)
+    reservoir = create_reservoir("水库", area=5e6, elevation=90.0)
+    outflow = create_outflow_boundary("出口", h=2.0, elevation=85.0)
+
+    # 模拟系统运行
+    print(f"\n系统运行:")
+
+    # 1. 汇流
+    Q1 = inflow1.get_boundary_value()
+    Q2 = inflow2.get_boundary_value()
+    Q_total = Q1 + Q2
+
+    print(f"  1. 汇流节点:")
+    print(f"     入流1: {Q1:.1f} m^3/s")
+    print(f"     入流2: {Q2:.1f} m^3/s")
+    print(f"     汇流后: {Q_total:.1f} m^3/s")
+
+    # 2. 分流
+    Q_split = bifurc.compute_split_flows(Q_total)
+
+    print(f"\n  2. 分流节点:")
+    print(f"     灌溉 (20%): {Q_split[0]:.1f} m^3/s")
+    print(f"     入库 (80%): {Q_split[1]:.1f} m^3/s")
+
+    # 3. 水库
+    Q_in_reservoir = Q_split[1]
+    Q_out_reservoir = outflow.get_boundary_value() * 50  # 假设出口流量
+
+    print(f"\n  3. 水库节点:")
+    print(f"     入库流量: {Q_in_reservoir:.1f} m^3/s")
+    print(f"     出库流量: {Q_out_reservoir:.1f} m^3/s")
+    print(f"     当前水位: {reservoir.get_absolute_water_level():.2f}m")
+
+    # 4. 系统质量平衡
+    Q_in_system = Q1 + Q2
+    Q_out_system = Q_split[0] + Q_out_reservoir
+    error = abs(Q_in_system - Q_out_system) / Q_in_system * 100
+
+    print(f"\n  4. 系统质量平衡:")
+    print(f"     总入流: {Q_in_system:.1f} m^3/s")
+    print(f"     总出流: {Q_out_system:.1f} m^3/s")
+    print(f"     误差: {error:.2f}%")
+    print(f"     {' 平衡' if error < 1.0 else ' 不平衡'}")
+
+    return {
+        'inflow1': inflow1,
+        'inflow2': inflow2,
+        'junction': junction,
+        'bifurcation': bifurc,
+        'reservoir': reservoir,
+        'outflow': outflow
+    }
+
+
+if __name__ == "__main__":
+    """运行所有示例"""
+    print("="*80)
+    print("节点类型使用示例集")
+    print("Stage 3 - Network Node Types Examples")
+    print("="*80)
+
+    # 示例1: 汇流节点
+    junction = example_1_junction_node()
+
+    # 示例2: 分流节点
+    bifurc, bifurc_dyn = example_2_bifurcation_node()
+
+    # 示例3: 水库节点
+    reservoir = example_3_reservoir_node()
+
+    # 示例4: 边界节点
+    boundaries = example_4_boundary_nodes()
+
+    # 示例5: 综合系统
+    system = example_5_integrated_system()
+
+    print("\n" + "="*80)
+    print(" 所有节点类型示例运行完成")
+    print("="*80)
+
+    print("\n总结:")
+    print("  Stage 3 专业化节点类型:")
+    print("  1.  JunctionNode - 汇流节点")
+    print("     - 能量守恒/动量守恒/简单平均")
+    print("     - 自动计算汇流点水位")
+    print("  2.  BifurcationNode - 分流节点")
+    print("     - 固定比例分流/动态分流")
+    print("     - 质量守恒保证")
+    print("  3.  ReservoirNode - 水库节点")
+    print("     - 蓄水平衡方程 dV/dt = Q_in - Q_out")
+    print("     - 自定义库容曲线")
+    print("  4.  BoundaryNode - 边界节点")
+    print("     - 常数/时变边界条件")
+    print("     - Rating Curve支持")
+    print("\n  可用于:")
+    print("  - 复杂河网系统模拟")
+    print("  - 灌溉系统分水管理")
+    print("  - 水库调度优化")
+    print("  - 洪水演进预报")

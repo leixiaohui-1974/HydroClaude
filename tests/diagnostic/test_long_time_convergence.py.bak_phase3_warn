@@ -1,0 +1,126 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+测试长时间收敛 - 检查是否只是需要更长时间达到稳态
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
+
+import numpy as np
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+
+
+def test_long_time():
+    """测试长时间运行"""
+
+    print("\n" + "="*80)
+    print("长时间收敛测试")
+    print("="*80)
+
+    B = 1.0
+    n = 0.03
+    S0 = 0.002
+    L = 1000.0
+    Q_bc = 2.0
+    g = 9.81
+
+    h_c = (Q_bc**2 / (g * B**2))**(1/3)
+
+    print(f"\n参数：L={L}m, Q={Q_bc} m^3/s, h_c={h_c:.4f}m")
+
+    # 创建求解器
+    n_cells = 50
+    solver = GodunvFVMSolver(
+        width=B,
+        length=L,
+        n_cells=n_cells,
+        manning_n=n,
+        slope=S0,
+        cfl=0.4,
+        order=1,
+        use_numba=False
+    )
+
+    # 初始化
+    h_init = np.ones(n_cells) * h_c * 1.5
+    Q_init = np.ones(n_cells) * Q_bc
+
+    bc_left = {'type': 'Q', 'value': Q_bc}
+    bc_right = {'type': 'h', 'value': h_c}
+
+    solver.initialize(h_init, Q_init, bc_left, bc_right)
+
+    mass_initial = solver.initial_mass
+
+    # 运行到不同时间点，观察收敛
+    time_points = [100, 500, 1000, 2000, 5000]
+
+    print(f"\n运行到不同时间点，观察流量平衡：")
+    print(f"{'时间(s)':<10} {'质量误差%':<12} {'流入/流出':<12} {'流入(m^3)':<12} {'流出(m^3)':<12}")
+    print("-" * 70)
+
+    cumulative_inflow = 0.0
+    cumulative_outflow = 0.0
+
+    for t_target in time_points:
+        while solver.t < t_target:
+            dt = solver.compute_dt()
+            solver.step()
+
+            # 累积通量
+            if solver.last_F_h is not None:
+                F_left = solver.last_F_h[0]
+                F_right = solver.last_F_h[-1]
+                cumulative_inflow += F_left * dt * B
+                cumulative_outflow += F_right * dt * B
+
+        # 统计
+        mass_final = np.sum(solver.h * solver.dx * B)
+        mass_error_pct = abs(mass_final - mass_initial) / mass_initial * 100
+        ratio = cumulative_inflow / cumulative_outflow if cumulative_outflow > 0 else 0
+
+        print(f"{solver.t:<10.1f} {mass_error_pct:<12.2f} {ratio:<12.2f} {cumulative_inflow:<12.1f} {cumulative_outflow:<12.1f}")
+
+    # 最终分析
+    print(f"\n观察：")
+    print(f"  - 如果流入/流出比随时间趋向1.0，说明正在收敛到稳态")
+    print(f"  - 如果流入/流出比保持恒定>1.0，说明存在根本问题")
+
+    # 计算最近两个时间点的流入流出速率
+    # 重新运行最后一段
+    cumulative_inflow_4000 = cumulative_inflow
+    cumulative_outflow_4000 = cumulative_outflow
+
+    while solver.t < time_points[-1]:
+        dt = solver.compute_dt()
+        solver.step()
+
+        if solver.last_F_h is not None:
+            F_left = solver.last_F_h[0]
+            F_right = solver.last_F_h[-1]
+            cumulative_inflow += F_left * dt * B
+            cumulative_outflow += F_right * dt * B
+
+    # 最后1000s的平均流入流出速率
+    delta_t = time_points[-1] - time_points[-2]
+    avg_inflow_rate = (cumulative_inflow - cumulative_inflow_4000) / delta_t
+    avg_outflow_rate = (cumulative_outflow - cumulative_outflow_4000) / delta_t
+
+    print(f"\n最后{delta_t:.0f}s的平均速率：")
+    print(f"  流入速率：{avg_inflow_rate:.4f} m^3/s (理论：{Q_bc} m^3/s)")
+    print(f"  流出速率：{avg_outflow_rate:.4f} m^3/s")
+    print(f"  比值：{avg_inflow_rate/avg_outflow_rate:.2f}")
+
+    print("\n" + "="*80)
+
+
+if __name__ == "__main__":
+    test_long_time()

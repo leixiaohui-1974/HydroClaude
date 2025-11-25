@@ -9,6 +9,8 @@
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # 添加项目路径

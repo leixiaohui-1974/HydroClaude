@@ -12,6 +12,8 @@ Spec: 001-comprehensive-review-and-testing
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 from pathlib import Path
 

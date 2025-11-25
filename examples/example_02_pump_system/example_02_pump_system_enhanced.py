@@ -1,4 +1,6 @@
 import matplotlib
+import warnings
+warnings.filterwarnings("ignore")
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 # -*- coding: utf-8 -*-

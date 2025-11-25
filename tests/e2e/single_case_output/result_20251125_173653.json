@@ -1,0 +1,47 @@
+{
+  "case_name": "溃坝模型基础测试",
+  "status": "failed",
+  "steps_completed": [
+    "navigate_to_simulation",
+    "configure_simulation"
+  ],
+  "steps_failed": [
+    "submit_and_wait"
+  ],
+  "validation": null,
+  "display_quality": null,
+  "screenshots": [
+    {
+      "file": "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\tests\\e2e\\single_case_output\\screenshots\\173611_01_homepage.png",
+      "name": "01_homepage",
+      "description": "首页加载完成",
+      "timestamp": "2025-11-25T17:36:12.044912"
+    },
+    {
+      "file": "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\tests\\e2e\\single_case_output\\screenshots\\173614_02_simulation_page.png",
+      "name": "02_simulation_page",
+      "description": "仿真计算页面",
+      "timestamp": "2025-11-25T17:36:15.390686"
+    },
+    {
+      "file": "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\tests\\e2e\\single_case_output\\screenshots\\173620_03_config_filled.png",
+      "name": "03_config_filled",
+      "description": "配置参数已填写",
+      "timestamp": "2025-11-25T17:36:20.855645"
+    },
+    {
+      "file": "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\tests\\e2e\\single_case_output\\screenshots\\173621_04_submitted.png",
+      "name": "04_submitted",
+      "description": "仿真已提交",
+      "timestamp": "2025-11-25T17:36:21.896558"
+    },
+    {
+      "file": "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\tests\\e2e\\single_case_output\\screenshots\\173652_error_during_calculation.png",
+      "name": "error_during_calculation",
+      "description": "计算错误: 提交失败: timeout of 30000ms exceeded",
+      "timestamp": "2025-11-25T17:36:53.128942"
+    }
+  ],
+  "duration": 48.83828616142273,
+  "error": "计算未完成或超时"
+}

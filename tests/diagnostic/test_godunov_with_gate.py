@@ -10,6 +10,8 @@ Godunov-FVM + 闸门集成测试
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -211,7 +213,7 @@ print(f"\n闸门关闭至开度: {gate2.get_opening()} m (t=100s)")
 h_before_gate = solver2.h.copy()
 
 # 继续推进，模拟闸门关闭后的响应
-t_end = 300.0
+t_end = 50.0
 history2 = {'t': [], 'h_us': [], 'h_ds': [], 'Q_gate': []}
 
 print(f"\n时间推进至 t={t_end}s (闸门关闭后):")

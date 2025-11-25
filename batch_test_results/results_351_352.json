@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 351,
+    "batch_end_index": 352,
+    "test_run_at": "2025-11-25T16:58:23.547669",
+    "batch_duration_seconds": 60.02,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./retest_batch1.py",
+      "status": "timeout",
+      "return_code": -1,
+      "duration_seconds": 60.02,
+      "stdout": "======================================================================\nRETEST BATCH 1 (After fixes)\n======================================================================\n\n[1/10] advanced_animation_generator.py... [TIMEOUT]\n[2/10] adaptive_first_order_mpc_test.py... [OK]\n[3/10] benchmark_controllers.py... [TIMEOUT]\n[4/10] compare_canal_solvers.py... [FAIL]\n[5/10] complete_benchmark_suite.py...",
+      "stderr": "Process timed out after 60 seconds."
+    }
+  ]
+}

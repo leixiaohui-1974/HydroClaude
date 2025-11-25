@@ -2,8 +2,8 @@
   "metadata": {
     "batch_start_index": 139,
     "batch_end_index": 140,
-    "test_run_at": "2025-11-19T00:41:42.445630",
-    "batch_duration_seconds": 0.07,
+    "test_run_at": "2025-11-25T16:56:48.181845",
+    "batch_duration_seconds": 56.45,
     "total_scripts_in_batch": 1
   },
   "results": [
@@ -11,9 +11,9 @@
       "script_path": "./comprehensive_full_test_suite.py",
       "status": "fail",
       "return_code": 1,
-      "duration_seconds": 0.07,
-      "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"/app/./comprehensive_full_test_suite.py\", line 15, in <module>\n    import requests\nModuleNotFoundError: No module named 'requests'"
+      "duration_seconds": 56.44,
+      "stdout": "================================================================================\nHydroClaude Web - Comprehensive Test Suite\n================================================================================\nStart Time: 2025-11-25 16:55:52\nBackend: http://localhost:8000\nFrontend: http://localhost:5173\n================================================================================\n\n================================================================================\nPart 1: Backend API Testing\n================================================================================\n\n[Test 1.1] Health Check\n[FAIL] Health Check\n      Status: 404\n\n[Test 1.2] Engine Info\n[FAIL] Engine Info\n      Status: 404\n\n[Test 1.3] List Simulations\n[PASS] List Simulations\n      Found 0 simulations\n\n================================================================================\nPart 2: Simulation Scenarios Testing\n================================================================================\n\n[Test 2.1] 均匀流测试\n[FAIL] Simulation: 均匀流测试\n      Failed: Worker error: Expecting value: line 1 column 1 (char 0)\n\n[Test 2.2] 溃坝测试\n[FAIL] Simulation: 溃坝测试\n      Failed: Worker error: Expecting value: line 1 column 1 (char 0)\n\n[Test 2.3] 流量边界测试\n[FAIL] Simulation: 流量边界测试\n      Failed: Worker error: Expecting value: line 1 column 1 (char 0)\n\n[Test 2.4] 陡坡流动测试\n[FAIL] Simulation: 陡坡流动测试\n      Failed: Worker error: Expecting value: line 1 column 1 (char 0)\n\n[Test 2.5] 宽渠道测试\n[FAIL] Simulation: 宽渠道测试\n      Failed: Worker error: Expecting value: line 1 column 1 (char 0)\n\n--------------------------------------------------------------------------------\nBoundary Value Testing\n--------------------------------------------------------------------------------\n\n[Test 2.B.1] 最小值测试\n[FAIL] Simulation: 最小值测试\n      Failed: Worker error: Expecting value: line 1 column 1 (char 0)\n\n[Test 2.B.2] 最大值测试\n[FAIL] Simulation: 最大值测试\n      Failed: Worker error: Expecting value: line 1 column 1 (char 0)\n\n================================================================================\nPart 3: UI Interaction Testing\n================================================================================\n\n[Test 3.1] Page Loading",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\comprehensive_full_test_suite.py\", line 620, in <module>\n    main()\n    ~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\comprehensive_full_test_suite.py\", line 600, in main\n    test_ui_interactions()\n    ~~~~~~~~~~~~~~~~~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\comprehensive_full_test_suite.py\", line 412, in test_ui_interactions\n    driver.get(FRONTEND_URL)\n    ~~~~~~~~~~^^^^^^^^^^^^^^\n  File \"D:\\Users\\lxh\\miniconda3\\Lib\\site-packages\\selenium\\webdriver\\remote\\webdriver.py\", line 483, in get\n    self.execute(Command.GET, {\"url\": url})\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Users\\lxh\\miniconda3\\Lib\\site-packages\\selenium\\webdriver\\remote\\webdriver.py\", line 458, in execute\n    self.error_handler.check_response(response)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^\n  File \"D:\\Users\\lxh\\miniconda3\\Lib\\site-packages\\selenium\\webdriver\\remote\\errorhandler.py\", line 233, in check_response\n    raise exception_class(message, screen, stacktrace)\nselenium.common.exceptions.WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED\n  (Session info: chrome=142.0.7444.176)\nStacktrace:\nSymbols not available. Dumping unresolved backtrace:\n\t0x384103\n\t0x384144\n\t0x18e71d\n\t0x18bc77\n\t0x17eec8\n\t0x180884\n\t0x17f396\n\t0x17ec82\n\t0x17e98d\n\t0x17c7fe\n\t0x17d28b\n\t0x1924ce\n\t0x21fb37\n\t0x1fc90c\n\t0x21ee17\n\t0x1fc706\n\t0x1cda30\n\t0x1ced54\n\t0x5f57b4\n\t0x5f098a\n\t0x3ac392\n\t0x39c4c8\n\t0x3a324d\n\t0x38c478\n\t0x38c63c\n\t0x3767ca\n\t0x75f55d49\n\t0x779ad6db\n\t0x779ad661\n\t0"
     }
   ]
 }

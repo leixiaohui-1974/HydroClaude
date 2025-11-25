@@ -15,6 +15,8 @@ Phase 2.4 - Task 2.4.4
 """
 
 import pytest
+import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
 import sys
 import os

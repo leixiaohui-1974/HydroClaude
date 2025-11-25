@@ -5,6 +5,8 @@
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 from scipy.sparse import lil_matrix
 import sys
 import os

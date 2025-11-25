@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 27,
+    "batch_end_index": 28,
+    "test_run_at": "2025-11-25T16:51:30.471052",
+    "batch_duration_seconds": 1.3,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/fix_20251113_090925/examples/example_01_canal_flow/scripts/04_boundary_conditions.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.3,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_090925\\examples\\example_01_canal_flow\\scripts\\04_boundary_conditions.py\", line 25, in <module>\n    from solvers.canal_solver import CanalSolver\nModuleNotFoundError: No module named 'solvers.canal_solver'"
+    }
+  ]
+}

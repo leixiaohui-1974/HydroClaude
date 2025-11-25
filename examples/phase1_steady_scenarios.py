@@ -20,6 +20,8 @@ Phase 1应用示例集 - 稳态场景库
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib.pyplot as plt
 import sys
 import os

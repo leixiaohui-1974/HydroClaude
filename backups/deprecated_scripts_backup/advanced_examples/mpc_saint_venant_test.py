@@ -94,7 +94,7 @@ class MPCSaintVenantTest:
             length=length,
             slope=slope,
             n_sections=51,  # 空间离散点数
-            method='moc',   # 使用MOC方法
+            method='preissmann',   # 使用MOC方法
             manning_n=manning_n,
             width=width,
             initial_depth=initial_depth,

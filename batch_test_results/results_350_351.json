@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 350,
+    "batch_end_index": 351,
+    "test_run_at": "2025-11-25T16:57:23.371937",
+    "batch_duration_seconds": 1.07,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./retest_and_find_files.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 1.07,
+      "stdout": "======================================================================\nPART 1: RETEST FIXED FILES\n======================================================================\n\ncompare_canal_solvers.py: FAIL\ndebug_saint_venant.py: FAIL\ndiagnose_canal_boundary.py: FAIL\noptimize_preissmann.py: FAIL\n\nFixed files: 0/4 passed\n\n======================================================================\nPART 2: FIND MISSING FILES\n======================================================================\n\nSearching for: advanced_animation_generator.py\n  -> Found: examples\\advanced_animation_generator.py\n\nSearching for: case_gate_operation.py\n  -> Found: examples\\case_gate_operation.py\n\nSearching for: case_irrigation_scheduling.py\n  -> Found: examples\\case_irrigation_scheduling.py\n\nSearching for: benchmark_performance.py\n  -> Found: examples\\benchmark_performance.py\n  -> Found: examples\\case_library\\benchmark_performance.py\n\nSearching for: dam_break_comparison.py\n  -> Found: examples\\case_library\\case_01_dam_break\\dam_break_comparison.py\n\nSearching for: case_01_hydropower_plant.py\n  -> NOT FOUND\n\nSearching for: flood_routing_simulation.py\n  -> Found: examples\\case_library\\case_02_flood_routing\\flood_routing_simulation.py\n\nSearching for: case_02_water_supply_network.py\n  -> Found: examples\\case_library\\case_02_water_supply_network.py\n\nSearching for: case_03_irrigation_canal.py\n  -> NOT FOUND\n\nSearching for: run_all_cases.py\n  -> NOT FOUND\n\n======================================================================\nFound 7/10 missing files\n======================================================================\n\nSaved 8 paths to found_file_paths.txt",
+      "stderr": ""
+    }
+  ]
+}

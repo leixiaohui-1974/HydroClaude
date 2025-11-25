@@ -4,6 +4,8 @@
 演示不同时间步长下自动选择合适的降阶模型
 """
 import sys, os
+import warnings
+warnings.filterwarnings("ignore")
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 import numpy as np

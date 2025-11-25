@@ -11,6 +11,8 @@ MacDonald Test 4 - 最终验证（WENO3，正确参数）
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 sys.path.insert(0, '/home/user/HydroClaude')
 
 import numpy as np

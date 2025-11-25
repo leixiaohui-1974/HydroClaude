@@ -18,12 +18,14 @@ HydroClaude 端到端应用示例: 冬季河流冰-水质模拟
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib.pyplot as plt
 from pathlib import Path
 
 # 导入HydroClaude模块
 import sys
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from solvers.water_temperature import WaterTemperatureSolver
 from solvers.dissolved_oxygen import DissolvedOxygenSolver

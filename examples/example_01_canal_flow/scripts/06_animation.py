@@ -12,6 +12,8 @@
 """
 
 import sys, os
+import warnings
+warnings.filterwarnings("ignore")
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 import numpy as np
@@ -24,7 +26,7 @@ from scipy.optimize import fsolve
 
 
 # Import output helper
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 from output_helper import get_output_path, save_animation
 
 def compute_steady_uniform_flow(Q, B, S0, n):

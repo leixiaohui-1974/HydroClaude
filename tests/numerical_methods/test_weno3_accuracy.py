@@ -32,6 +32,8 @@ WENO3重构精度测试（WENO3 Reconstruction Accuracy Test）
 """
 
 import pytest
+import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
 import tempfile
 import json

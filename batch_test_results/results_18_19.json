@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 18,
+    "batch_end_index": 19,
+    "test_run_at": "2025-11-25T16:51:01.438731",
+    "batch_duration_seconds": 6.27,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/deprecated_scripts_backup/example_06_sil_basic/code/example_06_sil_basic.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 6.27,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\deprecated_scripts_backup\\example_06_sil_basic\\code\\example_06_sil_basic.py\", line 6, in <module>\n    from physics.gate import Gate\nImportError: cannot import name 'Gate' from 'physics.gate' (E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\physics\\gate.py). Did you mean: 'gate'?"
+    }
+  ]
+}

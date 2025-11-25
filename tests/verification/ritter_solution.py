@@ -25,6 +25,8 @@ Ritter解析解 - Dam Break on Dry Bed
 Phase: Stage 7.1 - SWASHES Benchmark
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

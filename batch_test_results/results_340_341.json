@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 340,
+    "batch_end_index": 341,
+    "test_run_at": "2025-11-25T16:53:16.274162",
+    "batch_duration_seconds": 60.05,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./incremental_simulation_test.py",
+      "status": "timeout",
+      "return_code": -1,
+      "duration_seconds": 60.05,
+      "stdout": "======================================================================\nINCREMENTAL SIMULATION TESTING\n======================================================================\nTotal simulation files: 465\nAlready passed: 23\nNeed to test: 445\n\nBATCH 3 (20 files)\n======================================================================\n\n[1/20] 12_advanced_optimized_v2.py... [TIMEOUT]\n[2/20] 12_advanced_optimized_v2_refactored.py... [TIMEOUT]\n[3/20] _local_canal_solver.py... [FAIL]\n[4/20] _local_single_canal_solver.py... [FAIL]\n[5/20] output_helper.py... [OK]\n[6/20] animation_utils.py... [OK]\n[7/20] example_02_pump_system.py... [OK]\n[8/20] example_02_pump_system_enhanced.py... [OK]\n[9/20] example_02_pump_system_with_anim.py...",
+      "stderr": "Process timed out after 60 seconds."
+    }
+  ]
+}

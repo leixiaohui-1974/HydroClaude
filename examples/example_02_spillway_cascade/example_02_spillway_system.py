@@ -28,6 +28,8 @@ Date: 2025-10-22
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt

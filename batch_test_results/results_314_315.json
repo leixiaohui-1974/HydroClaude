@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 314,
+    "batch_end_index": 315,
+    "test_run_at": "2025-11-25T16:47:51.715553",
+    "batch_duration_seconds": 1.32,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/integration_examples/swmm_urban_drainage.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 1.32,
+      "stdout": "警告: pyswmm未安装。请使用 'pip install pyswmm' 安装\n\n    ╔════════════════════════════════════════════════════════════════╗\n    ║           SWMM城市雨洪系统集成案例                            ║\n    ╚════════════════════════════════════════════════════════════════╝\n\n    本案例展示HydroClaude与EPA SWMM的深度集成\n\n    功能：\n    1. SWMM模型创建和运行\n    2. 实时状态监测\n    3. PID控制器集成\n    4. 结果可视化\n\n    要求：\n    - 安装pyswmm: pip install pyswmm\n    \n\n============================================================\n错误: pyswmm未安装！\n============================================================\n\n请先安装pyswmm:\n  pip install pyswmm\n\n或者使用conda:\n  conda install -c conda-forge pyswmm",
+      "stderr": ""
+    }
+  ]
+}

@@ -17,12 +17,14 @@
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 from pathlib import Path
 import tempfile
 
 # 添加项目路径
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from boundary.timeseries_bc import TimeSeriesBoundary, create_timeseries_boundary
 

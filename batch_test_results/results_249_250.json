@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 249,
+    "batch_end_index": 250,
+    "test_run_at": "2025-11-25T16:31:26.182331",
+    "batch_duration_seconds": 1.24,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_08_load_acceptance/example_08_load_acceptance.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.24,
+      "stdout": "================================================================================\nLOAD ACCEPTANCE SCENARIO\n================================================================================\n\nScenario: Load suddenly increases from 10 MW to 100 MW at t=5s\n  - Initial condition: 10 MW (light load)\n  - Load step: +90 MW at t=5s\n  - Governor responds by opening guide vanes\n  - Speed drops initially, then recovers\n  - Surge tank level drops, then recovers\n\n================================================================================\nLOAD ACCEPTANCE TRANSIENT SIMULATOR\n================================================================================\n\nInitializing system components...\n\n1. Francis Turbine\n   Rated power: 100.0 MW\n   Rated head: 150.0 m\n   Rated flow: 75.0 m^3/s\n   Rated speed: 250.0 rpm\n\n2. PID Governor\n   Permanent droop: 10.0%\n   Servo time constant: 0.20 s\n   Rate limit: 15.0% / s\n\n3. Simple Surge Tank\n   Diameter: 12.0 m\n   Area: 113.1 m^2\n   Initial level: 480.0 m\n\n4. System Configuration\n   Reservoir level: 500.0 m\n   Tailwater level: 330.0 m\n   Tunnel length: 5000.0 m\n   Tunnel area: 20.0 m^2\n\n5. Generator\n   GD^2: 8.0 MN��m^2",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_08_load_acceptance\\example_08_load_acceptance.py\", line 447, in <module>\n    results = run_load_acceptance_simulation()\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_08_load_acceptance\\example_08_load_acceptance.py\", line 266, in run_load_acceptance_simulation\n    sim = LoadAcceptanceSimulator()\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_08_load_acceptance\\example_08_load_acceptance.py\", line 134, in __init__\n    print(f\"   Moment of inertia: {self.J/1e6:.1f} x 10\\u2076 kg��m^2\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'gbk' codec can't encode character '\\u2076' in position 30: illegal multibyte sequence"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 58,
+    "batch_end_index": 59,
+    "test_run_at": "2025-11-25T16:52:02.319885",
+    "batch_duration_seconds": 0.33,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/fix_20251113_090938/examples/example_01_canal_flow/scripts/12_advanced_optimized.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.33,
+      "stdout": "====================================================================================================\n优化版例子2：多闸门和混合结构\n====================================================================================================\n\n重要说明:\n  对于复杂场景（如三闸门串联），标准方法（0.5%容差）可能无法收敛\n  建议:\n    - 简单场景（单结构或两结构）: 使用原方法（0.5%容差）\n    - 复杂场景（三个及以上结构）: 使用优化方法（1%容差 + 更多迭代）\n  本脚本对比两种方法的性能，帮助您选择合适的方法\n====================================================================================================\n\n\n====================================================================================================\n场景1：三闸门串联\n====================================================================================================\n\n方法A：原方法（0.5%容差）\n----------------------------------------------------------------------------------------------------",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_090938\\examples\\example_01_canal_flow\\scripts\\12_advanced_optimized.py\", line 262, in <module>\n    run_optimized_example()\n    ~~~~~~~~~~~~~~~~~~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_090938\\examples\\example_01_canal_flow\\scripts\\12_advanced_optimized.py\", line 60, in run_optimized_example\n    solver1a = SingleCanalSolver(\n               ^^^^^^^^^^^^^^^^^\nNameError: name 'SingleCanalSolver' is not defined"
+    }
+  ]
+}

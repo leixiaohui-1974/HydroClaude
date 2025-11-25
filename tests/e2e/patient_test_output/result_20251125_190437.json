@@ -1,0 +1,31 @@
+{
+  "status": "no_results",
+  "steps": [
+    {
+      "name": "navigate",
+      "status": "done"
+    },
+    {
+      "name": "config",
+      "status": "done"
+    },
+    {
+      "name": "run",
+      "status": "done"
+    },
+    {
+      "name": "wait",
+      "status": "done"
+    },
+    {
+      "name": "check",
+      "status": "done"
+    }
+  ],
+  "results": {
+    "charts": 0,
+    "tables": 0,
+    "metrics": 0
+  },
+  "duration": 29.41292953491211
+}

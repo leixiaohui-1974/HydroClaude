@@ -1,0 +1,101 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+逐单元质量分析
+
+找出哪个单元在泄漏质量
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
+
+import numpy as np
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+
+
+def analyze_cell_mass():
+    """逐单元分析质量变化"""
+
+    print("\n" + "="*80)
+    print("逐单元质量分析")
+    print("="*80)
+
+    B = 10.0
+    L = 200.0  # 更短，单元更少
+    n_cells = 10  # 只用10个单元便于观察
+    dx = L / n_cells
+
+    solver = GodunvFVMSolver(
+        width=B,
+        length=L,
+        n_cells=n_cells,
+        manning_n=0.0,
+        slope=0.0,
+        cfl=0.4,
+        order=1
+    )
+
+    h_up = 0.3
+    Q_up = 10.0
+    h_down = 2.0
+
+    h_init = np.linspace(h_up, h_down, n_cells)
+    Q_init = np.ones(n_cells) * Q_up
+
+    bc_left = {'type': 'supercritical', 'h': h_up, 'Q': Q_up}
+    bc_right = {'type': 'h', 'value': h_down}
+
+    solver.initialize(h_init, Q_init, bc_left, bc_right)
+
+    print(f"\n网格: {n_cells} 单元, dx = {dx} m")
+    print(f"边界: 左={bc_left}, 右={bc_right}")
+
+    # 记录初始每个单元的质量
+    mass_cell_init = solver.h * B * dx
+
+    print(f"\n初始每单元质量 (m^3):")
+    for i in range(n_cells):
+        print(f"  单元{i}: {mass_cell_init[i]:.4f} m^3 (h={solver.h[i]:.4f}m)")
+
+    print(f"\n总初始质量: {np.sum(mass_cell_init):.2f} m^3")
+
+    # 推进3步
+    for step in range(3):
+        mass_before = solver.h * B * dx
+        total_before = np.sum(mass_before)
+
+        solver.step()
+
+        mass_after = solver.h * B * dx
+        total_after = np.sum(mass_after)
+
+        dmass_cell = mass_after - mass_before
+        dmass_total = total_after - total_before
+
+        print(f"\n步骤 {step+1}:")
+        print(f"  总质量变化: {dmass_total:.6f} m^3")
+        print(f"  各单元质量变化:")
+
+        for i in range(n_cells):
+            marker = "  " if abs(dmass_cell[i]) < 1e-3 else " "
+            print(f"    单元{i}: {dmass_cell[i]:+.6f} m^3{marker}")
+
+    print(f"\n" + "="*80)
+    print("总结:")
+    mass_final = solver.h * B * dx
+    total_final = np.sum(mass_final)
+    print(f"  初始总质量: {np.sum(mass_cell_init):.2f} m^3")
+    print(f"  最终总质量: {total_final:.2f} m^3")
+    print(f"  总质量误差: {(total_final - np.sum(mass_cell_init)):.2f} m^3")
+    print("="*80)
+
+
+if __name__ == "__main__":
+    analyze_cell_mass()

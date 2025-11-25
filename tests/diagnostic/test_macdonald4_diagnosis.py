@@ -8,6 +8,8 @@ MacDonald Test 4 (水跃) 诊断测试
 4. 探索可能的解决方案
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

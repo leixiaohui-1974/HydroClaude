@@ -1,4 +1,6 @@
 import os
+import warnings
+warnings.filterwarnings("ignore")
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """

@@ -13,10 +13,12 @@
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 from pathlib import Path
 
 # 添加项目路径
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from engine.simulation_engine import SimulationEngine
 
@@ -31,7 +33,7 @@ def main():
         config_files = list(script_dir.glob("*.json")) + list(script_dir.glob("*.yaml"))
         if config_files:
             config_file = str(config_files[0])
-            print(f"ℹ️  使用默认配置: {Path(config_file).name}")
+            print(f"[INFO]  使用默认配置: {Path(config_file).name}")
         else:
             print("用法: python simulate.py config.json", file=sys.stderr)
             print("或在当前目录放置配置文件", file=sys.stderr)
@@ -44,7 +46,7 @@ def main():
         engine = SimulationEngine(config_file)
 
         # 初始化
-        engine.initialize()
+        engine.initialize_steady_state()
         
         # 运行仿真
         engine.run()
@@ -54,7 +56,7 @@ def main():
             engine.save_results()
 
         # 成功
-        print(f"✅ 仿真完成")
+        print(f"[OK] 仿真完成")
         sys.exit(0)
 
     except Exception as e:

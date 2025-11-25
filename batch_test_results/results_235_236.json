@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 235,
+    "batch_end_index": 236,
+    "test_run_at": "2025-11-25T16:30:13.177203",
+    "batch_duration_seconds": 6.83,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_02_pump_system/code/example_02_pump_system.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 6.83,
+      "stdout": "============================================================\nʾ��2: ��վϵͳ (Pump System)\n============================================================\n�����������ʼ��: ģʽ=reduced, �����=4\n\n���б�վϵͳ����...\nStep 1/20: Tank1 Level=5.00m, Tank2 Level=5.00m\nStep 6/20: Tank1 Level=5.00m, Tank2 Level=5.00m\nStep 11/20: Tank1 Level=5.00m, Tank2 Level=5.00m\nStep 16/20: Tank1 Level=5.00m, Tank2 Level=5.00m\n\n��վϵͳ�������!",
+      "stderr": ""
+    }
+  ]
+}

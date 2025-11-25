@@ -2,8 +2,8 @@
   "metadata": {
     "batch_start_index": 121,
     "batch_end_index": 122,
-    "test_run_at": "2025-11-19T00:36:00.577506",
-    "batch_duration_seconds": 0.06,
+    "test_run_at": "2025-11-25T16:52:38.825494",
+    "batch_duration_seconds": 0.18,
     "total_scripts_in_batch": 1
   },
   "results": [
@@ -11,7 +11,7 @@
       "script_path": "./batch_test_all_cases.py",
       "status": "fail",
       "return_code": 2,
-      "duration_seconds": 0.06,
+      "duration_seconds": 0.18,
       "stdout": "",
       "stderr": "usage: batch_test_all_cases.py [-h] --start START --end END\nbatch_test_all_cases.py: error: the following arguments are required: --start, --end"
     }

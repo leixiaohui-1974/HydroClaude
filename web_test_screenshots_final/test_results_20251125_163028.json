@@ -1,0 +1,91 @@
+{
+  "test_time": "2025-11-25T16:29:46.158098",
+  "duration": 41.885068,
+  "base_url": "http://localhost:3001",
+  "total_tests": 7,
+  "total_screenshots": 8,
+  "results": [
+    {
+      "test_id": "01",
+      "name": "首页加载",
+      "status": "partial",
+      "duration": 10.684727907180786,
+      "screenshots": [
+        "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\web_test_screenshots_final\\01_homepage_163003.png"
+      ],
+      "notes": [
+        "页面标题: HydroClaude - 水力学仿真平台"
+      ]
+    },
+    {
+      "test_id": "02",
+      "name": "建模工作台",
+      "status": "passed",
+      "duration": 5.395498037338257,
+      "screenshots": [
+        "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\web_test_screenshots_final\\02_modeling_initial_163007.png",
+        "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\web_test_screenshots_final\\03_modeling_toolbar_163009.png"
+      ],
+      "notes": [
+        "工具栏按钮数: 5"
+      ]
+    },
+    {
+      "test_id": "03",
+      "name": "仿真管理工作台",
+      "status": "passed",
+      "duration": 1.7482964992523193,
+      "screenshots": [
+        "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\web_test_screenshots_final\\04_simulation_workspace_163012.png"
+      ],
+      "notes": [
+        "输入框数量: 0"
+      ]
+    },
+    {
+      "test_id": "04",
+      "name": "仿真配置表单",
+      "status": "passed",
+      "duration": 4.372093915939331,
+      "screenshots": [
+        "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\web_test_screenshots_final\\05_simulation_config_163015.png",
+        "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\web_test_screenshots_final\\06_simulation_config_modified_163017.png"
+      ],
+      "notes": [
+        "仿真名称填写失败"
+      ]
+    },
+    {
+      "test_id": "05",
+      "name": "运行仿真",
+      "status": "failed",
+      "duration": 0.03772401809692383,
+      "screenshots": [],
+      "notes": [
+        "未找到运行按钮"
+      ]
+    },
+    {
+      "test_id": "06",
+      "name": "UI元素交互",
+      "status": "passed",
+      "duration": 4.597451448440552,
+      "screenshots": [
+        "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\web_test_screenshots_final\\07_back_to_modeling_163021.png",
+        "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\web_test_screenshots_final\\08_ui_interaction_163024.png"
+      ],
+      "notes": []
+    },
+    {
+      "test_id": "07",
+      "name": "控制台错误检查",
+      "status": "passed",
+      "duration": 0.003507852554321289,
+      "screenshots": [],
+      "notes": [
+        "控制台错误: 0",
+        "控制台警告: 2"
+      ]
+    }
+  ]
+}

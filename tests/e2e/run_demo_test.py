@@ -10,6 +10,8 @@ Date: 2025-11-16
 """
 
 import json
+import warnings
+warnings.filterwarnings("ignore")
 import time
 from pathlib import Path
 from datetime import datetime

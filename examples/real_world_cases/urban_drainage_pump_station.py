@@ -26,6 +26,8 @@
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('Agg')
@@ -34,7 +36,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 import sys
-sys.path.insert(0, '/home/user/HydroClaude')
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from control.mpc_controller import MPCController, MPCConfig
 
 

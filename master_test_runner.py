@@ -11,6 +11,7 @@ import subprocess
 import os
 import re
 import time
+import sys
 
 INPUT_FILE = "all_test_scripts.json"
 RESULTS_DIR = "batch_test_results"
@@ -74,7 +75,7 @@ def main():
 
         # 调用批处理脚本，每次只运行一个案例
         command = [
-            "python3",
+            sys.executable,
             BATCH_SCRIPT,
             "--start", str(i),
             "--end", str(i + 1)
@@ -83,7 +84,7 @@ def main():
         try:
             # 使用 Popen 在后台运行，并等待它完成
             # 这比 run 更健壮，可以更好地处理流式输出
-            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding='utf-8')
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding='utf-8', errors='replace')
             stdout, stderr = process.communicate()
 
             if process.returncode != 0:

@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 292,
+    "batch_end_index": 293,
+    "test_run_at": "2025-11-25T16:39:20.205314",
+    "batch_duration_seconds": 1.22,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_gate_pump_cascade/temp_scenario.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.22,
+      "stdout": "==========================================================================================\n                                ��������բ��Ⱥϵͳ�߾��ȱ�վģ�� - ������������                                 \n==========================================================================================\n\n 1. ϵͳ��������\n------------------------------------------------------------------------------------------\n��������:\n  �ܳ���: 100.0 km\n  ��������: 15.0 m\n  ����: 1.00[permille]\n  ����: 501��, Deltax=200.0m\n\n��վģ��: PumpStationAdvanced�߾��� - ������������\n  �����: 30.0 m^3/s\n  ����: 5.0 m\n  �ط����: 6.0 m\n  �ص�: ��ʵ���������� + ���������\n\n 2. ����������ͽṹ��\n------------------------------------------------------------------------------------------\n: a=6.000, b=-0.05556, c=0.0029630\n\n�ṹ���Ѵ���:\n  SluiceGate(position=25000.0m, width=15.0m, opening=5.00m@t=0s, Cd=0.6)",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_gate_pump_cascade\\temp_scenario.py\", line 491, in <module>\n    results = main()\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_gate_pump_cascade\\temp_scenario.py\", line 114, in main\n    print(f\"  {pump}\")\n    ~~~~~^^^^^^^^^^^^^\nUnicodeEncodeError: 'gbk' codec can't encode character '\\xb3' in position 54: illegal multibyte sequence"
+    }
+  ]
+}

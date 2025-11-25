@@ -4,6 +4,8 @@ MacDonald Test 5 时间步长演化追踪
 目的：跟踪自适应dt的演化，找出失败原因
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

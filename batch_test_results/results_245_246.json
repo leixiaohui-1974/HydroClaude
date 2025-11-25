@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 245,
+    "batch_end_index": 246,
+    "test_run_at": "2025-11-25T16:31:08.936369",
+    "batch_duration_seconds": 1.14,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_05_transient_analysis/example_05_load_rejection.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.14,
+      "stdout": "================================================================================\nEXAMPLE 05: LOAD REJECTION TRANSIENT ANALYSIS\n================================================================================\nInitializing Transient Simulator...\n================================================================================",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_05_transient_analysis\\example_05_load_rejection.py\", line 443, in <module>\n    main()\n    ~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_05_transient_analysis\\example_05_load_rejection.py\", line 382, in main\n    simulator = HydropowerTransientSimulator()\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_05_transient_analysis\\example_05_load_rejection.py\", line 116, in __init__\n    print(f\"Turbine:        {self.turbine}\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'gbk' codec can't encode character '\\xb3' in position 87: illegal multibyte sequence"
+    }
+  ]
+}

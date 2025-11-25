@@ -14,6 +14,8 @@
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 import numpy as np
 import argparse
@@ -24,13 +26,13 @@ import matplotlib.pyplot as plt
 # 添加项目根目录
 script_path = os.path.abspath(__file__)
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(script_path)))
-sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from physics.turbine import FrancisTurbine
 
 # 导入动画工具
 EXAMPLES_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, EXAMPLES_DIR)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 # from animation_utils import AnimationGenerator  # Disabled - module not found
 
 

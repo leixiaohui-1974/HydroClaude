@@ -5,9 +5,11 @@
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 # 导入run_scenario模块
 exec(open(os.path.join(os.path.dirname(__file__), 'run_scenario.py')).read())

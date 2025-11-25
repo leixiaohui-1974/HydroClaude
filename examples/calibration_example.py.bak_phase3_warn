@@ -1,0 +1,255 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+HydroClaude DO求解器参数校准示例
+
+演示如何使用真实的DissolvedOxygenSolver进行参数校准
+
+作者: HydroClaude Team
+创建日期: 2025-11-02
+"""
+
+import sys
+import os
+
+# 添加项目根目录到路径
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import numpy as np
+from solvers.dissolved_oxygen import DissolvedOxygenSolver
+from tools.calibration import ParameterCalibrator
+
+
+def main():
+    """
+    主函数: DO求解器参数校准
+    """
+    print("=" * 70)
+    print("HydroClaude DO求解器参数校准示例")
+    print("=" * 70)
+    print()
+
+    # ======================
+    # 1. 生成"观测"数据
+    # ======================
+    print("步骤 1: 生成合成观测数据")
+    print("-" * 70)
+
+    np.random.seed(42)
+
+    # 真实参数 (未知，需要校准)
+    true_kd_20 = 0.20
+    true_SOD_20 = 1.5
+
+    print(f"  真实参数 (待校准): kd_20={true_kd_20}, SOD_20={true_SOD_20}")
+
+    # 创建"真实"模型
+    n_cells = 50
+    dx = 100.0
+    true_solver = DissolvedOxygenSolver(n_cells, dx, kd_20=true_kd_20, SOD_20=true_SOD_20)
+
+    # 初始条件
+    true_solver.DO = np.full(n_cells, 8.0)
+    true_solver.BOD = np.full(n_cells, 5.0)
+
+    # 环境条件
+    u = np.full(n_cells, 0.5)
+    h = np.full(n_cells, 2.0)
+    T = np.full(n_cells, 20.0)
+    manning_n = np.full(n_cells, 0.03)
+
+    # 模拟7天，每天采集1次观测数据
+    dt = 3600.0  # 1小时
+    n_days = 7
+    obs_times = []
+    DO_obs_mean = []
+    BOD_obs_mean = []
+
+    for day in range(n_days):
+        for hour in range(24):
+            state = true_solver.step(dt, u, h, T, manning_n)
+
+        # 每天记录一次观测
+        obs_times.append(day + 1)
+
+        # 添加观测噪声
+        DO_mean_true = state['DO'].mean()
+        BOD_mean_true = state['BOD'].mean()
+
+        DO_obs_mean.append(DO_mean_true + np.random.normal(0, 0.2))
+        BOD_obs_mean.append(BOD_mean_true + np.random.normal(0, 0.15))
+
+    DO_obs = np.array(DO_obs_mean)
+    BOD_obs = np.array(BOD_obs_mean)
+
+    print(f"  生成了 {len(obs_times)} 天的观测数据")
+    print(f"  初始DO: {DO_obs[0]:.2f} mg/L -> 最终DO: {DO_obs[-1]:.2f} mg/L")
+    print(f"  初始BOD: {BOD_obs[0]:.2f} mg/L -> 最终BOD: {BOD_obs[-1]:.2f} mg/L")
+    print()
+
+    # ======================
+    # 2. 定义模型函数
+    # ======================
+    def do_model_function(params):
+        """
+        DO模型函数 (用于校准)
+
+        Parameters
+        ----------
+        params : dict
+            待校准参数 {'kd_20': float, 'SOD_20': float}
+
+        Returns
+        -------
+        dict
+            模拟结果 {'DO': array, 'BOD': array}
+        """
+        # 创建求解器
+        solver = DissolvedOxygenSolver(
+            n_cells, dx,
+            kd_20=params['kd_20'],
+            SOD_20=params['SOD_20']
+        )
+
+        # 初始条件
+        solver.DO = np.full(n_cells, 8.0)
+        solver.BOD = np.full(n_cells, 5.0)
+
+        # 模拟并记录每日均值
+        DO_sim = []
+        BOD_sim = []
+
+        for day in range(n_days):
+            for hour in range(24):
+                state = solver.step(dt, u, h, T, manning_n)
+
+            # 记录每日均值
+            DO_sim.append(state['DO'].mean())
+            BOD_sim.append(state['BOD'].mean())
+
+        return {
+            'DO': np.array(DO_sim),
+            'BOD': np.array(BOD_sim)
+        }
+
+    # ======================
+    # 3. 设置校准参数
+    # ======================
+    print("步骤 2: 设置校准参数范围")
+    print("-" * 70)
+
+    observed_data = {
+        'DO': DO_obs,
+        'BOD': BOD_obs
+    }
+
+    param_ranges = {
+        'kd_20': (0.05, 0.50),   # BOD降解系数
+        'SOD_20': (0.5, 3.0)     # 底泥耗氧
+    }
+
+    print("  参数范围:")
+    for param, (min_val, max_val) in param_ranges.items():
+        print(f"    {param:10s}: [{min_val:.2f}, {max_val:.2f}]")
+    print()
+
+    # ======================
+    # 4. 创建校准器
+    # ======================
+    print("步骤 3: 创建参数校准器")
+    print("-" * 70)
+
+    calibrator = ParameterCalibrator(
+        model_function=do_model_function,
+        observed_data=observed_data,
+        param_ranges=param_ranges,
+        objective_function='RMSE'
+    )
+
+    print("  目标函数: RMSE (均方根误差)")
+    print("  优化算法: Nelder-Mead")
+    print()
+
+    # ======================
+    # 5. 运行校准
+    # ======================
+    print("步骤 4: 运行参数校准")
+    print("-" * 70)
+    print()
+
+    # 使用默认初始值 (参数范围中点)
+    results = calibrator.calibrate_nelder_mead(max_iter=150)
+
+    # ======================
+    # 6. 不确定性分析
+    # ======================
+    print()
+    print("步骤 5: 不确定性分析")
+    print("-" * 70)
+
+    uncertainty = calibrator.analyze_uncertainty(
+        results['optimal_params'],
+        n_samples=100,
+        perturbation=0.1
+    )
+
+    # ======================
+    # 7. 验证校准结果
+    # ======================
+    print()
+    print("=" * 70)
+    print("步骤 6: 验证校准结果")
+    print("=" * 70)
+    print()
+
+    print("真实参数 vs 校准参数:")
+    print(f"{'参数':<12s} {'真实值':<12s} {'校准值':<12s} {'误差%':<12s}")
+    print("-" * 50)
+
+    for param in ['kd_20', 'SOD_20']:
+        true_val = true_kd_20 if param == 'kd_20' else true_SOD_20
+        calib_val = results['optimal_params'][param]
+        error_pct = abs(calib_val - true_val) / true_val * 100
+        print(f"{param:<12s} {true_val:<12.4f} {calib_val:<12.4f} {error_pct:<12.2f}")
+
+    # 运行最优参数模拟
+    optimal_results = do_model_function(results['optimal_params'])
+
+    print()
+    print("模拟vs观测对比:")
+    print(f"{'Day':<6s} {'DO_obs':<10s} {'DO_sim':<10s} {'BOD_obs':<10s} {'BOD_sim':<10s}")
+    print("-" * 50)
+    for i, day in enumerate(obs_times):
+        print(f"{day:<6d} {DO_obs[i]:<10.2f} {optimal_results['DO'][i]:<10.2f} "
+              f"{BOD_obs[i]:<10.2f} {optimal_results['BOD'][i]:<10.2f}")
+
+    # ======================
+    # 8. 保存结果
+    # ======================
+    print()
+    print("步骤 7: 保存结果")
+    print("-" * 70)
+
+    calibrator.save_results(
+        results,
+        uncertainty,
+        'do_calibration_results.json'
+    )
+
+    calibrator.plot_convergence('do_calibration_convergence.png')
+    calibrator.plot_parameter_uncertainty(uncertainty, 'do_parameter_uncertainty.png')
+
+    print()
+    print("=" * 70)
+    print("校准示例完成! ")
+    print("=" * 70)
+    print()
+    print("生成的文件:")
+    print("  1. do_calibration_results.json - 校准结果 (JSON)")
+    print("  2. do_calibration_convergence.png - 收敛曲线")
+    print("  3. do_parameter_uncertainty.png - 参数不确定性")
+    print()
+
+
+if __name__ == '__main__':
+    main()

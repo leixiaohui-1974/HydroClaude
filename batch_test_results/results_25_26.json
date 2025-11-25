@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 25,
+    "batch_end_index": 26,
+    "test_run_at": "2025-11-25T16:51:28.405525",
+    "batch_duration_seconds": 1.12,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/fix_20251113_090925/examples/example_01_canal_flow/scripts/01_basic.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.12,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_090925\\examples\\example_01_canal_flow\\scripts\\01_basic.py\", line 20, in <module>\n    from solvers.canal_solver import CanalSolver\nModuleNotFoundError: No module named 'solvers.canal_solver'"
+    }
+  ]
+}

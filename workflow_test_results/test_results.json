@@ -1,65 +1,53 @@
 {
   "summary": {
-    "total": 9,
-    "passed": 3,
-    "failed": 2,
+    "total": 7,
+    "passed": 2,
+    "failed": 1,
     "warned": 4,
-    "screenshots": 5
+    "screenshots": 3
   },
   "tests": [
-    {
-      "test": "Load homepage",
-      "status": "pass",
-      "message": "Homepage loaded successfully",
-      "timestamp": "2025-11-12T21:54:02.310765"
-    },
-    {
-      "test": "Modeling workspace visible",
-      "status": "fail",
-      "message": "Modeling tab not found",
-      "timestamp": "2025-11-12T21:54:02.331873"
-    },
     {
       "test": "Switch to simulation tab",
       "status": "fail",
       "message": "Tab not found",
-      "timestamp": "2025-11-12T21:54:02.351858"
+      "timestamp": "2025-11-25T16:59:57.212038"
     },
     {
       "test": "Toolbar buttons",
       "status": "pass",
-      "message": "Found 18 buttons",
-      "timestamp": "2025-11-12T21:54:02.513549"
+      "message": "Found 2 buttons",
+      "timestamp": "2025-11-25T16:59:57.361023"
     },
     {
       "test": "Dropdown interaction",
       "status": "warn",
       "message": "No dropdowns found",
-      "timestamp": "2025-11-12T21:54:02.530109"
+      "timestamp": "2025-11-25T16:59:57.378694"
     },
     {
       "test": "Input field interaction",
       "status": "warn",
       "message": "No editable inputs",
-      "timestamp": "2025-11-12T21:54:02.561458"
+      "timestamp": "2025-11-25T16:59:57.396455"
     },
     {
       "test": "Tab switching",
       "status": "pass",
-      "message": "Tested 2 tabs",
-      "timestamp": "2025-11-12T21:54:06.315208"
+      "message": "Tested 0 tabs",
+      "timestamp": "2025-11-25T16:59:57.415695"
     },
     {
       "test": "Empty model error handling",
       "status": "warn",
-      "message": "Message: element not interactable\n  (Session info: chrome=142.0.7444.135); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#elementnotinteractableexception\nStacktrace:\nSymbols not available. Dumping unresolved backtrace:\n\t0x1024093\n\t0x10240d4\n\t0xe2e56b\n\t0xe7b27d\n\t0xe6fd65\n\t0xe9c90c\n\t0xe6f7c4\n\t0xe9cac4\n\t0xebee17\n\t0xe9c706\n\t0xe6da30\n\t0xe6ed54\n\t0x1295744\n\t0x129091a\n\t0x104c322\n\t0x103c458\n\t0x10431dd\n\t0x102c408\n\t0x102c5cc\n\t0x101675a\n\t0x76ef5d49\n\t0x77d2d6db\n\t0x77d2d661\n",
-      "timestamp": "2025-11-12T21:54:06.636257"
+      "message": "Message: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"//button[.//span[contains(text(), '运行仿真')]]\"}\n  (Session info: chrome=142.0.7444.176); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#nosuchelementexception\nStacktrace:\nSymbols not available. Dumping unresolved backtrace:\n\t0x384103\n\t0x384144\n\t0x18e71d\n\t0x1da03d\n\t0x1da41b\n\t0x2217f2\n\t0x1fc954\n\t0x21ee17\n\t0x1fc706\n\t0x1cda30\n\t0x1ced54\n\t0x5f57b4\n\t0x5f098a\n\t0x3ac392\n\t0x39c4c8\n\t0x3a324d\n\t0x38c478\n\t0x38c63c\n\t0x3767ca\n\t0x75f55d49\n\t0x779ad6db\n\t0x779ad661\n\t0\n",
+      "timestamp": "2025-11-25T16:59:57.460915"
     },
     {
       "test": "Invalid input handling",
       "status": "warn",
-      "message": "Message: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"//div[contains(text(), '仿真管理')]\"}\n  (Session info: chrome=142.0.7444.135); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#nosuchelementexception\nStacktrace:\nSymbols not available. Dumping unresolved backtrace:\n\t0x1024093\n\t0x10240d4\n\t0xe2e71d\n\t0xe7a03d\n\t0xe7a41b\n\t0xec17f2\n\t0xe9c954\n\t0xebee17\n\t0xe9c706\n\t0xe6da30\n\t0xe6ed54\n\t0x1295744\n\t0x129091a\n\t0x104c322\n\t0x103c458\n\t0x10431dd\n\t0x102c408\n\t0x102c5cc\n\t0x101675a\n\t0x76ef5d49\n\t0x77d2d6db\n\t0x77d2d661\n",
-      "timestamp": "2025-11-12T21:54:06.651371"
+      "message": "Message: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"//div[contains(text(), '仿真管理')]\"}\n  (Session info: chrome=142.0.7444.176); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#nosuchelementexception\nStacktrace:\nSymbols not available. Dumping unresolved backtrace:\n\t0x384103\n\t0x384144\n\t0x18e71d\n\t0x1da03d\n\t0x1da41b\n\t0x2217f2\n\t0x1fc954\n\t0x21ee17\n\t0x1fc706\n\t0x1cda30\n\t0x1ced54\n\t0x5f57b4\n\t0x5f098a\n\t0x3ac392\n\t0x39c4c8\n\t0x3a324d\n\t0x38c478\n\t0x38c63c\n\t0x3767ca\n\t0x75f55d49\n\t0x779ad6db\n\t0x779ad661\n\t0\n",
+      "timestamp": "2025-11-25T16:59:57.476949"
     }
   ]
 }

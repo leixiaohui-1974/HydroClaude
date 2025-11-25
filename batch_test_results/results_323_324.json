@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 323,
+    "batch_end_index": 324,
+    "test_run_at": "2025-11-25T16:49:25.634836",
+    "batch_duration_seconds": 12.93,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/spring_ice_breakup.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 12.93,
+      "stdout": "======================================================================\nHydroClaude 春季融冰期模拟\n======================================================================\n\n[1] 场景设置: 北方河流春季解冻\n----------------------------------------------------------------------\n河道长度: 15.0 km\n网格数: 150\n\n流速: 0.4 m/s (融雪径流)\n水深: 3.5 m (水位上涨)\n\n模拟时间: 21 天\n时间步长: 1 小时\n\n[2] 初始条件: 早春冰封期末\n----------------------------------------------------------------------\n初始水温: 0.5  degC (接近冰点)\n初始DO: 13.0 mg/L (高溶解度)\n初始冰厚: 30 cm\n总氮TN: 2.70 mg/L\n总磷TP: 0.180 mg/L\n初始叶绿素: 3.0 mug/L (冬季低水平)\n\n[3] 气象条件: 春季气温回升\n----------------------------------------------------------------------\n气温变化: -5 degC -> 15 degC (21天)\n太阳辐射: 200 -> 500 W/m^2 (逐渐增强)\n白天时长: 12 小时\n风速: 4.0 m/s\n\n[4] 初始化求解器\n----------------------------------------------------------------------\n 所有求解器初始化完成\n\n[5] 时间积分\n----------------------------------------------------------------------\n开始模拟 21 天...\n\nDay    1: Tair=  -8.9 degC, T= 0.50 degC, Ice= 30.0cm, Chla=  2.8mug/L\nDay    2: Tair=  -8.0 degC, T= 0.61 degC, Ice= 30.0cm, Chla=  2.6mug/L\nDay    3: Tair=  -7.0 degC, T= 0.81 degC, Ice= 30.0cm, Chla=  2.4mug/L\nDay    4: Tair=  -6.1 degC, T= 1.09 degC, Ice= 30.0cm, Chla=  2.3mug/L\nDay    5: Tair=  -5.1 degC, T= 1.43 degC, Ice= 30.0cm, Chla=  2.1mug/L\nDay    6: Tair=  -4.2 degC, T= 1.83 degC, Ice= 30.0cm, Chla=  2.0mug/L\nDay    7: Tair=  -3.2 degC, T= 2.26 degC, Ice= 30.0cm, Chla=  1.8mug/L\nDay    8: Tair=  -2.3 degC, T= 2.73 degC, Ice= 30.0cm, Chla=  1.7mug/L\nDay    9: Tair=  -1.3 degC, T= 3.23 degC, Ice= 30.0cm, Chla=  1.6mug/L\nDay   10: Tair=  -0.3 degC, T= 3.76 degC, Ice= 30.0cm, Chla=  1.5mug/L\nDay   11: Tair=   0.6 degC, T= 4.31 degC, Ice= 30.0cm, Chla=  1.4mug/L\nDay   12: Tair=   1.6 degC, T= 4.87 degC, Ice= 30.0cm, Chla=  1.3mug/L\nDay   13: Tair=   2.5 degC, T= 5.46 degC, Ice= 30.0cm, Chla=  1.2mug/L\nDay   14: Tair=   3.5 degC, T= 6.05 degC, Ice= 30.0cm, Chla=  1.1mug/L\nDay   15: Tair=   4.4 degC, T= 6.66 degC, Ice= 30.0cm, Chla=  1.0mug/L\nDay   16: Tair=   5.4 degC, T= 7.28 degC, Ice= 30.0cm, Chla=  1.0mug/L\nDay   17: Tair=   6.3 degC, T= 7.91 degC, Ice= 30.0cm, Chla=  0.9mug/L\nDay   18: Tair=   7.3 degC, T= 8.55 degC, Ice= 30.0cm, Chla=  0.9mug/L\nDay   19: Tair=   8.2 degC, T= 9.20 degC, Ice= 30.0cm, Chla=  0.8mug/L\nDay   20: Tair=   9.2 degC, T= 9.86 degC, Ice= 30.0cm, Chla=  0.8mug/L\nDay   21: Tair=  10.1 degC, T=10.53 degC, Ice= 30.0cm, Chla=  0.8mug/L\n\n 模拟完成!\n\n[6] 结果分析\n======================================================================\n初始状态:\n  气温: -10.0  degC\n  水温: 0.5  degC\n  冰厚: 30 cm\n  叶绿素: 3.0 mug/L\n\n最终状态 (Day 21):\n  气温: 10.1  degC\n  水温: 10.5  degC\n  冰厚: 30.0 cm\n  冰盖覆盖率: 100.0%\n  叶绿素: 0.8 mug/L\n\n解冻未完成 (残余冰盖: 100.0%)\n\n变化量:\n  水温上升: +10.0  degC\n  冰厚减少: 0.0 cm\n  藻类恢复: 0.3 倍\n\n[7] 生成可视化\n----------------------------------------------------------------------\n 图表已保存: spring_ice_breakup_results.png\n\n[8] 模拟总结\n======================================================================\n\n 成功模拟了春季融冰期生态恢复过程\n\n主要发现:\n  1. 气温回升: -10.0 -> 10.1  degC\n  2. 水温恢复: 0.5 -> 10.5  degC\n  3. 冰盖融化: 30 -> 30.0 cm\n  5. 藻类恢复: 3.0 -> 0.8 mug/L (0.3倍)\n\n生态过程:\n   气温回升 -> 冰盖融化\n   冰盖融化 -> 光照增强\n   水温回升 + 光照增强 -> 藻类复苏\n   冰盖消失 -> 大气复氧恢复\n   春季是生态系统从冬眠到活跃的关键转换期\n\n======================================================================\nHydroClaude v1.0 - 春季生态恢复评估工具 \n======================================================================",
+      "stderr": ""
+    }
+  ]
+}

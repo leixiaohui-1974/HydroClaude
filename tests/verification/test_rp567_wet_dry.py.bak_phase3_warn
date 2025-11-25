@@ -1,0 +1,588 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+RP5-RP7干床问题测试套件（Phase 8.2）
+
+测试目标：
+- 原始WENO3: RP5-RP7误差 >400%
+- Phase 8.1 PP-WENO3: RP5-RP7误差 ~250-300%
+- Phase 8.2湿干增强: RP5-RP7误差 <50% (目标)
+
+测试配置：
+- RP5: 左侧干床 (h_L=0, u_L=0, h_R=5, u_R=0)
+- RP6: 右侧干床 (h_L=5, u_L=5, h_R=0, u_R=0)
+- RP7: 近真空 (h_L=1, u_L=-10, h_R=1, u_R=10)
+
+作者: HydroClaude Team
+日期: 2025-10-31
+阶段: Stage 8 - Phase 8.2
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+
+import numpy as np
+import matplotlib.pyplot as plt
+from typing import Tuple, Dict, List
+
+try:
+    from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+from solvers.positivity_preserving_weno3 import PositivityPreservingWENO3
+from solvers.wet_dry_enhanced_weno3 import WetDryEnhancedWENO3
+from tests.verification.toro_riemann_solver import exact_riemann_solution, riemann_structure
+
+
+def compute_errors(h_num: np.ndarray, h_exact: np.ndarray) -> Dict[str, float]:
+    """
+    计算误差指标
+
+    Args:
+        h_num: 数值解
+        h_exact: 精确解
+
+    Returns:
+        dict: L1, L2, L∞误差（相对和绝对）
+    """
+    # 绝对误差
+    h_err = np.abs(h_num - h_exact)
+    h_L1_abs = np.mean(h_err)
+    h_L2_abs = np.sqrt(np.mean(h_err**2))
+    h_Linf_abs = np.max(h_err)
+
+    # 相对误差（百分比）
+    h_scale = np.max(h_exact) if np.max(h_exact) > 0 else 1.0
+    h_L1_rel = h_L1_abs / h_scale * 100
+    h_L2_rel = h_L2_abs / h_scale * 100
+    h_Linf_rel = h_Linf_abs / h_scale * 100
+
+    return {
+        'L1_abs': h_L1_abs,
+        'L2_abs': h_L2_abs,
+        'Linf_abs': h_Linf_abs,
+        'L1_rel': h_L1_rel,
+        'L2_rel': h_L2_rel,
+        'Linf_rel': h_Linf_rel
+    }
+
+
+def run_dry_bed_simulation(
+    solver_class,
+    solver_name: str,
+    h_L: float,
+    u_L: float,
+    h_R: float,
+    u_R: float,
+    test_name: str,
+    n_cells: int = 500,
+    t_end: float = 1.0,
+    cfl: float = 0.2,
+    **solver_kwargs
+) -> Dict:
+    """
+    运行干床模拟
+
+    Args:
+        solver_class: 求解器类
+        solver_name: 求解器名称
+        h_L, u_L: 左初值
+        h_R, u_R: 右初值
+        test_name: 测试名称（如"RP5"）
+        n_cells: 网格数
+        t_end: 终止时间
+        cfl: CFL数
+        **solver_kwargs: 求解器额外参数
+
+    Returns:
+        dict: 结果字典
+    """
+    print(f"\n{'='*70}")
+    print(f"{solver_name}: {test_name}")
+    print(f"{'='*70}")
+
+    # 参数设置
+    L = 100.0
+    x_dam = L / 2.0
+    B = 10.0
+
+    print(f"初值: h_L={h_L}, u_L={u_L}, h_R={h_R}, u_R={u_R}")
+    print(f"网格: {n_cells} cells, CFL={cfl}")
+
+    # 创建求解器
+    solver = solver_class(
+        width=B,
+        length=L,
+        n_cells=n_cells,
+        manning_n=0.0,
+        slope=0.0,
+        cfl=cfl,
+        use_enhanced_bc=True,
+        well_balanced=False,
+        use_numba=False,  # 测试时不用Numba
+        **solver_kwargs
+    )
+
+    # 初始条件
+    x = solver.x
+    h_init = np.where(x <= x_dam, h_L, h_R)
+    Q_init = B * np.where(x <= x_dam, h_L * u_L, h_R * u_R)
+
+    bc_left = {'type': 'transmissive'}
+    bc_right = {'type': 'transmissive'}
+    solver.initialize(h_init, Q_init, bc_left, bc_right)
+
+    # 运行模拟
+    print(f"\n运行中 (t_end={t_end}s)...")
+    step_count = 0
+    h_min_history = []
+    h_max_history = []
+
+    while solver.t < t_end:
+        solver.step()
+        step_count += 1
+
+        h_min = np.min(solver.h)
+        h_max = np.max(solver.h)
+        h_min_history.append(h_min)
+        h_max_history.append(h_max)
+
+        if step_count % 50 == 0:
+            print(f"  Step {step_count}: t={solver.t:.4f}s, h∈[{h_min:.4f}, {h_max:.4f}]")
+
+    print(f"\n完成！总步数: {step_count}, 最终时间: t={solver.t:.4f}s")
+
+    # 数值解
+    x_num = solver.x
+    h_num = solver.h
+    u_num = solver.Q / (solver.B * np.maximum(solver.h, solver.eps_dry))
+
+    # 精确解
+    x_exact = np.linspace(0, L, 1000)
+    h_exact, u_exact = exact_riemann_solution(
+        x_exact, solver.t, h_L, u_L, h_R, u_R, x_dam
+    )
+
+    # 插值数值解到精确解的网格上
+    h_num_interp = np.interp(x_exact, x_num, h_num)
+
+    # 计算误差
+    errors = compute_errors(h_num_interp, h_exact)
+
+    # 波结构
+    try:
+        structure = riemann_structure(h_L, u_L, h_R, u_R)
+    except:
+        structure = {'h_star': None}
+
+    # 打印结果
+    print(f"\n{'='*70}")
+    print("结果汇总")
+    print(f"{'='*70}")
+    print(f"数值解水深范围: [{np.min(h_num):.4f}, {np.max(h_num):.4f}] m")
+
+    if structure['h_star'] is not None:
+        print(f"精确解中间状态: h* = {structure['h_star']:.4f} m")
+
+    print(f"\n误差指标:")
+    print(f"  L1  = {errors['L1_abs']:.4f} m  ({errors['L1_rel']:.2f}%)")
+    print(f"  L2  = {errors['L2_abs']:.4f} m  ({errors['L2_rel']:.2f}%)")
+    print(f"  L∞  = {errors['Linf_abs']:.4f} m  ({errors['Linf_rel']:.2f}%)")
+
+    # 返回结果
+    result = {
+        'solver_name': solver_name,
+        'test_name': test_name,
+        'x_num': x_num,
+        'h_num': h_num,
+        'u_num': u_num,
+        'x_exact': x_exact,
+        'h_exact': h_exact,
+        'u_exact': u_exact,
+        'errors': errors,
+        'structure': structure,
+        'step_count': step_count,
+        'h_min_history': h_min_history,
+        'h_max_history': h_max_history,
+        't_final': solver.t
+    }
+
+    # 如果是增强型求解器，添加统计信息
+    if hasattr(solver, 'get_statistics'):
+        result['stats'] = solver.get_statistics()
+        solver.print_statistics()
+
+    # 正定性检查
+    h_min_all = np.min(h_min_history)
+    result['h_min_all'] = h_min_all
+    if h_min_all >= 0.0:
+        print(f"\n 正定性保持成功: h_min = {h_min_all:.6e} >= 0")
+    else:
+        print(f"\n 正定性违背: h_min = {h_min_all:.6e} < 0")
+
+    return result
+
+
+def plot_dry_bed_comparison(
+    rp5_results: List[Dict],
+    rp6_results: List[Dict],
+    rp7_results: List[Dict],
+    save_path: str = None
+):
+    """
+    绘制RP5-RP7对比图
+
+    Args:
+        rp5_results: RP5结果列表
+        rp6_results: RP6结果列表
+        rp7_results: RP7结果列表
+        save_path: 保存路径
+    """
+    fig = plt.figure(figsize=(18, 12))
+    gs = fig.add_gridspec(3, 3, hspace=0.3, wspace=0.3)
+
+    # 第一列：RP5
+    # 1. RP5水深对比
+    ax = fig.add_subplot(gs[0, 0])
+    for res in rp5_results:
+        ax.plot(res['x_num'], res['h_num'], 'o-', label=res['solver_name'],
+                markersize=2, alpha=0.7)
+    ax.plot(rp5_results[0]['x_exact'], rp5_results[0]['h_exact'], 'k-',
+            linewidth=2, label='Exact', alpha=0.8)
+    ax.set_xlabel('Distance x (m)', fontsize=10, fontweight='bold')
+    ax.set_ylabel('Water Depth h (m)', fontsize=10, fontweight='bold')
+    ax.set_title('RP5: Dry Bed Left', fontsize=12, fontweight='bold')
+    ax.legend(fontsize=8)
+    ax.grid(True, alpha=0.3)
+
+    # 第二列：RP6
+    # 2. RP6水深对比
+    ax = fig.add_subplot(gs[0, 1])
+    for res in rp6_results:
+        ax.plot(res['x_num'], res['h_num'], 'o-', label=res['solver_name'],
+                markersize=2, alpha=0.7)
+    ax.plot(rp6_results[0]['x_exact'], rp6_results[0]['h_exact'], 'k-',
+            linewidth=2, label='Exact', alpha=0.8)
+    ax.set_xlabel('Distance x (m)', fontsize=10, fontweight='bold')
+    ax.set_ylabel('Water Depth h (m)', fontsize=10, fontweight='bold')
+    ax.set_title('RP6: Dry Bed Right', fontsize=12, fontweight='bold')
+    ax.legend(fontsize=8)
+    ax.grid(True, alpha=0.3)
+
+    # 第三列：RP7
+    # 3. RP7水深对比
+    ax = fig.add_subplot(gs[0, 2])
+    for res in rp7_results:
+        ax.plot(res['x_num'], res['h_num'], 'o-', label=res['solver_name'],
+                markersize=2, alpha=0.7)
+    ax.plot(rp7_results[0]['x_exact'], rp7_results[0]['h_exact'], 'k-',
+            linewidth=2, label='Exact', alpha=0.8)
+    ax.set_xlabel('Distance x (m)', fontsize=10, fontweight='bold')
+    ax.set_ylabel('Water Depth h (m)', fontsize=10, fontweight='bold')
+    ax.set_title('RP7: Near Vacuum', fontsize=12, fontweight='bold')
+    ax.legend(fontsize=8)
+    ax.grid(True, alpha=0.3)
+
+    # 第二行：误差对比（柱状图）
+    # 4. L2误差对比
+    ax = fig.add_subplot(gs[1, :])
+
+    all_results = [
+        ('RP5', rp5_results),
+        ('RP6', rp6_results),
+        ('RP7', rp7_results)
+    ]
+
+    n_tests = len(all_results)
+    n_solvers = len(rp5_results)
+    x_pos = np.arange(n_tests)
+    width = 0.25
+
+    for i, res_list in enumerate([rp5_results, rp6_results, rp7_results]):
+        for j, res in enumerate(res_list):
+            offset = (j - n_solvers/2 + 0.5) * width
+            l2_error = res['errors']['L2_rel']
+            ax.bar(x_pos[i] + offset, l2_error, width,
+                   label=res['solver_name'] if i == 0 else "", alpha=0.8)
+
+    ax.set_ylabel('L2 Error (%)', fontsize=11, fontweight='bold')
+    ax.set_title('L2 Error Comparison: RP5-RP7', fontsize=13, fontweight='bold')
+    ax.set_xticks(x_pos)
+    ax.set_xticklabels(['RP5', 'RP6', 'RP7'])
+    ax.legend(fontsize=10)
+    ax.grid(True, alpha=0.3, axis='y')
+
+    # 添加目标线
+    ax.axhline(50, color='r', linestyle='--', linewidth=2, alpha=0.5,
+               label='Target (<50%)')
+
+    # 第三行：统计信息
+    # 5. 正定性保持激活率
+    ax = fig.add_subplot(gs[2, 0])
+
+    has_pp_stats = any('stats' in res and 'activation_rate' in res['stats']
+                       for res_list in [rp5_results, rp6_results, rp7_results]
+                       for res in res_list)
+
+    if has_pp_stats:
+        test_names = []
+        activation_rates = []
+
+        for test_name, res_list in all_results:
+            for res in res_list:
+                if 'stats' in res and 'activation_rate' in res['stats']:
+                    test_names.append(f"{test_name}\n{res['solver_name']}")
+                    activation_rates.append(res['stats']['activation_rate'] * 100)
+
+        ax.bar(range(len(test_names)), activation_rates, alpha=0.7)
+        ax.set_xticks(range(len(test_names)))
+        ax.set_xticklabels(test_names, rotation=45, ha='right', fontsize=8)
+        ax.set_ylabel('Activation Rate (%)', fontsize=10, fontweight='bold')
+        ax.set_title('Positivity Preservation Activation', fontsize=11, fontweight='bold')
+        ax.grid(True, alpha=0.3, axis='y')
+    else:
+        ax.text(0.5, 0.5, 'No PP statistics available',
+                ha='center', va='center', transform=ax.transAxes)
+        ax.set_title('Positivity Preservation Activation', fontsize=11, fontweight='bold')
+
+    # 6. 界面通量使用率
+    ax = fig.add_subplot(gs[2, 1])
+
+    has_wd_stats = any('stats' in res and 'interface_flux_usage_rate' in res['stats']
+                       for res_list in [rp5_results, rp6_results, rp7_results]
+                       for res in res_list)
+
+    if has_wd_stats:
+        test_names = []
+        wd_rates = []
+
+        for test_name, res_list in all_results:
+            for res in res_list:
+                if 'stats' in res and 'interface_flux_usage_rate' in res['stats']:
+                    test_names.append(f"{test_name}\n{res['solver_name']}")
+                    wd_rates.append(res['stats']['interface_flux_usage_rate'] * 100)
+
+        ax.bar(range(len(test_names)), wd_rates, alpha=0.7, color='orange')
+        ax.set_xticks(range(len(test_names)))
+        ax.set_xticklabels(test_names, rotation=45, ha='right', fontsize=8)
+        ax.set_ylabel('Usage Rate (%)', fontsize=10, fontweight='bold')
+        ax.set_title('Wet-Dry Interface Flux Usage', fontsize=11, fontweight='bold')
+        ax.grid(True, alpha=0.3, axis='y')
+    else:
+        ax.text(0.5, 0.5, 'No wet-dry interface statistics',
+                ha='center', va='center', transform=ax.transAxes)
+        ax.set_title('Wet-Dry Interface Flux Usage', fontsize=11, fontweight='bold')
+
+    # 7. 质量守恒误差
+    ax = fig.add_subplot(gs[2, 2])
+
+    has_mass_stats = any('stats' in res and 'mass_conservation_error' in res['stats']
+                         for res_list in [rp5_results, rp6_results, rp7_results]
+                         for res in res_list)
+
+    if has_mass_stats:
+        test_names = []
+        mass_errors = []
+
+        for test_name, res_list in all_results:
+            for res in res_list:
+                if 'stats' in res and 'mass_conservation_error' in res['stats']:
+                    test_names.append(f"{test_name}\n{res['solver_name']}")
+                    mass_errors.append(res['stats']['mass_conservation_error'])
+
+        ax.bar(range(len(test_names)), mass_errors, alpha=0.7, color='green')
+        ax.set_xticks(range(len(test_names)))
+        ax.set_xticklabels(test_names, rotation=45, ha='right', fontsize=8)
+        ax.set_ylabel('Error (%)', fontsize=10, fontweight='bold')
+        ax.set_title('Mass Conservation Error', fontsize=11, fontweight='bold')
+        ax.grid(True, alpha=0.3, axis='y')
+
+        # 添加目标线
+        ax.axhline(0.1, color='r', linestyle='--', alpha=0.5)
+    else:
+        ax.text(0.5, 0.5, 'No mass conservation statistics',
+                ha='center', va='center', transform=ax.transAxes)
+        ax.set_title('Mass Conservation Error', fontsize=11, fontweight='bold')
+
+    plt.suptitle('RP5-RP7 Dry Bed Tests: Wet-Dry Enhanced WENO3 vs Baselines',
+                 fontsize=15, fontweight='bold')
+
+    if save_path:
+        plt.savefig(save_path, dpi=150, bbox_inches='tight')
+        print(f"\n图表已保存: {save_path}")
+
+    return fig
+
+
+def main():
+    """
+    主测试函数：对比三种求解器在RP5-RP7上的性能
+    """
+    print("\n" + "="*80)
+    print("RP5-RP7干床测试：湿干增强WENO3 vs Phase 8.1 vs 原始WENO3")
+    print("="*80)
+
+    # 测试配置
+    test_configs = [
+        {
+            'name': 'RP5',
+            'h_L': 0.0, 'u_L': 0.0,
+            'h_R': 5.0, 'u_R': 0.0,
+            'n_cells': 500,
+            't_end': 1.0,
+            'cfl': 0.3
+        },
+        {
+            'name': 'RP6',
+            'h_L': 5.0, 'u_L': 5.0,
+            'h_R': 0.0, 'u_R': 0.0,
+            'n_cells': 500,
+            't_end': 1.0,
+            'cfl': 0.3
+        },
+        {
+            'name': 'RP7',
+            'h_L': 1.0, 'u_L': -10.0,
+            'h_R': 1.0, 'u_R': 10.0,
+            'n_cells': 1000,
+            't_end': 0.5,
+            'cfl': 0.2
+        }
+    ]
+
+    # 求解器配置
+    solvers = [
+        {
+            'class': GodunvFVMWENO3,
+            'name': 'WENO3 (Original)',
+            'kwargs': {}
+        },
+        {
+            'class': PositivityPreservingWENO3,
+            'name': 'PP-WENO3',
+            'kwargs': {
+                'eps_pp': 1e-10,
+                'theta_min': 0.0,
+                'use_pp': True
+            }
+        },
+        {
+            'class': WetDryEnhancedWENO3,
+            'name': 'WD-Enhanced-WENO3',
+            'kwargs': {
+                'eps_pp': 1e-10,
+                'theta_min': 0.0,
+                'wet_dry_threshold': 1e-3,  # 放宽检测阈值: 1e-4->1e-3
+                'interface_theta_max': 0.3,
+                'use_pp': True,
+                'use_wd_flux': True
+            }
+        }
+    ]
+
+    # 运行所有测试
+    rp5_results = []
+    rp6_results = []
+    rp7_results = []
+
+    for test_config in test_configs:
+        test_name = test_config['name']
+        results_list = []
+
+        print(f"\n\n{'#'*80}")
+        print(f"# {test_name}测试")
+        print(f"{'#'*80}")
+
+        for solver_config in solvers:
+            print(f"\n[{solver_config['name']}]")
+
+            try:
+                result = run_dry_bed_simulation(
+                    solver_class=solver_config['class'],
+                    solver_name=solver_config['name'],
+                    h_L=test_config['h_L'],
+                    u_L=test_config['u_L'],
+                    h_R=test_config['h_R'],
+                    u_R=test_config['u_R'],
+                    test_name=test_name,
+                    n_cells=test_config['n_cells'],
+                    t_end=test_config['t_end'],
+                    cfl=test_config['cfl'],
+                    **solver_config['kwargs']
+                )
+                results_list.append(result)
+            except Exception as e:
+                print(f"\n {solver_config['name']} 失败: {e}")
+                import traceback
+                traceback.print_exc()
+
+        # 保存结果
+        if test_name == 'RP5':
+            rp5_results = results_list
+        elif test_name == 'RP6':
+            rp6_results = results_list
+        elif test_name == 'RP7':
+            rp7_results = results_list
+
+    # 对比总结
+    print("\n\n" + "="*80)
+    print("对比总结")
+    print("="*80)
+
+    for test_name, results_list in [('RP5', rp5_results), ('RP6', rp6_results), ('RP7', rp7_results)]:
+        print(f"\n{test_name}:")
+        for res in results_list:
+            err = res['errors']
+            print(f"  {res['solver_name']}:")
+            print(f"    L2误差:  {err['L2_rel']:.2f}%")
+            print(f"    h_min:   {res['h_min_all']:.6e}")
+
+    # 判断达标情况
+    print("\n\n" + "="*80)
+    print("达标情况（目标：L2误差<50%）")
+    print("="*80)
+
+    target_l2 = 50.0
+
+    for test_name, results_list in [('RP5', rp5_results), ('RP6', rp6_results), ('RP7', rp7_results)]:
+        print(f"\n{test_name}:")
+
+        # 找到湿干增强WENO3的结果
+        wd_result = None
+        for res in results_list:
+            if 'WD-Enhanced' in res['solver_name']:
+                wd_result = res
+                break
+
+        if wd_result:
+            l2_error = wd_result['errors']['L2_rel']
+            if l2_error < target_l2:
+                print(f"   达标！WD-Enhanced-WENO3的L2误差({l2_error:.2f}%) < 目标({target_l2}%)")
+            else:
+                print(f"  ️  未达标。WD-Enhanced-WENO3的L2误差({l2_error:.2f}%) >= 目标({target_l2}%)")
+        else:
+            print(f"  ️  未运行WD-Enhanced-WENO3")
+
+    # 绘制对比图
+    if rp5_results and rp6_results and rp7_results:
+        print("\n\n生成对比图...")
+        output_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'results', 'phase8.2')
+        os.makedirs(output_dir, exist_ok=True)
+        save_path = os.path.join(output_dir, 'rp567_wet_dry_comparison.png')
+
+        fig = plot_dry_bed_comparison(rp5_results, rp6_results, rp7_results, save_path=save_path)
+
+    print("\n\n" + "="*80)
+    print("测试完成！")
+    print("="*80)
+
+    return rp5_results, rp6_results, rp7_results
+
+
+if __name__ == '__main__':
+    rp5_results, rp6_results, rp7_results = main()
+    plt.show()

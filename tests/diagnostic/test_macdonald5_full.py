@@ -4,6 +4,8 @@ MacDonald Test 5 完整测试
 基于诊断结果（Manning摩阻工作正常），运行完整的Test 5配置
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 241,
+    "batch_end_index": 242,
+    "test_run_at": "2025-11-25T16:30:48.039480",
+    "batch_duration_seconds": 1.28,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_03_turbine_demo/example_03_turbine_comparison.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.28,
+      "stdout": "================================================================================\nEXAMPLE 03: HYDRAULIC TURBINE COMPARISON AND SELECTION\n================================================================================\n\nThis example demonstrates:\n  - Francis, Kaplan, and Pelton turbine characteristics\n  - Efficiency curves at different loads\n  - Part-load performance comparison\n  - Hill chart for Francis turbine\n  - Turbine selection guide\n================================================================================\n\n================================================================================\nFRANCIS TURBINE DEMONSTRATION\n================================================================================",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_03_turbine_demo\\example_03_turbine_comparison.py\", line 376, in <module>\n    main()\n    ~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_03_turbine_demo\\example_03_turbine_comparison.py\", line 330, in main\n    francis_data = demo_francis_turbine()\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_03_turbine_demo\\example_03_turbine_comparison.py\", line 53, in demo_francis_turbine\n    print(f\"\\n{francis}\")\n    ~~~~~^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'gbk' codec can't encode character '\\xb3' in position 73: illegal multibyte sequence"
+    }
+  ]
+}

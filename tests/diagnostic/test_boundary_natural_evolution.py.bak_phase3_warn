@@ -1,0 +1,107 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+边界自然演化测试
+
+测试不强制边界单元，只通过ghost cell控制的效果
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
+
+import numpy as np
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+
+
+def test_natural_evolution():
+    """测试边界自然演化"""
+
+    print("\n" + "="*80)
+    print("边界自然演化测试（不强制边界单元）")
+    print("="*80)
+
+    B = 10.0
+    L = 200.0
+    n_cells = 10
+
+    solver = GodunvFVMSolver(
+        width=B,
+        length=L,
+        n_cells=n_cells,
+        manning_n=0.0,
+        slope=0.0,
+        cfl=0.4,
+        order=1
+    )
+
+    h_up = 0.3
+    Q_up = 10.0
+    h_down = 2.0
+
+    # 初始条件：线性插值
+    h_init = np.linspace(h_up, h_down, n_cells)
+    Q_init = np.ones(n_cells) * Q_up
+
+    bc_left = {'type': 'supercritical', 'h': h_up, 'Q': Q_up}
+    bc_right = {'type': 'h', 'value': h_down}
+
+    solver.initialize(h_init, Q_init, bc_left, bc_right)
+
+    # 临时禁用边界强制（仅用于测试）
+    original_apply_bc = solver._apply_bc
+
+    def no_force_apply_bc(h, Q):
+        """只强制右边界h，不强制左边界"""
+        # 右边界h必须强制，因为这是Dirichlet边界
+        if solver.bc_right['type'] == 'h':
+            h[-1] = h_down
+        return h, Q
+
+    solver._apply_bc = no_force_apply_bc
+
+    print(f"\n初始状态:")
+    print(f"  h[0] = {solver.h[0]:.6f} m (目标: {h_up})")
+    print(f"  Q[0] = {solver.Q[0]:.6f} m^3/s (目标: {Q_up})")
+    print(f"  初始质量 = {solver._compute_total_mass():.2f} m^3")
+
+    print(f"\n演化过程（不强制左边界）:")
+    print(f"{'步骤':>5} {'h[0](m)':>10} {'Q[0](m^3/s)':>12} {'h[1](m)':>10} {'质量(m^3)':>12} {'误差(%)':>10}")
+    print("-" * 75)
+
+    for step in range(20):
+        solver.step()
+        mass_error = solver.get_mass_conservation_error()
+
+        print(f"{step+1:5d} {solver.h[0]:10.6f} {solver.Q[0]:12.6f} {solver.h[1]:10.6f} {solver._compute_total_mass():12.2f} {mass_error:10.4f}")
+
+    print("\n" + "="*80)
+    print("分析:")
+    print(f"  最终 h[0] = {solver.h[0]:.6f} m (目标: {h_up})")
+    print(f"  最终 Q[0] = {solver.Q[0]:.6f} m^3/s (目标: {Q_up})")
+    print(f"  质量误差 = {solver.get_mass_conservation_error():.4f}%")
+
+    if abs(solver.h[0] - h_up) < 0.05 and abs(solver.Q[0] - Q_up) < 1.0:
+        print("   边界值通过ghost cell控制保持稳定")
+    else:
+        print("   边界值漂移严重，需要强制")
+
+    if abs(solver.get_mass_conservation_error()) < 1.0:
+        print("   质量守恒良好")
+    else:
+        print("   质量守恒误差过大")
+
+    print("="*80)
+
+    # 恢复原始方法
+    solver._apply_bc = original_apply_bc
+
+
+if __name__ == "__main__":
+    test_natural_evolution()

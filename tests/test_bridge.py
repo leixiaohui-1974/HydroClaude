@@ -12,6 +12,8 @@ Tests cover:
 """
 
 import pytest
+import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
 import sys
 import os

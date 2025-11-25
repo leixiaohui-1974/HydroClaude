@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 72,
+    "batch_end_index": 73,
+    "test_run_at": "2025-11-25T16:52:11.022574",
+    "batch_duration_seconds": 0.17,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/fix_20251113_090938/tests/legacy_diagnostic/test_fvm_fdm_comparison.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.17,
+      "stdout": "",
+      "stderr": "File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_090938\\tests\\legacy_diagnostic\\test_fvm_fdm_comparison.py\", line 30\n    except ImportError as e:\n    ^^^^^^\nIndentationError: expected an indented block after 'try' statement on line 27"
+    }
+  ]
+}

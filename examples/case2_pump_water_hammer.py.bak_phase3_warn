@@ -1,0 +1,381 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+泵站水锤分析案例
+Pump Station Water Hammer Analysis Case Study
+
+案例背景 Case Background:
+某水厂配水泵站，泵出流量1.0 m^3/s，扬程80m。
+输水管道长度5000m，直径800mm。
+分析停电工况下的水锤压力变化。
+
+分析内容 Analysis Content:
+1. 正常运行工况水力计算
+2. 停电断电水锤分析
+3. Joukowsky公式理论验证
+4. 最大/最小压力包络线
+5. 防护措施建议
+
+Author: HydroClaude Team
+Date: 2025-10-30
+"""
+
+import sys
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 添加项目路径
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from solvers.water_hammer_moc_solver import WaterHammerMOCSolver, WaterHammerBoundary
+from solvers.pump_boundary import PumpCharacteristics, PumpBoundary, StandardPumps
+
+
+def joukowsky_analysis():
+    """Joukowsky公式理论分析"""
+    print("="*80)
+    print("Joukowsky公式理论分析")
+    print("="*80)
+    print()
+
+    # 泵站参数
+    Q0 = 1.0          # 初始流量 (m^3/s)
+    D = 0.8           # 管径 (m)
+    L = 5000          # 管道长度 (m)
+    a = 1000          # 波速 (m/s)
+    f = 0.018         # 摩阻系数
+
+    # 计算流速
+    A = np.pi * (D/2)**2
+    V0 = Q0 / A
+
+    # Joukowsky压升
+    delta_H_jouk = a * V0 / 9.81
+
+    # 临界关闭时间
+    T_critical = 2 * L / a
+
+    print(f"【系统参数】")
+    print(f"  流量: Q = {Q0*1000:.1f} L/s")
+    print(f"  管径: D = {D*1000:.0f} mm")
+    print(f"  长度: L = {L:.0f} m")
+    print(f"  波速: a = {a:.0f} m/s")
+    print(f"  流速: V = {V0:.2f} m/s")
+    print()
+
+    print(f"【Joukowsky理论】")
+    print(f"  压力升高: DeltaH = a*V/g = {delta_H_jouk:.2f} m")
+    print(f"  临界时间: T_c = 2L/a = {T_critical:.2f} s")
+    print()
+
+    print(f"【工程判断】")
+    if delta_H_jouk > 50:
+        print(f"   压力升高 {delta_H_jouk:.0f}m 过大！")
+        print(f"     必须采取水锤防护措施：")
+        print(f"     1. 安装空气罐/调压塔")
+        print(f"     2. 增加飞轮惯量")
+        print(f"     3. 分段关阀控制")
+    elif delta_H_jouk > 30:
+        print(f"   压力升高 {delta_H_jouk:.0f}m 较大")
+        print(f"     建议采取适当防护措施")
+    else:
+        print(f"   压力升高 {delta_H_jouk:.0f}m 在可接受范围内")
+
+    print()
+
+    return Q0, D, L, a, f, V0, delta_H_jouk, T_critical
+
+
+def simulate_power_failure(Q0, D, L, a, f, duration=20.0, verbose=True):
+    """模拟停电工况"""
+    if verbose:
+        print("="*80)
+        print("停电工况水锤数值模拟")
+        print("="*80)
+        print()
+
+    # 创建水锤求解器
+    solver = WaterHammerMOCSolver(
+        L=L,
+        D=D,
+        f=f,
+        wave_speed=a
+    )
+
+    # 设置网格
+    nx = 51  # 空间节点数
+    cfl = 1.0  # CFL数
+    solver.set_grid(nx=nx, cfl=cfl)
+
+    if verbose:
+        print(f"【数值设置】")
+        print(f"  空间节点: nx = {nx}")
+        print(f"  时间步长: dt = {solver.dt:.4f} s")
+        print(f"  CFL数: {cfl}")
+        print()
+
+    # 边界条件
+    # 上游：固定水头（水库）
+    H0_up = 100.0  # 上游水库水位
+    bc_upstream = WaterHammerBoundary('reservoir', value=H0_up)
+
+    # 下游：阀门瞬间关闭（模拟停电）
+    def valve_closure(t):
+        """阀门开度函数（停电时瞬间关闭）"""
+        if t < 0.1:  # 0.1秒前正常运行
+            return 1.0
+        else:  # 停电后瞬间关闭
+            return 0.0
+
+    bc_downstream = WaterHammerBoundary('valve', closure_function=valve_closure)
+
+    if verbose:
+        print(f"【边界条件】")
+        print(f"  上游: 固定水头 H = {H0_up:.1f} m")
+        print(f"  下游: 阀门瞬间关闭 (t = 0.1s)")
+        print()
+
+        # 求解
+        print(f"【开始数值模拟】")
+
+    result = solver.solve_transient(
+        Q0=Q0,
+        H0_up=H0_up,
+        bc_upstream=bc_upstream,
+        bc_downstream=bc_downstream,
+        duration=duration
+    )
+
+    if verbose:
+        print(f"   模拟完成，时长 {duration:.1f}s")
+        print()
+
+    return solver, result, H0_up
+
+
+def analyze_results(solver, result, H0_up, delta_H_jouk):
+    """分析模拟结果"""
+    print("="*80)
+    print("水锤分析结果")
+    print("="*80)
+    print()
+
+    H = result['H']
+    Q = result['Q']
+    t = result['t']
+    x = result['x']
+
+    # 找到最大和最小压力
+    H_max = np.max(H)
+    H_min = np.min(H)
+
+    # 找到最大压力发生的时间和位置
+    idx_max = np.unravel_index(np.argmax(H), H.shape)
+    t_max, x_max = t[idx_max[0]], x[idx_max[1]]
+
+    # 找到最小压力发生的时间和位置
+    idx_min = np.unravel_index(np.argmin(H), H.shape)
+    t_min, x_min = t[idx_min[0]], x[idx_min[1]]
+
+    print(f"【压力统计】")
+    print(f"  初始水头: H0 = {H0_up:.2f} m")
+    print(f"  最大水头: H_max = {H_max:.2f} m (t={t_max:.2f}s, x={x_max:.0f}m)")
+    print(f"  最小水头: H_min = {H_min:.2f} m (t={t_min:.2f}s, x={x_min:.0f}m)")
+    print(f"  压力升高: DeltaH_max = {H_max - H0_up:.2f} m")
+    print(f"  压力下降: DeltaH_min = {H0_up - H_min:.2f} m")
+    print()
+
+    print(f"【理论对比】")
+    print(f"  Joukowsky理论: DeltaH = {delta_H_jouk:.2f} m")
+    print(f"  数值模拟结果: DeltaH = {H_max - H0_up:.2f} m")
+    error = abs((H_max - H0_up) - delta_H_jouk) / delta_H_jouk * 100
+    print(f"  相对误差: {error:.1f}%")
+
+    if error < 10:
+        print(f"   数值结果与理论吻合良好")
+    else:
+        print(f"   数值结果与理论存在偏差（可能受摩阻影响）")
+    print()
+
+    print(f"【安全评估】")
+    # 假设管道设计压力为150m
+    P_design = 150.0
+    if H_max > P_design:
+        print(f"   最大水头 {H_max:.0f}m 超过设计压力 {P_design:.0f}m")
+        print(f"     超压: {H_max - P_design:.0f}m ({(H_max-P_design)/P_design*100:.1f}%)")
+        print(f"     必须采取防护措施！")
+    elif H_max > 0.9 * P_design:
+        print(f"   最大水头 {H_max:.0f}m 接近设计压力 {P_design:.0f}m")
+        print(f"     安全裕度较小，建议采取防护措施")
+    else:
+        print(f"   最大水头 {H_max:.0f}m < 设计压力 {P_design:.0f}m")
+        print(f"     安全裕度: {P_design - H_max:.0f}m")
+
+    # 检查负压
+    if H_min < 0:
+        print(f"   出现负压 {H_min:.0f}m！")
+        print(f"     可能产生气穴和水柱分离")
+        print(f"     必须安装空气阀或其他防护设备")
+    elif H_min < 20:
+        print(f"   最小水头 {H_min:.0f}m 过低")
+        print(f"     建议安装空气阀")
+    else:
+        print(f"   最小水头 {H_min:.0f}m > 0，无负压风险")
+
+    print()
+
+    return H_max, H_min
+
+
+def plot_results(solver, result, Q0, H0_up, delta_H_jouk):
+    """绘制结果图表"""
+    H = result['H']
+    Q = result['Q']
+    t = result['t']
+    x = result['x']
+
+    fig = plt.figure(figsize=(16, 10))
+    gs = fig.add_gridspec(3, 2, hspace=0.3, wspace=0.3)
+
+    # 子图1: 管道末端水头时程
+    ax1 = fig.add_subplot(gs[0, 0])
+    ax1.plot(t, H[:, -1], 'b-', linewidth=2, label='Numerical')
+    ax1.axhline(y=H0_up, color='g', linestyle='--', label='Initial Head')
+    ax1.axhline(y=H0_up + delta_H_jouk, color='r', linestyle='--',
+               label=f'Joukowsky (+{delta_H_jouk:.1f}m)')
+    ax1.set_xlabel('Time (s)', fontsize=11)
+    ax1.set_ylabel('Head (m)', fontsize=11)
+    ax1.set_title('Head at Downstream End', fontsize=13, fontweight='bold')
+    ax1.legend()
+    ax1.grid(alpha=0.3)
+
+    # 子图2: 管道末端流量时程
+    ax2 = fig.add_subplot(gs[0, 1])
+    ax2.plot(t, Q[:, -1]*1000, 'r-', linewidth=2)
+    ax2.axhline(y=Q0*1000, color='g', linestyle='--', label='Initial Flow')
+    ax2.set_xlabel('Time (s)', fontsize=11)
+    ax2.set_ylabel('Flow Rate (L/s)', fontsize=11)
+    ax2.set_title('Flow at Downstream End', fontsize=13, fontweight='bold')
+    ax2.legend()
+    ax2.grid(alpha=0.3)
+
+    # 子图3: 水头时空分布（前5秒）
+    ax3 = fig.add_subplot(gs[1, :])
+    t_indices = t <= 5.0
+    X, T = np.meshgrid(x, t[t_indices])
+    contour = ax3.contourf(X, T, H[t_indices, :], levels=20, cmap='RdYlBu_r')
+    cbar = plt.colorbar(contour, ax=ax3)
+    cbar.set_label('Head (m)', fontsize=11)
+    ax3.set_xlabel('Distance (m)', fontsize=11)
+    ax3.set_ylabel('Time (s)', fontsize=11)
+    ax3.set_title('Head Distribution (First 5s)', fontsize=13, fontweight='bold')
+
+    # 子图4: 最大/最小压力包络线
+    ax4 = fig.add_subplot(gs[2, 0])
+    H_max_envelope = np.max(H, axis=0)
+    H_min_envelope = np.min(H, axis=0)
+    ax4.fill_between(x, H_min_envelope, H_max_envelope, alpha=0.3, color='blue', label='Pressure Envelope')
+    ax4.plot(x, H_max_envelope, 'r-', linewidth=2, label='Max Head')
+    ax4.plot(x, H_min_envelope, 'b-', linewidth=2, label='Min Head')
+    ax4.axhline(y=H0_up, color='g', linestyle='--', label='Initial Head')
+    ax4.set_xlabel('Distance (m)', fontsize=11)
+    ax4.set_ylabel('Head (m)', fontsize=11)
+    ax4.set_title('Pressure Envelope', fontsize=13, fontweight='bold')
+    ax4.legend()
+    ax4.grid(alpha=0.3)
+
+    # 子图5: 特定位置水头变化（多个位置）
+    ax5 = fig.add_subplot(gs[2, 1])
+    positions = [0, len(x)//4, len(x)//2, 3*len(x)//4, -1]
+    labels = ['x=0', 'x=L/4', 'x=L/2', 'x=3L/4', 'x=L']
+    colors = ['blue', 'green', 'orange', 'red', 'purple']
+
+    for pos, label, color in zip(positions, labels, colors):
+        ax5.plot(t, H[:, pos], color=color, label=label, linewidth=1.5)
+
+    ax5.set_xlabel('Time (s)', fontsize=11)
+    ax5.set_ylabel('Head (m)', fontsize=11)
+    ax5.set_title('Head at Different Locations', fontsize=13, fontweight='bold')
+    ax5.legend()
+    ax5.grid(alpha=0.3)
+
+    plt.savefig('examples/pump_water_hammer_results.png', dpi=150, bbox_inches='tight')
+    print(" 结果图表已保存: examples/pump_water_hammer_results.png")
+    plt.close()
+
+
+def recommendations():
+    """防护措施建议"""
+    print("="*80)
+    print("水锤防护措施建议")
+    print("="*80)
+    print()
+
+    print("【方案1】增加飞轮惯量 (WR^2)")
+    print("  原理: 增大泵组转动惯量，延缓转速下降")
+    print("  优点: 简单可靠，无需额外设施")
+    print("  缺点: 飞轮尺寸和重量较大")
+    print("  适用: 泵站空间充足，压力升高不太大")
+    print()
+
+    print("【方案2】安装空气罐")
+    print("  原理: 提供缓冲气垫，吸收压力脉动")
+    print("  优点: 防护效果好，使用广泛")
+    print("  缺点: 需要定期维护，成本较高")
+    print("  适用: 压力升高较大的情况")
+    print()
+
+    print("【方案3】安装调压塔")
+    print("  原理: 提供自由水面，限制最大/最小压力")
+    print("  优点: 防护效果最好，维护简单")
+    print("  缺点: 占地面积大，投资高")
+    print("  适用: 大型泵站，场地条件允许")
+    print()
+
+    print("【方案4】两阶段关阀")
+    print("  原理: 快速关闭50-70%，然后缓慢关闭")
+    print("  优点: 不需要额外设备")
+    print("  缺点: 控制复杂，可靠性取决于控制系统")
+    print("  适用: 有自动控制系统的泵站")
+    print()
+
+    print("【推荐方案】")
+    print("  对于本案例（DeltaH~=200m）：")
+    print("  建议采用 空气罐 + 增大飞轮 组合方案")
+    print("  - 空气罐容积约 5-10 m^3")
+    print("  - 飞轮 WR^2 增加50-100%")
+    print()
+
+
+def main():
+    """主函数"""
+    print("\n")
+    print("╔" + "="*78 + "╗")
+    print("║" + " "*23 + "泵站水锤分析案例" + " "*23 + "║")
+    print("║" + " "*16 + "Pump Station Water Hammer Analysis" + " "*16 + "║")
+    print("╚" + "="*78 + "╝")
+    print()
+
+    # 1. Joukowsky理论分析
+    Q0, D, L, a, f, V0, delta_H_jouk, T_critical = joukowsky_analysis()
+
+    # 2. 停电工况数值模拟
+    solver, result, H0_up = simulate_power_failure(Q0, D, L, a, f)
+
+    # 3. 结果分析
+    H_max, H_min = analyze_results(solver, result, H0_up, delta_H_jouk)
+
+    # 4. 结果可视化
+    plot_results(solver, result, Q0, H0_up, delta_H_jouk)
+
+    # 5. 防护建议
+    recommendations()
+
+    print("="*80)
+    print(" 案例分析完成！")
+    print("="*80)
+
+
+if __name__ == '__main__':
+    main()

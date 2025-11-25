@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 15,
+    "batch_end_index": 16,
+    "test_run_at": "2025-11-25T16:50:40.529534",
+    "batch_duration_seconds": 7.35,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/deprecated_scripts_backup/example_01_canal_flow/scripts/09_simple_canal_enhanced.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 7.35,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\deprecated_scripts_backup\\example_01_canal_flow\\scripts\\09_simple_canal_enhanced.py\", line 23, in <module>\n    from output_helper import get_output_path, save_figure, save_table, save_animation\nModuleNotFoundError: No module named 'output_helper'"
+    }
+  ]
+}

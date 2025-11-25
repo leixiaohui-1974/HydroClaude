@@ -5,6 +5,8 @@ Manning摩阻项诊断测试
 策略：从简单到复杂逐步测试
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

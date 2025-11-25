@@ -21,13 +21,15 @@
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('Agg')
 import sys
 import os
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from control.constrained_mpc import (
     ConstrainedMPC, MPCWeights, MPCConstraints,

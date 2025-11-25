@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 16,
+    "batch_end_index": 17,
+    "test_run_at": "2025-11-25T16:50:55.024385",
+    "batch_duration_seconds": 14.35,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/deprecated_scripts_backup/example_01_canal_flow/scripts/09_simple_canal_enhanced_refactored.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 14.35,
+      "stdout": "======================================================================\n示例1: 简单明渠仿真 (增强版)\n======================================================================\n\n本体仿真器初始化: 模式=high_fidelity, 组件数=1\n仿真参数:\n  渠道长度: 1000 m\n  网格数: 50\n  时间步长: 10.0 s\n  总步数: 10\n  总时间: 100.0 s\n\n开始仿真...\n----------------------------------------------------------------------\n步  1/10: 时间=   0.0s, 水深=5.000m, 流量=5.000m^3/s, 体积=0.0m^3\n步  2/10: 时间=  10.0s, 水深=5.000m, 流量=5.000m^3/s, 体积=0.0m^3\n步  3/10: 时间=  20.0s, 水深=5.000m, 流量=5.000m^3/s, 体积=0.0m^3\n步  4/10: 时间=  30.0s, 水深=5.000m, 流量=5.000m^3/s, 体积=0.0m^3\n步  5/10: 时间=  40.0s, 水深=5.000m, 流量=5.000m^3/s, 体积=0.0m^3\n步  6/10: 时间=  50.0s, 水深=5.000m, 流量=5.000m^3/s, 体积=0.0m^3\n步  7/10: 时间=  60.0s, 水深=5.000m, 流量=5.000m^3/s, 体积=0.0m^3\n步  8/10: 时间=  70.0s, 水深=5.000m, 流量=5.000m^3/s, 体积=0.0m^3\n步  9/10: 时间=  80.0s, 水深=5.000m, 流量=5.000m^3/s, 体积=0.0m^3\n步 10/10: 时间=  90.0s, 水深=5.000m, 流量=5.000m^3/s, 体积=0.0m^3\n----------------------------------------------------------------------\n仿真完成!\n\n生成可视化图表...\n   生成图表: archive_01_simple_depth_time.png\n   生成图表: archive_01_simple_flow_time.png\n   生成图表: archive_01_simple_depth_profile.png\n  生成动态GIF动画...\n   生成动画: archive_01_simple_depth_animation.gif\n   生成动画: archive_01_simple_flow_animation.gif\n\n导出数据表...\n   Saved: archive_01_simple_time_series_refactored.csv\n   Saved: archive_01_simple_spatial_profile_refactored.csv\n生成仿真报告...\n   报告已生成: archive_01_simple_simulation_report.md\n\n======================================================================\n仿真结果总结\n======================================================================\n初始水深: 5.000 m\n最终水深: 5.000 m\n水深变化: 0.000 m\n平均流量: 5.000 m^3/s\n\n生成文件:\n  Figures (3):\n    - archive_01_simple_depth_time.png\n    - archive_01_simple_flow_time.png\n    - archive_01_simple_depth_profile.png\n  Animations (2):\n    - archive_01_simple_depth_animation.gif\n    - archive_01_simple_flow_animation.gif\n  Tables (2):\n    - archive_01_simple_time_series.csv (10 rows)\n    - archive_01_simple_spatial_profile.csv (50 rows)\n  Report (1):\n    - archive_01_simple_simulation_report.md\n\n所有输出文件已保存到 results/ 目录\n======================================================================",
+      "stderr": ""
+    }
+  ]
+}

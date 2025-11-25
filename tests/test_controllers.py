@@ -1,4 +1,6 @@
 import sys, os
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # Add project root to path

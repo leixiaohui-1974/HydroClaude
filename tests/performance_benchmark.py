@@ -14,6 +14,8 @@ Date: 2025-10-31
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import os
 import time

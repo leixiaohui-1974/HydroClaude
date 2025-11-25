@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 254,
+    "batch_end_index": 255,
+    "test_run_at": "2025-11-25T16:32:45.152770",
+    "batch_duration_seconds": 1.93,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_10_series_network/example_10_series_network_with_anim.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 1.93,
+      "stdout": "================================================================================\nʾ��10: ��������ϵͳ - ��ǿ�棨Ƕ��ʽ������\n================================================================================\n\n ��̬ͼ���ѱ���: E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_10_series_network\\outputs\\figures\\series_network.png\n\n ʾ��10����ǿ�棩���гɹ�",
+      "stderr": ""
+    }
+  ]
+}

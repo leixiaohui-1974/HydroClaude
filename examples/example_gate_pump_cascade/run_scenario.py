@@ -6,12 +6,14 @@
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 import shutil
 
 # 添加项目根目录
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
 import matplotlib

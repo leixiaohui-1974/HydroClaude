@@ -23,6 +23,8 @@
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('Agg')
@@ -32,7 +34,7 @@ from dataclasses import dataclass
 # 导入控制器
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from control.mpc_controller import MPCController, MPCConfig
 from control.pid_controller import PIDController, PIDConfig
 

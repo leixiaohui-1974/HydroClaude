@@ -16,6 +16,8 @@
 日期: 2025-10-23
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

@@ -1,0 +1,561 @@
+# -*- coding: utf-8 -*-
+"""
+示例2：高级水工建筑物组合（重构版）
+
+展示高级功能：
+1. 多个闸门同时存在
+2. 混合结构（闸门 + 堰 + 孔口）
+3. 时变闸门开度
+4. 优化的稳态求解
+
+Author: Claude
+Date: 2025-10-22
+"""
+
+import sys, os
+
+# Add project root to path
+# Script is in: examples/example_01_canal_flow/scripts/
+# Project root is 3 levels up
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_path))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+
+# Add scripts directory to path for output_helper
+script_dir = os.path.dirname(script_path)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+from solvers.gate import SluiceGate, BroadCrestedWeir, Orifice
+from output_helper import save_animation, save_figure, save_table
+
+
+def run_advanced_structures_demo():
+    """演示高级水工建筑物组合"""
+
+    print("=" * 80)
+    print("示例2：高级水工建筑物组合")
+    print("=" * 80)
+    print()
+
+    # ==================== 系统配置 ====================
+    canal_length = 10000.0
+    canal_width = 10.0
+    n_points = 301
+
+    # 渠道参数
+    bed_slope = 0.0005
+    manning_n = 0.025
+
+    print("系统配置:")
+    print(f"  渠道总长度: {canal_length} m")
+    print(f"  渠道宽度: {canal_width} m")
+    print(f"  空间点数: {n_points}")
+    print()
+
+    # ==================== 场景1: 多个闸门 ====================
+    print("=" * 80)
+    print("场景1: 三个闸门串联")
+    print("-" * 80)
+
+    # 创建三个闸门
+    gate1 = SluiceGate(position=2500.0, width=canal_width, opening=4.5, Cd=0.6)
+    gate2 = SluiceGate(position=5000.0, width=canal_width, opening=4.0, Cd=0.6)
+    gate3 = SluiceGate(position=7500.0, width=canal_width, opening=5.0, Cd=0.6)
+
+    print(f"闸门1: {gate1}")
+    print(f"闸门2: {gate2}")
+    print(f"闸门3: {gate3}")
+    print()
+
+    solver1 = HydrostaticCanalSolver(
+        length=canal_length,
+        nx=n_points,
+        B=canal_width,
+        S0=bed_slope,
+        n=manning_n,
+        internal_structures=[
+            (gate1.position, gate1),
+            (gate2.position, gate2),
+            (gate3.position, gate3)
+        ]
+    )
+
+    Q_initial = 10.0
+
+    # 初始化均匀流
+    print("初始化均匀流...")
+    from utils.canal_utils import compute_steady_uniform_flow
+    h_uniform = compute_steady_uniform_flow(Q_initial, canal_width, bed_slope, manning_n)
+    solver1.h[:] = h_uniform
+    solver1.hu[:] = Q_initial / canal_width
+
+    # 使用静水重构稳态求解器
+    print("\n使用HydrostaticCanalSolver（Phase 2修复版）...")
+    result1 = solver1.solve_steady_state(
+        Q_target=Q_initial,
+        h_downstream=h_uniform,
+        max_iterations=5000,
+        convergence_tol = 0.1,
+        dt=0.5,
+        verbose=True
+    )
+
+    # 获取结果
+    x1 = solver1.x
+    h1 = result1['h']
+    Q1 = result1['Q']
+
+    # 使用求解器返回的误差
+    Q1_max_error = result1['Q_error_percent']
+    Q1_mean = result1['Q_mean']
+
+    print(f"\n求解器结果:")
+    print(f"  收敛状态: {' 收敛' if result1['converged'] else ' 未收敛'}")
+    print(f"  迭代次数: {result1['iterations']}")
+    print(f"  平均流量: {Q1_mean:.4f} m^3/s")
+    print(f"  流量守恒误差: {Q1_max_error:.6f}%")
+
+    # 验证闸门流量
+    print(f"\n闸门流量验证:")
+    for i, (idx, gate, name) in enumerate(zip(
+        solver1.structure_indices,
+        solver1.structure_objects,
+        ['闸门1', '闸门2', '闸门3']
+    )):
+        h_up = h1[idx - 1]
+        h_down = h1[idx + 1]
+        Q_gate, flow_type = gate.calculate_discharge(h_up, h_down)
+        gate_error = abs(Q_gate - Q_initial) / Q_initial * 100
+        print(f"  {name}: Q={Q_gate:.4f} m^3/s (误差{gate_error:.2f}%, {flow_type})")
+
+    # 计算流量误差数组用于绘图
+    Q1_error = np.abs(Q1 - Q_initial) / Q_initial * 100
+
+    # 设置对比变量（之前没有标准求解器）
+    Q1_std_max_error = Q1_max_error  # 只有一个求解器
+    Q1_std_error = Q1_error  # 定义误差数组用于绘图
+    x1_std = x1
+    Q1_std = Q1
+
+    # 对比可视化
+    fig1, (ax1a, ax1b, ax1c) = plt.subplots(3, 1, figsize=(14, 14))
+
+    # Panel 1: 标准求解器结果
+    ax1a.plot(x1_std, Q1_std, 'r-', linewidth=2, label='Standard Solver', alpha=0.7)
+    ax1a.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5, label=f'Target: {Q_initial} m^3/s')
+    for i, gate in enumerate([gate1, gate2, gate3]):
+        ax1a.axvline(x=gate.position, color='gray', linestyle='--', alpha=0.5)
+    ax1a.text(2500, Q_initial+0.3, 'Gate 1', ha='center', fontsize=9, color='gray')
+    ax1a.text(5000, Q_initial+0.3, 'Gate 2', ha='center', fontsize=9, color='gray')
+    ax1a.text(7500, Q_initial+0.3, 'Gate 3', ha='center', fontsize=9, color='gray')
+    ax1a.set_xlabel('Distance (m)', fontsize=12)
+    ax1a.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
+    ax1a.set_title(f'标准求解器 (最大误差: {Q1_std_max_error:.4f}%)', fontsize=13, fontweight='bold')
+    ax1a.legend(fontsize=11)
+    ax1a.grid(True, alpha=0.3)
+    ax1a.set_ylim([Q_initial-0.8, Q_initial+0.5])
+
+    # Panel 2: 两阶段混合高精度求解器结果
+    ax1b.plot(x1, Q1, 'b-', linewidth=2, label='Hybrid High-Precision Solver', alpha=0.7)
+    ax1b.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5, label=f'Target: {Q_initial} m^3/s')
+    for i, gate in enumerate([gate1, gate2, gate3]):
+        ax1b.axvline(x=gate.position, color='gray', linestyle='--', alpha=0.5)
+    ax1b.text(2500, Q_initial+0.3, 'Gate 1', ha='center', fontsize=9, color='gray')
+    ax1b.text(5000, Q_initial+0.3, 'Gate 2', ha='center', fontsize=9, color='gray')
+    ax1b.text(7500, Q_initial+0.3, 'Gate 3', ha='center', fontsize=9, color='gray')
+    ax1b.set_xlabel('Distance (m)', fontsize=12)
+    ax1b.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
+    ax1b.set_title(f'两阶段混合高精度求解器 (最大误差: {Q1_max_error:.4f}%)', fontsize=13, fontweight='bold')
+    ax1b.legend(fontsize=11)
+    ax1b.grid(True, alpha=0.3)
+    ax1b.set_ylim([Q_initial-0.8, Q_initial+0.5])
+
+    # Panel 3: 误差对比
+    ax1c.plot(x1_std, Q1_std_error, 'r-', linewidth=2, label='Standard Solver Error', alpha=0.7)
+    ax1c.plot(x1, Q1_error, 'b-', linewidth=2, label='Hybrid Solver Error', alpha=0.7)
+    ax1c.axhline(y=0.01, color='g', linestyle='--', alpha=0.5, label='Target: 0.01%')
+    for i, gate in enumerate([gate1, gate2, gate3]):
+        ax1c.axvline(x=gate.position, color='gray', linestyle='--', alpha=0.5)
+    ax1c.set_xlabel('Distance (m)', fontsize=12)
+    ax1c.set_ylabel('Relative Error (%)', fontsize=12)
+    ax1c.set_title(f'误差对比 (精度提升: {Q1_std_max_error/Q1_max_error:.1f}x)', fontsize=13, fontweight='bold')
+    ax1c.legend(fontsize=11)
+    ax1c.grid(True, alpha=0.3)
+    ax1c.set_yscale('log')
+
+    plt.tight_layout()
+    save_figure(fig1, 'example_02_scenario1_multi_gates_comparison.png')
+    plt.close(fig1)
+    print(f"\n   保存: reports/figures/example_02_scenario1_multi_gates_comparison.png")
+    print()
+
+    # ==================== 场景2: 混合结构 ====================
+    print("=" * 80)
+    print("场景2: 混合结构（闸门 + 堰 + 孔口）")
+    print("-" * 80)
+
+    # 创建混合结构
+    gate_mixed = SluiceGate(position=2500.0, width=canal_width, opening=3.5, Cd=0.6)
+    weir = BroadCrestedWeir(position=5000.0, width=canal_width, crest_height=0.5, Cd=0.848)
+    orifice = Orifice(position=7500.0, width=4.0, height=2.0, bottom_elevation=0.2, Cd=0.61)
+
+    print(f"闸门: {gate_mixed}")
+    print(f"堰:   {weir}")
+    print(f"孔口: {orifice}")
+    print()
+
+    solver2 = HydrostaticCanalSolver(
+        length=canal_length,
+        nx=n_points,
+        B=canal_width,
+        S0=bed_slope,
+        n=manning_n,
+        internal_structures=[
+            (gate_mixed.position, gate_mixed),
+            (weir.position, weir),
+            (orifice.position, orifice)
+        ]
+    )
+
+    # 初始化
+    h_uniform = compute_steady_uniform_flow(Q_initial, canal_width, bed_slope, manning_n)
+    solver2.h[:] = h_uniform
+    solver2.hu[:] = Q_initial / canal_width
+
+    result2 = solver2.solve_steady_state(
+        Q_target=Q_initial,
+        h_downstream=h_uniform,
+        max_iterations=5000,
+        convergence_tol = 0.1,
+        dt=0.5,
+        verbose=True
+    )
+
+    print(f"\n场景2求解结果:")
+    print(f"  收敛: {'' if result2['converged'] else ''}")
+    print(f"  迭代: {result2['iterations']}")
+    print(f"  流量误差: {result2['Q_error_percent']:.6f}%")
+
+    # 可视化
+    x2 = solver2.x
+    h2 = result2['h']
+    Q2 = result2['Q']
+
+    # 渠底高程
+    z_bed2 = (canal_length - x2) * bed_slope
+    z_surface2 = z_bed2 + h2
+
+    fig2, (ax2a, ax2b) = plt.subplots(2, 1, figsize=(14, 10))
+
+    # 水面纵剖面
+    ax2a.fill_between(x2, z_bed2, z_surface2, color='cyan', alpha=0.5)
+    ax2a.plot(x2, z_surface2, 'b-', linewidth=2.5, label='Water Surface')
+    ax2a.plot(x2, z_bed2, 'k-', linewidth=2, label='Bed')
+    ax2a.axvline(x=gate_mixed.position, color='r', linestyle='--', alpha=0.7, label='Gate')
+    ax2a.axvline(x=weir.position, color='g', linestyle='--', alpha=0.7, label='Weir')
+    ax2a.axvline(x=orifice.position, color='m', linestyle='--', alpha=0.7, label='Orifice')
+    ax2a.set_xlabel('Distance (m)', fontsize=12)
+    ax2a.set_ylabel('Elevation (m)', fontsize=12)
+    ax2a.set_title('场景2: 混合结构 - 水面纵剖面', fontsize=14, fontweight='bold')
+    ax2a.legend(fontsize=10)
+    ax2a.grid(True, alpha=0.3)
+
+    # 流量分布
+    ax2b.plot(x2, Q2, 'g-', linewidth=2.5)
+    ax2b.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5)
+    ax2b.axvline(x=gate_mixed.position, color='r', linestyle='--', alpha=0.7)
+    ax2b.axvline(x=weir.position, color='g', linestyle='--', alpha=0.7)
+    ax2b.axvline(x=orifice.position, color='m', linestyle='--', alpha=0.7)
+    ax2b.set_xlabel('Distance (m)', fontsize=12)
+    ax2b.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
+    ax2b.set_title('流量分布', fontsize=13, fontweight='bold')
+    ax2b.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    save_figure(fig2, 'example_02_scenario2_mixed_structures.png')
+    plt.close(fig2)
+    print(f"   Saved figure: example_02_scenario2_mixed_structures.png")
+    print()
+
+    # ==================== 场景3: 时变闸门开度 ====================
+    print("=" * 80)
+    print("场景3: 时变闸门开度")
+    print("-" * 80)
+
+    # 定义时变开度函数：从5m逐渐关闭到2m
+    def time_varying_opening(t):
+        """闸门开度随时间变化"""
+        if t < 1000:
+            return 5.0  # 初始完全开启
+        elif t < 3000:
+            # 线性关闭
+            return 5.0 - (t - 1000) / 2000 * 3.0  # 从5m降到2m
+        else:
+            return 2.0  # 保持在2m
+
+    gate_variable = SluiceGate(
+        position=5000.0,
+        width=canal_width,
+        opening=time_varying_opening,  # 传入函数
+        Cd=0.6
+    )
+
+    print(f"闸门: 位置={gate_variable.position}m, 开度=f(t) (时变)")
+    print(f"  t<1000s:  开度=5.0m (完全开启)")
+    print(f"  1000-3000s: 开度从5.0m线性降至2.0m")
+    print(f"  t>3000s:  开度=2.0m (部分关闭)")
+    print()
+
+    solver3 = HydrostaticCanalSolver(
+        length=canal_length,
+        nx=n_points,
+        B=canal_width,
+        S0=bed_slope,
+        n=manning_n,
+        internal_structures=[(gate_variable.position, gate_variable)]
+    )
+
+    # 初始稳态（完全开启）
+    h_uniform = compute_steady_uniform_flow(Q_initial, canal_width, bed_slope, manning_n)
+    solver3.h[:] = h_uniform
+    solver3.hu[:] = Q_initial / canal_width
+
+    result3 = solver3.solve_steady_state(
+        Q_target=Q_initial,
+        h_downstream=h_uniform,
+        max_iterations=5000,
+        convergence_tol = 0.1,
+        dt=0.5,
+        verbose=True
+    )
+
+    print(f"\n场景3初始稳态:")
+    print(f"  收敛: {'' if result3['converged'] else ''}")
+    print(f"  流量误差: {result3['Q_error_percent']:.6f}%")
+
+    # 非恒定流模拟（闸门逐渐关闭）
+    print("\n开始非恒定流模拟（闸门逐渐关闭）...")
+    dt = 5.0
+    total_time = 6000.0
+    n_steps = int(total_time / dt)
+
+    # 数据记录
+    time_series = []
+    gate_opening_series = []
+    gate_flow_series = []
+    inlet_flow_series = []
+    outlet_flow_series = []
+
+    # For animation - record spatial profiles at intervals
+    snapshot_interval = 50  # Every 50 steps
+    h_snapshots = []
+    Q_snapshots = []
+    t_snapshots = []
+    x_profile = None
+
+    for i in range(n_steps):
+        # 使用 step_preissmann 方法进行时间步进
+        h_new, hu_new = solver3.step_preissmann(
+            dt=dt,
+            max_iter=10,
+            enforce_bc=True,
+            Q_in=Q_initial,
+            h_out=None  # 自由出流
+        )
+        solver3.h = h_new
+        solver3.hu = hu_new
+        solver3.current_time += dt
+
+        # 记录数据
+        t = solver3.current_time
+        time_series.append(t)
+        gate_opening_series.append(gate_variable.get_opening(t))
+
+        # 计算流量（直接从求解器获取）
+        Q_current = solver3.hu  # hu数组就是流量
+        gate_idx = np.argmin(np.abs(solver3.x - gate_variable.position))
+        gate_flow_series.append(Q_current[gate_idx])
+        inlet_flow_series.append(Q_current[10])
+        outlet_flow_series.append(Q_current[-10])
+
+        # Record spatial snapshots for animation
+        if i % snapshot_interval == 0:
+            h_snapshots.append(solver3.h.copy())
+            Q_snapshots.append(solver3.hu.copy())
+            t_snapshots.append(t)
+            if x_profile is None:
+                x_profile = solver3.x.copy()
+
+        # 打印进度
+        if i % 100 == 0:
+            print(f"  t={t:.0f}s: 开度={gate_opening_series[-1]:.2f}m, "
+                  f"Q_gate={gate_flow_series[-1]:.2f} m^3/s")
+
+    print(f"\n模拟完成！")
+    print(f"  最终开度: {gate_opening_series[-1]:.2f} m")
+    print(f"  最终闸门流量: {gate_flow_series[-1]:.2f} m^3/s")
+    print()
+
+    # 可视化时间序列
+    fig3, (ax3a, ax3b) = plt.subplots(2, 1, figsize=(14, 10))
+
+    # 闸门开度
+    ax3a.plot(time_series, gate_opening_series, 'r-', linewidth=2.5, label='Gate Opening')
+    ax3a.set_xlabel('Time (s)', fontsize=12)
+    ax3a.set_ylabel('Opening (m)', fontsize=12)
+    ax3a.set_title('场景3: 时变闸门开度 - 开度随时间变化', fontsize=14, fontweight='bold')
+    ax3a.legend(fontsize=11)
+    ax3a.grid(True, alpha=0.3)
+
+    # 流量响应
+    ax3b.plot(time_series, inlet_flow_series, 'b-', linewidth=2, label='Inlet Flow')
+    ax3b.plot(time_series, gate_flow_series, 'r-', linewidth=2.5, label='Gate Flow')
+    ax3b.plot(time_series, outlet_flow_series, 'm-', linewidth=2, label='Outlet Flow')
+    ax3b.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5, label=f'Target: {Q_initial} m^3/s')
+    ax3b.set_xlabel('Time (s)', fontsize=12)
+    ax3b.set_ylabel('Flow Rate (m^3/s)', fontsize=12)
+    ax3b.set_title('流量响应', fontsize=13, fontweight='bold')
+    ax3b.legend(fontsize=11)
+    ax3b.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    save_figure(fig3, 'example_02_scenario3_time_varying.png')
+    plt.close(fig3)
+    print(f"   Saved figure: example_02_scenario3_time_varying.png")
+
+    # ==================== Create Animated GIF ====================
+    print("\n" + "=" * 80)
+    print("Creating animated GIF for Scenario 3...")
+    print("=" * 80)
+    print(f"  Total frames: {len(t_snapshots)}")
+    print(f"  Time range: {t_snapshots[0]:.0f}s - {t_snapshots[-1]:.0f}s")
+    print()
+
+    # Create animation function
+    def create_scenario3_animation():
+        """Create animation showing water depth and flow rate evolution"""
+
+        fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(14, 12))
+
+        # Find gate position index
+        gate_idx = np.argmin(np.abs(x_profile - gate_variable.position))
+
+        # Calculate y-axis limits
+        h_min, h_max = np.min(h_snapshots), np.max(h_snapshots)
+        Q_min, Q_max = np.min(Q_snapshots), np.max(Q_snapshots)
+        h_margin = (h_max - h_min) * 0.1
+        Q_margin = (Q_max - Q_min) * 0.1
+
+        def animate(frame):
+            # Clear all axes
+            ax1.clear()
+            ax2.clear()
+            ax3.clear()
+
+            t = t_snapshots[frame]
+            h_frame = h_snapshots[frame]
+            Q_frame = Q_snapshots[frame]
+            gate_opening = gate_variable.get_opening(t)
+
+            # Panel 1: Water Depth Distribution
+            ax1.plot(x_profile, h_frame, 'b-', linewidth=2.5, label='Water Depth')
+            ax1.axvline(x=gate_variable.position, color='r', linestyle='--',
+                       linewidth=2, alpha=0.7, label='Gate')
+            ax1.set_xlabel('Distance (m)', fontsize=11)
+            ax1.set_ylabel('Water Depth (m)', fontsize=11)
+            ax1.set_title(f'Water Depth Distribution (t={t:.0f}s, Gate Opening={gate_opening:.2f}m)',
+                         fontsize=12, fontweight='bold')
+            ax1.grid(True, alpha=0.3)
+            ax1.legend(loc='upper right', fontsize=10)
+            ax1.set_xlim([0, canal_length])
+            ax1.set_ylim([h_min - h_margin, h_max + h_margin])
+
+            # Panel 2: Flow Rate Distribution
+            ax2.plot(x_profile, Q_frame, 'g-', linewidth=2.5, label='Flow Rate')
+            ax2.axvline(x=gate_variable.position, color='r', linestyle='--',
+                       linewidth=2, alpha=0.7, label='Gate')
+            ax2.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5,
+                       label=f'Initial: {Q_initial} m^3/s')
+            ax2.set_xlabel('Distance (m)', fontsize=11)
+            ax2.set_ylabel('Flow Rate (m^3/s)', fontsize=11)
+            ax2.set_title('Flow Rate Distribution', fontsize=12, fontweight='bold')
+            ax2.grid(True, alpha=0.3)
+            ax2.legend(loc='best', fontsize=10)
+            ax2.set_xlim([0, canal_length])
+            ax2.set_ylim([Q_min - Q_margin, Q_max + Q_margin])
+
+            # Panel 3: Time History (up to current time)
+            idx = frame * snapshot_interval
+            ax3.plot(np.array(time_series[:idx+1])/60, gate_opening_series[:idx+1],
+                    'r-', linewidth=2, label='Gate Opening (m)', alpha=0.8)
+            ax3_twin = ax3.twinx()
+            ax3_twin.plot(np.array(time_series[:idx+1])/60, gate_flow_series[:idx+1],
+                         'b-', linewidth=2, label='Gate Flow (m^3/s)', alpha=0.8)
+
+            ax3.set_xlabel('Time (min)', fontsize=11)
+            ax3.set_ylabel('Gate Opening (m)', fontsize=11, color='r')
+            ax3_twin.set_ylabel('Flow Rate (m^3/s)', fontsize=11, color='b')
+            ax3.set_title('Gate Opening and Flow Rate History', fontsize=12, fontweight='bold')
+            ax3.grid(True, alpha=0.3)
+            ax3.tick_params(axis='y', labelcolor='r')
+            ax3_twin.tick_params(axis='y', labelcolor='b')
+            ax3.set_xlim([0, total_time/60])
+
+            # Add legends
+            lines1, labels1 = ax3.get_legend_handles_labels()
+            lines2, labels2 = ax3_twin.get_legend_handles_labels()
+            ax3.legend(lines1 + lines2, labels1 + labels2, loc='upper right', fontsize=9)
+
+            plt.tight_layout()
+
+        # Create animation
+        anim = animation.FuncAnimation(
+            fig, animate, frames=len(t_snapshots),
+            interval=100, blit=False, repeat=True
+        )
+
+        return fig, anim
+
+    # Generate and save animation
+    print("  Generating animation frames...")
+    fig_anim, anim = create_scenario3_animation()
+
+    print("  Saving GIF animation...")
+    save_animation(anim, 'example_02_scenario3_time_varying_animation.gif')
+    plt.close(fig_anim)
+
+    print(f"   Saved animation: example_02_scenario3_time_varying_animation.gif")
+    print(f"    Frames: {len(t_snapshots)}, Duration: ~{len(t_snapshots)/10:.1f}s")
+    print()
+
+    # ==================== 总结 ====================
+    print("\n" + "=" * 80)
+    print("分析完成！")
+    print("=" * 80)
+
+    print(f"\n生成的文件:")
+    print(f"  Figures:")
+    print(f"    1. Scenario 1 (Three Gates): example_02_scenario1_multi_gates.png")
+    print(f"    2. Scenario 2 (Mixed Structures): example_02_scenario2_mixed_structures.png")
+    print(f"    3. Scenario 3 (Time-Varying): example_02_scenario3_time_varying.png")
+    print(f"  Animations:")
+    print(f"    1. Scenario 3 Dynamic GIF: example_02_scenario3_time_varying_animation.gif")
+    print(f"       ({len(t_snapshots)} frames showing water depth and flow evolution)")
+
+    print("\n关键结果:")
+    print(f"  场景1 - HydrostaticCanalSolver流量误差: {Q1_max_error:.6f}%")
+    print(f"  场景1 - 收敛迭代次数: {result1['iterations']}")
+    print(f"  场景2 - 混合结构流量守恒误差: {result2['Q_error_percent']:.6f}%")
+    print(f"  场景2 - 收敛迭代次数: {result2['iterations']}")
+    print(f"  场景3 - 闸门关闭后流量减少: {Q_initial:.2f} -> {gate_flow_series[-1]:.2f} m^3/s")
+    print(f"  场景3 - Animation shows gate closing from 5.0m to 2.0m over {total_time/60:.0f} minutes")
+
+    print("\n" + "=" * 80)
+
+
+if __name__ == "__main__":
+    run_advanced_structures_demo()

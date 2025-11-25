@@ -11,6 +11,8 @@ Date: 2025-11-25
 """
 
 import os
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import json
 import time

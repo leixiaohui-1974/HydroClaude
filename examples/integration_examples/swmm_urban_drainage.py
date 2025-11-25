@@ -15,13 +15,15 @@ SWMM城市雨洪系统集成案例
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib.pyplot as plt
 from pathlib import Path
 import sys
 import os
 
 # 添加项目根目录
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from integration.swmm_adapter import (
     SWMMAdapter,

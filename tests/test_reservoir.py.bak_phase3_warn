@@ -1,0 +1,450 @@
+"""
+水库组件测试
+
+测试水库和梯级系统的核心功能
+
+作者: HydroClaude Team
+日期: 2025-10-22
+"""
+
+import sys
+import os
+
+# Add project root to path
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+sys.path.append('/home/user/HydroClaude')
+
+import numpy as np
+
+from physics.reservoir import Reservoir, ReservoirState, create_reservoir_from_config
+from physics.reservoir_cascade import ReservoirCascade, CascadeTopology
+
+
+class TestReservoir:
+    """水库组件测试类"""
+
+    def test_reservoir_creation(self):
+        """测试水库创建"""
+        reservoir = Reservoir(
+            reservoir_id="test_res",
+            total_capacity=1000e4,
+            dead_storage=100e4,
+            min_level=100.0,
+            normal_level=120.0,
+            flood_limit_level=118.0,
+            design_level=125.0
+        )
+
+        assert reservoir.reservoir_id == "test_res"
+        assert reservoir.total_capacity == 1000e4
+        assert reservoir.dead_storage == 100e4
+        assert reservoir.active_storage == 900e4
+
+    def test_initial_state(self):
+        """测试初始状态"""
+        reservoir = Reservoir(
+            reservoir_id="test_res",
+            total_capacity=1000e4,
+            dead_storage=100e4,
+            min_level=100.0,
+            normal_level=120.0,
+            flood_limit_level=118.0,
+            design_level=125.0
+        )
+
+        # 检查初始状态
+        assert hasattr(reservoir.state, 'storage')
+        assert hasattr(reservoir.state, 'water_level')
+        assert reservoir.state.storage >= reservoir.dead_storage
+        assert reservoir.state.storage <= reservoir.total_capacity
+
+    def test_water_balance(self):
+        """测试水量平衡"""
+        reservoir = Reservoir(
+            reservoir_id="test_res",
+            total_capacity=1000e4,
+            dead_storage=100e4,
+            min_level=100.0,
+            normal_level=120.0,
+            flood_limit_level=118.0,
+            design_level=125.0,
+            ecological_flow=5.0
+        )
+
+        initial_storage = reservoir.state.storage
+        dt = 3600.0  # 1小时
+        inflow = 100.0  # m^3/s
+        outflow_target = 80.0  # m^3/s
+
+        state = reservoir.update_high_fidelity(dt, {
+            'inflow': inflow,
+            'outflow_target': outflow_target
+        })
+
+        # 检查水量平衡
+        expected_storage = initial_storage + (inflow - state.outflow) * dt
+        assert abs(state.storage - expected_storage) < 1e-6
+
+    def test_storage_bounds(self):
+        """测试库容边界约束"""
+        reservoir = Reservoir(
+            reservoir_id="test_res",
+            total_capacity=1000e4,
+            dead_storage=100e4,
+            min_level=100.0,
+            normal_level=120.0,
+            flood_limit_level=118.0,
+            design_level=125.0
+        )
+
+        dt = 3600.0
+
+        # 测试超出上界
+        reservoir.reset(reservoir.total_capacity * 0.95)
+        state = reservoir.update_high_fidelity(dt, {
+            'inflow': 1000.0,
+            'outflow_target': 10.0
+        })
+        assert state.storage <= reservoir.total_capacity
+
+        # 测试超出下界
+        reservoir.reset(reservoir.dead_storage * 1.1)
+        state = reservoir.update_high_fidelity(dt, {
+            'inflow': 10.0,
+            'outflow_target': 1000.0
+        })
+        assert state.storage >= reservoir.dead_storage
+
+    def test_power_generation(self):
+        """测试发电计算"""
+        reservoir = Reservoir(
+            reservoir_id="test_res",
+            total_capacity=1000e4,
+            dead_storage=100e4,
+            min_level=100.0,
+            normal_level=120.0,
+            flood_limit_level=118.0,
+            design_level=125.0,
+            has_turbine=True,
+            turbine_capacity=50.0,
+            hydraulic_head=30.0,
+            turbine_efficiency=0.85
+        )
+
+        dt = 3600.0
+        turbine_discharge = 100.0  # m^3/s
+
+        state = reservoir.update_high_fidelity(dt, {
+            'inflow': 100.0,
+            'turbine_discharge': turbine_discharge
+        })
+
+        # 检查发电量
+        expected_power = 9.81 * turbine_discharge * 30.0 * 0.85 / 1000.0
+        assert abs(state.power_generation - expected_power) < 0.1
+
+        # 检查装机容量约束
+        assert state.power_generation <= reservoir.turbine_capacity
+
+    def test_ecological_flow(self):
+        """测试生态流量约束"""
+        ecological_flow = 10.0
+        reservoir = Reservoir(
+            reservoir_id="test_res",
+            total_capacity=1000e4,
+            dead_storage=100e4,
+            min_level=100.0,
+            normal_level=120.0,
+            flood_limit_level=118.0,
+            design_level=125.0,
+            ecological_flow=ecological_flow
+        )
+
+        dt = 3600.0
+        state = reservoir.update_high_fidelity(dt, {
+            'inflow': 50.0,
+            'outflow_target': 5.0  # 低于生态流量
+        })
+
+        # 出流应不低于生态流量
+        assert state.outflow >= ecological_flow
+
+    def test_constraints_check(self):
+        """测试约束检查"""
+        reservoir = Reservoir(
+            reservoir_id="test_res",
+            total_capacity=1000e4,
+            dead_storage=100e4,
+            min_level=100.0,
+            normal_level=120.0,
+            flood_limit_level=118.0,
+            design_level=125.0,
+            ecological_flow=10.0
+        )
+
+        # 获取约束
+        constraints = reservoir.get_constraints()
+        assert 'storage' in constraints
+        assert 'water_level' in constraints
+        assert 'outflow' in constraints
+
+        # 检查约束边界
+        storage_bounds = constraints['storage']
+        assert storage_bounds[0] == reservoir.dead_storage
+        assert storage_bounds[1] == reservoir.total_capacity
+
+    def test_create_from_config(self):
+        """测试从配置创建"""
+        config = {
+            'id': 'config_res',
+            'total_capacity': 2000e4,
+            'dead_storage': 200e4,
+            'min_level': 100.0,
+            'normal_level': 130.0,
+            'flood_limit_level': 128.0,
+            'design_level': 135.0,
+            'has_turbine': True,
+            'turbine_capacity': 80.0
+        }
+
+        reservoir = create_reservoir_from_config(config)
+        assert reservoir.reservoir_id == 'config_res'
+        assert reservoir.total_capacity == 2000e4
+        assert reservoir.has_turbine == True
+
+
+class TestReservoirCascade:
+    """梯级水库系统测试类"""
+
+    def create_simple_cascade(self):
+        """创建简单的两级梯级系统"""
+        r1 = Reservoir(
+            reservoir_id="R1",
+            total_capacity=1000e4,
+            dead_storage=100e4,
+            min_level=100.0,
+            normal_level=120.0,
+            flood_limit_level=118.0,
+            design_level=125.0
+        )
+
+        r2 = Reservoir(
+            reservoir_id="R2",
+            total_capacity=800e4,
+            dead_storage=80e4,
+            min_level=80.0,
+            normal_level=100.0,
+            flood_limit_level=98.0,
+            design_level=105.0
+        )
+
+        topology = CascadeTopology(
+            reservoir_ids=["R1", "R2"],
+            connections={"R1": ["R2"]},
+            travel_times={("R1", "R2"): 1.0},
+            lateral_inflows={"R1": 10.0, "R2": 5.0}
+        )
+
+        cascade = ReservoirCascade(
+            cascade_id="test_cascade",
+            reservoirs=[r1, r2],
+            topology=topology
+        )
+
+        return cascade
+
+    def test_cascade_creation(self):
+        """测试梯级系统创建"""
+        cascade = self.create_simple_cascade()
+
+        assert cascade.cascade_id == "test_cascade"
+        assert len(cascade.reservoirs) == 2
+        assert "R1" in cascade.reservoirs
+        assert "R2" in cascade.reservoirs
+
+    def test_topological_order(self):
+        """测试拓扑序计算"""
+        cascade = self.create_simple_cascade()
+
+        # 拓扑序应该是 R1 -> R2
+        assert cascade.topological_order == ["R1", "R2"]
+
+    def test_cascade_simulation(self):
+        """测试梯级仿真"""
+        cascade = self.create_simple_cascade()
+
+        dt = 3600.0
+        inflows = {"R1": 100.0}
+
+        states = cascade.simulate_cascade(
+            dt=dt,
+            inflows=inflows,
+            high_fidelity=True
+        )
+
+        # 检查返回的状态
+        assert "R1" in states
+        assert "R2" in states
+        assert hasattr(states["R1"], 'storage')
+        assert hasattr(states["R2"], 'storage')
+
+    def test_flow_transfer(self):
+        """测试水流传递"""
+        cascade = self.create_simple_cascade()
+
+        dt = 3600.0
+        n_steps = 10
+
+        # 给R1一个恒定入流
+        for i in range(n_steps):
+            states = cascade.simulate_cascade(
+                dt=dt,
+                inflows={"R1": 100.0},
+                high_fidelity=True
+            )
+
+        # R2的入流应该包括R1的出流（有延迟）
+        # 由于有区间入流，R2的总入流 > R1的出流
+        r1_outflow = cascade.reservoirs["R1"].state.outflow
+        r2_inflow = cascade.reservoirs["R2"].state.inflow
+        lateral_inflow_r2 = cascade.topology.lateral_inflows["R2"]
+
+        # R2的入流应该大约等于 R1出流 + 区间入流
+        # （考虑延迟，这里做粗略检查）
+        assert r2_inflow >= lateral_inflow_r2
+
+    def test_cascade_status(self):
+        """测试梯级状态查询"""
+        cascade = self.create_simple_cascade()
+
+        status = cascade.get_cascade_status()
+
+        assert 'cascade_id' in status
+        assert 'reservoir_count' in status
+        assert 'reservoirs' in status
+        assert status['reservoir_count'] == 2
+
+    def test_cascade_constraints(self):
+        """测试梯级约束检查"""
+        cascade = self.create_simple_cascade()
+
+        dt = 3600.0
+        cascade.simulate_cascade(dt=dt, inflows={"R1": 100.0})
+
+        constraints = cascade.check_cascade_constraints()
+
+        assert 'R1_flood_control' in constraints
+        assert 'R2_flood_control' in constraints
+        assert 'R1_ecological_flow' in constraints
+        assert 'R2_ecological_flow' in constraints
+
+    def test_upstream_downstream(self):
+        """测试上下游关系查询"""
+        cascade = self.create_simple_cascade()
+
+        # R1的下游应该是R2
+        downstream_r1 = cascade.get_downstream_reservoirs("R1")
+        assert "R2" in downstream_r1
+
+        # R2的上游应该是R1
+        upstream_r2 = cascade.get_upstream_reservoirs("R2")
+        assert "R1" in upstream_r2
+
+        # R1没有上游
+        upstream_r1 = cascade.get_upstream_reservoirs("R1")
+        assert len(upstream_r1) == 0
+
+    def test_cascade_reset(self):
+        """测试梯级重置"""
+        cascade = self.create_simple_cascade()
+
+        # 运行一段时间
+        dt = 3600.0
+        for i in range(10):
+            cascade.simulate_cascade(dt=dt, inflows={"R1": 100.0})
+
+        # 记录当前状态
+        r1_storage_before = cascade.reservoirs["R1"].state.storage
+
+        # 重置
+        cascade.reset()
+
+        # 状态应该恢复
+        r1_storage_after = cascade.reservoirs["R1"].state.storage
+        # 重置后应该回到初始状态（中间值）
+        assert abs(r1_storage_after - (cascade.reservoirs["R1"].dead_storage +
+                                      cascade.reservoirs["R1"].total_capacity) / 2) < 1e-6
+
+
+def run_all_tests():
+    """运行所有测试"""
+    print("=" * 80)
+    print("水库组件测试")
+    print("=" * 80)
+
+    # 创建测试实例
+    test_reservoir = TestReservoir()
+    test_cascade = TestReservoirCascade()
+
+    # 运行水库测试
+    print("\n运行水库组件测试...")
+    tests = [
+        ("创建水库", test_reservoir.test_reservoir_creation),
+        ("初始状态", test_reservoir.test_initial_state),
+        ("水量平衡", test_reservoir.test_water_balance),
+        ("库容边界", test_reservoir.test_storage_bounds),
+        ("发电计算", test_reservoir.test_power_generation),
+        ("生态流量", test_reservoir.test_ecological_flow),
+        ("约束检查", test_reservoir.test_constraints_check),
+        ("配置创建", test_reservoir.test_create_from_config),
+    ]
+
+    passed = 0
+    failed = 0
+
+    for name, test_func in tests:
+        try:
+            test_func()
+            print(f"   {name}")
+            passed += 1
+        except Exception as e:
+            print(f"   {name}: {e}")
+            failed += 1
+
+    # 运行梯级测试
+    print("\n运行梯级系统测试...")
+    cascade_tests = [
+        ("创建梯级", test_cascade.test_cascade_creation),
+        ("拓扑序", test_cascade.test_topological_order),
+        ("梯级仿真", test_cascade.test_cascade_simulation),
+        ("水流传递", test_cascade.test_flow_transfer),
+        ("梯级状态", test_cascade.test_cascade_status),
+        ("梯级约束", test_cascade.test_cascade_constraints),
+        ("上下游关系", test_cascade.test_upstream_downstream),
+        ("梯级重置", test_cascade.test_cascade_reset),
+    ]
+
+    for name, test_func in cascade_tests:
+        try:
+            test_func()
+            print(f"   {name}")
+            passed += 1
+        except Exception as e:
+            print(f"   {name}: {e}")
+            failed += 1
+
+    # 总结
+    print("\n" + "=" * 80)
+    print(f"测试完成: {passed} 通过, {failed} 失败")
+    print("=" * 80)
+
+    return passed, failed
+
+
+if __name__ == "__main__":
+    passed, failed = run_all_tests()
+    sys.exit(0 if failed == 0 else 1)

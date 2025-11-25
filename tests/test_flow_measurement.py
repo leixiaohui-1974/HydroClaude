@@ -13,6 +13,8 @@ Author: HydroClaude Development Team
 Date: 2025-01
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

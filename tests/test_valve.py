@@ -14,6 +14,8 @@ Date: 2025-10-22
 """
 
 import pytest
+import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
 import sys
 import os

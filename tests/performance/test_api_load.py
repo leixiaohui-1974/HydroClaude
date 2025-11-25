@@ -17,6 +17,8 @@ Usage:
 """
 
 from locust import HttpUser, task, between, tag
+import warnings
+warnings.filterwarnings("ignore")
 import random
 import json
 

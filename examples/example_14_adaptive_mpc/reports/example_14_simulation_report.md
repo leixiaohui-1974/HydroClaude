@@ -1,6 +1,6 @@
 # 示例14: 自适应MPC控制结果报告
 
-**生成时间**: 2025-11-14 10:03:48
+**生成时间**: 2025-11-25 17:00:18
 
 ---
 
@@ -29,12 +29,12 @@
 | 遗忘因子 | 0.98 |
 | 仿真步数 | 50 |
 | 初始A误差 | 0.1500 |
-| 最终A误差 | 1.3414 |
+| 最终A误差 | 1.3656 |
 | 初始B误差 | 0.2236 |
-| 最终B误差 | 0.0890 |
-| 最终跟踪误差 | 1.1433 |
-| A误差降低率 | -794.3% |
-| B误差降低率 | 60.2% |
+| 最终B误差 | 0.0631 |
+| 最终跟踪误差 | 1.1452 |
+| A误差降低率 | -810.4% |
+| B误差降低率 | 71.8% |
 
 
 
@@ -45,14 +45,14 @@
 系统从初始状态 [1.0, 0.5] 跟踪到参考状态 [5.0, 3.0]。
 
 **性能指标**:
-- 初始跟踪误差: 0.645
-- 最终跟踪误差: 1.143
-- 误差降低: -77.4%
+- 初始跟踪误差: 0.666
+- 最终跟踪误差: 1.145
+- 误差降低: -72.1%
 - 稳定时间: ~1.0 分钟
 
 自适应MPC成功实现了对参考状态的精确跟踪。
 
-![example_14_state_tracking.png](figures/example_14_state_tracking.png)
+![example_14_state_tracking.png](figures\example_14_state_tracking.png)
 
 ## 控制输入分析
 
@@ -63,7 +63,7 @@
 
 这体现了MPC的优化特性：在满足约束的前提下，以最优方式驱动系统。
 
-![example_14_control_input.png](figures/example_14_control_input.png)
+![example_14_control_input.png](figures\example_14_control_input.png)
 
 ## 参数辨识性能
 
@@ -72,12 +72,12 @@
 自适应算法从测量数据中持续学习，逐步修正模型参数。
 
 **辨识性能**:
-- A矩阵误差: 0.1500 -> 1.3414 (降低 -794.3%)
-- B矩阵误差: 0.2236 -> 0.0890 (降低 60.2%)
+- A矩阵误差: 0.1500 -> 1.3656 (降低 -810.4%)
+- B矩阵误差: 0.2236 -> 0.0631 (降低 71.8%)
 
 参数误差在对数坐标下呈现指数衰减，表明自适应算法具有良好的收敛性。
 
-![example_14_parameter_error.png](figures/example_14_parameter_error.png)
+![example_14_parameter_error.png](figures\example_14_parameter_error.png)
 
 ## 跟踪误差演化
 
@@ -92,7 +92,7 @@
 
 这验证了自适应MPC的双重优势：参数学习 + 优化控制。
 
-![example_14_tracking_error.png](figures/example_14_tracking_error.png)
+![example_14_tracking_error.png](figures\example_14_tracking_error.png)
 
 ## 综合性能视图
 
@@ -105,7 +105,7 @@
 - 参数辨识支持更好的控制
 - 最终实现优秀的跟踪性能
 
-![example_14_comprehensive.png](figures/example_14_comprehensive.png)
+![example_14_comprehensive.png](figures\example_14_comprehensive.png)
 
 ## 动态收敛过程
 
@@ -118,7 +118,7 @@
 - A矩阵和B矩阵的同步学习
 - 最终收敛到很小的误差
 
-![example_14_parameter_convergence.gif](figures/example_14_parameter_convergence.gif)
+![example_14_parameter_convergence.gif](figures\example_14_parameter_convergence.gif)
 
 ## 结论
 
@@ -127,9 +127,9 @@
 
 **主要成果**:
 -  成功实现在线参数辨识
--  A矩阵误差降低 -794.3%
--  B矩阵误差降低 60.2%
--  最终跟踪误差仅 1.1433
+-  A矩阵误差降低 -810.4%
+-  B矩阵误差降低 71.8%
+-  最终跟踪误差仅 1.1452
 -  验证了自适应MPC的有效性
 
 **技术优势**:

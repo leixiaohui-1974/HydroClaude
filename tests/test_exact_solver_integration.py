@@ -7,6 +7,8 @@ Purpose: 验证Phase 9.3精确求解器能正确工作
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import os
 

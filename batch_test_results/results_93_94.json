@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 93,
+    "batch_end_index": 94,
+    "test_run_at": "2025-11-25T16:52:30.220529",
+    "batch_duration_seconds": 1.78,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/fix_20251113_101343/tests/benchmark_newton_vs_iterative.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.78,
+      "stdout": "====================================================================================================\n牛顿法 vs 迭代法性能基准测试\n====================================================================================================\n\n====================================================================================================\n场景: 单闸门\n====================================================================================================\n\n参数:\n  渠道长度: 1000.0 m\n  网格点数: 51\n  目标流量: 10.0 m³/s\n  均匀流水深: 0.9298 m\n  结构数量: 1\n\n方法1: 迭代法（伪时间步进 + Aitken加速）\n----------------------------------------------------------------------------------------------------",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_101343\\tests\\benchmark_newton_vs_iterative.py\", line 357, in <module>\n    main()\n    ~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_101343\\tests\\benchmark_newton_vs_iterative.py\", line 226, in main\n    all_results['single_gate'] = benchmark_scenario(\n                                 ~~~~~~~~~~~~~~~~~~^\n        name=\"单闸门\",\n        ^^^^^^^^^^^^^^\n    ...<6 lines>...\n        structures_config=[(500.0, gate1)]\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_101343\\tests\\benchmark_newton_vs_iterative.py\", line 69, in benchmark_scenario\n    solver_iter = CanalSolver(length, nx, B, S0, n, internal_structures=structures_config)\n                  ^^^^^^^^^^^\nNameError: name 'CanalSolver' is not defined"
+    }
+  ]
+}

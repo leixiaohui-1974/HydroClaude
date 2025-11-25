@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 234,
+    "batch_end_index": 235,
+    "test_run_at": "2025-11-25T16:30:05.193843",
+    "batch_duration_seconds": 0.4,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_01_canal_flow/scripts/_local_single_canal_solver.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.4,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_01_canal_flow\\scripts\\_local_single_canal_solver.py\", line 19, in <module>\n    script_path = os.path.abspath(__file__)\n                  ^^\nNameError: name 'os' is not defined. Did you forget to import 'os'?"
+    }
+  ]
+}

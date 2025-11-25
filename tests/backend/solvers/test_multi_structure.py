@@ -9,6 +9,8 @@ Date: 2025-11-20
 Spec: 001-comprehensive-review-and-testing
 """
 import pytest
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import os
 from pathlib import Path

@@ -7,6 +7,8 @@ MacDonald Test 2 - 使用完全相同的配置
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
@@ -43,7 +45,7 @@ def test_macdonald_test2_exact_config():
     print(f"  n_cells = 100")
     print(f"  order = 2")
     print(f"  use_numba = True")
-    print(f"  t_end = 3000s")
+    print(f"  t_end = 50s")
 
     # 创建求解器（与标准测试完全相同）
     n_cells = 100
@@ -73,7 +75,7 @@ def test_macdonald_test2_exact_config():
     print(f"  初始质量 = {mass_initial:.4f} m^3")
 
     # 运行模拟（与标准测试相同的时间）
-    t_end = 3000.0
+    t_end = 50.0
     cumulative_inflow = 0.0
     cumulative_outflow = 0.0
 

@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 21,
+    "batch_end_index": 22,
+    "test_run_at": "2025-11-25T16:51:16.322838",
+    "batch_duration_seconds": 7.56,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/deprecated_scripts_backup/example_08_preissmann_vs_fvm/example_08_preissmann_vs_fvm_enhanced.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 7.56,
+      "stdout": "======================================================================\n示例8: Preissmann四点格式 vs 有限体积法对比 - 增强版\n======================================================================\n\n系统参数:\n  渠道长度: 5000.0 m\n  渠道宽度: 10.0 m\n  空间网格数: 51\n  时间步长: 10.0 s\n  仿真步数: 100\n  总时间: 1000.0 s (16.7 分钟)\n\n运行Preissmann四点格式...\n  步 1/100: 水位=5.000m, 流量=5.000m^3/s\n  步 21/100: 水位=5.000m, 流量=5.000m^3/s\n  步 41/100: 水位=5.000m, 流量=5.000m^3/s\n  步 61/100: 水位=5.000m, 流量=5.000m^3/s\n  步 81/100: 水位=5.000m, 流量=5.000m^3/s\n  步 100/100: 水位=5.000m, 流量=5.000m^3/s\nPreissmann方法完成!\n\n运行有限体积法 (FVM)...",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\deprecated_scripts_backup\\example_08_preissmann_vs_fvm\\example_08_preissmann_vs_fvm_enhanced.py\", line 549, in <module>\n    example_preissmann_vs_fvm()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\deprecated_scripts_backup\\example_08_preissmann_vs_fvm\\example_08_preissmann_vs_fvm_enhanced.py\", line 75, in example_preissmann_vs_fvm\n    canal_f = Canal(\n        \"Canal_FVM\", 5000, 10000, 100, length,\n        method='fvm', n_sections=n_sections\n    )\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\physics\\canal.py\", line 116, in __init__\n    raise ValueError(f\"不支持的求解方法'{self.method}'仅支持'preissmann'\")\nValueError: 不支持的求解方法'fvm'仅支持'preissmann'"
+    }
+  ]
+}

@@ -4,6 +4,8 @@
 验证GodunvFVMSolver的dt_max参数是否正常工作
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

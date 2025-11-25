@@ -19,6 +19,8 @@
 优先级: P1
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

@@ -6,6 +6,8 @@ Examples测试套件
 """
 
 import pytest
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import os
 from pathlib import Path
@@ -14,7 +16,7 @@ import time
 
 # 添加项目根目录
 examples_root = Path(__file__).parent.parent
-sys.path.insert(0, str(examples_root.parent))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 
 class TestExampleExecution:

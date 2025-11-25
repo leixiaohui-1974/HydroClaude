@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 83,
+    "batch_end_index": 84,
+    "test_run_at": "2025-11-25T16:52:18.346933",
+    "batch_duration_seconds": 1.31,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/fix_20251113_101343/examples/example_01_canal_flow/scripts/04_boundary_conditions.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.31,
+      "stdout": "================================================================================\n例子1扩展：不同下游边界条件的影响研究（完全收敛版）\n================================================================================\n\n参数设置:\n  渠道: L=1000.0m, B=10.0m, S0=0.001, n=0.025\n  上游流量: 8.0 → 10.0 m³/s\n  理论水深: 0.806483 → 0.929805 m\n\n下游边界条件:\n  高水位（回水）: h = 1.079805 m\n  恒定均匀流: h = 0.929805 m\n  低水位（泵站）: h = 0.829805 m\n\n================================================================================\n第一阶段：计算初始稳态（Q=8.0 m³/s）\n================================================================================\n\n场景: 高水位（回水）\n\n  计算稳态初始条件:\n    目标: Q=8.00 m³/s, h_down=1.0798 m\n    收敛判据: 质量守恒误差<0.10%, CV<0.0100%",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_101343\\examples\\example_01_canal_flow\\scripts\\04_boundary_conditions.py\", line 394, in <module>\n    main()\n    ~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_101343\\examples\\example_01_canal_flow\\scripts\\04_boundary_conditions.py\", line 171, in main\n    h_init, Q_init, converged, iterations = compute_steady_state_with_convergence(\n                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n        Q_initial,\n        ^^^^^^^^^^\n    ...<3 lines>...\n        cv_tol=0.0001    # 0.01%\n        ^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_101343\\examples\\example_01_canal_flow\\scripts\\04_boundary_conditions.py\", line 55, in compute_steady_state_with_convergence\n    solver = CanalSolver(length=length, nx=nx, B=B, S0=S0, n=n, method='preissmann')\n             ^^^^^^^^^^^\nNameError: name 'CanalSolver' is not defined"
+    }
+  ]
+}

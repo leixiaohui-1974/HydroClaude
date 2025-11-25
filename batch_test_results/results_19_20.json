@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 19,
+    "batch_end_index": 20,
+    "test_run_at": "2025-11-25T16:51:08.617841",
+    "batch_duration_seconds": 7.03,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/deprecated_scripts_backup/example_08_preissmann_vs_fvm/code/example_08_preissmann_vs_fvm.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 7.03,
+      "stdout": "============================================================\n示例：Preissmann四点格式 vs 有限体积法对比\n============================================================\n\n运行Preissmann格式...\n\n运行有限体积法...",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\deprecated_scripts_backup\\example_08_preissmann_vs_fvm\\code\\example_08_preissmann_vs_fvm.py\", line 99, in <module>\n    example_preissmann_vs_fvm()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\deprecated_scripts_backup\\example_08_preissmann_vs_fvm\\code\\example_08_preissmann_vs_fvm.py\", line 38, in example_preissmann_vs_fvm\n    canal_f = Canal(\n        \"明渠_FVM\", 5000, 10000, 100, length,\n        method='fvm', n_sections=n_sections\n    )\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\physics\\canal.py\", line 116, in __init__\n    raise ValueError(f\"不支持的求解方法'{self.method}'仅支持'preissmann'\")\nValueError: 不支持的求解方法'fvm'仅支持'preissmann'"
+    }
+  ]
+}

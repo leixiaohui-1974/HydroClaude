@@ -1,0 +1,393 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+瞬态流测试 - 验证HydrostaticCanalSolver的瞬态演化功能
+
+测试场景：
+1. 入流流量阶跃变化
+2. 闸门开度时变
+3. 洪水波传播
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+import sys
+sys.path.append('.')
+
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+from solvers.gate import SluiceGate
+
+
+def test_inflow_step_change():
+    """测试1: 入流流量阶跃变化"""
+    print("=" * 80)
+    print("测试1: 入流流量阶跃变化")
+    print("=" * 80)
+
+    # 参数
+    L = 1000.0
+    B = 10.0
+    S0 = 0.001
+    n = 0.025
+
+    # 创建求解器
+    solver = HydrostaticCanalSolver(
+        length=L,
+        nx=101,
+        B=B,
+        S0=S0,
+        n=n
+    )
+
+    # 初始条件：均匀流 Q=5 m^3/s
+    Q_initial = 5.0
+    h_initial = 0.60
+    solver.h = np.ones(101) * h_initial
+    solver.hu = np.ones(101) * Q_initial / B
+
+    # 计算Q=10 m^3/s的均匀流水深
+    def compute_uniform_h(Q, B, S0, n):
+        from scipy.optimize import fsolve
+        def residual(h):
+            if h <= 0:
+                return 1e10
+            A = B * h
+            R = A / (B + 2*h)
+            Q_calc = (1/n) * A * R**(2/3) * np.sqrt(S0)
+            return Q - Q_calc
+        h_result = fsolve(residual, 1.0)[0]
+        return h_result
+
+    h_final = compute_uniform_h(10.0, B, S0, n)
+    print(f"  Q=5 m^3/s均匀流水深：{h_initial:.3f} m")
+    print(f"  Q=10 m^3/s均匀流水深：{h_final:.3f} m")
+
+    # 边界条件：t=50s时流量从5增加到10 m^3/s
+    def Q_upstream_func(t):
+        if t < 50.0:
+            return 5.0
+        else:
+            return 10.0
+
+    # 下游水深也需要相应变化
+    def h_downstream_func(t):
+        if t < 50.0:
+            return h_initial
+        elif t < 100.0:  # 线性过渡
+            alpha = (t - 50.0) / 50.0
+            return h_initial + alpha * (h_final - h_initial)
+        else:
+            return h_final
+
+    # 求解瞬态（增加模拟时间以让波完全传播）
+    result = solver.solve_transient(
+        t_end=50.0,
+        dt=0.5,
+        Q_upstream_func=Q_upstream_func,
+        h_downstream_func=h_downstream_func,
+        save_interval=10,
+        verbose=True
+    )
+
+    print(f"\n结果分析：")
+    print(f"  时间步数：{len(result['t_history'])}")
+    print(f"  入口流量：{result['Q_final'][0]:.3f} m^3/s")
+    print(f"  出口流量：{result['Q_final'][-1]:.3f} m^3/s")
+    print(f"  平均流量：{np.mean(result['Q_final']):.3f} m^3/s")
+    print(f"  预期流量：10.0 m^3/s")
+
+    # 绘图
+    fig, axes = plt.subplots(3, 1, figsize=(12, 10))
+
+    # 图1：流量时间演化（不同位置）
+    ax = axes[0]
+    positions = [0, 25, 50, 75, 100]  # 选择5个位置
+    for pos_idx in positions:
+        Q_at_pos = result['Q_history'][:, pos_idx]
+        ax.plot(result['t_history'], Q_at_pos,
+               label=f'x={solver.x[pos_idx]:.0f}m')
+    ax.axhline(5.0, color='k', linestyle='--', alpha=0.3, label='Initial')
+    ax.axhline(10.0, color='k', linestyle=':', alpha=0.3, label='Final')
+    ax.axvline(50.0, color='r', linestyle='--', alpha=0.5, label='Step change')
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Discharge (m^3/s)')
+    ax.set_title('Discharge Evolution at Different Positions')
+    ax.legend(loc='right')
+    ax.grid(True, alpha=0.3)
+
+    # 图2：水深时间演化
+    ax = axes[1]
+    for pos_idx in positions:
+        h_at_pos = result['h_history'][:, pos_idx]
+        ax.plot(result['t_history'], h_at_pos,
+               label=f'x={solver.x[pos_idx]:.0f}m')
+    ax.axvline(50.0, color='r', linestyle='--', alpha=0.5)
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Water depth (m)')
+    ax.set_title('Water Depth Evolution')
+    ax.legend(loc='right')
+    ax.grid(True, alpha=0.3)
+
+    # 图3：空间分布快照（不同时刻）
+    ax = axes[2]
+    n_snapshots = min(6, len(result['t_history']))
+    time_indices = np.linspace(0, len(result['t_history'])-1, n_snapshots, dtype=int)
+    for t_idx in time_indices:
+        t_val = result['t_history'][t_idx]
+        ax.plot(solver.x, result['h_history'][t_idx], label=f't={t_val:.1f}s')
+    ax.set_xlabel('Position (m)')
+    ax.set_ylabel('Water depth (m)')
+    ax.set_title('Water Depth Profiles at Different Times')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('transient_inflow_step.png', dpi=150)
+    print(f"  图表保存至：transient_inflow_step.png")
+
+    return result
+
+
+def test_time_varying_gate():
+    """测试2: 闸门开度时变"""
+    print("\n" + "=" * 80)
+    print("测试2: 闸门开度时变")
+    print("=" * 80)
+
+    # 参数
+    L = 1000.0
+    B = 10.0
+    S0 = 0.001
+    n = 0.025
+
+    # 闸门开度时间函数：0.3m -> 0.6m (线性变化)
+    def gate_opening_func(t):
+        if t < 50.0:
+            return 0.3
+        elif t < 100.0:
+            return 0.3 + (0.6 - 0.3) * (t - 50.0) / 50.0
+        else:
+            return 0.6
+
+    # 创建时变闸门
+    gate = SluiceGate(
+        position=500.0,
+        width=B,
+        opening=gate_opening_func,  # 传入函数
+        Cd=0.6
+    )
+
+    # 创建求解器
+    solver = HydrostaticCanalSolver(
+        length=L,
+        nx=101,
+        B=B,
+        S0=S0,
+        n=n,
+        internal_structures=[(500.0, gate)]
+    )
+
+    # 初始条件
+    Q_flow = 5.0
+    h_uniform = 0.60
+    solver.h = np.ones(101) * h_uniform
+    solver.hu = np.ones(101) * Q_flow / B
+
+    # 求解瞬态
+    result = solver.solve_transient(
+        t_end=50.0,
+        dt=0.5,
+        Q_upstream=Q_flow,
+        h_downstream=h_uniform,
+        save_interval=5,
+        verbose=True
+    )
+
+    print(f"\n结果分析：")
+    print(f"  时间步数：{len(result['t_history'])}")
+
+    # 闸门位置
+    gate_idx = solver.structure_indices[0]
+
+    # 绘图
+    fig, axes = plt.subplots(3, 1, figsize=(12, 10))
+
+    # 图1：闸门开度变化
+    ax = axes[0]
+    t_array = np.array(result['t_history'])
+    opening_array = np.array([gate_opening_func(t) for t in t_array])
+    ax.plot(t_array, opening_array, 'b-', linewidth=2)
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Gate opening (m)')
+    ax.set_title('Time-Varying Gate Opening')
+    ax.grid(True, alpha=0.3)
+
+    # 图2：闸门上下游水位差
+    ax = axes[1]
+    h_up_array = result['h_history'][:, gate_idx - 1]
+    h_down_array = result['h_history'][:, gate_idx + 1]
+    delta_h = h_up_array - h_down_array
+    ax.plot(t_array, delta_h, 'r-', linewidth=2, label='Δh')
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Water level difference (m)')
+    ax.set_title('Head Difference Across Gate')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # 图3：水深空间分布演化
+    ax = axes[2]
+    n_snapshots = min(6, len(t_array))
+    time_indices = np.linspace(0, len(t_array)-1, n_snapshots, dtype=int)
+    for t_idx in time_indices:
+        t_val = t_array[t_idx]
+        opening_val = opening_array[t_idx]
+        ax.plot(solver.x, result['h_history'][t_idx],
+               label=f't={t_val:.0f}s, e={opening_val:.2f}m')
+    ax.axvline(500, color='gray', linestyle='--', alpha=0.5, label='Gate')
+    ax.set_xlabel('Position (m)')
+    ax.set_ylabel('Water depth (m)')
+    ax.set_title('Water Depth Evolution with Time-Varying Gate')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('transient_time_varying_gate.png', dpi=150)
+    print(f"  图表保存至：transient_time_varying_gate.png")
+
+    return result
+
+
+def test_flood_wave():
+    """测试3: 洪水波传播"""
+    print("\n" + "=" * 80)
+    print("测试3: 洪水波传播")
+    print("=" * 80)
+
+    # 参数
+    L = 2000.0
+    B = 10.0
+    S0 = 0.0005
+    n = 0.025
+
+    # 创建求解器
+    solver = HydrostaticCanalSolver(
+        length=L,
+        nx=201,
+        B=B,
+        S0=S0,
+        n=n
+    )
+
+    # 初始条件：低流量
+    Q_base = 5.0
+    h_base = 0.60
+    solver.h = np.ones(201) * h_base
+    solver.hu = np.ones(201) * Q_base / B
+
+    # 边界条件：洪水波 Q(t) = 5 + 10*sin^2(πt/100)
+    def Q_flood_wave(t):
+        if t < 200.0:
+            return Q_base + 10.0 * np.sin(np.pi * t / 100.0)**2
+        else:
+            return Q_base
+
+    # 求解瞬态
+    result = solver.solve_transient(
+        t_end=50.0,
+        dt=0.5,
+        Q_upstream_func=Q_flood_wave,
+        h_downstream=h_base,
+        save_interval=5,
+        verbose=True
+    )
+
+    print(f"\n结果分析：")
+    print(f"  时间步数：{len(result['t_history'])}")
+    print(f"  最大流量：{result['Q_history'].max():.3f} m^3/s")
+    print(f"  最大水深：{result['h_history'].max():.3f} m")
+
+    # 绘图
+    fig = plt.figure(figsize=(14, 10))
+
+    # 图1：入流洪水波
+    ax1 = plt.subplot(2, 2, 1)
+    t_array = np.array(result['t_history'])
+    Q_in_array = np.array([Q_flood_wave(t) for t in t_array])
+    ax1.plot(t_array, Q_in_array, 'b-', linewidth=2)
+    ax1.set_xlabel('Time (s)')
+    ax1.set_ylabel('Inflow discharge (m^3/s)')
+    ax1.set_title('Flood Wave Input')
+    ax1.grid(True, alpha=0.3)
+
+    # 图2：不同位置的流量响应
+    ax2 = plt.subplot(2, 2, 2)
+    positions = [0, 50, 100, 150, 200]
+    for pos_idx in positions:
+        Q_at_pos = result['Q_history'][:, pos_idx]
+        ax2.plot(t_array, Q_at_pos, label=f'x={solver.x[pos_idx]:.0f}m')
+    ax2.set_xlabel('Time (s)')
+    ax2.set_ylabel('Discharge (m^3/s)')
+    ax2.set_title('Discharge Response at Different Positions')
+    ax2.legend(loc='upper right')
+    ax2.grid(True, alpha=0.3)
+
+    # 图3：时空演化图（contour）
+    ax3 = plt.subplot(2, 2, 3)
+    X, T = np.meshgrid(solver.x, t_array)
+    contour = ax3.contourf(X, T, result['h_history'], levels=20, cmap='viridis')
+    plt.colorbar(contour, ax=ax3, label='Water depth (m)')
+    ax3.set_xlabel('Position (m)')
+    ax3.set_ylabel('Time (s)')
+    ax3.set_title('Spatiotemporal Evolution of Water Depth')
+
+    # 图4：水深剖面快照
+    ax4 = plt.subplot(2, 2, 4)
+    n_snapshots = min(6, len(t_array))
+    time_indices = np.linspace(0, len(t_array)-1, n_snapshots, dtype=int)
+    for t_idx in time_indices:
+        t_val = t_array[t_idx]
+        ax4.plot(solver.x, result['h_history'][t_idx], label=f't={t_val:.0f}s')
+    ax4.set_xlabel('Position (m)')
+    ax4.set_ylabel('Water depth (m)')
+    ax4.set_title('Water Depth Profiles')
+    ax4.legend()
+    ax4.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('transient_flood_wave.png', dpi=150)
+    print(f"  图表保存至：transient_flood_wave.png")
+
+    return result
+
+
+def main():
+    """主函数"""
+    print("HydrostaticCanalSolver 瞬态流测试")
+    print()
+
+    # 测试1：入流阶跃变化
+    result1 = test_inflow_step_change()
+
+    # 测试2：闸门开度时变
+    result2 = test_time_varying_gate()
+
+    # 测试3：洪水波传播
+    result3 = test_flood_wave()
+
+    print("\n" + "=" * 80)
+    print("所有瞬态流测试完成！")
+    print("=" * 80)
+    print("生成的图表：")
+    print("  1. transient_inflow_step.png - 入流阶跃变化")
+    print("  2. transient_time_varying_gate.png - 时变闸门")
+    print("  3. transient_flood_wave.png - 洪水波传播")
+
+
+if __name__ == "__main__":
+    main()

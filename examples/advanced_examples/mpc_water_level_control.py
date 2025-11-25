@@ -18,12 +18,14 @@ MPC水位控制示例
 日期: 2025-10-24
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========
 script_path = os.path.abspath(__file__)
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(script_path)))
-sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 
 import numpy as np
@@ -405,9 +407,9 @@ if __name__ == "__main__":
     # 1. MPC vs PID对比 - 因API不兼容暂时禁用
     # compare_mpc_vs_pid()
 
-    print("\n✅ MPC水位控制示例")
-    print("✅ MPCController基于IDZ模型")
-    print("✅ 核心功能可用，详细演示因API重构暂时禁用")
+    print("\n[OK] MPC水位控制示例")
+    print("[OK] MPCController基于IDZ模型")
+    print("[OK] 核心功能可用，详细演示因API重构暂时禁用")
     
     # 2. 自适应MPC演示 - 同样禁用
     # demonstrate_adaptive_mpc()

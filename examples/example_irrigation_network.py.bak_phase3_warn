@@ -1,0 +1,472 @@
+# -*- coding: utf-8 -*-
+"""
+灌溉渠系网络完整示例
+
+模拟典型灌溉渠系，包含：
+- 主渠道
+- 多级分水口
+- 支渠网络
+- 闸门控制
+
+拓扑结构:
+                                    -> [支渠1] -> [田块1]
+    [水源] -> [主渠1] -> [分水口1] ↗
+                                    -> [主渠2] -> [分水口2] -> [支渠2] -> [田块2]
+                                                          ↘
+                                                            -> [支渠3] -> [田块3]
+
+Stage 3 - Task 3.4.2 示例1
+
+作者: HydroClaude Team
+日期: 2025-10-29
+"""
+
+import numpy as np
+import sys
+import os
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from network import (
+    RiverNetwork, Node, Reach,
+    JunctionNode, BifurcationNode,
+    create_inflow_boundary, create_outflow_boundary,
+    NetworkSolver, NetworkValidator, NetworkVisualizer
+)
+from network.structures import InternalGate
+from physics.hydraulic_structures import SluiceGate
+from solvers.godunov_fvm_solver import GodunvFVMSolver
+
+
+def create_solver(length, width, Q_init, slope=0.002, manning_n=0.020):
+    """
+    创建渠道求解器
+
+    Args:
+        length: 渠道长度 (m)
+        width: 渠道宽度 (m)
+        Q_init: 初始流量 (m^3/s)
+        slope: 渠底坡度
+        manning_n: Manning糙率系数
+    """
+    n_cells = max(10, int(length / 50))
+
+    solver = GodunvFVMSolver(
+        width=width,
+        length=length,
+        n_cells=n_cells,
+        manning_n=manning_n,
+        slope=slope
+    )
+
+    # 初始条件：均匀流
+    h_init = 2.0  # 初始水深 (m)
+    h = np.ones(n_cells) * h_init
+    Q = np.ones(n_cells) * Q_init
+
+    solver.h = h
+    solver.Q = Q
+
+    return solver
+
+
+def build_irrigation_network():
+    """
+    构建灌溉渠系网络
+
+    Returns:
+        RiverNetwork实例
+    """
+    print("=" * 80)
+    print("灌溉渠系网络构建")
+    print("=" * 80)
+
+    network = RiverNetwork("灌溉渠系")
+
+    # ========== 节点定义 ==========
+    print("\n[1] 添加节点...")
+
+    # 水源（上游边界）
+    water_source = create_inflow_boundary(
+        "水源",
+        Q=100.0,  # 总供水量 100 m^3/s
+        elevation=150.0
+    )
+    network.add_node(water_source)
+
+    # 分水口1 - 分流节点（分出支渠1）
+    diversion1 = BifurcationNode(
+        "分水口1",
+        elevation=145.0,
+        split_ratios=[0.7, 0.3],  # 主渠70%，支渠1 30%
+        split_method='fixed'
+    )
+    network.add_node(diversion1)
+
+    # 分水口2 - 分流节点（分出支渠2和3）
+    diversion2 = BifurcationNode(
+        "分水口2",
+        elevation=140.0,
+        split_ratios=[0.5, 0.5],  # 均分
+        split_method='fixed'
+    )
+    network.add_node(diversion2)
+
+    # 田块（下游边界）
+    field1 = create_outflow_boundary("田块1", h=1.5, elevation=140.0)
+    field2 = create_outflow_boundary("田块2", h=1.5, elevation=135.0)
+    field3 = create_outflow_boundary("田块3", h=1.5, elevation=135.0)
+
+    network.add_node(field1)
+    network.add_node(field2)
+    network.add_node(field3)
+
+    # 闸门节点
+    gate1 = Node("闸门1", "junction", elevation=142.0)
+    gate2 = Node("闸门2", "junction", elevation=137.0)
+
+    network.add_node(gate1)
+    network.add_node(gate2)
+
+    print(f"  节点总数: {len(network.nodes)}")
+    print(f"    水源: 1")
+    print(f"    分水口: 2")
+    print(f"    闸门: 2")
+    print(f"    田块: 3")
+
+    # ========== 河段定义 ==========
+    print("\n[2] 添加河段...")
+
+    # 主渠1: 水源 -> 闸门1
+    main1_solver = create_solver(
+        length=1000.0,
+        width=5.0,
+        Q_init=100.0,
+        slope=0.005
+    )
+    main1 = Reach("主渠1", "水源", "闸门1", main1_solver)
+    network.add_reach(main1)
+
+    # 主渠1b: 闸门1 -> 分水口1
+    main1b_solver = create_solver(
+        length=500.0,
+        width=5.0,
+        Q_init=100.0,
+        slope=0.006
+    )
+    main1b = Reach("主渠1b", "闸门1", "分水口1", main1b_solver)
+    network.add_reach(main1b)
+
+    # 支渠1: 分水口1 -> 田块1
+    branch1_solver = create_solver(
+        length=800.0,
+        width=2.0,
+        Q_init=30.0,
+        slope=0.006
+    )
+    branch1 = Reach("支渠1", "分水口1", "田块1", branch1_solver)
+    network.add_reach(branch1)
+
+    # 主渠2: 分水口1 -> 闸门2
+    main2_solver = create_solver(
+        length=800.0,
+        width=4.0,
+        Q_init=70.0,
+        slope=0.006
+    )
+    main2 = Reach("主渠2", "分水口1", "闸门2", main2_solver)
+    network.add_reach(main2)
+
+    # 主渠2b: 闸门2 -> 分水口2
+    main2b_solver = create_solver(
+        length=500.0,
+        width=4.0,
+        Q_init=70.0,
+        slope=0.006
+    )
+    main2b = Reach("主渠2b", "闸门2", "分水口2", main2b_solver)
+    network.add_reach(main2b)
+
+    # 支渠2: 分水口2 -> 田块2
+    branch2_solver = create_solver(
+        length=700.0,
+        width=2.0,
+        Q_init=35.0,
+        slope=0.007
+    )
+    branch2 = Reach("支渠2", "分水口2", "田块2", branch2_solver)
+    network.add_reach(branch2)
+
+    # 支渠3: 分水口2 -> 田块3
+    branch3_solver = create_solver(
+        length=700.0,
+        width=2.0,
+        Q_init=35.0,
+        slope=0.007
+    )
+    branch3 = Reach("支渠3", "分水口2", "田块3", branch3_solver)
+    network.add_reach(branch3)
+
+    print(f"  河段总数: {len(network.reaches)}")
+    print(f"    主渠: 4段")
+    print(f"    支渠: 3段")
+
+    # ========== 内部建筑物（闸门）==========
+    print("\n[3] 添加控制闸门...")
+
+    # 闸门1: 控制总流量
+    gate1_struct = SluiceGate(
+        sill_elevation=142.0,
+        width=4.0,
+        opening=1.2,  # 开度1.2m
+        contraction_coeff=0.6
+    )
+    internal_gate1 = InternalGate(gate1_struct, main1, main1b, gate1)
+    network.add_internal_structure("闸门1", internal_gate1)
+    print(f"  闸门1: 开度={gate1_struct.opening:.1f}m (控制总流量)")
+
+    # 闸门2: 控制主渠2流量
+    gate2_struct = SluiceGate(
+        sill_elevation=137.0,
+        width=3.5,
+        opening=1.0,  # 开度1.0m
+        contraction_coeff=0.6
+    )
+    internal_gate2 = InternalGate(gate2_struct, main2, main2b, gate2)
+    network.add_internal_structure("闸门2", internal_gate2)
+    print(f"  闸门2: 开度={gate2_struct.opening:.1f}m (控制主渠2)")
+
+    # ========== 拓扑验证 ==========
+    print("\n[4] 构建拓扑...")
+    network.build_topology()
+    print(f"  拓扑顺序: {network.topological_order}")
+
+    return network
+
+
+def validate_network(network):
+    """
+    验证网络配置
+
+    Args:
+        network: RiverNetwork实例
+
+    Returns:
+        健康评分
+    """
+    print("\n" + "=" * 80)
+    print("网络验证")
+    print("=" * 80)
+
+    validator = NetworkValidator(network)
+    is_valid, health_score = validator.validate_all(verbose=True)
+
+    return health_score
+
+
+def simulate_irrigation(network, scenario_name="正常灌溉"):
+    """
+    运行灌溉模拟
+
+    Args:
+        network: RiverNetwork实例
+        scenario_name: 场景名称
+
+    Returns:
+        模拟结果字典
+    """
+    print("\n" + "=" * 80)
+    print(f"场景: {scenario_name}")
+    print("=" * 80)
+
+    # 创建求解器
+    solver = NetworkSolver(network, solve_method='sequential')
+
+    # 运行模拟
+    print("\n运行模拟...")
+    results = solver.run(
+        t_end = 30.0,  # 1小时
+        dt=10.0,
+        output_interval=1200.0,  # 每20分钟输出
+        verbose=True
+    )
+
+    return results
+
+
+def analyze_results(network, results):
+    """
+    分析模拟结果
+
+    Args:
+        network: RiverNetwork实例
+        results: 模拟结果
+    """
+    print("\n" + "=" * 80)
+    print("结果分析")
+    print("=" * 80)
+
+    # 1. 分水口流量分配
+    print("\n[1] 分水口流量分配")
+
+    print(f"\n  分水口1 (目标比例: 70% 主渠, 30% 支渠):")
+    div1 = network.nodes["分水口1"]
+    if div1.Q_in and div1.Q_out:
+        Q_in = div1.Q_in[0]
+        Q_main = div1.Q_out[0]  # 主渠2
+        Q_branch1 = div1.Q_out[1]  # 支渠1
+        ratio_main = Q_main / (Q_main + Q_branch1) * 100
+        ratio_branch = Q_branch1 / (Q_main + Q_branch1) * 100
+
+        print(f"    入流: {Q_in:.2f} m^3/s")
+        print(f"    主渠2: {Q_main:.2f} m^3/s ({ratio_main:.1f}%)")
+        print(f"    支渠1: {Q_branch1:.2f} m^3/s ({ratio_branch:.1f}%)")
+
+    print(f"\n  分水口2 (目标比例: 50% 支渠2, 50% 支渠3):")
+    div2 = network.nodes["分水口2"]
+    if div2.Q_in and div2.Q_out:
+        Q_in = div2.Q_in[0]
+        Q_branch2 = div2.Q_out[0]  # 支渠2
+        Q_branch3 = div2.Q_out[1]  # 支渠3
+        ratio2 = Q_branch2 / (Q_branch2 + Q_branch3) * 100
+        ratio3 = Q_branch3 / (Q_branch2 + Q_branch3) * 100
+
+        print(f"    入流: {Q_in:.2f} m^3/s")
+        print(f"    支渠2: {Q_branch2:.2f} m^3/s ({ratio2:.1f}%)")
+        print(f"    支渠3: {Q_branch3:.2f} m^3/s ({ratio3:.1f}%)")
+
+    # 2. 闸门状态
+    print("\n[2] 闸门状态")
+
+    for gate_id in ["闸门1", "闸门2"]:
+        gate_node = network.nodes[gate_id]
+        if hasattr(gate_node, 'internal_structure') and gate_node.internal_structure:
+            gate = gate_node.internal_structure
+            print(f"\n  {gate_id}:")
+            print(f"    开度: {gate.get_opening():.2f} m")
+            print(f"    流量: {gate.Q_current:.2f} m^3/s")
+            print(f"    上游水位: {gate.h_upstream:.2f} m")
+            print(f"    下游水位: {gate.h_downstream:.2f} m")
+            print(f"    水头差: {gate.delta_h:.3f} m")
+
+    # 3. 田块供水量
+    print("\n[3] 田块供水量")
+
+    total_supply = 0.0
+    for field_id in ["田块1", "田块2", "田块3"]:
+        field = network.nodes[field_id]
+        Q_supply = sum(field.Q_in) if field.Q_in else 0.0
+        total_supply += Q_supply
+        print(f"  {field_id}: {Q_supply:.2f} m^3/s")
+
+    print(f"  总供水量: {total_supply:.2f} m^3/s")
+
+    # 4. 质量守恒
+    Q_in, Q_out, mass_error = network.check_global_mass_balance()
+
+    print(f"\n[4] 全局质量守恒")
+    print(f"  总入流: {Q_in:.2f} m^3/s")
+    print(f"  总出流: {Q_out:.2f} m^3/s")
+    print(f"  误差: {mass_error:.4f}%")
+
+    if mass_error < 1.0:
+        print(f"   优秀 (< 1%)")
+    elif mass_error < 5.0:
+        print(f"   良好 (< 5%)")
+    else:
+        print(f"    需改进")
+
+    # 5. 计算性能
+    print(f"\n[5] 计算性能")
+    print(f"  总步数: {results['n_steps']}")
+    print(f"  计算时间: {results['total_time']:.2f} s")
+    print(f"  平均步速: {results['total_time']/results['n_steps']*1000:.1f} ms/step")
+
+    # 6. 质量误差历史
+    if 'mass_error_history' in results:
+        max_error = max(results['mass_error_history'])
+        avg_error = np.mean(results['mass_error_history'])
+
+        print(f"\n[6] 质量误差历史")
+        print(f"  最大误差: {max_error:.4f}%")
+        print(f"  平均误差: {avg_error:.4f}%")
+
+
+def scenario_1_normal_operation(network):
+    """场景1: 正常运行"""
+    print("\n" + "=" * 80)
+    print("场景1: 正常灌溉运行")
+    print("=" * 80)
+    print("闸门开度: 闸门1=1.2m, 闸门2=1.0m")
+
+    results = simulate_irrigation(network, "正常灌溉")
+    analyze_results(network, results)
+
+    return results
+
+
+def scenario_2_gate_adjustment(network):
+    """场景2: 闸门调节"""
+    print("\n" + "=" * 80)
+    print("场景2: 调整闸门增加支渠供水")
+    print("=" * 80)
+
+    # 调小闸门2，增加支渠1的供水比例
+    gate2_node = network.nodes["闸门2"]
+    if hasattr(gate2_node, 'internal_structure'):
+        gate2_node.internal_structure.set_opening(0.6)  # 从1.0m调到0.6m
+        print("调整闸门2开度: 1.0m -> 0.6m")
+
+    results = simulate_irrigation(network, "闸门调节")
+    analyze_results(network, results)
+
+    # 恢复闸门2开度
+    gate2_node.internal_structure.set_opening(1.0)
+
+    return results
+
+
+def main():
+    """主函数"""
+    print("=" * 80)
+    print("灌溉渠系网络完整示例")
+    print("Stage 3 - Task 3.4.2 示例1")
+    print("=" * 80)
+
+    # 1. 构建网络
+    network = build_irrigation_network()
+
+    # 2. 验证网络
+    health_score = validate_network(network)
+
+    if health_score < 80:
+        print("\n  警告: 网络健康评分较低，请检查配置")
+        return
+
+    # 3. 场景1: 正常运行
+    results1 = scenario_1_normal_operation(network)
+
+    # 4. 场景2: 闸门调节
+    results2 = scenario_2_gate_adjustment(network)
+
+    # 5. 总结
+    print("\n" + "=" * 80)
+    print("示例完成")
+    print("=" * 80)
+    print("\n主要功能演示:")
+    print("   复杂灌溉渠系构建")
+    print("   分水口流量分配 (BifurcationNode)")
+    print("   闸门流量控制 (InternalGate)")
+    print("   多级分流网络")
+    print("   质量守恒验证")
+    print("   闸门调节优化")
+
+    print("\n应用价值:")
+    print("  - 灌溉调度优化")
+    print("  - 水资源分配")
+    print("  - 闸门控制策略")
+    print("  - 渠系运行分析")
+
+
+if __name__ == "__main__":
+    main()

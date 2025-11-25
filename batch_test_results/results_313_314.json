@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 313,
+    "batch_end_index": 314,
+    "test_run_at": "2025-11-25T16:47:50.228585",
+    "batch_duration_seconds": 6.51,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/integration_examples/gis_water_network.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 6.51,
+      "stdout": "警告: pyswmm未安装。请使用 'pip install pyswmm' 安装\n\n    ╔════════════════════════════════════════════════════════════════╗\n    ║              GIS水网空间数据集成案例                          ║\n    ╚════════════════════════════════════════════════════════════════╝\n\n    本案例展示HydroClaude的GIS集成功能\n\n    功能：\n    1. 创建水网GeoJSON数据\n    2. 空间分析（缓冲区、边界等）\n    3. 地图可视化\n    4. 导出Shapefile格式\n\n    要求：\n    - 安装geopandas: pip install geopandas shapely fiona\n    \n============================================================\n示例1：创建水网GIS数据\n============================================================\n\n水网配置:\n  节点数量: 6\n  管道数量: 6\n水网GeoJSON已创建:\n  节点: water_network_nodes.geojson\n  管道: water_network_links.geojson\n\n节点类型统计:\ntype\njunction     4\nreservoir    1\noutlet       1\nName: count, dtype: int64\n\n管道长度统计:\n  总长度: 5000.0m\n  平均长度: 833.3m\n  最长管道: 1000.0m\n\n============================================================\n示例2：空间分析\n============================================================\n已加载GeoJSON: nodes\n  要素数量: 6\n  几何类型: ['Point']\n已加载GeoJSON: links\n  要素数量: 6\n  几何类型: ['LineString']\n\n执行缓冲区分析...\n缓冲区分析完成: node_buffers\n  缓冲距离: 0.01度\n  缓冲区数量: 6\n\n水网边界:\n  西经: 120.000000\n  南纬: 30.000000\n  东经: 120.400000\n  北纬: 30.100000\n已创建面图层: service_areas, 包含 1 个多边形\n\n服务区域已创建:\n  面积: 约 492.84 km^2\n\n============================================================\n示例3：地图可视化\n============================================================\n已加载GeoJSON: nodes\n  要素数量: 6\n  几何类型: ['Point']\n已加载GeoJSON: links\n  要素数量: 6\n  几何类型: ['LineString']\n\n生成地图可视化...\n可视化结果已保存到: water_network_map.png\n地图已保存！\n\n============================================================\n示例4：创建复杂水网（环状管网）\n============================================================\n\n复杂水网配置:\n  节点数量: 13\n  管道数量: 24\n  网络类型: 环状+径向\n水网GeoJSON已创建:\n  节点: complex_network_nodes.geojson\n  管道: complex_network_links.geojson\n可视化结果已保存到: complex_network_map.png\n\n复杂水网地图已保存: complex_network_map.png\n\n============================================================\n示例5：导出为Shapefile\n============================================================\n已加载GeoJSON: nodes\n  要素数量: 6\n  几何类型: ['Point']\n已加载GeoJSON: links\n  要素数量: 6\n  几何类型: ['LineString']\n\n导出为Shapefile...\n图层 nodes 已保存到: water_network_nodes.shp\n图层 links 已保存到: water_network_links.shp\n\nShapefile导出完成！\n可以在QGIS、ArcGIS等GIS软件中打开查看\n\n============================================================\n所有示例运行完成！\n============================================================\n\n生成的文件:\n- water_network_nodes.geojson\n- water_network_links.geojson\n- water_network_map.png\n- complex_network_map.png\n- water_network_nodes.shp\n- water_network_links.shp\n\n应用场景:\n- 水网规划与设计\n- 管网巡检路径规划\n- 服务区域分析\n- 与GIS平台集成",
+      "stderr": "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\integration\\gis_adapter.py:282: UserWarning: Geometry is in a geographic CRS. Results from 'buffer' are likely incorrect. Use 'GeoSeries.to_crs()' to re-project geometries to a projected CRS before this operation.\n\n  buffered['geometry'] = gdf.geometry.buffer(distance)"
+    }
+  ]
+}

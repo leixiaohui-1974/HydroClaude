@@ -7,6 +7,8 @@ Debug Well-Balanced NaN Issue
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 import numpy as np
 

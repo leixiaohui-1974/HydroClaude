@@ -14,10 +14,12 @@ Stage 3 - Task 3.1.1 示例
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import os
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from network.topology import Node, Reach, RiverNetwork
 from solvers.godunov_fvm_solver import GodunvFVMSolver

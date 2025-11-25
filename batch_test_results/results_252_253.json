@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 252,
+    "batch_end_index": 253,
+    "test_run_at": "2025-11-25T16:32:40.017633",
+    "batch_duration_seconds": 60.11,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_09_pipe_rk4/example_09_pipe_rk4_enhanced.py",
+      "status": "timeout",
+      "return_code": -1,
+      "duration_seconds": 60.11,
+      "stdout": "",
+      "stderr": "Process timed out after 60 seconds."
+    }
+  ]
+}

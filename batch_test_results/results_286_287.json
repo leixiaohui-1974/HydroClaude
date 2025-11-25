@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 286,
+    "batch_end_index": 287,
+    "test_run_at": "2025-11-25T16:39:14.014116",
+    "batch_duration_seconds": 1.21,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_gate_pump_cascade/run_scenario_01.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.21,
+      "stdout": "==========================================================================================\n                           ����: scenario_02_upstream_flow_medium                           \n==========================================================================================\n\n**��������**: ���α߽��Ŷ����еȷ��ȣ�\n\n**��ʼ״̬**: Q = 30 m^3/s\n**�Ŷ�**: t=300s, Q -> 42 m^3/s (+40%)\n**�۲�**: ��վ��������Χ�ڵ���Ӧ�����������\n\n------------------------------------------------------------------------------------------\n: a=6.000, b=-0.05556, c=0.0029630",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_gate_pump_cascade\\run_scenario_01.py\", line 16, in <module>\n    exec(open(os.path.join(os.path.dirname(__file__), 'run_scenario.py'), encoding='utf-8').read())\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 343, in <module>\n  File \"<string>\", line 82, in run_scenario\nUnicodeEncodeError: 'gbk' codec can't encode character '\\u25b6' in position 0: illegal multibyte sequence"
+    }
+  ]
+}

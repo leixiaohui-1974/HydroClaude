@@ -5,6 +5,8 @@ MacDonald Test 5 稳定性诊断
 策略：逐步增加模拟时间，定位失败点
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

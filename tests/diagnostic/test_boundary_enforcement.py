@@ -11,6 +11,8 @@
 3. 检查每个时间步后边界值是否保持
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

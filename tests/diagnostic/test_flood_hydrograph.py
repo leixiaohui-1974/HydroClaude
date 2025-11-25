@@ -14,6 +14,8 @@ Phase 1问题：
 """
 
 import sys, os
+import warnings
+warnings.filterwarnings("ignore")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 try:

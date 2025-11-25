@@ -13,6 +13,8 @@
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 from scipy.signal import savgol_filter
 import sys
 
@@ -20,12 +22,12 @@ import sys
 script_path = os.path.abspath(__file__)
 project_root = os.path.dirname(os.path.dirname(script_path))
 if project_root not in sys.path:
-    sys.path.insert(0, project_root)
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 import os
 
 # 添加父目录到路径
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 from utils.canal_utils import compute_steady_uniform_flow, compute_manning_friction_slope
 
 # 导入自适应平滑配置（可选）

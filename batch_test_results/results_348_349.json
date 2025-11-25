@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 348,
+    "batch_end_index": 349,
+    "test_run_at": "2025-11-25T16:56:27.321417",
+    "batch_duration_seconds": 60.07,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./quick_test_10_files.py",
+      "status": "timeout",
+      "return_code": -1,
+      "duration_seconds": 60.07,
+      "stdout": "================================================================================\n快速测试10个文件（Windows中文环境）\n================================================================================\n\n[ 1/10] run_first_order_mpc_benchmark.py                   [PASS]\n[ 2/10] case_channel_renovation.py                         [PASS]\n[ 3/10] case_flood_control.py                              [PASS]\n[ 4/10] case_gate_operation.py                             [PASS]\n[ 5/10] case_irrigation_scheduling.py                      [PASS]\n[ 6/10] case_01_hydropower_plant.py                        [FAIL]\n[ 7/10] case_02_water_supply_network.py",
+      "stderr": "Process timed out after 60 seconds."
+    }
+  ]
+}

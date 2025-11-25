@@ -10,10 +10,12 @@ HydroClaude DO求解器参数校准示例
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # 添加项目根目录到路径
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
 from solvers.dissolved_oxygen import DissolvedOxygenSolver

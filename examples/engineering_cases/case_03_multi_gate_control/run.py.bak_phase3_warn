@@ -1,0 +1,122 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+工程案例3: 多闸门协同控制
+
+运行示例
+    python run.py
+
+或直接使用通用建模器
+    python -m modeling.universal_modeler config.yaml
+"""
+
+import sys
+import os
+from pathlib import Path
+
+# 添加项目根目录到路径
+project_root = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+
+from modeling.universal_modeler import UniversalModeler
+
+
+def main():
+    """运行多闸门协同控制案例"""
+
+    # 配置文件路径
+    config_file = Path(__file__).parent / "config.yaml"
+
+    print("=" * 80)
+    print("工程案例3: 多闸门协同控制")
+    print("=" * 80)
+    print()
+    print("系统配置:")
+    print("  - 渠道长度: 12 km")
+    print("  - 闸门数量: 3个 (位于3km, 6km, 9km)")
+    print("  - 监测点: 3个 (1.5km, 4.5km, 7.5km)")
+    print("  - 控制方式: MPC协同控制")
+    print("  - 扰动: t=300s流量从25->32 m^3/s (+28%)")
+    print()
+    print("控制目标:")
+    print("  - 第1段水位: 2.5 m")
+    print("  - 第2段水位: 2.3 m")
+    print("  - 第3段水位: 2.1 m")
+    print()
+    print("-" * 80)
+    print()
+
+    # 创建建模器传入配置文件路径
+    modeler = UniversalModeler(str(config_file))
+
+    # 运行仿真
+    print("开始仿真...")
+    print()
+    result = modeler.run()
+
+    print()
+    print("=" * 80)
+    print("仿真完成")
+    print("=" * 80)
+    print()
+
+    # 显示控制性能
+    if hasattr(modeler, 'control_result') and modeler.control_result is not None:
+        ctrl_result = modeler.control_result
+        metrics = ctrl_result.get('performance_metrics', {})
+
+        print("控制性能指标:")
+        print("-" * 80)
+
+        # 整体性能
+        if 'mae' in metrics:
+            print(f"  平均绝对误差 (MAE):     {metrics['mae']:.4f} m")
+        if 'rmse' in metrics:
+            print(f"  均方根误差 (RMSE):      {metrics['rmse']:.4f} m")
+        if 'max_error' in metrics:
+            print(f"  最大误差:               {metrics['max_error']:.4f} m")
+        if 'steady_state_error' in metrics:
+            print(f"  稳态误差:               {metrics['steady_state_error']:.4f} m")
+
+        print()
+
+        # 控制平滑度
+        if 'control_smoothness' in metrics:
+            print(f"  控制平滑度:             {metrics['control_smoothness']:.4f} m/步")
+
+        print()
+
+        # 扰动前后对比
+        if 'disturbance_response' in metrics:
+            dr = metrics['disturbance_response']
+            print("扰动响应分析:")
+            print(f"  扰动前MAE:              {dr['mae_before']:.4f} m")
+            print(f"  扰动后MAE:              {dr['mae_after']:.4f} m")
+            print(f"  误差增幅:               {dr['error_increase']:.1f}%")
+
+        print()
+        print("-" * 80)
+        print()
+
+        # 各闸门控制范围
+        control_history = ctrl_result.get('control_history', [])
+        if len(control_history) > 0:
+            import numpy as np
+            controls = np.array(control_history)
+
+            print("各闸门控制动作:")
+            for i in range(controls.shape[1]):
+                print(f"  闸门{i+1}: {controls[:, i].min():.3f} - {controls[:, i].max():.3f} m "
+                      f"(平均: {controls[:, i].mean():.3f} m)")
+            print()
+
+    # 输出文件位置
+    output_dir = modeler.config.get_output_config()['directory']
+    print(f"结果已保存到: {output_dir}/")
+    print()
+
+    return result
+
+
+if __name__ == "__main__":
+    main()

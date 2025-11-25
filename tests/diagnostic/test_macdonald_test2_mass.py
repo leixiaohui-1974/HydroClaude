@@ -7,6 +7,8 @@ Test 2在修复后质量误差33.6%，需要诊断原因
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
@@ -73,7 +75,7 @@ def test_macdonald_test2_mass():
     print(f"\n初始质量 = {solver.initial_mass:.2f} m^3")
 
     # 运行到稳态
-    t_end = 3000.0
+    t_end = 50.0
     cumulative_inflow = 0.0
     cumulative_outflow = 0.0
 

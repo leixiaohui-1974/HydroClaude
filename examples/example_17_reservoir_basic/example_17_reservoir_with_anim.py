@@ -14,6 +14,8 @@
 """
 
 import sys, os
+import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
 import argparse
 import matplotlib
@@ -21,7 +23,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 EXAMPLES_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, EXAMPLES_DIR)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from animation_utils import AnimationGenerator
 
 def parse_args():

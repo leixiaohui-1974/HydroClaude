@@ -6,6 +6,8 @@
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 from pathlib import Path
 import numpy as np
@@ -16,7 +18,7 @@ from matplotlib.animation import FuncAnimation, PillowWriter
 import matplotlib.font_manager as fm
 
 # 添加项目根目录
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 # 设置中文字体尝试使用系统字体
@@ -52,7 +54,7 @@ class AdvancedAnimationGenerator:
         """生成明渠流动动画从实际仿真"""
         print(f"  运行明渠仿真并生成动画...")
 
-        sys.path.insert(0, str(self.examples_root.parent))
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
         try:
             from physics.canal_solver import CanalSolver

@@ -1,0 +1,377 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+网格收敛性测试 - MacDonald问题
+
+经过四次失败尝试后的基础验证：
+1. Interface方法：61% -> 114% 
+2. Strang Splitting：61% -> 65% 
+3. 空间精度order=2：61% -> 66% 
+4. Well-Balanced：61% -> 120% （最糟糕！）
+
+关键洞察：
+- 所有"高级"方法都失败了
+- 改变重构方式的方法失败最严重
+- 这暗示问题可能不在方法选择，而在更基础的层面
+
+本测试目的：
+检查质量守恒误差是否随网格加密而收敛
+- 如果收敛 -> 数值方法正确，只是n_cells=20太粗
+- 如果不收敛 -> 问题在边界条件、物理模型或其他地方
+
+这是数值方法验证的基础测试，应该最先做！
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
+
+import numpy as np
+import matplotlib.pyplot as plt
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+
+
+def test_grid_convergence():
+    """网格收敛性测试"""
+
+    print("\n" + "="*80)
+    print("网格收敛性测试 - MacDonald问题")
+    print("="*80)
+
+    B = 1.0
+    L = 1000.0
+    Q_bc = 2.0
+    g = 9.81
+    h_c = (Q_bc**2 / (g * B**2))**(1/3)
+
+    print(f"\n测试场景:")
+    print(f"  渠道长度: {L} m")
+    print(f"  底坡: 0.002")
+    print(f"  Manning n: 0.03")
+    print(f"  边界: Q={Q_bc} m^3/s, h={h_c:.4f} m (临界水深)")
+    print(f"  模拟时间: 500s")
+
+    # 测试不同网格分辨率
+    n_cells_list = [20, 40, 80, 160]
+
+    print(f"\n测试网格: {n_cells_list}")
+    print(f"预期：如果数值方法正确，质量误差应随网格加密而减小")
+
+    results = []
+
+    for n_cells in n_cells_list:
+        print(f"\n{'='*80}")
+        print(f"测试: n_cells = {n_cells}")
+        print("="*80)
+
+        # 创建求解器（使用标准配置）
+        solver = GodunvFVMSolver(
+            width=B,
+            length=L,
+            n_cells=n_cells,
+            manning_n=0.03,
+            slope=0.002,
+            cfl=0.4,
+            order=1,  # 一阶（标准）
+            well_balanced=False,  # 不使用well-balanced
+            use_numba=False  # 为了一致性，不使用numba
+        )
+
+        # 初始条件（与之前保持一致）
+        h_init = np.linspace(h_c * 1.5, h_c, n_cells)
+        Q_init = np.ones(n_cells) * Q_bc
+
+        # 边界条件
+        bc_left = {'type': 'Q', 'value': Q_bc}
+        bc_right = {'type': 'h', 'value': h_c}
+
+        solver.initialize(h_init, Q_init, bc_left, bc_right)
+
+        # 运行到500s
+        t_final = 500.0
+        step_count = 0
+        max_steps = 10000  # 增加最大步数限制（网格越细，步数越多）
+
+        print(f"\n运行到 t={t_final}s...")
+        print(f"dx = {solver.dx:.3f} m")
+
+        # 记录中间时刻的误差
+        checkpoints = [100, 200, 300, 400, 500]
+        checkpoint_errors = []
+
+        while solver.t < t_final and step_count < max_steps:
+            solver.step()
+            step_count += 1
+
+            # 记录检查点
+            for cp in checkpoints:
+                if len(checkpoint_errors) < len(checkpoints) and solver.t >= cp:
+                    mass_error = solver.get_mass_conservation_error()
+                    checkpoint_errors.append((cp, mass_error))
+
+            if step_count % 100 == 0:
+                mass_error = solver.get_mass_conservation_error()
+                print(f"  t={solver.t:6.1f}s, 步数={step_count:5d}, 质量误差={mass_error:7.3f}%")
+
+        # 最终结果
+        mass_error = solver.get_mass_conservation_error()
+        Q_avg = np.mean(solver.Q)
+        h_avg = np.mean(solver.h)
+
+        print(f"\n结果 (n_cells={n_cells}):")
+        print(f"  最终时刻: t={solver.t:.1f}s")
+        print(f"  总步数: {step_count}")
+        print(f"  质量误差: {mass_error:.2f}%")
+        print(f"  平均流量: {Q_avg:.4f} m^3/s (目标: {Q_bc})")
+        print(f"  平均水深: {h_avg:.4f} m")
+        print(f"  流量误差: {abs(Q_avg - Q_bc)/Q_bc*100:.2f}%")
+
+        # 保存结果
+        results.append({
+            'n_cells': n_cells,
+            'dx': solver.dx,
+            'mass_error': mass_error,
+            'Q_avg': Q_avg,
+            'h_avg': h_avg,
+            'steps': step_count,
+            'checkpoints': checkpoint_errors
+        })
+
+    # 分析收敛性
+    print(f"\n{'='*80}")
+    print("收敛性分析")
+    print("="*80)
+
+    print(f"\n{'网格':<10} {'dx(m)':<10} {'质量误差':<12} {'流量误差':<12} {'步数':<8}")
+    print("-" * 60)
+
+    for r in results:
+        flow_error = abs(r['Q_avg'] - Q_bc)/Q_bc*100
+        print(f"{r['n_cells']:<10} {r['dx']:<10.3f} {r['mass_error']:>10.2f}% {flow_error:>10.2f}% {r['steps']:<8}")
+
+    # 计算收敛率
+    print(f"\n收敛率分析:")
+    print("-" * 60)
+
+    for i in range(1, len(results)):
+        prev = results[i-1]
+        curr = results[i]
+
+        # 网格加密比
+        refinement = curr['n_cells'] / prev['n_cells']
+
+        # 误差比
+        error_ratio = curr['mass_error'] / prev['mass_error']
+
+        # 理论收敛率（一阶方法）
+        # 如果是一阶精度：error ∝ dx，dx减半则error应减半
+        # error_ratio应该约等于0.5（对于一阶方法）
+        theoretical_ratio = 1.0 / refinement
+
+        print(f"\n{prev['n_cells']} -> {curr['n_cells']} (网格加密{refinement}x):")
+        print(f"  质量误差比: {error_ratio:.4f}")
+        print(f"  理论比值(一阶): {theoretical_ratio:.4f}")
+
+        if error_ratio < 0.9:
+            print(f"   误差减小 ({(1-error_ratio)*100:.1f}%)")
+            if 0.4 < error_ratio < 0.6:
+                print(f"   接近一阶收敛率！数值方法基本正确")
+            elif error_ratio < 0.4:
+                print(f"   超线性收敛！可能接近二阶精度")
+        elif error_ratio < 1.1:
+            print(f"  ️ 误差几乎不变（变化<10%）")
+        else:
+            print(f"   误差反而增大 ({(error_ratio-1)*100:.1f}%)")
+
+    # 总结
+    print(f"\n{'='*80}")
+    print("总结")
+    print("="*80)
+
+    # 判断收敛性
+    mass_errors = [r['mass_error'] for r in results]
+
+    # 检查是否单调递减
+    is_monotone_decreasing = all(mass_errors[i] > mass_errors[i+1]
+                                   for i in range(len(mass_errors)-1))
+
+    # 检查最终误差改善
+    error_improvement = (mass_errors[0] - mass_errors[-1]) / mass_errors[0] * 100
+
+    # 检查最细网格误差
+    finest_error = mass_errors[-1]
+
+    print(f"\n1. 收敛性质:")
+    if is_monotone_decreasing:
+        print(f"    质量误差随网格加密单调递减")
+        print(f"    这说明数值方法基本正确！")
+    else:
+        print(f"    质量误差未单调递减")
+        print(f"    数值方法可能存在问题")
+
+    print(f"\n2. 改善程度:")
+    print(f"   从 n={n_cells_list[0]} 到 n={n_cells_list[-1]}:")
+    print(f"   质量误差: {mass_errors[0]:.2f}% -> {mass_errors[-1]:.2f}%")
+    print(f"   改善: {error_improvement:.1f}%")
+
+    if error_improvement > 50:
+        print(f"    显著改善 (>50%)")
+    elif error_improvement > 25:
+        print(f"    明显改善 (>25%)")
+    elif error_improvement > 10:
+        print(f"   ️ 略有改善 (>10%)")
+    else:
+        print(f"    改善很小 (<10%)")
+
+    print(f"\n3. 最细网格结果:")
+    print(f"   n_cells = {n_cells_list[-1]}, dx = {results[-1]['dx']:.3f} m")
+    print(f"   质量误差: {finest_error:.2f}%")
+
+    if finest_error < 5:
+        print(f"    优秀 (<5%)")
+        conclusion = "SUCCESS"
+    elif finest_error < 15:
+        print(f"    良好 (<15%)")
+        conclusion = "GOOD"
+    elif finest_error < 30:
+        print(f"    可接受 (<30%)")
+        conclusion = "ACCEPTABLE"
+    elif finest_error < mass_errors[0] * 0.5:
+        print(f"   ️ 仍有问题，但改善明显")
+        conclusion = "IMPROVED"
+    else:
+        print(f"    质量守恒仍然很差")
+        conclusion = "POOR"
+
+    # 绘图（如果matplotlib可用）
+    try:
+        fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+        # 子图1: 质量误差 vs 网格分辨率
+        ax1 = axes[0, 0]
+        ax1.plot([r['n_cells'] for r in results],
+                 [r['mass_error'] for r in results],
+                 'o-', linewidth=2, markersize=8, label='实际')
+
+        # 理论一阶收敛线
+        n0 = results[0]['n_cells']
+        e0 = results[0]['mass_error']
+        theoretical = [e0 * n0 / n for n in [r['n_cells'] for r in results]]
+        ax1.plot([r['n_cells'] for r in results], theoretical,
+                 '--', linewidth=2, label='一阶理论', alpha=0.7)
+
+        ax1.set_xlabel('网格单元数', fontsize=12)
+        ax1.set_ylabel('质量守恒误差 (%)', fontsize=12)
+        ax1.set_title('质量误差 vs 网格分辨率', fontsize=14, fontweight='bold')
+        ax1.grid(True, alpha=0.3)
+        ax1.legend()
+        ax1.set_xscale('log')
+        ax1.set_yscale('log')
+
+        # 子图2: 质量误差 vs dx
+        ax2 = axes[0, 1]
+        ax2.plot([r['dx'] for r in results],
+                 [r['mass_error'] for r in results],
+                 'o-', linewidth=2, markersize=8, color='green')
+        ax2.set_xlabel('网格间距 dx (m)', fontsize=12)
+        ax2.set_ylabel('质量守恒误差 (%)', fontsize=12)
+        ax2.set_title('质量误差 vs 网格间距', fontsize=14, fontweight='bold')
+        ax2.grid(True, alpha=0.3)
+        ax2.invert_xaxis()  # dx越小越好，所以反转x轴
+
+        # 子图3: 流量误差 vs 网格分辨率
+        ax3 = axes[1, 0]
+        flow_errors = [abs(r['Q_avg'] - Q_bc)/Q_bc*100 for r in results]
+        ax3.plot([r['n_cells'] for r in results], flow_errors,
+                 'o-', linewidth=2, markersize=8, color='red')
+        ax3.set_xlabel('网格单元数', fontsize=12)
+        ax3.set_ylabel('流量误差 (%)', fontsize=12)
+        ax3.set_title('流量误差 vs 网格分辨率', fontsize=14, fontweight='bold')
+        ax3.grid(True, alpha=0.3)
+
+        # 子图4: 时间演化对比
+        ax4 = axes[1, 1]
+        for r in results:
+            if r['checkpoints']:
+                times = [cp[0] for cp in r['checkpoints']]
+                errors = [cp[1] for cp in r['checkpoints']]
+                ax4.plot(times, errors, 'o-', linewidth=2, markersize=6,
+                        label=f"n={r['n_cells']}")
+        ax4.set_xlabel('时间 (s)', fontsize=12)
+        ax4.set_ylabel('质量守恒误差 (%)', fontsize=12)
+        ax4.set_title('质量误差时间演化', fontsize=14, fontweight='bold')
+        ax4.grid(True, alpha=0.3)
+        ax4.legend()
+
+        plt.tight_layout()
+        plt.savefig('tests/diagnostic/grid_convergence_analysis.png', dpi=150)
+        print(f"\n 收敛性分析图已保存: tests/diagnostic/grid_convergence_analysis.png")
+    except Exception as e:
+        print(f"\n️ 无法生成图表: {e}")
+
+    # 最终判断和建议
+    print(f"\n{'='*80}")
+    print(f"最终结论: {conclusion}")
+    print("="*80)
+
+    if conclusion in ["SUCCESS", "GOOD"]:
+        print(f"\n 找到解决方案！")
+        print(f"\n关键发现：")
+        print(f"  - 质量守恒误差随网格加密显著改善")
+        print(f"  - 数值方法本身是正确的")
+        print(f"  - n_cells=20太粗，无法精确捕捉物理过程")
+        print(f"\n解决方案：")
+        print(f"  - 使用 n_cells >= {n_cells_list[-1]} 可达到 {finest_error:.2f}% 误差")
+        print(f"  - 对于实际应用，建议使用 n_cells >= {n_cells_list[-2] if len(n_cells_list)>2 else n_cells_list[-1]}")
+        print(f"\n下一步：")
+        print(f"  1. 更新MacDonald测试用例使用更细网格")
+        print(f"  2. 重新运行所有benchmark测试")
+        print(f"  3. 文档记录网格分辨率要求")
+    elif conclusion == "ACCEPTABLE":
+        print(f"\n 部分成功")
+        print(f"\n关键发现：")
+        print(f"  - 质量守恒有改善但仍不理想")
+        print(f"  - 可能需要更细的网格或其他改进")
+        print(f"\n建议：")
+        print(f"  1. 继续加密网格测试 (n_cells = 320, 640)")
+        print(f"  2. 结合二阶精度 (order=2) 测试")
+        print(f"  3. 检查边界条件影响")
+    elif conclusion == "IMPROVED":
+        print(f"\n️ 有改善但问题仍存在")
+        print(f"\n关键发现：")
+        print(f"  - 网格加密确实有帮助")
+        print(f"  - 但还有其他因素影响质量守恒")
+        print(f"\n建议：")
+        print(f"  1. 在最细网格基础上测试其他因素:")
+        print(f"     - 边界条件 (CharacteristicBC)")
+        print(f"     - CFL数 (降低到0.2)")
+        print(f"     - 时间积分格式")
+        print(f"  2. 检查物理模型设置")
+    else:
+        print(f"\n 网格收敛性测试未能解决问题")
+        print(f"\n关键发现：")
+        print(f"  - 质量误差不随网格加密明显改善")
+        print(f"  - 问题可能不在网格分辨率")
+        print(f"\n需要检查：")
+        print(f"  1. 边界条件处理（可能是主要问题）")
+        print(f"  2. 源项计算的正确性")
+        print(f"  3. Riemann求解器实现")
+        print(f"  4. MacDonald问题本身的合理性")
+        print(f"\n下一步：")
+        print(f"  - 使用 CharacteristicBC 边界条件测试")
+        print(f"  - 对比商业软件（HEC-RAS）结果")
+        print(f"  - 查阅MacDonald原文")
+
+    print("="*80)
+
+    return results, conclusion
+
+
+if __name__ == "__main__":
+    results, conclusion = test_grid_convergence()

@@ -11,6 +11,8 @@ MacDonald Test 4 - HLLC低耗散求解器测试
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 sys.path.insert(0, '/home/user/HydroClaude')
 
 import numpy as np

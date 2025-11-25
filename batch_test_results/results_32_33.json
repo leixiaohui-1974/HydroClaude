@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 32,
+    "batch_end_index": 33,
+    "test_run_at": "2025-11-25T16:51:36.023839",
+    "batch_duration_seconds": 0.32,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/fix_20251113_090925/examples/example_01_canal_flow/tests/test_anderson_tuning.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.32,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_090925\\examples\\example_01_canal_flow\\tests\\test_anderson_tuning.py\", line 21, in <module>\n    from structures.sluice_gate import SluiceGate\nModuleNotFoundError: No module named 'structures'"
+    }
+  ]
+}

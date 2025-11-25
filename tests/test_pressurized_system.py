@@ -14,6 +14,8 @@
 """
 
 import os
+import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
 import pytest
 import sys

@@ -27,6 +27,8 @@ Toro标准Riemann问题测试套件
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import pytest
 import sys
 import os

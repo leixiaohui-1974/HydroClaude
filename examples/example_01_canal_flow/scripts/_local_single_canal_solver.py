@@ -12,6 +12,8 @@
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 from typing import List, Optional, Dict, Callable
 import sys
 
@@ -19,11 +21,11 @@ import sys
 script_path = os.path.abspath(__file__)
 project_root = os.path.dirname(os.path.dirname(script_path))
 if project_root not in sys.path:
-    sys.path.insert(0, project_root)
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 import os
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 from _local_canal_solver import CanalSolver
 from solvers.gate import HydraulicStructure
@@ -93,7 +95,7 @@ class SingleCanalSolver:
         x_grid = None
         if use_adaptive_grid and len(structures) > 0:
             # 导入网格生成工具
-            sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
             from utils.adaptive_grid import generate_structure_refined_grid
 
             # 生成自适应网格

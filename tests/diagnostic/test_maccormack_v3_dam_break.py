@@ -3,6 +3,8 @@
 """MacCormack v3.0 Dam Break测试（带HLL+TVD）"""
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt

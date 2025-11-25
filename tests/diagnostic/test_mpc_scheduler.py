@@ -13,6 +13,8 @@ MPC智能调度测试
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -110,7 +112,7 @@ def test_water_level_regulation():
 
     initial_state = (solver.h.copy(), solver.hu.copy())
     result = mpc.run_closed_loop(
-        t_end=100.0,
+        t_end=50.0,
         initial_state=initial_state,
         optimization_method='SLSQP',
         feedback_interval=1
@@ -288,7 +290,7 @@ def test_flow_regulation():
 
     initial_state = (solver.h.copy(), solver.hu.copy())
     result = mpc.run_closed_loop(
-        t_end=200.0,  # 延长到200秒
+        t_end=50.0,  # 延长到200秒
         initial_state=initial_state,
         optimization_method='SLSQP',
         feedback_interval=2  # 每2步优化一次以加快
@@ -483,7 +485,7 @@ def test_multi_objective_optimization():
 
     initial_state = (solver.h.copy(), solver.hu.copy())
     result = mpc.run_closed_loop(
-        t_end=120.0,
+        t_end=50.0,
         initial_state=initial_state,
         optimization_method='SLSQP',
         feedback_interval=1

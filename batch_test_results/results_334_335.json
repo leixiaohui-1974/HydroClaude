@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 334,
+    "batch_end_index": 335,
+    "test_run_at": "2025-11-25T16:51:53.277247",
+    "batch_duration_seconds": 0.14,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./fix_examples_imports.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 0.14,
+      "stdout": "================================================================================\n批量修复Examples导入问题\n================================================================================\n\n第1步: 检查需要修复的文件...\n--------------------------------------------------------------------------------\n   example_02_pump_system/example_02_pump_system_enhanced.py\n     已有sys.path设置，跳过\n   example_02_spillway_cascade/example_02_spillway_system.py\n     已有sys.path设置，跳过\n   example_03_turbine_demo/example_03_turbine_comparison.py\n     已有sys.path设置，跳过\n   example_03_complex_network/code/example_03_complex_network.py\n     已有sys.path设置，跳过\n   example_04_hydropower_system/example_04_hydropower_plant.py\n     已有sys.path设置，跳过\n   example_05_transient_analysis/example_05_load_rejection.py\n     已有sys.path设置，跳过\n   example_06_complete_hydropower_system/example_06_complete_system.py\n     已有sys.path设置，跳过\n   example_07_multi_unit_agc/example_07_multi_unit_agc.py\n     已有sys.path设置，跳过\n   example_08_preissmann_vs_fvm/example_08_preissmann_vs_fvm_enhanced.py\n     文件不存在: examples\\example_08_preissmann_vs_fvm\\example_08_preissmann_vs_fvm_enhanced.py\n   example_09_pipe_rk4/example_09_pipe_rk4_enhanced.py\n     已有sys.path设置，跳过\n   example_10_series_network/code/example_10_series_network.py\n     已有sys.path设置，跳过\n   example_11_tree_network/code/example_11_tree_network.py\n     已有sys.path设置，跳过\n   example_12_loop_network/code/example_12_loop_network.py\n     已有sys.path设置，跳过\n   example_13_adaptive_timescale/example_13_adaptive_timescale_enhanced.py\n     已有sys.path设置，跳过\n   example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py\n     已有sys.path设置，跳过\n   example_15_rls_identification/example_15_rls_identification_enhanced.py\n     已有sys.path设置，跳过\n\n发现 0 个文件需要修复\n\n所有文件已经正确配置!",
+      "stderr": ""
+    }
+  ]
+}

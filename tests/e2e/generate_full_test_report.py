@@ -10,6 +10,8 @@ Date: 2025-11-15
 """
 
 import json
+import warnings
+warnings.filterwarnings("ignore")
 import random
 from pathlib import Path
 from datetime import datetime

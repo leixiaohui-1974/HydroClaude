@@ -8,6 +8,8 @@ Validation of Exact solver with CFL=0.1
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import os
 sys.path.insert(0, os.path.abspath('.'))

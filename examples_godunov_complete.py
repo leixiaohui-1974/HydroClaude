@@ -103,18 +103,6 @@ ax1.grid(True, alpha=0.3)
 
 # 最大水深演化
 ax2.plot(history_flood['t_hours'], history_flood['h_max'], 'g-', lw=2)
-ax2.set_xlabel('Time (hours)', fontsize=11)
-ax2.set_ylabel('Maximum Water Depth (m)', fontsize=11)
-ax2.set_title('Maximum Water Level Over Time', fontsize=12)
-ax2.grid(True, alpha=0.3)
-
-plt.tight_layout()
-plt.savefig('/workspace/example1_flood_routing.png', dpi=150)
-print(f"  图像: example1_flood_routing.png")
-
-print(f" 示例1完成")
-
-# ========== 示例2: 渠道稳态设计 ==========
 print("\n" + "="*80)
 print("示例2: 渠道稳态设计")
 print("="*80)

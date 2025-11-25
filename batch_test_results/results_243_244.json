@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 243,
+    "batch_end_index": 244,
+    "test_run_at": "2025-11-25T16:30:59.208498",
+    "batch_duration_seconds": 6.12,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_04_hydropower_system/example_04_hydropower_plant.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 6.12,
+      "stdout": "================================================================================\nEXAMPLE 04: COMPLETE HYDROPOWER PLANT SYSTEM\n================================================================================\nInitializing Hydropower Plant...\n================================================================================\nReservoir level:    500.0 m\nTailwater level:    320.0 m\nGross head:         180.0 m\n\nTunnel:             L=5.0 km, D=8.0 m",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_04_hydropower_system\\example_04_hydropower_plant.py\", line 386, in <module>\n    main()\n    ~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_04_hydropower_system\\example_04_hydropower_plant.py\", line 315, in main\n    plant = HydropowerPlant()\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_04_hydropower_system\\example_04_hydropower_plant.py\", line 113, in __init__\n    print(f\"Surge tank:         {self.surge_tank}\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'gbk' codec can't encode character '\\xb2' in position 66: illegal multibyte sequence"
+    }
+  ]
+}

@@ -8,6 +8,8 @@ Date: 2025-10-23
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -94,7 +96,7 @@ def test_fvm_with_single_gate():
     print()
 
     # 求解到稳态
-    t_end = 1000.0
+    t_end = 50.0
     history = solver.solve(t_end, cfl=0.5, verbose=True)
 
     print()

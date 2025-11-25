@@ -11,6 +11,8 @@
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
@@ -25,7 +27,7 @@ import os
 import pandas as pd
 
 # Import output helper
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 from output_helper import save_figure, save_table, get_output_path
 
 # 配置matplotlib支持中文

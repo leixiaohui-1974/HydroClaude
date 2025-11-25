@@ -13,12 +13,14 @@ MPC性能诊断分析
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib.pyplot as plt
 from typing import Dict, List, Tuple
 import sys
 import os
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from examples.advanced_examples.linearized_canal_simulator import LinearizedCanalSimulator
 from control.first_order_mpc import FirstOrderMPC, FirstOrderMPCConfig

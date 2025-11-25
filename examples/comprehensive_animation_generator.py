@@ -4,12 +4,14 @@
 综合动画生成器 - 为所有剩余示例生成GIF动画
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========
 script_path = os.path.abspath(__file__)
 project_root = os.path.dirname(os.path.dirname(script_path))
-sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 import sys

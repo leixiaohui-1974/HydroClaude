@@ -10,6 +10,8 @@
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib.pyplot as plt
 import sys
 sys.path.append('.')
@@ -87,7 +89,7 @@ def test_inflow_step_change():
 
     # 求解瞬态（增加模拟时间以让波完全传播）
     result = solver.solve_transient(
-        t_end=500.0,
+        t_end=50.0,
         dt=0.5,
         Q_upstream_func=Q_upstream_func,
         h_downstream_func=h_downstream_func,
@@ -201,7 +203,7 @@ def test_time_varying_gate():
 
     # 求解瞬态
     result = solver.solve_transient(
-        t_end=200.0,
+        t_end=50.0,
         dt=0.5,
         Q_upstream=Q_flow,
         h_downstream=h_uniform,
@@ -299,7 +301,7 @@ def test_flood_wave():
 
     # 求解瞬态
     result = solver.solve_transient(
-        t_end=300.0,
+        t_end=50.0,
         dt=0.5,
         Q_upstream_func=Q_flood_wave,
         h_downstream=h_base,

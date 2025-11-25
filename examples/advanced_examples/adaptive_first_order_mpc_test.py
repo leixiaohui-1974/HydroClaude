@@ -5,7 +5,7 @@
 结合FirstOrderIdentifier进行在线参数更新
 
 特点：
-1. 在线辨识一阶系统参数（K, τ）
+1. 在线辨识一阶系统参数（K, tau）
 2. 动态更新MPC内部模型
 3. 适应工况变化和参数漂移
 
@@ -14,8 +14,10 @@
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -42,7 +44,7 @@ class SimpleFirstOrderMPC:
         self.u_max = u_max
         self.du_max = du_max
 
-        # 离散化：Δy[k+1] = a*Δy[k] + b*Δu[k]
+        # 离散化：Deltay[k+1] = a*Deltay[k] + b*Deltau[k]
         self._update_discrete_params()
 
         self.u_prev = u_work
@@ -145,7 +147,7 @@ simulator.reset()
 K_true, tau_true = simulator.get_system_params()
 print(f"\n真实系统参数:")
 print(f"  K = {K_true:.4f} m/m")
-print(f"  τ = {tau_true:.1f}s")
+print(f"  tau = {tau_true:.1f}s")
 
 # 创建一阶辨识器
 identifier = FirstOrderIdentifier(dt=dt, forgetting_factor=0.98)
@@ -164,7 +166,7 @@ controller = SimpleFirstOrderMPC(
 
 print(f"\nMPC初始参数（故意设错）:")
 print(f"  K_init = {K_init} (真实={K_true:.4f})")
-print(f"  τ_init = {tau_init}s (真实={tau_true:.1f}s)")
+print(f"  tau_init = {tau_init}s (真实={tau_true:.1f}s)")
 
 # 仿真参数
 total_time = 1200.0
@@ -205,7 +207,7 @@ for k in range(n_steps):
         if abs(t - t_switch) < dt / 2:
             current_disturbance = Q_new
             simulator.set_disturbance(Q_new)
-            print(f"  t={t:.0f}s: 扰动切换到 Q={Q_new} m³/s")
+            print(f"  t={t:.0f}s: 扰动切换到 Q={Q_new} m^3/s")
             break
 
     # 获取当前水位
@@ -225,7 +227,7 @@ for k in range(n_steps):
         controller.update_model(params.K, params.tau)
         update_counter += 1
         if update_counter % 10 == 0:
-            print(f"  t={t:.0f}s: MPC模型更新 -> K={params.K:.4f}, τ={params.tau:.1f}s")
+            print(f"  t={t:.0f}s: MPC模型更新 -> K={params.K:.4f}, tau={params.tau:.1f}s")
 
     # 记录
     time_hist.append(t)
@@ -295,12 +297,12 @@ ax3.grid(True, alpha=0.3)
 
 # 子图4：时间常数
 ax4 = axes[3]
-ax4.plot(time_hist, tau_est_hist, 'purple', linewidth=1.5, alpha=0.7, label='τ_identified')
-ax4.plot(time_hist, tau_mpc_hist, 'orange', linewidth=2, label='τ_MPC')
-ax4.axhline(tau_true, color='k', linestyle='--', linewidth=2, label=f'τ_true={tau_true:.1f}s')
-ax4.set_ylabel('Time constant τ (s)', fontsize=12)
+ax4.plot(time_hist, tau_est_hist, 'purple', linewidth=1.5, alpha=0.7, label='tau_identified')
+ax4.plot(time_hist, tau_mpc_hist, 'orange', linewidth=2, label='tau_MPC')
+ax4.axhline(tau_true, color='k', linestyle='--', linewidth=2, label=f'tau_true={tau_true:.1f}s')
+ax4.set_ylabel('Time constant tau (s)', fontsize=12)
 ax4.set_xlabel('Time (s)', fontsize=12)
-ax4.set_title('Online Parameter Identification and Model Update (τ)', fontsize=13, fontweight='bold')
+ax4.set_title('Online Parameter Identification and Model Update (tau)', fontsize=13, fontweight='bold')
 ax4.legend()
 ax4.grid(True, alpha=0.3)
 

@@ -3,6 +3,8 @@
 """快速验证牛顿法边界条件修复"""
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import time
 

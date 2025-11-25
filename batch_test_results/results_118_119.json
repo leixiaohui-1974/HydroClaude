@@ -2,8 +2,8 @@
   "metadata": {
     "batch_start_index": 118,
     "batch_end_index": 119,
-    "test_run_at": "2025-11-19T00:35:59.505452",
-    "batch_duration_seconds": 0.05,
+    "test_run_at": "2025-11-25T16:52:38.457100",
+    "batch_duration_seconds": 0.18,
     "total_scripts_in_batch": 1
   },
   "results": [
@@ -11,9 +11,9 @@
       "script_path": "./backups/utility_scripts/organize_examples.py",
       "status": "fail",
       "return_code": 1,
-      "duration_seconds": 0.05,
+      "duration_seconds": 0.18,
       "stdout": "================================================================================\n清理 example_01_canal_flow\n================================================================================",
-      "stderr": "Traceback (most recent call last):\n  File \"/app/./backups/utility_scripts/organize_examples.py\", line 209, in <module>\n    main()\n  File \"/app/./backups/utility_scripts/organize_examples.py\", line 190, in main\n    organizer.clean_example_01()\n  File \"/app/./backups/utility_scripts/organize_examples.py\", line 59, in clean_example_01\n    tests_dir.mkdir(exist_ok=True)\n  File \"/home/jules/.pyenv/versions/3.12.12/lib/python3.12/pathlib.py\", line 1311, in mkdir\n    os.mkdir(self, mode)\nFileNotFoundError: [Errno 2] No such file or directory: '/app/backups/utility_scripts/example_01_canal_flow/tests'"
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\utility_scripts\\organize_examples.py\", line 209, in <module>\n    main()\n    ~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\utility_scripts\\organize_examples.py\", line 190, in main\n    organizer.clean_example_01()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\utility_scripts\\organize_examples.py\", line 59, in clean_example_01\n    tests_dir.mkdir(exist_ok=True)\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^\n  File \"D:\\Users\\lxh\\miniconda3\\Lib\\pathlib\\_local.py\", line 722, in mkdir\n    os.mkdir(self, mode)\n    ~~~~~~~~^^^^^^^^^^^^\nFileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'E:\\\\OneDrive\\\\Documents\\\\GitHub\\\\Test\\\\HydroClaude\\\\backups\\\\utility_scripts\\\\example_01_canal_flow\\\\tests'"
     }
   ]
 }

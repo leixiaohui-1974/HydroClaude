@@ -1,0 +1,29 @@
+{
+  "test_time": "2025-11-25T16:55:11.334362",
+  "platform": "win32",
+  "python_version": "3.13.0 | packaged by conda-forge | (main, Nov 27 2024, 19:03:49) [MSC v.1942 64 bit (AMD64)]",
+  "total_tests": 1,
+  "results": [
+    {
+      "name": "明渠流动/01_basic_v2",
+      "path": "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_01_canal_flow\\scripts\\01_basic_v2.py",
+      "category": "basic",
+      "start_time": "2025-11-25T16:54:51.682801",
+      "status": "passed",
+      "duration": 19.65117907524109,
+      "error": null,
+      "output": "================================================================================\n[U+4F8B][U+5B50]1[U+FF1A][U+660E][U+6E20][U+6D41][U+52A8][U+57FA][U+7840][U+793A][U+4F8B] (HydrostaticCanalSolver[U+9AD8][U+7CBE][U+5EA6][U+7248][U+672C])\n================================================================================\n\n1. [U+53C2][U+6570][U+8BBE][U+7F6E]\n--------------------------------------------------------------------------------\n[U+6E20][U+9053][U+957F][U+5EA6]: 1000.0 m\n[U+6E20][U+9053][U+5BBD][U+5EA6]: 10.0 m\n[U+6E20][U+5E95][U+5761][U+5EA6]: 0.001\nManning[U+7CD9][U+7387]: 0.025\n[U+7F51][U+683C][U+6570]: 201\n[U+76EE][U+6807][U+6D41][U+91CF]: 8.0 m^3/s\n[U+5747][U+5300][U+6D41][U+6C34][U+6DF1]: 0.806483 m\n\n2. [U+9AD8][U+7CBE][U+5EA6][U+7A33][U+6001][U+6C42][U+89E3] (Phase 2[U+9759][U+6C34][U+91CD][U+6784][U+65B9][U+6CD5])\n--------------------------------------------------------------------------------\n[U+5F00][U+59CB][U+7A33][U+6001][U+6C42][U+89E3]...\n\n  8.000 m³/s\n  0.806 m\n  0.806 m\n   0: dh=5.0056e-03, dhu=0.0000e+00, Q=8.000 (0.00%)\n   0\n\n\n  8.000 m³/s0.00%\n  [0.801, 0.809] m\n\n[U+7A33][U+6001][U+6C42][U+89E3][U+7ED3][U+679C]:\n  [U+6536][U+655B]: [U+662F]\n  [U+8FED][U+4EE3][U+6B21][U+6570]: 0\n  [U+6D41][U+91CF][U+8BEF][U+5DEE]: 0.000000%\n\n[U+7A33][U+6001][U+7ED3][U+679C][U+9A8C][U+8BC1]:\n--------------------------------------------------------------------------------\n\n================================================================================\n[U+811A][U+672C]01 - [U+57FA][U+7840][U+793A][U+4F8B][U+7A33][U+6001]\n================================================================================\n\n[ 收敛] 迭代次数: 0 (极快 (1次))\n[优秀 (Excellent)] Overall 流量守恒: 0.000000% (目标=8.0000, 平均=8.0000)\n\n\n3. [U+975E][U+6052][U+5B9A][U+6D41][U+6F14][U+5316][U+5230][U+7A33][U+6001]\n--------------------------------------------------------------------------------\n[U+521D][U+59CB][U+72B6][U+6001]:\n  [U+6C34][U+6DF1]: 0.9678 m ([U+7406][U+8BBA][U+503C][U+7684]120%)\n  [U+6D41][U+91CF]: 8.0 m^3/s\n\n[U+975E][U+6052][U+5B9A][U+6D41][U+53C2][U+6570]:\n  [U+65F6][U+95F4][U+6B65][U+957F]: 0.5 s\n  [U+603B][U+65F6][U+95F4]: 100.0 s\n  [U+603B][U+6B65][U+6570]: 200\n\n[U+8FD0][U+884C][U+975E][U+6052][U+5B9A][U+6D41][U+4EFF][U+771F]...\n  t=25.0s: h_avg=0.874157 m, Q_avg=0.992660 m^3/s\n  t=50.0s: h_avg=0.809557 m, Q_avg=0.872862 m^3/s\n  t=75.0s: h_avg=0.783409 m, Q_avg=0.823906 m^3/s\n  t=100.0s: h_avg=0.772807 m, Q_avg=0.803472 m^3/s\n [U+975E][U+6052][U+5B9A][U+6D41][U+4EFF][U+771F][U+5B8C][U+6210]\n\n4. [U+751F][U+6210][U+53EF][U+89C6][U+5316][U+56FE][U+8868]\n--------------------------------------------------------------------------------\n  [U+751F][U+6210][U+7A33][U+6001][U+7EB5][U+5256][U+9762][U+56FE]...\n   Saved figure: 01_basic_steady_profile_v2.png\n  [U+751F][U+6210][U+975E][U+6052][U+5B9A][U+6D41][U+6F14][U+5316][U+56FE]...\n   Saved figure: 01_basic_unsteady_evolution_v2.png\n  [U+751F][U+6210][U+5FEB][U+7167][U+5BF9][U+6BD4][U+56FE]...\n   Saved figure: 01_basic_unsteady_snapshots_v2.png\n\n5. [U+4FDD][U+5B58][U+6570][U+636E][U+8868]\n--------------------------------------------------------------------------------\n   Saved table: 01_basic_steady_profile_v2.csv\n   [U+7A33][U+6001][U+5256][U+9762][U+6570][U+636E]: 01_basic_steady_profile_v2.csv (201 rows)\n   Saved table: 01_basic_unsteady_evolution_v2.csv\n   [U+975E][U+6052][U+5B9A][U+6D41][U+6F14][U+5316][U+6570][U+636E]: 01_basic_unsteady_evolution_v2.csv (200 rows)\n  [U+4FDD][U+5B58][U+9A8C][U+8BC1][U+62A5][U+544A]...\n 报告已保存: E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_01_canal_flow\\results\\reports\\01_basic_validation_report.txt\n   [U+9A8C][U+8BC1][U+62A5][U+544A]: 01_basic_validation_report.txt\n\n================================================================================\n[U+4EFF][U+771F][U+5B8C][U+6210][U+FF01]\n================================================================================\n\n[U+751F][U+6210][U+7684][U+6587][U+4EF6]:\n  Figures:\n    - 01_basic_steady_profile_v2.png ([U+7A33][U+6001][U+7EB5][U+5256][U+9762])\n    - 01_basic_unsteady_evolution_v2.png ([U+975E][U+6052][U+5B9A][U+6D41][U+6F14][U+5316])\n    - 01_basic_unsteady_snapshots_v2.png ([U+5FEB][U+7167][U+5BF9][U+6BD4])\n  Tables:\n    - 01_basic_steady_profile_v2.csv\n    - 01_basic_unsteady_evolution_v2.csv\n  Reports:\n    - 01_basic_validation_report.txt\n\n[U+5173][U+952E][U+7ED3][U+679C]:\n  [U+7A33][U+6001][U+6D41][U+91CF][U+8BEF][U+5DEE]: 0.000000% ([U+4F18][U+79C0])\n  [U+7A33][U+6001][U+6536][U+655B][U+8FED][U+4EE3]: 0 ([U+6781][U+5FEB])\n  [U+975E][U+6052][U+5B9A][U+6D41][U+6F14][U+5316]: 100s[U+5185][U+7A33][U+5B9A]\n\n [U+4F8B][U+5B50]1 (HydrostaticCanalSolver[U+7248]) [U+8FD0][U+884C][U+6210][U+529F]\n================================================================================\n\n",
+      "returncode": 0
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 0,
+    "timeout": 0,
+    "error": 0,
+    "passed_with_warnings": 0,
+    "unknown": 0,
+    "total_duration": 19.65117907524109,
+    "success_rate": 100.0
+  }
+}

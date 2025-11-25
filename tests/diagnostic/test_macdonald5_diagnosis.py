@@ -5,6 +5,8 @@ MacDonald Test 5 诊断测试
 策略：从最简单配置开始，逐步增加复杂度
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

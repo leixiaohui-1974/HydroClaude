@@ -13,14 +13,16 @@ Date: 2025-10-23
 """
 
 import sys, os
+import warnings
+warnings.filterwarnings("ignore")
 
 # Add project root to path
 script_path = os.path.abspath(__file__)
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_path))))
-sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 script_dir = os.path.dirname(script_path)
-sys.path.insert(0, script_dir)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 import numpy as np
 import pandas as pd

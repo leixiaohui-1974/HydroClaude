@@ -7,6 +7,8 @@ smann v2的矩阵结构
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 sys.path.insert(0, '/workspace')
 

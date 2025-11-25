@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 352,
+    "batch_end_index": 353,
+    "test_run_at": "2025-11-25T16:59:23.737606",
+    "batch_duration_seconds": 60.04,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./retest_fixed_files.py",
+      "status": "timeout",
+      "return_code": -1,
+      "duration_seconds": 60.04,
+      "stdout": "======================================================================\nRE-TESTING FIXED FILES\n======================================================================\nFiles to retest: 17\n\n[TIMEOUT] advanced_animation_generator.py... [TIMEOUT] Still timing out\n[FAIL] compare_canal_solvers.py... NOT FOUND\n[FAIL] complete_benchmark_suite.py... [TIMEOUT] Still timing out\n[FAIL] debug_saint_venant.py... NOT FOUND\n[FAIL] diagnose_canal_boundary.py... NOT FOUND\n[TIMEOUT] integrated_smart_water_system.py...",
+      "stderr": "Process timed out after 60 seconds."
+    }
+  ]
+}

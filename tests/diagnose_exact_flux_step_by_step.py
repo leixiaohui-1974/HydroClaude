@@ -11,6 +11,8 @@ Step-by-step flux diagnostics for Exact Riemann Solver
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import os
 sys.path.insert(0, os.path.abspath('.'))

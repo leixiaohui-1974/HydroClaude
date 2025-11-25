@@ -2,8 +2,8 @@
   "metadata": {
     "batch_start_index": 107,
     "batch_end_index": 108,
-    "test_run_at": "2025-11-19T00:35:50.614611",
-    "batch_duration_seconds": 0.02,
+    "test_run_at": "2025-11-25T16:52:34.151286",
+    "batch_duration_seconds": 0.12,
     "total_scripts_in_batch": 1
   },
   "results": [
@@ -11,9 +11,9 @@
       "script_path": "./backups/fix_20251113_101343/tests/legacy_diagnostic/test_swmm_omega.py",
       "status": "fail",
       "return_code": 1,
-      "duration_seconds": 0.02,
+      "duration_seconds": 0.12,
       "stdout": "",
-      "stderr": "File \"/app/./backups/fix_20251113_101343/tests/legacy_diagnostic/test_swmm_omega.py\", line 18\n    except ImportError as e:\n    ^^^^^^\nIndentationError: expected an indented block after 'try' statement on line 14"
+      "stderr": "File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_101343\\tests\\legacy_diagnostic\\test_swmm_omega.py\", line 18\n    except ImportError as e:\n    ^^^^^^\nIndentationError: expected an indented block after 'try' statement on line 14"
     }
   ]
 }

@@ -7,6 +7,8 @@ HLL vs HLLC性能对比测试
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 sys.path.insert(0, '/workspace')
 

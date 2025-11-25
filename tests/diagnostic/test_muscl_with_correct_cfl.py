@@ -7,6 +7,8 @@ MUSCL + 正确CFL测试
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 sys.path.insert(0, '/workspace')
 
 import numpy as np

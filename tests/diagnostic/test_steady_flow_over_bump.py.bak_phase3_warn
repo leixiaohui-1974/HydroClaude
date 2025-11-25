@@ -1,0 +1,227 @@
+"""
+测试静水重构法：凸起上的稳态流
+
+经典CFD测试案例：渠道中有凸起（台阶），亚临界稳态流动
+验证：
+1. 质量守恒（流量恒定）
+2. 稳态精度
+3. 与理论解对比
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+import sys
+sys.path.append('.')
+
+try:
+    from solvers.hydrostatic_reconstruction_v3 import WellBalancedSolverV3, BoundaryType
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+
+
+def steady_flow_over_bump():
+    """
+    凸起上的稳态流测试
+
+    设置：
+    - 渠道长度：10m
+    - 底床：中间有凸起
+    - 入流：Q = 1.0 m^3/s（固定）
+    - 出流：h = 0.5m（固定水深）
+    """
+    print("=" * 70)
+    print("凸起上的稳态流测试")
+    print("=" * 70)
+
+    # 参数
+    L = 10.0  # 渠道长度
+    n_cells = 100  # 单元数
+    dx = L / n_cells
+    B = 1.0  # 渠道宽度（单位宽度渠道）
+    g = 9.81
+    n_manning = 0.0  # 无摩擦（简化）
+
+    # 网格
+    x = np.linspace(dx/2, L-dx/2, n_cells)
+
+    # 底床地形：中间有凸起
+    z = np.zeros(n_cells)
+    for i in range(n_cells):
+        if 4.0 < x[i] < 6.0:
+            # 凸起：高度0.2m，宽度2m
+            z[i] = 0.2 * (1 - np.cos(np.pi * (x[i] - 4.0)))
+        else:
+            z[i] = 0.0
+
+    print(f"\n网格设置：")
+    print(f"  单元数：{n_cells}")
+    print(f"  网格间距：{dx:.3f} m")
+    print(f"  凸起高度：{z.max():.3f} m")
+    print(f"  凸起位置：4-6 m")
+
+    # 初始条件：近似稳态
+    Q_target = 1.0  # 目标流量 (m^3/s)
+    h_downstream = 0.5  # 下游水深 (m)
+
+    # 初始猜测：简单外推
+    h = h_downstream * np.ones(n_cells)
+    # 在凸起处增加水深（能量守恒粗略估计）
+    for i in range(n_cells):
+        if z[i] > 0:
+            # 伯努利方程粗略估计：h + z + u^2/2g ~= const
+            h[i] = h_downstream + 0.5 * z[i]
+
+    # 初始流量：均匀分布
+    hu = Q_target / B * np.ones(n_cells)
+
+    print(f"\n边界条件：")
+    print(f"  入流流量：Q = {Q_target} m^3/s")
+    print(f"  出流水深：h = {h_downstream} m")
+
+    # 创建求解器
+    solver = WellBalancedSolverV3(
+        g=g,
+        bc_left=BoundaryType.TRANSMISSIVE,
+        bc_right=BoundaryType.TRANSMISSIVE
+    )
+
+    # 时间推进至稳态
+    print(f"\n时间推进：")
+    dt = 0.01  # 时间步长
+    max_steps = 5000
+    convergence_tol = 1e-6
+
+    for step in range(max_steps):
+        # 计算通量和源项
+        F_mass, F_momentum, S_mass, S_momentum = solver.solve_step(
+            h, hu, z, dx, n=n_manning
+        )
+
+        # 边界条件
+        # 左边界（入流）：固定流量
+        F_mass[0] = Q_target / B
+
+        # 右边界（出流）：固定水深（外推）
+        # 使用简单的外推边界条件
+
+        # 时间推进（显式欧拉，仅用于演示）
+        h_old = h.copy()
+        hu_old = hu.copy()
+
+        for i in range(n_cells):
+            # 连续性方程
+            dh = dt * (-(F_mass[i+1] - F_mass[i])/dx + S_mass[i])
+            h[i] = h_old[i] + dh
+
+            # 动量方程
+            dhu = dt * (-(F_momentum[i+1] - F_momentum[i])/dx + S_momentum[i])
+            hu[i] = hu_old[i] + dhu
+
+        # 出流边界：固定水深
+        h[-1] = h_downstream
+        hu[-1] = Q_target / B
+
+        # 检查收敛
+        dh_max = np.max(np.abs(h - h_old))
+        dhu_max = np.max(np.abs(hu - hu_old))
+
+        if step % 500 == 0:
+            Q_actual = np.mean(hu) * B
+            print(f"  步数 {step}: dh_max={dh_max:.2e}, dhu_max={dhu_max:.2e}, Q={Q_actual:.4f}")
+
+        if dh_max < convergence_tol and dhu_max < convergence_tol:
+            print(f"  收敛于步数 {step}")
+            break
+
+    # 分析结果
+    print(f"\n稳态结果：")
+
+    # 流量守恒
+    Q_array = hu * B
+    Q_mean = np.mean(Q_array)
+    Q_std = np.std(Q_array)
+    Q_error = abs(Q_mean - Q_target) / Q_target * 100
+
+    print(f"  流量守恒：")
+    print(f"    目标流量：{Q_target:.4f} m^3/s")
+    print(f"    实际流量：{Q_mean:.4f} +/- {Q_std:.4f} m^3/s")
+    print(f"    误差：{Q_error:.2f}%")
+
+    # 水位
+    eta = h + z
+    eta_mean = np.mean(eta)
+    eta_std = np.std(eta)
+
+    print(f"  水位变化：")
+    print(f"    水深范围：[{h.min():.3f}, {h.max():.3f}] m")
+    print(f"    水位范围：[{eta.min():.3f}, {eta.max():.3f}] m")
+    print(f"    水位变化：{eta_std:.4f} m（稳态流应有变化）")
+
+    # Froude数
+    u = hu / h
+    Fr = u / np.sqrt(g * h)
+    print(f"  Froude数：")
+    print(f"    范围：[{Fr.min():.3f}, {Fr.max():.3f}]")
+    print(f"    流态：{'亚临界' if Fr.max() < 1.0 else '超临界或跨临界'}")
+
+    # 绘图
+    print(f"\n生成图表...")
+
+    fig, axes = plt.subplots(3, 1, figsize=(10, 9))
+
+    # 图1：水深和底床
+    ax = axes[0]
+    ax.fill_between(x, 0, z, alpha=0.3, color='brown', label='底床')
+    ax.plot(x, h + z, 'b-', linewidth=2, label='水面')
+    ax.plot(x, h + z, 'b.', markersize=3)
+    ax.set_ylabel('高程 (m)')
+    ax.set_title(f'凸起上的稳态流（Q={Q_target} m^3/s）')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # 图2：流量分布
+    ax = axes[1]
+    ax.plot(x, Q_array, 'r-', linewidth=2, label=f'流量（目标{Q_target}）')
+    ax.axhline(Q_target, color='k', linestyle='--', label='目标流量')
+    ax.set_ylabel('流量 (m^3/s)')
+    ax.set_title(f'流量守恒（误差{Q_error:.2f}%）')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # 图3：Froude数
+    ax = axes[2]
+    ax.plot(x, Fr, 'g-', linewidth=2, label='Froude数')
+    ax.axhline(1.0, color='k', linestyle='--', label='临界流')
+    ax.set_xlabel('位置 (m)')
+    ax.set_ylabel('Froude数')
+    ax.set_title(f'流态（Fr < 1: 亚临界）')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('steady_flow_over_bump.png', dpi=150)
+    print(f"  图表保存至：steady_flow_over_bump.png")
+
+    # 判断测试是否通过
+    mass_conservation_ok = Q_error < 5.0  # 5%容差
+    subcritical_ok = Fr.max() < 1.0  # 亚临界流
+
+    print(f"\n测试结果：")
+    print(f"  流量守恒：{' PASS' if mass_conservation_ok else ' FAIL'} ({Q_error:.2f}% < 5%)")
+    print(f"  亚临界流：{' PASS' if subcritical_ok else ' FAIL'} (Fr_max={Fr.max():.3f} < 1)")
+
+    overall_pass = mass_conservation_ok and subcritical_ok
+    print(f"\n总体结论：{' 测试通过' if overall_pass else ' 测试失败'}")
+
+    print("=" * 70)
+
+    return overall_pass
+
+
+if __name__ == "__main__":
+    import sys
+    success = steady_flow_over_bump()
+    sys.exit(0 if success else 1)

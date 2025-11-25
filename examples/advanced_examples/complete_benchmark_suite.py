@@ -19,6 +19,8 @@
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib
 matplotlib.use("Agg")  # 非交互模式
 import matplotlib.pyplot as plt
@@ -28,7 +30,7 @@ import sys
 import os
 import time
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from control.pid_controller import PIDController, PIDConfig
 from examples.advanced_examples.linearized_canal_simulator import LinearizedCanalSimulator

@@ -15,6 +15,8 @@ MacDonald Test 4 - 标准WENO3参数扫描优化
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 from pathlib import Path
 

@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 39,
+    "batch_end_index": 40,
+    "test_run_at": "2025-11-25T16:51:41.376415",
+    "batch_duration_seconds": 0.34,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/fix_20251113_090925/tests/legacy_diagnostic/test_adaptive_grid_optimized.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.34,
+      "stdout": "Import error: No module named 'solvers.single_canal_solver'\nMake sure project root is in sys.path",
+      "stderr": ""
+    }
+  ]
+}

@@ -22,6 +22,8 @@
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib
 matplotlib.use("Agg")  # Non-interactive mode
 import sys

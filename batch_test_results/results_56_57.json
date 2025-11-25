@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 56,
+    "batch_end_index": 57,
+    "test_run_at": "2025-11-25T16:51:58.634691",
+    "batch_duration_seconds": 2.16,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/fix_20251113_090938/examples/example_01_canal_flow/scripts/07_sluice_gate_flow.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 2.16,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_090938\\examples\\example_01_canal_flow\\scripts\\07_sluice_gate_flow.py\", line 25, in <module>\n    from output_helper import get_output_path, save_figure, save_table, save_animation\nModuleNotFoundError: No module named 'output_helper'"
+    }
+  ]
+}

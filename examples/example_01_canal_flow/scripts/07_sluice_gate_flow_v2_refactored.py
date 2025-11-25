@@ -20,6 +20,8 @@ Version: 2.0 (Refactored)
 # 路径设置 - 使用新工具
 # ============================================================
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 from pathlib import Path
 
@@ -27,7 +29,7 @@ from pathlib import Path
 script_path = Path(__file__).resolve()
 project_root = script_path.parents[3]  # 向上3层到达项目根目录
 if str(project_root) not in sys.path:
-    sys.path.insert(0, str(project_root))
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 # 现在可以导入工具了
 from utils.script_helper import ScriptHelper

@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 338,
+    "batch_end_index": 339,
+    "test_run_at": "2025-11-25T16:52:15.560951",
+    "batch_duration_seconds": 19.56,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./full_workflow_test_final.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 19.56,
+      "stdout": "================================================================================\nHydroClaude Web - Complete Functional Testing\n================================================================================\n\n================================================================================\nTest 1: Modeling Workspace\n================================================================================\n\n[ERROR] Message: unknown error: net::ERR_CONNECTION_REFUSED\n  (Session info: chrome=142.0.7444.176)\nStacktrace:\nSymbols not available. Dumping unresolved backtrace:\n\t0x384103\n\t0x384144\n\t0x18e71d\n\t0x18bc77\n\t0x17eec8\n\t0x180884\n\t0x17f396\n\t0x17ec82\n\t0x17e98d\n\t0x17c7fe\n\t0x17d28b\n\t0x1924ce\n\t0x21fb37\n\t0x1fc90c\n\t0x21ee17\n\t0x1fc706\n\t0x1cda30\n\t0x1ced54\n\t0x5f57b4\n\t0x5f098a\n\t0x3ac392\n\t0x39c4c8\n\t0x3a324d\n\t0x38c478\n\t0x38c63c\n\t0x3767ca\n\t0x75f55d49\n\t0x779ad6db\n\t0x779ad661\n\t0\n\n    [Screenshot] 01_ERROR_165213.png\n\n[Closing browser...]\nTesting complete!",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\full_workflow_test_final.py\", line 52, in <module>\n    driver.get(FRONTEND_URL)\n    ~~~~~~~~~~^^^^^^^^^^^^^^\n  File \"D:\\Users\\lxh\\miniconda3\\Lib\\site-packages\\selenium\\webdriver\\remote\\webdriver.py\", line 483, in get\n    self.execute(Command.GET, {\"url\": url})\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Users\\lxh\\miniconda3\\Lib\\site-packages\\selenium\\webdriver\\remote\\webdriver.py\", line 458, in execute\n    self.error_handler.check_response(response)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^\n  File \"D:\\Users\\lxh\\miniconda3\\Lib\\site-packages\\selenium\\webdriver\\remote\\errorhandler.py\", line 233, in check_response\n    raise exception_class(message, screen, stacktrace)\nselenium.common.exceptions.WebDriverException: Message: unknown error: net::ERR_CONNECTION_REFUSED\n  (Session info: chrome=142.0.7444.176)\nStacktrace:\nSymbols not available. Dumping unresolved backtrace:\n\t0x384103\n\t0x384144\n\t0x18e71d\n\t0x18bc77\n\t0x17eec8\n\t0x180884\n\t0x17f396\n\t0x17ec82\n\t0x17e98d\n\t0x17c7fe\n\t0x17d28b\n\t0x1924ce\n\t0x21fb37\n\t0x1fc90c\n\t0x21ee17\n\t0x1fc706\n\t0x1cda30\n\t0x1ced54\n\t0x5f57b4\n\t0x5f098a\n\t0x3ac392\n\t0x39c4c8\n\t0x3a324d\n\t0x38c478\n\t0x38c63c\n\t0x3767ca\n\t0x75f55d49\n\t0x779ad6db\n\t0x779ad661\n\t0"
+    }
+  ]
+}

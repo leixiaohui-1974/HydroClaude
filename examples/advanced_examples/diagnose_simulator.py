@@ -6,11 +6,13 @@
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
 from pathlib import Path
 
 project_root = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(project_root))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from control.idz_model import IDZParameters, IDZModel
 

@@ -20,6 +20,8 @@ SWMM智能泵站控制完整案例
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import sys
@@ -27,7 +29,7 @@ import os
 import json
 
 # 添加项目根目录
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from integration.swmm_adapter import (
     SWMMAdapter,

@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 230,
+    "batch_end_index": 231,
+    "test_run_at": "2025-11-25T16:27:58.092707",
+    "batch_duration_seconds": 1.97,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_01_canal_flow/scripts/11_advanced_structures.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.97,
+      "stdout": "================================================================================\nʾ��2���߼�ˮ�����������\n================================================================================\n\nϵͳ����:\n  �����ܳ���: 10000.0 m\n  ��������: 10.0 m\n  �ռ����: 301\n\n================================================================================\n����1: ����բ�Ŵ���\n--------------------------------------------------------------------------------\nբ��1: SluiceGate(position=2500.0m, width=10.0m, opening=4.50m@t=0s, Cd=0.6)\nբ��2: SluiceGate(position=5000.0m, width=10.0m, opening=4.00m@t=0s, Cd=0.6)\nբ��3: SluiceGate(position=7500.0m, width=10.0m, opening=5.00m@t=0s, Cd=0.6)\n\n��ʼ��������...\n\nʹ��HydrostaticCanalSolver��Phase 2�޸��棩...",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_01_canal_flow\\scripts\\11_advanced_structures.py\", line 561, in <module>\n    run_advanced_structures_demo()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_01_canal_flow\\scripts\\11_advanced_structures.py\", line 98, in run_advanced_structures_demo\n    result1 = solver1.solve_steady_state(\n        Q_target=Q_initial,\n    ...<4 lines>...\n        verbose=True\n    )\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\solvers\\hydrostatic_canal_solver.py\", line 1295, in solve_steady_state\n    print(f\"  {Q_target:.3f} m\\xb3/s\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'gbk' codec can't encode character '\\xb3' in position 10: illegal multibyte sequence"
+    }
+  ]
+}

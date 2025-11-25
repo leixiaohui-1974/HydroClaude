@@ -2,6 +2,8 @@
 Unit Tests for Newton-Raphson Network Solver
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

@@ -14,6 +14,8 @@
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 import numpy as np
 import argparse
@@ -22,7 +24,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 # 添加项目根目录
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from physics.tank import Tank
 from physics.pump import Pump
@@ -31,7 +33,7 @@ from simulation.plant_simulator import PlantSimulator
 
 # 导入动画工具
 EXAMPLES_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, EXAMPLES_DIR)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from animation_utils import AnimationGenerator
 
 

@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 30,
+    "batch_end_index": 31,
+    "test_run_at": "2025-11-25T16:51:35.070467",
+    "batch_duration_seconds": 0.31,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/fix_20251113_090925/examples/example_01_canal_flow/scripts/12_advanced_optimized.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.31,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_090925\\examples\\example_01_canal_flow\\scripts\\12_advanced_optimized.py\", line 18, in <module>\n    from solvers.single_canal_solver import SingleCanalSolver\nModuleNotFoundError: No module named 'solvers.single_canal_solver'"
+    }
+  ]
+}

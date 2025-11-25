@@ -22,6 +22,8 @@ Toro精确Riemann求解器 (Shallow Water Equations)
 - 通过Riemann不变量和Rankine-Hugoniot条件计算
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

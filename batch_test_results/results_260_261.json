@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 260,
+    "batch_end_index": 261,
+    "test_run_at": "2025-11-25T16:33:31.398425",
+    "batch_duration_seconds": 11.57,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_14_adaptive_mpc/example_14_adaptive_mpc_enhanced.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 11.57,
+      "stdout": "======================================================================\nʾ��14: ����ӦMPC���� - ��ǿ��\n======================================================================\n\nϵͳ����:\n  ��ʵA����:\n[[0.8 0.1]\n [0.  0.9]]\n  ��ʵB����:\n[[1. ]\n [0.5]]\n  ��ʼA����:\n[[0.9  0.  ]\n [0.   0.95]]\n  ��ʼB����:\n[[0.8]\n [0.6]]\n  ��ʼģ����� - A: 0.150, B: 0.224\n\nMPC����������:\n  Ԥ��ʱ��: 10\n  ����ʱ��: 5\n  ʱ�䲽��: 60.0s\n  ����Ӧѧϰ��: 0.01\n  ��������: 0.98\n\n��ʼ����ӦMPC����...\n----------------------------------------------------------------------\n��  0: ״̬=[ 1.00,  0.50], ����= 3.90, ģ�����(A)=0.150, �������=0.659\n�� 10: ״̬=[ 3.78,  2.44], ����= 0.52, ģ�����(A)=1.327, �������=1.332\n�� 20: ״̬=[ 3.84,  2.56], ����= 0.50, ģ�����(A)=1.337, �������=1.250\n�� 30: ״̬=[ 3.83,  2.54], ����= 0.50, ģ�����(A)=1.332, �������=1.278\n�� 40: ״̬=[ 3.81,  2.55], ����= 0.52, ģ�����(A)=1.331, �������=1.251\n----------------------------------------------------------------------\n�������!\n����ģ����� - A: 1.329, B: 0.144\n����״̬: [3.82, 2.53]\n�ο�״̬: [5.00, 3.00]\n���ո������: 1.266\n\n���ɿ��ӻ�ͼ��...\n   ����ͼ��: example_14_state_tracking.png\n   ����ͼ��: example_14_control_input.png\n   ����ͼ��: example_14_parameter_error.png\n   ����ͼ��: example_14_tracking_error.png\n   ����ͼ��: example_14_comprehensive.png\n  ���ɲ�����������...\n   ���ɶ���: example_14_parameter_convergence.gif\n\n���ɷ��汨��...\n   ����������: example_14_simulation_report.md\n\n======================================================================\n�������ܽ�\n======================================================================\n������ʶ����:\n  A�������: 0.1500 -> 1.3290 (���� -786.0%)\n  B�������: 0.2236 -> 0.1439 (���� 35.6%)\n\n���ٿ�������:\n  ��ʼ״̬: [1.00, 0.50]\n  ����״̬: [3.82, 2.53]\n  �ο�״̬: [5.00, 3.00]\n  �������: 0.6593 -> 1.2659\n\n�����ļ�:\n  - reports\\figures\\example_14_state_tracking.png\n  - reports\\figures\\example_14_control_input.png\n  - reports\\figures\\example_14_parameter_error.png\n  - reports\\figures\\example_14_tracking_error.png\n  - reports\\figures\\example_14_comprehensive.png\n  - reports\\figures\\example_14_parameter_convergence.gif\n  - reports\\example_14_simulation_report.md\n\n======================================================================",
+      "stderr": "Font 'default' does not have a glyph for '\\u2212' [U+2212], substituting with a dummy symbol.\nFont 'default' does not have a glyph for '\\u2212' [U+2212], substituting with a dummy symbol."
+    }
+  ]
+}

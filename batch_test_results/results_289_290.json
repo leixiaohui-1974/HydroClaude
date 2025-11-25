@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 289,
+    "batch_end_index": 290,
+    "test_run_at": "2025-11-25T16:39:17.188023",
+    "batch_duration_seconds": 0.14,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_gate_pump_cascade/run_scenario_04.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.14,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_gate_pump_cascade\\run_scenario_04.py\", line 15, in <module>\n    exec(open(os.path.join(os.path.dirname(__file__), 'run_scenario.py')).read())\n         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\nUnicodeDecodeError: 'gbk' codec can't decode byte 0xab in position 55: illegal multibyte sequence"
+    }
+  ]
+}

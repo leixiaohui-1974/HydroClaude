@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 229,
+    "batch_end_index": 230,
+    "test_run_at": "2025-11-25T16:27:54.970416",
+    "batch_duration_seconds": 1.87,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_01_canal_flow/scripts/08_optimized_steady_solving_v2_refactored.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.87,
+      "stdout": "====================================================================================================\n�Ż�������1����բ������ģ�� (HydrostaticCanalSolver�߾��Ȱ汾)\n====================================================================================================\n\nϵͳ����:\n  ��������: 10000.0 m\n  ��������: 10.0 m\n  �ռ����: 301\n  բ��λ��: 5000.0 m\n  բ�ſ���: 5.0 m\n  Ŀ������: 10.0 m^3/s\n\n������ˮ��: 1.1625 m\n\n====================================================================================================\n����1���ϸ��ݲ� (convergence_tol = 0.1)\n----------------------------------------------------------------------------------------------------",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_01_canal_flow\\scripts\\08_optimized_steady_solving_v2_refactored.py\", line 435, in <module>\n    validator = run_optimized_example()\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_01_canal_flow\\scripts\\08_optimized_steady_solving_v2_refactored.py\", line 117, in run_optimized_example\n    result1 = solver1.solve_steady_state(\n        Q_target=Q_target,\n    ...<4 lines>...\n        verbose=True\n    )\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\solvers\\hydrostatic_canal_solver.py\", line 1295, in solve_steady_state\n    print(f\"  {Q_target:.3f} m\\xb3/s\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'gbk' codec can't encode character '\\xb3' in position 10: illegal multibyte sequence"
+    }
+  ]
+}

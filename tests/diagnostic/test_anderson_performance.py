@@ -11,6 +11,8 @@ Anderson加速性能验证测试
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import time
 from typing import Dict, List, Tuple

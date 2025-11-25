@@ -6,6 +6,8 @@
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 sys.path.append('.')
 

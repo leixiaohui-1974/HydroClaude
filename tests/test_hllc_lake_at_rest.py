@@ -11,6 +11,8 @@ Phase 9.2: 验证新的HLLC实现能否显著降低数值耗散
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import os
 

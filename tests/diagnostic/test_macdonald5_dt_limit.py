@@ -4,6 +4,8 @@ MacDonald Test 5 时间步长限制测试
 测试手动限制dt_max是否能解决不稳定问题
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 336,
+    "batch_end_index": 337,
+    "test_run_at": "2025-11-25T16:51:55.167939",
+    "batch_duration_seconds": 0.55,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./fix_test_import_issues.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 0.55,
+      "stdout": "======================================================================\n                       HydroClaude Import Fixer                       \n======================================================================\n\nScanning 314 Python files in E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\tests...\nMode: DRY RUN\n\n[OK] tests\\test_environment.py\n  [DRY RUN] Would fix: Added sys.path configuration\n[OK] tests\\e2e\\analyze_results.py\n  [DRY RUN] Would fix: Added sys.path configuration, Added missing 'import os'\n[OK] tests\\e2e\\quick_test.py\n  [DRY RUN] Would fix: Added sys.path configuration, Added missing 'import os'\n[OK] tests\\e2e\\test_web_e2e.py\n  [DRY RUN] Would fix: Added sys.path configuration, Added missing 'import os'\n[OK] tests\\backend\\benchmarks\\test_performance_benchmark.py\n  [DRY RUN] Would fix: Added try-except for: from solvers.hydrostatic_canal_solver import Hydro...\n[OK] tests\\backend\\integration\\test_solver_with_structures.py\n  [DRY RUN] Would fix: Added try-except for: from solvers.hydrostatic_canal_solver import Hydro...\n[OK] tests\\backend\\solvers\\test_godunov_commercial.py\n  [DRY RUN] Would fix: Added try-except for: from solvers.godunov_fvm_solver import GodunvFVMSo...\n[OK] tests\\backend\\solvers\\test_hardycross_commercial.py\n  [DRY RUN] Would fix: Added try-except for: from solvers.hardy_cross_solver import HardyCrossS...\n[OK] tests\\backend\\solvers\\test_hydrostatic_commercial.py\n  [DRY RUN] Would fix: Added try-except for: from solvers.hydrostatic_canal_solver import Hydro...\n[OK] tests\\backend\\solvers\\test_hydrostatic_extreme.py\n  [DRY RUN] Would fix: Added try-except for: from solvers.hydrostatic_canal_solver import Hydro...\n[OK] tests\\backend\\solvers\\test_hydrostatic_scenarios.py\n  [DRY RUN] Would fix: Added try-except for: from solvers.hydrostatic_canal_solver import Hydro...\n[OK] tests\\backend\\solvers\\test_hydrostatic_simple.py\n  [DRY RUN] Would fix: Added try-except for: from solvers.hydrostatic_canal_solver import Hydro...\n[OK] tests\\backend\\solvers\\test_multi_structure.py\n  [DRY RUN] Would fix: Added try-except for: from solvers.hydrostatic_canal_solver import Hydro...\n[OK] tests\\backend\\solvers\\test_waterhammer_commercial.py\n  [DRY RUN] Would fix: Added try-except for: from solvers.water_hammer_moc_solver import WaterH...\n[OK] tests\\backend\\structures\\test_gate_simple.py\n  [DRY RUN] Would fix: Added try-except for: from solvers.gate import SluiceGate, BroadCrestedW...\n\n======================================================================\n                         IMPORT FIXER SUMMARY                         \n======================================================================\n\nMode: DRY RUN (no files modified)\nFiles modified: 0\nTotal fixes: 0\n\nℹ️  This was a dry run. Run with --apply to actually fix files.\n======================================================================\n\n\nTo apply these fixes, run:\n  python fix_test_import_issues.py --apply --directory tests",
+      "stderr": ""
+    }
+  ]
+}

@@ -7,6 +7,8 @@ Godunov-FVM - 稳态均匀流验证
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt

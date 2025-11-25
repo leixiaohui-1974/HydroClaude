@@ -16,13 +16,15 @@ Date: 2025-10-30
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 import math
 
 # Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 try:
     import numpy as np

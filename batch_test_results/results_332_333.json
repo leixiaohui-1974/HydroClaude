@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 332,
+    "batch_end_index": 333,
+    "test_run_at": "2025-11-25T16:51:52.451402",
+    "batch_duration_seconds": 0.15,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./finalize_test_round.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 0.15,
+      "stdout": "======================================================================\n测试结果最终处理 - Finalize Test Round\n======================================================================\n\n[1/4] 解析第二轮测试日志...\n[ERROR] 无法解析测试日志",
+      "stderr": ""
+    }
+  ]
+}

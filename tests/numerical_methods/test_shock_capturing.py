@@ -25,6 +25,8 @@ WENO3激波捕捉验证测试
 """
 
 import pytest
+import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
 import tempfile
 import json

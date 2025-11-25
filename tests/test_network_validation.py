@@ -13,6 +13,8 @@ Stage 3 - Task 3.1.3 测试
 """
 
 import pytest
+import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
 import sys
 import os

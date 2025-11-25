@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 280,
+    "batch_end_index": 281,
+    "test_run_at": "2025-11-25T16:39:05.902194",
+    "batch_duration_seconds": 1.21,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_gate_pump_cascade/comprehensive_scenario_test.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.21,
+      "stdout": "====================================================================================================\n                                         ��������բ��Ⱥϵͳ - �ۺϹ�������                                         \n====================================================================================================\n\n��ʼʱ��: 2025-11-25 16:39:05\n����� 17 ������\n\n��������ͳ��:\n  - ���������Ŷ�: 5��\n  - ����ˮλ�Ŷ�: 3��\n  - բ�ſ��ȵ���: 4��\n  - �����Ŷ����: 3��\n  - ���˹���: 2��\n\n====================================================================================================\n\n����: [1/17]\n\n====================================================================================================\n                                           ����01: ��������С����Ծ                                           \n====================================================================================================\n\n��ʼ30 m^3/s��t=300s��Ծ��35 m^3/s (+17%)\n���: ���������Ŷ�\n----------------------------------------------------------------------------------------------------",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_gate_pump_cascade\\comprehensive_scenario_test.py\", line 1116, in <module>\n    results = main()\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_gate_pump_cascade\\comprehensive_scenario_test.py\", line 944, in main\n    result = run_single_scenario(scenario_id, config, output_base_dir)\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_gate_pump_cascade\\comprehensive_scenario_test.py\", line 282, in run_single_scenario\n    print(\"\\n\\u25b6 ����������ͽṹ��...\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'gbk' codec can't encode character '\\u25b6' in position 2: illegal multibyte sequence"
+    }
+  ]
+}

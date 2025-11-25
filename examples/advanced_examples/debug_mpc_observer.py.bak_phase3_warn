@@ -1,0 +1,114 @@
+# -*- coding: utf-8 -*-
+"""
+调试MPC观测器和优化问题
+
+查看观测器状态估计是否正确
+
+作者：HydroClaude Team
+日期：2025-10-24
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+import numpy as np
+from control.idz_model import IDZParameters
+from control.mpc_controller import MPCController, MPCConfig
+
+print("=" * 80)
+print("调试MPC观测器和预测")
+print("=" * 80)
+
+# 创建MPC控制器
+idz_params = IDZParameters(K=-0.3, tau_z=103.0, tau_d=206.0, theta=4.0)
+mpc_config = MPCConfig(
+    prediction_horizon=15,
+    control_horizon=10,
+    dt=2.0,
+    Q=100.0,
+    R=1.0,
+    Qf=1000.0,
+    u_min=0.1,
+    u_max=4.0,
+    du_max=0.5
+)
+
+controller = MPCController(idz_params, mpc_config, use_observer=True)
+
+print(f"\n状态空间矩阵:")
+print(f"  A = {controller.A}")
+print(f"  B = {controller.B}")
+print(f"  C = {controller.C}")
+print(f"  D = {controller.D}")
+
+# 测试场景：y=2.7m（过高）
+print(f"\n" + "=" * 80)
+print("测试：水位过高（y=2.7m, setpoint=2.2m）")
+print("=" * 80)
+
+y_current = 2.7
+setpoint = 2.2
+
+print(f"\n初始状态:")
+print(f"  x_hat初始值 = {controller.x_hat}")
+print(f"  u_prev初始值 = {controller.u_prev}")
+
+# 计算控制量
+u_optimal, diagnostics = controller.compute_control(y_current, setpoint)
+
+print(f"\n观测器更新后:")
+print(f"  x_hat = {controller.x_hat}")
+print(f"  预测输出 y_hat = C @ x_hat = {controller.C @ controller.x_hat:.4f}m")
+
+print(f"\n优化结果:")
+print(f"  状态: {diagnostics['status']}")
+print(f"  u_optimal = {u_optimal:.4f}m")
+print(f"  求解时间: {diagnostics['solve_time']*1000:.2f}ms")
+
+if diagnostics['success']:
+    print(f"\n预测轨迹（前5步）:")
+    pred_traj = diagnostics['predicted_trajectory']
+    ctrl_seq = diagnostics['control_sequence']
+    for k in range(min(5, len(pred_traj))):
+        print(f"    k={k}: y_pred={pred_traj[k]:.4f}m, u={ctrl_seq[k]:.4f}m")
+
+# 手动验证：如果u增大，y应该减小（因为K<0）
+print(f"\n" + "=" * 80)
+print("手动验证状态空间模型方向")
+print("=" * 80)
+
+# 从当前状态开始，测试不同控制量的预测效果
+x_test = controller.x_hat.copy()
+u_test_values = [1.0, 2.0, 3.0, 4.0]
+
+print(f"\n从当前状态 x={x_test} 开始预测:")
+print(f"（如果K=-0.3是反向作用，u增大应使y减小）")
+
+for u_test in u_test_values:
+    # 预测下一步状态
+    x_next = controller.A @ x_test + controller.B * u_test
+    y_next = controller.C @ x_next + controller.D[0] * u_test
+    print(f"  u={u_test:.1f}m -> x_next={x_next} -> y_next={y_next:.4f}m")
+
+print(f"\n观察：u从1.0增大到4.0时，y_next应该减小（负相关）")
+
+# 检查_estimate_state函数
+print(f"\n" + "=" * 80)
+print("检查_estimate_state函数")
+print("=" * 80)
+
+x_est = controller._estimate_state(y_current)
+y_est = controller.C @ x_est + controller.D[0] * 0.0
+
+print(f"\n输入: y_measured = {y_current}m")
+print(f"  估计状态: x_est = {x_est}")
+print(f"  反推输出: y = C @ x_est = {y_est:.4f}m")
+print(f"  误差: {abs(y_est - y_current):.4f}m")
+
+if abs(y_est - y_current) > 0.1:
+    print(f"  X _estimate_state函数有问题！估计不一致")
+else:
+    print(f"  OK _estimate_state函数正确")
+
+print("\n" + "=" * 80)

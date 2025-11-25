@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 63,
+    "batch_end_index": 64,
+    "test_run_at": "2025-11-25T16:52:06.617581",
+    "batch_duration_seconds": 1.37,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/fix_20251113_090938/examples/example_16_weirs_application/weirs_irrigation_system.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.37,
+      "stdout": "================================================================================\n示例16：堰类组件在灌区引水渠系统中的应用\n================================================================================\n\n系统配置:\n  干渠总长: 2000.0 m\n  渠道宽度: 8.0 m\n  底坡: 0.30‰\n  曼宁糙率: 0.025\n\n水工建筑物配置:\n  1. SluiceGate(position=100.0m, width=8.0m, opening=3.00m@t=0s, Cd=0.6)\n  2. SideWeir(pos=800.0m, length=30.0m, crest_elev=2.5m, C=0.400)\n  3. Spillway(pos=1200.0m, length=8.0m, crest_elev=3.5m, C_weir=2.00, type=free-overflow)\n  4. SharpCrestedWeir(type=rectangular, pos=1800.0m, width=8.0m, crest_elev=1.0m, C=0.620)",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_090938\\examples\\example_16_weirs_application\\weirs_irrigation_system.py\", line 435, in <module>\n    run_irrigation_system_simulation()\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_090938\\examples\\example_16_weirs_application\\weirs_irrigation_system.py\", line 114, in run_irrigation_system_simulation\n    solver = SingleCanalSolver(\n             ^^^^^^^^^^^^^^^^^\nNameError: name 'SingleCanalSolver' is not defined"
+    }
+  ]
+}

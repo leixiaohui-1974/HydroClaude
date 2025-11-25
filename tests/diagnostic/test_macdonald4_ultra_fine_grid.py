@@ -11,6 +11,8 @@ MacDonald Test 4 - 超细网格测试（直接使用求解器）
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 

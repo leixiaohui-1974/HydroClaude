@@ -18,8 +18,10 @@
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 import numpy as np
 import matplotlib
@@ -27,7 +29,7 @@ matplotlib.use("Agg")  # Non-interactive mode
 import matplotlib.pyplot as plt
 from typing import Dict, List, Tuple
 
-from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
+from solvers.godunov_fvm_solver import GodunovFVMWENO3
 from solvers.positivity_preserving_weno3 import PositivityPreservingWENO3
 from solvers.wet_dry_enhanced_weno3 import WetDryEnhancedWENO3
 
@@ -476,7 +478,7 @@ def main():
     # 求解器配置
     solvers = [
         {
-            'class': GodunvFVMWENO3,
+            'class': GodunovFVMWENO3,
             'name': 'WENO3 (Original)',
             'kwargs': {}
         },

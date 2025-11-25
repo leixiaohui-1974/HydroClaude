@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 232,
+    "batch_end_index": 233,
+    "test_run_at": "2025-11-25T16:30:00.501661",
+    "batch_duration_seconds": 60.05,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_01_canal_flow/scripts/12_advanced_optimized_v2_refactored.py",
+      "status": "timeout",
+      "return_code": -1,
+      "duration_seconds": 60.05,
+      "stdout": "",
+      "stderr": "Process timed out after 60 seconds."
+    }
+  ]
+}

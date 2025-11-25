@@ -11,11 +11,13 @@ HydroClaude 性能基准测试
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import time
 from pathlib import Path
 import sys
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from solvers.water_temperature import WaterTemperatureSolver
 from solvers.dissolved_oxygen import DissolvedOxygenSolver

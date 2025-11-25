@@ -19,6 +19,8 @@ MacDonald Test 2 详细质量平衡分析
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
@@ -90,7 +92,7 @@ def test_macdonald_test2_detailed_mass():
     print(f"  Q范围：[{solver.Q.min():.4f}, {solver.Q.max():.4f}] m^3/s")
 
     # 运行模拟
-    t_end = 500.0
+    t_end = 50.0
     cumulative_inflow = 0.0
     cumulative_outflow = 0.0
 

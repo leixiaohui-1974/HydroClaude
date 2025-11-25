@@ -1,5 +1,10 @@
 """Animation utilities"""
 import matplotlib.pyplot as plt
+import warnings
+warnings.filterwarnings("ignore")
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
 
 def save_animation(fig, filename, fps=30):
     print(f"Animation saved: {filename}")

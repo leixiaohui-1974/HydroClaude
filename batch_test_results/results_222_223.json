@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 222,
+    "batch_end_index": 223,
+    "test_run_at": "2025-11-25T16:25:16.829758",
+    "batch_duration_seconds": 60.05,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_01_canal_flow/scripts/04_boundary_conditions_v2.py",
+      "status": "timeout",
+      "return_code": -1,
+      "duration_seconds": 60.05,
+      "stdout": "",
+      "stderr": "Process timed out after 60 seconds."
+    }
+  ]
+}

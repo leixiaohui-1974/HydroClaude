@@ -1,0 +1,421 @@
+{
+  "timestamp": "2025-11-25T19:18:38.806142",
+  "summary": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0,
+    "errors": 0
+  },
+  "results": [
+    {
+      "case_id": "TC001",
+      "case_name": "均匀流基础测试",
+      "status": "passed",
+      "duration": 11.110208988189697,
+      "metrics": {
+        "total_iterations": 37,
+        "mass_conservation_error": 0.030101806285268765,
+        "converged": true,
+        "max_depth": 5.000110543395519,
+        "min_depth": 4.762512100273887,
+        "max_velocity": 5.910242133145897,
+        "max_discharge": 281.4909246695628,
+        "max_froude": 0.8438805299742556,
+        "mean_depth_final": 4.849490968573657,
+        "mean_discharge_final": 281.44884217889506,
+        "total_volume": 48494.909685736566,
+        "mass_balance_error": 3.0101806285268764,
+        "solver": "HydrostaticCanalSolver",
+        "solver_version": "2.0.0",
+        "time_steps": 37
+      },
+      "validation": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "physical_validity",
+            "passed": true,
+            "message": "水深范围合理: [4.763, 5.000]m"
+          },
+          {
+            "name": "converged",
+            "passed": true,
+            "expected": true,
+            "actual": true,
+            "error": "0.00%"
+          }
+        ]
+      },
+      "error": null
+    },
+    {
+      "case_id": "TC002",
+      "case_name": "高流量输入测试",
+      "status": "passed",
+      "duration": 19.559727430343628,
+      "metrics": {
+        "total_iterations": 37,
+        "mass_conservation_error": 0.12056993068250098,
+        "converged": true,
+        "max_depth": 6.2752995180928695,
+        "min_depth": 3.0800907670532096,
+        "max_velocity": 23.415957875204477,
+        "max_discharge": 1000.0000000000007,
+        "max_froude": 2.984421738706588,
+        "mean_depth_final": 5.617785646949965,
+        "mean_discharge_final": 997.2108291678586,
+        "total_volume": 56177.856469499646,
+        "mass_balance_error": 12.056993068250097,
+        "solver": "HydrostaticCanalSolver",
+        "solver_version": "2.0.0",
+        "time_steps": 37
+      },
+      "validation": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "physical_validity",
+            "passed": true,
+            "message": "水深范围合理: [3.080, 6.275]m"
+          },
+          {
+            "name": "converged",
+            "passed": true,
+            "expected": true,
+            "actual": true,
+            "error": "0.00%"
+          }
+        ]
+      },
+      "error": null
+    },
+    {
+      "case_id": "TC003",
+      "case_name": "陡坡渠道测试",
+      "status": "passed",
+      "duration": 12.011752367019653,
+      "metrics": {
+        "total_iterations": 37,
+        "mass_conservation_error": 0.41639883838612524,
+        "converged": true,
+        "max_depth": 4.9925102787231985,
+        "min_depth": 2.5691950953518643,
+        "max_velocity": 11.913536391748892,
+        "max_discharge": 325.87525569261317,
+        "max_froude": 1.702341584898953,
+        "mean_depth_final": 2.906333784837092,
+        "mean_discharge_final": 306.2315638251815,
+        "total_volume": 29063.33784837092,
+        "mass_balance_error": 41.639883838612526,
+        "solver": "HydrostaticCanalSolver",
+        "solver_version": "2.0.0",
+        "time_steps": 37
+      },
+      "validation": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "physical_validity",
+            "passed": true,
+            "message": "水深范围合理: [2.569, 4.993]m"
+          },
+          {
+            "name": "converged",
+            "passed": true,
+            "expected": true,
+            "actual": true,
+            "error": "0.00%"
+          }
+        ]
+      },
+      "error": null
+    },
+    {
+      "case_id": "TC004",
+      "case_name": "高糙率渠道测试",
+      "status": "passed",
+      "duration": 14.883028507232666,
+      "metrics": {
+        "total_iterations": 37,
+        "mass_conservation_error": 0.9136777259553555,
+        "converged": true,
+        "max_depth": 10.870609396819807,
+        "min_depth": 4.045454986685204,
+        "max_velocity": 10.888709942801414,
+        "max_discharge": 499.8191009483203,
+        "max_froude": 1.0544232654945145,
+        "mean_depth_final": 9.59989739051,
+        "mean_discharge_final": 497.8788518011628,
+        "total_volume": 95998.97390509999,
+        "mass_balance_error": 91.36777259553554,
+        "solver": "HydrostaticCanalSolver",
+        "solver_version": "2.0.0",
+        "time_steps": 37
+      },
+      "validation": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "physical_validity",
+            "passed": true,
+            "message": "水深范围合理: [4.045, 10.871]m"
+          },
+          {
+            "name": "converged",
+            "passed": true,
+            "expected": true,
+            "actual": true,
+            "error": "0.00%"
+          }
+        ]
+      },
+      "error": null
+    },
+    {
+      "case_id": "TC005",
+      "case_name": "长渠道测试",
+      "status": "passed",
+      "duration": 15.295416831970215,
+      "metrics": {
+        "total_iterations": 37,
+        "mass_conservation_error": 1.173401735540939,
+        "converged": true,
+        "max_depth": 12.31636569411004,
+        "min_depth": 4.108438689657126,
+        "max_velocity": 15.980547139894327,
+        "max_discharge": 1302.0377937399326,
+        "max_froude": 1.453837454476672,
+        "mean_depth_final": 10.890154850771278,
+        "mean_discharge_final": 1197.7693018504808,
+        "total_volume": 816761.6138078459,
+        "mass_balance_error": 117.3401735540939,
+        "solver": "HydrostaticCanalSolver",
+        "solver_version": "2.0.0",
+        "time_steps": 37
+      },
+      "validation": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "physical_validity",
+            "passed": true,
+            "message": "水深范围合理: [4.108, 12.316]m"
+          },
+          {
+            "name": "converged",
+            "passed": true,
+            "expected": true,
+            "actual": true,
+            "error": "0.00%"
+          }
+        ]
+      },
+      "error": null
+    },
+    {
+      "case_id": "TC006",
+      "case_name": "窄渠道测试",
+      "status": "passed",
+      "duration": 13.70155644416809,
+      "metrics": {
+        "total_iterations": 37,
+        "mass_conservation_error": 0.5836283024482914,
+        "converged": true,
+        "max_depth": 2.168254871820061,
+        "min_depth": 2.0020983611191356,
+        "max_velocity": 4.979197724136142,
+        "max_discharge": 20.000000000000018,
+        "max_froude": 1.079616972311342,
+        "mean_depth_final": 2.073529402615159,
+        "mean_discharge_final": 19.999130102330785,
+        "total_volume": 2073.529402615159,
+        "mass_balance_error": 58.36283024482915,
+        "solver": "HydrostaticCanalSolver",
+        "solver_version": "2.0.0",
+        "time_steps": 37
+      },
+      "validation": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "physical_validity",
+            "passed": true,
+            "message": "水深范围合理: [2.002, 2.168]m"
+          },
+          {
+            "name": "converged",
+            "passed": true,
+            "expected": true,
+            "actual": true,
+            "error": "0.00%"
+          }
+        ]
+      },
+      "error": null
+    },
+    {
+      "case_id": "TC007",
+      "case_name": "宽渠道测试",
+      "status": "passed",
+      "duration": 97.87935137748718,
+      "metrics": {
+        "total_iterations": 37,
+        "mass_conservation_error": 0.410707012913319,
+        "converged": true,
+        "max_depth": 9.091363933842846,
+        "min_depth": 5.0,
+        "max_velocity": 99.99277004139599,
+        "max_discharge": 25000.00000000006,
+        "max_froude": 10.588137542236343,
+        "mean_depth_final": 7.093086277841574,
+        "mean_discharge_final": 24957.1759627823,
+        "total_volume": 709308.6277841575,
+        "mass_balance_error": 41.0707012913319,
+        "solver": "HydrostaticCanalSolver",
+        "solver_version": "2.0.0",
+        "time_steps": 37
+      },
+      "validation": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "physical_validity",
+            "passed": true,
+            "message": "水深范围合理: [5.000, 9.091]m"
+          },
+          {
+            "name": "converged",
+            "passed": true,
+            "expected": true,
+            "actual": true,
+            "error": "0.00%"
+          }
+        ]
+      },
+      "error": null
+    },
+    {
+      "case_id": "TC008",
+      "case_name": "精细网格测试",
+      "status": "passed",
+      "duration": 218.16860437393188,
+      "metrics": {
+        "total_iterations": 37,
+        "mass_conservation_error": 0.01231325456061398,
+        "converged": true,
+        "max_depth": 5.000052401622187,
+        "min_depth": 4.910166736408707,
+        "max_velocity": 6.076694008786712,
+        "max_discharge": 298.3766651968063,
+        "max_froude": 0.8676520284323541,
+        "mean_depth_final": 4.93843372719693,
+        "mean_discharge_final": 298.37379700619624,
+        "total_volume": 49384.3372719693,
+        "mass_balance_error": 1.231325456061398,
+        "solver": "HydrostaticCanalSolver",
+        "solver_version": "2.0.0",
+        "time_steps": 37
+      },
+      "validation": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "physical_validity",
+            "passed": true,
+            "message": "水深范围合理: [4.910, 5.000]m"
+          },
+          {
+            "name": "converged",
+            "passed": true,
+            "expected": true,
+            "actual": true,
+            "error": "0.00%"
+          }
+        ]
+      },
+      "error": null
+    },
+    {
+      "case_id": "TC009",
+      "case_name": "粗糙网格测试",
+      "status": "passed",
+      "duration": 6.901220083236694,
+      "metrics": {
+        "total_iterations": 37,
+        "mass_conservation_error": 0.04899209123823258,
+        "converged": true,
+        "max_depth": 5.000384391643986,
+        "min_depth": 4.560484724421374,
+        "max_velocity": 5.524173767349428,
+        "max_discharge": 252.11031141770383,
+        "max_froude": 0.7887350346234175,
+        "mean_depth_final": 4.755039543808836,
+        "mean_discharge_final": 251.6101609769556,
+        "total_volume": 47550.395438088366,
+        "mass_balance_error": 4.899209123823258,
+        "solver": "HydrostaticCanalSolver",
+        "solver_version": "2.0.0",
+        "time_steps": 37
+      },
+      "validation": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "physical_validity",
+            "passed": true,
+            "message": "水深范围合理: [4.560, 5.000]m"
+          },
+          {
+            "name": "converged",
+            "passed": true,
+            "expected": true,
+            "actual": true,
+            "error": "0.00%"
+          }
+        ]
+      },
+      "error": null
+    },
+    {
+      "case_id": "TC010",
+      "case_name": "水头差驱动流测试",
+      "status": "passed",
+      "duration": 14.107121706008911,
+      "metrics": {
+        "total_iterations": 37,
+        "mass_conservation_error": 0.4591277708972962,
+        "converged": true,
+        "max_depth": 7.995872716366767,
+        "min_depth": 4.1280406012049635,
+        "max_velocity": 10.370047291497222,
+        "max_discharge": 466.4268854485946,
+        "max_froude": 1.170882451777327,
+        "mean_depth_final": 7.324821409904432,
+        "mean_discharge_final": 465.85253255415853,
+        "total_volume": 73248.21409904431,
+        "mass_balance_error": 45.912777089729616,
+        "solver": "HydrostaticCanalSolver",
+        "solver_version": "2.0.0",
+        "time_steps": 37
+      },
+      "validation": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "physical_validity",
+            "passed": true,
+            "message": "水深范围合理: [4.128, 7.996]m"
+          },
+          {
+            "name": "converged",
+            "passed": true,
+            "expected": true,
+            "actual": true,
+            "error": "0.00%"
+          }
+        ]
+      },
+      "error": null
+    }
+  ]
+}

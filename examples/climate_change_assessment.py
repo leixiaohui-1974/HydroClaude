@@ -17,12 +17,14 @@
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from solvers.water_temperature import WaterTemperatureSolver
 from solvers.dissolved_oxygen import DissolvedOxygenSolver

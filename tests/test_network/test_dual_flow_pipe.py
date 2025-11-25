@@ -2,6 +2,8 @@
 Unit Tests for Dual Flow Pipe - 明满流管道单元测试
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

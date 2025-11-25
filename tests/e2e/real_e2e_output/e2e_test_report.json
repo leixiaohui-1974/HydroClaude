@@ -1,0 +1,55 @@
+{
+  "timestamp": "2025-11-25T17:32:36.937775",
+  "summary": {
+    "total": 3,
+    "passed": 1,
+    "failed": 0,
+    "errors": 2,
+    "pass_rate": "33.3%"
+  },
+  "results": [
+    {
+      "name": "溃坝模型",
+      "template_id": "dam-break-basic",
+      "status": "passed",
+      "duration": 15.750075340270996,
+      "screenshots": [
+        "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\tests\\e2e\\real_e2e_output\\screenshots\\173215_01_dam-break-basic_homepage.png",
+        "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\tests\\e2e\\real_e2e_output\\screenshots\\173219_02_dam-break-basic_simulation_page.png",
+        "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\tests\\e2e\\real_e2e_output\\screenshots\\173220_03_dam-break-basic_config_filled.png",
+        "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\tests\\e2e\\real_e2e_output\\screenshots\\173221_04_dam-break-basic_running.png",
+        "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\tests\\e2e\\real_e2e_output\\screenshots\\173223_05_dam-break-basic_result.png",
+        "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\tests\\e2e\\real_e2e_output\\screenshots\\173227_06_dam-break-basic_results_page.png",
+        "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\tests\\e2e\\real_e2e_output\\screenshots\\173227_07_dam-break-basic_final.png"
+      ],
+      "validation": {
+        "has_charts": true,
+        "chart_count": 11,
+        "has_tables": false,
+        "table_count": 0,
+        "page_loaded": true
+      },
+      "error": null
+    },
+    {
+      "name": "模板库功能",
+      "template_id": "template-library",
+      "status": "error",
+      "duration": 3.9937055110931396,
+      "screenshots": [
+        "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\tests\\e2e\\real_e2e_output\\screenshots\\173231_template_01_modeling.png"
+      ],
+      "validation": null,
+      "error": "Locator.count: Unexpected token \"=\" while parsing css selector \"button:has-text(\"模板\"), text=模板库, [class*=\"template\"]\". Did you mean to CSS.escape it?"
+    },
+    {
+      "name": "API测试案例",
+      "template_id": "api-test-cases",
+      "status": "error",
+      "duration": 4.421204328536987,
+      "screenshots": [],
+      "validation": null,
+      "error": "Page.evaluate: SyntaxError: Invalid or unexpected token\n    at eval (<anonymous>)\n    at UtilityScript.evaluate (<anonymous>:290:30)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)"
+    }
+  ]
+}

@@ -3,6 +3,8 @@
 """
 
 import asyncio
+import warnings
+warnings.filterwarnings("ignore")
 import json
 import os
 from datetime import datetime

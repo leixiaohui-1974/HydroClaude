@@ -22,6 +22,8 @@
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib
 matplotlib.use("Agg")  # Non-interactive mode
 import matplotlib.pyplot as plt
@@ -30,7 +32,7 @@ import sys
 import os
 
 # 添加项目根目录到路径
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from optimization.multi_objective import (
     MOProblem, Individual, NSGA2, NSGA2Config, NSGA3, NSGA3Config,

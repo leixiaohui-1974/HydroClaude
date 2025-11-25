@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 37,
+    "batch_end_index": 38,
+    "test_run_at": "2025-11-25T16:51:40.455113",
+    "batch_duration_seconds": 1.03,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/fix_20251113_090925/tests/benchmark_newton_vs_iterative.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.03,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_090925\\tests\\benchmark_newton_vs_iterative.py\", line 25, in <module>\n    from solvers.canal_solver import CanalSolver\nModuleNotFoundError: No module named 'solvers.canal_solver'"
+    }
+  ]
+}

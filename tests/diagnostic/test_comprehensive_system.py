@@ -16,6 +16,8 @@ HydroClaude综合系统测试
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import os
 import time

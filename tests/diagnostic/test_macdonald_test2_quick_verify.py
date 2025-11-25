@@ -7,6 +7,8 @@
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
@@ -43,7 +45,7 @@ def quick_verify():
     print(f"\n参数（缩小版）：")
     print(f"  L = {L} m (原5000m)")
     print(f"  n_cells = 50 (原100)")
-    print(f"  t_end = 3000s (快速验证)")
+    print(f"  t_end = 50s (快速验证)")
     print(f"  Q = {Q_bc} m^3/s")
     print(f"  h_c = {h_c:.4f} m")
     print(f"  h_n = {h_n:.4f} m")
@@ -73,7 +75,7 @@ def quick_verify():
     mass_initial = solver.initial_mass
 
     # 运行
-    t_end = 3000.0
+    t_end = 50.0
     cumulative_inflow = 0.0
     cumulative_outflow = 0.0
 

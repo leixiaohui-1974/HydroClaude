@@ -1,27 +1,29 @@
 # -*- coding: utf-8 -*-
 """
-示例1扩展[U+FF1A]明渠闸门过流动力学分析[U+FF08]高精度版本[U+FF09]
+[U+793A][U+4F8B]1[U+6269][U+5C55][U+FF1A][U+660E][U+6E20][U+95F8][U+95E8][U+8FC7][U+6D41][U+52A8][U+529B][U+5B66][U+5206][U+6790][U+FF08][U+9AD8][U+7CBE][U+5EA6][U+7248][U+672C][U+FF09]
 
-使用HydrostaticCanalSolver实现闸门流动模拟[U+FF08]Phase 2高精度求解器[U+FF09]
-- 稳态[U+FF1A]恒定均匀流[U+FF0C]流量守恒精度 < 0.01%
-- 自动结果验证和报告生成
+[U+4F7F][U+7528]HydrostaticCanalSolver[U+5B9E][U+73B0][U+95F8][U+95E8][U+6D41][U+52A8][U+6A21][U+62DF][U+FF08]Phase 2[U+9AD8][U+7CBE][U+5EA6][U+6C42][U+89E3][U+5668][U+FF09]
+- [U+7A33][U+6001][U+FF1A][U+6052][U+5B9A][U+5747][U+5300][U+6D41][U+FF0C][U+6D41][U+91CF][U+5B88][U+6052][U+7CBE][U+5EA6] < 0.01%
+- [U+81EA][U+52A8][U+7ED3][U+679C][U+9A8C][U+8BC1][U+548C][U+62A5][U+544A][U+751F][U+6210]
 
 Author: Claude
 Date: 2025-10-23
 """
 
 import sys, os
+import warnings
+warnings.filterwarnings("ignore")
 
 # Add project root to path
 # Script is in: examples/example_01_canal_flow/scripts/
 # Project root is 3 levels up
 script_path = os.path.abspath(__file__)
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_path))))
-sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 # Add scripts directory to path for output_helper
 script_dir = os.path.dirname(script_path)
-sys.path.insert(0, script_dir)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 import numpy as np
 import pandas as pd
@@ -36,40 +38,40 @@ from output_helper import get_output_path, save_figure, save_table
 
 
 def run_sluice_gate_dynamics():
-    """运行闸门流量动力学分析"""
+    """[U+8FD0][U+884C][U+95F8][U+95E8][U+6D41][U+91CF][U+52A8][U+529B][U+5B66][U+5206][U+6790]"""
 
     print("=" * 80)
-    print("示例1扩展[U+FF1A]明渠闸门过流动力学分析[U+FF08]HydrostaticCanalSolver高精度版本[U+FF09]")
+    print("[U+793A][U+4F8B]1[U+6269][U+5C55][U+FF1A][U+660E][U+6E20][U+95F8][U+95E8][U+8FC7][U+6D41][U+52A8][U+529B][U+5B66][U+5206][U+6790][U+FF08]HydrostaticCanalSolver[U+9AD8][U+7CBE][U+5EA6][U+7248][U+672C][U+FF09]")
     print("=" * 80)
     print()
 
-    # ==================== 系统配置 ====================
-    canal_length = 10000.0  # 渠道总长度 (m)
-    canal_width = 10.0      # 渠道宽度 (m)
-    gate_position = 5000.0  # 闸门位置[U+FF08]中点[U+FF09]
-    n_points = 201          # 总空间点数
+    # ==================== [U+7CFB][U+7EDF][U+914D][U+7F6E] ====================
+    canal_length = 10000.0  # [U+6E20][U+9053][U+603B][U+957F][U+5EA6] (m)
+    canal_width = 10.0      # [U+6E20][U+9053][U+5BBD][U+5EA6] (m)
+    gate_position = 5000.0  # [U+95F8][U+95E8][U+4F4D][U+7F6E][U+FF08][U+4E2D][U+70B9][U+FF09]
+    n_points = 201          # [U+603B][U+7A7A][U+95F4][U+70B9][U+6570]
 
-    # 渠道参数
-    bed_slope = 0.0005      # 底坡
-    manning_n = 0.025       # 曼宁糙率
+    # [U+6E20][U+9053][U+53C2][U+6570]
+    bed_slope = 0.0005      # [U+5E95][U+5761]
+    manning_n = 0.025       # [U+66FC][U+5B81][U+7CD9][U+7387]
 
-    # 闸门参数
-    gate_opening = 5.0      # 闸门开度 (m)
-    gate_Cd = 0.6           # 流量系数
+    # [U+95F8][U+95E8][U+53C2][U+6570]
+    gate_opening = 5.0      # [U+95F8][U+95E8][U+5F00][U+5EA6] (m)
+    gate_Cd = 0.6           # [U+6D41][U+91CF][U+7CFB][U+6570]
 
-    print("系统配置:")
-    print(f"  渠道总长度: {canal_length} m")
-    print(f"  渠道宽度: {canal_width} m")
-    print(f"  空间点数: {n_points}")
-    print(f"  闸门位置: {gate_position} m")
-    print(f"  闸门开度: {gate_opening} m")
-    print(f"  流量系数: {gate_Cd}")
-    print(f"  底坡: {bed_slope*1000:.2f}[U+2030]")
-    print(f"  曼宁糙率: {manning_n}")
+    print("[U+7CFB][U+7EDF][U+914D][U+7F6E]:")
+    print(f"  [U+6E20][U+9053][U+603B][U+957F][U+5EA6]: {canal_length} m")
+    print(f"  [U+6E20][U+9053][U+5BBD][U+5EA6]: {canal_width} m")
+    print(f"  [U+7A7A][U+95F4][U+70B9][U+6570]: {n_points}")
+    print(f"  [U+95F8][U+95E8][U+4F4D][U+7F6E]: {gate_position} m")
+    print(f"  [U+95F8][U+95E8][U+5F00][U+5EA6]: {gate_opening} m")
+    print(f"  [U+6D41][U+91CF][U+7CFB][U+6570]: {gate_Cd}")
+    print(f"  [U+5E95][U+5761]: {bed_slope*1000:.2f}[U+2030]")
+    print(f"  [U+66FC][U+5B81][U+7CD9][U+7387]: {manning_n}")
     print()
 
-    # ==================== 创建闸门和求解器 ====================
-    # 创建平板闸门
+    # ==================== [U+521B][U+5EFA][U+95F8][U+95E8][U+548C][U+6C42][U+89E3][U+5668] ====================
+    # [U+521B][U+5EFA][U+5E73][U+677F][U+95F8][U+95E8]
     sluice_gate = SluiceGate(
         position=gate_position,
         width=canal_width,
@@ -77,7 +79,7 @@ def run_sluice_gate_dynamics():
         Cd=gate_Cd
     )
 
-    # 创建高精度求解器[U+FF08]Phase 2静水重构方法[U+FF09]
+    # [U+521B][U+5EFA][U+9AD8][U+7CBE][U+5EA6][U+6C42][U+89E3][U+5668][U+FF08]Phase 2[U+9759][U+6C34][U+91CD][U+6784][U+65B9][U+6CD5][U+FF09]
     solver = HydrostaticCanalSolver(
         length=canal_length,
         nx=n_points,
@@ -87,32 +89,32 @@ def run_sluice_gate_dynamics():
         internal_structures=[(gate_position, sluice_gate)]
     )
 
-    print(f"求解器: HydrostaticCanalSolver (Phase 2高精度)")
-    print(f"  网格点数: {solver.nx}")
-    print(f"  网格间距: {solver.dx:.2f} m")
-    print(f"  内部结构: {len(solver.structure_objects)}个闸门")
+    print(f"[U+6C42][U+89E3][U+5668]: HydrostaticCanalSolver (Phase 2[U+9AD8][U+7CBE][U+5EA6])")
+    print(f"  [U+7F51][U+683C][U+70B9][U+6570]: {solver.nx}")
+    print(f"  [U+7F51][U+683C][U+95F4][U+8DDD]: {solver.dx:.2f} m")
+    print(f"  [U+5185][U+90E8][U+7ED3][U+6784]: {len(solver.structure_objects)}[U+4E2A][U+95F8][U+95E8]")
     print()
 
-    # ==================== 步骤1: 计算初始稳态 ====================
+    # ==================== [U+6B65][U+9AA4]1: [U+8BA1][U+7B97][U+521D][U+59CB][U+7A33][U+6001] ====================
     print("=" * 80)
-    print("步骤1: 计算初始稳态[U+FF08]恒定流[U+FF09]")
+    print("[U+6B65][U+9AA4]1: [U+8BA1][U+7B97][U+521D][U+59CB][U+7A33][U+6001][U+FF08][U+6052][U+5B9A][U+6D41][U+FF09]")
     print("-" * 80)
 
-    Q_initial = 10.0  # 初始流量 (m^3/s)
+    Q_initial = 10.0  # [U+521D][U+59CB][U+6D41][U+91CF] (m^3/s)
 
-    # 计算均匀流水深作为初始猜测
+    # [U+8BA1][U+7B97][U+5747][U+5300][U+6D41][U+6C34][U+6DF1][U+4F5C][U+4E3A][U+521D][U+59CB][U+731C][U+6D4B]
     h_uniform = compute_steady_uniform_flow(Q_initial, canal_width, bed_slope, manning_n)
 
-    print(f"  初始流量: {Q_initial} m^3/s")
-    print(f"  恒定均匀流水深: {h_uniform:.4f} m")
+    print(f"  [U+521D][U+59CB][U+6D41][U+91CF]: {Q_initial} m^3/s")
+    print(f"  [U+6052][U+5B9A][U+5747][U+5300][U+6D41][U+6C34][U+6DF1]: {h_uniform:.4f} m")
     print()
 
-    # 初始化求解器
+    # [U+521D][U+59CB][U+5316][U+6C42][U+89E3][U+5668]
     solver.h[:] = h_uniform
     solver.hu[:] = Q_initial / canal_width
 
-    # 使用高精度稳态求解器
-    print("开始稳态求解[U+FF08]Phase 2静水重构方法[U+FF09]...")
+    # [U+4F7F][U+7528][U+9AD8][U+7CBE][U+5EA6][U+7A33][U+6001][U+6C42][U+89E3][U+5668]
+    print("[U+5F00][U+59CB][U+7A33][U+6001][U+6C42][U+89E3][U+FF08]Phase 2[U+9759][U+6C34][U+91CD][U+6784][U+65B9][U+6CD5][U+FF09]...")
     result = solver.solve_steady_state(
         Q_target=Q_initial,
         h_downstream=h_uniform,
@@ -122,53 +124,53 @@ def run_sluice_gate_dynamics():
         verbose=True
     )
 
-    # ==================== 结果验证 ====================
+    # ==================== [U+7ED3][U+679C][U+9A8C][U+8BC1] ====================
     print("\n" + "=" * 80)
-    print("结果验证")
+    print("[U+7ED3][U+679C][U+9A8C][U+8BC1]")
     print("=" * 80)
 
-    # 使用ResultValidator进行验证
+    # [U+4F7F][U+7528]ResultValidator[U+8FDB][U+884C][U+9A8C][U+8BC1]
     validator = quick_validate_steady_state(
         solver=solver,
         result_dict=result,
         Q_target=Q_initial,
-        name="脚本07 - 闸门流动分析"
+        name="[U+811A][U+672C]07 - [U+95F8][U+95E8][U+6D41][U+52A8][U+5206][U+6790]"
     )
 
-    # ==================== 获取结果数据 ====================
+    # ==================== [U+83B7][U+53D6][U+7ED3][U+679C][U+6570][U+636E] ====================
     x_full = solver.x
     h_steady = result['h']
     Q_steady = result['Q']
 
-    # 找到闸门位置的索引
+    # [U+627E][U+5230][U+95F8][U+95E8][U+4F4D][U+7F6E][U+7684][U+7D22][U+5F15]
     gate_idx = solver.structure_indices[0]
 
-    print(f"\n详细结果:")
-    print(f"  闸前水深: {h_steady[gate_idx-1]:.4f} m")
-    print(f"  闸后水深: {h_steady[gate_idx+1]:.4f} m")
-    print(f"  水位差: {h_steady[gate_idx-1] - h_steady[gate_idx+1]:.4f} m")
+    print(f"\n[U+8BE6][U+7EC6][U+7ED3][U+679C]:")
+    print(f"  [U+95F8][U+524D][U+6C34][U+6DF1]: {h_steady[gate_idx-1]:.4f} m")
+    print(f"  [U+95F8][U+540E][U+6C34][U+6DF1]: {h_steady[gate_idx+1]:.4f} m")
+    print(f"  [U+6C34][U+4F4D][U+5DEE]: {h_steady[gate_idx-1] - h_steady[gate_idx+1]:.4f} m")
 
-    # 计算闸门流量
+    # [U+8BA1][U+7B97][U+95F8][U+95E8][U+6D41][U+91CF]
     h_up = h_steady[gate_idx - 1]
     h_down = h_steady[gate_idx + 1]
     Q_gate, flow_type = sluice_gate.calculate_discharge(h_up, h_down)
-    print(f"  闸门流量: {Q_gate:.4f} m^3/s")
-    print(f"  流态: {flow_type}")
+    print(f"  [U+95F8][U+95E8][U+6D41][U+91CF]: {Q_gate:.4f} m^3/s")
+    print(f"  [U+6D41][U+6001]: {flow_type}")
     print()
 
-    # ==================== 生成初始稳态图 ====================
+    # ==================== [U+751F][U+6210][U+521D][U+59CB][U+7A33][U+6001][U+56FE] ====================
     print("=" * 80)
-    print("生成可视化")
+    print("[U+751F][U+6210][U+53EF][U+89C6][U+5316]")
     print("=" * 80)
-    print("  1. 生成稳态纵剖面图...")
+    print("  1. [U+751F][U+6210][U+7A33][U+6001][U+7EB5][U+5256][U+9762][U+56FE]...")
 
     fig_steady = plt.figure(figsize=(16, 10))
 
-    # 计算渠底高程[U+FF08]以下游为基准0[U+FF09]
+    # [U+8BA1][U+7B97][U+6E20][U+5E95][U+9AD8][U+7A0B][U+FF08][U+4EE5][U+4E0B][U+6E38][U+4E3A][U+57FA][U+51C6]0[U+FF09]
     z_bed = (canal_length - x_full) * bed_slope
-    z_surface = z_bed + h_steady  # 水面高程
+    z_surface = z_bed + h_steady  # [U+6C34][U+9762][U+9AD8][U+7A0B]
 
-    # 子图1: 纵剖面[U+FF08]水面+渠底[U+FF09]
+    # [U+5B50][U+56FE]1: [U+7EB5][U+5256][U+9762][U+FF08][U+6C34][U+9762]+[U+6E20][U+5E95][U+FF09]
     ax1 = plt.subplot(3, 1, 1)
     ax1.fill_between(x_full, z_bed, z_surface, color='cyan', alpha=0.5, label='Water')
     ax1.plot(x_full, z_surface, 'b-', linewidth=2.5, label='Water Surface')
@@ -182,7 +184,7 @@ def run_sluice_gate_dynamics():
     ax1.legend(fontsize=11, loc='upper right')
     ax1.set_xlim([0, canal_length])
 
-    # 子图2: 水深剖面
+    # [U+5B50][U+56FE]2: [U+6C34][U+6DF1][U+5256][U+9762]
     ax2 = plt.subplot(3, 1, 2)
     ax2.plot(x_full, h_steady, 'b-', linewidth=2.5, label='Water Depth')
     ax2.axvline(x=gate_position, color='r', linestyle='--', linewidth=2, alpha=0.7,
@@ -196,10 +198,10 @@ def run_sluice_gate_dynamics():
     ax2.legend(fontsize=11)
     ax2.set_xlim([0, canal_length])
 
-    # 子图3: 流量剖面[U+FF08]带验证标记[U+FF09]
+    # [U+5B50][U+56FE]3: [U+6D41][U+91CF][U+5256][U+9762][U+FF08][U+5E26][U+9A8C][U+8BC1][U+6807][U+8BB0][U+FF09]
     ax3 = plt.subplot(3, 1, 3)
 
-    # 计算流量误差
+    # [U+8BA1][U+7B97][U+6D41][U+91CF][U+8BEF][U+5DEE]
     Q_error_pct = np.abs(Q_steady - Q_initial) / Q_initial * 100
     max_error = np.max(Q_error_pct)
 
@@ -209,17 +211,17 @@ def run_sluice_gate_dynamics():
     ax3.axhline(y=Q_initial, color='k', linestyle=':', alpha=0.5,
                 label=f'Target Flow ({Q_initial:.1f} m^3/s)')
 
-    # 添加误差信息
+    # [U+6DFB][U+52A0][U+8BEF][U+5DEE][U+4FE1][U+606F]
     error_text = f'Max Error: {max_error:.6f}%'
     if max_error < 0.01:
         error_color = 'green'
-        grade = '优秀'
+        grade = '[U+4F18][U+79C0]'
     elif max_error < 0.1:
         error_color = 'blue'
-        grade = '良好'
+        grade = '[U+826F][U+597D]'
     else:
         error_color = 'orange'
-        grade = '可接受'
+        grade = '[U+53EF][U+63A5][U+53D7]'
 
     ax3.text(0.98, 0.95, f'{error_text}\n({grade})',
              transform=ax3.transAxes, fontsize=11, verticalalignment='top',
@@ -238,10 +240,10 @@ def run_sluice_gate_dynamics():
     steady_fig_path = save_figure(fig_steady, '07_sluice_gate_steady_state_v2.png')
     plt.close(fig_steady)
 
-    # ==================== 生成验证结果图 ====================
-    print("  2. 生成验证结果图...")
+    # ==================== [U+751F][U+6210][U+9A8C][U+8BC1][U+7ED3][U+679C][U+56FE] ====================
+    print("  2. [U+751F][U+6210][U+9A8C][U+8BC1][U+7ED3][U+679C][U+56FE]...")
 
-    # 使用validator的plot功能
+    # [U+4F7F][U+7528]validator[U+7684]plot[U+529F][U+80FD]
     fig_validation = validator.plot_flow_distribution(
         x=x_full,
         Q=Q_steady,
@@ -263,18 +265,18 @@ def run_sluice_gate_dynamics():
     })
     save_table(steady_data, '07_sluice_gate_steady_profile_v2.csv', index=False)
 
-    # ==================== 保存验证报告 ====================
-    print("  3. 保存验证报告...")
+    # ==================== [U+4FDD][U+5B58][U+9A8C][U+8BC1][U+62A5][U+544A] ====================
+    print("  3. [U+4FDD][U+5B58][U+9A8C][U+8BC1][U+62A5][U+544A]...")
 
     report_path = get_output_path('reports', '07_sluice_gate_validation_report.txt')
     validator.save_report(report_path)
 
     print()
     print("=" * 80)
-    print("分析完成[U+FF01]")
+    print("[U+5206][U+6790][U+5B8C][U+6210][U+FF01]")
     print("=" * 80)
 
-    print(f"\n生成的文件:")
+    print(f"\n[U+751F][U+6210][U+7684][U+6587][U+4EF6]:")
     print(f"  Figures:")
     print(f"    - 07_sluice_gate_steady_state_v2.png")
     print(f"    - 07_sluice_gate_validation.png")
@@ -283,20 +285,20 @@ def run_sluice_gate_dynamics():
     print(f"  Reports:")
     print(f"    - 07_sluice_gate_validation_report.txt")
 
-    print("\n关键指标:")
-    print(f"  流量守恒误差: {result['Q_error_percent']:.6f}%")
-    print(f"  收敛迭代次数: {result['iterations']}")
-    print(f"  闸门流量误差: {abs(Q_gate-Q_initial)/Q_initial*100:.2f}%")
+    print("\n[U+5173][U+952E][U+6307][U+6807]:")
+    print(f"  [U+6D41][U+91CF][U+5B88][U+6052][U+8BEF][U+5DEE]: {result['Q_error_percent']:.6f}%")
+    print(f"  [U+6536][U+655B][U+8FED][U+4EE3][U+6B21][U+6570]: {result['iterations']}")
+    print(f"  [U+95F8][U+95E8][U+6D41][U+91CF][U+8BEF][U+5DEE]: {abs(Q_gate-Q_initial)/Q_initial*100:.2f}%")
 
-    # 最终判定
+    # [U+6700][U+7EC8][U+5224][U+5B9A]
     if result['Q_error_percent'] < 0.01:
-        print(f"\n   达到优秀精度标准[U+FF01][U+FF08]< 0.01%[U+FF09]")
+        print(f"\n   [U+8FBE][U+5230][U+4F18][U+79C0][U+7CBE][U+5EA6][U+6807][U+51C6][U+FF01][U+FF08]< 0.01%[U+FF09]")
     elif result['Q_error_percent'] < 0.1:
-        print(f"\n   达到良好精度标准[U+FF01][U+FF08]< 0.1%[U+FF09]")
+        print(f"\n   [U+8FBE][U+5230][U+826F][U+597D][U+7CBE][U+5EA6][U+6807][U+51C6][U+FF01][U+FF08]< 0.1%[U+FF09]")
     else:
-        print(f"\n   达到可接受精度标准[U+FF01][U+FF08]< 1.0%[U+FF09]")
+        print(f"\n   [U+8FBE][U+5230][U+53EF][U+63A5][U+53D7][U+7CBE][U+5EA6][U+6807][U+51C6][U+FF01][U+FF08]< 1.0%[U+FF09]")
 
-    print("\n所有输出文件已保存到 results/ 目录")
+    print("\n[U+6240][U+6709][U+8F93][U+51FA][U+6587][U+4EF6][U+5DF2][U+4FDD][U+5B58][U+5230] results/ [U+76EE][U+5F55]")
     print("\n" + "=" * 80)
 
     return validator

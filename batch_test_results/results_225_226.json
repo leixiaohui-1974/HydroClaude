@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 225,
+    "batch_end_index": 226,
+    "test_run_at": "2025-11-25T16:27:42.721457",
+    "batch_duration_seconds": 60.08,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_01_canal_flow/scripts/06_animation.py",
+      "status": "timeout",
+      "return_code": -1,
+      "duration_seconds": 60.08,
+      "stdout": "======================================================================\n���������Ǻ㶨��GIF���� - �Ľ��������߽���\n======================================================================\n\n�߽�����:\n  ��������: 8.00 m^3/s\n  ����ˮ��: 0.806 m\n\n��ɢ��:\n  �ռ����: 101\n  �ռ䲽��: 10.00 m\n\n����ģ�� (��ʱ��: 600.0s, ʱ�䲽��: 0.5s)...\n  EXPLICIT...  (120 ֡)\n  PREISSMANN...  (120 ֡)\n  HLL...",
+      "stderr": "Process timed out after 60 seconds."
+    }
+  ]
+}

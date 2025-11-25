@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 8,
+    "batch_end_index": 9,
+    "test_run_at": "2025-11-25T16:50:20.873380",
+    "batch_duration_seconds": 17.01,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/deprecated_scripts_backup/advanced_examples/mpc_saint_venant_test.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 17.01,
+      "stdout": "================================================================================\n一阶MPC在Saint-Venant高保真模型上的性能测试\n================================================================================\n\n测试配置：\n  - 控制器: 一阶MPC (K=-0.3, tau=206s)\n  - 高保真模型: Saint-Venant方程 (MOC求解)\n  - 基准模型: 线性化一阶模型\n  - 仿真时间: 800s\n  - 扰动: 4次阶跃变化 (20->25->18->23 m^3/s)\n\n开始测试...\n\n【步骤1】创建Saint-Venant高保真模型...",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\deprecated_scripts_backup\\advanced_examples\\mpc_saint_venant_test.py\", line 585, in <module>\n    main()\n    ~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\deprecated_scripts_backup\\advanced_examples\\mpc_saint_venant_test.py\", line 544, in main\n    canal = test.create_saint_venant_model()\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\deprecated_scripts_backup\\advanced_examples\\mpc_saint_venant_test.py\", line 89, in create_saint_venant_model\n    canal = Canal(\n        name=\"test_canal\",\n    ...<10 lines>...\n        initial_flow=initial_flow\n    )\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\physics\\canal.py\", line 116, in __init__\n    raise ValueError(f\"不支持的求解方法'{self.method}'仅支持'preissmann'\")\nValueError: 不支持的求解方法'moc'仅支持'preissmann'"
+    }
+  ]
+}

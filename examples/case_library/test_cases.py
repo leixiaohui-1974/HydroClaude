@@ -11,13 +11,15 @@ Date: 2025-10-30
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 import time
 import traceback
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
-sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 
 class CaseTestRunner:

@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 343,
+    "batch_end_index": 344,
+    "test_run_at": "2025-11-25T16:54:17.679048",
+    "batch_duration_seconds": 60.04,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./performance_benchmark.py",
+      "status": "timeout",
+      "return_code": -1,
+      "duration_seconds": 60.04,
+      "stdout": "",
+      "stderr": "Process timed out after 60 seconds."
+    }
+  ]
+}

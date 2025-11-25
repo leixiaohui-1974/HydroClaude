@@ -15,6 +15,8 @@ Riemann求解器单元测试
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import os
 

@@ -1,0 +1,377 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Stoker溃坝解析解 (1957)
+
+经典的下游有水溃坝问题解析解。
+
+参考文献:
+- Stoker, J.J. (1957). Water Waves. Interscience Publishers.
+- Toro, E.F. (2001). Shock-Capturing Methods for Free-Surface Shallow Flows.
+
+解的结构（从左到右）:
+1. 区域1: 上游未扰动区 (x < x_tail)
+2. 区域2: 稀疏波区 (x_tail <= x < x_star)
+3. 区域3: 中间常值区 (x_star <= x < x_shock)
+4. 区域4: 下游区域 (x >= x_shock) - 激波右侧
+
+与Ritter解的区别：
+- Ritter: 下游完全干床 (h_R = 0)
+- Stoker: 下游有水 (h_R > 0)，包含激波
+"""
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
+
+import numpy as np
+from typing import Tuple
+from scipy.optimize import fsolve
+
+
+def stoker_solution(
+    x: np.ndarray,
+    t: float,
+    h_L: float,
+    h_R: float,
+    x_dam: float = 0.0,
+    g: float = 9.81
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    计算Stoker溃坝解析解
+
+    Args:
+        x: 空间坐标数组 (m)
+        t: 时间 (s)
+        h_L: 上游初始水深 (m)
+        h_R: 下游初始水深 (m), h_R > 0
+        x_dam: 坝址位置 (m)
+        g: 重力加速度 (m/s^2)
+
+    Returns:
+        h: 水深数组 (m)
+        u: 流速数组 (m/s)
+
+    注意:
+        要求 h_R > 0 且 h_L > h_R（否则退化为Ritter解或无溃坝）
+    """
+    # 输入验证
+    if t <= 0:
+        raise ValueError(f"时间必须 > 0, 得到 t={t}")
+    if h_L <= 0 or h_R <= 0:
+        raise ValueError(f"水深必须 > 0, 得到 h_L={h_L}, h_R={h_R}")
+    if h_L <= h_R:
+        raise ValueError(f"必须 h_L > h_R, 得到 h_L={h_L}, h_R={h_R}")
+
+    # 初始化
+    h = np.zeros_like(x, dtype=float)
+    u = np.zeros_like(x, dtype=float)
+
+    # 特征波速
+    c_L = np.sqrt(g * h_L)
+    c_R = np.sqrt(g * h_R)
+
+    # 计算中间状态（激波左侧）
+    # 通过求解Rankine-Hugoniot条件和特征关系
+    h_star = _compute_middle_state(h_L, h_R, g)
+    c_star = np.sqrt(g * h_star)
+    u_star = 2.0 * (c_L - c_star)
+
+    # 激波速度（Rankine-Hugoniot条件）
+    S = u_star / 2.0 + np.sqrt(g/2.0 * (h_star + h_R) * h_star / h_R)
+
+    # 特征位置
+    x_tail = x_dam - c_L * t              # 稀疏波尾部
+    x_star = x_dam + (u_star - c_star) * t  # 稀疏波前沿
+    x_shock = x_dam + S * t               # 激波位置
+
+    # 相对坐标
+    xi = (x - x_dam) / t
+
+    # 区域1: 上游未扰动区
+    mask1 = x < x_tail
+    h[mask1] = h_L
+    u[mask1] = 0.0
+
+    # 区域2: 稀疏波区
+    mask2 = (x >= x_tail) & (x < x_star)
+    h[mask2] = (1.0/g) * (2.0*c_L/3.0 - xi[mask2]/3.0)**2
+    u[mask2] = 2.0/3.0 * (xi[mask2] + c_L)
+
+    # 区域3: 中间常值区
+    mask3 = (x >= x_star) & (x < x_shock)
+    h[mask3] = h_star
+    u[mask3] = u_star
+
+    # 区域4: 下游区域（激波右侧）
+    mask4 = x >= x_shock
+    h[mask4] = h_R
+    u[mask4] = 0.0
+
+    return h, u
+
+
+def _compute_middle_state(h_L: float, h_R: float, g: float) -> float:
+    """
+    计算中间状态水深 h_star
+
+    通过求解Rankine-Hugoniot条件和Riemann不变量：
+    - 稀疏波: u_star + 2*c_star = 2*c_L
+    - 激波: u_star^2 + g*h_star^2/h_star = (u_star - S)^2 + g*h_R^2/h_R
+
+    Args:
+        h_L: 上游水深
+        h_R: 下游水深
+        g: 重力加速度
+
+    Returns:
+        h_star: 中间状态水深
+    """
+    c_L = np.sqrt(g * h_L)
+    c_R = np.sqrt(g * h_R)
+
+    # 使用迭代求解（初值猜测为h_L和h_R的几何平均）
+    h0 = np.sqrt(h_L * h_R)
+
+    def equation(h_star):
+        """待求解方程 f(h_star) = 0"""
+        if h_star <= 0:
+            return 1e10  # 惩罚负值
+
+        c_star = np.sqrt(g * h_star)
+
+        # 稀疏波关系
+        u_star = 2.0 * (c_L - c_star)
+
+        # 激波速度
+        if h_star <= h_R:
+            return 1e10  # h_star必须 > h_R
+
+        S = u_star / 2.0 + np.sqrt(g/2.0 * (h_star + h_R) * h_star / h_R)
+
+        # Rankine-Hugoniot条件
+        # 质量守恒: S*(h_star - h_R) = u_star*h_star
+        # 动量守恒: S*(u_star*h_star - 0) = u_star^2*h_star + g*h_star^2/2 - g*h_R^2/2
+
+        # 组合为单一方程
+        lhs = S * (h_star - h_R)
+        rhs = u_star * h_star
+
+        return lhs - rhs
+
+    # 求解
+    h_star_sol = fsolve(equation, h0)[0]
+
+    # 验证结果
+    if h_star_sol <= h_R or h_star_sol >= h_L:
+        raise RuntimeError(
+            f"中间状态求解失败: h_star={h_star_sol:.3f}, "
+            f"应满足 {h_R:.3f} < h_star < {h_L:.3f}"
+        )
+
+    return h_star_sol
+
+
+def stoker_characteristics(
+    t: float,
+    h_L: float,
+    h_R: float,
+    x_dam: float = 0.0,
+    g: float = 9.81
+) -> dict:
+    """
+    计算Stoker解的特征位置和波速
+
+    Args:
+        t: 时间 (s)
+        h_L: 上游水深 (m)
+        h_R: 下游水深 (m)
+        x_dam: 坝址位置 (m)
+        g: 重力加速度 (m/s^2)
+
+    Returns:
+        dict: 包含特征位置和速度的字典
+            - x_tail: 稀疏波尾部位置
+            - x_star: 稀疏波前沿位置
+            - x_shock: 激波位置
+            - h_star: 中间状态水深
+            - u_star: 中间状态流速
+            - S: 激波速度
+            - c_L, c_R, c_star: 波速
+    """
+    c_L = np.sqrt(g * h_L)
+    c_R = np.sqrt(g * h_R)
+
+    # 中间状态
+    h_star = _compute_middle_state(h_L, h_R, g)
+    c_star = np.sqrt(g * h_star)
+    u_star = 2.0 * (c_L - c_star)
+
+    # 激波速度
+    S = u_star / 2.0 + np.sqrt(g/2.0 * (h_star + h_R) * h_star / h_R)
+
+    # 特征位置
+    x_tail = x_dam - c_L * t
+    x_star = x_dam + (u_star - c_star) * t
+    x_shock = x_dam + S * t
+
+    return {
+        'x_tail': x_tail,
+        'x_star': x_star,
+        'x_shock': x_shock,
+        'h_star': h_star,
+        'u_star': u_star,
+        'c_star': c_star,
+        'shock_speed': S,
+        'wave_speed_L': c_L,
+        'wave_speed_R': c_R,
+    }
+
+
+def verify_stoker_properties(
+    h_L: float,
+    h_R: float,
+    g: float = 9.81,
+    verbose: bool = False
+) -> bool:
+    """
+    验证Stoker解的物理性质
+
+    检查项:
+    1. h_R < h_star < h_L
+    2. 激波速度 S > 0
+    3. 稀疏波满足 u + 2c = 2c_L
+    4. 质量守恒
+    5. 动量守恒
+
+    Args:
+        h_L: 上游水深
+        h_R: 下游水深
+        g: 重力加速度
+        verbose: 是否打印详细信息
+
+    Returns:
+        bool: 是否通过所有检查
+    """
+    try:
+        c_L = np.sqrt(g * h_L)
+        c_R = np.sqrt(g * h_R)
+
+        # 计算中间状态
+        h_star = _compute_middle_state(h_L, h_R, g)
+        c_star = np.sqrt(g * h_star)
+        u_star = 2.0 * (c_L - c_star)
+
+        # 激波速度
+        S = u_star / 2.0 + np.sqrt(g/2.0 * (h_star + h_R) * h_star / h_R)
+
+        checks = []
+
+        # 检查1: 水深顺序
+        check1 = h_R < h_star < h_L
+        checks.append(('水深顺序', check1, f"{h_R:.3f} < {h_star:.3f} < {h_L:.3f}"))
+
+        # 检查2: 激波速度为正
+        check2 = S > 0
+        checks.append(('激波速度', check2, f"S = {S:.3f} m/s"))
+
+        # 检查3: 中间状态流速为正
+        check3 = u_star > 0
+        checks.append(('中间流速', check3, f"u_star = {u_star:.3f} m/s"))
+
+        # 检查4: 稀疏波Riemann不变量
+        riemann_inv = u_star + 2.0 * c_star
+        expected_inv = 2.0 * c_L
+        check4 = np.abs(riemann_inv - expected_inv) < 1e-6
+        checks.append(('Riemann不变量', check4,
+                      f"{riemann_inv:.6f} ~= {expected_inv:.6f}"))
+
+        # 检查5: 质量守恒（Rankine-Hugoniot）
+        mass_lhs = S * (h_star - h_R)
+        mass_rhs = u_star * h_star
+        check5 = np.abs(mass_lhs - mass_rhs) < 1e-6
+        checks.append(('质量守恒', check5,
+                      f"{mass_lhs:.6f} ~= {mass_rhs:.6f}"))
+
+        if verbose:
+            print("\n" + "="*60)
+            print("Stoker解性质验证")
+            print("="*60)
+            print(f"上游水深: h_L = {h_L:.3f} m")
+            print(f"下游水深: h_R = {h_R:.3f} m")
+            print(f"中间状态: h_star = {h_star:.3f} m, u_star = {u_star:.3f} m/s")
+            print(f"激波速度: S = {S:.3f} m/s")
+            print(f"\n检查结果:")
+            for name, result, detail in checks:
+                status = "" if result else ""
+                print(f"  {status} {name}: {detail}")
+
+        return all(check for _, check, _ in checks)
+
+    except Exception as e:
+        if verbose:
+            print(f" 验证失败: {e}")
+        return False
+
+
+if __name__ == '__main__':
+    """测试Stoker解"""
+    import matplotlib.pyplot as plt
+
+    # 测试参数
+    h_L = 10.0  # m
+    h_R = 2.0   # m
+    t = 10.0    # s
+    L = 2000.0  # m
+    x_dam = L / 2.0
+
+    print("\n" + "="*60)
+    print("Stoker溃坝解析解测试")
+    print("="*60)
+
+    # 验证性质
+    verify_stoker_properties(h_L, h_R, verbose=True)
+
+    # 计算特征
+    chars = stoker_characteristics(t, h_L, h_R, x_dam)
+    print(f"\n特征位置 (t={t}s):")
+    print(f"  稀疏波尾部: x_tail = {chars['x_tail']:.2f} m")
+    print(f"  稀疏波前沿: x_star = {chars['x_star']:.2f} m")
+    print(f"  激波位置:   x_shock = {chars['x_shock']:.2f} m")
+
+    # 计算解
+    x = np.linspace(0, L, 1000)
+    h, u = stoker_solution(x, t, h_L, h_R, x_dam)
+
+    # 绘图
+    fig, axes = plt.subplots(2, 1, figsize=(12, 8))
+
+    # 水深
+    axes[0].plot(x, h, 'b-', linewidth=2)
+    axes[0].axvline(x_dam, color='k', linestyle=':', label='Dam')
+    axes[0].axvline(chars['x_tail'], color='r', linestyle='--', alpha=0.5, label='Rarefaction tail')
+    axes[0].axvline(chars['x_star'], color='g', linestyle='--', alpha=0.5, label='Rarefaction front')
+    axes[0].axvline(chars['x_shock'], color='m', linestyle='--', alpha=0.5, label='Shock')
+    axes[0].set_ylabel('Water Depth h (m)', fontsize=12)
+    axes[0].set_title(f'Stoker Dam Break Solution - t={t}s, h_L={h_L}m, h_R={h_R}m',
+                     fontsize=14, weight='bold')
+    axes[0].legend()
+    axes[0].grid(True, alpha=0.3)
+
+    # 流速
+    axes[1].plot(x, u, 'r-', linewidth=2)
+    axes[1].axvline(x_dam, color='k', linestyle=':')
+    axes[1].axvline(chars['x_tail'], color='r', linestyle='--', alpha=0.5)
+    axes[1].axvline(chars['x_star'], color='g', linestyle='--', alpha=0.5)
+    axes[1].axvline(chars['x_shock'], color='m', linestyle='--', alpha=0.5)
+    axes[1].set_xlabel('Distance x (m)', fontsize=12)
+    axes[1].set_ylabel('Velocity u (m/s)', fontsize=12)
+    axes[1].grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('stoker_solution_test.png', dpi=150, bbox_inches='tight')
+    print(f"\n 测试图保存: stoker_solution_test.png")

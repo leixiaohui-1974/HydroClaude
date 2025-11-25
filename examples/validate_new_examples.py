@@ -17,6 +17,8 @@ print("="*80)
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 from pathlib import Path
 import subprocess
@@ -25,7 +27,7 @@ from typing import List, Tuple, Dict
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 class Colors:

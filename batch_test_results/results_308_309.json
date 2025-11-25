@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 308,
+    "batch_end_index": 309,
+    "test_run_at": "2025-11-25T16:42:42.373151",
+    "batch_duration_seconds": 60.04,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_structures/run_spillway.py",
+      "status": "timeout",
+      "return_code": -1,
+      "duration_seconds": 60.04,
+      "stdout": "",
+      "stderr": "E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\solvers\\gate.py:480: RuntimeWarning: invalid value encountered in scalar power\n  submergence_factor = (1.0 - submergence_ratio ** 1.5) ** 0.385"
+    }
+  ]
+}

@@ -4,6 +4,8 @@
 目的：验证supercritical边界能否正确维持指定的h和Q值
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

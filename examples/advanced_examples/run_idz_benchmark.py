@@ -18,11 +18,13 @@ IDZ自适应控制基准测试
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 from pathlib import Path
 
 # 添加项目根目录
 project_root = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(project_root))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from modeling.universal_modeler import UniversalModeler
 

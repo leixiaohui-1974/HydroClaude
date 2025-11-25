@@ -1,0 +1,17 @@
+{
+  "timestamp": "2025-11-25T21:26:03.718235",
+  "results": {
+    "plain_canal": true,
+    "gate": true,
+    "pump": true,
+    "weir": true,
+    "individual_apis": {
+      "pump": false,
+      "gate": false,
+      "weir": false
+    }
+  },
+  "passed": 4,
+  "total": 7,
+  "pass_rate": "57%"
+}

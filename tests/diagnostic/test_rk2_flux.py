@@ -7,6 +7,8 @@ TVD-RK2两个阶段的通量检查
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 

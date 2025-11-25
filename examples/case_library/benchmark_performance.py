@@ -18,6 +18,8 @@ Date: 2025-10-30
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 import time
 import psutil
@@ -28,7 +30,7 @@ from dataclasses import dataclass
 import json
 
 # Add project root to path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 
 @dataclass
@@ -76,10 +78,10 @@ class PerformanceBenchmark:
             if (self.case_dir / case_file).exists():
                 self.cases[case_id] = case_file
             else:
-                print(f"⚠️  跳过不存在的案例 {case_id}: {case_file}")
+                print(f"[WARN]  跳过不存在的案例 {case_id}: {case_file}")
         
         if not self.cases:
-            print("❌ 没有找到任何可测试的案例文件")
+            print("[X] 没有找到任何可测试的案例文件")
             sys.exit(1)
 
         self.results: List[BenchmarkResult] = []

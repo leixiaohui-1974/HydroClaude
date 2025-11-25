@@ -1,0 +1,644 @@
+"""
+Unit Tests for Network Node Module - 管网节点模块单元测试
+
+This module contains comprehensive unit tests for:
+- NetworkNode base class
+- Junction nodes
+- Reservoir nodes
+- Tank nodes
+
+Author: HydroClaude Development Team
+Date: 2025-10-30
+"""
+import sys
+import os
+
+# ========== 路径设置 ==========
+script_path = os.path.abspath(__file__)
+project_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, project_root)
+
+
+import pytest
+import numpy as np
+from network.network_node import (
+    NetworkNode, Junction, Reservoir, Tank,
+    create_junction, create_reservoir, create_tank,
+    NodeState
+)
+
+
+# ============================================================================
+# Test 1: NetworkNode Base Class - 基础类测试
+# ============================================================================
+
+class TestNetworkNodeInitialization:
+    """测试NetworkNode初始化和基本属性"""
+
+    def test_basic_initialization(self):
+        """测试基本初始化"""
+        node = NetworkNode(
+            node_id="N1",
+            node_type="junction",
+            elevation=10.0
+        )
+
+        assert node.node_id == "N1"
+        assert node.node_type == "junction"
+        assert node.elevation == 10.0
+        assert node.demand == 0.0
+        assert node.head == 10.0  # 默认等于elevation
+        assert node.pressure == 0.0
+
+    def test_initialization_with_demand(self):
+        """测试带需水量的初始化"""
+        node = NetworkNode(
+            node_id="N2",
+            node_type="junction",
+            elevation=15.0,
+            demand=0.05
+        )
+
+        assert node.demand == 0.05
+        assert node.current_demand == 0.05
+
+    def test_initialization_with_initial_head(self):
+        """测试带初始水头的初始化"""
+        node = NetworkNode(
+            node_id="N3",
+            node_type="junction",
+            elevation=10.0,
+            initial_head=25.0
+        )
+
+        assert node.initial_head == 25.0
+        assert node.head == 25.0
+        assert node.pressure == 15.0  # 25.0 - 10.0
+
+    def test_invalid_node_id(self):
+        """测试无效节点ID"""
+        with pytest.raises(ValueError, match="节点ID必须为非空字符串"):
+            NetworkNode("", "junction", 10.0)
+
+    def test_invalid_node_type(self):
+        """测试无效节点类型"""
+        with pytest.raises(ValueError, match="节点类型无效"):
+            NetworkNode("N1", "invalid_type", 10.0)
+
+    def test_coordinates(self):
+        """测试坐标设置"""
+        node = NetworkNode(
+            "N1", "junction", 10.0,
+            coordinates=(100.0, 200.0)
+        )
+
+        assert node.coordinates == (100.0, 200.0)
+
+
+class TestNetworkNodeConnections:
+    """测试节点连接功能"""
+
+    def test_add_connected_pipe(self):
+        """测试添加连接管道"""
+        node = NetworkNode("N1", "junction", 10.0)
+
+        node.add_connected_pipe("P1")
+        node.add_connected_pipe("P2")
+
+        assert len(node.connected_pipes) == 2
+        assert "P1" in node.connected_pipes
+        assert "P2" in node.connected_pipes
+
+    def test_add_duplicate_pipe(self):
+        """测试添加重复管道"""
+        node = NetworkNode("N1", "junction", 10.0)
+
+        node.add_connected_pipe("P1")
+        node.add_connected_pipe("P1")  # 重复添加
+
+        # 应该只有一个P1
+        assert len(node.connected_pipes) == 1
+
+    def test_remove_connected_pipe(self):
+        """测试移除连接管道"""
+        node = NetworkNode("N1", "junction", 10.0)
+
+        node.add_connected_pipe("P1")
+        node.add_connected_pipe("P2")
+        node.remove_connected_pipe("P1")
+
+        assert len(node.connected_pipes) == 1
+        assert "P2" in node.connected_pipes
+        assert "P1" not in node.connected_pipes
+
+
+class TestContinuityEquation:
+    """测试连续性方程"""
+
+    def test_continuity_balanced(self):
+        """测试平衡的连续性方程"""
+        node = NetworkNode("N1", "junction", 10.0, demand=0.05)
+
+        inflows = [0.08, 0.02]   # 总流入 0.10
+        outflows = [0.05]        # 总流出 0.05
+        # 需水量 0.05
+
+        residual = node.continuity_equation(inflows, outflows)
+
+        # 0.10 - 0.05 - 0.05 = 0
+        assert abs(residual) < 1e-10
+
+    def test_continuity_unbalanced(self):
+        """测试不平衡的连续性方程"""
+        node = NetworkNode("N1", "junction", 10.0, demand=0.05)
+
+        inflows = [0.08]         # 总流入 0.08
+        outflows = [0.05]        # 总流出 0.05
+
+        residual = node.continuity_equation(inflows, outflows)
+
+        # 0.08 - 0.05 - 0.05 = -0.02
+        assert abs(residual - (-0.02)) < 1e-10
+
+    def test_continuity_with_custom_demand(self):
+        """测试自定义需水量的连续性方程"""
+        node = NetworkNode("N1", "junction", 10.0, demand=0.05)
+
+        inflows = [0.10]
+        outflows = [0.02]
+
+        # 使用自定义需水量 0.08
+        residual = node.continuity_equation(inflows, outflows, demand=0.08)
+
+        # 0.10 - 0.02 - 0.08 = 0
+        assert abs(residual) < 1e-10
+
+
+class TestDemandPattern:
+    """测试需水量时变模式"""
+
+    def test_set_demand_pattern(self):
+        """测试设置需水量模式"""
+        node = NetworkNode("N1", "junction", 10.0, demand=1.0)
+
+        pattern = [0.5, 0.8, 1.2, 1.5]
+        node.set_demand_pattern(pattern)
+
+        assert node.demand_pattern == pattern
+
+    def test_get_demand_at_time(self):
+        """测试获取特定时间需水量"""
+        node = NetworkNode("N1", "junction", 10.0, demand=1.0)
+
+        pattern = [0.5, 0.8, 1.2, 1.5]
+        node.set_demand_pattern(pattern)
+
+        assert node.get_demand_at_time(0) == 0.5
+        assert node.get_demand_at_time(1) == 0.8
+        assert node.get_demand_at_time(2) == 1.2
+        assert node.get_demand_at_time(3) == 1.5
+
+        # 循环使用
+        assert node.get_demand_at_time(4) == 0.5
+        assert node.get_demand_at_time(5) == 0.8
+
+    def test_invalid_demand_pattern(self):
+        """测试无效的需水量模式"""
+        node = NetworkNode("N1", "junction", 10.0)
+
+        with pytest.raises(ValueError, match="需水量模式必须为非空列表"):
+            node.set_demand_pattern([])
+
+        with pytest.raises(ValueError, match="需水量模式系数不能为负"):
+            node.set_demand_pattern([0.5, -0.2, 1.0])
+
+
+class TestNodeStateUpdate:
+    """测试节点状态更新"""
+
+    def test_update_state(self):
+        """测试更新节点状态"""
+        node = NetworkNode("N1", "junction", 10.0)
+
+        node.update_state(head=30.0, inflows=[0.1, 0.05], outflows=[0.08])
+
+        assert node.head == 30.0
+        assert node.pressure == 20.0  # 30.0 - 10.0
+        assert len(node.state_history) == 1
+
+        state = node.state_history[0]
+        assert state.head == 30.0
+        assert abs(state.inflow - 0.15) < 1e-10
+        assert state.outflow == 0.08
+
+    def test_pressure_constraint_check(self):
+        """测试压力约束检查"""
+        node = NetworkNode(
+            "N1", "junction", 10.0,
+            min_pressure=5.0,
+            required_pressure=20.0
+        )
+
+        # 压力不足
+        node.update_state(12.0, [], [])
+        valid, msg = node.check_pressure_constraint()
+        assert not valid
+        assert "压力不足" in msg
+
+        # 压力低于设计标准
+        node.update_state(25.0, [], [])
+        valid, msg = node.check_pressure_constraint()
+        assert valid
+        assert "低于设计标准" in msg
+
+        # 压力正常
+        node.update_state(35.0, [], [])
+        valid, msg = node.check_pressure_constraint()
+        assert valid
+        assert "压力正常" in msg
+
+
+# ============================================================================
+# Test 2: Junction Node - 汇流节点测试
+# ============================================================================
+
+class TestJunctionNode:
+    """测试Junction汇流节点"""
+
+    def test_junction_initialization(self):
+        """测试汇流节点初始化"""
+        junction = Junction(
+            node_id="J1",
+            elevation=15.0,
+            demand=0.05
+        )
+
+        assert junction.node_id == "J1"
+        assert junction.node_type == "junction"
+        assert junction.elevation == 15.0
+        assert junction.demand == 0.05
+        assert junction.emitter_coefficient == 0.0
+
+    def test_junction_with_emitter(self):
+        """测试带消防栓的汇流节点"""
+        junction = Junction(
+            "J1", 15.0, demand=0.05,
+            emitter_coefficient=100.0  # L/s/m^0.5
+        )
+
+        assert junction.emitter_coefficient == 100.0
+
+    def test_emitter_flow_calculation(self):
+        """测试消防栓流量计算"""
+        junction = Junction(
+            "J1", 15.0,
+            emitter_coefficient=100.0  # L/s/m^0.5
+        )
+
+        # Q = C * √P (L/s)
+        # P = 25 m, Q = 100 * √25 = 500 L/s = 0.5 m^3/s
+        Q_emitter = junction.emitter_flow(pressure=25.0)
+
+        assert abs(Q_emitter - 0.5) < 1e-3
+
+    def test_emitter_flow_zero_pressure(self):
+        """测试零压力下的消防栓流量"""
+        junction = Junction("J1", 15.0, emitter_coefficient=100.0)
+
+        Q = junction.emitter_flow(pressure=0.0)
+        assert Q == 0.0
+
+        Q = junction.emitter_flow(pressure=-5.0)
+        assert Q == 0.0
+
+    def test_total_demand(self):
+        """测试总需水量"""
+        junction = Junction(
+            "J1", 15.0,
+            demand=0.05,
+            emitter_coefficient=100.0
+        )
+
+        # 基准需水量 + 消防栓流量
+        total = junction.total_demand(pressure=16.0)
+        expected = 0.05 + 0.4  # 0.05 + 100*√16/1000
+
+        assert abs(total - expected) < 1e-3
+
+    def test_create_junction_helper(self):
+        """测试便捷构造函数"""
+        junction = create_junction("J1", elevation=10.0, demand=0.03)
+
+        assert isinstance(junction, Junction)
+        assert junction.node_id == "J1"
+        assert junction.demand == 0.03
+
+
+# ============================================================================
+# Test 3: Reservoir Node - 水库节点测试
+# ============================================================================
+
+class TestReservoirNode:
+    """测试Reservoir水库节点"""
+
+    def test_reservoir_initialization(self):
+        """测试水库节点初始化"""
+        reservoir = Reservoir(
+            node_id="R1",
+            elevation=50.0,
+            head=55.0
+        )
+
+        assert reservoir.node_id == "R1"
+        assert reservoir.node_type == "reservoir"
+        assert reservoir.elevation == 50.0
+        assert reservoir.fixed_head == 55.0
+        assert reservoir.head == 55.0
+        assert reservoir.demand == 0.0  # 水库无需水量
+
+    def test_reservoir_default_head(self):
+        """测试水库默认水头"""
+        reservoir = Reservoir("R1", elevation=50.0)
+
+        # 默认水头等于高程
+        assert reservoir.head == 50.0
+
+    def test_available_head(self):
+        """测试可用水头"""
+        reservoir = Reservoir("R1", elevation=50.0, head=55.0)
+
+        assert reservoir.available_head() == 55.0
+
+    def test_reservoir_head_pattern(self):
+        """测试水库时变水位"""
+        reservoir = Reservoir(
+            "R1", elevation=50.0, head=55.0,
+            head_pattern=[0.0, 1.0, 2.0, -1.0]  # 相对变化
+        )
+
+        assert reservoir.available_head(time_index=0) == 55.0
+        assert reservoir.available_head(time_index=1) == 56.0
+        assert reservoir.available_head(time_index=2) == 57.0
+        assert reservoir.available_head(time_index=3) == 54.0
+
+        # 循环
+        assert reservoir.available_head(time_index=4) == 55.0
+
+    def test_set_head(self):
+        """测试手动设置水位"""
+        reservoir = Reservoir("R1", elevation=50.0, head=55.0)
+
+        reservoir.set_head(60.0)
+
+        assert reservoir.fixed_head == 60.0
+        assert reservoir.head == 60.0
+        assert reservoir.pressure == 10.0  # 60.0 - 50.0
+
+    def test_create_reservoir_helper(self):
+        """测试便捷构造函数"""
+        reservoir = create_reservoir("R1", elevation=50.0, head=55.0)
+
+        assert isinstance(reservoir, Reservoir)
+        assert reservoir.fixed_head == 55.0
+
+
+# ============================================================================
+# Test 4: Tank Node - 水箱节点测试
+# ============================================================================
+
+class TestTankNode:
+    """测试Tank水箱节点"""
+
+    def test_tank_initialization(self):
+        """测试水箱节点初始化"""
+        tank = Tank(
+            node_id="T1",
+            elevation=30.0,
+            diameter=10.0,
+            min_level=0.0,
+            max_level=5.0,
+            initial_level=3.0
+        )
+
+        assert tank.node_id == "T1"
+        assert tank.node_type == "tank"
+        assert tank.elevation == 30.0
+        assert tank.diameter == 10.0
+        assert tank.min_level == 0.0
+        assert tank.max_level == 5.0
+        assert tank.level == 3.0
+        assert tank.head == 33.0  # 30.0 + 3.0
+
+    def test_tank_invalid_parameters(self):
+        """测试无效参数"""
+        with pytest.raises(ValueError, match="水箱直径必须 > 0"):
+            Tank("T1", 30.0, diameter=0.0, max_level=5.0, initial_level=3.0)
+
+        with pytest.raises(ValueError, match="初始水位.*必须在.*范围内"):
+            Tank("T1", 30.0, diameter=10.0, min_level=0.0,
+                 max_level=5.0, initial_level=6.0)
+
+    def test_tank_geometry_cylindrical(self):
+        """测试圆柱形水箱"""
+        tank = Tank(
+            "T1", 30.0, diameter=10.0,
+            max_level=5.0, initial_level=3.0,
+            geometry="cylindrical"
+        )
+
+        # 底面积 = π * (D/2)^2
+        expected_area = np.pi * 5.0**2
+        assert abs(tank.base_area - expected_area) < 1e-6
+
+    def test_tank_geometry_prismatic(self):
+        """测试棱柱形水箱"""
+        tank = Tank(
+            "T1", 30.0, diameter=10.0,
+            max_level=5.0, initial_level=3.0,
+            geometry="prismatic"
+        )
+
+        # 底面积 = D^2
+        expected_area = 10.0**2
+        assert abs(tank.base_area - expected_area) < 1e-6
+
+    def test_calculate_volume(self):
+        """测试体积计算"""
+        tank = Tank(
+            "T1", 30.0, diameter=10.0,
+            max_level=5.0, initial_level=3.0,
+            geometry="cylindrical"
+        )
+
+        # V = A * h
+        expected_volume = np.pi * 5.0**2 * 3.0
+        assert abs(tank.volume - expected_volume) < 1e-6
+
+    def test_area_at_level(self):
+        """测试指定水位的面积"""
+        tank = Tank(
+            "T1", 30.0, diameter=10.0,
+            max_level=5.0, initial_level=3.0
+        )
+
+        # 圆柱形水箱面积恒定
+        area = tank.area_at_level(2.0)
+        assert abs(area - tank.base_area) < 1e-6
+
+    def test_update_volume_normal(self):
+        """测试正常的体积更新"""
+        tank = Tank(
+            "T1", 30.0, diameter=10.0,
+            max_level=5.0, initial_level=3.0
+        )
+
+        initial_volume = tank.volume
+
+        # 净流入 0.1 m^3/s，持续 60 秒
+        # 体积增加 = 0.1 * 60 = 6.0 m^3
+        new_level = tank.update_volume(dt=60.0, net_inflow=0.1)
+
+        expected_dV = 0.1 * 60.0
+        expected_volume = initial_volume + expected_dV
+        expected_level = expected_volume / tank.base_area
+
+        assert abs(tank.volume - expected_volume) < 1e-6
+        assert abs(new_level - expected_level) < 1e-3
+
+    def test_update_volume_overflow(self):
+        """测试水箱溢出"""
+        tank = Tank(
+            "T1", 30.0, diameter=10.0,
+            max_level=5.0, initial_level=4.9
+        )
+
+        # 大量流入，会达到最大水位
+        with pytest.warns(UserWarning, match="水位过高"):
+            tank.update_volume(dt=100.0, net_inflow=10.0)
+
+        # 应该被限制在最大水位
+        assert tank.level <= tank.max_level
+        assert tank.volume <= tank.max_volume
+
+    def test_update_volume_underflow(self):
+        """测试水箱抽空"""
+        tank = Tank(
+            "T1", 30.0, diameter=10.0,
+            min_level=0.0, max_level=5.0, initial_level=0.1
+        )
+
+        # 大量流出
+        with pytest.warns(UserWarning, match="水位过低"):
+            tank.update_volume(dt=100.0, net_inflow=-10.0)
+
+        # 应该被限制在最小水位
+        assert tank.level >= tank.min_level
+        assert tank.volume >= tank.min_volume
+
+    def test_is_full(self):
+        """测试是否已满"""
+        tank = Tank(
+            "T1", 30.0, diameter=10.0,
+            max_level=5.0, initial_level=4.99
+        )
+
+        assert tank.is_full()
+
+        tank.level = 3.0
+        assert not tank.is_full()
+
+    def test_is_empty(self):
+        """测试是否已空"""
+        tank = Tank(
+            "T1", 30.0, diameter=10.0,
+            min_level=0.0, max_level=5.0, initial_level=0.01
+        )
+
+        assert tank.is_empty()
+
+        tank.level = 3.0
+        assert not tank.is_empty()
+
+    def test_fill_percentage(self):
+        """测试充水率"""
+        tank = Tank(
+            "T1", 30.0, diameter=10.0,
+            min_level=0.0, max_level=5.0, initial_level=2.5
+        )
+
+        # 充水率 = (2.5 - 0) / (5.0 - 0) = 50%
+        assert abs(tank.fill_percentage() - 50.0) < 1e-6
+
+    def test_tank_with_area_curve(self):
+        """测试带面积曲线的水箱"""
+        # 梯形水箱: 底部小，顶部大
+        area_curve = [
+            (0.0, 50.0),
+            (2.5, 75.0),
+            (5.0, 100.0)
+        ]
+
+        tank = Tank(
+            "T1", 30.0, diameter=10.0,
+            max_level=5.0, initial_level=2.5,
+            area_curve=area_curve
+        )
+
+        # 在2.5m处面积应为75 m^2
+        area = tank.area_at_level(2.5)
+        assert abs(area - 75.0) < 1e-3
+
+        # 在1.25m处应插值: (50 + 75) / 2 = 62.5
+        area = tank.area_at_level(1.25)
+        assert abs(area - 62.5) < 1e-3
+
+    def test_create_tank_helper(self):
+        """测试便捷构造函数"""
+        tank = create_tank(
+            "T1", elevation=30.0, diameter=10.0,
+            initial_level=3.0, max_level=5.0
+        )
+
+        assert isinstance(tank, Tank)
+        assert tank.level == 3.0
+
+
+# ============================================================================
+# Test 5: Node Properties and Representation
+# ============================================================================
+
+class TestNodePropertiesAndRepresentation:
+    """测试节点属性和字符串表示"""
+
+    def test_node_properties(self):
+        """测试节点属性字典"""
+        node = Junction("J1", elevation=15.0, demand=0.05)
+        node.add_connected_pipe("P1")
+        node.add_connected_pipe("P2")
+
+        props = node.properties()
+
+        assert props['node_id'] == "J1"
+        assert props['elevation'] == 15.0
+        assert props['demand'] == 0.05
+        assert props['num_connections'] == 2
+
+    def test_node_repr(self):
+        """测试节点字符串表示"""
+        node = Junction("J1", elevation=15.0)
+        node.head = 30.0
+        node.pressure = 15.0
+
+        repr_str = repr(node)
+
+        assert "J1" in repr_str
+        assert "junction" in repr_str
+        assert "elev=15.00" in repr_str
+
+
+# ============================================================================
+# Summary: 共50个测试用例
+# ============================================================================
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-v", "--tb=short"])

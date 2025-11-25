@@ -29,6 +29,8 @@ Lake at Rest 测试（静水平衡测试）
 """
 
 import pytest
+import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
 import tempfile
 import json

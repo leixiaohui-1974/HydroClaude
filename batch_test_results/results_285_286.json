@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 285,
+    "batch_end_index": 286,
+    "test_run_at": "2025-11-25T16:39:12.657241",
+    "batch_duration_seconds": 1.19,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_gate_pump_cascade/run_scenario.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.19,
+      "stdout": "==========================================================================================\n                           ����: scenario_02_upstream_flow_medium                           \n==========================================================================================\n\n**��������**: ���α߽��Ŷ����еȷ��ȣ�\n\n**��ʼ״̬**: Q = 30 m^3/s\n**�Ŷ�**: t=300s, Q -> 42 m^3/s (+40%)\n**�۲�**: ��վ��������Χ�ڵ���Ӧ�����������\n\n------------------------------------------------------------------------------------------\n: a=6.000, b=-0.05556, c=0.0029630",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_gate_pump_cascade\\run_scenario.py\", line 343, in <module>\n    run_scenario(\"scenario_02_upstream_flow_medium\", scenario2)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_gate_pump_cascade\\run_scenario.py\", line 82, in run_scenario\n    print(\"\\u25b6 ��̬���...\")\n    ~~~~~^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'gbk' codec can't encode character '\\u25b6' in position 0: illegal multibyte sequence"
+    }
+  ]
+}

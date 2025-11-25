@@ -1,0 +1,208 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+测试单个渠道 + 闸门的稳态求解
+
+测试场景：
+- 单个渠道，中间有一个闸门
+- 上游入流流量固定
+- 下游水深固定
+- 求解稳态水深分布
+
+验证：
+1. 流量守恒（上下游流量 = 闸门流量）
+2. 稳态收敛性
+3. 水位分布合理性（闸门上游水位 > 下游水位）
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+import sys
+sys.path.append('.')
+
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+from solvers.gate import SluiceGate
+
+
+def test_single_canal_with_gate():
+    """测试单渠道 + 单闸门稳态流"""
+    print("=" * 70)
+    print("单渠道 + 闸门 稳态流测试")
+    print("=" * 70)
+
+    # 渠道参数
+    L = 1000.0     # 渠道长度 (m)
+    nx = 101       # 网格点数
+    B = 10.0       # 渠道宽度 (m)
+    S0 = 0.001     # 底坡
+    n = 0.025      # Manning糙率
+    g = 9.81
+
+    # 闸门参数
+    gate_position = 500.0  # 闸门位置（渠道中点）
+    gate_opening = 0.5     # 闸门开度 (m)
+    gate_Cd = 0.6          # 流量系数
+
+    # 流动条件
+    Q_target = 5.0         # 目标流量 (m^3/s)
+    h_downstream = 1.5     # 下游水深 (m)
+
+    print(f"\n渠道参数：")
+    print(f"  长度：{L} m")
+    print(f"  宽度：{B} m")
+    print(f"  底坡：{S0}")
+    print(f"  Manning糙率：{n}")
+
+    print(f"\n闸门参数：")
+    print(f"  位置：{gate_position} m")
+    print(f"  开度：{gate_opening} m")
+    print(f"  流量系数：{gate_Cd}")
+
+    print(f"\n流动条件：")
+    print(f"  目标流量：{Q_target} m^3/s")
+    print(f"  下游水深：{h_downstream} m")
+
+    # 创建闸门对象
+    gate = SluiceGate(
+        position=gate_position,
+        width=B,
+        opening=gate_opening,
+        Cd=gate_Cd,
+        g=g
+    )
+
+    # 创建求解器（带闸门）
+    solver = HydrostaticCanalSolver(
+        length=L,
+        nx=nx,
+        B=B,
+        S0=S0,
+        n=n,
+        g=g,
+        internal_structures=[(gate_position, gate)]
+    )
+
+    print(f"\n求解器设置：")
+    print(f"  网格点数：{nx}")
+    print(f"  网格间距：{solver.dx:.2f} m")
+    print(f"  闸门节点索引：{solver.structure_indices[0]}")
+    print(f"  Preissmann参数：θ={solver.theta}, ω={solver.omega}")
+
+    # 求解稳态
+    print(f"\n开始稳态求解...")
+    result = solver.solve_steady_state(
+        Q_target=Q_target,
+        h_downstream=h_downstream,
+        max_iterations=5000,
+        convergence_tol=0.001,
+        dt=0.5,
+        verbose=True
+    )
+
+    # 分析结果
+    print(f"\n结果分析：")
+    print(f"  收敛状态：{' 收敛' if result['converged'] else ' 未收敛'}）")
+    print(f"  迭代次数：{result['iterations']}")
+
+    # 流量守恒
+    print(f"\n流量守恒：")
+    print(f"  目标流量：{Q_target:.3f} m^3/s")
+    print(f"  实际流量：{result['Q_mean']:.3f} m^3/s")
+    print(f"  误差：{result['Q_error_percent']:.2f}%")
+
+    # 闸门处流量验证
+    gate_idx = solver.structure_indices[0]
+    h_up = result['h'][gate_idx]
+    h_down = result['h'][gate_idx + 1]
+    Q_gate, flow_type = gate.calculate_discharge(h_up, h_down)
+
+    print(f"\n闸门流量验证：")
+    print(f"  上游水深：{h_up:.3f} m")
+    print(f"  下游水深：{h_down:.3f} m")
+    print(f"  水位差：{h_up - h_down:.3f} m")
+    print(f"  闸门流量：{Q_gate:.3f} m^3/s")
+    print(f"  流态：{flow_type}")
+    print(f"  与目标流量误差：{abs(Q_gate - Q_target) / Q_target * 100:.2f}%")
+
+    # 水深分布
+    print(f"\n水深分布：")
+    print(f"  上游段平均：{np.mean(result['h'][:gate_idx]):.3f} m")
+    print(f"  下游段平均：{np.mean(result['h'][gate_idx+1:]):.3f} m")
+    print(f"  全渠道范围：[{result['h'].min():.3f}, {result['h'].max():.3f}] m")
+
+    # 绘图
+    print(f"\n生成图表...")
+
+    fig, axes = plt.subplots(3, 1, figsize=(12, 9))
+
+    x = solver.x
+
+    # 图1：水深分布
+    ax = axes[0]
+    ax.plot(x, result['h'], 'b-', linewidth=2, label='Water depth')
+    ax.axvline(gate_position, color='r', linestyle='--', linewidth=1.5,
+               label=f'Gate (e={gate_opening}m)', alpha=0.7)
+    ax.set_ylabel('Water depth (m)')
+    ax.set_title(f'Single Canal + Gate: Steady State (Q={Q_target} m^3/s)')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # 图2：流量分布
+    ax = axes[1]
+    ax.plot(x, result['Q'], 'g-', linewidth=2, label='Discharge')
+    ax.axhline(Q_target, color='k', linestyle='--', linewidth=1.5,
+               label=f'Target ({Q_target} m^3/s)')
+    ax.axhline(Q_gate, color='r', linestyle=':', linewidth=1.5,
+               label=f'Gate discharge ({Q_gate:.2f} m^3/s)')
+    ax.axvline(gate_position, color='r', linestyle='--', linewidth=1.5, alpha=0.3)
+    ax.set_ylabel('Discharge (m^3/s)')
+    ax.set_title(f'Discharge Distribution (error={result["Q_error_percent"]:.2f}%)')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # 图3：水位分布
+    ax = axes[2]
+    eta = result['h'] + solver.z
+    ax.plot(x, eta, 'r-', linewidth=2, label='Water surface')
+    ax.fill_between(x, solver.z, alpha=0.3, color='brown', label='Bed')
+    ax.axvline(gate_position, color='r', linestyle='--', linewidth=1.5,
+               label=f'Gate position', alpha=0.7)
+    ax.set_xlabel('Position (m)')
+    ax.set_ylabel('Elevation (m)')
+    ax.set_title('Water Surface Profile')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('single_canal_gate_test.png', dpi=150)
+    print(f"  图表保存至：single_canal_gate_test.png")
+
+    # 判断测试是否通过
+    mass_ok = result['Q_error_percent'] < 5.0  # 5%容差
+    converged_ok = result['converged']
+    gate_flow_ok = abs(Q_gate - Q_target) / Q_target * 100 < 5.0  # 闸门流量误差 < 5%
+    water_level_ok = h_up > h_down  # 上游水位应高于下游
+
+    print(f"\n测试结果：")
+    print(f"  流量守恒：{' PASS' if mass_ok else ' FAIL'} ({result['Q_error_percent']:.2f}% < 5%)")
+    print(f"  收敛性：{' PASS' if converged_ok else ' FAIL'}")
+    print(f"  闸门流量：{' PASS' if gate_flow_ok else ' FAIL'} ({abs(Q_gate - Q_target) / Q_target * 100:.2f}% < 5%)")
+    print(f"  水位关系：{' PASS' if water_level_ok else ' FAIL'} (上游 > 下游)")
+
+    overall_pass = mass_ok and converged_ok and gate_flow_ok and water_level_ok
+
+    print(f"\n总体结论：{' 测试通过' if overall_pass else ' 测试失败'}）")
+    print("=" * 70)
+
+    return overall_pass, result
+
+
+if __name__ == "__main__":
+    success, result = test_single_canal_with_gate()
+    sys.exit(0 if success else 1)

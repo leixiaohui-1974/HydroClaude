@@ -13,6 +13,8 @@ HLL vs HLLC Riemann求解器对比测试
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import os
 import pytest

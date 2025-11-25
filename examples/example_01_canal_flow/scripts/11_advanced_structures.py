@@ -13,17 +13,19 @@ Date: 2025-10-22
 """
 
 import sys, os
+import warnings
+warnings.filterwarnings("ignore")
 
 # Add project root to path
 # Script is in: examples/example_01_canal_flow/scripts/
 # Project root is 3 levels up
 script_path = os.path.abspath(__file__)
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_path))))
-sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 # Add scripts directory to path for output_helper
 script_dir = os.path.dirname(script_path)
-sys.path.insert(0, script_dir)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 import numpy as np
 import matplotlib.pyplot as plt

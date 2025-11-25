@@ -10,6 +10,8 @@
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
@@ -22,7 +24,7 @@ from datetime import datetime
 import pandas as pd
 
 # Import output helper
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 from output_helper import get_output_path, save_table, save_figure
 
 # ============================================================================

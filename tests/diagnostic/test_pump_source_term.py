@@ -4,6 +4,8 @@
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
 sys.path.insert(0, '/workspace')
 

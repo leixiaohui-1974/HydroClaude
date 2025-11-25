@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 284,
+    "batch_end_index": 285,
+    "test_run_at": "2025-11-25T16:39:11.320956",
+    "batch_duration_seconds": 1.19,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_gate_pump_cascade/quick_scenario_test.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.19,
+      "stdout": "====================================================================================================\n                                      ��������բ��Ⱥϵͳ - ���ٹ������ԣ�����棩                                       \n====================================================================================================\n\n��ʼʱ��: 2025-11-25 16:39:11\n����� 8 �������Թ���\n\n�Ż�����:\n  - ģ��ʱ��: 1200�� (20����)\n  - �������: 301 (����Լ40%)\n  - ʱ�䲽��: 1.0�� (�ӿ�2��)\n  - Ԥ���ܺ�ʱ: 20-30����\n\n��������ͳ��:\n  - ���������Ŷ�: 3��\n  - ����ˮλ�Ŷ�: 1��\n  - բ�ſ��ȵ���: 1��\n  - �����Ŷ����: 1��\n  - ���˹���: 2��\n\n====================================================================================================\n\n����: [1/8]\n\n====================================================================================================\n                                       ����01: ��������С����Ծ [����ģʽ]                                        \n====================================================================================================\n\n��ʼ30 m^3/s��t=300s��Ծ��35 m^3/s (+17%)\n���: ���������Ŷ�\n----------------------------------------------------------------------------------------------------",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_gate_pump_cascade\\quick_scenario_test.py\", line 570, in <module>\n    results = main()\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_gate_pump_cascade\\quick_scenario_test.py\", line 416, in main\n    result = run_single_scenario_quick(scenario_id, config, output_base_dir)\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_gate_pump_cascade\\quick_scenario_test.py\", line 75, in run_single_scenario_quick\n    print(\"\\n\\u25b6 ����������ͽṹ��...\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'gbk' codec can't encode character '\\u25b6' in position 2: illegal multibyte sequence"
+    }
+  ]
+}

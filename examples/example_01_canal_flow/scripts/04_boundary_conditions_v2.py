@@ -1,20 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-例子1扩展[U+FF1A]不同下游边界条件的影响研究 (HydrostaticCanalSolver高精度版本)
+[U+4F8B][U+5B50]1[U+6269][U+5C55][U+FF1A][U+4E0D][U+540C][U+4E0B][U+6E38][U+8FB9][U+754C][U+6761][U+4EF6][U+7684][U+5F71][U+54CD][U+7814][U+7A76] (HydrostaticCanalSolver[U+9AD8][U+7CBE][U+5EA6][U+7248][U+672C])
 
-展示HydrostaticCanalSolver在不同边界条件下的表现[U+FF1A]
-1. 高水位[U+FF08]回水效应[U+FF09]
-2. 恒定均匀流
-3. 低水位[U+FF08]泵站抽水[U+FF09]
+[U+5C55][U+793A]HydrostaticCanalSolver[U+5728][U+4E0D][U+540C][U+8FB9][U+754C][U+6761][U+4EF6][U+4E0B][U+7684][U+8868][U+73B0][U+FF1A]
+1. [U+9AD8][U+6C34][U+4F4D][U+FF08][U+56DE][U+6C34][U+6548][U+5E94][U+FF09]
+2. [U+6052][U+5B9A][U+5747][U+5300][U+6D41]
+3. [U+4F4E][U+6C34][U+4F4D][U+FF08][U+6CF5][U+7AD9][U+62BD][U+6C34][U+FF09]
 
-对比稳态求解精度和流量阶跃响应
+[U+5BF9][U+6BD4][U+7A33][U+6001][U+6C42][U+89E3][U+7CBE][U+5EA6][U+548C][U+6D41][U+91CF][U+9636][U+8DC3][U+54CD][U+5E94]
 
 Author: Claude
 Date: 2025-10-23
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 import numpy as np
 import pandas as pd
@@ -25,10 +27,10 @@ import matplotlib.pyplot as plt
 # Add project root to path
 script_path = os.path.abspath(__file__)
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_path))))
-sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 script_dir = os.path.dirname(script_path)
-sys.path.insert(0, script_dir)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
 from utils.canal_utils import compute_steady_uniform_flow
@@ -38,18 +40,18 @@ from output_helper import get_output_path, save_table, save_figure
 
 
 def main():
-    """主函数"""
+    """[U+4E3B][U+51FD][U+6570]"""
     print("=" * 80)
-    print("例子1扩展[U+FF1A]不同下游边界条件的影响研究 (HydrostaticCanalSolver高精度版本)")
+    print("[U+4F8B][U+5B50]1[U+6269][U+5C55][U+FF1A][U+4E0D][U+540C][U+4E0B][U+6E38][U+8FB9][U+754C][U+6761][U+4EF6][U+7684][U+5F71][U+54CD][U+7814][U+7A76] (HydrostaticCanalSolver[U+9AD8][U+7CBE][U+5EA6][U+7248][U+672C])")
     print("=" * 80)
 
     # ========================================================================
-    # 1. 参数设置
+    # 1. [U+53C2][U+6570][U+8BBE][U+7F6E]
     # ========================================================================
-    print("\n1. 参数设置")
+    print("\n1. [U+53C2][U+6570][U+8BBE][U+7F6E]")
     print("-" * 80)
 
-    # 渠道参数
+    # [U+6E20][U+9053][U+53C2][U+6570]
     length = 1000.0
     B = 10.0
     S0 = 0.001
@@ -62,57 +64,57 @@ def main():
     h_uniform_initial = compute_steady_uniform_flow(Q_initial, B, S0, n)
     h_uniform_final = compute_steady_uniform_flow(Q_final, B, S0, n)
 
-    print(f"渠道参数:")
-    print(f"  长度: {length} m")
-    print(f"  宽度: {B} m")
-    print(f"  底坡: {S0}")
-    print(f"  Manning糙率: {n}")
-    print(f"  网格数: {nx}")
+    print(f"[U+6E20][U+9053][U+53C2][U+6570]:")
+    print(f"  [U+957F][U+5EA6]: {length} m")
+    print(f"  [U+5BBD][U+5EA6]: {B} m")
+    print(f"  [U+5E95][U+5761]: {S0}")
+    print(f"  Manning[U+7CD9][U+7387]: {n}")
+    print(f"  [U+7F51][U+683C][U+6570]: {nx}")
 
-    print(f"\n流量变化:")
-    print(f"  初始流量: {Q_initial} m^3/s")
-    print(f"  最终流量: {Q_final} m^3/s")
-    print(f"  理论水深变化: {h_uniform_initial:.6f} -> {h_uniform_final:.6f} m")
+    print(f"\n[U+6D41][U+91CF][U+53D8][U+5316]:")
+    print(f"  [U+521D][U+59CB][U+6D41][U+91CF]: {Q_initial} m^3/s")
+    print(f"  [U+6700][U+7EC8][U+6D41][U+91CF]: {Q_final} m^3/s")
+    print(f"  [U+7406][U+8BBA][U+6C34][U+6DF1][U+53D8][U+5316]: {h_uniform_initial:.6f} -> {h_uniform_final:.6f} m")
 
-    # 定义三种边界条件
+    # [U+5B9A][U+4E49][U+4E09][U+79CD][U+8FB9][U+754C][U+6761][U+4EF6]
     scenarios = {
-        '高水位_回水': {
+        '[U+9AD8][U+6C34][U+4F4D]_[U+56DE][U+6C34]': {
             'h_downstream': h_uniform_final + 0.15,
-            'description': '高水位[U+FF08]回水[U+FF09]',
+            'description': '[U+9AD8][U+6C34][U+4F4D][U+FF08][U+56DE][U+6C34][U+FF09]',
             'color': '#d62728'
         },
-        '恒定均匀流': {
+        '[U+6052][U+5B9A][U+5747][U+5300][U+6D41]': {
             'h_downstream': h_uniform_final,
-            'description': '恒定均匀流',
+            'description': '[U+6052][U+5B9A][U+5747][U+5300][U+6D41]',
             'color': '#2ca02c'
         },
-        '低水位_泵站': {
+        '[U+4F4E][U+6C34][U+4F4D]_[U+6CF5][U+7AD9]': {
             'h_downstream': h_uniform_final - 0.10,
-            'description': '低水位[U+FF08]泵站[U+FF09]',
+            'description': '[U+4F4E][U+6C34][U+4F4D][U+FF08][U+6CF5][U+7AD9][U+FF09]',
             'color': '#1f77b4'
         }
     }
 
-    print(f"\n下游边界条件[U+FF08]Q={Q_final} m^3/s时[U+FF09]:")
+    print(f"\n[U+4E0B][U+6E38][U+8FB9][U+754C][U+6761][U+4EF6][U+FF08]Q={Q_final} m^3/s[U+65F6][U+FF09]:")
     for name, params in scenarios.items():
         deviation = params['h_downstream'] - h_uniform_final
         print(f"  {params['description']}: h = {params['h_downstream']:.6f} m "
-              f"({deviation:+.3f}m 相对理论值)")
+              f"({deviation:+.3f}m [U+76F8][U+5BF9][U+7406][U+8BBA][U+503C])")
 
     # ========================================================================
-    # 2. 第一阶段[U+FF1A]初始稳态[U+FF08]Q=8.0 m^3/s[U+FF09]
+    # 2. [U+7B2C][U+4E00][U+9636][U+6BB5][U+FF1A][U+521D][U+59CB][U+7A33][U+6001][U+FF08]Q=8.0 m^3/s[U+FF09]
     # ========================================================================
     print("\n" + "=" * 80)
-    print("第一阶段[U+FF1A]计算初始稳态 (Q=8.0 m^3/s)")
+    print("[U+7B2C][U+4E00][U+9636][U+6BB5][U+FF1A][U+8BA1][U+7B97][U+521D][U+59CB][U+7A33][U+6001] (Q=8.0 m^3/s)")
     print("=" * 80)
 
     initial_states = {}
 
     for scenario_name, scenario_params in scenarios.items():
-        print(f"\n场景: {scenario_params['description']}")
+        print(f"\n[U+573A][U+666F]: {scenario_params['description']}")
         print("-" * 80)
 
-        # 创建求解器
+        # [U+521B][U+5EFA][U+6C42][U+89E3][U+5668]
         solver = HydrostaticCanalSolver(
             length=length,
             nx=nx,
@@ -122,30 +124,30 @@ def main():
             internal_structures=[]
         )
 
-        # 初始化
+        # [U+521D][U+59CB][U+5316]
         solver.h[:] = h_uniform_initial
         solver.hu[:] = Q_initial / B
 
-        # 求解稳态
+        # [U+6C42][U+89E3][U+7A33][U+6001]
         result = solver.solve_steady_state(
             Q_target=Q_initial,
-            h_downstream=scenario_params['h_downstream'],  # 注意[U+FF1A]这里用的是最终水深
+            h_downstream=scenario_params['h_downstream'],  # [U+6CE8][U+610F][U+FF1A][U+8FD9][U+91CC][U+7528][U+7684][U+662F][U+6700][U+7EC8][U+6C34][U+6DF1]
             max_iterations=5000,
             convergence_tol = 0.1,
             dt=0.5,
             verbose=False
         )
 
-        print(f"  收敛: {'是' if result['converged'] else '否'}")
-        print(f"  迭代次数: {result['iterations']}")
-        print(f"  流量误差: {result['Q_error_percent']:.6f}%")
+        print(f"  [U+6536][U+655B]: {'[U+662F]' if result['converged'] else '[U+5426]'}")
+        print(f"  [U+8FED][U+4EE3][U+6B21][U+6570]: {result['iterations']}")
+        print(f"  [U+6D41][U+91CF][U+8BEF][U+5DEE]: {result['Q_error_percent']:.6f}%")
 
-        # 验证
+        # [U+9A8C][U+8BC1]
         validator = quick_validate_steady_state(
             solver=solver,
             result_dict=result,
             Q_target=Q_initial,
-            name=f"初始稳态 - {scenario_params['description']}"
+            name=f"[U+521D][U+59CB][U+7A33][U+6001] - {scenario_params['description']}"
         )
 
         initial_states[scenario_name] = {
@@ -156,29 +158,29 @@ def main():
         }
 
     # ========================================================================
-    # 3. 第二阶段[U+FF1A]流量阶跃响应[U+FF08]8.0 -> 10.0 m^3/s[U+FF09]
+    # 3. [U+7B2C][U+4E8C][U+9636][U+6BB5][U+FF1A][U+6D41][U+91CF][U+9636][U+8DC3][U+54CD][U+5E94][U+FF08]8.0 -> 10.0 m^3/s[U+FF09]
     # ========================================================================
     print("\n" + "=" * 80)
-    print("第二阶段[U+FF1A]流量阶跃响应 (8.0 -> 10.0 m^3/s)")
+    print("[U+7B2C][U+4E8C][U+9636][U+6BB5][U+FF1A][U+6D41][U+91CF][U+9636][U+8DC3][U+54CD][U+5E94] (8.0 -> 10.0 m^3/s)")
     print("=" * 80)
 
-    t_step = 50.0  # 阶跃时刻
-    T_total = 200.0  # 总时间
+    t_step = 50.0  # [U+9636][U+8DC3][U+65F6][U+523B]
+    T_total = 200.0  # [U+603B][U+65F6][U+95F4]
     dt = 0.5
 
-    print(f"\n时间参数:")
-    print(f"  阶跃时刻: {t_step} s")
-    print(f"  总时间: {T_total} s")
-    print(f"  时间步长: {dt} s")
+    print(f"\n[U+65F6][U+95F4][U+53C2][U+6570]:")
+    print(f"  [U+9636][U+8DC3][U+65F6][U+523B]: {t_step} s")
+    print(f"  [U+603B][U+65F6][U+95F4]: {T_total} s")
+    print(f"  [U+65F6][U+95F4][U+6B65][U+957F]: {dt} s")
 
     n_steps = int(T_total / dt)
     results = {}
 
     for scenario_name, scenario_params in scenarios.items():
-        print(f"\n场景: {scenario_params['description']}")
+        print(f"\n[U+573A][U+666F]: {scenario_params['description']}")
         print("-" * 80)
 
-        # 创建求解器
+        # [U+521B][U+5EFA][U+6C42][U+89E3][U+5668]
         solver = HydrostaticCanalSolver(
             length=length,
             nx=nx,
@@ -188,28 +190,28 @@ def main():
             internal_structures=[]
         )
 
-        # 使用初始稳态作为初值
+        # [U+4F7F][U+7528][U+521D][U+59CB][U+7A33][U+6001][U+4F5C][U+4E3A][U+521D][U+503C]
         initial = initial_states[scenario_name]
         solver.h[:] = initial['h']
         solver.hu[:] = initial['Q']
 
-        # 记录历史
+        # [U+8BB0][U+5F55][U+5386][U+53F2]
         time_history = []
         h_upstream_history = []
         h_downstream_history = []
         Q_upstream_history = []
         Q_downstream_history = []
 
-        # 时间步进
-        print("  运行非恒定流仿真...")
+        # [U+65F6][U+95F4][U+6B65][U+8FDB]
+        print("  [U+8FD0][U+884C][U+975E][U+6052][U+5B9A][U+6D41][U+4EFF][U+771F]...")
         for i in range(n_steps):
             t = (i + 1) * dt
 
-            # 流量阶跃
+            # [U+6D41][U+91CF][U+9636][U+8DC3]
             Q_upstream = Q_initial if t < t_step else Q_final
             h_downstream = scenario_params['h_downstream']
 
-            # 执行一步
+            # [U+6267][U+884C][U+4E00][U+6B65]
             h_new, hu_new = solver.step_preissmann(
                 dt=dt,
                 max_iter=10,
@@ -222,31 +224,31 @@ def main():
             solver.hu = hu_new
             solver.current_time = t
 
-            # 记录历史
+            # [U+8BB0][U+5F55][U+5386][U+53F2]
             time_history.append(t)
             h_upstream_history.append(solver.h[0])
             h_downstream_history.append(solver.h[-1])
             Q_upstream_history.append(solver.hu[0])
             Q_downstream_history.append(solver.hu[-1])
 
-            # 打印进度
+            # [U+6253][U+5370][U+8FDB][U+5EA6]
             if (i + 1) % 100 == 0:
                 Q_avg = np.mean(solver.hu)
                 expected_Q = Q_initial if t < t_step else Q_final
                 error = abs(Q_avg - expected_Q) / expected_Q * 100
-                print(f"    t={t:6.1f}s: Q_avg={Q_avg:.4f} m^3/s (误差={error:.3f}%)")
+                print(f"    t={t:6.1f}s: Q_avg={Q_avg:.4f} m^3/s ([U+8BEF][U+5DEE]={error:.3f}%)")
 
-        # 最终验证[U+FF08]使用最终流量[U+FF09]
-        print("\n  最终状态验证:")
+        # [U+6700][U+7EC8][U+9A8C][U+8BC1][U+FF08][U+4F7F][U+7528][U+6700][U+7EC8][U+6D41][U+91CF][U+FF09]
+        print("\n  [U+6700][U+7EC8][U+72B6][U+6001][U+9A8C][U+8BC1]:")
         Q_final_array = solver.hu
         Q_final_avg = np.mean(Q_final_array)
         Q_error = abs(Q_final_avg - Q_final) / Q_final * 100
 
-        print(f"    平均流量: {Q_final_avg:.4f} m^3/s (目标: {Q_final} m^3/s)")
-        print(f"    流量误差: {Q_error:.3f}%")
+        print(f"    [U+5E73][U+5747][U+6D41][U+91CF]: {Q_final_avg:.4f} m^3/s ([U+76EE][U+6807]: {Q_final} m^3/s)")
+        print(f"    [U+6D41][U+91CF][U+8BEF][U+5DEE]: {Q_error:.3f}%")
 
         status = "" if Q_error < 1.0 else ""
-        print(f"    质量守恒: {status}")
+        print(f"    [U+8D28][U+91CF][U+5B88][U+6052]: {status}")
 
         results[scenario_name] = {
             'h_final': solver.h.copy(),
@@ -261,21 +263,21 @@ def main():
         }
 
     # ========================================================================
-    # 4. 生成可视化
+    # 4. [U+751F][U+6210][U+53EF][U+89C6][U+5316]
     # ========================================================================
     print("\n" + "=" * 80)
-    print("生成可视化图表")
+    print("[U+751F][U+6210][U+53EF][U+89C6][U+5316][U+56FE][U+8868]")
     print("=" * 80)
 
-    # 图1: 时间序列响应
-    print("  生成时间序列图...")
+    # [U+56FE]1: [U+65F6][U+95F4][U+5E8F][U+5217][U+54CD][U+5E94]
+    print("  [U+751F][U+6210][U+65F6][U+95F4][U+5E8F][U+5217][U+56FE]...")
     fig1, axes = plt.subplots(4, 1, figsize=(16, 14))
 
     for scenario_name, data in results.items():
         params = data['params']
         time = data['time']
 
-        label = f"{params['description']} (误差={data['mass_error']:.2f}%)"
+        label = f"{params['description']} ([U+8BEF][U+5DEE]={data['mass_error']:.2f}%)"
 
         axes[0].plot(time, data['h_upstream'], label=label,
                     color=params['color'], linewidth=2, alpha=0.8)
@@ -286,7 +288,7 @@ def main():
         axes[3].plot(time, data['Q_downstream'], label=label,
                     color=params['color'], linewidth=2, alpha=0.8)
 
-    # 添加参考线
+    # [U+6DFB][U+52A0][U+53C2][U+8003][U+7EBF]
     for ax in axes:
         ax.axvline(t_step, color='k', linestyle='--', linewidth=1.5,
                   label='Flow Step' if ax == axes[0] else '', alpha=0.7)
@@ -326,17 +328,17 @@ def main():
     save_figure(fig1, '04_boundary_timeseries_v2.png')
     plt.close(fig1)
 
-    # 图2: 最终空间分布
-    print("  生成空间分布图...")
+    # [U+56FE]2: [U+6700][U+7EC8][U+7A7A][U+95F4][U+5206][U+5E03]
+    print("  [U+751F][U+6210][U+7A7A][U+95F4][U+5206][U+5E03][U+56FE]...")
     fig2, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 10))
 
-    # 创建一个求解器来获取x坐标
+    # [U+521B][U+5EFA][U+4E00][U+4E2A][U+6C42][U+89E3][U+5668][U+6765][U+83B7][U+53D6]x[U+5750][U+6807]
     solver_temp = HydrostaticCanalSolver(length=length, nx=nx, B=B, S0=S0, n=n, internal_structures=[])
     x = solver_temp.x
 
     for scenario_name, data in results.items():
         params = data['params']
-        label = f"{params['description']} (误差={data['mass_error']:.2f}%)"
+        label = f"{params['description']} ([U+8BEF][U+5DEE]={data['mass_error']:.2f}%)"
 
         ax1.plot(x, data['h_final'], label=label,
                 color=params['color'], linewidth=2.5, alpha=0.8)
@@ -367,12 +369,12 @@ def main():
     plt.close(fig2)
 
     # ========================================================================
-    # 5. 保存数据表
+    # 5. [U+4FDD][U+5B58][U+6570][U+636E][U+8868]
     # ========================================================================
-    print("\n5. 保存数据表")
+    print("\n5. [U+4FDD][U+5B58][U+6570][U+636E][U+8868]")
     print("-" * 80)
 
-    # 时间序列数据
+    # [U+65F6][U+95F4][U+5E8F][U+5217][U+6570][U+636E]
     timeseries_rows = []
     for scenario_name, data in results.items():
         for i in range(len(data['time'])):
@@ -387,9 +389,9 @@ def main():
 
     timeseries_df = pd.DataFrame(timeseries_rows)
     save_table(timeseries_df, '04_boundary_timeseries_v2.csv', index=False)
-    print(f"   时间序列数据: 04_boundary_timeseries_v2.csv ({len(timeseries_rows)} rows)")
+    print(f"   [U+65F6][U+95F4][U+5E8F][U+5217][U+6570][U+636E]: 04_boundary_timeseries_v2.csv ({len(timeseries_rows)} rows)")
 
-    # 最终空间分布数据
+    # [U+6700][U+7EC8][U+7A7A][U+95F4][U+5206][U+5E03][U+6570][U+636E]
     spatial_rows = []
     for scenario_name, data in results.items():
         for i in range(len(x)):
@@ -403,46 +405,46 @@ def main():
 
     spatial_df = pd.DataFrame(spatial_rows)
     save_table(spatial_df, '04_boundary_spatial_v2.csv', index=False)
-    print(f"   空间分布数据: 04_boundary_spatial_v2.csv ({len(spatial_rows)} rows)")
+    print(f"   [U+7A7A][U+95F4][U+5206][U+5E03][U+6570][U+636E]: 04_boundary_spatial_v2.csv ({len(spatial_rows)} rows)")
 
-    # 保存验证报告[U+FF08]使用恒定均匀流场景[U+FF09]
-    print("  保存验证报告...")
+    # [U+4FDD][U+5B58][U+9A8C][U+8BC1][U+62A5][U+544A][U+FF08][U+4F7F][U+7528][U+6052][U+5B9A][U+5747][U+5300][U+6D41][U+573A][U+666F][U+FF09]
+    print("  [U+4FDD][U+5B58][U+9A8C][U+8BC1][U+62A5][U+544A]...")
     report_path = get_output_path('reports', '04_boundary_validation_report.txt')
-    initial_states['恒定均匀流']['validator'].save_report(report_path)
-    print(f"   验证报告: 04_boundary_validation_report.txt")
+    initial_states['[U+6052][U+5B9A][U+5747][U+5300][U+6D41]']['validator'].save_report(report_path)
+    print(f"   [U+9A8C][U+8BC1][U+62A5][U+544A]: 04_boundary_validation_report.txt")
 
     # ========================================================================
-    # 6. 总结
+    # 6. [U+603B][U+7ED3]
     # ========================================================================
     print("\n" + "=" * 80)
-    print("仿真完成[U+FF01]")
+    print("[U+4EFF][U+771F][U+5B8C][U+6210][U+FF01]")
     print("=" * 80)
 
-    print(f"\n生成的文件:")
+    print(f"\n[U+751F][U+6210][U+7684][U+6587][U+4EF6]:")
     print(f"  Figures:")
-    print(f"    - 04_boundary_timeseries_v2.png (时间序列)")
-    print(f"    - 04_boundary_spatial_v2.png (空间分布)")
+    print(f"    - 04_boundary_timeseries_v2.png ([U+65F6][U+95F4][U+5E8F][U+5217])")
+    print(f"    - 04_boundary_spatial_v2.png ([U+7A7A][U+95F4][U+5206][U+5E03])")
     print(f"  Tables:")
     print(f"    - 04_boundary_timeseries_v2.csv")
     print(f"    - 04_boundary_spatial_v2.csv")
     print(f"  Reports:")
     print(f"    - 04_boundary_validation_report.txt")
 
-    print("\n最终质量守恒检查:")
+    print("\n[U+6700][U+7EC8][U+8D28][U+91CF][U+5B88][U+6052][U+68C0][U+67E5]:")
     for scenario_name, data in results.items():
         status = "" if data['mass_error'] < 1.0 else ""
-        print(f"  {data['params']['description']:12s}: 误差={data['mass_error']:6.3f}% {status}")
+        print(f"  {data['params']['description']:12s}: [U+8BEF][U+5DEE]={data['mass_error']:6.3f}% {status}")
 
-    print("\n关键发现:")
-    print("  1. HydrostaticCanalSolver对所有边界条件均稳定收敛")
-    print("  2. 高水位产生回水效应[U+FF0C]上游水深升高")
-    print("  3. 低水位[U+FF08]泵站[U+FF09]导致落水曲线")
-    print("  4. 流量守恒在所有场景下均达到优秀精度 (<0.01%)")
+    print("\n[U+5173][U+952E][U+53D1][U+73B0]:")
+    print("  1. HydrostaticCanalSolver[U+5BF9][U+6240][U+6709][U+8FB9][U+754C][U+6761][U+4EF6][U+5747][U+7A33][U+5B9A][U+6536][U+655B]")
+    print("  2. [U+9AD8][U+6C34][U+4F4D][U+4EA7][U+751F][U+56DE][U+6C34][U+6548][U+5E94][U+FF0C][U+4E0A][U+6E38][U+6C34][U+6DF1][U+5347][U+9AD8]")
+    print("  3. [U+4F4E][U+6C34][U+4F4D][U+FF08][U+6CF5][U+7AD9][U+FF09][U+5BFC][U+81F4][U+843D][U+6C34][U+66F2][U+7EBF]")
+    print("  4. [U+6D41][U+91CF][U+5B88][U+6052][U+5728][U+6240][U+6709][U+573A][U+666F][U+4E0B][U+5747][U+8FBE][U+5230][U+4F18][U+79C0][U+7CBE][U+5EA6] (<0.01%)")
 
-    print("\n 例子1扩展 (HydrostaticCanalSolver版) 运行成功")
+    print("\n [U+4F8B][U+5B50]1[U+6269][U+5C55] (HydrostaticCanalSolver[U+7248]) [U+8FD0][U+884C][U+6210][U+529F]")
     print("=" * 80)
 
-    return initial_states['恒定均匀流']['validator']
+    return initial_states['[U+6052][U+5B9A][U+5747][U+5300][U+6D41]']['validator']
 
 
 if __name__ == '__main__':

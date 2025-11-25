@@ -5,6 +5,8 @@
 按照 Spec-Kit 规范编写
 """
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 from typing import Dict, Any, List
 
 

@@ -12,6 +12,8 @@ MacDonald Test 4 - WENO5高阶格式测试
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 sys.path.insert(0, '/home/user/HydroClaude')
 
 import numpy as np

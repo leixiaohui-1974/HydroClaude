@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 282,
+    "batch_end_index": 283,
+    "test_run_at": "2025-11-25T16:39:08.575153",
+    "batch_duration_seconds": 1.19,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_gate_pump_cascade/enhanced_scenario_test.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.19,
+      "stdout": "====================================================================================================\n                                        ��������բ��Ⱥϵͳ - ��ǿ�湤������                                         \n====================================================================================================\n\n��ʼʱ��: 2025-11-25 16:39:08\n�۽�������: 8\n\n��ǿ����:\n  - ��������ʾ�߽������Ϳ���������ʵʱ�仯\n  - ��ϸ�ĳ�ʼ�㶨��״̬����\n  - �������ֵ�ȶ��Է�����CFL�������غ㣩\n  - ����ϸ�������ʱ�䲽��\n\n====================================================================================================\n\n����: [1/8]\n\n====================================================================================================\n                                      ����01: ��������С����Ծ [��ǿ����ģʽ]                                       \n====================================================================================================\n\n��ʼ30 m^3/s��t=300s��Ծ��35 m^3/s (+17%)\n���: ���������Ŷ�\n----------------------------------------------------------------------------------------------------",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_gate_pump_cascade\\enhanced_scenario_test.py\", line 884, in <module>\n    results = main()\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_gate_pump_cascade\\enhanced_scenario_test.py\", line 842, in main\n    result = run_enhanced_scenario(scenario_id, config, output_base_dir)\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_gate_pump_cascade\\enhanced_scenario_test.py\", line 565, in run_enhanced_scenario\n    print(\"\\n\\u25b6 ����������ͽṹ��...\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'gbk' codec can't encode character '\\u25b6' in position 2: illegal multibyte sequence"
+    }
+  ]
+}

@@ -1,0 +1,372 @@
+"""
+HLLC vs HLL Dam Break Comparison Test
+
+Purpose:
+    Verify HLLC performance on dynamic shock problems (Dam Break)
+
+Expected Results:
+    - HLLC should capture shocks more sharply (less dissipation)
+    - HLLC should show better accuracy at contact discontinuities
+    - Both should conserve mass perfectly
+
+Background:
+    Phase 9.2 found HLLC performs worse on Lake at Rest (static problem)
+    due to precise capture of Well-Balanced reconstruction errors.
+    This test validates HLLC advantages on dynamic problems where low
+    dissipation is beneficial for shock resolution.
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+try:
+    from solvers.godunov_fvm_solver import GodunvFVMSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+
+
+def run_dam_break_comparison(n_cells=200, t_final=5.0, order=1):
+    """
+    Run Dam Break with both HLL and HLLC solvers
+
+    Configuration:
+        - Domain: 1000m channel
+        - Initial: h_L = 10m (x < 500m), h_R = 1m (x >= 500m)
+        - Flat bottom (z_b = 0)
+        - Free boundaries
+        - 2nd order MUSCL reconstruction
+    """
+
+    print("="*70)
+    print("HLLC vs HLL Dam Break Comparison Test")
+    print("="*70)
+    print()
+
+    # Configuration
+    width = 10.0
+    length = 1000.0
+    dx = length / n_cells
+
+    print(f"Configuration:")
+    print(f"  Domain: {length}m x {width}m")
+    print(f"  Cells: {n_cells} (dx = {dx:.2f}m)")
+    print(f"  Order: {order}")
+    print(f"  Time: {t_final}s")
+    print()
+
+    # Initial conditions: Dam Break
+    def dam_break_ic(x):
+        h = np.where(x < length/2, 10.0, 1.0)
+        Q = np.zeros_like(x)
+        return h, Q
+
+    # Boundary conditions
+    bc_left = {'type': 'free'}
+    bc_right = {'type': 'free'}
+
+    # Create initial conditions
+    x_centers = np.linspace(dx/2, length - dx/2, n_cells)
+    h_init, Q_init = dam_break_ic(x_centers)
+
+    # --- Run HLL solver ---
+    print("[1/2] Running HLL solver...")
+    solver_hll = GodunvFVMSolver(
+        width=width,
+        length=length,
+        n_cells=n_cells,
+        manning_n=0.0,  # Frictionless
+        cfl=0.3,
+        order=order,
+        use_numba=True,
+        riemann_solver='hll',
+        slope=0.0  # Flat bottom
+    )
+
+    # Initialize
+    solver_hll.initialize(h_init, Q_init, bc_left, bc_right)
+
+    # Record initial mass
+    mass_hll_init = np.sum(solver_hll.h * solver_hll.dx * solver_hll.B)
+
+    # Run
+    while solver_hll.t < t_final:
+        solver_hll.step()
+
+        # Check for NaN
+        if np.any(np.isnan(solver_hll.h)) or np.any(np.isnan(solver_hll.Q)):
+            print(f"   NaN detected at t={solver_hll.t:.3f}s")
+            break
+
+    # Record final state
+    mass_hll_final = np.sum(solver_hll.h * solver_hll.dx * solver_hll.B)
+    mass_error_hll = abs(mass_hll_final - mass_hll_init) / mass_hll_init * 100
+
+    print(f"  Time: {solver_hll.t:.3f}s")
+    print(f"  Steps: {solver_hll.step_count}")
+    print(f"  Mass conservation: {mass_error_hll:.6f}%")
+    print(f"  Max h: {np.max(solver_hll.h):.3f}m")
+    print(f"  Max |Q|: {np.max(np.abs(solver_hll.Q)):.3f} m^3/s")
+    print()
+
+    # --- Run HLLC solver ---
+    print("[2/2] Running HLLC solver...")
+    solver_hllc = GodunvFVMSolver(
+        width=width,
+        length=length,
+        n_cells=n_cells,
+        manning_n=0.0,  # Frictionless
+        cfl=0.3,
+        order=order,
+        use_numba=True,
+        riemann_solver='hllc',
+        slope=0.0  # Flat bottom
+    )
+
+    # Initialize
+    solver_hllc.initialize(h_init, Q_init, bc_left, bc_right)
+
+    # Record initial mass
+    mass_hllc_init = np.sum(solver_hllc.h * solver_hllc.dx * solver_hllc.B)
+
+    # Run
+    while solver_hllc.t < t_final:
+        solver_hllc.step()
+
+        # Check for NaN
+        if np.any(np.isnan(solver_hllc.h)) or np.any(np.isnan(solver_hllc.Q)):
+            print(f"   NaN detected at t={solver_hllc.t:.3f}s")
+            break
+
+    # Record final state
+    mass_hllc_final = np.sum(solver_hllc.h * solver_hllc.dx * solver_hllc.B)
+    mass_error_hllc = abs(mass_hllc_final - mass_hllc_init) / mass_hllc_init * 100
+
+    print(f"  Time: {solver_hllc.t:.3f}s")
+    print(f"  Steps: {solver_hllc.step_count}")
+    print(f"  Mass conservation: {mass_error_hllc:.6f}%")
+    print(f"  Max h: {np.max(solver_hllc.h):.3f}m")
+    print(f"  Max |Q|: {np.max(np.abs(solver_hllc.Q)):.3f} m^3/s")
+    print()
+
+    # --- Compute metrics ---
+    print("="*70)
+    print("Comparison Metrics")
+    print("="*70)
+    print()
+
+    # Extract solutions
+    h_hll = solver_hll.h
+    Q_hll = solver_hll.Q
+    u_hll = Q_hll / (h_hll * solver_hll.B + 1e-10)
+
+    h_hllc = solver_hllc.h
+    Q_hllc = solver_hllc.Q
+    u_hllc = Q_hllc / (h_hllc * solver_hllc.B + 1e-10)
+
+    # Solution differences
+    h_diff = h_hllc - h_hll
+    u_diff = u_hllc - u_hll
+
+    print(f"Solution Differences (HLLC - HLL):")
+    print(f"  Max |Deltah|: {np.max(np.abs(h_diff)):.4f}m")
+    print(f"  RMS(Deltah): {np.sqrt(np.mean(h_diff**2)):.4f}m")
+    print(f"  Max |Deltau|: {np.max(np.abs(u_diff)):.4f} m/s")
+    print(f"  RMS(Deltau): {np.sqrt(np.mean(u_diff**2)):.4f} m/s")
+    print()
+
+    # Total Variation (shock sharpness metric)
+    tv_hll = np.sum(np.abs(np.diff(h_hll)))
+    tv_hllc = np.sum(np.abs(np.diff(h_hllc)))
+
+    print(f"Shock Sharpness (Total Variation):")
+    print(f"  TV(HLL):  {tv_hll:.3f}m")
+    print(f"  TV(HLLC): {tv_hllc:.3f}m")
+    print(f"  HLLC/HLL: {tv_hllc/tv_hll:.2%} {'(sharper)' if tv_hllc > tv_hll else '(smoother)'}")
+    print()
+
+    # Mass conservation
+    print(f"Mass Conservation:")
+    print(f"  HLL:  {mass_error_hll:.6f}%")
+    print(f"  HLLC: {mass_error_hllc:.6f}%")
+    print()
+
+    # Check for NaN
+    has_nan_hll = np.any(np.isnan(h_hll)) or np.any(np.isnan(Q_hll))
+    has_nan_hllc = np.any(np.isnan(h_hllc)) or np.any(np.isnan(Q_hllc))
+
+    print(f"Stability:")
+    print(f"  HLL:  {' No NaN' if not has_nan_hll else ' NaN detected'}")
+    print(f"  HLLC: {' No NaN' if not has_nan_hllc else ' NaN detected'}")
+    print()
+
+    # --- Create visualization ---
+    print("Creating visualization...")
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+    # Plot 1: Water depth
+    ax1 = axes[0, 0]
+    ax1.plot(x_centers, h_hll, 'b-', linewidth=2, label='HLL')
+    ax1.plot(x_centers, h_hllc, 'r--', linewidth=2, label='HLLC')
+    ax1.axvline(x=length/2, color='gray', linestyle=':', label='Initial dam')
+    ax1.set_xlabel('x (m)')
+    ax1.set_ylabel('Water depth h (m)')
+    ax1.set_title(f'Water Depth at t={t_final}s')
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+
+    # Plot 2: Velocity
+    ax2 = axes[0, 1]
+    ax2.plot(x_centers, u_hll, 'b-', linewidth=2, label='HLL')
+    ax2.plot(x_centers, u_hllc, 'r--', linewidth=2, label='HLLC')
+    ax2.axvline(x=length/2, color='gray', linestyle=':')
+    ax2.set_xlabel('x (m)')
+    ax2.set_ylabel('Velocity u (m/s)')
+    ax2.set_title(f'Velocity at t={t_final}s')
+    ax2.legend()
+    ax2.grid(True, alpha=0.3)
+
+    # Plot 3: Difference in depth
+    ax3 = axes[1, 0]
+    ax3.plot(x_centers, h_diff, 'k-', linewidth=1.5)
+    ax3.axhline(y=0, color='gray', linestyle='--')
+    ax3.axvline(x=length/2, color='gray', linestyle=':')
+    ax3.set_xlabel('x (m)')
+    ax3.set_ylabel('Deltah = h(HLLC) - h(HLL) (m)')
+    ax3.set_title('Depth Difference')
+    ax3.grid(True, alpha=0.3)
+
+    # Plot 4: Zoom on shock region
+    ax4 = axes[1, 1]
+    # Find shock location (max gradient)
+    grad_h_hll = np.abs(np.diff(h_hll))
+    shock_idx = np.argmax(grad_h_hll)
+    shock_x = x_centers[shock_idx]
+
+    # Zoom window: +/-50m around shock
+    zoom_width = 50.0
+    zoom_mask = (x_centers > shock_x - zoom_width) & (x_centers < shock_x + zoom_width)
+
+    ax4.plot(x_centers[zoom_mask], h_hll[zoom_mask], 'b-', linewidth=2, marker='o',
+             markersize=4, label='HLL')
+    ax4.plot(x_centers[zoom_mask], h_hllc[zoom_mask], 'r--', linewidth=2, marker='s',
+             markersize=4, label='HLLC')
+    ax4.set_xlabel('x (m)')
+    ax4.set_ylabel('Water depth h (m)')
+    ax4.set_title(f'Shock Detail (x ~= {shock_x:.1f}m)')
+    ax4.legend()
+    ax4.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+
+    # Save figure
+    output_dir = 'test_results'
+    os.makedirs(output_dir, exist_ok=True)
+    output_file = os.path.join(output_dir, 'hllc_vs_hll_dam_break.png')
+    plt.savefig(output_file, dpi=150, bbox_inches='tight')
+    print(f"  Saved: {output_file}")
+    print()
+
+    # --- Assessment ---
+    print("="*70)
+    print("Assessment")
+    print("="*70)
+    print()
+
+    # Criteria for HLLC to be "better"
+    hllc_better = True
+    issues = []
+
+    # 1. Stability
+    if has_nan_hllc:
+        hllc_better = False
+        issues.append(" HLLC has NaN (unstable)")
+    else:
+        print(" HLLC is stable (no NaN)")
+
+    # 2. Mass conservation
+    if mass_error_hllc > mass_error_hll * 1.5:
+        hllc_better = False
+        issues.append(f" HLLC mass error {mass_error_hllc:.6f}% > 1.5x HLL")
+    else:
+        print(f" HLLC mass conservation comparable ({mass_error_hllc:.6f}%)")
+
+    # 3. Shock sharpness (HLLC should be sharper)
+    if tv_hllc > tv_hll * 1.02:  # At least 2% sharper
+        print(f" HLLC captures shocks more sharply (TV +{(tv_hllc/tv_hll-1)*100:.1f}%)")
+    elif tv_hllc > tv_hll * 0.98:  # Within 2%
+        print(f" HLLC shock sharpness similar to HLL (TV +/-{abs(tv_hllc/tv_hll-1)*100:.1f}%)")
+    else:
+        hllc_better = False
+        issues.append(f" HLLC shock sharpness worse than HLL (TV {(tv_hllc/tv_hll-1)*100:.1f}%)")
+
+    print()
+
+    # Overall conclusion
+    if hllc_better and len(issues) == 0:
+        print("="*70)
+        print(" CONCLUSION: HLLC shows expected advantages on Dam Break")
+        print("="*70)
+        print()
+        print("HLLC demonstrates:")
+        print("  - Stable simulation (no NaN)")
+        print("  - Excellent mass conservation")
+        print("  - Sharper shock capture (less dissipation)")
+        print()
+        print("This validates the Phase 9.2 finding:")
+        print("  - HLLC worse on static problems (Lake at Rest)")
+        print("  - HLLC better on dynamic problems (Dam Break)")
+        print("  - Solver choice should match problem type")
+        print()
+        status = "PASS"
+    else:
+        print("="*70)
+        print(" CONCLUSION: HLLC performance needs investigation")
+        print("="*70)
+        print()
+        print("Issues found:")
+        for issue in issues:
+            print(f"  {issue}")
+        print()
+        status = "NEEDS_INVESTIGATION"
+
+    print("="*70)
+    print()
+
+    return {
+        'status': status,
+        'hll': {
+            'mass_error': mass_error_hll,
+            'tv': tv_hll,
+            'has_nan': has_nan_hll
+        },
+        'hllc': {
+            'mass_error': mass_error_hllc,
+            'tv': tv_hllc,
+            'has_nan': has_nan_hllc
+        },
+        'comparison': {
+            'max_h_diff': np.max(np.abs(h_diff)),
+            'rms_h_diff': np.sqrt(np.mean(h_diff**2)),
+            'tv_ratio': tv_hllc / tv_hll
+        }
+    }
+
+
+if __name__ == '__main__':
+    # Run comparison
+    results = run_dam_break_comparison(n_cells=200, t_final=5.0, order=1)
+
+    # Return exit code based on status
+    if results['status'] == 'PASS':
+        print("Test: PASS ")
+        exit(0)
+    else:
+        print("Test: NEEDS INVESTIGATION ")
+        exit(1)

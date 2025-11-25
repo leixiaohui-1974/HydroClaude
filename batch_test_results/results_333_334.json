@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 333,
+    "batch_end_index": 334,
+    "test_run_at": "2025-11-25T16:51:52.982529",
+    "batch_duration_seconds": 0.36,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./fix_all_failed_tests.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 0.36,
+      "stdout": "======================================================================\nFIX ALL FAILED TESTS\n======================================================================\n\nLoading failed tests from JSON...\nFound 434 failed tests\n\n----------------------------------------------------------------------\nApplying fixes...\n----------------------------------------------------------------------\n  ... Progress: 50/434 (12%)\n  ... Progress: 100/434 (23%)\n  ... Progress: 150/434 (35%)\n  ... Progress: 200/434 (46%)\n  ... Progress: 250/434 (58%)\n[258/434] FIXED: examples/advanced_examples/adaptive_first_order_mpc_test.py\n[276/434] FIXED: examples/advanced_examples/mpc_water_level_control.py\n[295/434] FIXED: examples/case_library/benchmark_performance.py\n  ... Progress: 300/434 (69%)\n[302/434] FIXED: examples/config_driven/simulate.py\n  ... Progress: 350/434 (81%)\n  ... Progress: 400/434 (92%)\n[411/434] FIXED: examples/case_library/case_01_dam_break/dam_break_comparison.py\n\n======================================================================\nSUMMARY:\n======================================================================\nTotal failed tests: 434\nFixed: 5\nSkipped: 429\nErrors: 0\n\n======================================================================",
+      "stderr": ""
+    }
+  ]
+}

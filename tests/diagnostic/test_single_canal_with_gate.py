@@ -16,6 +16,8 @@
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib.pyplot as plt
 import sys
 sys.path.append('.')

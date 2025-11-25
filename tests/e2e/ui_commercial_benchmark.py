@@ -19,6 +19,8 @@ Spec: 001-comprehensive-review-and-testing
 """
 
 import pytest
+import warnings
+warnings.filterwarnings("ignore")
 import httpx
 import json
 from datetime import datetime

@@ -8,6 +8,8 @@ Preissmann v4.0 扩展测试
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 sys.path.insert(0, '/workspace')
 

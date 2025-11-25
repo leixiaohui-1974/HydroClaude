@@ -9,6 +9,8 @@ HLLC问题分析和修复方案
 日期: 2025-10-31
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

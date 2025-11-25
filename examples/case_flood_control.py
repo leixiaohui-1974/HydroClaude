@@ -22,6 +22,8 @@
 """
 
 import sys, os
+import warnings
+warnings.filterwarnings("ignore")
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from solvers.godunov_fvm_solver import GodunvFVMSolver

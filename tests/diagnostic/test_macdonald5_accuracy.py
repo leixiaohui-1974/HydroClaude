@@ -11,6 +11,8 @@ MacDonald Test 5 精度改进诊断
 4. 优化dt_max
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

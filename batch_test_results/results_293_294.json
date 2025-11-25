@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 293,
+    "batch_end_index": 294,
+    "test_run_at": "2025-11-25T16:39:21.717636",
+    "batch_duration_seconds": 1.36,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_gate_pump_cascade/test_all_scenarios_quick.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 1.36,
+      "stdout": "====================================================================================================\n                                        ��������բ��Ⱥϵͳ - ��ǿ�湤������                                         \n====================================================================================================\n\n��ʼʱ��: 2025-11-25 16:39:21\n�۽�������: 8\n\n��ǿ����:\n  - ��������ʾ�߽������Ϳ���������ʵʱ�仯\n  - ��ϸ�ĳ�ʼ�㶨��״̬����\n  - �������ֵ�ȶ��Է�����CFL�������غ㣩\n  - ����ϸ�������ʱ�䲽��\n\n====================================================================================================\n\n����: [1/8]\n\n====================================================================================================\n                                      ����01: ��������С����Ծ [��ǿ����ģʽ]                                       \n====================================================================================================\n\n��ʼ30 m^3/s��t=300s��Ծ��35 m^3/s (+17%)\n���: ���������Ŷ�\n----------------------------------------------------------------------------------------------------",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_gate_pump_cascade\\test_all_scenarios_quick.py\", line 25, in <module>\n    exec(open('examples/example_gate_pump_cascade/enhanced_scenario_test.py', encoding='utf-8').read())\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 884, in <module>\n  File \"<string>\", line 842, in main\n  File \"<string>\", line 565, in run_enhanced_scenario\nUnicodeEncodeError: 'gbk' codec can't encode character '\\u25b6' in position 2: illegal multibyte sequence"
+    }
+  ]
+}

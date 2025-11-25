@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 264,
+    "batch_end_index": 265,
+    "test_run_at": "2025-11-25T16:34:09.792077",
+    "batch_duration_seconds": 2.4,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_17_reservoir_basic/example_17_reservoir_with_anim.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 2.4,
+      "stdout": "================================================================================\nʾ��17: ˮ����� - ��ǿ�棨Ƕ��ʽ������\n================================================================================\n\n ��̬ͼ���ѱ���: E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_17_reservoir_basic\\outputs\\figures\\reservoir_operation.png\n\n ʾ��17����ǿ�棩���гɹ�",
+      "stderr": ""
+    }
+  ]
+}

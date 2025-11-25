@@ -42,7 +42,7 @@ SCREENSHOTS_DIR.mkdir(exist_ok=True)
 
 # 测试配置
 TEST_CONFIG = {
-    'base_url': 'http://localhost:5173',
+    'base_url': 'http://localhost:3001',
     'backend_url': 'http://localhost:8000',
     'timeout': 30,
     'screenshot_delay': 1.5
@@ -308,11 +308,11 @@ class WebE2ETestRunner:
             # 点击仿真管理标签
             print("  切换到仿真管理标签...")
             try:
-                # 尝试多种方式查找仿真管理标签
+                # 尝试多种方式查找仿真管理标签 (侧边栏菜单)
                 selectors = [
-                    "//div[contains(@class, 'ant-tabs-tab')]//div[contains(text(), '仿真管理')]",
-                    "//div[contains(text(), '仿真管理')]",
-                    "//*[contains(text(), 'Simulation')]"
+                    "//li[contains(@class, 'ant-menu-item')]//span[contains(text(), '仿真计算')]",
+                    "//span[contains(text(), '仿真计算')]",
+                    "//li[contains(@title, '仿真计算')]"
                 ]
                 
                 tab_clicked = False
@@ -322,14 +322,16 @@ class WebE2ETestRunner:
                         if tab:
                             tab.click()
                             tab_clicked = True
-                            print("    ✓ 成功点击仿真管理标签")
+                            print("    ✓ 成功点击仿真计算菜单")
                             time.sleep(2)
                             break
                     except:
                         continue
                 
                 if not tab_clicked:
-                    print("    ⚠️ 未找到仿真管理标签，尝试直接截图")
+                    print("    ⚠️ 未找到仿真计算菜单，尝试直接截图")
+            except Exception as e:
+                print(f"    ⚠️ 切换标签异常: {e}")
             except Exception as e:
                 print(f"    ⚠️ 切换标签异常: {e}")
             
@@ -397,7 +399,11 @@ class WebE2ETestRunner:
             # 填写仿真名称
             print("  填写仿真名称...")
             try:
-                name_input = self.driver.find_element(By.ID, 'name')
+                try:
+                    name_input = self.driver.find_element(By.ID, 'name')
+                except:
+                    # 尝试通过 name 属性查找
+                    name_input = self.driver.find_element(By.NAME, 'name')
                 name_input.clear()
                 name_input.send_keys('E2E测试仿真-' + datetime.now().strftime('%H%M%S'))
                 print("    ✓ 仿真名称已填写")
@@ -476,7 +482,12 @@ class WebE2ETestRunner:
                 try:
                     run_button = self.driver.find_element(By.XPATH, "//button[contains(., 'Run')]")
                 except:
-                    print("    ⚠️ 未找到运行按钮")
+                    try:
+                        # 尝试通过 type="submit" 查找
+                        run_button = self.driver.find_element(By.XPATH, "//button[@type='submit']")
+                        print("    ✓ 通过 type='submit' 找到按钮")
+                    except:
+                        print("    ⚠️ 未找到运行按钮")
             
             if run_button:
                 print("    ✓ 找到运行按钮")
@@ -487,7 +498,8 @@ class WebE2ETestRunner:
                 
                 # 点击运行
                 print("  点击运行按钮...")
-                run_button.click()
+                # 使用 JavaScript 点击以防被遮挡
+                self.driver.execute_script("arguments[0].click();", run_button)
                 print("    ✓ 已点击运行按钮")
                 
                 # 等待响应
@@ -503,7 +515,7 @@ class WebE2ETestRunner:
                     # 检查是否有成功或失败提示
                     page_text = self.driver.find_element(By.TAG_NAME, 'body').text
                     
-                    if '成功' in page_text or 'Success' in page_text:
+                    if '成功' in page_text or 'Success' in page_text or '仿真已提交' in page_text:
                         print("    ✓ 检测到成功提示")
                         result['status'] = 'passed'
                         result['notes'].append("仿真提交成功")
@@ -523,6 +535,14 @@ class WebE2ETestRunner:
                 result['status'] = 'failed'
                 result['notes'].append("未找到运行按钮")
                 print("✗ 测试失败：未找到运行按钮")
+                # 打印页面源码片段帮助调试
+                print("DEBUG: 页面源码片段:")
+                print(self.driver.page_source[:1000])
+                try:
+                    submit_btns = self.driver.find_elements(By.XPATH, "//button[@type='submit']")
+                    print(f"DEBUG: 找到 {len(submit_btns)} 个 submit 按钮")
+                except:
+                    pass
             
         except Exception as e:
             result['status'] = 'failed'
@@ -561,13 +581,30 @@ class WebE2ETestRunner:
             # 返回建模标签
             print("  切换回建模工作台...")
             try:
-                tabs = self.driver.find_elements(By.CLASS_NAME, 'ant-tabs-tab')
-                if tabs:
-                    tabs[0].click()
-                    time.sleep(1)
-                    print("    ✓ 成功切换")
-            except:
-                print("    ⚠️ 标签切换失败")
+                # 点击侧边栏"高级建模"
+                selectors = [
+                    "//li[contains(@class, 'ant-menu-item')]//span[contains(text(), '高级建模')]",
+                    "//span[contains(text(), '高级建模')]",
+                    "//li[contains(@title, '高级建模')]"
+                ]
+                
+                tab_clicked = False
+                for selector in selectors:
+                    try:
+                        tab = self.driver.find_element(By.XPATH, selector)
+                        if tab:
+                            tab.click()
+                            tab_clicked = True
+                            print("    ✓ 成功点击高级建模菜单")
+                            time.sleep(2)
+                            break
+                    except:
+                        continue
+                
+                if not tab_clicked:
+                    print("    ⚠️ 菜单切换失败")
+            except Exception as e:
+                print(f"    ⚠️ 菜单切换异常: {e}")
             
             screenshot = self.take_screenshot('back_to_modeling', '返回建模工作台')
             result['screenshots'].append(screenshot)
@@ -781,7 +818,7 @@ def main():
     print("3. 已安装Chrome浏览器和chromedriver")
     print("4. 已安装Python包: selenium")
     
-    input("\n按回车键开始测试...")
+    # input("\n按回车键开始测试...")
     
     runner = WebE2ETestRunner()
     runner.run_all_tests()

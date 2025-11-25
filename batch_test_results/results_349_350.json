@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 349,
+    "batch_end_index": 350,
+    "test_run_at": "2025-11-25T16:57:22.156504",
+    "batch_duration_seconds": 54.34,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./quick_test_sample.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 54.34,
+      "stdout": "================================================================================\n                           快速测试样本 - Quick Test Sample                           \n================================================================================\n\n总共 541 个测试案例\n随机抽取 10 个进行快速测试\n\n[1/10] 测试洪水过程线模拟 - Phase 1问题修复\n    文件: tests\\diagnostic\\test_flood_hydrograph.py\n    状态: 通过 PASS (12.80s)\n\n[2/10] 高级边界条件集成测试\n    文件: tests\\test_advanced_boundary_conditions.py\n    状态: 通过 PASS (1.42s)\n\n[3/10] 案例5：农业灌溉系统分析\n    文件: examples\\case5_irrigation_system.py\n    状态: 通过 PASS (8.57s)\n\n[4/10] Unit Tests for Network Topology Module - 管网拓扑模块单元测试\n    文件: tests\\test_network\\test_network_topology.py\n    状态: 通过 PASS (9.49s)\n\n[5/10] 质量守恒验证测试（Mass Conservation Test）\n    文件: tests\\numerical_methods\\test_mass_conservation.py\n    状态: 通过 PASS (0.58s)\n\n[6/10] MacDonald Test 4 with Entropy Fix\n    文件: tests\\diagnostic\\test_macdonald4_entropy_fix.py\n    状态: 通过 PASS (2.61s)\n\n[7/10] 边界自然演化测试\n    文件: tests\\diagnostic\\test_boundary_natural_evolution.py\n    状态: 通过 PASS (4.00s)\n\n[8/10] Numba JIT性能基准测试\n    文件: tests\\diagnostic\\benchmark_numba_performance.py\n    状态: 通过 PASS (10.84s)\n\n[9/10] 工况4: 闸门开度调控\n    文件: examples\\example_gate_pump_cascade\\run_scenario_04.py\n    状态: 失败 FAIL (错误码: 1)\n    错误: Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_gate_pump_cascade\\run_scenario_04.py\", line 17, in <module>\n    exec(open(os.path.join(os.path\n\n[10/10] 复合糙率功能测试\n    文件: tests\\test_composite_roughness.py\n    状态: 通过 PASS (3.39s)\n\n================================================================================\n                                      测试完成                                      \n================================================================================\n\n总计: 10\n通过: 9 (90.0%)\n失败: 1 (10.0%)\n错误: 0 (0.0%)\n\n[WARN] 有 1 个测试未通过。建议先修复问题。",
+      "stderr": ""
+    }
+  ]
+}

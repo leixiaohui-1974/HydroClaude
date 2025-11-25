@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 337,
+    "batch_end_index": 338,
+    "test_run_at": "2025-11-25T16:51:55.810789",
+    "batch_duration_seconds": 0.26,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./fix_unicode_in_core_tests.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 0.26,
+      "stdout": "======================================================================\n修复核心测试文件的Unicode编码问题\n======================================================================\n\n处理 5 个核心测试文件...\n处理: core_functionality_verification_v2.py... [OK] 已修复\n处理: test_lake_at_rest_wb.py... [OK] 已修复\n处理: 07_sluice_gate_flow_v2.py... [OK] 已修复\n处理: 01_basic_v2.py... [OK] 已修复\n处理: 04_boundary_conditions_v2.py... [OK] 已修复\n\n修复完成: 5 个文件\n\n======================================================================",
+      "stderr": ""
+    }
+  ]
+}

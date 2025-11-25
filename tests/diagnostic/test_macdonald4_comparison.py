@@ -18,6 +18,8 @@ MacDonald Test 4 对比测试：标准WENO3 vs 增强WENO3
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 from pathlib import Path
 

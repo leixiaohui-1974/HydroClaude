@@ -15,8 +15,10 @@ MPC鲁棒性分析
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import numpy as np
 import matplotlib.pyplot as plt

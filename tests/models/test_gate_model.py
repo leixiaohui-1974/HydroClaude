@@ -3,6 +3,8 @@
 单元测试: tests/models/test_gate_model.py
 """
 import pytest
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 from pathlib import Path
 

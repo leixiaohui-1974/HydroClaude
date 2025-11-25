@@ -3,6 +3,8 @@
 """快速溃坝测试（10秒，展示Numba威力）"""
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys, os, time
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 try:

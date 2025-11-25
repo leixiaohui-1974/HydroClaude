@@ -8,6 +8,8 @@
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # Add project root to path

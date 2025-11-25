@@ -1,0 +1,588 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+高级功能综合测试
+
+测试三大高级功能：
+1. 并行MPC（多核加速）
+2. 参数在线估计（糙率估计）
+3. 预测性维护（传感器寿命预测）
+
+作者: Claude
+日期: 2025-10-23
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
+import time
+
+try:
+    from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Make sure project root is in sys.path")
+    sys.exit(1)
+
+from solvers.mpc_scheduler_parallel import ParallelMPCScheduler
+from solvers.parameter_estimation import ParameterEstimator
+from solvers.predictive_maintenance import PredictiveMaintenanceSystem, SensorHealthPredictor
+
+
+def test_parallel_mpc():
+    """
+    测试1: 并行MPC
+
+    对比：
+    - 串行优化（SLSQP）
+    - 并行PSO
+    - 并行DE
+    """
+    print("=" * 80)
+    print("测试1: 并行MPC性能对比")
+    print("=" * 80)
+
+    # 参数
+    L = 200.0
+    nx = 21
+    B = 10.0
+    S0 = 0.001
+    n = 0.025
+
+    Q_initial = 5.0
+    h_initial = 0.6
+    target_flow = 7.0
+
+    results = {}
+
+    # 测试1: 串行SLSQP（基准）
+    print("\n" + "-" * 60)
+    print("方法1: 串行SLSQP优化")
+    print("-" * 60)
+
+    solver1 = HydrostaticCanalSolver(length=L, nx=nx, B=B, S0=S0, n=n)
+    solver1.h = np.ones(nx) * h_initial
+    solver1.hu = np.ones(nx) * Q_initial / B
+
+    mpc1 = ParallelMPCScheduler(
+        solver=solver1,
+        prediction_horizon=8,
+        control_horizon=4,
+        dt=2.0,
+        n_workers=4,
+        verbose=False
+    )
+
+    mpc1.set_targets(flow_targets={-1: target_flow})
+    mpc1.set_weights(w_depth=0.0, w_flow=1.0, w_control_change=0.05)
+    mpc1.add_controllable_inflow(grid_index=0, Q_min=3.0, Q_max=10.0)
+
+    initial_state1 = (solver1.h.copy(), solver1.hu.copy())
+
+    t_start = time.time()
+    result1 = mpc1.run_closed_loop(
+        t_end=60.0,
+        initial_state=initial_state1,
+        optimization_method='SLSQP',
+        feedback_interval=3
+    )
+    time1 = time.time() - t_start
+
+    results['SLSQP'] = {'result': result1, 'time': time1, 'name': '串行SLSQP'}
+    print(f"完成! 耗时: {time1:.2f} s")
+
+    # 测试2: 并行PSO
+    print("\n" + "-" * 60)
+    print("方法2: 并行PSO优化")
+    print("-" * 60)
+
+    solver2 = HydrostaticCanalSolver(length=L, nx=nx, B=B, S0=S0, n=n)
+    solver2.h = np.ones(nx) * h_initial
+    solver2.hu = np.ones(nx) * Q_initial / B
+
+    mpc2 = ParallelMPCScheduler(
+        solver=solver2,
+        prediction_horizon=8,
+        control_horizon=4,
+        dt=2.0,
+        n_workers=4,
+        verbose=False
+    )
+
+    mpc2.set_targets(flow_targets={-1: target_flow})
+    mpc2.set_weights(w_depth=0.0, w_flow=1.0, w_control_change=0.05)
+    mpc2.add_controllable_inflow(grid_index=0, Q_min=3.0, Q_max=10.0)
+
+    initial_state2 = (solver2.h.copy(), solver2.hu.copy())
+
+    t_start = time.time()
+    result2 = mpc2.run_closed_loop(
+        t_end=60.0,
+        initial_state=initial_state2,
+        optimization_method='parallel_pso',
+        feedback_interval=3
+    )
+    time2 = time.time() - t_start
+
+    results['PSO'] = {
+        'result': result2,
+        'time': time2,
+        'name': '并行PSO',
+        'speedup': time1 / time2
+    }
+    print(f"完成! 耗时: {time2:.2f} s (加速比: {time1/time2:.2f}x)")
+
+    # 性能统计
+    print("\n" + "=" * 80)
+    print("并行MPC性能总结")
+    print("=" * 80)
+
+    print(f"\n{'方法':<20} {'总耗时(s)':<12} {'加速比':<10} {'最终流量(m^3/s)':<15}")
+    print("-" * 80)
+
+    for key, data in results.items():
+        name = data['name']
+        t = data['time']
+        speedup = data.get('speedup', 1.0)
+        Q_final = data['result']['Q_history'][-1][-1]
+
+        print(f"{name:<20} {t:<12.2f} {speedup:<10.2f}x {Q_final:<15.3f}")
+
+    # 绘图
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+    # 1. 流量跟踪对比
+    ax = axes[0]
+    for key, data in results.items():
+        times = np.array(data['result']['time'])
+        Q_history = np.array(data['result']['Q_history'])
+        Q_downstream = Q_history[:, -1]
+        ax.plot(times, Q_downstream, linewidth=2, label=data['name'], alpha=0.8)
+
+    ax.axhline(target_flow, color='k', linestyle='--', linewidth=2, alpha=0.5, label='目标')
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Downstream flow (m^3/s)')
+    ax.set_title('Flow Tracking - Parallel MPC')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # 2. 计算时间对比
+    ax = axes[1]
+    names = [data['name'] for data in results.values()]
+    times_list = [data['time'] for data in results.values()]
+    colors = ['#1f77b4', '#ff7f0e']
+
+    bars = ax.bar(names, times_list, color=colors, alpha=0.7)
+    ax.set_ylabel('Total computation time (s)')
+    ax.set_title('Computation Time Comparison')
+    ax.grid(True, alpha=0.3, axis='y')
+
+    # 添加加速比标注
+    for i, (bar, data) in enumerate(zip(bars, results.values())):
+        height = bar.get_height()
+        speedup = data.get('speedup', 1.0)
+        if speedup > 1:
+            ax.text(bar.get_x() + bar.get_width()/2., height,
+                   f'{speedup:.2f}x',
+                   ha='center', va='bottom', fontweight='bold')
+
+    plt.tight_layout()
+    plt.savefig('test_parallel_mpc.png', dpi=150)
+    print(f"\n图表保存: test_parallel_mpc.png")
+
+    return results
+
+
+def test_parameter_estimation():
+    """
+    测试2: 参数在线估计
+
+    场景：
+    - 真实糙率 n = 0.030
+    - 初始猜测 n = 0.025
+    - 通过观测数据估计真实糙率
+    """
+    print("\n" + "=" * 80)
+    print("测试2: 参数在线估计（糙率）")
+    print("=" * 80)
+
+    # 参数
+    L = 400.0
+    nx = 21
+    B = 10.0
+    S0 = 0.001
+    n_true = 0.030  # 真实糙率
+    n_initial_guess = 0.025  # 初始猜测
+
+    # 创建"真实"系统（用于生成观测）
+    true_solver = HydrostaticCanalSolver(
+        length=L, nx=nx, B=B, S0=S0, n=n_true
+    )
+
+    Q_initial = 5.0
+    h_initial = 0.6
+    true_solver.h = np.ones(nx) * h_initial
+    true_solver.hu = np.ones(nx) * Q_initial / B
+
+    # 创建参数估计器（带初始猜测）
+    est_solver = HydrostaticCanalSolver(
+        length=L, nx=nx, B=B, S0=S0, n=n_initial_guess
+    )
+    est_solver.h = np.ones(nx) * h_initial
+    est_solver.hu = np.ones(nx) * Q_initial / B
+
+    estimator = ParameterEstimator(
+        solver=est_solver,
+        dt=1.0,
+        estimate_roughness=True,
+        estimate_leakage=False,
+        process_noise_std=0.005,
+        parameter_process_noise=1e-5,  # 小过程噪声保持稳定性
+        verbose=True
+    )
+
+    # 添加传感器
+    sensor_positions = [nx//4, nx//2, 3*nx//4]
+    for i, pos in enumerate(sensor_positions):
+        estimator.add_sensor(
+            name=f'S{i+1}',
+            sensor_type='water_level',
+            location_idx=pos,
+            noise_std=0.01  # 测量噪声
+        )
+
+    # 边界条件
+    def Q_upstream(t):
+        return 5.0 if t < 50 else 7.0
+
+    def h_downstream(t):
+        return 0.6 if t < 50 else 0.68
+
+    # 测量函数（从真实系统获取）
+    def get_measurements(t):
+        measurements = {}
+
+        # 真实系统演化一步
+        Q_up = Q_upstream(t)
+        h_down = h_downstream(t)
+
+        h_true, hu_true = true_solver.step_preissmann(
+            dt=estimator.dt,
+            max_iter=10,
+            enforce_bc=True,
+            Q_in=Q_up,
+            h_out=h_down
+        )
+        true_solver.h = h_true
+        true_solver.hu = hu_true
+
+        # 获取测量
+        for name, sensor_info in estimator.sensors.items():
+            idx = sensor_info['location']
+            true_value = true_solver.h[idx]
+            noise = np.random.normal(0, sensor_info['noise_std'])
+            measurements[name] = true_value + noise
+
+        return measurements
+
+    # 运行参数估计
+    print("\n开始参数估计...")
+    t_start = time.time()
+
+    result = estimator.run_estimation(
+        t_end=100.0,  # 模拟时间
+        Q_upstream_func=Q_upstream,
+        h_downstream_func=h_downstream,
+        measurement_func=get_measurements,
+        assimilation_interval=1
+    )
+
+    elapsed = time.time() - t_start
+    print(f"完成! 耗时: {elapsed:.2f} s")
+
+    # 分析结果
+    times = np.array(result['time'])
+    n_history = result['parameters']['roughness']
+    n_std_history = result['parameter_std']['roughness']
+
+    n_estimated = n_history[-1]
+    estimation_error = abs(n_estimated - n_true) / n_true * 100
+
+    print(f"\n参数估计结果:")
+    print(f"  真实糙率: {n_true:.4f}")
+    print(f"  初始猜测: {n_initial_guess:.4f}")
+    print(f"  估计值: {n_estimated:.4f} +/- {n_std_history[-1]:.4f}")
+    print(f"  估计误差: {estimation_error:.2f}%")
+
+    # 绘图
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+    # 1. 糙率估计演化
+    ax = axes[0, 0]
+    ax.plot(times, n_history, 'b-', linewidth=2, label='估计值')
+    ax.fill_between(times,
+                    np.array(n_history) - 2*np.array(n_std_history),
+                    np.array(n_history) + 2*np.array(n_std_history),
+                    color='b', alpha=0.2, label='95% CI')
+    ax.axhline(n_true, color='r', linestyle='--', linewidth=2, label='真实值')
+    ax.axhline(n_initial_guess, color='g', linestyle=':', linewidth=2, label='初始猜测')
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel("Manning's n")
+    ax.set_title('Roughness Parameter Estimation')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    # 2. 估计误差
+    ax = axes[0, 1]
+    errors = (np.array(n_history) - n_true) / n_true * 100
+    ax.plot(times, errors, 'r-', linewidth=2)
+    ax.axhline(0, color='k', linestyle='--', alpha=0.5)
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Estimation error (%)')
+    ax.set_title('Parameter Estimation Error')
+    ax.grid(True, alpha=0.3)
+
+    # 3. 参数不确定性演化
+    ax = axes[1, 0]
+    ax.plot(times, n_std_history, 'g-', linewidth=2)
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Parameter uncertainty (σ)')
+    ax.set_title('Parameter Uncertainty Evolution')
+    ax.grid(True, alpha=0.3)
+
+    # 4. 水深估计（中点）
+    ax = axes[1, 1]
+    h_history = np.array(result['h'])
+    mid_idx = nx // 2
+
+    # 重建真实历史
+    true_solver.h = np.ones(nx) * h_initial
+    true_solver.hu = np.ones(nx) * Q_initial / B
+    h_true_history = []
+    for t in times:
+        h_true_history.append(true_solver.h[mid_idx])
+        if t < times[-1]:
+            h_t, hu_t = true_solver.step_preissmann(
+                dt=estimator.dt, max_iter=10, enforce_bc=True,
+                Q_in=Q_upstream(t), h_out=h_downstream(t)
+            )
+            true_solver.h = h_t
+            true_solver.hu = hu_t
+
+    ax.plot(times, h_true_history, 'k-', linewidth=2, label='真实值', alpha=0.7)
+    ax.plot(times, h_history[:, mid_idx], 'b-', linewidth=2, label='估计值', alpha=0.7)
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Water depth (m)')
+    ax.set_title('State Estimation at Mid-point')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('test_parameter_estimation.png', dpi=150)
+    print(f"\n图表保存: test_parameter_estimation.png")
+
+    return result
+
+
+def test_predictive_maintenance():
+    """
+    测试3: 预测性维护
+
+    场景：
+    - 5个传感器，不同退化速率
+    - 预测剩余寿命
+    - 生成维护建议
+    """
+    print("\n" + "=" * 80)
+    print("测试3: 预测性维护（传感器寿命预测）")
+    print("=" * 80)
+
+    # 创建预测性维护系统
+    pm_system = PredictiveMaintenanceSystem(
+        failure_threshold=0.3,
+        degradation_model='exponential',
+        verbose=True
+    )
+
+    # 模拟5个传感器的健康历史（0-100天）
+    time_days = np.linspace(0, 100, 50)
+
+    # 传感器1: 快速退化（需要紧急维护）
+    health_s1 = 1.0 * np.exp(-0.015 * time_days) + np.random.normal(0, 0.02, len(time_days))
+    health_s1 = np.clip(health_s1, 0.2, 1.0)
+
+    # 传感器2: 中等退化（需要计划维护）
+    health_s2 = 1.0 * np.exp(-0.008 * time_days) + np.random.normal(0, 0.02, len(time_days))
+    health_s2 = np.clip(health_s2, 0.3, 1.0)
+
+    # 传感器3: 慢速退化（加强监控）
+    health_s3 = 1.0 * np.exp(-0.004 * time_days) + np.random.normal(0, 0.02, len(time_days))
+    health_s3 = np.clip(health_s3, 0.5, 1.0)
+
+    # 传感器4: 非常慢（正常）
+    health_s4 = 1.0 * np.exp(-0.001 * time_days) + np.random.normal(0, 0.01, len(time_days))
+    health_s4 = np.clip(health_s4, 0.8, 1.0)
+
+    # 传感器5: 几乎无退化（正常）
+    health_s5 = 0.95 + np.random.normal(0, 0.02, len(time_days))
+    health_s5 = np.clip(health_s5, 0.85, 1.0)
+
+    # 添加传感器历史
+    pm_system.add_sensor_history('S1', health_s1.tolist(), time_days.tolist())
+    pm_system.add_sensor_history('S2', health_s2.tolist(), time_days.tolist())
+    pm_system.add_sensor_history('S3', health_s3.tolist(), time_days.tolist())
+    pm_system.add_sensor_history('S4', health_s4.tolist(), time_days.tolist())
+    pm_system.add_sensor_history('S5', health_s5.tolist(), time_days.tolist())
+
+    print("\n" + "-" * 60)
+    print("分析传感器状态...")
+    print("-" * 60)
+
+    # 分析所有传感器（当前时间=100天）
+    current_time = 100.0
+    recommendations = pm_system.analyze_all_sensors(current_time)
+
+    # 生成维护报告
+    report = pm_system.generate_maintenance_report(current_time)
+    print("\n" + report)
+
+    # 绘图
+    fig = plt.figure(figsize=(16, 10))
+    gs = GridSpec(3, 2, figure=fig)
+
+    # 1. 健康评分历史
+    ax1 = fig.add_subplot(gs[0, :])
+
+    sensors_data = [
+        ('S1', health_s1, 'red'),
+        ('S2', health_s2, 'orange'),
+        ('S3', health_s3, 'yellow'),
+        ('S4', health_s4, 'lightgreen'),
+        ('S5', health_s5, 'green')
+    ]
+
+    for name, health, color in sensors_data:
+        ax1.plot(time_days, health, linewidth=2, label=name, color=color, alpha=0.7)
+
+    ax1.axhline(0.5, color='orange', linestyle='--', alpha=0.5, label='Warning threshold')
+    ax1.axhline(0.3, color='red', linestyle='--', alpha=0.5, label='Critical threshold')
+    ax1.set_xlabel('Time (days)')
+    ax1.set_ylabel('Health score')
+    ax1.set_title('Sensor Health History and Degradation')
+    ax1.legend(ncol=7)
+    ax1.grid(True, alpha=0.3)
+
+    # 2. RUL预测
+    ax2 = fig.add_subplot(gs[1, 0])
+
+    sensor_names = [r['sensor'] for r in recommendations]
+    ruls = [r['rul_mean'] for r in recommendations]
+    rul_stds = [r['rul_std'] for r in recommendations]
+    colors_bar = [sensors_data[i][2] for i in range(len(sensor_names))]
+
+    bars = ax2.bar(sensor_names, ruls, yerr=rul_stds, color=colors_bar, alpha=0.7, capsize=5)
+    ax2.axhline(30, color='red', linestyle='--', alpha=0.5, label='Critical (30d)')
+    ax2.axhline(90, color='orange', linestyle='--', alpha=0.5, label='Warning (90d)')
+    ax2.set_ylabel('Remaining Useful Life (days)')
+    ax2.set_title('RUL Prediction')
+    ax2.legend()
+    ax2.grid(True, alpha=0.3, axis='y')
+
+    # 3. 30天故障概率
+    ax3 = fig.add_subplot(gs[1, 1])
+
+    failure_probs = [r['failure_prob_30d'] * 100 for r in recommendations]
+    bars = ax3.bar(sensor_names, failure_probs, color=colors_bar, alpha=0.7)
+    ax3.axhline(10, color='orange', linestyle='--', alpha=0.5, label='Threshold (10%)')
+    ax3.set_ylabel('Failure probability (%)')
+    ax3.set_title('30-Day Failure Probability')
+    ax3.legend()
+    ax3.grid(True, alpha=0.3, axis='y')
+
+    # 4. 维护优先级
+    ax4 = fig.add_subplot(gs[2, 0])
+
+    urgencies = [r['urgency'] * 100 for r in recommendations]
+    bars = ax4.barh(sensor_names, urgencies, color=colors_bar, alpha=0.7)
+
+    for i, (bar, rec) in enumerate(zip(bars, recommendations)):
+        width = bar.get_width()
+        ax4.text(width + 2, bar.get_y() + bar.get_height()/2.,
+                rec['maintenance_level'].value,
+                va='center', fontsize=9)
+
+    ax4.set_xlabel('Urgency (%)')
+    ax4.set_title('Maintenance Priority')
+    ax4.grid(True, alpha=0.3, axis='x')
+
+    # 5. 维护级别分布
+    ax5 = fig.add_subplot(gs[2, 1])
+
+    from collections import Counter
+    level_counts = Counter([r['maintenance_level'].value for r in recommendations])
+
+    labels = list(level_counts.keys())
+    counts = list(level_counts.values())
+    colors_pie = ['red' if '紧急' in l else 'orange' if '计划' in l else
+                  'yellow' if '监控' in l else 'green' for l in labels]
+
+    ax5.pie(counts, labels=labels, autopct='%1.0f%%',
+           colors=colors_pie, startangle=90)
+    ax5.set_title('Maintenance Level Distribution')
+
+    plt.tight_layout()
+    plt.savefig('test_predictive_maintenance.png', dpi=150)
+    print(f"\n图表保存: test_predictive_maintenance.png")
+
+    return recommendations
+
+
+def main():
+    """运行所有高级功能测试"""
+    print("\n" + "" * 40)
+    print("高级功能综合测试")
+    print("" * 40)
+
+    # 测试1: 并行MPC
+    try:
+        mpc_results = test_parallel_mpc()
+        print("\n 并行MPC测试完成")
+    except Exception as e:
+        print(f"\n 并行MPC测试失败: {e}")
+        import traceback
+        traceback.print_exc()
+
+    # 测试2: 参数估计
+    try:
+        param_results = test_parameter_estimation()
+        print("\n 参数估计测试完成")
+    except Exception as e:
+        print(f"\n 参数估计测试失败: {e}")
+        import traceback
+        traceback.print_exc()
+
+    # 测试3: 预测性维护
+    try:
+        pm_results = test_predictive_maintenance()
+        print("\n 预测性维护测试完成")
+    except Exception as e:
+        print(f"\n 预测性维护测试失败: {e}")
+        import traceback
+        traceback.print_exc()
+
+    print("\n" + "=" * 80)
+    print("所有高级功能测试完成!")
+    print("=" * 80)
+
+    print("\n高级功能总结：")
+    print("   并行MPC: 多核加速，PSO/DE优化")
+    print("   参数估计: 糙率在线估计，增广EKF")
+    print("   预测性维护: 传感器寿命预测，维护建议")
+
+
+if __name__ == "__main__":
+    main()

@@ -11,6 +11,7 @@ import subprocess
 import time
 from datetime import datetime
 import os
+import sys
 import argparse
 
 # --- 配置 ---
@@ -30,10 +31,12 @@ def run_script(script_path: str) -> dict:
 
     env = os.environ.copy()
     env['PYTHONPATH'] = '.'
+    env['PYTHONIOENCODING'] = 'utf-8'
+    env['MPLBACKEND'] = 'Agg'
 
     try:
         result = subprocess.run(
-            ["python3", script_path],
+            [sys.executable, script_path],
             capture_output=True, text=True, encoding=DEFAULT_ENCODING,
             errors='replace', timeout=TIMEOUT_SECONDS, env=env, check=False
         )

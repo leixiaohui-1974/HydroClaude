@@ -6,6 +6,8 @@
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 import numpy as np
 import matplotlib
@@ -15,7 +17,7 @@ from matplotlib.gridspec import GridSpec
 
 # 路径设置
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
 from solvers.gate import SluiceGate, PumpStation

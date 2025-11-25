@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 71,
+    "batch_end_index": 72,
+    "test_run_at": "2025-11-25T16:52:10.679044",
+    "batch_duration_seconds": 0.12,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./backups/fix_20251113_090938/tests/legacy_diagnostic/test_fixes_quick.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 0.12,
+      "stdout": "",
+      "stderr": "File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\fix_20251113_090938\\tests\\legacy_diagnostic\\test_fixes_quick.py\", line 18\n    except ImportError as e:\n    ^^^^^^\nIndentationError: expected an indented block after 'try' statement on line 15"
+    }
+  ]
+}

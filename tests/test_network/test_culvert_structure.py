@@ -19,6 +19,8 @@
 """
 
 import pytest
+import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
 import sys
 from pathlib import Path

@@ -17,11 +17,13 @@
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 from pathlib import Path
 
 # 添加项目路径
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from network.culvert_structure import Culvert, create_culvert
 

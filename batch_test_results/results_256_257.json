@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 256,
+    "batch_end_index": 257,
+    "test_run_at": "2025-11-25T16:32:50.501245",
+    "batch_duration_seconds": 2.15,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_12_loop_network/code/example_12_loop_network.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 2.15,
+      "stdout": "============================================================\nʾ��3: ��״���� (Loop Network)\n     N1 ---- E1 ---- N2\n     |               |\n     E4             E2\n     |               |\n     N4 ---- E3 ---- N3\n============================================================\n\n============================================================\n���˷���\n============================================================\nԴ�ڵ���: 1\n��ڵ���: 1\n�ܽڵ���: 4\n�ܹܶ���: 4\n ��״����: ��⵽ 1 ����·\n  ��·1: N1 -> N2 -> N3 -> N4 -> N1\n\n�ڵ����:\n  junction: 4\n============================================================\n\n\n============================================================\nHardy-Cross\n============================================================\n[OK]  1",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_12_loop_network\\code\\example_12_loop_network.py\", line 46, in <module>\n    example_loop_network()\n    ~~~~~~~~~~~~~~~~~~~~^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_12_loop_network\\code\\example_12_loop_network.py\", line 36, in example_loop_network\n    results = solver.solve_timestep(dt=60, use_hardy_cross=True)\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\solvers\\coupled_solver.py\", line 22, in solve_timestep\n    return self._solve_loop_network_hardy_cross(dt)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\solvers\\coupled_solver.py\", line 125, in _solve_loop_network_hardy_cross\n    flows = hardy_cross.solve(self.topology, head_loss)\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\solvers\\hardy_cross.py\", line 36, in solve\n    print(f\"  : {max_correction:.6f} m\\xb3/s\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'gbk' codec can't encode character '\\xb3' in position 14: illegal multibyte sequence"
+    }
+  ]
+}

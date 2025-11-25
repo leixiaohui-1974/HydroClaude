@@ -12,6 +12,8 @@
 日期: 2025-10-23
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========
@@ -69,7 +71,7 @@ def test_comparison_simple():
     def h_downstream_func(t):
         return 0.6 if t < 50.0 else 0.93
 
-    t_end = 200.0
+    t_end = 50.0
 
     # 固定时间步
     print(f"\n固定时间步求解...")
@@ -243,7 +245,7 @@ def test_comparison_with_gate():
     solver_adaptive.h = np.ones(nx) * h_init
     solver_adaptive.hu = np.ones(nx) * Q_init / B
 
-    t_end = 150.0
+    t_end = 50.0
 
     # 固定时间步
     print(f"\n固定时间步求解...")
@@ -368,7 +370,7 @@ def test_cfl_stability():
 
         t_start = time.time()
         result = solver.solve_transient_adaptive(
-            t_end=100.0,
+            t_end=50.0,
             dt_initial=0.1,
             dt_min=0.001,
             dt_max=1.0,

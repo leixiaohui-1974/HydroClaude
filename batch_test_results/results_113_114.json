@@ -2,8 +2,8 @@
   "metadata": {
     "batch_start_index": 113,
     "batch_end_index": 114,
-    "test_run_at": "2025-11-19T00:35:54.850545",
-    "batch_duration_seconds": 0.81,
+    "test_run_at": "2025-11-25T16:52:36.812967",
+    "batch_duration_seconds": 1.16,
     "total_scripts_in_batch": 1
   },
   "results": [
@@ -11,9 +11,9 @@
       "script_path": "./backups/test_scripts/tests/test_convergence_visual.py",
       "status": "fail",
       "return_code": 1,
-      "duration_seconds": 0.81,
+      "duration_seconds": 1.16,
       "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"/app/./backups/test_scripts/tests/test_convergence_visual.py\", line 11, in <module>\n    from example_01_canal_stability_test import ImprovedCanalSolver\nModuleNotFoundError: No module named 'example_01_canal_stability_test'"
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\backups\\test_scripts\\tests\\test_convergence_visual.py\", line 11, in <module>\n    from example_01_canal_stability_test import ImprovedCanalSolver\nModuleNotFoundError: No module named 'example_01_canal_stability_test'"
     }
   ]
 }

@@ -22,6 +22,8 @@ Anderson vs Aitken 加速方法性能对比测试
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import time
 from pathlib import Path

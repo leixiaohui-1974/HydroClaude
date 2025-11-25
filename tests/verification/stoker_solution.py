@@ -20,6 +20,8 @@ Stoker溃坝解析解 (1957)
 - Stoker: 下游有水 (h_R > 0)，包含激波
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

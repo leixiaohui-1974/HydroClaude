@@ -10,6 +10,8 @@ Date: 2025-11-15
 """
 
 import json
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 from pathlib import Path
 from typing import Dict, List, Any

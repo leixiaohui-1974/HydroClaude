@@ -10,6 +10,8 @@ Test Newton-Raphson solver improvements
 日期: 2025-10-30
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========

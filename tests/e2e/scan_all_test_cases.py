@@ -10,6 +10,8 @@ Date: 2025-11-15
 """
 
 import os
+import warnings
+warnings.filterwarnings("ignore")
 import re
 import json
 from pathlib import Path

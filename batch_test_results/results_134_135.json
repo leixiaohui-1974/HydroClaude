@@ -2,18 +2,18 @@
   "metadata": {
     "batch_start_index": 134,
     "batch_end_index": 135,
-    "test_run_at": "2025-11-19T00:39:40.059903",
-    "batch_duration_seconds": 0.03,
+    "test_run_at": "2025-11-25T16:54:51.376575",
+    "batch_duration_seconds": 2.54,
     "total_scripts_in_batch": 1
   },
   "results": [
     {
       "script_path": "./commercial_grade_test.py",
-      "status": "fail",
-      "return_code": 1,
-      "duration_seconds": 0.03,
-      "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"/app/./commercial_grade_test.py\", line 8, in <module>\n    import requests\nModuleNotFoundError: No module named 'requests'"
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 2.54,
+      "stdout": "======================================================================\n COMMERCIAL-GRADE WEB API TEST SUITE\n Testing all 7 simulation scenarios\n Start time: 2025-11-25 16:54:49\n======================================================================\n\n[Step 1] Testing backend health...\n[X] Backend is not responding!\n\nPlease ensure backend is running:\n  cd web/backend/api_gateway\n  python -m uvicorn main:app --host 0.0.0.0 --port 8000",
+      "stderr": ""
     }
   ]
 }

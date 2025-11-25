@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 247,
+    "batch_end_index": 248,
+    "test_run_at": "2025-11-25T16:31:18.572450",
+    "batch_duration_seconds": 6.19,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_07_fault_test/code/example_07_fault_test.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 6.19,
+      "stdout": "============================================================\nʾ��7: ���ϲ���\n============================================================\n\nģ�⴫��������...\nStep 0: ��ʵѹ��=40.00m, ����ѹ��=40.00m, ���=0.002m\nStep 25: ��ʵѹ��=1509.86m, ����ѹ��=1509.86m, ���=0.002m\nStep 50: ��ʵѹ��=3501.30m, ����ѹ��=3501.30m, ���=0.006m\nStep 75: ��ʵѹ��=5347.47m, ����ѹ��=5347.46m, ���=0.015m\n\n���ϲ������!",
+      "stderr": ""
+    }
+  ]
+}

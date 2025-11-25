@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-例子1[U+FF1A]明渠流动基础示例 (HydrostaticCanalSolver高精度版本)
+[U+4F8B][U+5B50]1[U+FF1A][U+660E][U+6E20][U+6D41][U+52A8][U+57FA][U+7840][U+793A][U+4F8B] (HydrostaticCanalSolver[U+9AD8][U+7CBE][U+5EA6][U+7248][U+672C])
 
-展示HydrostaticCanalSolver的核心能力[U+FF1A]
-1. 高精度稳态求解
-2. 非恒定流演化到稳态
-3. 流量守恒验证
+[U+5C55][U+793A]HydrostaticCanalSolver[U+7684][U+6838][U+5FC3][U+80FD][U+529B][U+FF1A]
+1. [U+9AD8][U+7CBE][U+5EA6][U+7A33][U+6001][U+6C42][U+89E3]
+2. [U+975E][U+6052][U+5B9A][U+6D41][U+6F14][U+5316][U+5230][U+7A33][U+6001]
+3. [U+6D41][U+91CF][U+5B88][U+6052][U+9A8C][U+8BC1]
 
 Author: Claude
 Date: 2025-10-23
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 import numpy as np
 import pandas as pd
@@ -23,10 +25,10 @@ import matplotlib.pyplot as plt
 # Add project root to path
 script_path = os.path.abspath(__file__)
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_path))))
-sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 script_dir = os.path.dirname(script_path)
-sys.path.insert(0, script_dir)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
 from utils.canal_utils import compute_steady_uniform_flow
@@ -36,42 +38,42 @@ from output_helper import get_output_path, save_table, save_figure
 
 
 def main():
-    """主函数"""
+    """[U+4E3B][U+51FD][U+6570]"""
     print("=" * 80)
-    print("例子1[U+FF1A]明渠流动基础示例 (HydrostaticCanalSolver高精度版本)")
+    print("[U+4F8B][U+5B50]1[U+FF1A][U+660E][U+6E20][U+6D41][U+52A8][U+57FA][U+7840][U+793A][U+4F8B] (HydrostaticCanalSolver[U+9AD8][U+7CBE][U+5EA6][U+7248][U+672C])")
     print("=" * 80)
 
     # ========================================================================
-    # 1. 参数设置
+    # 1. [U+53C2][U+6570][U+8BBE][U+7F6E]
     # ========================================================================
-    print("\n1. 参数设置")
+    print("\n1. [U+53C2][U+6570][U+8BBE][U+7F6E]")
     print("-" * 80)
 
-    # 渠道参数
-    length = 1000.0  # 渠道长度 (m)
-    B = 10.0         # 渠道宽度 (m)
-    S0 = 0.001       # 渠底坡度
-    n = 0.025        # Manning糙率系数
-    nx = 201         # 空间网格数
+    # [U+6E20][U+9053][U+53C2][U+6570]
+    length = 1000.0  # [U+6E20][U+9053][U+957F][U+5EA6] (m)
+    B = 10.0         # [U+6E20][U+9053][U+5BBD][U+5EA6] (m)
+    S0 = 0.001       # [U+6E20][U+5E95][U+5761][U+5EA6]
+    n = 0.025        # Manning[U+7CD9][U+7387][U+7CFB][U+6570]
+    nx = 201         # [U+7A7A][U+95F4][U+7F51][U+683C][U+6570]
 
-    # 边界条件
-    Q_target = 8.0  # 目标流量 (m^3/s)
+    # [U+8FB9][U+754C][U+6761][U+4EF6]
+    Q_target = 8.0  # [U+76EE][U+6807][U+6D41][U+91CF] (m^3/s)
 
-    # 计算理论水深
+    # [U+8BA1][U+7B97][U+7406][U+8BBA][U+6C34][U+6DF1]
     h_uniform = compute_steady_uniform_flow(Q_target, B, S0, n)
 
-    print(f"渠道长度: {length} m")
-    print(f"渠道宽度: {B} m")
-    print(f"渠底坡度: {S0}")
-    print(f"Manning糙率: {n}")
-    print(f"网格数: {nx}")
-    print(f"目标流量: {Q_target} m^3/s")
-    print(f"均匀流水深: {h_uniform:.6f} m")
+    print(f"[U+6E20][U+9053][U+957F][U+5EA6]: {length} m")
+    print(f"[U+6E20][U+9053][U+5BBD][U+5EA6]: {B} m")
+    print(f"[U+6E20][U+5E95][U+5761][U+5EA6]: {S0}")
+    print(f"Manning[U+7CD9][U+7387]: {n}")
+    print(f"[U+7F51][U+683C][U+6570]: {nx}")
+    print(f"[U+76EE][U+6807][U+6D41][U+91CF]: {Q_target} m^3/s")
+    print(f"[U+5747][U+5300][U+6D41][U+6C34][U+6DF1]: {h_uniform:.6f} m")
 
     # ========================================================================
-    # 2. 高精度稳态求解
+    # 2. [U+9AD8][U+7CBE][U+5EA6][U+7A33][U+6001][U+6C42][U+89E3]
     # ========================================================================
-    print("\n2. 高精度稳态求解 (Phase 2静水重构方法)")
+    print("\n2. [U+9AD8][U+7CBE][U+5EA6][U+7A33][U+6001][U+6C42][U+89E3] (Phase 2[U+9759][U+6C34][U+91CD][U+6784][U+65B9][U+6CD5])")
     print("-" * 80)
 
     solver = HydrostaticCanalSolver(
@@ -80,14 +82,14 @@ def main():
         B=B,
         S0=S0,
         n=n,
-        internal_structures=[]  # 无内部结构的简单渠道
+        internal_structures=[]  # [U+65E0][U+5185][U+90E8][U+7ED3][U+6784][U+7684][U+7B80][U+5355][U+6E20][U+9053]
     )
 
-    # 初始化
+    # [U+521D][U+59CB][U+5316]
     solver.h[:] = h_uniform
     solver.hu[:] = Q_target / B
 
-    print("开始稳态求解...")
+    print("[U+5F00][U+59CB][U+7A33][U+6001][U+6C42][U+89E3]...")
     result = solver.solve_steady_state(
         Q_target=Q_target,
         h_downstream=h_uniform,
@@ -97,28 +99,28 @@ def main():
         verbose=True
     )
 
-    print(f"\n稳态求解结果:")
-    print(f"  收敛: {'是' if result['converged'] else '否'}")
-    print(f"  迭代次数: {result['iterations']}")
-    print(f"  流量误差: {result['Q_error_percent']:.6f}%")
+    print(f"\n[U+7A33][U+6001][U+6C42][U+89E3][U+7ED3][U+679C]:")
+    print(f"  [U+6536][U+655B]: {'[U+662F]' if result['converged'] else '[U+5426]'}")
+    print(f"  [U+8FED][U+4EE3][U+6B21][U+6570]: {result['iterations']}")
+    print(f"  [U+6D41][U+91CF][U+8BEF][U+5DEE]: {result['Q_error_percent']:.6f}%")
 
-    # 验证
-    print("\n稳态结果验证:")
+    # [U+9A8C][U+8BC1]
+    print("\n[U+7A33][U+6001][U+7ED3][U+679C][U+9A8C][U+8BC1]:")
     print("-" * 80)
     validator = quick_validate_steady_state(
         solver=solver,
         result_dict=result,
         Q_target=Q_target,
-        name="脚本01 - 基础示例稳态"
+        name="[U+811A][U+672C]01 - [U+57FA][U+7840][U+793A][U+4F8B][U+7A33][U+6001]"
     )
 
     # ========================================================================
-    # 3. 非恒定流演化到稳态
+    # 3. [U+975E][U+6052][U+5B9A][U+6D41][U+6F14][U+5316][U+5230][U+7A33][U+6001]
     # ========================================================================
-    print("\n3. 非恒定流演化到稳态")
+    print("\n3. [U+975E][U+6052][U+5B9A][U+6D41][U+6F14][U+5316][U+5230][U+7A33][U+6001]")
     print("-" * 80)
 
-    # 创建新求解器用于非恒定流
+    # [U+521B][U+5EFA][U+65B0][U+6C42][U+89E3][U+5668][U+7528][U+4E8E][U+975E][U+6052][U+5B9A][U+6D41]
     solver_unsteady = HydrostaticCanalSolver(
         length=length,
         nx=nx,
@@ -128,37 +130,37 @@ def main():
         internal_structures=[]
     )
 
-    # 从扰动初值开始
-    h_initial = h_uniform * 1.2  # 初始水深为理论值的120%
+    # [U+4ECE][U+6270][U+52A8][U+521D][U+503C][U+5F00][U+59CB]
+    h_initial = h_uniform * 1.2  # [U+521D][U+59CB][U+6C34][U+6DF1][U+4E3A][U+7406][U+8BBA][U+503C][U+7684]120%
     solver_unsteady.h[:] = h_initial
     solver_unsteady.hu[:] = Q_target / B
 
-    print(f"初始状态:")
-    print(f"  水深: {h_initial:.4f} m (理论值的120%)")
-    print(f"  流量: {Q_target} m^3/s")
+    print(f"[U+521D][U+59CB][U+72B6][U+6001]:")
+    print(f"  [U+6C34][U+6DF1]: {h_initial:.4f} m ([U+7406][U+8BBA][U+503C][U+7684]120%)")
+    print(f"  [U+6D41][U+91CF]: {Q_target} m^3/s")
 
-    # 时间步进参数
+    # [U+65F6][U+95F4][U+6B65][U+8FDB][U+53C2][U+6570]
     dt = 0.5
-    T_total = 100.0  # 100秒足以看到稳态演化
+    T_total = 100.0  # 100[U+79D2][U+8DB3][U+4EE5][U+770B][U+5230][U+7A33][U+6001][U+6F14][U+5316]
     n_steps = int(T_total / dt)
 
-    print(f"\n非恒定流参数:")
-    print(f"  时间步长: {dt} s")
-    print(f"  总时间: {T_total} s")
-    print(f"  总步数: {n_steps}")
+    print(f"\n[U+975E][U+6052][U+5B9A][U+6D41][U+53C2][U+6570]:")
+    print(f"  [U+65F6][U+95F4][U+6B65][U+957F]: {dt} s")
+    print(f"  [U+603B][U+65F6][U+95F4]: {T_total} s")
+    print(f"  [U+603B][U+6B65][U+6570]: {n_steps}")
 
-    # 记录历史
+    # [U+8BB0][U+5F55][U+5386][U+53F2]
     time_history = []
     h_avg_history = []
     Q_avg_history = []
     snapshot_times = [0, 10, 30, 50, 100]
     snapshots = {}
 
-    print("\n运行非恒定流仿真...")
+    print("\n[U+8FD0][U+884C][U+975E][U+6052][U+5B9A][U+6D41][U+4EFF][U+771F]...")
     for i in range(n_steps):
         current_time = (i + 1) * dt
 
-        # 执行一步 Preissmann格式
+        # [U+6267][U+884C][U+4E00][U+6B65] Preissmann[U+683C][U+5F0F]
         h_new, hu_new = solver_unsteady.step_preissmann(
             dt=dt,
             max_iter=10,
@@ -171,7 +173,7 @@ def main():
         solver_unsteady.hu = hu_new
         solver_unsteady.current_time = current_time
 
-        # 记录平均值
+        # [U+8BB0][U+5F55][U+5E73][U+5747][U+503C]
         h_avg = np.mean(solver_unsteady.h)
         Q_avg = np.mean(solver_unsteady.hu)
 
@@ -179,27 +181,27 @@ def main():
         h_avg_history.append(h_avg)
         Q_avg_history.append(Q_avg)
 
-        # 保存快照
+        # [U+4FDD][U+5B58][U+5FEB][U+7167]
         if current_time in snapshot_times:
             snapshots[current_time] = {
                 'h': solver_unsteady.h.copy(),
                 'Q': solver_unsteady.hu.copy()
             }
 
-        # 打印进度
+        # [U+6253][U+5370][U+8FDB][U+5EA6]
         if (i + 1) % 50 == 0:
             print(f"  t={current_time:.1f}s: h_avg={h_avg:.6f} m, Q_avg={Q_avg:.6f} m^3/s")
 
-    print(f" 非恒定流仿真完成")
+    print(f" [U+975E][U+6052][U+5B9A][U+6D41][U+4EFF][U+771F][U+5B8C][U+6210]")
 
     # ========================================================================
-    # 4. 生成可视化
+    # 4. [U+751F][U+6210][U+53EF][U+89C6][U+5316]
     # ========================================================================
-    print("\n4. 生成可视化图表")
+    print("\n4. [U+751F][U+6210][U+53EF][U+89C6][U+5316][U+56FE][U+8868]")
     print("-" * 80)
 
-    # 图1: 稳态纵剖面
-    print("  生成稳态纵剖面图...")
+    # [U+56FE]1: [U+7A33][U+6001][U+7EB5][U+5256][U+9762]
+    print("  [U+751F][U+6210][U+7A33][U+6001][U+7EB5][U+5256][U+9762][U+56FE]...")
     fig1, axes1 = plt.subplots(2, 1, figsize=(14, 10))
 
     x = solver.x
@@ -208,7 +210,7 @@ def main():
     z_bed = (length - x) * S0
     z_surface = z_bed + h_steady
 
-    # 子图1: 水面线
+    # [U+5B50][U+56FE]1: [U+6C34][U+9762][U+7EBF]
     ax1 = axes1[0]
     ax1.fill_between(x, z_bed, z_surface, color='cyan', alpha=0.5, label='Water')
     ax1.plot(x, z_surface, 'b-', linewidth=2.5, label='Water Surface')
@@ -222,7 +224,7 @@ def main():
     ax1.grid(True, alpha=0.3)
     ax1.legend(fontsize=11)
 
-    # 子图2: 流量分布
+    # [U+5B50][U+56FE]2: [U+6D41][U+91CF][U+5206][U+5E03]
     ax2 = axes1[1]
     Q_error_pct = np.abs(Q_steady - Q_target) / Q_target * 100
     ax2.plot(x, Q_steady, 'g-', linewidth=2.5, label='Flow Rate')
@@ -235,7 +237,7 @@ def main():
     ax2.grid(True, alpha=0.3)
     ax2.legend(fontsize=11)
 
-    # 添加误差标注
+    # [U+6DFB][U+52A0][U+8BEF][U+5DEE][U+6807][U+6CE8]
     max_error = np.max(Q_error_pct)
     if max_error < 0.01:
         grade_text = 'Excellent (<0.01%)'
@@ -256,11 +258,11 @@ def main():
     save_figure(fig1, '01_basic_steady_profile_v2.png')
     plt.close(fig1)
 
-    # 图2: 非恒定流演化
-    print("  生成非恒定流演化图...")
+    # [U+56FE]2: [U+975E][U+6052][U+5B9A][U+6D41][U+6F14][U+5316]
+    print("  [U+751F][U+6210][U+975E][U+6052][U+5B9A][U+6D41][U+6F14][U+5316][U+56FE]...")
     fig2, axes2 = plt.subplots(2, 1, figsize=(14, 10))
 
-    # 子图1: 平均水深演化
+    # [U+5B50][U+56FE]1: [U+5E73][U+5747][U+6C34][U+6DF1][U+6F14][U+5316]
     ax1 = axes2[0]
     ax1.plot(time_history, h_avg_history, 'b-', linewidth=2.5, label='Average Depth')
     ax1.axhline(y=h_uniform, color='r', linestyle='--', linewidth=2, alpha=0.7,
@@ -272,7 +274,7 @@ def main():
     ax1.grid(True, alpha=0.3)
     ax1.legend(fontsize=11)
 
-    # 子图2: 平均流量演化
+    # [U+5B50][U+56FE]2: [U+5E73][U+5747][U+6D41][U+91CF][U+6F14][U+5316]
     ax2 = axes2[1]
     ax2.plot(time_history, Q_avg_history, 'g-', linewidth=2.5, label='Average Flow')
     ax2.axhline(y=Q_target, color='r', linestyle='--', linewidth=2, alpha=0.7,
@@ -288,8 +290,8 @@ def main():
     save_figure(fig2, '01_basic_unsteady_evolution_v2.png')
     plt.close(fig2)
 
-    # 图3: 快照对比
-    print("  生成快照对比图...")
+    # [U+56FE]3: [U+5FEB][U+7167][U+5BF9][U+6BD4]
+    print("  [U+751F][U+6210][U+5FEB][U+7167][U+5BF9][U+6BD4][U+56FE]...")
     fig3, ax3 = plt.subplots(1, 1, figsize=(14, 8))
 
     colors = plt.cm.viridis(np.linspace(0, 1, len(snapshot_times)))
@@ -311,12 +313,12 @@ def main():
     plt.close(fig3)
 
     # ========================================================================
-    # 5. 保存数据表
+    # 5. [U+4FDD][U+5B58][U+6570][U+636E][U+8868]
     # ========================================================================
-    print("\n5. 保存数据表")
+    print("\n5. [U+4FDD][U+5B58][U+6570][U+636E][U+8868]")
     print("-" * 80)
 
-    # 稳态剖面数据
+    # [U+7A33][U+6001][U+5256][U+9762][U+6570][U+636E]
     steady_profile = pd.DataFrame({
         'Distance_m': x,
         'Bed_Elevation_m': z_bed,
@@ -326,9 +328,9 @@ def main():
         'Flow_Error_pct': Q_error_pct
     })
     save_table(steady_profile, '01_basic_steady_profile_v2.csv', index=False)
-    print(f"   稳态剖面数据: 01_basic_steady_profile_v2.csv ({len(x)} rows)")
+    print(f"   [U+7A33][U+6001][U+5256][U+9762][U+6570][U+636E]: 01_basic_steady_profile_v2.csv ({len(x)} rows)")
 
-    # 非恒定流演化数据
+    # [U+975E][U+6052][U+5B9A][U+6D41][U+6F14][U+5316][U+6570][U+636E]
     unsteady_evolution = pd.DataFrame({
         'Time_s': time_history,
         'Average_Depth_m': h_avg_history,
@@ -337,38 +339,38 @@ def main():
         'Flow_Error_pct': (np.array(Q_avg_history) - Q_target) / Q_target * 100
     })
     save_table(unsteady_evolution, '01_basic_unsteady_evolution_v2.csv', index=False)
-    print(f"   非恒定流演化数据: 01_basic_unsteady_evolution_v2.csv ({len(time_history)} rows)")
+    print(f"   [U+975E][U+6052][U+5B9A][U+6D41][U+6F14][U+5316][U+6570][U+636E]: 01_basic_unsteady_evolution_v2.csv ({len(time_history)} rows)")
 
-    # 保存验证报告
-    print("  保存验证报告...")
+    # [U+4FDD][U+5B58][U+9A8C][U+8BC1][U+62A5][U+544A]
+    print("  [U+4FDD][U+5B58][U+9A8C][U+8BC1][U+62A5][U+544A]...")
     report_path = get_output_path('reports', '01_basic_validation_report.txt')
     validator.save_report(report_path)
-    print(f"   验证报告: 01_basic_validation_report.txt")
+    print(f"   [U+9A8C][U+8BC1][U+62A5][U+544A]: 01_basic_validation_report.txt")
 
     # ========================================================================
-    # 6. 总结
+    # 6. [U+603B][U+7ED3]
     # ========================================================================
     print("\n" + "=" * 80)
-    print("仿真完成[U+FF01]")
+    print("[U+4EFF][U+771F][U+5B8C][U+6210][U+FF01]")
     print("=" * 80)
 
-    print(f"\n生成的文件:")
+    print(f"\n[U+751F][U+6210][U+7684][U+6587][U+4EF6]:")
     print(f"  Figures:")
-    print(f"    - 01_basic_steady_profile_v2.png (稳态纵剖面)")
-    print(f"    - 01_basic_unsteady_evolution_v2.png (非恒定流演化)")
-    print(f"    - 01_basic_unsteady_snapshots_v2.png (快照对比)")
+    print(f"    - 01_basic_steady_profile_v2.png ([U+7A33][U+6001][U+7EB5][U+5256][U+9762])")
+    print(f"    - 01_basic_unsteady_evolution_v2.png ([U+975E][U+6052][U+5B9A][U+6D41][U+6F14][U+5316])")
+    print(f"    - 01_basic_unsteady_snapshots_v2.png ([U+5FEB][U+7167][U+5BF9][U+6BD4])")
     print(f"  Tables:")
     print(f"    - 01_basic_steady_profile_v2.csv")
     print(f"    - 01_basic_unsteady_evolution_v2.csv")
     print(f"  Reports:")
     print(f"    - 01_basic_validation_report.txt")
 
-    print(f"\n关键结果:")
-    print(f"  稳态流量误差: {result['Q_error_percent']:.6f}% (优秀)")
-    print(f"  稳态收敛迭代: {result['iterations']} (极快)")
-    print(f"  非恒定流演化: 100s内稳定")
+    print(f"\n[U+5173][U+952E][U+7ED3][U+679C]:")
+    print(f"  [U+7A33][U+6001][U+6D41][U+91CF][U+8BEF][U+5DEE]: {result['Q_error_percent']:.6f}% ([U+4F18][U+79C0])")
+    print(f"  [U+7A33][U+6001][U+6536][U+655B][U+8FED][U+4EE3]: {result['iterations']} ([U+6781][U+5FEB])")
+    print(f"  [U+975E][U+6052][U+5B9A][U+6D41][U+6F14][U+5316]: 100s[U+5185][U+7A33][U+5B9A]")
 
-    print("\n 例子1 (HydrostaticCanalSolver版) 运行成功")
+    print("\n [U+4F8B][U+5B50]1 (HydrostaticCanalSolver[U+7248]) [U+8FD0][U+884C][U+6210][U+529F]")
     print("=" * 80)
 
     return validator

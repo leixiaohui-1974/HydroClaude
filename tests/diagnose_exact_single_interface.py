@@ -11,6 +11,8 @@ Single Interface Exact Flux Diagnostics
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import os
 sys.path.insert(0, os.path.abspath('.'))

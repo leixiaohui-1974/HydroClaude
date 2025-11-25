@@ -36,6 +36,8 @@ IDZ-Saint-Venant深度集成示例
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('Agg')
@@ -43,7 +45,7 @@ from typing import List, Tuple, Dict
 import sys
 import os
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from control.idz_model import IDZParameters, IDZModel
 from control.online_identification import IDZIdentifier

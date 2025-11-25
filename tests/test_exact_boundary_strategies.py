@@ -11,6 +11,8 @@ Test different boundary condition strategies for Exact Riemann solver
 """
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 import os
 sys.path.insert(0, os.path.abspath('.'))

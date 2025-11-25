@@ -2,18 +2,18 @@
   "metadata": {
     "batch_start_index": 130,
     "batch_end_index": 131,
-    "test_run_at": "2025-11-19T00:39:38.138646",
-    "batch_duration_seconds": 0.05,
+    "test_run_at": "2025-11-25T16:54:48.681120",
+    "batch_duration_seconds": 29.74,
     "total_scripts_in_batch": 1
   },
   "results": [
     {
       "script_path": "./browser_test_real.py",
-      "status": "fail",
-      "return_code": 1,
-      "duration_seconds": 0.05,
-      "stdout": "",
-      "stderr": "Traceback (most recent call last):\n  File \"/app/./browser_test_real.py\", line 8, in <module>\n    from selenium import webdriver\nModuleNotFoundError: No module named 'selenium'"
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 29.74,
+      "stdout": "================================================================================\n启动浏览器测试...\n================================================================================\n\n[测试1] 首页加载测试\n--------------------------------------------------------------------------------\n[OK] Screenshot saved: 01_homepage_error_165432.png\n[!] [CRITICAL] 首页加载失败: Message: unknown error: net::ERR_CONNECTION_REFUSED\n  (Session info: chrome=142.0.7444.176)\nStacktrace:\nSymbols not available. Dumping unresolved backtrace:\n\t0x384103\n\t0x384144\n\t0x18e71d\n\t0x18bc77\n\t0x17eec8\n\t0x180884\n\t0x17f396\n\t0x17ec82\n\t0x17e98d\n\t0x17c7fe\n\t0x17d28b\n\t0x1924ce\n\t0x21fb37\n\t0x1fc90c\n\t0x21ee17\n\t0x1fc706\n\t0x1cda30\n\t0x1ced54\n\t0x5f57b4\n\t0x5f098a\n\t0x3ac392\n\t0x39c4c8\n\t0x3a324d\n\t0x38c478\n\t0x38c63c\n\t0x3767ca\n\t0x75f55d49\n\t0x779ad6db\n\t0x779ad661\n\t0\n\n\n[测试2] 建模工作台测试\n--------------------------------------------------------------------------------\n[OK] Screenshot saved: 02_modeling_workspace_165434.png\n[*] [WARNING] 未找到建模相关元素\n页面共有 2 个按钮\n[OK] Screenshot saved: 03_modeling_interface_165435.png\n[OK] Modeling workspace test completed\n\n[测试3] 仿真管理标签测试\n--------------------------------------------------------------------------------\n找到 0 个标签页\n[OK] Screenshot saved: 04_simulation_interface_165436.png\n[OK] Simulation test completed\n\n[测试4] 控制台错误检查\n--------------------------------------------------------------------------------\n控制台错误数: 0\n控制台警告数: 0\n[OK] No console errors\n\n[测试5] 响应式布局测试\n--------------------------------------------------------------------------------\n[OK] Screenshot saved: 05_responsive_desktop_165437.png\n[OK] desktop (1920x1080) screenshot saved\n[OK] Screenshot saved: 06_responsive_laptop_165439.png\n[OK] laptop (1366x768) screenshot saved\n[OK] Screenshot saved: 07_responsive_tablet_165440.png\n[OK] tablet (768x1024) screenshot saved\n[OK] Responsive test completed\n\n================================================================================\n测试总结\n================================================================================\n总截图数: 7\n发现问题数: 2\n\n发现的问题:\n\n问题 1:\n  严重性: critical\n  描述: 首页加载失败: Message: unknown error: net::ERR_CONNECTION_REFUSED\n  (Session info: chrome=142.0.7444.176)\nStacktrace:\nSymbols not available. Dumping unresolved backtrace:\n\t0x384103\n\t0x384144\n\t0x18e71d\n\t0x18bc77\n\t0x17eec8\n\t0x180884\n\t0x17f396\n\t0x17ec82\n\t0x17e98d\n\t0x17c7fe\n\t0x17d28b\n\t0x1924ce\n\t0x21fb37\n\t0x1fc90c\n\t0x21ee17\n\t0x1fc706\n\t0x1cda30\n\t0x1ced54\n\t0x5f57b4\n\t0x5f098a\n\t0x3ac392\n\t0x39c4c8\n\t0x3a324d\n\t0x38c478\n\t0x38c63c\n\t0x3767ca\n\t0x75f55d49\n\t0x779ad6db\n\t0x779ad661\n\t0\n\n  截图: web_test_screenshots\\01_homepage_error_165432.png\n\n问题 2:\n  严重性: warning\n  描述: 未找到建模相关元素\n  截图: web_test_screenshots\\02_modeling_workspace_165434.png\n\n所有截图保存在: web_test_screenshots/\n================================================================================\n\n================================================================================\n测试完成，5秒后关闭浏览器...\n================================================================================",
+      "stderr": ""
     }
   ]
 }

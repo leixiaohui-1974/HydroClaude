@@ -9,6 +9,8 @@ Date: 2025-11-25
 """
 
 import json
+import warnings
+warnings.filterwarnings("ignore")
 import os
 import re
 import httpx

@@ -1,0 +1,262 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+WENO-3求解器 - Dam Break经典测试
+
+Dam Break是测试WENO的**标准场景**：
+- 有明显间断（水坝溃决瞬间）
+- WENO优势可充分体现
+- 不同于均匀流，更适合高阶格式
+
+对比：
+- Phase 1 (一阶FVM)
+- WENO-3 (三阶)
+
+作者: HydroClaude Team
+日期: 2025-10-27
+"""
+
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.use('Agg')
+from solvers.godunov_fvm_solver import GodunvFVMSolver
+from solvers.godunov_fvm_weno3_v2 import GodunovFVMWENO3V2
+
+
+def run_dambreak(solver, solver_name: str, T_sim: float = 5.0):
+    """
+    运行Dam Break模拟
+    
+    Args:
+        solver: 求解器实例
+        solver_name: 求解器名称
+        T_sim: 模拟时间（秒）
+    
+    Returns:
+        t_final, x, h_final, Q_final, success
+    """
+    print(f"\n{'='*70}")
+    print(f"运行 {solver_name}")
+    print(f"{'='*70}")
+    
+    # 初始条件：Dam Break
+    # 左侧：h=2.0m（高水位）
+    # 右侧：h=0.5m（低水位）
+    # 瞬间移除水坝 -> 激波+稀疏波
+    
+    n_cells = solver.n_cells
+    x_mid = solver.L / 2.0
+    
+    h_init = np.zeros(n_cells)
+    Q_init = np.zeros(n_cells)
+    
+    for i in range(n_cells):
+        x_i = solver.x[i]
+        if x_i < x_mid:
+            h_init[i] = 2.0  # 左侧高水位
+        else:
+            h_init[i] = 0.5  # 右侧低水位
+        Q_init[i] = 0.0  # 初始静止
+    
+    # 边界条件：透射（自由出流）
+    bc_left = {'type': 'transmissive'}
+    bc_right = {'type': 'transmissive'}
+    
+    # GodunvFVMSolver需要手动初始化
+
+    
+    solver.h = h_init.copy()
+
+    
+    solver.Q = Q_init.copy()
+
+    
+    solver.bc_left = bc_left
+
+    
+    solver.bc_right = bc_right
+    
+    print(f"  初始条件: 左侧h={2.0}m, 右侧h={0.5}m (Dam Break)")
+    print(f"  模拟时间: {T_sim}s")
+    
+    # 时间推进
+    t = 0.0
+    step = 0
+    success = True
+    
+    while t < T_sim:
+        try:
+            dt = solver.compute_dt()
+            dt = min(dt, T_sim - t)  # 不超过T_sim
+            
+            solver.step(dt)
+            
+            t += dt
+            step += 1
+            
+            # 检查NaN
+            if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
+                print(f"   第{step}步出现NaN，模拟终止")
+                success = False
+                break
+            
+            # 每1秒报告
+            if step % 100 == 0:
+                mass_current = np.sum(solver.h * solver.B * solver.dx)
+                mass_error = (mass_current - solver.initial_mass) / solver.initial_mass * 100
+                print(f"  t={t:.2f}s, 步{step}, h_avg={np.mean(solver.h):.3f}m, "
+                      f"mass_err={mass_error:.4f}%")
+        
+        except Exception as e:
+            print(f"   求解器错误: {e}")
+            success = False
+            break
+    
+    if success:
+        print(f"   模拟成功完成")
+        mass_current = np.sum(solver.h * solver.B * solver.dx)
+        mass_error = (mass_current - solver.initial_mass) / solver.initial_mass * 100
+        print(f"  最终: t={t:.2f}s, 步{step}")
+        print(f"  质量误差: {mass_error:.4f}%")
+    
+    return t, solver.x.copy(), solver.h.copy(), solver.Q.copy(), success
+
+
+def main():
+    """主函数"""
+    print("="*70)
+    print("WENO-3 Dam Break经典测试")
+    print("="*70)
+    print("\n目标：验证WENO-3在间断问题上的性能")
+    print("对比：Phase 1 (一阶) vs WENO-3 (三阶)")
+    
+    # 渠道参数
+    B = 10.0  # 渠宽 (m)
+    L = 100.0  # 渠长 (m)
+    n_cells = 200  # 单元数
+    n = 0.025  # Manning系数
+    S0 = 0.0  # 水平（无坡度，纯Dam Break）
+    
+    # ===== 1. Phase 1 一阶求解器 =====
+    solver1 = GodunvFVMSolver(
+        width=B,
+        length=L,
+        n_cells=n_cells,
+        manning_n=n,
+        slope=S0,
+        cfl = 0.3,
+        order=1  # 一阶
+    )
+    
+    t1, x1, h1, Q1, success1 = run_dambreak(solver1, "Phase 1 (一阶FVM)", T_sim=5.0)
+    
+    # ===== 2. WENO-3 求解器 =====
+    solver3 = GodunovFVMWENO3V2(
+        width=B,
+        length=L,
+        n_cells=n_cells,
+        manning_n=n,
+        slope=S0,
+        cfl=0.3,  # 更低CFL for WENO
+        weno_epsilon=1e-4
+    )
+    
+    t3, x3, h3, Q3, success3 = run_dambreak(solver3, "WENO-3", T_sim=5.0)
+    
+    # ===== 3. 结果对比 =====
+    print(f"\n{'='*70}")
+    print("结果对比")
+    print(f"{'='*70}")
+    
+    print(f"\n一阶FVM:")
+    print(f"  成功: {'' if success1 else ''}")
+    if success1:
+        mass_error1 = (np.sum(solver1.h * solver1.B * solver1.dx) - solver1.initial_mass) / solver1.initial_mass * 100
+        print(f"  质量误差: {mass_error1:.4f}%")
+    
+    print(f"\nWENO-3:")
+    print(f"  成功: {'' if success3 else ''}")
+    if success3:
+        mass_error3 = (np.sum(solver3.h * solver3.B * solver3.dx) - solver3.initial_mass) / solver3.initial_mass * 100
+        print(f"  质量误差: {mass_error3:.4f}%")
+    
+    # ===== 4. 可视化 =====
+    if success1 or success3:
+        fig, axes = plt.subplots(2, 1, figsize=(12, 8))
+        
+        # 水深
+        ax = axes[0]
+        if success1:
+            ax.plot(x1, h1, 'b-', linewidth=2, label='一阶FVM')
+        if success3:
+            ax.plot(x3, h3, 'r--', linewidth=2, label='WENO-3')
+        
+        ax.axvline(L/2, color='k', linestyle=':', alpha=0.5, label='初始Dam位置')
+        ax.set_xlabel('x (m)', fontsize=12)
+        ax.set_ylabel('水深 h (m)', fontsize=12)
+        ax.set_title('Dam Break - 水深分布', fontsize=14, fontweight='bold')
+        ax.legend(fontsize=11)
+        ax.grid(True, alpha=0.3)
+        
+        # 流量
+        ax = axes[1]
+        if success1:
+            ax.plot(x1, Q1, 'b-', linewidth=2, label='一阶FVM')
+        if success3:
+            ax.plot(x3, Q3, 'r--', linewidth=2, label='WENO-3')
+        
+        ax.axvline(L/2, color='k', linestyle=':', alpha=0.5, label='初始Dam位置')
+        ax.set_xlabel('x (m)', fontsize=12)
+        ax.set_ylabel('流量 Q (m^3/s)', fontsize=12)
+        ax.set_title('Dam Break - 流量分布', fontsize=14, fontweight='bold')
+        ax.legend(fontsize=11)
+        ax.grid(True, alpha=0.3)
+        
+        plt.tight_layout()
+        
+        # 保存
+        output_path = 'weno3_dambreak_comparison.png'
+        plt.savefig(output_path, dpi=150, bbox_inches='tight')
+        print(f"\n 图表已保存: {output_path}")
+        
+        # 显示（如果在交互环境）
+        # # plt.show()  # Disabled for automated testing
+    
+    # ===== 5. 总结 =====
+    print(f"\n{'='*70}")
+    print("测试总结")
+    print(f"{'='*70}")
+    
+    if success1 and success3:
+        print(" 两种求解器均成功完成Dam Break模拟")
+        print("\n精度对比:")
+        mass_error1 = (np.sum(solver1.h * solver1.B * solver1.dx) - solver1.initial_mass) / solver1.initial_mass * 100
+        mass_error3 = (np.sum(solver3.h * solver3.B * solver3.dx) - solver3.initial_mass) / solver3.initial_mass * 100
+        print(f"  一阶FVM:  质量误差 {mass_error1:.4f}%")
+        print(f"  WENO-3:   质量误差 {mass_error3:.4f}%")
+        
+        if abs(mass_error3) < abs(mass_error1):
+            print("\n WENO-3精度优于一阶FVM!")
+        else:
+            print("\n WENO-3精度未体现优势，可能需要进一步调优")
+    
+    elif success1 and not success3:
+        print(" 一阶FVM成功，但WENO-3失败")
+        print("   -> WENO-3仍需调试")
+    
+    elif not success1 and success3:
+        print(" WENO-3成功，一阶FVM失败")
+        print("   -> WENO-3在极端条件下更稳定!")
+    
+    else:
+        print(" 两种求解器均失败")
+        print("   -> 问题可能在测试参数设置")
+
+
+if __name__ == '__main__':
+    main()

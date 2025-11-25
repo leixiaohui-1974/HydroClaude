@@ -7,6 +7,8 @@ CFL敏感性测试 - 找出无摩阻Test 4的稳定CFL数
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 sys.path.insert(0, os.path.dirname(__file__))
 

@@ -24,6 +24,8 @@ Date: 2025-10-30
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 import numpy as np
 import matplotlib
@@ -34,7 +36,7 @@ from scipy.optimize import differential_evolution
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
-sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from solvers.hardy_cross_solver import HardyCrossSolver
 from solvers.newton_raphson_network_solver import NewtonRaphsonNetworkSolver

@@ -1,6 +1,8 @@
 """测试平坦底床的良平衡性"""
 
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 import sys
 sys.path.append('.')
 

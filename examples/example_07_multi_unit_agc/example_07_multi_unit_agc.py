@@ -23,6 +23,8 @@ Author: HydroClaude Development Team
 Date: 2025-10-22
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # 添加项目根目录到Python路径
@@ -79,7 +81,7 @@ def simulate_frequency_disturbance():
 
     # Simulation parameters
     dt = 0.5  # seconds
-    t_end = 60.0  # seconds
+    t_end = 50.0  # seconds
     time_array = np.arange(0, t_end, dt)
 
     # Storage
@@ -272,7 +274,7 @@ def simulate_load_variation():
 
     # Simulation parameters
     dt = 1.0  # seconds
-    t_end = 120.0  # seconds
+    t_end = 50.0  # seconds
     time_array = np.arange(0, t_end, dt)
 
     # Storage
@@ -424,7 +426,7 @@ def simulate_tie_line_control():
 
     # Simulation parameters
     dt = 0.5
-    t_end = 90.0
+    t_end = 50.0
     time_array = np.arange(0, t_end, dt)
 
     # Storage

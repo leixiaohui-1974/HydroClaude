@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 339,
+    "batch_end_index": 340,
+    "test_run_at": "2025-11-25T16:52:16.059360",
+    "batch_duration_seconds": 0.33,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./global_fix_all_test_issues.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 0.33,
+      "stdout": "======================================================================\nGLOBAL FIX FOR ALL TEST FILES\n======================================================================\n\nFound 184 Python files\nProcessing...\n\n[ 46/184] examples\\test_weno3_dambreak.py\n           - Fixed GodunvFVMWENO3 typo\n[ 90/184] examples\\config_driven\\simulate.py\n           - Fixed initialize method\nProgress: 100/184 scanned...\n[183/184] examples\\case_library\\case_01_dam_break\\dam_break_comparison.py\n           - Fixed GodunvFVMWENO3 typo\n\n======================================================================\nSUMMARY\n======================================================================\nTotal files: 184\nFiles fixed: 3\n\nChanges applied:\n  - Fixed GodunvFVMWENO3 typo: 2 files\n  - Fixed initialize method: 1 files\n======================================================================",
+      "stderr": ""
+    }
+  ]
+}

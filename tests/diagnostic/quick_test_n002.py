@@ -3,6 +3,8 @@
 """快速测试 n=0.02 工况"""
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 sys.path.insert(0, os.path.dirname(__file__))
 

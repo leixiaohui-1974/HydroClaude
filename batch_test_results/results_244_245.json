@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 244,
+    "batch_end_index": 245,
+    "test_run_at": "2025-11-25T16:31:06.651734",
+    "batch_duration_seconds": 6.3,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_04_moc_boundary/code/example_04_moc_boundary.py",
+      "status": "pass",
+      "return_code": 0,
+      "duration_seconds": 6.3,
+      "stdout": "============================================================\nʾ��4: MOC�߽���������\n============================================================\n\n���Է��ſ��ٹر�...\n  t=0.00s: ���ѹ��=41.15m\n  t=1.00s: ���ѹ��=129.98m\n  t=2.00s: ���ѹ��=1210.01m\n  t=3.00s: ���ѹ��=1280.56m\n  t=4.00s: ���ѹ��=2176.00m\n\n�������ѹ��: 2234.41m\nMOC�߽������������!",
+      "stderr": ""
+    }
+  ]
+}

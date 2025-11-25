@@ -1,0 +1,375 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+HydroClaude Performance Benchmark Tool - 性能基准测试工具
+======================================================
+
+Comprehensive performance benchmarking for all engineering cases.
+对所有工程案例进行全面的性能基准测试。
+
+Measures:
+- Execution time / 执行时间
+- Memory usage / 内存使用
+- CPU utilization / CPU利用率
+- Output file sizes / 输出文件大小
+
+Author: HydroClaude Development Team
+Date: 2025-10-30
+"""
+
+import sys
+import os
+import time
+import psutil
+import subprocess
+from pathlib import Path
+from typing import Dict, List, Optional
+from dataclasses import dataclass
+import json
+
+# Add project root to path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+
+@dataclass
+class BenchmarkResult:
+    """Benchmark result for a single case / 单个案例的基准测试结果"""
+    case_id: int
+    case_name: str
+    success: bool
+    execution_time: float  # seconds
+    peak_memory_mb: float  # MB
+    avg_cpu_percent: float  # %
+    output_size_kb: float  # KB (if applicable)
+    error_message: Optional[str] = None
+
+
+class PerformanceBenchmark:
+    """
+    Performance benchmark tool for HydroClaude cases
+    HydroClaude案例性能基准测试工具
+    """
+
+    def __init__(self, output_dir: Optional[Path] = None):
+        """
+        Initialize benchmark tool
+        初始化基准测试工具
+
+        Args:
+            output_dir: Directory to save benchmark results
+        """
+        self.case_dir = Path(__file__).parent
+        self.output_dir = output_dir or (self.case_dir / 'benchmark_results')
+        self.output_dir.mkdir(exist_ok=True)
+
+        all_cases = {
+            1: 'case_01_hydropower_plant.py',
+            2: 'case_02_water_supply_network.py',
+            3: 'case_03_irrigation_canal.py',
+            4: 'case_04_urban_drainage.py',
+            5: 'case_05_river_network.py'
+        }
+        
+        # 只保留存在的案例文件
+        self.cases = {}
+        for case_id, case_file in all_cases.items():
+            if (self.case_dir / case_file).exists():
+                self.cases[case_id] = case_file
+            else:
+                print(f"[WARN]  跳过不存在的案例 {case_id}: {case_file}")
+        
+        if not self.cases:
+            print("[X] 没有找到任何可测试的案例文件")
+            sys.exit(1)
+
+        self.results: List[BenchmarkResult] = []
+
+    def benchmark_case(self, case_id: int) -> BenchmarkResult:
+        """
+        Benchmark a single case
+        对单个案例进行基准测试
+
+        Args:
+            case_id: Case ID (1-5)
+
+        Returns:
+            Benchmark result
+        """
+        case_file = self.case_dir / self.cases[case_id]
+        case_name = self.cases[case_id].replace('.py', '').replace('_', ' ').title()
+
+        print(f"\n{'='*80}")
+        print(f"Benchmarking Case {case_id}: {case_name}")
+        print(f"{'='*80}\n")
+
+        try:
+            # Start process
+            start_time = time.time()
+            process = subprocess.Popen(
+                [sys.executable, str(case_file)],
+                cwd=str(self.case_dir),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+
+            # Monitor process
+            psutil_process = psutil.Process(process.pid)
+            memory_samples = []
+            cpu_samples = []
+
+            # Sample every 0.5 seconds
+            while process.poll() is None:
+                try:
+                    mem_info = psutil_process.memory_info()
+                    memory_samples.append(mem_info.rss / 1024 / 1024)  # MB
+
+                    cpu_percent = psutil_process.cpu_percent(interval=0.1)
+                    cpu_samples.append(cpu_percent)
+
+                    time.sleep(0.5)
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    break
+
+            # Wait for completion
+            stdout, stderr = process.communicate(timeout=600)
+            execution_time = time.time() - start_time
+
+            # Calculate metrics
+            peak_memory = max(memory_samples) if memory_samples else 0.0
+            avg_cpu = sum(cpu_samples) / len(cpu_samples) if cpu_samples else 0.0
+
+            # Check output files
+            output_size = 0.0
+            output_patterns = ['*.png', '*.json', '*.csv']
+            for pattern in output_patterns:
+                for file in self.case_dir.glob(pattern):
+                    if file.stat().st_mtime > start_time:
+                        output_size += file.stat().st_size / 1024  # KB
+
+            success = (process.returncode == 0)
+
+            result = BenchmarkResult(
+                case_id=case_id,
+                case_name=case_name,
+                success=success,
+                execution_time=execution_time,
+                peak_memory_mb=peak_memory,
+                avg_cpu_percent=avg_cpu,
+                output_size_kb=output_size,
+                error_message=stderr if not success else None
+            )
+
+            # Print result
+            self._print_result(result)
+
+            return result
+
+        except subprocess.TimeoutExpired:
+            return BenchmarkResult(
+                case_id=case_id,
+                case_name=case_name,
+                success=False,
+                execution_time=600.0,
+                peak_memory_mb=0.0,
+                avg_cpu_percent=0.0,
+                output_size_kb=0.0,
+                error_message="Timeout (>10 minutes)"
+            )
+
+        except Exception as e:
+            return BenchmarkResult(
+                case_id=case_id,
+                case_name=case_name,
+                success=False,
+                execution_time=0.0,
+                peak_memory_mb=0.0,
+                avg_cpu_percent=0.0,
+                output_size_kb=0.0,
+                error_message=str(e)
+            )
+
+    def _print_result(self, result: BenchmarkResult):
+        """Print individual result / 打印单个结果"""
+        status = " SUCCESS" if result.success else " FAILED"
+        print(f"\nResult / 结果: {status}")
+        print(f"  Execution Time / 执行时间:     {result.execution_time:.2f}s")
+        print(f"  Peak Memory / 峰值内存:        {result.peak_memory_mb:.2f} MB")
+        print(f"  Avg CPU / 平均CPU:             {result.avg_cpu_percent:.1f}%")
+        print(f"  Output Size / 输出大小:        {result.output_size_kb:.2f} KB")
+
+        if not result.success and result.error_message:
+            print(f"  Error / 错误: {result.error_message[:200]}")
+
+    def run_all_benchmarks(self, case_ids: Optional[List[int]] = None):
+        """
+        Run benchmarks for all or selected cases
+        运行所有或选定案例的基准测试
+
+        Args:
+            case_ids: List of case IDs, or None for all
+        """
+        if case_ids is None:
+            case_ids = sorted(self.cases.keys())
+
+        print("\n" + "="*80)
+        print("HydroClaude Performance Benchmark")
+        print("HydroClaude 性能基准测试")
+        print("="*80)
+        print(f"\nBenchmarking {len(case_ids)} cases...")
+        print(f"Results will be saved to: {self.output_dir}")
+        print()
+
+        total_start = time.time()
+
+        for case_id in case_ids:
+            result = self.benchmark_case(case_id)
+            self.results.append(result)
+
+        total_time = time.time() - total_start
+
+        # Print summary
+        self._print_summary(total_time)
+
+        # Save results
+        self._save_results()
+
+    def _print_summary(self, total_time: float):
+        """Print benchmark summary / 打印基准测试总结"""
+        print(f"\n{'='*80}")
+        print("BENCHMARK SUMMARY / 基准测试总结")
+        print(f"{'='*80}\n")
+
+        successful = [r for r in self.results if r.success]
+        failed = [r for r in self.results if not r.success]
+
+        print(f"Total Cases / 总案例数:        {len(self.results)}")
+        print(f"Successful / 成功:             {len(successful)}")
+        print(f"Failed / 失败:                 {len(failed)}")
+        print(f"Total Time / 总时间:           {total_time:.2f}s ({total_time/60:.1f} min)")
+        print()
+
+        if successful:
+            print("Performance Metrics / 性能指标:")
+            print()
+
+            # Create table
+            print(f"{'Case':<6} {'Name':<25} {'Time(s)':<10} {'Memory(MB)':<12} {'CPU(%)':<8}")
+            print("-" * 80)
+
+            for result in successful:
+                print(f"{result.case_id:<6} {result.case_name:<25} "
+                      f"{result.execution_time:<10.2f} {result.peak_memory_mb:<12.2f} "
+                      f"{result.avg_cpu_percent:<8.1f}")
+
+            print()
+
+            # Statistics
+            times = [r.execution_time for r in successful]
+            memories = [r.peak_memory_mb for r in successful]
+            cpus = [r.avg_cpu_percent for r in successful]
+
+            print("Statistics / 统计:")
+            print(f"  Execution Time / 执行时间:")
+            print(f"    Average / 平均:    {sum(times)/len(times):.2f}s")
+            print(f"    Minimum / 最小:    {min(times):.2f}s")
+            print(f"    Maximum / 最大:    {max(times):.2f}s")
+            print()
+            print(f"  Peak Memory / 峰值内存:")
+            print(f"    Average / 平均:    {sum(memories)/len(memories):.2f} MB")
+            print(f"    Minimum / 最小:    {min(memories):.2f} MB")
+            print(f"    Maximum / 最大:    {max(memories):.2f} MB")
+            print()
+            print(f"  CPU Utilization / CPU利用率:")
+            print(f"    Average / 平均:    {sum(cpus)/len(cpus):.1f}%")
+            print()
+
+        if failed:
+            print("Failed Cases / 失败的案例:")
+            for result in failed:
+                print(f"   Case {result.case_id}: {result.case_name}")
+                if result.error_message:
+                    print(f"    Error: {result.error_message[:100]}")
+            print()
+
+        # Success rate
+        success_rate = len(successful) / len(self.results) * 100 if self.results else 0
+        print(f"Success Rate / 成功率: {success_rate:.1f}%")
+        print()
+
+    def _save_results(self):
+        """Save benchmark results to JSON / 保存基准测试结果到JSON"""
+        timestamp = time.strftime("%Y%m%d_%H%M%S")
+        output_file = self.output_dir / f"benchmark_{timestamp}.json"
+
+        data = {
+            'timestamp': timestamp,
+            'total_cases': len(self.results),
+            'successful': len([r for r in self.results if r.success]),
+            'results': [
+                {
+                    'case_id': r.case_id,
+                    'case_name': r.case_name,
+                    'success': r.success,
+                    'execution_time_s': r.execution_time,
+                    'peak_memory_mb': r.peak_memory_mb,
+                    'avg_cpu_percent': r.avg_cpu_percent,
+                    'output_size_kb': r.output_size_kb,
+                    'error': r.error_message
+                }
+                for r in self.results
+            ]
+        }
+
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+
+        print(f" Results saved to: {output_file}")
+        print()
+
+
+def main():
+    """Main function / 主函数"""
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description='HydroClaude Performance Benchmark / HydroClaude性能基准测试'
+    )
+
+    parser.add_argument(
+        '--case', '-c',
+        type=int,
+        nargs='+',
+        metavar='N',
+        help='Case number(s) to benchmark (1-5) / 要测试的案例编号 (1-5)'
+    )
+
+    parser.add_argument(
+        '--output', '-o',
+        type=str,
+        help='Output directory for results / 结果输出目录'
+    )
+
+    args = parser.parse_args()
+
+    # Check psutil availability
+    try:
+        import psutil
+    except ImportError:
+        print("Error: psutil package is required for benchmarking")
+        print("Install with: pip install psutil")
+        return 1
+
+    # Create benchmark tool
+    output_dir = Path(args.output) if args.output else None
+    benchmark = PerformanceBenchmark(output_dir=output_dir)
+
+    # Run benchmarks
+    case_ids = args.case if args.case else None
+    benchmark.run_all_benchmarks(case_ids)
+
+    return 0 if all(r.success for r in benchmark.results) else 1
+
+
+if __name__ == '__main__':
+    sys.exit(main())

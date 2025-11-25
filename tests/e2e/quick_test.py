@@ -10,6 +10,8 @@ Date: 2025-11-15
 """
 
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import time
 from pathlib import Path
 

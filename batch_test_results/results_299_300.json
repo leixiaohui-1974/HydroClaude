@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "batch_start_index": 299,
+    "batch_end_index": 300,
+    "test_run_at": "2025-11-25T16:39:44.401844",
+    "batch_duration_seconds": 6.06,
+    "total_scripts_in_batch": 1
+  },
+  "results": [
+    {
+      "script_path": "./examples/example_network_nodes.py",
+      "status": "fail",
+      "return_code": 1,
+      "duration_seconds": 6.06,
+      "stdout": "================================================================================\n�ڵ�����ʹ��ʾ����\nStage 3 - Network Node Types Examples\n================================================================================\n\n================================================================================\nʾ��1: �����ڵ�\n================================================================================\n\n���������ڵ�: JunctionNode(id='������', z=95.00m, method=energy)\n\n���κӶ�:\n  ֧��1: Q=15.0 m^3/s, h=1.50m, A=15.0m^2\n  ֧��2: Q=25.0 m^3/s, h=2.00m, A=25.0m^2\n\n������:\n  ˮλ: 96.60m (�߳�)\n  ˮ��: 1.60m (����ڿ��)\n  ������: 40.0 m^3/s\n  ��������: 40.0 m^3/s\n\n����ƽ��:  ƽ��\n  ���: 0.000000 m^3/s\n\n================================================================================\nʾ��2: �����ڵ�\n================================================================================\n\n���������ڵ�: BifurcationNode(id='��ˮ��', ratios=[0.30, 0.70], method=fixed)\n\n����:\n  ����: 60.0 m^3/s\n\n�������:\n  ֧��1 (30%): 18.0 m^3/s\n  ֧��2 (70%): 42.0 m^3/s\n  �ܺ�: 60.0 m^3/s\n\n����ƽ��:  ƽ��\n\n------------------------------------------------------------\n��̬����ʾ�� (��������ˮλ)\n\n���κӶ�ˮλ:\n  ֧��1: 92.0m (ˮͷ�� 8.0m)\n  ֧��2: 95.0m (ˮͷ�� 5.0m)\n\n��̬�������:\n  ֧��1: 36.9 m^3/s (61.5%)\n  ֧��2: 23.1 m^3/s (38.5%)\n\n================================================================================\nʾ��3: ˮ��ڵ�\n================================================================================",
+      "stderr": "Traceback (most recent call last):\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_network_nodes.py\", line 412, in <module>\n    reservoir = example_3_reservoir_node()\n  File \"E:\\OneDrive\\Documents\\GitHub\\Test\\HydroClaude\\examples\\example_network_nodes.py\", line 182, in example_3_reservoir_node\n    print(f\"\\n����ˮ��ڵ�: {reservoir}\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'gbk' codec can't encode character '\\xb2' in position 47: illegal multibyte sequence"
+    }
+  ]
+}

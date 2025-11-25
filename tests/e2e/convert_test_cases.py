@@ -8,6 +8,8 @@ Date: 2025-11-15
 """
 
 import json
+import warnings
+warnings.filterwarnings("ignore")
 import os
 import sys
 from pathlib import Path

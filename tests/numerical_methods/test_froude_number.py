@@ -14,6 +14,8 @@ Froude数计算和临界流检测测试
 """
 
 import pytest
+import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
 import sys
 from pathlib import Path

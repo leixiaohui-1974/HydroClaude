@@ -1,0 +1,415 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+工程案例4: 闸门调度优化
+
+场景渠道中游设有一座闸门用于控制流量和水位
+目标对比不同开度优化闸门调度方案
+
+方案对比
+- 方案A: 全开 (a=4.0m)
+- 方案B: 开80% (a=3.2m)
+- 方案C: 开60% (a=2.4m)
+- 方案D: 开40% (a=1.6m)
+
+分析指标
+- 上下游水位差
+- 过流量
+- 能量损失
+- 推荐调度策略
+
+作者: HydroClaude Team
+日期: 2025-10-27
+"""
+
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
+from solvers.gate import SluiceGate
+from utils.canal_utils import compute_steady_uniform_flow
+from utils.result_validator import quick_validate_steady_state
+import numpy as np
+import matplotlib
+matplotlib.use("Agg")  # Non-interactive mode
+import matplotlib.pyplot as plt
+
+print("=" * 80)
+print("工程案例4: 闸门调度优化分析")
+print("=" * 80)
+
+# 渠道参数
+L_total = 2000.0
+L1 = 1000.0  # 上游段长度
+gate_pos = L1  # 闸门位置
+B = 10.0
+S0 = 0.001
+n = 0.025
+n_cells = 100
+
+print(f"\n渠道参数:")
+print(f"  总长度: {L_total/1000} km")
+print(f"  闸门位置: {gate_pos/1000} km")
+print(f"  宽度: {B} m")
+print(f"  底坡: {S0}")
+print(f"  糙率: {n}")
+
+# 设计流量
+Q_design = 50.0
+print(f"\n设计流量: {Q_design} m^3/s")
+
+# 闸门宽度
+gate_width = B
+
+# 四个调度方案
+schemes = [
+    {
+        'name': '方案A',
+        'description': '全开',
+        'opening': 4.0,
+        'ratio': 100,
+        'color': 'green'
+    },
+    {
+        'name': '方案B',
+        'description': '开80%',
+        'opening': 3.2,
+        'ratio': 80,
+        'color': 'blue'
+    },
+    {
+        'name': '方案C',
+        'description': '开60%',
+        'opening': 2.4,
+        'ratio': 60,
+        'color': 'orange'
+    },
+    {
+        'name': '方案D',
+        'description': '开40%',
+        'opening': 1.6,
+        'ratio': 40,
+        'color': 'red'
+    }
+]
+
+print(f"\n闸门调度方案:")
+for i, scheme in enumerate(schemes, 1):
+    print(f"\n{i}. {scheme['name']}: {scheme['description']}")
+    print(f"   开度: {scheme['opening']} m ({scheme['ratio']}%)")
+
+# 运行每个方案
+results = []
+
+print(f"\n{'=' * 80}")
+print(f"逐方案稳态求解")
+print(f"{'=' * 80}")
+
+for scheme in schemes:
+    print(f"\n{'=' * 80}")
+    print(f"{scheme['name']}: {scheme['description']} (开度={scheme['opening']}m)")
+    print(f"{'=' * 80}")
+    
+    opening = scheme['opening']
+    
+    # 创建闸门
+    gate = SluiceGate(position=gate_pos, width=gate_width, opening=opening)
+    
+    # 创建求解器使用正确的参数名
+    solver = HydrostaticCanalSolver(
+        length=L_total,
+        nx=n_cells,
+        B=B,
+        S0=S0,
+        n=n,
+        internal_structures=[(gate_pos, gate)]
+    )
+    
+    # 计算理论水深
+    h_uniform = compute_steady_uniform_flow(Q_design, B, S0, n)
+    
+    # 初始化
+    h_init = np.ones(n_cells) * h_uniform
+    Q_init = np.ones(n_cells) * Q_design
+    
+    # # GodunvFVMSolver需要手动初始化
+    solver.h = h_init.copy()
+    solver.Q = Q_init.copy()  # Manual initialization preferred
+    
+    # 稳态求解
+    print(f"\n求解稳态...")
+    try:
+        result = solver.solve_steady_state(
+            Q_target=Q_design.copy(),
+            h_downstream=h_uniform,
+            max_iter=100,
+            convergence_tol=0.5
+        )
+        
+        success = result['converged']
+        iterations = result['iterations']
+        final_error = result['residual']
+        
+        print(f"  收敛: {'' if success else ''}")
+        print(f"  迭代次数: {iterations}")
+        print(f"  最终误差: {final_error:.6f}")
+        
+        if success:
+            # 获取结果
+            h = result['h']
+            Q = result['Q']
+            x = solver.grid.x_centers
+            
+            # 找到闸门上下游的索引
+            gate_idx = np.argmin(np.abs(x - gate_pos))
+            
+            # 上游闸门前50m
+            upstream_idx = max(0, gate_idx - 2)
+            h_upstream = h[upstream_idx]
+            
+            # 下游闸门后50m
+            downstream_idx = min(n_cells - 1, gate_idx + 2)
+            h_downstream_actual = h[downstream_idx]
+            
+            # 水位差
+            delta_h = h_upstream - h_downstream_actual
+            
+            # 实际流量
+            Q_actual = np.mean(Q)
+            Q_error = abs(Q_actual - Q_design) / Q_design * 100
+            
+            # 能量损失简化计算
+            v_upstream = Q_actual / (B * h_upstream)
+            v_downstream = Q_actual / (B * h_downstream_actual)
+            E_upstream = h_upstream + v_upstream**2 / (2 * 9.81)
+            E_downstream = h_downstream_actual + v_downstream**2 / (2 * 9.81)
+            delta_E = E_upstream - E_downstream
+            
+            print(f"\n  水力特性:")
+            print(f"    上游水深: {h_upstream:.3f} m")
+            print(f"    下游水深: {h_downstream_actual:.3f} m")
+            print(f"    水位差: {delta_h:.3f} m")
+            print(f"    实际流量: {Q_actual:.2f} m^3/s")
+            print(f"    流量误差: {Q_error:.2f}%")
+            print(f"    能量损失: {delta_E:.3f} m")
+            
+            # 验证
+            validator = quick_validate_steady_state(
+                solver=solver,
+                result_dict=result,
+                Q_target=Q_design,
+                name=scheme['name']
+            )
+            
+            results.append({
+                'scheme': scheme,
+                'success': True,
+                'opening': opening,
+                'h_upstream': h_upstream,
+                'h_downstream': h_downstream_actual,
+                'delta_h': delta_h,
+                'Q_actual': Q_actual,
+                'Q_error': Q_error,
+                'delta_E': delta_E,
+                'x': x,
+                'h': h,
+                'Q': Q,
+                'iterations': iterations
+            })
+        else:
+            print(f"   未收敛")
+            results.append({
+                'scheme': scheme,
+                'success': False,
+                'opening': opening
+            })
+            
+    except Exception as e:
+        print(f"   求解失败: {str(e)}")
+        results.append({
+            'scheme': scheme,
+            'success': False,
+            'opening': opening
+        })
+
+# 筛选成功的结果
+successful_results = [r for r in results if r['success']]
+
+if len(successful_results) > 0:
+    # 综合对比
+    print(f"\n" + "=" * 80)
+    print("综合对比分析")
+    print("=" * 80)
+    
+    print(f"\n{'方案':<12} {'开度':<10} {'上游水深':<12} {'下游水深':<12} {'水位差':<12} {'能量损失':<12}")
+    print(f"{'':12} {'(m)':<10} {'(m)':<12} {'(m)':<12} {'(m)':<12} {'(m)':<12}")
+    print("-" * 80)
+    
+    for result in successful_results:
+        name = result['scheme']['name']
+        opening = result['opening']
+        h_up = result['h_upstream']
+        h_down = result['h_downstream']
+        delta_h = result['delta_h']
+        delta_E = result['delta_E']
+        
+        print(f"{name:<12} {opening:<10.2f} {h_up:<12.3f} {h_down:<12.3f} {delta_h:<12.3f} {delta_E:<12.3f}")
+    
+    # 调度策略分析
+    print(f"\n调度策略分析:")
+    
+    # 找到水位差最小的方案全开通常最好
+    min_delta_h_result = min(successful_results, key=lambda r: r['delta_h'])
+    
+    # 找到能量损失最小的方案
+    min_delta_E_result = min(successful_results, key=lambda r: r['delta_E'])
+    
+    print(f"\n1. 水位差最小方案: {min_delta_h_result['scheme']['name']}")
+    print(f"   开度: {min_delta_h_result['opening']} m")
+    print(f"   水位差: {min_delta_h_result['delta_h']:.3f} m")
+    
+    print(f"\n2. 能量损失最小方案: {min_delta_E_result['scheme']['name']}")
+    print(f"   开度: {min_delta_E_result['opening']} m")
+    print(f"   能量损失: {min_delta_E_result['delta_E']:.3f} m")
+    
+    # 推荐方案
+    print(f"\n" + "=" * 80)
+    print("推荐调度策略")
+    print("=" * 80)
+    
+    print(f"\n 推荐: {min_delta_E_result['scheme']['name']}")
+    print(f"\n理由:")
+    print(f"  1. 能量损失最小: {min_delta_E_result['delta_E']:.3f} m")
+    print(f"  2. 水位差较小: {min_delta_E_result['delta_h']:.3f} m")
+    print(f"  3. 流量误差: {min_delta_E_result['Q_error']:.2f}%")
+    print(f"  4. 数值稳定")
+    
+    # 分情况调度建议
+    print(f"\n分情况调度建议:")
+    print(f"\n1. 正常运行推荐:")
+    print(f"   - 闸门开度: {min_delta_E_result['opening']} m")
+    print(f"   - 上游水深: {min_delta_E_result['h_upstream']:.2f} m")
+    print(f"   - 下游水深: {min_delta_E_result['h_downstream']:.2f} m")
+    
+    print(f"\n2. 需要抬高上游水位时:")
+    if len(successful_results) > 1:
+        max_upstream_result = max(successful_results, key=lambda r: r['h_upstream'])
+        print(f"   - 采用: {max_upstream_result['scheme']['name']}")
+        print(f"   - 开度: {max_upstream_result['opening']} m")
+        print(f"   - 上游水深: {max_upstream_result['h_upstream']:.2f} m")
+    
+    print(f"\n3. 需要快速泄流时:")
+    print(f"   - 采用: 方案A全开")
+    print(f"   - 最大过流能力")
+    
+    # 可视化
+    try:
+        fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+        
+        # 子图1: 纵断面水面线对比
+        ax1 = axes[0, 0]
+        for result in successful_results:
+            ax1.plot(result['x']/1000, result['h'], 
+                    label=f"{result['scheme']['name']} (a={result['opening']:.1f}m)",
+                    color=result['scheme']['color'], linewidth=2)
+        ax1.axvline(x=gate_pos/1000, color='black', linestyle='--', linewidth=1.5, label='闸门位置')
+        ax1.set_xlabel('距离 (km)')
+        ax1.set_ylabel('水深 (m)')
+        ax1.set_title('纵断面水面线对比')
+        ax1.legend()
+        ax1.grid(True, alpha=0.3)
+        
+        # 子图2: 开度 vs 水位差
+        ax2 = axes[0, 1]
+        openings = [r['opening'] for r in successful_results]
+        delta_hs = [r['delta_h'] for r in successful_results]
+        colors = [r['scheme']['color'] for r in successful_results]
+        
+        ax2.scatter(openings, delta_hs, c=colors, s=200, alpha=0.7, edgecolors='black', linewidths=2)
+        ax2.set_xlabel('闸门开度 (m)')
+        ax2.set_ylabel('水位差 (m)')
+        ax2.set_title('开度 - 水位差关系')
+        ax2.grid(True, alpha=0.3)
+        
+        # 标注点
+        for r in successful_results:
+            ax2.annotate(r['scheme']['name'], 
+                        (r['opening'], r['delta_h']),
+                        textcoords="offset points",
+                        xytext=(0, 10),
+                        ha='center',
+                        fontsize=9)
+        
+        # 子图3: 能量损失对比
+        ax3 = axes[1, 0]
+        names = [r['scheme']['name'] for r in successful_results]
+        delta_Es = [r['delta_E'] for r in successful_results]
+        colors = [r['scheme']['color'] for r in successful_results]
+        
+        bars = ax3.bar(range(len(names)), delta_Es, color=colors, alpha=0.7, edgecolor='black', linewidth=2)
+        ax3.set_xticks(range(len(names)))
+        ax3.set_xticklabels(names)
+        ax3.set_ylabel('能量损失 (m)')
+        ax3.set_title('能量损失对比')
+        ax3.grid(True, alpha=0.3, axis='y')
+        
+        for bar, val in zip(bars, delta_Es):
+            ax3.text(bar.get_x() + bar.get_width()/2, val + 0.01,
+                    f'{val:.3f}', ha='center', va='bottom', fontweight='bold')
+        
+        # 子图4: 综合性能雷达图简化为表格
+        ax4 = axes[1, 1]
+        ax4.axis('off')
+        
+        # 推荐方案摘要
+        y_pos = 0.9
+        ax4.text(0.5, y_pos, '推荐方案', ha='center', fontsize=14, fontweight='bold')
+        y_pos -= 0.15
+        
+        ax4.text(0.5, y_pos, f"{min_delta_E_result['scheme']['name']}", 
+                ha='center', fontsize=12, color=min_delta_E_result['scheme']['color'], fontweight='bold')
+        y_pos -= 0.15
+        
+        ax4.text(0.1, y_pos, f"开度: {min_delta_E_result['opening']} m", fontsize=11)
+        y_pos -= 0.12
+        ax4.text(0.1, y_pos, f"上游水深: {min_delta_E_result['h_upstream']:.2f} m", fontsize=11)
+        y_pos -= 0.12
+        ax4.text(0.1, y_pos, f"下游水深: {min_delta_E_result['h_downstream']:.2f} m", fontsize=11)
+        y_pos -= 0.12
+        ax4.text(0.1, y_pos, f"水位差: {min_delta_E_result['delta_h']:.3f} m", fontsize=11)
+        y_pos -= 0.12
+        ax4.text(0.1, y_pos, f"能量损失: {min_delta_E_result['delta_E']:.3f} m", fontsize=11)
+        
+        plt.tight_layout()
+        plt.savefig('./case_gate_operation.png', dpi=150, bbox_inches='tight')
+        print(f"\n 分析图表已保存: case_gate_operation.png")
+    except Exception as e:
+        print(f"\n 可视化失败: {str(e)}")
+    
+    # 工程建议
+    print(f"\n" + "=" * 80)
+    print("工程建议")
+    print("=" * 80)
+    
+    print(f"\n1. 日常运行:")
+    print(f"   - 闸门开度: {min_delta_E_result['opening']} m")
+    print(f"   - 定期检查闸门")
+    print(f"   - 监测上下游水位")
+    
+    print(f"\n2. 特殊情况:")
+    print(f"   - 需抬高水位: 减小开度")
+    print(f"   - 需快速泄流: 全开")
+    print(f"   - 检修维护: 关闭")
+    
+    print(f"\n3. 监测要求:")
+    print(f"   - 水位监测频率: 每小时")
+    print(f"   - 闸门开度记录")
+    print(f"   - 流量监测")
+    
+else:
+    print(f"\n 所有方案求解失败")
+
+print(f"\n" + "=" * 80)
+print(f" 闸门调度优化分析完成")
+print(f" 成功方案数: {len(successful_results)}/{len(schemes)}")
+print("=" * 80)

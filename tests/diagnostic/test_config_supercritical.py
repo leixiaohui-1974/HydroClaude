@@ -4,6 +4,8 @@
 目的：验证通过配置文件系统，supercritical边界是否正常工作
 """
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 import os
 
 # ========== 路径设置 ==========
