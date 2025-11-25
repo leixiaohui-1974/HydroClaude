@@ -31,15 +31,37 @@ def event_loop():
 
 # ==================== API 测试 Fixtures ====================
 
-@pytest.fixture
+# 使用 pytest_asyncio fixture
+import pytest_asyncio
+import socket
+
+def is_server_running(host="localhost", port=8000):
+    """检查服务器是否运行"""
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(1)
+        result = sock.connect_ex((host, port))
+        sock.close()
+        return result == 0
+    except:
+        return False
+
+@pytest_asyncio.fixture
 async def api_client():
     """API 测试客户端"""
-    async with AsyncClient(
+    # 如果服务器未运行，跳过测试
+    if not is_server_running():
+        pytest.skip("API server not running at localhost:8000")
+
+    client = AsyncClient(
         base_url="http://localhost:8000",
         timeout=30.0,
         follow_redirects=True
-    ) as client:
+    )
+    try:
         yield client
+    finally:
+        await client.aclose()
 
 
 @pytest.fixture

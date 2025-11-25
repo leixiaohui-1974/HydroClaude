@@ -1,0 +1,82 @@
+{
+  "start_time": "2025-11-25T07:18:31.736935",
+  "end_time": "2025-11-25T07:18:35.943700",
+  "total_tests": 8,
+  "passed": 0,
+  "failed": 8,
+  "skipped": 0,
+  "tests": [
+    {
+      "name": "首页加载",
+      "status": "failed",
+      "details": "Page.goto: Page crashed\nCall log:\n  - navigating to \"http://localhost:3000/\", waiting until \"load\"\n",
+      "screenshots": [
+        null
+      ],
+      "timestamp": "2025-11-25T07:18:35.788527"
+    },
+    {
+      "name": "导航功能",
+      "status": "failed",
+      "details": "Page.goto: Page crashed\nCall log:\n  - navigating to \"http://localhost:3000/\", waiting until \"load\"\n",
+      "screenshots": [
+        null
+      ],
+      "timestamp": "2025-11-25T07:18:35.796652"
+    },
+    {
+      "name": "仿真页面",
+      "status": "failed",
+      "details": "Locator.count: Target crashed ",
+      "screenshots": [
+        null
+      ],
+      "timestamp": "2025-11-25T07:18:35.819293"
+    },
+    {
+      "name": "运行仿真流程",
+      "status": "failed",
+      "details": "Page.goto: Page crashed\nCall log:\n  - navigating to \"http://localhost:3000/\", waiting until \"load\"\n",
+      "screenshots": [
+        null
+      ],
+      "timestamp": "2025-11-25T07:18:35.825257"
+    },
+    {
+      "name": "结构建模页面",
+      "status": "failed",
+      "details": "Locator.count: Target crashed ",
+      "screenshots": [
+        null
+      ],
+      "timestamp": "2025-11-25T07:18:35.846949"
+    },
+    {
+      "name": "结果可视化",
+      "status": "failed",
+      "details": "Locator.count: Target crashed ",
+      "screenshots": [
+        null
+      ],
+      "timestamp": "2025-11-25T07:18:35.865112"
+    },
+    {
+      "name": "API 文档",
+      "status": "failed",
+      "details": "Page.goto: Page crashed\nCall log:\n  - navigating to \"http://localhost:8000/docs\", waiting until \"load\"\n",
+      "screenshots": [
+        null
+      ],
+      "timestamp": "2025-11-25T07:18:35.870489"
+    },
+    {
+      "name": "响应式设计",
+      "status": "failed",
+      "details": "Page.goto: Page crashed\nCall log:\n  - navigating to \"http://localhost:3000/\", waiting until \"load\"\n",
+      "screenshots": [
+        null
+      ],
+      "timestamp": "2025-11-25T07:18:35.875525"
+    }
+  ]
+}

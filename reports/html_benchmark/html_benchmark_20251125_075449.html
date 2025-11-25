@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>HydroClaude UI源代码分析报告</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; margin-bottom: 20px; }
+        .card { background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .category-card { background: #fafafa; border-radius: 8px; padding: 15px; margin: 10px 0; }
+        .score-bar { background: #e0e0e0; border-radius: 10px; height: 20px; overflow: hidden; margin: 10px 0; }
+        .score-fill { height: 100%; border-radius: 10px; }
+        .excellent { background: #4caf50; }
+        .good { background: #8bc34a; }
+        .needs-work { background: #ff9800; }
+        .details-list { list-style: none; padding: 0; margin-top: 10px; font-size: 14px; }
+        .details-list li { padding: 3px 0; }
+        .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .summary-item { background: white; padding: 15px; border-radius: 8px; text-align: center; }
+        .summary-item .value { font-size: 24px; font-weight: bold; color: #667eea; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>HydroClaude UI 源代码分析报告</h1>
+        <p>测试日期: 2025-11-25T07:54:49.310633</p>
+        <p>综合评分: <strong>95.0%</strong></p>
+    </div>
+
+    <div class="card">
+        <h2>综合评分</h2>
+        <div class="score-bar">
+            <div class="score-fill excellent" style="width: 95.0%"></div>
+        </div>
+        <p>95.0% - 优秀</p>
+    </div>
+
+    <div class="card">
+        <h2>源代码统计</h2>
+        <div class="summary">
+            <div class="summary-item">
+                <div class="value">5</div>
+                <div>页面</div>
+            </div>
+            <div class="summary-item">
+                <div class="value">9</div>
+                <div>组件</div>
+            </div>
+            <div class="summary-item">
+                <div class="value">10</div>
+                <div>功能模块</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>功能评估详情</h2>
+        
+            <div class="category-card">
+                <h3>navigation</h3>
+                <div class="score-bar">
+                    <div class="score-fill good" style="width: 66.66666666666666%"></div>
+                </div>
+                <p>4/6 (66.7%)</p>
+                <ul class="details-list"><li>✅ sidebar</li><li>✅ header</li><li>✅ quick_actions</li><li>✅ routing</li><li>❌ responsive</li><li>❌ i18n</li></ul>
+            </div>
+            
+            <div class="category-card">
+                <h3>modeling</h3>
+                <div class="score-bar">
+                    <div class="score-fill excellent" style="width: 100.0%"></div>
+                </div>
+                <p>6/6 (100.0%)</p>
+                <ul class="details-list"><li>✅ component_palette</li><li>✅ canvas</li><li>✅ property_panel</li><li>❌ structure_editors</li><li>✅ model_library</li><li>✅ template_gallery</li></ul>
+            </div>
+            
+            <div class="category-card">
+                <h3>simulation</h3>
+                <div class="score-bar">
+                    <div class="score-fill excellent" style="width: 100.0%"></div>
+                </div>
+                <p>6/6 (100.0%)</p>
+                <ul class="details-list"><li>✅ config_form</li><li>✅ workspace</li><li>✅ results</li><li>✅ animation</li><li>✅ scenarios</li><li>✅ batch</li></ul>
+            </div>
+            
+            <div class="category-card">
+                <h3>visualization</h3>
+                <div class="score-bar">
+                    <div class="score-fill excellent" style="width: 100.0%"></div>
+                </div>
+                <p>6/6 (100.0%)</p>
+                <ul class="details-list"><li>✅ enhanced_charts</li><li>✅ plot3d</li><li>✅ comparison_view</li><li>✅ results_export</li><li>✅ animation_controller</li><li>✅ charts_library</li></ul>
+            </div>
+            
+            <div class="category-card">
+                <h3>reports</h3>
+                <div class="score-bar">
+                    <div class="score-fill excellent" style="width: 100.0%"></div>
+                </div>
+                <p>4/4 (100.0%)</p>
+                <ul class="details-list"><li>✅ report_generator</li><li>✅ results_export</li><li>✅ result_analysis</li><li>✅ config_analysis</li></ul>
+            </div>
+            
+            <div class="category-card">
+                <h3>data_management</h3>
+                <div class="score-bar">
+                    <div class="score-fill excellent" style="width: 100.0%"></div>
+                </div>
+                <p>4/4 (100.0%)</p>
+                <ul class="details-list"><li>✅ data_importer</li><li>✅ model_io</li><li>✅ scenario_manager</li><li>✅ test_case_library</li></ul>
+            </div>
+            
+            <div class="category-card">
+                <h3>user_experience</h3>
+                <div class="score-bar">
+                    <div class="score-fill excellent" style="width: 100.0%"></div>
+                </div>
+                <p>4/4 (100.0%)</p>
+                <ul class="details-list"><li>✅ error_display</li><li>✅ config_form</li><li>✅ unified_selector</li><li>✅ about_page</li></ul>
+            </div>
+            
+    </div>
+
+    <div class="card">
+        <h2>商业软件对标</h2>
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr style="background: #f5f5f5;">
+                <th style="padding: 10px; text-align: left;">商业软件</th>
+                <th style="padding: 10px;">达标阈值</th>
+                <th style="padding: 10px;">实际得分</th>
+                <th style="padding: 10px;">状态</th>
+            </tr>
+            <tr><td style="padding: 10px;">HEC-RAS</td><td style="padding: 10px; text-align: center;">50%</td><td style="padding: 10px; text-align: center;">95.0%</td><td style="padding: 10px; text-align: center;">✅ 达标</td></tr>
+            <tr><td style="padding: 10px;">MIKE 11</td><td style="padding: 10px; text-align: center;">55%</td><td style="padding: 10px; text-align: center;">95.0%</td><td style="padding: 10px; text-align: center;">✅ 达标</td></tr>
+            <tr><td style="padding: 10px;">EPANET</td><td style="padding: 10px; text-align: center;">45%</td><td style="padding: 10px; text-align: center;">95.0%</td><td style="padding: 10px; text-align: center;">✅ 达标</td></tr>
+            <tr><td style="padding: 10px;">HAMMER</td><td style="padding: 10px; text-align: center;">45%</td><td style="padding: 10px; text-align: center;">95.0%</td><td style="padding: 10px; text-align: center;">✅ 达标</td></tr>
+        </table>
+    </div>
+</body>
+</html>

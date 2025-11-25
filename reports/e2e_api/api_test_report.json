@@ -1,0 +1,185 @@
+{
+  "start_time": "2025-11-25T07:24:04.042273",
+  "end_time": "2025-11-25T07:24:04.917281",
+  "total_tests": 25,
+  "passed": 16,
+  "failed": 9,
+  "tests": [
+    {
+      "name": "GET /",
+      "status": "passed",
+      "details": "API Version: 2.2.0-service-layer",
+      "response": "{'message': 'Welcome to HydroClaude API. Visit /docs for documentation.', 'api_version': '2.2.0-service-layer', 'available_modules': ['structures', 'simulations', 'simulations-sync', 'reservoir', 'network', 'analysis', 'test-cases', 'test-runner']}",
+      "timestamp": "2025-11-25T07:24:04.145263"
+    },
+    {
+      "name": "GET /docs",
+      "status": "passed",
+      "details": "Swagger UI 可用",
+      "response": null,
+      "timestamp": "2025-11-25T07:24:04.147936"
+    },
+    {
+      "name": "GET /openapi.json",
+      "status": "passed",
+      "details": "API 端点数: 46",
+      "response": "{'paths_count': 46}",
+      "timestamp": "2025-11-25T07:24:04.152949"
+    },
+    {
+      "name": "GET /api/structures/types",
+      "status": "passed",
+      "details": "结构类型: {'pumps': ['single', 'parallel', 'series'], 'gates': ['sluice', 'radial'], 'weirs': ['broad_crested', 'sharp_crested', 'v_notch'], 'turbines': ['simplified', 'francis'], 'valves': ['general', 'butterfly'], 'canal_structures': ['sluice_gate', 'pump', 'weir']}",
+      "response": "{'pumps': ['single', 'parallel', 'series'], 'gates': ['sluice', 'radial'], 'weirs': ['broad_crested', 'sharp_crested', 'v_notch'], 'turbines': ['simplified', 'francis'], 'valves': ['general', 'butterfly'], 'canal_structures': ['sluice_gate', 'pump', 'weir']}",
+      "timestamp": "2025-11-25T07:24:04.244254"
+    },
+    {
+      "name": "GET /api/structures/health",
+      "status": "passed",
+      "details": "健康检查通过",
+      "response": null,
+      "timestamp": "2025-11-25T07:24:04.246693"
+    },
+    {
+      "name": "POST /api/structures/gate",
+      "status": "failed",
+      "details": "Status: 422, {\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"gate\"],\"msg\":\"Field required\",\"input\":{\"gate_type\":\"slui",
+      "response": null,
+      "timestamp": "2025-11-25T07:24:04.249557"
+    },
+    {
+      "name": "POST /api/structures/weir",
+      "status": "failed",
+      "details": "Status: 422, {\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"weir\"],\"msg\":\"Field required\",\"input\":{\"weir_type\":\"broa",
+      "response": null,
+      "timestamp": "2025-11-25T07:24:04.252033"
+    },
+    {
+      "name": "POST /api/structures/pump",
+      "status": "failed",
+      "details": "Status: 422, {\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"pump\"],\"msg\":\"Field required\",\"input\":{\"pump_type\":\"cent",
+      "response": null,
+      "timestamp": "2025-11-25T07:24:04.254484"
+    },
+    {
+      "name": "POST /api/v1/simulations-sync",
+      "status": "failed",
+      "details": "Status: 422, {\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"name\"],\"msg\":\"Field required\",\"input\":{\"length\":1000.0,\"",
+      "response": null,
+      "timestamp": "2025-11-25T07:24:04.346877"
+    },
+    {
+      "name": "POST /api/v1/simulations",
+      "status": "failed",
+      "details": "Status: 422, {\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"name\"],\"msg\":\"Field required\",\"input\":{\"length\":1000.0,\"",
+      "response": null,
+      "timestamp": "2025-11-25T07:24:04.349625"
+    },
+    {
+      "name": "GET /api/v1/simulations",
+      "status": "passed",
+      "details": "仿真列表: 0 项",
+      "response": null,
+      "timestamp": "2025-11-25T07:24:04.351746"
+    },
+    {
+      "name": "GET /reservoir/health",
+      "status": "passed",
+      "details": "健康检查通过",
+      "response": null,
+      "timestamp": "2025-11-25T07:24:04.441784"
+    },
+    {
+      "name": "GET /reservoir/weir-types",
+      "status": "passed",
+      "details": "堰类型: {'weir_types': [{'type': 'broad_crested', 'name': '宽顶堰', 'description': '堰顶较宽，水流达到临界流，适用于大流量', 'discharge_coeff_range': [1.6, 1.7]}, {'type': 'sharp_crested', 'name': '尖顶堰（薄壁堰）', 'description': '堰顶尖锐，流量公式精确，常用于测流', 'discharge_coeff_range': [1.7, 1.84]}, {'type': 'ogee', 'name': '溢流堰', 'description': '优化堰面曲线，泄流能力强，用于水坝溢洪道', 'discharge_coeff_range': [1.8, 2.2]}, {'type': 'v_notch', 'name': 'V形堰', 'description': '三角形缺口，小流量测量精度高', 'angle_range': [30, 120]}], 'total': 4}",
+      "response": "{'weir_types': [{'type': 'broad_crested', 'name': '宽顶堰', 'description': '堰顶较宽，水流达到临界流，适用于大流量', 'discharge_coeff_range': [1.6, 1.7]}, {'type': 'sharp_crested', 'name': '尖顶堰（薄壁堰）', 'description': '堰顶尖锐，流量公式精确，常用于测流', 'discharge_coeff_range': [1.7, 1.84]}, {'type': 'ogee', 'name': '溢流堰', 'description': '优化堰面曲线，泄流能力强，用于水坝溢洪道', 'discharge_coeff_range': [1.8, 2.2]}, {'type': 'v_notch', 'name': 'V形堰', 'description': '三角形缺口，小流量测量精度高', 'angle_range': [30, 120]}], 'total': 4}",
+      "timestamp": "2025-11-25T07:24:04.446486"
+    },
+    {
+      "name": "POST /reservoir/weir",
+      "status": "failed",
+      "details": "Status: 422, {\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"weir\"],\"msg\":\"Field required\",\"input\":{\"weir_type\":\"broa",
+      "response": null,
+      "timestamp": "2025-11-25T07:24:04.449237"
+    },
+    {
+      "name": "GET /network/health",
+      "status": "passed",
+      "details": "健康检查通过",
+      "response": null,
+      "timestamp": "2025-11-25T07:24:04.532835"
+    },
+    {
+      "name": "GET /network/formulas",
+      "status": "passed",
+      "details": "公式: {'formulas': [{'name': 'manning', 'full_name': 'Manning公式', 'description': '明渠/管道均匀流计算，适用于重力流', 'formula': 'Q = (1/n) * A * R^(2/3) * S^(1/2)', 'parameters': ['n (糙率)', 'A (面积)', 'R (水力半径)', 'S (坡度)']}, {'name': 'darcy', 'full_name': 'Darcy-Weisbach公式', 'description': '压力管道水头损失计算，理论基础最严密', 'formula': 'hf = f * (L/D) * (V²/2g)', 'parameters': ['f (摩阻系数)', 'L (长度)', 'D (直径)', 'V (流速)']}, {'name': 'hazen_williams', 'full_name': 'Hazen-Williams公式', 'description': '给水管网常用，计算简便', 'formula': 'hf = 10.67 * Q^1.852 / (C^1.852 * D^4.87) * L', 'parameters': ['C (Hazen-Williams系数)', 'Q (流量)', 'D (直径)', 'L (长度)']}], 'total': 3}",
+      "response": "{'formulas': [{'name': 'manning', 'full_name': 'Manning公式', 'description': '明渠/管道均匀流计算，适用于重力流', 'formula': 'Q = (1/n) * A * R^(2/3) * S^(1/2)', 'parameters': ['n (糙率)', 'A (面积)', 'R (水力半径)', 'S (坡度)']}, {'name': 'darcy', 'full_name': 'Darcy-Weisbach公式', 'description': '压力管道水头损失计算，理论基础最严密', 'formula': 'hf = f * (L/D) * (V²/2g)', 'parameters': ['f (摩阻系数)', 'L (长度)', 'D (直径)', 'V (流速)']}, {'name': 'hazen_williams', 'full_name': 'Hazen-Williams公式', 'description': '给水管网常用，计算简便', 'formula': 'hf = 10.6",
+      "timestamp": "2025-11-25T07:24:04.534928"
+    },
+    {
+      "name": "POST /network/pipe-flow",
+      "status": "failed",
+      "details": "Status: 422, {\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"pipe\"],\"msg\":\"Field required\",\"input\":{\"diameter\":0.3,\"l",
+      "response": null,
+      "timestamp": "2025-11-25T07:24:04.537462"
+    },
+    {
+      "name": "GET /analysis/health",
+      "status": "passed",
+      "details": "健康检查通过",
+      "response": null,
+      "timestamp": "2025-11-25T07:24:04.628922"
+    },
+    {
+      "name": "POST /analysis/config",
+      "status": "passed",
+      "details": "配置分析成功",
+      "response": "{'is_valid': False, 'quality_score': 19.0, 'estimated_time': 0.1, 'estimated_memory': 1.0, 'estimated_iterations': 100, 'spatial_resolution': {'dx': 0, 'cells_per_width': 0, 'aspect_ratio': 100.0, 'total_cells': 0}, 'temporal_resolution': {}, 'numerical_stability': {'cfl': 0, 'order': 1, 'scheme': '1阶精度', 'estimated_velocity': 3.6986223885946474, 'estimated_froude': 0.528105254185894, 'flow_regime': '亚临界', 'peclet_number': 9.999999999999998}, 'physical_validity': {'manning_n': 0.025, 'slope': 0.",
+      "timestamp": "2025-11-25T07:24:04.631707"
+    },
+    {
+      "name": "GET /api/v1/test-cases/",
+      "status": "passed",
+      "details": "测试用例: 541 项",
+      "response": "{'total': 541, 'categories': {'general': 381, 'benchmark': 14, 'dam_break': 14, 'structures': 50, 'lake_at_rest': 6, 'control': 28, 'water_quality': 4, 'network': 30, 'pressurized': 14}, 'cases': [{'metadata': {'id': 'tests-analyze_well_balanced_details', 'name': '详细分析Well-Balanced重构的数值行为', 'nameCN': '详细分析Well-Balanced重构的数值行为', 'category': 'general', 'subcategory': 'General', 'difficulty': 'intermediate', 'tags': ['godunov', 'riemann'], 'author': 'HydroClaude Test Suite', 'version': '1.0.0', 're",
+      "timestamp": "2025-11-25T07:24:04.732212"
+    },
+    {
+      "name": "GET /api/v1/test-cases/categories",
+      "status": "passed",
+      "details": "分类: {'general': 381, 'benchmark': 14, 'dam_break': 14, 'structures': 50, 'lake_at_rest': 6, 'control': 28, 'water_quality': 4, 'network': 30, 'pressurized': 14}",
+      "response": "{'general': 381, 'benchmark': 14, 'dam_break': 14, 'structures': 50, 'lake_at_rest': 6, 'control': 28, 'water_quality': 4, 'network': 30, 'pressurized': 14}",
+      "timestamp": "2025-11-25T07:24:04.734400"
+    },
+    {
+      "name": "GET /api/v1/test-cases/statistics",
+      "status": "passed",
+      "details": "统计信息获取成功",
+      "response": "{'total': 541, 'categories': {'general': 381, 'benchmark': 14, 'dam_break': 14, 'structures': 50, 'lake_at_rest': 6, 'control': 28, 'water_quality': 4, 'network': 30, 'pressurized': 14}, 'difficulty': {'beginner': 28, 'intermediate': 430, 'advanced': 83}, 'topTags': {'godunov': 167, 'gate': 126, 'control': 91, 'riemann': 84, 'network': 77, 'pump': 57, 'mpc': 49, 'pid': 45, 'dam-break': 41, 'weno': 40}}",
+      "timestamp": "2025-11-25T07:24:04.736350"
+    },
+    {
+      "name": "GET / (Frontend)",
+      "status": "passed",
+      "details": "前端加载成功 (React: True, Script: True)",
+      "response": null,
+      "timestamp": "2025-11-25T07:24:04.825645"
+    },
+    {
+      "name": "工作流-创建仿真",
+      "status": "failed",
+      "details": "Status: 422",
+      "response": null,
+      "timestamp": "2025-11-25T07:24:04.913530"
+    },
+    {
+      "name": "工作流-渠道+闸门仿真",
+      "status": "failed",
+      "details": "Status: 422, {\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"structure_type\"],\"msg\":\"Field required\",\"input\":{\"canal\"",
+      "response": null,
+      "timestamp": "2025-11-25T07:24:04.915686"
+    }
+  ],
+  "api_responses": []
+}

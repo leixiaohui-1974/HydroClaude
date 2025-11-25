@@ -1,0 +1,314 @@
+{
+  "test_date": "2025-11-25T07:54:49.310633",
+  "frontend_url": "http://localhost:5173",
+  "source_analysis": {
+    "pages": [
+      {
+        "name": "AboutPage",
+        "file": "/home/user/HydroClaude/web/frontend/src/pages/AboutPage.tsx",
+        "lines": 120,
+        "has_state": false,
+        "has_effects": false,
+        "has_routing": false,
+        "has_forms": false,
+        "has_charts": true
+      },
+      {
+        "name": "HomePage",
+        "file": "/home/user/HydroClaude/web/frontend/src/pages/HomePage.tsx",
+        "lines": 155,
+        "has_state": false,
+        "has_effects": false,
+        "has_routing": true,
+        "has_forms": false,
+        "has_charts": false
+      },
+      {
+        "name": "ResultsPage",
+        "file": "/home/user/HydroClaude/web/frontend/src/pages/ResultsPage.tsx",
+        "lines": 24,
+        "has_state": false,
+        "has_effects": false,
+        "has_routing": false,
+        "has_forms": false,
+        "has_charts": false
+      },
+      {
+        "name": "SimulationPage",
+        "file": "/home/user/HydroClaude/web/frontend/src/pages/SimulationPage.tsx",
+        "lines": 20,
+        "has_state": false,
+        "has_effects": false,
+        "has_routing": false,
+        "has_forms": false,
+        "has_charts": false
+      },
+      {
+        "name": "VisualizationDemo",
+        "file": "/home/user/HydroClaude/web/frontend/src/pages/VisualizationDemo.tsx",
+        "lines": 347,
+        "has_state": true,
+        "has_effects": true,
+        "has_routing": false,
+        "has_forms": false,
+        "has_charts": true
+      }
+    ],
+    "components": [
+      {
+        "name": "ComponentConfigForm",
+        "file": "components/ComponentConfigForm.tsx"
+      },
+      {
+        "name": "ErrorDisplay",
+        "file": "components/ErrorDisplay.tsx"
+      },
+      {
+        "name": "QuickActionsToolbar",
+        "file": "components/QuickActionsToolbar.tsx"
+      },
+      {
+        "name": "UnifiedComponentSelector",
+        "file": "components/UnifiedComponentSelector.tsx"
+      },
+      {
+        "name": "ComponentPalette",
+        "file": "components/hydraulic-structures/ComponentPalette.tsx"
+      },
+      {
+        "name": "HydraulicStructures",
+        "file": "components/hydraulic-structures/HydraulicStructures.tsx"
+      },
+      {
+        "name": "AppHeader",
+        "file": "components/layout/AppHeader.tsx"
+      },
+      {
+        "name": "AppSidebar",
+        "file": "components/layout/AppSidebar.tsx"
+      },
+      {
+        "name": "EnhancedCharts",
+        "file": "components/visualization/EnhancedCharts.tsx"
+      }
+    ],
+    "features": [
+      {
+        "name": "advanced",
+        "files": 1
+      },
+      {
+        "name": "analysis",
+        "files": 2
+      },
+      {
+        "name": "batch",
+        "files": 1
+      },
+      {
+        "name": "control-systems",
+        "files": 1
+      },
+      {
+        "name": "modeling",
+        "files": 17
+      },
+      {
+        "name": "optimization",
+        "files": 1
+      },
+      {
+        "name": "reports",
+        "files": 1
+      },
+      {
+        "name": "simulation",
+        "files": 13
+      },
+      {
+        "name": "test-cases",
+        "files": 1
+      },
+      {
+        "name": "water-quality",
+        "files": 1
+      }
+    ],
+    "hooks": [],
+    "apis": []
+  },
+  "html_analysis": {
+    "index": {
+      "title": "HydroClaude - 水力学仿真平台",
+      "meta_tags": 2,
+      "scripts": 3,
+      "stylesheets": 0,
+      "has_root": true,
+      "has_viewport": true,
+      "charset": true
+    }
+  },
+  "feature_scores": {
+    "navigation": {
+      "score": 4,
+      "max_score": 6,
+      "percentage": 66.66666666666666,
+      "details": {
+        "sidebar": {
+          "exists": true,
+          "has_links": false,
+          "has_icons": true
+        },
+        "header": {
+          "exists": true
+        },
+        "quick_actions": {
+          "exists": true
+        },
+        "routing": {
+          "exists": true
+        },
+        "responsive": {
+          "exists": false
+        },
+        "i18n": {
+          "exists": false
+        }
+      }
+    },
+    "modeling": {
+      "score": 6,
+      "max_score": 6,
+      "percentage": 100.0,
+      "details": {
+        "component_palette": {
+          "exists": true
+        },
+        "canvas": {
+          "exists": true
+        },
+        "property_panel": {
+          "exists": true
+        },
+        "structure_editors": {
+          "count": 4,
+          "total": 4
+        },
+        "model_library": {
+          "exists": true
+        },
+        "template_gallery": {
+          "exists": true
+        }
+      }
+    },
+    "simulation": {
+      "score": 6,
+      "max_score": 6,
+      "percentage": 100.0,
+      "details": {
+        "config_form": {
+          "exists": true
+        },
+        "workspace": {
+          "exists": true
+        },
+        "results": {
+          "exists": true
+        },
+        "animation": {
+          "exists": true
+        },
+        "scenarios": {
+          "exists": true
+        },
+        "batch": {
+          "exists": true
+        }
+      }
+    },
+    "visualization": {
+      "score": 6,
+      "max_score": 6,
+      "percentage": 100.0,
+      "details": {
+        "enhanced_charts": {
+          "exists": true
+        },
+        "plot3d": {
+          "exists": true
+        },
+        "comparison_view": {
+          "exists": true
+        },
+        "results_export": {
+          "exists": true
+        },
+        "animation_controller": {
+          "exists": true
+        },
+        "charts_library": {
+          "exists": true
+        }
+      }
+    },
+    "reports": {
+      "score": 4,
+      "max_score": 4,
+      "percentage": 100.0,
+      "details": {
+        "report_generator": {
+          "exists": true
+        },
+        "results_export": {
+          "exists": true
+        },
+        "result_analysis": {
+          "exists": true
+        },
+        "config_analysis": {
+          "exists": true
+        }
+      }
+    },
+    "data_management": {
+      "score": 4,
+      "max_score": 4,
+      "percentage": 100.0,
+      "details": {
+        "data_importer": {
+          "exists": true
+        },
+        "model_io": {
+          "exists": true
+        },
+        "scenario_manager": {
+          "exists": true
+        },
+        "test_case_library": {
+          "exists": true
+        }
+      }
+    },
+    "user_experience": {
+      "score": 4,
+      "max_score": 4,
+      "percentage": 100.0,
+      "details": {
+        "error_display": {
+          "exists": true
+        },
+        "config_form": {
+          "exists": true
+        },
+        "unified_selector": {
+          "exists": true
+        },
+        "about_page": {
+          "exists": true
+        }
+      }
+    }
+  },
+  "overall_score": 95.0
+}

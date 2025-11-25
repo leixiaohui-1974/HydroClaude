@@ -1,0 +1,73 @@
+{
+  "test_date": "2025-11-25T07:56:29.377872",
+  "screenshots": [
+    "/home/user/HydroClaude/e2e_screenshots/browser/home_075634.png",
+    "/home/user/HydroClaude/e2e_screenshots/browser/simulation_075637.png",
+    "/home/user/HydroClaude/e2e_screenshots/browser/results_075640.png",
+    "/home/user/HydroClaude/e2e_screenshots/browser/about_075642.png"
+  ],
+  "pages": [
+    {
+      "id": "home",
+      "path": "/",
+      "description": "首页",
+      "screenshot": "/home/user/HydroClaude/e2e_screenshots/browser/home_075634.png",
+      "title": "HydroClaude - 水力学仿真平台",
+      "content_size": 25039,
+      "elements": {
+        "header": 1,
+        "main": 1,
+        "buttons": 5,
+        "links": 0
+      },
+      "success": true
+    },
+    {
+      "id": "simulation",
+      "path": "/simulation",
+      "description": "仿真页面",
+      "screenshot": "/home/user/HydroClaude/e2e_screenshots/browser/simulation_075637.png",
+      "title": "HydroClaude - 水力学仿真平台",
+      "content_size": 57357,
+      "elements": {
+        "header": 1,
+        "main": 1,
+        "buttons": 3,
+        "links": 0
+      },
+      "success": true
+    },
+    {
+      "id": "results",
+      "path": "/results",
+      "description": "结果页面",
+      "screenshot": "/home/user/HydroClaude/e2e_screenshots/browser/results_075640.png",
+      "title": "HydroClaude - 水力学仿真平台",
+      "content_size": 16286,
+      "elements": {
+        "header": 1,
+        "main": 1,
+        "buttons": 0,
+        "links": 0
+      },
+      "success": true
+    },
+    {
+      "id": "about",
+      "path": "/about",
+      "description": "关于页面",
+      "screenshot": "/home/user/HydroClaude/e2e_screenshots/browser/about_075642.png",
+      "title": "HydroClaude - 水力学仿真平台",
+      "content_size": 20055,
+      "elements": {
+        "header": 1,
+        "main": 1,
+        "buttons": 0,
+        "links": 0
+      },
+      "success": true
+    }
+  ],
+  "errors": [],
+  "overall_score": 100.0
+}
