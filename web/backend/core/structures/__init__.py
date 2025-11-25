@@ -82,20 +82,4 @@ STRUCTURE_TYPES = {
 
 TOTAL_STRUCTURES = sum(STRUCTURE_TYPES.values())  # 17种
 
-print(f"""
-╔══════════════════════════════════════════════════════════════╗
-║  HydroClaude v{__version__} 水工结构模块                       ║
-║  对标商业软件（HEC-RAS、MIKE、InfoWorks）                   ║
-╠══════════════════════════════════════════════════════════════╣
-║  ✅ 泵站:         {STRUCTURE_TYPES['pump_station']}种                                     ║
-║  ✅ 闸门:         {STRUCTURE_TYPES['gates']}种                                     ║
-║  ✅ 堰:           {STRUCTURE_TYPES['weirs']}种                                     ║
-║  ✅ 涵洞:         {STRUCTURE_TYPES['culvert']}种                                     ║
-║  ✅ 侧堰:         {STRUCTURE_TYPES['side_weir']}种                                     ║
-║  ✅ 调蓄池:       {STRUCTURE_TYPES['storage']}种                                     ║
-║  ✅ 跌水:         {STRUCTURE_TYPES['drop_structure']}种                                     ║
-║  ✅ 桥梁:         {STRUCTURE_TYPES['bridge']}种                                     ║
-╠══════════════════════════════════════════════════════════════╣
-║  📊 总计:         {TOTAL_STRUCTURES}种水工结构                           ║
-╚══════════════════════════════════════════════════════════════╝
-""")
+# Print statement removed to avoid UnicodeEncodeError in Windows console

@@ -144,6 +144,71 @@ class HydrostaticCanalSolver:
         # 
         self.current_time = 0.0
 
+    def compute_dt(self, cfl: float = 0.9) -> float:
+        """
+        Compute stable time step based on CFL condition
+        
+        Args:
+            cfl: CFL number (default 0.9)
+            
+        Returns:
+            dt: Stable time step (s)
+        """
+        h = self.h
+        # Avoid division by zero
+        mask = h > self.eps_dry
+        u = np.zeros_like(h)
+        u[mask] = self.hu[mask] / h[mask]
+        
+        c = np.sqrt(self.g * h)
+        wave_speed = np.abs(u) + c
+        max_speed = np.max(wave_speed)
+        
+        if max_speed < 1e-6:
+            return 1.0  # Default large step if fluid is at rest
+            
+        return cfl * self.dx / max_speed
+
+    def step(self, dt: float):
+        """
+        Perform one time step integration
+        
+        Args:
+            dt: Time step (s)
+        """
+        # 1. Compute fluxes and sources
+        F_mass, F_mom, S_mass, S_mom = self.compute_fluxes_and_sources(
+            self.h, self.hu, self.z, self.dx
+        )
+        
+        # 2. Update conserved variables
+        # dU/dt + dF/dx = S
+        # U_new = U_old - dt/dx * (F_R - F_L) + dt * S
+        
+        # Mass conservation
+        # F_mass has size n_cells + 1 (interfaces)
+        # Flux difference for cell i is F[i+1] - F[i]
+        flux_diff_mass = F_mass[1:] - F_mass[:-1]
+        self.h -= (dt / self.dx) * flux_diff_mass
+        self.h += dt * S_mass
+        
+        # Momentum conservation
+        flux_diff_mom = F_mom[1:] - F_mom[:-1]
+        self.hu -= (dt / self.dx) * flux_diff_mom
+        self.hu += dt * S_mom
+        
+        # 3. Apply internal boundary conditions (structures)
+        self._apply_internal_bc(self.current_time, None)
+        
+        # 4. Handle dry cells and physical constraints
+        self.h = np.maximum(self.h, self.eps_dry)
+        # Zero velocity in dry cells
+        dry_mask = self.h <= self.eps_dry
+        self.hu[dry_mask] = 0.0
+        
+        # 5. Update time
+        self.current_time += dt
+
     def _compute_bed_elevation(self) -> np.ndarray:
         """
         
@@ -163,14 +228,40 @@ class HydrostaticCanalSolver:
         return z
 
     def _setup_internal_structures(self):
-        """"""
+        """Setup internal structures by finding nearest interface indices"""
         self.structure_indices = []
         self.structure_objects = []
 
         for position, structure in self.internal_structures:
-            idx = np.argmin(np.abs(self.x - position))
-            self.structure_indices.append(idx)
-            self.structure_objects.append(structure)
+            # Find nearest interface
+            # x has size nx (cell centers/nodes). Interfaces are at i+1/2?
+            # In this solver, x seems to be nodes.
+            # F_mass has size nx+1.
+            # Let's assume structure is at interface i if x[i-1] < pos < x[i]
+            # or simply nearest node.
+            
+            # Let's find the nearest node index, and treat it as the interface to the right of that node?
+            # Or better, find the index i such that the structure is between x[i] and x[i+1].
+            # Then we modify flux at interface i+1 (which connects cell i and i+1).
+            
+            # F_mass[i] is flux at interface i-1/2? No.
+            # F_mass has size nx+1.
+            # F[0] is left boundary. F[nx] is right boundary.
+            # F[i] is flux between cell i-1 and i.
+            
+            # Find i such that x[i-1] <= pos <= x[i]
+            # If pos is 500, and x is 0, 10, ..., 1000.
+            # 500 is at index 50.
+            # We want to modify flux at interface 50?
+            
+            idx = np.searchsorted(self.x, position)
+            # idx is such that x[idx-1] <= pos < x[idx]
+            # So structure is between cell idx-1 and idx.
+            # The flux between them is F[idx].
+            
+            if 0 < idx < self.nx:
+                self.structure_indices.append(idx)
+                self.structure_objects.append(structure)
 
     def reconstruct_interface(
         self, h_L: float, z_L: float, h_R: float, z_R: float
@@ -646,6 +737,51 @@ class HydrostaticCanalSolver:
         #
         # v7.0: 
         # ========================================================================
+
+        # ========================================================================
+        # Internal Structures Coupling (Flux Overwrite)
+        # ========================================================================
+        if hasattr(self, 'structure_indices') and self.structure_indices:
+            for idx, structure in zip(self.structure_indices, self.structure_objects):
+                if idx >= len(F_mass): continue
+                
+                # Get upstream and downstream states
+                # Interface idx connects cell idx-1 and idx
+                h_up = h[idx-1]
+                h_down = h[idx]
+                
+                # Calculate discharge
+                try:
+                    # Try new interface first
+                    if hasattr(structure, 'compute_discharge'):
+                        Q_struc, _ = structure.compute_discharge(h_up, h_down)
+                    elif hasattr(structure, 'calculate_discharge'):
+                        Q_struc, _ = structure.calculate_discharge(h_up, h_down)
+                    else:
+                        continue
+                        
+                    # Overwrite Mass Flux
+                    F_mass[idx] = float(Q_struc)
+                    
+                    # Debug print every 100 steps or so (how to know step? just print if t > 0)
+                    # Or just print if Q_struc is unexpected
+                    # print(f"Struc {idx}: h_up={h_up:.2f}, h_dn={h_down:.2f}, Q={Q_struc:.2f}")
+                    
+                    # Overwrite Momentum Flux
+                    # F_mom = Q * v + g*h^2/2
+                    # Approximate v = Q / (h * B)
+                    # Use upstream side for momentum flux? Or average?
+                    # Simple approximation:
+                    if h_up > self.eps_dry:
+                        v_up = Q_struc / (h_up * self.B)
+                        F_momentum[idx] = Q_struc * v_up + 0.5 * self.g * h_up**2
+                    else:
+                        F_momentum[idx] = 0.0
+                        
+                except Exception as e:
+                    # Fallback or log error (print for now as we are in a solver)
+                    # print(f"Structure Error: {e}")
+                    pass
 
         return F_mass, F_momentum, S_mass, S_momentum
 

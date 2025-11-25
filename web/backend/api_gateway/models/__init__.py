@@ -25,5 +25,18 @@ __all__ = [
     'SimulationResponse',
     'SimulationStatusResponse',
     'SimulationResultResponse',
-    'SimulationMetrics'
+    'SimulationMetrics',
+    'get_pump_model',
+    'get_gate_model',
+    'get_weir_model',
+    'get_turbine_model',
+    'get_valve_model'
 ]
+
+from .factory import (
+    get_pump_model,
+    get_gate_model,
+    get_weir_model,
+    get_turbine_model,
+    get_valve_model
+)

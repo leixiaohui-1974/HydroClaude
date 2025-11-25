@@ -45,7 +45,7 @@ import {
   canConvertToSimulation,
   generateConfigSummary
 } from './utils/converter';
-import { createSimulation } from '@/services/api';
+import { createSimulation } from '@/services/simulation-api';
 
 import ComponentPalette from './components/ComponentPalette';
 import ModelCanvas from './components/ModelCanvas';

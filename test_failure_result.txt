@@ -1,0 +1,1 @@
+{'task_id': 'ad60d25d-3c3c-4f00-8a93-ec8f62375dbc', 'status': 'failed', 'time': [], 'x': [], 'h': [], 'Q': [], 'V': [], 'metrics': {}, 'duration': 0.002705, 'timestamp': '2025-11-25T11:17:56.989833', 'error': "'HydrostaticCanalSolver' object has no attribute 'step'"}

@@ -111,7 +111,24 @@ const SimulationConfigForm = ({ onSimulationComplete }: SimulationConfigFormProp
               type: values.bc_downstream_type || 'h',
               value: values.bc_downstream_value
             }
-          }
+          },
+          structures: values.structure_type ? [{
+            type: values.structure_type,
+            position: values.st_position,
+            parameters: {
+              // Pump
+              flow_rate: values.st_pump_flow,
+              head: values.st_pump_head,
+              // Gate
+              type: values.st_gate_type,
+              opening: values.st_gate_opening,
+              width: values.st_gate_width,
+              discharge_coeff: values.st_gate_coeff,
+              // Weir
+              crest_height: values.st_weir_height,
+              angle: values.st_weir_type === 'v_notch' ? 90 : undefined // Default angle for V-notch
+            }
+          }] : []
         }
       };
 
@@ -277,6 +294,87 @@ const SimulationConfigForm = ({ onSimulationComplete }: SimulationConfigFormProp
 
         <Form.Item label="下游边界值" name="bc_downstream_value">
           <InputNumber min={0} max={10000} step={0.1} style={{ width: '100%' }} />
+        </Form.Item>
+
+        <Divider orientation="left">水工结构 (可选)</Divider>
+
+        <Form.Item label="结构类型" name="structure_type">
+          <Select allowClear placeholder="选择结构类型 (留空表示无结构)">
+            <Option value="pump">泵站 (Pump)</Option>
+            <Option value="gate">闸门 (Gate)</Option>
+            <Option value="weir">堰 (Weir)</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          noStyle
+          shouldUpdate={(prevValues, currentValues) => prevValues.structure_type !== currentValues.structure_type}
+        >
+          {({ getFieldValue }) => {
+            const type = getFieldValue('structure_type');
+            if (!type) return null;
+
+            return (
+              <>
+                <Form.Item label="位置 (m)" name="st_position" rules={[{ required: true }]}>
+                  <InputNumber min={0} max={100000} step={10} style={{ width: '100%' }} />
+                </Form.Item>
+
+                {type === 'pump' && (
+                  <>
+                    <Form.Item label="额定流量 (m³/s)" name="st_pump_flow" rules={[{ required: true }]}>
+                      <InputNumber min={0} max={1000} step={0.1} style={{ width: '100%' }} />
+                    </Form.Item>
+                    <Form.Item label="额定扬程 (m)" name="st_pump_head" rules={[{ required: true }]}>
+                      <InputNumber min={0} max={1000} step={0.1} style={{ width: '100%' }} />
+                    </Form.Item>
+                  </>
+                )}
+
+                {type === 'gate' && (
+                  <>
+                    <Form.Item label="闸门类型" name="st_gate_type" initialValue="sluice">
+                      <Select>
+                        <Option value="sluice">平板闸 (Sluice)</Option>
+                        <Option value="radial">弧形闸 (Radial)</Option>
+                      </Select>
+                    </Form.Item>
+                    <Form.Item label="开度 (m)" name="st_gate_opening" rules={[{ required: true }]}>
+                      <InputNumber min={0} max={100} step={0.1} style={{ width: '100%' }} />
+                    </Form.Item>
+                    <Form.Item label="宽度 (m)" name="st_gate_width" rules={[{ required: true }]}>
+                      <InputNumber min={0} max={1000} step={0.1} style={{ width: '100%' }} />
+                    </Form.Item>
+                    <Form.Item label="流量系数" name="st_gate_coeff" initialValue={0.6}>
+                      <InputNumber min={0} max={1} step={0.01} style={{ width: '100%' }} />
+                    </Form.Item>
+                  </>
+                )}
+
+                {type === 'weir' && (
+                  <>
+                    <Form.Item label="堰类型" name="st_weir_type" initialValue="broad_crested">
+                      <Select>
+                        <Option value="broad_crested">宽顶堰</Option>
+                        <Option value="sharp_crested">薄壁堰</Option>
+                        <Option value="ogee">溢流堰</Option>
+                        <Option value="v_notch">V型堰</Option>
+                      </Select>
+                    </Form.Item>
+                    <Form.Item label="堰顶高程 (m)" name="st_weir_height" rules={[{ required: true }]}>
+                      <InputNumber min={0} max={100} step={0.1} style={{ width: '100%' }} />
+                    </Form.Item>
+                    <Form.Item label="宽度 (m)" name="st_weir_width" rules={[{ required: true }]}>
+                      <InputNumber min={0} max={1000} step={0.1} style={{ width: '100%' }} />
+                    </Form.Item>
+                    <Form.Item label="流量系数" name="st_weir_coeff" initialValue={1.7}>
+                      <InputNumber min={0} max={5} step={0.01} style={{ width: '100%' }} />
+                    </Form.Item>
+                  </>
+                )}
+              </>
+            );
+          }}
         </Form.Item>
 
         {loading && progress > 0 && (

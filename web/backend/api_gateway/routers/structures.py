@@ -21,12 +21,12 @@ if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
 # 导入新的独立物理模型
-from models import get_pump_model, get_gate_model, get_weir_model, get_turbine_model, get_valve_model
+from web.backend.api_gateway.models import get_pump_model, get_gate_model, get_weir_model, get_turbine_model, get_valve_model
 # 导入新的仿真服务
-from services.simulation_service import simulation_service
+from web.backend.services.simulation_service import simulation_service
 
 
-router = APIRouter(prefix="/structures", tags=["structures"])
+router = APIRouter(tags=["structures"])
 
 
 # ==================== Pydantic Models ====================
@@ -280,13 +280,23 @@ async def run_complex_simulation(request: ComplexSimulationRequest):
             )
 
         return ComplexSimulationResponse(
-            task_id=str(uuid.uuid4()), status='completed',
+            task_id=results.get("task_id"), status='completed',
             simulation_time_ms=(time.time() - start_time) * 1000,
             timestamp=datetime.now().isoformat(), results=results, error=None
         )
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"API层发生内部错误: {e}")
+
+@router.get("/simulation-results/{task_id}", summary="获取仿真结果")
+async def get_simulation_result(task_id: str):
+    """
+    获取指定任务ID的仿真结果
+    """
+    result = simulation_service.get_simulation_result(task_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Result not found or task not started")
+    return result
 
 # ==================== 辅助API ====================
 

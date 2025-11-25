@@ -8,42 +8,36 @@ import {
 
 const { Sider } = Layout
 
+import { useNavigate } from 'react-router-dom'
+
 const AppSidebar = () => {
+  const navigate = useNavigate()
+
   const menuItems = [
     {
-      key: 'dashboard',
+      key: '/',
       icon: <DashboardOutlined />,
       label: '仪表盘',
     },
     {
-      key: 'structures',
+      key: '/modeling',
       icon: <ControlOutlined />,
+      label: '高级建模',
+    },
+    {
+      key: '/simulation',
+      icon: <CloudOutlined />,
+      label: '仿真计算',
+    },
+    {
+      key: 'structures',
+      icon: <BranchesOutlined />,
       label: '水工结构',
       children: [
         { key: 'pump', label: '泵站' },
         { key: 'gate', label: '闸门' },
         { key: 'weir', label: '堰' },
         { key: 'reservoir', label: '水库' },
-      ],
-    },
-    {
-      key: 'network',
-      icon: <BranchesOutlined />,
-      label: '管网系统',
-      children: [
-        { key: 'pipe', label: '管道' },
-        { key: 'network', label: '管网' },
-        { key: 'complex', label: '复杂系统' },
-      ],
-    },
-    {
-      key: 'simulation',
-      icon: <CloudOutlined />,
-      label: '仿真类型',
-      children: [
-        { key: 'canal', label: '明渠流动' },
-        { key: 'pressure', label: '压力管道' },
-        { key: 'integrated', label: '综合调度' },
       ],
     },
   ]
@@ -57,10 +51,14 @@ const AppSidebar = () => {
     >
       <Menu
         mode="inline"
-        defaultSelectedKeys={['dashboard']}
-        defaultOpenKeys={['structures']}
+        defaultSelectedKeys={['/']}
         style={{ height: '100%', borderRight: 0 }}
         items={menuItems}
+        onClick={({ key }) => {
+          if (key.startsWith('/')) {
+            navigate(key)
+          }
+        }}
       />
     </Sider>
   )

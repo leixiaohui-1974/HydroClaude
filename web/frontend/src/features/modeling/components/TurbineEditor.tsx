@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Form, Input, InputNumber, Select, Button, Space, Card, 
-  Row, Col, Alert, Divider, Tabs, Radio, Tooltip, Statistic, Table 
+import {
+  Form, Input, InputNumber, Select, Button, Space, Card,
+  Row, Col, Alert, Divider, Tabs, Radio, Tooltip, Statistic, Table
 } from 'antd';
-import { 
-  SaveOutlined, CloseOutlined, CalculatorOutlined, 
-  ThunderboltOutlined, LineChartOutlined 
+import {
+  SaveOutlined, CloseOutlined, CalculatorOutlined,
+  ThunderboltOutlined, LineChartOutlined
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 
@@ -123,12 +123,12 @@ export const TurbineEditor: React.FC<Props> = ({ initialConfig, onSave, onCancel
     }
 
     const data: PerformanceData[] = [];
-    
+
     // 生成不同工况点
     for (let i = 0.4; i <= 1.2; i += 0.1) {
       const head = ratedHead * i;
       const flow = ratedFlow * i;
-      
+
       // 根据类型计算效率
       let efficiency = ratedEfficiency;
       if (turbineType === TurbineType.FRANCIS) {
@@ -138,11 +138,11 @@ export const TurbineEditor: React.FC<Props> = ({ initialConfig, onSave, onCancel
       } else if (turbineType === TurbineType.PELTON) {
         efficiency = ratedEfficiency * (0.95 + 0.05 * (1 - Math.abs(i - 0.8) / 0.6));
       }
-      
+
       efficiency = Math.max(0, Math.min(efficiency, 0.98));
-      
+
       const power = 9.81 * flow * head * efficiency / 1000; // MW
-      
+
       data.push({
         head: parseFloat(head.toFixed(2)),
         flow: parseFloat(flow.toFixed(2)),
@@ -150,7 +150,7 @@ export const TurbineEditor: React.FC<Props> = ({ initialConfig, onSave, onCancel
         efficiency: parseFloat((efficiency * 100).toFixed(2))
       });
     }
-    
+
     setPerformanceData(data);
   };
 
@@ -198,7 +198,7 @@ export const TurbineEditor: React.FC<Props> = ({ initialConfig, onSave, onCancel
       key: 'efficiency',
       align: 'center',
       render: (value: number) => (
-        <span style={{ 
+        <span style={{
           color: value > 90 ? '#52c41a' : value > 85 ? '#faad14' : '#ff4d4f',
           fontWeight: 'bold'
         }}>
@@ -209,7 +209,7 @@ export const TurbineEditor: React.FC<Props> = ({ initialConfig, onSave, onCancel
   ];
 
   return (
-    <Card 
+    <Card
       title={
         <Space>
           <ThunderboltOutlined />
@@ -281,10 +281,10 @@ export const TurbineEditor: React.FC<Props> = ({ initialConfig, onSave, onCancel
             </Row>
 
             <Divider>水轮机类型</Divider>
-            
+
             <Form.Item label="选择类型">
-              <Radio.Group 
-                value={turbineType} 
+              <Radio.Group
+                value={turbineType}
                 onChange={(e) => setTurbineType(e.target.value)}
                 buttonStyle="solid"
               >
@@ -301,22 +301,22 @@ export const TurbineEditor: React.FC<Props> = ({ initialConfig, onSave, onCancel
             <Card size="small" style={{ backgroundColor: '#f0f5ff', marginBottom: 16 }}>
               <Row gutter={16}>
                 <Col span={8}>
-                  <Statistic 
-                    title="适用水头" 
+                  <Statistic
+                    title="适用水头"
                     value={currentTurbineInfo.headRange}
                     valueStyle={{ fontSize: 16 }}
                   />
                 </Col>
                 <Col span={8}>
-                  <Statistic 
-                    title="额定效率" 
+                  <Statistic
+                    title="额定效率"
                     value={currentTurbineInfo.efficiency}
                     valueStyle={{ fontSize: 16, color: '#52c41a' }}
                   />
                 </Col>
                 <Col span={8}>
-                  <Statistic 
-                    title="优势特点" 
+                  <Statistic
+                    title="优势特点"
                     value={currentTurbineInfo.advantages}
                     valueStyle={{ fontSize: 12 }}
                   />
@@ -333,8 +333,8 @@ export const TurbineEditor: React.FC<Props> = ({ initialConfig, onSave, onCancel
                   name="ratedHead"
                   rules={[{ required: true, message: '请输入额定水头' }]}
                 >
-                  <InputNumber 
-                    style={{ width: '100%' }} 
+                  <InputNumber
+                    style={{ width: '100%' }}
                     min={0}
                     addonAfter="m"
                   />
@@ -346,8 +346,8 @@ export const TurbineEditor: React.FC<Props> = ({ initialConfig, onSave, onCancel
                   name="ratedFlow"
                   rules={[{ required: true, message: '请输入额定流量' }]}
                 >
-                  <InputNumber 
-                    style={{ width: '100%' }} 
+                  <InputNumber
+                    style={{ width: '100%' }}
                     min={0}
                     addonAfter="m³/s"
                   />
@@ -359,8 +359,8 @@ export const TurbineEditor: React.FC<Props> = ({ initialConfig, onSave, onCancel
                   name="ratedPower"
                   rules={[{ required: true, message: '请输入额定功率' }]}
                 >
-                  <InputNumber 
-                    style={{ width: '100%' }} 
+                  <InputNumber
+                    style={{ width: '100%' }}
                     min={0}
                     addonAfter="MW"
                   />
@@ -375,13 +375,13 @@ export const TurbineEditor: React.FC<Props> = ({ initialConfig, onSave, onCancel
                   name="ratedEfficiency"
                   rules={[{ required: true, message: '请输入额定效率' }]}
                 >
-                  <InputNumber 
-                    style={{ width: '100%' }} 
+                  <InputNumber
+                    style={{ width: '100%' }}
                     min={0}
                     max={1}
                     step={0.01}
-                    formatter={value => `${(Number(value) * 100).toFixed(1)}%`}
-                    parser={value => Number(value!.replace('%', '')) / 100}
+                    formatter={(value) => `${(Number(value) * 100).toFixed(1)}%`}
+                    parser={(value: string | undefined) => value ? Number(value.replace('%', '')) / 100 : 0}
                   />
                 </Form.Item>
               </Col>
@@ -391,8 +391,8 @@ export const TurbineEditor: React.FC<Props> = ({ initialConfig, onSave, onCancel
                   name="ratedSpeed"
                   rules={[{ required: true, message: '请输入额定转速' }]}
                 >
-                  <InputNumber 
-                    style={{ width: '100%' }} 
+                  <InputNumber
+                    style={{ width: '100%' }}
                     min={0}
                     addonAfter="rpm"
                   />
@@ -403,8 +403,8 @@ export const TurbineEditor: React.FC<Props> = ({ initialConfig, onSave, onCancel
                   label="机组数量"
                   name="numUnits"
                 >
-                  <InputNumber 
-                    style={{ width: '100%' }} 
+                  <InputNumber
+                    style={{ width: '100%' }}
                     min={1}
                     max={10}
                   />
@@ -422,8 +422,8 @@ export const TurbineEditor: React.FC<Props> = ({ initialConfig, onSave, onCancel
               style={{ marginBottom: 16 }}
             />
 
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               icon={<LineChartOutlined />}
               onClick={calculatePerformance}
               block
@@ -491,8 +491,8 @@ export const TurbineEditor: React.FC<Props> = ({ initialConfig, onSave, onCancel
               <ul>
                 <li><strong>Francis混流式</strong>: 最常用，适用于中等水头（50-500m），效率高，运行范围广</li>
                 <li><strong>Kaplan轴流式</strong>: 适用于低水头（5-70m），可调桨叶，部分负荷性能好</li>
-                <li><strong>Pelton冲击式</strong>: 适用于高水头（>200m），部分负荷效率高，适合山区水电</li>
-                <li><strong>灯泡式</strong>: 适用于超低水头（<20m），结构紧凑，适合潮汐电站</li>
+                <li><strong>Pelton冲击式</strong>: 适用于高水头（&gt;200m），部分负荷效率高，适合山区水电</li>
+                <li><strong>灯泡式</strong>: 适用于超低水头（&lt;20m），结构紧凑，适合潮汐电站</li>
                 <li><strong>Turgo斜击式</strong>: 适用于中高水头（50-300m），流量范围大于Pelton</li>
               </ul>
             </Card>

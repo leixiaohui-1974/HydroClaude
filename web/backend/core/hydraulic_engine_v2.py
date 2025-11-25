@@ -183,17 +183,24 @@ class HydraulicEngineV2:
         with suppress_output():
             return self._run_canal_simulation_internal(task_id, config, start_time)
     
-    def _run_canal_simulation_internal(self, task_id: str, config: Dict[str, Any], start_time):
+    def _run_canal_simulation_internal(self, task_id: str, config: Dict[str, Any], start_time, structures: List[Any] = None):
         """内部实现 - 在suppress_output上下文中调用，使用HydrostaticCanalSolver"""
         try:
             # 1. 提取配置参数
             width = config.get('width', 10.0)
             length = config.get('length', 1000.0)
             n_cells = config.get('n_cells', 200)
-            manning_n = config.get('manning_n', 0.025)  # 默认值改为合理的糙率
-            slope = config.get('slope', 0.001)  # 默认值改为合理的坡度
+            manning_n = config.get('manning_n', 0.025)
+            slope = config.get('slope', 0.001)
             t_end = config.get('t_end', 100.0)
             dt_max = config.get('dt_max', 0.1)
+
+            # 准备内部结构列表 [(position, structure_obj), ...]
+            internal_structures = []
+            if structures:
+                for st in structures:
+                    if hasattr(st, 'position'):
+                        internal_structures.append((st.position, st))
 
             # 2. 创建求解器（使用HydrostaticCanalSolver）
             solver = HydrostaticCanalSolver(
@@ -202,7 +209,8 @@ class HydraulicEngineV2:
                 B=width,
                 S0=slope,
                 n=manning_n,
-                g=9.81
+                g=9.81,
+                internal_structures=internal_structures
             )
 
             # 3. 设置初始条件
@@ -222,12 +230,24 @@ class HydraulicEngineV2:
 
                 solver.h = h0.copy()
                 solver.Q = Q0.copy()
+                solver.hu = Q0.copy() # Ensure hu is synced
 
             elif ic_type == 'uniform':
                 h_init = ic_config.get('h', 5.0)
                 Q_init = ic_config.get('Q', 0.0)
                 solver.h = np.full(n_cells, h_init)
                 solver.Q = np.full(n_cells, Q_init)
+                solver.hu = np.full(n_cells, Q_init)
+
+            # 提取边界条件
+            bc_config = config.get('boundary_conditions', {})
+            bc_up = bc_config.get('upstream', {})
+            bc_down = bc_config.get('downstream', {})
+            
+            bc_up_type = bc_up.get('type', 'h')
+            bc_up_value = bc_up.get('value', 5.0)
+            bc_down_type = bc_down.get('type', 'h')
+            bc_down_value = bc_down.get('value', 5.0)
 
             # 4. 运行仿真
             output_interval = config.get('output_interval', 1.0)
@@ -241,6 +261,19 @@ class HydraulicEngineV2:
             output_time = 0.0
             
             while t < t_end:
+                # Apply Boundary Conditions (Dirichlet)
+                if bc_up_type == 'Q':
+                    solver.hu[0] = bc_up_value
+                    solver.Q[0] = bc_up_value
+                elif bc_up_type == 'h':
+                    solver.h[0] = bc_up_value
+                
+                if bc_down_type == 'Q':
+                    solver.hu[-1] = bc_down_value
+                    solver.Q[-1] = bc_down_value
+                elif bc_down_type == 'h':
+                    solver.h[-1] = bc_down_value
+
                 dt = solver.compute_dt()
                 dt = min(dt, dt_max, t_end - t)
                 
@@ -500,22 +533,40 @@ class HydraulicEngineV2:
                 canal_config = config.copy()
                 canal_config.pop('pump', None)
             
-            canal_result = self._run_canal_simulation_internal(
-                task_id,
-                canal_config,
-                start_time
-            )
-            
-            if canal_result.status != 'completed':
-                return canal_result
-            
-            # 2. 叠加泵站影响
+            # 2. 创建泵站对象
             pump_cfg = config.get('pump', {})
             pump_flow = pump_cfg.get('flow_rate', 5.0)
             pump_position = pump_cfg.get('position', canal_config.get('length', 1000.0) / 2)
             pump_head = pump_cfg.get('head', 10.0)
             
-            # 修改metrics添加泵站信息
+            # 创建泵特性曲线（简化）
+            pump_curve = PumpCurve(
+                Q_min=0.0, Q_max=pump_flow * 2,
+                H_min=0.0, H_max=pump_head * 2,
+                coefficients=(pump_head, 0.0, 0.0)
+            )
+            
+            pump = PumpStation(
+                name=pump_cfg.get('name', 'Pump-01'),
+                position=pump_position,
+                pump_curve=pump_curve,
+                pump_type=PumpType.SINGLE,
+                num_pumps=pump_cfg.get('num_pumps', 1)
+            )
+            pump.is_running[0] = True # 默认开启
+
+            # 3. 运行带结构的仿真
+            canal_result = self._run_canal_simulation_internal(
+                task_id,
+                canal_config,
+                start_time,
+                structures=[pump]
+            )
+            
+            if canal_result.status != 'completed':
+                return canal_result
+
+            # 4. 更新Metrics
             canal_result.metrics.update({
                 'pump_flow': float(pump_flow),
                 'pump_position': float(pump_position),
@@ -698,21 +749,11 @@ class HydraulicEngineV2:
                 canal_config = config.copy()
                 canal_config.pop('gate', None)
             
-            canal_result = self._run_canal_simulation_internal(
-                task_id,
-                canal_config,
-                start_time
-            )
-            
-            if canal_result.status != 'completed':
-                return canal_result
-            
-            # 2. 在闸门位置计算过闸流量
+            # 2. 创建闸门对象
             gate_cfg = config.get('gate', {})
             gate_position = gate_cfg.get('position', canal_config.get('length', 1000.0) / 2)
             gate_type = gate_cfg.get('type', 'sluice')
             
-            # 创建闸门
             if gate_type == 'sluice':
                 gate = SluiceGate(
                     name=gate_cfg.get('name', 'Gate-001'),
@@ -729,23 +770,30 @@ class HydraulicEngineV2:
                     opening=gate_cfg.get('opening', 2.0),
                     discharge_coeff=gate_cfg.get('discharge_coeff', 0.65)
                 )
+
+            # 3. 运行带结构的仿真
+            canal_result = self._run_canal_simulation_internal(
+                task_id,
+                canal_config,
+                start_time,
+                structures=[gate]
+            )
             
-            # 从明渠结果中提取闸门位置的水深
-            mid_idx = len(canal_result.x) // 2
-            if len(canal_result.h) > 0 and len(canal_result.h[-1]) > mid_idx:
-                h_upstream = canal_result.h[-1][mid_idx]
-                h_downstream = h_upstream * 0.7  # 简化假设，下游水深为上游70%
-            else:
-                h_upstream = 5.0
-                h_downstream = 3.5
+            if canal_result.status != 'completed':
+                return canal_result
             
-            Q_gate, regime = gate.compute_discharge(h_upstream, h_downstream)
-            
-            # 3. 修改metrics添加闸门信息
+            # 4. 更新Metrics
+            # 估算过闸流量用于Metrics显示 (实际流量已在仿真中计算)
+            Q_gate = 0.0
+            if len(canal_result.Q) > 0:
+                 # 找最近的网格点流量
+                 idx = int(gate_position / (canal_config.get('length', 1000.0) / canal_config.get('n_cells', 200)))
+                 if idx < len(canal_result.Q[-1]):
+                     Q_gate = canal_result.Q[-1][idx]
+
             canal_result.metrics.update({
                 'gate_discharge': float(Q_gate),
                 'gate_position': float(gate_position),
-                'gate_regime': regime.value,
                 'gate_type': gate_type,
                 'gate_opening': gate.opening,
                 'system_type': 'canal_with_gate'
@@ -930,52 +978,62 @@ class HydraulicEngineV2:
                 canal_config = config.copy()
                 canal_config.pop('weir', None)
             
+            # 2. 创建堰对象
+            weir_cfg = config.get('weir', {})
+            weir_position = weir_cfg.get('position', canal_config.get('length', 1000.0) / 2)
+            weir_type = weir_cfg.get('type', 'broad_crested')
+            width = weir_cfg.get('width', canal_config.get('width', 10.0))
+            crest_height = weir_cfg.get('crest_height', 1.5)
+            discharge_coeff = weir_cfg.get('discharge_coeff', 1.7)
+            
+            if weir_type == 'broad_crested':
+                weir = BroadCrestedWeir(
+                    name=weir_cfg.get('name', 'Weir-001'),
+                    position=weir_position,
+                    width=width,
+                    crest_height=crest_height,
+                    discharge_coeff=discharge_coeff
+                )
+            elif weir_type == 'sharp_crested':
+                weir = SharpCrestedWeir(
+                    name=weir_cfg.get('name', 'Weir-001'),
+                    position=weir_position,
+                    width=width,
+                    crest_height=crest_height,
+                    discharge_coeff=discharge_coeff
+                )
+            elif weir_type == 'v_notch':
+                weir = VNotchWeir(
+                    name=weir_cfg.get('name', 'Weir-001'),
+                    position=weir_position,
+                    crest_height=crest_height,
+                    notch_angle=weir_cfg.get('angle', 90.0)
+                )
+            else:
+                # Default to broad crested
+                weir = BroadCrestedWeir(
+                    name=weir_cfg.get('name', 'Weir-001'),
+                    position=weir_position,
+                    width=width,
+                    crest_height=crest_height,
+                    discharge_coeff=discharge_coeff
+                )
+
+            # 3. 运行带结构的仿真
             canal_result = self._run_canal_simulation_internal(
                 task_id,
                 canal_config,
-                start_time
+                start_time,
+                structures=[weir]
             )
             
             if canal_result.status != 'completed':
                 return canal_result
             
-            # 2. 在堰位置计算过堰流量
-            weir_cfg = config.get('weir', {})
-            weir_position = weir_cfg.get('position', canal_config.get('length', 1000.0) / 2)
-            weir_type = weir_cfg.get('type', 'broad_crested')
-            crest_height = weir_cfg.get('crest_height', 1.5)
-            
-            # 从明渠结果中提取堰位置的水深
-            mid_idx = len(canal_result.x) // 2
-            if len(canal_result.h) > 0 and len(canal_result.h[-1]) > 0 and len(canal_result.h[-1]) > mid_idx:
-                h_upstream = canal_result.h[-1][mid_idx]
-            else:
-                # 使用初始条件的水深
-                initial_cond = canal_config.get('initial_conditions', {})
-                if isinstance(initial_cond, dict):
-                    h_upstream = initial_cond.get('h', 3.0)
-                else:
-                    h_upstream = 3.0
-            
-            # 计算堰上水头和流量
-            H = max(h_upstream - crest_height, 0.0)
-            width = weir_cfg.get('width', canal_config.get('width', 10.0))
-            Cd = weir_cfg.get('discharge_coeff', 1.7)
-            
-            if weir_type == 'v_notch':
-                # V形堰
-                angle = weir_cfg.get('angle', 90.0)
-                Q_weir = 1.4 * np.tan(np.radians(angle/2)) * np.sqrt(2*9.81) * H**2.5
-            else:
-                # 其他堰型（宽顶、薄壁、溢流）
-                Q_weir = Cd * width * np.sqrt(2*9.81) * H**1.5
-            
-            # 3. 修改metrics添加堰信息
+            # 4. 更新Metrics
             canal_result.metrics.update({
-                'weir_discharge': float(Q_weir),
                 'weir_position': float(weir_position),
                 'weir_type': weir_type,
-                'weir_head': float(H),
                 'crest_height': float(crest_height),
                 'system_type': 'canal_with_weir'
             })

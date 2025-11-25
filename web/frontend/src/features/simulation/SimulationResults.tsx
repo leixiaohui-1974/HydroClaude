@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { Card, Descriptions, Space, Tag, Typography, Tabs, Alert, Button } from 'antd';
 import { DownloadOutlined } from '@ant-design/icons';
 import Plot from 'react-plotly.js';
-import { SimulationResultResponse } from '@/services/api';
+import { SimulationResultResponse } from '@/services/simulation-api';
 import AnimationController from './components/AnimationController';
 import Plot3D from './components/Plot3D';
 import EnhancedCharts from './components/EnhancedCharts';
@@ -362,6 +362,82 @@ const SimulationResults = ({ result }: SimulationResultsProps) => {
           </Descriptions.Item>
         </Descriptions>
       </Card>
+
+      {/* Structure Performance Metrics (v1.5.0 NEW) */}
+      {result.metrics.system_type && result.metrics.system_type !== 'canal_only' && (
+        <Card title="水工结构运行指标" size="small">
+          <Descriptions column={2} size="small" bordered>
+            {result.metrics.system_type === 'canal_with_gate' && (
+              <>
+                <Descriptions.Item label="闸门类型">
+                  {result.metrics.gate_type === 'sluice' ? '平板闸' : '弧形闸'}
+                </Descriptions.Item>
+                <Descriptions.Item label="闸门开度">
+                  {result.metrics.gate_opening?.toFixed(2)} m
+                </Descriptions.Item>
+                <Descriptions.Item label="过闸流量">
+                  <Text strong style={{ color: '#fa8c16' }}>
+                    {result.metrics.gate_discharge?.toFixed(4)} m³/s
+                  </Text>
+                </Descriptions.Item>
+                <Descriptions.Item label="流态">
+                  {result.metrics.gate_regime === 'free' ? <Tag color="green">自由出流</Tag> : <Tag color="blue">淹没出流</Tag>}
+                </Descriptions.Item>
+                <Descriptions.Item label="位置">
+                  {result.metrics.gate_position?.toFixed(1)} m
+                </Descriptions.Item>
+              </>
+            )}
+
+            {result.metrics.system_type === 'canal_with_pump' && (
+              <>
+                <Descriptions.Item label="泵站名称">
+                  {result.metrics.pump_name || 'Pump Station'}
+                </Descriptions.Item>
+                <Descriptions.Item label="运行状态">
+                  <Tag color="processing">运行中</Tag>
+                </Descriptions.Item>
+                <Descriptions.Item label="抽水流量">
+                  <Text strong style={{ color: '#1890ff' }}>
+                    {result.metrics.pump_flow?.toFixed(4)} m³/s
+                  </Text>
+                </Descriptions.Item>
+                <Descriptions.Item label="扬程">
+                  {result.metrics.pump_head?.toFixed(2)} m
+                </Descriptions.Item>
+                <Descriptions.Item label="位置">
+                  {result.metrics.pump_position?.toFixed(1)} m
+                </Descriptions.Item>
+                <Descriptions.Item label="总抽水量">
+                  {formatScientific(result.metrics.total_pumped_volume)} m³
+                </Descriptions.Item>
+              </>
+            )}
+
+            {result.metrics.system_type === 'canal_with_weir' && (
+              <>
+                <Descriptions.Item label="堰型">
+                  {result.metrics.weir_type}
+                </Descriptions.Item>
+                <Descriptions.Item label="堰顶高程">
+                  {result.metrics.crest_height?.toFixed(2)} m
+                </Descriptions.Item>
+                <Descriptions.Item label="过堰流量">
+                  <Text strong style={{ color: '#722ed1' }}>
+                    {result.metrics.weir_discharge?.toFixed(4)} m³/s
+                  </Text>
+                </Descriptions.Item>
+                <Descriptions.Item label="堰上水头">
+                  {result.metrics.weir_head?.toFixed(3)} m
+                </Descriptions.Item>
+                <Descriptions.Item label="位置">
+                  {result.metrics.weir_position?.toFixed(1)} m
+                </Descriptions.Item>
+              </>
+            )}
+          </Descriptions>
+        </Card>
+      )}
 
       {/* Animation Controller (v1.4.0 NEW) */}
       <Card title="🎬 动画控制 (v1.4.0新功能) - 按Space键播放/暂停" size="small">

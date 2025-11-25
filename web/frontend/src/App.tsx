@@ -4,6 +4,7 @@ import AppHeader from './components/layout/AppHeader'
 import AppSidebar from './components/layout/AppSidebar'
 import HomePage from './pages/HomePage'
 import SimulationPage from './pages/SimulationPage'
+import ModelingWorkspace from '@/features/modeling/ModelingWorkspace'
 import ResultsPage from './pages/ResultsPage'
 import AboutPage from './pages/AboutPage'
 import './App.css'
@@ -27,6 +28,7 @@ function App() {
           >
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="/modeling" element={<ModelingWorkspace />} />
               <Route path="/simulation" element={<SimulationPage />} />
               <Route path="/results" element={<ResultsPage />} />
               <Route path="/about" element={<AboutPage />} />

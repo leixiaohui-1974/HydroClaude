@@ -94,7 +94,7 @@ const DOBODConfiguration: React.FC<{
     const K2 = config.rearationRate;
     const D0 = getDODeficit();
     const L0 = config.initialBOD;
-    
+
     if (K2 <= K1) return 0;
     return Math.log((K2 * (1 - D0 * (K2 - K1) / (K1 * L0))) / K1) / (K2 - K1);
   };
@@ -373,7 +373,7 @@ interface NutrientConfig {
   denitrificationRate: number;
   phosphorusAdsorption: number;
   algaeGrowthRate: number;
-  algaeDeath Rate: number;
+  algaeDeathRate: number;
 }
 
 const NutrientConfiguration: React.FC<{
@@ -387,7 +387,7 @@ const NutrientConfiguration: React.FC<{
   const getEutrophicationLevel = () => {
     const TN = config.totalNitrogen;
     const TP = config.totalPhosphorus;
-    
+
     if (TN < 0.2 && TP < 0.01) return { level: 'Oligotrophic / 贫营养', color: 'green' };
     if (TN < 0.5 && TP < 0.03) return { level: 'Mesotrophic / 中营养', color: 'blue' };
     if (TN < 1.5 && TP < 0.1) return { level: 'Eutrophic / 富营养', color: 'orange' };
@@ -689,7 +689,7 @@ const WaterQualityPanel: React.FC = () => {
                 Add Pollution Source / 添加污染源
               </Button>
               <Paragraph style={{ marginTop: 16 }}>
-                Configure point and non-point pollution sources / 
+                Configure point and non-point pollution sources /
                 配置点源和面源污染
               </Paragraph>
             </Card>
