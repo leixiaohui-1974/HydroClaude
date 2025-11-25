@@ -1,0 +1,422 @@
+{
+  "test_date": "2025-11-25T07:37:56.629433",
+  "frontend_url": "http://localhost:5173",
+  "api_url": "http://localhost:8000",
+  "categories": {
+    "navigation": {
+      "features": [
+        {
+          "id": "sidebar_menu",
+          "name": "侧边栏菜单",
+          "description": "清晰的导航菜单结构",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "breadcrumb",
+          "name": "面包屑导航",
+          "description": "显示当前位置的导航路径",
+          "available": true,
+          "score": 3,
+          "status": "adequate"
+        },
+        {
+          "id": "quick_actions",
+          "name": "快捷操作",
+          "description": "常用功能快速访问",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "search",
+          "name": "搜索功能",
+          "description": "全局搜索能力",
+          "available": false,
+          "score": 1,
+          "status": "missing"
+        },
+        {
+          "id": "keyboard_shortcuts",
+          "name": "键盘快捷键",
+          "description": "提高效率的快捷键支持",
+          "available": true,
+          "score": 3,
+          "status": "adequate"
+        },
+        {
+          "id": "responsive",
+          "name": "响应式设计",
+          "description": "适应不同屏幕尺寸",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        }
+      ],
+      "score": 19,
+      "max_score": 30,
+      "percentage": 63.33333333333333
+    },
+    "modeling": {
+      "features": [
+        {
+          "id": "component_palette",
+          "name": "组件面板",
+          "description": "可拖拽的水力组件库",
+          "available": true,
+          "score": 5,
+          "status": "excellent"
+        },
+        {
+          "id": "canvas",
+          "name": "建模画布",
+          "description": "可视化建模区域",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "property_editor",
+          "name": "属性编辑器",
+          "description": "组件参数编辑面板",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "structure_library",
+          "name": "结构库",
+          "description": "预定义结构模板",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "validation",
+          "name": "模型验证",
+          "description": "实时错误检查",
+          "available": true,
+          "score": 3,
+          "status": "adequate"
+        },
+        {
+          "id": "undo_redo",
+          "name": "撤销/重做",
+          "description": "操作历史管理",
+          "available": true,
+          "score": 3,
+          "status": "adequate"
+        }
+      ],
+      "score": 23,
+      "max_score": 30,
+      "percentage": 76.66666666666667
+    },
+    "simulation": {
+      "features": [
+        {
+          "id": "config_form",
+          "name": "配置表单",
+          "description": "仿真参数设置界面",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "boundary_conditions",
+          "name": "边界条件",
+          "description": "边界条件设置",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "solver_options",
+          "name": "求解器选项",
+          "description": "数值方法选择",
+          "available": true,
+          "score": 3,
+          "status": "adequate"
+        },
+        {
+          "id": "progress_indicator",
+          "name": "进度指示",
+          "description": "仿真进度显示",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "real_time_preview",
+          "name": "实时预览",
+          "description": "计算过程可视化",
+          "available": true,
+          "score": 3,
+          "status": "adequate"
+        },
+        {
+          "id": "batch_simulation",
+          "name": "批量仿真",
+          "description": "多场景批处理",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        }
+      ],
+      "score": 22,
+      "max_score": 30,
+      "percentage": 73.33333333333333
+    },
+    "visualization": {
+      "features": [
+        {
+          "id": "2d_charts",
+          "name": "2D图表",
+          "description": "时间序列和剖面图",
+          "available": true,
+          "score": 5,
+          "status": "excellent"
+        },
+        {
+          "id": "3d_visualization",
+          "name": "3D可视化",
+          "description": "三维结果展示",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "animation",
+          "name": "动画播放",
+          "description": "时变结果动画",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "comparison_view",
+          "name": "对比视图",
+          "description": "多方案对比",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "export_images",
+          "name": "图片导出",
+          "description": "高质量图片输出",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "interactive_plots",
+          "name": "交互图表",
+          "description": "缩放、平移、数据点提示",
+          "available": true,
+          "score": 5,
+          "status": "excellent"
+        }
+      ],
+      "score": 26,
+      "max_score": 30,
+      "percentage": 86.66666666666667
+    },
+    "reports": {
+      "features": [
+        {
+          "id": "summary_report",
+          "name": "摘要报告",
+          "description": "关键结果概览",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "detailed_report",
+          "name": "详细报告",
+          "description": "完整计算结果",
+          "available": true,
+          "score": 3,
+          "status": "adequate"
+        },
+        {
+          "id": "custom_templates",
+          "name": "自定义模板",
+          "description": "报告模板定制",
+          "available": true,
+          "score": 3,
+          "status": "adequate"
+        },
+        {
+          "id": "export_formats",
+          "name": "导出格式",
+          "description": "PDF/Excel/Word导出",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "print_ready",
+          "name": "打印就绪",
+          "description": "适合打印的格式",
+          "available": true,
+          "score": 3,
+          "status": "adequate"
+        }
+      ],
+      "score": 17,
+      "max_score": 25,
+      "percentage": 68.0
+    },
+    "data": {
+      "features": [
+        {
+          "id": "import_formats",
+          "name": "导入格式",
+          "description": "支持多种数据格式导入",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "export_formats",
+          "name": "导出格式",
+          "description": "支持多种数据格式导出",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "project_management",
+          "name": "项目管理",
+          "description": "项目文件组织",
+          "available": true,
+          "score": 3,
+          "status": "adequate"
+        },
+        {
+          "id": "scenario_management",
+          "name": "场景管理",
+          "description": "多方案管理",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "backup_recovery",
+          "name": "备份恢复",
+          "description": "数据安全保障",
+          "available": true,
+          "score": 3,
+          "status": "adequate"
+        }
+      ],
+      "score": 18,
+      "max_score": 25,
+      "percentage": 72.0
+    },
+    "ux": {
+      "features": [
+        {
+          "id": "loading_speed",
+          "name": "加载速度",
+          "description": "页面响应速度",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "error_messages",
+          "name": "错误提示",
+          "description": "清晰的错误信息",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "help_system",
+          "name": "帮助系统",
+          "description": "内置帮助文档",
+          "available": true,
+          "score": 3,
+          "status": "adequate"
+        },
+        {
+          "id": "tooltips",
+          "name": "工具提示",
+          "description": "悬停提示信息",
+          "available": true,
+          "score": 4,
+          "status": "good"
+        },
+        {
+          "id": "accessibility",
+          "name": "无障碍访问",
+          "description": "键盘导航和屏幕阅读器支持",
+          "available": true,
+          "score": 3,
+          "status": "adequate"
+        }
+      ],
+      "score": 18,
+      "max_score": 25,
+      "percentage": 72.0
+    }
+  },
+  "overall_score": 74.43333333333334,
+  "comparison": {
+    "HEC-RAS": {
+      "threshold": 65,
+      "strengths": [
+        "免费",
+        "行业标准",
+        "完善文档"
+      ],
+      "our_advantages": [
+        "现代Web界面",
+        "跨平台",
+        "开源"
+      ]
+    },
+    "MIKE 11": {
+      "threshold": 70,
+      "strengths": [
+        "专业支持",
+        "集成模块",
+        "现代UI"
+      ],
+      "our_advantages": [
+        "免费",
+        "Web访问",
+        "易于定制"
+      ]
+    },
+    "EPANET": {
+      "threshold": 60,
+      "strengths": [
+        "免费",
+        "易学",
+        "文档好"
+      ],
+      "our_advantages": [
+        "更强可视化",
+        "现代技术栈",
+        "扩展性强"
+      ]
+    },
+    "HAMMER": {
+      "threshold": 60,
+      "strengths": [
+        "专业水锤",
+        "现代界面"
+      ],
+      "our_advantages": [
+        "免费",
+        "Web部署",
+        "多功能"
+      ]
+    }
+  }
+}

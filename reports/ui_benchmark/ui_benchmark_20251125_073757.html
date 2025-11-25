@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydroClaude UI 商业软件对标报告</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .score-bar {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .score-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        .excellent { background: #4caf50; }
+        .good { background: #8bc34a; }
+        .adequate { background: #ffc107; }
+        .needs-work { background: #ff9800; }
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .status-pass { background: #e8f5e9; color: #2e7d32; }
+        .status-warn { background: #fff3e0; color: #ef6c00; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>HydroClaude UI 商业软件对标报告</h1>
+        <p>测试日期: 2025-11-25T07:37:56.629433</p>
+        <p>综合评分: <strong>74.4%</strong></p>
+    </div>
+
+    <div class="card">
+        <h2>综合评分</h2>
+        <div class="score-bar">
+            <div class="score-fill good"
+                 style="width: 74.43333333333334%"></div>
+        </div>
+        <p>74.4% - 良好</p>
+    </div>
+
+    <div class="card">
+        <h2>各类别评分</h2>
+        <div class="category-grid">
+
+            <div class="card">
+                <h3>导航与布局</h3>
+                <div class="score-bar">
+                    <div class="score-fill adequate" style="width: 63.33333333333333%"></div>
+                </div>
+                <p>63.3% (19/30)</p>
+            </div>
+
+            <div class="card">
+                <h3>建模工作区</h3>
+                <div class="score-bar">
+                    <div class="score-fill good" style="width: 76.66666666666667%"></div>
+                </div>
+                <p>76.7% (23/30)</p>
+            </div>
+
+            <div class="card">
+                <h3>仿真配置</h3>
+                <div class="score-bar">
+                    <div class="score-fill good" style="width: 73.33333333333333%"></div>
+                </div>
+                <p>73.3% (22/30)</p>
+            </div>
+
+            <div class="card">
+                <h3>结果可视化</h3>
+                <div class="score-bar">
+                    <div class="score-fill excellent" style="width: 86.66666666666667%"></div>
+                </div>
+                <p>86.7% (26/30)</p>
+            </div>
+
+            <div class="card">
+                <h3>报告生成</h3>
+                <div class="score-bar">
+                    <div class="score-fill adequate" style="width: 68.0%"></div>
+                </div>
+                <p>68.0% (17/25)</p>
+            </div>
+
+            <div class="card">
+                <h3>数据管理</h3>
+                <div class="score-bar">
+                    <div class="score-fill good" style="width: 72.0%"></div>
+                </div>
+                <p>72.0% (18/25)</p>
+            </div>
+
+            <div class="card">
+                <h3>用户体验</h3>
+                <div class="score-bar">
+                    <div class="score-fill good" style="width: 72.0%"></div>
+                </div>
+                <p>72.0% (18/25)</p>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>商业软件对比</h2>
+        <table>
+            <tr>
+                <th>商业软件</th>
+                <th>达标阈值</th>
+                <th>状态</th>
+                <th>HydroClaude优势</th>
+            </tr>
+
+            <tr>
+                <td><strong>HEC-RAS</strong></td>
+                <td>65%</td>
+                <td><span class="status-badge status-pass">达标</span></td>
+                <td>现代Web界面, 跨平台, 开源</td>
+            </tr>
+
+            <tr>
+                <td><strong>MIKE 11</strong></td>
+                <td>70%</td>
+                <td><span class="status-badge status-pass">达标</span></td>
+                <td>免费, Web访问, 易于定制</td>
+            </tr>
+
+            <tr>
+                <td><strong>EPANET</strong></td>
+                <td>60%</td>
+                <td><span class="status-badge status-pass">达标</span></td>
+                <td>更强可视化, 现代技术栈, 扩展性强</td>
+            </tr>
+
+            <tr>
+                <td><strong>HAMMER</strong></td>
+                <td>60%</td>
+                <td><span class="status-badge status-pass">达标</span></td>
+                <td>免费, Web部署, 多功能</td>
+            </tr>
+
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>结论</h2>
+        <p>HydroClaude 作为一款现代化的Web水力学仿真平台，在以下方面具有显著优势：</p>
+        <ul>
+            <li><strong>现代技术栈</strong>: React + TypeScript + Vite 提供流畅的用户体验</li>
+            <li><strong>跨平台访问</strong>: 基于Web，无需安装，任意设备可用</li>
+            <li><strong>开源免费</strong>: 降低使用门槛，促进学术交流</li>
+            <li><strong>可视化能力</strong>: 现代图表库提供丰富的数据展示</li>
+        </ul>
+        <p>需要改进的方面：</p>
+        <ul>
+            <li>全局搜索功能</li>
+            <li>更完善的帮助系统</li>
+            <li>更多数据格式支持</li>
+        </ul>
+    </div>
+</body>
+</html>
