@@ -1,0 +1,56 @@
+{
+  "test_date": "2025-11-25T07:51:44.682405",
+  "frontend_url": "http://localhost:5173",
+  "screenshots": [],
+  "pages_tested": [
+    {
+      "page": "homepage",
+      "url": "http://localhost:5173",
+      "features": {},
+      "score": 0,
+      "max_score": 0,
+      "error": "Page.goto: Page crashed\nCall log:\n  - navigating to \"http://localhost:5173/\", waiting until \"load\"\n"
+    },
+    {
+      "page": "simulation",
+      "url": "http://localhost:5173/simulation",
+      "features": {},
+      "score": 0,
+      "max_score": 0,
+      "error": "Page.goto: Page crashed\nCall log:\n  - navigating to \"http://localhost:5173/simulation\", waiting until \"load\"\n"
+    },
+    {
+      "page": "results",
+      "url": "http://localhost:5173/results",
+      "features": {},
+      "score": 0,
+      "max_score": 0,
+      "error": "Page.goto: Page crashed\nCall log:\n  - navigating to \"http://localhost:5173/results\", waiting until \"load\"\n"
+    },
+    {
+      "page": "about",
+      "url": "http://localhost:5173/about",
+      "features": {},
+      "score": 0,
+      "max_score": 0,
+      "error": "Page.goto: Page crashed\nCall log:\n  - navigating to \"http://localhost:5173/about\", waiting until \"load\"\n"
+    },
+    {
+      "page": "responsive",
+      "viewports": [],
+      "score": 0,
+      "max_score": 0,
+      "error": "Page.goto: Page crashed\nCall log:\n  - navigating to \"http://localhost:5173/\", waiting until \"load\"\n"
+    },
+    {
+      "page": "navigation",
+      "links_tested": [],
+      "score": 0,
+      "max_score": 0,
+      "error": "Page.goto: Page crashed\nCall log:\n  - navigating to \"http://localhost:5173/\", waiting until \"load\"\n"
+    }
+  ],
+  "features_found": {},
+  "issues_found": [],
+  "scores": {}
+}
