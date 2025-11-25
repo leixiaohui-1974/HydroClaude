@@ -255,11 +255,13 @@ class HydraulicValidator:
                     validations.append(validation)
             
             all_passed = all(v.get("passed", False) for v in validations)
-            
+            passed_count = sum(1 for v in validations if v.get("passed"))
+            total_count = len(validations)
+
             return {
                 "passed": all_passed,
                 "structures": validations,
-                "message": f"结构验证: {len([v for v in validations if v.get('passed')]}/{len(validations)} 通过"
+                "message": f"结构验证: {passed_count}/{total_count} 通过"
             }
         except Exception as e:
             return {

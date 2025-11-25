@@ -1,82 +1,89 @@
 {
-  "start_time": "2025-11-25T07:18:31.736935",
-  "end_time": "2025-11-25T07:18:35.943700",
+  "start_time": "2025-11-25T22:55:18.342020",
+  "end_time": "2025-11-25T22:55:58.464445",
   "total_tests": 8,
-  "passed": 0,
-  "failed": 8,
+  "passed": 8,
+  "failed": 0,
   "skipped": 0,
   "tests": [
     {
       "name": "首页加载",
-      "status": "failed",
-      "details": "Page.goto: Page crashed\nCall log:\n  - navigating to \"http://localhost:3000/\", waiting until \"load\"\n",
+      "status": "passed",
+      "details": "标题: HydroClaude - 水力学仿真平台",
       "screenshots": [
-        null
+        "/app/reports/e2e_screenshots/20251125_225530_01_homepage.png"
       ],
-      "timestamp": "2025-11-25T07:18:35.788527"
+      "timestamp": "2025-11-25T22:55:30.652234"
     },
     {
       "name": "导航功能",
-      "status": "failed",
-      "details": "Page.goto: Page crashed\nCall log:\n  - navigating to \"http://localhost:3000/\", waiting until \"load\"\n",
-      "screenshots": [
-        null
-      ],
-      "timestamp": "2025-11-25T07:18:35.796652"
+      "status": "passed",
+      "details": "测试了 0 个导航项",
+      "screenshots": [],
+      "timestamp": "2025-11-25T22:55:32.177308"
     },
     {
       "name": "仿真页面",
-      "status": "failed",
-      "details": "Locator.count: Target crashed ",
+      "status": "passed",
+      "details": "输入元素: 1",
       "screenshots": [
-        null
+        "/app/reports/e2e_screenshots/20251125_225533_03_simulation_page.png",
+        "/app/reports/e2e_screenshots/20251125_225533_03_simulation_form_filled.png",
+        "/app/reports/e2e_screenshots/20251125_225533_03_simulation_ready.png"
       ],
-      "timestamp": "2025-11-25T07:18:35.819293"
+      "timestamp": "2025-11-25T22:55:33.657018"
     },
     {
       "name": "运行仿真流程",
-      "status": "failed",
-      "details": "Page.goto: Page crashed\nCall log:\n  - navigating to \"http://localhost:3000/\", waiting until \"load\"\n",
+      "status": "passed",
+      "details": "流程完成",
       "screenshots": [
-        null
+        "/app/reports/e2e_screenshots/20251125_225534_04_sim_start.png",
+        "/app/reports/e2e_screenshots/20251125_225535_04_sim_params.png",
+        "/app/reports/e2e_screenshots/20251125_225538_04_sim_running.png",
+        "/app/reports/e2e_screenshots/20251125_225545_04_sim_results.png"
       ],
-      "timestamp": "2025-11-25T07:18:35.825257"
+      "timestamp": "2025-11-25T22:55:47.599672"
     },
     {
       "name": "结构建模页面",
-      "status": "failed",
-      "details": "Locator.count: Target crashed ",
+      "status": "passed",
+      "details": "参数输入: 0",
       "screenshots": [
-        null
+        "/app/reports/e2e_screenshots/20251125_225549_05_structure_page.png",
+        "/app/reports/e2e_screenshots/20251125_225549_05_structure_elements.png"
       ],
-      "timestamp": "2025-11-25T07:18:35.846949"
+      "timestamp": "2025-11-25T22:55:49.691515"
     },
     {
       "name": "结果可视化",
-      "status": "failed",
-      "details": "Locator.count: Target crashed ",
+      "status": "passed",
+      "details": "图表: canvas=0, svg=10",
       "screenshots": [
-        null
+        "/app/reports/e2e_screenshots/20251125_225550_06_visualization.png"
       ],
-      "timestamp": "2025-11-25T07:18:35.865112"
+      "timestamp": "2025-11-25T22:55:50.411208"
     },
     {
       "name": "API 文档",
-      "status": "failed",
-      "details": "Page.goto: Page crashed\nCall log:\n  - navigating to \"http://localhost:8000/docs\", waiting until \"load\"\n",
+      "status": "passed",
+      "details": "端点数: 67",
       "screenshots": [
-        null
+        "/app/reports/e2e_screenshots/20251125_225551_07_api_docs.png",
+        "/app/reports/e2e_screenshots/20251125_225555_07_api_endpoints.png"
       ],
-      "timestamp": "2025-11-25T07:18:35.870489"
+      "timestamp": "2025-11-25T22:55:55.288763"
     },
     {
       "name": "响应式设计",
-      "status": "failed",
-      "details": "Page.goto: Page crashed\nCall log:\n  - navigating to \"http://localhost:3000/\", waiting until \"load\"\n",
+      "status": "passed",
+      "details": "测试了桌面/平板/手机视图",
       "screenshots": [
-        null
+        "/app/reports/e2e_screenshots/20251125_225557_08_desktop_view.png",
+        "/app/reports/e2e_screenshots/20251125_225557_08_tablet_view.png",
+        "/app/reports/e2e_screenshots/20251125_225558_08_mobile_view.png"
       ],
-      "timestamp": "2025-11-25T07:18:35.875525"
+      "timestamp": "2025-11-25T22:55:58.367372"
     }
   ]
 }

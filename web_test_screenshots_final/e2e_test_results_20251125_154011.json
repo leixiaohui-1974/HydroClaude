@@ -1,0 +1,274 @@
+{
+  "startTime": "2025-11-25T15:38:40.107706",
+  "durationSeconds": 91.307318,
+  "config": {
+    "base_url": "http://localhost:3000",
+    "backend_api_url": "http://localhost:8000/api/v1",
+    "timeout": 180,
+    "screenshot_delay": 2.0
+  },
+  "totalTests": 20,
+  "screenshots": 21,
+  "results": [
+    {
+      "test_id": "tests-analyze_well_balanced_details",
+      "name": "详细分析Well-Balanced重构的数值行为",
+      "status": "failed",
+      "duration": 4.629042625427246,
+      "screenshots": [
+        "/app/web_test_screenshots_final/002_tests-analyze_well_balanced_details_error_153848.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-benchmark_newton_vs_iterative",
+      "name": "性能基准测试：牛顿法 vs 迭代法",
+      "status": "failed",
+      "duration": 4.283617973327637,
+      "screenshots": [
+        "/app/web_test_screenshots_final/003_tests-benchmark_newton_vs_iterative_error_153852.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-benchmark_numba",
+      "name": "加速效果基准测试",
+      "status": "failed",
+      "duration": 4.244110345840454,
+      "screenshots": [
+        "/app/web_test_screenshots_final/004_tests-benchmark_numba_error_153856.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-benchmark_riemann_solvers",
+      "name": "求解器性能基准测试",
+      "status": "failed",
+      "duration": 4.242661476135254,
+      "screenshots": [
+        "/app/web_test_screenshots_final/005_tests-benchmark_riemann_solvers_error_153901.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-core_functionality_verification",
+      "name": "核心功能验证测试",
+      "status": "failed",
+      "duration": 4.255840063095093,
+      "screenshots": [
+        "/app/web_test_screenshots_final/006_tests-core_functionality_verification_error_153905.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-core_functionality_verification_v2",
+      "name": "核心功能验证测试 V2 (改进版)",
+      "status": "failed",
+      "duration": 4.264269828796387,
+      "screenshots": [
+        "/app/web_test_screenshots_final/007_tests-core_functionality_verification_v2_error_153909.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-dam_break_high_res_numba",
+      "name": "高精度溃坝测试（Numba加速版本）",
+      "status": "failed",
+      "duration": 4.246440410614014,
+      "screenshots": [
+        "/app/web_test_screenshots_final/008_tests-dam_break_high_res_numba_error_153913.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-dam_break_numba_10s",
+      "name": "快速溃坝测试（10秒，展示Numba威力）",
+      "status": "failed",
+      "duration": 4.2815282344818115,
+      "screenshots": [
+        "/app/web_test_screenshots_final/009_tests-dam_break_numba_10s_error_153918.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-debug_exact_flux",
+      "name": "诊断精确Riemann求解器通量计算",
+      "status": "failed",
+      "duration": 4.269098281860352,
+      "screenshots": [
+        "/app/web_test_screenshots_final/010_tests-debug_exact_flux_error_153922.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-debug_exact_sampling",
+      "name": "调试精确Riemann求解器采样逻辑",
+      "status": "failed",
+      "duration": 4.248612403869629,
+      "screenshots": [
+        "/app/web_test_screenshots_final/011_tests-debug_exact_sampling_error_153926.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-debug_gate_jacobian",
+      "name": "调试闸门场景的Jacobian奇异性",
+      "status": "failed",
+      "duration": 4.249777317047119,
+      "screenshots": [
+        "/app/web_test_screenshots_final/012_tests-debug_gate_jacobian_error_153930.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-debug_wb_nan",
+      "name": "调试Well-Balanced格式NaN问题",
+      "status": "failed",
+      "duration": 4.235107898712158,
+      "screenshots": [
+        "/app/web_test_screenshots_final/013_tests-debug_wb_nan_error_153935.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_exact_crash_timeline",
+      "name": "精确求解器崩溃时间线诊断",
+      "status": "failed",
+      "duration": 4.249680519104004,
+      "screenshots": [
+        "/app/web_test_screenshots_final/014_tests-diagnose_exact_crash_timeline_error_153939.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_exact_flux_step_by_step",
+      "name": "逐步通量诊断 - 精确求解器",
+      "status": "failed",
+      "duration": 4.23512601852417,
+      "screenshots": [
+        "/app/web_test_screenshots_final/015_tests-diagnose_exact_flux_step_by_step_error_153943.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_exact_mass_loss",
+      "name": "诊断精确求解器质量损失问题",
+      "status": "failed",
+      "duration": 4.250683546066284,
+      "screenshots": [
+        "/app/web_test_screenshots_final/016_tests-diagnose_exact_mass_loss_error_153947.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_exact_single_interface",
+      "name": "单界面精确通量诊断",
+      "status": "failed",
+      "duration": 4.3686323165893555,
+      "screenshots": [
+        "/app/web_test_screenshots_final/017_tests-diagnose_exact_single_interface_error_153952.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_hllc_instability",
+      "name": "Diagnose HLLC Numerical Instability",
+      "status": "failed",
+      "duration": 4.365293979644775,
+      "screenshots": [
+        "/app/web_test_screenshots_final/018_tests-diagnose_hllc_instability_error_153956.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_newton_solver",
+      "name": "求解器诊断",
+      "status": "failed",
+      "duration": 4.2331438064575195,
+      "screenshots": [
+        "/app/web_test_screenshots_final/019_tests-diagnose_newton_solver_error_154000.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-hllc_bug_analysis",
+      "name": "问题分析和修复方案",
+      "status": "failed",
+      "duration": 4.229547023773193,
+      "screenshots": [
+        "/app/web_test_screenshots_final/020_tests-hllc_bug_analysis_error_154005.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    },
+    {
+      "test_id": "tests-numba_performance_validation",
+      "name": "Numba JIT Performance Validation",
+      "status": "failed",
+      "duration": 4.249097585678101,
+      "screenshots": [
+        "/app/web_test_screenshots_final/021_tests-numba_performance_validation_error_154009.png"
+      ],
+      "notes": [
+        "成功从API获取配置。",
+        "测试失败: Message: javascript error: Illegal invocation\n  (Session info: chrome=142.0.7444.175)\nStacktrace:\n#0 0x557cfb251aca <unknown>\n#1 0x557cfac9dcdb <unknown>\n#2 0x557cfaca4b96 <unknown>\n#3 0x557cfaca764c <unknown>\n#4 0x557cfad3dcee <unknown>\n#5 0x557cfad3cc87 <unknown>\n#6 0x557cface2aca <unknown>\n#7 0x557cface37d1 <unknown>\n#8 0x557cfb218a99 <unknown>\n#9 0x557cfb21ba6c <unknown>\n#10 0x557cfb201d29 <unknown>\n#11 0x557cfb21c665 <unknown>\n#12 0x557cfb1e96a3 <unknown>\n#13 0x557cfb23e7b8 <unknown>\n#14 0x557cfb23e993 <unknown>\n#15 0x557cfb250a63 <unknown>\n#16 0x7f9e21322aa4 <unknown>\n#17 0x7f9e213afc6c <unknown>\n"
+      ]
+    }
+  ]
+}

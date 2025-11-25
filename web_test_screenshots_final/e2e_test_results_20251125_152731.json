@@ -1,0 +1,254 @@
+{
+  "startTime": "2025-11-25T15:22:06.657459",
+  "durationSeconds": 324.679603,
+  "config": {
+    "base_url": "http://localhost:3000",
+    "backend_api_url": "http://localhost:8000/api/v1",
+    "timeout": 120,
+    "screenshot_delay": 2.0
+  },
+  "totalTests": 20,
+  "screenshots": 21,
+  "results": [
+    {
+      "test_id": "tests-analyze_well_balanced_details",
+      "name": "详细分析Well-Balanced重构的数值行为",
+      "status": "failed",
+      "duration": 16.454408407211304,
+      "screenshots": [
+        "/app/web_test_screenshots_final/002_tests-analyze_well_balanced_details_error_152229.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-analyze_well_balanced_details'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-benchmark_newton_vs_iterative",
+      "name": "性能基准测试：牛顿法 vs 迭代法",
+      "status": "failed",
+      "duration": 15.45210576057434,
+      "screenshots": [
+        "/app/web_test_screenshots_final/003_tests-benchmark_newton_vs_iterative_error_152244.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-benchmark_newton_vs_iterative'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-benchmark_numba",
+      "name": "加速效果基准测试",
+      "status": "failed",
+      "duration": 15.818723440170288,
+      "screenshots": [
+        "/app/web_test_screenshots_final/004_tests-benchmark_numba_error_152300.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-benchmark_numba'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-benchmark_riemann_solvers",
+      "name": "求解器性能基准测试",
+      "status": "failed",
+      "duration": 15.913121223449707,
+      "screenshots": [
+        "/app/web_test_screenshots_final/005_tests-benchmark_riemann_solvers_error_152316.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-benchmark_riemann_solvers'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-core_functionality_verification",
+      "name": "核心功能验证测试",
+      "status": "failed",
+      "duration": 16.06492853164673,
+      "screenshots": [
+        "/app/web_test_screenshots_final/006_tests-core_functionality_verification_error_152332.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-core_functionality_verification'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-core_functionality_verification_v2",
+      "name": "核心功能验证测试 V2 (改进版)",
+      "status": "failed",
+      "duration": 15.798540830612183,
+      "screenshots": [
+        "/app/web_test_screenshots_final/007_tests-core_functionality_verification_v2_error_152348.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-core_functionality_verification_v2'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-dam_break_high_res_numba",
+      "name": "高精度溃坝测试（Numba加速版本）",
+      "status": "failed",
+      "duration": 15.782889366149902,
+      "screenshots": [
+        "/app/web_test_screenshots_final/008_tests-dam_break_high_res_numba_error_152404.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-dam_break_high_res_numba'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-dam_break_numba_10s",
+      "name": "快速溃坝测试（10秒，展示Numba威力）",
+      "status": "failed",
+      "duration": 15.749010562896729,
+      "screenshots": [
+        "/app/web_test_screenshots_final/009_tests-dam_break_numba_10s_error_152419.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-dam_break_numba_10s'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-debug_exact_flux",
+      "name": "诊断精确Riemann求解器通量计算",
+      "status": "failed",
+      "duration": 15.754700183868408,
+      "screenshots": [
+        "/app/web_test_screenshots_final/010_tests-debug_exact_flux_error_152435.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-debug_exact_flux'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-debug_exact_sampling",
+      "name": "调试精确Riemann求解器采样逻辑",
+      "status": "failed",
+      "duration": 15.759568929672241,
+      "screenshots": [
+        "/app/web_test_screenshots_final/011_tests-debug_exact_sampling_error_152451.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-debug_exact_sampling'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-debug_gate_jacobian",
+      "name": "调试闸门场景的Jacobian奇异性",
+      "status": "failed",
+      "duration": 15.767433643341064,
+      "screenshots": [
+        "/app/web_test_screenshots_final/012_tests-debug_gate_jacobian_error_152507.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-debug_gate_jacobian'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-debug_wb_nan",
+      "name": "调试Well-Balanced格式NaN问题",
+      "status": "failed",
+      "duration": 15.803011178970337,
+      "screenshots": [
+        "/app/web_test_screenshots_final/013_tests-debug_wb_nan_error_152522.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-debug_wb_nan'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_exact_crash_timeline",
+      "name": "精确求解器崩溃时间线诊断",
+      "status": "failed",
+      "duration": 15.777504682540894,
+      "screenshots": [
+        "/app/web_test_screenshots_final/014_tests-diagnose_exact_crash_timeline_error_152538.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-diagnose_exact_crash_timeline'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_exact_flux_step_by_step",
+      "name": "逐步通量诊断 - 精确求解器",
+      "status": "failed",
+      "duration": 15.772524356842041,
+      "screenshots": [
+        "/app/web_test_screenshots_final/015_tests-diagnose_exact_flux_step_by_step_error_152554.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-diagnose_exact_flux_step_by_step'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_exact_mass_loss",
+      "name": "诊断精确求解器质量损失问题",
+      "status": "failed",
+      "duration": 15.826312780380249,
+      "screenshots": [
+        "/app/web_test_screenshots_final/016_tests-diagnose_exact_mass_loss_error_152610.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-diagnose_exact_mass_loss'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_exact_single_interface",
+      "name": "单界面精确通量诊断",
+      "status": "failed",
+      "duration": 15.772676944732666,
+      "screenshots": [
+        "/app/web_test_screenshots_final/017_tests-diagnose_exact_single_interface_error_152626.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-diagnose_exact_single_interface'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_hllc_instability",
+      "name": "Diagnose HLLC Numerical Instability",
+      "status": "failed",
+      "duration": 15.794172286987305,
+      "screenshots": [
+        "/app/web_test_screenshots_final/018_tests-diagnose_hllc_instability_error_152641.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-diagnose_hllc_instability'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-diagnose_newton_solver",
+      "name": "求解器诊断",
+      "status": "failed",
+      "duration": 15.767692804336548,
+      "screenshots": [
+        "/app/web_test_screenshots_final/019_tests-diagnose_newton_solver_error_152657.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-diagnose_newton_solver'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-hllc_bug_analysis",
+      "name": "问题分析和修复方案",
+      "status": "failed",
+      "duration": 15.73610234260559,
+      "screenshots": [
+        "/app/web_test_screenshots_final/020_tests-hllc_bug_analysis_error_152713.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-hllc_bug_analysis'。\n"
+      ]
+    },
+    {
+      "test_id": "tests-numba_performance_validation",
+      "name": "Numba JIT Performance Validation",
+      "status": "failed",
+      "duration": 15.827717542648315,
+      "screenshots": [
+        "/app/web_test_screenshots_final/021_tests-numba_performance_validation_error_152729.png"
+      ],
+      "notes": [
+        "测试失败 (元素查找超时或不存在): Message: 在下拉框中找不到案例ID 'tests-numba_performance_validation'。\n"
+      ]
+    }
+  ]
+}

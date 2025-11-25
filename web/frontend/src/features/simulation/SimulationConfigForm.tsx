@@ -1,26 +1,18 @@
-import { useState } from 'react';
-import {
-  Form,
-  Input,
-  InputNumber,
-  Button,
-  Select,
-  Space,
-  Divider,
-  message,
-  Spin,
-  Progress
-} from 'antd';
-import { PlayCircleOutlined, ReloadOutlined } from '@ant-design/icons';
-import {
-  createSimulation,
-  getSimulationStatus,
-  getSimulationResults,
-  SimulationRequest,
-  SimulationResultResponse
-} from '@/services/simulation-api';
+import { useState, useEffect } from 'react';
+import { Form, Input, InputNumber, Button, Select, Space, Divider, message, Spin, Progress, Typography } from 'antd';
+import { PlayCircleOutlined, ReloadOutlined, ExperimentOutlined } from '@ant-design/icons';
+import { createSimulation, getSimulationStatus, getSimulationResults, SimulationRequest, SimulationResultResponse } from '@/services/simulation-api';
+import { api as testCaseApi, TestCase } from '@/services/test-cases-api';
 
 const { Option } = Select;
+const { Text } = Typography;
+
+// Define a type for the global test helper
+declare global {
+  interface Window {
+    runSingleTestCase: (caseId: string) => Promise<void>;
+  }
+}
 
 interface SimulationConfigFormProps {
   onSimulationComplete: (taskId: string, result: SimulationResultResponse) => void;
@@ -30,372 +22,136 @@ const SimulationConfigForm = ({ onSimulationComplete }: SimulationConfigFormProp
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [_currentTaskId, setCurrentTaskId] = useState<string | null>(null);
 
-  // Poll simulation status
-  const pollSimulationStatus = async (taskId: string) => {
-    const maxAttempts = 60; // 60 seconds max
-    let attempts = 0;
+  // Expose a helper for the parent component to trigger a run
+  useEffect(() => {
+    window.runSingleTestCase = async (caseId: string) => {
+      await handleTestCaseSelect(caseId, true); // Select and auto-submit
+    };
+    return () => { // @ts-ignore
+      delete window.runSingleTestCase;
+    };
+  }, [form]);
 
-    const poll = setInterval(async () => {
-      attempts++;
-
+  const [testCases, setTestCases] = useState<TestCase[]>([]);
+  useEffect(() => {
+    const fetchTestCases = async () => {
       try {
-        const status = await getSimulationStatus(taskId);
-
-        // Update progress
-        if (status.progress !== undefined) {
-          setProgress(status.progress);
-        }
-
-        if (status.status === 'completed') {
-          clearInterval(poll);
-          // Fetch results
-          const result = await getSimulationResults(taskId);
-          setLoading(false);
-          setProgress(100);
-          message.success('仿真完成！');
-          onSimulationComplete(taskId, result);
-        } else if (status.status === 'failed') {
-          clearInterval(poll);
-          setLoading(false);
-          message.error(`仿真失败: ${status.error || '未知错误'}`);
-        } else if (attempts >= maxAttempts) {
-          clearInterval(poll);
-          setLoading(false);
-          message.warning('仿真超时，请稍后查看结果');
-        }
+        const response = await testCaseApi.getAllTestCases(550, 0);
+        setTestCases(response.cases);
       } catch (error) {
-        clearInterval(poll);
-        setLoading(false);
-        message.error('查询仿真状态失败');
-        console.error(error);
+        message.error('加载测试案例列表失败');
       }
-    }, 1000);
+    };
+    fetchTestCases();
+  }, []);
+
+  const handleTestCaseSelect = async (caseId: string, autoSubmit = false) => {
+    if (!caseId) return;
+    try {
+      const caseDetail = await testCaseApi.getTestCaseDetail(caseId);
+      const { config = {}, metadata = {} } = caseDetail;
+      const formValues = {
+        name: metadata.nameCN || metadata.name || `测试: ${caseId}`,
+        description: `基于预设案例: ${caseId}`,
+        width: config.width,
+        length: config.domainLength,
+        n_cells: config.nCells,
+        manning_n: config.manning,
+        slope: config.slope,
+        t_end: config.duration || 10.0,
+      };
+      form.setFieldsValue(formValues);
+      if (autoSubmit) {
+        setTimeout(() => form.submit(), 100);
+      }
+    } catch (error) {
+      message.error(`加载案例配置失败: ${caseId}`);
+    }
   };
 
   const handleSubmit = async (values: any) => {
     setLoading(true);
     setProgress(0);
+    return new Promise<void>(async (resolve, reject) => {
+      try {
+        const request: SimulationRequest = {
+          name: values.name || 'Unnamed Simulation',
+          description: values.description,
+          config: {
+            width: values.width,
+            length: values.length,
+            n_cells: values.n_cells,
+            manning_n: values.manning_n || 0.0,
+            slope: values.slope || 0.0,
+            t_end: values.t_end,
+          }
+        };
+        const response = await createSimulation(request);
 
-    try {
-      // Prepare simulation request
-      const request: SimulationRequest = {
-        name: values.name || 'Unnamed Simulation',
-        description: values.description,
-        config: {
-          width: values.width,
-          length: values.length,
-          n_cells: values.n_cells,
-          manning_n: values.manning_n || 0.0,
-          slope: values.slope || 0.0,
-          t_end: values.t_end,
-          dt_max: values.dt_max || 0.1,
-          output_interval: values.output_interval || 0.5,
-          initial_conditions: {
-            type: values.ic_type,
-            h: values.ic_type === 'uniform' ? values.ic_h : undefined,
-            Q: values.ic_type === 'uniform' ? values.ic_Q : undefined,
-            dam_position: values.ic_type === 'dam_break' ? values.dam_position : undefined,
-            h_left: values.ic_type === 'dam_break' ? values.h_left : undefined,
-            h_right: values.ic_type === 'dam_break' ? values.h_right : undefined,
-            Q_left: values.ic_type === 'dam_break' ? values.Q_left : undefined,
-            Q_right: values.ic_type === 'dam_break' ? values.Q_right : undefined,
-          },
-          boundary_conditions: {
-            upstream: {
-              type: values.bc_upstream_type || 'h',
-              value: values.bc_upstream_value
-            },
-            downstream: {
-              type: values.bc_downstream_type || 'h',
-              value: values.bc_downstream_value
+        const poll = setInterval(async () => {
+          try {
+            const status = await getSimulationStatus(response.task_id);
+            if (status.progress !== undefined) setProgress(status.progress);
+            if (status.status === 'completed') {
+              clearInterval(poll);
+              const result = await getSimulationResults(response.task_id);
+              setLoading(false);
+              onSimulationComplete(response.task_id, result);
+              resolve();
+            } else if (status.status === 'failed') {
+              clearInterval(poll);
+              setLoading(false);
+              message.error(`案例 ${values.name} 仿真失败!`);
+              reject(new Error(status.error || '未知错误'));
             }
-          },
-          structures: values.structure_type ? [{
-            type: values.structure_type,
-            position: values.st_position,
-            parameters: {
-              // Pump
-              flow_rate: values.st_pump_flow,
-              head: values.st_pump_head,
-              // Gate
-              type: values.st_gate_type,
-              opening: values.st_gate_opening,
-              width: values.st_gate_width,
-              discharge_coeff: values.st_gate_coeff,
-              // Weir
-              crest_height: values.st_weir_height,
-              angle: values.st_weir_type === 'v_notch' ? 90 : undefined // Default angle for V-notch
-            }
-          }] : []
-        }
-      };
-
-      // Create simulation
-      const response = await createSimulation(request);
-      setCurrentTaskId(response.task_id);
-      message.info('仿真已提交，正在运行...');
-
-      // Start polling
-      await pollSimulationStatus(response.task_id);
-
-    } catch (error: any) {
-      setLoading(false);
-      message.error(`提交失败: ${error.response?.data?.detail || error.message}`);
-      console.error(error);
-    }
-  };
-
-  const handleReset = () => {
-    form.resetFields();
-    setProgress(0);
-    setCurrentTaskId(null);
+          } catch {
+            clearInterval(poll);
+            setLoading(false);
+            reject(new Error('轮询状态失败'));
+          }
+        }, 2000);
+      } catch (error: any) {
+        setLoading(false);
+        message.error(`提交失败: ${error.message}`);
+        reject(error);
+      }
+    });
   };
 
   return (
     <Spin spinning={loading} tip={`仿真运行中... ${progress.toFixed(0)}%`}>
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-        initialValues={{
-          name: '均匀流测试',
-          width: 10.0,
-          length: 1000.0,
-          n_cells: 100,
-          manning_n: 0.0,
-          slope: 0.0,
-          t_end: 10.0,
-          dt_max: 0.1,
-          output_interval: 0.5,
-          ic_type: 'uniform',
-          ic_h: 5.0,
-          ic_Q: 0.0,
-          bc_upstream_type: 'h',
-          bc_upstream_value: 5.0,
-          bc_downstream_type: 'h',
-          bc_downstream_value: 5.0
-        }}
-      >
-        {/* Basic Info */}
-        <Form.Item label="仿真名称" name="name">
-          <Input placeholder="输入仿真名称" />
+      <Form form={form} layout="vertical" onFinish={handleSubmit}>
+        <Form.Item label={<Text strong><ExperimentOutlined /> 从预设案例加载</Text>}>
+          <Select
+            id="test-case-selector"
+            showSearch
+            placeholder="搜索或选择一个案例以自动填充表单..."
+            onSelect={(value) => handleTestCaseSelect(value, false)}
+            loading={testCases.length === 0}
+            filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+            options={testCases.map(tc => ({
+              value: tc.metadata.id,
+              label: `${tc.metadata.nameCN || tc.metadata.name} (${tc.metadata.id})`
+            }))}
+          />
         </Form.Item>
-
-        <Form.Item label="描述" name="description">
-          <Input.TextArea rows={2} placeholder="可选的仿真描述" />
-        </Form.Item>
-
+        <Divider />
+        <Form.Item label="仿真名称" name="name"><Input /></Form.Item>
+        <Form.Item label="描述" name="description"><Input.TextArea rows={2} /></Form.Item>
         <Divider orientation="left">几何参数</Divider>
-
-        <Form.Item label="渠道宽度 (m)" name="width" rules={[{ required: true }]}>
-          <InputNumber min={0.1} max={1000} step={0.1} style={{ width: '100%' }} />
-        </Form.Item>
-
-        <Form.Item label="渠道长度 (m)" name="length" rules={[{ required: true }]}>
-          <InputNumber min={1} max={100000} step={10} style={{ width: '100%' }} />
-        </Form.Item>
-
-        <Form.Item label="网格单元数" name="n_cells" rules={[{ required: true }]}>
-          <InputNumber min={10} max={10000} step={10} style={{ width: '100%' }} />
-        </Form.Item>
-
+        <Form.Item label="渠道宽度 (m)" name="width" rules={[{ required: true }]}><InputNumber style={{ width: '100%' }} /></Form.Item>
+        <Form.Item label="渠道长度 (m)" name="length" rules={[{ required: true }]}><InputNumber style={{ width: '100%' }} /></Form.Item>
+        <Form.Item label="网格单元数" name="n_cells" rules={[{ required: true }]}><InputNumber style={{ width: '100%' }} /></Form.Item>
         <Divider orientation="left">物理参数</Divider>
-
-        <Form.Item label="曼宁糙率系数" name="manning_n">
-          <InputNumber min={0} max={0.1} step={0.001} style={{ width: '100%' }} />
-        </Form.Item>
-
-        <Form.Item label="底坡" name="slope">
-          <InputNumber min={0} max={0.1} step={0.0001} style={{ width: '100%' }} />
-        </Form.Item>
-
+        <Form.Item label="曼宁糙率系数" name="manning_n"><InputNumber style={{ width: '100%' }} /></Form.Item>
+        <Form.Item label="底坡" name="slope"><InputNumber style={{ width: '100%' }} /></Form.Item>
         <Divider orientation="left">时间参数</Divider>
-
-        <Form.Item label="结束时间 (s)" name="t_end" rules={[{ required: true }]}>
-          <InputNumber min={0.1} max={10000} step={1} style={{ width: '100%' }} />
-        </Form.Item>
-
-        <Form.Item label="最大时间步长 (s)" name="dt_max">
-          <InputNumber min={0.001} max={1} step={0.01} style={{ width: '100%' }} />
-        </Form.Item>
-
-        <Form.Item label="输出间隔 (s)" name="output_interval">
-          <InputNumber min={0.1} max={100} step={0.1} style={{ width: '100%' }} />
-        </Form.Item>
-
-        <Divider orientation="left">初始条件</Divider>
-
-        <Form.Item label="类型" name="ic_type">
-          <Select>
-            <Option value="uniform">均匀流</Option>
-            <Option value="dam_break">溃坝</Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item
-          noStyle
-          shouldUpdate={(prevValues, currentValues) => prevValues.ic_type !== currentValues.ic_type}
-        >
-          {({ getFieldValue }) =>
-            getFieldValue('ic_type') === 'uniform' ? (
-              <>
-                <Form.Item label="初始水深 (m)" name="ic_h">
-                  <InputNumber min={0} max={100} step={0.1} style={{ width: '100%' }} />
-                </Form.Item>
-                <Form.Item label="初始流量 (m³/s)" name="ic_Q">
-                  <InputNumber min={0} max={10000} step={0.1} style={{ width: '100%' }} />
-                </Form.Item>
-              </>
-            ) : (
-              <>
-                <Form.Item label="溃坝位置 (m)" name="dam_position">
-                  <InputNumber min={0} max={100000} step={10} style={{ width: '100%' }} />
-                </Form.Item>
-                <Form.Item label="左侧水深 (m)" name="h_left">
-                  <InputNumber min={0} max={100} step={0.1} style={{ width: '100%' }} />
-                </Form.Item>
-                <Form.Item label="右侧水深 (m)" name="h_right">
-                  <InputNumber min={0} max={100} step={0.1} style={{ width: '100%' }} />
-                </Form.Item>
-                <Form.Item label="左侧流量 (m³/s)" name="Q_left">
-                  <InputNumber min={0} max={10000} step={0.1} style={{ width: '100%' }} />
-                </Form.Item>
-                <Form.Item label="右侧流量 (m³/s)" name="Q_right">
-                  <InputNumber min={0} max={10000} step={0.1} style={{ width: '100%' }} />
-                </Form.Item>
-              </>
-            )
-          }
-        </Form.Item>
-
-        <Divider orientation="left">边界条件</Divider>
-
-        <Form.Item label="上游边界类型" name="bc_upstream_type">
-          <Select>
-            <Option value="h">固定水深</Option>
-            <Option value="Q">固定流量</Option>
-            <Option value="wall">壁面</Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item label="上游边界值" name="bc_upstream_value">
-          <InputNumber min={0} max={10000} step={0.1} style={{ width: '100%' }} />
-        </Form.Item>
-
-        <Form.Item label="下游边界类型" name="bc_downstream_type">
-          <Select>
-            <Option value="h">固定水深</Option>
-            <Option value="Q">固定流量</Option>
-            <Option value="wall">壁面</Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item label="下游边界值" name="bc_downstream_value">
-          <InputNumber min={0} max={10000} step={0.1} style={{ width: '100%' }} />
-        </Form.Item>
-
-        <Divider orientation="left">水工结构 (可选)</Divider>
-
-        <Form.Item label="结构类型" name="structure_type">
-          <Select allowClear placeholder="选择结构类型 (留空表示无结构)">
-            <Option value="pump">泵站 (Pump)</Option>
-            <Option value="gate">闸门 (Gate)</Option>
-            <Option value="weir">堰 (Weir)</Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item
-          noStyle
-          shouldUpdate={(prevValues, currentValues) => prevValues.structure_type !== currentValues.structure_type}
-        >
-          {({ getFieldValue }) => {
-            const type = getFieldValue('structure_type');
-            if (!type) return null;
-
-            return (
-              <>
-                <Form.Item label="位置 (m)" name="st_position" rules={[{ required: true }]}>
-                  <InputNumber min={0} max={100000} step={10} style={{ width: '100%' }} />
-                </Form.Item>
-
-                {type === 'pump' && (
-                  <>
-                    <Form.Item label="额定流量 (m³/s)" name="st_pump_flow" rules={[{ required: true }]}>
-                      <InputNumber min={0} max={1000} step={0.1} style={{ width: '100%' }} />
-                    </Form.Item>
-                    <Form.Item label="额定扬程 (m)" name="st_pump_head" rules={[{ required: true }]}>
-                      <InputNumber min={0} max={1000} step={0.1} style={{ width: '100%' }} />
-                    </Form.Item>
-                  </>
-                )}
-
-                {type === 'gate' && (
-                  <>
-                    <Form.Item label="闸门类型" name="st_gate_type" initialValue="sluice">
-                      <Select>
-                        <Option value="sluice">平板闸 (Sluice)</Option>
-                        <Option value="radial">弧形闸 (Radial)</Option>
-                      </Select>
-                    </Form.Item>
-                    <Form.Item label="开度 (m)" name="st_gate_opening" rules={[{ required: true }]}>
-                      <InputNumber min={0} max={100} step={0.1} style={{ width: '100%' }} />
-                    </Form.Item>
-                    <Form.Item label="宽度 (m)" name="st_gate_width" rules={[{ required: true }]}>
-                      <InputNumber min={0} max={1000} step={0.1} style={{ width: '100%' }} />
-                    </Form.Item>
-                    <Form.Item label="流量系数" name="st_gate_coeff" initialValue={0.6}>
-                      <InputNumber min={0} max={1} step={0.01} style={{ width: '100%' }} />
-                    </Form.Item>
-                  </>
-                )}
-
-                {type === 'weir' && (
-                  <>
-                    <Form.Item label="堰类型" name="st_weir_type" initialValue="broad_crested">
-                      <Select>
-                        <Option value="broad_crested">宽顶堰</Option>
-                        <Option value="sharp_crested">薄壁堰</Option>
-                        <Option value="ogee">溢流堰</Option>
-                        <Option value="v_notch">V型堰</Option>
-                      </Select>
-                    </Form.Item>
-                    <Form.Item label="堰顶高程 (m)" name="st_weir_height" rules={[{ required: true }]}>
-                      <InputNumber min={0} max={100} step={0.1} style={{ width: '100%' }} />
-                    </Form.Item>
-                    <Form.Item label="宽度 (m)" name="st_weir_width" rules={[{ required: true }]}>
-                      <InputNumber min={0} max={1000} step={0.1} style={{ width: '100%' }} />
-                    </Form.Item>
-                    <Form.Item label="流量系数" name="st_weir_coeff" initialValue={1.7}>
-                      <InputNumber min={0} max={5} step={0.01} style={{ width: '100%' }} />
-                    </Form.Item>
-                  </>
-                )}
-              </>
-            );
-          }}
-        </Form.Item>
-
-        {loading && progress > 0 && (
-          <Form.Item>
-            <Progress percent={progress} status="active" />
-          </Form.Item>
-        )}
-
+        <Form.Item label="结束时间 (s)" name="t_end" rules={[{ required: true }]}><InputNumber style={{ width: '100%' }} /></Form.Item>
         <Form.Item>
           <Space>
-            <Button
-              type="primary"
-              htmlType="submit"
-              icon={<PlayCircleOutlined />}
-              loading={loading}
-            >
-              运行仿真
-            </Button>
-            <Button icon={<ReloadOutlined />} onClick={handleReset}>
-              重置
-            </Button>
+            <Button type="primary" htmlType="submit" icon={<PlayCircleOutlined />} loading={loading}>运行仿真</Button>
+            <Button icon={<ReloadOutlined />} onClick={() => form.resetFields()}>重置</Button>
           </Space>
         </Form.Item>
       </Form>
