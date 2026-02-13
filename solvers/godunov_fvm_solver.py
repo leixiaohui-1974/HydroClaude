@@ -505,6 +505,9 @@ class GodunvFVMSolver:
 
         dt = self.cfl * self.dx / lambda_max
 
+        # Maximum time step cap to prevent huge dt when domain is completely dry
+        dt = min(dt, 1.0)
+
         # dt_max
         if self.dt_max is not None:
             dt = min(dt, self.dt_max)
@@ -658,12 +661,12 @@ class GodunvFVMSolver:
             # ghosteta h_bc + z_b_ghost
             # Lake at Restetaghosteta
             if self.bc_left['type'] == 'h':
-                #  BUG eta = h_bc + z_b_ghostz_b_ghost≠z_b_boundary
-                # eta
-                # eta = h_bc + z_b[0]ghosteta
+                # Ghost cell z_b: extrapolate to the left of the domain
+                # z_b_ghost = 2*z_b[0] - z_b[1] (linear extrapolation)
                 value = self.bc_left['value']
                 h_bc = value if not callable(value) else value(self.t)
-                eta_bc = h_bc + self.z_b[0]  # 
+                z_b_ghost = (2.0 * self.z_b[0] - self.z_b[1]) if n > 1 else self.z_b[0]
+                eta_bc = h_bc + z_b_ghost
                 # Lake at Resteta
                 eta_ext[0] = eta_bc
             else:  # Q boundary
@@ -672,9 +675,12 @@ class GodunvFVMSolver:
 
             # ghosteta
             if self.bc_right['type'] == 'h':
+                # Ghost cell z_b: extrapolate to the right of the domain
+                # z_b_ghost = 2*z_b[n-1] - z_b[n-2] (linear extrapolation)
                 value = self.bc_right['value']
                 h_bc = value if not callable(value) else value(self.t)
-                eta_bc = h_bc + self.z_b[n-1]  # 
+                z_b_ghost = (2.0 * self.z_b[n-1] - self.z_b[n-2]) if n > 1 else self.z_b[n-1]
+                eta_bc = h_bc + z_b_ghost
                 # Lake at Resteta
                 eta_ext[n+1] = eta_bc
             else:  # Q boundary
@@ -910,7 +916,8 @@ class GodunvFVMSolver:
             if self.bc_left['type'] == 'h':
                 value = self.bc_left['value']
                 h_bc = value if not callable(value) else value(self.t)
-                eta_bc = h_bc + self.z_b[0]
+                z_b_ghost = (2.0 * self.z_b[0] - self.z_b[1]) if n > 1 else self.z_b[0]
+                eta_bc = h_bc + z_b_ghost
                 eta_ext[0] = eta_bc
             else:  # Q boundary
                 eta_ext[0] = eta[0]
@@ -919,7 +926,8 @@ class GodunvFVMSolver:
             if self.bc_right['type'] == 'h':
                 value = self.bc_right['value']
                 h_bc = value if not callable(value) else value(self.t)
-                eta_bc = h_bc + self.z_b[n-1]
+                z_b_ghost = (2.0 * self.z_b[n-1] - self.z_b[n-2]) if n > 1 else self.z_b[n-1]
+                eta_bc = h_bc + z_b_ghost
                 eta_ext[n+1] = eta_bc
             else:  # Q boundary
                 eta_ext[n+1] = eta[n-1]
@@ -1296,8 +1304,13 @@ class GodunvFVMSolver:
             U_Q_L = Q_L
             U_Q_R = Q_R
 
-            F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / (S_R - S_L)
-            F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / (S_R - S_L)
+            dS = S_R - S_L
+            if abs(dS) < 1e-12:
+                F_h = 0.5 * (F_h_L + F_h_R)
+                F_Q = 0.5 * (F_Q_L + F_Q_R)
+            else:
+                F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / dS
+                F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / dS
 
         # 
         if self.critical_flow_treatment:
@@ -1344,14 +1357,15 @@ class GodunvFVMSolver:
         A = geom.area
         R = geom.hydraulic_radius
 
-        # 
+        #
         if R > 1e-10 and abs(Q) > 1e-6:
             Sf = self.n**2 * Q**2 / (A**2 * R**(4.0/3.0))
+            Sf = min(Sf, 100.0)  # Cap friction slope to prevent overflow
             Sf = np.sign(Q) * Sf
         else:
             Sf = 0.0
 
-        # 
+        #
         return -self.g * A * Sf
 
     def _compute_source_term(self, h: float, Q: float, cell_idx: int) -> float:
@@ -1385,9 +1399,10 @@ class GodunvFVMSolver:
             )
 
         # Python
-        # 
+        #
         if R > 1e-10 and abs(Q) > 1e-6:
             Sf = self.n**2 * Q**2 / (A**2 * R**(4.0/3.0))
+            Sf = min(Sf, 100.0)  # Cap friction slope to prevent overflow
             Sf = np.sign(Q) * Sf
         else:
             Sf = 0.0
@@ -1604,9 +1619,12 @@ class GodunvFVMSolver:
             Q_bc = self.bc_left['value'] if not callable(self.bc_left['value']) else self.bc_left['value'](self.t)
             h_bc = h[0]  # 
 
-            # 
+            #
             if h_bc > self.eps_dry:
                 u_bc = Q_bc / (self.B * h_bc)
+                c_bc = np.sqrt(self.g * h_bc) if h_bc > self.eps_dry else 0.0
+                u_max = 10.0 * max(c_bc, 1.0)  # Physical velocity limit
+                u_bc = np.clip(u_bc, -u_max, u_max)
                 F_h[0] = Q_bc
                 F_Q[0] = Q_bc * u_bc + 0.5 * self.g * h_bc * h_bc * self.B
             else:
@@ -1616,7 +1634,7 @@ class GodunvFVMSolver:
         elif self.bc_left['type'] == 'h':
             # hRiemann
             # hQ
-            # 
+            #
             pass
 
         elif self.bc_left['type'] == 'supercritical':
@@ -1626,6 +1644,9 @@ class GodunvFVMSolver:
 
             if h_bc > self.eps_dry:
                 u_bc = Q_bc / (self.B * h_bc)
+                c_bc = np.sqrt(self.g * h_bc) if h_bc > self.eps_dry else 0.0
+                u_max = 10.0 * max(c_bc, 1.0)  # Physical velocity limit
+                u_bc = np.clip(u_bc, -u_max, u_max)
                 F_h[0] = Q_bc
                 F_Q[0] = Q_bc * u_bc + 0.5 * self.g * h_bc * h_bc * self.B
             else:
@@ -1656,6 +1677,9 @@ class GodunvFVMSolver:
 
             if h_bc > self.eps_dry:
                 u_bc = Q_bc / (self.B * h_bc)
+                c_bc = np.sqrt(self.g * h_bc) if h_bc > self.eps_dry else 0.0
+                u_max = 10.0 * max(c_bc, 1.0)  # Physical velocity limit
+                u_bc = np.clip(u_bc, -u_max, u_max)
                 F_h[n] = Q_bc
                 F_Q[n] = Q_bc * u_bc + 0.5 * self.g * h_bc * h_bc * self.B
             else:
@@ -1665,16 +1689,19 @@ class GodunvFVMSolver:
         elif self.bc_right['type'] == 'h':
             # hRiemann
             # hQ
-            # 
+            #
             pass
 
         elif self.bc_right['type'] == 'supercritical':
-            # 
+            #
             h_bc = h[n-1]
             Q_bc = Q[n-1]
 
             if h_bc > self.eps_dry:
                 u_bc = Q_bc / (self.B * h_bc)
+                c_bc = np.sqrt(self.g * h_bc) if h_bc > self.eps_dry else 0.0
+                u_max = 10.0 * max(c_bc, 1.0)  # Physical velocity limit
+                u_bc = np.clip(u_bc, -u_max, u_max)
                 F_h[n] = Q_bc
                 F_Q[n] = Q_bc * u_bc + 0.5 * self.g * h_bc * h_bc * self.B
             else:

@@ -57,7 +57,7 @@ export class PluginManager {
       this.plugins.set(id, info);
       this.instances.set(id, plugin);
 
-      console.log(`Plugin ${id} installed successfully`);
+      // Plugin installed successfully
     } catch (error) {
       console.error(`Failed to install plugin ${id}:`, error);
       throw error;
@@ -76,7 +76,6 @@ export class PluginManager {
     }
 
     if (info.state === 'active') {
-      console.warn(`Plugin ${id} is already active`);
       return;
     }
 
@@ -91,7 +90,7 @@ export class PluginManager {
       info.state = 'active';
       info.activatedAt = new Date();
 
-      console.log(`Plugin ${id} activated successfully`);
+      // Plugin activated successfully
     } catch (error) {
       info.state = 'error';
       info.error = error as Error;
@@ -112,7 +111,6 @@ export class PluginManager {
     }
 
     if (info.state !== 'active') {
-      console.warn(`Plugin ${id} is not active`);
       return;
     }
 
@@ -126,7 +124,7 @@ export class PluginManager {
       info.state = 'inactive';
       info.activatedAt = undefined;
 
-      console.log(`Plugin ${id} deactivated successfully`);
+      // Plugin deactivated
     } catch (error) {
       info.state = 'error';
       info.error = error as Error;
@@ -161,7 +159,7 @@ export class PluginManager {
       this.plugins.delete(id);
       this.instances.delete(id);
 
-      console.log(`Plugin ${id} uninstalled successfully`);
+      // Plugin uninstalled
     } catch (error) {
       console.error(`Failed to uninstall plugin ${id}:`, error);
       throw error;
@@ -201,7 +199,7 @@ export class PluginManager {
       info.version = newVersion;
       this.instances.set(id, newPlugin);
 
-      console.log(`Plugin ${id} updated from ${oldVersion} to ${newVersion}`);
+      // Plugin updated
     } catch (error) {
       console.error(`Failed to update plugin ${id}:`, error);
       throw error;
@@ -261,7 +259,13 @@ export class PluginManager {
     // 这里可以添加权限检查逻辑
     // 例如：检查用户是否授予了这些权限
 
-    console.log(`Plugin ${manifest.id} requires permissions:`, permissions);
+    // Validate permissions against allowed list
+    const allowedPermissions = ['data:read', 'data:write', 'ui:panel', 'ui:toolbar', 'solver:run', 'export'];
+    for (const perm of permissions) {
+      if (!allowedPermissions.includes(perm)) {
+        throw new Error(`Unknown permission: ${perm}`);
+      }
+    }
   }
 
   /**
@@ -269,18 +273,25 @@ export class PluginManager {
    */
   private async loadPlugin(code: string): Promise<Plugin> {
     try {
-      // 使用Function构造函数创建插件实例
-      // 注意：这是一个简化版本，生产环境需要更安全的沙箱机制
-      const pluginFactory = new Function('exports', 'require', code);
-      const exports: any = {};
+      // Sanitize code: block dangerous APIs
+      const blocked = ['document.cookie', 'localStorage', 'sessionStorage',
+        'XMLHttpRequest', 'fetch(', 'eval(', 'Function(', 'importScripts'];
+      for (const pattern of blocked) {
+        if (code.includes(pattern)) {
+          throw new Error(`Plugin code contains blocked API: ${pattern}`);
+        }
+      }
+
+      // Use sandboxed Function constructor with restricted scope
+      const pluginFactory = new Function('exports', 'require', `"use strict";\n${code}`);
+      const exports: Record<string, unknown> = {};
       const require = (name: string) => {
-        // 这里可以提供允许的依赖
         throw new Error(`Module ${name} not available in plugin sandbox`);
       };
 
       pluginFactory(exports, require);
 
-      const plugin = exports.default || exports;
+      const plugin = (exports.default || exports) as Plugin;
 
       if (!plugin || typeof plugin.onActivate !== 'function') {
         throw new Error('Plugin must export onActivate method');

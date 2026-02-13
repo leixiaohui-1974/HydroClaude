@@ -10,28 +10,46 @@ import {
   ReloadOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { ColumnsType } from 'antd/es/table';
 import projectService, { Project } from '@/services/projects';
 
 const { Option } = Select;
 
-const typeMap: Record<string, { color: string; text: string }> = {
-  steady: { color: 'blue', text: '稳态流' },
-  unsteady: { color: 'purple', text: '非恒定流' },
-  gate: { color: 'cyan', text: '闸门流' },
-  network: { color: 'geekblue', text: '渠道网络' },
-  draft: { color: 'default', text: '草稿' },
+const typeColorMap: Record<string, string> = {
+  steady: 'blue',
+  unsteady: 'purple',
+  gate: 'cyan',
+  network: 'geekblue',
+  draft: 'default',
 };
 
-const statusMap: Record<string, { color: string; text: string }> = {
-  draft: { color: 'default', text: '草稿' },
-  completed: { color: 'success', text: '已完成' },
-  running: { color: 'processing', text: '运行中' },
-  pending: { color: 'warning', text: '待运行' },
-  failed: { color: 'error', text: '失败' },
+const typeI18nMap: Record<string, string> = {
+  steady: 'projects.steadyFlow',
+  unsteady: 'projects.unsteadyFlow',
+  gate: 'projects.gateFlow',
+  network: 'projects.canalNetwork',
+  draft: 'projects.draft',
+};
+
+const statusColorMap: Record<string, string> = {
+  draft: 'default',
+  completed: 'success',
+  running: 'processing',
+  pending: 'warning',
+  failed: 'error',
+};
+
+const statusI18nMap: Record<string, string> = {
+  draft: 'projects.statusDraft',
+  completed: 'projects.statusCompleted',
+  running: 'projects.statusRunning',
+  pending: 'projects.statusPending',
+  failed: 'projects.statusFailed',
 };
 
 const ProjectsPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
@@ -70,50 +88,52 @@ const ProjectsPage: React.FC = () => {
 
   const columns: ColumnsType<Project> = [
     {
-      title: '项目名称',
+      title: t('projects.projectName'),
       dataIndex: 'name',
       key: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
-      title: '类型',
+      title: t('projects.type'),
       key: 'type',
       render: (_, record) => {
         const type = getProjectType(record);
-        const config = typeMap[type] || { color: 'default', text: type };
-        return <Tag color={config.color}>{config.text}</Tag>;
+        const color = typeColorMap[type] || 'default';
+        const text = typeI18nMap[type] ? t(typeI18nMap[type]) : type;
+        return <Tag color={color}>{text}</Tag>;
       },
       filters: [
-        { text: '稳态流', value: 'steady' },
-        { text: '非恒定流', value: 'unsteady' },
-        { text: '闸门流', value: 'gate' },
+        { text: t('projects.steadyFlow'), value: 'steady' },
+        { text: t('projects.unsteadyFlow'), value: 'unsteady' },
+        { text: t('projects.gateFlow'), value: 'gate' },
       ],
       onFilter: (value, record) => getProjectType(record) === value,
     },
     {
-      title: '状态',
+      title: t('projects.status'),
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => {
-        const config = statusMap[status] || { color: 'default', text: status };
-        return <Tag color={config.color}>{config.text}</Tag>;
+        const color = statusColorMap[status] || 'default';
+        const text = statusI18nMap[status] ? t(statusI18nMap[status]) : status;
+        return <Tag color={color}>{text}</Tag>;
       },
     },
     {
-      title: '创建日期',
+      title: t('projects.createdDate'),
       dataIndex: 'created_at',
       key: 'created_at',
-      render: (date: string) => date ? new Date(date).toLocaleDateString('zh-CN') : '-',
+      render: (date: string) => date ? new Date(date).toLocaleDateString() : '-',
       sorter: (a, b) => new Date(a.created_at || '').getTime() - new Date(b.created_at || '').getTime(),
     },
     {
-      title: '更新日期',
+      title: t('projects.updatedDate'),
       dataIndex: 'updated_at',
       key: 'updated_at',
-      render: (date: string) => date ? new Date(date).toLocaleDateString('zh-CN') : '-',
+      render: (date: string) => date ? new Date(date).toLocaleDateString() : '-',
     },
     {
-      title: '操作',
+      title: t('projects.actions'),
       key: 'action',
       render: (_, record) => (
         <Space size="small">
@@ -122,21 +142,21 @@ const ProjectsPage: React.FC = () => {
             icon={<EditOutlined />}
             onClick={() => navigate(`/editor/${record.id}`)}
           >
-            编辑
+            {t('projects.editBtn')}
           </Button>
           <Button
             type="link"
             icon={<PlayCircleOutlined />}
             onClick={() => handleRun(record)}
           >
-            运行
+            {t('projects.runBtn')}
           </Button>
           <Button
             type="link"
             icon={<CopyOutlined />}
             onClick={() => handleClone(record)}
           >
-            克隆
+            {t('projects.cloneBtn')}
           </Button>
           <Button
             type="link"
@@ -144,7 +164,7 @@ const ProjectsPage: React.FC = () => {
             icon={<DeleteOutlined />}
             onClick={() => handleDelete(record)}
           >
-            删除
+            {t('projects.deleteBtn')}
           </Button>
         </Space>
       ),
@@ -152,48 +172,48 @@ const ProjectsPage: React.FC = () => {
   ];
 
   const handleRun = (project: Project) => {
-    message.success(`开始运行项目: ${project.name}`);
+    message.success(t('projects.runStarted', { key: project.name }));
     navigate(`/simulation/${project.id}`);
   };
 
   const handleClone = async (project: Project) => {
     try {
       const cloned = await projectService.create({
-        name: `${project.name} (副本)`,
+        name: `${project.name} ${t('projects.cloneSuffix')}`,
         description: project.description,
         config: project.config,
       });
       setProjects((prev) => [cloned, ...prev]);
-      message.success(`已克隆项目: ${project.name}`);
+      message.success(t('projects.cloneSuccess', { name: project.name }));
     } catch {
-      // 离线模式下的本地克隆
+      // Offline mode - local clone
       const cloned: Project = {
         ...project,
         id: Date.now(),
-        name: `${project.name} (副本)`,
+        name: `${project.name} ${t('projects.cloneSuffix')}`,
         status: 'draft',
         created_at: new Date().toISOString(),
       };
       setProjects((prev) => [cloned, ...prev]);
-      message.success(`已克隆项目: ${project.name}`);
+      message.success(t('projects.cloneSuccess', { name: project.name }));
     }
   };
 
   const handleDelete = (project: Project) => {
     Modal.confirm({
-      title: '确认删除',
-      content: `确定要删除项目"${project.name}"吗？此操作不可恢复。`,
-      okText: '删除',
+      title: t('projects.confirmDelete'),
+      content: t('projects.confirmDeleteSpecific', { name: project.name }),
+      okText: t('common.delete'),
       okType: 'danger',
-      cancelText: '取消',
+      cancelText: t('common.cancel'),
       onOk: async () => {
         try {
           await projectService.delete(project.id);
         } catch {
-          // 离线模式
+          // Offline mode
         }
         setProjects((prev) => prev.filter((p) => p.id !== project.id));
-        message.success('项目已删除');
+        message.success(t('projects.projectDeleted'));
       },
     });
   };
@@ -207,14 +227,14 @@ const ProjectsPage: React.FC = () => {
         config: { simulation: { type: values.type || 'steady', mode: 'single_canal' } },
       });
       setProjects((prev) => [newProject, ...prev]);
-      message.success('项目创建成功！');
+      message.success(t('projects.projectCreated'));
       setIsModalVisible(false);
       form.resetFields();
       navigate(`/editor/${newProject.id}`);
     } catch {
-      // 离线模式 - 本地创建
+      // Offline mode - local creation
       const values = form.getFieldsValue();
-      if (!values.name) { message.error('请输入项目名称'); return; }
+      if (!values.name) { message.error(t('projects.pleaseEnterProjectName')); return; }
       const localProject: Project = {
         id: Date.now(),
         name: values.name,
@@ -224,7 +244,7 @@ const ProjectsPage: React.FC = () => {
         created_at: new Date().toISOString(),
       };
       setProjects((prev) => [localProject, ...prev]);
-      message.success('项目创建成功！');
+      message.success(t('projects.projectCreated'));
       setIsModalVisible(false);
       form.resetFields();
       navigate('/editor/new');
@@ -240,11 +260,11 @@ const ProjectsPage: React.FC = () => {
   return (
     <div>
       <Card
-        title={`项目管理 (${total})`}
+        title={`${t('projects.title')} (${total})`}
         extra={
           <Space>
             <Input
-              placeholder="搜索项目"
+              placeholder={t('projects.searchPlaceholder')}
               prefix={<SearchOutlined />}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
@@ -256,11 +276,11 @@ const ProjectsPage: React.FC = () => {
               onChange={setFilterType}
               style={{ width: 120 }}
             >
-              <Option value="all">全部类型</Option>
-              <Option value="steady">稳态流</Option>
-              <Option value="unsteady">非恒定流</Option>
-              <Option value="gate">闸门流</Option>
-              <Option value="network">渠道网络</Option>
+              <Option value="all">{t('projects.allTypes')}</Option>
+              <Option value="steady">{t('projects.steadyFlow')}</Option>
+              <Option value="unsteady">{t('projects.unsteadyFlow')}</Option>
+              <Option value="gate">{t('projects.gateFlow')}</Option>
+              <Option value="network">{t('projects.canalNetwork')}</Option>
             </Select>
             <Button icon={<ReloadOutlined />} onClick={loadProjects} />
             <Button
@@ -268,7 +288,7 @@ const ProjectsPage: React.FC = () => {
               icon={<PlusOutlined />}
               onClick={() => setIsModalVisible(true)}
             >
-              新建项目
+              {t('projects.newProject')}
             </Button>
           </Space>
         }
@@ -280,7 +300,7 @@ const ProjectsPage: React.FC = () => {
             rowKey="id"
             pagination={{
               showSizeChanger: true,
-              showTotal: (t) => `共 ${t} 个项目`,
+              showTotal: (total) => t('projects.totalProjects', { total }),
               total: filteredProjects.length,
             }}
           />
@@ -288,38 +308,38 @@ const ProjectsPage: React.FC = () => {
       </Card>
 
       <Modal
-        title="创建新项目"
+        title={t('projects.createProjectTitle')}
         open={isModalVisible}
         onOk={handleCreateProject}
         onCancel={() => {
           setIsModalVisible(false);
           form.resetFields();
         }}
-        okText="创建"
-        cancelText="取消"
+        okText={t('common.create')}
+        cancelText={t('common.cancel')}
       >
         <Form form={form} layout="vertical">
           <Form.Item
             name="name"
-            label="项目名称"
-            rules={[{ required: true, message: '请输入项目名称' }]}
+            label={t('projects.projectName')}
+            rules={[{ required: true, message: t('projects.pleaseEnterProjectName') }]}
           >
-            <Input placeholder="输入项目名称" />
+            <Input placeholder={t('projects.enterProjectName')} />
           </Form.Item>
           <Form.Item
             name="type"
-            label="项目类型"
-            rules={[{ required: true, message: '请选择项目类型' }]}
+            label={t('projects.projectType')}
+            rules={[{ required: true, message: t('projects.pleaseSelectProjectType') }]}
           >
-            <Select placeholder="选择项目类型">
-              <Option value="steady">稳态流</Option>
-              <Option value="unsteady">非恒定流</Option>
-              <Option value="gate">闸门流</Option>
-              <Option value="network">渠道网络</Option>
+            <Select placeholder={t('projects.selectProjectType')}>
+              <Option value="steady">{t('projects.steadyFlow')}</Option>
+              <Option value="unsteady">{t('projects.unsteadyFlow')}</Option>
+              <Option value="gate">{t('projects.gateFlow')}</Option>
+              <Option value="network">{t('projects.canalNetwork')}</Option>
             </Select>
           </Form.Item>
-          <Form.Item name="description" label="项目描述">
-            <Input.TextArea rows={4} placeholder="输入项目描述（可选）" />
+          <Form.Item name="description" label={t('projects.projectDescription')}>
+            <Input.TextArea rows={4} placeholder={t('projects.enterProjectDescription')} />
           </Form.Item>
         </Form>
       </Modal>

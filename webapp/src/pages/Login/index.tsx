@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Form, Input, Button, Card, Checkbox, Typography, Space, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import useAuthStore from '@/stores/authStore';
 
 const { Title, Text } = Typography;
@@ -13,21 +14,21 @@ interface LoginFormValues {
 }
 
 const LoginPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { login, isLoading } = useAuthStore();
   const [form] = Form.useForm();
 
-  // Get the page user was trying to visit before being redirected
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
 
   const handleSubmit = async (values: LoginFormValues) => {
     try {
       await login(values.username, values.password);
-      message.success('登录成功');
+      message.success(t('loginPage.loginSuccess'));
       navigate(from, { replace: true });
     } catch (error: any) {
-      const errorMsg = error?.response?.data?.message || '登录失败，请检查用户名和密码';
+      const errorMsg = error?.response?.data?.message || t('loginPage.loginFailed');
       message.error(errorMsg);
     }
   };
@@ -55,11 +56,11 @@ const LoginPage: React.FC = () => {
               HydroClaude
             </Title>
             <Text type="secondary" style={{ fontSize: 14 }}>
-              水力学仿真平台
+              {t('loginPage.subtitle')}
             </Text>
           </Space>
           <Title level={4} style={{ marginTop: 16, marginBottom: 0 }}>
-            登录
+            {t('loginPage.title')}
           </Title>
         </div>
 
@@ -73,28 +74,28 @@ const LoginPage: React.FC = () => {
         >
           <Form.Item
             name="username"
-            rules={[{ required: true, message: '请输入用户名' }]}
+            rules={[{ required: true, message: t('loginPage.usernameRequired') }]}
           >
             <Input
               prefix={<UserOutlined style={{ color: '#bfbfbf' }} />}
-              placeholder="用户名"
+              placeholder={t('loginPage.usernamePlaceholder')}
             />
           </Form.Item>
 
           <Form.Item
             name="password"
-            rules={[{ required: true, message: '请输入密码' }]}
+            rules={[{ required: true, message: t('loginPage.passwordRequired') }]}
           >
             <Input.Password
               prefix={<LockOutlined style={{ color: '#bfbfbf' }} />}
-              placeholder="密码"
+              placeholder={t('loginPage.passwordPlaceholder')}
             />
           </Form.Item>
 
           <Form.Item>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Form.Item name="remember" valuePropName="checked" noStyle>
-                <Checkbox>记住我</Checkbox>
+                <Checkbox>{t('auth.rememberMe')}</Checkbox>
               </Form.Item>
             </div>
           </Form.Item>
@@ -107,14 +108,14 @@ const LoginPage: React.FC = () => {
               block
               style={{ height: 44, borderRadius: 6 }}
             >
-              登录
+              {t('loginPage.loginBtn')}
             </Button>
           </Form.Item>
 
           <div style={{ textAlign: 'center' }}>
             <Text type="secondary">
-              还没有账号？{' '}
-              <Link to="/register">立即注册</Link>
+              {t('auth.noAccount')}{' '}
+              <Link to="/register">{t('auth.registerNow')}</Link>
             </Text>
           </div>
         </Form>

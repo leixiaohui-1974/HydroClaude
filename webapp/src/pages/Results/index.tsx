@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Typography, Spin, Alert, Descriptions, Tag, Button, Space } from 'antd';
 import { ClockCircleOutlined, CheckCircleOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import ResultsViewer from '@/components/ResultsViewer';
 import simulationService from '@/services/simulations';
 
 const { Title } = Typography;
 
 /**
- * 将后端仿真结果转换为 ResultsViewer 期望的格式
+ * Transform backend simulation results to ResultsViewer expected format
  */
-function transformResults(apiResult: any): any {
+function transformResults(apiResult: any, t: (key: string, opts?: any) => string): any {
   const summary = apiResult.summary || {};
   const timeSeries = apiResult.time_series || {};
   const metadata = apiResult.solver_metadata || {};
@@ -32,7 +33,7 @@ function transformResults(apiResult: any): any {
   return {
     metadata: {
       simulation_type: 'unsteady',
-      case_name: `仿真结果 #${apiResult.job_id}`,
+      case_name: t('results.simResultId', { id: apiResult.job_id }),
       timestamp: apiResult.created_at || new Date().toISOString(),
       solver: metadata.solver || 'godunov_fvm',
       convergence: {
@@ -51,6 +52,7 @@ function transformResults(apiResult: any): any {
 }
 
 const ResultsPage: React.FC = () => {
+  const { t } = useTranslation();
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -72,11 +74,11 @@ const ResultsPage: React.FC = () => {
     try {
       const data = await simulationService.getResults(id);
       setApiResult(data);
-      setResults(transformResults(data));
+      setResults(transformResults(data, t));
     } catch (err: any) {
-      const msg = err.response?.data?.detail || err.message || '加载结果失败';
+      const msg = err.response?.data?.detail || err.message || t('results.loadError');
       if (msg.includes('not completed')) {
-        setError('仿真尚未完成，请等待计算完成后查看结果');
+        setError(t('results.notCompleted'));
       } else {
         setError(msg);
         loadMockResults();
@@ -95,7 +97,7 @@ const ResultsPage: React.FC = () => {
     setResults({
       metadata: {
         simulation_type: 'steady',
-        case_name: '渠道稳态流分析（演示数据）',
+        case_name: t('results.demoData'),
         timestamp: new Date().toISOString(),
         solver: 'hydrostatic',
         convergence: { iterations: 5, error: 0.000001 },
@@ -113,7 +115,7 @@ const ResultsPage: React.FC = () => {
   if (loading) {
     return (
       <Card>
-        <Spin tip="加载结果中..." size="large" />
+        <Spin tip={t('results.loading')} size="large" />
       </Card>
     );
   }
@@ -122,14 +124,14 @@ const ResultsPage: React.FC = () => {
     return (
       <Card>
         <Alert
-          message="加载失败"
+          message={t('results.loadFailed')}
           description={error}
           type="error"
           showIcon
           action={
             <Space>
-              <Button onClick={() => navigate(-1)}>返回</Button>
-              {jobId && <Button type="primary" onClick={() => loadResults(jobId)}>重试</Button>}
+              <Button onClick={() => navigate(-1)}>{t('results.back')}</Button>
+              {jobId && <Button type="primary" onClick={() => loadResults(jobId)}>{t('results.retry')}</Button>}
             </Space>
           }
         />
@@ -141,8 +143,8 @@ const ResultsPage: React.FC = () => {
     return (
       <Card>
         <Alert
-          message="暂无结果"
-          description="请先运行仿真或选择一个已完成的作业"
+          message={t('results.noResults')}
+          description={t('results.noResultsDesc')}
           type="info"
           showIcon
         />
@@ -154,58 +156,58 @@ const ResultsPage: React.FC = () => {
     <div>
       <Card style={{ marginBottom: 16 }}>
         <Space style={{ marginBottom: 16 }}>
-          <Button icon={<ArrowLeftOutlined />} onClick={() => navigate(-1)}>返回</Button>
+          <Button icon={<ArrowLeftOutlined />} onClick={() => navigate(-1)}>{t('results.back')}</Button>
         </Space>
 
         <Title level={3}>
           <CheckCircleOutlined style={{ color: '#52c41a', marginRight: 8 }} />
-          仿真结果
+          {t('results.simulationResults')}
         </Title>
 
         <Descriptions bordered column={2} size="small">
-          <Descriptions.Item label="场景名称">
+          <Descriptions.Item label={t('results.sceneName')}>
             {results.metadata.case_name}
           </Descriptions.Item>
-          <Descriptions.Item label="仿真类型">
+          <Descriptions.Item label={t('results.simType')}>
             <Tag color={results.metadata.simulation_type === 'steady' ? 'blue' : 'purple'}>
-              {results.metadata.simulation_type === 'steady' ? '稳态流' : '非恒定流'}
+              {results.metadata.simulation_type === 'steady' ? t('results.steadyFlow') : t('results.unsteadyFlow')}
             </Tag>
           </Descriptions.Item>
-          <Descriptions.Item label="求解器">
+          <Descriptions.Item label={t('results.solver')}>
             {results.metadata.solver || 'hydrostatic'}
           </Descriptions.Item>
-          <Descriptions.Item label="完成时间">
+          <Descriptions.Item label={t('results.completionTime')}>
             <ClockCircleOutlined style={{ marginRight: 4 }} />
-            {new Date(results.metadata.timestamp).toLocaleString('zh-CN')}
+            {new Date(results.metadata.timestamp).toLocaleString()}
           </Descriptions.Item>
           {results.metadata.convergence && (
             <>
-              <Descriptions.Item label="总步数">
-                {results.metadata.convergence.iterations} 步
+              <Descriptions.Item label={t('results.totalSteps')}>
+                {results.metadata.convergence.iterations} {t('results.stepsUnit')}
               </Descriptions.Item>
-              <Descriptions.Item label="质量误差">
+              <Descriptions.Item label={t('results.massError')}>
                 {results.metadata.convergence.error?.toExponential(2)}
               </Descriptions.Item>
             </>
           )}
-          <Descriptions.Item label="数据点数" span={2}>
-            {results.spatial.positions.length} 个空间节点
-            {results.temporal && ` × ${results.temporal.times.length} 个时间步`}
+          <Descriptions.Item label={t('results.dataPoints')} span={2}>
+            {results.spatial.positions.length} {t('results.spatialNodes')}
+            {results.temporal && ` × ${results.temporal.times.length} ${t('results.timeSteps')}`}
           </Descriptions.Item>
           {apiResult?.summary && (
             <>
-              <Descriptions.Item label="最大水深">
+              <Descriptions.Item label={t('results.maxDepth')}>
                 {apiResult.summary.h_max?.toFixed(4)} m
               </Descriptions.Item>
-              <Descriptions.Item label="最小水深">
+              <Descriptions.Item label={t('results.minDepth')}>
                 {apiResult.summary.h_min?.toFixed(4)} m
               </Descriptions.Item>
-              <Descriptions.Item label="平均水深">
+              <Descriptions.Item label={t('results.avgDepth')}>
                 {apiResult.summary.h_mean?.toFixed(4)} m
               </Descriptions.Item>
-              <Descriptions.Item label="计算稳定性">
+              <Descriptions.Item label={t('results.stability')}>
                 <Tag color={apiResult.summary.stable ? 'success' : 'error'}>
-                  {apiResult.summary.stable ? '稳定' : '不稳定'}
+                  {apiResult.summary.stable ? t('results.stable') : t('results.unstable')}
                 </Tag>
               </Descriptions.Item>
             </>

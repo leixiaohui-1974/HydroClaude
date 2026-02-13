@@ -2,7 +2,7 @@
 插件数据库模型
 """
 
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, ARRAY, DECIMAL
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, ARRAY, DECIMAL, UniqueConstraint
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from ..database import Base
@@ -56,6 +56,7 @@ class Plugin(Base):
 class Rating(Base):
     """评分模型"""
     __tablename__ = "ratings"
+    __table_args__ = (UniqueConstraint("plugin_id", "user_id", name="uq_plugin_user_rating"),)
 
     id = Column(Integer, primary_key=True, index=True)
     plugin_id = Column(Integer, ForeignKey("plugins.id"), nullable=False, index=True)

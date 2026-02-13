@@ -162,7 +162,7 @@ class HardyCrossSolver:
             print(f"   {len(self.loops)} ")
 
         if len(self.loops) == 0:
-            warnings.warn("Hardy Cross")
+            warnings.warn("No loops found in network - Hardy Cross method requires loop topology", stacklevel=2)
 
         # 
         self.loop_matrix, _, self.pipe_ids = self.network.loop_matrix()

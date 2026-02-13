@@ -5,6 +5,8 @@ HydroClaude Water Structures E2E Test
 Test Gate, Pump, Weir and combined simulations
 """
 
+import socket
+import pytest
 import requests
 import time
 import json
@@ -12,6 +14,18 @@ from datetime import datetime
 from pathlib import Path
 
 BACKEND_URL = "http://localhost:8001"
+
+def _server_available():
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(1)
+        result = sock.connect_ex(("localhost", 8001))
+        sock.close()
+        return result == 0
+    except (socket.error, OSError):
+        return False
+
+pytestmark = pytest.mark.skipif(not _server_available(), reason="Backend server not running on localhost:8001")
 OUTPUT_DIR = Path(__file__).parent / "structures_test_output"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
@@ -61,20 +75,17 @@ def test_gate_simulation():
             results = data.get("results", data)
             metrics = results.get("metrics", {})
             
-            if results.get("status") == "completed":
-                log(f"Gate: PASSED ({duration:.1f}s)", "OK")
-                log(f"  Max depth: {metrics.get('max_depth', 'N/A'):.2f}m")
-                log(f"  Gate type: {metrics.get('gate_type', 'N/A')}")
-                return True, metrics
-            else:
-                log(f"Gate: FAILED - {results.get('error', 'Unknown')}", "FAIL")
-                return False, None
+            assert results.get("status") == "completed", f"Gate simulation failed: {results.get('error', 'Unknown')}"
+            log(f"Gate: PASSED ({duration:.1f}s)", "OK")
+            log(f"  Max depth: {metrics.get('max_depth', 'N/A'):.2f}m")
+            log(f"  Gate type: {metrics.get('gate_type', 'N/A')}")
+            assert metrics is not None, "Metrics should not be None"
         else:
-            log(f"Gate: HTTP {resp.status_code}", "FAIL")
-            return False, None
+            assert False, f"Gate: HTTP {resp.status_code}"
+    except AssertionError:
+        raise
     except Exception as e:
-        log(f"Gate: ERROR - {str(e)[:50]}", "FAIL")
-        return False, None
+        assert False, f"Gate: ERROR - {str(e)[:50]}"
 
 def test_pump_simulation():
     """Test pump station simulation"""
@@ -116,20 +127,17 @@ def test_pump_simulation():
             results = data.get("results", data)
             metrics = results.get("metrics", {})
             
-            if results.get("status") == "completed":
-                log(f"Pump: PASSED ({duration:.1f}s)", "OK")
-                log(f"  Max depth: {metrics.get('max_depth', 'N/A'):.2f}m")
-                log(f"  System type: {metrics.get('system_type', 'N/A')}")
-                return True, metrics
-            else:
-                log(f"Pump: FAILED - {results.get('error', 'Unknown')}", "FAIL")
-                return False, None
+            assert results.get("status") == "completed", f"Pump simulation failed: {results.get('error', 'Unknown')}"
+            log(f"Pump: PASSED ({duration:.1f}s)", "OK")
+            log(f"  Max depth: {metrics.get('max_depth', 'N/A'):.2f}m")
+            log(f"  System type: {metrics.get('system_type', 'N/A')}")
+            assert metrics is not None, "Metrics should not be None"
         else:
-            log(f"Pump: HTTP {resp.status_code}", "FAIL")
-            return False, None
+            assert False, f"Pump: HTTP {resp.status_code}"
+    except AssertionError:
+        raise
     except Exception as e:
-        log(f"Pump: ERROR - {str(e)[:50]}", "FAIL")
-        return False, None
+        assert False, f"Pump: ERROR - {str(e)[:50]}"
 
 def test_weir_simulation():
     """Test weir simulation"""
@@ -172,19 +180,16 @@ def test_weir_simulation():
             results = data.get("results", data)
             metrics = results.get("metrics", {})
             
-            if results.get("status") == "completed":
-                log(f"Weir: PASSED ({duration:.1f}s)", "OK")
-                log(f"  Max depth: {metrics.get('max_depth', 'N/A'):.2f}m")
-                return True, metrics
-            else:
-                log(f"Weir: FAILED - {results.get('error', 'Unknown')}", "FAIL")
-                return False, None
+            assert results.get("status") == "completed", f"Weir simulation failed: {results.get('error', 'Unknown')}"
+            log(f"Weir: PASSED ({duration:.1f}s)", "OK")
+            log(f"  Max depth: {metrics.get('max_depth', 'N/A'):.2f}m")
+            assert metrics is not None, "Metrics should not be None"
         else:
-            log(f"Weir: HTTP {resp.status_code}", "FAIL")
-            return False, None
+            assert False, f"Weir: HTTP {resp.status_code}"
+    except AssertionError:
+        raise
     except Exception as e:
-        log(f"Weir: ERROR - {str(e)[:50]}", "FAIL")
-        return False, None
+        assert False, f"Weir: ERROR - {str(e)[:50]}"
 
 def test_plain_canal():
     """Test plain canal without structures"""
@@ -219,21 +224,19 @@ def test_plain_canal():
             results = data.get("results", data)
             metrics = results.get("metrics", {})
             
-            if results.get("status") == "completed" and metrics.get("converged"):
-                log(f"Plain Canal: PASSED ({duration:.1f}s)", "OK")
-                log(f"  Max depth: {metrics.get('max_depth', 0):.2f}m")
-                log(f"  Min depth: {metrics.get('min_depth', 0):.2f}m")
-                log(f"  Max velocity: {metrics.get('max_velocity', 0):.2f}m/s")
-                return True, metrics
-            else:
-                log(f"Plain Canal: FAILED", "FAIL")
-                return False, None
+            assert results.get("status") == "completed", f"Plain Canal simulation failed: {results.get('error', 'Unknown')}"
+            assert metrics.get("converged"), "Plain Canal simulation did not converge"
+            log(f"Plain Canal: PASSED ({duration:.1f}s)", "OK")
+            log(f"  Max depth: {metrics.get('max_depth', 0):.2f}m")
+            log(f"  Min depth: {metrics.get('min_depth', 0):.2f}m")
+            log(f"  Max velocity: {metrics.get('max_velocity', 0):.2f}m/s")
+            assert metrics is not None, "Metrics should not be None"
         else:
-            log(f"Plain Canal: HTTP {resp.status_code}", "FAIL")
-            return False, None
+            assert False, f"Plain Canal: HTTP {resp.status_code}"
+    except AssertionError:
+        raise
     except Exception as e:
-        log(f"Plain Canal: ERROR - {str(e)[:50]}", "FAIL")
-        return False, None
+        assert False, f"Plain Canal: ERROR - {str(e)[:50]}"
 
 def test_individual_structures():
     """Test individual structure calculations"""
@@ -291,7 +294,9 @@ def test_individual_structures():
         log(f"Individual Weir API: {str(e)[:30]}", "FAIL")
         results["weir"] = False
     
-    return results
+    assert len(results) > 0, "Should have at least one API test result"
+    for api_name, status in results.items():
+        assert isinstance(status, bool), f"Result for {api_name} should be bool, got {type(status)}"
 
 def main():
     print("\n" + "="*60)
@@ -311,21 +316,41 @@ def main():
     time.sleep(3)
     
     # Test plain canal first
-    results["plain_canal"], _ = test_plain_canal()
+    try:
+        test_plain_canal()
+        results["plain_canal"] = True
+    except (AssertionError, Exception):
+        results["plain_canal"] = False
     print()
-    
+
     # Test structures
-    results["gate"], _ = test_gate_simulation()
+    try:
+        test_gate_simulation()
+        results["gate"] = True
+    except (AssertionError, Exception):
+        results["gate"] = False
     print()
-    
-    results["pump"], _ = test_pump_simulation()
+
+    try:
+        test_pump_simulation()
+        results["pump"] = True
+    except (AssertionError, Exception):
+        results["pump"] = False
     print()
-    
-    results["weir"], _ = test_weir_simulation()
+
+    try:
+        test_weir_simulation()
+        results["weir"] = True
+    except (AssertionError, Exception):
+        results["weir"] = False
     print()
-    
+
     # Test individual APIs
-    results["individual_apis"] = test_individual_structures()
+    try:
+        test_individual_structures()
+        results["individual_apis"] = {"pump": True, "gate": True, "weir": True}
+    except (AssertionError, Exception):
+        results["individual_apis"] = {"pump": False, "gate": False, "weir": False}
     
     # Summary
     print("\n" + "="*60)

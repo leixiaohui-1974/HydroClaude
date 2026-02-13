@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Form, Input, Button, Card, Typography, Space, Progress, message } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import useAuthStore from '@/stores/authStore';
 
 const { Title, Text } = Typography;
@@ -25,12 +26,13 @@ const getPasswordStrength = (password: string): { percent: number; status: 'exce
   if (/[0-9]/.test(password)) score += 15;
   if (/[^a-zA-Z0-9]/.test(password)) score += 15;
 
-  if (score <= 30) return { percent: score, status: 'exception', text: '弱' };
-  if (score <= 60) return { percent: score, status: 'active', text: '中' };
-  return { percent: score, status: 'success', text: '强' };
+  if (score <= 30) return { percent: score, status: 'exception', text: 'Weak' };
+  if (score <= 60) return { percent: score, status: 'active', text: 'Medium' };
+  return { percent: score, status: 'success', text: 'Strong' };
 };
 
 const RegisterPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { register, isLoading } = useAuthStore();
   const [form] = Form.useForm();
@@ -48,10 +50,10 @@ const RegisterPage: React.FC = () => {
   const handleSubmit = async (values: RegisterFormValues) => {
     try {
       await register(values.username, values.email, values.password);
-      message.success('注册成功');
+      message.success(t('registerPage.registerSuccess'));
       navigate('/', { replace: true });
     } catch (error: any) {
-      const errorMsg = error?.response?.data?.message || '注册失败，请稍后重试';
+      const errorMsg = error?.response?.data?.message || t('registerPage.registerFailed');
       message.error(errorMsg);
     }
   };
@@ -79,11 +81,11 @@ const RegisterPage: React.FC = () => {
               HydroClaude
             </Title>
             <Text type="secondary" style={{ fontSize: 14 }}>
-              水力学仿真平台
+              {t('loginPage.subtitle')}
             </Text>
           </Space>
           <Title level={4} style={{ marginTop: 16, marginBottom: 0 }}>
-            注册
+            {t('registerPage.title')}
           </Title>
         </div>
 
@@ -97,41 +99,41 @@ const RegisterPage: React.FC = () => {
           <Form.Item
             name="username"
             rules={[
-              { required: true, message: '请输入用户名' },
-              { min: 3, message: '用户名至少3个字符' },
-              { max: 20, message: '用户名最多20个字符' },
-              { pattern: /^[a-zA-Z0-9_]+$/, message: '用户名只能包含字母、数字和下划线' },
+              { required: true, message: t('registerPage.usernameRequired') },
+              { min: 3, message: t('registerPage.usernameRequired') },
+              { max: 20, message: t('registerPage.usernameRequired') },
+              { pattern: /^[a-zA-Z0-9_]+$/, message: t('registerPage.usernameRequired') },
             ]}
           >
             <Input
               prefix={<UserOutlined style={{ color: '#bfbfbf' }} />}
-              placeholder="用户名"
+              placeholder={t('registerPage.usernamePlaceholder')}
             />
           </Form.Item>
 
           <Form.Item
             name="email"
             rules={[
-              { required: true, message: '请输入邮箱' },
-              { type: 'email', message: '请输入有效的邮箱地址' },
+              { required: true, message: t('registerPage.emailRequired') },
+              { type: 'email', message: t('registerPage.emailInvalid') },
             ]}
           >
             <Input
               prefix={<MailOutlined style={{ color: '#bfbfbf' }} />}
-              placeholder="邮箱"
+              placeholder={t('registerPage.emailPlaceholder')}
             />
           </Form.Item>
 
           <Form.Item
             name="password"
             rules={[
-              { required: true, message: '请输入密码' },
-              { min: 6, message: '密码至少6个字符' },
+              { required: true, message: t('registerPage.passwordRequired') },
+              { min: 6, message: t('registerPage.passwordMin') },
             ]}
           >
             <Input.Password
               prefix={<LockOutlined style={{ color: '#bfbfbf' }} />}
-              placeholder="密码"
+              placeholder={t('registerPage.passwordPlaceholder')}
               onChange={handlePasswordChange}
             />
           </Form.Item>
@@ -139,9 +141,6 @@ const RegisterPage: React.FC = () => {
           {passwordStrength.text && (
             <Form.Item style={{ marginTop: -16, marginBottom: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Text type="secondary" style={{ fontSize: 12, flexShrink: 0 }}>
-                  密码强度：
-                </Text>
                 <Progress
                   percent={passwordStrength.percent}
                   status={passwordStrength.status}
@@ -170,20 +169,20 @@ const RegisterPage: React.FC = () => {
             name="confirmPassword"
             dependencies={['password']}
             rules={[
-              { required: true, message: '请确认密码' },
+              { required: true, message: t('registerPage.confirmRequired') },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || getFieldValue('password') === value) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(new Error('两次输入的密码不一致'));
+                  return Promise.reject(new Error(t('registerPage.passwordMismatch')));
                 },
               }),
             ]}
           >
             <Input.Password
               prefix={<LockOutlined style={{ color: '#bfbfbf' }} />}
-              placeholder="确认密码"
+              placeholder={t('registerPage.confirmPassword')}
             />
           </Form.Item>
 
@@ -195,14 +194,14 @@ const RegisterPage: React.FC = () => {
               block
               style={{ height: 44, borderRadius: 6 }}
             >
-              注册
+              {t('registerPage.registerBtn')}
             </Button>
           </Form.Item>
 
           <div style={{ textAlign: 'center' }}>
             <Text type="secondary">
-              已有账号？{' '}
-              <Link to="/login">返回登录</Link>
+              {t('auth.hasAccount')}{' '}
+              <Link to="/login">{t('auth.loginNow')}</Link>
             </Text>
           </div>
         </Form>

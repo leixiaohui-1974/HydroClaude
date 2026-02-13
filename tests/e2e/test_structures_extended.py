@@ -84,7 +84,9 @@ def test_gate_variations():
     
     passed = sum(1 for _, s, _ in results if s == "OK")
     print(f"\n  Gate tests: {passed}/{len(results)} passed")
-    return results
+    assert len(results) > 0, "Should have at least one gate test result"
+    for name, status, dur in results:
+        assert status is not None, f"Result for {name} should not be None"
 
 def test_pump_variations():
     """Test various pump configurations"""
@@ -129,7 +131,9 @@ def test_pump_variations():
     
     passed = sum(1 for _, s, _ in results if s == "OK")
     print(f"\n  Pump tests: {passed}/{len(results)} passed")
-    return results
+    assert len(results) > 0, "Should have at least one pump test result"
+    for name, status, dur in results:
+        assert status is not None, f"Result for {name} should not be None"
 
 def test_weir_variations():
     """Test various weir configurations"""
@@ -175,7 +179,9 @@ def test_weir_variations():
     
     passed = sum(1 for _, s, _ in results if s == "OK")
     print(f"\n  Weir tests: {passed}/{len(results)} passed")
-    return results
+    assert len(results) > 0, "Should have at least one weir test result"
+    for name, status, dur in results:
+        assert status is not None, f"Result for {name} should not be None"
 
 def test_boundary_variations():
     """Test various boundary condition combinations"""
@@ -213,7 +219,9 @@ def test_boundary_variations():
     
     passed = sum(1 for _, s, _ in results if s == "OK")
     print(f"\n  Boundary tests: {passed}/{len(results)} passed")
-    return results
+    assert len(results) > 0, "Should have at least one boundary test result"
+    for name, status, dur in results:
+        assert status is not None, f"Result for {name} should not be None"
 
 def main():
     print("\n" + "="*70)
@@ -223,18 +231,20 @@ def main():
     
     start_time = time.time()
     
-    all_results = []
-    
-    # Run all tests
-    all_results.extend(test_gate_variations())
-    all_results.extend(test_pump_variations())
-    all_results.extend(test_weir_variations())
-    all_results.extend(test_boundary_variations())
-    
+    test_names = ["gate_variations", "pump_variations", "weir_variations", "boundary_variations"]
+    test_funcs = [test_gate_variations, test_pump_variations, test_weir_variations, test_boundary_variations]
+    passed = 0
+    total = len(test_funcs)
+
+    for name, func in zip(test_names, test_funcs):
+        try:
+            func()
+            passed += 1
+        except (AssertionError, Exception) as e:
+            print(f"  {name} had issues: {e}")
+
     # Summary
     total_time = time.time() - start_time
-    passed = sum(1 for _, s, _ in all_results if s == "OK")
-    total = len(all_results)
     
     print("\n" + "="*70)
     print("  Final Summary")

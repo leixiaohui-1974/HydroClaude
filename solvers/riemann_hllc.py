@@ -96,7 +96,7 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
     denominator = h_L * (S_L - u_L) - h_R * (S_R - u_R)
 
     #
-    if abs(denominator) < eps_dry:
+    if abs(denominator) < 1e-12:  # Use small dimensionless threshold
         # HLLHLLHLLC
         if S_L >= 0.0:
             return F_h_L, F_Q_L
@@ -109,12 +109,17 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
             U_Q_L = Q_L
             U_Q_R = Q_R
 
-            F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / (S_R - S_L)
-            F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / (S_R - S_L)
+            dS = S_R - S_L
+            if abs(dS) < 1e-12:
+                F_h = 0.5 * (F_h_L + F_h_R)
+                F_Q = 0.5 * (F_Q_L + F_Q_R)
+            else:
+                F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / dS
+                F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / dS
 
             return F_h, F_Q
 
-    # 
+    #
     numerator = (F_Q_R - F_Q_L + S_L * Q_L - S_R * Q_R)
     S_star = numerator / denominator
 
@@ -132,14 +137,24 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
             U_h_R = h_R
             U_Q_L = Q_L
             U_Q_R = Q_R
-            F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / (S_R - S_L)
-            F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / (S_R - S_L)
+            dS = S_R - S_L
+            if abs(dS) < 1e-12:
+                F_h = 0.5 * (F_h_L + F_h_R)
+                F_Q = 0.5 * (F_Q_L + F_Q_R)
+            else:
+                F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / dS
+                F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / dS
             return F_h, F_Q
 
     # ========== HLL fallback (used if NaN detected) ==========
     # Pre-compute HLL flux for fallback
-    HLL_F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (h_R - h_L)) / (S_R - S_L)
-    HLL_F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (Q_R - Q_L)) / (S_R - S_L)
+    dS = S_R - S_L
+    if abs(dS) < 1e-12:
+        HLL_F_h = 0.5 * (F_h_L + F_h_R)
+        HLL_F_Q = 0.5 * (F_Q_L + F_Q_R)
+    else:
+        HLL_F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (h_R - h_L)) / dS
+        HLL_F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (Q_R - Q_L)) / dS
 
     # ========== HLLC () ==========
 
@@ -153,9 +168,12 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
         # F_L* = F_L + S_L * (U_L* - U_L)
 
         #  ()
-        h_L_star = h_L * (S_L - u_L) / (S_L - S_star)
+        ratio = (S_L - u_L) / (S_L - S_star) if abs(S_L - S_star) > 1e-12 else 1.0
+        h_L_star = h_L * ratio
 
         # Fix 1: NaN
+        if np.isnan(h_L_star) or np.isinf(h_L_star):
+            h_L_star = eps_dry
         h_L_star = max(eps_dry, h_L_star)
 
         #  ()
@@ -177,9 +195,12 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
         # F_R* = F_R + S_R * (U_R* - U_R)
 
         #  ()
-        h_R_star = h_R * (S_R - u_R) / (S_R - S_star)
+        ratio = (S_R - u_R) / (S_R - S_star) if abs(S_R - S_star) > 1e-12 else 1.0
+        h_R_star = h_R * ratio
 
         # Fix 1: NaN
+        if np.isnan(h_R_star) or np.isinf(h_R_star):
+            h_R_star = eps_dry
         h_R_star = max(eps_dry, h_R_star)
 
         #  ()

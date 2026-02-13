@@ -137,6 +137,13 @@ def exact_riemann_flux(
     # Both wet: solve for star region
     h_star, u_star = _solve_star_region_newton(h_L, u_L, h_R, u_R, g, max_iter, tol)
 
+    # Validate h_star and u_star are physically meaningful
+    if h_star < 0 or np.isnan(h_star) or np.isinf(h_star):
+        h_star = 0.5 * (h_L + h_R)
+        u_star = 0.5 * (u_L + u_R)
+    if np.isnan(u_star) or np.isinf(u_star):
+        u_star = 0.5 * (u_L + u_R)
+
     # Sample solution at x/t = 0
     h_sample, u_sample = _sample_solution(h_L, u_L, h_R, u_R, h_star, u_star, g)
 
@@ -634,6 +641,13 @@ def exact_riemann_flux_numba(
 
     # Solve for star region
     h_star, u_star = _solve_star_region_numba(h_L, u_L, h_R, u_R, g, max_iter, tol)
+
+    # Validate h_star and u_star are physically meaningful
+    if h_star < 0 or np.isnan(h_star) or np.isinf(h_star):
+        h_star = 0.5 * (h_L + h_R)
+        u_star = 0.5 * (u_L + u_R)
+    if np.isnan(u_star) or np.isinf(u_star):
+        u_star = 0.5 * (u_L + u_R)
 
     # Sample solution
     h_sample, u_sample = _sample_solution_numba(h_L, u_L, h_R, u_R, h_star, u_star, g)

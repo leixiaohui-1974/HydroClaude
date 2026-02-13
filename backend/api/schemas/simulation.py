@@ -2,7 +2,7 @@
 仿真相关的Pydantic模型
 """
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, Any, Dict, List
 from datetime import datetime
 
@@ -11,8 +11,8 @@ from datetime import datetime
 
 class ProjectCreate(BaseModel):
     """创建项目请求"""
-    name: str
-    description: Optional[str] = None
+    name: str = Field(..., min_length=1, max_length=200)
+    description: Optional[str] = Field(None, max_length=2000)
     config: Optional[Dict[str, Any]] = None
 
 

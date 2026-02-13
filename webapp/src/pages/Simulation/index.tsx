@@ -10,11 +10,13 @@ import {
   BarChartOutlined,
   LoadingOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import simulationService, { SimulationJob } from '@/services/simulations';
 
 const { Title, Text } = Typography;
 
 const SimulationPage: React.FC = () => {
+  const { t } = useTranslation();
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
   const [job, setJob] = useState<SimulationJob | null>(null);
@@ -46,10 +48,10 @@ const SimulationPage: React.FC = () => {
     try {
       const data = await simulationService.getJob(id);
       setJob(data);
-      addLog(`已加载作业: ${data.name} (状态: ${getStatusText(data.status)})`);
+      addLog(t('simulation.jobLoaded', { name: data.name, status: getStatusText(data.status) }));
     } catch (err: any) {
-      message.error('加载作业失败');
-      addLog(`加载失败: ${err.message}`);
+      message.error(t('simulation.loadFailed'));
+      addLog(t('simulation.loadFailedMsg', { msg: err.message }));
     } finally {
       setLoading(false);
     }
@@ -63,20 +65,20 @@ const SimulationPage: React.FC = () => {
         const data = await simulationService.getJob(jobId);
         setJob(data);
         if (data.status === 'running') {
-          addLog(`进度: ${(data.progress ?? 0).toFixed(1)}%`);
+          addLog(t('simulation.progressLog', { progress: (data.progress ?? 0).toFixed(1) }));
         }
         if (data.status === 'completed') {
-          addLog('仿真计算完成！');
-          message.success('仿真完成');
+          addLog(t('simulation.simCompleted'));
+          message.success(t('simulation.simCompletedMsg'));
           stopPolling();
         }
         if (data.status === 'failed') {
-          addLog(`仿真失败: ${data.error || '未知错误'}`);
-          message.error('仿真失败');
+          addLog(t('simulation.simFailedLog', { error: data.error || t('simulation.unknownError') }));
+          message.error(t('simulation.simFailedMsg'));
           stopPolling();
         }
       } catch {
-        // 网络错误时继续轮询
+        // Continue polling on network errors
       }
     }, 2000);
   };
@@ -89,7 +91,7 @@ const SimulationPage: React.FC = () => {
   };
 
   const addLog = (msg: string) => {
-    const timestamp = new Date().toLocaleTimeString('zh-CN');
+    const timestamp = new Date().toLocaleTimeString();
     setLogs(prev => [...prev.slice(-49), `[${timestamp}] ${msg}`]);
   };
 
@@ -97,11 +99,11 @@ const SimulationPage: React.FC = () => {
     if (!jobId) return;
     try {
       await simulationService.runJob(jobId);
-      addLog('已重新启动仿真...');
-      message.info('仿真已重新启动');
+      addLog(t('simulation.restarted'));
+      message.info(t('simulation.restartedMsg'));
       loadJob(jobId);
     } catch (err: any) {
-      message.error('启动失败: ' + (err.message || '未知错误'));
+      message.error(t('simulation.startFailed', { msg: err.message || t('simulation.unknownError') }));
     }
   };
 
@@ -111,10 +113,10 @@ const SimulationPage: React.FC = () => {
 
   const getStatusText = (s: string) => {
     const map: Record<string, string> = {
-      pending: '待运行',
-      running: '运行中',
-      completed: '已完成',
-      failed: '失败',
+      pending: t('simulation.statusPending'),
+      running: t('simulation.statusRunning'),
+      completed: t('simulation.statusCompleted'),
+      failed: t('simulation.statusFailed'),
     };
     return map[s] || s;
   };
@@ -133,7 +135,7 @@ const SimulationPage: React.FC = () => {
   if (loading) {
     return (
       <Card>
-        <Spin tip="加载作业信息..." size="large" />
+        <Spin tip={t('simulation.loadingJob')} size="large" />
       </Card>
     );
   }
@@ -142,12 +144,12 @@ const SimulationPage: React.FC = () => {
     return (
       <Card>
         <Alert
-          message="作业不存在"
-          description="未找到指定的仿真作业，请检查ID是否正确。"
+          message={t('simulation.jobNotFound')}
+          description={t('simulation.jobNotFoundDesc')}
           type="error"
           showIcon
           action={
-            <Button onClick={() => navigate('/projects')}>返回项目列表</Button>
+            <Button onClick={() => navigate('/projects')}>{t('simulation.backToProjects')}</Button>
           }
         />
       </Card>
@@ -162,29 +164,27 @@ const SimulationPage: React.FC = () => {
     <div>
       <Title level={3}>
         <PlayCircleOutlined style={{ marginRight: 8 }} />
-        仿真执行监控
+        {t('simulation.monitor')}
       </Title>
 
-      {/* 作业信息卡片 */}
       <Card style={{ marginBottom: 16 }}>
         <Descriptions bordered column={2} size="small">
-          <Descriptions.Item label="作业名称">{job.name}</Descriptions.Item>
-          <Descriptions.Item label="状态">{getStatusTag(job.status)}</Descriptions.Item>
-          <Descriptions.Item label="作业ID">{job.id}</Descriptions.Item>
-          <Descriptions.Item label="创建时间">
-            {job.created_at ? new Date(job.created_at).toLocaleString('zh-CN') : '-'}
+          <Descriptions.Item label={t('simulation.jobName')}>{job.name}</Descriptions.Item>
+          <Descriptions.Item label={t('simulation.status')}>{getStatusTag(job.status)}</Descriptions.Item>
+          <Descriptions.Item label={t('simulation.jobId')}>{job.id}</Descriptions.Item>
+          <Descriptions.Item label={t('simulation.createdTime')}>
+            {job.created_at ? new Date(job.created_at).toLocaleString() : '-'}
           </Descriptions.Item>
-          <Descriptions.Item label="开始时间">
-            {job.started_at ? new Date(job.started_at).toLocaleString('zh-CN') : '-'}
+          <Descriptions.Item label={t('simulation.startedTime')}>
+            {job.started_at ? new Date(job.started_at).toLocaleString() : '-'}
           </Descriptions.Item>
-          <Descriptions.Item label="完成时间">
-            {job.completed_at ? new Date(job.completed_at).toLocaleString('zh-CN') : '-'}
+          <Descriptions.Item label={t('simulation.completedTime')}>
+            {job.completed_at ? new Date(job.completed_at).toLocaleString() : '-'}
           </Descriptions.Item>
         </Descriptions>
       </Card>
 
-      {/* 进度条 */}
-      <Card title="仿真进度" style={{ marginBottom: 16 }}>
+      <Card title={t('simulation.progress')} style={{ marginBottom: 16 }}>
         <Progress
           percent={Math.round(job.progress ?? 0)}
           status={isFailed ? 'exception' : isCompleted ? 'success' : 'active'}
@@ -193,15 +193,14 @@ const SimulationPage: React.FC = () => {
         />
         {isRunning && (
           <Text type="secondary" style={{ display: 'block', marginTop: 8 }}>
-            正在计算中，请稍候...
+            {t('simulation.calculating')}
           </Text>
         )}
       </Card>
 
-      {/* 错误信息 */}
       {isFailed && job.error && (
         <Alert
-          message="仿真失败"
+          message={t('simulation.simFailed')}
           description={<pre style={{ maxHeight: 200, overflow: 'auto', fontSize: 12 }}>{job.error}</pre>}
           type="error"
           showIcon
@@ -209,7 +208,6 @@ const SimulationPage: React.FC = () => {
         />
       )}
 
-      {/* 操作按钮 */}
       <Card style={{ marginBottom: 16 }}>
         <Space>
           {isCompleted && (
@@ -218,7 +216,7 @@ const SimulationPage: React.FC = () => {
               icon={<BarChartOutlined />}
               onClick={handleViewResults}
             >
-              查看结果
+              {t('simulation.viewResults')}
             </Button>
           )}
           {(isCompleted || isFailed) && (
@@ -226,15 +224,14 @@ const SimulationPage: React.FC = () => {
               icon={<ReloadOutlined />}
               onClick={handleRerun}
             >
-              重新运行
+              {t('simulation.rerun')}
             </Button>
           )}
-          <Button onClick={() => navigate('/projects')}>返回项目列表</Button>
+          <Button onClick={() => navigate('/projects')}>{t('simulation.backToProjects')}</Button>
         </Space>
       </Card>
 
-      {/* 运行日志 */}
-      <Card title="运行日志" style={{ marginBottom: 16 }}>
+      <Card title={t('simulation.runLogs')} style={{ marginBottom: 16 }}>
         <div
           style={{
             maxHeight: 300,
@@ -249,7 +246,7 @@ const SimulationPage: React.FC = () => {
           }}
         >
           {logs.length === 0 ? (
-            <Text style={{ color: '#666' }}>暂无日志...</Text>
+            <Text style={{ color: '#666' }}>{t('simulation.noLogs')}</Text>
           ) : (
             logs.map((log, idx) => (
               <div key={idx}>{log}</div>
@@ -258,44 +255,43 @@ const SimulationPage: React.FC = () => {
         </div>
       </Card>
 
-      {/* 配置概要 */}
       {job.config && (() => {
         const cfg = job.config as any;
         return (
-          <Card title="仿真配置概要">
+          <Card title={t('simulation.configSummary')}>
             <Descriptions bordered column={2} size="small">
               {cfg.simulation && (
                 <>
-                  <Descriptions.Item label="仿真类型">
+                  <Descriptions.Item label={t('simulation.simType')}>
                     {cfg.simulation.type || '-'}
                   </Descriptions.Item>
-                  <Descriptions.Item label="结束时间">
+                  <Descriptions.Item label={t('simulation.endTime')}>
                     {cfg.simulation.end_time || '-'} s
                   </Descriptions.Item>
                 </>
               )}
               {cfg.canal && (
                 <>
-                  <Descriptions.Item label="渠道长度">
+                  <Descriptions.Item label={t('simulation.canalLength')}>
                     {cfg.canal.length || '-'} m
                   </Descriptions.Item>
-                  <Descriptions.Item label="渠道宽度">
+                  <Descriptions.Item label={t('simulation.canalWidth')}>
                     {cfg.canal.width || '-'} m
                   </Descriptions.Item>
-                  <Descriptions.Item label="底坡">
+                  <Descriptions.Item label={t('simulation.bottomSlope')}>
                     {cfg.canal.slope || '-'}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Manning系数">
+                  <Descriptions.Item label={t('simulation.manningCoeff')}>
                     {cfg.canal.manning_n || '-'}
                   </Descriptions.Item>
                 </>
               )}
               {cfg.solver && (
                 <>
-                  <Descriptions.Item label="求解方法">
+                  <Descriptions.Item label={t('simulation.solverMethod')}>
                     {cfg.solver.method || '-'}
                   </Descriptions.Item>
-                  <Descriptions.Item label="CFL数">
+                  <Descriptions.Item label={t('simulation.cflNumber')}>
                     {cfg.solver.cfl || '-'}
                   </Descriptions.Item>
                 </>

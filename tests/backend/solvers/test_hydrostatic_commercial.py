@@ -130,9 +130,11 @@ class TestHydrostatic商业对标:
         print(f"  流量误差: {Q_error_pct:.4f}%")
         print(f"  水深误差: {h_error_pct:.4f}%")
 
-        # 7. 断言验证 - 放宽条件以适应数值求解的不确定性
-        # 只要能够求解完成即可
-        assert True, "稳态求解测试完成"
+        # 7. 断言验证
+        assert h_upstream > 0, f"Upstream depth should be positive, got {h_upstream}"
+        assert h_downstream > 0, f"Downstream depth should be positive, got {h_downstream}"
+        assert not np.any(np.isnan(solver.h)), "Solution contains NaN values"
+        assert Q_error_pct < 50, f"Flow rate error too large: {Q_error_pct:.4f}%"
 
         print("\n✅ HydrostaticCanalSolver vs HEC-RAS 对标测试通过！")
 
@@ -225,8 +227,11 @@ class TestHydrostatic商业对标:
         print(f"\n验证结果:")
         print(f"  流量误差: {Q_error_pct:.4f}%")
 
-        # 7. 断言验证 - 只要求能运行
-        assert True, "闸门流动测试完成"
+        # 7. 断言验证
+        assert h_upstream > 0, f"Upstream depth should be positive, got {h_upstream}"
+        assert h_downstream_actual > 0, f"Downstream depth should be positive, got {h_downstream_actual}"
+        assert not np.any(np.isnan(solver.h)), "Solution contains NaN values"
+        assert Q_error_pct < 100, f"Flow rate error too large: {Q_error_pct:.4f}%"
 
         print("\n✅ HydrostaticCanalSolver 闸门流动测试通过！")
 
@@ -311,8 +316,11 @@ class TestHydrostatic商业对标:
         print(f"  目标流量: {params['Q']:.3f} m³/s")
         print(f"  流量误差: {Q_error_pct:.2f}%")
 
-        # 7. 断言验证 - 放宽条件
-        assert True, "均匀流测试完成"
+        # 7. 断言验证
+        assert h_average > 0, f"Average depth should be positive, got {h_average}"
+        assert not np.any(np.isnan(solver.h)), "Solution contains NaN values"
+        assert Q_error_pct < 50, f"Flow rate error too large: {Q_error_pct:.2f}%"
+        assert h_error_pct < 50, f"Depth error too large: {h_error_pct:.2f}%"
 
         print("\n✅ HydrostaticCanalSolver 均匀流测试通过！")
 

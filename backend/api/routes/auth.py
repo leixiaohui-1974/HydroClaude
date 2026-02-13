@@ -2,10 +2,13 @@
 认证相关API路由
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from datetime import timedelta
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from ..database import get_db
 from ..models import User
@@ -14,11 +17,19 @@ from ..utils.security import verify_password, get_password_hash, create_access_t
 from ..utils.dependencies import get_current_active_user
 from ..config import settings
 
+limiter = Limiter(key_func=get_remote_address)
+
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
+class ChangePasswordRequest(BaseModel):
+    current_password: str = Field(..., min_length=6)
+    new_password: str = Field(..., min_length=8, max_length=128)
+
+
 @router.post("/register", response_model=UserPublic, status_code=status.HTTP_201_CREATED)
-async def register(user_data: RegisterRequest, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+async def register(request: Request, user_data: RegisterRequest, db: Session = Depends(get_db)):
     """
     用户注册
     
@@ -53,7 +64,9 @@ async def register(user_data: RegisterRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=Token)
+@limiter.limit("10/minute")
 async def login(
+    request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
@@ -66,7 +79,9 @@ async def login(
 
 
 @router.post("/login/json", response_model=Token)
+@limiter.limit("10/minute")
 async def login_json(
+    request: Request,
     data: LoginRequest,
     db: Session = Depends(get_db)
 ):
@@ -130,8 +145,7 @@ async def refresh_token(
 
 @router.post("/change-password")
 async def change_password(
-    current_password: str,
-    new_password: str,
+    data: ChangePasswordRequest,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -140,19 +154,14 @@ async def change_password(
 
     验证当前密码后更新为新密码。
     """
-    if not verify_password(current_password, current_user.password_hash):
+    if not verify_password(data.current_password, current_user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Current password is incorrect"
         )
 
-    if len(new_password) < 6:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="New password must be at least 6 characters"
-        )
-
-    current_user.password_hash = get_password_hash(new_password)
+    current_user.password_hash = get_password_hash(data.new_password)
     db.commit()
+    db.refresh(current_user)
 
     return {"message": "Password changed successfully"}

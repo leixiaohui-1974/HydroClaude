@@ -1,8 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """测试后端API"""
+import socket
+import pytest
 import requests
 import json
+
+def _server_available():
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(1)
+        result = sock.connect_ex(("localhost", 8001))
+        sock.close()
+        return result == 0
+    except (socket.error, OSError):
+        return False
+
+pytestmark = pytest.mark.skipif(not _server_available(), reason="Backend server not running on localhost:8001")
 
 def test_backend_api():
     print("测试后端API /api/structures/simulate-canal-with-structure")
@@ -106,14 +120,15 @@ def test_backend_api():
                         print(f"  {metric}: MISSING!")
             
             print("\n后端API正常工作!")
-            return True
+            assert data.get("results") is not None, "Response should contain results"
+            assert response.status_code == 200, f"Expected status 200, got {response.status_code}"
         else:
-            print(f"错误: {response.text[:500]}")
-            return False
-            
+            assert False, f"HTTP error: {response.status_code} - {response.text[:500]}"
+
+    except AssertionError:
+        raise
     except Exception as e:
-        print(f"请求失败: {e}")
-        return False
+        assert False, f"Request failed: {e}"
 
 if __name__ == "__main__":
     test_backend_api()
