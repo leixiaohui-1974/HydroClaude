@@ -45,7 +45,7 @@ def setup_chinese_font():
             warnings.filterwarnings('ignore', category=UserWarning, module='matplotlib')
 
             return font_name
-        except:
+        except Exception:
             continue
 
     # 如果没有找到合适的中文字体，使用fallback方案
@@ -76,7 +76,7 @@ def get_chinese_font():
         try:
             font = FontProperties(fname=None, family=font_name)
             return font
-        except:
+        except Exception:
             continue
 
     return None

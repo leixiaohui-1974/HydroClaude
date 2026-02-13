@@ -35,14 +35,20 @@ export function createTray(mainWindow: BrowserWindow | null): void {
       click: () => {
         mainWindow?.show();
         mainWindow?.focus();
-        // TODO: 触发新建项目
+        mainWindow?.webContents.send('navigate', '/editor/new');
       },
     },
     { type: 'separator' },
     {
       label: '关于',
       click: () => {
-        // TODO: 显示关于对话框
+        const { dialog } = require('electron');
+        dialog.showMessageBox({
+          type: 'info',
+          title: '关于 HydroClaude',
+          message: 'HydroClaude',
+          detail: `水力学仿真软件\n版本: ${app.getVersion()}\n\n基于浅水方程的明渠水力学数值模拟平台`,
+        });
       },
     },
     {

@@ -9,13 +9,17 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from selenium import webdriver
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
-from selenium.webdriver.firefox.service import Service as FirefoxService
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.firefox import GeckoDriverManager
+try:
+    from selenium import webdriver
+    from selenium.webdriver.firefox.options import Options as FirefoxOptions
+    from selenium.webdriver.firefox.service import Service as FirefoxService
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+    from webdriver_manager.firefox import GeckoDriverManager
+except ImportError:
+    import pytest
+    pytest.skip("selenium not installed", allow_module_level=True)
 
 # 截图目录
 SCREENSHOT_DIR = Path(__file__).parent.parent.parent / "e2e_screenshots" / "selenium"

@@ -61,7 +61,7 @@ class PlotHelper:
         try:
             plt.rcParams['font.sans-serif'] = ['SimHei', 'DejaVu Sans']
             plt.rcParams['axes.unicode_minus'] = False
-        except:
+        except Exception:
             pass  # 忽略字体设置失败
 
     def apply_style(self):

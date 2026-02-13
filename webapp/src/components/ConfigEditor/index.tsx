@@ -6,8 +6,6 @@ import JsonEditor from '../JsonEditor';
 import ConfigPreview from './ConfigPreview';
 import type { SimulationConfig } from '@/services/simulations';
 
-const { TabPane } = Tabs;
-
 interface ConfigEditorProps {
   initialConfig?: SimulationConfig;
   onSave?: (config: SimulationConfig) => void;
@@ -151,57 +149,62 @@ const ConfigEditor: React.FC<ConfigEditorProps> = ({
         style={{ flex: 1, overflow: 'hidden' }}
         bodyStyle={{ height: '100%', padding: 0 }}
       >
-        <Tabs 
-          activeKey={activeTab} 
+        <Tabs
+          activeKey={activeTab}
           onChange={setActiveTab}
           style={{ height: '100%' }}
           tabBarStyle={{ padding: '0 16px' }}
-        >
-          <TabPane 
-            tab={
-              <span>
-                <FormOutlined />
-                表单编辑器
-              </span>
-            } 
-            key="form"
-            style={{ height: 'calc(100vh - 240px)', overflow: 'auto', padding: 16 }}
-          >
-            <FormEditor 
-              config={config} 
-              onChange={handleConfigChange} 
-            />
-          </TabPane>
-          
-          <TabPane 
-            tab={
-              <span>
-                <CodeOutlined />
-                JSON编辑器
-              </span>
-            } 
-            key="json"
-            style={{ height: 'calc(100vh - 240px)' }}
-          >
-            <JsonEditor 
-              config={config} 
-              onChange={handleConfigChange} 
-            />
-          </TabPane>
-          
-          <TabPane 
-            tab={
-              <span>
-                <EyeOutlined />
-                预览
-              </span>
-            } 
-            key="preview"
-            style={{ height: 'calc(100vh - 240px)', overflow: 'auto', padding: 16 }}
-          >
-            <ConfigPreview config={config} />
-          </TabPane>
-        </Tabs>
+          items={[
+            {
+              key: 'form',
+              label: (
+                <span>
+                  <FormOutlined />
+                  表单编辑器
+                </span>
+              ),
+              children: (
+                <div style={{ height: 'calc(100vh - 240px)', overflow: 'auto', padding: 16 }}>
+                  <FormEditor
+                    config={config}
+                    onChange={handleConfigChange}
+                  />
+                </div>
+              ),
+            },
+            {
+              key: 'json',
+              label: (
+                <span>
+                  <CodeOutlined />
+                  JSON编辑器
+                </span>
+              ),
+              children: (
+                <div style={{ height: 'calc(100vh - 240px)' }}>
+                  <JsonEditor
+                    config={config}
+                    onChange={handleConfigChange}
+                  />
+                </div>
+              ),
+            },
+            {
+              key: 'preview',
+              label: (
+                <span>
+                  <EyeOutlined />
+                  预览
+                </span>
+              ),
+              children: (
+                <div style={{ height: 'calc(100vh - 240px)', overflow: 'auto', padding: 16 }}>
+                  <ConfigPreview config={config} />
+                </div>
+              ),
+            },
+          ]}
+        />
       </Card>
     </div>
   );

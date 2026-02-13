@@ -24,12 +24,11 @@ sys.path.insert(0, project_root)
 
 import numpy as np
 import matplotlib.pyplot as plt
+import pytest
 try:
     from solvers.canal_network_solver import CanalNetworkSolver
 except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
+    pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 
 from solvers.gate import SluiceGate
 

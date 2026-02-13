@@ -30,7 +30,11 @@ from typing import Dict, Any, Optional, List
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from playwright.async_api import async_playwright, Page
+try:
+    from playwright.async_api import async_playwright, Page
+except ImportError:
+    import pytest
+    pytest.skip("playwright not installed", allow_module_level=True)
 
 # 配置
 FRONTEND_URL = "http://localhost:3000"

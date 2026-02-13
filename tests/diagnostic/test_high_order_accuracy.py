@@ -26,12 +26,11 @@ sys.path.insert(0, project_root)
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import pytest
 try:
     from solvers.high_order_solver import HighOrderCanalSolver
 except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
+    pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 
 
 

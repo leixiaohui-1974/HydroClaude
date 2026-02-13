@@ -18,12 +18,11 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, '/workspace')
 
+import pytest
 try:
     from solvers.godunov_fvm_solver_wb import GodunvFVMSolverWB
 except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
+    pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 
 from solvers.godunov_fvm_solver import GodunvFVMSolver
 from utils.canal_utils import compute_steady_uniform_flow

@@ -2,7 +2,7 @@
 认证相关的Pydantic模型
 """
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field
 
 
 class Token(BaseModel):
@@ -25,6 +25,6 @@ class LoginRequest(BaseModel):
 
 class RegisterRequest(BaseModel):
     """注册请求"""
-    username: str
-    email: str
-    password: str
+    username: str = Field(..., min_length=3, max_length=50)
+    email: EmailStr
+    password: str = Field(..., min_length=6, max_length=128)

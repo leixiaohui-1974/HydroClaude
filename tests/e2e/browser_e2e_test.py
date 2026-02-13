@@ -23,7 +23,11 @@ from datetime import datetime
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from playwright.sync_api import sync_playwright, Page, expect
+try:
+    from playwright.sync_api import sync_playwright, Page, expect
+except ImportError:
+    import pytest
+    pytest.skip("playwright not installed", allow_module_level=True)
 
 # 测试配置
 FRONTEND_URL = "http://localhost:3000"

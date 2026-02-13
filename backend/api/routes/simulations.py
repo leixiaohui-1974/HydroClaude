@@ -4,8 +4,8 @@
 提供仿真作业的创建、运行、状态查询和结果获取。
 """
 
-import traceback
-from datetime import datetime
+import logging
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import Optional
@@ -42,7 +42,7 @@ def _run_simulation(job_id: int, db_url: str):
             return
 
         job.status = "running"
-        job.started_at = datetime.utcnow()
+        job.started_at = datetime.now(timezone.utc)
         job.progress = 0.0
         db.commit()
 
@@ -118,7 +118,7 @@ def _run_simulation(job_id: int, db_url: str):
         next_output_time = output_interval
         snapshots = [{"t": 0.0, "h_max": float(np.max(h_init)), "h_min": float(np.min(h_init)),
                        "Q_max": float(np.max(Q_init))}]
-        max_steps = 100000
+        max_steps = solver_cfg.get("max_steps", 100000)
         step = 0
 
         while solver.t < end_time and step < max_steps:
@@ -174,18 +174,21 @@ def _run_simulation(job_id: int, db_url: str):
 
         job.status = "completed"
         job.progress = 100.0
-        job.completed_at = datetime.utcnow()
+        job.completed_at = datetime.now(timezone.utc)
         db.commit()
 
     except Exception as e:
+        logger = logging.getLogger(__name__)
+        logger.error(f"Simulation job {job_id} failed: {e}", exc_info=True)
         job = db.query(SimulationJob).filter(SimulationJob.id == job_id).first()
         if job:
             job.status = "failed"
             job.error = f"{type(e).__name__}: {str(e)}"
-            job.completed_at = datetime.utcnow()
+            job.completed_at = datetime.now(timezone.utc)
             db.commit()
     finally:
         db.close()
+        engine.dispose()
 
 
 def _parse_bc(bc_dict):
@@ -217,7 +220,7 @@ async def create_job(
                 detail="Project not found or does not belong to current user"
             )
 
-    name = data.name or f"Simulation-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+    name = data.name or f"Simulation-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
     job = SimulationJob(
         user_id=current_user.id,
         project_id=data.project_id,
@@ -241,8 +244,14 @@ async def list_jobs(
     current_user: User = Depends(get_current_active_user),
 ):
     """获取当前用户的仿真作业列表"""
+    valid_statuses = {"pending", "running", "completed", "failed"}
     query = db.query(SimulationJob).filter(SimulationJob.user_id == current_user.id)
     if status_filter:
+        if status_filter not in valid_statuses:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid status filter. Must be one of: {', '.join(valid_statuses)}"
+            )
         query = query.filter(SimulationJob.status == status_filter)
     total = query.count()
     items = query.order_by(SimulationJob.created_at.desc()).offset(skip).limit(limit).all()
@@ -283,7 +292,11 @@ async def run_job(
     if job.status == "running":
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Job is already running")
 
-    # 重置状态以便重新运行
+    # 清除旧结果并重置状态
+    old_result = db.query(SimulationResult).filter(SimulationResult.job_id == job_id).first()
+    if old_result:
+        db.delete(old_result)
+
     job.status = "pending"
     job.progress = 0.0
     job.error = None

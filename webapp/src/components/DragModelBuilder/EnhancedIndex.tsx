@@ -22,8 +22,6 @@ import {
 } from '@ant-design/icons';
 
 const { Option } = Select;
-const { TabPane } = Tabs;
-const { Panel } = Collapse;
 
 // 完整的水工结构类型
 const ALL_STRUCTURE_TYPES = {
@@ -393,230 +391,261 @@ const EnhancedDragModelBuilder: React.FC = () => {
                 </Space>
             }>
                 
-                <Tabs defaultActiveKey="canal">
-                    <TabPane tab="渠道配置" key="canal">
-                        <Form layout="vertical">
-                            <Row gutter={16}>
-                                <Col span={6}>
-                                    <Form.Item label="渠道形状">
-                                        <Select 
-                                            value={canalConfig.shape}
-                                            onChange={(val) => setCanalConfig({ ...canalConfig, shape: val })}
-                                        >
-                                            <Option value="rectangular">矩形</Option>
-                                            <Option value="trapezoidal">梯形</Option>
-                                            <Option value="circular">圆形</Option>
-                                        </Select>
-                                    </Form.Item>
-                                </Col>
-                                <Col span={6}>
-                                    <Form.Item label="长度(m)">
-                                        <InputNumber
-                                            value={canalConfig.length}
-                                            onChange={(val) => setCanalConfig({ ...canalConfig, length: val || 10000 })}
-                                            min={100}
-                                            max={100000}
-                                            step={1000}
-                                            style={{ width: '100%' }}
-                                        />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={6}>
-                                    <Form.Item label="宽度(m)">
-                                        <InputNumber
-                                            value={canalConfig.width}
-                                            onChange={(val) => setCanalConfig({ ...canalConfig, width: val || 10 })}
-                                            min={1}
-                                            max={100}
-                                            style={{ width: '100%' }}
-                                        />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={6}>
-                                    <Form.Item label="坡度">
-                                        <InputNumber
-                                            value={canalConfig.slope}
-                                            onChange={(val) => setCanalConfig({ ...canalConfig, slope: val || 0.001 })}
-                                            min={0.0001}
-                                            max={0.1}
-                                            step={0.0001}
-                                            style={{ width: '100%' }}
-                                        />
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                            <Row gutter={16}>
-                                <Col span={6}>
-                                    <Form.Item label="糙率">
-                                        <InputNumber
-                                            value={canalConfig.roughness}
-                                            onChange={(val) => setCanalConfig({ ...canalConfig, roughness: val || 0.025 })}
-                                            min={0.01}
-                                            max={0.1}
-                                            step={0.001}
-                                            style={{ width: '100%' }}
-                                        />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={6}>
-                                    <Form.Item label="网格数">
-                                        <InputNumber
-                                            value={canalConfig.nx}
-                                            onChange={(val) => setCanalConfig({ ...canalConfig, nx: val || 500 })}
-                                            min={10}
-                                            max={10000}
-                                            step={10}
-                                            style={{ width: '100%' }}
-                                        />
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                        </Form>
-                    </TabPane>
-                    
-                    <TabPane tab="流量配置" key="flow">
-                        <Form layout="vertical">
-                            <Row gutter={16}>
-                                <Col span={8}>
-                                    <Form.Item label="流量(m³/s)">
-                                        <InputNumber
-                                            value={flowConfig.flow_rate}
-                                            onChange={(val) => setFlowConfig({ ...flowConfig, flow_rate: val || 50 })}
-                                            min={0.1}
-                                            max={1000}
-                                            style={{ width: '100%' }}
-                                        />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={8}>
-                                    <Form.Item label="类型">
-                                        <Select
-                                            value={flowConfig.type}
-                                            onChange={(val) => setFlowConfig({ ...flowConfig, type: val })}
-                                        >
-                                            <Option value="steady">稳态</Option>
-                                            <Option value="unsteady">非稳态</Option>
-                                        </Select>
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                        </Form>
-                    </TabPane>
-                    
-                    <TabPane tab="边界条件" key="boundary">
-                        <Collapse>
-                            {boundaryConditions.map((bc, idx) => (
-                                <Panel header={`${bc.type === 'upstream' ? '上游' : '下游'}边界`} key={idx}>
-                                    <Form layout="inline">
-                                        <Form.Item label="条件类型">
-                                            <Select
-                                                value={bc.condition}
-                                                onChange={(val) => {
-                                                    const updated = [...boundaryConditions];
-                                                    updated[idx].condition = val;
-                                                    setBoundaryConditions(updated);
-                                                }}
-                                                style={{ width: 120 }}
-                                            >
-                                                <Option value="flow">流量</Option>
-                                                <Option value="depth">水深</Option>
-                                                <Option value="stage">水位</Option>
-                                            </Select>
-                                        </Form.Item>
-                                        <Form.Item label="值">
-                                            <InputNumber
-                                                value={bc.value}
-                                                onChange={(val) => {
-                                                    const updated = [...boundaryConditions];
-                                                    updated[idx].value = val || 0;
-                                                    setBoundaryConditions(updated);
-                                                }}
-                                            />
-                                        </Form.Item>
-                                    </Form>
-                                </Panel>
-                            ))}
-                        </Collapse>
-                    </TabPane>
-                </Tabs>
+                <Tabs
+                    defaultActiveKey="canal"
+                    items={[
+                        {
+                            key: 'canal',
+                            label: '渠道配置',
+                            children: (
+                                <Form layout="vertical">
+                                    <Row gutter={16}>
+                                        <Col span={6}>
+                                            <Form.Item label="渠道形状">
+                                                <Select
+                                                    value={canalConfig.shape}
+                                                    onChange={(val) => setCanalConfig({ ...canalConfig, shape: val })}
+                                                >
+                                                    <Option value="rectangular">矩形</Option>
+                                                    <Option value="trapezoidal">梯形</Option>
+                                                    <Option value="circular">圆形</Option>
+                                                </Select>
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={6}>
+                                            <Form.Item label="长度(m)">
+                                                <InputNumber
+                                                    value={canalConfig.length}
+                                                    onChange={(val) => setCanalConfig({ ...canalConfig, length: val || 10000 })}
+                                                    min={100}
+                                                    max={100000}
+                                                    step={1000}
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={6}>
+                                            <Form.Item label="宽度(m)">
+                                                <InputNumber
+                                                    value={canalConfig.width}
+                                                    onChange={(val) => setCanalConfig({ ...canalConfig, width: val || 10 })}
+                                                    min={1}
+                                                    max={100}
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={6}>
+                                            <Form.Item label="坡度">
+                                                <InputNumber
+                                                    value={canalConfig.slope}
+                                                    onChange={(val) => setCanalConfig({ ...canalConfig, slope: val || 0.001 })}
+                                                    min={0.0001}
+                                                    max={0.1}
+                                                    step={0.0001}
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
+                                    <Row gutter={16}>
+                                        <Col span={6}>
+                                            <Form.Item label="糙率">
+                                                <InputNumber
+                                                    value={canalConfig.roughness}
+                                                    onChange={(val) => setCanalConfig({ ...canalConfig, roughness: val || 0.025 })}
+                                                    min={0.01}
+                                                    max={0.1}
+                                                    step={0.001}
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={6}>
+                                            <Form.Item label="网格数">
+                                                <InputNumber
+                                                    value={canalConfig.nx}
+                                                    onChange={(val) => setCanalConfig({ ...canalConfig, nx: val || 500 })}
+                                                    min={10}
+                                                    max={10000}
+                                                    step={10}
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            ),
+                        },
+                        {
+                            key: 'flow',
+                            label: '流量配置',
+                            children: (
+                                <Form layout="vertical">
+                                    <Row gutter={16}>
+                                        <Col span={8}>
+                                            <Form.Item label="流量(m³/s)">
+                                                <InputNumber
+                                                    value={flowConfig.flow_rate}
+                                                    onChange={(val) => setFlowConfig({ ...flowConfig, flow_rate: val || 50 })}
+                                                    min={0.1}
+                                                    max={1000}
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={8}>
+                                            <Form.Item label="类型">
+                                                <Select
+                                                    value={flowConfig.type}
+                                                    onChange={(val) => setFlowConfig({ ...flowConfig, type: val })}
+                                                >
+                                                    <Option value="steady">稳态</Option>
+                                                    <Option value="unsteady">非稳态</Option>
+                                                </Select>
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            ),
+                        },
+                        {
+                            key: 'boundary',
+                            label: '边界条件',
+                            children: (
+                                <Collapse
+                                    items={boundaryConditions.map((bc, idx) => ({
+                                        key: String(idx),
+                                        label: `${bc.type === 'upstream' ? '上游' : '下游'}边界`,
+                                        children: (
+                                            <Form layout="inline">
+                                                <Form.Item label="条件类型">
+                                                    <Select
+                                                        value={bc.condition}
+                                                        onChange={(val) => {
+                                                            const updated = [...boundaryConditions];
+                                                            updated[idx].condition = val;
+                                                            setBoundaryConditions(updated);
+                                                        }}
+                                                        style={{ width: 120 }}
+                                                    >
+                                                        <Option value="flow">流量</Option>
+                                                        <Option value="depth">水深</Option>
+                                                        <Option value="stage">水位</Option>
+                                                    </Select>
+                                                </Form.Item>
+                                                <Form.Item label="值">
+                                                    <InputNumber
+                                                        value={bc.value}
+                                                        onChange={(val) => {
+                                                            const updated = [...boundaryConditions];
+                                                            updated[idx].value = val || 0;
+                                                            setBoundaryConditions(updated);
+                                                        }}
+                                                    />
+                                                </Form.Item>
+                                            </Form>
+                                        ),
+                                    }))}
+                                />
+                            ),
+                        },
+                    ]}
+                />
             </Card>
 
             {/* 结构工具箱 */}
             <Card title="🧰 水工结构工具箱 (11种类型)" style={{ marginTop: 20 }}>
-                <Tabs activeKey={activeCategory} onChange={setActiveCategory}>
-                    <TabPane tab="基础结构" key="basic">
-                        <Space size="large" wrap>
-                            {getStructuresByCategory('basic').map((structure) => (
-                                <div
-                                    key={structure.type}
-                                    className="structure-tool"
-                                    draggable
-                                    onDragStart={() => handleDragStart(structure.type)}
-                                    style={{
-                                        padding: '12px 24px',
-                                        border: `2px solid ${structure.color}`,
-                                        borderRadius: '8px',
-                                        cursor: 'grab',
-                                        backgroundColor: '#fafafa',
-                                        minWidth: '100px',
-                                        textAlign: 'center',
-                                    }}
-                                >
-                                    <div style={{ fontSize: '28px' }}>{structure.icon}</div>
-                                    <div style={{ fontSize: '13px', marginTop: 4 }}>{structure.label}</div>
-                                </div>
-                            ))}
-                        </Space>
-                    </TabPane>
-                    <TabPane tab="进阶结构" key="advanced">
-                        <Space size="large" wrap>
-                            {getStructuresByCategory('advanced').map((structure) => (
-                                <div
-                                    key={structure.type}
-                                    className="structure-tool"
-                                    draggable
-                                    onDragStart={() => handleDragStart(structure.type)}
-                                    style={{
-                                        padding: '12px 24px',
-                                        border: `2px solid ${structure.color}`,
-                                        borderRadius: '8px',
-                                        cursor: 'grab',
-                                        backgroundColor: '#fafafa',
-                                        minWidth: '100px',
-                                        textAlign: 'center',
-                                    }}
-                                >
-                                    <div style={{ fontSize: '28px' }}>{structure.icon}</div>
-                                    <div style={{ fontSize: '13px', marginTop: 4 }}>{structure.label}</div>
-                                </div>
-                            ))}
-                        </Space>
-                    </TabPane>
-                    <TabPane tab="管网结构" key="network">
-                        <Space size="large" wrap>
-                            {getStructuresByCategory('network').map((structure) => (
-                                <div
-                                    key={structure.type}
-                                    className="structure-tool"
-                                    draggable
-                                    onDragStart={() => handleDragStart(structure.type)}
-                                    style={{
-                                        padding: '12px 24px',
-                                        border: `2px solid ${structure.color}`,
-                                        borderRadius: '8px',
-                                        cursor: 'grab',
-                                        backgroundColor: '#fafafa',
-                                        minWidth: '100px',
-                                        textAlign: 'center',
-                                    }}
-                                >
-                                    <div style={{ fontSize: '28px' }}>{structure.icon}</div>
-                                    <div style={{ fontSize: '13px', marginTop: 4 }}>{structure.label}</div>
-                                </div>
-                            ))}
-                        </Space>
-                    </TabPane>
-                </Tabs>
+                <Tabs
+                    activeKey={activeCategory}
+                    onChange={setActiveCategory}
+                    items={[
+                        {
+                            key: 'basic',
+                            label: '基础结构',
+                            children: (
+                                <Space size="large" wrap>
+                                    {getStructuresByCategory('basic').map((structure) => (
+                                        <div
+                                            key={structure.type}
+                                            className="structure-tool"
+                                            draggable
+                                            onDragStart={() => handleDragStart(structure.type)}
+                                            style={{
+                                                padding: '12px 24px',
+                                                border: `2px solid ${structure.color}`,
+                                                borderRadius: '8px',
+                                                cursor: 'grab',
+                                                backgroundColor: '#fafafa',
+                                                minWidth: '100px',
+                                                textAlign: 'center',
+                                            }}
+                                        >
+                                            <div style={{ fontSize: '28px' }}>{structure.icon}</div>
+                                            <div style={{ fontSize: '13px', marginTop: 4 }}>{structure.label}</div>
+                                        </div>
+                                    ))}
+                                </Space>
+                            ),
+                        },
+                        {
+                            key: 'advanced',
+                            label: '进阶结构',
+                            children: (
+                                <Space size="large" wrap>
+                                    {getStructuresByCategory('advanced').map((structure) => (
+                                        <div
+                                            key={structure.type}
+                                            className="structure-tool"
+                                            draggable
+                                            onDragStart={() => handleDragStart(structure.type)}
+                                            style={{
+                                                padding: '12px 24px',
+                                                border: `2px solid ${structure.color}`,
+                                                borderRadius: '8px',
+                                                cursor: 'grab',
+                                                backgroundColor: '#fafafa',
+                                                minWidth: '100px',
+                                                textAlign: 'center',
+                                            }}
+                                        >
+                                            <div style={{ fontSize: '28px' }}>{structure.icon}</div>
+                                            <div style={{ fontSize: '13px', marginTop: 4 }}>{structure.label}</div>
+                                        </div>
+                                    ))}
+                                </Space>
+                            ),
+                        },
+                        {
+                            key: 'network',
+                            label: '管网结构',
+                            children: (
+                                <Space size="large" wrap>
+                                    {getStructuresByCategory('network').map((structure) => (
+                                        <div
+                                            key={structure.type}
+                                            className="structure-tool"
+                                            draggable
+                                            onDragStart={() => handleDragStart(structure.type)}
+                                            style={{
+                                                padding: '12px 24px',
+                                                border: `2px solid ${structure.color}`,
+                                                borderRadius: '8px',
+                                                cursor: 'grab',
+                                                backgroundColor: '#fafafa',
+                                                minWidth: '100px',
+                                                textAlign: 'center',
+                                            }}
+                                        >
+                                            <div style={{ fontSize: '28px' }}>{structure.icon}</div>
+                                            <div style={{ fontSize: '13px', marginTop: 4 }}>{structure.label}</div>
+                                        </div>
+                                    ))}
+                                </Space>
+                            ),
+                        },
+                    ]}
+                />
                 <div style={{ marginTop: 15, padding: '10px', background: '#f0f2f5', borderRadius: '4px' }}>
                     <Space>
                         <span style={{ color: '#666', fontSize: '13px' }}>
