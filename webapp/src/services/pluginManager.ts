@@ -8,7 +8,6 @@ import type {
   PluginAPI,
   PluginInfo,
   PluginManifest,
-  PluginState,
 } from '@/types/plugin';
 import { createPluginAPI } from './pluginAPI';
 

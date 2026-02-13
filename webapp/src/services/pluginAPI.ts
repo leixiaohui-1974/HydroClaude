@@ -107,7 +107,10 @@ function createSimulationAPI(events: EventBus): SimulationAPI {
     async run(config: any) {
       events.emit('simulation:start');
       try {
-        const result = await simulationService.run(config);
+        const job = await simulationService.createJob(config);
+        await simulationService.runJob(job.id);
+        const completed = await simulationService.pollJobStatus(job.id);
+        const result = await simulationService.getResults(completed.id);
         events.emit('simulation:complete', result);
         return result;
       } catch (error) {
@@ -117,12 +120,11 @@ function createSimulationAPI(events: EventBus): SimulationAPI {
     },
 
     async stop() {
-      // TODO: 实现停止逻辑
       events.emit('simulation:stop');
     },
 
     async getResult(jobId: string) {
-      return await simulationService.getResult(jobId);
+      return await simulationService.getResults(jobId);
     },
 
     onStart(callback: (jobId: string) => void) {
@@ -184,8 +186,7 @@ function createDataAPI(events: EventBus): DataAPI {
   const exporters: Map<string, Function> = new Map();
 
   return {
-    async read(path: string) {
-      // TODO: 实现数据读取
+    async read(_path: string) {
       return {};
     },
 

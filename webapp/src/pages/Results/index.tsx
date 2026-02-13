@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import { Card, Typography, Spin, Alert, Descriptions, Tag } from 'antd';
 import { ClockCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import ResultsViewer from '@/components/ResultsViewer';
-import type { SimulationResults } from '@/services/simulations';
 import simulationService from '@/services/simulations';
 
 const { Title } = Typography;

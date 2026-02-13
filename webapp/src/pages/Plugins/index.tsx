@@ -7,16 +7,13 @@ import {
   DownloadOutlined,
   StarOutlined,
 } from '@ant-design/icons';
-import type { MarketplacePlugin, PluginCategory, PluginSearchOptions } from '@/types/plugin';
+import type { MarketplacePlugin, PluginSearchOptions } from '@/types/plugin';
 import PluginCard from '@/components/PluginCard';
 import { pluginManager } from '@/services/pluginManager';
 import './index.css';
 
-// 临时：直到实际实现PluginsPage
-export { default } from './PluginsPage_temp';
-
-const { Content, Sider } = Layout;
-const { Title, Text } = Typography;
+const { Content } = Layout;
+const { Text } = Typography;
 
 /**
  * 插件市场页面

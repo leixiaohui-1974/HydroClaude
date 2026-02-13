@@ -19,7 +19,7 @@ interface ResultsTableProps {
   title?: string;
 }
 
-const ResultsTable: React.FC<ResultsTableProps> = ({ data, title = '仿真结果数据' }) => {
+const ResultsTable: React.FC<ResultsTableProps> = ({ data, title: _title = '仿真结果数据' }) => {
   const [searchText, setSearchText] = useState('');
   const [filterVariable, setFilterVariable] = useState<string>('all');
   const [pageSize, setPageSize] = useState(10);

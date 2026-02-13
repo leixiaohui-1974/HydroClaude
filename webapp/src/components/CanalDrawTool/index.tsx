@@ -1,9 +1,8 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Polyline, Marker, useMapEvents } from 'react-leaflet';
 import { Card, Space, Button, InputNumber, Tooltip, message } from 'antd';
 import {
   EditOutlined,
-  DeleteOutlined,
   SaveOutlined,
   UndoOutlined,
   RedoOutlined,
@@ -76,17 +75,17 @@ export interface CanalGeoJSON {
  * - 坡度计算
  * - 撤销/重做
  */
-const CanalDrawTool: React.FC<CanalDrawToolProps> = ({ onSave, initialData }) => {
+const CanalDrawTool: React.FC<CanalDrawToolProps> = ({ onSave, initialData: _initialData }) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [nodes, setNodes] = useState<CanalNode[]>([]);
-  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const [_draggingIndex, setDraggingIndex] = useState<number | null>(null);
   
   // 历史记录（撤销/重做）
   const [history, setHistory] = useState<CanalNode[][]>([[]]);
   const [historyIndex, setHistoryIndex] = useState(0);
   
   // 渠道属性
-  const [canalName, setCanalName] = useState('新建渠道');
+  const [canalName, _setCanalName] = useState('新建渠道');
   const [canalWidth, setCanalWidth] = useState(10);
   const [canalRoughness, setCanalRoughness] = useState(0.025);
   const [startElevation, setStartElevation] = useState(100);

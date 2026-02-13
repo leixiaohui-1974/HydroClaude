@@ -9,6 +9,11 @@ from .plugin import (
     RatingCreate, RatingInDB,
     CommentCreate, CommentInDB, CommentPublic
 )
+from .simulation import (
+    ProjectCreate, ProjectUpdate, ProjectPublic, ProjectList,
+    JobCreate, JobPublic, JobList,
+    ResultPublic,
+)
 
 __all__ = [
     "UserCreate", "UserUpdate", "UserInDB", "UserPublic", "UserMe",
@@ -16,4 +21,7 @@ __all__ = [
     "PluginCreate", "PluginUpdate", "PluginInDB", "PluginPublic", "PluginList",
     "RatingCreate", "RatingInDB",
     "CommentCreate", "CommentInDB", "CommentPublic",
+    "ProjectCreate", "ProjectUpdate", "ProjectPublic", "ProjectList",
+    "JobCreate", "JobPublic", "JobList",
+    "ResultPublic",
 ]

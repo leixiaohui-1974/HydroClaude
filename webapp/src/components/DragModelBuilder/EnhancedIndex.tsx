@@ -13,12 +13,12 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import { 
-    Card, Button, InputNumber, Select, message, Space, Divider, 
-    Modal, Tabs, Switch, Slider, Form, Row, Col, Tag, Collapse 
+    Card, Button, InputNumber, Select, message, Space, Divider,
+    Modal, Tabs, Form, Row, Col, Tag, Collapse
 } from 'antd';
 import {
-    PlusOutlined, DeleteOutlined, EditOutlined, SaveOutlined, 
-    ExportOutlined, EyeOutlined, SettingOutlined, CheckCircleOutlined
+    DeleteOutlined, EditOutlined,
+    ExportOutlined, EyeOutlined, CheckCircleOutlined
 } from '@ant-design/icons';
 
 const { Option } = Select;

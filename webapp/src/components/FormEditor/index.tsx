@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, InputNumber, Select, Card, Space, Collapse, Button, Row, Col } from 'antd';
+import { Form, InputNumber, Select, Card, Space, Collapse, Button, Row, Col } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { SimulationConfig } from '@/services/simulations';
 

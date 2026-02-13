@@ -6,13 +6,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
 from .database import init_db
-from .routes import auth, users, plugins
+from .routes import auth, users, plugins, projects, simulations
 
 # 创建FastAPI应用
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
-    description="HydroClaude社区平台API",
+    description="HydroClaude水力学仿真平台API",
     docs_url="/docs" if settings.DEBUG else None,
     redoc_url="/redoc" if settings.DEBUG else None,
 )
@@ -30,6 +30,8 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api")
 app.include_router(users.router, prefix="/api")
 app.include_router(plugins.router, prefix="/api")
+app.include_router(projects.router, prefix="/api")
+app.include_router(simulations.router, prefix="/api")
 
 
 @app.on_event("startup")

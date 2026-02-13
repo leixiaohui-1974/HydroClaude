@@ -247,18 +247,82 @@ class SystemConfig:
         with open(filepath, 'w', encoding='utf-8') as f:
             yaml.dump(data, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
 
-    def create_system(self):
+    def create_system(self) -> Dict[str, Any]:
         """
         根据配置创建实际系统对象
 
         Returns:
-            系统对象（具体类型取决于配置）
+            系统对象字典，包含:
+            - 'reservoirs': {id: Reservoir} 水库对象
+            - 'canals': {id: Canal} 渠道对象
+            - 'controllers': {id: PIDController} 控制器对象
+            - 'topology': 拓扑连接列表
+            - 'config': 原始配置引用
 
         注意: 这是一个工厂方法，根据配置创建合适的系统对象
         """
-        # TODO: 实现系统创建逻辑
-        # 这需要根据具体的系统类型（水库、渠道、混合等）创建相应对象
-        raise NotImplementedError("System creation not yet implemented")
+        from physics.reservoir import Reservoir
+        from physics.canal import Canal
+        from control.pid_controller import PIDController as PIDCtrl, PIDConfig as PIDCfg
+
+        system: Dict[str, Any] = {
+            'reservoirs': {},
+            'canals': {},
+            'controllers': {},
+            'topology': self.topology,
+            'config': self,
+        }
+
+        # 创建水库对象
+        for res_cfg in self.reservoirs:
+            reservoir = Reservoir(
+                reservoir_id=res_cfg.id,
+                total_capacity=res_cfg.total_capacity,
+                dead_storage=res_cfg.dead_storage,
+                min_level=res_cfg.min_level,
+                normal_level=res_cfg.normal_level,
+                flood_limit_level=res_cfg.flood_level,
+                design_level=res_cfg.design_level,
+                ecological_flow=res_cfg.ecological_flow,
+                has_turbine=res_cfg.turbine_capacity > 0,
+                turbine_capacity=res_cfg.turbine_capacity,
+                turbine_efficiency=res_cfg.turbine_efficiency,
+            )
+            system['reservoirs'][res_cfg.id] = reservoir
+
+        # 创建渠道对象
+        for canal_cfg in self.canals:
+            width = canal_cfg.width
+            area = width * 2.0  # 默认截面积（宽度x估计水深）
+            canal = Canal(
+                name=canal_cfg.id,
+                volume_min=0.0,
+                volume_max=width * canal_cfg.length * 10.0,
+                area=area,
+                length=canal_cfg.length,
+                slope=canal_cfg.slope,
+                n_sections=canal_cfg.nx,
+                manning_n=canal_cfg.roughness,
+                width=width,
+                initial_depth=canal_cfg.initial_depth if canal_cfg.initial_depth else 1.0,
+                initial_flow=canal_cfg.initial_flow if canal_cfg.initial_flow else 0.0,
+            )
+            system['canals'][canal_cfg.id] = canal
+
+        # 创建PID控制器对象
+        for ctrl_cfg in self.controllers:
+            pid_config = PIDCfg(
+                kp=ctrl_cfg.Kp,
+                ki=ctrl_cfg.Ki,
+                kd=ctrl_cfg.Kd,
+                output_min=ctrl_cfg.output_min,
+                output_max=ctrl_cfg.output_max,
+            )
+            controller = PIDCtrl(pid_config, name=ctrl_cfg.id)
+            controller.set_setpoint(ctrl_cfg.setpoint)
+            system['controllers'][ctrl_cfg.id] = controller
+
+        return system
 
     def validate(self) -> List[str]:
         """

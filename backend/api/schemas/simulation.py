@@ -1,0 +1,91 @@
+"""
+仿真相关的Pydantic模型
+"""
+
+from pydantic import BaseModel
+from typing import Optional, Any, Dict, List
+from datetime import datetime
+
+
+# ====== Project Schemas ======
+
+class ProjectCreate(BaseModel):
+    """创建项目请求"""
+    name: str
+    description: Optional[str] = None
+    config: Optional[Dict[str, Any]] = None
+
+
+class ProjectUpdate(BaseModel):
+    """更新项目请求"""
+    name: Optional[str] = None
+    description: Optional[str] = None
+    config: Optional[Dict[str, Any]] = None
+    status: Optional[str] = None
+
+
+class ProjectPublic(BaseModel):
+    """项目公开信息"""
+    id: int
+    name: str
+    description: Optional[str] = None
+    config: Optional[Dict[str, Any]] = None
+    status: str
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+class ProjectList(BaseModel):
+    """项目列表"""
+    total: int
+    items: List[ProjectPublic]
+
+
+# ====== Simulation Job Schemas ======
+
+class JobCreate(BaseModel):
+    """创建仿真作业请求"""
+    name: Optional[str] = None
+    config: Dict[str, Any]
+    project_id: Optional[int] = None
+
+
+class JobPublic(BaseModel):
+    """仿真作业公开信息"""
+    id: int
+    name: str
+    config: Dict[str, Any]
+    status: str
+    progress: float
+    error: Optional[str] = None
+    project_id: Optional[int] = None
+    created_at: Optional[datetime] = None
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+class JobList(BaseModel):
+    """作业列表"""
+    total: int
+    items: List[JobPublic]
+
+
+# ====== Simulation Result Schemas ======
+
+class ResultPublic(BaseModel):
+    """仿真结果公开信息"""
+    id: int
+    job_id: int
+    summary: Optional[Dict[str, Any]] = None
+    time_series: Optional[Dict[str, Any]] = None
+    solver_metadata: Optional[Dict[str, Any]] = None
+    created_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True

@@ -142,7 +142,11 @@ const MapViewer: React.FC<MapViewerProps> = ({
           zoom={zoom}
           style={{ height: height, width: '100%' }}
           zoomControl={false}
-          whenCreated={handleMapCreated}
+          ref={(mapInstance: any) => {
+            if (mapInstance) {
+              handleMapCreated(mapInstance);
+            }
+          }}
         >
           {/* 底图层 */}
           <TileLayer

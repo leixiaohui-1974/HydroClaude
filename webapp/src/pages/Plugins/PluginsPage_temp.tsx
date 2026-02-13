@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Result, Button, Typography } from 'antd';
+import { Layout, Result, Typography } from 'antd';
 import { RocketOutlined } from '@ant-design/icons';
 
 const { Content } = Layout;

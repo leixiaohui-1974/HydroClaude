@@ -11,7 +11,7 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import { Card, Button, InputNumber, Select, message, Space, Divider, Modal } from 'antd';
-import { PlusOutlined, DeleteOutlined, EditOutlined, SaveOutlined, ExportOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, ExportOutlined } from '@ant-design/icons';
 import './styles.css';
 
 const { Option } = Select;
