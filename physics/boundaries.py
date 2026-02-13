@@ -49,7 +49,7 @@ class GateBoundary(BoundaryCondition):
         try:
             solution = fsolve(equations, [h_up, h_down, (Q_up + Q_down) / 2])
             return solution[1], solution[2]
-        except:
+        except Exception:
             return h_down, (Q_up + Q_down) / 2
 
 class ValveBoundary(BoundaryCondition):
@@ -73,21 +73,28 @@ class ValveBoundary(BoundaryCondition):
         C_plus = H_up + (a / (g * A)) * Q_up
         C_minus = H_down - (a / (g * A)) * Q_down
 
+        # Solve using C+ and C- characteristics with valve equation
+        # C+: H_up_valve = C_plus - B*Q_valve  where B = a/(g*A)
+        # C-: H_down_valve = C_minus + B*Q_valve
+        # Valve: Q_valve = Cv * opening * sqrt(H_up_valve - H_down_valve)
+        B_coeff = a / (g * A)
+
         def equations(vars):
-            H_valve, Q_valve = vars
-            eq1 = H_valve - (C_plus - (a / (g * A)) * Q_valve)
-            eq2 = H_valve - (C_minus + (a / (g * A)) * Q_valve)
-
-            delta_P = max(0.01, (C_plus - C_minus) / 2)
-            Q_capacity = self.Cv * self.opening * np.sqrt(delta_P)
-            eq3 = Q_valve - Q_capacity
-
-            return [eq1 + eq2, eq3]
+            Q_valve = vars[0]
+            H_up_valve = C_plus - B_coeff * Q_valve
+            H_down_valve = C_minus + B_coeff * Q_valve
+            delta_H = max(1e-6, H_up_valve - H_down_valve)
+            Q_capacity = self.Cv * self.opening * np.sqrt(delta_H)
+            return [Q_valve - Q_capacity]
 
         try:
-            solution = fsolve(equations, [H_up, Q_up])
-            return solution[0], solution[1]
-        except:
+            solution = fsolve(equations, [(Q_up + Q_down) / 2])
+            Q_valve = solution[0]
+            H_up_valve = C_plus - B_coeff * Q_valve
+            H_down_valve = C_minus + B_coeff * Q_valve
+            H_valve = (H_up_valve + H_down_valve) / 2
+            return H_valve, Q_valve
+        except Exception:
             return (H_up + H_down) / 2, (Q_up + Q_down) / 2
 
 class PumpBoundary(BoundaryCondition):
@@ -127,5 +134,5 @@ class PumpBoundary(BoundaryCondition):
         try:
             solution = fsolve(equations, [Q_in, 30.0])
             return H_in + solution[1], solution[0]
-        except:
+        except Exception:
             return H_out, Q_in

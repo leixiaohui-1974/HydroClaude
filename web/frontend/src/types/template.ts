@@ -20,6 +20,10 @@ export type TemplateCategory =
   | 'drainage'       // 排水
   | 'irrigation'     // 灌溉
   | 'urban'          // 城市水文
+  | 'pressurized'    // 压力管流
+  | 'structures'     // 水工建筑物
+  | 'control'        // 控制系统
+  | 'water-quality'  // 水质
   | 'custom';        // 自定义
 
 /**
@@ -311,6 +315,10 @@ export const TEMPLATE_CATEGORY_NAMES: Record<TemplateCategory, { en: string; cn:
   'drainage': { en: 'Drainage', cn: '排水' },
   'irrigation': { en: 'Irrigation', cn: '灌溉' },
   'urban': { en: 'Urban Hydrology', cn: '城市水文' },
+  'pressurized': { en: 'Pressurized Flow', cn: '压力管流' },
+  'structures': { en: 'Hydraulic Structures', cn: '水工建筑物' },
+  'control': { en: 'Control Systems', cn: '控制系统' },
+  'water-quality': { en: 'Water Quality', cn: '水质' },
   'custom': { en: 'Custom', cn: '自定义' }
 };
 

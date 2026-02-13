@@ -187,7 +187,7 @@ export function exportMetricsCSV(
     ['Max Depth', formatNumber(result.metrics.max_depth, precision), 'm'],
     ['Min Depth', formatNumber(result.metrics.min_depth, precision), 'm'],
     ['Max Velocity', formatNumber(result.metrics.max_velocity, precision), 'm/s'],
-    ['Max Discharge', formatNumber(result.metrics.max_discharge, precision), 'm³/s'],
+    ['Max Discharge', formatNumber(result.metrics.max_discharge ?? 0, precision), 'm³/s'],
     ['Max Froude Number', formatNumber(result.metrics.max_froude, precision), '-'],
     ['Mean Depth (Final)', formatNumber(result.metrics.mean_depth_final, precision), 'm'],
     ['Mean Discharge (Final)', formatNumber(result.metrics.mean_discharge_final, precision), 'm³/s'],

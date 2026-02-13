@@ -9,8 +9,11 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import type { HydraulicModel } from '../../types/model.types';
+import type { HydraulicModel, ModelNode } from '../../types/model.types';
+import { NodeType } from '../../types/model.types';
 import { STORAGE_KEYS } from '../../../../types/model-io';
+
+declare var global: typeof globalThis;
 
 // ============= Mock Data =============
 
@@ -21,11 +24,15 @@ const createMockModel = (overrides?: Partial<HydraulicModel>): HydraulicModel =>
   nodes: [
     {
       id: 'node-1',
-      type: 'channel',
+      type: NodeType.CHANNEL,
       position: { x: 100, y: 200 },
       data: {
         name: 'Channel 1',
         width: 5.0,
+        length: 100,
+        slope: 0.001,
+        manning_n: 0.025,
+        n_cells: 50,
         validated: true,
         errors: [],
         warnings: []
@@ -387,17 +394,17 @@ describe('ModelLibrary - CRUD操作', () => {
       nodes: [
         {
           id: 'node-1',
-          type: 'channel',
+          type: NodeType.CHANNEL,
           position: { x: 100, y: 200 },
-          data: { name: 'Node 1', validated: true, errors: [], warnings: [] }
+          data: { name: 'Node 1', width: 5, length: 100, slope: 0.001, manning_n: 0.025, n_cells: 50, validated: true, errors: [], warnings: [] }
         },
         {
           id: 'node-2',
-          type: 'channel',
+          type: NodeType.CHANNEL,
           position: { x: 300, y: 200 },
-          data: { name: 'Node 2', validated: true, errors: [], warnings: [] }
+          data: { name: 'Node 2', width: 5, length: 100, slope: 0.001, manning_n: 0.025, n_cells: 50, validated: true, errors: [], warnings: [] }
         }
-      ],
+      ] as ModelNode[],
       edges: [
         {
           id: 'edge-1',
@@ -528,19 +535,21 @@ describe('ModelLibrary - 综合测试', () => {
       nodes: [
         {
           id: 'node-1',
-          type: 'channel',
+          type: NodeType.CHANNEL,
           position: { x: 100, y: 200 },
           data: {
             name: 'Channel 1',
             width: 5.0,
             length: 100.0,
             slope: 0.001,
+            manning_n: 0.025,
+            n_cells: 50,
             validated: true,
             errors: [],
             warnings: []
           }
         }
-      ],
+      ] as ModelNode[],
       edges: [],
       validated: true,
       version: 1

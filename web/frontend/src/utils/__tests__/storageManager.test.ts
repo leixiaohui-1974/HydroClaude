@@ -21,6 +21,9 @@ import {
 } from '../storageManager';
 import { STORAGE_KEYS } from '../../types/model-io';
 import type { HydraulicModel } from '../../features/modeling/types/model.types';
+import { NodeType } from '../../features/modeling/types/model.types';
+
+declare var global: typeof globalThis;
 
 // ============= Test Setup =============
 
@@ -96,7 +99,7 @@ const createMockModel = (id: string, name: string, updatedAt?: string): Hydrauli
   nodes: [
     {
       id: `node-${id}`,
-      type: 'channel',
+      type: NodeType.CHANNEL,
       position: { x: 100, y: 200 },
       data: {
         name: `Node ${id}`,
@@ -422,7 +425,7 @@ describe('storageManager - cleanupLargeModels', () => {
     const largeModel = createMockModel('large', 'Large Model');
     largeModel.nodes = Array.from({ length: 100 }, (_, i) => ({
       id: `node-${i}`,
-      type: 'channel',
+      type: NodeType.CHANNEL,
       position: { x: i * 10, y: i * 10 },
       data: {
         name: `Node ${i}`,

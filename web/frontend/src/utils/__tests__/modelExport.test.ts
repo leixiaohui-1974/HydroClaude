@@ -16,6 +16,7 @@ import {
   getExportStatistics
 } from '../modelExport';
 import type { HydraulicModel } from '../../types/model-io';
+import { NodeType } from '../../features/modeling/types/model.types';
 
 // ============= Mock Data =============
 
@@ -26,7 +27,7 @@ const createMockModel = (overrides?: Partial<HydraulicModel>): HydraulicModel =>
   nodes: [
     {
       id: 'node-1',
-      type: 'channel',
+      type: NodeType.CHANNEL,
       position: { x: 100, y: 200 },
       data: {
         name: 'Channel 1',
@@ -42,7 +43,7 @@ const createMockModel = (overrides?: Partial<HydraulicModel>): HydraulicModel =>
     },
     {
       id: 'node-2',
-      type: 'channel',
+      type: NodeType.CHANNEL,
       position: { x: 300, y: 200 },
       data: {
         name: 'Channel 2',
@@ -158,14 +159,14 @@ describe('modelExport - exportModelNodesCSV', () => {
       nodes: [
         {
           id: 'node-empty',
-          type: 'channel',
+          type: NodeType.CHANNEL,
           position: { x: 0, y: 0 },
           data: {
             name: 'Empty Node',
             validated: false,
             errors: [],
             warnings: []
-          }
+          } as any
         }
       ]
     });
@@ -295,11 +296,11 @@ describe('modelExport - validateModelForExport', () => {
   it('应该对大型模型发出警告', () => {
     const largeNodes = Array.from({ length: 1500 }, (_, i) => ({
       id: `node-${i}`,
-      type: 'channel',
+      type: NodeType.CHANNEL,
       position: { x: i, y: i },
-      data: { name: `Node ${i}`, validated: true, errors: [], warnings: [] }
+      data: { name: `Node ${i}`, validated: true, errors: [] as string[], warnings: [] as string[] } as any
     }));
-    const model = createMockModel({ nodes: largeNodes });
+    const model = createMockModel({ nodes: largeNodes as any });
     const result = validateModelForExport(model);
 
     expect(result.valid).toBe(true);
@@ -345,7 +346,7 @@ describe('modelExport - estimateExportSize', () => {
     const largeModel = createMockModel({
       nodes: Array.from({ length: 100 }, (_, i) => ({
         id: `node-${i}`,
-        type: 'channel',
+        type: NodeType.CHANNEL,
         position: { x: i * 10, y: i * 10 },
         data: {
           name: `Channel ${i}`,

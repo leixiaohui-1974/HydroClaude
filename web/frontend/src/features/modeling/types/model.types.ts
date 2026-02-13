@@ -12,6 +12,7 @@ import { Node } from 'reactflow';
  */
 export enum NodeType {
   CANAL = 'canal',                   // 明渠
+  CHANNEL = 'channel',               // 渠道
   GATE = 'gate',                     // 闸门
   WEIR = 'weir',                     // 堰
   BOUNDARY_FLOW = 'boundary_flow',   // 流量边界
@@ -30,6 +31,14 @@ export interface CanalNodeData {
   slope: number;                     // 坡度 (无量纲)
   manning_n: number;                 // 曼宁系数
   n_cells: number;                   // 网格数
+
+  // 断面扩展参数
+  side_slope?: number;               // 边坡系数（梯形断面）
+  diameter?: number;                 // 直径 (m)（圆形断面）
+  main_width?: number;               // 主槽宽度 (m)（复式断面）
+  floodplain_width?: number;         // 滩地宽度 (m)（复式断面）
+  bank_height?: number;              // 岸高 (m)（复式断面）
+  roughness?: number;                // 粗糙度（管道）
 
   // 初始条件
   initial_depth?: number;            // 初始水深 (m)
@@ -50,6 +59,22 @@ export interface GateNodeData {
   discharge_coeff: number;           // 流量系数
   width: number;                     // 闸门宽度 (m)
   crest_height?: number;             // 堰顶高程 (m, 可选)
+  gate_type?: string;                // 闸门类型
+
+  // 泵站相关（泵站暂用GATE类型）
+  flow_rate?: number;                // 流量 (m³/s)
+  head?: number;                     // 扬程 (m)
+  num_pumps?: number;                // 泵数量
+
+  // 涵洞相关
+  diameter?: number;                 // 直径 (m)
+  length?: number;                   // 长度 (m)
+  inlet_coeff?: number;              // 进口系数
+
+  // 桥梁相关
+  span_width?: number;               // 跨度宽度 (m)
+  pier_width?: number;               // 桥墩宽度 (m)
+  num_piers?: number;                // 桥墩数量
 
   validated: boolean;
   errors: string[];
@@ -65,6 +90,7 @@ export interface WeirNodeData {
   discharge_coeff: number;           // 流量系数
   width: number;                     // 堰宽 (m)
   crest_elevation: number;           // 堰顶高程 (m)
+  drop_height?: number;              // 跌水高度 (m)
 
   validated: boolean;
   errors: string[];
@@ -78,6 +104,7 @@ export interface BoundaryNodeData {
   name: string;                      // 名称
   boundary_type: 'flow' | 'depth';   // 边界类型
   value: number;                     // 边界值
+  elevation?: number;                // 高程 (m)
 
   // 时间序列 (可选)
   time_series?: Array<{
@@ -217,7 +244,7 @@ export interface ComponentTemplate {
   name: string;                      // 显示名称
   description: string;               // 描述
   icon: string;                      // 图标
-  defaultData: Partial<NodeData>;    // 默认数据
+  defaultData: Partial<CanalNodeData & GateNodeData & WeirNodeData & BoundaryNodeData>;    // 默认数据
 }
 
 // ============= 配置转换 =============

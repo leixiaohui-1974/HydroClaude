@@ -66,9 +66,9 @@ class Pump(HydraulicComponent):
         self.eta_max = max_efficiency
 
         # Characteristic curve parameters (parabolic)
-        # H = H0 - a*Q^2
+        # H = H0 - a*Q^2 (a is positive for a drooping curve)
         self.H0 = rated_head * shutoff_head_ratio  # Shutoff head (Q=0)
-        self.a = -(self.H0 - rated_head) / (actual_rated_flow ** 2)
+        self.a = (self.H0 - rated_head) / (actual_rated_flow ** 2)
 
         # Efficiency curve parameters
         self.Q_eta_max = actual_rated_flow  # Flow at maximum efficiency
@@ -113,7 +113,7 @@ class Pump(HydraulicComponent):
         Q_rated = Q / speed_ratio if speed_ratio > 0.01 else 0.0
 
         # Parabolic characteristic: H = H0 - a*Q^2
-        H_rated = self.H0 + self.a * (Q_rated ** 2)
+        H_rated = self.H0 - self.a * (Q_rated ** 2)
         H_rated = max(0.0, H_rated)
 
         # Head scales with speed squared: H1/H2 = (n1/n2)^2
@@ -214,7 +214,7 @@ class Pump(HydraulicComponent):
             # Flat curve, use rated flow
             return self.rated_flow * speed_ratio
 
-        Q_rated_sq = (self.H0 - H_system_rated) / abs(self.a)
+        Q_rated_sq = (self.H0 - H_system_rated) / self.a
 
         if Q_rated_sq < 0:
             return 0.0
@@ -242,12 +242,19 @@ class Pump(HydraulicComponent):
         """
         # Parse speed input
         speed_input = inputs.get('speed', self.rated_speed)
+        speed_unit = inputs.get('speed_unit', 'auto')
 
-        # If speed is in percentage (0-100), convert to rpm
-        if speed_input <= 100.0:
+        # Determine speed: explicit unit or auto-detect based on range
+        if speed_unit == 'percent':
             target_speed = self.rated_speed * speed_input / 100.0
-        else:
+        elif speed_unit == 'rpm':
             target_speed = speed_input
+        else:
+            # Auto-detect: treat as percentage if <= 100, else as rpm
+            if speed_input <= 100.0:
+                target_speed = self.rated_speed * speed_input / 100.0
+            else:
+                target_speed = speed_input
 
         self.state.speed = target_speed
 
@@ -285,12 +292,19 @@ class Pump(HydraulicComponent):
             Updated state
         """
         speed_input = inputs.get('speed', 100.0)
+        speed_unit = inputs.get('speed_unit', 'auto')
 
-        # Convert percentage to ratio
-        if speed_input <= 100.0:
+        # Convert to speed ratio
+        if speed_unit == 'percent':
             speed_ratio = speed_input / 100.0
-        else:
+        elif speed_unit == 'rpm':
             speed_ratio = speed_input / self.rated_speed
+        else:
+            # Auto-detect: treat as percentage if <= 100, else as rpm
+            if speed_input <= 100.0:
+                speed_ratio = speed_input / 100.0
+            else:
+                speed_ratio = speed_input / self.rated_speed
 
         # Linear approximation
         self.state.flow = self.rated_flow * speed_ratio

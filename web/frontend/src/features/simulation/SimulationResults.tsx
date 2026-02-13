@@ -57,12 +57,13 @@ const SimulationResults = ({ result }: SimulationResultsProps) => {
 
   // Prepare data for current time step
   const currentData = useMemo(() => {
+    const safeIndex = Math.min(timeIndex, (result.time?.length ?? 1) - 1);
     return {
-      x: result.x,
-      h: result.h[timeIndex],
-      Q: result.Q[timeIndex],
-      V: result.V[timeIndex],
-      time: result.time[timeIndex]
+      x: result.x ?? [],
+      h: result.h?.[safeIndex] ?? [],
+      Q: result.Q?.[safeIndex] ?? [],
+      V: result.V?.[safeIndex] ?? [],
+      time: result.time?.[safeIndex] ?? 0
     };
   }, [result, timeIndex]);
 
@@ -409,7 +410,7 @@ const SimulationResults = ({ result }: SimulationResultsProps) => {
                   {result.metrics.pump_position?.toFixed(1)} m
                 </Descriptions.Item>
                 <Descriptions.Item label="总抽水量">
-                  {formatScientific(result.metrics.total_pumped_volume)} m³
+                  {formatScientific(result.metrics.total_pumped_volume ?? 0)} m³
                 </Descriptions.Item>
               </>
             )}

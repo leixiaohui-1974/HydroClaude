@@ -33,9 +33,11 @@ class TestModelConfig:
                 'nx': 101,
                 'adaptive': False
             },
-            'boundary': {
-                'upstream': {'type': 'flow', 'value': 10.0},
-                'downstream': {'type': 'depth', 'value': 2.0}
+            'boundary_conditions': {
+                'upstream_type': 'flow',
+                'upstream_value': 10.0,
+                'downstream_type': 'depth',
+                'downstream_value': 2.0
             },
             'simulation': {
                 'mode': 'steady'
@@ -68,7 +70,7 @@ class TestModelConfig:
         assert canal_params['B'] == 10.0
         assert canal_params['S0'] == 0.001
         assert canal_params['n'] == 0.025
-        assert canal_params['h0'] == 2.0
+        assert canal_params['g'] == 9.81
 
     def test_get_grid_config(self, sample_config_file):
         """测试获取网格配置"""
@@ -83,17 +85,17 @@ class TestModelConfig:
         config = ModelConfig(sample_config_file)
         boundary = config.get_boundary_conditions()
 
-        assert boundary['upstream']['type'] == 'flow'
-        assert boundary['upstream']['value'] == 10.0
-        assert boundary['downstream']['type'] == 'depth'
-        assert boundary['downstream']['value'] == 2.0
+        assert boundary['upstream_type'] == 'flow'
+        assert boundary['upstream_value'] == 10.0
+        assert boundary['downstream_type'] == 'depth'
+        assert boundary['downstream_value'] == 2.0
 
     def test_get_simulation_config(self, sample_config_file):
         """测试获取仿真配置"""
         config = ModelConfig(sample_config_file)
         sim_config = config.get_simulation_config()
 
-        assert sim_config['mode'] == 'steady'
+        assert sim_config['mode'] == 'steady'  # 'mode' is passed through as extra key
 
     def test_get_output_config(self, sample_config_file):
         """测试获取输出配置"""
@@ -101,7 +103,7 @@ class TestModelConfig:
         output_config = config.get_output_config()
 
         assert 'directory' in output_config
-        assert output_config['verbose'] == True
+        assert 'prefix' in output_config
 
     def test_get_with_dot_notation(self, sample_config_file):
         """测试点号分隔键访问"""

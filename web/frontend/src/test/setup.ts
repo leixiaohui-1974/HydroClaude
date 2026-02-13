@@ -3,6 +3,8 @@ import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
+declare var global: typeof globalThis;
+
 // Cleanup after each test case
 afterEach(() => {
   cleanup();

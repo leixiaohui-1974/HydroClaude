@@ -87,7 +87,8 @@ class Spillway(HydraulicStructure):
 
         # 预计算常数
         self.sqrt_2g = np.sqrt(2.0 * self.g)
-        self.C_weir_sqrt2g = self.C_weir * self.sqrt_2g
+        # 注意: WES标准堰流系数C=2.0-2.2已经包含了sqrt(2g)因子
+        # 标准公式为 Q = C * L * H^(3/2)，不需要再乘以sqrt(2g)
 
         # 检查gate_opening类型
         self.gate_opening_is_callable = callable(gate_opening)
@@ -150,8 +151,8 @@ class Spillway(HydraulicStructure):
         if not self.has_gate or e is None or e >= H:
             # 情况1：无闸门，或闸门全开，或开度大于水头 → 堰流
             flow_type = 'weir_flow'
-            # WES堰流：Q = C * L * H^(3/2) * sqrt(2g)
-            Q = self.C_weir_sqrt2g * self.length * (H ** 1.5)
+            # WES堰流：Q = C * L * H^(3/2)  (C已包含sqrt(2g)因子)
+            Q = self.C_weir * self.length * (H ** 1.5)
 
         else:
             # 情况2：闸门部分开 → 孔流
@@ -203,10 +204,10 @@ class Spillway(HydraulicStructure):
 
         # 根据流态计算导数
         if not self.has_gate or e is None or e >= H:
-            # 堰流：Q = C * L * sqrt(2g) * H^(3/2)
-            # dQ/dH = C * L * sqrt(2g) * (3/2) * H^(1/2)
-            # dQ/dh_up = dQ/dH = 1.5 * C * L * sqrt(2g) * sqrt(H)
-            dQ_dh_up = 1.5 * self.C_weir_sqrt2g * self.length * np.sqrt(H)
+            # 堰流：Q = C * L * H^(3/2)
+            # dQ/dH = C * L * (3/2) * H^(1/2)
+            # dQ/dh_up = dQ/dH = 1.5 * C * L * sqrt(H)
+            dQ_dh_up = 1.5 * self.C_weir * self.length * np.sqrt(H)
             dQ_dh_down = 0.0  # 堰流不受下游影响
 
         else:

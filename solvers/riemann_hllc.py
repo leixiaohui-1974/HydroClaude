@@ -225,14 +225,16 @@ def hllc_flux_with_source_numba(h_L, Q_L, z_b_L, h_R, Q_R, z_b_R, B, g, eps_dry)
     if h_L_adj < eps_dry and h_R_adj < eps_dry:
         return 0.0, 0.0
 
-    # HLLC
+    # HLLC (using reconstructed depths)
     F_h, F_Q_star = hllc_flux_numba(h_L_adj, Q_L, h_R_adj, Q_R, B, g, eps_dry)
 
-    # 
-    # Lake at Rest F_Q 
-    source_contribution = 0.5 * g * (h_L_adj**2 - h_R_adj**2) * B
-
-    F_Q = F_Q_star - source_contribution
+    # Hydrostatic reconstruction correction (Audusse et al., 2004)
+    # F_Q = F_Q_star + 0.5*g*h_L^2*B - 0.5*g*h_L_adj^2*B  (left correction)
+    #                + 0.5*g*h_R^2*B - 0.5*g*h_R_adj^2*B  (right correction averaged)
+    # Standard well-balanced correction adds back the difference between original and adjusted pressure
+    correction_L = 0.5 * g * (h_L**2 - h_L_adj**2) * B
+    correction_R = 0.5 * g * (h_R**2 - h_R_adj**2) * B
+    F_Q = F_Q_star + 0.5 * (correction_L + correction_R)
 
     return F_h, F_Q
 
@@ -398,14 +400,21 @@ def validate_hllc_properties():
         'pass': abs(F_h) < 1e-10 and abs(F_Q - 0.5*g*h_L**2*B) < 1e-6
     }
 
-    # 2: 
-    F_h_LR, F_Q_LR = hllc_flux_numba(5.0, 10.0, 3.0, 5.0, B, g, eps_dry)
-    F_h_RL, F_Q_RL = hllc_flux_numba(3.0, 5.0, 5.0, 10.0, B, g, eps_dry)
+    # 2: Consistency check (same state on both sides should give the physical flux)
+    # Note: Riemann solvers are NOT antisymmetric, i.e. F(U_L,U_R) != -F(U_R,U_L)
+    # Instead, we check that F(U,U) = F(U) for a uniform state
+    h_test = 4.0
+    Q_test = 20.0
+    A_test = h_test * B
+    u_test = Q_test / A_test
+    F_h_uniform, F_Q_uniform = hllc_flux_numba(h_test, Q_test, h_test, Q_test, B, g, eps_dry)
+    F_h_exact = Q_test  # Mass flux = Q
+    F_Q_exact = Q_test * u_test + 0.5 * g * h_test**2 * B  # Momentum flux
 
-    results['symmetry'] = {
-        'F_h_diff': abs(F_h_LR + F_h_RL),
-        'F_Q_diff': abs(F_Q_LR + F_Q_RL),
-        'pass': abs(F_h_LR + F_h_RL) < 1e-10 and abs(F_Q_LR + F_Q_RL) < 1e-6
+    results['consistency'] = {
+        'F_h_diff': abs(F_h_uniform - F_h_exact),
+        'F_Q_diff': abs(F_Q_uniform - F_Q_exact),
+        'pass': abs(F_h_uniform - F_h_exact) < 1e-6 and abs(F_Q_uniform - F_Q_exact) < 1e-3
     }
 
     # 3: 
@@ -436,10 +445,10 @@ if __name__ == '__main__':
     print(f"  Status: {' PASS' if results['lake_at_rest']['pass'] else ' FAIL'}")
     print(f"  Note: Constant F_Q → dF_Q/dx = 0 → Lake remains at rest [OK]")
 
-    print("\n[Test 2] Symmetry")
-    print(f"  F_h difference = {results['symmetry']['F_h_diff']:.2e}")
-    print(f"  F_Q difference = {results['symmetry']['F_Q_diff']:.2e}")
-    print(f"  Status: {' PASS' if results['symmetry']['pass'] else ' FAIL'}")
+    print("\n[Test 2] Consistency (uniform state)")
+    print(f"  F_h difference = {results['consistency']['F_h_diff']:.2e}")
+    print(f"  F_Q difference = {results['consistency']['F_Q_diff']:.2e}")
+    print(f"  Status: {' PASS' if results['consistency']['pass'] else ' FAIL'}")
 
     print("\n[Test 3] Dry Bed")
     print(f"  F_h = {results['dry_bed']['F_h']:.2e}")

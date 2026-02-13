@@ -375,14 +375,14 @@ class SimulationEngine:
                 self.solver.current_time = current_time
             
             # 保存输出
-            if step % int(output_interval / dt) == 0:
+            if step % max(int(output_interval / dt), 1) == 0:
                 output_times.append(current_time)
                 h_history.append(self.solver.h.copy())
                 Q_history.append((self.solver.hu * self.config['canal']['width']).copy())
                 output_counter += 1
             
             # 打印进度
-            if self.verbose and (step + 1) % (n_steps // 10) == 0:
+            if self.verbose and (step + 1) % max(n_steps // 10, 1) == 0:
                 progress = (step + 1) / n_steps * 100
                 print(f"  进度: {progress:.0f}%")
         
@@ -568,8 +568,10 @@ class SimulationEngine:
             }
         }
         
-        # 流速
-        v = Q / (self.config['canal']['width'] * h)
+        # 流速 (防止除零)
+        eps = 1e-6
+        h_safe = np.where(h > eps, h, eps)
+        v = Q / (self.config['canal']['width'] * h_safe)
         variables['velocity'] = {
             'name': 'Flow Velocity',
             'symbol': 'v',
@@ -588,7 +590,7 @@ class SimulationEngine:
         
         # Froude数
         g = 9.81
-        Fr = v / np.sqrt(g * h)
+        Fr = v / np.sqrt(g * h_safe)
         variables['froude'] = {
             'name': 'Froude Number',
             'symbol': 'Fr',

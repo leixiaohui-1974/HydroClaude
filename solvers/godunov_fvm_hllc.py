@@ -157,9 +157,10 @@ class GodunvFVMHLLC:
         for i in range(n + 1):
             F_h[i], F_Q[i] = self._hllc_flux(h_L[i], Q_L[i], h_R[i], Q_R[i])
         
-        #  + 
+        #  +
         for i in range(n):
-            dh_dt[i] = -(F_h[i+1] - F_h[i]) / self.dx
+            # Mass eq: dh/dt = -(1/B) * dF_h/dx (since conserved var is h, flux is Q)
+            dh_dt[i] = -(F_h[i+1] - F_h[i]) / (self.B * self.dx)
             dQ_dt[i] = -(F_Q[i+1] - F_Q[i]) / self.dx + self._compute_source_term(h[i], Q[i])
         
         return dh_dt, dQ_dt
@@ -192,23 +193,22 @@ class GodunvFVMHLLC:
         S_L = min(u_L - c_L, u_R - c_R)
         S_R = max(u_L + c_L, u_R + c_R)
         
-        # 
-        # S_M = (Q_R - Q_L + S_L*h_L*B - S_R*h_R*B) / (h_L*B - h_R*B + S_L*h_L*B/S_L - S_R*h_R*B/S_R)
-        # 
-        num = (S_R - u_R) * A_R - (S_L - u_L) * A_L
-        den = A_R - A_L
-        
+        # Compute fluxes first (needed for S_M computation)
+        F_h_L = Q_L
+        F_Q_L = Q_L**2 / A_L + 0.5 * self.g * h_L**2 * self.B
+
+        F_h_R = Q_R
+        F_Q_R = Q_R**2 / A_R + 0.5 * self.g * h_R**2 * self.B
+
+        # Standard HLLC contact wave speed (Toro, 2009):
+        # S_M from: F_Q_R - F_Q_L + S_L*Q_L - S_R*Q_R = S_M * (A_L*(S_L - u_L) - A_R*(S_R - u_R))
+        den = A_L * (S_L - u_L) - A_R * (S_R - u_R)
+
         if abs(den) > 1e-10:
+            num = F_Q_R - F_Q_L + S_L * Q_L - S_R * Q_R
             S_M = num / den
         else:
             S_M = 0.5 * (u_L + u_R)
-        
-        # 
-        F_h_L = Q_L
-        F_Q_L = Q_L**2 / A_L + 0.5 * self.g * h_L**2 * self.B
-        
-        F_h_R = Q_R
-        F_Q_R = Q_R**2 / A_R + 0.5 * self.g * h_R**2 * self.B
         
         # HLLC
         if S_L >= 0:

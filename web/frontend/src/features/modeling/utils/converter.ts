@@ -187,14 +187,16 @@ export const generateConfigSummary = (config: SimulationRequest): string => {
 
     if (canal.boundary_conditions.upstream) {
       const bc = canal.boundary_conditions.upstream;
-      const valueStr = bc.value !== undefined ? `= ${bc.value} ${getBoundaryUnit(bc.type)}` : '';
-      lines.push(`- 上游: ${getBoundaryLabel(bc.type)} ${valueStr}`);
+      const bcType = bc.type as 'h' | 'Q' | 'wall';
+      const valueStr = bc.value !== undefined ? `= ${bc.value} ${getBoundaryUnit(bcType)}` : '';
+      lines.push(`- 上游: ${getBoundaryLabel(bcType)} ${valueStr}`);
     }
 
     if (canal.boundary_conditions.downstream) {
       const bc = canal.boundary_conditions.downstream;
-      const valueStr = bc.value !== undefined ? `= ${bc.value} ${getBoundaryUnit(bc.type)}` : '';
-      lines.push(`- 下游: ${getBoundaryLabel(bc.type)} ${valueStr}`);
+      const bcType = bc.type as 'h' | 'Q' | 'wall';
+      const valueStr = bc.value !== undefined ? `= ${bc.value} ${getBoundaryUnit(bcType)}` : '';
+      lines.push(`- 下游: ${getBoundaryLabel(bcType)} ${valueStr}`);
     }
   }
 

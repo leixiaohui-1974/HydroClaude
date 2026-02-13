@@ -37,11 +37,11 @@ export interface SimulationConfig {
   boundary_conditions: {
     upstream: {
       type: string;
-      value: number;
+      value?: number;
     };
     downstream: {
       type: string;
-      value: number;
+      value?: number;
     };
   };
   structures?: Array<{
@@ -49,6 +49,10 @@ export interface SimulationConfig {
     position: number;
     parameters: Record<string, any>;
   }>;
+  // 求解器配置
+  cfl?: number;
+  order?: number;
+  use_numba?: boolean;
 }
 
 /**
@@ -100,6 +104,7 @@ export interface SimulationResultResponse {
     min_depth: number;
     max_velocity: number;
     max_froude: number;
+    max_discharge?: number;
     mean_depth_final: number;
     mean_discharge_final: number;
     system_type?: string;

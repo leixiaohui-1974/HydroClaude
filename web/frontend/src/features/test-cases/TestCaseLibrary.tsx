@@ -665,7 +665,7 @@ const TestCaseLibrary: React.FC = () => {
                 style={{ marginBottom: '8px', cursor: 'pointer' }}
                 onClick={() => handleSearch(tag)}
               >
-                {tag} ({count})
+                {tag} ({count as React.ReactNode})
               </Tag>
             ))}
           </div>

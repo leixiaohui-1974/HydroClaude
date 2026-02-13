@@ -251,21 +251,24 @@ class Reservoir(HydraulicComponent):
             # 重新计算实际出流
             outflow = max(0, inflow + (current_storage - self.dead_storage) / dt)
         elif new_storage > self.total_capacity:
+            # 计算超出库容的量（必须在截断前计算）
+            excess = new_storage - self.total_capacity
             new_storage = self.total_capacity
             # 超出库容部分作为溢流
-            spillway_discharge += (new_storage - self.total_capacity) / dt
-            outflow = inflow + (current_storage - self.total_capacity) / dt
+            spillway_discharge += excess / dt
+            outflow = inflow + (current_storage - new_storage) / dt
 
         # 计算新水位
         new_level = float(self.storage_to_level(new_storage))
 
         # 计算发电量
         if self.has_turbine and turbine_discharge > 0:
-            # P = η * ρ * g * Q * H (单位: W)
-            # 简化: P = g * Q * H * η / 1000 (单位: MW)
+            # P = ρ * g * Q * H * η (单位: W)
+            # P / 1e6 → MW
+            rho = 1000.0  # 水的密度 (kg/m³)
             head = self.hydraulic_head if self.hydraulic_head > 0 else (new_level - self.min_level)
             # 使用实例变量 self.g 而不是硬编码 9.81
-            power = self.g * turbine_discharge * head * self.turbine_efficiency / 1000.0
+            power = rho * self.g * turbine_discharge * head * self.turbine_efficiency / 1e6
             power = min(power, self.turbine_capacity)
         else:
             power = 0.0
@@ -455,7 +458,7 @@ class Reservoir(HydraulicComponent):
             'drought_control_ok': self.check_drought_control(),
             'ecological_flow_ok': self.check_ecological_flow(),
             'active_storage_used': (self.state.storage - self.dead_storage) / self.active_storage * 100,
-            'flood_control_capacity_used': (self.total_capacity - self.state.storage) / self.state.flood_control_capacity * 100
+            'flood_control_capacity_used': (self.total_capacity - self.state.storage) / self.state.flood_control_capacity * 100 if self.state.flood_control_capacity > 0 else 0.0
         }
 
     def reset(self, initial_storage: Optional[float] = None):

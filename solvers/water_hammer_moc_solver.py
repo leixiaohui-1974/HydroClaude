@@ -114,6 +114,7 @@ class WaterHammerMOCSolver:
         self.dx: Optional[float] = None
         self.dt: Optional[float] = None
         self.nx: Optional[int] = None
+        self.z_elevation: Optional[np.ndarray] = None  # Pipe elevation profile
 
         # MOC / MOC coefficients
         self.B: Optional[float] = None  # B = a / (g*A)
@@ -215,9 +216,9 @@ class WaterHammerMOCSolver:
         if self.nx is None or self.dt is None:
             raise RuntimeError("set_grid()")
 
-        #  / Number of time steps
-        nt = int(duration / self.dt) + 1
-        t_array = np.linspace(0, duration, nt)
+        #  / Number of time steps (use arange to match actual dt spacing)
+        t_array = np.arange(0, duration + self.dt / 2, self.dt)
+        nt = len(t_array)
         x_array = np.linspace(0, self.L, self.nx)
 
         #  / Initialize field variables
@@ -267,7 +268,14 @@ class WaterHammerMOCSolver:
 
         #  / Calculate velocity and pressure
         V = Q / self.A
-        p = 1000.0 * self.g * H  # 
+        # Pressure = rho * g * (H - z_elevation), gauge pressure
+        # H is piezometric head = z + p/(rho*g), so p = rho*g*(H - z)
+        if self.z_elevation is not None:
+            z_elev = self.z_elevation
+        else:
+            # Default: assume horizontal pipe at z=0
+            z_elev = np.zeros(self.nx)
+        p = 1000.0 * self.g * (H - z_elev[np.newaxis, :])  # gauge pressure (Pa)
 
         return {
             't': t_array,
