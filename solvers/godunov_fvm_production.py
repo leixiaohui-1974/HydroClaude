@@ -16,8 +16,11 @@ Order 1
 : 2025-10-27
 """
 
+import logging
 import numpy as np
 from typing import Tuple, Dict, Optional, List
+
+logger = logging.getLogger(__name__)
 
 
 class GodunvFVMProduction:
@@ -355,9 +358,9 @@ class GodunvFVMProduction:
                     Q[idx-1] = (1 - 0.5*alpha) * Q[idx-1] + 0.5*alpha * Q_struct
                 if idx < len(Q) - 1:
                     Q[idx+1] = (1 - 0.5*alpha) * Q[idx+1] + 0.5*alpha * Q_struct
-            except:
-                pass
-        
+            except Exception as e:
+                logger.warning(f"Structure coupling failed at cell {idx} for {struct.__class__.__name__}: {e}")
+
         return h, Q
     
     def _apply_smoothing(self, h, Q):
@@ -475,7 +478,8 @@ class GodunvFVMProduction:
                         'flow_type': flow_type,
                         'opening': opening
                     })
-                except:
+                except Exception as e:
+                    logger.warning(f"Structure info retrieval failed for {struct.__class__.__name__} at cell {idx}: {e}")
                     info.append({'type': struct.__class__.__name__, 'error': True})
         return info
 

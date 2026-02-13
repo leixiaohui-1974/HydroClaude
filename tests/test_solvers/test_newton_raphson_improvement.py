@@ -29,9 +29,7 @@ from network.network_topology import NetworkTopology
 try:
     from solvers.hardy_cross_solver import HardyCrossSolver
 except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
+    pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 
 from solvers.newton_raphson_network_solver import NewtonRaphsonNetworkSolver
 

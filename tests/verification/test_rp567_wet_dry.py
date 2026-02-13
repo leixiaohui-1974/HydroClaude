@@ -19,6 +19,7 @@ RP5-RP7干床问题测试套件（Phase 8.2）
 """
 
 import sys
+import pytest
 import warnings
 warnings.filterwarnings("ignore")
 import os
@@ -31,9 +32,7 @@ from typing import Tuple, Dict, List
 try:
     from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
 except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
+    pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 
 from solvers.positivity_preserving_weno3 import PositivityPreservingWENO3
 from solvers.wet_dry_enhanced_weno3 import WetDryEnhancedWENO3

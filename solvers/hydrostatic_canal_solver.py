@@ -14,11 +14,14 @@ Preissmann
 : 2025-10-23
 """
 
+import logging
 import numpy as np
 import math
 from typing import List, Tuple, Optional
 import sys
 import os
+
+logger = logging.getLogger(__name__)
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -779,9 +782,7 @@ class HydrostaticCanalSolver:
                         F_momentum[idx] = 0.0
                         
                 except Exception as e:
-                    # Fallback or log error (print for now as we are in a solver)
-                    # print(f"Structure Error: {e}")
-                    pass
+                    logger.warning(f"Structure discharge calculation failed at index {idx}: {e}")
 
         return F_mass, F_momentum, S_mass, S_momentum
 
@@ -1280,8 +1281,8 @@ class HydrostaticCanalSolver:
                     # 
                     h_uniform = compute_steady_uniform_flow(Q_target, self.B, self.S0_scalar, self.n, self.g)
                     h_upstream_guess = h_uniform
-                except:
-                    # 
+                except Exception as e:
+                    logger.warning(f"Steady uniform flow computation failed, using h_downstream as fallback: {e}")
                     h_upstream_guess = h_downstream
 
         # 

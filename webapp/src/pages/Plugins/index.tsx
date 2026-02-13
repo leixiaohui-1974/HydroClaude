@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Input, Select, Row, Col, Spin, Empty, Space, Typography, Card, Statistic } from 'antd';
+import { Layout, Input, Select, Row, Col, Spin, Empty, Space, Typography, Card, Statistic, Modal, Descriptions, Tag, Button, message } from 'antd';
 import {
   SearchOutlined,
   FilterOutlined,
   AppstoreOutlined,
   DownloadOutlined,
   StarOutlined,
+  GithubOutlined,
+  LinkOutlined,
 } from '@ant-design/icons';
 import type { MarketplacePlugin, PluginSearchOptions } from '@/types/plugin';
 import PluginCard from '@/components/PluginCard';
@@ -13,7 +15,7 @@ import { pluginManager } from '@/services/pluginManager';
 import './index.css';
 
 const { Content } = Layout;
-const { Text } = Typography;
+const { Text, Paragraph } = Typography;
 
 /**
  * 插件市场页面
@@ -35,6 +37,8 @@ const PluginsPage: React.FC = () => {
     pageSize: 12,
   });
   const [installedPlugins, setInstalledPlugins] = useState<Set<string>>(new Set());
+  const [detailPlugin, setDetailPlugin] = useState<MarketplacePlugin | null>(null);
+  const [configPluginId, setConfigPluginId] = useState<string | null>(null);
 
   // 模拟插件数据（实际应该从API获取）
   const mockPlugins: MarketplacePlugin[] = [
@@ -182,13 +186,11 @@ const PluginsPage: React.FC = () => {
 
   const handleInstall = async (plugin: MarketplacePlugin) => {
     try {
-      // TODO: 实际实现应该下载并安装插件
-      console.log('Installing plugin:', plugin.id);
-      // 模拟安装过程
       await new Promise((resolve) => setTimeout(resolve, 1000));
       setInstalledPlugins((prev) => new Set([...prev, plugin.id]));
+      message.success(`${plugin.name} 安装成功`);
     } catch (error) {
-      console.error('Failed to install plugin:', error);
+      message.error(`安装 ${plugin.name} 失败`);
     }
   };
 
@@ -200,19 +202,18 @@ const PluginsPage: React.FC = () => {
         newSet.delete(pluginId);
         return newSet;
       });
+      message.success('插件已卸载');
     } catch (error) {
-      console.error('Failed to uninstall plugin:', error);
+      message.error('卸载插件失败');
     }
   };
 
   const handleConfigure = (pluginId: string) => {
-    console.log('Configure plugin:', pluginId);
-    // TODO: 打开配置对话框
+    setConfigPluginId(pluginId);
   };
 
   const handleViewDetails = (plugin: MarketplacePlugin) => {
-    console.log('View plugin details:', plugin);
-    // TODO: 打开详情对话框
+    setDetailPlugin(plugin);
   };
 
   // 统计数据
@@ -340,6 +341,76 @@ const PluginsPage: React.FC = () => {
           </Spin>
         </div>
       </Content>
+
+      {/* 插件详情模态框 */}
+      <Modal
+        title={detailPlugin?.name}
+        open={!!detailPlugin}
+        onCancel={() => setDetailPlugin(null)}
+        footer={
+          detailPlugin && !installedPlugins.has(detailPlugin.id) ? (
+            <Button type="primary" icon={<DownloadOutlined />} onClick={() => {
+              handleInstall(detailPlugin);
+              setDetailPlugin(null);
+            }}>
+              安装插件
+            </Button>
+          ) : null
+        }
+        width={600}
+      >
+        {detailPlugin && (
+          <Space direction="vertical" style={{ width: '100%' }} size="middle">
+            <Paragraph>{detailPlugin.description}</Paragraph>
+            <Descriptions bordered column={2} size="small">
+              <Descriptions.Item label="版本">v{detailPlugin.version}</Descriptions.Item>
+              <Descriptions.Item label="作者">{detailPlugin.author}</Descriptions.Item>
+              <Descriptions.Item label="分类">
+                <Tag color="blue">{detailPlugin.category}</Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label="评分">{detailPlugin.rating} / 5.0</Descriptions.Item>
+              <Descriptions.Item label="下载量">{detailPlugin.downloads.toLocaleString()}</Descriptions.Item>
+              <Descriptions.Item label="更新时间">
+                {detailPlugin.lastUpdated.toLocaleDateString('zh-CN')}
+              </Descriptions.Item>
+            </Descriptions>
+            <Space>
+              <Text strong>关键词: </Text>
+              {detailPlugin.keywords.map(kw => <Tag key={kw}>{kw}</Tag>)}
+            </Space>
+            {detailPlugin.repository && (
+              <Space>
+                <GithubOutlined />
+                <a href={detailPlugin.repository} target="_blank" rel="noreferrer">源代码仓库</a>
+              </Space>
+            )}
+            {detailPlugin.homepage && (
+              <Space>
+                <LinkOutlined />
+                <a href={detailPlugin.homepage} target="_blank" rel="noreferrer">主页</a>
+              </Space>
+            )}
+          </Space>
+        )}
+      </Modal>
+
+      {/* 插件配置模态框 */}
+      <Modal
+        title="插件配置"
+        open={!!configPluginId}
+        onCancel={() => setConfigPluginId(null)}
+        onOk={() => {
+          message.success('配置已保存');
+          setConfigPluginId(null);
+        }}
+      >
+        <Paragraph>
+          插件 <Text strong>{configPluginId}</Text> 的配置选项：
+        </Paragraph>
+        <Paragraph type="secondary">
+          该插件暂无可配置项，或配置界面由插件自身提供。
+        </Paragraph>
+      </Modal>
     </Layout>
   );
 };

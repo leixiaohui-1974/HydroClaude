@@ -12,6 +12,7 @@ from typing import Optional
 
 from ..database import get_db
 from ..models import User, SimulationJob, SimulationResult
+from ..models.simulation import Project
 from ..schemas import JobCreate, JobPublic, JobList, ResultPublic
 from ..utils.dependencies import get_current_active_user
 
@@ -180,7 +181,7 @@ def _run_simulation(job_id: int, db_url: str):
         job = db.query(SimulationJob).filter(SimulationJob.id == job_id).first()
         if job:
             job.status = "failed"
-            job.error = f"{type(e).__name__}: {str(e)}\n{traceback.format_exc()}"
+            job.error = f"{type(e).__name__}: {str(e)}"
             job.completed_at = datetime.utcnow()
             db.commit()
     finally:
@@ -204,6 +205,18 @@ async def create_job(
     current_user: User = Depends(get_current_active_user),
 ):
     """创建仿真作业"""
+    # 验证 project_id（如果提供）
+    if data.project_id is not None:
+        project = db.query(Project).filter(
+            Project.id == data.project_id,
+            Project.user_id == current_user.id,
+        ).first()
+        if not project:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Project not found or does not belong to current user"
+            )
+
     name = data.name or f"Simulation-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
     job = SimulationJob(
         user_id=current_user.id,

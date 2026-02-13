@@ -37,10 +37,13 @@ app.include_router(simulations.router, prefix="/api")
 @app.on_event("startup")
 async def startup_event():
     """应用启动时执行"""
-    # 初始化数据库
-    init_db()
-    print(f"🚀 {settings.APP_NAME} v{settings.APP_VERSION} started")
-    print(f"📚 API文档: http://{settings.HOST}:{settings.PORT}/docs")
+    try:
+        init_db()
+        print(f"{settings.APP_NAME} v{settings.APP_VERSION} started")
+        print(f"API docs: http://{settings.HOST}:{settings.PORT}/docs")
+    except Exception as e:
+        print(f"FATAL: Database initialization failed: {e}")
+        raise
 
 
 @app.get("/")

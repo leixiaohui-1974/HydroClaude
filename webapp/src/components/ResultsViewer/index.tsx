@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Tabs, Card, Space, Button, Select, Switch } from 'antd';
+import { Tabs, Card, Space, Button, Select, Switch, message } from 'antd';
 import {
   LineChartOutlined,
   BarChartOutlined,
@@ -48,19 +48,63 @@ const ResultsViewer: React.FC<ResultsViewerProps> = ({ results }) => {
 
   const isUnsteady = results.metadata.simulation_type === 'unsteady';
 
+  const handleExportCSV = () => {
+    const { positions, depths, velocities, froude_numbers, discharge } = results.spatial;
+    const headers = ['Position(m)', 'Depth(m)', 'Velocity(m/s)'];
+    if (froude_numbers) headers.push('Froude');
+    if (discharge) headers.push('Discharge(m3/s)');
+
+    const rows = positions.map((pos, i) => {
+      const row = [pos, depths[i], velocities[i]];
+      if (froude_numbers) row.push(froude_numbers[i]);
+      if (discharge) row.push(discharge[i]);
+      return row.join(',');
+    });
+
+    const csv = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `results_${results.metadata.case_name || 'data'}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    message.success('数据已导出为CSV');
+  };
+
+  const handleDownloadReport = () => {
+    const report = {
+      metadata: results.metadata,
+      summary: {
+        total_points: results.spatial.positions.length,
+        depth_range: [Math.min(...results.spatial.depths), Math.max(...results.spatial.depths)],
+        velocity_range: [Math.min(...results.spatial.velocities), Math.max(...results.spatial.velocities)],
+      },
+      spatial: results.spatial,
+    };
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `report_${results.metadata.case_name || 'simulation'}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    message.success('报告已下载');
+  };
+
   return (
     <div>
       {/* 工具栏 */}
       <Card size="small" style={{ marginBottom: 16 }}>
         <Space>
-          <Button type="primary" icon={<DownloadOutlined />}>
+          <Button type="primary" icon={<DownloadOutlined />} onClick={handleDownloadReport}>
             下载报告
           </Button>
-          <Button icon={<DownloadOutlined />}>
+          <Button icon={<DownloadOutlined />} onClick={handleExportCSV}>
             导出所有数据
           </Button>
           {isUnsteady && (
-            <Button icon={<PlayCircleOutlined />}>
+            <Button icon={<PlayCircleOutlined />} onClick={() => setActiveTab('animation')}>
               生成动画
             </Button>
           )}
