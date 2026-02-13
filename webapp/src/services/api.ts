@@ -41,7 +41,7 @@ apiClient.interceptors.response.use(
       message.error('未授权，请先登录');
       // 清除token并跳转到登录页
       localStorage.removeItem('authToken');
-      window.location.href = '/login';
+      window.location.href = '/';
     } else if (error.response?.status === 403) {
       message.error('没有权限访问此资源');
     } else if (error.response?.status === 404) {

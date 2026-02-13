@@ -198,7 +198,8 @@ class SluiceGate(HydraulicStructure):
             # : Q = Cd * B * e * √(2g * h_up)
             # dQ/dh_up = Cd * B * e * g / √(2g * h_up)
             # dQ/dh_down = 0 ()
-            dQ_dh_up = self.Cd * self.width * e * self.g / np.sqrt(2 * self.g * h_upstream)
+            h_up_safe = max(h_upstream, 1e-6)
+            dQ_dh_up = self.Cd * self.width * e * self.g / np.sqrt(2 * self.g * h_up_safe)
             dQ_dh_down = 0.0
 
         return dQ_dh_up, dQ_dh_down
@@ -208,7 +209,7 @@ class SluiceGate(HydraulicStructure):
             current_opening = self.get_opening()
             return (f"SluiceGate(position={self.position}m, width={self.width}m, "
                     f"opening={current_opening:.2f}m@t={self.current_time:.0f}s, Cd={self.Cd})")
-        except:
+        except Exception:
             return (f"SluiceGate(position={self.position}m, width={self.width}m, "
                     f"opening=f(t), Cd={self.Cd})")
 

@@ -7,7 +7,7 @@ import sys
 sys.path.append('.')
 
 try:
-    from solvers.hydrostatic_reconstruction_v2 import WellBalancedSolver
+    from solvers.hydrostatic_reconstruction_v3 import WellBalancedSolver
 except ImportError as e:
     print(f"Import error: {e}")
     print("Make sure project root is in sys.path")

@@ -29,10 +29,10 @@ const HomePage: React.FC = () => {
             <Button type="primary" size="large" icon={<RocketOutlined />} onClick={() => navigate('/projects')}>
               开始使用
             </Button>
-            <Button size="large" icon={<BookOutlined />}>
+            <Button size="large" icon={<BookOutlined />} onClick={() => navigate('/plugins')}>
               查看文档
             </Button>
-            <Button size="large" icon={<ApiOutlined />}>
+            <Button size="large" icon={<ApiOutlined />} onClick={() => navigate('/plugins')}>
               API参考
             </Button>
           </Space>
@@ -102,6 +102,7 @@ const HomePage: React.FC = () => {
                 title="浏览示例"
                 extra={<Button type="link">查看 →</Button>}
                 hoverable
+                onClick={() => navigate('/projects')}
               >
                 查看预置的示例项目，快速了解系统功能
               </Card>
@@ -183,7 +184,7 @@ const HomePage: React.FC = () => {
                 <Paragraph>
                   查看完整的使用文档和API参考
                 </Paragraph>
-                <Link href="#">查看文档 →</Link>
+                <Link onClick={() => navigate('/plugins')}>查看文档 →</Link>
               </Card>
             </Col>
             <Col xs={24} sm={8}>
@@ -191,7 +192,7 @@ const HomePage: React.FC = () => {
                 <Paragraph>
                   学习预置的示例项目和最佳实践
                 </Paragraph>
-                <Link href="#">浏览示例 →</Link>
+                <Link onClick={() => navigate('/projects')}>浏览示例 →</Link>
               </Card>
             </Col>
             <Col xs={24} sm={8}>
@@ -199,7 +200,7 @@ const HomePage: React.FC = () => {
                 <Paragraph>
                   探索插件市场，扩展系统功能
                 </Paragraph>
-                <Link href="#" onClick={() => navigate('/plugins')}>插件市场 →</Link>
+                <Link onClick={() => navigate('/plugins')}>插件市场 →</Link>
               </Card>
             </Col>
           </Row>

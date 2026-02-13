@@ -83,9 +83,11 @@ async def update_project(
     if not project:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
 
+    allowed_fields = {"name", "description", "config", "status"}
     update_data = data.model_dump(exclude_unset=True)
     for field, value in update_data.items():
-        setattr(project, field, value)
+        if field in allowed_fields:
+            setattr(project, field, value)
 
     db.commit()
     db.refresh(project)
@@ -108,3 +110,4 @@ async def delete_project(
 
     db.delete(project)
     db.commit()
+    return None

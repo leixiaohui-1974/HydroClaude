@@ -13,28 +13,131 @@ import ResultsOverlay from '@/components/ResultsOverlay';
 import type { LatLngExpression } from 'leaflet';
 
 const { Content } = Layout;
-const { TabPane } = Tabs;
+
+const GEOJSON_STORAGE_KEY = 'hydroclaude_map_geojson';
 
 /**
  * 地图页面
- * 
+ *
  * 功能：
  * - 地图查看
- * - 渠道绘制（待实现）
- * - 结果叠加（待实现）
+ * - 渠道绘制
+ * - 结果叠加
  */
 const MapPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('view');
   const [mapCenter] = useState<LatLngExpression>([39.9042, 116.4074]); // 北京
   const [mapZoom] = useState(13);
+  const [geoJsonData, setGeoJsonData] = useState<any>(null);
 
   const handleSave = () => {
-    message.success('保存成功！');
+    if (geoJsonData) {
+      localStorage.setItem(GEOJSON_STORAGE_KEY, JSON.stringify(geoJsonData));
+      message.success('GeoJSON数据已保存到本地存储');
+    } else {
+      message.warning('没有可保存的GeoJSON数据，请先在渠道绘制页签中绘制');
+    }
   };
 
   const handleLoad = () => {
-    message.info('加载GeoJSON...');
+    const saved = localStorage.getItem(GEOJSON_STORAGE_KEY);
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        setGeoJsonData(data);
+        message.success('GeoJSON数据加载成功');
+      } catch {
+        message.error('加载失败：数据格式错误');
+      }
+    } else {
+      message.info('没有已保存的GeoJSON数据');
+    }
   };
+
+  const tabItems = [
+    {
+      key: 'view',
+      label: (
+        <Space>
+          <EyeOutlined />
+          <span>地图查看</span>
+        </Space>
+      ),
+      children: (
+        <MapViewer
+          center={mapCenter}
+          zoom={mapZoom}
+          height="calc(100vh - 230px)"
+          showControls
+          showBaseMapSelector
+        />
+      ),
+    },
+    {
+      key: 'draw',
+      label: (
+        <Space>
+          <EditOutlined />
+          <span>渠道绘制</span>
+        </Space>
+      ),
+      children: (
+        <MapViewer
+          center={mapCenter}
+          zoom={mapZoom}
+          height="calc(100vh - 230px)"
+          showControls
+          showBaseMapSelector
+          defaultBaseMap="cartoLight"
+        >
+          <CanalDrawTool
+            onSave={(data) => {
+              setGeoJsonData(data);
+              message.success('渠道已保存到内存，点击保存按钮持久化');
+            }}
+          />
+        </MapViewer>
+      ),
+    },
+    {
+      key: 'overlay',
+      label: (
+        <Space>
+          <EnvironmentOutlined />
+          <span>结果叠加</span>
+        </Space>
+      ),
+      children: (
+        <MapViewer
+          center={mapCenter}
+          zoom={mapZoom}
+          height="calc(100vh - 230px)"
+          showControls
+          showBaseMapSelector
+          defaultBaseMap="cartoLight"
+        >
+          <ResultsOverlay
+            data={{
+              coordinates: [
+                [116.404, 39.915],
+                [116.405, 39.916],
+                [116.406, 39.917],
+                [116.407, 39.918],
+                [116.408, 39.919],
+              ],
+              depths: [3.0, 2.9, 2.8, 2.7, 2.6],
+              velocities: [1.5, 1.6, 1.7, 1.8, 1.9],
+              positions: [0, 150, 300, 450, 600],
+              froudeNumbers: [0.85, 0.92, 0.99, 1.05, 1.12],
+            }}
+            showDepth
+            showVelocity={false}
+            showVelocityVectors={false}
+          />
+        </MapViewer>
+      ),
+    },
+  ];
 
   return (
     <Layout style={{ height: 'calc(100vh - 64px)' }}>
@@ -62,97 +165,10 @@ const MapPage: React.FC = () => {
           <Tabs
             activeKey={activeTab}
             onChange={setActiveTab}
+            items={tabItems}
             style={{ height: '100%' }}
             tabBarStyle={{ padding: '0 24px', margin: 0 }}
-          >
-            {/* 地图查看 */}
-            <TabPane
-              tab={
-                <Space>
-                  <EyeOutlined />
-                  <span>地图查看</span>
-                </Space>
-              }
-              key="view"
-              style={{ height: '100%' }}
-            >
-              <MapViewer
-                center={mapCenter}
-                zoom={mapZoom}
-                height="calc(100vh - 230px)"
-                showControls
-                showBaseMapSelector
-              />
-            </TabPane>
-
-            {/* 渠道绘制 */}
-            <TabPane
-              tab={
-                <Space>
-                  <EditOutlined />
-                  <span>渠道绘制</span>
-                </Space>
-              }
-              key="draw"
-              style={{ height: '100%' }}
-            >
-              <MapViewer
-                center={mapCenter}
-                zoom={mapZoom}
-                height="calc(100vh - 230px)"
-                showControls
-                showBaseMapSelector
-                defaultBaseMap="cartoLight"
-              >
-                <CanalDrawTool
-                  onSave={(data) => {
-                    console.log('保存的GeoJSON:', data);
-                    message.success('渠道已保存！');
-                  }}
-                />
-              </MapViewer>
-            </TabPane>
-
-            {/* 结果叠加 */}
-            <TabPane
-              tab={
-                <Space>
-                  <EnvironmentOutlined />
-                  <span>结果叠加</span>
-                </Space>
-              }
-              key="overlay"
-              style={{ height: '100%' }}
-            >
-              <MapViewer
-                center={mapCenter}
-                zoom={mapZoom}
-                height="calc(100vh - 230px)"
-                showControls
-                showBaseMapSelector
-                defaultBaseMap="cartoLight"
-              >
-                <ResultsOverlay
-                  data={{
-                    coordinates: [
-                      [116.404, 39.915],
-                      [116.405, 39.916],
-                      [116.406, 39.917],
-                      [116.407, 39.918],
-                      [116.408, 39.919],
-                    ],
-                    depths: [3.0, 2.9, 2.8, 2.7, 2.6],
-                    velocities: [1.5, 1.6, 1.7, 1.8, 1.9],
-                    positions: [0, 150, 300, 450, 600],
-                    froudeNumbers: [0.85, 0.92, 0.99, 1.05, 1.12],
-                  }}
-                  showDepth
-                  showVelocity={false}
-                  showVelocityVectors={false}
-                />
-              </MapViewer>
-            </TabPane>
-          </Tabs>
+          />
         </Card>
       </Content>
     </Layout>

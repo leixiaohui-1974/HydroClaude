@@ -15,8 +15,8 @@ class Plugin(Base):
     id = Column(Integer, primary_key=True, index=True)
     
     # 作者
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+
     # 插件信息
     plugin_id = Column(String(100), unique=True, index=True, nullable=False)
     name = Column(String(100), nullable=False)
@@ -58,9 +58,9 @@ class Rating(Base):
     __tablename__ = "ratings"
 
     id = Column(Integer, primary_key=True, index=True)
-    plugin_id = Column(Integer, ForeignKey("plugins.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    
+    plugin_id = Column(Integer, ForeignKey("plugins.id"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+
     rating = Column(Integer, nullable=False)  # 1-5
     review = Column(Text, nullable=True)
     
@@ -80,8 +80,8 @@ class Comment(Base):
     __tablename__ = "comments"
 
     id = Column(Integer, primary_key=True, index=True)
-    plugin_id = Column(Integer, ForeignKey("plugins.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    plugin_id = Column(Integer, ForeignKey("plugins.id"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     parent_id = Column(Integer, ForeignKey("comments.id"), nullable=True)
     
     content = Column(Text, nullable=False)

@@ -233,8 +233,9 @@ class ModelBuilder:
         elif ic['type'] == 'expression':
             # Python表达式
             expr = ic['expression']
-            h_init = eval(expr['h'], {'np': np, 'x': x})
-            Q_init = eval(expr['Q'], {'np': np, 'x': x})
+            safe_globals = {"__builtins__": {}, "np": np, "x": x, "abs": abs, "max": max, "min": min}
+            h_init = eval(expr['h'], safe_globals)
+            Q_init = eval(expr['Q'], safe_globals)
 
         else:
             raise ValueError(f"不支持的初始条件类型: {ic['type']}")

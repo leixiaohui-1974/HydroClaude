@@ -3,7 +3,7 @@
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import desc, func
 from typing import Optional
 import json
@@ -37,17 +37,18 @@ async def get_plugins(
     
     支持分页、分类筛选、搜索和排序。
     """
-    query = db.query(Plugin).filter(Plugin.status == "approved")
-    
+    query = db.query(Plugin).options(joinedload(Plugin.author)).filter(Plugin.status == "approved")
+
     # 分类筛选
     if category:
         query = query.filter(Plugin.category == category)
-    
+
     # 搜索
     if search:
+        search_pattern = f"%{search}%"
         query = query.filter(
-            (Plugin.name.ilike(f"%{search}%")) |
-            (Plugin.description.ilike(f"%{search}%"))
+            (Plugin.name.ilike(search_pattern)) |
+            (Plugin.description.ilike(search_pattern))
         )
     
     # 排序
@@ -66,7 +67,7 @@ async def get_plugins(
     
     # 添加作者用户名
     for plugin in plugins:
-        plugin.author_username = plugin.author.username
+        plugin.author_username = plugin.author.username if plugin.author else "Unknown"
     
     return {
         "items": plugins,
@@ -133,7 +134,7 @@ async def get_plugin(plugin_id: int, db: Session = Depends(get_db)):
             detail="Plugin not found"
         )
     
-    plugin.author_username = plugin.author.username
+    plugin.author_username = plugin.author.username if plugin.author else "Unknown"
     return plugin
 
 
@@ -182,7 +183,7 @@ async def update_plugin(
     db.commit()
     db.refresh(plugin)
     
-    plugin.author_username = plugin.author.username
+    plugin.author_username = plugin.author.username if plugin.author else "Unknown"
     return plugin
 
 
@@ -314,18 +315,32 @@ async def create_comment(
 @router.get("/{plugin_id}/comments", response_model=list[CommentPublic])
 async def get_comments(
     plugin_id: int,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=100),
     db: Session = Depends(get_db)
 ):
     """
     获取评论列表
-    
-    获取插件的所有评论。
+
+    获取插件的评论（分页）。
     """
-    comments = db.query(Comment).filter(Comment.plugin_id == plugin_id).order_by(Comment.created_at.desc()).all()
-    
+    comments = (
+        db.query(Comment)
+        .options(joinedload(Comment.user))
+        .filter(Comment.plugin_id == plugin_id)
+        .order_by(Comment.created_at.desc())
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+        .all()
+    )
+
     # 添加作者信息
     for comment in comments:
-        comment.author_username = comment.user.username
-        comment.author_avatar = comment.user.avatar_url
-    
+        if comment.user:
+            comment.author_username = comment.user.username
+            comment.author_avatar = comment.user.avatar_url
+        else:
+            comment.author_username = "Deleted User"
+            comment.author_avatar = None
+
     return comments

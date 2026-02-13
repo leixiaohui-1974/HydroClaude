@@ -266,8 +266,8 @@ class MultiGridSolver:
         if level == self.n_levels - 1:
             try:
                 x = spsolve(A, b)
-            except:
-                # 
+            except Exception:
+                # Fallback to iterative smoothing
                 x = self._smooth(A, b, x, nu=50)
             return x
 

@@ -13,7 +13,6 @@ import TimeSeriesChart from '../Charts/TimeSeriesChart';
 import ResultsTable from '../DataTable/ResultsTable';
 import AnimationPlayer from '../AnimationPlayer';
 
-const { TabPane } = Tabs;
 const { Option } = Select;
 
 interface SimulationResults {
@@ -92,6 +91,124 @@ const ResultsViewer: React.FC<ResultsViewerProps> = ({ results }) => {
     message.success('报告已下载');
   };
 
+  const tabItems = [
+    {
+      key: 'profile',
+      label: (
+        <span>
+          <LineChartOutlined />
+          水位剖面
+        </span>
+      ),
+      children: (
+        <WaterProfileChart
+          data={results.spatial}
+          showVelocity={showVelocity}
+          height={500}
+        />
+      ),
+    },
+    {
+      key: 'velocity',
+      label: (
+        <span>
+          <BarChartOutlined />
+          流速分布
+        </span>
+      ),
+      children: (
+        <VelocityChart
+          data={results.spatial}
+          showFroude={showFroude}
+          height={500}
+        />
+      ),
+    },
+    ...(isUnsteady && results.temporal
+      ? [
+          {
+            key: 'timeseries',
+            label: (
+              <span>
+                <PlayCircleOutlined />
+                时间序列
+              </span>
+            ),
+            children: (
+              <Space direction="vertical" style={{ width: '100%' }} size="large">
+                <Card size="small" type="inner">
+                  <Space>
+                    <span>选择监测位置:</span>
+                    <Select
+                      mode="multiple"
+                      placeholder="选择位置"
+                      style={{ width: 300 }}
+                      defaultValue={[0, Math.floor(results.spatial.positions.length / 2)]}
+                    >
+                      {results.spatial.positions.map((pos, idx) => (
+                        <Option key={idx} value={idx}>
+                          x = {pos.toFixed(1)} m
+                        </Option>
+                      ))}
+                    </Select>
+                  </Space>
+                </Card>
+
+                <TimeSeriesChart
+                  data={{
+                    times: results.temporal!.times,
+                    values: results.temporal!.depth_series,
+                    positions: results.spatial.positions,
+                    variable_name: '水深 (m)',
+                  }}
+                  title="水深时间序列"
+                  height={450}
+                />
+              </Space>
+            ),
+          },
+          {
+            key: 'animation',
+            label: (
+              <span>
+                <PlayCircleOutlined />
+                动画播放
+              </span>
+            ),
+            children: (
+              <AnimationPlayer
+                totalFrames={results.temporal!.times.length}
+                currentFrame={currentFrame}
+                onFrameChange={setCurrentFrame}
+                fps={10}
+              >
+                <WaterProfileChart
+                  data={{
+                    positions: results.spatial.positions,
+                    depths: results.temporal!.depth_series.map(series => series[currentFrame]),
+                    velocities: results.temporal!.velocity_series?.map(series => series[currentFrame]),
+                  }}
+                  title={`时间: ${results.temporal!.times[currentFrame]?.toFixed(2)} s`}
+                  showVelocity={showVelocity}
+                  height={400}
+                />
+              </AnimationPlayer>
+            ),
+          },
+        ]
+      : []),
+    {
+      key: 'table',
+      label: (
+        <span>
+          <TableOutlined />
+          数据表格
+        </span>
+      ),
+      children: <ResultsTable data={results.spatial} />,
+    },
+  ];
+
   return (
     <div>
       {/* 工具栏 */}
@@ -122,129 +239,7 @@ const ResultsViewer: React.FC<ResultsViewerProps> = ({ results }) => {
 
       {/* 结果展示 */}
       <Card>
-        <Tabs activeKey={activeTab} onChange={setActiveTab}>
-          {/* 空间剖面 */}
-          <TabPane
-            tab={
-              <span>
-                <LineChartOutlined />
-                水位剖面
-              </span>
-            }
-            key="profile"
-          >
-            <WaterProfileChart
-              data={results.spatial}
-              showVelocity={showVelocity}
-              height={500}
-            />
-          </TabPane>
-
-          {/* 流速分布 */}
-          <TabPane
-            tab={
-              <span>
-                <BarChartOutlined />
-                流速分布
-              </span>
-            }
-            key="velocity"
-          >
-            <VelocityChart
-              data={results.spatial}
-              showFroude={showFroude}
-              height={500}
-            />
-          </TabPane>
-
-          {/* 时间序列（非恒定流）*/}
-          {isUnsteady && results.temporal && (
-            <TabPane
-              tab={
-                <span>
-                  <PlayCircleOutlined />
-                  时间序列
-                </span>
-              }
-              key="timeseries"
-            >
-              <Space direction="vertical" style={{ width: '100%' }} size="large">
-                <Card size="small" type="inner">
-                  <Space>
-                    <span>选择监测位置:</span>
-                    <Select
-                      mode="multiple"
-                      placeholder="选择位置"
-                      style={{ width: 300 }}
-                      defaultValue={[0, Math.floor(results.spatial.positions.length / 2)]}
-                    >
-                      {results.spatial.positions.map((pos, idx) => (
-                        <Option key={idx} value={idx}>
-                          x = {pos.toFixed(1)} m
-                        </Option>
-                      ))}
-                    </Select>
-                  </Space>
-                </Card>
-
-                <TimeSeriesChart
-                  data={{
-                    times: results.temporal.times,
-                    values: results.temporal.depth_series,
-                    positions: results.spatial.positions,
-                    variable_name: '水深 (m)',
-                  }}
-                  title="水深时间序列"
-                  height={450}
-                />
-              </Space>
-            </TabPane>
-          )}
-
-          {/* 动画播放（非恒定流）*/}
-          {isUnsteady && results.temporal && (
-            <TabPane
-              tab={
-                <span>
-                  <PlayCircleOutlined />
-                  动画播放
-                </span>
-              }
-              key="animation"
-            >
-              <AnimationPlayer
-                totalFrames={results.temporal.times.length}
-                currentFrame={currentFrame}
-                onFrameChange={setCurrentFrame}
-                fps={10}
-              >
-                <WaterProfileChart
-                  data={{
-                    positions: results.spatial.positions,
-                    depths: results.temporal.depth_series.map(series => series[currentFrame]),
-                    velocities: results.temporal.velocity_series?.map(series => series[currentFrame]),
-                  }}
-                  title={`时间: ${results.temporal.times[currentFrame]?.toFixed(2)} s`}
-                  showVelocity={showVelocity}
-                  height={400}
-                />
-              </AnimationPlayer>
-            </TabPane>
-          )}
-
-          {/* 数据表格 */}
-          <TabPane
-            tab={
-              <span>
-                <TableOutlined />
-                数据表格
-              </span>
-            }
-            key="table"
-          >
-            <ResultsTable data={results.spatial} />
-          </TabPane>
-        </Tabs>
+        <Tabs activeKey={activeTab} onChange={setActiveTab} items={tabItems} />
       </Card>
     </div>
   );

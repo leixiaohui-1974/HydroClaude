@@ -10,7 +10,8 @@ from datetime import timedelta
 from ..database import get_db
 from ..models import User
 from ..schemas import Token, RegisterRequest, UserPublic
-from ..utils.security import verify_password, get_password_hash, create_access_token
+from ..utils.security import verify_password, get_password_hash, create_access_token, decode_access_token
+from ..utils.dependencies import get_current_active_user
 from ..config import settings
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -75,18 +76,69 @@ async def login(
     # 检查用户是否激活
     if not user.is_active:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Inactive user"
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Account is disabled"
         )
-    
+
     # 创建访问令牌
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
-    
+
     return {
         "access_token": access_token,
         "token_type": "bearer",
         "expires_in": settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
     }
+
+
+@router.post("/refresh", response_model=Token)
+async def refresh_token(
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    刷新访问令牌
+
+    使用当前有效的令牌获取新的访问令牌。
+    """
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": current_user.username}, expires_delta=access_token_expires
+    )
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "expires_in": settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+    }
+
+
+@router.post("/change-password")
+async def change_password(
+    current_password: str,
+    new_password: str,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    修改密码
+
+    验证当前密码后更新为新密码。
+    """
+    if not verify_password(current_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect"
+        )
+
+    if len(new_password) < 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be at least 6 characters"
+        )
+
+    current_user.password_hash = get_password_hash(new_password)
+    db.commit()
+
+    return {"message": "Password changed successfully"}

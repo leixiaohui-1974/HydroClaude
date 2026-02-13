@@ -4,7 +4,6 @@ import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { SimulationConfig } from '@/services/simulations';
 
 const { Option } = Select;
-const { Panel } = Collapse;
 
 interface FormEditorProps {
   config: SimulationConfig;
@@ -155,71 +154,81 @@ const FormEditor: React.FC<FormEditorProps> = ({ config, onChange }) => {
 
         {/* 边界条件 */}
         <Card title="边界条件" size="small">
-          <Collapse defaultActiveKey={['upstream', 'downstream']}>
-            <Panel header="上游边界条件" key="upstream">
-              <Row gutter={16}>
-                <Col xs={24} md={12}>
-                  <Form.Item
-                    label="边界类型"
-                    name={['boundary_conditions', 'upstream', 'type']}
-                    rules={[{ required: true, message: '请选择边界类型' }]}
-                  >
-                    <Select placeholder="选择边界类型">
-                      <Option value="flow">流量边界</Option>
-                      <Option value="depth">水深边界</Option>
-                    </Select>
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                  <Form.Item
-                    label="边界值"
-                    name={['boundary_conditions', 'upstream', 'value']}
-                    rules={[
-                      { required: true, message: '请输入边界值' },
-                      { type: 'number', min: 0, message: '边界值必须大于0' }
-                    ]}
-                  >
-                    <InputNumber
-                      style={{ width: '100%' }}
-                      placeholder="输入边界值"
-                      min={0}
-                      step={0.1}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Panel>
-            
-            <Panel header="下游边界条件" key="downstream">
-              <Row gutter={16}>
-                <Col xs={24} md={12}>
-                  <Form.Item
-                    label="边界类型"
-                    name={['boundary_conditions', 'downstream', 'type']}
-                    rules={[{ required: true, message: '请选择边界类型' }]}
-                  >
-                    <Select placeholder="选择边界类型">
-                      <Option value="depth">水深边界</Option>
-                      <Option value="flow">流量边界</Option>
-                      <Option value="rating_curve">水位流量关系</Option>
-                    </Select>
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                  <Form.Item
-                    label="计算方法"
-                    name={['boundary_conditions', 'downstream', 'method']}
-                  >
-                    <Select placeholder="选择计算方法" allowClear>
-                      <Option value="uniform_flow">均匀流</Option>
-                      <Option value="critical_depth">临界水深</Option>
-                      <Option value="specified">指定值</Option>
-                    </Select>
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Panel>
-          </Collapse>
+          <Collapse
+            defaultActiveKey={['upstream', 'downstream']}
+            items={[
+              {
+                key: 'upstream',
+                label: '上游边界条件',
+                children: (
+                  <Row gutter={16}>
+                    <Col xs={24} md={12}>
+                      <Form.Item
+                        label="边界类型"
+                        name={['boundary_conditions', 'upstream', 'type']}
+                        rules={[{ required: true, message: '请选择边界类型' }]}
+                      >
+                        <Select placeholder="选择边界类型">
+                          <Option value="flow">流量边界</Option>
+                          <Option value="depth">水深边界</Option>
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={12}>
+                      <Form.Item
+                        label="边界值"
+                        name={['boundary_conditions', 'upstream', 'value']}
+                        rules={[
+                          { required: true, message: '请输入边界值' },
+                          { type: 'number', min: 0, message: '边界值必须大于0' }
+                        ]}
+                      >
+                        <InputNumber
+                          style={{ width: '100%' }}
+                          placeholder="输入边界值"
+                          min={0}
+                          step={0.1}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                ),
+              },
+              {
+                key: 'downstream',
+                label: '下游边界条件',
+                children: (
+                  <Row gutter={16}>
+                    <Col xs={24} md={12}>
+                      <Form.Item
+                        label="边界类型"
+                        name={['boundary_conditions', 'downstream', 'type']}
+                        rules={[{ required: true, message: '请选择边界类型' }]}
+                      >
+                        <Select placeholder="选择边界类型">
+                          <Option value="depth">水深边界</Option>
+                          <Option value="flow">流量边界</Option>
+                          <Option value="rating_curve">水位流量关系</Option>
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={12}>
+                      <Form.Item
+                        label="计算方法"
+                        name={['boundary_conditions', 'downstream', 'method']}
+                      >
+                        <Select placeholder="选择计算方法" allowClear>
+                          <Option value="uniform_flow">均匀流</Option>
+                          <Option value="critical_depth">临界水深</Option>
+                          <Option value="specified">指定值</Option>
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                ),
+              },
+            ]}
+          />
         </Card>
 
         {/* 水工结构（可选） */}

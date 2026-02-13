@@ -22,40 +22,40 @@ interface ProjectData {
   created: string;
 }
 
+const initialData: ProjectData[] = [
+  {
+    key: '1',
+    name: '渠道稳态流分析',
+    type: 'steady',
+    status: 'completed',
+    lastRun: '2025-11-15 10:30',
+    created: '2025-11-10',
+  },
+  {
+    key: '2',
+    name: '闸门流动仿真',
+    type: 'gate',
+    status: 'running',
+    lastRun: '2025-11-15 09:15',
+    created: '2025-11-12',
+  },
+  {
+    key: '3',
+    name: '非恒定流计算',
+    type: 'unsteady',
+    status: 'pending',
+    lastRun: '2025-11-14 16:20',
+    created: '2025-11-13',
+  },
+];
+
 const ProjectsPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
-
-  // 示例数据
-  const mockData: ProjectData[] = [
-    {
-      key: '1',
-      name: '渠道稳态流分析',
-      type: 'steady',
-      status: 'completed',
-      lastRun: '2025-11-15 10:30',
-      created: '2025-11-10',
-    },
-    {
-      key: '2',
-      name: '闸门流动仿真',
-      type: 'gate',
-      status: 'running',
-      lastRun: '2025-11-15 09:15',
-      created: '2025-11-12',
-    },
-    {
-      key: '3',
-      name: '非恒定流计算',
-      type: 'unsteady',
-      status: 'pending',
-      lastRun: '2025-11-14 16:20',
-      created: '2025-11-13',
-    },
-  ];
+  const [projects, setProjects] = useState<ProjectData[]>(initialData);
 
   const columns: ColumnsType<ProjectData> = [
     {
@@ -156,7 +156,19 @@ const ProjectsPage: React.FC = () => {
   };
 
   const handleClone = (key: string) => {
-    message.success(`克隆项目: ${key}`);
+    const source = projects.find((p) => p.key === key);
+    if (!source) return;
+    const newKey = String(Date.now());
+    const cloned: ProjectData = {
+      ...source,
+      key: newKey,
+      name: `${source.name} (副本)`,
+      status: 'pending',
+      lastRun: '-',
+      created: new Date().toISOString().slice(0, 10),
+    };
+    setProjects((prev) => [...prev, cloned]);
+    message.success(`已克隆项目: ${source.name}`);
   };
 
   const handleDelete = (key: string) => {
@@ -167,7 +179,8 @@ const ProjectsPage: React.FC = () => {
       okType: 'danger',
       cancelText: '取消',
       onOk: () => {
-        message.success(`删除项目: ${key}`);
+        setProjects((prev) => prev.filter((p) => p.key !== key));
+        message.success('项目已删除');
       },
     });
   };
@@ -217,7 +230,11 @@ const ProjectsPage: React.FC = () => {
       >
         <Table
           columns={columns}
-          dataSource={mockData}
+          dataSource={projects.filter((p) => {
+            const matchSearch = !searchText || p.name.toLowerCase().includes(searchText.toLowerCase());
+            const matchType = filterType === 'all' || p.type === filterType;
+            return matchSearch && matchType;
+          })}
           pagination={{
             showSizeChanger: true,
             showTotal: (total) => `共 ${total} 个项目`,

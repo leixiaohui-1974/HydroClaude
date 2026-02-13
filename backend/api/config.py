@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     # 应用信息
     APP_NAME: str = "HydroClaude API"
     APP_VERSION: str = "2.0.0"
-    DEBUG: bool = os.getenv("DEBUG", "true").lower() in ("true", "1", "yes")
+    DEBUG: bool = os.getenv("DEBUG", "false").lower() in ("true", "1", "yes")
 
     # 数据库
     # 开发环境: sqlite:///./hydroclaude.db
