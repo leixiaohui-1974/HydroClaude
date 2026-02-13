@@ -4,6 +4,19 @@ import { message } from 'antd';
 // API基础URL
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
+// 认证回调接口 - 用于避免与auth store的循环依赖
+interface AuthCallbacks {
+  getToken: () => string | null;
+  onUnauthorized: () => void;
+}
+
+let authCallbacks: AuthCallbacks | null = null;
+
+// 注册认证回调（由auth store调用）
+export const registerAuthCallbacks = (callbacks: AuthCallbacks) => {
+  authCallbacks = callbacks;
+};
+
 // 创建axios实例
 const apiClient: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -16,8 +29,8 @@ const apiClient: AxiosInstance = axios.create({
 // 请求拦截器
 apiClient.interceptors.request.use(
   (config) => {
-    // 添加认证token（如果有）
-    const token = localStorage.getItem('authToken');
+    // 从注册的回调获取token，回退到localStorage
+    const token = authCallbacks?.getToken() ?? localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -36,12 +49,16 @@ apiClient.interceptors.response.use(
   (error) => {
     // 错误处理
     const errorMessage = error.response?.data?.message || error.message || '请求失败';
-    
+
     if (error.response?.status === 401) {
       message.error('未授权，请先登录');
-      // 清除token并跳转到登录页
-      localStorage.removeItem('authToken');
-      window.location.href = '/';
+      // 通过注册的回调清除认证状态
+      if (authCallbacks) {
+        authCallbacks.onUnauthorized();
+      } else {
+        localStorage.removeItem('authToken');
+        window.location.href = '/login';
+      }
     } else if (error.response?.status === 403) {
       message.error('没有权限访问此资源');
     } else if (error.response?.status === 404) {
@@ -51,7 +68,7 @@ apiClient.interceptors.response.use(
     } else {
       message.error(errorMessage);
     }
-    
+
     return Promise.reject(error);
   }
 );

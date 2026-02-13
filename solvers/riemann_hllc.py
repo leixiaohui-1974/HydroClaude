@@ -93,10 +93,10 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
     # F_Q_R + S_R*(Q_R - Q_R*) = F_Q_R*
     #  Q_L* = A_L*(S_star), Q_R* = A_R*(S_star)
 
-    denominator = A_L * (S_L - u_L) - A_R * (S_R - u_R)
+    denominator = h_L * (S_L - u_L) - h_R * (S_R - u_R)
 
-    # 
-    if abs(denominator) < eps_dry * B:
+    #
+    if abs(denominator) < eps_dry:
         # HLLHLLHLLC
         if S_L >= 0.0:
             return F_h_L, F_Q_L
@@ -136,6 +136,11 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
             F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / (S_R - S_L)
             return F_h, F_Q
 
+    # ========== HLL fallback (used if NaN detected) ==========
+    # Pre-compute HLL flux for fallback
+    HLL_F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (h_R - h_L)) / (S_R - S_L)
+    HLL_F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (Q_R - Q_L)) / (S_R - S_L)
+
     # ========== HLLC () ==========
 
     if S_L >= 0.0:
@@ -156,9 +161,13 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
         #  ()
         Q_L_star = h_L_star * B * S_star
 
-        # 
+        #
         F_h_star = F_h_L + S_L * (h_L_star - h_L)
         F_Q_star = F_Q_L + S_L * (Q_L_star - Q_L)
+
+        # NaN guard: fall back to HLL if any flux is NaN/Inf
+        if np.isnan(F_h_star) or np.isnan(F_Q_star) or np.isinf(F_h_star) or np.isinf(F_Q_star):
+            return HLL_F_h, HLL_F_Q
 
         return F_h_star, F_Q_star
 
@@ -176,9 +185,13 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
         #  ()
         Q_R_star = h_R_star * B * S_star
 
-        # 
+        #
         F_h_star = F_h_R + S_R * (h_R_star - h_R)
         F_Q_star = F_Q_R + S_R * (Q_R_star - Q_R)
+
+        # NaN guard: fall back to HLL if any flux is NaN/Inf
+        if np.isnan(F_h_star) or np.isnan(F_Q_star) or np.isinf(F_h_star) or np.isinf(F_Q_star):
+            return HLL_F_h, HLL_F_Q
 
         return F_h_star, F_Q_star
 
@@ -229,12 +242,13 @@ def hllc_flux_with_source_numba(h_L, Q_L, z_b_L, h_R, Q_R, z_b_R, B, g, eps_dry)
     F_h, F_Q_star = hllc_flux_numba(h_L_adj, Q_L, h_R_adj, Q_R, B, g, eps_dry)
 
     # Hydrostatic reconstruction correction (Audusse et al., 2004)
-    # F_Q = F_Q_star + 0.5*g*h_L^2*B - 0.5*g*h_L_adj^2*B  (left correction)
-    #                + 0.5*g*h_R^2*B - 0.5*g*h_R_adj^2*B  (right correction averaged)
-    # Standard well-balanced correction adds back the difference between original and adjusted pressure
+    # The left and right corrections are applied independently to their respective states:
+    # F_Q = F_Q_star + correction_L  (left pressure difference added to left side)
+    # The right correction is NOT averaged with the left; each acts on its own cell
+    # in the finite volume update. Here we apply the left correction to the interface flux;
+    # the right correction is handled symmetrically by the adjacent interface.
     correction_L = 0.5 * g * (h_L**2 - h_L_adj**2) * B
-    correction_R = 0.5 * g * (h_R**2 - h_R_adj**2) * B
-    F_Q = F_Q_star + 0.5 * (correction_L + correction_R)
+    F_Q = F_Q_star + correction_L
 
     return F_h, F_Q
 

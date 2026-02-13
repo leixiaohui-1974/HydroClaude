@@ -99,7 +99,7 @@ class GodunvFVMSolver:
         z_b: np.ndarray = None,
         g: float = 9.81,
         cfl: float = 0.5,
-        eps_dry: float = 1e-6,
+        eps_dry: float = 1e-4,
         order: int = 2,
         riemann_solver: str = 'hll',
         well_balanced: bool = False,
@@ -500,9 +500,8 @@ class GodunvFVMSolver:
                     c_neighbor = max(c_neighbor, np.sqrt(self.g * self.h[i+1]))
                 lambda_max = max(lambda_max, c_neighbor)
 
-        # lambda_max > 0
-        if lambda_max < 1e-6:
-            lambda_max = np.sqrt(self.g * 1.0)  # 1m
+        # Ensure lambda_max is never zero to avoid division by zero
+        lambda_max = max(lambda_max, 1e-8)
 
         dt = self.cfl * self.dx / lambda_max
 
@@ -558,19 +557,21 @@ class GodunvFVMSolver:
         # 
         # h_star, Q_star = self._apply_bc(h_star, Q_star)
 
-        # 
+        #
         h_star = np.maximum(h_star, 0.0)
+        Q_star[h_star < self.eps_dry] = 0.0
 
         # === 2 ===
         dh_dt_star, dQ_dt_star = self._compute_rhs(h_star, Q_star)
         self.h = 0.5 * (h_n + h_star) + 0.5 * dt * dh_dt_star
         self.Q = 0.5 * (Q_n + Q_star) + 0.5 * dt * dQ_dt_star
 
-        # 
+        #
         self.h, self.Q = self._apply_bc(self.h, self.Q)
 
-        # 
+        #
         self.h = np.maximum(self.h, 0.0)
+        self.Q[self.h < self.eps_dry] = 0.0
 
     def _step_strang_splitting(self, dt: float):
         """
@@ -610,10 +611,11 @@ class GodunvFVMSolver:
         self.h = h_source + 0.5 * dt * dh_dt
         self.Q = Q_source + 0.5 * dt * dQ_dt
 
-        # 
+        #
         self.h, self.Q = self._apply_bc(self.h, self.Q)
         self.h = np.maximum(self.h, 0.0)
-    
+        self.Q[self.h < self.eps_dry] = 0.0
+
     def _compute_rhs(self, h: np.ndarray, Q: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
         +

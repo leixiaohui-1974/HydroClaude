@@ -145,6 +145,26 @@ def exact_riemann_flux(
     F_h = Q_sample
     F_Q = Q_sample * u_sample + 0.5 * g * h_sample**2 * B
 
+    # NaN/Inf guard: fall back to HLL flux
+    if np.isnan(F_h) or np.isnan(F_Q) or np.isinf(F_h) or np.isinf(F_Q):
+        c_L = np.sqrt(g * h_L)
+        c_R = np.sqrt(g * h_R)
+        S_L = min(u_L - c_L, u_R - c_R)
+        S_R = max(u_L + c_L, u_R + c_R)
+        F_h_L = Q_L
+        F_Q_L = Q_L * u_L + 0.5 * g * h_L**2 * B
+        F_h_R = Q_R
+        F_Q_R = Q_R * u_R + 0.5 * g * h_R**2 * B
+        if S_L >= 0.0:
+            return F_h_L, F_Q_L
+        elif S_R <= 0.0:
+            return F_h_R, F_Q_R
+        else:
+            denom = S_R - S_L
+            F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (h_R - h_L)) / denom
+            F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (Q_R - Q_L)) / denom
+            return F_h, F_Q
+
     return F_h, F_Q
 
 
@@ -198,6 +218,7 @@ def _solve_star_region_newton(
     h_star = max(0.1 * min(h_L, h_R), h_star)  # Ensure positive
 
     # Newton-Raphson iteration
+    converged = False
     for iteration in range(max_iter):
         # Evaluate f(h*) and f'(h*)
         f_val = _f_function(h_star, h_L, u_L, c_L, g) + \
@@ -219,12 +240,25 @@ def _solve_star_region_newton(
         # Check convergence
         if abs(h_star_new - h_star) < tol:
             h_star = h_star_new
+            converged = True
             break
 
         h_star = h_star_new
 
+    # If Newton failed to converge, fall back to HLL estimate
+    if not converged:
+        # HLL star state estimate: simple average weighted by wave speeds
+        h_star = 0.5 * (h_L + h_R)
+        u_star = 0.5 * (u_L + u_R)
+        return h_star, u_star
+
     # Compute u_star from h_star using left wave relation
     u_star = u_L - _f_function(h_star, h_L, 0.0, c_L, g)
+
+    # NaN/Inf safety check
+    if np.isnan(h_star) or np.isnan(u_star) or np.isinf(h_star) or np.isinf(u_star):
+        h_star = 0.5 * (h_L + h_R)
+        u_star = 0.5 * (u_L + u_R)
 
     return h_star, u_star
 
@@ -450,6 +484,7 @@ def _solve_star_region_numba(
     h_star = max(0.1 * min(h_L, h_R), h_star)
 
     # Newton-Raphson iteration
+    converged = False
     for iteration in range(max_iter):
         f_val = _f_function_numba(h_star, h_L, u_L, c_L, g) + \
                 _f_function_numba(h_star, h_R, -u_R, c_R, g)
@@ -466,11 +501,23 @@ def _solve_star_region_numba(
 
         if abs(h_star_new - h_star) < tol:
             h_star = h_star_new
+            converged = True
             break
 
         h_star = h_star_new
 
+    # If Newton failed to converge, fall back to HLL estimate
+    if not converged:
+        h_star = 0.5 * (h_L + h_R)
+        u_star = 0.5 * (u_L + u_R)
+        return h_star, u_star
+
     u_star = u_L - _f_function_numba(h_star, h_L, 0.0, c_L, g)
+
+    # NaN/Inf safety check
+    if np.isnan(h_star) or np.isnan(u_star) or np.isinf(h_star) or np.isinf(u_star):
+        h_star = 0.5 * (h_L + h_R)
+        u_star = 0.5 * (u_L + u_R)
 
     return h_star, u_star
 
@@ -595,6 +642,26 @@ def exact_riemann_flux_numba(
     Q_sample = h_sample * u_sample * B
     F_h = Q_sample
     F_Q = Q_sample * u_sample + 0.5 * g * h_sample**2 * B
+
+    # NaN/Inf guard: fall back to HLL flux
+    if np.isnan(F_h) or np.isnan(F_Q) or np.isinf(F_h) or np.isinf(F_Q):
+        c_L = np.sqrt(g * h_L)
+        c_R = np.sqrt(g * h_R)
+        S_L = min(u_L - c_L, u_R - c_R)
+        S_R = max(u_L + c_L, u_R + c_R)
+        F_h_L = Q_L
+        F_Q_L = Q_L * u_L + 0.5 * g * h_L**2 * B
+        F_h_R = Q_R
+        F_Q_R = Q_R * u_R + 0.5 * g * h_R**2 * B
+        if S_L >= 0.0:
+            return F_h_L, F_Q_L
+        elif S_R <= 0.0:
+            return F_h_R, F_Q_R
+        else:
+            denom = S_R - S_L
+            F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (h_R - h_L)) / denom
+            F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (Q_R - Q_L)) / denom
+            return F_h, F_Q
 
     return F_h, F_Q
 

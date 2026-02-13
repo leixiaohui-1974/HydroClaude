@@ -10,40 +10,42 @@ import {
   ApiOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const { Title, Paragraph, Link } = Typography;
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div>
-      {/* 欢迎标题 */}
+      {/* Welcome Header */}
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <div style={{ textAlign: 'center', padding: '40px 0' }}>
-          <Title>欢迎使用 HydroClaude v2.0 🌊</Title>
+          <Title>{t('home.welcomeTitle')} 🌊</Title>
           <Paragraph style={{ fontSize: '16px' }}>
-            开源水力学仿真平台 - 现代化图形界面版本
+            {t('home.welcomeSubtitle')}
           </Paragraph>
           <Space size="large">
             <Button type="primary" size="large" icon={<RocketOutlined />} onClick={() => navigate('/projects')}>
-              开始使用
+              {t('home.getStarted')}
             </Button>
             <Button size="large" icon={<BookOutlined />} onClick={() => navigate('/plugins')}>
-              查看文档
+              {t('home.viewDocs')}
             </Button>
             <Button size="large" icon={<ApiOutlined />} onClick={() => navigate('/plugins')}>
-              API参考
+              {t('home.apiReference')}
             </Button>
           </Space>
         </div>
 
-        {/* 统计卡片 */}
+        {/* Statistics Cards */}
         <Row gutter={16}>
           <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic
-                title="总项目数"
+                title={t('home.totalProjects')}
                 value={12}
                 prefix={<ProjectOutlined />}
                 valueStyle={{ color: '#3f8600' }}
@@ -53,7 +55,7 @@ const HomePage: React.FC = () => {
           <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic
-                title="运行中"
+                title={t('home.running')}
                 value={3}
                 prefix={<PlayCircleOutlined />}
                 valueStyle={{ color: '#1890ff' }}
@@ -63,7 +65,7 @@ const HomePage: React.FC = () => {
           <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic
-                title="已完成"
+                title={t('home.completed')}
                 value={24}
                 prefix={<CheckCircleOutlined />}
                 valueStyle={{ color: '#52c41a' }}
@@ -73,7 +75,7 @@ const HomePage: React.FC = () => {
           <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic
-                title="排队中"
+                title={t('home.queued')}
                 value={2}
                 prefix={<ClockCircleOutlined />}
                 valueStyle={{ color: '#faad14' }}
@@ -82,46 +84,46 @@ const HomePage: React.FC = () => {
           </Col>
         </Row>
 
-        {/* 快速操作 */}
-        <Card title="快速开始" bordered={false}>
+        {/* Quick Start */}
+        <Card title={t('home.quickStart')} bordered={false}>
           <Row gutter={16}>
             <Col xs={24} md={12}>
               <Card
                 type="inner"
-                title="创建新项目"
-                extra={<Button type="link">开始 →</Button>}
+                title={t('home.createNewProject')}
+                extra={<Button type="link">{t('home.startArrow')}</Button>}
                 hoverable
                 onClick={() => navigate('/editor')}
               >
-                使用配置编辑器创建一个新的水力学仿真项目
+                {t('home.createNewProjectDesc')}
               </Card>
             </Col>
             <Col xs={24} md={12}>
               <Card
                 type="inner"
-                title="浏览示例"
-                extra={<Button type="link">查看 →</Button>}
+                title={t('home.browseExamples')}
+                extra={<Button type="link">{t('home.viewArrow')}</Button>}
                 hoverable
                 onClick={() => navigate('/projects')}
               >
-                查看预置的示例项目，快速了解系统功能
+                {t('home.browseExamplesDesc')}
               </Card>
             </Col>
           </Row>
         </Card>
 
-        {/* 最近活动 */}
+        {/* Recent Activity */}
         <Row gutter={16}>
           <Col xs={24} md={12}>
-            <Card title="最近项目" bordered={false}>
+            <Card title={t('home.recentProjects')} bordered={false}>
               <Timeline
                 items={[
                   {
                     color: 'green',
                     children: (
                       <>
-                        <p><strong>渠道稳态流</strong></p>
-                        <p>2分钟前 · 已完成</p>
+                        <p><strong>{t('home.canalSteadyFlow')}</strong></p>
+                        <p>{t('home.minutesAgoCompleted')}</p>
                       </>
                     ),
                   },
@@ -129,8 +131,8 @@ const HomePage: React.FC = () => {
                     color: 'blue',
                     children: (
                       <>
-                        <p><strong>闸门流动分析</strong></p>
-                        <p>1小时前 · 运行中</p>
+                        <p><strong>{t('home.gateFlowAnalysis')}</strong></p>
+                        <p>{t('home.hourAgoRunning')}</p>
                       </>
                     ),
                   },
@@ -138,8 +140,8 @@ const HomePage: React.FC = () => {
                     color: 'gray',
                     children: (
                       <>
-                        <p><strong>非恒定流仿真</strong></p>
-                        <p>昨天 · 已完成</p>
+                        <p><strong>{t('home.unsteadyFlowSim')}</strong></p>
+                        <p>{t('home.yesterdayCompleted')}</p>
                       </>
                     ),
                   },
@@ -149,58 +151,58 @@ const HomePage: React.FC = () => {
           </Col>
 
           <Col xs={24} md={12}>
-            <Card title="功能特性" bordered={false}>
+            <Card title={t('home.features')} bordered={false}>
               <Space direction="vertical" style={{ width: '100%' }}>
                 <Paragraph>
                   <CheckCircleOutlined style={{ color: '#52c41a', marginRight: 8 }} />
-                  <strong>可视化配置编辑器</strong> - 无需编写JSON代码
+                  <strong>{t('home.featureVisualEditor')}</strong> - {t('home.featureVisualEditorDesc')}
                 </Paragraph>
                 <Paragraph>
                   <CheckCircleOutlined style={{ color: '#52c41a', marginRight: 8 }} />
-                  <strong>GIS地图集成</strong> - 在地图上绘制和查看渠道
+                  <strong>{t('home.featureGIS')}</strong> - {t('home.featureGISDesc')}
                 </Paragraph>
                 <Paragraph>
                   <CheckCircleOutlined style={{ color: '#52c41a', marginRight: 8 }} />
-                  <strong>交互式结果查看</strong> - Plotly图表，支持缩放和导出
+                  <strong>{t('home.featureInteractiveResults')}</strong> - {t('home.featureInteractiveResultsDesc')}
                 </Paragraph>
                 <Paragraph>
                   <CheckCircleOutlined style={{ color: '#52c41a', marginRight: 8 }} />
-                  <strong>实时监控</strong> - 查看仿真进度和性能指标
+                  <strong>{t('home.featureRealTimeMonitor')}</strong> - {t('home.featureRealTimeMonitorDesc')}
                 </Paragraph>
                 <Paragraph>
                   <CheckCircleOutlined style={{ color: '#52c41a', marginRight: 8 }} />
-                  <strong>插件系统</strong> - 扩展功能，自定义工作流
+                  <strong>{t('home.featurePluginSystem')}</strong> - {t('home.featurePluginSystemDesc')}
                 </Paragraph>
               </Space>
             </Card>
           </Col>
         </Row>
 
-        {/* 帮助资源 */}
-        <Card title="帮助与资源" bordered={false}>
+        {/* Help & Resources */}
+        <Card title={t('home.helpAndResources')} bordered={false}>
           <Row gutter={16}>
             <Col xs={24} sm={8}>
-              <Card type="inner" title="📚 文档">
+              <Card type="inner" title={`📚 ${t('home.documentation')}`}>
                 <Paragraph>
-                  查看完整的使用文档和API参考
+                  {t('home.documentationDesc')}
                 </Paragraph>
-                <Link onClick={() => navigate('/plugins')}>查看文档 →</Link>
+                <Link onClick={() => navigate('/plugins')}>{t('home.viewDocsArrow')}</Link>
               </Card>
             </Col>
             <Col xs={24} sm={8}>
-              <Card type="inner" title="💡 示例">
+              <Card type="inner" title={`💡 ${t('home.examples')}`}>
                 <Paragraph>
-                  学习预置的示例项目和最佳实践
+                  {t('home.examplesDesc')}
                 </Paragraph>
-                <Link onClick={() => navigate('/projects')}>浏览示例 →</Link>
+                <Link onClick={() => navigate('/projects')}>{t('home.browseExamplesArrow')}</Link>
               </Card>
             </Col>
             <Col xs={24} sm={8}>
-              <Card type="inner" title="🔌 插件">
+              <Card type="inner" title={`🔌 ${t('home.pluginsTitle')}`}>
                 <Paragraph>
-                  探索插件市场，扩展系统功能
+                  {t('home.pluginsDesc')}
                 </Paragraph>
-                <Link onClick={() => navigate('/plugins')}>插件市场 →</Link>
+                <Link onClick={() => navigate('/plugins')}>{t('home.pluginsMarketArrow')}</Link>
               </Card>
             </Col>
           </Row>

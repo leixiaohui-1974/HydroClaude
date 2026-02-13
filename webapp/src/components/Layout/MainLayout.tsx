@@ -16,73 +16,93 @@ import {
   MenuUnfoldOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
+import { useTranslation } from 'react-i18next';
+import useAuthStore from '@/stores/authStore';
+import LanguageSwitcher from '../LanguageSwitcher';
 import './MainLayout.css';
 
 const { Header, Sider, Content, Footer } = Layout;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const MainLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuthStore();
+  const { t } = useTranslation();
 
   // 侧边栏菜单项
   const menuItems: MenuProps['items'] = [
     {
       key: '/',
       icon: <HomeOutlined />,
-      label: '首页',
+      label: t('nav.home'),
       onClick: () => navigate('/'),
     },
     {
       key: '/projects',
       icon: <ProjectOutlined />,
-      label: '项目管理',
+      label: t('nav.projects'),
       onClick: () => navigate('/projects'),
     },
     {
       key: '/editor',
       icon: <EditOutlined />,
-      label: '配置编辑器',
+      label: t('nav.editor'),
       onClick: () => navigate('/editor'),
     },
     {
       key: '/simulation',
       icon: <PlayCircleOutlined />,
-      label: '仿真执行',
+      label: t('nav.simulation'),
       onClick: () => navigate('/simulation'),
     },
     {
       key: '/results',
       icon: <BarChartOutlined />,
-      label: '结果查看',
+      label: t('nav.results'),
       onClick: () => navigate('/results/latest'),
     },
     {
       key: '/map',
       icon: <EnvironmentOutlined />,
-      label: '地图工具',
+      label: t('nav.map'),
       onClick: () => navigate('/map'),
     },
     {
       key: '/plugins',
       icon: <AppstoreOutlined />,
-      label: '插件市场',
+      label: t('nav.plugins'),
       onClick: () => navigate('/plugins'),
     },
   ];
+
+  // 用户菜单点击处理
+  const handleUserMenuClick: MenuProps['onClick'] = ({ key }) => {
+    switch (key) {
+      case 'profile':
+        // TODO: Navigate to profile page when available
+        break;
+      case 'settings':
+        // TODO: Navigate to settings page when available
+        break;
+      case 'logout':
+        logout();
+        break;
+    }
+  };
 
   // 用户菜单
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: '用户资料',
+      label: t('layout.userProfile'),
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: '设置',
+      label: t('layout.settings'),
     },
     {
       type: 'divider',
@@ -90,7 +110,7 @@ const MainLayout: React.FC = () => {
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: '退出登录',
+      label: t('layout.logout'),
       danger: true,
     },
   ];
@@ -124,10 +144,20 @@ const MainLayout: React.FC = () => {
             style={{ fontSize: '16px', width: 64, height: 64 }}
           />
 
-          <Space>
-            <Button type="primary">新建项目</Button>
-            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-              <Avatar icon={<UserOutlined />} style={{ cursor: 'pointer' }} />
+          <Space size="middle">
+            <LanguageSwitcher />
+            <Button type="primary">{t('layout.newProject')}</Button>
+            <Dropdown menu={{ items: userMenuItems, onClick: handleUserMenuClick }} placement="bottomRight">
+              <Space style={{ cursor: 'pointer' }}>
+                <Avatar
+                  src={user?.avatar_url}
+                  icon={!user?.avatar_url ? <UserOutlined /> : undefined}
+                  style={{ backgroundColor: '#1890ff' }}
+                />
+                <Text style={{ maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {user?.username || t('auth.username')}
+                </Text>
+              </Space>
             </Dropdown>
           </Space>
         </Header>
@@ -137,7 +167,7 @@ const MainLayout: React.FC = () => {
         </Content>
 
         <Footer style={{ textAlign: 'center' }}>
-          HydroClaude v2.0.0 | Open Source Hydraulic Simulation Platform | MIT License
+          {t('layout.footer')}
         </Footer>
       </Layout>
     </Layout>

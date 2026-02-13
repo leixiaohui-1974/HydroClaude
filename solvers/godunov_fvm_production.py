@@ -110,10 +110,11 @@ class GodunvFVMProduction:
         u = self.Q / (h_safe * self.B)
         c = np.sqrt(self.g * h_safe)
         lambda_max = np.max(np.abs(u) + c)
-        
-        if lambda_max > 1e-10:
-            return self.cfl * self.dx / lambda_max
-        return 0.1
+
+        # Ensure lambda_max is never zero to avoid division by zero
+        lambda_max = max(lambda_max, 1e-8)
+
+        return self.cfl * self.dx / lambda_max
     
     def step(self, dt: Optional[float] = None):
         """"""
@@ -134,8 +135,9 @@ class GodunvFVMProduction:
         
         h_star, Q_star = self._apply_bc(h_star, Q_star)
         h_star = np.maximum(h_star, 0.0)
-        
-        # 
+        Q_star[h_star < self.eps_dry] = 0.0
+
+        #
         if len(self.structures) > 0:
             h_star, Q_star = self._apply_structure_coupling(h_star, Q_star)
         
@@ -149,7 +151,8 @@ class GodunvFVMProduction:
         
         self.h, self.Q = self._apply_bc(self.h, self.Q)
         self.h = np.maximum(self.h, 0.0)
-        
+        self.Q[self.h < self.eps_dry] = 0.0
+
         # 2
         if len(self.structures) > 0:
             self.h, self.Q = self._apply_structure_coupling(self.h, self.Q)
