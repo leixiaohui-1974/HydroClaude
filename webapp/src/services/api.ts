@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { message } from 'antd';
+import i18n from '@/i18n';
 
 // API基础URL
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
@@ -51,7 +52,7 @@ apiClient.interceptors.response.use(
     const errorMessage = error.response?.data?.message || error.message || '请求失败';
 
     if (error.response?.status === 401) {
-      message.error('未授权，请先登录');
+      message.error(i18n.t('apiErrors.unauthorized'));
       // 通过注册的回调清除认证状态
       if (authCallbacks) {
         authCallbacks.onUnauthorized();
@@ -60,11 +61,11 @@ apiClient.interceptors.response.use(
         window.location.href = '/login';
       }
     } else if (error.response?.status === 403) {
-      message.error('没有权限访问此资源');
+      message.error(i18n.t('apiErrors.forbidden'));
     } else if (error.response?.status === 404) {
-      message.error('请求的资源不存在');
+      message.error(i18n.t('apiErrors.notFound'));
     } else if (error.response?.status >= 500) {
-      message.error('服务器错误，请稍后重试');
+      message.error(i18n.t('apiErrors.serverError'));
     } else {
       message.error(errorMessage);
     }

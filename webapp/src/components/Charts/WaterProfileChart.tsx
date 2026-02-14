@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import Plot from 'react-plotly.js';
 import { Card, Empty } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 interface WaterProfileData {
   positions: number[];
@@ -19,10 +20,13 @@ interface WaterProfileChartProps {
 
 const WaterProfileChart: React.FC<WaterProfileChartProps> = ({
   data,
-  title = '水位剖面图',
+  title,
   height = 400,
   showVelocity = false,
 }) => {
+  const { t } = useTranslation();
+  const chartTitle = title || t('chart.waterProfile');
+
   const plotData = useMemo(() => {
     if (!data || !data.positions || data.positions.length === 0) {
       return [];
@@ -30,71 +34,67 @@ const WaterProfileChart: React.FC<WaterProfileChartProps> = ({
 
     const traces: any[] = [];
 
-    // 底部高程（如果有）
     if (data.bottom_elevation) {
       traces.push({
         x: data.positions,
         y: data.bottom_elevation,
         type: 'scatter',
         mode: 'lines',
-        name: '渠底高程',
+        name: t('chart.bottomElevation'),
         line: { color: '#8B4513', width: 2 },
         fill: 'tozeroy',
         fillcolor: 'rgba(139, 69, 19, 0.3)',
       });
     }
 
-    // 水面线
     if (data.water_surface) {
       traces.push({
         x: data.positions,
         y: data.water_surface,
         type: 'scatter',
         mode: 'lines',
-        name: '水面线',
+        name: t('chart.waterSurface'),
         line: { color: '#1890ff', width: 3 },
       });
     } else {
-      // 如果没有水面线，用深度绘制
       traces.push({
         x: data.positions,
         y: data.depths,
         type: 'scatter',
         mode: 'lines',
-        name: '水深',
+        name: t('chart.waterDepth'),
         line: { color: '#1890ff', width: 3 },
       });
     }
 
-    // 流速（如果需要显示）
     if (showVelocity && data.velocities) {
       traces.push({
         x: data.positions,
         y: data.velocities,
         type: 'scatter',
         mode: 'lines',
-        name: '流速',
+        name: t('chart.velocity'),
         line: { color: '#52c41a', width: 2, dash: 'dash' },
         yaxis: 'y2',
       });
     }
 
     return traces;
-  }, [data, showVelocity]);
+  }, [data, showVelocity, t]);
 
   const layout = useMemo(() => {
     const baseLayout: any = {
       title: {
-        text: title,
+        text: chartTitle,
         font: { size: 16, family: 'Arial, sans-serif' },
       },
       xaxis: {
-        title: '距离 (m)',
+        title: t('chart.distanceM'),
         gridcolor: '#e8e8e8',
         showgrid: true,
       },
       yaxis: {
-        title: data.water_surface ? '高程 (m)' : '水深 (m)',
+        title: data.water_surface ? t('chart.elevationM') : t('chart.depthM'),
         gridcolor: '#e8e8e8',
         showgrid: true,
       },
@@ -113,10 +113,9 @@ const WaterProfileChart: React.FC<WaterProfileChartProps> = ({
       paper_bgcolor: 'white',
     };
 
-    // 如果显示流速，添加第二个y轴
     if (showVelocity && data.velocities) {
       baseLayout.yaxis2 = {
-        title: '流速 (m/s)',
+        title: t('chart.velocityMs'),
         overlaying: 'y',
         side: 'right',
         gridcolor: '#e8e8e8',
@@ -125,12 +124,12 @@ const WaterProfileChart: React.FC<WaterProfileChartProps> = ({
     }
 
     return baseLayout;
-  }, [title, showVelocity, data]);
+  }, [chartTitle, showVelocity, data, t]);
 
   if (!data || !data.positions || data.positions.length === 0) {
     return (
       <Card>
-        <Empty description="暂无数据" />
+        <Empty description={t('chart.noData')} />
       </Card>
     );
   }

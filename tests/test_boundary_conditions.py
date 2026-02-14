@@ -21,13 +21,12 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 try:
     from solvers.boundary_conditions import (
+        CharacteristicBC,
+        FlowRegime,
+        BoundaryConditionType
+    )
 except ImportError as e:
     pytest.skip(f"Required module not available: {e}", allow_module_level=True)
-
-    CharacteristicBC,
-    FlowRegime,
-    BoundaryConditionType
-)
 
 
 class TestCharacteristicBC:

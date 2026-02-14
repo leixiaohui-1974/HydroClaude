@@ -64,7 +64,7 @@ async def register(request: Request, user_data: RegisterRequest, db: Session = D
 
 
 @router.post("/login", response_model=Token)
-@limiter.limit("10/minute")
+@limiter.limit("30/minute")
 async def login(
     request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
@@ -79,7 +79,7 @@ async def login(
 
 
 @router.post("/login/json", response_model=Token)
-@limiter.limit("10/minute")
+@limiter.limit("30/minute")
 async def login_json(
     request: Request,
     data: LoginRequest,
@@ -123,7 +123,9 @@ def _authenticate(username: str, password: str, db: Session) -> dict:
 
 
 @router.post("/refresh", response_model=Token)
+@limiter.limit("30/minute")
 async def refresh_token(
+    request: Request,
     current_user: User = Depends(get_current_active_user),
 ):
     """
@@ -144,7 +146,9 @@ async def refresh_token(
 
 
 @router.post("/change-password")
+@limiter.limit("5/minute")
 async def change_password(
+    request: Request,
     data: ChangePasswordRequest,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),

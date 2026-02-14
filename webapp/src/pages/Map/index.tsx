@@ -7,6 +7,7 @@ import {
   SaveOutlined,
   FolderOpenOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import MapViewer from '@/components/MapViewer';
 import CanalDrawTool from '@/components/CanalDrawTool';
 import ResultsOverlay from '@/components/ResultsOverlay';
@@ -25,6 +26,7 @@ const GEOJSON_STORAGE_KEY = 'hydroclaude_map_geojson';
  * - 结果叠加
  */
 const MapPage: React.FC = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('view');
   const [mapCenter] = useState<LatLngExpression>([39.9042, 116.4074]); // 北京
   const [mapZoom] = useState(13);
@@ -33,9 +35,9 @@ const MapPage: React.FC = () => {
   const handleSave = () => {
     if (geoJsonData) {
       localStorage.setItem(GEOJSON_STORAGE_KEY, JSON.stringify(geoJsonData));
-      message.success('GeoJSON数据已保存到本地存储');
+      message.success(t('map.geoJsonSavedSuccess'));
     } else {
-      message.warning('没有可保存的GeoJSON数据，请先在渠道绘制页签中绘制');
+      message.warning(t('map.noGeoJsonToSave'));
     }
   };
 
@@ -45,12 +47,12 @@ const MapPage: React.FC = () => {
       try {
         const data = JSON.parse(saved);
         setGeoJsonData(data);
-        message.success('GeoJSON数据加载成功');
+        message.success(t('map.geoJsonLoadSuccess'));
       } catch {
-        message.error('加载失败：数据格式错误');
+        message.error(t('map.loadError'));
       }
     } else {
-      message.info('没有已保存的GeoJSON数据');
+      message.info(t('map.noSavedGeoJson'));
     }
   };
 
@@ -60,7 +62,7 @@ const MapPage: React.FC = () => {
       label: (
         <Space>
           <EyeOutlined />
-          <span>地图查看</span>
+          <span>{t('map.mapView')}</span>
         </Space>
       ),
       children: (
@@ -78,7 +80,7 @@ const MapPage: React.FC = () => {
       label: (
         <Space>
           <EditOutlined />
-          <span>渠道绘制</span>
+          <span>{t('map.canalDraw')}</span>
         </Space>
       ),
       children: (
@@ -93,7 +95,7 @@ const MapPage: React.FC = () => {
           <CanalDrawTool
             onSave={(data) => {
               setGeoJsonData(data);
-              message.success('渠道已保存到内存，点击保存按钮持久化');
+              message.success(t('map.canalSavedToMemory'));
             }}
           />
         </MapViewer>
@@ -104,7 +106,7 @@ const MapPage: React.FC = () => {
       label: (
         <Space>
           <EnvironmentOutlined />
-          <span>结果叠加</span>
+          <span>{t('map.resultsOverlay')}</span>
         </Space>
       ),
       children: (
@@ -146,16 +148,16 @@ const MapPage: React.FC = () => {
           title={
             <Space>
               <EnvironmentOutlined />
-              <span>地图工具</span>
+              <span>{t('map.mapTools')}</span>
             </Space>
           }
           extra={
             <Space>
               <Button icon={<FolderOpenOutlined />} onClick={handleLoad}>
-                加载GeoJSON
+                {t('map.loadGeojson')}
               </Button>
               <Button type="primary" icon={<SaveOutlined />} onClick={handleSave}>
-                保存
+                {t('map.save')}
               </Button>
             </Space>
           }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Form, InputNumber, Select, Card, Space, Collapse, Button, Row, Col } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import type { SimulationConfig } from '@/services/simulations';
 
 const { Option } = Select;
@@ -11,6 +12,7 @@ interface FormEditorProps {
 }
 
 const FormEditor: React.FC<FormEditorProps> = ({ config, onChange }) => {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
 
   // 表单值变化时更新配置
@@ -28,29 +30,29 @@ const FormEditor: React.FC<FormEditorProps> = ({ config, onChange }) => {
     >
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         {/* 仿真设置 */}
-        <Card title="仿真设置" size="small">
+        <Card title={t('form.simulationSettings')} size="small">
           <Row gutter={16}>
             <Col xs={24} md={12}>
               <Form.Item
-                label="仿真类型"
+                label={t('form.simulationType')}
                 name={['simulation', 'type']}
-                rules={[{ required: true, message: '请选择仿真类型' }]}
+                rules={[{ required: true, message: t('form.pleaseSelectSimulationType') }]}
               >
-                <Select placeholder="选择仿真类型">
-                  <Option value="steady">稳态流</Option>
-                  <Option value="unsteady">非恒定流</Option>
+                <Select placeholder={t('form.selectSimulationType')}>
+                  <Option value="steady">{t('form.steadyFlow')}</Option>
+                  <Option value="unsteady">{t('form.unsteadyFlow')}</Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col xs={24} md={12}>
               <Form.Item
-                label="仿真模式"
+                label={t('form.simulationMode')}
                 name={['simulation', 'mode']}
-                rules={[{ required: true, message: '请选择仿真模式' }]}
+                rules={[{ required: true, message: t('form.pleaseSelectSimulationMode') }]}
               >
-                <Select placeholder="选择仿真模式">
-                  <Option value="single_canal">单一渠道</Option>
-                  <Option value="network">渠道网络</Option>
+                <Select placeholder={t('form.selectSimulationMode')}>
+                  <Option value="single_canal">{t('form.singleCanal')}</Option>
+                  <Option value="network">{t('form.canalNetwork')}</Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -58,20 +60,20 @@ const FormEditor: React.FC<FormEditorProps> = ({ config, onChange }) => {
         </Card>
 
         {/* 渠道参数 */}
-        <Card title="渠道参数" size="small">
+        <Card title={t('form.canalParameters')} size="small">
           <Row gutter={16}>
             <Col xs={24} md={12}>
               <Form.Item
-                label="渠道长度 (m)"
+                label={t('form.canalLength')}
                 name={['canal', 'length']}
                 rules={[
-                  { required: true, message: '请输入渠道长度' },
-                  { type: 'number', min: 1, message: '长度必须大于0' }
+                  { required: true, message: t('form.pleaseEnterCanalLength') },
+                  { type: 'number', min: 1, message: t('form.lengthMustBePositive') }
                 ]}
               >
                 <InputNumber
                   style={{ width: '100%' }}
-                  placeholder="输入渠道长度"
+                  placeholder={t('form.enterCanalLength')}
                   min={1}
                   step={100}
                 />
@@ -79,36 +81,36 @@ const FormEditor: React.FC<FormEditorProps> = ({ config, onChange }) => {
             </Col>
             <Col xs={24} md={12}>
               <Form.Item
-                label="渠道宽度 (m)"
+                label={t('form.canalWidth')}
                 name={['canal', 'width']}
                 rules={[
-                  { required: true, message: '请输入渠道宽度' },
-                  { type: 'number', min: 0.1, message: '宽度必须大于0' }
+                  { required: true, message: t('form.pleaseEnterCanalWidth') },
+                  { type: 'number', min: 0.1, message: t('form.widthMustBePositive') }
                 ]}
               >
                 <InputNumber
                   style={{ width: '100%' }}
-                  placeholder="输入渠道宽度"
+                  placeholder={t('form.enterCanalWidth')}
                   min={0.1}
                   step={1}
                 />
               </Form.Item>
             </Col>
           </Row>
-          
+
           <Row gutter={16}>
             <Col xs={24} md={12}>
               <Form.Item
-                label="渠道坡度"
+                label={t('form.canalSlope')}
                 name={['canal', 'slope']}
                 rules={[
-                  { required: true, message: '请输入渠道坡度' },
-                  { type: 'number', min: 0.0001, message: '坡度必须大于0' }
+                  { required: true, message: t('form.pleaseEnterCanalSlope') },
+                  { type: 'number', min: 0.0001, message: t('form.slopeMustBePositive') }
                 ]}
               >
                 <InputNumber
                   style={{ width: '100%' }}
-                  placeholder="输入渠道坡度"
+                  placeholder={t('form.enterCanalSlope')}
                   min={0.0001}
                   step={0.0001}
                   precision={4}
@@ -117,16 +119,16 @@ const FormEditor: React.FC<FormEditorProps> = ({ config, onChange }) => {
             </Col>
             <Col xs={24} md={12}>
               <Form.Item
-                label="Manning糙率系数"
+                label={t('form.manningCoefficient')}
                 name={['canal', 'manning_n']}
                 rules={[
-                  { required: true, message: '请输入Manning系数' },
-                  { type: 'number', min: 0.01, max: 0.1, message: 'Manning系数范围: 0.01-0.1' }
+                  { required: true, message: t('form.pleaseEnterManningCoefficient') },
+                  { type: 'number', min: 0.01, max: 0.1, message: t('form.manningRange') }
                 ]}
               >
                 <InputNumber
                   style={{ width: '100%' }}
-                  placeholder="输入Manning系数"
+                  placeholder={t('form.enterManningCoefficient')}
                   min={0.01}
                   max={0.1}
                   step={0.001}
@@ -138,54 +140,54 @@ const FormEditor: React.FC<FormEditorProps> = ({ config, onChange }) => {
         </Card>
 
         {/* 求解器设置 */}
-        <Card title="求解器设置" size="small">
+        <Card title={t('form.solverSettings')} size="small">
           <Form.Item
-            label="求解方法"
+            label={t('form.solverMethod')}
             name={['solver', 'method']}
-            rules={[{ required: true, message: '请选择求解方法' }]}
+            rules={[{ required: true, message: t('form.pleaseSelectSolverMethod') }]}
           >
-            <Select placeholder="选择求解方法">
-              <Option value="hydrostatic">静水压求解器（推荐）</Option>
-              <Option value="godunov">Godunov格式</Option>
-              <Option value="simple">简单求解器</Option>
+            <Select placeholder={t('form.selectSolverMethod')}>
+              <Option value="hydrostatic">{t('form.hydrostaticSolver')}</Option>
+              <Option value="godunov">{t('form.godunovScheme')}</Option>
+              <Option value="simple">{t('form.simpleSolver')}</Option>
             </Select>
           </Form.Item>
         </Card>
 
         {/* 边界条件 */}
-        <Card title="边界条件" size="small">
+        <Card title={t('form.boundaryConditions')} size="small">
           <Collapse
             defaultActiveKey={['upstream', 'downstream']}
             items={[
               {
                 key: 'upstream',
-                label: '上游边界条件',
+                label: t('form.upstreamBoundary'),
                 children: (
                   <Row gutter={16}>
                     <Col xs={24} md={12}>
                       <Form.Item
-                        label="边界类型"
+                        label={t('form.boundaryType')}
                         name={['boundary_conditions', 'upstream', 'type']}
-                        rules={[{ required: true, message: '请选择边界类型' }]}
+                        rules={[{ required: true, message: t('form.pleaseSelectBoundaryType') }]}
                       >
-                        <Select placeholder="选择边界类型">
-                          <Option value="flow">流量边界</Option>
-                          <Option value="depth">水深边界</Option>
+                        <Select placeholder={t('form.selectBoundaryType')}>
+                          <Option value="flow">{t('form.flowBoundary')}</Option>
+                          <Option value="depth">{t('form.depthBoundary')}</Option>
                         </Select>
                       </Form.Item>
                     </Col>
                     <Col xs={24} md={12}>
                       <Form.Item
-                        label="边界值"
+                        label={t('form.boundaryValue')}
                         name={['boundary_conditions', 'upstream', 'value']}
                         rules={[
-                          { required: true, message: '请输入边界值' },
-                          { type: 'number', min: 0, message: '边界值必须大于0' }
+                          { required: true, message: t('form.pleaseEnterBoundaryValue') },
+                          { type: 'number', min: 0, message: t('form.boundaryValuePositive') }
                         ]}
                       >
                         <InputNumber
                           style={{ width: '100%' }}
-                          placeholder="输入边界值"
+                          placeholder={t('form.enterBoundaryValue')}
                           min={0}
                           step={0.1}
                         />
@@ -196,31 +198,31 @@ const FormEditor: React.FC<FormEditorProps> = ({ config, onChange }) => {
               },
               {
                 key: 'downstream',
-                label: '下游边界条件',
+                label: t('form.downstreamBoundary'),
                 children: (
                   <Row gutter={16}>
                     <Col xs={24} md={12}>
                       <Form.Item
-                        label="边界类型"
+                        label={t('form.boundaryType')}
                         name={['boundary_conditions', 'downstream', 'type']}
-                        rules={[{ required: true, message: '请选择边界类型' }]}
+                        rules={[{ required: true, message: t('form.pleaseSelectBoundaryType') }]}
                       >
-                        <Select placeholder="选择边界类型">
-                          <Option value="depth">水深边界</Option>
-                          <Option value="flow">流量边界</Option>
-                          <Option value="rating_curve">水位流量关系</Option>
+                        <Select placeholder={t('form.selectBoundaryType')}>
+                          <Option value="depth">{t('form.depthBoundary')}</Option>
+                          <Option value="flow">{t('form.flowBoundary')}</Option>
+                          <Option value="rating_curve">{t('form.ratingCurve')}</Option>
                         </Select>
                       </Form.Item>
                     </Col>
                     <Col xs={24} md={12}>
                       <Form.Item
-                        label="计算方法"
+                        label={t('form.calculationMethod')}
                         name={['boundary_conditions', 'downstream', 'method']}
                       >
-                        <Select placeholder="选择计算方法" allowClear>
-                          <Option value="uniform_flow">均匀流</Option>
-                          <Option value="critical_depth">临界水深</Option>
-                          <Option value="specified">指定值</Option>
+                        <Select placeholder={t('form.selectCalculationMethod')} allowClear>
+                          <Option value="uniform_flow">{t('form.uniformFlow')}</Option>
+                          <Option value="critical_depth">{t('form.criticalDepth')}</Option>
+                          <Option value="specified">{t('form.specified')}</Option>
                         </Select>
                       </Form.Item>
                     </Col>
@@ -232,17 +234,17 @@ const FormEditor: React.FC<FormEditorProps> = ({ config, onChange }) => {
         </Card>
 
         {/* 水工结构（可选） */}
-        <Card 
-          title="水工结构" 
+        <Card
+          title={t('form.hydraulicStructures')}
           size="small"
-          extra={<Button type="dashed" icon={<PlusOutlined />}>添加结构</Button>}
+          extra={<Button type="dashed" icon={<PlusOutlined />}>{t('form.addStructure')}</Button>}
         >
           <Form.List name="structures">
             {(fields, { add, remove }) => (
               <>
                 {fields.length === 0 && (
                   <div style={{ textAlign: 'center', padding: '20px', color: '#999' }}>
-                    暂无水工结构，点击"添加结构"按钮添加
+                    {t('form.noStructures')}
                   </div>
                 )}
                 {fields.map((field, index) => (
@@ -250,7 +252,7 @@ const FormEditor: React.FC<FormEditorProps> = ({ config, onChange }) => {
                     key={field.key}
                     size="small"
                     type="inner"
-                    title={`结构 ${index + 1}`}
+                    title={t('form.structureIndex', { index: index + 1 })}
                     extra={
                       <Button
                         type="link"
@@ -258,7 +260,7 @@ const FormEditor: React.FC<FormEditorProps> = ({ config, onChange }) => {
                         icon={<DeleteOutlined />}
                         onClick={() => remove(field.name)}
                       >
-                        删除
+                        {t('common.delete')}
                       </Button>
                     }
                     style={{ marginBottom: 16 }}
@@ -267,27 +269,27 @@ const FormEditor: React.FC<FormEditorProps> = ({ config, onChange }) => {
                       <Col xs={24} md={8}>
                         <Form.Item
                           {...field}
-                          label="结构类型"
+                          label={t('form.structureType')}
                           name={[field.name, 'type']}
-                          rules={[{ required: true, message: '请选择结构类型' }]}
+                          rules={[{ required: true, message: t('form.pleaseSelectStructureType') }]}
                         >
-                          <Select placeholder="选择结构类型">
-                            <Option value="sluice_gate">闸门</Option>
-                            <Option value="weir">堰</Option>
-                            <Option value="orifice">孔板</Option>
+                          <Select placeholder={t('form.selectStructureType')}>
+                            <Option value="sluice_gate">{t('form.sluiceGate')}</Option>
+                            <Option value="weir">{t('form.weir')}</Option>
+                            <Option value="orifice">{t('form.orifice')}</Option>
                           </Select>
                         </Form.Item>
                       </Col>
                       <Col xs={24} md={8}>
                         <Form.Item
                           {...field}
-                          label="位置 (m)"
+                          label={t('form.position')}
                           name={[field.name, 'position']}
-                          rules={[{ required: true, message: '请输入位置' }]}
+                          rules={[{ required: true, message: t('form.pleaseEnterPosition') }]}
                         >
                           <InputNumber
                             style={{ width: '100%' }}
-                            placeholder="输入位置"
+                            placeholder={t('form.enterPosition')}
                             min={0}
                           />
                         </Form.Item>
@@ -295,12 +297,12 @@ const FormEditor: React.FC<FormEditorProps> = ({ config, onChange }) => {
                       <Col xs={24} md={8}>
                         <Form.Item
                           {...field}
-                          label="宽度 (m)"
+                          label={t('form.widthM')}
                           name={[field.name, 'parameters', 'width']}
                         >
                           <InputNumber
                             style={{ width: '100%' }}
-                            placeholder="输入宽度"
+                            placeholder={t('form.enterWidth')}
                             min={0.1}
                           />
                         </Form.Item>
@@ -314,7 +316,7 @@ const FormEditor: React.FC<FormEditorProps> = ({ config, onChange }) => {
                   block
                   icon={<PlusOutlined />}
                 >
-                  添加结构
+                  {t('form.addStructure')}
                 </Button>
               </>
             )}

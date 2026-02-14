@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Tabs, Space, Button, message } from 'antd';
 import { SaveOutlined, PlayCircleOutlined, EyeOutlined, CodeOutlined, FormOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import FormEditor from '../FormEditor';
 import JsonEditor from '../JsonEditor';
 import ConfigPreview from './ConfigPreview';
@@ -12,11 +13,12 @@ interface ConfigEditorProps {
   onRun?: (config: SimulationConfig) => void;
 }
 
-const ConfigEditor: React.FC<ConfigEditorProps> = ({ 
-  initialConfig, 
-  onSave, 
-  onRun 
+const ConfigEditor: React.FC<ConfigEditorProps> = ({
+  initialConfig,
+  onSave,
+  onRun
 }) => {
+  const { t } = useTranslation();
   const [config, setConfig] = useState<SimulationConfig>(
     initialConfig || getDefaultConfig()
   );
@@ -67,24 +69,24 @@ const ConfigEditor: React.FC<ConfigEditorProps> = ({
       
       // 简单的客户端验证
       if (!config.canal || config.canal.length <= 0) {
-        message.error('渠道长度必须大于0');
+        message.error(t('editor.canalLengthError'));
         return false;
       }
       
       if (!config.canal.width || config.canal.width <= 0) {
-        message.error('渠道宽度必须大于0');
+        message.error(t('editor.canalWidthError'));
         return false;
       }
       
       if (!config.canal.slope || config.canal.slope <= 0) {
-        message.error('渠道坡度必须大于0');
+        message.error(t('editor.canalSlopeError'));
         return false;
       }
       
-      message.success('配置验证通过');
+      message.success(t('editor.configValid'));
       return true;
     } catch (error) {
-      message.error('配置验证失败');
+      message.error(t('editor.configInvalid'));
       return false;
     } finally {
       setIsValidating(false);
@@ -99,7 +101,7 @@ const ConfigEditor: React.FC<ConfigEditorProps> = ({
     if (onSave) {
       onSave(config);
     }
-    message.success('配置已保存');
+    message.success(t('editor.configSaved'));
   };
 
   // 运行仿真
@@ -110,7 +112,7 @@ const ConfigEditor: React.FC<ConfigEditorProps> = ({
     if (onRun) {
       onRun(config);
     }
-    message.success('仿真已启动');
+    message.success(t('editor.simulationStarted'));
   };
 
   return (
@@ -124,7 +126,7 @@ const ConfigEditor: React.FC<ConfigEditorProps> = ({
             onClick={handleSave}
             loading={isValidating}
           >
-            保存配置
+            {t('editor.saveConfig')}
           </Button>
           <Button 
             type="primary" 
@@ -132,14 +134,14 @@ const ConfigEditor: React.FC<ConfigEditorProps> = ({
             onClick={handleRun}
             loading={isValidating}
           >
-            运行仿真
+            {t('editor.runSimulation')}
           </Button>
           <Button 
             icon={<EyeOutlined />} 
             onClick={validateConfig}
             loading={isValidating}
           >
-            验证配置
+            {t('editor.validateConfig')}
           </Button>
         </Space>
       </Card>
@@ -160,7 +162,7 @@ const ConfigEditor: React.FC<ConfigEditorProps> = ({
               label: (
                 <span>
                   <FormOutlined />
-                  表单编辑器
+                  {t('editor.formEditor')}
                 </span>
               ),
               children: (
@@ -177,7 +179,7 @@ const ConfigEditor: React.FC<ConfigEditorProps> = ({
               label: (
                 <span>
                   <CodeOutlined />
-                  JSON编辑器
+                  {t('editor.jsonEditor')}
                 </span>
               ),
               children: (
@@ -194,7 +196,7 @@ const ConfigEditor: React.FC<ConfigEditorProps> = ({
               label: (
                 <span>
                   <EyeOutlined />
-                  预览
+                  {t('editor.preview')}
                 </span>
               ),
               children: (

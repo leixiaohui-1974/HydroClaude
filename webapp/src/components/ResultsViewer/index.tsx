@@ -7,6 +7,7 @@ import {
   PlayCircleOutlined,
   DownloadOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import WaterProfileChart from '../Charts/WaterProfileChart';
 import VelocityChart from '../Charts/VelocityChart';
 import TimeSeriesChart from '../Charts/TimeSeriesChart';
@@ -40,6 +41,7 @@ interface ResultsViewerProps {
 }
 
 const ResultsViewer: React.FC<ResultsViewerProps> = ({ results }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('profile');
   const [currentFrame, setCurrentFrame] = useState(0);
   const [showVelocity, setShowVelocity] = useState(false);
@@ -68,7 +70,7 @@ const ResultsViewer: React.FC<ResultsViewerProps> = ({ results }) => {
     a.download = `results_${results.metadata.case_name || 'data'}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    message.success('数据已导出为CSV');
+    message.success(t('results.dataExportedCSV'));
   };
 
   const handleDownloadReport = () => {
@@ -88,7 +90,7 @@ const ResultsViewer: React.FC<ResultsViewerProps> = ({ results }) => {
     a.download = `report_${results.metadata.case_name || 'simulation'}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    message.success('报告已下载');
+    message.success(t('results.reportDownloaded'));
   };
 
   const tabItems = [
@@ -97,7 +99,7 @@ const ResultsViewer: React.FC<ResultsViewerProps> = ({ results }) => {
       label: (
         <span>
           <LineChartOutlined />
-          水位剖面
+          {t('results.waterProfile')}
         </span>
       ),
       children: (
@@ -113,7 +115,7 @@ const ResultsViewer: React.FC<ResultsViewerProps> = ({ results }) => {
       label: (
         <span>
           <BarChartOutlined />
-          流速分布
+          {t('results.velocityDistribution')}
         </span>
       ),
       children: (
@@ -131,17 +133,17 @@ const ResultsViewer: React.FC<ResultsViewerProps> = ({ results }) => {
             label: (
               <span>
                 <PlayCircleOutlined />
-                时间序列
+                {t('results.timeSeries')}
               </span>
             ),
             children: (
               <Space direction="vertical" style={{ width: '100%' }} size="large">
                 <Card size="small" type="inner">
                   <Space>
-                    <span>选择监测位置:</span>
+                    <span>{t('results.selectMonitoringPosition')}</span>
                     <Select
                       mode="multiple"
-                      placeholder="选择位置"
+                      placeholder={t('results.selectPosition')}
                       style={{ width: 300 }}
                       defaultValue={[0, Math.floor(results.spatial.positions.length / 2)]}
                     >
@@ -159,9 +161,9 @@ const ResultsViewer: React.FC<ResultsViewerProps> = ({ results }) => {
                     times: results.temporal!.times,
                     values: results.temporal!.depth_series,
                     positions: results.spatial.positions,
-                    variable_name: '水深 (m)',
+                    variable_name: t('results.waterDepthM'),
                   }}
-                  title="水深时间序列"
+                  title={t('results.waterDepthTimeSeries')}
                   height={450}
                 />
               </Space>
@@ -172,7 +174,7 @@ const ResultsViewer: React.FC<ResultsViewerProps> = ({ results }) => {
             label: (
               <span>
                 <PlayCircleOutlined />
-                动画播放
+                {t('results.animation')}
               </span>
             ),
             children: (
@@ -188,7 +190,7 @@ const ResultsViewer: React.FC<ResultsViewerProps> = ({ results }) => {
                     depths: results.temporal!.depth_series.map(series => series[currentFrame]),
                     velocities: results.temporal!.velocity_series?.map(series => series[currentFrame]),
                   }}
-                  title={`时间: ${results.temporal!.times[currentFrame]?.toFixed(2)} s`}
+                  title={t('results.timeLabel', { time: results.temporal!.times[currentFrame]?.toFixed(2) })}
                   showVelocity={showVelocity}
                   height={400}
                 />
@@ -202,7 +204,7 @@ const ResultsViewer: React.FC<ResultsViewerProps> = ({ results }) => {
       label: (
         <span>
           <TableOutlined />
-          数据表格
+          {t('results.dataTable')}
         </span>
       ),
       children: <ResultsTable data={results.spatial} />,
@@ -211,33 +213,31 @@ const ResultsViewer: React.FC<ResultsViewerProps> = ({ results }) => {
 
   return (
     <div>
-      {/* 工具栏 */}
       <Card size="small" style={{ marginBottom: 16 }}>
         <Space>
           <Button type="primary" icon={<DownloadOutlined />} onClick={handleDownloadReport}>
-            下载报告
+            {t('results.downloadReport')}
           </Button>
           <Button icon={<DownloadOutlined />} onClick={handleExportCSV}>
-            导出所有数据
+            {t('results.exportAllData')}
           </Button>
           {isUnsteady && (
             <Button icon={<PlayCircleOutlined />} onClick={() => setActiveTab('animation')}>
-              生成动画
+              {t('results.generateAnimation')}
             </Button>
           )}
         </Space>
 
         <div style={{ float: 'right' }}>
           <Space>
-            <span>显示流速:</span>
+            <span>{t('results.showVelocity')}:</span>
             <Switch checked={showVelocity} onChange={setShowVelocity} />
-            <span style={{ marginLeft: 16 }}>显示Froude数:</span>
+            <span style={{ marginLeft: 16 }}>{t('results.showFroude')}:</span>
             <Switch checked={showFroude} onChange={setShowFroude} />
           </Space>
         </div>
       </Card>
 
-      {/* 结果展示 */}
       <Card>
         <Tabs activeKey={activeTab} onChange={setActiveTab} items={tabItems} />
       </Card>

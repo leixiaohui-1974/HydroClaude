@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Spin } from 'antd';
+import { useTranslation } from 'react-i18next';
 import ErrorBoundary from './components/ErrorBoundary';
 import RouteErrorBoundary from './components/ErrorBoundary/RouteErrorBoundary';
 import HomePage from './pages/Home';
@@ -19,6 +20,7 @@ import useAuthStore from '@/stores/authStore';
 // Protected route wrapper - redirects to /login if not authenticated
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuthStore();
+  const { t } = useTranslation();
   const location = useLocation();
 
   if (isLoading) {
@@ -29,7 +31,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
         alignItems: 'center',
         minHeight: '100vh',
       }}>
-        <Spin size="large" tip="加载中..." />
+        <Spin size="large" tip={t('common.loading')} />
       </div>
     );
   }

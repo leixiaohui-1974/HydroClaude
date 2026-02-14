@@ -10,9 +10,10 @@ Spec: 001-comprehensive-review-and-testing
 """
 import pytest
 import warnings
-warnings.filterwarnings("ignore")
 import sys
 import os
+
+pytestmark = pytest.mark.filterwarnings("ignore::UserWarning")
 from pathlib import Path
 
 # 路径设置

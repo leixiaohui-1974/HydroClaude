@@ -29,12 +29,11 @@ from typing import Dict
 # 导入新模块
 try:
     from solvers.dissolved_oxygen import (
+        DissolvedOxygenSolver,
+        StreeterPhelpsAnalytical
+    )
 except ImportError as e:
     pytest.skip(f"Required module not available: {e}", allow_module_level=True)
-
-    DissolvedOxygenSolver,
-    StreeterPhelpsAnalytical
-)
 from solvers.ice_cover import IceCoverSolver, StefanAnalyticalSolution
 from solvers.water_temperature import WaterTemperatureSolver
 from solvers.water_quality_adr import ConservativeTracerSolver

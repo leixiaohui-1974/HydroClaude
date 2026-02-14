@@ -23,11 +23,10 @@ import numpy as np
 
 try:
     from solvers.pump_boundary import (
+        PumpCharacteristics, PumpBoundary, StandardPumps
+    )
 except ImportError as e:
     pytest.skip(f"Required module not available: {e}", allow_module_level=True)
-
-    PumpCharacteristics, PumpBoundary, StandardPumps
-)
 
 
 class TestPumpCharacteristics:

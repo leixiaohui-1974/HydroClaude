@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, ZoomControl, ScaleControl } from 'react-leaflet';
 import { Card, Select, Space, Tag } from 'antd';
+import { useTranslation } from 'react-i18next';
 import type { LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './index.css';
 
-// 修复Leaflet默认图标问题
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -19,7 +19,6 @@ const DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// 底图配置
 export const BASE_MAPS = {
   osm: {
     name: 'OpenStreetMap',
@@ -66,18 +65,8 @@ interface MapViewerProps {
   onMapReady?: (map: L.Map) => void;
 }
 
-/**
- * 地图查看器组件
- * 
- * 功能：
- * - 基础地图显示
- * - 多种底图切换
- * - 缩放控件
- * - 比例尺显示
- * - 鼠标坐标显示
- */
 const MapViewer: React.FC<MapViewerProps> = ({
-  center = [39.9042, 116.4074], // 默认北京天安门
+  center = [39.9042, 116.4074],
   zoom = 13,
   height = '600px',
   defaultBaseMap = 'osm',
@@ -86,12 +75,12 @@ const MapViewer: React.FC<MapViewerProps> = ({
   showBaseMapSelector = true,
   onMapReady,
 }) => {
+  const { t } = useTranslation();
   const [baseMap, setBaseMap] = useState<BaseMapType>(defaultBaseMap);
   const [mousePosition, setMousePosition] = useState<{ lat: number; lng: number } | null>(null);
   const [mapZoom, setMapZoom] = useState(zoom);
 
   const handleMapCreated = (map: L.Map) => {
-    // 监听鼠标移动
     map.on('mousemove', (e: L.LeafletMouseEvent) => {
       setMousePosition({
         lat: e.latlng.lat,
@@ -99,12 +88,10 @@ const MapViewer: React.FC<MapViewerProps> = ({
       });
     });
 
-    // 监听缩放
     map.on('zoomend', () => {
       setMapZoom(map.getZoom());
     });
 
-    // 回调
     onMapReady?.(map);
   };
 
@@ -116,11 +103,10 @@ const MapViewer: React.FC<MapViewerProps> = ({
       style={{ height: '100%' }}
       bodyStyle={{ padding: 0, height: '100%' }}
     >
-      {/* 顶部控制栏 */}
       {showBaseMapSelector && (
         <div className="map-controls-bar">
           <Space>
-            <span>底图:</span>
+            <span>{t('mapViewer.baseMap')}</span>
             <Select
               value={baseMap}
               onChange={setBaseMap}
@@ -130,12 +116,11 @@ const MapViewer: React.FC<MapViewerProps> = ({
                 value: key,
               }))}
             />
-            <Tag color="blue">缩放级别: {mapZoom}</Tag>
+            <Tag color="blue">{t('mapViewer.zoomLevel')}{mapZoom}</Tag>
           </Space>
         </div>
       )}
 
-      {/* 地图容器 */}
       <div style={{ height: showBaseMapSelector ? 'calc(100% - 50px)' : '100%' }}>
         <MapContainer
           center={center}
@@ -148,29 +133,24 @@ const MapViewer: React.FC<MapViewerProps> = ({
             }
           }}
         >
-          {/* 底图层 */}
           <TileLayer
             url={currentBaseMap.url}
             attribution={currentBaseMap.attribution}
           />
 
-          {/* 缩放控件 */}
           {showControls && <ZoomControl position="topright" />}
 
-          {/* 比例尺 */}
           {showControls && <ScaleControl position="bottomleft" imperial={false} />}
 
-          {/* 子组件 */}
           {children}
         </MapContainer>
       </div>
 
-      {/* 底部坐标显示 */}
       {mousePosition && (
         <div className="map-coordinates">
           <Space>
-            <span>纬度: {mousePosition.lat.toFixed(6)}</span>
-            <span>经度: {mousePosition.lng.toFixed(6)}</span>
+            <span>{t('mapViewer.latitude')}{mousePosition.lat.toFixed(6)}</span>
+            <span>{t('mapViewer.longitude')}{mousePosition.lng.toFixed(6)}</span>
           </Space>
         </div>
       )}

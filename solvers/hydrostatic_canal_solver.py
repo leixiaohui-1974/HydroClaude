@@ -304,9 +304,16 @@ class HydrostaticCanalSolver:
         if h_L < self.eps_dry and h_R < self.eps_dry:
             return 0.0, 0.0
 
+        # Clamp inputs to prevent overflow
+        h_max_safe = 1e8
+        h_L = min(max(h_L, 0.0), h_max_safe)
+        h_R = min(max(h_R, 0.0), h_max_safe)
+        hu_max_safe = 1e10
+        hu_L = max(-hu_max_safe, min(hu_max_safe, hu_L))
+        hu_R = max(-hu_max_safe, min(hu_max_safe, hu_R))
+
         u_L = hu_L / h_L if h_L > self.eps_dry else 0.0
         u_R = hu_R / h_R if h_R > self.eps_dry else 0.0
-        # Clamp velocities to prevent overflow
         u_max = 100.0
         u_L = max(-u_max, min(u_max, u_L))
         u_R = max(-u_max, min(u_max, u_R))
@@ -458,31 +465,37 @@ class HydrostaticCanalSolver:
         Returns:
             (F_mass, F_momentum): 
         """
-        # 
         if h_L < self.eps_dry and h_R < self.eps_dry:
             return 0.0, 0.0
 
-        # 
+        # Clamp inputs to prevent overflow in all downstream computations
+        h_max_safe = 1e8  # Max physically meaningful depth
+        h_L = min(max(h_L, 0.0), h_max_safe)
+        h_R = min(max(h_R, 0.0), h_max_safe)
+        hu_max_safe = 1e10
+        hu_L = max(-hu_max_safe, min(hu_max_safe, hu_L))
+        hu_R = max(-hu_max_safe, min(hu_max_safe, hu_R))
+
         u_L = hu_L / h_L if h_L > self.eps_dry else 0.0
         u_R = hu_R / h_R if h_R > self.eps_dry else 0.0
 
-        # Clamp velocities to prevent overflow in flux computation
-        u_max = 100.0  # Physical velocity limit (m/s)
+        # Clamp velocities
+        u_max = 100.0
         u_L = max(-u_max, min(u_max, u_L))
         u_R = max(-u_max, min(u_max, u_R))
 
-        #
         c_L = math.sqrt(self.g * h_L) if h_L > self.eps_dry else 0.0
         c_R = math.sqrt(self.g * h_R) if h_R > self.eps_dry else 0.0
 
-        # Roe
-        # Toro (2009), Section 10.5
+        # Roe averages - Toro (2009), Section 10.5
         h_avg = 0.5 * (h_L + h_R)
         c_avg = math.sqrt(self.g * h_avg) if h_avg > self.eps_dry else 0.0
-        
-        # Roe
+
         if h_L + h_R > self.eps_dry:
-            u_avg = (u_L * math.sqrt(h_L) + u_R * math.sqrt(h_R)) / (math.sqrt(h_L) + math.sqrt(h_R))
+            sqrt_hL = math.sqrt(h_L) if h_L > 0 else 0.0
+            sqrt_hR = math.sqrt(h_R) if h_R > 0 else 0.0
+            denom = sqrt_hL + sqrt_hR
+            u_avg = (u_L * sqrt_hL + u_R * sqrt_hR) / denom if denom > 1e-14 else 0.0
         else:
             u_avg = 0.0
 
@@ -1216,12 +1229,17 @@ class HydrostaticCanalSolver:
                     # 
                     continue
                 
-                # 
-                dh = dt * (-(F_mass[i+1] - F_mass[i])/self.dx + S_mass[i])
+                # Update with overflow-safe flux difference
+                dF_mass = F_mass[i+1] - F_mass[i]
+                dF_mom = F_momentum[i+1] - F_momentum[i]
+                if not math.isfinite(dF_mass):
+                    dF_mass = 0.0
+                if not math.isfinite(dF_mom):
+                    dF_mom = 0.0
+                dh = dt * (-dF_mass / self.dx + S_mass[i])
                 h_new[i] = self.h[i] + dh
 
-                # 
-                dhu = dt * (-(F_momentum[i+1] - F_momentum[i])/self.dx + S_momentum[i])
+                dhu = dt * (-dF_mom / self.dx + S_momentum[i])
                 hu_new[i] = self.hu[i] + dhu
 
             #
