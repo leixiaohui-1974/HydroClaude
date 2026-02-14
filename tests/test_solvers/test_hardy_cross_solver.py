@@ -69,7 +69,7 @@ class TestHardyCrossSolverInitialization:
         r1 = Reservoir("R1", elevation=50.0, head=50.0)
         topology.add_node(r1)
 
-        with pytest.raises(ValueError, match="最大迭代次数必须 > 0"):
+        with pytest.raises(ValueError, match="> 0"):
             HardyCrossSolver(topology, max_iter=0)
 
     def test_invalid_tolerance(self):
@@ -78,7 +78,7 @@ class TestHardyCrossSolverInitialization:
         r1 = Reservoir("R1", elevation=50.0, head=50.0)
         topology.add_node(r1)
 
-        with pytest.raises(ValueError, match="收敛容差必须 > 0"):
+        with pytest.raises(ValueError, match="> 0"):
             HardyCrossSolver(topology, tol=0.0)
 
     def test_invalid_relaxation_factor(self):
@@ -87,10 +87,10 @@ class TestHardyCrossSolverInitialization:
         r1 = Reservoir("R1", elevation=50.0, head=50.0)
         topology.add_node(r1)
 
-        with pytest.raises(ValueError, match="松弛因子必须在"):
+        with pytest.raises(ValueError, match=r"\(0, 1\]"):
             HardyCrossSolver(topology, relaxation_factor=0.0)
 
-        with pytest.raises(ValueError, match="松弛因子必须在"):
+        with pytest.raises(ValueError, match=r"\(0, 1\]"):
             HardyCrossSolver(topology, relaxation_factor=1.5)
 
 
@@ -119,7 +119,7 @@ class TestSimpleTreeNetwork:
         solver = HardyCrossSolver(topology, max_iter=10, tol=1e-6, verbose=False)
 
         # 树状网络应该立即收敛（没有回路）
-        with pytest.warns(UserWarning, match="网络中没有回路"):
+        with pytest.warns(UserWarning, match="No loops found"):
             flows, heads = solver.solve()
 
         # 检查流量

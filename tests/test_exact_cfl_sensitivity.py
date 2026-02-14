@@ -19,7 +19,7 @@ except ImportError as e:
     pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 
 
-def test_cfl_number(cfl, max_steps=20, max_time=1.0):
+def _run_cfl_number(cfl, max_steps=20, max_time=1.0):
     """测试特定CFL数"""
     width = 10.0
     length = 100.0
@@ -88,6 +88,18 @@ def test_cfl_number(cfl, max_steps=20, max_time=1.0):
 
     return results
 
+def test_cfl_sensitivity():
+    """Pytest-compatible test: verify at least one CFL value completes without crashing."""
+    cfl_values = [0.1, 0.2, 0.3]
+    any_passed = False
+    for cfl in cfl_values:
+        results = _run_cfl_number(cfl, max_steps=20, max_time=1.0)
+        if not results['crashed'] and len(results['steps']) > 0:
+            any_passed = True
+            break
+    assert any_passed, "All CFL values caused crashes"
+
+
 def main():
     print("=" * 80)
     print("精确求解器CFL数敏感性测试")
@@ -102,7 +114,7 @@ def main():
         print(f"CFL = {cfl}")
         print("=" * 80)
 
-        results = test_cfl_number(cfl, max_steps=20, max_time=1.0)
+        results = _run_cfl_number(cfl, max_steps=20, max_time=1.0)
         all_results.append(results)
 
         print(f"\n初始质量: 1500.00 m^3")

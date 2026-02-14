@@ -94,6 +94,19 @@ class SimulationEngine:
         print("=" * 80)
         print()
 
+    def run_to_time(self, target_time: float, max_steps: int = 1000000):
+        """
+        运行仿真到指定时间
+
+        Args:
+            target_time: 目标时间
+            max_steps: 最大步数限制
+        """
+        steps = 0
+        while self.solver.t < target_time and steps < max_steps:
+            self.solver.step()
+            steps += 1
+
     def run(self):
         """运行仿真"""
         sim_cfg = self.config['simulation']

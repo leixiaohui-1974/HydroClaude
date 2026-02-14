@@ -279,7 +279,7 @@ class TestVariableSlope:
         # 错误长度的S0数组
         S0_wrong = np.ones(60)  # 应该是50
 
-        with pytest.raises(ValueError, match="S0数组长度"):
+        with pytest.raises(ValueError, match="S0"):
             solver = HydrostaticCanalSolver(
                 length=1000.0,
                 nx=nx,

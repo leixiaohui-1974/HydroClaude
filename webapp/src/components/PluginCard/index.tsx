@@ -7,6 +7,7 @@ import {
   SettingOutlined,
   InfoCircleOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import type { MarketplacePlugin } from '@/types/plugin';
 import './index.css';
 
@@ -38,6 +39,7 @@ const PluginCard: React.FC<PluginCardProps> = ({
   onConfigure,
   onViewDetails,
 }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const handleInstall = async () => {
@@ -100,7 +102,7 @@ const PluginCard: React.FC<PluginCardProps> = ({
   };
 
   return (
-    <Badge.Ribbon text={installed ? '已安装' : null} color="green">
+    <Badge.Ribbon text={installed ? t('pluginCard.installed') : null} color="green">
       <Card
         className="plugin-card"
         hoverable
@@ -117,19 +119,19 @@ const PluginCard: React.FC<PluginCardProps> = ({
         }
         actions={[
           installed ? (
-            <Tooltip title="配置">
+            <Tooltip title={t('common.configure')}>
               <SettingOutlined key="configure" onClick={handleConfigure} />
             </Tooltip>
           ) : null,
-          <Tooltip title="查看详情">
+          <Tooltip title={t('pluginCard.viewDetails')}>
             <InfoCircleOutlined key="details" onClick={handleViewDetails} />
           </Tooltip>,
           installed ? (
-            <Tooltip title="卸载">
+            <Tooltip title={t('common.uninstall')}>
               <DeleteOutlined key="uninstall" onClick={handleUninstall} />
             </Tooltip>
           ) : (
-            <Tooltip title="安装">
+            <Tooltip title={t('common.install')}>
               <DownloadOutlined key="install" onClick={handleInstall} />
             </Tooltip>
           ),
@@ -171,7 +173,7 @@ const PluginCard: React.FC<PluginCardProps> = ({
                   </Text>
                 </Space>
                 <Text type="secondary" style={{ fontSize: 12 }}>
-                  {formatDownloads(plugin.downloads)} 下载
+                  {formatDownloads(plugin.downloads)} {t('pluginCard.downloads')}
                 </Text>
               </Space>
 
@@ -191,7 +193,7 @@ const PluginCard: React.FC<PluginCardProps> = ({
                   onClick={handleUninstall}
                   block
                 >
-                  卸载插件
+                  {t('pluginCard.uninstallPlugin')}
                 </Button>
               ) : (
                 <Button
@@ -201,7 +203,7 @@ const PluginCard: React.FC<PluginCardProps> = ({
                   onClick={handleInstall}
                   block
                 >
-                  安装插件
+                  {t('pluginCard.installPlugin')}
                 </Button>
               )}
             </Space>

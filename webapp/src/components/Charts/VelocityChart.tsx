@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import Plot from 'react-plotly.js';
 import { Card, Empty } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 interface VelocityData {
   positions: number[];
@@ -17,10 +18,12 @@ interface VelocityChartProps {
 
 const VelocityChart: React.FC<VelocityChartProps> = ({
   data,
-  title = '流速分布图',
+  title,
   height = 400,
   showFroude = true,
 }) => {
+  const { t } = useTranslation();
+  const resolvedTitle = title ?? t('chart.velocityChartTitle');
   const plotData = useMemo(() => {
     if (!data || !data.positions || data.positions.length === 0) {
       return [];
@@ -34,7 +37,7 @@ const VelocityChart: React.FC<VelocityChartProps> = ({
       y: data.velocities,
       type: 'scatter',
       mode: 'lines+markers',
-      name: '流速',
+      name: t('chart.velocity'),
       line: { color: '#52c41a', width: 3 },
       marker: { size: 6, color: '#52c41a' },
     });
@@ -46,7 +49,7 @@ const VelocityChart: React.FC<VelocityChartProps> = ({
         y: data.froude_numbers,
         type: 'scatter',
         mode: 'lines',
-        name: 'Froude数',
+        name: t('chart.froudeNumber'),
         line: { color: '#ff7875', width: 2, dash: 'dash' },
         yaxis: 'y2',
       });
@@ -57,7 +60,7 @@ const VelocityChart: React.FC<VelocityChartProps> = ({
         y: [1, 1],
         type: 'scatter',
         mode: 'lines',
-        name: '临界流 (Fr=1)',
+        name: t('chart.criticalFlow'),
         line: { color: '#faad14', width: 1, dash: 'dot' },
         yaxis: 'y2',
         showlegend: true,
@@ -65,21 +68,21 @@ const VelocityChart: React.FC<VelocityChartProps> = ({
     }
 
     return traces;
-  }, [data, showFroude]);
+  }, [data, showFroude, t]);
 
   const layout = useMemo(() => {
     const baseLayout: any = {
       title: {
-        text: title,
+        text: resolvedTitle,
         font: { size: 16, family: 'Arial, sans-serif' },
       },
       xaxis: {
-        title: '距离 (m)',
+        title: t('chart.distanceM'),
         gridcolor: '#e8e8e8',
         showgrid: true,
       },
       yaxis: {
-        title: '流速 (m/s)',
+        title: t('chart.velocityMs'),
         gridcolor: '#e8e8e8',
         showgrid: true,
       },
@@ -101,7 +104,7 @@ const VelocityChart: React.FC<VelocityChartProps> = ({
     // 如果显示Froude数，添加第二个y轴
     if (showFroude && data.froude_numbers) {
       baseLayout.yaxis2 = {
-        title: 'Froude数',
+        title: t('chart.froudeNumber'),
         overlaying: 'y',
         side: 'right',
         gridcolor: '#e8e8e8',
@@ -110,12 +113,12 @@ const VelocityChart: React.FC<VelocityChartProps> = ({
     }
 
     return baseLayout;
-  }, [title, showFroude, data]);
+  }, [resolvedTitle, showFroude, data, t]);
 
   if (!data || !data.positions || data.positions.length === 0) {
     return (
       <Card>
-        <Empty description="暂无数据" />
+        <Empty description={t('chart.noData')} />
       </Card>
     );
   }

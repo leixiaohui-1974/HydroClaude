@@ -49,7 +49,7 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     // 错误处理
-    const errorMessage = error.response?.data?.message || error.message || '请求失败';
+    const errorMessage = error.response?.data?.message || error.message || 'Request failed';
 
     if (error.response?.status === 401) {
       message.error(i18n.t('apiErrors.unauthorized'));

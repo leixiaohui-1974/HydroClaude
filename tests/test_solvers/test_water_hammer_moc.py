@@ -116,7 +116,7 @@ class TestWaterHammerMOCSolver:
         )
 
         # 尝试使用过大的CFL数
-        with pytest.raises(ValueError, match="违反CFL条件"):
+        with pytest.raises(ValueError, match="CFL"):
             solver.set_grid(nx=10, cfl=2.0)
 
         print(" CFL条件违反检测测试通过")

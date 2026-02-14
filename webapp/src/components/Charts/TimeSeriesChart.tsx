@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import Plot from 'react-plotly.js';
 import { Card, Empty } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 interface TimeSeriesData {
   times: number[];
@@ -18,10 +19,12 @@ interface TimeSeriesChartProps {
 
 const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
   data,
-  title = '时间序列图',
+  title,
   height = 400,
   selectedPositions,
 }) => {
+  const { t } = useTranslation();
+  const resolvedTitle = title ?? t('chart.timeSeriesTitle');
   const plotData = useMemo(() => {
     if (!data || !data.times || data.times.length === 0) {
       return [];
@@ -49,16 +52,16 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
 
   const layout = useMemo(() => ({
     title: {
-      text: title,
+      text: resolvedTitle,
       font: { size: 16, family: 'Arial, sans-serif' },
     },
     xaxis: {
-      title: '时间 (s)',
+      title: t('chart.timeS'),
       gridcolor: '#e8e8e8',
       showgrid: true,
     },
     yaxis: {
-      title: data.variable_name || '值',
+      title: data.variable_name || t('chart.value'),
       gridcolor: '#e8e8e8',
       showgrid: true,
     },
@@ -75,12 +78,12 @@ const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
     margin: { l: 60, r: 60, t: 60, b: 60 },
     plot_bgcolor: '#fafafa',
     paper_bgcolor: 'white',
-  }), [title, data]);
+  }), [resolvedTitle, data, t]);
 
   if (!data || !data.times || data.times.length === 0) {
     return (
       <Card>
-        <Empty description="暂无时间序列数据" />
+        <Empty description={t('chart.noTimeSeriesData')} />
       </Card>
     );
   }

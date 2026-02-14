@@ -25,8 +25,14 @@ try:
 except ImportError as e:
     pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 
+try:
+    from solvers.riemann_hllc import hllc_flux  # noqa: F401
+    HLLC_AVAILABLE = True
+except ImportError:
+    HLLC_AVAILABLE = False
 
 
+@pytest.mark.skipif(not HLLC_AVAILABLE, reason="HLLC solver module (solvers/riemann_hllc) not available")
 def test_lake_at_rest_hll_vs_hllc():
     """
     对比HLL和HLLC求解器在Lake at Rest上的表现
@@ -197,6 +203,7 @@ def test_lake_at_rest_hll_vs_hllc():
     return success
 
 
+@pytest.mark.skipif(not HLLC_AVAILABLE, reason="HLLC solver module (solvers/riemann_hllc) not available")
 def test_lake_at_rest_hllc_long_time():
     """
     长时间Lake at Rest测试验证HLLC稳定性

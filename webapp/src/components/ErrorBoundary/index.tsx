@@ -1,5 +1,6 @@
 import React from 'react';
 import { Result, Button, Typography } from 'antd';
+import i18n from '@/i18n';
 
 const { Paragraph, Text } = Typography;
 
@@ -54,14 +55,14 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
         <div style={{ padding: '48px 24px' }}>
           <Result
             status="error"
-            title="页面出错了"
-            subTitle="抱歉，页面发生了意外错误。请尝试重试或返回首页。"
+            title={i18n.t('errorBoundary.pageError')}
+            subTitle={i18n.t('errorBoundary.errorDescription')}
             extra={[
               <Button type="primary" key="retry" onClick={this.handleRetry}>
-                重试
+                {i18n.t('errorBoundary.retry')}
               </Button>,
               <Button key="home" onClick={this.handleBackHome}>
-                返回首页
+                {i18n.t('errorBoundary.backHome')}
               </Button>,
             ]}
           >
@@ -69,7 +70,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
               <div style={{ textAlign: 'left' }}>
                 <Paragraph>
                   <Text strong style={{ fontSize: 16 }}>
-                    错误信息：
+                    {i18n.t('errorBoundary.errorInfo')}
                   </Text>
                 </Paragraph>
                 <Paragraph>
@@ -78,7 +79,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
                 {this.state.error.stack && (
                   <details style={{ marginTop: 8 }}>
                     <summary style={{ cursor: 'pointer', color: '#1677ff' }}>
-                      查看错误堆栈
+                      {i18n.t('errorBoundary.viewErrorStack')}
                     </summary>
                     <pre
                       style={{

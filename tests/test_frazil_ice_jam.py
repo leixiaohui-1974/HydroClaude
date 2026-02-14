@@ -175,9 +175,9 @@ def test_frazil_size_distribution():
     frazil_solver.initialize()
 
     # 条件
-    u = np.array([0.8])  # 较强湍流
-    h = np.array([3.0])
-    T = np.array([-0.2])  # 较强过冷
+    u = np.full(n_cells, 0.8)  # 较强湍流
+    h = np.full(n_cells, 3.0)
+    T = np.full(n_cells, -0.2)  # 较强过冷
 
     print(f"强过冷条件: T={T[0]:.2f} degC, u={u[0]:.2f}m/s")
 

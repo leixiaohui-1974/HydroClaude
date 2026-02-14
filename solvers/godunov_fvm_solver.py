@@ -24,7 +24,7 @@ from typing import Tuple, Dict, Optional
 from .boundary_conditions import CharacteristicBC
 
 # 
-from physics.cross_section import CrossSection, RectangularSection
+from physics.cross_section import CrossSection, RectangularSection, SectionType
 
 # Numba
 try:
@@ -159,34 +159,36 @@ class GodunvFVMSolver:
             self.cross_section = RectangularSection("default", width)
         else:
             self.cross_section = cross_section
-            # [WARN]  Phase 2.3 
-            # 
+            # [WARN]  Phase 2.3
+            #
             # 1.  A, P, R
             # 2.  A
             # 3.  Froude
             #
-            # 
-            # 1. [WARN]   (0.5*g*h²*B) - 
-            # 2. [WARN]   - 
-            # 3. [WARN]   (CharacteristicBC) - 
+            #
+            # 1. [WARN]   (0.5*g*h²*B) -
+            # 2. [WARN]   -
+            # 3. [WARN]   (CharacteristicBC) -
             #
             # //
-            # -  
-            # -  
-            # - Froude 
+            # -
+            # -
+            # - Froude
             # - [WARN]
             #
-            # 
+            #
             #       /
-            import warnings
-            warnings.warn(
-                "\n[WARN]   (Phase 2.3)\n"
-                "Froude\n"
-                "\n"
-                "\n"
-                ": docs/STAGE2_PHASE2_3_COMPLETION_REPORT.md",
-                UserWarning
-            )
+            if cross_section.section_type != SectionType.RECTANGULAR:
+                import warnings
+                warnings.warn(
+                    "非矩形断面支持：部分実現 (Phase 2.3)\n"
+                    "[WARN]   (Phase 2.3)\n"
+                    "Froude\n"
+                    "\n"
+                    "\n"
+                    ": docs/STAGE2_PHASE2_3_COMPLETION_REPORT.md",
+                    UserWarning
+                )
 
         # self.B ()
         self.B = width

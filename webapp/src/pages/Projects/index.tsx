@@ -68,9 +68,9 @@ const ProjectsPage: React.FC = () => {
     } catch {
       // API不可用时使用演示数据
       setProjects([
-        { id: 1, name: '渠道稳态流分析', status: 'completed', config: { simulation: { type: 'steady' } }, created_at: '2025-11-10T00:00:00Z' },
-        { id: 2, name: '闸门流动仿真', status: 'running', config: { simulation: { type: 'gate' } }, created_at: '2025-11-12T00:00:00Z' },
-        { id: 3, name: '非恒定流计算', status: 'pending', config: { simulation: { type: 'unsteady' } }, created_at: '2025-11-13T00:00:00Z' },
+        { id: 1, name: t('home.canalSteadyFlow'), status: 'completed', config: { simulation: { type: 'steady' } }, created_at: '2025-11-10T00:00:00Z' },
+        { id: 2, name: t('home.gateFlowAnalysis'), status: 'running', config: { simulation: { type: 'gate' } }, created_at: '2025-11-12T00:00:00Z' },
+        { id: 3, name: t('home.unsteadyFlowSim'), status: 'pending', config: { simulation: { type: 'unsteady' } }, created_at: '2025-11-13T00:00:00Z' },
       ]);
       setTotal(3);
     } finally {

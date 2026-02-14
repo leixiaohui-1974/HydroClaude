@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Polyline, CircleMarker, Popup } from 'react-leaflet';
 import { Card, Space, Switch, Slider, Select, Row, Col } from 'antd';
 import type { Position } from 'geojson';
@@ -35,6 +36,7 @@ const ResultsOverlay: React.FC<ResultsOverlayProps> = ({
   showVelocity: initialShowVelocity = false,
   showVelocityVectors: initialShowVectors = false,
 }) => {
+  const { t } = useTranslation();
   const [showDepth, setShowDepth] = useState(initialShowDepth);
   const [showVelocity, setShowVelocity] = useState(initialShowVelocity);
   const [showVectors, setShowVectors] = useState(initialShowVectors);
@@ -155,22 +157,22 @@ const ResultsOverlay: React.FC<ResultsOverlayProps> = ({
             <Space direction="vertical" style={{ width: '100%' }}>
               <Space>
                 <Switch checked={showDepth} onChange={setShowDepth} />
-                <span>显示水深</span>
+                <span>{t('resultsOverlay.showDepth')}</span>
               </Space>
               <Space>
                 <Switch checked={showVelocity} onChange={setShowVelocity} />
-                <span>显示流速</span>
+                <span>{t('resultsOverlay.showVelocity')}</span>
               </Space>
               <Space>
                 <Switch checked={showVectors} onChange={setShowVectors} />
-                <span>显示矢量场</span>
+                <span>{t('resultsOverlay.showVectorField')}</span>
               </Space>
             </Space>
           </div>
 
           {/* 透明度 */}
           <div>
-            <div style={{ marginBottom: 8 }}>透明度: {(opacity * 100).toFixed(0)}%</div>
+            <div style={{ marginBottom: 8 }}>{t('resultsOverlay.opacity')}: {(opacity * 100).toFixed(0)}%</div>
             <Slider
               value={opacity * 100}
               onChange={(v) => setOpacity(v / 100)}
@@ -182,13 +184,13 @@ const ResultsOverlay: React.FC<ResultsOverlayProps> = ({
           {/* 颜色方案 */}
           {showDepth && (
             <div>
-              <div style={{ marginBottom: 8 }}>水深配色:</div>
+              <div style={{ marginBottom: 8 }}>{t('resultsOverlay.depthColorScheme')}:</div>
               <Select
                 value={depthColorMap}
                 onChange={setDepthColorMap}
                 style={{ width: '100%' }}
                 options={[
-                  { label: '深蓝-浅蓝-黄', value: 'depth' },
+                  { label: t('resultsOverlay.colorDepthBlueYellow'), value: 'depth' },
                   { label: 'Viridis', value: 'viridis' },
                   { label: 'Plasma', value: 'plasma' },
                   { label: 'CoolWarm', value: 'coolwarm' },
@@ -199,13 +201,13 @@ const ResultsOverlay: React.FC<ResultsOverlayProps> = ({
 
           {showVelocity && (
             <div>
-              <div style={{ marginBottom: 8 }}>流速配色:</div>
+              <div style={{ marginBottom: 8 }}>{t('resultsOverlay.velocityColorScheme')}:</div>
               <Select
                 value={velocityColorMap}
                 onChange={setVelocityColorMap}
                 style={{ width: '100%' }}
                 options={[
-                  { label: '蓝-绿-黄-红', value: 'velocity' },
+                  { label: t('resultsOverlay.colorVelocityBlueRed'), value: 'velocity' },
                   { label: 'Viridis', value: 'viridis' },
                   { label: 'Plasma', value: 'plasma' },
                   { label: 'CoolWarm', value: 'coolwarm' },
@@ -216,7 +218,7 @@ const ResultsOverlay: React.FC<ResultsOverlayProps> = ({
 
           {showVectors && (
             <div>
-              <div style={{ marginBottom: 8 }}>矢量密度: {vectorDensity}</div>
+              <div style={{ marginBottom: 8 }}>{t('resultsOverlay.vectorDensity')}: {vectorDensity}</div>
               <Slider
                 value={vectorDensity}
                 onChange={setVectorDensity}
@@ -232,7 +234,7 @@ const ResultsOverlay: React.FC<ResultsOverlayProps> = ({
       {showDepth && (
         <Card
           className="results-overlay-legend"
-          title="水深 (m)"
+          title={t('resultsOverlay.depthLegendTitle')}
           style={{
             position: 'absolute',
             bottom: 60,
@@ -268,7 +270,7 @@ const ResultsOverlay: React.FC<ResultsOverlayProps> = ({
       {showVelocity && !showDepth && (
         <Card
           className="results-overlay-legend"
-          title="流速 (m/s)"
+          title={t('resultsOverlay.velocityLegendTitle')}
           style={{
             position: 'absolute',
             bottom: 60,
@@ -312,8 +314,8 @@ const ResultsOverlay: React.FC<ResultsOverlayProps> = ({
           >
             <Popup>
               <div>
-                <strong>位置:</strong> {segment.position.toFixed(1)} m<br />
-                <strong>水深:</strong> {segment.depth.toFixed(3)} m
+                <strong>{t('resultsOverlay.position')}:</strong> {segment.position.toFixed(1)} m<br />
+                <strong>{t('resultsOverlay.depth')}:</strong> {segment.depth.toFixed(3)} m
               </div>
             </Popup>
           </Polyline>
@@ -331,8 +333,8 @@ const ResultsOverlay: React.FC<ResultsOverlayProps> = ({
           >
             <Popup>
               <div>
-                <strong>位置:</strong> {segment.position.toFixed(1)} m<br />
-                <strong>流速:</strong> {segment.velocity.toFixed(3)} m/s
+                <strong>{t('resultsOverlay.position')}:</strong> {segment.position.toFixed(1)} m<br />
+                <strong>{t('resultsOverlay.velocity')}:</strong> {segment.velocity.toFixed(3)} m/s
               </div>
             </Popup>
           </Polyline>
@@ -357,7 +359,7 @@ const ResultsOverlay: React.FC<ResultsOverlayProps> = ({
             >
               <Popup>
                 <div>
-                  <strong>流速:</strong> {vector.velocity.toFixed(3)} m/s
+                  <strong>{t('resultsOverlay.velocity')}:</strong> {vector.velocity.toFixed(3)} m/s
                 </div>
               </Popup>
             </CircleMarker>

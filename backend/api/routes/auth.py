@@ -4,7 +4,8 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+import re
 from sqlalchemy.orm import Session
 from datetime import timedelta
 from slowapi import Limiter
@@ -25,6 +26,17 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 class ChangePasswordRequest(BaseModel):
     current_password: str = Field(..., min_length=6)
     new_password: str = Field(..., min_length=8, max_length=128)
+
+    @field_validator("new_password")
+    @classmethod
+    def validate_password_strength(cls, v: str) -> str:
+        if not re.search(r"[A-Z]", v):
+            raise ValueError("Password must contain at least one uppercase letter")
+        if not re.search(r"[a-z]", v):
+            raise ValueError("Password must contain at least one lowercase letter")
+        if not re.search(r"\d", v):
+            raise ValueError("Password must contain at least one digit")
+        return v
 
 
 @router.post("/register", response_model=UserPublic, status_code=status.HTTP_201_CREATED)

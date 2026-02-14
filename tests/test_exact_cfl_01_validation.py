@@ -115,7 +115,7 @@ def test_lake_at_rest(cfl=0.1, sim_time=10.0):
 
     solver = GodunvFVMSolver(
         width=width, length=length, n_cells=n_cells,
-        manning_n=0.0, slope=0.0, cfl=cfl, order=1,
+        manning_n=0.0, cfl=cfl, order=1,
         riemann_solver='exact', well_balanced=True, z_b=z_b,
         use_numba=False
     )

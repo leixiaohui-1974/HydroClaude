@@ -230,6 +230,17 @@ class ModelBuilder:
             if len(h_init) != n_cells:
                 raise ValueError(f"初始条件数据点数({len(h_init)})与网格单元数({n_cells})不匹配")
 
+        elif ic['type'] == 'smooth_wave':
+            # 光滑波初始条件（正弦扰动）
+            h_base = ic.get('h_base', 2.0)
+            amplitude = ic.get('amplitude', 0.1)
+            wavelength = ic.get('wavelength', geom['channel_length'])
+            Q_val = ic.get('Q', 0.0)
+
+            k = 2 * np.pi / wavelength
+            h_init = h_base + amplitude * np.cos(k * x)
+            Q_init = np.ones(n_cells) * Q_val
+
         elif ic['type'] == 'expression':
             # Python表达式
             expr = ic['expression']

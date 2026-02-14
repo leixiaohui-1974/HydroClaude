@@ -9,14 +9,30 @@
 """
 
 import os
+import sys
 import secrets
 from pydantic_settings import BaseSettings
 from typing import List
 
 
+_DEFAULT_DEV_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://localhost:8080",
+]
+
+
 def _generate_default_secret() -> str:
     """生成默认密钥（仅用于开发环境）"""
     return secrets.token_urlsafe(32)
+
+
+def _parse_cors_origins() -> List[str]:
+    """Parse CORS_ORIGINS from environment variable (comma-separated) or use defaults."""
+    env_value = os.getenv("CORS_ORIGINS")
+    if env_value:
+        return [origin.strip() for origin in env_value.split(",") if origin.strip()]
+    return _DEFAULT_DEV_ORIGINS
 
 
 class Settings(BaseSettings):
@@ -50,11 +66,7 @@ class Settings(BaseSettings):
     RESULTS_DIR: str = os.getenv("RESULTS_DIR", "./results")
 
     # CORS
-    CORS_ORIGINS: List[str] = [
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "http://localhost:8080",
-    ]
+    CORS_ORIGINS: List[str] = _parse_cors_origins()
 
     class Config:
         env_file = ".env"
@@ -62,8 +74,22 @@ class Settings(BaseSettings):
         case_sensitive = True
 
 
+def _validate_production_settings(s: Settings) -> None:
+    """Validate that required settings are properly configured for production."""
+    # Only enforce SECRET_KEY when explicitly running in production
+    # (i.e., DEBUG is explicitly set to false AND we're not in a testing context)
+    is_testing = "pytest" in sys.modules or os.getenv("TESTING", "").lower() in ("true", "1", "yes")
+    if not s.DEBUG and not is_testing:
+        if not os.getenv("SECRET_KEY"):
+            raise ValueError(
+                "SECRET_KEY environment variable must be explicitly set in production mode "
+                "(DEBUG=False). Generate one with: python -c \"import secrets; print(secrets.token_urlsafe(32))\""
+            )
+
+
 # 创建全局配置实例
 settings = Settings()
+_validate_production_settings(settings)
 
 # 确保上传和结果目录存在
 os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
