@@ -15,6 +15,11 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+pytestmark = [pytest.mark.slow, pytest.mark.solver]
+
+# Maximum solver steps to prevent hanging in CI
+_MAX_SOLVER_STEPS = 5000
+
 try:
     from solvers.godunov_fvm_solver import GodunvFVMSolver
 except ImportError as e:
@@ -22,6 +27,7 @@ except ImportError as e:
 
 
 
+@pytest.mark.timeout(300)
 def test_exact_solver_simple():
     """测试精确求解器基本功能"""
 
@@ -87,9 +93,8 @@ def test_exact_solver_simple():
             solver.step()
 
             # 检查NaN
-            if np.any(np.isnan(solver.h)) or np.any(np.isnan(solver.Q)):
-                print(f"   步骤{step+1}出现NaN!")
-                return False
+            assert not np.any(np.isnan(solver.h)), f"NaN in h at step {step+1}"
+            assert not np.any(np.isnan(solver.Q)), f"NaN in Q at step {step+1}"
 
         print(f"   运行成功")
         print(f"  时间: t={solver.t:.4f}s")
@@ -113,19 +118,18 @@ def test_exact_solver_simple():
         print()
 
     except Exception as e:
-        print(f"   运行失败: {e}")
-        import traceback
-        traceback.print_exc()
-        return False
+        pytest.fail(f"Exact solver integration test failed: {e}")
 
     print("="*70)
     print(" 精确求解器集成测试通过!")
     print("="*70)
     print()
 
-    return True
+    # Verify mass conservation
+    assert mass_error < 10.0, f"Mass conservation error too large: {mass_error:.6f}%"
 
 
+@pytest.mark.timeout(300)
 def test_exact_vs_hll_comparison():
     """对比精确求解器与HLL的结果"""
 
@@ -158,8 +162,10 @@ def test_exact_vs_hll_comparison():
     )
     solver_exact.initialize(h_init.copy(), Q_init.copy(), bc_left, bc_right)
 
-    while solver_exact.t < t_final:
+    step_count = 0
+    while solver_exact.t < t_final and step_count < _MAX_SOLVER_STEPS:
         solver_exact.step()
+        step_count += 1
 
     print(f"  时间: {solver_exact.t:.4f}s")
     print(f"  步数: {solver_exact.step_count}")
@@ -174,8 +180,10 @@ def test_exact_vs_hll_comparison():
     )
     solver_hll.initialize(h_init.copy(), Q_init.copy(), bc_left, bc_right)
 
-    while solver_hll.t < t_final:
+    step_count = 0
+    while solver_hll.t < t_final and step_count < _MAX_SOLVER_STEPS:
         solver_hll.step()
+        step_count += 1
 
     print(f"  时间: {solver_hll.t:.4f}s")
     print(f"  步数: {solver_hll.step_count}")

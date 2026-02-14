@@ -20,7 +20,7 @@ class Project(Base):
     config = Column(JSON, nullable=True)
 
     # 状态
-    status = Column(String(20), default="draft")  # draft, active, archived
+    status = Column(String(20), default="draft", index=True)  # draft, active, archived
 
     # 时间戳
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -46,7 +46,7 @@ class SimulationJob(Base):
     config = Column(JSON, nullable=False)
 
     # 运行状态
-    status = Column(String(20), default="pending")  # pending, running, completed, failed
+    status = Column(String(20), default="pending", index=True)  # pending, running, completed, failed
     progress = Column(Float, default=0.0)  # 0.0 - 100.0
     error = Column(Text, nullable=True)
 

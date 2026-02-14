@@ -29,9 +29,9 @@ const EditorPage: React.FC = () => {
       const project = await api.get(`/projects/${id}`);
       setConfig(project.config);
       setProjectName(project.name || '');
-      message.success(t('editor.configSaved'));
+      message.success(t('editor.projectLoaded'));
     } catch {
-      message.info(t('editor.configSaved'));
+      message.info(t('editor.projectLoadFailed'));
     } finally {
       setLoading(false);
     }
@@ -52,7 +52,7 @@ const EditorPage: React.FC = () => {
       }
     } catch {
       localStorage.setItem('hydroclaude_config', JSON.stringify(newConfig));
-      message.success(t('editor.configSaved'));
+      message.success(t('editor.saveToLocalFallback'));
     }
   };
 
@@ -64,7 +64,7 @@ const EditorPage: React.FC = () => {
       message.success(t('editor.simulationStarted'));
       navigate(`/simulation/${job.id}`);
     } catch {
-      message.error(t('editor.configInvalid'));
+      message.error(t('editor.runFailed'));
     }
   };
 

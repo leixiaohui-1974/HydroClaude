@@ -2,7 +2,9 @@
 插件相关API路由
 """
 
+import logging
 from fastapi import APIRouter, Depends, HTTPException, status, Query
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import desc, func
 from typing import Optional
@@ -19,6 +21,8 @@ from ..schemas import (
 )
 from ..utils.dependencies import get_current_active_user
 from ..config import settings
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/plugins", tags=["Plugins"])
 
@@ -112,10 +116,19 @@ async def create_plugin(
         status="pending"
     )
     
-    db.add(plugin)
-    db.commit()
-    db.refresh(plugin)
-    
+    try:
+        db.add(plugin)
+        db.commit()
+        db.refresh(plugin)
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to create plugin '{plugin_data.plugin_id}': {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create plugin"
+        )
+
+    logger.info(f"Plugin created: {plugin.plugin_id} by user {current_user.username}")
     plugin.author_username = current_user.username
     return plugin
 
@@ -179,10 +192,18 @@ async def update_plugin(
         plugin.repository = plugin_update.repository
     if plugin_update.keywords is not None:
         plugin.keywords = json.dumps(plugin_update.keywords)
-    
-    db.commit()
-    db.refresh(plugin)
-    
+
+    try:
+        db.commit()
+        db.refresh(plugin)
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to update plugin {plugin_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update plugin"
+        )
+
     plugin.author_username = plugin.author.username if plugin.author else "Unknown"
     return plugin
 
@@ -212,9 +233,18 @@ async def delete_plugin(
             detail="Not enough permissions"
         )
     
-    db.delete(plugin)
-    db.commit()
-    
+    try:
+        db.delete(plugin)
+        db.commit()
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to delete plugin {plugin_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete plugin"
+        )
+
+    logger.info(f"Plugin deleted: id={plugin_id} by user {current_user.username}")
     return None
 
 
@@ -244,32 +274,40 @@ async def rate_plugin(
         Rating.user_id == current_user.id
     ).first()
     
-    if existing_rating:
-        # 更新评分
-        existing_rating.rating = rating_data.rating
-        existing_rating.review = rating_data.review
+    try:
+        if existing_rating:
+            # 更新评分
+            existing_rating.rating = rating_data.rating
+            existing_rating.review = rating_data.review
+            db.commit()
+            db.refresh(existing_rating)
+            rating = existing_rating
+        else:
+            # 创建新评分
+            rating = Rating(
+                plugin_id=plugin_id,
+                user_id=current_user.id,
+                rating=rating_data.rating,
+                review=rating_data.review
+            )
+            db.add(rating)
+            db.commit()
+            db.refresh(rating)
+
+        # 更新插件平均评分
+        avg_rating = db.query(func.avg(Rating.rating)).filter(Rating.plugin_id == plugin_id).scalar()
+        count = db.query(func.count(Rating.id)).filter(Rating.plugin_id == plugin_id).scalar()
+        plugin.rating_avg = float(avg_rating) if avg_rating else 0.0
+        plugin.rating_count = count
         db.commit()
-        db.refresh(existing_rating)
-        rating = existing_rating
-    else:
-        # 创建新评分
-        rating = Rating(
-            plugin_id=plugin_id,
-            user_id=current_user.id,
-            rating=rating_data.rating,
-            review=rating_data.review
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to rate plugin {plugin_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to submit rating"
         )
-        db.add(rating)
-        db.commit()
-        db.refresh(rating)
-    
-    # 更新插件平均评分
-    avg_rating = db.query(func.avg(Rating.rating)).filter(Rating.plugin_id == plugin_id).scalar()
-    count = db.query(func.count(Rating.id)).filter(Rating.plugin_id == plugin_id).scalar()
-    plugin.rating_avg = float(avg_rating) if avg_rating else 0.0
-    plugin.rating_count = count
-    db.commit()
-    
+
     return rating
 
 
@@ -300,15 +338,23 @@ async def create_comment(
         parent_id=comment_data.parent_id,
         content=comment_data.content
     )
-    
-    db.add(comment)
-    db.commit()
-    db.refresh(comment)
-    
+
+    try:
+        db.add(comment)
+        db.commit()
+        db.refresh(comment)
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to create comment on plugin {plugin_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create comment"
+        )
+
     # 添加作者信息
     comment.author_username = current_user.username
     comment.author_avatar = current_user.avatar_url
-    
+
     return comment
 
 

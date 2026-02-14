@@ -18,6 +18,8 @@ import pytest
 import os
 sys.path.insert(0, os.path.abspath('.'))
 
+pytestmark = [pytest.mark.slow, pytest.mark.solver]
+
 try:
     from solvers.godunov_fvm_solver import GodunvFVMSolver
 except ImportError as e:
@@ -171,6 +173,7 @@ def _run_boundary_relaxation(relaxation_factor, max_steps=10):
 
     return results
 
+@pytest.mark.timeout(300)
 def test_boundary_relaxation_strategies():
     """Pytest-compatible test: verify at least one relaxation factor completes without crashing."""
     test_factors = [0.5, 0.8, 1.0]

@@ -9,7 +9,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources: { zh: { translation: zh }, en: { translation: en } },
-    fallbackLng: 'zh',
+    fallbackLng: 'en',
     interpolation: { escapeValue: false },
   });
 

@@ -3,7 +3,7 @@
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional, Any, Dict, List
+from typing import Optional, Any, Dict, List, Literal
 from datetime import datetime
 
 
@@ -18,10 +18,10 @@ class ProjectCreate(BaseModel):
 
 class ProjectUpdate(BaseModel):
     """更新项目请求"""
-    name: Optional[str] = None
-    description: Optional[str] = None
+    name: Optional[str] = Field(None, min_length=1, max_length=200)
+    description: Optional[str] = Field(None, max_length=2000)
     config: Optional[Dict[str, Any]] = None
-    status: Optional[str] = None
+    status: Optional[Literal["draft", "active", "archived"]] = None
 
 
 class ProjectPublic(BaseModel):

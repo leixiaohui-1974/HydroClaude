@@ -187,10 +187,10 @@ const ResultsViewer: React.FC<ResultsViewerProps> = ({ results }) => {
                 <WaterProfileChart
                   data={{
                     positions: results.spatial.positions,
-                    depths: results.temporal!.depth_series.map(series => series[currentFrame]),
-                    velocities: results.temporal!.velocity_series?.map(series => series[currentFrame]),
+                    depths: results.temporal!.depth_series.map(series => series[currentFrame] ?? 0),
+                    velocities: results.temporal!.velocity_series?.map(series => series[currentFrame] ?? 0),
                   }}
-                  title={t('results.timeLabel', { time: results.temporal!.times[currentFrame]?.toFixed(2) })}
+                  title={t('results.timeLabel', { time: results.temporal!.times[currentFrame]?.toFixed(2) ?? '0' })}
                   showVelocity={showVelocity}
                   height={400}
                 />
@@ -230,10 +230,10 @@ const ResultsViewer: React.FC<ResultsViewerProps> = ({ results }) => {
 
         <div style={{ float: 'right' }}>
           <Space>
-            <span>{t('results.showVelocity')}:</span>
-            <Switch checked={showVelocity} onChange={setShowVelocity} />
-            <span style={{ marginLeft: 16 }}>{t('results.showFroude')}:</span>
-            <Switch checked={showFroude} onChange={setShowFroude} />
+            <span id="show-velocity-label">{t('results.showVelocity')}:</span>
+            <Switch checked={showVelocity} onChange={setShowVelocity} aria-labelledby="show-velocity-label" />
+            <span id="show-froude-label" style={{ marginLeft: 16 }}>{t('results.showFroude')}:</span>
+            <Switch checked={showFroude} onChange={setShowFroude} aria-labelledby="show-froude-label" />
           </Space>
         </div>
       </Card>

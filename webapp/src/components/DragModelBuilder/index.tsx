@@ -417,6 +417,8 @@ const DragModelBuilder: React.FC = () => {
             onClick={handleCanvasClick}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
+            aria-label={t('modelBuilder.visualization')}
+            role="img"
             style={{ border: '1px solid #d9d9d9', borderRadius: '4px', cursor: 'pointer' }}
           />
         </div>

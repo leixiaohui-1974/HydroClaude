@@ -22,7 +22,7 @@ class Plugin(Base):
     name = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
     version = Column(String(20), nullable=False)
-    category = Column(String(50), nullable=True)
+    category = Column(String(50), nullable=True, index=True)
     
     # 统计
     downloads = Column(Integer, default=0)
@@ -38,7 +38,7 @@ class Plugin(Base):
     screenshots = Column(Text, nullable=True)  # JSON字符串
     
     # 状态
-    status = Column(String(20), default="pending")  # pending, approved, rejected
+    status = Column(String(20), default="pending", index=True)  # pending, approved, rejected
     
     # 时间戳
     created_at = Column(DateTime(timezone=True), server_default=func.now())

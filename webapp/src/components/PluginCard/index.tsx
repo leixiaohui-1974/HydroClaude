@@ -101,8 +101,7 @@ const PluginCard: React.FC<PluginCardProps> = ({
     return colorMap[category] || 'default';
   };
 
-  return (
-    <Badge.Ribbon text={installed ? t('pluginCard.installed') : null} color="green">
+  const cardContent = (
       <Card
         className="plugin-card"
         hoverable
@@ -210,7 +209,14 @@ const PluginCard: React.FC<PluginCardProps> = ({
           }
         />
       </Card>
+  );
+
+  return installed ? (
+    <Badge.Ribbon text={t('pluginCard.installed')} color="green">
+      {cardContent}
     </Badge.Ribbon>
+  ) : (
+    cardContent
   );
 };
 

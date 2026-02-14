@@ -7,6 +7,7 @@
 import logging
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from typing import Optional
 
@@ -15,6 +16,8 @@ from ..models import User, SimulationJob, SimulationResult
 from ..models.simulation import Project
 from ..schemas import JobCreate, JobPublic, JobList, ResultPublic
 from ..utils.dependencies import get_current_active_user
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/jobs", tags=["Simulation Jobs"])
 
@@ -178,7 +181,6 @@ def _run_simulation(job_id: int, db_url: str):
         db.commit()
 
     except Exception as e:
-        logger = logging.getLogger(__name__)
         logger.error(f"Simulation job {job_id} failed: {e}", exc_info=True)
         job = db.query(SimulationJob).filter(SimulationJob.id == job_id).first()
         if job:
@@ -229,9 +231,18 @@ async def create_job(
         status="pending",
         progress=0.0,
     )
-    db.add(job)
-    db.commit()
-    db.refresh(job)
+    try:
+        db.add(job)
+        db.commit()
+        db.refresh(job)
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to create simulation job for user {current_user.id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create simulation job"
+        )
+    logger.info(f"Simulation job created: '{name}' (id={job.id}) by user {current_user.username}")
     return job
 
 
@@ -293,20 +304,29 @@ async def run_job(
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Job is already running")
 
     # 清除旧结果并重置状态
-    old_result = db.query(SimulationResult).filter(SimulationResult.job_id == job_id).first()
-    if old_result:
-        db.delete(old_result)
+    try:
+        old_result = db.query(SimulationResult).filter(SimulationResult.job_id == job_id).first()
+        if old_result:
+            db.delete(old_result)
 
-    job.status = "pending"
-    job.progress = 0.0
-    job.error = None
-    db.commit()
-    db.refresh(job)
+        job.status = "pending"
+        job.progress = 0.0
+        job.error = None
+        db.commit()
+        db.refresh(job)
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to reset and run job {job_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to start simulation job"
+        )
 
     # 在后台线程运行仿真
     from ..config import settings
     background_tasks.add_task(_run_simulation, job.id, settings.DATABASE_URL)
 
+    logger.info(f"Simulation job started: id={job.id}")
     return job
 
 
@@ -357,5 +377,13 @@ async def delete_job(
             detail="Cannot delete a running job"
         )
 
-    db.delete(job)
-    db.commit()
+    try:
+        db.delete(job)
+        db.commit()
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to delete job {job_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete simulation job"
+        )

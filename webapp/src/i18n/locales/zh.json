@@ -161,7 +161,11 @@
     "configInvalid": "配置验证失败",
     "canalLengthError": "渠道长度必须大于0",
     "canalWidthError": "渠道宽度必须大于0",
-    "canalSlopeError": "渠道坡度必须大于0"
+    "canalSlopeError": "渠道坡度必须大于0",
+    "projectLoaded": "项目加载成功",
+    "projectLoadFailed": "从服务器加载项目失败，使用本地编辑器",
+    "saveToLocalFallback": "已保存到本地存储（离线模式）",
+    "runFailed": "启动仿真失败"
   },
   "form": {
     "simulationSettings": "仿真设置",
@@ -424,7 +428,10 @@
     "userProfile": "用户资料",
     "settings": "设置",
     "logout": "退出登录",
-    "footer": "HydroClaude v2.0.0 | Open Source Hydraulic Simulation Platform | MIT License"
+    "footer": "HydroClaude v2.0.0 | Open Source Hydraulic Simulation Platform | MIT License",
+    "expandSidebar": "展开侧边栏",
+    "collapseSidebar": "折叠侧边栏",
+    "switchLanguage": "切换语言"
   },
   "notFound": {
     "subtitle": "抱歉，您访问的页面不存在。",
@@ -457,7 +464,10 @@
     "passwordMismatch": "两次输入的密码不一致",
     "registerBtn": "注册",
     "registerSuccess": "注册成功",
-    "registerFailed": "注册失败，请稍后重试"
+    "registerFailed": "注册失败，请稍后重试",
+    "passwordStrengthWeak": "弱",
+    "passwordStrengthMedium": "中等",
+    "passwordStrengthStrong": "强"
   },
   "map": {
     "geoJsonSavedSuccess": "GeoJSON数据已保存到本地存储",

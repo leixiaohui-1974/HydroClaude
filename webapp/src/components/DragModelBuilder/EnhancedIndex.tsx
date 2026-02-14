@@ -733,6 +733,8 @@ const EnhancedDragModelBuilder: React.FC = () => {
                         onClick={handleCanvasClick}
                         onDrop={handleDrop}
                         onDragOver={handleDragOver}
+                        aria-label={t('modelBuilderEnhanced.visualizationTitle')}
+                        role="img"
                         style={{
                             border: '2px solid #d9d9d9',
                             borderRadius: '6px',

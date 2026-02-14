@@ -2,10 +2,12 @@
 认证相关API路由
 """
 
+import logging
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel, Field, field_validator
 import re
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from datetime import timedelta
 from slowapi import Limiter
@@ -17,6 +19,8 @@ from ..schemas import Token, LoginRequest, RegisterRequest, UserPublic
 from ..utils.security import verify_password, get_password_hash, create_access_token, decode_access_token
 from ..utils.dependencies import get_current_active_user
 from ..config import settings
+
+logger = logging.getLogger(__name__)
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -67,11 +71,20 @@ async def register(request: Request, user_data: RegisterRequest, db: Session = D
         email=user_data.email,
         password_hash=get_password_hash(user_data.password)
     )
-    
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    
+
+    try:
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to create user '{user_data.username}': {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create user account"
+        )
+
+    logger.info(f"User registered: {user.username} (id={user.id})")
     return user
 
 
@@ -176,8 +189,17 @@ async def change_password(
             detail="Current password is incorrect"
         )
 
-    current_user.password_hash = get_password_hash(data.new_password)
-    db.commit()
-    db.refresh(current_user)
+    try:
+        current_user.password_hash = get_password_hash(data.new_password)
+        db.commit()
+        db.refresh(current_user)
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to change password for user '{current_user.username}': {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update password"
+        )
 
+    logger.info(f"Password changed for user: {current_user.username}")
     return {"message": "Password changed successfully"}

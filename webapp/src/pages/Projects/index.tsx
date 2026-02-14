@@ -66,7 +66,7 @@ const ProjectsPage: React.FC = () => {
       setProjects(data.items);
       setTotal(data.total);
     } catch {
-      // API不可用时使用演示数据
+      // API not available - use demo data
       setProjects([
         { id: 1, name: t('home.canalSteadyFlow'), status: 'completed', config: { simulation: { type: 'steady' } }, created_at: '2025-11-10T00:00:00Z' },
         { id: 2, name: t('home.gateFlowAnalysis'), status: 'running', config: { simulation: { type: 'gate' } }, created_at: '2025-11-12T00:00:00Z' },
@@ -76,7 +76,7 @@ const ProjectsPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     loadProjects();

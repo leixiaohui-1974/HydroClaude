@@ -2,7 +2,9 @@
 项目管理API路由
 """
 
+import logging
 from fastapi import APIRouter, Depends, HTTPException, status, Query
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from typing import Optional
 
@@ -10,6 +12,8 @@ from ..database import get_db
 from ..models import User, Project
 from ..schemas import ProjectCreate, ProjectUpdate, ProjectPublic, ProjectList
 from ..utils.dependencies import get_current_active_user
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/projects", tags=["Projects"])
 
@@ -28,9 +32,18 @@ async def create_project(
         config=data.config,
         status="draft",
     )
-    db.add(project)
-    db.commit()
-    db.refresh(project)
+    try:
+        db.add(project)
+        db.commit()
+        db.refresh(project)
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to create project for user {current_user.id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create project"
+        )
+    logger.info(f"Project created: '{project.name}' (id={project.id}) by user {current_user.username}")
     return project
 
 
@@ -89,8 +102,16 @@ async def update_project(
         if field in allowed_fields:
             setattr(project, field, value)
 
-    db.commit()
-    db.refresh(project)
+    try:
+        db.commit()
+        db.refresh(project)
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to update project {project_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update project"
+        )
     return project
 
 
@@ -108,6 +129,15 @@ async def delete_project(
     if not project:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
 
-    db.delete(project)
-    db.commit()
+    try:
+        db.delete(project)
+        db.commit()
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to delete project {project_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete project"
+        )
+    logger.info(f"Project deleted: id={project_id} by user {current_user.username}")
     return None

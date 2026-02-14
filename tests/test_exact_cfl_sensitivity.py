@@ -13,6 +13,8 @@ import pytest
 import os
 sys.path.insert(0, os.path.abspath('.'))
 
+pytestmark = [pytest.mark.slow, pytest.mark.solver]
+
 try:
     from solvers.godunov_fvm_solver import GodunvFVMSolver
 except ImportError as e:
@@ -88,6 +90,7 @@ def _run_cfl_number(cfl, max_steps=20, max_time=1.0):
 
     return results
 
+@pytest.mark.timeout(300)
 def test_cfl_sensitivity():
     """Pytest-compatible test: verify at least one CFL value completes without crashing."""
     cfl_values = [0.1, 0.2, 0.3]

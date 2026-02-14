@@ -141,6 +141,7 @@ const MainLayout: React.FC = () => {
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
+            aria-label={collapsed ? t('layout.expandSidebar') : t('layout.collapseSidebar')}
             style={{ fontSize: '16px', width: 64, height: 64 }}
           />
 

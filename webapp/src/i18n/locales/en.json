@@ -161,7 +161,11 @@
     "configInvalid": "Configuration validation failed",
     "canalLengthError": "Canal length must be greater than 0",
     "canalWidthError": "Canal width must be greater than 0",
-    "canalSlopeError": "Canal slope must be greater than 0"
+    "canalSlopeError": "Canal slope must be greater than 0",
+    "projectLoaded": "Project loaded successfully",
+    "projectLoadFailed": "Failed to load project from server, using local editor",
+    "saveToLocalFallback": "Saved to local storage (offline mode)",
+    "runFailed": "Failed to start simulation"
   },
   "form": {
     "simulationSettings": "Simulation Settings",
@@ -424,7 +428,10 @@
     "userProfile": "User Profile",
     "settings": "Settings",
     "logout": "Logout",
-    "footer": "HydroClaude v2.0.0 | Open Source Hydraulic Simulation Platform | MIT License"
+    "footer": "HydroClaude v2.0.0 | Open Source Hydraulic Simulation Platform | MIT License",
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar",
+    "switchLanguage": "Switch language"
   },
   "notFound": {
     "subtitle": "Sorry, the page you visited does not exist.",
@@ -457,7 +464,10 @@
     "passwordMismatch": "Passwords do not match",
     "registerBtn": "Register",
     "registerSuccess": "Registration successful",
-    "registerFailed": "Registration failed, please try again later"
+    "registerFailed": "Registration failed, please try again later",
+    "passwordStrengthWeak": "Weak",
+    "passwordStrengthMedium": "Medium",
+    "passwordStrengthStrong": "Strong"
   },
   "map": {
     "geoJsonSavedSuccess": "GeoJSON data saved to local storage",

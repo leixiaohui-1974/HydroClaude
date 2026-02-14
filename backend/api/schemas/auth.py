@@ -19,8 +19,8 @@ class TokenData(BaseModel):
 
 class LoginRequest(BaseModel):
     """登录请求"""
-    username: str
-    password: str
+    username: str = Field(..., min_length=1, max_length=50)
+    password: str = Field(..., min_length=1, max_length=128)
 
 
 class RegisterRequest(BaseModel):

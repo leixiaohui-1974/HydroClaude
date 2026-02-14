@@ -2,13 +2,17 @@
 用户相关API路由
 """
 
+import logging
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..models import User
 from ..schemas import UserMe, UserPublic, UserUpdate
 from ..utils.dependencies import get_current_active_user
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -53,10 +57,18 @@ async def update_current_user(
     
     if user_update.bio is not None:
         current_user.bio = user_update.bio
-    
-    db.commit()
-    db.refresh(current_user)
-    
+
+    try:
+        db.commit()
+        db.refresh(current_user)
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to update user '{current_user.username}': {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update user profile"
+        )
+
     return current_user
 
 

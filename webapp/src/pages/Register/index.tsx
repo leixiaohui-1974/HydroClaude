@@ -14,8 +14,8 @@ interface RegisterFormValues {
   confirmPassword: string;
 }
 
-const getPasswordStrength = (password: string): { percent: number; status: 'exception' | 'active' | 'success'; text: string } => {
-  if (!password) return { percent: 0, status: 'exception', text: '' };
+const getPasswordStrength = (password: string): { percent: number; status: 'exception' | 'active' | 'success'; textKey: string } => {
+  if (!password) return { percent: 0, status: 'exception', textKey: '' };
 
   let score = 0;
   if (password.length >= 6) score += 20;
@@ -26,9 +26,9 @@ const getPasswordStrength = (password: string): { percent: number; status: 'exce
   if (/[0-9]/.test(password)) score += 15;
   if (/[^a-zA-Z0-9]/.test(password)) score += 15;
 
-  if (score <= 30) return { percent: score, status: 'exception', text: 'Weak' };
-  if (score <= 60) return { percent: score, status: 'active', text: 'Medium' };
-  return { percent: score, status: 'success', text: 'Strong' };
+  if (score <= 30) return { percent: score, status: 'exception', textKey: 'registerPage.passwordStrengthWeak' };
+  if (score <= 60) return { percent: score, status: 'active', textKey: 'registerPage.passwordStrengthMedium' };
+  return { percent: score, status: 'success', textKey: 'registerPage.passwordStrengthStrong' };
 };
 
 const RegisterPage: React.FC = () => {
@@ -36,10 +36,10 @@ const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const { register, isLoading } = useAuthStore();
   const [form] = Form.useForm();
-  const [passwordStrength, setPasswordStrength] = useState<{ percent: number; status: 'exception' | 'active' | 'success'; text: string }>({
+  const [passwordStrength, setPasswordStrength] = useState<{ percent: number; status: 'exception' | 'active' | 'success'; textKey: string }>({
     percent: 0,
     status: 'exception',
-    text: '',
+    textKey: '',
   });
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,7 +138,7 @@ const RegisterPage: React.FC = () => {
             />
           </Form.Item>
 
-          {passwordStrength.text && (
+          {passwordStrength.textKey && (
             <Form.Item style={{ marginTop: -16, marginBottom: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Progress
@@ -159,7 +159,7 @@ const RegisterPage: React.FC = () => {
                         : '#52c41a',
                   }}
                 >
-                  {passwordStrength.text}
+                  {t(passwordStrength.textKey)}
                 </Text>
               </div>
             </Form.Item>

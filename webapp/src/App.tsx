@@ -66,6 +66,7 @@ function App() {
               <LoginPage />
             </PublicRoute>
           }
+          errorElement={<RouteErrorBoundary />}
         />
         <Route
           path="/register"
@@ -74,6 +75,7 @@ function App() {
               <RegisterPage />
             </PublicRoute>
           }
+          errorElement={<RouteErrorBoundary />}
         />
 
         {/* Protected routes wrapped in MainLayout */}

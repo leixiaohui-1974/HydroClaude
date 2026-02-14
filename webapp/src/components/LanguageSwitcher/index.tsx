@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { GlobalOutlined } from '@ant-design/icons';
 
 const LanguageSwitcher: React.FC = () => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   return (
     <Select
       value={i18n.language.startsWith('zh') ? 'zh' : 'en'}
@@ -16,6 +16,7 @@ const LanguageSwitcher: React.FC = () => {
       style={{ width: 100 }}
       suffixIcon={<GlobalOutlined />}
       variant="borderless"
+      aria-label={t('layout.switchLanguage')}
     />
   );
 };
