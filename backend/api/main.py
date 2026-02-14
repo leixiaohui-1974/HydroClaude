@@ -16,7 +16,7 @@ from slowapi.errors import RateLimitExceeded
 from sqlalchemy import text
 from .config import settings
 from .database import init_db, get_db
-from .routes import auth, users, plugins, projects, simulations
+from .routes import auth, users, plugins, projects, simulations, dashboard
 
 # Configure logging format for the application
 logging.basicConfig(
@@ -103,6 +103,7 @@ app.include_router(users.router, prefix="/api")
 app.include_router(plugins.router, prefix="/api")
 app.include_router(projects.router, prefix="/api")
 app.include_router(simulations.router, prefix="/api")
+app.include_router(dashboard.router, prefix="/api")
 
 
 @app.exception_handler(RequestValidationError)

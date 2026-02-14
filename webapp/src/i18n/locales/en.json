@@ -481,7 +481,41 @@
     "save": "Save",
     "mapView": "Map View",
     "canalDraw": "Canal Draw",
-    "resultsOverlay": "Results Overlay"
+    "resultsOverlay": "Results Overlay",
+    "downloadGeoJson": "Download GeoJSON",
+    "downloadSuccess": "GeoJSON downloaded"
+  },
+  "profile": {
+    "title": "User Profile",
+    "userId": "User ID",
+    "username": "Username",
+    "email": "Email",
+    "editProfile": "Edit Profile",
+    "avatarUrl": "Avatar URL",
+    "bio": "Bio",
+    "bioPlaceholder": "Tell us about yourself...",
+    "updateSuccess": "Profile updated successfully",
+    "updateFailed": "Failed to update profile"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "languageDesc": "Choose your preferred language",
+    "languageChanged": "Language changed",
+    "notifications": "Notifications",
+    "notifyComplete": "Notify when simulation completes",
+    "notifyFailed": "Notify when simulation fails",
+    "notifyEmail": "Send email notifications",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "currentPasswordRequired": "Please enter current password",
+    "newPassword": "New Password",
+    "newPasswordRequired": "Please enter new password",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "confirmNewPassword": "Confirm New Password",
+    "changePasswordBtn": "Change Password",
+    "passwordChanged": "Password changed successfully",
+    "passwordChangeFailed": "Failed to change password"
   },
   "dataTable": {
     "positionM": "Position (m)",

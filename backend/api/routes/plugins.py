@@ -33,7 +33,7 @@ async def get_plugins(
     page_size: int = Query(20, ge=1, le=100),
     category: Optional[str] = None,
     search: Optional[str] = None,
-    sort: str = Query("downloads", regex="^(downloads|rating|created_at)$"),
+    sort: str = Query("downloads", pattern="^(downloads|rating|created_at)$"),
     db: Session = Depends(get_db)
 ):
     """

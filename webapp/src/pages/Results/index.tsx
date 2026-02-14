@@ -20,7 +20,8 @@ function transformResults(apiResult: any, t: (key: string, opts?: any) => string
   const h_final = timeSeries.h_final || [];
   const Q_final = timeSeries.Q_final || [];
 
-  const width = 10.0;
+  // Use width from solver metadata, fallback to 10.0
+  const width = metadata.canal_width || 10.0;
   const velocities = h_final.map((h: number, i: number) => {
     if (h < 1e-6) return 0;
     return Q_final[i] / (h * width);

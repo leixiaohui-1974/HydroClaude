@@ -126,9 +126,35 @@ const PluginsPage: React.FC = () => {
   const loadPlugins = async () => {
     setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      let filtered = [...mockPlugins];
+      // Try backend API first
+      const params = new URLSearchParams();
+      if (searchOptions.query) params.set('search', searchOptions.query);
+      if (searchOptions.category) params.set('category', searchOptions.category);
+      if (searchOptions.sortBy) params.set('sort', searchOptions.sortBy === 'updated' ? 'created_at' : searchOptions.sortBy);
+      params.set('skip', String(((searchOptions.page || 1) - 1) * (searchOptions.pageSize || 12)));
+      params.set('limit', String(searchOptions.pageSize || 12));
 
+      const { default: api } = await import('@/services/api');
+      const response: any = await api.get(`/plugins?${params.toString()}`);
+      const items = (response.items || response || []).map((p: any) => ({
+        id: p.plugin_id || p.id,
+        name: p.name,
+        version: p.version || '1.0.0',
+        description: p.description || '',
+        author: p.author || 'Unknown',
+        icon: p.icon || '',
+        category: p.category || 'extension',
+        keywords: p.keywords || [],
+        rating: p.average_rating || p.rating || 0,
+        downloads: p.download_count || p.downloads || 0,
+        lastUpdated: new Date(p.updated_at || p.created_at || Date.now()),
+        homepage: p.homepage || '',
+        repository: p.repository || '',
+      }));
+      setPlugins(items.length > 0 ? items : mockPlugins);
+    } catch {
+      // Fallback to mock data if backend is unavailable
+      let filtered = [...mockPlugins];
       if (searchOptions.query) {
         const query = searchOptions.query.toLowerCase();
         filtered = filtered.filter(
@@ -138,11 +164,9 @@ const PluginsPage: React.FC = () => {
             p.keywords.some((k) => k.toLowerCase().includes(query))
         );
       }
-
       if (searchOptions.category) {
         filtered = filtered.filter((p) => p.category === searchOptions.category);
       }
-
       switch (searchOptions.sortBy) {
         case 'downloads':
           filtered.sort((a, b) => b.downloads - a.downloads);
@@ -157,7 +181,6 @@ const PluginsPage: React.FC = () => {
           filtered.sort((a, b) => a.name.localeCompare(b.name));
           break;
       }
-
       setPlugins(filtered);
     } finally {
       setLoading(false);

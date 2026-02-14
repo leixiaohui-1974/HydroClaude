@@ -9,6 +9,13 @@ export interface AuthUser {
   avatar_url?: string;
 }
 
+interface LoginResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  user?: AuthUser;
+}
+
 export interface AuthState {
   token: string | null;
   user: AuthUser | null;
@@ -33,7 +40,6 @@ export const useAuthStore = create<AuthState>()(
 
       setToken: (token: string | null) => {
         set({ token, isAuthenticated: !!token });
-        // Sync to localStorage for backward compatibility
         if (token) {
           localStorage.setItem('authToken', token);
         } else {
@@ -48,8 +54,9 @@ export const useAuthStore = create<AuthState>()(
       login: async (username: string, password: string) => {
         set({ isLoading: true });
         try {
-          const response: any = await api.post('/auth/login', { username, password });
-          const { token, user } = response;
+          const response = await api.post<LoginResponse>('/auth/login/json', { username, password });
+          const token = response.access_token;
+          const user = response.user || null;
           set({
             token,
             user,
@@ -67,9 +74,10 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
         try {
           await api.post('/auth/register', { username, email, password });
-          // Auto-login after registration
-          const loginResponse: any = await api.post('/auth/login', { username, password });
-          const { token, user } = loginResponse;
+          // Auto-login after registration using JSON endpoint
+          const loginResponse = await api.post<LoginResponse>('/auth/login/json', { username, password });
+          const token = loginResponse.access_token;
+          const user = loginResponse.user || null;
           set({
             token,
             user,
@@ -84,6 +92,11 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
+        const { token } = get();
+        // Call server-side logout to blacklist token (fire and forget)
+        if (token) {
+          api.post('/auth/logout').catch(() => {});
+        }
         set({
           token: null,
           user: null,
@@ -98,9 +111,10 @@ export const useAuthStore = create<AuthState>()(
         const { token } = get();
         if (!token) return;
         try {
-          const response: any = await api.post('/auth/refresh', { token });
-          const newToken = response.token;
-          set({ token: newToken });
+          const response = await api.post<LoginResponse>('/auth/refresh');
+          const newToken = response.access_token;
+          const user = response.user || get().user;
+          set({ token: newToken, user });
           localStorage.setItem('authToken', newToken);
         } catch {
           // If refresh fails, log out
@@ -118,7 +132,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           const response: any = await api.get('/auth/me');
           set({
-            user: response.user || response,
+            user: response,
             isAuthenticated: true,
             isLoading: false,
           });
@@ -145,7 +159,7 @@ export const useAuthStore = create<AuthState>()(
   )
 );
 
-// 注册认证回调到API模块，避免循环依赖
+// Register auth callbacks to API module to avoid circular dependency
 registerAuthCallbacks({
   getToken: () => useAuthStore.getState().token,
   onUnauthorized: () => useAuthStore.getState().logout(),

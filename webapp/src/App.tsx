@@ -11,6 +11,8 @@ import ResultsPage from './pages/Results';
 import MapPage from './pages/Map';
 import PluginsPage from './pages/Plugins';
 import SimulationPage from './pages/Simulation';
+import ProfilePage from './pages/Profile';
+import SettingsPage from './pages/Settings';
 import NotFoundPage from './pages/NotFound';
 import LoginPage from './pages/Login';
 import RegisterPage from './pages/Register';
@@ -96,6 +98,8 @@ function App() {
           <Route path="/simulation/:jobId" element={<SimulationPage />} errorElement={<RouteErrorBoundary />} />
           <Route path="/map" element={<MapPage />} errorElement={<RouteErrorBoundary />} />
           <Route path="/plugins" element={<PluginsPage />} errorElement={<RouteErrorBoundary />} />
+          <Route path="/profile" element={<ProfilePage />} errorElement={<RouteErrorBoundary />} />
+          <Route path="/settings" element={<SettingsPage />} errorElement={<RouteErrorBoundary />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

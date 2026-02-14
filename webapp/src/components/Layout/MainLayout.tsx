@@ -5,7 +5,6 @@ import {
   HomeOutlined,
   ProjectOutlined,
   EditOutlined,
-  PlayCircleOutlined,
   BarChartOutlined,
   EnvironmentOutlined,
   AppstoreOutlined,
@@ -52,16 +51,10 @@ const MainLayout: React.FC = () => {
       onClick: () => navigate('/editor'),
     },
     {
-      key: '/simulation',
-      icon: <PlayCircleOutlined />,
-      label: t('nav.simulation'),
-      onClick: () => navigate('/simulation'),
-    },
-    {
       key: '/results',
       icon: <BarChartOutlined />,
       label: t('nav.results'),
-      onClick: () => navigate('/results/latest'),
+      onClick: () => navigate('/results'),
     },
     {
       key: '/map',
@@ -81,10 +74,10 @@ const MainLayout: React.FC = () => {
   const handleUserMenuClick: MenuProps['onClick'] = ({ key }) => {
     switch (key) {
       case 'profile':
-        // TODO: Navigate to profile page when available
+        navigate('/profile');
         break;
       case 'settings':
-        // TODO: Navigate to settings page when available
+        navigate('/settings');
         break;
       case 'logout':
         logout();
@@ -147,7 +140,7 @@ const MainLayout: React.FC = () => {
 
           <Space size="middle">
             <LanguageSwitcher />
-            <Button type="primary">{t('layout.newProject')}</Button>
+            <Button type="primary" onClick={() => navigate('/editor')}>{t('layout.newProject')}</Button>
             <Dropdown menu={{ items: userMenuItems, onClick: handleUserMenuClick }} placement="bottomRight">
               <Space style={{ cursor: 'pointer' }}>
                 <Avatar

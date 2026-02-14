@@ -481,7 +481,41 @@
     "save": "保存",
     "mapView": "地图查看",
     "canalDraw": "渠道绘制",
-    "resultsOverlay": "结果叠加"
+    "resultsOverlay": "结果叠加",
+    "downloadGeoJson": "下载GeoJSON",
+    "downloadSuccess": "GeoJSON已下载"
+  },
+  "profile": {
+    "title": "用户资料",
+    "userId": "用户ID",
+    "username": "用户名",
+    "email": "邮箱",
+    "editProfile": "编辑资料",
+    "avatarUrl": "头像链接",
+    "bio": "个人简介",
+    "bioPlaceholder": "介绍一下自己...",
+    "updateSuccess": "资料更新成功",
+    "updateFailed": "资料更新失败"
+  },
+  "settings": {
+    "title": "设置",
+    "language": "语言",
+    "languageDesc": "选择您偏好的语言",
+    "languageChanged": "语言已切换",
+    "notifications": "通知",
+    "notifyComplete": "仿真完成时通知",
+    "notifyFailed": "仿真失败时通知",
+    "notifyEmail": "发送邮件通知",
+    "changePassword": "修改密码",
+    "currentPassword": "当前密码",
+    "currentPasswordRequired": "请输入当前密码",
+    "newPassword": "新密码",
+    "newPasswordRequired": "请输入新密码",
+    "passwordMinLength": "密码至少8个字符",
+    "confirmNewPassword": "确认新密码",
+    "changePasswordBtn": "修改密码",
+    "passwordChanged": "密码修改成功",
+    "passwordChangeFailed": "密码修改失败"
   },
   "dataTable": {
     "positionM": "位置 (m)",

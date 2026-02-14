@@ -6,10 +6,12 @@
 
 import logging
 from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks, Request
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from typing import Optional
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from ..database import get_db
 from ..models import User, SimulationJob, SimulationResult
@@ -18,6 +20,8 @@ from ..schemas import JobCreate, JobPublic, JobList, ResultPublic
 from ..utils.dependencies import get_current_active_user
 
 logger = logging.getLogger(__name__)
+
+limiter = Limiter(key_func=get_remote_address)
 
 router = APIRouter(prefix="/jobs", tags=["Simulation Jobs"])
 
@@ -171,6 +175,10 @@ def _run_simulation(job_id: int, db_url: str):
                 "n_cells": n_cells,
                 "cfl": cfl,
                 "end_time": end_time,
+                "canal_width": width,
+                "canal_length": length,
+                "manning_n": manning_n,
+                "slope": slope,
             },
         )
         db.add(result)
@@ -203,7 +211,9 @@ def _parse_bc(bc_dict):
 
 
 @router.post("", response_model=JobPublic, status_code=status.HTTP_201_CREATED)
+@limiter.limit("10/minute")
 async def create_job(
+    request: Request,
     data: JobCreate,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
