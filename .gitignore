@@ -23,6 +23,7 @@ env/
 # Generated files
 *.png
 *.npz
+*.db
 
 # Result directories
 results_*/
