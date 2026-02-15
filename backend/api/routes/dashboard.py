@@ -85,6 +85,57 @@ async def get_dashboard_stats(
     }
 
 
+@router.get("/platform/capabilities")
+async def get_platform_capabilities():
+    """Return the full platform capability matrix.
+
+    No authentication required – used by the landing page.
+    """
+    return {
+        "simulation_types": [
+            {"id": "open_channel", "category": "hydrodynamics", "name": "Open Channel Flow (Saint-Venant)"},
+            {"id": "water_quality", "category": "environment", "name": "Water Quality (ADR Transport)"},
+            {"id": "water_temperature", "category": "environment", "name": "Water Temperature"},
+            {"id": "ice_simulation", "category": "environment", "name": "Ice Dynamics (Stefan)"},
+            {"id": "coupled_ice_wq", "category": "environment", "name": "Coupled Ice + Water Quality"},
+            {"id": "water_hammer", "category": "hydrodynamics", "name": "Water Hammer (MoC)"},
+        ],
+        "numerical_methods": [
+            "Godunov FVM", "HLLC Riemann", "WENO-3", "WENO-5",
+            "MacCormack", "Preissmann Implicit", "Method of Characteristics",
+            "Newton-Raphson", "Multigrid", "Anderson Acceleration",
+        ],
+        "control_modules": [
+            "MPC (Model Predictive Control)", "PID", "Gain-Scheduled MPC",
+            "Adaptive MPC", "Sliding Mode Control", "H-Infinity",
+            "AGC (Automatic Generation Control)", "Governor Control",
+        ],
+        "identification_modules": [
+            "Least Squares", "Recursive Least Squares",
+            "Extended Kalman Filter", "Unscented Kalman Filter",
+            "Frequency Domain Analysis", "Online Identification",
+        ],
+        "optimization_modules": [
+            "NSGA-II", "NSGA-III", "Reservoir Scheduling",
+            "Multi-Objective Pareto Optimization",
+        ],
+        "hardware_simulation": {
+            "sensor_types": ["water_level", "flow_rate", "pressure", "pH",
+                             "turbidity", "chlorine", "temperature", "gate_position",
+                             "pump_speed", "valve_position"],
+            "actuator_types": ["gate", "pump", "valve"],
+            "fault_models": ["drift", "stuck", "intermittent", "bias", "noise_increase"],
+        },
+        "physics_components": [
+            "Canals", "Pipes", "Reservoirs", "Tanks", "Pumps", "Valves",
+            "Turbines (Francis, Kaplan, Pelton)", "Surge Tanks",
+            "Weirs (Broad-crested, Sharp-crested, Side)",
+            "Culverts", "Bridges", "Radial Gates", "Inflatable Dams",
+            "Inverted Siphons", "Spillways",
+        ],
+    }
+
+
 @router.get("/jobs/{job_id}/stream")
 async def stream_job_progress(
     job_id: int,

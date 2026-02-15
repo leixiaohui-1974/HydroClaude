@@ -5,12 +5,17 @@ export interface SimulationConfig {
   simulation: {
     type: string;
     mode: string;
+    end_time?: number;
+    dt?: number;
   };
   canal: {
     length: number;
     width: number;
     slope: number;
     manning_n: number;
+    n_cells?: number;
+    depth?: number;
+    velocity?: number;
   };
   solver: {
     method: string;
@@ -20,6 +25,50 @@ export interface SimulationConfig {
     downstream: any;
   };
   structures?: any[];
+  // Water quality parameters
+  water_quality?: {
+    initial_concentration?: number;
+    source_position?: number;
+    source_rate?: number;
+    decay_rate?: number;
+  };
+  // Water temperature parameters
+  temperature?: {
+    initial_temperature?: number;
+    air_temperature?: number;
+    solar_radiation?: number;
+    wind_speed?: number;
+    relative_humidity?: number;
+  };
+  // Ice simulation parameters
+  ice?: {
+    water_temperature?: number;
+    air_temperature?: number;
+    initial_ice_thickness?: number;
+    rho_ice?: number;
+    T_freeze?: number;
+  };
+  // Coupled ice + water quality
+  coupled?: {
+    enable_temperature?: boolean;
+    enable_do?: boolean;
+    enable_ice?: boolean;
+    enable_nutrients?: boolean;
+    initial_temperature?: number;
+    initial_do?: number;
+  };
+  // Water hammer (pipe) parameters
+  pipe?: {
+    length?: number;
+    diameter?: number;
+    friction_factor?: number;
+    initial_flow?: number;
+    upstream_head?: number;
+    n_cells?: number;
+  };
+  valve?: {
+    closure_time?: number;
+  };
 }
 
 export interface SimulationJob {
