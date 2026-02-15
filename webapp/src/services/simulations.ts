@@ -23,7 +23,7 @@ export interface SimulationConfig {
 }
 
 export interface SimulationJob {
-  id: string;
+  id: number;
   name: string;
   config: SimulationConfig;
   status: 'pending' | 'running' | 'completed' | 'failed';
@@ -35,10 +35,12 @@ export interface SimulationJob {
 }
 
 export interface SimulationResults {
-  job_id: string;
-  status: string;
-  results: any;
-  metadata: any;
+  id: number;
+  job_id: number;
+  summary?: Record<string, any>;
+  time_series?: Record<string, any>;
+  solver_metadata?: Record<string, any>;
+  created_at?: string;
 }
 
 // 仿真API服务
@@ -54,27 +56,27 @@ export const simulationService = {
   },
 
   // 获取单个作业详情
-  getJob: async (jobId: string): Promise<SimulationJob> => {
+  getJob: async (jobId: number | string): Promise<SimulationJob> => {
     return api.get(`/jobs/${jobId}`);
   },
 
   // 运行作业
-  runJob: async (jobId: string): Promise<void> => {
+  runJob: async (jobId: number | string): Promise<void> => {
     return api.post(`/jobs/${jobId}/run`);
   },
 
   // 获取作业结果
-  getResults: async (jobId: string): Promise<SimulationResults> => {
+  getResults: async (jobId: number | string): Promise<SimulationResults> => {
     return api.get(`/jobs/${jobId}/results`);
   },
 
   // 删除作业
-  deleteJob: async (jobId: string): Promise<void> => {
+  deleteJob: async (jobId: number | string): Promise<void> => {
     return api.delete(`/jobs/${jobId}`);
   },
 
   // 轮询作业状态
-  pollJobStatus: async (jobId: string, interval = 2000): Promise<SimulationJob> => {
+  pollJobStatus: async (jobId: number | string, interval = 2000): Promise<SimulationJob> => {
     return new Promise((resolve, reject) => {
       const poll = async () => {
         try {

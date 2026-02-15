@@ -13,8 +13,6 @@ from typing import Set
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel, Field, field_validator
-from slowapi import Limiter
-from slowapi.util import get_remote_address
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -23,6 +21,7 @@ from ..database import get_db
 from ..models import User
 from ..schemas import (
     LoginRequest,
+    MessageResponse,
     PasswordResetRequest,
     RegisterRequest,
     Token,
@@ -37,9 +36,9 @@ from ..utils.security import (
     verify_password,
 )
 
-logger = logging.getLogger(__name__)
+from ..utils.limiter import limiter
 
-limiter = Limiter(key_func=get_remote_address)
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -197,7 +196,7 @@ async def refresh_token(
 # ---------------------------------------------------------------------------
 # Logout (token blacklist)
 # ---------------------------------------------------------------------------
-@router.post("/logout")
+@router.post("/logout", response_model=MessageResponse)
 async def logout(
     request: Request,
     current_user: User = Depends(get_current_active_user),
@@ -214,7 +213,7 @@ async def logout(
 # ---------------------------------------------------------------------------
 # Get current user info (convenience alias for /users/me)
 # ---------------------------------------------------------------------------
-@router.get("/me")
+@router.get("/me", response_model=UserBrief)
 async def get_me(current_user: User = Depends(get_current_active_user)):
     """Return current user info (same as /users/me)."""
     return UserBrief.model_validate(current_user)
@@ -223,7 +222,7 @@ async def get_me(current_user: User = Depends(get_current_active_user)):
 # ---------------------------------------------------------------------------
 # Password change
 # ---------------------------------------------------------------------------
-@router.post("/change-password")
+@router.post("/change-password", response_model=MessageResponse)
 @limiter.limit("5/minute")
 async def change_password(
     request: Request,
@@ -257,7 +256,7 @@ async def change_password(
 # ---------------------------------------------------------------------------
 # Password reset request (stub – sends response but no actual email yet)
 # ---------------------------------------------------------------------------
-@router.post("/forgot-password")
+@router.post("/forgot-password", response_model=MessageResponse)
 @limiter.limit("3/minute")
 async def forgot_password(
     request: Request,

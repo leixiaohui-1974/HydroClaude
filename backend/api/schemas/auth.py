@@ -2,19 +2,18 @@
 认证相关的Pydantic模型
 """
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from typing import Optional
 
 
 class UserBrief(BaseModel):
     """Brief user info returned with login token."""
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     username: str
     email: str
     avatar_url: Optional[str] = None
-
-    class Config:
-        from_attributes = True
 
 
 class Token(BaseModel):
@@ -52,3 +51,8 @@ class PasswordResetConfirm(BaseModel):
     """Password reset confirmation."""
     token: str
     new_password: str = Field(..., min_length=8, max_length=128)
+
+
+class MessageResponse(BaseModel):
+    """Standard message-only response."""
+    message: str

@@ -10,18 +10,15 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query, Background
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from typing import Optional
-from slowapi import Limiter
-from slowapi.util import get_remote_address
-
 from ..database import get_db
 from ..models import User, SimulationJob, SimulationResult
 from ..models.simulation import Project
 from ..schemas import JobCreate, JobPublic, JobList, ResultPublic
 from ..utils.dependencies import get_current_active_user
 
-logger = logging.getLogger(__name__)
+from ..utils.limiter import limiter
 
-limiter = Limiter(key_func=get_remote_address)
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/jobs", tags=["Simulation Jobs"])
 
