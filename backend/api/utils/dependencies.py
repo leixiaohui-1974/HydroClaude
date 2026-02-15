@@ -20,14 +20,14 @@ async def get_current_user(
 ) -> User:
     """
     获取当前用户
-    
+
     Args:
         token: JWT令牌
         db: 数据库会话
-    
+
     Returns:
         当前用户对象
-    
+
     Raises:
         HTTPException: 如果令牌无效或用户不存在
     """
@@ -36,21 +36,26 @@ async def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
+
+    # Check token blacklist (logout invalidation)
+    from ..routes.auth import is_token_blacklisted
+    if is_token_blacklisted(token):
+        raise credentials_exception
+
     # 解码令牌
     payload = decode_access_token(token)
     if payload is None:
         raise credentials_exception
-    
+
     username: str = payload.get("sub")
     if username is None:
         raise credentials_exception
-    
+
     # 查询用户
     user = db.query(User).filter(User.username == username).first()
     if user is None:
         raise credentials_exception
-    
+
     return user
 
 

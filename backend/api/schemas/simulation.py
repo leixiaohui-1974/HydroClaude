@@ -2,7 +2,7 @@
 仿真相关的Pydantic模型
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, Any, Dict, List, Literal
 from datetime import datetime
 
@@ -34,8 +34,7 @@ class ProjectPublic(BaseModel):
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ProjectList(BaseModel):
@@ -66,8 +65,7 @@ class JobPublic(BaseModel):
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class JobList(BaseModel):
@@ -87,5 +85,4 @@ class ResultPublic(BaseModel):
     solver_metadata: Optional[Dict[str, Any]] = None
     created_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

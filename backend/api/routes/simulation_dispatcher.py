@@ -214,8 +214,8 @@ def _run_water_quality(config: dict, progress_cb=None) -> dict:
     output_every = max(1, n_steps // 50)
 
     for step in range(n_steps):
-        adv_flux = solver.compute_advective_flux(C, u)
-        dC_adv = -np.diff(np.concatenate([[adv_flux[0]], adv_flux])) / dx
+        adv_flux = solver.compute_advective_flux(C, u)  # shape (n_cells+1,) at faces
+        dC_adv = -np.diff(adv_flux) / dx  # diff of (n+1) faces → (n,) cell values
 
         dC_diff = np.zeros(n_cells)
         for i in range(1, n_cells - 1):
@@ -311,7 +311,7 @@ def _run_water_temperature(config: dict, progress_cb=None) -> dict:
             dT_adv[i] = -u[i] * (T[i] - T[i - 1]) / dx
 
         dT_diff = np.zeros(n_cells)
-        kappa = solver.thermal_diffusivity
+        kappa = solver.D_T
         for i in range(1, n_cells - 1):
             dT_diff[i] = kappa * (T[i + 1] - 2 * T[i] + T[i - 1]) / dx**2
 

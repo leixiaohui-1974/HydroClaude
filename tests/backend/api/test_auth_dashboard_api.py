@@ -43,18 +43,14 @@ def override_get_db():
         db.close()
 
 
-app.dependency_overrides[get_db] = override_get_db
-
-# Disable rate limiting for tests so requests are not throttled
-limiter.enabled = False
-
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
 @pytest.fixture(autouse=True)
 def setup_database():
     """Create all tables before each test and drop them after."""
+    app.dependency_overrides[get_db] = override_get_db
+    limiter.enabled = False
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)
