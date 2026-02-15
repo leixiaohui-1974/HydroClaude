@@ -124,15 +124,19 @@ export const simulationService = {
     return api.delete(`/jobs/${jobId}`);
   },
 
-  // 轮询作业状态
-  pollJobStatus: async (jobId: number | string, interval = 2000): Promise<SimulationJob> => {
+  // 轮询作业状态 (max 300 attempts ≈ 10 min at 2s interval)
+  pollJobStatus: async (jobId: number | string, interval = 2000, maxAttempts = 300): Promise<SimulationJob> => {
     return new Promise((resolve, reject) => {
+      let attempts = 0;
       const poll = async () => {
+        attempts++;
         try {
           const job = await simulationService.getJob(jobId);
-          
+
           if (job.status === 'completed' || job.status === 'failed') {
             resolve(job);
+          } else if (attempts >= maxAttempts) {
+            reject(new Error(`Polling timed out after ${maxAttempts} attempts for job ${jobId}`));
           } else {
             setTimeout(poll, interval);
           }
@@ -140,7 +144,7 @@ export const simulationService = {
           reject(error);
         }
       };
-      
+
       poll();
     });
   },

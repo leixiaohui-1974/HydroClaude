@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy import func
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from ..database import get_db
@@ -32,38 +33,45 @@ async def get_dashboard_stats(
     """Return aggregated statistics for the current user's dashboard."""
     user_id = current_user.id
 
-    total_projects = db.query(func.count(Project.id)).filter(
-        Project.user_id == user_id
-    ).scalar() or 0
+    try:
+        total_projects = db.query(func.count(Project.id)).filter(
+            Project.user_id == user_id
+        ).scalar() or 0
 
-    running_jobs = db.query(func.count(SimulationJob.id)).filter(
-        SimulationJob.user_id == user_id,
-        SimulationJob.status == "running",
-    ).scalar() or 0
+        running_jobs = db.query(func.count(SimulationJob.id)).filter(
+            SimulationJob.user_id == user_id,
+            SimulationJob.status == "running",
+        ).scalar() or 0
 
-    completed_jobs = db.query(func.count(SimulationJob.id)).filter(
-        SimulationJob.user_id == user_id,
-        SimulationJob.status == "completed",
-    ).scalar() or 0
+        completed_jobs = db.query(func.count(SimulationJob.id)).filter(
+            SimulationJob.user_id == user_id,
+            SimulationJob.status == "completed",
+        ).scalar() or 0
 
-    pending_jobs = db.query(func.count(SimulationJob.id)).filter(
-        SimulationJob.user_id == user_id,
-        SimulationJob.status == "pending",
-    ).scalar() or 0
+        pending_jobs = db.query(func.count(SimulationJob.id)).filter(
+            SimulationJob.user_id == user_id,
+            SimulationJob.status == "pending",
+        ).scalar() or 0
 
-    failed_jobs = db.query(func.count(SimulationJob.id)).filter(
-        SimulationJob.user_id == user_id,
-        SimulationJob.status == "failed",
-    ).scalar() or 0
+        failed_jobs = db.query(func.count(SimulationJob.id)).filter(
+            SimulationJob.user_id == user_id,
+            SimulationJob.status == "failed",
+        ).scalar() or 0
 
-    # Recent jobs for timeline
-    recent_jobs = (
-        db.query(SimulationJob)
-        .filter(SimulationJob.user_id == user_id)
-        .order_by(SimulationJob.created_at.desc())
-        .limit(5)
-        .all()
-    )
+        # Recent jobs for timeline
+        recent_jobs = (
+            db.query(SimulationJob)
+            .filter(SimulationJob.user_id == user_id)
+            .order_by(SimulationJob.created_at.desc())
+            .limit(5)
+            .all()
+        )
+    except SQLAlchemyError as e:
+        logger.error(f"Dashboard stats query failed for user {user_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to load dashboard statistics",
+        )
 
     recent_list = []
     for job in recent_jobs:

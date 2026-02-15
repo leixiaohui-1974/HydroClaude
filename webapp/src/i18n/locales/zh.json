@@ -98,7 +98,11 @@
     "browseExamplesArrow": "浏览示例 →",
     "pluginsTitle": "插件",
     "pluginsDesc": "探索插件市场，扩展系统功能",
-    "pluginsMarketArrow": "插件市场 →"
+    "pluginsMarketArrow": "插件市场 →",
+    "justNow": "刚刚",
+    "minutesAgo": "{{min}} 分钟前",
+    "hoursAgo": "{{hr}} 小时前",
+    "daysAgo": "{{day}} 天前"
   },
   "projects": {
     "title": "项目管理",

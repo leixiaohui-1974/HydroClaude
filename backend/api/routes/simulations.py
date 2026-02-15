@@ -271,8 +271,10 @@ async def delete_job(
         )
 
     try:
+        job_name = job.name
         db.delete(job)
         db.commit()
+        logger.info(f"Job deleted: id={job_id} name='{job_name}' by user {current_user.username}")
     except SQLAlchemyError as e:
         db.rollback()
         logger.error(f"Failed to delete job {job_id}: {e}")

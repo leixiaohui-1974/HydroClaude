@@ -98,7 +98,11 @@
     "browseExamplesArrow": "Browse Examples →",
     "pluginsTitle": "Plugins",
     "pluginsDesc": "Explore the plugin marketplace to extend system functionality",
-    "pluginsMarketArrow": "Plugin Market →"
+    "pluginsMarketArrow": "Plugin Market →",
+    "justNow": "Just now",
+    "minutesAgo": "{{min}} min ago",
+    "hoursAgo": "{{hr}} hr ago",
+    "daysAgo": "{{day}} days ago"
   },
   "projects": {
     "title": "Project Management",
