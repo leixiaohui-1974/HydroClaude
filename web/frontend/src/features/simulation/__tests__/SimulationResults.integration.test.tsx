@@ -43,8 +43,8 @@ describe('SimulationResults Integration Tests', () => {
       max_depth: 1.6,
       min_depth: 0.36,
       max_velocity: 1.1,
-      max_discharge: 1.76,
       max_froude: 0.85,
+      max_discharge: 1.76,
       mean_depth_final: 1.35,
       mean_discharge_final: 1.05
     }

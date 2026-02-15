@@ -1,5 +1,4 @@
 import React, { useRef, useEffect } from 'react';
-import { message } from 'antd';
 import Editor, { OnMount } from '@monaco-editor/react';
 import type { editor } from 'monaco-editor';
 import type { SimulationConfig } from '@/services/simulations';
@@ -17,7 +16,7 @@ const JsonEditor: React.FC<JsonEditorProps> = ({
 }) => {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
-  const handleEditorDidMount: OnMount = (editor, monaco) => {
+  const handleEditorDidMount: OnMount = (editor: any, monaco: any) => {
     editorRef.current = editor;
 
     // 配置JSON验证

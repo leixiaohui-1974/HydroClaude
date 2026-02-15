@@ -18,9 +18,12 @@ Godunov-FVM -
 : 2025-10-29
 """
 
+import logging
 import numpy as np
 from typing import Tuple, Dict, Optional, List
 import sys, os
+
+logger = logging.getLogger(__name__)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from solvers.gate import SluiceGate, BroadCrestedWeir
@@ -173,9 +176,8 @@ class GodunvFVMCoupled:
                     if struct_idx < len(Q) - 2:
                         Q[struct_idx + 1] = 0.7 * Q[struct_idx + 1] + 0.3 * Q_struct
                         
-                except:
-                    # 
-                    pass
+                except Exception as e:
+                    logger.warning(f"Structure coupling failed at cell {struct_idx} for {struct.__class__.__name__}: {e}")
         
         return h, Q
     
@@ -348,7 +350,8 @@ class GodunvFVMCoupled:
                         'flow_type': flow_type,
                         'opening': opening
                     })
-                except:
+                except Exception as e:
+                    logger.warning(f"Structure info retrieval failed for {struct.__class__.__name__} at cell {idx}: {e}")
                     info.append({'type': struct.__class__.__name__, 'error': True})
         
         return info

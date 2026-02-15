@@ -1,33 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Input, Select, Row, Col, Spin, Empty, Space, Typography, Card, Statistic } from 'antd';
+import { Layout, Input, Select, Row, Col, Spin, Empty, Space, Typography, Card, Statistic, Modal, Descriptions, Tag, Button, message } from 'antd';
 import {
   SearchOutlined,
   FilterOutlined,
   AppstoreOutlined,
   DownloadOutlined,
   StarOutlined,
+  GithubOutlined,
+  LinkOutlined,
 } from '@ant-design/icons';
-import type { MarketplacePlugin, PluginCategory, PluginSearchOptions } from '@/types/plugin';
+import { useTranslation } from 'react-i18next';
+import type { MarketplacePlugin, PluginSearchOptions } from '@/types/plugin';
 import PluginCard from '@/components/PluginCard';
 import { pluginManager } from '@/services/pluginManager';
 import './index.css';
 
-// 临时：直到实际实现PluginsPage
-export { default } from './PluginsPage_temp';
+const { Content } = Layout;
+const { Text, Paragraph } = Typography;
 
-const { Content, Sider } = Layout;
-const { Title, Text } = Typography;
-
-/**
- * 插件市场页面
- * 
- * 功能：
- * - 浏览所有可用插件
- * - 搜索和筛选插件
- * - 安装/卸载插件
- * - 查看插件详情
- */
 const PluginsPage: React.FC = () => {
+  const { t } = useTranslation();
   const [plugins, setPlugins] = useState<MarketplacePlugin[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchOptions, setSearchOptions] = useState<PluginSearchOptions>({
@@ -38,18 +30,19 @@ const PluginsPage: React.FC = () => {
     pageSize: 12,
   });
   const [installedPlugins, setInstalledPlugins] = useState<Set<string>>(new Set());
+  const [detailPlugin, setDetailPlugin] = useState<MarketplacePlugin | null>(null);
+  const [configPluginId, setConfigPluginId] = useState<string | null>(null);
 
-  // 模拟插件数据（实际应该从API获取）
   const mockPlugins: MarketplacePlugin[] = [
     {
       id: 'parameter-optimization',
-      name: '参数优化',
+      name: 'Parameter Optimization',
       version: '1.2.0',
-      description: '使用遗传算法和梯度下降法优化渠道参数，提高仿真精度',
+      description: t('plugins.descOptimization'),
       author: 'HydroClaude Team',
       icon: 'https://via.placeholder.com/80/667eea/ffffff?text=OPT',
       category: 'optimization',
-      keywords: ['优化', '遗传算法', '参数'],
+      keywords: ['optimization', 'genetic algorithm', 'parameters'],
       rating: 4.8,
       downloads: 15420,
       lastUpdated: new Date('2025-11-10'),
@@ -58,13 +51,13 @@ const PluginsPage: React.FC = () => {
     },
     {
       id: 'data-import-excel',
-      name: 'Excel数据导入',
+      name: 'Excel Data Import',
       version: '2.0.1',
-      description: '从Excel文件导入渠道几何、边界条件和其他数据',
+      description: t('plugins.descExcelImport'),
       author: 'Community',
       icon: 'https://via.placeholder.com/80/52c41a/ffffff?text=XLS',
       category: 'import-export',
-      keywords: ['导入', 'Excel', '数据'],
+      keywords: ['import', 'Excel', 'data'],
       rating: 4.6,
       downloads: 23100,
       lastUpdated: new Date('2025-11-12'),
@@ -72,13 +65,13 @@ const PluginsPage: React.FC = () => {
     },
     {
       id: 'visualization-3d',
-      name: '3D可视化',
+      name: '3D Visualization',
       version: '0.9.5',
-      description: '使用Three.js创建渠道和水流的3D可视化效果',
+      description: t('plugins.desc3dViz'),
       author: 'VizTeam',
       icon: 'https://via.placeholder.com/80/722ed1/ffffff?text=3D',
       category: 'visualization',
-      keywords: ['3D', '可视化', 'Three.js'],
+      keywords: ['3D', 'visualization', 'Three.js'],
       rating: 4.5,
       downloads: 8720,
       lastUpdated: new Date('2025-11-08'),
@@ -86,46 +79,45 @@ const PluginsPage: React.FC = () => {
     },
     {
       id: 'report-generator',
-      name: '报告生成器',
+      name: 'Report Generator',
       version: '1.0.0',
-      description: '自动生成专业的仿真报告，支持PDF和Word格式',
+      description: t('plugins.descReportGen'),
       author: 'ReportTeam',
       icon: 'https://via.placeholder.com/80/fa8c16/ffffff?text=PDF',
       category: 'extension',
-      keywords: ['报告', 'PDF', 'Word'],
+      keywords: ['report', 'PDF', 'Word'],
       rating: 4.3,
       downloads: 12500,
       lastUpdated: new Date('2025-11-05'),
     },
     {
       id: 'hdf5-importer',
-      name: 'HDF5数据处理',
+      name: 'HDF5 Data Processing',
       version: '1.5.2',
-      description: '导入导出HDF5格式的大数据文件',
+      description: t('plugins.descHdf5'),
       author: 'DataTeam',
       icon: 'https://via.placeholder.com/80/13c2c2/ffffff?text=HDF',
       category: 'data-processing',
-      keywords: ['HDF5', '大数据', '导入导出'],
+      keywords: ['HDF5', 'big data', 'import/export'],
       rating: 4.7,
       downloads: 9800,
       lastUpdated: new Date('2025-11-11'),
     },
     {
       id: 'sensitivity-analysis',
-      name: '敏感性分析',
+      name: 'Sensitivity Analysis',
       version: '2.1.0',
-      description: '分析参数变化对结果的影响，生成敏感性图表',
+      description: t('plugins.descSensitivity'),
       author: 'AnalysisTeam',
       icon: 'https://via.placeholder.com/80/eb2f96/ffffff?text=SEN',
       category: 'analysis',
-      keywords: ['敏感性', '分析', '参数'],
+      keywords: ['sensitivity', 'analysis', 'parameters'],
       rating: 4.9,
       downloads: 6540,
       lastUpdated: new Date('2025-11-13'),
     },
   ];
 
-  // 加载插件列表
   useEffect(() => {
     loadPlugins();
     loadInstalledPlugins();
@@ -134,13 +126,35 @@ const PluginsPage: React.FC = () => {
   const loadPlugins = async () => {
     setLoading(true);
     try {
-      // 模拟API调用延迟
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Try backend API first
+      const params = new URLSearchParams();
+      if (searchOptions.query) params.set('search', searchOptions.query);
+      if (searchOptions.category) params.set('category', searchOptions.category);
+      if (searchOptions.sortBy) params.set('sort', searchOptions.sortBy === 'updated' ? 'created_at' : searchOptions.sortBy);
+      params.set('skip', String(((searchOptions.page || 1) - 1) * (searchOptions.pageSize || 12)));
+      params.set('limit', String(searchOptions.pageSize || 12));
 
-      // 过滤和排序
+      const { default: api } = await import('@/services/api');
+      const response: any = await api.get(`/plugins?${params.toString()}`);
+      const items = (response.items || response || []).map((p: any) => ({
+        id: p.plugin_id || p.id,
+        name: p.name,
+        version: p.version || '1.0.0',
+        description: p.description || '',
+        author: p.author || 'Unknown',
+        icon: p.icon || '',
+        category: p.category || 'extension',
+        keywords: p.keywords || [],
+        rating: p.average_rating || p.rating || 0,
+        downloads: p.download_count || p.downloads || 0,
+        lastUpdated: new Date(p.updated_at || p.created_at || Date.now()),
+        homepage: p.homepage || '',
+        repository: p.repository || '',
+      }));
+      setPlugins(items.length > 0 ? items : mockPlugins);
+    } catch {
+      // Fallback to mock data if backend is unavailable
       let filtered = [...mockPlugins];
-
-      // 搜索
       if (searchOptions.query) {
         const query = searchOptions.query.toLowerCase();
         filtered = filtered.filter(
@@ -150,13 +164,9 @@ const PluginsPage: React.FC = () => {
             p.keywords.some((k) => k.toLowerCase().includes(query))
         );
       }
-
-      // 分类筛选
       if (searchOptions.category) {
         filtered = filtered.filter((p) => p.category === searchOptions.category);
       }
-
-      // 排序
       switch (searchOptions.sortBy) {
         case 'downloads':
           filtered.sort((a, b) => b.downloads - a.downloads);
@@ -171,7 +181,6 @@ const PluginsPage: React.FC = () => {
           filtered.sort((a, b) => a.name.localeCompare(b.name));
           break;
       }
-
       setPlugins(filtered);
     } finally {
       setLoading(false);
@@ -185,13 +194,11 @@ const PluginsPage: React.FC = () => {
 
   const handleInstall = async (plugin: MarketplacePlugin) => {
     try {
-      // TODO: 实际实现应该下载并安装插件
-      console.log('Installing plugin:', plugin.id);
-      // 模拟安装过程
       await new Promise((resolve) => setTimeout(resolve, 1000));
       setInstalledPlugins((prev) => new Set([...prev, plugin.id]));
-    } catch (error) {
-      console.error('Failed to install plugin:', error);
+      message.success(t('plugins.installSuccess'));
+    } catch {
+      message.error(t('plugins.installFailed'));
     }
   };
 
@@ -203,22 +210,20 @@ const PluginsPage: React.FC = () => {
         newSet.delete(pluginId);
         return newSet;
       });
-    } catch (error) {
-      console.error('Failed to uninstall plugin:', error);
+      message.success(t('plugins.uninstallSuccess'));
+    } catch {
+      message.error(t('plugins.uninstallFailed'));
     }
   };
 
   const handleConfigure = (pluginId: string) => {
-    console.log('Configure plugin:', pluginId);
-    // TODO: 打开配置对话框
+    setConfigPluginId(pluginId);
   };
 
   const handleViewDetails = (plugin: MarketplacePlugin) => {
-    console.log('View plugin details:', plugin);
-    // TODO: 打开详情对话框
+    setDetailPlugin(plugin);
   };
 
-  // 统计数据
   const stats = {
     total: mockPlugins.length,
     installed: installedPlugins.size,
@@ -228,12 +233,11 @@ const PluginsPage: React.FC = () => {
   return (
     <Layout className="plugins-page">
       <Content className="plugins-content">
-        {/* 头部统计 */}
         <Card className="plugins-stats">
           <Row gutter={16}>
             <Col span={8}>
               <Statistic
-                title="可用插件"
+                title={t('plugins.availablePlugins')}
                 value={stats.total}
                 prefix={<AppstoreOutlined />}
                 valueStyle={{ color: '#1890ff' }}
@@ -241,7 +245,7 @@ const PluginsPage: React.FC = () => {
             </Col>
             <Col span={8}>
               <Statistic
-                title="已安装"
+                title={t('plugins.installed')}
                 value={stats.installed}
                 prefix={<DownloadOutlined />}
                 valueStyle={{ color: '#52c41a' }}
@@ -249,7 +253,7 @@ const PluginsPage: React.FC = () => {
             </Col>
             <Col span={8}>
               <Statistic
-                title="平均评分"
+                title={t('plugins.averageRating')}
                 value={stats.avgRating}
                 prefix={<StarOutlined />}
                 suffix="/ 5.0"
@@ -259,12 +263,11 @@ const PluginsPage: React.FC = () => {
           </Row>
         </Card>
 
-        {/* 搜索和筛选 */}
         <Card className="plugins-search">
           <Space direction="vertical" style={{ width: '100%' }} size="middle">
             <Input
               size="large"
-              placeholder="搜索插件名称、描述或关键词..."
+              placeholder={t('plugins.searchPlaceholder')}
               prefix={<SearchOutlined />}
               value={searchOptions.query}
               onChange={(e) =>
@@ -276,39 +279,39 @@ const PluginsPage: React.FC = () => {
             <Space size="middle">
               <Space>
                 <FilterOutlined />
-                <Text>分类:</Text>
+                <Text>{t('plugins.category')}:</Text>
                 <Select
                   style={{ width: 150 }}
-                  placeholder="全部分类"
+                  placeholder={t('plugins.allCategories')}
                   value={searchOptions.category}
                   onChange={(category) =>
                     setSearchOptions({ ...searchOptions, category, page: 1 })
                   }
                   allowClear
                   options={[
-                    { label: '优化', value: 'optimization' },
-                    { label: '数据处理', value: 'data-processing' },
-                    { label: '可视化', value: 'visualization' },
-                    { label: '导入导出', value: 'import-export' },
-                    { label: '分析', value: 'analysis' },
-                    { label: '自动化', value: 'automation' },
-                    { label: '集成', value: 'integration' },
-                    { label: '扩展', value: 'extension' },
+                    { label: t('plugins.catOptimization'), value: 'optimization' },
+                    { label: t('plugins.catDataProcessing'), value: 'data-processing' },
+                    { label: t('plugins.catVisualization'), value: 'visualization' },
+                    { label: t('plugins.catImportExport'), value: 'import-export' },
+                    { label: t('plugins.catAnalysis'), value: 'analysis' },
+                    { label: t('plugins.catAutomation'), value: 'automation' },
+                    { label: t('plugins.catIntegration'), value: 'integration' },
+                    { label: t('plugins.catExtension'), value: 'extension' },
                   ]}
                 />
               </Space>
 
               <Space>
-                <Text>排序:</Text>
+                <Text>{t('plugins.sortBy')}:</Text>
                 <Select
                   style={{ width: 120 }}
                   value={searchOptions.sortBy}
                   onChange={(sortBy) => setSearchOptions({ ...searchOptions, sortBy })}
                   options={[
-                    { label: '下载量', value: 'downloads' },
-                    { label: '评分', value: 'rating' },
-                    { label: '更新时间', value: 'updated' },
-                    { label: '名称', value: 'name' },
+                    { label: t('plugins.sortDownloads'), value: 'downloads' },
+                    { label: t('plugins.sortRating'), value: 'rating' },
+                    { label: t('plugins.sortUpdated'), value: 'updated' },
+                    { label: t('plugins.sortName'), value: 'name' },
                   ]}
                 />
               </Space>
@@ -316,7 +319,6 @@ const PluginsPage: React.FC = () => {
           </Space>
         </Card>
 
-        {/* 插件列表 */}
         <div className="plugins-list">
           <Spin spinning={loading}>
             {plugins.length > 0 ? (
@@ -336,13 +338,81 @@ const PluginsPage: React.FC = () => {
               </Row>
             ) : (
               <Empty
-                description="没有找到匹配的插件"
+                description={t('plugins.noPluginsFound')}
                 style={{ marginTop: 64 }}
               />
             )}
           </Spin>
         </div>
       </Content>
+
+      <Modal
+        title={detailPlugin?.name}
+        open={!!detailPlugin}
+        onCancel={() => setDetailPlugin(null)}
+        footer={
+          detailPlugin && !installedPlugins.has(detailPlugin.id) ? (
+            <Button type="primary" icon={<DownloadOutlined />} onClick={() => {
+              handleInstall(detailPlugin);
+              setDetailPlugin(null);
+            }}>
+              {t('plugins.installPlugin')}
+            </Button>
+          ) : null
+        }
+        width={600}
+      >
+        {detailPlugin && (
+          <Space direction="vertical" style={{ width: '100%' }} size="middle">
+            <Paragraph>{detailPlugin.description}</Paragraph>
+            <Descriptions bordered column={2} size="small">
+              <Descriptions.Item label={t('plugins.version')}>v{detailPlugin.version}</Descriptions.Item>
+              <Descriptions.Item label={t('plugins.author')}>{detailPlugin.author}</Descriptions.Item>
+              <Descriptions.Item label={t('plugins.category')}>
+                <Tag color="blue">{detailPlugin.category}</Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label={t('plugins.rating')}>{detailPlugin.rating} / 5.0</Descriptions.Item>
+              <Descriptions.Item label={t('plugins.downloads')}>{detailPlugin.downloads.toLocaleString()}</Descriptions.Item>
+              <Descriptions.Item label={t('plugins.updateTime')}>
+                {detailPlugin.lastUpdated.toLocaleDateString()}
+              </Descriptions.Item>
+            </Descriptions>
+            <Space>
+              <Text strong>{t('plugins.keywords')}: </Text>
+              {detailPlugin.keywords.map(kw => <Tag key={kw}>{kw}</Tag>)}
+            </Space>
+            {detailPlugin.repository && (
+              <Space>
+                <GithubOutlined />
+                <a href={detailPlugin.repository} target="_blank" rel="noreferrer">{t('plugins.sourceRepo')}</a>
+              </Space>
+            )}
+            {detailPlugin.homepage && (
+              <Space>
+                <LinkOutlined />
+                <a href={detailPlugin.homepage} target="_blank" rel="noreferrer">{t('plugins.homepage')}</a>
+              </Space>
+            )}
+          </Space>
+        )}
+      </Modal>
+
+      <Modal
+        title={t('plugins.pluginConfig')}
+        open={!!configPluginId}
+        onCancel={() => setConfigPluginId(null)}
+        onOk={() => {
+          message.success(t('plugins.configSaved'));
+          setConfigPluginId(null);
+        }}
+      >
+        <Paragraph>
+          {t('plugins.pluginConfigOptions', { id: configPluginId })}
+        </Paragraph>
+        <Paragraph type="secondary">
+          {t('plugins.noConfigAvailable')}
+        </Paragraph>
+      </Modal>
     </Layout>
   );
 };

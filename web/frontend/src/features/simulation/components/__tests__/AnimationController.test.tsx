@@ -3,6 +3,8 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import AnimationController from '../AnimationController';
 
+declare var global: typeof globalThis;
+
 describe('AnimationController', () => {
   const mockOnFrameChange = vi.fn();
   const defaultProps = {

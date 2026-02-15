@@ -50,9 +50,9 @@ const SimulationConfigForm = ({ onSimulationComplete }: SimulationConfigFormProp
     if (!caseId) return;
     try {
       const caseDetail = await testCaseApi.getTestCaseDetail(caseId);
-      const { config = {}, metadata = {} } = caseDetail;
+      const { config = {} as any, metadata } = caseDetail;
       const formValues = {
-        name: metadata.nameCN || metadata.name || `测试: ${caseId}`,
+        name: metadata?.nameCN || metadata?.name || `测试: ${caseId}`,
         description: `基于预设案例: ${caseId}`,
         width: config.width,
         length: config.domainLength,
@@ -85,6 +85,15 @@ const SimulationConfigForm = ({ onSimulationComplete }: SimulationConfigFormProp
             manning_n: values.manning_n || 0.0,
             slope: values.slope || 0.0,
             t_end: values.t_end,
+            initial_conditions: {
+              type: 'uniform',
+              h: 0.0,
+              Q: 0.0,
+            },
+            boundary_conditions: {
+              upstream: { type: 'wall', value: 0.0 },
+              downstream: { type: 'wall', value: 0.0 },
+            },
           }
         };
         const response = await createSimulation(request);

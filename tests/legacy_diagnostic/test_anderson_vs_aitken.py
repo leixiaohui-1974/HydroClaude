@@ -25,6 +25,7 @@ import numpy as np
 import warnings
 warnings.filterwarnings("ignore")
 import sys
+import pytest
 import time
 from pathlib import Path
 from dataclasses import dataclass
@@ -36,9 +37,7 @@ from physics.steady_saint_venant import SteadySaintVenantSystem
 try:
     from solvers.continuation_solver import ContinuationSolver
 except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
+    pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 
 from solvers.fixed_point_iteration import (
     FixedPointIterationSolver,

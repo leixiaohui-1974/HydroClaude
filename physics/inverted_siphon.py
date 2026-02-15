@@ -316,8 +316,8 @@ class InvertedSiphon:
         # First derivative (approximate)
         dh_dQ = 2.0 * h_loss / Q
 
-        # Second derivative (approximate)
-        d2h_dQ2 = -2.0 * h_loss / (Q ** 2)
+        # Second derivative (approximate): h ~ k*Q^2, d2h/dQ2 = 2k = 2*h/Q^2 > 0
+        d2h_dQ2 = 2.0 * h_loss / (Q ** 2)
 
         return dh_dQ, d2h_dQ2
 

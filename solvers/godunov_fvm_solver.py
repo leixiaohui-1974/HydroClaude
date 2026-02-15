@@ -24,7 +24,7 @@ from typing import Tuple, Dict, Optional
 from .boundary_conditions import CharacteristicBC
 
 # 
-from physics.cross_section import CrossSection, RectangularSection
+from physics.cross_section import CrossSection, RectangularSection, SectionType
 
 # Numba
 try:
@@ -99,7 +99,7 @@ class GodunvFVMSolver:
         z_b: np.ndarray = None,
         g: float = 9.81,
         cfl: float = 0.5,
-        eps_dry: float = 1e-6,
+        eps_dry: float = 1e-4,
         order: int = 2,
         riemann_solver: str = 'hll',
         well_balanced: bool = False,
@@ -159,34 +159,36 @@ class GodunvFVMSolver:
             self.cross_section = RectangularSection("default", width)
         else:
             self.cross_section = cross_section
-            # [WARN]  Phase 2.3 
-            # 
+            # [WARN]  Phase 2.3
+            #
             # 1.  A, P, R
             # 2.  A
             # 3.  Froude
             #
-            # 
-            # 1. [WARN]   (0.5*g*h²*B) - 
-            # 2. [WARN]   - 
-            # 3. [WARN]   (CharacteristicBC) - 
+            #
+            # 1. [WARN]   (0.5*g*h²*B) -
+            # 2. [WARN]   -
+            # 3. [WARN]   (CharacteristicBC) -
             #
             # //
-            # -  
-            # -  
-            # - Froude 
+            # -
+            # -
+            # - Froude
             # - [WARN]
             #
-            # 
+            #
             #       /
-            import warnings
-            warnings.warn(
-                "\n[WARN]   (Phase 2.3)\n"
-                "Froude\n"
-                "\n"
-                "\n"
-                ": docs/STAGE2_PHASE2_3_COMPLETION_REPORT.md",
-                UserWarning
-            )
+            if cross_section.section_type != SectionType.RECTANGULAR:
+                import warnings
+                warnings.warn(
+                    "非矩形断面支持：部分実現 (Phase 2.3)\n"
+                    "[WARN]   (Phase 2.3)\n"
+                    "Froude\n"
+                    "\n"
+                    "\n"
+                    ": docs/STAGE2_PHASE2_3_COMPLETION_REPORT.md",
+                    UserWarning
+                )
 
         # self.B ()
         self.B = width
@@ -500,11 +502,13 @@ class GodunvFVMSolver:
                     c_neighbor = max(c_neighbor, np.sqrt(self.g * self.h[i+1]))
                 lambda_max = max(lambda_max, c_neighbor)
 
-        # lambda_max > 0
-        if lambda_max < 1e-6:
-            lambda_max = np.sqrt(self.g * 1.0)  # 1m
+        # Ensure lambda_max is never zero to avoid division by zero
+        lambda_max = max(lambda_max, 1e-8)
 
         dt = self.cfl * self.dx / lambda_max
+
+        # Maximum time step cap to prevent huge dt when domain is completely dry
+        dt = min(dt, 1.0)
 
         # dt_max
         if self.dt_max is not None:
@@ -558,19 +562,21 @@ class GodunvFVMSolver:
         # 
         # h_star, Q_star = self._apply_bc(h_star, Q_star)
 
-        # 
+        #
         h_star = np.maximum(h_star, 0.0)
+        Q_star[h_star < self.eps_dry] = 0.0
 
         # === 2 ===
         dh_dt_star, dQ_dt_star = self._compute_rhs(h_star, Q_star)
         self.h = 0.5 * (h_n + h_star) + 0.5 * dt * dh_dt_star
         self.Q = 0.5 * (Q_n + Q_star) + 0.5 * dt * dQ_dt_star
 
-        # 
+        #
         self.h, self.Q = self._apply_bc(self.h, self.Q)
 
-        # 
+        #
         self.h = np.maximum(self.h, 0.0)
+        self.Q[self.h < self.eps_dry] = 0.0
 
     def _step_strang_splitting(self, dt: float):
         """
@@ -610,10 +616,11 @@ class GodunvFVMSolver:
         self.h = h_source + 0.5 * dt * dh_dt
         self.Q = Q_source + 0.5 * dt * dQ_dt
 
-        # 
+        #
         self.h, self.Q = self._apply_bc(self.h, self.Q)
         self.h = np.maximum(self.h, 0.0)
-    
+        self.Q[self.h < self.eps_dry] = 0.0
+
     def _compute_rhs(self, h: np.ndarray, Q: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
         +
@@ -656,12 +663,12 @@ class GodunvFVMSolver:
             # ghosteta h_bc + z_b_ghost
             # Lake at Restetaghosteta
             if self.bc_left['type'] == 'h':
-                #  BUG eta = h_bc + z_b_ghostz_b_ghost≠z_b_boundary
-                # eta
-                # eta = h_bc + z_b[0]ghosteta
+                # Ghost cell z_b: extrapolate to the left of the domain
+                # z_b_ghost = 2*z_b[0] - z_b[1] (linear extrapolation)
                 value = self.bc_left['value']
                 h_bc = value if not callable(value) else value(self.t)
-                eta_bc = h_bc + self.z_b[0]  # 
+                z_b_ghost = (2.0 * self.z_b[0] - self.z_b[1]) if n > 1 else self.z_b[0]
+                eta_bc = h_bc + z_b_ghost
                 # Lake at Resteta
                 eta_ext[0] = eta_bc
             else:  # Q boundary
@@ -670,9 +677,12 @@ class GodunvFVMSolver:
 
             # ghosteta
             if self.bc_right['type'] == 'h':
+                # Ghost cell z_b: extrapolate to the right of the domain
+                # z_b_ghost = 2*z_b[n-1] - z_b[n-2] (linear extrapolation)
                 value = self.bc_right['value']
                 h_bc = value if not callable(value) else value(self.t)
-                eta_bc = h_bc + self.z_b[n-1]  # 
+                z_b_ghost = (2.0 * self.z_b[n-1] - self.z_b[n-2]) if n > 1 else self.z_b[n-1]
+                eta_bc = h_bc + z_b_ghost
                 # Lake at Resteta
                 eta_ext[n+1] = eta_bc
             else:  # Q boundary
@@ -908,7 +918,8 @@ class GodunvFVMSolver:
             if self.bc_left['type'] == 'h':
                 value = self.bc_left['value']
                 h_bc = value if not callable(value) else value(self.t)
-                eta_bc = h_bc + self.z_b[0]
+                z_b_ghost = (2.0 * self.z_b[0] - self.z_b[1]) if n > 1 else self.z_b[0]
+                eta_bc = h_bc + z_b_ghost
                 eta_ext[0] = eta_bc
             else:  # Q boundary
                 eta_ext[0] = eta[0]
@@ -917,7 +928,8 @@ class GodunvFVMSolver:
             if self.bc_right['type'] == 'h':
                 value = self.bc_right['value']
                 h_bc = value if not callable(value) else value(self.t)
-                eta_bc = h_bc + self.z_b[n-1]
+                z_b_ghost = (2.0 * self.z_b[n-1] - self.z_b[n-2]) if n > 1 else self.z_b[n-1]
+                eta_bc = h_bc + z_b_ghost
                 eta_ext[n+1] = eta_bc
             else:  # Q boundary
                 eta_ext[n+1] = eta[n-1]
@@ -1294,8 +1306,13 @@ class GodunvFVMSolver:
             U_Q_L = Q_L
             U_Q_R = Q_R
 
-            F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / (S_R - S_L)
-            F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / (S_R - S_L)
+            dS = S_R - S_L
+            if abs(dS) < 1e-12:
+                F_h = 0.5 * (F_h_L + F_h_R)
+                F_Q = 0.5 * (F_Q_L + F_Q_R)
+            else:
+                F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / dS
+                F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / dS
 
         # 
         if self.critical_flow_treatment:
@@ -1342,14 +1359,15 @@ class GodunvFVMSolver:
         A = geom.area
         R = geom.hydraulic_radius
 
-        # 
+        #
         if R > 1e-10 and abs(Q) > 1e-6:
             Sf = self.n**2 * Q**2 / (A**2 * R**(4.0/3.0))
+            Sf = min(Sf, 100.0)  # Cap friction slope to prevent overflow
             Sf = np.sign(Q) * Sf
         else:
             Sf = 0.0
 
-        # 
+        #
         return -self.g * A * Sf
 
     def _compute_source_term(self, h: float, Q: float, cell_idx: int) -> float:
@@ -1383,9 +1401,10 @@ class GodunvFVMSolver:
             )
 
         # Python
-        # 
+        #
         if R > 1e-10 and abs(Q) > 1e-6:
             Sf = self.n**2 * Q**2 / (A**2 * R**(4.0/3.0))
+            Sf = min(Sf, 100.0)  # Cap friction slope to prevent overflow
             Sf = np.sign(Q) * Sf
         else:
             Sf = 0.0
@@ -1602,9 +1621,12 @@ class GodunvFVMSolver:
             Q_bc = self.bc_left['value'] if not callable(self.bc_left['value']) else self.bc_left['value'](self.t)
             h_bc = h[0]  # 
 
-            # 
+            #
             if h_bc > self.eps_dry:
                 u_bc = Q_bc / (self.B * h_bc)
+                c_bc = np.sqrt(self.g * h_bc) if h_bc > self.eps_dry else 0.0
+                u_max = 10.0 * max(c_bc, 1.0)  # Physical velocity limit
+                u_bc = np.clip(u_bc, -u_max, u_max)
                 F_h[0] = Q_bc
                 F_Q[0] = Q_bc * u_bc + 0.5 * self.g * h_bc * h_bc * self.B
             else:
@@ -1614,7 +1636,7 @@ class GodunvFVMSolver:
         elif self.bc_left['type'] == 'h':
             # hRiemann
             # hQ
-            # 
+            #
             pass
 
         elif self.bc_left['type'] == 'supercritical':
@@ -1624,6 +1646,9 @@ class GodunvFVMSolver:
 
             if h_bc > self.eps_dry:
                 u_bc = Q_bc / (self.B * h_bc)
+                c_bc = np.sqrt(self.g * h_bc) if h_bc > self.eps_dry else 0.0
+                u_max = 10.0 * max(c_bc, 1.0)  # Physical velocity limit
+                u_bc = np.clip(u_bc, -u_max, u_max)
                 F_h[0] = Q_bc
                 F_Q[0] = Q_bc * u_bc + 0.5 * self.g * h_bc * h_bc * self.B
             else:
@@ -1654,6 +1679,9 @@ class GodunvFVMSolver:
 
             if h_bc > self.eps_dry:
                 u_bc = Q_bc / (self.B * h_bc)
+                c_bc = np.sqrt(self.g * h_bc) if h_bc > self.eps_dry else 0.0
+                u_max = 10.0 * max(c_bc, 1.0)  # Physical velocity limit
+                u_bc = np.clip(u_bc, -u_max, u_max)
                 F_h[n] = Q_bc
                 F_Q[n] = Q_bc * u_bc + 0.5 * self.g * h_bc * h_bc * self.B
             else:
@@ -1663,16 +1691,19 @@ class GodunvFVMSolver:
         elif self.bc_right['type'] == 'h':
             # hRiemann
             # hQ
-            # 
+            #
             pass
 
         elif self.bc_right['type'] == 'supercritical':
-            # 
+            #
             h_bc = h[n-1]
             Q_bc = Q[n-1]
 
             if h_bc > self.eps_dry:
                 u_bc = Q_bc / (self.B * h_bc)
+                c_bc = np.sqrt(self.g * h_bc) if h_bc > self.eps_dry else 0.0
+                u_max = 10.0 * max(c_bc, 1.0)  # Physical velocity limit
+                u_bc = np.clip(u_bc, -u_max, u_max)
                 F_h[n] = Q_bc
                 F_Q[n] = Q_bc * u_bc + 0.5 * self.g * h_bc * h_bc * self.B
             else:

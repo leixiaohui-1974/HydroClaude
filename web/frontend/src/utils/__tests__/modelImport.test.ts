@@ -13,6 +13,7 @@ import {
 } from '../modelImport';
 import { IOErrorType } from '../../types/model-io';
 import type { HydraulicModel, ModelExportData } from '../../types/model-io';
+import { NodeType } from '../../features/modeling/types/model.types';
 
 // ============= Mock Data =============
 
@@ -23,7 +24,7 @@ const createMockModel = (): HydraulicModel => ({
   nodes: [
     {
       id: 'node-1',
-      type: 'channel',
+      type: NodeType.CHANNEL,
       position: { x: 100, y: 200 },
       data: {
         name: 'Channel 1',
@@ -39,7 +40,7 @@ const createMockModel = (): HydraulicModel => ({
     },
     {
       id: 'node-2',
-      type: 'channel',
+      type: NodeType.CHANNEL,
       position: { x: 300, y: 200 },
       data: {
         name: 'Channel 2',
@@ -205,8 +206,8 @@ describe('modelImport - importModelJSON', () => {
     const result = await importModelJSON(file);
 
     expect(result.metadata).toBeDefined();
-    expect(result.metadata.author).toBe('Test Author');
-    expect(result.metadata.tags).toEqual(['test', 'import']);
+    expect(result.metadata!.author).toBe('Test Author');
+    expect(result.metadata!.tags).toEqual(['test', 'import']);
   });
 
   it('应该处理中文内容', async () => {
@@ -301,10 +302,10 @@ describe('modelImport - validateImportedModel', () => {
     const model = createMockModel();
     model.nodes = Array.from({ length: 1200 }, (_, i) => ({
       id: `node-${i}`,
-      type: 'channel',
+      type: NodeType.CHANNEL,
       position: { x: i, y: i },
-      data: { name: `Node ${i}`, validated: true, errors: [], warnings: [] }
-    }));
+      data: { name: `Node ${i}`, validated: true, errors: [] as string[], warnings: [] as string[] } as any
+    })) as any;
     const result = validateImportedModel(model);
 
     expect(result.valid).toBe(true);
@@ -465,7 +466,7 @@ edge-empty,node-test,node-test,false,`;
     expect(result.nodes[0].data.name).toBe('Test Channel');
     expect(result.nodes[0].position.x).toBe(150);
     expect(result.nodes[0].position.y).toBe(250);
-    expect(result.nodes[0].data.width).toBe(4.5);
+    expect((result.nodes[0].data as any).width).toBe(4.5);
     expect(result.nodes[0].data.validated).toBe(true);
   });
 
@@ -482,9 +483,9 @@ edge-empty,node-1,node-1,false,`;
 
     const result = await importModelCSV(nodesFile, edgesFile);
 
-    expect(result.nodes[0].data.width).toBeUndefined();
-    expect(result.nodes[0].data.length).toBeUndefined();
-    expect(result.nodes[0].data.slope).toBeUndefined();
+    expect((result.nodes[0].data as any).width).toBeUndefined();
+    expect((result.nodes[0].data as any).length).toBeUndefined();
+    expect((result.nodes[0].data as any).slope).toBeUndefined();
   });
 
   it('应该拒绝缺少标题行的CSV', async () => {
@@ -539,7 +540,7 @@ describe('modelImport - 集成测试', () => {
     const complexModel = createMockModel();
     complexModel.nodes = Array.from({ length: 20 }, (_, i) => ({
       id: `node-${i}`,
-      type: i % 2 === 0 ? 'channel' : 'junction',
+      type: i % 2 === 0 ? NodeType.CHANNEL : NodeType.CANAL,
       position: { x: i * 100, y: Math.sin(i) * 100 },
       data: {
         name: `Element ${i}`,
@@ -552,7 +553,7 @@ describe('modelImport - 集成测试', () => {
         errors: [],
         warnings: []
       }
-    }));
+    })) as any;
 
     complexModel.edges = Array.from({ length: 19 }, (_, i) => ({
       id: `edge-${i}`,

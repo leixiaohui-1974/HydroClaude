@@ -16,6 +16,7 @@
 """
 
 import sys
+import pytest
 import warnings
 warnings.filterwarnings("ignore")
 import os
@@ -28,14 +29,11 @@ from typing import Dict
 # 导入新模块
 try:
     from solvers.dissolved_oxygen import (
+        DissolvedOxygenSolver,
+        StreeterPhelpsAnalytical
+    )
 except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
-
-    DissolvedOxygenSolver,
-    StreeterPhelpsAnalytical
-)
+    pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 from solvers.ice_cover import IceCoverSolver, StefanAnalyticalSolution
 from solvers.water_temperature import WaterTemperatureSolver
 from solvers.water_quality_adr import ConservativeTracerSolver

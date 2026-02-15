@@ -4,5 +4,9 @@
 
 from .user import User
 from .plugin import Plugin, Rating, Comment
+from .simulation import Project, SimulationJob, SimulationResult
 
-__all__ = ["User", "Plugin", "Rating", "Comment"]
+__all__ = [
+    "User", "Plugin", "Rating", "Comment",
+    "Project", "SimulationJob", "SimulationResult",
+]

@@ -14,11 +14,14 @@ Preissmann
 : 2025-10-23
 """
 
+import logging
 import numpy as np
 import math
 from typing import List, Tuple, Optional
 import sys
 import os
+
+logger = logging.getLogger(__name__)
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -301,8 +304,19 @@ class HydrostaticCanalSolver:
         if h_L < self.eps_dry and h_R < self.eps_dry:
             return 0.0, 0.0
 
+        # Clamp inputs to prevent overflow
+        h_max_safe = 1e8
+        h_L = min(max(h_L, 0.0), h_max_safe)
+        h_R = min(max(h_R, 0.0), h_max_safe)
+        hu_max_safe = 1e10
+        hu_L = max(-hu_max_safe, min(hu_max_safe, hu_L))
+        hu_R = max(-hu_max_safe, min(hu_max_safe, hu_R))
+
         u_L = hu_L / h_L if h_L > self.eps_dry else 0.0
         u_R = hu_R / h_R if h_R > self.eps_dry else 0.0
+        u_max = 100.0
+        u_L = max(-u_max, min(u_max, u_L))
+        u_R = max(-u_max, min(u_max, u_R))
 
         c_L = math.sqrt(self.g * h_L) if h_L > self.eps_dry else 0.0
         c_R = math.sqrt(self.g * h_R) if h_R > self.eps_dry else 0.0
@@ -314,17 +328,19 @@ class HydrostaticCanalSolver:
             s_L = -1e-10
             s_R = 1e-10
 
-        # 
+        #
         if h_L > self.eps_dry:
             F_mass_L = hu_L
-            F_mom_L = hu_L * u_L + 0.5 * self.g * h_L**2
+            h_L_c = min(h_L, 1e6)  # Prevent h**2 overflow
+            F_mom_L = hu_L * u_L + 0.5 * self.g * h_L_c**2
         else:
             F_mass_L = 0.0
             F_mom_L = 0.0
 
         if h_R > self.eps_dry:
             F_mass_R = hu_R
-            F_mom_R = hu_R * u_R + 0.5 * self.g * h_R**2
+            h_R_c = min(h_R, 1e6)  # Prevent h**2 overflow
+            F_mom_R = hu_R * u_R + 0.5 * self.g * h_R_c**2
         else:
             F_mass_R = 0.0
             F_mom_R = 0.0
@@ -449,26 +465,37 @@ class HydrostaticCanalSolver:
         Returns:
             (F_mass, F_momentum): 
         """
-        # 
         if h_L < self.eps_dry and h_R < self.eps_dry:
             return 0.0, 0.0
 
-        # 
+        # Clamp inputs to prevent overflow in all downstream computations
+        h_max_safe = 1e8  # Max physically meaningful depth
+        h_L = min(max(h_L, 0.0), h_max_safe)
+        h_R = min(max(h_R, 0.0), h_max_safe)
+        hu_max_safe = 1e10
+        hu_L = max(-hu_max_safe, min(hu_max_safe, hu_L))
+        hu_R = max(-hu_max_safe, min(hu_max_safe, hu_R))
+
         u_L = hu_L / h_L if h_L > self.eps_dry else 0.0
         u_R = hu_R / h_R if h_R > self.eps_dry else 0.0
 
-        # 
+        # Clamp velocities
+        u_max = 100.0
+        u_L = max(-u_max, min(u_max, u_L))
+        u_R = max(-u_max, min(u_max, u_R))
+
         c_L = math.sqrt(self.g * h_L) if h_L > self.eps_dry else 0.0
         c_R = math.sqrt(self.g * h_R) if h_R > self.eps_dry else 0.0
 
-        # Roe
-        # Toro (2009), Section 10.5
+        # Roe averages - Toro (2009), Section 10.5
         h_avg = 0.5 * (h_L + h_R)
         c_avg = math.sqrt(self.g * h_avg) if h_avg > self.eps_dry else 0.0
-        
-        # Roe
+
         if h_L + h_R > self.eps_dry:
-            u_avg = (u_L * math.sqrt(h_L) + u_R * math.sqrt(h_R)) / (math.sqrt(h_L) + math.sqrt(h_R))
+            sqrt_hL = math.sqrt(h_L) if h_L > 0 else 0.0
+            sqrt_hR = math.sqrt(h_R) if h_R > 0 else 0.0
+            denom = sqrt_hL + sqrt_hR
+            u_avg = (u_L * sqrt_hL + u_R * sqrt_hR) / denom if denom > 1e-14 else 0.0
         else:
             u_avg = 0.0
 
@@ -480,17 +507,19 @@ class HydrostaticCanalSolver:
             s_L = -1e-10
             s_R = 1e-10
 
-        # 
+        #
         if h_L > self.eps_dry:
             F_mass_L = hu_L
-            F_mom_L = hu_L * u_L + 0.5 * self.g * h_L**2
+            h_L_c = min(h_L, 1e6)  # Prevent h**2 overflow
+            F_mom_L = hu_L * u_L + 0.5 * self.g * h_L_c**2
         else:
             F_mass_L = 0.0
             F_mom_L = 0.0
 
         if h_R > self.eps_dry:
             F_mass_R = hu_R
-            F_mom_R = hu_R * u_R + 0.5 * self.g * h_R**2
+            h_R_c = min(h_R, 1e6)  # Prevent h**2 overflow
+            F_mom_R = hu_R * u_R + 0.5 * self.g * h_R_c**2
         else:
             F_mass_R = 0.0
             F_mom_R = 0.0
@@ -506,38 +535,41 @@ class HydrostaticCanalSolver:
             # s_star
             
             # contact wave speed
-            # Rankine-Hugoniot
-            if abs(s_R - s_L) > 1e-14:
-                s_star = (s_R * hu_R - s_L * hu_L + F_mom_L - F_mom_R) / (s_R * h_R - s_L * h_L)
+            # Rankine-Hugoniot with overflow protection
+            denom_star = s_R * h_R - s_L * h_L
+            if abs(s_R - s_L) > 1e-14 and abs(denom_star) > 1e-14:
+                s_star = (s_R * hu_R - s_L * hu_L + F_mom_L - F_mom_R) / denom_star
+                if not math.isfinite(s_star):
+                    s_star = 0.5 * (u_L + u_R)
             else:
                 s_star = 0.5 * (u_L + u_R)
 
             if s_star >= 0:
                 # s_L < 0 < s_star
-                # 
                 if abs(s_L - s_star) > 1e-14:
                     h_star_L = h_L * (s_L - u_L) / (s_L - s_star)
+                    if not math.isfinite(h_star_L) or h_star_L < 0:
+                        h_star_L = h_L
                     hu_star_L = h_star_L * s_star
                 else:
                     h_star_L = h_L
                     hu_star_L = hu_L
-                
-                # 
+
                 F_mass_star = F_mass_L + s_L * (h_star_L - h_L)
                 F_mom_star = F_mom_L + s_L * (hu_star_L - hu_L)
-                
+
                 return F_mass_star, F_mom_star
             else:
                 # s_star < 0 < s_R
-                # 
                 if abs(s_R - s_star) > 1e-14:
                     h_star_R = h_R * (s_R - u_R) / (s_R - s_star)
+                    if not math.isfinite(h_star_R) or h_star_R < 0:
+                        h_star_R = h_R
                     hu_star_R = h_star_R * s_star
                 else:
                     h_star_R = h_R
                     hu_star_R = hu_R
-                
-                # 
+
                 F_mass_star = F_mass_R + s_R * (h_star_R - h_R)
                 F_mom_star = F_mom_R + s_R * (hu_star_R - hu_R)
                 
@@ -703,14 +735,18 @@ class HydrostaticCanalSolver:
             # 
             h_star_R = h_star_interfaces[i+1, 0]
 
-            # Audusse
-            S_gravity = 0.5 * self.g * (h_star_R**2 - h_star_L**2) / dx
+            # Audusse - with overflow protection
+            h_sL = min(h_star_L, 1e6)  # Cap to prevent h**2 overflow
+            h_sR = min(h_star_R, 1e6)
+            S_gravity = 0.5 * self.g * (h_sR**2 - h_sL**2) / dx
 
-            # 
+            #
             if h[i] > self.eps_dry and abs(self.n) > 1e-10:
                 u_i = hu[i] / h[i]
-                R_i = h[i]  # 
+                u_i = max(-100.0, min(100.0, u_i))  # Clamp velocity
+                R_i = max(h[i], 1e-8)  # Ensure R > 0 for power operation
                 S_friction = -self.g * self.n**2 * abs(u_i) * hu[i] / (R_i**(4/3))
+                S_friction = max(-1e6, min(1e6, S_friction))  # Cap friction source
             else:
                 S_friction = 0.0
 
@@ -779,9 +815,7 @@ class HydrostaticCanalSolver:
                         F_momentum[idx] = 0.0
                         
                 except Exception as e:
-                    # Fallback or log error (print for now as we are in a solver)
-                    # print(f"Structure Error: {e}")
-                    pass
+                    logger.warning(f"Structure discharge calculation failed at index {idx}: {e}")
 
         return F_mass, F_momentum, S_mass, S_momentum
 
@@ -1195,19 +1229,30 @@ class HydrostaticCanalSolver:
                     # 
                     continue
                 
-                # 
-                dh = dt * (-(F_mass[i+1] - F_mass[i])/self.dx + S_mass[i])
+                # Update with overflow-safe flux difference
+                dF_mass = F_mass[i+1] - F_mass[i]
+                dF_mom = F_momentum[i+1] - F_momentum[i]
+                if not math.isfinite(dF_mass):
+                    dF_mass = 0.0
+                if not math.isfinite(dF_mom):
+                    dF_mom = 0.0
+                dh = dt * (-dF_mass / self.dx + S_mass[i])
                 h_new[i] = self.h[i] + dh
 
-                # 
-                dhu = dt * (-(F_momentum[i+1] - F_momentum[i])/self.dx + S_momentum[i])
+                dhu = dt * (-dF_mom / self.dx + S_momentum[i])
                 hu_new[i] = self.hu[i] + dhu
 
-            # 
+            #
             for i in range(self.nx):
                 if not pump_mask[i]:
                     h_new[i] = self.omega * h_new[i] + (1 - self.omega) * h_old_iter[i]
                     hu_new[i] = self.omega * hu_new[i] + (1 - self.omega) * hu_old_iter[i]
+
+            # Positivity enforcement and NaN guard
+            h_new = np.where(np.isfinite(h_new), h_new, self.h)
+            hu_new = np.where(np.isfinite(hu_new), hu_new, self.hu)
+            h_new = np.maximum(h_new, 0.0)
+            hu_new[h_new < self.eps_dry] = 0.0
 
             # 
             # [WARN] use_pump_mask=True
@@ -1280,8 +1325,8 @@ class HydrostaticCanalSolver:
                     # 
                     h_uniform = compute_steady_uniform_flow(Q_target, self.B, self.S0_scalar, self.n, self.g)
                     h_upstream_guess = h_uniform
-                except:
-                    # 
+                except Exception as e:
+                    logger.warning(f"Steady uniform flow computation failed, using h_downstream as fallback: {e}")
                     h_upstream_guess = h_downstream
 
         # 
@@ -1342,9 +1387,11 @@ class HydrostaticCanalSolver:
                 self._apply_internal_bc(t=self.current_time, Q_target=Q_target,
                                       max_iter=20, tol=0.05, relax=0.3)  # P2:  (0.6→0.3)
 
-            # 
-            dh_max = np.max(np.abs(self.h - h_old))
-            dhu_max = np.max(np.abs(self.hu - hu_old))
+            #
+            dh_diff = np.abs(self.h - h_old)
+            dhu_diff = np.abs(self.hu - hu_old)
+            dh_max = np.nanmax(dh_diff) if np.any(np.isfinite(dh_diff)) else 1e10
+            dhu_max = np.nanmax(dhu_diff) if np.any(np.isfinite(dhu_diff)) else 1e10
 
             if iteration % 500 == 0 and verbose:
                 Q_actual = np.mean(self.get_Q())

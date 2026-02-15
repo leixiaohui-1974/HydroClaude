@@ -173,12 +173,12 @@ class TestTriangularWeirGeometry:
 
     def test_invalid_angle_too_small(self):
         """测试角度过小"""
-        with pytest.raises(ValueError, match="between 10 deg and 120 deg"):
+        with pytest.raises(ValueError, match="Notch angle must be between"):
             TriangularWeirGeometry(position=100.0, notch_angle=5.0)
 
     def test_invalid_angle_too_large(self):
         """测试角度过大"""
-        with pytest.raises(ValueError, match="between 10 deg and 120 deg"):
+        with pytest.raises(ValueError, match="Notch angle must be between"):
             TriangularWeirGeometry(position=100.0, notch_angle=150.0)
 
 

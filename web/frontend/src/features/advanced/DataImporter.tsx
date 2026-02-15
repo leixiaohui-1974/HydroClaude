@@ -291,9 +291,10 @@ export const DataImporter: React.FC = () => {
                           )}
                         </div>
                       ),
-                      rowExpandable: record => 
-                        (record.warnings && record.warnings.length > 0) ||
-                        (record.errors && record.errors.length > 0)
+                      rowExpandable: (record): boolean =>
+                        (record.warnings !== undefined && record.warnings.length > 0) ||
+                        (record.errors !== undefined && record.errors.length > 0) ||
+                        false
                     }}
                   />
 

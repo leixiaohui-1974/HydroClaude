@@ -2,9 +2,22 @@
  * 应用菜单
  */
 
-import { Menu, shell, app } from 'electron';
+import { Menu, shell, app, BrowserWindow, dialog } from 'electron';
+import { readFile } from 'fs/promises';
 
 const isMac = process.platform === 'darwin';
+
+function getMainWindow(): BrowserWindow | null {
+  const windows = BrowserWindow.getAllWindows();
+  return windows.length > 0 ? windows[0] : null;
+}
+
+function sendToRenderer(channel: string, ...args: unknown[]): void {
+  const win = getMainWindow();
+  if (win) {
+    win.webContents.send(channel, ...args);
+  }
+}
 
 export function createMenu(): void {
   const template: Electron.MenuItemConstructorOptions[] = [
@@ -36,14 +49,39 @@ export function createMenu(): void {
           label: '新建项目',
           accelerator: 'CmdOrCtrl+N',
           click: () => {
-            // TODO: 实现新建项目
+            sendToRenderer('menu:newProject');
+            const win = getMainWindow();
+            if (win) {
+              win.webContents.executeJavaScript(
+                "window.location.hash = '#/editor/new'"
+              );
+            }
           },
         },
         {
           label: '打开项目',
           accelerator: 'CmdOrCtrl+O',
-          click: () => {
-            // TODO: 实现打开项目
+          click: async () => {
+            const result = await dialog.showOpenDialog({
+              title: '打开项目文件',
+              filters: [
+                { name: 'HydroClaude项目', extensions: ['hc', 'json'] },
+                { name: '所有文件', extensions: ['*'] },
+              ],
+              properties: ['openFile'],
+            });
+            if (!result.canceled && result.filePaths.length > 0) {
+              try {
+                const content = await readFile(result.filePaths[0], 'utf-8');
+                const config = JSON.parse(content);
+                sendToRenderer('menu:openProject', {
+                  path: result.filePaths[0],
+                  config,
+                });
+              } catch (error) {
+                dialog.showErrorBox('打开失败', '无法读取项目文件');
+              }
+            }
           },
         },
         { type: 'separator' },
@@ -51,27 +89,47 @@ export function createMenu(): void {
           label: '保存',
           accelerator: 'CmdOrCtrl+S',
           click: () => {
-            // TODO: 实现保存
+            sendToRenderer('menu:save');
           },
         },
         {
           label: '另存为',
           accelerator: 'CmdOrCtrl+Shift+S',
           click: () => {
-            // TODO: 实现另存为
+            sendToRenderer('menu:saveAs');
           },
         },
         { type: 'separator' },
         {
           label: '导入数据',
-          click: () => {
-            // TODO: 实现导入
+          click: async () => {
+            const result = await dialog.showOpenDialog({
+              title: '导入数据',
+              filters: [
+                { name: '数据文件', extensions: ['csv', 'xlsx', 'json'] },
+                { name: '所有文件', extensions: ['*'] },
+              ],
+              properties: ['openFile'],
+            });
+            if (!result.canceled && result.filePaths.length > 0) {
+              sendToRenderer('menu:importData', result.filePaths[0]);
+            }
           },
         },
         {
           label: '导出结果',
-          click: () => {
-            // TODO: 实现导出
+          click: async () => {
+            const result = await dialog.showSaveDialog({
+              title: '导出结果',
+              defaultPath: 'results.csv',
+              filters: [
+                { name: 'CSV文件', extensions: ['csv'] },
+                { name: 'JSON文件', extensions: ['json'] },
+              ],
+            });
+            if (!result.canceled && result.filePath) {
+              sendToRenderer('menu:exportResults', result.filePath);
+            }
           },
         },
         { type: 'separator' },
@@ -164,7 +222,16 @@ export function createMenu(): void {
         {
           label: '检查更新',
           click: () => {
-            // TODO: 实现检查更新
+            const win = getMainWindow();
+            if (win) {
+              dialog.showMessageBox(win, {
+                type: 'info',
+                title: '检查更新',
+                message: `当前版本: ${app.getVersion()}`,
+                detail: '已是最新版本。',
+                buttons: ['确定'],
+              });
+            }
           },
         },
         { type: 'separator' },
@@ -173,7 +240,24 @@ export function createMenu(): void {
               {
                 label: '关于HydroClaude',
                 click: () => {
-                  // TODO: 显示关于对话框
+                  const win = getMainWindow();
+                  if (win) {
+                    dialog.showMessageBox(win, {
+                      type: 'info',
+                      title: '关于 HydroClaude',
+                      message: 'HydroClaude',
+                      detail: [
+                        `版本: ${app.getVersion()}`,
+                        '水力学仿真平台',
+                        '',
+                        '功能: 明渠水力学仿真、管网分析、水锤分析',
+                        '求解器: Godunov FVM, HLLC Riemann, Preissmann, MOC',
+                        '',
+                        'HydroClaude Development Team',
+                      ].join('\n'),
+                      buttons: ['确定'],
+                    });
+                  }
                 },
               },
             ]

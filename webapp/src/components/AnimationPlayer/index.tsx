@@ -8,6 +8,7 @@ import {
   FastForwardOutlined,
   FastBackwardOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 const { Option } = Select;
 
@@ -26,11 +27,11 @@ const AnimationPlayer: React.FC<AnimationPlayerProps> = ({
   fps = 10,
   children,
 }) => {
+  const { t } = useTranslation();
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 播放控制
   useEffect(() => {
     if (isPlaying) {
       const interval = 1000 / (fps * speed);
@@ -82,14 +83,11 @@ const AnimationPlayer: React.FC<AnimationPlayerProps> = ({
 
   return (
     <Card>
-      {/* 显示区域 */}
       <div style={{ minHeight: 400, marginBottom: 16 }}>
         {children}
       </div>
 
-      {/* 控制面板 */}
       <div>
-        {/* 进度条 */}
         <div style={{ marginBottom: 16 }}>
           <Slider
             min={0}
@@ -97,12 +95,11 @@ const AnimationPlayer: React.FC<AnimationPlayerProps> = ({
             value={currentFrame}
             onChange={handleSliderChange}
             tooltip={{
-              formatter: (value) => `帧 ${value} / ${totalFrames - 1}`,
+              formatter: (value) => t('animation.frameTooltip', { current: value, total: totalFrames - 1 }),
             }}
           />
         </div>
 
-        {/* 控制按钮 */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Space>
             <Button
@@ -110,7 +107,7 @@ const AnimationPlayer: React.FC<AnimationPlayerProps> = ({
               onClick={handleJumpToStart}
               disabled={currentFrame === 0}
             >
-              开始
+              {t('animation.start')}
             </Button>
             <Button
               icon={<StepBackwardOutlined />}
@@ -122,7 +119,7 @@ const AnimationPlayer: React.FC<AnimationPlayerProps> = ({
               icon={isPlaying ? <PauseOutlined /> : <PlayCircleOutlined />}
               onClick={handlePlayPause}
             >
-              {isPlaying ? '暂停' : '播放'}
+              {isPlaying ? t('animation.pause') : t('animation.play')}
             </Button>
             <Button
               icon={<StepForwardOutlined />}
@@ -134,12 +131,12 @@ const AnimationPlayer: React.FC<AnimationPlayerProps> = ({
               onClick={handleJumpToEnd}
               disabled={currentFrame === totalFrames - 1}
             >
-              结束
+              {t('animation.end')}
             </Button>
           </Space>
 
           <Space>
-            <span>帧数:</span>
+            <span>{t('animation.frameCount')}</span>
             <InputNumber
               min={0}
               max={totalFrames - 1}
@@ -148,8 +145,8 @@ const AnimationPlayer: React.FC<AnimationPlayerProps> = ({
               style={{ width: 100 }}
             />
             <span>/ {totalFrames - 1}</span>
-            
-            <span style={{ marginLeft: 16 }}>速度:</span>
+
+            <span style={{ marginLeft: 16 }}>{t('animation.speed')}</span>
             <Select value={speed} onChange={setSpeed} style={{ width: 100 }}>
               <Option value={0.25}>0.25x</Option>
               <Option value={0.5}>0.5x</Option>

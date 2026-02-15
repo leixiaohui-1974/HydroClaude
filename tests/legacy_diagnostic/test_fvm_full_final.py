@@ -13,6 +13,7 @@ Date: 2025-10-23
 """
 
 import sys
+import pytest
 import warnings
 warnings.filterwarnings("ignore")
 import os
@@ -29,9 +30,7 @@ try:
     # # from solvers.single_canal_solver import SingleCanalSolver  # 已废弃
     from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver as SingleCanalSolver
 except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
+    pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 
 from solvers.fvm_steady_full import FVMSteadyFullSolver
 from solvers.gate import SluiceGate

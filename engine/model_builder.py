@@ -230,11 +230,23 @@ class ModelBuilder:
             if len(h_init) != n_cells:
                 raise ValueError(f"初始条件数据点数({len(h_init)})与网格单元数({n_cells})不匹配")
 
+        elif ic['type'] == 'smooth_wave':
+            # 光滑波初始条件（正弦扰动）
+            h_base = ic.get('h_base', 2.0)
+            amplitude = ic.get('amplitude', 0.1)
+            wavelength = ic.get('wavelength', geom['channel_length'])
+            Q_val = ic.get('Q', 0.0)
+
+            k = 2 * np.pi / wavelength
+            h_init = h_base + amplitude * np.cos(k * x)
+            Q_init = np.ones(n_cells) * Q_val
+
         elif ic['type'] == 'expression':
             # Python表达式
             expr = ic['expression']
-            h_init = eval(expr['h'], {'np': np, 'x': x})
-            Q_init = eval(expr['Q'], {'np': np, 'x': x})
+            safe_globals = {"__builtins__": {}, "np": np, "x": x, "abs": abs, "max": max, "min": min}
+            h_init = eval(expr['h'], safe_globals)
+            Q_init = eval(expr['Q'], safe_globals)
 
         else:
             raise ValueError(f"不支持的初始条件类型: {ic['type']}")
@@ -276,9 +288,7 @@ class ModelBuilder:
 
             # 如果有时间序列，创建插值函数
             if 'time_series' in bc_dict and bc_dict['time_series']:
-                # TODO: 实现时间序列插值
-                # 目前简单返回常数
-                pass
+                value = self._create_time_series_interpolator(bc_dict['time_series'], value)
 
             return {'type': bc_type, 'value': value}
 
@@ -299,17 +309,126 @@ class ModelBuilder:
             return {'type': 'Q', 'value': Q_val}
 
         elif bc_type == 'rating_curve':
-            # 水位-流量关系
-            # TODO: 实现rating curve
-            raise NotImplementedError("Rating curve尚未实现")
+            # 水位-流量关系: Q = C * (h - h0)^n 或离散表格
+            return self._parse_rating_curve(bc_dict)
 
         elif bc_type == 'hydrograph':
-            # 流量过程线
-            # TODO: 实现hydrograph
-            raise NotImplementedError("Hydrograph尚未实现")
+            # 流量过程线: Q(t) 时间序列
+            return self._parse_hydrograph(bc_dict)
 
         else:
             raise ValueError(f"不支持的边界条件类型: {bc_type}")
+
+    def _create_time_series_interpolator(self, time_series, default_value):
+        """
+        创建时间序列插值函数
+
+        Args:
+            time_series: 时间序列数据，格式为:
+                - dict: {'times': [...], 'values': [...]}
+                - list: [[t0, v0], [t1, v1], ...]
+                - str: CSV文件路径
+            default_value: 默认值（超出范围时使用）
+
+        Returns:
+            插值函数 f(t) -> value
+        """
+        from scipy.interpolate import interp1d
+
+        if isinstance(time_series, str):
+            data = np.loadtxt(time_series, delimiter=',', skiprows=1)
+            times = data[:, 0]
+            values = data[:, 1]
+        elif isinstance(time_series, dict):
+            times = np.array(time_series['times'])
+            values = np.array(time_series['values'])
+        elif isinstance(time_series, list):
+            arr = np.array(time_series)
+            times = arr[:, 0]
+            values = arr[:, 1]
+        else:
+            return default_value
+
+        interp_func = interp1d(
+            times, values,
+            kind='linear',
+            bounds_error=False,
+            fill_value=(values[0], values[-1])
+        )
+
+        def bc_value(t):
+            return float(interp_func(t))
+
+        return bc_value
+
+    def _parse_rating_curve(self, bc_dict: Dict) -> Dict:
+        """
+        解析水位-流量关系（Rating Curve）边界条件
+
+        支持两种格式:
+        1. 幂律公式: Q = coefficient * (h - datum)^exponent
+        2. 离散表格: {'h_values': [...], 'Q_values': [...]}
+        """
+        from scipy.interpolate import interp1d
+
+        if 'coefficient' in bc_dict:
+            C = bc_dict['coefficient']
+            h0 = bc_dict.get('datum', 0.0)
+            n = bc_dict.get('exponent', 1.5)
+
+            def rating_Q(h):
+                dh = max(h - h0, 0.0)
+                return C * dh ** n
+
+            return {'type': 'rating_curve', 'func': rating_Q}
+
+        elif 'h_values' in bc_dict and 'Q_values' in bc_dict:
+            h_vals = np.array(bc_dict['h_values'])
+            Q_vals = np.array(bc_dict['Q_values'])
+
+            interp_func = interp1d(
+                h_vals, Q_vals,
+                kind='linear',
+                bounds_error=False,
+                fill_value=(Q_vals[0], Q_vals[-1])
+            )
+
+            def rating_Q_table(h):
+                return float(interp_func(h))
+
+            return {'type': 'rating_curve', 'func': rating_Q_table}
+
+        else:
+            raise ValueError(
+                "Rating curve需要提供 'coefficient'+'exponent' 或 'h_values'+'Q_values'"
+            )
+
+    def _parse_hydrograph(self, bc_dict: Dict) -> Dict:
+        """
+        解析流量过程线（Hydrograph）边界条件
+
+        格式:
+        - times + values: 时间-流量序列
+        - file: CSV文件路径 (两列: time, Q)
+        """
+        if 'file' in bc_dict:
+            data = np.loadtxt(bc_dict['file'], delimiter=',', skiprows=1)
+            times = data[:, 0]
+            values = data[:, 1]
+        elif 'times' in bc_dict and 'values' in bc_dict:
+            times = np.array(bc_dict['times'])
+            values = np.array(bc_dict['values'])
+        else:
+            raise ValueError(
+                "Hydrograph需要提供 'times'+'values' 或 'file'"
+            )
+
+        Q_func = self._create_time_series_interpolator(
+            {'times': times.tolist(), 'values': values.tolist()},
+            default_value=values[0]
+        )
+
+        return {'type': 'Q', 'value': Q_func}
 
     def get_analytical_solution(self, t: float, x: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """

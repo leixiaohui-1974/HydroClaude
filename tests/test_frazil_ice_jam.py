@@ -16,6 +16,7 @@ Frazil Ice和Ice Jam模块测试套件
 """
 
 import sys
+import pytest
 import warnings
 warnings.filterwarnings("ignore")
 import os
@@ -29,9 +30,7 @@ from typing import Dict
 try:
     from solvers.frazil_ice import FrazilIceSolver
 except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
+    pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 
 from solvers.ice_jam import IceJamSolver
 
@@ -176,9 +175,9 @@ def test_frazil_size_distribution():
     frazil_solver.initialize()
 
     # 条件
-    u = np.array([0.8])  # 较强湍流
-    h = np.array([3.0])
-    T = np.array([-0.2])  # 较强过冷
+    u = np.full(n_cells, 0.8)  # 较强湍流
+    h = np.full(n_cells, 3.0)
+    T = np.full(n_cells, -0.2)  # 较强过冷
 
     print(f"强过冷条件: T={T[0]:.2f} degC, u={u[0]:.2f}m/s")
 

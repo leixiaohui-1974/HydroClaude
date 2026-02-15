@@ -10,9 +10,12 @@
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import type { HydraulicModel } from '../../types/model.types';
+import { NodeType } from '../../types/model.types';
 import * as modelExport from '../../../../utils/modelExport';
 import * as modelImport from '../../../../utils/modelImport';
 import { STORAGE_KEYS } from '../../../../types/model-io';
+
+declare var global: typeof globalThis;
 
 // ============= Mock Data =============
 
@@ -23,11 +26,15 @@ const createMockModel = (overrides?: Partial<HydraulicModel>): HydraulicModel =>
   nodes: [
     {
       id: 'node-1',
-      type: 'channel',
+      type: NodeType.CHANNEL,
       position: { x: 100, y: 200 },
       data: {
         name: 'Channel 1',
         width: 5.0,
+        length: 100,
+        slope: 0.001,
+        manning_n: 0.025,
+        n_cells: 50,
         validated: true,
         errors: [],
         warnings: []
@@ -35,11 +42,15 @@ const createMockModel = (overrides?: Partial<HydraulicModel>): HydraulicModel =>
     },
     {
       id: 'node-2',
-      type: 'channel',
+      type: NodeType.CHANNEL,
       position: { x: 300, y: 200 },
       data: {
         name: 'Channel 2',
         width: 3.0,
+        length: 100,
+        slope: 0.001,
+        manning_n: 0.025,
+        n_cells: 50,
         validated: true,
         errors: [],
         warnings: []

@@ -144,8 +144,8 @@ class BroadCrestedWeir:
 
         # 淹没孔流系数
         C_d = 0.6
-        # 过流面积（近似为堰顶宽度×水头差）
-        A = self.B * delta_H
+        # 过流面积（使用下游淹没水深作为有效过流截面高度）
+        A = self.B * min(H_up, H_down)
         Q = C_d * A * np.sqrt(2 * self.g * delta_H)
 
         return Q

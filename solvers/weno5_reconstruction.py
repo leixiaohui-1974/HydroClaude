@@ -159,34 +159,38 @@ def weno5_reconstruct(q: np.ndarray, epsilon: float = 1e-6) -> tuple:
     return q_L, q_R
 
 
-@njit
-def weno5_flux_splitting(q: np.ndarray, flux_func, epsilon: float = 1e-6):
+def weno5_flux_splitting(q: np.ndarray, f: np.ndarray, alpha: float, epsilon: float = 1e-6):
     """
-    WENO5 with flux splitting (Lax-Friedrichs)
+    WENO5 with Lax-Friedrichs flux splitting
 
-    :
-        q: 
-        flux_func:  f(q)
-        epsilon: WENO epsilon
+    Args:
+        q: conserved variables (array of size n)
+        f: flux values f(q) (array of size n)
+        alpha: max wave speed for Lax-Friedrichs splitting
+        epsilon: WENO epsilon parameter
 
-    :
-        f_interface: 
+    Returns:
+        f_interface: numerical flux at interfaces (array of size n-1)
     """
     n = len(q)
 
-    # 
-    f = flux_func(q)
+    # Lax-Friedrichs flux splitting
+    # f^+ = 0.5 * (f + alpha * q)
+    # f^- = 0.5 * (f - alpha * q)
+    f_plus = 0.5 * (f + alpha * q)
+    f_minus = 0.5 * (f - alpha * q)
 
-    # Lax-Friedrichs
-    # 
-    # 
+    # WENO5 reconstruct f^+ from left and f^- from right
+    fp_L, _ = weno5_reconstruct(f_plus, epsilon)
+    _, fm_R = weno5_reconstruct(f_minus, epsilon)
 
-    # 
-    # f = f^+ + f^-
-    # f^+ f^- 
+    # Numerical flux at interfaces
+    n_interfaces = min(len(fp_L), len(fm_R))
+    f_interface = np.zeros(n_interfaces)
+    for i in range(n_interfaces):
+        f_interface[i] = fp_L[i] + fm_R[i]
 
-    # 
-    pass
+    return f_interface
 
 
 def test_weno5():

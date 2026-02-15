@@ -6,35 +6,148 @@ import {
   EyeOutlined,
   SaveOutlined,
   FolderOpenOutlined,
+  DownloadOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import MapViewer from '@/components/MapViewer';
 import CanalDrawTool from '@/components/CanalDrawTool';
 import ResultsOverlay from '@/components/ResultsOverlay';
 import type { LatLngExpression } from 'leaflet';
 
 const { Content } = Layout;
-const { TabPane } = Tabs;
 
-/**
- * 地图页面
- * 
- * 功能：
- * - 地图查看
- * - 渠道绘制（待实现）
- * - 结果叠加（待实现）
- */
+const GEOJSON_STORAGE_KEY = 'hydroclaude_map_geojson';
+
 const MapPage: React.FC = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('view');
-  const [mapCenter] = useState<LatLngExpression>([39.9042, 116.4074]); // 北京
-  const [mapZoom] = useState(13);
+  // Neutral world center so map is not biased to any region
+  const [mapCenter] = useState<LatLngExpression>([30.0, 0.0]);
+  const [mapZoom] = useState(3);
+  const [geoJsonData, setGeoJsonData] = useState<any>(null);
 
   const handleSave = () => {
-    message.success('保存成功！');
+    if (geoJsonData) {
+      localStorage.setItem(GEOJSON_STORAGE_KEY, JSON.stringify(geoJsonData));
+      message.success(t('map.geoJsonSavedSuccess'));
+    } else {
+      message.warning(t('map.noGeoJsonToSave'));
+    }
+  };
+
+  const handleDownload = () => {
+    if (!geoJsonData) {
+      message.warning(t('map.noGeoJsonToSave'));
+      return;
+    }
+    const blob = new Blob([JSON.stringify(geoJsonData, null, 2)], { type: 'application/geo+json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'hydroclaude_canal.geojson';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    message.success(t('map.downloadSuccess', 'GeoJSON downloaded'));
   };
 
   const handleLoad = () => {
-    message.info('加载GeoJSON...');
+    const saved = localStorage.getItem(GEOJSON_STORAGE_KEY);
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        setGeoJsonData(data);
+        message.success(t('map.geoJsonLoadSuccess'));
+      } catch {
+        message.error(t('map.loadError'));
+      }
+    } else {
+      message.info(t('map.noSavedGeoJson'));
+    }
   };
+
+  const tabItems = [
+    {
+      key: 'view',
+      label: (
+        <Space>
+          <EyeOutlined />
+          <span>{t('map.mapView')}</span>
+        </Space>
+      ),
+      children: (
+        <MapViewer
+          center={mapCenter}
+          zoom={mapZoom}
+          height="calc(100vh - 230px)"
+          showControls
+          showBaseMapSelector
+        />
+      ),
+    },
+    {
+      key: 'draw',
+      label: (
+        <Space>
+          <EditOutlined />
+          <span>{t('map.canalDraw')}</span>
+        </Space>
+      ),
+      children: (
+        <MapViewer
+          center={mapCenter}
+          zoom={mapZoom}
+          height="calc(100vh - 230px)"
+          showControls
+          showBaseMapSelector
+          defaultBaseMap="cartoLight"
+        >
+          <CanalDrawTool
+            onSave={(data) => {
+              setGeoJsonData(data);
+              message.success(t('map.canalSavedToMemory'));
+            }}
+          />
+        </MapViewer>
+      ),
+    },
+    {
+      key: 'overlay',
+      label: (
+        <Space>
+          <EnvironmentOutlined />
+          <span>{t('map.resultsOverlay')}</span>
+        </Space>
+      ),
+      children: (
+        <MapViewer
+          center={mapCenter}
+          zoom={mapZoom}
+          height="calc(100vh - 230px)"
+          showControls
+          showBaseMapSelector
+          defaultBaseMap="cartoLight"
+        >
+          {geoJsonData ? (
+            <ResultsOverlay
+              data={{
+                coordinates: geoJsonData.features?.[0]?.geometry?.coordinates?.map(
+                  (c: number[]) => [c[0], c[1]] as [number, number]
+                ) || [],
+                depths: [],
+                velocities: [],
+                positions: [],
+              }}
+              showDepth
+              showVelocity={false}
+              showVelocityVectors={false}
+            />
+          ) : null}
+        </MapViewer>
+      ),
+    },
+  ];
 
   return (
     <Layout style={{ height: 'calc(100vh - 64px)' }}>
@@ -43,16 +156,19 @@ const MapPage: React.FC = () => {
           title={
             <Space>
               <EnvironmentOutlined />
-              <span>地图工具</span>
+              <span>{t('map.mapTools')}</span>
             </Space>
           }
           extra={
             <Space>
               <Button icon={<FolderOpenOutlined />} onClick={handleLoad}>
-                加载GeoJSON
+                {t('map.loadGeojson')}
+              </Button>
+              <Button icon={<DownloadOutlined />} onClick={handleDownload}>
+                {t('map.downloadGeoJson', 'Download GeoJSON')}
               </Button>
               <Button type="primary" icon={<SaveOutlined />} onClick={handleSave}>
-                保存
+                {t('map.save')}
               </Button>
             </Space>
           }
@@ -62,97 +178,10 @@ const MapPage: React.FC = () => {
           <Tabs
             activeKey={activeTab}
             onChange={setActiveTab}
+            items={tabItems}
             style={{ height: '100%' }}
             tabBarStyle={{ padding: '0 24px', margin: 0 }}
-          >
-            {/* 地图查看 */}
-            <TabPane
-              tab={
-                <Space>
-                  <EyeOutlined />
-                  <span>地图查看</span>
-                </Space>
-              }
-              key="view"
-              style={{ height: '100%' }}
-            >
-              <MapViewer
-                center={mapCenter}
-                zoom={mapZoom}
-                height="calc(100vh - 230px)"
-                showControls
-                showBaseMapSelector
-              />
-            </TabPane>
-
-            {/* 渠道绘制 */}
-            <TabPane
-              tab={
-                <Space>
-                  <EditOutlined />
-                  <span>渠道绘制</span>
-                </Space>
-              }
-              key="draw"
-              style={{ height: '100%' }}
-            >
-              <MapViewer
-                center={mapCenter}
-                zoom={mapZoom}
-                height="calc(100vh - 230px)"
-                showControls
-                showBaseMapSelector
-                defaultBaseMap="cartoLight"
-              >
-                <CanalDrawTool
-                  onSave={(data) => {
-                    console.log('保存的GeoJSON:', data);
-                    message.success('渠道已保存！');
-                  }}
-                />
-              </MapViewer>
-            </TabPane>
-
-            {/* 结果叠加 */}
-            <TabPane
-              tab={
-                <Space>
-                  <EnvironmentOutlined />
-                  <span>结果叠加</span>
-                </Space>
-              }
-              key="overlay"
-              style={{ height: '100%' }}
-            >
-              <MapViewer
-                center={mapCenter}
-                zoom={mapZoom}
-                height="calc(100vh - 230px)"
-                showControls
-                showBaseMapSelector
-                defaultBaseMap="cartoLight"
-              >
-                <ResultsOverlay
-                  data={{
-                    coordinates: [
-                      [116.404, 39.915],
-                      [116.405, 39.916],
-                      [116.406, 39.917],
-                      [116.407, 39.918],
-                      [116.408, 39.919],
-                    ],
-                    depths: [3.0, 2.9, 2.8, 2.7, 2.6],
-                    velocities: [1.5, 1.6, 1.7, 1.8, 1.9],
-                    positions: [0, 150, 300, 450, 600],
-                    froudeNumbers: [0.85, 0.92, 0.99, 1.05, 1.12],
-                  }}
-                  showDepth
-                  showVelocity={false}
-                  showVelocityVectors={false}
-                />
-              </MapViewer>
-            </TabPane>
-          </Tabs>
+          />
         </Card>
       </Content>
     </Layout>

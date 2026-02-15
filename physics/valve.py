@@ -78,8 +78,9 @@ class Valve(HydraulicComponent):
             return 0.0
 
         if self.valve_type == 'quick':
-            # Quick opening: Cv = Cv_max * tau^2
-            Cv = self.Cv_max * (tau ** 2)
+            # Quick opening: Cv = Cv_max * sqrt(tau)
+            # Flow increases rapidly at small openings (concave-down curve)
+            Cv = self.Cv_max * np.sqrt(tau)
 
         elif self.valve_type == 'linear':
             # Linear: Cv = Cv_max * tau

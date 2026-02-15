@@ -152,8 +152,8 @@ class CoupledNetworkSolver:
                 if np.linalg.norm(R) < 1e-6:
                     print(f"Newton {iteration+1} ")
                     break
-            except:
-                print("Newton")
+            except Exception as e:
+                print(f"Newton solver failed: {e}")
                 break
 
         for i, node in enumerate(self.topology.nodes.values()):

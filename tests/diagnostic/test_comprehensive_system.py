@@ -24,12 +24,11 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import pytest
 try:
     from solvers.godunov_fvm_solver import GodunvFVMSolver
 except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
+    pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 
 from solvers.godunov_fvm_hllc import GodunvFVMHLLC
 from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver

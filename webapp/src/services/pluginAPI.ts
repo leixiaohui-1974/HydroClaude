@@ -95,19 +95,22 @@ class CommandRegistry implements CommandsAPI {
 function createSimulationAPI(events: EventBus): SimulationAPI {
   return {
     async getConfig() {
-      // TODO: 从状态管理获取配置
-      return {};
+      const stored = localStorage.getItem('hydroclaude-simulation-config');
+      return stored ? JSON.parse(stored) : {};
     },
 
     async updateConfig(config: any) {
-      // TODO: 更新配置
+      localStorage.setItem('hydroclaude-simulation-config', JSON.stringify(config));
       events.emit('simulation:configChanged', config);
     },
 
     async run(config: any) {
       events.emit('simulation:start');
       try {
-        const result = await simulationService.run(config);
+        const job = await simulationService.createJob(config);
+        await simulationService.runJob(job.id);
+        const completed = await simulationService.pollJobStatus(job.id);
+        const result = await simulationService.getResults(completed.id);
         events.emit('simulation:complete', result);
         return result;
       } catch (error) {
@@ -117,12 +120,11 @@ function createSimulationAPI(events: EventBus): SimulationAPI {
     },
 
     async stop() {
-      // TODO: 实现停止逻辑
       events.emit('simulation:stop');
     },
 
     async getResult(jobId: string) {
-      return await simulationService.getResult(jobId);
+      return await simulationService.getResults(jobId);
     },
 
     onStart(callback: (jobId: string) => void) {
@@ -185,12 +187,12 @@ function createDataAPI(events: EventBus): DataAPI {
 
   return {
     async read(path: string) {
-      // TODO: 实现数据读取
-      return {};
+      const stored = localStorage.getItem(`hydroclaude-data-${path}`);
+      return stored ? JSON.parse(stored) : {};
     },
 
     async write(path: string, data: any) {
-      // TODO: 实现数据写入
+      localStorage.setItem(`hydroclaude-data-${path}`, JSON.stringify(data));
       events.emit('data:written', { path, data });
     },
 

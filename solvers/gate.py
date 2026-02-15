@@ -198,7 +198,8 @@ class SluiceGate(HydraulicStructure):
             # : Q = Cd * B * e * √(2g * h_up)
             # dQ/dh_up = Cd * B * e * g / √(2g * h_up)
             # dQ/dh_down = 0 ()
-            dQ_dh_up = self.Cd * self.width * e * self.g / np.sqrt(2 * self.g * h_upstream)
+            h_up_safe = max(h_upstream, 1e-6)
+            dQ_dh_up = self.Cd * self.width * e * self.g / np.sqrt(2 * self.g * h_up_safe)
             dQ_dh_down = 0.0
 
         return dQ_dh_up, dQ_dh_down
@@ -208,7 +209,7 @@ class SluiceGate(HydraulicStructure):
             current_opening = self.get_opening()
             return (f"SluiceGate(position={self.position}m, width={self.width}m, "
                     f"opening={current_opening:.2f}m@t={self.current_time:.0f}s, Cd={self.Cd})")
-        except:
+        except Exception:
             return (f"SluiceGate(position={self.position}m, width={self.width}m, "
                     f"opening=f(t), Cd={self.Cd})")
 
@@ -247,15 +248,14 @@ class BroadCrestedWeir(HydraulicStructure):
         Returns:
             (discharge, flow_type):  (m³/s) 
         """
-        # 
         H = max(0.0, h_upstream - self.crest_height)
 
         if H < 1e-4:
-            # 
             return 0.0, 'no_flow'
 
-        # 
-        discharge = self.Cd * self.width * (H ** 1.5) * np.sqrt(2 * self.g)
+        # Cap H to prevent H**1.5 overflow for extreme inputs
+        H_safe = min(H, 1e6)
+        discharge = self.Cd * self.width * (H_safe ** 1.5) * np.sqrt(2 * self.g)
 
         return discharge, 'free'
 
@@ -453,17 +453,16 @@ class Spillway(HydraulicStructure):
         H = max(0.0, h_upstream - self.crest_elevation)
 
         if H < 1e-4:
-            # 
             return 0.0, 'no_flow'
 
-        # 
+        # Cap H to prevent H**1.5 overflow
+        H_safe = min(H, 1e6)
+
         if self.spillway_type in ['wes', 'ogee']:
-            # WES / Q = Cd * B * H^(3/2)
-            Q_free = self.Cd * self.width * (H ** 1.5)
+            Q_free = self.Cd * self.width * (H_safe ** 1.5)
 
         elif self.spillway_type == 'broad_crested':
-            # Q = Cd * B * H^(3/2) * sqrt(2g)
-            Q_free = self.Cd * self.width * (H ** 1.5) * np.sqrt(2 * self.g)
+            Q_free = self.Cd * self.width * (H_safe ** 1.5) * np.sqrt(2 * self.g)
 
         else:
             raise ValueError(f"Unknown spillway type: {self.spillway_type}")

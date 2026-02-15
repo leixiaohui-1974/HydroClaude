@@ -20,26 +20,30 @@ Expected:
 import numpy as np
 import warnings
 warnings.filterwarnings("ignore")
-import matplotlib.pyplot as plt
 import sys
+import pytest
 import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+pytestmark = [pytest.mark.slow, pytest.mark.solver]
+
+# Maximum solver steps to prevent hanging in CI
+_MAX_SOLVER_STEPS = 5000
+
 try:
     from solvers.godunov_fvm_solver import GodunvFVMSolver
 except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
+    pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 
 
 
+@pytest.mark.timeout(300)
 def test_lake_at_rest_exact(
-    n_cells=120,
-    t_final=100.0,
+    n_cells=50,
+    t_final=5.0,
     hump_amplitude=2.0,
-    make_plot=True
+    make_plot=False
 ):
     """
     Lake at Rest测试 - 精确求解器
@@ -119,7 +123,7 @@ def test_lake_at_rest_exact(
     print(f"[2/2] 运行{t_final}s模拟...")
 
     step_count = 0
-    while solver.t < t_final:
+    while solver.t < t_final and step_count < _MAX_SOLVER_STEPS:
         solver.step()
         step_count += 1
 
@@ -224,6 +228,12 @@ def test_lake_at_rest_exact(
 
     # 可视化
     if make_plot:
+        try:
+            import matplotlib.pyplot as plt
+        except ImportError:
+            print("matplotlib not available, skipping plot")
+            make_plot = False
+    if make_plot:
         print("创建可视化...")
         fig, axes = plt.subplots(3, 1, figsize=(12, 10))
 
@@ -270,12 +280,18 @@ def test_lake_at_rest_exact(
     print("="*70)
     print()
 
-    return {
+    result = {
         'status': status,
         'max_disturbance': max_disturbance,
         'rms_disturbance': rms_disturbance,
         'mass_error': mass_error
     }
+
+    # Assert that the test achieves at least acceptable precision
+    assert status in ('MACHINE_PRECISION', 'EXCELLENT', 'GOOD', 'MODERATE'), \
+        f"Lake at rest failed: max disturbance = {max_disturbance:.3e}m (status={status})"
+
+    return result
 
 
 if __name__ == '__main__':

@@ -744,7 +744,7 @@ class TestEdgeCases:
         repr_str = repr(culvert)
 
         assert "CV_STR_R" in repr_str
-        assert "2.50mx2.00m" in repr_str
+        assert "2.50m\u00d72.00m" in repr_str
         assert "L=50.0m" in repr_str
 
 

@@ -359,9 +359,11 @@ class CoupledIceWaterQualitySolver:
             else:
                 ice_cover_fraction = np.zeros(self.n_cells)
 
+            ice_thickness = self.ice_solver.h_ice if self.enable_ice else None
             T = self.temp_solver.step(
                 dt, u, h,
                 T_air, solar_radiation, wind_speed, relative_humidity,
+                ice_cover_thickness=ice_thickness,
                 ice_cover_fraction=ice_cover_fraction
             )
         else:

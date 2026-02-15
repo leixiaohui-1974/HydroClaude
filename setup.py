@@ -52,7 +52,7 @@ setup(
         'Natural Language :: English',
     ],
     keywords='hydraulics, simulation, open-channel-flow, pipe-network, water-hammer, engineering',
-    python_requires='>=3.12',
+    python_requires='>=3.11',
     install_requires=[
         'numpy>=1.24.0',
         'scipy>=1.10.0',

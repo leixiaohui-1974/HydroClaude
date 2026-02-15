@@ -2,7 +2,7 @@
 插件数据库模型
 """
 
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, ARRAY, DECIMAL
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, ARRAY, DECIMAL, UniqueConstraint
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from ..database import Base
@@ -15,14 +15,14 @@ class Plugin(Base):
     id = Column(Integer, primary_key=True, index=True)
     
     # 作者
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+
     # 插件信息
     plugin_id = Column(String(100), unique=True, index=True, nullable=False)
     name = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
     version = Column(String(20), nullable=False)
-    category = Column(String(50), nullable=True)
+    category = Column(String(50), nullable=True, index=True)
     
     # 统计
     downloads = Column(Integer, default=0)
@@ -38,7 +38,7 @@ class Plugin(Base):
     screenshots = Column(Text, nullable=True)  # JSON字符串
     
     # 状态
-    status = Column(String(20), default="pending")  # pending, approved, rejected
+    status = Column(String(20), default="pending", index=True)  # pending, approved, rejected
     
     # 时间戳
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -56,11 +56,12 @@ class Plugin(Base):
 class Rating(Base):
     """评分模型"""
     __tablename__ = "ratings"
+    __table_args__ = (UniqueConstraint("plugin_id", "user_id", name="uq_plugin_user_rating"),)
 
     id = Column(Integer, primary_key=True, index=True)
-    plugin_id = Column(Integer, ForeignKey("plugins.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    
+    plugin_id = Column(Integer, ForeignKey("plugins.id"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+
     rating = Column(Integer, nullable=False)  # 1-5
     review = Column(Text, nullable=True)
     
@@ -80,8 +81,8 @@ class Comment(Base):
     __tablename__ = "comments"
 
     id = Column(Integer, primary_key=True, index=True)
-    plugin_id = Column(Integer, ForeignKey("plugins.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    plugin_id = Column(Integer, ForeignKey("plugins.id"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     parent_id = Column(Integer, ForeignKey("comments.id"), nullable=True)
     
     content = Column(Text, nullable=False)

@@ -1,9 +1,9 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Polyline, Marker, useMapEvents } from 'react-leaflet';
 import { Card, Space, Button, InputNumber, Tooltip, message } from 'antd';
 import {
   EditOutlined,
-  DeleteOutlined,
   SaveOutlined,
   UndoOutlined,
   RedoOutlined,
@@ -76,17 +76,18 @@ export interface CanalGeoJSON {
  * - 坡度计算
  * - 撤销/重做
  */
-const CanalDrawTool: React.FC<CanalDrawToolProps> = ({ onSave, initialData }) => {
+const CanalDrawTool: React.FC<CanalDrawToolProps> = ({ onSave, initialData: _initialData }) => {
+  const { t } = useTranslation();
   const [isDrawing, setIsDrawing] = useState(false);
   const [nodes, setNodes] = useState<CanalNode[]>([]);
-  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const [_draggingIndex, setDraggingIndex] = useState<number | null>(null);
   
   // 历史记录（撤销/重做）
   const [history, setHistory] = useState<CanalNode[][]>([[]]);
   const [historyIndex, setHistoryIndex] = useState(0);
   
   // 渠道属性
-  const [canalName, setCanalName] = useState('新建渠道');
+  const [canalName, _setCanalName] = useState(t('canalDraw.newCanal'));
   const [canalWidth, setCanalWidth] = useState(10);
   const [canalRoughness, setCanalRoughness] = useState(0.025);
   const [startElevation, setStartElevation] = useState(100);
@@ -133,14 +134,14 @@ const CanalDrawTool: React.FC<CanalDrawToolProps> = ({ onSave, initialData }) =>
   // 开始绘制
   const handleStartDrawing = () => {
     setIsDrawing(true);
-    message.info('点击地图绘制渠道线');
+    message.info(t('canalDraw.clickMapToDraw'));
   };
 
   // 停止绘制
   const handleStopDrawing = () => {
     setIsDrawing(false);
     if (nodes.length >= 2) {
-      message.success(`绘制完成！共 ${nodes.length} 个节点`);
+      message.success(t('canalDraw.drawingComplete', { count: nodes.length }));
     }
   };
 
@@ -150,7 +151,7 @@ const CanalDrawTool: React.FC<CanalDrawToolProps> = ({ onSave, initialData }) =>
     setHistory([[]]);
     setHistoryIndex(0);
     setIsDrawing(false);
-    message.info('已清空');
+    message.info(t('canalDraw.cleared'));
   };
 
   // 撤销
@@ -172,7 +173,7 @@ const CanalDrawTool: React.FC<CanalDrawToolProps> = ({ onSave, initialData }) =>
   // 删除节点
   const handleDeleteNode = (index: number) => {
     if (nodes.length <= 2) {
-      message.warning('至少需要2个节点');
+      message.warning(t('canalDraw.needAtLeast2Nodes'));
       return;
     }
     const newNodes = nodes.filter((_, i) => i !== index);
@@ -198,7 +199,7 @@ const CanalDrawTool: React.FC<CanalDrawToolProps> = ({ onSave, initialData }) =>
   // 保存为GeoJSON
   const handleSave = () => {
     if (nodes.length < 2) {
-      message.error('至少需要2个节点才能保存');
+      message.error(t('canalDraw.needAtLeast2NodesToSave'));
       return;
     }
 
@@ -235,7 +236,7 @@ const CanalDrawTool: React.FC<CanalDrawToolProps> = ({ onSave, initialData }) =>
     link.click();
     URL.revokeObjectURL(url);
 
-    message.success('已保存为GeoJSON');
+    message.success(t('canalDraw.savedAsGeoJSON'));
   };
 
   return (
@@ -259,23 +260,23 @@ const CanalDrawTool: React.FC<CanalDrawToolProps> = ({ onSave, initialData }) =>
               icon={<EditOutlined />}
               onClick={isDrawing ? handleStopDrawing : handleStartDrawing}
             >
-              {isDrawing ? '停止绘制' : '开始绘制'}
+              {isDrawing ? t('canalDraw.stopDrawing') : t('canalDraw.startDrawing')}
             </Button>
-            <Tooltip title="撤销">
+            <Tooltip title={t('canalDraw.undo')}>
               <Button
                 icon={<UndoOutlined />}
                 onClick={handleUndo}
                 disabled={historyIndex <= 0}
               />
             </Tooltip>
-            <Tooltip title="重做">
+            <Tooltip title={t('canalDraw.redo')}>
               <Button
                 icon={<RedoOutlined />}
                 onClick={handleRedo}
                 disabled={historyIndex >= history.length - 1}
               />
             </Tooltip>
-            <Tooltip title="清空">
+            <Tooltip title={t('canalDraw.clear')}>
               <Button
                 icon={<ClearOutlined />}
                 onClick={handleClear}
@@ -286,15 +287,15 @@ const CanalDrawTool: React.FC<CanalDrawToolProps> = ({ onSave, initialData }) =>
 
           {/* 渠道信息 */}
           <div style={{ fontSize: '14px', color: '#666' }}>
-            <div><strong>节点数:</strong> {nodes.length}</div>
-            <div><strong>总长度:</strong> {formatDistance(totalLength)}</div>
-            <div><strong>平均坡度:</strong> {formatSlope(averageSlope)}</div>
+            <div><strong>{t('canalDraw.nodeCount')}</strong> {nodes.length}</div>
+            <div><strong>{t('canalDraw.totalLength')}</strong> {formatDistance(totalLength)}</div>
+            <div><strong>{t('canalDraw.averageSlope')}</strong> {formatSlope(averageSlope)}</div>
           </div>
 
           {/* 渠道参数 */}
           <div>
             <div style={{ marginBottom: 8 }}>
-              <label>渠道宽度 (m):</label>
+              <label>{t('canalDraw.canalWidth')}</label>
               <InputNumber
                 value={canalWidth}
                 onChange={(v) => setCanalWidth(v || 10)}
@@ -304,7 +305,7 @@ const CanalDrawTool: React.FC<CanalDrawToolProps> = ({ onSave, initialData }) =>
               />
             </div>
             <div style={{ marginBottom: 8 }}>
-              <label>粗糙度:</label>
+              <label>{t('canalDraw.roughness')}</label>
               <InputNumber
                 value={canalRoughness}
                 onChange={(v) => setCanalRoughness(v || 0.025)}
@@ -315,7 +316,7 @@ const CanalDrawTool: React.FC<CanalDrawToolProps> = ({ onSave, initialData }) =>
               />
             </div>
             <div style={{ marginBottom: 8 }}>
-              <label>起点高程 (m):</label>
+              <label>{t('canalDraw.startElevation')}</label>
               <InputNumber
                 value={startElevation}
                 onChange={(v) => setStartElevation(v || 100)}
@@ -323,7 +324,7 @@ const CanalDrawTool: React.FC<CanalDrawToolProps> = ({ onSave, initialData }) =>
               />
             </div>
             <div style={{ marginBottom: 8 }}>
-              <label>终点高程 (m):</label>
+              <label>{t('canalDraw.endElevation')}</label>
               <InputNumber
                 value={endElevation}
                 onChange={(v) => setEndElevation(v || 98)}
@@ -340,7 +341,7 @@ const CanalDrawTool: React.FC<CanalDrawToolProps> = ({ onSave, initialData }) =>
             block
             disabled={nodes.length < 2}
           >
-            保存为GeoJSON
+            {t('canalDraw.saveAsGeoJSON')}
           </Button>
         </Space>
       </Card>

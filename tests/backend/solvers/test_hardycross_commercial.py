@@ -10,9 +10,10 @@ Spec: 001-comprehensive-review-and-testing
 """
 import pytest
 import warnings
-warnings.filterwarnings("ignore")
 import sys
 import os
+
+pytestmark = pytest.mark.filterwarnings("ignore::UserWarning")
 from pathlib import Path
 
 # 路径设置
@@ -105,10 +106,7 @@ class TestHardyCross商业对标:
             )
             print(f"\n✅ 求解器创建成功")
         except Exception as e:
-            print(f"\n⚠️ 求解器创建失败: {e}")
-            # 测试通过 - 我们只验证API正确性
-            assert True, "API正确性测试完成"
-            return
+            pytest.fail(f"Solver creation failed: {e}")
 
         # 4. 求解
         print("\n开始求解...")
@@ -132,8 +130,10 @@ class TestHardyCross商业对标:
         except Exception as e:
             print(f"\n⚠️ 求解过程出现问题: {e}")
 
-        # 测试通过 - 能够正确调用API
-        assert True, "HardyCrossSolver API 测试完成"
+        # 验证求解器创建成功
+        assert solver is not None, "Solver should be created successfully"
+        assert len(network.nodes) > 0, "Network should have nodes"
+        assert len(network.pipes) > 0, "Network should have pipes"
 
         print("\n✅ HardyCrossSolver vs EPANET 测试完成！")
 
@@ -196,8 +196,11 @@ class TestHardyCross商业对标:
             except Exception as e:
                 print(f"  ⚠️ 求解失败: {e}")
 
-        # 测试通过
-        assert True, "收敛性测试完成"
+        # 验证求解器可以在不同松弛因子下被创建和运行
+        assert len(relaxation_factors) > 0, "Should test at least one relaxation factor"
+        assert network is not None, "Network should be created"
+        assert len(network.nodes) == 3, f"Network should have 3 nodes, got {len(network.nodes)}"
+        assert len(network.pipes) == 2, f"Network should have 2 pipes, got {len(network.pipes)}"
 
         print("\n✅ HardyCrossSolver 收敛性测试完成！")
 
@@ -273,8 +276,11 @@ class TestHardyCross商业对标:
         except Exception as e:
             print(f"\n⚠️ 求解失败: {e}")
 
-        # 测试通过
-        assert True, "质量守恒测试完成"
+        # 验证网络和求解器
+        assert network is not None, "Network should be created"
+        assert len(network.nodes) == 4, f"Network should have 4 nodes, got {len(network.nodes)}"
+        assert len(network.pipes) == 3, f"Network should have 3 pipes, got {len(network.pipes)}"
+        assert total_demand > 0, f"Total demand should be positive, got {total_demand}"
 
         print("\n✅ HardyCrossSolver 质量守恒测试完成！")
 

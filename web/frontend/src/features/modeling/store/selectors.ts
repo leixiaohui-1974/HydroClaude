@@ -229,6 +229,7 @@ export const selectNodeTypeStats = (state: RootState) => {
   const nodes = selectAllNodes(state);
   const stats: Record<NodeType, number> = {
     [NodeType.CANAL]: 0,
+    [NodeType.CHANNEL]: 0,
     [NodeType.GATE]: 0,
     [NodeType.WEIR]: 0,
     [NodeType.BOUNDARY_FLOW]: 0,

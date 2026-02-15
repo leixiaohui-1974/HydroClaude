@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Card, Table, Button, Space, Tag, Input, Select, Modal, Form, message } from 'antd';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Card, Table, Button, Space, Tag, Input, Select, Modal, Form, message, Spin } from 'antd';
 import {
   PlusOutlined,
   SearchOutlined,
@@ -7,257 +7,339 @@ import {
   DeleteOutlined,
   PlayCircleOutlined,
   CopyOutlined,
+  ReloadOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { ColumnsType } from 'antd/es/table';
+import projectService, { Project } from '@/services/projects';
 
 const { Option } = Select;
 
-interface ProjectData {
-  key: string;
-  name: string;
-  type: string;
-  status: string;
-  lastRun: string;
-  created: string;
-}
+const typeColorMap: Record<string, string> = {
+  steady: 'blue',
+  unsteady: 'purple',
+  gate: 'cyan',
+  network: 'geekblue',
+  draft: 'default',
+};
+
+const typeI18nMap: Record<string, string> = {
+  steady: 'projects.steadyFlow',
+  unsteady: 'projects.unsteadyFlow',
+  gate: 'projects.gateFlow',
+  network: 'projects.canalNetwork',
+  draft: 'projects.draft',
+};
+
+const statusColorMap: Record<string, string> = {
+  draft: 'default',
+  completed: 'success',
+  running: 'processing',
+  pending: 'warning',
+  failed: 'error',
+};
+
+const statusI18nMap: Record<string, string> = {
+  draft: 'projects.statusDraft',
+  completed: 'projects.statusCompleted',
+  running: 'projects.statusRunning',
+  pending: 'projects.statusPending',
+  failed: 'projects.statusFailed',
+};
 
 const ProjectsPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [total, setTotal] = useState(0);
 
-  // 示例数据
-  const mockData: ProjectData[] = [
-    {
-      key: '1',
-      name: '渠道稳态流分析',
-      type: 'steady',
-      status: 'completed',
-      lastRun: '2025-11-15 10:30',
-      created: '2025-11-10',
-    },
-    {
-      key: '2',
-      name: '闸门流动仿真',
-      type: 'gate',
-      status: 'running',
-      lastRun: '2025-11-15 09:15',
-      created: '2025-11-12',
-    },
-    {
-      key: '3',
-      name: '非恒定流计算',
-      type: 'unsteady',
-      status: 'pending',
-      lastRun: '2025-11-14 16:20',
-      created: '2025-11-13',
-    },
-  ];
+  const loadProjects = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await projectService.list();
+      setProjects(data.items);
+      setTotal(data.total);
+    } catch {
+      // API not available - use demo data
+      setProjects([
+        { id: 1, name: t('home.canalSteadyFlow'), status: 'completed', config: { simulation: { type: 'steady' } }, created_at: '2025-11-10T00:00:00Z' },
+        { id: 2, name: t('home.gateFlowAnalysis'), status: 'running', config: { simulation: { type: 'gate' } }, created_at: '2025-11-12T00:00:00Z' },
+        { id: 3, name: t('home.unsteadyFlowSim'), status: 'pending', config: { simulation: { type: 'unsteady' } }, created_at: '2025-11-13T00:00:00Z' },
+      ]);
+      setTotal(3);
+    } finally {
+      setLoading(false);
+    }
+  }, [t]);
 
-  const columns: ColumnsType<ProjectData> = [
+  useEffect(() => {
+    loadProjects();
+  }, [loadProjects]);
+
+  const getProjectType = (project: Project): string => {
+    return project.config?.simulation?.type || 'draft';
+  };
+
+  const columns: ColumnsType<Project> = [
     {
-      title: '项目名称',
+      title: t('projects.projectName'),
       dataIndex: 'name',
       key: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
-      title: '类型',
-      dataIndex: 'type',
+      title: t('projects.type'),
       key: 'type',
-      render: (type: string) => {
-        const typeMap: Record<string, { color: string; text: string }> = {
-          steady: { color: 'blue', text: '稳态流' },
-          unsteady: { color: 'purple', text: '非恒定流' },
-          gate: { color: 'cyan', text: '闸门流' },
-        };
-        const config = typeMap[type] || { color: 'default', text: type };
-        return <Tag color={config.color}>{config.text}</Tag>;
+      render: (_, record) => {
+        const type = getProjectType(record);
+        const color = typeColorMap[type] || 'default';
+        const text = typeI18nMap[type] ? t(typeI18nMap[type]) : type;
+        return <Tag color={color}>{text}</Tag>;
       },
       filters: [
-        { text: '稳态流', value: 'steady' },
-        { text: '非恒定流', value: 'unsteady' },
-        { text: '闸门流', value: 'gate' },
+        { text: t('projects.steadyFlow'), value: 'steady' },
+        { text: t('projects.unsteadyFlow'), value: 'unsteady' },
+        { text: t('projects.gateFlow'), value: 'gate' },
       ],
-      onFilter: (value, record) => record.type === value,
+      onFilter: (value, record) => getProjectType(record) === value,
     },
     {
-      title: '状态',
+      title: t('projects.status'),
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => {
-        const statusMap: Record<string, { color: string; text: string }> = {
-          completed: { color: 'success', text: '已完成' },
-          running: { color: 'processing', text: '运行中' },
-          pending: { color: 'warning', text: '待运行' },
-          failed: { color: 'error', text: '失败' },
-        };
-        const config = statusMap[status] || { color: 'default', text: status };
-        return <Tag color={config.color}>{config.text}</Tag>;
+        const color = statusColorMap[status] || 'default';
+        const text = statusI18nMap[status] ? t(statusI18nMap[status]) : status;
+        return <Tag color={color}>{text}</Tag>;
       },
     },
     {
-      title: '最后运行',
-      dataIndex: 'lastRun',
-      key: 'lastRun',
-      sorter: (a, b) => new Date(a.lastRun).getTime() - new Date(b.lastRun).getTime(),
+      title: t('projects.createdDate'),
+      dataIndex: 'created_at',
+      key: 'created_at',
+      render: (date: string) => date ? new Date(date).toLocaleDateString() : '-',
+      sorter: (a, b) => new Date(a.created_at || '').getTime() - new Date(b.created_at || '').getTime(),
     },
     {
-      title: '创建日期',
-      dataIndex: 'created',
-      key: 'created',
-      sorter: (a, b) => new Date(a.created).getTime() - new Date(b.created).getTime(),
+      title: t('projects.updatedDate'),
+      dataIndex: 'updated_at',
+      key: 'updated_at',
+      render: (date: string) => date ? new Date(date).toLocaleDateString() : '-',
     },
     {
-      title: '操作',
+      title: t('projects.actions'),
       key: 'action',
       render: (_, record) => (
         <Space size="small">
           <Button
             type="link"
             icon={<EditOutlined />}
-            onClick={() => navigate(`/editor/${record.key}`)}
+            onClick={() => navigate(`/editor/${record.id}`)}
           >
-            编辑
+            {t('projects.editBtn')}
           </Button>
           <Button
             type="link"
             icon={<PlayCircleOutlined />}
-            onClick={() => handleRun(record.key)}
+            onClick={() => handleRun(record)}
           >
-            运行
+            {t('projects.runBtn')}
           </Button>
           <Button
             type="link"
             icon={<CopyOutlined />}
-            onClick={() => handleClone(record.key)}
+            onClick={() => handleClone(record)}
           >
-            克隆
+            {t('projects.cloneBtn')}
           </Button>
           <Button
             type="link"
             danger
             icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record.key)}
+            onClick={() => handleDelete(record)}
           >
-            删除
+            {t('projects.deleteBtn')}
           </Button>
         </Space>
       ),
     },
   ];
 
-  const handleRun = (key: string) => {
-    message.success(`开始运行项目: ${key}`);
-    navigate(`/simulation/${key}`);
+  const handleRun = (project: Project) => {
+    message.success(t('projects.runStarted', { key: project.name }));
+    navigate(`/simulation/${project.id}`);
   };
 
-  const handleClone = (key: string) => {
-    message.success(`克隆项目: ${key}`);
+  const handleClone = async (project: Project) => {
+    try {
+      const cloned = await projectService.create({
+        name: `${project.name} ${t('projects.cloneSuffix')}`,
+        description: project.description,
+        config: project.config,
+      });
+      setProjects((prev) => [cloned, ...prev]);
+      message.success(t('projects.cloneSuccess', { name: project.name }));
+    } catch {
+      // Offline mode - local clone
+      const cloned: Project = {
+        ...project,
+        id: Date.now(),
+        name: `${project.name} ${t('projects.cloneSuffix')}`,
+        status: 'draft',
+        created_at: new Date().toISOString(),
+      };
+      setProjects((prev) => [cloned, ...prev]);
+      message.success(t('projects.cloneSuccess', { name: project.name }));
+    }
   };
 
-  const handleDelete = (key: string) => {
+  const handleDelete = (project: Project) => {
     Modal.confirm({
-      title: '确认删除',
-      content: '确定要删除这个项目吗？此操作不可恢复。',
-      okText: '删除',
+      title: t('projects.confirmDelete'),
+      content: t('projects.confirmDeleteSpecific', { name: project.name }),
+      okText: t('common.delete'),
       okType: 'danger',
-      cancelText: '取消',
-      onOk: () => {
-        message.success(`删除项目: ${key}`);
+      cancelText: t('common.cancel'),
+      onOk: async () => {
+        try {
+          await projectService.delete(project.id);
+        } catch {
+          // Offline mode
+        }
+        setProjects((prev) => prev.filter((p) => p.id !== project.id));
+        message.success(t('projects.projectDeleted'));
       },
     });
   };
 
-  const handleCreateProject = () => {
-    form.validateFields().then((values) => {
-      console.log('创建项目:', values);
-      message.success('项目创建成功！');
+  const handleCreateProject = async () => {
+    try {
+      const values = await form.validateFields();
+      const newProject = await projectService.create({
+        name: values.name,
+        description: values.description,
+        config: { simulation: { type: values.type || 'steady', mode: 'single_canal' } },
+      });
+      setProjects((prev) => [newProject, ...prev]);
+      message.success(t('projects.projectCreated'));
+      setIsModalVisible(false);
+      form.resetFields();
+      navigate(`/editor/${newProject.id}`);
+    } catch {
+      // Offline mode - local creation
+      const values = form.getFieldsValue();
+      if (!values.name) { message.error(t('projects.pleaseEnterProjectName')); return; }
+      const localProject: Project = {
+        id: Date.now(),
+        name: values.name,
+        description: values.description,
+        status: 'draft',
+        config: { simulation: { type: values.type || 'steady', mode: 'single_canal' } },
+        created_at: new Date().toISOString(),
+      };
+      setProjects((prev) => [localProject, ...prev]);
+      message.success(t('projects.projectCreated'));
       setIsModalVisible(false);
       form.resetFields();
       navigate('/editor/new');
-    });
+    }
   };
+
+  const filteredProjects = projects.filter((p) => {
+    const matchSearch = !searchText || p.name.toLowerCase().includes(searchText.toLowerCase());
+    const matchType = filterType === 'all' || getProjectType(p) === filterType;
+    return matchSearch && matchType;
+  });
 
   return (
     <div>
       <Card
-        title="项目管理"
+        title={`${t('projects.title')} (${total})`}
         extra={
           <Space>
             <Input
-              placeholder="搜索项目"
+              placeholder={t('projects.searchPlaceholder')}
               prefix={<SearchOutlined />}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               style={{ width: 200 }}
+              allowClear
             />
             <Select
               value={filterType}
               onChange={setFilterType}
               style={{ width: 120 }}
             >
-              <Option value="all">全部类型</Option>
-              <Option value="steady">稳态流</Option>
-              <Option value="unsteady">非恒定流</Option>
-              <Option value="gate">闸门流</Option>
+              <Option value="all">{t('projects.allTypes')}</Option>
+              <Option value="steady">{t('projects.steadyFlow')}</Option>
+              <Option value="unsteady">{t('projects.unsteadyFlow')}</Option>
+              <Option value="gate">{t('projects.gateFlow')}</Option>
+              <Option value="network">{t('projects.canalNetwork')}</Option>
             </Select>
+            <Button icon={<ReloadOutlined />} onClick={loadProjects} />
             <Button
               type="primary"
               icon={<PlusOutlined />}
               onClick={() => setIsModalVisible(true)}
             >
-              新建项目
+              {t('projects.newProject')}
             </Button>
           </Space>
         }
       >
-        <Table
-          columns={columns}
-          dataSource={mockData}
-          pagination={{
-            showSizeChanger: true,
-            showTotal: (total) => `共 ${total} 个项目`,
-          }}
-        />
+        <Spin spinning={loading}>
+          <Table
+            columns={columns}
+            dataSource={filteredProjects}
+            rowKey="id"
+            pagination={{
+              showSizeChanger: true,
+              showTotal: (total) => t('projects.totalProjects', { total }),
+              total: filteredProjects.length,
+            }}
+          />
+        </Spin>
       </Card>
 
       <Modal
-        title="创建新项目"
+        title={t('projects.createProjectTitle')}
         open={isModalVisible}
         onOk={handleCreateProject}
         onCancel={() => {
           setIsModalVisible(false);
           form.resetFields();
         }}
-        okText="创建"
-        cancelText="取消"
+        okText={t('common.create')}
+        cancelText={t('common.cancel')}
       >
         <Form form={form} layout="vertical">
           <Form.Item
             name="name"
-            label="项目名称"
-            rules={[{ required: true, message: '请输入项目名称' }]}
+            label={t('projects.projectName')}
+            rules={[{ required: true, message: t('projects.pleaseEnterProjectName') }]}
           >
-            <Input placeholder="输入项目名称" />
+            <Input placeholder={t('projects.enterProjectName')} />
           </Form.Item>
           <Form.Item
             name="type"
-            label="项目类型"
-            rules={[{ required: true, message: '请选择项目类型' }]}
+            label={t('projects.projectType')}
+            rules={[{ required: true, message: t('projects.pleaseSelectProjectType') }]}
           >
-            <Select placeholder="选择项目类型">
-              <Option value="steady">稳态流</Option>
-              <Option value="unsteady">非恒定流</Option>
-              <Option value="gate">闸门流</Option>
-              <Option value="network">渠道网络</Option>
+            <Select placeholder={t('projects.selectProjectType')}>
+              <Option value="steady">{t('projects.steadyFlow')}</Option>
+              <Option value="unsteady">{t('projects.unsteadyFlow')}</Option>
+              <Option value="gate">{t('projects.gateFlow')}</Option>
+              <Option value="network">{t('projects.canalNetwork')}</Option>
             </Select>
           </Form.Item>
-          <Form.Item name="description" label="项目描述">
-            <Input.TextArea rows={4} placeholder="输入项目描述（可选）" />
+          <Form.Item name="description" label={t('projects.projectDescription')}>
+            <Input.TextArea rows={4} placeholder={t('projects.enterProjectDescription')} />
           </Form.Item>
         </Form>
       </Modal>

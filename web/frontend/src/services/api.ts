@@ -124,4 +124,7 @@ export class HydraulicAPI {
   }
 }
 
+// Re-export types from simulation-api for convenience
+export type { SimulationResultResponse, SimulationRequest, SimulationConfig } from './simulation-api';
+
 export default api

@@ -162,7 +162,7 @@ class HardyCrossSolver:
             print(f"   {len(self.loops)} ")
 
         if len(self.loops) == 0:
-            warnings.warn("Hardy Cross")
+            warnings.warn("No loops found in network - Hardy Cross method requires loop topology", stacklevel=2)
 
         # 
         self.loop_matrix, _, self.pipe_ids = self.network.loop_matrix()
@@ -298,31 +298,32 @@ class HardyCrossSolver:
             pipe = self.network.pipes[pipe_id]
             Q = self.flows[pipe_id]
 
-            # 
+            #
             if abs(Q) < 1e-12:
                 # 0
                 continue
 
             h_loss = pipe.head_loss(abs(Q))
 
-            # 
+            # Determine if actual flow direction agrees with loop traversal direction
+            # from_node -> to_node is the pipe's defined positive direction
+            # node1 -> node2 is the loop traversal direction
             from_node, to_node = self.network.pipe_connections[pipe_id]
 
             if from_node == node1 and to_node == node2:
-                # 
-                direction = 1.0
+                # Pipe defined direction agrees with loop traversal
+                # If Q > 0: actual flow is in pipe's defined direction = agrees with traversal → positive h_loss
+                # If Q < 0: actual flow is opposite to pipe's defined direction = opposes traversal → negative h_loss
+                direction = 1.0 if Q >= 0 else -1.0
             elif from_node == node2 and to_node == node1:
-                # 
-                direction = -1.0
+                # Pipe defined direction opposes loop traversal
+                # If Q > 0: actual flow is in pipe's defined direction = opposes traversal → negative h_loss
+                # If Q < 0: actual flow is opposite to pipe's defined direction = agrees with traversal → positive h_loss
+                direction = -1.0 if Q >= 0 else 1.0
             else:
-                # 
                 direction = 0.0
 
-            # 
-            if Q < 0:
-                direction *= -1.0
-
-            # 
+            #
             sum_h += direction * h_loss
             sum_h_over_Q += h_loss / abs(Q)
 

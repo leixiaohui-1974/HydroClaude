@@ -1,5 +1,5 @@
-import React from 'react';
-import { Card, Row, Col, Statistic, Typography, Space, Button, Timeline } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Card, Row, Col, Statistic, Typography, Space, Button, Timeline, Spin } from 'antd';
 import {
   ProjectOutlined,
   PlayCircleOutlined,
@@ -10,196 +10,258 @@ import {
   ApiOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import api from '@/services/api';
 
 const { Title, Paragraph, Link } = Typography;
 
+interface DashboardStats {
+  total_projects: number;
+  running_jobs: number;
+  completed_jobs: number;
+  pending_jobs: number;
+  failed_jobs: number;
+  recent_jobs: Array<{
+    id: number;
+    name: string;
+    status: string;
+    created_at: string | null;
+    completed_at: string | null;
+  }>;
+}
+
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  const loadStats = async () => {
+    setLoading(true);
+    try {
+      const data = await api.get<DashboardStats>('/dashboard/stats');
+      setStats(data);
+    } catch {
+      // Fallback to zero stats if API unavailable
+      setStats({
+        total_projects: 0,
+        running_jobs: 0,
+        completed_jobs: 0,
+        pending_jobs: 0,
+        recent_jobs: [],
+        failed_jobs: 0,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatTimeAgo = (dateStr: string | null): string => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMin = Math.floor(diffMs / 60000);
+    if (diffMin < 1) return t('home.justNow', 'Just now');
+    if (diffMin < 60) return t('home.minutesAgo', '{{min}} min ago', { min: diffMin });
+    const diffHr = Math.floor(diffMin / 60);
+    if (diffHr < 24) return t('home.hoursAgo', '{{hr}} hr ago', { hr: diffHr });
+    const diffDay = Math.floor(diffHr / 24);
+    return t('home.daysAgo', '{{day}} days ago', { day: diffDay });
+  };
+
+  const statusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'green';
+      case 'running': return 'blue';
+      case 'failed': return 'red';
+      default: return 'gray';
+    }
+  };
 
   return (
     <div>
-      {/* 欢迎标题 */}
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <div style={{ textAlign: 'center', padding: '40px 0' }}>
-          <Title>欢迎使用 HydroClaude v2.0 🌊</Title>
+          <Title>{t('home.welcomeTitle')}</Title>
           <Paragraph style={{ fontSize: '16px' }}>
-            开源水力学仿真平台 - 现代化图形界面版本
+            {t('home.welcomeSubtitle')}
           </Paragraph>
           <Space size="large">
             <Button type="primary" size="large" icon={<RocketOutlined />} onClick={() => navigate('/projects')}>
-              开始使用
+              {t('home.getStarted')}
             </Button>
-            <Button size="large" icon={<BookOutlined />}>
-              查看文档
+            <Button size="large" icon={<BookOutlined />} onClick={() => navigate('/plugins')}>
+              {t('home.viewDocs')}
             </Button>
-            <Button size="large" icon={<ApiOutlined />}>
-              API参考
+            <Button size="large" icon={<ApiOutlined />} onClick={() => navigate('/plugins')}>
+              {t('home.apiReference')}
             </Button>
           </Space>
         </div>
 
-        {/* 统计卡片 */}
-        <Row gutter={16}>
-          <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic
-                title="总项目数"
-                value={12}
-                prefix={<ProjectOutlined />}
-                valueStyle={{ color: '#3f8600' }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic
-                title="运行中"
-                value={3}
-                prefix={<PlayCircleOutlined />}
-                valueStyle={{ color: '#1890ff' }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic
-                title="已完成"
-                value={24}
-                prefix={<CheckCircleOutlined />}
-                valueStyle={{ color: '#52c41a' }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic
-                title="排队中"
-                value={2}
-                prefix={<ClockCircleOutlined />}
-                valueStyle={{ color: '#faad14' }}
-              />
-            </Card>
-          </Col>
-        </Row>
+        {/* Statistics Cards - fetched from API */}
+        <Spin spinning={loading}>
+          <Row gutter={16}>
+            <Col xs={24} sm={12} md={6}>
+              <Card>
+                <Statistic
+                  title={t('home.totalProjects')}
+                  value={stats?.total_projects ?? 0}
+                  prefix={<ProjectOutlined />}
+                  valueStyle={{ color: '#3f8600' }}
+                />
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Card>
+                <Statistic
+                  title={t('home.running')}
+                  value={stats?.running_jobs ?? 0}
+                  prefix={<PlayCircleOutlined />}
+                  valueStyle={{ color: '#1890ff' }}
+                />
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Card>
+                <Statistic
+                  title={t('home.completed')}
+                  value={stats?.completed_jobs ?? 0}
+                  prefix={<CheckCircleOutlined />}
+                  valueStyle={{ color: '#52c41a' }}
+                />
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Card>
+                <Statistic
+                  title={t('home.queued')}
+                  value={stats?.pending_jobs ?? 0}
+                  prefix={<ClockCircleOutlined />}
+                  valueStyle={{ color: '#faad14' }}
+                />
+              </Card>
+            </Col>
+          </Row>
+        </Spin>
 
-        {/* 快速操作 */}
-        <Card title="快速开始" bordered={false}>
+        {/* Quick Start */}
+        <Card title={t('home.quickStart')} bordered={false}>
           <Row gutter={16}>
             <Col xs={24} md={12}>
               <Card
                 type="inner"
-                title="创建新项目"
-                extra={<Button type="link">开始 →</Button>}
+                title={t('home.createNewProject')}
+                extra={<Button type="link">{t('home.startArrow')}</Button>}
                 hoverable
                 onClick={() => navigate('/editor')}
               >
-                使用配置编辑器创建一个新的水力学仿真项目
+                {t('home.createNewProjectDesc')}
               </Card>
             </Col>
             <Col xs={24} md={12}>
               <Card
                 type="inner"
-                title="浏览示例"
-                extra={<Button type="link">查看 →</Button>}
+                title={t('home.browseExamples')}
+                extra={<Button type="link">{t('home.viewArrow')}</Button>}
                 hoverable
+                onClick={() => navigate('/projects')}
               >
-                查看预置的示例项目，快速了解系统功能
+                {t('home.browseExamplesDesc')}
               </Card>
             </Col>
           </Row>
         </Card>
 
-        {/* 最近活动 */}
+        {/* Recent Activity - dynamic from API */}
         <Row gutter={16}>
           <Col xs={24} md={12}>
-            <Card title="最近项目" bordered={false}>
-              <Timeline
-                items={[
-                  {
-                    color: 'green',
+            <Card title={t('home.recentProjects')} bordered={false}>
+              {stats?.recent_jobs && stats.recent_jobs.length > 0 ? (
+                <Timeline
+                  items={stats.recent_jobs.map((job) => ({
+                    color: statusColor(job.status),
                     children: (
                       <>
-                        <p><strong>渠道稳态流</strong></p>
-                        <p>2分钟前 · 已完成</p>
+                        <p>
+                          <strong>{job.name}</strong>
+                        </p>
+                        <p>
+                          {formatTimeAgo(job.created_at || job.completed_at)}
+                          {' · '}
+                          {job.status === 'completed' ? t('simulation.statusCompleted')
+                            : job.status === 'running' ? t('simulation.statusRunning')
+                            : job.status === 'failed' ? t('simulation.statusFailed')
+                            : t('simulation.statusPending')}
+                        </p>
                       </>
                     ),
-                  },
-                  {
-                    color: 'blue',
-                    children: (
-                      <>
-                        <p><strong>闸门流动分析</strong></p>
-                        <p>1小时前 · 运行中</p>
-                      </>
-                    ),
-                  },
-                  {
-                    color: 'gray',
-                    children: (
-                      <>
-                        <p><strong>非恒定流仿真</strong></p>
-                        <p>昨天 · 已完成</p>
-                      </>
-                    ),
-                  },
-                ]}
-              />
+                  }))}
+                />
+              ) : (
+                <Paragraph type="secondary">{t('home.noRecentJobs', 'No recent jobs. Start a simulation!')}</Paragraph>
+              )}
             </Card>
           </Col>
 
           <Col xs={24} md={12}>
-            <Card title="功能特性" bordered={false}>
+            <Card title={t('home.features')} bordered={false}>
               <Space direction="vertical" style={{ width: '100%' }}>
                 <Paragraph>
                   <CheckCircleOutlined style={{ color: '#52c41a', marginRight: 8 }} />
-                  <strong>可视化配置编辑器</strong> - 无需编写JSON代码
+                  <strong>{t('home.featureVisualEditor')}</strong> - {t('home.featureVisualEditorDesc')}
                 </Paragraph>
                 <Paragraph>
                   <CheckCircleOutlined style={{ color: '#52c41a', marginRight: 8 }} />
-                  <strong>GIS地图集成</strong> - 在地图上绘制和查看渠道
+                  <strong>{t('home.featureGIS')}</strong> - {t('home.featureGISDesc')}
                 </Paragraph>
                 <Paragraph>
                   <CheckCircleOutlined style={{ color: '#52c41a', marginRight: 8 }} />
-                  <strong>交互式结果查看</strong> - Plotly图表，支持缩放和导出
+                  <strong>{t('home.featureInteractiveResults')}</strong> - {t('home.featureInteractiveResultsDesc')}
                 </Paragraph>
                 <Paragraph>
                   <CheckCircleOutlined style={{ color: '#52c41a', marginRight: 8 }} />
-                  <strong>实时监控</strong> - 查看仿真进度和性能指标
+                  <strong>{t('home.featureRealTimeMonitor')}</strong> - {t('home.featureRealTimeMonitorDesc')}
                 </Paragraph>
                 <Paragraph>
                   <CheckCircleOutlined style={{ color: '#52c41a', marginRight: 8 }} />
-                  <strong>插件系统</strong> - 扩展功能，自定义工作流
+                  <strong>{t('home.featurePluginSystem')}</strong> - {t('home.featurePluginSystemDesc')}
                 </Paragraph>
               </Space>
             </Card>
           </Col>
         </Row>
 
-        {/* 帮助资源 */}
-        <Card title="帮助与资源" bordered={false}>
+        {/* Help & Resources */}
+        <Card title={t('home.helpAndResources')} bordered={false}>
           <Row gutter={16}>
             <Col xs={24} sm={8}>
-              <Card type="inner" title="📚 文档">
+              <Card type="inner" title={t('home.documentation')}>
                 <Paragraph>
-                  查看完整的使用文档和API参考
+                  {t('home.documentationDesc')}
                 </Paragraph>
-                <Link href="#">查看文档 →</Link>
+                <Link onClick={() => navigate('/plugins')}>{t('home.viewDocsArrow')}</Link>
               </Card>
             </Col>
             <Col xs={24} sm={8}>
-              <Card type="inner" title="💡 示例">
+              <Card type="inner" title={t('home.examples')}>
                 <Paragraph>
-                  学习预置的示例项目和最佳实践
+                  {t('home.examplesDesc')}
                 </Paragraph>
-                <Link href="#">浏览示例 →</Link>
+                <Link onClick={() => navigate('/projects')}>{t('home.browseExamplesArrow')}</Link>
               </Card>
             </Col>
             <Col xs={24} sm={8}>
-              <Card type="inner" title="🔌 插件">
+              <Card type="inner" title={t('home.pluginsTitle')}>
                 <Paragraph>
-                  探索插件市场，扩展系统功能
+                  {t('home.pluginsDesc')}
                 </Paragraph>
-                <Link href="#" onClick={() => navigate('/plugins')}>插件市场 →</Link>
+                <Link onClick={() => navigate('/plugins')}>{t('home.pluginsMarketArrow')}</Link>
               </Card>
             </Col>
           </Row>

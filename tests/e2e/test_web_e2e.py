@@ -19,7 +19,10 @@ from typing import Dict, List, Any
 from datetime import datetime
 
 import pytest
-from playwright.sync_api import sync_playwright, Page, Browser, BrowserContext
+try:
+    from playwright.sync_api import sync_playwright, Page, Browser, BrowserContext
+except ImportError:
+    pytest.skip("playwright not installed", allow_module_level=True)
 
 # 导入增强验证器
 try:

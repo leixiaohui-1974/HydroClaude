@@ -23,6 +23,7 @@ env/
 # Generated files
 *.png
 *.npz
+*.db
 
 # Result directories
 results_*/
@@ -47,3 +48,4 @@ coverage.xml
 .claude/
 .specify/memory/*.tmp
 specs/*/tmp/
+node_modules/

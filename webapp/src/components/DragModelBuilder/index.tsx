@@ -1,33 +1,33 @@
 /**
- * 拖拽式建模组件 - Drag & Drop Model Builder
- * 
- * 功能：
- * 1. 拖拽式渠道建模
- * 2. 可视化添加水工结构（闸门、堰、泵站等）
- * 3. 参数配置面板
- * 4. 实时预览
- * 5. 导出JSON配置
+ * Drag & Drop Model Builder Component
  */
 
 import React, { useState, useRef, useCallback } from 'react';
 import { Card, Button, InputNumber, Select, message, Space, Divider, Modal } from 'antd';
-import { PlusOutlined, DeleteOutlined, EditOutlined, SaveOutlined, ExportOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, ExportOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import './styles.css';
 
 const { Option } = Select;
 
-// 水工结构类型
-const STRUCTURE_TYPES = {
-  GATE: { type: 'gate', label: '闸门', icon: '🚪', color: '#1890ff' },
-  WEIR: { type: 'weir', label: '堰', icon: '⛰️', color: '#52c41a' },
-  PUMP: { type: 'pump', label: '泵站', icon: '💧', color: '#722ed1' },
-  ORIFICE: { type: 'orifice', label: '孔口', icon: '⭕', color: '#fa8c16' },
+interface StructureType {
+  type: string;
+  labelKey: string;
+  icon: string;
+  color: string;
+}
+
+const STRUCTURE_TYPES: Record<string, StructureType> = {
+  GATE: { type: 'gate', labelKey: 'modelBuilder.gate', icon: '🚪', color: '#1890ff' },
+  WEIR: { type: 'weir', labelKey: 'modelBuilder.weir', icon: '⛰️', color: '#52c41a' },
+  PUMP: { type: 'pump', labelKey: 'modelBuilder.pump', icon: '💧', color: '#722ed1' },
+  ORIFICE: { type: 'orifice', labelKey: 'modelBuilder.orifice', icon: '⭕', color: '#fa8c16' },
 };
 
 interface Structure {
   id: string;
   type: string;
-  position: number; // 在渠道上的位置 (m)
+  position: number;
   params: Record<string, number>;
   label: string;
 }
@@ -46,7 +46,8 @@ interface FlowConfig {
 }
 
 const DragModelBuilder: React.FC = () => {
-  // 状态管理
+  const { t } = useTranslation();
+
   const [canalConfig, setCanalConfig] = useState<CanalConfig>({
     length: 10000,
     width: 10,
@@ -65,11 +66,10 @@ const DragModelBuilder: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragType, setDragType] = useState<string>('');
   const [showConfigModal, setShowConfigModal] = useState(false);
-  
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // 绘制渠道
   const drawCanal = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -77,32 +77,29 @@ const DragModelBuilder: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // 清空画布
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 绘制渠道主体
     const canalHeight = 100;
     const canalY = canvas.height / 2 - canalHeight / 2;
 
-    // 渠道轮廓
     ctx.fillStyle = '#e6f7ff';
     ctx.fillRect(50, canalY, canvas.width - 100, canalHeight);
     ctx.strokeStyle = '#1890ff';
     ctx.lineWidth = 2;
     ctx.strokeRect(50, canalY, canvas.width - 100, canalHeight);
 
-    // 水流方向箭头
+    // Flow direction arrow
     ctx.fillStyle = '#1890ff';
     ctx.font = '14px Arial';
-    ctx.fillText('→ 流向', canvas.width / 2 - 30, canalY - 10);
+    ctx.fillText(`→ ${t('modelBuilder.flowDirection')}`, canvas.width / 2 - 30, canalY - 10);
 
-    // 绘制长度标注
+    // Length labels
     ctx.fillStyle = '#666';
     ctx.font = '12px Arial';
     ctx.fillText('0 m', 45, canvas.height / 2 + canalHeight / 2 + 25);
     ctx.fillText(`${canalConfig.length} m`, canvas.width - 100, canvas.height / 2 + canalHeight / 2 + 25);
 
-    // 绘制网格线
+    // Grid lines
     const gridCount = 10;
     ctx.strokeStyle = '#d9d9d9';
     ctx.lineWidth = 0.5;
@@ -114,21 +111,19 @@ const DragModelBuilder: React.FC = () => {
       ctx.stroke();
     }
 
-    // 绘制结构
+    // Draw structures
     structures.forEach((structure) => {
       const posRatio = structure.position / canalConfig.length;
       const x = 50 + (canvas.width - 100) * posRatio;
       const structureInfo = Object.values(STRUCTURE_TYPES).find(s => s.type === structure.type);
 
       if (structureInfo) {
-        // 结构图标
         ctx.fillStyle = structureInfo.color;
         ctx.fillRect(x - 15, canalY + 20, 30, 60);
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 2;
         ctx.strokeRect(x - 15, canalY + 20, 30, 60);
 
-        // 图标和标签
         ctx.font = '24px Arial';
         ctx.fillText(structureInfo.icon, x - 12, canalY + 50);
 
@@ -138,21 +133,18 @@ const DragModelBuilder: React.FC = () => {
         ctx.fillText(`${structure.position.toFixed(0)}m`, x - 15, canalY + 105);
       }
 
-      // 高亮选中的结构
       if (selectedStructure?.id === structure.id) {
         ctx.strokeStyle = '#ff4d4f';
         ctx.lineWidth = 3;
         ctx.strokeRect(x - 18, canalY + 17, 36, 66);
       }
     });
-  }, [canalConfig, structures, selectedStructure]);
+  }, [canalConfig, structures, selectedStructure, t]);
 
-  // 重绘画布
   React.useEffect(() => {
     drawCanal();
   }, [drawCanal]);
 
-  // 处理画布调整大小
   React.useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
@@ -169,13 +161,11 @@ const DragModelBuilder: React.FC = () => {
     return () => window.removeEventListener('resize', resizeCanvas);
   }, [drawCanal]);
 
-  // 开始拖拽
   const handleDragStart = (type: string) => {
     setIsDragging(true);
     setDragType(type);
   };
 
-  // 处理放置
   const handleDrop = (e: React.DragEvent<HTMLCanvasElement>) => {
     e.preventDefault();
     const canvas = canvasRef.current;
@@ -185,29 +175,27 @@ const DragModelBuilder: React.FC = () => {
     const x = e.clientX - rect.left;
     const canvasWidth = canvas.width;
 
-    // 计算在渠道上的位置
     const posRatio = Math.max(0, Math.min(1, (x - 50) / (canvasWidth - 100)));
     const position = posRatio * canalConfig.length;
 
-    // 创建新结构
     const structureInfo = Object.values(STRUCTURE_TYPES).find(s => s.type === dragType);
     if (!structureInfo) return;
 
+    const label = t(structureInfo.labelKey);
     const newStructure: Structure = {
       id: `${dragType}_${Date.now()}`,
       type: dragType,
       position: Math.round(position),
-      label: `${structureInfo.label}${structures.filter(s => s.type === dragType).length + 1}`,
+      label: `${label}${structures.filter(s => s.type === dragType).length + 1}`,
       params: getDefaultParams(dragType),
     };
 
     setStructures([...structures, newStructure]);
     setIsDragging(false);
     setDragType('');
-    message.success(`已添加${structureInfo.label}`);
+    message.success(t('modelBuilder.structureAdded', { name: label }));
   };
 
-  // 获取默认参数
   const getDefaultParams = (type: string): Record<string, number> => {
     switch (type) {
       case 'gate':
@@ -223,12 +211,10 @@ const DragModelBuilder: React.FC = () => {
     }
   };
 
-  // 处理拖拽悬停
   const handleDragOver = (e: React.DragEvent<HTMLCanvasElement>) => {
     e.preventDefault();
   };
 
-  // 点击画布选择结构
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -237,7 +223,6 @@ const DragModelBuilder: React.FC = () => {
     const x = e.clientX - rect.left;
     const canvasWidth = canvas.width;
 
-    // 查找点击的结构
     const clickedStructure = structures.find((structure) => {
       const posRatio = structure.position / canalConfig.length;
       const structureX = 50 + (canvasWidth - 100) * posRatio;
@@ -247,21 +232,18 @@ const DragModelBuilder: React.FC = () => {
     setSelectedStructure(clickedStructure || null);
   };
 
-  // 删除结构
   const handleDeleteStructure = () => {
     if (!selectedStructure) return;
     setStructures(structures.filter(s => s.id !== selectedStructure.id));
     setSelectedStructure(null);
-    message.success('已删除结构');
+    message.success(t('modelBuilder.structureDeleted'));
   };
 
-  // 编辑结构
   const handleEditStructure = () => {
     if (!selectedStructure) return;
     setShowConfigModal(true);
   };
 
-  // 更新结构参数
   const handleUpdateStructure = (params: Record<string, number>) => {
     if (!selectedStructure) return;
     const updated = structures.map(s =>
@@ -270,14 +252,13 @@ const DragModelBuilder: React.FC = () => {
     setStructures(updated);
     setSelectedStructure({ ...selectedStructure, params });
     setShowConfigModal(false);
-    message.success('参数已更新');
+    message.success(t('modelBuilder.paramsUpdated'));
   };
 
-  // 导出配置
   const handleExportConfig = () => {
     const config = {
       name: 'drag_model',
-      description: '拖拽式建模生成的配置',
+      description: t('modelBuilder.exportDescription'),
       canal: canalConfig,
       flow: flowConfig,
       structures: structures.map(s => ({
@@ -299,17 +280,16 @@ const DragModelBuilder: React.FC = () => {
     a.download = 'canal_model.json';
     a.click();
     URL.revokeObjectURL(url);
-    message.success('配置已导出');
+    message.success(t('modelBuilder.configExported'));
   };
 
   return (
     <div className="drag-model-builder">
-      <Card title="🎨 拖拽式渠道建模" style={{ marginBottom: 20 }}>
-        {/* 渠道参数配置 */}
+      <Card title={t('modelBuilder.title')} style={{ marginBottom: 20 }}>
         <div className="canal-config">
-          <h4>渠道参数</h4>
+          <h4>{t('modelBuilder.canalParams')}</h4>
           <Space wrap>
-            <span>长度(m):</span>
+            <span>{t('modelBuilder.lengthM')}:</span>
             <InputNumber
               value={canalConfig.length}
               onChange={(val) => setCanalConfig({ ...canalConfig, length: val || 10000 })}
@@ -317,7 +297,7 @@ const DragModelBuilder: React.FC = () => {
               max={100000}
               step={1000}
             />
-            <span>宽度(m):</span>
+            <span>{t('modelBuilder.widthM')}:</span>
             <InputNumber
               value={canalConfig.width}
               onChange={(val) => setCanalConfig({ ...canalConfig, width: val || 10 })}
@@ -325,7 +305,7 @@ const DragModelBuilder: React.FC = () => {
               max={100}
               step={1}
             />
-            <span>坡度:</span>
+            <span>{t('modelBuilder.slope')}:</span>
             <InputNumber
               value={canalConfig.slope}
               onChange={(val) => setCanalConfig({ ...canalConfig, slope: val || 0.001 })}
@@ -333,7 +313,7 @@ const DragModelBuilder: React.FC = () => {
               max={0.1}
               step={0.0001}
             />
-            <span>糙率:</span>
+            <span>{t('modelBuilder.roughness')}:</span>
             <InputNumber
               value={canalConfig.roughness}
               onChange={(val) => setCanalConfig({ ...canalConfig, roughness: val || 0.025 })}
@@ -346,11 +326,10 @@ const DragModelBuilder: React.FC = () => {
 
         <Divider />
 
-        {/* 流量配置 */}
         <div className="flow-config">
-          <h4>流量参数</h4>
+          <h4>{t('modelBuilder.flowParams')}</h4>
           <Space>
-            <span>流量(m³/s):</span>
+            <span>{t('modelBuilder.flowRateM3s')}:</span>
             <InputNumber
               value={flowConfig.flow_rate}
               onChange={(val) => setFlowConfig({ ...flowConfig, flow_rate: val || 50 })}
@@ -358,21 +337,20 @@ const DragModelBuilder: React.FC = () => {
               max={1000}
               step={1}
             />
-            <span>类型:</span>
+            <span>{t('modelBuilder.flowType')}:</span>
             <Select
               value={flowConfig.type}
               onChange={(val) => setFlowConfig({ ...flowConfig, type: val })}
               style={{ width: 120 }}
             >
-              <Option value="steady">稳态</Option>
-              <Option value="unsteady">非稳态</Option>
+              <Option value="steady">{t('modelBuilder.steady')}</Option>
+              <Option value="unsteady">{t('modelBuilder.unsteady')}</Option>
             </Select>
           </Space>
         </div>
       </Card>
 
-      {/* 结构工具箱 */}
-      <Card title="🧰 水工结构工具箱" style={{ marginBottom: 20 }}>
+      <Card title={t('modelBuilder.toolbox')} style={{ marginBottom: 20 }}>
         <Space size="large">
           {Object.values(STRUCTURE_TYPES).map((structure) => (
             <div
@@ -389,18 +367,17 @@ const DragModelBuilder: React.FC = () => {
               }}
             >
               <div style={{ fontSize: '24px', textAlign: 'center' }}>{structure.icon}</div>
-              <div style={{ fontSize: '12px', textAlign: 'center' }}>{structure.label}</div>
+              <div style={{ fontSize: '12px', textAlign: 'center' }}>{t(structure.labelKey)}</div>
             </div>
           ))}
         </Space>
         <div style={{ marginTop: 10, color: '#666', fontSize: '12px' }}>
-          💡 提示: 拖拽水工结构到下方渠道上进行建模
+          {t('modelBuilder.dragHint')}
         </div>
       </Card>
 
-      {/* 渠道画布 */}
       <Card
-        title="🏞️ 渠道可视化"
+        title={t('modelBuilder.visualization')}
         extra={
           <Space>
             {selectedStructure && (
@@ -411,7 +388,7 @@ const DragModelBuilder: React.FC = () => {
                   onClick={handleEditStructure}
                   size="small"
                 >
-                  编辑
+                  {t('common.edit')}
                 </Button>
                 <Button
                   danger
@@ -419,7 +396,7 @@ const DragModelBuilder: React.FC = () => {
                   onClick={handleDeleteStructure}
                   size="small"
                 >
-                  删除
+                  {t('common.delete')}
                 </Button>
               </>
             )}
@@ -429,7 +406,7 @@ const DragModelBuilder: React.FC = () => {
               onClick={handleExportConfig}
               disabled={structures.length === 0}
             >
-              导出配置
+              {t('modelBuilder.exportConfig')}
             </Button>
           </Space>
         }
@@ -440,18 +417,19 @@ const DragModelBuilder: React.FC = () => {
             onClick={handleCanvasClick}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
+            aria-label={t('modelBuilder.visualization')}
+            role="img"
             style={{ border: '1px solid #d9d9d9', borderRadius: '4px', cursor: 'pointer' }}
           />
         </div>
         <div style={{ marginTop: 10, color: '#666', fontSize: '12px' }}>
-          已添加 {structures.length} 个结构
-          {selectedStructure && ` | 已选中: ${selectedStructure.label} (位置: ${selectedStructure.position}m)`}
+          {t('modelBuilder.structureCount', { count: structures.length })}
+          {selectedStructure && ` | ${t('modelBuilder.selected', { name: selectedStructure.label, position: selectedStructure.position })}`}
         </div>
       </Card>
 
-      {/* 结构参数配置模态框 */}
       <Modal
-        title={`编辑 ${selectedStructure?.label}`}
+        title={t('modelBuilder.editStructure', { name: selectedStructure?.label })}
         open={showConfigModal}
         onCancel={() => setShowConfigModal(false)}
         onOk={() => {

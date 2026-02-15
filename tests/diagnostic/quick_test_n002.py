@@ -9,12 +9,11 @@ import os
 sys.path.insert(0, os.path.dirname(__file__))
 
 import numpy as np
+import pytest
 try:
     from solvers.godunov_fvm_weno3 import GodunvFVMWENO3
 except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
+    pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 
 
 # 参数

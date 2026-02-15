@@ -93,10 +93,10 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
     # F_Q_R + S_R*(Q_R - Q_R*) = F_Q_R*
     #  Q_L* = A_L*(S_star), Q_R* = A_R*(S_star)
 
-    denominator = A_L * (S_L - u_L) - A_R * (S_R - u_R)
+    denominator = h_L * (S_L - u_L) - h_R * (S_R - u_R)
 
-    # 
-    if abs(denominator) < eps_dry * B:
+    #
+    if abs(denominator) < 1e-12:  # Use small dimensionless threshold
         # HLLHLLHLLC
         if S_L >= 0.0:
             return F_h_L, F_Q_L
@@ -109,12 +109,17 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
             U_Q_L = Q_L
             U_Q_R = Q_R
 
-            F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / (S_R - S_L)
-            F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / (S_R - S_L)
+            dS = S_R - S_L
+            if abs(dS) < 1e-12:
+                F_h = 0.5 * (F_h_L + F_h_R)
+                F_Q = 0.5 * (F_Q_L + F_Q_R)
+            else:
+                F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / dS
+                F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / dS
 
             return F_h, F_Q
 
-    # 
+    #
     numerator = (F_Q_R - F_Q_L + S_L * Q_L - S_R * Q_R)
     S_star = numerator / denominator
 
@@ -132,9 +137,24 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
             U_h_R = h_R
             U_Q_L = Q_L
             U_Q_R = Q_R
-            F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / (S_R - S_L)
-            F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / (S_R - S_L)
+            dS = S_R - S_L
+            if abs(dS) < 1e-12:
+                F_h = 0.5 * (F_h_L + F_h_R)
+                F_Q = 0.5 * (F_Q_L + F_Q_R)
+            else:
+                F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (U_h_R - U_h_L)) / dS
+                F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (U_Q_R - U_Q_L)) / dS
             return F_h, F_Q
+
+    # ========== HLL fallback (used if NaN detected) ==========
+    # Pre-compute HLL flux for fallback
+    dS = S_R - S_L
+    if abs(dS) < 1e-12:
+        HLL_F_h = 0.5 * (F_h_L + F_h_R)
+        HLL_F_Q = 0.5 * (F_Q_L + F_Q_R)
+    else:
+        HLL_F_h = (S_R * F_h_L - S_L * F_h_R + S_L * S_R * (h_R - h_L)) / dS
+        HLL_F_Q = (S_R * F_Q_L - S_L * F_Q_R + S_L * S_R * (Q_R - Q_L)) / dS
 
     # ========== HLLC () ==========
 
@@ -148,17 +168,24 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
         # F_L* = F_L + S_L * (U_L* - U_L)
 
         #  ()
-        h_L_star = h_L * (S_L - u_L) / (S_L - S_star)
+        ratio = (S_L - u_L) / (S_L - S_star) if abs(S_L - S_star) > 1e-12 else 1.0
+        h_L_star = h_L * ratio
 
         # Fix 1: NaN
+        if np.isnan(h_L_star) or np.isinf(h_L_star):
+            h_L_star = eps_dry
         h_L_star = max(eps_dry, h_L_star)
 
         #  ()
         Q_L_star = h_L_star * B * S_star
 
-        # 
+        #
         F_h_star = F_h_L + S_L * (h_L_star - h_L)
         F_Q_star = F_Q_L + S_L * (Q_L_star - Q_L)
+
+        # NaN guard: fall back to HLL if any flux is NaN/Inf
+        if np.isnan(F_h_star) or np.isnan(F_Q_star) or np.isinf(F_h_star) or np.isinf(F_Q_star):
+            return HLL_F_h, HLL_F_Q
 
         return F_h_star, F_Q_star
 
@@ -168,17 +195,24 @@ def hllc_flux_numba(h_L, Q_L, h_R, Q_R, B, g, eps_dry):
         # F_R* = F_R + S_R * (U_R* - U_R)
 
         #  ()
-        h_R_star = h_R * (S_R - u_R) / (S_R - S_star)
+        ratio = (S_R - u_R) / (S_R - S_star) if abs(S_R - S_star) > 1e-12 else 1.0
+        h_R_star = h_R * ratio
 
         # Fix 1: NaN
+        if np.isnan(h_R_star) or np.isinf(h_R_star):
+            h_R_star = eps_dry
         h_R_star = max(eps_dry, h_R_star)
 
         #  ()
         Q_R_star = h_R_star * B * S_star
 
-        # 
+        #
         F_h_star = F_h_R + S_R * (h_R_star - h_R)
         F_Q_star = F_Q_R + S_R * (Q_R_star - Q_R)
+
+        # NaN guard: fall back to HLL if any flux is NaN/Inf
+        if np.isnan(F_h_star) or np.isnan(F_Q_star) or np.isinf(F_h_star) or np.isinf(F_Q_star):
+            return HLL_F_h, HLL_F_Q
 
         return F_h_star, F_Q_star
 
@@ -225,14 +259,17 @@ def hllc_flux_with_source_numba(h_L, Q_L, z_b_L, h_R, Q_R, z_b_R, B, g, eps_dry)
     if h_L_adj < eps_dry and h_R_adj < eps_dry:
         return 0.0, 0.0
 
-    # HLLC
+    # HLLC (using reconstructed depths)
     F_h, F_Q_star = hllc_flux_numba(h_L_adj, Q_L, h_R_adj, Q_R, B, g, eps_dry)
 
-    # 
-    # Lake at Rest F_Q 
-    source_contribution = 0.5 * g * (h_L_adj**2 - h_R_adj**2) * B
-
-    F_Q = F_Q_star - source_contribution
+    # Hydrostatic reconstruction correction (Audusse et al., 2004)
+    # The left and right corrections are applied independently to their respective states:
+    # F_Q = F_Q_star + correction_L  (left pressure difference added to left side)
+    # The right correction is NOT averaged with the left; each acts on its own cell
+    # in the finite volume update. Here we apply the left correction to the interface flux;
+    # the right correction is handled symmetrically by the adjacent interface.
+    correction_L = 0.5 * g * (h_L**2 - h_L_adj**2) * B
+    F_Q = F_Q_star + correction_L
 
     return F_h, F_Q
 
@@ -398,14 +435,21 @@ def validate_hllc_properties():
         'pass': abs(F_h) < 1e-10 and abs(F_Q - 0.5*g*h_L**2*B) < 1e-6
     }
 
-    # 2: 
-    F_h_LR, F_Q_LR = hllc_flux_numba(5.0, 10.0, 3.0, 5.0, B, g, eps_dry)
-    F_h_RL, F_Q_RL = hllc_flux_numba(3.0, 5.0, 5.0, 10.0, B, g, eps_dry)
+    # 2: Consistency check (same state on both sides should give the physical flux)
+    # Note: Riemann solvers are NOT antisymmetric, i.e. F(U_L,U_R) != -F(U_R,U_L)
+    # Instead, we check that F(U,U) = F(U) for a uniform state
+    h_test = 4.0
+    Q_test = 20.0
+    A_test = h_test * B
+    u_test = Q_test / A_test
+    F_h_uniform, F_Q_uniform = hllc_flux_numba(h_test, Q_test, h_test, Q_test, B, g, eps_dry)
+    F_h_exact = Q_test  # Mass flux = Q
+    F_Q_exact = Q_test * u_test + 0.5 * g * h_test**2 * B  # Momentum flux
 
-    results['symmetry'] = {
-        'F_h_diff': abs(F_h_LR + F_h_RL),
-        'F_Q_diff': abs(F_Q_LR + F_Q_RL),
-        'pass': abs(F_h_LR + F_h_RL) < 1e-10 and abs(F_Q_LR + F_Q_RL) < 1e-6
+    results['consistency'] = {
+        'F_h_diff': abs(F_h_uniform - F_h_exact),
+        'F_Q_diff': abs(F_Q_uniform - F_Q_exact),
+        'pass': abs(F_h_uniform - F_h_exact) < 1e-6 and abs(F_Q_uniform - F_Q_exact) < 1e-3
     }
 
     # 3: 
@@ -436,10 +480,10 @@ if __name__ == '__main__':
     print(f"  Status: {' PASS' if results['lake_at_rest']['pass'] else ' FAIL'}")
     print(f"  Note: Constant F_Q → dF_Q/dx = 0 → Lake remains at rest [OK]")
 
-    print("\n[Test 2] Symmetry")
-    print(f"  F_h difference = {results['symmetry']['F_h_diff']:.2e}")
-    print(f"  F_Q difference = {results['symmetry']['F_Q_diff']:.2e}")
-    print(f"  Status: {' PASS' if results['symmetry']['pass'] else ' FAIL'}")
+    print("\n[Test 2] Consistency (uniform state)")
+    print(f"  F_h difference = {results['consistency']['F_h_diff']:.2e}")
+    print(f"  F_Q difference = {results['consistency']['F_Q_diff']:.2e}")
+    print(f"  Status: {' PASS' if results['consistency']['pass'] else ' FAIL'}")
 
     print("\n[Test 3] Dry Bed")
     print(f"  F_h = {results['dry_bed']['F_h']:.2e}")

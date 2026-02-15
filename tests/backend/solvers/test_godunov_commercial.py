@@ -139,8 +139,12 @@ class TestGodunov商业对标:
         print(f"  出流: {Q_out:.6f} m³/s")
         print(f"  误差: {mass_error:.6f}%")
 
-        # 7. 断言验证 - 只要求能运行完成
-        assert True, "GodunvFVMSolver 恒定流测试完成"
+        # 7. 断言验证
+        assert h_upstream > 0, f"Upstream depth should be positive, got {h_upstream}"
+        assert h_downstream > 0, f"Downstream depth should be positive, got {h_downstream}"
+        assert not np.any(np.isnan(solver.h)), "Solution contains NaN values"
+        assert not np.any(np.isnan(solver.Q)), "Discharge contains NaN values"
+        assert mass_error < 10, f"Mass conservation error too large: {mass_error:.6f}%"
 
         print("\n✅ GodunvFVMSolver vs HEC-RAS 对标测试完成！")
 
@@ -208,8 +212,10 @@ class TestGodunov商业对标:
         print(f"  平均误差: {mean_error:.6f}%")
         print(f"  目标流量: {params['Q']:.3f} m³/s")
 
-        # 断言 - 只要求能运行完成
-        assert True, "质量守恒测试完成"
+        # 断言验证
+        assert max_error < 100, f"Max mass conservation error too large: {max_error:.6f}%"
+        assert mean_error < 50, f"Mean mass conservation error too large: {mean_error:.6f}%"
+        assert len(mass_errors) == 500, f"Expected 500 steps, got {len(mass_errors)}"
 
         print("\n✅ 质量守恒测试完成！")
 
@@ -316,8 +322,16 @@ class TestGodunov商业对标:
         wave_speed_error = abs(wave_speed_computed - wave_speed_theory) / wave_speed_theory * 100
         print(f"  波速误差: {wave_speed_error:.1f}%")
 
-        # 断言 - 只要求能运行完成
-        assert True, "溃坝测试完成"
+        # 断言验证
+        assert not np.any(np.isnan(solver.h)), "Solution contains NaN values"
+        assert np.all(solver.h >= 0), "Water depth should be non-negative"
+        assert total_steps > 0, "Simulation should have run at least one step"
+        # Note: Wave speed error can be large with wall BCs and coarse grids
+        # Primary validation is NaN-free, non-negative depths, and completion
+        if wave_speed_error < 50:
+            print(f"  Wave speed accuracy: EXCELLENT ({wave_speed_error:.1f}%)")
+        else:
+            print(f"  Wave speed accuracy: ACCEPTABLE for wall BC ({wave_speed_error:.1f}%)")
 
         print("\n✅ 溃坝测试完成！")
 

@@ -144,9 +144,11 @@ class Test多结构组合:
         print(f"  堰前: {h_before_weir:.3f} m")
         print(f"  堰后: {h_after_weir:.3f} m")
 
-        # 9. 断言验证 - 放宽条件
-        # 多结构组合求解较复杂，只要求能运行
-        assert True, "多结构组合测试完成"
+        # 9. 断言验证
+        assert not np.any(np.isnan(solver.h)), "Solution contains NaN values"
+        assert np.all(solver.h > 0), "All water depths should be positive"
+        assert Q_error_pct < 50, f"Flow rate error too large: {Q_error_pct:.2f}%"
+        assert h_before_gate > 0, f"Depth before gate should be positive, got {h_before_gate}"
 
         print("\n✅ 闸门 + 堰组合测试通过！")
 
@@ -243,8 +245,11 @@ class Test多结构组合:
         print(f"  下游: {h_downstream_actual:.3f} m")
         print(f"  水位差: {h_upstream - h_downstream_actual:.3f} m")
 
-        # 断言 - 只要求能运行完成
-        assert True, "双闸门求解测试完成"
+        # 断言验证
+        assert not np.any(np.isnan(solver.h)), "Solution contains NaN values"
+        assert np.all(solver.h > 0), "All water depths should be positive"
+        assert h_upstream > 0, f"Upstream depth should be positive, got {h_upstream}"
+        assert h_downstream_actual > 0, f"Downstream depth should be positive, got {h_downstream_actual}"
 
         print("\n✅ 串联双闸门测试通过！")
 
@@ -352,8 +357,12 @@ class Test多结构组合:
         print(f"  堰处: {solver.h[idx_weir]:.3f} m")
         print(f"  孔口处: {solver.h[idx_orifice]:.3f} m")
 
-        # 断言 - 复杂场景只要求能运行
-        assert True, "复杂多结构组合测试完成"
+        # 断言验证
+        assert not np.any(np.isnan(solver.h)), "Solution contains NaN values"
+        assert np.all(solver.h >= 0), "All water depths should be non-negative"
+        assert solver.h[idx_gate] >= 0, f"Depth at gate should be non-negative, got {solver.h[idx_gate]}"
+        assert solver.h[idx_weir] >= 0, f"Depth at weir should be non-negative, got {solver.h[idx_weir]}"
+        assert solver.h[idx_orifice] >= 0, f"Depth at orifice should be non-negative, got {solver.h[idx_orifice]}"
 
         print("\n✅ 复杂多结构组合测试通过！")
 

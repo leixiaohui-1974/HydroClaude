@@ -47,18 +47,19 @@ class TestValveCharacteristics:
         """Test quick opening characteristic (Ball valve)"""
         valve = BallValve("BV1", Cv_max=100.0)
 
-        # Test quadratic relationship
+        # Quick opening uses Cv = Cv_max * sqrt(tau)
         openings = [0.0, 0.5, 0.7, 1.0]
-        expected_Cvs = [0.0, 25.0, 49.0, 100.0]
+        expected_Cvs = [0.0, 100.0 * np.sqrt(0.5), 100.0 * np.sqrt(0.7), 100.0]
 
         for opening, expected_Cv in zip(openings, expected_Cvs):
             Cv = valve.get_Cv(opening)
             assert abs(Cv - expected_Cv) < 0.1, f"Quick opening failed at opening={opening}"
 
         # Verify it's more responsive at small openings than linear
+        # sqrt(tau) > tau for 0 < tau < 1, so quick opening gives MORE flow than linear
         Cv_10pct = valve.get_Cv(0.1)
         Cv_linear = 0.1 * valve.Cv_max
-        assert Cv_10pct < Cv_linear, "Quick opening should be less than linear at small openings"
+        assert Cv_10pct > Cv_linear, "Quick opening should be greater than linear at small openings"
 
         print("  Quick opening characteristic test passed")
 
@@ -380,11 +381,11 @@ class TestValveIntegration:
             results[valve.__class__.__name__] = Q
 
         # At 50% opening:
-        # Linear (Gate) should be highest
+        # Quick opening (Ball, sqrt(tau)) should be highest
+        # Linear (Gate) should be in between
         # Equal percentage (Butterfly) should be lowest
-        # Quick opening (Ball) should be in between
-        assert results['GateValve'] > results['BallValve']
-        assert results['BallValve'] > results['ButterflyValve']
+        assert results['BallValve'] > results['GateValve']
+        assert results['GateValve'] > results['ButterflyValve']
 
         print(f"  Valve types comparison test passed")
         for name, Q in results.items():

@@ -39,14 +39,40 @@ from .structures import (
     InternalStructure, InternalWeir, InternalGate, InternalOrifice,
     create_internal_weir, create_internal_gate, create_internal_orifice
 )
-from .pump_station import (
-    PumpStationNode, Pump,
-    create_pump_station
-)
-from .bridge_structure import Bridge, create_bridge
-from .culvert_structure import Culvert, create_culvert
-from .side_weir import SideWeir, create_side_weir
-from .solver import NetworkSolver, create_network_solver, solve_network
+try:
+    from .pump_station import (
+        PumpStationNode, Pump,
+        create_pump_station
+    )
+except ImportError:
+    PumpStationNode = None
+    Pump = None
+    create_pump_station = None  # type: ignore[assignment]
+
+try:
+    from .bridge_structure import Bridge, create_bridge
+except ImportError:
+    Bridge = None
+    create_bridge = None  # type: ignore[assignment]
+
+try:
+    from .culvert_structure import Culvert, create_culvert
+except ImportError:
+    Culvert = None
+    create_culvert = None  # type: ignore[assignment]
+
+try:
+    from .side_weir import SideWeir, create_side_weir
+except ImportError:
+    SideWeir = None
+    create_side_weir = None  # type: ignore[assignment]
+
+try:
+    from .solver import NetworkSolver, create_network_solver, solve_network
+except ImportError:
+    NetworkSolver = None
+    create_network_solver = None  # type: ignore[assignment]
+    solve_network = None  # type: ignore[assignment]
 
 __all__ = [
     # 基础类

@@ -18,6 +18,7 @@ import numpy as np
 import warnings
 warnings.filterwarnings("ignore")
 import sys
+import pytest
 import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -25,9 +26,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 try:
     from solvers.godunov_fvm_solver import GodunvFVMSolver
 except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
+    pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 
 
 
@@ -143,8 +142,9 @@ def test_mass_conservation():
         )
 
         # 初始条件：均匀流（更稳定）
-        h_init = np.ones(100) * 2.0
-        Q_init = np.ones(100) * 20.0  # 恒定流量
+        nx = solver.n_cells
+        h_init = np.ones(nx) * 2.0
+        Q_init = np.ones(nx) * 20.0  # 恒定流量
 
         solver.h = h_init
         solver.Q = Q_init
@@ -204,8 +204,9 @@ def test_numerical_stability():
         # 近似正常水深：h_n ~= (Q*n/(b*sqrt(S0)))^(3/5)
         h_n = (Q * n / (b * np.sqrt(S0)))**(3.0/5.0)
 
-        h_init = np.ones(100) * h_n
-        Q_init = np.ones(100) * Q
+        nx = solver.n_cells
+        h_init = np.ones(nx) * h_n
+        Q_init = np.ones(nx) * Q
 
         solver.h = h_init
         solver.Q = Q_init

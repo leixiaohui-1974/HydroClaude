@@ -156,7 +156,7 @@ class PIDController:
         p_term = self.kp * error
 
         # 积分项（梯形积分）
-        self.integral += error * dt
+        self.integral += 0.5 * (error + self.last_error) * dt
 
         # 积分限幅（抗饱和）
         self.integral = np.clip(
@@ -180,14 +180,18 @@ class PIDController:
         d_term = self.kd * filtered_derivative
 
         # 总控制输出
-        output = p_term + i_term + d_term
+        unclamped_output = p_term + i_term + d_term
 
         # 输出限幅
         output = np.clip(
-            output,
+            unclamped_output,
             self.config.output_min,
             self.config.output_max
         )
+
+        # Back-calculation anti-windup: if output is saturated, undo excess integral
+        if output != unclamped_output and self.ki != 0:
+            self.integral -= (unclamped_output - output) / self.ki
 
         # 记录历史（用于分析）
         self.error_history.append(error)

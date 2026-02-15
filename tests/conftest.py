@@ -43,7 +43,7 @@ def is_server_running(host="localhost", port=8000):
         result = sock.connect_ex((host, port))
         sock.close()
         return result == 0
-    except:
+    except (socket.error, OSError):
         return False
 
 @pytest_asyncio.fixture

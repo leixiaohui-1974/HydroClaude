@@ -3,17 +3,26 @@ Pydantic模型
 """
 
 from .user import UserCreate, UserUpdate, UserInDB, UserPublic, UserMe
-from .auth import Token, TokenData, LoginRequest, RegisterRequest
+from .auth import Token, TokenData, LoginRequest, RegisterRequest, UserBrief, PasswordResetRequest, PasswordResetConfirm, MessageResponse
 from .plugin import (
     PluginCreate, PluginUpdate, PluginInDB, PluginPublic, PluginList,
     RatingCreate, RatingInDB,
     CommentCreate, CommentInDB, CommentPublic
 )
+from .simulation import (
+    ProjectCreate, ProjectUpdate, ProjectPublic, ProjectList,
+    JobCreate, JobPublic, JobList,
+    ResultPublic,
+)
 
 __all__ = [
     "UserCreate", "UserUpdate", "UserInDB", "UserPublic", "UserMe",
-    "Token", "TokenData", "LoginRequest", "RegisterRequest",
+    "Token", "TokenData", "LoginRequest", "RegisterRequest", "UserBrief",
+    "PasswordResetRequest", "PasswordResetConfirm", "MessageResponse",
     "PluginCreate", "PluginUpdate", "PluginInDB", "PluginPublic", "PluginList",
     "RatingCreate", "RatingInDB",
     "CommentCreate", "CommentInDB", "CommentPublic",
+    "ProjectCreate", "ProjectUpdate", "ProjectPublic", "ProjectList",
+    "JobCreate", "JobPublic", "JobList",
+    "ResultPublic",
 ]

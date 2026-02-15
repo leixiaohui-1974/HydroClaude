@@ -2,8 +2,10 @@
 插件相关API路由
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File
-from sqlalchemy.orm import Session
+import logging
+from fastapi import APIRouter, Depends, HTTPException, status, Query
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import desc, func
 from typing import Optional
 import json
@@ -20,6 +22,8 @@ from ..schemas import (
 from ..utils.dependencies import get_current_active_user
 from ..config import settings
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/plugins", tags=["Plugins"])
 
 
@@ -29,7 +33,7 @@ async def get_plugins(
     page_size: int = Query(20, ge=1, le=100),
     category: Optional[str] = None,
     search: Optional[str] = None,
-    sort: str = Query("downloads", regex="^(downloads|rating|created_at)$"),
+    sort: str = Query("downloads", pattern="^(downloads|rating|created_at)$"),
     db: Session = Depends(get_db)
 ):
     """
@@ -37,17 +41,18 @@ async def get_plugins(
     
     支持分页、分类筛选、搜索和排序。
     """
-    query = db.query(Plugin).filter(Plugin.status == "approved")
-    
+    query = db.query(Plugin).options(joinedload(Plugin.author)).filter(Plugin.status == "approved")
+
     # 分类筛选
     if category:
         query = query.filter(Plugin.category == category)
-    
+
     # 搜索
     if search:
+        search_pattern = f"%{search}%"
         query = query.filter(
-            (Plugin.name.ilike(f"%{search}%")) |
-            (Plugin.description.ilike(f"%{search}%"))
+            (Plugin.name.ilike(search_pattern)) |
+            (Plugin.description.ilike(search_pattern))
         )
     
     # 排序
@@ -66,7 +71,7 @@ async def get_plugins(
     
     # 添加作者用户名
     for plugin in plugins:
-        plugin.author_username = plugin.author.username
+        plugin.author_username = plugin.author.username if plugin.author else "Unknown"
     
     return {
         "items": plugins,
@@ -111,10 +116,19 @@ async def create_plugin(
         status="pending"
     )
     
-    db.add(plugin)
-    db.commit()
-    db.refresh(plugin)
-    
+    try:
+        db.add(plugin)
+        db.commit()
+        db.refresh(plugin)
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to create plugin '{plugin_data.plugin_id}': {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create plugin"
+        )
+
+    logger.info(f"Plugin created: {plugin.plugin_id} by user {current_user.username}")
     plugin.author_username = current_user.username
     return plugin
 
@@ -133,7 +147,7 @@ async def get_plugin(plugin_id: int, db: Session = Depends(get_db)):
             detail="Plugin not found"
         )
     
-    plugin.author_username = plugin.author.username
+    plugin.author_username = plugin.author.username if plugin.author else "Unknown"
     return plugin
 
 
@@ -178,11 +192,19 @@ async def update_plugin(
         plugin.repository = plugin_update.repository
     if plugin_update.keywords is not None:
         plugin.keywords = json.dumps(plugin_update.keywords)
-    
-    db.commit()
-    db.refresh(plugin)
-    
-    plugin.author_username = plugin.author.username
+
+    try:
+        db.commit()
+        db.refresh(plugin)
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to update plugin {plugin_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update plugin"
+        )
+
+    plugin.author_username = plugin.author.username if plugin.author else "Unknown"
     return plugin
 
 
@@ -211,9 +233,18 @@ async def delete_plugin(
             detail="Not enough permissions"
         )
     
-    db.delete(plugin)
-    db.commit()
-    
+    try:
+        db.delete(plugin)
+        db.commit()
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to delete plugin {plugin_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete plugin"
+        )
+
+    logger.info(f"Plugin deleted: id={plugin_id} by user {current_user.username}")
     return None
 
 
@@ -243,32 +274,40 @@ async def rate_plugin(
         Rating.user_id == current_user.id
     ).first()
     
-    if existing_rating:
-        # 更新评分
-        existing_rating.rating = rating_data.rating
-        existing_rating.review = rating_data.review
+    try:
+        if existing_rating:
+            # 更新评分
+            existing_rating.rating = rating_data.rating
+            existing_rating.review = rating_data.review
+            db.commit()
+            db.refresh(existing_rating)
+            rating = existing_rating
+        else:
+            # 创建新评分
+            rating = Rating(
+                plugin_id=plugin_id,
+                user_id=current_user.id,
+                rating=rating_data.rating,
+                review=rating_data.review
+            )
+            db.add(rating)
+            db.commit()
+            db.refresh(rating)
+
+        # 更新插件平均评分
+        avg_rating = db.query(func.avg(Rating.rating)).filter(Rating.plugin_id == plugin_id).scalar()
+        count = db.query(func.count(Rating.id)).filter(Rating.plugin_id == plugin_id).scalar()
+        plugin.rating_avg = float(avg_rating) if avg_rating else 0.0
+        plugin.rating_count = count
         db.commit()
-        db.refresh(existing_rating)
-        rating = existing_rating
-    else:
-        # 创建新评分
-        rating = Rating(
-            plugin_id=plugin_id,
-            user_id=current_user.id,
-            rating=rating_data.rating,
-            review=rating_data.review
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to rate plugin {plugin_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to submit rating"
         )
-        db.add(rating)
-        db.commit()
-        db.refresh(rating)
-    
-    # 更新插件平均评分
-    avg_rating = db.query(func.avg(Rating.rating)).filter(Rating.plugin_id == plugin_id).scalar()
-    count = db.query(func.count(Rating.id)).filter(Rating.plugin_id == plugin_id).scalar()
-    plugin.rating_avg = float(avg_rating) if avg_rating else 0.0
-    plugin.rating_count = count
-    db.commit()
-    
+
     return rating
 
 
@@ -299,33 +338,55 @@ async def create_comment(
         parent_id=comment_data.parent_id,
         content=comment_data.content
     )
-    
-    db.add(comment)
-    db.commit()
-    db.refresh(comment)
-    
+
+    try:
+        db.add(comment)
+        db.commit()
+        db.refresh(comment)
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Failed to create comment on plugin {plugin_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create comment"
+        )
+
     # 添加作者信息
     comment.author_username = current_user.username
     comment.author_avatar = current_user.avatar_url
-    
+
     return comment
 
 
 @router.get("/{plugin_id}/comments", response_model=list[CommentPublic])
 async def get_comments(
     plugin_id: int,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=100),
     db: Session = Depends(get_db)
 ):
     """
     获取评论列表
-    
-    获取插件的所有评论。
+
+    获取插件的评论（分页）。
     """
-    comments = db.query(Comment).filter(Comment.plugin_id == plugin_id).order_by(Comment.created_at.desc()).all()
-    
+    comments = (
+        db.query(Comment)
+        .options(joinedload(Comment.user))
+        .filter(Comment.plugin_id == plugin_id)
+        .order_by(Comment.created_at.desc())
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+        .all()
+    )
+
     # 添加作者信息
     for comment in comments:
-        comment.author_username = comment.user.username
-        comment.author_avatar = comment.user.avatar_url
-    
+        if comment.user:
+            comment.author_username = comment.user.username
+            comment.author_avatar = comment.user.avatar_url
+        else:
+            comment.author_username = "Deleted User"
+            comment.author_avatar = None
+
     return comments

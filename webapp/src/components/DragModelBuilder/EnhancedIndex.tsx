@@ -1,48 +1,78 @@
 /**
- * 增强版拖拽式建模组件 - 覆盖所有组件类型
- * 
- * 新增功能：
- * 1. 更多水工结构类型（桥梁、涵洞、跌水、侧堰等）
- * 2. 管网节点和管段
- * 3. 边界条件设置
- * 4. 初始条件配置
- * 5. 网格划分可视化
- * 6. 参数验证
- * 7. 实时预览
+ * Enhanced drag & drop modeling component - covers all component types
+ *
+ * Features:
+ * 1. More hydraulic structure types (bridge, culvert, drop, side weir, etc.)
+ * 2. Network junctions and pipes
+ * 3. Boundary condition settings
+ * 4. Initial condition configuration
+ * 5. Grid visualization
+ * 6. Parameter validation
+ * 7. Real-time preview
  */
 
 import React, { useState, useRef, useCallback } from 'react';
-import { 
-    Card, Button, InputNumber, Select, message, Space, Divider, 
-    Modal, Tabs, Switch, Slider, Form, Row, Col, Tag, Collapse 
+import { useTranslation } from 'react-i18next';
+import {
+    Card, Button, InputNumber, Select, message, Space, Divider,
+    Modal, Tabs, Form, Row, Col, Tag, Collapse
 } from 'antd';
 import {
-    PlusOutlined, DeleteOutlined, EditOutlined, SaveOutlined, 
-    ExportOutlined, EyeOutlined, SettingOutlined, CheckCircleOutlined
+    DeleteOutlined, EditOutlined,
+    ExportOutlined, EyeOutlined, CheckCircleOutlined
 } from '@ant-design/icons';
 
 const { Option } = Select;
-const { TabPane } = Tabs;
-const { Panel } = Collapse;
 
-// 完整的水工结构类型
-const ALL_STRUCTURE_TYPES = {
-    // 基础结构
-    GATE: { type: 'gate', label: '闸门', icon: '🚪', color: '#1890ff', category: 'basic' },
-    WEIR: { type: 'weir', label: '堰', icon: '⛰️', color: '#52c41a', category: 'basic' },
-    PUMP: { type: 'pump', label: '泵站', icon: '💧', color: '#722ed1', category: 'basic' },
-    ORIFICE: { type: 'orifice', label: '孔口', icon: '⭕', color: '#fa8c16', category: 'basic' },
-    
-    // 进阶结构
-    BRIDGE: { type: 'bridge', label: '桥梁', icon: '🌉', color: '#13c2c2', category: 'advanced' },
-    CULVERT: { type: 'culvert', label: '涵洞', icon: '🔲', color: '#eb2f96', category: 'advanced' },
-    SIDE_WEIR: { type: 'side_weir', label: '侧堰', icon: '⤴️', color: '#faad14', category: 'advanced' },
-    DROP: { type: 'drop', label: '跌水', icon: '⬇️', color: '#2f54eb', category: 'advanced' },
-    
-    // 管网结构
-    JUNCTION: { type: 'junction', label: '节点', icon: '⚫', color: '#595959', category: 'network' },
-    RESERVOIR: { type: 'reservoir', label: '水库', icon: '🌊', color: '#096dd9', category: 'network' },
-    VALVE: { type: 'valve', label: '阀门', icon: '🔧', color: '#d48806', category: 'network' },
+// Structure type key mapping for i18n
+const STRUCTURE_TYPE_KEYS: Record<string, string> = {
+    gate: 'gate',
+    weir: 'weir',
+    pump: 'pump',
+    orifice: 'orifice',
+    bridge: 'bridge',
+    culvert: 'culvert',
+    side_weir: 'sideWeir',
+    drop: 'drop',
+    junction: 'junction',
+    reservoir: 'reservoir',
+    valve: 'valve',
+};
+
+// Structure metadata (non-translatable parts)
+const STRUCTURE_META = {
+    GATE: { type: 'gate', icon: '\u{1F6AA}', color: '#1890ff', category: 'basic' },
+    WEIR: { type: 'weir', icon: '\u26F0\uFE0F', color: '#52c41a', category: 'basic' },
+    PUMP: { type: 'pump', icon: '\u{1F4A7}', color: '#722ed1', category: 'basic' },
+    ORIFICE: { type: 'orifice', icon: '\u2B55', color: '#fa8c16', category: 'basic' },
+    BRIDGE: { type: 'bridge', icon: '\u{1F309}', color: '#13c2c2', category: 'advanced' },
+    CULVERT: { type: 'culvert', icon: '\u{1F532}', color: '#eb2f96', category: 'advanced' },
+    SIDE_WEIR: { type: 'side_weir', icon: '\u2934\uFE0F', color: '#faad14', category: 'advanced' },
+    DROP: { type: 'drop', icon: '\u2B07\uFE0F', color: '#2f54eb', category: 'advanced' },
+    JUNCTION: { type: 'junction', icon: '\u26AB', color: '#595959', category: 'network' },
+    RESERVOIR: { type: 'reservoir', icon: '\u{1F30A}', color: '#096dd9', category: 'network' },
+    VALVE: { type: 'valve', icon: '\u{1F527}', color: '#d48806', category: 'network' },
+};
+
+interface StructureTypeInfo {
+    type: string;
+    label: string;
+    icon: string;
+    color: string;
+    category: string;
+}
+
+// Build translated structure types
+const getStructureTypes = (t: (key: string) => string): Record<string, StructureTypeInfo> => {
+    const result: Record<string, StructureTypeInfo> = {};
+    for (const [key, meta] of Object.entries(STRUCTURE_META)) {
+        const i18nKey = STRUCTURE_TYPE_KEYS[meta.type] || meta.type;
+        result[key] = {
+            ...meta,
+            label: t(`modelBuilder.${i18nKey}`),
+        };
+    }
+    return result;
 };
 
 interface Structure {
@@ -67,12 +97,15 @@ interface EnhancedCanalConfig {
     roughness: number;
     nx: number;
     shape: 'rectangular' | 'trapezoidal' | 'circular';
-    sideSlope?: number; // 梯形渠道边坡
-    diameter?: number;  // 圆形管道直径
+    sideSlope?: number;
+    diameter?: number;
 }
 
 const EnhancedDragModelBuilder: React.FC = () => {
-    // 状态管理
+    const { t } = useTranslation();
+
+    const ALL_STRUCTURE_TYPES = getStructureTypes(t);
+
     const [canalConfig, setCanalConfig] = useState<EnhancedCanalConfig>({
         length: 10000,
         width: 10,
@@ -101,11 +134,10 @@ const EnhancedDragModelBuilder: React.FC = () => {
     const [showConfigModal, setShowConfigModal] = useState(false);
     const [showGridModal, setShowGridModal] = useState(false);
     const [activeCategory, setActiveCategory] = useState<string>('basic');
-    
+
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // 绘制渠道（增强版）
     const drawCanal = useCallback(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -119,16 +151,13 @@ const EnhancedDragModelBuilder: React.FC = () => {
         const canalY = canvas.height / 2 - canalHeight / 2;
         const canalWidth = canvas.width - 100;
 
-        // 根据渠道形状绘制
         if (canalConfig.shape === 'rectangular') {
-            // 矩形渠道
             ctx.fillStyle = '#e6f7ff';
             ctx.fillRect(50, canalY, canalWidth, canalHeight);
             ctx.strokeStyle = '#1890ff';
             ctx.lineWidth = 2;
             ctx.strokeRect(50, canalY, canalWidth, canalHeight);
         } else if (canalConfig.shape === 'trapezoidal') {
-            // 梯形渠道
             ctx.fillStyle = '#e6f7ff';
             ctx.beginPath();
             ctx.moveTo(50, canalY + canalHeight);
@@ -142,7 +171,7 @@ const EnhancedDragModelBuilder: React.FC = () => {
             ctx.stroke();
         }
 
-        // 绘制网格
+        // Draw grid
         const gridSpacing = canalWidth / canalConfig.nx;
         ctx.strokeStyle = '#d9d9d9';
         ctx.lineWidth = 0.5;
@@ -154,44 +183,39 @@ const EnhancedDragModelBuilder: React.FC = () => {
             ctx.stroke();
         }
 
-        // 标注
+        // Labels
         ctx.fillStyle = '#666';
         ctx.font = '12px Arial';
         ctx.fillText('0 m', 45, canalY + canalHeight + 20);
         ctx.fillText(`${canalConfig.length} m`, canvas.width - 95, canalY + canalHeight + 20);
-        ctx.fillText(`网格数: ${canalConfig.nx}`, canvas.width / 2 - 30, canalY - 10);
+        ctx.fillText(t('modelBuilderEnhanced.gridCount', { count: canalConfig.nx }), canvas.width / 2 - 30, canalY - 10);
 
-        // 绘制结构
+        // Draw structures
         structures.forEach((structure) => {
             const posRatio = structure.position / canalConfig.length;
             const x = 50 + canalWidth * posRatio;
             const structureInfo = ALL_STRUCTURE_TYPES[structure.type.toUpperCase() as keyof typeof ALL_STRUCTURE_TYPES];
 
             if (structureInfo) {
-                // 结构主体
                 ctx.fillStyle = structureInfo.color;
                 ctx.fillRect(x - 20, canalY + 10, 40, canalHeight - 20);
                 ctx.strokeStyle = '#000';
                 ctx.lineWidth = 2;
                 ctx.strokeRect(x - 20, canalY + 10, 40, canalHeight - 20);
 
-                // 图标
                 ctx.font = '28px Arial';
                 ctx.fillText(structureInfo.icon, x - 14, canalY + canalHeight / 2 + 10);
 
-                // 标签
                 ctx.font = '11px Arial';
                 ctx.fillStyle = '#000';
                 ctx.fillText(structure.label, x - 25, canalY + canalHeight + 35);
                 ctx.fillText(`${structure.position.toFixed(0)}m`, x - 20, canalY + canalHeight + 47);
 
-                // 分类标签
                 ctx.font = '9px Arial';
                 ctx.fillStyle = '#999';
                 ctx.fillText(`[${structureInfo.category}]`, x - 22, canalY - 2);
             }
 
-            // 高亮选中
             if (selectedStructure?.id === structure.id) {
                 ctx.strokeStyle = '#ff4d4f';
                 ctx.lineWidth = 3;
@@ -199,14 +223,13 @@ const EnhancedDragModelBuilder: React.FC = () => {
             }
         });
 
-        // 流向箭头
+        // Flow direction arrow
         ctx.fillStyle = '#1890ff';
         ctx.font = 'bold 16px Arial';
-        ctx.fillText('→ 流向', canvas.width / 2 - 30, canalY - 25);
+        ctx.fillText(t('modelBuilderEnhanced.flowDirectionArrow'), canvas.width / 2 - 30, canalY - 25);
 
-    }, [canalConfig, structures, selectedStructure]);
+    }, [canalConfig, structures, selectedStructure, t, ALL_STRUCTURE_TYPES]);
 
-    // 其他函数保持不变...
     React.useEffect(() => {
         drawCanal();
     }, [drawCanal]);
@@ -260,7 +283,7 @@ const EnhancedDragModelBuilder: React.FC = () => {
         setStructures([...structures, newStructure]);
         setIsDragging(false);
         setDragType('');
-        message.success(`已添加${structureInfo.label}`);
+        message.success(t('modelBuilder.structureAdded', { name: structureInfo.label }));
     };
 
     const getDefaultParams = (type: string): Record<string, any> => {
@@ -305,7 +328,7 @@ const EnhancedDragModelBuilder: React.FC = () => {
         if (!selectedStructure) return;
         setStructures(structures.filter(s => s.id !== selectedStructure.id));
         setSelectedStructure(null);
-        message.success('已删除结构');
+        message.success(t('modelBuilder.structureDeleted'));
     };
 
     const handleEditStructure = () => {
@@ -321,24 +344,24 @@ const EnhancedDragModelBuilder: React.FC = () => {
         setStructures(updated);
         setSelectedStructure({ ...selectedStructure, params });
         setShowConfigModal(false);
-        message.success('参数已更新');
+        message.success(t('modelBuilder.paramsUpdated'));
     };
 
     const validateConfig = () => {
         const errors = [];
-        
-        if (canalConfig.length <= 0) errors.push('渠道长度必须大于0');
-        if (canalConfig.width <= 0) errors.push('渠道宽度必须大于0');
-        if (canalConfig.slope <= 0) errors.push('底坡必须大于0');
-        if (canalConfig.nx < 10) errors.push('网格数必须至少10个');
-        if (flowConfig.flow_rate <= 0) errors.push('流量必须大于0');
-        
+
+        if (canalConfig.length <= 0) errors.push(t('modelBuilderEnhanced.lengthError'));
+        if (canalConfig.width <= 0) errors.push(t('modelBuilderEnhanced.widthError'));
+        if (canalConfig.slope <= 0) errors.push(t('modelBuilderEnhanced.slopeError'));
+        if (canalConfig.nx < 10) errors.push(t('modelBuilderEnhanced.gridMinError'));
+        if (flowConfig.flow_rate <= 0) errors.push(t('modelBuilderEnhanced.flowRateError'));
+
         if (errors.length > 0) {
             message.error(errors.join('; '));
             return false;
         }
-        
-        message.success('配置验证通过');
+
+        message.success(t('modelBuilderEnhanced.configValidated'));
         return true;
     };
 
@@ -347,7 +370,7 @@ const EnhancedDragModelBuilder: React.FC = () => {
 
         const config = {
             name: 'enhanced_drag_model',
-            description: '增强版拖拽式建模生成的配置',
+            description: t('modelBuilderEnhanced.exportDescription'),
             canal: canalConfig,
             flow: flowConfig,
             boundary_conditions: boundaryConditions,
@@ -376,263 +399,293 @@ const EnhancedDragModelBuilder: React.FC = () => {
         a.download = `canal_model_${Date.now()}.json`;
         a.click();
         URL.revokeObjectURL(url);
-        message.success('配置已导出');
+        message.success(t('modelBuilderEnhanced.configExported'));
     };
 
-    // 按分类筛选结构
     const getStructuresByCategory = (category: string) => {
         return Object.values(ALL_STRUCTURE_TYPES).filter(s => s.category === category);
     };
 
     return (
         <div className="enhanced-drag-model-builder" style={{ padding: 20 }}>
-            <Card title="🎨 增强版拖拽式渠道建模" extra={
+            <Card title={`\u{1F3A8} ${t('modelBuilderEnhanced.title')}`} extra={
                 <Space>
-                    <Tag color="blue">{structures.length} 个结构</Tag>
-                    <Button icon={<CheckCircleOutlined />} onClick={validateConfig}>验证配置</Button>
+                    <Tag color="blue">{t('modelBuilderEnhanced.structureCountTag', { count: structures.length })}</Tag>
+                    <Button icon={<CheckCircleOutlined />} onClick={validateConfig}>{t('modelBuilderEnhanced.validateConfig')}</Button>
                 </Space>
             }>
-                
-                <Tabs defaultActiveKey="canal">
-                    <TabPane tab="渠道配置" key="canal">
-                        <Form layout="vertical">
-                            <Row gutter={16}>
-                                <Col span={6}>
-                                    <Form.Item label="渠道形状">
-                                        <Select 
-                                            value={canalConfig.shape}
-                                            onChange={(val) => setCanalConfig({ ...canalConfig, shape: val })}
-                                        >
-                                            <Option value="rectangular">矩形</Option>
-                                            <Option value="trapezoidal">梯形</Option>
-                                            <Option value="circular">圆形</Option>
-                                        </Select>
-                                    </Form.Item>
-                                </Col>
-                                <Col span={6}>
-                                    <Form.Item label="长度(m)">
-                                        <InputNumber
-                                            value={canalConfig.length}
-                                            onChange={(val) => setCanalConfig({ ...canalConfig, length: val || 10000 })}
-                                            min={100}
-                                            max={100000}
-                                            step={1000}
-                                            style={{ width: '100%' }}
-                                        />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={6}>
-                                    <Form.Item label="宽度(m)">
-                                        <InputNumber
-                                            value={canalConfig.width}
-                                            onChange={(val) => setCanalConfig({ ...canalConfig, width: val || 10 })}
-                                            min={1}
-                                            max={100}
-                                            style={{ width: '100%' }}
-                                        />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={6}>
-                                    <Form.Item label="坡度">
-                                        <InputNumber
-                                            value={canalConfig.slope}
-                                            onChange={(val) => setCanalConfig({ ...canalConfig, slope: val || 0.001 })}
-                                            min={0.0001}
-                                            max={0.1}
-                                            step={0.0001}
-                                            style={{ width: '100%' }}
-                                        />
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                            <Row gutter={16}>
-                                <Col span={6}>
-                                    <Form.Item label="糙率">
-                                        <InputNumber
-                                            value={canalConfig.roughness}
-                                            onChange={(val) => setCanalConfig({ ...canalConfig, roughness: val || 0.025 })}
-                                            min={0.01}
-                                            max={0.1}
-                                            step={0.001}
-                                            style={{ width: '100%' }}
-                                        />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={6}>
-                                    <Form.Item label="网格数">
-                                        <InputNumber
-                                            value={canalConfig.nx}
-                                            onChange={(val) => setCanalConfig({ ...canalConfig, nx: val || 500 })}
-                                            min={10}
-                                            max={10000}
-                                            step={10}
-                                            style={{ width: '100%' }}
-                                        />
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                        </Form>
-                    </TabPane>
-                    
-                    <TabPane tab="流量配置" key="flow">
-                        <Form layout="vertical">
-                            <Row gutter={16}>
-                                <Col span={8}>
-                                    <Form.Item label="流量(m³/s)">
-                                        <InputNumber
-                                            value={flowConfig.flow_rate}
-                                            onChange={(val) => setFlowConfig({ ...flowConfig, flow_rate: val || 50 })}
-                                            min={0.1}
-                                            max={1000}
-                                            style={{ width: '100%' }}
-                                        />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={8}>
-                                    <Form.Item label="类型">
-                                        <Select
-                                            value={flowConfig.type}
-                                            onChange={(val) => setFlowConfig({ ...flowConfig, type: val })}
-                                        >
-                                            <Option value="steady">稳态</Option>
-                                            <Option value="unsteady">非稳态</Option>
-                                        </Select>
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                        </Form>
-                    </TabPane>
-                    
-                    <TabPane tab="边界条件" key="boundary">
-                        <Collapse>
-                            {boundaryConditions.map((bc, idx) => (
-                                <Panel header={`${bc.type === 'upstream' ? '上游' : '下游'}边界`} key={idx}>
-                                    <Form layout="inline">
-                                        <Form.Item label="条件类型">
-                                            <Select
-                                                value={bc.condition}
-                                                onChange={(val) => {
-                                                    const updated = [...boundaryConditions];
-                                                    updated[idx].condition = val;
-                                                    setBoundaryConditions(updated);
-                                                }}
-                                                style={{ width: 120 }}
-                                            >
-                                                <Option value="flow">流量</Option>
-                                                <Option value="depth">水深</Option>
-                                                <Option value="stage">水位</Option>
-                                            </Select>
-                                        </Form.Item>
-                                        <Form.Item label="值">
-                                            <InputNumber
-                                                value={bc.value}
-                                                onChange={(val) => {
-                                                    const updated = [...boundaryConditions];
-                                                    updated[idx].value = val || 0;
-                                                    setBoundaryConditions(updated);
-                                                }}
-                                            />
-                                        </Form.Item>
-                                    </Form>
-                                </Panel>
-                            ))}
-                        </Collapse>
-                    </TabPane>
-                </Tabs>
+
+                <Tabs
+                    defaultActiveKey="canal"
+                    items={[
+                        {
+                            key: 'canal',
+                            label: t('modelBuilderEnhanced.canalConfig'),
+                            children: (
+                                <Form layout="vertical">
+                                    <Row gutter={16}>
+                                        <Col span={6}>
+                                            <Form.Item label={t('modelBuilderEnhanced.canalShape')}>
+                                                <Select
+                                                    value={canalConfig.shape}
+                                                    onChange={(val) => setCanalConfig({ ...canalConfig, shape: val })}
+                                                >
+                                                    <Option value="rectangular">{t('modelBuilderEnhanced.rectangular')}</Option>
+                                                    <Option value="trapezoidal">{t('modelBuilderEnhanced.trapezoidal')}</Option>
+                                                    <Option value="circular">{t('modelBuilderEnhanced.circular')}</Option>
+                                                </Select>
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={6}>
+                                            <Form.Item label={t('modelBuilder.lengthM')}>
+                                                <InputNumber
+                                                    value={canalConfig.length}
+                                                    onChange={(val) => setCanalConfig({ ...canalConfig, length: val || 10000 })}
+                                                    min={100}
+                                                    max={100000}
+                                                    step={1000}
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={6}>
+                                            <Form.Item label={t('modelBuilder.widthM')}>
+                                                <InputNumber
+                                                    value={canalConfig.width}
+                                                    onChange={(val) => setCanalConfig({ ...canalConfig, width: val || 10 })}
+                                                    min={1}
+                                                    max={100}
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={6}>
+                                            <Form.Item label={t('modelBuilder.slope')}>
+                                                <InputNumber
+                                                    value={canalConfig.slope}
+                                                    onChange={(val) => setCanalConfig({ ...canalConfig, slope: val || 0.001 })}
+                                                    min={0.0001}
+                                                    max={0.1}
+                                                    step={0.0001}
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
+                                    <Row gutter={16}>
+                                        <Col span={6}>
+                                            <Form.Item label={t('modelBuilder.roughness')}>
+                                                <InputNumber
+                                                    value={canalConfig.roughness}
+                                                    onChange={(val) => setCanalConfig({ ...canalConfig, roughness: val || 0.025 })}
+                                                    min={0.01}
+                                                    max={0.1}
+                                                    step={0.001}
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={6}>
+                                            <Form.Item label={t('modelBuilderEnhanced.gridNodes')}>
+                                                <InputNumber
+                                                    value={canalConfig.nx}
+                                                    onChange={(val) => setCanalConfig({ ...canalConfig, nx: val || 500 })}
+                                                    min={10}
+                                                    max={10000}
+                                                    step={10}
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            ),
+                        },
+                        {
+                            key: 'flow',
+                            label: t('modelBuilderEnhanced.flowConfig'),
+                            children: (
+                                <Form layout="vertical">
+                                    <Row gutter={16}>
+                                        <Col span={8}>
+                                            <Form.Item label={t('modelBuilder.flowRateM3s')}>
+                                                <InputNumber
+                                                    value={flowConfig.flow_rate}
+                                                    onChange={(val) => setFlowConfig({ ...flowConfig, flow_rate: val || 50 })}
+                                                    min={0.1}
+                                                    max={1000}
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={8}>
+                                            <Form.Item label={t('modelBuilderEnhanced.flowType')}>
+                                                <Select
+                                                    value={flowConfig.type}
+                                                    onChange={(val) => setFlowConfig({ ...flowConfig, type: val })}
+                                                >
+                                                    <Option value="steady">{t('modelBuilder.steady')}</Option>
+                                                    <Option value="unsteady">{t('modelBuilder.unsteady')}</Option>
+                                                </Select>
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            ),
+                        },
+                        {
+                            key: 'boundary',
+                            label: t('modelBuilderEnhanced.boundaryConditions'),
+                            children: (
+                                <Collapse
+                                    items={boundaryConditions.map((bc, idx) => ({
+                                        key: String(idx),
+                                        label: bc.type === 'upstream' ? t('modelBuilderEnhanced.upstreamBoundary') : t('modelBuilderEnhanced.downstreamBoundary'),
+                                        children: (
+                                            <Form layout="inline">
+                                                <Form.Item label={t('modelBuilderEnhanced.conditionType')}>
+                                                    <Select
+                                                        value={bc.condition}
+                                                        onChange={(val) => {
+                                                            const updated = [...boundaryConditions];
+                                                            updated[idx].condition = val;
+                                                            setBoundaryConditions(updated);
+                                                        }}
+                                                        style={{ width: 120 }}
+                                                    >
+                                                        <Option value="flow">{t('modelBuilderEnhanced.flow')}</Option>
+                                                        <Option value="depth">{t('modelBuilderEnhanced.depth')}</Option>
+                                                        <Option value="stage">{t('modelBuilderEnhanced.stage')}</Option>
+                                                    </Select>
+                                                </Form.Item>
+                                                <Form.Item label={t('modelBuilderEnhanced.value')}>
+                                                    <InputNumber
+                                                        value={bc.value}
+                                                        onChange={(val) => {
+                                                            const updated = [...boundaryConditions];
+                                                            updated[idx].value = val || 0;
+                                                            setBoundaryConditions(updated);
+                                                        }}
+                                                    />
+                                                </Form.Item>
+                                            </Form>
+                                        ),
+                                    }))}
+                                />
+                            ),
+                        },
+                    ]}
+                />
             </Card>
 
-            {/* 结构工具箱 */}
-            <Card title="🧰 水工结构工具箱 (11种类型)" style={{ marginTop: 20 }}>
-                <Tabs activeKey={activeCategory} onChange={setActiveCategory}>
-                    <TabPane tab="基础结构" key="basic">
-                        <Space size="large" wrap>
-                            {getStructuresByCategory('basic').map((structure) => (
-                                <div
-                                    key={structure.type}
-                                    className="structure-tool"
-                                    draggable
-                                    onDragStart={() => handleDragStart(structure.type)}
-                                    style={{
-                                        padding: '12px 24px',
-                                        border: `2px solid ${structure.color}`,
-                                        borderRadius: '8px',
-                                        cursor: 'grab',
-                                        backgroundColor: '#fafafa',
-                                        minWidth: '100px',
-                                        textAlign: 'center',
-                                    }}
-                                >
-                                    <div style={{ fontSize: '28px' }}>{structure.icon}</div>
-                                    <div style={{ fontSize: '13px', marginTop: 4 }}>{structure.label}</div>
-                                </div>
-                            ))}
-                        </Space>
-                    </TabPane>
-                    <TabPane tab="进阶结构" key="advanced">
-                        <Space size="large" wrap>
-                            {getStructuresByCategory('advanced').map((structure) => (
-                                <div
-                                    key={structure.type}
-                                    className="structure-tool"
-                                    draggable
-                                    onDragStart={() => handleDragStart(structure.type)}
-                                    style={{
-                                        padding: '12px 24px',
-                                        border: `2px solid ${structure.color}`,
-                                        borderRadius: '8px',
-                                        cursor: 'grab',
-                                        backgroundColor: '#fafafa',
-                                        minWidth: '100px',
-                                        textAlign: 'center',
-                                    }}
-                                >
-                                    <div style={{ fontSize: '28px' }}>{structure.icon}</div>
-                                    <div style={{ fontSize: '13px', marginTop: 4 }}>{structure.label}</div>
-                                </div>
-                            ))}
-                        </Space>
-                    </TabPane>
-                    <TabPane tab="管网结构" key="network">
-                        <Space size="large" wrap>
-                            {getStructuresByCategory('network').map((structure) => (
-                                <div
-                                    key={structure.type}
-                                    className="structure-tool"
-                                    draggable
-                                    onDragStart={() => handleDragStart(structure.type)}
-                                    style={{
-                                        padding: '12px 24px',
-                                        border: `2px solid ${structure.color}`,
-                                        borderRadius: '8px',
-                                        cursor: 'grab',
-                                        backgroundColor: '#fafafa',
-                                        minWidth: '100px',
-                                        textAlign: 'center',
-                                    }}
-                                >
-                                    <div style={{ fontSize: '28px' }}>{structure.icon}</div>
-                                    <div style={{ fontSize: '13px', marginTop: 4 }}>{structure.label}</div>
-                                </div>
-                            ))}
-                        </Space>
-                    </TabPane>
-                </Tabs>
+            {/* Structure Toolbox */}
+            <Card title={`\u{1F9F0} ${t('modelBuilderEnhanced.toolboxTitle', { count: 11 })}`} style={{ marginTop: 20 }}>
+                <Tabs
+                    activeKey={activeCategory}
+                    onChange={setActiveCategory}
+                    items={[
+                        {
+                            key: 'basic',
+                            label: t('modelBuilderEnhanced.categoryBasic'),
+                            children: (
+                                <Space size="large" wrap>
+                                    {getStructuresByCategory('basic').map((structure) => (
+                                        <div
+                                            key={structure.type}
+                                            className="structure-tool"
+                                            draggable
+                                            onDragStart={() => handleDragStart(structure.type)}
+                                            style={{
+                                                padding: '12px 24px',
+                                                border: `2px solid ${structure.color}`,
+                                                borderRadius: '8px',
+                                                cursor: 'grab',
+                                                backgroundColor: '#fafafa',
+                                                minWidth: '100px',
+                                                textAlign: 'center',
+                                            }}
+                                        >
+                                            <div style={{ fontSize: '28px' }}>{structure.icon}</div>
+                                            <div style={{ fontSize: '13px', marginTop: 4 }}>{structure.label}</div>
+                                        </div>
+                                    ))}
+                                </Space>
+                            ),
+                        },
+                        {
+                            key: 'advanced',
+                            label: t('modelBuilderEnhanced.categoryAdvanced'),
+                            children: (
+                                <Space size="large" wrap>
+                                    {getStructuresByCategory('advanced').map((structure) => (
+                                        <div
+                                            key={structure.type}
+                                            className="structure-tool"
+                                            draggable
+                                            onDragStart={() => handleDragStart(structure.type)}
+                                            style={{
+                                                padding: '12px 24px',
+                                                border: `2px solid ${structure.color}`,
+                                                borderRadius: '8px',
+                                                cursor: 'grab',
+                                                backgroundColor: '#fafafa',
+                                                minWidth: '100px',
+                                                textAlign: 'center',
+                                            }}
+                                        >
+                                            <div style={{ fontSize: '28px' }}>{structure.icon}</div>
+                                            <div style={{ fontSize: '13px', marginTop: 4 }}>{structure.label}</div>
+                                        </div>
+                                    ))}
+                                </Space>
+                            ),
+                        },
+                        {
+                            key: 'network',
+                            label: t('modelBuilderEnhanced.categoryNetwork'),
+                            children: (
+                                <Space size="large" wrap>
+                                    {getStructuresByCategory('network').map((structure) => (
+                                        <div
+                                            key={structure.type}
+                                            className="structure-tool"
+                                            draggable
+                                            onDragStart={() => handleDragStart(structure.type)}
+                                            style={{
+                                                padding: '12px 24px',
+                                                border: `2px solid ${structure.color}`,
+                                                borderRadius: '8px',
+                                                cursor: 'grab',
+                                                backgroundColor: '#fafafa',
+                                                minWidth: '100px',
+                                                textAlign: 'center',
+                                            }}
+                                        >
+                                            <div style={{ fontSize: '28px' }}>{structure.icon}</div>
+                                            <div style={{ fontSize: '13px', marginTop: 4 }}>{structure.label}</div>
+                                        </div>
+                                    ))}
+                                </Space>
+                            ),
+                        },
+                    ]}
+                />
                 <div style={{ marginTop: 15, padding: '10px', background: '#f0f2f5', borderRadius: '4px' }}>
                     <Space>
                         <span style={{ color: '#666', fontSize: '13px' }}>
-                            💡 提示: 拖拽水工结构到下方渠道进行建模
+                            {`\u{1F4A1} ${t('modelBuilderEnhanced.dragTip')}`}
                         </span>
                         <Divider type="vertical" />
                         <span style={{ color: '#1890ff', fontSize: '13px' }}>
-                            已支持: 11种结构类型 | 3种渠道形状 | 边界条件配置
+                            {t('modelBuilderEnhanced.supportedInfo', { structureCount: 11, shapeCount: 3 })}
                         </span>
                     </Space>
                 </div>
             </Card>
 
-            {/* 渠道画布 */}
+            {/* Canal Canvas */}
             <Card
-                title="🏞️ 渠道可视化建模"
+                title={`\u{1F3DE}\uFE0F ${t('modelBuilderEnhanced.visualizationTitle')}`}
                 style={{ marginTop: 20 }}
                 extra={
                     <Space>
@@ -644,7 +697,7 @@ const EnhancedDragModelBuilder: React.FC = () => {
                                     onClick={handleEditStructure}
                                     size="small"
                                 >
-                                    编辑
+                                    {t('modelBuilderEnhanced.editBtn')}
                                 </Button>
                                 <Button
                                     danger
@@ -652,7 +705,7 @@ const EnhancedDragModelBuilder: React.FC = () => {
                                     onClick={handleDeleteStructure}
                                     size="small"
                                 >
-                                    删除
+                                    {t('modelBuilderEnhanced.deleteBtn')}
                                 </Button>
                             </>
                         )}
@@ -661,7 +714,7 @@ const EnhancedDragModelBuilder: React.FC = () => {
                             icon={<EyeOutlined />}
                             onClick={() => setShowGridModal(true)}
                         >
-                            网格预览
+                            {t('modelBuilderEnhanced.gridPreview')}
                         </Button>
                         <Button
                             type="primary"
@@ -669,7 +722,7 @@ const EnhancedDragModelBuilder: React.FC = () => {
                             onClick={handleExportConfig}
                             disabled={structures.length === 0}
                         >
-                            导出配置
+                            {t('modelBuilderEnhanced.exportConfig')}
                         </Button>
                     </Space>
                 }
@@ -680,9 +733,11 @@ const EnhancedDragModelBuilder: React.FC = () => {
                         onClick={handleCanvasClick}
                         onDrop={handleDrop}
                         onDragOver={handleDragOver}
-                        style={{ 
-                            border: '2px solid #d9d9d9', 
-                            borderRadius: '6px', 
+                        aria-label={t('modelBuilderEnhanced.visualizationTitle')}
+                        role="img"
+                        style={{
+                            border: '2px solid #d9d9d9',
+                            borderRadius: '6px',
                             cursor: 'pointer',
                             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                         }}
@@ -691,24 +746,23 @@ const EnhancedDragModelBuilder: React.FC = () => {
                 <div style={{ marginTop: 15, padding: '10px', background: '#f6ffed', border: '1px solid #b7eb8f', borderRadius: '4px' }}>
                     <Space split={<Divider type="vertical" />}>
                         <span>
-                            <strong>已添加:</strong> {structures.length} 个结构
+                            {t('modelBuilderEnhanced.structuresAdded', { count: structures.length })}
                         </span>
                         {selectedStructure && (
                             <span style={{ color: '#1890ff' }}>
-                                <strong>已选中:</strong> {selectedStructure.label} 
-                                (位置: {selectedStructure.position}m, 类型: {selectedStructure.category})
+                                {t('modelBuilderEnhanced.selectedInfo', { name: selectedStructure.label, position: selectedStructure.position, category: selectedStructure.category })}
                             </span>
                         )}
                         <span>
-                            <strong>渠道:</strong> {canalConfig.shape} | {canalConfig.length}m × {canalConfig.width}m
+                            {t('modelBuilderEnhanced.canalInfo', { shape: canalConfig.shape, length: canalConfig.length, width: canalConfig.width })}
                         </span>
                     </Space>
                 </div>
             </Card>
 
-            {/* 参数编辑模态框 */}
+            {/* Parameter Edit Modal */}
             <Modal
-                title={`编辑 ${selectedStructure?.label}`}
+                title={t('modelBuilder.editStructure', { name: selectedStructure?.label })}
                 open={showConfigModal}
                 onCancel={() => setShowConfigModal(false)}
                 onOk={() => {
@@ -739,22 +793,21 @@ const EnhancedDragModelBuilder: React.FC = () => {
                 )}
             </Modal>
 
-            {/* 网格预览模态框 */}
+            {/* Grid Preview Modal */}
             <Modal
-                title="网格划分预览"
+                title={t('modelBuilderEnhanced.gridPreviewTitle')}
                 open={showGridModal}
                 onCancel={() => setShowGridModal(false)}
                 footer={null}
                 width={800}
             >
                 <div style={{ padding: 20 }}>
-                    <p><strong>网格数:</strong> {canalConfig.nx}</p>
-                    <p><strong>网格间距:</strong> {(canalConfig.length / canalConfig.nx).toFixed(2)} m</p>
-                    <p><strong>时间步长:</strong> {flowConfig.time_step} s (如果是非稳态)</p>
+                    <p><strong>{t('modelBuilderEnhanced.gridCount', { count: canalConfig.nx })}</strong></p>
+                    <p><strong>{t('modelBuilderEnhanced.gridSpacing')}</strong> {(canalConfig.length / canalConfig.nx).toFixed(2)} m</p>
+                    <p><strong>{t('modelBuilderEnhanced.timeStep')}</strong> {flowConfig.time_step} s {t('modelBuilderEnhanced.timeStepSuffix')}</p>
                     <div style={{ marginTop: 20, padding: 15, background: '#f0f2f5', borderRadius: 4 }}>
                         <p style={{ margin: 0, color: '#666' }}>
-                            💡 网格数越多，计算精度越高，但计算时间也越长。
-                            建议: 简单场景 100-500，复杂场景 500-2000。
+                            {`\u{1F4A1} ${t('modelBuilderEnhanced.gridTip')}`}
                         </p>
                     </div>
                 </div>

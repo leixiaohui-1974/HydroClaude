@@ -142,7 +142,7 @@ class SteadyProfileSolver:
 
                 try:
                     h[i] = fsolve(residual, h_init)[0]
-                except:
+                except Exception:
                     # Euler
                     h[i] = h[i+1] + dx * self.dh_dx(h[i+1], Q)
 
@@ -223,7 +223,7 @@ class SteadyProfileSolver:
         try:
             # Brent
             h_gate_up = brentq(gate_equation, h_gate_down, h_gate_down + 5.0)
-        except:
+        except Exception:
             # fsolve
             h_gate_up = fsolve(gate_equation, h_up_init)[0]
 
@@ -363,7 +363,7 @@ class SteadyProfileSolver:
 
                 try:
                     h_up_new = brentq(gate_eq, h_down, h_down + 5.0)
-                except:
+                except Exception:
                     h_up_new = fsolve(gate_eq, h_gates_up[i])[0]
 
                 change = abs(h_up_new - h_gates_up[i])

@@ -14,18 +14,19 @@ import numpy as np
 import warnings
 warnings.filterwarnings("ignore")
 import sys
+import pytest
 import os
 sys.path.insert(0, os.path.abspath('.'))
+
+pytestmark = [pytest.mark.slow, pytest.mark.solver]
 
 try:
     from solvers.godunov_fvm_solver import GodunvFVMSolver
 except ImportError as e:
-    print(f"Import error: {e}")
-    print("Make sure project root is in sys.path")
-    sys.exit(1)
+    pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 
 
-def test_boundary_relaxation(relaxation_factor, max_steps=10):
+def _run_boundary_relaxation(relaxation_factor, max_steps=10):
     """
     测试特定relaxation_factor下的精确求解器
 
@@ -172,6 +173,19 @@ def test_boundary_relaxation(relaxation_factor, max_steps=10):
 
     return results
 
+@pytest.mark.timeout(300)
+def test_boundary_relaxation_strategies():
+    """Pytest-compatible test: verify at least one relaxation factor completes without crashing."""
+    test_factors = [0.5, 0.8, 1.0]
+    any_passed = False
+    for rf in test_factors:
+        results = _run_boundary_relaxation(rf, max_steps=10)
+        if not results['crashed']:
+            any_passed = True
+            break
+    assert any_passed, "All relaxation factor strategies crashed"
+
+
 def main():
     """主测试函数"""
     print("=" * 80)
@@ -193,7 +207,7 @@ def main():
         print(f"测试: {name} (relaxation_factor={rf})")
         print("=" * 80)
 
-        results = test_boundary_relaxation(rf, max_steps=10)
+        results = _run_boundary_relaxation(rf, max_steps=10)
         all_results.append(results)
 
         # 打印结果

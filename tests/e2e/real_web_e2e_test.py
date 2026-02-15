@@ -23,8 +23,8 @@ try:
     from playwright.async_api import async_playwright, Page, Browser
     PLAYWRIGHT_AVAILABLE = True
 except ImportError:
-    PLAYWRIGHT_AVAILABLE = False
-    print("⚠️  Playwright未安装，请运行: pip install playwright && playwright install")
+    import pytest
+    pytest.skip("playwright not installed", allow_module_level=True)
 
 
 class RealWebE2ETester:
