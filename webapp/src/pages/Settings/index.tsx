@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Card, Typography, Form, Input, Button, Space, Switch, Select, message } from 'antd';
 import { SettingOutlined, LockOutlined, GlobalOutlined, BellOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -6,10 +6,38 @@ import api from '@/services/api';
 
 const { Title, Paragraph } = Typography;
 
+const NOTIFICATION_STORAGE_KEY = 'hydroclaude-notification-settings';
+
+interface NotificationSettings {
+  notifyComplete: boolean;
+  notifyFailed: boolean;
+  notifyEmail: boolean;
+}
+
+const DEFAULT_NOTIFICATIONS: NotificationSettings = {
+  notifyComplete: true,
+  notifyFailed: true,
+  notifyEmail: false,
+};
+
+function loadNotificationSettings(): NotificationSettings {
+  try {
+    const raw = localStorage.getItem(NOTIFICATION_STORAGE_KEY);
+    if (raw) return { ...DEFAULT_NOTIFICATIONS, ...JSON.parse(raw) };
+  } catch { /* ignore parse errors */ }
+  return { ...DEFAULT_NOTIFICATIONS };
+}
+
 const SettingsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [passwordForm] = Form.useForm();
   const [changingPassword, setChangingPassword] = useState(false);
+  const [notifications, setNotifications] = useState<NotificationSettings>(loadNotificationSettings);
+
+  const saveNotifications = useCallback((updated: NotificationSettings) => {
+    setNotifications(updated);
+    localStorage.setItem(NOTIFICATION_STORAGE_KEY, JSON.stringify(updated));
+  }, []);
 
   const handleChangePassword = async (values: any) => {
     setChangingPassword(true);
@@ -60,15 +88,24 @@ const SettingsPage: React.FC = () => {
       <Card title={<><BellOutlined /> {t('settings.notifications', 'Notifications')}</>} style={{ marginBottom: 24 }}>
         <Space direction="vertical" style={{ width: '100%' }}>
           <Space>
-            <Switch defaultChecked />
+            <Switch
+              checked={notifications.notifyComplete}
+              onChange={(v) => saveNotifications({ ...notifications, notifyComplete: v })}
+            />
             <span>{t('settings.notifyComplete', 'Notify when simulation completes')}</span>
           </Space>
           <Space>
-            <Switch defaultChecked />
+            <Switch
+              checked={notifications.notifyFailed}
+              onChange={(v) => saveNotifications({ ...notifications, notifyFailed: v })}
+            />
             <span>{t('settings.notifyFailed', 'Notify when simulation fails')}</span>
           </Space>
           <Space>
-            <Switch />
+            <Switch
+              checked={notifications.notifyEmail}
+              onChange={(v) => saveNotifications({ ...notifications, notifyEmail: v })}
+            />
             <span>{t('settings.notifyEmail', 'Send email notifications')}</span>
           </Space>
         </Space>
