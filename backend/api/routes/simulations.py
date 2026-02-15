@@ -30,6 +30,11 @@ def _run_simulation(job_id: int, db_url: str):
     Uses an independent DB session and dispatches to the appropriate solver
     via the multi-physics simulation dispatcher.
     """
+    import os, sys as _sys
+    _proj = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    if _proj not in _sys.path:
+        _sys.path.insert(0, _proj)
+
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker
     from .simulation_dispatcher import dispatch

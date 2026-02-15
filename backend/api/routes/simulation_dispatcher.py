@@ -9,6 +9,11 @@ Supports:
     - ice_simulation: Ice cover formation, frazil ice, ice jam
     - coupled_ice_wq: Coupled ice + water quality multi-process
     - water_hammer: Method of Characteristics for transient pipe flow
+    - pipe_network: Steady-state pipe network hydraulics (Hardy-Cross / Newton-Raphson)
+    - pipe_network_pdd: Pressure-Driven Demand analysis for pipe networks
+    - network_wq: Water quality transport in pressurized pipe networks
+    - network_optimization: Genetic Algorithm pipe sizing optimization
+    - extended_period: Extended Period Simulation (EPS) with demand patterns
 """
 
 import logging
@@ -579,6 +584,757 @@ def _run_water_hammer(config: dict, progress_cb=None) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# 7. Pipe network steady-state hydraulics (Hardy-Cross / Newton-Raphson)
+# ---------------------------------------------------------------------------
+def _create_network_solver(topo, config: dict, max_iter_override=None, tol_override=None):
+    """Create the appropriate network solver based on config."""
+    solver_cfg = config.get("solver", {})
+    method = solver_cfg.get("method", "hardy_cross")
+    max_iter = max_iter_override or solver_cfg.get("max_iter", 100)
+    tol = tol_override or solver_cfg.get("tol", 1e-6)
+
+    if method == "newton_raphson":
+        from solvers.newton_raphson_network_solver import NewtonRaphsonNetworkSolver
+        return NewtonRaphsonNetworkSolver(
+            network=topo,
+            max_iter=max_iter,
+            tol=tol,
+            damping_factor=solver_cfg.get("damping_factor", 0.5),
+            adaptive_damping=solver_cfg.get("adaptive_damping", True),
+            use_hardy_cross_init=solver_cfg.get("use_hardy_cross_init", False),
+            verbose=False,
+        )
+    else:
+        from solvers.hardy_cross_solver import HardyCrossSolver
+        return HardyCrossSolver(
+            network=topo,
+            max_iter=max_iter,
+            tol=tol,
+            relaxation_factor=solver_cfg.get("relaxation_factor", 1.0),
+            verbose=False,
+        )
+
+
+def _build_network(config: dict):
+    """Build a NetworkTopology from JSON config."""
+    # Ensure project root is in sys.path for background threads
+    if _project_root not in sys.path:
+        sys.path.insert(0, _project_root)
+
+    from network.network_topology import NetworkTopology
+    from network.network_node import NetworkNode
+    from network.pressure_pipe import PressurePipe
+
+    net_cfg = config.get("network", {})
+    topo = NetworkTopology(name=net_cfg.get("name", "API Network"))
+
+    for nd in net_cfg.get("nodes", []):
+        node = NetworkNode(
+            node_id=nd["id"],
+            node_type=nd.get("type", "junction"),
+            elevation=nd.get("elevation", 0.0),
+            demand=nd.get("demand", 0.0),
+            initial_head=nd.get("head"),
+            min_pressure=nd.get("min_pressure", 0.0),
+            required_pressure=nd.get("required_pressure", 20.0),
+        )
+        topo.add_node(node)
+
+    for pp in net_cfg.get("pipes", []):
+        pipe = PressurePipe(
+            pipe_id=pp["id"],
+            diameter=pp.get("diameter", 0.3),
+            length=pp.get("length", 500.0),
+            roughness=pp.get("roughness", 0.001),
+            formula=pp.get("formula", "darcy"),
+            K_minor=pp.get("K_minor", 0.0),
+        )
+        topo.add_pipe(pipe, pp["from"], pp["to"])
+
+    return topo
+
+
+@_register("pipe_network")
+def _run_pipe_network(config: dict, progress_cb=None) -> dict:
+    """Steady-state pipe network hydraulic analysis."""
+    solver_cfg = config.get("solver", {})
+    method = solver_cfg.get("method", "newton_raphson")
+
+    topo = _build_network(config)
+
+    if progress_cb:
+        progress_cb(10.0)
+
+    solver = _create_network_solver(topo, config)
+
+    if progress_cb:
+        progress_cb(30.0)
+
+    flows, heads = solver.solve()
+
+    if progress_cb:
+        progress_cb(90.0)
+
+    # Compute derived quantities
+    net_cfg = config.get("network", {})
+    pipes_info = {}
+    for pp in net_cfg.get("pipes", []):
+        pid = pp["id"]
+        Q = flows.get(pid, 0.0)
+        D = pp.get("diameter", 0.3)
+        A = np.pi * D**2 / 4
+        v = abs(Q) / A if A > 0 else 0.0
+        pipes_info[pid] = {"Q": Q, "velocity": v, "diameter": D}
+
+    # Pressure at junctions
+    pressures = {}
+    for nd in net_cfg.get("nodes", []):
+        nid = nd["id"]
+        if nid in heads:
+            pressures[nid] = heads[nid] - nd.get("elevation", 0.0)
+
+    min_pressure = min(pressures.values()) if pressures else 0.0
+
+    return {
+        "summary": {
+            "simulation_type": "pipe_network",
+            "solver_method": method,
+            "converged": solver.converged,
+            "iterations": solver.iteration_count,
+            "num_nodes": len(topo.nodes),
+            "num_pipes": len(topo.pipes),
+            "min_pressure": float(min_pressure),
+            "max_velocity": float(max((p["velocity"] for p in pipes_info.values()), default=0.0)),
+            "total_demand": float(sum(nd.get("demand", 0.0) for nd in net_cfg.get("nodes", []))),
+            "stable": solver.converged,
+        },
+        "time_series": {
+            "flows": {k: float(v) for k, v in flows.items()},
+            "heads": {k: float(v) for k, v in heads.items()},
+            "pressures": {k: float(v) for k, v in pressures.items()},
+            "pipes": {k: {kk: float(vv) for kk, vv in v.items()} for k, v in pipes_info.items()},
+        },
+        "solver_metadata": {
+            "solver": method,
+            "iterations": solver.iteration_count,
+            "converged": solver.converged,
+            "num_loops": topo.num_loops if hasattr(topo, "num_loops") else 0,
+        },
+    }
+
+
+# ---------------------------------------------------------------------------
+# 8. Pressure-Driven Demand (PDD) analysis
+# ---------------------------------------------------------------------------
+@_register("pipe_network_pdd")
+def _run_pipe_network_pdd(config: dict, progress_cb=None) -> dict:
+    """
+    Pressure-Driven Demand analysis.
+
+    Uses the Wagner formula: Q_actual = Q_base * ((P - P_min) / (P_req - P_min))^0.5
+    where P_min = minimum serviceable pressure, P_req = required pressure.
+    Iterates until demand-pressure equilibrium is reached.
+    """
+    solver_cfg = config.get("solver", {})
+    pdd_cfg = config.get("pdd", {})
+    P_min = pdd_cfg.get("min_pressure", 0.0)
+    P_req = pdd_cfg.get("required_pressure", 20.0)
+    pdd_max_iter = pdd_cfg.get("max_iter", 30)
+    pdd_tol = pdd_cfg.get("tol", 0.001)
+
+    net_cfg = config.get("network", {})
+    base_demands = {nd["id"]: nd.get("demand", 0.0) for nd in net_cfg.get("nodes", [])}
+
+    if progress_cb:
+        progress_cb(5.0)
+
+    pdd_iteration = 0
+    demand_converged = False
+    current_demands = dict(base_demands)
+    prev_demands = {}
+    pdd_history = []
+
+    while pdd_iteration < pdd_max_iter and not demand_converged:
+        # Update demands in config
+        for nd in net_cfg["nodes"]:
+            nd["demand"] = current_demands[nd["id"]]
+        config["network"] = net_cfg
+
+        # Solve hydraulics
+        topo = _build_network(config)
+        solver = _create_network_solver(topo, config)
+        flows, heads = solver.solve()
+
+        # Compute pressures and update demands (Wagner formula)
+        pressures = {}
+        for nd in net_cfg.get("nodes", []):
+            nid = nd["id"]
+            if nid in heads:
+                pressures[nid] = heads[nid] - nd.get("elevation", 0.0)
+
+        prev_demands = dict(current_demands)
+        for nid, base_d in base_demands.items():
+            if base_d <= 0 or nid not in pressures:
+                continue
+            P = pressures[nid]
+            if P <= P_min:
+                current_demands[nid] = 0.0
+            elif P >= P_req:
+                current_demands[nid] = base_d
+            else:
+                ratio = (P - P_min) / (P_req - P_min)
+                current_demands[nid] = base_d * float(np.sqrt(max(ratio, 0.0)))
+
+        # Check convergence
+        max_diff = max(
+            abs(current_demands[nid] - prev_demands.get(nid, 0.0))
+            for nid in base_demands if base_demands[nid] > 0
+        ) if any(base_demands[nid] > 0 for nid in base_demands) else 0.0
+
+        pdd_iteration += 1
+        pdd_history.append({
+            "iteration": pdd_iteration,
+            "max_demand_diff": float(max_diff),
+            "total_actual_demand": float(sum(current_demands[nid] for nid in current_demands if base_demands[nid] > 0)),
+        })
+
+        if max_diff < pdd_tol:
+            demand_converged = True
+
+        if progress_cb:
+            progress_cb(min(10 + 80 * pdd_iteration / pdd_max_iter, 90.0))
+
+    # Compute demand satisfaction ratio
+    total_base = sum(d for d in base_demands.values() if d > 0)
+    total_actual = sum(current_demands[nid] for nid in current_demands if base_demands[nid] > 0)
+    satisfaction = total_actual / total_base if total_base > 0 else 1.0
+
+    # Deficit nodes
+    deficit_nodes = []
+    for nid, base_d in base_demands.items():
+        if base_d > 0 and current_demands[nid] < base_d * 0.99:
+            deficit_nodes.append({
+                "node_id": nid,
+                "base_demand": base_d,
+                "actual_demand": current_demands[nid],
+                "pressure": pressures.get(nid, 0.0),
+                "deficit_percent": (1 - current_demands[nid] / base_d) * 100 if base_d > 0 else 0,
+            })
+
+    return {
+        "summary": {
+            "simulation_type": "pipe_network_pdd",
+            "pdd_converged": demand_converged,
+            "pdd_iterations": pdd_iteration,
+            "hydraulic_converged": solver.converged,
+            "demand_satisfaction": float(satisfaction * 100),
+            "total_base_demand": float(total_base),
+            "total_actual_demand": float(total_actual),
+            "num_deficit_nodes": len(deficit_nodes),
+            "min_pressure": float(min(pressures.values()) if pressures else 0.0),
+            "stable": demand_converged and solver.converged,
+        },
+        "time_series": {
+            "flows": {k: float(v) for k, v in flows.items()},
+            "heads": {k: float(v) for k, v in heads.items()},
+            "pressures": {k: float(v) for k, v in pressures.items()},
+            "actual_demands": {k: float(v) for k, v in current_demands.items()},
+            "deficit_nodes": deficit_nodes,
+            "pdd_convergence": pdd_history,
+        },
+        "solver_metadata": {
+            "solver": "newton_raphson_pdd",
+            "P_min": P_min, "P_req": P_req,
+            "pdd_iterations": pdd_iteration,
+            "demand_satisfaction_percent": float(satisfaction * 100),
+        },
+    }
+
+
+# ---------------------------------------------------------------------------
+# 9. Network water quality transport (chlorine decay in pipes)
+# ---------------------------------------------------------------------------
+@_register("network_wq")
+def _run_network_wq(config: dict, progress_cb=None) -> dict:
+    """
+    Water quality transport in pressurized pipe networks.
+
+    Implements first-order chlorine decay with:
+    - Bulk decay: dC/dt = -k_b * C
+    - Wall decay: dC/dt = -k_w * C (simplified)
+    - Advective transport through pipes based on hydraulic solution
+    - Mixing at junctions (flow-weighted)
+    """
+    wq_cfg = config.get("water_quality", {})
+    net_cfg = config.get("network", {})
+
+    k_bulk = wq_cfg.get("bulk_decay_rate", 0.5)   # 1/day
+    k_wall = wq_cfg.get("wall_decay_rate", 0.1)    # 1/day
+    C_source = wq_cfg.get("source_concentration", 1.0)  # mg/L at reservoirs
+    duration = wq_cfg.get("duration", 86400.0)     # seconds
+    dt_wq = wq_cfg.get("dt", 60.0)                 # seconds
+
+    # First solve steady-state hydraulics
+    topo = _build_network(config)
+    solver = _create_network_solver(topo, config)
+    flows, heads = solver.solve()
+
+    if progress_cb:
+        progress_cb(20.0)
+
+    # Initialize concentrations
+    node_ids = list(topo.nodes.keys())
+    C = {}
+    for nd in net_cfg.get("nodes", []):
+        nid = nd["id"]
+        if nd.get("type") == "reservoir":
+            C[nid] = C_source
+        else:
+            C[nid] = wq_cfg.get("initial_concentration", 0.0)
+
+    # Pipe travel times and residence concentrations
+    pipe_info = {}
+    for pp in net_cfg.get("pipes", []):
+        pid = pp["id"]
+        Q = abs(flows.get(pid, 0.0))
+        D = pp.get("diameter", 0.3)
+        L = pp.get("length", 500.0)
+        A = np.pi * D**2 / 4
+        v = Q / A if A > 0 and Q > 1e-12 else 0.001
+        travel_time = L / v if v > 1e-12 else L / 0.001
+        pipe_info[pid] = {
+            "from": pp["from"], "to": pp["to"],
+            "Q": flows.get(pid, 0.0),
+            "velocity": v, "travel_time": travel_time, "length": L,
+        }
+
+    # Time-stepping for WQ transport
+    k_total = (k_bulk + k_wall) / 86400.0  # convert 1/day → 1/s
+    n_steps = int(duration / dt_wq)
+    snapshots = []
+    output_every = max(1, n_steps // 50)
+
+    for step in range(n_steps):
+        t = (step + 1) * dt_wq
+        new_C = {}
+
+        for nid in node_ids:
+            nd_info = next((nd for nd in net_cfg["nodes"] if nd["id"] == nid), {})
+
+            # Reservoirs maintain constant concentration
+            if nd_info.get("type") == "reservoir":
+                new_C[nid] = C_source
+                continue
+
+            # Junction mixing: flow-weighted average of incoming pipe concentrations
+            total_inflow = 0.0
+            mass_inflow = 0.0
+
+            for pp in net_cfg.get("pipes", []):
+                pid = pp["id"]
+                info = pipe_info[pid]
+                Q_pipe = info["Q"]
+                travel = info["travel_time"]
+
+                # Determine flow direction and contributing node
+                if Q_pipe > 0 and pp["to"] == nid:
+                    # Positive flow into this node
+                    source_C = C.get(pp["from"], 0.0)
+                    # Decay during travel
+                    C_arriving = source_C * float(np.exp(-k_total * min(travel, dt_wq)))
+                    mass_inflow += abs(Q_pipe) * C_arriving
+                    total_inflow += abs(Q_pipe)
+                elif Q_pipe < 0 and pp["from"] == nid:
+                    # Reverse flow into this node
+                    source_C = C.get(pp["to"], 0.0)
+                    C_arriving = source_C * float(np.exp(-k_total * min(travel, dt_wq)))
+                    mass_inflow += abs(Q_pipe) * C_arriving
+                    total_inflow += abs(Q_pipe)
+
+            if total_inflow > 1e-12:
+                new_C[nid] = mass_inflow / total_inflow
+            else:
+                # No inflow: just decay in place
+                new_C[nid] = C.get(nid, 0.0) * float(np.exp(-k_total * dt_wq))
+
+        C = new_C
+
+        if step % output_every == 0:
+            concentrations = list(C.values())
+            snapshots.append({
+                "t": float(t),
+                "C_max": float(max(concentrations)) if concentrations else 0.0,
+                "C_min": float(min(concentrations)) if concentrations else 0.0,
+                "C_mean": float(np.mean(concentrations)) if concentrations else 0.0,
+            })
+            if progress_cb:
+                progress_cb(min(20 + 70 * step / n_steps, 90.0))
+
+    # Compliance check (e.g., minimum 0.2 mg/L residual)
+    min_residual = wq_cfg.get("min_residual", 0.2)
+    non_compliant = [
+        {"node_id": nid, "concentration": float(c)}
+        for nid, c in C.items()
+        if c < min_residual and next((nd for nd in net_cfg["nodes"] if nd["id"] == nid), {}).get("type") != "reservoir"
+    ]
+
+    all_c = list(C.values())
+
+    return {
+        "summary": {
+            "simulation_type": "network_wq",
+            "duration_hours": float(duration / 3600),
+            "C_max": float(max(all_c)) if all_c else 0.0,
+            "C_min_junction": float(min(
+                c for nid, c in C.items()
+                if next((nd for nd in net_cfg["nodes"] if nd["id"] == nid), {}).get("type") != "reservoir"
+            )) if any(
+                next((nd for nd in net_cfg["nodes"] if nd["id"] == nid), {}).get("type") != "reservoir"
+                for nid in C
+            ) else 0.0,
+            "C_mean": float(np.mean(all_c)) if all_c else 0.0,
+            "num_non_compliant": len(non_compliant),
+            "min_residual_threshold": min_residual,
+            "stable": True,
+        },
+        "time_series": {
+            "snapshots": snapshots,
+            "final_concentrations": {k: float(v) for k, v in C.items()},
+            "non_compliant_nodes": non_compliant,
+        },
+        "solver_metadata": {
+            "solver": "network_wq_transport",
+            "k_bulk": k_bulk, "k_wall": k_wall,
+            "dt": dt_wq, "duration": duration,
+            "C_source": C_source,
+        },
+    }
+
+
+# ---------------------------------------------------------------------------
+# 10. Genetic Algorithm pipe network optimization
+# ---------------------------------------------------------------------------
+@_register("network_optimization")
+def _run_network_optimization(config: dict, progress_cb=None) -> dict:
+    """
+    Genetic Algorithm for optimal pipe sizing.
+
+    Minimizes total pipe cost subject to minimum pressure constraints.
+    Uses tournament selection, uniform crossover, and mutation.
+    """
+    import random
+
+    opt_cfg = config.get("optimization", {})
+    net_cfg = config.get("network", {})
+    solver_cfg = config.get("solver", {})
+
+    pop_size = opt_cfg.get("population_size", 50)
+    n_gen = opt_cfg.get("generations", 80)
+    P_min_req = opt_cfg.get("min_pressure", 20.0)
+    crossover_rate = opt_cfg.get("crossover_rate", 0.8)
+    mutation_rate = opt_cfg.get("mutation_rate", 0.1)
+    seed = opt_cfg.get("seed", 42)
+    random.seed(seed)
+    np.random.seed(seed)
+
+    # Available commercial pipe diameters (m) and cost per meter ($/m)
+    PIPE_CATALOG = opt_cfg.get("pipe_catalog", [
+        {"diameter": 0.100, "cost": 30},
+        {"diameter": 0.150, "cost": 50},
+        {"diameter": 0.200, "cost": 80},
+        {"diameter": 0.250, "cost": 120},
+        {"diameter": 0.300, "cost": 170},
+        {"diameter": 0.350, "cost": 230},
+        {"diameter": 0.400, "cost": 300},
+        {"diameter": 0.450, "cost": 380},
+        {"diameter": 0.500, "cost": 470},
+        {"diameter": 0.600, "cost": 680},
+        {"diameter": 0.800, "cost": 1200},
+        {"diameter": 1.000, "cost": 1900},
+    ])
+    n_diameters = len(PIPE_CATALOG)
+    pipe_list = net_cfg.get("pipes", [])
+    n_pipes = len(pipe_list)
+
+    if n_pipes == 0:
+        raise ValueError("No pipes defined for optimization")
+
+    # Penalty for pressure violations
+    penalty_factor = opt_cfg.get("penalty_factor", 1e6)
+
+    def evaluate(individual):
+        """Evaluate cost + penalty for a pipe sizing solution."""
+        # Build config with individual's diameters
+        test_config = {"network": {"nodes": net_cfg["nodes"], "pipes": []}, "solver": solver_cfg}
+        total_cost = 0.0
+        for i, pp in enumerate(pipe_list):
+            idx = individual[i]
+            cat = PIPE_CATALOG[idx]
+            test_pipe = dict(pp)
+            test_pipe["diameter"] = cat["diameter"]
+            test_config["network"]["pipes"].append(test_pipe)
+            total_cost += cat["cost"] * pp.get("length", 500.0)
+
+        # Solve hydraulics
+        try:
+            topo = _build_network(test_config)
+            solver = _create_network_solver(topo, test_config, max_iter_override=30, tol_override=1e-4)
+            flows, heads = solver.solve()
+
+            if not solver.converged:
+                return total_cost + penalty_factor * 10
+
+            # Check pressure constraints
+            penalty = 0.0
+            for nd in net_cfg["nodes"]:
+                nid = nd["id"]
+                if nd.get("type") == "reservoir":
+                    continue
+                if nid in heads:
+                    P = heads[nid] - nd.get("elevation", 0.0)
+                    if P < P_min_req:
+                        penalty += penalty_factor * (P_min_req - P) ** 2
+            return total_cost + penalty
+
+        except Exception:
+            return total_cost + penalty_factor * 100
+
+    # Initialize population
+    population = [
+        [random.randint(0, n_diameters - 1) for _ in range(n_pipes)]
+        for _ in range(pop_size)
+    ]
+    fitness = [evaluate(ind) for ind in population]
+    best_fitness_history = []
+    best_idx = int(np.argmin(fitness))
+    best_individual = list(population[best_idx])
+    best_fit = fitness[best_idx]
+
+    if progress_cb:
+        progress_cb(10.0)
+
+    # GA main loop
+    for gen in range(n_gen):
+        new_pop = []
+        for _ in range(pop_size // 2):
+            # Tournament selection (size 3)
+            def tournament():
+                candidates = random.sample(range(pop_size), min(3, pop_size))
+                return population[min(candidates, key=lambda i: fitness[i])]
+
+            p1 = tournament()
+            p2 = tournament()
+
+            # Uniform crossover
+            if random.random() < crossover_rate:
+                c1 = [p1[j] if random.random() < 0.5 else p2[j] for j in range(n_pipes)]
+                c2 = [p2[j] if random.random() < 0.5 else p1[j] for j in range(n_pipes)]
+            else:
+                c1, c2 = list(p1), list(p2)
+
+            # Mutation
+            for child in [c1, c2]:
+                for j in range(n_pipes):
+                    if random.random() < mutation_rate:
+                        child[j] = random.randint(0, n_diameters - 1)
+
+            new_pop.extend([c1, c2])
+
+        population = new_pop[:pop_size]
+        fitness = [evaluate(ind) for ind in population]
+
+        gen_best_idx = int(np.argmin(fitness))
+        if fitness[gen_best_idx] < best_fit:
+            best_fit = fitness[gen_best_idx]
+            best_individual = list(population[gen_best_idx])
+
+        best_fitness_history.append({"generation": gen + 1, "best_cost": float(best_fit)})
+
+        if progress_cb:
+            progress_cb(min(10 + 80 * (gen + 1) / n_gen, 90.0))
+
+    # Decode best solution
+    optimal_pipes = {}
+    total_cost = 0.0
+    for i, pp in enumerate(pipe_list):
+        cat = PIPE_CATALOG[best_individual[i]]
+        optimal_pipes[pp["id"]] = {
+            "diameter": cat["diameter"],
+            "cost_per_m": cat["cost"],
+            "length": pp.get("length", 500.0),
+            "total_cost": cat["cost"] * pp.get("length", 500.0),
+            "original_diameter": pp.get("diameter", 0.3),
+        }
+        total_cost += cat["cost"] * pp.get("length", 500.0)
+
+    return {
+        "summary": {
+            "simulation_type": "network_optimization",
+            "total_cost": float(total_cost),
+            "generations": n_gen,
+            "population_size": pop_size,
+            "num_pipes": n_pipes,
+            "best_fitness": float(best_fit),
+            "feasible": float(best_fit) == float(total_cost),
+            "stable": True,
+        },
+        "time_series": {
+            "convergence": best_fitness_history,
+            "optimal_pipes": optimal_pipes,
+        },
+        "solver_metadata": {
+            "solver": "genetic_algorithm",
+            "generations": n_gen, "population_size": pop_size,
+            "crossover_rate": crossover_rate, "mutation_rate": mutation_rate,
+            "min_pressure_constraint": P_min_req,
+            "pipe_catalog_size": n_diameters,
+        },
+    }
+
+
+# ---------------------------------------------------------------------------
+# 11. Extended Period Simulation (EPS)
+# ---------------------------------------------------------------------------
+@_register("extended_period")
+def _run_extended_period(config: dict, progress_cb=None) -> dict:
+    """
+    Extended Period Simulation for pipe networks.
+
+    Simulates network hydraulics over multiple time steps with:
+    - Time-varying demand patterns (multiplier array)
+    - Tank level tracking (mass balance)
+    - Periodic steady-state solves
+    """
+    eps_cfg = config.get("eps", {})
+    net_cfg = config.get("network", {})
+    solver_cfg = config.get("solver", {})
+
+    duration = eps_cfg.get("duration", 86400.0)          # seconds (default 24h)
+    timestep = eps_cfg.get("timestep", 3600.0)           # seconds (default 1h)
+    # Demand pattern: multipliers for each timestep (repeats cyclically)
+    demand_pattern = eps_cfg.get("demand_pattern", [
+        0.5, 0.4, 0.3, 0.3, 0.4, 0.6,    # 00:00-06:00
+        0.8, 1.2, 1.4, 1.3, 1.1, 1.0,     # 06:00-12:00
+        0.9, 0.9, 1.0, 1.1, 1.3, 1.4,     # 12:00-18:00
+        1.2, 1.0, 0.8, 0.7, 0.6, 0.5,     # 18:00-24:00
+    ])
+
+    n_steps = int(duration / timestep)
+    base_demands = {nd["id"]: nd.get("demand", 0.0) for nd in net_cfg.get("nodes", [])}
+
+    # Tank tracking
+    tanks = {}
+    for nd in net_cfg.get("nodes", []):
+        if nd.get("type") == "tank":
+            tanks[nd["id"]] = {
+                "level": nd.get("initial_level", nd.get("head", 50.0) - nd.get("elevation", 0.0)),
+                "area": nd.get("area", 100.0),       # m²
+                "min_level": nd.get("min_level", 0.5),
+                "max_level": nd.get("max_level", 10.0),
+                "elevation": nd.get("elevation", 0.0),
+            }
+
+    snapshots = []
+    all_flows = []
+    all_pressures = []
+
+    for step in range(n_steps):
+        t = (step + 1) * timestep
+        pattern_idx = step % len(demand_pattern)
+        multiplier = demand_pattern[pattern_idx]
+
+        # Apply demand multiplier
+        step_config = {"network": {"nodes": [], "pipes": net_cfg["pipes"]}, "solver": solver_cfg}
+        for nd in net_cfg["nodes"]:
+            nd_copy = dict(nd)
+            if nd["id"] in base_demands and base_demands[nd["id"]] > 0:
+                nd_copy["demand"] = base_demands[nd["id"]] * multiplier
+            # Update tank head from level
+            if nd["id"] in tanks:
+                tank = tanks[nd["id"]]
+                nd_copy["head"] = tank["elevation"] + tank["level"]
+                nd_copy["type"] = "reservoir"  # Treat tank as variable-head reservoir
+            step_config["network"]["nodes"].append(nd_copy)
+
+        # Solve hydraulics for this timestep
+        try:
+            topo = _build_network(step_config)
+            solver = _create_network_solver(topo, step_config)
+            flows, heads = solver.solve()
+        except Exception as e:
+            logger.warning(f"EPS step {step}: solver failed: {e}")
+            flows, heads = {}, {}
+
+        # Compute pressures
+        pressures = {}
+        for nd in step_config["network"]["nodes"]:
+            nid = nd["id"]
+            if nid in heads:
+                pressures[nid] = heads[nid] - nd.get("elevation", 0.0)
+
+        # Update tank levels
+        for tank_id, tank in tanks.items():
+            net_inflow = 0.0
+            for pp in net_cfg.get("pipes", []):
+                pid = pp["id"]
+                Q = flows.get(pid, 0.0)
+                if Q > 0 and pp["to"] == tank_id:
+                    net_inflow += Q
+                elif Q > 0 and pp["from"] == tank_id:
+                    net_inflow -= Q
+                elif Q < 0 and pp["from"] == tank_id:
+                    net_inflow += abs(Q)
+                elif Q < 0 and pp["to"] == tank_id:
+                    net_inflow -= abs(Q)
+
+            # Level change = net_inflow * dt / area
+            dLevel = net_inflow * timestep / tank["area"]
+            tank["level"] = max(tank["min_level"],
+                                min(tank["max_level"], tank["level"] + dLevel))
+
+        # Record snapshot
+        all_p = list(pressures.values())
+        snapshots.append({
+            "t": float(t),
+            "t_hours": float(t / 3600),
+            "demand_multiplier": float(multiplier),
+            "min_pressure": float(min(all_p)) if all_p else 0.0,
+            "mean_pressure": float(np.mean(all_p)) if all_p else 0.0,
+            "tank_levels": {k: float(v["level"]) for k, v in tanks.items()},
+        })
+
+        if progress_cb:
+            progress_cb(min(step / n_steps * 95, 95.0))
+
+    # Summary statistics
+    all_min_p = [s["min_pressure"] for s in snapshots]
+    all_mean_p = [s["mean_pressure"] for s in snapshots]
+
+    return {
+        "summary": {
+            "simulation_type": "extended_period",
+            "duration_hours": float(duration / 3600),
+            "timestep_hours": float(timestep / 3600),
+            "total_timesteps": n_steps,
+            "min_pressure_overall": float(min(all_min_p)) if all_min_p else 0.0,
+            "mean_pressure_overall": float(np.mean(all_mean_p)) if all_mean_p else 0.0,
+            "num_tanks": len(tanks),
+            "final_tank_levels": {k: float(v["level"]) for k, v in tanks.items()},
+            "stable": True,
+        },
+        "time_series": {
+            "snapshots": snapshots,
+            "demand_pattern": demand_pattern,
+        },
+        "solver_metadata": {
+            "solver": "extended_period_simulation",
+            "duration": duration, "timestep": timestep,
+            "n_steps": n_steps, "pattern_length": len(demand_pattern),
+        },
+    }
+
+
+# ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 def _parse_bc(bc_dict):
@@ -598,4 +1354,9 @@ def get_supported_simulation_types() -> list:
         {"id": "ice_simulation", "name": "Ice Dynamics", "description": "Ice cover formation, growth, and decay (Stefan equation)"},
         {"id": "coupled_ice_wq", "name": "Coupled Ice + Water Quality", "description": "Multi-process coupling of ice, temperature, DO, nutrients"},
         {"id": "water_hammer", "name": "Water Hammer", "description": "Transient pipe flow by Method of Characteristics"},
+        {"id": "pipe_network", "name": "Pipe Network Hydraulics", "description": "Steady-state pipe network analysis (Hardy-Cross / Newton-Raphson)"},
+        {"id": "pipe_network_pdd", "name": "Pressure-Driven Demand", "description": "Pipe network with pressure-dependent demand (Wagner formula)"},
+        {"id": "network_wq", "name": "Network Water Quality", "description": "Chlorine decay and transport in pressurized pipe networks"},
+        {"id": "network_optimization", "name": "Pipe Sizing Optimization", "description": "Genetic Algorithm for minimum-cost pipe network design"},
+        {"id": "extended_period", "name": "Extended Period Simulation", "description": "Multi-timestep network analysis with demand patterns and tank dynamics"},
     ]
