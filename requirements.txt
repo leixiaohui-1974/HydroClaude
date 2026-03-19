@@ -1,25 +1,27 @@
-# HydroClaude v2.0.0 - 生产依赖
+# HydroClaude v2.0.0 - runtime dependencies
 # Python 3.12+
 
-# 核心计算库
 numpy>=1.24.0
 scipy>=1.10.0
+matplotlib>=3.7.0
 
-# Web框架
 fastapi>=0.100.0
 uvicorn>=0.23.0
 pydantic>=2.0.0
+sqlalchemy>=2.0.0
+python-multipart>=0.0.6
+pydantic-settings>=2.1.0
+email-validator>=2.1.0
+slowapi>=0.1.9
+python-jose[cryptography]>=3.3.0
+bcrypt>=4.1.2
 
-# 可视化
-matplotlib>=3.7.0
-
-# HTTP客户端（用于测试）
 requests>=2.31.0
+hydromind-contracts>=0.1.0
+httpx>=0.25.0
 
-# 可选：数据库支持
-# sqlalchemy>=2.0.0
+# Optional dependencies
+# fastmcp>=0.1.0
 # pymongo>=4.5.0
-
-# 可选：性能优化
 # numba>=0.57.0
 # cython>=3.0.0

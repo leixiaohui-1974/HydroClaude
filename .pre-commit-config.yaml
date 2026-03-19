@@ -54,20 +54,20 @@ repos:
       # 检查Python语法
       - id: check-ast
   
-  # Python代码格式化（可选）
-  # - repo: https://github.com/psf/black
-  #   rev: 23.12.1
-  #   hooks:
-  #     - id: black
-  #       args: [--line-length=100]
-  #       language_version: python3
-  
-  # Python导入排序（可选）
-  # - repo: https://github.com/pycqa/isort
-  #   rev: 5.13.2
-  #   hooks:
-  #     - id: isort
-  #       args: [--profile=black]
+  # Python代码格式化
+  - repo: https://github.com/psf/black
+    rev: 23.12.1
+    hooks:
+      - id: black
+        args: [--line-length=100]
+        language_version: python3
+
+  # Python导入排序
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: [--profile=black, --line-length=100]
 
 # 默认配置
 default_stages: [commit]

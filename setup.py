@@ -60,6 +60,13 @@ setup(
         'fastapi>=0.100.0',
         'uvicorn>=0.23.0',
         'pydantic>=2.0.0',
+        'sqlalchemy>=2.0.0',
+        'python-multipart>=0.0.6',
+        'pydantic-settings>=2.1.0',
+        'email-validator>=2.1.0',
+        'slowapi>=0.1.9',
+        'python-jose[cryptography]>=3.3.0',
+        'bcrypt>=4.1.2',
     ],
     extras_require={
         'dev': [
@@ -85,6 +92,10 @@ setup(
     entry_points={
         'console_scripts': [
             'hydroclaude=main:main',
+            'hydroclaude-mcp=mcp_server.hydroclaude_server:main',
+        ],
+        'hydromind.engines': [
+            'hydroclaude = mcp_server.engine_entry:discover_hydroclaude_engine',
         ],
     },
     include_package_data=True,

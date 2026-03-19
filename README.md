@@ -7,8 +7,8 @@
 **世界级水力学仿真平台**
 
 [![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/your-org/hydroclaude/releases)
-[![Tests](https://img.shields.io/badge/tests-68%20passed-brightgreen.svg)](./reports/html/report.html)
-[![Coverage](https://img.shields.io/badge/coverage-85%25-green.svg)](./reports/coverage/index.html)
+[![Tests](https://img.shields.io/badge/tests-277%20passed-brightgreen.svg)](./reports/html/report.html)
+[![Coverage](https://img.shields.io/badge/coverage-43%25-yellow.svg)](./reports/coverage/index.html)
 [![Quality](https://img.shields.io/badge/quality-9.5%2F10-brightgreen.svg)](./📋_项目交付清单_FINAL.txt)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-完整-brightgreen.svg)](./🎯_HydroClaude_终极导航指南.md)
@@ -31,7 +31,7 @@ HydroClaude 是一个现代化的开源水力学仿真平台，专注于提供�
 - ⚡ **卓越性能**：比商业软件（HEC-RAS, MIKE 11）快 5-10 倍
 - 🎨 **现代化界面**：Web 原生，拖拽建模，实时计算
 - 📚 **完整文档**：47+ 个文档，200,000+ 字，完整的中文支持
-- 🧪 **全面测试**：68 个后端测试，100% 通过，85%+ 覆盖率
+- 🧪 **全面测试**：68 个后端测试，100% 通过，43% 覆盖率（improving, target 80%+）
 - 🌟 **开源透明**：MIT 协议，完全开源，欢迎贡献
 
 ### 对比商业软件
@@ -123,11 +123,11 @@ python3 main.py
 ### 运行测试
 
 ```bash
-# 运行所有测试（68个）
+# 运行所有测试（277个）
 ./run_tests.sh
 
 # 预期输出：
-# ✅ 68 passed in ~14s
+# ✅ 277 passed in ~14s
 ```
 
 ### 第一个仿真
@@ -263,7 +263,7 @@ python3 examples/example_01_canal_flow/scripts/12_advanced_optimized_v2.py
 ./run_tests.sh
 
 # 或手动运行
-pytest tests/backend/ -v                    # 后端测试（68个）
+pytest tests/backend/ -v                    # 后端测试（277个）
 pytest tests/e2e/ -v -s                     # E2E测试（6个）
 
 # 生成覆盖率报告
@@ -275,10 +275,65 @@ xdg-open reports/coverage/index.html  # Linux
 ```
 
 **测试统计**：
-- ✅ 后端测试：68个，100%通过
+- ✅ 后端测试：277个，100%通过
 - ✅ E2E测试：6个框架测试
 - ✅ 前端测试：8+个测试文件
-- ✅ 覆盖率：85%+
+- ✅ 覆盖率：43%（improving, target 80%+）
+
+---
+
+## 🔌 MCP 集成 (HydroMind 生态)
+
+HydroClaude 作为 HydroMind 水利智能控制生态中的水力学仿真引擎，通过 [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) 对外暴露计算能力。
+
+### 启动 MCP Server
+
+```bash
+# 使用 FastMCP 传输（推荐）
+python -m mcp_server.hydroclaude_server
+
+# 或通过 entry point
+hydroclaude-mcp
+```
+
+### 可用 MCP 工具
+
+| 工具 | 说明 |
+|------|------|
+| `run_canal_simulation` | 1-D 明渠仿真（hydrostatic / godunov / steady） |
+| `run_network_analysis` | Hardy-Cross 管网分析 |
+| `run_steady_state` | 稳态水面线计算 |
+| `run_controller` | PID / MPC 水位控制 |
+| `validate_results` | 结果校验（NaN / Inf / 负值） |
+| `get_solver_capabilities` | 引擎元数据与能力查询 |
+
+### 协议合规
+
+HydroClaude 适配器实现了 `hydromind-contracts` 定义的三个 Protocol：
+
+- **SimulatorProtocol** -- `mcp_server.adapters.simulator_adapter.HydroClaudeSimulator`
+- **ControllerProtocol** -- `mcp_server.adapters.controller_adapter.HydroClaudeController`
+- **MCPToolProtocol** -- `mcp_server.adapters.mcp_tool_adapter.HydroClaudeMCPTool`
+
+详细集成指南参见 [docs/mcp_integration_guide.md](./docs/mcp_integration_guide.md)。
+
+---
+
+## 🎯 精度验证
+
+HydroClaude 通过网格收敛测试和解析基准验证计算精度：
+
+- **Manning 均匀流** -- 与解析解对比，误差 < 0.01%
+- **Stoker 溃坝** -- 与 Ritter 解析解对比，L2 误差随网格加密二阶收敛
+- **水面线（M1/M2/S1/S2）** -- 与 ODE 积分解析解对比
+
+运行精度测试：
+
+```bash
+pytest tests/backend/test_convergence_order.py tests/backend/test_analytical_benchmarks.py -v
+```
+
+详细验证报告参见 [docs/accuracy_verification.md](./docs/accuracy_verification.md)。
 
 ---
 
@@ -345,7 +400,7 @@ xdg-open reports/coverage/index.html  # Linux
 | **版本** | v2.0.0 |
 | **完成度** | 98.5% |
 | **质量评分** | 9.5/10 (Excellence+++) |
-| **测试通过率** | 100% (68/68) |
+| **测试通过率** | 100% (277/277) |
 | **文档完整性** | 100% (47+个文档) |
 | **商业对标优势** | +42% |
 | **状态** | ✅ 生产就绪 |
@@ -483,10 +538,12 @@ xdg-open reports/coverage/index.html  # Linux
   • 总文档字数: ~200,000字
 
 测试统计:
-  • 后端测试: 68个 (100%通过)
+  • 后端测试: 277个 (100%通过)
+  • 闸门/结构测试: 127个
+  • 边界条件测试: 82个
   • E2E测试: 6个框架测试
   • 前端测试: 8+个测试文件
-  • 测试覆盖率: 85%+
+  • 测试覆盖率: 43% (improving, target 80%+)
 
 功能统计:
   • 求解器: 4个核心求解器
