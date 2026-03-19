@@ -1335,6 +1335,13 @@ class HydrostaticCanalSolver:
         # 
         self.h[-1] = h_downstream
 
+        has_structures = bool(self.structure_indices)
+        uniform_target_profile = (
+            not has_structures and
+            h_upstream_guess is not None and
+            abs(h_upstream_guess - h_downstream) <= max(1e-6, 1e-3 * max(abs(h_downstream), 1.0))
+        )
+
         if verbose:
             print(f"")
             print(f"  {Q_target:.3f} m³/s")
@@ -1345,20 +1352,19 @@ class HydrostaticCanalSolver:
             h_old = self.h.copy()
             hu_old = self.hu.copy()
 
-            # Preissmann
-            h_new, hu_new = self.step_preissmann(dt)
+            # Enforce the physical steady-state boundary condition directly:
+            # upstream discharge Q and downstream stage h.
+            h_new, hu_new = self.step_preissmann(
+                dt,
+                enforce_bc=True,
+                Q_in=Q_target,
+                h_out=h_downstream,
+            )
 
-            # 
-            #  
-            has_structures = len(self.structure_indices) > 0 if self.structure_indices else False
-            
-            if not has_structures:
-                # 
-                h_new[-1] = h_downstream  # 
-                h_new[0] = h_downstream   # h_downstream
-            else:
-                # 
-                h_new[-1] = h_downstream
+            # For uniform-flow targets, pin the upstream stage to the normal-depth
+            # guess instead of incorrectly copying the downstream stage.
+            if uniform_target_profile:
+                h_new[0] = h_upstream_guess
 
             # 
             self.h = h_new

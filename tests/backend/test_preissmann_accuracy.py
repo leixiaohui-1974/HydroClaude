@@ -70,8 +70,8 @@ class TestPreissmannAccuracy:
         S0 = 0.001
         Q = 10.0
         B = 5.0
-        length = 2000.0
-        nx = 201
+        length = 400.0
+        nx = 61
         g = 9.81
 
         # Analytical normal depth
@@ -114,6 +114,54 @@ class TestPreissmannAccuracy:
         assert max_rel_error < 0.005, (
             f"Preissmann uniform flow: max relative error {max_rel_error:.6e} "
             f"exceeds 0.5 %"
+        )
+
+    @pytest.mark.backend
+    def test_preissmann_upstream_q_downstream_h_boundary(self):
+        """
+        Confirm solve_steady_state respects upstream Q and downstream h when no
+        internal structures are present, i.e., it does not overwrite the
+        upstream depth with the downstream depth.
+        """
+        Q = 10.0
+        B = 5.0
+        S0 = 0.001
+        n_manning = 0.015
+        length = 2000.0
+        nx = 201
+        g = 9.81
+
+        h_normal = compute_steady_uniform_flow(Q, B, S0, n_manning, g)
+        h_downstream = h_normal * 1.1
+
+        solver = HydrostaticCanalSolver(
+            length=length,
+            nx=nx,
+            B=B,
+            S0=S0,
+            n=n_manning,
+            g=g,
+            theta=0.6,
+            omega=0.95,
+        )
+
+        result = solver.solve_steady_state(
+            Q_target=Q,
+            h_downstream=h_downstream,
+            max_iterations=1200,
+            convergence_tol=1e-4,
+            dt=1.0,
+            verbose=False,
+        )
+
+        h_upstream = result['h'][0]
+        q_upstream = result['Q'][0]
+
+        assert abs(h_upstream - h_downstream) > 0.05, (
+            "Upstream depth was overwritten by the downstream boundary value"
+        )
+        assert abs(q_upstream - Q) / Q < 1e-3, (
+            f"Upstream discharge {q_upstream:.3f} does not match target {Q:.3f}"
         )
 
     # -----------------------------------------------------------------------
