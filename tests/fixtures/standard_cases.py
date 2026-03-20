@@ -171,6 +171,14 @@ class StandardCases:
             "description": "简单3节点管网",
             "category": "pipe_network",
             "difficulty": "easy",
+            "reference_type": "external_benchmark",
+            "verification_status": "external_review_needed",
+            "provenance_path": "validation_cases/engineering/epanet_3node_network/README.md",
+            "notes": [
+                "Externally sourced EPANET comparison target.",
+                "Pipe flows are repo-reproducible, but the stored nodal heads have not yet been revalidated against a local EPANET project/export.",
+                "Head-loss model and roughness-field mapping remain under review before these values can be treated as hard truth.",
+            ],
             
             "topology": {
                 "nodes": [

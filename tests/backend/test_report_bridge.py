@@ -129,7 +129,12 @@ class TestLocalFallback:
         self, bridge: ReportBridge, sample_results, sample_config, tmp_path
     ):
         sample_config["output_dir"] = str(tmp_path)
-        result = bridge.generate_simulation_report(sample_results, sample_config)
+        import mcp_server.report_bridge as rb_mod
+
+        with patch.object(rb_mod, "_post", side_effect=ConnectionError("disabled")), patch.object(
+            rb_mod, "_call_inprocess_hydrowriter", side_effect=RuntimeError("disabled")
+        ):
+            result = bridge.generate_simulation_report(sample_results, sample_config)
 
         assert result["success"] is True
         assert result["backend"] == "local"
@@ -144,10 +149,16 @@ class TestLocalFallback:
         self, bridge: ReportBridge, sample_validation, tmp_path
     ):
         # Patch output_dir into a default config via the local generator
+        import mcp_server.report_bridge as rb_mod
+
         with patch(
             "mcp_server.report_bridge._local_generate_report",
             wraps=_local_generate_report,
-        ) as wrapped:
+        ) as wrapped, patch.object(
+            rb_mod, "_post", side_effect=ConnectionError("disabled")
+        ), patch.object(
+            rb_mod, "_call_inprocess_hydrowriter", side_effect=RuntimeError("disabled")
+        ):
             result = bridge.generate_validation_report(sample_validation)
 
         assert result["success"] is True
@@ -157,7 +168,12 @@ class TestLocalFallback:
     def test_convergence_report_fallback(
         self, bridge: ReportBridge, sample_convergence
     ):
-        result = bridge.generate_convergence_report(sample_convergence)
+        import mcp_server.report_bridge as rb_mod
+
+        with patch.object(rb_mod, "_post", side_effect=ConnectionError("disabled")), patch.object(
+            rb_mod, "_call_inprocess_hydrowriter", side_effect=RuntimeError("disabled")
+        ):
+            result = bridge.generate_convergence_report(sample_convergence)
 
         assert result["success"] is True
         assert result["backend"] == "local"
@@ -166,8 +182,13 @@ class TestLocalFallback:
     def test_last_backend_is_local_after_fallback(
         self, bridge: ReportBridge, sample_results
     ):
-        bridge.generate_simulation_report(sample_results)
-        assert bridge.last_backend == "local"
+        import mcp_server.report_bridge as rb_mod
+
+        with patch.object(rb_mod, "_post", side_effect=ConnectionError("disabled")), patch.object(
+            rb_mod, "_call_inprocess_hydrowriter", side_effect=RuntimeError("disabled")
+        ):
+            bridge.generate_simulation_report(sample_results)
+            assert bridge.last_backend == "local"
 
     def test_local_generate_report_simulation(self, tmp_path):
         data = {"max_depth": 2.0}
@@ -180,6 +201,9 @@ class TestLocalFallback:
         assert md.exists()
         content = md.read_text(encoding="utf-8")
         assert "Unit Test" in content
+        assert "报告元数据" in content
+        assert "未提供信息" in content
+        assert "local_fallback_unverified" in content
 
     def test_local_generate_report_validation_list(self, tmp_path):
         data = [{"rmse": 0.01}, {"rmse": 0.02}]
@@ -208,7 +232,9 @@ class TestTimeoutHandling:
         def fake_post(url, payload, timeout):
             raise ConnectionError("simulated timeout")
 
-        with patch.object(rb_mod, "_post", side_effect=fake_post):
+        with patch.object(rb_mod, "_post", side_effect=fake_post), patch.object(
+            rb_mod, "_call_inprocess_hydrowriter", side_effect=RuntimeError("disabled")
+        ):
             result = bridge.generate_simulation_report(sample_results)
 
         assert result["success"] is True
@@ -222,7 +248,9 @@ class TestTimeoutHandling:
         def fake_post(url, payload, timeout):
             raise OSError("Connection refused")
 
-        with patch.object(rb_mod, "_post", side_effect=fake_post):
+        with patch.object(rb_mod, "_post", side_effect=fake_post), patch.object(
+            rb_mod, "_call_inprocess_hydrowriter", side_effect=RuntimeError("disabled")
+        ):
             result = bridge.generate_validation_report(sample_validation)
 
         assert result["success"] is True
@@ -436,6 +464,7 @@ class TestBridgeConfig:
         b = ReportBridge()
         assert b.gateway_port == 8040
         assert b.writer_port == 8033
+        assert b.writer_host == "127.0.0.1"
 
     def test_custom_ports(self):
         b = ReportBridge(gateway_port=9040, writer_port=9033)
@@ -449,3 +478,39 @@ class TestBridgeConfig:
     def test_last_backend_starts_none(self):
         b = ReportBridge()
         assert b.last_backend is None
+
+    def test_inprocess_writer_fallback(self, bridge: ReportBridge, sample_results):
+        import mcp_server.report_bridge as rb_mod
+
+        fake_response = {
+            "success": True,
+            "method": "write_chapter",
+            "results": {"content": "in-process", "average_score": 1.0},
+        }
+
+        with patch.object(rb_mod, "_post", side_effect=ConnectionError("down")), patch.object(
+            rb_mod, "_call_inprocess_hydrowriter", return_value=fake_response
+        ):
+            result = bridge.generate_simulation_report(sample_results)
+
+        assert result["backend"] == "hydrowriter_inprocess"
+        assert bridge.last_backend == "hydrowriter_inprocess"
+
+    def test_write_chapter_timeout_is_extended(self, bridge: ReportBridge):
+        import mcp_server.report_bridge as rb_mod
+
+        timeouts = []
+
+        def capture_timeout(url, payload, timeout):
+            timeouts.append(timeout)
+            return {
+                "success": True,
+                "method": "write_chapter",
+                "results": {"content": "ok"},
+            }
+
+        with patch.object(rb_mod, "_post", side_effect=capture_timeout):
+            bridge.generate_simulation_report({"summary": {"metric": 1}})
+
+        assert timeouts
+        assert timeouts[0] >= 90.0

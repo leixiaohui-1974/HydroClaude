@@ -145,6 +145,7 @@ class HydroClaudeSimulator:
         cfl = float(params.get("cfl", 0.5))
         order = int(params.get("order", 2))
         riemann = params.get("riemann_solver", "hll")
+        dt_max = params.get("dt_max", None)
 
         solver = GodunvFVMSolver(
             width=width,
@@ -155,6 +156,7 @@ class HydroClaudeSimulator:
             cfl=cfl,
             order=order,
             riemann_solver=riemann,
+            dt_max=float(dt_max) if dt_max is not None else None,
         )
 
         Q_upstream = float(
@@ -173,7 +175,13 @@ class HydroClaudeSimulator:
             )
         h_downstream = float(h_downstream)
 
-        h_init = np.ones(n_cells) * h_downstream
+        h_init_uniform = compute_steady_uniform_flow(
+            Q=Q_upstream,
+            B=width,
+            S0=float(slope),
+            n=manning_n,
+        )
+        h_init = np.ones(n_cells) * h_init_uniform
         Q_init = np.ones(n_cells) * Q_upstream
         bc_left = {"type": "Q", "value": Q_upstream}
         bc_right = {"type": "h", "value": h_downstream}
@@ -206,6 +214,7 @@ class HydroClaudeSimulator:
         q_out = float(solver.Q[-1]) if len(solver.Q) else 0.0
         mass_error = abs(q_in - q_out) / abs(q_in) * 100 if abs(q_in) > 1e-12 else 0.0
         return {
+            "x": solver.x.tolist(),
             "time": time_points,
             "h_history": h_history,
             "Q_history": q_history,

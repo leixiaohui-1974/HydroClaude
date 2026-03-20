@@ -61,6 +61,13 @@ class TestHardyCross商业对标:
         print(f"\n案例: {case['name']}")
         print(f"描述: {case['description']}")
         print(f"来源: {case['reference']}")
+        if "provenance_path" in case:
+            print(f"来源工件: {case['provenance_path']}")
+        if "verification_status" in case:
+            print(f"校验状态: {case['verification_status']}")
+        if "notes" in case:
+            for note in case["notes"]:
+                print(f"备注: {note}")
 
         # 2. 构建 NetworkTopology
         network = NetworkTopology(name="EPANET_3Node")
@@ -127,6 +134,35 @@ class TestHardyCross商业对标:
             for node_id, head in heads.items():
                 print(f"  {node_id}: {head:.3f} m")
 
+            flow_errors = {}
+            for pipe_id, expected_flow_ls in expected["flows"].items():
+                actual_flow_ls = flows.get(pipe_id, 0.0) * 1000.0
+                flow_errors[pipe_id] = abs(actual_flow_ls - expected_flow_ls)
+
+            head_errors = {}
+            for node_id, expected_head_m in expected["heads"].items():
+                actual_head_m = heads.get(node_id, 0.0)
+                head_errors[node_id] = abs(actual_head_m - expected_head_m)
+
+            print(f"\n对标误差:")
+            for pipe_id, error_ls in flow_errors.items():
+                print(f"  流量 {pipe_id}: {error_ls:.3f} L/s")
+            for node_id, error_m in head_errors.items():
+                print(f"  水头 {node_id}: {error_m:.3f} m")
+
+            for pipe_id, error_ls in flow_errors.items():
+                assert error_ls <= tol["flow"], (
+                    f"Flow mismatch for {pipe_id}: {error_ls:.3f} L/s > tolerance {tol['flow']:.3f} L/s"
+                )
+
+            if case.get("verification_status") == "external_review_needed":
+                print("  [PROVENANCE] Stored EPANET head targets remain under external review; head differences are diagnostic-only until the source model/export is attached.")
+            else:
+                for node_id, error_m in head_errors.items():
+                    assert error_m <= tol["head"], (
+                        f"Head mismatch for {node_id}: {error_m:.3f} m > tolerance {tol['head']:.3f} m"
+                    )
+
         except Exception as e:
             print(f"\n⚠️ 求解过程出现问题: {e}")
 
@@ -134,6 +170,7 @@ class TestHardyCross商业对标:
         assert solver is not None, "Solver should be created successfully"
         assert len(network.nodes) > 0, "Network should have nodes"
         assert len(network.pipes) > 0, "Network should have pipes"
+        assert solver.converged, "HardyCross commercial benchmark should converge"
 
         print("\n✅ HardyCrossSolver vs EPANET 测试完成！")
 

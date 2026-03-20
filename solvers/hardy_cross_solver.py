@@ -191,6 +191,13 @@ class HardyCrossSolver:
             warnings.warn("(Reservoir)0")
             return
 
+        if len(self.loops) == 0:
+            self._initialize_tree_flows(reservoirs)
+            if self.verbose:
+                non_zero_flows = sum(1 for Q in self.flows.values() if abs(Q) > 1e-10)
+                print(f"   {non_zero_flows} ")
+            return
+
         # 
         total_demand = sum(node.demand for node in self.network.nodes.values()
                           if isinstance(node, Junction))
@@ -217,6 +224,57 @@ class HardyCrossSolver:
         if self.verbose:
             non_zero_flows = sum(1 for Q in self.flows.values() if abs(Q) > 1e-10)
             print(f"   {non_zero_flows} ")
+
+    def _initialize_tree_flows(self, reservoirs: List[Reservoir]) -> None:
+        """Initialize flows for an acyclic network by demand aggregation.
+
+        For tree networks, Hardy Cross loop corrections are unavailable.
+        A physically meaningful initial condition is therefore the exact
+        continuity-satisfying branch flow obtained by summing downstream
+        junction demands away from each reservoir.
+        """
+        if len(reservoirs) != 1:
+            warnings.warn("Tree-flow initialization currently assumes a single reservoir")
+            return
+
+        root_id = reservoirs[0].node_id
+        parent: Dict[str, Optional[str]] = {root_id: None}
+        order: List[str] = []
+        stack = [root_id]
+
+        while stack:
+            node_id = stack.pop()
+            order.append(node_id)
+            for neighbor in self.network.adjacency[node_id]:
+                if neighbor in parent:
+                    continue
+                parent[neighbor] = node_id
+                stack.append(neighbor)
+
+        subtree_demand: Dict[str, float] = {}
+        for node_id in reversed(order):
+            node = self.network.nodes[node_id]
+            own_demand = node.demand if isinstance(node, Junction) else 0.0
+            total = own_demand
+            for neighbor in self.network.adjacency[node_id]:
+                if parent.get(neighbor) == node_id:
+                    total += subtree_demand.get(neighbor, 0.0)
+            subtree_demand[node_id] = total
+
+        for node_id, parent_id in parent.items():
+            if parent_id is None:
+                continue
+
+            pipe_id = self.network._find_pipe_between(parent_id, node_id)
+            if pipe_id is None:
+                continue
+
+            flow = subtree_demand[node_id]
+            from_node, to_node = self.network.pipe_connections[pipe_id]
+            if from_node == parent_id and to_node == node_id:
+                self.flows[pipe_id] = flow
+            elif from_node == node_id and to_node == parent_id:
+                self.flows[pipe_id] = -flow
 
     def _hardy_cross_iteration(self):
         """Hardy Cross"""

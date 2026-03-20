@@ -135,6 +135,13 @@ def _build_mcp_direct_request(method: str, params: Dict[str, Any]) -> dict:
     }
 
 
+def _tool_timeout(tool_name: str, base_timeout: float) -> float:
+    """Use a longer timeout for LLM-heavy writing tools."""
+    if tool_name == "write_chapter":
+        return max(base_timeout, 90.0)
+    return base_timeout
+
+
 # ---------------------------------------------------------------------------
 # Local fallback helper
 # ---------------------------------------------------------------------------
@@ -160,6 +167,31 @@ def _local_generate_report(
         output_dir=output_dir,
     )
 
+    def _add_fallback_metadata(context: Dict[str, Any]) -> None:
+        backend_name = context.get("backend", "local")
+        evidence_status = context.get("evidence_status", "local_fallback_unverified")
+        unknowns = context.get("unknowns")
+        if not unknowns:
+            unknowns = [
+                "远端 HydroWriter 不可用，当前报告未经过 HydroMind 标准写作链路润色。",
+                "若上下文未明确提供案例来源、证据等级或外部基准出处，本地报告不会自动补全。",
+            ]
+
+        reporter.add_section(
+            title="报告元数据",
+            content=(
+                f"生成后端: {backend_name}\n\n"
+                f"数据来源: 调用方传入的结构化上下文\n\n"
+                f"证据状态: {evidence_status}"
+            ),
+            level=2,
+        )
+        reporter.add_section(
+            title="未提供信息",
+            content="\n".join(f"- {item}" for item in unknowns),
+            level=2,
+        )
+
     # Populate the reporter based on report_type
     if report_type == "simulation":
         system_info = data.get("system_info") or config
@@ -167,6 +199,7 @@ def _local_generate_report(
             reporter.add_system_info(system_info)
         results = data.get("results") or data
         reporter.add_results(results)
+        _add_fallback_metadata(config)
 
     elif report_type == "validation":
         reporter.add_section(
@@ -180,6 +213,7 @@ def _local_generate_report(
             for i, item in enumerate(data):
                 if isinstance(item, dict):
                     reporter.add_results({f"验证项{i+1}_{k}": v for k, v in item.items()})
+        _add_fallback_metadata(config)
 
     elif report_type == "convergence":
         reporter.add_section(
@@ -189,6 +223,7 @@ def _local_generate_report(
         )
         if isinstance(data, dict):
             reporter.add_results(data)
+        _add_fallback_metadata(config)
 
     # Generate all formats
     md_path = reporter.generate_markdown(f"{report_type}_report.md")
@@ -286,9 +321,13 @@ class ReportBridge:
         except ImportError:
             _cfg_host = _DEFAULT_GATEWAY_HOST
 
-        self.gateway_host = gateway_host or _cfg_host or _DEFAULT_GATEWAY_HOST
+        # Gateway clients should also prefer explicit loopback on Windows.
+        self.gateway_host = gateway_host or _DEFAULT_GATEWAY_HOST
         self.gateway_port = gateway_port or _DEFAULT_GATEWAY_PORT
-        self.writer_host = writer_host or _cfg_host or _DEFAULT_GATEWAY_HOST
+        # The writer service is a separate local process. Using HydroClaude's
+        # bind host (often 0.0.0.0) as the client target breaks loopback
+        # connections on Windows; prefer an explicit loopback default.
+        self.writer_host = writer_host or _DEFAULT_GATEWAY_HOST
         self.writer_port = writer_port or _DEFAULT_WRITER_PORT
         self.timeout = timeout
 
@@ -311,13 +350,14 @@ class ReportBridge:
 
         Raises on total failure so the caller can trigger local fallback.
         """
+        request_timeout = _tool_timeout(tool_name, self.timeout)
         # 1) Gateway
         try:
             gateway_payload = _build_mcp_gateway_request(tool_name, params)
             result = _post(
-                f"{self._gateway_url}/call_tool",
+                f"{self._gateway_url}/api/gateway/call_tool",
                 gateway_payload,
-                self.timeout,
+                request_timeout,
             )
             self.last_backend = "mcp_gateway"
             logger.info(
@@ -339,7 +379,7 @@ class ReportBridge:
             result = _post(
                 f"{self._writer_url}/jsonrpc",
                 direct_payload,
-                self.timeout,
+                request_timeout,
             )
             # JSON-RPC envelope: unwrap if needed
             if "result" in result:
@@ -390,7 +430,15 @@ class ReportBridge:
                 ensure_ascii=False,
                 default=str,
             ),
-            "style_guide": "专业水利仿真报告，包含系统配置、结果摘要、图表分析",
+            "style_guide": (
+                "使用正式中文撰写水利仿真报告。"
+                "必须包含以下章节：1. 问题描述 2. 目标与验收口径 3. 工况与仿真设置 "
+                "4. 现象与初始判断 5. 根因分析 6. 解题思路 7. 关键结果 8. 结论与后续建议。"
+                "只能使用上下文中明确提供的事实、数值、求解器名称、误差指标和结论，"
+                "不得虚构硬件环境、软件版本、工程背景、维度、外部来源或未提供的测试结果。"
+                "如果某项信息未提供，明确写“未提供”或跳过，不要补会。"
+                "重点解释仿真结果与物理意义，不要描写测试流程。"
+            ),
         }
 
         try:
@@ -438,7 +486,11 @@ class ReportBridge:
                 ensure_ascii=False,
                 default=str,
             ),
-            "style_guide": "专业模型验证报告，包含误差分析、对比图表、结论",
+            "style_guide": (
+                "使用正式中文撰写模型验证报告。"
+                "必须优先呈现验证对象、评价口径、关键误差指标、主要发现和剩余风险。"
+                "只能使用上下文中明确提供的事实与数值，不得虚构案例背景、版本、来源或结论。"
+            ),
         }
 
         try:
@@ -484,7 +536,11 @@ class ReportBridge:
                 ensure_ascii=False,
                 default=str,
             ),
-            "style_guide": "收敛性分析报告，包含迭代历史、残差曲线、收敛判据",
+            "style_guide": (
+                "使用正式中文撰写收敛分析报告。"
+                "必须说明收敛对象、判据、迭代行为、异常现象和结论。"
+                "只能使用上下文中明确提供的事实与数值，不得虚构外部背景。"
+            ),
         }
 
         try:

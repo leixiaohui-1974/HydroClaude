@@ -1,5 +1,13 @@
 # 🏆 HydroClaude 商业对标报告
 
+> [!WARNING]
+> 这份报告是历史生成产物，不代表 2026-03-20 当前已核验结论。
+> 其中关于 `HydrostaticCanalSolver vs HEC-RAS` 的“零误差”“超越商业级”等表述，已被后续证据链复核推翻或暂停采信。
+> 当前应优先参考：
+> - `reports/hydromind_hydrostatic_simulation_report.md`
+> - `reports/hydromind_hydrostatic_benchmark_reconciliation.md`
+> 原因：仓库中的 HEC-RAS steady fixture 仍处于 `external_review_needed / repo_fixture_only` 状态，且旧测试存在平均值与上游值混比的口径错位。
+
 **生成时间**: 2025-11-20  
 **报告版本**: v1.0.0  
 **对标软件**: HEC-RAS, EPANET, HAMMER, MIKE 11

@@ -21,6 +21,7 @@ sys.path.insert(0, str(project_root))
 
 # ========== 基础库导入（必须）==========
 from solvers.godunov_fvm_solver import GodunvFVMSolver
+from solvers.steady_profile_solver import SteadyProfileSolver
 from utils.canal_utils import compute_steady_uniform_flow
 from tests.fixtures.standard_cases import StandardCases, ValidationHelpers
 
@@ -53,7 +54,6 @@ class TestGodunov商业对标:
         case = StandardCases.hec_ras_steady_flow()
         params = case["parameters"]
         expected = case["expected_results"]
-        tol = case["tolerance"]
 
         print(f"\n案例: {case['name']}")
         print(f"描述: {case['description']}")
@@ -97,6 +97,19 @@ class TestGodunov商业对标:
         print(f"\n初始水深: {h_init_uniform:.3f} m")
         print(f"网格数: {n_cells}")
 
+        reference_solver = SteadyProfileSolver(
+            length=params["length"],
+            B=params["width"],
+            S0=params["slope"],
+            n=params["manning_n"],
+        )
+        reference = reference_solver.solve_without_structures(
+            Q=params["Q"],
+            h_downstream=params["h_downstream"],
+            nx=201,
+        )
+        h_reference = np.asarray(reference["h"])
+
         # 4. 运行到稳态（至少 1000 步）
         print("\n运行稳态计算...")
 
@@ -122,6 +135,11 @@ class TestGodunov商业对标:
         h_downstream = solver.h[-1]
         h_average = np.mean(solver.h)
         Q_average = np.mean(solver.Q)
+        h_ref_upstream = h_reference[0]
+        h_ref_average = float(np.mean(h_reference))
+        upstream_error_pct = abs(h_upstream - h_ref_upstream) / h_ref_upstream * 100
+        average_error_pct = abs(h_average - h_ref_average) / h_ref_average * 100
+        fixture_upstream_error_pct = abs(h_upstream - expected["h_upstream"]) / expected["h_upstream"] * 100
 
         # 计算平均速度和 Froude 数
         v_average = Q_average / (params["width"] * h_average)
@@ -132,9 +150,14 @@ class TestGodunov商业对标:
         print(f"  上游水深: {h_upstream:.3f} m")
         print(f"  下游水深: {h_downstream:.3f} m")
         print(f"  平均水深: {h_average:.3f} m")
+        print(f"  SteadyProfile 上游参考: {h_ref_upstream:.3f} m")
+        print(f"  SteadyProfile 平均参考: {h_ref_average:.3f} m")
         print(f"  平均流量: {Q_average:.3f} m³/s")
         print(f"  平均速度: {v_average:.3f} m/s")
         print(f"  Froude数: {froude_avg:.3f}")
+        print(f"  上游误差 vs SteadyProfile: {upstream_error_pct:.3f}%")
+        print(f"  平均误差 vs SteadyProfile: {average_error_pct:.3f}%")
+        print(f"  上游误差 vs 存档 fixture: {fixture_upstream_error_pct:.3f}%")
 
         # 6. 验证质量守恒
         Q_in = solver.Q[0]
@@ -152,6 +175,12 @@ class TestGodunov商业对标:
         assert not np.any(np.isnan(solver.h)), "Solution contains NaN values"
         assert not np.any(np.isnan(solver.Q)), "Discharge contains NaN values"
         assert mass_error < 10, f"Mass conservation error too large: {mass_error:.6f}%"
+        assert upstream_error_pct < 2.0, (
+            f"Upstream depth error vs SteadyProfile too large: {upstream_error_pct:.3f}%"
+        )
+        assert average_error_pct < 2.0, (
+            f"Average depth error vs SteadyProfile too large: {average_error_pct:.3f}%"
+        )
 
         print("\n✅ GodunvFVMSolver vs HEC-RAS 对标测试完成！")
 

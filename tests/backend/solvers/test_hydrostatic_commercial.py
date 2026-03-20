@@ -22,6 +22,7 @@ sys.path.insert(0, str(project_root))
 # ========== 基础库导入（必须）==========
 from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
 from solvers.gate import SluiceGate
+from solvers.steady_profile_solver import SteadyProfileSolver
 from utils.canal_utils import compute_steady_uniform_flow
 from tests.fixtures.standard_cases import StandardCases, ValidationHelpers
 
@@ -107,7 +108,7 @@ class TestHydrostatic商业对标:
         result = solver.solve_steady_state(
             Q_target=params["Q"],
             h_downstream=params["h_downstream"],
-            max_iterations=100,
+            max_iterations=400,
             convergence_tol=0.05,
             verbose=True
         )
@@ -135,19 +136,57 @@ class TestHydrostatic商业对标:
         print(f"  平均速度: {v_average:.3f} m/s")
         print(f"  Froude数: {froude_avg:.3f}")
 
-        # 6. 验证
+        # 6. 构造同工况独立稳态参考，避免把平均值和上游值混比
+        steady_ref = SteadyProfileSolver(
+            length=params["length"],
+            B=params["width"],
+            S0=params["slope"],
+            n=params["manning_n"],
+            g=9.81,
+        )
+        ref_result = steady_ref.solve_without_structures(
+            Q=params["Q"],
+            h_downstream=params["h_downstream"],
+            nx=solver.nx,
+            method="shooting",
+        )
+        ref_h = np.asarray(ref_result["h"], dtype=float)
+        ref_upstream = float(ref_h[0])
+        ref_average = float(np.mean(ref_h))
+
+        # 7. 验证
         Q_error_pct = abs(Q_average - params["Q"]) / params["Q"] * 100
-        h_error_pct = abs(h_average - expected["h_upstream"]) / expected["h_upstream"] * 100
+        upstream_error_vs_fixture_pct = abs(h_upstream - expected["h_upstream"]) / expected["h_upstream"] * 100
+        average_error_vs_fixture_pct = abs(h_average - expected["h_average"]) / expected["h_average"] * 100
+        upstream_error_vs_ref_pct = abs(h_upstream - ref_upstream) / ref_upstream * 100
+        average_error_vs_ref_pct = abs(h_average - ref_average) / ref_average * 100
+        legacy_misaligned_metric_pct = abs(h_average - expected["h_upstream"]) / expected["h_upstream"] * 100
 
         print(f"\n验证结果:")
         print(f"  流量误差: {Q_error_pct:.4f}%")
-        print(f"  水深误差: {h_error_pct:.4f}%")
+        print(f"  上游水深误差 vs fixture: {upstream_error_vs_fixture_pct:.4f}%")
+        print(f"  平均水深误差 vs fixture 平均值: {average_error_vs_fixture_pct:.4f}%")
+        print(f"  上游水深误差 vs SteadyProfile: {upstream_error_vs_ref_pct:.4f}%")
+        print(f"  平均水深误差 vs SteadyProfile: {average_error_vs_ref_pct:.4f}%")
+        print(f"  旧错位口径(平均水深 vs fixture上游): {legacy_misaligned_metric_pct:.4f}%")
 
-        # 7. 断言验证
+        if case.get("verification_status") == "external_review_needed":
+            print("  [PROVENANCE] Fixture remains under external review; aligned SteadyProfile metrics are currently the more reliable repo-local reference.")
+
+        # 8. 断言验证
+        assert result.get("converged", False), "Steady commercial benchmark should converge under the configured iteration budget"
         assert h_upstream > 0, f"Upstream depth should be positive, got {h_upstream}"
         assert h_downstream > 0, f"Downstream depth should be positive, got {h_downstream}"
         assert not np.any(np.isnan(solver.h)), "Solution contains NaN values"
         assert Q_error_pct < 50, f"Flow rate error too large: {Q_error_pct:.4f}%"
+        assert upstream_error_vs_ref_pct < 2.0, (
+            f"Upstream depth should stay within 2% of SteadyProfile for the disputed HEC-RAS case, "
+            f"got {upstream_error_vs_ref_pct:.4f}%"
+        )
+        assert average_error_vs_ref_pct < 2.0, (
+            f"Average depth should stay within 2% of SteadyProfile for the disputed HEC-RAS case, "
+            f"got {average_error_vs_ref_pct:.4f}%"
+        )
 
         print("\n✅ HydrostaticCanalSolver vs HEC-RAS 对标测试通过！")
 

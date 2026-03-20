@@ -18,16 +18,22 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import sys
+import threading
+import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from urllib.error import URLError
+from urllib.request import Request, urlopen
 from typing import Any
 
-from mcp_server.config import HOST, SERVER_PORT, LOG_LEVEL, ENGINE_NAME
+from mcp_server.config import HOST, SERVER_PORT, LOG_LEVEL, ENGINE_NAME, ENGINE_VERSION, ENGINE_CAPABILITIES
 from mcp_server.adapters.simulator_adapter import HydroClaudeSimulator
 from mcp_server.adapters.controller_adapter import HydroClaudeController
 from mcp_server.adapters.mcp_tool_adapter import HydroClaudeMCPTool
 
 logger = logging.getLogger(__name__)
+_SERVER_TRANSPORT = os.environ.get("HYDROCLAUDE_MCP_TRANSPORT", "http").lower()
 
 # ======================================================================
 # FastMCP server (preferred)
@@ -117,6 +123,268 @@ def _create_fastmcp_server() -> "FastMCP":
             "max_iter": max_iter,
             "tol": tol,
         })
+
+    @mcp.tool()
+    def run_network_benchmark(
+        nodes: list[dict],
+        pipes: list[dict],
+        max_iter: int = 100,
+        tol: float = 1e-6,
+        epanet_units: str = "LPS",
+        headloss_model: str = "D-W",
+        inp_path: str | None = None,
+    ) -> dict:
+        """Run Hardy-Cross and compare against a real EPANET reference.
+
+        Args:
+            nodes: [{id, type, elevation, demand?, head?}, ...]
+            pipes: [{id, from, to, length, diameter, roughness}, ...]
+            max_iter: Maximum Hardy-Cross iterations.
+            tol: Convergence tolerance (m3/s).
+            epanet_units: EPANET input flow units.
+            headloss_model: EPANET headloss model ("D-W" or "H-W").
+            inp_path: Optional path for generated .inp file.
+
+        Returns:
+            Hardy-Cross results, EPANET results, and comparison metrics.
+        """
+        tool = HydroClaudeMCPTool()
+        payload: dict[str, Any] = {
+            "nodes": nodes,
+            "pipes": pipes,
+            "max_iter": max_iter,
+            "tol": tol,
+            "epanet_units": epanet_units,
+            "headloss_model": headloss_model,
+        }
+        if inp_path is not None:
+            payload["inp_path"] = inp_path
+        return tool.call("run_network_benchmark", payload)
+
+    @mcp.tool()
+    def run_open_channel_benchmark(
+        length: float = 1000.0,
+        width: float = 10.0,
+        channel_height: float = 5.0,
+        slope: float = 0.001,
+        manning_n: float = 0.025,
+        discharge: float = 50.0,
+        h_downstream: float = 2.0,
+        dx: float = 50.0,
+        duration_hours: float = 6.0,
+        inp_path: str | None = None,
+    ) -> dict:
+        """Run a real SWMM open-channel benchmark.
+
+        Args:
+            length: Channel length in metres.
+            width: Rectangular channel width in metres.
+            channel_height: Channel wall height in metres.
+            slope: Bed slope.
+            manning_n: Manning roughness.
+            discharge: Upstream inflow (m3/s).
+            h_downstream: Downstream fixed depth (m).
+            dx: SWMM reach length (m).
+            duration_hours: SWMM simulation duration in hours.
+            inp_path: Optional output path for generated SWMM input file.
+
+        Returns:
+            SWMM, HydroClaude, and steady-profile comparison data.
+        """
+        tool = HydroClaudeMCPTool()
+        payload: dict[str, Any] = {
+            "length": length,
+            "width": width,
+            "channel_height": channel_height,
+            "slope": slope,
+            "manning_n": manning_n,
+            "discharge": discharge,
+            "h_downstream": h_downstream,
+            "dx": dx,
+            "duration_hours": duration_hours,
+        }
+        if inp_path is not None:
+            payload["inp_path"] = inp_path
+        return tool.call("run_open_channel_benchmark", payload)
+
+    @mcp.tool()
+    def get_hec_ras_benchmark_status(
+        case_name: str = "hec_ras_steady_flow_example_3_1",
+    ) -> dict:
+        """Inspect HEC-RAS runtime and benchmark-case readiness.
+
+        Args:
+            case_name: Engineering benchmark case directory name under
+                ``validation_cases/engineering``.
+
+        Returns:
+            Runtime availability, provenance-scaffold inventory, and whether
+            a true external HEC-RAS run is currently possible.
+        """
+        tool = HydroClaudeMCPTool()
+        return tool.call("get_hec_ras_benchmark_status", {"case_name": case_name})
+
+    @mcp.tool()
+    def run_hec_ras_sample_benchmark(
+        output_root: str | None = None,
+    ) -> dict:
+        """Run the official HEC-RAS 6.6 mixed-flow sample benchmark.
+
+        Args:
+            output_root: Optional folder for extracted sample project files.
+
+        Returns:
+            Real HEC-RAS sample results, Hydrostatic comparison, and metrics.
+        """
+        tool = HydroClaudeMCPTool()
+        payload: dict[str, Any] = {}
+        if output_root is not None:
+            payload["output_root"] = output_root
+        return tool.call("run_hec_ras_sample_benchmark", payload)
+
+    @mcp.tool()
+    def summarize_hec_ras_project(
+        project_path: str,
+        include_tables: bool = True,
+    ) -> dict:
+        """Summarize a local HEC-RAS project via ras-commander metadata.
+
+        Args:
+            project_path: Path to a HEC-RAS project directory.
+            include_tables: Whether to include plan/geometry/flow tables.
+
+        Returns:
+            Structured project inventory and metadata tables.
+        """
+        tool = HydroClaudeMCPTool()
+        return tool.call("summarize_hec_ras_project", {
+            "project_path": project_path,
+            "include_tables": include_tables,
+        })
+
+    @mcp.tool()
+    def read_hec_ras_plan_description(
+        project_path: str,
+        plan_number: str,
+    ) -> dict:
+        """Read a HEC-RAS plan description block.
+
+        Args:
+            project_path: Path to a HEC-RAS project directory.
+            plan_number: Plan number such as ``01`` or ``1``.
+
+        Returns:
+            Structured plan description payload.
+        """
+        tool = HydroClaudeMCPTool()
+        return tool.call("read_hec_ras_plan_description", {
+            "project_path": project_path,
+            "plan_number": plan_number,
+        })
+
+    @mcp.tool()
+    def get_hec_ras_compute_messages(
+        project_path: str,
+        plan_number: str,
+    ) -> dict:
+        """Extract compute messages from a HEC-RAS plan HDF.
+
+        Args:
+            project_path: Path to a HEC-RAS project directory.
+            plan_number: Plan number such as ``01`` or ``1``.
+
+        Returns:
+            HDF path, preview lines, and raw compute messages text.
+        """
+        tool = HydroClaudeMCPTool()
+        return tool.call("get_hec_ras_compute_messages", {
+            "project_path": project_path,
+            "plan_number": plan_number,
+        })
+
+    @mcp.tool()
+    def get_hec_ras_plan_results_summary(
+        project_path: str,
+        plan_number: str,
+    ) -> dict:
+        """Read plan-level summary tables from a HEC-RAS plan HDF."""
+        tool = HydroClaudeMCPTool()
+        return tool.call("get_hec_ras_plan_results_summary", {
+            "project_path": project_path,
+            "plan_number": plan_number,
+        })
+
+    @mcp.tool()
+    def get_hec_ras_hdf_structure(
+        hdf_path: str,
+        group_path: str = "/",
+        paths_only: bool = True,
+    ) -> dict:
+        """Explore the structure of a HEC-RAS HDF file."""
+        tool = HydroClaudeMCPTool()
+        return tool.call("get_hec_ras_hdf_structure", {
+            "hdf_path": hdf_path,
+            "group_path": group_path,
+            "paths_only": paths_only,
+        })
+
+    @mcp.tool()
+    def get_hec_ras_projection_info(hdf_path: str) -> dict:
+        """Read projection WKT from a HEC-RAS HDF file."""
+        tool = HydroClaudeMCPTool()
+        return tool.call("get_hec_ras_projection_info", {"hdf_path": hdf_path})
+
+    @mcp.tool()
+    def hecras_project_summary(project_path: str, include_tables: bool = True) -> dict:
+        """ras-commander compatible alias for HEC-RAS project summary."""
+        tool = HydroClaudeMCPTool()
+        return tool.call("hecras_project_summary", {
+            "project_path": project_path,
+            "include_tables": include_tables,
+        })
+
+    @mcp.tool()
+    def read_plan_description(project_path: str, plan_number: str) -> dict:
+        """ras-commander compatible alias for plan description."""
+        tool = HydroClaudeMCPTool()
+        return tool.call("read_plan_description", {
+            "project_path": project_path,
+            "plan_number": plan_number,
+        })
+
+    @mcp.tool()
+    def get_compute_messages(project_path: str, plan_number: str) -> dict:
+        """ras-commander compatible alias for compute messages."""
+        tool = HydroClaudeMCPTool()
+        return tool.call("get_compute_messages", {
+            "project_path": project_path,
+            "plan_number": plan_number,
+        })
+
+    @mcp.tool()
+    def get_plan_results_summary(project_path: str, plan_number: str) -> dict:
+        """ras-commander compatible alias for plan results summary."""
+        tool = HydroClaudeMCPTool()
+        return tool.call("get_plan_results_summary", {
+            "project_path": project_path,
+            "plan_number": plan_number,
+        })
+
+    @mcp.tool()
+    def get_hdf_structure(hdf_path: str, group_path: str = "/", paths_only: bool = True) -> dict:
+        """ras-commander compatible alias for HDF structure browsing."""
+        tool = HydroClaudeMCPTool()
+        return tool.call("get_hdf_structure", {
+            "hdf_path": hdf_path,
+            "group_path": group_path,
+            "paths_only": paths_only,
+        })
+
+    @mcp.tool()
+    def get_projection_info(hdf_path: str) -> dict:
+        """ras-commander compatible alias for HDF projection info."""
+        tool = HydroClaudeMCPTool()
+        return tool.call("get_projection_info", {"hdf_path": hdf_path})
 
     @mcp.tool()
     def run_steady_state(
@@ -275,15 +543,76 @@ class _JsonRpcHandler(BaseHTTPRequestHandler):
 def create_server() -> Any:
     """Create the MCP server instance.
 
-    Returns a FastMCP server if the ``mcp`` package is available,
-    otherwise an ``HTTPServer`` with the JSON-RPC fallback handler.
+    By default, HydroClaude serves HTTP JSON-RPC on ``SERVER_PORT`` so that
+    HydroMind gateway components can call it over the network. Set
+    ``HYDROCLAUDE_MCP_TRANSPORT=stdio`` to force stdio FastMCP mode.
     """
-    if _FASTMCP_AVAILABLE:
+    if _FASTMCP_AVAILABLE and _SERVER_TRANSPORT == "stdio":
         logger.info("Using FastMCP transport")
         return _create_fastmcp_server()
     else:
-        logger.info("FastMCP not available -- falling back to JSON-RPC on port %d", SERVER_PORT)
+        logger.info(
+            "Using HTTP JSON-RPC transport on %s:%d (FastMCP stdio=%s)",
+            HOST,
+            SERVER_PORT,
+            "enabled" if _FASTMCP_AVAILABLE else "unavailable",
+        )
         return HTTPServer((HOST, SERVER_PORT), _JsonRpcHandler)
+
+
+def _build_registration_payload() -> dict[str, Any]:
+    client_host = "127.0.0.1" if HOST in {"0.0.0.0", "::"} else HOST
+    endpoint = f"http://{client_host}:{SERVER_PORT}"
+    tool = HydroClaudeMCPTool()
+    return {
+        "engine_id": ENGINE_NAME,
+        "name": ENGINE_NAME,
+        "version": ENGINE_VERSION,
+        "transport": "jsonrpc",
+        "endpoint": endpoint,
+        "health_url": endpoint,
+        "tools": [item["name"] for item in tool.list_tools()],
+        "capabilities": ENGINE_CAPABILITIES,
+        "source": "hydroclaude_server",
+    }
+
+
+def _register_with_gateway_once() -> bool:
+    gateway_host = os.environ.get("HYDROMAS_GATEWAY_HOST", "127.0.0.1")
+    gateway_port = int(os.environ.get("HYDROMAS_GATEWAY_PORT", "8040"))
+    url = f"http://{gateway_host}:{gateway_port}/api/gateway/engines/register"
+    payload = _build_registration_payload()
+    body = json.dumps(payload).encode("utf-8")
+    request = Request(
+        url,
+        data=body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urlopen(request, timeout=5) as response:
+            response.read()
+        logger.info("Registered HydroClaude with HydroMAS gateway at %s", url)
+        return True
+    except URLError as exc:
+        logger.warning("HydroClaude gateway registration failed: %s", exc)
+        return False
+
+
+def _start_gateway_registration_thread() -> None:
+    if os.environ.get("HYDROCLAUDE_DISABLE_GATEWAY_REGISTER", "").lower() in {"1", "true", "yes"}:
+        return
+    if _SERVER_TRANSPORT != "http":
+        return
+
+    def _worker() -> None:
+        time.sleep(1.0)
+        for _ in range(5):
+            if _register_with_gateway_once():
+                return
+            time.sleep(2.0)
+
+    threading.Thread(target=_worker, daemon=True).start()
 
 
 def main() -> None:
@@ -295,11 +624,12 @@ def main() -> None:
 
     server = create_server()
 
-    if _FASTMCP_AVAILABLE:
+    if _FASTMCP_AVAILABLE and _SERVER_TRANSPORT == "stdio":
         logger.info("Starting HydroClaude MCP server (FastMCP)")
         server.run()
     else:
         logger.info("Starting HydroClaude MCP server (JSON-RPC) on %s:%d", HOST, SERVER_PORT)
+        _start_gateway_registration_thread()
         try:
             server.serve_forever()
         except KeyboardInterrupt:
