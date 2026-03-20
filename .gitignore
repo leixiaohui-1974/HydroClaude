@@ -49,3 +49,12 @@ coverage.xml
 .specify/memory/*.tmp
 specs/*/tmp/
 node_modules/
+.three_engine/
+
+# Generated analysis outputs
+reports/
+OVERNIGHT_REPORT.md
+SIMULATION_RESULTS_REVIEW.md
+HYDROSTATIC_HECRAS_DISCREPANCY.md
+validation_cases/hec_ras/
+validation_cases/engineering/hec_ras_steady_flow_example_3_1/
