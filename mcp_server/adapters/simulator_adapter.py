@@ -135,6 +135,7 @@ class HydroClaudeSimulator:
 
     def _run_godunov(self, params: dict, duration: float, dt: float) -> dict:
         from solvers.godunov_fvm_solver import GodunvFVMSolver
+        from utils.canal_utils import compute_steady_uniform_flow
 
         width = float(params.get("width", params.get("B", 10.0)))
         length = float(params.get("length", 1000.0))
@@ -156,9 +157,32 @@ class HydroClaudeSimulator:
             riemann_solver=riemann,
         )
 
+        Q_upstream = float(
+            params.get("Q_upstream", params.get("Q", self._boundary.get("Q_upstream", 10.0)))
+        )
+        h_downstream = params.get(
+            "h_downstream",
+            params.get("initial_depth", self._boundary.get("h_downstream", None)),
+        )
+        if h_downstream is None:
+            h_downstream = compute_steady_uniform_flow(
+                Q=Q_upstream,
+                B=width,
+                S0=float(slope),
+                n=manning_n,
+            )
+        h_downstream = float(h_downstream)
+
+        h_init = np.ones(n_cells) * h_downstream
+        Q_init = np.ones(n_cells) * Q_upstream
+        bc_left = {"type": "Q", "value": Q_upstream}
+        bc_right = {"type": "h", "value": h_downstream}
+        solver.initialize(h_init, Q_init, bc_left, bc_right)
+
         # Time-stepping loop
         t = 0.0
         h_history: list[list[float]] = []
+        q_history: list[list[float]] = []
         time_points: list[float] = []
         step_count = 0
         save_every = max(1, int(10.0 / max(dt, 1e-6)))
@@ -171,17 +195,32 @@ class HydroClaudeSimulator:
             step_count += 1
             if step_count % save_every == 0:
                 h_history.append(solver.h.tolist())
+                q_history.append(solver.Q.tolist())
                 time_points.append(t)
 
         self._state = {
             "h": solver.h.tolist(),
             "Q": solver.Q.tolist() if hasattr(solver, "Q") else [],
         }
+        q_in = float(solver.Q[0]) if len(solver.Q) else 0.0
+        q_out = float(solver.Q[-1]) if len(solver.Q) else 0.0
+        mass_error = abs(q_in - q_out) / abs(q_in) * 100 if abs(q_in) > 1e-12 else 0.0
         return {
             "time": time_points,
             "h_history": h_history,
+            "Q_history": q_history,
             "h_final": solver.h.tolist(),
+            "Q_final": solver.Q.tolist(),
             "steps": step_count,
+            "summary": {
+                "Q_in": q_in,
+                "Q_out": q_out,
+                "mass_error_percent": mass_error,
+                "h_upstream": float(solver.h[0]) if len(solver.h) else 0.0,
+                "h_downstream": float(solver.h[-1]) if len(solver.h) else 0.0,
+                "Q_mean": float(np.mean(solver.Q)) if len(solver.Q) else 0.0,
+                "h_mean": float(np.mean(solver.h)) if len(solver.h) else 0.0,
+            },
         }
 
     def _run_steady(self, params: dict) -> dict:

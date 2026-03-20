@@ -156,6 +156,35 @@ class Test简单验证:
         assert h > 0
         assert h < 10.0  # 合理范围
 
+    def test_05_均匀目标快速返回保持均匀剖面(self):
+        """当下游边界等于正常水深时，快速返回应保持物理一致的均匀流。"""
+        Q = 10.0
+        B = 5.0
+        S0 = 0.001
+        n = 0.025
+
+        solver = HydrostaticCanalSolver(
+            length=1000.0,
+            nx=80,
+            B=B,
+            S0=S0,
+            n=n,
+        )
+
+        h_normal = compute_steady_uniform_flow(Q, B, S0, n)
+        result = solver.solve_steady_state(
+            Q_target=Q,
+            h_downstream=h_normal,
+            max_iterations=50,
+            convergence_tol=0.01,
+            verbose=False,
+        )
+
+        assert result["converged"] is True
+        assert result["iterations"] == 0
+        assert np.allclose(solver.h, solver.h[0])
+        assert np.mean(solver.get_Q()) == pytest.approx(Q, rel=1e-6)
+
 
 if __name__ == '__main__':
     pytest.main([__file__, '-v', '-s'])

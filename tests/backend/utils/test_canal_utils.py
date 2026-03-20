@@ -19,10 +19,20 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 from utils.canal_utils import (
     compute_steady_uniform_flow,
     compute_critical_depth,
-    compute_froude_number
+    compute_froude_number,
+    compute_froude_scalar,
+    compute_manning_friction_slope,
+    compute_wave_speed,
+    compute_cfl_number,
+    check_numerical_validity,
+    compute_mass_balance,
+    get_convergence_metrics,
+    setup_chinese_fonts,
 )
 import numpy as np
 import pytest
+import matplotlib.pyplot as plt
+from fixtures.standard_cases import StandardCases
 
 
 class Test水力学函数:
@@ -279,6 +289,129 @@ class Test水力学函数:
         assert h > 0.1, "水深不应过小（可能有误）"
         
         print(f"   ✅ 边界条件处理正确")
+
+    def test_froude_scalar_zero_depth_returns_inf(self):
+        """零水深应返回无穷大，避免除零。"""
+        Fr = compute_froude_scalar(Q=5.0, B=2.0, h=0.0)
+        assert np.isinf(Fr)
+
+    def test_setup_chinese_fonts_updates_matplotlib_rcparams(self):
+        """字体配置应写入 matplotlib 全局参数，避免中文图表退化。"""
+        setup_chinese_fonts(font_size=14)
+        assert plt.rcParams["font.size"] == 14
+        assert plt.rcParams["axes.titlesize"] == 16
+        assert plt.rcParams["axes.unicode_minus"] is False
+        assert "SimHei" in plt.rcParams["font.sans-serif"]
+
+    def test_wave_speed_and_cfl_follow_theory(self):
+        """波速和 CFL 数应符合浅水波基础关系。"""
+        h = np.array([1.0, 4.0])
+        V = np.array([2.0, -1.0])
+        c = compute_wave_speed(h)
+        assert np.allclose(c, np.sqrt(9.81 * h))
+
+        cfl = compute_cfl_number(V, c, dx=10.0, dt=1.0)
+        assert np.allclose(cfl, (np.abs(V) + c) / 10.0)
+
+    @pytest.mark.parametrize(
+        "h,Q,expected_fragment",
+        [
+            (np.array([1.0, np.nan]), np.array([1.0, 1.0]), "contains NaN"),
+            (np.array([1.0, 1.0]), np.array([1.0, np.inf]), "contains Inf"),
+            (np.array([-0.1, 1.0]), np.array([1.0, 1.0]), "contains negative"),
+            (np.array([1.0, 1.0]), np.array([-1.0, 1.0]), "contains negative"),
+        ],
+    )
+    def test_numerical_validity_rejects_nonphysical_states(self, h, Q, expected_fragment):
+        """数值校验应识别 NaN、Inf 和非物理负值。"""
+        valid, message = check_numerical_validity(h, Q, ("depth", "discharge"))
+        assert valid is False
+        assert expected_fragment in message
+
+    def test_mass_balance_uses_first_and_last_snapshots(self):
+        """质量平衡只应比较初末时刻总体积。"""
+        history = [
+            np.array([1.0, 1.0, 1.0]),
+            np.array([1.5, 1.5, 1.5]),
+            np.array([2.0, 2.0, 2.0]),
+        ]
+        initial, final = compute_mass_balance(history, B=5.0, dx=10.0)
+        assert initial == pytest.approx(150.0)
+        assert final == pytest.approx(300.0)
+
+    def test_mass_balance_empty_history_returns_zero(self):
+        """空历史记录不应抛错。"""
+        initial, final = compute_mass_balance([], B=5.0, dx=10.0)
+        assert initial == 0.0
+        assert final == 0.0
+
+    def test_manning_friction_slope_matches_manual_reference(self):
+        """摩阻坡度应与 Manning 公式逐点一致，并在干床处归零。"""
+        h = np.array([2.0, 0.0, 1.5])
+        Q = np.array([10.0, 4.0, 6.0])
+        B = 5.0
+        n = 0.025
+
+        sf = compute_manning_friction_slope(h, Q, B=B, n=n)
+
+        expected0_area = B * h[0]
+        expected0_radius = expected0_area / (B + 2 * h[0])
+        expected0_velocity = Q[0] / expected0_area
+        expected0 = (n * abs(expected0_velocity)) ** 2 / (expected0_radius ** (4.0 / 3.0))
+
+        expected2_area = B * h[2]
+        expected2_radius = expected2_area / (B + 2 * h[2])
+        expected2_velocity = Q[2] / expected2_area
+        expected2 = (n * abs(expected2_velocity)) ** 2 / (expected2_radius ** (4.0 / 3.0))
+
+        assert sf[0] == pytest.approx(expected0)
+        assert sf[1] == 0.0
+        assert sf[2] == pytest.approx(expected2)
+
+    def test_numerical_validity_accepts_physical_state(self):
+        """有限且非负的水深/流量应通过校验。"""
+        valid, message = check_numerical_validity(
+            np.array([0.5, 1.0, 2.0]),
+            np.array([0.0, 1.5, 3.0]),
+            ("depth", "discharge"),
+        )
+        assert valid is True
+        assert message == ""
+
+    def test_mike11_reference_parameters_reproduce_manning_depth(self):
+        """MIKE11 参数集下，Manning 公式应给出稳定一致的正常水深。"""
+        case = StandardCases.mike11_steady_uniform_flow()
+        params = case["parameters"]
+
+        h = compute_steady_uniform_flow(
+            Q=params["Q"],
+            B=params["width"],
+            S0=params["slope"],
+            n=params["manning_n"],
+        )
+
+        assert h == pytest.approx(3.8112833340466024, rel=1e-6)
+
+    def test_convergence_metrics_identify_steady_tail(self):
+        """后半段几乎不变时应判定收敛。"""
+        time = np.arange(12, dtype=float)
+        h_history = [np.array([1.0 + 1e-8 * i, 1.2 + 1e-8 * i]) for i in range(12)]
+        Q_history = [np.array([5.0 + 1e-8 * i, 5.0 + 1e-8 * i]) for i in range(12)]
+
+        metrics = get_convergence_metrics(time, h_history, Q_history)
+
+        assert bool(metrics["converged"]) is True
+        assert metrics["max_cv"] < 0.01
+
+    def test_convergence_metrics_require_enough_points(self):
+        """样本过少时不应误判为收敛。"""
+        metrics = get_convergence_metrics(
+            np.arange(5, dtype=float),
+            [np.array([1.0, 1.0])] * 5,
+            [np.array([5.0, 5.0])] * 5,
+        )
+        assert metrics["converged"] is False
+        assert "Insufficient data points" in metrics["message"]
 
 
 if __name__ == '__main__':

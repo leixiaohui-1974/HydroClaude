@@ -59,6 +59,13 @@ class TestHydrostatic商业对标:
         print(f"\n案例: {case['name']}")
         print(f"描述: {case['description']}")
         print(f"来源: {case['reference']}")
+        if "provenance_path" in case:
+            print(f"来源工件: {case['provenance_path']}")
+        if "verification_status" in case:
+            print(f"校验状态: {case['verification_status']}")
+        if "notes" in case:
+            for note in case["notes"]:
+                print(f"备注: {note}")
 
         # 2. 创建 HydrostaticCanalSolver（基础库 - 唯一推荐）
         solver = HydrostaticCanalSolver(
@@ -87,6 +94,12 @@ class TestHydrostatic商业对标:
         print(f"\n初始化:")
         print(f"  初始水深: {h_init_uniform:.3f} m")
         print(f"  目标流量: {params['Q']:.3f} m³/s")
+
+        fixture_gap_pct = abs(h_init_uniform - expected["h_upstream"]) / expected["h_upstream"] * 100
+        if fixture_gap_pct > 5.0:
+            print("  [DIAGNOSTIC] Disputed benchmark target detected:")
+            print(f"    Manning reference depth differs from stored HEC-RAS upstream depth by {fixture_gap_pct:.2f}%")
+            print("    Treat this case as an externally sourced benchmark requiring provenance review, not a Manning-consistency target.")
 
         # 4. 稳态求解（使用正确的API）
         print("\n稳态求解...")
@@ -163,6 +176,10 @@ class TestHydrostatic商业对标:
 
         print(f"\n案例: {case['name']}")
         print(f"描述: {case['description']}")
+        if "provenance_path" in case:
+            print(f"来源工件: {case['provenance_path']}")
+        if "verification_status" in case:
+            print(f"校验状态: {case['verification_status']}")
 
         # 2. 创建闸门
         gate = SluiceGate(
@@ -261,6 +278,13 @@ class TestHydrostatic商业对标:
 
         print(f"\n案例: {case['name']}")
         print(f"描述: {case['description']}")
+        if "provenance_path" in case:
+            print(f"来源工件: {case['provenance_path']}")
+        if "verification_status" in case:
+            print(f"校验状态: {case['verification_status']}")
+        if "notes" in case:
+            for note in case["notes"]:
+                print(f"备注: {note}")
 
         # 2. 创建求解器
         solver = HydrostaticCanalSolver(
@@ -282,6 +306,12 @@ class TestHydrostatic商业对标:
         print(f"\nManning 公式理论解:")
         print(f"  正常水深: {h_normal_theory:.3f} m")
         print(f"  理论水深: {expected['normal_depth']:.3f} m")
+
+        fixture_gap_pct = abs(h_normal_theory - expected["normal_depth"]) / expected["normal_depth"] * 100
+        if fixture_gap_pct > 5.0:
+            print("  [DIAGNOSTIC] Fixture inconsistency detected:")
+            print(f"    Stored benchmark depth differs from Manning reference by {fixture_gap_pct:.2f}%")
+            print("    This case should be treated as a disputed benchmark target, not a strict external truth.")
 
         # 4. 稳态求解
         print("\n稳态求解...")

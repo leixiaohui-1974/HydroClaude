@@ -13,9 +13,13 @@ Usage::
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
+import sys
+import threading
 import time
+from pathlib import Path
 from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
@@ -27,6 +31,35 @@ _DEFAULT_GATEWAY_PORT = 8040
 _DEFAULT_WRITER_PORT = 8033
 _DEFAULT_GATEWAY_HOST = "127.0.0.1"
 _DEFAULT_TIMEOUT = 10.0  # seconds
+
+
+def _run_coro_sync(coro):
+    """Run an async coroutine from sync code.
+
+    Uses ``asyncio.run`` in the normal case and falls back to a temporary
+    worker thread when the current thread already owns a running event loop.
+    """
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        return asyncio.run(coro)
+
+    result_box: dict[str, Any] = {}
+    error_box: dict[str, BaseException] = {}
+
+    def _worker() -> None:
+        try:
+            result_box["result"] = asyncio.run(coro)
+        except BaseException as exc:  # pragma: no cover - defensive bridge
+            error_box["error"] = exc
+
+    thread = threading.Thread(target=_worker, daemon=True)
+    thread.start()
+    thread.join()
+
+    if "error" in error_box:
+        raise error_box["error"]
+    return result_box.get("result")
 
 # ---------------------------------------------------------------------------
 # Helpers — HTTP transport via httpx (preferred) or requests fallback
@@ -172,6 +205,41 @@ def _local_generate_report(
             "json_path": json_path,
         },
     }
+
+
+def _find_hydrowriter_repo() -> Optional[Path]:
+    """Locate the sibling HydroWriter repository if present."""
+    here = Path(__file__).resolve()
+    candidates = [
+        here.parents[2] / "HydroWriter",
+        here.parents[1] / "HydroWriter",
+        Path.cwd().resolve().parents[0] / "HydroWriter" if len(Path.cwd().resolve().parents) > 0 else None,
+    ]
+    for candidate in candidates:
+        if candidate and candidate.exists() and (candidate / "hydrowriter" / "mcp_server.py").exists():
+            return candidate
+    return None
+
+
+def _call_inprocess_hydrowriter(tool_name: str, params: Dict[str, Any]) -> Dict[str, Any]:
+    """Invoke HydroWriter directly in-process when HTTP MCP is unavailable."""
+    repo_root = _find_hydrowriter_repo()
+    if repo_root is None:
+        raise FileNotFoundError("HydroWriter repository not found for in-process fallback")
+
+    repo_str = str(repo_root)
+    if repo_str not in sys.path:
+        sys.path.insert(0, repo_str)
+
+    from hydrowriter.mcp_server import HydroWriterMCPServer
+
+    server = HydroWriterMCPServer(config_path=str(repo_root / "configs" / "engines.yaml"))
+    handler = getattr(server, tool_name, None)
+    if handler is None:
+        raise AttributeError(f"HydroWriterMCPServer missing tool: {tool_name}")
+    if not callable(handler):
+        raise TypeError(f"HydroWriter tool is not callable: {tool_name}")
+    return _run_coro_sync(handler(**params))
 
 
 # ---------------------------------------------------------------------------
@@ -331,7 +399,16 @@ class ReportBridge:
             return response
         except Exception:
             logger.info(
-                "All remote backends unavailable — using local report generator"
+                "Remote HydroWriter unavailable — trying in-process HydroWriter"
+            )
+        try:
+            response = _call_inprocess_hydrowriter("write_chapter", params)
+            self.last_backend = "hydrowriter_inprocess"
+            response["backend"] = self.last_backend
+            return response
+        except Exception:
+            logger.info(
+                "In-process HydroWriter unavailable — using local report generator"
             )
             self.last_backend = "local"
             return _local_generate_report(
@@ -370,7 +447,16 @@ class ReportBridge:
             return response
         except Exception:
             logger.info(
-                "All remote backends unavailable — using local report generator"
+                "Remote HydroWriter unavailable — trying in-process HydroWriter"
+            )
+        try:
+            response = _call_inprocess_hydrowriter("write_chapter", params)
+            self.last_backend = "hydrowriter_inprocess"
+            response["backend"] = self.last_backend
+            return response
+        except Exception:
+            logger.info(
+                "In-process HydroWriter unavailable — using local report generator"
             )
             self.last_backend = "local"
             return _local_generate_report("validation", validation_data)
@@ -407,7 +493,16 @@ class ReportBridge:
             return response
         except Exception:
             logger.info(
-                "All remote backends unavailable — using local report generator"
+                "Remote HydroWriter unavailable — trying in-process HydroWriter"
+            )
+        try:
+            response = _call_inprocess_hydrowriter("write_chapter", params)
+            self.last_backend = "hydrowriter_inprocess"
+            response["backend"] = self.last_backend
+            return response
+        except Exception:
+            logger.info(
+                "In-process HydroWriter unavailable — using local report generator"
             )
             self.last_backend = "local"
             return _local_generate_report("convergence", convergence_data)

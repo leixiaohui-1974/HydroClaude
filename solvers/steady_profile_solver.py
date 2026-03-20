@@ -60,7 +60,7 @@ class SteadyProfileSolver:
 
         Sf = (n·V)² / R^(4/3)
         """
-        h_safe = max(h, 1e-6)
+        h_safe = np.maximum(h, 1e-6)
         A = self.B * h_safe
         P = self.B + 2 * h_safe
         R = A / P
@@ -71,7 +71,7 @@ class SteadyProfileSolver:
 
     def compute_froude(self, h: float, Q: float) -> float:
         """Froude"""
-        h_safe = max(h, 1e-6)
+        h_safe = np.maximum(h, 1e-6)
         A = self.B * h_safe
         V = Q / A
         Fr = V / np.sqrt(self.g * h_safe)
@@ -132,7 +132,7 @@ class SteadyProfileSolver:
                 # 
                 def residual(h_i):
                     dh_avg = self.dh_dx((h_i + h[i+1])/2, Q)
-                    return h_i - h[i+1] - dx * dh_avg
+                    return h_i - h[i+1] + dx * dh_avg
 
                 # 
                 if i == nx - 2:
@@ -143,8 +143,8 @@ class SteadyProfileSolver:
                 try:
                     h[i] = fsolve(residual, h_init)[0]
                 except Exception:
-                    # Euler
-                    h[i] = h[i+1] + dx * self.dh_dx(h[i+1], Q)
+                    # Backward Euler in physical x-direction.
+                    h[i] = h[i+1] - dx * self.dh_dx(h[i+1], Q)
 
         else:  # BVP method
             # scipyBVP

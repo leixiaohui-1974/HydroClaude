@@ -567,6 +567,58 @@ class TestPumpStationAdvanced:
         assert ft == "pump_off"
 
 
+class TestPumpStationSimplified:
+    """Test the simplified pump envelope and branch behavior."""
+
+    @pytest.fixture
+    def pump(self):
+        return PumpStationSimplified(
+            position=100.0,
+            width=4.0,
+            rated_flow=20.0,
+            rated_head=6.0,
+            max_overload_ratio=1.5,
+            min_suction_head=1.0,
+        )
+
+    def test_normal_regime_uses_requested_inflow(self, pump):
+        Q, flow_type = pump.calculate_discharge(2.0, 1.0, Q_upstream=18.0)
+        assert Q == pytest.approx(18.0)
+        assert flow_type == "normal"
+        assert pump.get_current_head() == pytest.approx(6.0)
+
+    def test_overload_regime_reduces_head(self, pump):
+        Q, flow_type = pump.calculate_discharge(2.0, 1.0, Q_upstream=24.0)
+        assert Q == pytest.approx(24.0)
+        assert flow_type == "overload"
+        assert 0.0 < pump.get_current_head() < pump.rated_head
+
+    def test_max_capacity_clamps_flow(self, pump):
+        Q, flow_type = pump.calculate_discharge(2.0, 1.0, Q_upstream=40.0)
+        assert Q == pytest.approx(pump.max_flow)
+        assert flow_type == "max_capacity"
+        assert pump.current_flow == pytest.approx(pump.max_flow)
+
+    def test_insufficient_water_and_shutdown_zero_output(self, pump):
+        Q_low, flow_low = pump.calculate_discharge(0.05, 1.0, Q_upstream=10.0)
+        assert Q_low == 0.0
+        assert flow_low == "insufficient_water"
+
+        pump.set_running_state(False)
+        Q_off, flow_off = pump.calculate_discharge(2.0, 1.0, Q_upstream=10.0)
+        assert Q_off == 0.0
+        assert flow_off == "pump_off"
+
+    def test_derivatives_and_repr_are_stateful(self, pump):
+        dQ_dh_up, dQ_dh_down = pump.calculate_discharge_derivatives(2.0, 1.0)
+        assert dQ_dh_up == pytest.approx(0.1)
+        assert dQ_dh_down == pytest.approx(0.0)
+
+        text = repr(pump)
+        assert "PumpStationSimplified" in text
+        assert "state=ON" in text
+
+
 # =====================================================================
 #  9. Zero Flow Conditions
 # =====================================================================

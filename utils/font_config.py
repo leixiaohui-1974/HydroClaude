@@ -6,9 +6,9 @@ Matplotlib中文字体配置
 解决matplotlib显示中文时的警告和方框问题
 """
 
-import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
+from matplotlib import font_manager as fm
 import warnings
 
 
@@ -31,22 +31,19 @@ def setup_chinese_font():
         'STHeiti',              # macOS 华文黑体
     ]
 
+    available_fonts = {f.name for f in fm.fontManager.ttflist}
+
     # 尝试找到可用的中文字体
     for font_name in font_candidates:
-        try:
-            # 测试字体是否可用
-            test_font = FontProperties(fname=None, family=font_name)
-
-            # 如果没有抛出异常，说明字体可用
-            plt.rcParams['font.sans-serif'] = [font_name] + plt.rcParams['font.sans-serif']
-            plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
-
-            # 抑制中文字符缺失警告
-            warnings.filterwarnings('ignore', category=UserWarning, module='matplotlib')
-
-            return font_name
-        except Exception:
+        if font_name not in available_fonts:
             continue
+
+        plt.rcParams['font.sans-serif'] = [font_name] + [
+            name for name in plt.rcParams['font.sans-serif'] if name != font_name
+        ]
+        plt.rcParams['axes.unicode_minus'] = False
+        warnings.filterwarnings('ignore', category=UserWarning, module='matplotlib')
+        return font_name
 
     # 如果没有找到合适的中文字体，使用fallback方案
     # 设置为不显示警告
@@ -72,12 +69,11 @@ def get_chinese_font():
         'Heiti SC',
     ]
 
+    available_fonts = {f.name for f in fm.fontManager.ttflist}
+
     for font_name in font_candidates:
-        try:
-            font = FontProperties(fname=None, family=font_name)
-            return font
-        except Exception:
-            continue
+        if font_name in available_fonts:
+            return FontProperties(family=font_name)
 
     return None
 

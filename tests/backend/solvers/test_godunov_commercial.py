@@ -57,6 +57,13 @@ class TestGodunov商业对标:
 
         print(f"\n案例: {case['name']}")
         print(f"描述: {case['description']}")
+        if "provenance_path" in case:
+            print(f"来源工件: {case['provenance_path']}")
+        if "verification_status" in case:
+            print(f"校验状态: {case['verification_status']}")
+        if "notes" in case:
+            for note in case["notes"]:
+                print(f"备注: {note}")
 
         # 2. 创建 GodunvFVMSolver（基础库）
         n_cells = 100

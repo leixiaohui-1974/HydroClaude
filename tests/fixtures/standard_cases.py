@@ -27,6 +27,15 @@ class StandardCases:
             "description": "简单矩形渠道恒定流",
             "category": "open_channel",
             "difficulty": "easy",
+            "reference_type": "external_benchmark",
+            "verification_status": "external_review_needed",
+            "provenance_path": "validation_cases/engineering/hec_ras_steady_flow_example_3_1/README.md",
+            "notes": [
+                "Externally sourced HEC-RAS comparison target.",
+                "Not Manning-uniform-flow consistent for the listed Q/B/S0/n parameters.",
+                "Hydraulic behavior is plausibly downstream-stage-controlled GVF, but the stored numbers have not been locally revalidated from source data.",
+                "See provenance_path for source audit status, reproduction checklist, and pending evidence.",
+            ],
             
             "parameters": {
                 "length": 1000.0,      # m
@@ -277,6 +286,13 @@ class StandardCases:
             "description": "稳态均匀流（Manning公式）",
             "category": "uniform_flow",
             "difficulty": "easy",
+            "reference_type": "analytical_reference",
+            "verification_status": "repo_recomputed",
+            "provenance_path": "validation_cases/analytical/steady_uniform_flow.py",
+            "notes": [
+                "Analytical Manning-theory reference.",
+                "Expected values were recomputed from the listed Q/B/S0/n parameters to keep the fixture internally consistent with repo utilities and tests.",
+            ],
             
             "parameters": {
                 "length": 5000.0,
@@ -288,10 +304,13 @@ class StandardCases:
             
             "expected_results": {
                 # Manning 公式理论解
-                "normal_depth": 2.87,       # m
-                "velocity": 2.32,           # m/s
-                "froude": 0.44,             # 亚临界流
-                "shear_stress": 22.5,       # Pa
+                # Recomputed from the listed Q/B/S0/n parameters so the
+                # fixture remains internally consistent with the analytical
+                # reference used by the repo tests and utilities.
+                "normal_depth": 3.8112833340466024,   # m
+                "velocity": 1.7491920915751968,       # m/s
+                "froude": 0.2860667510365494,         # 亚临界流
+                "shear_stress": 19.83259816034759,    # Pa
             },
             
             "tolerance": {

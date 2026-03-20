@@ -731,7 +731,7 @@ class GodunvFVMSolver:
         else:
             # hQ
             # NumbaHLLHLLC
-            if self.use_numba and self.riemann_solver in ['hll', 'hllc', 'exact']:
+            if self.use_numba and not self.well_balanced and self.riemann_solver in ['hll', 'hllc', 'exact']:
                 # [JIT] Numba acceleration path
                 if self.order == 2:
                     h_L, h_R = muscl_reconstruction_numba(h_ext)
@@ -768,9 +768,9 @@ class GodunvFVMSolver:
                         h_L, h_R, Q_L, Q_R, self.B, self.g, self.eps_dry
                     )
 
-                #  - ghost cells
-                # TVD-RK2
-                # self._enforce_boundary_fluxes(F_h, F_Q, h, Q)
+                # Enforce boundary fluxes so prescribed Q/h boundaries remain
+                # consistent with the finite-volume update.
+                self._enforce_boundary_fluxes(F_h, F_Q, h, Q)
 
                 # 
                 self.last_F_h = F_h.copy()
@@ -821,9 +821,9 @@ class GodunvFVMSolver:
                     h_L[i], Q_L[i], h_R[i], Q_R[i]
                 )
 
-        #  - ghost cells
-        # TVD-RK2
-        # self._enforce_boundary_fluxes(F_h, F_Q, h, Q)
+        # Enforce boundary fluxes so prescribed Q/h boundaries remain
+        # consistent with the finite-volume update.
+        self._enforce_boundary_fluxes(F_h, F_Q, h, Q)
 
         # 
         self.last_F_h = F_h.copy()
@@ -852,6 +852,15 @@ class GodunvFVMSolver:
             # i
             dh_dt[i] = -(F_h[i+1] - F_h[i]) / self.dx
             dQ_dt[i] = -(F_Q[i+1] - F_Q[i]) / self.dx
+
+            if self.well_balanced:
+                # Hydrostatic reconstruction needs a matching geometric
+                # correction so lake-at-rest states remain stationary.
+                h_star_left = 0.5 * (h_L[i] + h_R[i])
+                h_star_right = 0.5 * (h_L[i+1] + h_R[i+1])
+                dz_interface = z_b_interface[i+1] - z_b_interface[i]
+                h_star_avg = 0.5 * (h_star_left + h_star_right)
+                dQ_dt[i] += -self.g * h_star_avg * self.B * dz_interface / self.dx
 
             # Well-balanced: reconstruction
             #
@@ -1556,7 +1565,9 @@ class GodunvFVMSolver:
 
         # 'h', 'Q', 'critical'
         # relaxation
-        relaxation_factor = 0.5  # 50%
+        # Slightly under-relax mixed h/Q Dirichlet boundaries to reduce
+        # steady-state outlet drift in long subcritical runs.
+        relaxation_factor = 0.48
 
         # relaxation
         if self.bc_left['type'] == 'h':
@@ -1689,10 +1700,20 @@ class GodunvFVMSolver:
                 F_Q[n] = 0.0
 
         elif self.bc_right['type'] == 'h':
-            # hRiemann
-            # hQ
-            #
-            pass
+            value = self.bc_right['value']
+            h_bc = value if not callable(value) else value(self.t)
+            Q_bc = Q[n-1]
+
+            if h_bc > self.eps_dry:
+                u_bc = Q_bc / (self.B * h_bc)
+                c_bc = np.sqrt(self.g * h_bc)
+                u_max = 10.0 * max(c_bc, 1.0)
+                u_bc = np.clip(u_bc, -u_max, u_max)
+                F_h[n] = Q_bc
+                F_Q[n] = Q_bc * u_bc + 0.5 * self.g * h_bc * h_bc * self.B
+            else:
+                F_h[n] = 0.0
+                F_Q[n] = 0.0
 
         elif self.bc_right['type'] == 'supercritical':
             #

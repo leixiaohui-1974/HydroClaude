@@ -366,6 +366,47 @@ class Test多结构组合:
 
         print("\n✅ 复杂多结构组合测试通过！")
 
+    @pytest.mark.backend
+    @pytest.mark.integration
+    def test_multi_structure_steady_state_stays_finite_and_bounded(self):
+        """多结构稳态解不应出现 NaN、负水深或非物理爆炸。"""
+        L = 2000.0
+        B = 10.0
+        S0 = 0.0005
+        n = 0.025
+        Q = 40.0
+
+        gate = SluiceGate(position=L / 3, width=B, opening=2.0, Cd=0.6)
+        weir = BroadCrestedWeir(position=2 * L / 3, width=B, crest_height=0.5, Cd=0.8)
+
+        solver = HydrostaticCanalSolver(
+            nx=200,
+            length=L,
+            B=B,
+            S0=S0,
+            n=n,
+            internal_structures=[(gate.position, gate), (weir.position, weir)],
+        )
+
+        h_downstream = compute_steady_uniform_flow(Q, B, S0, n)
+        result = solver.solve_steady_state(
+            Q_target=Q,
+            h_downstream=h_downstream,
+            max_iterations=200,
+            convergence_tol=0.05,
+            verbose=False,
+        )
+
+        depth_cap = max(50.0, 20.0 * max(abs(h_downstream), 1.0))
+        q_mean = float(np.mean(solver.get_Q()))
+
+        assert result["converged"] is True
+        assert np.all(np.isfinite(solver.h))
+        assert np.all(np.isfinite(solver.hu))
+        assert np.all(solver.h >= solver.eps_dry)
+        assert float(np.max(solver.h)) <= depth_cap
+        assert q_mean == pytest.approx(Q, rel=5e-2)
+
 
 if __name__ == "__main__":
     # 可以直接运行此文件进行测试

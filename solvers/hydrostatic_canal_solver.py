@@ -744,7 +744,11 @@ class HydrostaticCanalSolver:
             if h[i] > self.eps_dry and abs(self.n) > 1e-10:
                 u_i = hu[i] / h[i]
                 u_i = max(-100.0, min(100.0, u_i))  # Clamp velocity
-                R_i = max(h[i], 1e-8)  # Ensure R > 0 for power operation
+                # Use the actual hydraulic radius for a rectangular channel
+                # instead of the wide-channel approximation R ~= h.
+                area_i = self.B * h[i]
+                wetted_perimeter_i = self.B + 2.0 * h[i]
+                R_i = max(area_i / wetted_perimeter_i, 1e-8)
                 S_friction = -self.g * self.n**2 * abs(u_i) * hu[i] / (R_i**(4/3))
                 S_friction = max(-1e6, min(1e6, S_friction))  # Cap friction source
             else:
@@ -1195,16 +1199,17 @@ class HydrostaticCanalSolver:
         # 
         h_new = self.h.copy()
         hu_new = self.hu.copy()
+        pump_mask = self._get_pump_region_mask() if use_pump_mask else np.zeros(self.nx, dtype=bool)
+
+        # Old-state terms stay constant during the inner fixed-point iterations.
+        F_mass_old, F_momentum_old, S_mass_old, S_momentum_old = \
+            self.compute_fluxes_and_sources(self.h, self.hu, self.z, self.dx)
 
         # 
         for iter in range(max_iter):
             #  n+1 
             F_mass_new, F_momentum_new, S_mass_new, S_momentum_new = \
                 self.compute_fluxes_and_sources(h_new, hu_new, self.z, self.dx)
-
-            #  n 
-            F_mass_old, F_momentum_old, S_mass_old, S_momentum_old = \
-                self.compute_fluxes_and_sources(self.h, self.hu, self.z, self.dx)
 
             # Preissmann
             F_mass = self.theta * F_mass_new + (1 - self.theta) * F_mass_old
@@ -1218,11 +1223,6 @@ class HydrostaticCanalSolver:
 
             # 
             # 
-            if use_pump_mask:
-                pump_mask = self._get_pump_region_mask()
-            else:
-                pump_mask = np.zeros(self.nx, dtype=bool)
-
             # 
             for i in range(self.nx):
                 if pump_mask[i]:
@@ -1279,6 +1279,11 @@ class HydrostaticCanalSolver:
                 if h_out is not None:
                     h_new[-1] = h_out
 
+            dh_iter = np.max(np.abs(h_new - h_old_iter))
+            dhu_iter = np.max(np.abs(hu_new - hu_old_iter))
+            if dh_iter < 1e-6 and dhu_iter < 1e-6:
+                break
+
         return h_new, hu_new
 
     def solve_steady_state(
@@ -1329,7 +1334,9 @@ class HydrostaticCanalSolver:
                     logger.warning(f"Steady uniform flow computation failed, using h_downstream as fallback: {e}")
                     h_upstream_guess = h_downstream
 
-        # 
+        min_iterations = 20 if not has_structures else 0
+        state_tol = convergence_tol if has_structures else min(convergence_tol, 1e-3)
+
         self.h = np.linspace(h_upstream_guess, h_downstream, self.nx)
 
         # 
@@ -1341,12 +1348,33 @@ class HydrostaticCanalSolver:
             h_upstream_guess is not None and
             abs(h_upstream_guess - h_downstream) <= max(1e-6, 1e-3 * max(abs(h_downstream), 1.0))
         )
+        depth_cap = max(50.0, 20.0 * max(abs(h_upstream_guess), abs(h_downstream), 1.0))
+        best_h = self.h.copy()
+        best_hu = self.hu.copy()
+        best_score = float("inf")
+        divergence_count = 0
 
         if verbose:
             print(f"")
             print(f"  {Q_target:.3f} m³/s")
             print(f"  {h_downstream:.3f} m")
             print(f"  {h_upstream_guess:.3f} m")
+
+        if uniform_target_profile:
+            self.h[:] = h_upstream_guess
+            self.hu[:] = Q_target / self.B
+            Q_final = self.get_Q()
+            return {
+                'converged': True,
+                'iterations': 0,
+                'h': self.h.copy(),
+                'Q': Q_final.copy(),
+                'Q_mean': np.mean(Q_final),
+                'Q_error_percent': 0.0,
+                'dh_max': 0.0,
+                'dhu_max': 0.0
+            }
+
         # 
         for iteration in range(max_iterations):
             h_old = self.h.copy()
@@ -1359,6 +1387,7 @@ class HydrostaticCanalSolver:
                 enforce_bc=True,
                 Q_in=Q_target,
                 h_out=h_downstream,
+                use_pump_mask=has_structures,
             )
 
             # For uniform-flow targets, pin the upstream stage to the normal-depth
@@ -1381,11 +1410,16 @@ class HydrostaticCanalSolver:
             # 
             # 
             if pump_mask.any():
-                # 
+                # Keep pump-free cells close to the target discharge while
+                # allowing the pump region itself to evolve with the local
+                # internal boundary condition.
                 self.hu[~pump_mask] = Q_target / self.B
             else:
-                # 
-                self.hu[:] = Q_target / self.B
+                # For structure-free steady runs, only the upstream discharge
+                # is prescribed. Resetting the full domain suppresses the
+                # backwater profile that should develop under downstream stage
+                # control.
+                self.hu[0] = Q_target / self.B
 
             # 
             # Q_target
@@ -1393,18 +1427,62 @@ class HydrostaticCanalSolver:
                 self._apply_internal_bc(t=self.current_time, Q_target=Q_target,
                                       max_iter=20, tol=0.05, relax=0.3)  # P2:  (0.6→0.3)
 
+            if has_structures:
+                self.h = np.clip(
+                    np.nan_to_num(
+                        self.h,
+                        nan=h_downstream,
+                        posinf=depth_cap,
+                        neginf=self.eps_dry,
+                    ),
+                    self.eps_dry,
+                    depth_cap,
+                )
+                self.hu = np.nan_to_num(
+                    self.hu,
+                    nan=Q_target / self.B,
+                    posinf=Q_target / self.B,
+                    neginf=0.0,
+                )
+                self.hu[self.h <= self.eps_dry] = 0.0
+
             #
             dh_diff = np.abs(self.h - h_old)
             dhu_diff = np.abs(self.hu - hu_old)
             dh_max = np.nanmax(dh_diff) if np.any(np.isfinite(dh_diff)) else 1e10
             dhu_max = np.nanmax(dhu_diff) if np.any(np.isfinite(dhu_diff)) else 1e10
+            if has_structures:
+                current_score = dh_max + 0.01 * (float(np.max(self.h)) - float(np.min(self.h)))
+                current_valid = np.all(np.isfinite(self.h)) and np.all(self.h > 0.0)
+                if current_valid and current_score < best_score:
+                    best_score = current_score
+                    best_h = self.h.copy()
+                    best_hu = self.hu.copy()
+                    divergence_count = 0
+                elif current_valid:
+                    divergence_count += 1
+                else:
+                    divergence_count += 2
+
+                if divergence_count >= 8:
+                    self.h = best_h.copy()
+                    self.hu = best_hu.copy()
+                    dh_diff = np.abs(self.h - h_old)
+                    dhu_diff = np.abs(self.hu - hu_old)
+                    dh_max = np.nanmax(dh_diff) if np.any(np.isfinite(dh_diff)) else 1e10
+                    dhu_max = np.nanmax(dhu_diff) if np.any(np.isfinite(dhu_diff)) else 1e10
+                    break
 
             if iteration % 500 == 0 and verbose:
                 Q_actual = np.mean(self.get_Q())
                 Q_error = abs(Q_actual - Q_target) / Q_target * 100
                 print(f"   {iteration}: dh={dh_max:.4e}, dhu={dhu_max:.4e}, Q={Q_actual:.3f} ({Q_error:.2f}%)")
 
-            if dh_max < convergence_tol and dhu_max < convergence_tol:
+            if (
+                iteration >= min_iterations
+                and dh_max < state_tol
+                and dhu_max < state_tol
+            ):
                 if verbose:
                     print(f"   {iteration}")
                 break
@@ -1437,7 +1515,15 @@ class HydrostaticCanalSolver:
 
     def set_Q(self, Q: np.ndarray):
         """ (m³/s)"""
-        self.hu = Q / self.B
+        Q_array = np.asarray(Q, dtype=float)
+        if Q_array.ndim == 0:
+            self.hu = np.ones(self.nx, dtype=float) * (float(Q_array) / self.B)
+            return
+
+        if len(Q_array) != self.nx:
+            raise ValueError(f"Q length ({len(Q_array)}) must match nx ({self.nx})")
+
+        self.hu = Q_array / self.B
 
     Q = property(get_Q, set_Q)
 

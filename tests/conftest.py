@@ -227,6 +227,12 @@ def cleanup_temp_files(request):
 
 def pytest_configure(config):
     """Pytest 配置钩子"""
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
     # 确保报告目录存在
     reports_dir = project_root / "reports"
     reports_dir.mkdir(parents=True, exist_ok=True)
