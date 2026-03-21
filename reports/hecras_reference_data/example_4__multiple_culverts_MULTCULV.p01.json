@@ -1,0 +1,1012 @@
+{
+  "case_name": "Example 4 - Multiple Culverts",
+  "hdf_file": "MULTCULV.p01.hdf",
+  "unit_system": "US Customary (ft/cfs)",
+  "n_profiles": 3,
+  "n_cross_sections": 10,
+  "profiles": [
+    {
+      "name": "5 yr",
+      "cross_sections": [
+        {
+          "index": 0,
+          "wse_ft": 30.6084,
+          "wse_m": 9.3294,
+          "flow_cfs": 250.0,
+          "flow_m3s": 7.0792,
+          "alpha": 1.0,
+          "friction_slope": 0.000354,
+          "conveyance_total": 13287.745117,
+          "area_flow_total": 166.454117,
+          "velocity_total": 1.501915,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 1,
+          "wse_ft": 30.4425,
+          "wse_m": 9.2789,
+          "flow_cfs": 250.0,
+          "flow_m3s": 7.0792,
+          "alpha": 1.0,
+          "friction_slope": 0.000236,
+          "conveyance_total": 16262.339844,
+          "area_flow_total": 191.456924,
+          "velocity_total": 1.305777,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 2,
+          "wse_ft": 30.3216,
+          "wse_m": 9.242,
+          "flow_cfs": 250.0,
+          "flow_m3s": 7.0792,
+          "alpha": 1.0,
+          "friction_slope": 0.000182,
+          "conveyance_total": 18508.976562,
+          "area_flow_total": 209.939743,
+          "velocity_total": 1.190818,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 3,
+          "wse_ft": 30.2647,
+          "wse_m": 9.2247,
+          "flow_cfs": 250.0,
+          "flow_m3s": 7.0792,
+          "alpha": 1.0,
+          "friction_slope": 0.000186,
+          "conveyance_total": 18321.705078,
+          "area_flow_total": 203.286407,
+          "velocity_total": 1.229792,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 4,
+          "wse_ft": 30.2461,
+          "wse_m": 9.219,
+          "flow_cfs": 250.0,
+          "flow_m3s": 7.0792,
+          "alpha": 1.0,
+          "friction_slope": 0.000172,
+          "conveyance_total": 19041.492188,
+          "area_flow_total": 182.785812,
+          "velocity_total": 1.367721,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 5,
+          "wse_ft": 29.9598,
+          "wse_m": 9.1317,
+          "flow_cfs": 250.0,
+          "flow_m3s": 7.0792,
+          "alpha": 1.0,
+          "friction_slope": 0.00023,
+          "conveyance_total": 16501.916016,
+          "area_flow_total": 155.941223,
+          "velocity_total": 1.603168,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 6,
+          "wse_ft": 29.9452,
+          "wse_m": 9.1273,
+          "flow_cfs": 250.0,
+          "flow_m3s": 7.0792,
+          "alpha": 1.0,
+          "friction_slope": 0.000206,
+          "conveyance_total": 17406.195312,
+          "area_flow_total": 195.128571,
+          "velocity_total": 1.281206,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 7,
+          "wse_ft": 29.9255,
+          "wse_m": 9.1213,
+          "flow_cfs": 250.0,
+          "flow_m3s": 7.0792,
+          "alpha": 1.0,
+          "friction_slope": 0.000196,
+          "conveyance_total": 17853.208984,
+          "area_flow_total": 198.19722,
+          "velocity_total": 1.26137,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 8,
+          "wse_ft": 29.8538,
+          "wse_m": 9.0994,
+          "flow_cfs": 250.0,
+          "flow_m3s": 7.0792,
+          "alpha": 1.0,
+          "friction_slope": 0.000124,
+          "conveyance_total": 22429.011719,
+          "area_flow_total": 238.10994,
+          "velocity_total": 1.049935,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 9,
+          "wse_ft": 29.8,
+          "wse_m": 9.083,
+          "flow_cfs": 250.0,
+          "flow_m3s": 7.0792,
+          "alpha": 1.0,
+          "friction_slope": 0.0001,
+          "conveyance_total": 25004.642578,
+          "area_flow_total": 257.628662,
+          "velocity_total": 0.970389,
+          "manning_n_channel": 0.04
+        }
+      ]
+    },
+    {
+      "name": "10 yr",
+      "cross_sections": [
+        {
+          "index": 0,
+          "wse_ft": 32.1448,
+          "wse_m": 9.7977,
+          "flow_cfs": 400.0,
+          "flow_m3s": 11.3267,
+          "alpha": 1.0,
+          "friction_slope": 0.00028,
+          "conveyance_total": 23899.660156,
+          "area_flow_total": 251.539993,
+          "velocity_total": 1.590204,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 1,
+          "wse_ft": 32.0108,
+          "wse_m": 9.7569,
+          "flow_cfs": 400.0,
+          "flow_m3s": 11.3267,
+          "alpha": 1.013499,
+          "friction_slope": 0.000197,
+          "conveyance_total": 28534.398438,
+          "area_flow_total": 283.884277,
+          "velocity_total": 1.409025,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 2,
+          "wse_ft": 31.9107,
+          "wse_m": 9.7264,
+          "flow_cfs": 400.0,
+          "flow_m3s": 11.3267,
+          "alpha": 1.076349,
+          "friction_slope": 0.000152,
+          "conveyance_total": 32424.470703,
+          "area_flow_total": 316.512665,
+          "velocity_total": 1.263772,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 3,
+          "wse_ft": 31.8619,
+          "wse_m": 9.7115,
+          "flow_cfs": 400.0,
+          "flow_m3s": 11.3267,
+          "alpha": 1.159549,
+          "friction_slope": 0.000157,
+          "conveyance_total": 31966.007812,
+          "area_flow_total": 315.619598,
+          "velocity_total": 1.267348,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 4,
+          "wse_ft": 31.8362,
+          "wse_m": 9.7037,
+          "flow_cfs": 400.0,
+          "flow_m3s": 11.3267,
+          "alpha": 1.0,
+          "friction_slope": 0.00017,
+          "conveyance_total": 30650.072266,
+          "area_flow_total": 243.209641,
+          "velocity_total": 1.644672,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 5,
+          "wse_ft": 31.3538,
+          "wse_m": 9.5566,
+          "flow_cfs": 400.0,
+          "flow_m3s": 11.3267,
+          "alpha": 1.0,
+          "friction_slope": 0.000254,
+          "conveyance_total": 25097.892578,
+          "area_flow_total": 200.549988,
+          "velocity_total": 1.994515,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 6,
+          "wse_ft": 31.3451,
+          "wse_m": 9.554,
+          "flow_cfs": 400.0,
+          "flow_m3s": 11.3267,
+          "alpha": 1.033644,
+          "friction_slope": 0.000202,
+          "conveyance_total": 28110.878906,
+          "area_flow_total": 274.644836,
+          "velocity_total": 1.456426,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 7,
+          "wse_ft": 31.3255,
+          "wse_m": 9.548,
+          "flow_cfs": 400.0,
+          "flow_m3s": 11.3267,
+          "alpha": 1.030182,
+          "friction_slope": 0.000195,
+          "conveyance_total": 28608.376953,
+          "area_flow_total": 277.208984,
+          "velocity_total": 1.442955,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 8,
+          "wse_ft": 31.2544,
+          "wse_m": 9.5263,
+          "flow_cfs": 400.0,
+          "flow_m3s": 11.3267,
+          "alpha": 1.086354,
+          "friction_slope": 0.000127,
+          "conveyance_total": 35523.082031,
+          "area_flow_total": 336.574036,
+          "velocity_total": 1.188446,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 9,
+          "wse_ft": 31.2,
+          "wse_m": 9.5098,
+          "flow_cfs": 400.0,
+          "flow_m3s": 11.3267,
+          "alpha": 1.205399,
+          "friction_slope": 0.000102,
+          "conveyance_total": 39670.03125,
+          "area_flow_total": 380.897552,
+          "velocity_total": 1.050151,
+          "manning_n_channel": 0.04
+        }
+      ]
+    },
+    {
+      "name": "25 yr",
+      "cross_sections": [
+        {
+          "index": 0,
+          "wse_ft": 33.5201,
+          "wse_m": 10.2169,
+          "flow_cfs": 600.0,
+          "flow_m3s": 16.9901,
+          "alpha": 1.212411,
+          "friction_slope": 0.000244,
+          "conveyance_total": 38397.992188,
+          "area_flow_total": 374.482086,
+          "velocity_total": 1.602213,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 1,
+          "wse_ft": 33.403,
+          "wse_m": 10.1812,
+          "flow_cfs": 600.0,
+          "flow_m3s": 16.9901,
+          "alpha": 1.382257,
+          "friction_slope": 0.000177,
+          "conveyance_total": 45146.296875,
+          "area_flow_total": 445.681824,
+          "velocity_total": 1.346252,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 2,
+          "wse_ft": 33.3132,
+          "wse_m": 10.1539,
+          "flow_cfs": 600.0,
+          "flow_m3s": 16.9901,
+          "alpha": 1.544386,
+          "friction_slope": 0.00014,
+          "conveyance_total": 50699.703125,
+          "area_flow_total": 512.144592,
+          "velocity_total": 1.171544,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 3,
+          "wse_ft": 33.2684,
+          "wse_m": 10.1402,
+          "flow_cfs": 600.0,
+          "flow_m3s": 16.9901,
+          "alpha": 1.747407,
+          "friction_slope": 0.000144,
+          "conveyance_total": 49949.496094,
+          "area_flow_total": 530.513123,
+          "velocity_total": 1.13098,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 4,
+          "wse_ft": 33.2247,
+          "wse_m": 10.1269,
+          "flow_cfs": 600.0,
+          "flow_m3s": 16.9901,
+          "alpha": 1.0,
+          "friction_slope": 0.000199,
+          "conveyance_total": 42516.109375,
+          "area_flow_total": 295.974304,
+          "velocity_total": 2.027203,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 5,
+          "wse_ft": 32.109,
+          "wse_m": 9.7868,
+          "flow_cfs": 600.0,
+          "flow_m3s": 16.9901,
+          "alpha": 1.0,
+          "friction_slope": 0.000391,
+          "conveyance_total": 30338.484375,
+          "area_flow_total": 224.717346,
+          "velocity_total": 2.670021,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 6,
+          "wse_ft": 32.104,
+          "wse_m": 9.7853,
+          "flow_cfs": 600.0,
+          "flow_m3s": 16.9901,
+          "alpha": 1.236096,
+          "friction_slope": 0.000276,
+          "conveyance_total": 36118.636719,
+          "area_flow_total": 352.501221,
+          "velocity_total": 1.702122,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 7,
+          "wse_ft": 32.0771,
+          "wse_m": 9.7771,
+          "flow_cfs": 600.0,
+          "flow_m3s": 16.9901,
+          "alpha": 1.223765,
+          "friction_slope": 0.000269,
+          "conveyance_total": 36561.65625,
+          "area_flow_total": 353.240143,
+          "velocity_total": 1.698561,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 8,
+          "wse_ft": 31.9781,
+          "wse_m": 9.7469,
+          "flow_cfs": 600.0,
+          "flow_m3s": 16.9901,
+          "alpha": 1.328751,
+          "friction_slope": 0.000181,
+          "conveyance_total": 44592.605469,
+          "area_flow_total": 432.237244,
+          "velocity_total": 1.388127,
+          "manning_n_channel": 0.04
+        },
+        {
+          "index": 9,
+          "wse_ft": 31.9,
+          "wse_m": 9.7231,
+          "flow_cfs": 600.0,
+          "flow_m3s": 16.9901,
+          "alpha": 1.499168,
+          "friction_slope": 0.000149,
+          "conveyance_total": 49201.582031,
+          "area_flow_total": 492.413544,
+          "velocity_total": 1.218488,
+          "manning_n_channel": 0.04
+        }
+      ]
+    }
+  ],
+  "geometry": {
+    "cross_sections": [
+      {
+        "left_bank_ft": 960.4,
+        "right_bank_ft": 1020.9,
+        "len_channel_ft": 600.0,
+        "len_left_ft": 650.0,
+        "len_right_ft": 500.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            856.0,
+            37.5
+          ],
+          [
+            910.9,
+            34.1
+          ],
+          [
+            960.4,
+            32.3
+          ],
+          [
+            975.8,
+            26.5
+          ],
+          [
+            1005.5,
+            26.5
+          ],
+          [
+            1020.9,
+            32.4
+          ],
+          [
+            1088.9,
+            34.6
+          ],
+          [
+            1143.9,
+            38.6
+          ]
+        ],
+        "manning_n": [
+          [
+            856.0,
+            0.1
+          ],
+          [
+            960.4,
+            0.04
+          ],
+          [
+            1020.9,
+            0.1
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 960.4,
+        "right_bank_ft": 1020.9,
+        "len_channel_ft": 600.0,
+        "len_left_ft": 650.0,
+        "len_right_ft": 500.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            856.0,
+            36.9
+          ],
+          [
+            910.9,
+            33.5
+          ],
+          [
+            960.4,
+            31.7
+          ],
+          [
+            975.8,
+            25.8
+          ],
+          [
+            1005.5,
+            25.9
+          ],
+          [
+            1020.9,
+            31.8
+          ],
+          [
+            1088.9,
+            34.0
+          ],
+          [
+            1143.9,
+            38.0
+          ]
+        ],
+        "manning_n": [
+          [
+            856.0,
+            0.1
+          ],
+          [
+            960.4,
+            0.04
+          ],
+          [
+            1020.9,
+            0.1
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 960.4,
+        "right_bank_ft": 1020.9,
+        "len_channel_ft": 300.0,
+        "len_left_ft": 300.0,
+        "len_right_ft": 350.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            856.0,
+            36.4
+          ],
+          [
+            910.9,
+            33.0
+          ],
+          [
+            960.4,
+            31.2
+          ],
+          [
+            975.8,
+            25.4
+          ],
+          [
+            1005.5,
+            25.4
+          ],
+          [
+            1020.9,
+            31.3
+          ],
+          [
+            1088.9,
+            33.5
+          ],
+          [
+            1143.9,
+            37.5
+          ]
+        ],
+        "manning_n": [
+          [
+            856.0,
+            0.1
+          ],
+          [
+            960.4,
+            0.04
+          ],
+          [
+            1020.9,
+            0.1
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 972.0,
+        "right_bank_ft": 1027.0,
+        "len_channel_ft": 70.0,
+        "len_left_ft": 70.0,
+        "len_right_ft": 70.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            856.0,
+            36.1
+          ],
+          [
+            917.0,
+            32.7
+          ],
+          [
+            972.0,
+            30.9
+          ],
+          [
+            986.0,
+            25.1
+          ],
+          [
+            1013.0,
+            25.1
+          ],
+          [
+            1027.0,
+            31.0
+          ],
+          [
+            1095.0,
+            33.2
+          ],
+          [
+            1150.0,
+            37.2
+          ]
+        ],
+        "manning_n": [
+          [
+            856.0,
+            0.1
+          ],
+          [
+            972.0,
+            0.04
+          ],
+          [
+            1027.0,
+            0.1
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 972.0,
+        "right_bank_ft": 1027.0,
+        "len_channel_ft": 57.0,
+        "len_left_ft": 57.0,
+        "len_right_ft": 57.0,
+        "contraction": 0.3,
+        "expansion": 0.5,
+        "station_elevation": [
+          [
+            856.0,
+            36.1
+          ],
+          [
+            917.0,
+            32.7
+          ],
+          [
+            972.0,
+            30.9
+          ],
+          [
+            986.0,
+            25.1
+          ],
+          [
+            993.0,
+            25.1
+          ],
+          [
+            1007.0,
+            25.1
+          ],
+          [
+            1013.0,
+            25.1
+          ],
+          [
+            1027.0,
+            31.0
+          ],
+          [
+            1095.0,
+            33.2
+          ],
+          [
+            1150.0,
+            37.2
+          ]
+        ],
+        "manning_n": [
+          [
+            856.0,
+            0.1
+          ],
+          [
+            972.0,
+            0.04
+          ],
+          [
+            1027.0,
+            0.1
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 972.0,
+        "right_bank_ft": 1027.0,
+        "len_channel_ft": 100.0,
+        "len_left_ft": 100.0,
+        "len_right_ft": 100.0,
+        "contraction": 0.3,
+        "expansion": 0.5,
+        "station_elevation": [
+          [
+            856.0,
+            36.1
+          ],
+          [
+            917.0,
+            32.7
+          ],
+          [
+            972.0,
+            30.9
+          ],
+          [
+            986.0,
+            25.0
+          ],
+          [
+            993.0,
+            25.0
+          ],
+          [
+            1007.0,
+            25.0
+          ],
+          [
+            1013.0,
+            25.0
+          ],
+          [
+            1027.0,
+            31.0
+          ],
+          [
+            1095.0,
+            33.2
+          ],
+          [
+            1150.0,
+            37.2
+          ]
+        ],
+        "manning_n": [
+          [
+            856.0,
+            0.1
+          ],
+          [
+            972.0,
+            0.04
+          ],
+          [
+            1027.0,
+            0.1
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 972.0,
+        "right_bank_ft": 1027.0,
+        "len_channel_ft": 100.0,
+        "len_left_ft": 100.0,
+        "len_right_ft": 100.0,
+        "contraction": 0.3,
+        "expansion": 0.5,
+        "station_elevation": [
+          [
+            856.0,
+            36.1
+          ],
+          [
+            917.0,
+            32.7
+          ],
+          [
+            972.0,
+            30.9
+          ],
+          [
+            986.0,
+            24.9
+          ],
+          [
+            993.0,
+            24.9
+          ],
+          [
+            1007.0,
+            24.9
+          ],
+          [
+            1013.0,
+            24.9
+          ],
+          [
+            1027.0,
+            31.0
+          ],
+          [
+            1095.0,
+            33.2
+          ],
+          [
+            1150.0,
+            37.2
+          ]
+        ],
+        "manning_n": [
+          [
+            856.0,
+            0.1
+          ],
+          [
+            972.0,
+            0.04
+          ],
+          [
+            1027.0,
+            0.1
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 972.0,
+        "right_bank_ft": 1027.0,
+        "len_channel_ft": 500.0,
+        "len_left_ft": 600.0,
+        "len_right_ft": 550.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            856.0,
+            36.1
+          ],
+          [
+            917.0,
+            32.7
+          ],
+          [
+            972.0,
+            30.9
+          ],
+          [
+            986.0,
+            24.8
+          ],
+          [
+            1013.0,
+            24.8
+          ],
+          [
+            1027.0,
+            31.0
+          ],
+          [
+            1095.0,
+            33.2
+          ],
+          [
+            1150.0,
+            37.2
+          ]
+        ],
+        "manning_n": [
+          [
+            856.0,
+            0.1
+          ],
+          [
+            972.0,
+            0.04
+          ],
+          [
+            1027.0,
+            0.1
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 983.6,
+        "right_bank_ft": 1044.1,
+        "len_channel_ft": 500.0,
+        "len_left_ft": 500.0,
+        "len_right_ft": 450.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            856.0,
+            35.75
+          ],
+          [
+            923.1,
+            32.35
+          ],
+          [
+            983.6,
+            30.55
+          ],
+          [
+            999.0,
+            24.25
+          ],
+          [
+            1028.7,
+            24.45
+          ],
+          [
+            1044.1,
+            30.65
+          ],
+          [
+            1125.7,
+            32.85
+          ],
+          [
+            1191.7,
+            36.85
+          ]
+        ],
+        "manning_n": [
+          [
+            856.0,
+            0.1
+          ],
+          [
+            983.6,
+            0.04
+          ],
+          [
+            1044.1,
+            0.1
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 983.6,
+        "right_bank_ft": 1044.1,
+        "len_channel_ft": 0.0,
+        "len_left_ft": 0.0,
+        "len_right_ft": 0.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            856.0,
+            35.3
+          ],
+          [
+            923.1,
+            31.9
+          ],
+          [
+            983.6,
+            30.1
+          ],
+          [
+            999.0,
+            23.95
+          ],
+          [
+            1028.7,
+            24.0
+          ],
+          [
+            1044.1,
+            30.2
+          ],
+          [
+            1125.7,
+            32.4
+          ],
+          [
+            1191.7,
+            36.4
+          ]
+        ],
+        "manning_n": [
+          [
+            856.0,
+            0.1
+          ],
+          [
+            983.6,
+            0.04
+          ],
+          [
+            1044.1,
+            0.1
+          ]
+        ]
+      }
+    ]
+  }
+}

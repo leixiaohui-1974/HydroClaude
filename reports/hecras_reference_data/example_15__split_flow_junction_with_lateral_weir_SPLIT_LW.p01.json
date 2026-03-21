@@ -1,0 +1,3340 @@
+{
+  "case_name": "Example 15 - Split Flow Junction with Lateral Weir",
+  "hdf_file": "SPLIT_LW.p01.hdf",
+  "unit_system": "US Customary (ft/cfs)",
+  "n_profiles": 3,
+  "n_cross_sections": 23,
+  "profiles": [
+    {
+      "name": "PF#1",
+      "cross_sections": [
+        {
+          "index": 0,
+          "wse_ft": 71.9157,
+          "wse_m": 21.9199,
+          "flow_cfs": 1500.0,
+          "flow_m3s": 42.4752,
+          "alpha": 1.0021,
+          "friction_slope": 0.000389,
+          "conveyance_total": 76028.882812,
+          "area_flow_total": 418.771057,
+          "velocity_total": 3.581909,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 1,
+          "wse_ft": 71.8558,
+          "wse_m": 21.9016,
+          "flow_cfs": 1500.0,
+          "flow_m3s": 42.4752,
+          "alpha": 1.025748,
+          "friction_slope": 0.000429,
+          "conveyance_total": 72453.265625,
+          "area_flow_total": 402.970062,
+          "velocity_total": 3.722361,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 2,
+          "wse_ft": 71.818,
+          "wse_m": 21.8901,
+          "flow_cfs": 1500.0,
+          "flow_m3s": 42.4752,
+          "alpha": 1.024077,
+          "friction_slope": 0.000438,
+          "conveyance_total": 71658.171875,
+          "area_flow_total": 399.779663,
+          "velocity_total": 3.752067,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 3,
+          "wse_ft": 71.8074,
+          "wse_m": 21.8869,
+          "flow_cfs": 1500.0,
+          "flow_m3s": 42.4752,
+          "alpha": 1.003024,
+          "friction_slope": 0.000369,
+          "conveyance_total": 78049.078125,
+          "area_flow_total": 425.902252,
+          "velocity_total": 3.521935,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 4,
+          "wse_ft": 71.4619,
+          "wse_m": 21.7816,
+          "flow_cfs": 1051.21,
+          "flow_m3s": 29.767,
+          "alpha": 1.0,
+          "friction_slope": 0.001124,
+          "conveyance_total": 31353.677734,
+          "area_flow_total": 188.622742,
+          "velocity_total": 5.573097,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 5,
+          "wse_ft": 71.3637,
+          "wse_m": 21.7517,
+          "flow_cfs": 1051.21,
+          "flow_m3s": 29.767,
+          "alpha": 1.0,
+          "friction_slope": 0.001106,
+          "conveyance_total": 31612.599609,
+          "area_flow_total": 189.935593,
+          "velocity_total": 5.534575,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 6,
+          "wse_ft": 71.2629,
+          "wse_m": 21.7209,
+          "flow_cfs": 1051.21,
+          "flow_m3s": 29.767,
+          "alpha": 1.0,
+          "friction_slope": 0.001091,
+          "conveyance_total": 31821.982422,
+          "area_flow_total": 191.205551,
+          "velocity_total": 5.497815,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 7,
+          "wse_ft": 71.1645,
+          "wse_m": 21.6909,
+          "flow_cfs": 1051.21,
+          "flow_m3s": 29.767,
+          "alpha": 1.0,
+          "friction_slope": 0.001074,
+          "conveyance_total": 32076.042969,
+          "area_flow_total": 192.579407,
+          "velocity_total": 5.458594,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 8,
+          "wse_ft": 71.0745,
+          "wse_m": 21.6635,
+          "flow_cfs": 1051.21,
+          "flow_m3s": 29.767,
+          "alpha": 1.0,
+          "friction_slope": 0.001045,
+          "conveyance_total": 32523.375,
+          "area_flow_total": 194.832458,
+          "velocity_total": 5.395471,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 9,
+          "wse_ft": 70.9856,
+          "wse_m": 21.6364,
+          "flow_cfs": 1051.21,
+          "flow_m3s": 29.767,
+          "alpha": 1.0,
+          "friction_slope": 0.001028,
+          "conveyance_total": 32785.046875,
+          "area_flow_total": 196.244125,
+          "velocity_total": 5.356658,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 10,
+          "wse_ft": 70.8965,
+          "wse_m": 21.6092,
+          "flow_cfs": 1051.21,
+          "flow_m3s": 29.767,
+          "alpha": 1.0,
+          "friction_slope": 0.001,
+          "conveyance_total": 33241.035156,
+          "area_flow_total": 198.559204,
+          "velocity_total": 5.294203,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 11,
+          "wse_ft": 71.5289,
+          "wse_m": 21.802,
+          "flow_cfs": 448.79,
+          "flow_m3s": 12.7082,
+          "alpha": 1.0,
+          "friction_slope": 0.001294,
+          "conveyance_total": 12475.949219,
+          "area_flow_total": 88.708435,
+          "velocity_total": 5.059126,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 12,
+          "wse_ft": 71.4386,
+          "wse_m": 21.7745,
+          "flow_cfs": 448.79,
+          "flow_m3s": 12.7082,
+          "alpha": 1.0,
+          "friction_slope": 0.001232,
+          "conveyance_total": 12787.626953,
+          "area_flow_total": 90.455399,
+          "velocity_total": 4.96142,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 13,
+          "wse_ft": 71.3391,
+          "wse_m": 21.7442,
+          "flow_cfs": 448.79,
+          "flow_m3s": 12.7082,
+          "alpha": 1.0,
+          "friction_slope": 0.001186,
+          "conveyance_total": 13029.817383,
+          "area_flow_total": 91.731705,
+          "velocity_total": 4.892389,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 14,
+          "wse_ft": 71.132,
+          "wse_m": 21.681,
+          "flow_cfs": 498.79,
+          "flow_m3s": 14.1241,
+          "alpha": 1.0,
+          "friction_slope": 0.001482,
+          "conveyance_total": 12957.335938,
+          "area_flow_total": 91.319626,
+          "velocity_total": 5.461994,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 15,
+          "wse_ft": 70.9984,
+          "wse_m": 21.6403,
+          "flow_cfs": 498.79,
+          "flow_m3s": 14.1241,
+          "alpha": 1.0,
+          "friction_slope": 0.001448,
+          "conveyance_total": 13105.90918,
+          "area_flow_total": 92.132019,
+          "velocity_total": 5.413831,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 16,
+          "wse_ft": 70.8868,
+          "wse_m": 21.6063,
+          "flow_cfs": 498.79,
+          "flow_m3s": 14.1241,
+          "alpha": 1.0,
+          "friction_slope": 0.001391,
+          "conveyance_total": 13375.489258,
+          "area_flow_total": 93.553078,
+          "velocity_total": 5.331596,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 17,
+          "wse_ft": 70.8371,
+          "wse_m": 21.5912,
+          "flow_cfs": 1550.0,
+          "flow_m3s": 43.891,
+          "alpha": 1.0,
+          "friction_slope": 0.000871,
+          "conveyance_total": 52508.40625,
+          "area_flow_total": 299.877502,
+          "velocity_total": 5.168777,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 18,
+          "wse_ft": 70.7191,
+          "wse_m": 21.5552,
+          "flow_cfs": 1550.0,
+          "flow_m3s": 43.891,
+          "alpha": 1.0,
+          "friction_slope": 0.000982,
+          "conveyance_total": 49470.074219,
+          "area_flow_total": 290.103546,
+          "velocity_total": 5.34292,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 19,
+          "wse_ft": 70.5964,
+          "wse_m": 21.5178,
+          "flow_cfs": 1550.0,
+          "flow_m3s": 43.891,
+          "alpha": 1.0,
+          "friction_slope": 0.001066,
+          "conveyance_total": 47463.652344,
+          "area_flow_total": 283.969147,
+          "velocity_total": 5.45834,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 20,
+          "wse_ft": 70.4812,
+          "wse_m": 21.4827,
+          "flow_cfs": 1550.0,
+          "flow_m3s": 43.891,
+          "alpha": 1.0,
+          "friction_slope": 0.001106,
+          "conveyance_total": 46597.929688,
+          "area_flow_total": 281.876221,
+          "velocity_total": 5.498868,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 21,
+          "wse_ft": 70.3902,
+          "wse_m": 21.4549,
+          "flow_cfs": 1550.0,
+          "flow_m3s": 43.891,
+          "alpha": 1.0,
+          "friction_slope": 0.00108,
+          "conveyance_total": 47162.882812,
+          "area_flow_total": 285.217743,
+          "velocity_total": 5.434444,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 22,
+          "wse_ft": 70.3085,
+          "wse_m": 21.43,
+          "flow_cfs": 1550.0,
+          "flow_m3s": 43.891,
+          "alpha": 1.0,
+          "friction_slope": 0.001001,
+          "conveyance_total": 49000.964844,
+          "area_flow_total": 292.70401,
+          "velocity_total": 5.295452,
+          "manning_n_channel": 0.025
+        }
+      ]
+    },
+    {
+      "name": "PF 2",
+      "cross_sections": [
+        {
+          "index": 0,
+          "wse_ft": 77.3258,
+          "wse_m": 23.5689,
+          "flow_cfs": 5000.0,
+          "flow_m3s": 141.584,
+          "alpha": 1.075119,
+          "friction_slope": 0.000452,
+          "conveyance_total": 235148.09375,
+          "area_flow_total": 913.681885,
+          "velocity_total": 5.472364,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 1,
+          "wse_ft": 77.2295,
+          "wse_m": 23.5396,
+          "flow_cfs": 5000.0,
+          "flow_m3s": 141.584,
+          "alpha": 1.083122,
+          "friction_slope": 0.000503,
+          "conveyance_total": 222851.6875,
+          "area_flow_total": 875.739258,
+          "velocity_total": 5.709462,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 2,
+          "wse_ft": 77.2522,
+          "wse_m": 23.5465,
+          "flow_cfs": 4604.74,
+          "flow_m3s": 130.3915,
+          "alpha": 1.083194,
+          "friction_slope": 0.000424,
+          "conveyance_total": 223640.46875,
+          "area_flow_total": 877.797363,
+          "velocity_total": 5.245789,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 3,
+          "wse_ft": 77.2556,
+          "wse_m": 23.5475,
+          "flow_cfs": 4604.74,
+          "flow_m3s": 130.3915,
+          "alpha": 1.075824,
+          "friction_slope": 0.000368,
+          "conveyance_total": 240011.546875,
+          "area_flow_total": 926.488525,
+          "velocity_total": 4.970099,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 4,
+          "wse_ft": 76.5462,
+          "wse_m": 23.3313,
+          "flow_cfs": 3167.32,
+          "flow_m3s": 89.6883,
+          "alpha": 1.0,
+          "friction_slope": 0.001324,
+          "conveyance_total": 87045.6875,
+          "area_flow_total": 388.653748,
+          "velocity_total": 8.149462,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 5,
+          "wse_ft": 76.4353,
+          "wse_m": 23.2975,
+          "flow_cfs": 3167.32,
+          "flow_m3s": 89.6883,
+          "alpha": 1.0,
+          "friction_slope": 0.001302,
+          "conveyance_total": 87770.289062,
+          "area_flow_total": 391.6698,
+          "velocity_total": 8.086707,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 6,
+          "wse_ft": 76.3215,
+          "wse_m": 23.2628,
+          "flow_cfs": 3167.32,
+          "flow_m3s": 89.6883,
+          "alpha": 1.0,
+          "friction_slope": 0.001283,
+          "conveyance_total": 88417.0,
+          "area_flow_total": 394.464325,
+          "velocity_total": 8.029418,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 7,
+          "wse_ft": 76.2078,
+          "wse_m": 23.2281,
+          "flow_cfs": 3167.32,
+          "flow_m3s": 89.6883,
+          "alpha": 1.0,
+          "friction_slope": 0.00127,
+          "conveyance_total": 88880.125,
+          "area_flow_total": 396.851196,
+          "velocity_total": 7.981124,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 8,
+          "wse_ft": 76.1051,
+          "wse_m": 23.1968,
+          "flow_cfs": 3167.32,
+          "flow_m3s": 89.6883,
+          "alpha": 1.0,
+          "friction_slope": 0.001245,
+          "conveyance_total": 89759.34375,
+          "area_flow_total": 400.615936,
+          "velocity_total": 7.906123,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 9,
+          "wse_ft": 76.0013,
+          "wse_m": 23.1652,
+          "flow_cfs": 3167.32,
+          "flow_m3s": 89.6883,
+          "alpha": 1.0,
+          "friction_slope": 0.001231,
+          "conveyance_total": 90268.070312,
+          "area_flow_total": 403.128784,
+          "velocity_total": 7.856841,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 10,
+          "wse_ft": 75.8968,
+          "wse_m": 23.1333,
+          "flow_cfs": 3167.32,
+          "flow_m3s": 89.6883,
+          "alpha": 1.0,
+          "friction_slope": 0.001211,
+          "conveyance_total": 91029.304688,
+          "area_flow_total": 406.609741,
+          "velocity_total": 7.789579,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 11,
+          "wse_ft": 76.7167,
+          "wse_m": 23.3833,
+          "flow_cfs": 1437.42,
+          "flow_m3s": 40.7032,
+          "alpha": 1.020901,
+          "friction_slope": 0.001592,
+          "conveyance_total": 36029.242188,
+          "area_flow_total": 197.112366,
+          "velocity_total": 7.292394,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 12,
+          "wse_ft": 76.6056,
+          "wse_m": 23.3494,
+          "flow_cfs": 1437.42,
+          "flow_m3s": 40.7032,
+          "alpha": 1.020409,
+          "friction_slope": 0.001538,
+          "conveyance_total": 36651.128906,
+          "area_flow_total": 199.448486,
+          "velocity_total": 7.206979,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 13,
+          "wse_ft": 76.4865,
+          "wse_m": 23.3131,
+          "flow_cfs": 1437.42,
+          "flow_m3s": 40.7032,
+          "alpha": 1.020095,
+          "friction_slope": 0.00148,
+          "conveyance_total": 37360.984375,
+          "area_flow_total": 201.995499,
+          "velocity_total": 7.116104,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 14,
+          "wse_ft": 76.2113,
+          "wse_m": 23.2292,
+          "flow_cfs": 1537.42,
+          "flow_m3s": 43.5348,
+          "alpha": 1.015336,
+          "friction_slope": 0.00175,
+          "conveyance_total": 36750.777344,
+          "area_flow_total": 199.639938,
+          "velocity_total": 7.700969,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 15,
+          "wse_ft": 76.056,
+          "wse_m": 23.1819,
+          "flow_cfs": 1537.42,
+          "flow_m3s": 43.5348,
+          "alpha": 1.01471,
+          "friction_slope": 0.001715,
+          "conveyance_total": 37122.3125,
+          "area_flow_total": 201.115814,
+          "velocity_total": 7.644456,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 16,
+          "wse_ft": 75.9282,
+          "wse_m": 23.1429,
+          "flow_cfs": 1537.42,
+          "flow_m3s": 43.5348,
+          "alpha": 1.015017,
+          "friction_slope": 0.001655,
+          "conveyance_total": 37790.886719,
+          "area_flow_total": 203.640549,
+          "velocity_total": 7.54968,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 17,
+          "wse_ft": 75.8246,
+          "wse_m": 23.1113,
+          "flow_cfs": 4704.74,
+          "flow_m3s": 133.2232,
+          "alpha": 1.0,
+          "friction_slope": 0.001044,
+          "conveyance_total": 145603.734375,
+          "area_flow_total": 611.619812,
+          "velocity_total": 7.692262,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 18,
+          "wse_ft": 75.7051,
+          "wse_m": 23.0749,
+          "flow_cfs": 4704.74,
+          "flow_m3s": 133.2232,
+          "alpha": 1.0,
+          "friction_slope": 0.001083,
+          "conveyance_total": 142956.125,
+          "area_flow_total": 605.696411,
+          "velocity_total": 7.767488,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 19,
+          "wse_ft": 75.593,
+          "wse_m": 23.0407,
+          "flow_cfs": 4704.74,
+          "flow_m3s": 133.2232,
+          "alpha": 1.0,
+          "friction_slope": 0.001098,
+          "conveyance_total": 141998.375,
+          "area_flow_total": 604.634033,
+          "velocity_total": 7.781136,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 20,
+          "wse_ft": 75.4893,
+          "wse_m": 23.0091,
+          "flow_cfs": 4704.74,
+          "flow_m3s": 133.2232,
+          "alpha": 1.0,
+          "friction_slope": 0.001092,
+          "conveyance_total": 142343.609375,
+          "area_flow_total": 607.58783,
+          "velocity_total": 7.743308,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 21,
+          "wse_ft": 75.4108,
+          "wse_m": 22.9852,
+          "flow_cfs": 4704.74,
+          "flow_m3s": 133.2232,
+          "alpha": 1.0,
+          "friction_slope": 0.001055,
+          "conveyance_total": 144844.921875,
+          "area_flow_total": 616.529175,
+          "velocity_total": 7.631009,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 22,
+          "wse_ft": 75.3409,
+          "wse_m": 22.9639,
+          "flow_cfs": 4704.74,
+          "flow_m3s": 133.2232,
+          "alpha": 1.0,
+          "friction_slope": 0.001,
+          "conveyance_total": 148768.9375,
+          "area_flow_total": 629.770996,
+          "velocity_total": 7.470556,
+          "manning_n_channel": 0.025
+        }
+      ]
+    },
+    {
+      "name": "PF 3",
+      "cross_sections": [
+        {
+          "index": 0,
+          "wse_ft": 84.7341,
+          "wse_m": 25.8269,
+          "flow_cfs": 15000.0,
+          "flow_m3s": 424.752,
+          "alpha": 1.162905,
+          "friction_slope": 0.000623,
+          "conveyance_total": 601073.5625,
+          "area_flow_total": 1744.133789,
+          "velocity_total": 8.600258,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 1,
+          "wse_ft": 84.3896,
+          "wse_m": 25.7219,
+          "flow_cfs": 15000.0,
+          "flow_m3s": 424.752,
+          "alpha": 1.163941,
+          "friction_slope": 0.000756,
+          "conveyance_total": 545700.5,
+          "area_flow_total": 1598.080078,
+          "velocity_total": 9.386263,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 2,
+          "wse_ft": 84.6807,
+          "wse_m": 25.8107,
+          "flow_cfs": 12721.96,
+          "flow_m3s": 360.2451,
+          "alpha": 1.166782,
+          "friction_slope": 0.000513,
+          "conveyance_total": 561590.8125,
+          "area_flow_total": 1629.234497,
+          "velocity_total": 7.808549,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 3,
+          "wse_ft": 84.8024,
+          "wse_m": 25.8478,
+          "flow_cfs": 12372.62,
+          "flow_m3s": 350.3531,
+          "alpha": 1.164021,
+          "friction_slope": 0.000402,
+          "conveyance_total": 617073.125,
+          "area_flow_total": 1774.245239,
+          "velocity_total": 6.973457,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 4,
+          "wse_ft": 83.782,
+          "wse_m": 25.5367,
+          "flow_cfs": 8080.52,
+          "flow_m3s": 228.8145,
+          "alpha": 1.139868,
+          "friction_slope": 0.001181,
+          "conveyance_total": 235098.078125,
+          "area_flow_total": 805.966736,
+          "velocity_total": 10.025875,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 5,
+          "wse_ft": 83.6973,
+          "wse_m": 25.5109,
+          "flow_cfs": 8080.52,
+          "flow_m3s": 228.8145,
+          "alpha": 1.134455,
+          "friction_slope": 0.00115,
+          "conveyance_total": 238318.5,
+          "area_flow_total": 811.824097,
+          "velocity_total": 9.953538,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 6,
+          "wse_ft": 83.6093,
+          "wse_m": 25.4841,
+          "flow_cfs": 8080.52,
+          "flow_m3s": 228.8145,
+          "alpha": 1.129877,
+          "friction_slope": 0.001123,
+          "conveyance_total": 241164.296875,
+          "area_flow_total": 817.243164,
+          "velocity_total": 9.887537,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 7,
+          "wse_ft": 83.5247,
+          "wse_m": 25.4583,
+          "flow_cfs": 8080.52,
+          "flow_m3s": 228.8145,
+          "alpha": 1.124727,
+          "friction_slope": 0.001097,
+          "conveyance_total": 243987.71875,
+          "area_flow_total": 822.88916,
+          "velocity_total": 9.819696,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 8,
+          "wse_ft": 83.4517,
+          "wse_m": 25.4361,
+          "flow_cfs": 8080.52,
+          "flow_m3s": 228.8145,
+          "alpha": 1.119753,
+          "friction_slope": 0.001066,
+          "conveyance_total": 247525.484375,
+          "area_flow_total": 830.347351,
+          "velocity_total": 9.731496,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 9,
+          "wse_ft": 83.3764,
+          "wse_m": 25.4131,
+          "flow_cfs": 8080.52,
+          "flow_m3s": 228.8145,
+          "alpha": 1.115697,
+          "friction_slope": 0.001042,
+          "conveyance_total": 250380.796875,
+          "area_flow_total": 836.345093,
+          "velocity_total": 9.661708,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 10,
+          "wse_ft": 83.3037,
+          "wse_m": 25.391,
+          "flow_cfs": 8080.52,
+          "flow_m3s": 228.8145,
+          "alpha": 1.110945,
+          "friction_slope": 0.001014,
+          "conveyance_total": 253769.234375,
+          "area_flow_total": 843.828613,
+          "velocity_total": 9.576023,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 11,
+          "wse_ft": 84.1605,
+          "wse_m": 25.6521,
+          "flow_cfs": 4292.1,
+          "flow_m3s": 121.5386,
+          "alpha": 1.327106,
+          "friction_slope": 0.001295,
+          "conveyance_total": 119283.445312,
+          "area_flow_total": 519.436523,
+          "velocity_total": 8.262995,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 12,
+          "wse_ft": 84.0758,
+          "wse_m": 25.6263,
+          "flow_cfs": 4292.1,
+          "flow_m3s": 121.5386,
+          "alpha": 1.327717,
+          "friction_slope": 0.001257,
+          "conveyance_total": 121074.15625,
+          "area_flow_total": 524.233826,
+          "velocity_total": 8.187379,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 13,
+          "wse_ft": 83.9861,
+          "wse_m": 25.599,
+          "flow_cfs": 4292.1,
+          "flow_m3s": 121.5386,
+          "alpha": 1.328158,
+          "friction_slope": 0.001211,
+          "conveyance_total": 123346.101562,
+          "area_flow_total": 529.449463,
+          "velocity_total": 8.106725,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 14,
+          "wse_ft": 83.3213,
+          "wse_m": 25.3963,
+          "flow_cfs": 4792.1,
+          "flow_m3s": 135.697,
+          "alpha": 1.307504,
+          "friction_slope": 0.001698,
+          "conveyance_total": 116277.890625,
+          "area_flow_total": 501.455841,
+          "velocity_total": 9.556377,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 15,
+          "wse_ft": 83.1678,
+          "wse_m": 25.3496,
+          "flow_cfs": 4792.1,
+          "flow_m3s": 135.697,
+          "alpha": 1.305711,
+          "friction_slope": 0.00167,
+          "conveyance_total": 117265.585938,
+          "area_flow_total": 502.338318,
+          "velocity_total": 9.539589,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 16,
+          "wse_ft": 83.0518,
+          "wse_m": 25.3142,
+          "flow_cfs": 4792.1,
+          "flow_m3s": 135.697,
+          "alpha": 1.297332,
+          "friction_slope": 0.001615,
+          "conveyance_total": 119255.40625,
+          "area_flow_total": 505.556366,
+          "velocity_total": 9.478866,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 17,
+          "wse_ft": 82.8621,
+          "wse_m": 25.2564,
+          "flow_cfs": 12872.62,
+          "flow_m3s": 364.5115,
+          "alpha": 1.087871,
+          "friction_slope": 0.001093,
+          "conveyance_total": 389324.625,
+          "area_flow_total": 1212.026611,
+          "velocity_total": 10.620743,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 18,
+          "wse_ft": 82.7544,
+          "wse_m": 25.2235,
+          "flow_cfs": 12872.62,
+          "flow_m3s": 364.5115,
+          "alpha": 1.084127,
+          "friction_slope": 0.001099,
+          "conveyance_total": 388264.125,
+          "area_flow_total": 1208.57959,
+          "velocity_total": 10.651034,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 19,
+          "wse_ft": 82.6511,
+          "wse_m": 25.192,
+          "flow_cfs": 12872.62,
+          "flow_m3s": 364.5115,
+          "alpha": 1.08092,
+          "friction_slope": 0.001094,
+          "conveyance_total": 389246.90625,
+          "area_flow_total": 1210.076172,
+          "velocity_total": 10.637862,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 20,
+          "wse_ft": 82.5597,
+          "wse_m": 25.1642,
+          "flow_cfs": 12872.62,
+          "flow_m3s": 364.5115,
+          "alpha": 1.077129,
+          "friction_slope": 0.001077,
+          "conveyance_total": 392265.28125,
+          "area_flow_total": 1216.238403,
+          "velocity_total": 10.583963,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 21,
+          "wse_ft": 82.4935,
+          "wse_m": 25.144,
+          "flow_cfs": 12872.62,
+          "flow_m3s": 364.5115,
+          "alpha": 1.074263,
+          "friction_slope": 0.001044,
+          "conveyance_total": 398386.375,
+          "area_flow_total": 1229.264038,
+          "velocity_total": 10.471813,
+          "manning_n_channel": 0.025
+        },
+        {
+          "index": 22,
+          "wse_ft": 82.4351,
+          "wse_m": 25.1262,
+          "flow_cfs": 12872.62,
+          "flow_m3s": 364.5115,
+          "alpha": 1.071071,
+          "friction_slope": 0.001002,
+          "conveyance_total": 406716.46875,
+          "area_flow_total": 1247.059082,
+          "velocity_total": 10.322384,
+          "manning_n_channel": 0.025
+        }
+      ]
+    }
+  ],
+  "geometry": {
+    "cross_sections": [
+      {
+        "left_bank_ft": 42.3,
+        "right_bank_ft": 124.54,
+        "len_channel_ft": 90.0,
+        "len_left_ft": 80.0,
+        "len_right_ft": 100.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            91.0
+          ],
+          [
+            27.2,
+            85.0
+          ],
+          [
+            27.2,
+            82.14
+          ],
+          [
+            35.46,
+            79.45
+          ],
+          [
+            42.3,
+            78.85
+          ],
+          [
+            43.74,
+            76.15
+          ],
+          [
+            48.3,
+            73.25
+          ],
+          [
+            51.66,
+            69.55
+          ],
+          [
+            69.42,
+            66.85
+          ],
+          [
+            80.94,
+            64.45
+          ],
+          [
+            90.06,
+            64.0
+          ],
+          [
+            111.42,
+            65.6
+          ],
+          [
+            117.02,
+            66.4
+          ],
+          [
+            124.54,
+            71.5
+          ],
+          [
+            132.35,
+            72.85
+          ],
+          [
+            138.21,
+            73.45
+          ],
+          [
+            147.5,
+            83.85
+          ],
+          [
+            147.5,
+            85.0
+          ],
+          [
+            150.0,
+            91.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            42.3,
+            0.025
+          ],
+          [
+            124.54,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 42.3,
+        "right_bank_ft": 120.0,
+        "len_channel_ft": 80.0,
+        "len_left_ft": 70.0,
+        "len_right_ft": 90.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            91.0
+          ],
+          [
+            27.0,
+            85.0
+          ],
+          [
+            27.0,
+            82.65
+          ],
+          [
+            35.46,
+            79.25
+          ],
+          [
+            42.3,
+            78.65
+          ],
+          [
+            43.74,
+            75.95
+          ],
+          [
+            48.3,
+            73.05
+          ],
+          [
+            51.66,
+            69.35
+          ],
+          [
+            69.42,
+            66.64
+          ],
+          [
+            80.94,
+            64.24
+          ],
+          [
+            90.06,
+            63.8
+          ],
+          [
+            108.42,
+            65.4
+          ],
+          [
+            112.02,
+            66.2
+          ],
+          [
+            120.0,
+            71.3
+          ],
+          [
+            134.0,
+            71.5
+          ],
+          [
+            134.0,
+            90.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            42.3,
+            0.025
+          ],
+          [
+            120.0,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 42.3,
+        "right_bank_ft": 120.0,
+        "len_channel_ft": 80.0,
+        "len_left_ft": 75.0,
+        "len_right_ft": 90.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            91.0
+          ],
+          [
+            27.0,
+            85.0
+          ],
+          [
+            27.0,
+            82.65
+          ],
+          [
+            35.46,
+            79.25
+          ],
+          [
+            42.3,
+            78.65
+          ],
+          [
+            43.74,
+            75.95
+          ],
+          [
+            48.3,
+            73.05
+          ],
+          [
+            51.66,
+            69.35
+          ],
+          [
+            69.42,
+            66.64
+          ],
+          [
+            80.94,
+            64.24
+          ],
+          [
+            90.06,
+            63.8
+          ],
+          [
+            108.42,
+            65.4
+          ],
+          [
+            112.02,
+            66.2
+          ],
+          [
+            120.0,
+            71.3
+          ],
+          [
+            134.0,
+            71.5
+          ],
+          [
+            134.0,
+            90.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            42.3,
+            0.025
+          ],
+          [
+            120.0,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 42.3,
+        "right_bank_ft": 124.54,
+        "len_channel_ft": 60.0,
+        "len_left_ft": 60.0,
+        "len_right_ft": 60.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            91.0
+          ],
+          [
+            27.0,
+            85.0
+          ],
+          [
+            27.0,
+            82.65
+          ],
+          [
+            35.46,
+            79.25
+          ],
+          [
+            42.3,
+            78.65
+          ],
+          [
+            43.74,
+            75.95
+          ],
+          [
+            48.3,
+            73.05
+          ],
+          [
+            51.66,
+            69.35
+          ],
+          [
+            69.42,
+            66.65
+          ],
+          [
+            80.94,
+            64.25
+          ],
+          [
+            90.06,
+            63.8
+          ],
+          [
+            111.42,
+            65.4
+          ],
+          [
+            117.02,
+            66.2
+          ],
+          [
+            124.54,
+            71.3
+          ],
+          [
+            132.35,
+            72.65
+          ],
+          [
+            138.21,
+            73.25
+          ],
+          [
+            147.5,
+            83.65
+          ],
+          [
+            147.5,
+            90.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            42.3,
+            0.025
+          ],
+          [
+            124.54,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 28.0,
+        "right_bank_ft": 74.0,
+        "len_channel_ft": 92.0,
+        "len_left_ft": 82.0,
+        "len_right_ft": 100.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            88.0
+          ],
+          [
+            10.0,
+            84.0
+          ],
+          [
+            15.0,
+            81.0
+          ],
+          [
+            28.0,
+            78.0
+          ],
+          [
+            32.0,
+            73.0
+          ],
+          [
+            35.0,
+            69.0
+          ],
+          [
+            40.0,
+            67.0
+          ],
+          [
+            50.0,
+            64.0
+          ],
+          [
+            60.0,
+            63.8
+          ],
+          [
+            65.0,
+            68.0
+          ],
+          [
+            70.0,
+            73.0
+          ],
+          [
+            74.0,
+            79.5
+          ],
+          [
+            79.0,
+            80.0
+          ],
+          [
+            83.0,
+            85.0
+          ],
+          [
+            86.0,
+            92.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            28.0,
+            0.025
+          ],
+          [
+            74.0,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 27.3,
+        "right_bank_ft": 74.0,
+        "len_channel_ft": 95.0,
+        "len_left_ft": 75.0,
+        "len_right_ft": 110.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            87.9
+          ],
+          [
+            9.8,
+            83.98
+          ],
+          [
+            11.4,
+            83.05
+          ],
+          [
+            14.6,
+            81.12
+          ],
+          [
+            17.1,
+            80.44
+          ],
+          [
+            27.3,
+            77.92
+          ],
+          [
+            31.4,
+            73.11
+          ],
+          [
+            32.8,
+            71.42
+          ],
+          [
+            34.5,
+            69.18
+          ],
+          [
+            35.5,
+            68.62
+          ],
+          [
+            39.6,
+            66.98
+          ],
+          [
+            40.9,
+            66.55
+          ],
+          [
+            49.8,
+            63.95
+          ],
+          [
+            50.9,
+            63.88
+          ],
+          [
+            60.0,
+            63.73
+          ],
+          [
+            65.0,
+            67.9
+          ],
+          [
+            70.0,
+            72.95
+          ],
+          [
+            74.0,
+            79.4
+          ],
+          [
+            79.0,
+            79.93
+          ],
+          [
+            83.0,
+            84.97
+          ],
+          [
+            86.0,
+            91.5
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            27.3,
+            0.025
+          ],
+          [
+            74.0,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 26.7,
+        "right_bank_ft": 74.0,
+        "len_channel_ft": 95.0,
+        "len_left_ft": 85.0,
+        "len_right_ft": 100.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            87.8
+          ],
+          [
+            9.5,
+            83.96
+          ],
+          [
+            11.1,
+            83.1
+          ],
+          [
+            14.3,
+            81.23
+          ],
+          [
+            16.7,
+            80.45
+          ],
+          [
+            26.7,
+            77.83
+          ],
+          [
+            30.8,
+            73.22
+          ],
+          [
+            32.2,
+            71.61
+          ],
+          [
+            34.0,
+            69.36
+          ],
+          [
+            35.0,
+            68.63
+          ],
+          [
+            39.2,
+            66.97
+          ],
+          [
+            40.6,
+            66.5
+          ],
+          [
+            49.6,
+            63.91
+          ],
+          [
+            50.7,
+            63.79
+          ],
+          [
+            60.0,
+            63.62
+          ],
+          [
+            65.0,
+            67.8
+          ],
+          [
+            70.0,
+            72.9
+          ],
+          [
+            74.0,
+            79.3
+          ],
+          [
+            79.0,
+            79.87
+          ],
+          [
+            83.0,
+            84.93
+          ],
+          [
+            86.0,
+            91.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            26.7,
+            0.025
+          ],
+          [
+            74.0,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 26.0,
+        "right_bank_ft": 74.0,
+        "len_channel_ft": 92.0,
+        "len_left_ft": 78.0,
+        "len_right_ft": 103.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            87.7
+          ],
+          [
+            9.3,
+            83.94
+          ],
+          [
+            10.8,
+            83.15
+          ],
+          [
+            13.9,
+            81.35
+          ],
+          [
+            16.3,
+            80.46
+          ],
+          [
+            26.0,
+            77.75
+          ],
+          [
+            30.3,
+            73.34
+          ],
+          [
+            31.7,
+            71.81
+          ],
+          [
+            33.4,
+            69.54
+          ],
+          [
+            34.5,
+            68.65
+          ],
+          [
+            38.8,
+            66.95
+          ],
+          [
+            40.2,
+            66.45
+          ],
+          [
+            49.4,
+            63.86
+          ],
+          [
+            50.6,
+            63.69
+          ],
+          [
+            60.0,
+            63.55
+          ],
+          [
+            65.0,
+            67.7
+          ],
+          [
+            70.0,
+            72.85
+          ],
+          [
+            74.0,
+            79.2
+          ],
+          [
+            79.0,
+            79.8
+          ],
+          [
+            83.0,
+            84.9
+          ],
+          [
+            86.0,
+            90.5
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            26.0,
+            0.025
+          ],
+          [
+            74.0,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 25.3,
+        "right_bank_ft": 74.0,
+        "len_channel_ft": 90.0,
+        "len_left_ft": 84.0,
+        "len_right_ft": 100.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            87.6
+          ],
+          [
+            9.0,
+            83.92
+          ],
+          [
+            10.6,
+            83.2
+          ],
+          [
+            13.6,
+            81.47
+          ],
+          [
+            15.8,
+            80.47
+          ],
+          [
+            25.3,
+            77.67
+          ],
+          [
+            29.7,
+            73.45
+          ],
+          [
+            31.1,
+            72.01
+          ],
+          [
+            32.9,
+            69.72
+          ],
+          [
+            34.0,
+            68.67
+          ],
+          [
+            38.3,
+            66.93
+          ],
+          [
+            39.8,
+            66.4
+          ],
+          [
+            49.2,
+            63.82
+          ],
+          [
+            50.4,
+            63.59
+          ],
+          [
+            60.0,
+            63.4
+          ],
+          [
+            65.0,
+            67.6
+          ],
+          [
+            70.0,
+            72.8
+          ],
+          [
+            74.0,
+            79.1
+          ],
+          [
+            79.0,
+            79.73
+          ],
+          [
+            83.0,
+            84.87
+          ],
+          [
+            86.0,
+            90.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            25.3,
+            0.025
+          ],
+          [
+            74.0,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 24.7,
+        "right_bank_ft": 74.0,
+        "len_channel_ft": 95.0,
+        "len_left_ft": 80.0,
+        "len_right_ft": 110.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            87.5
+          ],
+          [
+            8.8,
+            83.9
+          ],
+          [
+            10.3,
+            83.25
+          ],
+          [
+            13.2,
+            81.58
+          ],
+          [
+            15.4,
+            80.49
+          ],
+          [
+            24.7,
+            77.58
+          ],
+          [
+            29.1,
+            73.56
+          ],
+          [
+            30.6,
+            72.2
+          ],
+          [
+            32.4,
+            69.91
+          ],
+          [
+            33.5,
+            68.68
+          ],
+          [
+            37.9,
+            66.92
+          ],
+          [
+            39.4,
+            66.35
+          ],
+          [
+            49.0,
+            63.77
+          ],
+          [
+            50.2,
+            63.5
+          ],
+          [
+            60.0,
+            63.35
+          ],
+          [
+            65.0,
+            67.5
+          ],
+          [
+            70.0,
+            72.75
+          ],
+          [
+            74.0,
+            79.0
+          ],
+          [
+            79.0,
+            79.67
+          ],
+          [
+            83.0,
+            84.83
+          ],
+          [
+            86.0,
+            89.5
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            24.7,
+            0.025
+          ],
+          [
+            74.0,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 24.0,
+        "right_bank_ft": 74.0,
+        "len_channel_ft": 70.0,
+        "len_left_ft": 70.0,
+        "len_right_ft": 70.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            87.4
+          ],
+          [
+            10.0,
+            83.3
+          ],
+          [
+            15.0,
+            80.5
+          ],
+          [
+            24.0,
+            77.5
+          ],
+          [
+            30.0,
+            72.4
+          ],
+          [
+            33.0,
+            68.7
+          ],
+          [
+            39.0,
+            66.3
+          ],
+          [
+            50.0,
+            63.4
+          ],
+          [
+            60.0,
+            63.2
+          ],
+          [
+            65.0,
+            67.4
+          ],
+          [
+            70.0,
+            72.7
+          ],
+          [
+            74.0,
+            78.9
+          ],
+          [
+            79.0,
+            79.6
+          ],
+          [
+            83.0,
+            84.8
+          ],
+          [
+            86.0,
+            89.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            24.0,
+            0.025
+          ],
+          [
+            74.0,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 43.2,
+        "right_bank_ft": 66.2,
+        "len_channel_ft": 80.0,
+        "len_left_ft": 75.0,
+        "len_right_ft": 90.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            90.0
+          ],
+          [
+            27.0,
+            82.65
+          ],
+          [
+            31.7,
+            79.25
+          ],
+          [
+            35.5,
+            78.65
+          ],
+          [
+            43.2,
+            75.95
+          ],
+          [
+            43.9,
+            73.05
+          ],
+          [
+            45.3,
+            69.35
+          ],
+          [
+            46.8,
+            66.65
+          ],
+          [
+            51.6,
+            64.25
+          ],
+          [
+            55.4,
+            63.8
+          ],
+          [
+            59.3,
+            68.05
+          ],
+          [
+            60.8,
+            71.15
+          ],
+          [
+            63.1,
+            73.35
+          ],
+          [
+            66.2,
+            75.65
+          ],
+          [
+            71.0,
+            77.25
+          ],
+          [
+            77.6,
+            83.65
+          ],
+          [
+            90.0,
+            90.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            43.2,
+            0.025
+          ],
+          [
+            66.2,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 43.4,
+        "right_bank_ft": 66.6,
+        "len_channel_ft": 88.0,
+        "len_left_ft": 80.0,
+        "len_right_ft": 98.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            90.0
+          ],
+          [
+            27.0,
+            82.52
+          ],
+          [
+            31.7,
+            79.41
+          ],
+          [
+            31.8,
+            79.39
+          ],
+          [
+            35.6,
+            78.53
+          ],
+          [
+            35.7,
+            78.5
+          ],
+          [
+            43.4,
+            75.76
+          ],
+          [
+            44.1,
+            72.94
+          ],
+          [
+            44.1,
+            72.85
+          ],
+          [
+            45.5,
+            69.24
+          ],
+          [
+            45.5,
+            69.18
+          ],
+          [
+            47.0,
+            66.53
+          ],
+          [
+            47.0,
+            66.51
+          ],
+          [
+            51.9,
+            64.13
+          ],
+          [
+            55.7,
+            63.63
+          ],
+          [
+            59.6,
+            67.88
+          ],
+          [
+            59.6,
+            67.94
+          ],
+          [
+            61.2,
+            70.95
+          ],
+          [
+            61.2,
+            71.03
+          ],
+          [
+            63.4,
+            73.22
+          ],
+          [
+            66.6,
+            75.52
+          ],
+          [
+            71.4,
+            77.39
+          ],
+          [
+            71.4,
+            77.41
+          ],
+          [
+            78.1,
+            83.52
+          ],
+          [
+            90.0,
+            90.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            43.4,
+            0.025
+          ],
+          [
+            66.6,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 43.5,
+        "right_bank_ft": 67.0,
+        "len_channel_ft": 80.0,
+        "len_left_ft": 70.0,
+        "len_right_ft": 90.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            90.0
+          ],
+          [
+            27.0,
+            82.39
+          ],
+          [
+            31.8,
+            79.56
+          ],
+          [
+            31.9,
+            79.54
+          ],
+          [
+            35.7,
+            78.41
+          ],
+          [
+            35.7,
+            78.37
+          ],
+          [
+            43.5,
+            75.57
+          ],
+          [
+            44.2,
+            72.84
+          ],
+          [
+            44.3,
+            72.74
+          ],
+          [
+            45.7,
+            69.12
+          ],
+          [
+            45.7,
+            69.06
+          ],
+          [
+            47.2,
+            66.41
+          ],
+          [
+            47.3,
+            66.38
+          ],
+          [
+            52.0,
+            63.99
+          ],
+          [
+            56.0,
+            63.54
+          ],
+          [
+            59.9,
+            67.76
+          ],
+          [
+            60.0,
+            67.82
+          ],
+          [
+            61.5,
+            70.84
+          ],
+          [
+            61.5,
+            70.91
+          ],
+          [
+            63.9,
+            73.09
+          ],
+          [
+            67.0,
+            75.39
+          ],
+          [
+            71.8,
+            77.54
+          ],
+          [
+            71.9,
+            77.57
+          ],
+          [
+            78.6,
+            83.39
+          ],
+          [
+            90.0,
+            90.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            43.5,
+            0.025
+          ],
+          [
+            67.0,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 43.7,
+        "right_bank_ft": 67.4,
+        "len_channel_ft": 95.0,
+        "len_left_ft": 85.0,
+        "len_right_ft": 100.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            90.0
+          ],
+          [
+            27.0,
+            82.26
+          ],
+          [
+            31.8,
+            79.72
+          ],
+          [
+            31.9,
+            79.7
+          ],
+          [
+            35.8,
+            78.28
+          ],
+          [
+            35.8,
+            78.25
+          ],
+          [
+            43.7,
+            75.38
+          ],
+          [
+            44.4,
+            72.73
+          ],
+          [
+            44.5,
+            72.62
+          ],
+          [
+            45.9,
+            69.01
+          ],
+          [
+            45.9,
+            68.94
+          ],
+          [
+            47.4,
+            66.29
+          ],
+          [
+            47.5,
+            66.26
+          ],
+          [
+            52.3,
+            63.86
+          ],
+          [
+            56.3,
+            63.41
+          ],
+          [
+            60.3,
+            67.64
+          ],
+          [
+            60.3,
+            67.71
+          ],
+          [
+            61.9,
+            70.73
+          ],
+          [
+            61.9,
+            70.78
+          ],
+          [
+            64.2,
+            72.96
+          ],
+          [
+            67.4,
+            75.26
+          ],
+          [
+            72.3,
+            77.69
+          ],
+          [
+            72.4,
+            77.72
+          ],
+          [
+            79.2,
+            83.26
+          ],
+          [
+            90.0,
+            90.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            43.7,
+            0.025
+          ],
+          [
+            67.4,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 43.8,
+        "right_bank_ft": 67.8,
+        "len_channel_ft": 85.0,
+        "len_left_ft": 75.0,
+        "len_right_ft": 98.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            90.0
+          ],
+          [
+            27.0,
+            82.13
+          ],
+          [
+            31.9,
+            79.87
+          ],
+          [
+            32.0,
+            79.85
+          ],
+          [
+            35.8,
+            78.16
+          ],
+          [
+            35.9,
+            78.12
+          ],
+          [
+            43.8,
+            75.19
+          ],
+          [
+            44.6,
+            72.63
+          ],
+          [
+            44.6,
+            72.51
+          ],
+          [
+            46.1,
+            68.89
+          ],
+          [
+            46.1,
+            68.82
+          ],
+          [
+            47.6,
+            66.17
+          ],
+          [
+            47.6,
+            66.13
+          ],
+          [
+            52.6,
+            63.73
+          ],
+          [
+            56.6,
+            63.28
+          ],
+          [
+            60.6,
+            67.52
+          ],
+          [
+            60.7,
+            67.6
+          ],
+          [
+            62.2,
+            70.61
+          ],
+          [
+            62.2,
+            70.66
+          ],
+          [
+            64.6,
+            72.83
+          ],
+          [
+            67.8,
+            75.13
+          ],
+          [
+            72.8,
+            77.85
+          ],
+          [
+            72.8,
+            77.88
+          ],
+          [
+            79.7,
+            83.13
+          ],
+          [
+            90.0,
+            90.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            43.8,
+            0.025
+          ],
+          [
+            67.8,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 44.0,
+        "right_bank_ft": 68.3,
+        "len_channel_ft": 60.0,
+        "len_left_ft": 60.0,
+        "len_right_ft": 60.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            10.0,
+            90.0
+          ],
+          [
+            27.0,
+            82.0
+          ],
+          [
+            32.0,
+            80.0
+          ],
+          [
+            36.0,
+            78.0
+          ],
+          [
+            44.0,
+            75.0
+          ],
+          [
+            44.8,
+            72.4
+          ],
+          [
+            46.3,
+            68.7
+          ],
+          [
+            47.8,
+            66.0
+          ],
+          [
+            52.9,
+            63.6
+          ],
+          [
+            56.9,
+            63.15
+          ],
+          [
+            61.0,
+            67.4
+          ],
+          [
+            62.6,
+            70.5
+          ],
+          [
+            65.0,
+            72.7
+          ],
+          [
+            68.3,
+            75.0
+          ],
+          [
+            73.3,
+            78.0
+          ],
+          [
+            80.3,
+            83.0
+          ],
+          [
+            90.0,
+            90.0
+          ]
+        ],
+        "manning_n": [
+          [
+            10.0,
+            0.035
+          ],
+          [
+            44.0,
+            0.025
+          ],
+          [
+            68.3,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 28.8,
+        "right_bank_ft": 103.8,
+        "len_channel_ft": 95.0,
+        "len_left_ft": 82.0,
+        "len_right_ft": 110.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            87.3
+          ],
+          [
+            12.0,
+            83.2
+          ],
+          [
+            18.0,
+            80.4
+          ],
+          [
+            28.8,
+            77.4
+          ],
+          [
+            37.8,
+            72.3
+          ],
+          [
+            42.3,
+            68.6
+          ],
+          [
+            51.3,
+            66.2
+          ],
+          [
+            67.8,
+            63.3
+          ],
+          [
+            82.8,
+            63.12
+          ],
+          [
+            90.3,
+            67.3
+          ],
+          [
+            97.8,
+            72.6
+          ],
+          [
+            103.8,
+            78.8
+          ],
+          [
+            110.3,
+            79.5
+          ],
+          [
+            115.5,
+            84.7
+          ],
+          [
+            119.4,
+            88.9
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            28.8,
+            0.025
+          ],
+          [
+            103.8,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 28.0,
+        "right_bank_ft": 103.8,
+        "len_channel_ft": 100.0,
+        "len_left_ft": 85.0,
+        "len_right_ft": 120.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            87.2
+          ],
+          [
+            11.7,
+            83.21
+          ],
+          [
+            13.5,
+            82.42
+          ],
+          [
+            17.5,
+            80.52
+          ],
+          [
+            20.2,
+            79.69
+          ],
+          [
+            28.0,
+            77.3
+          ],
+          [
+            36.7,
+            72.28
+          ],
+          [
+            38.9,
+            70.49
+          ],
+          [
+            41.0,
+            68.96
+          ],
+          [
+            49.0,
+            66.7
+          ],
+          [
+            49.6,
+            66.53
+          ],
+          [
+            59.8,
+            64.5
+          ],
+          [
+            65.4,
+            63.55
+          ],
+          [
+            79.8,
+            63.06
+          ],
+          [
+            88.4,
+            66.62
+          ],
+          [
+            89.8,
+            67.37
+          ],
+          [
+            94.8,
+            70.38
+          ],
+          [
+            96.9,
+            71.9
+          ],
+          [
+            99.8,
+            74.59
+          ],
+          [
+            103.8,
+            78.72
+          ],
+          [
+            110.3,
+            79.42
+          ],
+          [
+            115.5,
+            84.62
+          ],
+          [
+            119.4,
+            88.82
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            28.0,
+            0.025
+          ],
+          [
+            103.8,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 27.3,
+        "right_bank_ft": 103.8,
+        "len_channel_ft": 100.0,
+        "len_left_ft": 90.0,
+        "len_right_ft": 100.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            87.1
+          ],
+          [
+            11.4,
+            83.22
+          ],
+          [
+            13.1,
+            82.49
+          ],
+          [
+            17.0,
+            80.64
+          ],
+          [
+            19.6,
+            79.74
+          ],
+          [
+            27.3,
+            77.2
+          ],
+          [
+            35.5,
+            72.27
+          ],
+          [
+            37.7,
+            70.62
+          ],
+          [
+            39.7,
+            69.31
+          ],
+          [
+            47.3,
+            67.03
+          ],
+          [
+            47.9,
+            66.85
+          ],
+          [
+            57.7,
+            64.67
+          ],
+          [
+            63.0,
+            63.79
+          ],
+          [
+            76.8,
+            62.99
+          ],
+          [
+            86.4,
+            65.95
+          ],
+          [
+            88.1,
+            66.55
+          ],
+          [
+            93.7,
+            69.49
+          ],
+          [
+            96.1,
+            71.21
+          ],
+          [
+            99.3,
+            73.99
+          ],
+          [
+            103.8,
+            78.64
+          ],
+          [
+            110.3,
+            79.34
+          ],
+          [
+            115.5,
+            84.54
+          ],
+          [
+            119.4,
+            88.74
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            27.3,
+            0.025
+          ],
+          [
+            103.8,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 26.5,
+        "right_bank_ft": 103.8,
+        "len_channel_ft": 90.0,
+        "len_left_ft": 80.0,
+        "len_right_ft": 100.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            87.0
+          ],
+          [
+            11.1,
+            83.22
+          ],
+          [
+            12.7,
+            82.56
+          ],
+          [
+            16.6,
+            80.76
+          ],
+          [
+            19.1,
+            79.8
+          ],
+          [
+            26.5,
+            77.1
+          ],
+          [
+            34.4,
+            72.25
+          ],
+          [
+            36.5,
+            70.75
+          ],
+          [
+            38.3,
+            69.67
+          ],
+          [
+            45.6,
+            67.35
+          ],
+          [
+            46.2,
+            67.18
+          ],
+          [
+            55.6,
+            64.85
+          ],
+          [
+            60.7,
+            64.04
+          ],
+          [
+            73.8,
+            62.93
+          ],
+          [
+            84.5,
+            65.27
+          ],
+          [
+            86.3,
+            65.73
+          ],
+          [
+            92.6,
+            68.59
+          ],
+          [
+            95.2,
+            70.51
+          ],
+          [
+            98.8,
+            73.39
+          ],
+          [
+            103.8,
+            78.56
+          ],
+          [
+            110.3,
+            79.26
+          ],
+          [
+            115.5,
+            84.46
+          ],
+          [
+            119.4,
+            88.66
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            26.5,
+            0.025
+          ],
+          [
+            103.8,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 25.8,
+        "right_bank_ft": 103.8,
+        "len_channel_ft": 95.0,
+        "len_left_ft": 85.0,
+        "len_right_ft": 105.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            86.9
+          ],
+          [
+            10.7,
+            83.23
+          ],
+          [
+            12.4,
+            82.63
+          ],
+          [
+            16.1,
+            80.89
+          ],
+          [
+            18.5,
+            79.85
+          ],
+          [
+            25.8,
+            77.0
+          ],
+          [
+            33.3,
+            72.24
+          ],
+          [
+            35.2,
+            70.87
+          ],
+          [
+            37.0,
+            70.03
+          ],
+          [
+            44.0,
+            67.68
+          ],
+          [
+            44.5,
+            67.51
+          ],
+          [
+            53.4,
+            65.02
+          ],
+          [
+            58.3,
+            64.28
+          ],
+          [
+            70.8,
+            62.86
+          ],
+          [
+            82.6,
+            64.59
+          ],
+          [
+            84.6,
+            64.92
+          ],
+          [
+            91.4,
+            67.69
+          ],
+          [
+            94.4,
+            69.81
+          ],
+          [
+            98.3,
+            72.8
+          ],
+          [
+            103.8,
+            78.48
+          ],
+          [
+            110.3,
+            79.18
+          ],
+          [
+            115.5,
+            84.38
+          ],
+          [
+            119.4,
+            88.58
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            25.8,
+            0.025
+          ],
+          [
+            103.8,
+            0.035
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 25.0,
+        "right_bank_ft": 103.8,
+        "len_channel_ft": 0.0,
+        "len_left_ft": 0.0,
+        "len_right_ft": 0.0,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            86.8
+          ],
+          [
+            12.0,
+            82.7
+          ],
+          [
+            18.0,
+            79.9
+          ],
+          [
+            25.0,
+            76.9
+          ],
+          [
+            34.0,
+            71.0
+          ],
+          [
+            42.3,
+            68.0
+          ],
+          [
+            51.3,
+            65.2
+          ],
+          [
+            67.8,
+            62.8
+          ],
+          [
+            82.8,
+            64.1
+          ],
+          [
+            90.3,
+            66.8
+          ],
+          [
+            97.8,
+            72.2
+          ],
+          [
+            103.8,
+            78.4
+          ],
+          [
+            110.3,
+            79.1
+          ],
+          [
+            115.5,
+            84.3
+          ],
+          [
+            119.4,
+            88.5
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.035
+          ],
+          [
+            25.0,
+            0.025
+          ],
+          [
+            103.8,
+            0.035
+          ]
+        ]
+      }
+    ]
+  }
+}

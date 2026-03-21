@@ -1,0 +1,1296 @@
+{
+  "case_name": "Mixed Flow Regime Channel",
+  "hdf_file": "MIXED.p01.hdf",
+  "unit_system": "US Customary (ft/cfs)",
+  "n_profiles": 2,
+  "n_cross_sections": 19,
+  "profiles": [
+    {
+      "name": "PF 1",
+      "cross_sections": [
+        {
+          "index": 0,
+          "wse_ft": 71.8657,
+          "wse_m": 21.9047,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.010007,
+          "conveyance_total": 4998.137695,
+          "area_flow_total": 37.313995,
+          "velocity_total": 13.399798,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 1,
+          "wse_ft": 70.8687,
+          "wse_m": 21.6008,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.009958,
+          "conveyance_total": 5010.52832,
+          "area_flow_total": 37.373199,
+          "velocity_total": 13.378571,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 2,
+          "wse_ft": 69.8704,
+          "wse_m": 21.2965,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.009929,
+          "conveyance_total": 5017.782227,
+          "area_flow_total": 37.407837,
+          "velocity_total": 13.366183,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 3,
+          "wse_ft": 68.8665,
+          "wse_m": 20.9905,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.009995,
+          "conveyance_total": 5001.362305,
+          "area_flow_total": 37.329407,
+          "velocity_total": 13.394266,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 4,
+          "wse_ft": 67.8703,
+          "wse_m": 20.6869,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.009931,
+          "conveyance_total": 5017.333984,
+          "area_flow_total": 37.405701,
+          "velocity_total": 13.366946,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 5,
+          "wse_ft": 69.5544,
+          "wse_m": 21.2002,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.000671,
+          "conveyance_total": 19304.443359,
+          "area_flow_total": 91.088104,
+          "velocity_total": 5.489191,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 6,
+          "wse_ft": 69.4795,
+          "wse_m": 21.1774,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.000686,
+          "conveyance_total": 19089.121094,
+          "area_flow_total": 90.39032,
+          "velocity_total": 5.531566,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 7,
+          "wse_ft": 69.322,
+          "wse_m": 21.1294,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.000722,
+          "conveyance_total": 18613.166016,
+          "area_flow_total": 88.840942,
+          "velocity_total": 5.628036,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 8,
+          "wse_ft": 69.1514,
+          "wse_m": 21.0774,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.000766,
+          "conveyance_total": 18060.1875,
+          "area_flow_total": 87.028351,
+          "velocity_total": 5.745254,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 9,
+          "wse_ft": 68.9651,
+          "wse_m": 21.0206,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.000824,
+          "conveyance_total": 17416.708984,
+          "area_flow_total": 84.901428,
+          "velocity_total": 5.889183,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 10,
+          "wse_ft": 68.7044,
+          "wse_m": 20.9411,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.000993,
+          "conveyance_total": 15864.875977,
+          "area_flow_total": 79.687195,
+          "velocity_total": 6.274534,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 11,
+          "wse_ft": 68.4767,
+          "wse_m": 20.8717,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.001045,
+          "conveyance_total": 15468.402344,
+          "area_flow_total": 78.334198,
+          "velocity_total": 6.382908,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 12,
+          "wse_ft": 68.1506,
+          "wse_m": 20.7723,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.001267,
+          "conveyance_total": 14048.621094,
+          "area_flow_total": 73.41156,
+          "velocity_total": 6.810916,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 13,
+          "wse_ft": 67.1142,
+          "wse_m": 20.4564,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.003145,
+          "conveyance_total": 8915.415039,
+          "area_flow_total": 54.283752,
+          "velocity_total": 9.210859,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 14,
+          "wse_ft": 66.5788,
+          "wse_m": 20.2932,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.002834,
+          "conveyance_total": 9392.657227,
+          "area_flow_total": 56.175308,
+          "velocity_total": 8.900708,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 15,
+          "wse_ft": 66.287,
+          "wse_m": 20.2043,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.001989,
+          "conveyance_total": 11210.353516,
+          "area_flow_total": 63.139877,
+          "velocity_total": 7.918926,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 16,
+          "wse_ft": 66.1366,
+          "wse_m": 20.1584,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.001302,
+          "conveyance_total": 13855.321289,
+          "area_flow_total": 72.731323,
+          "velocity_total": 6.874617,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 17,
+          "wse_ft": 66.0536,
+          "wse_m": 20.1332,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.000854,
+          "conveyance_total": 17107.654297,
+          "area_flow_total": 83.872833,
+          "velocity_total": 5.961406,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 18,
+          "wse_ft": 66.0005,
+          "wse_m": 20.1169,
+          "flow_cfs": 500.0,
+          "flow_m3s": 14.1584,
+          "alpha": 1.0,
+          "friction_slope": 0.000586,
+          "conveyance_total": 20650.822266,
+          "area_flow_total": 95.409012,
+          "velocity_total": 5.240595,
+          "manning_n_channel": 0.015
+        }
+      ]
+    },
+    {
+      "name": "PF 2",
+      "cross_sections": [
+        {
+          "index": 0,
+          "wse_ft": 72.9266,
+          "wse_m": 22.228,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.010005,
+          "conveyance_total": 9997.464844,
+          "area_flow_total": 58.532562,
+          "velocity_total": 17.084507,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 1,
+          "wse_ft": 71.9327,
+          "wse_m": 21.9251,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.009942,
+          "conveyance_total": 10029.083008,
+          "area_flow_total": 58.654633,
+          "velocity_total": 17.048952,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 2,
+          "wse_ft": 70.9292,
+          "wse_m": 21.6192,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.009978,
+          "conveyance_total": 10010.858398,
+          "area_flow_total": 58.58429,
+          "velocity_total": 17.069422,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 3,
+          "wse_ft": 69.9332,
+          "wse_m": 21.3156,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.009937,
+          "conveyance_total": 10031.494141,
+          "area_flow_total": 58.66394,
+          "velocity_total": 17.046247,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 4,
+          "wse_ft": 68.9293,
+          "wse_m": 21.0097,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.009977,
+          "conveyance_total": 10011.491211,
+          "area_flow_total": 58.586731,
+          "velocity_total": 17.068712,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 5,
+          "wse_ft": 71.9218,
+          "wse_m": 21.9218,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.000813,
+          "conveyance_total": 35075.519531,
+          "area_flow_total": 138.436584,
+          "velocity_total": 7.223524,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 6,
+          "wse_ft": 71.8277,
+          "wse_m": 21.8931,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.000831,
+          "conveyance_total": 34693.625,
+          "area_flow_total": 137.354126,
+          "velocity_total": 7.280451,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 7,
+          "wse_ft": 71.6265,
+          "wse_m": 21.8318,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.000873,
+          "conveyance_total": 33841.335938,
+          "area_flow_total": 134.929657,
+          "velocity_total": 7.411269,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 8,
+          "wse_ft": 71.4064,
+          "wse_m": 21.7647,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.000926,
+          "conveyance_total": 32862.164062,
+          "area_flow_total": 132.128906,
+          "velocity_total": 7.568367,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 9,
+          "wse_ft": 71.1651,
+          "wse_m": 21.6911,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.000993,
+          "conveyance_total": 31741.591797,
+          "area_flow_total": 128.902588,
+          "velocity_total": 7.757796,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 10,
+          "wse_ft": 70.8393,
+          "wse_m": 21.5918,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.001149,
+          "conveyance_total": 29503.414062,
+          "area_flow_total": 122.385864,
+          "velocity_total": 8.170878,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 11,
+          "wse_ft": 70.5594,
+          "wse_m": 21.5065,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.001215,
+          "conveyance_total": 28688.615234,
+          "area_flow_total": 119.98764,
+          "velocity_total": 8.334191,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 12,
+          "wse_ft": 70.1595,
+          "wse_m": 21.3846,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.00142,
+          "conveyance_total": 26539.539062,
+          "area_flow_total": 113.589478,
+          "velocity_total": 8.803633,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 13,
+          "wse_ft": 69.5343,
+          "wse_m": 21.1941,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.001896,
+          "conveyance_total": 22966.740234,
+          "area_flow_total": 102.686768,
+          "velocity_total": 9.738353,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 14,
+          "wse_ft": 69.3579,
+          "wse_m": 21.1403,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.001487,
+          "conveyance_total": 25931.263672,
+          "area_flow_total": 111.758041,
+          "velocity_total": 8.947902,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 15,
+          "wse_ft": 69.2367,
+          "wse_m": 21.1033,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.001156,
+          "conveyance_total": 29417.566406,
+          "area_flow_total": 122.133865,
+          "velocity_total": 8.187737,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 16,
+          "wse_ft": 69.1444,
+          "wse_m": 21.0752,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.000911,
+          "conveyance_total": 33127.296875,
+          "area_flow_total": 132.888947,
+          "velocity_total": 7.52508,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 17,
+          "wse_ft": 69.0756,
+          "wse_m": 21.0542,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.000724,
+          "conveyance_total": 37162.4375,
+          "area_flow_total": 144.311371,
+          "velocity_total": 6.929461,
+          "manning_n_channel": 0.015
+        },
+        {
+          "index": 18,
+          "wse_ft": 69.0194,
+          "wse_m": 21.0371,
+          "flow_cfs": 1000.0,
+          "flow_m3s": 28.3168,
+          "alpha": 1.0,
+          "friction_slope": 0.000586,
+          "conveyance_total": 41304.820312,
+          "area_flow_total": 155.788193,
+          "velocity_total": 6.418972,
+          "manning_n_channel": 0.015
+        }
+      ]
+    }
+  ],
+  "geometry": {
+    "cross_sections": [
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 100.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            80.0
+          ],
+          [
+            0.0,
+            70.0
+          ],
+          [
+            20.0,
+            70.0
+          ],
+          [
+            20.0,
+            80.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            null
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            null
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 100.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            79.0
+          ],
+          [
+            0.0,
+            69.0
+          ],
+          [
+            20.0,
+            69.0
+          ],
+          [
+            20.0,
+            79.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            0.0
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 100.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            78.0
+          ],
+          [
+            0.0,
+            68.0
+          ],
+          [
+            20.0,
+            68.0
+          ],
+          [
+            20.0,
+            78.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            null
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            null
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 100.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            77.0
+          ],
+          [
+            0.0,
+            67.0
+          ],
+          [
+            20.0,
+            67.0
+          ],
+          [
+            20.0,
+            77.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            0.0
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 100.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            76.0
+          ],
+          [
+            0.0,
+            66.0
+          ],
+          [
+            20.0,
+            66.0
+          ],
+          [
+            20.0,
+            76.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            null
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            null
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 100.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            75.0
+          ],
+          [
+            0.0,
+            65.0
+          ],
+          [
+            20.0,
+            65.0
+          ],
+          [
+            20.0,
+            75.0
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            0.0
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 200.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            74.96
+          ],
+          [
+            0.0,
+            64.96
+          ],
+          [
+            20.0,
+            64.96
+          ],
+          [
+            20.0,
+            74.96
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            null
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            null
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 200.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            74.88
+          ],
+          [
+            0.0,
+            64.88
+          ],
+          [
+            20.0,
+            64.88
+          ],
+          [
+            20.0,
+            74.88
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            0.0
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 200.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            74.8
+          ],
+          [
+            0.0,
+            64.8
+          ],
+          [
+            20.0,
+            64.8
+          ],
+          [
+            20.0,
+            74.8
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            null
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            null
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 200.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            74.72
+          ],
+          [
+            0.0,
+            64.72
+          ],
+          [
+            20.0,
+            64.72
+          ],
+          [
+            20.0,
+            74.72
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            0.0
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 200.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            74.72
+          ],
+          [
+            0.0,
+            64.72
+          ],
+          [
+            20.0,
+            64.72
+          ],
+          [
+            20.0,
+            74.72
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            null
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            null
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 200.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            74.56
+          ],
+          [
+            0.0,
+            64.56
+          ],
+          [
+            20.0,
+            64.56
+          ],
+          [
+            20.0,
+            74.56
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            0.0
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 200.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            74.48
+          ],
+          [
+            0.0,
+            64.48
+          ],
+          [
+            20.0,
+            64.48
+          ],
+          [
+            20.0,
+            74.48
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            null
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            null
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 200.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            74.4
+          ],
+          [
+            0.0,
+            64.4
+          ],
+          [
+            20.0,
+            64.4
+          ],
+          [
+            20.0,
+            74.4
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            0.0
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 200.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            73.77
+          ],
+          [
+            0.0,
+            63.77
+          ],
+          [
+            20.0,
+            63.77
+          ],
+          [
+            20.0,
+            73.77
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            null
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            null
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 200.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            73.13
+          ],
+          [
+            0.0,
+            63.13
+          ],
+          [
+            20.0,
+            63.13
+          ],
+          [
+            20.0,
+            73.13
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            0.0
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 200.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            72.5
+          ],
+          [
+            0.0,
+            62.5
+          ],
+          [
+            20.0,
+            62.5
+          ],
+          [
+            20.0,
+            72.5
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            null
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            null
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": 200.0,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            71.86
+          ],
+          [
+            0.0,
+            61.86
+          ],
+          [
+            20.0,
+            61.86
+          ],
+          [
+            20.0,
+            71.86
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            0.0
+          ]
+        ]
+      },
+      {
+        "left_bank_ft": 0.0,
+        "right_bank_ft": 20.0,
+        "len_channel_ft": NaN,
+        "len_left_ft": NaN,
+        "len_right_ft": NaN,
+        "contraction": 0.1,
+        "expansion": 0.3,
+        "station_elevation": [
+          [
+            0.0,
+            71.23
+          ],
+          [
+            0.0,
+            61.23
+          ],
+          [
+            20.0,
+            61.23
+          ],
+          [
+            20.0,
+            71.23
+          ]
+        ],
+        "manning_n": [
+          [
+            0.0,
+            null
+          ],
+          [
+            0.0,
+            0.015
+          ],
+          [
+            20.0,
+            null
+          ]
+        ]
+      }
+    ]
+  }
+}
