@@ -1198,13 +1198,16 @@ class SteadyProfileSolver:
             # 目标：每子步能量变化 < 0.002m，最多 50 个子步
             n_substeps = 1
             energy_change = dx_seg * Sf_ds
-            if energy_change > 0.005 and not (i in _bridge_at_us):
+            # 子步只在真正陡坡（S0 > 0.003）且能量变化大时启用
+            # 缓坡段不需要子步，且子步可能导致 brentq 找到超临界根
+            _S0_seg = abs(bed[i] - bed[i + 1]) / max(dx_seg, 0.1)
+            if energy_change > 0.005 and _S0_seg > 0.003 and not (i in _bridge_at_us):
                 n_substeps = min(50, max(1, int(energy_change / 0.002)))
 
             # 子步迭代：每步以前一子步 W 为下游，床面高程线性插值
             # 子步间的断面几何在 i 和 i+1 之间按位置线性插值
-            # 重要：在子步内使用上游断面的流量（区间来水已累加）
-            Q = Q_us_local  # 覆盖外层参数 Q，让闭包和 Picard 都使用正确流量
+            # 重要：子步能量方程必须显式绑定本段流量，不能覆盖外层 Q
+            Q_seg_local = Q_us_local
             W_sub_ds = W[i + 1]
             bed_sub_ds = bed[i + 1]
             dx_sub = dx_seg / n_substeps
@@ -1232,8 +1235,8 @@ class SteadyProfileSolver:
                 _K_ds_sub    = w_ip1 * _K_ip1 + w_i * _K_i
                 _alpha_ds_sub = w_ip1 * _alpha_ip1 + w_i * _alpha_i
                 _A_ds_sub    = max(w_ip1 * _A_ip1 + w_i * _A_i, 1e-9)
-                _Sf_ds_sub   = (Q / _K_ds_sub) ** 2 if _K_ds_sub > 0 else Sf_ds
-                _V_ds_sub    = Q / _A_ds_sub
+                _Sf_ds_sub   = (Q_seg_local / _K_ds_sub) ** 2 if _K_ds_sub > 0 else Sf_ds
+                _V_ds_sub    = Q_seg_local / _A_ds_sub
                 _vh_ds_sub   = _alpha_ds_sub * _V_ds_sub ** 2 / (2.0 * self.g)
                 # 改进初始猜测：使用能量方程的粗略估计，而非简单的床面跟随
                 # 先用能量方程估算一个合理的初值
@@ -1256,17 +1259,24 @@ class SteadyProfileSolver:
                     _A_us_ip1 = self._get_geometry(h_us_r, i + 1)[0]
                     _A_us_i   = self._get_geometry(h_us_r, i)[0]
                     A_us_r = max(w_ip1_us * _A_us_ip1 + w_i_us * _A_us_i, 1e-9)
-                    V_us_r = Q / max(A_us_r, 1e-9)
+                    V_us_r = Q_seg_local / max(A_us_r, 1e-9)
                     # 上游面输水率：插值
                     _K_us_ip1, _alpha_us_ip1 = self._compute_subdivided_conveyance(h_us_r, i + 1)
                     _K_us_i,   _alpha_us_i   = self._compute_subdivided_conveyance(h_us_r, i)
                     K_us_r     = max(w_ip1_us * _K_us_ip1 + w_i_us * _K_us_i, 1e-9)
                     alpha_us_r = w_ip1_us * _alpha_us_ip1 + w_i_us * _alpha_us_i
-                    Sf_us_r = (Q / K_us_r) ** 2 if K_us_r > 0 else self.compute_friction_slope(h_us_r, Q, i)
+                    Sf_us_r = (
+                        (Q_seg_local / K_us_r) ** 2
+                        if K_us_r > 0
+                        else self.compute_friction_slope(h_us_r, Q_seg_local, i)
+                    )
                     vh_us_r = alpha_us_r * V_us_r ** 2 / (2.0 * self.g)
                     # HEC-RAS 默认: Average Conveyance Equation
                     # Sf_avg = ((Q_us + Q_ds) / (K_us + K_ds))^2
-                    Sf_avg_r = min(((Q + Q) / max(K_us_r + _K_ds_sub, 1e-9)) ** 2, 1.0)
+                    Sf_avg_r = min(
+                        ((Q_seg_local + Q_seg_local) / max(K_us_r + _K_ds_sub, 1e-9)) ** 2,
+                        1.0,
+                    )
                     cc_r = self._contraction_coefs[i] if self._contraction_coefs and i < len(self._contraction_coefs) else contraction_coef
                     ec_r = self._expansion_coefs[i]   if self._expansion_coefs   and i < len(self._expansion_coefs)   else expansion_coef
                     h_f_r = dx_sub * Sf_avg_r
@@ -1275,17 +1285,16 @@ class SteadyProfileSolver:
                     return (W_us_val + vh_us_r) - (W_sub_ds + _vh_ds_sub) - h_f_r - h_e_r
 
                 _brentq_ok = False
-                # --- brentq 区间策略 ---
-                # 亚临界流：残差函数在高水位区有唯一根；超临界流：低水位区也有根。
-                # 策略1（优先）：以 W_sub_ds 为下界的区间 [W_ds, W_ds+20]，仅包含亚临界根。
-                # 策略2（降级）：扩展下界至 bed+0.001，全范围搜索（可能包含超临界根）。
-                # 亚临界流：上游水位总在下游水位之上，以 W_sub_ds 为下界可避免超临界根
-                # 亚临界下界：取下游水位与临界水位中的较大者
-                # 这确保在陡坡段不会收敛到超临界根
-                _y_c_us = self._compute_critical_depth(Q, i)
+                # --- 亚临界 brentq 区间策略 ---
+                # 只在 [max(W_ds, bed+y_c), W_ds+20] 窄区间内寻找亚临界根，
+                # 明确跳过可能存在的超临界根。
+                _y_c_us = self._compute_critical_depth(Q_seg_local, i)
                 _W_critical_us = bed_sub_us + _y_c_us
+                _Sc_us = self._compute_critical_slope(Q_seg_local, i)
+                _S0_sub = max((bed_sub_us - bed_sub_ds) / max(dx_sub, 0.1), 0.0)
+                _is_steep_substep = _S0_sub > _Sc_us
                 _W_lo_narrow = max(W_sub_ds, _W_critical_us)  # 跳过超临界段
-                _W_hi = W_sub_ds + 20.0
+                _W_hi = max(_W_lo_narrow + 1e-4, W_sub_ds + 20.0)
                 try:
                     f_narrow_lo = _energy_residual(_W_lo_narrow)
                     f_hi = _energy_residual(_W_hi)
@@ -1296,20 +1305,24 @@ class SteadyProfileSolver:
                         W_trial = W_new
                         _converged = True
                         _brentq_ok = True
+                    elif _is_steep_substep:
+                        # 关键修正：陡坡子步在窄区间无亚临界根时，
+                        # 直接取临界深度，不再扩展到可能包含超临界根的宽区间。
+                        W_new = _W_critical_us
+                        W_trial = W_new
+                        _converged = True
+                        _brentq_ok = True
                     else:
-                        # 窄区间无根，扩展到全范围 [bed+0.001, W_ds+50]，寻找任意根
-                        _W_lo_wide = bed_sub_us + 0.001
-                        f_wide_lo = _energy_residual(_W_lo_wide)
-                        _W_hi_wide = W_sub_ds + 50.0
-                        f_hi_wide = _energy_residual(_W_hi_wide)
-                        if np.isfinite(f_wide_lo) and np.isfinite(f_hi_wide) and f_wide_lo * f_hi_wide <= 0.0:
-                            W_new = brentq(_energy_residual, _W_lo_wide, _W_hi_wide, xtol=1e-6, maxiter=100)
-                            W_new = max(W_new, bed_sub_us + 1e-4)
-                            W_trial = W_new
-                            _converged = True
-                            _brentq_ok = True
+                        _brentq_ok = False
                 except Exception:
-                    # brentq 异常（极端边界条件），回退到 Picard
+                    # 极端情况下若陡坡子步求根异常，仍按 HEC-RAS 取临界深度；
+                    # 缓坡段则回退到 Picard。
+                    if _is_steep_substep:
+                        W_new = _W_critical_us
+                        W_trial = W_new
+                        _converged = True
+                        _brentq_ok = True
+                    else:
                         _brentq_ok = False
 
                 # === Picard 迭代（回退路径）：brentq 找不到变号区间时使用 ===
@@ -1322,12 +1335,19 @@ class SteadyProfileSolver:
                         h_us = max(W_trial - bed_sub_us, 0.01)
                         h_us = min(h_us, 100.0)
                         A_us, _P_us, _R_us, _T_us = self._get_geometry(h_us, i)
-                        V_us = Q / max(A_us, 1e-9)
+                        V_us = Q_seg_local / max(A_us, 1e-9)
                         K_us, alpha_us = self._compute_subdivided_conveyance(h_us, i)
-                        Sf_us = (Q / K_us) ** 2 if K_us > 0 else self.compute_friction_slope(h_us, Q, i)
+                        Sf_us = (
+                            (Q_seg_local / K_us) ** 2
+                            if K_us > 0
+                            else self.compute_friction_slope(h_us, Q_seg_local, i)
+                        )
                         vh_us = alpha_us * V_us ** 2 / (2.0 * self.g)
                         # HEC-RAS 默认: Average Conveyance Equation
-                        Sf_avg = min(((Q + Q) / max(K_us + _K_ds_sub, 1e-9)) ** 2, 1.0)
+                        Sf_avg = min(
+                            ((Q_seg_local + Q_seg_local) / max(K_us + _K_ds_sub, 1e-9)) ** 2,
+                            1.0,
+                        )
                         cc = contraction_coef
                         ec = expansion_coef
                         if self._contraction_coefs and i < len(self._contraction_coefs):
@@ -1339,7 +1359,8 @@ class SteadyProfileSolver:
                         else:
                             h_minor = ec * (_vh_ds_sub - vh_us)
                         W_new = W_sub_ds + _vh_ds_sub - vh_us + dx_sub * Sf_avg + h_minor
-                        W_new = max(W_new, bed_sub_us + 1e-4)
+                        # 亚临界解下界：至少等于临界水位（HEC-RAS 混合流默认）
+                        W_new = max(W_new, _W_critical_us)
                         _delta = abs(W_new - W_trial)
                         if _delta < 1e-4 or _delta / max(abs(W_trial), 1.0) < 1e-4:
                             W_trial = W_new
@@ -1358,7 +1379,7 @@ class SteadyProfileSolver:
             # 同步 h_us/V_us/alpha_us 供后续 bridge energy 路径使用
             h_us = max(W_trial - bed[i], 0.01)
             A_us, _P_us, _R_us, _T_us = self._get_geometry(h_us, i)
-            V_us = Q / max(A_us, 1e-9)
+            V_us = Q_seg_local / max(A_us, 1e-9)
             K_us, alpha_us = self._compute_subdivided_conveyance(h_us, i)
             # -----------------------------------------------------------------------
             # Divergence protection
@@ -1372,7 +1393,7 @@ class SteadyProfileSolver:
                 _use_momentum = str(_br.get("bridge_method", "momentum")).lower() != "energy"
                 if _use_momentum:
                     W_trial = self._solve_bridge_momentum(
-                        Q=Q,
+                        Q=Q_seg_local,
                         W_downstream=W[i + 1],
                         bridge=_br,
                         bed_ds=bed[i + 1],
@@ -1412,18 +1433,21 @@ class SteadyProfileSolver:
                         if wl_br > deck_e and deck_e > bed[i]:
                             A_deck_e = (wl_br - deck_e) * _T_br
                         A_eff_e = max(A_br - A_pier_e - A_deck_e, A_br * 0.3)
-                    V_eff_e = Q / max(A_eff_e, 1e-9)
+                    V_eff_e = Q_seg_local / max(A_eff_e, 1e-9)
                     vh_eff_e = V_eff_e ** 2 / (2.0 * self.g)
                     h_pier_e = _pier_k * vh_eff_e
                     R_eff_e = A_eff_e / max(_P_br, 1e-6)
                     n_br_e = self._manning_ns[i] if self._manning_ns and i < len(self._manning_ns) else self.n
-                    Sf_br_e = (Q * n_br_e / (A_eff_e * R_eff_e ** (2.0/3.0))) ** 2 if A_eff_e > 0 and R_eff_e > 0 else 0
+                    Sf_br_e = (
+                        (Q_seg_local * n_br_e / (A_eff_e * R_eff_e ** (2.0/3.0))) ** 2
+                        if A_eff_e > 0 and R_eff_e > 0 else 0
+                    )
                     h_f_br_e = _br_len * Sf_br_e
                     vh_us_app = alpha_us * V_us ** 2 / (2.0 * self.g)
                     h_contr_e = _cc * max(vh_eff_e - vh_us_app, 0.0)
                     h_ds_app = max(W[i + 1] - bed[i + 1], 0.01)
                     A_ds_app, _, _, _ = self._get_geometry(h_ds_app, i + 1)
-                    V_ds_app = Q / max(A_ds_app, 1e-9)
+                    V_ds_app = Q_seg_local / max(A_ds_app, 1e-9)
                     _, alpha_ds_app = self._compute_subdivided_conveyance(h_ds_app, i + 1)
                     vh_ds_app = alpha_ds_app * V_ds_app ** 2 / (2.0 * self.g)
                     h_exp_e = _ec * max(vh_eff_e - vh_ds_app, 0.0)
@@ -1435,7 +1459,7 @@ class SteadyProfileSolver:
             if i in _culvert_at_us:
                 _cv = _culvert_at_us[i]
                 W_trial = self._solve_culvert(
-                    Q=Q, W_downstream=W[i + 1],
+                    Q=Q_seg_local, W_downstream=W[i + 1],
                     culvert_dict=_cv, bed_us=bed[i])
                 W_trial = max(W_trial, bed[i] + 1e-4)
                 W_trial = min(W_trial, _W_MAX)
@@ -1763,17 +1787,21 @@ class SteadyProfileSolver:
         if len(idx_valid) < 2:
             return None
 
+        # HEC-RAS 水跃定位：从上游向下游扫描
+        # 当亚临界 Specific Force 明显超过超临界 SF 时判定水跃
+        dm_arr = np.asarray(delta_m)
+        dm_max = float(np.max(np.abs(dm_arr))) if len(dm_arr) > 0 else 1.0
+        threshold = max(dm_max * 0.1, 0.5)
+
         for k in range(1, len(idx_valid)):
-            d1 = delta_m[k - 1]
-            d2 = delta_m[k]
-            if d1 == 0.0:
-                return idx_valid[k - 1]
-            if d1 * d2 < 0.0:
+            d_prev = delta_m[k - 1]
+            d_curr = delta_m[k]
+            if d_curr > threshold and d_prev <= threshold:
                 return idx_valid[k]
 
-        k_min = int(np.argmin(np.abs(np.asarray(delta_m))))
-        if np.isfinite(delta_m[k_min]):
-            return idx_valid[k_min]
+        for k in range(len(idx_valid)):
+            if delta_m[k] > threshold:
+                return idx_valid[k]
 
         return None
 
@@ -1787,102 +1815,202 @@ class SteadyProfileSolver:
         contraction_coef: float = 0.1,
         expansion_coef: float = 0.3,
     ):
-        r"""Split-Flow Method mixed-flow solver (HEC-RAS-style workflow).
+        r"""按 HEC-RAS 6.6 Mixed Flow Regime Calculations 拼接混合流剖面。
 
-        Workflow:
-            1) Use given global subcritical profile W_subcritical
-            2) Locate control section(s): first h<y_c entry of each interval
-            3) Set critical depth at control section as supercritical boundary
-            4) March supercritical profile downstream from control section
-            5) Locate hydraulic jump by momentum-function matching
-            6) Stitch supercritical (upstream of jump) + subcritical (downstream)
+        流程：
+            1) 直接使用已算好的亚临界标准步剖面
+            2) 将“亚临界解等于临界深度”的断面作为控制断面
+            3) 从控制断面向下游重算超临界剖面，边界条件为正常深度
+            4) 用 Specific Force 首次满足 SF_sub > SF_super 的位置判定水跃
         """
+        W_sub = np.asarray(W_subcritical, dtype=float).copy()
+        bed_arr = np.asarray(bed, dtype=float)
+
         y_c = np.zeros(n_xs, dtype=float)
         for i in range(n_xs):
             y_c[i] = self._compute_critical_depth(Q, i)
+        W_critical = bed_arr + y_c
 
-        control_sections = self._locate_control_sections(W_subcritical, bed, y_c, Q, x)
+        def _specific_force(W_val: float, idx: int) -> float:
+            """Specific Force：当前几何接口下取 beta=1，y_bar≈A/T。"""
+            h_val = max(float(W_val) - bed_arr[idx], 1e-6)
+            A, _P, _R, T = self._get_geometry(h_val, idx)
+            A = max(float(A), 1e-9)
+            T = max(float(T), 1e-9)
+            beta_sf = 1.0
+            y_bar = A / T
+            return float(Q ** 2 * beta_sf / (self.g * A) + A * y_bar)
+
+        def _local_bed_slope(idx: int) -> float:
+            if idx < n_xs - 1:
+                dx_seg = float(abs(x[idx + 1] - x[idx]))
+                if dx_seg > 1e-6:
+                    return float(max((bed_arr[idx] - bed_arr[idx + 1]) / dx_seg, 1e-8))
+            if idx > 0:
+                dx_seg = float(abs(x[idx] - x[idx - 1]))
+                if dx_seg > 1e-6:
+                    return float(max((bed_arr[idx - 1] - bed_arr[idx]) / dx_seg, 1e-8))
+            return float(max(self.S0, 1e-8))
+
+        def _solve_normal_depth(idx: int) -> float:
+            """用 Manning 方程求正常深度，供超临界边界使用。"""
+            S0_local = _local_bed_slope(idx)
+            if S0_local <= 1e-8:
+                return float(max(0.95 * y_c[idx], 1e-4))
+
+            n_local = self.n
+            if self._manning_ns and idx < len(self._manning_ns):
+                nv = self._manning_ns[idx]
+                if nv and float(nv) > 0:
+                    n_local = float(nv)
+
+            def _yn_residual(y_val: float) -> float:
+                y_safe = max(float(y_val), 1e-6)
+                A, _P, R, _T = self._get_geometry(y_safe, idx)
+                if A <= 0.0 or R <= 0.0:
+                    return -Q
+                conveyance = (1.0 / max(n_local, 0.001)) * A * R ** (2.0 / 3.0)
+                return conveyance * np.sqrt(S0_local) - Q
+
+            y_lo = 1e-4
+            y_hi = max(1.5 * y_c[idx], 1.0)
+            try:
+                f_lo = _yn_residual(y_lo)
+                f_hi = _yn_residual(y_hi)
+                _expand = 0
+                while (not np.isfinite(f_hi) or f_lo * f_hi > 0.0) and _expand < 12:
+                    y_hi *= 2.0
+                    f_hi = _yn_residual(y_hi)
+                    _expand += 1
+                if np.isfinite(f_lo) and np.isfinite(f_hi) and f_lo * f_hi <= 0.0:
+                    y_n = brentq(_yn_residual, y_lo, y_hi, xtol=1e-6, maxiter=100)
+                else:
+                    y_n = 0.95 * y_c[idx]
+            except Exception:
+                y_n = 0.95 * y_c[idx]
+
+            if (not np.isfinite(y_n)) or y_n <= 0.0:
+                y_n = 0.95 * y_c[idx]
+
+            # 数值安全：若正常深度因数值问题高于临界，轻微压到临界以下。
+            if y_n >= y_c[idx]:
+                y_n = max(0.999 * y_c[idx], 1e-4)
+            return float(max(y_n, 1e-4))
+
+        def _compute_supercritical_segment(control_idx: int, end_idx: int) -> np.ndarray:
+            """从控制断面向下游推进超临界剖面。"""
+            W_super = np.full(n_xs, np.nan, dtype=float)
+            y_n_ctrl = _solve_normal_depth(control_idx)
+            W_super[control_idx] = max(bed_arr[control_idx] + y_n_ctrl, bed_arr[control_idx] + 1e-4)
+
+            for j in range(control_idx + 1, end_idx + 1):
+                dx_seg = float(abs(x[j] - x[j - 1]))
+                if dx_seg < 1e-6:
+                    dx_seg = 1.0
+
+                h_us = max(W_super[j - 1] - bed_arr[j - 1], 0.001)
+                A_us, _P_us, _R_us, _T_us = self._get_geometry(h_us, j - 1)
+                V_us = Q / max(A_us, 1e-9)
+                K_us, alpha_us = self._compute_subdivided_conveyance(h_us, j - 1)
+                Sf_us = (Q / K_us) ** 2 if K_us > 0 else self.compute_friction_slope(h_us, Q, j - 1)
+                vh_us = alpha_us * V_us ** 2 / (2.0 * self.g)
+
+                _cc = (
+                    self._contraction_coefs[j]
+                    if self._contraction_coefs and j < len(self._contraction_coefs)
+                    else contraction_coef
+                )
+                _ec = (
+                    self._expansion_coefs[j]
+                    if self._expansion_coefs and j < len(self._expansion_coefs)
+                    else expansion_coef
+                )
+                W_lo = bed_arr[j] + 1e-4
+                W_hi = max(W_lo + 1e-4, bed_arr[j] + y_c[j] - 1e-4)
+
+                def _super_residual(W_ds_val: float) -> float:
+                    h_ds = max(W_ds_val - bed_arr[j], 0.001)
+                    A_ds, _P_ds, _R_ds, _T_ds = self._get_geometry(h_ds, j)
+                    V_ds = Q / max(A_ds, 1e-9)
+                    K_ds, alpha_ds = self._compute_subdivided_conveyance(h_ds, j)
+                    vh_ds = alpha_ds * V_ds ** 2 / (2.0 * self.g)
+                    Sf_avg = min(((Q + Q) / max(K_us + max(K_ds, 1e-9), 1e-9)) ** 2, 1.0)
+                    h_minor = _cc * (vh_ds - vh_us) if vh_ds > vh_us else _ec * (vh_us - vh_ds)
+                    return (W_ds_val + vh_ds) - (W_super[j - 1] + vh_us) + dx_seg * Sf_avg + h_minor
+
+                W_trial = min(max(W_super[j - 1] - dx_seg * max(Sf_us, 1e-6), W_lo), W_hi)
+                _brentq_ok = False
+                try:
+                    f_lo = _super_residual(W_lo)
+                    f_hi = _super_residual(W_hi)
+                    if np.isfinite(f_lo) and np.isfinite(f_hi) and f_lo * f_hi <= 0.0:
+                        W_trial = brentq(_super_residual, W_lo, W_hi, xtol=1e-6, maxiter=100)
+                        _brentq_ok = True
+                except Exception:
+                    _brentq_ok = False
+
+                if not _brentq_ok:
+                    for _iter in range(60):
+                        h_ds = max(W_trial - bed_arr[j], 0.001)
+                        A_ds, _P_ds, _R_ds, _T_ds = self._get_geometry(h_ds, j)
+                        V_ds = Q / max(A_ds, 1e-9)
+                        K_ds, alpha_ds = self._compute_subdivided_conveyance(h_ds, j)
+                        vh_ds = alpha_ds * V_ds ** 2 / (2.0 * self.g)
+                        Sf_avg = min(((Q + Q) / max(K_us + max(K_ds, 1e-9), 1e-9)) ** 2, 1.0)
+                        h_minor = _cc * (vh_ds - vh_us) if vh_ds > vh_us else _ec * (vh_us - vh_ds)
+                        W_new = W_super[j - 1] + vh_us - vh_ds - dx_seg * Sf_avg - h_minor
+                        W_new = min(max(W_new, W_lo), W_hi)
+                        if abs(W_new - W_trial) < 1e-4:
+                            W_trial = W_new
+                            break
+                        W_trial = 0.5 * W_trial + 0.5 * W_new
+
+                W_super[j] = float(min(max(W_trial, W_lo), W_hi))
+
+            return W_super
+
+        # 控制断面：亚临界结果等于临界深度的位置。
+        # 连续临界断面视为同一控制带，仅保留每带首个断面向下游推进超临界剖面。
+        crit_tol = np.maximum(1e-4, 1e-4 * np.maximum(y_c, 1.0))
+        control_mask = np.abs(W_sub - W_critical) <= crit_tol
+        if n_xs > 0:
+            control_mask[-1] = False
+
+        control_sections: List[int] = []
+        for i in range(n_xs):
+            if not control_mask[i]:
+                continue
+            if i == 0 or (not control_mask[i - 1]):
+                control_sections.append(i)
+
         if not control_sections:
-            h_final = np.maximum(W_subcritical - bed, 0.001)
-            return W_subcritical, h_final
+            h_final = np.maximum(W_sub - bed_arr, 0.001)
+            return W_sub, h_final
 
-        # 亚临界剖面修正：找到陡→缓过渡点，从缓坡端用临界深度向上游重推回水线
-        W_sub_corrected = np.array(W_subcritical, dtype=float)
-
+        W_final = W_sub.copy()
         for c_idx, control_idx in enumerate(control_sections):
             seg_end = (control_sections[c_idx + 1] - 1) if (c_idx + 1 < len(control_sections)) else (n_xs - 1)
             seg_end = max(seg_end, control_idx)
 
-            # 找到陡坡段末端（第一个 S0 < Sc 的断面）
-            transition_idx = seg_end
-            for ti in range(control_idx, seg_end + 1):
-                if ti >= n_xs - 1:
-                    break
-                dx_t = float(abs(x[ti + 1] - x[ti]))
-                if dx_t < 1e-6:
+            W_super = _compute_supercritical_segment(control_idx, seg_end)
+
+            jump_idx: Optional[int] = None
+            for j in range(control_idx, seg_end + 1):
+                if not np.isfinite(W_super[j]):
                     continue
-                S0_t = (bed[ti] - bed[ti + 1]) / dx_t
-                Sc_t = self._compute_critical_slope(Q, ti)
-                if S0_t < Sc_t:
-                    transition_idx = ti
+                sf_sub = _specific_force(W_sub[j], j)
+                sf_super = _specific_force(W_super[j], j)
+                sf_tol = max(1e-6, 1e-6 * abs(sf_super))
+                if sf_sub > sf_super + sf_tol:
+                    jump_idx = j
                     break
 
-            # 从过渡点用临界深度向上游重推
-            W_bc = bed[transition_idx] + y_c[transition_idx]
-            W_sub_corrected[transition_idx] = max(W_sub_corrected[transition_idx], W_bc)
-            W_prev = W_bc
-            for i in range(transition_idx - 1, control_idx - 1, -1):
-                dx_i = float(abs(x[i + 1] - x[i]))
-                if dx_i < 1e-6:
-                    dx_i = 1.0
-                h_prev = max(W_prev - bed[i + 1], 0.01)
-                K_prev, _ = self._compute_subdivided_conveyance(h_prev, i + 1)
-                Sf_prev = (Q / max(K_prev, 1e-9)) ** 2
-                bed_rise = max(bed[i] - bed[i + 1], 0.0)
-                W_us_est = W_prev + Sf_prev * dx_i + bed_rise
-                W_us_est = max(W_us_est, bed[i] + y_c[i])
-                W_sub_corrected[i] = W_us_est
-                W_prev = W_us_est
+            jump_stop = seg_end + 1 if jump_idx is None else jump_idx
+            for j in range(control_idx, jump_stop):
+                if np.isfinite(W_super[j]):
+                    W_final[j] = W_super[j]
 
-        W_final = np.array(W_sub_corrected, dtype=float)
-
-        for c_idx, control_idx in enumerate(control_sections):
-            seg_end = (control_sections[c_idx + 1] - 1) if (c_idx + 1 < len(control_sections)) else (n_xs - 1)
-            seg_end = max(seg_end, control_idx)
-
-            W_control = bed[control_idx] + y_c[control_idx]
-
-            W_super = self._compute_supercritical_profile(
-                Q=Q,
-                control_idx=control_idx,
-                W_control=W_control,
-                bed=bed,
-                x=x,
-                y_c=y_c,
-                contraction_coef=contraction_coef,
-                expansion_coef=expansion_coef,
-                end_idx=seg_end,
-            )
-
-            jump_idx = self._locate_hydraulic_jump(
-                W_sub=W_sub_corrected,
-                W_super=W_super,
-                bed=bed,
-                Q=Q,
-                start_idx=control_idx,
-                end_idx=seg_end,
-            )
-
-            if jump_idx is None:
-                for i in range(control_idx, seg_end + 1):
-                    if not np.isnan(W_super[i]):
-                        W_final[i] = W_super[i]
-            else:
-                for i in range(control_idx, jump_idx):
-                    if not np.isnan(W_super[i]):
-                        W_final[i] = W_super[i]
-
-        h_final = np.maximum(W_final - bed, 0.001)
+        h_final = np.maximum(W_final - bed_arr, 0.001)
         return W_final, h_final
 
 
