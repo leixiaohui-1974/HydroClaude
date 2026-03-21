@@ -1008,5 +1008,43 @@
         ]
       }
     ]
-  }
+  },
+  "culverts": [
+    {
+      "rs": "20.237",
+      "shape": "rectangular",
+      "rise_ft": 3.0,
+      "span_ft": 5.0,
+      "length_ft": 50.0,
+      "us_invert_ft": 28.100000381469727,
+      "ds_invert_ft": 28.0,
+      "n_barrels": 2,
+      "manning_n": 0.013000000268220901,
+      "entrance_loss_coef": 0.20000000298023224,
+      "diameter_m": null,
+      "height_m": 0.9144000000000001,
+      "width_m": 1.524,
+      "length_m": 15.24,
+      "us_invert_m": 8.564880116271974,
+      "ds_invert_m": 8.5344
+    },
+    {
+      "rs": "",
+      "shape": "circular",
+      "rise_ft": 6.0,
+      "span_ft": 6.0,
+      "length_ft": 50.0,
+      "us_invert_ft": 25.100000381469727,
+      "ds_invert_ft": 25.0,
+      "n_barrels": 2,
+      "manning_n": 0.013000000268220901,
+      "entrance_loss_coef": 0.5,
+      "diameter_m": 1.8288000000000002,
+      "height_m": 1.8288000000000002,
+      "width_m": 1.8288000000000002,
+      "length_m": 15.24,
+      "us_invert_m": 7.650480116271973,
+      "ds_invert_m": 7.62
+    }
+  ]
 }

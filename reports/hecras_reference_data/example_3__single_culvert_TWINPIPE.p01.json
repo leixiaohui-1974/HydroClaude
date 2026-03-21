@@ -1008,5 +1008,25 @@
         ]
       }
     ]
-  }
+  },
+  "culverts": [
+    {
+      "rs": "20.237",
+      "shape": "circular",
+      "rise_ft": 6.0,
+      "span_ft": 6.0,
+      "length_ft": 50.0,
+      "us_invert_ft": 25.100000381469727,
+      "ds_invert_ft": 25.0,
+      "n_barrels": 2,
+      "manning_n": 0.013000000268220901,
+      "entrance_loss_coef": 0.5,
+      "diameter_m": 1.8288000000000002,
+      "height_m": 1.8288000000000002,
+      "width_m": 1.8288000000000002,
+      "length_m": 15.24,
+      "us_invert_m": 7.650480116271973,
+      "ds_invert_m": 7.62
+    }
+  ]
 }
