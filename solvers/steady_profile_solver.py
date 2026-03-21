@@ -38,6 +38,9 @@ class SteadyProfileSolver:
         reach_lengths=None,
         contraction_coefs=None,
         expansion_coefs=None,
+        manning_n_lob=None,
+        manning_n_rob=None,
+        bank_stations=None,
     ) -> None:
         """
         Args:
@@ -49,10 +52,13 @@ class SteadyProfileSolver:
             cross_section: Single CrossSection (backward-compat)
             cross_sections: List of CrossSection per station
             bed_elevations: Absolute bed elevation per station (m); enables absolute WSE iteration
-            manning_ns: Manning n per station; falls back to self.n when None
+            manning_ns: Manning n per station (channel zone); falls back to self.n when None
             reach_lengths: Actual reach lengths between XS pairs (m); from HEC-RAS Len Channel
             contraction_coefs: Per-XS contraction loss coefficients
             expansion_coefs: Per-XS expansion loss coefficients
+            manning_n_lob: Per-XS Left Overbank Manning n (HEC-RAS 三区分区)
+            manning_n_rob: Per-XS Right Overbank Manning n (HEC-RAS 三区分区)
+            bank_stations: Per-XS (left_bank_station, right_bank_station) cross-section coords (m)
         """
         self.length = length
         self.B = B
@@ -66,6 +72,9 @@ class SteadyProfileSolver:
         self._reach_lengths = reach_lengths
         self._contraction_coefs = contraction_coefs
         self._expansion_coefs = expansion_coefs
+        self._manning_n_lob = manning_n_lob
+        self._manning_n_rob = manning_n_rob
+        self._bank_stations = bank_stations
 
     # Hydraulic geometry helpers
 
@@ -206,6 +215,188 @@ class SteadyProfileSolver:
             result["divergence_fraction"] = divergence_count / nx
         return result
     
+
+    # HEC-RAS 三区 Conveyance 分区计算 (LOB / Channel / ROB)
+
+    def _zone_conveyance(
+        self,
+        stations: np.ndarray,
+        elevations: np.ndarray,
+        water_level: float,
+        sta_min: float,
+        sta_max: float,
+        n: float,
+    ) -> Tuple[float, float]:
+        """Compute conveyance K and flow area for a single overbank zone.
+
+        Clips the station-elevation profile to [sta_min, sta_max] and integrates
+        area and wetted perimeter.  Inter-zone vertical faces are NOT counted as
+        wetted perimeter (Posey 1967 / HEC-RAS convention).
+
+        Returns:
+            (K, A) -- conveyance (m^3/s) and flow area (m^2) for this zone.
+        """
+        area = 0.0
+        perimeter = 0.0
+
+        for j in range(len(stations) - 1):
+            s1, s2 = float(stations[j]), float(stations[j + 1])
+            z1, z2 = float(elevations[j]), float(elevations[j + 1])
+
+            if s2 <= sta_min or s1 >= sta_max:
+                continue
+
+            # Clip to zone boundaries with linear elevation interpolation
+            if s1 < sta_min:
+                frac = (sta_min - s1) / (s2 - s1)
+                z1 = z1 + frac * (z2 - z1)
+                s1 = sta_min
+            if s2 > sta_max:
+                frac = (sta_max - s1) / (s2 - s1)
+                z2 = z1 + frac * (z2 - z1)
+                s2 = sta_max
+
+            ds = s2 - s1
+            if ds <= 0.0:
+                continue
+            dz = z2 - z1
+
+            if z1 >= water_level and z2 >= water_level:
+                continue
+            elif z1 < water_level and z2 < water_level:
+                d1 = water_level - z1
+                d2 = water_level - z2
+                area += 0.5 * (d1 + d2) * ds
+                perimeter += np.sqrt(ds ** 2 + dz ** 2)
+            elif z1 < water_level <= z2:
+                frac_wet = (water_level - z1) / (z2 - z1)
+                ds_wet = ds * frac_wet
+                dz_wet = dz * frac_wet
+                area += 0.5 * (water_level - z1) * ds_wet
+                perimeter += np.sqrt(ds_wet ** 2 + dz_wet ** 2)
+            else:
+                frac_wet = (water_level - z2) / (z1 - z2)
+                ds_wet = ds * frac_wet
+                dz_wet = dz * frac_wet
+                area += 0.5 * (water_level - z2) * ds_wet
+                perimeter += np.sqrt(ds_wet ** 2 + dz_wet ** 2)
+
+        if area <= 0.0 or perimeter <= 0.0:
+            return 0.0, 0.0
+
+        R = area / perimeter
+        K = (1.0 / max(n, 0.001)) * area * R ** (2.0 / 3.0)
+        return float(K), float(area)
+
+    def _compute_subdivided_conveyance(
+        self, h: float, station_index: int
+    ) -> Tuple[float, float]:
+        """Compute total conveyance K and alpha using HEC-RAS LOB/Channel/ROB subdivision.
+
+        HEC-RAS Hydraulic Reference Manual section 2:
+            K_i = (1/n_i) * A_i * R_i^(2/3)
+            K_total = K_LOB + K_Ch + K_ROB
+            alpha = A_total^2 * sum(K_i^3 / A_i^2) / K_total^3
+
+        Falls back to single-zone calculation when cross-section geometry or bank
+        station data is unavailable.
+
+        Args:
+            h: Water depth above cross-section minimum elevation (m).
+            station_index: Index into self._xs_array and ancillary arrays.
+
+        Returns:
+            (K_total, alpha)
+        """
+        def _n_ch(idx):
+            if self._manning_ns and idx < len(self._manning_ns):
+                v = self._manning_ns[idx]
+                if v and float(v) > 0:
+                    return float(v)
+            return self.n
+
+        def _n_lob(idx):
+            if self._manning_n_lob and idx < len(self._manning_n_lob):
+                v = self._manning_n_lob[idx]
+                if v and float(v) > 0:
+                    return float(v)
+            return _n_ch(idx)
+
+        def _n_rob(idx):
+            if self._manning_n_rob and idx < len(self._manning_n_rob):
+                v = self._manning_n_rob[idx]
+                if v and float(v) > 0:
+                    return float(v)
+            return _n_ch(idx)
+
+        def _fallback():
+            A, _P, R, _T = self._get_geometry(h, station_index)
+            n_local = _n_ch(station_index)
+            K = (1.0 / n_local) * A * max(R, 1e-9) ** (2.0 / 3.0)
+            return float(K), 1.0
+
+        xs = self._xs
+        if (
+            self._xs_array
+            and station_index is not None
+            and station_index < len(self._xs_array)
+        ):
+            xs = self._xs_array[station_index]
+
+        if xs is None or not hasattr(xs, "distances") or not hasattr(xs, "elevations"):
+            return _fallback()
+
+        if not self._bank_stations or station_index >= len(self._bank_stations):
+            return _fallback()
+
+        left_bank, right_bank = self._bank_stations[station_index]
+        if left_bank is None or right_bank is None or float(left_bank) >= float(right_bank):
+            return _fallback()
+
+        stations_arr = np.asarray(xs.distances, dtype=float)
+        elevations_arr = np.asarray(xs.elevations, dtype=float)
+        water_level = float(xs.min_elevation) + max(float(h), 1e-6)
+
+        sta_min_all = float(np.min(stations_arr))
+        sta_max_all = float(np.max(stations_arr))
+
+        # If bank stations span the entire cross-section (no overbank),
+        # fall back to single-zone to avoid numerical artifacts.
+        if float(left_bank) <= sta_min_all + 0.01 and float(right_bank) >= sta_max_all - 0.01:
+            return _fallback()
+
+        K_lob, A_lob = self._zone_conveyance(
+            stations_arr, elevations_arr, water_level,
+            sta_min=sta_min_all, sta_max=float(left_bank),
+            n=_n_lob(station_index),
+        )
+        K_ch, A_ch = self._zone_conveyance(
+            stations_arr, elevations_arr, water_level,
+            sta_min=float(left_bank), sta_max=float(right_bank),
+            n=_n_ch(station_index),
+        )
+        K_rob, A_rob = self._zone_conveyance(
+            stations_arr, elevations_arr, water_level,
+            sta_min=float(right_bank), sta_max=sta_max_all,
+            n=_n_rob(station_index),
+        )
+
+        K_total = K_lob + K_ch + K_rob
+        A_total = A_lob + A_ch + A_rob
+
+        if K_total <= 0.0 or A_total <= 0.0:
+            return _fallback()
+
+        sum_k3_a2 = 0.0
+        for K_i, A_i in ((K_lob, A_lob), (K_ch, A_ch), (K_rob, A_rob)):
+            if K_i > 0.0 and A_i > 0.0:
+                sum_k3_a2 += K_i ** 3 / A_i ** 2
+
+        alpha = A_total ** 2 * sum_k3_a2 / K_total ** 3
+        alpha = max(alpha, 1.0)
+
+        return float(K_total), float(alpha)
+
     def _solve_standard_step_variable_xs(
         self,
         Q: float,
@@ -245,16 +436,19 @@ class SteadyProfileSolver:
             h_ds = max(W[i + 1] - bed[i + 1], 0.01)
             A_ds, _P_ds, _R_ds, _T_ds = self._get_geometry(h_ds, i + 1)
             V_ds = Q / max(A_ds, 1e-9)
-            Sf_ds = self.compute_friction_slope(h_ds, Q, i + 1)
-            vh_ds = alpha * V_ds ** 2 / (2.0 * self.g)
+            # 三区分区输水计算 (HEC-RAS LOB/Channel/ROB)
+            K_ds, alpha_ds = self._compute_subdivided_conveyance(h_ds, i + 1)
+            Sf_ds = (Q / K_ds) ** 2 if K_ds > 0 else self.compute_friction_slope(h_ds, Q, i + 1)
+            vh_ds = alpha_ds * V_ds ** 2 / (2.0 * self.g)
             W_trial = W[i + 1]
             for _iter in range(30):
                 h_us = max(W_trial - bed[i], 0.01)
                 h_us = min(h_us, 100.0)  # cap depth at 100m
                 A_us, _P_us, _R_us, _T_us = self._get_geometry(h_us, i)
                 V_us = Q / max(A_us, 1e-9)
-                Sf_us = self.compute_friction_slope(h_us, Q, i)
-                vh_us = alpha * V_us ** 2 / (2.0 * self.g)
+                K_us, alpha_us = self._compute_subdivided_conveyance(h_us, i)
+                Sf_us = (Q / K_us) ** 2 if K_us > 0 else self.compute_friction_slope(h_us, Q, i)
+                vh_us = alpha_us * V_us ** 2 / (2.0 * self.g)
                 Sf_avg = 0.5 * (Sf_us + Sf_ds)
                 # Cap friction slope to avoid explosion
                 Sf_avg = min(Sf_avg, 1.0)

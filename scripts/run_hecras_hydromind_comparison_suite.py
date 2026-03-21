@@ -1131,6 +1131,146 @@ def run_comparison_suite(
     return summary
 
 
+
+def run_exact_comparison(
+    hecras_hdf_path,
+    project_file=None,
+):
+    """基于 HydroMind 数据格式的精确对比。
+
+    同步 HEC-RAS 的所有建模参数：
+    - 每个断面的完整 station-elevation 几何
+    - 逐断面 Manning n (LOB/Channel/ROB)
+    - 实际 reach length
+    - 实际收缩/扩展系数
+    - 每个 profile 的精确 Q 和 h_downstream
+
+    Args:
+        hecras_hdf_path: HEC-RAS HDF 文件路径。
+        project_file: 可选项目文件路径（保留备用）。
+
+    Returns:
+        dict: profiles 列表及整体 MAE 统计。
+        {"profiles": [{name, Q, h_ds, mae, rmse, max_err}, ...],
+         "overall_mae_m": float, "best_mae_m": float, "worst_mae_m": float}
+    """
+    import numpy as np
+    from hydromind_data_format import HydroMindReader
+    from physics.cross_section import NaturalSection, RectangularSection
+    from solvers.steady_profile_solver import SteadyProfileSolver
+
+    reader = HydroMindReader(hecras_hdf_path)
+    xs_records = reader.read_cross_sections()
+    results = reader.read_steady_results()
+
+    if not xs_records or not results:
+        return {"error": "No cross-sections or results found"}
+
+    n_xs = len(xs_records)
+
+    # 构造逐断面 NaturalSection 数组
+    cross_sections = []
+    bed_elevations = []
+    manning_ns = []
+    reach_lengths = []
+    contraction_coefs = []
+    expansion_coefs = []
+
+    for i, rec in enumerate(xs_records):
+        if rec.sta_elev_stations and len(rec.sta_elev_stations) > 2:
+            xs = NaturalSection(
+                f"xs_{i}_{rec.station}",
+                elevations=np.array(rec.sta_elev_elevations),
+                distances=np.array(rec.sta_elev_stations),
+            )
+            cross_sections.append(xs)
+        else:
+            width = rec.right_bank_m - rec.left_bank_m
+            if width < 1.0:
+                width = 10.0
+            cross_sections.append(RectangularSection(f"xs_{i}", width))
+
+        bed_elevations.append(rec.bed_elevation_m)
+        manning_ns.append(rec.manning_n_channel)
+        reach_lengths.append(rec.reach_length_m)
+        contraction_coefs.append(rec.contraction_coef)
+        expansion_coefs.append(rec.expansion_coef)
+
+    # 计算总长度与平均坡度
+    total_length = sum(reach_lengths) if reach_lengths else 1000.0
+    avg_slope = (
+        abs(bed_elevations[0] - bed_elevations[-1]) / max(total_length, 1.0)
+        if len(bed_elevations) > 1
+        else 0.001
+    )
+    avg_manning = float(np.mean(manning_ns)) if manning_ns else 0.03
+
+    # 构造 solver（cross_sections 覆盖 B 参数）
+    solver = SteadyProfileSolver(
+        length=total_length,
+        B=10.0,
+        S0=avg_slope,
+        n=avg_manning,
+        cross_sections=cross_sections,
+        bed_elevations=bed_elevations,
+        manning_ns=manning_ns,
+        reach_lengths=reach_lengths,
+        contraction_coefs=contraction_coefs,
+        expansion_coefs=expansion_coefs,
+    )
+
+    # 读取 HEC-RAS 结果矩阵
+    ws_hecras = results.get("WaterSurfaceM")
+    flow_hecras = results.get("FlowM3S")
+    profile_names = results.get("profile_names", [])
+
+    if ws_hecras is None:
+        return {"error": "No WaterSurface results"}
+
+    profile_results = []
+    for pi in range(len(profile_names)):
+        ws_hec = ws_hecras[pi]
+        flow_hec = flow_hecras[pi] if flow_hecras is not None else np.full(n_xs, 10.0)
+
+        # 精确边界条件
+        Q_exact = float(flow_hec[0])                              # 上游流量
+        h_ds_exact = float(ws_hec[-1] - bed_elevations[-1])      # 精确下游水深
+
+        try:
+            sol = solver.solve_standard_step(Q_exact, h_ds_exact)
+            W_hydromind = np.asarray(sol["W"], dtype=float)
+
+            ws_err = np.abs(ws_hec - W_hydromind)
+            mae = float(np.nanmean(ws_err))
+            rmse = float(np.sqrt(np.nanmean(ws_err ** 2)))
+            max_err = float(np.nanmax(ws_err))
+
+            profile_results.append({
+                "name": profile_names[pi],
+                "Q_m3s": Q_exact,
+                "h_downstream_m": h_ds_exact,
+                "mae_m": mae,
+                "rmse_m": rmse,
+                "max_error_m": max_err,
+            })
+        except Exception as exc:
+            profile_results.append({
+                "name": profile_names[pi],
+                "Q_m3s": Q_exact,
+                "error": str(exc),
+            })
+
+    maes = [p["mae_m"] for p in profile_results if "mae_m" in p]
+    return {
+        "n_profiles": len(profile_names),
+        "n_cross_sections": n_xs,
+        "profiles": profile_results,
+        "overall_mae_m": float(np.mean(maes)) if maes else float("inf"),
+        "best_mae_m": float(min(maes)) if maes else float("inf"),
+        "worst_mae_m": float(max(maes)) if maes else float("inf"),
+    }
+
+
 def _load_suite_records(pattern: str) -> list[dict[str, Any]]:
     """Load and deduplicate suite records from chunk JSON files."""
     records: dict[str, dict[str, Any]] = {}

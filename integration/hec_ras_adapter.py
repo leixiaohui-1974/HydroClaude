@@ -562,6 +562,9 @@ class HECRASResultSummary:
     right_bank_m: list[float] | None = None
     contraction_coefs: list[float] | None = None
     expansion_coefs: list[float] | None = None
+    # Per-XS three-zone Manning n (HEC-RAS LOB / Channel / ROB)
+    manning_n_lob_values: list[float] | None = None
+    manning_n_rob_values: list[float] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {k: v for k, v in self.__dict__.items()}
@@ -634,8 +637,12 @@ def extract_hecras_result_summary(
                 has_structures=has_structures,
                 xs_profiles=xs_profiles,
                 reach_lengths_m=xs_attrs.get("reach_lengths_m"),
+                left_bank_m=xs_attrs.get("left_bank_m"),
+                right_bank_m=xs_attrs.get("right_bank_m"),
                 contraction_coefs=xs_attrs.get("contraction_coefs"),
                 expansion_coefs=xs_attrs.get("expansion_coefs"),
+                manning_n_lob_values=xs_attrs.get("manning_n_lob_values"),
+                manning_n_rob_values=xs_attrs.get("manning_n_rob_values"),
             )
 
         # --- Unsteady fallback ---
@@ -675,8 +682,12 @@ def extract_hecras_result_summary(
             has_structures=has_structures,
             xs_profiles=xs_profiles,
             reach_lengths_m=xs_attrs.get("reach_lengths_m"),
+            left_bank_m=xs_attrs.get("left_bank_m"),
+            right_bank_m=xs_attrs.get("right_bank_m"),
             contraction_coefs=xs_attrs.get("contraction_coefs"),
             expansion_coefs=xs_attrs.get("expansion_coefs"),
+            manning_n_lob_values=xs_attrs.get("manning_n_lob_values"),
+            manning_n_rob_values=xs_attrs.get("manning_n_rob_values"),
         )
 
 
@@ -720,7 +731,7 @@ def _try_read_xs_attributes(hdf: h5py.File, lf: float) -> dict[str, list]:
     """Read per-XS attributes from Geometry/Cross Sections/Attributes.
 
     Returns dict with reach_lengths_m, left_bank_m, right_bank_m,
-    contraction_coefs, expansion_coefs.
+    contraction_coefs, expansion_coefs, manning_n_lob_values, manning_n_rob_values.
     """
     result: dict[str, list] = {}
     for attr_path in ["Geometry/Cross Sections/Attributes"]:
@@ -738,6 +749,34 @@ def _try_read_xs_attributes(hdf: h5py.File, lf: float) -> dict[str, list]:
         if "Expan" in attrs.dtype.names:
             result["expansion_coefs"] = np.asarray(attrs["Expan"], dtype=float).tolist()
         break
+
+    # Read per-XS LOB and ROB Manning n from Manning n Info/Values dataset
+    mn_info_path = "Geometry/Cross Sections/Manning's n Info"
+    mn_vals_path = "Geometry/Cross Sections/Manning's n Values"
+    if mn_info_path in hdf and mn_vals_path in hdf:
+        mn_info = hdf[mn_info_path][:]
+        mn_vals = np.asarray(hdf[mn_vals_path][:], dtype=float)
+        n_lob_list: list[float] = []
+        n_rob_list: list[float] = []
+        for row in mn_info:
+            start = int(row[0])
+            count = int(row[1])
+            if count >= 3 and start + count <= len(mn_vals):
+                # HEC-RAS Manning n order: first = LOB station, last = ROB station
+                # Values column index 1 is the n value
+                n_lob_list.append(float(mn_vals[start, 1]))
+                n_rob_list.append(float(mn_vals[start + count - 1, 1]))
+            elif count >= 1 and start < len(mn_vals):
+                n_all = float(mn_vals[start, 1])
+                n_lob_list.append(n_all)
+                n_rob_list.append(n_all)
+            else:
+                n_lob_list.append(0.0)
+                n_rob_list.append(0.0)
+        if n_lob_list:
+            result["manning_n_lob_values"] = n_lob_list
+            result["manning_n_rob_values"] = n_rob_list
+
     return result
 
 
@@ -1098,6 +1137,14 @@ def diagnose_flow_regime(result_summary: HECRASResultSummary, g: float = 9.81) -
             if result_summary.manning_n_values and len(result_summary.manning_n_values) == len(stations_m_list)
             else [round(avg_manning, 4)] * len(stations_m_list)
         )
+        # 构造 bank_stations 列表：[(left_bank_m, right_bank_m), ...] per XS
+        left_banks = result_summary.left_bank_m
+        right_banks = result_summary.right_bank_m
+        if left_banks and right_banks and len(left_banks) == len(stations_m_list):
+            bank_stations_list = list(zip(left_banks, right_banks))
+        else:
+            bank_stations_list = None
+
         recommended_params["cross_section_data"] = {
             "type": "multi_station",
             "n_stations": len(stations_m_list),
@@ -1109,6 +1156,10 @@ def diagnose_flow_regime(result_summary: HECRASResultSummary, g: float = 9.81) -
             "reach_lengths": result_summary.reach_lengths_m,  # actual HEC-RAS reach lengths
             "contraction_coefs": result_summary.contraction_coefs,
             "expansion_coefs": result_summary.expansion_coefs,
+            # 三区 Manning n（HEC-RAS LOB/Channel/ROB 分区）
+            "manning_n_lob": result_summary.manning_n_lob_values,
+            "manning_n_rob": result_summary.manning_n_rob_values,
+            "bank_stations": bank_stations_list,
         }
     elif result_summary.channel_width_m:
         recommended_params["cross_section_data"] = {

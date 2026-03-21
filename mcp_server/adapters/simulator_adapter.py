@@ -188,6 +188,10 @@ class HydroClaudeSimulator:
                 "channel_widths": xs_data.get("channel_widths", []),
                 "manning_ns": xs_data.get("manning_ns", []),
                 "n_stations": xs_data.get("n_stations", 0),
+                # 三区 Manning n 和 bank stations（HEC-RAS LOB/Channel/ROB）
+                "manning_n_lob": xs_data.get("manning_n_lob"),
+                "manning_n_rob": xs_data.get("manning_n_rob"),
+                "bank_stations": xs_data.get("bank_stations"),
             }
 
         else:
@@ -422,6 +426,9 @@ class HydroClaudeSimulator:
                 reach_lengths=xs_data.get("reach_lengths"),
                 contraction_coefs=xs_data.get("contraction_coefs"),
                 expansion_coefs=xs_data.get("expansion_coefs"),
+                manning_n_lob=xs_data.get("manning_n_lob") or None,
+                manning_n_rob=xs_data.get("manning_n_rob") or None,
+                bank_stations=xs_data.get("bank_stations") or None,
             )
             # multi_station 模式固定使用 standard_step（绝对水位版）
             result = solver.solve_standard_step(Q, h_downstream)
