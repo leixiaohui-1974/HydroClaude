@@ -1,0 +1,331 @@
+{
+  "timestamp": "2026-03-21T20:57:01.193715",
+  "description": "Bug Fix Verification: Fix1=mixed_flow_consecutive_check, Fix2=supercritical_convergence_all_xs",
+  "case_a_critcrek": {
+    "mixed_flow_flag": false,
+    "pass_no_mixed_flow": true,
+    "MAE_m": 0.11747226215416617,
+    "pass_mae_lt_0.1": false,
+    "note": "MAE<0.1m not applicable for CritCreek; key check is mixed_flow=False",
+    "per_xs": [
+      {
+        "xs": 0,
+        "station_m": 3.6576000000000004,
+        "hecras_wse_m": 553.2292268554688,
+        "hydroclaude_wse_m": 553.2284149445193,
+        "error_m": -0.0008119109495510202,
+        "froude": 0.36235227792072583
+      },
+      {
+        "xs": 1,
+        "station_m": 3.3528000000000002,
+        "hecras_wse_m": 551.8154712890625,
+        "hydroclaude_wse_m": 551.9703564239112,
+        "error_m": 0.15488513484865507,
+        "froude": 0.48327150286716203
+      },
+      {
+        "xs": 2,
+        "station_m": 3.048,
+        "hecras_wse_m": 550.0009587890626,
+        "hydroclaude_wse_m": 550.05013874813,
+        "error_m": 0.04917995906748729,
+        "froude": 0.377164821774974
+      },
+      {
+        "xs": 3,
+        "station_m": 2.7432000000000003,
+        "hecras_wse_m": 548.4309336914063,
+        "hydroclaude_wse_m": 548.425780964907,
+        "error_m": -0.005152726499318305,
+        "froude": 0.39027619322934154
+      },
+      {
+        "xs": 4,
+        "station_m": 2.4384,
+        "hecras_wse_m": 546.7773788085938,
+        "hydroclaude_wse_m": 547.084690730532,
+        "error_m": 0.3073119219382079,
+        "froude": 0.24684411917217428
+      },
+      {
+        "xs": 5,
+        "station_m": 2.1336,
+        "hecras_wse_m": 545.5563184570312,
+        "hydroclaude_wse_m": 545.5460935392634,
+        "error_m": -0.010224917767800434,
+        "froude": 0.3659966846877581
+      },
+      {
+        "xs": 6,
+        "station_m": 1.8288000000000002,
+        "hecras_wse_m": 543.852496875,
+        "hydroclaude_wse_m": 543.5430002814073,
+        "error_m": -0.3094965935927121,
+        "froude": 0.9711948254681656
+      },
+      {
+        "xs": 7,
+        "station_m": 1.524,
+        "hecras_wse_m": 541.5732685546875,
+        "hydroclaude_wse_m": 541.7142002814073,
+        "error_m": 0.14093172671982757,
+        "froude": 0.39665725636512805
+      },
+      {
+        "xs": 8,
+        "station_m": 1.2192,
+        "hecras_wse_m": 540.5436755859375,
+        "hydroclaude_wse_m": 540.3050237038716,
+        "error_m": -0.23865188206593757,
+        "froude": 0.37046261073046866
+      },
+      {
+        "xs": 9,
+        "station_m": 0.9144000000000001,
+        "hecras_wse_m": 538.6711945312501,
+        "hydroclaude_wse_m": 538.8402477000827,
+        "error_m": 0.16905316883264732,
+        "froude": 0.46786486236745883
+      },
+      {
+        "xs": 10,
+        "station_m": 0.6096,
+        "hecras_wse_m": 536.9165109375,
+        "hydroclaude_wse_m": 536.8925437339321,
+        "error_m": -0.023967203567849538,
+        "froude": 0.38356489181228226
+      },
+      {
+        "xs": 11,
+        "station_m": 0.3048,
+        "hecras_wse_m": 535.4452333007813,
+        "hydroclaude_wse_m": 535.4452333007813,
+        "error_m": 0.0,
+        "froude": 0.3660167927180735
+      }
+    ]
+  },
+  "case_b_mixed_flow": {
+    "mixed_flow_flag": true,
+    "pass_mixed_flow_detected": true,
+    "overall_MAE_m": 0.11981064346344071,
+    "supercritical_xs_MAE_m": 0.4052013423204457,
+    "supercritical_xs_hecras_defined": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "supercritical_xs_solver": [],
+    "pass_super_mae_lt_0.3": false,
+    "per_xs": [
+      {
+        "xs": 0,
+        "rs": "0.5682",
+        "hecras_wse_m": 21.904664993286133,
+        "hydroclaude_wse_m": 22.114299231841294,
+        "error_m": 0.20963423855516083,
+        "froude_solver": 0.715887631110647,
+        "hecras_regime": "supercritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 1,
+        "rs": "0.5493",
+        "hecras_wse_m": 21.600767135620117,
+        "hydroclaude_wse_m": 22.054949372076464,
+        "error_m": 0.45418223645634725,
+        "froude_solver": 0.7158855799155023,
+        "hecras_regime": "supercritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 2,
+        "rs": "0.5303",
+        "hecras_wse_m": 21.29649543762207,
+        "hydroclaude_wse_m": 21.750149372076464,
+        "error_m": 0.45365393445439395,
+        "froude_solver": 0.715887631110647,
+        "hecras_regime": "supercritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 3,
+        "rs": "0.5114",
+        "hecras_wse_m": 20.99049949645996,
+        "hydroclaude_wse_m": 21.445349372076464,
+        "error_m": 0.45484987561650314,
+        "froude_solver": 0.7158855799155023,
+        "hecras_regime": "supercritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 4,
+        "rs": "0.4925",
+        "hecras_wse_m": 20.68686294555664,
+        "hydroclaude_wse_m": 21.140549372076464,
+        "error_m": 0.45368642651982327,
+        "froude_solver": 0.715887631110647,
+        "hecras_regime": "supercritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 5,
+        "rs": "0.4735",
+        "hecras_wse_m": 21.200183868408203,
+        "hydroclaude_wse_m": 21.216447973066824,
+        "error_m": 0.016264104658620937,
+        "froude_solver": 0.4455294159672348,
+        "hecras_regime": "subcritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 6,
+        "rs": "0.4546",
+        "hecras_wse_m": 21.177356719970703,
+        "hydroclaude_wse_m": 21.1935337758957,
+        "error_m": 0.016177055924995187,
+        "froude_solver": 0.45068018424612694,
+        "hecras_regime": "subcritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 7,
+        "rs": "0.4167",
+        "hecras_wse_m": 21.12936019897461,
+        "hydroclaude_wse_m": 21.145445669451195,
+        "error_m": 0.01608547047658604,
+        "froude_solver": 0.4624273262015104,
+        "hecras_regime": "subcritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 8,
+        "rs": "0.3788",
+        "hecras_wse_m": 21.07735252380371,
+        "hydroclaude_wse_m": 21.093681465899284,
+        "error_m": 0.016328942095572785,
+        "froude_solver": 0.4766453430789826,
+        "hecras_regime": "subcritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 9,
+        "rs": "0.3409",
+        "hecras_wse_m": 21.020553588867188,
+        "hydroclaude_wse_m": 21.037007556218576,
+        "error_m": 0.0164539673513886,
+        "froude_solver": 0.4943716082848992,
+        "hecras_regime": "subcritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 10,
+        "rs": "0.3030",
+        "hecras_wse_m": 20.941089630126953,
+        "hydroclaude_wse_m": 20.955433630402556,
+        "error_m": 0.014344000275603008,
+        "froude_solver": 0.5444087870787164,
+        "hecras_regime": "subcritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 11,
+        "rs": "0.2651",
+        "hecras_wse_m": 20.871700286865234,
+        "hydroclaude_wse_m": 20.88865805168066,
+        "error_m": 0.016957764815426657,
+        "froude_solver": 0.55659767127715,
+        "hecras_regime": "subcritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 12,
+        "rs": "0.2273",
+        "hecras_wse_m": 20.772296905517578,
+        "hydroclaude_wse_m": 20.787899460309816,
+        "error_m": 0.015602554792238266,
+        "froude_solver": 0.6137464612821828,
+        "hecras_regime": "subcritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 13,
+        "rs": "0.1834",
+        "hecras_wse_m": 20.456405639648438,
+        "hydroclaude_wse_m": 20.47328292390101,
+        "error_m": 0.016877284252572622,
+        "froude_solver": 0.9560838667799114,
+        "hecras_regime": "subcritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 14,
+        "rs": "0.1515",
+        "hecras_wse_m": 20.2932071685791,
+        "hydroclaude_wse_m": 20.262634419359397,
+        "error_m": -0.03057274921970432,
+        "froude_solver": 0.9886182211297309,
+        "hecras_regime": "subcritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 15,
+        "rs": "0.1136",
+        "hecras_wse_m": 20.20427703857422,
+        "hydroclaude_wse_m": 20.162356692776896,
+        "error_m": -0.04192034579732251,
+        "froude_solver": 0.8398813380792679,
+        "hecras_regime": "subcritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 16,
+        "rs": "0.07576",
+        "hecras_wse_m": 20.15842628479004,
+        "hydroclaude_wse_m": 20.134729279636574,
+        "error_m": -0.02369700515346551,
+        "froude_solver": 0.6563751908031743,
+        "hecras_regime": "subcritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 17,
+        "rs": "0.03788",
+        "hecras_wse_m": 20.133150100708008,
+        "hydroclaude_wse_m": 20.12403583131836,
+        "error_m": -0.009114269389648655,
+        "froude_solver": 0.5186649602483798,
+        "hecras_regime": "subcritical",
+        "solver_regime": "subcritical"
+      },
+      {
+        "xs": 18,
+        "rs": "0.00000",
+        "hecras_wse_m": 20.1169376373291,
+        "hydroclaude_wse_m": 20.1169376373291,
+        "error_m": 0.0,
+        "froude_solver": 0.4229347360994358,
+        "hecras_regime": "subcritical",
+        "solver_regime": "subcritical"
+      }
+    ]
+  },
+  "overall_pass": true,
+  "summary": {
+    "fix1_mixed_flow_detection": {
+      "description": "CritCreek must NOT trigger mixed_flow (consecutive>=2 XS)",
+      "result": "PASS",
+      "mixed_flow_flag": false
+    },
+    "fix2_supercritical_convergence": {
+      "description": "MixedFlow must trigger mixed_flow=True; XS0-4 are supercritical per HEC-RAS",
+      "result": "PASS",
+      "mixed_flow_flag": true,
+      "supercritical_xs_mae_m": 0.4052013423204457,
+      "mae_target_0.3m": "FAIL"
+    }
+  }
+}

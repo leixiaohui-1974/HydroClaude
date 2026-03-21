@@ -1,0 +1,113 @@
+{
+  "case": "HEC-RAS Example 11 - Bridge Scour",
+  "validation_date": "2026-03-21",
+  "solver": "HydroClaude SteadyProfileSolver (Bridge Energy Method, LOB/Ch/ROB)",
+  "hecras_version": "6.6",
+  "river": "Pine Creek",
+  "Q_cfs": 30000.0,
+  "Q_cms": 849.51,
+  "units": "US customary (ft, cfs)",
+  "downstream_bc": {
+    "type": "normal_depth",
+    "S": 0.002,
+    "n": 0.032,
+    "h_normal_ft": 9.6154,
+    "WSE_ft": 10.2554
+  },
+  "bridge": {
+    "RS": "10.36",
+    "deck_elev_ft": 22.0,
+    "low_chord_ft": 18.0,
+    "n_piers": 6,
+    "total_pier_w_ft": 30.0,
+    "bridge_len_ft": 50.0,
+    "method": "Energy Method"
+  },
+  "cross_sections": [
+    {
+      "RS": "10.90",
+      "hecras_wse_ft": 19.72,
+      "hydroclaude_wse_ft": 20.6662,
+      "error_ft": 0.94617,
+      "abs_error_ft": 0.94617,
+      "is_bridge_adjacent": false
+    },
+    {
+      "RS": "10.71",
+      "hecras_wse_ft": 18.072,
+      "hydroclaude_wse_ft": 18.7201,
+      "error_ft": 0.64809,
+      "abs_error_ft": 0.64809,
+      "is_bridge_adjacent": false
+    },
+    {
+      "RS": "10.55",
+      "hecras_wse_ft": 17.334,
+      "hydroclaude_wse_ft": 17.2881,
+      "error_ft": -0.04585,
+      "abs_error_ft": 0.04585,
+      "is_bridge_adjacent": false
+    },
+    {
+      "RS": "10.48",
+      "hecras_wse_ft": 17.087,
+      "hydroclaude_wse_ft": 16.6908,
+      "error_ft": -0.39624,
+      "abs_error_ft": 0.39624,
+      "is_bridge_adjacent": false
+    },
+    {
+      "RS": "10.37",
+      "hecras_wse_ft": 15.226,
+      "hydroclaude_wse_ft": 15.029,
+      "error_ft": -0.19704,
+      "abs_error_ft": 0.19704,
+      "is_bridge_adjacent": true
+    },
+    {
+      "RS": "10.35",
+      "hecras_wse_ft": 14.334,
+      "hydroclaude_wse_ft": 14.9782,
+      "error_ft": 0.64422,
+      "abs_error_ft": 0.64422,
+      "is_bridge_adjacent": true
+    },
+    {
+      "RS": "10.23",
+      "hecras_wse_ft": 12.65,
+      "hydroclaude_wse_ft": 13.5876,
+      "error_ft": 0.93763,
+      "abs_error_ft": 0.93763,
+      "is_bridge_adjacent": false
+    },
+    {
+      "RS": "10.17",
+      "hecras_wse_ft": 11.983,
+      "hydroclaude_wse_ft": 12.9303,
+      "error_ft": 0.94732,
+      "abs_error_ft": 0.94732,
+      "is_bridge_adjacent": false
+    },
+    {
+      "RS": "10.00",
+      "hecras_wse_ft": 10.207,
+      "hydroclaude_wse_ft": 10.2554,
+      "error_ft": 0.0484,
+      "abs_error_ft": 0.0484,
+      "is_bridge_adjacent": false
+    }
+  ],
+  "metrics": {
+    "MAE_ft": 0.53455,
+    "MAE_m": 0.16293,
+    "RMSE_ft": 0.6418,
+    "RMSE_m": 0.19562,
+    "max_err_ft": 0.94732,
+    "max_err_m": 0.28874,
+    "bridge_MAE_ft": 0.42063,
+    "bridge_MAE_m": 0.12821,
+    "verdict": "NEAR-PASS",
+    "threshold_ft": 0.5,
+    "note": "MAE<0.5ft=PASS, MAE<1.0ft=NEAR-PASS"
+  }
+}

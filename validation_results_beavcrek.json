@@ -1,0 +1,458 @@
+{
+  "generated_at": "2026-03-21 20:06:38",
+  "case": "Example 2 - Beaver Creek",
+  "hdf_path": "Z:/research/hydroclaude/reports/hec_ras_example_project/Example 2 - Beaver Creek/BEAVCREK.p01.hdf",
+  "solver": "SteadyProfileSolver (standard_step, variable_xs)",
+  "unit_system": "english",
+  "unit_system_source": "hdf root attr \"Units System\"=US Customary",
+  "n_cross_sections": 14,
+  "n_profiles": 3,
+  "profile_names": [
+    "25 yr",
+    "100 yr",
+    "May '74 flood"
+  ],
+  "has_bridge": true,
+  "bridge_params": {
+    "us_rs": "5.41",
+    "ds_rs": "5.39",
+    "deck_elevation_m": 65.74535906982422,
+    "low_chord_elevation_m": 60.96,
+    "opening_height_m": 4.785359069824217,
+    "bridge_length_m": 9.144,
+    "n_piers": 9,
+    "total_pier_width_m": 6.8580000000000005,
+    "pier_loss_coef": 0.0,
+    "contraction_coef": 0.0,
+    "expansion_coef": 0.0,
+    "bridge_opening_stations": [
+      0.0,
+      137.16000366210938,
+      137.16000366210938,
+      197.20559692382812,
+      197.20559692382812,
+      609.6000366210938
+    ],
+    "bridge_opening_elevations": [
+      60.959999084472656,
+      60.959999084472656,
+      65.745361328125,
+      65.745361328125,
+      60.959999084472656,
+      60.959999084472656
+    ]
+  },
+  "summary_metrics": {
+    "mean_mae_m": 0.4383898467284654,
+    "mean_rmse_m": 0.4816721674680715,
+    "global_max_error_m": 0.7130961130906144,
+    "n_profiles_validated": 3,
+    "n_profiles_failed": 0
+  },
+  "profile_results": [
+    {
+      "profile_name": "25 yr",
+      "flow_m3s": 141.58420530682952,
+      "metrics": {
+        "mae_m": 0.4307703414149892,
+        "rmse_m": 0.47819023673606814,
+        "max_error_m": 0.7130961130906144,
+        "max_error_xs_index": 6,
+        "max_error_rs_label": "5.44",
+        "mean_bias_m": 0.33433315948592124,
+        "n_xs_compared": 14
+      },
+      "per_xs": [
+        {
+          "xs_index": 0,
+          "rs_label": "5.99",
+          "hecras_wse_m": 66.25354665527344,
+          "hydroclaude_wse_m": 65.57848638176996,
+          "error_m": -0.6750602735034761
+        },
+        {
+          "xs_index": 1,
+          "rs_label": "5.875",
+          "hecras_wse_m": 65.83319091796875,
+          "hydroclaude_wse_m": 66.1462231117311,
+          "error_m": 0.3130321937623535
+        },
+        {
+          "xs_index": 2,
+          "rs_label": "5.76",
+          "hecras_wse_m": 65.59148009033204,
+          "hydroclaude_wse_m": 65.86943680878593,
+          "error_m": 0.27795671845389336
+        },
+        {
+          "xs_index": 3,
+          "rs_label": "5.685",
+          "hecras_wse_m": 65.46724581298828,
+          "hydroclaude_wse_m": 65.80926070869006,
+          "error_m": 0.3420148957017801
+        },
+        {
+          "xs_index": 4,
+          "rs_label": "5.61",
+          "hecras_wse_m": 65.36596362304688,
+          "hydroclaude_wse_m": 65.81399896246532,
+          "error_m": 0.4480353394184391
+        },
+        {
+          "xs_index": 5,
+          "rs_label": "5.525",
+          "hecras_wse_m": 65.19677860107423,
+          "hydroclaude_wse_m": 65.80332168823657,
+          "error_m": 0.6065430871623363
+        },
+        {
+          "xs_index": 6,
+          "rs_label": "5.44",
+          "hecras_wse_m": 65.00312995605469,
+          "hydroclaude_wse_m": 65.7162260691453,
+          "error_m": 0.7130961130906144
+        },
+        {
+          "xs_index": 7,
+          "rs_label": "5.41",
+          "hecras_wse_m": 64.93135294189453,
+          "hydroclaude_wse_m": 65.63304277491216,
+          "error_m": 0.7016898330176247
+        },
+        {
+          "xs_index": 8,
+          "rs_label": "5.39",
+          "hecras_wse_m": 64.84427918701172,
+          "hydroclaude_wse_m": 65.41263322223767,
+          "error_m": 0.5683540352259513
+        },
+        {
+          "xs_index": 9,
+          "rs_label": "5.29",
+          "hecras_wse_m": 64.70855258789062,
+          "hydroclaude_wse_m": 64.98054926388345,
+          "error_m": 0.27199667599282407
+        },
+        {
+          "xs_index": 10,
+          "rs_label": "5.21",
+          "hecras_wse_m": 64.53920478515626,
+          "hydroclaude_wse_m": 64.71450920443958,
+          "error_m": 0.17530441928332152
+        },
+        {
+          "xs_index": 11,
+          "rs_label": "5.13",
+          "hecras_wse_m": 64.2907687866211,
+          "hydroclaude_wse_m": 64.66877279583498,
+          "error_m": 0.3780040092138819
+        },
+        {
+          "xs_index": 12,
+          "rs_label": "5.065",
+          "hecras_wse_m": 64.09378081054687,
+          "hydroclaude_wse_m": 64.65347799653023,
+          "error_m": 0.559697185983353
+        },
+        {
+          "xs_index": 13,
+          "rs_label": "5.0",
+          "hecras_wse_m": 63.8556,
+          "hydroclaude_wse_m": 63.8556,
+          "error_m": 0.0
+        }
+      ],
+      "bridge_comparison": {
+        "us_rs": "5.41",
+        "ds_rs": "5.39",
+        "us_xs_index": 7,
+        "ds_xs_index": 8,
+        "hecras_wse_us_m": 64.93135294189453,
+        "hydroclaude_wse_us_m": 65.63304277491216,
+        "error_us_m": 0.7016898330176247,
+        "hecras_wse_ds_m": 64.84427918701172,
+        "hydroclaude_wse_ds_m": 65.41263322223767,
+        "error_ds_m": 0.5683540352259513,
+        "backwater_hecras_m": 0.08707375488280888,
+        "backwater_hydroclaude_m": 0.22040955267448226,
+        "backwater_error_m": 0.13333579779167337
+      },
+      "solver_status": "ok"
+    },
+    {
+      "profile_name": "100 yr",
+      "flow_m3s": 283.16846592,
+      "metrics": {
+        "mae_m": 0.4767900998713494,
+        "rmse_m": 0.520076282594504,
+        "max_error_m": 0.7072926165544686,
+        "max_error_xs_index": 8,
+        "max_error_rs_label": "5.39",
+        "mean_bias_m": 0.3775458620789891,
+        "n_xs_compared": 14
+      },
+      "per_xs": [
+        {
+          "xs_index": 0,
+          "rs_label": "5.99",
+          "hecras_wse_m": 66.73938676757813,
+          "hydroclaude_wse_m": 66.0446771030316,
+          "error_m": -0.6947096645465223
+        },
+        {
+          "xs_index": 1,
+          "rs_label": "5.875",
+          "hecras_wse_m": 66.34269005126953,
+          "hydroclaude_wse_m": 66.82191803320738,
+          "error_m": 0.47922798193785354
+        },
+        {
+          "xs_index": 2,
+          "rs_label": "5.76",
+          "hecras_wse_m": 66.13558641357422,
+          "hydroclaude_wse_m": 66.49964087882334,
+          "error_m": 0.36405446524912577
+        },
+        {
+          "xs_index": 3,
+          "rs_label": "5.685",
+          "hecras_wse_m": 66.03738775634766,
+          "hydroclaude_wse_m": 66.48793171840973,
+          "error_m": 0.4505439620620706
+        },
+        {
+          "xs_index": 4,
+          "rs_label": "5.61",
+          "hecras_wse_m": 65.97071740722656,
+          "hydroclaude_wse_m": 66.50460027737353,
+          "error_m": 0.533882870146968
+        },
+        {
+          "xs_index": 5,
+          "rs_label": "5.525",
+          "hecras_wse_m": 65.89079205322265,
+          "hydroclaude_wse_m": 66.49009668378486,
+          "error_m": 0.5993046305622016
+        },
+        {
+          "xs_index": 6,
+          "rs_label": "5.44",
+          "hecras_wse_m": 65.81101552734376,
+          "hydroclaude_wse_m": 66.42943687696366,
+          "error_m": 0.6184213496199078
+        },
+        {
+          "xs_index": 7,
+          "rs_label": "5.41",
+          "hecras_wse_m": 65.54955706787109,
+          "hydroclaude_wse_m": 66.22820678397336,
+          "error_m": 0.6786497161022709
+        },
+        {
+          "xs_index": 8,
+          "rs_label": "5.39",
+          "hecras_wse_m": 65.35088547363281,
+          "hydroclaude_wse_m": 66.05817809018728,
+          "error_m": 0.7072926165544686
+        },
+        {
+          "xs_index": 9,
+          "rs_label": "5.29",
+          "hecras_wse_m": 65.22677211914063,
+          "hydroclaude_wse_m": 65.68789550213873,
+          "error_m": 0.4611233829980961
+        },
+        {
+          "xs_index": 10,
+          "rs_label": "5.21",
+          "hecras_wse_m": 65.0593172241211,
+          "hydroclaude_wse_m": 65.15478477287215,
+          "error_m": 0.09546754875104568
+        },
+        {
+          "xs_index": 11,
+          "rs_label": "5.13",
+          "hecras_wse_m": 64.75732635498048,
+          "hydroclaude_wse_m": 65.11700237133488,
+          "error_m": 0.35967601635439905
+        },
+        {
+          "xs_index": 12,
+          "rs_label": "5.065",
+          "hecras_wse_m": 64.50931358642579,
+          "hydroclaude_wse_m": 65.14202077973975,
+          "error_m": 0.6327071933139621
+        },
+        {
+          "xs_index": 13,
+          "rs_label": "5.0",
+          "hecras_wse_m": 64.16040000000001,
+          "hydroclaude_wse_m": 64.16040000000001,
+          "error_m": 0.0
+        }
+      ],
+      "bridge_comparison": {
+        "us_rs": "5.41",
+        "ds_rs": "5.39",
+        "us_xs_index": 7,
+        "ds_xs_index": 8,
+        "hecras_wse_us_m": 65.54955706787109,
+        "hydroclaude_wse_us_m": 66.22820678397336,
+        "error_us_m": 0.6786497161022709,
+        "hecras_wse_ds_m": 65.35088547363281,
+        "hydroclaude_wse_ds_m": 66.05817809018728,
+        "error_ds_m": 0.7072926165544686,
+        "backwater_hecras_m": 0.1986715942382773,
+        "backwater_hydroclaude_m": 0.17002869378607954,
+        "backwater_error_m": -0.02864290045219775
+      },
+      "solver_status": "ok"
+    },
+    {
+      "profile_name": "May '74 flood",
+      "flow_m3s": 396.4358522880001,
+      "metrics": {
+        "mae_m": 0.4076090988990576,
+        "rmse_m": 0.4467499830736423,
+        "max_error_m": 0.6703180285034307,
+        "max_error_xs_index": 12,
+        "max_error_rs_label": "5.065",
+        "mean_bias_m": 0.32585572271221047,
+        "n_xs_compared": 14
+      },
+      "per_xs": [
+        {
+          "xs_index": 0,
+          "rs_label": "5.99",
+          "hecras_wse_m": 67.05405593261719,
+          "hydroclaude_wse_m": 66.48178229930926,
+          "error_m": -0.5722736333079297
+        },
+        {
+          "xs_index": 1,
+          "rs_label": "5.875",
+          "hecras_wse_m": 66.74502828369141,
+          "hydroclaude_wse_m": 67.25902322948505,
+          "error_m": 0.513994945793641
+        },
+        {
+          "xs_index": 2,
+          "rs_label": "5.76",
+          "hecras_wse_m": 66.58224752197266,
+          "hydroclaude_wse_m": 66.8889174259029,
+          "error_m": 0.30666990393024207
+        },
+        {
+          "xs_index": 3,
+          "rs_label": "5.685",
+          "hecras_wse_m": 66.51158671875001,
+          "hydroclaude_wse_m": 66.9049042250012,
+          "error_m": 0.39331750625119355
+        },
+        {
+          "xs_index": 4,
+          "rs_label": "5.61",
+          "hecras_wse_m": 66.46954277343751,
+          "hydroclaude_wse_m": 66.92473682285338,
+          "error_m": 0.4551940494158657
+        },
+        {
+          "xs_index": 5,
+          "rs_label": "5.525",
+          "hecras_wse_m": 66.42540128173829,
+          "hydroclaude_wse_m": 66.90806634477221,
+          "error_m": 0.4826650630339202
+        },
+        {
+          "xs_index": 6,
+          "rs_label": "5.44",
+          "hecras_wse_m": 66.38564556884766,
+          "hydroclaude_wse_m": 66.85567546662767,
+          "error_m": 0.4700298977800088
+        },
+        {
+          "xs_index": 7,
+          "rs_label": "5.41",
+          "hecras_wse_m": 66.2755406616211,
+          "hydroclaude_wse_m": 66.5278090895173,
+          "error_m": 0.25226842789621173
+        },
+        {
+          "xs_index": 8,
+          "rs_label": "5.39",
+          "hecras_wse_m": 65.70827296142579,
+          "hydroclaude_wse_m": 66.37097589359203,
+          "error_m": 0.6627029321662405
+        },
+        {
+          "xs_index": 9,
+          "rs_label": "5.29",
+          "hecras_wse_m": 65.54037623291016,
+          "hydroclaude_wse_m": 65.95842437710854,
+          "error_m": 0.4180481441983801
+        },
+        {
+          "xs_index": 10,
+          "rs_label": "5.21",
+          "hecras_wse_m": 65.35463873291016,
+          "hydroclaude_wse_m": 65.47462308019527,
+          "error_m": 0.11998434728511143
+        },
+        {
+          "xs_index": 11,
+          "rs_label": "5.13",
+          "hecras_wse_m": 65.02390078125,
+          "hydroclaude_wse_m": 65.41296128627464,
+          "error_m": 0.38906050502463074
+        },
+        {
+          "xs_index": 12,
+          "rs_label": "5.065",
+          "hecras_wse_m": 64.78356661376954,
+          "hydroclaude_wse_m": 65.45388464227297,
+          "error_m": 0.6703180285034307
+        },
+        {
+          "xs_index": 13,
+          "rs_label": "5.0",
+          "hecras_wse_m": 64.55664093017579,
+          "hydroclaude_wse_m": 64.55664093017579,
+          "error_m": 0.0
+        }
+      ],
+      "bridge_comparison": {
+        "us_rs": "5.41",
+        "ds_rs": "5.39",
+        "us_xs_index": 7,
+        "ds_xs_index": 8,
+        "hecras_wse_us_m": 66.2755406616211,
+        "hydroclaude_wse_us_m": 66.5278090895173,
+        "error_us_m": 0.25226842789621173,
+        "hecras_wse_ds_m": 65.70827296142579,
+        "hydroclaude_wse_ds_m": 66.37097589359203,
+        "error_ds_m": 0.6627029321662405,
+        "backwater_hecras_m": 0.5672677001953019,
+        "backwater_hydroclaude_m": 0.15683319592527312,
+        "backwater_error_m": -0.4104345042700288
+      },
+      "solver_status": "ok"
+    }
+  ],
+  "parameter_completeness": {
+    "unit_system_detected": true,
+    "unit_system_source_present": true,
+    "water_surface_present": true,
+    "flow_present": true,
+    "energy_grade_present": true,
+    "bed_elevation_present": true,
+    "channel_width_present": true,
+    "manning_ch_present": true,
+    "manning_lob_present": true,
+    "manning_rob_present": true,
+    "reach_lengths_channel_present": true,
+    "reach_lengths_lob_present": true,
+    "reach_lengths_rob_present": true,
+    "bank_stations_present": true,
+    "xs_profiles_present": true
+  }
+}
