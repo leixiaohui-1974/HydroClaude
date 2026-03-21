@@ -35,6 +35,9 @@ class SteadyProfileSolver:
         cross_sections=None,
         bed_elevations=None,
         manning_ns=None,
+        reach_lengths=None,
+        contraction_coefs=None,
+        expansion_coefs=None,
     ) -> None:
         """
         Args:
@@ -47,6 +50,9 @@ class SteadyProfileSolver:
             cross_sections: List of CrossSection per station
             bed_elevations: Absolute bed elevation per station (m); enables absolute WSE iteration
             manning_ns: Manning n per station; falls back to self.n when None
+            reach_lengths: Actual reach lengths between XS pairs (m); from HEC-RAS Len Channel
+            contraction_coefs: Per-XS contraction loss coefficients
+            expansion_coefs: Per-XS expansion loss coefficients
         """
         self.length = length
         self.B = B
@@ -57,6 +63,9 @@ class SteadyProfileSolver:
         self._xs_array = cross_sections
         self._bed_elevations = bed_elevations
         self._manning_ns = manning_ns
+        self._reach_lengths = reach_lengths
+        self._contraction_coefs = contraction_coefs
+        self._expansion_coefs = expansion_coefs
 
     # Hydraulic geometry helpers
 
@@ -207,13 +216,21 @@ class SteadyProfileSolver:
         expansion_coef: float = 0.3,
     ) -> Dict:
         """Absolute WSE Standard Step with per-station geometry.
-    
+
         Called by solve_standard_step when bed_elevations is set.
         Iterates on absolute water surface elevation W, consistent with HEC-RAS.
+        Uses actual HEC-RAS reach lengths, Manning n, and loss coefficients when available.
         """
         bed = np.asarray(self._bed_elevations, dtype=float)
         n_xs = len(bed)
-        x = np.linspace(0, self.length, n_xs)
+        # Use actual reach lengths from HEC-RAS if available
+        if self._reach_lengths and len(self._reach_lengths) >= n_xs:
+            rl = np.asarray(self._reach_lengths, dtype=float)
+            x = np.zeros(n_xs)
+            for k in range(1, n_xs):
+                x[k] = x[k-1] + max(rl[k-1], 0.1)
+        else:
+            x = np.linspace(0, self.length, n_xs)
         h = np.zeros(n_xs)
         W = np.zeros(n_xs)
         h[-1] = h_downstream
@@ -241,10 +258,17 @@ class SteadyProfileSolver:
                 Sf_avg = 0.5 * (Sf_us + Sf_ds)
                 # Cap friction slope to avoid explosion
                 Sf_avg = min(Sf_avg, 1.0)
+                # Use per-XS loss coefficients from HEC-RAS when available
+                cc = contraction_coef
+                ec = expansion_coef
+                if self._contraction_coefs and i < len(self._contraction_coefs):
+                    cc = self._contraction_coefs[i]
+                if self._expansion_coefs and i < len(self._expansion_coefs):
+                    ec = self._expansion_coefs[i]
                 if vh_us > vh_ds:
-                    h_minor = contraction_coef * (vh_us - vh_ds)
+                    h_minor = cc * (vh_us - vh_ds)
                 else:
-                    h_minor = expansion_coef * (vh_ds - vh_us)
+                    h_minor = ec * (vh_ds - vh_us)
                 W_new = W[i + 1] + vh_ds - vh_us + dx_seg * Sf_avg + h_minor
                 if abs(W_new - W_trial) < 3e-4:
                     W_trial = W_new; break

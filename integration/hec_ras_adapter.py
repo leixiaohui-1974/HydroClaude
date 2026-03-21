@@ -555,6 +555,13 @@ class HECRASResultSummary:
     has_structures: bool = False  # True when HDF contains bridges/culverts/weirs/gates
     # Per-XS station-elevation profiles for NaturalSection construction
     xs_profiles: list[dict] | None = None  # [{stations: [...], elevations: [...]}, ...]
+    # HEC-RAS reach lengths between XS pairs (channel direction)
+    reach_lengths_m: list[float] | None = None  # len = n_xs, first element = distance to next downstream
+    # Per-XS bank stations and loss coefficients
+    left_bank_m: list[float] | None = None
+    right_bank_m: list[float] | None = None
+    contraction_coefs: list[float] | None = None
+    expansion_coefs: list[float] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {k: v for k, v in self.__dict__.items()}
@@ -606,6 +613,8 @@ def extract_hecras_result_summary(
 
             xs_profiles = _try_read_xs_profiles(hdf, lf)
 
+            xs_attrs = _try_read_xs_attributes(hdf, lf)
+
             return HECRASResultSummary(
                 mode="steady",
                 unit_system=unit_system,
@@ -624,6 +633,9 @@ def extract_hecras_result_summary(
                 channel_width_m=width,
                 has_structures=has_structures,
                 xs_profiles=xs_profiles,
+                reach_lengths_m=xs_attrs.get("reach_lengths_m"),
+                contraction_coefs=xs_attrs.get("contraction_coefs"),
+                expansion_coefs=xs_attrs.get("expansion_coefs"),
             )
 
         # --- Unsteady fallback ---
@@ -642,6 +654,7 @@ def extract_hecras_result_summary(
         width = _try_read_channel_width(hdf, lf)
         has_structures = _detect_structures(hdf)
         xs_profiles = _try_read_xs_profiles(hdf, lf)
+        xs_attrs = _try_read_xs_attributes(hdf, lf)
 
         return HECRASResultSummary(
             mode="unsteady",
@@ -661,6 +674,9 @@ def extract_hecras_result_summary(
             channel_width_m=width,
             has_structures=has_structures,
             xs_profiles=xs_profiles,
+            reach_lengths_m=xs_attrs.get("reach_lengths_m"),
+            contraction_coefs=xs_attrs.get("contraction_coefs"),
+            expansion_coefs=xs_attrs.get("expansion_coefs"),
         )
 
 
@@ -698,6 +714,31 @@ def _try_read_bed_elevation(hdf: h5py.File, lf: float) -> list[float] | None:
             return min_elevs
 
     return None
+
+
+def _try_read_xs_attributes(hdf: h5py.File, lf: float) -> dict[str, list]:
+    """Read per-XS attributes from Geometry/Cross Sections/Attributes.
+
+    Returns dict with reach_lengths_m, left_bank_m, right_bank_m,
+    contraction_coefs, expansion_coefs.
+    """
+    result: dict[str, list] = {}
+    for attr_path in ["Geometry/Cross Sections/Attributes"]:
+        if attr_path not in hdf:
+            continue
+        attrs = hdf[attr_path][:]
+        if "Len Channel" in attrs.dtype.names:
+            result["reach_lengths_m"] = (np.asarray(attrs["Len Channel"], dtype=float) * lf).tolist()
+        if "Left Bank" in attrs.dtype.names:
+            result["left_bank_m"] = (np.asarray(attrs["Left Bank"], dtype=float) * lf).tolist()
+        if "Right Bank" in attrs.dtype.names:
+            result["right_bank_m"] = (np.asarray(attrs["Right Bank"], dtype=float) * lf).tolist()
+        if "Contr" in attrs.dtype.names:
+            result["contraction_coefs"] = np.asarray(attrs["Contr"], dtype=float).tolist()
+        if "Expan" in attrs.dtype.names:
+            result["expansion_coefs"] = np.asarray(attrs["Expan"], dtype=float).tolist()
+        break
+    return result
 
 
 def _try_read_xs_profiles(hdf: h5py.File, lf: float) -> list[dict] | None:
@@ -906,26 +947,24 @@ def diagnose_flow_regime(result_summary: HECRASResultSummary, g: float = 9.81) -
     else:
         regime = "subcritical"
 
-    # Bed slope estimation.
-    # Station numbers in HEC-RAS are identifiers, not always physical distances.
-    # Use _estimate_reach_length for a reliable distance, then compute slope.
+    # Bed slope and reach length estimation.
+    # Priority 1: Use actual HEC-RAS Reach Lengths from Geometry/Cross Sections/Attributes
+    # Priority 2: Use station range (if physically meaningful)
+    # Priority 3: Heuristic estimation
     stations = np.asarray(result_summary.stations_m, dtype=float)
     n_xs = result_summary.n_cross_sections
+    reach_lengths = result_summary.reach_lengths_m
+    if reach_lengths and len(reach_lengths) > 0:
+        total_distance = float(np.sum(np.asarray(reach_lengths, dtype=float)))
+        if total_distance < 1.0:
+            total_distance = max(n_xs * 100.0, 100.0)
+    else:
+        total_distance = _estimate_reach_length(stations, bed, 0.001, n_xs)
+
     if len(bed) > 1:
         total_drop = abs(float(bed[0]) - float(bed[-1]))
-        # First estimate length from stations
-        station_range = abs(float(stations[0]) - float(stations[-1])) if len(stations) > 1 else 0
-        # Use heuristic length if station range is suspiciously small
-        if station_range > 10.0 and n_xs <= 50:
-            total_distance = station_range
-        elif total_drop > 0.01:
-            # Estimate from typical open-channel slope (0.001-0.01)
-            total_distance = total_drop / 0.005  # assume moderate slope
-            total_distance = max(total_distance, n_xs * 50.0)  # min 50m per xs
-        else:
-            total_distance = max(n_xs * 100.0, 100.0)
         avg_slope = total_drop / max(total_distance, 1.0)
-        avg_slope = np.clip(avg_slope, 1e-6, 0.5)  # cap at 50% slope
+        avg_slope = np.clip(avg_slope, 1e-6, 0.5)
     else:
         avg_slope = 0.001
 
@@ -1067,6 +1106,9 @@ def diagnose_flow_regime(result_summary: HECRASResultSummary, g: float = 9.81) -
             "channel_widths": width_list,
             "manning_ns": manning_list,
             "xs_profiles": result_summary.xs_profiles,  # per-XS station-elevation for NaturalSection
+            "reach_lengths": result_summary.reach_lengths_m,  # actual HEC-RAS reach lengths
+            "contraction_coefs": result_summary.contraction_coefs,
+            "expansion_coefs": result_summary.expansion_coefs,
         }
     elif result_summary.channel_width_m:
         recommended_params["cross_section_data"] = {

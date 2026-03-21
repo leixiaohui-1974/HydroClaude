@@ -419,6 +419,9 @@ class HydroClaudeSimulator:
                 cross_sections=cross_sections,
                 bed_elevations=bed_elevs,
                 manning_ns=manning_vals,
+                reach_lengths=xs_data.get("reach_lengths"),
+                contraction_coefs=xs_data.get("contraction_coefs"),
+                expansion_coefs=xs_data.get("expansion_coefs"),
             )
             # multi_station 模式固定使用 standard_step（绝对水位版）
             result = solver.solve_standard_step(Q, h_downstream)
