@@ -758,6 +758,7 @@ class SteadyProfileSolver:
             energy_change = dx_seg * Sf_ds
             if energy_change > 0.005 and not (i in _bridge_at_us):
                 n_substeps = min(50, max(1, int(energy_change / 0.002)))
+
             # 子步迭代：每步以前一子步 W 为下游，床面高程线性插值
             # 子步间的断面几何在 i 和 i+1 之间按位置线性插值
             W_sub_ds = W[i + 1]
@@ -786,16 +787,22 @@ class SteadyProfileSolver:
                 _Sf_ds_sub   = (Q / _K_ds_sub) ** 2 if _K_ds_sub > 0 else Sf_ds
                 _V_ds_sub    = Q / _A_ds_sub
                 _vh_ds_sub   = _alpha_ds_sub * _V_ds_sub ** 2 / (2.0 * self.g)
-                # 改进初始猜测：考虑床面坡降方向，避免陡坡初始猜测偏低
-                _bed_rise     = max(bed_sub_us - bed_sub_ds, 0.0)
-                h_init_estimate = max(W_sub_ds - bed_sub_ds, 0.01) + _bed_rise
-                W_trial = max(
-                    W_sub_ds + _bed_rise,
-                    bed_sub_us + h_init_estimate,
-                )
+                # 改进初始猜测：使用能量方程的粗略估计，而非简单的床面跟随
+                # 先用能量方程估算一个合理的初值
+                _bed_rise = max(bed_sub_us - bed_sub_ds, 0.0)
+                _Sf_est = _Sf_ds_sub  # 用下游摩阻坡度估算
+                _dE_est = dx_sub * _Sf_est  # 能量损失估计
+                # 初值：下游水位 + 床面抬升 + 能量损失
+                W_trial = W_sub_ds + _bed_rise + _dE_est
+                # 但不能过高（限制在下游水深的 2 倍以内）
+                W_trial = min(W_trial, W_sub_ds + 2.0 * _h_ds_sub)
+                # 也不能低于床面
+                W_trial = max(W_trial, bed_sub_us + 0.01)
+
                 W_trial_prev = W_trial - 1.0  # 前一步，用于震荡检测
                 W_new = W_trial
                 relax = 1.0  # 松弛因子，震荡时递减
+                _converged = False
                 for _iter in range(80):
                     h_us = max(W_trial - bed_sub_us, 0.01)
                     h_us = min(h_us, 100.0)  # cap depth at 100m
@@ -821,10 +828,12 @@ class SteadyProfileSolver:
                     W_new = W_sub_ds + _vh_ds_sub - vh_us + dx_sub * Sf_avg + h_minor
                     # 物理下限：W 不能低于床面
                     W_new = max(W_new, bed_sub_us + 1e-4)
-                    # 绝对+相对双重收敛准则
+
+                    # 放宽收敛准则：绝对误差 1e-4 或相对误差 1e-4
                     _delta = abs(W_new - W_trial)
-                    if _delta < 1e-5 or _delta / max(abs(W_trial), 1.0) < 1e-6:
+                    if _delta < 1e-4 or _delta / max(abs(W_trial), 1.0) < 1e-4:
                         W_trial = W_new
+                        _converged = True
                         break
                     # 震荡检测：若 W_new 在 W_trial 两侧来回跳，用松弛因子递减
                     if _iter >= 2 and (W_new - W_trial) * (W_trial - W_trial_prev) < 0:
@@ -832,6 +841,7 @@ class SteadyProfileSolver:
                         W_new = W_trial + relax * (W_new - W_trial)
                     W_trial_prev = W_trial
                     W_trial = W_new
+
                 # 更新子步状态：当前子步上游 W 成为下一子步的下游 W
                 W_sub_ds = W_trial
                 bed_sub_ds = bed_sub_us
@@ -914,8 +924,9 @@ class SteadyProfileSolver:
             # --------------------------------------------------------------------
             W[i] = W_trial
             h[i] = max(W[i] - bed[i], 0.001)
+
         # ---- Mixed Flow Detection (HEC-RAS Mixed Flow Mode) -------------------
-        # 计算每个断面的弗劳德数；若存在 Fr > 1 的区段，启用混合流计算
+        # 双重检测：(1) Froude 数 > 1，或 (2) 存在陡坡段（S0 > Sc）
         froude_arr = np.zeros(n_xs)
         for _mf_i in range(n_xs):
             _mf_h = max(W[_mf_i] - bed[_mf_i], 0.01)
@@ -923,7 +934,23 @@ class SteadyProfileSolver:
             _mf_V = Q / max(_mf_A, 1e-9)
             _mf_D = _mf_A / max(_mf_T, 1e-9)
             froude_arr[_mf_i] = _mf_V / np.sqrt(self.g * max(_mf_D, 1e-9))
-        _mixed_flow_flag = bool(np.any(froude_arr > 1.0))
+
+        # 检测 1: Froude 数 > 1
+        _froude_flag = bool(np.any(froude_arr > 1.0))
+
+        # 检测 2: 陡坡段（S0 > Sc）
+        _steep_flag = False
+        for _mf_i in range(n_xs - 1):
+            _dx = float(abs(x[_mf_i + 1] - x[_mf_i]))
+            if _dx < 1e-6:
+                continue
+            _S0_local = float((bed[_mf_i] - bed[_mf_i + 1]) / _dx)
+            _Sc_local = self._compute_critical_slope(Q, _mf_i)
+            if _S0_local > _Sc_local:
+                _steep_flag = True
+                break
+
+        _mixed_flow_flag = _froude_flag or _steep_flag
         if _mixed_flow_flag:
             W, h = self._solve_mixed_flow(Q, W, bed, n_xs, x,
                                           contraction_coef, expansion_coef)
@@ -952,6 +979,241 @@ class SteadyProfileSolver:
             y_c = float((Q ** 2 / (self.g * max(self.B, 1.0) ** 2)) ** (1.0 / 3.0))
         return float(y_c)
 
+
+    def _compute_critical_slope(self, Q: float, station_index: int) -> float:
+        """计算临界坡度 Sc，当 S0 > Sc 时该断面更可能出现超临界流。
+
+        公式:
+            Sc = n^2 * Q^2 / (A^2 * R^(4/3))
+        其中 A, R 在临界深度处计算。
+        """
+        y_c = self._compute_critical_depth(Q, station_index)
+        A, _P, R, _T = self._get_geometry(y_c, station_index)
+
+        n_local = self.n
+        if self._manning_ns and station_index < len(self._manning_ns):
+            n_val = self._manning_ns[station_index]
+            if n_val and float(n_val) > 0:
+                n_local = float(n_val)
+
+        if A > 0.0 and R > 0.0:
+            Sc = (n_local * Q / A) ** 2 / (R ** (4.0 / 3.0))
+        else:
+            Sc = 0.001  # fallback default
+
+        return float(Sc)
+
+    def _identify_steep_sections(self, Q: float, bed: np.ndarray, x: np.ndarray) -> List[int]:
+        """基于局部床坡与临界坡对比，识别陡坡段起始断面。
+
+        Returns:
+            List[int]: 每个陡坡段入口索引（上游到下游顺序）。
+        """
+        n_xs = len(bed)
+        controls: List[int] = []
+
+        if n_xs < 2:
+            return controls
+
+        steep_flags = np.zeros(n_xs - 1, dtype=bool)
+
+        for i in range(n_xs - 1):
+            dx = float(abs(x[i + 1] - x[i]))
+            if dx < 1e-6:
+                continue
+            S0_local = float((bed[i] - bed[i + 1]) / dx)
+            Sc_local = self._compute_critical_slope(Q, i)
+            steep_flags[i] = bool(S0_local > Sc_local)
+
+        for i in range(n_xs - 1):
+            if not steep_flags[i]:
+                continue
+            if i == 0 or (not steep_flags[i - 1]):
+                controls.append(i)
+
+        return controls
+
+
+    def _compute_momentum_function(self, h: float, Q: float, station_index: int) -> float:
+        r"""Compute momentum function M = Q^2/(gA) + A*y_bar.
+
+        Notes:
+            Uses y_bar = A / T (as requested in task spec).
+        """
+        h_safe = max(float(h), 1e-6)
+        A, _P, _R, T = self._get_geometry(h_safe, station_index)
+        A = max(A, 1e-9)
+        T = max(T, 1e-9)
+        y_bar = A / T
+        return float(Q ** 2 / (self.g * A) + A * y_bar)
+
+    def _locate_control_sections(
+        self,
+        W_subcritical: np.ndarray,
+        bed: np.ndarray,
+        y_c: np.ndarray,
+        Q: float,
+        x: np.ndarray,
+    ) -> List[int]:
+        r"""定位 Split-Flow 控制断面（优先坡度法，回退水深法）。
+
+        优先:
+            基于 S0_local > Sc 的陡坡段入口识别控制断面。
+        回退:
+            若未识别到陡坡，则使用 h_sub < y_c 的旧逻辑。
+        """
+        controls = self._identify_steep_sections(Q, bed, x)
+
+        if controls:
+            return controls
+
+        # fallback: legacy depth-based detection
+        h_sub = np.asarray(W_subcritical, dtype=float) - np.asarray(bed, dtype=float)
+        h_sub = np.maximum(h_sub, 0.0)
+        y_c_arr = np.asarray(y_c, dtype=float)
+
+        is_below_critical = h_sub < y_c_arr
+        for i in range(len(is_below_critical)):
+            if not is_below_critical[i]:
+                continue
+            if i == 0 or (not is_below_critical[i - 1]):
+                controls.append(i)
+
+        return controls
+
+
+    def _compute_supercritical_profile(
+        self,
+        Q: float,
+        control_idx: int,
+        W_control: float,
+        bed: np.ndarray,
+        x: np.ndarray,
+        y_c: np.ndarray,
+        contraction_coef: float = 0.1,
+        expansion_coef: float = 0.3,
+        end_idx: Optional[int] = None,
+    ) -> np.ndarray:
+        r"""Compute supercritical profile from control section to downstream.
+
+        Direction:
+            upstream -> downstream (opposite of subcritical marching).
+        Boundary at control:
+            W(control_idx) fixed to critical WSE.
+        """
+        n_xs = len(bed)
+        if end_idx is None:
+            end_idx = n_xs - 1
+        end_idx = int(np.clip(end_idx, control_idx, n_xs - 1))
+
+        W_super = np.full(n_xs, np.nan, dtype=float)
+        # 修复点 3：控制断面边界由临界深度改为略低于临界深度
+        yc0 = max(float(y_c[control_idx]), 1e-4)
+        W_super[control_idx] = float(bed[control_idx]) + 0.95 * yc0
+        W_super[control_idx] = max(W_super[control_idx], float(bed[control_idx]) + 1e-4)
+
+        for i in range(control_idx + 1, end_idx + 1):
+            dx_seg = float(abs(x[i] - x[i - 1]))
+            if dx_seg < 1e-6:
+                dx_seg = 1.0
+
+            h_us = max(W_super[i - 1] - bed[i - 1], 0.001)
+            A_us, _P_us, _R_us, _T_us = self._get_geometry(h_us, i - 1)
+            V_us = Q / max(A_us, 1e-9)
+            K_us, alpha_us = self._compute_subdivided_conveyance(h_us, i - 1)
+            Sf_us = (Q / K_us) ** 2 if K_us > 0 else self.compute_friction_slope(h_us, Q, i - 1)
+            vh_us = alpha_us * V_us ** 2 / (2.0 * self.g)
+
+            W_trial = max(W_super[i - 1] - 0.05, bed[i] + 0.001)
+
+            for _iter in range(60):
+                h_ds = max(W_trial - bed[i], 0.001)
+                A_ds, _P_ds, _R_ds, _T_ds = self._get_geometry(h_ds, i)
+                V_ds = Q / max(A_ds, 1e-9)
+                K_ds, alpha_ds = self._compute_subdivided_conveyance(h_ds, i)
+                Sf_ds = (Q / K_ds) ** 2 if K_ds > 0 else self.compute_friction_slope(h_ds, Q, i)
+                vh_ds = alpha_ds * V_ds ** 2 / (2.0 * self.g)
+
+                Sf_avg = min(0.5 * (Sf_us + Sf_ds), 1.0)
+
+                cc = contraction_coef
+                ec = expansion_coef
+                if self._contraction_coefs and i < len(self._contraction_coefs):
+                    cc = self._contraction_coefs[i]
+                if self._expansion_coefs and i < len(self._expansion_coefs):
+                    ec = self._expansion_coefs[i]
+
+                if vh_ds > vh_us:
+                    h_minor = cc * (vh_ds - vh_us)
+                else:
+                    h_minor = ec * (vh_us - vh_ds)
+
+                W_new = W_super[i - 1] + vh_us - vh_ds - dx_seg * Sf_avg - h_minor
+
+                W_new = max(W_new, bed[i] + 0.1)
+            # 修复点 2：去掉临界深度上限约束,仅保留最小物理深度
+
+            if i == control_idx + 1:  # 第一个下游断面
+
+                if abs(W_new - W_trial) < 3e-4:
+                    W_trial = W_new
+                    break
+                W_trial = 0.5 * (W_trial + W_new)
+
+            W_super[i] = W_trial
+
+        return W_super
+
+    def _locate_hydraulic_jump(
+        self,
+        W_sub: np.ndarray,
+        W_super: np.ndarray,
+        bed: np.ndarray,
+        Q: float,
+        start_idx: int = 0,
+        end_idx: Optional[int] = None,
+    ) -> Optional[int]:
+        r"""Locate hydraulic jump using momentum-function matching.
+
+        Jump criterion:
+            M_sub - M_super changes sign (or reaches minimal absolute difference).
+        """
+        n_xs = len(bed)
+        if end_idx is None:
+            end_idx = n_xs - 1
+        start_idx = int(np.clip(start_idx, 0, n_xs - 1))
+        end_idx = int(np.clip(end_idx, start_idx, n_xs - 1))
+
+        idx_valid: List[int] = []
+        delta_m: List[float] = []
+
+        for i in range(start_idx, end_idx + 1):
+            if np.isnan(W_super[i]) or np.isnan(W_sub[i]):
+                continue
+            h_sub = max(W_sub[i] - bed[i], 0.001)
+            h_sup = max(W_super[i] - bed[i], 0.001)
+            M_sub = self._compute_momentum_function(h_sub, Q, i)
+            M_sup = self._compute_momentum_function(h_sup, Q, i)
+            idx_valid.append(i)
+            delta_m.append(M_sub - M_sup)
+
+        if len(idx_valid) < 2:
+            return None
+
+        for k in range(1, len(idx_valid)):
+            d1 = delta_m[k - 1]
+            d2 = delta_m[k]
+            if d1 == 0.0:
+                return idx_valid[k - 1]
+            if d1 * d2 < 0.0:
+                return idx_valid[k]
+
+        k_min = int(np.argmin(np.abs(np.asarray(delta_m))))
+        if np.isfinite(delta_m[k_min]):
+            return idx_valid[k_min]
+
+        return None
+
     def _solve_mixed_flow(
         self,
         Q: float,
@@ -962,88 +1224,66 @@ class SteadyProfileSolver:
         contraction_coef: float = 0.1,
         expansion_coef: float = 0.3,
     ):
-        r"""Mixed flow analysis: merge sub- and supercritical profiles."""
-        # Step 1: critical depth
-        y_c = np.zeros(n_xs)
+        r"""Split-Flow Method mixed-flow solver (HEC-RAS-style workflow).
+
+        Workflow:
+            1) Use given global subcritical profile W_subcritical
+            2) Locate control section(s): first h<y_c entry of each interval
+            3) Set critical depth at control section as supercritical boundary
+            4) March supercritical profile downstream from control section
+            5) Locate hydraulic jump by momentum-function matching
+            6) Stitch supercritical (upstream of jump) + subcritical (downstream)
+        """
+        y_c = np.zeros(n_xs, dtype=float)
         for i in range(n_xs):
             y_c[i] = self._compute_critical_depth(Q, i)
-        W_critical = bed + y_c
-        # Step 2: supercritical profile (upstream to downstream)
-        W_super = np.full(n_xs, np.nan)
-        h_sub_0 = W_subcritical[0] - bed[0]
-        if h_sub_0 < y_c[0]:
-            W_super[0] = W_subcritical[0]
-        else:
-            W_super[0] = W_critical[0]
-        for i in range(1, n_xs):
-            dx_seg = float(abs(x[i] - x[i - 1]))
-            if dx_seg < 1e-6:
-                dx_seg = 1.0
-            h_us = max(W_super[i - 1] - bed[i - 1], 0.001)
-            A_us, _P_us, _R_us, _T_us = self._get_geometry(h_us, i - 1)
-            V_us = Q / max(A_us, 1e-9)
-            K_us, alpha_us = self._compute_subdivided_conveyance(h_us, i - 1)
-            Sf_us = (Q / K_us) ** 2 if K_us > 0 else self.compute_friction_slope(h_us, Q, i - 1)
-            vh_us = alpha_us * V_us ** 2 / (2.0 * self.g)
-            W_trial = max(W_super[i - 1] - 0.1, bed[i] + 0.001)
-            for _iter in range(50):
-                h_ds = max(W_trial - bed[i], 0.001)
-                A_ds, _P_ds, _R_ds, _T_ds = self._get_geometry(h_ds, i)
-                V_ds = Q / max(A_ds, 1e-9)
-                K_ds, alpha_ds = self._compute_subdivided_conveyance(h_ds, i)
-                Sf_ds = (Q / K_ds) ** 2 if K_ds > 0 else self.compute_friction_slope(h_ds, Q, i)
-                vh_ds = alpha_ds * V_ds ** 2 / (2.0 * self.g)
-                Sf_avg = min(0.5 * (Sf_us + Sf_ds), 1.0)
-                cc = contraction_coef
-                ec = expansion_coef
-                if self._contraction_coefs and i < len(self._contraction_coefs):
-                    cc = self._contraction_coefs[i]
-                if self._expansion_coefs and i < len(self._expansion_coefs):
-                    ec = self._expansion_coefs[i]
-                h_minor = cc * (vh_ds - vh_us) if vh_ds > vh_us else ec * (vh_us - vh_ds)
-                W_new = W_super[i - 1] + vh_us - vh_ds - dx_seg * Sf_avg + h_minor
-                W_new = max(W_new, bed[i] + 0.001)
-                if abs(W_new - W_trial) < 3e-4:
-                    W_trial = W_new
-                    break
-                W_trial = 0.5 * (W_trial + W_new)
-            W_super[i] = min(max(W_trial, bed[i] + 0.001), W_critical[i])
-        # Step 3: select physically correct profile
-        W_final = np.copy(W_subcritical)
-        for i in range(n_xs):
-            if W_subcritical[i] - bed[i] < y_c[i] * 0.99:
-                W_final[i] = W_super[i]
-        # Step 4: hydraulic jump detection via momentum function
-        def _momentum(h_val, idx):
-            A, _P, _R, T = self._get_geometry(max(h_val, 0.001), idx)
-            y_bar = A / max(T, 1e-9)
-            return Q ** 2 / (self.g * max(A, 1e-9)) + A * y_bar
-        in_supercritical = False
-        jump_indices = []
-        for i in range(n_xs - 1, -1, -1):
-            h_f = W_final[i] - bed[i]
-            A_f, _P_f, _R_f, T_f = self._get_geometry(max(h_f, 0.001), i)
-            fr_f = (Q / max(A_f, 1e-9)) / np.sqrt(self.g * max(A_f / max(T_f, 1e-9), 1e-9))
-            if fr_f > 1.0 and not in_supercritical:
-                in_supercritical = True
-            elif fr_f <= 1.0 and in_supercritical:
-                jump_indices.append(i + 1)
-                in_supercritical = False
-        for j_idx in jump_indices:
-            if j_idx >= n_xs:
-                continue
-            h_super_j = W_super[j_idx] - bed[j_idx]
-            M_super_j = _momentum(h_super_j, j_idx)
-            def _mom_res(h_seq, _M=M_super_j, _idx=j_idx):
-                return _momentum(h_seq, _idx) - _M
-            try:
-                h_seq = brentq(_mom_res, y_c[j_idx], max(y_c[j_idx] * 10.0, 20.0),
-                    xtol=1e-4, maxiter=50)
-                W_final[j_idx] = bed[j_idx] + h_seq
-            except Exception:
-                W_final[j_idx] = W_subcritical[j_idx]
+
+        control_sections = self._locate_control_sections(W_subcritical, bed, y_c, Q, x)
+        if not control_sections:
+            h_final = np.maximum(W_subcritical - bed, 0.001)
+            return W_subcritical, h_final
+
+        W_final = np.array(W_subcritical, dtype=float)
+
+        for c_idx, control_idx in enumerate(control_sections):
+            seg_end = (control_sections[c_idx + 1] - 1) if (c_idx + 1 < len(control_sections)) else (n_xs - 1)
+            seg_end = max(seg_end, control_idx)
+
+            W_control = bed[control_idx] + y_c[control_idx]
+
+            W_super = self._compute_supercritical_profile(
+                Q=Q,
+                control_idx=control_idx,
+                W_control=W_control,
+                bed=bed,
+                x=x,
+                y_c=y_c,
+                contraction_coef=contraction_coef,
+                expansion_coef=expansion_coef,
+                end_idx=seg_end,
+            )
+
+            jump_idx = self._locate_hydraulic_jump(
+                W_sub=W_subcritical,
+                W_super=W_super,
+                bed=bed,
+                Q=Q,
+                start_idx=control_idx,
+                end_idx=seg_end,
+            )
+
+            if jump_idx is None:
+                for i in range(control_idx, seg_end + 1):
+                    if not np.isnan(W_super[i]):
+                        W_final[i] = W_super[i]
+            else:
+                for i in range(control_idx, jump_idx):
+                    if not np.isnan(W_super[i]):
+                        W_final[i] = W_super[i]
+
         h_final = np.maximum(W_final - bed, 0.001)
         return W_final, h_final
+
 
     # General solve entry
 

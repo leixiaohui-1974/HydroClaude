@@ -539,6 +539,7 @@ class HECRASResultSummary:
     """Structured summary of HEC-RAS results for comparison pipeline."""
     mode: str  # "steady" or "unsteady"
     unit_system: str
+    unit_system_source: str  # 单位制来源说明
     hdf_path: str
     n_cross_sections: int
     n_profiles: int
@@ -551,12 +552,15 @@ class HECRASResultSummary:
     profile_names: list[str]
     bed_elevation_m: list[float] | None  # per xs, if available
     manning_n_values: list[float] | None  # per xs, if available
+    manning_n_ch_values: list[float] | None  # per xs, channel 糙率
     channel_width_m: list[float] | None  # per xs, if available
     has_structures: bool = False  # True when HDF contains bridges/culverts/weirs/gates
     # Per-XS station-elevation profiles for NaturalSection construction
     xs_profiles: list[dict] | None = None  # [{stations: [...], elevations: [...]}, ...]
     # HEC-RAS reach lengths between XS pairs (channel direction)
-    reach_lengths_m: list[float] | None = None  # len = n_xs, first element = distance to next downstream
+    reach_lengths_m: list[float] | None = None  # len = n_xs
+    reach_lengths_lob_m: list[float] | None = None
+    reach_lengths_rob_m: list[float] | None = None
     # Per-XS bank stations and loss coefficients
     left_bank_m: list[float] | None = None
     right_bank_m: list[float] | None = None
@@ -567,9 +571,223 @@ class HECRASResultSummary:
     manning_n_rob_values: list[float] | None = None
     # Bridge parameters extracted from HEC-RAS HDF Geometry/Structures
     bridges: list[dict] | None = None  # list of bridge parameter dicts
+    # 参数完整性报告
+    parameter_completeness: dict[str, bool] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {k: v for k, v in self.__dict__.items()}
+
+
+
+
+def _detect_unit_system_from_hdf(hdf: h5py.File) -> tuple[str, str]:
+    """从 HDF 根属性读取单位制，返回 (unit_system, source_description)."""
+    attr_name = "Units System"
+    if attr_name not in hdf.attrs:
+        return "english", "hdf root attr missing"
+
+    raw = hdf.attrs[attr_name]
+    if isinstance(raw, np.ndarray):
+        raw = raw[0] if raw.size > 0 else b""
+    text = _decode_bytes(raw)
+    lower = text.lower()
+
+    if "si" in lower:
+        return "si", f'hdf root attr "{attr_name}"={text}'
+    if "us" in lower or "customary" in lower or "english" in lower:
+        return "english", f'hdf root attr "{attr_name}"={text}'
+
+    return "english", f'hdf root attr "{attr_name}" unrecognized: {text} (fallback english)'
+
+
+def generate_parameter_completeness_report(result_summary: HECRASResultSummary) -> dict[str, bool]:
+    """生成关键参数完整性报告"""
+    n_xs = result_summary.n_cross_sections
+
+    def _ok_list(v: list[float] | None, exact_len: int | None = None) -> bool:
+        if v is None:
+            return False
+        if exact_len is not None:
+            return len(v) == exact_len
+        return len(v) > 0
+
+    report = {
+        "unit_system_detected": result_summary.unit_system in ("si", "english"),
+        "unit_system_source_present": bool(result_summary.unit_system_source),
+        "water_surface_present": bool(result_summary.water_surface_m and len(result_summary.water_surface_m) > 0),
+        "flow_present": bool(result_summary.flow_m3s and len(result_summary.flow_m3s) > 0),
+        "energy_grade_present": bool(result_summary.energy_grade_m) if result_summary.mode == "steady" else True,
+        "bed_elevation_present": _ok_list(result_summary.bed_elevation_m, n_xs),
+        "channel_width_present": _ok_list(result_summary.channel_width_m, n_xs),
+        "manning_ch_present": _ok_list(result_summary.manning_n_ch_values, n_xs),
+        "manning_lob_present": _ok_list(result_summary.manning_n_lob_values, n_xs),
+        "manning_rob_present": _ok_list(result_summary.manning_n_rob_values, n_xs),
+        "reach_lengths_channel_present": _ok_list(result_summary.reach_lengths_m, n_xs),
+        "reach_lengths_lob_present": _ok_list(result_summary.reach_lengths_lob_m, n_xs),
+        "reach_lengths_rob_present": _ok_list(result_summary.reach_lengths_rob_m, n_xs),
+        "bank_stations_present": _ok_list(result_summary.left_bank_m, n_xs) and _ok_list(result_summary.right_bank_m, n_xs),
+        "xs_profiles_present": bool(result_summary.xs_profiles),
+    }
+    return report
+
+
+
+
+def _detect_unit_system_from_hdf(hdf: h5py.File) -> tuple[str, str]:
+    """从 HDF 根属性读取单位制，返回 (unit_system, source_description)."""
+    attr_name = "Units System"
+    if attr_name not in hdf.attrs:
+        return "english", "hdf root attr missing"
+
+    raw = hdf.attrs[attr_name]
+    if isinstance(raw, np.ndarray):
+        raw = raw[0] if raw.size > 0 else b""
+    text = _decode_bytes(raw)
+    lower = text.lower()
+
+    if "si" in lower:
+        return "si", f'hdf root attr "{attr_name}"={text}'
+    if "us" in lower or "customary" in lower or "english" in lower:
+        return "english", f'hdf root attr "{attr_name}"={text}'
+
+    return "english", f'hdf root attr "{attr_name}" unrecognized: {text} (fallback english)'
+
+
+def generate_parameter_completeness_report(result_summary: HECRASResultSummary) -> dict[str, bool]:
+    """生成关键参数完整性报告"""
+    n_xs = result_summary.n_cross_sections
+
+    def _ok_list(v: list[float] | None, exact_len: int | None = None) -> bool:
+        if v is None:
+            return False
+        if exact_len is not None:
+            return len(v) == exact_len
+        return len(v) > 0
+
+    report = {
+        "unit_system_detected": result_summary.unit_system in ("si", "english"),
+        "unit_system_source_present": bool(result_summary.unit_system_source),
+        "water_surface_present": bool(result_summary.water_surface_m and len(result_summary.water_surface_m) > 0),
+        "flow_present": bool(result_summary.flow_m3s and len(result_summary.flow_m3s) > 0),
+        "energy_grade_present": bool(result_summary.energy_grade_m) if result_summary.mode == "steady" else True,
+        "bed_elevation_present": _ok_list(result_summary.bed_elevation_m, n_xs),
+        "channel_width_present": _ok_list(result_summary.channel_width_m, n_xs),
+        "manning_ch_present": _ok_list(result_summary.manning_n_ch_values, n_xs),
+        "manning_lob_present": _ok_list(result_summary.manning_n_lob_values, n_xs),
+        "manning_rob_present": _ok_list(result_summary.manning_n_rob_values, n_xs),
+        "reach_lengths_channel_present": _ok_list(result_summary.reach_lengths_m, n_xs),
+        "reach_lengths_lob_present": _ok_list(result_summary.reach_lengths_lob_m, n_xs),
+        "reach_lengths_rob_present": _ok_list(result_summary.reach_lengths_rob_m, n_xs),
+        "bank_stations_present": _ok_list(result_summary.left_bank_m, n_xs) and _ok_list(result_summary.right_bank_m, n_xs),
+        "xs_profiles_present": bool(result_summary.xs_profiles),
+    }
+    return report
+
+
+
+
+def _detect_unit_system_from_hdf(hdf: h5py.File) -> tuple[str, str]:
+    """从 HDF 根属性读取单位制，返回 (unit_system, source_description)."""
+    attr_name = "Units System"
+    if attr_name not in hdf.attrs:
+        return "english", "hdf root attr missing"
+
+    raw = hdf.attrs[attr_name]
+    if isinstance(raw, np.ndarray):
+        raw = raw[0] if raw.size > 0 else b""
+    text = _decode_bytes(raw)
+    lower = text.lower()
+
+    if "si" in lower:
+        return "si", f'hdf root attr "{attr_name}"={text}'
+    if "us" in lower or "customary" in lower or "english" in lower:
+        return "english", f'hdf root attr "{attr_name}"={text}'
+
+    return "english", f'hdf root attr "{attr_name}" unrecognized: {text} (fallback english)'
+
+
+def generate_parameter_completeness_report(result_summary: HECRASResultSummary) -> dict[str, bool]:
+    """生成关键参数完整性报告"""
+    n_xs = result_summary.n_cross_sections
+
+    def _ok_list(v: list[float] | None, exact_len: int | None = None) -> bool:
+        if v is None:
+            return False
+        if exact_len is not None:
+            return len(v) == exact_len
+        return len(v) > 0
+
+    report = {
+        "unit_system_detected": result_summary.unit_system in ("si", "english"),
+        "unit_system_source_present": bool(result_summary.unit_system_source),
+        "water_surface_present": bool(result_summary.water_surface_m and len(result_summary.water_surface_m) > 0),
+        "flow_present": bool(result_summary.flow_m3s and len(result_summary.flow_m3s) > 0),
+        "energy_grade_present": bool(result_summary.energy_grade_m) if result_summary.mode == "steady" else True,
+        "bed_elevation_present": _ok_list(result_summary.bed_elevation_m, n_xs),
+        "channel_width_present": _ok_list(result_summary.channel_width_m, n_xs),
+        "manning_ch_present": _ok_list(result_summary.manning_n_ch_values, n_xs),
+        "manning_lob_present": _ok_list(result_summary.manning_n_lob_values, n_xs),
+        "manning_rob_present": _ok_list(result_summary.manning_n_rob_values, n_xs),
+        "reach_lengths_channel_present": _ok_list(result_summary.reach_lengths_m, n_xs),
+        "reach_lengths_lob_present": _ok_list(result_summary.reach_lengths_lob_m, n_xs),
+        "reach_lengths_rob_present": _ok_list(result_summary.reach_lengths_rob_m, n_xs),
+        "bank_stations_present": _ok_list(result_summary.left_bank_m, n_xs) and _ok_list(result_summary.right_bank_m, n_xs),
+        "xs_profiles_present": bool(result_summary.xs_profiles),
+    }
+    return report
+
+
+
+
+def _detect_unit_system_from_hdf(hdf: h5py.File) -> tuple[str, str]:
+    """从 HDF 根属性读取单位制，返回 (unit_system, source_description)."""
+    attr_name = "Units System"
+    if attr_name not in hdf.attrs:
+        return "english", "hdf root attr missing"
+
+    raw = hdf.attrs[attr_name]
+    if isinstance(raw, np.ndarray):
+        raw = raw[0] if raw.size > 0 else b""
+    text = _decode_bytes(raw)
+    lower = text.lower()
+
+    if "si" in lower:
+        return "si", f'hdf root attr "{attr_name}"={text}'
+    if "us" in lower or "customary" in lower or "english" in lower:
+        return "english", f'hdf root attr "{attr_name}"={text}'
+
+    return "english", f'hdf root attr "{attr_name}" unrecognized: {text} (fallback english)'
+
+
+def generate_parameter_completeness_report(result_summary: HECRASResultSummary) -> dict[str, bool]:
+    """生成关键参数完整性报告"""
+    n_xs = result_summary.n_cross_sections
+
+    def _ok_list(v: list[float] | None, exact_len: int | None = None) -> bool:
+        if v is None:
+            return False
+        if exact_len is not None:
+            return len(v) == exact_len
+        return len(v) > 0
+
+    report = {
+        "unit_system_detected": result_summary.unit_system in ("si", "english"),
+        "unit_system_source_present": bool(result_summary.unit_system_source),
+        "water_surface_present": bool(result_summary.water_surface_m and len(result_summary.water_surface_m) > 0),
+        "flow_present": bool(result_summary.flow_m3s and len(result_summary.flow_m3s) > 0),
+        "energy_grade_present": bool(result_summary.energy_grade_m) if result_summary.mode == "steady" else True,
+        "bed_elevation_present": _ok_list(result_summary.bed_elevation_m, n_xs),
+        "channel_width_present": _ok_list(result_summary.channel_width_m, n_xs),
+        "manning_ch_present": _ok_list(result_summary.manning_n_ch_values, n_xs),
+        "manning_lob_present": _ok_list(result_summary.manning_n_lob_values, n_xs),
+        "manning_rob_present": _ok_list(result_summary.manning_n_rob_values, n_xs),
+        "reach_lengths_channel_present": _ok_list(result_summary.reach_lengths_m, n_xs),
+        "reach_lengths_lob_present": _ok_list(result_summary.reach_lengths_lob_m, n_xs),
+        "reach_lengths_rob_present": _ok_list(result_summary.reach_lengths_rob_m, n_xs),
+        "bank_stations_present": _ok_list(result_summary.left_bank_m, n_xs) and _ok_list(result_summary.right_bank_m, n_xs),
+        "xs_profiles_present": bool(result_summary.xs_profiles),
+    }
+    return report
 
 
 def extract_hecras_result_summary(
@@ -594,11 +812,17 @@ def extract_hecras_result_summary(
         raise FileNotFoundError(f"HDF not found: {hdf_p}")
 
     prj_p = Path(project_file) if project_file else None
-    unit_system = _detect_unit_system(prj_p)
-    lf = _length_factor(unit_system)
-    qf = _flow_factor(unit_system)
 
     with h5py.File(hdf_p, "r") as hdf:
+        unit_system, unit_system_source = _detect_unit_system_from_hdf(hdf)
+        if unit_system_source == "hdf root attr missing":
+            unit_system = _detect_unit_system(prj_p)
+            if prj_p and prj_p.exists():
+                unit_system_source = f"project file: {prj_p}"
+            else:
+                unit_system_source = "default english (no hdf attr/project)"
+        lf = _length_factor(unit_system)
+        qf = _flow_factor(unit_system)
         # --- Try steady first ---
         steady_base = "Results/Steady/Output/Output Blocks/Base Output/Steady Profiles/Cross Sections"
         if f"{steady_base}/Water Surface" in hdf:
@@ -622,9 +846,12 @@ def extract_hecras_result_summary(
 
             bridges = _extract_bridge_params(hdf, lf) if has_structures else []
 
-            return HECRASResultSummary(
+            manning_n_ch = xs_attrs.get("manning_n_ch_values")
+            
+            summary = HECRASResultSummary(
                 mode="steady",
                 unit_system=unit_system,
+                unit_system_source=unit_system_source,
                 hdf_path=str(hdf_p),
                 n_cross_sections=len(stations_m),
                 n_profiles=len(profile_names),
@@ -637,10 +864,13 @@ def extract_hecras_result_summary(
                 profile_names=profile_names,
                 bed_elevation_m=bed_elev,
                 manning_n_values=manning_n,
+                manning_n_ch_values=manning_n_ch if manning_n_ch else manning_n,
                 channel_width_m=width,
                 has_structures=has_structures,
                 xs_profiles=xs_profiles,
                 reach_lengths_m=xs_attrs.get("reach_lengths_m"),
+                reach_lengths_lob_m=xs_attrs.get("reach_lengths_lob_m"),
+                reach_lengths_rob_m=xs_attrs.get("reach_lengths_rob_m"),
                 left_bank_m=xs_attrs.get("left_bank_m"),
                 right_bank_m=xs_attrs.get("right_bank_m"),
                 contraction_coefs=xs_attrs.get("contraction_coefs"),
@@ -648,7 +878,10 @@ def extract_hecras_result_summary(
                 manning_n_lob_values=xs_attrs.get("manning_n_lob_values"),
                 manning_n_rob_values=xs_attrs.get("manning_n_rob_values"),
                 bridges=bridges if bridges else None,
+                parameter_completeness=None,
             )
+            summary.parameter_completeness = generate_parameter_completeness_report(summary)
+            return summary
 
         # --- Unsteady fallback ---
         us_base = "Results/Unsteady/Output/Output Blocks/Base Output/Unsteady Time Series/Cross Sections"
@@ -668,9 +901,12 @@ def extract_hecras_result_summary(
         xs_profiles = _try_read_xs_profiles(hdf, lf)
         xs_attrs = _try_read_xs_attributes(hdf, lf)
 
-        return HECRASResultSummary(
+        manning_n_ch = xs_attrs.get("manning_n_ch_values")
+        
+        summary = HECRASResultSummary(
             mode="unsteady",
             unit_system=unit_system,
+            unit_system_source=unit_system_source,
             hdf_path=str(hdf_p),
             n_cross_sections=len(stations_m),
             n_profiles=len(ws),
@@ -683,17 +919,23 @@ def extract_hecras_result_summary(
             profile_names=[f"timestep_{i}" for i in range(len(ws))],
             bed_elevation_m=bed_elev,
             manning_n_values=manning_n,
+            manning_n_ch_values=manning_n_ch if manning_n_ch else manning_n,
             channel_width_m=width,
             has_structures=has_structures,
             xs_profiles=xs_profiles,
             reach_lengths_m=xs_attrs.get("reach_lengths_m"),
+            reach_lengths_lob_m=xs_attrs.get("reach_lengths_lob_m"),
+            reach_lengths_rob_m=xs_attrs.get("reach_lengths_rob_m"),
             left_bank_m=xs_attrs.get("left_bank_m"),
             right_bank_m=xs_attrs.get("right_bank_m"),
             contraction_coefs=xs_attrs.get("contraction_coefs"),
             expansion_coefs=xs_attrs.get("expansion_coefs"),
             manning_n_lob_values=xs_attrs.get("manning_n_lob_values"),
             manning_n_rob_values=xs_attrs.get("manning_n_rob_values"),
+            parameter_completeness=None,
         )
+        summary.parameter_completeness = generate_parameter_completeness_report(summary)
+        return summary
 
 
 def _try_read_bed_elevation(hdf: h5py.File, lf: float) -> list[float] | None:
@@ -735,51 +977,81 @@ def _try_read_bed_elevation(hdf: h5py.File, lf: float) -> list[float] | None:
 def _try_read_xs_attributes(hdf: h5py.File, lf: float) -> dict[str, list]:
     """Read per-XS attributes from Geometry/Cross Sections/Attributes.
 
-    Returns dict with reach_lengths_m, left_bank_m, right_bank_m,
-    contraction_coefs, expansion_coefs, manning_n_lob_values, manning_n_rob_values.
+    Returns dict with reach_lengths_m, reach_lengths_lob_m, reach_lengths_rob_m,
+    left_bank_m, right_bank_m, contraction_coefs, expansion_coefs,
+    manning_n_lob_values, manning_n_ch_values, manning_n_rob_values.
     """
-    result: dict[str, list] = {}
-    for attr_path in ["Geometry/Cross Sections/Attributes"]:
-        if attr_path not in hdf:
-            continue
-        attrs = hdf[attr_path][:]
-        if "Len Channel" in attrs.dtype.names:
-            result["reach_lengths_m"] = (np.asarray(attrs["Len Channel"], dtype=float) * lf).tolist()
-        if "Left Bank" in attrs.dtype.names:
-            result["left_bank_m"] = (np.asarray(attrs["Left Bank"], dtype=float) * lf).tolist()
-        if "Right Bank" in attrs.dtype.names:
-            result["right_bank_m"] = (np.asarray(attrs["Right Bank"], dtype=float) * lf).tolist()
-        if "Contr" in attrs.dtype.names:
-            result["contraction_coefs"] = np.asarray(attrs["Contr"], dtype=float).tolist()
-        if "Expan" in attrs.dtype.names:
-            result["expansion_coefs"] = np.asarray(attrs["Expan"], dtype=float).tolist()
-        break
+    import logging
 
-    # Read per-XS LOB and ROB Manning n from Manning n Info/Values dataset
+    logger = logging.getLogger(__name__)
+    result: dict[str, list] = {}
+
+    attr_path = "Geometry/Cross Sections/Attributes"
+    if attr_path in hdf:
+        attrs = hdf[attr_path][:]
+        names = set(attrs.dtype.names or [])
+
+        len_channel: list[float] | None = None
+        if "Len Channel" in names:
+            len_channel = (np.asarray(attrs["Len Channel"], dtype=float) * lf).tolist()
+            result["reach_lengths_m"] = len_channel
+
+        if "Len Left" in names:
+            result["reach_lengths_lob_m"] = (np.asarray(attrs["Len Left"], dtype=float) * lf).tolist()
+        elif len_channel is not None:
+            result["reach_lengths_lob_m"] = list(len_channel)
+            logger.info("Len Left missing; fallback to Len Channel for LOB reach lengths.")
+        else:
+            logger.warning("Len Left and Len Channel both missing in Geometry/Cross Sections/Attributes.")
+
+        if "Len Right" in names:
+            result["reach_lengths_rob_m"] = (np.asarray(attrs["Len Right"], dtype=float) * lf).tolist()
+        elif len_channel is not None:
+            result["reach_lengths_rob_m"] = list(len_channel)
+            logger.info("Len Right missing; fallback to Len Channel for ROB reach lengths.")
+        else:
+            logger.warning("Len Right and Len Channel both missing in Geometry/Cross Sections/Attributes.")
+
+        if "Left Bank" in names:
+            result["left_bank_m"] = (np.asarray(attrs["Left Bank"], dtype=float) * lf).tolist()
+        if "Right Bank" in names:
+            result["right_bank_m"] = (np.asarray(attrs["Right Bank"], dtype=float) * lf).tolist()
+        if "Contr" in names:
+            result["contraction_coefs"] = np.asarray(attrs["Contr"], dtype=float).tolist()
+        if "Expan" in names:
+            result["expansion_coefs"] = np.asarray(attrs["Expan"], dtype=float).tolist()
+
+    # Read per-XS LOB / CH / ROB Manning n from Manning n Info/Values dataset
     mn_info_path = "Geometry/Cross Sections/Manning's n Info"
     mn_vals_path = "Geometry/Cross Sections/Manning's n Values"
     if mn_info_path in hdf and mn_vals_path in hdf:
         mn_info = hdf[mn_info_path][:]
         mn_vals = np.asarray(hdf[mn_vals_path][:], dtype=float)
+
         n_lob_list: list[float] = []
+        n_ch_list: list[float] = []
         n_rob_list: list[float] = []
+
         for row in mn_info:
             start = int(row[0])
             count = int(row[1])
-            if count >= 3 and start + count <= len(mn_vals):
-                # HEC-RAS Manning n order: first = LOB station, last = ROB station
-                # Values column index 1 is the n value
-                n_lob_list.append(float(mn_vals[start, 1]))
-                n_rob_list.append(float(mn_vals[start + count - 1, 1]))
-            elif count >= 1 and start < len(mn_vals):
-                n_all = float(mn_vals[start, 1])
-                n_lob_list.append(n_all)
-                n_rob_list.append(n_all)
+
+            if count >= 1 and start + count <= len(mn_vals):
+                lob_idx = start
+                rob_idx = start + count - 1
+                ch_idx = start + (count // 2)  # 中间列（中间条目）作为 Channel 糙率
+
+                n_lob_list.append(float(mn_vals[lob_idx, 1]))
+                n_ch_list.append(float(mn_vals[ch_idx, 1]))
+                n_rob_list.append(float(mn_vals[rob_idx, 1]))
             else:
                 n_lob_list.append(0.0)
+                n_ch_list.append(0.0)
                 n_rob_list.append(0.0)
+
         if n_lob_list:
             result["manning_n_lob_values"] = n_lob_list
+            result["manning_n_ch_values"] = n_ch_list
             result["manning_n_rob_values"] = n_rob_list
 
     return result
@@ -942,11 +1214,13 @@ def _extract_bridge_params(hdf: h5py.File, lf: float) -> list[dict]:
         # Deck and low-chord elevation from profile data
         deck_elev = 0.0
         low_chord_elev = 0.0
+        bridge_opening_stations: list[float] = []
+        bridge_opening_elevations: list[float] = []
         if profile_data is not None and table_info is not None and idx < len(table_info):
             ti = table_info[idx]
             ti_names = ti.dtype.names if hasattr(ti, "dtype") else []
 
-            # US BR Lid Profile = 桥面板轮廓
+            # US BR Lid Profile = 桥面板轮廓（包含桥面板+桥底完整 station-elevation 数据）
             lid_idx_name = next(
                 (n for n in (ti_names or []) if "lid" in n.lower() and "index" in n.lower()), None
             )
@@ -957,7 +1231,11 @@ def _extract_bridge_params(hdf: h5py.File, lf: float) -> list[dict]:
                 lid_start = int(ti[lid_idx_name])
                 lid_count = int(ti[lid_cnt_name])
                 if lid_count > 0 and lid_start + lid_count <= len(profile_data):
-                    deck_elev = float(np.max(profile_data[lid_start:lid_start + lid_count, 1])) * lf
+                    lid_profile = profile_data[lid_start:lid_start + lid_count]
+                    deck_elev = float(np.max(lid_profile[:, 1])) * lf
+                    # 保存 opening 轮廓供 solver 构造 NaturalSection 使用
+                    bridge_opening_stations = (lid_profile[:, 0] * lf).tolist()
+                    bridge_opening_elevations = (lid_profile[:, 1] * lf).tolist()
 
             # US BR Profile = 桥底（低弦）
             br_idx_name = next(
@@ -1041,7 +1319,7 @@ def _extract_bridge_params(hdf: h5py.File, lf: float) -> list[dict]:
             else 5.0  # fallback 5 m
         )
 
-        bridges.append({
+        bridge_dict: dict = {
             "us_rs": us_rs,
             "ds_rs": ds_rs,
             "deck_elevation_m": deck_elev,
@@ -1053,7 +1331,12 @@ def _extract_bridge_params(hdf: h5py.File, lf: float) -> list[dict]:
             "pier_loss_coef": pier_loss_coef,
             "contraction_coef": contraction_coef,
             "expansion_coef": expansion_coef,
-        })
+        }
+        # 桥面板 opening 轮廓（用于 solver 构造 NaturalSection 计算有效过水面积）
+        if len(bridge_opening_stations) > 2:
+            bridge_dict["bridge_opening_stations"] = bridge_opening_stations
+            bridge_dict["bridge_opening_elevations"] = bridge_opening_elevations
+        bridges.append(bridge_dict)
 
     return bridges
 

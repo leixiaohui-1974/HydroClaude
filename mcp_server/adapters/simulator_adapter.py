@@ -192,6 +192,10 @@ class HydroClaudeSimulator:
                 "manning_n_lob": xs_data.get("manning_n_lob"),
                 "manning_n_rob": xs_data.get("manning_n_rob"),
                 "bank_stations": xs_data.get("bank_stations"),
+                # 桥梁参数（HEC-RAS Energy Method）
+                "bridges": xs_data.get("bridges"),
+                # 断面站点标签，用于桥梁 RS 到索引的映射
+                "stations": xs_data.get("stations"),
             }
 
         else:
@@ -418,6 +422,8 @@ class HydroClaudeSimulator:
             bed_elevs = xs_data.get("bed_elevations") or None
             manning_vals = xs_data.get("manning_ns") or None
 
+            _bridges = xs_data.get("bridges") or None
+            _xs_stations = xs_data.get("stations") or None
             solver = SteadyProfileSolver(
                 length=length, B=B, S0=S0, n=n,
                 cross_sections=cross_sections,
@@ -429,7 +435,11 @@ class HydroClaudeSimulator:
                 manning_n_lob=xs_data.get("manning_n_lob") or None,
                 manning_n_rob=xs_data.get("manning_n_rob") or None,
                 bank_stations=xs_data.get("bank_stations") or None,
+                bridges=_bridges,
             )
+            # Attach station labels for bridge RS→index resolution
+            if _xs_stations:
+                solver._xs_station_labels = list(_xs_stations)
             # multi_station 模式固定使用 standard_step（绝对水位版）
             result = solver.solve_standard_step(Q, h_downstream)
         else:
