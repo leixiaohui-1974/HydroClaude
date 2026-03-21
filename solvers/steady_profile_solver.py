@@ -434,6 +434,30 @@ class SteadyProfileSolver:
         # Reasonable W upper bound: max bed + 100m depth
         _W_MAX = float(np.max(bed)) + 100.0
         _diverge_count = 0
+        # --- Bridge index resolution -----------------------------------------
+        # Map river stations (us_rs / ds_rs strings) to XS array indices.
+        # Requires a matching xs_stations list, which comes from the stations_m
+        # field of the HEC-RAS summary (passed in via reach_lengths or external).
+        # Fallback: skip if no station labels available.
+        _bridge_at_us: dict[int, dict] = {}  # us_xs_index -> bridge dict
+        if self._bridges and hasattr(self, "_xs_station_labels") and self._xs_station_labels:
+            _labels = self._xs_station_labels
+            for _br in self._bridges:
+                _us = str(_br.get("us_rs", "")).strip()
+                _ds = str(_br.get("ds_rs", "")).strip()
+                _us_idx = next((j for j, lbl in enumerate(_labels) if str(lbl).strip() == _us), None)
+                _ds_idx = next((j for j, lbl in enumerate(_labels) if str(lbl).strip() == _ds), None)
+                if _us_idx is not None:
+                    _br_copy = dict(_br)
+                    _br_copy["us_xs_index"] = _us_idx
+                    _br_copy["ds_xs_index"] = _ds_idx
+                    _bridge_at_us[_us_idx] = _br_copy
+        # Also support bridges that already carry us_xs_index (numeric index mode)
+        elif self._bridges:
+            for _br in self._bridges:
+                if "us_xs_index" in _br:
+                    _bridge_at_us[int(_br["us_xs_index"])] = _br
+        # -----------------------------------------------------------------------
         for i in range(n_xs - 2, -1, -1):
             dx_seg = float(abs(x[i + 1] - x[i]))
             if dx_seg < 1e-6:
@@ -487,11 +511,199 @@ class SteadyProfileSolver:
             if W_trial > _W_MAX or W_trial < bed[i] - 10 or np.isnan(W_trial):
                 W_trial = W[i + 1] + (bed[i] - bed[i + 1])  # follow bed slope
                 _diverge_count += 1
+            # --- Bridge energy-method correction --------------------------------
+            # When the current upstream XS is identified as a bridge's upstream face,
+            # apply the HEC-RAS Energy Method (4-section approach):
+            #
+            #   W4 (upstream) = W1 (downstream of bridge) +
+            #       contraction loss + friction loss + pier loss + expansion loss
+            #
+            # W_trial here is the upstream face of the bridge (Section 4).
+            # W[i+1] is the downstream approach (Section 1 equivalent).
+            # Inside the bridge we model as a single 2→3 step with effective area.
+            if i in _bridge_at_us:
+                _br = _bridge_at_us[i]
+                _br_len = max(float(_br.get("bridge_length_m", 0.0)), 1.0)
+                _pier_w = max(float(_br.get("total_pier_width_m", 0.0)), 0.0)
+                _pier_k = float(_br.get("pier_loss_coef", 0.0))
+                _cc = float(_br.get("contraction_coef", 0.3))
+                _ec = float(_br.get("expansion_coef", 0.5))
+                _low_chord = float(_br.get("low_chord_elevation_m", 0.0))
+
+                # Effective flow area inside bridge: subtract pier blockage
+                h_br = max(W_trial - bed[i], 0.01)
+                A_br, _P_br, _R_br, _T_br = self._get_geometry(h_br, i)
+                # Pier area approximation: pier_width * depth
+                A_pier = _pier_w * h_br
+                A_eff = max(A_br - A_pier, A_br * 0.5)  # allow max 50% blockage
+                V_eff = Q / max(A_eff, 1e-9)
+                vh_eff = V_eff ** 2 / (2.0 * self.g)
+
+                # Pier head loss (K * V^2/2g)
+                h_pier = _pier_k * vh_eff
+
+                # Friction loss through bridge opening
+                K_br, _alpha_br = self._compute_subdivided_conveyance(h_br, i)
+                Sf_br = (Q / K_br) ** 2 if K_br > 0 else self.compute_friction_slope(h_br, Q, i)
+                h_f_br = _br_len * Sf_br
+
+                # Velocity head at upstream approach
+                vh_us_approach = alpha_us * V_us ** 2 / (2.0 * self.g)
+                # Velocity head at downstream approach (W[i+1])
+                h_ds_app = max(W[i + 1] - bed[i + 1], 0.01)
+                A_ds_app, _, _, _ = self._get_geometry(h_ds_app, i + 1)
+                V_ds_app = Q / max(A_ds_app, 1e-9)
+                K_ds_app, alpha_ds_app = self._compute_subdivided_conveyance(h_ds_app, i + 1)
+                vh_ds_approach = alpha_ds_app * V_ds_app ** 2 / (2.0 * self.g)
+
+                # Contraction loss (entering bridge, Section 4→3)
+                dv_contr = max(vh_eff - vh_us_approach, 0.0)
+                h_contr = _cc * dv_contr
+
+                # Expansion loss (exiting bridge, Section 2→1)
+                dv_exp = max(vh_ds_approach - vh_eff, 0.0)
+                h_exp = _ec * dv_exp
+
+                # Total bridge head loss penalty added to W_trial
+                h_bridge_total = h_pier + h_f_br + h_contr + h_exp
+                W_trial = W_trial + h_bridge_total
+                # Re-apply physical limit after bridge correction
+                W_trial = max(W_trial, bed[i] + 1e-4)
+                W_trial = min(W_trial, _W_MAX)
+            # --------------------------------------------------------------------
             W[i] = W_trial
             h[i] = max(W[i] - bed[i], 0.001)
+        # ---- Mixed Flow Detection (HEC-RAS Mixed Flow Mode) -------------------
+        # 计算每个断面的弗劳德数；若存在 Fr > 1 的区段，启用混合流计算
+        froude_arr = np.zeros(n_xs)
+        for _mf_i in range(n_xs):
+            _mf_h = max(W[_mf_i] - bed[_mf_i], 0.01)
+            _mf_A, _mf_P, _mf_R, _mf_T = self._get_geometry(_mf_h, _mf_i)
+            _mf_V = Q / max(_mf_A, 1e-9)
+            _mf_D = _mf_A / max(_mf_T, 1e-9)
+            froude_arr[_mf_i] = _mf_V / np.sqrt(self.g * max(_mf_D, 1e-9))
+        _mixed_flow_flag = bool(np.any(froude_arr > 1.0))
+        if _mixed_flow_flag:
+            W, h = self._solve_mixed_flow(Q, W, bed, n_xs, x,
+                                          contraction_coef, expansion_coef)
         return {"x": x, "h": h, "W": W, "Q": np.full(n_xs, Q), "bed": bed,
-                "method": "standard_step_variable_xs"}
+                "method": "standard_step_variable_xs",
+                "mixed_flow": _mixed_flow_flag,
+                "froude": froude_arr}
     
+    # Mixed Flow Analysis (HEC-RAS Mixed Flow Mode)
+
+    def _compute_critical_depth(self, Q: float, station_index: int) -> float:
+        r"""Compute critical depth where Fr=1 (Q^2*T/(g*A^3)=1)."""
+        def _criterion(h):
+            h_safe = max(h, 1e-4)
+            A, _P, _R, T = self._get_geometry(h_safe, station_index)
+            if A <= 0.0 or T <= 0.0:
+                return -1.0
+            return Q ** 2 * T / (self.g * A ** 3) - 1.0
+        try:
+            f_lo = _criterion(0.001)
+            f_hi = _criterion(50.0)
+            if f_lo * f_hi > 0:
+                raise ValueError("no bracket")
+            y_c = brentq(_criterion, 0.001, 50.0, xtol=1e-5, maxiter=100)
+        except Exception:
+            y_c = float((Q ** 2 / (self.g * max(self.B, 1.0) ** 2)) ** (1.0 / 3.0))
+        return float(y_c)
+
+    def _solve_mixed_flow(
+        self,
+        Q: float,
+        W_subcritical: np.ndarray,
+        bed: np.ndarray,
+        n_xs: int,
+        x: np.ndarray,
+        contraction_coef: float = 0.1,
+        expansion_coef: float = 0.3,
+    ):
+        r"""Mixed flow analysis: merge sub- and supercritical profiles."""
+        # Step 1: critical depth
+        y_c = np.zeros(n_xs)
+        for i in range(n_xs):
+            y_c[i] = self._compute_critical_depth(Q, i)
+        W_critical = bed + y_c
+        # Step 2: supercritical profile (upstream to downstream)
+        W_super = np.full(n_xs, np.nan)
+        h_sub_0 = W_subcritical[0] - bed[0]
+        if h_sub_0 < y_c[0]:
+            W_super[0] = W_subcritical[0]
+        else:
+            W_super[0] = W_critical[0]
+        for i in range(1, n_xs):
+            dx_seg = float(abs(x[i] - x[i - 1]))
+            if dx_seg < 1e-6:
+                dx_seg = 1.0
+            h_us = max(W_super[i - 1] - bed[i - 1], 0.001)
+            A_us, _P_us, _R_us, _T_us = self._get_geometry(h_us, i - 1)
+            V_us = Q / max(A_us, 1e-9)
+            K_us, alpha_us = self._compute_subdivided_conveyance(h_us, i - 1)
+            Sf_us = (Q / K_us) ** 2 if K_us > 0 else self.compute_friction_slope(h_us, Q, i - 1)
+            vh_us = alpha_us * V_us ** 2 / (2.0 * self.g)
+            W_trial = max(W_super[i - 1] - 0.1, bed[i] + 0.001)
+            for _iter in range(50):
+                h_ds = max(W_trial - bed[i], 0.001)
+                A_ds, _P_ds, _R_ds, _T_ds = self._get_geometry(h_ds, i)
+                V_ds = Q / max(A_ds, 1e-9)
+                K_ds, alpha_ds = self._compute_subdivided_conveyance(h_ds, i)
+                Sf_ds = (Q / K_ds) ** 2 if K_ds > 0 else self.compute_friction_slope(h_ds, Q, i)
+                vh_ds = alpha_ds * V_ds ** 2 / (2.0 * self.g)
+                Sf_avg = min(0.5 * (Sf_us + Sf_ds), 1.0)
+                cc = contraction_coef
+                ec = expansion_coef
+                if self._contraction_coefs and i < len(self._contraction_coefs):
+                    cc = self._contraction_coefs[i]
+                if self._expansion_coefs and i < len(self._expansion_coefs):
+                    ec = self._expansion_coefs[i]
+                h_minor = cc * (vh_ds - vh_us) if vh_ds > vh_us else ec * (vh_us - vh_ds)
+                W_new = W_super[i - 1] + vh_us - vh_ds - dx_seg * Sf_avg + h_minor
+                W_new = max(W_new, bed[i] + 0.001)
+                if abs(W_new - W_trial) < 3e-4:
+                    W_trial = W_new
+                    break
+                W_trial = 0.5 * (W_trial + W_new)
+            W_super[i] = min(max(W_trial, bed[i] + 0.001), W_critical[i])
+        # Step 3: select physically correct profile
+        W_final = np.copy(W_subcritical)
+        for i in range(n_xs):
+            if W_subcritical[i] - bed[i] < y_c[i] * 0.99:
+                W_final[i] = W_super[i]
+        # Step 4: hydraulic jump detection via momentum function
+        def _momentum(h_val, idx):
+            A, _P, _R, T = self._get_geometry(max(h_val, 0.001), idx)
+            y_bar = A / max(T, 1e-9)
+            return Q ** 2 / (self.g * max(A, 1e-9)) + A * y_bar
+        in_supercritical = False
+        jump_indices = []
+        for i in range(n_xs - 1, -1, -1):
+            h_f = W_final[i] - bed[i]
+            A_f, _P_f, _R_f, T_f = self._get_geometry(max(h_f, 0.001), i)
+            fr_f = (Q / max(A_f, 1e-9)) / np.sqrt(self.g * max(A_f / max(T_f, 1e-9), 1e-9))
+            if fr_f > 1.0 and not in_supercritical:
+                in_supercritical = True
+            elif fr_f <= 1.0 and in_supercritical:
+                jump_indices.append(i + 1)
+                in_supercritical = False
+        for j_idx in jump_indices:
+            if j_idx >= n_xs:
+                continue
+            h_super_j = W_super[j_idx] - bed[j_idx]
+            M_super_j = _momentum(h_super_j, j_idx)
+            def _mom_res(h_seq, _M=M_super_j, _idx=j_idx):
+                return _momentum(h_seq, _idx) - _M
+            try:
+                h_seq = brentq(_mom_res, y_c[j_idx], max(y_c[j_idx] * 10.0, 20.0),
+                    xtol=1e-4, maxiter=50)
+                W_final[j_idx] = bed[j_idx] + h_seq
+            except Exception:
+                W_final[j_idx] = W_subcritical[j_idx]
+        h_final = np.maximum(W_final - bed, 0.001)
+        return W_final, h_final
+
     # General solve entry
 
     def solve_without_structures(self, Q: float, h_downstream: float, nx: int = 201, method: str = "standard_step") -> Dict:
