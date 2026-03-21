@@ -565,6 +565,8 @@ class HECRASResultSummary:
     # Per-XS three-zone Manning n (HEC-RAS LOB / Channel / ROB)
     manning_n_lob_values: list[float] | None = None
     manning_n_rob_values: list[float] | None = None
+    # Bridge parameters extracted from HEC-RAS HDF Geometry/Structures
+    bridges: list[dict] | None = None  # list of bridge parameter dicts
 
     def to_dict(self) -> dict[str, Any]:
         return {k: v for k, v in self.__dict__.items()}
@@ -618,6 +620,8 @@ def extract_hecras_result_summary(
 
             xs_attrs = _try_read_xs_attributes(hdf, lf)
 
+            bridges = _extract_bridge_params(hdf, lf) if has_structures else []
+
             return HECRASResultSummary(
                 mode="steady",
                 unit_system=unit_system,
@@ -643,6 +647,7 @@ def extract_hecras_result_summary(
                 expansion_coefs=xs_attrs.get("expansion_coefs"),
                 manning_n_lob_values=xs_attrs.get("manning_n_lob_values"),
                 manning_n_rob_values=xs_attrs.get("manning_n_rob_values"),
+                bridges=bridges if bridges else None,
             )
 
         # --- Unsteady fallback ---
@@ -884,6 +889,174 @@ def _estimate_reach_length(
     return max(float(n_xs) * 100.0, 100.0)
 
 
+
+def _extract_bridge_params(hdf: h5py.File, lf: float) -> list[dict]:
+    """Extract bridge parameters from HEC-RAS HDF Geometry/Structures.
+
+    Returns a list of bridge parameter dicts with keys:
+        us_rs, ds_rs, deck_elevation_m, low_chord_elevation_m,
+        opening_height_m, bridge_length_m, n_piers,
+        total_pier_width_m, pier_loss_coef,
+        contraction_coef, expansion_coef.
+    """
+    bridges: list[dict] = []
+
+    # HEC-RAS stores structure data under Geometry/Structures/Attributes
+    attr_path = "Geometry/Structures/Attributes"
+    if attr_path not in hdf:
+        return bridges
+
+    attrs = hdf[attr_path][:]
+
+    profile_data = (
+        hdf["Geometry/Structures/Profile Data"][:]
+        if "Geometry/Structures/Profile Data" in hdf
+        else None
+    )
+    table_info = (
+        hdf["Geometry/Structures/Table Info"][:]
+        if "Geometry/Structures/Table Info" in hdf
+        else None
+    )
+    pier_attrs = (
+        hdf["Geometry/Structures/Pier Attributes"][:]
+        if "Geometry/Structures/Pier Attributes" in hdf
+        else None
+    )
+    pier_data = (
+        hdf["Geometry/Structures/Pier Data"][:]
+        if "Geometry/Structures/Pier Data" in hdf
+        else None
+    )
+
+    for idx, sa in enumerate(attrs):
+        # Filter to Bridge type only
+        stype_raw = sa["Type"] if "Type" in sa.dtype.names else b""
+        stype = _decode_bytes(stype_raw).strip()
+        if stype.lower() != "bridge":
+            continue
+
+        us_rs = _decode_bytes(sa["US RS"]) if "US RS" in sa.dtype.names else ""
+        ds_rs = _decode_bytes(sa["DS RS"]) if "DS RS" in sa.dtype.names else ""
+
+        # Deck and low-chord elevation from profile data
+        deck_elev = 0.0
+        low_chord_elev = 0.0
+        if profile_data is not None and table_info is not None and idx < len(table_info):
+            ti = table_info[idx]
+            ti_names = ti.dtype.names if hasattr(ti, "dtype") else []
+
+            # US BR Lid Profile = 桥面板轮廓
+            lid_idx_name = next(
+                (n for n in (ti_names or []) if "lid" in n.lower() and "index" in n.lower()), None
+            )
+            lid_cnt_name = next(
+                (n for n in (ti_names or []) if "lid" in n.lower() and "count" in n.lower()), None
+            )
+            if lid_idx_name and lid_cnt_name:
+                lid_start = int(ti[lid_idx_name])
+                lid_count = int(ti[lid_cnt_name])
+                if lid_count > 0 and lid_start + lid_count <= len(profile_data):
+                    deck_elev = float(np.max(profile_data[lid_start:lid_start + lid_count, 1])) * lf
+
+            # US BR Profile = 桥底（低弦）
+            br_idx_name = next(
+                (n for n in (ti_names or []) if "br profile" in n.lower() and "index" in n.lower()), None
+            )
+            br_cnt_name = next(
+                (n for n in (ti_names or []) if "br profile" in n.lower() and "count" in n.lower()), None
+            )
+            if br_idx_name and br_cnt_name:
+                br_start = int(ti[br_idx_name])
+                br_count = int(ti[br_cnt_name])
+                if br_count > 0 and br_start + br_count <= len(profile_data):
+                    pass  # will read below
+                elif lid_idx_name and lid_cnt_name:
+                    # Fallback: use Lid Profile min elevation as low chord
+                    _lid_s = int(ti[lid_idx_name])
+                    _lid_c = int(ti[lid_cnt_name])
+                    if _lid_c > 0 and _lid_s + _lid_c <= len(profile_data):
+                        low_chord_elev = float(np.min(profile_data[_lid_s:_lid_s + _lid_c, 1])) * lf
+                        br_count = 0  # skip next block
+                if br_count > 0 and br_start + br_count <= len(profile_data):
+                    low_chord_elev = float(np.min(profile_data[br_start:br_start + br_count, 1])) * lf
+
+        # Pier parameters
+        n_piers = 0
+        total_pier_width_m = 0.0
+        if pier_attrs is not None and pier_data is not None:
+            pier_struct_field = next(
+                (n for n in pier_attrs.dtype.names if "struct" in n.lower()),
+                None,
+            )
+            for pa in pier_attrs:
+                # Only count piers belonging to this structure (if field available)
+                if pier_struct_field is not None:
+                    struct_idx = int(pa[pier_struct_field])
+                    if struct_idx != idx:
+                        continue
+
+                ps_field = next(
+                    (n for n in pa.dtype.names if "index" in n.lower()), None
+                )
+                pc_field = next(
+                    (n for n in pa.dtype.names if "count" in n.lower()), None
+                )
+                if ps_field and pc_field:
+                    ps = int(pa[ps_field])
+                    pc = int(pa[pc_field])
+                    if pc >= 1 and ps + pc <= len(pier_data):
+                        # Pier Data column 0 = pier half-width (station coord)
+                        # The pier width is the max station value (represents half-width from center)
+                        pier_stations = pier_data[ps:ps + pc, 0]
+                        pier_width = float(np.max(pier_stations)) * 2.0 * lf  # full width = 2 × half-width
+                        total_pier_width_m += pier_width
+                        n_piers += 1
+
+        bridge_length_m = (
+            float(sa["Upstream Distance"]) * lf
+            if "Upstream Distance" in sa.dtype.names
+            else 0.0
+        )
+
+        pier_loss_coef = (
+            float(sa["BR Pier K"])
+            if "BR Pier K" in sa.dtype.names
+            else 0.0
+        )
+        contraction_coef = (
+            float(sa["BR Contraction"])
+            if "BR Contraction" in sa.dtype.names
+            else 0.3
+        )
+        expansion_coef = (
+            float(sa["BR Expansion"])
+            if "BR Expansion" in sa.dtype.names
+            else 0.5
+        )
+
+        opening_height = (
+            deck_elev - low_chord_elev
+            if deck_elev > low_chord_elev
+            else 5.0  # fallback 5 m
+        )
+
+        bridges.append({
+            "us_rs": us_rs,
+            "ds_rs": ds_rs,
+            "deck_elevation_m": deck_elev,
+            "low_chord_elevation_m": low_chord_elev,
+            "opening_height_m": opening_height,
+            "bridge_length_m": bridge_length_m,
+            "n_piers": n_piers,
+            "total_pier_width_m": total_pier_width_m,
+            "pier_loss_coef": pier_loss_coef,
+            "contraction_coef": contraction_coef,
+            "expansion_coef": expansion_coef,
+        })
+
+    return bridges
+
 def _detect_structures(hdf: h5py.File) -> bool:
     """Return True when the HDF contains *actual* hydraulic structures.
 
@@ -914,6 +1087,9 @@ def _detect_structures(hdf: h5py.File) -> bool:
         "Geometry/Structures/Culvert Groups",
         "Geometry/Structures/Bridge Data",
         "Geometry/Structures/Gate Groups",
+        "Geometry/Structures/Pier Attributes",
+        "Geometry/Structures/Pier Data",
+        "Geometry/Structures/Bridge Coefficient Attributes",
         "Geometry/Structures/Weir Data",
     ]
     for path in struct_indicators:
@@ -1160,6 +1336,7 @@ def diagnose_flow_regime(result_summary: HECRASResultSummary, g: float = 9.81) -
             "manning_n_lob": result_summary.manning_n_lob_values,
             "manning_n_rob": result_summary.manning_n_rob_values,
             "bank_stations": bank_stations_list,
+            "bridges": result_summary.bridges,
         }
     elif result_summary.channel_width_m:
         recommended_params["cross_section_data"] = {
