@@ -1271,6 +1271,183 @@ def run_exact_comparison(
     }
 
 
+def run_exact_comparison_segmented(
+    hecras_hdf_path,
+    project_file=None,
+) -> dict:
+    """对多河段（multi-river/reach）案例按 (river, reach) 分段精确求解，拼接后对比。
+
+    相较于 run_exact_comparison，本函数：
+    1. 按 (river, reach) 对 HEC-RAS 断面进行分组
+    2. 对每组独立构造 SteadyProfileSolver（正确的 Q 和下游边界）
+    3. 将各段结果拼回全局数组后计算整体 MAE
+
+    对单河段案例，等价于 run_exact_comparison。
+
+    Args:
+        hecras_hdf_path: HEC-RAS HDF 文件路径。
+        project_file: 可选项目文件路径（未使用，保持接口兼容）。
+
+    Returns:
+        dict: 同 run_exact_comparison 格式，额外包含 segments_info。
+    """
+    from hydromind_data_format import HydroMindReader
+    from physics.cross_section import NaturalSection, RectangularSection
+    from solvers.steady_profile_solver import SteadyProfileSolver
+
+    reader = HydroMindReader(hecras_hdf_path)
+    xs_records = reader.read_cross_sections()
+    results = reader.read_steady_results()
+
+    if not xs_records or not results:
+        return {"error": "No cross-sections or results found"}
+
+    n_xs = len(xs_records)
+    ws_hecras = results.get("WaterSurfaceM")
+    flow_hecras = results.get("FlowM3S")
+    profile_names = results.get("profile_names", [])
+
+    if ws_hecras is None:
+        return {"error": "No WaterSurface results"}
+
+    # 按 (river, reach) 分组，保持原始顺序
+    segments: dict[tuple, list[int]] = {}
+    for idx, rec in enumerate(xs_records):
+        key = (rec.river, rec.reach)
+        segments.setdefault(key, []).append(idx)
+
+    profile_results = []
+    for pi in range(len(profile_names)):
+        ws_hec = np.asarray(ws_hecras[pi], dtype=float)
+        flow_hec = (
+            np.asarray(flow_hecras[pi], dtype=float)
+            if flow_hecras is not None
+            else np.full(n_xs, 10.0)
+        )
+
+        W_combined = np.full(n_xs, np.nan)
+        segments_info = []
+
+        for (river, reach), indices in segments.items():
+            recs_seg = [xs_records[i] for i in indices]
+            n_seg = len(indices)
+
+            # 构造分段 NaturalSection 数组
+            cross_sections_seg = []
+            bed_elevations_seg = []
+            manning_ns_seg = []
+            reach_lengths_seg = []
+            contraction_coefs_seg = []
+            expansion_coefs_seg = []
+
+            for rec in recs_seg:
+                if rec.sta_elev_stations and len(rec.sta_elev_stations) > 2:
+                    xs = NaturalSection(
+                        f"xs_{rec.station}",
+                        elevations=np.array(rec.sta_elev_elevations),
+                        distances=np.array(rec.sta_elev_stations),
+                    )
+                else:
+                    width = rec.right_bank_m - rec.left_bank_m
+                    if width < 1.0:
+                        width = 10.0
+                    xs = RectangularSection(f"xs_{rec.station}", width)
+
+                cross_sections_seg.append(xs)
+                bed_elevations_seg.append(rec.bed_elevation_m)
+                manning_ns_seg.append(rec.manning_n_channel)
+                reach_lengths_seg.append(rec.reach_length_m)
+                contraction_coefs_seg.append(rec.contraction_coef)
+                expansion_coefs_seg.append(rec.expansion_coef)
+
+            total_length_seg = sum(reach_lengths_seg) if reach_lengths_seg else 1000.0
+            avg_slope_seg = (
+                abs(bed_elevations_seg[0] - bed_elevations_seg[-1])
+                / max(total_length_seg, 1.0)
+                if len(bed_elevations_seg) > 1
+                else 0.001
+            )
+            avg_manning_seg = float(np.mean(manning_ns_seg)) if manning_ns_seg else 0.03
+
+            solver_seg = SteadyProfileSolver(
+                length=total_length_seg,
+                B=10.0,
+                S0=avg_slope_seg,
+                n=avg_manning_seg,
+                cross_sections=cross_sections_seg,
+                bed_elevations=bed_elevations_seg,
+                manning_ns=manning_ns_seg,
+                reach_lengths=reach_lengths_seg,
+                contraction_coefs=contraction_coefs_seg,
+                expansion_coefs=expansion_coefs_seg,
+            )
+
+            # 精确边界条件：用本段第一断面流量和最后断面下游水深
+            Q_seg = float(flow_hec[indices[0]])
+            h_ds_seg = float(ws_hec[indices[-1]] - bed_elevations_seg[-1])
+            h_ds_seg = max(h_ds_seg, 0.01)
+
+            try:
+                sol = solver_seg.solve_standard_step(Q_seg, h_ds_seg)
+                W_seg = np.asarray(sol["W"], dtype=float)
+                for j, global_idx in enumerate(indices):
+                    W_combined[global_idx] = W_seg[j]
+
+                ws_err_seg = np.abs(ws_hec[indices] - W_seg)
+                segments_info.append({
+                    "river": river,
+                    "reach": reach,
+                    "n_xs": n_seg,
+                    "Q_m3s": Q_seg,
+                    "h_ds_m": h_ds_seg,
+                    "mae_m": float(np.nanmean(ws_err_seg)),
+                    "max_err_m": float(np.nanmax(ws_err_seg)),
+                })
+            except Exception as exc:
+                segments_info.append({
+                    "river": river,
+                    "reach": reach,
+                    "n_xs": n_seg,
+                    "error": str(exc),
+                })
+
+        # 全线对比（仅有效点）
+        valid = np.isfinite(W_combined)
+        if not np.any(valid):
+            profile_results.append({
+                "name": profile_names[pi],
+                "error": "all segments failed",
+                "segments": segments_info,
+            })
+            continue
+
+        ws_err = np.abs(ws_hec[valid] - W_combined[valid])
+        mae = float(np.nanmean(ws_err))
+        rmse = float(np.sqrt(np.nanmean(ws_err ** 2)))
+        max_err = float(np.nanmax(ws_err))
+
+        profile_results.append({
+            "name": profile_names[pi],
+            "Q_m3s": float(np.nanmean(flow_hec)),
+            "mae_m": mae,
+            "rmse_m": rmse,
+            "max_error_m": max_err,
+            "n_valid_xs": int(np.sum(valid)),
+            "segments": segments_info,
+        })
+
+    maes = [p["mae_m"] for p in profile_results if "mae_m" in p]
+    return {
+        "n_profiles": len(profile_names),
+        "n_cross_sections": n_xs,
+        "n_segments": len(segments),
+        "profiles": profile_results,
+        "overall_mae_m": float(np.mean(maes)) if maes else float("inf"),
+        "best_mae_m": float(min(maes)) if maes else float("inf"),
+        "worst_mae_m": float(max(maes)) if maes else float("inf"),
+    }
+
+
 def _load_suite_records(pattern: str) -> list[dict[str, Any]]:
     """Load and deduplicate suite records from chunk JSON files."""
     records: dict[str, dict[str, Any]] = {}

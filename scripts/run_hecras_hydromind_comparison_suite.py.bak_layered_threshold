@@ -1,0 +1,670 @@
+"""HEC-RAS vs HydroMind principle-driven comparison pipeline.
+
+This script implements the full comparison loop:
+1. Load suite records (from run_hecras_example_suite output)
+2. For each direct_candidate/partial case, extract HEC-RAS results
+3. Diagnose flow regime using HEC-RAS hydraulic principles
+4. Run HydroMind (HydroClaudeSimulator) with diagnosed solver/params
+5. Compute unified error metrics
+6. If error exceeds threshold, iterate with constrained parameter tuning
+7. Write enriched records with comparison_metrics and tuning_history
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import logging
+import sys
+import time
+from copy import deepcopy
+from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import numpy as np
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from integration.hec_ras_adapter import (
+    HECRASResultSummary,
+    diagnose_flow_regime,
+    extract_hecras_result_summary,
+)
+from mcp_server.adapters.simulator_adapter import HydroClaudeSimulator
+
+logger = logging.getLogger(__name__)
+
+REPORTS_DIR = ROOT / "reports"
+
+# ======================================================================
+# Error metrics
+# ======================================================================
+
+@dataclass
+class ComparisonMetrics:
+    """Unified error metrics for HEC-RAS vs HydroMind comparison."""
+    wse_mae_m: float       # Water Surface Elevation MAE (m)
+    wse_rmse_m: float      # Water Surface Elevation RMSE (m)
+    wse_p95_m: float       # Water Surface Elevation 95th percentile abs error (m)
+    wse_max_error_m: float # Maximum absolute WSE error (m)
+    flow_mae_m3s: float    # Flow MAE (m3/s)
+    flow_rel_error_pct: float  # Flow mean relative error (%)
+    depth_mae_m: float     # Depth MAE (m)
+    depth_rmse_m: float    # Depth RMSE (m)
+    n_points: int          # Number of comparison points
+    pass_wse: bool         # WSE MAE below threshold
+    pass_flow: bool        # Flow relative error below threshold
+    overall_pass: bool     # Both pass
+
+    def to_dict(self) -> dict[str, Any]:
+        return self.__dict__
+
+
+def compute_comparison_metrics(
+    hecras_ws: np.ndarray,
+    hydromind_ws: np.ndarray,
+    hecras_flow: np.ndarray,
+    hydromind_flow: np.ndarray,
+    hecras_bed: np.ndarray | None = None,
+    wse_threshold_m: float = 0.10,
+    flow_threshold_pct: float = 5.0,
+) -> ComparisonMetrics:
+    """Compute unified comparison metrics between HEC-RAS and HydroMind."""
+    # Water surface elevation
+    ws_err = np.abs(hecras_ws - hydromind_ws)
+    wse_mae = float(np.nanmean(ws_err))
+    wse_rmse = float(np.sqrt(np.nanmean(ws_err**2)))
+    wse_p95 = float(np.nanpercentile(ws_err, 95))
+    wse_max = float(np.nanmax(ws_err))
+
+    # Flow
+    flow_err = np.abs(hecras_flow - hydromind_flow)
+    flow_mae = float(np.nanmean(flow_err))
+    flow_denom = np.maximum(np.abs(hecras_flow), 1e-9)
+    flow_rel = float(np.nanmean(flow_err / flow_denom) * 100.0)
+
+    # Depth (if bed available)
+    if hecras_bed is not None:
+        hecras_depth = hecras_ws - hecras_bed
+        hydromind_depth = hydromind_ws - hecras_bed
+        depth_err = np.abs(hecras_depth - hydromind_depth)
+        depth_mae = float(np.nanmean(depth_err))
+        depth_rmse = float(np.sqrt(np.nanmean(depth_err**2)))
+    else:
+        depth_mae = wse_mae
+        depth_rmse = wse_rmse
+
+    pass_wse = wse_mae <= wse_threshold_m
+    pass_flow = flow_rel <= flow_threshold_pct
+
+    return ComparisonMetrics(
+        wse_mae_m=round(wse_mae, 6),
+        wse_rmse_m=round(wse_rmse, 6),
+        wse_p95_m=round(wse_p95, 6),
+        wse_max_error_m=round(wse_max, 6),
+        flow_mae_m3s=round(flow_mae, 6),
+        flow_rel_error_pct=round(flow_rel, 4),
+        depth_mae_m=round(depth_mae, 6),
+        depth_rmse_m=round(depth_rmse, 6),
+        n_points=int(len(hecras_ws)),
+        pass_wse=pass_wse,
+        pass_flow=pass_flow,
+        overall_pass=pass_wse and pass_flow,
+    )
+
+
+# ======================================================================
+# HydroMind simulation runner
+# ======================================================================
+
+def run_hydromind_simulation(
+    params: dict[str, Any],
+    duration: float = 0.0,
+    dt: float = 0.1,
+) -> dict[str, Any]:
+    """Run a single HydroMind simulation via HydroClaudeSimulator.
+
+    Args:
+        params: Solver parameters (solver_type, length, width, etc.).
+            若 params 包含 cross_section_data 字段（由 diagnose_flow_regime 填充），
+            HydroClaudeSimulator 会自动构造对应的 CrossSection 对象并注入求解器。
+        duration: Simulation duration (0 for steady-state).
+        dt: Time step.
+
+    Returns:
+        Simulation result dict.
+    """
+    sim = HydroClaudeSimulator()
+    solver_type = params.get("solver_type", "hydrostatic")
+
+    if solver_type == "steady":
+        result = sim.simulate(params, duration=0, dt=0)
+    elif solver_type == "godunov":
+        # Godunov needs real duration for time-stepping to steady state
+        dur = duration if duration > 0 else 3600.0
+        dt_val = dt if dt > 0 else 0.5
+        result = sim.simulate(params, duration=dur, dt=dt_val)
+    else:
+        # Hydrostatic: steady-state via time march
+        dur = duration if duration > 0 else 3600.0
+        dt_val = dt if dt > 0 else 0.5
+        result = sim.simulate(params, duration=dur, dt=dt_val)
+
+    return result
+
+
+def _extract_hydromind_profile(
+    result: dict[str, Any],
+    params: dict[str, Any],
+    n_target: int,
+    hecras_bed: np.ndarray | None = None,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Extract water surface elevation and flow from HydroMind result.
+
+    HydroMind uses a relative bed coordinate (slope*length -> 0), while
+    HEC-RAS uses absolute elevation.  When hecras_bed is provided the
+    HydroMind WSE is shifted to the same datum: ws = hecras_bed + h,
+    where h is the water depth output by HydroMind.  This eliminates the
+    datum mismatch that would otherwise inflate WSE MAE by tens of metres.
+
+    Returns (ws_m, flow_m3s) arrays resampled to n_target points.
+    """
+    # Get depth and flow arrays
+    h = np.asarray(result.get("h_final", result.get("h", [])), dtype=float)
+    Q = np.asarray(result.get("Q_final", result.get("Q", [])), dtype=float)
+
+    if len(h) == 0:
+        return np.zeros(n_target), np.zeros(n_target)
+
+    length = float(params.get("length", 1000.0))
+    x = np.linspace(0, length, len(h))
+
+    # Resample depth and flow to match HEC-RAS cross-section count first
+    if len(h) != n_target:
+        x_target = np.linspace(0, length, n_target)
+        h = np.interp(x_target, x, h)
+        if len(Q) > 0:
+            Q = np.interp(x_target, x, Q)
+        x = x_target
+
+    # Flow: if scalar or empty, broadcast
+    if len(Q) == 0:
+        Q_upstream = float(params.get("Q_upstream", params.get("Q", 10.0)))
+        Q = np.full_like(h, Q_upstream)
+
+    # Compute WSE in the same datum as HEC-RAS.
+    # hecras_bed is the absolute bed elevation array from HEC-RAS.
+    # HydroMind h is water depth above bed, so ws = hecras_bed + h.
+    # Without hecras_bed, fall back to HydroMind's own relative bed so that
+    # at least the depth metric remains meaningful.
+    if hecras_bed is not None:
+        bed_ref = np.asarray(hecras_bed, dtype=float)
+        ws = bed_ref + h
+    else:
+        slope = float(params.get("slope", params.get("S0", 0.001)))
+        bed_relative = np.linspace(slope * length, 0.0, n_target)
+        ws = bed_relative + h
+
+    return ws, Q
+
+
+# ======================================================================
+# Constrained auto-tuning
+# ======================================================================
+
+# Tuning knobs in priority order (numerical first, physical last)
+TUNING_SEQUENCE = [
+    # (param_name, values_to_try, category)
+    ("nx", [201, 401, 801], "numerical"),
+    ("n_cells", [200, 400, 800], "numerical"),
+    ("method", ["shooting", "bvp"], "numerical"),
+    ("cfl", [0.5, 0.3, 0.8], "numerical"),
+    ("order", [2, 1], "numerical"),
+    # Manning's n: only ±20% from diagnosed value, with reason
+    ("manning_n", "relative_range", "physical"),
+]
+
+
+def _generate_tuning_candidates(
+    base_params: dict[str, Any],
+    diagnosis: dict[str, Any],
+) -> list[tuple[dict[str, Any], str]]:
+    """Generate candidate parameter sets for auto-tuning.
+
+    Returns list of (params, reason) tuples.
+    Numerical parameters first; Manning's n only last resort with ±20% constraint.
+    """
+    candidates: list[tuple[dict[str, Any], str]] = []
+    solver = base_params.get("solver_type", "hydrostatic")
+
+    # 1. Resolution increase
+    if solver in ("hydrostatic", "steady"):
+        for nx in [201, 401, 801]:
+            if nx != base_params.get("nx", 201):
+                p = dict(base_params)
+                p["nx"] = nx
+                candidates.append((p, f"增加空间分辨率到 nx={nx}"))
+    if solver == "godunov":
+        for nc in [200, 400, 800]:
+            if nc != base_params.get("n_cells", 200):
+                p = dict(base_params)
+                p["n_cells"] = nc
+                candidates.append((p, f"增加 Godunov 网格到 n_cells={nc}"))
+
+    # 2. Solver method switch (steady only)
+    if solver == "steady":
+        alt = "bvp" if base_params.get("method") == "shooting" else "shooting"
+        p = dict(base_params)
+        p["method"] = alt
+        candidates.append((p, f"切换求解方法到 {alt}"))
+
+    # 3. CFL adjustment (godunov)
+    if solver == "godunov":
+        for cfl in [0.3, 0.5, 0.8]:
+            if abs(cfl - base_params.get("cfl", 0.5)) > 0.05:
+                p = dict(base_params)
+                p["cfl"] = cfl
+                candidates.append((p, f"调整 CFL 到 {cfl}"))
+
+    # 4. Manning's n ±20% (physical, constrained)
+    base_n = base_params.get("manning_n", 0.025)
+    for factor, label in [(0.85, "-15%"), (1.15, "+15%"), (0.8, "-20%"), (1.2, "+20%")]:
+        adjusted_n = round(base_n * factor, 5)
+        if 0.005 <= adjusted_n <= 0.15:
+            p = dict(base_params)
+            p["manning_n"] = adjusted_n
+            candidates.append((
+                p,
+                f"调整 Manning's n 到 {adjusted_n}（{label}，原值 {base_n}，"
+                f"基于 HEC-RAS 几何值，允许因断面概化差异微调）",
+            ))
+
+    return candidates
+
+
+def auto_tune_comparison(
+    hecras_summary: HECRASResultSummary,
+    diagnosis: dict[str, Any],
+    base_params: dict[str, Any],
+    profile_index: int = 0,
+    max_iterations: int = 8,
+    wse_threshold_m: float = 0.10,
+    flow_threshold_pct: float = 5.0,
+) -> dict[str, Any]:
+    """Run the constrained auto-tuning loop.
+
+    Strategy:
+    1. Run with diagnosed parameters
+    2. If error too high, try candidates in priority order
+    3. Stop when: threshold met, improvement stalls, or budget exhausted
+
+    Returns:
+        Dict with best_params, best_metrics, tuning_history, and final status.
+    """
+    hecras_ws = np.asarray(hecras_summary.water_surface_m[profile_index], dtype=float)
+    hecras_flow = np.asarray(hecras_summary.flow_m3s[profile_index], dtype=float)
+    hecras_bed = np.asarray(hecras_summary.bed_elevation_m, dtype=float) if hecras_summary.bed_elevation_m else None
+    n_xs = len(hecras_ws)
+
+    history: list[dict[str, Any]] = []
+    best_metrics: ComparisonMetrics | None = None
+    best_params = dict(base_params)
+    best_result: dict[str, Any] = {}
+
+    # Initial run
+    try:
+        result = run_hydromind_simulation(base_params)
+        if not result.get("success", False):
+            return {
+                "status": "solver_error",
+                "error": result.get("error", "Unknown solver error"),
+                "best_params": base_params,
+                "best_metrics": None,
+                "tuning_history": [],
+            }
+        hm_ws, hm_flow = _extract_hydromind_profile(result, base_params, n_xs, hecras_bed)
+        metrics = compute_comparison_metrics(
+            hecras_ws, hm_ws, hecras_flow, hm_flow,
+            hecras_bed, wse_threshold_m, flow_threshold_pct,
+        )
+        history.append({
+            "iteration": 0,
+            "params_changed": "initial",
+            "reason": "诊断推荐参数",
+            "wse_mae_m": metrics.wse_mae_m,
+            "flow_rel_error_pct": metrics.flow_rel_error_pct,
+            "overall_pass": metrics.overall_pass,
+        })
+        best_metrics = metrics
+        best_result = result
+        if metrics.overall_pass:
+            return {
+                "status": "pass",
+                "best_params": base_params,
+                "best_metrics": metrics.to_dict(),
+                "tuning_history": history,
+                "hydromind_result": result,
+            }
+    except Exception as exc:
+        return {
+            "status": "solver_error",
+            "error": str(exc),
+            "best_params": base_params,
+            "best_metrics": None,
+            "tuning_history": [],
+        }
+
+    # Tuning loop
+    candidates = _generate_tuning_candidates(base_params, diagnosis)
+    stall_count = 0
+    for iteration, (candidate_params, reason) in enumerate(candidates[:max_iterations], start=1):
+        try:
+            result = run_hydromind_simulation(candidate_params)
+            if not result.get("success", False):
+                history.append({
+                    "iteration": iteration,
+                    "params_changed": reason,
+                    "reason": reason,
+                    "error": result.get("error", "solver failed"),
+                })
+                continue
+
+            hm_ws, hm_flow = _extract_hydromind_profile(result, candidate_params, n_xs, hecras_bed)
+            metrics = compute_comparison_metrics(
+                hecras_ws, hm_ws, hecras_flow, hm_flow,
+                hecras_bed, wse_threshold_m, flow_threshold_pct,
+            )
+            history.append({
+                "iteration": iteration,
+                "params_changed": reason,
+                "reason": reason,
+                "wse_mae_m": metrics.wse_mae_m,
+                "flow_rel_error_pct": metrics.flow_rel_error_pct,
+                "overall_pass": metrics.overall_pass,
+            })
+
+            # Check improvement
+            if best_metrics is None or metrics.wse_mae_m < best_metrics.wse_mae_m:
+                improvement = (best_metrics.wse_mae_m - metrics.wse_mae_m) if best_metrics else 0
+                best_metrics = metrics
+                best_params = candidate_params
+                best_result = result
+                stall_count = 0
+
+                if metrics.overall_pass:
+                    return {
+                        "status": "pass",
+                        "best_params": best_params,
+                        "best_metrics": metrics.to_dict(),
+                        "tuning_history": history,
+                        "hydromind_result": result,
+                    }
+            else:
+                stall_count += 1
+
+            # Stop if stalled for 3 consecutive iterations
+            if stall_count >= 3:
+                break
+
+        except Exception as exc:
+            history.append({
+                "iteration": iteration,
+                "params_changed": reason,
+                "reason": reason,
+                "error": str(exc),
+            })
+
+    final_status = "pass" if (best_metrics and best_metrics.overall_pass) else "needs_review"
+    return {
+        "status": final_status,
+        "best_params": best_params,
+        "best_metrics": best_metrics.to_dict() if best_metrics else None,
+        "tuning_history": history,
+        "hydromind_result": best_result,
+    }
+
+
+# ======================================================================
+# Suite-level orchestration
+# ======================================================================
+
+def _find_project_file(record: dict[str, Any]) -> Path | None:
+    """Locate the .prj file for a suite record."""
+    prj = record.get("project_file")
+    if prj:
+        p = Path(prj)
+        if p.exists():
+            return p
+    project_dir = record.get("project_dir")
+    if project_dir:
+        candidates = sorted(Path(project_dir).glob("*.prj"))
+        if candidates:
+            return candidates[0]
+    return None
+
+
+def run_comparison_for_record(
+    record: dict[str, Any],
+    profile_index: int = 0,
+    max_tuning_iterations: int = 8,
+    wse_threshold_m: float = 0.10,
+    flow_threshold_pct: float = 5.0,
+) -> dict[str, Any]:
+    """Run the full comparison pipeline for a single suite record.
+
+    Returns the enriched record with hecras_summary, hydromind_run,
+    comparison_metrics, and tuning_history populated.
+    """
+    record = deepcopy(record)
+
+    hdf_path = record.get("result_hdf_path")
+    if not hdf_path or not Path(hdf_path).exists():
+        record["comparison_metrics"] = {"error": "No HEC-RAS result HDF available"}
+        record["evidence"]["comparison_completed"] = False
+        return record
+
+    project_file = _find_project_file(record)
+
+    # Step 1: Extract HEC-RAS results
+    try:
+        hecras_summary = extract_hecras_result_summary(hdf_path, project_file)
+        record["hecras_summary"] = hecras_summary.to_dict()
+        record["evidence"]["hecras_hdf_verified"] = True
+    except Exception as exc:
+        record["comparison_metrics"] = {"error": f"HEC-RAS extraction failed: {exc}"}
+        record["evidence"]["comparison_completed"] = False
+        return record
+
+    # Step 2: Diagnose flow regime
+    diagnosis = diagnose_flow_regime(hecras_summary)
+    record["flow_diagnosis"] = diagnosis
+
+    # Step 3: Build initial params from diagnosis
+    base_params = dict(diagnosis.get("recommended_params", {}))
+
+    # Step 4: Run comparison + auto-tune
+    comparison_result = auto_tune_comparison(
+        hecras_summary=hecras_summary,
+        diagnosis=diagnosis,
+        base_params=base_params,
+        profile_index=profile_index,
+        max_iterations=max_tuning_iterations,
+        wse_threshold_m=wse_threshold_m,
+        flow_threshold_pct=flow_threshold_pct,
+    )
+
+    record["hydromind_run"] = {
+        "solver_type": comparison_result["best_params"].get("solver_type"),
+        "final_params": comparison_result["best_params"],
+        "status": comparison_result["status"],
+    }
+    record["comparison_metrics"] = comparison_result.get("best_metrics")
+    record["tuning_history"] = comparison_result.get("tuning_history", [])
+    record["evidence"]["hydromind_completed"] = True
+    record["evidence"]["comparison_completed"] = True
+
+    return record
+
+
+def run_comparison_suite(
+    suite_json_pattern: str = "hecras_example_suite_chunk_*.json",
+    comparability_levels: list[str] | None = None,
+    max_tuning_iterations: int = 8,
+    wse_threshold_m: float = 0.10,
+    flow_threshold_pct: float = 5.0,
+    limit: int | None = None,
+) -> dict[str, Any]:
+    """Run the comparison pipeline for all eligible cases in the suite.
+
+    Args:
+        suite_json_pattern: Glob pattern for suite chunk JSON files.
+        comparability_levels: Which levels to compare (default: direct_candidate only).
+        max_tuning_iterations: Max tuning iterations per case.
+        wse_threshold_m: WSE MAE pass threshold in meters.
+        flow_threshold_pct: Flow relative error pass threshold in percent.
+        limit: Max number of cases to process.
+
+    Returns:
+        Suite-level comparison summary with enriched records.
+    """
+    if comparability_levels is None:
+        comparability_levels = ["direct_candidate"]
+
+    # Load records from suite chunks
+    records = _load_suite_records(suite_json_pattern)
+    eligible = [
+        r for r in records
+        if r.get("status") == "computed"
+        and r.get("comparability", {}).get("level") in comparability_levels
+    ]
+
+    if limit is not None:
+        eligible = eligible[:limit]
+
+    logger.info("Comparison suite: %d eligible out of %d total records", len(eligible), len(records))
+
+    enriched_records: list[dict[str, Any]] = []
+    for idx, record in enumerate(eligible, 1):
+        logger.info("[%d/%d] Comparing: %s", idx, len(eligible), record["project_name"])
+        started = time.perf_counter()
+        try:
+            enriched = run_comparison_for_record(
+                record,
+                max_tuning_iterations=max_tuning_iterations,
+                wse_threshold_m=wse_threshold_m,
+                flow_threshold_pct=flow_threshold_pct,
+            )
+        except Exception as exc:
+            enriched = deepcopy(record)
+            enriched["comparison_metrics"] = {"error": str(exc)}
+        enriched["comparison_elapsed_seconds"] = round(time.perf_counter() - started, 2)
+        enriched_records.append(enriched)
+
+    # Aggregate statistics
+    completed = [r for r in enriched_records if r.get("evidence", {}).get("comparison_completed")]
+    passed = [r for r in completed if r.get("comparison_metrics", {}).get("overall_pass")]
+    needs_review = [r for r in completed if not r.get("comparison_metrics", {}).get("overall_pass")]
+
+    # Per-solver stats
+    solver_stats: dict[str, dict[str, Any]] = {}
+    for r in completed:
+        st = r.get("hydromind_run", {}).get("solver_type", "unknown")
+        if st not in solver_stats:
+            solver_stats[st] = {"count": 0, "pass_count": 0, "wse_mae_values": []}
+        solver_stats[st]["count"] += 1
+        metrics = r.get("comparison_metrics", {})
+        if metrics.get("overall_pass"):
+            solver_stats[st]["pass_count"] += 1
+        if metrics.get("wse_mae_m") is not None:
+            solver_stats[st]["wse_mae_values"].append(metrics["wse_mae_m"])
+
+    for st, stats in solver_stats.items():
+        vals = stats.pop("wse_mae_values")
+        stats["avg_wse_mae_m"] = round(float(np.mean(vals)), 6) if vals else None
+        stats["pass_rate"] = round(stats["pass_count"] / max(stats["count"], 1), 3)
+
+    # Top deviation cases
+    top_deviation = sorted(
+        [r for r in completed if r.get("comparison_metrics", {}).get("wse_mae_m") is not None],
+        key=lambda r: r["comparison_metrics"]["wse_mae_m"],
+        reverse=True,
+    )[:10]
+
+    summary = {
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "total_records": len(records),
+        "eligible_count": len(eligible),
+        "compared_count": len(completed),
+        "pass_count": len(passed),
+        "needs_review_count": len(needs_review),
+        "pass_rate": round(len(passed) / max(len(completed), 1), 3),
+        "wse_threshold_m": wse_threshold_m,
+        "flow_threshold_pct": flow_threshold_pct,
+        "max_tuning_iterations": max_tuning_iterations,
+        "solver_stats": solver_stats,
+        "top_deviation_cases": [
+            {
+                "project_name": r["project_name"],
+                "wse_mae_m": r["comparison_metrics"]["wse_mae_m"],
+                "solver": r.get("hydromind_run", {}).get("solver_type"),
+                "status": r.get("hydromind_run", {}).get("status"),
+            }
+            for r in top_deviation
+        ],
+        "records": enriched_records,
+    }
+    return summary
+
+
+def _load_suite_records(pattern: str) -> list[dict[str, Any]]:
+    """Load and deduplicate suite records from chunk JSON files."""
+    records: dict[str, dict[str, Any]] = {}
+    for path in sorted(REPORTS_DIR.glob(pattern)):
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        for record in payload.get("records", []):
+            records[record["project_name"]] = record
+    return sorted(records.values(), key=lambda r: (r.get("category", ""), r["project_name"]))
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="HEC-RAS vs HydroMind comparison pipeline")
+    parser.add_argument("--pattern", default="hecras_example_suite_chunk_*.json")
+    parser.add_argument("--levels", nargs="+", default=["direct_candidate"],
+                        help="Comparability levels to include")
+    parser.add_argument("--max-iterations", type=int, default=8)
+    parser.add_argument("--wse-threshold", type=float, default=0.10)
+    parser.add_argument("--flow-threshold", type=float, default=5.0)
+    parser.add_argument("--limit", type=int, default=None)
+    parser.add_argument("--output", type=Path,
+                        default=REPORTS_DIR / "hecras_hydromind_comparison.json")
+    args = parser.parse_args()
+
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+
+    summary = run_comparison_suite(
+        suite_json_pattern=args.pattern,
+        comparability_levels=args.levels,
+        max_tuning_iterations=args.max_iterations,
+        wse_threshold_m=args.wse_threshold,
+        flow_threshold_pct=args.flow_threshold,
+        limit=args.limit,
+    )
+
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    print(json.dumps({
+        "output": str(args.output),
+        "eligible_count": summary["eligible_count"],
+        "compared_count": summary["compared_count"],
+        "pass_count": summary["pass_count"],
+        "pass_rate": summary["pass_rate"],
+    }, ensure_ascii=False, indent=2))
+
+
+if __name__ == "__main__":
+    main()

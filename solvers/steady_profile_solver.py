@@ -440,8 +440,13 @@ class SteadyProfileSolver:
             K_ds, alpha_ds = self._compute_subdivided_conveyance(h_ds, i + 1)
             Sf_ds = (Q / K_ds) ** 2 if K_ds > 0 else self.compute_friction_slope(h_ds, Q, i + 1)
             vh_ds = alpha_ds * V_ds ** 2 / (2.0 * self.g)
-            W_trial = W[i + 1]
-            for _iter in range(30):
+            # 改进初始猜测：当上游床面高于下游水面时（逆坡或陡坡），
+            # 直接从 W=bed[i]+h_downstream 作为初始猜测，避免负水深震荡
+            h_init_estimate = max(W[i + 1] - bed[i + 1], 0.01)
+            W_trial = max(W[i + 1], bed[i] + h_init_estimate)
+            W_trial_prev = W_trial - 1.0  # 前一步，用于震荡检测
+            W_new = W_trial
+            for _iter in range(50):
                 h_us = max(W_trial - bed[i], 0.01)
                 h_us = min(h_us, 100.0)  # cap depth at 100m
                 A_us, _P_us, _R_us, _T_us = self._get_geometry(h_us, i)
@@ -464,8 +469,14 @@ class SteadyProfileSolver:
                 else:
                     h_minor = ec * (vh_ds - vh_us)
                 W_new = W[i + 1] + vh_ds - vh_us + dx_seg * Sf_avg + h_minor
+                # 物理下限：W 不能低于床面
+                W_new = max(W_new, bed[i] + 1e-4)
                 if abs(W_new - W_trial) < 3e-4:
                     W_trial = W_new; break
+                # 震荡检测：若 W_new 在 W_trial 两侧来回跳，改用二分步
+                if _iter >= 2 and (W_new - W_trial) * (W_trial - W_trial_prev) < 0:
+                    W_new = 0.5 * (W_trial + W_new)
+                W_trial_prev = W_trial
                 W_trial = W_new
             # Divergence protection
             if W_trial > _W_MAX or W_trial < bed[i] - 10 or np.isnan(W_trial):
