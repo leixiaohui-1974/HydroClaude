@@ -1198,10 +1198,7 @@ class SteadyProfileSolver:
             # 目标：每子步能量变化 < 0.002m，最多 50 个子步
             n_substeps = 1
             energy_change = dx_seg * Sf_ds
-            # 子步只在真正陡坡（S0 > 0.003）且能量变化大时启用
-            # 缓坡段不需要子步，且子步可能导致 brentq 找到超临界根
-            _S0_seg = abs(bed[i] - bed[i + 1]) / max(dx_seg, 0.1)
-            if energy_change > 0.005 and _S0_seg > 0.003 and not (i in _bridge_at_us):
+            if energy_change > 0.005 and not (i in _bridge_at_us):
                 n_substeps = min(50, max(1, int(energy_change / 0.002)))
 
             # 子步迭代：每步以前一子步 W 为下游，床面高程线性插值
