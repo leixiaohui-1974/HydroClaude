@@ -300,6 +300,8 @@ class SteadyProfileSolver:
 
         R = area / perimeter
         K = (1.0 / max(n, 0.001)) * area * R ** (2.0 / 3.0)
+        # TODO: 实现 HEC-RAS HP Slices 方法（水平分片积分 K），
+        # 当前使用整区 A/R 计算，对宽浅不均匀漫滩 K 偏低约 3-7%
         return float(K), float(area)
 
     def _compute_subdivided_conveyance(
