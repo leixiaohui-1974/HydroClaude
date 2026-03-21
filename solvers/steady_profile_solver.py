@@ -305,51 +305,9 @@ class SteadyProfileSolver:
         if A_total <= 0.0 or P_total <= 0.0:
             return 0.0, 0.0
 
-        if n_slices <= 1:
-            R = A_total / P_total
-            K = (1.0 / max(n, 0.001)) * A_total * R ** (2.0 / 3.0)
-            return float(K), float(A_total)
-
-        # HEC-RAS HP Table 增量法：按高程递增计算 K
-        # HP Table 从最低点开始，每增加 hp_incr 高程，累积 K(h)
-        # 每层的 ΔK = (1/n) * ΔA * R_layer^(2/3)
-        # 其中 R_layer = ΔA / ΔP（该层的水力半径）
-        # K_total = Σ ΔK（从底部到水面逐层累加）
-        hp_incr = 0.3048  # 1 ft 高程增量（HEC-RAS 默认）
-
-        # 找到该区域的最低高程
-        zone_min_elev = water_level  # 初始化为水面（如果没有点在区域内）
-        for j in range(len(stations)):
-            s = float(stations[j])
-            if sta_min <= s <= sta_max:
-                zone_min_elev = min(zone_min_elev, float(elevations[j]))
-
-        if zone_min_elev >= water_level:
-            return 0.0, 0.0
-
-        # 按高程增量逐层计算
-        K_zone = 0.0
-        n_layers = max(1, int(np.ceil((water_level - zone_min_elev) / hp_incr)))
-        prev_A = 0.0
-        prev_P = 0.0
-        for layer in range(1, n_layers + 1):
-            wl_layer = min(zone_min_elev + layer * hp_incr, water_level)
-            A_layer, P_layer = self._segment_area_perimeter(
-                stations, elevations, wl_layer, sta_min, sta_max)
-            dA = A_layer - prev_A
-            dP = P_layer - prev_P
-            if dA > 0.0 and dP > 0.0:
-                R_layer = dA / dP
-                dK = (1.0 / max(n, 0.001)) * dA * R_layer ** (2.0 / 3.0)
-                K_zone += dK
-            prev_A = A_layer
-            prev_P = P_layer
-
-        if K_zone <= 0.0:
-            R = A_total / P_total
-            K_zone = (1.0 / max(n, 0.001)) * A_total * R ** (2.0 / 3.0)
-
-        return float(K_zone), float(A_total)
+        R = A_total / P_total
+        K = (1.0 / max(n, 0.001)) * A_total * R ** (2.0 / 3.0)
+        return float(K), float(A_total)
 
     def _compute_subdivided_conveyance(
         self, h: float, station_index: int
