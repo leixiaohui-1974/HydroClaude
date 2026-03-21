@@ -42,6 +42,7 @@ class SteadyProfileSolver:
         manning_n_rob=None,
         bank_stations=None,
         bridges=None,
+        lateral_inflows=None,
     ) -> None:
         """
         Args:
@@ -63,6 +64,9 @@ class SteadyProfileSolver:
             bridges: List of bridge dicts with physical parameters for energy method calculation.
                 Each dict: {us_xs_index, ds_xs_index, deck_elevation_m, low_chord_elevation_m,
                 bridge_length_m, n_piers, total_pier_width_m, pier_loss_coef, ...}
+            lateral_inflows: Per-XS lateral inflow array (m³/s). Positive = flow entering.
+                When provided, Q at each XS = Q_upstream + cumulative lateral inflows.
+                Length must match cross_sections. None = uniform Q throughout.
         """
         self.length = length
         self.B = B
@@ -80,6 +84,7 @@ class SteadyProfileSolver:
         self._manning_n_rob = manning_n_rob
         self._bank_stations = bank_stations
         self._bridges = bridges  # list[dict] with bridge physical parameters
+        self._lateral_inflows = lateral_inflows  # 逐断面区间来水 (m³/s)
 
     # Hydraulic geometry helpers
 
@@ -846,6 +851,20 @@ class SteadyProfileSolver:
                 x[k] = x[k-1] + max(rl[k-1], 0.1)
         else:
             x = np.linspace(0, self.length, n_xs)
+
+        # 逐断面流量数组：支持区间来水（lateral inflows）
+        # 断面排列：index 0 = 最上游，index n_xs-1 = 最下游
+        # 亚临界回水从下游向上游推进，流量随上游递减
+        Q_arr = np.full(n_xs, Q, dtype=float)
+        if self._lateral_inflows is not None:
+            lat = np.asarray(self._lateral_inflows, dtype=float)
+            if len(lat) >= n_xs:
+                # lateral_inflows[i] = 从 XS[i] 到 XS[i+1] 之间汇入的流量
+                # Q_arr[0] = Q (上游给定流量)
+                # Q_arr[i] = Q + sum(lateral_inflows[0:i])
+                for k in range(1, n_xs):
+                    Q_arr[k] = Q_arr[k - 1] + lat[k - 1]
+
         h = np.zeros(n_xs)
         W = np.zeros(n_xs)
         h[-1] = h_downstream
@@ -878,15 +897,23 @@ class SteadyProfileSolver:
                     _bridge_at_us[int(_br["us_xs_index"])] = _br
         # -----------------------------------------------------------------------
         for i in range(n_xs - 2, -1, -1):
+            # 逐断面流量：支持区间来水（HEC-RAS Change in Discharge）
+            # 下游断面 i+1 的流量（回水从下游向上游推进）
+            Q_ds_local = float(Q_arr[i + 1])
+            # 上游断面 i 的流量
+            Q_us_local = float(Q_arr[i])
+            # 本段使用的平均流量（HEC-RAS 在标准步中使用下游断面流量）
+            Q_seg = Q_ds_local
+
             dx_seg = float(abs(x[i + 1] - x[i]))
             if dx_seg < 1e-6:
                 dx_seg = 1.0
             h_ds = max(W[i + 1] - bed[i + 1], 0.01)
             A_ds, _P_ds, _R_ds, _T_ds = self._get_geometry(h_ds, i + 1)
-            V_ds = Q / max(A_ds, 1e-9)
+            V_ds = Q_ds_local / max(A_ds, 1e-9)
             # 三区分区输水计算 (HEC-RAS LOB/Channel/ROB)
             K_ds, alpha_ds = self._compute_subdivided_conveyance(h_ds, i + 1)
-            Sf_ds = (Q / K_ds) ** 2 if K_ds > 0 else self.compute_friction_slope(h_ds, Q, i + 1)
+            Sf_ds = (Q_ds_local / K_ds) ** 2 if K_ds > 0 else self.compute_friction_slope(h_ds, Q_ds_local, i + 1)
             vh_ds = alpha_ds * V_ds ** 2 / (2.0 * self.g)
             # --- 改进2：陡坡自适应子步 -------------------------------------------
             # --- 改进2：陡坡自适应子步（v2）-------------------------------------------
@@ -899,6 +926,8 @@ class SteadyProfileSolver:
 
             # 子步迭代：每步以前一子步 W 为下游，床面高程线性插值
             # 子步间的断面几何在 i 和 i+1 之间按位置线性插值
+            # 重要：在子步内使用上游断面的流量（区间来水已累加）
+            Q = Q_us_local  # 覆盖外层参数 Q，让闭包和 Picard 都使用正确流量
             W_sub_ds = W[i + 1]
             bed_sub_ds = bed[i + 1]
             dx_sub = dx_seg / n_substeps
@@ -1171,7 +1200,7 @@ class SteadyProfileSolver:
         if _mixed_flow_flag:
             W, h = self._solve_mixed_flow(Q, W, bed, n_xs, x,
                                           contraction_coef, expansion_coef)
-        return {"x": x, "h": h, "W": W, "Q": np.full(n_xs, Q), "bed": bed,
+        return {"x": x, "h": h, "W": W, "Q": Q_arr, "bed": bed,
                 "method": "standard_step_variable_xs",
                 "mixed_flow": _mixed_flow_flag,
                 "froude": froude_arr}
