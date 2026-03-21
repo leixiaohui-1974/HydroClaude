@@ -423,6 +423,34 @@ class SteadyProfileSolver:
         gamma = 9810.0  # N/m^3
         return gamma * A * y_bar
 
+    def _split_deck_overtopping_flow(
+        self,
+        Q_total: float,
+        WSE: float,
+        deck_elev: float,
+        weir_len: float,
+        weir_coef: float = 1.70,
+    ) -> tuple[float, float]:
+        """桥面板溢顶堰流分流计算。
+
+        当水面高程超过桥面板顶时，部分流量以堰流形式溢过桥面板，
+        剩余流量通过桥下孔口。
+
+        Returns
+        -------
+        (Q_weir, Q_under) : tuple[float, float]
+        """
+        if (Q_total <= 0.0 or weir_len <= 0.0
+                or deck_elev >= 1e8 or WSE <= deck_elev):
+            return 0.0, float(max(Q_total, 0.0))
+
+        H = max(float(WSE) - float(deck_elev), 0.0)
+        Q_weir = float(weir_coef) * float(weir_len) * H ** 1.5
+        # 限制堰流不超过总流量的 95%，保证桥下至少有 5% 流量
+        Q_weir = float(np.clip(Q_weir, 0.0, 0.95 * max(float(Q_total), 0.0)))
+        Q_under = float(Q_total) - Q_weir
+        return Q_weir, Q_under
+
     def _solve_bridge_momentum(
         self,
         Q: float,
@@ -459,9 +487,13 @@ class SteadyProfileSolver:
 
         L_bridge = max(float(bridge.get("bridge_length_m", 1.0)), 0.1)
         pier_w_total = max(float(bridge.get("total_pier_width_m", 0.0)), 0.0)
-        C_D = float(bridge.get("pier_cd", 2.0))
+        # TODO-B05: 当 HEC-RAS pier_loss_coef=0 时，桥墩拖曳系数也应为 0
+        _pier_loss_coef = float(bridge.get("pier_loss_coef", 0.0))
+        C_D = float(bridge.get("pier_cd", 2.0)) if _pier_loss_coef > 0.0 else 0.0
         deck_elev = float(bridge.get("deck_elevation_m", 1e9))
         pier_height = float(bridge.get("pier_height_m", 1e9))
+        deck_weir_coef = float(bridge.get("deck_weir_coef", 1.70))
+        deck_weir_len_cfg = float(bridge.get("deck_weir_length_m", 0.0))
 
         n_br = (
             self._manning_ns[us_xs_index]
@@ -471,14 +503,26 @@ class SteadyProfileSolver:
 
         h2 = max(W_downstream - bed_ds, 0.01)
         A2, P2_wet, _R2, T2 = self._get_geometry(h2, ds_xs_index)
+        weir_len_ds = (
+            deck_weir_len_cfg
+            if deck_weir_len_cfg > 0.0
+            else max(T2, 1e-6)
+        )
+        # 下游断面仅用于压顶面积判定，分流公式统一复用辅助函数。
+        _Q_weir_ds, Q_under_ds = self._split_deck_overtopping_flow(
+            Q_total=Q,
+            WSE=W_downstream,
+            deck_elev=deck_elev,
+            weir_len=weir_len_ds,
+            weir_coef=deck_weir_coef,
+        )
         A_pier2 = pier_w_total * min(h2, pier_height)
         A2_eff = max(A2 - A_pier2, A2 * 0.3)
         # 壅水判断：使用 EGL (能量梯度线) 而非 WSE
-        V2_temp = Q / max(A2_eff, 1e-9)
+        V2_temp = Q_under_ds / max(A2_eff, 1e-9)
         EGL2 = W_downstream + V2_temp ** 2 / (2.0 * self.g)
         if EGL2 > deck_elev > bed_ds:
             A2_eff = max(A2_eff - (W_downstream - deck_elev) * T2, A2 * 0.1)
-        V2 = Q / max(A2_eff, 1e-9)
         P2_force = self._hydrostatic_pressure_force(h2, ds_xs_index)
 
         S0_bridge = (bed_us - bed_ds) / max(L_bridge, 0.1)
@@ -489,46 +533,87 @@ class SteadyProfileSolver:
         for _it in range(40):
             h3 = max(W3_trial - bed_us, 0.01)
             A3, P3_wet, _R3, T3 = self._get_geometry(h3, us_xs_index)
+            weir_len = (
+                deck_weir_len_cfg
+                if deck_weir_len_cfg > 0.0
+                else max(min(T2, T3), 1e-6)
+            )
+            # 桥面板溢顶后，桥孔内只使用桥下分配流量。
+            Q_weir, Q_under = self._split_deck_overtopping_flow(
+                Q_total=Q,
+                WSE=W3_trial,
+                deck_elev=deck_elev,
+                weir_len=weir_len,
+                weir_coef=deck_weir_coef,
+            )
             A_pier3 = pier_w_total * min(h3, pier_height)
             A3_eff = max(A3 - A_pier3, A3 * 0.3)
             # 壅水判断：使用 EGL (能量梯度线) 而非 WSE
-            V3_temp = Q / max(A3_eff, 1e-9)
+            V3_temp = Q_under / max(A3_eff, 1e-9)
             EGL3 = W3_trial + V3_temp ** 2 / (2.0 * self.g)
             if EGL3 > deck_elev > bed_us:
                 A3_eff = max(A3_eff - (W3_trial - deck_elev) * T3, A3 * 0.1)
-            V3 = Q / max(A3_eff, 1e-9)
+            V2 = Q_under / max(A2_eff, 1e-9)
+            V3 = Q_under / max(A3_eff, 1e-9)
             P3_force = self._hydrostatic_pressure_force(h3, us_xs_index)
 
             A_avg = 0.5 * (A2_eff + A3_eff)
             P_wet_avg = 0.5 * (P2_wet + P3_wet)
             R_avg = A_avg / max(P_wet_avg, 1e-6)
-            V_avg = Q / max(A_avg, 1e-9)
-            Sf_avg = min((Q * n_br / max(A_avg * R_avg ** (2.0/3.0), 1e-9)) ** 2, 1.0)
+            V_avg = Q_under / max(A_avg, 1e-9)
+            Sf_avg = min((Q_under * n_br / max(A_avg * R_avg ** (2.0/3.0), 1e-9)) ** 2, 1.0)
 
             F_f = gamma * A_avg * Sf_avg * L_bridge
             A_pier_avg = 0.5 * (A_pier2 + A_pier3)
             F_pier = 0.5 * rho * C_D * A_pier_avg * V_avg ** 2
             W_x = gamma * A_avg * S0_bridge * L_bridge
 
-            momentum_rhs = beta2 * rho * Q * V2 + P2_force + F_f + F_pier + W_x
-            imbalance = (beta3 * rho * Q * V3 + P3_force) - momentum_rhs
+            momentum_rhs = beta2 * rho * Q_under * V2 + P2_force + F_f + F_pier + W_x
+            imbalance = (beta3 * rho * Q_under * V3 + P3_force) - momentum_rhs
 
             if abs(imbalance) < max(1.0, abs(momentum_rhs) * 1e-5):
                 break
 
             dW = 1e-3
-            h3p = max(h3 + dW, 0.01)
+            W3p = W3_trial + dW
+            h3p = max(W3p - bed_us, 0.01)
             A3p, _P3pw, _R3p, T3p = self._get_geometry(h3p, us_xs_index)
+            weir_len_p = (
+                deck_weir_len_cfg
+                if deck_weir_len_cfg > 0.0
+                else max(min(T2, T3p), 1e-6)
+            )
+            _Q_weir_p, Q_under_p = self._split_deck_overtopping_flow(
+                Q_total=Q,
+                WSE=W3p,
+                deck_elev=deck_elev,
+                weir_len=weir_len_p,
+                weir_coef=deck_weir_coef,
+            )
             A_pier3p = pier_w_total * min(h3p, pier_height)
             A3p_eff = max(A3p - A_pier3p, A3p * 0.3)
             # 壅水判断：使用 EGL (能量梯度线) 而非 WSE
-            V3p_temp = Q / max(A3p_eff, 1e-9)
-            EGL3p = (W3_trial + dW) + V3p_temp ** 2 / (2.0 * self.g)
+            V3p_temp = Q_under_p / max(A3p_eff, 1e-9)
+            EGL3p = W3p + V3p_temp ** 2 / (2.0 * self.g)
             if EGL3p > deck_elev > bed_us:
-                A3p_eff = max(A3p_eff - ((W3_trial + dW) - deck_elev) * T3p, A3p * 0.1)
-            V3p = Q / max(A3p_eff, 1e-9)
+                A3p_eff = max(A3p_eff - (W3p - deck_elev) * T3p, A3p * 0.1)
+            V2p = Q_under_p / max(A2_eff, 1e-9)
+            V3p = Q_under_p / max(A3p_eff, 1e-9)
             P3p_force = self._hydrostatic_pressure_force(h3p, us_xs_index)
-            d_imb_dW = ((beta3 * rho * Q * V3p + P3p_force) - momentum_rhs - imbalance) / dW
+            A_avgp = 0.5 * (A2_eff + A3p_eff)
+            P_wet_avgp = 0.5 * (P2_wet + _P3pw)
+            R_avgp = A_avgp / max(P_wet_avgp, 1e-6)
+            V_avgp = Q_under_p / max(A_avgp, 1e-9)
+            Sf_avgp = min((Q_under_p * n_br / max(A_avgp * R_avgp ** (2.0/3.0), 1e-9)) ** 2, 1.0)
+
+            F_fp = gamma * A_avgp * Sf_avgp * L_bridge
+            A_pier_avgp = 0.5 * (A_pier2 + A_pier3p)
+            F_pierp = 0.5 * rho * C_D * A_pier_avgp * V_avgp ** 2
+            W_xp = gamma * A_avgp * S0_bridge * L_bridge
+
+            momentum_rhs_p = beta2 * rho * Q_under_p * V2p + P2_force + F_fp + F_pierp + W_xp
+            imbalance_p = (beta3 * rho * Q_under_p * V3p + P3p_force) - momentum_rhs_p
+            d_imb_dW = (imbalance_p - imbalance) / dW
 
             if abs(d_imb_dW) < 1e-3:
                 step = float(np.clip(imbalance / max(gamma * A3, 1.0), -0.5, 0.5))
@@ -569,6 +654,8 @@ class SteadyProfileSolver:
         pier_k = float(bridge.get("pier_loss_coef", 0.0))
         pier_height = float(bridge.get("pier_height_m", 1e9))
         deck_elev = float(bridge.get("deck_elevation_m", 1e9))
+        deck_weir_coef = float(bridge.get("deck_weir_coef", 1.70))
+        deck_weir_len_cfg = float(bridge.get("deck_weir_length_m", 0.0))
         cc = float(bridge.get("contraction_coef", 0.1))
 
         n_br = (
@@ -592,8 +679,10 @@ class SteadyProfileSolver:
             except Exception:
                 _bridge_ns = None
 
-        def _eff_area(W_trial: float, xs_idx: int, bed_elev: float) -> tuple[float, float, float]:
-            """Return (A_eff, P_wet, alpha) at WSE W_trial for given XS."""
+        def _eff_area(W_trial: float, xs_idx: int, bed_elev: float, Q_local: float = Q) -> tuple[float, float, float]:
+            """Return (A_eff, P_wet, alpha) at WSE W_trial for given XS.
+            Q_local: 实际过孔流量（溢顶时为 Q_under，非溢顶时为 Q）
+            """
             h = max(W_trial - bed_elev, 0.01)
             A, P_wet, _R, T = self._get_geometry(h, xs_idx)
             # 桥墩面积扣减
@@ -608,7 +697,7 @@ class SteadyProfileSolver:
                 # 桥面板压顶面积扣减（使用 EGL 判断）
                 # 先计算初步的有效面积（仅扣除桥墩）
                 A_temp = max(A - A_pier, A * 0.3)
-                V_temp = Q / max(A_temp, 1e-9)
+                V_temp = Q_local / max(A_temp, 1e-9)
                 # 计算能量梯度线 EGL
                 _, alpha_temp = self._compute_subdivided_conveyance(h, xs_idx)
                 EGL_trial = W_trial + alpha_temp * V_temp ** 2 / (2.0 * self.g)
@@ -622,9 +711,22 @@ class SteadyProfileSolver:
             return A_open, P_open, alpha
 
         # ── Section 2（下游桥面）已知量 ──────────────────────────────────────
-        A2_eff, P2_wet, alpha2 = _eff_area(W_downstream, ds_xs_index, bed_ds)
-        V2 = Q / max(A2_eff, 1e-9)
-        E2 = W_downstream + alpha2 * V2 ** 2 / (2.0 * self.g)
+        h2 = max(W_downstream - bed_ds, 0.01)
+        _A2_raw, _P2_raw, _R2_raw, T2 = self._get_geometry(h2, ds_xs_index)
+        weir_len_ds = (
+            deck_weir_len_cfg
+            if deck_weir_len_cfg > 0.0
+            else max(T2, 1e-6)
+        )
+        # 下游断面只用于预估压顶影响，分流公式统一复用辅助函数。
+        _Q_weir_ds, Q_under_ds_en = self._split_deck_overtopping_flow(
+            Q_total=Q,
+            WSE=W_downstream,
+            deck_elev=deck_elev,
+            weir_len=weir_len_ds,
+            weir_coef=deck_weir_coef,
+        )
+        A2_eff, P2_wet, alpha2 = _eff_area(W_downstream, ds_xs_index, bed_ds, Q_under_ds_en)
 
         # ── Newton-Raphson 求解 Section 3（上游桥面）WSE ─────────────────────
         # 初始猜测：W_3 ≥ W_2，从下游值开始
@@ -632,15 +734,33 @@ class SteadyProfileSolver:
         W3_trial = max(W3_trial, bed_us + max(W_downstream - bed_ds, 0.01))
 
         for _it in range(40):
-            A3_eff, P3_wet, alpha3 = _eff_area(W3_trial, us_xs_index, bed_us)
-            V3 = Q / max(A3_eff, 1e-9)
+            h3 = max(W3_trial - bed_us, 0.01)
+            _A3_raw, _P3_raw, _R3_raw, T3 = self._get_geometry(h3, us_xs_index)
+            weir_len = (
+                deck_weir_len_cfg
+                if deck_weir_len_cfg > 0.0
+                else max(min(T2, T3), 1e-6)
+            )
+            # 速度水头和摩阻损失只使用桥下分配流量。
+            Q_weir, Q_under = self._split_deck_overtopping_flow(
+                Q_total=Q,
+                WSE=W3_trial,
+                deck_elev=deck_elev,
+                weir_len=weir_len,
+                weir_coef=deck_weir_coef,
+            )
+
+            V2 = Q_under / max(A2_eff, 1e-9)
+            E2 = W_downstream + alpha2 * V2 ** 2 / (2.0 * self.g)
+            A3_eff, P3_wet, alpha3 = _eff_area(W3_trial, us_xs_index, bed_us, Q_under)
+            V3 = Q_under / max(A3_eff, 1e-9)
             vh3 = alpha3 * V3 ** 2 / (2.0 * self.g)
 
             # 摩擦损失（Manning 平均）
             A_avg = 0.5 * (A2_eff + A3_eff)
             P_avg = 0.5 * (P2_wet + P3_wet)
             R_avg = A_avg / max(P_avg, 1e-6)
-            Sf_avg = min((Q * n_br / max(A_avg * R_avg ** (2.0 / 3.0), 1e-9)) ** 2, 1.0)
+            Sf_avg = min((Q_under * n_br / max(A_avg * R_avg ** (2.0 / 3.0), 1e-9)) ** 2, 1.0)
             h_f = L_bridge * Sf_avg
 
             # 桥墩局部损失（基于上游桥面速度头）
@@ -658,17 +778,35 @@ class SteadyProfileSolver:
 
             # 数值微分 df/dW3
             dW = 1e-3
-            A3p, P3p, alpha3p = _eff_area(W3_trial + dW, us_xs_index, bed_us)
-            V3p = Q / max(A3p, 1e-9)
+            W3p = W3_trial + dW
+            h3p = max(W3p - bed_us, 0.01)
+            _A3p_raw, _P3p_raw, _R3p_raw, T3p = self._get_geometry(h3p, us_xs_index)
+            weir_len_p = (
+                deck_weir_len_cfg
+                if deck_weir_len_cfg > 0.0
+                else max(min(T2, T3p), 1e-6)
+            )
+            _Q_weir_p, Q_under_p = self._split_deck_overtopping_flow(
+                Q_total=Q,
+                WSE=W3p,
+                deck_elev=deck_elev,
+                weir_len=weir_len_p,
+                weir_coef=deck_weir_coef,
+            )
+            V2p = Q_under_p / max(A2_eff, 1e-9)
+            E2p = W_downstream + alpha2 * V2p ** 2 / (2.0 * self.g)
+            A3p, P3p, alpha3p = _eff_area(W3p, us_xs_index, bed_us, Q_under_p)
+            V3p = Q_under_p / max(A3p, 1e-9)
             vh3p = alpha3p * V3p ** 2 / (2.0 * self.g)
             A_avgp = 0.5 * (A2_eff + A3p)
             P_avgp = 0.5 * (P2_wet + P3p)
             R_avgp = A_avgp / max(P_avgp, 1e-6)
-            Sf_avgp = min((Q * n_br / max(A_avgp * R_avgp ** (2.0 / 3.0), 1e-9)) ** 2, 1.0)
+            Sf_avgp = min((Q_under_p * n_br / max(A_avgp * R_avgp ** (2.0 / 3.0), 1e-9)) ** 2, 1.0)
             h_fp = L_bridge * Sf_avgp
             h_pierp = pier_k * vh3p
-            h_contrp = cc * max(vh3p - vh2, 0.0)
-            f_valp = E2 - ((W3_trial + dW) + vh3p + h_fp + h_pierp + h_contrp)
+            vh2p = alpha2 * V2p ** 2 / (2.0 * self.g)
+            h_contrp = cc * max(vh3p - vh2p, 0.0)
+            f_valp = E2p - (W3p + vh3p + h_fp + h_pierp + h_contrp)
 
             df_dW = (f_valp - f_val) / dW
             if abs(df_dW) < 1e-6:
@@ -772,6 +910,10 @@ class SteadyProfileSolver:
                 frac_ds = _sub / n_substeps       # 第 _sub 子步下游侧相对 i+1 的距离
                 w_i   = frac_ds                    # 靠近 i 的权重
                 w_ip1 = 1.0 - frac_ds              # 靠近 i+1 的权重
+                # 上游面位置权重：当前子步上游侧位置 = (_sub+1)/n_substeps
+                frac_us = (_sub + 1) / n_substeps  # 上游侧靠近 xs[i] 的权重
+                w_i_us   = frac_us
+                w_ip1_us = 1.0 - frac_us
                 # 计算本子步的下游水力量（对两个端面分别算再插值）
                 _h_ds_sub = max(W_sub_ds - bed_sub_ds, 0.01)
                 # i+1 端面
@@ -799,48 +941,104 @@ class SteadyProfileSolver:
                 # 也不能低于床面
                 W_trial = max(W_trial, bed_sub_us + 0.01)
 
-                W_trial_prev = W_trial - 1.0  # 前一步，用于震荡检测
-                W_new = W_trial
-                relax = 1.0  # 松弛因子，震荡时递减
-                _converged = False
-                for _iter in range(80):
-                    h_us = max(W_trial - bed_sub_us, 0.01)
-                    h_us = min(h_us, 100.0)  # cap depth at 100m
-                    A_us, _P_us, _R_us, _T_us = self._get_geometry(h_us, i)
-                    V_us = Q / max(A_us, 1e-9)
-                    K_us, alpha_us = self._compute_subdivided_conveyance(h_us, i)
-                    Sf_us = (Q / K_us) ** 2 if K_us > 0 else self.compute_friction_slope(h_us, Q, i)
-                    vh_us = alpha_us * V_us ** 2 / (2.0 * self.g)
-                    Sf_avg = 0.5 * (Sf_us + _Sf_ds_sub)
-                    # Cap friction slope to avoid explosion
-                    Sf_avg = min(Sf_avg, 1.0)
-                    # Use per-XS loss coefficients from HEC-RAS when available
-                    cc = contraction_coef
-                    ec = expansion_coef
-                    if self._contraction_coefs and i < len(self._contraction_coefs):
-                        cc = self._contraction_coefs[i]
-                    if self._expansion_coefs and i < len(self._expansion_coefs):
-                        ec = self._expansion_coefs[i]
-                    if vh_us > _vh_ds_sub:
-                        h_minor = cc * (vh_us - _vh_ds_sub)
-                    else:
-                        h_minor = ec * (_vh_ds_sub - vh_us)
-                    W_new = W_sub_ds + _vh_ds_sub - vh_us + dx_sub * Sf_avg + h_minor
-                    # 物理下限：W 不能低于床面
-                    W_new = max(W_new, bed_sub_us + 1e-4)
+                # === brentq 求根（主路径）：K-h 高度非线性时比 Picard 稳健 ===
+                # 能量方程残差：residual(W_us) = (W_us + alpha_us*V_us^2/2g) - (W_ds + alpha_ds*V_ds^2/2g) - h_f - h_e
+                def _energy_residual(W_us_val: float) -> float:
+                    h_us_r = max(W_us_val - bed_sub_us, 0.01)
+                    h_us_r = min(h_us_r, 100.0)
+                    # 上游面几何：按子步位置在 xs[i+1] 和 xs[i] 之间插值
+                    _A_us_ip1 = self._get_geometry(h_us_r, i + 1)[0]
+                    _A_us_i   = self._get_geometry(h_us_r, i)[0]
+                    A_us_r = max(w_ip1_us * _A_us_ip1 + w_i_us * _A_us_i, 1e-9)
+                    V_us_r = Q / max(A_us_r, 1e-9)
+                    # 上游面输水率：插值
+                    _K_us_ip1, _alpha_us_ip1 = self._compute_subdivided_conveyance(h_us_r, i + 1)
+                    _K_us_i,   _alpha_us_i   = self._compute_subdivided_conveyance(h_us_r, i)
+                    K_us_r     = max(w_ip1_us * _K_us_ip1 + w_i_us * _K_us_i, 1e-9)
+                    alpha_us_r = w_ip1_us * _alpha_us_ip1 + w_i_us * _alpha_us_i
+                    Sf_us_r = (Q / K_us_r) ** 2 if K_us_r > 0 else self.compute_friction_slope(h_us_r, Q, i)
+                    vh_us_r = alpha_us_r * V_us_r ** 2 / (2.0 * self.g)
+                    Sf_avg_r = min(0.5 * (Sf_us_r + _Sf_ds_sub), 1.0)
+                    cc_r = self._contraction_coefs[i] if self._contraction_coefs and i < len(self._contraction_coefs) else contraction_coef
+                    ec_r = self._expansion_coefs[i]   if self._expansion_coefs   and i < len(self._expansion_coefs)   else expansion_coef
+                    h_f_r = dx_sub * Sf_avg_r
+                    h_e_r = cc_r * (vh_us_r - _vh_ds_sub) if vh_us_r > _vh_ds_sub else ec_r * (_vh_ds_sub - vh_us_r)
+                    # 残差 = 上游总能量头 - 下游总能量头 - 摩擦损失 - 局部损失
+                    return (W_us_val + vh_us_r) - (W_sub_ds + _vh_ds_sub) - h_f_r - h_e_r
 
-                    # 放宽收敛准则：绝对误差 1e-4 或相对误差 1e-4
-                    _delta = abs(W_new - W_trial)
-                    if _delta < 1e-4 or _delta / max(abs(W_trial), 1.0) < 1e-4:
+                _brentq_ok = False
+                # --- brentq 区间策略 ---
+                # 亚临界流：残差函数在高水位区有唯一根；超临界流：低水位区也有根。
+                # 策略1（优先）：以 W_sub_ds 为下界的区间 [W_ds, W_ds+20]，仅包含亚临界根。
+                # 策略2（降级）：扩展下界至 bed+0.001，全范围搜索（可能包含超临界根）。
+                # 亚临界流：上游水位总在下游水位之上，以 W_sub_ds 为下界可避免超临界根
+                _W_lo_narrow = W_sub_ds  # 下游水位作为下界，跳过超临界段
+                _W_hi = W_sub_ds + 20.0
+                try:
+                    f_narrow_lo = _energy_residual(_W_lo_narrow)
+                    f_hi = _energy_residual(_W_hi)
+                    if np.isfinite(f_narrow_lo) and np.isfinite(f_hi) and f_narrow_lo * f_hi <= 0.0:
+                        # 窄区间有根（亚临界根），直接求解
+                        W_new = brentq(_energy_residual, _W_lo_narrow, _W_hi, xtol=1e-4, maxiter=100)
+                        W_new = max(W_new, bed_sub_us + 1e-4)
                         W_trial = W_new
                         _converged = True
-                        break
-                    # 震荡检测：若 W_new 在 W_trial 两侧来回跳，用松弛因子递减
-                    if _iter >= 2 and (W_new - W_trial) * (W_trial - W_trial_prev) < 0:
-                        relax = max(0.3, relax * 0.7)
-                        W_new = W_trial + relax * (W_new - W_trial)
-                    W_trial_prev = W_trial
-                    W_trial = W_new
+                        _brentq_ok = True
+                    else:
+                        # 窄区间无根，扩展到全范围 [bed+0.001, W_ds+50]，寻找任意根
+                        _W_lo_wide = bed_sub_us + 0.001
+                        f_wide_lo = _energy_residual(_W_lo_wide)
+                        _W_hi_wide = W_sub_ds + 50.0
+                        f_hi_wide = _energy_residual(_W_hi_wide)
+                        if np.isfinite(f_wide_lo) and np.isfinite(f_hi_wide) and f_wide_lo * f_hi_wide <= 0.0:
+                            W_new = brentq(_energy_residual, _W_lo_wide, _W_hi_wide, xtol=1e-4, maxiter=100)
+                            W_new = max(W_new, bed_sub_us + 1e-4)
+                            W_trial = W_new
+                            _converged = True
+                            _brentq_ok = True
+                except Exception:
+                    # brentq 异常（极端边界条件），回退到 Picard
+                        _brentq_ok = False
+
+                # === Picard 迭代（回退路径）：brentq 找不到变号区间时使用 ===
+                if not _brentq_ok:
+                    W_trial_prev = W_trial - 1.0  # 前一步，用于震荡检测
+                    W_new = W_trial
+                    relax = 1.0  # 松弛因子，震荡时递减
+                    _converged = False
+                    for _iter in range(80):
+                        h_us = max(W_trial - bed_sub_us, 0.01)
+                        h_us = min(h_us, 100.0)
+                        A_us, _P_us, _R_us, _T_us = self._get_geometry(h_us, i)
+                        V_us = Q / max(A_us, 1e-9)
+                        K_us, alpha_us = self._compute_subdivided_conveyance(h_us, i)
+                        Sf_us = (Q / K_us) ** 2 if K_us > 0 else self.compute_friction_slope(h_us, Q, i)
+                        vh_us = alpha_us * V_us ** 2 / (2.0 * self.g)
+                        Sf_avg = 0.5 * (Sf_us + _Sf_ds_sub)
+                        Sf_avg = min(Sf_avg, 1.0)
+                        cc = contraction_coef
+                        ec = expansion_coef
+                        if self._contraction_coefs and i < len(self._contraction_coefs):
+                            cc = self._contraction_coefs[i]
+                        if self._expansion_coefs and i < len(self._expansion_coefs):
+                            ec = self._expansion_coefs[i]
+                        if vh_us > _vh_ds_sub:
+                            h_minor = cc * (vh_us - _vh_ds_sub)
+                        else:
+                            h_minor = ec * (_vh_ds_sub - vh_us)
+                        W_new = W_sub_ds + _vh_ds_sub - vh_us + dx_sub * Sf_avg + h_minor
+                        W_new = max(W_new, bed_sub_us + 1e-4)
+                        _delta = abs(W_new - W_trial)
+                        if _delta < 1e-4 or _delta / max(abs(W_trial), 1.0) < 1e-4:
+                            W_trial = W_new
+                            _converged = True
+                            break
+                        # 震荡检测：若 W_new 在 W_trial 两侧来回跳，用松弛因子递减
+                        if _iter >= 2 and (W_new - W_trial) * (W_trial - W_trial_prev) < 0:
+                            relax = max(0.3, relax * 0.7)
+                            W_new = W_trial + relax * (W_new - W_trial)
+                        W_trial_prev = W_trial
+                        W_trial = W_new
 
                 # 更新子步状态：当前子步上游 W 成为下一子步的下游 W
                 W_sub_ds = W_trial
@@ -926,7 +1124,7 @@ class SteadyProfileSolver:
             h[i] = max(W[i] - bed[i], 0.001)
 
         # ---- Mixed Flow Detection (HEC-RAS Mixed Flow Mode) -------------------
-        # 双重检测：(1) Froude 数 > 1，或 (2) 存在陡坡段（S0 > Sc）
+        # 计算 Froude 数（基于标准步初始解）
         froude_arr = np.zeros(n_xs)
         for _mf_i in range(n_xs):
             _mf_h = max(W[_mf_i] - bed[_mf_i], 0.01)
@@ -935,20 +1133,39 @@ class SteadyProfileSolver:
             _mf_D = _mf_A / max(_mf_T, 1e-9)
             froude_arr[_mf_i] = _mf_V / np.sqrt(self.g * max(_mf_D, 1e-9))
 
-        # 检测 1: Froude 数 > 1
-        _froude_flag = bool(np.any(froude_arr > 1.0))
+        # 检测 1: 基于 Froude 数的超临界流判断
+        # 注意：标准步初始解可能在宽浅复合断面发散，导致 Fr 虚高（误报）
+        # 因此仅在 Froude 数足够高（> 2.0）且连续多个断面时才触发
+        # 避免因求解发散引起的误触发（Critical Creek 类型断面）
+        _froude_flag = False
+        _consecutive_super = 0
+        _min_consecutive_super = 3  # 需要连续 >= 3 个断面
+        for _mf_i in range(n_xs):
+            if froude_arr[_mf_i] > 2.0:  # 安全系数 2x，避免略超 1.0 的数值误差
+                _consecutive_super += 1
+                if _consecutive_super >= _min_consecutive_super:
+                    _froude_flag = True
+                    break
+            else:
+                _consecutive_super = 0
 
-        # 检测 2: 陡坡段（S0 > Sc）
+        # 检测 2: 陡坡段（需要连续 >= 2 个断面 S0 > 1.5*Sc，避免天然河道局部波动误触发）
         _steep_flag = False
+        _consecutive_steep = 0
+        _min_consecutive = 2  # 至少连续2个断面才判定为陡坡段
         for _mf_i in range(n_xs - 1):
             _dx = float(abs(x[_mf_i + 1] - x[_mf_i]))
             if _dx < 1e-6:
                 continue
             _S0_local = float((bed[_mf_i] - bed[_mf_i + 1]) / _dx)
             _Sc_local = self._compute_critical_slope(Q, _mf_i)
-            if _S0_local > _Sc_local:
-                _steep_flag = True
-                break
+            if _S0_local > 1.5 * _Sc_local:  # 加 1.5x 安全系数
+                _consecutive_steep += 1
+                if _consecutive_steep >= _min_consecutive:
+                    _steep_flag = True
+                    break
+            else:
+                _consecutive_steep = 0
 
         _mixed_flow_flag = _froude_flag or _steep_flag
         if _mixed_flow_flag:
@@ -1151,9 +1368,7 @@ class SteadyProfileSolver:
                 W_new = W_super[i - 1] + vh_us - vh_ds - dx_seg * Sf_avg - h_minor
 
                 W_new = max(W_new, bed[i] + 0.1)
-            # 修复点 2：去掉临界深度上限约束,仅保留最小物理深度
-
-            if i == control_idx + 1:  # 第一个下游断面
+                # 修复点 2：去掉临界深度上限约束,仅保留最小物理深度
 
                 if abs(W_new - W_trial) < 3e-4:
                     W_trial = W_new

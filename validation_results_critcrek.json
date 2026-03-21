@@ -1,0 +1,199 @@
+{
+  "case": "Example 1 - Critical Creek",
+  "timestamp": "2026-03-21T20:59:08.112213",
+  "n_cross_sections": 12,
+  "profile": "100 yr",
+  "unit_system": "english -> SI converted",
+  "flow_m3s": 254.851619328,
+  "solver_params": {
+    "length_m": 1728.2160000000003,
+    "avg_width_m": 377.01220000000006,
+    "avg_slope": 0.009947094252921068,
+    "avg_manning_n": 0.03999999910593033,
+    "h_downstream_m": 2.8986881835937766
+  },
+  "metrics": {
+    "MAE_m": 0.11747226215416617,
+    "RMSE_m": 0.16399656095581372,
+    "Max_Error_m": 0.3094965935927121,
+    "n_valid_xs": 12
+  },
+  "per_xs_comparison": [
+    {
+      "station_m": 3.6576000000000004,
+      "hecras_wse_m": 553.2292268554688,
+      "hydroclaude_wse_m": 553.2284149445193,
+      "error_m": -0.0008119109495510202
+    },
+    {
+      "station_m": 3.3528000000000002,
+      "hecras_wse_m": 551.8154712890625,
+      "hydroclaude_wse_m": 551.9703564239112,
+      "error_m": 0.15488513484865507
+    },
+    {
+      "station_m": 3.048,
+      "hecras_wse_m": 550.0009587890626,
+      "hydroclaude_wse_m": 550.05013874813,
+      "error_m": 0.04917995906748729
+    },
+    {
+      "station_m": 2.7432000000000003,
+      "hecras_wse_m": 548.4309336914063,
+      "hydroclaude_wse_m": 548.425780964907,
+      "error_m": -0.005152726499318305
+    },
+    {
+      "station_m": 2.4384,
+      "hecras_wse_m": 546.7773788085938,
+      "hydroclaude_wse_m": 547.084690730532,
+      "error_m": 0.3073119219382079
+    },
+    {
+      "station_m": 2.1336,
+      "hecras_wse_m": 545.5563184570312,
+      "hydroclaude_wse_m": 545.5460935392634,
+      "error_m": -0.010224917767800434
+    },
+    {
+      "station_m": 1.8288000000000002,
+      "hecras_wse_m": 543.852496875,
+      "hydroclaude_wse_m": 543.5430002814073,
+      "error_m": -0.3094965935927121
+    },
+    {
+      "station_m": 1.524,
+      "hecras_wse_m": 541.5732685546875,
+      "hydroclaude_wse_m": 541.7142002814073,
+      "error_m": 0.14093172671982757
+    },
+    {
+      "station_m": 1.2192,
+      "hecras_wse_m": 540.5436755859375,
+      "hydroclaude_wse_m": 540.3050237038716,
+      "error_m": -0.23865188206593757
+    },
+    {
+      "station_m": 0.9144000000000001,
+      "hecras_wse_m": 538.6711945312501,
+      "hydroclaude_wse_m": 538.8402477000827,
+      "error_m": 0.16905316883264732
+    },
+    {
+      "station_m": 0.6096,
+      "hecras_wse_m": 536.9165109375,
+      "hydroclaude_wse_m": 536.8925437339321,
+      "error_m": -0.023967203567849538
+    },
+    {
+      "station_m": 0.3048,
+      "hecras_wse_m": 535.4452333007813,
+      "hydroclaude_wse_m": 535.4452333007813,
+      "error_m": 0.0
+    }
+  ],
+  "solver_result": {
+    "success": true,
+    "warning": null,
+    "method": "standard_step_variable_xs",
+    "mixed_flow": false,
+    "froude": [
+      0.3624,
+      0.4833,
+      0.3772,
+      0.3903,
+      0.2468,
+      0.366,
+      0.9712,
+      0.3967,
+      0.3705,
+      0.4679,
+      0.3836,
+      0.366
+    ]
+  },
+  "hecras_summary": {
+    "rivers": [
+      "Critical Cr.",
+      "Critical Cr.",
+      "Critical Cr.",
+      "Critical Cr.",
+      "Critical Cr.",
+      "Critical Cr.",
+      "Critical Cr.",
+      "Critical Cr.",
+      "Critical Cr.",
+      "Critical Cr.",
+      "Critical Cr.",
+      "Critical Cr."
+    ],
+    "reaches": [
+      "Upper Reach",
+      "Upper Reach",
+      "Upper Reach",
+      "Upper Reach",
+      "Upper Reach",
+      "Upper Reach",
+      "Upper Reach",
+      "Upper Reach",
+      "Upper Reach",
+      "Upper Reach",
+      "Upper Reach",
+      "Upper Reach"
+    ],
+    "has_structures": false
+  },
+  "diagnosis": {
+    "flow_regime_hecras": "subcritical throughout (all depths 2.4-3.9m, Fr 0.3-0.7)",
+    "flow_regime_hydroclaude": "subcritical (mixed flow detection corrected)",
+    "q_variation_note": "HEC-RAS flow increases at XS5 from 254.85 to 269.01 m3/s (tributary inflow not modeled by HydroClaude)",
+    "error_pattern": "upstream xs1-3: HC overestimates WSE +5 to +9m; xs4-8: abnormal Fr>100; xs9-12: underpredicts -1.4 to -2.7m",
+    "root_cause": "Fixed: consecutive>=2 XS with S0>1.5*Sc prevents false trigger",
+    "accuracy_assessment": "IMPROVED MAE=0.1175m (was 3.0886m)",
+    "known_limitations": [
+      "Standard step solver diverges in compound channel with high overbank Manning n (LOB/ROB=0.1)",
+      "K-h relationship is highly nonlinear at floodplain activation threshold, causing Picard iteration oscillation",
+      "Mixed flow detection Froude flag triggered by solver divergence artifacts (Fr > 7000), not real supercritical flow",
+      "S0/Sc slope-based detection correctly NOT triggered (all S0 < 1.5*Sc)",
+      "Mixed Flow Regime Channel case: correctly detected and solved (MAE=0.13m)",
+      "TODO: fix standard_step_variable_xs Picard iteration stability for compound sections"
+    ]
+  },
+  "hecras_data": {
+    "depths_m": [
+      3.492,
+      2.962,
+      3.068,
+      3.235,
+      2.923,
+      3.866,
+      2.985,
+      2.534,
+      3.181,
+      2.406,
+      2.45,
+      2.899
+    ],
+    "energy_grade_m": [
+      553.445,
+      552.259,
+      550.159,
+      548.688,
+      547.14,
+      545.895,
+      544.479,
+      541.99,
+      540.68,
+      539.294,
+      537.088,
+      535.596
+    ],
+    "flow_variation": "Q increases from 254.85 to 269.01 m3/s at XS5 (tributary)"
+  },
+  "mixed_flow_regression_check": {
+    "mixed_flow_case_triggered": true,
+    "supercritical_count": 0,
+    "regression_ok": true,
+    "note": "MIXED.p01 correctly triggers"
+  }
+}
