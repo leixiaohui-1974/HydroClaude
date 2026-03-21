@@ -553,6 +553,8 @@ class HECRASResultSummary:
     manning_n_values: list[float] | None  # per xs, if available
     channel_width_m: list[float] | None  # per xs, if available
     has_structures: bool = False  # True when HDF contains bridges/culverts/weirs/gates
+    # Per-XS station-elevation profiles for NaturalSection construction
+    xs_profiles: list[dict] | None = None  # [{stations: [...], elevations: [...]}, ...]
 
     def to_dict(self) -> dict[str, Any]:
         return {k: v for k, v in self.__dict__.items()}
@@ -602,6 +604,8 @@ def extract_hecras_result_summary(
             width = _try_read_channel_width(hdf, lf)
             has_structures = _detect_structures(hdf)
 
+            xs_profiles = _try_read_xs_profiles(hdf, lf)
+
             return HECRASResultSummary(
                 mode="steady",
                 unit_system=unit_system,
@@ -619,6 +623,7 @@ def extract_hecras_result_summary(
                 manning_n_values=manning_n,
                 channel_width_m=width,
                 has_structures=has_structures,
+                xs_profiles=xs_profiles,
             )
 
         # --- Unsteady fallback ---
@@ -636,6 +641,7 @@ def extract_hecras_result_summary(
         manning_n = _try_read_manning(hdf)
         width = _try_read_channel_width(hdf, lf)
         has_structures = _detect_structures(hdf)
+        xs_profiles = _try_read_xs_profiles(hdf, lf)
 
         return HECRASResultSummary(
             mode="unsteady",
@@ -654,6 +660,7 @@ def extract_hecras_result_summary(
             manning_n_values=manning_n,
             channel_width_m=width,
             has_structures=has_structures,
+            xs_profiles=xs_profiles,
         )
 
 
@@ -691,6 +698,32 @@ def _try_read_bed_elevation(hdf: h5py.File, lf: float) -> list[float] | None:
             return min_elevs
 
     return None
+
+
+def _try_read_xs_profiles(hdf: h5py.File, lf: float) -> list[dict] | None:
+    """Read per-cross-section station-elevation profiles from HDF geometry.
+
+    Returns list of {stations: [...], elevations: [...]} dicts, one per XS.
+    These can be used to construct NaturalSection objects for each station.
+    """
+    info_path = "Geometry/Cross Sections/Station Elevation Info"
+    vals_path = "Geometry/Cross Sections/Station Elevation Values"
+    if info_path not in hdf or vals_path not in hdf:
+        return None
+
+    info = hdf[info_path][:]
+    vals = np.asarray(hdf[vals_path][:], dtype=float)
+    profiles: list[dict] = []
+    for row in info:
+        start = int(row[0])
+        count = int(row[1])
+        if count > 2 and start + count <= len(vals):
+            xs_stations = (vals[start:start + count, 0] * lf).tolist()
+            xs_elevations = (vals[start:start + count, 1] * lf).tolist()
+            profiles.append({"stations": xs_stations, "elevations": xs_elevations})
+        else:
+            profiles.append(None)
+    return profiles if any(p is not None for p in profiles) else None
 
 
 def _try_read_manning(hdf: h5py.File) -> list[float] | None:
@@ -1033,6 +1066,7 @@ def diagnose_flow_regime(result_summary: HECRASResultSummary, g: float = 9.81) -
             "bed_elevations": bed_elevation_list,
             "channel_widths": width_list,
             "manning_ns": manning_list,
+            "xs_profiles": result_summary.xs_profiles,  # per-XS station-elevation for NaturalSection
         }
     elif result_summary.channel_width_m:
         recommended_params["cross_section_data"] = {

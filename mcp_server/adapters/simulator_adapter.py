@@ -377,17 +377,38 @@ class HydroClaudeSimulator:
         xs_data = self._build_cross_section(params)
 
         if isinstance(xs_data, dict) and xs_data.get("type") == "multi_station":
-            # 逐断面模式：为每个断面构造 RectangularSection（用实际宽度），
-            # 并传入绝对床底高程和 Manning n，让 solver 走绝对水位路径。
+            # 逐断面模式：优先用真实不规则断面 (NaturalSection)，
+            # 退化为 RectangularSection(width) 当 xs_profiles 不可用时。
+            cross_sections = None
             try:
-                from physics.cross_section import RectangularSection
-                widths = xs_data.get("channel_widths", [])
-                cross_sections = [
-                    RectangularSection(f"xs_{k}", float(w) if w else B)
-                    for k, w in enumerate(widths)
-                ]
+                xs_profiles = xs_data.get("xs_profiles")
+                if xs_profiles and any(p is not None for p in xs_profiles):
+                    from physics.cross_section import NaturalSection, RectangularSection
+                    widths = xs_data.get("channel_widths", [])
+                    cross_sections = []
+                    for k, prof in enumerate(xs_profiles):
+                        if prof is not None and len(prof.get("stations", [])) > 2:
+                            cross_sections.append(
+                                NaturalSection(
+                                    f"xs_{k}",
+                                    elevations=prof["elevations"],
+                                    distances=prof["stations"],
+                                )
+                            )
+                        else:
+                            w = float(widths[k]) if k < len(widths) and widths[k] else B
+                            cross_sections.append(RectangularSection(f"xs_{k}", w))
+                    logger.info("逐断面模式：%d NaturalSection + %d RectangularSection",
+                                sum(1 for p in xs_profiles if p), sum(1 for p in xs_profiles if not p))
+                else:
+                    from physics.cross_section import RectangularSection
+                    widths = xs_data.get("channel_widths", [])
+                    cross_sections = [
+                        RectangularSection(f"xs_{k}", float(w) if w else B)
+                        for k, w in enumerate(widths)
+                    ]
             except (ImportError, Exception) as exc:
-                logger.warning("构造逐断面 RectangularSection 失败 (%s)，降级为单断面模式", exc)
+                logger.warning("构造逐断面 CrossSection 失败 (%s)，降级为单断面模式", exc)
                 cross_sections = None
 
             bed_elevs = xs_data.get("bed_elevations") or None
