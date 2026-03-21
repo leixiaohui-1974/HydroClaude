@@ -1640,9 +1640,34 @@ class SteadyProfileSolver:
         end_idx = int(np.clip(end_idx, control_idx, n_xs - 1))
 
         W_super = np.full(n_xs, np.nan, dtype=float)
-        # 修复点 3：控制断面边界由临界深度改为略低于临界深度
+        # 超临界流边界条件：用正常深度 y_n（不是临界深度 y_c）
+        # 在陡坡段，均匀流水深 y_n < y_c，S2 型水面线趋近 y_n
         yc0 = max(float(y_c[control_idx]), 1e-4)
-        W_super[control_idx] = float(bed[control_idx]) + 0.95 * yc0
+        # 计算控制断面处的正常深度
+        if control_idx < n_xs - 1:
+            dx_ctrl = float(abs(x[control_idx + 1] - x[control_idx]))
+            S0_ctrl = (bed[control_idx] - bed[control_idx + 1]) / max(dx_ctrl, 0.1)
+        else:
+            S0_ctrl = 0.01
+        if S0_ctrl > 1e-6:
+            n_local = self.n
+            if self._manning_ns and control_idx < len(self._manning_ns):
+                nv = self._manning_ns[control_idx]
+                if nv and float(nv) > 0:
+                    n_local = float(nv)
+            # 用 brentq 求正常深度
+            def _yn_residual(y):
+                A, _P, R, _T = self._get_geometry(y, control_idx)
+                if A <= 0 or R <= 0:
+                    return -1.0
+                return (1.0 / n_local) * A * R ** (2.0 / 3.0) * S0_ctrl ** 0.5 - Q
+            try:
+                y_n = brentq(_yn_residual, 0.001, yc0 * 2.0, xtol=1e-6, maxiter=100)
+            except Exception:
+                y_n = 0.95 * yc0  # fallback
+        else:
+            y_n = 0.95 * yc0
+        W_super[control_idx] = float(bed[control_idx]) + min(y_n, 0.95 * yc0)
         W_super[control_idx] = max(W_super[control_idx], float(bed[control_idx]) + 1e-4)
 
         for i in range(control_idx + 1, end_idx + 1):
@@ -1657,40 +1682,43 @@ class SteadyProfileSolver:
             Sf_us = (Q / K_us) ** 2 if K_us > 0 else self.compute_friction_slope(h_us, Q, i - 1)
             vh_us = alpha_us * V_us ** 2 / (2.0 * self.g)
 
-            W_trial = max(W_super[i - 1] - 0.05, bed[i] + 0.001)
+            # 超临界流能量方程: W_ds = W_us + vh_us - vh_ds - Sf*dx - h_minor
+            # 用 brentq 求根代替 Picard 迭代（稳健性更好）
+            def _super_residual(W_ds_val: float) -> float:
+                h_d = max(W_ds_val - bed[i], 0.001)
+                A_d, _, _, _ = self._get_geometry(h_d, i)
+                V_d = Q / max(A_d, 1e-9)
+                K_d, alpha_d = self._compute_subdivided_conveyance(h_d, i)
+                Sf_d = (Q / K_d) ** 2 if K_d > 0 else Sf_us
+                vh_d = alpha_d * V_d ** 2 / (2.0 * self.g)
+                Sf_a = min(((Q + Q) / max(K_us + K_d, 1e-9)) ** 2, 1.0)
+                _cc = self._contraction_coefs[i] if self._contraction_coefs and i < len(self._contraction_coefs) else contraction_coef
+                _ec = self._expansion_coefs[i] if self._expansion_coefs and i < len(self._expansion_coefs) else expansion_coef
+                h_m = _cc * (vh_d - vh_us) if vh_d > vh_us else _ec * (vh_us - vh_d)
+                # 残差: W_ds + vh_ds - (W_us + vh_us - Sf*dx - h_minor) = 0
+                return (W_ds_val + vh_d) - (W_super[i - 1] + vh_us) + dx_seg * Sf_a + h_m
 
-            for _iter in range(60):
-                h_ds = max(W_trial - bed[i], 0.001)
-                A_ds, _P_ds, _R_ds, _T_ds = self._get_geometry(h_ds, i)
-                V_ds = Q / max(A_ds, 1e-9)
-                K_ds, alpha_ds = self._compute_subdivided_conveyance(h_ds, i)
-                Sf_ds = (Q / K_ds) ** 2 if K_ds > 0 else self.compute_friction_slope(h_ds, Q, i)
-                vh_ds = alpha_ds * V_ds ** 2 / (2.0 * self.g)
-
-                Sf_avg = min(0.5 * (Sf_us + Sf_ds), 1.0)
-
-                cc = contraction_coef
-                ec = expansion_coef
-                if self._contraction_coefs and i < len(self._contraction_coefs):
-                    cc = self._contraction_coefs[i]
-                if self._expansion_coefs and i < len(self._expansion_coefs):
-                    ec = self._expansion_coefs[i]
-
-                if vh_ds > vh_us:
-                    h_minor = cc * (vh_ds - vh_us)
+            # 超临界根在 [bed+0.001, W_us] 范围（水面下降）
+            _W_lo = bed[i] + 0.001
+            _W_hi = W_super[i - 1] + 1.0  # 允许略高于上游（局部抬升）
+            try:
+                f_lo = _super_residual(_W_lo)
+                f_hi = _super_residual(_W_hi)
+                if np.isfinite(f_lo) and np.isfinite(f_hi) and f_lo * f_hi <= 0:
+                    W_trial = brentq(_super_residual, _W_lo, _W_hi, xtol=1e-6, maxiter=100)
                 else:
-                    h_minor = ec * (vh_us - vh_ds)
+                    # 扩大搜索范围
+                    _W_hi2 = W_super[i - 1] + 5.0
+                    f_hi2 = _super_residual(_W_hi2)
+                    if np.isfinite(f_lo) and np.isfinite(f_hi2) and f_lo * f_hi2 <= 0:
+                        W_trial = brentq(_super_residual, _W_lo, _W_hi2, xtol=1e-6, maxiter=100)
+                    else:
+                        # Picard fallback
+                        W_trial = max(W_super[i - 1] - dx_seg * Sf_us, bed[i] + 0.01)
+            except Exception:
+                W_trial = max(W_super[i - 1] - dx_seg * Sf_us, bed[i] + 0.01)
 
-                W_new = W_super[i - 1] + vh_us - vh_ds - dx_seg * Sf_avg - h_minor
-
-                W_new = max(W_new, bed[i] + 0.1)
-                # 修复点 2：去掉临界深度上限约束,仅保留最小物理深度
-
-                if abs(W_new - W_trial) < 3e-4:
-                    W_trial = W_new
-                    break
-                W_trial = 0.5 * (W_trial + W_new)
-
+            W_trial = max(W_trial, bed[i] + 0.001)
             W_super[i] = W_trial
 
         return W_super
