@@ -41,6 +41,12 @@ class HydroClaudeSimulator:
             params: Model parameters.  Expected keys depend on solver_type:
                 - Common: solver_type, length, width (B), slope (S0),
                   manning_n, nx, Q_upstream, h_downstream
+                - Optional: cross_section_data (dict) -- 断面几何，格式：
+                    {"type": "irregular"|"trapezoidal"|"rectangular",
+                     "stations": [...], "elevations": [...],  # irregular
+                     "bottom_width": ..., "side_slope": ...,  # trapezoidal
+                     "channel_width": ...}                      # rectangular
+                    不含此字段时按矩形处理（向后兼容）。
                 - godunov extras: cfl, order, riemann_solver
                 - steady extras: method ("shooting" | "bvp")
             duration: Simulation duration in seconds.
@@ -58,6 +64,8 @@ class HydroClaudeSimulator:
                 result = self._run_godunov(params, duration, dt)
             elif solver_type == "steady":
                 result = self._run_steady(params)
+            elif solver_type == "network":
+                result = self._run_network(params)
             else:
                 result = self._run_hydrostatic(params, duration, dt)
         except Exception as exc:
@@ -91,6 +99,126 @@ class HydroClaudeSimulator:
     # Private solver drivers
     # ==================================================================
 
+
+    def _build_cross_section(self, params: dict) -> Any | None:
+        """从参数构造 CrossSection 对象。
+
+        Args:
+            params: 包含可选 cross_section_data 字段的参数字典。
+
+        Returns:
+            CrossSection 实例，或 None（无断面数据或构造失败时降级返回 None）。
+        """
+        xs_data = params.get("cross_section_data")
+        if not xs_data:
+            return None
+
+        xs_type = xs_data.get("type", "rectangular")
+
+        if xs_type == "irregular":
+            stations = xs_data.get("stations")
+            elevations = xs_data.get("elevations")
+            if not stations or not elevations:
+                logger.warning(
+                    "cross_section_data type='irregular' 缺少 stations 或 elevations，降级为矩形断面"
+                )
+                return None
+            try:
+                from physics.cross_section import NaturalSection
+                return NaturalSection(
+                    name="hec_ras_imported",
+                    elevations=np.asarray(elevations, dtype=float),
+                    distances=np.asarray(stations, dtype=float),
+                )
+            except (ImportError, AttributeError) as exc:
+                logger.warning("无法导入 NaturalSection（%s），降级为矩形断面", exc)
+                return None
+            except Exception as exc:
+                logger.warning("构造 NaturalSection 失败（%s），降级为矩形断面", exc)
+                return None
+
+        elif xs_type == "trapezoidal":
+            bottom_width = xs_data.get("bottom_width")
+            side_slope = xs_data.get("side_slope")
+            if bottom_width is None or side_slope is None:
+                logger.warning(
+                    "cross_section_data type='trapezoidal' 缺少 bottom_width 或 side_slope，降级为矩形断面"
+                )
+                return None
+            try:
+                from physics.cross_section import TrapezoidalSection
+                return TrapezoidalSection(
+                    name="hec_ras_imported",
+                    bottom_width=float(bottom_width),
+                    side_slope=float(side_slope),
+                )
+            except (ImportError, AttributeError) as exc:
+                logger.warning("无法导入 TrapezoidalSection（%s），降级为矩形断面", exc)
+                return None
+            except Exception as exc:
+                logger.warning("构造 TrapezoidalSection 失败（%s），降级为矩形断面", exc)
+                return None
+
+        elif xs_type == "rectangular":
+            channel_width = xs_data.get("channel_width", xs_data.get("bottom_width"))
+            if channel_width is None:
+                logger.warning(
+                    "cross_section_data type='rectangular' 缺少 channel_width，跳过断面几何"
+                )
+                return None
+            try:
+                from physics.cross_section import RectangularSection
+                return RectangularSection(
+                    name="hec_ras_imported",
+                    width=float(channel_width),
+                )
+            except (ImportError, AttributeError) as exc:
+                logger.warning("无法导入 RectangularSection（%s），跳过断面几何", exc)
+                return None
+            except Exception as exc:
+                logger.warning("构造 RectangularSection 失败（%s），跳过断面几何", exc)
+                return None
+
+        elif xs_type == "multi_station":
+            # 逐断面模式：返回结构化 dict 而非 CrossSection 对象，
+            # 由 _run_steady 直接传给 SteadyProfileSolver 的逐断面参数。
+            return {
+                "type": "multi_station",
+                "bed_elevations": xs_data.get("bed_elevations", []),
+                "channel_widths": xs_data.get("channel_widths", []),
+                "manning_ns": xs_data.get("manning_ns", []),
+                "n_stations": xs_data.get("n_stations", 0),
+            }
+
+        else:
+            logger.warning(
+                "未知断面类型 '%s'，跳过断面几何注入（支持: irregular/trapezoidal/rectangular/multi_station）",
+                xs_type,
+            )
+            return None
+
+    def _inject_cross_section(self, solver: Any, cross_section: Any | None) -> None:
+        """将 CrossSection 对象注入求解器（若求解器支持该属性）。
+
+        Skips dict-type cross_section (multi_station) — handled by _run_steady.
+        """
+        if cross_section is None:
+            return
+        if isinstance(cross_section, dict):
+            return
+        if hasattr(solver, "cross_section"):
+            solver.cross_section = cross_section
+            logger.debug(
+                "已将断面几何 %s 注入求解器 %s",
+                cross_section.__class__.__name__,
+                solver.__class__.__name__,
+            )
+        else:
+            logger.debug(
+                "求解器 %s 不支持 cross_section 属性，跳过断面几何注入",
+                solver.__class__.__name__,
+            )
+
     def _run_hydrostatic(self, params: dict, duration: float, dt: float) -> dict:
         from solvers.hydrostatic_canal_solver import HydrostaticCanalSolver
 
@@ -101,6 +229,7 @@ class HydroClaudeSimulator:
         n = float(params.get("manning_n", params.get("n", 0.025)))
 
         solver = HydrostaticCanalSolver(length=length, nx=nx, B=B, S0=S0, n=n)
+        self._inject_cross_section(solver, self._build_cross_section(params))
 
         Q_upstream = float(
             params.get("Q_upstream", self._boundary.get("Q_upstream", 10.0))
@@ -158,6 +287,7 @@ class HydroClaudeSimulator:
             riemann_solver=riemann,
             dt_max=float(dt_max) if dt_max is not None else None,
         )
+        self._inject_cross_section(solver, self._build_cross_section(params))
 
         Q_upstream = float(
             params.get("Q_upstream", params.get("Q", self._boundary.get("Q_upstream", 10.0)))
@@ -244,14 +374,99 @@ class HydroClaudeSimulator:
         nx = int(params.get("nx", 201))
         method = params.get("method", "shooting")
 
-        solver = SteadyProfileSolver(length=length, B=B, S0=S0, n=n)
-        result = solver.solve_without_structures(Q, h_downstream, nx=nx, method=method)
+        xs_data = self._build_cross_section(params)
 
+        if isinstance(xs_data, dict) and xs_data.get("type") == "multi_station":
+            # 逐断面模式：为每个断面构造 RectangularSection（用实际宽度），
+            # 并传入绝对床底高程和 Manning n，让 solver 走绝对水位路径。
+            try:
+                from physics.cross_section import RectangularSection
+                widths = xs_data.get("channel_widths", [])
+                cross_sections = [
+                    RectangularSection(f"xs_{k}", float(w) if w else B)
+                    for k, w in enumerate(widths)
+                ]
+            except (ImportError, Exception) as exc:
+                logger.warning("构造逐断面 RectangularSection 失败 (%s)，降级为单断面模式", exc)
+                cross_sections = None
+
+            bed_elevs = xs_data.get("bed_elevations") or None
+            manning_vals = xs_data.get("manning_ns") or None
+
+            solver = SteadyProfileSolver(
+                length=length, B=B, S0=S0, n=n,
+                cross_sections=cross_sections,
+                bed_elevations=bed_elevs,
+                manning_ns=manning_vals,
+            )
+            # multi_station 模式固定使用 standard_step（绝对水位版）
+            result = solver.solve_standard_step(Q, h_downstream)
+        else:
+            solver = SteadyProfileSolver(length=length, B=B, S0=S0, n=n)
+            self._inject_cross_section(solver, xs_data)
+            result = solver.solve_without_structures(Q, h_downstream, nx=nx, method=method)
+
+        h_arr = np.asarray(result["h"])
+        Q_arr = np.asarray(result["Q"])
         self._state = {
-            "h": result["h"].tolist(),
-            "Q": result["Q"].tolist(),
+            "h": h_arr.tolist(),
+            "Q": Q_arr.tolist(),
         }
         return _serialise_result(result)
+
+
+    def _run_network(self, params: dict) -> dict:
+        from solvers.network_steady_solver import (
+            NetworkSteadySolver, ReachDefinition, JunctionDefinition,
+        )
+
+        reaches_data = params.get("reaches", [])
+        junctions_data = params.get("junctions", [])
+
+        if not reaches_data or not junctions_data:
+            raise ValueError(
+                "network solver requires params[reach_list] and params[junction_list]"
+            )
+
+        reaches = []
+        for rd in reaches_data:
+            reaches.append(ReachDefinition(
+                reach_id=str(rd["reach_id"]),
+                length=float(rd["length"]),
+                slope=float(rd.get("slope", rd.get("S0", 0.001))),
+                manning_n=float(rd.get("manning_n", rd.get("n", 0.025))),
+                width=float(rd.get("width", rd.get("B", 10.0))),
+                cross_section=None,
+                nx=int(rd.get("nx", 101)),
+            ))
+
+        junctions = []
+        for jd in junctions_data:
+            junctions.append(JunctionDefinition(
+                junction_id=str(jd["junction_id"]),
+                upstream_reaches=list(jd.get("upstream_reaches", [])),
+                downstream_reaches=list(jd.get("downstream_reaches", [])),
+                boundary_type=jd.get("boundary_type"),
+                boundary_value=float(jd["boundary_value"]) if jd.get("boundary_value") is not None else None,
+                elevation=float(jd.get("elevation", 0.0)),
+                junction_type=str(jd.get("junction_type", "confluence")),
+            ))
+
+        inflows = {str(k): float(v) for k, v in params.get("inflows", {}).items()}
+
+        solver = NetworkSteadySolver(
+            reaches=reaches,
+            junctions=junctions,
+            max_iter=int(params.get("max_iter", 50)),
+            tol=float(params.get("tol", 1e-3)),
+        )
+        result = solver.solve(inflows)
+
+        self._state = {
+            "junction_wse": result["junction_wse"],
+            "junction_Q": result["junction_Q"],
+        }
+        return result
 
 
 # ======================================================================
