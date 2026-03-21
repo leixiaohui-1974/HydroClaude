@@ -530,41 +530,54 @@ class SteadyProfileSolver:
                 _ec = float(_br.get("expansion_coef", 0.5))
                 _low_chord = float(_br.get("low_chord_elevation_m", 0.0))
 
-                # Effective flow area inside bridge: subtract pier blockage
+                # Bridge effective area = normal area - pier blockage - deck blockage
+                # This is the core physics: area reduction → velocity increase → head loss
                 h_br = max(W_trial - bed[i], 0.01)
                 A_br, _P_br, _R_br, _T_br = self._get_geometry(h_br, i)
-                # Pier area approximation: pier_width * depth
-                A_pier = _pier_w * h_br
-                A_eff = max(A_br - A_pier, A_br * 0.5)  # allow max 50% blockage
+
+                # Pier blockage: sum of all pier widths × water depth at pier
+                A_pier = _pier_w * min(h_br, 30.0)  # cap at 30m depth for piers
+
+                # Deck blockage only in pressure flow (water level > deck elevation)
+                # For free-surface flow (most cases), only pier blockage applies
+                A_deck = 0.0
+                water_level = bed[i] + h_br
+                deck_elev = float(_br.get("deck_elevation_m", 1e6))
+                if water_level > deck_elev and deck_elev > bed[i]:
+                    # Pressure flow: area above deck is fully blocked
+                    h_above_deck = water_level - deck_elev
+                    A_deck = h_above_deck * _T_br
+
+                A_eff = max(A_br - A_pier - A_deck, A_br * 0.3)  # min 30% open
                 V_eff = Q / max(A_eff, 1e-9)
                 vh_eff = V_eff ** 2 / (2.0 * self.g)
 
-                # Pier head loss (K * V^2/2g)
+                # Pier drag loss: K_pier × V²/(2g) (from HEC-RAS parameters)
                 h_pier = _pier_k * vh_eff
 
-                # Friction loss through bridge opening
-                K_br, _alpha_br = self._compute_subdivided_conveyance(h_br, i)
-                Sf_br = (Q / K_br) ** 2 if K_br > 0 else self.compute_friction_slope(h_br, Q, i)
+                # When pier_k == 0 (HEC-RAS setting), the pier loss comes purely
+                # from the area reduction (A_eff < A_br) which increases velocity.
+                # Do NOT add estimated drag — respect the model's K=0 setting.
+
+                # Friction loss through bridge opening (reduced area → higher Sf)
+                R_eff = A_eff / max(_P_br, 1e-6)
+                n_br = self._manning_ns[i] if self._manning_ns and i < len(self._manning_ns) else self.n
+                Sf_br = (Q * n_br / (A_eff * R_eff ** (2.0/3.0))) ** 2 if A_eff > 0 and R_eff > 0 else 0
                 h_f_br = _br_len * Sf_br
 
-                # Velocity head at upstream approach
+                # Contraction loss (flow entering bridge from upstream approach)
                 vh_us_approach = alpha_us * V_us ** 2 / (2.0 * self.g)
-                # Velocity head at downstream approach (W[i+1])
+                h_contr = _cc * max(vh_eff - vh_us_approach, 0.0)
+
+                # Expansion loss (flow exiting bridge to downstream)
                 h_ds_app = max(W[i + 1] - bed[i + 1], 0.01)
                 A_ds_app, _, _, _ = self._get_geometry(h_ds_app, i + 1)
                 V_ds_app = Q / max(A_ds_app, 1e-9)
-                K_ds_app, alpha_ds_app = self._compute_subdivided_conveyance(h_ds_app, i + 1)
+                _, alpha_ds_app = self._compute_subdivided_conveyance(h_ds_app, i + 1)
                 vh_ds_approach = alpha_ds_app * V_ds_app ** 2 / (2.0 * self.g)
+                h_exp = _ec * max(vh_eff - vh_ds_approach, 0.0)
 
-                # Contraction loss (entering bridge, Section 4→3)
-                dv_contr = max(vh_eff - vh_us_approach, 0.0)
-                h_contr = _cc * dv_contr
-
-                # Expansion loss (exiting bridge, Section 2→1)
-                dv_exp = max(vh_ds_approach - vh_eff, 0.0)
-                h_exp = _ec * dv_exp
-
-                # Total bridge head loss penalty added to W_trial
+                # Total bridge head loss (all from physics)
                 h_bridge_total = h_pier + h_f_br + h_contr + h_exp
                 W_trial = W_trial + h_bridge_total
                 # Re-apply physical limit after bridge correction
