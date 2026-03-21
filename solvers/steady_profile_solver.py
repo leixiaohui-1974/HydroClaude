@@ -402,6 +402,287 @@ class SteadyProfileSolver:
 
         return float(K_total), float(alpha)
 
+
+    # Bridge Momentum Method (HEC-RAS Technical Reference Manual Chapter 5)
+
+    def _hydrostatic_pressure_force(self, h: float, station_index: int) -> float:
+        """Calculate hydrostatic pressure force P = gamma * A * y_bar_c (N).
+
+        Uses equivalent rectangular section approx: y_bar_c = A / (2 * T),
+        where T is water-surface width and A is flow area.
+
+        Args:
+            h: water depth (m)
+            station_index: cross-section index
+        Returns:
+            hydrostatic pressure force (N)
+        """
+        h_safe = max(float(h), 1e-6)
+        A, _P, _R, T = self._get_geometry(h_safe, station_index)
+        y_bar = A / max(2.0 * T, 1e-6)
+        gamma = 9810.0  # N/m^3
+        return gamma * A * y_bar
+
+    def _solve_bridge_momentum(
+        self,
+        Q: float,
+        W_downstream: float,
+        bridge: dict,
+        bed_ds: float,
+        bed_us: float,
+        ds_xs_index: int,
+        us_xs_index: int,
+    ) -> float:
+        """Compute upstream WSE at bridge using HEC-RAS Momentum Method.
+
+        HEC-RAS TRM Chapter 5 momentum equation (Section 2 to 3):
+            beta3*rho*Q*V3 + P3 = beta2*rho*Q*V2 + P2 + F_f + F_pier + W_x
+
+        Section 2 = downstream bridge face (known),
+        Section 3 = upstream bridge face (Newton-Raphson iteration).
+
+        Args:
+            Q: discharge (m^3/s)
+            W_downstream: WSE at downstream bridge face (m)
+            bridge: bridge parameter dict
+            bed_ds: downstream bed elevation (m)
+            bed_us: upstream bed elevation (m)
+            ds_xs_index: downstream XS index
+            us_xs_index: upstream XS index
+        Returns:
+            W_upstream: upstream bridge face WSE (m)
+        """
+        gamma = 9810.0
+        rho = 1000.0
+        beta2 = 1.0  # Boussinesq momentum correction
+        beta3 = 1.0
+
+        L_bridge = max(float(bridge.get("bridge_length_m", 1.0)), 0.1)
+        pier_w_total = max(float(bridge.get("total_pier_width_m", 0.0)), 0.0)
+        C_D = float(bridge.get("pier_cd", 2.0))
+        deck_elev = float(bridge.get("deck_elevation_m", 1e9))
+        pier_height = float(bridge.get("pier_height_m", 1e9))
+
+        n_br = (
+            self._manning_ns[us_xs_index]
+            if self._manning_ns and us_xs_index < len(self._manning_ns)
+            else self.n
+        )
+
+        h2 = max(W_downstream - bed_ds, 0.01)
+        A2, P2_wet, _R2, T2 = self._get_geometry(h2, ds_xs_index)
+        A_pier2 = pier_w_total * min(h2, pier_height)
+        A2_eff = max(A2 - A_pier2, A2 * 0.3)
+        # 壅水判断：使用 EGL (能量梯度线) 而非 WSE
+        V2_temp = Q / max(A2_eff, 1e-9)
+        EGL2 = W_downstream + V2_temp ** 2 / (2.0 * self.g)
+        if EGL2 > deck_elev > bed_ds:
+            A2_eff = max(A2_eff - (W_downstream - deck_elev) * T2, A2 * 0.1)
+        V2 = Q / max(A2_eff, 1e-9)
+        P2_force = self._hydrostatic_pressure_force(h2, ds_xs_index)
+
+        S0_bridge = (bed_us - bed_ds) / max(L_bridge, 0.1)
+
+        W3_trial = W_downstream + max(0.05, abs(bed_us - bed_ds) + 0.05)
+        W3_trial = max(W3_trial, bed_us + 0.01)
+
+        for _it in range(40):
+            h3 = max(W3_trial - bed_us, 0.01)
+            A3, P3_wet, _R3, T3 = self._get_geometry(h3, us_xs_index)
+            A_pier3 = pier_w_total * min(h3, pier_height)
+            A3_eff = max(A3 - A_pier3, A3 * 0.3)
+            # 壅水判断：使用 EGL (能量梯度线) 而非 WSE
+            V3_temp = Q / max(A3_eff, 1e-9)
+            EGL3 = W3_trial + V3_temp ** 2 / (2.0 * self.g)
+            if EGL3 > deck_elev > bed_us:
+                A3_eff = max(A3_eff - (W3_trial - deck_elev) * T3, A3 * 0.1)
+            V3 = Q / max(A3_eff, 1e-9)
+            P3_force = self._hydrostatic_pressure_force(h3, us_xs_index)
+
+            A_avg = 0.5 * (A2_eff + A3_eff)
+            P_wet_avg = 0.5 * (P2_wet + P3_wet)
+            R_avg = A_avg / max(P_wet_avg, 1e-6)
+            V_avg = Q / max(A_avg, 1e-9)
+            Sf_avg = min((Q * n_br / max(A_avg * R_avg ** (2.0/3.0), 1e-9)) ** 2, 1.0)
+
+            F_f = gamma * A_avg * Sf_avg * L_bridge
+            A_pier_avg = 0.5 * (A_pier2 + A_pier3)
+            F_pier = 0.5 * rho * C_D * A_pier_avg * V_avg ** 2
+            W_x = gamma * A_avg * S0_bridge * L_bridge
+
+            momentum_rhs = beta2 * rho * Q * V2 + P2_force + F_f + F_pier + W_x
+            imbalance = (beta3 * rho * Q * V3 + P3_force) - momentum_rhs
+
+            if abs(imbalance) < max(1.0, abs(momentum_rhs) * 1e-5):
+                break
+
+            dW = 1e-3
+            h3p = max(h3 + dW, 0.01)
+            A3p, _P3pw, _R3p, T3p = self._get_geometry(h3p, us_xs_index)
+            A_pier3p = pier_w_total * min(h3p, pier_height)
+            A3p_eff = max(A3p - A_pier3p, A3p * 0.3)
+            # 壅水判断：使用 EGL (能量梯度线) 而非 WSE
+            V3p_temp = Q / max(A3p_eff, 1e-9)
+            EGL3p = (W3_trial + dW) + V3p_temp ** 2 / (2.0 * self.g)
+            if EGL3p > deck_elev > bed_us:
+                A3p_eff = max(A3p_eff - ((W3_trial + dW) - deck_elev) * T3p, A3p * 0.1)
+            V3p = Q / max(A3p_eff, 1e-9)
+            P3p_force = self._hydrostatic_pressure_force(h3p, us_xs_index)
+            d_imb_dW = ((beta3 * rho * Q * V3p + P3p_force) - momentum_rhs - imbalance) / dW
+
+            if abs(d_imb_dW) < 1e-3:
+                step = float(np.clip(imbalance / max(gamma * A3, 1.0), -0.5, 0.5))
+            else:
+                step = float(np.clip(-imbalance / d_imb_dW, -0.5, 0.5))
+            W3_trial = max(W3_trial + step, bed_us + 0.005)
+
+        return float(W3_trial)
+
+    def _solve_bridge_energy(
+        self,
+        Q: float,
+        W_downstream: float,
+        bridge: dict,
+        bed_ds: float,
+        bed_us: float,
+        ds_xs_index: int,
+        us_xs_index: int,
+    ) -> float:
+        """Compute upstream WSE at bridge using HEC-RAS Energy Method (TRM Section 5.2).
+
+        Energy equation from Section 2 (DS bridge face) to Section 3 (US bridge face):
+            W_2 + alpha_2*V_2^2/(2g) = W_3 + alpha_3*V_3^2/(2g) + h_f + h_pier + h_contr
+
+        Args:
+            Q: discharge (m^3/s)
+            W_downstream: WSE at downstream bridge face Section 2 (m)
+            bridge: bridge parameter dict
+            bed_ds: downstream bridge face bed elevation (m)
+            bed_us: upstream bridge face bed elevation (m)
+            ds_xs_index: downstream XS array index
+            us_xs_index: upstream XS array index
+        Returns:
+            W_upstream: upstream bridge face WSE (m)
+        """
+        L_bridge = max(float(bridge.get("bridge_length_m", 1.0)), 0.1)
+        pier_w_total = max(float(bridge.get("total_pier_width_m", 0.0)), 0.0)
+        pier_k = float(bridge.get("pier_loss_coef", 0.0))
+        pier_height = float(bridge.get("pier_height_m", 1e9))
+        deck_elev = float(bridge.get("deck_elevation_m", 1e9))
+        cc = float(bridge.get("contraction_coef", 0.1))
+
+        n_br = (
+            self._manning_ns[us_xs_index]
+            if self._manning_ns and us_xs_index < len(self._manning_ns)
+            else self.n
+        )
+
+        # ── 桥梁 opening 轮廓（若有）用于构造 NaturalSection ──────────────────
+        _op_sta = bridge.get("bridge_opening_stations", [])
+        _op_elev = bridge.get("bridge_opening_elevations", [])
+        _bridge_ns = None
+        if len(_op_sta) > 2 and len(_op_elev) == len(_op_sta):
+            try:
+                from physics.cross_section import NaturalSection
+                _bridge_ns = NaturalSection(
+                    "bridge_opening",
+                    elevations=np.array(_op_elev, dtype=float),
+                    distances=np.array(_op_sta, dtype=float),
+                )
+            except Exception:
+                _bridge_ns = None
+
+        def _eff_area(W_trial: float, xs_idx: int, bed_elev: float) -> tuple[float, float, float]:
+            """Return (A_eff, P_wet, alpha) at WSE W_trial for given XS."""
+            h = max(W_trial - bed_elev, 0.01)
+            A, P_wet, _R, T = self._get_geometry(h, xs_idx)
+            # 桥墩面积扣减
+            A_pier = pier_w_total * min(h, pier_height)
+            if _bridge_ns is not None:
+                # 用 NaturalSection 计算桥内净过水面积（相对 NaturalSection 最低点的水深）
+                _op_depth = max(W_trial - _bridge_ns.min_elevation, 0.0)
+                _geom = _bridge_ns.compute_geometry(_op_depth)
+                A_open = max(_geom.area - A_pier, _geom.area * 0.3)
+                P_open = max(_geom.perimeter, 1e-6)
+            else:
+                # 桥面板压顶面积扣减（使用 EGL 判断）
+                # 先计算初步的有效面积（仅扣除桥墩）
+                A_temp = max(A - A_pier, A * 0.3)
+                V_temp = Q / max(A_temp, 1e-9)
+                # 计算能量梯度线 EGL
+                _, alpha_temp = self._compute_subdivided_conveyance(h, xs_idx)
+                EGL_trial = W_trial + alpha_temp * V_temp ** 2 / (2.0 * self.g)
+                # 判断是否需要扣除桥面板面积
+                A_deck = 0.0
+                if EGL_trial > deck_elev > bed_elev:
+                    A_deck = (W_trial - deck_elev) * T
+                A_open = max(A - A_pier - A_deck, A * 0.3)
+                P_open = P_wet
+            _, alpha = self._compute_subdivided_conveyance(h, xs_idx)
+            return A_open, P_open, alpha
+
+        # ── Section 2（下游桥面）已知量 ──────────────────────────────────────
+        A2_eff, P2_wet, alpha2 = _eff_area(W_downstream, ds_xs_index, bed_ds)
+        V2 = Q / max(A2_eff, 1e-9)
+        E2 = W_downstream + alpha2 * V2 ** 2 / (2.0 * self.g)
+
+        # ── Newton-Raphson 求解 Section 3（上游桥面）WSE ─────────────────────
+        # 初始猜测：W_3 ≥ W_2，从下游值开始
+        W3_trial = max(W_downstream, bed_us + 0.01)
+        W3_trial = max(W3_trial, bed_us + max(W_downstream - bed_ds, 0.01))
+
+        for _it in range(40):
+            A3_eff, P3_wet, alpha3 = _eff_area(W3_trial, us_xs_index, bed_us)
+            V3 = Q / max(A3_eff, 1e-9)
+            vh3 = alpha3 * V3 ** 2 / (2.0 * self.g)
+
+            # 摩擦损失（Manning 平均）
+            A_avg = 0.5 * (A2_eff + A3_eff)
+            P_avg = 0.5 * (P2_wet + P3_wet)
+            R_avg = A_avg / max(P_avg, 1e-6)
+            Sf_avg = min((Q * n_br / max(A_avg * R_avg ** (2.0 / 3.0), 1e-9)) ** 2, 1.0)
+            h_f = L_bridge * Sf_avg
+
+            # 桥墩局部损失（基于上游桥面速度头）
+            h_pier = pier_k * vh3
+
+            # 收缩损失（Section 2 → Section 3 速度头增加时为收缩）
+            vh2 = alpha2 * V2 ** 2 / (2.0 * self.g)
+            h_contr = cc * max(vh3 - vh2, 0.0)
+
+            # 能量方程残差：f = E2 - (W3 + vh3 + h_f + h_pier + h_contr) = 0
+            f_val = E2 - (W3_trial + vh3 + h_f + h_pier + h_contr)
+
+            if abs(f_val) < 1e-4:
+                break
+
+            # 数值微分 df/dW3
+            dW = 1e-3
+            A3p, P3p, alpha3p = _eff_area(W3_trial + dW, us_xs_index, bed_us)
+            V3p = Q / max(A3p, 1e-9)
+            vh3p = alpha3p * V3p ** 2 / (2.0 * self.g)
+            A_avgp = 0.5 * (A2_eff + A3p)
+            P_avgp = 0.5 * (P2_wet + P3p)
+            R_avgp = A_avgp / max(P_avgp, 1e-6)
+            Sf_avgp = min((Q * n_br / max(A_avgp * R_avgp ** (2.0 / 3.0), 1e-9)) ** 2, 1.0)
+            h_fp = L_bridge * Sf_avgp
+            h_pierp = pier_k * vh3p
+            h_contrp = cc * max(vh3p - vh2, 0.0)
+            f_valp = E2 - ((W3_trial + dW) + vh3p + h_fp + h_pierp + h_contrp)
+
+            df_dW = (f_valp - f_val) / dW
+            if abs(df_dW) < 1e-6:
+                step = float(np.clip(f_val * 0.5, -0.5, 0.5))
+            else:
+                step = float(np.clip(f_val / df_dW, -0.5, 0.5))
+
+            # 能量方程要求 W_3 ≥ W_2（亚临界流），同时不低于床面
+            W3_new = max(W3_trial + step, bed_us + 0.005)
+            W3_trial = W3_new
+
+        return float(W3_trial)
+
+
     def _solve_standard_step_variable_xs(
         self,
         Q: float,
@@ -469,157 +750,165 @@ class SteadyProfileSolver:
             K_ds, alpha_ds = self._compute_subdivided_conveyance(h_ds, i + 1)
             Sf_ds = (Q / K_ds) ** 2 if K_ds > 0 else self.compute_friction_slope(h_ds, Q, i + 1)
             vh_ds = alpha_ds * V_ds ** 2 / (2.0 * self.g)
-            # 改进初始猜测：当上游床面高于下游水面时（逆坡或陡坡），
-            # 直接从 W=bed[i]+h_downstream 作为初始猜测，避免负水深震荡
-            h_init_estimate = max(W[i + 1] - bed[i + 1], 0.01)
-            W_trial = max(W[i + 1], bed[i] + h_init_estimate)
-            W_trial_prev = W_trial - 1.0  # 前一步，用于震荡检测
-            W_new = W_trial
-            for _iter in range(50):
-                h_us = max(W_trial - bed[i], 0.01)
-                h_us = min(h_us, 100.0)  # cap depth at 100m
-                A_us, _P_us, _R_us, _T_us = self._get_geometry(h_us, i)
-                V_us = Q / max(A_us, 1e-9)
-                K_us, alpha_us = self._compute_subdivided_conveyance(h_us, i)
-                Sf_us = (Q / K_us) ** 2 if K_us > 0 else self.compute_friction_slope(h_us, Q, i)
-                vh_us = alpha_us * V_us ** 2 / (2.0 * self.g)
-                Sf_avg = 0.5 * (Sf_us + Sf_ds)
-                # Cap friction slope to avoid explosion
-                Sf_avg = min(Sf_avg, 1.0)
-                # Use per-XS loss coefficients from HEC-RAS when available
-                cc = contraction_coef
-                ec = expansion_coef
-                if self._contraction_coefs and i < len(self._contraction_coefs):
-                    cc = self._contraction_coefs[i]
-                if self._expansion_coefs and i < len(self._expansion_coefs):
-                    ec = self._expansion_coefs[i]
-                if vh_us > vh_ds:
-                    h_minor = cc * (vh_us - vh_ds)
-                else:
-                    h_minor = ec * (vh_ds - vh_us)
-                W_new = W[i + 1] + vh_ds - vh_us + dx_seg * Sf_avg + h_minor
-                # 物理下限：W 不能低于床面
-                W_new = max(W_new, bed[i] + 1e-4)
-                if abs(W_new - W_trial) < 3e-4:
-                    W_trial = W_new; break
-                # 震荡检测：若 W_new 在 W_trial 两侧来回跳，改用二分步
-                if _iter >= 2 and (W_new - W_trial) * (W_trial - W_trial_prev) < 0:
-                    W_new = 0.5 * (W_trial + W_new)
-                W_trial_prev = W_trial
-                W_trial = W_new
+            # --- 改进2：陡坡自适应子步 -------------------------------------------
+            # --- 改进2：陡坡自适应子步（v2）-------------------------------------------
+            # 触发判据：基于每步能量变化 energy_change = dx_seg * Sf_ds
+            # 目标：每子步能量变化 < 0.002m，最多 50 个子步
+            n_substeps = 1
+            energy_change = dx_seg * Sf_ds
+            if energy_change > 0.005 and not (i in _bridge_at_us):
+                n_substeps = min(50, max(1, int(energy_change / 0.002)))
+            # 子步迭代：每步以前一子步 W 为下游，床面高程线性插值
+            # 子步间的断面几何在 i 和 i+1 之间按位置线性插值
+            W_sub_ds = W[i + 1]
+            bed_sub_ds = bed[i + 1]
+            dx_sub = dx_seg / n_substeps
+            # 床面高程增量：每子步向 bed[i] 方向推进一格
+            _bed_step = (bed[i] - bed[i + 1]) / n_substeps
+            for _sub in range(n_substeps):
+                bed_sub_us = bed_sub_ds + _bed_step
+                # 当前子步下游断面相对位置（0 = 纯 i+1，1 = 纯 i）
+                frac_ds = _sub / n_substeps       # 第 _sub 子步下游侧相对 i+1 的距离
+                w_i   = frac_ds                    # 靠近 i 的权重
+                w_ip1 = 1.0 - frac_ds              # 靠近 i+1 的权重
+                # 计算本子步的下游水力量（对两个端面分别算再插值）
+                _h_ds_sub = max(W_sub_ds - bed_sub_ds, 0.01)
+                # i+1 端面
+                _K_ip1, _alpha_ip1 = self._compute_subdivided_conveyance(_h_ds_sub, i + 1)
+                _A_ip1 = self._get_geometry(_h_ds_sub, i + 1)[0]
+                # i 端面（用同一水深，仅面积和 conveyance 来自 xs[i]）
+                _K_i, _alpha_i = self._compute_subdivided_conveyance(_h_ds_sub, i)
+                _A_i = self._get_geometry(_h_ds_sub, i)[0]
+                # 插值
+                _K_ds_sub    = w_ip1 * _K_ip1 + w_i * _K_i
+                _alpha_ds_sub = w_ip1 * _alpha_ip1 + w_i * _alpha_i
+                _A_ds_sub    = max(w_ip1 * _A_ip1 + w_i * _A_i, 1e-9)
+                _Sf_ds_sub   = (Q / _K_ds_sub) ** 2 if _K_ds_sub > 0 else Sf_ds
+                _V_ds_sub    = Q / _A_ds_sub
+                _vh_ds_sub   = _alpha_ds_sub * _V_ds_sub ** 2 / (2.0 * self.g)
+                # 改进初始猜测：考虑床面坡降方向，避免陡坡初始猜测偏低
+                _bed_rise     = max(bed_sub_us - bed_sub_ds, 0.0)
+                h_init_estimate = max(W_sub_ds - bed_sub_ds, 0.01) + _bed_rise
+                W_trial = max(
+                    W_sub_ds + _bed_rise,
+                    bed_sub_us + h_init_estimate,
+                )
+                W_trial_prev = W_trial - 1.0  # 前一步，用于震荡检测
+                W_new = W_trial
+                relax = 1.0  # 松弛因子，震荡时递减
+                for _iter in range(80):
+                    h_us = max(W_trial - bed_sub_us, 0.01)
+                    h_us = min(h_us, 100.0)  # cap depth at 100m
+                    A_us, _P_us, _R_us, _T_us = self._get_geometry(h_us, i)
+                    V_us = Q / max(A_us, 1e-9)
+                    K_us, alpha_us = self._compute_subdivided_conveyance(h_us, i)
+                    Sf_us = (Q / K_us) ** 2 if K_us > 0 else self.compute_friction_slope(h_us, Q, i)
+                    vh_us = alpha_us * V_us ** 2 / (2.0 * self.g)
+                    Sf_avg = 0.5 * (Sf_us + _Sf_ds_sub)
+                    # Cap friction slope to avoid explosion
+                    Sf_avg = min(Sf_avg, 1.0)
+                    # Use per-XS loss coefficients from HEC-RAS when available
+                    cc = contraction_coef
+                    ec = expansion_coef
+                    if self._contraction_coefs and i < len(self._contraction_coefs):
+                        cc = self._contraction_coefs[i]
+                    if self._expansion_coefs and i < len(self._expansion_coefs):
+                        ec = self._expansion_coefs[i]
+                    if vh_us > _vh_ds_sub:
+                        h_minor = cc * (vh_us - _vh_ds_sub)
+                    else:
+                        h_minor = ec * (_vh_ds_sub - vh_us)
+                    W_new = W_sub_ds + _vh_ds_sub - vh_us + dx_sub * Sf_avg + h_minor
+                    # 物理下限：W 不能低于床面
+                    W_new = max(W_new, bed_sub_us + 1e-4)
+                    # 绝对+相对双重收敛准则
+                    _delta = abs(W_new - W_trial)
+                    if _delta < 1e-5 or _delta / max(abs(W_trial), 1.0) < 1e-6:
+                        W_trial = W_new
+                        break
+                    # 震荡检测：若 W_new 在 W_trial 两侧来回跳，用松弛因子递减
+                    if _iter >= 2 and (W_new - W_trial) * (W_trial - W_trial_prev) < 0:
+                        relax = max(0.3, relax * 0.7)
+                        W_new = W_trial + relax * (W_new - W_trial)
+                    W_trial_prev = W_trial
+                    W_trial = W_new
+                # 更新子步状态：当前子步上游 W 成为下一子步的下游 W
+                W_sub_ds = W_trial
+                bed_sub_ds = bed_sub_us
+            # 同步 h_us/V_us/alpha_us 供后续 bridge energy 路径使用
+            h_us = max(W_trial - bed[i], 0.01)
+            A_us, _P_us, _R_us, _T_us = self._get_geometry(h_us, i)
+            V_us = Q / max(A_us, 1e-9)
+            K_us, alpha_us = self._compute_subdivided_conveyance(h_us, i)
+            # -----------------------------------------------------------------------
             # Divergence protection
             if W_trial > _W_MAX or W_trial < bed[i] - 10 or np.isnan(W_trial):
                 W_trial = W[i + 1] + (bed[i] - bed[i + 1])  # follow bed slope
                 _diverge_count += 1
-            # --- Bridge energy-method correction --------------------------------
-            # When the current upstream XS is identified as a bridge's upstream face,
-            # apply the HEC-RAS Energy Method (4-section approach):
-            #
-            #   W4 (upstream) = W1 (downstream of bridge) +
-            #       contraction loss + friction loss + pier loss + expansion loss
-            #
-            # W_trial here is the upstream face of the bridge (Section 4).
-            # W[i+1] is the downstream approach (Section 1 equivalent).
-            # Inside the bridge we model as a single 2→3 step with effective area.
+            # --- Bridge Momentum Method (HEC-RAS TRM Chapter 5) ----------------
+            # Default: Momentum Method; set bridge_method="energy" for legacy mode.
             if i in _bridge_at_us:
                 _br = _bridge_at_us[i]
-                _br_len = max(float(_br.get("bridge_length_m", 0.0)), 1.0)
-                _pier_w = max(float(_br.get("total_pier_width_m", 0.0)), 0.0)
-                _pier_k = float(_br.get("pier_loss_coef", 0.0))
-                _deck_elev = float(_br.get("deck_elevation_m", 1e6))
-
-                # ============================================================
-                # Bridge Energy Method with pier area reduction
-                # (HEC-RAS Technical Reference Manual, Chapter 5)
-                #
-                # Momentum equation between downstream (Section 2) and
-                # upstream (Section 3) bridge faces:
-                #
-                #   P3 + β3·ρ·Q·V3 = P2 + β2·ρ·Q·V2 + F_f + F_pier + W_x
-                #
-                # where:
-                #   P = hydrostatic pressure force = γ·A·ȳ
-                #   F_f = friction force = γ·A_avg·Sf_avg·L
-                #   F_pier = pier drag = ½·ρ·Cd·Σ(w_pier·h_pier)·V²
-                #   W_x = gravity component = γ·A_avg·S0·L
-                # ============================================================
-                _rho = 1000.0  # kg/m³
-                _gamma = _rho * self.g  # N/m³
-
-                # Downstream face (Section 2) — known from W[i+1]
-                h2 = max(W[i + 1] - bed[i + 1], 0.01)
-                A2_full, P2_full, _, T2 = self._get_geometry(h2, i + 1)
-                A2_pier = _pier_w * min(h2, 30.0)
-                A2_eff = max(A2_full - A2_pier, A2_full * 0.3)
-                V2 = Q / max(A2_eff, 1e-9)
-                # Hydrostatic pressure: P = γ·A·ȳ, ȳ ≈ A/(2T) for general XS
-                y_bar2 = A2_full / max(2.0 * T2, 1e-6)
-                P2 = _gamma * A2_full * y_bar2
-
-                # Bed slope through bridge
-                S0_br = (bed[i] - bed[i + 1]) / max(_br_len, 0.1)
-
-                # Newton-Raphson iteration for upstream face (Section 3)
-                W3_trial = W_trial  # start from Standard Step estimate
-                for _m_iter in range(20):
-                    h3 = max(W3_trial - bed[i], 0.01)
-                    A3_full, P3_full, _, T3 = self._get_geometry(h3, i)
-                    A3_pier = _pier_w * min(h3, 30.0)
-                    A3_eff = max(A3_full - A3_pier, A3_full * 0.3)
-                    V3 = Q / max(A3_eff, 1e-9)
-                    y_bar3 = A3_full / max(2.0 * T3, 1e-6)
-                    P3 = _gamma * A3_full * y_bar3
-
-                    # Average values for friction and gravity
-                    A_avg = 0.5 * (A2_eff + A3_eff)
-                    V_avg = Q / max(A_avg, 1e-9)
-                    n_br = self._manning_ns[i] if self._manning_ns and i < len(self._manning_ns) else self.n
-                    R_avg = A_avg / max(0.5 * (P2_full + P3_full), 1e-6)
-                    Sf_avg = (n_br * V_avg) ** 2 / max(R_avg ** (4.0/3.0), 1e-12)
-
-                    # Forces (all in Newtons per unit... actually we work in N total)
-                    F_friction = _gamma * A_avg * Sf_avg * _br_len
-                    F_gravity = _gamma * A_avg * S0_br * _br_len
-
-                    # Pier drag: F = ½ρ·Cd·A_frontal·V²
-                    # When HEC-RAS pier_k = 0, NO additional pier drag is applied.
-                    # The pier effect comes only from area reduction (A_eff < A_full).
-                    if _pier_k > 0:
-                        A_pier_frontal = _pier_w * min(h3, 30.0)
-                        F_pier = _pier_k * _rho * A_pier_frontal * V_avg ** 2 / 2.0
+                _use_momentum = str(_br.get("bridge_method", "momentum")).lower() != "energy"
+                if _use_momentum:
+                    W_trial = self._solve_bridge_momentum(
+                        Q=Q,
+                        W_downstream=W[i + 1],
+                        bridge=_br,
+                        bed_ds=bed[i + 1],
+                        bed_us=bed[i],
+                        ds_xs_index=i + 1,
+                        us_xs_index=i,
+                    )
+                else:
+                    # Legacy Energy Method path
+                    _br_len = max(float(_br.get("bridge_length_m", 0.0)), 1.0)
+                    _pier_w = max(float(_br.get("total_pier_width_m", 0.0)), 0.0)
+                    _pier_k = float(_br.get("pier_loss_coef", 0.0))
+                    _cc = float(_br.get("contraction_coef", 0.3))
+                    _ec = float(_br.get("expansion_coef", 0.5))
+                    h_br = max(W_trial - bed[i], 0.01)
+                    A_br, _P_br, _R_br, _T_br = self._get_geometry(h_br, i)
+                    A_pier_e = _pier_w * min(h_br, 30.0)
+                    # 改进1：若有 bridge_opening_stations，用 NaturalSection 计算桥内有效过水面积
+                    _op_sta = _br.get("bridge_opening_stations", [])
+                    _op_elev = _br.get("bridge_opening_elevations", [])
+                    if len(_op_sta) > 2 and len(_op_elev) == len(_op_sta):
+                        from physics.cross_section import NaturalSection
+                        _bridge_xs = NaturalSection(
+                            "bridge_opening",
+                            elevations=np.array(_op_elev, dtype=float),
+                            distances=np.array(_op_sta, dtype=float),
+                        )
+                        # NaturalSection.compute_geometry 需要相对于最低点的水深
+                        _wl_abs = bed[i] + h_br
+                        _op_depth = max(_wl_abs - _bridge_xs.min_elevation, 0.0)
+                        _bridge_geom = _bridge_xs.compute_geometry(_op_depth)
+                        A_eff_e = max(_bridge_geom.area - A_pier_e, _bridge_geom.area * 0.3)
                     else:
-                        F_pier = 0.0
-
-                    # Momentum balance: P3 + β3·ρQV3 = P2 + β2·ρQV2 + F_f + F_pier + W_x
-                    # β ≈ 1.0 for bridge interior (no subdivision)
-                    lhs = P3 + _rho * Q * V3
-                    rhs = P2 + _rho * Q * V2 + F_friction + F_pier - F_gravity
-                    residual = lhs - rhs  # should be 0
-
-                    if abs(residual) < _gamma * 0.001:  # convergence: < 1mm water column
-                        break
-
-                    # Numerical derivative dR/dW3
-                    dW = 0.001
-                    h3p = max(W3_trial + dW - bed[i], 0.01)
-                    A3p, _, _, T3p = self._get_geometry(h3p, i)
-                    A3p_eff = max(A3p - _pier_w * min(h3p, 30), A3p * 0.3)
-                    V3p = Q / max(A3p_eff, 1e-9)
-                    P3p = _gamma * A3p * A3p / max(2.0 * T3p, 1e-6)
-                    lhs_p = P3p + _rho * Q * V3p
-                    dR_dW = (lhs_p - lhs) / dW
-
-                    if abs(dR_dW) > 1e-3:
-                        W3_trial -= residual / dR_dW
-                    else:
-                        W3_trial += 0.01 if residual < 0 else -0.01
-
-                    # Physical bounds
-                    W3_trial = max(W3_trial, bed[i] + 0.01)
-                    W3_trial = min(W3_trial, _W_MAX)
-
-                W_trial = W3_trial
-                # Re-apply physical limit after bridge correction
+                        A_deck_e = 0.0
+                        wl_br = bed[i] + h_br
+                        deck_e = float(_br.get("deck_elevation_m", 1e6))
+                        if wl_br > deck_e and deck_e > bed[i]:
+                            A_deck_e = (wl_br - deck_e) * _T_br
+                        A_eff_e = max(A_br - A_pier_e - A_deck_e, A_br * 0.3)
+                    V_eff_e = Q / max(A_eff_e, 1e-9)
+                    vh_eff_e = V_eff_e ** 2 / (2.0 * self.g)
+                    h_pier_e = _pier_k * vh_eff_e
+                    R_eff_e = A_eff_e / max(_P_br, 1e-6)
+                    n_br_e = self._manning_ns[i] if self._manning_ns and i < len(self._manning_ns) else self.n
+                    Sf_br_e = (Q * n_br_e / (A_eff_e * R_eff_e ** (2.0/3.0))) ** 2 if A_eff_e > 0 and R_eff_e > 0 else 0
+                    h_f_br_e = _br_len * Sf_br_e
+                    vh_us_app = alpha_us * V_us ** 2 / (2.0 * self.g)
+                    h_contr_e = _cc * max(vh_eff_e - vh_us_app, 0.0)
+                    h_ds_app = max(W[i + 1] - bed[i + 1], 0.01)
+                    A_ds_app, _, _, _ = self._get_geometry(h_ds_app, i + 1)
+                    V_ds_app = Q / max(A_ds_app, 1e-9)
+                    _, alpha_ds_app = self._compute_subdivided_conveyance(h_ds_app, i + 1)
+                    vh_ds_app = alpha_ds_app * V_ds_app ** 2 / (2.0 * self.g)
+                    h_exp_e = _ec * max(vh_eff_e - vh_ds_app, 0.0)
+                    W_trial = W_trial + h_pier_e + h_f_br_e + h_contr_e + h_exp_e
+                # Re-apply physical limit
                 W_trial = max(W_trial, bed[i] + 1e-4)
                 W_trial = min(W_trial, _W_MAX)
             # --------------------------------------------------------------------
