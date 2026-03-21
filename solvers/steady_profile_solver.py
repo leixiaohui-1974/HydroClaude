@@ -41,6 +41,7 @@ class SteadyProfileSolver:
         manning_n_lob=None,
         manning_n_rob=None,
         bank_stations=None,
+        bridges=None,
     ) -> None:
         """
         Args:
@@ -59,6 +60,9 @@ class SteadyProfileSolver:
             manning_n_lob: Per-XS Left Overbank Manning n (HEC-RAS 三区分区)
             manning_n_rob: Per-XS Right Overbank Manning n (HEC-RAS 三区分区)
             bank_stations: Per-XS (left_bank_station, right_bank_station) cross-section coords (m)
+            bridges: List of bridge dicts with physical parameters for energy method calculation.
+                Each dict: {us_xs_index, ds_xs_index, deck_elevation_m, low_chord_elevation_m,
+                bridge_length_m, n_piers, total_pier_width_m, pier_loss_coef, ...}
         """
         self.length = length
         self.B = B
@@ -75,6 +79,7 @@ class SteadyProfileSolver:
         self._manning_n_lob = manning_n_lob
         self._manning_n_rob = manning_n_rob
         self._bank_stations = bank_stations
+        self._bridges = bridges  # list[dict] with bridge physical parameters
 
     # Hydraulic geometry helpers
 

@@ -172,22 +172,70 @@ class CrossSectionRecord:
 
 @dataclass
 class StructureRecord:
-    """Hydraulic structure metadata."""
+    """Hydraulic structure metadata — complete HEC-RAS input parameters."""
     structure_id: str = ""
     structure_type: str = ""  # bridge, culvert, inline_weir, lateral
-    xs_upstream: str = ""
-    xs_downstream: str = ""
-    # Bridge-specific
-    span_m: float = 0.0
-    opening_height_m: float = 0.0
-    pier_width_m: float = 0.0
+    xs_upstream: str = ""     # RS of upstream XS
+    xs_downstream: str = ""   # RS of downstream XS
+    us_xs_index: int = -1     # Index into XS array
+    ds_xs_index: int = -1     # Index into XS array
+
+    # ===== Bridge parameters (HEC-RAS Energy/Momentum Method) =====
+    # Deck geometry
+    deck_elevation_m: float = 0.0          # 桥面板顶高程
+    low_chord_elevation_m: float = 0.0     # 桥底（低弦）高程
+    opening_height_m: float = 0.0          # 净空高 = deck - low_chord
+    bridge_length_m: float = 0.0           # 桥长（沿水流方向）
+    bridge_width_m: float = 0.0            # 桥宽（堰宽）
+    # Piers
     n_piers: int = 0
-    # Culvert-specific
-    shape: str = ""  # circular, rectangular, arch
-    diameter_m: float = 0.0
-    length_m: float = 0.0
-    slope: float = 0.0
-    inlet_type: str = "square_edge"
+    total_pier_width_m: float = 0.0        # 所有桥墩的总阻水宽度
+    pier_loss_coef: float = 0.0            # K_pier（桥墩阻力系数）
+    pier_drag_coef: float = 2.0            # C_D（桥墩拖曳系数）
+    # Per-pier geometry (station-elevation profiles)
+    pier_profiles: list[dict] = field(default_factory=list)  # [{station_m, elevation_m}, ...]
+    # Loss coefficients
+    bridge_contraction_coef: float = 0.3   # 入口收缩系数
+    bridge_expansion_coef: float = 0.5     # 出口扩展系数
+    # Bridge deck as weir
+    weir_coef: float = 2.6                 # 堰流系数 (Cd)
+    weir_max_submergence: float = 0.95     # 最大淹没比
+    # Bridge cross-section profiles (桥内断面几何)
+    us_bridge_stations: list[float] = field(default_factory=list)  # 上游桥面内断面
+    us_bridge_elevations: list[float] = field(default_factory=list)
+    ds_bridge_stations: list[float] = field(default_factory=list)  # 下游桥面内断面
+    ds_bridge_elevations: list[float] = field(default_factory=list)
+    # Bridge deck profile (lid)
+    lid_stations: list[float] = field(default_factory=list)
+    lid_elevations: list[float] = field(default_factory=list)
+    # Calculation mode
+    bridge_method: str = "energy"  # energy, momentum, yarnell, wspro
+    use_friction_in_momentum: bool = True
+    use_weight_in_momentum: bool = True
+    # Manning n inside bridge
+    bridge_manning_n: float = 0.03
+
+    # ===== Culvert parameters (FHWA HDS-5) =====
+    shape: str = ""              # circular, rectangular, arch
+    diameter_m: float = 0.0      # 直径（圆形）
+    culvert_width_m: float = 0.0 # 宽度（矩形）
+    culvert_height_m: float = 0.0  # 高度（矩形/拱形）
+    culvert_length_m: float = 0.0
+    culvert_slope: float = 0.0
+    culvert_manning_n: float = 0.013
+    inlet_type: str = "square_edge"  # square_edge, headwall, mitered, projecting
+    entrance_loss_coef: float = 0.5
+    exit_loss_coef: float = 1.0
+    invert_elevation_us_m: float = 0.0  # 上游倒虹吸高程
+    invert_elevation_ds_m: float = 0.0  # 下游倒虹吸高程
+    n_barrels: int = 1  # 洞数
+
+    # ===== Inline structure (weir/gate) =====
+    crest_elevation_m: float = 0.0
+    weir_length_m: float = 0.0
+    gate_opening_m: float = 0.0
+    gate_width_m: float = 0.0
+    gate_coef: float = 0.6
 
 
 @dataclass
