@@ -1296,9 +1296,17 @@ class SteadyProfileSolver:
                     f_narrow_lo = _energy_residual(_W_lo_narrow)
                     f_hi = _energy_residual(_W_hi)
                     if np.isfinite(f_narrow_lo) and np.isfinite(f_hi) and f_narrow_lo * f_hi <= 0.0:
-                        # 窄区间有根（亚临界根），直接求解
                         W_new = brentq(_energy_residual, _W_lo_narrow, _W_hi, xtol=1e-6, maxiter=100)
                         W_new = max(W_new, bed_sub_us + 1e-4)
+                        # Froude 检查：确保找到的是亚临界根 (Fr < 1)
+                        _h_check = max(W_new - bed_sub_us, 0.001)
+                        _A_check, _, _, _T_check = self._get_geometry(_h_check, i)
+                        _V_check = Q / max(_A_check, 1e-9)
+                        _D_check = _A_check / max(_T_check, 1e-9)
+                        _Fr_check = _V_check / max(np.sqrt(self.g * _D_check), 1e-9)
+                        if _Fr_check > 1.0:
+                            # 找到了超临界根——按 HEC-RAS 做法默认临界深度
+                            W_new = _W_critical_us
                         W_trial = W_new
                         _converged = True
                         _brentq_ok = True
