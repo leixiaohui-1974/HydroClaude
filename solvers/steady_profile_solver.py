@@ -46,6 +46,8 @@ class SteadyProfileSolver:
         bridges=None,
         culverts=None,
         lateral_inflows=None,
+        ice_thickness=None,
+        n_ice=None,
     ) -> None:
         """
         Args:
@@ -70,6 +72,8 @@ class SteadyProfileSolver:
             lateral_inflows: Per-XS lateral inflow array (m³/s). Positive = flow entering.
                 When provided, Q at each XS = Q_upstream + cumulative lateral inflows.
                 Length must match cross_sections. None = uniform Q throughout.
+            ice_thickness: Per-XS 冰盖厚度 (m)，<=0 视为无冰盖
+            n_ice: Per-XS 冰底曼宁糙率，<=0 时回退为渠床糙率
         """
         self.length = length
         self.B = B
@@ -91,12 +95,38 @@ class SteadyProfileSolver:
         self._bridges = bridges  # list[dict] with bridge physical parameters
         self._culverts = culverts  # list[dict] with culvert parameters from HDF adapter
         self._lateral_inflows = lateral_inflows  # 逐断面区间来水 (m³/s)
+        self._ice_thickness = ice_thickness
+        self._n_ice = n_ice
         self._manning_n_segments = None  # 每断面完整 n 分段: list[list[(station, n)]]
+        self._ineffective_areas = None  # 每断面无效流动区: list[list[{sta_l, sta_r, elev}]]
 
     # Hydraulic geometry helpers
 
-    def _get_geometry(self, h: float, station_index=None) -> Tuple[float, float, float, float]:
-        """Return (A, P, R, T) at water depth h."""
+    def _get_station_ice_params(self, station_index=None) -> Tuple[float, float]:
+        """获取断面冰盖厚度与冰底糙率。"""
+        idx = 0 if station_index is None else int(station_index)
+        ice_t = 0.0
+        n_ice = self.n
+
+        if self._ice_thickness is not None and idx < len(self._ice_thickness):
+            v = self._ice_thickness[idx]
+            if v is not None and float(v) > 0.0:
+                ice_t = float(v)
+        if self._n_ice is not None and idx < len(self._n_ice):
+            v = self._n_ice[idx]
+            if v is not None and float(v) > 0.0:
+                n_ice = float(v)
+        return ice_t, n_ice
+
+    @staticmethod
+    def _compute_sabaneev_nc(n_bed: float, n_ice: float, P_bed: float, P_ice: float) -> float:
+        """Sabaneev 复合糙率公式。"""
+        denom = max(P_bed + P_ice, 1e-9)
+        numer = n_bed ** 1.5 * P_bed + n_ice ** 1.5 * P_ice
+        return float(max((numer / denom) ** (2.0 / 3.0), 1e-6))
+
+    def _get_raw_geometry(self, h: float, station_index=None) -> Tuple[float, float, float, float]:
+        """返回未考虑冰盖修正的 (A, P, R, T)。"""
         xs = self._xs
         if station_index is not None and self._xs_array and station_index < len(self._xs_array):
             xs = self._xs_array[station_index]
@@ -108,6 +138,19 @@ class SteadyProfileSolver:
         P = self.B + 2 * h_safe
         return A, P, A / P, self.B
 
+    def _get_geometry(self, h: float, station_index=None) -> Tuple[float, float, float, float]:
+        """Return (A, P, R, T) at water depth h."""
+        A, P_bed, _R, T = self._get_raw_geometry(h, station_index)
+        ice_t, _n_ice = self._get_station_ice_params(station_index)
+        if ice_t > 0.0 and T > 0.0:
+            # 冰盖修正：有效过水面积扣除冰层占据面积，湿周增加冰底接触周长
+            A = max(A - ice_t * T, 1e-9)
+            P = P_bed + T
+        else:
+            P = P_bed
+        R = A / max(P, 1e-9)
+        return float(A), float(P), float(R), float(T)
+
     def compute_friction_slope(self, h: float, Q: float, station_index=None) -> float:
         """Manning friction slope, per-station Manning n support."""
         n_local = self.n
@@ -115,14 +158,18 @@ class SteadyProfileSolver:
             n_val = self._manning_ns[station_index]
             if n_val and float(n_val) > 0:
                 n_local = float(n_val)
+        ice_t, n_ice = self._get_station_ice_params(station_index)
         xs = self._xs
         if station_index is not None and self._xs_array and station_index < len(self._xs_array):
             xs = self._xs_array[station_index]
-        if xs is not None and hasattr(xs, "compute_conveyance"):
+        if xs is not None and hasattr(xs, "compute_conveyance") and ice_t <= 0.0:
             K, _alpha = xs.compute_conveyance(h)
             if K > 0:
                 return float((Q / K) ** 2)
-        A, _P, R, _T = self._get_geometry(h, station_index)
+        A, P, R, T = self._get_geometry(h, station_index)
+        if ice_t > 0.0 and T > 0.0:
+            P_bed = max(P - T, 1e-9)
+            n_local = self._compute_sabaneev_nc(n_local, n_ice, P_bed, T)
         V = Q / max(A, 1e-9)
         return float((n_local * V) ** 2 / max(R, 1e-9) ** (4.0 / 3.0))
 
@@ -404,9 +451,24 @@ class SteadyProfileSolver:
             return _n_ch(idx)
 
         def _fallback():
-            A, _P, R, _T = self._get_geometry(h, station_index)
+            A, P, R, T = self._get_geometry(h, station_index)
             n_local = _n_ch(station_index)
+            ice_t, n_ice = self._get_station_ice_params(station_index)
+            if ice_t > 0.0 and T > 0.0:
+                P_bed = max(P - T, 1e-9)
+                n_local = self._compute_sabaneev_nc(n_local, n_ice, P_bed, T)
             K = (1.0 / n_local) * A * max(R, 1e-9) ** (2.0 / 3.0)
+            return float(K), 1.0
+
+        # 有冰盖时采用整体断面复合糙率，避免分区 K 与冰底阻力耦合不一致
+        ice_t, n_ice = self._get_station_ice_params(station_index)
+        if ice_t > 0.0:
+            A, P, R, T = self._get_geometry(h, station_index)
+            n_local = _n_ch(station_index)
+            if T > 0.0:
+                P_bed = max(P - T, 1e-9)
+                n_local = self._compute_sabaneev_nc(n_local, n_ice, P_bed, T)
+            K = (1.0 / max(n_local, 0.001)) * A * max(R, 1e-9) ** (2.0 / 3.0)
             return float(K), 1.0
 
         xs = self._xs
@@ -558,15 +620,41 @@ class SteadyProfileSolver:
             hw_inlet = culvert._required_headwater_inlet(q_per_barrel)
             hw_outlet = culvert._required_headwater_outlet(q_per_barrel, h_downstream)
 
-            # 控制水头取大者
+            # 道路漫顶分流（roadway overtopping）
+            road_elev = float(culvert_dict.get("road_elev_m", us_invert + height_m + 1.0))
+            road_width = float(culvert_dict.get("road_width_m", 10.0))
+            road_cd = float(culvert_dict.get("road_cd", 1.5))
+
+            # 迭代求解：HW 使得 Q_culvert + Q_road = Q_total
+            # 初始猜测用不含漫顶的 HW
             hw_required = max(hw_inlet, hw_outlet)
 
+            for _cv_iter in range(20):
+                W_trial = us_invert + hw_required
+                # 道路漫顶流量
+                h_over_road = max(W_trial - road_elev, 0.0)
+                Q_road = road_cd * road_width * h_over_road ** 1.5 if h_over_road > 0 else 0.0
+                Q_road = min(Q_road, 0.95 * Q)  # 限制不超过总流量95%
+                Q_culvert = Q - Q_road
+
+                if Q_culvert <= 0:
+                    break
+
+                # 用涵洞流量重新计算 HW
+                q_pb = Q_culvert / max(n_barrels, 1)
+                hw_in_new = culvert._required_headwater_inlet(q_pb)
+                hw_out_new = culvert._required_headwater_outlet(q_pb, h_downstream)
+                hw_new = max(hw_in_new, hw_out_new)
+
+                if abs(hw_new - hw_required) < 0.001:
+                    hw_required = hw_new
+                    break
+                hw_required = 0.5 * (hw_required + hw_new)  # 松弛
+
             W_upstream = us_invert + hw_required
-            # 不能低于下游水面
             W_upstream = max(W_upstream, W_downstream + 0.001)
 
         except Exception:
-            # 涵洞计算失败时回退：简单加一个估算壅水
             W_upstream = W_downstream + 0.1
 
         return float(W_upstream)
