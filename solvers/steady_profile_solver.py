@@ -232,6 +232,49 @@ class SteadyProfileSolver:
 
     # HEC-RAS 三区 Conveyance 分区计算 (LOB / Channel / ROB)
 
+    @staticmethod
+    def _segment_area_perimeter(
+        stations: np.ndarray, elevations: np.ndarray,
+        water_level: float, sta_lo: float, sta_hi: float,
+    ) -> Tuple[float, float]:
+        """计算 [sta_lo, sta_hi] 区间在给定水位下的面积和湿周。
+
+        湿周不包含区间两端的垂直面（HEC-RAS / Posey 1967 惯例）。
+        """
+        area = 0.0
+        perimeter = 0.0
+        for j in range(len(stations) - 1):
+            s1, s2 = float(stations[j]), float(stations[j + 1])
+            z1, z2 = float(elevations[j]), float(elevations[j + 1])
+            if s2 <= sta_lo or s1 >= sta_hi:
+                continue
+            if s1 < sta_lo:
+                frac = (sta_lo - s1) / (s2 - s1)
+                z1 = z1 + frac * (z2 - z1); s1 = sta_lo
+            if s2 > sta_hi:
+                frac = (sta_hi - s1) / (s2 - s1)
+                z2 = z1 + frac * (z2 - z1); s2 = sta_hi
+            ds = s2 - s1
+            if ds <= 0.0:
+                continue
+            dz = z2 - z1
+            if z1 >= water_level and z2 >= water_level:
+                continue
+            elif z1 < water_level and z2 < water_level:
+                area += 0.5 * (water_level - z1 + water_level - z2) * ds
+                perimeter += np.sqrt(ds ** 2 + dz ** 2)
+            elif z1 < water_level <= z2:
+                fw = (water_level - z1) / (z2 - z1)
+                dsw, dzw = ds * fw, dz * fw
+                area += 0.5 * (water_level - z1) * dsw
+                perimeter += np.sqrt(dsw ** 2 + dzw ** 2)
+            else:
+                fw = (water_level - z2) / (z1 - z2)
+                dsw, dzw = ds * fw, dz * fw
+                area += 0.5 * (water_level - z2) * dsw
+                perimeter += np.sqrt(dsw ** 2 + dzw ** 2)
+        return area, perimeter
+
     def _zone_conveyance(
         self,
         stations: np.ndarray,
@@ -240,69 +283,73 @@ class SteadyProfileSolver:
         sta_min: float,
         sta_max: float,
         n: float,
+        n_slices: int = 5,
     ) -> Tuple[float, float]:
-        """Compute conveyance K and flow area for a single overbank zone.
+        """HEC-RAS 垂直切片法计算分区输水能力 K。
 
-        Clips the station-elevation profile to [sta_min, sta_max] and integrates
-        area and wetted perimeter.  Inter-zone vertical faces are NOT counted as
-        wetted perimeter (Posey 1967 / HEC-RAS convention).
+        将分区 [sta_min, sta_max] 沿 Station 方向等分为 n_slices 个垂直切片，
+        每片独立计算 K_slice = (1/n) * A_slice * R_slice^(2/3)，
+        K_zone = Σ K_slice。
 
+        垂直切片间的虚拟分割面不计入湿周（HEC-RAS / Posey 1967 惯例）。
+
+        Args:
+            n_slices: 垂直切片数（HEC-RAS HP Slices，默认 5）
         Returns:
-            (K, A) -- conveyance (m^3/s) and flow area (m^2) for this zone.
+            (K_zone, A_zone)
         """
-        area = 0.0
-        perimeter = 0.0
+        # 先计算整区面积（用于返回值和 fallback）
+        A_total, P_total = self._segment_area_perimeter(
+            stations, elevations, water_level, sta_min, sta_max)
 
-        for j in range(len(stations) - 1):
-            s1, s2 = float(stations[j]), float(stations[j + 1])
-            z1, z2 = float(elevations[j]), float(elevations[j + 1])
-
-            if s2 <= sta_min or s1 >= sta_max:
-                continue
-
-            # Clip to zone boundaries with linear elevation interpolation
-            if s1 < sta_min:
-                frac = (sta_min - s1) / (s2 - s1)
-                z1 = z1 + frac * (z2 - z1)
-                s1 = sta_min
-            if s2 > sta_max:
-                frac = (sta_max - s1) / (s2 - s1)
-                z2 = z1 + frac * (z2 - z1)
-                s2 = sta_max
-
-            ds = s2 - s1
-            if ds <= 0.0:
-                continue
-            dz = z2 - z1
-
-            if z1 >= water_level and z2 >= water_level:
-                continue
-            elif z1 < water_level and z2 < water_level:
-                d1 = water_level - z1
-                d2 = water_level - z2
-                area += 0.5 * (d1 + d2) * ds
-                perimeter += np.sqrt(ds ** 2 + dz ** 2)
-            elif z1 < water_level <= z2:
-                frac_wet = (water_level - z1) / (z2 - z1)
-                ds_wet = ds * frac_wet
-                dz_wet = dz * frac_wet
-                area += 0.5 * (water_level - z1) * ds_wet
-                perimeter += np.sqrt(ds_wet ** 2 + dz_wet ** 2)
-            else:
-                frac_wet = (water_level - z2) / (z1 - z2)
-                ds_wet = ds * frac_wet
-                dz_wet = dz * frac_wet
-                area += 0.5 * (water_level - z2) * ds_wet
-                perimeter += np.sqrt(ds_wet ** 2 + dz_wet ** 2)
-
-        if area <= 0.0 or perimeter <= 0.0:
+        if A_total <= 0.0 or P_total <= 0.0:
             return 0.0, 0.0
 
-        R = area / perimeter
-        K = (1.0 / max(n, 0.001)) * area * R ** (2.0 / 3.0)
-        # TODO: 实现 HEC-RAS HP Slices 方法（水平分片积分 K），
-        # 当前使用整区 A/R 计算，对宽浅不均匀漫滩 K 偏低约 3-7%
-        return float(K), float(area)
+        if n_slices <= 1:
+            R = A_total / P_total
+            K = (1.0 / max(n, 0.001)) * A_total * R ** (2.0 / 3.0)
+            return float(K), float(A_total)
+
+        # HEC-RAS HP Table 增量法：按高程递增计算 K
+        # HP Table 从最低点开始，每增加 hp_incr 高程，累积 K(h)
+        # 每层的 ΔK = (1/n) * ΔA * R_layer^(2/3)
+        # 其中 R_layer = ΔA / ΔP（该层的水力半径）
+        # K_total = Σ ΔK（从底部到水面逐层累加）
+        hp_incr = 0.3048  # 1 ft 高程增量（HEC-RAS 默认）
+
+        # 找到该区域的最低高程
+        zone_min_elev = water_level  # 初始化为水面（如果没有点在区域内）
+        for j in range(len(stations)):
+            s = float(stations[j])
+            if sta_min <= s <= sta_max:
+                zone_min_elev = min(zone_min_elev, float(elevations[j]))
+
+        if zone_min_elev >= water_level:
+            return 0.0, 0.0
+
+        # 按高程增量逐层计算
+        K_zone = 0.0
+        n_layers = max(1, int(np.ceil((water_level - zone_min_elev) / hp_incr)))
+        prev_A = 0.0
+        prev_P = 0.0
+        for layer in range(1, n_layers + 1):
+            wl_layer = min(zone_min_elev + layer * hp_incr, water_level)
+            A_layer, P_layer = self._segment_area_perimeter(
+                stations, elevations, wl_layer, sta_min, sta_max)
+            dA = A_layer - prev_A
+            dP = P_layer - prev_P
+            if dA > 0.0 and dP > 0.0:
+                R_layer = dA / dP
+                dK = (1.0 / max(n, 0.001)) * dA * R_layer ** (2.0 / 3.0)
+                K_zone += dK
+            prev_A = A_layer
+            prev_P = P_layer
+
+        if K_zone <= 0.0:
+            R = A_total / P_total
+            K_zone = (1.0 / max(n, 0.001)) * A_total * R ** (2.0 / 3.0)
+
+        return float(K_zone), float(A_total)
 
     def _compute_subdivided_conveyance(
         self, h: float, station_index: int
