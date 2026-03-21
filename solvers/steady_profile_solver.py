@@ -255,9 +255,17 @@ class SteadyProfileSolver:
                 frac = (sta_hi - s1) / (s2 - s1)
                 z2 = z1 + frac * (z2 - z1); s2 = sta_hi
             ds = s2 - s1
-            if ds <= 0.0:
-                continue
             dz = z2 - z1
+            if ds <= 0.0:
+                # 垂直壁：ds=0 但 dz≠0，只贡献湿周不贡献面积
+                # 但分区边界（sta_lo/sta_hi）处的垂直面不计入（Posey 惯例）
+                if abs(dz) > 0.0 and abs(s1 - sta_lo) > 0.01 and abs(s1 - sta_hi) > 0.01:
+                    z_lo = min(z1, z2)
+                    z_hi = max(z1, z2)
+                    if z_lo < water_level:
+                        wet_height = min(water_level, z_hi) - z_lo
+                        perimeter += wet_height
+                continue
             if z1 >= water_level and z2 >= water_level:
                 continue
             elif z1 < water_level and z2 < water_level:
