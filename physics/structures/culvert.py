@@ -70,45 +70,63 @@ BARREL_MATERIALS: dict[str, MaterialProperties] = {
 # ============================================================================
 
 INLET_COEFF_TABLE: dict[tuple[str, str, str], InletCoefficients] = {
-    # ── 混凝土圆管 ──────────────────────────────────────────────────────────
-    # 管端突出，无翼墙（projecting）
+    # ── 混凝土圆管（HDS-5 Table 5-1）────────────────────────────────────────
     ("circular", "concrete", "projecting"):
         InletCoefficients(K=0.0098, M=2.0, c=0.0398, Y=0.67),
-    # 竖直端墙，方形进口（headwall with square edge）
     ("circular", "concrete", "headwall_square_edge"):
         InletCoefficients(K=0.0078, M=2.0, c=0.0292, Y=0.74),
-    # 槽形（groove）进口，突出式
-    ("circular", "concrete", "groove_end_projecting"):
+    ("circular", "concrete", "headwall_groove_end"):
+        InletCoefficients(K=0.0018, M=2.5, c=0.0243, Y=0.83),
+    ("circular", "concrete", "mitered_to_slope"):
         InletCoefficients(K=0.0045, M=2.0, c=0.0317, Y=0.69),
-    # 槽形进口，带端墙（groove end with headwall）
-    ("circular", "concrete", "groove_end_headwall"):
-        InletCoefficients(K=0.0078, M=2.0, c=0.0292, Y=0.74),
-    # 斜切倒角进口（beveled ring）
     ("circular", "concrete", "beveled_ring"):
         InletCoefficients(K=0.0018, M=2.5, c=0.0243, Y=0.83),
-    # ── 波纹金属管（CMP） ────────────────────────────────────────────────────
-    # 管端突出
+
+    # 混凝土圆管旧键兼容（保留历史入口命名）
+    ("circular", "concrete", "groove_end_projecting"):
+        InletCoefficients(K=0.0045, M=2.0, c=0.0317, Y=0.69),
+    ("circular", "concrete", "groove_end_headwall"):
+        InletCoefficients(K=0.0018, M=2.5, c=0.0243, Y=0.83),
+
+    # ── 波纹金属管 CMP（HDS-5 Table 5-1）────────────────────────────────────
     ("circular", "cmp", "projecting"):
         InletCoefficients(K=0.0078, M=2.0, c=0.0379, Y=0.69),
-    # 竖直端墙
+    ("circular", "cmp", "mitered"):
+        InletCoefficients(K=0.0210, M=1.33, c=0.0463, Y=0.75),
     ("circular", "cmp", "headwall"):
         InletCoefficients(K=0.0078, M=2.0, c=0.0340, Y=0.74),
-    # 斜切与坡面齐平（mitered to slope）
+
+    # CMP 旧键兼容
     ("circular", "cmp", "mitered_to_slope"):
         InletCoefficients(K=0.0210, M=1.33, c=0.0463, Y=0.75),
-    # ── 混凝土箱涵（矩形） ──────────────────────────────────────────────────
-    # 竖直端墙，方形进口
+
+    # ── 混凝土箱涵（HDS-5 Table 5-1）────────────────────────────────────────
+    ("rectangular", "concrete_box", "headwall_thin_wall"):
+        InletCoefficients(K=0.0083, M=2.0, c=0.0379, Y=0.69),
+    ("rectangular", "concrete_box", "headwall_thick_wall"):
+        InletCoefficients(K=0.0040, M=2.0, c=0.0179, Y=0.97),
+    ("rectangular", "concrete_box", "wingwall_30deg"):
+        InletCoefficients(K=0.0145, M=1.75, c=0.0419, Y=0.64),
+    ("rectangular", "concrete_box", "wingwall_45deg"):
+        InletCoefficients(K=0.0145, M=1.75, c=0.0419, Y=0.64),
+    ("rectangular", "concrete_box", "wingwall_90deg"):
+        InletCoefficients(K=0.0083, M=2.0, c=0.0379, Y=0.69),
+
+    # 箱涵旧键兼容
     ("rectangular", "concrete_box", "headwall_square_edge"):
         InletCoefficients(K=0.0083, M=2.0, c=0.0379, Y=0.69),
-    # 翼墙 30~75 deg（wingwall flare 30-75 deg）
     ("rectangular", "concrete_box", "wingwall_30_75"):
         InletCoefficients(K=0.0145, M=1.75, c=0.0419, Y=0.64),
-    # 翼墙 0~15 deg（wingwall flare 0-15 deg）
     ("rectangular", "concrete_box", "wingwall_0_15"):
         InletCoefficients(K=0.0145, M=1.75, c=0.0419, Y=0.64),
-    # 平行端墙带倒角（parallel headwall with bevel）
     ("rectangular", "concrete_box", "parallel_headwall_bevel"):
         InletCoefficients(K=0.0040, M=2.0, c=0.0179, Y=0.97),
+
+    # ── 塑料管（光滑内壁，HDS-5 Table 5-1 对应 smooth pipe 族）───────────────
+    ("circular", "smooth_pipe", "projecting"):
+        InletCoefficients(K=0.0098, M=2.0, c=0.0398, Y=0.67),
+    ("circular", "smooth_pipe", "headwall"):
+        InletCoefficients(K=0.0078, M=2.0, c=0.0292, Y=0.74),
 }
 
 
@@ -117,15 +135,34 @@ INLET_COEFF_TABLE: dict[tuple[str, str, str], InletCoefficients] = {
 # ============================================================================
 
 INLET_TYPE_ALIASES: dict[str, str] = {
-    "square_edge": "headwall_square_edge",     # 方形进口 → 端墙方形
-    "projecting": "projecting",                # 突出式（无别名）
-    "headwall": "headwall_square_edge",        # 端墙（默认方形进口）
-    "groove_end": "groove_end_projecting",     # 槽形进口（默认突出式）
-    "groove_headwall": "groove_end_headwall",  # 槽形进口带端墙
-    "mitered": "mitered_to_slope",             # 斜切与坡面齐平
-    "beveled": "beveled_ring",                 # 倒角进口
-    "wingwall": "wingwall_30_75",              # 翼墙（默认 30-75 deg）
-    "parallel_bevel": "parallel_headwall_bevel",  # 平行端墙带倒角
+    # ── 通用入口类型 ───────────────────────────────────────────────────────────
+    "projecting": "projecting",                     # 突出式
+    "headwall": "headwall",                         # 端墙（通用）
+
+    # ── 混凝土圆管系列 ─────────────────────────────────────────────────────────
+    "square_edge": "headwall_square_edge",          # 方口端墙
+    "headwall_square": "headwall_square_edge",      # 方口端墙（别名）
+    "headwall_square_edge": "headwall_square_edge", # 方口端墙（规范名）
+    "groove_end": "headwall_groove_end",            # 头墙槽口（旧习惯名）
+    "groove_headwall": "headwall_groove_end",       # 头墙槽口（旧习惯名）
+    "headwall_groove": "headwall_groove_end",       # 头墙槽口（简写）
+    "headwall_groove_end": "headwall_groove_end",   # 头墙槽口（规范名）
+    "mitered": "mitered_to_slope",                  # 斜切与坡面齐平
+    "mitered_to_slope": "mitered_to_slope",         # 斜切与坡面齐平（规范名）
+    "beveled": "beveled_ring",                      # 倒角环口
+    "beveled_ring": "beveled_ring",                 # 倒角环口（规范名）
+
+    # ── 箱涵系列 ───────────────────────────────────────────────────────────────
+    "thin_wall": "headwall_thin_wall",              # 薄壁端墙
+    "thick_wall": "headwall_thick_wall",            # 厚壁端墙
+    "wingwall": "wingwall_45deg",                   # 翼墙默认映射到 45°
+    "wingwall_30": "wingwall_30deg",                # 翼墙 30°
+    "wingwall_30deg": "wingwall_30deg",             # 翼墙 30°（规范名）
+    "wingwall_45": "wingwall_45deg",                # 翼墙 45°
+    "wingwall_45deg": "wingwall_45deg",             # 翼墙 45°（规范名）
+    "wingwall_90": "wingwall_90deg",                # 翼墙 90°
+    "wingwall_90deg": "wingwall_90deg",             # 翼墙 90°（规范名）
+    "parallel_bevel": "headwall_thick_wall",        # 平行端墙倒角（旧名兼容）
 }
 
 
