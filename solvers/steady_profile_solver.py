@@ -526,60 +526,99 @@ class SteadyProfileSolver:
                 _br_len = max(float(_br.get("bridge_length_m", 0.0)), 1.0)
                 _pier_w = max(float(_br.get("total_pier_width_m", 0.0)), 0.0)
                 _pier_k = float(_br.get("pier_loss_coef", 0.0))
-                _cc = float(_br.get("contraction_coef", 0.3))
-                _ec = float(_br.get("expansion_coef", 0.5))
-                _low_chord = float(_br.get("low_chord_elevation_m", 0.0))
+                _deck_elev = float(_br.get("deck_elevation_m", 1e6))
 
-                # Bridge effective area = normal area - pier blockage - deck blockage
-                # This is the core physics: area reduction → velocity increase → head loss
-                h_br = max(W_trial - bed[i], 0.01)
-                A_br, _P_br, _R_br, _T_br = self._get_geometry(h_br, i)
+                # ============================================================
+                # Bridge Energy Method with pier area reduction
+                # (HEC-RAS Technical Reference Manual, Chapter 5)
+                #
+                # Momentum equation between downstream (Section 2) and
+                # upstream (Section 3) bridge faces:
+                #
+                #   P3 + β3·ρ·Q·V3 = P2 + β2·ρ·Q·V2 + F_f + F_pier + W_x
+                #
+                # where:
+                #   P = hydrostatic pressure force = γ·A·ȳ
+                #   F_f = friction force = γ·A_avg·Sf_avg·L
+                #   F_pier = pier drag = ½·ρ·Cd·Σ(w_pier·h_pier)·V²
+                #   W_x = gravity component = γ·A_avg·S0·L
+                # ============================================================
+                _rho = 1000.0  # kg/m³
+                _gamma = _rho * self.g  # N/m³
 
-                # Pier blockage: sum of all pier widths × water depth at pier
-                A_pier = _pier_w * min(h_br, 30.0)  # cap at 30m depth for piers
+                # Downstream face (Section 2) — known from W[i+1]
+                h2 = max(W[i + 1] - bed[i + 1], 0.01)
+                A2_full, P2_full, _, T2 = self._get_geometry(h2, i + 1)
+                A2_pier = _pier_w * min(h2, 30.0)
+                A2_eff = max(A2_full - A2_pier, A2_full * 0.3)
+                V2 = Q / max(A2_eff, 1e-9)
+                # Hydrostatic pressure: P = γ·A·ȳ, ȳ ≈ A/(2T) for general XS
+                y_bar2 = A2_full / max(2.0 * T2, 1e-6)
+                P2 = _gamma * A2_full * y_bar2
 
-                # Deck blockage only in pressure flow (water level > deck elevation)
-                # For free-surface flow (most cases), only pier blockage applies
-                A_deck = 0.0
-                water_level = bed[i] + h_br
-                deck_elev = float(_br.get("deck_elevation_m", 1e6))
-                if water_level > deck_elev and deck_elev > bed[i]:
-                    # Pressure flow: area above deck is fully blocked
-                    h_above_deck = water_level - deck_elev
-                    A_deck = h_above_deck * _T_br
+                # Bed slope through bridge
+                S0_br = (bed[i] - bed[i + 1]) / max(_br_len, 0.1)
 
-                A_eff = max(A_br - A_pier - A_deck, A_br * 0.3)  # min 30% open
-                V_eff = Q / max(A_eff, 1e-9)
-                vh_eff = V_eff ** 2 / (2.0 * self.g)
+                # Newton-Raphson iteration for upstream face (Section 3)
+                W3_trial = W_trial  # start from Standard Step estimate
+                for _m_iter in range(20):
+                    h3 = max(W3_trial - bed[i], 0.01)
+                    A3_full, P3_full, _, T3 = self._get_geometry(h3, i)
+                    A3_pier = _pier_w * min(h3, 30.0)
+                    A3_eff = max(A3_full - A3_pier, A3_full * 0.3)
+                    V3 = Q / max(A3_eff, 1e-9)
+                    y_bar3 = A3_full / max(2.0 * T3, 1e-6)
+                    P3 = _gamma * A3_full * y_bar3
 
-                # Pier drag loss: K_pier × V²/(2g) (from HEC-RAS parameters)
-                h_pier = _pier_k * vh_eff
+                    # Average values for friction and gravity
+                    A_avg = 0.5 * (A2_eff + A3_eff)
+                    V_avg = Q / max(A_avg, 1e-9)
+                    n_br = self._manning_ns[i] if self._manning_ns and i < len(self._manning_ns) else self.n
+                    R_avg = A_avg / max(0.5 * (P2_full + P3_full), 1e-6)
+                    Sf_avg = (n_br * V_avg) ** 2 / max(R_avg ** (4.0/3.0), 1e-12)
 
-                # When pier_k == 0 (HEC-RAS setting), the pier loss comes purely
-                # from the area reduction (A_eff < A_br) which increases velocity.
-                # Do NOT add estimated drag — respect the model's K=0 setting.
+                    # Forces (all in Newtons per unit... actually we work in N total)
+                    F_friction = _gamma * A_avg * Sf_avg * _br_len
+                    F_gravity = _gamma * A_avg * S0_br * _br_len
 
-                # Friction loss through bridge opening (reduced area → higher Sf)
-                R_eff = A_eff / max(_P_br, 1e-6)
-                n_br = self._manning_ns[i] if self._manning_ns and i < len(self._manning_ns) else self.n
-                Sf_br = (Q * n_br / (A_eff * R_eff ** (2.0/3.0))) ** 2 if A_eff > 0 and R_eff > 0 else 0
-                h_f_br = _br_len * Sf_br
+                    # Pier drag: F = ½ρ·Cd·A_frontal·V²
+                    # When HEC-RAS pier_k = 0, NO additional pier drag is applied.
+                    # The pier effect comes only from area reduction (A_eff < A_full).
+                    if _pier_k > 0:
+                        A_pier_frontal = _pier_w * min(h3, 30.0)
+                        F_pier = _pier_k * _rho * A_pier_frontal * V_avg ** 2 / 2.0
+                    else:
+                        F_pier = 0.0
 
-                # Contraction loss (flow entering bridge from upstream approach)
-                vh_us_approach = alpha_us * V_us ** 2 / (2.0 * self.g)
-                h_contr = _cc * max(vh_eff - vh_us_approach, 0.0)
+                    # Momentum balance: P3 + β3·ρQV3 = P2 + β2·ρQV2 + F_f + F_pier + W_x
+                    # β ≈ 1.0 for bridge interior (no subdivision)
+                    lhs = P3 + _rho * Q * V3
+                    rhs = P2 + _rho * Q * V2 + F_friction + F_pier - F_gravity
+                    residual = lhs - rhs  # should be 0
 
-                # Expansion loss (flow exiting bridge to downstream)
-                h_ds_app = max(W[i + 1] - bed[i + 1], 0.01)
-                A_ds_app, _, _, _ = self._get_geometry(h_ds_app, i + 1)
-                V_ds_app = Q / max(A_ds_app, 1e-9)
-                _, alpha_ds_app = self._compute_subdivided_conveyance(h_ds_app, i + 1)
-                vh_ds_approach = alpha_ds_app * V_ds_app ** 2 / (2.0 * self.g)
-                h_exp = _ec * max(vh_eff - vh_ds_approach, 0.0)
+                    if abs(residual) < _gamma * 0.001:  # convergence: < 1mm water column
+                        break
 
-                # Total bridge head loss (all from physics)
-                h_bridge_total = h_pier + h_f_br + h_contr + h_exp
-                W_trial = W_trial + h_bridge_total
+                    # Numerical derivative dR/dW3
+                    dW = 0.001
+                    h3p = max(W3_trial + dW - bed[i], 0.01)
+                    A3p, _, _, T3p = self._get_geometry(h3p, i)
+                    A3p_eff = max(A3p - _pier_w * min(h3p, 30), A3p * 0.3)
+                    V3p = Q / max(A3p_eff, 1e-9)
+                    P3p = _gamma * A3p * A3p / max(2.0 * T3p, 1e-6)
+                    lhs_p = P3p + _rho * Q * V3p
+                    dR_dW = (lhs_p - lhs) / dW
+
+                    if abs(dR_dW) > 1e-3:
+                        W3_trial -= residual / dR_dW
+                    else:
+                        W3_trial += 0.01 if residual < 0 else -0.01
+
+                    # Physical bounds
+                    W3_trial = max(W3_trial, bed[i] + 0.01)
+                    W3_trial = min(W3_trial, _W_MAX)
+
+                W_trial = W3_trial
                 # Re-apply physical limit after bridge correction
                 W_trial = max(W_trial, bed[i] + 1e-4)
                 W_trial = min(W_trial, _W_MAX)
