@@ -91,6 +91,7 @@ class SteadyProfileSolver:
         self._bridges = bridges  # list[dict] with bridge physical parameters
         self._culverts = culverts  # list[dict] with culvert parameters from HDF adapter
         self._lateral_inflows = lateral_inflows  # 逐断面区间来水 (m³/s)
+        self._manning_n_segments = None  # 每断面完整 n 分段: list[list[(station, n)]]
 
     # Hydraulic geometry helpers
 
@@ -293,28 +294,70 @@ class SteadyProfileSolver:
         sta_min: float,
         sta_max: float,
         n: float,
+        n_segments: list | None = None,
         n_slices: int = 5,
     ) -> Tuple[float, float]:
-        """HEC-RAS 垂直切片法计算分区输水能力 K。
+        """HEC-RAS n-value break point 方法计算分区输水能力 K。
 
-        将分区 [sta_min, sta_max] 沿 Station 方向等分为 n_slices 个垂直切片，
-        每片独立计算 K_slice = (1/n) * A_slice * R_slice^(2/3)，
-        K_zone = Σ K_slice。
-
-        垂直切片间的虚拟分割面不计入湿周（HEC-RAS / Posey 1967 惯例）。
+        当 n_segments 提供时，按 n 值变化点将分区切分为子区，
+        每个子区独立计算 K_i = (1/n_i)*A_i*R_i^(2/3)，K_zone = ΣK_i。
+        子区间的虚拟垂直分割面不计入湿周（Posey 1967 惯例）。
 
         Args:
-            n_slices: 垂直切片数（HEC-RAS HP Slices，默认 5）
+            n: 单一 Manning n（n_segments 为 None 时使用）
+            n_segments: [(station, n_value), ...] 按 station 排序的 n 值分段列表
         Returns:
             (K_zone, A_zone)
         """
-        # 先计算整区面积（用于返回值和 fallback）
+        # 先计算整区面积
         A_total, P_total = self._segment_area_perimeter(
             stations, elevations, water_level, sta_min, sta_max)
 
         if A_total <= 0.0 or P_total <= 0.0:
             return 0.0, 0.0
 
+        # 如果有分段 Manning n，按 n-value break points 细分
+        if n_segments and len(n_segments) >= 2:
+            # 筛选出落在 [sta_min, sta_max] 内的 n 分段
+            breaks = []
+            for sta, n_val in n_segments:
+                sta_f = float(sta)
+                n_f = float(n_val)
+                if np.isnan(n_f) or n_f <= 0:
+                    continue
+                if sta_min <= sta_f <= sta_max:
+                    breaks.append((sta_f, n_f))
+            # 添加边界
+            if not breaks or breaks[0][0] > sta_min + 0.01:
+                # 用第一个有效 n 覆盖左边界
+                first_n = n
+                for _, nv in n_segments:
+                    if not np.isnan(float(nv)) and float(nv) > 0:
+                        first_n = float(nv)
+                        break
+                breaks.insert(0, (sta_min, first_n))
+            if breaks[-1][0] < sta_max - 0.01:
+                breaks.append((sta_max, breaks[-1][1]))
+
+            if len(breaks) >= 2:
+                K_zone = 0.0
+                for idx in range(len(breaks) - 1):
+                    seg_lo = breaks[idx][0]
+                    seg_hi = breaks[idx + 1][0]
+                    seg_n = breaks[idx][1]
+                    if seg_hi - seg_lo < 1e-6 or seg_n <= 0:
+                        continue
+                    A_s, P_s = self._segment_area_perimeter(
+                        stations, elevations, water_level, seg_lo, seg_hi)
+                    if A_s > 0.0 and P_s > 0.0:
+                        R_s = A_s / P_s
+                        K_s = (1.0 / seg_n) * A_s * R_s ** (2.0 / 3.0)
+                        K_zone += K_s
+
+                if K_zone > 0.0:
+                    return float(K_zone), float(A_total)
+
+        # 单一 n 值：整区计算
         R = A_total / P_total
         K = (1.0 / max(n, 0.001)) * A_total * R ** (2.0 / 3.0)
         return float(K), float(A_total)
@@ -396,20 +439,25 @@ class SteadyProfileSolver:
         if float(left_bank) <= sta_min_all + 0.01 and float(right_bank) >= sta_max_all - 0.01:
             return _fallback()
 
+        # 获取完整 Manning n 分段（如果有）用于 n-value break point 细分
+        _n_segs = None
+        if self._manning_n_segments and station_index < len(self._manning_n_segments):
+            _n_segs = self._manning_n_segments[station_index]
+
         K_lob, A_lob = self._zone_conveyance(
             stations_arr, elevations_arr, water_level,
             sta_min=sta_min_all, sta_max=float(left_bank),
-            n=_n_lob(station_index),
+            n=_n_lob(station_index), n_segments=_n_segs,
         )
         K_ch, A_ch = self._zone_conveyance(
             stations_arr, elevations_arr, water_level,
             sta_min=float(left_bank), sta_max=float(right_bank),
-            n=_n_ch(station_index),
+            n=_n_ch(station_index), n_segments=_n_segs,
         )
         K_rob, A_rob = self._zone_conveyance(
             stations_arr, elevations_arr, water_level,
             sta_min=float(right_bank), sta_max=sta_max_all,
-            n=_n_rob(station_index),
+            n=_n_rob(station_index), n_segments=_n_segs,
         )
 
         K_total = K_lob + K_ch + K_rob
