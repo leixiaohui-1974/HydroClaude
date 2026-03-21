@@ -1280,7 +1280,11 @@ class SteadyProfileSolver:
                 # 策略1（优先）：以 W_sub_ds 为下界的区间 [W_ds, W_ds+20]，仅包含亚临界根。
                 # 策略2（降级）：扩展下界至 bed+0.001，全范围搜索（可能包含超临界根）。
                 # 亚临界流：上游水位总在下游水位之上，以 W_sub_ds 为下界可避免超临界根
-                _W_lo_narrow = W_sub_ds  # 下游水位作为下界，跳过超临界段
+                # 亚临界下界：取下游水位与临界水位中的较大者
+                # 这确保在陡坡段不会收敛到超临界根
+                _y_c_us = self._compute_critical_depth(Q, i)
+                _W_critical_us = bed_sub_us + _y_c_us
+                _W_lo_narrow = max(W_sub_ds, _W_critical_us)  # 跳过超临界段
                 _W_hi = W_sub_ds + 20.0
                 try:
                     f_narrow_lo = _energy_residual(_W_lo_narrow)
@@ -1802,7 +1806,45 @@ class SteadyProfileSolver:
             h_final = np.maximum(W_subcritical - bed, 0.001)
             return W_subcritical, h_final
 
-        W_final = np.array(W_subcritical, dtype=float)
+        # 亚临界剖面修正：找到陡→缓过渡点，从缓坡端用临界深度向上游重推回水线
+        W_sub_corrected = np.array(W_subcritical, dtype=float)
+
+        for c_idx, control_idx in enumerate(control_sections):
+            seg_end = (control_sections[c_idx + 1] - 1) if (c_idx + 1 < len(control_sections)) else (n_xs - 1)
+            seg_end = max(seg_end, control_idx)
+
+            # 找到陡坡段末端（第一个 S0 < Sc 的断面）
+            transition_idx = seg_end
+            for ti in range(control_idx, seg_end + 1):
+                if ti >= n_xs - 1:
+                    break
+                dx_t = float(abs(x[ti + 1] - x[ti]))
+                if dx_t < 1e-6:
+                    continue
+                S0_t = (bed[ti] - bed[ti + 1]) / dx_t
+                Sc_t = self._compute_critical_slope(Q, ti)
+                if S0_t < Sc_t:
+                    transition_idx = ti
+                    break
+
+            # 从过渡点用临界深度向上游重推
+            W_bc = bed[transition_idx] + y_c[transition_idx]
+            W_sub_corrected[transition_idx] = max(W_sub_corrected[transition_idx], W_bc)
+            W_prev = W_bc
+            for i in range(transition_idx - 1, control_idx - 1, -1):
+                dx_i = float(abs(x[i + 1] - x[i]))
+                if dx_i < 1e-6:
+                    dx_i = 1.0
+                h_prev = max(W_prev - bed[i + 1], 0.01)
+                K_prev, _ = self._compute_subdivided_conveyance(h_prev, i + 1)
+                Sf_prev = (Q / max(K_prev, 1e-9)) ** 2
+                bed_rise = max(bed[i] - bed[i + 1], 0.0)
+                W_us_est = W_prev + Sf_prev * dx_i + bed_rise
+                W_us_est = max(W_us_est, bed[i] + y_c[i])
+                W_sub_corrected[i] = W_us_est
+                W_prev = W_us_est
+
+        W_final = np.array(W_sub_corrected, dtype=float)
 
         for c_idx, control_idx in enumerate(control_sections):
             seg_end = (control_sections[c_idx + 1] - 1) if (c_idx + 1 < len(control_sections)) else (n_xs - 1)
@@ -1823,7 +1865,7 @@ class SteadyProfileSolver:
             )
 
             jump_idx = self._locate_hydraulic_jump(
-                W_sub=W_subcritical,
+                W_sub=W_sub_corrected,
                 W_super=W_super,
                 bed=bed,
                 Q=Q,
