@@ -44,6 +44,7 @@ class SteadyProfileSolver:
         manning_n_rob=None,
         bank_stations=None,
         bridges=None,
+        culverts=None,
         lateral_inflows=None,
     ) -> None:
         """
@@ -88,6 +89,7 @@ class SteadyProfileSolver:
         self._manning_n_rob = manning_n_rob
         self._bank_stations = bank_stations
         self._bridges = bridges  # list[dict] with bridge physical parameters
+        self._culverts = culverts  # list[dict] with culvert parameters from HDF adapter
         self._lateral_inflows = lateral_inflows  # 逐断面区间来水 (m³/s)
 
     # Hydraulic geometry helpers
@@ -446,6 +448,80 @@ class SteadyProfileSolver:
         y_bar = A / max(2.0 * T, 1e-6)
         gamma = 9810.0  # N/m^3
         return gamma * A * y_bar
+
+    def _solve_culvert(
+        self,
+        Q: float,
+        W_downstream: float,
+        culvert_dict: dict,
+        bed_us: float,
+    ) -> float:
+        """计算涵洞上游水面高程。
+
+        使用 HDS-5 入口/出口控制方法，取控制水头较大者。
+        涵洞参数从 HDF 适配器提取的 dict 获取。
+
+        Args:
+            Q: 流量 (m³/s)
+            W_downstream: 下游水面高程 (m)
+            culvert_dict: 涵洞参数字典
+            bed_us: 上游断面床面高程 (m)
+        Returns:
+            W_upstream: 上游水面高程 (m)
+        """
+        from physics.structures.culvert import Culvert, CulvertGeometry
+
+        # 提取参数
+        shape = str(culvert_dict.get("shape", "circular"))
+        diameter_m = float(culvert_dict.get("diameter_m", 0.0))
+        height_m = float(culvert_dict.get("height_m", diameter_m))
+        width_m = float(culvert_dict.get("width_m", diameter_m))
+        length_m = float(culvert_dict.get("length_m", 30.0))
+        us_invert = float(culvert_dict.get("us_invert_m", bed_us))
+        ds_invert = float(culvert_dict.get("ds_invert_m", us_invert - 0.01))
+        n_barrels = int(culvert_dict.get("n_barrels", 1))
+        manning_n = float(culvert_dict.get("manning_n", 0.013))
+        ke = float(culvert_dict.get("entrance_loss_coef", 0.5))
+
+        slope = (us_invert - ds_invert) / max(length_m, 0.1)
+
+        try:
+            geom = CulvertGeometry(
+                shape=shape, length=length_m, slope=max(slope, 1e-6),
+                diameter=diameter_m if shape == "circular" else None,
+                width=width_m if shape != "circular" else None,
+                height=height_m if shape != "circular" else None,
+                invert_elevation=us_invert,
+                n_barrels=n_barrels,
+            )
+            culvert = Culvert(
+                position=0.0, geometry=geom,
+                manning_n=manning_n,
+                entrance_loss_coef=ke,
+            )
+
+            # 上游可用水头 = W_upstream - us_invert（相对于涵洞入口底）
+            # 下游水头 = W_downstream - ds_invert
+            # 需要求解: 给定 Q，找 HW 使得 culvert 能通过 Q
+            h_downstream = max(W_downstream - ds_invert, 0.0)
+
+            # 用涵洞的 required_headwater 方法
+            q_per_barrel = Q / max(n_barrels, 1)
+            hw_inlet = culvert._required_headwater_inlet(q_per_barrel)
+            hw_outlet = culvert._required_headwater_outlet(q_per_barrel, h_downstream)
+
+            # 控制水头取大者
+            hw_required = max(hw_inlet, hw_outlet)
+
+            W_upstream = us_invert + hw_required
+            # 不能低于下游水面
+            W_upstream = max(W_upstream, W_downstream + 0.001)
+
+        except Exception:
+            # 涵洞计算失败时回退：简单加一个估算壅水
+            W_upstream = W_downstream + 0.1
+
+        return float(W_upstream)
 
     def _split_deck_overtopping_flow(
         self,
@@ -914,6 +990,21 @@ class SteadyProfileSolver:
             for _br in self._bridges:
                 if "us_xs_index" in _br:
                     _bridge_at_us[int(_br["us_xs_index"])] = _br
+
+        # --- Culvert index resolution ------------------------------------------
+        _culvert_at_us: dict[int, dict] = {}  # us_xs_index -> culvert dict
+        if self._culverts:
+            for _cv in self._culverts:
+                if "us_xs_index" in _cv:
+                    _culvert_at_us[int(_cv["us_xs_index"])] = _cv
+                elif hasattr(self, "_xs_station_labels") and self._xs_station_labels:
+                    _us_rs = str(_cv.get("us_rs", "")).strip()
+                    _us_idx = next((j for j, lbl in enumerate(self._xs_station_labels)
+                                    if str(lbl).strip() == _us_rs), None)
+                    if _us_idx is not None:
+                        _cv_copy = dict(_cv)
+                        _cv_copy["us_xs_index"] = _us_idx
+                        _culvert_at_us[_us_idx] = _cv_copy
         # -----------------------------------------------------------------------
         for i in range(n_xs - 2, -1, -1):
             # 逐断面流量：支持区间来水（HEC-RAS Change in Discharge）
@@ -1198,6 +1289,14 @@ class SteadyProfileSolver:
                     h_exp_e = _ec * max(vh_eff_e - vh_ds_app, 0.0)
                     W_trial = W_trial + h_pier_e + h_f_br_e + h_contr_e + h_exp_e
                 # Re-apply physical limit
+                W_trial = max(W_trial, bed[i] + 1e-4)
+                W_trial = min(W_trial, _W_MAX)
+            # --- Culvert (HDS-5) ------------------------------------------------
+            if i in _culvert_at_us:
+                _cv = _culvert_at_us[i]
+                W_trial = self._solve_culvert(
+                    Q=Q, W_downstream=W[i + 1],
+                    culvert_dict=_cv, bed_us=bed[i])
                 W_trial = max(W_trial, bed[i] + 1e-4)
                 W_trial = min(W_trial, _W_MAX)
             # --------------------------------------------------------------------
