@@ -36,6 +36,8 @@ class SteadyProfileSolver:
         bed_elevations=None,
         manning_ns=None,
         reach_lengths=None,
+        reach_lengths_lob=None,
+        reach_lengths_rob=None,
         contraction_coefs=None,
         expansion_coefs=None,
         manning_n_lob=None,
@@ -78,6 +80,8 @@ class SteadyProfileSolver:
         self._bed_elevations = bed_elevations
         self._manning_ns = manning_ns
         self._reach_lengths = reach_lengths
+        self._reach_lengths_lob = reach_lengths_lob  # HEC-RAS Len Left
+        self._reach_lengths_rob = reach_lengths_rob  # HEC-RAS Len Right
         self._contraction_coefs = contraction_coefs
         self._expansion_coefs = expansion_coefs
         self._manning_n_lob = manning_n_lob
@@ -905,15 +909,46 @@ class SteadyProfileSolver:
             # 本段使用的平均流量（HEC-RAS 在标准步中使用下游断面流量）
             Q_seg = Q_ds_local
 
-            dx_seg = float(abs(x[i + 1] - x[i]))
-            if dx_seg < 1e-6:
-                dx_seg = 1.0
+            # HEC-RAS 加权平均 reach length: L = (K_LOB*L_LOB + K_Ch*L_Ch + K_ROB*L_ROB) / K_total
+            dx_ch = float(abs(x[i + 1] - x[i]))
+            if dx_ch < 1e-6:
+                dx_ch = 1.0
+            dx_lob = dx_ch  # 默认与主槽相同
+            dx_rob = dx_ch
+            if self._reach_lengths_lob and i < len(self._reach_lengths_lob):
+                dx_lob = max(float(self._reach_lengths_lob[i]), 0.1)
+            if self._reach_lengths_rob and i < len(self._reach_lengths_rob):
+                dx_rob = max(float(self._reach_lengths_rob[i]), 0.1)
+
             h_ds = max(W[i + 1] - bed[i + 1], 0.01)
             A_ds, _P_ds, _R_ds, _T_ds = self._get_geometry(h_ds, i + 1)
             V_ds = Q_ds_local / max(A_ds, 1e-9)
             # 三区分区输水计算 (HEC-RAS LOB/Channel/ROB)
             K_ds, alpha_ds = self._compute_subdivided_conveyance(h_ds, i + 1)
             Sf_ds = (Q_ds_local / K_ds) ** 2 if K_ds > 0 else self.compute_friction_slope(h_ds, Q_ds_local, i + 1)
+
+            # 计算下游分区 K 用于加权 reach length
+            _K_ds_lob, _K_ds_ch, _K_ds_rob = 0.0, K_ds, 0.0
+            if hasattr(self, '_bank_stations') and self._bank_stations and i + 1 < len(self._bank_stations or []):
+                xs_ds = self._xs_array[i + 1] if self._xs_array and i + 1 < len(self._xs_array) else None
+                if xs_ds is not None and hasattr(xs_ds, 'distances'):
+                    _lb, _rb = self._bank_stations[i + 1]
+                    _sta = np.asarray(xs_ds.distances)
+                    _ele = np.asarray(xs_ds.elevations)
+                    _wl = float(xs_ds.min_elevation) + h_ds
+                    _n_l = self._manning_n_lob[i+1] if self._manning_n_lob and i+1 < len(self._manning_n_lob) else self.n
+                    _n_c = self._manning_ns[i+1] if self._manning_ns and i+1 < len(self._manning_ns) else self.n
+                    _n_r = self._manning_n_rob[i+1] if self._manning_n_rob and i+1 < len(self._manning_n_rob) else self.n
+                    _K_ds_lob, _ = self._zone_conveyance(_sta, _ele, _wl, float(np.min(_sta)), float(_lb), _n_l)
+                    _K_ds_ch, _ = self._zone_conveyance(_sta, _ele, _wl, float(_lb), float(_rb), _n_c)
+                    _K_ds_rob, _ = self._zone_conveyance(_sta, _ele, _wl, float(_rb), float(np.max(_sta)), _n_r)
+
+            # 加权平均 reach length
+            _K_sum = _K_ds_lob + _K_ds_ch + _K_ds_rob
+            if _K_sum > 0:
+                dx_seg = (_K_ds_lob * dx_lob + _K_ds_ch * dx_ch + _K_ds_rob * dx_rob) / _K_sum
+            else:
+                dx_seg = dx_ch
             vh_ds = alpha_ds * V_ds ** 2 / (2.0 * self.g)
             # --- 改进2：陡坡自适应子步 -------------------------------------------
             # --- 改进2：陡坡自适应子步（v2）-------------------------------------------
@@ -987,7 +1022,9 @@ class SteadyProfileSolver:
                     alpha_us_r = w_ip1_us * _alpha_us_ip1 + w_i_us * _alpha_us_i
                     Sf_us_r = (Q / K_us_r) ** 2 if K_us_r > 0 else self.compute_friction_slope(h_us_r, Q, i)
                     vh_us_r = alpha_us_r * V_us_r ** 2 / (2.0 * self.g)
-                    Sf_avg_r = min(0.5 * (Sf_us_r + _Sf_ds_sub), 1.0)
+                    # HEC-RAS 默认: Average Conveyance Equation
+                    # Sf_avg = ((Q_us + Q_ds) / (K_us + K_ds))^2
+                    Sf_avg_r = min(((Q + Q) / max(K_us_r + _K_ds_sub, 1e-9)) ** 2, 1.0)
                     cc_r = self._contraction_coefs[i] if self._contraction_coefs and i < len(self._contraction_coefs) else contraction_coef
                     ec_r = self._expansion_coefs[i]   if self._expansion_coefs   and i < len(self._expansion_coefs)   else expansion_coef
                     h_f_r = dx_sub * Sf_avg_r
@@ -1008,7 +1045,7 @@ class SteadyProfileSolver:
                     f_hi = _energy_residual(_W_hi)
                     if np.isfinite(f_narrow_lo) and np.isfinite(f_hi) and f_narrow_lo * f_hi <= 0.0:
                         # 窄区间有根（亚临界根），直接求解
-                        W_new = brentq(_energy_residual, _W_lo_narrow, _W_hi, xtol=1e-4, maxiter=100)
+                        W_new = brentq(_energy_residual, _W_lo_narrow, _W_hi, xtol=1e-6, maxiter=100)
                         W_new = max(W_new, bed_sub_us + 1e-4)
                         W_trial = W_new
                         _converged = True
@@ -1020,7 +1057,7 @@ class SteadyProfileSolver:
                         _W_hi_wide = W_sub_ds + 50.0
                         f_hi_wide = _energy_residual(_W_hi_wide)
                         if np.isfinite(f_wide_lo) and np.isfinite(f_hi_wide) and f_wide_lo * f_hi_wide <= 0.0:
-                            W_new = brentq(_energy_residual, _W_lo_wide, _W_hi_wide, xtol=1e-4, maxiter=100)
+                            W_new = brentq(_energy_residual, _W_lo_wide, _W_hi_wide, xtol=1e-6, maxiter=100)
                             W_new = max(W_new, bed_sub_us + 1e-4)
                             W_trial = W_new
                             _converged = True
@@ -1043,8 +1080,8 @@ class SteadyProfileSolver:
                         K_us, alpha_us = self._compute_subdivided_conveyance(h_us, i)
                         Sf_us = (Q / K_us) ** 2 if K_us > 0 else self.compute_friction_slope(h_us, Q, i)
                         vh_us = alpha_us * V_us ** 2 / (2.0 * self.g)
-                        Sf_avg = 0.5 * (Sf_us + _Sf_ds_sub)
-                        Sf_avg = min(Sf_avg, 1.0)
+                        # HEC-RAS 默认: Average Conveyance Equation
+                        Sf_avg = min(((Q + Q) / max(K_us + _K_ds_sub, 1e-9)) ** 2, 1.0)
                         cc = contraction_coef
                         ec = expansion_coef
                         if self._contraction_coefs and i < len(self._contraction_coefs):
