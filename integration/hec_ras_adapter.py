@@ -39,6 +39,16 @@ FT_TO_M = 0.3048
 CFS_TO_M3S = 0.028316846592
 
 
+# HEC-RAS 涵洞断面形状编码 → HydroClaude shape 字符串映射
+CULVERT_SHAPE_CODE_MAP: dict[int, str] = {
+    1: "circular",      # Circular 圆形管涵
+    2: "rectangular",   # Box 矩形箱涵
+    3: "arch",          # Pipe Arch 管拱
+    4: "arch",          # Ellipse 椭圆形
+    8: "arch",          # High Profile Arch 高拱
+    9: "arch",          # Conspan Arch 拱形
+}
+
 HECRAS_ADAPTER_VERSION = "hec_ras_adapter_v2"
 
 
@@ -571,6 +581,8 @@ class HECRASResultSummary:
     manning_n_rob_values: list[float] | None = None
     # Bridge parameters extracted from HEC-RAS HDF Geometry/Structures
     bridges: list[dict] | None = None  # list of bridge parameter dicts
+    # 涵洞参数（从 HDF Geometry/Structures/Culvert Groups 提取）
+    culverts: list[dict] | None = None  # list of culvert parameter dicts
     # 参数完整性报告
     parameter_completeness: dict[str, bool] | None = None
 
@@ -845,6 +857,8 @@ def extract_hecras_result_summary(
             xs_attrs = _try_read_xs_attributes(hdf, lf)
 
             bridges = _extract_bridge_params(hdf, lf) if has_structures else []
+            # 提取涵洞参数（与桥梁参数并列提取）
+            culverts = _extract_culvert_params(hdf, lf) if has_structures else []
 
             manning_n_ch = xs_attrs.get("manning_n_ch_values")
             
@@ -878,6 +892,7 @@ def extract_hecras_result_summary(
                 manning_n_lob_values=xs_attrs.get("manning_n_lob_values"),
                 manning_n_rob_values=xs_attrs.get("manning_n_rob_values"),
                 bridges=bridges if bridges else None,
+                culverts=culverts if culverts else None,
                 parameter_completeness=None,
             )
             summary.parameter_completeness = generate_parameter_completeness_report(summary)
@@ -900,6 +915,8 @@ def extract_hecras_result_summary(
         has_structures = _detect_structures(hdf)
         xs_profiles = _try_read_xs_profiles(hdf, lf)
         xs_attrs = _try_read_xs_attributes(hdf, lf)
+        # 提取涵洞参数（非稳态分支）
+        culverts = _extract_culvert_params(hdf, lf) if has_structures else []
 
         manning_n_ch = xs_attrs.get("manning_n_ch_values")
         
@@ -932,6 +949,7 @@ def extract_hecras_result_summary(
             expansion_coefs=xs_attrs.get("expansion_coefs"),
             manning_n_lob_values=xs_attrs.get("manning_n_lob_values"),
             manning_n_rob_values=xs_attrs.get("manning_n_rob_values"),
+            culverts=culverts if culverts else None,
             parameter_completeness=None,
         )
         summary.parameter_completeness = generate_parameter_completeness_report(summary)
@@ -1336,9 +1354,240 @@ def _extract_bridge_params(hdf: h5py.File, lf: float) -> list[dict]:
         if len(bridge_opening_stations) > 2:
             bridge_dict["bridge_opening_stations"] = bridge_opening_stations
             bridge_dict["bridge_opening_elevations"] = bridge_opening_elevations
+            # 推导桥面板跨度 deck_span_m（堰流计算必需）
+            # 找出高程接近 deck_elev（误差 < 0.1m）的 station 点，取其横向范围
+            if deck_elev > 0.0:
+                deck_pts = [
+                    float(bridge_opening_stations[_j])
+                    for _j, _e in enumerate(bridge_opening_elevations)
+                    if abs(float(_e) - deck_elev) < 0.1
+                ]
+                if len(deck_pts) >= 2:
+                    bridge_dict["deck_span_m"] = float(max(deck_pts) - min(deck_pts))
         bridges.append(bridge_dict)
 
     return bridges
+
+def _extract_culvert_params(hdf: h5py.File, lf: float) -> list[dict]:
+    r"""Extract culvert parameters from HEC-RAS HDF Geometry/Structures (by Culvert Group).
+
+    Reads from:
+    - Geometry/Structures/Attributes (River, Reach, RS, flap gate flag)
+    - Geometry/Structures/Culvert Groups/Attributes (core geometry: Rise, Span, Length, etc.)
+    - Geometry/Structures/Culvert Groups/Barrels/Attributes (optional barrel station coords)
+
+    All lengths and elevations are converted from English (ft) to SI (m) using lf.
+    Returns list[dict], one entry per culvert group.
+    """
+    culverts: list[dict] = []
+
+    def _safe_float(value: Any, default: float = 0.0) -> float:
+        r"""Safely cast value to float; return default on any failure."""
+        try:
+            if value is None:
+                return default
+            if isinstance(value, bytes):
+                txt = _decode_bytes(value)
+                return float(txt) if txt else default
+            return float(value)
+        except Exception:
+            return default
+
+    # 1) 读取结构主表，建立 structure_id -> 元信息映射（保留 Culvert / Lateral 类型）
+    structure_meta: dict[int, dict[str, Any]] = {}
+    struct_attr_path = "Geometry/Structures/Attributes"
+    if struct_attr_path in hdf:
+        try:
+            s_attrs = hdf[struct_attr_path][:]
+            for idx, sa in enumerate(s_attrs):
+                names = set(sa.dtype.names or [])
+                stype = _decode_bytes(sa["Type"]) if "Type" in names else ""
+                stype_l = stype.lower()
+                # 仅保留包含 culvert 或 lateral 的结构类型
+                if "culvert" not in stype_l and "lateral" not in stype_l:
+                    continue
+                river = _decode_bytes(sa["River"]) if "River" in names else ""
+                reach = _decode_bytes(sa["Reach"]) if "Reach" in names else ""
+                rs = _decode_bytes(sa["RS"]) if "RS" in names else ""
+                # Culverts Flap Gates > 0 表示含拍门（单向阀）
+                has_flap_gate = (
+                    _safe_float(sa["Culverts Flap Gates"], 0.0) > 0.0
+                    if "Culverts Flap Gates" in names
+                    else False
+                )
+                meta: dict[str, Any] = {
+                    "structure_id": idx,
+                    "river": river,
+                    "reach": reach,
+                    "rs": rs,
+                    "has_flap_gate": has_flap_gate,
+                }
+                # 兼容 0-based 和 1-based 两种 structure_id 编码
+                structure_meta[idx] = meta
+                if (idx + 1) not in structure_meta:
+                    structure_meta[idx + 1] = meta
+        except Exception:
+            # 主表解析失败不阻断涵洞组解析
+            pass
+
+    # 2) 读取涵洞组核心参数表
+    group_attr_path = "Geometry/Structures/Culvert Groups/Attributes"
+    if group_attr_path not in hdf:
+        return culverts
+
+    try:
+        g_attrs = hdf[group_attr_path][:]
+    except Exception:
+        return culverts
+
+    # 3) 可选：读取 Barrels/Attributes 获取多孔横站坐标
+    barrel_map: dict[tuple[int, int], dict[str, list[float]]] = {}
+    barrel_attr_path = "Geometry/Structures/Culvert Groups/Barrels/Attributes"
+    if barrel_attr_path in hdf:
+        try:
+            b_attrs = hdf[barrel_attr_path][:]
+            for ba in b_attrs:
+                b_names = set(ba.dtype.names or [])
+                sid = int(round(_safe_float(ba["Structure ID"], -1.0))) if "Structure ID" in b_names else -1
+                gid = (
+                    int(round(_safe_float(ba["Culvert Group ID"], -1.0)))
+                    if "Culvert Group ID" in b_names
+                    else -1
+                )
+                if sid < 0 or gid < 0:
+                    continue
+                key = (sid, gid)
+                if key not in barrel_map:
+                    barrel_map[key] = {"us": [], "ds": []}
+                if "US Station" in b_names:
+                    barrel_map[key]["us"].append(_safe_float(ba["US Station"], 0.0) * lf)
+                if "DS Station" in b_names:
+                    barrel_map[key]["ds"].append(_safe_float(ba["DS Station"], 0.0) * lf)
+        except Exception:
+            # barrels 为可选数据，异常时忽略
+            pass
+
+    # 4) 逐组解析并输出参数 dict
+    for g_idx, ga in enumerate(g_attrs):
+        parse_notes: list[str] = []
+        try:
+            names = set(ga.dtype.names or [])
+            # structure_id 对应结构主表索引
+            structure_id = (
+                int(round(_safe_float(ga["Structure ID"], -1.0)))
+                if "Structure ID" in names
+                else -1
+            )
+            s_meta = structure_meta.get(structure_id)
+            if s_meta is None:
+                s_meta = {
+                    "structure_id": structure_id,
+                    "river": "",
+                    "reach": "",
+                    "rs": "",
+                    "has_flap_gate": False,
+                }
+                parse_notes.append(f"Structure ID {structure_id} not found in Structures/Attributes")
+            group_name = _decode_bytes(ga["Name"]) if "Name" in names else f"culvert_group_{g_idx}"
+            shape_code = int(round(_safe_float(ga["Shape"], 0.0))) if "Shape" in names else 0
+            shape = CULVERT_SHAPE_CODE_MAP.get(shape_code, "rectangular")
+            if shape_code not in CULVERT_SHAPE_CODE_MAP:
+                parse_notes.append(f"unknown shape code {shape_code}, fallback rectangular")
+            chart = int(round(_safe_float(ga["Chart"], 0.0))) if "Chart" in names else 0
+            scale = int(round(_safe_float(ga["Scale"], 0.0))) if "Scale" in names else 0
+            # 尺寸参数换算（英制 ft -> SI m）
+            rise_m = _safe_float(ga["Rise"], 0.0) * lf if "Rise" in names else 0.0
+            span_m = _safe_float(ga["Span"], 0.0) * lf if "Span" in names else 0.0
+            length_m = _safe_float(ga["Length"], 0.0) * lf if "Length" in names else 0.0
+            us_invert_m = _safe_float(ga["US Invert"], 0.0) * lf if "US Invert" in names else 0.0
+            ds_invert_m = _safe_float(ga["DS Invert"], 0.0) * lf if "DS Invert" in names else 0.0
+            # 坡度从进出口高差推算（HDF 中不直接存储坡度字段）
+            slope = (us_invert_m - ds_invert_m) / length_m if length_m > 0.0 else 0.0
+            manning_n = _safe_float(ga["Mann Top"], 0.013) if "Mann Top" in names else 0.013
+            entrance_loss_coef = _safe_float(ga["Entrance Loss"], 0.5) if "Entrance Loss" in names else 0.5
+            exit_loss_coef = _safe_float(ga["Exit Loss"], 1.0) if "Exit Loss" in names else 1.0
+            n_barrels = max(
+                int(round(_safe_float(ga["Barrels"], 1.0))) if "Barrels" in names else 1, 1
+            )
+            # 圆管时 Rise = Span = diameter；矩形/拱形时 Rise = height，Span = width
+            if shape == "circular":
+                diameter_m: float | None = rise_m
+                height_m = rise_m
+                width_m = rise_m
+            else:
+                diameter_m = None
+                height_m = rise_m
+                width_m = span_m
+            item: dict[str, Any] = {
+                "structure_id": int(s_meta.get("structure_id", structure_id)),
+                "group_name": group_name,
+                "shape_code": shape_code,
+                "shape": shape,
+                "chart": chart,
+                "scale": scale,
+                "height_m": float(height_m),
+                "width_m": float(width_m),
+                "diameter_m": float(diameter_m) if diameter_m is not None else None,
+                "length_m": float(length_m),
+                "slope": float(slope),
+                "us_invert_m": float(us_invert_m),
+                "ds_invert_m": float(ds_invert_m),
+                "manning_n": float(manning_n),
+                "entrance_loss_coef": float(entrance_loss_coef),
+                "exit_loss_coef": float(exit_loss_coef),
+                "n_barrels": int(n_barrels),
+                "has_flap_gate": bool(s_meta.get("has_flap_gate", False)),
+                "river": str(s_meta.get("river", "")),
+                "reach": str(s_meta.get("reach", "")),
+                "rs": str(s_meta.get("rs", "")),
+            }
+            # 尝试多种 group id 键式匹配 barrel 横站坐标（兼容 0-based/1-based 编码）
+            candidate_gids: list[int] = [g_idx, g_idx + 1]
+            for field_name in ("Culvert Group ID", "Group ID", "ID"):
+                if field_name in names:
+                    candidate_gids.append(int(round(_safe_float(ga[field_name], -1.0))))
+            for gid in candidate_gids:
+                if gid < 0:
+                    continue
+                barrel_key = (structure_id, gid)
+                if barrel_key in barrel_map:
+                    us_list = barrel_map[barrel_key]["us"]
+                    ds_list = barrel_map[barrel_key]["ds"]
+                    if us_list:
+                        item["barrel_us_stations"] = us_list
+                    if ds_list:
+                        item["barrel_ds_stations"] = ds_list
+                    break
+            if parse_notes:
+                item["notes"] = parse_notes
+            culverts.append(item)
+        except Exception as exc:
+            # 单组解析失败不影响其他组，记录错误信息
+            culverts.append({
+                "structure_id": -1,
+                "group_name": f"culvert_group_{g_idx}",
+                "shape_code": 0,
+                "shape": "rectangular",
+                "chart": 0,
+                "scale": 0,
+                "height_m": 0.0,
+                "width_m": 0.0,
+                "diameter_m": None,
+                "length_m": 0.0,
+                "slope": 0.0,
+                "us_invert_m": 0.0,
+                "ds_invert_m": 0.0,
+                "manning_n": 0.013,
+                "entrance_loss_coef": 0.5,
+                "exit_loss_coef": 1.0,
+                "n_barrels": 1,
+                "has_flap_gate": False,
+                "river": "",
+                "reach": "",
+                "rs": "",
+                "notes": [f"parse error: {exc}"],
+            })
+    return culverts
 
 def _detect_structures(hdf: h5py.File) -> bool:
     """Return True when the HDF contains *actual* hydraulic structures.
