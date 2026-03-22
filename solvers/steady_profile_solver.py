@@ -1890,8 +1890,7 @@ class SteadyProfileSolver:
                         _converged = True
                         _brentq_ok = True
                     elif _is_steep_substep:
-                        # 关键修正：陡坡子步在窄区间无亚临界根时，
-                        # 直接取临界深度，不再扩展到可能包含超临界根的宽区间。
+                        # 陡坡子步在窄区间无亚临界根时取临界深度。
                         W_new = _W_critical_us
                         W_trial = W_new
                         _converged = True

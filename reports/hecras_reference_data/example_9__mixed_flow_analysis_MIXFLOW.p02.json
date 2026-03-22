@@ -2030,19 +2030,10 @@
         "upstream_distance_m": 3.048,
         "weir_width_ft": 90.0,
         "weir_width_m": 27.432000000000002,
-        "piers": [
-          {
-            "us_station_ft": 150.0,
-            "us_station_m": 45.72,
-            "ds_station_ft": 150.0,
-            "ds_station_m": 45.72,
-            "use_debris": false,
-            "debris_width_ft": null,
-            "debris_width_m": null,
-            "debris_height_ft": null,
-            "debris_height_m": null
-          }
-        ],
+        "piers": {
+          "pier_count": 1,
+          "total_pier_width_ft": 5.0
+        },
         "coefficients": {
           "method": 0,
           "low_standard_step": true,
@@ -2055,6 +2046,14 @@
           "us_xs_index": 8,
           "ds_xs_index": 9,
           "upstream_distance_ft": 30
+        },
+        "deck_geometry": {
+          "low_chord_elev_ft": 1282.0,
+          "high_chord_elev_ft": 1285.0,
+          "bridge_opening_width_ft": 90.0
+        },
+        "weir_parameters": {
+          "weir_coefficient": 2.9
         }
       }
     ]
