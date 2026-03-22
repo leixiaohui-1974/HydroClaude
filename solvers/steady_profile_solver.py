@@ -1268,9 +1268,9 @@ class SteadyProfileSolver:
 
         L_bridge = max(float(bridge.get("bridge_length_m", 1.0)), 0.1)
         pier_w_total = max(float(bridge.get("total_pier_width_m", 0.0)), 0.0)
-        # TODO-B05: 当 HEC-RAS pier_loss_coef=0 时，桥墩拖曳系数也应为 0
-        _pier_loss_coef = float(bridge.get("pier_loss_coef", 0.0))
-        C_D = float(bridge.get("pier_cd", 2.0)) if _pier_loss_coef > 0.0 else 0.0
+        # 桥墩拖曳系数：优先从 coefficients.momentum_cd 读取
+        _coefs = bridge.get("coefficients", {})
+        C_D = float(_coefs.get("momentum_cd", bridge.get("pier_cd", 2.0)))
         deck_elev = float(bridge.get("deck_elevation_m", 1e9))
         pier_height = float(bridge.get("pier_height_m", 1e9))
         deck_weir_coef = float(bridge.get("deck_weir_coef", 1.70))
