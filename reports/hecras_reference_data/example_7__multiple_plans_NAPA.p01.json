@@ -7675,7 +7675,9 @@
           "us_xs_index": 14,
           "ds_xs_index": 15,
           "upstream_distance_ft": 30
-        }
+        },
+        "bridge_opening_width_ft": 52,
+        "bridge_opening_width_m": 15.8496
       },
       {
         "structure_id": 1,
