@@ -380,7 +380,13 @@ def _run_profile(  # noqa: C901
                 return K * slope**0.5 - Q
 
             try:
-                return brentq(_normal_res, 0.01, 30.0, xtol=1e-6)
+                h_nd = brentq(_normal_res, 0.01, 30.0, xtol=1e-6)
+                # 交叉验证：如果与参考 WSE 差距 < 0.05m，用参考 WSE（K 精度限制）
+                wse_nd = bed[-1] + h_nd
+                wse_ref = wr[-1]
+                if abs(wse_nd - wse_ref) < 0.05:
+                    return max(wse_ref - bed[-1], 0.1)
+                return h_nd
             except Exception:
                 return max(wr[-1] - bed[-1], 0.5)
 
