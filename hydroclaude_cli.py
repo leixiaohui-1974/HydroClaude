@@ -219,12 +219,14 @@ def _build_from_ref(ref: dict):
     return sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts_param, n_xs
 
 
-def _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts, lat):
+def _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts, lat,
+                  ice_thickness=None, n_ice=None):
     sv = SteadyProfileSolver(
         length=max(sum(rl), 1), cross_sections=sections, bed_elevations=bed,
         reach_lengths=rl, manning_ns=nch, manning_n_lob=nlob, manning_n_rob=nrob,
         bank_stations=list(zip(bsl, bsr)), contraction_coefs=cc, expansion_coefs=ec,
-        lateral_inflows=lat, culverts=culverts if culverts else None)
+        lateral_inflows=lat, culverts=culverts if culverts else None,
+        ice_thickness=ice_thickness, n_ice=n_ice)
     sv._manning_n_segments = nsa
     sv._ineffective_areas = ifa
     return sv
@@ -311,11 +313,23 @@ def _run_profile(  # noqa: C901
         )
         return seg_sv.solve_without_structures(Q=seg_flows[0], h_downstream=seg_hd)
 
+    # 冰盖参数（从 ref 读取，所有断面统一）
+    _ice_data = ref.get("ice_cover")
+    _ice_t_arr = None
+    _ice_n_arr = None
+    if _ice_data:
+        _t = float(_ice_data.get("thickness_m", 0))
+        _n = float(_ice_data.get("manning_n", 0))
+        if _t > 0:
+            _ice_t_arr = [_t] * n_xs
+            _ice_n_arr = [_n if _n > 0 else 0.03] * n_xs
+
     def _fallback_serial():
         lat = [0.0] * n_xs
         for i in range(1, n_xs):
             lat[i - 1] = flows[i] - flows[i - 1]
-        sv = _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts, lat)
+        sv = _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts, lat,
+                          ice_thickness=_ice_t_arr, n_ice=_ice_n_arr)
 
         # Inline Structure（闸门+堰）：从参考数据提取并传入
         inline_data = ref.get("inline_structure")

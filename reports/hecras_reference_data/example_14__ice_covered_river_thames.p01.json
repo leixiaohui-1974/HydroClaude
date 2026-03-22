@@ -3238,5 +3238,11 @@
         ]
       }
     ]
+  },
+  "ice_cover": {
+    "thickness_ft": 0.5,
+    "thickness_m": 0.1524,
+    "manning_n": 0.03,
+    "specific_gravity": 0.916
   }
 }
