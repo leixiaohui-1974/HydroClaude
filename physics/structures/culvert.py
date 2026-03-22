@@ -870,10 +870,12 @@ class Culvert:
         V = q / A
 
         # 满流公式在非满流时也以当前流深近似计算，保持连续
-        H_f = (self.n * q) ** 2 * L / (R ** (4.0 / 3.0) * A ** 2)
-        H_e = self.K_e * V ** 2 / (2.0 * self.g)
+        # HDS-5 出口控制公式: H = (1 + Ke + 19.63*n²*L/R^(4/3)) × V²/(2g)
+        # H 包含入口损失 + 摩阻，出口损失已隐含在 h_o 中
+        friction_factor = 19.63 * self.n ** 2 * L / max(R ** (4.0 / 3.0), 1e-12)
+        H = (1.0 + self.K_e + friction_factor) * V ** 2 / (2.0 * self.g)
 
-        hw_required = h_o + H_f + H_e - L * S
+        hw_required = h_o + H - L * S
         return max(0.0, hw_required)
 
     def _solve_discharge_by_required_headwater(self, hw_available: float, required_hw_func) -> float:
