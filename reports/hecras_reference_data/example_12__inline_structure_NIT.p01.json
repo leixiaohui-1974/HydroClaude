@@ -7735,5 +7735,142 @@
     [],
     [],
     []
-  ]
+  ],
+  "inline_structure": {
+    "rs": "41.75",
+    "weir_coef": 3.950000047683716,
+    "weir_width_ft": 50.0,
+    "gate_groups": [
+      {
+        "name": "Left Group",
+        "width_ft": 30.0,
+        "width_m": 9.144,
+        "height_ft": 10.0,
+        "invert_ft": 0.0,
+        "invert_m": 0.0,
+        "sluice_coef": 0.800000011920929,
+        "n_openings_per_group": 5
+      },
+      {
+        "name": "Center Group",
+        "width_ft": 30.0,
+        "width_m": 9.144,
+        "height_ft": 10.0,
+        "invert_ft": 0.0,
+        "invert_m": 0.0,
+        "sluice_coef": 0.800000011920929,
+        "n_openings_per_group": 5
+      },
+      {
+        "name": "Right Group",
+        "width_ft": 30.0,
+        "width_m": 9.144,
+        "height_ft": 10.0,
+        "invert_ft": 0.0,
+        "invert_m": 0.0,
+        "sluice_coef": 0.800000011920929,
+        "n_openings_per_group": 5
+      }
+    ],
+    "openings_per_profile": [
+      {
+        "Left Group": [
+          0,
+          0
+        ],
+        "Center Group": [
+          5,
+          5
+        ],
+        "Right Group": [
+          0,
+          0
+        ]
+      },
+      {
+        "Left Group": [
+          3,
+          2
+        ],
+        "Center Group": [
+          5,
+          5
+        ],
+        "Right Group": [
+          3,
+          2
+        ]
+      },
+      {
+        "Left Group": [
+          6,
+          3
+        ],
+        "Center Group": [
+          6,
+          5
+        ],
+        "Right Group": [
+          6,
+          3
+        ]
+      },
+      {
+        "Left Group": [
+          7,
+          4
+        ],
+        "Center Group": [
+          8,
+          5
+        ],
+        "Right Group": [
+          7,
+          4
+        ]
+      },
+      {
+        "Left Group": [
+          9,
+          5
+        ],
+        "Center Group": [
+          9,
+          5
+        ],
+        "Right Group": [
+          9,
+          5
+        ]
+      },
+      {
+        "Left Group": [
+          10,
+          5
+        ],
+        "Center Group": [
+          10,
+          5
+        ],
+        "Right Group": [
+          10,
+          5
+        ]
+      },
+      {
+        "Left Group": [
+          10,
+          5
+        ],
+        "Center Group": [
+          10,
+          5
+        ],
+        "Right Group": [
+          10,
+          5
+        ]
+      }
+    ]
+  }
 }
