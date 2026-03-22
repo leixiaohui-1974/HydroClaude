@@ -7649,6 +7649,112 @@
         ],
         "rs": "200"
       }
+    ],
+    "bridges": [
+      {
+        "structure_id": 0,
+        "type": "Bridge",
+        "mode": "",
+        "river": "Napa Creek",
+        "reach": "South Reach",
+        "rs": "2512",
+        "upstream_distance_ft": 2.0,
+        "upstream_distance_m": 0.6096,
+        "weir_width_ft": 52.0,
+        "weir_width_m": 15.8496,
+        "piers": [],
+        "coefficients": {
+          "method": 0,
+          "low_standard_step": true,
+          "use_momentum": true,
+          "momentum_cd": 2.0,
+          "use_yarnell": false,
+          "yarnell_k": null
+        },
+        "cross_section_reference": {
+          "us_xs_index": 14,
+          "ds_xs_index": 15,
+          "upstream_distance_ft": 30
+        }
+      },
+      {
+        "structure_id": 1,
+        "type": "Bridge",
+        "mode": "",
+        "river": "Napa Creek",
+        "reach": "South Reach",
+        "rs": "1350",
+        "upstream_distance_ft": 2.0,
+        "upstream_distance_m": 0.6096,
+        "weir_width_ft": 61.0,
+        "weir_width_m": 18.5928,
+        "piers": [],
+        "coefficients": {
+          "method": 0,
+          "low_standard_step": true,
+          "use_momentum": true,
+          "momentum_cd": 2.0,
+          "use_yarnell": false,
+          "yarnell_k": null
+        },
+        "cross_section_reference": {
+          "us_xs_index": 61,
+          "ds_xs_index": 62,
+          "upstream_distance_ft": 30
+        }
+      },
+      {
+        "structure_id": 2,
+        "type": "Bridge",
+        "mode": "",
+        "river": "Napa Creek",
+        "reach": "South Reach",
+        "rs": "1218.5",
+        "upstream_distance_ft": 2.0,
+        "upstream_distance_m": 0.6096,
+        "weir_width_ft": 17.0,
+        "weir_width_m": 5.1816,
+        "piers": [],
+        "coefficients": {
+          "method": 0,
+          "low_standard_step": true,
+          "use_momentum": true,
+          "momentum_cd": 2.0,
+          "use_yarnell": false,
+          "yarnell_k": null
+        },
+        "cross_section_reference": {
+          "us_xs_index": 65,
+          "ds_xs_index": 66,
+          "upstream_distance_ft": 30
+        }
+      },
+      {
+        "structure_id": 3,
+        "type": "Bridge",
+        "mode": "",
+        "river": "Napa Creek",
+        "reach": "South Reach",
+        "rs": "979",
+        "upstream_distance_ft": 2.0,
+        "upstream_distance_m": 0.6096,
+        "weir_width_ft": 42.0,
+        "weir_width_m": 12.8016,
+        "piers": [],
+        "coefficients": {
+          "method": 0,
+          "low_standard_step": true,
+          "use_momentum": true,
+          "momentum_cd": 2.0,
+          "use_yarnell": false,
+          "yarnell_k": null
+        },
+        "cross_section_reference": {
+          "us_xs_index": 70,
+          "ds_xs_index": 71,
+          "upstream_distance_ft": 30
+        }
+      }
     ]
   },
   "ineffective_areas": [
