@@ -72,8 +72,10 @@ def _build_from_ref(ref: dict):
         _lr = xg.get("len_right_ft", _lch)
         # NaN 或无效值时回退到 channel length
         import math
-        rl_lob.append(float(_ll) * LF if _ll is not None and not math.isnan(float(_ll)) else _lch * LF)
-        rl_rob.append(float(_lr) * LF if _lr is not None and not math.isnan(float(_lr)) else _lch * LF)
+        _ll_val = float(_ll) if _ll is not None and not math.isnan(float(_ll)) else _lch
+        _lr_val = float(_lr) if _lr is not None and not math.isnan(float(_lr)) else _lch
+        rl_lob.append(_ll_val * LF)
+        rl_rob.append(_lr_val * LF)
         nch.append(nc); nlob.append(nl); nrob.append(nrv)
         bsl.append(lb); bsr.append(rb)
         cc.append(float(xg.get("contraction", 0.1)))

@@ -2017,7 +2017,35 @@ class SteadyProfileSolver:
                             _converged = True
                             _brentq_ok = True
                     else:
-                        _brentq_ok = False
+                        # 缓坡断面窄区间（[max(W_ds,W_crit), W_ds+20]）未找到亚临界根。
+                        # 一级回退：放宽到宽区间 [W_crit, W_ds+20]，允许 W_us < W_ds。
+                        # 物理依据：当下游 WSE 因误差偏高时，能量方程的真实亚临界根
+                        # 可能低于 W_ds，只需保证 W_us >= W_crit（最低物理约束）。
+                        _W_lo_wide = _W_critical_us
+                        _W_hi_wide = max(_W_lo_wide + 1e-4, W_sub_ds + 20.0)
+                        try:
+                            f_wide_lo = _energy_residual(_W_lo_wide)
+                            f_wide_hi = _energy_residual(_W_hi_wide)
+                            if (np.isfinite(f_wide_lo) and np.isfinite(f_wide_hi)
+                                    and f_wide_lo * f_wide_hi <= 0.0):
+                                W_new = brentq(_energy_residual, _W_lo_wide, _W_hi_wide,
+                                               xtol=1e-6, maxiter=100)
+                                W_new = max(W_new, bed_sub_us + 1e-4)
+                                # Froude 检查：确保找到的是亚临界根
+                                _h_check2 = max(W_new - bed_sub_us, 0.001)
+                                _A_check2, _, _, _T_check2 = self._get_geometry(_h_check2, i)
+                                _V_check2 = Q / max(_A_check2, 1e-9)
+                                _D_check2 = _A_check2 / max(_T_check2, 1e-9)
+                                _Fr_check2 = _V_check2 / max(np.sqrt(self.g * _D_check2), 1e-9)
+                                if _Fr_check2 > 1.0:
+                                    W_new = _W_critical_us
+                                W_trial = W_new
+                                _converged = True
+                                _brentq_ok = True
+                            else:
+                                _brentq_ok = False
+                        except Exception:
+                            _brentq_ok = False
                 except Exception:
                     # 极端情况下若陡坡子步求根异常，仍按 HEC-RAS 取临界深度；
                     # 缓坡段则回退到 Picard。
