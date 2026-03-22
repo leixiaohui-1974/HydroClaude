@@ -221,19 +221,152 @@ def _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa,
     return sv
 
 
-def _run_profile(ref, p_idx, sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts, n_xs):
+def _run_profile(  # noqa: C901
+    ref: dict,
+    p_idx: int,
+    sections: list,
+    bed: list,
+    rl: list,
+    nch: list,
+    nlob: list,
+    nrob: list,
+    bsl: list,
+    bsr: list,
+    cc: list,
+    ec: list,
+    nsa: list,
+    ifa: list,
+    culverts: list,
+    n_xs: int,
+):
+    """工况求解。自动检测环状河网并分段求解；普通河道退回串联求解。
+
+    环网检测条件（适用于 HEC-RAS Example 8 类型）：
+      - rl[i] == 0 表示分叉/合流节点
+      - 节点处流量减小 → 分叉点；增大 → 合流点
+      - 识别到"主干上游 → 支路A → 支路B → 主干下游"结构后分段求解
+    """
     profile = ref["profiles"][p_idx]
     xd = profile["cross_sections"]
-    Q = float(xd[0]["flow_m3s"])
+
+    flows = [float(x["flow_m3s"]) for x in xd]
     wr = [float(x["wse_m"]) for x in xd]
+    Q = flows[0]
     hd = max(wr[-1] - bed[-1], 0.5)
-    lat = [0.0] * n_xs
-    for i in range(1, n_xs):
-        lat[i - 1] = float(xd[i]["flow_m3s"]) - float(xd[i - 1]["flow_m3s"])
-    sv = _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts, lat)
-    r = sv.solve_without_structures(Q=Q, h_downstream=hd)
-    errs = [abs(float(r["W"][i]) - wr[i]) for i in range(n_xs)]
-    return r, wr, errs, Q, profile["name"]
+
+    def _is_zero(v: float) -> bool:
+        return abs(v) < 1e-9
+
+    def _solve_seg(xs_indices: list[int], Q_seg: float, h_ds_wse: float) -> dict:
+        """在 xs_indices 指定的子断面集上求解一段稳态水面线。"""
+        seg_secs = [sections[i] for i in xs_indices]
+        seg_bed = [bed[i] for i in xs_indices]
+        seg_rl = [rl[i] for i in xs_indices]
+        seg_nch = [nch[i] for i in xs_indices]
+        seg_nlob = [nlob[i] for i in xs_indices]
+        seg_nrob = [nrob[i] for i in xs_indices]
+        seg_bsl = [bsl[i] for i in xs_indices]
+        seg_bsr = [bsr[i] for i in xs_indices]
+        seg_cc = [cc[i] for i in xs_indices]
+        seg_ec = [ec[i] for i in xs_indices]
+        seg_nsa = [nsa[i] for i in xs_indices]
+        seg_lat = [0.0] * len(xs_indices)  # 段内各断面无侧向流
+        seg_hd = max(float(h_ds_wse) - float(seg_bed[-1]), 0.5)
+        seg_sv = _make_solver(
+            seg_secs, seg_bed, seg_rl, seg_nch, seg_nlob, seg_nrob,
+            seg_bsl, seg_bsr, seg_cc, seg_ec, seg_nsa, [], None, seg_lat,
+        )
+        return seg_sv.solve_without_structures(Q=Q_seg, h_downstream=seg_hd)
+
+    def _fallback_serial():
+        lat = [0.0] * n_xs
+        for i in range(1, n_xs):
+            lat[i - 1] = flows[i] - flows[i - 1]
+        sv = _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts, lat)
+        r0 = sv.solve_without_structures(Q=Q, h_downstream=hd)
+        errs0 = [abs(float(r0["W"][i]) - wr[i]) for i in range(n_xs)]
+        return r0, wr, errs0, Q, profile["name"]
+
+    # ------------------------------------------------------------------ #
+    # 环网检测（两平行支路汇流结构）                                       #
+    # 格式：XS[0..bif] 主干上游 → XS[bif+1..a_end] 支路A                 #
+    #       → XS[b_start..b_end] 支路B → XS[dn_start..end] 主干下游     #
+    # ------------------------------------------------------------------ #
+    try:
+        # 找 rl=0 的节点断面
+        node_set = {i for i in range(n_xs - 1) if _is_zero(float(rl[i]))}
+        # 分叉候选：节点处流量减小
+        bif_candidates = [i for i in sorted(node_set) if flows[i + 1] < flows[i]]
+        if not bif_candidates:
+            return _fallback_serial()
+
+        bif_idx = bif_candidates[0]
+        main_q = flows[bif_idx]
+        branch_a_q = flows[bif_idx + 1]
+
+        # 支路A终止：流量首次偏离 branch_a_q
+        branch_b_start = None
+        for i in range(bif_idx + 1, n_xs):
+            if not _is_zero(flows[i] - branch_a_q):
+                branch_b_start = i
+                break
+        if branch_b_start is None:
+            return _fallback_serial()
+
+        branch_a_end = branch_b_start - 1
+        branch_b_q = flows[branch_b_start]
+
+        # 主干下游起点：流量恢复到 main_q
+        down_start = None
+        for i in range(branch_b_start, n_xs):
+            if _is_zero(flows[i] - main_q):
+                down_start = i
+                break
+        if down_start is None:
+            return _fallback_serial()
+
+        branch_b_end = down_start - 1
+
+        # 合法性校验
+        if not (0 <= bif_idx < branch_a_end < branch_b_start <= branch_b_end < down_start < n_xs):
+            return _fallback_serial()
+        # 支路末端必须是节点（rl=0）
+        if branch_a_end not in node_set or branch_b_end not in node_set:
+            return _fallback_serial()
+
+        seg_up = list(range(0, bif_idx + 1))         # 主干上游
+        seg_a = list(range(bif_idx + 1, branch_a_end + 1))   # 支路A
+        seg_b = list(range(branch_b_start, branch_b_end + 1))  # 支路B
+        seg_dn = list(range(down_start, n_xs))        # 主干下游
+
+        if not (seg_up and seg_a and seg_b and seg_dn):
+            return _fallback_serial()
+
+        # 求解顺序：下游 → 两支路 → 上游
+        r_dn = _solve_seg(seg_dn, main_q, wr[-1])
+        wse_confluence = float(r_dn["W"][0])          # 合流点WSE
+
+        r_b = _solve_seg(seg_b, branch_b_q, wse_confluence)
+        r_a = _solve_seg(seg_a, branch_a_q, wse_confluence)
+
+        # 分叉点WSE = 两支路上游端取较大值（壅水控制）
+        wse_bif = max(float(r_a["W"][0]), float(r_b["W"][0]))
+        r_up = _solve_seg(seg_up, main_q, wse_bif)
+
+        # 组装全局WSE数组
+        full_w: list[float] = [0.0] * n_xs
+        for li, xi in enumerate(seg_up):  full_w[xi] = float(r_up["W"][li])
+        for li, xi in enumerate(seg_a):   full_w[xi] = float(r_a["W"][li])
+        for li, xi in enumerate(seg_b):   full_w[xi] = float(r_b["W"][li])
+        for li, xi in enumerate(seg_dn):  full_w[xi] = float(r_dn["W"][li])
+
+        r = {"W": full_w}
+        errs = [abs(full_w[i] - wr[i]) for i in range(n_xs)]
+        return r, wr, errs, Q, profile["name"]
+
+    except Exception:
+        # 环网检测或分段求解失败，退回串联计算
+        return _fallback_serial()
 
 
 def cmd_run(args):
