@@ -363,6 +363,57 @@ def _run_profile(  # noqa: C901
         branch_a_end = branch_b_start - 1
         branch_b_q = flows[branch_b_start]
 
+        # -------------------------------------------------------------- #
+        # Y 形汇流检测：branch_b_q > main_q 说明是合流下游（非环路第二支路）
+        # 拓扑：main_upstream(Q=main_q) + tributary(Q=branch_a_q) → downstream(Q=branch_b_q)
+        # -------------------------------------------------------------- #
+        if branch_b_q > main_q * 1.01:
+            seg_main = list(range(0, bif_idx + 1))          # 主干上游
+            seg_trib = list(range(bif_idx + 1, branch_a_end + 1))  # 支流
+            seg_dn = list(range(branch_b_start, n_xs))      # 合流下游
+
+            if not (seg_main and seg_trib and seg_dn):
+                return _fallback_serial()
+
+            # 1) 求解下游段
+            r_dn = _solve_seg(seg_dn, branch_b_q, wr[-1])
+            wse_dn_top = float(r_dn["W"][0])  # 下游段最上游断面 WSE
+
+            # 2) Junction 能量修正：用下游段顶部的 EGL 作为上游支路 BC
+            #    EGL = WSE + α·V²/(2g)
+            #    这近似 HEC-RAS 的 Energy Method junction
+            xs_dn0 = branch_b_start
+            gx = ref["geometry"]["cross_sections"][xs_dn0]
+            pts = gx["station_elevation"]
+            dm_j = np.array([p[0] * LF for p in pts])
+            em_j = np.array([p[1] * LF for p in pts])
+            _sec = NaturalSection(name="junc", elevations=em_j, distances=dm_j)
+            _bed = float(np.min(em_j))
+            _depth = wse_dn_top - _bed
+            _area = _sec.compute_area(_depth) if _depth > 0 else 0.0
+            if _area > 0:
+                _vel = branch_b_q / _area
+                junction_wse = wse_dn_top + _vel ** 2 / (2 * 9.81)
+            else:
+                junction_wse = wse_dn_top
+
+            # 3) 求解两上游支路
+            r_trib = _solve_seg(seg_trib, branch_a_q, junction_wse)
+            r_main = _solve_seg(seg_main, main_q, junction_wse)
+
+            # 4) 组装全局 WSE
+            full_w: list[float] = [0.0] * n_xs
+            for li, xi in enumerate(seg_main): full_w[xi] = float(r_main["W"][li])
+            for li, xi in enumerate(seg_trib): full_w[xi] = float(r_trib["W"][li])
+            for li, xi in enumerate(seg_dn):   full_w[xi] = float(r_dn["W"][li])
+
+            r = {"W": full_w}
+            errs = [abs(full_w[i] - wr[i]) for i in range(n_xs)]
+            return r, wr, errs, Q, profile["name"]
+
+        # -------------------------------------------------------------- #
+        # 环路检测（Ex8 类型）：主干 → 支路A + 支路B → 主干下游
+        # -------------------------------------------------------------- #
         # 主干下游起点：流量恢复到 main_q
         down_start = None
         for i in range(branch_b_start, n_xs):
