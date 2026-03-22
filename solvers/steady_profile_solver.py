@@ -1874,7 +1874,7 @@ class SteadyProfileSolver:
                     if _eff_r > float(_rb) + 1e-6:
                         _K_ds_rob, _ = self._zone_conveyance(_sta, _ele, _wl, float(_rb), _eff_r, _n_r)
 
-            # 加权平均 reach length
+            # 加权平均 reach length (HEC-RAS TRM 2-3: K-weighted)
             _K_sum = _K_ds_lob + _K_ds_ch + _K_ds_rob
             if _K_sum > 0:
                 dx_seg = (_K_ds_lob * dx_lob + _K_ds_ch * dx_ch + _K_ds_rob * dx_rob) / _K_sum
@@ -1994,7 +1994,7 @@ class SteadyProfileSolver:
                         # Froude 检查：确保找到的是亚临界根 (Fr < 1)
                         _h_check = max(W_new - bed_sub_us, 0.001)
                         _A_check, _, _, _T_check = self._get_geometry(_h_check, i)
-                        _V_check = Q / max(_A_check, 1e-9)
+                        _V_check = Q_seg_local / max(_A_check, 1e-9)  # 用本段流量计算 Fr，避免变流量段误判
                         _D_check = _A_check / max(_T_check, 1e-9)
                         _Fr_check = _V_check / max(np.sqrt(self.g * _D_check), 1e-9)
                         if _Fr_check > 1.0:
@@ -2034,7 +2034,7 @@ class SteadyProfileSolver:
                                 # Froude 检查：确保找到的是亚临界根
                                 _h_check2 = max(W_new - bed_sub_us, 0.001)
                                 _A_check2, _, _, _T_check2 = self._get_geometry(_h_check2, i)
-                                _V_check2 = Q / max(_A_check2, 1e-9)
+                                _V_check2 = Q_seg_local / max(_A_check2, 1e-9)  # 用本段流量计算 Fr，避免变流量段误判
                                 _D_check2 = _A_check2 / max(_T_check2, 1e-9)
                                 _Fr_check2 = _V_check2 / max(np.sqrt(self.g * _D_check2), 1e-9)
                                 if _Fr_check2 > 1.0:
