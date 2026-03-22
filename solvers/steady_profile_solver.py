@@ -1339,7 +1339,8 @@ class SteadyProfileSolver:
         C_D = float(_coefs.get("momentum_cd", bridge.get("pier_cd", 2.0)))
         deck_elev = float(bridge.get("deck_elevation_m", 1e9))
         high_chord_elev = float(bridge.get("high_chord_m", 1e9))
-        deck_overflow_elev = high_chord_elev if high_chord_elev < 1e8 else deck_elev
+        # arch 桥：溢顶阈值用 deck_elev（路堤顶，由 CLI 设置），high_chord_elev 只用于压力流判断
+        deck_overflow_elev = deck_elev
         pier_height = float(bridge.get("pier_height_m", 1e9))
         deck_weir_coef = float(bridge.get("deck_weir_coef", 1.70))
         deck_weir_len_cfg = float(bridge.get("deck_weir_length_m", 0.0))
@@ -1384,6 +1385,47 @@ class SteadyProfileSolver:
         P2_force = self._hydrostatic_pressure_force(h2, ds_xs_index)
 
         S0_bridge = (bed_us - bed_ds) / max(L_bridge, 0.1)
+
+        # =====================================================================
+        # Arch 桥全压力流预判（HEC-RAS TRM: Pressure/Orifice Flow）
+        # 触发条件：arch 净面积已知 + DS WSE 在拱高度的 85% 以上（接近全满压力流）
+        # 孔口流方程（淹没孔口）：Q = Cd * A_arch * sqrt(2g * (W_us - W_ds))
+        # 仅当孔口流结果 W_us > 拱顶时，确认是全压力流，直接返回（跳过动量迭代）
+        # =====================================================================
+        _arch_area_pre = float(bridge.get("arch_net_area_m2", 0) or 0)
+        _arch_low_chord = float(bridge.get("arch_low_chord_m", 1e9))
+        if (_arch_area_pre > 0 and high_chord_elev < 1e8 and _arch_low_chord < 1e8
+                and high_chord_elev > _arch_low_chord + 0.01):
+            # 计算 DS 侧在拱内的淹没比率：(W_ds - 拱脚) / (拱顶 - 拱脚)
+            _arch_height = high_chord_elev - _arch_low_chord
+            _arch_submersion = max(W_downstream - _arch_low_chord, 0.0) / _arch_height
+            # 仅当 DS 淹没比率 > 85% 时触发孔口流（接近全满，US 侧可能是全压力流）
+            if _arch_submersion > 0.85:
+                _Cd_arch_pre = 0.55  # arch 桥全压力流 Cd（经验值）
+                _weir_coef_pre = deck_weir_coef
+                _weir_len_pre = deck_weir_len_cfg if deck_weir_len_cfg > 0.0 else max(T2, 1.0)
+
+                try:
+                    from scipy.optimize import brentq as _brentq_pre
+
+                    def _arch_pre_residual(W_us: float) -> float:
+                        _dH = max(W_us - W_downstream, 0.0)
+                        _Q_under = _Cd_arch_pre * _arch_area_pre * (2.0 * self.g * _dH) ** 0.5
+                        _H_weir = max(W_us - deck_elev, 0.0)
+                        _Q_weir_p = _weir_coef_pre * _weir_len_pre * _H_weir ** 1.5
+                        return _Q_under + _Q_weir_p - Q
+
+                    _lo_pre = W_downstream + 1e-4
+                    _hi_pre = W_downstream + 10.0
+                    _f_lo = _arch_pre_residual(_lo_pre)
+                    _f_hi = _arch_pre_residual(_hi_pre)
+                    if _f_lo * _f_hi < 0:
+                        _W_arch_pre = _brentq_pre(_arch_pre_residual, _lo_pre, _hi_pre, xtol=1e-4)
+                        # 仅当孔口流结果 > 拱顶时，确认是全压力流，直接返回
+                        if _W_arch_pre > high_chord_elev:
+                            return float(_W_arch_pre)
+                except Exception:
+                    pass  # 求解失败，继续动量方程
 
         # 压力流检查 (HEC-RAS TRM: High Flow Computations)
         # 当上游 WSE > 低弦 deck_elev 时，用压力流方程提供初始估计
@@ -1518,6 +1560,47 @@ class SteadyProfileSolver:
                 step = float(np.clip(-imbalance / d_imb_dW, -0.5, 0.5))
             W3_trial = max(W3_trial + step, bed_us + 0.005)
 
+        # =====================================================================
+        # Arch 桥全压力流修正（HEC-RAS TRM: Pressure/Orifice Flow）
+        # 当动量方程结果 W_us > 拱顶（high_chord）时，改用孔口流方程
+        # Q = Cd * A_arch * sqrt(2g * (W_us - W_ds)) [淹没孔口]
+        # 适用条件：arch_net_area_m2 > 0 且 W_us > high_chord_elev
+        # =====================================================================
+        _arch_area = float(bridge.get("arch_net_area_m2", 0) or 0)
+        if _arch_area > 0 and W3_trial > high_chord_elev:
+            # 确认是全压力流：W_us > 拱顶，用孔口流方程联立溢顶方程求解
+            # Cd_arch = 0.55（arch 桥全压力流经验值，介于 HDS-5 0.5 和 0.6 之间）
+            _Cd_arch = 0.55
+            _weir_coef_arch = deck_weir_coef
+            _weir_len_arch = (
+                deck_weir_len_cfg if deck_weir_len_cfg > 0.0
+                else float(self._cross_sections[us_xs_index].distances[-1]
+                           - self._cross_sections[us_xs_index].distances[0])
+                    if self._cross_sections and us_xs_index < len(self._cross_sections)
+                    else 15.0
+            )
+
+            try:
+                from scipy.optimize import brentq as _brentq
+
+                def _arch_residual(W_us):
+                    _dH = max(W_us - W_downstream, 0.0)
+                    _Q_under = _Cd_arch * _arch_area * (2.0 * self.g * _dH) ** 0.5
+                    _H_weir = max(W_us - deck_elev, 0.0)
+                    _Q_weir_arch = _weir_coef_arch * _weir_len_arch * _H_weir ** 1.5
+                    return _Q_under + _Q_weir_arch - Q
+
+                # 搜索范围：W_downstream 到 W_downstream + 10m
+                _lo = W_downstream + 1e-4
+                _hi = W_downstream + 10.0
+                if _arch_residual(_lo) * _arch_residual(_hi) < 0:
+                    _W_arch = _brentq(_arch_residual, _lo, _hi, xtol=1e-4)
+                    # 仅当孔口流结果确认是压力流时才替换
+                    if _W_arch > high_chord_elev:
+                        W3_trial = _W_arch
+            except Exception:
+                pass  # 求解失败时保留动量方程结果
+
         return float(W3_trial)
 
     def _solve_bridge_energy(
@@ -1552,7 +1635,8 @@ class SteadyProfileSolver:
         pier_height = float(bridge.get("pier_height_m", 1e9))
         deck_elev = float(bridge.get("deck_elevation_m", 1e9))
         high_chord_elev = float(bridge.get("high_chord_m", 1e9))
-        deck_overflow_elev = high_chord_elev if high_chord_elev < 1e8 else deck_elev
+        # arch 桥：溢顶阈值用 deck_elev（路堤顶，由 CLI 设置），high_chord_elev 只用于压力流判断
+        deck_overflow_elev = deck_elev
         deck_weir_coef = float(bridge.get("deck_weir_coef", 1.70))
         deck_weir_len_cfg = float(bridge.get("deck_weir_length_m", 0.0))
         cc = float(bridge.get("contraction_coef", 0.1))

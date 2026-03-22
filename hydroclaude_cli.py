@@ -90,7 +90,7 @@ def _build_from_ref(ref: dict):
         _ds_idx = _csr.get("ds_xs_index")
         if _us_idx is None:
             continue
-        _deck = _br.get("deck_geometry", {})
+        _deck = _br.get("deck_geometry") or {}
         _piers = _br.get("piers", {}) if isinstance(_br.get("piers"), dict) else {}
         _weir = _br.get("weir_parameters", {})
         _coefs = _br.get("coefficients", {})
@@ -98,7 +98,11 @@ def _build_from_ref(ref: dict):
             "us_xs_index": int(_us_idx),
             "ds_xs_index": int(_ds_idx) if _ds_idx is not None else int(_us_idx) + 1,
             "bridge_length_m": rl[int(_us_idx)] if int(_us_idx) < len(rl) else float(_csr.get("upstream_distance_ft", _br.get("upstream_distance_ft", 30))) * LF,
-            "deck_elevation_m": float(_deck.get("low_chord_elev_ft", 1e9)) * LF,
+            "deck_elevation_m": float(
+                _deck.get("weir_min_elev_ft") or
+                _deck.get("high_chord_elev_ft") or
+                _deck.get("low_chord_elev_ft") or 1e9 / LF
+            ) * LF,
             "high_chord_m": float(_deck.get("high_chord_elev_ft", 1e9)) * LF,
             "deck_weir_length_m": float(_deck.get("bridge_opening_width_ft", _br.get("weir_width_ft", 0))) * LF,
             "deck_weir_coef": float(_weir.get("weir_coefficient", _coefs.get("momentum_cd", 1.70))),
@@ -109,6 +113,8 @@ def _build_from_ref(ref: dict):
             "bridge_opening_width_m": float(_br.get("bridge_opening_width_m", 0)) or (
                 float(_br.get("bridge_opening_width_ft", 0)) * LF),
             "coefficients": _coefs,
+            "arch_net_area_m2": float(_deck.get("arch_net_area_m2") or 0),
+            "arch_low_chord_m": float(_deck.get("low_chord_elev_ft") or 1e9 / LF) * LF,
         })
 
     # ----------------------------------------

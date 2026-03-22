@@ -7675,6 +7675,16 @@
           "us_xs_index": 14,
           "ds_xs_index": 15,
           "upstream_distance_ft": 30
+        },
+        "deck_geometry": {
+          "low_chord_elev_ft": 6.9,
+          "low_chord_elev_m": 2.10312,
+          "high_chord_elev_ft": 20.9,
+          "high_chord_elev_m": 6.3703199999999995,
+          "weir_min_elev_ft": 22.9,
+          "weir_min_elev_m": 6.97992,
+          "arch_net_area_m2": 45.5587,
+          "arch_net_area_ft2": 490.39
         }
       },
       {
@@ -7701,6 +7711,16 @@
           "us_xs_index": 61,
           "ds_xs_index": 62,
           "upstream_distance_ft": 30
+        },
+        "deck_geometry": {
+          "low_chord_elev_ft": 10.0,
+          "low_chord_elev_m": 3.048,
+          "high_chord_elev_ft": 18.2,
+          "high_chord_elev_m": 5.54736,
+          "weir_min_elev_ft": 21.0,
+          "weir_min_elev_m": 6.4008,
+          "arch_net_area_m2": 52.65,
+          "arch_net_area_ft2": 566.7
         }
       },
       {
@@ -7727,6 +7747,16 @@
           "us_xs_index": 65,
           "ds_xs_index": 66,
           "upstream_distance_ft": 30
+        },
+        "deck_geometry": {
+          "low_chord_elev_ft": 10.0,
+          "low_chord_elev_m": 3.048,
+          "high_chord_elev_ft": 17.1,
+          "high_chord_elev_m": 5.21208,
+          "weir_min_elev_ft": 20.0,
+          "weir_min_elev_m": 6.096,
+          "arch_net_area_m2": 40.803,
+          "arch_net_area_ft2": 439.2
         }
       },
       {
@@ -7753,6 +7783,16 @@
           "us_xs_index": 70,
           "ds_xs_index": 71,
           "upstream_distance_ft": 30
+        },
+        "deck_geometry": {
+          "low_chord_elev_ft": 5.5,
+          "low_chord_elev_m": 1.6764000000000001,
+          "high_chord_elev_ft": 16.7,
+          "high_chord_elev_m": 5.09016,
+          "weir_min_elev_ft": 19.7,
+          "weir_min_elev_m": 6.00456,
+          "arch_net_area_m2": 47.9222,
+          "arch_net_area_ft2": 515.9
         }
       }
     ]
