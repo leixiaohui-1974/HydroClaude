@@ -284,19 +284,17 @@ class CulvertGeometry:
             y_eff = min(max(y, 0.0), self.height)
             return float(self.width * y_eff)
 
-        # 拱形：下部半圆段（y <= r）用圆弓面积；上部矩形段叠加
+        # 拱形 (HDS-5): 半椭圆段面积
+        # 半椭圆: x²/a² + (z-b)²/b² = 1, a=span/2, b=rise
+        # A(y) = a·b·[v·√(1-v²) + arcsin(v) + π/2], v = y/b - 1
         y_eff = min(max(y, 0.0), self.height)
-        r = self.width / 2.0
-        rect_h = max(self.height - r, 0.0)
-
-        if y_eff <= r:
-            d = 2.0 * r
-            theta = 2.0 * np.arccos(1.0 - 2.0 * y_eff / d)
-            return float((d ** 2 / 8.0) * (theta - np.sin(theta)))
-
-        lower_area = 0.5 * np.pi * r ** 2              # 下部完整半圆
-        upper_area = self.width * min(y_eff - r, rect_h)  # 上部矩形
-        return float(min(lower_area + upper_area, self.full_area()))
+        a = self.width / 2.0   # semi-major (horizontal)
+        b = self.height         # semi-minor (vertical = rise)
+        if b <= 0:
+            return 0.0
+        v = y_eff / b - 1.0  # ranges from -1 (y=0) to 0 (y=rise)
+        v = max(-1.0, min(v, 0.0))
+        return float(a * b * (v * np.sqrt(max(1.0 - v * v, 0.0)) + np.arcsin(v) + np.pi / 2.0))
 
     def top_width(self, y: float) -> float:
         """按水深计算水面宽度（m）
@@ -321,14 +319,12 @@ class CulvertGeometry:
         if self.shape == "rectangular":
             return float(self.width) if y <= self.height else 0.0
 
-        # 拱形：下半圆段按弦长，上部矩形段为等宽
+        # 拱形（半椭圆）：宽度 = span * sqrt(y*(2*rise-y)) / rise
         if y >= self.height:
             return 0.0
-        r = self.width / 2.0
-        if y <= r:
-            # 弦长 = 2*sqrt(r^2 - (r-y)^2)
-            return float(2.0 * np.sqrt(max(r ** 2 - (r - y) ** 2, 0.0)))
-        return float(self.width)
+        a = self.width / 2.0
+        b = self.height
+        return float(2.0 * a * np.sqrt(max(y * (2.0 * b - y), 0.0)) / max(b, 1e-9))
 
     def wetted_perimeter(self, y: float) -> float:
         """按水深计算湿周（m）
