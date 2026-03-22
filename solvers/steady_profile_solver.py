@@ -351,6 +351,100 @@ class SteadyProfileSolver:
                 perimeter += np.sqrt(dsw ** 2 + dzw ** 2)
         return area, perimeter
 
+    @staticmethod
+    def _find_wet_connected_segments(
+        stations: np.ndarray,
+        elevations: np.ndarray,
+        water_level: float,
+        sta_lo: float,
+        sta_hi: float,
+        min_dry_height: float = 0.55,
+    ) -> list[tuple[float, float]]:
+        """Find wet connected segments in [sta_lo, sta_hi].
+
+        Args:
+            min_dry_height: minimum elevation above water_level for a dry section
+                to be considered a true disconnection. Small bumps (< min_dry_height)
+                are merged back into adjacent wet segments.
+        """
+        stations = np.asarray(stations, dtype=np.float64)
+        elevations = np.asarray(elevations, dtype=np.float64)
+        if len(stations) < 2 or len(stations) != len(elevations):
+            return [(sta_lo, sta_hi)]
+        if sta_hi - sta_lo < 1.0:
+            return [(sta_lo, sta_hi)]
+        valid = np.isfinite(stations) & np.isfinite(elevations)
+        if not valid.any():
+            return [(sta_lo, sta_hi)]
+        stations = stations[valid]; elevations = elevations[valid]
+        if len(stations) < 2:
+            return [(sta_lo, sta_hi)]
+
+        def _interp_at(s_tgt):
+            idx = int(np.searchsorted(stations, s_tgt))
+            if idx == 0: return float(elevations[0])
+            if idx >= len(stations): return float(elevations[-1])
+            s0,s1=stations[idx-1],stations[idx]; e0,e1=elevations[idx-1],elevations[idx]
+            ds=float(s1-s0)
+            if ds<=0.0: return float(e0)
+            return float(e0+(s_tgt-s0)/ds*(e1-e0))
+
+        def _max_ele_in(lo, hi):
+            """Max elevation in [lo, hi] from the cross-section data."""
+            in_range = (stations >= lo) & (stations <= hi)
+            if not in_range.any():
+                return max(_interp_at(lo), _interp_at(hi))
+            return float(np.maximum(elevations[in_range].max(),
+                                    max(_interp_at(lo), _interp_at(hi))))
+
+        cross_pts = []
+        for j in range(len(stations)-1):
+            s1,s2=float(stations[j]),float(stations[j+1])
+            z1,z2=float(elevations[j]),float(elevations[j+1])
+            if s2<=sta_lo or s1>=sta_hi: continue
+            if s1<sta_lo:
+                frac=(sta_lo-s1)/(s2-s1); z1=z1+frac*(z2-z1); s1=sta_lo
+            if s2>sta_hi:
+                frac=(sta_hi-s1)/(s2-s1); z2=z1+frac*(z2-z1); s2=sta_hi
+            ds=s2-s1
+            if ds<=0.0: continue
+            d1=z1-water_level; d2=z2-water_level
+            if d1*d2<0.0:
+                t=d1/(d1-d2); cross_pts.append(s1+t*ds)
+        if not cross_pts:
+            mid_z=_interp_at(0.5*(sta_lo+sta_hi))
+            if mid_z<water_level: return [(sta_lo,sta_hi)]
+            return []
+        splits=sorted(set([sta_lo]+cross_pts+[sta_hi]))
+        uniq=[splits[0]]
+        for c in splits[1:]:
+            if c-uniq[-1]>1e-9: uniq.append(c)
+        wet_raw=[]
+        for k in range(len(uniq)-1):
+            lo,hi=uniq[k],uniq[k+1]
+            if hi-lo<1e-9: continue
+            mid_z=_interp_at(0.5*(lo+hi))
+            if mid_z<water_level: wet_raw.append((lo,hi))
+        if len(wet_raw)<=1: return wet_raw
+        # Merge adjacent wet segments if the dry gap between them is too shallow
+        merged=[]
+        cur_lo,cur_hi=wet_raw[0]
+        for k in range(1,len(wet_raw)):
+            gap_lo,gap_hi=cur_hi,wet_raw[k][0]
+            if gap_hi-gap_lo<1e-6:
+                # Zero-width gap: merge immediately
+                cur_hi=wet_raw[k][1]
+            else:
+                max_dry=_max_ele_in(gap_lo,gap_hi)
+                if max_dry-water_level<min_dry_height:
+                    # Shallow bump: merge
+                    cur_hi=wet_raw[k][1]
+                else:
+                    merged.append((cur_lo,cur_hi)); cur_lo,cur_hi=wet_raw[k]
+        merged.append((cur_lo,cur_hi))
+        return merged
+
+
     def _zone_conveyance(
         self,
         stations: np.ndarray,
@@ -362,70 +456,58 @@ class SteadyProfileSolver:
         n_segments: list | None = None,
         n_slices: int = 5,
     ) -> Tuple[float, float]:
-        """HEC-RAS n-value break point 方法计算分区输水能力 K。
-
-        当 n_segments 提供时，按 n 值变化点将分区切分为子区，
-        每个子区独立计算 K_i = (1/n_i)*A_i*R_i^(2/3)，K_zone = ΣK_i。
-        子区间的虚拟垂直分割面不计入湿周（Posey 1967 惯例）。
-
-        Args:
-            n: 单一 Manning n（n_segments 为 None 时使用）
-            n_segments: [(station, n_value), ...] 按 station 排序的 n 值分段列表
-        Returns:
-            (K_zone, A_zone)
-        """
-        # 先计算整区面积
-        A_total, P_total = self._segment_area_perimeter(
-            stations, elevations, water_level, sta_min, sta_max)
-
-        if A_total <= 0.0 or P_total <= 0.0:
-            return 0.0, 0.0
-
-        # 如果有分段 Manning n，按 n-value break points 细分
-        if n_segments and len(n_segments) >= 2:
-            # 筛选出落在 [sta_min, sta_max] 内的 n 分段
-            breaks = []
-            for sta, n_val in n_segments:
-                sta_f = float(sta)
-                n_f = float(n_val)
-                if np.isnan(n_f) or n_f <= 0:
-                    continue
-                if sta_min <= sta_f <= sta_max:
-                    breaks.append((sta_f, n_f))
-            # 添加边界
-            if not breaks or breaks[0][0] > sta_min + 0.01:
-                # 用第一个有效 n 覆盖左边界
-                first_n = n
-                for _, nv in n_segments:
-                    if not np.isnan(float(nv)) and float(nv) > 0:
-                        first_n = float(nv)
-                        break
-                breaks.insert(0, (sta_min, first_n))
-            if breaks[-1][0] < sta_max - 0.01:
-                breaks.append((sta_max, breaks[-1][1]))
-
-            if len(breaks) >= 2:
-                K_zone = 0.0
-                for idx in range(len(breaks) - 1):
-                    seg_lo = breaks[idx][0]
-                    seg_hi = breaks[idx + 1][0]
-                    seg_n = breaks[idx][1]
-                    if seg_hi - seg_lo < 1e-6 or seg_n <= 0:
-                        continue
-                    A_s, P_s = self._segment_area_perimeter(
-                        stations, elevations, water_level, seg_lo, seg_hi)
-                    if A_s > 0.0 and P_s > 0.0:
-                        R_s = A_s / P_s
-                        K_s = (1.0 / seg_n) * A_s * R_s ** (2.0 / 3.0)
-                        K_zone += K_s
-
-                if K_zone > 0.0:
-                    return float(K_zone), float(A_total)
-
-        # 单一 n 值：整区计算
-        R = A_total / P_total
-        K = (1.0 / max(n, 0.001)) * A_total * R ** (2.0 / 3.0)
-        return float(K), float(A_total)
+        """HEC-RAS n-value break point K calculation with disconnected-water support."""
+        try:
+            sta_clean=np.asarray(stations,dtype=np.float64)
+            ele_clean=np.asarray(elevations,dtype=np.float64)
+            vm=np.isfinite(sta_clean)&np.isfinite(ele_clean)
+            if vm.any(): sta_clean=sta_clean[vm]; ele_clean=ele_clean[vm]
+            A_total,P_total=self._segment_area_perimeter(sta_clean,ele_clean,water_level,sta_min,sta_max)
+            if A_total<=0.0: return 0.0,0.0
+            def _k_for_sub(seg_lo,seg_hi,seg_n):
+                if seg_hi-seg_lo<1e-6 or seg_n<=0.0: return 0.0
+                wet=self._find_wet_connected_segments(sta_clean,ele_clean,water_level,seg_lo,seg_hi)
+                if not wet: return 0.0
+                ks=0.0
+                for wl2,wh2 in wet:
+                    Aw,Pw=self._segment_area_perimeter(sta_clean,ele_clean,water_level,wl2,wh2)
+                    if Aw>0.0 and Pw>0.0: ks+=(1.0/seg_n)*Aw*(Aw/Pw)**(2.0/3.0)
+                return ks
+            if n_segments and len(n_segments)>=2:
+                breaks=[]
+                for sta,n_val in n_segments:
+                    sta_f=float(sta); n_f=float(n_val)
+                    if np.isnan(n_f) or n_f<=0: continue
+                    if sta_min<=sta_f<=sta_max: breaks.append((sta_f,n_f))
+                if not breaks or breaks[0][0]>sta_min+0.01:
+                    first_n=n
+                    for _,nv in n_segments:
+                        if not np.isnan(float(nv)) and float(nv)>0:
+                            first_n=float(nv); break
+                    breaks.insert(0,(sta_min,first_n))
+                if breaks[-1][0]<sta_max-0.01: breaks.append((sta_max,breaks[-1][1]))
+                if len(breaks)>=2:
+                    K_zone=0.0
+                    for idx in range(len(breaks)-1):
+                        seg_lo=breaks[idx][0]; seg_hi=breaks[idx+1][0]; seg_n=breaks[idx][1]
+                        if seg_hi-seg_lo<1e-6 or seg_n<=0: continue
+                        K_zone+=_k_for_sub(seg_lo,seg_hi,seg_n)
+                    if K_zone>0.0: return float(K_zone),float(A_total)
+            K=_k_for_sub(sta_min,sta_max,max(n,0.001))
+            if K>0.0: return float(K),float(A_total)
+            if P_total>0.0:
+                R=A_total/P_total
+                K=(1.0/max(n,0.001))*A_total*R**(2.0/3.0)
+                return float(K),float(A_total)
+            return 0.0,0.0
+        except Exception:
+            try:
+                Afb,Pfb=self._segment_area_perimeter(stations,elevations,water_level,sta_min,sta_max)
+                if Afb<=0.0 or Pfb<=0.0: return 0.0,0.0
+                Rfb=Afb/Pfb
+                Kfb=(1.0/max(float(n),0.001))*Afb*Rfb**(2.0/3.0)
+                return float(Kfb),float(Afb)
+            except Exception: return 0.0,0.0
 
     def _resolve_effective_flow_limits(
         self,
