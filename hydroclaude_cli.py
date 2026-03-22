@@ -300,7 +300,105 @@ def _run_profile(  # noqa: C901
     flows = [float(x["flow_m3s"]) for x in xd]
     wr = [float(x["wse_m"]) for x in xd]
     Q = flows[0]
-    hd = max(wr[-1] - bed[-1], 0.5)
+
+    def _compute_downstream_bc() -> float:
+        """从边界条件计算下游水深。优先用 boundary_conditions（v2），回退到参考 WSE（v1）。
+
+        闭包访问外层变量: ref, p_idx, Q, bed, sections, nch, nlob, nrob,
+                         nsa, ifa, culverts, rl, rl_lob, rl_rob, bsl, bsr, cc, ec, n_xs, wr
+        """
+        bc_list = ref.get("boundary_conditions", [])
+        if not bc_list:
+            # v1 兼容：回退到参考 WSE
+            return max(wr[-1] - bed[-1], 0.5)
+
+        # 找到当前 profile 的边界条件
+        # boundary_conditions 的 profile_number 是 1-based（从 .f01 读取）
+        bc = None
+        for b in bc_list:
+            pn = b.get("profile_number", b.get("profile_index", 0))
+            if pn == p_idx + 1 or pn == p_idx:  # 兼容 0-based 和 1-based
+                bc = b
+                break
+        if bc is None and bc_list:
+            bc = bc_list[0]  # 回退到第一个 BC
+        if bc is None:
+            return max(wr[-1] - bed[-1], 0.5)
+
+        dn_type = bc.get("dn_type", 0)
+
+        if dn_type in (0, 1):  # Known WS
+            ws_ft = bc.get("dn_known_ws_ft")
+            if ws_ft is not None:
+                return max(ws_ft * 0.3048 - bed[-1], 0.1)
+            return max(wr[-1] - bed[-1], 0.5)
+
+        elif dn_type == 2:  # Critical Depth
+            from scipy.optimize import brentq
+            sec = sections[-1]
+
+            def _crit_res(h):
+                A = sec.compute_area(max(h, 0.001))
+                T = sec.compute_top_width(max(h, 0.001))
+                if T < 1e-9 or A < 1e-9:
+                    return 1e6
+                return Q**2 * T / (9.81 * A**3) - 1.0
+
+            try:
+                return brentq(_crit_res, 0.01, 30.0, xtol=1e-6)
+            except Exception:
+                return max(wr[-1] - bed[-1], 0.5)
+
+        elif dn_type == 3:  # Normal Depth
+            slope = bc.get("dn_slope", 0.001)
+            from scipy.optimize import brentq
+            sv_temp = _make_solver(
+                sections,
+                bed,
+                rl,
+                nch,
+                nlob,
+                nrob,
+                bsl,
+                bsr,
+                cc,
+                ec,
+                nsa,
+                ifa,
+                culverts,
+                [0.0] * n_xs,
+                rl_lob=rl_lob,
+                rl_rob=rl_rob,
+            )
+
+            def _normal_res(h):
+                K, _ = sv_temp._compute_subdivided_conveyance(h, n_xs - 1)
+                return K * slope**0.5 - Q
+
+            try:
+                return brentq(_normal_res, 0.01, 30.0, xtol=1e-6)
+            except Exception:
+                return max(wr[-1] - bed[-1], 0.5)
+
+        elif dn_type == 4:  # Rating Curve
+            pts = bc.get("dn_rating_curve_pts") or bc.get("dn_rating_curve_values", [])
+            if pts:
+                Q_cfs = Q / 0.028316846592
+                if isinstance(pts[0], (list, tuple)):
+                    qs = [p[0] for p in pts]
+                    ws = [p[1] for p in pts]
+                else:
+                    qs = [pts[j] for j in range(0, len(pts), 2)]
+                    ws = [pts[j] for j in range(1, len(pts), 2)]
+                ws_ft = float(np.interp(Q_cfs, qs, ws))
+                return max(ws_ft * 0.3048 - bed[-1], 0.1)
+            return max(wr[-1] - bed[-1], 0.5)
+
+        else:
+            return max(wr[-1] - bed[-1], 0.5)
+
+    # 边界条件计算（v2 schema）
+    hd = _compute_downstream_bc()
 
     def _is_zero(v: float) -> bool:
         return abs(v) < 1e-9
