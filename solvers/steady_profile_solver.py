@@ -1891,10 +1891,15 @@ class SteadyProfileSolver:
                         _brentq_ok = True
                     elif _is_steep_substep:
                         # 陡坡子步在窄区间无亚临界根时取临界深度。
-                        W_new = _W_critical_us
-                        W_trial = W_new
-                        _converged = True
-                        _brentq_ok = True
+                        # 例外：逆坡且下游 WSE 远高于上游临界（桥梁回水池传播）
+                        _ds_above_crit = W_sub_ds - _W_critical_us
+                        if bed_sub_us > bed_sub_ds + 0.01 and _ds_above_crit > 0.7:
+                            _brentq_ok = False  # 尝试 Picard 迭代找亚临界根
+                        else:
+                            W_new = _W_critical_us
+                            W_trial = W_new
+                            _converged = True
+                            _brentq_ok = True
                     else:
                         _brentq_ok = False
                 except Exception:
