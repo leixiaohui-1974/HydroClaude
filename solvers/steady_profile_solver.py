@@ -1232,6 +1232,72 @@ class SteadyProfileSolver:
         Q_under = float(Q_total) - Q_weir
         return Q_weir, Q_under
 
+
+    def _bridge_face_area(
+        self,
+        xs_index: int,
+        water_level: float,
+        opening_w: float,
+        A_full: float,
+        A_pier: float,
+    ) -> float:
+        """计算桥孔范围有效过水面积（用于速度项），并扣除桥墩面积。
+
+        当 opening_w > 0 时，优先按桥孔范围（bank stations 中心 ± opening_w/2）
+        积分实际断面面积；若几何数据不可用或积分面积 <= 0，则回退矩形近似。
+        返回值已扣除桥墩面积，下限为 A_full * 0.05。
+        """
+        idx = int(xs_index)
+        opening_w = float(opening_w)
+        A_full = float(max(A_full, 1e-9))
+        A_pier = float(max(A_pier, 0.0))
+
+        if opening_w <= 0.0:
+            return float(max(A_full - A_pier, A_full * 0.05))
+
+        A_bridge_face = 0.0
+        xs = None
+        if self._xs_array and 0 <= idx < len(self._xs_array):
+            xs = self._xs_array[idx]
+
+        # 1) 优先用桥孔范围内的实际断面积分面积
+        if (
+            xs is not None
+            and hasattr(xs, "distances")
+            and hasattr(xs, "elevations")
+            and self._bank_stations is not None
+            and idx < len(self._bank_stations)
+            and self._bank_stations[idx] is not None
+        ):
+            lb, rb = self._bank_stations[idx]
+            if lb is not None and rb is not None:
+                center = 0.5 * (float(lb) + float(rb))
+                sta_left = center - opening_w * 0.5
+                sta_right = center + opening_w * 0.5
+
+                stations_arr = np.asarray(xs.distances, dtype=float)
+                elevations_arr = np.asarray(xs.elevations, dtype=float)
+                sta_min = float(np.min(stations_arr))
+                sta_max = float(np.max(stations_arr))
+                sta_left = max(sta_left, sta_min)
+                sta_right = min(sta_right, sta_max)
+
+                if sta_right > sta_left + 1e-6:
+                    A_bridge_face, _ = self._segment_area_perimeter(
+                        stations_arr, elevations_arr, float(water_level), sta_left, sta_right
+                    )
+
+        # 2) 回退：矩形近似
+        if A_bridge_face <= 0.0:
+            if xs is not None and hasattr(xs, "min_elevation"):
+                h_rect = max(float(water_level) - float(xs.min_elevation), 0.0)
+                A_bridge_face = opening_w * h_rect
+            else:
+                A_bridge_face = A_full
+
+        # 3) 扣除桥墩面积并设置下限
+        return float(max(min(A_full, float(A_bridge_face)) - A_pier, A_full * 0.05))
+
     def _solve_bridge_momentum(
         self,
         Q: float,
@@ -1300,8 +1366,14 @@ class SteadyProfileSolver:
             weir_coef=deck_weir_coef,
         )
         A_pier2 = pier_w_total * min(h2, pier_height)
-        A2_bridge = _opening_w * h2 if _opening_w > 0 else A2
-        A2_eff = max(min(A2, A2_bridge) - A_pier2, A2 * 0.05)
+        # 改动：A2_eff 用桥孔范围内实际断面面积（_segment_area_perimeter），回退矩形近似
+        A2_eff = self._bridge_face_area(
+            xs_index=ds_xs_index,
+            water_level=W_downstream,
+            opening_w=_opening_w,
+            A_full=A2,
+            A_pier=A_pier2,
+        )
         # 壅水判断：使用 EGL (能量梯度线) 而非 WSE
         V2_temp = Q_under_ds / max(A2_eff, 1e-9)
         EGL2 = W_downstream + V2_temp ** 2 / (2.0 * self.g)
@@ -1356,8 +1428,14 @@ class SteadyProfileSolver:
                 weir_coef=deck_weir_coef,
             )
             A_pier3 = pier_w_total * min(h3, pier_height)
-            A3_bridge = _opening_w * h3 if _opening_w > 0 else A3
-            A3_eff = max(min(A3, A3_bridge) - A_pier3, A3 * 0.05)
+            # 改动：A3_eff 用桥孔范围内实际断面面积（_segment_area_perimeter），回退矩形近似
+            A3_eff = self._bridge_face_area(
+                xs_index=us_xs_index,
+                water_level=W3_trial,
+                opening_w=_opening_w,
+                A_full=A3,
+                A_pier=A_pier3,
+            )
             # 壅水判断：使用 EGL (能量梯度线) 而非 WSE
             V3_temp = Q_under / max(A3_eff, 1e-9)
             EGL3 = W3_trial + V3_temp ** 2 / (2.0 * self.g)
@@ -1401,8 +1479,14 @@ class SteadyProfileSolver:
                 weir_coef=deck_weir_coef,
             )
             A_pier3p = pier_w_total * min(h3p, pier_height)
-            A3p_bridge = _opening_w * h3p if _opening_w > 0 else A3p
-            A3p_eff = max(min(A3p, A3p_bridge) - A_pier3p, A3p * 0.05)
+            # 改动：A3p_eff 用桥孔范围内实际断面面积（_segment_area_perimeter），回退矩形近似
+            A3p_eff = self._bridge_face_area(
+                xs_index=us_xs_index,
+                water_level=W3p,
+                opening_w=_opening_w,
+                A_full=A3p,
+                A_pier=A_pier3p,
+            )
             # 壅水判断：使用 EGL (能量梯度线) 而非 WSE
             V3p_temp = Q_under_p / max(A3p_eff, 1e-9)
             EGL3p = W3p + V3p_temp ** 2 / (2.0 * self.g)

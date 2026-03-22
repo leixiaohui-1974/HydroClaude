@@ -104,6 +104,9 @@ def _build_from_ref(ref: dict):
             "n_piers": int(_piers.get("pier_count", 0)),
             "pier_loss_coef": 0.0,
             "contraction_coef": 0.1,
+            "bridge_opening_width_m": float(_br.get("bridge_opening_width_m", 0)) or (
+                float(_br.get("bridge_opening_width_ft", 0)) * LF),
+            "coefficients": _coefs,
         })
 
     # ----------------------------------------
