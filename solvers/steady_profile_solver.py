@@ -2050,10 +2050,17 @@ class SteadyProfileSolver:
                     elif _is_steep_substep:
                         # 陡坡子步在窄区间无亚临界根时取临界深度。
                         # 例外：逆坡且下游 WSE 远高于上游临界（桥梁回水池传播）
+                        # 扩大 _near_bridge 范围到 10 个断面（~300m），逆坡+桥梁时用更低阈值
                         _ds_above_crit = W_sub_ds - _W_critical_us
-                        _near_bridge = any(abs(i - bi) <= 5 for bi in _bridge_at_us)
-                        _threshold = 0.3 if _near_bridge else 0.7
-                        if bed_sub_us > bed_sub_ds + 0.01 and _ds_above_crit > _threshold:
+                        _near_bridge = any(abs(i - bi) <= 10 for bi in _bridge_at_us)
+                        _is_adverse = bed_sub_us > bed_sub_ds + 0.01
+                        if _near_bridge and _is_adverse:
+                            _threshold = 0.15
+                        elif _near_bridge:
+                            _threshold = 0.3
+                        else:
+                            _threshold = 0.7
+                        if _is_adverse and _ds_above_crit > _threshold:
                             _brentq_ok = False
                         else:
                             W_new = _W_critical_us
