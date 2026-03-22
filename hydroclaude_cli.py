@@ -465,31 +465,35 @@ def _run_profile(  # noqa: C901
                     r_merged = _solve_seg(seg_merged, merge_q, wr[-1])
                     wse_merge_top = float(r_merged["W"][0])
 
-                    # 2) Junction 能量修正
-                    xs_m0 = merge_start
-                    gx = ref["geometry"]["cross_sections"][xs_m0]
-                    pts = gx["station_elevation"]
-                    dm_j = np.array([p[0] * LF for p in pts])
-                    em_j = np.array([p[1] * LF for p in pts])
-                    _sec = NaturalSection(name="junc_sm", elevations=em_j, distances=dm_j)
-                    _bed_j = float(np.min(em_j))
-                    _depth_j = wse_merge_top - _bed_j
-                    _area_j = _sec.compute_area(_depth_j) if _depth_j > 0 else 0.0
-                    if _area_j > 0:
-                        _vel_j = merge_q / _area_j
-                        junction_wse = wse_merge_top + _vel_j ** 2 / (2 * 9.81)
-                    else:
-                        junction_wse = wse_merge_top
+                    # 2) Junction WSE = 合流段顶部 WSE（不加能量修正）
+                    #    split-merge 汇流的能量损失大，EGL 修正会显著过估
+                    junction_wse = wse_merge_top
 
                     # 3) 侧分水道（变流量）
                     r_side = _solve_seg_lat(seg_side, junction_wse)
 
-                    # 4) 主河道（变流量，含 lateral weir 引起的 Q 递减）
-                    r_main = _solve_seg_lat(seg_main, junction_wse)
+                    # 4) 主河道：分成常 Q 段和变 Q 段
+                    #    bif_idx+1..branch_a_end: 常 Q（lateral weir 后）
+                    #    0..bif_idx: 变 Q（lateral weir 影响区）
+                    seg_main_const = list(range(bif_idx + 1, branch_a_end + 1))
+                    seg_main_var = list(range(0, bif_idx + 1))
+
+                    if seg_main_const:
+                        r_mc = _solve_seg(seg_main_const, branch_a_q, junction_wse)
+                        wse_at_bif = float(r_mc["W"][0])
+                    else:
+                        wse_at_bif = junction_wse
+
+                    if seg_main_var:
+                        r_mv = _solve_seg_lat(seg_main_var, wse_at_bif)
+                    else:
+                        r_mv = None
 
                     # 5) 组装
                     full_w: list[float] = [0.0] * n_xs
-                    for li, xi in enumerate(seg_main):   full_w[xi] = float(r_main["W"][li])
+                    if r_mv:
+                        for li, xi in enumerate(seg_main_var):   full_w[xi] = float(r_mv["W"][li])
+                    for li, xi in enumerate(seg_main_const): full_w[xi] = float(r_mc["W"][li])
                     for li, xi in enumerate(seg_side):   full_w[xi] = float(r_side["W"][li])
                     for li, xi in enumerate(seg_merged): full_w[xi] = float(r_merged["W"][li])
 
