@@ -955,6 +955,108 @@ class SteadyProfileSolver:
 
         return float(W_upstream)
 
+    def _solve_culverts_parallel(
+        self,
+        Q: float,
+        W_downstream: float,
+        culvert_list: list,
+        bed_us: float,
+    ) -> float:
+        """并联涵洞组合求解上游水面高程（HEC-RAS Multiple Culverts）。
+
+        对每个涵洞独立计算通流能力，总流量相加后与 Q 对比，
+        用 brentq 找到满足总流量 Q 所需的上游水位 HW。
+
+        不同涵洞可有不同倒置高程（us_invert_m）：上游水位低于某涵洞入口时，
+        该涵洞不过流；所有涵洞均不过流时返回 W_downstream。
+
+        Args:
+            Q: 总流量 (m³/s)
+            W_downstream: 下游水面高程 (m)
+            culvert_list: 涵洞参数字典列表
+            bed_us: 上游断面床面高程 (m)
+        Returns:
+            W_upstream: 上游水面高程 (m)
+        """
+        from physics.structures.culvert import Culvert, CulvertGeometry
+        from scipy.optimize import brentq as _brentq
+
+        # 构建每个涵洞的 Culvert 对象和关键参数
+        culverts_built = []
+        for _cv in culvert_list:
+            _shape = str(_cv.get("shape", "circular"))
+            _diam = float(_cv.get("diameter_m", 0.0))
+            _ht = float(_cv.get("height_m", _diam))
+            _wd = float(_cv.get("width_m", _diam))
+            _len = float(_cv.get("length_m", 30.0))
+            _us_inv = float(_cv.get("us_invert_m", bed_us))
+            _ds_inv = float(_cv.get("ds_invert_m", _us_inv - 0.01))
+            _nb = int(_cv.get("n_barrels", 1))
+            _mn = float(_cv.get("manning_n", 0.013))
+            _ke = float(_cv.get("entrance_loss_coef", 0.5))
+            _slp = (_us_inv - _ds_inv) / max(_len, 0.1)
+            _road_elev = float(_cv.get("road_elev_m", _us_inv + _ht + 1.0))
+            _road_w = float(_cv.get("road_width_m", 10.0))
+            _road_cd = float(_cv.get("road_cd", 1.5))
+            try:
+                _geom = CulvertGeometry(
+                    shape=_shape, length=_len, slope=max(_slp, 1e-6),
+                    diameter=_diam if _shape == "circular" else None,
+                    width=_wd if _shape != "circular" else None,
+                    height=_ht if _shape != "circular" else None,
+                    invert_elevation=_us_inv,
+                    n_barrels=_nb,
+                )
+                _culv = Culvert(position=0.0, geometry=_geom, manning_n=_mn, entrance_loss_coef=_ke)
+                _h_ds = max(W_downstream - _ds_inv, 0.0)
+                culverts_built.append((_culv, _us_inv, _h_ds, _nb, _road_elev, _road_w, _road_cd))
+            except Exception:
+                continue
+
+        if not culverts_built:
+            return W_downstream + 0.1
+
+        def _total_Q(HW: float) -> float:
+            """给定上游 WSE，计算所有涵洞 + 道路漫顶的总通流量。"""
+            Q_sum = 0.0
+            for _culv, _us_inv, _h_ds, _nb, _re, _rw, _rcd in culverts_built:
+                _h_us = max(HW - _us_inv, 0.0)
+                if _h_us <= 0.0:
+                    continue
+                # 出口控制流量（给定 h_us 能通过的 Q）
+                _Qout = _culv._solve_discharge_by_required_headwater(
+                    _h_us, lambda q, _h=_h_ds: _culv._required_headwater_outlet(q, _h))
+                # 入口控制流量
+                _Qin = _culv._solve_discharge_by_required_headwater(
+                    _h_us, _culv._required_headwater_inlet)
+                Q_sum += min(_Qout, _Qin)
+                # 道路漫顶
+                _h_ot = max(HW - _re, 0.0)
+                if _h_ot > 0.0:
+                    Q_sum += min(_rcd * _rw * _h_ot ** 1.5, Q)
+            return Q_sum
+
+        # 搜索上界：从最高倒置高程处开始，指数步长扩展
+        W_lo = W_downstream
+        W_hi = max(_us_inv for _, _us_inv, *_ in culverts_built) + 0.1
+        _step = 0.5
+        for _ in range(60):
+            if _total_Q(W_hi) >= Q:
+                break
+            W_hi += _step
+            _step = min(_step * 1.5, 5.0)  # 指数增长，上限 5m/步
+
+        # brentq 求解
+        try:
+            W_us = _brentq(lambda W: _total_Q(W) - Q, W_lo, W_hi, xtol=1e-5, maxiter=80)
+        except Exception:
+            # 降级：选 us_invert 最低的涵洞单独求解
+            best_cv = min(culvert_list, key=lambda cv: float(cv.get("us_invert_m", bed_us)))
+            return self._solve_culvert(Q, W_downstream, best_cv, bed_us)
+
+        W_us = max(float(W_us), W_downstream + 0.001)
+        return W_us
+
     def _solve_inline_structure(
         self,
         Q: float,
@@ -1522,11 +1624,12 @@ class SteadyProfileSolver:
                     _bridge_at_us[int(_br["us_xs_index"])] = _br
 
         # --- Culvert index resolution ------------------------------------------
-        _culvert_at_us: dict[int, dict] = {}  # us_xs_index -> culvert dict
+        # 使用 list 支持同一位置多个并联涵洞（HEC-RAS Multiple Culverts）
+        _culvert_at_us: dict[int, list] = {}  # us_xs_index -> list of culvert dicts
         if self._culverts:
             for _cv in self._culverts:
                 if "us_xs_index" in _cv:
-                    _culvert_at_us[int(_cv["us_xs_index"])] = _cv
+                    _culvert_at_us.setdefault(int(_cv["us_xs_index"]), []).append(_cv)
                 elif hasattr(self, "_xs_station_labels") and self._xs_station_labels:
                     _us_rs = str(_cv.get("us_rs", "")).strip()
                     _us_idx = next((j for j, lbl in enumerate(self._xs_station_labels)
@@ -1534,7 +1637,7 @@ class SteadyProfileSolver:
                     if _us_idx is not None:
                         _cv_copy = dict(_cv)
                         _cv_copy["us_xs_index"] = _us_idx
-                        _culvert_at_us[_us_idx] = _cv_copy
+                        _culvert_at_us.setdefault(_us_idx, []).append(_cv_copy)
 
         # --- Inline Structure index resolution ---------------------------------
         _inline_at_us: dict[int, dict] = {}
@@ -1887,10 +1990,16 @@ class SteadyProfileSolver:
                 W_trial = min(W_trial, _W_MAX)
             # --- Culvert (HDS-5) ------------------------------------------------
             if i in _culvert_at_us:
-                _cv = _culvert_at_us[i]
-                W_trial = self._solve_culvert(
-                    Q=Q_seg_local, W_downstream=W[i + 1],
-                    culvert_dict=_cv, bed_us=bed[i])
+                _cv_list = _culvert_at_us[i]
+                if len(_cv_list) == 1:
+                    W_trial = self._solve_culvert(
+                        Q=Q_seg_local, W_downstream=W[i + 1],
+                        culvert_dict=_cv_list[0], bed_us=bed[i])
+                else:
+                    # 并联涵洞（Multiple Culverts）：各涵洞共同分担总流量
+                    W_trial = self._solve_culverts_parallel(
+                        Q=Q_seg_local, W_downstream=W[i + 1],
+                        culvert_list=_cv_list, bed_us=bed[i])
                 W_trial = max(W_trial, bed[i] + 1e-4)
                 W_trial = min(W_trial, _W_MAX)
             # --- Inline Structure (gate + weir) ---------------------------------
