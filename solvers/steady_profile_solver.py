@@ -1878,6 +1878,13 @@ class SteadyProfileSolver:
             _K_sum = _K_ds_lob + _K_ds_ch + _K_ds_rob
             if _K_sum > 0:
                 dx_seg = (_K_ds_lob * dx_lob + _K_ds_ch * dx_ch + _K_ds_rob * dx_rob) / _K_sum
+                # 漫滩主导且 reach length 差异显著时，K-weighted 可能振荡
+                # 回退到 channel reach length 以提高稳定性
+                # 物理理由：漫滩 K 占主导时，漫滩 dx 反映洪水波距离而非主槽水力梯度距离
+                _lob_dominant = (_K_ds_lob > 0.8 * _K_sum) or (_K_ds_rob > 0.8 * _K_sum)
+                _rl_divergent = (dx_ch > 0) and (abs(dx_seg - dx_ch) > 0.05 * dx_ch)
+                if _lob_dominant and _rl_divergent:
+                    dx_seg = dx_ch
             else:
                 dx_seg = dx_ch
             vh_ds = alpha_ds * V_ds ** 2 / (2.0 * self.g)
@@ -1988,6 +1995,7 @@ class SteadyProfileSolver:
                 try:
                     f_narrow_lo = _energy_residual(_W_lo_narrow)
                     f_hi = _energy_residual(_W_hi)
+                    # 主路径：端点变号时用 brentq
                     if np.isfinite(f_narrow_lo) and np.isfinite(f_hi) and f_narrow_lo * f_hi <= 0.0:
                         W_new = brentq(_energy_residual, _W_lo_narrow, _W_hi, xtol=1e-6, maxiter=100)
                         W_new = max(W_new, bed_sub_us + 1e-4)
@@ -2003,6 +2011,42 @@ class SteadyProfileSolver:
                         W_trial = W_new
                         _converged = True
                         _brentq_ok = True
+                    elif np.isfinite(f_narrow_lo) and not _is_steep_substep:
+                        # 能量方程残差可能非单调（Wc 附近 alpha 大导致局部极值）。
+                        # 端点同号时做短程扫描（步长 0.05m，扫描 [W_lo, W_lo+2m]），
+                        # 找到第一个符号变化子区间再做 brentq。
+                        _W_scan_prev = _W_lo_narrow
+                        _f_scan_prev = f_narrow_lo
+                        _scan_root_found = False
+                        _scan_step = 0.05
+                        _W_scan = _W_lo_narrow + _scan_step
+                        _W_scan_max = min(_W_lo_narrow + 2.0, _W_hi)
+                        while _W_scan <= _W_scan_max + 1e-9:
+                            _f_scan = _energy_residual(_W_scan)
+                            if np.isfinite(_f_scan) and _f_scan_prev * _f_scan <= 0.0:
+                                # 找到符号变化子区间 [_W_scan_prev, _W_scan]
+                                try:
+                                    W_new = brentq(_energy_residual, _W_scan_prev, _W_scan,
+                                                   xtol=1e-6, maxiter=100)
+                                    W_new = max(W_new, bed_sub_us + 1e-4)
+                                    _h_chk = max(W_new - bed_sub_us, 0.001)
+                                    _A_chk, _, _, _T_chk = self._get_geometry(_h_chk, i)
+                                    _Fr_chk = (Q_seg_local / max(_A_chk, 1e-9)) / max(
+                                        np.sqrt(self.g * _A_chk / max(_T_chk, 1e-9)), 1e-9)
+                                    if _Fr_chk <= 1.0:
+                                        W_trial = W_new
+                                        _converged = True
+                                        _brentq_ok = True
+                                        _scan_root_found = True
+                                        break
+                                    # Fr>1 的根继续扫描，寻找更大的亚临界根
+                                except Exception:
+                                    pass
+                            _W_scan_prev = _W_scan
+                            _f_scan_prev = _f_scan
+                            _W_scan += _scan_step
+                        if not _scan_root_found:
+                            _brentq_ok = False
                     elif _is_steep_substep:
                         # 陡坡子步在窄区间无亚临界根时取临界深度。
                         # 例外：逆坡且下游 WSE 远高于上游临界（桥梁回水池传播）
