@@ -1141,8 +1141,8 @@ class SteadyProfileSolver:
 
                 # HEC-RAS TRM: H/B 判定流态
                 B = opening_m
-                # 全开闸门（opening >= height）不适用 H/B 堰流过渡
-                _gate_fully_open = (opening_m >= height_m * 0.99)
+                # 近全开闸门（opening >= 0.8*height）不适用 H/B 堰流过渡
+                _gate_fully_open = (opening_m >= height_m * 0.85)
                 H_over_B = H / max(B, 1e-9) if (B > 0 and not _gate_fully_open) else 99.0
                 # 闸门自身的堰流系数（英制）
                 gate_wc_us = float(gate.get("gate_weir_coef", 3.1))
