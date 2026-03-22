@@ -66,21 +66,47 @@ def _build_from_ref(ref: dict):
         cc.append(float(xg.get("contraction", 0.1)))
         ec.append(float(xg.get("expansion", 0.3)))
     ifa = ref.get("ineffective_areas", [])
-    return sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, n_xs
+
+    # 涵洞参数：自动确定 us_xs_index（根据 invert 高程匹配最近断面）
+    culverts_param = []
+    for cv in ref.get("culverts", []):
+        us_inv = cv.get("us_invert_m", 0)
+        best_i = n_xs // 2  # 默认中间
+        best_diff = 1e9
+        for i in range(n_xs - 1):
+            diff = abs(bed[i] - us_inv)
+            if diff < best_diff:
+                best_diff = diff
+                best_i = i
+        culverts_param.append({
+            "us_xs_index": best_i,
+            "shape": cv.get("shape", "circular"),
+            "diameter_m": cv.get("diameter_m") or cv.get("height_m", 1.0),
+            "height_m": cv.get("height_m", 1.0),
+            "width_m": cv.get("width_m", 1.0),
+            "length_m": cv.get("length_m", 30.0),
+            "us_invert_m": cv.get("us_invert_m", 0),
+            "ds_invert_m": cv.get("ds_invert_m", 0),
+            "n_barrels": cv.get("n_barrels", 1),
+            "manning_n": cv.get("manning_n", 0.013),
+            "entrance_loss_coef": cv.get("entrance_loss_coef", 0.5),
+        })
+
+    return sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts_param, n_xs
 
 
-def _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, lat):
+def _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts, lat):
     sv = SteadyProfileSolver(
         length=max(sum(rl), 1), cross_sections=sections, bed_elevations=bed,
         reach_lengths=rl, manning_ns=nch, manning_n_lob=nlob, manning_n_rob=nrob,
         bank_stations=list(zip(bsl, bsr)), contraction_coefs=cc, expansion_coefs=ec,
-        lateral_inflows=lat)
+        lateral_inflows=lat, culverts=culverts if culverts else None)
     sv._manning_n_segments = nsa
     sv._ineffective_areas = ifa
     return sv
 
 
-def _run_profile(ref, p_idx, sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, n_xs):
+def _run_profile(ref, p_idx, sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts, n_xs):
     profile = ref["profiles"][p_idx]
     xd = profile["cross_sections"]
     Q = float(xd[0]["flow_m3s"])
@@ -89,7 +115,7 @@ def _run_profile(ref, p_idx, sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, e
     lat = [0.0] * n_xs
     for i in range(1, n_xs):
         lat[i - 1] = float(xd[i]["flow_m3s"]) - float(xd[i - 1]["flow_m3s"])
-    sv = _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, lat)
+    sv = _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts, lat)
     r = sv.solve_without_structures(Q=Q, h_downstream=hd)
     errs = [abs(float(r["W"][i]) - wr[i]) for i in range(n_xs)]
     return r, wr, errs, Q, profile["name"]
