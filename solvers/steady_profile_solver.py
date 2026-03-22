@@ -131,10 +131,15 @@ class SteadyProfileSolver:
 
     @staticmethod
     def _compute_sabaneev_nc(n_bed: float, n_ice: float, P_bed: float, P_ice: float) -> float:
-        """Sabaneev 复合糙率公式。"""
-        denom = max(P_bed + P_ice, 1e-9)
-        numer = n_bed ** 1.5 * P_bed + n_ice ** 1.5 * P_ice
-        return float(max((numer / denom) ** (2.0 / 3.0), 1e-6))
+        """Belokon-Sabaneev 复合糙率公式 (HEC-RAS TRM)。
+
+        n_c = ((n_b^(3/2) + n_i^(3/2)) / 2)^(2/3)
+
+        注意：HEC-RAS 使用简单平均（除以 2），不是 P 加权平均。
+        P_bed 和 P_ice 参数保留用于向后兼容但不影响计算。
+        """
+        numer = n_bed ** 1.5 + n_ice ** 1.5
+        return float(max((numer / 2.0) ** (2.0 / 3.0), 1e-6))
 
     def _get_raw_geometry(self, h: float, station_index=None) -> Tuple[float, float, float, float]:
         """返回未考虑冰盖修正的 (A, P, R, T)。"""
@@ -1110,7 +1115,10 @@ class SteadyProfileSolver:
                     Q_weir *= max(subm_factor, 0.01)
                 Q_total += Q_weir
 
-            # 闸门流量
+            # 闸门流量 (HEC-RAS TRM: Sluice Gate)
+            # 自由出流: Q = C_u * W * B * sqrt(2g * H)，H = 上游能量水头
+            # 淹没出流: Q = C_s * W * B * sqrt(2g * H_o)，H_o = EGL_us - WSE_ds
+            # 过渡区: SB 0.67-0.80 线性插值
             for gate in gates:
                 opening_m = float(gate.get("opening_m", 0))
                 n_open = int(gate.get("n_openings", 0))
@@ -1123,18 +1131,24 @@ class SteadyProfileSolver:
                     continue
 
                 A_gate = width_m * opening_m * n_open
-                h_us_gate = max(W_us - invert_m, 0.0)
+                # HEC-RAS: H = 上游能量水头 above gate invert
+                H = max(W_us - invert_m, 0.0)
                 h_ds_gate = max(W_downstream - invert_m, 0.0)
+                # H_o = 上游 WSE - 下游 WSE (energy head difference)
+                H_o = max(W_us - W_downstream, 0.0)
+                # 淹没比
+                SB = h_ds_gate / max(H, 1e-9)
 
                 # 自由/淹没判定
                 if h_ds_gate < opening_m:
                     # 自由出流
-                    dH = max(h_us_gate - opening_m / 2.0, 0.0)
+                    dH = max(H - opening_m / 2.0, 0.0)
                 else:
                     # 淹没出流
-                    dH = max(h_us_gate - h_ds_gate, 0.0)
+                    dH = max(H_o, 0.0)
 
                 Q_gate = Cg * A_gate * np.sqrt(max(2.0 * g * dH, 0.0))
+
                 Q_total += Q_gate
 
                 # 闸门顶溢流：水位超过闸门顶 (invert + height) 时的堰流
