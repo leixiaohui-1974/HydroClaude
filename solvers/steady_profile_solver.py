@@ -1867,7 +1867,9 @@ class SteadyProfileSolver:
                 _Sc_us = self._compute_critical_slope(Q_seg_local, i)
                 _S0_sub = max((bed_sub_us - bed_sub_ds) / max(dx_sub, 0.1), 0.0)
                 _is_steep_substep = _S0_sub > _Sc_us
-                _W_lo_narrow = max(W_sub_ds, _W_critical_us)  # 跳过超临界段
+                # 显著逆坡（床面上游抬升 > 0.5m）时允许 WSE 低于下游
+                _bed_rise = bed_sub_us - bed_sub_ds
+                _W_lo_narrow = _W_critical_us if _bed_rise > 0.5 else max(W_sub_ds, _W_critical_us)
                 _W_hi = max(_W_lo_narrow + 1e-4, W_sub_ds + 20.0)
                 try:
                     f_narrow_lo = _energy_residual(_W_lo_narrow)
