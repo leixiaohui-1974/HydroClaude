@@ -605,7 +605,7 @@ class Culvert:
                     coeff_item = table[key]
                     break
 
-            # 再做一次宽松匹配，兼容 tuple key 的不同顺序
+            # 宽松匹配1：兼容 tuple key 的不同顺序
             if coeff_item is None:
                 for key, value in table.items():
                     if not isinstance(key, tuple):
@@ -615,11 +615,27 @@ class Culvert:
                         coeff_item = value
                         break
 
+            # 宽松匹配2：通过 INLET_TYPE_ALIASES 解析别名后重试
+            # 例如 inlet_type="square_edge" -> "headwall_square_edge"，
+            # 然后依次尝试各 family（concrete / cmp 等）
+            if coeff_item is None:
+                aliases = globals().get('INLET_TYPE_ALIASES', {})
+                resolved_type = aliases.get(str(self.inlet_type), str(self.inlet_type))
+                # 按优先级尝试: concrete > cmp > smooth_pipe > concrete_box
+                for _fam in ('concrete', 'cmp', 'smooth_pipe', 'concrete_box'):
+                    _k = (str(shape), _fam, resolved_type)
+                    if _k in table:
+                        coeff_item = table[_k]
+                        break
+
+        # HDS-5 Table 5-1 SI 单位默认系数（圆形混凝土管）
+        # 对应 K, M (Form 1 未淹没) 和 c, Y (Form 2 淹没)
+        # 参考: FHWA HDS-5 3rd Edition, Table 5-1 (SI)
         default_map = {
-            'square_edge': {'K': 1.50, 'M': 1.75, 'c': 0.43, 'Y': 0.70, 'slope_coef': 0.0},
-            'groove_end': {'K': 1.35, 'M': 1.70, 'c': 0.39, 'Y': 0.66, 'slope_coef': 0.0},
-            'groove_headwall': {'K': 1.28, 'M': 1.68, 'c': 0.36, 'Y': 0.63, 'slope_coef': 0.0},
-            'beveled': {'K': 1.15, 'M': 1.65, 'c': 0.32, 'Y': 0.58, 'slope_coef': 0.0},
+            'square_edge':    {'K': 0.0078, 'M': 2.0, 'c': 0.0292, 'Y': 0.74, 'slope_coef': 0.0},
+            'groove_end':     {'K': 0.0018, 'M': 2.5, 'c': 0.0243, 'Y': 0.83, 'slope_coef': 0.0},
+            'groove_headwall': {'K': 0.0018, 'M': 2.5, 'c': 0.0243, 'Y': 0.83, 'slope_coef': 0.0},
+            'beveled':        {'K': 0.0018, 'M': 2.5, 'c': 0.0243, 'Y': 0.83, 'slope_coef': 0.0},
         }
         defaults = default_map.get(self.inlet_type, default_map['square_edge'])
 

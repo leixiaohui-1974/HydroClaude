@@ -146,14 +146,24 @@ def _build_from_ref(ref: dict):
             _cv_idx_map_valid[_orig_idx] = _fallback_i
 
     # 按原始顺序构建涵洞参数列表
-    # RS 有效  -> 使用其定位结果
-    # RS 无效  -> 并联涵洞，复用上一个成功定位涵洞的 us_xs_index（允许多涵洞共享位置）
+    # RS 有效  -> 使用 WSE 跳变定位结果（已在上方计算）
+    # RS 无效  -> 并联涵洞（HEC-RAS 多孔叠置结构），复用最近一个有效 RS 涵洞的位置
+    #            若前面没有有效 RS 涵洞，回退到 us_invert 与床面高程最小差值匹配
     culverts_param = []
-    _last_located_idx = None    # 记录最近一次成功定位的 us_xs_index，供并联涵洞复用
+    _last_valid_idx = None  # 最近一个有效 RS 涵洞的 us_xs_index，供并联涵洞复用
 
+    # 先扫描一遍确定 RS 有效涵洞的最终位置（按原始顺序，便于并联复用）
     for _orig_idx, cv in enumerate(_culverts_raw):
         _ok, _ = _parse_rs(cv)
+        if _ok:
+            _us_idx = _cv_idx_map_valid.get(_orig_idx, None)
+            if _us_idx is not None:
+                _last_valid_idx = _us_idx
 
+    # 再次扫描，为每个涵洞确定最终 us_xs_index
+    _last_valid_idx = None
+    for _orig_idx, cv in enumerate(_culverts_raw):
+        _ok, _ = _parse_rs(cv)
         if _ok:
             # RS 有效：使用 WSE 跳变定位结果
             _us_idx = _cv_idx_map_valid.get(_orig_idx, None)
@@ -167,34 +177,21 @@ def _build_from_ref(ref: dict):
                     if _diff < _best_diff:
                         _best_diff = _diff
                         _us_idx = _i
-            _last_located_idx = _us_idx
+            _last_valid_idx = _us_idx
         else:
-            if _last_located_idx is not None:
-                # 并联涵洞：直接复用上一个涵洞位置（允许共享同一 us_xs_index）
-                _us_idx = _last_located_idx
+            # RS 无效：并联涵洞，复用最近一个有效 RS 涵洞的位置
+            if _last_valid_idx is not None:
+                _us_idx = _last_valid_idx
             else:
-                # 前面还没有可复用位置，找已定位涵洞中原始索引最近的
-                _nearest = None
-                _nearest_dist = 10 ** 9
-                for _k, _v in _cv_idx_map_valid.items():
-                    _d = abs(_k - _orig_idx)
-                    if _d < _nearest_dist:
-                        _nearest_dist = _d
-                        _nearest = _v
-                if _nearest is not None:
-                    _us_idx = _nearest
-                    _last_located_idx = _us_idx
-                else:
-                    # 最终兜底：us_invert 匹配床面高程
-                    _us_inv = float(cv.get("us_invert_m", 0.0))
-                    _us_idx = n_xs // 2
-                    _best_diff = 1e9
-                    for _i in range(n_xs - 1):
-                        _diff = abs(bed[_i] - _us_inv)
-                        if _diff < _best_diff:
-                            _best_diff = _diff
-                            _us_idx = _i
-                    _last_located_idx = _us_idx
+                # 前面没有有效 RS 涵洞，用 us_invert 匹配床面高程
+                _us_inv = float(cv.get("us_invert_m", 0.0))
+                _us_idx = n_xs // 2
+                _best_diff = 1e9
+                for _i in range(n_xs - 1):
+                    _diff = abs(bed[_i] - _us_inv)
+                    if _diff < _best_diff:
+                        _best_diff = _diff
+                        _us_idx = _i
 
         culverts_param.append({
             "us_xs_index": _us_idx,
