@@ -44,8 +44,8 @@ def _build_from_ref(ref: dict):
     """从参考数据 JSON 构建求解器。"""
     n_xs = ref["n_cross_sections"]
     gd = ref["geometry"]["cross_sections"]
-    sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa = (
-        [], [], [], [], [], [], [], [], [], [], [])
+    sections, bed, rl, rl_lob, rl_rob, nch, nlob, nrob, bsl, bsr, cc, ec, nsa = (
+        [], [], [], [], [], [], [], [], [], [], [], [], [])
     for i, xg in enumerate(gd):
         pts = xg["station_elevation"]
         dm = np.array([p[0] * LF for p in pts])
@@ -66,7 +66,14 @@ def _build_from_ref(ref: dict):
         sec = NaturalSection(name=f"XS{i}", elevations=em, distances=dm)
         sections.append(sec)
         bed.append(float(np.min(em)))
-        rl.append(float(xg["len_channel_ft"]) * LF)
+        _lch = float(xg["len_channel_ft"])
+        rl.append(_lch * LF)
+        _ll = xg.get("len_left_ft", _lch)
+        _lr = xg.get("len_right_ft", _lch)
+        # NaN 或无效值时回退到 channel length
+        import math
+        rl_lob.append(float(_ll) * LF if _ll is not None and not math.isnan(float(_ll)) else _lch * LF)
+        rl_rob.append(float(_lr) * LF if _lr is not None and not math.isnan(float(_lr)) else _lch * LF)
         nch.append(nc); nlob.append(nl); nrob.append(nrv)
         bsl.append(lb); bsr.append(rb)
         cc.append(float(xg.get("contraction", 0.1)))
@@ -241,14 +248,15 @@ def _build_from_ref(ref: dict):
             "entrance_loss_coef": cv.get("entrance_loss_coef", 0.5),
         })
 
-    return sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts_param, _bridges_parsed, n_xs
+    return sections, bed, rl, rl_lob, rl_rob, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts_param, _bridges_parsed, n_xs
 
 
 def _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts, lat,
-                  bridges=None, ice_thickness=None, n_ice=None):
+                  rl_lob=None, rl_rob=None, bridges=None, ice_thickness=None, n_ice=None):
     sv = SteadyProfileSolver(
         length=max(sum(rl), 1), cross_sections=sections, bed_elevations=bed,
-        reach_lengths=rl, manning_ns=nch, manning_n_lob=nlob, manning_n_rob=nrob,
+        reach_lengths=rl, reach_lengths_lob=rl_lob, reach_lengths_rob=rl_rob,
+        manning_ns=nch, manning_n_lob=nlob, manning_n_rob=nrob,
         bank_stations=list(zip(bsl, bsr)), contraction_coefs=cc, expansion_coefs=ec,
         lateral_inflows=lat, culverts=culverts if culverts else None,
         bridges=bridges if bridges else None,
@@ -264,6 +272,8 @@ def _run_profile(  # noqa: C901
     sections: list,
     bed: list,
     rl: list,
+    rl_lob: list,
+    rl_rob: list,
     nch: list,
     nlob: list,
     nrob: list,
@@ -356,7 +366,8 @@ def _run_profile(  # noqa: C901
         for i in range(1, n_xs):
             lat[i - 1] = flows[i] - flows[i - 1]
         sv = _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts, lat,
-                          bridges=bridges, ice_thickness=_ice_t_arr, n_ice=_ice_n_arr)
+                          rl_lob=rl_lob, rl_rob=rl_rob, bridges=bridges,
+                          ice_thickness=_ice_t_arr, n_ice=_ice_n_arr)
 
         # Inline Structure（闸门+堰）：从参考数据提取并传入
         inline_data = ref.get("inline_structure")
