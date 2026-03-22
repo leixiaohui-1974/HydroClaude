@@ -1171,7 +1171,12 @@
       "width_m": 8.5344,
       "length_m": 15.24,
       "us_invert_m": 7.650480116271973,
-      "ds_invert_m": 7.62
+      "ds_invert_m": 7.62,
+      "exit_loss_coef": 1.0,
+      "manning_n_bottom": 0.03,
+      "depth_bottom_mann_ft": 0.5,
+      "chart": 61,
+      "scale": 3
     }
   ],
   "ineffective_areas": [

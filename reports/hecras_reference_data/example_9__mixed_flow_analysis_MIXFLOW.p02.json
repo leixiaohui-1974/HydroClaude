@@ -2017,6 +2017,46 @@
         ],
         "rs": "1"
       }
+    ],
+    "bridges": [
+      {
+        "structure_id": 0,
+        "type": "Bridge",
+        "mode": "",
+        "river": "Putah Creek",
+        "reach": "Putah Creek",
+        "rs": "7",
+        "upstream_distance_ft": 10.0,
+        "upstream_distance_m": 3.048,
+        "weir_width_ft": 90.0,
+        "weir_width_m": 27.432000000000002,
+        "piers": [
+          {
+            "us_station_ft": 150.0,
+            "us_station_m": 45.72,
+            "ds_station_ft": 150.0,
+            "ds_station_m": 45.72,
+            "use_debris": false,
+            "debris_width_ft": null,
+            "debris_width_m": null,
+            "debris_height_ft": null,
+            "debris_height_m": null
+          }
+        ],
+        "coefficients": {
+          "method": 0,
+          "low_standard_step": true,
+          "use_momentum": true,
+          "momentum_cd": 1.3300000429153442,
+          "use_yarnell": false,
+          "yarnell_k": null
+        },
+        "cross_section_reference": {
+          "us_xs_index": 8,
+          "ds_xs_index": 9,
+          "upstream_distance_ft": 30
+        }
+      }
     ]
   },
   "ineffective_areas": [
