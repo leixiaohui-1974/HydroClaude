@@ -812,12 +812,16 @@ class SteadyProfileSolver:
                         P_ineff += P_blk
                 if A_ineff > 0.0:
                     A_eff = max(A_total - A_ineff, A_total * 0.05)
-                    # HEC-RAS IFA: 只减少面积，湿周保持不变
-                    # K_eff = K_total × (A_eff/A_total)^(5/3)
-                    # 推导: K=(1/n)*A*R^(2/3), R=A/P, P不变
-                    # K_eff/K = (A_eff/A)*(A_eff/A)^(2/3) = (A_eff/A)^(5/3)
-                    ratio = A_eff / max(A_total, 1e-9)
-                    K_total *= ratio ** (5.0 / 3.0)
+                    # 湿周：排除 IFA 段的湿周，但保留活跃区域的湿周
+                    _, P_total_full = self._segment_area_perimeter(
+                        stations_arr, elevations_arr, water_level,
+                        eff_left, eff_right)
+                    P_eff = max(P_total_full - P_ineff, P_total_full * 0.1)
+                    R_eff = A_eff / max(P_eff, 1e-9)
+                    # 等效 n: 从原 K_total 反推
+                    R_old = A_total / max(P_total_full, 1e-9)
+                    n_equiv = A_total * R_old ** (2.0/3.0) / max(K_total, 1e-9)
+                    K_total = (1.0 / max(n_equiv, 0.001)) * A_eff * R_eff ** (2.0/3.0)
                     A_total = A_eff
 
         sum_k3_a2 = 0.0
