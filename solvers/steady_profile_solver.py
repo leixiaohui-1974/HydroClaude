@@ -3247,6 +3247,305 @@ class SteadyProfileSolver:
                 "h_gates_up": h_gates_up, "h_gates_down": h_gates_down, "gate_positions": gate_positions}
 
 
+
+    # Stream Junction Energy Method (HEC-RAS TRM, River/Stream Junctions)
+
+    def _solve_junction(
+        self,
+        Q_total: float,
+        W_downstream: float,
+        branches: list,
+        bed_junction: float,
+        max_iter: int = 50,
+        tol: float = 1e-4,
+    ) -> dict:
+        """HEC-RAS Stream Junction Energy Method (TRM River/Stream Junctions).
+
+        汊口所有分支 WSE 一致（WSE_junction），按输水能力 K 分配流量，迭代收敛。
+
+        Args:
+            Q_total: 汊口总流量 (m^3/s)
+            W_downstream: 下游控制水面高程 (m)
+            branches: list[dict], 每项含:
+                xs_indices (list[int]): 断面索引，[0]=汊口近端，[-1]=远端
+                Q_fraction (float): 初始流量分配比例
+                is_outflow (bool): True=分流，False=合流
+                W_boundary (float): 外端边界水面高程 (m)
+            bed_junction: 汊口床面高程 (m)
+            max_iter: 最大迭代次数
+            tol: 收敛容差 (m)
+        Returns:
+            dict(WSE_junction, Q_branches, converged, iterations, EGL_branches[, warning])
+        """
+        n_br = len(branches)
+        if n_br == 0:
+            return {
+                'WSE_junction': float(max(W_downstream, bed_junction + 1e-4)),
+                'Q_branches': [], 'converged': True, 'iterations': 0, 'EGL_branches': [],
+            }
+
+        Q_total_abs = max(float(Q_total), 0.0)
+        bed_arr = np.asarray(self._bed_elevations, dtype=float) if self._bed_elevations is not None else None
+
+        def _reach_dx(ia, ib):
+            """获取两断面之间步长，优先使用 HEC-RAS 实际河长。"""
+            if ia == ib:
+                return 0.1
+            i_min = min(ia, ib)
+            if self._reach_lengths is not None and i_min < len(self._reach_lengths):
+                try:
+                    return max(float(self._reach_lengths[i_min]), 0.1)
+                except Exception:
+                    pass
+            if bed_arr is not None and len(bed_arr) > 1:
+                return max(float(self.length) / float(max(len(bed_arr) - 1, 1)), 0.1)
+            return 1.0
+
+        def _kah(wse, idx):
+            """给定绝对水位与断面索引，返回 (K, alpha, A)。"""
+            if bed_arr is not None and 0 <= idx < len(bed_arr):
+                h = max(float(wse) - float(bed_arr[idx]), 0.01)
+            else:
+                h = max(float(wse) - float(bed_junction), 0.01)
+            K, alpha = self._compute_subdivided_conveyance(h, idx)
+            A = self._get_geometry(h, idx)[0]
+            return float(max(K, 1e-9)), float(max(alpha, 1.0)), float(max(A, 1e-9))
+
+        def _minor_loss(vu, vd, ix):
+            """局部损失：加速用收缩系数，减速用扩散系数（HEC-RAS TRM 第 2 章）。"""
+            cc = 0.1
+            ec = 0.3
+            if self._contraction_coefs is not None and ix < len(self._contraction_coefs):
+                try:
+                    cc = float(self._contraction_coefs[ix])
+                except Exception:
+                    pass
+            if self._expansion_coefs is not None and ix < len(self._expansion_coefs):
+                try:
+                    ec = float(self._expansion_coefs[ix])
+                except Exception:
+                    pass
+            return cc * (vu - vd) if vu > vd else ec * (vd - vu)
+
+        def _solve_step_known_ds(q, ius, ids, Wds):
+            """已知下游水位，标准步进求上游水位（亚临界，逆水流方向）。"""
+            dx = _reach_dx(ius, ids)
+            Kds, ads, Ads = _kah(Wds, ids)
+            Vds = q / Ads
+            vhds = ads * Vds ** 2 / (2.0 * self.g)
+            if bed_arr is not None and ius < len(bed_arr):
+                bed_us = float(bed_arr[ius])
+            else:
+                bed_us = float(bed_junction)
+
+            def _res(Wu):
+                Kus, aus, Aus = _kah(Wu, ius)
+                Vus = q / Aus
+                vhus = aus * Vus ** 2 / (2.0 * self.g)
+                # HEC-RAS 平均输水能力公式：Sf = (2Q/(K_us+K_ds))^2
+                Sf = min(((q + q) / max(Kus + Kds, 1e-9)) ** 2, 1.0)
+                return (Wu + vhus) - (Wds + vhds + dx * Sf + _minor_loss(vhus, vhds, min(ius, ids)))
+
+            lo = max(bed_us + 1e-4, Wds - 20.0)
+            hi = max(lo + 1e-3, Wds + 20.0)
+            flo, fhi = _res(lo), _res(hi)
+            expand = 0
+            while np.isfinite(flo) and np.isfinite(fhi) and flo * fhi > 0.0 and expand < 8:
+                lo = max(bed_us + 1e-4, lo - 10.0)
+                hi += 10.0
+                flo, fhi = _res(lo), _res(hi)
+                expand += 1
+            if np.isfinite(flo) and np.isfinite(fhi) and flo * fhi <= 0.0:
+                return float(brentq(_res, lo, hi, xtol=1e-6, maxiter=100))
+            return float(max(bed_us + 1e-4, Wds + dx * (q / max(Kds, 1e-9)) ** 2))
+
+        def _solve_step_known_us(q, ius, ids, Wus):
+            """已知上游水位，标准步进求下游水位（顺水流方向）。"""
+            dx = _reach_dx(ius, ids)
+            Kus, aus, Aus = _kah(Wus, ius)
+            Vus = q / Aus
+            vhus = aus * Vus ** 2 / (2.0 * self.g)
+            if bed_arr is not None and ids < len(bed_arr):
+                bed_ds = float(bed_arr[ids])
+            else:
+                bed_ds = float(bed_junction)
+
+            def _res(Wd):
+                Kds, ads, Ads = _kah(Wd, ids)
+                Vds = q / Ads
+                vhds = ads * Vds ** 2 / (2.0 * self.g)
+                Sf = min(((q + q) / max(Kus + Kds, 1e-9)) ** 2, 1.0)
+                return (Wus + vhus) - (Wd + vhds + dx * Sf + _minor_loss(vhus, vhds, min(ius, ids)))
+
+            lo = max(bed_ds + 1e-4, Wus - 25.0)
+            hi = max(lo + 1e-3, Wus + 5.0)
+            flo, fhi = _res(lo), _res(hi)
+            expand = 0
+            while np.isfinite(flo) and np.isfinite(fhi) and flo * fhi > 0.0 and expand < 8:
+                lo = max(bed_ds + 1e-4, lo - 10.0)
+                hi += 10.0
+                flo, fhi = _res(lo), _res(hi)
+                expand += 1
+            if np.isfinite(flo) and np.isfinite(fhi) and flo * fhi <= 0.0:
+                return float(brentq(_res, lo, hi, xtol=1e-6, maxiter=100))
+            return float(max(bed_ds + 1e-4, Wus - dx * (q / max(Kus, 1e-9)) ** 2))
+
+        def _march_branch_to_junction(q, br):
+            """从分支外端推进到汊口端，返回 (W_jct, EGL_jct, K_jct)。
+
+            分流(is_outflow=True)：逆水流推进（已知下游出口，求上游汊口端水位）。
+            合流(is_outflow=False)：顺水流推进（已知上游来水，求下游汊口端水位）。
+            xs_indices[0]=汊口近端，xs_indices[-1]=边界远端。
+            """
+            xs = br.get('xs_indices', [])
+            if not xs:
+                Wj = float(max(W_downstream, bed_junction + 1e-4))
+                Aj = max(1.0, self.B * max(Wj - bed_junction, 0.1))
+                Vj = abs(q) / max(Aj, 1e-9)
+                return float(Wj), float(Wj + Vj ** 2 / (2.0 * self.g)), 1.0
+
+            path = [int(v) for v in xs]
+            # pjct: 从边界远端推进到汊口近端的顺序
+            pjct = list(reversed(path))
+            is_outflow = bool(br.get('is_outflow', True))
+            Wc = float(br.get('W_boundary', W_downstream))
+            # 确保初始水位不低于床面
+            if bed_arr is not None:
+                oi = pjct[0]
+                if 0 <= oi < len(bed_arr):
+                    Wc = max(Wc, float(bed_arr[oi]) + 1e-4)
+
+            for k in range(len(pjct) - 1):
+                ic, inx = pjct[k], pjct[k + 1]
+                if is_outflow:
+                    # 分流：逆水流方向（已知下游出口，逐步求上游汊口端水位）
+                    Wc = _solve_step_known_ds(abs(q), inx, ic, Wc)
+                else:
+                    # 合流：顺水流方向（已知上游来水，逐步求下游汊口端水位）
+                    Wc = _solve_step_known_us(abs(q), ic, inx, Wc)
+                if bed_arr is not None and 0 <= inx < len(bed_arr):
+                    Wc = max(Wc, float(bed_arr[inx]) + 1e-4)
+
+            ij = path[0]  # 汊口近端断面索引
+            Kj, aj, Aj = _kah(Wc, ij)
+            Vj = abs(q) / max(Aj, 1e-9)
+            EGLj = float(Wc + aj * Vj ** 2 / (2.0 * self.g))
+            return float(Wc), EGLj, float(Kj)
+
+        # ── 初始化 ────────────────────────────────────────────────────────────
+        # 归一化 Q_fraction，得到初始流量分配
+        qf = np.array([max(float(br.get('Q_fraction', 0.0)), 0.0) for br in branches], dtype=float)
+        if np.sum(qf) <= 0.0:
+            qf = np.full(n_br, 1.0 / n_br, dtype=float)
+        else:
+            qf /= np.sum(qf)
+        Qb = Q_total_abs * qf
+
+        # 用汊口近端断面的 K 比例修正初始流量分配（HEC-RAS K-ratio 方法）
+        Wj = float(max(W_downstream, bed_junction + 0.05))
+        Ki = np.ones(n_br, dtype=float)
+        for i, br in enumerate(branches):
+            xs = br.get('xs_indices', [])
+            if xs:
+                ij = int(xs[0])
+                try:
+                    if bed_arr is not None and 0 <= ij < len(bed_arr):
+                        hj = max(Wj - float(bed_arr[ij]), 0.01)
+                    else:
+                        hj = max(Wj - bed_junction, 0.01)
+                    Kj, _ = self._compute_subdivided_conveyance(hj, ij)
+                    Ki[i] = max(float(Kj), 1e-9)
+                except Exception:
+                    Ki[i] = 1.0
+        Ks_init = np.sum(Ki)
+        if Ks_init > 0.0:
+            Qb = Q_total_abs * (Ki / Ks_init)
+
+        # ── 主迭代（HEC-RAS Stream Junction Energy Method）────────────────────
+        # 流程：
+        # 1. 各分支从外端推进到汊口端，得各分支汊口端 EGL
+        # 2. K 加权平均 EGL -> 新节点水位目标 W_target
+        # 3. 在 W_target 下按 K 比例重新分配 Q_total -> Q_target
+        # 4. 松弛更新（relax=0.6），检查收敛（EGL 离散度 + dW + dQ）
+        EGL: list = [float('nan')] * n_br
+        conv = False
+        rl = 0.6  # 松弛因子，防止迭代震荡
+        it = 0
+        for it in range(1, max_iter + 1):
+            Wbl: list = []
+            EL: list = []
+            KL: list = []
+            for i, br in enumerate(branches):
+                qi = float(max(Qb[i], 0.0))
+                Wji, Ei, Ki2 = _march_branch_to_junction(qi, br)
+                Wbl.append(Wji)
+                EL.append(Ei)
+                KL.append(max(Ki2, 1e-9))
+            EGL = [float(v) for v in EL]
+
+            # K 加权平均 EGL 作为新节点水位目标
+            Ka = np.asarray(KL, dtype=float)
+            Ks = float(np.sum(Ka))
+            if Ks > 0:
+                Wt = float(np.sum(Ka * np.asarray(EL, dtype=float)) / Ks)
+            else:
+                Wt = float(np.mean(EL))
+            Wt = max(Wt, bed_junction + 1e-4)
+
+            # 松弛更新节点水位
+            Wn = (1.0 - rl) * Wj + rl * Wt
+
+            # 在新节点水位下按 K 比例重新分配流量
+            Kr = np.ones(n_br, dtype=float)
+            for i, br in enumerate(branches):
+                xs = br.get('xs_indices', [])
+                if xs:
+                    ij = int(xs[0])
+                    if bed_arr is not None and 0 <= ij < len(bed_arr):
+                        hj = max(Wn - float(bed_arr[ij]), 0.01)
+                    else:
+                        hj = max(Wn - bed_junction, 0.01)
+                    try:
+                        Kj, _ = self._compute_subdivided_conveyance(hj, ij)
+                        Kr[i] = max(float(Kj), 1e-9)
+                    except Exception:
+                        Kr[i] = 1.0
+            Krs = np.sum(Kr)
+            if Krs > 0:
+                Qt = Q_total_abs * (Kr / Krs)
+            else:
+                Qt = np.full(n_br, Q_total_abs / n_br, dtype=float)
+
+            # 松弛更新流量
+            Qn = (1.0 - rl) * Qb + rl * Qt
+
+            # 收敛判断：EGL 离散度 + 节点水位变化 + 流量变化
+            es = float(np.max(EL) - np.min(EL)) if len(EL) > 1 else 0.0
+            dw = abs(Wn - Wj)
+            dq = float(np.max(np.abs(Qn - Qb)))
+            q_tol = max(1e-6, 1e-4 * max(Q_total_abs, 1.0))
+
+            Wj = float(Wn)
+            Qb = np.asarray(Qn, dtype=float)
+
+            if es < tol and dw < tol and dq < q_tol:
+                conv = True
+                break
+
+        # ── 返回结果 ──────────────────────────────────────────────────────────
+        res = {
+            'WSE_junction': float(Wj),
+            'Q_branches': [float(v) for v in Qb.tolist()],
+            'converged': conv,
+            'iterations': it,
+            'EGL_branches': [float(v) for v in EGL],
+        }
+        if not conv:
+            res['warning'] = 'junction_solver_not_converged'
+        return res
+
+
+
 def test_steady_profile_solver() -> None:
     from solvers.gate import SluiceGate
     import time
