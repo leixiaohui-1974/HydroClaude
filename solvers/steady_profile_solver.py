@@ -1893,7 +1893,10 @@ class SteadyProfileSolver:
                         # 陡坡子步在窄区间无亚临界根时取临界深度。
                         # 例外：逆坡且下游 WSE 远高于上游临界（桥梁回水池传播）
                         _ds_above_crit = W_sub_ds - _W_critical_us
-                        if bed_sub_us > bed_sub_ds + 0.01 and _ds_above_crit > 0.7:
+                        # 桥梁附近（5个断面内）用更低阈值传播回水池
+                        _near_bridge = any(abs(i - bi) <= 5 for bi in _bridge_at_us)
+                        _threshold = 0.3 if _near_bridge else 0.7
+                        if bed_sub_us > bed_sub_ds + 0.01 and _ds_above_crit > _threshold:
                             _brentq_ok = False  # 尝试 Picard 迭代找亚临界根
                         else:
                             W_new = _W_critical_us
