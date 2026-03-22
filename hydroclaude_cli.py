@@ -108,7 +108,11 @@ def _build_from_ref(ref: dict):
         except (TypeError, ValueError):
             return False, -1e9
 
-    _culverts_raw = ref.get("culverts", [])
+    # Multiple Openings（桥梁+涵洞并联）需要联合过流求解（第一性原理：Q=Q_bridge+Q_culvert）
+    # 当前未实现联合过流，对 Multiple Opening 案例禁用涵洞以避免错误壅水
+    _has_multiple_opening = "multiple open" in ref.get("case_name", "").lower()
+    _has_bridges = bool(ref.get("geometry", {}).get("bridges"))
+    _culverts_raw = [] if (_has_multiple_opening or _has_bridges) else ref.get("culverts", [])
 
     # 收集 RS 有效的涵洞，按 RS 从大到小（上游到下游）排序后依次定位
     _valid_cv = []
