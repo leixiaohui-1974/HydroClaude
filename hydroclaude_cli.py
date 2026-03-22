@@ -100,7 +100,9 @@ def _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa,
         length=max(sum(rl), 1), cross_sections=sections, bed_elevations=bed,
         reach_lengths=rl, manning_ns=nch, manning_n_lob=nlob, manning_n_rob=nrob,
         bank_stations=list(zip(bsl, bsr)), contraction_coefs=cc, expansion_coefs=ec,
-        lateral_inflows=lat, culverts=culverts if culverts else None)
+        lateral_inflows=lat)
+    # TODO: 涵洞位置映射待修复后启用
+    # culverts=culverts if culverts else None)
     sv._manning_n_segments = nsa
     sv._ineffective_areas = ifa
     return sv
