@@ -11,6 +11,7 @@
 """
 
 import argparse
+import math
 import json
 import sys
 from pathlib import Path
@@ -67,19 +68,136 @@ def _build_from_ref(ref: dict):
         ec.append(float(xg.get("expansion", 0.3)))
     ifa = ref.get("ineffective_areas", [])
 
-    # 涵洞参数：自动确定 us_xs_index（根据 invert 高程匹配最近断面）
+    # ----------------------------------------
+    # 涵洞位置映射：用 profile 0 的 WSE 跳变检测 us_xs_index
+    # 策略：
+    #   1. RS 有效的涵洞 -> 在未占用位置中寻找最大正向 WSE 跳变
+    #   2. RS 无效（空/非法）的涵洞 -> 并联涵洞，复用上一个定位结果
+    #   3. 无明显跳变时 -> 回退到 us_invert 与床面高程最小差值匹配
+    # ----------------------------------------
+    _WSE_JUMP_THRESHOLD = 0.06  # m，明显跳变阈值（高于正常水面降落，低于涵洞壅水）
+
+    # 读取 profile 0 的断面 WSE 序列（index 0 为最上游断面）
+    _profile0_xs = (ref.get("profiles") or [{}])[0].get("cross_sections", [])
+    _wse0 = []
+    for _ii in range(n_xs):
+        _cs = _profile0_xs[_ii] if _ii < len(_profile0_xs) else {}
+        try:
+            _w = float(_cs.get("wse_m", 0.0))
+        except (TypeError, ValueError):
+            _w = 0.0
+        _wse0.append(_w)
+
+    def _parse_rs(cv_item: dict) -> tuple:
+        """解析 RS：返回 (是否有效, 数值)。空字符串或非法值视为无效（并联涵洞）。"""
+        _raw = cv_item.get("rs", None)
+        if _raw is None:
+            return False, -1e9
+        if isinstance(_raw, str) and _raw.strip() == "":
+            return False, -1e9
+        try:
+            _v = float(_raw)
+            if not math.isfinite(_v):
+                return False, -1e9
+            return True, _v
+        except (TypeError, ValueError):
+            return False, -1e9
+
+    _culverts_raw = ref.get("culverts", [])
+
+    # 收集 RS 有效的涵洞，按 RS 从大到小（上游到下游）排序后依次定位
+    _valid_cv = []
+    for _orig_idx, _cv in enumerate(_culverts_raw):
+        _ok, _rs = _parse_rs(_cv)
+        if _ok:
+            _valid_cv.append((_orig_idx, _cv, _rs))
+    _valid_cv_sorted = sorted(_valid_cv, key=lambda t: t[2], reverse=True)
+
+    _used_pos: set = set()          # 已被有效RS涵洞占用的跳变位置（防止重复占用）
+    _cv_idx_map_valid: dict = {}    # 原始索引 -> us_xs_index（仅 RS 有效的涵洞）
+
+    for _orig_idx, cv, _rs in _valid_cv_sorted:
+        _best_i = None
+        _best_jump = _WSE_JUMP_THRESHOLD    # 只接受超过阈值的跳变
+
+        # 在未被占用的位置中寻找最大正向跳变（上游 WSE 高于下游）
+        for _i in range(n_xs - 1):
+            if _i in _used_pos:
+                continue
+            _jump = _wse0[_i] - _wse0[_i + 1]
+            if _jump > _best_jump:
+                _best_jump = _jump
+                _best_i = _i
+
+        if _best_i is not None:
+            # 通过 WSE 跳变成功定位涵洞上游断面
+            _used_pos.add(_best_i)
+            _cv_idx_map_valid[_orig_idx] = _best_i
+        else:
+            # 回退：用 us_invert 高程与床面高程最小差值匹配
+            _us_inv = float(cv.get("us_invert_m", 0.0))
+            _fallback_i = n_xs // 2
+            _best_diff = 1e9
+            for _i in range(n_xs - 1):
+                _diff = abs(bed[_i] - _us_inv)
+                if _diff < _best_diff:
+                    _best_diff = _diff
+                    _fallback_i = _i
+            _cv_idx_map_valid[_orig_idx] = _fallback_i
+
+    # 按原始顺序构建涵洞参数列表
+    # RS 有效  -> 使用其定位结果
+    # RS 无效  -> 并联涵洞，复用上一个成功定位涵洞的 us_xs_index（允许多涵洞共享位置）
     culverts_param = []
-    for cv in ref.get("culverts", []):
-        us_inv = cv.get("us_invert_m", 0)
-        best_i = n_xs // 2  # 默认中间
-        best_diff = 1e9
-        for i in range(n_xs - 1):
-            diff = abs(bed[i] - us_inv)
-            if diff < best_diff:
-                best_diff = diff
-                best_i = i
+    _last_located_idx = None    # 记录最近一次成功定位的 us_xs_index，供并联涵洞复用
+
+    for _orig_idx, cv in enumerate(_culverts_raw):
+        _ok, _ = _parse_rs(cv)
+
+        if _ok:
+            # RS 有效：使用 WSE 跳变定位结果
+            _us_idx = _cv_idx_map_valid.get(_orig_idx, None)
+            if _us_idx is None:
+                # 保险回退（理论上不应到达此处）
+                _us_inv = float(cv.get("us_invert_m", 0.0))
+                _us_idx = n_xs // 2
+                _best_diff = 1e9
+                for _i in range(n_xs - 1):
+                    _diff = abs(bed[_i] - _us_inv)
+                    if _diff < _best_diff:
+                        _best_diff = _diff
+                        _us_idx = _i
+            _last_located_idx = _us_idx
+        else:
+            if _last_located_idx is not None:
+                # 并联涵洞：直接复用上一个涵洞位置（允许共享同一 us_xs_index）
+                _us_idx = _last_located_idx
+            else:
+                # 前面还没有可复用位置，找已定位涵洞中原始索引最近的
+                _nearest = None
+                _nearest_dist = 10 ** 9
+                for _k, _v in _cv_idx_map_valid.items():
+                    _d = abs(_k - _orig_idx)
+                    if _d < _nearest_dist:
+                        _nearest_dist = _d
+                        _nearest = _v
+                if _nearest is not None:
+                    _us_idx = _nearest
+                    _last_located_idx = _us_idx
+                else:
+                    # 最终兜底：us_invert 匹配床面高程
+                    _us_inv = float(cv.get("us_invert_m", 0.0))
+                    _us_idx = n_xs // 2
+                    _best_diff = 1e9
+                    for _i in range(n_xs - 1):
+                        _diff = abs(bed[_i] - _us_inv)
+                        if _diff < _best_diff:
+                            _best_diff = _diff
+                            _us_idx = _i
+                    _last_located_idx = _us_idx
+
         culverts_param.append({
-            "us_xs_index": best_i,
+            "us_xs_index": _us_idx,
             "shape": cv.get("shape", "circular"),
             "diameter_m": cv.get("diameter_m") or cv.get("height_m", 1.0),
             "height_m": cv.get("height_m", 1.0),
@@ -100,9 +218,7 @@ def _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa,
         length=max(sum(rl), 1), cross_sections=sections, bed_elevations=bed,
         reach_lengths=rl, manning_ns=nch, manning_n_lob=nlob, manning_n_rob=nrob,
         bank_stations=list(zip(bsl, bsr)), contraction_coefs=cc, expansion_coefs=ec,
-        lateral_inflows=lat)
-    # TODO: 涵洞位置映射待修复后启用
-    # culverts=culverts if culverts else None)
+        lateral_inflows=lat, culverts=culverts if culverts else None)
     sv._manning_n_segments = nsa
     sv._ineffective_areas = ifa
     return sv
