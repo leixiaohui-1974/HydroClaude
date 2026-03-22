@@ -83,6 +83,32 @@ def _build_from_ref(ref: dict):
     ifa = ref.get("ineffective_areas", [])
 
     # 桥梁参数：从 geometry.bridges 提取，扁平化 us_xs_index
+    # 尝试从 HDF 文件加载 Lid Profile（arch 桥面积截断）
+    _hdf_bridge_lid_map: dict = {}  # us_rs -> {bridge_opening_stations, bridge_opening_elevations, lid_offset_m}
+    _hdf_fname = ref.get("hdf_file", "")
+    if _hdf_fname:
+        from pathlib import Path as _Path
+        _raw_dir = _Path("reports/hecras_examples_raw")
+        _hdf_candidates = list(_raw_dir.rglob(_hdf_fname))
+        if _hdf_candidates:
+            try:
+                import h5py as _h5
+                from integration.hec_ras_adapter import _extract_bridge_params, _length_factor
+                with _h5.File(_hdf_candidates[0], "r") as _hf:
+                    _lf = _length_factor(_hf.attrs.get("Units", b"US Customary"))
+                    _hdf_bridges = _extract_bridge_params(_hf, _lf)
+                for _hb in _hdf_bridges:
+                    _us_rs_key = str(_hb.get("us_rs", "")).strip()
+                    # Only use Lid Profile for arch bridges (lid_offset_m key present = arch)
+                    if _us_rs_key and _hb.get("bridge_opening_stations") and "lid_offset_m" in _hb:
+                        _hdf_bridge_lid_map[_us_rs_key] = {
+                            "bridge_opening_stations": _hb["bridge_opening_stations"],
+                            "bridge_opening_elevations": _hb["bridge_opening_elevations"],
+                            "lid_offset_m": _hb.get("lid_offset_m", 0.0),
+                        }
+            except Exception:
+                pass
+
     _bridges_parsed = []
     for _br in ref.get("geometry", {}).get("bridges", []):
         _csr = _br.get("cross_section_reference", {})
@@ -94,7 +120,11 @@ def _build_from_ref(ref: dict):
         _piers = _br.get("piers", {}) if isinstance(_br.get("piers"), dict) else {}
         _weir = _br.get("weir_parameters", {})
         _coefs = _br.get("coefficients", {})
-        _bridges_parsed.append({
+        # Lid Profile (arch intrados) - convert ft to m
+        _lid_sta_ft = _br.get("lid_stations_ft") or []
+        _lid_elev_ft = _br.get("lid_elevations_ft") or []
+        _lid_off_ft = _br.get("lid_offset_ft")
+        _br_entry: dict = {
             "us_xs_index": int(_us_idx),
             "ds_xs_index": int(_ds_idx) if _ds_idx is not None else int(_us_idx) + 1,
             "bridge_length_m": rl[int(_us_idx)] if int(_us_idx) < len(rl) else float(_csr.get("upstream_distance_ft", _br.get("upstream_distance_ft", 30))) * LF,
@@ -106,10 +136,25 @@ def _build_from_ref(ref: dict):
             "n_piers": int(_piers.get("pier_count", 0)),
             "pier_loss_coef": 0.0,
             "contraction_coef": 0.1,
-            "bridge_opening_width_m": float(_br.get("bridge_opening_width_m", 0)) or (
-                float(_br.get("bridge_opening_width_ft", 0)) * LF),
+            "bridge_opening_width_m": float(_br.get("bridge_opening_width_m") or 0) or (
+                float(_br.get("bridge_opening_width_ft") or 0) * LF),
             "coefficients": _coefs,
-        })
+        }
+        if _lid_sta_ft and len(_lid_sta_ft) > 2 and len(_lid_elev_ft) == len(_lid_sta_ft):
+            _br_entry["bridge_opening_stations"] = [s * LF for s in _lid_sta_ft]
+            _br_entry["bridge_opening_elevations"] = [e * LF for e in _lid_elev_ft]
+            _br_entry["lid_offset_m"] = float(_lid_off_ft) * LF if _lid_off_ft is not None else 0.0
+        # Supplement with HDF-extracted Lid Profile if not already in JSON
+        if not _br_entry.get("bridge_opening_stations"):
+            # Match by approach XS RS (us_rs is stored in HDF bridge dict)
+            # Try matching by cross_section_reference us_xs_index -> station label
+            _gd_xs = ref.get("geometry", {}).get("cross_sections", [])
+            _us_xs_idx = int(_us_idx)
+            _us_rs_label = _gd_xs[_us_xs_idx].get("rs", "") if _us_xs_idx < len(_gd_xs) else ""
+            _hdf_lid = _hdf_bridge_lid_map.get(str(_us_rs_label).strip())
+            if _hdf_lid:
+                _br_entry.update(_hdf_lid)
+        _bridges_parsed.append(_br_entry)
 
     # ----------------------------------------
     # 涵洞位置映射：用 profile 0 的 WSE 跳变检测 us_xs_index
@@ -395,7 +440,8 @@ def _run_profile(  # noqa: C901
 
             def _normal_res(h):
                 K, _ = sv_temp._compute_subdivided_conveyance(h, n_xs - 1)
-                return K * slope**0.5 - Q
+                _Q_ds = float(flows[-1]) if flows else Q  # use actual DS flow (may differ from upstream Q due to lateral inflows)
+                return K * slope**0.5 - _Q_ds
 
             try:
                 return brentq(_normal_res, 0.01, 30.0, xtol=1e-6)
