@@ -1275,6 +1275,8 @@ class SteadyProfileSolver:
         pier_height = float(bridge.get("pier_height_m", 1e9))
         deck_weir_coef = float(bridge.get("deck_weir_coef", 1.70))
         deck_weir_len_cfg = float(bridge.get("deck_weir_length_m", 0.0))
+        # 桥孔宽度（从 Lid Profile 提取）用于限制有效面积
+        _opening_w = float(bridge.get("bridge_opening_width_m", 0.0))
 
         n_br = (
             self._manning_ns[us_xs_index]
@@ -1298,7 +1300,8 @@ class SteadyProfileSolver:
             weir_coef=deck_weir_coef,
         )
         A_pier2 = pier_w_total * min(h2, pier_height)
-        A2_eff = max(A2 - A_pier2, A2 * 0.3)
+        A2_bridge = _opening_w * h2 if _opening_w > 0 else A2
+        A2_eff = max(min(A2, A2_bridge) - A_pier2, A2 * 0.05)
         # 壅水判断：使用 EGL (能量梯度线) 而非 WSE
         V2_temp = Q_under_ds / max(A2_eff, 1e-9)
         EGL2 = W_downstream + V2_temp ** 2 / (2.0 * self.g)
@@ -1353,7 +1356,8 @@ class SteadyProfileSolver:
                 weir_coef=deck_weir_coef,
             )
             A_pier3 = pier_w_total * min(h3, pier_height)
-            A3_eff = max(A3 - A_pier3, A3 * 0.3)
+            A3_bridge = _opening_w * h3 if _opening_w > 0 else A3
+            A3_eff = max(min(A3, A3_bridge) - A_pier3, A3 * 0.05)
             # 壅水判断：使用 EGL (能量梯度线) 而非 WSE
             V3_temp = Q_under / max(A3_eff, 1e-9)
             EGL3 = W3_trial + V3_temp ** 2 / (2.0 * self.g)
@@ -1397,7 +1401,8 @@ class SteadyProfileSolver:
                 weir_coef=deck_weir_coef,
             )
             A_pier3p = pier_w_total * min(h3p, pier_height)
-            A3p_eff = max(A3p - A_pier3p, A3p * 0.3)
+            A3p_bridge = _opening_w * h3p if _opening_w > 0 else A3p
+            A3p_eff = max(min(A3p, A3p_bridge) - A_pier3p, A3p * 0.05)
             # 壅水判断：使用 EGL (能量梯度线) 而非 WSE
             V3p_temp = Q_under_p / max(A3p_eff, 1e-9)
             EGL3p = W3p + V3p_temp ** 2 / (2.0 * self.g)

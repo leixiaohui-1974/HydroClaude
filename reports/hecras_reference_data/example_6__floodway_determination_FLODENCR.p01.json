@@ -3280,7 +3280,9 @@
           "low_chord_elev_ft": 215.6999969482422,
           "high_chord_elev_ft": 216.6999969482422,
           "bridge_opening_width_ft": 40.0
-        }
+        },
+        "bridge_opening_width_ft": "197.0",
+        "bridge_opening_width_m": "60.0456"
       }
     ]
   },

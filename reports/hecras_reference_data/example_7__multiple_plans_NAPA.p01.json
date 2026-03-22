@@ -7675,7 +7675,9 @@
           "us_xs_index": 14,
           "ds_xs_index": 15,
           "upstream_distance_ft": 30
-        }
+        },
+        "bridge_opening_width_ft": "32.0",
+        "bridge_opening_width_m": "9.7536"
       },
       {
         "structure_id": 1,
@@ -7701,7 +7703,9 @@
           "us_xs_index": 61,
           "ds_xs_index": 62,
           "upstream_distance_ft": 30
-        }
+        },
+        "bridge_opening_width_ft": "39.6",
+        "bridge_opening_width_m": "12.07008"
       },
       {
         "structure_id": 2,
@@ -7727,7 +7731,9 @@
           "us_xs_index": 65,
           "ds_xs_index": 66,
           "upstream_distance_ft": 30
-        }
+        },
+        "bridge_opening_width_ft": "30.0",
+        "bridge_opening_width_m": "9.144"
       },
       {
         "structure_id": 3,
@@ -7753,7 +7759,9 @@
           "us_xs_index": 70,
           "ds_xs_index": 71,
           "upstream_distance_ft": 30
-        }
+        },
+        "bridge_opening_width_ft": "34.0",
+        "bridge_opening_width_m": "10.3632"
       }
     ]
   },

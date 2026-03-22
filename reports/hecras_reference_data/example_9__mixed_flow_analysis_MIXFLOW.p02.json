@@ -2054,7 +2054,9 @@
         },
         "weir_parameters": {
           "weir_coefficient": 2.9
-        }
+        },
+        "bridge_opening_width_ft": 292.0,
+        "bridge_opening_width_m": 89.00160000000001
       }
     ]
   },
