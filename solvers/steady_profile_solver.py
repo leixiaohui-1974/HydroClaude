@@ -94,6 +94,7 @@ class SteadyProfileSolver:
         self._bank_stations = bank_stations
         self._bridges = bridges  # list[dict] with bridge physical parameters
         self._culverts = culverts  # list[dict] with culvert parameters from HDF adapter
+        self._inline_structures = None  # list[dict] with inline structure params
         self._lateral_inflows = lateral_inflows  # 逐断面区间来水 (m³/s)
         self._ice_thickness = ice_thickness
         self._n_ice = n_ice
@@ -692,6 +693,104 @@ class SteadyProfileSolver:
 
         return float(W_upstream)
 
+    def _solve_inline_structure(
+        self,
+        Q: float,
+        W_downstream: float,
+        structure: dict,
+        bed_us: float,
+    ) -> float:
+        """计算内联结构（闸门+堰）的上游水面高程。
+
+        按 HEC-RAS Technical Reference Manual:
+        Q_total = Σ Q_gate_i + Q_weir
+        Q_gate = Cg × Ag × sqrt(2g × ΔH)
+        Q_weir = Cw × L × H^(3/2)
+        迭代上游水位使 Q_total = Q
+
+        Args:
+            Q: 总流量 (m³/s)
+            W_downstream: 下游水面高程 (m)
+            structure: 内联结构参数字典
+            bed_us: 上游断面床面高程 (m)
+        Returns:
+            W_upstream: 上游水面高程 (m)
+        """
+        g = self.g
+        lf = 0.3048
+
+        # 堰参数
+        weir_coef = float(structure.get("weir_coef", 3.1))  # 英制系数
+        weir_coef_si = weir_coef * lf ** 0.5  # 转 SI: C_si = C_us * ft^0.5
+        weir_width_m = float(structure.get("weir_width_ft", 0)) * lf
+        weir_min_elev_m = float(structure.get("weir_min_elev_ft", 0)) * lf
+        if np.isnan(weir_min_elev_m):
+            weir_min_elev_m = bed_us
+
+        # 闸门参数
+        gates = structure.get("gates", [])
+
+        def _compute_Q_at_WSE(W_us: float) -> float:
+            """给定上游水位，计算结构可通过的总流量。"""
+            Q_total = 0.0
+
+            # 堰流
+            H_weir = max(W_us - weir_min_elev_m, 0.0)
+            if H_weir > 0 and weir_width_m > 0:
+                Q_weir = weir_coef_si * weir_width_m * H_weir ** 1.5
+                # 淹没修正
+                H_tw = max(W_downstream - weir_min_elev_m, 0.0)
+                if H_tw > 0 and H_tw / max(H_weir, 1e-9) > 0.67:
+                    subm_ratio = H_tw / max(H_weir, 1e-9)
+                    subm_factor = (1.0 - subm_ratio ** 1.5) ** 0.385  # Villemonte
+                    Q_weir *= max(subm_factor, 0.01)
+                Q_total += Q_weir
+
+            # 闸门流量
+            for gate in gates:
+                opening_m = float(gate.get("opening_m", 0))
+                n_open = int(gate.get("n_openings", 0))
+                width_m = float(gate.get("width_m", 0))
+                invert_m = float(gate.get("invert_m", bed_us))
+                Cg = float(gate.get("sluice_coef", 0.8))
+
+                if opening_m <= 0 or n_open <= 0 or width_m <= 0:
+                    continue
+
+                A_gate = width_m * opening_m * n_open
+                h_us_gate = max(W_us - invert_m, 0.0)
+                h_ds_gate = max(W_downstream - invert_m, 0.0)
+
+                # 自由/淹没判定
+                if h_ds_gate < opening_m:
+                    # 自由出流
+                    dH = max(h_us_gate - opening_m / 2.0, 0.0)
+                else:
+                    # 淹没出流
+                    dH = max(h_us_gate - h_ds_gate, 0.0)
+
+                Q_gate = Cg * A_gate * np.sqrt(max(2.0 * g * dH, 0.0))
+                Q_total += Q_gate
+
+            return Q_total
+
+        # 二分法迭代：找 W_us 使 Q_structure(W_us) = Q
+        W_lo = max(W_downstream, bed_us + 0.01)
+        W_hi = W_downstream + 30.0  # 最大壅水 30m
+
+        for _ in range(100):
+            W_mid = 0.5 * (W_lo + W_hi)
+            Q_mid = _compute_Q_at_WSE(W_mid)
+            if abs(Q_mid - Q) < Q * 0.001:
+                break
+            if Q_mid < Q:
+                W_lo = W_mid
+            else:
+                W_hi = W_mid
+
+        W_upstream = 0.5 * (W_lo + W_hi)
+        return float(max(W_upstream, W_downstream + 0.001))
+
     def _split_deck_overtopping_flow(
         self,
         Q_total: float,
@@ -1174,6 +1273,13 @@ class SteadyProfileSolver:
                         _cv_copy = dict(_cv)
                         _cv_copy["us_xs_index"] = _us_idx
                         _culvert_at_us[_us_idx] = _cv_copy
+
+        # --- Inline Structure index resolution ---------------------------------
+        _inline_at_us: dict[int, dict] = {}
+        if self._inline_structures:
+            for _is in self._inline_structures:
+                if "us_xs_index" in _is:
+                    _inline_at_us[int(_is["us_xs_index"])] = _is
         # -----------------------------------------------------------------------
         for i in range(n_xs - 2, -1, -1):
             # 逐断面流量：支持区间来水（HEC-RAS Change in Discharge）
@@ -1499,6 +1605,14 @@ class SteadyProfileSolver:
                 W_trial = self._solve_culvert(
                     Q=Q_seg_local, W_downstream=W[i + 1],
                     culvert_dict=_cv, bed_us=bed[i])
+                W_trial = max(W_trial, bed[i] + 1e-4)
+                W_trial = min(W_trial, _W_MAX)
+            # --- Inline Structure (gate + weir) ---------------------------------
+            if i in _inline_at_us:
+                _is = _inline_at_us[i]
+                W_trial = self._solve_inline_structure(
+                    Q=Q_seg_local, W_downstream=W[i + 1],
+                    structure=_is, bed_us=bed[i])
                 W_trial = max(W_trial, bed[i] + 1e-4)
                 W_trial = min(W_trial, _W_MAX)
             # --------------------------------------------------------------------
