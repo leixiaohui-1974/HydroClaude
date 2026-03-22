@@ -25556,6 +25556,176 @@
           ]
         ]
       }
+    ],
+    "bridges": [
+      {
+        "river": "Bogue Chitto",
+        "reach": "Johnston Sta",
+        "river_station": "52.37",
+        "description": "County Road Bridge #341",
+        "cross_section_reference": {
+          "us_rs": "52.38",
+          "ds_rs": "52.36",
+          "us_xs_index": 26,
+          "ds_xs_index": 27,
+          "upstream_distance_ft": 26.0
+        },
+        "deck_geometry": {
+          "deck_left_station_ft": 2444.0,
+          "deck_right_station_ft": 2864.0,
+          "bridge_opening_width_ft": 420.0,
+          "low_chord_elev_ft": 340.2,
+          "high_chord_elev_ft": 341.0,
+          "deck_thickness_ft": 0.8
+        },
+        "weir_parameters": {
+          "weir_coefficient": 2.6,
+          "weir_width_ft": 31.0
+        },
+        "hydraulic_method": {
+          "method_code": 3,
+          "method_name": "WSPRO",
+          "use_momentum": true,
+          "use_yarnell": true,
+          "use_wspro": true
+        },
+        "wspro_parameters": {
+          "el_top_left_ft": 341.0,
+          "el_top_right_ft": 341.0,
+          "el_toe_left_ft": 323.6,
+          "el_toe_right_ft": 330.5,
+          "opening_type": 3,
+          "slope": 1.0,
+          "width_ft": 31.0,
+          "centroid_station_ft": 2531.0
+        },
+        "piers": {
+          "pier_count": 17,
+          "pier_width_each_ft": 1.0,
+          "total_pier_width_ft": 17.0,
+          "pier_stations_us_ft": [
+            2466.0,
+            2490.0,
+            2514.0,
+            2538.0,
+            2562.0,
+            2586.0,
+            2610.0,
+            2634.0,
+            2658.0,
+            2682.0,
+            2706.0,
+            2730.0,
+            2754.0,
+            2778.0,
+            2802.0,
+            2826.0,
+            2850.0
+          ],
+          "pier_list": [
+            {
+              "pier_id": 1,
+              "center_station_us_ft": 2466.0,
+              "width_ft": 1.0
+            },
+            {
+              "pier_id": 2,
+              "center_station_us_ft": 2490.0,
+              "width_ft": 1.0
+            },
+            {
+              "pier_id": 3,
+              "center_station_us_ft": 2514.0,
+              "width_ft": 1.0
+            },
+            {
+              "pier_id": 4,
+              "center_station_us_ft": 2538.0,
+              "width_ft": 1.0
+            },
+            {
+              "pier_id": 5,
+              "center_station_us_ft": 2562.0,
+              "width_ft": 1.0
+            },
+            {
+              "pier_id": 6,
+              "center_station_us_ft": 2586.0,
+              "width_ft": 1.0
+            },
+            {
+              "pier_id": 7,
+              "center_station_us_ft": 2610.0,
+              "width_ft": 1.0
+            },
+            {
+              "pier_id": 8,
+              "center_station_us_ft": 2634.0,
+              "width_ft": 1.0
+            },
+            {
+              "pier_id": 9,
+              "center_station_us_ft": 2658.0,
+              "width_ft": 1.0
+            },
+            {
+              "pier_id": 10,
+              "center_station_us_ft": 2682.0,
+              "width_ft": 1.0
+            },
+            {
+              "pier_id": 11,
+              "center_station_us_ft": 2706.0,
+              "width_ft": 1.0
+            },
+            {
+              "pier_id": 12,
+              "center_station_us_ft": 2730.0,
+              "width_ft": 1.0
+            },
+            {
+              "pier_id": 13,
+              "center_station_us_ft": 2754.0,
+              "width_ft": 1.0
+            },
+            {
+              "pier_id": 14,
+              "center_station_us_ft": 2778.0,
+              "width_ft": 1.0
+            },
+            {
+              "pier_id": 15,
+              "center_station_us_ft": 2802.0,
+              "width_ft": 1.0
+            },
+            {
+              "pier_id": 16,
+              "center_station_us_ft": 2826.0,
+              "width_ft": 1.0
+            },
+            {
+              "pier_id": 17,
+              "center_station_us_ft": 2850.0,
+              "width_ft": 1.0
+            }
+          ]
+        },
+        "abutments": {
+          "left_abutment": {
+            "top_sta_ft": 2444.0,
+            "top_elev_ft": 340.2,
+            "toe_sta_ft": 2458.0,
+            "toe_elev_ft": 323.6
+          },
+          "right_abutment": {
+            "top_sta_ft": 2864.0,
+            "top_elev_ft": 340.2,
+            "toe_sta_ft": 2852.0,
+            "toe_elev_ft": 330.5
+          }
+        },
+        "unit_system": "US Customary (ft/cfs)"
+      }
     ]
   },
   "ineffective_areas": [
