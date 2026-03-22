@@ -53,11 +53,16 @@ def _build_from_ref(ref: dict):
         nr = xg.get("manning_n", [])
         nsa.append([(s * LF, n) for s, n in nr])
         vn = [n for _, n in nr if n is not None and n > 0]
-        nc = vn[1] if len(vn) > 2 else (vn[0] if vn else 0.04)
+        lb_ft = float(xg["left_bank_ft"])
+        rb_ft = float(xg["right_bank_ft"])
+        # 主槽 n: bank station 范围内的 n 值中取最小值（主槽底部）
+        n_in_channel = [n for s, n in nr if n is not None and n > 0
+                        and lb_ft <= s <= rb_ft]
+        nc = min(n_in_channel) if n_in_channel else (vn[1] if len(vn) > 2 else (vn[0] if vn else 0.04))
         nl = vn[0] if vn else 0.1
         nrv = vn[-1] if len(vn) > 1 else nl
-        lb = float(xg["left_bank_ft"]) * LF
-        rb = float(xg["right_bank_ft"]) * LF
+        lb = lb_ft * LF
+        rb = rb_ft * LF
         sec = NaturalSection(name=f"XS{i}", elevations=em, distances=dm)
         sections.append(sec)
         bed.append(float(np.min(em)))
