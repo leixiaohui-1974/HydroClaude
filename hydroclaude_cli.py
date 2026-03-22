@@ -317,7 +317,7 @@ def _run_profile(  # noqa: C901
         bc = None
         for b in bc_list:
             pn = b.get("profile_number", b.get("profile_index", 0))
-            if pn == p_idx + 1 or pn == p_idx:  # 兼容 0-based 和 1-based
+            if pn == p_idx + 1:  # profile_number 是 1-based
                 bc = b
                 break
         if bc is None and bc_list:
@@ -381,7 +381,7 @@ def _run_profile(  # noqa: C901
                 return max(wr[-1] - bed[-1], 0.5)
 
         elif dn_type == 4:  # Rating Curve
-            pts = bc.get("dn_rating_curve_pts") or bc.get("dn_rating_curve_values", [])
+            pts = bc.get("dn_rating_curve_values", [])
             if pts:
                 Q_cfs = Q / 0.028316846592
                 if isinstance(pts[0], (list, tuple)):

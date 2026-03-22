@@ -7804,5 +7804,36 @@
     [],
     [],
     []
+  ],
+  "schema_version": "2.0",
+  "boundary_conditions": [
+    {
+      "river": "Napa Creek",
+      "reach": "South Reach",
+      "profile_number": 1,
+      "up_type": 0,
+      "dn_type": 1,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": 13.0,
+      "dn_known_ws_m": 3.9624,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    }
+  ],
+  "flow_data": [
+    {
+      "river": "Napa Creek",
+      "reach": "South Reach",
+      "rs": "3800",
+      "flows_cfs": [
+        4070.0
+      ],
+      "flows_m3s": [
+        115.24956562944
+      ]
+    }
   ]
 }

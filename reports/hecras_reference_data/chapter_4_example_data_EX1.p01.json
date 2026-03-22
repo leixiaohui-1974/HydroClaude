@@ -984,5 +984,205 @@
         ]
       }
     ]
-  }
+  },
+  "schema_version": "2.0",
+  "boundary_conditions": [
+    {
+      "river": "Fall River",
+      "reach": "Upper Reach",
+      "profile_number": 1,
+      "up_type": 0,
+      "dn_type": 0,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Fall River",
+      "reach": "Upper Reach",
+      "profile_number": 2,
+      "up_type": 0,
+      "dn_type": 0,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Fall River",
+      "reach": "Upper Reach",
+      "profile_number": 3,
+      "up_type": 0,
+      "dn_type": 0,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Butte Cr.",
+      "reach": "Tributary",
+      "profile_number": 1,
+      "up_type": 0,
+      "dn_type": 0,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Butte Cr.",
+      "reach": "Tributary",
+      "profile_number": 2,
+      "up_type": 0,
+      "dn_type": 0,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Butte Cr.",
+      "reach": "Tributary",
+      "profile_number": 3,
+      "up_type": 0,
+      "dn_type": 0,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Fall River",
+      "reach": "Lower Reach",
+      "profile_number": 1,
+      "up_type": 0,
+      "dn_type": 3,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": 0.0004,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Fall River",
+      "reach": "Lower Reach",
+      "profile_number": 2,
+      "up_type": 0,
+      "dn_type": 3,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": 0.0004,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Fall River",
+      "reach": "Lower Reach",
+      "profile_number": 3,
+      "up_type": 0,
+      "dn_type": 3,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": 0.0004,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    }
+  ],
+  "flow_data": [
+    {
+      "river": "Butte Cr.",
+      "reach": "Tributary",
+      "rs": "0.2",
+      "flows_cfs": [
+        100.0,
+        500.0,
+        1500.0
+      ],
+      "flows_m3s": [
+        2.8316846592,
+        14.158423296,
+        42.475269888
+      ]
+    },
+    {
+      "river": "Fall River",
+      "reach": "Upper Reach",
+      "rs": "10",
+      "flows_cfs": [
+        500.0,
+        2000.0,
+        5000.0
+      ],
+      "flows_m3s": [
+        14.158423296,
+        56.633693184,
+        141.58423296
+      ]
+    },
+    {
+      "river": "Fall River",
+      "reach": "Lower Reach",
+      "rs": "9.79",
+      "flows_cfs": [
+        600.0,
+        2500.0,
+        6500.0
+      ],
+      "flows_m3s": [
+        16.9901079552,
+        70.79211648,
+        184.059502848
+      ]
+    },
+    {
+      "river": "Fall River",
+      "reach": "Lower Reach",
+      "rs": "9.6",
+      "flows_cfs": [
+        650.0,
+        2700.0,
+        7000.0
+      ],
+      "flows_m3s": [
+        18.4059502848,
+        76.4554857984,
+        198.21792614400002
+      ]
+    }
+  ]
 }

@@ -3430,5 +3430,47 @@
         ]
       }
     ]
-  }
+  },
+  "schema_version": "2.0",
+  "boundary_conditions": [
+    {
+      "river": "Critical Cr.",
+      "reach": "Upper Reach",
+      "profile_number": 1,
+      "up_type": 0,
+      "dn_type": 3,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": 0.01,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    }
+  ],
+  "flow_data": [
+    {
+      "river": "Critical Cr.",
+      "reach": "Upper Reach",
+      "rs": "12",
+      "flows_cfs": [
+        9000.0
+      ],
+      "flows_m3s": [
+        254.851619328
+      ]
+    },
+    {
+      "river": "Critical Cr.",
+      "reach": "Upper Reach",
+      "rs": "8",
+      "flows_cfs": [
+        9500.0
+      ],
+      "flows_m3s": [
+        269.010042624
+      ]
+    }
+  ]
 }

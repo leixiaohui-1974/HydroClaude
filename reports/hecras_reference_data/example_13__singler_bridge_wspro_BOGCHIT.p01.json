@@ -25828,5 +25828,53 @@
     [],
     [],
     []
+  ],
+  "schema_version": "2.0",
+  "boundary_conditions": [
+    {
+      "river": "Bogue Chitto",
+      "reach": "Johnston Sta",
+      "profile_number": 1,
+      "up_type": 0,
+      "dn_type": 1,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": 325.7,
+      "dn_known_ws_m": 99.27336,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Bogue Chitto",
+      "reach": "Johnston Sta",
+      "profile_number": 2,
+      "up_type": 0,
+      "dn_type": 1,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": 326.0,
+      "dn_known_ws_m": 99.3648,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    }
+  ],
+  "flow_data": [
+    {
+      "river": "Bogue Chitto",
+      "reach": "Johnston Sta",
+      "rs": "56.97",
+      "flows_cfs": [
+        25000.0,
+        31500.0
+      ],
+      "flows_m3s": [
+        707.9211648,
+        891.980667648
+      ]
+    }
   ]
 }

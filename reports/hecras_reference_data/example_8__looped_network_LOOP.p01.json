@@ -5216,5 +5216,250 @@
         ]
       }
     ]
-  }
+  },
+  "schema_version": "2.0",
+  "boundary_conditions": [
+    {
+      "river": "Spruce Creek",
+      "reach": "Upper Spruce",
+      "profile_number": 1,
+      "up_type": 0,
+      "dn_type": 0,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Spruce Creek",
+      "reach": "Upper Spruce",
+      "profile_number": 2,
+      "up_type": 0,
+      "dn_type": 0,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Spruce Creek",
+      "reach": "Upper Spruce",
+      "profile_number": 3,
+      "up_type": 0,
+      "dn_type": 0,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Spruce Creek",
+      "reach": "Middle Spruce",
+      "profile_number": 1,
+      "up_type": 0,
+      "dn_type": 0,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Spruce Creek",
+      "reach": "Middle Spruce",
+      "profile_number": 2,
+      "up_type": 0,
+      "dn_type": 0,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Spruce Creek",
+      "reach": "Middle Spruce",
+      "profile_number": 3,
+      "up_type": 0,
+      "dn_type": 0,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Bear Run",
+      "reach": "Bear Run",
+      "profile_number": 1,
+      "up_type": 0,
+      "dn_type": 0,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Bear Run",
+      "reach": "Bear Run",
+      "profile_number": 2,
+      "up_type": 0,
+      "dn_type": 0,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Bear Run",
+      "reach": "Bear Run",
+      "profile_number": 3,
+      "up_type": 0,
+      "dn_type": 0,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Spruce Creek",
+      "reach": "Lower Spruce",
+      "profile_number": 1,
+      "up_type": 0,
+      "dn_type": 3,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": 0.0004,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Spruce Creek",
+      "reach": "Lower Spruce",
+      "profile_number": 2,
+      "up_type": 0,
+      "dn_type": 3,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": 0.0004,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Spruce Creek",
+      "reach": "Lower Spruce",
+      "profile_number": 3,
+      "up_type": 0,
+      "dn_type": 3,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": 0.0004,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    }
+  ],
+  "flow_data": [
+    {
+      "river": "Bear Run",
+      "reach": "Bear Run",
+      "rs": "1470",
+      "flows_cfs": [
+        130.0,
+        350.0,
+        440.0
+      ],
+      "flows_m3s": [
+        3.6811900569600002,
+        9.9108963072,
+        12.459412500480001
+      ]
+    },
+    {
+      "river": "Spruce Creek",
+      "reach": "Upper Spruce",
+      "rs": "2500",
+      "flows_cfs": [
+        300.0,
+        800.0,
+        1000.0
+      ],
+      "flows_m3s": [
+        8.4950539776,
+        22.6534772736,
+        28.316846592
+      ]
+    },
+    {
+      "river": "Spruce Creek",
+      "reach": "Lower Spruce",
+      "rs": "465",
+      "flows_cfs": [
+        300.0,
+        800.0,
+        1000.0
+      ],
+      "flows_m3s": [
+        8.4950539776,
+        22.6534772736,
+        28.316846592
+      ]
+    },
+    {
+      "river": "Spruce Creek",
+      "reach": "Middle Spruce",
+      "rs": "1960",
+      "flows_cfs": [
+        170.0,
+        450.0,
+        560.0
+      ],
+      "flows_m3s": [
+        4.81386392064,
+        12.7425809664,
+        15.85743409152
+      ]
+    }
+  ]
 }

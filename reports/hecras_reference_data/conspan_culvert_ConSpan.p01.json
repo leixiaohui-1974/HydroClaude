@@ -1213,5 +1213,87 @@
     [],
     [],
     []
+  ],
+  "schema_version": "2.0",
+  "boundary_conditions": [
+    {
+      "river": "Spring Creek",
+      "reach": "Culvrt Reach",
+      "profile_number": 1,
+      "up_type": 0,
+      "dn_type": 1,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": 28.9,
+      "dn_known_ws_m": 8.80872,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Spring Creek",
+      "reach": "Culvrt Reach",
+      "profile_number": 2,
+      "up_type": 0,
+      "dn_type": 1,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": 30.2,
+      "dn_known_ws_m": 9.20496,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Spring Creek",
+      "reach": "Culvrt Reach",
+      "profile_number": 3,
+      "up_type": 0,
+      "dn_type": 1,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": 30.9,
+      "dn_known_ws_m": 9.41832,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Spring Creek",
+      "reach": "Culvrt Reach",
+      "profile_number": 4,
+      "up_type": 0,
+      "dn_type": 1,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": 31.5,
+      "dn_known_ws_m": 9.6012,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    }
+  ],
+  "flow_data": [
+    {
+      "river": "Spring Creek",
+      "reach": "Culvrt Reach",
+      "rs": "20.535",
+      "flows_cfs": [
+        250.0,
+        400.0,
+        600.0,
+        1000.0
+      ],
+      "flows_m3s": [
+        7.079211648,
+        11.3267386368,
+        16.9901079552,
+        28.316846592
+      ]
+    }
   ]
 }

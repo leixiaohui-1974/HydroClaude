@@ -2252,5 +2252,88 @@
         ]
       }
     ]
-  }
+  },
+  "schema_version": "2.0",
+  "boundary_conditions": [
+    {
+      "river": "Spruce Creek",
+      "reach": "Spruce Creek",
+      "profile_number": 1,
+      "up_type": 0,
+      "dn_type": 0,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Spring Creek",
+      "reach": "Upper Reach",
+      "profile_number": 1,
+      "up_type": 0,
+      "dn_type": 0,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Spring Creek",
+      "reach": "Lower Reach",
+      "profile_number": 1,
+      "up_type": 0,
+      "dn_type": 3,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": 0.001,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    }
+  ],
+  "flow_data": [
+    {
+      "river": "Spruce Creek",
+      "reach": "Spruce Creek",
+      "rs": "0.094",
+      "flows_cfs": [
+        1100.0
+      ],
+      "flows_m3s": [
+        31.1485312512
+      ]
+    },
+    {
+      "river": "Spring Creek",
+      "reach": "Upper Reach",
+      "rs": "10.212",
+      "flows_cfs": [
+        3000.0
+      ],
+      "flows_m3s": [
+        84.950539776
+      ]
+    },
+    {
+      "river": "Spring Creek",
+      "reach": "Lower Reach",
+      "rs": "10.091",
+      "flows_cfs": [
+        4100.0
+      ],
+      "flows_m3s": [
+        116.0990710272
+      ]
+    }
+  ]
 }

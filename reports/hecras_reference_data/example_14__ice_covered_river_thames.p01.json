@@ -3244,5 +3244,36 @@
     "thickness_m": 0.1524,
     "manning_n": 0.03,
     "specific_gravity": 0.916
-  }
+  },
+  "schema_version": "2.0",
+  "boundary_conditions": [
+    {
+      "river": "Thames River",
+      "reach": "Ice Jam Section",
+      "profile_number": 1,
+      "up_type": 0,
+      "dn_type": 1,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": 177.64,
+      "dn_known_ws_m": 54.144672,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    }
+  ],
+  "flow_data": [
+    {
+      "river": "Thames River",
+      "reach": "Ice Jam Section",
+      "rs": "42000",
+      "flows_cfs": [
+        261.0
+      ],
+      "flows_m3s": [
+        7.390696960512
+      ]
+    }
+  ]
 }

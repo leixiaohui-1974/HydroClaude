@@ -3287,5 +3287,53 @@
     [],
     [],
     []
+  ],
+  "schema_version": "2.0",
+  "boundary_conditions": [
+    {
+      "river": "Beaver Creek",
+      "reach": "Kentwood",
+      "profile_number": 1,
+      "up_type": 0,
+      "dn_type": 1,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": 211.8,
+      "dn_known_ws_m": 64.55664,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    },
+    {
+      "river": "Beaver Creek",
+      "reach": "Kentwood",
+      "profile_number": 2,
+      "up_type": 0,
+      "dn_type": 1,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": null,
+      "dn_known_ws_ft": 212.8,
+      "dn_known_ws_m": 64.86144,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    }
+  ],
+  "flow_data": [
+    {
+      "river": "Beaver Creek",
+      "reach": "Kentwood",
+      "rs": "5.99",
+      "flows_cfs": [
+        14000.0,
+        14000.0
+      ],
+      "flows_m3s": [
+        396.43585228800004,
+        396.43585228800004
+      ]
+    }
   ]
 }

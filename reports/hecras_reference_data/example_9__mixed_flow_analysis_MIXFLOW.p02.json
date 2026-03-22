@@ -2073,5 +2073,36 @@
       "wse_ds_ft": 1277.9509
     }
   ],
-  "culverts": []
+  "culverts": [],
+  "schema_version": "2.0",
+  "boundary_conditions": [
+    {
+      "river": "Putah Creek",
+      "reach": "Putah Creek",
+      "profile_number": 1,
+      "up_type": 3,
+      "dn_type": 2,
+      "up_known_ws_ft": null,
+      "up_known_ws_m": null,
+      "up_slope": 0.01,
+      "dn_known_ws_ft": null,
+      "dn_known_ws_m": null,
+      "dn_slope": null,
+      "dn_rating_curve_pts": null,
+      "dn_rating_curve_values": []
+    }
+  ],
+  "flow_data": [
+    {
+      "river": "Putah Creek",
+      "reach": "Putah Creek",
+      "rs": "12",
+      "flows_cfs": [
+        3200.0
+      ],
+      "flows_m3s": [
+        90.6139090944
+      ]
+    }
+  ]
 }
