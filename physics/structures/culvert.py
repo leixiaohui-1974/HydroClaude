@@ -255,10 +255,8 @@ class CulvertGeometry:
             return float(np.pi * (self.diameter / 2) ** 2)
         if self.shape == "rectangular":
             return float(self.width * self.height)
-        # 拱形：下部半圆 + 上部矩形（r = width/2）
-        r = self.width / 2
-        rect_h = max(self.height - r, 0.0)
-        return float((np.pi / 2) * r ** 2 + self.width * rect_h)
+        # 拱形 (HDS-5): 半椭圆近似，A ≈ (π/4) × span × rise
+        return float((np.pi / 4) * self.width * self.height)
 
     # ── 按水深计算几何量 ──────────────────────────────────────────────────────
 
