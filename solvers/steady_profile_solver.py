@@ -351,6 +351,66 @@ class SteadyProfileSolver:
                 perimeter += np.sqrt(dsw ** 2 + dzw ** 2)
         return area, perimeter
 
+    @staticmethod
+    def _find_wet_connected_segments(
+        stations: np.ndarray,
+        elevations: np.ndarray,
+        water_level: float,
+        sta_lo: float,
+        sta_hi: float,
+    ) -> list[tuple[float, float]]:
+        """返回 [sta_lo, sta_hi] 区间内所有连通湿润子段 [(lo1,hi1), ...]。
+
+        HEC-RAS 对 LOB/ROB 内被高地分隔的不连通水体分段计算 K。
+        本方法通过断面高程线与水面的交叉点定位各孤立湿润子区。
+        """
+        boundaries: list[float] = []
+        for j in range(len(stations) - 1):
+            s1, s2 = float(stations[j]), float(stations[j + 1])
+            z1, z2 = float(elevations[j]), float(elevations[j + 1])
+            if s2 <= sta_lo or s1 >= sta_hi:
+                continue
+            if s1 < sta_lo:
+                t = (sta_lo - s1) / (s2 - s1); z1 = z1 + t * (z2 - z1); s1 = sta_lo
+            if s2 > sta_hi:
+                t = (sta_hi - s1) / (s2 - s1); z2 = z1 + t * (z2 - z1); s2 = sta_hi
+            d1, d2 = z1 - water_level, z2 - water_level
+            if d1 * d2 < 0:  # 严格跨越水面
+                t = d1 / (d1 - d2)
+                boundaries.append(s1 + t * (s2 - s1))
+
+        if not boundaries:
+            # 无交叉点：判断整区是否有水
+            for j in range(len(stations) - 1):
+                s1, s2 = float(stations[j]), float(stations[j + 1])
+                z1, z2 = float(elevations[j]), float(elevations[j + 1])
+                if s2 <= sta_lo or s1 >= sta_hi:
+                    continue
+                if min(z1, z2) < water_level:
+                    return [(sta_lo, sta_hi)]
+            return []
+
+        cuts = sorted(set([sta_lo] + boundaries + [sta_hi]))
+        unique_cuts: list[float] = [cuts[0]]
+        for c in cuts[1:]:
+            if c - unique_cuts[-1] > 1e-9:
+                unique_cuts.append(c)
+
+        result: list[tuple[float, float]] = []
+        for k in range(len(unique_cuts) - 1):
+            lo, hi = unique_cuts[k], unique_cuts[k + 1]
+            s_mid = 0.5 * (lo + hi)
+            z_mid = water_level + 1.0  # 默认干
+            for j in range(len(stations) - 1):
+                if stations[j] <= s_mid <= stations[j + 1]:
+                    t = (s_mid - stations[j]) / (stations[j + 1] - stations[j])
+                    z_mid = float(elevations[j]) + t * float(elevations[j + 1] - elevations[j])
+                    break
+            if z_mid < water_level:
+                result.append((lo, hi))
+
+        return result
+
     def _zone_conveyance(
         self,
         stations: np.ndarray,
@@ -364,9 +424,9 @@ class SteadyProfileSolver:
     ) -> Tuple[float, float]:
         """HEC-RAS n-value break point 方法计算分区输水能力 K。
 
-        当 n_segments 提供时，按 n 值变化点将分区切分为子区，
-        每个子区独立计算 K_i = (1/n_i)*A_i*R_i^(2/3)，K_zone = ΣK_i。
-        子区间的虚拟垂直分割面不计入湿周（Posey 1967 惯例）。
+        对每个 n-value 子区，先用 _find_wet_connected_segments 找出所有连通湿润
+        子段，各子段独立计算 K_i = (1/n_i)*A_i*R_i^(2/3)，K_zone = ΣK_i。
+        这与 HEC-RAS 对 LOB/ROB 内不连通水体的分段处理保持一致。
 
         Args:
             n: 单一 Manning n（n_segments 为 None 时使用）
@@ -374,16 +434,29 @@ class SteadyProfileSolver:
         Returns:
             (K_zone, A_zone)
         """
-        # 先计算整区面积
+        # 整区总面积（始终用于返回 A_zone，不受分段影响）
         A_total, P_total = self._segment_area_perimeter(
             stations, elevations, water_level, sta_min, sta_max)
 
-        if A_total <= 0.0 or P_total <= 0.0:
+        if A_total <= 0.0:
             return 0.0, 0.0
+
+        def _k_sub(seg_lo: float, seg_hi: float, seg_n: float) -> float:
+            """对单个 n-value 子区计算 K，内部处理不连续水面。"""
+            if seg_hi - seg_lo < 1e-6 or seg_n <= 0:
+                return 0.0
+            wet_segs = self._find_wet_connected_segments(
+                stations, elevations, water_level, seg_lo, seg_hi)
+            K_sub = 0.0
+            for ws_lo, ws_hi in wet_segs:
+                A_w, P_w = self._segment_area_perimeter(
+                    stations, elevations, water_level, ws_lo, ws_hi)
+                if A_w > 0.0 and P_w > 0.0:
+                    K_sub += (1.0 / seg_n) * A_w * (A_w / P_w) ** (2.0 / 3.0)
+            return K_sub
 
         # 如果有分段 Manning n，按 n-value break points 细分
         if n_segments and len(n_segments) >= 2:
-            # 筛选出落在 [sta_min, sta_max] 内的 n 分段
             breaks = []
             for sta, n_val in n_segments:
                 sta_f = float(sta)
@@ -392,9 +465,7 @@ class SteadyProfileSolver:
                     continue
                 if sta_min <= sta_f <= sta_max:
                     breaks.append((sta_f, n_f))
-            # 添加边界
             if not breaks or breaks[0][0] > sta_min + 0.01:
-                # 用第一个有效 n 覆盖左边界
                 first_n = n
                 for _, nv in n_segments:
                     if not np.isnan(float(nv)) and float(nv) > 0:
@@ -407,24 +478,15 @@ class SteadyProfileSolver:
             if len(breaks) >= 2:
                 K_zone = 0.0
                 for idx in range(len(breaks) - 1):
-                    seg_lo = breaks[idx][0]
-                    seg_hi = breaks[idx + 1][0]
-                    seg_n = breaks[idx][1]
-                    if seg_hi - seg_lo < 1e-6 or seg_n <= 0:
-                        continue
-                    A_s, P_s = self._segment_area_perimeter(
-                        stations, elevations, water_level, seg_lo, seg_hi)
-                    if A_s > 0.0 and P_s > 0.0:
-                        R_s = A_s / P_s
-                        K_s = (1.0 / seg_n) * A_s * R_s ** (2.0 / 3.0)
-                        K_zone += K_s
-
+                    K_zone += _k_sub(breaks[idx][0], breaks[idx + 1][0], breaks[idx][1])
                 if K_zone > 0.0:
                     return float(K_zone), float(A_total)
 
-        # 单一 n 值：整区计算
-        R = A_total / P_total
-        K = (1.0 / max(n, 0.001)) * A_total * R ** (2.0 / 3.0)
+        # 单一 n 值
+        K = _k_sub(sta_min, sta_max, max(n, 0.001))
+        if K <= 0.0 and P_total > 0.0:
+            # 回退：整区统一计算（不应发生）
+            K = (1.0 / max(n, 0.001)) * A_total * (A_total / P_total) ** (2.0 / 3.0)
         return float(K), float(A_total)
 
     def _resolve_effective_flow_limits(
@@ -1298,6 +1360,74 @@ class SteadyProfileSolver:
         # 3) 扣除桥墩面积并设置下限
         return float(max(min(A_full, float(A_bridge_face)) - A_pier, A_full * 0.05))
 
+    @staticmethod
+    def _arch_clipped_area(
+        water_level: float,
+        xs_stations: np.ndarray,
+        xs_elevations: np.ndarray,
+        lid_stations: np.ndarray,
+        lid_elevations_rel: np.ndarray,
+        lid_offset: float,
+        sta_left: float,
+        sta_right: float,
+    ) -> float:
+        """Compute arch-clipped flow area between bed and arch intrados (Lid Profile).
+
+        At each station x within [sta_left, sta_right]:
+            bed_elev(x)   = interpolated from XS profile (absolute)
+            lid_abs(x)    = interp(lid_stations, lid_elevations_rel, x) + lid_offset
+            eff_top(x)    = min(water_level, lid_abs(x))
+            depth(x)      = max(0, eff_top(x) - bed_elev(x))
+
+        Integrates depth over x using trapezoid rule.
+
+        Args:
+            water_level: Absolute WSE (m).
+            xs_stations: Station coords of approach XS profile (m).
+            xs_elevations: Absolute bed elevations (m).
+            lid_stations: Station coords of Lid Profile (m, same coord system).
+            lid_elevations_rel: Relative Lid bottom elevations (m), 0 = xs min elevation.
+            lid_offset: US approach XS min elevation (m); added to get absolute lid elev.
+            sta_left: Left bound of bridge arch opening (m, where lid > 0).
+            sta_right: Right bound of bridge arch opening (m, where lid > 0).
+
+        Returns:
+            Flow area (m²), >= 0.
+        """
+        if sta_right <= sta_left + 1e-6:
+            return 0.0
+
+        lid_elevations_abs = lid_elevations_rel + lid_offset
+
+        # Build merged station grid within [sta_left, sta_right]
+        xs_in = xs_stations[
+            (xs_stations >= sta_left - 1e-6) & (xs_stations <= sta_right + 1e-6)
+        ]
+        lid_in = lid_stations[
+            (lid_stations >= sta_left - 1e-6) & (lid_stations <= sta_right + 1e-6)
+        ]
+        all_stas = np.unique(np.concatenate([xs_in, lid_in, [sta_left, sta_right]]))
+        all_stas = np.sort(all_stas)
+        all_stas = all_stas[
+            (all_stas >= sta_left - 1e-9) & (all_stas <= sta_right + 1e-9)
+        ]
+        all_stas = np.clip(all_stas, sta_left, sta_right)
+
+        if len(all_stas) < 2:
+            return 0.0
+
+        # Interpolate bed and lid at merged stations
+        bed_at = np.interp(all_stas, xs_stations, xs_elevations)
+        lid_at = np.interp(all_stas, lid_stations, lid_elevations_abs)
+
+        # Effective top = water_level capped by arch intrados
+        eff_top = np.minimum(float(water_level), lid_at)
+        depth = np.maximum(0.0, eff_top - bed_at)
+
+        # Trapezoidal integration
+        area = float(np.trapz(depth, all_stas))
+        return max(area, 0.0)
+
     def _solve_bridge_momentum(
         self,
         Q: float,
@@ -1345,6 +1475,48 @@ class SteadyProfileSolver:
         deck_weir_len_cfg = float(bridge.get("deck_weir_length_m", 0.0))
         # 桥孔宽度（从 Lid Profile 提取）用于限制有效面积
         _opening_w = float(bridge.get("bridge_opening_width_m", 0.0))
+        # Arch Lid Profile 参数（用于 arch 桥有效面积截断）
+        _lid_offset = float(bridge.get("lid_offset_m", 0.0))
+        _op_sta_raw = bridge.get("bridge_opening_stations", [])
+        _op_elev_raw = bridge.get("bridge_opening_elevations", [])
+        # lid_offset_m 存在于 bridge 中即表示有 Lid Profile（arch 桥），即使 offset=0 也应处理
+        _has_arch_lid = (
+            len(_op_sta_raw) > 2
+            and len(_op_elev_raw) == len(_op_sta_raw)
+            and "lid_offset_m" in bridge
+        )
+        if _has_arch_lid:
+            _op_sta_arr = np.asarray(_op_sta_raw, dtype=float)
+            _op_elev_arr = np.asarray(_op_elev_raw, dtype=float)
+            # Arch opening bounds: stations where lid elevation > 0 (above ground)
+            _lid_pos_mask = _op_elev_arr > 1e-6
+            if _lid_pos_mask.any():
+                _arch_sta_left = float(_op_sta_arr[_lid_pos_mask][0])
+                _arch_sta_right = float(_op_sta_arr[_lid_pos_mask][-1])
+            else:
+                _arch_sta_left = float(_op_sta_arr[0])
+                _arch_sta_right = float(_op_sta_arr[-1])
+
+        def _arch_area_at(water_level: float, xs_idx: int, A_full: float, A_pier: float) -> float:
+            """Return arch-clipped effective area; falls back to A_full - A_pier if no Lid data."""
+            if not _has_arch_lid:
+                return float(max(A_full - A_pier, A_full * 0.05))
+            xs = self._xs_array[xs_idx] if self._xs_array and xs_idx < len(self._xs_array) else None
+            if xs is None or not hasattr(xs, "distances") or not hasattr(xs, "elevations"):
+                return float(max(A_full - A_pier, A_full * 0.05))
+            xs_stas = np.asarray(xs.distances, dtype=float)
+            xs_elevs = np.asarray(xs.elevations, dtype=float)
+            A_arch = self._arch_clipped_area(
+                water_level=float(water_level),
+                xs_stations=xs_stas,
+                xs_elevations=xs_elevs,
+                lid_stations=_op_sta_arr,
+                lid_elevations_rel=_op_elev_arr,
+                lid_offset=_lid_offset,
+                sta_left=_arch_sta_left,
+                sta_right=_arch_sta_right,
+            )
+            return float(max(A_arch - A_pier, A_arch * 0.05))
 
         n_br = (
             self._manning_ns[us_xs_index]
@@ -1376,6 +1548,9 @@ class SteadyProfileSolver:
             A_full=A2,
             A_pier=A_pier2,
         )
+        # Arch 桥：用 Lid Profile 截断有效面积（覆盖 _bridge_face_area 的结果）
+        if _has_arch_lid:
+            A2_eff = _arch_area_at(W_downstream, ds_xs_index, A2, A_pier2)
         # 壅水判断：使用 EGL (能量梯度线) 而非 WSE
         V2_temp = Q_under_ds / max(A2_eff, 1e-9)
         EGL2 = W_downstream + V2_temp ** 2 / (2.0 * self.g)
@@ -1438,6 +1613,9 @@ class SteadyProfileSolver:
                 A_full=A3,
                 A_pier=A_pier3,
             )
+            # Arch 桥：用 Lid Profile 截断有效面积
+            if _has_arch_lid:
+                A3_eff = _arch_area_at(W3_trial, us_xs_index, A3, A_pier3)
             # 壅水判断：使用 EGL (能量梯度线) 而非 WSE
             V3_temp = Q_under / max(A3_eff, 1e-9)
             EGL3 = W3_trial + V3_temp ** 2 / (2.0 * self.g)
@@ -1489,6 +1667,9 @@ class SteadyProfileSolver:
                 A_full=A3p,
                 A_pier=A_pier3p,
             )
+            # Arch 桥：用 Lid Profile 截断有效面积
+            if _has_arch_lid:
+                A3p_eff = _arch_area_at(W3p, us_xs_index, A3p, A_pier3p)
             # 壅水判断：使用 EGL (能量梯度线) 而非 WSE
             V3p_temp = Q_under_p / max(A3p_eff, 1e-9)
             EGL3p = W3p + V3p_temp ** 2 / (2.0 * self.g)
@@ -1563,20 +1744,25 @@ class SteadyProfileSolver:
             else self.n
         )
 
-        # ── 桥梁 opening 轮廓（若有）用于构造 NaturalSection ──────────────────
-        _op_sta = bridge.get("bridge_opening_stations", [])
-        _op_elev = bridge.get("bridge_opening_elevations", [])
-        _bridge_ns = None
-        if len(_op_sta) > 2 and len(_op_elev) == len(_op_sta):
-            try:
-                from physics.cross_section import NaturalSection
-                _bridge_ns = NaturalSection(
-                    "bridge_opening",
-                    elevations=np.array(_op_elev, dtype=float),
-                    distances=np.array(_op_sta, dtype=float),
-                )
-            except Exception:
-                _bridge_ns = None
+        # ── 桥梁 opening 轮廓（arch Lid Profile，用于有效面积截断）──────────────
+        _lid_offset_en = float(bridge.get("lid_offset_m", 0.0))
+        _op_sta_en_raw = bridge.get("bridge_opening_stations", [])
+        _op_elev_en_raw = bridge.get("bridge_opening_elevations", [])
+        _has_arch_lid_en = (
+            len(_op_sta_en_raw) > 2
+            and len(_op_elev_en_raw) == len(_op_sta_en_raw)
+            and "lid_offset_m" in bridge
+        )
+        if _has_arch_lid_en:
+            _op_sta_en = np.asarray(_op_sta_en_raw, dtype=float)
+            _op_elev_en = np.asarray(_op_elev_en_raw, dtype=float)
+            _lid_pos_mask_en = _op_elev_en > 1e-6
+            if _lid_pos_mask_en.any():
+                _arch_left_en = float(_op_sta_en[_lid_pos_mask_en][0])
+                _arch_right_en = float(_op_sta_en[_lid_pos_mask_en][-1])
+            else:
+                _arch_left_en = float(_op_sta_en[0])
+                _arch_right_en = float(_op_sta_en[-1])
 
         def _eff_area(W_trial: float, xs_idx: int, bed_elev: float, Q_local: float = Q) -> tuple[float, float, float]:
             """Return (A_eff, P_wet, alpha) at WSE W_trial for given XS.
@@ -1586,12 +1772,25 @@ class SteadyProfileSolver:
             A, P_wet, _R, T = self._get_geometry(h, xs_idx)
             # 桥墩面积扣减
             A_pier = pier_w_total * min(h, pier_height)
-            if _bridge_ns is not None:
-                # 用 NaturalSection 计算桥内净过水面积（相对 NaturalSection 最低点的水深）
-                _op_depth = max(W_trial - _bridge_ns.min_elevation, 0.0)
-                _geom = _bridge_ns.compute_geometry(_op_depth)
-                A_open = max(_geom.area - A_pier, _geom.area * 0.3)
-                P_open = max(_geom.perimeter, 1e-6)
+            if _has_arch_lid_en:
+                # Arch 桥：用 Lid Profile 截断有效面积（正确的绝对高程积分）
+                _xs_en = self._xs_array[xs_idx] if self._xs_array and xs_idx < len(self._xs_array) else None
+                if _xs_en is not None and hasattr(_xs_en, "distances") and hasattr(_xs_en, "elevations"):
+                    _A_arch = self._arch_clipped_area(
+                        water_level=float(W_trial),
+                        xs_stations=np.asarray(_xs_en.distances, dtype=float),
+                        xs_elevations=np.asarray(_xs_en.elevations, dtype=float),
+                        lid_stations=_op_sta_en,
+                        lid_elevations_rel=_op_elev_en,
+                        lid_offset=_lid_offset_en,
+                        sta_left=_arch_left_en,
+                        sta_right=_arch_right_en,
+                    )
+                    A_open = max(_A_arch - A_pier, _A_arch * 0.05)
+                    P_open = max(P_wet, 1e-6)
+                else:
+                    A_open = max(A - A_pier, A * 0.05)
+                    P_open = P_wet
             else:
                 # 桥面板压顶面积扣减（使用 EGL 判断）
                 # 先计算初步的有效面积（仅扣除桥墩）
