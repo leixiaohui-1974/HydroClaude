@@ -3239,12 +3239,6 @@
       }
     ]
   },
-  "ice_cover": {
-    "thickness_ft": 0.5,
-    "thickness_m": 0.1524,
-    "manning_n": 0.03,
-    "specific_gravity": 0.916
-  },
   "schema_version": "2.0",
   "boundary_conditions": [
     {
@@ -3275,5 +3269,11 @@
         7.390696960512
       ]
     }
-  ]
+  ],
+  "ice_cover": {
+    "thickness_ft": 0.5,
+    "thickness_m": 0.1524,
+    "manning_n": 0.06,
+    "specific_gravity": 0.916
+  }
 }
