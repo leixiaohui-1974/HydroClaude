@@ -1308,8 +1308,33 @@ class SteadyProfileSolver:
 
         S0_bridge = (bed_us - bed_ds) / max(L_bridge, 0.1)
 
+        # 压力流检查 (HEC-RAS TRM: High Flow Computations)
+        # 当上游 WSE > 低弦 deck_elev 时，用压力流方程提供初始估计
+        _sub_inlet_cd = float(_coefs.get("submerged_inlet_cd",
+                              _coefs.get("Submerged Inlet Cd", 0.5)))
+        _sub_io_cd = float(_coefs.get("submerged_inlet_outlet_cd",
+                           _coefs.get("Submerged Inlet-Outlet Cd", 0.8)))
+        _A_opening = deck_weir_len_cfg * max(deck_elev - bed_us, 0.1) if deck_elev < 1e8 else 0.0
+
         W3_trial = W_downstream + max(0.05, abs(bed_us - bed_ds) + 0.05)
         W3_trial = max(W3_trial, bed_us + 0.01)
+
+        # 压力流初始化：如果低流量结果的 EGL > deck，提高初始猜测
+        if deck_elev < 1e8 and _A_opening > 0:
+            _h_init = max(W3_trial - bed_us, 0.01)
+            _A_init = max(self._get_geometry(_h_init, us_xs_index)[0], 1e-9)
+            _V_init = Q / _A_init
+            _EGL_init = W3_trial + _V_init ** 2 / (2.0 * self.g)
+            if _EGL_init > deck_elev:
+                # 压力流：Q = Cd * A_opening * sqrt(2g * H_eff)
+                _ds_submerged = W_downstream > deck_elev
+                _Cd_press = _sub_io_cd if _ds_submerged else _sub_inlet_cd
+                if _Cd_press > 0 and _A_opening > 0:
+                    # H_eff = (Q / (Cd * A))^2 / (2g)
+                    _H_eff = (Q / (_Cd_press * _A_opening)) ** 2 / (2.0 * self.g)
+                    # WSE_us ≈ WSE_ds + H_eff (crude estimate for pressure flow)
+                    W3_pressure = W_downstream + _H_eff
+                    W3_trial = max(W3_trial, W3_pressure)
 
         for _it in range(40):
             h3 = max(W3_trial - bed_us, 0.01)
