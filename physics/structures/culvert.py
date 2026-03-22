@@ -72,15 +72,15 @@ BARREL_MATERIALS: dict[str, MaterialProperties] = {
 INLET_COEFF_TABLE: dict[tuple[str, str, str], InletCoefficients] = {
     # ── 混凝土圆管（HDS-5 Table 5-1）────────────────────────────────────────
     ("circular", "concrete", "projecting"):
-        InletCoefficients(K=0.0098, M=2.0, c=0.0398, Y=0.67),
+        InletCoefficients(K=0.0340, M=1.5, c=0.0553, Y=0.54),  # HDS-5 Chart 1
     ("circular", "concrete", "headwall_square_edge"):
-        InletCoefficients(K=0.0078, M=2.0, c=0.0292, Y=0.74),
+        InletCoefficients(K=0.0098, M=2.0, c=0.0398, Y=0.67),  # HDS-5 Chart 1
     ("circular", "concrete", "headwall_groove_end"):
-        InletCoefficients(K=0.0018, M=2.5, c=0.0243, Y=0.83),
+        InletCoefficients(K=0.0018, M=2.0, c=0.0292, Y=0.74),  # HDS-5 Chart 1
     ("circular", "concrete", "mitered_to_slope"):
-        InletCoefficients(K=0.0045, M=2.0, c=0.0317, Y=0.69),
+        InletCoefficients(K=0.0210, M=1.33, c=0.0463, Y=0.75),  # HDS-5 Chart 1
     ("circular", "concrete", "beveled_ring"):
-        InletCoefficients(K=0.0018, M=2.5, c=0.0243, Y=0.83),
+        InletCoefficients(K=0.0018, M=2.5, c=0.0300, Y=0.74),  # HDS-5 Chart 1
 
     # 混凝土圆管旧键兼容（保留历史入口命名）
     ("circular", "concrete", "groove_end_projecting"):
@@ -669,18 +669,26 @@ class Culvert:
             return 0.0
 
         coeffs = self._lookup_inlet_coeffs()
-        A = max(self._full_area(), 1e-9)
-        D = max(self._rise(), 1e-9)
+        A_si = max(self._full_area(), 1e-9)  # m²
+        D_si = max(self._rise(), 1e-9)       # m
         S = float(self.geom.slope)
 
-        q_star = q / (A * np.sqrt(D))
+        # HDS-5 的 K/M/c/Y 系数是按英制 (cfs, ft) 标定的
+        # 必须将 Q/A/D 转成英制计算 q_star，再将结果 HW 转回 SI
+        FT = 0.3048
+        CFS = 0.0283168
+        Q_cfs = q / CFS           # m³/s → cfs
+        A_ft2 = A_si / FT ** 2    # m² → ft²
+        D_ft = D_si / FT          # m → ft
+
+        q_star = Q_cfs / (A_ft2 * np.sqrt(D_ft))  # 英制无量纲流量参数
         slope_term = coeffs['slope_coef'] * S
         base_term = slope_term - 0.5 * S
 
         hw_d_form1 = coeffs['K'] * (q_star ** coeffs['M']) + base_term
         hw_d_form2 = coeffs['c'] * (q_star ** 2.0) + coeffs['Y'] + base_term
 
-        # 在 HW/D 约 1.5 附近平滑切换，避免分段突变
+        # 在 HW/D 约 1.5 附近平滑切换
         trans_lo = 1.4
         trans_hi = 1.6
         if hw_d_form1 <= trans_lo:
@@ -691,7 +699,9 @@ class Culvert:
             alpha = (hw_d_form1 - trans_lo) / (trans_hi - trans_lo)
             hw_d = (1.0 - alpha) * hw_d_form1 + alpha * hw_d_form2
 
-        return max(0.0, hw_d * D)
+        # HW/D 是无量纲比，HW = (HW/D) × D_ft → ft → m
+        HW_ft = max(0.0, hw_d * D_ft)
+        return HW_ft * FT  # ft → m
 
     def _critical_depth(self, q_per_barrel: float) -> float:
         """用 Newton 迭代求解临界水深 y_c"""
