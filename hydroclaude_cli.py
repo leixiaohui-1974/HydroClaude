@@ -487,6 +487,8 @@ def _run_profile(  # noqa: C901
                             "height_m": gi.get("height_m", gi.get("height_ft", 10) * LF),
                             "invert_m": gi.get("invert_m", gi.get("invert_ft", 0) * LF),
                             "sluice_coef": gi.get("sluice_coef", 0.8),
+                            "gate_weir_coef": gi.get("gate_weir_coef",
+                                                     gi.get("weir_coef_gate", 3.1)),
                         })
             # 确定 us_xs_index（WSE 跳变最大位置）
             max_jump = 0

@@ -1139,15 +1139,36 @@ class SteadyProfileSolver:
                 # 淹没比
                 SB = h_ds_gate / max(H, 1e-9)
 
-                # 自由/淹没判定
-                if h_ds_gate < opening_m:
-                    # 自由出流
-                    dH = max(H - opening_m / 2.0, 0.0)
-                else:
-                    # 淹没出流
-                    dH = max(H_o, 0.0)
+                # HEC-RAS TRM: H/B 判定流态
+                B = opening_m
+                # 全开闸门（opening >= height）不适用 H/B 堰流过渡
+                _gate_fully_open = (opening_m >= height_m * 0.99)
+                H_over_B = H / max(B, 1e-9) if (B > 0 and not _gate_fully_open) else 99.0
+                # 闸门自身的堰流系数（英制）
+                gate_wc_us = float(gate.get("gate_weir_coef", 3.1))
+                gate_wc_si = gate_wc_us * lf ** 0.5
+                L_gate = width_m * n_open
 
-                Q_gate = Cg * A_gate * np.sqrt(max(2.0 * g * dH, 0.0))
+                if H_over_B <= 1.0:
+                    # 堰流模式（水位低于闸门开度顶部）
+                    Q_gate = gate_wc_si * L_gate * H ** 1.5
+                elif H_over_B < 1.25:
+                    # 堰流→孔口过渡
+                    Q_weir_g = gate_wc_si * L_gate * H ** 1.5
+                    Q_orifice_g = Cg * A_gate * np.sqrt(max(2.0 * g * H, 0.0))
+                    frac = (H_over_B - 1.0) / 0.25
+                    Q_gate = Q_weir_g * (1 - frac) + Q_orifice_g * frac
+                else:
+                    # 孔口流 + 淹没过渡
+                    if SB < 0.67:
+                        Q_gate = Cg * A_gate * np.sqrt(max(2.0 * g * H, 0.0))
+                    elif SB > 0.80:
+                        Q_gate = Cg * A_gate * np.sqrt(max(2.0 * g * H_o, 0.0))
+                    else:
+                        Q_free = Cg * A_gate * np.sqrt(max(2.0 * g * H, 0.0))
+                        Q_subm = Cg * A_gate * np.sqrt(max(2.0 * g * H_o, 0.0))
+                        frac = (SB - 0.67) / 0.13
+                        Q_gate = Q_free * (1 - frac) + Q_subm * frac
 
                 Q_total += Q_gate
 

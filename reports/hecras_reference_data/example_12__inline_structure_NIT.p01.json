@@ -7784,7 +7784,8 @@
         "invert_ft": 0.0,
         "invert_m": 0.0,
         "sluice_coef": 0.800000011920929,
-        "n_openings_per_group": 5
+        "n_openings_per_group": 5,
+        "gate_weir_coef": 3.91
       },
       {
         "name": "Center Group",
@@ -7794,7 +7795,8 @@
         "invert_ft": 0.0,
         "invert_m": 0.0,
         "sluice_coef": 0.800000011920929,
-        "n_openings_per_group": 5
+        "n_openings_per_group": 5,
+        "gate_weir_coef": 3.91
       },
       {
         "name": "Right Group",
@@ -7804,7 +7806,8 @@
         "invert_ft": 0.0,
         "invert_m": 0.0,
         "sluice_coef": 0.800000011920929,
-        "n_openings_per_group": 5
+        "n_openings_per_group": 5,
+        "gate_weir_coef": 3.91
       }
     ],
     "openings_per_profile": [
