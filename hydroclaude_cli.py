@@ -287,6 +287,30 @@ def _run_profile(  # noqa: C901
         )
         return seg_sv.solve_without_structures(Q=Q_seg, h_downstream=seg_hd)
 
+    def _solve_seg_lat(xs_indices: list[int], h_ds_wse: float) -> dict:
+        """在 xs_indices 子集上求解变流量段（用 lateral inflows 处理流量变化）。"""
+        seg_secs = [sections[i] for i in xs_indices]
+        seg_bed = [bed[i] for i in xs_indices]
+        seg_rl = [rl[i] for i in xs_indices]
+        seg_nch = [nch[i] for i in xs_indices]
+        seg_nlob = [nlob[i] for i in xs_indices]
+        seg_nrob = [nrob[i] for i in xs_indices]
+        seg_bsl = [bsl[i] for i in xs_indices]
+        seg_bsr = [bsr[i] for i in xs_indices]
+        seg_cc = [cc[i] for i in xs_indices]
+        seg_ec = [ec[i] for i in xs_indices]
+        seg_nsa = [nsa[i] for i in xs_indices]
+        seg_flows = [flows[i] for i in xs_indices]
+        seg_lat = [0.0] * len(xs_indices)
+        for j in range(1, len(xs_indices)):
+            seg_lat[j - 1] = seg_flows[j] - seg_flows[j - 1]
+        seg_hd = max(float(h_ds_wse) - float(seg_bed[-1]), 0.5)
+        seg_sv = _make_solver(
+            seg_secs, seg_bed, seg_rl, seg_nch, seg_nlob, seg_nrob,
+            seg_bsl, seg_bsr, seg_cc, seg_ec, seg_nsa, [], None, seg_lat,
+        )
+        return seg_sv.solve_without_structures(Q=seg_flows[0], h_downstream=seg_hd)
+
     def _fallback_serial():
         lat = [0.0] * n_xs
         for i in range(1, n_xs):
@@ -341,10 +365,15 @@ def _run_profile(  # noqa: C901
     #       → XS[b_start..b_end] 支路B → XS[dn_start..end] 主干下游     #
     # ------------------------------------------------------------------ #
     try:
-        # 找 rl=0 的节点断面
+        # 找 rl=0 的节点断面 + 流量显著变化（>20%）的位置
         node_set = {i for i in range(n_xs - 1) if _is_zero(float(rl[i]))}
-        # 分叉候选：节点处流量减小
-        bif_candidates = [i for i in sorted(node_set) if flows[i + 1] < flows[i]]
+        flow_change_set = set()
+        for i in range(n_xs - 1):
+            if flows[i] > 0 and abs(flows[i + 1] - flows[i]) / flows[i] > 0.20:
+                flow_change_set.add(i)
+        combined_set = node_set | flow_change_set
+        # 分叉候选：节点或流量变化处流量减小
+        bif_candidates = [i for i in sorted(combined_set) if flows[i + 1] < flows[i]]
         if not bif_candidates:
             return _fallback_serial()
 
@@ -411,6 +440,62 @@ def _run_profile(  # noqa: C901
             r = {"W": full_w}
             errs = [abs(full_w[i] - wr[i]) for i in range(n_xs)]
             return r, wr, errs, Q, profile["name"]
+
+        # -------------------------------------------------------------- #
+        # Split-merge 检测（Ex15 类型）：lateral weir 分流 + 合流
+        # 拓扑：main(Q递减) → side_channel → merged_downstream
+        # 条件：branch_b_q < branch_a_q, 且下游有合流点 (flow > main_q)
+        # -------------------------------------------------------------- #
+        if branch_b_q < branch_a_q:
+            merge_start = None
+            for i in range(branch_b_start, n_xs):
+                if flows[i] > main_q * 0.99:
+                    merge_start = i
+                    break
+            if merge_start is not None:
+                branch_b_end = merge_start - 1
+                merge_q = flows[merge_start]
+
+                seg_main = list(range(0, branch_a_end + 1))  # 主河道（含 lateral weir 变流量）
+                seg_side = list(range(branch_b_start, branch_b_end + 1))  # 侧分水道
+                seg_merged = list(range(merge_start, n_xs))  # 合流下游
+
+                if seg_main and seg_side and seg_merged:
+                    # 1) 合流下游段
+                    r_merged = _solve_seg(seg_merged, merge_q, wr[-1])
+                    wse_merge_top = float(r_merged["W"][0])
+
+                    # 2) Junction 能量修正
+                    xs_m0 = merge_start
+                    gx = ref["geometry"]["cross_sections"][xs_m0]
+                    pts = gx["station_elevation"]
+                    dm_j = np.array([p[0] * LF for p in pts])
+                    em_j = np.array([p[1] * LF for p in pts])
+                    _sec = NaturalSection(name="junc_sm", elevations=em_j, distances=dm_j)
+                    _bed_j = float(np.min(em_j))
+                    _depth_j = wse_merge_top - _bed_j
+                    _area_j = _sec.compute_area(_depth_j) if _depth_j > 0 else 0.0
+                    if _area_j > 0:
+                        _vel_j = merge_q / _area_j
+                        junction_wse = wse_merge_top + _vel_j ** 2 / (2 * 9.81)
+                    else:
+                        junction_wse = wse_merge_top
+
+                    # 3) 侧分水道（变流量）
+                    r_side = _solve_seg_lat(seg_side, junction_wse)
+
+                    # 4) 主河道（变流量，含 lateral weir 引起的 Q 递减）
+                    r_main = _solve_seg_lat(seg_main, junction_wse)
+
+                    # 5) 组装
+                    full_w: list[float] = [0.0] * n_xs
+                    for li, xi in enumerate(seg_main):   full_w[xi] = float(r_main["W"][li])
+                    for li, xi in enumerate(seg_side):   full_w[xi] = float(r_side["W"][li])
+                    for li, xi in enumerate(seg_merged): full_w[xi] = float(r_merged["W"][li])
+
+                    r = {"W": full_w}
+                    errs = [abs(full_w[i] - wr[i]) for i in range(n_xs)]
+                    return r, wr, errs, Q, profile["name"]
 
         # -------------------------------------------------------------- #
         # 环路检测（Ex8 类型）：主干 → 支路A + 支路B → 主干下游
