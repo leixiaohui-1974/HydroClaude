@@ -73,6 +73,31 @@ def _build_from_ref(ref: dict):
         ec.append(float(xg.get("expansion", 0.3)))
     ifa = ref.get("ineffective_areas", [])
 
+    # 桥梁参数：从 geometry.bridges 提取，扁平化 us_xs_index
+    _bridges_parsed = []
+    for _br in ref.get("geometry", {}).get("bridges", []):
+        _csr = _br.get("cross_section_reference", {})
+        _us_idx = _csr.get("us_xs_index")
+        _ds_idx = _csr.get("ds_xs_index")
+        if _us_idx is None:
+            continue
+        _deck = _br.get("deck_geometry", {})
+        _piers = _br.get("piers", {})
+        _weir = _br.get("weir_parameters", {})
+        _bridges_parsed.append({
+            "us_xs_index": int(_us_idx),
+            "ds_xs_index": int(_ds_idx) if _ds_idx is not None else int(_us_idx) + 1,
+            "bridge_length_m": float(_csr.get("upstream_distance_ft", 30)) * LF,
+            "deck_elevation_m": float(_deck.get("low_chord_elev_ft", 1e9)) * LF,
+            "high_chord_m": float(_deck.get("high_chord_elev_ft", 1e9)) * LF,
+            "deck_weir_length_m": float(_deck.get("bridge_opening_width_ft", 0)) * LF,
+            "deck_weir_coef": float(_weir.get("weir_coefficient", 1.70)),
+            "total_pier_width_m": float(_piers.get("total_pier_width_ft", 0)) * LF,
+            "n_piers": int(_piers.get("pier_count", 0)),
+            "pier_loss_coef": 0.0,  # HEC-RAS Energy Method default
+            "contraction_coef": 0.1,
+        })
+
     # ----------------------------------------
     # 涵洞位置映射：用 profile 0 的 WSE 跳变检测 us_xs_index
     # 策略：
@@ -216,16 +241,17 @@ def _build_from_ref(ref: dict):
             "entrance_loss_coef": cv.get("entrance_loss_coef", 0.5),
         })
 
-    return sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts_param, n_xs
+    return sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts_param, _bridges_parsed, n_xs
 
 
 def _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts, lat,
-                  ice_thickness=None, n_ice=None):
+                  bridges=None, ice_thickness=None, n_ice=None):
     sv = SteadyProfileSolver(
         length=max(sum(rl), 1), cross_sections=sections, bed_elevations=bed,
         reach_lengths=rl, manning_ns=nch, manning_n_lob=nlob, manning_n_rob=nrob,
         bank_stations=list(zip(bsl, bsr)), contraction_coefs=cc, expansion_coefs=ec,
         lateral_inflows=lat, culverts=culverts if culverts else None,
+        bridges=bridges if bridges else None,
         ice_thickness=ice_thickness, n_ice=n_ice)
     sv._manning_n_segments = nsa
     sv._ineffective_areas = ifa
@@ -248,6 +274,7 @@ def _run_profile(  # noqa: C901
     nsa: list,
     ifa: list,
     culverts: list,
+    bridges: list,
     n_xs: int,
 ):
     """工况求解。自动检测环状河网并分段求解；普通河道退回串联求解。
@@ -329,7 +356,7 @@ def _run_profile(  # noqa: C901
         for i in range(1, n_xs):
             lat[i - 1] = flows[i] - flows[i - 1]
         sv = _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts, lat,
-                          ice_thickness=_ice_t_arr, n_ice=_ice_n_arr)
+                          bridges=bridges, ice_thickness=_ice_t_arr, n_ice=_ice_n_arr)
 
         # Inline Structure（闸门+堰）：从参考数据提取并传入
         inline_data = ref.get("inline_structure")
