@@ -976,5 +976,73 @@
         ]
       }
     ]
-  }
+  },
+  "ineffective_areas": [
+    [],
+    [],
+    [],
+    [],
+    [
+      {
+        "left_sta_ft": 0.0,
+        "right_sta_ft": 865.4,
+        "elevation_ft": 22.12,
+        "permanent": 0,
+        "left_sta_m": 0.0,
+        "right_sta_m": 263.7739,
+        "elevation_m": 6.7422
+      },
+      {
+        "left_sta_ft": 1515.4,
+        "right_sta_ft": 2600.0,
+        "elevation_ft": 22.12,
+        "permanent": 0,
+        "left_sta_m": 461.8939,
+        "right_sta_m": 792.48,
+        "elevation_m": 6.7422
+      }
+    ],
+    [
+      {
+        "left_sta_ft": 0.0,
+        "right_sta_ft": 875.0,
+        "elevation_ft": 21.98,
+        "permanent": 0,
+        "left_sta_m": 0.0,
+        "right_sta_m": 266.7,
+        "elevation_m": 6.6995
+      },
+      {
+        "left_sta_ft": 1500.0,
+        "right_sta_ft": 2600.0,
+        "elevation_ft": 21.98,
+        "permanent": 0,
+        "left_sta_m": 457.2,
+        "right_sta_m": 792.48,
+        "elevation_m": 6.6995
+      }
+    ],
+    [
+      {
+        "left_sta_ft": 0.0,
+        "right_sta_ft": 400.0,
+        "elevation_ft": 14.0,
+        "permanent": 0,
+        "left_sta_m": 0.0,
+        "right_sta_m": 121.92,
+        "elevation_m": 4.2672
+      },
+      {
+        "left_sta_ft": 2100.0,
+        "right_sta_ft": 2490.0,
+        "elevation_ft": 14.0,
+        "permanent": 0,
+        "left_sta_m": 640.08,
+        "right_sta_m": 758.952,
+        "elevation_m": 4.2672
+      }
+    ],
+    [],
+    []
+  ]
 }

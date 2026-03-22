@@ -4232,5 +4232,96 @@
       "us_invert_m": 64.52615906982422,
       "ds_invert_m": 64.49568186035157
     }
+  ],
+  "ineffective_areas": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      {
+        "left_sta_ft": 0.0,
+        "right_sta_ft": 177.0,
+        "elevation_ft": 216.4,
+        "permanent": 0,
+        "left_sta_m": 0.0,
+        "right_sta_m": 53.9496,
+        "elevation_m": 65.9587
+      },
+      {
+        "left_sta_ft": 303.0,
+        "right_sta_ft": 420.0,
+        "elevation_ft": 216.4,
+        "permanent": 0,
+        "left_sta_m": 92.3544,
+        "right_sta_m": 128.016,
+        "elevation_m": 65.9587
+      },
+      {
+        "left_sta_ft": 677.0,
+        "right_sta_ft": 930.0,
+        "elevation_ft": 216.4,
+        "permanent": 0,
+        "left_sta_m": 206.3496,
+        "right_sta_m": 283.464,
+        "elevation_m": 65.9587
+      },
+      {
+        "left_sta_ft": 1270.0,
+        "right_sta_ft": 1850.0,
+        "elevation_ft": 216.4,
+        "permanent": 0,
+        "left_sta_m": 387.096,
+        "right_sta_m": 563.88,
+        "elevation_m": 65.9587
+      }
+    ],
+    [
+      {
+        "left_sta_ft": 0.0,
+        "right_sta_ft": 177.0,
+        "elevation_ft": 216.0,
+        "permanent": 0,
+        "left_sta_m": 0.0,
+        "right_sta_m": 53.9496,
+        "elevation_m": 65.8368
+      },
+      {
+        "left_sta_ft": 303.0,
+        "right_sta_ft": 420.0,
+        "elevation_ft": 216.0,
+        "permanent": 0,
+        "left_sta_m": 92.3544,
+        "right_sta_m": 128.016,
+        "elevation_m": 65.8368
+      },
+      {
+        "left_sta_ft": 677.0,
+        "right_sta_ft": 930.0,
+        "elevation_ft": 216.0,
+        "permanent": 0,
+        "left_sta_m": 206.3496,
+        "right_sta_m": 283.464,
+        "elevation_m": 65.8368
+      },
+      {
+        "left_sta_ft": 1270.0,
+        "right_sta_ft": 1850.0,
+        "elevation_ft": 216.0,
+        "permanent": 0,
+        "left_sta_m": 387.096,
+        "right_sta_m": 563.88,
+        "elevation_m": 65.8368
+      }
+    ],
+    [],
+    [],
+    [],
+    [],
+    [],
+    []
   ]
 }

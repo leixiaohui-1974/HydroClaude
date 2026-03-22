@@ -7660,5 +7660,80 @@
         ]
       }
     ]
-  }
+  },
+  "ineffective_areas": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      {
+        "left_sta_ft": 0.0,
+        "right_sta_ft": 185.0,
+        "elevation_ft": 9.5,
+        "permanent": 0,
+        "left_sta_m": 0.0,
+        "right_sta_m": 56.388,
+        "elevation_m": 2.8956
+      },
+      {
+        "left_sta_ft": 745.0,
+        "right_sta_ft": 818.0,
+        "elevation_ft": 13.0,
+        "permanent": 0,
+        "left_sta_m": 227.076,
+        "right_sta_m": 249.3264,
+        "elevation_m": 3.9624
+      }
+    ],
+    [
+      {
+        "left_sta_ft": 0.0,
+        "right_sta_ft": 185.0,
+        "elevation_ft": 9.5,
+        "permanent": 0,
+        "left_sta_m": 0.0,
+        "right_sta_m": 56.388,
+        "elevation_m": 2.8956
+      },
+      {
+        "left_sta_ft": 745.0,
+        "right_sta_ft": 831.0,
+        "elevation_ft": 13.5,
+        "permanent": 0,
+        "left_sta_m": 227.076,
+        "right_sta_m": 253.2888,
+        "elevation_m": 4.1148
+      }
+    ],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    []
+  ]
 }

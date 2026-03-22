@@ -528,6 +528,31 @@ class SteadyProfileSolver:
         if K_total <= 0.0 or A_total <= 0.0:
             return _fallback()
 
+        # Ineffective Flow Area 扣除（HEC-RAS Hydraulic Reference Manual）
+        # 当 WSE < trigger elevation 时，IFA 区段不参与有效过流
+        if self._ineffective_areas and station_index < len(self._ineffective_areas):
+            ifa_blocks = self._ineffective_areas[station_index]
+            if ifa_blocks:
+                A_ineff = 0.0
+                for blk in ifa_blocks:
+                    ifa_left = float(blk.get('left_sta_m', blk.get('sta_l', 0)))
+                    ifa_right = float(blk.get('right_sta_m', blk.get('sta_r', 0)))
+                    ifa_elev = float(blk.get('elevation_m', blk.get('elev', 1e9)))
+                    # 当水位低于触发高程时，该区域无效
+                    if water_level < ifa_elev:
+                        A_blk, _ = self._segment_area_perimeter(
+                            stations_arr, elevations_arr, water_level,
+                            ifa_left, ifa_right)
+                        A_ineff += A_blk
+                if A_ineff > 0.0 and A_ineff < A_total * 0.9:
+                    # IFA：K 按有效面积比调整
+                    # K = (1/n)*A*R^(2/3), R = A/P, P 不变
+                    # K_eff/K = (A_eff/A)^(5/3) 当 P 不变
+                    A_eff = A_total - A_ineff
+                    ratio = A_eff / A_total
+                    K_total *= ratio ** (5.0 / 3.0)
+                    A_total = A_eff
+
         sum_k3_a2 = 0.0
         for K_i, A_i in ((K_lob, A_lob), (K_ch, A_ch), (K_rob, A_rob)):
             if K_i > 0.0 and A_i > 0.0:

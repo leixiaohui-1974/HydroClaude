@@ -7570,5 +7570,239 @@
         ]
       }
     ]
-  }
+  },
+  "ineffective_areas": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      {
+        "left_sta_ft": 0.0,
+        "right_sta_ft": 56.5,
+        "elevation_ft": 22.5,
+        "permanent": 0,
+        "left_sta_m": 0.0,
+        "right_sta_m": 17.2212,
+        "elevation_m": 6.858
+      },
+      {
+        "left_sta_ft": 93.2,
+        "right_sta_ft": 150.0,
+        "elevation_ft": 22.5,
+        "permanent": 0,
+        "left_sta_m": 28.4074,
+        "right_sta_m": 45.72,
+        "elevation_m": 6.858
+      }
+    ],
+    [
+      {
+        "left_sta_ft": 0.0,
+        "right_sta_ft": 56.5,
+        "elevation_ft": 22.5,
+        "permanent": 0,
+        "left_sta_m": 0.0,
+        "right_sta_m": 17.2212,
+        "elevation_m": 6.858
+      },
+      {
+        "left_sta_ft": 93.2,
+        "right_sta_ft": 150.0,
+        "elevation_ft": 22.5,
+        "permanent": 0,
+        "left_sta_m": 28.4074,
+        "right_sta_m": 45.72,
+        "elevation_m": 6.858
+      }
+    ],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      {
+        "left_sta_ft": 0.0,
+        "right_sta_ft": 54.5,
+        "elevation_ft": 21.9,
+        "permanent": 0,
+        "left_sta_m": 0.0,
+        "right_sta_m": 16.6116,
+        "elevation_m": 6.6751
+      },
+      {
+        "left_sta_ft": 95.0,
+        "right_sta_ft": 150.0,
+        "elevation_ft": 21.9,
+        "permanent": 0,
+        "left_sta_m": 28.956,
+        "right_sta_m": 45.72,
+        "elevation_m": 6.6751
+      }
+    ],
+    [
+      {
+        "left_sta_ft": 0.0,
+        "right_sta_ft": 54.5,
+        "elevation_ft": 21.9,
+        "permanent": 0,
+        "left_sta_m": 0.0,
+        "right_sta_m": 16.6116,
+        "elevation_m": 6.6751
+      },
+      {
+        "left_sta_ft": 95.0,
+        "right_sta_ft": 150.0,
+        "elevation_ft": 21.9,
+        "permanent": 0,
+        "left_sta_m": 28.956,
+        "right_sta_m": 45.72,
+        "elevation_m": 6.6751
+      }
+    ],
+    [],
+    [],
+    [
+      {
+        "left_sta_ft": 0.0,
+        "right_sta_ft": 55.5,
+        "elevation_ft": 20.0,
+        "permanent": 0,
+        "left_sta_m": 0.0,
+        "right_sta_m": 16.9164,
+        "elevation_m": 6.096
+      },
+      {
+        "left_sta_ft": 96.8,
+        "right_sta_ft": 150.0,
+        "elevation_ft": 20.0,
+        "permanent": 0,
+        "left_sta_m": 29.5046,
+        "right_sta_m": 45.72,
+        "elevation_m": 6.096
+      }
+    ],
+    [
+      {
+        "left_sta_ft": 0.0,
+        "right_sta_ft": 55.5,
+        "elevation_ft": 20.0,
+        "permanent": 0,
+        "left_sta_m": 0.0,
+        "right_sta_m": 16.9164,
+        "elevation_m": 6.096
+      },
+      {
+        "left_sta_ft": 97.0,
+        "right_sta_ft": 150.0,
+        "elevation_ft": 20.0,
+        "permanent": 0,
+        "left_sta_m": 29.5656,
+        "right_sta_m": 45.72,
+        "elevation_m": 6.096
+      }
+    ],
+    [],
+    [],
+    [],
+    [
+      {
+        "left_sta_ft": 0.0,
+        "right_sta_ft": 55.5,
+        "elevation_ft": 19.6,
+        "permanent": 0,
+        "left_sta_m": 0.0,
+        "right_sta_m": 16.9164,
+        "elevation_m": 5.9741
+      },
+      {
+        "left_sta_ft": 94.0,
+        "right_sta_ft": 150.0,
+        "elevation_ft": 19.6,
+        "permanent": 0,
+        "left_sta_m": 28.6512,
+        "right_sta_m": 45.72,
+        "elevation_m": 5.9741
+      }
+    ],
+    [
+      {
+        "left_sta_ft": 0.0,
+        "right_sta_ft": 53.5,
+        "elevation_ft": 19.6,
+        "permanent": 0,
+        "left_sta_m": 0.0,
+        "right_sta_m": 16.3068,
+        "elevation_m": 5.9741
+      },
+      {
+        "left_sta_ft": 94.5,
+        "right_sta_ft": 150.0,
+        "elevation_ft": 19.6,
+        "permanent": 0,
+        "left_sta_m": 28.8036,
+        "right_sta_m": 45.72,
+        "elevation_m": 5.9741
+      }
+    ],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    []
+  ]
 }

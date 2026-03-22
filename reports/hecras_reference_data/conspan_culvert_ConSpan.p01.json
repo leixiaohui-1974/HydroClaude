@@ -1163,5 +1163,55 @@
       "us_invert_m": 7.650480116271973,
       "ds_invert_m": 7.62
     }
+  ],
+  "ineffective_areas": [
+    [],
+    [],
+    [],
+    [],
+    [
+      {
+        "left_sta_ft": 856.0,
+        "right_sta_ft": 976.0,
+        "elevation_ft": 33.7,
+        "permanent": 0,
+        "left_sta_m": 260.9088,
+        "right_sta_m": 297.4848,
+        "elevation_m": 10.2718
+      },
+      {
+        "left_sta_ft": 1024.0,
+        "right_sta_ft": 1150.0,
+        "elevation_ft": 33.7,
+        "permanent": 0,
+        "left_sta_m": 312.1152,
+        "right_sta_m": 350.52,
+        "elevation_m": 10.2718
+      }
+    ],
+    [
+      {
+        "left_sta_ft": 856.0,
+        "right_sta_ft": 979.0,
+        "elevation_ft": 33.0,
+        "permanent": 0,
+        "left_sta_m": 260.9088,
+        "right_sta_m": 298.3992,
+        "elevation_m": 10.0584
+      },
+      {
+        "left_sta_ft": 1021.0,
+        "right_sta_ft": 1150.0,
+        "elevation_ft": 33.0,
+        "permanent": 0,
+        "left_sta_m": 311.2008,
+        "right_sta_m": 350.52,
+        "elevation_m": 10.0584
+      }
+    ],
+    [],
+    [],
+    [],
+    []
   ]
 }
