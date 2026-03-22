@@ -1882,13 +1882,6 @@ class SteadyProfileSolver:
             _K_sum = _K_ds_lob + _K_ds_ch + _K_ds_rob
             if _K_sum > 0:
                 dx_seg = (_K_ds_lob * dx_lob + _K_ds_ch * dx_ch + _K_ds_rob * dx_rob) / _K_sum
-                # 漫滩主导且 reach length 差异显著时，K-weighted 可能振荡
-                # 回退到 channel reach length 以提高稳定性
-                # 物理理由：漫滩 K 占主导时，漫滩 dx 反映洪水波距离而非主槽水力梯度距离
-                _lob_dominant = (_K_ds_lob > 0.8 * _K_sum) or (_K_ds_rob > 0.8 * _K_sum)
-                _rl_divergent = (dx_ch > 0) and (abs(dx_seg - dx_ch) > 0.05 * dx_ch)
-                if _lob_dominant and _rl_divergent:
-                    dx_seg = dx_ch
             else:
                 dx_seg = dx_ch
             vh_ds = alpha_ds * V_ds ** 2 / (2.0 * self.g)

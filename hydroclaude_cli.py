@@ -303,9 +303,25 @@ def _run_profile(  # noqa: C901
     profile = ref["profiles"][p_idx]
     xd = profile["cross_sections"]
 
+    # 流量：优先从 flow_data（.f01 输入文件）读取，回退到 profiles（Results）
+    _flow_data = ref.get("flow_data", [])
+    _upstream_Q = None
+    if _flow_data:
+        # 从 .f01 提取的上游流量（输入数据，非计算结果）
+        for fd in _flow_data:
+            if fd.get("flows_m3s"):
+                idx = min(p_idx, len(fd["flows_m3s"]) - 1)
+                _upstream_Q = float(fd["flows_m3s"][idx])
+                break
+            elif fd.get("flows_cfs"):
+                idx = min(p_idx, len(fd["flows_cfs"]) - 1)
+                _upstream_Q = float(fd["flows_cfs"][idx]) * 0.028316846592
+                break
+
+    # per-section flow 仍从 profiles 读取（用于拓扑检测和 lateral inflow 计算）
     flows = [float(x["flow_m3s"]) for x in xd]
     wr = [float(x["wse_m"]) for x in xd]
-    Q = flows[0]
+    Q = _upstream_Q if _upstream_Q is not None else flows[0]  # 优先用输入 Q
 
     def _compute_downstream_bc() -> float:
         """从边界条件计算下游水深。优先用 boundary_conditions（v2），回退到参考 WSE（v1）。
@@ -382,13 +398,7 @@ def _run_profile(  # noqa: C901
                 return K * slope**0.5 - Q
 
             try:
-                h_nd = brentq(_normal_res, 0.01, 30.0, xtol=1e-6)
-                # 交叉验证：如果与参考 WSE 差距 < 0.05m，用参考 WSE（K 精度限制）
-                wse_nd = bed[-1] + h_nd
-                wse_ref = wr[-1]
-                if abs(wse_nd - wse_ref) < 0.05:
-                    return max(wse_ref - bed[-1], 0.1)
-                return h_nd
+                return brentq(_normal_res, 0.01, 30.0, xtol=1e-6)
             except Exception:
                 return max(wr[-1] - bed[-1], 0.5)
 
