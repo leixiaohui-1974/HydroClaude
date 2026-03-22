@@ -100,6 +100,11 @@ class SteadyProfileSolver:
         self._n_ice = n_ice
         self._manning_n_segments = None  # 每断面完整 n 分段: list[list[(station, n)]]
         self._ineffective_areas = None  # 每断面无效流动区: list[list[{sta_l, sta_r, elev}]]
+        # Floodway Encroachment：记录每断面有效过水边界 (left_eff, right_eff)
+        # 说明：_bank_stations 仍表示主槽左右岸；本字段表示被侵占后的有效过水范围。
+        self._effective_bank_stations = None
+        # 最近一次标准步求解的绝对水位线（用于 encroachment 基准 WSE）
+        self._last_wse_profile = None
 
     # Hydraulic geometry helpers
 
@@ -410,8 +415,232 @@ class SteadyProfileSolver:
         K = (1.0 / max(n, 0.001)) * A_total * R ** (2.0 / 3.0)
         return float(K), float(A_total)
 
+    def _resolve_effective_flow_limits(
+        self,
+        station_index: int,
+        sta_min_all: float,
+        sta_max_all: float,
+        left_bank: float,
+        right_bank: float,
+        effective_limits: Optional[Tuple[float, float]] = None,
+    ) -> Tuple[float, float]:
+        """解析断面的有效过水边界（用于 Floodway Encroachment）。"""
+        eff_pair = effective_limits
+        if eff_pair is None and self._effective_bank_stations and station_index < len(self._effective_bank_stations):
+            eff_pair = self._effective_bank_stations[station_index]
+
+        # 默认：整个断面都可过水
+        if eff_pair is None:
+            return float(sta_min_all), float(sta_max_all)
+
+        try:
+            eff_left = float(eff_pair[0])
+            eff_right = float(eff_pair[1])
+        except Exception:
+            return float(sta_min_all), float(sta_max_all)
+
+        # 有效边界必须位于断面范围内，且不侵入主槽
+        eff_left = min(max(eff_left, sta_min_all), float(left_bank))
+        eff_right = max(min(eff_right, sta_max_all), float(right_bank))
+        if eff_left >= eff_right - 1e-6:
+            return float(sta_min_all), float(sta_max_all)
+        return float(eff_left), float(eff_right)
+
+    def _solve_depth_for_target_conveyance(
+        self,
+        target_K: float,
+        station_index: int,
+        effective_limits: Tuple[float, float],
+        h_seed: float,
+    ) -> float:
+        """在给定有效过水边界下，求解满足 K(h)=target_K 的水深。"""
+        target_K = float(target_K)
+        if target_K <= 0.0:
+            return max(float(h_seed), 1e-4)
+
+        def _residual(h_val: float) -> float:
+            h_safe = max(float(h_val), 1e-6)
+            K_val, _ = self._compute_subdivided_conveyance(
+                h_safe, station_index, effective_limits=effective_limits
+            )
+            return float(K_val - target_K)
+
+        h_lo = max(1e-4, min(float(h_seed), 0.25 * float(h_seed) + 0.02))
+        f_lo = _residual(h_lo)
+        for _ in range(12):
+            if not np.isfinite(f_lo):
+                break
+            if f_lo <= 0.0:
+                break
+            h_lo *= 0.5
+            if h_lo < 1e-6:
+                h_lo = 1e-6
+                break
+            f_lo = _residual(h_lo)
+
+        h_hi = max(float(h_seed) + 0.5, float(h_seed) * 1.2 + 0.2)
+        f_hi = _residual(h_hi)
+        for _ in range(50):
+            if np.isfinite(f_hi) and f_hi >= 0.0:
+                break
+            h_hi = h_hi * 1.35 + 0.3
+            if h_hi > 300.0:
+                return float("nan")
+            f_hi = _residual(h_hi)
+
+        if not np.isfinite(f_lo) or not np.isfinite(f_hi):
+            return float("nan")
+        if f_lo > 0.0 and f_hi > 0.0:
+            return float("nan")
+        if abs(f_lo) <= 1e-10:
+            return float(h_lo)
+        if abs(f_hi) <= 1e-10:
+            return float(h_hi)
+
+        try:
+            return float(brentq(_residual, h_lo, h_hi, xtol=1e-6, maxiter=120))
+        except Exception:
+            return float("nan")
+
+    def _apply_encroachment(self, surcharge_m: float, station_index: int) -> Tuple[float, float]:
+        """按 Method 4（两侧等比例收缩）确定 Floodway Encroachment 边界。
+
+        输入:
+            surcharge_m: 目标壅高（m）
+            station_index: 断面索引
+        输出:
+            (left_encroachment_station, right_encroachment_station)
+        """
+        if surcharge_m is None or float(surcharge_m) <= 0.0:
+            if self._bank_stations and station_index < len(self._bank_stations):
+                lb0, rb0 = self._bank_stations[station_index]
+                return float(lb0), float(rb0)
+            return (0.0, 0.0)
+
+        xs = self._xs
+        if self._xs_array and station_index < len(self._xs_array):
+            xs = self._xs_array[station_index]
+        if xs is None or not hasattr(xs, "distances") or not hasattr(xs, "elevations"):
+            if self._bank_stations and station_index < len(self._bank_stations):
+                lb0, rb0 = self._bank_stations[station_index]
+                return float(lb0), float(rb0)
+            return (0.0, 0.0)
+        if not self._bank_stations or station_index >= len(self._bank_stations):
+            return (0.0, 0.0)
+
+        left_bank, right_bank = self._bank_stations[station_index]
+        if left_bank is None or right_bank is None:
+            return (0.0, 0.0)
+        left_bank = float(left_bank)
+        right_bank = float(right_bank)
+        if left_bank >= right_bank:
+            return left_bank, right_bank
+
+        stations_arr = np.asarray(xs.distances, dtype=float)
+        elevations_arr = np.asarray(xs.elevations, dtype=float)
+        sta_min_all = float(np.min(stations_arr))
+        sta_max_all = float(np.max(stations_arr))
+
+        # 没有滩地时无需 encroachment（主槽已覆盖全断面）
+        if left_bank <= sta_min_all + 0.01 and right_bank >= sta_max_all - 0.01:
+            return left_bank, right_bank
+
+        # 基准 WSE：优先使用最近一次全河段求解结果；否则用岸顶高程近似估计
+        if (
+            self._last_wse_profile is not None
+            and station_index < len(self._last_wse_profile)
+            and np.isfinite(self._last_wse_profile[station_index])
+        ):
+            W_base = float(self._last_wse_profile[station_index])
+        else:
+            z_lb = float(np.interp(left_bank, stations_arr, elevations_arr))
+            z_rb = float(np.interp(right_bank, stations_arr, elevations_arr))
+            W_base = max(z_lb, z_rb) + max(float(surcharge_m) * 2.0, 0.5)
+
+        min_elev = float(xs.min_elevation) if hasattr(xs, "min_elevation") else float(np.min(elevations_arr))
+        h_base = max(W_base - min_elev, 0.05)
+
+        # 基准输水能力：未侵占（全断面有效）状态
+        K_base, _ = self._compute_subdivided_conveyance(
+            h_base, station_index, effective_limits=(sta_min_all, sta_max_all)
+        )
+        if K_base <= 0.0:
+            return left_bank, right_bank
+
+        target_surcharge = float(max(surcharge_m, 0.0))
+        p_prev = 0.0
+        rise_prev = 0.0
+        p_hit = None
+        rise_hit = None
+
+        # 1) 从两侧漫滩向主槽逐步收缩有效过水宽度（等比例）
+        for p in np.linspace(0.0, 1.0, 41):
+            left_eff = sta_min_all + p * (left_bank - sta_min_all)
+            right_eff = sta_max_all - p * (sta_max_all - right_bank)
+            h_new = self._solve_depth_for_target_conveyance(
+                target_K=K_base,
+                station_index=station_index,
+                effective_limits=(left_eff, right_eff),
+                h_seed=h_base,
+            )
+            if not np.isfinite(h_new):
+                continue
+            W_new = min_elev + h_new
+            rise = W_new - W_base
+            # 2) 每步重算 K_total 与 WSE，直到达到目标壅高
+            if rise >= target_surcharge:
+                p_hit = p
+                rise_hit = rise
+                break
+            p_prev = p
+            rise_prev = rise
+
+        if p_hit is None:
+            # 未达到目标壅高：取最大可侵占（到主槽岸线）
+            p_final = 1.0
+        else:
+            # 3) 二分细化停止点，逼近目标 surcharge
+            p_lo, p_hi = p_prev, p_hit
+            for _ in range(24):
+                p_mid = 0.5 * (p_lo + p_hi)
+                left_eff_m = sta_min_all + p_mid * (left_bank - sta_min_all)
+                right_eff_m = sta_max_all - p_mid * (sta_max_all - right_bank)
+                h_mid = self._solve_depth_for_target_conveyance(
+                    target_K=K_base,
+                    station_index=station_index,
+                    effective_limits=(left_eff_m, right_eff_m),
+                    h_seed=h_base,
+                )
+                if not np.isfinite(h_mid):
+                    p_hi = p_mid
+                    continue
+                rise_mid = (min_elev + h_mid) - W_base
+                if rise_mid >= target_surcharge:
+                    p_hi = p_mid
+                    rise_hit = rise_mid
+                else:
+                    p_lo = p_mid
+                    rise_prev = rise_mid
+            p_final = p_hi
+
+        left_final = sta_min_all + p_final * (left_bank - sta_min_all)
+        right_final = sta_max_all - p_final * (sta_max_all - right_bank)
+
+        # 4) 记录 encroachment station（有效过水边界）
+        n_xs_eff = len(self._xs_array) if self._xs_array else (len(self._bank_stations) if self._bank_stations else 0)
+        if n_xs_eff <= 0:
+            n_xs_eff = station_index + 1
+        if self._effective_bank_stations is None or len(self._effective_bank_stations) < n_xs_eff:
+            self._effective_bank_stations = [None] * n_xs_eff
+        self._effective_bank_stations[station_index] = (float(left_final), float(right_final))
+
+        return float(left_final), float(right_final)
+
     def _compute_subdivided_conveyance(
-        self, h: float, station_index: int
+        self,
+        h: float,
+        station_index: int,
+        effective_limits: Optional[Tuple[float, float]] = None,
     ) -> Tuple[float, float]:
         """Compute total conveyance K and alpha using HEC-RAS LOB/Channel/ROB subdivision.
 
@@ -1290,6 +1519,15 @@ class SteadyProfileSolver:
             # 本段使用的平均流量（HEC-RAS 在标准步中使用下游断面流量）
             Q_seg = Q_ds_local
 
+            # HEC-RAS reach_length=0：此断面与下游断面在同一河流位置（零距离）
+            # 无摩擦损失，直接继承下游水位，跳过能量方程计算
+            # 注意：有桥梁/涵洞/闸门的断面即使 rl=0 也不能跳过（结构物需单独计算损失）
+            _raw_rl_i = float(self._reach_lengths[i]) if self._reach_lengths and i < len(self._reach_lengths) else 1.0
+            if _raw_rl_i < 1e-6 and not (i in _bridge_at_us) and not (i in _culvert_at_us) and not (i in _inline_at_us):
+                W[i] = W[i + 1]
+                h[i] = max(W[i] - bed[i], 0.001)
+                continue
+
             # HEC-RAS 加权平均 reach length: L = (K_LOB*L_LOB + K_Ch*L_Ch + K_ROB*L_ROB) / K_total
             dx_ch = float(abs(x[i + 1] - x[i]))
             if dx_ch < 1e-6:
@@ -1336,8 +1574,10 @@ class SteadyProfileSolver:
             # 触发判据：基于每步能量变化 energy_change = dx_seg * Sf_ds
             # 目标：每子步能量变化 < 0.002m，最多 50 个子步
             n_substeps = 1
-            energy_change = dx_seg * Sf_ds
-            if energy_change > 0.005 and not (i in _bridge_at_us):
+            # 子步已禁用：天然河道断面间的几何插值会引入累积偏差
+            # HEC-RAS 不做断面间插值，而是用 HP Table 在每个断面独立计算
+            # 仅在需要的地方（如用户显式请求）启用子步
+            if False and not (i in _bridge_at_us):  # 禁用子步
                 n_substeps = min(50, max(1, int(energy_change / 0.002)))
 
             # 子步迭代：每步以前一子步 W 为下游，床面高程线性插值
