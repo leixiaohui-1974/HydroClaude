@@ -2788,6 +2788,335 @@ class SteadyProfileSolver:
         }
 
 
+
+    # -----------------------------------------------------------------------
+    # Lateral Weir (侧向堰) - 空间渐变流求解
+
+    def _solve_lateral_weir(
+        self,
+        Q_upstream: float,
+        W_downstream: float,
+        weir_params: dict,
+        xs_indices: list[int],
+    ) -> dict:
+        """侧向堰空间渐变流求解 (HEC-RAS Lateral Weir)。
+
+        物理背景：侧向堰是空间渐变流 (Spatially Varied Flow with Decreasing
+        Discharge)，主河道流量沿程因侧向溢出而减少。
+
+        核心公式 (de Marchi 1934)：
+            dQ/dx = -Cd * (2/3) * sqrt(2g) * h^(3/2)
+            其中 h = WSE - crest_elevation（溢流水头，m）
+
+        迭代策略（HEC-RAS Lateral Structure 两步 Picard）：
+            1. 根据当前水面线，按 de Marchi 公式估算各堰段侧向溢流量，更新沿程 Q
+            2. 固定 Q 后，用标准步能量方程从下游向上游推算水面高程 W
+            3. 外层迭代，直到 W 与 Q 同时收敛
+
+        Args:
+            Q_upstream: 上游来流量 (m^3/s)
+            W_downstream: 下游边界水面高程 (m)
+            weir_params: 侧向堰参数字典，包含：
+                weir_coef (float): 堰流系数 Cd，默认 0.36（自由流宽顶堰 SI 单位）
+                crest_elevation_m (float): 堰顶绝对高程 (m)
+                weir_length_m (float): 堰总长度 (m)，0 则按 reach_lengths 自动求和
+                start_xs (int): 堰起始断面全局索引（含）
+                end_xs (int): 堰结束断面全局索引（含）
+                tailwater_elevation_m (float, 可选): 侧向尾水高程，Villemonte 淹没修正
+            xs_indices: 参与计算的断面全局索引列表（上游到下游顺序）
+
+        Returns:
+            dict 包含：
+                W (np.ndarray): 各断面水面高程 (m)
+                Q (np.ndarray): 各断面流量 (m^3/s)，沿程递减
+                Q_lateral (np.ndarray): 各断面累计侧向溢流量 (m^3/s)
+                converged (bool): 外层迭代是否收敛
+                iterations (int): 实际迭代次数
+                method (str): 固定值 "lateral_weir"
+        """
+        from scipy.optimize import brentq  # 文件顶部已导入，此处标注来源
+
+        g = self.g
+        n_xs = len(xs_indices)
+
+        # 边界情况：无断面或只有一个断面，直接返回
+        if n_xs == 0:
+            return {
+                "W": np.array([], dtype=float),
+                "Q": np.array([], dtype=float),
+                "Q_lateral": np.array([], dtype=float),
+                "converged": True,
+                "iterations": 0,
+                "method": "lateral_weir",
+            }
+        if n_xs == 1:
+            return {
+                "W": np.array([float(W_downstream)], dtype=float),
+                "Q": np.array([float(Q_upstream)], dtype=float),
+                "Q_lateral": np.array([0.0], dtype=float),
+                "converged": True,
+                "iterations": 1,
+                "method": "lateral_weir",
+            }
+
+        # ---- 解析堰参数 ----
+        Cd = float(weir_params.get("weir_coef", 0.36))
+        crest_elev = float(weir_params["crest_elevation_m"])
+        weir_length_cfg = float(weir_params.get("weir_length_m", 0.0))
+        start_xs_idx = int(weir_params["start_xs"])
+        end_xs_idx = int(weir_params["end_xs"])
+        if start_xs_idx > end_xs_idx:
+            # 自动纠正顺序（允许调用方传入逆序索引）
+            start_xs_idx, end_xs_idx = end_xs_idx, start_xs_idx
+
+        # 可选侧向尾水高程，用于 Villemonte 淹没修正
+        tw_raw = weir_params.get("tailwater_elevation_m", None)
+        tailwater_elev: float | None = float(tw_raw) if tw_raw is not None else None
+
+        # ---- 提取各断面的床面高程 ----
+        # _bed_elevations 是全局绝对高程数组，通过 xs_indices[k] 寻址
+        bed = np.array(
+            [float(self._bed_elevations[xs_indices[k]]) for k in range(n_xs)],
+            dtype=float,
+        )
+
+        # ---- 建立相邻断面间距表 (m) ----
+        # dx_segs[j] = xs_indices[j] 到 xs_indices[j+1] 之间的沿河距离
+        dx_segs = np.ones(n_xs - 1, dtype=float)
+        for j in range(n_xs - 1):
+            global_j = xs_indices[j]
+            if (
+                self._reach_lengths is not None
+                and global_j < len(self._reach_lengths)
+                and float(self._reach_lengths[global_j]) > 0
+            ):
+                dx_segs[j] = float(self._reach_lengths[global_j])
+            else:
+                # 无实际距离数据时，均分全河长作近似
+                dx_segs[j] = max(self.length / max(n_xs - 1, 1), 1.0)
+
+        # ---- 识别堰段（两端断面都在堰范围内的 j 段才参与溢流计算）----
+        weir_seg_mask = np.zeros(n_xs - 1, dtype=bool)
+        for j in range(n_xs - 1):
+            xs_us_g = xs_indices[j]
+            xs_ds_g = xs_indices[j + 1]
+            if (
+                start_xs_idx <= xs_us_g <= end_xs_idx
+                and start_xs_idx <= xs_ds_g <= end_xs_idx
+            ):
+                weir_seg_mask[j] = True
+
+        # 堰段有效长度：若设定了 weir_length_m，则按比例缩放各段距离使总和等于设定值
+        dx_weir = np.where(weir_seg_mask, dx_segs, 0.0).copy()
+        if weir_length_cfg > 0.0:
+            total_weir_nat = float(np.sum(dx_weir))
+            if total_weir_nat > 1e-6:
+                dx_weir *= weir_length_cfg / total_weir_nat
+
+        # ---- 局部损失系数辅助函数 ----
+        _def_cc, _def_ec = 0.1, 0.3
+
+        def _get_cc(k: int) -> float:
+            """取第 k 个本地断面的收缩损失系数；不可用时回退为 0.1。"""
+            gi = xs_indices[k]
+            if self._contraction_coefs and gi < len(self._contraction_coefs):
+                v = self._contraction_coefs[gi]
+                if v is not None and float(v) >= 0:
+                    return float(v)
+            return _def_cc
+
+        def _get_ec(k: int) -> float:
+            """取第 k 个本地断面的扩散损失系数；不可用时回退为 0.3。"""
+            gi = xs_indices[k]
+            if self._expansion_coefs and gi < len(self._expansion_coefs):
+                v = self._expansion_coefs[gi]
+                if v is not None and float(v) >= 0:
+                    return float(v)
+            return _def_ec
+
+        # ---- 初始化水位和流量 ----
+        # 初始猜测：以下游水深叠加到各断面床面高程（近似平水面，后续迭代修正）
+        h_ds_init = max(W_downstream - bed[-1], 1e-3)
+        W_old = bed + h_ds_init
+        W_old[-1] = W_downstream  # 强制下游边界
+
+        Q_old = np.full(n_xs, float(Q_upstream), dtype=float)
+        Q_lateral_old = np.zeros(n_xs, dtype=float)
+
+        converged = False
+        it = 0
+        max_outer_iter = 50
+        relax = 0.7  # 外层 Picard 松弛因子，防止 W 振荡
+
+        for it in range(1, max_outer_iter + 1):
+
+            # ================================================================
+            # 第一步：根据当前水面线，按 de Marchi 公式更新沿程流量 Q
+            # ================================================================
+            Q_new = np.full(n_xs, float(Q_upstream), dtype=float)
+            Q_lateral_new = np.zeros(n_xs, dtype=float)
+            q_lat_cum = 0.0  # 累计侧向溢出流量 (m^3/s)
+
+            for j in range(n_xs - 1):
+                dQ_seg = 0.0
+                if weir_seg_mask[j] and dx_weir[j] > 1e-9:
+                    # 以本段上游断面 WSE 代表整段溢流水头（前向差分近似）
+                    H_w = max(float(W_old[j]) - crest_elev, 0.0)
+                    if H_w > 1e-9:
+                        # de Marchi 公式：dQ = Cd*(2/3)*sqrt(2g)*h^1.5 * dx_weir
+                        dQ_seg = (
+                            Cd * (2.0 / 3.0) * np.sqrt(2.0 * g)
+                            * (H_w ** 1.5) * dx_weir[j]
+                        )
+
+                        # Villemonte (1947) 淹没修正（仅在提供尾水高程时启用）
+                        if tailwater_elev is not None:
+                            H_tw = max(tailwater_elev - crest_elev, 0.0)
+                            subm = H_tw / H_w  # 淹没比
+                            if subm > 0.67:
+                                if subm >= 1.0:
+                                    dQ_seg = 0.0  # 完全淹没
+                                else:
+                                    # 部分淹没修正：Cs = (1 - subm^1.5)^0.385
+                                    dQ_seg *= max((1.0 - subm ** 1.5) ** 0.385, 0.0)
+
+                # 限制：单段溢流不超过上游可用流量，防止 Q 出现负值
+                dQ_seg = float(np.clip(dQ_seg, 0.0, max(float(Q_new[j]), 0.0)))
+                q_lat_cum += dQ_seg
+
+                # 下一断面流量 = 上游流量 - 本段侧向溢出量（空间渐变流核心）
+                Q_new[j + 1] = max(float(Q_new[j]) - dQ_seg, 0.0)
+                Q_lateral_new[j + 1] = q_lat_cum
+
+            # ================================================================
+            # 第二步：固定 Q_new，用标准步能量方程从下游向上游推算 W
+            # ================================================================
+            W_calc = np.zeros(n_xs, dtype=float)
+            W_calc[-1] = W_downstream  # 下游边界条件
+
+            for j in range(n_xs - 2, -1, -1):
+                i_us = xs_indices[j]       # 上游断面全局索引
+                i_ds = xs_indices[j + 1]   # 下游断面全局索引
+                bed_us = float(bed[j])
+                bed_ds = float(bed[j + 1])
+                dx = float(dx_segs[j])
+
+                Q_us = float(Q_new[j])
+                Q_ds = float(Q_new[j + 1])
+                W_ds = float(W_calc[j + 1])
+
+                # 下游断面水力量（本迭代内固定，不随上游猜测值变化）
+                h_ds_loc = max(W_ds - bed_ds, 1e-6)
+                A_ds_loc, _, _, _ = self._get_geometry(h_ds_loc, i_ds)
+                A_ds_loc = max(float(A_ds_loc), 1e-12)
+                K_ds_loc, alpha_ds_loc = self._compute_subdivided_conveyance(h_ds_loc, i_ds)
+                K_ds_loc = max(float(K_ds_loc), 1e-12)
+                V_ds_loc = Q_ds / A_ds_loc
+                vh_ds_loc = float(alpha_ds_loc) * V_ds_loc ** 2 / (2.0 * g)
+
+                cc_j = _get_cc(j)
+                ec_j = _get_ec(j)
+
+                def _energy_residual(W_us_val: float) -> float:
+                    """能量方程残差（与 _solve_standard_step_variable_xs 保持一致）。
+
+                    残差 = (上游总能量头) - (下游总能量头) - 摩阻损失 - 局部损失
+                    """
+                    h_us_r = max(W_us_val - bed_us, 1e-6)
+                    A_us_r, _, _, _ = self._get_geometry(h_us_r, i_us)
+                    A_us_r = max(float(A_us_r), 1e-12)
+                    K_us_r, alpha_us_r = self._compute_subdivided_conveyance(h_us_r, i_us)
+                    K_us_r = max(float(K_us_r), 1e-12)
+                    V_us_r = Q_us / A_us_r
+                    vh_us_r = float(alpha_us_r) * V_us_r ** 2 / (2.0 * g)
+                    # HEC-RAS 平均输水率：Sf_avg = ((Q_us+Q_ds)/(K_us+K_ds))^2
+                    Sf_avg_r = min(
+                        ((Q_us + Q_ds) / (K_us_r + K_ds_loc)) ** 2,
+                        1.0,
+                    )
+                    h_f_r = dx * Sf_avg_r
+                    # 局部损失：速度水头增大取收缩系数，减小取扩散系数
+                    h_e_r = (
+                        cc_j * (vh_us_r - vh_ds_loc)
+                        if vh_us_r > vh_ds_loc
+                        else ec_j * (vh_ds_loc - vh_us_r)
+                    )
+                    return (W_us_val + vh_us_r) - (W_ds + vh_ds_loc) - h_f_r - h_e_r
+
+                # 计算临界水位，作为 brentq 下界（确保找到亚临界解而非超临界解）
+                h_crit_us = float(self._compute_critical_depth(max(Q_us, 1e-9), i_us))
+                W_lo = max(W_ds, bed_us + h_crit_us)
+                W_hi_n = max(W_lo + 1e-4, W_ds + 20.0)
+                W_hi_e = max(W_lo + 1e-4, W_ds + 60.0)
+
+                W_us_solved: float
+                _ok = False
+                try:
+                    f_lo = _energy_residual(W_lo)
+                    f_hi_n = _energy_residual(W_hi_n)
+                    if np.isfinite(f_lo) and np.isfinite(f_hi_n) and f_lo * f_hi_n <= 0.0:
+                        # 窄区间存在变号，直接 brentq 求根
+                        W_us_solved = float(
+                            brentq(_energy_residual, W_lo, W_hi_n, xtol=1e-6, maxiter=100)
+                        )
+                        _ok = True
+                    else:
+                        # 扩展到宽区间再试一次
+                        f_hi_e = _energy_residual(W_hi_e)
+                        if (
+                            np.isfinite(f_lo)
+                            and np.isfinite(f_hi_e)
+                            and f_lo * f_hi_e <= 0.0
+                        ):
+                            W_us_solved = float(
+                                brentq(_energy_residual, W_lo, W_hi_e, xtol=1e-6, maxiter=100)
+                            )
+                            _ok = True
+                except Exception:
+                    _ok = False
+
+                if not _ok:
+                    # 兜底：离散扫描 121 点，取残差绝对值最小的近似解
+                    scan_ws = np.linspace(W_lo, W_hi_e, 121)
+                    scan_rs = np.array(
+                        [abs(_energy_residual(wv)) for wv in scan_ws], dtype=float
+                    )
+                    W_us_solved = float(scan_ws[int(np.argmin(scan_rs))])
+
+                # 保证上游水位不低于临界水位（HEC-RAS 混合流模式默认取临界深度）
+                W_us_solved = max(W_us_solved, bed_us + h_crit_us)
+                W_calc[j] = W_us_solved
+
+            # ================================================================
+            # 第三步：外层松弛更新 W，检查双收敛条件
+            # ================================================================
+            # W_relaxed = (1-relax)*W_old + relax*W_calc，防止水位振荡不收敛
+            W_new_relaxed = (1.0 - relax) * W_old + relax * W_calc
+            W_new_relaxed[-1] = W_downstream  # 强制下游边界
+
+            delta_W = float(np.max(np.abs(W_new_relaxed - W_old)))
+            delta_Q = float(
+                np.max(np.abs(Q_new - Q_old)) / max(abs(Q_upstream), 1.0)
+            )
+
+            W_old = W_new_relaxed
+            Q_old = Q_new.copy()
+            Q_lateral_old = Q_lateral_new.copy()
+
+            # 双收敛条件：水位变化 < 0.1 mm 且流量变化 < 0.01%
+            if delta_W < 1e-4 and delta_Q < 1e-4:
+                converged = True
+                break
+
+        return {
+            "W": W_old,
+            "Q": Q_old,
+            "Q_lateral": Q_lateral_old,
+            "converged": converged,
+            "iterations": it,
+            "method": "lateral_weir",
+        }
+
     # General solve entry
 
     def solve_without_structures(self, Q: float, h_downstream: float, nx: int = 201, method: str = "standard_step") -> Dict:
