@@ -292,6 +292,44 @@ def _run_profile(  # noqa: C901
         for i in range(1, n_xs):
             lat[i - 1] = flows[i] - flows[i - 1]
         sv = _make_solver(sections, bed, rl, nch, nlob, nrob, bsl, bsr, cc, ec, nsa, ifa, culverts, lat)
+
+        # Inline Structure（闸门+堰）：从参考数据提取并传入
+        inline_data = ref.get("inline_structure")
+        if inline_data and inline_data.get("gate_groups"):
+            openings = inline_data.get("openings_per_profile", [])
+            gate_groups = inline_data.get("gate_groups", [])
+            # 构建当前 profile 的闸门参数
+            gates_for_profile = []
+            if p_idx < len(openings):
+                op = openings[p_idx]
+                for gi in gate_groups:
+                    name = gi.get("name", "")
+                    if name in op:
+                        opening_ft, n_open = op[name]
+                        gates_for_profile.append({
+                            "opening_m": opening_ft * LF,
+                            "n_openings": n_open,
+                            "width_m": gi.get("width_m", gi.get("width_ft", 30) * LF),
+                            "invert_m": gi.get("invert_m", gi.get("invert_ft", 0) * LF),
+                            "sluice_coef": gi.get("sluice_coef", 0.8),
+                        })
+            # 确定 us_xs_index（WSE 跳变最大位置）
+            max_jump = 0
+            struct_idx = n_xs // 2
+            for ii in range(n_xs - 1):
+                jump = abs(wr[ii + 1] - wr[ii])
+                if jump > max_jump:
+                    max_jump = jump
+                    struct_idx = ii
+            inline_param = {
+                "us_xs_index": struct_idx,
+                "weir_coef": inline_data.get("weir_coef", 3.1),
+                "weir_width_ft": inline_data.get("weir_width_ft", 0),
+                "weir_min_elev_ft": 0,
+                "gates": gates_for_profile,
+            }
+            sv._inline_structures = [inline_param]
+
         r0 = sv.solve_without_structures(Q=Q, h_downstream=hd)
         errs0 = [abs(float(r0["W"][i]) - wr[i]) for i in range(n_xs)]
         return r0, wr, errs0, Q, profile["name"]
