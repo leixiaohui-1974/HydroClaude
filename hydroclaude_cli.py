@@ -325,7 +325,7 @@ def _run_profile(  # noqa: C901
                 "us_xs_index": struct_idx,
                 "weir_coef": inline_data.get("weir_coef", 3.1),
                 "weir_width_ft": inline_data.get("weir_width_ft", 0),
-                "weir_min_elev_ft": 0,
+                "weir_min_elev_ft": inline_data.get("weir_min_elev_ft", 0),
                 "gates": gates_for_profile,
             }
             sv._inline_structures = [inline_param]
