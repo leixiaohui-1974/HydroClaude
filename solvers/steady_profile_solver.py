@@ -1338,6 +1338,8 @@ class SteadyProfileSolver:
         _coefs = bridge.get("coefficients", {})
         C_D = float(_coefs.get("momentum_cd", bridge.get("pier_cd", 2.0)))
         deck_elev = float(bridge.get("deck_elevation_m", 1e9))
+        high_chord_elev = float(bridge.get("high_chord_m", 1e9))
+        deck_overflow_elev = high_chord_elev if high_chord_elev < 1e8 else deck_elev
         pier_height = float(bridge.get("pier_height_m", 1e9))
         deck_weir_coef = float(bridge.get("deck_weir_coef", 1.70))
         deck_weir_len_cfg = float(bridge.get("deck_weir_length_m", 0.0))
@@ -1361,7 +1363,7 @@ class SteadyProfileSolver:
         _Q_weir_ds, Q_under_ds = self._split_deck_overtopping_flow(
             Q_total=Q,
             WSE=W_downstream,
-            deck_elev=deck_elev,
+            deck_elev=deck_overflow_elev,
             weir_len=weir_len_ds,
             weir_coef=deck_weir_coef,
         )
@@ -1423,7 +1425,7 @@ class SteadyProfileSolver:
             Q_weir, Q_under = self._split_deck_overtopping_flow(
                 Q_total=Q,
                 WSE=W3_trial,
-                deck_elev=deck_elev,
+                deck_elev=deck_overflow_elev,
                 weir_len=weir_len,
                 weir_coef=deck_weir_coef,
             )
@@ -1474,7 +1476,7 @@ class SteadyProfileSolver:
             _Q_weir_p, Q_under_p = self._split_deck_overtopping_flow(
                 Q_total=Q,
                 WSE=W3p,
-                deck_elev=deck_elev,
+                deck_elev=deck_overflow_elev,
                 weir_len=weir_len_p,
                 weir_coef=deck_weir_coef,
             )
@@ -1549,6 +1551,8 @@ class SteadyProfileSolver:
         pier_k = float(bridge.get("pier_loss_coef", 0.0))
         pier_height = float(bridge.get("pier_height_m", 1e9))
         deck_elev = float(bridge.get("deck_elevation_m", 1e9))
+        high_chord_elev = float(bridge.get("high_chord_m", 1e9))
+        deck_overflow_elev = high_chord_elev if high_chord_elev < 1e8 else deck_elev
         deck_weir_coef = float(bridge.get("deck_weir_coef", 1.70))
         deck_weir_len_cfg = float(bridge.get("deck_weir_length_m", 0.0))
         cc = float(bridge.get("contraction_coef", 0.1))
@@ -1617,7 +1621,7 @@ class SteadyProfileSolver:
         _Q_weir_ds, Q_under_ds_en = self._split_deck_overtopping_flow(
             Q_total=Q,
             WSE=W_downstream,
-            deck_elev=deck_elev,
+            deck_elev=deck_overflow_elev,
             weir_len=weir_len_ds,
             weir_coef=deck_weir_coef,
         )
@@ -1640,7 +1644,7 @@ class SteadyProfileSolver:
             Q_weir, Q_under = self._split_deck_overtopping_flow(
                 Q_total=Q,
                 WSE=W3_trial,
-                deck_elev=deck_elev,
+                deck_elev=deck_overflow_elev,
                 weir_len=weir_len,
                 weir_coef=deck_weir_coef,
             )
@@ -1684,7 +1688,7 @@ class SteadyProfileSolver:
             _Q_weir_p, Q_under_p = self._split_deck_overtopping_flow(
                 Q_total=Q,
                 WSE=W3p,
-                deck_elev=deck_elev,
+                deck_elev=deck_overflow_elev,
                 weir_len=weir_len_p,
                 weir_coef=deck_weir_coef,
             )
