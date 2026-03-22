@@ -95,7 +95,7 @@ def _build_from_ref(ref: dict):
         _bridges_parsed.append({
             "us_xs_index": int(_us_idx),
             "ds_xs_index": int(_ds_idx) if _ds_idx is not None else int(_us_idx) + 1,
-            "bridge_length_m": float(_csr.get("upstream_distance_ft", _br.get("upstream_distance_ft", 30))) * LF,
+            "bridge_length_m": rl[int(_us_idx)] if int(_us_idx) < len(rl) else float(_csr.get("upstream_distance_ft", _br.get("upstream_distance_ft", 30))) * LF,
             "deck_elevation_m": float(_deck.get("low_chord_elev_ft", 1e9)) * LF,
             "high_chord_m": float(_deck.get("high_chord_elev_ft", 1e9)) * LF,
             "deck_weir_length_m": float(_deck.get("bridge_opening_width_ft", _br.get("weir_width_ft", 0))) * LF,
