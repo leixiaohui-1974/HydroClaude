@@ -310,6 +310,7 @@ def _run_profile(  # noqa: C901
                             "opening_m": opening_ft * LF,
                             "n_openings": n_open,
                             "width_m": gi.get("width_m", gi.get("width_ft", 30) * LF),
+                            "height_m": gi.get("height_m", gi.get("height_ft", 10) * LF),
                             "invert_m": gi.get("invert_m", gi.get("invert_ft", 0) * LF),
                             "sluice_coef": gi.get("sluice_coef", 0.8),
                         })

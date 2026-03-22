@@ -1115,6 +1115,7 @@ class SteadyProfileSolver:
                 opening_m = float(gate.get("opening_m", 0))
                 n_open = int(gate.get("n_openings", 0))
                 width_m = float(gate.get("width_m", 0))
+                height_m = float(gate.get("height_m", opening_m))
                 invert_m = float(gate.get("invert_m", bed_us))
                 Cg = float(gate.get("sluice_coef", 0.8))
 
@@ -1135,6 +1136,19 @@ class SteadyProfileSolver:
 
                 Q_gate = Cg * A_gate * np.sqrt(max(2.0 * g * dH, 0.0))
                 Q_total += Q_gate
+
+                # 闸门顶溢流：水位超过闸门顶 (invert + height) 时的堰流
+                gate_top_m = invert_m + height_m
+                H_over = W_us - gate_top_m
+                if H_over > 0:
+                    L_over = width_m * n_open
+                    Q_over = weir_coef_si * L_over * H_over ** 1.5
+                    # 淹没修正
+                    H_tw_over = max(W_downstream - gate_top_m, 0.0)
+                    if H_tw_over > 0 and H_tw_over / max(H_over, 1e-9) > 0.67:
+                        sr = H_tw_over / max(H_over, 1e-9)
+                        Q_over *= max((1.0 - sr ** 1.5) ** 0.385, 0.01)
+                    Q_total += Q_over
 
             return Q_total
 
