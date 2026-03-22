@@ -91,7 +91,12 @@ class SteadyProfileSolver:
         self._expansion_coefs = expansion_coefs
         self._manning_n_lob = manning_n_lob
         self._manning_n_rob = manning_n_rob
-        self._bank_stations = bank_stations
+        self._bank_stations = list(bank_stations) if bank_stations is not None else None
+        self._channel_bank_stations = (
+            [tuple(bs) if bs is not None else (None, None) for bs in self._bank_stations]
+            if self._bank_stations is not None
+            else None
+        )
         self._bridges = bridges  # list[dict] with bridge physical parameters
         self._culverts = culverts  # list[dict] with culvert parameters from HDF adapter
         self._inline_structures = None  # list[dict] with inline structure params
@@ -101,7 +106,7 @@ class SteadyProfileSolver:
         self._manning_n_segments = None  # 每断面完整 n 分段: list[list[(station, n)]]
         self._ineffective_areas = None  # 每断面无效流动区: list[list[{sta_l, sta_r, elev}]]
         # Floodway Encroachment：记录每断面有效过水边界 (left_eff, right_eff)
-        # 说明：_bank_stations 仍表示主槽左右岸；本字段表示被侵占后的有效过水范围。
+        # _channel_bank_stations 为原始主槽岸线；_bank_stations 可同步为有效边界输出。
         self._effective_bank_stations = None
         # 最近一次标准步求解的绝对水位线（用于 encroachment 基准 WSE）
         self._last_wse_profile = None
@@ -283,6 +288,8 @@ class SteadyProfileSolver:
         if divergence_count > nx * 0.3:
             result["warning"] = "solver_partially_diverged"
             result["divergence_fraction"] = divergence_count / nx
+        # 非绝对高程模式下，用 z+h 近似记录 WSE，便于后续 encroachment 估计基准
+        self._last_wse_profile = np.asarray(z + h, dtype=float).copy()
         return result
     
 
@@ -525,10 +532,11 @@ class SteadyProfileSolver:
                 lb0, rb0 = self._bank_stations[station_index]
                 return float(lb0), float(rb0)
             return (0.0, 0.0)
-        if not self._bank_stations or station_index >= len(self._bank_stations):
+        _banks_ref = self._channel_bank_stations if self._channel_bank_stations else self._bank_stations
+        if not _banks_ref or station_index >= len(_banks_ref):
             return (0.0, 0.0)
 
-        left_bank, right_bank = self._bank_stations[station_index]
+        left_bank, right_bank = _banks_ref[station_index]
         if left_bank is None or right_bank is None:
             return (0.0, 0.0)
         left_bank = float(left_bank)
@@ -569,9 +577,7 @@ class SteadyProfileSolver:
 
         target_surcharge = float(max(surcharge_m, 0.0))
         p_prev = 0.0
-        rise_prev = 0.0
         p_hit = None
-        rise_hit = None
 
         # 1) 从两侧漫滩向主槽逐步收缩有效过水宽度（等比例）
         for p in np.linspace(0.0, 1.0, 41):
@@ -590,10 +596,8 @@ class SteadyProfileSolver:
             # 2) 每步重算 K_total 与 WSE，直到达到目标壅高
             if rise >= target_surcharge:
                 p_hit = p
-                rise_hit = rise
                 break
             p_prev = p
-            rise_prev = rise
 
         if p_hit is None:
             # 未达到目标壅高：取最大可侵占（到主槽岸线）
@@ -617,10 +621,8 @@ class SteadyProfileSolver:
                 rise_mid = (min_elev + h_mid) - W_base
                 if rise_mid >= target_surcharge:
                     p_hi = p_mid
-                    rise_hit = rise_mid
                 else:
                     p_lo = p_mid
-                    rise_prev = rise_mid
             p_final = p_hi
 
         left_final = sta_min_all + p_final * (left_bank - sta_min_all)
@@ -633,6 +635,9 @@ class SteadyProfileSolver:
         if self._effective_bank_stations is None or len(self._effective_bank_stations) < n_xs_eff:
             self._effective_bank_stations = [None] * n_xs_eff
         self._effective_bank_stations[station_index] = (float(left_final), float(right_final))
+        # 兼容外部调用：同步更新“有效 bank_stations”输出容器
+        if self._bank_stations is not None and station_index < len(self._bank_stations):
+            self._bank_stations[station_index] = (float(left_final), float(right_final))
 
         return float(left_final), float(right_final)
 
@@ -655,6 +660,8 @@ class SteadyProfileSolver:
         Args:
             h: Water depth above cross-section minimum elevation (m).
             station_index: Index into self._xs_array and ancillary arrays.
+            effective_limits: 可选有效过水边界 (left_eff, right_eff)，
+                用于 Floodway Encroachment 试算；None 时使用已记录边界或全断面。
 
         Returns:
             (K_total, alpha)
@@ -712,10 +719,11 @@ class SteadyProfileSolver:
         if xs is None or not hasattr(xs, "distances") or not hasattr(xs, "elevations"):
             return _fallback()
 
-        if not self._bank_stations or station_index >= len(self._bank_stations):
+        _banks_ref = self._channel_bank_stations if self._channel_bank_stations else self._bank_stations
+        if not _banks_ref or station_index >= len(_banks_ref):
             return _fallback()
 
-        left_bank, right_bank = self._bank_stations[station_index]
+        left_bank, right_bank = _banks_ref[station_index]
         if left_bank is None or right_bank is None or float(left_bank) >= float(right_bank):
             return _fallback()
 
@@ -725,10 +733,25 @@ class SteadyProfileSolver:
 
         sta_min_all = float(np.min(stations_arr))
         sta_max_all = float(np.max(stations_arr))
+        left_bank = float(left_bank)
+        right_bank = float(right_bank)
+        eff_left, eff_right = self._resolve_effective_flow_limits(
+            station_index=station_index,
+            sta_min_all=sta_min_all,
+            sta_max_all=sta_max_all,
+            left_bank=left_bank,
+            right_bank=right_bank,
+            effective_limits=effective_limits,
+        )
 
         # If bank stations span the entire cross-section (no overbank),
         # fall back to single-zone to avoid numerical artifacts.
-        if float(left_bank) <= sta_min_all + 0.01 and float(right_bank) >= sta_max_all - 0.01:
+        if (
+            left_bank <= sta_min_all + 0.01
+            and right_bank >= sta_max_all - 0.01
+            and eff_left <= sta_min_all + 0.01
+            and eff_right >= sta_max_all - 0.01
+        ):
             return _fallback()
 
         # 获取完整 Manning n 分段（如果有）用于 n-value break point 细分
@@ -736,21 +759,26 @@ class SteadyProfileSolver:
         if self._manning_n_segments and station_index < len(self._manning_n_segments):
             _n_segs = self._manning_n_segments[station_index]
 
-        K_lob, A_lob = self._zone_conveyance(
-            stations_arr, elevations_arr, water_level,
-            sta_min=sta_min_all, sta_max=float(left_bank),
-            n=_n_lob(station_index), n_segments=_n_segs,
-        )
+        # Encroachment 生效时，仅在 [eff_left, eff_right] 范围内计算有效过水输水能力
+        K_lob, A_lob = 0.0, 0.0
+        if eff_left < left_bank - 1e-6:
+            K_lob, A_lob = self._zone_conveyance(
+                stations_arr, elevations_arr, water_level,
+                sta_min=eff_left, sta_max=left_bank,
+                n=_n_lob(station_index), n_segments=_n_segs,
+            )
         K_ch, A_ch = self._zone_conveyance(
             stations_arr, elevations_arr, water_level,
-            sta_min=float(left_bank), sta_max=float(right_bank),
+            sta_min=left_bank, sta_max=right_bank,
             n=_n_ch(station_index), n_segments=_n_segs,
         )
-        K_rob, A_rob = self._zone_conveyance(
-            stations_arr, elevations_arr, water_level,
-            sta_min=float(right_bank), sta_max=sta_max_all,
-            n=_n_rob(station_index), n_segments=_n_segs,
-        )
+        K_rob, A_rob = 0.0, 0.0
+        if eff_right > right_bank + 1e-6:
+            K_rob, A_rob = self._zone_conveyance(
+                stations_arr, elevations_arr, water_level,
+                sta_min=right_bank, sta_max=eff_right,
+                n=_n_rob(station_index), n_segments=_n_segs,
+            )
 
         K_total = K_lob + K_ch + K_rob
         A_total = A_lob + A_ch + A_rob
@@ -772,9 +800,14 @@ class SteadyProfileSolver:
                     ifa_right = float(blk.get('right_sta_m', blk.get('sta_r', 0)))
                     ifa_elev = float(blk.get('elevation_m', blk.get('elev', 1e9)))
                     if water_level < ifa_elev:
+                        # 仅扣除有效过水边界内的 IFA 区段，避免与 encroachment 重复扣减
+                        ifa_left_eff = max(ifa_left, eff_left)
+                        ifa_right_eff = min(ifa_right, eff_right)
+                        if ifa_right_eff <= ifa_left_eff + 1e-6:
+                            continue
                         A_blk, P_blk = self._segment_area_perimeter(
                             stations_arr, elevations_arr, water_level,
-                            ifa_left, ifa_right)
+                            ifa_left_eff, ifa_right_eff)
                         A_ineff += A_blk
                         P_ineff += P_blk
                 if A_ineff > 0.0:
@@ -782,7 +815,7 @@ class SteadyProfileSolver:
                     # 湿周：排除 IFA 段的湿周，但保留活跃区域的湿周
                     _, P_total_full = self._segment_area_perimeter(
                         stations_arr, elevations_arr, water_level,
-                        sta_min_all, sta_max_all)
+                        eff_left, eff_right)
                     P_eff = max(P_total_full - P_ineff, P_total_full * 0.1)
                     R_eff = A_eff / max(P_eff, 1e-9)
                     # 等效 n: 从原 K_total 反推
@@ -1548,19 +1581,32 @@ class SteadyProfileSolver:
 
             # 计算下游分区 K 用于加权 reach length
             _K_ds_lob, _K_ds_ch, _K_ds_rob = 0.0, K_ds, 0.0
-            if hasattr(self, '_bank_stations') and self._bank_stations and i + 1 < len(self._bank_stations or []):
+            _banks_ref = self._channel_bank_stations if self._channel_bank_stations else self._bank_stations
+            if _banks_ref and i + 1 < len(_banks_ref):
                 xs_ds = self._xs_array[i + 1] if self._xs_array and i + 1 < len(self._xs_array) else None
                 if xs_ds is not None and hasattr(xs_ds, 'distances'):
-                    _lb, _rb = self._bank_stations[i + 1]
+                    _lb, _rb = _banks_ref[i + 1]
                     _sta = np.asarray(xs_ds.distances)
                     _ele = np.asarray(xs_ds.elevations)
                     _wl = float(xs_ds.min_elevation) + h_ds
                     _n_l = self._manning_n_lob[i+1] if self._manning_n_lob and i+1 < len(self._manning_n_lob) else self.n
                     _n_c = self._manning_ns[i+1] if self._manning_ns and i+1 < len(self._manning_ns) else self.n
                     _n_r = self._manning_n_rob[i+1] if self._manning_n_rob and i+1 < len(self._manning_n_rob) else self.n
-                    _K_ds_lob, _ = self._zone_conveyance(_sta, _ele, _wl, float(np.min(_sta)), float(_lb), _n_l)
+                    _sta_min = float(np.min(_sta))
+                    _sta_max = float(np.max(_sta))
+                    _eff_l, _eff_r = self._resolve_effective_flow_limits(
+                        station_index=i + 1,
+                        sta_min_all=_sta_min,
+                        sta_max_all=_sta_max,
+                        left_bank=float(_lb),
+                        right_bank=float(_rb),
+                        effective_limits=None,
+                    )
+                    if _eff_l < float(_lb) - 1e-6:
+                        _K_ds_lob, _ = self._zone_conveyance(_sta, _ele, _wl, _eff_l, float(_lb), _n_l)
                     _K_ds_ch, _ = self._zone_conveyance(_sta, _ele, _wl, float(_lb), float(_rb), _n_c)
-                    _K_ds_rob, _ = self._zone_conveyance(_sta, _ele, _wl, float(_rb), float(np.max(_sta)), _n_r)
+                    if _eff_r > float(_rb) + 1e-6:
+                        _K_ds_rob, _ = self._zone_conveyance(_sta, _ele, _wl, float(_rb), _eff_r, _n_r)
 
             # 加权平均 reach length
             _K_sum = _K_ds_lob + _K_ds_ch + _K_ds_rob
@@ -1907,6 +1953,8 @@ class SteadyProfileSolver:
         if _mixed_flow_flag:
             W, h = self._solve_mixed_flow(Q, W, bed, n_xs, x,
                                           contraction_coef, expansion_coef)
+        # 记录最近一次绝对水位线，供 Floodway Encroachment 基准水位使用
+        self._last_wse_profile = np.asarray(W, dtype=float).copy()
         return {"x": x, "h": h, "W": W, "Q": Q_arr, "bed": bed,
                 "method": "standard_step_variable_xs",
                 "mixed_flow": _mixed_flow_flag,
@@ -2404,6 +2452,340 @@ class SteadyProfileSolver:
 
         h_final = np.maximum(W_final - bed_arr, 0.001)
         return W_final, h_final
+
+    def _solve_looped_network(self, Q_total, branches, junction_nodes):
+        '''
+        Hardy-Cross 方法求解环状河网的流量分配。
+
+        原理（第一性原理）:
+        1. 环路约束: 沿任一闭合环路，总水头损失 = 0
+        2. 节点约束: 流入 = 流出（连续方程）
+        3. 迭代: 对每个环路计算修正流量 dQ = -sum(h_L) / sum(dh_L/dQ)
+
+        branches: list of dict, 每个分支:
+          - xs_indices: 断面索引列表
+          - connects: (from_node, to_node)
+        junction_nodes: list of dict:
+          - inflows: 进入该节点的分支
+          - outflows: 离开该节点的分支
+        '''
+        q_total = float(Q_total)
+        n_branch = len(branches or [])
+        if n_branch <= 0:
+            return {
+                "converged": True,
+                "iterations": 0,
+                "branch_flows": [],
+                "branches": [],
+                "loops": [],
+                "max_loop_residual": 0.0,
+                "max_mass_error": 0.0,
+            }
+
+        # 基本健壮性检查：确保每条分支都携带连接节点和断面索引
+        branch_connects: List[Tuple[object, object]] = []
+        branch_xs: List[List[int]] = []
+        for i, br in enumerate(branches):
+            if not isinstance(br, dict):
+                raise ValueError(f"branches[{i}] 必须是 dict")
+            xs_idx = [int(v) for v in (br.get("xs_indices") or [])]
+            if len(xs_idx) == 0:
+                raise ValueError(f"branches[{i}] 缺少 xs_indices")
+            conn = br.get("connects")
+            if not isinstance(conn, (list, tuple)) or len(conn) != 2:
+                raise ValueError(f"branches[{i}] 缺少 connects=(from_node,to_node)")
+            branch_connects.append((conn[0], conn[1]))
+            branch_xs.append(xs_idx)
+
+        # 构建分支编号映射：支持 junction_nodes 里用索引或分支 id 引用
+        branch_ref_to_idx: Dict[object, int] = {}
+        for i, br in enumerate(branches):
+            branch_ref_to_idx[i] = i
+            branch_ref_to_idx[str(i)] = i
+            if "id" in br:
+                branch_ref_to_idx[br["id"]] = i
+                branch_ref_to_idx[str(br["id"])] = i
+
+        def _resolve_branch_indices(values) -> List[int]:
+            out: List[int] = []
+            for v in (values or []):
+                idx = None
+                if isinstance(v, int) and 0 <= v < n_branch:
+                    idx = v
+                elif isinstance(v, str):
+                    if v in branch_ref_to_idx:
+                        idx = branch_ref_to_idx[v]
+                    else:
+                        try:
+                            vv = int(v)
+                            if 0 <= vv < n_branch:
+                                idx = vv
+                        except Exception:
+                            idx = None
+                elif isinstance(v, dict) and ("id" in v) and (v["id"] in branch_ref_to_idx):
+                    idx = branch_ref_to_idx[v["id"]]
+                if idx is not None and idx not in out:
+                    out.append(idx)
+            return out
+
+        # 用连通图检测闭合环路（无向图），并生成“有方向环路边序列”
+        # 每个元素为 (branch_idx, sign): sign=+1 表示沿分支 connects 方向，-1 表示反向
+        adjacency: Dict[object, List[Tuple[object, int, int]]] = {}
+        for e_idx, (u, v) in enumerate(branch_connects):
+            adjacency.setdefault(u, []).append((v, e_idx, +1))
+            adjacency.setdefault(v, []).append((u, e_idx, -1))
+
+        def _find_path(start_node, end_node, skip_edge_idx: int) -> Optional[List[Tuple[int, int]]]:
+            queue = [start_node]
+            prev_node: Dict[object, Optional[object]] = {start_node: None}
+            prev_edge: Dict[object, Tuple[int, int]] = {}
+            while queue:
+                cur = queue.pop(0)
+                if cur == end_node:
+                    break
+                for nxt, e_idx, sgn in adjacency.get(cur, []):
+                    if e_idx == skip_edge_idx:
+                        continue
+                    if nxt in prev_node:
+                        continue
+                    prev_node[nxt] = cur
+                    prev_edge[nxt] = (e_idx, sgn)
+                    queue.append(nxt)
+            if end_node not in prev_node:
+                return None
+            path: List[Tuple[int, int]] = []
+            cur = end_node
+            while prev_node[cur] is not None:
+                e_idx, sgn = prev_edge[cur]
+                path.append((e_idx, sgn))
+                cur = prev_node[cur]
+            path.reverse()
+            return path
+
+        loops: List[List[Tuple[int, int]]] = []
+        seen_loop_keys = set()
+        for e_idx, (u, v) in enumerate(branch_connects):
+            # 用“v -> u 的树外路径 + e_idx 的 u -> v”构造一个闭合环
+            alt_path = _find_path(v, u, skip_edge_idx=e_idx)
+            if not alt_path:
+                continue
+            loop_edges = alt_path + [(e_idx, +1)]
+            key = frozenset([k for k, _ in loop_edges])
+            if key in seen_loop_keys:
+                continue
+            seen_loop_keys.add(key)
+            loops.append(loop_edges)
+
+        # 初始流量：优先读取外部提供；没有就按边界节点做均分初值
+        q = np.zeros(n_branch, dtype=float)
+        q_eps = max(1e-8, abs(q_total) * 1e-8)
+        has_seed = False
+        for i, br in enumerate(branches):
+            for key in ("Q_init", "Q", "flow", "flow_m3s", "q"):
+                if key in br and br[key] is not None:
+                    try:
+                        q[i] = float(br[key])
+                        has_seed = True
+                        break
+                    except Exception:
+                        continue
+
+        # 解析节点连续方程约束
+        node_constraints: List[Tuple[List[int], List[int], float]] = []
+        for jn in (junction_nodes or []):
+            if not isinstance(jn, dict):
+                continue
+            inflow_idx = _resolve_branch_indices(jn.get("inflows", []))
+            outflow_idx = _resolve_branch_indices(jn.get("outflows", []))
+            ext = jn.get("external_flow", jn.get("external", None))
+            if ext is None:
+                # 若节点未声明外部流量，默认：
+                # - 纯出流节点（源）取 +Q_total
+                # - 纯入流节点（汇）取 -Q_total
+                # - 其余内部节点取 0
+                if (len(inflow_idx) == 0) and (len(outflow_idx) > 0):
+                    ext_flow = q_total
+                elif (len(inflow_idx) > 0) and (len(outflow_idx) == 0):
+                    ext_flow = -q_total
+                else:
+                    ext_flow = 0.0
+            else:
+                try:
+                    ext_flow = float(ext)
+                except Exception:
+                    ext_flow = 0.0
+            node_constraints.append((inflow_idx, outflow_idx, float(ext_flow)))
+
+        if not has_seed:
+            # 用边界节点初始化：源节点各出流均分，汇节点各入流均分
+            for inflow_idx, outflow_idx, ext_flow in node_constraints:
+                if ext_flow > 0.0 and len(outflow_idx) > 0:
+                    share = ext_flow / len(outflow_idx)
+                    for bi in outflow_idx:
+                        if abs(q[bi]) <= q_eps:
+                            q[bi] = share
+                elif ext_flow < 0.0 and len(inflow_idx) > 0:
+                    share = abs(ext_flow) / len(inflow_idx)
+                    for bi in inflow_idx:
+                        if abs(q[bi]) <= q_eps:
+                            q[bi] = share
+            # 若仍全为零，给一个极小对称初值避免导数退化
+            if float(np.max(np.abs(q))) <= q_eps:
+                q[:] = q_total / max(n_branch, 1)
+
+        # 节点连续方程投影：把不平衡误差分配到该节点的出流（或入流）
+        def _enforce_node_continuity(n_sweeps: int = 2) -> float:
+            max_err = 0.0
+            for _ in range(max(1, n_sweeps)):
+                for inflow_idx, outflow_idx, ext_flow in node_constraints:
+                    if (len(inflow_idx) == 0) and (len(outflow_idx) == 0):
+                        continue
+                    q_in = float(np.sum([q[k] for k in inflow_idx])) if inflow_idx else 0.0
+                    q_out = float(np.sum([q[k] for k in outflow_idx])) if outflow_idx else 0.0
+                    err = q_in - q_out - ext_flow
+                    max_err = max(max_err, abs(err))
+                    if abs(err) <= 1e-14:
+                        continue
+                    if outflow_idx:
+                        corr = err / len(outflow_idx)
+                        for k in outflow_idx:
+                            q[k] += corr
+                    elif inflow_idx:
+                        corr = -err / len(inflow_idx)
+                        for k in inflow_idx:
+                            q[k] += corr
+            return max_err
+
+        _enforce_node_continuity(n_sweeps=3)
+
+        # 用曼宁阻力线性化构建分支“等效阻抗”：
+        # h_L ≈ R_branch * Q*|Q|，其中 R_branch = Σ[n^2*L/(A^2*R_h^(4/3))]
+        if self._reach_lengths is not None and len(self._reach_lengths) > 0:
+            _dx_default = float(np.mean([max(float(v), 0.1) for v in self._reach_lengths]))
+        else:
+            _n_ref = len(self._bed_elevations) if self._bed_elevations is not None else max(
+                max((max(xs) for xs in branch_xs), default=1) + 1, 2
+            )
+            _dx_default = float(self.length) / max(_n_ref - 1, 1)
+        _dx_default = max(_dx_default, 0.1)
+
+        def _local_n(idx: int) -> float:
+            n_local = self.n
+            if self._manning_ns is not None and idx < len(self._manning_ns):
+                try:
+                    nv = self._manning_ns[idx]
+                    if nv is not None and float(nv) > 0.0:
+                        n_local = float(nv)
+                except Exception:
+                    pass
+            return float(max(n_local, 1e-4))
+
+        def _branch_resistance(branch_idx: int, q_abs: float) -> float:
+            xs_idx = branch_xs[branch_idx]
+            if len(xs_idx) == 0:
+                return 1e6
+            q_ref = max(q_abs, abs(q_total) / max(n_branch, 1) * 0.25, 1e-4)
+            seg_idx = xs_idx[:-1] if len(xs_idx) > 1 else xs_idx
+            coef = 0.0
+            for idx in seg_idx:
+                if idx < 0:
+                    continue
+                try:
+                    y_crit = self._compute_critical_depth(q_ref, idx)
+                    h_ref = max(1.2 * float(y_crit), 0.05)
+                except Exception:
+                    h_ref = 0.5
+                try:
+                    A, _P, Rh, _T = self._get_geometry(h_ref, idx)
+                    A = max(float(A), 1e-6)
+                    Rh = max(float(Rh), 1e-6)
+                except Exception:
+                    A = max(self.B * h_ref, 1e-6)
+                    Rh = max(h_ref, 1e-6)
+                if self._reach_lengths is not None and idx < len(self._reach_lengths):
+                    dx = max(float(self._reach_lengths[idx]), 0.1)
+                else:
+                    dx = _dx_default
+                n_loc = _local_n(idx)
+                coef += (n_loc ** 2) * dx / max(A ** 2 * Rh ** (4.0 / 3.0), 1e-12)
+            return float(max(coef, 1e-9))
+
+        # Hardy-Cross 主迭代
+        max_iter = 120
+        tol_q = max(1e-6, abs(q_total) * 1e-6)
+        converged = False
+        max_loop_residual = 0.0
+        max_mass_error = _enforce_node_continuity(n_sweeps=2)
+        iter_used = 0
+
+        if len(loops) == 0:
+            # 无闭合环：只做节点连续修正后直接返回
+            converged = max_mass_error <= tol_q
+            iter_used = 0
+        else:
+            for it in range(1, max_iter + 1):
+                iter_used = it
+                max_corr = 0.0
+                max_loop_residual = 0.0
+
+                for loop_edges in loops:
+                    numerator = 0.0
+                    denominator = 0.0
+                    for bi, sgn in loop_edges:
+                        q_i = float(q[bi])
+                        r_i = _branch_resistance(bi, abs(q_i))
+                        h_i = r_i * q_i * abs(q_i)  # 沿分支方向的有符号损失
+                        numerator += float(sgn) * h_i
+                        denominator += 2.0 * r_i * max(abs(q_i), q_eps)
+
+                    max_loop_residual = max(max_loop_residual, abs(numerator))
+                    if denominator <= 1e-14:
+                        continue
+
+                    dQ = -numerator / denominator
+                    # 数值稳定：限制单次校正幅度，避免环网大步震荡
+                    dQ = float(np.clip(dQ, -0.5 * max(abs(q_total), 1.0), 0.5 * max(abs(q_total), 1.0)))
+                    max_corr = max(max_corr, abs(dQ))
+                    for bi, sgn in loop_edges:
+                        q[bi] += float(sgn) * dQ
+
+                max_mass_error = _enforce_node_continuity(n_sweeps=2)
+                if max_corr <= tol_q and max_mass_error <= tol_q:
+                    converged = True
+                    break
+
+        # 组装输出结果
+        branch_res = []
+        branch_hl = []
+        branches_out = []
+        for i, br in enumerate(branches):
+            r_i = _branch_resistance(i, abs(float(q[i])))
+            h_i = r_i * float(q[i]) * abs(float(q[i]))
+            branch_res.append(float(r_i))
+            branch_hl.append(float(h_i))
+            bo = dict(br)
+            bo["Q_m3s"] = float(q[i])
+            bo["headloss_m"] = float(h_i)
+            bo["resistance_coef"] = float(r_i)
+            branches_out.append(bo)
+
+        loops_out = []
+        for lp in loops:
+            loops_out.append(
+                [{"branch_index": int(bi), "sign": int(sgn)} for bi, sgn in lp]
+            )
+
+        return {
+            "converged": bool(converged),
+            "iterations": int(iter_used),
+            "branch_flows": [float(v) for v in q],
+            "branch_headloss": branch_hl,
+            "branch_resistance": branch_res,
+            "branches": branches_out,
+            "loops": loops_out,
+            "max_loop_residual": float(max_loop_residual),
+            "max_mass_error": float(max_mass_error),
+        }
 
 
     # General solve entry
