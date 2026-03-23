@@ -1364,6 +1364,60 @@ def _extract_bridge_params(hdf: h5py.File, lf: float) -> list[dict]:
                 ]
                 if len(deck_pts) >= 2:
                     bridge_dict["deck_span_m"] = float(max(deck_pts) - min(deck_pts))
+        # --- Arch Lid Profile offset: US approach XS minimum elevation (absolute) ---
+        # Lid Profile elevations are relative to approach XS min elevation.
+        # This offset converts them to absolute elevations in the solver.
+        us_xs_min_elev_m = 0.0
+        if bridge_opening_stations and us_rs:
+            _se_info_path = "Geometry/Cross Sections/Station Elevation Info"
+            _se_vals_path = "Geometry/Cross Sections/Station Elevation Values"
+            _xs_attrs_path = "Geometry/Cross Sections/Attributes"
+            if (_se_info_path in hdf and _se_vals_path in hdf
+                    and _xs_attrs_path in hdf):
+                try:
+                    _se_info = hdf[_se_info_path][:]
+                    _se_vals = np.asarray(hdf[_se_vals_path][:], dtype=float)
+                    _xs_attrs2 = hdf[_xs_attrs_path][:]
+                    _us_rs_target = us_rs.strip()
+                    for _xi, _xa in enumerate(_xs_attrs2):
+                        _xa_rs = (
+                            _decode_bytes(_xa["RS"]).strip()
+                            if "RS" in _xa.dtype.names else ""
+                        )
+                        if _xa_rs == _us_rs_target and _xi < len(_se_info):
+                            _start = int(_se_info[_xi][0])
+                            _count = int(_se_info[_xi][1])
+                            if _count > 0 and _start + _count <= len(_se_vals):
+                                us_xs_min_elev_m = (
+                                    float(np.min(_se_vals[_start:_start + _count, 1]))
+                                    * lf
+                                )
+                            break
+                except Exception:
+                    us_xs_min_elev_m = 0.0
+        # Arch detection: Lid Profile tapers from 0 at both ends with curved interior.
+        # Distinguishes arch from deck bridges:
+        #   Arch: interior elevations vary significantly (CV > 0.15)
+        #   Deck: interior elevations nearly constant (CV ~ 0)
+        _is_arch_lid = False
+        if bridge_opening_stations and len(bridge_opening_elevations) >= 4:
+            _lid_arr = np.array(bridge_opening_elevations, dtype=float)
+            _lid_max = float(np.max(_lid_arr))
+            if _lid_max > 0:
+                _lid_start_frac = abs(_lid_arr[0]) / _lid_max
+                _lid_end_frac = abs(_lid_arr[-1]) / _lid_max
+                # Must taper to near 0 at both ends
+                if _lid_start_frac < 0.10 and _lid_end_frac < 0.10:
+                    # Interior segment (elev > 5% max): must show significant curvature
+                    _interior = _lid_arr[_lid_arr > 0.05 * _lid_max]
+                    if len(_interior) >= 3:
+                        _cv = float(np.std(_interior)) / float(np.mean(_interior)) if np.mean(_interior) > 0 else 0.0
+                        _is_arch_lid = _cv > 0.10  # arch curves; deck is flat (cv ~ 0)
+        if _is_arch_lid:
+            bridge_dict["lid_offset_m"] = us_xs_min_elev_m
+            bridge_dict["bridge_type"] = "arch"
+        # --- end lid_offset_m ---
+
         bridges.append(bridge_dict)
 
     return bridges

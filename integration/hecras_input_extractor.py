@@ -719,6 +719,59 @@ class HECRASInputExtractor:
                     mode = _get_field_s(srow, "Mode")
                     up_dist = _get_field_f(srow, "Upstream Distance")
                     weir_width = _get_field_f(srow, "Weir Width")
+                    # --- Extract Lid Profile (arch intrados) from Profile Data + Table Info ---
+                    _lid_stations_ft: list[float] = []
+                    _lid_elevations_ft: list[float] = []
+                    _lid_offset_ft: float = 0.0
+                    _bridge_opening_width_ft: float = float(weir_width) if not math.isnan(weir_width) else 0.0
+                    _prof_data_ds = self._hdf_get(hdf, "Geometry/Structures/Profile Data")
+                    _table_info_ds = self._hdf_get(hdf, "Geometry/Structures/Table Info")
+                    _xs_se_info_ds = self._hdf_get(hdf, "Geometry/Cross Sections/Station Elevation Info")
+                    _xs_se_vals_ds = self._hdf_get(hdf, "Geometry/Cross Sections/Station Elevation Values")
+                    _xs_attrs_ds = self._hdf_get(hdf, "Geometry/Cross Sections/Attributes")
+                    if (_prof_data_ds is not None and _table_info_ds is not None
+                            and i < len(_table_info_ds[...])):
+                        _prof_data = _prof_data_ds[...]
+                        _table_info = _table_info_ds[...]
+                        _ti = _table_info[i]
+                        _ti_names = _ti.dtype.names if hasattr(_ti, "dtype") else ()
+                        # Find US BR Lid Profile columns
+                        _lid_idx_col = next((n for n in (_ti_names or ()) if "lid" in n.lower() and "us" in n.lower() and "index" in n.lower()), None)
+                        _lid_cnt_col = next((n for n in (_ti_names or ()) if "lid" in n.lower() and "us" in n.lower() and "count" in n.lower()), None)
+                        if _lid_idx_col is None:
+                            # fallback: any lid index/count
+                            _lid_idx_col = next((n for n in (_ti_names or ()) if "lid" in n.lower() and "index" in n.lower()), None)
+                            _lid_cnt_col = next((n for n in (_ti_names or ()) if "lid" in n.lower() and "count" in n.lower()), None)
+                        if _lid_idx_col and _lid_cnt_col:
+                            _lid_start = int(_ti[_lid_idx_col])
+                            _lid_count = int(_ti[_lid_cnt_col])
+                            if _lid_count > 0 and _lid_start + _lid_count <= len(_prof_data):
+                                _lid_data = _prof_data[_lid_start:_lid_start + _lid_count]
+                                _lid_stations_ft = [float(r[0]) for r in _lid_data]
+                                _lid_elevations_ft = [float(r[1]) for r in _lid_data]
+                                # Opening width = station range where lid > 0
+                                _lid_nonzero = [s for s, e in zip(_lid_stations_ft, _lid_elevations_ft) if e > 0.01]
+                                if len(_lid_nonzero) >= 2:
+                                    _bridge_opening_width_ft = float(_lid_nonzero[-1]) - float(_lid_nonzero[0])
+                    # Get US approach XS min elevation as Lid Profile offset (relative -> absolute)
+                    _us_rs_val = _get_field_s(srow, "US RS") if "US RS" in srow.dtype.names else ""
+                    if (_xs_se_info_ds is not None and _xs_se_vals_ds is not None
+                            and _xs_attrs_ds is not None and _us_rs_val):
+                        try:
+                            _se_info = _xs_se_info_ds[...]
+                            _se_vals = np.asarray(_xs_se_vals_ds[...], dtype=float)
+                            _xs_attrs_arr = _xs_attrs_ds[...]
+                            for _xi, _xa in enumerate(_xs_attrs_arr):
+                                _xa_rs = _get_field_s(_xa, "RS") if "RS" in _xa.dtype.names else ""
+                                if _xa_rs.strip() == _us_rs_val.strip() and _xi < len(_se_info):
+                                    _xstart = int(_se_info[_xi][0])
+                                    _xcount = int(_se_info[_xi][1])
+                                    if _xcount > 0 and _xstart + _xcount <= len(_se_vals):
+                                        _lid_offset_ft = float(np.min(_se_vals[_xstart:_xstart + _xcount, 1]))
+                                    break
+                        except Exception:
+                            _lid_offset_ft = 0.0
+
                     bridges.append({
                         "structure_id": i,
                         "type": stype,
@@ -731,8 +784,15 @@ class HECRASInputExtractor:
                         "weir_width_ft": float(weir_width) if not math.isnan(weir_width) else None,
                         "weir_width_m": float(weir_width * LF) if not math.isnan(weir_width) else None,
                         "piers": piers_by_sid.get(i, []),
-                        "coefficients": coef_by_sid.get(i, {})
-                        # TODO: Extract deck/roadway shapes from "Structures Profile Data" + "Structures Table Info" if needed.
+                        "coefficients": coef_by_sid.get(i, {}),
+                        # Lid Profile (arch intrados) for arch bridge effective area calculation
+                        "lid_stations_ft": _lid_stations_ft if _lid_stations_ft else None,
+                        "lid_elevations_ft": _lid_elevations_ft if _lid_elevations_ft else None,
+                        "lid_offset_ft": _lid_offset_ft if _lid_offset_ft != 0.0 or _lid_stations_ft else None,
+                        "bridge_opening_width_ft": _bridge_opening_width_ft if _bridge_opening_width_ft > 0 else (
+                            float(weir_width) if not math.isnan(weir_width) else None),
+                        "bridge_opening_width_m": _bridge_opening_width_ft * LF if _bridge_opening_width_ft > 0 else (
+                            float(weir_width * LF) if not math.isnan(weir_width) else None),
                     })
                 except Exception:
                     continue
