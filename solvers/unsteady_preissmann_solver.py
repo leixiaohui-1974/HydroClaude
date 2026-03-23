@@ -308,15 +308,18 @@ class PreissmannSolver:
         A_avg_n = 0.5 * (A_Ln  + A_Rn)
         K_avg_n = 0.5 * (K_Ln  + K_Rn)
         Q_avg_n = 0.5 * (Q_Ln  + Q_Rn)
-        # Average Friction Slope method (HEC-RAS default for XS):
-        # Sf = 0.5 * (Q²/K_L² + Q²/K_R²) — average of individual friction slopes
-        # This gives higher Sf than Average Conveyance when K_L != K_R
-        K2_L = K_L**2 + 1e-30
-        K2_R = K_R**2 + 1e-30
-        K2_Ln = K_Ln**2 + 1e-30
-        K2_Rn = K_Rn**2 + 1e-30
-        Sf   = 0.5 * (Q_avg * np.abs(Q_avg) / K2_L + Q_avg * np.abs(Q_avg) / K2_R)
-        Sf_n = 0.5 * (Q_avg_n * np.abs(Q_avg_n) / K2_Ln + Q_avg_n * np.abs(Q_avg_n) / K2_Rn)
+        # HEC-RAS 4-point averaged Preissmann discretization:
+        # First average Q, K, A over 4 points (2 space × 2 time), then compute Sf
+        # This is mathematically different from averaging Sf values (Jensen's inequality)
+        Q_4pt = theta * Q_avg + (1.0 - theta) * Q_avg_n
+        K_4pt = theta * K_avg + (1.0 - theta) * K_avg_n
+        A_4pt = theta * A_avg + (1.0 - theta) * A_avg_n
+        B_4pt = theta * 0.5 * (B_L + B[1:]) + (1.0 - theta) * 0.5 * (B_n[:-1] + B_n[1:]) if len(B) > 1 else 0.5 * (B_L + B[1:])
+        dZ_4pt = theta * (Z_R - Z_L) + (1.0 - theta) * (Z_Rn - Z_Ln)
+        K2_4pt = K_4pt**2 + 1e-30
+        Sf   = Q_4pt * np.abs(Q_4pt) / K2_4pt
+        gA_4pt = g * A_4pt
+        # Keep separate time-level values for Jacobian compatibility
         gA   = g * A_avg
         gA_n = g * A_avg_n
         beta_L  = bm_L  * Q_L**2  / A_L
@@ -350,14 +353,14 @@ class PreissmannSolver:
             + (1.0-theta) * (Q_Rn - Q_Ln) / dx
         )
         eq_m = 2 * np.arange(nm1) + 2
+        # Contraction/expansion loss: 4-point averaged
+        Sf_loss_4pt = theta * Sf_loss + (1.0 - theta) * Sf_loss_n if not isinstance(Sf_loss, float) or Sf_loss != 0.0 else 0.0
         F[eq_m] = (
             sigma   * (Q_R  + Q_L  - Q_Rn  - Q_Ln) / (2.0 * dt)
             + sigma   * theta       * (beta_R  - beta_L)  / dx
             + sigma_n * (1.0-theta) * (beta_Rn - beta_Ln) / dx
-            + theta       * gA   * dZ   / dx
-            + (1.0-theta) * gA_n * dZ_n / dx
-            + theta       * gA   * (Sf   + Sf_loss)
-            + (1.0-theta) * gA_n * (Sf_n + Sf_loss_n)
+            + gA_4pt * dZ_4pt / dx
+            + gA_4pt * (Sf + Sf_loss_4pt)
         )
         col_Z_L = 2 * np.arange(nm1)
         col_Q_L = 2 * np.arange(nm1) + 1
@@ -371,13 +374,14 @@ class PreissmannSolver:
         dbeta_L_dQL =  2.0 * bm_L * Q_L / A_L
         dbeta_R_dZR = -bm_R * (Q_R**2) / (A_R**2) * B_R
         dbeta_R_dQR =  2.0 * bm_R * Q_R / A_R
-        dSf_dQavg = np.abs(Q_avg) * (1.0 / K2_L + 1.0 / K2_R)
-        dgASf_dZL = g * 0.5 * B_L * Sf
-        dgASf_dZR = g * 0.5 * B_R * Sf
-        dgASf_dQL = gA * dSf_dQavg * 0.5
-        dgASf_dQR = gA * dSf_dQavg * 0.5
-        dgAdZ_dZL = g * 0.5 * B_L * dZ / dx - gA / dx
-        dgAdZ_dZR = g * 0.5 * B_R * dZ / dx + gA / dx
+        # Jacobian using 4-point averaged quantities
+        dSf_dQavg = 2.0 * np.abs(Q_4pt) / K2_4pt * theta * 0.5  # d(Sf)/d(Q_L or Q_R)
+        dgASf_dZL = g * 0.5 * theta * B_L * Sf  # d(gA_4pt*Sf)/dZ_L approx
+        dgASf_dZR = g * 0.5 * theta * B[1:] * Sf if len(B) > 1 else dgASf_dZL
+        dgASf_dQL = gA_4pt * dSf_dQavg
+        dgASf_dQR = gA_4pt * dSf_dQavg
+        dgAdZ_dZL = g * 0.5 * theta * B_L * dZ_4pt / dx - gA_4pt / dx * theta
+        dgAdZ_dZR = g * 0.5 * theta * B[1:] * dZ_4pt / dx + gA_4pt / dx * theta if len(B) > 1 else dgAdZ_dZL
         Jm_ZL = theta * (sigma * (-dbeta_L_dZL / dx) + dgAdZ_dZL + dgASf_dZL)
         Jm_QL = sigma / (2.0 * dt) + theta * (sigma * (-dbeta_L_dQL / dx) + dgASf_dQL)
         Jm_ZR = theta * (sigma * ( dbeta_R_dZR / dx) + dgAdZ_dZR + dgASf_dZR)
