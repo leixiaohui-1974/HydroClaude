@@ -83,6 +83,67 @@ class CrossSection:
         """计算水面宽度"""
         return self.compute_geometry(depth).width
 
+    def get_invert_elevation(self) -> float:
+        """返回断面最低点高程（子类可覆盖）"""
+        return getattr(self, 'invert_elevation', 0.0)
+
+    def compute_geometry_from_wse(self, wse: float) -> 'SectionGeometry':
+        """按绝对水位计算断面几何"""
+        depth = wse - self.get_invert_elevation()
+        return self.compute_geometry(max(depth, 0.0))
+
+    def compute_area_from_wse(self, wse: float) -> float:
+        """按水位计算过水面积 A(Z)"""
+        return self.compute_geometry_from_wse(wse).area
+
+    def compute_width_from_wse(self, wse: float) -> float:
+        """按水位计算水面宽度 B(Z) = dA/dZ"""
+        return self.compute_geometry_from_wse(wse).width
+
+    def compute_perimeter_from_wse(self, wse: float) -> float:
+        """按水位计算湿周 P(Z)"""
+        return self.compute_geometry_from_wse(wse).perimeter
+
+    def compute_conveyance(self, wse: float, manning_n: float) -> float:
+        """计算输水能力 K(Z) = (1/n) * A * R^(2/3)"""
+        geom = self.compute_geometry_from_wse(wse)
+        if geom.area <= 0 or geom.hydraulic_radius <= 0:
+            return 0.0
+        return (1.0 / manning_n) * geom.area * geom.hydraulic_radius ** (2.0 / 3.0)
+
+    def compute_dA_dZ(self, wse: float, dz: float = 0.001) -> float:
+        """计算 dA/dZ（数值中心差分），等于水面宽度 B"""
+        a_plus = self.compute_area_from_wse(wse + dz)
+        a_minus = self.compute_area_from_wse(wse - dz)
+        return (a_plus - a_minus) / (2.0 * dz)
+
+    def compute_dK_dZ(self, wse: float, manning_n: float, dz: float = 0.001) -> float:
+        """计算 dK/dZ（数值中心差分）"""
+        k_plus = self.compute_conveyance(wse + dz, manning_n)
+        k_minus = self.compute_conveyance(wse - dz, manning_n)
+        return (k_plus - k_minus) / (2.0 * dz)
+
+    def compute_friction_slope(self, wse: float, Q: float, manning_n: float) -> float:
+        """计算摩擦坡降 Sf = Q|Q| / K^2"""
+        K = self.compute_conveyance(wse, manning_n)
+        if K <= 0:
+            return 0.0
+        return Q * abs(Q) / (K * K)
+
+    def compute_dSf_dZ(self, wse: float, Q: float, manning_n: float, dz: float = 0.001) -> float:
+        """计算 dSf/dZ（数值中心差分）"""
+        sf_plus = self.compute_friction_slope(wse + dz, Q, manning_n)
+        sf_minus = self.compute_friction_slope(wse - dz, Q, manning_n)
+        return (sf_plus - sf_minus) / (2.0 * dz)
+
+    def compute_dSf_dQ(self, wse: float, Q: float, manning_n: float) -> float:
+        """计算 dSf/dQ = 2|Q| / K^2"""
+        K = self.compute_conveyance(wse, manning_n)
+        if K <= 0:
+            return 0.0
+        return 2.0 * abs(Q) / (K * K)
+
+
 
 class RectangularSection(CrossSection):
     """
@@ -413,6 +474,14 @@ class NaturalSection(CrossSection):
 
         # 找到最低点
         self.min_elevation = np.min(self.elevations)
+
+    @property
+    def invert_elevation(self):
+        return self.min_elevation
+
+    def get_invert_elevation(self) -> float:
+        return self.min_elevation
+
 
     def compute_geometry(self, depth: float) -> SectionGeometry:
         """计算自然断面几何参数"""
