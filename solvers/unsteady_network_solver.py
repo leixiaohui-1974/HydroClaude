@@ -31,6 +31,9 @@ class JunctionInfo:
     name: str
     upstream_reaches: list = field(default_factory=list)
     downstream_reaches: list = field(default_factory=list)
+    # Junction storage: elevation (m) vs cumulative volume (m³) from HEC-RAS
+    storage_elevations: np.ndarray = None
+    storage_volumes: np.ndarray = None
 
 
 class UnsteadyNetworkSolver:
@@ -288,8 +291,8 @@ class UnsteadyNetworkSolver:
                 Z_old = Z_n_dict[rname]
                 Q_old = Q_n_dict[rname]
 
-                A, B, K = solver._compute_hydraulics_all(Z_cur, Q_cur)
-                A_n, B_n, K_n = solver._compute_hydraulics_all(Z_old, Q_old)
+                A, B, K, bm = solver._compute_hydraulics_all(Z_cur, Q_cur)
+                A_n, B_n, K_n, bm_n = solver._compute_hydraulics_all(Z_old, Q_old)
 
                 # Upstream BC
                 Z_up_val = None
@@ -316,7 +319,7 @@ class UnsteadyNetworkSolver:
 
                 F_local, J_local = solver._build_system(
                     Z_cur, Q_cur, Z_old, Q_old,
-                    A, B, K, A_n, B_n, K_n,
+                    A, B, K, bm, A_n, B_n, K_n, bm_n,
                     dt, Q_up_val, t_new, ds_bc,
                     Z_up=Z_up_val,
                     ds_junction_Z=ds_junc_Z,
@@ -342,8 +345,10 @@ class UnsteadyNetworkSolver:
                 master_o = offsets[master_rname]
                 n_master = self.reaches[master_rname].reach_data.n_xs
 
-                # Master's BC row → flow conservation: ΣQ_in - ΣQ_out = 0
-                fc_row = master_o + 2 * n_master - 1  # last row (was DS Z BC)
+                # Master's BC row → flow conservation with junction storage:
+                # ΣQ_in - ΣQ_out - dV_junc/dt = 0
+                # dV_junc/dt ≈ (V(Z_junc) - V(Z_junc_old)) / dt
+                fc_row = master_o + 2 * n_master - 1
                 J_global[fc_row, :] = 0
                 F_val = 0.0
                 for rname_c, ep_c, col_Z_c, col_Q_c in conns:
@@ -353,6 +358,29 @@ class UnsteadyNetworkSolver:
                     else:
                         F_val -= X[col_Q_c]
                         J_global[fc_row, col_Q_c] = -1.0
+
+                # Junction storage: dV/dt term
+                if junc.storage_elevations is not None and junc.storage_volumes is not None:
+                    Z_junc_new = float(X[master_col_Z])
+                    # Old junction Z from master reach's old state
+                    if master_ep == "ds":
+                        Z_junc_old = float(Z_n_dict[master_rname][-1])
+                    else:
+                        Z_junc_old = float(Z_n_dict[master_rname][0])
+                    V_new = float(np.interp(Z_junc_new, junc.storage_elevations,
+                                            junc.storage_volumes))
+                    V_old = float(np.interp(Z_junc_old, junc.storage_elevations,
+                                            junc.storage_volumes))
+                    dVdt = (V_new - V_old) / dt
+                    F_val -= dVdt
+                    # Jacobian: dF/dZ_master = -dV/dZ / dt
+                    # dV/dZ ≈ surface area at junction
+                    dz_eps = 0.01
+                    V_plus = float(np.interp(Z_junc_new + dz_eps, junc.storage_elevations,
+                                             junc.storage_volumes))
+                    dVdZ = (V_plus - V_new) / dz_eps
+                    J_global[fc_row, master_col_Z] += -dVdZ / dt
+
                 F_global[fc_row] = F_val
 
                 # Other connections: Z equality to master (already set by ds_junction_Z/Z_up)

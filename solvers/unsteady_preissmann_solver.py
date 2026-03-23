@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any, Optional, List
 import scipy.sparse as sp
 from scipy.sparse.linalg import spsolve
+from physics.property_table import subdivided_conveyance
 
 
 @dataclass
@@ -20,6 +21,15 @@ class UnsteadyReachData:
     manning_n_rob: np.ndarray = None  # Right overbank Manning n [n_xs]
     left_bank: np.ndarray = None      # Left bank station [n_xs] (m)
     right_bank: np.ndarray = None     # Right bank station [n_xs] (m)
+    # Pre-built HEC-RAS property tables (optional, takes precedence over computed)
+    # Each is a list of (elevations, values) arrays per XS, in SI units
+    hecras_pt_elevations: list = None  # [n_xs] of np.ndarray (m)
+    hecras_pt_A: list = None           # [n_xs] of np.ndarray (m²) — storage area
+    hecras_pt_K: list = None           # [n_xs] of np.ndarray (m³/s) — conveyance
+    hecras_pt_B: list = None           # [n_xs] of np.ndarray (m) — top width
+    hecras_pt_beta: list = None        # [n_xs] of np.ndarray — momentum correction factor
+    dx_lob: np.ndarray = None          # LOB reach lengths [n_xs-1] (m)
+    dx_rob: np.ndarray = None          # ROB reach lengths [n_xs-1] (m)
 
 
 @dataclass
@@ -61,18 +71,55 @@ class PreissmannSolver:
         self._build_property_tables()
 
     def _build_property_tables(self, n_pts: int = 201, max_depth: float = 30.0):
-        """Pre-compute A/B/P/K vs depth for all cross sections.
+        """Pre-compute A/B/K vs depth for all cross sections.
 
-        If bank stations and LOB/ROB Manning n are provided, computes
-        subdivided K = K_LOB + K_Chan + K_ROB (HEC-RAS method).
+        Priority:
+        1. HEC-RAS pre-built property tables (hecras_pt_*) — most accurate
+        2. Subdivided K from LOB/Channel/ROB (bank stations + Manning n)
+        3. Single-n fallback
         """
         n = self.n
         reach = self.reach
+
+        # --- Option 1: HEC-RAS property tables ---
+        if (reach.hecras_pt_elevations is not None
+                and reach.hecras_pt_A is not None
+                and reach.hecras_pt_K is not None
+                and reach.hecras_pt_B is not None):
+            # Use depth-based lookup: depth = Z - bed_elevation
+            # HEC-RAS tables are elevation-based; convert to depth for solver
+            self._pt_depths = np.linspace(0, max_depth, n_pts)
+            self._pt_A = np.zeros((n, n_pts))
+            self._pt_B = np.zeros((n, n_pts))
+            self._pt_P = np.zeros((n, n_pts))
+            self._pt_K = np.zeros((n, n_pts))
+            self._pt_beta = np.ones((n, n_pts))  # momentum correction factor
+            has_beta = reach.hecras_pt_beta is not None
+            for i in range(n):
+                bed = reach.bed_elevation[i]
+                elev_table = reach.hecras_pt_elevations[i]
+                depth_table = elev_table - bed
+                A_table = reach.hecras_pt_A[i]
+                K_table = reach.hecras_pt_K[i]
+                B_table = reach.hecras_pt_B[i]
+                for j, d in enumerate(self._pt_depths):
+                    if d <= 0:
+                        continue
+                    self._pt_A[i, j] = max(float(np.interp(d, depth_table, A_table)), 1e-10)
+                    self._pt_K[i, j] = max(float(np.interp(d, depth_table, K_table)), 1e-10)
+                    self._pt_B[i, j] = max(float(np.interp(d, depth_table, B_table)), 1e-6)
+                    if has_beta:
+                        beta_table = reach.hecras_pt_beta[i]
+                        self._pt_beta[i, j] = max(float(np.interp(d, depth_table, beta_table)), 1.0)
+            return
+
+        # --- Option 2/3: Compute from cross-section geometry ---
         self._pt_depths = np.linspace(0, max_depth, n_pts)
         self._pt_A = np.zeros((n, n_pts))
         self._pt_B = np.zeros((n, n_pts))
         self._pt_P = np.zeros((n, n_pts))
         self._pt_K = np.zeros((n, n_pts))
+        self._pt_beta = np.ones((n, n_pts))  # default beta=1.0
         has_subdivide = (reach.left_bank is not None and reach.right_bank is not None
                          and reach.manning_n_lob is not None and reach.manning_n_rob is not None)
         for i in range(n):
@@ -89,85 +136,18 @@ class PreissmannSolver:
                 self._pt_B[i, j] = b
                 self._pt_P[i, j] = p
                 if has_subdivide and hasattr(sec, 'distances') and hasattr(sec, 'elevations'):
-                    # Subdivided K: compute K for LOB, Chan, ROB separately
                     lb = reach.left_bank[i]
                     rb = reach.right_bank[i]
                     n_lob = reach.manning_n_lob[i]
                     n_rob = reach.manning_n_rob[i]
-                    wl = reach.bed_elevation[i] + d  # water level
-                    K_total = self._subdivided_K(sec, wl, lb, rb, n_lob, n_ch, n_rob)
+                    wl = reach.bed_elevation[i] + d
+                    K_total, _A = subdivided_conveyance(
+                        np.asarray(sec.distances), np.asarray(sec.elevations),
+                        wl, lb, rb, n_lob, n_ch, n_rob)
                     self._pt_K[i, j] = max(K_total, 1e-10)
                 else:
                     r = a / p
                     self._pt_K[i, j] = max((1.0 / n_ch) * a * r ** (2.0 / 3.0), 1e-10)
-
-    @staticmethod
-    def _subdivided_K(sec, water_level: float, lb: float, rb: float,
-                      n_lob: float, n_ch: float, n_rob: float) -> float:
-        """Compute subdivided conveyance K = K_LOB + K_Chan + K_ROB."""
-        if not hasattr(sec, 'distances') or not hasattr(sec, 'elevations'):
-            # Fallback for non-natural sections
-            depth = max(water_level - float(np.min(sec.elevations) if hasattr(sec, 'elevations') else 0), 0.01)
-            geom = sec.compute_geometry(depth)
-            a, p = geom.area, max(geom.perimeter, 1e-6)
-            return (1.0 / n_ch) * a * (a / p) ** (2.0 / 3.0)
-
-        dists = sec.distances
-        elevs = sec.elevations
-        K_total = 0.0
-
-        # Three zones: [min_sta, lb), [lb, rb], (rb, max_sta]
-        zones = [
-            (float(dists[0]), lb, n_lob),
-            (lb, rb, n_ch),
-            (rb, float(dists[-1]), n_rob),
-        ]
-        for sta_l, sta_r, n_val in zones:
-            if n_val < 0.001 or sta_r <= sta_l:
-                continue
-            # Compute A and P for this zone at water_level
-            a_zone = 0.0
-            p_zone = 0.0
-            for k in range(len(dists) - 1):
-                x1, y1 = float(dists[k]), float(elevs[k])
-                x2, y2 = float(dists[k + 1]), float(elevs[k + 1])
-                # Clip segment to zone
-                x1c = max(x1, sta_l)
-                x2c = min(x2, sta_r)
-                if x2c <= x1c:
-                    continue
-                # Interpolate elevations at clipped boundaries
-                if x2 > x1:
-                    frac1 = (x1c - x1) / (x2 - x1)
-                    frac2 = (x2c - x1) / (x2 - x1)
-                    y1c = y1 + frac1 * (y2 - y1)
-                    y2c = y1 + frac2 * (y2 - y1)
-                else:
-                    y1c, y2c = y1, y2
-                d1 = max(water_level - y1c, 0)
-                d2 = max(water_level - y2c, 0)
-                if d1 > 0 or d2 > 0:
-                    dx_seg = x2c - x1c
-                    a_zone += 0.5 * (d1 + d2) * dx_seg
-                    # Wetted perimeter
-                    if d1 > 0 and d2 > 0:
-                        seg_len = ((dx_seg)**2 + (y2c - y1c)**2)**0.5
-                        p_zone += seg_len
-                    elif d1 > 0:
-                        # partial
-                        if y2c > y1c:
-                            x_int = x1c + d1 / (y2c - y1c) * dx_seg
-                            p_zone += ((x_int - x1c)**2 + (water_level - y1c)**2)**0.5
-                    elif d2 > 0:
-                        if y1c > y2c:
-                            x_int = x1c + (water_level - y1c) / (y2c - y1c) * dx_seg
-                            p_zone += ((x2c - x_int)**2 + (water_level - y2c)**2)**0.5
-
-            if a_zone > 1e-10 and p_zone > 1e-6:
-                r_zone = a_zone / p_zone
-                K_total += (1.0 / n_val) * a_zone * r_zone ** (2.0 / 3.0)
-
-        return K_total
 
     def solve(self, state0: UnsteadyState, t_end: float, dt: float,
               upstream_bc: Any, downstream_bc: Any,
@@ -232,12 +212,12 @@ class PreissmannSolver:
         Z = Z_n.copy()
         Q = Q_n.copy()
         Q_up = float(upstream_bc(t_np1)) if Z_upstream is None else 0.0
-        A_n, B_n, K_n = self._compute_hydraulics_all(Z_n, Q_n)
+        A_n, B_n, K_n, bm_n = self._compute_hydraulics_all(Z_n, Q_n)
         converged = False
         nr_iter = 0
         for nr_iter in range(1, self.nr_max_iter + 1):
-            A, B, K = self._compute_hydraulics_all(Z, Q)
-            F, J = self._build_system(Z, Q, Z_n, Q_n, A, B, K, A_n, B_n, K_n,
+            A, B, K, bm = self._compute_hydraulics_all(Z, Q)
+            F, J = self._build_system(Z, Q, Z_n, Q_n, A, B, K, bm, A_n, B_n, K_n, bm_n,
                                       dt, Q_up, t_np1, downstream_bc, Z_up=Z_upstream)
             try:
                 delta = spsolve(J.tocsr(), -F)
@@ -280,18 +260,20 @@ class PreissmannSolver:
         A = np.array([np.interp(depths[i], d_tab, self._pt_A[i]) for i in range(n)])
         B = np.array([np.interp(depths[i], d_tab, self._pt_B[i]) for i in range(n)])
         K = np.array([np.interp(depths[i], d_tab, self._pt_K[i]) for i in range(n)])
+        beta_m = np.array([np.interp(depths[i], d_tab, self._pt_beta[i]) for i in range(n)])
         A = np.maximum(A, 1e-6)
         B = np.maximum(B, 0.1)
         K = np.maximum(K, 1e-6)
+        beta_m = np.maximum(beta_m, 1.0)
         if self.slot_enabled:
             mask = depths < self.slot_depth
             if np.any(mask):
                 slot_w = np.maximum(B * self.slot_width_ratio, 0.05)
                 A[mask] = np.maximum(A[mask], slot_w[mask] * self.slot_depth)
                 B[mask] = np.maximum(B[mask], slot_w[mask])
-        return A, B, K
+        return A, B, K, beta_m
 
-    def _build_system(self, Z, Q, Z_n, Q_n, A, B, K, A_n, B_n, K_n, dt, Q_up, t_np1, downstream_bc, Z_up=None, ds_junction_Z=None):
+    def _build_system(self, Z, Q, Z_n, Q_n, A, B, K, bm, A_n, B_n, K_n, bm_n, dt, Q_up, t_np1, downstream_bc, Z_up=None, ds_junction_Z=None):
         n = len(Z)
         neq = 2 * n
         reach = self.reach
@@ -314,10 +296,12 @@ class PreissmannSolver:
         K_L  = K[:-1];   K_R  = K[1:]
         Q_L  = Q[:-1];   Q_R  = Q[1:]
         Z_L  = Z[:-1];   Z_R  = Z[1:]
+        bm_L = bm[:-1];  bm_R = bm[1:]
         A_Ln = A_n[:-1]; A_Rn = A_n[1:]
         K_Ln = K_n[:-1]; K_Rn = K_n[1:]
         Q_Ln = Q_n[:-1]; Q_Rn = Q_n[1:]
         Z_Ln = Z_n[:-1]; Z_Rn = Z_n[1:]
+        bm_Ln = bm_n[:-1]; bm_Rn = bm_n[1:]
         A_avg   = 0.5 * (A_L   + A_R)
         K_avg   = 0.5 * (K_L   + K_R)
         Q_avg   = 0.5 * (Q_L   + Q_R)
@@ -330,10 +314,10 @@ class PreissmannSolver:
         Sf_n = Q_avg_n * np.abs(Q_avg_n) / K2_n
         gA   = g * A_avg
         gA_n = g * A_avg_n
-        beta_L  = Q_L**2  / A_L
-        beta_R  = Q_R**2  / A_R
-        beta_Ln = Q_Ln**2 / A_Ln
-        beta_Rn = Q_Rn**2 / A_Rn
+        beta_L  = bm_L  * Q_L**2  / A_L
+        beta_R  = bm_R  * Q_R**2  / A_R
+        beta_Ln = bm_Ln * Q_Ln**2 / A_Ln
+        beta_Rn = bm_Rn * Q_Rn**2 / A_Rn
         dZ   = Z_R  - Z_L
         dZ_n = Z_Rn - Z_Ln
         # Contraction/expansion loss: Sf_loss = C * |V²_R/2g - V²_L/2g| / dx
@@ -378,10 +362,10 @@ class PreissmannSolver:
         Jc_QL = -theta / dx
         Jc_ZR = B_R / (2.0 * dt)
         Jc_QR = theta / dx
-        dbeta_L_dZL = -(Q_L**2) / (A_L**2) * B_L
-        dbeta_L_dQL =  2.0 * Q_L / A_L
-        dbeta_R_dZR = -(Q_R**2) / (A_R**2) * B_R
-        dbeta_R_dQR =  2.0 * Q_R / A_R
+        dbeta_L_dZL = -bm_L * (Q_L**2) / (A_L**2) * B_L
+        dbeta_L_dQL =  2.0 * bm_L * Q_L / A_L
+        dbeta_R_dZR = -bm_R * (Q_R**2) / (A_R**2) * B_R
+        dbeta_R_dQR =  2.0 * bm_R * Q_R / A_R
         dSf_dQavg = 2.0 * np.abs(Q_avg) / K2
         dgASf_dZL = g * 0.5 * B_L * Sf
         dgASf_dZR = g * 0.5 * B_R * Sf

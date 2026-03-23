@@ -33,33 +33,52 @@ class StageHydrographBC:
 
 
 class NormalDepthBC:
-    """下游正常水深边界条件（Manning 公式反推）。"""
+    """下游正常水深边界条件（Manning 公式反推）。
 
-    def __init__(self, section, manning_n: float, bed_slope: float):
+    支持两种 K 计算方式：
+    1. HEC-RAS Property Table（推荐，精确匹配 HEC-RAS）
+    2. 单一 Manning n（后备）
+    """
+
+    def __init__(self, section, manning_n: float, bed_slope: float,
+                 K_elevations: np.ndarray | None = None,
+                 K_values: np.ndarray | None = None):
         """
         Args:
             section: CrossSection 实例
             manning_n: Manning 糙率系数
             bed_slope: 底坡
+            K_elevations: HEC-RAS PT 高程数组 (m)，可选
+            K_values: HEC-RAS PT K 数组 (m³/s)，可选
         """
         self.section = section
         self.manning_n = manning_n
         self.bed_slope = bed_slope
+        self._K_elevations = K_elevations
+        self._K_values = K_values
 
     def compute_normal_wse(self, Q: float) -> float:
         """给定流量 Q，反解正常水深对应的水位 Z。
 
         使用二分法求解 K(Z) * sqrt(S0) = Q。
+        优先使用 HEC-RAS Property Table K(Z)。
         """
         from scipy.optimize import brentq
 
         invert = self.section.get_invert_elevation()
         target_K = abs(Q) / max(self.bed_slope ** 0.5, 1e-10)
 
-        def residual(z: float) -> float:
-            return self.section.compute_conveyance(z, self.manning_n) - target_K
+        if self._K_elevations is not None and self._K_values is not None:
+            # 使用 HEC-RAS K(Z) 插值表
+            elev = self._K_elevations
+            kval = self._K_values
 
-        # 搜索上界
+            def residual(z: float) -> float:
+                return float(np.interp(z, elev, kval)) - target_K
+        else:
+            def residual(z: float) -> float:
+                return self.section.compute_conveyance(z, self.manning_n) - target_K
+
         z_hi = invert + 0.1
         for _ in range(50):
             if residual(z_hi) > 0:

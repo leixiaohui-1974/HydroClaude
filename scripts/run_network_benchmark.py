@@ -120,6 +120,40 @@ def load_junction_hydraulics():
                     n_lob_arr.append(0.06)  # default
                     n_rob_arr.append(0.06)
 
+            # --- HEC-RAS Property Tables (XSEC Value) ---
+            pt_grp = geom["Property Tables"]
+            pt_xsec_info = pt_grp["XSEC Info"][:]
+            pt_xsec_val = pt_grp["XSEC Value"][:]
+
+            hecras_pt_elev = []
+            hecras_pt_A = []
+            hecras_pt_K = []
+            hecras_pt_B = []
+            hecras_pt_beta = []
+
+            for idx in xs_indices:
+                pt_si = int(pt_xsec_info[idx, 0])
+                pt_cnt = int(pt_xsec_info[idx, 1])
+                pt_rows = pt_xsec_val[pt_si:pt_si + pt_cnt]
+
+                elev_m = pt_rows[:, 0] * FT_TO_M
+                # Cols 4-6: effective/storage area (LOB+Ch+ROB)
+                A_m2 = (pt_rows[:, 4] + pt_rows[:, 5] + pt_rows[:, 6]) * FT_TO_M**2
+                # Cols 7-9: conveyance K (LOB+Ch+ROB), in cfs -> m3/s
+                K_m3s = (pt_rows[:, 7] + pt_rows[:, 8] + pt_rows[:, 9]) * CFS_TO_M3S
+                # Col 16: top width (total)
+                B_m = pt_rows[:, 16] * FT_TO_M
+
+                # Col 22: momentum correction factor (beta)
+                beta_arr = pt_rows[:, 22].copy()
+                beta_arr = np.maximum(beta_arr, 1.0)
+
+                hecras_pt_elev.append(elev_m)
+                hecras_pt_A.append(A_m2)
+                hecras_pt_K.append(K_m3s)
+                hecras_pt_B.append(B_m)
+                hecras_pt_beta.append(beta_arr)
+
             reach_data = UnsteadyReachData(
                 n_xs=n_xs,
                 dx=dx,
@@ -132,6 +166,11 @@ def load_junction_hydraulics():
                 manning_n_rob=np.array(n_rob_arr),
                 left_bank=lb_arr,
                 right_bank=rb_arr,
+                hecras_pt_elevations=hecras_pt_elev,
+                hecras_pt_A=hecras_pt_A,
+                hecras_pt_K=hecras_pt_K,
+                hecras_pt_B=hecras_pt_B,
+                hecras_pt_beta=hecras_pt_beta,
             )
 
             reach_infos.append(ReachInfo(
@@ -150,14 +189,35 @@ def load_junction_hydraulics():
                 "manning_n": np.array(manning_n_arr),
             }
 
-        # --- Junctions ---
+        # --- Junctions with storage ---
         junction_names = set()
         for rt in reach_topo:
             if rt["us_type"] == "junction":
                 junction_names.add(rt["us_name"])
             if rt["ds_type"] == "junction":
                 junction_names.add(rt["ds_name"])
-        junctions = [JunctionInfo(name=jn) for jn in junction_names]
+
+        # Extract junction storage from Property Tables
+        pt_grp2 = geom["Property Tables"]
+        jc_info = pt_grp2["Junction Cell Info"][:]
+        jc_val = pt_grp2["Junction Cell Value"][:]
+        FT3_TO_M3 = FT_TO_M ** 3
+
+        junctions = []
+        for ji, jn in enumerate(sorted(junction_names)):
+            storage_elev = None
+            storage_vol = None
+            if ji < len(jc_info):
+                jc_si = int(jc_info[ji, 0])
+                jc_cnt = int(jc_info[ji, 1])
+                jc_rows = jc_val[jc_si:jc_si + jc_cnt]
+                storage_elev = jc_rows[:, 0] * FT_TO_M
+                storage_vol = jc_rows[:, 1] * FT3_TO_M3
+            junctions.append(JunctionInfo(
+                name=jn,
+                storage_elevations=storage_elev,
+                storage_volumes=storage_vol,
+            ))
 
         # --- Boundary Conditions ---
         bc_grp = f["Event Conditions/Unsteady/Boundary Conditions"]
@@ -184,10 +244,18 @@ def load_junction_hydraulics():
                 for ri in reach_infos:
                     if ri.ds_type == "external":
                         if ri.name.split("/")[0] in key or ri.name.split("/")[1] in key:
+                            # Pass HEC-RAS K table to NormalDepthBC for accurate normal depth
+                            K_elev = None
+                            K_vals = None
+                            if ri.reach_data.hecras_pt_elevations is not None:
+                                K_elev = ri.reach_data.hecras_pt_elevations[-1]
+                                K_vals = ri.reach_data.hecras_pt_K[-1]
                             external_bcs[f"{ri.name}_ds"] = NormalDepthBC(
                                 ri.reach_data.sections[-1],
                                 manning_n=float(ri.reach_data.manning_n[-1]),
                                 bed_slope=slope,
+                                K_elevations=K_elev,
+                                K_values=K_vals,
                             )
 
         # --- Reference results ---
