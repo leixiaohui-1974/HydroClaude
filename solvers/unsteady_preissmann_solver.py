@@ -308,10 +308,15 @@ class PreissmannSolver:
         A_avg_n = 0.5 * (A_Ln  + A_Rn)
         K_avg_n = 0.5 * (K_Ln  + K_Rn)
         Q_avg_n = 0.5 * (Q_Ln  + Q_Rn)
-        K2   = K_avg**2   + 1e-30
-        K2_n = K_avg_n**2 + 1e-30
-        Sf   = Q_avg   * np.abs(Q_avg)   / K2
-        Sf_n = Q_avg_n * np.abs(Q_avg_n) / K2_n
+        # Average Friction Slope method (HEC-RAS default for XS):
+        # Sf = 0.5 * (Q²/K_L² + Q²/K_R²) — average of individual friction slopes
+        # This gives higher Sf than Average Conveyance when K_L != K_R
+        K2_L = K_L**2 + 1e-30
+        K2_R = K_R**2 + 1e-30
+        K2_Ln = K_Ln**2 + 1e-30
+        K2_Rn = K_Rn**2 + 1e-30
+        Sf   = 0.5 * (Q_avg * np.abs(Q_avg) / K2_L + Q_avg * np.abs(Q_avg) / K2_R)
+        Sf_n = 0.5 * (Q_avg_n * np.abs(Q_avg_n) / K2_Ln + Q_avg_n * np.abs(Q_avg_n) / K2_Rn)
         gA   = g * A_avg
         gA_n = g * A_avg_n
         beta_L  = bm_L  * Q_L**2  / A_L
@@ -366,7 +371,7 @@ class PreissmannSolver:
         dbeta_L_dQL =  2.0 * bm_L * Q_L / A_L
         dbeta_R_dZR = -bm_R * (Q_R**2) / (A_R**2) * B_R
         dbeta_R_dQR =  2.0 * bm_R * Q_R / A_R
-        dSf_dQavg = 2.0 * np.abs(Q_avg) / K2
+        dSf_dQavg = np.abs(Q_avg) * (1.0 / K2_L + 1.0 / K2_R)
         dgASf_dZL = g * 0.5 * B_L * Sf
         dgASf_dZR = g * 0.5 * B_R * Sf
         dgASf_dQL = gA * dSf_dQavg * 0.5

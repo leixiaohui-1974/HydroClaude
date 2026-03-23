@@ -1,0 +1,40 @@
+[
+  {
+    "hdf_path": "Z:\\research\\hydroclaude\\reports\\hec_ras_example_project\\Example 1 - Critical Creek_hydromind2\\CRITCREK.p01.hdf",
+    "mode": "steady",
+    "unit_system": "english",
+    "unit_system_source": "hdf root attr \"Units System\"=US Customary",
+    "n_cross_sections": 12,
+    "n_profiles": 1,
+    "completeness": {
+      "unit_system_detected": true,
+      "unit_system_source_present": true,
+      "water_surface_present": true,
+      "flow_present": true,
+      "energy_grade_present": true,
+      "bed_elevation_present": true,
+      "channel_width_present": true,
+      "manning_ch_present": true,
+      "manning_lob_present": true,
+      "manning_rob_present": true,
+      "reach_lengths_channel_present": true,
+      "reach_lengths_lob_present": true,
+      "reach_lengths_rob_present": true,
+      "bank_stations_present": true,
+      "xs_profiles_present": true
+    },
+    "field_counts": {
+      "reach_lengths_m": 12,
+      "reach_lengths_lob_m": 12,
+      "reach_lengths_rob_m": 12,
+      "manning_n_ch_values": 12,
+      "manning_n_lob_values": 12,
+      "manning_n_rob_values": 12,
+      "left_bank_m": 12,
+      "right_bank_m": 12,
+      "contraction_coefs": 12,
+      "expansion_coefs": 12
+    },
+    "completeness_score": "15/15 (100.0%)"
+  }
+]

@@ -383,8 +383,7 @@ class UnsteadyNetworkSolver:
 
                 F_global[fc_row] = F_val
 
-                # Other connections: Z equality to master (already set by ds_junction_Z/Z_up)
-                # But those use junc_Z (average), not master_col_Z. Fix: replace with exact coupling.
+                # Other connections: Z equality to master
                 for rname_c, ep_c, col_Z_c, col_Q_c in conns:
                     if (rname_c, ep_c) == (master_rname, master_ep):
                         continue
