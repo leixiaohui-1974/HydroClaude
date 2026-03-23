@@ -558,14 +558,30 @@ def _run_profile(  # noqa: C901
                             "gate_weir_coef": gi.get("gate_weir_coef",
                                                      gi.get("weir_coef_gate", 3.1)),
                         })
-            # 确定 us_xs_index（WSE 跳变最大位置）
-            max_jump = 0
-            struct_idx = n_xs // 2
-            for ii in range(n_xs - 1):
-                jump = abs(wr[ii + 1] - wr[ii])
-                if jump > max_jump:
-                    max_jump = jump
-                    struct_idx = ii
+            # 确定 us_xs_index：优先用 RS（河道里程）匹配，回退到 WSE 跳变
+            struct_rs = inline_data.get("rs")
+            struct_idx = None
+            if struct_rs is not None:
+                struct_rs_f = float(struct_rs)
+                geo_xss = ref.get("geometry", {}).get("cross_sections", [])
+                if len(geo_xss) == n_xs:
+                    best_dist = float('inf')
+                    for ii in range(n_xs):
+                        xs_rs = geo_xss[ii].get("rs", geo_xss[ii].get("river_station"))
+                        if xs_rs is not None:
+                            dist = abs(float(xs_rs) - struct_rs_f)
+                            if dist < best_dist:
+                                best_dist = dist
+                                struct_idx = ii
+            if struct_idx is None:
+                # 回退：WSE 跳变检测（v1 兼容）
+                max_jump = 0
+                struct_idx = n_xs // 2
+                for ii in range(n_xs - 1):
+                    jump = abs(wr[ii + 1] - wr[ii])
+                    if jump > max_jump:
+                        max_jump = jump
+                        struct_idx = ii
             inline_param = {
                 "us_xs_index": struct_idx,
                 "weir_coef": inline_data.get("weir_coef", 3.1),

@@ -21,6 +21,49 @@ except ImportError:
     SectionGeometry = None
 
 
+
+
+def _clip_section_to_range(distances, elevations, sta_left, sta_right):
+    """Clip cross-section station/elevation data to [sta_left, sta_right] with linear interpolation at boundaries."""
+    clipped_sta = []
+    clipped_elev = []
+    n = len(distances)
+    for i in range(n):
+        d = float(distances[i])
+        e = float(elevations[i])
+        if d < sta_left:
+            if i + 1 < n and float(distances[i + 1]) > sta_left:
+                d_next = float(distances[i + 1])
+                e_next = float(elevations[i + 1])
+                frac = (sta_left - d) / (d_next - d)
+                e_interp = e + frac * (e_next - e)
+                clipped_sta.append(sta_left)
+                clipped_elev.append(e_interp)
+        elif d <= sta_right:
+            clipped_sta.append(d)
+            clipped_elev.append(e)
+            if i + 1 < n and float(distances[i + 1]) > sta_right:
+                d_next = float(distances[i + 1])
+                e_next = float(elevations[i + 1])
+                frac = (sta_right - d) / (d_next - d)
+                e_interp = e + frac * (e_next - e)
+                clipped_sta.append(sta_right)
+                clipped_elev.append(e_interp)
+                break
+        else:
+            if clipped_sta and clipped_sta[-1] < sta_right:
+                if i > 0:
+                    d_prev = float(distances[i - 1])
+                    e_prev = float(elevations[i - 1])
+                    if d_prev < sta_right:
+                        frac = (sta_right - d_prev) / (d - d_prev)
+                        e_interp = e_prev + frac * (e - e_prev)
+                        clipped_sta.append(sta_right)
+                        clipped_elev.append(e_interp)
+            break
+    return clipped_sta, clipped_elev
+
+
 class SteadyProfileSolver:
     """Steady-state water surface profile solver with per-station XS support."""
 
@@ -924,22 +967,34 @@ class SteadyProfileSolver:
 
     # Bridge Momentum Method (HEC-RAS Technical Reference Manual Chapter 5)
 
-    def _hydrostatic_pressure_force(self, h: float, station_index: int) -> float:
+    def _hydrostatic_pressure_force(self, h: float, station_index: int,
+                                     numerical: bool = False) -> float:
         """Calculate hydrostatic pressure force P = gamma * A * y_bar_c (N).
 
-        Uses equivalent rectangular section approx: y_bar_c = A / (2 * T),
-        where T is water-surface width and A is flow area.
+        Default: rectangular section approx y_bar_c = A / (2 * T).
+        When numerical=True: trapezoidal integration P = γ ∫₀ʰ (h-z)·w(z)dz,
+        which is monotonically increasing for any cross-section shape.
 
         Args:
             h: water depth (m)
             station_index: cross-section index
+            numerical: use numerical integration (for bridge momentum without deck)
         Returns:
             hydrostatic pressure force (N)
         """
         h_safe = max(float(h), 1e-6)
+        gamma = 9810.0  # N/m^3
+        if numerical:
+            n_steps = 20
+            dz = h_safe / n_steps
+            P = 0.0
+            for j in range(n_steps):
+                z_mid = (j + 0.5) * dz
+                _, _, _, T_z = self._get_geometry(z_mid, station_index)
+                P += gamma * (h_safe - z_mid) * T_z * dz
+            return P
         A, _P, _R, T = self._get_geometry(h_safe, station_index)
         y_bar = A / max(2.0 * T, 1e-6)
-        gamma = 9810.0  # N/m^3
         return gamma * A * y_bar
 
     def _solve_culvert(
@@ -1428,6 +1483,69 @@ class SteadyProfileSolver:
         # 桥孔宽度（从 Lid Profile 提取）用于限制有效面积
         _opening_w = float(bridge.get("bridge_opening_width_m", 0.0))
 
+        # ---- 构造虚拟桥梁面断面（下游面/Section 2）----
+        _bridge_face_section_ds = None
+        if _opening_w > 0 and self._xs_array is not None:
+            _xs_ds = self._xs_array[ds_xs_index] if ds_xs_index < len(self._xs_array) else None
+            if (_xs_ds is not None
+                    and hasattr(_xs_ds, 'distances')
+                    and hasattr(_xs_ds, 'elevations')
+                    and self._bank_stations is not None
+                    and ds_xs_index < len(self._bank_stations)
+                    and self._bank_stations[ds_xs_index] is not None):
+                _dists = np.asarray(_xs_ds.distances, dtype=float)
+                _elevs = np.asarray(_xs_ds.elevations, dtype=float)
+                _bs = self._bank_stations[ds_xs_index]
+                _bank_l = float(_bs[0]) if _bs[0] is not None else float(_dists.min())
+                _bank_r = float(_bs[1]) if _bs[1] is not None else float(_dists.max())
+                _center = 0.5 * (_bank_l + _bank_r)
+                _sta_left = _center - _opening_w * 0.5
+                _sta_right = _center + _opening_w * 0.5
+                _clip_sta, _clip_elev = _clip_section_to_range(_dists, _elevs, _sta_left, _sta_right)
+                if len(_clip_sta) >= 2:
+                    try:
+                        from physics.cross_section import NaturalSection
+                        _face_candidate = NaturalSection(
+                            "bridge_face_ds",
+                            elevations=np.array(_clip_elev, dtype=float),
+                            distances=np.array(_clip_sta, dtype=float),
+                        )
+                        # 仅当裁剪面积 > 30% 全断面时使用虚拟断面。
+                        # 若裁剪去除了 >70% 面积（大滩地桥），说明桥梁主要阻挡滩地流，
+                        # 这应由 IFA 机制处理，非 momentum 面断面限制。
+                        _h_check = max(W_downstream - bed_ds, 0.01)
+                        _A_full_check = max(self._get_geometry(_h_check, ds_xs_index)[0], 1e-9)
+                        _A_face_check = _face_candidate.compute_area(
+                            max(W_downstream - _face_candidate.min_elevation, 0.001))
+                        if _A_face_check > _A_full_check * 0.3:
+                            _bridge_face_section_ds = _face_candidate
+                    except Exception:
+                        _bridge_face_section_ds = None
+
+        # ---- 虚拟断面几何获取局部函数 ----
+        def _get_face_geometry(water_level_abs, face_section):
+            """Get (A, P, R, T) from clipped bridge face section at absolute WSE."""
+            depth = max(water_level_abs - face_section.min_elevation, 0.001)
+            geom = face_section.compute_geometry(depth)
+            A = float(geom.area)
+            P = max(float(geom.perimeter), 1e-6)
+            T = max(float(geom.width), 1e-6)
+            R = A / P
+            return A, P, R, T
+
+        def _face_pressure_force(water_level_abs, face_section):
+            """Hydrostatic pressure for bridge face section using numerical integration."""
+            gamma = 9810.0
+            depth = max(water_level_abs - face_section.min_elevation, 1e-6)
+            n_steps = 20
+            dz = depth / n_steps
+            P_force = 0.0
+            for _j in range(n_steps):
+                z_mid = (_j + 0.5) * dz
+                T_z = max(face_section.compute_width(max(z_mid, 0.001)), 1e-6)
+                P_force += gamma * (depth - z_mid) * T_z * dz
+            return P_force
+
         n_br = (
             self._manning_ns[us_xs_index]
             if self._manning_ns and us_xs_index < len(self._manning_ns)
@@ -1435,7 +1553,10 @@ class SteadyProfileSolver:
         )
 
         h2 = max(W_downstream - bed_ds, 0.01)
-        A2, P2_wet, _R2, T2 = self._get_geometry(h2, ds_xs_index)
+        if _bridge_face_section_ds is not None:
+            A2, P2_wet, _R2, T2 = _get_face_geometry(W_downstream, _bridge_face_section_ds)
+        else:
+            A2, P2_wet, _R2, T2 = self._get_geometry(h2, ds_xs_index)
         weir_len_ds = (
             deck_weir_len_cfg
             if deck_weir_len_cfg > 0.0
@@ -1450,20 +1571,27 @@ class SteadyProfileSolver:
             weir_coef=deck_weir_coef,
         )
         A_pier2 = pier_w_total * min(h2, pier_height)
-        # 改动：A2_eff 用桥孔范围内实际断面面积（_segment_area_perimeter），回退矩形近似
-        A2_eff = self._bridge_face_area(
-            xs_index=ds_xs_index,
-            water_level=W_downstream,
-            opening_w=_opening_w,
-            A_full=A2,
-            A_pier=A_pier2,
-        )
+        if _bridge_face_section_ds is not None:
+            # 虚拟断面已经是裁剪后的桥孔范围，直接扣除桥墩面积
+            A2_eff = max(A2 - A_pier2, A2 * 0.05)
+        else:
+            # 改动：A2_eff 用桥孔范围内实际断面面积（_segment_area_perimeter），回退矩形近似
+            A2_eff = self._bridge_face_area(
+                xs_index=ds_xs_index,
+                water_level=W_downstream,
+                opening_w=_opening_w,
+                A_full=A2,
+                A_pier=A_pier2,
+            )
         # 壅水判断：使用 EGL (能量梯度线) 而非 WSE
         V2_temp = Q_under_ds / max(A2_eff, 1e-9)
         EGL2 = W_downstream + V2_temp ** 2 / (2.0 * self.g)
         if EGL2 > deck_elev > bed_ds:
             A2_eff = max(A2_eff - (W_downstream - deck_elev) * T2, A2 * 0.1)
-        P2_force = self._hydrostatic_pressure_force(h2, ds_xs_index)
+        if _bridge_face_section_ds is not None:
+            P2_force = _face_pressure_force(W_downstream, _bridge_face_section_ds)
+        else:
+            P2_force = self._hydrostatic_pressure_force(h2, ds_xs_index)
 
         S0_bridge = (bed_us - bed_ds) / max(L_bridge, 0.1)
 
@@ -1475,25 +1603,29 @@ class SteadyProfileSolver:
                            _coefs.get("Submerged Inlet-Outlet Cd", 0.8)))
         _A_opening = deck_weir_len_cfg * max(deck_elev - bed_us, 0.1) if deck_elev < 1e8 else 0.0
 
-        W3_trial = W_downstream + max(0.05, abs(bed_us - bed_ds) + 0.05)
-        W3_trial = max(W3_trial, bed_us + 0.01)
+        # 初始猜测：基于下游速度水头估算桥梁壅水
+        # 桥梁收缩使部分速度水头转为位置水头（壅水），初始估计 0.5*VH 的壅水
+        _h_ds_init = max(W_downstream - bed_ds, 0.01)
+        _A_ds_init = max(self._get_geometry(_h_ds_init, ds_xs_index)[0], 1e-9)
+        _VH_ds = (Q / _A_ds_init) ** 2 / (2.0 * self.g)
+        # 初始猜测：基于下游面速度水头
+        _W3_base = W_downstream + max(0.05, _VH_ds + abs(bed_us - bed_ds) + 0.05)
+        _W3_base = max(_W3_base, bed_us + 0.01)
 
-        # 压力流初始化：如果低流量结果的 EGL > deck，提高初始猜测
+        # 压力流初始化
         if deck_elev < 1e8 and _A_opening > 0:
-            _h_init = max(W3_trial - bed_us, 0.01)
+            _h_init = max(_W3_base - bed_us, 0.01)
             _A_init = max(self._get_geometry(_h_init, us_xs_index)[0], 1e-9)
             _V_init = Q / _A_init
-            _EGL_init = W3_trial + _V_init ** 2 / (2.0 * self.g)
+            _EGL_init = _W3_base + _V_init ** 2 / (2.0 * self.g)
             if _EGL_init > deck_elev:
-                # 压力流：Q = Cd * A_opening * sqrt(2g * H_eff)
                 _ds_submerged = W_downstream > deck_elev
                 _Cd_press = _sub_io_cd if _ds_submerged else _sub_inlet_cd
                 if _Cd_press > 0 and _A_opening > 0:
-                    # H_eff = (Q / (Cd * A))^2 / (2g)
                     _H_eff = (Q / (_Cd_press * _A_opening)) ** 2 / (2.0 * self.g)
-                    # WSE_us ≈ WSE_ds + H_eff (crude estimate for pressure flow)
-                    W3_pressure = W_downstream + _H_eff
-                    W3_trial = max(W3_trial, W3_pressure)
+                    _W3_base = max(_W3_base, W_downstream + _H_eff)
+
+        W3_trial = _W3_base
 
         for _it in range(40):
             h3 = max(W3_trial - bed_us, 0.01)
@@ -1598,7 +1730,8 @@ class SteadyProfileSolver:
                 step = float(np.clip(imbalance / max(gamma * A3, 1.0), -0.5, 0.5))
             else:
                 step = float(np.clip(-imbalance / d_imb_dW, -0.5, 0.5))
-            W3_trial = max(W3_trial + step, bed_us + 0.005)
+            # 亚临界流约束：桥梁上游 WSE >= 下游 WSE（正向壅水）
+            W3_trial = max(W3_trial + step, bed_us + 0.005, W_downstream)
 
         return float(W3_trial)
 
