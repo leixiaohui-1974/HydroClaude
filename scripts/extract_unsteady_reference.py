@@ -188,8 +188,9 @@ def _extract_bcs(hdf, is_english: bool):
         try:
             arr = ds[...]
             if arr.ndim == 2 and arr.shape[1] >= 2:
-                flow_m3s = [float(v) * cfs for v in arr[:, 0]]
-                stage_m = [float(v) * lf for v in arr[:, 1]]
+                # HEC-RAS stores Rating Curves as (Stage_ft, Flow_cfs)
+                stage_m = [float(v) * lf for v in arr[:, 0]]
+                flow_m3s = [float(v) * cfs for v in arr[:, 1]]
             else:
                 flow_m3s = []; stage_m = []
             bcs.append({"type": "rating_curve", "location": _b2s(loc_key),
@@ -213,6 +214,114 @@ def _extract_timeseries(hdf, is_english: bool):
     if ws_arr is not None: out["water_surface_m"] = (ws_arr * lf).tolist()
     flow_arr = _read(hdf, ts_root + "/Cross Sections/Flow")
     if flow_arr is not None: out["flow_m3s_ts"] = (flow_arr * cfs).tolist()
+    return out
+
+
+def _extract_property_tables(hdf, is_english: bool, n_xs: int) -> Dict[str, Any]:
+    """提取 HEC-RAS 断面属性预计算表 (K/A/B/β vs 高程)。"""
+    lf = LF if is_english else 1.0
+    cfs = CFS_TO_M3S if is_english else 1.0
+    out = {"hecras_pt": None}
+    pt_path = "Geometry/Cross Sections/Property Tables"
+    xsec_info = _read(hdf, pt_path + "/XSEC Info")
+    xsec_vals = _read(hdf, pt_path + "/XSEC Value")
+    if xsec_info is None or xsec_vals is None:
+        return out
+    pt_list = []
+    for i in range(min(n_xs, xsec_info.shape[0])):
+        si = int(xsec_info[i, 0])
+        cnt = int(xsec_info[i, 1])
+        if cnt == 0:
+            pt_list.append(None)
+            continue
+        rows = xsec_vals[si:si + cnt]
+        elev_m = (rows[:, 0] * lf).tolist()
+        # Cols 4-6: effective area (LOB+Ch+ROB)
+        A_m2 = ((rows[:, 4] + rows[:, 5] + rows[:, 6]) * lf**2).tolist()
+        # Cols 7-9: conveyance K (LOB+Ch+ROB)
+        K_m3s = ((rows[:, 7] + rows[:, 8] + rows[:, 9]) * cfs).tolist()
+        # Col 16: top width
+        B_m = (rows[:, 16] * lf).tolist()
+        # Col 22: momentum correction factor beta
+        beta = np.maximum(rows[:, 22], 1.0).tolist()
+        pt_list.append({
+            "elevations_m": elev_m,
+            "A_m2": A_m2,
+            "K_m3s": K_m3s,
+            "B_m": B_m,
+            "beta": beta,
+        })
+    out["hecras_pt"] = pt_list
+    return out
+
+
+def _extract_structures(hdf, is_english: bool) -> Dict[str, Any]:
+    """提取结构物 HTAB 评级曲线族 (桥梁/涵洞)。"""
+    lf = LF if is_english else 1.0
+    cfs = CFS_TO_M3S if is_english else 1.0
+    out = {"has_structures": False, "structures": []}
+    struct_attrs = _read(hdf, "Geometry/Structures/Attributes")
+    if struct_attrs is None or len(struct_attrs) == 0:
+        return out
+    out["has_structures"] = True
+    for si in range(len(struct_attrs)):
+        sa = struct_attrs[si]
+        s_river = _field_s(sa, "River")
+        s_reach = _field_s(sa, "Reach")
+        s_type = _field_s(sa, "Type")
+        s_rs = _field_s(sa, "RS")
+        us_rs = _field_s(sa, "US RS")
+        ds_rs = _field_s(sa, "DS RS")
+        groupname = _field_s(sa, "Groupname") if "Groupname" in sa.dtype.names else ""
+        struct_info = {
+            "river": s_river, "reach": s_reach, "type": s_type,
+            "rs": s_rs, "us_rs": us_rs, "ds_rs": ds_rs,
+            "htab": None,
+        }
+        # Load HTAB from Property Tables
+        pt_path = f"Geometry/Structures/Property Tables/{groupname}"
+        htab_info = _read(hdf, pt_path + "/Info")
+        htab_vals = _read(hdf, pt_path + "/Values")
+        if htab_info is not None and htab_vals is not None:
+            htab_curves = []
+            for ri in range(len(htab_info)):
+                h_si = int(htab_info[ri, 0])
+                h_cnt = int(htab_info[ri, 1])
+                if h_cnt == 0:
+                    htab_curves.append(None)
+                    continue
+                rc = htab_vals[h_si:h_si + h_cnt]
+                htab_curves.append({
+                    "Q_m3s": (rc[:, 0] * cfs).tolist(),
+                    "HW_m": (rc[:, 1] * lf).tolist(),
+                })
+            struct_info["htab"] = htab_curves
+        out["structures"].append(struct_info)
+    return out
+
+
+def _extract_junction_storage(hdf, is_english: bool) -> Dict[str, Any]:
+    """提取汇流点 (Junction) 存储表。"""
+    lf = LF if is_english else 1.0
+    out = {"junction_storage": None}
+    jc_info = _read(hdf, "Geometry/Cross Sections/Property Tables/Junction Cell Info")
+    jc_val = _read(hdf, "Geometry/Cross Sections/Property Tables/Junction Cell Value")
+    if jc_info is None or jc_val is None:
+        return out
+    ft3_to_m3 = lf ** 3
+    storage_list = []
+    for ji in range(len(jc_info)):
+        si = int(jc_info[ji, 0])
+        cnt = int(jc_info[ji, 1])
+        if cnt == 0:
+            storage_list.append(None)
+            continue
+        rows = jc_val[si:si + cnt]
+        storage_list.append({
+            "elevations_m": (rows[:, 0] * lf).tolist(),
+            "volumes_m3": (rows[:, 1] * ft3_to_m3).tolist(),
+        })
+    out["junction_storage"] = storage_list
     return out
 
 
@@ -245,7 +354,10 @@ def _extract_case(suite_num, case_name, hdf_pattern):
         geom = _extract_geometry(f, is_eng)
         bcs = _extract_bcs(f, is_eng)
         ts = _extract_timeseries(f, is_eng)
-        has_struct = _check_structures(f)
+        n_xs = geom.get("n_cross_sections", 0)
+        pt = _extract_property_tables(f, is_eng, n_xs)
+        struct = _extract_structures(f, is_eng)
+        junc = _extract_junction_storage(f, is_eng)
     result: Dict[str, Any] = {"case_name": case_name, "source_hdf": str(hdf_path),
         "mode": "unsteady", "unit_system": unit_sys}
     result.update(geom)
@@ -255,7 +367,10 @@ def _extract_case(suite_num, case_name, hdf_pattern):
     result["time_stamps"] = ts["time_stamps"]
     result["water_surface_m"] = ts["water_surface_m"]
     result["flow_m3s"] = ts["flow_m3s_ts"]
-    result["has_structures"] = has_struct
+    result["has_structures"] = struct["has_structures"]
+    result["structures"] = struct["structures"]
+    result["hecras_pt"] = pt["hecras_pt"]
+    result["junction_storage"] = junc["junction_storage"]
     return result
 
 

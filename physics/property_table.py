@@ -33,7 +33,7 @@ def segment_area_perimeter(
     for j in range(len(stations) - 1):
         s1, s2 = float(stations[j]), float(stations[j + 1])
         z1, z2 = float(elevations[j]), float(elevations[j + 1])
-        if s2 <= sta_lo or s1 >= sta_hi:
+        if s2 < sta_lo or s1 > sta_hi:
             continue
         if s1 < sta_lo:
             frac = (sta_lo - s1) / (s2 - s1)
@@ -46,7 +46,7 @@ def segment_area_perimeter(
         ds = s2 - s1
         dz = z2 - z1
         if ds <= 0.0:
-            if abs(dz) > 0.0 and abs(s1 - sta_lo) > 0.01 and abs(s1 - sta_hi) > 0.01:
+            if abs(dz) > 0.0:
                 z_lo = min(z1, z2)
                 z_hi = max(z1, z2)
                 if z_lo < water_level:
@@ -133,6 +133,60 @@ def subdivided_conveyance(
     K_total = K_lob + K_ch + K_rob
     A_total = A_lob + A_ch + A_rob
     return K_total, A_total
+
+
+def subdivided_conveyance_with_beta(
+    stations: np.ndarray,
+    elevations: np.ndarray,
+    water_level: float,
+    left_bank: float,
+    right_bank: float,
+    n_lob: float,
+    n_ch: float,
+    n_rob: float,
+) -> tuple[float, float, float]:
+    """HEC-RAS LOB/Channel/ROB 分区 K 计算 + 动量修正因子 beta。
+
+    beta = Σ(K_i³/A_i²) / (K_total³/A_total²)   (HEC-RAS TRM Eq 2-7)
+
+    Returns:
+        (K_total, A_total, beta)
+    """
+    sta_min = float(np.min(stations))
+    sta_max = float(np.max(stations))
+
+    K_lob, A_lob = 0.0, 0.0
+    if left_bank > sta_min + 1e-6:
+        K_lob, A_lob = zone_conveyance(
+            stations, elevations, water_level, sta_min, left_bank, n_lob
+        )
+
+    K_ch, A_ch = zone_conveyance(
+        stations, elevations, water_level, left_bank, right_bank, n_ch
+    )
+
+    K_rob, A_rob = 0.0, 0.0
+    if right_bank < sta_max - 1e-6:
+        K_rob, A_rob = zone_conveyance(
+            stations, elevations, water_level, right_bank, sta_max, n_rob
+        )
+
+    K_total = K_lob + K_ch + K_rob
+    A_total = A_lob + A_ch + A_rob
+
+    # Momentum correction factor (velocity distribution coefficient)
+    # beta = (A²/K³) * Σ(K_i³/A_i²)
+    beta = 1.0
+    if K_total > 1e-10 and A_total > 1e-10:
+        numerator = 0.0
+        for Ki, Ai in [(K_lob, A_lob), (K_ch, A_ch), (K_rob, A_rob)]:
+            if Ai > 1e-10 and Ki > 1e-10:
+                numerator += Ki ** 3 / Ai ** 2
+        denominator = K_total ** 3 / A_total ** 2
+        if denominator > 1e-30:
+            beta = max(numerator / denominator, 1.0)
+
+    return K_total, A_total, beta
 
 
 class PropertyTable:

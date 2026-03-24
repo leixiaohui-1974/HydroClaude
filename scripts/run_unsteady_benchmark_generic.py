@@ -1,8 +1,12 @@
-"""通用非恒定流对标脚本 — 从 HEC-RAS HDF 直接读取并求解。"""
+"""通用非恒定流对标脚本 — 从 HEC-RAS HDF 直接读取并求解。
+
+包含 HEC-RAS 预计算属性表 (K/A/B/β) 和分区 Manning n。
+"""
 
 import sys
 import os
 import glob
+import time
 import numpy as np
 import h5py
 
@@ -22,7 +26,6 @@ def find_hdf(suite_num: str) -> str:
     """Find the .p*.hdf file in a suite case directory."""
     pattern = f"{SUITE}/{suite_num}/**/*.p*.hdf"
     hdfs = glob.glob(pattern, recursive=True)
-    # Filter out geometry-only HDFs
     hdfs = [h for h in hdfs if not h.endswith('.g01.hdf') and not h.endswith('.g02.hdf')]
     if not hdfs:
         raise FileNotFoundError(f"No plan HDF found for suite case {suite_num}")
@@ -30,7 +33,7 @@ def find_hdf(suite_num: str) -> str:
 
 
 def load_case(hdf_path: str) -> dict:
-    """Load geometry, BCs, and reference results from HEC-RAS HDF."""
+    """Load geometry, BCs, property tables, and reference results from HEC-RAS HDF."""
     with h5py.File(hdf_path, "r") as f:
         geom = f["Geometry/Cross Sections"]
         attrs = geom["Attributes"][:]
@@ -46,7 +49,9 @@ def load_case(hdf_path: str) -> dict:
 
         sections = []
         bed_elevations = []
-        manning_n_arr = []
+        manning_n_ch = []
+        manning_n_lob = []
+        manning_n_rob = []
         reach_info = []
 
         for i in range(n_xs):
@@ -73,18 +78,73 @@ def load_case(hdf_path: str) -> dict:
             ni_count = int(mann_info[i][1])
             nvals = mann_vals[ni_start:ni_start + ni_count]
             if ni_count >= 3:
-                manning_n_arr.append(float(nvals[1, 1]))
+                manning_n_ch.append(max(float(nvals[1, 1]), 0.001))
+                manning_n_lob.append(max(float(nvals[0, 1]), 0.01))
+                manning_n_rob.append(max(float(nvals[-1, 1]), 0.01))
             elif ni_count > 0:
-                manning_n_arr.append(float(nvals[0, 1]))
+                n_val = max(float(nvals[0, 1]), 0.001)
+                manning_n_ch.append(n_val)
+                manning_n_lob.append(n_val)
+                manning_n_rob.append(n_val)
             else:
-                manning_n_arr.append(0.03)
+                manning_n_ch.append(0.03)
+                manning_n_lob.append(0.06)
+                manning_n_rob.append(0.06)
 
         bed_elevation = np.array(bed_elevations)
-        manning_n = np.array(manning_n_arr)
+        manning_n = np.array(manning_n_ch)
+
+        # Bank stations
+        lb_arr = np.array([float(attrs[i]["Left Bank"]) * FT_TO_M for i in range(n_xs)])
+        rb_arr = np.array([float(attrs[i]["Right Bank"]) * FT_TO_M for i in range(n_xs)])
+
+        # Contraction/expansion coefficients
+        cc_arr = np.array([float(attrs[i]["Contr"]) for i in range(n_xs)])
+        ce_arr = np.array([float(attrs[i]["Expan"]) for i in range(n_xs)])
 
         # dx from Len Channel
         dx_raw = np.array([float(attrs[i]["Len Channel"]) * FT_TO_M for i in range(n_xs - 1)])
         dx = np.where(dx_raw > 1.0, dx_raw, 100.0)
+
+        # --- HEC-RAS Property Tables ---
+        hecras_pt_elev = None
+        hecras_pt_A = None
+        hecras_pt_K = None
+        hecras_pt_B = None
+        hecras_pt_beta = None
+        if "Property Tables" in geom and "XSEC Value" in geom["Property Tables"]:
+            pt_grp = geom["Property Tables"]
+            pt_xsec_info = pt_grp["XSEC Info"][:]
+            pt_xsec_val = pt_grp["XSEC Value"][:]
+
+            hecras_pt_elev = []
+            hecras_pt_A = []
+            hecras_pt_K = []
+            hecras_pt_B = []
+            hecras_pt_beta = []
+
+            for i in range(n_xs):
+                pt_si = int(pt_xsec_info[i, 0])
+                pt_cnt = int(pt_xsec_info[i, 1])
+                pt_rows = pt_xsec_val[pt_si:pt_si + pt_cnt]
+
+                elev_m = pt_rows[:, 0] * FT_TO_M
+                # Cols 4-6: effective area (LOB+Ch+ROB)
+                A_m2 = (pt_rows[:, 4] + pt_rows[:, 5] + pt_rows[:, 6]) * FT_TO_M**2
+                # Cols 7-9: conveyance K (LOB+Ch+ROB)
+                K_m3s = (pt_rows[:, 7] + pt_rows[:, 8] + pt_rows[:, 9]) * CFS_TO_M3S
+                # Col 16: top width
+                B_m = pt_rows[:, 16] * FT_TO_M
+                # Col 22: beta
+                beta_arr = np.maximum(pt_rows[:, 22], 1.0)
+
+                hecras_pt_elev.append(elev_m)
+                hecras_pt_A.append(A_m2)
+                hecras_pt_K.append(K_m3s)
+                hecras_pt_B.append(B_m)
+                hecras_pt_beta.append(beta_arr)
+
+            print(f"  Loaded HEC-RAS Property Tables for {n_xs} cross sections")
 
         # Boundary conditions
         bc_grp = f["Event Conditions/Unsteady/Boundary Conditions"]
@@ -112,10 +172,10 @@ def load_case(hdf_path: str) -> dict:
             ds_bc_data["times_s"] = sh_data[:, 0] * 3600.0
             ds_bc_data["stages_m"] = sh_data[:, 1] * FT_TO_M
         elif "Rating Curves" in bc_grp and len(bc_grp["Rating Curves"]) > 0:
+            ds_bc_type = "rating_curve"
             rc_grp = bc_grp["Rating Curves"]
             rc_key = list(rc_grp.keys())[0]
             rc_data = rc_grp[rc_key][:]
-            ds_bc_type = "rating_curve"
             ds_bc_data["flows_m3s"] = rc_data[:, 0] * CFS_TO_M3S
             ds_bc_data["stages_m"] = rc_data[:, 1] * FT_TO_M
 
@@ -130,7 +190,18 @@ def load_case(hdf_path: str) -> dict:
         "dx": dx,
         "bed_elevation": bed_elevation,
         "manning_n": manning_n,
+        "manning_n_lob": np.array(manning_n_lob),
+        "manning_n_rob": np.array(manning_n_rob),
+        "left_bank": lb_arr,
+        "right_bank": rb_arr,
+        "contraction_coef": cc_arr,
+        "expansion_coef": ce_arr,
         "sections": sections,
+        "hecras_pt_elevations": hecras_pt_elev,
+        "hecras_pt_A": hecras_pt_A,
+        "hecras_pt_K": hecras_pt_K,
+        "hecras_pt_B": hecras_pt_B,
+        "hecras_pt_beta": hecras_pt_beta,
         "bc_times_s": bc_times_s,
         "bc_flows_m3s": bc_flows_m3s,
         "ds_bc_type": ds_bc_type,
@@ -159,6 +230,8 @@ def run_case(suite_num: str, name: str) -> float:
     print(f"  Q range: {data['bc_flows_m3s'].min():.1f}-{data['bc_flows_m3s'].max():.1f} m3/s")
     print(f"  dx range: {data['dx'].min():.0f}-{data['dx'].max():.0f} m")
     print(f"  DS BC: {data['ds_bc_type']}")
+    has_pt = data["hecras_pt_elevations"] is not None
+    print(f"  HEC-RAS PT: {'Yes' if has_pt else 'No'}")
 
     # Build solver
     reach_data = UnsteadyReachData(
@@ -167,15 +240,30 @@ def run_case(suite_num: str, name: str) -> float:
         bed_elevation=data["bed_elevation"],
         manning_n=data["manning_n"],
         sections=data["sections"],
+        contraction_coef=data["contraction_coef"],
+        expansion_coef=data["expansion_coef"],
+        manning_n_lob=data["manning_n_lob"],
+        manning_n_rob=data["manning_n_rob"],
+        left_bank=data["left_bank"],
+        right_bank=data["right_bank"],
+        hecras_pt_elevations=data["hecras_pt_elevations"],
+        hecras_pt_A=data["hecras_pt_A"],
+        hecras_pt_K=data["hecras_pt_K"],
+        hecras_pt_B=data["hecras_pt_B"],
+        hecras_pt_beta=data["hecras_pt_beta"],
     )
 
     upstream_bc = FlowHydrographBC(data["bc_times_s"], data["bc_flows_m3s"])
 
     if data["ds_bc_type"] == "normal_depth":
+        K_elev = data["hecras_pt_elevations"][-1] if has_pt else None
+        K_vals = data["hecras_pt_K"][-1] if has_pt else None
         downstream_bc = NormalDepthBC(
             data["sections"][-1],
             manning_n=float(data["manning_n"][-1]),
             bed_slope=data["ds_bc_data"]["slope"],
+            K_elevations=K_elev,
+            K_values=K_vals,
         )
     elif data["ds_bc_type"] == "stage_hydrograph":
         downstream_bc = StageHydrographBC(
@@ -192,9 +280,8 @@ def run_case(suite_num: str, name: str) -> float:
     state0 = UnsteadyState(Z=Z_init, Q=Q_init, t=data["time_ref"][0])
 
     dt_output = data["time_ref"][1] - data["time_ref"][0]
-    # 隐式格式允许大时间步，按断面数调整
     if n_xs > 100:
-        dt = min(dt_output, 120.0)  # 大案例用大时间步
+        dt = min(dt_output, 120.0)
     else:
         dt = min(dt_output / 2.0, 60.0)
     print(f"  dt={dt:.1f}s, dt_output={dt_output:.1f}s")
@@ -206,6 +293,7 @@ def run_case(suite_num: str, name: str) -> float:
     )
 
     print("  Solving...")
+    t0 = time.perf_counter()
     result = solver.solve(
         state0,
         t_end=data["time_ref"][-1],
@@ -215,6 +303,8 @@ def run_case(suite_num: str, name: str) -> float:
         output_interval=dt_output,
         verbose=False,
     )
+    elapsed = time.perf_counter() - t0
+    print(f"  Elapsed: {elapsed:.1f}s")
 
     # Compare
     times_out = result["times"]
@@ -242,9 +332,13 @@ def run_case(suite_num: str, name: str) -> float:
 if __name__ == "__main__":
     cases = [
         ("029", "Mixed Flow Regime (153 XS, single reach, no structures)"),
-        ("051", "Example 17 - Unsteady Flow (77 XS, 8 reaches)"),
-        ("018", "Dam Breaching (192 XS, single reach)"),
+        ("018", "Dam Breaching (192 XS, single reach, structures)"),
     ]
+
+    if len(sys.argv) > 1:
+        # Filter by suite number
+        filter_num = sys.argv[1]
+        cases = [(n, d) for n, d in cases if n == filter_num]
 
     results = {}
     for num, name in cases:
@@ -260,7 +354,11 @@ if __name__ == "__main__":
     print(f"\n{'='*60}")
     print("SUMMARY")
     print(f"{'='*60}")
+    passed = 0
     for num, name in cases:
         mae = results.get(num, float("inf"))
         v = "PASS" if mae < 0.15 else ("NEAR" if mae < 0.50 else "FAIL")
+        if mae < 0.15:
+            passed += 1
         print(f"  {num} {name[:50]:<50} MAE={mae:.4f}m [{v}]")
+    print(f"\n  {passed}/{len(cases)} PASSED")

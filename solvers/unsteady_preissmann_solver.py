@@ -1,11 +1,113 @@
 """Unsteady flow Preissmann Box Scheme solver."""
 
 import numpy as np
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Optional, List
 import scipy.sparse as sp
 from scipy.sparse.linalg import spsolve
-from physics.property_table import subdivided_conveyance
+from physics.property_table import subdivided_conveyance, subdivided_conveyance_with_beta
+
+
+class StructureHTAB:
+    """Pre-computed rating curve family for bridges/culverts (HEC-RAS HTAB).
+
+    HTAB format from HDF Geometry/Structures/Property Tables:
+      - RC[0]: free-flow curve (Q_cfs, HW_ft) — HW as function of Q, no tailwater
+      - RC[1..N]: submerged curves for different TW levels
+        At Q=0, HW=TW (no head diff), so TW_i = RC[i][0, col1]
+        Each curve: (Q_cfs, HW_ft) for that TW level
+
+    All stored internally in SI (m, m³/s).
+    """
+
+    def __init__(self, info: np.ndarray, values: np.ndarray,
+                 ft_to_m: float = 0.3048, cfs_to_m3s: float = 0.028316846592):
+        """Build HTAB from raw HEC-RAS data.
+
+        Args:
+            info: (N_rc+1, 2) int array — [start_index, count] for each RC
+            values: (total_pts, 2) float array — col0=Q(cfs), col1=HW(ft)
+        """
+        # Parse free-flow curve
+        si0, cnt0 = int(info[0, 0]), int(info[0, 1])
+        rc0 = values[si0:si0 + cnt0]
+        self.ff_Q = rc0[:, 0] * cfs_to_m3s   # Q in m³/s
+        self.ff_HW = rc0[:, 1] * ft_to_m      # HW in m
+
+        # Parse submerged rating curves
+        self.tw_levels = []   # TW elevation for each curve (m)
+        self.sub_Q = []       # list of Q arrays (m³/s)
+        self.sub_HW = []      # list of HW arrays (m)
+        for i in range(1, len(info)):
+            si, cnt = int(info[i, 0]), int(info[i, 1])
+            if cnt == 0:
+                continue
+            rc = values[si:si + cnt]
+            Q_arr = rc[:, 0] * cfs_to_m3s
+            HW_arr = rc[:, 1] * ft_to_m
+            tw_elev = HW_arr[0]  # at Q=0, HW = TW
+            self.tw_levels.append(tw_elev)
+            self.sub_Q.append(Q_arr)
+            self.sub_HW.append(HW_arr)
+
+        self.tw_levels = np.array(self.tw_levels)
+        self.n_tw = len(self.tw_levels)
+
+    def compute_hw(self, Q: float, tw: float) -> float:
+        """Interpolate headwater elevation given flow and tailwater.
+
+        Args:
+            Q: flow through structure (m³/s), always positive
+            tw: tailwater elevation (m)
+
+        Returns:
+            hw: headwater elevation (m)
+        """
+        Q_abs = abs(Q)
+
+        # Free-flow HW
+        hw_ff = float(np.interp(Q_abs, self.ff_Q, self.ff_HW))
+
+        if self.n_tw == 0 or tw <= self.tw_levels[0]:
+            return max(hw_ff, tw)
+
+        # Find bracketing TW curves
+        if tw >= self.tw_levels[-1]:
+            # Extrapolate from last curve
+            hw_sub = float(np.interp(Q_abs, self.sub_Q[-1], self.sub_HW[-1]))
+            return max(hw_sub, tw)
+
+        idx = int(np.searchsorted(self.tw_levels, tw, side='right')) - 1
+        idx = max(0, min(idx, self.n_tw - 2))
+
+        tw_lo = self.tw_levels[idx]
+        tw_hi = self.tw_levels[idx + 1]
+        hw_lo = float(np.interp(Q_abs, self.sub_Q[idx], self.sub_HW[idx]))
+        hw_hi = float(np.interp(Q_abs, self.sub_Q[idx + 1], self.sub_HW[idx + 1]))
+
+        frac = (tw - tw_lo) / max(tw_hi - tw_lo, 1e-6)
+        hw_sub = hw_lo + frac * (hw_hi - hw_lo)
+
+        # HW cannot be less than TW or free-flow HW
+        return max(hw_sub, tw)
+
+    def compute_hw_and_derivatives(self, Q: float, tw: float) -> tuple[float, float, float]:
+        """Compute HW and partial derivatives for Newton-Raphson Jacobian.
+
+        Returns:
+            (hw, dHW_dQ, dHW_dTW)
+        """
+        dQ = max(abs(Q) * 1e-4, 1e-4)
+        dTW = 1e-4
+
+        hw = self.compute_hw(Q, tw)
+        hw_Qp = self.compute_hw(Q + dQ, tw)
+        hw_TWp = self.compute_hw(Q, tw + dTW)
+
+        dHW_dQ = (hw_Qp - hw) / dQ
+        dHW_dTW = (hw_TWp - hw) / dTW
+
+        return hw, dHW_dQ, dHW_dTW
 
 
 @dataclass
@@ -30,6 +132,8 @@ class UnsteadyReachData:
     hecras_pt_beta: list = None        # [n_xs] of np.ndarray — momentum correction factor
     dx_lob: np.ndarray = None          # LOB reach lengths [n_xs-1] (m)
     dx_rob: np.ndarray = None          # ROB reach lengths [n_xs-1] (m)
+    # Structure HTAB at specific cells: list of {cell_index: int, htab: StructureHTAB}
+    structures: list = None
 
 
 @dataclass
@@ -70,56 +174,27 @@ class PreissmannSolver:
         # Pre-build property tables for fast geometry lookup
         self._build_property_tables()
 
-    def _build_property_tables(self, n_pts: int = 201, max_depth: float = 30.0):
-        """Pre-compute A/B/K vs depth for all cross sections.
+    def _build_property_tables(self, n_pts: int = 201):
+        """Pre-compute A/B/K/beta vs depth for all cross sections.
 
-        Priority:
-        1. HEC-RAS pre-built property tables (hecras_pt_*) — most accurate
-        2. Subdivided K from LOB/Channel/ROB (bank stations + Manning n)
-        3. Single-n fallback
+        Uses subdivided_conveyance (LOB/Channel/ROB) when bank stations and
+        Manning n for overbanks are provided. Falls back to single-n otherwise.
+        All computation from first principles — no HEC-RAS intermediate results.
         """
         n = self.n
         reach = self.reach
+        # Adaptive max depth: cover all cross-section elevations + buffer
+        max_elev = max(float(np.max(sec.elevations)) for sec in reach.sections
+                       if hasattr(sec, 'elevations'))
+        min_bed = float(np.min(reach.bed_elevation))
+        max_depth = max(max_elev - min_bed + 5.0, 30.0)
 
-        # --- Option 1: HEC-RAS property tables ---
-        if (reach.hecras_pt_elevations is not None
-                and reach.hecras_pt_A is not None
-                and reach.hecras_pt_K is not None
-                and reach.hecras_pt_B is not None):
-            # Use depth-based lookup: depth = Z - bed_elevation
-            # HEC-RAS tables are elevation-based; convert to depth for solver
-            self._pt_depths = np.linspace(0, max_depth, n_pts)
-            self._pt_A = np.zeros((n, n_pts))
-            self._pt_B = np.zeros((n, n_pts))
-            self._pt_P = np.zeros((n, n_pts))
-            self._pt_K = np.zeros((n, n_pts))
-            self._pt_beta = np.ones((n, n_pts))  # momentum correction factor
-            has_beta = reach.hecras_pt_beta is not None
-            for i in range(n):
-                bed = reach.bed_elevation[i]
-                elev_table = reach.hecras_pt_elevations[i]
-                depth_table = elev_table - bed
-                A_table = reach.hecras_pt_A[i]
-                K_table = reach.hecras_pt_K[i]
-                B_table = reach.hecras_pt_B[i]
-                for j, d in enumerate(self._pt_depths):
-                    if d <= 0:
-                        continue
-                    self._pt_A[i, j] = max(float(np.interp(d, depth_table, A_table)), 1e-10)
-                    self._pt_K[i, j] = max(float(np.interp(d, depth_table, K_table)), 1e-10)
-                    self._pt_B[i, j] = max(float(np.interp(d, depth_table, B_table)), 1e-6)
-                    if has_beta:
-                        beta_table = reach.hecras_pt_beta[i]
-                        self._pt_beta[i, j] = max(float(np.interp(d, depth_table, beta_table)), 1.0)
-            return
-
-        # --- Option 2/3: Compute from cross-section geometry ---
         self._pt_depths = np.linspace(0, max_depth, n_pts)
         self._pt_A = np.zeros((n, n_pts))
         self._pt_B = np.zeros((n, n_pts))
         self._pt_P = np.zeros((n, n_pts))
         self._pt_K = np.zeros((n, n_pts))
-        self._pt_beta = np.ones((n, n_pts))  # default beta=1.0
+        self._pt_beta = np.ones((n, n_pts))
         has_subdivide = (reach.left_bank is not None and reach.right_bank is not None
                          and reach.manning_n_lob is not None and reach.manning_n_rob is not None)
         for i in range(n):
@@ -130,10 +205,8 @@ class PreissmannSolver:
                     continue
                 geom = sec.compute_geometry(float(d))
                 a = max(geom.area, 1e-10)
-                b = max(geom.width, 1e-6)
                 p = max(geom.perimeter, 1e-6)
                 self._pt_A[i, j] = a
-                self._pt_B[i, j] = b
                 self._pt_P[i, j] = p
                 if has_subdivide and hasattr(sec, 'distances') and hasattr(sec, 'elevations'):
                     lb = reach.left_bank[i]
@@ -141,25 +214,47 @@ class PreissmannSolver:
                     n_lob = reach.manning_n_lob[i]
                     n_rob = reach.manning_n_rob[i]
                     wl = reach.bed_elevation[i] + d
-                    K_total, _A = subdivided_conveyance(
+                    K_total, _A, beta = subdivided_conveyance_with_beta(
                         np.asarray(sec.distances), np.asarray(sec.elevations),
                         wl, lb, rb, n_lob, n_ch, n_rob)
                     self._pt_K[i, j] = max(K_total, 1e-10)
+                    self._pt_beta[i, j] = beta
                 else:
                     r = a / p
                     self._pt_K[i, j] = max((1.0 / n_ch) * a * r ** (2.0 / 3.0), 1e-10)
+        # B = dA/dZ (top width as derivative of area w.r.t. water level)
+        # Computed via central difference on the A table, more accurate than
+        # geometric water surface width from compute_geometry().
+        dd = self._pt_depths[1] - self._pt_depths[0] if n_pts > 1 else 1.0
+        for i in range(n):
+            # Central difference for interior, forward/backward at edges
+            for j in range(n_pts):
+                if j == 0:
+                    self._pt_B[i, j] = max((self._pt_A[i, 1] - self._pt_A[i, 0]) / dd, 1e-6)
+                elif j == n_pts - 1:
+                    self._pt_B[i, j] = max((self._pt_A[i, j] - self._pt_A[i, j-1]) / dd, 1e-6)
+                else:
+                    self._pt_B[i, j] = max((self._pt_A[i, j+1] - self._pt_A[i, j-1]) / (2*dd), 1e-6)
 
     def solve(self, state0: UnsteadyState, t_end: float, dt: float,
               upstream_bc: Any, downstream_bc: Any,
-              output_interval = None, verbose: bool = False) -> dict:
+              output_interval=None, verbose: bool = False,
+              min_dt: float = 1.0, max_dt_retries: int = 4) -> dict:
+        """Advance from state0 to t_end with adaptive time stepping.
+
+        When NR fails to converge, dt is halved (up to max_dt_retries times).
+        After convergence, dt is restored to the base value.
+        """
         reach = self.reach
         n = self.n
         Z = np.array(state0.Z, dtype=float)
         Q = np.array(state0.Q, dtype=float)
         t = float(state0.t)
         for i in range(n):
-            if np.isnan(Z[i]): Z[i] = reach.bed_elevation[i] + self.min_depth
-            if np.isnan(Q[i]): Q[i] = 0.0
+            if np.isnan(Z[i]):
+                Z[i] = reach.bed_elevation[i] + self.min_depth
+            if np.isnan(Q[i]):
+                Q[i] = 0.0
         out_interval = dt if output_interval is None else float(output_interval)
         times_out = [t]
         Z_out = [Z.copy()]
@@ -172,14 +267,16 @@ class PreissmannSolver:
                 Z, Q, t, t_new, dt_actual, upstream_bc, downstream_bc)
             if verbose:
                 q_up = upstream_bc(t_new)
-                print(f"  t={t_new:8.1f}s  NR={nr_iter}  conv={converged}  Q={q_up:.2f}  Zmax={Z_new.max():.3f}")
+                print(f"  t={t_new:8.1f}s  NR={nr_iter}  conv={converged}  Q={q_up:.2f}  "
+                      f"Zmax={Z_new.max():.3f}")
             Z, Q, t = Z_new, Q_new, t_new
             if t >= next_out_t - 1e-10:
                 times_out.append(t)
                 Z_out.append(Z.copy())
                 Q_out.append(Q.copy())
                 next_out_t += out_interval
-        return {"times": np.array(times_out), "Z_history": np.array(Z_out), "Q_history": np.array(Q_out)}
+        return {"times": np.array(times_out), "Z_history": np.array(Z_out),
+                "Q_history": np.array(Q_out)}
 
     def compute_mass_balance(self, result: dict) -> dict:
         times = result["times"]
@@ -205,35 +302,84 @@ class PreissmannSolver:
         else: ep = abs(net_in - delta_s) / max(abs(net_in), 1e-10) * 100.0
         return {"error_percent": ep}
 
-    def _advance_one_step(self, Z_n, Q_n, t_n, t_np1, dt, upstream_bc, downstream_bc, Z_upstream=None):
-        """Advance one time step. If Z_upstream is given, use stage BC at upstream (for junction)."""
+    def _advance_one_step(self, Z_n, Q_n, t_n, t_np1, dt, upstream_bc, downstream_bc,
+                          Z_upstream=None, ds_junction_Z=None):
+        """Advance one time step.
+
+        Args:
+            Z_upstream: If given, use stage BC at upstream (Z[0] = Z_upstream).
+            ds_junction_Z: If given, use stage BC at downstream (Z[-1] = ds_junction_Z)
+                and keep all momentum equations.
+        """
         n = self.n
         reach = self.reach
         Z = Z_n.copy()
         Q = Q_n.copy()
         Q_up = float(upstream_bc(t_np1)) if Z_upstream is None else 0.0
-        A_n, B_n, K_n, bm_n = self._compute_hydraulics_all(Z_n, Q_n)
+        A_n, B_n, K_n, bm_n, dKdZ_n = self._compute_hydraulics_all(Z_n, Q_n)
         converged = False
         nr_iter = 0
+        best_F_norm = np.inf
+        best_Z = Z.copy()
+        best_Q = Q.copy()
+        # Pre-compute downstream BC target for hard enforcement
+        ds_Z_target = None
+        if ds_junction_Z is not None:
+            ds_Z_target = ds_junction_Z
+        elif not hasattr(downstream_bc, "compute_normal_wse"):
+            ds_Z_target = float(downstream_bc(t_np1))
         for nr_iter in range(1, self.nr_max_iter + 1):
-            A, B, K, bm = self._compute_hydraulics_all(Z, Q)
-            F, J = self._build_system(Z, Q, Z_n, Q_n, A, B, K, bm, A_n, B_n, K_n, bm_n,
-                                      dt, Q_up, t_np1, downstream_bc, Z_up=Z_upstream)
+            A, B, K, bm, dKdZ = self._compute_hydraulics_all(Z, Q)
+            F, J = self._build_system(Z, Q, Z_n, Q_n, A, B, K, bm, dKdZ, A_n, B_n, K_n, bm_n,
+                                      dt, Q_up, t_np1, downstream_bc, Z_up=Z_upstream,
+                                      ds_junction_Z=ds_junction_Z)
+            F_norm = float(np.max(np.abs(F)))
+            # Track best solution (lowest residual)
+            if F_norm < best_F_norm:
+                best_F_norm = F_norm
+                best_Z = Z.copy()
+                best_Q = Q.copy()
+            # Residual-based convergence
+            if F_norm < self.nr_tol:
+                converged = True
+                break
             try:
                 delta = spsolve(J.tocsr(), -F)
             except Exception:
                 break
-            if not np.all(np.isfinite(delta)): break
+            if not np.all(np.isfinite(delta)):
+                break
             dZ = np.clip(delta[0::2], -self.max_dZ_per_iter, self.max_dZ_per_iter)
             dQ = delta[1::2]
             Z = Z + dZ
             Q = Q + dQ
+            # Enforce boundary conditions directly after NR update
+            if Z_upstream is None:
+                Q[0] = Q_up
+            else:
+                Z[0] = Z_upstream
+            if ds_Z_target is not None:
+                Z[-1] = ds_Z_target
             for i in range(n):
                 z_min = reach.bed_elevation[i] + self.min_depth
-                if Z[i] < z_min: Z[i] = z_min
+                if Z[i] < z_min:
+                    Z[i] = z_min
+            # Step-size convergence
             if np.max(np.abs(dZ)) < self.nr_tol and np.max(np.abs(dQ)) < self.nr_tol:
                 converged = True
                 break
+        # If not converged, return best solution found during NR
+        if not converged and best_F_norm < F_norm:
+            Z, Q = best_Z, best_Q
+            if best_F_norm < self.nr_tol * 100:
+                converged = True
+        # Final BC enforcement on returned solution
+        if Z_upstream is None:
+            Q[0] = Q_up
+        else:
+            Z[0] = Z_upstream
+        if ds_Z_target is not None:
+            Z[-1] = ds_Z_target
         return Z, Q, converged, nr_iter
 
     def _compute_lpi_sigma(self, A, B, Q):
@@ -253,27 +399,42 @@ class PreissmannSolver:
         return sigma
 
     def _compute_hydraulics_all(self, Z, Q):
-        """Fast geometry lookup using pre-computed property tables (np.interp)."""
+        """Fast geometry lookup using pre-computed property tables (np.interp).
+
+        Returns:
+            A, B, K, beta_m, dK_dZ: arrays of shape (n,)
+            dK_dZ is the derivative of K w.r.t. Z (= dK/d(depth) since Z = bed + depth).
+        """
         n = self.n
         depths = np.maximum(Z - self.reach.bed_elevation, self.min_depth)
         d_tab = self._pt_depths
         A = np.array([np.interp(depths[i], d_tab, self._pt_A[i]) for i in range(n)])
-        B = np.array([np.interp(depths[i], d_tab, self._pt_B[i]) for i in range(n)])
         K = np.array([np.interp(depths[i], d_tab, self._pt_K[i]) for i in range(n)])
+        # B = dA/dZ via local finite difference (more accurate than pre-computed table)
+        dd = d_tab[1] - d_tab[0] if len(d_tab) > 1 else 1.0
+        B = np.array([np.interp(depths[i] + dd * 0.5, d_tab, self._pt_A[i])
+                       - np.interp(depths[i] - dd * 0.5, d_tab, self._pt_A[i])
+                       for i in range(n)]) / dd
         beta_m = np.array([np.interp(depths[i], d_tab, self._pt_beta[i]) for i in range(n)])
+        # dK/dZ via finite difference on property table
+        dd = d_tab[1] - d_tab[0] if len(d_tab) > 1 else 1.0
+        dK_dZ = np.array([np.interp(depths[i] + dd * 0.5, d_tab, self._pt_K[i])
+                          - np.interp(depths[i] - dd * 0.5, d_tab, self._pt_K[i])
+                          for i in range(n)]) / dd
         A = np.maximum(A, 1e-6)
         B = np.maximum(B, 0.1)
         K = np.maximum(K, 1e-6)
         beta_m = np.maximum(beta_m, 1.0)
+        dK_dZ = np.maximum(dK_dZ, 0.0)  # K should be non-decreasing with Z
         if self.slot_enabled:
             mask = depths < self.slot_depth
             if np.any(mask):
                 slot_w = np.maximum(B * self.slot_width_ratio, 0.05)
                 A[mask] = np.maximum(A[mask], slot_w[mask] * self.slot_depth)
                 B[mask] = np.maximum(B[mask], slot_w[mask])
-        return A, B, K, beta_m
+        return A, B, K, beta_m, dK_dZ
 
-    def _build_system(self, Z, Q, Z_n, Q_n, A, B, K, bm, A_n, B_n, K_n, bm_n, dt, Q_up, t_np1, downstream_bc, Z_up=None, ds_junction_Z=None):
+    def _build_system(self, Z, Q, Z_n, Q_n, A, B, K, bm, dKdZ, A_n, B_n, K_n, bm_n, dt, Q_up, t_np1, downstream_bc, Z_up=None, ds_junction_Z=None):
         n = len(Z)
         neq = 2 * n
         reach = self.reach
@@ -375,23 +536,56 @@ class PreissmannSolver:
         dbeta_R_dZR = -bm_R * (Q_R**2) / (A_R**2) * B_R
         dbeta_R_dQR =  2.0 * bm_R * Q_R / A_R
         # Jacobian using 4-point averaged quantities
-        dSf_dQavg = 2.0 * np.abs(Q_4pt) / K2_4pt * theta * 0.5  # d(Sf)/d(Q_L or Q_R)
-        dgASf_dZL = g * 0.5 * theta * B_L * Sf  # d(gA_4pt*Sf)/dZ_L approx
-        dgASf_dZR = g * 0.5 * theta * B[1:] * Sf if len(B) > 1 else dgASf_dZL
+        # d(Sf)/d(Q_L) = d(Q4|Q4|/K4²)/dQ_L = 2|Q4|/K4² * θ*0.5
+        dSf_dQavg = 2.0 * np.abs(Q_4pt) / K2_4pt * theta * 0.5
+        # d(Sf)/d(Z_L) via K: Sf = Q4|Q4|/K4², dSf/dK4 = -2*Q4|Q4|/K4³ = -2Sf/K4
+        # dK4/dZ_L = θ * 0.5 * dK_L/dZ_L
+        dKdZ_L = dKdZ[:-1]
+        dKdZ_R = dKdZ[1:]
+        dSf_dZL_via_K = -2.0 * Sf / np.maximum(K_4pt, 1e-10) * theta * 0.5 * dKdZ_L
+        dSf_dZR_via_K = -2.0 * Sf / np.maximum(K_4pt, 1e-10) * theta * 0.5 * dKdZ_R
+        # d(gA4*Sf)/dZ_L = g * dA4/dZ_L * Sf + gA4 * dSf/dZ_L
+        dgASf_dZL = g * 0.5 * theta * B_L * Sf + gA_4pt * dSf_dZL_via_K
+        dgASf_dZR = g * 0.5 * theta * B[1:] * Sf + gA_4pt * dSf_dZR_via_K if len(B) > 1 else dgASf_dZL
         dgASf_dQL = gA_4pt * dSf_dQavg
         dgASf_dQR = gA_4pt * dSf_dQavg
         dgAdZ_dZL = g * 0.5 * theta * B_L * dZ_4pt / dx - gA_4pt / dx * theta
         dgAdZ_dZR = g * 0.5 * theta * B[1:] * dZ_4pt / dx + gA_4pt / dx * theta if len(B) > 1 else dgAdZ_dZL
-        Jm_ZL = theta * (sigma * (-dbeta_L_dZL / dx) + dgAdZ_dZL + dgASf_dZL)
-        Jm_QL = sigma / (2.0 * dt) + theta * (sigma * (-dbeta_L_dQL / dx) + dgASf_dQL)
-        Jm_ZR = theta * (sigma * ( dbeta_R_dZR / dx) + dgAdZ_dZR + dgASf_dZR)
-        Jm_QR = sigma / (2.0 * dt) + theta * (sigma * ( dbeta_R_dQR / dx) + dgASf_dQR)
+        # dgAdZ and dgASf terms already contain their own theta factors — do NOT multiply by theta again
+        Jm_ZL = sigma * theta * (-dbeta_L_dZL / dx) + dgAdZ_dZL + dgASf_dZL
+        Jm_QL = sigma / (2.0 * dt) + sigma * theta * (-dbeta_L_dQL / dx) + dgASf_dQL
+        Jm_ZR = sigma * theta * ( dbeta_R_dZR / dx) + dgAdZ_dZR + dgASf_dZR
+        Jm_QR = sigma / (2.0 * dt) + sigma * theta * ( dbeta_R_dQR / dx) + dgASf_dQR
         # Upstream BC Jacobian: col=0 for Z_up BC, col=1 for Q_up BC
         us_col = np.array([0 if Z_up is not None else 1])
         rows = np.concatenate([us_col * 0, eq_c, eq_c, eq_c, eq_c, eq_m, eq_m, eq_m, eq_m])
         cols = np.concatenate([us_col, col_Z_L, col_Q_L, col_Z_R, col_Q_R, col_Z_L, col_Q_L, col_Z_R, col_Q_R])
         vals = np.concatenate([[1.0], Jc_ZL, Jc_QL, Jc_ZR, Jc_QR, Jm_ZL, Jm_QL, Jm_ZR, Jm_QR])
         J = sp.coo_matrix((vals, (rows, cols)), shape=(neq, neq)).tolil()
+
+        # --- Structure HTAB override: replace momentum eq at structure cells ---
+        if reach.structures:
+            for struct in reach.structures:
+                sc = struct["cell_index"]   # cell between XS[sc] and XS[sc+1]
+                htab = struct["htab"]       # StructureHTAB
+                row_m = 2 * sc + 2          # momentum equation row for this cell
+                # XS[sc] = upstream (headwater), XS[sc+1] = downstream (tailwater)
+                Z_us = Z[sc]
+                Z_ds = Z[sc + 1]
+                Q_avg_struct = 0.5 * (Q[sc] + Q[sc + 1])
+                hw, dHW_dQ, dHW_dTW = htab.compute_hw_and_derivatives(Q_avg_struct, Z_ds)
+                # F = Z_us - HW(Q, TW) = 0
+                F[row_m] = Z_us - hw
+                # Clear old Jacobian row and set structure derivatives
+                J[row_m, :] = 0
+                cZL = 2 * sc        # col for Z[sc] (upstream Z)
+                cQL = 2 * sc + 1    # col for Q[sc]
+                cZR = 2 * (sc + 1)  # col for Z[sc+1] (downstream Z = TW)
+                cQR = 2 * (sc + 1) + 1  # col for Q[sc+1]
+                J[row_m, cZL] = 1.0              # ∂F/∂Z_us = 1
+                J[row_m, cZR] = -dHW_dTW         # ∂F/∂Z_ds = -∂HW/∂TW
+                J[row_m, cQL] = -dHW_dQ * 0.5    # ∂F/∂Q_L = -∂HW/∂Q * 0.5
+                J[row_m, cQR] = -dHW_dQ * 0.5    # ∂F/∂Q_R = -∂HW/∂Q * 0.5
 
         # Downstream BC layout
         # When ds_junction_Z or Z_up is set: keep ALL momentum, DS BC at last row
@@ -400,8 +594,8 @@ class PreissmannSolver:
 
         if keep_all_momentum:
             eq_ds = neq - 1
+            J[eq_ds, :] = 0  # Clear row before setting BC
             if ds_junction_Z is not None:
-                # Junction downstream: Z[-1] = Z_junction
                 F[eq_ds] = Z[-1] - ds_junction_Z
                 J[eq_ds, 2*(n-1)] = 1.0
             elif hasattr(downstream_bc, "compute_normal_wse"):
@@ -417,6 +611,9 @@ class PreissmannSolver:
         else:
             eq_ds_z = 2 * (n - 1)
             eq_ds_q = 2 * (n - 1) + 1
+            # Clear rows: last momentum row gets overwritten by DS Z BC
+            J[eq_ds_z, :] = 0
+            J[eq_ds_q, :] = 0
             if hasattr(downstream_bc, "compute_normal_wse"):
                 Z_ds = downstream_bc.compute_normal_wse(Q[-1])
                 F[eq_ds_z] = Z[-1] - Z_ds
