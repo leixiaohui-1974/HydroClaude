@@ -151,6 +151,7 @@ class PreissmannSolver:
     def __init__(self, reach: UnsteadyReachData, theta: float = 0.6, g: float = 9.81,
                  nr_max_iter: int = 30, nr_tol: float = 1e-4,
                  min_depth: float = 0.05, max_dZ_per_iter: float = 0.5,
+                 max_dQ_per_iter: float = 25.0,
                  lpi_enabled: bool = True, lpi_threshold: float = 1.0,
                  lpi_exponent: float = 2.0,
                  slot_enabled: bool = True, slot_width_ratio: float = 0.01,
@@ -162,6 +163,7 @@ class PreissmannSolver:
         self.nr_tol = nr_tol
         self.min_depth = min_depth
         self.max_dZ_per_iter = max_dZ_per_iter
+        self.max_dQ_per_iter = max_dQ_per_iter
         self.n = reach.n_xs
         # LPI (Local Partial Inertia) — suppress inertia near/above Fr=1
         self.lpi_enabled = lpi_enabled
@@ -350,7 +352,7 @@ class PreissmannSolver:
             if not np.all(np.isfinite(delta)):
                 break
             dZ = np.clip(delta[0::2], -self.max_dZ_per_iter, self.max_dZ_per_iter)
-            dQ = delta[1::2]
+            dQ = np.clip(delta[1::2], -self.max_dQ_per_iter, self.max_dQ_per_iter)
             Z = Z + dZ
             Q = Q + dQ
             # Enforce boundary conditions directly after NR update
@@ -433,6 +435,184 @@ class PreissmannSolver:
                 A[mask] = np.maximum(A[mask], slot_w[mask] * self.slot_depth)
                 B[mask] = np.maximum(B[mask], slot_w[mask])
         return A, B, K, beta_m, dK_dZ
+
+    def _compute_cell_equation_terms(
+        self,
+        Z,
+        Q,
+        Z_n,
+        Q_n,
+        A,
+        B,
+        K,
+        bm,
+        dKdZ,
+        A_n,
+        B_n,
+        K_n,
+        bm_n,
+        dt,
+        cell_index,
+    ):
+        i = int(cell_index)
+        n = len(Z)
+        if i < 0 or i >= n - 1:
+            raise IndexError(f"cell_index out of range: {i}")
+
+        theta = self.theta
+        g = self.g
+        dx = float(self.reach.dx[i])
+
+        sigma = float(self._compute_lpi_sigma(A, B, Q)[i])
+        sigma_n = float(self._compute_lpi_sigma(A_n, B_n, Q_n)[i])
+
+        A_L = float(A[i])
+        A_R = float(A[i + 1])
+        B_L = float(B[i])
+        B_R = float(B[i + 1])
+        K_L = float(K[i])
+        K_R = float(K[i + 1])
+        Q_L = float(Q[i])
+        Q_R = float(Q[i + 1])
+        Z_L = float(Z[i])
+        Z_R = float(Z[i + 1])
+        bm_L = float(bm[i])
+        bm_R = float(bm[i + 1])
+        A_Ln = float(A_n[i])
+        A_Rn = float(A_n[i + 1])
+        B_Ln = float(B_n[i])
+        B_Rn = float(B_n[i + 1])
+        K_Ln = float(K_n[i])
+        K_Rn = float(K_n[i + 1])
+        Q_Ln = float(Q_n[i])
+        Q_Rn = float(Q_n[i + 1])
+        Z_Ln = float(Z_n[i])
+        Z_Rn = float(Z_n[i + 1])
+        bm_Ln = float(bm_n[i])
+        bm_Rn = float(bm_n[i + 1])
+        bed_L = float(self.reach.bed_elevation[i])
+        bed_R = float(self.reach.bed_elevation[i + 1])
+        depth_L = max(Z_L - bed_L, self.min_depth)
+        depth_R = max(Z_R - bed_R, self.min_depth)
+        depth_Ln = max(Z_Ln - bed_L, self.min_depth)
+        depth_Rn = max(Z_Rn - bed_R, self.min_depth)
+
+        A_avg = 0.5 * (A_L + A_R)
+        A_avg_n = 0.5 * (A_Ln + A_Rn)
+        K_avg = 0.5 * (K_L + K_R)
+        K_avg_n = 0.5 * (K_Ln + K_Rn)
+        Q_avg = 0.5 * (Q_L + Q_R)
+        Q_avg_n = 0.5 * (Q_Ln + Q_Rn)
+        Q_4pt = theta * Q_avg + (1.0 - theta) * Q_avg_n
+        K_4pt = theta * K_avg + (1.0 - theta) * K_avg_n
+        A_4pt = theta * A_avg + (1.0 - theta) * A_avg_n
+        dZ_4pt = theta * (Z_R - Z_L) + (1.0 - theta) * (Z_Rn - Z_Ln)
+        K2_4pt = K_4pt ** 2 + 1e-30
+        Sf = Q_4pt * abs(Q_4pt) / K2_4pt
+        gA_4pt = g * A_4pt
+
+        beta_L = bm_L * Q_L * Q_L / max(A_L, 1e-12)
+        beta_R = bm_R * Q_R * Q_R / max(A_R, 1e-12)
+        beta_Ln = bm_Ln * Q_Ln * Q_Ln / max(A_Ln, 1e-12)
+        beta_Rn = bm_Rn * Q_Rn * Q_Rn / max(A_Rn, 1e-12)
+
+        sf_loss_np1 = 0.0
+        sf_loss_n = 0.0
+        Cc = self.reach.contraction_coef
+        Ce = self.reach.expansion_coef
+        if Cc is not None and Ce is not None:
+            V_L = Q_L / max(A_L, 1e-12)
+            V_R = Q_R / max(A_R, 1e-12)
+            dV2 = V_R * V_R - V_L * V_L
+            c_loss = 0.5 * (float(Cc[i]) + float(Cc[i + 1])) if dV2 > 0.0 else 0.5 * (float(Ce[i]) + float(Ce[i + 1]))
+            sf_loss_np1 = c_loss * abs(dV2) / (2.0 * g * dx)
+
+            V_Ln = Q_Ln / max(A_Ln, 1e-12)
+            V_Rn = Q_Rn / max(A_Rn, 1e-12)
+            dV2_n = V_Rn * V_Rn - V_Ln * V_Ln
+            c_loss_n = 0.5 * (float(Cc[i]) + float(Cc[i + 1])) if dV2_n > 0.0 else 0.5 * (float(Ce[i]) + float(Ce[i + 1]))
+            sf_loss_n = c_loss_n * abs(dV2_n) / (2.0 * g * dx)
+        sf_loss_4pt = theta * sf_loss_np1 + (1.0 - theta) * sf_loss_n
+
+        continuity_storage = (A_R + A_L - A_Rn - A_Ln) / (2.0 * dt)
+        continuity_flux_np1 = theta * (Q_R - Q_L) / dx
+        continuity_flux_n = (1.0 - theta) * (Q_Rn - Q_Ln) / dx
+        continuity_residual = continuity_storage + continuity_flux_np1 + continuity_flux_n
+
+        momentum_local_inertia = sigma * (Q_R + Q_L - Q_Rn - Q_Ln) / (2.0 * dt)
+        momentum_convective_np1 = sigma * theta * (beta_R - beta_L) / dx
+        momentum_convective_n = sigma_n * (1.0 - theta) * (beta_Rn - beta_Ln) / dx
+        momentum_pressure = gA_4pt * dZ_4pt / dx
+        momentum_friction = gA_4pt * Sf
+        momentum_minor_loss = gA_4pt * sf_loss_4pt
+        momentum_residual = (
+            momentum_local_inertia
+            + momentum_convective_np1
+            + momentum_convective_n
+            + momentum_pressure
+            + momentum_friction
+            + momentum_minor_loss
+        )
+
+        return {
+            "cell_index": int(i),
+            "dx_m": float(dx),
+            "sigma_np1": float(sigma),
+            "sigma_n": float(sigma_n),
+            "depth_L_m": float(max(Z_L - float(self.reach.bed_elevation[i]), 0.0)),
+            "depth_R_m": float(max(Z_R - float(self.reach.bed_elevation[i + 1]), 0.0)),
+            "depth_L_old_m": float(max(Z_Ln - float(self.reach.bed_elevation[i]), 0.0)),
+            "depth_R_old_m": float(max(Z_Rn - float(self.reach.bed_elevation[i + 1]), 0.0)),
+            "A_L_m2": float(A_L),
+            "A_R_m2": float(A_R),
+            "A_L_old_m2": float(A_Ln),
+            "A_R_old_m2": float(A_Rn),
+            "A_avg_m2": float(A_avg),
+            "A_avg_old_m2": float(A_avg_n),
+            "K_L": float(K_L),
+            "K_R": float(K_R),
+            "K_L_old": float(K_Ln),
+            "K_R_old": float(K_Rn),
+            "K_avg": float(K_avg),
+            "K_avg_old": float(K_avg_n),
+            "A_4pt_m2": float(A_4pt),
+            "K_4pt": float(K_4pt),
+            "Q_avg_m3s": float(Q_avg),
+            "Q_avg_old_m3s": float(Q_avg_n),
+            "Q_4pt_m3s": float(Q_4pt),
+            "dZ_4pt_m": float(dZ_4pt),
+            "Sf": float(Sf),
+            "Sf_loss_4pt": float(sf_loss_4pt),
+            "continuity_storage_term": float(continuity_storage),
+            "continuity_flux_term_np1": float(continuity_flux_np1),
+            "continuity_flux_term_n": float(continuity_flux_n),
+            "continuity_residual": float(continuity_residual),
+            "momentum_local_inertia_term": float(momentum_local_inertia),
+            "momentum_convective_term_np1": float(momentum_convective_np1),
+            "momentum_convective_term_n": float(momentum_convective_n),
+            "momentum_pressure_term": float(momentum_pressure),
+            "momentum_friction_term": float(momentum_friction),
+            "momentum_minor_loss_term": float(momentum_minor_loss),
+            "momentum_residual": float(momentum_residual),
+            "Z_L": float(Z_L),
+            "Z_R": float(Z_R),
+            "Q_L": float(Q_L),
+            "Q_R": float(Q_R),
+            "Z_L_old": float(Z_Ln),
+            "Z_R_old": float(Z_Rn),
+            "Q_L_old": float(Q_Ln),
+            "Q_R_old": float(Q_Rn),
+            "depth_L": float(depth_L),
+            "depth_R": float(depth_R),
+            "depth_L_old": float(depth_Ln),
+            "depth_R_old": float(depth_Rn),
+            "A_4pt": float(A_4pt),
+            "K_4pt": float(K_4pt),
+            "Q_4pt": float(Q_4pt),
+            "dZ_4pt": float(dZ_4pt),
+            "Sf": float(Sf),
+            "Sf_loss_4pt": float(sf_loss_4pt),
+        }
 
     def _build_system(self, Z, Q, Z_n, Q_n, A, B, K, bm, dKdZ, A_n, B_n, K_n, bm_n, dt, Q_up, t_np1, downstream_bc, Z_up=None, ds_junction_Z=None):
         n = len(Z)
