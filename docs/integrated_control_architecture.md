@@ -69,7 +69,7 @@ $$ y = C x + D u $$
 
 ## 4. 辨识、估计与控制算法集合
 
-依托 Pipedream 仓库中的 `hydroclaw_control_server`，构建完整的算法工具箱：
+依托 Pipedream 仓库中的 `hydromind_control_server`，构建完整的算法工具箱：
 
 ### 4.1 状态估计（Kalman Filtering）
 *   **算法**：扩展卡尔曼滤波（EKF）或无迹卡尔曼滤波（UKF）。

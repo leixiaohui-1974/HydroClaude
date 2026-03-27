@@ -12,7 +12,7 @@
 | **HydroClaude** | **高保真仿真引擎** | 1D/2D 水动力求解器 (Preissmann, FVM-HLLC)、水质生化动力学 (DO-BOD-营养盐-藻类)、冰期热力学与水力学、AMR 自适应网格。 |
 | **pipedream-hydrology-integration-lab** | **降阶、辨识与控制算法库** | SuperLink 状态空间模型、POD/平衡截断降阶 (ROM)、卡尔曼滤波 (EKF/EnKF) 数据同化、MPC 预测控制。 |
 | **hydromind-contracts** | **标准接口契约** | 定义整个生态的通信协议（如 `HydraulicSolverProtocol`, `WaterQualityProtocol`, `IdentifierProtocol`），实现依赖倒置。 |
-| **HydroClaw (即将更名为 HydroMind)** | **认知 AI 与业务调度中枢** | Agent 智能体网络、ODD 安全包络、SIL 在环仿真、水质突发事件调度、漏水应急响应。 |
+| **HydroMind (即将更名为 HydroMind)** | **认知 AI 与业务调度中枢** | Agent 智能体网络、ODD 安全包络、SIL 在环仿真、水质突发事件调度、漏水应急响应。 |
 
 ---
 
@@ -33,8 +33,8 @@
 - `HydroClaude1DWaterQualityAdapter`：封装 `River1DSystem`，提供水质污染源注入与全要素时序仿真接口。
 - `HydroClaude1DLeakDetectorAdapter` & `HydroClaude1DPollutionSourceAdapter`：作为代理，调用 pipedream 的底层算法，向上层暴露标准检测与辨识接口。
 
-### 2.3 业务用例闭环：`HydroClaw` 仓库
-我们重写了 `HydroClaw/core/hydrology/use_cases/water_quality_incident.py`：
+### 2.3 业务用例闭环：`HydroMind` 仓库
+我们重写了 `HydroMind/core/hydrology/use_cases/water_quality_incident.py`：
 - 移除了原有的硬编码占位符（`return 'Source_A'`）。
 - 动态调用 HydroClaude 的 `HydroClaude1DPollutionSourceAdapter`。
 - 实现了从**浓度观测 -> BLP-EnKF 溯源 -> 浓度时空演进预测 -> 取水口风险评估**的完整业务闭环。
@@ -69,15 +69,15 @@
 - 水质仿真时间序列与浓度分布符合预期。
 - EKF 漏水检测在无漏水时无误报，在注入 0.5 m³/s 漏水时成功捕获。
 - BLP-EnKF 成功将污染源位置误差控制在合理范围内。
-- HydroClaw 的 `water_quality_incident` 链路全线贯通。
+- HydroMind 的 `water_quality_incident` 链路全线贯通。
 
 ---
 
 ## 5. 下一步演进建议
 
 1. **渠道边坡衬砌板耦合**：按照已输出的 `integrated_control_architecture.md` 规划，将边坡地下水扬压力模型作为附加状态变量接入 `River1DSystem`。
-2. **MPC 调度实战**：利用 `HydroClaude1DSolverAdapter.get_reduced_state_matrices()` 导出的 POD 降阶模型，在 HydroClaw 中实现考虑冰期糙率约束的自适应模型预测控制 (Adaptive MPC)。
-3. **仓库重命名与 CI/CD**：推进 `HydroClaw` 仓库正式更名为 `HydroMind`，并配置跨仓库的 GitHub Actions，确保一方接口变更能及时触发全局集成测试。
+2. **MPC 调度实战**：利用 `HydroClaude1DSolverAdapter.get_reduced_state_matrices()` 导出的 POD 降阶模型，在 HydroMind 中实现考虑冰期糙率约束的自适应模型预测控制 (Adaptive MPC)。
+3. **仓库重命名与 CI/CD**：推进 `HydroMind` 仓库正式更名为 `HydroMind`，并配置跨仓库的 GitHub Actions，确保一方接口变更能及时触发全局集成测试。
 
 ---
 ### 参考资料

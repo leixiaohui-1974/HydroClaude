@@ -2,7 +2,7 @@
 
 归属仓库：HydroClaude/integration/
 作用：让 HydroClaude 的高保真求解器实现 hydromind-contracts 定义的标准协议，
-      使 HydroMind/HydroClaw 生态中的任何上层模块（调度、控制、ODD、SIL）
+      使 HydroMind/HydroMind 生态中的任何上层模块（调度、控制、ODD、SIL）
       都能通过统一接口调用 HydroClaude 的仿真能力。
 
 实现的协议（来自 hydromind-contracts）：
@@ -64,7 +64,7 @@ def _import_assimilation():
 class HydroClaude1DSolverAdapter:
     """将 PreissmannUnsteadySolver 包装为 HydroMind 标准水动力接口。
 
-    使用示例（在 HydroMind/HydroClaw 中）：
+    使用示例（在 HydroMind/HydroMind 中）：
 
         from hydroclaude.integration.hydromind_adapter import HydroClaude1DSolverAdapter
 
@@ -188,7 +188,7 @@ class HydroClaude1DSolverAdapter:
 class HydroClaude1DWaterQualityAdapter:
     """将 River1DSystem 包装为 HydroMind 标准水质接口。
 
-    使用示例（在 HydroMind/HydroClaw 中）：
+    使用示例（在 HydroMind/HydroMind 中）：
 
         from hydroclaude.integration.hydromind_adapter import HydroClaude1DWaterQualityAdapter
 
@@ -337,7 +337,7 @@ class HydroClaude1DWaterQualityAdapter:
 class HydroClaude1DLeakDetectorAdapter:
     """将 pipedream.EKFLeakDetector 包装为 HydroMind 标准检测接口。
 
-    使用示例（在 HydroMind/HydroClaw 中）：
+    使用示例（在 HydroMind/HydroMind 中）：
 
         from hydroclaude.integration.hydromind_adapter import HydroClaude1DLeakDetectorAdapter
 
@@ -419,7 +419,7 @@ class HydroClaude1DLeakDetectorAdapter:
 class HydroClaude1DPollutionSourceAdapter:
     """将 pipedream.BLPEnKF 包装为 HydroMind 标准辨识接口。
 
-    使用示例（在 HydroMind/HydroClaw 中）：
+    使用示例（在 HydroMind/HydroMind 中）：
 
         from hydroclaude.integration.hydromind_adapter import HydroClaude1DPollutionSourceAdapter
 

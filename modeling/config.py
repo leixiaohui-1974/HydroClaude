@@ -178,11 +178,30 @@ class ModelConfig:
     def get_boundary_conditions(self) -> Dict:
         """获取边界条件"""
         bc = self.config.get('boundary_conditions', {})
+        
+        # 支持嵌套格式 (upstream: {type, value}) 和 扁平格式 (upstream_type, upstream_value)
+        upstream = bc.get('upstream', {})
+        downstream = bc.get('downstream', {})
+        
+        if isinstance(upstream, dict):
+            u_type = upstream.get('type', bc.get('upstream_type', 'flow'))
+            u_val = upstream.get('value', bc.get('upstream_value', 10.0))
+        else:
+            u_type = bc.get('upstream_type', 'flow')
+            u_val = bc.get('upstream_value', 10.0)
+            
+        if isinstance(downstream, dict):
+            d_type = downstream.get('type', bc.get('downstream_type', 'depth'))
+            d_val = downstream.get('value', bc.get('downstream_value', 2.0))
+        else:
+            d_type = bc.get('downstream_type', 'depth')
+            d_val = bc.get('downstream_value', 2.0)
+            
         return {
-            'upstream_type': bc.get('upstream_type', 'flow'),
-            'upstream_value': bc.get('upstream_value', 10.0),
-            'downstream_type': bc.get('downstream_type', 'depth'),
-            'downstream_value': bc.get('downstream_value', 2.0)
+            'upstream_type': u_type,
+            'upstream_value': float(u_val),
+            'downstream_type': d_type,
+            'downstream_value': float(d_val)
         }
 
     def get_output_config(self) -> Dict:

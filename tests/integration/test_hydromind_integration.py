@@ -5,7 +5,7 @@
   2. HydroClaude1DWaterQualityAdapter → WaterQualityProtocol
   3. HydroClaude1DLeakDetectorAdapter → LeakDetectorProtocol（依赖 pipedream）
   4. HydroClaude1DPollutionSourceAdapter → IdentifierProtocol（依赖 pipedream）
-  5. HydroClaw.water_quality_incident  → 完整溯源链路
+  5. HydroMind.water_quality_incident  → 完整溯源链路
 
 归属仓库：HydroClaude/tests/integration/
 """
@@ -273,15 +273,15 @@ class TestPipedreamDataAssimilation:
         assert len(positions) == 3
 
 
-# ── 集成点 4：HydroClaw water_quality_incident 完整链路 ─────────────────
+# ── 集成点 4：HydroMind water_quality_incident 完整链路 ─────────────────
 
 class TestWaterQualityIncidentChain:
-    """验证 HydroClaw.water_quality_incident 的完整溯源链路。"""
+    """验证 HydroMind.water_quality_incident 的完整溯源链路。"""
 
     def setup_method(self):
         hydroclaw_path = os.path.join(
             os.path.dirname(__file__), "..", "..", "..",
-            "HydroClaw"
+            "HydroMind"
         )
         if hydroclaw_path not in sys.path:
             sys.path.insert(0, hydroclaw_path)

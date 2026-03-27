@@ -1,6 +1,6 @@
 """Report generation bridge — MCP-first with local fallback.
 
-Calls HydroClaw's hydrowriter_server via the MCP Gateway (port 8040)
+Calls HydroMind's hydrowriter_server via the MCP Gateway (port 8040)
 or directly (port 8033) to generate reports.  Falls back to the local
 ``utils.report_generator.ReportGenerator`` when the remote server is
 unreachable.
@@ -72,7 +72,7 @@ def _post(url: str, payload: dict, timeout: float) -> dict:
     """POST JSON and return the parsed response body.
 
     Tries *httpx* first (async-friendly library already used elsewhere in
-    HydroClaw), then falls back to *requests*.  Raises on connection /
+    HydroMind), then falls back to *requests*.  Raises on connection /
     timeout errors so the caller can trigger the local fallback.
     """
     global _http_client_module
@@ -282,7 +282,7 @@ def _call_inprocess_hydrowriter(tool_name: str, params: Dict[str, Any]) -> Dict[
 # ---------------------------------------------------------------------------
 
 class ReportBridge:
-    """Bridge that routes report generation to HydroClaw's hydrowriter_server
+    """Bridge that routes report generation to HydroMind's hydrowriter_server
     via MCP, falling back to the local ``ReportGenerator`` when the remote
     server is not reachable.
 

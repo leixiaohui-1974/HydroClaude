@@ -1,7 +1,7 @@
 """HydroClaude 集成层 — 对外暴露 HydroMind 标准协议适配器
 
 本包将 HydroClaude 的高保真求解器包装为 hydromind-contracts 定义的标准接口，
-使 HydroMind/HydroClaw/HydroGuard 生态中的任何上层模块都能无缝调用。
+使 HydroMind/HydroMind/HydroGuard 生态中的任何上层模块都能无缝调用。
 
 可用适配器：
   HydroClaude1DSolverAdapter          水动力求解器（Preissmann）

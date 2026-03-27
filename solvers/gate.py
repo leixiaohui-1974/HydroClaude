@@ -77,24 +77,52 @@ class HydraulicStructure(ABC):
         pass
 
 
+class PIDController:
+    """
+    工业级 PID 控制器，用于闸门自动调节
+    包含积分饱和截断 (Anti-windup) 和微分平滑
+    """
+    def __init__(self, Kp: float, Ki: float, Kd: float, 
+                 target: float, min_out: float, max_out: float):
+        self.Kp = Kp
+        self.Ki = Ki
+        self.Kd = Kd
+        self.target = target
+        self.min_out = min_out
+        self.max_out = max_out
+        
+        self.integral = 0.0
+        self.last_error = 0.0
+        self.last_time = None
+
+    def update(self, current_value: float, t: float) -> float:
+        if self.last_time is None:
+            self.last_time = t
+            return self.min_out # 初始输出
+            
+        dt = t - self.last_time
+        if dt <= 0: return self.last_error
+        
+        error = self.target - current_value
+        self.integral += error * dt
+        
+        # Anti-windup: 限制积分项
+        self.integral = np.clip(self.integral, -10.0, 10.0)
+        
+        derivative = (error - self.last_error) / dt
+        output = self.Kp * error + self.Ki * self.integral + self.Kd * derivative
+        
+        self.last_error = error
+        self.last_time = t
+        
+        return np.clip(output, self.min_out, self.max_out)
+
 class SluiceGate(HydraulicStructure):
     """
-
-    
-    - : Q = Cd * B * e * √(2g * Δh)
-    - : Q = Cd * B * e * √(2g * h_upstream)
-
-    
-        Cd: 
-        B: 
-        e: 
-        Δh: 
-
-    opening
+    闸门结构物，支持固定开度、函数开度或 PID 自动调节
     """
-
     def __init__(self, position: float, width: float,
-                 opening: Union[float, Callable[[float], float]],
+                 opening: Union[float, Callable[[float], float], PIDController],
                  Cd: float = 0.6, g: float = 9.81,
                  submerged_threshold: float = 0.1):
         """
@@ -111,34 +139,54 @@ class SluiceGate(HydraulicStructure):
         self.Cd = Cd
         self.submerged_threshold = submerged_threshold
 
+    def update_pid(self, current_value: float, t: float):
+        """
+        如果闸门由 PID 控制，更新 PID 计算出的目标开度
+        """
+        if isinstance(self.opening_func, PIDController):
+            self._pid_target_opening = self.opening_func.update(current_value, t)
+
     def get_opening(self, t: Optional[float] = None) -> float:
         """
-        
-
-        Args:
-            t:  (s)Noneself.current_time
-
-        Returns:
-             (m)
+        获取当前闸门开度 (增加平滑调节逻辑)
         """
         if t is None:
             t = self.current_time
-        return self.opening_func(t)
+        
+        # 确定目标开度
+        if isinstance(self.opening_func, PIDController):
+            target_opening = getattr(self, '_pid_target_opening', self.opening_func.min_out)
+        elif callable(self.opening_func):
+            target_opening = self.opening_func(t)
+        else:
+            target_opening = self.opening_func
+        
+        # 增加平滑调节逻辑：模拟真实电机动作，防止开度突变引发数值震荡
+        if not hasattr(self, '_last_opening'):
+            self._last_opening = target_opening
+            self._last_time = t
+            return target_opening
+        
+        dt = t - self._last_time
+        if dt <= 0:
+            return self._last_opening
+            
+        # 假设闸门调节速度为 0.01m/s (可调参数)
+        max_change = 0.01 * dt
+        actual_change = np.clip(target_opening - self._last_opening, -max_change, max_change)
+        
+        current_opening = self._last_opening + actual_change
+        self._last_opening = current_opening
+        self._last_time = t
+        
+        return current_opening
 
     def calculate_discharge(self, h_upstream: float, h_downstream: float,
                           t: Optional[float] = None) -> tuple:
         """
-        
-
-        Args:
-            h_upstream:  (m)
-            h_downstream:  (m)
-            t:  (s)
-
-        Returns:
-            (discharge, flow_type):  (m³/s)  ('free'  'submerged')
+        计算闸门泄流量
         """
-        # 
+        # 使用 get_opening() 获取数值开度，而不是直接使用 self.opening_func
         e = self.get_opening(t)
 
         # 
@@ -161,17 +209,9 @@ class SluiceGate(HydraulicStructure):
     def calculate_discharge_derivatives(self, h_upstream: float, h_downstream: float,
                                         t: Optional[float] = None) -> tuple:
         """
-        
-
-        Args:
-            h_upstream:  (m)
-            h_downstream:  (m)
-            t:  (s)
-
-        Returns:
-            (dQ_dh_up, dQ_dh_down): 
+        计算泄流量对水位的导数
         """
-        # 
+        # 使用 get_opening() 获取数值开度
         e = self.get_opening(t)
 
         # 
