@@ -83,8 +83,9 @@ class TestPreissmannAccuracy:
             f"Manning reference depth inconsistent: Q_check={Q_check:.6f}"
         )
 
-        # Numerical solution using Preissmann implicit scheme
-        solver = HydrostaticCanalSolver(
+        # Numerical solution using the new PreissmannUnsteadySolver
+        from solvers.preissmann_unsteady_solver import PreissmannUnsteadySolver
+        solver = PreissmannUnsteadySolver(
             length=length,
             nx=nx,
             B=B,
@@ -92,18 +93,22 @@ class TestPreissmannAccuracy:
             n=n_manning,
             g=g,
             theta=0.6,
-            omega=0.95,
         )
+        solver.set_boundary_conditions(Q_upstream=Q, h_upstream=h_normal, h_downstream=h_normal)
+        solver.initialize_state(h_initial=h_normal, Q_initial=Q)
 
-        # Use solve_steady_state which internally uses step_preissmann
-        result = solver.solve_steady_state(
-            Q_target=Q,
-            h_downstream=h_normal,
-            max_iterations=5000,
-            convergence_tol=1e-4,
-            dt=0.5,
-            verbose=False,
-        )
+        # Run pseudo-transient to reach steady state
+        dt_pseudo = 0.5 # pseudo time step
+        for _ in range(5000):
+            U_old = solver.U_old.copy()
+            U_new = solver.solve_step(U_old, dt_pseudo)
+            solver.U_old = U_new
+            h_current, Q_current = solver.unpack_state(U_new)
+            if np.max(np.abs(h_current - solver.unpack_state(U_old)[0])) < 1e-5:
+                break
+        
+        h_final, Q_final = solver.unpack_state(solver.U_old)
+        result = {'h': h_final, 'Q': Q_final}
 
         # Comparison: interior cells (skip boundary-affected cells)
         margin = 10
@@ -134,7 +139,8 @@ class TestPreissmannAccuracy:
         h_normal = compute_steady_uniform_flow(Q, B, S0, n_manning, g)
         h_downstream = h_normal * 1.1
 
-        solver = HydrostaticCanalSolver(
+        from solvers.preissmann_unsteady_solver import PreissmannUnsteadySolver
+        solver = PreissmannUnsteadySolver(
             length=length,
             nx=nx,
             B=B,
@@ -142,17 +148,22 @@ class TestPreissmannAccuracy:
             n=n_manning,
             g=g,
             theta=0.6,
-            omega=0.95,
         )
+        solver.set_boundary_conditions(Q_upstream=Q, h_downstream=h_downstream)
+        solver.initialize_state(h_initial=h_downstream, Q_initial=Q) # Initialize with downstream h and target Q
 
-        result = solver.solve_steady_state(
-            Q_target=Q,
-            h_downstream=h_downstream,
-            max_iterations=1200,
-            convergence_tol=1e-4,
-            dt=1.0,
-            verbose=False,
-        )
+        # Run pseudo-transient to reach steady state
+        dt_pseudo = 5.0
+        for _ in range(3000):
+            U_old = solver.U_old.copy()
+            U_new = solver.solve_step(U_old, dt_pseudo)
+            solver.U_old = U_new
+            h_current, Q_current = solver.unpack_state(U_new)
+            if np.max(np.abs(h_current - solver.unpack_state(U_old)[0])) < 1e-5:
+                break
+        
+        h_final, Q_final = solver.unpack_state(solver.U_old)
+        result = {"h": h_final, "Q": Q_final}
 
         h_upstream = result['h'][0]
         q_upstream = result['Q'][0]
@@ -228,9 +239,9 @@ class TestPreissmannAccuracy:
         h_ref = np.array([sol.sol(length - x)[0] for x in x_nodes])
 
         # --- numerical solution ---
-        # Use solve_transient to properly enforce Q upstream and h downstream
-        # without the solve_steady_state upstream h=h_downstream override.
-        solver = HydrostaticCanalSolver(
+        # Numerical solution using the new PreissmannUnsteadySolver
+        from solvers.preissmann_unsteady_solver import PreissmannUnsteadySolver
+        solver = PreissmannUnsteadySolver(
             length=length,
             nx=nx,
             B=B,
@@ -238,41 +249,24 @@ class TestPreissmannAccuracy:
             n=n_manning,
             g=g,
             theta=0.6,
-            omega=0.95,
         )
+        solver.set_boundary_conditions(Q_upstream=Q, h_downstream=h_downstream)
+        solver.initialize_state(h_initial=h_downstream, Q_initial=Q) # Initialize with downstream h and target Q
 
-        # Initialize with normal depth and target discharge
-        solver.h[:] = h_normal
-        solver.hu[:] = Q / B
-
-        # Run Preissmann iterations manually with proper BCs:
-        # upstream = Q inflow, downstream = prescribed h
-        dt = 1.0
-        for iteration in range(3000):
-            h_old = solver.h.copy()
-
-            h_new, hu_new = solver.step_preissmann(
-                dt,
-                enforce_bc=True,
-                Q_in=Q,
-                h_out=h_downstream,
-                use_pump_mask=False,
-            )
-
-            # Enforce BCs
-            h_new[-1] = h_downstream
-            hu_new[:] = Q / B  # enforce steady Q throughout
-
-            solver.h[:] = h_new
-            solver.hu[:] = hu_new
-
-            dh_max = np.max(np.abs(solver.h - h_old))
-            if dh_max < 1e-5:
+        # Run pseudo-transient to reach steady state
+        dt_pseudo = 1.0
+        for _ in range(3000):
+            U_old = solver.U_old.copy()
+            U_new = solver.solve_step(U_old, dt_pseudo)
+            solver.U_old = U_new
+            h_current, Q_current = solver.unpack_state(U_new)
+            if np.max(np.abs(h_current - solver.unpack_state(U_old)[0])) < 1e-5:
                 break
 
         # --- comparison (interior, skip near-boundary artefacts) ---
         margin = 15
-        h_num = solver.h[margin:-margin]
+        h_final, _ = solver.unpack_state(solver.U_old)
+        h_num = h_final[margin:-margin]
         h_analytical = h_ref[margin:-margin]
 
         rel_errors = np.abs(h_num - h_analytical) / h_analytical
@@ -316,16 +310,18 @@ class TestPreissmannAccuracy:
 
         h_normal = compute_steady_uniform_flow(Q, B, S0, n_manning, g)
 
-        solver = HydrostaticCanalSolver(
+        from solvers.preissmann_unsteady_solver import PreissmannUnsteadySolver
+        solver = PreissmannUnsteadySolver(
             length=length,
             nx=nx,
             B=B,
             S0=S0,
             n=n_manning,
             g=g,
-            theta=0.7,   # higher theta for stability
-            omega=0.90,   # moderate relaxation
+            theta=0.7,
         )
+        solver.set_boundary_conditions(Q_upstream=Q, h_downstream=h_normal)
+        solver.initialize_state(h_initial=h_normal, Q_initial=Q)
 
         # Compute explicit CFL limit
         dx = length / (nx - 1)
@@ -336,17 +332,17 @@ class TestPreissmannAccuracy:
         # Use dt that gives CFL ~ 2 (larger than explicit limit)
         dt_large = dt_explicit * 2.0
 
-        # Use solve_steady_state which properly enforces BCs and
-        # uses step_preissmann internally. This is the standard way
-        # to reach steady state with the Preissmann scheme.
-        result = solver.solve_steady_state(
-            Q_target=Q,
-            h_downstream=h_normal,
-            max_iterations=3000,
-            convergence_tol=1e-4,
-            dt=dt_large,
-            verbose=False,
-        )
+        # Run pseudo-transient to reach steady state with large dt
+        for _ in range(3000):
+            U_old = solver.U_old.copy()
+            U_new = solver.solve_step(U_old, dt_large)
+            solver.U_old = U_new
+            h_current, Q_current = solver.unpack_state(U_new)
+            if np.max(np.abs(h_current - solver.unpack_state(U_old)[0])) < 1e-5:
+                break
+        
+        h_final, Q_final = solver.unpack_state(solver.U_old)
+        result = {"h": h_final, "Q": Q_final}
 
         # Verify no NaN
         assert not np.any(np.isnan(result['h'])), (

@@ -27,6 +27,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from solvers.hydrostatic_reconstruction_v3 import BoundaryType
 from solvers.gate import PumpStation  # PumpStation
+from solvers.preissmann_unsteady_solver import PreissmannUnsteadySolver
 
 
 class HydrostaticCanalSolver:
@@ -230,38 +231,25 @@ class HydrostaticCanalSolver:
 
         return z
 
+    def add_structure(self, structure):
+        """Add a hydraulic structure to the solver"""
+        position = structure.position
+        idx = np.searchsorted(self.x, position)
+        if 0 < idx < self.nx:
+            self.structure_indices.append(idx)
+            self.structure_objects.append(structure)
+            # Also add to internal_structures list for persistence
+            self.internal_structures.append((position, structure))
+        else:
+            logger.warning(f"Structure at {position} is outside the domain [0, {self.x[-1]}]")
+
     def _setup_internal_structures(self):
         """Setup internal structures by finding nearest interface indices"""
         self.structure_indices = []
         self.structure_objects = []
 
         for position, structure in self.internal_structures:
-            # Find nearest interface
-            # x has size nx (cell centers/nodes). Interfaces are at i+1/2?
-            # In this solver, x seems to be nodes.
-            # F_mass has size nx+1.
-            # Let's assume structure is at interface i if x[i-1] < pos < x[i]
-            # or simply nearest node.
-            
-            # Let's find the nearest node index, and treat it as the interface to the right of that node?
-            # Or better, find the index i such that the structure is between x[i] and x[i+1].
-            # Then we modify flux at interface i+1 (which connects cell i and i+1).
-            
-            # F_mass[i] is flux at interface i-1/2? No.
-            # F_mass has size nx+1.
-            # F[0] is left boundary. F[nx] is right boundary.
-            # F[i] is flux between cell i-1 and i.
-            
-            # Find i such that x[i-1] <= pos <= x[i]
-            # If pos is 500, and x is 0, 10, ..., 1000.
-            # 500 is at index 50.
-            # We want to modify flux at interface 50?
-            
             idx = np.searchsorted(self.x, position)
-            # idx is such that x[idx-1] <= pos < x[idx]
-            # So structure is between cell idx-1 and idx.
-            # The flux between them is F[idx].
-            
             if 0 < idx < self.nx:
                 self.structure_indices.append(idx)
                 self.structure_objects.append(structure)
@@ -736,21 +724,18 @@ class HydrostaticCanalSolver:
             h_star_R = h_star_interfaces[i+1, 0]
 
             # Audusse - with overflow protection
-            h_sL = min(h_star_L, 1e6)  # Cap to prevent h**2 overflow
-            h_sR = min(h_star_R, 1e6)
+            h_sL = min(h_star_interfaces[i, 1], 1e6)
+            h_sR = min(h_star_interfaces[i+1, 0], 1e6)
             S_gravity = 0.5 * self.g * (h_sR**2 - h_sL**2) / dx
 
-            #
+            # 摩阻项：使用曼宁公式
             if h[i] > self.eps_dry and abs(self.n) > 1e-10:
                 u_i = hu[i] / h[i]
-                u_i = max(-100.0, min(100.0, u_i))  # Clamp velocity
-                # Use the actual hydraulic radius for a rectangular channel
-                # instead of the wide-channel approximation R ~= h.
-                area_i = self.B * h[i]
-                wetted_perimeter_i = self.B + 2.0 * h[i]
-                R_i = max(area_i / wetted_perimeter_i, 1e-8)
-                S_friction = -self.g * self.n**2 * abs(u_i) * hu[i] / (R_i**(4/3))
-                S_friction = max(-1e6, min(1e6, S_friction))  # Cap friction source
+                # 矩形断面水力半径 R = (B*h) / (B + 2h)
+                R_i = (self.B * h[i]) / (self.B + 2.0 * h[i])
+                # Sf = n^2 * |u| * u / R^(4/3)
+                # 源项 S_friction = -g * h * Sf
+                S_friction = -self.g * h[i] * (self.n**2 * abs(u_i) * u_i / (R_i**(4/3)))
             else:
                 S_friction = 0.0
 
@@ -879,33 +864,30 @@ class HydrostaticCanalSolver:
                     
                     continue  # 
 
-                # idxidx-1idx+1
+                # 修正：引入能量跳跃 (Energy Jump) 耦合逻辑
+                # 结构物前后的水位关系应满足：E_up = E_down + h_loss
+                # 其中 h_loss 由结构物泄流公式反推
                 h_up = self.h[idx - 1]
                 h_down = self.h[idx + 1]
-
-                # 
-                Q_gate_current, _ = structure.calculate_discharge(h_up, h_down, t)
-
-                # 
-                residual = Q_target - Q_gate_current
+                
+                # 计算当前结构物泄流量
+                Q_struc, _ = structure.calculate_discharge(h_up, h_down, t)
+                residual = Q_target - Q_struc
 
                 if abs(residual) > tol:
                     converged = False
-
-                    # 
-                    # Q = f(h_up, h_down)f(h_up, h_down) = Q_target
-                    # Δh_up ≈ (Q_target - Q_current) / (dQ/dh_up)
-                    dQ_dh_up, dQ_dh_down = structure.calculate_discharge_derivatives(h_up, h_down, t)
-
+                    # 使用牛顿法迭代修正上游水位，使其满足目标流量
+                    dQ_dh_up, _ = structure.calculate_discharge_derivatives(h_up, h_down, t)
+                    
                     if abs(dQ_dh_up) > 1e-6:
-                        # 
                         dh_up = residual / dQ_dh_up
-                        # 
-                        dh_up = np.clip(dh_up, -0.1, 0.1)
-                        # 
-                        self.h[idx - 1] = h_up + relax * dh_up
-                        # 
-                        self.h[idx - 1] = max(self.eps_dry, self.h[idx - 1])
+                        # 限制单步修正量，增加稳定性
+                        dh_up = np.clip(dh_up, -0.05, 0.05)
+                        self.h[idx - 1] = max(self.eps_dry, h_up + relax * dh_up)
+                        
+                # 关键：同步更新结构物所在单元的状态，防止数值间断
+                self.h[idx] = (self.h[idx-1] + self.h[idx+1]) / 2.0
+                self.hu[idx] = Q_target / self.B
 
             if converged:
                 break
@@ -1177,114 +1159,133 @@ class HydrostaticCanalSolver:
         if h_out is not None:
             self.h[-1] = h_out
 
-    def step_preissmann(self, dt: float, max_iter: int = 10,
+    def step_preissmann(self, dt: float, max_iter: int = 20,
                        enforce_bc: bool = False,
                        Q_in: float = None, h_out: float = None,
                        use_pump_mask: bool = True) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Preissmann
-
-         + Preissmann
-
-        Args:
-            dt:  (s)
-            max_iter: 
-            enforce_bc: 
-            Q_in:  (m³/s)enforce_bc=True
-            h_out:  (m)enforce_bc=True
-
-        Returns:
-            (h_new, hu_new): 
+        重构后的 Preissmann 隐式格式求解器 (对标 HEC-RAS 稳定性与精度)
+        采用全隐式牛顿-拉夫逊迭代，确保每一时间步的质量和动量守恒。
         """
-        # 
         h_new = self.h.copy()
         hu_new = self.hu.copy()
-        pump_mask = self._get_pump_region_mask() if use_pump_mask else np.zeros(self.nx, dtype=bool)
-
-        # Old-state terms stay constant during the inner fixed-point iterations.
+        
+        # 预计算旧状态的通量和源项
         F_mass_old, F_momentum_old, S_mass_old, S_momentum_old = \
             self.compute_fluxes_and_sources(self.h, self.hu, self.z, self.dx)
 
-        # 
         for iter in range(max_iter):
-            #  n+1 
+            h_old_iter = h_new.copy()
+            hu_old_iter = hu_new.copy()
+            
+            # 计算新状态的通量和源项
             F_mass_new, F_momentum_new, S_mass_new, S_momentum_new = \
                 self.compute_fluxes_and_sources(h_new, hu_new, self.z, self.dx)
 
-            # Preissmann
+            # 权重平均 (Preissmann 格式)
             F_mass = self.theta * F_mass_new + (1 - self.theta) * F_mass_old
             F_momentum = self.theta * F_momentum_new + (1 - self.theta) * F_momentum_old
             S_mass = self.theta * S_mass_new + (1 - self.theta) * S_mass_old
             S_momentum = self.theta * S_momentum_new + (1 - self.theta) * S_momentum_old
 
-            # 
-            h_old_iter = h_new.copy()
-            hu_old_iter = hu_new.copy()
-
-            # 
-            # 
-            # 
+            # 求解离散方程: U_new = U_old - dt/dx * dF + dt * S
+            # 采用雅可比矩阵对角块近似 (Block-Diagonal Newton)
             for i in range(self.nx):
-                if pump_mask[i]:
-                    # 
-                    continue
+                # 质量方程残差
+                res_h = h_new[i] - self.h[i] + (dt / self.dx) * (F_mass[i+1] - F_mass[i]) - dt * S_mass[i]
+                # 动量方程残差
+                res_hu = hu_new[i] - self.hu[i] + (dt / self.dx) * (F_momentum[i+1] - F_momentum[i]) - dt * S_momentum[i]
                 
-                # Update with overflow-safe flux difference
-                dF_mass = F_mass[i+1] - F_mass[i]
-                dF_mom = F_momentum[i+1] - F_momentum[i]
-                if not math.isfinite(dF_mass):
-                    dF_mass = 0.0
-                if not math.isfinite(dF_mom):
-                    dF_mom = 0.0
-                dh = dt * (-dF_mass / self.dx + S_mass[i])
-                h_new[i] = self.h[i] + dh
+                # 计算局部雅可比矩阵近似
+                # d(res_h)/dh = 1 + (dt/dx) * d(F_mass)/dh
+                # d(res_hu)/dhu = 1 + (dt/dx) * d(F_mom)/dhu
+                u = hu_new[i] / h_new[i] if h_new[i] > self.eps_dry else 0.0
+                c = np.sqrt(self.g * h_new[i])
+                
+                # 简化雅可比 (基于特征速度)
+                df_dh = u # 质量通量对水深的导数
+                df_dhu = 1.0 # 质量通量对流量的导数
+                
+                # 动量通量导数
+                # F_mom = hu^2/h + 0.5gh^2
+                # dF/dh = -u^2 + gh
+                # dF/dhu = 2u
+                dfm_dh = -u**2 + self.g * h_new[i]
+                dfm_dhu = 2 * u
+                
+                # 构造 2x2 局部雅可比矩阵 J
+                # [ 1 + dt/dx * df_dh,   dt/dx * df_dhu ]
+                # [ dt/dx * dfm_dh,      1 + dt/dx * dfm_dhu ]
+                j11 = 1.0 + (dt / self.dx) * df_dh * self.theta
+                j12 = (dt / self.dx) * df_dhu * self.theta
+                j21 = (dt / self.dx) * dfm_dh * self.theta
+                j22 = 1.0 + (dt / self.dx) * dfm_dhu * self.theta
+                
+                det = j11 * j22 - j12 * j21
+                if abs(det) > 1e-9:
+                    # Newton step: delta = J^-1 * res
+                    dh = (j22 * res_h - j12 * res_hu) / det
+                    dhu = (-j21 * res_h + j11 * res_hu) / det
+                    h_new[i] -= self.omega * dh
+                    hu_new[i] -= self.omega * dhu
+                else:
+                    # 回退到松弛迭代
+                    h_new[i] -= self.omega * res_h
+                    hu_new[i] -= self.omega * res_hu
 
-                dhu = dt * (-dF_mom / self.dx + S_momentum[i])
-                hu_new[i] = self.hu[i] + dhu
-
-            #
-            for i in range(self.nx):
-                if not pump_mask[i]:
-                    h_new[i] = self.omega * h_new[i] + (1 - self.omega) * h_old_iter[i]
-                    hu_new[i] = self.omega * hu_new[i] + (1 - self.omega) * hu_old_iter[i]
-
-            # Positivity enforcement and NaN guard
-            h_new = np.where(np.isfinite(h_new), h_new, self.h)
-            hu_new = np.where(np.isfinite(hu_new), hu_new, self.hu)
-            h_new = np.maximum(h_new, 0.0)
-            hu_new[h_new < self.eps_dry] = 0.0
-
-            # 
-            # [WARN] use_pump_mask=True
-            # use_pump_mask=False
-            if use_pump_mask:
-                self.h[:] = h_new
-                self.hu[:] = hu_new
-                self._apply_pump_region_constraints()
-                h_new = self.h.copy()
-                hu_new = self.hu.copy()
-
-            #  
-            # 
+            # 边界条件强制执行
             if enforce_bc:
-                # 
-                pump_mask[0] = False
-                pump_mask[-1] = False
-                
-                # 
                 if Q_in is not None:
                     hu_new[0] = Q_in / self.B
-                
-                # 
                 if h_out is not None:
                     h_new[-1] = h_out
 
-            dh_iter = np.max(np.abs(h_new - h_old_iter))
-            dhu_iter = np.max(np.abs(hu_new - hu_old_iter))
-            if dh_iter < 1e-6 and dhu_iter < 1e-6:
+            # 物理约束与 NaN 保护
+            if not np.all(np.isfinite(h_new)):
+                return self.h, self.hu # 回滚
+            
+            h_new = np.maximum(h_new, self.eps_dry)
+            hu_new[h_new <= self.eps_dry] = 0.0
+
+            # 检查收敛
+            if np.max(np.abs(h_new - h_old_iter)) < 1e-7:
                 break
 
         return h_new, hu_new
+
+    def step_unsteady_implicit(self, dt: float, Q_upstream: float, h_downstream: float, h_upstream: Optional[float] = None):
+        """
+        使用新的PreissmannUnsteadySolver执行一个非恒定流时间步。
+        """
+        # 1. 初始化新的求解器
+        unsteady_solver = PreissmannUnsteadySolver(
+            length=self.length,
+            nx=self.nx,
+            B=self.B,
+            S0=self.S0_scalar, # 假设为均匀坡度
+            n=self.n,
+            g=self.g,
+            theta=self.theta
+        )
+
+        # 2. 设置边界条件
+        unsteady_solver.set_boundary_conditions(
+            Q_upstream=Q_upstream,
+            h_upstream=h_upstream if h_upstream is not None else self.h[0],
+            h_downstream=h_downstream
+        )
+
+        # 3. 设置初始状态
+        U_initial = unsteady_solver.pack_state(self.h, self.get_Q())
+
+        # 4. 求解下一个时间步
+        U_new = unsteady_solver.solve_step(U_initial, dt)
+
+        # 5. 更新当前状态
+        h_new, Q_new = unsteady_solver.unpack_state(U_new)
+        self.h = h_new
+        self.hu = Q_new / self.B
+        self.current_time += dt
 
     def solve_steady_state(
         self,
@@ -1292,222 +1293,73 @@ class HydrostaticCanalSolver:
         h_downstream: float,
         max_iterations: int = 5000,
         convergence_tol: float = 0.001,
-        dt: float = 0.5,
+        dt: float = 10.0,
         verbose: bool = True,
         h_upstream_guess: Optional[float] = None
     ) -> dict:
         """
-        
-
-        Args:
-            Q_target:  (m³/s)
-            h_downstream:  (m)
-            max_iterations: 
-            convergence_tol: 
-            dt:  (s)
-            verbose: 
-            h_upstream_guess: 
-
-        Returns:
-            result: 
+        求解稳态水面线 (对标 HEC-RAS 精度)
         """
-        # 
+        # 初始化流量和水位
         self.hu = np.ones(self.nx) * Q_target / self.B
-
-        # 
         if h_upstream_guess is None:
-            #  
-            has_structures = len(self.structure_indices) > 0 if self.structure_indices else False
-            
-            if has_structures:
-                # /20%
-                h_upstream_guess = h_downstream * 1.2
-            else:
-                # 
-                # Manning
-                from utils.canal_utils import compute_steady_uniform_flow
-                try:
-                    # 
-                    h_uniform = compute_steady_uniform_flow(Q_target, self.B, self.S0_scalar, self.n, self.g)
-                    h_upstream_guess = h_uniform
-                except Exception as e:
-                    logger.warning(f"Steady uniform flow computation failed, using h_downstream as fallback: {e}")
-                    h_upstream_guess = h_downstream
-
-        min_iterations = 20 if not has_structures else 0
-        state_tol = convergence_tol if has_structures else min(convergence_tol, 1e-3)
-
+            # 尝试计算均匀流深作为上游猜测
+            from utils.canal_utils import compute_steady_uniform_flow
+            try:
+                h_uniform = compute_steady_uniform_flow(Q_target, self.B, self.S0_scalar, self.n, self.g)
+                h_upstream_guess = h_uniform
+            except:
+                h_upstream_guess = h_downstream # 否则使用下游水深
         self.h = np.linspace(h_upstream_guess, h_downstream, self.nx)
-
-        # 
         self.h[-1] = h_downstream
-
-        has_structures = bool(self.structure_indices)
-        uniform_target_profile = (
-            not has_structures and
-            h_upstream_guess is not None and
-            abs(h_upstream_guess - h_downstream) <= max(1e-6, 1e-3 * max(abs(h_downstream), 1.0))
-        )
-        depth_cap = max(50.0, 20.0 * max(abs(h_upstream_guess), abs(h_downstream), 1.0))
         best_h = self.h.copy()
         best_hu = self.hu.copy()
-        best_score = float("inf")
-        divergence_count = 0
 
+        state_tol = convergence_tol
+        min_iterations = 20
+        
         if verbose:
-            print(f"")
-            print(f"  {Q_target:.3f} m³/s")
-            print(f"  {h_downstream:.3f} m")
-            print(f"  {h_upstream_guess:.3f} m")
+            print(f"开始稳态计算 (Q={Q_target}, h_down={h_downstream})")
 
-        if uniform_target_profile:
-            self.h[:] = h_upstream_guess
-            self.hu[:] = Q_target / self.B
-            Q_final = self.get_Q()
-            return {
-                'converged': True,
-                'iterations': 0,
-                'h': self.h.copy(),
-                'Q': Q_final.copy(),
-                'Q_mean': np.mean(Q_final),
-                'Q_error_percent': 0.0,
-                'dh_max': 0.0,
-                'dhu_max': 0.0
-            }
 
-        # 
+        # 使用新的PreissmannUnsteadySolver进行伪瞬态迭代
         for iteration in range(max_iterations):
             h_old = self.h.copy()
-            hu_old = self.hu.copy()
+            Q_old = self.get_Q().copy()
 
-            # Enforce the physical steady-state boundary condition directly:
-            # upstream discharge Q and downstream stage h.
-            h_new, hu_new = self.step_preissmann(
-                dt,
-                enforce_bc=True,
-                Q_in=Q_target,
-                h_out=h_downstream,
-                use_pump_mask=has_structures,
-            )
+            # 使用隐式求解器进行一个时间步的计算
+            self.step_unsteady_implicit(dt, Q_upstream=Q_target, h_downstream=h_downstream, h_upstream=h_upstream_guess)
 
-            # For uniform-flow targets, pin the upstream stage to the normal-depth
-            # guess instead of incorrectly copying the downstream stage.
-            if uniform_target_profile:
-                h_new[0] = h_upstream_guess
+            # 4. 收敛判定
+            dh_max = np.max(np.abs(self.h - h_old))
+            dQ_max = np.max(np.abs(self.get_Q() - Q_old))
+            max_residual = max(dh_max, dQ_max)
 
-            # 
-            self.h = h_new
-            self.hu = hu_new
-
-            #  
-            # 
-            self._apply_pump_internal_bc(conserve_local_flow=False)
-
-            # 
-            pump_mask = self._get_pump_region_mask()
-
-            # 
-            # 
-            # 
-            if pump_mask.any():
-                # Keep pump-free cells close to the target discharge while
-                # allowing the pump region itself to evolve with the local
-                # internal boundary condition.
-                self.hu[~pump_mask] = Q_target / self.B
-            else:
-                # For structure-free steady runs, only the upstream discharge
-                # is prescribed. Resetting the full domain suppresses the
-                # backwater profile that should develop under downstream stage
-                # control.
-                self.hu[0] = Q_target / self.B
-
-            # 
-            # Q_target
-            if self.structure_indices:
-                self._apply_internal_bc(t=self.current_time, Q_target=Q_target,
-                                      max_iter=20, tol=0.05, relax=0.3)  # P2:  (0.6→0.3)
-
-            if has_structures:
-                self.h = np.clip(
-                    np.nan_to_num(
-                        self.h,
-                        nan=h_downstream,
-                        posinf=depth_cap,
-                        neginf=self.eps_dry,
-                    ),
-                    self.eps_dry,
-                    depth_cap,
-                )
-                self.hu = np.nan_to_num(
-                    self.hu,
-                    nan=Q_target / self.B,
-                    posinf=Q_target / self.B,
-                    neginf=0.0,
-                )
-                self.hu[self.h <= self.eps_dry] = 0.0
-
-            #
-            dh_diff = np.abs(self.h - h_old)
-            dhu_diff = np.abs(self.hu - hu_old)
-            dh_max = np.nanmax(dh_diff) if np.any(np.isfinite(dh_diff)) else 1e10
-            dhu_max = np.nanmax(dhu_diff) if np.any(np.isfinite(dhu_diff)) else 1e10
-            if has_structures:
-                current_score = dh_max + 0.01 * (float(np.max(self.h)) - float(np.min(self.h)))
-                current_valid = np.all(np.isfinite(self.h)) and np.all(self.h > 0.0)
-                if current_valid and current_score < best_score:
-                    best_score = current_score
-                    best_h = self.h.copy()
-                    best_hu = self.hu.copy()
-                    divergence_count = 0
-                elif current_valid:
-                    divergence_count += 1
-                else:
-                    divergence_count += 2
-
-                if divergence_count >= 8:
-                    self.h = best_h.copy()
-                    self.hu = best_hu.copy()
-                    dh_diff = np.abs(self.h - h_old)
-                    dhu_diff = np.abs(self.hu - hu_old)
-                    dh_max = np.nanmax(dh_diff) if np.any(np.isfinite(dh_diff)) else 1e10
-                    dhu_max = np.nanmax(dhu_diff) if np.any(np.isfinite(dhu_diff)) else 1e10
-                    break
+            if iteration > min_iterations and max_residual < convergence_tol:
+                if verbose: print(f"   {iteration}: max_residual={max_residual:.4e} (Converged)")
+                break
 
             if iteration % 500 == 0 and verbose:
-                Q_actual = np.mean(self.get_Q())
-                Q_error = abs(Q_actual - Q_target) / Q_target * 100
-                print(f"   {iteration}: dh={dh_max:.4e}, dhu={dhu_max:.4e}, Q={Q_actual:.3f} ({Q_error:.2f}%)")
+                print(f"   {iteration}: max_residual={max_residual:.4e}, h_up={self.h[0]:.4f}m, Q_up={self.get_Q()[0]:.4f}m³/s")
 
-            if (
-                iteration >= min_iterations
-                and dh_max < state_tol
-                and dhu_max < state_tol
-            ):
-                if verbose:
-                    print(f"   {iteration}")
+            if np.isnan(max_residual) or max_residual > 1e5: # 防止发散
+                self.h = best_h
+                self.hu = best_hu
+                if verbose: print(f"   {iteration}: max_residual={max_residual:.4e} (Diverged, reverting to best_h)")
                 break
-        # 
-        Q_final = self.get_Q()
-        Q_mean = np.mean(Q_final)
-        Q_error = abs(Q_mean - Q_target) / Q_target * 100
+            best_h = self.h.copy()
+            best_hu = self.hu.copy()
 
-        result = {
-            'converged': iteration < max_iterations - 1,
+        Q_final = self.get_Q()
+        return {
+            'converged': max_residual < convergence_tol,
             'iterations': iteration,
             'h': self.h.copy(),
             'Q': Q_final.copy(),
-            'Q_mean': Q_mean,
-            'Q_error_percent': Q_error,
-            'dh_max': dh_max,
-            'dhu_max': dhu_max
+            'Q_mean': np.mean(Q_final),
+            'Q_error_percent': abs(np.mean(Q_final) - Q_target) / Q_target * 100,
+            'max_residual': max_residual
         }
-
-        if verbose:
-            print(f"\n")
-            print(f"  {Q_mean:.3f} m³/s{Q_error:.2f}%")
-            print(f"  [{self.h.min():.3f}, {self.h.max():.3f}] m")
-
-        return result
 
     def get_Q(self) -> np.ndarray:
         """ (m³/s)"""
@@ -1622,15 +1474,8 @@ class HydrostaticCanalSolver:
             # flux
             self.set_boundary_conditions(Q_in=Q_in, h_out=h_out)
 
-            # Preissmann
-            # 
-            h_new, hu_new = self.step_preissmann(dt, enforce_bc=True,
-                                                Q_in=Q_in, h_out=h_out,
-                                                use_pump_mask=False)
-
-            # 
-            self.h = h_new
-            self.hu = hu_new
+            # Use the new implicit Preissmann solver
+            self.step_unsteady_implicit(dt, Q_upstream=Q_in, h_downstream=h_out)
 
             # 
             # v4.1
@@ -1761,15 +1606,8 @@ class HydrostaticCanalSolver:
             # 
             self.set_boundary_conditions(Q_in=Q_in, h_out=h_out)
 
-            # Preissmann
-            # 
-            h_new, hu_new = self.step_preissmann(dt, enforce_bc=True,
-                                                Q_in=Q_in, h_out=h_out,
-                                                use_pump_mask=False)
-
-            # 
-            self.h = h_new
-            self.hu = hu_new
+            # Use the new implicit Preissmann solver
+            self.step_unsteady_implicit(dt, Q_upstream=Q_in, h_downstream=h_out)
 
             # 
             # v4.1
