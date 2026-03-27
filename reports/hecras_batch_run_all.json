@@ -1,0 +1,678 @@
+{
+  "timestamp": "2026-03-28T05:41:11.113028",
+  "hecras_version": "6.6",
+  "summary": {
+    "total": 15,
+    "ok": 14,
+    "partial": 1,
+    "fail": 0,
+    "skip": 0
+  },
+  "cases": [
+    {
+      "project": "Applications Guide\\Example 20 - HagerLatWeir",
+      "category": "Applications Guide",
+      "prj_path": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\hecras_all_cases\\Applications Guide\\Example 20 - HagerLatWeir\\HagerLatWeir.prj",
+      "plans": [
+        {
+          "plan_number": "06",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 15.031287908554077,
+          "messages": "[b'Plan: \\'Unsteady Broad Crest S=10ft/mi\\' (HagerLatWeir.p06)\\r\\nSimulation started at: 28Mar2026 05:00:53 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n Initial Backwater, Split flow optimization, iteration    1\\r\\n Initial Backwater, Split flow optimization, iteration    2\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:           0.02298\\r\\nOverall Volume Accounting Error as percentage:      0.0000984910\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [192 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t       3\\r\\nPost-Processing\\t<1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t       7\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t28496x\\r\\nComplete Process\\t10949x\\r\\n']",
+          "errors": [
+            "[b'Plan: \\'Unsteady Broad Crest S=10ft/mi\\' (HagerLatWeir.p06)\\r\\nSimulation started at: 28Mar2026 05:00:53 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n Initial Backwater, Split flow optimization, iteration    1\\r\\n Initial Backwater, Split flow optimization, iteration    2\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:           0.02298\\r\\nOverall Volume Accounting Error as percentage:      0.0000984910\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [192 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t       3\\r\\nPost-Processing\\t<1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t       7\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t28496x\\r\\nComplete Process\\t10949x\\r\\n']"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 20 - HagerLatWeir\\HagerLatWeir.p06.hdf"
+        },
+        {
+          "plan_number": "02",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.005527019500732,
+          "messages": "[b\"Plan: 'Steady Flow Broad Crest S=10ft/mi' (HagerLatWeir.p02)\\r\\nSimulation started at: 28Mar2026 05:01:08 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t       1\\r\\nComplete Process\\t       4\\r\\n\"]",
+          "errors": [],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 20 - HagerLatWeir\\HagerLatWeir.p02.hdf"
+        },
+        {
+          "plan_number": "08",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 15.026032209396362,
+          "messages": "[b'Plan: \\'Unsteady Round Crest S=10ft/mi\\' (HagerLatWeir.p08)\\r\\nSimulation started at: 28Mar2026 05:01:18 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n Initial Backwater, Split flow optimization, iteration    1\\r\\n Initial Backwater, Split flow optimization, iteration    2\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:           0.02684\\r\\nOverall Volume Accounting Error as percentage:          0.000115\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [193 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t       2\\r\\nPost-Processing\\t<1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t       7\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t29101x\\r\\nComplete Process\\t11104x\\r\\n']",
+          "errors": [
+            "[b'Plan: \\'Unsteady Round Crest S=10ft/mi\\' (HagerLatWeir.p08)\\r\\nSimulation started at: 28Mar2026 05:01:18 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n Initial Backwater, Split flow optimization, iteration    1\\r\\n Initial Backwater, Split flow optimization, iteration    2\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:           0.02684\\r\\nOverall Volume Accounting Error as percentage:          0.000115\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [193 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t       2\\r\\nPost-Processing\\t<1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t       7\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t29101x\\r\\nComplete Process\\t11104x\\r\\n']"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 20 - HagerLatWeir\\HagerLatWeir.p08.hdf"
+        },
+        {
+          "plan_number": "05",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.017995595932007,
+          "messages": "[b\"Plan: 'Steady Q Rect Chan S=10ft/mi Ogee Crest' (HagerLatWeir.p05)\\r\\nSimulation started at: 28Mar2026 05:01:33 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t       1\\r\\nComplete Process\\t       4\\r\\n\"]",
+          "errors": [],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 20 - HagerLatWeir\\HagerLatWeir.p05.hdf"
+        },
+        {
+          "plan_number": "07",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 15.036669254302979,
+          "messages": "[b'Plan: \\'Unsteady Sharp Crest S=10ft/mi\\' (HagerLatWeir.p07)\\r\\nSimulation started at: 28Mar2026 05:01:43 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n Initial Backwater, Split flow optimization, iteration    1\\r\\n Initial Backwater, Split flow optimization, iteration    2\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:           0.02809\\r\\nOverall Volume Accounting Error as percentage:          0.000120\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [189 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t       2\\r\\nPost-Processing\\t<1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t       7\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t29101x\\r\\nComplete Process\\t11240x\\r\\n']",
+          "errors": [
+            "[b'Plan: \\'Unsteady Sharp Crest S=10ft/mi\\' (HagerLatWeir.p07)\\r\\nSimulation started at: 28Mar2026 05:01:43 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n Initial Backwater, Split flow optimization, iteration    1\\r\\n Initial Backwater, Split flow optimization, iteration    2\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:           0.02809\\r\\nOverall Volume Accounting Error as percentage:          0.000120\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [189 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t       2\\r\\nPost-Processing\\t<1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t       7\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t29101x\\r\\nComplete Process\\t11240x\\r\\n']"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 20 - HagerLatWeir\\HagerLatWeir.p07.hdf"
+        },
+        {
+          "plan_number": "01",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.01488208770752,
+          "messages": "[b\"Plan: 'Steady Flow Broad Crested Weir' (HagerLatWeir.p01)\\r\\nSimulation started at: 28Mar2026 05:01:58 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t       2\\r\\nComplete Process\\t       4\\r\\n\"]",
+          "errors": [],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 20 - HagerLatWeir\\HagerLatWeir.p01.hdf"
+        },
+        {
+          "plan_number": "03",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.016263008117676,
+          "messages": "[b\"Plan: 'Steady Q Rect Chan S=10ft/mi Zero H weir' (HagerLatWeir.p03)\\r\\nSimulation started at: 28Mar2026 05:02:08 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 116 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 48 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 57 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t       1\\r\\nComplete Process\\t       3\\r\\n\"]",
+          "errors": [],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 20 - HagerLatWeir\\HagerLatWeir.p03.hdf"
+        },
+        {
+          "plan_number": "04",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.015340566635132,
+          "messages": "[b\"Plan: 'Steady Q Rect Chan S=10ft/mi Sharp Crest' (HagerLatWeir.p04)\\r\\nSimulation started at: 28Mar2026 05:02:18 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t       1\\r\\nComplete Process\\t       4\\r\\n\"]",
+          "errors": [],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 20 - HagerLatWeir\\HagerLatWeir.p04.hdf"
+        }
+      ],
+      "ok_count": 8,
+      "total_plans": 8,
+      "total_time_s": 97.74594330787659,
+      "hdf_copied": 9,
+      "status": "OK",
+      "error": null
+    },
+    {
+      "project": "Applications Guide\\Example 21 - Overflow Gates",
+      "category": "Applications Guide",
+      "prj_path": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\hecras_all_cases\\Applications Guide\\Example 21 - Overflow Gates\\Overflow.prj",
+      "plans": [
+        {
+          "plan_number": "05",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 20.1344735622406,
+          "messages": "[b'Plan: \\'Open Air Gates - Complex Network\\' (Overflow.p05)\\r\\nSimulation started at: 28Mar2026 05:02:31 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:          0.000114\\r\\nOverall Volume Accounting Error as percentage:      0.0000077924\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nWriting SA Data: Water-Surface\\r\\nWriting SA Data: Inflow\\r\\nTime Series Post Process file generated [240 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t      10\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      16\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t32432x\\r\\nComplete Process\\t21287x\\r\\n']",
+          "errors": [
+            "[b'Plan: \\'Open Air Gates - Complex Network\\' (Overflow.p05)\\r\\nSimulation started at: 28Mar2026 05:02:31 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:          0.000114\\r\\nOverall Volume Accounting Error as percentage:      0.0000077924\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nWriting SA Data: Water-Surface\\r\\nWriting SA Data: Inflow\\r\\nTime Series Post Process file generated [240 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t      10\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      16\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t32432x\\r\\nComplete Process\\t21287x\\r\\n']"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 21 - Overflow Gates\\Overflow.p05.hdf"
+        },
+        {
+          "plan_number": "01",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 20.023656368255615,
+          "messages": "[b'Plan: \\'Open Air Overflow Gates\\' (Overflow.p01)\\r\\nSimulation started at: 28Mar2026 05:02:51 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:          0.000807\\r\\nOverall Volume Accounting Error as percentage:      0.0000879555\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [193 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t       9\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      14\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t35618x\\r\\nComplete Process\\t23209x\\r\\n']",
+          "errors": [
+            "[b'Plan: \\'Open Air Overflow Gates\\' (Overflow.p01)\\r\\nSimulation started at: 28Mar2026 05:02:51 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:          0.000807\\r\\nOverall Volume Accounting Error as percentage:      0.0000879555\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [193 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t       9\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      14\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t35618x\\r\\nComplete Process\\t23209x\\r\\n']"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 21 - Overflow Gates\\Overflow.p01.hdf"
+        },
+        {
+          "plan_number": "04",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 20.03402829170227,
+          "messages": "[b'Plan: \\'Open Air- Navigation Dam Control\\' (Overflow.p04)\\r\\nSimulation started at: 28Mar2026 05:03:11 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:     -0.0008512288\\r\\nOverall Volume Accounting Error as percentage:      0.0000930845\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [189 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t       9\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      14\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t36083x\\r\\nComplete Process\\t23282x\\r\\n']",
+          "errors": [
+            "[b'Plan: \\'Open Air- Navigation Dam Control\\' (Overflow.p04)\\r\\nSimulation started at: 28Mar2026 05:03:11 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:     -0.0008512288\\r\\nOverall Volume Accounting Error as percentage:      0.0000930845\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [189 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t       9\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      14\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t36083x\\r\\nComplete Process\\t23282x\\r\\n']"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 21 - Overflow Gates\\Overflow.p04.hdf"
+        },
+        {
+          "plan_number": "02",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 20.045294046401978,
+          "messages": "[b'Plan: \\'Closed Top Overflow Gates\\' (Overflow.p02)\\r\\nSimulation started at: 28Mar2026 05:03:31 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:          0.008999\\r\\nOverall Volume Accounting Error as percentage:          0.000981\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [187 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t      10\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      15\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t33359x\\r\\nComplete Process\\t22185x\\r\\n']",
+          "errors": [
+            "[b'Plan: \\'Closed Top Overflow Gates\\' (Overflow.p02)\\r\\nSimulation started at: 28Mar2026 05:03:31 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:          0.008999\\r\\nOverall Volume Accounting Error as percentage:          0.000981\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [187 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t      10\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      15\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t33359x\\r\\nComplete Process\\t22185x\\r\\n']"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 21 - Overflow Gates\\Overflow.p02.hdf"
+        },
+        {
+          "plan_number": "07",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 20.027348518371582,
+          "messages": "[b'Plan: \\'Open Air Gates - Kinsvater Eqn.\\' (Overflow.p07)\\r\\nSimulation started at: 28Mar2026 05:03:51 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:          0.000922\\r\\nOverall Volume Accounting Error as percentage:          0.000101\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [186 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t       9\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      14\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t36986x\\r\\nComplete Process\\t23605x\\r\\n']",
+          "errors": [
+            "[b'Plan: \\'Open Air Gates - Kinsvater Eqn.\\' (Overflow.p07)\\r\\nSimulation started at: 28Mar2026 05:03:51 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:          0.000922\\r\\nOverall Volume Accounting Error as percentage:          0.000101\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [186 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t       9\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      14\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t36986x\\r\\nComplete Process\\t23605x\\r\\n']"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 21 - Overflow Gates\\Overflow.p07.hdf"
+        },
+        {
+          "plan_number": "06",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 20.042744159698486,
+          "messages": "[b'Plan: \\'Open Air Gates - Rehbock Eqn.\\' (Overflow.p06)\\r\\nSimulation started at: 28Mar2026 05:04:11 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:          0.000761\\r\\nOverall Volume Accounting Error as percentage:      0.0000829660\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [203 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t      10\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      15\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t34398x\\r\\nComplete Process\\t22755x\\r\\n']",
+          "errors": [
+            "[b'Plan: \\'Open Air Gates - Rehbock Eqn.\\' (Overflow.p06)\\r\\nSimulation started at: 28Mar2026 05:04:11 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:          0.000761\\r\\nOverall Volume Accounting Error as percentage:      0.0000829660\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [203 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t      10\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      15\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t34398x\\r\\nComplete Process\\t22755x\\r\\n']"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 21 - Overflow Gates\\Overflow.p06.hdf"
+        },
+        {
+          "plan_number": "03",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 20.035244941711426,
+          "messages": "[b'Plan: \\'Open Air - Elevation Controlled Gates\\' (Overflow.p03)\\r\\nSimulation started at: 28Mar2026 05:04:31 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:     -0.0285533948\\r\\nOverall Volume Accounting Error as percentage:          0.003115\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [187 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t      10\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      15\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t33717x\\r\\nComplete Process\\t22431x\\r\\n']",
+          "errors": [
+            "[b'Plan: \\'Open Air - Elevation Controlled Gates\\' (Overflow.p03)\\r\\nSimulation started at: 28Mar2026 05:04:31 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:     -0.0285533948\\r\\nOverall Volume Accounting Error as percentage:          0.003115\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [187 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t      10\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      15\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t33717x\\r\\nComplete Process\\t22431x\\r\\n']"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 21 - Overflow Gates\\Overflow.p03.hdf"
+        }
+      ],
+      "ok_count": 7,
+      "total_plans": 7,
+      "total_time_s": 143.42621445655823,
+      "hdf_copied": 7,
+      "status": "OK",
+      "error": null
+    },
+    {
+      "project": "Applications Guide\\Example 22 - Groundwater Interflow",
+      "category": "Applications Guide",
+      "prj_path": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\hecras_all_cases\\Applications Guide\\Example 22 - Groundwater Interflow\\BeaverSALeak.prj",
+      "plans": [
+        {
+          "plan_number": "01",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 20.04923677444458,
+          "messages": "[b'Plan: \\'With bridge\\' (BeaverSALeak.p01)\\r\\nSimulation started at: 28Mar2026 05:04:55 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 128 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 48 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 135 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n     Number of warm up time steps:   20\\r\\n\\r\\nRestart File:  .\\\\BeaverSALeak.p01.10FEB1999 2000.rst\\r\\nWritten at T =     10.0000 Hours - 10FEB1999 at Time  20:00:00\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:             2646.\\r\\nOverall Volume Accounting Error as percentage:             4.642\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nWriting SA Data: Water-Surface\\r\\nWriting SA Data: Inflow\\r\\nTime Series Post Process file generated [234 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t       2\\r\\nUnsteady Flow Computations\\t       3\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      11\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t57600x\\r\\nComplete Process\\t18772x\\r\\n']",
+          "errors": [
+            "[b'Plan: \\'With bridge\\' (BeaverSALeak.p01)\\r\\nSimulation started at: 28Mar2026 05:04:55 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 128 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 48 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 135 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n     Number of warm up time steps:   20\\r\\n\\r\\nRestart File:  .\\\\BeaverSALeak.p01.10FEB1999 2000.rst\\r\\nWritten at T =     10.0000 Hours - 10FEB1999 at Time  20:00:00\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:             2646.\\r\\nOverall Volume Accounting Error as percentage:             4.642\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nWriting SA Data: Water-Surface\\r\\nWriting SA Data: Inflow\\r\\nTime Series Post Process file generated [234 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t       2\\r\\nUnsteady Flow Computations\\t       3\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      11\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t57600x\\r\\nComplete Process\\t18772x\\r\\n']"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 22 - Groundwater Interflow\\BeaverSALeak.p01.hdf"
+        }
+      ],
+      "ok_count": 1,
+      "total_plans": 1,
+      "total_time_s": 21.55399441719055,
+      "hdf_copied": 1,
+      "status": "OK",
+      "error": null
+    },
+    {
+      "project": "Applications Guide\\Example 22 - Groundwater Interflow",
+      "category": "Applications Guide",
+      "prj_path": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\hecras_all_cases\\Applications Guide\\Example 22 - Groundwater Interflow\\GroundwaterInterac.prj",
+      "plans": [
+        {
+          "plan_number": "01",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 15.028668403625488,
+          "messages": "[b'Plan: \\'Groundwater Interaction Run\\' (GroundwaterInterac.p01)\\r\\nSimulation started at: 28Mar2026 05:05:15 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 145 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 36 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 170 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n     Number of warm up time steps:   20\\r\\n Initial Backwater, Split flow optimization, iteration    1\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:             645.8\\r\\nOverall Volume Accounting Error as percentage:             3.968\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nWriting SA Data: Water-Surface\\r\\nWriting SA Data: Inflow\\r\\nTime Series Post Process file generated [239 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t       2\\r\\nPost-Processing\\t<1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t       7\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t99310x\\r\\nComplete Process\\t34204x\\r\\n']",
+          "errors": [
+            "[b'Plan: \\'Groundwater Interaction Run\\' (GroundwaterInterac.p01)\\r\\nSimulation started at: 28Mar2026 05:05:15 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 145 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 36 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 170 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n     Number of warm up time steps:   20\\r\\n Initial Backwater, Split flow optimization, iteration    1\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:             645.8\\r\\nOverall Volume Accounting Error as percentage:             3.968\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nWriting SA Data: Water-Surface\\r\\nWriting SA Data: Inflow\\r\\nTime Series Post Process file generated [239 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t       2\\r\\nPost-Processing\\t<1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t       7\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t99310x\\r\\nComplete Process\\t34204x\\r\\n']"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 22 - Groundwater Interflow\\GroundwaterInterac.p01.hdf"
+        },
+        {
+          "plan_number": "02",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 280.42526721954346,
+          "messages": "[b'Plan: \\'Junction Hydraulics On Run\\' (GroundwaterInterac.p02)\\r\\nSimulation started at: 28Mar2026 05:09:21 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 157 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 40 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 167 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n     Number of warm up time steps:   20\\r\\n Initial Backwater, Split flow optimization, iteration    1\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:             22.24\\r\\nOverall Volume Accounting Error as percentage:            0.1366\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [197 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t      34\\r\\nUnsteady Flow Computations\\t       1\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      42\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t130645x\\r\\nComplete Process\\t6072x\\r\\n']",
+          "errors": [
+            "[b'Plan: \\'Junction Hydraulics On Run\\' (GroundwaterInterac.p02)\\r\\nSimulation started at: 28Mar2026 05:09:21 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 157 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 40 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 167 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n     Number of warm up time steps:   20\\r\\n Initial Backwater, Split flow optimization, iteration    1\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:             22.24\\r\\nOverall Volume Accounting Error as percentage:            0.1366\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nTime Series Post Process file generated [197 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nPreprocessing Geometry\\t      34\\r\\nUnsteady Flow Computations\\t       1\\r\\nPost-Processing\\t       1\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t      42\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t130645x\\r\\nComplete Process\\t6072x\\r\\n']"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 22 - Groundwater Interflow\\GroundwaterInterac.p02.hdf"
+        }
+      ],
+      "ok_count": 2,
+      "total_plans": 2,
+      "total_time_s": 296.65846610069275,
+      "hdf_copied": 4,
+      "status": "OK",
+      "error": null
+    },
+    {
+      "project": "Applications Guide\\Example 23 - Urban Modeling",
+      "category": "Applications Guide",
+      "prj_path": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\hecras_all_cases\\Applications Guide\\Example 23 - Urban Modeling\\OrleansEx.prj",
+      "plans": [
+        {
+          "plan_number": "02",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 280.61679244041443,
+          "messages": "[b'Plan: \\'Katrina Existing Conditions\\' (OrleansEx.p02)\\r\\nSimulation started at: 28Mar2026 05:10:18 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 331 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 62 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 234 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n     Number of warm up time steps:   10\\r\\nBreach at   17th Street 2 16500   at   29AUG2005 09:46:00\\r\\n\\r\\nMaximum iteration location              \\t\\tRS\\t WSEL\\tERROR\\tITERATIONS\\r\\n\\r\\n30AUG2005 15:48:00  Washington      \\t2               \\t17802.2*\\t    1.97\\t   0.010\\t20\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:     -0.2402382838\\r\\nOverall Volume Accounting Error as percentage:          0.001425\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nThe maximum xsec wsel error was     0.010\\r\\nWashington  2  17802.2*  at  30AUG2005 15:48:00\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nWriting SA Data: Water-Surface\\r\\nWriting SA Data: Inflow\\r\\nTime Series Post Process file generated [278 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       4\\r\\nPreprocessing Geometry\\t       2\\r\\nUnsteady Flow Computations\\t    2:34\\r\\nPost-Processing\\t    1:49\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t    4:32\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t2932x\\r\\nComplete Process\\t1662x\\r\\n']",
+          "errors": [
+            "[b'Plan: \\'Katrina Existing Conditions\\' (OrleansEx.p02)\\r\\nSimulation started at: 28Mar2026 05:10:18 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 331 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 62 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 234 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n     Number of warm up time steps:   10\\r\\nBreach at   17th Street 2 16500   at   29AUG2005 09:46:00\\r\\n\\r\\nMaximum iteration location              \\t\\tRS\\t WSEL\\tERROR\\tITERATIONS\\r\\n\\r\\n30AUG2005 15:48:00  Washington      \\t2               \\t17802.2*\\t    1.97\\t   0.010\\t20\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:     -0.2402382838\\r\\nOverall Volume Accounting Error as percentage:          0.001425\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nThe maximum xsec wsel error was     0.010\\r\\nWashington  2  17802.2*  at  30AUG2005 15:48:00\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nWriting SA Data: Water-Surface\\r\\nWriting SA Data: Inflow\\r\\nTime Series Post Process file generated [278 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       4\\r\\nPreprocessing Geometry\\t       2\\r\\nUnsteady Flow Computations\\t    2:34\\r\\nPost-Processing\\t    1:49\\r\\nGenerating Time Series Post Process\\t       1\\r\\nComplete Process\\t    4:32\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t2932x\\r\\nComplete Process\\t1662x\\r\\n']"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 23 - Urban Modeling\\OrleansEx.p02.hdf"
+        }
+      ],
+      "ok_count": 1,
+      "total_plans": 1,
+      "total_time_s": 285.31129217147827,
+      "hdf_copied": 1,
+      "status": "OK",
+      "error": null
+    },
+    {
+      "project": "Applications Guide\\Example 24 - Mannings-n-Calibration",
+      "category": "Applications Guide",
+      "prj_path": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\hecras_all_cases\\Applications Guide\\Example 24 - Mannings-n-Calibration\\Manning'snCalibra.prj",
+      "plans": [
+        {
+          "plan_number": "01",
+          "success": false,
+          "finished": false,
+          "compute_time_s": 330.5122163295746,
+          "messages": "",
+          "errors": [
+            "STALLED: HDF not created after 300.0s"
+          ],
+          "warnings": [],
+          "hdf_path": null
+        },
+        {
+          "plan_number": "02",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 135.20983028411865,
+          "messages": "[b'Plan: \\'No Calibration Run\\' (Manning\\'snCalibra.p02)\\r\\nSimulation started at: 28Mar2026 05:20:45 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nProcessing Observed data...\\r\\n \\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n     Number of warm up time steps:   30\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:  -4071.8912736475\\r\\nOverall Volume Accounting Error as percentage:          0.001796\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nWriting SA Data: Water-Surface\\r\\nWriting SA Data: Inflow\\r\\nTime Series Post Process file generated [1110 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       6\\r\\nPreprocessing Geometry\\t      12\\r\\nUnsteady Flow Computations\\t    1:11\\r\\nPost-Processing\\t      25\\r\\nGenerating Time Series Post Process\\t       2\\r\\nComplete Process\\t    2:01\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t194000x\\r\\nComplete Process\\t114769x\\r\\n']",
+          "errors": [
+            "[b'Plan: \\'No Calibration Run\\' (Manning\\'snCalibra.p02)\\r\\nSimulation started at: 28Mar2026 05:20:45 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nProcessing Observed data...\\r\\n \\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n     Number of warm up time steps:   30\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:  -4071.8912736475\\r\\nOverall Volume Accounting Error as percentage:          0.001796\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nWriting SA Data: Water-Surface\\r\\nWriting SA Data: Inflow\\r\\nTime Series Post Process file generated [1110 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       6\\r\\nPreprocessing Geometry\\t      12\\r\\nUnsteady Flow Computations\\t    1:11\\r\\nPost-Processing\\t      25\\r\\nGenerating Time Series Post Process\\t       2\\r\\nComplete Process\\t    2:01\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t194000x\\r\\nComplete Process\\t114769x\\r\\n']"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 24 - Mannings-n-Calibration\\Manning'snCalibra.p02.hdf"
+        },
+        {
+          "plan_number": "03",
+          "success": false,
+          "finished": false,
+          "compute_time_s": 330.51389169692993,
+          "messages": "",
+          "errors": [
+            "STALLED: HDF not created after 300.0s"
+          ],
+          "warnings": [],
+          "hdf_path": null
+        },
+        {
+          "plan_number": "04",
+          "success": false,
+          "finished": false,
+          "compute_time_s": 330.44718837738037,
+          "messages": "",
+          "errors": [
+            "STALLED: HDF not created after 300.0s"
+          ],
+          "warnings": [],
+          "hdf_path": null
+        },
+        {
+          "plan_number": "05",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 135.2273292541504,
+          "messages": "[b'Plan: \\'Automatic Calibration - Final Model\\' (Manning\\'snCalibra.p05)\\r\\nSimulation started at: 28Mar2026 05:34:09 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nProcessing Observed data...\\r\\n \\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n     Number of warm up time steps:   30\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:  -5689.2750627100\\r\\nOverall Volume Accounting Error as percentage:          0.002507\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nWriting SA Data: Water-Surface\\r\\nWriting SA Data: Inflow\\r\\nTime Series Post Process file generated [1137 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       6\\r\\nPreprocessing Geometry\\t      12\\r\\nUnsteady Flow Computations\\t    1:14\\r\\nPost-Processing\\t      26\\r\\nGenerating Time Series Post Process\\t       2\\r\\nComplete Process\\t    2:04\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t186327x\\r\\nComplete Process\\t111772x\\r\\n']",
+          "errors": [
+            "[b'Plan: \\'Automatic Calibration - Final Model\\' (Manning\\'snCalibra.p05)\\r\\nSimulation started at: 28Mar2026 05:34:09 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nProcessing Observed data...\\r\\n \\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     1D Unsteady Finite Difference Numerical Solution\\r\\n     Number of warm up time steps:   30\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:  -5689.2750627100\\r\\nOverall Volume Accounting Error as percentage:          0.002507\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nReading Unsteady Data for Post Process...\\r\\nCompleted Reading Unsteady Data for Post Process\\r\\n\\r\\n\\t\\r\\nRunning Post Processor  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Post Processing\\r\\n\\r\\n\\r\\nGenerating Time Series Post Process File ...\\r\\nWriting 1D Data: Water-Surface\\r\\nWriting 1D Data: Flow\\r\\nWriting SA Data: Water-Surface\\r\\nWriting SA Data: Inflow\\r\\nTime Series Post Process file generated [1137 ms]\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       6\\r\\nPreprocessing Geometry\\t      12\\r\\nUnsteady Flow Computations\\t    1:14\\r\\nPost-Processing\\t      26\\r\\nGenerating Time Series Post Process\\t       2\\r\\nComplete Process\\t    2:04\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t186327x\\r\\nComplete Process\\t111772x\\r\\n']"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 24 - Mannings-n-Calibration\\Manning'snCalibra.p05.hdf"
+        }
+      ],
+      "ok_count": 2,
+      "total_plans": 5,
+      "total_time_s": 1297.9185347557068,
+      "hdf_copied": 5,
+      "status": "PARTIAL",
+      "error": null
+    },
+    {
+      "project": "Applications Guide\\Example 3 - Single Culvert",
+      "category": "Applications Guide",
+      "prj_path": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\hecras_all_cases\\Applications Guide\\Example 3 - Single Culvert\\TWINPIPE.prj",
+      "plans": [
+        {
+          "plan_number": "01",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.023887157440186,
+          "messages": "[b\"Plan: 'Spring Creek Culverts' (TWINPIPE.p01)\\r\\nSimulation started at: 28Mar2026 05:36:35 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 115 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 31 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 136 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       3\\r\\n\"]",
+          "errors": [],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 3 - Single Culvert\\TWINPIPE.p01.hdf"
+        },
+        {
+          "plan_number": "02",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.021029710769653,
+          "messages": "[b\"Plan: 'Sp. Cr. Culverts - Adj. Weir Flow' (TWINPIPE.p02)\\r\\nSimulation started at: 28Mar2026 05:36:45 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 113 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 32 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 128 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       2\\r\\n\"]",
+          "errors": [],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 3 - Single Culvert\\TWINPIPE.p02.hdf"
+        }
+      ],
+      "ok_count": 2,
+      "total_plans": 2,
+      "total_time_s": 20.565012216567993,
+      "hdf_copied": 4,
+      "status": "OK",
+      "error": null
+    },
+    {
+      "project": "Applications Guide\\Example 4 - Multiple Culverts",
+      "category": "Applications Guide",
+      "prj_path": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\hecras_all_cases\\Applications Guide\\Example 4 - Multiple Culverts\\MULTCULV.prj",
+      "plans": [
+        {
+          "plan_number": "01",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.005538940429688,
+          "messages": "[b\"Plan: 'Spring Creek Multiple Culverts' (MULTCULV.p01)\\r\\nSimulation started at: 28Mar2026 05:36:55 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 108 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 30 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 131 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       2\\r\\n\"]",
+          "errors": [],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 4 - Multiple Culverts\\MULTCULV.p01.hdf"
+        }
+      ],
+      "ok_count": 1,
+      "total_plans": 1,
+      "total_time_s": 10.223388671875,
+      "hdf_copied": 2,
+      "status": "OK",
+      "error": null
+    },
+    {
+      "project": "Applications Guide\\Example 5 - Multiple Openings",
+      "category": "Applications Guide",
+      "prj_path": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\hecras_all_cases\\Applications Guide\\Example 5 - Multiple Openings\\MULTOPEN.prj",
+      "plans": [
+        {
+          "plan_number": "02",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.020925283432007,
+          "messages": "[b\"Plan: 'Modified Conditions' (MULTOPEN.p02)\\r\\nSimulation started at: 28Mar2026 05:37:06 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 120 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 33 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 139 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t       1\\r\\nComplete Process\\t       4\\r\\n\"]",
+          "errors": [],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 5 - Multiple Openings\\MULTOPEN.p02.hdf"
+        },
+        {
+          "plan_number": "01",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.020686864852905,
+          "messages": "[b\"Plan: 'Base Conditions' (MULTOPEN.p01)\\r\\nSimulation started at: 28Mar2026 05:37:16 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 140 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 32 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 143 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       2\\r\\n\"]",
+          "errors": [],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 5 - Multiple Openings\\MULTOPEN.p01.hdf"
+        }
+      ],
+      "ok_count": 2,
+      "total_plans": 2,
+      "total_time_s": 20.432991981506348,
+      "hdf_copied": 4,
+      "status": "OK",
+      "error": null
+    },
+    {
+      "project": "Applications Guide\\Example 6 - Floodway Determination",
+      "category": "Applications Guide",
+      "prj_path": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\hecras_all_cases\\Applications Guide\\Example 6 - Floodway Determination\\FLODENCR.prj",
+      "plans": [
+        {
+          "plan_number": "01",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.018664836883545,
+          "messages": "[b\"Plan: 'Method 5 Encroachment' (FLODENCR.p01)\\r\\nSimulation started at: 28Mar2026 05:37:27 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 141 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 36 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 146 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       3\\r\\n\"]",
+          "errors": [
+            "[b\"Plan: 'Method 5 Encroachment' (FLODENCR.p01)\\r\\nSimulation started at: 28Mar2026 05:37:27 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 141 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 36 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 146 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       3\\r\\n\"]"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 6 - Floodway Determination\\FLODENCR.p01.hdf"
+        },
+        {
+          "plan_number": "05",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 7.588637828826904,
+          "messages": "[b\"Plan: 'Method 1 Encroachment' (FLODENCR.p05)\\r\\nSimulation started at: 28Mar2026 05:37:36 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       2\\r\\n\"]",
+          "errors": [
+            "[b\"Plan: 'Method 1 Encroachment' (FLODENCR.p05)\\r\\nSimulation started at: 28Mar2026 05:37:36 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       2\\r\\n\"]"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 6 - Floodway Determination\\FLODENCR.p05.hdf"
+        },
+        {
+          "plan_number": "02",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 7.244794130325317,
+          "messages": "[b\"Plan: 'Method 4 Encroachment - Trial 1' (FLODENCR.p02)\\r\\nSimulation started at: 28Mar2026 05:37:43 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       2\\r\\n\"]",
+          "errors": [
+            "[b\"Plan: 'Method 4 Encroachment - Trial 1' (FLODENCR.p02)\\r\\nSimulation started at: 28Mar2026 05:37:43 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       2\\r\\n\"]"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 6 - Floodway Determination\\FLODENCR.p02.hdf"
+        },
+        {
+          "plan_number": "04",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 7.658707618713379,
+          "messages": "[b\"Plan: 'Method 4 Encroachment - Trial 3' (FLODENCR.p04)\\r\\nSimulation started at: 28Mar2026 05:37:51 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       2\\r\\n\"]",
+          "errors": [
+            "[b\"Plan: 'Method 4 Encroachment - Trial 3' (FLODENCR.p04)\\r\\nSimulation started at: 28Mar2026 05:37:51 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       2\\r\\n\"]"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 6 - Floodway Determination\\FLODENCR.p04.hdf"
+        },
+        {
+          "plan_number": "03",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.00798773765564,
+          "messages": "[b\"Plan: 'Method 4 Encroachment - Trial 2' (FLODENCR.p03)\\r\\nSimulation started at: 28Mar2026 05:37:58 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       2\\r\\n\"]",
+          "errors": [
+            "[b\"Plan: 'Method 4 Encroachment - Trial 2' (FLODENCR.p03)\\r\\nSimulation started at: 28Mar2026 05:37:58 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       2\\r\\n\"]"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 6 - Floodway Determination\\FLODENCR.p03.hdf"
+        }
+      ],
+      "ok_count": 5,
+      "total_plans": 5,
+      "total_time_s": 43.05846166610718,
+      "hdf_copied": 6,
+      "status": "OK",
+      "error": null
+    },
+    {
+      "project": "Applications Guide\\Example 7 - Multiple Plans",
+      "category": "Applications Guide",
+      "prj_path": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\hecras_all_cases\\Applications Guide\\Example 7 - Multiple Plans\\NAPA.prj",
+      "plans": [
+        {
+          "plan_number": "01",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.004555940628052,
+          "messages": "[b\"Plan: 'Existing Plan Data' (NAPA.p01)\\r\\nSimulation started at: 28Mar2026 05:38:10 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 147 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 53 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 147 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       3\\r\\n\"]",
+          "errors": [],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 7 - Multiple Plans\\NAPA.p01.hdf"
+        },
+        {
+          "plan_number": "02",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.029327154159546,
+          "messages": "[b\"Plan: 'Proposed Plan' (NAPA.p02)\\r\\nSimulation started at: 28Mar2026 05:38:20 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 150 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 55 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 142 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       3\\r\\n\"]",
+          "errors": [],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 7 - Multiple Plans\\NAPA.p02.hdf"
+        }
+      ],
+      "ok_count": 2,
+      "total_plans": 2,
+      "total_time_s": 20.395500659942627,
+      "hdf_copied": 2,
+      "status": "OK",
+      "error": null
+    },
+    {
+      "project": "Applications Guide\\Example 8 - Looped Network",
+      "category": "Applications Guide",
+      "prj_path": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\hecras_all_cases\\Applications Guide\\Example 8 - Looped Network\\LOOP.prj",
+      "plans": [
+        {
+          "plan_number": "01",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.02424931526184,
+          "messages": "[b\"Plan: 'Looped Plan' (LOOP.p01)\\r\\nSimulation started at: 28Mar2026 05:38:30 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 151 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 46 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 162 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       3\\r\\n\"]",
+          "errors": [],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 8 - Looped Network\\LOOP.p01.hdf"
+        },
+        {
+          "plan_number": "02",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.019405364990234,
+          "messages": "[b\"Plan: 'Looped Plan with final flow distribution' (LOOP.p02)\\r\\nSimulation started at: 28Mar2026 05:38:39 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       3\\r\\n\"]",
+          "errors": [],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 8 - Looped Network\\LOOP.p02.hdf"
+        }
+      ],
+      "ok_count": 2,
+      "total_plans": 2,
+      "total_time_s": 20.33884072303772,
+      "hdf_copied": 3,
+      "status": "OK",
+      "error": null
+    },
+    {
+      "project": "Applications Guide\\Example 9 - Mixed Flow Analysis",
+      "category": "Applications Guide",
+      "prj_path": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\hecras_all_cases\\Applications Guide\\Example 9 - Mixed Flow Analysis\\MIXFLOW.prj",
+      "plans": [
+        {
+          "plan_number": "02",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.008311986923218,
+          "messages": "[b\"Plan: 'Putah Creek Bridge - Press/Weir' (MIXFLOW.p02)\\r\\nSimulation started at: 28Mar2026 05:38:50 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 135 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 40 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 159 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       3\\r\\n\"]",
+          "errors": [],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 9 - Mixed Flow Analysis\\MIXFLOW.p02.hdf"
+        },
+        {
+          "plan_number": "01",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.019784450531006,
+          "messages": "[b\"Plan: 'Putah Creek Bridge - Energy' (MIXFLOW.p01)\\r\\nSimulation started at: 28Mar2026 05:39:00 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 146 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 62 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 166 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nComplete Process\\t       3\\r\\n\"]",
+          "errors": [],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Example 9 - Mixed Flow Analysis\\MIXFLOW.p01.hdf"
+        }
+      ],
+      "ok_count": 2,
+      "total_plans": 2,
+      "total_time_s": 20.377927780151367,
+      "hdf_copied": 4,
+      "status": "OK",
+      "error": null
+    },
+    {
+      "project": "Pipes (beta)\\Davis",
+      "category": "Pipes (beta)",
+      "prj_path": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\hecras_all_cases\\Pipes (beta)\\Davis\\DavisStormSystem.prj",
+      "plans": [
+        {
+          "plan_number": "02",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 110.18752455711365,
+          "messages": "[b'Plan: \\'Full System ROM with Pump\\' (DavisStormSystem.p02)\\r\\nSimulation started at: 28Mar2026 05:39:12 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing 2D Flow Area \\'area2\\' tables: Associated terrain has been updated.\\r\\n2D Flow Area \\'area2\\' tables complete 2.52 sec\\r\\nComputing 2D Flow Area \\'DS Channel\\' tables: Associated terrain has been updated.\\r\\n2D Flow Area \\'DS Channel\\' tables complete 0.05 sec\\r\\nDavis: Pipe Network property tables are current.\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     2D Unsteady Diffusion Wave Equation Set (fastest)\\r\\n     2D Max number of Solver Cores for any 2D area:    2\\r\\n     Pipe Network Diffusion Wave Equation Set (fastest)\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:            0.2306\\r\\nOverall Volume Accounting Error as percentage:            0.1620\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       5\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t    1:36\\r\\nComplete Process\\t    1:42\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t1344x\\r\\nComplete Process\\t1263x\\r\\n']",
+          "errors": [
+            "[b'Plan: \\'Full System ROM with Pump\\' (DavisStormSystem.p02)\\r\\nSimulation started at: 28Mar2026 05:39:12 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing 2D Flow Area \\'area2\\' tables: Associated terrain has been updated.\\r\\n2D Flow Area \\'area2\\' tables complete 2.52 sec\\r\\nComputing 2D Flow Area \\'DS Channel\\' tables: Associated terrain has been updated.\\r\\n2D Flow Area \\'DS Channel\\' tables complete 0.05 sec\\r\\nDavis: Pipe Network property tables are current.\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nGeometric Preprocessor HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Processing Geometry\\r\\n\\r\\n\\r\\nPerforming Unsteady Flow Simulation  HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\t\\r\\nUnsteady Input Summary:\\r\\n     2D Unsteady Diffusion Wave Equation Set (fastest)\\r\\n     2D Max number of Solver Cores for any 2D area:    2\\r\\n     Pipe Network Diffusion Wave Equation Set (fastest)\\r\\n\\r\\nOverall Volume Accounting Error in Acre Feet:            0.2306\\r\\nOverall Volume Accounting Error as percentage:            0.1620\\r\\nPlease review \"Computational Log File\" output for volume accounting details\\r\\n\\r\\nWriting Results to DSS\\r\\n\\r\\nFinished Unsteady Flow Simulation\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       5\\r\\nPreprocessing Geometry\\t<1\\r\\nUnsteady Flow Computations\\t    1:36\\r\\nComplete Process\\t    1:42\\r\\n\\r\\nComputation Speed\\tSimulation/Runtime\\r\\nUnsteady Flow Computations\\t1344x\\r\\nComplete Process\\t1263x\\r\\n']"
+          ],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Davis\\DavisStormSystem.p02.hdf"
+        }
+      ],
+      "ok_count": 1,
+      "total_plans": 1,
+      "total_time_s": 112.27662205696106,
+      "hdf_copied": 1,
+      "status": "OK",
+      "error": null
+    },
+    {
+      "project": "Water Quality\\Nutrient Example",
+      "category": "Water Quality",
+      "prj_path": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\hecras_all_cases\\Water Quality\\Nutrient Example\\WaterQualityExamp.prj",
+      "plans": [
+        {
+          "plan_number": "01",
+          "success": true,
+          "finished": true,
+          "compute_time_s": 10.016203165054321,
+          "messages": "[b\"Plan: 'Example Project Steady Q with set WSE' (WaterQualityExamp.p01)\\r\\nSimulation started at: 28Mar2026 05:41:03 AM\\r\\n\\r\\nWriting Plan GIS Data...\\r\\nCompleted Writing Plan GIS Data\\r\\nWriting Geometry...\\r\\nComputing Bank Lines\\r\\nBank lines generated in 196 ms\\r\\nComputing Edge Lines\\r\\nEdge Lines generated in 42 ms\\r\\nComputing XS Interpolation Surface\\r\\nXS Interpolation Surface generated in 56 ms\\r\\nCompleted Writing Geometry\\r\\nWriting Event Conditions ...\\r\\nCompleted Writing Event Condition Data\\r\\n\\r\\n\\t\\r\\nSteady Flow Simulation HEC-RAS 6.6 September 2024\\r\\n \\r\\n\\r\\nFinished Steady Flow Simulation\\r\\n\\r\\n\\r\\nPerforming Water Quality Simulation Version 6.6.0\\r\\nResults filename  (h5)     = C:\\\\Temp\\\\hecras_run\\\\Nutrient Example\\\\WaterQualityExamp.p01.hdf\\r\\nIC BC filename    (text)   = C:\\\\Temp\\\\hecras_run\\\\Nutrient Example\\\\WaterQualityExamp.bc01\\r\\nMessages filename (text)   = C:\\\\Temp\\\\hecras_run\\\\Nutrient Example\\\\WaterQualityExamp.wq_msg01\\r\\nOutput filename   (binary) = C:\\\\Temp\\\\hecras_run\\\\Nutrient Example\\\\WaterQualityExamp.wq01\\r\\nOutput filename   (hdf)    = C:\\\\Temp\\\\hecras_run\\\\Nutrient Example\\\\WaterQualityExamp.wq01.hdf                                                                                                                                                                                                                                                                                                                                                                                                                                                                  \\r\\n(Debug) Total Number of Kinetics Libraries = 2\\r\\nopening output file: C:\\\\Temp\\\\hecras_run\\\\Nutrient Example\\\\WaterQualityExamp.wq01.hdf\\r\\nWater Quality Simulation Complete\\r\\n\\r\\nComputations Summary\\r\\n\\r\\nComputation Task\\tTime(hh:mm:ss)\\r\\nCompleting Geometry, Flow and Plan\\t       2\\r\\nSteady Flow Computations\\t<1\\r\\nWater Quality Computations\\t       1\\r\\nComplete Process\\t       4\\r\\n\"]",
+          "errors": [],
+          "warnings": [],
+          "hdf_path": "C:\\temp\\hecras_run\\Nutrient Example\\WaterQualityExamp.p01.hdf"
+        }
+      ],
+      "ok_count": 1,
+      "total_plans": 1,
+      "total_time_s": 10.428812026977539,
+      "hdf_copied": 1,
+      "status": "OK",
+      "error": null
+    }
+  ]
+}

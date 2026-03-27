@@ -1,0 +1,1353 @@
+2026-03-28 05:00:46,376 INFO Found 67 projects
+2026-03-28 05:00:46,377 INFO [53/67] Applications Guide\Example 20 - HagerLatWeir
+2026-03-28 05:00:51,117 INFO   Plan 06...
+2026-03-28 05:00:51,120 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 20 - HagerLatWeir
+2026-03-28 05:00:51,137 INFO Using provided plan file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p06
+2026-03-28 05:00:51,140 INFO Successfully updated file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p06
+2026-03-28 05:00:51,213 INFO Set number of cores to 2 for plan: 06
+2026-03-28 05:00:51,216 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:00:51,217 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.prj" "C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p06"
+2026-03-28 05:01:02,702 INFO HEC-RAS execution completed for plan: 06
+2026-03-28 05:01:02,704 INFO Total run time for plan 06: 11.48 seconds
+2026-03-28 05:01:02,781 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p06.hdf
+2026-03-28 05:01:02,782 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p06.hdf
+2026-03-28 05:01:02,785 INFO Reading computation messages from HDF: HagerLatWeir.p06.hdf
+2026-03-28 05:01:02,787 INFO Successfully extracted 1625 characters from HDF
+2026-03-28 05:01:02,789 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p06.hdf
+2026-03-28 05:01:02,791 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p06.hdf
+2026-03-28 05:01:02,793 INFO Extracting Plan Information from: HagerLatWeir.p06.hdf
+2026-03-28 05:01:02,796 INFO Plan Name: Unsteady Broad Crest S=10ft/mi
+2026-03-28 05:01:02,797 INFO Simulation Duration (hours): 24.0
+2026-03-28 05:01:02,804 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p06.hdf
+2026-03-28 05:01:02,805 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p06.hdf
+2026-03-28 05:01:02,816 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:01:06,150 INFO   Plan 06: OK (15s)
+2026-03-28 05:01:06,154 INFO   Plan 02...
+2026-03-28 05:01:06,157 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 20 - HagerLatWeir
+2026-03-28 05:01:06,173 INFO Using provided plan file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p02
+2026-03-28 05:01:06,176 INFO Successfully updated file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p02
+2026-03-28 05:01:06,249 INFO Set number of cores to 2 for plan: 02
+2026-03-28 05:01:06,251 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:01:06,252 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.prj" "C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p02"
+2026-03-28 05:01:13,671 INFO HEC-RAS execution completed for plan: 02
+2026-03-28 05:01:13,674 INFO Total run time for plan 02: 7.42 seconds
+2026-03-28 05:01:13,753 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p02.hdf
+2026-03-28 05:01:13,754 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p02.hdf
+2026-03-28 05:01:13,757 INFO Reading computation messages from HDF: HagerLatWeir.p02.hdf
+2026-03-28 05:01:13,758 INFO Successfully extracted 550 characters from HDF
+2026-03-28 05:01:13,760 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p02.hdf
+2026-03-28 05:01:13,762 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p02.hdf
+2026-03-28 05:01:13,764 INFO Extracting Plan Information from: HagerLatWeir.p02.hdf
+2026-03-28 05:01:13,766 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:01:13,767 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p02.hdf
+2026-03-28 05:01:13,768 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p02.hdf
+2026-03-28 05:01:13,771 INFO Reading computation messages from HDF: HagerLatWeir.p02.hdf
+2026-03-28 05:01:13,773 INFO Successfully extracted 550 characters from HDF
+2026-03-28 05:01:13,775 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p02.hdf
+2026-03-28 05:01:13,776 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p02.hdf
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2026-03-28 05:01:13,789 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:01:16,161 INFO   Plan 02: OK (10s)
+2026-03-28 05:01:16,164 INFO   Plan 08...
+2026-03-28 05:01:16,167 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 20 - HagerLatWeir
+2026-03-28 05:01:16,182 INFO Using provided plan file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p08
+2026-03-28 05:01:16,186 INFO Successfully updated file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p08
+2026-03-28 05:01:16,257 INFO Set number of cores to 2 for plan: 08
+2026-03-28 05:01:16,260 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:01:16,262 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.prj" "C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p08"
+2026-03-28 05:01:27,613 INFO HEC-RAS execution completed for plan: 08
+2026-03-28 05:01:27,616 INFO Total run time for plan 08: 11.35 seconds
+2026-03-28 05:01:27,697 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p08.hdf
+2026-03-28 05:01:27,699 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p08.hdf
+2026-03-28 05:01:27,703 INFO Reading computation messages from HDF: HagerLatWeir.p08.hdf
+2026-03-28 05:01:27,706 INFO Successfully extracted 1625 characters from HDF
+2026-03-28 05:01:27,709 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p08.hdf
+2026-03-28 05:01:27,711 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p08.hdf
+2026-03-28 05:01:27,713 INFO Extracting Plan Information from: HagerLatWeir.p08.hdf
+2026-03-28 05:01:27,716 INFO Plan Name: Unsteady Round Crest S=10ft/mi
+2026-03-28 05:01:27,717 INFO Simulation Duration (hours): 24.0
+2026-03-28 05:01:27,725 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p08.hdf
+2026-03-28 05:01:27,727 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p08.hdf
+2026-03-28 05:01:27,739 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:01:31,191 INFO   Plan 08: OK (15s)
+2026-03-28 05:01:31,194 INFO   Plan 05...
+2026-03-28 05:01:31,197 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 20 - HagerLatWeir
+2026-03-28 05:01:31,212 INFO Using provided plan file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p05
+2026-03-28 05:01:31,214 INFO Successfully updated file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p05
+2026-03-28 05:01:31,295 INFO Set number of cores to 2 for plan: 05
+2026-03-28 05:01:31,297 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:01:31,299 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.prj" "C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p05"
+2026-03-28 05:01:39,011 INFO HEC-RAS execution completed for plan: 05
+2026-03-28 05:01:39,012 INFO Total run time for plan 05: 7.71 seconds
+2026-03-28 05:01:39,089 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p05.hdf
+2026-03-28 05:01:39,091 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p05.hdf
+2026-03-28 05:01:39,094 INFO Reading computation messages from HDF: HagerLatWeir.p05.hdf
+2026-03-28 05:01:39,096 INFO Successfully extracted 556 characters from HDF
+2026-03-28 05:01:39,099 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p05.hdf
+2026-03-28 05:01:39,101 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p05.hdf
+2026-03-28 05:01:39,103 INFO Extracting Plan Information from: HagerLatWeir.p05.hdf
+2026-03-28 05:01:39,105 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:01:39,107 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p05.hdf
+2026-03-28 05:01:39,108 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p05.hdf
+2026-03-28 05:01:39,111 INFO Reading computation messages from HDF: HagerLatWeir.p05.hdf
+2026-03-28 05:01:39,113 INFO Successfully extracted 556 characters from HDF
+2026-03-28 05:01:39,115 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p05.hdf
+2026-03-28 05:01:39,116 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p05.hdf
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2026-03-28 05:01:39,128 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:01:41,213 INFO   Plan 05: OK (10s)
+2026-03-28 05:01:41,215 INFO   Plan 07...
+2026-03-28 05:01:41,218 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 20 - HagerLatWeir
+2026-03-28 05:01:41,233 INFO Using provided plan file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p07
+2026-03-28 05:01:41,236 INFO Successfully updated file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p07
+2026-03-28 05:01:41,310 INFO Set number of cores to 2 for plan: 07
+2026-03-28 05:01:41,312 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:01:41,314 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.prj" "C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p07"
+2026-03-28 05:01:52,589 INFO HEC-RAS execution completed for plan: 07
+2026-03-28 05:01:52,612 INFO Total run time for plan 07: 11.27 seconds
+2026-03-28 05:01:52,712 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p07.hdf
+2026-03-28 05:01:52,715 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p07.hdf
+2026-03-28 05:01:52,718 INFO Reading computation messages from HDF: HagerLatWeir.p07.hdf
+2026-03-28 05:01:52,719 INFO Successfully extracted 1625 characters from HDF
+2026-03-28 05:01:52,722 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p07.hdf
+2026-03-28 05:01:52,723 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p07.hdf
+2026-03-28 05:01:52,725 INFO Extracting Plan Information from: HagerLatWeir.p07.hdf
+2026-03-28 05:01:52,727 INFO Plan Name: Unsteady Sharp Crest S=10ft/mi
+2026-03-28 05:01:52,728 INFO Simulation Duration (hours): 24.0
+2026-03-28 05:01:52,735 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p07.hdf
+2026-03-28 05:01:52,737 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p07.hdf
+2026-03-28 05:01:52,749 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:01:56,252 INFO   Plan 07: OK (15s)
+2026-03-28 05:01:56,255 INFO   Plan 01...
+2026-03-28 05:01:56,258 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 20 - HagerLatWeir
+2026-03-28 05:01:56,274 INFO Using provided plan file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p01
+2026-03-28 05:01:56,276 INFO Successfully updated file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p01
+2026-03-28 05:01:56,349 INFO Set number of cores to 2 for plan: 01
+2026-03-28 05:01:56,351 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:01:56,353 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.prj" "C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p01"
+2026-03-28 05:02:04,197 INFO HEC-RAS execution completed for plan: 01
+2026-03-28 05:02:04,199 INFO Total run time for plan 01: 7.84 seconds
+2026-03-28 05:02:04,280 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p01.hdf
+2026-03-28 05:02:04,284 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p01.hdf
+2026-03-28 05:02:04,288 INFO Reading computation messages from HDF: HagerLatWeir.p01.hdf
+2026-03-28 05:02:04,290 INFO Successfully extracted 547 characters from HDF
+2026-03-28 05:02:04,291 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p01.hdf
+2026-03-28 05:02:04,293 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p01.hdf
+2026-03-28 05:02:04,295 INFO Extracting Plan Information from: HagerLatWeir.p01.hdf
+2026-03-28 05:02:04,297 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:02:04,299 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p01.hdf
+2026-03-28 05:02:04,300 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p01.hdf
+2026-03-28 05:02:04,303 INFO Reading computation messages from HDF: HagerLatWeir.p01.hdf
+2026-03-28 05:02:04,305 INFO Successfully extracted 547 characters from HDF
+2026-03-28 05:02:04,307 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p01.hdf
+2026-03-28 05:02:04,308 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p01.hdf
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2026-03-28 05:02:04,322 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:02:06,271 INFO   Plan 01: OK (10s)
+2026-03-28 05:02:06,274 INFO   Plan 03...
+2026-03-28 05:02:06,277 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 20 - HagerLatWeir
+2026-03-28 05:02:06,292 INFO Using provided plan file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p03
+2026-03-28 05:02:06,296 INFO Successfully updated file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p03
+2026-03-28 05:02:06,374 INFO Set number of cores to 2 for plan: 03
+2026-03-28 05:02:06,375 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:02:06,376 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.prj" "C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p03"
+2026-03-28 05:02:13,972 INFO HEC-RAS execution completed for plan: 03
+2026-03-28 05:02:13,974 INFO Total run time for plan 03: 7.59 seconds
+2026-03-28 05:02:14,052 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p03.hdf
+2026-03-28 05:02:14,054 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p03.hdf
+2026-03-28 05:02:14,057 INFO Reading computation messages from HDF: HagerLatWeir.p03.hdf
+2026-03-28 05:02:14,059 INFO Successfully extracted 745 characters from HDF
+2026-03-28 05:02:14,060 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p03.hdf
+2026-03-28 05:02:14,062 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p03.hdf
+2026-03-28 05:02:14,064 INFO Extracting Plan Information from: HagerLatWeir.p03.hdf
+2026-03-28 05:02:14,066 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:02:14,068 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p03.hdf
+2026-03-28 05:02:14,069 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p03.hdf
+2026-03-28 05:02:14,071 INFO Reading computation messages from HDF: HagerLatWeir.p03.hdf
+2026-03-28 05:02:14,073 INFO Successfully extracted 745 characters from HDF
+2026-03-28 05:02:14,075 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p03.hdf
+2026-03-28 05:02:14,076 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p03.hdf
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2026-03-28 05:02:14,088 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:02:16,293 INFO   Plan 03: OK (10s)
+2026-03-28 05:02:16,295 INFO   Plan 04...
+2026-03-28 05:02:16,298 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 20 - HagerLatWeir
+2026-03-28 05:02:16,313 INFO Using provided plan file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p04
+2026-03-28 05:02:16,317 INFO Successfully updated file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p04
+2026-03-28 05:02:16,397 INFO Set number of cores to 2 for plan: 04
+2026-03-28 05:02:16,403 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:02:16,421 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.prj" "C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p04"
+2026-03-28 05:02:24,054 INFO HEC-RAS execution completed for plan: 04
+2026-03-28 05:02:24,057 INFO Total run time for plan 04: 7.63 seconds
+2026-03-28 05:02:24,133 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p04.hdf
+2026-03-28 05:02:24,135 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p04.hdf
+2026-03-28 05:02:24,139 INFO Reading computation messages from HDF: HagerLatWeir.p04.hdf
+2026-03-28 05:02:24,141 INFO Successfully extracted 557 characters from HDF
+2026-03-28 05:02:24,143 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p04.hdf
+2026-03-28 05:02:24,145 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p04.hdf
+2026-03-28 05:02:24,147 INFO Extracting Plan Information from: HagerLatWeir.p04.hdf
+2026-03-28 05:02:24,149 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:02:24,150 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p04.hdf
+2026-03-28 05:02:24,151 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p04.hdf
+2026-03-28 05:02:24,154 INFO Reading computation messages from HDF: HagerLatWeir.p04.hdf
+2026-03-28 05:02:24,155 INFO Successfully extracted 557 characters from HDF
+2026-03-28 05:02:24,157 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p04.hdf
+2026-03-28 05:02:24,158 INFO Final validated file path: C:\Temp\hecras_run\Example 20 - HagerLatWeir\HagerLatWeir.p04.hdf
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2026-03-28 05:02:24,169 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:02:26,312 INFO   Plan 04: OK (10s)
+2026-03-28 05:02:27,246 INFO OK Applications Guide\Example 20 - HagerLatWeir: 8/8 plans, 9 HDF, 98s
+2026-03-28 05:02:27,248 INFO [54/67] Applications Guide\Example 21 - Overflow Gates
+2026-03-28 05:02:28,960 INFO   Plan 05...
+2026-03-28 05:02:28,964 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 21 - Overflow Gates
+2026-03-28 05:02:28,981 INFO Using provided plan file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p05
+2026-03-28 05:02:28,984 INFO Successfully updated file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p05
+2026-03-28 05:02:29,061 INFO Set number of cores to 2 for plan: 05
+2026-03-28 05:02:29,063 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:02:29,064 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.prj" "C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p05"
+2026-03-28 05:02:48,969 INFO HEC-RAS execution completed for plan: 05
+2026-03-28 05:02:48,971 INFO Total run time for plan 05: 19.90 seconds
+2026-03-28 05:02:49,057 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p05.hdf
+2026-03-28 05:02:49,060 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p05.hdf
+2026-03-28 05:02:49,063 INFO Reading computation messages from HDF: Overflow.p05.hdf
+2026-03-28 05:02:49,065 INFO Successfully extracted 1564 characters from HDF
+2026-03-28 05:02:49,068 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p05.hdf
+2026-03-28 05:02:49,069 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p05.hdf
+2026-03-28 05:02:49,072 INFO Extracting Plan Information from: Overflow.p05.hdf
+2026-03-28 05:02:49,073 INFO Plan Name: Open Air Gates - Complex Network
+2026-03-28 05:02:49,075 INFO Simulation Duration (hours): 96.0
+2026-03-28 05:02:49,082 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p05.hdf
+2026-03-28 05:02:49,084 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p05.hdf
+2026-03-28 05:02:49,095 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:02:49,098 INFO   Plan 05: OK (20s)
+2026-03-28 05:02:49,100 INFO   Plan 01...
+2026-03-28 05:02:49,103 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 21 - Overflow Gates
+2026-03-28 05:02:49,118 INFO Using provided plan file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p01
+2026-03-28 05:02:49,121 INFO Successfully updated file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p01
+2026-03-28 05:02:49,204 INFO Set number of cores to 2 for plan: 01
+2026-03-28 05:02:49,206 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:02:49,208 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.prj" "C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p01"
+2026-03-28 05:03:07,705 INFO HEC-RAS execution completed for plan: 01
+2026-03-28 05:03:07,707 INFO Total run time for plan 01: 18.50 seconds
+2026-03-28 05:03:07,814 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p01.hdf
+2026-03-28 05:03:07,816 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p01.hdf
+2026-03-28 05:03:07,819 INFO Reading computation messages from HDF: Overflow.p01.hdf
+2026-03-28 05:03:07,822 INFO Successfully extracted 1498 characters from HDF
+2026-03-28 05:03:07,825 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p01.hdf
+2026-03-28 05:03:07,826 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p01.hdf
+2026-03-28 05:03:07,829 INFO Extracting Plan Information from: Overflow.p01.hdf
+2026-03-28 05:03:07,831 INFO Plan Name: Open Air Overflow Gates
+2026-03-28 05:03:07,833 INFO Simulation Duration (hours): 96.0
+2026-03-28 05:03:07,840 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p01.hdf
+2026-03-28 05:03:07,842 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p01.hdf
+2026-03-28 05:03:07,854 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:03:09,126 INFO   Plan 01: OK (20s)
+2026-03-28 05:03:09,128 INFO   Plan 04...
+2026-03-28 05:03:09,132 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 21 - Overflow Gates
+2026-03-28 05:03:09,145 INFO Using provided plan file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p04
+2026-03-28 05:03:09,149 INFO Successfully updated file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p04
+2026-03-28 05:03:09,223 INFO Set number of cores to 2 for plan: 04
+2026-03-28 05:03:09,225 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:03:09,227 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.prj" "C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p04"
+2026-03-28 05:03:27,587 INFO HEC-RAS execution completed for plan: 04
+2026-03-28 05:03:27,589 INFO Total run time for plan 04: 18.36 seconds
+2026-03-28 05:03:27,668 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p04.hdf
+2026-03-28 05:03:27,671 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p04.hdf
+2026-03-28 05:03:27,675 INFO Reading computation messages from HDF: Overflow.p04.hdf
+2026-03-28 05:03:27,676 INFO Successfully extracted 1507 characters from HDF
+2026-03-28 05:03:27,679 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p04.hdf
+2026-03-28 05:03:27,680 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p04.hdf
+2026-03-28 05:03:27,683 INFO Extracting Plan Information from: Overflow.p04.hdf
+2026-03-28 05:03:27,685 INFO Plan Name: Open Air- Navigation Dam Control
+2026-03-28 05:03:27,686 INFO Simulation Duration (hours): 96.0
+2026-03-28 05:03:27,698 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p04.hdf
+2026-03-28 05:03:27,700 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p04.hdf
+2026-03-28 05:03:27,714 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:03:29,165 INFO   Plan 04: OK (20s)
+2026-03-28 05:03:29,166 INFO   Plan 02...
+2026-03-28 05:03:29,169 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 21 - Overflow Gates
+2026-03-28 05:03:29,184 INFO Using provided plan file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p02
+2026-03-28 05:03:29,187 INFO Successfully updated file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p02
+2026-03-28 05:03:29,265 INFO Set number of cores to 2 for plan: 02
+2026-03-28 05:03:29,266 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:03:29,267 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.prj" "C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p02"
+2026-03-28 05:03:47,779 INFO HEC-RAS execution completed for plan: 02
+2026-03-28 05:03:47,781 INFO Total run time for plan 02: 18.51 seconds
+2026-03-28 05:03:47,863 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p02.hdf
+2026-03-28 05:03:47,864 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p02.hdf
+2026-03-28 05:03:47,866 INFO Reading computation messages from HDF: Overflow.p02.hdf
+2026-03-28 05:03:47,868 INFO Successfully extracted 1500 characters from HDF
+2026-03-28 05:03:47,870 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p02.hdf
+2026-03-28 05:03:47,872 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p02.hdf
+2026-03-28 05:03:47,874 INFO Extracting Plan Information from: Overflow.p02.hdf
+2026-03-28 05:03:47,877 INFO Plan Name: Closed Top Overflow Gates
+2026-03-28 05:03:47,878 INFO Simulation Duration (hours): 96.0
+2026-03-28 05:03:47,885 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p02.hdf
+2026-03-28 05:03:47,887 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p02.hdf
+2026-03-28 05:03:47,898 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:03:49,214 INFO   Plan 02: OK (20s)
+2026-03-28 05:03:49,215 INFO   Plan 07...
+2026-03-28 05:03:49,219 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 21 - Overflow Gates
+2026-03-28 05:03:49,233 INFO Using provided plan file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p07
+2026-03-28 05:03:49,235 INFO Successfully updated file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p07
+2026-03-28 05:03:49,309 INFO Set number of cores to 2 for plan: 07
+2026-03-28 05:03:49,310 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:03:49,311 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.prj" "C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p07"
+2026-03-28 05:04:07,326 INFO HEC-RAS execution completed for plan: 07
+2026-03-28 05:04:07,328 INFO Total run time for plan 07: 18.01 seconds
+2026-03-28 05:04:07,407 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p07.hdf
+2026-03-28 05:04:07,410 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p07.hdf
+2026-03-28 05:04:07,414 INFO Reading computation messages from HDF: Overflow.p07.hdf
+2026-03-28 05:04:07,415 INFO Successfully extracted 1506 characters from HDF
+2026-03-28 05:04:07,418 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p07.hdf
+2026-03-28 05:04:07,419 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p07.hdf
+2026-03-28 05:04:07,421 INFO Extracting Plan Information from: Overflow.p07.hdf
+2026-03-28 05:04:07,423 INFO Plan Name: Open Air Gates - Kinsvater Eqn.
+2026-03-28 05:04:07,424 INFO Simulation Duration (hours): 96.0
+2026-03-28 05:04:07,432 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p07.hdf
+2026-03-28 05:04:07,434 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p07.hdf
+2026-03-28 05:04:07,447 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:04:09,244 INFO   Plan 07: OK (20s)
+2026-03-28 05:04:09,248 INFO   Plan 06...
+2026-03-28 05:04:09,251 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 21 - Overflow Gates
+2026-03-28 05:04:09,265 INFO Using provided plan file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p06
+2026-03-28 05:04:09,269 INFO Successfully updated file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p06
+2026-03-28 05:04:09,345 INFO Set number of cores to 2 for plan: 06
+2026-03-28 05:04:09,346 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:04:09,348 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.prj" "C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p06"
+2026-03-28 05:04:27,281 INFO HEC-RAS execution completed for plan: 06
+2026-03-28 05:04:27,284 INFO Total run time for plan 06: 17.93 seconds
+2026-03-28 05:04:27,365 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p06.hdf
+2026-03-28 05:04:27,367 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p06.hdf
+2026-03-28 05:04:27,370 INFO Reading computation messages from HDF: Overflow.p06.hdf
+2026-03-28 05:04:27,372 INFO Successfully extracted 1504 characters from HDF
+2026-03-28 05:04:27,375 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p06.hdf
+2026-03-28 05:04:27,376 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p06.hdf
+2026-03-28 05:04:27,377 INFO Extracting Plan Information from: Overflow.p06.hdf
+2026-03-28 05:04:27,379 INFO Plan Name: Open Air Gates - Rehbock Eqn.
+2026-03-28 05:04:27,380 INFO Simulation Duration (hours): 96.0
+2026-03-28 05:04:27,387 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p06.hdf
+2026-03-28 05:04:27,388 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p06.hdf
+2026-03-28 05:04:27,399 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:04:29,292 INFO   Plan 06: OK (20s)
+2026-03-28 05:04:29,294 INFO   Plan 03...
+2026-03-28 05:04:29,296 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 21 - Overflow Gates
+2026-03-28 05:04:29,311 INFO Using provided plan file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p03
+2026-03-28 05:04:29,314 INFO Successfully updated file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p03
+2026-03-28 05:04:29,388 INFO Set number of cores to 2 for plan: 03
+2026-03-28 05:04:29,390 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:04:29,392 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.prj" "C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p03"
+2026-03-28 05:04:47,710 INFO HEC-RAS execution completed for plan: 03
+2026-03-28 05:04:47,713 INFO Total run time for plan 03: 18.32 seconds
+2026-03-28 05:04:47,796 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p03.hdf
+2026-03-28 05:04:47,797 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p03.hdf
+2026-03-28 05:04:47,800 INFO Reading computation messages from HDF: Overflow.p03.hdf
+2026-03-28 05:04:47,802 INFO Successfully extracted 1512 characters from HDF
+2026-03-28 05:04:47,804 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p03.hdf
+2026-03-28 05:04:47,806 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p03.hdf
+2026-03-28 05:04:47,807 INFO Extracting Plan Information from: Overflow.p03.hdf
+2026-03-28 05:04:47,809 INFO Plan Name: Open Air - Elevation Controlled Gates
+2026-03-28 05:04:47,810 INFO Simulation Duration (hours): 96.0
+2026-03-28 05:04:47,817 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p03.hdf
+2026-03-28 05:04:47,819 INFO Final validated file path: C:\Temp\hecras_run\Example 21 - Overflow Gates\Overflow.p03.hdf
+2026-03-28 05:04:47,831 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:04:49,330 INFO   Plan 03: OK (20s)
+2026-03-28 05:04:50,744 INFO OK Applications Guide\Example 21 - Overflow Gates: 7/7 plans, 7 HDF, 143s
+2026-03-28 05:04:50,747 INFO [55/67] Applications Guide\Example 22 - Groundwater Interflow
+2026-03-28 05:04:52,095 INFO   Plan 01...
+2026-03-28 05:04:52,099 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 22 - Groundwater Interflow
+2026-03-28 05:04:52,108 INFO Using provided plan file path: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\BeaverSALeak.p01
+2026-03-28 05:04:52,111 INFO Successfully updated file: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\BeaverSALeak.p01
+2026-03-28 05:04:52,140 INFO Set number of cores to 2 for plan: 01
+2026-03-28 05:04:52,142 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:04:52,143 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 22 - Groundwater Interflow\BeaverSALeak.prj" "C:\Temp\hecras_run\Example 22 - Groundwater Interflow\BeaverSALeak.p01"
+2026-03-28 05:05:08,418 INFO HEC-RAS execution completed for plan: 01
+2026-03-28 05:05:08,420 INFO Total run time for plan 01: 16.27 seconds
+2026-03-28 05:05:08,453 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\BeaverSALeak.p01.hdf
+2026-03-28 05:05:08,454 INFO Final validated file path: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\BeaverSALeak.p01.hdf
+2026-03-28 05:05:08,457 INFO Reading computation messages from HDF: BeaverSALeak.p01.hdf
+2026-03-28 05:05:08,459 INFO Successfully extracted 1903 characters from HDF
+2026-03-28 05:05:08,461 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\BeaverSALeak.p01.hdf
+2026-03-28 05:05:08,462 INFO Final validated file path: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\BeaverSALeak.p01.hdf
+2026-03-28 05:05:08,465 INFO Extracting Plan Information from: BeaverSALeak.p01.hdf
+2026-03-28 05:05:08,467 INFO Plan Name: With bridge
+2026-03-28 05:05:08,467 INFO Simulation Duration (hours): 62.0
+2026-03-28 05:05:08,475 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\BeaverSALeak.p01.hdf
+2026-03-28 05:05:08,476 INFO Final validated file path: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\BeaverSALeak.p01.hdf
+2026-03-28 05:05:08,485 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:05:12,147 INFO   Plan 01: OK (20s)
+2026-03-28 05:05:12,324 INFO OK Applications Guide\Example 22 - Groundwater Interflow: 1/1 plans, 1 HDF, 22s
+2026-03-28 05:05:12,325 INFO [56/67] Applications Guide\Example 22 - Groundwater Interflow
+2026-03-28 05:05:12,780 INFO   Plan 01...
+2026-03-28 05:05:12,783 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 22 - Groundwater Interflow
+2026-03-28 05:05:12,794 INFO Using provided plan file path: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p01
+2026-03-28 05:05:12,798 INFO Successfully updated file: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p01
+2026-03-28 05:05:12,840 INFO Set number of cores to 2 for plan: 01
+2026-03-28 05:05:12,842 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:05:12,845 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.prj" "C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p01"
+2026-03-28 05:05:24,399 INFO HEC-RAS execution completed for plan: 01
+2026-03-28 05:05:24,402 INFO Total run time for plan 01: 11.55 seconds
+2026-03-28 05:05:24,449 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p01.hdf
+2026-03-28 05:05:24,452 INFO Final validated file path: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p01.hdf
+2026-03-28 05:05:24,455 INFO Reading computation messages from HDF: GroundwaterInterac.p01.hdf
+2026-03-28 05:05:24,457 INFO Successfully extracted 1854 characters from HDF
+2026-03-28 05:05:24,459 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p01.hdf
+2026-03-28 05:05:24,461 INFO Final validated file path: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p01.hdf
+2026-03-28 05:05:24,463 INFO Extracting Plan Information from: GroundwaterInterac.p01.hdf
+2026-03-28 05:05:24,465 INFO Plan Name: Groundwater Interaction Run
+2026-03-28 05:05:24,466 INFO Simulation Duration (hours): 72.0
+2026-03-28 05:05:24,473 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p01.hdf
+2026-03-28 05:05:24,475 INFO Final validated file path: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p01.hdf
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2026-03-28 05:05:24,488 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:05:27,811 INFO   Plan 01: OK (15s)
+2026-03-28 05:05:27,814 INFO   Plan 02...
+2026-03-28 05:05:27,816 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 22 - Groundwater Interflow
+2026-03-28 05:05:27,827 INFO Using provided plan file path: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p02
+2026-03-28 05:05:27,830 INFO Successfully updated file: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p02
+2026-03-28 05:05:27,874 INFO Set number of cores to 2 for plan: 02
+2026-03-28 05:05:27,876 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:05:27,877 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.prj" "C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p02"
+2026-03-28 05:10:05,653 INFO HEC-RAS execution completed for plan: 02
+2026-03-28 05:10:05,654 INFO Total run time for plan 02: 277.77 seconds
+2026-03-28 05:10:05,702 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p02.hdf
+2026-03-28 05:10:05,703 INFO Final validated file path: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p02.hdf
+2026-03-28 05:10:05,706 INFO Reading computation messages from HDF: GroundwaterInterac.p02.hdf
+2026-03-28 05:10:05,708 INFO Successfully extracted 1808 characters from HDF
+2026-03-28 05:10:05,710 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p02.hdf
+2026-03-28 05:10:05,711 INFO Final validated file path: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p02.hdf
+2026-03-28 05:10:05,714 INFO Extracting Plan Information from: GroundwaterInterac.p02.hdf
+2026-03-28 05:10:05,717 INFO Plan Name: Junction Hydraulics On Run
+2026-03-28 05:10:05,718 INFO Simulation Duration (hours): 72.0
+2026-03-28 05:10:05,725 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p02.hdf
+2026-03-28 05:10:05,727 INFO Final validated file path: C:\Temp\hecras_run\Example 22 - Groundwater Interflow\GroundwaterInterac.p02.hdf
+2026-03-28 05:10:05,742 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:10:08,242 INFO   Plan 02: OK (280s)
+2026-03-28 05:10:09,013 INFO OK Applications Guide\Example 22 - Groundwater Interflow: 2/2 plans, 4 HDF, 297s
+2026-03-28 05:10:09,014 INFO [57/67] Applications Guide\Example 23 - Urban Modeling
+2026-03-28 05:10:12,422 INFO   Plan 02...
+2026-03-28 05:10:12,425 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 23 - Urban Modeling
+2026-03-28 05:10:12,436 INFO Using provided plan file path: C:\Temp\hecras_run\Example 23 - Urban Modeling\OrleansEx.p02
+2026-03-28 05:10:12,439 INFO Successfully updated file: C:\Temp\hecras_run\Example 23 - Urban Modeling\OrleansEx.p02
+2026-03-28 05:10:12,478 INFO Set number of cores to 2 for plan: 02
+2026-03-28 05:10:12,480 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:10:12,481 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 23 - Urban Modeling\OrleansEx.prj" "C:\Temp\hecras_run\Example 23 - Urban Modeling\OrleansEx.p02"
+2026-03-28 05:14:52,956 INFO HEC-RAS execution completed for plan: 02
+2026-03-28 05:14:52,958 INFO Total run time for plan 02: 280.47 seconds
+2026-03-28 05:14:53,004 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 23 - Urban Modeling\OrleansEx.p02.hdf
+2026-03-28 05:14:53,005 INFO Final validated file path: C:\Temp\hecras_run\Example 23 - Urban Modeling\OrleansEx.p02.hdf
+2026-03-28 05:14:53,008 INFO Reading computation messages from HDF: OrleansEx.p02.hdf
+2026-03-28 05:14:53,010 INFO Successfully extracted 2105 characters from HDF
+2026-03-28 05:14:53,013 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 23 - Urban Modeling\OrleansEx.p02.hdf
+2026-03-28 05:14:53,014 INFO Final validated file path: C:\Temp\hecras_run\Example 23 - Urban Modeling\OrleansEx.p02.hdf
+2026-03-28 05:14:53,017 INFO Extracting Plan Information from: OrleansEx.p02.hdf
+2026-03-28 05:14:53,019 INFO Plan Name: Katrina Existing Conditions
+2026-03-28 05:14:53,020 INFO Simulation Duration (hours): 126.0
+2026-03-28 05:14:53,028 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 23 - Urban Modeling\OrleansEx.p02.hdf
+2026-03-28 05:14:53,030 INFO Final validated file path: C:\Temp\hecras_run\Example 23 - Urban Modeling\OrleansEx.p02.hdf
+2026-03-28 05:14:53,039 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:14:53,042 INFO   Plan 02: OK (281s)
+2026-03-28 05:14:54,357 INFO OK Applications Guide\Example 23 - Urban Modeling: 1/1 plans, 1 HDF, 285s
+2026-03-28 05:14:54,358 INFO [58/67] Applications Guide\Example 24 - Mannings-n-Calibration
+2026-03-28 05:15:01,603 INFO   Plan 01...
+2026-03-28 05:15:01,606 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration
+2026-03-28 05:15:01,620 INFO Using provided plan file path: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p01
+2026-03-28 05:15:01,623 INFO Successfully updated file: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p01
+2026-03-28 05:15:01,727 INFO Set number of cores to 2 for plan: 01
+2026-03-28 05:15:01,730 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:15:01,731 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.prj" "C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p01"
+2026-03-28 05:20:34,654 ERROR Error running plan: 01
+2026-03-28 05:20:34,656 ERROR Error message:  
+    -----DSS---ZOPEN:  Existing File Opened,  File: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\LMRFC.dss
+                       Unit:    3;  DSS Versions - Software: 6-YO, File: 6-ND,  Library 7-IQ
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01SEP2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01OCT2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01NOV2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01DEC2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01JAN2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01FEB2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01MAR2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01SEP2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01OCT2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01NOV2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01DEC2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01JAN2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01FEB2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01MAR2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01SEP2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01OCT2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01NOV2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01DEC2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01JAN2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01FEB2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01MAR2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01SEP2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01OCT2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01NOV2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01DEC2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01JAN2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01FEB2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01MAR2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01SEP2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01OCT2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01NOV2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01DEC2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01JAN2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01FEB2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01MAR2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01SEP2004/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01OCT2004/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01NOV2004/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01DEC2004/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01JAN2005/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01FEB2005/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01MAR2005/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01MAR2005/6HOUR/OBS/
+    -----DSS---zclose6 Unit:    3,   File: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\LMRFC.dss
+               Pointer Utilization:  0.44
+               Number of Records:   4696
+               File Size:  10167.2  Kbytes
+               Percent Inactive:  42.8
+               Number of Reads:     2789
+
+2026-03-28 05:20:34,658 INFO Total run time for plan 01: 332.92 seconds
+2026-03-28 05:20:34,813 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:20:36,580 WARNING   Plan 01: FAIL (331s) - STALLED: HDF not created after 300.0s
+2026-03-28 05:20:36,582 INFO   Plan 02...
+2026-03-28 05:20:36,585 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration
+2026-03-28 05:20:36,608 INFO Using provided plan file path: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p02
+2026-03-28 05:20:36,612 INFO Successfully updated file: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p02
+2026-03-28 05:20:36,727 INFO Set number of cores to 2 for plan: 02
+2026-03-28 05:20:36,729 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:20:36,731 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.prj" "C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p02"
+2026-03-28 05:22:48,022 INFO HEC-RAS execution completed for plan: 02
+2026-03-28 05:22:48,024 INFO Total run time for plan 02: 131.29 seconds
+2026-03-28 05:22:48,135 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p02.hdf
+2026-03-28 05:22:48,137 INFO Final validated file path: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p02.hdf
+2026-03-28 05:22:48,140 INFO Reading computation messages from HDF: Manning'snCalibra.p02.hdf
+2026-03-28 05:22:48,142 INFO Successfully extracted 1641 characters from HDF
+2026-03-28 05:22:48,145 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p02.hdf
+2026-03-28 05:22:48,146 INFO Final validated file path: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p02.hdf
+2026-03-28 05:22:48,148 INFO Extracting Plan Information from: Manning'snCalibra.p02.hdf
+2026-03-28 05:22:48,150 INFO Plan Name: No Calibration Run
+2026-03-28 05:22:48,151 INFO Simulation Duration (hours): 3864.0
+2026-03-28 05:22:48,158 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p02.hdf
+2026-03-28 05:22:48,159 INFO Final validated file path: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p02.hdf
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2026-03-28 05:22:48,173 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:22:51,794 INFO   Plan 02: OK (135s)
+2026-03-28 05:22:51,796 INFO   Plan 03...
+2026-03-28 05:22:51,799 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration
+2026-03-28 05:22:51,813 INFO Using provided plan file path: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p03
+2026-03-28 05:22:51,816 INFO Successfully updated file: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p03
+2026-03-28 05:22:51,927 INFO Set number of cores to 2 for plan: 03
+2026-03-28 05:22:51,929 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:22:51,930 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.prj" "C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p03"
+2026-03-28 05:28:23,720 ERROR Error running plan: 03
+2026-03-28 05:28:23,723 ERROR Error message:  
+    -----DSS---ZOPEN:  Existing File Opened,  File: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\LMRFC.dss
+                       Unit:    3;  DSS Versions - Software: 6-YO, File: 6-ND,  Library 7-IQ
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01SEP2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01OCT2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01NOV2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01DEC2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01JAN2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01FEB2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01MAR2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01SEP2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01OCT2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01NOV2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01DEC2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01JAN2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01FEB2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01MAR2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01SEP2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01OCT2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01NOV2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01DEC2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01JAN2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01FEB2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01MAR2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01SEP2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01OCT2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01NOV2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01DEC2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01JAN2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01FEB2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01MAR2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01SEP2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01OCT2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01NOV2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01DEC2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01JAN2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01FEB2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01MAR2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01SEP2004/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01OCT2004/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01NOV2004/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01DEC2004/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01JAN2005/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01FEB2005/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01MAR2005/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01MAR2005/6HOUR/OBS/
+    -----DSS---zclose6 Unit:    3,   File: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\LMRFC.dss
+               Pointer Utilization:  0.44
+               Number of Records:   4696
+               File Size:  10167.2  Kbytes
+               Percent Inactive:  42.8
+               Number of Reads:     2789
+
+2026-03-28 05:28:23,725 INFO Total run time for plan 03: 331.79 seconds
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2026-03-28 05:28:23,848 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:28:26,693 WARNING   Plan 03: FAIL (331s) - STALLED: HDF not created after 300.0s
+2026-03-28 05:28:26,695 INFO   Plan 04...
+2026-03-28 05:28:26,698 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration
+2026-03-28 05:28:26,711 INFO Using provided plan file path: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p04
+2026-03-28 05:28:26,715 INFO Successfully updated file: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p04
+2026-03-28 05:28:26,818 INFO Set number of cores to 2 for plan: 04
+2026-03-28 05:28:26,820 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:28:26,821 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.prj" "C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p04"
+2026-03-28 05:33:58,522 ERROR Error running plan: 04
+2026-03-28 05:33:58,525 ERROR Error message:  
+    -----DSS---ZOPEN:  Existing File Opened,  File: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\LMRFC.dss
+                       Unit:    3;  DSS Versions - Software: 6-YO, File: 6-ND,  Library 7-IQ
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01SEP2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01OCT2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01NOV2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01DEC2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01JAN2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01FEB2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /MURI2/MURI2/FLOW/01MAR2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01SEP2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01OCT2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01NOV2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01DEC2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01JAN2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01FEB2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CPGM7/CPGM7/FLOW/01MAR2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01SEP2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01OCT2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01NOV2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01DEC2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01JAN2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01FEB2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /WKLK2/WKLK2/FLOW/01MAR2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01SEP2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01OCT2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01NOV2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01DEC2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01JAN2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01FEB2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /NMDM7/NMDM7/FLOW/01MAR2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01SEP2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01OCT2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01NOV2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01DEC2004/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01JAN2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01FEB2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    2:  /CIRI2/CIRI2/FLOW/01MAR2005/6HOUR/SQIN/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /THBI2/THBI2/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /CIRI2/CIRI2/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /HKMK2/HKMK2/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /TPTT1/TPTT1/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    7:  /CHSI2/CHSI2/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    5:  /PCLM7/PCLM7/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01SEP2004/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01OCT2004/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01NOV2004/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01DEC2004/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01JAN2005/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01FEB2005/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    8:  /GCTI2/GCTI2/ELEV/01MAR2005/6HOUR/PELV/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    3:  /MTRI2/MTRI2/STAGE/01MAR2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01SEP2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01OCT2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01NOV2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01DEC2004/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01JAN2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01FEB2005/6HOUR/OBS/
+ -----DSS---ZREAD Unit    3; Vers.    6:  /PAHK2/PAHK2/STAGE/01MAR2005/6HOUR/OBS/
+    -----DSS---zclose6 Unit:    3,   File: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\LMRFC.dss
+               Pointer Utilization:  0.44
+               Number of Records:   4696
+               File Size:  10167.2  Kbytes
+               Percent Inactive:  42.8
+               Number of Reads:     2789
+
+2026-03-28 05:33:58,527 INFO Total run time for plan 04: 331.70 seconds
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2026-03-28 05:33:58,653 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:34:01,590 WARNING   Plan 04: FAIL (330s) - STALLED: HDF not created after 300.0s
+2026-03-28 05:34:01,592 INFO   Plan 05...
+2026-03-28 05:34:01,594 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration
+2026-03-28 05:34:01,608 INFO Using provided plan file path: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p05
+2026-03-28 05:34:01,611 INFO Successfully updated file: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p05
+2026-03-28 05:34:01,726 INFO Set number of cores to 2 for plan: 05
+2026-03-28 05:34:01,727 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:34:01,728 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.prj" "C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p05"
+2026-03-28 05:36:15,384 INFO HEC-RAS execution completed for plan: 05
+2026-03-28 05:36:15,386 INFO Total run time for plan 05: 133.66 seconds
+2026-03-28 05:36:15,496 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p05.hdf
+2026-03-28 05:36:15,497 INFO Final validated file path: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p05.hdf
+2026-03-28 05:36:15,500 INFO Reading computation messages from HDF: Manning'snCalibra.p05.hdf
+2026-03-28 05:36:15,502 INFO Successfully extracted 1658 characters from HDF
+2026-03-28 05:36:15,505 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p05.hdf
+2026-03-28 05:36:15,506 INFO Final validated file path: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p05.hdf
+2026-03-28 05:36:15,508 INFO Extracting Plan Information from: Manning'snCalibra.p05.hdf
+2026-03-28 05:36:15,510 INFO Plan Name: Automatic Calibration - Final Model
+2026-03-28 05:36:15,511 INFO Simulation Duration (hours): 3864.0
+2026-03-28 05:36:15,518 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p05.hdf
+2026-03-28 05:36:15,519 INFO Final validated file path: C:\Temp\hecras_run\Example 24 - Mannings-n-Calibration\Manning'snCalibra.p05.hdf
+2026-03-28 05:36:15,531 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:36:16,820 INFO   Plan 05: OK (135s)
+2026-03-28 05:36:32,693 INFO PARTIAL Applications Guide\Example 24 - Mannings-n-Calibration: 2/5 plans, 5 HDF, 1298s
+2026-03-28 05:36:32,696 INFO [59/67] Applications Guide\Example 3 - Single Culvert
+2026-03-28 05:36:33,038 INFO   Plan 01...
+2026-03-28 05:36:33,040 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 3 - Single Culvert
+2026-03-28 05:36:33,051 INFO Using provided plan file path: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p01
+2026-03-28 05:36:33,053 INFO Successfully updated file: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p01
+2026-03-28 05:36:33,094 INFO Set number of cores to 2 for plan: 01
+2026-03-28 05:36:33,096 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:36:33,097 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.prj" "C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p01"
+2026-03-28 05:36:41,447 INFO HEC-RAS execution completed for plan: 01
+2026-03-28 05:36:41,448 INFO Total run time for plan 01: 8.35 seconds
+2026-03-28 05:36:41,489 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p01.hdf
+2026-03-28 05:36:41,491 INFO Final validated file path: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p01.hdf
+2026-03-28 05:36:41,493 INFO Reading computation messages from HDF: TWINPIPE.p01.hdf
+2026-03-28 05:36:41,496 INFO Successfully extracted 717 characters from HDF
+2026-03-28 05:36:41,498 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p01.hdf
+2026-03-28 05:36:41,500 INFO Final validated file path: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p01.hdf
+2026-03-28 05:36:41,501 INFO Extracting Plan Information from: TWINPIPE.p01.hdf
+2026-03-28 05:36:41,503 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:36:41,505 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p01.hdf
+2026-03-28 05:36:41,506 INFO Final validated file path: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p01.hdf
+2026-03-28 05:36:41,508 INFO Reading computation messages from HDF: TWINPIPE.p01.hdf
+2026-03-28 05:36:41,510 INFO Successfully extracted 717 characters from HDF
+2026-03-28 05:36:41,512 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p01.hdf
+2026-03-28 05:36:41,513 INFO Final validated file path: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p01.hdf
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2026-03-28 05:36:41,523 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:36:43,063 INFO   Plan 01: OK (10s)
+2026-03-28 05:36:43,066 INFO   Plan 02...
+2026-03-28 05:36:43,069 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 3 - Single Culvert
+2026-03-28 05:36:43,080 INFO Using provided plan file path: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p02
+2026-03-28 05:36:43,083 INFO Successfully updated file: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p02
+2026-03-28 05:36:43,120 INFO Set number of cores to 2 for plan: 02
+2026-03-28 05:36:43,122 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:36:43,124 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.prj" "C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p02"
+2026-03-28 05:36:50,458 INFO HEC-RAS execution completed for plan: 02
+2026-03-28 05:36:50,460 INFO Total run time for plan 02: 7.33 seconds
+2026-03-28 05:36:50,500 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p02.hdf
+2026-03-28 05:36:50,503 INFO Final validated file path: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p02.hdf
+2026-03-28 05:36:50,506 INFO Reading computation messages from HDF: TWINPIPE.p02.hdf
+2026-03-28 05:36:50,509 INFO Successfully extracted 729 characters from HDF
+2026-03-28 05:36:50,511 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p02.hdf
+2026-03-28 05:36:50,512 INFO Final validated file path: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p02.hdf
+2026-03-28 05:36:50,514 INFO Extracting Plan Information from: TWINPIPE.p02.hdf
+2026-03-28 05:36:50,516 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:36:50,517 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p02.hdf
+2026-03-28 05:36:50,518 INFO Final validated file path: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p02.hdf
+2026-03-28 05:36:50,521 INFO Reading computation messages from HDF: TWINPIPE.p02.hdf
+2026-03-28 05:36:50,522 INFO Successfully extracted 729 characters from HDF
+2026-03-28 05:36:50,524 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p02.hdf
+2026-03-28 05:36:50,526 INFO Final validated file path: C:\Temp\hecras_run\Example 3 - Single Culvert\TWINPIPE.p02.hdf
+2026-03-28 05:36:50,533 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:36:53,090 INFO   Plan 02: OK (10s)
+2026-03-28 05:36:53,271 INFO OK Applications Guide\Example 3 - Single Culvert: 2/2 plans, 4 HDF, 21s
+2026-03-28 05:36:53,272 INFO [60/67] Applications Guide\Example 4 - Multiple Culverts
+2026-03-28 05:36:53,385 INFO   Plan 01...
+2026-03-28 05:36:53,388 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 4 - Multiple Culverts
+2026-03-28 05:36:53,399 INFO Using provided plan file path: C:\Temp\hecras_run\Example 4 - Multiple Culverts\MULTCULV.p01
+2026-03-28 05:36:53,402 INFO Successfully updated file: C:\Temp\hecras_run\Example 4 - Multiple Culverts\MULTCULV.p01
+2026-03-28 05:36:53,429 INFO Set number of cores to 2 for plan: 01
+2026-03-28 05:36:53,431 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:36:53,433 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 4 - Multiple Culverts\MULTCULV.prj" "C:\Temp\hecras_run\Example 4 - Multiple Culverts\MULTCULV.p01"
+2026-03-28 05:37:00,790 INFO HEC-RAS execution completed for plan: 01
+2026-03-28 05:37:00,792 INFO Total run time for plan 01: 7.36 seconds
+2026-03-28 05:37:00,820 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 4 - Multiple Culverts\MULTCULV.p01.hdf
+2026-03-28 05:37:00,823 INFO Final validated file path: C:\Temp\hecras_run\Example 4 - Multiple Culverts\MULTCULV.p01.hdf
+2026-03-28 05:37:00,826 INFO Reading computation messages from HDF: MULTCULV.p01.hdf
+2026-03-28 05:37:00,828 INFO Successfully extracted 726 characters from HDF
+2026-03-28 05:37:00,830 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 4 - Multiple Culverts\MULTCULV.p01.hdf
+2026-03-28 05:37:00,831 INFO Final validated file path: C:\Temp\hecras_run\Example 4 - Multiple Culverts\MULTCULV.p01.hdf
+2026-03-28 05:37:00,833 INFO Extracting Plan Information from: MULTCULV.p01.hdf
+2026-03-28 05:37:00,835 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:37:00,837 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 4 - Multiple Culverts\MULTCULV.p01.hdf
+2026-03-28 05:37:00,838 INFO Final validated file path: C:\Temp\hecras_run\Example 4 - Multiple Culverts\MULTCULV.p01.hdf
+2026-03-28 05:37:00,840 INFO Reading computation messages from HDF: MULTCULV.p01.hdf
+2026-03-28 05:37:00,842 INFO Successfully extracted 726 characters from HDF
+2026-03-28 05:37:00,843 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 4 - Multiple Culverts\MULTCULV.p01.hdf
+2026-03-28 05:37:00,844 INFO Final validated file path: C:\Temp\hecras_run\Example 4 - Multiple Culverts\MULTCULV.p01.hdf
+2026-03-28 05:37:00,850 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:37:03,397 INFO   Plan 01: OK (10s)
+2026-03-28 05:37:03,503 INFO OK Applications Guide\Example 4 - Multiple Culverts: 1/1 plans, 2 HDF, 10s
+2026-03-28 05:37:03,529 INFO Report saved: \\file.hydrosis.heiyu.space\rainfields-automount\research\HydroClaude\reports\hecras_batch_run_all.json
+2026-03-28 05:37:03,530 INFO Summary: 7 OK / 1 PARTIAL / 0 FAIL / 0 SKIP
+2026-03-28 05:37:03,531 INFO [61/67] Applications Guide\Example 5 - Multiple Openings
+2026-03-28 05:37:03,752 INFO   Plan 02...
+2026-03-28 05:37:03,755 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 5 - Multiple Openings
+2026-03-28 05:37:03,768 INFO Using provided plan file path: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p02
+2026-03-28 05:37:03,771 INFO Successfully updated file: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p02
+2026-03-28 05:37:03,811 INFO Set number of cores to 2 for plan: 02
+2026-03-28 05:37:03,813 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:37:03,815 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.prj" "C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p02"
+2026-03-28 05:37:12,325 INFO HEC-RAS execution completed for plan: 02
+2026-03-28 05:37:12,328 INFO Total run time for plan 02: 8.51 seconds
+2026-03-28 05:37:12,371 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p02.hdf
+2026-03-28 05:37:12,374 INFO Final validated file path: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p02.hdf
+2026-03-28 05:37:12,377 INFO Reading computation messages from HDF: MULTOPEN.p02.hdf
+2026-03-28 05:37:12,379 INFO Successfully extracted 721 characters from HDF
+2026-03-28 05:37:12,381 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p02.hdf
+2026-03-28 05:37:12,382 INFO Final validated file path: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p02.hdf
+2026-03-28 05:37:12,384 INFO Extracting Plan Information from: MULTOPEN.p02.hdf
+2026-03-28 05:37:12,385 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:37:12,387 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p02.hdf
+2026-03-28 05:37:12,388 INFO Final validated file path: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p02.hdf
+2026-03-28 05:37:12,390 INFO Reading computation messages from HDF: MULTOPEN.p02.hdf
+2026-03-28 05:37:12,392 INFO Successfully extracted 721 characters from HDF
+2026-03-28 05:37:12,393 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p02.hdf
+2026-03-28 05:37:12,395 INFO Final validated file path: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p02.hdf
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2026-03-28 05:37:12,404 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:37:13,777 INFO   Plan 02: OK (10s)
+2026-03-28 05:37:13,779 INFO   Plan 01...
+2026-03-28 05:37:13,782 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 5 - Multiple Openings
+2026-03-28 05:37:13,794 INFO Using provided plan file path: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p01
+2026-03-28 05:37:13,795 INFO Successfully updated file: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p01
+2026-03-28 05:37:13,835 INFO Set number of cores to 2 for plan: 01
+2026-03-28 05:37:13,837 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:37:13,838 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.prj" "C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p01"
+2026-03-28 05:37:21,878 INFO HEC-RAS execution completed for plan: 01
+2026-03-28 05:37:21,879 INFO Total run time for plan 01: 8.04 seconds
+2026-03-28 05:37:21,919 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p01.hdf
+2026-03-28 05:37:21,922 INFO Final validated file path: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p01.hdf
+2026-03-28 05:37:21,924 INFO Reading computation messages from HDF: MULTOPEN.p01.hdf
+2026-03-28 05:37:21,926 INFO Successfully extracted 711 characters from HDF
+2026-03-28 05:37:21,929 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p01.hdf
+2026-03-28 05:37:21,930 INFO Final validated file path: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p01.hdf
+2026-03-28 05:37:21,932 INFO Extracting Plan Information from: MULTOPEN.p01.hdf
+2026-03-28 05:37:21,934 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:37:21,935 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p01.hdf
+2026-03-28 05:37:21,936 INFO Final validated file path: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p01.hdf
+2026-03-28 05:37:21,939 INFO Reading computation messages from HDF: MULTOPEN.p01.hdf
+2026-03-28 05:37:21,941 INFO Successfully extracted 711 characters from HDF
+2026-03-28 05:37:21,942 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p01.hdf
+2026-03-28 05:37:21,943 INFO Final validated file path: C:\Temp\hecras_run\Example 5 - Multiple Openings\MULTOPEN.p01.hdf
+2026-03-28 05:37:21,951 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:37:23,803 INFO   Plan 01: OK (10s)
+2026-03-28 05:37:23,973 INFO OK Applications Guide\Example 5 - Multiple Openings: 2/2 plans, 4 HDF, 20s
+2026-03-28 05:37:23,974 INFO [62/67] Applications Guide\Example 6 - Floodway Determination
+2026-03-28 05:37:24,174 INFO   Plan 01...
+2026-03-28 05:37:24,177 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 6 - Floodway Determination
+2026-03-28 05:37:24,190 INFO Using provided plan file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p01
+2026-03-28 05:37:24,193 INFO Successfully updated file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p01
+2026-03-28 05:37:24,226 INFO Set number of cores to 2 for plan: 01
+2026-03-28 05:37:24,228 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:37:24,229 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.prj" "C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p01"
+2026-03-28 05:37:32,990 INFO HEC-RAS execution completed for plan: 01
+2026-03-28 05:37:32,992 INFO Total run time for plan 01: 8.76 seconds
+2026-03-28 05:37:33,027 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p01.hdf
+2026-03-28 05:37:33,032 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p01.hdf
+2026-03-28 05:37:33,034 INFO Reading computation messages from HDF: FLODENCR.p01.hdf
+2026-03-28 05:37:33,037 INFO Successfully extracted 717 characters from HDF
+2026-03-28 05:37:33,039 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p01.hdf
+2026-03-28 05:37:33,040 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p01.hdf
+2026-03-28 05:37:33,043 INFO Extracting Plan Information from: FLODENCR.p01.hdf
+2026-03-28 05:37:33,045 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:37:33,047 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p01.hdf
+2026-03-28 05:37:33,049 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p01.hdf
+2026-03-28 05:37:33,052 INFO Reading computation messages from HDF: FLODENCR.p01.hdf
+2026-03-28 05:37:33,054 INFO Successfully extracted 717 characters from HDF
+2026-03-28 05:37:33,056 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p01.hdf
+2026-03-28 05:37:33,057 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p01.hdf
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2026-03-28 05:37:33,067 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:37:34,195 INFO   Plan 01: OK (10s)
+2026-03-28 05:37:34,201 INFO   Plan 05...
+2026-03-28 05:37:34,204 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 6 - Floodway Determination
+2026-03-28 05:37:34,218 INFO Using provided plan file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p05
+2026-03-28 05:37:34,220 INFO Successfully updated file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p05
+2026-03-28 05:37:34,254 INFO Set number of cores to 2 for plan: 05
+2026-03-28 05:37:34,255 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:37:34,256 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.prj" "C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p05"
+2026-03-28 05:37:41,719 INFO HEC-RAS execution completed for plan: 05
+2026-03-28 05:37:41,721 INFO Total run time for plan 05: 7.46 seconds
+2026-03-28 05:37:41,755 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p05.hdf
+2026-03-28 05:37:41,758 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p05.hdf
+2026-03-28 05:37:41,761 INFO Reading computation messages from HDF: FLODENCR.p05.hdf
+2026-03-28 05:37:41,762 INFO Successfully extracted 528 characters from HDF
+2026-03-28 05:37:41,765 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p05.hdf
+2026-03-28 05:37:41,766 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p05.hdf
+2026-03-28 05:37:41,768 INFO Extracting Plan Information from: FLODENCR.p05.hdf
+2026-03-28 05:37:41,770 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:37:41,771 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p05.hdf
+2026-03-28 05:37:41,773 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p05.hdf
+2026-03-28 05:37:41,775 INFO Reading computation messages from HDF: FLODENCR.p05.hdf
+2026-03-28 05:37:41,777 INFO Successfully extracted 528 characters from HDF
+2026-03-28 05:37:41,779 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p05.hdf
+2026-03-28 05:37:41,780 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p05.hdf
+2026-03-28 05:37:41,789 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:37:41,792 INFO   Plan 05: OK (8s)
+2026-03-28 05:37:41,793 INFO   Plan 02...
+2026-03-28 05:37:41,796 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 6 - Floodway Determination
+2026-03-28 05:37:41,809 INFO Using provided plan file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p02
+2026-03-28 05:37:41,813 INFO Successfully updated file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p02
+2026-03-28 05:37:41,845 INFO Set number of cores to 2 for plan: 02
+2026-03-28 05:37:41,847 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:37:41,849 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.prj" "C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p02"
+2026-03-28 05:37:48,966 INFO HEC-RAS execution completed for plan: 02
+2026-03-28 05:37:48,969 INFO Total run time for plan 02: 7.12 seconds
+2026-03-28 05:37:49,004 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p02.hdf
+2026-03-28 05:37:49,006 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p02.hdf
+2026-03-28 05:37:49,009 INFO Reading computation messages from HDF: FLODENCR.p02.hdf
+2026-03-28 05:37:49,011 INFO Successfully extracted 538 characters from HDF
+2026-03-28 05:37:49,013 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p02.hdf
+2026-03-28 05:37:49,014 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p02.hdf
+2026-03-28 05:37:49,017 INFO Extracting Plan Information from: FLODENCR.p02.hdf
+2026-03-28 05:37:49,018 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:37:49,020 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p02.hdf
+2026-03-28 05:37:49,021 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p02.hdf
+2026-03-28 05:37:49,023 INFO Reading computation messages from HDF: FLODENCR.p02.hdf
+2026-03-28 05:37:49,025 INFO Successfully extracted 538 characters from HDF
+2026-03-28 05:37:49,026 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p02.hdf
+2026-03-28 05:37:49,028 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p02.hdf
+2026-03-28 05:37:49,037 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:37:49,039 INFO   Plan 02: OK (7s)
+2026-03-28 05:37:49,040 INFO   Plan 04...
+2026-03-28 05:37:49,042 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 6 - Floodway Determination
+2026-03-28 05:37:49,056 INFO Using provided plan file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p04
+2026-03-28 05:37:49,060 INFO Successfully updated file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p04
+2026-03-28 05:37:49,090 INFO Set number of cores to 2 for plan: 04
+2026-03-28 05:37:49,092 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:37:49,094 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.prj" "C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p04"
+2026-03-28 05:37:56,628 INFO HEC-RAS execution completed for plan: 04
+2026-03-28 05:37:56,630 INFO Total run time for plan 04: 7.53 seconds
+2026-03-28 05:37:56,663 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p04.hdf
+2026-03-28 05:37:56,665 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p04.hdf
+2026-03-28 05:37:56,668 INFO Reading computation messages from HDF: FLODENCR.p04.hdf
+2026-03-28 05:37:56,670 INFO Successfully extracted 538 characters from HDF
+2026-03-28 05:37:56,672 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p04.hdf
+2026-03-28 05:37:56,673 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p04.hdf
+2026-03-28 05:37:56,676 INFO Extracting Plan Information from: FLODENCR.p04.hdf
+2026-03-28 05:37:56,677 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:37:56,679 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p04.hdf
+2026-03-28 05:37:56,680 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p04.hdf
+2026-03-28 05:37:56,683 INFO Reading computation messages from HDF: FLODENCR.p04.hdf
+2026-03-28 05:37:56,685 INFO Successfully extracted 538 characters from HDF
+2026-03-28 05:37:56,687 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p04.hdf
+2026-03-28 05:37:56,688 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p04.hdf
+2026-03-28 05:37:56,697 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:37:56,700 INFO   Plan 04: OK (8s)
+2026-03-28 05:37:56,701 INFO   Plan 03...
+2026-03-28 05:37:56,704 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 6 - Floodway Determination
+2026-03-28 05:37:56,718 INFO Using provided plan file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p03
+2026-03-28 05:37:56,720 INFO Successfully updated file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p03
+2026-03-28 05:37:56,752 INFO Set number of cores to 2 for plan: 03
+2026-03-28 05:37:56,753 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:37:56,754 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.prj" "C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p03"
+2026-03-28 05:38:04,418 INFO HEC-RAS execution completed for plan: 03
+2026-03-28 05:38:04,419 INFO Total run time for plan 03: 7.66 seconds
+2026-03-28 05:38:04,452 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p03.hdf
+2026-03-28 05:38:04,453 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p03.hdf
+2026-03-28 05:38:04,456 INFO Reading computation messages from HDF: FLODENCR.p03.hdf
+2026-03-28 05:38:04,458 INFO Successfully extracted 538 characters from HDF
+2026-03-28 05:38:04,459 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p03.hdf
+2026-03-28 05:38:04,460 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p03.hdf
+2026-03-28 05:38:04,463 INFO Extracting Plan Information from: FLODENCR.p03.hdf
+2026-03-28 05:38:04,464 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:38:04,465 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p03.hdf
+2026-03-28 05:38:04,466 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p03.hdf
+2026-03-28 05:38:04,468 INFO Reading computation messages from HDF: FLODENCR.p03.hdf
+2026-03-28 05:38:04,471 INFO Successfully extracted 538 characters from HDF
+2026-03-28 05:38:04,472 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p03.hdf
+2026-03-28 05:38:04,474 INFO Final validated file path: C:\Temp\hecras_run\Example 6 - Floodway Determination\FLODENCR.p03.hdf
+2026-03-28 05:38:04,482 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:38:06,711 INFO   Plan 03: OK (10s)
+2026-03-28 05:38:07,050 INFO OK Applications Guide\Example 6 - Floodway Determination: 5/5 plans, 6 HDF, 43s
+2026-03-28 05:38:07,051 INFO [63/67] Applications Guide\Example 7 - Multiple Plans
+2026-03-28 05:38:07,258 INFO   Plan 01...
+2026-03-28 05:38:07,260 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 7 - Multiple Plans
+2026-03-28 05:38:07,270 INFO Using provided plan file path: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p01
+2026-03-28 05:38:07,272 INFO Successfully updated file: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p01
+2026-03-28 05:38:07,314 INFO Set number of cores to 2 for plan: 01
+2026-03-28 05:38:07,315 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:38:07,317 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.prj" "C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p01"
+2026-03-28 05:38:15,749 INFO HEC-RAS execution completed for plan: 01
+2026-03-28 05:38:15,751 INFO Total run time for plan 01: 8.43 seconds
+2026-03-28 05:38:15,797 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p01.hdf
+2026-03-28 05:38:15,800 INFO Final validated file path: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p01.hdf
+2026-03-28 05:38:15,803 INFO Reading computation messages from HDF: NAPA.p01.hdf
+2026-03-28 05:38:15,806 INFO Successfully extracted 710 characters from HDF
+2026-03-28 05:38:15,808 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p01.hdf
+2026-03-28 05:38:15,809 INFO Final validated file path: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p01.hdf
+2026-03-28 05:38:15,811 INFO Extracting Plan Information from: NAPA.p01.hdf
+2026-03-28 05:38:15,813 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:38:15,815 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p01.hdf
+2026-03-28 05:38:15,816 INFO Final validated file path: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p01.hdf
+2026-03-28 05:38:15,819 INFO Reading computation messages from HDF: NAPA.p01.hdf
+2026-03-28 05:38:15,820 INFO Successfully extracted 710 characters from HDF
+2026-03-28 05:38:15,822 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p01.hdf
+2026-03-28 05:38:15,824 INFO Final validated file path: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p01.hdf
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2026-03-28 05:38:15,834 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:38:17,264 INFO   Plan 01: OK (10s)
+2026-03-28 05:38:17,265 INFO   Plan 02...
+2026-03-28 05:38:17,266 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 7 - Multiple Plans
+2026-03-28 05:38:17,277 INFO Using provided plan file path: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p02
+2026-03-28 05:38:17,279 INFO Successfully updated file: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p02
+2026-03-28 05:38:17,321 INFO Set number of cores to 2 for plan: 02
+2026-03-28 05:38:17,323 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:38:17,324 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.prj" "C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p02"
+2026-03-28 05:38:25,944 INFO HEC-RAS execution completed for plan: 02
+2026-03-28 05:38:25,946 INFO Total run time for plan 02: 8.62 seconds
+2026-03-28 05:38:25,993 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p02.hdf
+2026-03-28 05:38:25,995 INFO Final validated file path: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p02.hdf
+2026-03-28 05:38:25,999 INFO Reading computation messages from HDF: NAPA.p02.hdf
+2026-03-28 05:38:26,000 INFO Successfully extracted 705 characters from HDF
+2026-03-28 05:38:26,003 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p02.hdf
+2026-03-28 05:38:26,004 INFO Final validated file path: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p02.hdf
+2026-03-28 05:38:26,006 INFO Extracting Plan Information from: NAPA.p02.hdf
+2026-03-28 05:38:26,008 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:38:26,010 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p02.hdf
+2026-03-28 05:38:26,011 INFO Final validated file path: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p02.hdf
+2026-03-28 05:38:26,013 INFO Reading computation messages from HDF: NAPA.p02.hdf
+2026-03-28 05:38:26,014 INFO Successfully extracted 705 characters from HDF
+2026-03-28 05:38:26,016 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p02.hdf
+2026-03-28 05:38:26,017 INFO Final validated file path: C:\Temp\hecras_run\Example 7 - Multiple Plans\NAPA.p02.hdf
+2026-03-28 05:38:26,024 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:38:27,296 INFO   Plan 02: OK (10s)
+2026-03-28 05:38:27,458 INFO OK Applications Guide\Example 7 - Multiple Plans: 2/2 plans, 2 HDF, 20s
+2026-03-28 05:38:27,459 INFO [64/67] Applications Guide\Example 8 - Looped Network
+2026-03-28 05:38:27,583 INFO   Plan 01...
+2026-03-28 05:38:27,585 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 8 - Looped Network
+2026-03-28 05:38:27,597 INFO Using provided plan file path: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p01
+2026-03-28 05:38:27,599 INFO Successfully updated file: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p01
+2026-03-28 05:38:27,628 INFO Set number of cores to 2 for plan: 01
+2026-03-28 05:38:27,629 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:38:27,630 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.prj" "C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p01"
+2026-03-28 05:38:36,246 INFO HEC-RAS execution completed for plan: 01
+2026-03-28 05:38:36,247 INFO Total run time for plan 01: 8.62 seconds
+2026-03-28 05:38:36,281 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p01.hdf
+2026-03-28 05:38:36,294 INFO Final validated file path: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p01.hdf
+2026-03-28 05:38:36,298 INFO Reading computation messages from HDF: LOOP.p01.hdf
+2026-03-28 05:38:36,299 INFO Successfully extracted 703 characters from HDF
+2026-03-28 05:38:36,302 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p01.hdf
+2026-03-28 05:38:36,303 INFO Final validated file path: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p01.hdf
+2026-03-28 05:38:36,305 INFO Extracting Plan Information from: LOOP.p01.hdf
+2026-03-28 05:38:36,307 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:38:36,308 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p01.hdf
+2026-03-28 05:38:36,310 INFO Final validated file path: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p01.hdf
+2026-03-28 05:38:36,312 INFO Reading computation messages from HDF: LOOP.p01.hdf
+2026-03-28 05:38:36,314 INFO Successfully extracted 703 characters from HDF
+2026-03-28 05:38:36,316 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p01.hdf
+2026-03-28 05:38:36,317 INFO Final validated file path: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p01.hdf
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2026-03-28 05:38:36,326 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:38:37,609 INFO   Plan 01: OK (10s)
+2026-03-28 05:38:37,611 INFO   Plan 02...
+2026-03-28 05:38:37,613 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 8 - Looped Network
+2026-03-28 05:38:37,626 INFO Using provided plan file path: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p02
+2026-03-28 05:38:37,628 INFO Successfully updated file: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p02
+2026-03-28 05:38:37,651 INFO Set number of cores to 2 for plan: 02
+2026-03-28 05:38:37,653 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:38:37,655 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.prj" "C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p02"
+2026-03-28 05:38:45,640 INFO HEC-RAS execution completed for plan: 02
+2026-03-28 05:38:45,642 INFO Total run time for plan 02: 7.98 seconds
+2026-03-28 05:38:45,679 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p02.hdf
+2026-03-28 05:38:45,681 INFO Final validated file path: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p02.hdf
+2026-03-28 05:38:45,683 INFO Reading computation messages from HDF: LOOP.p02.hdf
+2026-03-28 05:38:45,687 INFO Successfully extracted 543 characters from HDF
+2026-03-28 05:38:45,690 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p02.hdf
+2026-03-28 05:38:45,693 INFO Final validated file path: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p02.hdf
+2026-03-28 05:38:45,696 INFO Extracting Plan Information from: LOOP.p02.hdf
+2026-03-28 05:38:45,698 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:38:45,701 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p02.hdf
+2026-03-28 05:38:45,703 INFO Final validated file path: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p02.hdf
+2026-03-28 05:38:45,708 INFO Reading computation messages from HDF: LOOP.p02.hdf
+2026-03-28 05:38:45,711 INFO Successfully extracted 543 characters from HDF
+2026-03-28 05:38:45,713 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p02.hdf
+2026-03-28 05:38:45,715 INFO Final validated file path: C:\Temp\hecras_run\Example 8 - Looped Network\LOOP.p02.hdf
+2026-03-28 05:38:45,728 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:38:47,632 INFO   Plan 02: OK (10s)
+2026-03-28 05:38:47,807 INFO OK Applications Guide\Example 8 - Looped Network: 2/2 plans, 3 HDF, 20s
+2026-03-28 05:38:47,809 INFO [65/67] Applications Guide\Example 9 - Mixed Flow Analysis
+2026-03-28 05:38:47,969 INFO   Plan 02...
+2026-03-28 05:38:47,971 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis
+2026-03-28 05:38:47,985 INFO Using provided plan file path: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p02
+2026-03-28 05:38:47,989 INFO Successfully updated file: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p02
+2026-03-28 05:38:48,036 INFO Set number of cores to 2 for plan: 02
+2026-03-28 05:38:48,038 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:38:48,040 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.prj" "C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p02"
+2026-03-28 05:38:55,943 INFO HEC-RAS execution completed for plan: 02
+2026-03-28 05:38:55,946 INFO Total run time for plan 02: 7.90 seconds
+2026-03-28 05:38:55,997 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p02.hdf
+2026-03-28 05:38:56,000 INFO Final validated file path: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p02.hdf
+2026-03-28 05:38:56,003 INFO Reading computation messages from HDF: MIXFLOW.p02.hdf
+2026-03-28 05:38:56,005 INFO Successfully extracted 726 characters from HDF
+2026-03-28 05:38:56,007 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p02.hdf
+2026-03-28 05:38:56,009 INFO Final validated file path: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p02.hdf
+2026-03-28 05:38:56,011 INFO Extracting Plan Information from: MIXFLOW.p02.hdf
+2026-03-28 05:38:56,013 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:38:56,014 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p02.hdf
+2026-03-28 05:38:56,015 INFO Final validated file path: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p02.hdf
+2026-03-28 05:38:56,019 INFO Reading computation messages from HDF: MIXFLOW.p02.hdf
+2026-03-28 05:38:56,021 INFO Successfully extracted 726 characters from HDF
+2026-03-28 05:38:56,022 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p02.hdf
+2026-03-28 05:38:56,023 INFO Final validated file path: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p02.hdf
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2026-03-28 05:38:56,033 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:38:57,979 INFO   Plan 02: OK (10s)
+2026-03-28 05:38:57,980 INFO   Plan 01...
+2026-03-28 05:38:57,982 INFO Using ras_object with project folder: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis
+2026-03-28 05:38:57,994 INFO Using provided plan file path: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p01
+2026-03-28 05:38:57,997 INFO Successfully updated file: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p01
+2026-03-28 05:38:58,060 INFO Set number of cores to 2 for plan: 01
+2026-03-28 05:38:58,061 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:38:58,063 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.prj" "C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p01"
+2026-03-28 05:39:06,161 INFO HEC-RAS execution completed for plan: 01
+2026-03-28 05:39:06,163 INFO Total run time for plan 01: 8.10 seconds
+2026-03-28 05:39:06,207 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p01.hdf
+2026-03-28 05:39:06,208 INFO Final validated file path: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p01.hdf
+2026-03-28 05:39:06,212 INFO Reading computation messages from HDF: MIXFLOW.p01.hdf
+2026-03-28 05:39:06,214 INFO Successfully extracted 722 characters from HDF
+2026-03-28 05:39:06,216 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p01.hdf
+2026-03-28 05:39:06,217 INFO Final validated file path: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p01.hdf
+2026-03-28 05:39:06,220 INFO Extracting Plan Information from: MIXFLOW.p01.hdf
+2026-03-28 05:39:06,221 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:39:06,222 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p01.hdf
+2026-03-28 05:39:06,223 INFO Final validated file path: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p01.hdf
+2026-03-28 05:39:06,226 INFO Reading computation messages from HDF: MIXFLOW.p01.hdf
+2026-03-28 05:39:06,228 INFO Successfully extracted 722 characters from HDF
+2026-03-28 05:39:06,230 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p01.hdf
+2026-03-28 05:39:06,231 INFO Final validated file path: C:\Temp\hecras_run\Example 9 - Mixed Flow Analysis\MIXFLOW.p01.hdf
+2026-03-28 05:39:06,240 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:39:08,001 INFO   Plan 01: OK (10s)
+2026-03-28 05:39:08,196 INFO OK Applications Guide\Example 9 - Mixed Flow Analysis: 2/2 plans, 4 HDF, 20s
+2026-03-28 05:39:08,197 INFO [66/67] Pipes (beta)\Davis
+2026-03-28 05:39:08,971 INFO   Plan 02...
+2026-03-28 05:39:08,973 INFO Using ras_object with project folder: C:\Temp\hecras_run\Davis
+2026-03-28 05:39:08,986 INFO Using provided plan file path: C:\Temp\hecras_run\Davis\DavisStormSystem.p02
+2026-03-28 05:39:08,990 INFO Successfully updated file: C:\Temp\hecras_run\Davis\DavisStormSystem.p02
+2026-03-28 05:39:09,021 INFO Set number of cores to 2 for plan: 02
+2026-03-28 05:39:09,022 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:39:09,023 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Davis\DavisStormSystem.prj" "C:\Temp\hecras_run\Davis\DavisStormSystem.p02"
+2026-03-28 05:40:56,111 INFO HEC-RAS execution completed for plan: 02
+2026-03-28 05:40:56,113 INFO Total run time for plan 02: 107.09 seconds
+2026-03-28 05:40:56,146 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Davis\DavisStormSystem.p02.hdf
+2026-03-28 05:40:56,148 INFO Final validated file path: C:\Temp\hecras_run\Davis\DavisStormSystem.p02.hdf
+2026-03-28 05:40:56,152 INFO Reading computation messages from HDF: DavisStormSystem.p02.hdf
+2026-03-28 05:40:56,155 INFO Successfully extracted 1520 characters from HDF
+2026-03-28 05:40:56,158 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Davis\DavisStormSystem.p02.hdf
+2026-03-28 05:40:56,160 INFO Final validated file path: C:\Temp\hecras_run\Davis\DavisStormSystem.p02.hdf
+2026-03-28 05:40:56,162 INFO Extracting Plan Information from: DavisStormSystem.p02.hdf
+2026-03-28 05:40:56,164 INFO Plan Name: Full System ROM with Pump
+2026-03-28 05:40:56,165 INFO Simulation Duration (hours): 36.0
+2026-03-28 05:40:56,174 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Davis\DavisStormSystem.p02.hdf
+2026-03-28 05:40:56,175 INFO Final validated file path: C:\Temp\hecras_run\Davis\DavisStormSystem.p02.hdf
+2026-03-28 05:40:56,185 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:40:59,160 INFO   Plan 02: OK (110s)
+2026-03-28 05:41:00,498 INFO OK Pipes (beta)\Davis: 1/1 plans, 1 HDF, 112s
+2026-03-28 05:41:00,499 INFO [67/67] Water Quality\Nutrient Example
+2026-03-28 05:41:00,856 INFO   Plan 01...
+2026-03-28 05:41:00,860 INFO Using ras_object with project folder: C:\Temp\hecras_run\Nutrient Example
+2026-03-28 05:41:00,874 INFO Using provided plan file path: C:\Temp\hecras_run\Nutrient Example\WaterQualityExamp.p01
+2026-03-28 05:41:00,876 INFO Successfully updated file: C:\Temp\hecras_run\Nutrient Example\WaterQualityExamp.p01
+2026-03-28 05:41:00,899 INFO Set number of cores to 2 for plan: 01
+2026-03-28 05:41:00,900 INFO Running HEC-RAS from the Command Line:
+2026-03-28 05:41:00,901 INFO Running command: "C:\Program Files (x86)\HEC\HEC-RAS\6.6\Ras.exe" -c "C:\Temp\hecras_run\Nutrient Example\WaterQualityExamp.prj" "C:\Temp\hecras_run\Nutrient Example\WaterQualityExamp.p01"
+2026-03-28 05:41:10,390 INFO HEC-RAS execution completed for plan: 01
+2026-03-28 05:41:10,392 INFO Total run time for plan 01: 9.49 seconds
+2026-03-28 05:41:10,417 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Nutrient Example\WaterQualityExamp.p01.hdf
+2026-03-28 05:41:10,420 INFO Final validated file path: C:\Temp\hecras_run\Nutrient Example\WaterQualityExamp.p01.hdf
+2026-03-28 05:41:10,422 INFO Reading computation messages from HDF: WaterQualityExamp.p01.hdf
+2026-03-28 05:41:10,424 INFO Successfully extracted 1905 characters from HDF
+2026-03-28 05:41:10,426 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Nutrient Example\WaterQualityExamp.p01.hdf
+2026-03-28 05:41:10,428 INFO Final validated file path: C:\Temp\hecras_run\Nutrient Example\WaterQualityExamp.p01.hdf
+2026-03-28 05:41:10,430 INFO Extracting Plan Information from: WaterQualityExamp.p01.hdf
+2026-03-28 05:41:10,432 ERROR Error parsing simulation times: time data 'Unknown' does not match format '%d%b%Y %H:%M:%S'
+2026-03-28 05:41:10,434 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Nutrient Example\WaterQualityExamp.p01.hdf
+2026-03-28 05:41:10,435 INFO Final validated file path: C:\Temp\hecras_run\Nutrient Example\WaterQualityExamp.p01.hdf
+2026-03-28 05:41:10,438 INFO Reading computation messages from HDF: WaterQualityExamp.p01.hdf
+2026-03-28 05:41:10,440 INFO Successfully extracted 1905 characters from HDF
+2026-03-28 05:41:10,441 INFO Using existing Path object HDF file: C:\Temp\hecras_run\Nutrient Example\WaterQualityExamp.p01.hdf
+2026-03-28 05:41:10,442 INFO Final validated file path: C:\Temp\hecras_run\Nutrient Example\WaterQualityExamp.p01.hdf
+2026-03-28 05:41:10,450 INFO Updated results_df with 1 plan(s)
+2026-03-28 05:41:10,875 INFO   Plan 01: OK (10s)
+2026-03-28 05:41:10,940 INFO OK Water Quality\Nutrient Example: 1/1 plans, 1 HDF, 10s
+2026-03-28 05:41:11,110 INFO Report saved: \\file.hydrosis.heiyu.space\rainfields-automount\research\HydroClaude\reports\hecras_batch_run_all.json
+2026-03-28 05:41:11,111 INFO Summary: 14 OK / 1 PARTIAL / 0 FAIL / 0 SKIP
+2026-03-28 05:41:11,141 INFO Report saved: \\file.hydrosis.heiyu.space\rainfields-automount\research\HydroClaude\reports\hecras_batch_run_all.json
+2026-03-28 05:41:11,142 INFO Summary: 14 OK / 1 PARTIAL / 0 FAIL / 0 SKIP
+2026-03-28 05:41:11,144 INFO All done.
