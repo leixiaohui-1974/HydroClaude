@@ -1,0 +1,403 @@
+{
+  "generated_at": "2026-03-27 16:28:44",
+  "hecras_version": "6.6",
+  "hydroclaude_version": "dev",
+  "total_cases": 16,
+  "hecras_success": 16,
+  "hecras_failed": 0,
+  "hc_pass": 16,
+  "hc_near": 0,
+  "hc_fail": 0,
+  "hc_total_profiles": 34,
+  "hc_pass_profiles": 34,
+  "overall_mae_m": 0.0614,
+  "hc_batch_summary": {
+    "pass_n": 45,
+    "total": 45,
+    "near": 0,
+    "fail": 0
+  },
+  "cases": [
+    {
+      "case_name": "Example 1 - Critical Creek",
+      "hecras_run_success": true,
+      "hecras_run_error": null,
+      "hecras_run_time_s": 13.37,
+      "hc_profiles": [
+        {
+          "case_name": "Example 1 - Critical Creek",
+          "profile_name": "100 yr",
+          "mae_m": 0.147,
+          "status": "PASS"
+        }
+      ],
+      "hc_mae_mean": 0.147,
+      "hc_status": "PASS",
+      "hc_error": null
+    },
+    {
+      "case_name": "Example 2 - Beaver Creek",
+      "hecras_run_success": true,
+      "hecras_run_error": null,
+      "hecras_run_time_s": 10.31,
+      "hc_profiles": [
+        {
+          "case_name": "Example 2 - Beaver Creek",
+          "profile_name": "25 yr",
+          "mae_m": 0.021,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 2 - Beaver Creek",
+          "profile_name": "100 yr",
+          "mae_m": 0.038,
+          "status": "PASS"
+        }
+      ],
+      "hc_mae_mean": 0.0295,
+      "hc_status": "PASS",
+      "hc_error": null
+    },
+    {
+      "case_name": "Example 3 - Single Culvert",
+      "hecras_run_success": true,
+      "hecras_run_error": null,
+      "hecras_run_time_s": 8.57,
+      "hc_profiles": [
+        {
+          "case_name": "Example 3 - Single Culvert",
+          "profile_name": "5 yr",
+          "mae_m": 0.106,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 3 - Single Culvert",
+          "profile_name": "10 yr",
+          "mae_m": 0.016,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 3 - Single Culvert",
+          "profile_name": "25 yr",
+          "mae_m": 0.07,
+          "status": "PASS"
+        }
+      ],
+      "hc_mae_mean": 0.064,
+      "hc_status": "PASS",
+      "hc_error": null
+    },
+    {
+      "case_name": "Example 4 - Multiple Culverts",
+      "hecras_run_success": true,
+      "hecras_run_error": null,
+      "hecras_run_time_s": 8.54,
+      "hc_profiles": [
+        {
+          "case_name": "Example 4 - Multiple Culverts",
+          "profile_name": "5 yr",
+          "mae_m": 0.074,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 4 - Multiple Culverts",
+          "profile_name": "10 yr",
+          "mae_m": 0.005,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 4 - Multiple Culverts",
+          "profile_name": "25 yr",
+          "mae_m": 0.01,
+          "status": "PASS"
+        }
+      ],
+      "hc_mae_mean": 0.0297,
+      "hc_status": "PASS",
+      "hc_error": null
+    },
+    {
+      "case_name": "Example 5 - Multiple Openings",
+      "hecras_run_success": true,
+      "hecras_run_error": null,
+      "hecras_run_time_s": 9.2,
+      "hc_profiles": [
+        {
+          "case_name": "Example 5 - Multiple Openings",
+          "profile_name": "25 yr",
+          "mae_m": 0.013,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 5 - Multiple Openings",
+          "profile_name": "100 yr",
+          "mae_m": 0.02,
+          "status": "PASS"
+        }
+      ],
+      "hc_mae_mean": 0.0165,
+      "hc_status": "PASS",
+      "hc_error": null
+    },
+    {
+      "case_name": "Example 6 - Floodway Determination",
+      "hecras_run_success": true,
+      "hecras_run_error": null,
+      "hecras_run_time_s": 8.52,
+      "hc_profiles": [
+        {
+          "case_name": "Example 6 - Floodway Determination",
+          "profile_name": "PF#1",
+          "mae_m": 0.054,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 6 - Floodway Determination",
+          "profile_name": "PF#2",
+          "mae_m": 0.148,
+          "status": "PASS"
+        }
+      ],
+      "hc_mae_mean": 0.101,
+      "hc_status": "PASS",
+      "hc_error": null
+    },
+    {
+      "case_name": "Example 7 - Multiple Plans",
+      "hecras_run_success": true,
+      "hecras_run_error": null,
+      "hecras_run_time_s": 9.44,
+      "hc_profiles": [
+        {
+          "case_name": "Example 7 - Multiple Plans",
+          "profile_name": "100 yr",
+          "mae_m": 0.092,
+          "status": "PASS"
+        }
+      ],
+      "hc_mae_mean": 0.092,
+      "hc_status": "PASS",
+      "hc_error": null
+    },
+    {
+      "case_name": "Example 8 - Looped Network",
+      "hecras_run_success": true,
+      "hecras_run_error": null,
+      "hecras_run_time_s": 8.6,
+      "hc_profiles": [
+        {
+          "case_name": "Example 8 - Looped Network",
+          "profile_name": "10 yr",
+          "mae_m": 0.01,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 8 - Looped Network",
+          "profile_name": "50 yr",
+          "mae_m": 0.013,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 8 - Looped Network",
+          "profile_name": "100 yr",
+          "mae_m": 0.013,
+          "status": "PASS"
+        }
+      ],
+      "hc_mae_mean": 0.012,
+      "hc_status": "PASS",
+      "hc_error": null
+    },
+    {
+      "case_name": "Example 9 - Mixed Flow Analysis",
+      "hecras_run_success": true,
+      "hecras_run_error": null,
+      "hecras_run_time_s": 8.5,
+      "hc_profiles": [
+        {
+          "case_name": "Example 9 - Mixed Flow Analysis",
+          "profile_name": "100 yr",
+          "mae_m": 0.128,
+          "status": "PASS"
+        }
+      ],
+      "hc_mae_mean": 0.128,
+      "hc_status": "PASS",
+      "hc_error": null
+    },
+    {
+      "case_name": "Example 10 - Stream Junction",
+      "hecras_run_success": true,
+      "hecras_run_error": null,
+      "hecras_run_time_s": 8.37,
+      "hc_profiles": [
+        {
+          "case_name": "Example 10 - Stream Junction",
+          "profile_name": "10 yr",
+          "mae_m": 0.064,
+          "status": "PASS"
+        }
+      ],
+      "hc_mae_mean": 0.064,
+      "hc_status": "PASS",
+      "hc_error": null
+    },
+    {
+      "case_name": "Example 11 - Bridge Scour",
+      "hecras_run_success": true,
+      "hecras_run_error": null,
+      "hecras_run_time_s": 8.57,
+      "hc_profiles": [
+        {
+          "case_name": "Example 11 - Bridge Scour",
+          "profile_name": "PF 1",
+          "mae_m": 0.103,
+          "status": "PASS"
+        }
+      ],
+      "hc_mae_mean": 0.103,
+      "hc_status": "PASS",
+      "hc_error": null
+    },
+    {
+      "case_name": "Example 12 - Inline Structure",
+      "hecras_run_success": true,
+      "hecras_run_error": null,
+      "hecras_run_time_s": 8.73,
+      "hc_profiles": [
+        {
+          "case_name": "Example 12 - Inline Structure",
+          "profile_name": "PF#1",
+          "mae_m": 0.097,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 12 - Inline Structure",
+          "profile_name": "PF#2",
+          "mae_m": 0.056,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 12 - Inline Structure",
+          "profile_name": "PF#3",
+          "mae_m": 0.014,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 12 - Inline Structure",
+          "profile_name": "PF#4",
+          "mae_m": 0.028,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 12 - Inline Structure",
+          "profile_name": "PF#5",
+          "mae_m": 0.036,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 12 - Inline Structure",
+          "profile_name": "PF#6",
+          "mae_m": 0.106,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 12 - Inline Structure",
+          "profile_name": "PF#7",
+          "mae_m": 0.055,
+          "status": "PASS"
+        }
+      ],
+      "hc_mae_mean": 0.056,
+      "hc_status": "PASS",
+      "hc_error": null
+    },
+    {
+      "case_name": "Example 13 - Singler Bridge (WSPRO)",
+      "hecras_run_success": true,
+      "hecras_run_error": null,
+      "hecras_run_time_s": 8.98,
+      "hc_profiles": [
+        {
+          "case_name": "Example 13 - Singler Bridge (WSPRO)",
+          "profile_name": "50 yr",
+          "mae_m": 0.016,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 13 - Singler Bridge (WSPRO)",
+          "profile_name": "100 yr",
+          "mae_m": 0.02,
+          "status": "PASS"
+        }
+      ],
+      "hc_mae_mean": 0.018,
+      "hc_status": "PASS",
+      "hc_error": null
+    },
+    {
+      "case_name": "Example 14 - Ice Covered River",
+      "hecras_run_success": true,
+      "hecras_run_error": null,
+      "hecras_run_time_s": 8.93,
+      "hc_profiles": [
+        {
+          "case_name": "Example 14 - Ice Covered River",
+          "profile_name": "PF#1",
+          "mae_m": 0.139,
+          "status": "PASS"
+        }
+      ],
+      "hc_mae_mean": 0.139,
+      "hc_status": "PASS",
+      "hc_error": null
+    },
+    {
+      "case_name": "Example 15 - Split Flow Junction with Lateral Weir",
+      "hecras_run_success": true,
+      "hecras_run_error": null,
+      "hecras_run_time_s": 8.67,
+      "hc_profiles": [
+        {
+          "case_name": "Example 15 - Split Flow Junction with Lateral Weir",
+          "profile_name": "PF#1",
+          "mae_m": 0.031,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 15 - Split Flow Junction with Lateral Weir",
+          "profile_name": "PF 2",
+          "mae_m": 0.062,
+          "status": "PASS"
+        },
+        {
+          "case_name": "Example 15 - Split Flow Junction with Lateral Weir",
+          "profile_name": "PF 3",
+          "mae_m": 0.147,
+          "status": "PASS"
+        }
+      ],
+      "hc_mae_mean": 0.08,
+      "hc_status": "PASS",
+      "hc_error": null
+    },
+    {
+      "case_name": "Example 16 - Channel Modification",
+      "hecras_run_success": true,
+      "hecras_run_error": null,
+      "hecras_run_time_s": 8.63,
+      "hc_profiles": [
+        {
+          "case_name": "Example 16 - Channel Modification",
+          "profile_name": "100 yr",
+          "mae_m": 0.135,
+          "status": "PASS"
+        }
+      ],
+      "hc_mae_mean": 0.135,
+      "hc_status": "PASS",
+      "hc_error": null
+    }
+  ],
+  "total_elapsed_s": 191.1
+}

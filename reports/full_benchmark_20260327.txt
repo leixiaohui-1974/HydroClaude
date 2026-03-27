@@ -1,0 +1,29 @@
+HydroClaude vs HEC-RAS 对标报告
+生成时间: 2026-03-27 16:28:44
+HEC-RAS 版本: 6.6
+HydroClaude 版本: dev
+
+========================================================================
+Case Name                                    HEC-RAS    HC MAE       Status
+------------------------------------------------------------------------
+Example 1 - Critical Creek                   OK         0.147 m      PASS
+Example 2 - Beaver Creek                     OK         0.029 m      PASS
+Example 3 - Single Culvert                   OK         0.064 m      PASS
+Example 4 - Multiple Culverts                OK         0.030 m      PASS
+Example 5 - Multiple Openings                OK         0.017 m      PASS
+Example 6 - Floodway Determination           OK         0.101 m      PASS
+Example 7 - Multiple Plans                   OK         0.092 m      PASS
+Example 8 - Looped Network                   OK         0.012 m      PASS
+Example 9 - Mixed Flow Analysis              OK         0.128 m      PASS
+Example 10 - Stream Junction                 OK         0.064 m      PASS
+Example 11 - Bridge Scour                    OK         0.103 m      PASS
+Example 12 - Inline Structure                OK         0.056 m      PASS
+Example 13 - Singler Bridge (WSPRO)          OK         0.018 m      PASS
+Example 14 - Ice Covered River               OK         0.139 m      PASS
+Example 15 - Split Flow Junction with Latera OK         0.080 m      PASS
+Example 16 - Channel Modification            OK         0.135 m      PASS
+------------------------------------------------------------------------
+PASS: 16/16  NEAR: 0  FAIL: 0
+HEC-RAS OK: 16/16
+Overall MAE: 0.0614 m
+========================================================================

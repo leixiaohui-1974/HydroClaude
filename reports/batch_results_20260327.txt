@@ -1,0 +1,47 @@
+  Chapter 4 Example Data                     10 yr        0.051 PASS
+  Chapter 4 Example Data                     50 yr        0.045 PASS
+  Chapter 4 Example Data                     100 yr       0.040 PASS
+  ConSpan Culvert                            5 yr         0.036 PASS
+  ConSpan Culvert                            10 yr        0.056 PASS
+  ConSpan Culvert                            25 yr        0.050 PASS
+  ConSpan Culvert                            50 yr        0.145 PASS
+  Example 10 - Stream Junction               10 yr        0.064 PASS
+  Example 11 - Bridge Scour                  PF 1         0.103 PASS
+  Example 12 - Inline Structure              PF#1         0.097 PASS
+  Example 12 - Inline Structure              PF#2         0.056 PASS
+  Example 12 - Inline Structure              PF#3         0.014 PASS
+  Example 12 - Inline Structure              PF#4         0.028 PASS
+  Example 12 - Inline Structure              PF#5         0.036 PASS
+  Example 12 - Inline Structure              PF#6         0.106 PASS
+  Example 12 - Inline Structure              PF#7         0.055 PASS
+  Example 13 - Singler Bridge (WSPRO)        50 yr        0.016 PASS
+  Example 13 - Singler Bridge (WSPRO)        100 yr       0.020 PASS
+  Example 14 - Ice Covered River             PF#1         0.139 PASS
+  Example 15 - Split Flow Junction with Lateral Weir PF#1         0.031 PASS
+  Example 15 - Split Flow Junction with Lateral Weir PF 2         0.062 PASS
+  Example 15 - Split Flow Junction with Lateral Weir PF 3         0.147 PASS
+  Example 16 - Channel Modification          100 yr       0.135 PASS
+  Example 1 - Critical Creek                 100 yr       0.147 PASS
+  Example 2 - Beaver Creek                   25 yr        0.021 PASS
+  Example 2 - Beaver Creek                   100 yr       0.038 PASS
+  Example 2 - Beaver Creek                   May '74 flood 0.146 PASS
+  Example 3 - Single Culvert                 5 yr         0.106 PASS
+  Example 3 - Single Culvert                 10 yr        0.016 PASS
+  Example 3 - Single Culvert                 25 yr        0.070 PASS
+  Example 4 - Multiple Culverts              5 yr         0.074 PASS
+  Example 4 - Multiple Culverts              10 yr        0.005 PASS
+  Example 4 - Multiple Culverts              25 yr        0.010 PASS
+  Example 5 - Multiple Openings              25 yr        0.013 PASS
+  Example 5 - Multiple Openings              100 yr       0.020 PASS
+  Example 5 - Multiple Openings              May '74 flood 0.053 PASS
+  Example 6 - Floodway Determination         PF#1         0.054 PASS
+  Example 6 - Floodway Determination         PF#2         0.148 PASS
+  Example 7 - Multiple Plans                 100 yr       0.092 PASS
+  Example 8 - Looped Network                 10 yr        0.010 PASS
+  Example 8 - Looped Network                 50 yr        0.013 PASS
+  Example 8 - Looped Network                 100 yr       0.013 PASS
+  Example 9 - Mixed Flow Analysis            100 yr       0.128 PASS
+  Mixed Flow Regime Channel                  PF 1         0.085 PASS
+  Mixed Flow Regime Channel                  PF 2         0.127 PASS
+
+PASS: 45/45 (100%)  NEAR: 0  FAIL: 0
