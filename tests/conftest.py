@@ -18,6 +18,13 @@ sys.path.insert(0, str(project_root / "web" / "backend"))
 sys.path.insert(0, str(project_root / "solvers"))
 sys.path.insert(0, str(project_root / "utils"))
 
+# 添加关联仓库路径：HydroMind(HydroClaw) 和 pipedream
+_parent = project_root.parent
+for _repo in ['pipedream-hydrology-integration-lab', 'HydroClaw', 'HydroMind']:
+    _p = _parent / _repo
+    if _p.is_dir() and str(_p) not in sys.path:
+        sys.path.insert(0, str(_p))
+
 
 # ==================== 事件循环 Fixture ====================
 
