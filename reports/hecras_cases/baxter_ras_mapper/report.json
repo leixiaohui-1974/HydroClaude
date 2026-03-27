@@ -1,0 +1,64 @@
+{
+  "generated_at": "2026-03-21 09:10:07",
+  "record": {
+    "project_name": "Baxter RAS Mapper",
+    "category": "1D Steady Flow Hydraulics",
+    "status": "computed",
+    "extract_root": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\008\\Baxter RAS Mapper_hydroclaude_suite_1774012103746104500",
+    "project_dir": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\008\\Baxter RAS Mapper_hydroclaude_suite_1774012103746104500\\GIS Data",
+    "project_file": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\008\\Baxter RAS Mapper_hydroclaude_suite_1774012103746104500\\GIS Data\\CA_SPCS_III_NAVD88.prj",
+    "flow_file_count": 0,
+    "geometry_file_count": 0,
+    "declared_current_plan": null,
+    "comparability": {
+      "level": "direct_candidate",
+      "reason": "看起来接近单河道稳态回水问题，可作为 HydroClaude 直接对比候选。"
+    },
+    "plan_hdf_files": [],
+    "new_plan_numbers": [],
+    "actual_plan_number": null,
+    "compute_messages_error": "No plan results HDF could be resolved after compute.",
+    "elapsed_seconds": 651.32,
+    "_source_json": "hecras_example_suite_chunk_00_09.json"
+  },
+  "summary": null,
+  "results_mode": null,
+  "result_extract_error": "[Errno 13] Unable to synchronously open file (unable to open file: name = '.', errno = 13, error message = 'Permission denied', flags = 0, o_flags = 0)",
+  "table_rows": [
+    [
+      "案例名称",
+      "Baxter RAS Mapper"
+    ],
+    [
+      "类别",
+      "1D Steady Flow Hydraulics"
+    ],
+    [
+      "运行状态",
+      "computed"
+    ],
+    [
+      "当前 Plan",
+      "p-"
+    ],
+    [
+      "结果来源",
+      "hecras_example_suite_chunk_00_09.json"
+    ],
+    [
+      "结果 HDF",
+      "-"
+    ]
+  ],
+  "ai_conclusions": [
+    "本页展示的是该案例当前实际求得的水面线、过程线或峰值包络结果。",
+    "对标建议: 看起来接近单河道稳态回水问题，可作为 HydroClaude 直接对比候选。",
+    "全部结果已统一换算为国际单位，图表使用中文字体配置，避免浏览器查看时汉字乱码。"
+  ],
+  "ai_recommendations": [
+    "尚未完成 HydroMind 对比，建议优先运行对比流水线。"
+  ],
+  "comparison_metrics": null,
+  "flow_diagnosis": null,
+  "tuning_history": null
+}

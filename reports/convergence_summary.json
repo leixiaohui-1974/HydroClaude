@@ -1,0 +1,19 @@
+{
+  "project_name": "HydroClaude仿真",
+  "author": "HydroClaude",
+  "timestamp": "2026-03-21T23:29:21.287729",
+  "system_info": {},
+  "results": {
+    "iterations": 25,
+    "final_residual": 1e-08,
+    "converged": true,
+    "residual_history": [
+      0.1,
+      0.001,
+      1e-05,
+      1e-08
+    ]
+  },
+  "figures": [],
+  "tables": []
+}

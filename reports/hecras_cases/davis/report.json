@@ -1,0 +1,285 @@
+{
+  "generated_at": "2026-03-20 22:31:26",
+  "record": {
+    "project_name": "Davis",
+    "category": "Pipes (beta)",
+    "status": "computed",
+    "extract_root": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\067\\Davis_hydroclaude_suite_1774015801198796600",
+    "project_dir": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\067\\Davis_hydroclaude_suite_1774015801198796600",
+    "project_file": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\067\\Davis_hydroclaude_suite_1774015801198796600\\DavisStormSystem.prj",
+    "flow_file_count": 0,
+    "geometry_file_count": 2,
+    "declared_current_plan": "02",
+    "comparability": {
+      "level": "not_direct",
+      "reason": "不属于单河道稳态回水主线问题，当前不作为 HydroClaude 公平直接对标样例。"
+    },
+    "plan_hdf_files": [
+      "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\067\\Davis_hydroclaude_suite_1774015801198796600\\DavisStormSystem.p02.hdf"
+    ],
+    "new_plan_numbers": [
+      "02"
+    ],
+    "actual_plan_number": "02",
+    "compute_messages_preview": [
+      "Message  | Notes generated when writing the computation files:",
+      "Message  | Testing program set the number of cores for 2d flow area: 'area2' from 0 to 0",
+      "Message  | Testing program set the number of cores for 2d flow area: 'DS Channel' from 0 to 0",
+      "Message  |",
+      "Message  | Plan: 'Full System ROM with Pump' (DavisStormSystem.p02)",
+      "Message  | Simulation started at: 20Mar2026 10:10:05 PM",
+      "Message  |",
+      "Message  | PROCESS:RasProcess"
+    ],
+    "compute_message_line_count": 305,
+    "result_hdf_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\067\\Davis_hydroclaude_suite_1774015801198796600\\DavisStormSystem.p02.hdf",
+    "elapsed_seconds": 122.01,
+    "_source_json": "hecras_example_suite_chunk_60_67.json"
+  },
+  "summary": {
+    "project_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\067\\Davis_hydroclaude_suite_1774015801198796600",
+    "project_name": "DavisStormSystem",
+    "prj_file": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\067\\Davis_hydroclaude_suite_1774015801198796600\\DavisStormSystem.prj",
+    "runtime": {
+      "installed": true,
+      "com_available": true,
+      "exe_path": "C:\\Program Files (x86)\\HEC\\HEC-RAS\\6.6\\Ras.exe",
+      "progid": "RAS66.HECRASController",
+      "notes": []
+    },
+    "tables": {
+      "plans": [
+        {
+          "plan_number": "02",
+          "unsteady_number": "01",
+          "geometry_number": "02",
+          "Plan Title": "Full System ROM with Pump",
+          "Program Version": "6.60",
+          "Short Identifier": "Full System ROM with Pump",
+          "Simulation Date": "10JAN2000,1200,11JAN2000,2400",
+          "Computation Interval": "12SEC",
+          "Mapping Interval": "10MIN",
+          "Run HTab": "-1",
+          "Run UNet": "-1",
+          "Run Sediment": "0",
+          "Run PostProcess": "0",
+          "Run WQNet": "0",
+          "UNET Use Existing IB Tables": "-1",
+          "UNET 1D Methodology": "Finite Difference",
+          "UNET D1 Cores": 0,
+          "UNET D2 Cores": 0,
+          "PS Cores": 0,
+          "DSS File": "dss",
+          "Friction Slope Method": "1",
+          "UNET D2 SolverType": "PARDISO (Direct)",
+          "UNET D2 Name": "area2",
+          "HDF_Results_Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\067\\Davis_hydroclaude_suite_1774015801198796600\\DavisStormSystem.p02.hdf",
+          "Geom File": "02",
+          "Geom Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\067\\Davis_hydroclaude_suite_1774015801198796600\\DavisStormSystem.g02",
+          "Flow File": "01",
+          "Flow Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\067\\Davis_hydroclaude_suite_1774015801198796600\\DavisStormSystem.u01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\067\\Davis_hydroclaude_suite_1774015801198796600\\DavisStormSystem.p02",
+          "flow_type": "Unsteady"
+        }
+      ],
+      "geometries": [
+        {
+          "geom_file": "g02",
+          "geom_number": "02",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\067\\Davis_hydroclaude_suite_1774015801198796600\\DavisStormSystem.g02",
+          "hdf_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\067\\Davis_hydroclaude_suite_1774015801198796600\\DavisStormSystem.g02.hdf",
+          "has_1d_xs": false,
+          "has_2d_mesh": true,
+          "num_cross_sections": 0,
+          "num_inline_structures": 0,
+          "num_bridges": 0,
+          "num_culverts": 0,
+          "num_weirs": 0,
+          "num_gates": 0,
+          "num_lateral_structures": 0,
+          "num_sa_2d_connections": 0,
+          "mesh_cell_count": 2716,
+          "mesh_area_names": [
+            "area2",
+            "DS Channel"
+          ],
+          "geom_title": "Davis Full System w/ Pump",
+          "description": null
+        }
+      ],
+      "steady_flows": [],
+      "unsteady_flows": [
+        {
+          "unsteady_number": "01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\067\\Davis_hydroclaude_suite_1774015801198796600\\DavisStormSystem.u01",
+          "Flow Title": "Full System Rain w/ Pump",
+          "Program Version": "6.60",
+          "Use Restart": "0",
+          "Precipitation Mode": "Disable",
+          "Wind Mode": "No Wind Forces",
+          "Met BC=Precipitation|Mode": "Constant",
+          "Met BC=Evapotranspiration|Mode": "None",
+          "Met BC=Precipitation|Expanded View": "-1",
+          "Met BC=Precipitation|Constant Units": "in/hr",
+          "Met BC=Precipitation|Gridded Source": "DSS",
+          "description": ""
+        }
+      ],
+      "boundaries": [
+        {
+          "unsteady_number": "01",
+          "boundary_condition_number": 1,
+          "river_reach_name": "",
+          "river_station": "",
+          "storage_area_name": "",
+          "pump_station_name": "",
+          "bc_type": "Normal Depth",
+          "hydrograph_type": null,
+          "hydrograph_num_values": 0,
+          "Interval": null,
+          "DSS Path": null,
+          "Use DSS": null,
+          "Use Fixed Start Time": null,
+          "Fixed Start Date/Time": null,
+          "Is Critical Boundary": null,
+          "Critical Boundary Flow": null,
+          "hydrograph_values": null,
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\067\\Davis_hydroclaude_suite_1774015801198796600\\DavisStormSystem.u01",
+          "Flow Title": "Full System Rain w/ Pump",
+          "Program Version": "6.60",
+          "Use Restart": "0",
+          "Precipitation Mode": "Disable",
+          "Wind Mode": "No Wind Forces",
+          "Met BC=Precipitation|Mode": "Constant",
+          "Met BC=Evapotranspiration|Mode": "None",
+          "Met BC=Precipitation|Expanded View": "-1",
+          "Met BC=Precipitation|Constant Units": "in/hr",
+          "Met BC=Precipitation|Gridded Source": "DSS",
+          "description": ""
+        },
+        {
+          "unsteady_number": "01",
+          "boundary_condition_number": 2,
+          "river_reach_name": "",
+          "river_station": "",
+          "storage_area_name": "",
+          "pump_station_name": "",
+          "bc_type": "Precipitation Hydrograph",
+          "hydrograph_type": "Precipitation Hydrograph",
+          "hydrograph_num_values": 21,
+          "Interval": "1HOUR",
+          "DSS Path": "",
+          "Use DSS": "False",
+          "Use Fixed Start Time": "False",
+          "Fixed Start Date/Time": ",",
+          "Is Critical Boundary": "False",
+          "Critical Boundary Flow": "",
+          "hydrograph_values": [
+            ".1",
+            ".1",
+            ".1",
+            ".25",
+            ".25",
+            ".25",
+            ".25",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\067\\Davis_hydroclaude_suite_1774015801198796600\\DavisStormSystem.u01",
+          "Flow Title": "Full System Rain w/ Pump",
+          "Program Version": "6.60",
+          "Use Restart": "0",
+          "Precipitation Mode": "Disable",
+          "Wind Mode": "No Wind Forces",
+          "Met BC=Precipitation|Mode": "Constant",
+          "Met BC=Evapotranspiration|Mode": "None",
+          "Met BC=Precipitation|Expanded View": "-1",
+          "Met BC=Precipitation|Constant Units": "in/hr",
+          "Met BC=Precipitation|Gridded Source": "DSS",
+          "description": ""
+        }
+      ]
+    },
+    "counts": {
+      "plans": 1,
+      "geometries": 1,
+      "steady_flows": 0,
+      "unsteady_flows": 1,
+      "boundaries": 2
+    }
+  },
+  "results_mode": null,
+  "result_extract_error": "'Unable to synchronously open object (component not found)'",
+  "table_rows": [
+    [
+      "案例名称",
+      "Davis"
+    ],
+    [
+      "类别",
+      "Pipes (beta)"
+    ],
+    [
+      "运行状态",
+      "computed"
+    ],
+    [
+      "当前 Plan",
+      "p02"
+    ],
+    [
+      "结果来源",
+      "hecras_example_suite_chunk_60_67.json"
+    ],
+    [
+      "结果 HDF",
+      "DavisStormSystem.p02.hdf"
+    ],
+    [
+      "Plan 数",
+      "1"
+    ],
+    [
+      "几何文件数",
+      "1"
+    ],
+    [
+      "边界/流量文件数",
+      "1"
+    ],
+    [
+      "断面数",
+      "0"
+    ],
+    [
+      "桥梁数",
+      "0"
+    ],
+    [
+      "涵洞数",
+      "0"
+    ],
+    [
+      "闸门数",
+      "0"
+    ]
+  ],
+  "ai_conclusions": [
+    "本页展示的是该案例当前实际求得的水面线、过程线或峰值包络结果。",
+    "对标建议: 不属于单河道稳态回水主线问题，当前不作为 HydroClaude 公平直接对标样例。",
+    "该几何以 1D 断面为主，适合作为后续 HydroClaude 明渠基线映射候选。",
+    "全部结果已统一换算为国际单位，图表使用中文字体配置，避免浏览器查看时汉字乱码。"
+  ]
+}

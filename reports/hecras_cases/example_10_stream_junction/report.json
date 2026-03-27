@@ -1,0 +1,239 @@
+{
+  "generated_at": "2026-03-20 22:30:15",
+  "record": {
+    "project_name": "Example 10 - Stream Junction",
+    "category": "Applications Guide",
+    "status": "computed",
+    "extract_root": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500",
+    "project_dir": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500",
+    "project_file": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500\\JUNCTION.prj",
+    "flow_file_count": 1,
+    "geometry_file_count": 2,
+    "declared_current_plan": "02",
+    "comparability": {
+      "level": "not_direct",
+      "reason": "不属于单河道稳态回水主线问题，当前不作为 HydroClaude 公平直接对标样例。"
+    },
+    "plan_hdf_files": [
+      "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500\\JUNCTION.p02.hdf"
+    ],
+    "new_plan_numbers": [
+      "02"
+    ],
+    "actual_plan_number": "02",
+    "compute_messages_preview": [
+      "Message  | Plan: 'Junction - Momentum' (JUNCTION.p02)",
+      "Message  | Simulation started at: 20Mar2026 09:57:54 PM",
+      "Message  |",
+      "Message  | PROCESS:RasProcess",
+      "Message  | Writing Plan GIS Data...",
+      "Progress | 100",
+      "Message  | Completed Writing Plan GIS Data",
+      "Message  | Writing Geometry..."
+    ],
+    "compute_message_line_count": 87,
+    "result_hdf_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500\\JUNCTION.p02.hdf",
+    "elapsed_seconds": 9.62,
+    "_source_json": "hecras_example_suite_chunk_40_49.json"
+  },
+  "summary": {
+    "project_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500",
+    "project_name": "JUNCTION",
+    "prj_file": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500\\JUNCTION.prj",
+    "runtime": {
+      "installed": true,
+      "com_available": true,
+      "exe_path": "C:\\Program Files (x86)\\HEC\\HEC-RAS\\6.6\\Ras.exe",
+      "progid": "RAS66.HECRASController",
+      "notes": []
+    },
+    "tables": {
+      "plans": [
+        {
+          "plan_number": "01",
+          "unsteady_number": null,
+          "geometry_number": "01",
+          "Plan Title": "Junction - Energy",
+          "Short Identifier": "Energy",
+          "UNET D1 Cores": null,
+          "UNET D2 Cores": null,
+          "PS Cores": null,
+          "Friction Slope Method": "1",
+          "HDF_Results_Path": null,
+          "Geom File": "01",
+          "Geom Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500\\JUNCTION.g01",
+          "Flow File": "01",
+          "Flow Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500\\JUNCTION.f01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500\\JUNCTION.p01",
+          "flow_type": "Steady"
+        },
+        {
+          "plan_number": "02",
+          "unsteady_number": null,
+          "geometry_number": "02",
+          "Plan Title": "Junction - Momentum",
+          "Short Identifier": "Momentum",
+          "UNET D1 Cores": null,
+          "UNET D2 Cores": null,
+          "PS Cores": null,
+          "Friction Slope Method": "1",
+          "HDF_Results_Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500\\JUNCTION.p02.hdf",
+          "Geom File": "02",
+          "Geom Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500\\JUNCTION.g02",
+          "Flow File": "01",
+          "Flow Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500\\JUNCTION.f01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500\\JUNCTION.p02",
+          "flow_type": "Steady"
+        }
+      ],
+      "geometries": [
+        {
+          "geom_file": "g01",
+          "geom_number": "01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500\\JUNCTION.g01",
+          "hdf_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500\\JUNCTION.g01.hdf",
+          "has_1d_xs": true,
+          "has_2d_mesh": false,
+          "num_cross_sections": 19,
+          "num_inline_structures": 0,
+          "num_bridges": 0,
+          "num_culverts": 0,
+          "num_weirs": 0,
+          "num_gates": 0,
+          "num_lateral_structures": 0,
+          "num_sa_2d_connections": 0,
+          "mesh_cell_count": 0,
+          "mesh_area_names": [],
+          "geom_title": "Base Geometry - Energy Junction",
+          "description": "Upstream River Station - River Mile 10.212"
+        },
+        {
+          "geom_file": "g02",
+          "geom_number": "02",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500\\JUNCTION.g02",
+          "hdf_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500\\JUNCTION.g02.hdf",
+          "has_1d_xs": true,
+          "has_2d_mesh": false,
+          "num_cross_sections": 19,
+          "num_inline_structures": 0,
+          "num_bridges": 0,
+          "num_culverts": 0,
+          "num_weirs": 0,
+          "num_gates": 0,
+          "num_lateral_structures": 0,
+          "num_sa_2d_connections": 0,
+          "mesh_cell_count": 0,
+          "mesh_area_names": [],
+          "geom_title": "Base Geometry - Momemtum Junction",
+          "description": null
+        }
+      ],
+      "steady_flows": [
+        {
+          "flow_number": "01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\044\\Example 10 - Stream Junction_hydroclaude_suite_1774015069745796500\\JUNCTION.f01",
+          "unsteady_number": null,
+          "Flow Title": "10 Year Profile",
+          "description": ""
+        }
+      ],
+      "unsteady_flows": [],
+      "boundaries": []
+    },
+    "counts": {
+      "plans": 2,
+      "geometries": 2,
+      "steady_flows": 1,
+      "unsteady_flows": 0,
+      "boundaries": 0
+    }
+  },
+  "results_mode": "steady",
+  "result_extract_error": null,
+  "table_rows": [
+    [
+      "案例名称",
+      "Example 10 - Stream Junction"
+    ],
+    [
+      "类别",
+      "Applications Guide"
+    ],
+    [
+      "运行状态",
+      "computed"
+    ],
+    [
+      "当前 Plan",
+      "p02"
+    ],
+    [
+      "结果来源",
+      "hecras_example_suite_chunk_40_49.json"
+    ],
+    [
+      "结果 HDF",
+      "JUNCTION.p02.hdf"
+    ],
+    [
+      "Plan 数",
+      "2"
+    ],
+    [
+      "几何文件数",
+      "2"
+    ],
+    [
+      "边界/流量文件数",
+      "1"
+    ],
+    [
+      "断面数",
+      "19"
+    ],
+    [
+      "桥梁数",
+      "0"
+    ],
+    [
+      "涵洞数",
+      "0"
+    ],
+    [
+      "闸门数",
+      "0"
+    ],
+    [
+      "结果模式",
+      "稳态"
+    ],
+    [
+      "剖面数",
+      "1"
+    ],
+    [
+      "最大水位",
+      "23.216 m"
+    ],
+    [
+      "最小水位",
+      "22.722 m"
+    ],
+    [
+      "代表流量",
+      "116.099 m3/s"
+    ],
+    [
+      "河段数",
+      "3"
+    ]
+  ],
+  "ai_conclusions": [
+    "本页展示的是该案例当前实际求得的水面线、过程线或峰值包络结果。",
+    "对标建议: 不属于单河道稳态回水主线问题，当前不作为 HydroClaude 公平直接对标样例。",
+    "该几何以 1D 断面为主，适合作为后续 HydroClaude 明渠基线映射候选。",
+    "结果曲线已按 3 个 river/reach 河段分组重排，避免多河段案例因断面编号交错而出现假性锯齿。",
+    "报告中的水面线图反映的是 HEC-RAS 多剖面稳态结果，适合人工核查回水线单调性、能量线位置和不同工况间的水位差。",
+    "全部结果已统一换算为国际单位，图表使用中文字体配置，避免浏览器查看时汉字乱码。"
+  ]
+}

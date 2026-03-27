@@ -1,0 +1,354 @@
+{
+  "generated_at": "2026-03-21 13:19:59",
+  "record": {
+    "project_name": "Mixed Flow Regime Channel",
+    "category": "1D Steady Flow Hydraulics",
+    "status": "computed",
+    "extract_root": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\011\\Mixed Flow Regime Channel_hydroclaude_suite_1774009628285807600",
+    "project_dir": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\011\\Mixed Flow Regime Channel_hydroclaude_suite_1774009628285807600",
+    "project_file": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\011\\Mixed Flow Regime Channel_hydroclaude_suite_1774009628285807600\\MIXED.PRJ",
+    "flow_file_count": 1,
+    "geometry_file_count": 2,
+    "declared_current_plan": "01",
+    "comparability": {
+      "level": "not_direct",
+      "reason": "含桥梁/结构物/混合流态/2D 等复杂物理，当前 HydroClaude 不能公平直接对标。"
+    },
+    "plan_hdf_files": [
+      "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\011\\Mixed Flow Regime Channel_hydroclaude_suite_1774009628285807600\\MIXED.p01.hdf"
+    ],
+    "new_plan_numbers": [
+      "01"
+    ],
+    "actual_plan_number": "01",
+    "compute_messages_preview": [
+      "Message  | Plan: 'Mixed Flow Plan ' (MIXED.p01)",
+      "Message  | Simulation started at: 20Mar2026 08:27:13 PM",
+      "Message  |",
+      "Message  | PROCESS:RasProcess",
+      "Message  | Writing Plan GIS Data...",
+      "Progress | 100",
+      "Message  | Completed Writing Plan GIS Data",
+      "Message  | Writing Geometry..."
+    ],
+    "compute_message_line_count": 87,
+    "result_hdf_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\011\\Mixed Flow Regime Channel_hydroclaude_suite_1774009628285807600\\MIXED.p01.hdf",
+    "elapsed_seconds": 12.24,
+    "_source_json": "hecras_example_suite_chunk_10_19.json",
+    "comparison_metrics": {
+      "wse_mae_m": 0.703338,
+      "wse_rmse_m": 0.771008,
+      "wse_p95_m": 1.109246,
+      "wse_max_error_m": 1.109457,
+      "flow_mae_m3s": 14.158577,
+      "flow_rel_error_pct": 100.0011,
+      "depth_mae_m": 0.703338,
+      "depth_rmse_m": 0.771008,
+      "n_points": 19,
+      "pass_wse": false,
+      "pass_flow": false,
+      "overall_pass": false,
+      "case_type": "natural_subcritical",
+      "applied_wse_threshold_m": 0.15,
+      "applied_flow_threshold_pct": 5.0,
+      "comparable": true
+    },
+    "flow_diagnosis": {
+      "regime": "subcritical",
+      "curve_type": "S1",
+      "froude_mean": 0.8703,
+      "froude_max": 1.7603,
+      "froude_min": 0.4054,
+      "subcritical_fraction": 0.737,
+      "avg_slope": 0.002814,
+      "avg_manning_n": 0.0077,
+      "avg_depth_m": 1.6766,
+      "normal_depth_m": 0.8733,
+      "critical_depth_m": 1.3005,
+      "representative_Q_m3s": 28.317,
+      "representative_width_m": 6.1,
+      "has_structures": false,
+      "solver_recommendation": "godunov",
+      "solver_reason": "陡坡超临界曲线（S1型），特征线方向向下游，shooting 法会从错误方向积分而发散，必须使用 Godunov FVM 求解器。",
+      "recommended_params": {
+        "solver_type": "godunov",
+        "manning_n": 0.0077,
+        "slope": 0.002814,
+        "width": 6.1,
+        "Q_upstream": 28.317,
+        "h_downstream": 2.3742,
+        "length": 950.0,
+        "nx": 101,
+        "cfl": 0.5,
+        "order": 2,
+        "riemann_solver": "hll",
+        "n_cells": 200,
+        "cross_section_data": {
+          "type": "multi_station",
+          "n_stations": 19,
+          "stations": [
+            0.17318736,
+            0.16742664000000002,
+            0.16163544000000002,
+            0.15587472,
+            0.150114,
+            0.1443228,
+            0.13856208,
+            0.12701016,
+            0.11545824000000002,
+            0.10390632,
+            0.0923544,
+            0.08080248000000001,
+            0.06928104,
+            0.05590032,
+            0.0461772,
+            0.03462528,
+            0.023091648,
+            0.011545824,
+            0.0
+          ],
+          "bed_elevations": [
+            21.336000000000002,
+            21.031200000000002,
+            20.7264,
+            20.4216,
+            20.1168,
+            19.812,
+            19.799807720947268,
+            19.775423162841797,
+            19.751040930175783,
+            19.726656372070313,
+            19.726656372070313,
+            19.677887255859375,
+            19.65350502319336,
+            19.62912046508789,
+            19.437096139526368,
+            19.242024325561523,
+            19.05,
+            18.854928186035156,
+            18.662903860473634
+          ],
+          "channel_widths": [
+            6.096,
+            6.096,
+            6.096,
+            6.096,
+            6.096,
+            6.096,
+            6.096,
+            6.096,
+            6.096,
+            6.096,
+            6.096,
+            6.096,
+            6.096,
+            6.096,
+            6.096,
+            6.096,
+            6.096,
+            6.096,
+            6.096
+          ],
+          "manning_ns": [
+            0.0077,
+            0.0077,
+            0.0077,
+            0.0077,
+            0.0077,
+            0.0077,
+            0.0077,
+            0.0077,
+            0.0077,
+            0.0077,
+            0.0077,
+            0.0077,
+            0.0077,
+            0.0077,
+            0.0077,
+            0.0077,
+            0.0077,
+            0.0077,
+            0.0077
+          ]
+        }
+      }
+    },
+    "case_classification": {
+      "case_type": "natural_subcritical",
+      "wse_threshold_m": 0.15,
+      "comparable": true
+    },
+    "hydromind_run": {
+      "solver_type": "steady",
+      "status": "needs_review"
+    },
+    "evidence": {
+      "hecras_hdf_verified": true,
+      "hydromind_completed": true,
+      "comparison_completed": true
+    }
+  },
+  "summary": {
+    "project_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\011\\Mixed Flow Regime Channel_hydroclaude_suite_1774009628285807600",
+    "project_name": "MIXED",
+    "prj_file": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\011\\Mixed Flow Regime Channel_hydroclaude_suite_1774009628285807600\\MIXED.PRJ",
+    "runtime": {
+      "installed": true,
+      "com_available": true,
+      "exe_path": "C:\\Program Files (x86)\\HEC\\HEC-RAS\\6.6\\Ras.exe",
+      "progid": "RAS66.HECRASController",
+      "notes": []
+    },
+    "tables": {
+      "plans": [
+        {
+          "plan_number": "01",
+          "unsteady_number": null,
+          "geometry_number": "01",
+          "Plan Title": "Mixed Flow Plan",
+          "Short Identifier": "Mixed",
+          "UNET D1 Cores": null,
+          "UNET D2 Cores": null,
+          "PS Cores": null,
+          "Friction Slope Method": "1",
+          "HDF_Results_Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\011\\Mixed Flow Regime Channel_hydroclaude_suite_1774009628285807600\\MIXED.p01.hdf",
+          "Geom File": "01",
+          "Geom Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\011\\Mixed Flow Regime Channel_hydroclaude_suite_1774009628285807600\\MIXED.g01",
+          "Flow File": "01",
+          "Flow Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\011\\Mixed Flow Regime Channel_hydroclaude_suite_1774009628285807600\\MIXED.f01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\011\\Mixed Flow Regime Channel_hydroclaude_suite_1774009628285807600\\MIXED.p01",
+          "flow_type": "Steady"
+        }
+      ],
+      "geometries": [
+        {
+          "geom_file": "g01",
+          "geom_number": "01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\011\\Mixed Flow Regime Channel_hydroclaude_suite_1774009628285807600\\MIXED.g01",
+          "hdf_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\011\\Mixed Flow Regime Channel_hydroclaude_suite_1774009628285807600\\MIXED.g01.hdf",
+          "has_1d_xs": true,
+          "has_2d_mesh": false,
+          "num_cross_sections": 19,
+          "num_inline_structures": 0,
+          "num_bridges": 0,
+          "num_culverts": 0,
+          "num_weirs": 0,
+          "num_gates": 0,
+          "num_lateral_structures": 0,
+          "num_sa_2d_connections": 0,
+          "mesh_cell_count": 0,
+          "mesh_area_names": [],
+          "geom_title": "Mixed Flow Geometry Data",
+          "description": "Ninetenth Cross Section"
+        }
+      ],
+      "steady_flows": [
+        {
+          "flow_number": "01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\011\\Mixed Flow Regime Channel_hydroclaude_suite_1774009628285807600\\MIXED.f01",
+          "unsteady_number": null,
+          "Flow Title": "Flow data with two profiles",
+          "Program Version": "6.30",
+          "description": ""
+        }
+      ],
+      "unsteady_flows": [],
+      "boundaries": []
+    },
+    "counts": {
+      "plans": 1,
+      "geometries": 1,
+      "steady_flows": 1,
+      "unsteady_flows": 0,
+      "boundaries": 0
+    }
+  },
+  "results_mode": "steady",
+  "result_extract_error": null,
+  "table_rows": [
+    [
+      "案例名称",
+      "Mixed Flow Regime Channel"
+    ],
+    [
+      "类别",
+      "1D Steady Flow Hydraulics"
+    ],
+    [
+      "运行状态",
+      "computed"
+    ],
+    [
+      "当前 Plan",
+      "p01"
+    ],
+    [
+      "结果来源",
+      "hecras_example_suite_chunk_10_19.json"
+    ],
+    [
+      "结果 HDF",
+      "MIXED.p01.hdf"
+    ],
+    [
+      "Plan 数",
+      "1"
+    ],
+    [
+      "几何文件数",
+      "1"
+    ],
+    [
+      "边界/流量文件数",
+      "1"
+    ],
+    [
+      "断面数",
+      "19"
+    ],
+    [
+      "桥梁数",
+      "0"
+    ],
+    [
+      "涵洞数",
+      "0"
+    ],
+    [
+      "闸门数",
+      "0"
+    ],
+    [
+      "结果模式",
+      "稳态"
+    ],
+    [
+      "剖面数",
+      "2"
+    ],
+    [
+      "最大水位",
+      "22.228 m"
+    ],
+    [
+      "最小水位",
+      "20.117 m"
+    ],
+    [
+      "代表流量",
+      "28.317 m3/s"
+    ],
+    [
+      "河段数",
+      "1"
+    ]
+  ],
+  "ai_conclusions": [
+    "本页展示的是该案例当前实际求得的水面线、过程线或峰值包络结果。",
+    "对标建议: 含桥梁/结构物/混合流态/2D 等复杂物理，当前 HydroClaude 不能公平直接对标。",
+    "该几何以 1D 断面为主，适合作为后续 HydroClaude 明渠基线映射候选。",
+    "结果曲线已按 1 个 river/reach 河段分组重排，避免多河段案例因断面编号交错而出现假性锯齿。",
+    "报告中的水面线图反映的是 HEC-RAS 多剖面稳态结果，适合人工核查回水线单调性、能量线位置和不同工况间的水位差。",
+    "全部结果已统一换算为国际单位，图表使用中文字体配置，避免浏览器查看时汉字乱码。"
+  ]
+}

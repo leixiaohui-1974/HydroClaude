@@ -1,0 +1,68 @@
+Message  | Plan: 'Existing Conditions' (CRITCREK.p01)
+Message  | Simulation started at: 20Mar2026 07:35:17 PM
+Message  | 
+Message  | PROCESS:RasProcess
+Message  | Writing Plan GIS Data...
+Progress | 100
+Message  | Completed Writing Plan GIS Data
+Message  | Writing Geometry...
+Message  | Computing Bank Lines
+Progress | 1
+Message  | Bank lines generated in 148 ms
+Message  | Computing Edge Lines
+Message  | Edge Lines generated in 39 ms
+Message  | Computing XS Interpolation Surface
+Progress | 8.333334E-02
+Progress | 0.1666667
+Progress | 0.25
+Progress | 0.3333333
+Progress | 0.4166667
+Progress | 0.5
+Progress | 0.5833333
+Progress | 0.6666667
+Progress | 0.75
+Progress | 0.8333333
+Progress | 0.9166667
+Message  | XS Interpolation Surface generated in 146 ms
+Progress | 1
+Message  | Completed Writing Geometry
+Message  | Writing Event Conditions ...
+Message  | Completed Writing Event Condition Data
+Message  | 
+Message  | PROCESS:RasSteady
+Progress | 0.1
+Progress | 0.2
+Message  | 	
+Message  | Steady Flow Simulation HEC-RAS 6.6 September 2024
+Progress | 0.1
+Progress | 0.3
+Progress | 0.4
+Message  |  
+Progress | 0.5
+Progress | 0.6
+Progress | 0.7
+Progress | 0.8
+Progress | 0.9
+Progress | 1
+Progress | 0.083
+Progress | 0.167
+Progress | 0.25
+Progress | 0.333
+Progress | 0.417
+Progress | 0.5
+Progress | 0.583
+Progress | 0.667
+Progress | 0.75
+Progress | 0.833
+Progress | 0.917
+Progress | 1
+Message  | 
+Message  | Finished Steady Flow Simulation
+Message  | 
+Message  | 
+Message  | Computations Summary
+Message  | 
+Message  | Computation Task	Time(hh:mm:ss)
+Message  | Completing Geometry, Flow and Plan	       5
+Message  | Steady Flow Computations	<1
+Message  | Complete Process	       6

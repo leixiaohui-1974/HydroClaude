@@ -1,0 +1,75 @@
+{
+  "generated_at": "2026-03-21 09:11:37",
+  "record": {
+    "project_name": "UngagedAreaInflows",
+    "category": "1D Unsteady Flow Hydraulics",
+    "status": "computed",
+    "extract_root": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\037\\UngagedAreaInflows_hydroclaude_suite_1774013626839535000",
+    "project_dir": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\037\\UngagedAreaInflows_hydroclaude_suite_1774013626839535000",
+    "project_file": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\037\\UngagedAreaInflows_hydroclaude_suite_1774013626839535000\\Ungaged_area.prj",
+    "flow_file_count": 0,
+    "geometry_file_count": 1,
+    "declared_current_plan": "02",
+    "comparability": {
+      "level": "not_direct",
+      "reason": "不属于单河道稳态回水主线问题，当前不作为 HydroClaude 公平直接对标样例。"
+    },
+    "plan_hdf_files": [],
+    "new_plan_numbers": [],
+    "actual_plan_number": "02",
+    "compute_messages_preview": [
+      "Message  | Plan: 'Ungaged' (Ungaged_area.p02)",
+      "Message  | Simulation started at: 20Mar2026 09:33:54 PM",
+      "Message  |",
+      "Message  | PROCESS:RasProcess",
+      "Message  | Writing Plan GIS Data...",
+      "Progress | 100",
+      "Message  | Completed Writing Plan GIS Data",
+      "Message  | Writing Geometry..."
+    ],
+    "compute_message_line_count": 832,
+    "result_hdf_path": "",
+    "elapsed_seconds": 44.6,
+    "_source_json": "hecras_example_suite_chunk_30_39.json"
+  },
+  "summary": null,
+  "results_mode": null,
+  "result_extract_error": "[Errno 13] Unable to synchronously open file (unable to open file: name = '.', errno = 13, error message = 'Permission denied', flags = 0, o_flags = 0)",
+  "table_rows": [
+    [
+      "案例名称",
+      "UngagedAreaInflows"
+    ],
+    [
+      "类别",
+      "1D Unsteady Flow Hydraulics"
+    ],
+    [
+      "运行状态",
+      "computed"
+    ],
+    [
+      "当前 Plan",
+      "p02"
+    ],
+    [
+      "结果来源",
+      "hecras_example_suite_chunk_30_39.json"
+    ],
+    [
+      "结果 HDF",
+      "-"
+    ]
+  ],
+  "ai_conclusions": [
+    "本页展示的是该案例当前实际求得的水面线、过程线或峰值包络结果。",
+    "对标建议: 不属于单河道稳态回水主线问题，当前不作为 HydroClaude 公平直接对标样例。",
+    "全部结果已统一换算为国际单位，图表使用中文字体配置，避免浏览器查看时汉字乱码。"
+  ],
+  "ai_recommendations": [
+    "该案例当前不在直接对标范围内，仅供巡检参考。"
+  ],
+  "comparison_metrics": null,
+  "flow_diagnosis": null,
+  "tuning_history": null
+}

@@ -1,0 +1,57 @@
+{
+  "generated_at": "2026-03-21 09:12:24",
+  "source_paths": [
+    "hecras_example_suite_chunk_00_09.json",
+    "hecras_example_suite_chunk_10_19.json",
+    "hecras_example_suite_chunk_20_29.json",
+    "hecras_example_suite_chunk_30_39.json",
+    "hecras_example_suite_chunk_40_49.json",
+    "hecras_example_suite_chunk_50_59.json",
+    "hecras_example_suite_chunk_60_67.json"
+  ],
+  "report_count": 7,
+  "items": [
+    {
+      "project_name": "BSTEM - Simple Example",
+      "md": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\bstem_simple_example\\report.md",
+      "html": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\bstem_simple_example\\report.html",
+      "json": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\bstem_simple_example\\report.json"
+    },
+    {
+      "project_name": "Dredging Example",
+      "md": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\dredging_example\\report.md",
+      "html": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\dredging_example\\report.html",
+      "json": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\dredging_example\\report.json"
+    },
+    {
+      "project_name": "Reservoir Video Tutorial",
+      "md": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\reservoir_video_tutorial\\report.md",
+      "html": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\reservoir_video_tutorial\\report.html",
+      "json": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\reservoir_video_tutorial\\report.json"
+    },
+    {
+      "project_name": "SIAM Example",
+      "md": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\siam_example\\report.md",
+      "html": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\siam_example\\report.html",
+      "json": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\siam_example\\report.json"
+    },
+    {
+      "project_name": "Simple Sediment Transport Example",
+      "md": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\simple_sediment_transport_example\\report.md",
+      "html": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\simple_sediment_transport_example\\report.html",
+      "json": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\simple_sediment_transport_example\\report.json"
+    },
+    {
+      "project_name": "Unsteady Sediment with Concentration Rules",
+      "md": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\unsteady_sediment_with_concentration_rules\\report.md",
+      "html": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\unsteady_sediment_with_concentration_rules\\report.html",
+      "json": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\unsteady_sediment_with_concentration_rules\\report.json"
+    },
+    {
+      "project_name": "Video Tutorial (Sediment Intro)",
+      "md": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\video_tutorial_sediment_intro\\report.md",
+      "html": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\video_tutorial_sediment_intro\\report.html",
+      "json": "\\\\file.hydrosis.heiyu.space\\rainfields-automount\\research\\HydroClaude\\reports\\hecras_cases\\video_tutorial_sediment_intro\\report.json"
+    }
+  ]
+}

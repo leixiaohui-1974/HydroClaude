@@ -1,0 +1,364 @@
+{
+  "generated_at": "2026-03-21 13:19:55",
+  "record": {
+    "project_name": "ConSpan Culvert",
+    "category": "1D Steady Flow Hydraulics",
+    "status": "computed",
+    "extract_root": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500",
+    "project_dir": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500",
+    "project_file": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500\\ConSpan.prj",
+    "flow_file_count": 1,
+    "geometry_file_count": 4,
+    "declared_current_plan": "01",
+    "comparability": {
+      "level": "not_direct",
+      "reason": "含桥梁/结构物/混合流态/2D 等复杂物理，当前 HydroClaude 不能公平直接对标。"
+    },
+    "plan_hdf_files": [
+      "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500\\ConSpan.p01.hdf"
+    ],
+    "new_plan_numbers": [
+      "01"
+    ],
+    "actual_plan_number": "01",
+    "compute_messages_preview": [
+      "Message  | Plan: 'ConSpan Culvert' (ConSpan.p01)",
+      "Message  | Simulation started at: 20Mar2026 09:19:49 PM",
+      "Message  |",
+      "Message  | PROCESS:RasProcess",
+      "Message  | Writing Plan GIS Data...",
+      "Progress | 100",
+      "Message  | Completed Writing Plan GIS Data",
+      "Message  | Writing Geometry..."
+    ],
+    "compute_message_line_count": 94,
+    "result_hdf_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500\\ConSpan.p01.hdf",
+    "elapsed_seconds": 19.04,
+    "_source_json": "hecras_example_suite_chunk_00_09.json",
+    "comparison_metrics": {
+      "wse_mae_m": 0.678938,
+      "wse_rmse_m": 0.684129,
+      "wse_p95_m": 0.779452,
+      "wse_max_error_m": 0.79244,
+      "flow_mae_m3s": 21.237788,
+      "flow_rel_error_pct": 300.0022,
+      "depth_mae_m": 0.678938,
+      "depth_rmse_m": 0.684129,
+      "n_points": 10,
+      "pass_wse": false,
+      "pass_flow": false,
+      "overall_pass": false,
+      "case_type": "has_structures",
+      "applied_wse_threshold_m": 0.5,
+      "applied_flow_threshold_pct": 15.0,
+      "comparable": true
+    },
+    "flow_diagnosis": {
+      "regime": "subcritical",
+      "curve_type": "M1",
+      "froude_mean": 0.0274,
+      "froude_max": 0.031,
+      "froude_min": 0.0245,
+      "subcritical_fraction": 1.0,
+      "avg_slope": 0.001554,
+      "avg_manning_n": 0.08,
+      "avg_depth_m": 2.361,
+      "normal_depth_m": 0.7609,
+      "critical_depth_m": 0.2136,
+      "representative_Q_m3s": 28.317,
+      "representative_width_m": 91.6,
+      "has_structures": true,
+      "solver_recommendation": "steady",
+      "solver_reason": "亚临界稳态回水（M1型），适合 SteadyProfileSolver 的标准步长法（Standard Step Method），与 HEC-RAS 原理一致。",
+      "recommended_params": {
+        "solver_type": "steady",
+        "manning_n": 0.08,
+        "slope": 0.001554,
+        "width": 91.6,
+        "Q_upstream": 28.317,
+        "h_downstream": 2.3012,
+        "length": 500.0,
+        "nx": 101,
+        "method": "shooting",
+        "cross_section_data": {
+          "type": "multi_station",
+          "n_stations": 10,
+          "stations": [
+            6.259068,
+            6.2246256,
+            6.1898784000000004,
+            6.1725048000000005,
+            6.1685424,
+            6.165189600000001,
+            0.0,
+            6.153607200000001,
+            6.124956,
+            6.096
+          ],
+          "bed_elevations": [
+            8.077200000000001,
+            7.863839767456055,
+            7.741919883728028,
+            7.650480116271973,
+            7.650480116271973,
+            7.62,
+            7.589519883728028,
+            7.559039767456055,
+            7.3914,
+            7.299960232543945
+          ],
+          "channel_widths": [
+            87.75192744140625,
+            87.75192744140625,
+            87.75192744140625,
+            89.61120000000001,
+            89.61120000000001,
+            89.61120000000001,
+            89.61120000000001,
+            89.61120000000001,
+            102.3213451171875,
+            102.3213451171875
+          ],
+          "manning_ns": [
+            0.08,
+            0.08,
+            0.08,
+            0.08,
+            0.08,
+            0.08,
+            0.08,
+            0.08,
+            0.08,
+            0.08
+          ]
+        }
+      }
+    },
+    "case_classification": {
+      "case_type": "has_structures",
+      "wse_threshold_m": 0.5,
+      "comparable": true
+    },
+    "hydromind_run": {
+      "solver_type": "steady",
+      "status": "needs_review"
+    },
+    "evidence": {
+      "hecras_hdf_verified": true,
+      "hydromind_completed": true,
+      "comparison_completed": true
+    }
+  },
+  "summary": {
+    "project_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500",
+    "project_name": "ConSpan",
+    "prj_file": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500\\ConSpan.prj",
+    "runtime": {
+      "installed": true,
+      "com_available": true,
+      "exe_path": "C:\\Program Files (x86)\\HEC\\HEC-RAS\\6.6\\Ras.exe",
+      "progid": "RAS66.HECRASController",
+      "notes": []
+    },
+    "tables": {
+      "plans": [
+        {
+          "plan_number": "01",
+          "unsteady_number": null,
+          "geometry_number": "01",
+          "Plan Title": "ConSpan Culvert",
+          "Short Identifier": "ConSpan",
+          "Simulation Date": ",,,",
+          "Computation Interval": "1HOUR",
+          "Run HTab": "0",
+          "Run UNet": "0",
+          "Run PostProcess": "0",
+          "UNET Use Existing IB Tables": "-1",
+          "UNET D1 Cores": null,
+          "UNET D2 Cores": null,
+          "PS Cores": null,
+          "Friction Slope Method": "1",
+          "HDF_Results_Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500\\ConSpan.p01.hdf",
+          "Geom File": "01",
+          "Geom Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500\\ConSpan.g01",
+          "Flow File": "01",
+          "Flow Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500\\ConSpan.f01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500\\ConSpan.p01",
+          "flow_type": "Steady"
+        },
+        {
+          "plan_number": "02",
+          "unsteady_number": null,
+          "geometry_number": "02",
+          "Plan Title": "Twin Circular Culverts",
+          "Short Identifier": "Twin Circ",
+          "Simulation Date": ",,,",
+          "Computation Interval": "1HOUR",
+          "Run HTab": "0",
+          "Run UNet": "0",
+          "Run PostProcess": "0",
+          "UNET Use Existing IB Tables": "-1",
+          "UNET D1 Cores": null,
+          "UNET D2 Cores": null,
+          "PS Cores": null,
+          "Friction Slope Method": "1",
+          "HDF_Results_Path": null,
+          "Geom File": "02",
+          "Geom Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500\\ConSpan.g02",
+          "Flow File": "01",
+          "Flow Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500\\ConSpan.f01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500\\ConSpan.p02",
+          "flow_type": "Steady"
+        }
+      ],
+      "geometries": [
+        {
+          "geom_file": "g01",
+          "geom_number": "01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500\\ConSpan.g01",
+          "hdf_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500\\ConSpan.g01.hdf",
+          "has_1d_xs": true,
+          "has_2d_mesh": false,
+          "num_cross_sections": 10,
+          "num_inline_structures": 0,
+          "num_bridges": 0,
+          "num_culverts": 0,
+          "num_weirs": 0,
+          "num_gates": 0,
+          "num_lateral_structures": 0,
+          "num_sa_2d_connections": 0,
+          "mesh_cell_count": 0,
+          "mesh_area_names": [],
+          "geom_title": "ConSpan Culvert Geometry",
+          "description": "River mile 20.535 - Upstream Cross Section"
+        },
+        {
+          "geom_file": "g02",
+          "geom_number": "02",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500\\ConSpan.g02",
+          "hdf_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500\\ConSpan.g02.hdf",
+          "has_1d_xs": true,
+          "has_2d_mesh": false,
+          "num_cross_sections": 10,
+          "num_inline_structures": 0,
+          "num_bridges": 0,
+          "num_culverts": 0,
+          "num_weirs": 0,
+          "num_gates": 0,
+          "num_lateral_structures": 0,
+          "num_sa_2d_connections": 0,
+          "mesh_cell_count": 0,
+          "mesh_area_names": [],
+          "geom_title": "Twin Circular Pipes",
+          "description": "River mile 20.535 - Upstream Cross Section"
+        }
+      ],
+      "steady_flows": [
+        {
+          "flow_number": "01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\010\\ConSpan Culvert_hydroclaude_suite_1774012784229155500\\ConSpan.f01",
+          "unsteady_number": null,
+          "Flow Title": "Multiple Pipe Flow Data",
+          "description": ""
+        }
+      ],
+      "unsteady_flows": [],
+      "boundaries": []
+    },
+    "counts": {
+      "plans": 2,
+      "geometries": 2,
+      "steady_flows": 1,
+      "unsteady_flows": 0,
+      "boundaries": 0
+    }
+  },
+  "results_mode": "steady",
+  "result_extract_error": null,
+  "table_rows": [
+    [
+      "案例名称",
+      "ConSpan Culvert"
+    ],
+    [
+      "类别",
+      "1D Steady Flow Hydraulics"
+    ],
+    [
+      "运行状态",
+      "computed"
+    ],
+    [
+      "当前 Plan",
+      "p01"
+    ],
+    [
+      "结果来源",
+      "hecras_example_suite_chunk_00_09.json"
+    ],
+    [
+      "结果 HDF",
+      "ConSpan.p01.hdf"
+    ],
+    [
+      "Plan 数",
+      "2"
+    ],
+    [
+      "几何文件数",
+      "2"
+    ],
+    [
+      "边界/流量文件数",
+      "1"
+    ],
+    [
+      "断面数",
+      "10"
+    ],
+    [
+      "桥梁数",
+      "0"
+    ],
+    [
+      "涵洞数",
+      "0"
+    ],
+    [
+      "闸门数",
+      "0"
+    ],
+    [
+      "结果模式",
+      "稳态"
+    ],
+    [
+      "剖面数",
+      "4"
+    ],
+    [
+      "最大水位",
+      "10.388 m"
+    ],
+    [
+      "最小水位",
+      "8.809 m"
+    ],
+    [
+      "代表流量",
+      "28.317 m3/s"
+    ],
+    [
+      "河段数",
+      "1"
+    ]
+  ],
+  "ai_conclusions": [
+    "本页展示的是该案例当前实际求得的水面线、过程线或峰值包络结果。",
+    "对标建议: 含桥梁/结构物/混合流态/2D 等复杂物理，当前 HydroClaude 不能公平直接对标。",
+    "该几何以 1D 断面为主，适合作为后续 HydroClaude 明渠基线映射候选。",
+    "结果曲线已按 1 个 river/reach 河段分组重排，避免多河段案例因断面编号交错而出现假性锯齿。",
+    "报告中的水面线图反映的是 HEC-RAS 多剖面稳态结果，适合人工核查回水线单调性、能量线位置和不同工况间的水位差。",
+    "全部结果已统一换算为国际单位，图表使用中文字体配置，避免浏览器查看时汉字乱码。"
+  ]
+}

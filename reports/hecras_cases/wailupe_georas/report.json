@@ -1,0 +1,510 @@
+{
+  "generated_at": "2026-03-21 13:20:03",
+  "record": {
+    "project_name": "Wailupe GeoRAS",
+    "category": "1D Steady Flow Hydraulics",
+    "status": "computed",
+    "extract_root": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800",
+    "project_dir": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800",
+    "project_file": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800\\WAILUPE.prj",
+    "flow_file_count": 1,
+    "geometry_file_count": 2,
+    "declared_current_plan": "01",
+    "comparability": {
+      "level": "direct_candidate",
+      "reason": "看起来接近单河道稳态回水问题，可作为 HydroClaude 直接对比候选。"
+    },
+    "plan_hdf_files": [
+      "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800\\WAILUPE.p01.hdf"
+    ],
+    "new_plan_numbers": [
+      "01"
+    ],
+    "actual_plan_number": "01",
+    "compute_messages_preview": [
+      "Message  | Plan: 'Existing Conditions Run' (WAILUPE.p01)",
+      "Message  | Simulation started at: 20Mar2026 08:27:25 PM",
+      "Message  |",
+      "Message  | PROCESS:RasProcess",
+      "Message  | Writing Plan GIS Data...",
+      "Progress | 100",
+      "Message  | Completed Writing Plan GIS Data",
+      "Message  | Writing Geometry..."
+    ],
+    "compute_message_line_count": 133,
+    "result_hdf_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800\\WAILUPE.p01.hdf",
+    "elapsed_seconds": 10.36,
+    "_source_json": "hecras_example_suite_chunk_10_19.json",
+    "comparison_metrics": {
+      "wse_mae_m": 2.105897,
+      "wse_rmse_m": 2.311366,
+      "wse_p95_m": 3.317747,
+      "wse_max_error_m": 3.595599,
+      "flow_mae_m3s": 61.896816,
+      "flow_rel_error_pct": 196.6626,
+      "depth_mae_m": 2.105897,
+      "depth_rmse_m": 2.311366,
+      "n_points": 47,
+      "pass_wse": false,
+      "pass_flow": false,
+      "overall_pass": false,
+      "case_type": "network",
+      "applied_wse_threshold_m": 0.3,
+      "applied_flow_threshold_pct": 10.0,
+      "comparable": true
+    },
+    "flow_diagnosis": {
+      "regime": "subcritical",
+      "curve_type": "M1",
+      "froude_mean": 0.0386,
+      "froude_max": 0.1551,
+      "froude_min": 0.0069,
+      "subcritical_fraction": 1.0,
+      "avg_slope": 0.005,
+      "avg_manning_n": 0.1167,
+      "avg_depth_m": 2.867,
+      "normal_depth_m": 0.6684,
+      "critical_depth_m": 0.2135,
+      "representative_Q_m3s": 136.825,
+      "representative_width_m": 442.74,
+      "has_structures": false,
+      "solver_recommendation": "steady",
+      "solver_reason": "亚临界稳态回水（M1型），适合 SteadyProfileSolver 的标准步长法（Standard Step Method），与 HEC-RAS 原理一致。",
+      "recommended_params": {
+        "solver_type": "steady",
+        "manning_n": 0.1167,
+        "slope": 0.005,
+        "width": 442.74,
+        "Q_upstream": 136.825,
+        "h_downstream": 3.2296,
+        "length": 16100.1,
+        "nx": 101,
+        "method": "shooting",
+        "cross_section_data": {
+          "type": "multi_station",
+          "n_stations": 47,
+          "stations": [
+            0.094488,
+            0.088392,
+            0.08229600000000001,
+            0.067056,
+            0.05181600000000001,
+            0.04267200000000001,
+            0.033528,
+            0.027432,
+            0.021336000000000004,
+            0.496824,
+            0.49377600000000005,
+            0.48463200000000006,
+            0.47244,
+            0.46329600000000004,
+            0.451104,
+            0.438912,
+            0.42672,
+            0.41452800000000006,
+            0.402336,
+            0.39319200000000004,
+            0.384048,
+            0.359664,
+            0.35052,
+            0.34137600000000007,
+            0.32918400000000003,
+            0.31699200000000005,
+            0.307848,
+            0.298704,
+            0.286512,
+            0.271272,
+            0.252984,
+            0.237744,
+            0.219456,
+            0.201168,
+            0.188976,
+            0.173736,
+            0.155448,
+            0.13716,
+            0.12192000000000001,
+            0.10363200000000002,
+            0.08534400000000002,
+            0.067056,
+            0.05181600000000001,
+            0.036576,
+            0.027432,
+            0.018288,
+            0.012192000000000001
+          ],
+          "bed_elevations": [
+            79.35163088378907,
+            76.98333823242187,
+            72.92949730224609,
+            65.51981004638672,
+            58.56122548828125,
+            52.416456372070314,
+            46.39970269775391,
+            42.85183088378906,
+            40.062912744140625,
+            66.46164093017579,
+            65.90081004638672,
+            63.33744093017579,
+            60.0516973022461,
+            57.36641004638672,
+            55.58028186035156,
+            51.77637451171875,
+            49.80431813964844,
+            46.31435906982422,
+            42.53484093017578,
+            39.7002,
+            37.88054362792969,
+            34.134551348876954,
+            32.77514362792969,
+            30.89147953491211,
+            28.861512744140626,
+            26.87726409301758,
+            25.04236911621094,
+            23.57932818603516,
+            21.555456372070314,
+            19.235928186035157,
+            17.45894362792969,
+            14.895575674438478,
+            11.701271813964844,
+            9.482328186035156,
+            7.915655790710449,
+            5.971032046508789,
+            4.255008011627197,
+            2.810256081390381,
+            1.8166080116271974,
+            1.0180319738388062,
+            0.48463201017379764,
+            -0.10363200109004975,
+            -0.10058400399684907,
+            -0.3779520029067993,
+            -0.5791199927330017,
+            -0.8808720319747926,
+            -1.1490959941864014
+          ],
+          "channel_widths": [
+            63.770256372070314,
+            77.39786176757814,
+            107.25302548828125,
+            151.20823088378907,
+            155.1584362792969,
+            206.724498046875,
+            174.62295981445314,
+            99.75494362792969,
+            63.42583088378907,
+            45.99736911621094,
+            179.56987646484376,
+            159.02634902343752,
+            159.78834902343752,
+            187.3879853027344,
+            195.611501953125,
+            189.6739853027344,
+            168.07586176757815,
+            184.0199490234375,
+            224.872301953125,
+            212.13774902343752,
+            179.1431490234375,
+            248.4272362792969,
+            260.04012744140624,
+            294.66540000000003,
+            325.9836,
+            345.2317274414063,
+            311.54827646484375,
+            327.666101953125,
+            342.9365745117188,
+            357.96929414062504,
+            391.16507255859375,
+            430.51779609375,
+            539.3527529296875,
+            595.0214293945313,
+            619.6919235351563,
+            702.3689607421875,
+            749.77138828125,
+            806.5739490234375,
+            820.9879529296876,
+            823.7220000000001,
+            953.1827490234375,
+            994.8397412109375,
+            1150.5285451171876,
+            1228.25559609375,
+            1292.59280390625,
+            1359.158117578125,
+            1352.03178046875
+          ],
+          "manning_ns": [
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167,
+            0.1167
+          ]
+        }
+      }
+    },
+    "case_classification": {
+      "case_type": "network",
+      "wse_threshold_m": 0.3,
+      "comparable": true
+    },
+    "hydromind_run": {
+      "solver_type": "steady",
+      "status": "needs_review"
+    },
+    "evidence": {
+      "hecras_hdf_verified": true,
+      "hydromind_completed": true,
+      "comparison_completed": true
+    }
+  },
+  "summary": {
+    "project_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800",
+    "project_name": "WAILUPE",
+    "prj_file": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800\\WAILUPE.prj",
+    "runtime": {
+      "installed": true,
+      "com_available": true,
+      "exe_path": "C:\\Program Files (x86)\\HEC\\HEC-RAS\\6.6\\Ras.exe",
+      "progid": "RAS66.HECRASController",
+      "notes": []
+    },
+    "tables": {
+      "plans": [
+        {
+          "plan_number": "01",
+          "unsteady_number": null,
+          "geometry_number": "01",
+          "Plan Title": "Existing Conditions Run",
+          "Short Identifier": "Base GIS Dat",
+          "Simulation Date": ",,,",
+          "Computation Interval": "1HOUR",
+          "Run HTab": "0",
+          "Run UNet": "0",
+          "Run PostProcess": "0",
+          "UNET D1 Cores": null,
+          "UNET D2 Cores": null,
+          "PS Cores": null,
+          "Friction Slope Method": "1",
+          "HDF_Results_Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800\\WAILUPE.p01.hdf",
+          "Geom File": "01",
+          "Geom Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800\\WAILUPE.g01",
+          "Flow File": "01",
+          "Flow Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800\\WAILUPE.f01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800\\WAILUPE.p01",
+          "flow_type": "Steady"
+        },
+        {
+          "plan_number": "02",
+          "unsteady_number": null,
+          "geometry_number": "02",
+          "Plan Title": "Final Geometry Run",
+          "Short Identifier": "Final Geom",
+          "Simulation Date": ",,,",
+          "Computation Interval": "1HOUR",
+          "Run HTab": "0",
+          "Run UNet": "0",
+          "Run PostProcess": "0",
+          "UNET D1 Cores": null,
+          "UNET D2 Cores": null,
+          "PS Cores": null,
+          "Friction Slope Method": "1",
+          "HDF_Results_Path": null,
+          "Geom File": "02",
+          "Geom Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800\\WAILUPE.g02",
+          "Flow File": "01",
+          "Flow Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800\\WAILUPE.f01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800\\WAILUPE.p02",
+          "flow_type": "Steady"
+        }
+      ],
+      "geometries": [
+        {
+          "geom_file": "g01",
+          "geom_number": "01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800\\WAILUPE.g01",
+          "hdf_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800\\WAILUPE.g01.hdf",
+          "has_1d_xs": true,
+          "has_2d_mesh": false,
+          "num_cross_sections": 47,
+          "num_inline_structures": 0,
+          "num_bridges": 0,
+          "num_culverts": 0,
+          "num_weirs": 0,
+          "num_gates": 0,
+          "num_lateral_structures": 0,
+          "num_sa_2d_connections": 0,
+          "mesh_cell_count": 0,
+          "mesh_area_names": [],
+          "geom_title": "Imported From GIS",
+          "description": null
+        },
+        {
+          "geom_file": "g02",
+          "geom_number": "02",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800\\WAILUPE.g02",
+          "hdf_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800\\WAILUPE.g02.hdf",
+          "has_1d_xs": true,
+          "has_2d_mesh": false,
+          "num_cross_sections": 209,
+          "num_inline_structures": 3,
+          "num_bridges": 3,
+          "num_culverts": 0,
+          "num_weirs": 0,
+          "num_gates": 0,
+          "num_lateral_structures": 0,
+          "num_sa_2d_connections": 0,
+          "mesh_cell_count": 0,
+          "mesh_area_names": [],
+          "geom_title": "Final Geometry  Data - GIS + Interp + Br",
+          "description": "Ani Street Bridge"
+        }
+      ],
+      "steady_flows": [
+        {
+          "flow_number": "01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\012\\Wailupe GeoRAS_hydroclaude_suite_1774009640528460800\\WAILUPE.f01",
+          "unsteady_number": null,
+          "Flow Title": "50, 100, 500 yr flow data",
+          "description": ""
+        }
+      ],
+      "unsteady_flows": [],
+      "boundaries": []
+    },
+    "counts": {
+      "plans": 2,
+      "geometries": 2,
+      "steady_flows": 1,
+      "unsteady_flows": 0,
+      "boundaries": 0
+    }
+  },
+  "results_mode": "steady",
+  "result_extract_error": null,
+  "table_rows": [
+    [
+      "案例名称",
+      "Wailupe GeoRAS"
+    ],
+    [
+      "类别",
+      "1D Steady Flow Hydraulics"
+    ],
+    [
+      "运行状态",
+      "computed"
+    ],
+    [
+      "当前 Plan",
+      "p01"
+    ],
+    [
+      "结果来源",
+      "hecras_example_suite_chunk_10_19.json"
+    ],
+    [
+      "结果 HDF",
+      "WAILUPE.p01.hdf"
+    ],
+    [
+      "Plan 数",
+      "2"
+    ],
+    [
+      "几何文件数",
+      "2"
+    ],
+    [
+      "边界/流量文件数",
+      "1"
+    ],
+    [
+      "断面数",
+      "47"
+    ],
+    [
+      "桥梁数",
+      "0"
+    ],
+    [
+      "涵洞数",
+      "0"
+    ],
+    [
+      "闸门数",
+      "0"
+    ],
+    [
+      "结果模式",
+      "稳态"
+    ],
+    [
+      "剖面数",
+      "3"
+    ],
+    [
+      "最大水位",
+      "80.385 m"
+    ],
+    [
+      "最小水位",
+      "1.846 m"
+    ],
+    [
+      "代表流量",
+      "195.386 m3/s"
+    ],
+    [
+      "河段数",
+      "3"
+    ]
+  ],
+  "ai_conclusions": [
+    "本页展示的是该案例当前实际求得的水面线、过程线或峰值包络结果。",
+    "对标建议: 看起来接近单河道稳态回水问题，可作为 HydroClaude 直接对比候选。",
+    "该几何以 1D 断面为主，适合作为后续 HydroClaude 明渠基线映射候选。",
+    "结果曲线已按 3 个 river/reach 河段分组重排，避免多河段案例因断面编号交错而出现假性锯齿。",
+    "报告中的水面线图反映的是 HEC-RAS 多剖面稳态结果，适合人工核查回水线单调性、能量线位置和不同工况间的水位差。",
+    "全部结果已统一换算为国际单位，图表使用中文字体配置，避免浏览器查看时汉字乱码。"
+  ]
+}

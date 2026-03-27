@@ -1,0 +1,394 @@
+{
+  "generated_at": "2026-03-21 13:22:09",
+  "record": {
+    "project_name": "Example 5 - Multiple Openings",
+    "category": "Applications Guide",
+    "status": "computed",
+    "extract_root": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600",
+    "project_dir": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600",
+    "project_file": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600\\MULTOPEN.prj",
+    "flow_file_count": 1,
+    "geometry_file_count": 2,
+    "declared_current_plan": "02",
+    "comparability": {
+      "level": "not_direct",
+      "reason": "不属于单河道稳态回水主线问题，当前不作为 HydroClaude 公平直接对标样例。"
+    },
+    "plan_hdf_files": [
+      "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600\\MULTOPEN.p02.hdf"
+    ],
+    "new_plan_numbers": [
+      "02"
+    ],
+    "actual_plan_number": "02",
+    "compute_messages_preview": [
+      "Message  | Plan: 'Modified Conditions' (MULTOPEN.p02)",
+      "Message  | Simulation started at: 20Mar2026 10:09:31 PM",
+      "Message  |",
+      "Message  | PROCESS:RasProcess",
+      "Message  | Writing Plan GIS Data...",
+      "Progress | 100",
+      "Message  | Completed Writing Plan GIS Data",
+      "Message  | Writing Geometry..."
+    ],
+    "compute_message_line_count": 99,
+    "result_hdf_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600\\MULTOPEN.p02.hdf",
+    "elapsed_seconds": 7.52,
+    "_source_json": "hecras_example_suite_chunk_60_67.json",
+    "comparison_metrics": {
+      "wse_mae_m": 0.576557,
+      "wse_rmse_m": 0.704327,
+      "wse_p95_m": 1.278264,
+      "wse_max_error_m": 1.542468,
+      "flow_mae_m3s": 254.851767,
+      "flow_rel_error_pct": 180.0001,
+      "depth_mae_m": 0.576557,
+      "depth_rmse_m": 0.704327,
+      "n_points": 15,
+      "pass_wse": false,
+      "pass_flow": false,
+      "overall_pass": false,
+      "case_type": "has_structures",
+      "applied_wse_threshold_m": 0.5,
+      "applied_flow_threshold_pct": 15.0,
+      "comparable": true
+    },
+    "flow_diagnosis": {
+      "regime": "subcritical",
+      "curve_type": "M1",
+      "froude_mean": 0.0289,
+      "froude_max": 0.0357,
+      "froude_min": 0.0223,
+      "subcritical_fraction": 1.0,
+      "avg_slope": 0.00256,
+      "avg_manning_n": 0.0837,
+      "avg_depth_m": 3.9399,
+      "normal_depth_m": 1.094,
+      "critical_depth_m": 0.3684,
+      "representative_Q_m3s": 396.436,
+      "representative_width_m": 566.13,
+      "has_structures": true,
+      "solver_recommendation": "steady",
+      "solver_reason": "亚临界稳态回水（M1型），适合 SteadyProfileSolver 的标准步长法（Standard Step Method），与 HEC-RAS 原理一致。",
+      "recommended_params": {
+        "solver_type": "steady",
+        "manning_n": 0.0837,
+        "slope": 0.00256,
+        "width": 566.13,
+        "Q_upstream": 396.436,
+        "h_downstream": 4.0234,
+        "length": 750.0,
+        "nx": 101,
+        "method": "shooting",
+        "cross_section_data": {
+          "type": "multi_station",
+          "n_stations": 15,
+          "stations": [
+            1.8257520000000003,
+            0.0,
+            1.755648,
+            0.0,
+            1.7099280000000001,
+            0.0,
+            1.6581120000000003,
+            1.6489680000000002,
+            1.6428719999999999,
+            0.0,
+            1.612392,
+            0.0,
+            1.5636240000000001,
+            0.0,
+            1.524
+          ],
+          "bed_elevations": [
+            62.45351813964844,
+            63.230759069824224,
+            62.484,
+            62.39255906982422,
+            62.30111813964844,
+            62.22491813964844,
+            62.14871813964844,
+            61.78295906982422,
+            61.78295906982422,
+            61.8012463256836,
+            61.81344093017579,
+            61.371481860351565,
+            60.929518139648444,
+            60.929518139648444,
+            60.533281860351565
+          ],
+          "channel_widths": [
+            582.168,
+            566.166,
+            550.164,
+            587.0448,
+            623.9256,
+            593.9028000000001,
+            563.88,
+            563.88,
+            555.9552,
+            531.9979274414063,
+            516.0264000000001,
+            530.5044,
+            544.9824,
+            575.4624,
+            605.9424
+          ],
+          "manning_ns": [
+            0.0837,
+            0.0837,
+            0.0837,
+            0.0837,
+            0.0837,
+            0.0837,
+            0.0837,
+            0.0837,
+            0.0837,
+            0.0837,
+            0.0837,
+            0.0837,
+            0.0837,
+            0.0837,
+            0.0837
+          ]
+        }
+      }
+    },
+    "case_classification": {
+      "case_type": "has_structures",
+      "wse_threshold_m": 0.5,
+      "comparable": true
+    },
+    "hydromind_run": {
+      "solver_type": "steady",
+      "status": "needs_review"
+    },
+    "evidence": {
+      "hecras_hdf_verified": true,
+      "hydromind_completed": true,
+      "comparison_completed": true
+    }
+  },
+  "summary": {
+    "project_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600",
+    "project_name": "MULTOPEN",
+    "prj_file": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600\\MULTOPEN.prj",
+    "runtime": {
+      "installed": true,
+      "com_available": true,
+      "exe_path": "C:\\Program Files (x86)\\HEC\\HEC-RAS\\6.6\\Ras.exe",
+      "progid": "RAS66.HECRASController",
+      "notes": []
+    },
+    "tables": {
+      "plans": [
+        {
+          "plan_number": "02",
+          "unsteady_number": null,
+          "geometry_number": "02",
+          "Plan Title": "Modified Conditions",
+          "Program Version": "5.00",
+          "Short Identifier": "Mult Open",
+          "Simulation Date": ",,,",
+          "Computation Interval": "1HOUR",
+          "Mapping Interval": "1HOUR",
+          "Run HTab": "0",
+          "Run UNet": "0",
+          "Run Sediment": "0",
+          "Run PostProcess": "0",
+          "Run WQNet": "0",
+          "UNET Use Existing IB Tables": "-1",
+          "UNET D1 Cores": 0.0,
+          "UNET D2 Cores": 0.0,
+          "PS Cores": null,
+          "DSS File": "dss",
+          "Friction Slope Method": "1",
+          "HDF_Results_Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600\\MULTOPEN.p02.hdf",
+          "Geom File": "02",
+          "Geom Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600\\MULTOPEN.g02",
+          "Flow File": "01",
+          "Flow Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600\\MULTOPEN.f01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600\\MULTOPEN.p02",
+          "flow_type": "Steady"
+        },
+        {
+          "plan_number": "01",
+          "unsteady_number": null,
+          "geometry_number": "01",
+          "Plan Title": "Base Conditions",
+          "Program Version": null,
+          "Short Identifier": "Base",
+          "Simulation Date": null,
+          "Computation Interval": null,
+          "Mapping Interval": null,
+          "Run HTab": null,
+          "Run UNet": null,
+          "Run Sediment": null,
+          "Run PostProcess": null,
+          "Run WQNet": null,
+          "UNET Use Existing IB Tables": null,
+          "UNET D1 Cores": null,
+          "UNET D2 Cores": null,
+          "PS Cores": null,
+          "DSS File": null,
+          "Friction Slope Method": "1",
+          "HDF_Results_Path": null,
+          "Geom File": "01",
+          "Geom Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600\\MULTOPEN.g01",
+          "Flow File": "01",
+          "Flow Path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600\\MULTOPEN.f01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600\\MULTOPEN.p01",
+          "flow_type": "Steady"
+        }
+      ],
+      "geometries": [
+        {
+          "geom_file": "g02",
+          "geom_number": "02",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600\\MULTOPEN.g02",
+          "hdf_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600\\MULTOPEN.g02.hdf",
+          "has_1d_xs": true,
+          "has_2d_mesh": false,
+          "num_cross_sections": 15,
+          "num_inline_structures": 0,
+          "num_bridges": 0,
+          "num_culverts": 0,
+          "num_weirs": 0,
+          "num_gates": 0,
+          "num_lateral_structures": 0,
+          "num_sa_2d_connections": 0,
+          "mesh_cell_count": 0,
+          "mesh_area_names": [],
+          "geom_title": "Culvert Group + Relief Bridge",
+          "description": "Upstream Boundary Cross Section"
+        },
+        {
+          "geom_file": "g01",
+          "geom_number": "01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600\\MULTOPEN.g01",
+          "hdf_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600\\MULTOPEN.g01.hdf",
+          "has_1d_xs": true,
+          "has_2d_mesh": false,
+          "num_cross_sections": 13,
+          "num_inline_structures": 1,
+          "num_bridges": 1,
+          "num_culverts": 0,
+          "num_weirs": 0,
+          "num_gates": 0,
+          "num_lateral_structures": 0,
+          "num_sa_2d_connections": 0,
+          "mesh_cell_count": 0,
+          "mesh_area_names": [],
+          "geom_title": "Beaver Creek + Single Bridge",
+          "description": "Upstream Boundary Cross Section"
+        }
+      ],
+      "steady_flows": [
+        {
+          "flow_number": "01",
+          "full_path": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\062\\Example 5 - Multiple Openings_hydroclaude_suite_1774015768764607600\\MULTOPEN.f01",
+          "unsteady_number": null,
+          "Flow Title": "Beaver Cr. - 3 Flows",
+          "description": ""
+        }
+      ],
+      "unsteady_flows": [],
+      "boundaries": []
+    },
+    "counts": {
+      "plans": 2,
+      "geometries": 2,
+      "steady_flows": 1,
+      "unsteady_flows": 0,
+      "boundaries": 0
+    }
+  },
+  "results_mode": "steady",
+  "result_extract_error": null,
+  "table_rows": [
+    [
+      "案例名称",
+      "Example 5 - Multiple Openings"
+    ],
+    [
+      "类别",
+      "Applications Guide"
+    ],
+    [
+      "运行状态",
+      "computed"
+    ],
+    [
+      "当前 Plan",
+      "p02"
+    ],
+    [
+      "结果来源",
+      "hecras_example_suite_chunk_60_67.json"
+    ],
+    [
+      "结果 HDF",
+      "MULTOPEN.p02.hdf"
+    ],
+    [
+      "Plan 数",
+      "2"
+    ],
+    [
+      "几何文件数",
+      "2"
+    ],
+    [
+      "边界/流量文件数",
+      "1"
+    ],
+    [
+      "断面数",
+      "15"
+    ],
+    [
+      "桥梁数",
+      "0"
+    ],
+    [
+      "涵洞数",
+      "0"
+    ],
+    [
+      "闸门数",
+      "0"
+    ],
+    [
+      "结果模式",
+      "稳态"
+    ],
+    [
+      "剖面数",
+      "3"
+    ],
+    [
+      "最大水位",
+      "67.013 m"
+    ],
+    [
+      "最小水位",
+      "63.856 m"
+    ],
+    [
+      "代表流量",
+      "396.436 m3/s"
+    ],
+    [
+      "河段数",
+      "1"
+    ]
+  ],
+  "ai_conclusions": [
+    "本页展示的是该案例当前实际求得的水面线、过程线或峰值包络结果。",
+    "对标建议: 不属于单河道稳态回水主线问题，当前不作为 HydroClaude 公平直接对标样例。",
+    "该几何以 1D 断面为主，适合作为后续 HydroClaude 明渠基线映射候选。",
+    "结果曲线已按 1 个 river/reach 河段分组重排，避免多河段案例因断面编号交错而出现假性锯齿。",
+    "报告中的水面线图反映的是 HEC-RAS 多剖面稳态结果，适合人工核查回水线单调性、能量线位置和不同工况间的水位差。",
+    "全部结果已统一换算为国际单位，图表使用中文字体配置，避免浏览器查看时汉字乱码。"
+  ]
+}

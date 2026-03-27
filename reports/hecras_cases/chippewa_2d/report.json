@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-03-21 09:11:37",
+  "record": {
+    "project_name": "Chippewa_2D",
+    "category": "2D Sediment Transport",
+    "status": "failed",
+    "extract_root": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\039\\Chippewa_2D_hydroclaude_suite_1774013686782603900",
+    "project_dir": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\039\\Chippewa_2D_hydroclaude_suite_1774013686782603900",
+    "project_file": "C:\\Users\\lxh\\AppData\\Local\\Temp\\hydroclaude_hecras_suite\\039\\Chippewa_2D_hydroclaude_suite_1774013686782603900\\Chippewa_2D.prj",
+    "flow_file_count": 0,
+    "geometry_file_count": 2,
+    "declared_current_plan": "02",
+    "comparability": {
+      "level": "not_direct",
+      "reason": "不属于单河道稳态回水主线问题，当前不作为 HydroClaude 公平直接对标样例。"
+    },
+    "error": "(-2147023170, '远程过程调用失败。', None, None)",
+    "elapsed_seconds": 176.59,
+    "_source_json": "hecras_example_suite_chunk_30_39.json"
+  },
+  "summary": null,
+  "results_mode": null,
+  "result_extract_error": null,
+  "table_rows": [
+    [
+      "案例名称",
+      "Chippewa_2D"
+    ],
+    [
+      "类别",
+      "2D Sediment Transport"
+    ],
+    [
+      "运行状态",
+      "failed"
+    ],
+    [
+      "当前 Plan",
+      "p-"
+    ],
+    [
+      "结果来源",
+      "hecras_example_suite_chunk_30_39.json"
+    ],
+    [
+      "结果 HDF",
+      "-"
+    ]
+  ],
+  "ai_conclusions": [
+    "该案例当前还没有形成可供人工核查的通用水力结果图，需要继续补结果提取适配。",
+    "当前阻塞: (-2147023170, '远程过程调用失败。', None, None)"
+  ],
+  "ai_recommendations": [
+    "该案例当前不在直接对标范围内，仅供巡检参考。"
+  ],
+  "comparison_metrics": null,
+  "flow_diagnosis": null,
+  "tuning_history": null
+}

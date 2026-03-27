@@ -1,0 +1,87 @@
+Message  | Plan: 'Mixed Flow Plan ' (MIXED.p01)
+Message  | Simulation started at: 20Mar2026 02:24:07 PM
+Message  | 
+Message  | PROCESS:RasProcess
+Message  | Writing Plan GIS Data...
+Progress | 100
+Message  | Completed Writing Plan GIS Data
+Message  | Writing Geometry...
+Message  | Computing Bank Lines
+Progress | 1
+Message  | Bank lines generated in 128 ms
+Message  | Computing Edge Lines
+Message  | Edge Lines generated in 35 ms
+Message  | Computing XS Interpolation Surface
+Progress | 5.263158E-02
+Progress | 0.1052632
+Progress | 0.1578947
+Progress | 0.2105263
+Progress | 0.2631579
+Progress | 0.3157895
+Progress | 0.368421
+Progress | 0.4210526
+Progress | 0.4736842
+Progress | 0.5263158
+Progress | 0.5789474
+Progress | 0.6315789
+Progress | 0.6842105
+Progress | 0.7368421
+Progress | 0.7894737
+Progress | 0.8421053
+Progress | 0.8947368
+Progress | 0.9473684
+Message  | XS Interpolation Surface generated in 56 ms
+Progress | 1
+Message  | Completed Writing Geometry
+Message  | Writing Event Conditions ...
+Message  | Completed Writing Event Condition Data
+Message  | 
+Message  | PROCESS:RasSteady
+Progress | 0.1
+Progress | 0.2
+Message  | 	
+Message  | Steady Flow Simulation HEC-RAS 6.6 September 2024
+Progress | 0.1
+Progress | 0.3
+Progress | 0.4
+Message  |  
+Progress | 0.5
+Progress | 0.6
+Progress | 0.7
+Progress | 0.8
+Progress | 0.9
+Progress | 1
+Progress | 0.018
+Progress | 0.053
+Progress | 0.088
+Progress | 0.123
+Progress | 0.158
+Progress | 0.193
+Progress | 0.228
+Progress | 0.263
+Progress | 0.298
+Progress | 0.333
+Progress | 0.368
+Progress | 0.5
+Progress | 0.535
+Progress | 0.57
+Progress | 0.605
+Progress | 0.64
+Progress | 0.675
+Progress | 0.711
+Progress | 0.746
+Progress | 0.781
+Progress | 0.816
+Progress | 0.851
+Progress | 0.886
+Progress | 1
+Message  | 
+Message  | Finished Steady Flow Simulation
+Message  | 
+Message  | 
+Message  | Computations Summary
+Message  | 
+Message  | Computation Task	Time(hh:mm:ss)
+Message  | Completing Geometry, Flow and Plan	       5
+Message  | Steady Flow Computations	<1
+Message  | Complete Process	       6
