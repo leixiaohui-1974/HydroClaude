@@ -58,3 +58,4 @@ SIMULATION_RESULTS_REVIEW.md
 HYDROSTATIC_HECRAS_DISCREPANCY.md
 validation_cases/hec_ras/
 validation_cases/engineering/hec_ras_steady_flow_example_3_1/
+*.npz
