@@ -1,0 +1,2 @@
+There are no rivers in the geometry data.
+ - There are no flow values in the steady flow data.

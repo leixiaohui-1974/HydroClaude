@@ -1,0 +1,930 @@
+OPENED LOG FILE
+
+    HEC-RAS 6.6 September 2024
+
+
+ At river station 5.4     
+
+    <start MULTIPLE OPENING routines>
+
+        **** I_OPEN ****          INTERNAL OPENING
+
+        **** I_BEG ****          INTERNAL BOUNDARY BEGINNING
+
+        **** EXIT I_BEG ****
+
+    <start BRIDGE routines>
+
+        **** BRIDGE ****            DETERMINE WATER SURFACE PROFILE FOR SINGLE OPENING BRIDGE
+
+        **** B_BEG ****             BRIDGE BEGINNING
+
+        **** CRITWS ****            DETERMINE CRITICAL WSEL
+
+        **** CRIT_PAR ****          USE PARABOLIC METHOD
+
+        **** EXIT CRIT_PAR ****
+        PARABOLIC METHOD DID NOT CONVERGE -- TRY SLICE/SECANT METHOD
+
+        SLICE     WSEL           EG
+          1      203.176     39830.9023
+          2      203.643      2794.0095
+          3      204.109       821.5546
+          4      204.575       437.3936
+          5      205.042       320.9888
+          6      205.508       273.8255
+          7      205.974       250.4645
+          8      206.441       237.1384
+          9      206.907       229.0532
+         10      207.373       223.8940
+         11      207.840       220.3809
+         12      208.306       217.8739
+         13      208.772       216.1001
+         14      209.239       214.8037
+         15      209.705       213.9884
+         16      210.171       213.5436
+         17      210.638       213.3517
+         18      211.104       213.3280
+        SEARCH FOR LOCAL MINIMUM
+
+      WSX            EGX            WSMAX          WSMIN
+     210.78189      213.32932      211.10399      210.78189
+     210.93056      213.32097      211.10399      210.93056
+     211.06064      213.32466      211.06064      210.93056
+     211.04980      213.32399      211.04980      210.93056
+     210.96037      213.32095      210.96037      210.93056
+     210.93802      213.32092      210.96037      210.93802
+     210.94801      213.32089      210.94801      210.93802
+         19      211.570       213.4196
+         20      212.037       213.5915
+         21      212.503       213.8229
+         22      212.969       214.1000
+         23      213.436       214.4090
+         24      213.902       214.7437
+         25      214.368       215.1023
+         26      214.835       215.4798
+         27      215.301       215.8721
+         28      215.767       216.2762
+         29      216.234       216.6898
+         30      216.700       217.1110
+         31      216.710       216.8681
+        SEARCH FOR LOCAL MINIMUM
+
+      WSX            EGX            WSMAX          WSMIN
+     216.70038      216.86850      216.70999      216.70038
+         32      216.899       217.0533
+         33      217.089       217.2306
+         34      217.278       217.4091
+         35      217.468       217.5888
+         36      217.658       217.7694
+         37      217.847       217.9508
+         38      218.036       218.1330
+         39      218.226       218.3159
+         40      218.415       218.4993
+         41      218.605       218.6833
+         42      218.794       218.8678
+         43      218.984       219.0527
+         44      219.173       219.2380
+         45      219.363       219.4237
+         46      219.552       219.6096
+         47      219.742       219.7959
+         48      219.932       219.9824
+         49      220.121       220.1691
+         50      220.311       220.3560
+
+        MULTIPLE CRITICAL WATER SURFACES WERE FOUND
+
+        CRITICAL WATER SURFACES =   210.95    216.70
+
+        FINAL CRITICAL WATER SURFACE =   210.95     DID IT CONVERGE?     T
+
+
+        **** EXIT CRITWS ****
+
+        **** CRITWS ****            DETERMINE CRITICAL WSEL
+
+        **** CRIT_PAR ****          USE PARABOLIC METHOD
+
+        **** EXIT CRIT_PAR ****
+        PARABOLIC METHOD DID NOT CONVERGE -- TRY SLICE/SECANT METHOD
+
+        SLICE     WSEL           EG
+          1      203.176     47043.7969
+          2      203.643      3282.1514
+          3      204.109       926.1071
+          4      204.575       472.4903
+          5      205.042       338.4567
+          6      205.508       284.0694
+          7      205.974       257.0755
+          8      206.441       241.6267
+          9      206.907       232.2298
+         10      207.373       226.2140
+         11      207.840       222.1309
+         12      208.306       219.2409
+         13      208.772       217.1613
+         14      209.239       215.6003
+         15      209.705       214.6012
+         16      210.171       214.0297
+         17      210.638       213.7444
+         18      211.104       213.6503
+        SEARCH FOR LOCAL MINIMUM
+
+      WSX            EGX            WSMAX          WSMIN
+     211.48694      213.67323      211.48694      211.10399
+     211.40616      213.66240      211.40616      211.10399
+     211.17953      213.64864      211.40616      211.17953
+     211.40027      213.66171      211.40027      211.17953
+     211.39027      213.66061      211.39027      211.17953
+     211.23222      213.64944      211.23222      211.17953
+     211.19270      213.64870      211.19270      211.17953
+         19      211.570       213.6874
+         20      212.037       213.8159
+         21      212.503       214.0134
+         22      212.969       214.2642
+         23      213.436       214.5522
+         24      213.902       214.8710
+         25      214.368       215.2173
+         26      214.835       215.5845
+         27      215.301       215.9681
+         28      215.767       216.3741
+         29      216.234       216.8404
+         30      216.700       217.3068
+         31      216.710       217.3068
+        SEARCH FOR LOCAL MINIMUM
+
+      WSX            EGX            WSMAX          WSMIN
+     216.70749      217.31427      216.70749      216.70000
+         32      216.899       217.5063
+         33      217.089       217.6607
+         34      217.278       217.7971
+         35      217.468       217.9305
+         36      217.658       218.0656
+         37      217.847       218.2048
+         38      218.036       218.3491
+         39      218.226       218.4987
+         40      218.415       218.6534
+         41      218.605       218.8128
+         42      218.794       218.9763
+         43      218.984       219.1436
+         44      219.173       219.3139
+         45      219.363       219.4870
+         46      219.552       219.6623
+         47      219.742       219.8396
+         48      219.932       220.0186
+         49      220.121       220.1990
+         50      220.311       220.3805
+
+        MULTIPLE CRITICAL WATER SURFACES WERE FOUND
+
+        CRITICAL WATER SURFACES =   211.19    216.71
+
+        FINAL CRITICAL WATER SURFACE =   211.19     DID IT CONVERGE?     T
+
+
+        **** EXIT CRITWS ****
+
+        **** CRITWS ****            DETERMINE CRITICAL WSEL
+
+        **** CRIT_PAR ****          USE PARABOLIC METHOD
+
+        **** EXIT CRIT_PAR ****
+        PARABOLIC METHOD DID NOT CONVERGE -- TRY SLICE/SECANT METHOD
+
+        SLICE     WSEL           EG
+          1      202.891     **********
+          2      203.071     **********
+          3      203.252     24945.9863
+          4      203.433      8186.1216
+          5      203.614      3663.0513
+          6      203.794      1982.7170
+          7      203.975      1231.6787
+          8      204.156       847.5306
+          9      204.337       630.8905
+         10      204.517       502.0255
+         11      204.698       422.7846
+         12      204.879       371.0013
+         13      205.060       335.4641
+         14      205.240       310.0815
+         15      205.421       291.3604
+         16      205.602       277.1899
+         17      205.783       266.2303
+         18      205.963       257.5501
+         19      206.144       250.5205
+         20      206.325       244.7711
+         21      206.505       240.0284
+         22      206.686       236.1120
+         23      206.867       232.8716
+         24      207.048       230.1528
+         25      207.228       227.8320
+         26      207.409       225.8441
+         27      207.590       224.1445
+         28      207.771       222.6555
+         29      207.951       221.3393
+         30      208.132       220.2014
+         31      208.313       219.2059
+         32      208.494       218.3349
+         33      208.674       217.5652
+         34      208.855       216.8385
+         35      209.036       216.2033
+         36      209.216       215.6609
+         37      209.397       215.2058
+         38      209.578       214.8257
+         39      209.759       214.5164
+         40      209.939       214.2700
+         41      210.120       214.0762
+         42      210.301       213.9267
+         43      210.482       213.8148
+         44      210.662       213.7353
+         45      210.843       213.6835
+         46      211.024       213.6557
+         47      211.205       213.6488
+        SEARCH FOR LOCAL MINIMUM
+
+      WSX            EGX            WSMAX          WSMIN
+     211.05222      213.65332      211.20456      211.05222
+     211.07881      213.65154      211.20456      211.07881
+         48      211.385       213.6601
+         49      211.566       213.6866
+         50      211.747       213.7266
+         51      211.927       213.7789
+         52      212.108       213.8422
+         53      212.289       213.9152
+         54      212.470       213.9973
+         55      212.650       214.0876
+         56      212.831       214.1852
+         57      213.012       214.2892
+         58      213.193       214.3983
+         59      213.373       214.5120
+         60      213.554       214.6302
+         61      213.735       214.7532
+         62      213.916       214.8808
+         63      214.096       215.0124
+         64      214.277       215.1477
+         65      214.458       215.2862
+         66      214.639       215.4278
+         67      214.819       215.5721
+         68      215.000       215.7188
+         69      215.010       215.7188
+        SEARCH FOR LOCAL MINIMUM
+
+      WSX            EGX            WSMAX          WSMIN
+     215.00749      215.72498      215.00749      215.00000
+         70      215.149       215.8418
+         71      215.289       215.9578
+         72      215.428       216.0750
+         73      215.567       216.1932
+         74      215.707       216.3134
+         75      215.846       216.4528
+         76      215.985       216.5921
+         77      216.125       216.7314
+         78      216.264       216.8708
+         79      216.403       217.0101
+         80      216.543       217.1494
+         81      216.682       217.2888
+         82      216.821       217.4281
+         83      216.961       217.5622
+
+        MULTIPLE CRITICAL WATER SURFACES WERE FOUND
+
+        CRITICAL WATER SURFACES =   211.18    215.01
+
+        FINAL CRITICAL WATER SURFACE =   211.18     DID IT CONVERGE?     T
+
+
+        **** EXIT CRITWS ****
+
+    LOW   YARNELL CONTRACTED HIGH  MOMENTUM         MIN ELV.           PIER COEF   ORIFICE COEF   USE ORIFICE
+    ENERGY        OPENING    ENERGY          PRESS FLOW  WEIR FLOW   YARN.   DRAG   FULL  SLUICE     TABLE
+
+      T      T       F         F      T          215.70     216.94    1.25   2.00   0.80    0.34       F
+
+    AREA BR.        XSEC LENGTH            SLUICE  MEAN RIVER  FRICTION  BRIDGE   MOMENTUM ADD
+    OPENING  UPSTREAM  BRIDGE  DOWNSTREAM             BED      TYPE      METHOD  FRICTION  WEIGHT
+
+    1600.36     30.00   40.00       30.00     T       207.08       0         T       T
+
+        **** B_BEG_M ****           BRIDGE BEGINNING MOMENTUM CHECK
+
+        **** EXIT B_BEG_M ****
+
+        **** EXIT B_BEG ****
+
+        **** B_DRIVER ****          BRIDGE DRIVER
+
+        **** B_D_SS ****            BRIDGE DRIVER STANDARD STEP
+
+        **** B_STDSTP ****          BRIDGE STANDARD STEP
+
+        **** STDSTP ****            MAKE CHECKS AND DO STANDARD STEP
+
+        **** STDSTPBR ****          CHECK FOR MULTIPLE SOLUTIONS DURING STANDARD STEP
+
+        **** STD_REAL ****            PERFORM STANDARD STEP BETWEEN TWO CROSS SECTIONS
+
+  I  ASSUMED    CALC     ERROR        EG       HL        FL    F_SLOPE    K        A            WP
+
+         PROPERTY SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1    450.0    469.4   2    470.6    489.4   3    490.6    509.4   4    510.6    529.4   5    530.6    549.4   6    550.6    569.4
+           7    570.6    589.4   8    590.6    609.4   9    610.6    629.4  10    630.6    647.0
+        AREA OF PROPERTY SLICES
+           1         53.37       2        107.18       3        116.10       4        177.22       5        214.78       6        203.95
+           7        204.39       8        148.47       9        102.64      10         39.85
+         WETTED PERIMETER OF PROPERTY SLICES
+           1         26.02       2         30.62       3         32.12       4         37.82       5         41.60       6         41.79
+           7         40.13       8         35.49       9         30.21      10         22.72
+
+        CONVEYANCE SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1    450.0    647.0
+        AREA OF CONVEYANCE SLICES
+           1       1367.95
+        WETTED PERIMETER OF CONVEYANCE SLICES
+           1        338.52
+        CONVYENACE OF CONVEYANCE SLICES
+           1     128922.92
+
+   AREA-LEFT  AREA-MAIN AREA-RIGHT AREA-TOTAL     WP LEFT    WP MAIN   WP RIGHT   WP TOTAL      K LEFT     K MAIN    K RIGHT    K TOTAL
+ ***********    1367.95***********    1367.95 ***********     338.52***********     338.52 ***********  128922.92***********  128922.92
+
+
+  I  ASSUMED    CALC     ERROR        EG       HL        FL    F_SLOPE    K        A            WP
+  0   214.45   214.46     0.0084    215.28    0.1652    0.1083  0.00361   128923.  1368.0   338.5
+
+ At river station 5.4     
+
+         PROPERTY SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1    450.0    469.4   2    470.6    489.4   3    490.6    509.4   4    510.6    529.4   5    530.6    549.4   6    550.6    569.4
+           7    570.6    589.4   8    590.6    609.4   9    610.6    629.4  10    630.6    647.0
+        AREA OF PROPERTY SLICES
+           1         53.53       2        107.34       3        116.25       4        177.38       5        214.94       6        204.10
+           7        204.55       8        148.63       9        102.80      10         39.99
+         WETTED PERIMETER OF PROPERTY SLICES
+           1         26.04       2         30.64       3         32.14       4         37.83       5         41.62       6         41.81
+           7         40.15       8         35.50       9         30.23      10         22.74
+
+        CONVEYANCE SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1    450.0    647.0
+        AREA OF CONVEYANCE SLICES
+           1       1369.52
+        WETTED PERIMETER OF CONVEYANCE SLICES
+           1        338.69
+        CONVYENACE OF CONVEYANCE SLICES
+           1     129125.90
+
+   AREA-LEFT  AREA-MAIN AREA-RIGHT AREA-TOTAL     WP LEFT    WP MAIN   WP RIGHT   WP TOTAL      K LEFT     K MAIN    K RIGHT    K TOTAL
+ ***********    1369.52***********    1369.52 ***********     338.69***********     338.69 ***********  129125.90***********  129125.90
+
+
+  I  ASSUMED    CALC     ERROR        EG       HL        FL    F_SLOPE    K        A            WP
+  1   214.46   214.46     0.0008    215.29    0.1641    0.1082  0.00361   129126.  1369.5   338.7
+ Final iteration based on computed WSEL
+
+         PROPERTY SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1    450.0    469.4   2    470.6    489.4   3    490.6    509.4   4    510.6    529.4   5    530.6    549.4   6    550.6    569.4
+           7    570.6    589.4   8    590.6    609.4   9    610.6    629.4  10    630.6    647.0
+        AREA OF PROPERTY SLICES
+           1         53.53       2        107.34       3        116.25       4        177.38       5        214.94       6        204.10
+           7        204.55       8        148.63       9        102.80      10         39.99
+         WETTED PERIMETER OF PROPERTY SLICES
+           1         26.04       2         30.64       3         32.14       4         37.83       5         41.62       6         41.81
+           7         40.15       8         35.50       9         30.23      10         22.74
+
+        CONVEYANCE SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1    450.0    647.0
+        AREA OF CONVEYANCE SLICES
+           1       1369.52
+        WETTED PERIMETER OF CONVEYANCE SLICES
+           1        338.69
+        CONVYENACE OF CONVEYANCE SLICES
+           1     129125.90
+
+   AREA-LEFT  AREA-MAIN AREA-RIGHT AREA-TOTAL     WP LEFT    WP MAIN   WP RIGHT   WP TOTAL      K LEFT     K MAIN    K RIGHT    K TOTAL
+ ***********    1369.52***********    1369.52 ***********     338.69***********     338.69 ***********  129125.90***********  129125.90
+
+
+  I  ASSUMED    CALC     ERROR        EG       HL        FL    F_SLOPE    K        A            WP
+
+CROSS SEC   WSEL     EG        N  ERROR   Q        K     HL
+5.4       214.46    215.29     1 0.0008 10000. 129126.    0.16
+
+        **** EXIT STD_REAL ****
+
+        **** EXIT STDSTPBR ****
+
+        **** EXIT STDSTP ****
+
+        **** WSCHECK ****           CHECK FINAL WSEL
+
+        **** CRITWS ****            DETERMINE CRITICAL WSEL
+
+        **** EXIT CRITWS ****
+
+        **** EXIT WSCHECK ****
+
+        **** STDSTP ****            MAKE CHECKS AND DO STANDARD STEP
+
+        **** STDSTPBR ****          CHECK FOR MULTIPLE SOLUTIONS DURING STANDARD STEP
+
+        **** STD_REAL ****            PERFORM STANDARD STEP BETWEEN TWO CROSS SECTIONS
+
+  I  ASSUMED    CALC     ERROR        EG       HL        FL    F_SLOPE    K        A            WP
+
+         PROPERTY SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1    450.0    469.4   2    470.6    489.4   3    490.6    509.4   4    510.6    529.4   5    530.6    549.4   6    550.6    569.4
+           7    570.6    589.4   8    590.6    609.4   9    610.6    629.4  10    630.6    647.0
+        AREA OF PROPERTY SLICES
+           1         56.33       2        110.05       3        118.96       4        180.08       5        217.65       6        206.81
+           7        207.26       8        151.33       9        105.50      10         42.35
+         WETTED PERIMETER OF PROPERTY SLICES
+           1         26.33       2         30.92       3         32.43       4         38.12       5         41.91       6         42.10
+           7         40.44       8         35.79       9         30.52      10         23.02
+
+        CONVEYANCE SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1    450.0    647.0
+        AREA OF CONVEYANCE SLICES
+           1       1396.31
+        WETTED PERIMETER OF CONVEYANCE SLICES
+           1        341.57
+        CONVYENACE OF CONVEYANCE SLICES
+           1     132611.28
+
+   AREA-LEFT  AREA-MAIN AREA-RIGHT AREA-TOTAL     WP LEFT    WP MAIN   WP RIGHT   WP TOTAL      K LEFT     K MAIN    K RIGHT    K TOTAL
+ ***********    1396.31***********    1396.31 ***********     341.57***********     341.57 ***********  132611.28***********  132611.28
+
+
+  I  ASSUMED    CALC     ERROR        EG       HL        FL    F_SLOPE    K        A            WP
+  0   214.60   214.73     0.1302    215.40    0.2430    0.2336  0.00584   132611.  1396.3   341.6
+
+ At river station 5.4     
+
+         PROPERTY SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1    450.0    469.4   2    470.6    489.4   3    490.6    509.4   4    510.6    529.4   5    530.6    549.4   6    550.6    569.4
+           7    570.6    589.4   8    590.6    609.4   9    610.6    629.4  10    630.6    647.0
+        AREA OF PROPERTY SLICES
+           1         58.09       2        111.76       3        120.67       4        181.79       5        219.36       6        208.52
+           7        208.97       8        153.04       9        107.21      10         43.84
+         WETTED PERIMETER OF PROPERTY SLICES
+           1         26.51       2         31.11       3         32.61       4         38.30       5         42.09       6         42.28
+           7         40.62       8         35.98       9         30.70      10         23.21
+
+        CONVEYANCE SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1    450.0    647.0
+        AREA OF CONVEYANCE SLICES
+           1       1413.24
+        WETTED PERIMETER OF CONVEYANCE SLICES
+           1        343.40
+        CONVYENACE OF CONVEYANCE SLICES
+           1     134823.36
+
+   AREA-LEFT  AREA-MAIN AREA-RIGHT AREA-TOTAL     WP LEFT    WP MAIN   WP RIGHT   WP TOTAL      K LEFT     K MAIN    K RIGHT    K TOTAL
+ ***********    1413.24***********    1413.24 ***********     343.40***********     343.40 ***********  134823.36***********  134823.36
+
+
+  I  ASSUMED    CALC     ERROR        EG       HL        FL    F_SLOPE    K        A            WP
+  1   214.69   214.75     0.0599    215.47    0.2448    0.2297  0.00574   134823.  1413.2   343.4
+
+         PROPERTY SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1    450.0    469.4   2    470.6    489.4   3    490.6    509.4   4    510.6    529.4   5    530.6    549.4   6    550.6    569.4
+           7    570.6    589.4   8    590.6    609.4   9    610.6    629.4  10    630.6    647.0
+        AREA OF PROPERTY SLICES
+           1         59.60       2        113.21       3        122.12       4        183.25       5        220.81       6        209.97
+           7        210.42       8        154.49       9        108.67      10         45.11
+         WETTED PERIMETER OF PROPERTY SLICES
+           1         26.66       2         31.26       3         32.76       4         38.46       5         42.25       6         42.43
+           7         40.78       8         36.13       9         30.85      10         23.36
+
+        CONVEYANCE SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1    450.0    647.0
+        AREA OF CONVEYANCE SLICES
+           1       1427.65
+        WETTED PERIMETER OF CONVEYANCE SLICES
+           1        344.95
+        CONVYENACE OF CONVEYANCE SLICES
+           1     136710.80
+
+   AREA-LEFT  AREA-MAIN AREA-RIGHT AREA-TOTAL     WP LEFT    WP MAIN   WP RIGHT   WP TOTAL      K LEFT     K MAIN    K RIGHT    K TOTAL
+ ***********    1427.65***********    1427.65 ***********     344.95***********     344.95 ***********  136710.80***********  136710.80
+
+
+  I  ASSUMED    CALC     ERROR        EG       HL        FL    F_SLOPE    K        A            WP
+  2   214.77   214.77     0.0006    215.53    0.2462    0.2264  0.00566   136711.  1427.7   344.9
+
+         PROPERTY SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1    450.0    469.4   2    470.6    489.4   3    490.6    509.4   4    510.6    529.4   5    530.6    549.4   6    550.6    569.4
+           7    570.6    589.4   8    590.6    609.4   9    610.6    629.4  10    630.6    647.0
+        AREA OF PROPERTY SLICES
+           1         59.59       2        113.20       3        122.11       4        183.23       5        220.80       6        209.96
+           7        210.41       8        154.48       9        108.66      10         45.10
+         WETTED PERIMETER OF PROPERTY SLICES
+           1         26.66       2         31.26       3         32.76       4         38.46       5         42.24       6         42.43
+           7         40.77       8         36.13       9         30.85      10         23.36
+
+        CONVEYANCE SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1    450.0    647.0
+        AREA OF CONVEYANCE SLICES
+           1       1427.54
+        WETTED PERIMETER OF CONVEYANCE SLICES
+           1        344.94
+        CONVYENACE OF CONVEYANCE SLICES
+           1     136695.55
+
+   AREA-LEFT  AREA-MAIN AREA-RIGHT AREA-TOTAL     WP LEFT    WP MAIN   WP RIGHT   WP TOTAL      K LEFT     K MAIN    K RIGHT    K TOTAL
+ ***********    1427.54***********    1427.54 ***********     344.94***********     344.94 ***********  136695.55***********  136695.55
+
+
+  I  ASSUMED    CALC     ERROR        EG       HL        FL    F_SLOPE    K        A            WP
+  3   214.77   214.77     0.0001    215.53    0.2462    0.2264  0.00566   136696.  1427.5   344.9
+ Final iteration based on computed WSEL
+
+         PROPERTY SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1    450.0    469.4   2    470.6    489.4   3    490.6    509.4   4    510.6    529.4   5    530.6    549.4   6    550.6    569.4
+           7    570.6    589.4   8    590.6    609.4   9    610.6    629.4  10    630.6    647.0
+        AREA OF PROPERTY SLICES
+           1         59.59       2        113.20       3        122.11       4        183.23       5        220.80       6        209.96
+           7        210.41       8        154.48       9        108.66      10         45.10
+         WETTED PERIMETER OF PROPERTY SLICES
+           1         26.66       2         31.26       3         32.76       4         38.46       5         42.24       6         42.43
+           7         40.77       8         36.13       9         30.85      10         23.36
+
+        CONVEYANCE SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1    450.0    647.0
+        AREA OF CONVEYANCE SLICES
+           1       1427.54
+        WETTED PERIMETER OF CONVEYANCE SLICES
+           1        344.94
+        CONVYENACE OF CONVEYANCE SLICES
+           1     136695.55
+
+   AREA-LEFT  AREA-MAIN AREA-RIGHT AREA-TOTAL     WP LEFT    WP MAIN   WP RIGHT   WP TOTAL      K LEFT     K MAIN    K RIGHT    K TOTAL
+ ***********    1427.54***********    1427.54 ***********     344.94***********     344.94 ***********  136695.55***********  136695.55
+
+
+  I  ASSUMED    CALC     ERROR        EG       HL        FL    F_SLOPE    K        A            WP
+
+CROSS SEC   WSEL     EG        N  ERROR   Q        K     HL
+5.4       214.77    215.53     3 0.0001 10000. 136696.    0.25
+
+        **** EXIT STD_REAL ****
+
+        **** EXIT STDSTPBR ****
+
+        **** EXIT STDSTP ****
+
+        **** WSCHECK ****           CHECK FINAL WSEL
+
+        **** CRITWS ****            DETERMINE CRITICAL WSEL
+
+        **** EXIT CRITWS ****
+
+        **** EXIT WSCHECK ****
+
+        **** STDSTP ****            MAKE CHECKS AND DO STANDARD STEP
+
+        **** STDSTPBR ****          CHECK FOR MULTIPLE SOLUTIONS DURING STANDARD STEP
+
+        **** STD_REAL ****            PERFORM STANDARD STEP BETWEEN TWO CROSS SECTIONS
+
+  I  ASSUMED    CALC     ERROR        EG       HL        FL    F_SLOPE    K        A            WP
+
+         PROPERTY SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1     29.7    161.5   2    161.5    420.0   3    420.0    450.0   4    450.0    647.0   5    647.0    677.0   6    677.0   1650.7
+
+        AREA OF PROPERTY SLICES
+           1          0.00       2          0.00       3         50.45       4       1556.92       5         70.62       6          0.00
+
+         WETTED PERIMETER OF PROPERTY SLICES
+           1          0.00       2          0.00       3         30.00       4        200.25       5         30.05       6          0.00
+
+
+        CONVEYANCE SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1     29.7    161.5   2    161.5    450.0   3    450.0    647.0   4    647.0   1650.7
+        AREA OF CONVEYANCE SLICES
+           1          0.00       2         50.45       3       1556.92       4         70.62
+        WETTED PERIMETER OF CONVEYANCE SLICES
+           1          0.00       2         30.00       3        200.25       4         30.05
+        CONVYENACE OF CONVEYANCE SLICES
+           1          0.00       2        423.97       3     226987.39       4       1236.54
+
+   AREA-LEFT  AREA-MAIN AREA-RIGHT AREA-TOTAL     WP LEFT    WP MAIN   WP RIGHT   WP TOTAL      K LEFT     K MAIN    K RIGHT    K TOTAL
+       50.45    1556.92      70.62    1677.98       30.00     200.25      30.05     260.30      423.97  226987.39    1236.54  228647.89
+
+
+  I  ASSUMED    CALC     ERROR        EG       HL        FL    F_SLOPE    K        A            WP
+  0   214.94   215.04     0.0959    215.57    0.1305    0.0899  0.00300   228648.  1678.0   260.3
+
+ At river station 5.41    
+
+         PROPERTY SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1     28.6    161.5   2    161.5    420.0   3    420.0    450.0   4    450.0    647.0   5    647.0    677.0   6    677.0   1661.2
+
+        AREA OF PROPERTY SLICES
+           1          0.00       2          0.00       3         52.46       4       1570.15       5         72.63       6          0.00
+
+         WETTED PERIMETER OF PROPERTY SLICES
+           1          0.00       2          0.00       3         30.00       4        200.25       5         30.05       6          0.00
+
+
+        CONVEYANCE SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1     28.6    161.5   2    161.5    450.0   3    450.0    647.0   4    647.0   1661.2
+        AREA OF CONVEYANCE SLICES
+           1          0.00       2         52.46       3       1570.15       4         72.63
+        WETTED PERIMETER OF CONVEYANCE SLICES
+           1          0.00       2         30.00       3        200.25       4         30.05
+        CONVYENACE OF CONVEYANCE SLICES
+           1          0.00       2        452.57       3     230211.72       4       1295.90
+
+   AREA-LEFT  AREA-MAIN AREA-RIGHT AREA-TOTAL     WP LEFT    WP MAIN   WP RIGHT   WP TOTAL      K LEFT     K MAIN    K RIGHT    K TOTAL
+       52.46    1570.15      72.63    1695.24       30.00     200.25      30.05     260.30      452.57  230211.72    1295.90  231960.19
+
+
+  I  ASSUMED    CALC     ERROR        EG       HL        FL    F_SLOPE    K        A            WP
+  1   215.01   215.05     0.0415    215.62    0.1322    0.0883  0.00294   231960.  1695.2   260.3
+
+         PROPERTY SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1     27.8    161.5   2    161.5    420.0   3    420.0    450.0   4    450.0    647.0   5    647.0    677.0   6    677.0   1670.8
+
+        AREA OF PROPERTY SLICES
+           1          0.00       2          0.00       3         54.00       4       1580.25       5         74.17       6          0.00
+
+         WETTED PERIMETER OF PROPERTY SLICES
+           1          0.00       2          0.00       3         30.00       4        200.25       5         30.05       6          0.00
+
+
+        CONVEYANCE SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1     27.8    161.5   2    161.5    450.0   3    450.0    647.0   4    647.0   1670.8
+        AREA OF CONVEYANCE SLICES
+           1          0.00       2         54.00       3       1580.25       4         74.17
+        WETTED PERIMETER OF CONVEYANCE SLICES
+           1          0.00       2         30.00       3        200.25       4         30.05
+        CONVYENACE OF CONVEYANCE SLICES
+           1          0.00       2        474.90       3     232685.11       4       1341.96
+
+   AREA-LEFT  AREA-MAIN AREA-RIGHT AREA-TOTAL     WP LEFT    WP MAIN   WP RIGHT   WP TOTAL      K LEFT     K MAIN    K RIGHT    K TOTAL
+       54.00    1580.25      74.17    1708.42       30.00     200.25      30.05     260.30      474.90  232685.11    1341.96  234501.95
+
+
+  I  ASSUMED    CALC     ERROR        EG       HL        FL    F_SLOPE    K        A            WP
+  2   215.06   215.06     0.0002    215.67    0.1335    0.0871  0.00290   234502.  1708.4   260.3
+
+         PROPERTY SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1     27.8    161.5   2    161.5    420.0   3    420.0    450.0   4    450.0    647.0   5    647.0    677.0   6    677.0   1670.8
+
+        AREA OF PROPERTY SLICES
+           1          0.00       2          0.00       3         53.99       4       1580.20       5         74.16       6          0.00
+
+         WETTED PERIMETER OF PROPERTY SLICES
+           1          0.00       2          0.00       3         30.00       4        200.25       5         30.05       6          0.00
+
+
+        CONVEYANCE SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1     27.8    161.5   2    161.5    450.0   3    450.0    647.0   4    647.0   1670.8
+        AREA OF CONVEYANCE SLICES
+           1          0.00       2         53.99       3       1580.20       4         74.16
+        WETTED PERIMETER OF CONVEYANCE SLICES
+           1          0.00       2         30.00       3        200.25       4         30.05
+        CONVYENACE OF CONVEYANCE SLICES
+           1          0.00       2        474.79       3     232673.31       4       1341.74
+
+   AREA-LEFT  AREA-MAIN AREA-RIGHT AREA-TOTAL     WP LEFT    WP MAIN   WP RIGHT   WP TOTAL      K LEFT     K MAIN    K RIGHT    K TOTAL
+       53.99    1580.20      74.16    1708.36       30.00     200.25      30.05     260.30      474.79  232673.31    1341.74  234489.84
+
+
+  I  ASSUMED    CALC     ERROR        EG       HL        FL    F_SLOPE    K        A            WP
+  3   215.06   215.06     0.0000    215.67    0.1335    0.0871  0.00290   234490.  1708.4   260.3
+ Final iteration based on computed WSEL
+
+         PROPERTY SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1     27.8    161.5   2    161.5    420.0   3    420.0    450.0   4    450.0    647.0   5    647.0    677.0   6    677.0   1670.8
+
+        AREA OF PROPERTY SLICES
+           1          0.00       2          0.00       3         53.99       4       1580.20       5         74.16       6          0.00
+
+         WETTED PERIMETER OF PROPERTY SLICES
+           1          0.00       2          0.00       3         30.00       4        200.25       5         30.05       6          0.00
+
+
+        CONVEYANCE SLICES -- NUMBER, STARTING STATION, ENDING STATION
+           1     27.8    161.5   2    161.5    450.0   3    450.0    647.0   4    647.0   1670.8
+        AREA OF CONVEYANCE SLICES
+           1          0.00       2         53.99       3       1580.20       4         74.16
+        WETTED PERIMETER OF CONVEYANCE SLICES
+           1          0.00       2         30.00       3        200.25       4         30.05
+        CONVYENACE OF CONVEYANCE SLICES
+           1          0.00       2        474.79       3     232673.31       4       1341.74
+
+   AREA-LEFT  AREA-MAIN AREA-RIGHT AREA-TOTAL     WP LEFT    WP MAIN   WP RIGHT   WP TOTAL      K LEFT     K MAIN    K RIGHT    K TOTAL
+       53.99    1580.20      74.16    1708.36       30.00     200.25      30.05     260.30      474.79  232673.31    1341.74  234489.84
+
+
+  I  ASSUMED    CALC     ERROR        EG       HL        FL    F_SLOPE    K        A            WP
+
+CROSS SEC   WSEL     EG        N  ERROR   Q        K     HL
+5.41      215.06    215.67     3 0.0000 10000. 234490.    0.13
+
+        **** EXIT STD_REAL ****
+
+        **** EXIT STDSTPBR ****
+
+        **** EXIT STDSTP ****
+
+        **** WSCHECK ****           CHECK FINAL WSEL
+
+        **** CRITWS ****            DETERMINE CRITICAL WSEL
+
+        **** EXIT CRITWS ****
+
+        **** EXIT WSCHECK ****
+
+        **** EXIT B_STDSTP ****
+
+CROSS SEC  METHOD           WSEL     EG         Q-BRIDGE    Q-WEIR
+5.39       STANDARD STEP   214.41   215.12       10000.0       0.0
+5.4        STANDARD STEP   214.46   215.29       10000.0       0.0
+5.4        STANDARD STEP   214.77   215.53       10000.0       0.0
+5.41       STANDARD STEP   215.06   215.67       10000.0       0.0
+
+        **** EXIT B_D_SS ****
+
+        **** B_D_M ****             BRIDGE DRIVER MOMENTUM
+
+        **** B_MOMENT ****          BRIDGE MOMENTUM
+
+        **** B_M_ITR1 ****          ITERATE BETWEEN TWO CROSS SECTIONS
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+ 10357.87  9809.17 -181.358    0.000    0.000    0.000  540.845    0.000  189.209       3
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  6395.99  6420.61 -200.204    0.000    0.000    0.000  174.927    0.000    0.660       3
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8737.54  8291.10 -160.078    0.000    0.000    0.000  417.312    0.000  189.209       3
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8367.54  7984.86 -164.074    0.000    0.000    0.000  390.095    0.000  156.657       3
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8552.25  8134.88 -162.061    0.000    0.000    0.000  403.576    0.000  175.856       3
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8677.87  8236.84 -160.754    0.000    0.000    0.000  412.573    0.000  189.209       3
+
+        **** B_M_ITR2 ****          ITERATE BETWEEN TWO CROSS SECTIONS
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8677.87  8236.84 -160.754    0.000    0.000    0.000  412.573    0.000  189.209       3
+
+    WS-TRY   SF     SF-CALC   SF-RATIO  WSMAX   WSMIN
+   214.41    8656.    8678.   0.0025   214.41   214.31
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8655.76  8218.90 -160.981    0.000    0.000    0.000  410.999    0.000  186.842       3
+
+    WS-TRY   SF     SF-CALC   SF-RATIO  WSMAX   WSMIN
+   214.39    8656.    8656.  -0.0000   214.41   214.31
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8661.39  8223.47 -160.923    0.000    0.000    0.000  411.400    0.000  187.444       3
+
+  WS-FINAL   SF     SF-CALC   SF-RATIO  WSMAX   WSMIN  CONVERGED
+   214.39    8656.    8661.   0.0006   214.41   214.39       T
+
+        **** EXIT B_MF_IT2 ****
+
+        **** B_M_ITR1 ****          ITERATE BETWEEN TWO CROSS SECTIONS
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  9427.21  9809.17 -383.332    1.376    0.000    0.000    0.000    0.000    0.000       2
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  5949.40  6420.62 -472.220    1.001    0.000    0.000    0.000    0.000    0.000       2
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8317.80  8635.69 -319.184    1.296    0.000    0.000    0.000    0.000    0.000       2
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  7974.74  8304.22 -330.755    1.270    0.000    0.000    0.000    0.000    0.000       2
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8143.36  8466.98 -324.895    1.283    0.000    0.000    0.000    0.000    0.000       2
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8229.87  8550.60 -322.021    1.289    0.000    0.000    0.000    0.000    0.000       2
+
+        **** B_M_ITR2 ****          ITERATE BETWEEN TWO CROSS SECTIONS
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8229.87  8550.60 -322.021    1.289    0.000    0.000    0.000    0.000    0.000       2
+
+    WS-TRY   SF     SF-CALC   SF-RATIO  WSMAX   WSMIN
+   214.69    8219.    8230.   0.0013   214.69   214.62
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8218.81  8539.91 -322.383    1.288    0.000    0.000    0.000    0.000    0.000       2
+
+    WS-TRY   SF     SF-CALC   SF-RATIO  WSMAX   WSMIN
+   214.69    8219.    8219.  -0.0000   214.69   214.62
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8221.61  8542.61 -322.291    1.289    0.000    0.000    0.000    0.000    0.000       2
+
+  WS-FINAL   SF     SF-CALC   SF-RATIO  WSMAX   WSMIN  CONVERGED
+   214.69    8219.    8222.   0.0003   214.69   214.69       T
+
+        **** EXIT B_MF_IT2 ****
+
+        **** B_M_ITR1 ****          ITERATE BETWEEN TWO CROSS SECTIONS
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+ 63708.56 64329.88  -80.853    0.000   -1.541 -438.658    0.000 -100.270    0.000       1
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  5358.01  6326.41 -278.540    0.000 -251.207 -438.658    0.000    0.000    0.000       1
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8652.20  9434.13 -137.397    0.000 -105.608 -438.658    0.000 -100.270    0.000       1
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8216.98  9013.15 -145.353    0.000 -111.885 -438.658    0.000 -100.270    0.000       1
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8431.07  9219.97 -141.311    0.000 -108.660 -438.658    0.000 -100.270    0.000       1
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8540.77  9326.15 -139.338    0.000 -107.113 -438.658    0.000 -100.270    0.000       1
+
+        **** B_M_ITR2 ****          ITERATE BETWEEN TWO CROSS SECTIONS
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8540.77  9326.15 -139.338    0.000 -107.113 -438.658    0.000 -100.270    0.000       1
+
+    WS-TRY   SF     SF-CALC   SF-RATIO  WSMAX   WSMIN
+   214.98    8540.    8541.   0.0001   214.98   214.91
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8512.76  9299.02 -139.836    0.000 -107.502 -438.658    0.000 -100.270    0.000       1
+
+    WS-TRY   SF     SF-CALC   SF-RATIO  WSMAX   WSMIN
+   214.96    8540.    8513.  -0.0032   214.98   214.91
+
+     SF_C     SF_A     FRIC   WEIGHT     DRAG  P1_STAT  P4_STAT  R1_STAT  R4_STAT  ISEC_CALC
+  8533.31  9318.92 -139.470    0.000 -107.216 -438.658    0.000 -100.270    0.000       1
+
+  WS-FINAL   SF     SF-CALC   SF-RATIO  WSMAX   WSMIN  CONVERGED
+   214.98    8540.    8533.  -0.0008   214.98   214.96       T
+
+        **** EXIT B_MF_IT2 ****
+
+        **** EXIT B_MOMENT ****
+
+        **** EXIT B_D_M ****
+
+CROSS SEC  METHOD           WSEL     EG         Q-BRIDGE    Q-WEIR
+5.39       MOMENTUM        214.41   215.12       10000.0       0.0
+5.4        MOMENTUM        214.39   215.23       10000.0       0.0
+5.4        MOMENTUM        214.69   215.46       10000.0       0.0
+5.41       MOMENTUM        214.98   215.60       10000.0       0.0
+
+        **** B_D_Y ****             BRIDGE DRIVER YARNELL
+
+        **** B_YARNEL ****          YARNELL
+
+TRIALS  WS_TRY   WS_CALC  ERROR    OMEGA      V    ALPHA       H
+
+        **** CRITWS ****            DETERMINE CRITICAL WSEL
+
+        **** EXIT CRITWS ****
+
+        **** EXIT B_YARNEL ****
+
+        **** EXIT B_D_Y ****
+
+CROSS SEC  METHOD           WSEL     EG         Q-BRIDGE    Q-WEIR
+5.41       YARNELL         214.58   215.27       10000.0       0.0
+
+        **** B_D_END ****           BRIDGE DRIVER END
+
+        **** EXIT B_D_END ****
+
+ final bridge method at 5.4      is YARNELL      
+
+ final upstream WSEL and EG for bridge is    215.06      215.27
+
+        **** EXIT B_DRIVER ****
+
+        **** B_END ****          BRIDGE END
+
+        **** EXIT B_END ****
+
+        **** EXIT BRIDGE ****
+
+        **** B_OUTPUT ****          BRIDGE OUTPUT
+
+        **** B_SIN_OP ****          BRIDGE OUTPUT
+
+        **** EXIT B_SIN_OP ****
+
+        **** EXIT B_OUTPUT ****
+
+ For cross section 5.41     the WSEL and EG is     215.06    215.67
+
+        **** EXIT I_OPEN ****
