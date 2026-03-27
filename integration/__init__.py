@@ -1,71 +1,24 @@
+"""HydroClaude 集成层 — 对外暴露 HydroMind 标准协议适配器
+
+本包将 HydroClaude 的高保真求解器包装为 hydromind-contracts 定义的标准接口，
+使 HydroMind/HydroClaw/HydroGuard 生态中的任何上层模块都能无缝调用。
+
+可用适配器：
+  HydroClaude1DSolverAdapter          水动力求解器（Preissmann）
+  HydroClaude1DWaterQualityAdapter    水质仿真（River1DSystem）
+  HydroClaude1DLeakDetectorAdapter    漏水/偷水检测（EKF，依赖 pipedream）
+  HydroClaude1DPollutionSourceAdapter 污染溯源（BLP-EnKF，依赖 pipedream）
 """
-外部工具集成模块
+from .hydromind_adapter import (
+    HydroClaude1DSolverAdapter,
+    HydroClaude1DWaterQualityAdapter,
+    HydroClaude1DLeakDetectorAdapter,
+    HydroClaude1DPollutionSourceAdapter,
+)
 
-本模块提供与外部水力学模拟工具的集成接口
-"""
-
-# SWMM集成
-try:
-    from .swmm_adapter import (
-        SWMMAdapter,
-        SWMMPIDController,
-        SWMMObjectType,
-        SWMMNodeState,
-        SWMMLinkState,
-        SWMMPumpState,
-        SWMMSystemState,
-        create_simple_swmm_model,
-        PYSWMM_AVAILABLE,
-    )
-    __all__ = [
-        'SWMMAdapter',
-        'SWMMPIDController',
-        'SWMMObjectType',
-        'SWMMNodeState',
-        'SWMMLinkState',
-        'SWMMPumpState',
-        'SWMMSystemState',
-        'create_simple_swmm_model',
-        'PYSWMM_AVAILABLE',
-    ]
-except ImportError as e:
-    print(f"警告: SWMM集成模块导入失败: {e}")
-
-try:
-    from .swmm_benchmark import (
-        SWMMOpenChannelCase,
-        build_swmm_input,
-        write_swmm_input,
-        extract_swmm_results,
-        run_swmm_open_channel_benchmark,
-    )
-    __all__.extend([
-        'SWMMOpenChannelCase',
-        'build_swmm_input',
-        'write_swmm_input',
-        'extract_swmm_results',
-        'run_swmm_open_channel_benchmark',
-    ])
-except ImportError as e:
-    print(f"警告: SWMM benchmark模块导入失败: {e}")
-
-try:
-    from .hec_ras_adapter import (
-        HECRASRuntimeStatus,
-        detect_hec_ras_runtime,
-        collect_hec_ras_case_scaffold,
-        prepare_hec_ras_benchmark,
-        export_hec_ras_status_json,
-        run_hec_ras_mixed_flow_sample,
-    )
-    __all__.extend([
-        'HECRASRuntimeStatus',
-        'detect_hec_ras_runtime',
-        'collect_hec_ras_case_scaffold',
-        'prepare_hec_ras_benchmark',
-        'export_hec_ras_status_json',
-        'run_hec_ras_mixed_flow_sample',
-    ])
-except ImportError as e:
-    print(f"警告: HEC-RAS集成模块导入失败: {e}")
-    __all__ = []
+__all__ = [
+    "HydroClaude1DSolverAdapter",
+    "HydroClaude1DWaterQualityAdapter",
+    "HydroClaude1DLeakDetectorAdapter",
+    "HydroClaude1DPollutionSourceAdapter",
+]
