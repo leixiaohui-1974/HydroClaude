@@ -298,10 +298,20 @@ class PreissmannUnsteadySolver:
         U_new, info = solver.solve(U_initial, residual_func, jacobian_func)
         converged = info["converged"]
         num_iter = info["iterations"]
-        
+
         if not converged:
             print(f"Warning: Newton solver did not converge after {num_iter} iterations.")
-            
+
+        # 物理约束：确保水深 h 不为负，防止数值发散
+        h_new, Q_new = self.unpack_state(U_new)
+        eps_h = 1e-6
+        if np.any(~np.isfinite(h_new)) or np.any(h_new < -1.0):
+            # 数值发散：回退到上一步的解，避免崩溃
+            print("Warning: Numerical blow-up detected. Falling back to previous step.")
+            return U_initial.copy()
+        h_new = np.maximum(h_new, eps_h)
+        U_new = self.pack_state(h_new, Q_new)
+
         return U_new
 
     def initialize_state(self, h_initial: float, Q_initial: float):
