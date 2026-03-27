@@ -155,7 +155,9 @@ class PreissmannSolver:
                  lpi_enabled: bool = True, lpi_threshold: float = 1.0,
                  lpi_exponent: float = 2.0,
                  slot_enabled: bool = True, slot_width_ratio: float = 0.01,
-                 slot_depth: float = 0.05):
+                 slot_depth: float = 0.05,
+                 use_picard_linearization: bool = False,
+                 picard_max_iter: int = 8, picard_tol: float = 1e-4):
         self.reach = reach
         self.theta = theta
         self.g = g
@@ -173,6 +175,10 @@ class PreissmannSolver:
         self.slot_enabled = slot_enabled
         self.slot_width_ratio = slot_width_ratio
         self.slot_depth = slot_depth
+        # HEC-RAS Picard linearization mode
+        self.use_picard_linearization = use_picard_linearization
+        self.picard_max_iter = picard_max_iter
+        self.picard_tol = picard_tol
         # Pre-build property tables for fast geometry lookup
         self._build_property_tables()
 
@@ -237,6 +243,73 @@ class PreissmannSolver:
                     self._pt_B[i, j] = max((self._pt_A[i, j] - self._pt_A[i, j-1]) / dd, 1e-6)
                 else:
                     self._pt_B[i, j] = max((self._pt_A[i, j+1] - self._pt_A[i, j-1]) / (2*dd), 1e-6)
+        # Channel-only (main channel) property tables for HEC-RAS Picard linearization
+        # Ac = channel area, Kc = channel conveyance, Bc = channel top width
+        # Used for dx_e (area-weighted effective length) and phi (flow distribution factor)
+        self._pt_Ac = np.zeros((n, n_pts))
+        self._pt_Kc = np.zeros((n, n_pts))
+        self._pt_Bc = np.zeros((n, n_pts))
+        has_banks = (reach.left_bank is not None and reach.right_bank is not None)
+        for i in range(n):
+            sec = reach.sections[i]
+            n_ch = reach.manning_n[i]
+            for j, d in enumerate(self._pt_depths):
+                if d <= 0:
+                    continue
+                if has_banks and hasattr(sec, 'distances') and hasattr(sec, 'elevations'):
+                    lb = reach.left_bank[i]
+                    rb = reach.right_bank[i]
+                    wl = reach.bed_elevation[i] + d
+                    # Compute channel-only area and conveyance
+                    xs = np.asarray(sec.distances)
+                    ys = np.asarray(sec.elevations)
+                    # Channel mask: stations between lb and rb
+                    ch_mask = (xs >= lb) & (xs <= rb)
+                    if np.sum(ch_mask) >= 2:
+                        xs_ch = np.clip(xs[ch_mask], lb, rb)
+                        ys_ch = ys[ch_mask]
+                        # Add boundary points (np.interp returns scalar, wrap in list)
+                        xs_ch_full = np.concatenate([[lb], xs_ch, [rb]])
+                        ys_ch_full = np.concatenate(
+                            [[float(np.interp(lb, xs, ys))], ys_ch, [float(np.interp(rb, xs, ys))]]
+                        ) if len(xs_ch) > 0 else np.array([wl, wl])
+                        # Compute area above bed (below water level)
+                        wet = wl - ys_ch_full
+                        wet = np.maximum(wet, 0.0)
+                        if len(xs_ch_full) >= 2:
+                            Ac_j = float(np.trapz(wet, xs_ch_full))
+                            # Wetted perimeter for channel
+                            Pc_j = 0.0
+                            for k in range(len(xs_ch_full) - 1):
+                                if wet[k] > 0 or wet[k+1] > 0:
+                                    Pc_j += np.sqrt((xs_ch_full[k+1]-xs_ch_full[k])**2 + (ys_ch_full[k+1]-ys_ch_full[k])**2)
+                            Pc_j = max(Pc_j, 1e-6)
+                            Kc_j = max((1.0/n_ch) * Ac_j * (Ac_j/Pc_j)**(2.0/3.0), 1e-10)
+                            self._pt_Ac[i, j] = max(Ac_j, 1e-10)
+                            self._pt_Kc[i, j] = Kc_j
+                            # Bc = dAc/dZ ≈ channel water surface width
+                            self._pt_Bc[i, j] = max(min(rb, np.max(xs_ch_full)) - max(lb, np.min(xs_ch_full)), 1e-6)
+                        else:
+                            self._pt_Ac[i, j] = self._pt_A[i, j]
+                            self._pt_Kc[i, j] = self._pt_K[i, j]
+                            self._pt_Bc[i, j] = self._pt_B[i, j]
+                    else:
+                        self._pt_Ac[i, j] = self._pt_A[i, j]
+                        self._pt_Kc[i, j] = self._pt_K[i, j]
+                        self._pt_Bc[i, j] = self._pt_B[i, j]
+                else:
+                    self._pt_Ac[i, j] = self._pt_A[i, j]
+                    self._pt_Kc[i, j] = self._pt_K[i, j]
+                    self._pt_Bc[i, j] = self._pt_B[i, j]
+        # Bc = dAc/dZ via central difference
+        for i in range(n):
+            for j in range(n_pts):
+                if j == 0:
+                    self._pt_Bc[i, j] = max((self._pt_Ac[i, 1] - self._pt_Ac[i, 0]) / dd, 1e-6)
+                elif j == n_pts - 1:
+                    self._pt_Bc[i, j] = max((self._pt_Ac[i, j] - self._pt_Ac[i, j-1]) / dd, 1e-6)
+                else:
+                    self._pt_Bc[i, j] = max((self._pt_Ac[i, j+1] - self._pt_Ac[i, j-1]) / (2*dd), 1e-6)
 
     def solve(self, state0: UnsteadyState, t_end: float, dt: float,
               upstream_bc: Any, downstream_bc: Any,
@@ -318,20 +391,86 @@ class PreissmannSolver:
         Z = Z_n.copy()
         Q = Q_n.copy()
         Q_up = float(upstream_bc(t_np1)) if Z_upstream is None else 0.0
-        A_n, B_n, K_n, bm_n, dKdZ_n = self._compute_hydraulics_all(Z_n, Q_n)
+        A_n, B_n, K_n, bm_n, dKdZ_n, Ac_n, Kc_n, Bc_n = self._compute_hydraulics_all(Z_n, Q_n)
         converged = False
         nr_iter = 0
-        best_F_norm = np.inf
-        best_Z = Z.copy()
-        best_Q = Q.copy()
         # Pre-compute downstream BC target for hard enforcement
         ds_Z_target = None
         if ds_junction_Z is not None:
             ds_Z_target = ds_junction_Z
         elif not hasattr(downstream_bc, "compute_normal_wse"):
             ds_Z_target = float(downstream_bc(t_np1))
+
+        if self.use_picard_linearization:
+            # ----------------------------------------------------------------
+            # HEC-RAS-style Picard linearization:
+            # Z_n/Q_n = old time step (fixed)
+            # Z_k/Q_k = current linearization point (updated each iteration)
+            # Jacobian uses HEC-RAS approximation (beta*V not 2*beta*V,
+            # node-averaged Sf not 4-pt, B*dz continuity)
+            # ----------------------------------------------------------------
+            Z_k = Z_n.copy()
+            Q_k = Q_n.copy()
+            picard_iter = 0
+            best_err = np.inf
+            best_Z_k = Z_k.copy()
+            best_Q_k = Q_k.copy()
+            for picard_iter in range(1, self.picard_max_iter + 1):
+                A_k, B_k, K_k, bm_k, dKdZ_k, Ac_k, Kc_k, Bc_k = self._compute_hydraulics_all(Z_k, Q_k)
+                # Correct Picard: Z_n/Q_n as old time step, Z_k/Q_k as linearization point
+                F, J = self._build_system(
+                    Z_k, Q_k, Z_n, Q_n,
+                    A_k, B_k, K_k, bm_k, dKdZ_k,
+                    A_n, B_n, K_n, bm_n,
+                    dt, Q_up, t_np1, downstream_bc,
+                    Z_up=Z_upstream, ds_junction_Z=ds_junction_Z,
+                    Ac=Ac_k, Kc=Kc_k, Bc=Bc_k,
+                    linearized_continuity=True)
+                try:
+                    delta = spsolve(J.tocsr(), -F)
+                except Exception:
+                    break
+                if not np.all(np.isfinite(delta)):
+                    break
+                dZ = delta[0::2]
+                dQ = delta[1::2]
+                # Clip updates to prevent divergence
+                dZ = np.clip(dZ, -self.max_dZ_per_iter, self.max_dZ_per_iter)
+                dQ = np.clip(dQ, -self.max_dQ_per_iter, self.max_dQ_per_iter)
+                Z_new = Z_k + dZ
+                Q_new = Q_k + dQ
+                # Enforce minimum depth
+                for i in range(n):
+                    z_min = reach.bed_elevation[i] + self.min_depth
+                    if Z_new[i] < z_min:
+                        Z_new[i] = z_min
+                err = max(np.max(np.abs(dZ)), np.max(np.abs(dQ)))
+                if err < best_err:
+                    best_err = err
+                    best_Z_k = Z_new.copy()
+                    best_Q_k = Q_new.copy()
+                Z_k = Z_new
+                Q_k = Q_new
+                if err < self.picard_tol:
+                    converged = True
+                    break
+            # Use best solution found
+            Z_k, Q_k = best_Z_k, best_Q_k
+            # Final BC enforcement
+            if Z_upstream is None:
+                Q_k[0] = Q_up
+            else:
+                Z_k[0] = Z_upstream
+            if ds_Z_target is not None:
+                Z_k[-1] = ds_Z_target
+            return Z_k, Q_k, converged, picard_iter
+
+        # --- Standard Newton-Raphson ---
+        best_F_norm = np.inf
+        best_Z = Z.copy()
+        best_Q = Q.copy()
         for nr_iter in range(1, self.nr_max_iter + 1):
-            A, B, K, bm, dKdZ = self._compute_hydraulics_all(Z, Q)
+            A, B, K, bm, dKdZ, Ac, Kc, Bc = self._compute_hydraulics_all(Z, Q)
             F, J = self._build_system(Z, Q, Z_n, Q_n, A, B, K, bm, dKdZ, A_n, B_n, K_n, bm_n,
                                       dt, Q_up, t_np1, downstream_bc, Z_up=Z_upstream,
                                       ds_junction_Z=ds_junction_Z)
@@ -404,8 +543,9 @@ class PreissmannSolver:
         """Fast geometry lookup using pre-computed property tables (np.interp).
 
         Returns:
-            A, B, K, beta_m, dK_dZ: arrays of shape (n,)
+            A, B, K, beta_m, dK_dZ, Ac, Kc, Bc: arrays of shape (n,)
             dK_dZ is the derivative of K w.r.t. Z (= dK/d(depth) since Z = bed + depth).
+            Ac, Kc, Bc are channel-only area, conveyance, and top width.
         """
         n = self.n
         depths = np.maximum(Z - self.reach.bed_elevation, self.min_depth)
@@ -434,7 +574,14 @@ class PreissmannSolver:
                 slot_w = np.maximum(B * self.slot_width_ratio, 0.05)
                 A[mask] = np.maximum(A[mask], slot_w[mask] * self.slot_depth)
                 B[mask] = np.maximum(B[mask], slot_w[mask])
-        return A, B, K, beta_m, dK_dZ
+        # Channel-only hydraulics for Picard linearization
+        Ac = np.array([np.interp(depths[i], d_tab, self._pt_Ac[i]) for i in range(n)])
+        Kc = np.array([np.interp(depths[i], d_tab, self._pt_Kc[i]) for i in range(n)])
+        Bc = np.array([np.interp(depths[i], d_tab, self._pt_Bc[i]) for i in range(n)])
+        Ac = np.maximum(Ac, 1e-6)
+        Kc = np.maximum(Kc, 1e-6)
+        Bc = np.maximum(Bc, 0.01)
+        return A, B, K, beta_m, dK_dZ, Ac, Kc, Bc
 
     def _compute_cell_equation_terms(
         self,
@@ -614,7 +761,7 @@ class PreissmannSolver:
             "Sf_loss_4pt": float(sf_loss_4pt),
         }
 
-    def _build_system(self, Z, Q, Z_n, Q_n, A, B, K, bm, dKdZ, A_n, B_n, K_n, bm_n, dt, Q_up, t_np1, downstream_bc, Z_up=None, ds_junction_Z=None):
+    def _build_system(self, Z, Q, Z_n, Q_n, A, B, K, bm, dKdZ, A_n, B_n, K_n, bm_n, dt, Q_up, t_np1, downstream_bc, Z_up=None, ds_junction_Z=None, Ac=None, Kc=None, Bc=None, linearized_continuity=False):
         n = len(Z)
         neq = 2 * n
         reach = self.reach
@@ -688,54 +835,132 @@ class PreissmannSolver:
             Sf_loss = 0.0
             Sf_loss_n = 0.0
         eq_c = 2 * np.arange(nm1) + 1
-        F[eq_c] = (
-            (A_R + A_L - A_Rn - A_Ln) / (2.0 * dt)
-            + theta       * (Q_R  - Q_L)  / dx
-            + (1.0-theta) * (Q_Rn - Q_Ln) / dx
-        )
         eq_m = 2 * np.arange(nm1) + 2
         # Contraction/expansion loss: 4-point averaged
         Sf_loss_4pt = theta * Sf_loss + (1.0 - theta) * Sf_loss_n if not isinstance(Sf_loss, float) or Sf_loss != 0.0 else 0.0
-        F[eq_m] = (
-            sigma   * (Q_R  + Q_L  - Q_Rn  - Q_Ln) / (2.0 * dt)
-            + sigma   * theta       * (beta_R  - beta_L)  / dx
-            + sigma_n * (1.0-theta) * (beta_Rn - beta_Ln) / dx
-            + gA_4pt * dZ_4pt / dx
-            + gA_4pt * (Sf + Sf_loss_4pt)
-        )
         col_Z_L = 2 * np.arange(nm1)
         col_Q_L = 2 * np.arange(nm1) + 1
         col_Z_R = 2 * np.arange(nm1) + 2
         col_Q_R = 2 * np.arange(nm1) + 3
-        Jc_ZL = B_L / (2.0 * dt)
-        Jc_QL = -theta / dx
-        Jc_ZR = B_R / (2.0 * dt)
-        Jc_QR = theta / dx
-        dbeta_L_dZL = -bm_L * (Q_L**2) / (A_L**2) * B_L
-        dbeta_L_dQL =  2.0 * bm_L * Q_L / A_L
-        dbeta_R_dZR = -bm_R * (Q_R**2) / (A_R**2) * B_R
-        dbeta_R_dQR =  2.0 * bm_R * Q_R / A_R
-        # Jacobian using 4-point averaged quantities
-        # d(Sf)/d(Q_L) = d(Q4|Q4|/K4²)/dQ_L = 2|Q4|/K4² * θ*0.5
-        dSf_dQavg = 2.0 * np.abs(Q_4pt) / K2_4pt * theta * 0.5
-        # d(Sf)/d(Z_L) via K: Sf = Q4|Q4|/K4², dSf/dK4 = -2*Q4|Q4|/K4³ = -2Sf/K4
-        # dK4/dZ_L = θ * 0.5 * dK_L/dZ_L
         dKdZ_L = dKdZ[:-1]
         dKdZ_R = dKdZ[1:]
-        dSf_dZL_via_K = -2.0 * Sf / np.maximum(K_4pt, 1e-10) * theta * 0.5 * dKdZ_L
-        dSf_dZR_via_K = -2.0 * Sf / np.maximum(K_4pt, 1e-10) * theta * 0.5 * dKdZ_R
-        # d(gA4*Sf)/dZ_L = g * dA4/dZ_L * Sf + gA4 * dSf/dZ_L
-        dgASf_dZL = g * 0.5 * theta * B_L * Sf + gA_4pt * dSf_dZL_via_K
-        dgASf_dZR = g * 0.5 * theta * B[1:] * Sf + gA_4pt * dSf_dZR_via_K if len(B) > 1 else dgASf_dZL
-        dgASf_dQL = gA_4pt * dSf_dQavg
-        dgASf_dQR = gA_4pt * dSf_dQavg
-        dgAdZ_dZL = g * 0.5 * theta * B_L * dZ_4pt / dx - gA_4pt / dx * theta
-        dgAdZ_dZR = g * 0.5 * theta * B[1:] * dZ_4pt / dx + gA_4pt / dx * theta if len(B) > 1 else dgAdZ_dZL
-        # dgAdZ and dgASf terms already contain their own theta factors — do NOT multiply by theta again
-        Jm_ZL = sigma * theta * (-dbeta_L_dZL / dx) + dgAdZ_dZL + dgASf_dZL
-        Jm_QL = sigma / (2.0 * dt) + sigma * theta * (-dbeta_L_dQL / dx) + dgASf_dQL
-        Jm_ZR = sigma * theta * ( dbeta_R_dZR / dx) + dgAdZ_dZR + dgASf_dZR
-        Jm_QR = sigma / (2.0 * dt) + sigma * theta * ( dbeta_R_dQR / dx) + dgASf_dQR
+
+        if linearized_continuity:
+            # ================================================================
+            # HEC-RAS Table 3/4 linearized scheme (Picard mode)
+            # Uses B*(dz) linearization for continuity and node-averaged Sf
+            # for momentum. Matches debug_hecras_linear.py: hecras_linear_step
+            # ================================================================
+            # Effective reach length dx_e (area-weighted, HEC-RAS style)
+            # When dx_lob/dx_rob are available, use them; otherwise dx_e = dx
+            if reach.dx_lob is not None and reach.dx_rob is not None and Ac is not None and Kc is not None and Bc is not None:
+                Ac_L = Ac[:-1]; Ac_R = Ac[1:]
+                Af_L = np.maximum(A_L - Ac_L, 0.0)
+                Af_R = np.maximum(A_R - Ac_R, 0.0)
+                A_total = np.maximum(A_L + A_R, 1e-10)
+                dx_ch = dx
+                dx_f = 0.5 * (reach.dx_lob + reach.dx_rob)
+                dx_e = ((Ac_L + Ac_R) * dx_ch + (Af_L + Af_R) * dx_f) / A_total
+                dx_e = np.maximum(dx_e, 1.0)
+                phi_L = np.minimum(Kc[:-1] / np.maximum(K_L, 1e-10), 1.0)
+                phi_R = np.minimum(Kc[1:]  / np.maximum(K_R, 1e-10), 1.0)
+                Bc_L = Bc[:-1]; Bc_R = Bc[1:]
+                Bf_L = np.maximum(B_L - Bc_L, 0.0)
+                Bf_R = np.maximum(B_R - Bc_R, 0.0)
+                B_eff_L = (Bc_L * dx_ch + Bf_L * dx_f) / dx_e
+                B_eff_R = (Bc_R * dx_ch + Bf_R * dx_f) / dx_e
+                inertia_Q_L = 0.5 * (phi_L * dx_ch + (1.0 - phi_L) * dx_f) / (dx_e * dt)
+                inertia_Q_R = 0.5 * (phi_R * dx_ch + (1.0 - phi_R) * dx_f) / (dx_e * dt)
+            else:
+                # Simple case: dx_e = dx, B_eff = B, phi = 1
+                dx_e = dx
+                B_eff_L = B_L
+                B_eff_R = B_R
+                inertia_Q_L = 0.5 / dt * np.ones(nm1)
+                inertia_Q_R = 0.5 / dt * np.ones(nm1)
+
+            # Table 3: Continuity equation (HEC-RAS linearized: B*dz + theta*dQ/dx_e)
+            F[eq_c] = (
+                B_eff_L * (Z_L - Z_Ln) / (2.0 * dt)
+                + B_eff_R * (Z_R - Z_Rn) / (2.0 * dt)
+                + theta       * (Q_R  - Q_L)  / dx_e
+                + (1.0-theta) * (Q_Rn - Q_Ln) / dx_e
+            )
+            # Table 4: Momentum equation (HEC-RAS linearized form)
+            # Friction: Sf_avg = (Sf_L + Sf_R) / 2 (node-averaged, not 4-pt)
+            Sf_L_node = Q_L**2 / np.maximum(K_L**2, 1e-30)
+            Sf_R_node = Q_R**2 / np.maximum(K_R**2, 1e-30)
+            Sf_lin_avg = 0.5 * (Sf_L_node + Sf_R_node)
+            Sf_n_L_node = Q_Ln**2 / np.maximum(K_Ln**2, 1e-30)
+            Sf_n_R_node = Q_Rn**2 / np.maximum(K_Rn**2, 1e-30)
+            Sf_n_lin_avg = 0.5 * (Sf_n_L_node + Sf_n_R_node)
+            F[eq_m] = (
+                inertia_Q_L * (Q_L - Q_Ln)
+                + inertia_Q_R * (Q_R - Q_Rn)
+                + sigma   * theta       * (beta_R  - beta_L)  / dx_e
+                + sigma_n * (1.0-theta) * (beta_Rn - beta_Ln) / dx_e
+                + g * A_avg * dZ_4pt / dx_e
+                + g * A_avg * (theta * Sf_lin_avg + (1.0-theta) * Sf_n_lin_avg)
+                + g * A_avg * Sf_loss_4pt
+            )
+            # Jacobian (HEC-RAS Table 3/4 linearized)
+            Jc_ZL = B_eff_L / (2.0 * dt)
+            Jc_QL = -theta / dx_e
+            Jc_ZR = B_eff_R / (2.0 * dt)
+            Jc_QR = theta / dx_e
+            # Momentum Jacobian (HEC-RAS approximation)
+            # Convective: d(beta*Q^2/A)/dQ ≈ beta*V (not 2*beta*V)
+            V_L = Q_L / np.maximum(A_L, 1e-10)
+            V_R = Q_R / np.maximum(A_R, 1e-10)
+            conv_dQL = -bm_L * V_L * theta / dx_e
+            conv_dQR =  bm_R * V_R * theta / dx_e
+            # Friction: gA * Sf / |Q|
+            fric_dQL = theta * g * A_avg * Sf_lin_avg / np.maximum(np.abs(Q_L), 1e-6)
+            fric_dQR = theta * g * A_avg * Sf_lin_avg / np.maximum(np.abs(Q_R), 1e-6)
+            # Friction Z-derivative: -2*gA*Sf/K * dK/dZ * theta/2
+            dSf_dZL_lin = -2.0 * Sf_lin_avg / np.maximum(K_avg, 1e-10) * theta * 0.5 * dKdZ_L
+            dSf_dZR_lin = -2.0 * Sf_lin_avg / np.maximum(K_avg, 1e-10) * theta * 0.5 * dKdZ_R
+            Jm_ZL = -g * A_avg * theta / dx_e + g * A_avg * dSf_dZL_lin
+            Jm_QL = sigma * inertia_Q_L + conv_dQL + fric_dQL
+            Jm_ZR =  g * A_avg * theta / dx_e + g * A_avg * dSf_dZR_lin
+            Jm_QR = sigma * inertia_Q_R + conv_dQR + fric_dQR
+        else:
+            # ================================================================
+            # Standard NR scheme (original)
+            # ================================================================
+            F[eq_c] = (
+                (A_R + A_L - A_Rn - A_Ln) / (2.0 * dt)
+                + theta       * (Q_R  - Q_L)  / dx
+                + (1.0-theta) * (Q_Rn - Q_Ln) / dx
+            )
+            F[eq_m] = (
+                sigma   * (Q_R  + Q_L  - Q_Rn  - Q_Ln) / (2.0 * dt)
+                + sigma   * theta       * (beta_R  - beta_L)  / dx
+                + sigma_n * (1.0-theta) * (beta_Rn - beta_Ln) / dx
+                + gA_4pt * dZ_4pt / dx
+                + gA_4pt * (Sf + Sf_loss_4pt)
+            )
+            Jc_ZL = B_L / (2.0 * dt)
+            Jc_QL = -theta / dx
+            Jc_ZR = B_R / (2.0 * dt)
+            Jc_QR = theta / dx
+            dbeta_L_dZL = -bm_L * (Q_L**2) / (A_L**2) * B_L
+            dbeta_L_dQL =  2.0 * bm_L * Q_L / A_L
+            dbeta_R_dZR = -bm_R * (Q_R**2) / (A_R**2) * B_R
+            dbeta_R_dQR =  2.0 * bm_R * Q_R / A_R
+            dSf_dQavg = 2.0 * np.abs(Q_4pt) / K2_4pt * theta * 0.5
+            dSf_dZL_via_K = -2.0 * Sf / np.maximum(K_4pt, 1e-10) * theta * 0.5 * dKdZ_L
+            dSf_dZR_via_K = -2.0 * Sf / np.maximum(K_4pt, 1e-10) * theta * 0.5 * dKdZ_R
+            dgASf_dZL = g * 0.5 * theta * B_L * Sf + gA_4pt * dSf_dZL_via_K
+            dgASf_dZR = g * 0.5 * theta * B[1:] * Sf + gA_4pt * dSf_dZR_via_K if len(B) > 1 else dgASf_dZL
+            dgASf_dQL = gA_4pt * dSf_dQavg
+            dgASf_dQR = gA_4pt * dSf_dQavg
+            dgAdZ_dZL = g * 0.5 * theta * B_L * dZ_4pt / dx - gA_4pt / dx * theta
+            dgAdZ_dZR = g * 0.5 * theta * B[1:] * dZ_4pt / dx + gA_4pt / dx * theta if len(B) > 1 else dgAdZ_dZL
+            Jm_ZL = sigma * theta * (-dbeta_L_dZL / dx) + dgAdZ_dZL + dgASf_dZL
+            Jm_QL = sigma / (2.0 * dt) + sigma * theta * (-dbeta_L_dQL / dx) + dgASf_dQL
+            Jm_ZR = sigma * theta * ( dbeta_R_dZR / dx) + dgAdZ_dZR + dgASf_dZR
+            Jm_QR = sigma / (2.0 * dt) + sigma * theta * ( dbeta_R_dQR / dx) + dgASf_dQR
         # Upstream BC Jacobian: col=0 for Z_up BC, col=1 for Q_up BC
         us_col = np.array([0 if Z_up is not None else 1])
         rows = np.concatenate([us_col * 0, eq_c, eq_c, eq_c, eq_c, eq_m, eq_m, eq_m, eq_m])
