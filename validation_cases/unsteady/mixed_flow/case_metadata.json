@@ -1,0 +1,24 @@
+{
+  "case_id": "unsteady_mixed_flow_01",
+  "title": "Mixed Flow Regime",
+  "category": "mixed_flow",
+  "status": "active",
+  "modeling_basis_case": "hec_project_mixed_flow_regime_mixedflow_p02",
+  "steady_basis_case": "steady_family_mixed_flow_channel",
+  "hec_ras_mode": "1d_mixed_flow",
+  "hydroclaude_solver": "preissmann",
+  "runner_mode": "single_reach_json_preissmann",
+  "unit_system": "si",
+  "source_reference_json": "reports/hecras_unsteady_reference/MixedFlowRegime_unsteady_ref.json",
+  "source_hdf": "",
+  "validation_targets": [
+    "stage_mae",
+    "regime_transition",
+    "peak_timing_error",
+    "mass_balance"
+  ],
+  "output_stations": [],
+  "notes": [
+    "This case should later gain a Godunov-FVM comparison path for cross-critical robustness."
+  ]
+}

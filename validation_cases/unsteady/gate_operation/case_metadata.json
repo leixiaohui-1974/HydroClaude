@@ -1,0 +1,25 @@
+{
+  "case_id": "unsteady_gate_operation_01",
+  "title": "Gate Operation Placeholder",
+  "category": "gate_operation",
+  "status": "planned",
+  "modeling_basis_case": "hec_project_gate_operation_placeholder",
+  "steady_basis_case": "steady_gap_gate_operation",
+  "hec_ras_mode": "1d_unsteady_structure_control",
+  "hydroclaude_solver": "preissmann",
+  "runner_mode": "inventory_only",
+  "unit_system": "si",
+  "source_reference_json": "",
+  "source_hdf": "",
+  "validation_targets": [
+    "stage_mae",
+    "discharge_mae",
+    "peak_timing_error",
+    "mass_balance"
+  ],
+  "output_stations": [],
+  "notes": [
+    "No canonical gate-operation reference JSON has been attached yet.",
+    "Use this case to bind the first extracted HEC-RAS gate-control dataset."
+  ]
+}

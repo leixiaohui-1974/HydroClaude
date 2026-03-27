@@ -1,0 +1,26 @@
+{
+  "case_id": "unsteady_case_template",
+  "title": "Template Case",
+  "category": "dam_break",
+  "status": "planned",
+  "modeling_basis_case": "basis_registry_modeling_case_id",
+  "steady_basis_case": "basis_registry_steady_case_id",
+  "hec_ras_mode": "1d_finite_volume",
+  "hydroclaude_solver": "godunov_fvm",
+  "runner_mode": "inventory_only",
+  "unit_system": "si",
+  "source_reference_json": "",
+  "source_hdf": "",
+  "validation_targets": [
+    "stage_mae",
+    "peak_timing",
+    "mass_balance"
+  ],
+  "output_stations": [],
+  "notes": [
+    "Fill source_reference_json when HEC-RAS reference extraction is ready.",
+    "Do not use HEC-RAS result fields as HydroClaude input.",
+    "Non-unsteady validation must inherit the same modeling basis and a passed steady basis.",
+    "Resolve both basis IDs through validation_cases/unsteady/metadata/basis_registry.json."
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "case_id": "unsteady_flood_routing_01",
+  "title": "Example 17 Unsteady Flood Routing",
+  "category": "flood_routing",
+  "status": "active",
+  "modeling_basis_case": "hec_project_example17_diamond_p01",
+  "steady_basis_case": "steady_gap_example17_same_project",
+  "hec_ras_mode": "1d_finite_difference_network",
+  "hydroclaude_solver": "preissmann_network",
+  "runner_mode": "network_json_preissmann",
+  "unit_system": "si",
+  "source_reference_json": "reports/hecras_unsteady_reference/Example17_Unsteady_unsteady_ref.json",
+  "source_hdf": "",
+  "validation_targets": [
+    "stage_mae",
+    "discharge_mae",
+    "peak_timing_error",
+    "mass_balance"
+  ],
+  "output_stations": [],
+  "notes": [
+    "This case exercises multi-reach unsteady routing and junction handling.",
+    "The exact same-project steady prerequisite for the Diamond geometry is still a planned gap and has not been registered as a validated steady asset.",
+    "This case is also blocked by first-principles feature gaps around storage areas, storage-area connections, and lateral-structure-to-storage exchange, so it must not be treated as an ordinary network patch target."
+  ]
+}

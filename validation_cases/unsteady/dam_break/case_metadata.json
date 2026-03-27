@@ -1,0 +1,27 @@
+{
+  "case_id": "unsteady_dam_breaching_01",
+  "title": "Dam Breaching",
+  "category": "dam_break",
+  "status": "active",
+  "modeling_basis_case": "hec_project_dam_breaching_baldeagledambrk_p06",
+  "steady_basis_case": "steady_gap_dam_breaching_same_project",
+  "hec_ras_mode": "1d_finite_volume_or_unsteady_structure",
+  "hydroclaude_solver": "preissmann",
+  "runner_mode": "single_reach_json_preissmann",
+  "unit_system": "si",
+  "source_reference_json": "reports/hecras_unsteady_reference/DamBreaching_unsteady_ref.json",
+  "source_hdf": "",
+  "validation_targets": [
+    "stage_mae",
+    "peak_stage_error",
+    "peak_timing_error",
+    "mass_balance"
+  ],
+  "output_stations": [],
+  "notes": [
+    "Current runner uses the existing Preissmann benchmark path.",
+    "This case should later add a Godunov-FVM route for true FV comparison.",
+    "The same-project steady prerequisite is still a planned gap: the pre-breach reservoir/downstream steady base state has not been registered as a steady asset.",
+    "Until that steady precursor exists, this case cannot claim same-project three-stage closure and solver patching must not be used to paper over the missing prerequisite."
+  ]
+}

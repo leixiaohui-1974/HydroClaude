@@ -1,0 +1,24 @@
+{
+  "case_id": "unsteady_junction_hydraulics_01",
+  "title": "Junction Hydraulics",
+  "category": "junction_hydraulics",
+  "status": "active",
+  "modeling_basis_case": "hec_project_junctionhydraulics_p02",
+  "steady_basis_case": "steady_family_stream_junction",
+  "hec_ras_mode": "1d_finite_difference_network",
+  "hydroclaude_solver": "preissmann_network",
+  "runner_mode": "network_json_preissmann",
+  "unit_system": "si",
+  "source_reference_json": "reports/hecras_unsteady_reference/JunctionHydraulics_unsteady_ref.json",
+  "source_hdf": "",
+  "validation_targets": [
+    "stage_mae",
+    "junction_balance",
+    "peak_timing_error",
+    "mass_balance"
+  ],
+  "output_stations": [],
+  "notes": [
+    "This case exercises junction storage and multi-reach topology handling."
+  ]
+}

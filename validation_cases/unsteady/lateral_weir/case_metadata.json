@@ -1,0 +1,24 @@
+{
+  "case_id": "unsteady_lateral_weir_01",
+  "title": "Example 20 Lateral Weir",
+  "category": "lateral_weir",
+  "status": "active",
+  "modeling_basis_case": "hec_project_example20_hagerlatweir_p07",
+  "steady_basis_case": "steady_family_lateral_weir_split_flow",
+  "hec_ras_mode": "1d_unsteady_lateral_structure",
+  "hydroclaude_solver": "preissmann",
+  "runner_mode": "single_reach_json_preissmann",
+  "unit_system": "si",
+  "source_reference_json": "reports/hecras_unsteady_reference/Example20_LateralWeir_unsteady_ref.json",
+  "source_hdf": "",
+  "validation_targets": [
+    "stage_mae",
+    "lateral_diversion_response",
+    "peak_timing_error",
+    "mass_balance"
+  ],
+  "output_stations": [],
+  "notes": [
+    "This case should later be split into main-channel and lateral-structure diagnostics."
+  ]
+}

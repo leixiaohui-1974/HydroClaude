@@ -1,0 +1,206 @@
+{
+  "version": 1,
+  "scope": "HEC-RAS unsteady benchmark pipeline traceability for HydroClaude",
+  "notes": [
+    "This registry is the single traceability source for modeling-basis and steady-basis IDs used by validation_cases/unsteady/*/case_metadata.json.",
+    "A same_physics_family steady basis is acceptable for active engineering work, but it is not equivalent to a same-project steady re-run.",
+    "planned_gap means the exact steady prerequisite is not yet backfilled and must be closed before claiming full three-stage closure."
+  ],
+  "modeling_basis_cases": {
+    "hec_project_bridge_hydraulics_beaver_p03": {
+      "basis_status": "same_project_unsteady_source",
+      "hec_ras_project_name": "Bridge Hydraulics",
+      "hec_ras_plan_short_id": "p03",
+      "hec_ras_plan_title": "Unsteady with 100 yr event",
+      "artifacts": [
+        "reports/hecras_cases/bridge_hydraulics/report.json",
+        "reports/hecras_unsteady_reference/BridgeHydraulics_unsteady_ref.json"
+      ],
+      "notes": [
+        "Unsteady modeling source is the Beaver bridge project extracted from HEC-RAS.",
+        "Exact same-project steady backfill is not yet extracted into reports/hecras_reference_data.",
+        "Source project beaver.prj currently contains zero steady flow files (`steady_flows`: []), so same-project steady closure cannot be backfilled from existing project outputs alone.",
+        "Any future same-project steady prerequisite for this case requires creating and running a dedicated steady HEC-RAS plan from the Beaver bridge project inputs before new artifacts can be registered."
+      ]
+    },
+    "hec_project_culvert_hydraulics_beav_culvert_p01": {
+      "basis_status": "same_project_unsteady_source",
+      "hec_ras_project_name": "Culvert Hydraulics",
+      "hec_ras_plan_short_id": "p01",
+      "hec_ras_plan_title": "Unsteady with 100 year event",
+      "artifacts": [
+        "reports/hecras_cases/culvert_hydraulics/report.json",
+        "reports/hecras_unsteady_reference/CulvertHydraulics_unsteady_ref.json"
+      ],
+      "notes": [
+        "Unsteady modeling source is the Beav_Culvert project extracted from HEC-RAS.",
+        "Source project Beav_Culvert.prj currently contains zero steady flow files (`steady_flows`: []), so same-project steady closure cannot be backfilled from existing project outputs alone.",
+        "Any future same-project steady prerequisite for this case requires creating and running a dedicated steady HEC-RAS plan from the Beav_Culvert project inputs before new artifacts can be registered."
+      ]
+    },
+    "hec_project_dam_breaching_baldeagledambrk_p06": {
+      "basis_status": "same_project_unsteady_source",
+      "hec_ras_project_name": "Dam Breaching",
+      "hec_ras_plan_short_id": "p06",
+      "hec_ras_plan_title": "PMF - Froehlich Breach Parameters",
+      "artifacts": [
+        "reports/hecras_cases/dam_breaching/report.json",
+        "reports/hecras_unsteady_reference/DamBreaching_unsteady_ref.json"
+      ],
+      "notes": [
+        "Unsteady modeling source is the BaldEagleDamBrk project extracted from HEC-RAS.",
+        "The current registered asset set does not yet include the reservoir/downstream channel steady base state needed for same-project three-stage closure.",
+        "Do not treat current Preissmann-run unsteady validation as evidence that the dam-breach steady prerequisite has been satisfied.",
+        "Before same-project closure can be claimed, extract and register the steady precursor representing the pre-breach reservoir/downstream base state from the same project context."
+      ]
+    },
+    "hec_project_example17_diamond_p01": {
+      "basis_status": "same_project_unsteady_source",
+      "hec_ras_project_name": "Example 17 - Unsteady Flow Application",
+      "hec_ras_plan_short_id": "p01",
+      "hec_ras_plan_title": "Diamond River Base Plan",
+      "artifacts": [
+        "reports/hecras_cases/example_17_unsteady_flow_application/report.json",
+        "reports/hecras_unsteady_reference/Example17_Unsteady_unsteady_ref.json"
+      ],
+      "notes": [
+        "Unsteady modeling source is the Example 17 Diamond project extracted from HEC-RAS.",
+        "The current registered asset set does not yet include the exact same-project steady precursor for the Diamond geometry.",
+        "Current HydroClaude network validation is additionally blocked by first-principles feature gaps around storage-area connections and lateral-structure-to-storage exchange.",
+        "Do not treat current network runs as ordinary routing failures or as evidence of same-project three-stage closure until both the steady precursor and the missing dynamic components are addressed."
+      ]
+    },
+    "hec_project_example20_hagerlatweir_p07": {
+      "basis_status": "same_project_unsteady_source",
+      "hec_ras_project_name": "Example 20 - HagerLatWeir",
+      "hec_ras_plan_short_id": "p07",
+      "hec_ras_plan_title": "Unsteady Sharp Crest S=10ft/mi",
+      "artifacts": [
+        "reports/hecras_cases/example_20_hagerlatweir/report.json",
+        "reports/hecras_unsteady_reference/Example20_LateralWeir_unsteady_ref.json"
+      ]
+    },
+    "hec_project_junctionhydraulics_p02": {
+      "basis_status": "same_project_unsteady_source",
+      "hec_ras_project_name": "JunctionHydraulics",
+      "hec_ras_plan_short_id": "p02",
+      "hec_ras_plan_title": "Junction Hydraulics On Run",
+      "artifacts": [
+        "reports/hecras_cases/junctionhydraulics/report.json",
+        "reports/hecras_unsteady_reference/JunctionHydraulics_unsteady_ref.json"
+      ]
+    },
+    "hec_project_mixed_flow_regime_mixedflow_p02": {
+      "basis_status": "same_project_unsteady_source",
+      "hec_ras_project_name": "Mixed Flow Regime",
+      "hec_ras_plan_short_id": "p02",
+      "hec_ras_plan_title": "Unsteady with Mixed Flow Regime",
+      "artifacts": [
+        "reports/hecras_cases/mixed_flow_regime/report.json",
+        "reports/hecras_unsteady_reference/MixedFlowRegime_unsteady_ref.json"
+      ]
+    },
+    "hec_project_multiple_reaches_3reachunsteady_p01": {
+      "basis_status": "same_project_unsteady_source",
+      "hec_ras_project_name": "Multiple Reaches with Hydraulic Structures",
+      "hec_ras_plan_short_id": "p01",
+      "hec_ras_plan_title": "Existing Conditions",
+      "artifacts": [
+        "reports/hecras_cases/multiple_reaches_with_hydraulic_structures/report.json",
+        "reports/hecras_unsteady_reference/MultipleReaches_unsteady_ref.json"
+      ]
+    },
+    "hec_project_gate_operation_placeholder": {
+      "basis_status": "planned_gap",
+      "hec_ras_project_name": "Gate Operation Placeholder",
+      "hec_ras_plan_short_id": "",
+      "hec_ras_plan_title": "",
+      "artifacts": [],
+      "notes": [
+        "No extracted HEC-RAS gate-operation project has been registered yet."
+      ]
+    }
+  },
+  "steady_basis_cases": {
+    "steady_family_bridge_beaver_bridge_scour": {
+      "basis_status": "same_physics_family",
+      "description": "Bridge/channel steady family used as the current static prerequisite for Bridge Hydraulics.",
+      "artifacts": [
+        "reports/hecras_reference_data/example_2__beaver_creek_BEAVCREK.p01.json",
+        "reports/hecras_reference_data/example_11__bridge_scour_SCOUR.p01.json"
+      ],
+      "notes": [
+        "This is a physics-family steady basis, not a same-project Beaver p03 steady rerun.",
+        "Source project beaver.prj currently exposes zero steady flow files (`steady_flows`: []), so same-project steady closure is not backfillable from the current project artifact set.",
+        "To upgrade this case to same-project three-stage closure, create and run a dedicated steady Beaver plan first, then register its extracted steady artifacts."
+      ]
+    },
+    "steady_family_culvert_examples": {
+      "basis_status": "same_physics_family",
+      "description": "Culvert steady family used as the current static prerequisite for Culvert Hydraulics.",
+      "artifacts": [
+        "reports/hecras_reference_data/example_3__single_culvert_TWINPIPE.p01.json",
+        "reports/hecras_reference_data/example_4__multiple_culverts_MULTCULV.p01.json"
+      ],
+      "notes": [
+        "This is a physics-family steady basis, not a same-project Beav_Culvert p01 steady rerun.",
+        "Source project Beav_Culvert.prj currently exposes zero steady flow files (`steady_flows`: []), so same-project steady closure is not backfillable from the current project artifact set.",
+        "To upgrade this case to same-project three-stage closure, create and run a dedicated steady Beav_Culvert plan first, then register its extracted steady artifacts."
+      ]
+    },
+    "steady_gap_dam_breaching_same_project": {
+      "basis_status": "planned_gap",
+      "description": "Dam-breach same-project steady precursor has not yet been backfilled into the steady reference registry.",
+      "artifacts": [],
+      "notes": [
+        "Before claiming full three-stage closure, add the reservoir/downstream channel steady base state for BaldEagleDamBrk."
+      ]
+    },
+    "steady_gap_example17_same_project": {
+      "basis_status": "planned_gap",
+      "description": "Example 17 exact same-project steady prerequisite is not yet extracted as a validated steady asset.",
+      "artifacts": [],
+      "notes": [
+        "Do not treat the current unsteady result as full pipeline closure until the Diamond geometry steady basis is backfilled."
+      ]
+    },
+    "steady_gap_gate_operation": {
+      "basis_status": "planned_gap",
+      "description": "Gate-operation steady prerequisite is not registered yet.",
+      "artifacts": []
+    },
+    "steady_family_stream_junction": {
+      "basis_status": "same_physics_family",
+      "description": "Steady stream-junction basis used for junction unsteady topology verification.",
+      "artifacts": [
+        "reports/hecras_reference_data/example_10__stream_junction_JUNCTION.p02.json"
+      ]
+    },
+    "steady_family_lateral_weir_split_flow": {
+      "basis_status": "same_physics_family",
+      "description": "Steady split-flow/lateral-weir basis used for Example 20 lateral-weir unsteady verification.",
+      "artifacts": [
+        "reports/hecras_reference_data/example_15__split_flow_junction_with_lateral_weir_SPLIT_LW.p01.json"
+      ]
+    },
+    "steady_family_mixed_flow_channel": {
+      "basis_status": "same_physics_family",
+      "description": "Steady mixed-flow basis used for mixed-flow unsteady verification.",
+      "artifacts": [
+        "reports/hecras_reference_data/mixed_flow_regime_channel_MIXED.p01.json",
+        "reports/hecras_reference_data/example_9__mixed_flow_analysis_MIXFLOW.p02.json"
+      ]
+    },
+    "steady_family_network_structures": {
+      "basis_status": "same_physics_family",
+      "description": "Steady network-plus-structure family used as the current static prerequisite for Multiple Reaches.",
+      "artifacts": [
+        "reports/hecras_reference_data/example_10__stream_junction_JUNCTION.p02.json",
+        "reports/hecras_reference_data/example_12__inline_structure_NIT.p01.json"
+      ],
+      "notes": [
+        "This is a composite steady family basis until the exact 3ReachUnsteady steady precursor is extracted."
+      ]
+    }
+  }
+}

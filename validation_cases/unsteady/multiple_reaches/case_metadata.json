@@ -1,0 +1,24 @@
+{
+  "case_id": "unsteady_multiple_reaches_01",
+  "title": "Multiple Reaches",
+  "category": "multiple_reaches",
+  "status": "active",
+  "modeling_basis_case": "hec_project_multiple_reaches_3reachunsteady_p01",
+  "steady_basis_case": "steady_family_network_structures",
+  "hec_ras_mode": "1d_finite_difference_network",
+  "hydroclaude_solver": "preissmann_network",
+  "runner_mode": "network_json_preissmann",
+  "unit_system": "si",
+  "source_reference_json": "reports/hecras_unsteady_reference/MultipleReaches_unsteady_ref.json",
+  "source_hdf": "",
+  "validation_targets": [
+    "stage_mae",
+    "network_routing",
+    "peak_timing_error",
+    "mass_balance"
+  ],
+  "output_stations": [],
+  "notes": [
+    "This case is intended to stress multi-reach routing before more complex storage/junction combinations."
+  ]
+}

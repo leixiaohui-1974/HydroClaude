@@ -1,0 +1,26 @@
+{
+  "case_id": "unsteady_culvert_hydraulics_01",
+  "title": "Culvert Hydraulics",
+  "category": "culvert_hydraulics",
+  "status": "active",
+  "modeling_basis_case": "hec_project_culvert_hydraulics_beav_culvert_p01",
+  "steady_basis_case": "steady_family_culvert_examples",
+  "hec_ras_mode": "1d_unsteady_structure_htab",
+  "hydroclaude_solver": "preissmann",
+  "runner_mode": "single_reach_json_preissmann",
+  "unit_system": "si",
+  "source_reference_json": "reports/hecras_unsteady_reference/CulvertHydraulics_unsteady_ref.json",
+  "source_hdf": "",
+  "validation_targets": [
+    "stage_mae",
+    "discharge_mae",
+    "structure_response",
+    "mass_balance"
+  ],
+  "output_stations": [],
+  "notes": [
+    "This case will later need a focused culvert-physics audit against HDS-5 assumptions.",
+    "The source HEC-RAS project Beav_Culvert.prj currently has no steady flow files, so this case cannot claim same-project three-stage closure with the present asset set.",
+    "Any future same-project steady prerequisite for this case requires creating and running a dedicated steady Beav_Culvert plan before registry backfill."
+  ]
+}

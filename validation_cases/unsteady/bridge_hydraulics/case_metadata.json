@@ -1,0 +1,26 @@
+{
+  "case_id": "unsteady_bridge_hydraulics_01",
+  "title": "Bridge Hydraulics",
+  "category": "bridge_hydraulics",
+  "status": "active",
+  "modeling_basis_case": "hec_project_bridge_hydraulics_beaver_p03",
+  "steady_basis_case": "steady_family_bridge_beaver_bridge_scour",
+  "hec_ras_mode": "1d_unsteady_structure_htab",
+  "hydroclaude_solver": "preissmann",
+  "runner_mode": "single_reach_json_preissmann",
+  "unit_system": "si",
+  "source_reference_json": "reports/hecras_unsteady_reference/BridgeHydraulics_unsteady_ref.json",
+  "source_hdf": "",
+  "validation_targets": [
+    "stage_mae",
+    "discharge_mae",
+    "structure_response",
+    "mass_balance"
+  ],
+  "output_stations": [],
+  "notes": [
+    "This case exercises structure HTAB coupling in the existing single-reach Preissmann runner.",
+    "The source HEC-RAS project beaver.prj currently has no steady flow files, so this case cannot claim same-project three-stage closure with the present asset set.",
+    "Any future same-project steady prerequisite for this case requires creating and running a dedicated steady Beaver plan before registry backfill."
+  ]
+}
