@@ -466,6 +466,13 @@ class PreissmannSolver:
             return Z_k, Q_k, converged, picard_iter
 
         # --- Standard Newton-Raphson ---
+        # Initialize Z[-1] to ds_Z_target so NR starts from a feasible point
+        if ds_Z_target is not None:
+            Z[-1] = ds_Z_target
+        if Z_upstream is not None:
+            Z[0] = Z_upstream
+        else:
+            Q[0] = Q_up
         best_F_norm = np.inf
         best_Z = Z.copy()
         best_Q = Q.copy()
@@ -494,13 +501,7 @@ class PreissmannSolver:
             dQ = np.clip(delta[1::2], -self.max_dQ_per_iter, self.max_dQ_per_iter)
             Z = Z + dZ
             Q = Q + dQ
-            # Enforce boundary conditions directly after NR update
-            if Z_upstream is None:
-                Q[0] = Q_up
-            else:
-                Z[0] = Z_upstream
-            if ds_Z_target is not None:
-                Z[-1] = ds_Z_target
+            # Enforce minimum depth only (BC is handled by the linear system)
             for i in range(n):
                 z_min = reach.bed_elevation[i] + self.min_depth
                 if Z[i] < z_min:
@@ -994,8 +995,13 @@ class PreissmannSolver:
 
         # Downstream BC layout
         # When ds_junction_Z or Z_up is set: keep ALL momentum, DS BC at last row
-        # Otherwise (default): overwrite last momentum with DS Z, Q smoothing at last row
-        keep_all_momentum = (Z_up is not None) or (ds_junction_Z is not None)
+        # For StageHydrographBC (not NormalDepthBC): also keep all momentum, DS BC at last row
+        # For NormalDepthBC: overwrite last momentum with DS Z (Q-dependent), Q smoothing at last row
+        keep_all_momentum = (
+            (Z_up is not None)
+            or (ds_junction_Z is not None)
+            or (not hasattr(downstream_bc, "compute_normal_wse"))
+        )
 
         if keep_all_momentum:
             eq_ds = neq - 1
