@@ -1,0 +1,65 @@
+Total: 67 projects
+[1/67] 1D Steady Flow Hydraulics\Baxter RAS Mapper\RAS Model... 2/2 OK (7s)
+[2/67] 1D Steady Flow Hydraulics\Chapter 4 Example Data... 1/1 OK (1s)
+[3/67] 1D Steady Flow Hydraulics\ConSpan Culvert... C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2/2 OK (21s)
+[4/67] 1D Steady Flow Hydraulics\Mixed Flow Regime Channel... 1/1 OK (9s)
+[5/67] 1D Steady Flow Hydraulics\Wailupe GeoRAS... C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2/2 OK (23s)
+[6/67] 1D Unsteady Flow Hydraulics\Balde Eagle Creek... C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2/2 OK (284s)
+[7/67] 1D Unsteady Flow Hydraulics\Bridge Hydraulics... 1/1 OK (39s)
+[8/67] 1D Unsteady Flow Hydraulics\ContractionExpansionMinorLosses... C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2/2 OK (38s)
+[9/67] 1D Unsteady Flow Hydraulics\Culvert Hydraulics... 1/1 OK (23s)
+[10/67] 1D Unsteady Flow Hydraulics\Culverts with Flap Gates... 1/1 OK (16s)
+[11/67] 1D Unsteady Flow Hydraulics\Dam Breaching... C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2/2 OK (356s)
+[12/67] 1D Unsteady Flow Hydraulics\Elevation Controled Gates... 1/1 OK (15s)
+[13/67] 1D Unsteady Flow Hydraulics\Inline Structure with Gated Spillways... 1/1 OK (15s)
+[14/67] 1D Unsteady Flow Hydraulics\Internal Stage and Flow Boundary Condition... 1/1 OK (14s)
+[15/67] 1D Unsteady Flow Hydraulics\JunctionHydraulics... C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2/2 OK (102s)
+[16/67] 1D Unsteady Flow Hydraulics\Lateral Strcuture with Gates... 1/1 OK (17s)
+[17/67] 1D Unsteady Flow Hydraulics\Lateral Structure connected to a River Reach... 1/1 OK (55s)
+[18/67] 1D Unsteady Flow Hydraulics\Lateral Structure Overflow Weir... 1/1 OK (17s)
+[19/67] 1D Unsteady Flow Hydraulics\Lateral Structure with Culverts... 1/1 OK (17s)
+[20/67] 1D Unsteady Flow Hydraulics\Lateral Structure with Culverts and Gates... 1/1 OK (16s)
+[21/67] 1D Unsteady Flow Hydraulics\Levee Breaching... 1/1 OK (34s)
+[22/67] 1D Unsteady Flow Hydraulics\Mixed Flow Regime... C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2/2 OK (53s)
+[23/67] 1D Unsteady Flow Hydraulics\Multiple Reaches with Hydraulic Structures... C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2/2 OK (347s)
+[24/67] 1D Unsteady Flow Hydraulics\NavigationDam... 1/1 OK (95s)
+[25/67] 1D Unsteady Flow Hydraulics\NavigationDam... 1/1 OK (71s)
+[26/67] 1D Unsteady Flow Hydraulics\Pumping Station... 1/1 OK (18s)
+[27/67] 1D Unsteady Flow Hydraulics\Pumping Station with Rules... 1/1 OK (16s)
+[28/67] 1D Unsteady Flow Hydraulics\Pumping Station with Rules... FAIL (0s): [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'C:\\temp\\hecras_run\\P
+[29/67] 1D Unsteady Flow Hydraulics\Rule Operations... 1/1 OK (110s)
+[30/67] 1D Unsteady Flow Hydraulics\Rule Operations... 1/1 OK (20s)
+[31/67] 1D Unsteady Flow Hydraulics\Rule Operations... 1/1 OK (24s)
+[32/67] 1D Unsteady Flow Hydraulics\Rule Operations... 1/1 OK (23s)
+[33/67] 1D Unsteady Flow Hydraulics\Simplified Physical Breaching... 1/1 OK (451s)
+[34/67] 1D Unsteady Flow Hydraulics\Simplified Physical Breaching... 1/1 OK (68s)
+[35/67] 1D Unsteady Flow Hydraulics\Simplified Physical Breaching... 1/1 OK (46s)
+[36/67] 1D Unsteady Flow Hydraulics\Storage Area Hydraulic Connection... 1/1 OK (15s)
+[37/67] 1D Unsteady Flow Hydraulics\UngagedAreaInflows... C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2/2 OK (42s)
+[38/67] 1D Unsteady Flow Hydraulics\Unsteady Flow Encroachment Analysis... 

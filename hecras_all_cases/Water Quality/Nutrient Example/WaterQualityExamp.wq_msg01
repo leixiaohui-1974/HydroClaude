@@ -1,0 +1,86 @@
+ 
+ Start simulation at :  0.000000000000000E+000
+ End of simulation at:   4.00000000000000     
+ Maximum time step:      3600.00000000000     
+ 
+ Write output at dt=  1.041666666666670E-002
+ 
+ Additional output requested
+     upstream face flow       = F
+     upstream face velocity   = F
+     upstream face area       = F
+     upstream face dispersion = F
+ 
+     cell volume              = F
+     cell surface area        = F
+     cell continuity err      = F
+     cell cumulative err      = F
+ 
+     upstream face conc       = F
+     upstream face dc/dx      = F
+     upstream face adv mass   = F
+     upstream face disp mass  = F
+ 
+     cell mass                = F
+ 
+ restart file:
+    none requested
+ 
+ Non-conservative transport methology
+ Use Ultimate Limiter =  T
+ Compute Dispersion   =  F
+ Computed Dispersion Factor =    1.00000000000000     
+ 
+ Initial Conditions
+ 
+ Boundary conditions
+ boundary condition read in for face:           1  constituent:           1
+ boundary condition read in for face:           0  constituent:           1
+ boundary condition read in for face:           0  constituent:           1
+ boundary condition read in for face:           0  constituent:           1
+ boundary condition read in for face:           1  constituent:           2
+ boundary condition read in for face:           0  constituent:           2
+ boundary condition read in for face:           0  constituent:           2
+ boundary condition read in for face:           0  constituent:           2
+ boundary condition read in for face:           1  constituent:           3
+ boundary condition read in for face:           0  constituent:           3
+ boundary condition read in for face:           0  constituent:           3
+ boundary condition read in for face:           0  constituent:           3
+ boundary condition read in for face:           1  constituent:           4
+ boundary condition read in for face:           0  constituent:           4
+ boundary condition read in for face:           0  constituent:           4
+ boundary condition read in for face:           0  constituent:           4
+ boundary condition read in for face:           1  constituent:           5
+ boundary condition read in for face:           0  constituent:           5
+ boundary condition read in for face:           0  constituent:           5
+ boundary condition read in for face:           0  constituent:           5
+ boundary condition read in for face:           1  constituent:           6
+ boundary condition read in for face:           0  constituent:           6
+ boundary condition read in for face:           0  constituent:           6
+ boundary condition read in for face:           0  constituent:           6
+ boundary condition read in for face:           1  constituent:           7
+ boundary condition read in for face:           0  constituent:           7
+ boundary condition read in for face:           0  constituent:           7
+ boundary condition read in for face:           0  constituent:           7
+ boundary condition read in for face:           1  constituent:           8
+ boundary condition read in for face:           0  constituent:           8
+ boundary condition read in for face:           0  constituent:           8
+ boundary condition read in for face:           0  constituent:           8
+ boundary condition read in for face:           1  constituent:           9
+ boundary condition read in for face:           0  constituent:           9
+ boundary condition read in for face:           0  constituent:           9
+ boundary condition read in for face:           0  constituent:           9
+ End reading boundary conditions
+ 
+ About to start reading lateral boundary conditions
+ Read lateral boundary condition upstream RS:13.18    downstream RS:12.75   
+ Read lateral boundary condition upstream RS:10.2     downstream RS:9.35    
+ Read lateral boundary condition upstream RS:5.95     downstream RS:5.10    
+ End of reading lateral boundary conditions
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      About to read met datasets
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   Finished reading met datasets
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         About to read cell met dataset indicies
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Finished reading cell met dataset indicies
+ 
+Maximum Time Step =    13.32 min
+Minimum Time Step =    13.32 min

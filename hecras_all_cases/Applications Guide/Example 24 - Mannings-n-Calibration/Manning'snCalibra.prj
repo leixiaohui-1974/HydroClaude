@@ -1,0 +1,45 @@
+Proj Title=Manning's n Calibration
+Current Plan=p01
+Default Exp/Contr=0.3,0.1
+English Units
+Geom File=g01
+Unsteady File=u01
+Plan File=p01
+Plan File=p02
+Plan File=p03
+Plan File=p04
+Plan File=p05
+Y Axis Title=Elevation
+X Axis Title(PF)=Main Channel Distance
+X Axis Title(XS)=Station
+BEGIN DESCRIPTION:
+
+END DESCRIPTION:
+DSS Start Date=25sep2004
+DSS Start Time=12:00
+DSS End Date=05MAR2005
+DSS End Time=12:00
+DSS File=dss
+DSS Export Filename=
+DSS Export Rating Curves= 0 
+DSS Export Rating Curve Sorted= 0 
+DSS Export Volume Flow Curves= 0 
+DXF Filename=..\Pittsburgh-031810_after_add_IB\OHS.
+DXF OffsetX= 0 
+DXF OffsetY= 0 
+DXF ScaleX= 1 
+DXF ScaleY= 10 
+GIS Export Reach=Cumberland River,Cumberland River
+GIS Export SA=1055            
+GIS Export SA=1056            
+GIS Export SA=1057            
+GIS Export SA=1071            
+GIS Export SA=1079            
+GIS Export SA=1088            
+GIS Export SA=1093            
+GIS Export SA=1096            
+GIS Export SA=1097            
+GIS Export SA=1346            
+GIS Export SA=1347            
+GIS Export SA=1348            
+GIS Export Profiles= 0 

@@ -1,0 +1,32 @@
+<VRTDataset rasterXSize="681" rasterYSize="569">
+  <SRS dataAxisToSRSAxisMapping="1,2">PROJCS["NAD83(HARN) / California zone 2 (ftUS)",GEOGCS["NAD83(HARN)",DATUM["NAD83_High_Accuracy_Reference_Network",SPHEROID["GRS 1980",6378137,298.257222101004,AUTHORITY["EPSG","7019"]],AUTHORITY["EPSG","6152"]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["latitude_of_origin",37.6666666666667],PARAMETER["central_meridian",-122],PARAMETER["standard_parallel_1",39.8333333333333],PARAMETER["standard_parallel_2",38.3333333333333],PARAMETER["false_easting",6561666.667],PARAMETER["false_northing",1640416.667],UNIT["US survey foot",0.304800609601219,AUTHORITY["EPSG","9003"]],AXIS["Easting",EAST],AXIS["Northing",NORTH]]</SRS>
+  <GeoTransform>  6.6246089105912847e+06,  2.8845244883894431e+01,  0.0000000000000000e+00,  1.9736486808886456e+06,  0.0000000000000000e+00, -2.8845244883894431e+01</GeoTransform>
+  <VRTRasterBand dataType="Float32" band="1">
+    <Metadata>
+      <MDI key="STATISTICS_MAXIMUM">73.03125</MDI>
+      <MDI key="STATISTICS_MEAN">44.616939069377</MDI>
+      <MDI key="STATISTICS_MINIMUM">22.875</MDI>
+      <MDI key="STATISTICS_STDDEV">6.6302569491622</MDI>
+    </Metadata>
+    <NoDataValue>-9999</NoDataValue>
+    <ColorInterp>Gray</ColorInterp>
+    <Histograms>
+      <HistItem>
+        <HistMin>22.875</HistMin>
+        <HistMax>73.03125</HistMax>
+        <BucketCount>256</BucketCount>
+        <IncludeOutOfRange>1</IncludeOutOfRange>
+        <Approximate>0</Approximate>
+        <HistCounts>16|5|6|1|1|28|11|7|11|6|0|6|6|13|19|14|18|6|11|13|11|17|93|89|103|157|151|144|153|187|183|149|169|305|320|647|409|573|543|620|698|605|659|837|1018|828|922|1104|1455|1187|1516|1487|862|887|872|1062|965|1051|1191|1421|1282|1347|1427|1716|1499|1461|1804|1710|1877|2095|2501|2235|2294|2348|2735|2351|2414|3030|2581|2721|2882|3646|3168|3284|3173|3698|3445|3604|3801|4607|3947|4219|4711|3884|3949|3706|4087|3347|3320|3241|3936|3273|3220|3929|3591|3742|3422|3994|3115|2966|2842|3566|3304|3296|3440|3886|3108|3037|3515|3048|3146|3216|3993|3495|3409|3272|3904|3429|3753|4560|4033|3981|3888|4920|4105|4034|3597|3902|3290|3047|3378|2996|2985|2603|2832|2555|2501|2576|2890|2509|2380|2306|2765|2050|1908|2179|1573|1515|1494|1761|1447|1382|1266|1450|1256|1175|1290|1210|1212|1189|1450|1413|1570|1499|1475|862|748|686|828|647|645|531|411|336|260|223|122|109|85|80|81|49|41|36|34|35|51|22|12|21|17|8|11|10|16|5|8|3|3|3|2|6|1|7|3|4|1|3|1|3|1|4|5|3|2|1|5|4|4|5|1|4|1|4|3|2|1|1|6|0|3|0|1|2|2|2|1|0|0|1|1|1|1|0|0|1</HistCounts>
+      </HistItem>
+    </Histograms>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">Terrain (1).Davis_terrain2.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="681" RasterYSize="569" DataType="Float32" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="681" ySize="569" />
+      <DstRect xOff="0" yOff="0" xSize="681" ySize="569" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+</VRTDataset>

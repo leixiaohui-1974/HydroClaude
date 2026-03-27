@@ -1,0 +1,75 @@
+ 
+                                              HEC-RAS - River Analysis System
+ 
+ 
+Project File:  d:\HEC\HEC-RAS\Automated Tests 6.2.0\Examples\2D Unsteady Flow Hydraulics\BaldEagleCrkMulti2D\BaldEagleDamBrk.prj
+ 
+Project Name:  Bald Eagle Creek Example Dam Break Study
+ 
+ 
+Plan Name:     Gridded Precip - Infiltration
+ 
+Short ID:      Grid Precip Infiltration
+ 
+
+Starting Time:   08Sep2018 2400
+
+Ending Time:     13Sep2018 2400
+
+
+                ################################################
+                #                                              #
+                #                                              #
+                #       1D and 2D Unsteady Flow Module         #
+                #                                              #
+                #                                              #
+                #          HEC-RAS 6.2 March                   #
+                #                                              #
+                #             11MAR22 at 14:00:26              #
+                #                                              #
+                ################################################
+                
+ 
+ 
+ 
+
+         US Inflow      DS Outflow       Lat Hydro        SA Hydro     Groundwater      Diversions   Precip Excess   Precip Excess
+                                                                                                       (Acre Feet)        (Inches)
+         *********      **********       *********        ********     ***********      **********   *************   *************
+                                                                                                                          0.000000
+
+    Start 1D Reach  Final 1D Reach   Starting SA's      Final SA's
+    **************  **************   *************      **********
+                                                                  
+
+
+
+                 ***   Volume Accounting for 2D Flow Area in Acre Feet   ***
+
+           2D Area    Starting Vol      Ending Vol      Cum Inflow     Cum Outflow           Error   Percent Error   Precip Excess   Precip Excess
+                                                    (incl. precip)                                                     (Acre Feet)        (Inches)
+           *******    ************      **********      **********     ***********           *****   *************   *************   *************
+ 
+ 
+       BaldEagleCr                         124450.         141685.          17244.           9.603        0.006778           3757.           1.708
+
+
+
+                 ***   Total Volume Accounting (for the entire model) in Acre Feet   ***
+
+Total Boundary Flux of Water In          141685.
+Total Boundary Flux of Water Out          17244.
+
+Starting Volume                         0.000000
+Ending Volume                            124450.
+
+Precipitation Excess (Acre Feet)           3757.
+Precipitation Excess (inches)              1.708
+
+
+                             Error   Percent Error
+                             *****   *************
+                             9.603        0.006778
+
+
+

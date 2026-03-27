@@ -1,0 +1,31 @@
+Proj Title=SedRuleLat
+Current Plan=p05
+Default Exp/Contr=0.3,0.1
+English Units
+Geom File=g03
+Unsteady File=u02
+Sediment File=s03
+Plan File=p05
+Y Axis Title=Elevation
+X Axis Title(PF)=Main Channel Distance
+X Axis Title(XS)=Station
+DSS Caption Additional Text=Jensen
+BEGIN DESCRIPTION:
+
+END DESCRIPTION:
+DSS Start Date=2/10/1999
+DSS Start Time=0000
+DSS End Date=2/12/1999
+DSS End Time=2400
+DSS File=..\u_Unsteady Rules Example\SedRuleLat.dss
+DSS File=dss
+DSS Export Filename=
+DSS Export Rating Curves= 0 
+DSS Export Rating Curve Sorted= 0 
+DSS Export Volume Flow Curves= 0 
+DXF Filename=..\..\..\HEC Data\HEC-RAS\Unsteady Examples\Beav_Lateral.
+DXF OffsetX= 0 
+DXF OffsetY= 0 
+DXF ScaleX= 1 
+DXF ScaleY= 10 
+GIS Export Profiles= 0 

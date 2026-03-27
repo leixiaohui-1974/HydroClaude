@@ -1,0 +1,122 @@
+Flow Title=Concentration Rules
+Program Version=6.00
+Use Restart= 0 
+Initial Flow Loc=Beaver Creek    ,Kentwood        ,5.99    ,5000
+Initial Storage Elev=STo #1          ,205
+Boundary Location=Beaver Creek    ,Kentwood        ,5.99    ,        ,                ,                ,                ,                                
+Interval=1HOUR
+Flow Hydrograph= 200 
+ 5024.65 5098.34 5220.25 5389.05 5602.89 5859.42 6155.85 6488.91 6854.97    7250
+ 7669.69 8109.42  8564.4 9029.62    9500 9970.38 10435.610890.5811330.31   11750
+12145.0312511.0912844.1513140.5813397.1113610.9513779.7513901.6613975.35   14000
+13975.3513901.6613779.7513610.9513397.1113140.5812844.1512511.0912145.03   11750
+11330.3110890.58 10435.6 9970.38 9727.97 9497.38 9278.04  9069.4 8870.94 8682.15
+ 8502.57 8331.74 8169.25 8014.69 7867.66  7727.8 7594.77 7468.22 7347.84 7233.33
+ 7124.41 7020.81 6922.25  6828.5 6739.32  6654.5 6573.81 6497.05 6424.04 6354.59
+ 6288.52 6225.68  6165.9 6109.04 6054.95  6003.5 5954.56 5908.01 5863.72  5821.6
+ 5781.53 5743.41 5707.16 5672.67 5639.86 5608.66 5578.97 5550.73 5523.87 5498.32
+ 5474.02  5450.9 5428.91 5407.99  5388.1 5369.17 5351.16 5334.04 5317.75 5302.25
+ 5289.23 5276.21 5263.18 5250.16 5237.14 5224.12 5211.09 5198.07 5185.05 5172.03
+    5159 5145.98 5132.96 5119.94 5106.91 5093.89 5080.87 5067.85 5054.82  5041.8
+ 5028.78 5015.76 5002.73 4989.71 4976.69 4963.67 4950.64 4937.62  4924.6 4911.58
+ 4898.55 4885.53 4872.51 4859.49 4846.46 4833.44 4820.42  4807.4 4794.37 4781.35
+ 4768.33 4755.31 4742.28 4729.26 4716.24 4703.22 4690.19 4677.17 4664.15 4651.13
+  4638.1 4625.08 4612.06 4599.04 4586.01 4572.99 4559.97 4546.95 4533.92  4520.9
+ 4507.88 4494.86 4481.83 4468.81 4455.79 4442.77 4429.74 4416.72  4403.7 4390.68
+ 4377.65 4364.63 4351.61 4338.59 4325.56 4312.54 4299.52  4286.5 4273.47 4260.45
+ 4247.43 4234.41 4221.38 4208.36 4195.34 4182.32 4169.29 4156.27 4143.25 4130.23
+  4117.2 4104.18 4091.16 4078.14 4065.11 4052.09 4039.07 4026.05 4013.02    4000
+Stage Hydrograph TW Check=0
+Flow Hydrograph QMult= 0.7 
+DSS Path=
+Use DSS=False
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=
+Boundary Location=Beaver Creek    ,Kentwood        ,5.4     ,        ,                ,                ,                ,                                
+Rule Operation=Type=3,Var Type=1,Sim Group=Lateral Structures,Sim Function=Gate.Opening
+Rule Expression=,Constant=0
+Rule Operation=Type=2,Var Name=Concentration,Var Type=1,River=Beaver Creek,Reach=Kentwood,RS=5.491,Sim Group=Cross Sections,Sim Function=Sediment Concentration,Time=1
+Rule Operation=Type=4,Var Type=1,Branch Type=0,Branch Or=0,BranchCompare1=3,BranchCompare2=0
+Rule Expression=,Variable=Concentration
+Rule Expression=,Constant=8000
+Rule Operation=Type=3,Var Type=1,Sim Group=Lateral Structures,Sim Function=Gate.Opening
+Rule Expression=,Constant=5
+Rule Operation=Type=4,Var Type=1,Branch Type=4,Branch Or=0,BranchCompare1=0,BranchCompare2=0
+Rule Operation=Type=3,Var Type=1,Sim Group=Lateral Structures,Sim Function=Gate.Opening
+Rule Expression=,Constant=0
+Rule Operation=Type=4,Var Type=1,Branch Type=5,Branch Or=0,BranchCompare1=0,BranchCompare2=0
+
+Rule Gate Data=Gate #1     ,0.01,0.01,5,0,0
+Boundary Location=Beaver Creek    ,Kentwood        ,5.0     ,        ,                ,                ,                ,                                
+Interval=1HOUR
+Rating Curve= 18 
+  201.44     200  203.39     500  204.56    1000  205.77    2000   206.6    3000
+  207.13    4000  207.55    5000  207.98    6000  208.29    7000  208.57    8000
+  208.83    9000  209.08   10000  209.32   11000  209.55   12000  209.77   13000
+  209.98   14000  210.58   20000  211.13   25000
+DSS Path=
+Use DSS=False
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=
+Met Point Raster Parameters=,,,,
+Precipitation Mode=Disable
+Wind Mode=No Wind Forces
+Air Density Mode=
+Met BC=Precipitation|Expanded View=0
+Met BC=Precipitation|Point Interpolation=Nearest
+Met BC=Precipitation|Gridded Source=DSS
+Met BC=Evapotranspiration|Expanded View=0
+Met BC=Evapotranspiration|Point Interpolation=Nearest
+Met BC=Evapotranspiration|Gridded Source=DSS
+Met BC=Wind Speed|Expanded View=0
+Met BC=Wind Speed|Constant Units=ft/s
+Met BC=Wind Speed|Point Interpolation=Nearest
+Met BC=Wind Speed|Gridded Source=DSS
+Met BC=Wind Direction|Expanded View=0
+Met BC=Wind Direction|Point Interpolation=Nearest
+Met BC=Wind Direction|Gridded Source=DSS
+Met BC=Wind Velocity X|Expanded View=0
+Met BC=Wind Velocity X|Constant Units=ft/s
+Met BC=Wind Velocity X|Point Interpolation=Nearest
+Met BC=Wind Velocity X|Gridded Source=DSS
+Met BC=Wind Velocity Y|Expanded View=0
+Met BC=Wind Velocity Y|Constant Units=ft/s
+Met BC=Wind Velocity Y|Point Interpolation=Nearest
+Met BC=Wind Velocity Y|Gridded Source=DSS
+Met BC=Air Density|Mode=Constant
+Met BC=Air Density|Expanded View=0
+Met BC=Air Density|Constant Value=1.225
+Met BC=Air Density|Point Interpolation=Nearest
+Met BC=Air Density|Gridded Source=DSS
+Met BC=Air Temperature|Expanded View=0
+Met BC=Air Temperature|Point Interpolation=Nearest
+Met BC=Air Temperature|Gridded Source=DSS
+Met BC=Humidity|Expanded View=0
+Met BC=Humidity|Point Interpolation=Nearest
+Met BC=Humidity|Gridded Source=DSS
+Met BC=Air Pressure|Expanded View=0
+Met BC=Air Pressure|Point Interpolation=Nearest
+Met BC=Air Pressure|Gridded Source=DSS
+Non-Newtonian Method= 0 ,  
+Non-Newtonian Constant Vol Conc=0
+Non-Newtonian Yield Method= 0 ,  
+Non-Newtonian Yield Coef=0, 0
+User Yeild=   0
+Non-Newtonian Sed Visc= 0 ,  
+Non-Newtonian Obrian B=0
+User Viscosity=0
+User Viscosity Ratio=0
+Herschel-Bulkley Coef=0, 0
+Clastic Method= 0 ,  
+Coulomb Phi=0
+Voellmy X=0
+Non-Newtonian Hindered FV= 0 
+Non-Newtonian FV K=0
+Non-Newtonian ds=0
+Non-Newtonian Max Cv=0
+Non-Newtonian Bulking Method= 0 , 
+Non-Newtonian High C Transport= 0 , 

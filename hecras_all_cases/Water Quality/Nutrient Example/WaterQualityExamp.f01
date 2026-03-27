@@ -1,0 +1,42 @@
+Flow Title=Steady Flow for Example Project
+Program Version=4.00
+Number of Profiles= 1 
+Profile Names=PF 1
+River Rch & RM=Chester Creek,Upstream Reach  ,13.6    
+     .75
+River Rch & RM=Chester Creek,Upstream Reach  ,12.75   
+    1.75
+River Rch & RM=Chester Creek,Upstream Reach  ,9.35    
+    2.75
+River Rch & RM=Chester Creek,Upstream Reach  ,5.10    
+    1.75
+Boundary for River Rch & Prof#=Chester Creek,Upstream Reach  , 1 
+Up Type= 0 
+Dn Type= 3 
+Dn Slope=0.0003
+Set Internal Change=Chester Creek   ,Upstream Reach  ,13.6    , 1 , 3 ,1676.216
+Set Internal Change=Chester Creek   ,Upstream Reach  ,13.18   , 1 , 3 ,1674.516
+Set Internal Change=Chester Creek   ,Upstream Reach  ,12.75   , 1 , 3 ,1672.962
+Set Internal Change=Chester Creek   ,Upstream Reach  ,11.90   , 1 , 3 ,1669.562
+Set Internal Change=Chester Creek   ,Upstream Reach  ,11.05   , 1 , 3 ,1666.162
+Set Internal Change=Chester Creek   ,Upstream Reach  ,10.2    , 1 , 3 ,1662.762
+Set Internal Change=Chester Creek   ,Upstream Reach  ,9.35    , 1 , 3 ,1659.923
+Set Internal Change=Chester Creek   ,Upstream Reach  ,8.5     , 1 , 3 ,1656.948
+Set Internal Change=Chester Creek   ,Upstream Reach  ,7.65    , 1 , 3 ,1653.973
+Set Internal Change=Chester Creek   ,Upstream Reach  ,6.8     , 1 , 3 ,1650.998
+Set Internal Change=Chester Creek   ,Upstream Reach  ,5.95    , 1 , 3 ,1648.023
+Set Internal Change=Chester Creek   ,Upstream Reach  ,5.10    , 1 , 3 ,1645.339
+Set Internal Change=Chester Creek   ,Upstream Reach  ,4.25    , 1 , 3 ,1642.789
+Set Internal Change=Chester Creek   ,Upstream Reach  ,3.4     , 1 , 3 ,1640.239
+Set Internal Change=Chester Creek   ,Upstream Reach  ,2.55    , 1 , 3 ,1637.689
+Set Internal Change=Chester Creek   ,Upstream Reach  ,1.7     , 1 , 3 ,1635.139
+Set Internal Change=Chester Creek   ,Upstream Reach  ,0.85    , 1 , 3 ,1632.589
+Set Internal Change=Chester Creek   ,Upstream Reach  ,0       , 1 , 3 ,1630.039
+DSS Import StartDate=
+DSS Import StartTime=
+DSS Import EndDate=
+DSS Import EndTime=
+DSS Import GetInterval= 0 
+DSS Import Interval=
+DSS Import GetPeak= 0 
+DSS Import FillOption= 0 

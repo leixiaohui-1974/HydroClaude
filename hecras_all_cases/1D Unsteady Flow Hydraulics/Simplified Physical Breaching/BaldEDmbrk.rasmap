@@ -1,0 +1,18 @@
+<RASMapper>
+  <CurrentView>
+    <MaxX>2070207.8935</MaxX>
+    <MinX>1962723.7365</MinX>
+    <MaxY>356712.4765</MaxY>
+    <MinY>284860.3335</MinY>
+  </CurrentView>
+  <Version>2.0.0.13029</Version>
+  <RASProjectionFilename Filename="" />
+  <RASPlans>
+    <RASPlan>
+      <Name>Dambreak With Simple Physical Breach</Name>
+      <PlanFilename>.\BaldEDmbrk.p01</PlanFilename>
+      <DelineateBoundary>False</DelineateBoundary>
+      <DelineationMethod>ConnectedToXS</DelineationMethod>
+    </RASPlan>
+  </RASPlans>
+</RASMapper>

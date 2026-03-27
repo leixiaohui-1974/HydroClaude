@@ -1,0 +1,106 @@
+HEC-RAS 5.0.0 Beta August 2015
+       1       8       0       0
+       0       0
+       F       F
+       1
+Initial Conditions Flow Information
+       8        Initial Profile
+     100       7      70      18      30      25      20      35      60      46
+      80      58      10      72      10      78
+Flow and Seasonal Roughness Flag (plan)
+       F       F
+       2       0       0
+       3       0.0000947
+      10
+      12
+      11
+      10
+       1       8       0       0
+       0       0
+       F
+Project Title, Plan Title and Plan ShortID
+Unsteady Flow Application - Example 17
+Diamond River Base Plan
+Base                                                            
+Job Control Information
+  Computation Interval  = 15MIN
+  Warmup Interval       =  0 
+  Instantaneous Profile = 6HOUR
+  Hydrograph Interval   = 1HOUR
+  Theta Simulation      =        1
+  Theta Warmup          =        1
+  Friction Slope Method =        2
+  Maximum Iterations    =       20
+  Max Iter WOImprovement=        0
+  Number Warmup Steps   =       20
+  Abort DZ Tolerance    =      100
+  DZ Tolerance          =      .02
+  DZSA Tolerance        =       .1
+  DQ Tolerance          =  3.1E+38
+  Weir Flow Stability   =        1
+  Spillway Stability    =        1
+  Write Restart File    =        F       F
+  Echo Input TS         =        F
+  Echo Parameters       =        F
+  Echo Output TS        =        F
+  DSS Message Level     =        4
+  Write HDF5 File       =        T
+  Write DSS File        =        T
+d:\HEC Data\HEC-RAS\Example Data\Applications Guide\Chapter 17 - Unsteady Flow Application\Diamond.dss
+Computational Time Window
+  Start Date/Time       = 01Jan1990 0800
+  End Date/Time         = 05Jan1990 0800
+Initial Conditions (use restart file?)
+       F
+Log File Information
+       T-3.4E+38 3.4E+38
+Computation Level Output
+       F-3.4E+38 3.4E+38       F       F       F       F       F       F       F       F       F   1HOUR
+Mixed Flow - Acceleration term reduction based on Froude number
+       F      10       1       1
+Number of Gate Groups and Internal Boundaries with Gates
+       0       0       0       0
+Breach Data
+       0
+Hydrograph Data
+       1
+       F       F       T       F       F
+Upstream Flow Hydrograph
+      33
+       0     100       3     100       6     100       9     100      12     100
+      15     100      18     100      21     100      24     100      27     325
+      30     550      33     775      36    1000      39    5000      42    4200
+      45    3400      48    2600      51    1800      54    1000      57  871.43
+      60  742.86      63  614.29      66  485.71      69  357.14      72  228.57
+      75     100      78     100      81     100      84     100      87     100
+      90     100      93     100      96     100
+ 3.4E+38
+       F       F       F       T       F
+Downstream Normal Depth
+.0000947
+Internal Observed Stage/Flow Boundaries
+       0
+Ground Water Interflows
+       0
+Old River Diversions
+       F
+Lateral Inflows, Ungaged Lateral Inflows, Outlet TS, and Observed DSS
+       0       0       0       0
+Stage and Flow Boundary and Ungaged Areas
+       0       0
+Time Slicing Parameters
+       F
+HYDROGRAPH LOCATIONS
+ 77 
+       7       8       9      10      11      12      13      14      15      16
+      17      18      19      20      21      23      24      25      26      27
+      28      29      30      31      32      33      34      35      36      38
+      39      40      41      42      43      44      45      46      47      49
+      50      51      52      53      54      55      56      57      58      59
+      61      62      63      64      65      66      67      68      69      70
+      71      72      73      74      75      76      77      78      79      80
+      81      82      83      84      85      86      87
+Rules (number of rule sets, number of lookbacks, number of tables)
+       0       0       0
+Extra Commands
+       0

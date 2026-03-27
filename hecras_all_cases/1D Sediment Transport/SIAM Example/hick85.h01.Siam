@@ -1,0 +1,230 @@
+Opening Project File: d:\HEC Data\HEC-RAS\Example Data Sets\1D Steady Flow Example Data\SIAM Example\hick85.h01.SiamInput
+Debug Output File: d:\HEC Data\HEC-RAS\Example Data Sets\1D Steady Flow Example Data\SIAM Example\hick85.h01.Siam
+<Local Supply>
+    Scenario, Reach Key, Class1, Class2, Class3, Class4, Class5, Class6, Class7, Class8, Class9, Class10, Class11, Class12, Class13, Class14, Class15, Class16, Class17, Class18, Class19, Class20, Sum, Comment
+    text, text, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, text
+    HickSIAM, RIVER-1 - H - 1, 0, 0, 92458.85, 92458.85, 92458.85, 16649.75, 16989.95, 1220.7, 157.35, 1311.25, 26.1, 14.1, 39, 25.5, 19, 0, 0, 0, 0, 0, 313829.2, 
+    HickSIAM, RIVER-1 - H - 2, 0, 0, 23129.55, 23129.55, 23129.55, 3848.037, 3948.077, 94.39999, 20.45, 13.979, 7.316, 10.129, 17.97, 16.195, 0, 0, 0, 0, 0, 0, 77365.22, 
+    HickSIAM, RIVER-1 - H - 3, 0, 0, 10711.05, 10711.05, 10711.05, 1812.59, 1798.24, 0, 0, 24.03, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35768.01, 
+    HickSIAM, RIVER-1 - H - 4, 0, 0, 108780.1, 108780.1, 108780.1, 24417.81, 22630.25, 6913, 13675, 4440.71, 546, 385, 0, 0, 0, 0, 0, 0, 0, 0, 399348.1, 
+    HickSIAM, RIVER-1 - H - 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+</Local Supply>
+<Annual Capacity>
+    Scenario, Reach Key, Class1, Class2, Class3, Class4, Class5, Class6, Class7, Class8, Class9, Class10, Class11, Class12, Class13, Class14, Class15, Class16, Class17, Class18, Class19, Class20, Sum, Comment
+    text, text, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, text
+    HickSIAM, RIVER-1 - H - 1, 0, 0, 0, 0, 0, 22384.27, 5342.016, 101335.5, 3659.301, -66174.38, -2.411816, -3.896086, 0, 0, 0, 0, 0, 0, 0, 0, 66540.45, 
+    HickSIAM, RIVER-1 - H - 2, 0, 0, 0, 0, 0, 0, 0, 51468.8, 1664.002, -27514.43, -3.00949, -1.929702, 0, 0, 0, 0, 0, 0, 0, 0, 25613.43, 
+    HickSIAM, RIVER-1 - H - 3, 0, 0, 0, 0, 0, 0, 0, 12211, 524.981, -11546.15, -3.273433, -6.354576, 0, 0, 0, 0, 0, 0, 0, 0, 1180.2, 
+    HickSIAM, RIVER-1 - H - 4, 0, 0, 0, 0, 0, 0, 0, 10302.56, 444.567, -9803.1, -2.95524, -5.388197, 0, 0, 0, 0, 0, 0, 0, 0, 935.68, 
+    HickSIAM, RIVER-1 - H - 0, 0, 0, 0, 0, 0, 21185.94, 4739.729, 87329.73, 3203.457, -60074.88, -20.45031, -29.75766, 0, 0, 0, 0, 0, 0, 0, 0, 56333.78, 
+</Annual Capacity>
+<Source Accumulation>
+    Scenario, Reach Key, Class1, Class2, Class3, Class4, Class5, Class6, Class7, Class8, Class9, Class10, Class11, Class12, Class13, Class14, Class15, Class16, Class17, Class18, Class19, Class20, Sum, Comment
+    text, text, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, text
+    HickSIAM, RIVER-1 - H - 1, 0, 0, 235079.6, 235079.6, 235079.6, 46728.19, 45366.52, 8228.1, 13852.8, 5789.969, 579.416, 409.229, 56.97, 41.695, 19, 0, 0, 0, 0, 0, 826310.6, 
+    HickSIAM, RIVER-1 - H - 2, 0, 0, 142620.7, 142620.7, 142620.7, 30078.44, 28376.57, 7007.4, 13695.45, 4478.719, 553.316, 395.129, 17.97, 16.195, 0, 0, 0, 0, 0, 0, 512481.3, 
+    HickSIAM, RIVER-1 - H - 3, 0, 0, 119491.2, 119491.2, 119491.2, 26230.4, 24428.49, 6913, 13675, 4464.74, 546, 385, 0, 0, 0, 0, 0, 0, 0, 0, 435116.1, 
+    HickSIAM, RIVER-1 - H - 4, 0, 0, 108780.1, 108780.1, 108780.1, 24417.81, 22630.25, 6913, 13675, 4440.71, 546, 385, 0, 0, 0, 0, 0, 0, 0, 0, 399348.1, 
+    HickSIAM, RIVER-1 - H - 0, 0, 0, 235079.6, 235079.6, 235079.6, 46728.19, 45366.52, 8228.1, 13852.8, 5789.969, 579.416, 409.229, 56.97, 41.695, 19, 0, 0, 0, 0, 0, 826310.6, 
+</Source Accumulation>
+<Source Distribution>
+    Scenario, Reach Key, Class1, Class2, Class3, Class4, Class5, Class6, Class7, Class8, Class9, Class10, Class11, Class12, Class13, Class14, Class15, Class16, Class17, Class18, Class19, Class20, Sum, Comment
+    text, text, none, none, none, none, none, none, none, none, none, none, none, none, none, none, none, none, none, none, none, none, none, text
+    HickSIAM, RIVER-1 - H - 1, 0, 0, 0.3933088, 0.3933088, 0.3933088, 0.3563106, 0.3745042, 0.1483575, 1.135871E-02, 0.2264693, 4.504536E-02, 3.445504E-02, 0.6845708, 0.6115841, 1, 0, 0, 0, 0, 0, 4.672582, 
+    HickSIAM, RIVER-1 - H - 2, 0, 0, 9.839033E-02, 9.839033E-02, 9.839033E-02, 8.234937E-02, 8.702623E-02, 1.147288E-02, 1.476236E-03, 2.414348E-03, 1.262651E-02, 2.475142E-02, 0.3154292, 0.3884159, 0, 0, 0, 0, 0, 0, 1.221133, 
+    HickSIAM, RIVER-1 - H - 3, 0, 0, 4.556351E-02, 4.556351E-02, 4.556351E-02, 3.879008E-02, 3.963805E-02, 0, 0, 4.150282E-03, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.2192689, 
+    HickSIAM, RIVER-1 - H - 4, 0, 0, 0.4627374, 0.4627374, 0.4627374, 0.5225499, 0.4988316, 0.8401697, 0.987165, 0.7669662, 0.9423282, 0.9407935, 0, 0, 0, 0, 0, 0, 0, 0, 6.887017, 
+    HickSIAM, RIVER-1 - H - 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+</Source Distribution>
+<Wash Material Supply>
+    Scenario, Reach Key, Class1, Class2, Class3, Class4, Class5, Class6, Class7, Class8, Class9, Class10, Class11, Class12, Class13, Class14, Class15, Class16, Class17, Class18, Class19, Class20, Sum, Comment
+    text, text, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, text
+    HickSIAM, RIVER-1 - H - 1, 0, 0, 235079.6, 235079.6, 235079.6, 30078.44, 28376.57, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 763693.7, 
+    HickSIAM, RIVER-1 - H - 2, 0, 0, 142620.7, 142620.7, 142620.7, 30078.44, 28376.57, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 486317.2, 
+    HickSIAM, RIVER-1 - H - 3, 0, 0, 119491.2, 119491.2, 119491.2, 26230.4, 24428.49, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 409132.4, 
+    HickSIAM, RIVER-1 - H - 4, 0, 0, 108780.1, 108780.1, 108780.1, 24417.81, 22630.25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 373388.4, 
+    HickSIAM, RIVER-1 - H - 0, 0, 0, 235079.6, 235079.6, 235079.6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 705238.7, 
+</Wash Material Supply>
+<Bed Material Supply>
+    Scenario, Reach Key, Class1, Class2, Class3, Class4, Class5, Class6, Class7, Class8, Class9, Class10, Class11, Class12, Class13, Class14, Class15, Class16, Class17, Class18, Class19, Class20, Sum, Comment
+    text, text, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, text
+    HickSIAM, RIVER-1 - H - 1, 0, 0, 0, 0, 0, 46728.19, 45366.52, 52689.5, 1821.352, -26203.18, 23.09051, 12.1703, 39, 25.5, 19, 0, 0, 0, 0, 0, 120521.1, 
+    HickSIAM, RIVER-1 - H - 2, 0, 0, 0, 0, 0, 0, 0, 12305.4, 545.431, -11532.17, 4.042567, 3.774425, 17.97, 16.195, 0, 0, 0, 0, 0, 0, 1360.638, 
+    HickSIAM, RIVER-1 - H - 3, 0, 0, 0, 0, 0, 0, 0, 10302.56, 444.567, -9779.069, -2.95524, -5.388197, 0, 0, 0, 0, 0, 0, 0, 0, 959.7103, 
+    HickSIAM, RIVER-1 - H - 4, 0, 0, 0, 0, 0, 0, 0, 6913, 13675, 4440.71, 546, 385, 0, 0, 0, 0, 0, 0, 0, 0, 25959.71, 
+    HickSIAM, RIVER-1 - H - 0, 0, 0, 0, 0, 0, 22384.27, 5342.016, 101335.5, 3659.301, -66174.38, -2.411816, -3.896086, 0, 0, 0, 0, 0, 0, 0, 0, 66540.45, 
+</Bed Material Supply>
+<Local Balance>
+    Scenario, Reach Key, Class1, Class2, Class3, Class4, Class5, Class6, Class7, Class8, Class9, Class10, Class11, Class12, Class13, Class14, Class15, Class16, Class17, Class18, Class19, Class20, Sum, Comment
+    text, text, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, text
+    HickSIAM, RIVER-1 - H - 1, 0, 0, 0, 0, 0, 24343.92, 40024.5, -48646.05, -1837.949, 39971.19, 25.50233, 16.06638, 39, 25.5, 19, 0, 0, 0, 0, 0, 53980.68, 
+    HickSIAM, RIVER-1 - H - 2, 0, 0, 0, 0, 0, 0, 0, -39163.41, -1118.571, 15982.26, 7.052057, 5.704126, 17.97, 16.195, 0, 0, 0, 0, 0, 0, -24252.79, 
+    HickSIAM, RIVER-1 - H - 3, 0, 0, 0, 0, 0, 0, 0, -1908.439, -80.41397, 1767.079, 0.3181932, 0.9663787, 0, 0, 0, 0, 0, 0, 0, 0, -220.4897, 
+    HickSIAM, RIVER-1 - H - 4, 0, 0, 0, 0, 0, 0, 0, -3389.556, 13230.43, 14243.81, 548.9553, 390.3882, 0, 0, 0, 0, 0, 0, 0, 0, 25024.03, 
+    HickSIAM, RIVER-1 - H - 0, 0, 0, 0, 0, 0, 1198.328, 602.2871, 14005.81, 455.8442, -6099.5, 18.03849, 25.86157, 0, 0, 0, 0, 0, 0, 0, 0, 10206.67, 
+</Local Balance>
+<Network Balance>
+    Scenario, Reach Key, Class1, Class2, Class3, Class4, Class5, Class6, Class7, Class8, Class9, Class10, Class11, Class12, Class13, Class14, Class15, Class16, Class17, Class18, Class19, Class20, Sum, Comment
+    text, text, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, tonnes/year, text
+    HickSIAM, RIVER-1 - H - 1, 0, 0, 235079.6, 235079.6, 235079.6, 24343.92, 40024.5, 7.213503E+07, 10193.5, 71964.34, 581.8278, 413.1251, 56.97, 41.695, 19, 0, 0, 0, 0, 0, 7.298791E+07, 
+    HickSIAM, RIVER-1 - H - 2, 0, 0, 142620.7, 142620.7, 142620.7, 30078.44, 28376.57, -44461.4, 12031.45, 31993.15, 556.3254, 397.0587, 17.97, 16.195, 0, 0, 0, 0, 0, 0, 486867.9, 
+    HickSIAM, RIVER-1 - H - 3, 0, 0, 119491.2, 119491.2, 119491.2, 26230.4, 24428.49, 4.059266E+07, 13150.02, 16010.89, 549.2734, 391.3546, 0, 0, 0, 0, 0, 0, 0, 0, 4.10319E+07, 
+    HickSIAM, RIVER-1 - H - 4, 0, 0, 108780.1, 108780.1, 108780.1, 24417.81, 22630.25, -3389.556, 13230.43, 14243.81, 548.9553, 390.3882, 0, 0, 0, 0, 0, 0, 0, 0, 398412.4, 
+    HickSIAM, RIVER-1 - H - 0, 0, 0, 235079.6, 235079.6, 235079.6, 25542.24, 40626.79, -79101.63, 10649.34, 65864.84, 599.8663, 438.9867, 56.97, 41.695, 19, 0, 0, 0, 0, 0, 769976.9, 
+</Network Balance>
+<Load versus Power>
+    Scenario, Reach Key, Power, Load
+    text, text, m^4/s^2, tonnes/year
+    HickSIAM, RIVER-1 - H - 1, 3.576182E-03, 4.493979E+11
+    HickSIAM, RIVER-1 - H - 1, 6.280262E-03, 1.074804E+12
+    HickSIAM, RIVER-1 - H - 1, 1.146382E-02, 3.015463E+12
+    HickSIAM, RIVER-1 - H - 1, 1.731778E-02, 5.274194E+12
+    HickSIAM, RIVER-1 - H - 1, 2.345545E-02, 7.594638E+12
+    HickSIAM, RIVER-1 - H - 1, 2.961532E-02, 9.846589E+12
+    HickSIAM, RIVER-1 - H - 1, 5.867257E-02, 2.018557E+13
+    HickSIAM, RIVER-1 - H - 1, 0.1129463, 4.051517E+13
+    HickSIAM, RIVER-1 - H - 1, 0.2187988, 9.06638E+13
+    HickSIAM, RIVER-1 - H - 1, 0.2760156, 1.208322E+14
+    HickSIAM, RIVER-1 - H - 1, 0.1193604, 2.431512E+13
+    HickSIAM, RIVER-1 - H - 1, 0.3531893, 1.226964E+14
+    HickSIAM, RIVER-1 - H - 1, 0.9589555, 5.290723E+14
+    HickSIAM, RIVER-1 - H - 1, 0.478463, 1.65052E+14
+    HickSIAM, RIVER-1 - H - 2, 1.806739E-02, 3.192092E+12
+    HickSIAM, RIVER-1 - H - 2, 2.557517E-02, 6.217432E+12
+    HickSIAM, RIVER-1 - H - 2, 4.225454E-02, 1.446818E+13
+    HickSIAM, RIVER-1 - H - 2, 0.0494348, 2.123963E+13
+    HickSIAM, RIVER-1 - H - 2, 5.885534E-02, 3.016256E+13
+    HickSIAM, RIVER-1 - H - 2, 6.804528E-02, 3.929365E+13
+    HickSIAM, RIVER-1 - H - 2, 1.070948E-02, 1.99222E+12
+    HickSIAM, RIVER-1 - H - 2, 7.591096E-03, 8.249414E+11
+    HickSIAM, RIVER-1 - H - 2, 3.066174E-03, 7.266861E+10
+    HickSIAM, RIVER-1 - H - 2, 3.139768E-03, 5.852655E+10
+    HickSIAM, RIVER-1 - H - 2, 6.20926E-03, 1.083853E+11
+    HickSIAM, RIVER-1 - H - 2, 1.111767E-02, 1.978126E+11
+    HickSIAM, RIVER-1 - H - 2, 8.280941E-03, 6.292547E+10
+    HickSIAM, RIVER-1 - H - 2, 1.160274E-02, 1.125673E+11
+    HickSIAM, RIVER-1 - H - 3, 2.973058E-05, 1.037608E+09
+    HickSIAM, RIVER-1 - H - 3, 7.681936E-05, 3.580083E+09
+    HickSIAM, RIVER-1 - H - 3, 1.943272E-04, 1.145955E+10
+    HickSIAM, RIVER-1 - H - 3, 3.222964E-04, 2.10334E+10
+    HickSIAM, RIVER-1 - H - 3, 4.630801E-04, 3.235354E+10
+    HickSIAM, RIVER-1 - H - 3, 6.158416E-04, 4.546364E+10
+    HickSIAM, RIVER-1 - H - 3, 1.612699E-03, 1.532862E+11
+    HickSIAM, RIVER-1 - H - 3, 4.421322E-03, 5.59183E+11
+    HickSIAM, RIVER-1 - H - 3, 0.0154902, 3.239244E+12
+    HickSIAM, RIVER-1 - H - 3, 2.064999E-02, 4.492874E+12
+    HickSIAM, RIVER-1 - H - 3, 0.0428132, 8.888268E+12
+    HickSIAM, RIVER-1 - H - 3, 0.0978403, 2.090736E+13
+    HickSIAM, RIVER-1 - H - 3, 0.2573704, 7.174967E+13
+    HickSIAM, RIVER-1 - H - 3, 0.3923174, 1.29143E+14
+    HickSIAM, RIVER-1 - H - 4, 3.328488E-05, 1.874812E+09
+    HickSIAM, RIVER-1 - H - 4, 6.864818E-05, 4.076004E+09
+    HickSIAM, RIVER-1 - H - 4, 2.026636E-04, 1.643387E+10
+    HickSIAM, RIVER-1 - H - 4, 3.637268E-04, 3.497582E+10
+    HickSIAM, RIVER-1 - H - 4, 5.352175E-04, 5.755054E+10
+    HickSIAM, RIVER-1 - H - 4, 7.742821E-04, 9.286917E+10
+    HickSIAM, RIVER-1 - H - 4, 2.263866E-03, 3.597742E+11
+    HickSIAM, RIVER-1 - H - 4, 4.793454E-03, 8.393233E+11
+    HickSIAM, RIVER-1 - H - 4, 1.221802E-02, 2.431494E+12
+    HickSIAM, RIVER-1 - H - 4, 1.708235E-02, 3.588127E+12
+    HickSIAM, RIVER-1 - H - 4, 4.097669E-02, 9.339073E+12
+    HickSIAM, RIVER-1 - H - 4, 9.481159E-02, 2.26351E+13
+    HickSIAM, RIVER-1 - H - 4, 0.2122844, 5.409437E+13
+    HickSIAM, RIVER-1 - H - 4, 0.2866223, 7.64704E+13
+    HickSIAM, RIVER-1 - H - 0, 1.286439E-03, 1.201692E+12
+    HickSIAM, RIVER-1 - H - 0, 3.00872E-03, 2.987489E+12
+    HickSIAM, RIVER-1 - H - 0, 7.417472E-03, 8.112581E+12
+    HickSIAM, RIVER-1 - H - 0, 1.225798E-02, 1.393332E+13
+    HickSIAM, RIVER-1 - H - 0, 1.717122E-02, 1.988939E+13
+    HickSIAM, RIVER-1 - H - 0, 2.201668E-02, 2.572208E+13
+    HickSIAM, RIVER-1 - H - 0, 4.338478E-02, 5.155168E+13
+    HickSIAM, RIVER-1 - H - 0, 8.374982E-02, 8.035148E+13
+    HickSIAM, RIVER-1 - H - 0, 0.0918252, 5.782158E+13
+    HickSIAM, RIVER-1 - H - 0, 8.909433E-02, 4.95037E+13
+    HickSIAM, RIVER-1 - H - 0, 8.539962E-02, 3.213199E+13
+    HickSIAM, RIVER-1 - H - 0, 0.1262648, 4.718805E+13
+    HickSIAM, RIVER-1 - H - 0, 0.210125, 8.505099E+13
+    HickSIAM, RIVER-1 - H - 0, 0.2509937, 1.027149E+14
+</Load versus Power>
+<Load versus Work>
+    Scenario, Reach Key, Work, Load
+    text, text, m^4/s, tonnes/year
+    HickSIAM, RIVER-1 - H - 1, 1.404437E-02, 4.794313E+12
+    HickSIAM, RIVER-1 - H - 1, 1.935912E-02, 77090.77
+    HickSIAM, RIVER-1 - H - 1, 1.699863E-02, 92187.18
+    HickSIAM, RIVER-1 - H - 1, 1.551442E-02, 129319.9
+    HickSIAM, RIVER-1 - H - 1, 1.562453E-02, 150791.3
+    HickSIAM, RIVER-1 - H - 1, 1.587157E-02, 162850.3
+    HickSIAM, RIVER-1 - H - 1, 1.603181E-02, 168910.7
+    HickSIAM, RIVER-1 - H - 1, 1.627536E-02, 177436.1
+    HickSIAM, RIVER-1 - H - 1, 1.627318E-02, 184979.3
+    HickSIAM, RIVER-1 - H - 1, 1.698185E-02, 222986.8
+    HickSIAM, RIVER-1 - H - 1, 1.761346E-02, 244342.6
+    HickSIAM, RIVER-1 - H - 1, 4.308167E-03, 27810.84
+    HickSIAM, RIVER-1 - H - 1, 7.690157E-03, 84657.37
+    HickSIAM, RIVER-1 - H - 1, 1.305453E-02, 228235.4
+    HickSIAM, RIVER-1 - H - 1, 6.090099E-03, 66573.61
+    HickSIAM, RIVER-1 - H - 2, 1.998983E-02, 6.941036E+12
+    HickSIAM, RIVER-1 - H - 2, 0.1092521, 611667.1
+    HickSIAM, RIVER-1 - H - 2, 7.732555E-02, 595690.7
+    HickSIAM, RIVER-1 - H - 2, 6.387749E-02, 693096.6
+    HickSIAM, RIVER-1 - H - 2, 0.0498214, 678321.2
+    HickSIAM, RIVER-1 - H - 2, 4.495499E-02, 730071.7
+    HickSIAM, RIVER-1 - H - 2, 4.149223E-02, 759270.3
+    HickSIAM, RIVER-1 - H - 2, 3.251518E-03, 19167.28
+    HickSIAM, RIVER-1 - H - 2, 1.154787E-03, 3976.726
+    HickSIAM, RIVER-1 - H - 2, 2.332191E-04, 175.1538
+    HickSIAM, RIVER-1 - H - 2, 1.909734E-04, 112.8063
+    HickSIAM, RIVER-1 - H - 2, 1.961779E-04, 108.5141
+    HickSIAM, RIVER-1 - H - 2, 2.074664E-04, 116.975
+    HickSIAM, RIVER-1 - H - 2, 1.033369E-04, 24.88326
+    HickSIAM, RIVER-1 - H - 2, 1.240229E-04, 38.1293
+    HickSIAM, RIVER-1 - H - 3, 1.302376E-03, 3.10073E+11
+    HickSIAM, RIVER-1 - H - 3, 2.07962E-04, 229.9953
+    HickSIAM, RIVER-1 - H - 3, 2.686713E-04, 396.7792
+    HickSIAM, RIVER-1 - H - 3, 3.322724E-04, 620.9169
+    HickSIAM, RIVER-1 - H - 3, 3.701296E-04, 765.4434
+    HickSIAM, RIVER-1 - H - 3, 4.003495E-04, 886.3602
+    HickSIAM, RIVER-1 - H - 3, 4.268932E-04, 998.6647
+    HickSIAM, RIVER-1 - H - 3, 5.564442E-04, 1676.01
+    HickSIAM, RIVER-1 - H - 3, 7.644786E-04, 3063.885
+    HickSIAM, RIVER-1 - H - 3, 1.339184E-03, 8874.261
+    HickSIAM, RIVER-1 - H - 3, 1.427572E-03, 9842.549
+    HickSIAM, RIVER-1 - H - 3, 1.479878E-03, 9735.772
+    HickSIAM, RIVER-1 - H - 3, 1.69097E-03, 11450.45
+    HickSIAM, RIVER-1 - H - 3, 2.224311E-03, 19649.97
+    HickSIAM, RIVER-1 - H - 3, 2.712418E-03, 28294.05
+    HickSIAM, RIVER-1 - H - 4, 1.140116E-03, 2.519471E+11
+    HickSIAM, RIVER-1 - H - 4, 2.52858E-04, 451.3285
+    HickSIAM, RIVER-1 - H - 4, 2.607527E-04, 490.6136
+    HickSIAM, RIVER-1 - H - 4, 3.464081E-04, 890.1379
+    HickSIAM, RIVER-1 - H - 4, 4.144732E-04, 1262.974
+    HickSIAM, RIVER-1 - H - 4, 4.69146E-04, 1598.573
+    HickSIAM, RIVER-1 - H - 4, 5.293849E-04, 2012.098
+    HickSIAM, RIVER-1 - H - 4, 7.370614E-04, 3711.831
+    HickSIAM, RIVER-1 - H - 4, 8.624567E-04, 4785.455
+    HickSIAM, RIVER-1 - H - 4, 1.070973E-03, 6753.925
+    HickSIAM, RIVER-1 - H - 4, 1.167939E-03, 7774.014
+    HickSIAM, RIVER-1 - H - 4, 1.40081E-03, 10116.99
+    HickSIAM, RIVER-1 - H - 4, 1.620592E-03, 12260.27
+    HickSIAM, RIVER-1 - H - 4, 1.814264E-03, 14650.07
+    HickSIAM, RIVER-1 - H - 4, 1.959667E-03, 16568.03
+    HickSIAM, RIVER-1 - H - 0, 7.629325E-03, 7.12864E+12
+    HickSIAM, RIVER-1 - H - 0, 5.254163E-03, 155529.6
+    HickSIAM, RIVER-1 - H - 0, 6.144213E-03, 193328.6
+    HickSIAM, RIVER-1 - H - 0, 7.576403E-03, 262586
+    HickSIAM, RIVER-1 - H - 0, 8.427849E-03, 303569.3
+    HickSIAM, RIVER-1 - H - 0, 9.007824E-03, 330632.4
+    HickSIAM, RIVER-1 - H - 0, 9.419933E-03, 348744.4
+    HickSIAM, RIVER-1 - H - 0, 1.021381E-02, 384590.6
+    HickSIAM, RIVER-1 - H - 0, 1.101376E-02, 334850.4
+    HickSIAM, RIVER-1 - H - 0, 7.657669E-03, 152802.3
+    HickSIAM, RIVER-1 - H - 0, 6.506601E-03, 114563.7
+    HickSIAM, RIVER-1 - H - 0, 3.898537E-03, 46482.41
+    HickSIAM, RIVER-1 - H - 0, 4.39865E-03, 52092.4
+    HickSIAM, RIVER-1 - H - 0, 5.539534E-03, 71052.63
+    HickSIAM, RIVER-1 - H - 0, 5.872493E-03, 76155.02
+</Load versus Work>
+<Binary File>
+</Binary File>
+Closing Project File: d:\HEC Data\HEC-RAS\Example Data Sets\1D Steady Flow Example Data\SIAM Example\hick85.h01.SiamInput

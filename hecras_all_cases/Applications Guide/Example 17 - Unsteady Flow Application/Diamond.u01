@@ -1,0 +1,38 @@
+Flow Title=Unsteady Flow
+Version=Version 3.0 Beta April 15, 2000
+Use Restart= 0 
+Restart Filename=
+Initial Flow Loc=Diamond         ,North           ,6.0     ,100
+Initial Flow Loc=Diamond         ,Northwest       ,4.0     ,70
+Initial Flow Loc=Diamond         ,Northeast       ,3.9999  ,30
+Initial Flow Loc=Diamond         ,Southeast       ,2.0     ,20
+Initial Flow Loc=Diamond         ,Southwest       ,2.0     ,60
+Initial Flow Loc=Diamond         ,East            ,1.0     ,10
+Initial Flow Loc=Diamond         ,West            ,1.0     ,10
+Initial Flow Loc=Diamond         ,South           ,2.0     ,80
+Initial Storage Elev=Pyramid Lake    ,11
+Initial Storage Elev=Eagle Lake      ,10
+Initial Storage Elev=Lower Angora    ,12
+Initial Storage Elev=Upper Angora    ,10
+Boundary Location=Diamond         ,North           ,6.0     ,        ,                ,                
+Interval=3HOUR
+Flow Hydrograph= 100 
+     100     100     100     100     100     100     100     100     100     325
+     550     775    1000    5000    4200    3400    2600    1800    1000  871.43
+  742.86  614.29  485.71  357.14  228.57     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+DSS File=
+DSS Path=
+Use DSS=False
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=
+Boundary Location=Diamond         ,South           ,0.0     ,        ,                ,                
+Friction Slope=.0000947

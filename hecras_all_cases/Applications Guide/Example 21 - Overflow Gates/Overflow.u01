@@ -1,0 +1,44 @@
+Flow Title=Test event
+Program Version=3.19
+Use Restart= 0 
+Initial Flow Loc=Reach 1         ,A               ,1000    ,100
+Boundary Location=Reach 1         ,A               ,1000    ,        ,                ,                
+Interval=1HOUR
+Flow Hydrograph= 100 
+     100     100     100     100     100     100     105     110     115     120
+     128     136     144     152     160     168     176     184     192     200
+     190     180     170     160     150   142.5     135   127.5     120     116
+     112     108     104     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+DSS Path=
+Use DSS=False
+CWMS InputPosition= 0 
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=
+Boundary Location=Reach 1         ,A               ,250     ,        ,                ,                
+Gate Name=Gate #1     
+Gate DSS Path=
+Gate Use DSS=False
+Gate Time Interval=1HOUR
+Gate Use Fixed Start Time=False
+Gate Fixed Start Date/Time=,
+Gate Openings= 100 
+       0       0       0       0       0       0      .2      .4      .6      .8
+       1     1.2     1.4     1.6     1.8       2    2.17    2.33     2.5    2.67
+    2.83       3    3.14    3.29    3.43    3.57    3.71    3.86       4    4.17
+    4.33     4.5    4.67    4.83       5    5.14    5.29    5.43    5.57    5.71
+    5.86       6    5.86    5.71    5.57    5.43    5.29    5.14       5    4.89
+    4.78    4.67    4.56    4.44    4.33    4.22    4.11       4    3.89    3.78
+    3.67    3.56    3.44    3.33    3.22    3.11       3    2.83    2.67     2.5
+    2.33    2.17       2    1.86    1.71    1.57    1.43    1.29    1.14       1
+       1       1       1       1       1       1       1       1       1       1
+       1       1       1       1       1       1       1       1       1       1
+Boundary Location=Reach 1         ,A               ,0.0     ,        ,                ,                
+Friction Slope=0.0002

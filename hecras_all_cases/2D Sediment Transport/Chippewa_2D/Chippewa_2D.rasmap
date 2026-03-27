@@ -1,0 +1,146 @@
+<RASMapper>
+  <Version>2.0.0</Version>
+  <RASProjectionFilename Filename="..\Winona_Upload\LifeSim model\Winona Levee SQRA 2019\RAS\AW\MMC_Projection.prj" />
+  <Features />
+  <Geometries Checked="True" Expanded="True">
+    <Layer Name="100ft_Mod" Type="RASGeometry" Checked="True" Expanded="True" Filename=".\Chippewa_2D.g01.hdf">
+      <Layer Type="RASRiver">
+        <LabelFeatures Checked="True" PercentPosition="0" rows="1" cols="2" r0c0="River" r0c1="Reach" Position="3" Color="-16777216" FontSize="8.25" />
+      </Layer>
+      <Layer Type="RASJunction">
+        <LabelFeatures Checked="True" PercentPosition="0" rows="1" cols="1" r0c0="Name" Position="3" Color="-16777216" FontSize="8.25" />
+      </Layer>
+      <Layer Type="RASXS" UnitsRiverStation="Feet" RiverStationDecimalPlaces="0">
+        <LabelFeatures Checked="True" PercentPosition="0" rows="1" cols="1" r0c0="River Station" Position="3" Color="-16777216" FontSize="8.25" />
+      </Layer>
+      <Layer Type="RASStorageArea">
+        <LabelFeatures Checked="True" PercentPosition="0" rows="1" cols="1" r0c0="Name" Position="3" Color="-16777216" FontSize="8.25" />
+      </Layer>
+      <Layer Type="RASD2FlowArea" Checked="True" />
+      <Layer Type="MeshPerimeterLayer">
+        <Symbology>
+          <Pen B="0" G="0" R="0" A="255" Dash="0" Width="2" />
+          <Brush Type="SolidBrush" B="0" G="0" R="0" A="50" Name="PolygonFill" />
+        </Symbology>
+        <LabelFeatures Checked="True" PercentPosition="0" rows="1" cols="1" r0c0="Name" Position="3" Color="-16777216" FontSize="8.25" />
+      </Layer>
+      <Layer Name="Culvert Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Culvert Barrels" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Bridges/Culverts" />
+      <Layer Name="Gate Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Gate Openings" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Inline Structures" />
+      <Layer Name="Culvert Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Culvert Barrels" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Inline Structures" />
+      <Layer Name="Rating Curve Outlets" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Inline Structures" />
+      <Layer Name="Outlet Time Series" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Inline Structures" />
+      <Layer Name="Gate Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Gate Openings" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Lateral Structures" />
+      <Layer Name="Culvert Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Culvert Barrels" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Lateral Structures" />
+      <Layer Name="Rating Curve Outlets" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Lateral Structures" />
+      <Layer Name="Outlet Time Series" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Lateral Structures" />
+      <Layer Name="Gate Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Gate Openings" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="SA/2D Connections" />
+      <Layer Name="Culvert Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Culvert Barrels" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="SA/2D Connections" />
+      <Layer Name="Rating Curve Outlets" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="SA/2D Connections" />
+      <Layer Name="Outlet Time Series" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="SA/2D Connections" />
+      <Layer Type="StructureLayer" UnitsRiverStation="Feet" RiverStationDecimalPlaces="0" />
+      <Layer Type="FinalNValueLayer">
+        <ResampleMethod>near</ResampleMethod>
+        <Surface On="True" />
+      </Layer>
+      <Layer Name="TEMP N-Value Rasterizer (DEBUG)" Type="InterpretationRasterizerLayer" Filename=".\Chippewa_2D.g01.hdf">
+        <ResampleMethod>near</ResampleMethod>
+        <Surface On="True" />
+      </Layer>
+      <Layer Name="Final Values" Type="InterpretationRasterizerLayer" Filename=".\Chippewa_2D.g01.hdf">
+        <ResampleMethod>near</ResampleMethod>
+        <Surface On="True" />
+      </Layer>
+      <Layer Name="Final Values" Type="InterpretationRasterizerLayer" Filename=".\Chippewa_2D.g01.hdf">
+        <ResampleMethod>near</ResampleMethod>
+        <Surface On="True" />
+      </Layer>
+    </Layer>
+  </Geometries>
+  <Plans>
+    <Layer Name="100ft Sediment" Type="RASPlan" Filename=".\Chippewa_2D.p02" GeometryHDF=".\Chippewa_2D.g01.hdf">
+      <Layer Name="Encroachment Regions" Type="RASEncroachmentPolygons" Filename=".\Chippewa_2D.p02" />
+    </Layer>
+  </Plans>
+  <EventConditions>
+    <Layer Name="2019-test" Type="RASEventConditions" Filename="..\Chippewa\Chippewa_2D.u04.hdf" />
+    <Layer Name="2019-test" Type="RASEventConditions" Filename=".\Chippewa_2D.u04.hdf" />
+  </EventConditions>
+  <Results Checked="True" Expanded="True" />
+  <MapLayers Checked="True" Expanded="True">
+    <Layer Name="Mannings_n" Type="LandCoverLayer" Checked="True" Expanded="True" Filename=".\External Dependencies\Mannings_n.hdf" SelectedParameterForSurfaceFillLabel="ID">
+      <Symbology>
+        <ColorByteMap Type="System.Int32" Alpha="128" Values="1,31,82,41,24,22,23,21,95,42,71,43,11,81,52,90" Colors="-4340286,-10701603,-16376138,-8227504,-222114,-15280068,-7342021,-8786312,-15133297,-3828267,-6793229,-15662289,-16361681,-13230490,-14695461,-3204159" ValuesExcludeLegend="0" />
+      </Symbology>
+      <ColorByteMap Type="System.Int32" Alpha="128" Values="1,31,82,41,24,22,23,21,95,42,71,43,11,81,52,90" Colors="-4340286,-10701603,-16376138,-8227504,-222114,-15280068,-7342021,-8786312,-15133297,-3828267,-6793229,-15662289,-16361681,-13230490,-14695461,-3204159" ValuesExcludeLegend="0" />
+      <Layer Name="Classification Polygons" Type="LandCoverClassificationLayer" Filename="..\Chippewa\Mannings_n.hdf" />
+    </Layer>
+    <Layer Name="Sediment Materials" Type="LandCoverLayer" Checked="True" Expanded="True" Filename=".\External Dependencies\Sediment Materials.hdf" SelectedParameterForSurfaceFillLabel="ID">
+      <Symbology>
+        <ColorByteMap Type="System.Int32" Alpha="128" Values="1,2,3" Colors="-4469949,-9046986,-571432" ValuesExcludeLegend="0" />
+      </Symbology>
+      <ColorByteMap Type="System.Int32" Alpha="128" Values="1,2,3" Colors="-4469949,-9046986,-571432" ValuesExcludeLegend="0" />
+      <Layer Name="Classification Polygons" Type="LandCoverClassificationLayer" Filename="..\Chippewa\Sediment Materials.hdf" />
+    </Layer>
+  </MapLayers>
+  <Terrains Checked="True" Expanded="True">
+    <Layer Name="100ft" Type="TerrainLayer" Checked="True" Filename=".\External Dependencies\100ft.hdf">
+      <Symbology>
+        <SurfaceFill Colors="-10039894,-256,-16744448,-23296,-7667712,-5952982,-8355712,-1286" Values="667.510803222656,672.11607244185,674.629239298778,679.781897308677,681.081260262407,682.38862784024,683.31062191052,769.081787109375" Stretched="True" AlphaTag="255" UseDatasetMinMax="False" RegenerateForScreen="False" />
+      </Symbology>
+      <ResampleMethod>near</ResampleMethod>
+      <Surface On="True" />
+    </Layer>
+  </Terrains>
+  <CurrentView>
+    <MaxX>1036056.21093186</MaxX>
+    <MinX>1019475.96689272</MinX>
+    <MaxY>7858821.20799782</MaxY>
+    <MinY>7848642.28435821</MinY>
+  </CurrentView>
+  <VelocitySettings>
+    <Density>1.5</Density>
+    <Lifetime>100</Lifetime>
+    <Radius>0.75</Radius>
+    <Method>2</Method>
+    <Timestep>1</Timestep>
+    <StaticColor>Black</StaticColor>
+    <SpeedRelativeToZoom>False</SpeedRelativeToZoom>
+  </VelocitySettings>
+  <AnimationSettings>
+    <DelayTimer>0</DelayTimer>
+  </AnimationSettings>
+  <Units>US Customary</Units>
+  <RenderMode>sloping</RenderMode>
+  <FullExtentPlotting />
+  <MarksWarpMethod>False</MarksWarpMethod>
+  <CurrentSettings>
+    <ProjectSettings>
+      <RiverStationUnits>Feet</RiverStationUnits>
+      <RiverStationDecimalPlaces>0</RiverStationDecimalPlaces>
+      <HorizontalDecimalPlaces>1</HorizontalDecimalPlaces>
+      <VerticalDecimalPlaces>3</VerticalDecimalPlaces>
+      <XSMaxPoints>450</XSMaxPoints>
+      <LSMaxPoints>1000</LSMaxPoints>
+      <ProfilePointMinCount>0</ProfilePointMinCount>
+      <ShowLegend>True</ShowLegend>
+      <ShowNorthArrow>False</ShowNorthArrow>
+      <ShowScaleBar>True</ShowScaleBar>
+      <ShowGreaterThanInLegend>False</ShowGreaterThanInLegend>
+      <MeshTolerance_MinFaceLength>0.05</MeshTolerance_MinFaceLength>
+      <MeshTolerance_EnsureCellPoint>False</MeshTolerance_EnsureCellPoint>
+    </ProjectSettings>
+    <Folders>
+      <AddDataFolder>..\Chippewa</AddDataFolder>
+      <TerrainDestinationFolder>.\Terrain</TerrainDestinationFolder>
+      <TerrainSourceFolder>..\RSM-Chippewa</TerrainSourceFolder>
+      <LandCoverDestinationFolder>.\Land Classification</LandCoverDestinationFolder>
+    </Folders>
+  </CurrentSettings>
+</RASMapper>

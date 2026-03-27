@@ -1,0 +1,138 @@
+Flow Title=GW Unsteady Flow
+Program Version=4.20
+Use Restart= 0 
+Initial Flow Loc=Butte Cr.       ,Butte Cr.       ,0.4     ,300.33
+Initial Flow Loc=Fall River      ,Upper Reach     ,10.4    ,630.86
+Initial Flow Loc=Fall River      ,Lower Reach     ,9.79    ,931.19
+Initial Storage Elev=Lower Pond      ,68
+Initial Storage Elev=Upper Pond      ,70
+Boundary Location=Butte Cr.       ,Butte Cr.       ,0.4     ,        ,                ,                ,                
+Interval=1HOUR
+Flow Hydrograph= 73 
+  302.57  310.24  322.93  340.52  362.83  389.62  420.62  455.52  493.95  535.52
+   579.8  626.35  674.67  724.29  774.68  825.32  875.71  925.33  973.65  1020.2
+ 1064.48 1106.05 1144.48 1179.38 1210.38 1237.17 1259.48 1277.07 1289.77 1297.44
+    1300 1297.44 1289.77 1277.07 1259.48 1237.17 1210.38 1179.38 1144.48 1106.05
+ 1064.48  1020.2  973.65  925.33  875.71  825.32  774.68  724.29  674.67  626.35
+   579.8  535.52  493.95  455.52  420.62  389.62  362.83  340.52  322.93  310.24
+  302.57     300     300     300     300     300     300     300     300     300
+     300     300     300
+DSS Path=
+Use DSS=False
+CWMS InputPosition= 0 
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=
+Boundary Location=Fall River      ,Upper Reach     ,10.4    ,        ,                ,                ,                
+Interval=1HOUR
+Flow Hydrograph= 73 
+  505.71  522.79  551.11  590.46  640.54  700.96  771.27  850.93  939.34 1035.82
+ 1139.64    1250 1366.07 1486.97 1611.77 1739.53 1869.27    2000 2130.73 2260.47
+ 2388.23 2513.03 2633.93    2750 2860.37 2964.18 3060.66 3149.07 3228.73 3299.04
+ 3359.46 3409.54 3448.89 3477.21 3494.29    3500 3494.29 3477.21 3448.89 3409.54
+ 3359.46 3299.04 3228.73 3149.07 3060.66 2964.18 2860.37    2750 2633.93 2513.03
+ 2388.23 2260.47 2130.73    2000 1869.27 1739.53 1611.77 1486.97 1366.07    1250
+ 1139.64 1035.82  939.34  850.93  771.27  700.96  640.54  590.46  551.11  522.79
+  505.71     500     500
+DSS Path=
+Use DSS=False
+CWMS InputPosition= 0 
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=
+Boundary Location=Fall River      ,Upper Reach     ,10.3    ,9.9     ,                ,                ,                
+Interval=1HOUR
+Ground Water Interflow= 100 
+      65   65.04   65.08   65.12   65.16    65.2   65.24   65.28   65.32   65.36
+    65.4   65.44   65.48   65.53   65.57   65.61   65.65   65.69   65.73   65.77
+   65.81   65.85   65.89   65.93   65.97   66.01   66.05   66.09   66.13   66.17
+   66.21   66.25   66.29   66.33   66.37   66.41   66.45   66.49   66.54   66.58
+   66.62   66.66    66.7   66.74   66.78   66.82   66.86    66.9   66.94   66.98
+   67.02   67.06    67.1   67.14   67.18   67.22   67.26    67.3   67.34   67.38
+   67.42   67.46   67.51   67.55   67.59   67.63   67.67   67.71   67.75   67.79
+   67.83   67.87   67.91   67.95   67.99   68.03   68.07   68.11   68.15   68.19
+   68.23   68.27   68.31   68.35   68.39   68.43   68.47   68.52   68.56    68.6
+   68.64   68.68   68.72   68.76    68.8   68.84   68.88   68.92   68.96      69
+Ground Water Darcy K=0.15
+Ground Water Darcy K/day=3.6
+Ground Water Darcy Distance=2
+DSS Path=
+Use DSS=False
+CWMS InputPosition= 0 
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=0
+Boundary Location=Fall River      ,Lower Reach     ,9.7     ,9.4     ,                ,                ,                
+Interval=1HOUR
+Ground Water Interflow= 100 
+      64   64.04   64.08   64.12   64.16    64.2   64.24   64.28   64.32   64.36
+    64.4   64.44   64.48   64.53   64.57   64.61   64.65   64.69   64.73   64.77
+   64.81   64.85   64.89   64.93   64.97   65.01   65.05   65.09   65.13   65.17
+   65.21   65.25   65.29   65.33   65.37   65.41   65.45   65.49   65.54   65.58
+   65.62   65.66    65.7   65.74   65.78   65.82   65.86    65.9   65.94   65.98
+   66.02   66.06    66.1   66.14   66.18   66.22   66.26    66.3   66.34   66.38
+   66.42   66.46   66.51   66.55   66.59   66.63   66.67   66.71   66.75   66.79
+   66.83   66.87   66.91   66.95   66.99   67.03   67.07   67.11   67.15   67.19
+   67.23   67.27   67.31   67.35   67.39   67.43   67.47   67.52   67.56    67.6
+   67.64   67.68   67.72   67.76    67.8   67.84   67.88   67.92   67.96      68
+Ground Water Darcy K=0.15
+Ground Water Darcy K/day=3.6
+Ground Water Darcy Distance=2
+DSS Path=
+Use DSS=False
+CWMS InputPosition= 0 
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=0
+Boundary Location=Fall River      ,Lower Reach     ,9.3     ,        ,                ,                ,                
+Friction Slope=0.0004
+Boundary Location=                ,                ,        ,        ,                ,Upper Pond      ,                
+Interval=1HOUR
+Ground Water Interflow= 100 
+      65   65.04   65.08   65.12   65.16    65.2   65.24   65.28   65.32   65.36
+    65.4   65.44   65.48   65.53   65.57   65.61   65.65   65.69   65.73   65.77
+   65.81   65.85   65.89   65.93   65.97   66.01   66.05   66.09   66.13   66.17
+   66.21   66.25   66.29   66.33   66.37   66.41   66.45   66.49   66.54   66.58
+   66.62   66.66    66.7   66.74   66.78   66.82   66.86    66.9   66.94   66.98
+   67.02   67.06    67.1   67.14   67.18   67.22   67.26    67.3   67.34   67.38
+   67.42   67.46   67.51   67.55   67.59   67.63   67.67   67.71   67.75   67.79
+   67.83   67.87   67.91   67.95   67.99   68.03   68.07   68.11   68.15   68.19
+   68.23   68.27   68.31   68.35   68.39   68.43   68.47   68.52   68.56    68.6
+   68.64   68.68   68.72   68.76    68.8   68.84   68.88   68.92   68.96      69
+Ground Water Darcy K=0.01
+Ground Water Darcy K/day=0.24
+Ground Water Darcy Distance=2
+DSS Path=
+Use DSS=False
+CWMS InputPosition= 0 
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=0
+Boundary Location=                ,                ,        ,        ,                ,Lower Pond      ,                
+Interval=1HOUR
+Ground Water Interflow= 100 
+      64   64.04   64.08   64.12   64.16    64.2   64.24   64.28   64.32   64.36
+    64.4   64.44   64.48   64.53   64.57   64.61   64.65   64.69   64.73   64.77
+   64.81   64.85   64.89   64.93   64.97   65.01   65.05   65.09   65.13   65.17
+   65.21   65.25   65.29   65.33   65.37   65.41   65.45   65.49   65.54   65.58
+   65.62   65.66    65.7   65.74   65.78   65.82   65.86    65.9   65.94   65.98
+   66.02   66.06    66.1   66.14   66.18   66.22   66.26    66.3   66.34   66.38
+   66.42   66.46   66.51   66.55   66.59   66.63   66.67   66.71   66.75   66.79
+   66.83   66.87   66.91   66.95   66.99   67.03   67.07   67.11   67.15   67.19
+   67.23   67.27   67.31   67.35   67.39   67.43   67.47   67.52   67.56    67.6
+   67.64   67.68   67.72   67.76    67.8   67.84   67.88   67.92   67.96      68
+Ground Water Darcy K=0.02
+Ground Water Darcy K/day=0.48
+Ground Water Darcy Distance=3
+DSS Path=
+Use DSS=False
+CWMS InputPosition= 0 
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=0

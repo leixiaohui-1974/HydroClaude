@@ -1,0 +1,254 @@
+Geom Title=Rect chan S=10ft/mi Ogee Crested
+Program Version=4.00
+Viewing Rectangle= 0 , 1 , 1 , 0 
+
+River Reach=Brunner         ,1               
+Reach XY= 2 
+-0.05813953488370.879844961240311.089147286821710.11434108527132
+Rch Text X Y=0.2286822,0.688469
+Reverse River Text= 0 
+
+Type RM Length L Ch R = 1 ,1000    ,50,50,50
+BEGIN DESCRIPTION:
+Downstream Boundary Section
+END DESCRIPTION:
+Node Last Edited Time=Apr/16/2007 15:19:47
+#Sta/Elev= 4 
+       0   21.89       0    1.89     100    1.89     100   21.89
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,950.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0    21.8       0     1.8     100     1.8     100    21.8
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,900.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0    21.7       0     1.7     100     1.7     100    21.7
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,850.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0   21.61       0    1.61     100    1.61     100   21.61
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,800.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0   21.51       0    1.51     100    1.51     100   21.51
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,750.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0   21.42       0    1.42     100    1.42     100   21.42
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,700.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0   21.32       0    1.32     100    1.32     100   21.32
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,650.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0   21.23       0    1.23     100    1.23     100   21.23
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,600.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0   21.13       0    1.13     100    1.13     100   21.13
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 6 ,599     ,,,
+Node Last Edited Time=May/07/2007 08:52:38
+Lateral Weir Pos= 2 
+Lateral Weir End=                ,                ,        ,                
+Lateral Weir Distance=0
+Lateral Weir TW Multiple XS=0
+Lateral Weir WD=8
+Lateral Weir Coef=2
+Lateral Weir Is Ogee=-1 
+Lateral Weir WSCriteria=-1 
+Lateral Weir Design EG=10
+Lateral Weir Design HT=10
+Lateral Weir Flap Gates= 0 
+Lateral Weir Hagers EQN= 1 ,2.2,10,0.00189,,4
+Lateral Weir SS=0.05,0.05,
+Lateral Weir Type= 0 
+Lateral Weir Connection Pos and Dist= 0 ,
+Lateral Weir SE= 2 
+       0   11.13     100   10.94
+LW Div RC= 0 ,False,
+
+Type RM Length L Ch R = 1 ,550.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0   21.04       0    1.04     100    1.04     100   21.04
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,500.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0   20.94       0     .94     100     .94     100   20.94
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,450.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0   20.85       0     .85     100     .85     100   20.85
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,400.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0   20.76       0     .76     100     .76     100   20.76
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,350.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0   20.66       0     .66     100     .66     100   20.66
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,300.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0   20.57       0     .57     100     .57     100   20.57
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,250.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0   20.47       0     .47     100     .47     100   20.47
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,200.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0   20.38       0     .38     100     .38     100   20.38
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,150.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0   20.28       0     .28     100     .28     100   20.28
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,100.*   ,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0   20.19       0     .19     100     .19     100   20.19
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,50.0000*,50,50,50
+Node Last Edited Time=Apr/16/2007 15:19:56
+#Sta/Elev= 4 
+       0   20.09       0     .09     100     .09     100   20.09
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,0       ,0,0,0
+BEGIN DESCRIPTION:
+Downstream Boundary Section
+END DESCRIPTION:
+Node Last Edited Time=Apr/16/2007 14:32:19
+#Sta/Elev= 4 
+       0      20       0       0     100       0     100      20
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0     100    .035       0
+Bank Sta=0,100
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Chan Stop Cuts=-1 
+
+
+
+Use User Specified Reach Order=0
+User Specified Reach Order=Brunner         ,1               
+GIS Ratio Cuts To Invert=-1

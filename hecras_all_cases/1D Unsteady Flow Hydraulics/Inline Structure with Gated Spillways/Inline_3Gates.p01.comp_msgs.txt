@@ -1,0 +1,33 @@
+Simulation started at: 11Jun2012 10:34 AM
+
+Writing geometry to output file
+Completed writing geometry to output file
+
+
+Geometric Preprocessor Version 4.2.0 Jan 2010 XXX XXXX
+
+Finished Processing Geometry
+
+Performing Unsteady Flow Simulation  Version 4.2.0 Jan 2010 XXX XXXX
+
+
+
+Finished Unsteady Flow Simulation
+
+Writing Results to DSS
+Finished Writing Results to DSS
+
+Reading Data for Post Process
+
+Running Post Processor  Version 4.2.0 Jan 2010 XXX XXXX
+
+Finished Post Processing
+
+Task	Time
+Writing geometry information	2.43 sec
+Preprocessing Geometry	0.13 sec
+Unsteady Flow Computations	1.01 sec
+Writing to DSS	0.33 sec
+Post-Processing	1.34 sec
+Complete Process	5.27 sec
+

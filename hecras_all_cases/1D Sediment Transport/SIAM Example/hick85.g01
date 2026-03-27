@@ -1,0 +1,1952 @@
+Geom Title=Hickahala85
+Program Version=4.00
+Viewing Rectangle= 0 , 1 , 1 , 0 
+
+River Reach=RIVER-1         ,Reach-1         
+Reach XY= 2 
+             0.5            0.95             0.5            0.05
+Rch Text X Y=0.5,0.725
+Reverse River Text= 0 
+
+Type RM Length L Ch R = 1 ,1369.4  ,3510,3510,3510
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 13 
+    9300     450    9900     400   10000   396.3   10118   397.8   10136     382
+   10142   382.3   10156   387.5   10160   397.2   10169   397.5   10210   397.2
+   10260   397.6   10560     400   11260     450
+#Mann= 3 , 0 , 0 
+    9300     .08       0   10118     .06       0   10160     .08       0
+#Block Obstruct= 2 , 0 
+           10118   397.8   10169           397.5
+Bank Sta=10118,10160
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1334.3  ,50,50,50
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 10 
+       0     400     100     390     225     385     226     377     240   369.8
+     255   369.8     274     379     275     385    1100     390    1350     400
+#Mann= 3 , 0 , 0 
+       0     .08       0     225     .06       0     275     .08       0
+#XS Ineff= 2 , 0 
+             225     385     275             385
+Permanent Ineff=
+       F       F
+Bank Sta=225,275
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,1333.8  ,20,20,20
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 10 
+       0     400     100     390     225     385     226     377     240   369.8
+     255   369.8     274     379     275     385    1100     390    1350     400
+#Mann= 3 , 0 , 0 
+       0     .08       0     225     .06       0     275     .08       0
+#XS Ineff= 2 , 0 
+             225     385     275             385
+Permanent Ineff=
+       F       F
+Bank Sta=225,275
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 3 ,1333.7  ,,,
+BEGIN DESCRIPTION:
+Bridge #13
+
+END DESCRIPTION:
+Node Last Edited Time=May/20/2003 11:50:13
+Bridge Culvert--1,0,-1,-1, 0 
+Deck Dist Width WeirC Skew NumUp NumDn MinLoCord MaxHiCord MaxSubmerge Is_Ogee
+3,16,2.6,0, 6, 6, 385, , 0.95, 0, 0,0,,
+       0     225     225     275     275    1350
+     385     385     385     385     385     385
+   369.8   369.8   383.5   383.5   369.8   369.8
+       0     225     225     275     275    1350
+     385     385     385     385     385     385
+   369.8   369.8   383.5   383.5   369.8   369.8
+Pier Skew, UpSta & Num, DnSta & Num=  ,250, 2 ,250, 2 , 0 , 0 , 0 ,,
+     2.5     2.5
+   369.8   383.5
+     2.5     2.5
+   369.8   383.5
+BR Coef= 0 , 0 ,-1 ,1.05, 0 ,,,0.8006408,0,,2,383.5
+WSPro=,,,, 1 ,,,, 0 ,,,, 0 ,,,,-1 ,-1 ,-1 , 0 , 0 , 0 , 0 , 0 
+BC Design=,, 0 ,, 0 ,,,,,,
+BC Use User HTab Curves=0
+BC User HTab FreeFlow(D)= 0 
+
+Type RM Length L Ch R = 1 ,1333.6  ,200,200,200
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 10 
+       0     400     100     390     225     385     226     377     240   369.8
+     255   369.8     274     379     275     385    1100     390    1350     400
+#Mann= 3 , 0 , 0 
+       0     .08       0     225     .06       0     275     .08       0
+#XS Ineff= 2 , 0 
+             225     385     275             385
+Permanent Ineff=
+       F       F
+Bank Sta=225,275
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,1331.6  ,1425,1425,1425
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 10 
+       0     400     100     390     225     385     226     377     240   369.8
+     255   369.8     274     379     275     385    1100     390    1350     400
+#Mann= 3 , 0 , 0 
+       0     .08       0     225     .06       0     275     .08       0
+#XS Ineff= 2 , 0 
+             225     385     275             385
+Permanent Ineff=
+       F       F
+Bank Sta=225,275
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,1317.4  ,3385,3385,3385
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 26 
+    7400     450    7800     440    8300     430    8500     420    8800     410
+    9100     400    9600     400    9750     390    9800     380   10000     376
+   10120   376.5   10133   377.4   10140   378.3   10147   377.5   10153   369.5
+   10161     364   10175   363.9   10186   363.1   10197     372   10200   377.9
+   10229     377   10300   377.1   10500     380   11600     390   11800     400
+   12100     450
+#Mann= 3 , 0 , 0 
+    7400     .08       0   10147     .06       0   10200     .08       0
+#Block Obstruct= 2 , 0 
+           10140   378.3   10200           377.9
+Bank Sta=10147,10200
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1283.5  ,1945,1945,1945
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 21 
+    9000     400    9250     370   10000   364.1   10050   364.2   10100   363.9
+   10126     363   10134   363.5   10136     358   10144   354.6   10147   352.6
+   10151   352.8   10160   352.8   10168   356.5   10185   361.6   10194   361.5
+   10200   364.8   10206     365   10218   363.3   10300   363.5   10600     370
+   11300     400
+#Mann= 3 , 0 , 0 
+    9000     .08       0   10134     .06       0   10200     .08       0
+#Block Obstruct= 2 , 0 
+           10134   363.5   10206             365
+Bank Sta=10134,10200
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1264.1  ,50,50,50
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 12 
+       0     370     300     360     500     360     620     361     621     352
+     624     349     636     349     640   345.6     655   345.6     670     348
+     680     361    1200     370
+#Mann= 3 , 0 , 0 
+       0     .08       0     620     .06       0     680     .08       0
+#XS Ineff= 2 , 0 
+             620     361     680             361
+Permanent Ineff=
+       F       F
+Bank Sta=620,680
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,1263.6  ,20,20,20
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 12 
+       0     370     300     360     500     360     620     361     621     352
+     624     349     636     349     640   345.6     655   345.6     670     348
+     680     361    1200     370
+#Mann= 3 , 0 , 0 
+       0     .08       0     620     .06       0     680     .08       0
+#XS Ineff= 2 , 0 
+             620     361     680             361
+Permanent Ineff=
+       F       F
+Bank Sta=620,680
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 3 ,1263.5  ,,,
+BEGIN DESCRIPTION:
+Bridge #12
+
+END DESCRIPTION:
+Node Last Edited Time=May/20/2003 11:50:13
+Bridge Culvert--1,0,-1,-1, 0 
+Deck Dist Width WeirC Skew NumUp NumDn MinLoCord MaxHiCord MaxSubmerge Is_Ogee
+3,16,2.6,0, 6, 6, 361, , 0.95, 0, 0,0,,
+       0     620     620     680     680    1200
+     361     361     361     361     361     361
+   345.6   345.6   359.5   359.5   345.6   345.6
+       0     620     620     680     680    1200
+     361     361     361     361     361     361
+   345.6   345.6   359.5   359.5   345.6   345.6
+Pier Skew, UpSta & Num, DnSta & Num=  ,650, 2 ,650, 2 , 0 , 0 , 0 ,,
+     2.5     2.5
+   345.6   359.5
+     2.5     2.5
+   345.6   359.5
+BR Coef= 0 , 0 ,-1 ,1.05, 0 ,,,0.8006408,0,,2,359.5
+WSPro=,,,, 1 ,,,, 0 ,,,, 0 ,,,,-1 ,-1 ,-1 , 0 , 0 , 0 , 0 , 0 
+BC Design=,, 0 ,, 0 ,,,,,,
+BC Use User HTab Curves=0
+BC User HTab FreeFlow(D)= 0 
+
+Type RM Length L Ch R = 1 ,1263.4  ,200,200,200
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 12 
+       0     370     300     360     500     360     620     361     621     352
+     624     349     636     349     640   345.6     655   345.6     670     348
+     680     361    1200     370
+#Mann= 3 , 0 , 0 
+       0     .08       0     620     .06       0     680     .08       0
+#XS Ineff= 2 , 0 
+             620     361     680             361
+Permanent Ineff=
+       F       F
+Bank Sta=620,680
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,1261.4  ,735,735,735
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 12 
+       0     370     300     360     500     360     620     361     621     352
+     624     349     636     349     640   345.6     655   345.6     670     348
+     680     361    1200     370
+#Mann= 3 , 0 , 0 
+       0     .08       0     620     .06       0     680     .08       0
+#XS Ineff= 2 , 0 
+             620     361     680             361
+Permanent Ineff=
+       F       F
+Bank Sta=620,680
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,1254    ,1440,1440,1440
+Node Last Edited Time=May/20/2003 13:51:15
+#Sta/Elev= 28 
+    8600     400    9500     360   10000   354.7   10035   354.2   10063   354.5
+   10066   353.5   10070   354.2   10107   355.8   10111   355.8   10115     353
+   10121   351.2   10126     344   10131   342.3   10140   341.5   10147   341.5
+   10153     349   10156   350.2   10160   355.2   10167   354.5   10203   353.6
+   10260   353.3   10560     360   10860     370   11360     380   11460     370
+   11660     370   11760     380   11860     390
+#Mann= 3 , 0 , 0 
+    8600     .08       0   10111     .06       0   10160     .08       0
+#XS Ineff= 2 , 0 
+           10111   355.8   10160           355.2
+Permanent Ineff=
+       F       F
+Bank Sta=10111,10160
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1239.6  ,2602,2602,2602
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 21 
+    8600     400    9100     350    9850     350   10000     351   10040     351
+   10060   351.2   10084   351.1   10108   351.6   10124   337.7   10140   337.7
+   10152     339   10157     343   10160     352   10180     351   10187   350.1
+   10260   350.8   10360     350   10960     360   11160     370   11760     380
+   11860     390
+#Mann= 3 , 0 , 0 
+    8600     .08       0   10108     .04       0   10160     .08       0
+#XS Ineff= 2 , 0 
+           10108   351.6   10160             352
+Permanent Ineff=
+       F       F
+Bank Sta=10108,10160
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1213.6  ,50,50,50
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 8 
+       0     360     150     350    1576   351.4    1583   331.4    1617   331.4
+    1624   351.4    3150     350    3250     360
+#Mann= 3 , 0 , 0 
+       0     .08       0    1576     .04       0    1624     .08       0
+#XS Ineff= 2 , 0 
+            1576   351.4    1624           351.4
+Permanent Ineff=
+       F       F
+Bank Sta=1576,1624
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,1213.1  ,15,15,15
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 8 
+       0     360     150     350    1576   351.4    1583   331.4    1617   331.4
+    1624   351.4    3150     350    3250     360
+#Mann= 3 , 0 , 0 
+       0     .08       0    1576     .04       0    1624     .08       0
+#XS Ineff= 2 , 0 
+            1576   351.4    1624           351.4
+Permanent Ineff=
+       F       F
+Bank Sta=1576,1624
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 3 ,1213    ,,,
+BEGIN DESCRIPTION:
+Bridge #11
+
+END DESCRIPTION:
+Node Last Edited Time=May/20/2003 11:50:13
+Bridge Culvert--1,0,-1,-1, 0 
+Deck Dist Width WeirC Skew NumUp NumDn MinLoCord MaxHiCord MaxSubmerge Is_Ogee
+3,11,2.6,0, 6, 6, 351.4, , 0.95, 0, 0,0,,
+       0    1576    1576    1624    1624    3250
+   351.4   351.4   351.4   351.4   351.4   351.4
+   331.4   331.4   349.4   349.4   331.4   331.4
+       0    1576    1576    1624    1624    3250
+   351.4   351.4   351.4   351.4   351.4   351.4
+   331.4   331.4   349.4   349.4   331.4   331.4
+Pier Skew, UpSta & Num, DnSta & Num=  ,1600, 2 ,1600, 2 , 0 , 0 , 0 ,,
+    3.33    3.33
+   331.4   349.4
+    3.33    3.33
+   331.4   349.4
+BR Coef= 0 , 0 ,-1 ,1.05, 0 ,,,0.8006408,0,,2,349.4
+WSPro=,,,, 1 ,,,, 0 ,,,, 0 ,,,,-1 ,-1 ,-1 , 0 , 0 , 0 , 0 , 0 
+BC Design=,, 0 ,, 0 ,,,,,,
+BC Use User HTab Curves=0
+BC User HTab FreeFlow(D)= 0 
+
+Type RM Length L Ch R = 1 ,1212.9  ,463,463,463
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 8 
+       0     360     150     350    1576   351.4    1583   331.4    1617   331.4
+    1624   351.4    3150     350    3250     360
+#Mann= 3 , 0 , 0 
+       0     .08       0    1576     .04       0    1624     .08       0
+#XS Ineff= 2 , 0 
+            1576   351.4    1624           351.4
+Permanent Ineff=
+       F       F
+Bank Sta=1576,1624
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,1208.3  ,2630,2630,2630
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 19 
+    8400     390    8800     350   10000   342.8   10095     343   10100     344
+   10130   343.6   10147   330.4   10170   330.6   10185   330.4   10188     333
+   10192   340.6   10197   341.7   10200   344.2   10210   344.5   10213   343.6
+   10250   343.1   10300     343   11800     350   12200     380
+#Mann= 3 , 0 , 0 
+    8400     .08       0   10130     .04       0   10200     .08       0
+#Block Obstruct= 2 , 0 
+           10100     344   10210           344.5
+Bank Sta=10130,10200
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1182    ,3100,3100,3100
+Node Last Edited Time=May/21/2003 15:02:10
+#Sta/Elev= 24 
+    7900     390    8400     340   10000   338.2   10007   338.4   10012   339.3
+   10022   339.2   10026   336.1   10051   335.7   10070     336   10089   335.2
+   10101     334   10113   325.5   10136     325   10144   324.5   10155     334
+   10158   334.5   10160   337.7   10180   337.5   10187   337.9   10260   337.1
+   11260     340   11760     350   12060     360   12360     390
+#Mann= 3 , 0 , 0 
+    7900     .08       0   10022     .04       0   10160     .08       0
+#Block Obstruct= 2 , 0 
+           10012   339.3   10187           337.9
+Bank Sta=10022,10160
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1151    ,2525,2525,2525
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 31 
+    7300     380    7700     370    7900     360    8200     350    8500     340
+   10000   332.4   10035   331.6   10060   331.5   10105   331.9   10108   332.2
+   10114   325.5   10133   318.5   10141   317.5   10152   321.5   10163     321
+   10183     325   10205   325.3   10218   327.4   10240   328.2   10253   330.4
+   10260   332.8   10280   332.5   10302   332.9   10310   331.8   10360     332
+   11360     340   11860     350   12460     360   12560     370   12660     380
+   12860     390
+#Mann= 3 , 0 , 0 
+    7300     .08       0   10108     .04       0   10260     .08       0
+#XS Ineff= 2 , 0 
+           10108   332.2   10260           332.8
+Permanent Ineff=
+       F       F
+Bank Sta=10108,10260
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1125.8  ,167,167,167
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 26 
+    8800     380    8900     370    9000     360    9250     350    9300     340
+    9600     330   10000     327   10060   326.8   10093     327   10098   327.4
+   10104   327.6   10116   316.5   10120     312   10151   312.1   10161   319.5
+   10165   319.1   10184   324.5   10193   325.1   10200   327.7   10300   327.2
+   10500     330   11800     340   12000     350   13000     360   13500     370
+   13800     380
+#Mann= 3 , 0 , 0 
+    8800     .08       0   10104     .04       0   10200     .08       0
+#XS Ineff= 2 , 0 
+           10104   327.6   10200           327.7
+Permanent Ineff=
+       F       F
+Bank Sta=10104,10200
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1124.1  ,50,50,50
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 6 
+       0     330   355.5   329.7   380.5   304.7   419.5   304.7   444.5   329.7
+     800     330
+#Mann= 3 , 0 , 0 
+       0     .08       0   355.5     .04       0   444.5     .08       0
+#XS Ineff= 2 , 0 
+           355.5   329.7   444.5           329.7
+Permanent Ineff=
+       F       F
+Bank Sta=355.5,444.5
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,1123.6  ,15,15,15
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 6 
+       0     330   355.5   329.7   380.5   304.7   419.5   304.7   444.5   329.7
+     800     330
+#Mann= 3 , 0 , 0 
+       0     .08       0   355.5     .04       0   444.5     .08       0
+#XS Ineff= 2 , 0 
+           355.5   329.7   444.5           329.7
+Permanent Ineff=
+       F       F
+Bank Sta=355.5,444.5
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 3 ,1123.5  ,,,
+BEGIN DESCRIPTION:
+Bridge #10
+
+END DESCRIPTION:
+Node Last Edited Time=May/20/2003 11:50:13
+Bridge Culvert--1,0,-1,-1, 0 
+Deck Dist Width WeirC Skew NumUp NumDn MinLoCord MaxHiCord MaxSubmerge Is_Ogee
+3,11,2.6,0, 6, 6, 329.7, , 0.95, 0, 0,0,,
+       0   355.5   355.5   444.5   444.5     800
+   329.7   329.7   329.7   329.7   329.7   329.7
+   304.7   304.7   327.7   327.7   304.7   304.7
+       0   355.5   355.5   444.5   444.5     800
+   329.7   329.7   329.7   329.7   329.7   329.7
+   304.7   304.7   327.7   327.7   304.7   304.7
+Pier Skew, UpSta & Num, DnSta & Num=  ,400, 2 ,400, 2 , 0 , 0 , 0 ,,
+    3.33    3.33
+   304.7   327.7
+    3.33    3.33
+   304.7   327.7
+BR Coef= 0 , 0 ,-1 ,1.05, 0 ,,,0.8006408,0,,2,327.7
+WSPro=,,,, 1 ,,,, 0 ,,,, 0 ,,,,-1 ,-1 ,-1 , 0 , 0 , 0 , 0 , 0 
+BC Design=,, 0 ,, 0 ,,,,,,
+BC Use User HTab Curves=0
+BC User HTab FreeFlow(D)= 0 
+
+Type RM Length L Ch R = 1 ,1123.4  ,200,200,200
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 6 
+       0     330   355.5   329.7   380.5   304.7   419.5   304.7   444.5   329.7
+     800     330
+#Mann= 3 , 0 , 0 
+       0     .08       0   355.5     .04       0   444.5     .08       0
+#XS Ineff= 2 , 0 
+           355.5   329.7   444.5           329.7
+Permanent Ineff=
+       F       F
+Bank Sta=355.5,444.5
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,1121.4  ,3143,3143,3143
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 6 
+       0     330   355.5   329.7   380.5   304.7   419.5   304.7   444.5   329.7
+     800     330
+#Mann= 3 , 0 , 0 
+       0     .08       0   355.5     .04       0   444.5     .08       0
+#XS Ineff= 2 , 0 
+           355.5   329.7   444.5           329.7
+Permanent Ineff=
+       F       F
+Bank Sta=355.5,444.5
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,1090    ,3600,3600,3600
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 26 
+    8300     370    8400     360    8650     350    8750     340    8800     330
+   10000  317.9210025.12   318.710070.11  317.6310086.86  319.4810099.52  322.69
+10110.62  312.9510129.71  305.7510155.22  305.4510171.58   307.510172.75  311.49
+10185.02  314.4210194.37  315.5810199.24  319.9710274.81  318.9910291.95  320.06
+10298.38  317.82   11198     330   11348     340   11698     350   11898     360
+   11998     370
+#Mann= 3 , 0 , 0 
+    8300     .08       010099.52     .04       010199.24     .08       0
+#Block Obstruct= 2 , 0 
+        10099.52  322.6910199.24          319.97
+Bank Sta=10099.52,10199.24
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1054    ,1726,1726,1726
+Node Last Edited Time=May/21/2003 15:01:28
+#Sta/Elev= 27 
+    8100     360    8300     350    8500     340    8600     330    8800     320
+   10000  313.26 10039.2   315.110046.22  317.6310052.26  317.9210058.31  316.94
+10066.88  311.6810079.17  310.5110096.12  297.5510128.29  297.3410135.32  302.11
+10140.98  307.5710149.37  313.3110154.44  314.0910158.15  315.6410164.19  315.45
+10175.11  312.4310248.82   312.6   11349     320   11549     330   11749     340
+   11849     350   12049     360
+#Mann= 3 , 0 , 0 
+    8100     .08       010058.31     .04       010158.15     .08       0
+#Block Obstruct= 2 , 0 
+        10052.26  317.9210158.15          315.64
+Bank Sta=10058.31,10158.15
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1036.7  ,50,50,50
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 7 
+       0     320      50     315    1205   314.7    1206   294.7    1289   294.7
+    1290   314.7    3100     320
+#Mann= 3 , 0 , 0 
+       0     .08       0    1205     .04       0    1290     .08       0
+#XS Ineff= 2 , 0 
+            1205   314.7    1290           314.7
+Permanent Ineff=
+       F       F
+Bank Sta=1205,1290
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,1036.2  ,28,28,28
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 7 
+       0     320      50     315    1205   314.7    1206   294.7    1289   294.7
+    1290   314.7    3100     320
+#Mann= 3 , 0 , 0 
+       0     .08       0    1205     .04       0    1290     .08       0
+#XS Ineff= 2 , 0 
+            1205   314.7    1290           314.7
+Permanent Ineff=
+       F       F
+Bank Sta=1205,1290
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 3 ,1036.1  ,,,
+BEGIN DESCRIPTION:
+Bridge #9
+
+END DESCRIPTION:
+Node Last Edited Time=May/20/2003 11:50:13
+Bridge Culvert--1,0,-1,-1, 0 
+Deck Dist Width WeirC Skew NumUp NumDn MinLoCord MaxHiCord MaxSubmerge Is_Ogee
+3,24,2.6,0, 6, 6, 314.7, , 0.95, 0, 0,0,,
+       0    1205    1205    1290    1290    3100
+   314.7   314.7   314.7   314.7   314.7   314.7
+   294.7   294.7   312.7   312.7   294.7   294.7
+       0    1205    1205    1290    1290    3100
+   314.7   314.7   314.7   314.7   314.7   314.7
+   294.7   294.7   312.7   312.7   294.7   294.7
+Pier Skew, UpSta & Num, DnSta & Num=  ,1247.5, 2 ,1247.5, 2 , 0 , 0 , 0 ,,
+    4.67    4.67
+   294.7   312.7
+    4.67    4.67
+   294.7   312.7
+BR Coef= 0 , 0 ,-1 ,1.05, 0 ,,,0.8006408,0,,2,312.7
+WSPro=,,,, 1 ,,,, 0 ,,,, 0 ,,,,-1 ,-1 ,-1 , 0 , 0 , 0 , 0 , 0 
+BC Design=,, 0 ,, 0 ,,,,,,
+BC Use User HTab Curves=0
+BC User HTab FreeFlow(D)= 0 
+
+Type RM Length L Ch R = 1 ,1036    ,200,200,200
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 7 
+       0     320      50     315    1205   314.7    1206   294.7    1289   294.7
+    1290   314.7    3100     320
+#Mann= 3 , 0 , 0 
+       0     .08       0    1205     .04       0    1290     .08       0
+#XS Ineff= 2 , 0 
+            1205   314.7    1290           314.7
+Permanent Ineff=
+       F       F
+Bank Sta=1205,1290
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,1034    ,996,996,996
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 7 
+       0     320      50     315    1205   314.7    1206   294.7    1289   294.7
+    1290   314.7    3100     320
+#Mann= 3 , 0 , 0 
+       0     .08       0    1205     .04       0    1290     .08       0
+#XS Ineff= 2 , 0 
+            1205   314.7    1290           314.7
+Permanent Ineff=
+       F       F
+Bank Sta=1205,1290
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,1024    ,3075,3075,3075
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 26 
+    8200     350    8600     340    8800     330    9300     320    9500     310
+   10000  307.5610069.23  307.36 10089.9  308.4210099.06  310.2610105.69   309.1
+10110.37  305.0510146.45  296.85 10152.1  294.44 10179.6  293.5710192.27  292.03
+10199.88  293.1810210.21  297.9110220.16  309.3910239.66  307.56 10269.1  306.59
+10318.83  307.07   11619     310   12519     320   12919     330   13019     340
+   13219     350
+#Mann= 3 , 0 , 0 
+    8200     .08       010099.06     .04       010220.16     .08       0
+#Block Obstruct= 2 , 0 
+        10099.06  310.2610220.16          309.39
+Bank Sta=10099.06,10220.16
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,993.3   ,1149,1149,1149
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 22 
+    8700     350    9100     310   10000   301.810029.44  302.3810084.58  304.39
+ 10099.6  304.0510112.21  293.4310124.14  290.3710135.34  283.9210199.98  290.51
+10209.67  295.1910218.44   295.910229.65  303.4910238.02  304.4810245.05  303.44
+10255.59  302.7910329.29  302.35   12829     310   13529     320   13729     330
+   14029     340   14329     350
+#Mann= 3 , 0 , 0 
+    8700     .08       0 10099.6     .03       010229.65     .08       0
+#Block Obstruct= 2 , 0 
+        10084.58  304.3910238.02          304.48
+Bank Sta=10099.6,10229.65
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,981.8   ,50,50,50
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 9 
+       0     310     663     306     664     295     683   284.8     736   284.8
+     738     306    1700     300    2200     300    2550     310
+#Mann= 3 , 0 , 0 
+       0     .08       0     663     .03       0     738     .08       0
+#XS Ineff= 2 , 0 
+             663     306     738             306
+Permanent Ineff=
+       F       F
+Bank Sta=663,738
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,981.3   ,12,12,12
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 9 
+       0     310     663     306     664     295     683   284.8     736   284.8
+     738     306    1700     300    2200     300    2550     310
+#Mann= 3 , 0 , 0 
+       0     .08       0     663     .03       0     738     .08       0
+#XS Ineff= 2 , 0 
+             663     306     738             306
+Permanent Ineff=
+       F       F
+Bank Sta=663,738
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 3 ,981.2   ,,,
+BEGIN DESCRIPTION:
+Bridge #8
+
+END DESCRIPTION:
+Node Last Edited Time=May/20/2003 11:50:13
+Bridge Culvert--1,0,-1,-1, 0 
+Deck Dist Width WeirC Skew NumUp NumDn MinLoCord MaxHiCord MaxSubmerge Is_Ogee
+3,8,2.6,0, 6, 6, 306, , 0.95, 0, 0,0,,
+       0     663     663     738     738    2550
+     306     306     306     306     306     306
+   284.8   284.8     303     303   284.8   284.8
+       0     663     663     738     738    2550
+     306     306     306     306     306     306
+   284.8   284.8     303     303   284.8   284.8
+BR Coef=-1 , 0 , 0 ,0, 0 ,,,0.8006408,0,,1,303
+WSPro=,,,, 1 ,,,, 0 ,,,, 0 ,,,,-1 ,-1 ,-1 , 0 , 0 , 0 , 0 , 0 
+BC Design=,, 0 ,, 0 ,,,,,,
+BC Use User HTab Curves=0
+BC User HTab FreeFlow(D)= 0 
+
+Type RM Length L Ch R = 1 ,981.1   ,200,200,200
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 9 
+       0     310     663     306     664     295     683   284.8     736   284.8
+     738     306    1700     300    2200     300    2550     310
+#Mann= 3 , 0 , 0 
+       0     .08       0     663     .03       0     738     .08       0
+#XS Ineff= 2 , 0 
+             663     306     738             306
+Permanent Ineff=
+       F       F
+Bank Sta=663,738
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,979.1   ,1814,1814,1814
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 9 
+       0     310     663     306     664     295     683   284.8     736   284.8
+     738     306    1700     300    2200     300    2550     310
+#Mann= 3 , 0 , 0 
+       0     .08       0     663     .03       0     738     .08       0
+#XS Ineff= 2 , 0 
+             663     306     738             306
+Permanent Ineff=
+       F       F
+Bank Sta=663,738
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,961     ,2800,2800,2800
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 27 
+    8500     350    8800     320    9200     310    9800     300   10000  297.87
+10049.77  298.1510064.01  298.5610070.85  297.2110079.04  298.4910099.73  298.04
+10109.35  290.9710119.72   287.410131.04  286.4410138.88  282.3810154.88  283.09
+10160.92  284.3610167.37   283.4 10186.5  282.4610198.01  283.2610200.73   285.3
+10223.92  291.1710236.74  299.0510246.71  297.8110276.76  298.1510335.71  298.25
+   12036     300   12836     350
+#Mann= 3 , 0 , 0 
+    8500     .08       010099.73     .03       010236.74     .08       0
+#Block Obstruct= 2 , 0 
+        10079.04  298.4910236.74          299.05
+Bank Sta=10099.73,10236.74
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,933     ,3210,3210,3210
+Node Last Edited Time=May/21/2003 14:59:23
+#Sta/Elev= 35 
+    7600     350    8000     320    8200     310    8500     300   10000  294.51
+10043.11  294.8810058.48  299.7310070.18  300.3310088.17  295.7410099.87  295.48
+10103.81  291.24 10108.1  290.9610116.56  282.11 10123.6  280.3910126.93  278.08
+10143.89  279.5610158.69  282.4910164.36  280.7610174.68  283.2910190.48  284.28
+ 10204.9  285.7610211.31  288.4710221.05  290.7110226.68  294.0910243.06  295.18
+10260.57  300.4210266.81  301.0110285.98  294.2110325.97  293.61   11826     300
+   11926     310   12126     320   12326     330   12826     340   13226     350
+#Mann= 3 , 0 , 0 
+    7600     .08       010070.18     .03       010260.57     .08       0
+#Block Obstruct= 2 , 0 
+        10070.18  300.3310266.81          301.02
+Bank Sta=10070.18,10260.57
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,900.9   ,3190,3190,3190
+Node Last Edited Time=May/21/2003 14:59:17
+#Sta/Elev= 36 
+    6400     350    6500     340    6700     330    6800     320    7200     310
+    7500     300    8700     290   10000   290.110039.89  291.3810048.66  293.11
+10061.15  297.3710067.96  297.7410085.03  292.6410098.64  292.2210104.43  286.94
+10128.85  277.73 10133.9  277.2310173.97  276.9510185.85  278.0910188.79  280.42
+10195.02  281.7710201.67  285.7510206.75  288.2710211.82  289.0310213.97  291.07
+10238.48  291.2110254.87  296.4410263.82   297.110284.58  290.7210312.97  290.07
+   11213     290   12013     300   12213     310   12413     320   12513     330
+   12913     350
+#Mann= 3 , 0 , 0 
+    6400     .08       010067.96     .03       010254.87     .08       0
+#Block Obstruct= 2 , 0 
+        10067.96  297.7410263.82           297.1
+Bank Sta=10067.96,10254.87
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,869     ,3200,3200,3200
+Node Last Edited Time=May/21/2003 14:59:12
+#Sta/Elev= 37 
+    6500     330    6700     320    7000     310    7700     300    8400     300
+    8800     290   10000  286.6510018.12   287.5 10027.1  289.6110038.61  293.36
+ 10046.6  294.1210049.32  293.1510068.78  287.4410101.13   287.410111.41  277.65
+10124.45  275.5110126.59  273.4810145.49  273.94 10156.2  273.5510170.03  272.66
+10177.26  276.5110190.33  280.7410198.53  283.6310205.96  288.2510223.69  289.39
+10232.09  292.6610242.22  292.5510248.05  290.8110255.06  289.1610266.74  287.21
+10283.88  286.1310304.34  286.01   11104     280   11204     280   11304     290
+   11504     300   11534     330
+#Mann= 3 , 0 , 0 
+    6500     .08       010049.32     .03       010232.09     .08       0
+#Block Obstruct= 2 , 0 
+         10046.6  294.1210232.09          292.66
+Bank Sta=10049.32,10232.09
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,837     ,1472,1472,1472
+Node Last Edited Time=May/21/2003 14:59:06
+#Sta/Elev= 30 
+    7100     330    7200     320    7500     310    7800     300    8900     290
+   10000  282.2210050.39  283.3810070.33  285.8510088.72  289.7810100.05  289.95
+ 10121.6  274.2510135.26  273.1610151.06  270.0410160.81  268.7610191.29  270.73
+10201.69  276.9910219.47  278.0210234.53  280.3110241.19  283.3910260.73  283.83
+10269.92  285.0710290.26  289.6710300.22  289.5510310.35  286.05 10327.7  282.06
+10340.19  281.35   11040     280   11240     280   11940     290   12540     320
+#Mann= 3 , 0 , 0 
+    7100     .08       010100.05     .03       010290.26     .08       0
+#Block Obstruct= 2 , 0 
+        10100.05  289.9510290.26          289.67
+Bank Sta=10100.05,10290.26
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,822.2   ,50,50,50
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 15 
+       0     310     300     300     650     297    1050     290    3232     290
+    3233     280    3244     280    3276     267    3324     267    3356     280
+    3367     280    3368     290    6550     290    6700     300    6800     310
+#Mann= 3 , 0 , 0 
+       0     .08       0    3232     .03       0    3368     .08       0
+#XS Ineff= 2 , 0 
+            3232     290    3368             290
+Permanent Ineff=
+       F       F
+Bank Sta=3232,3368
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,821.8   ,25,25,25
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 15 
+       0     310     300     300     650     297    1050     290    3232     290
+    3233     280    3244     280    3276     267    3324     267    3356     280
+    3367     280    3368     290    6550     290    6700     300    6800     310
+#Mann= 3 , 0 , 0 
+       0     .08       0    3232     .03       0    3368     .08       0
+#XS Ineff= 2 , 0 
+            3232     290    3368             290
+Permanent Ineff=
+       F       F
+Bank Sta=3232,3368
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 3 ,821.65  ,,,
+BEGIN DESCRIPTION:
+Bridge #7
+
+END DESCRIPTION:
+Node Last Edited Time=May/20/2003 11:50:13
+Bridge Culvert--1,0,-1,-1, 0 
+Deck Dist Width WeirC Skew NumUp NumDn MinLoCord MaxHiCord MaxSubmerge Is_Ogee
+3,21,2.6,0, 6, 6, 290, , 0.95, 0, 0,0,,
+       0    3232    3232    3368    3368    6800
+     290     290     290     290     290     290
+     267     267     287     287     267     267
+       0    3232    3232    3368    3368    6800
+     290     290     290     290     290     290
+     267     267     287     287     267     267
+Pier Skew, UpSta & Num, DnSta & Num=  ,3300, 2 ,3300, 2 , 0 , 0 , 0 ,,
+    7.67    7.67
+     267     287
+    7.67    7.67
+     267     287
+BR Coef= 0 , 0 ,-1 ,1.15, 0 ,,,0.8006408,0,,2,287
+WSPro=,,,, 1 ,,,, 0 ,,,, 0 ,,,,-1 ,-1 ,-1 , 0 , 0 , 0 , 0 , 0 
+BC Design=,, 0 ,, 0 ,,,,,,
+BC Use User HTab Curves=0
+BC User HTab FreeFlow(D)= 0 
+
+Type RM Length L Ch R = 1 ,821.5   ,200,200,200
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+STATE HIGHWAY 305 BRIDGE
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 15 
+       0     310     300     300     650     297    1050     290    3232     290
+    3233     280    3244     280    3276     267    3324     267    3356     280
+    3367     280    3368     290    6550     290    6700     300    6800     310
+#Mann= 3 , 0 , 0 
+       0     .08       0    3232     .03       0    3368     .08       0
+#XS Ineff= 2 , 0 
+            3232     290    3368             290
+Permanent Ineff=
+       F       F
+Bank Sta=3232,3368
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,819.5   ,1253,1253,1253
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 15 
+       0     310     300     300     650     297    1050     290    3232     290
+    3233     280    3244     280    3276     267    3324     267    3356     280
+    3367     280    3368     290    6550     290    6700     300    6800     310
+#Mann= 3 , 0 , 0 
+       0     .08       0    3232     .03       0    3368     .08       0
+#XS Ineff= 2 , 0 
+            3232     290    3368             290
+Permanent Ineff=
+       F       F
+Bank Sta=3232,3368
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,807     ,3600,3600,3600
+Node Last Edited Time=May/21/2003 14:58:46
+#Sta/Elev= 33 
+    9000     310    9250     300    9450     290    9700     280   10000  278.48
+10017.34  278.4210044.36  286.8910049.62  287.4810053.32  287.3910075.58  281.72
+10099.94     28110109.75  271.6310114.42  272.31   10124  268.2710142.13  267.82
+10182.26  267.5110185.16   270.910201.65  280.42 10218.2  281.3210237.44  287.36
+10248.74  287.4810252.07  285.9410271.21  279.4910278.23  279.2110281.95  276.32
+10289.98   271.410297.41  268.3110298.94  271.2210301.66  272.29   11402     280
+   13702     290   13902     300   14002     310
+#Mann= 3 , 0 , 0 
+    9000     .08       010053.32     .03       010237.44     .08       0
+#Block Obstruct= 2 , 0 
+        10049.62  287.4810248.74          287.48
+Bank Sta=10053.32,10237.44
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,771     ,4450,4450,4450
+Node Last Edited Time=May/21/2003 14:58:40
+#Sta/Elev= 30 
+    8800     300    9200     290    9300     280   10000  274.5710036.02  276.37
+10049.25  278.6210057.22  281.4510068.49  284.8610077.06  285.3610094.62  279.36
+ 10099.1  278.79 10111.4  273.3710130.72  267.4710133.26  264.5710150.98  265.47
+10191.11  264.1610204.15  264.5710214.44  269.8310227.47  273.2510231.54  277.23
+10250.42  277.6510276.68     28410280.96   284.310284.27  283.9110302.23  277.63
+10316.46  274.6410330.29  274.37   12730     280   13030     290   13130     300
+#Mann= 3 , 0 , 0 
+    8800     .08       010077.06     .03       010276.68     .08       0
+#Block Obstruct= 2 , 0 
+        10077.06  285.3610280.96           284.3
+Bank Sta=10077.06,10276.68
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,726.5   ,3350,3350,3350
+Node Last Edited Time=May/21/2003 14:58:35
+#Sta/Elev= 28 
+    5300     300    5500     290    6000     280    9000     270    9900     270
+   10000  272.1210051.13  271.4210070.83  272.61 10097.9  281.1210099.27  280.83
+10103.79  275.2910123.39  260.4310138.61  259.7710159.49  259.5110180.56  260.12
+10201.43  261.4210222.89  262.3210281.36  273.2110305.55   274.910337.12  282.34
+10350.39  282.36 10366.6  278.9810380.47   275.5   11180     270   12380     270
+   13580     280   15880     290   16080     300
+#Mann= 3 , 0 , 0 
+    5300     .08       0 10097.9     .04       010337.12     .08       0
+#Block Obstruct= 2 , 0 
+         10097.9  281.1210350.39          282.36
+Bank Sta=10097.9,10337.12
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,693     ,2900,2900,2900
+Node Last Edited Time=May/21/2003 14:58:26
+#Sta/Elev= 34 
+    7200     310    7800     300    8400     290    8700     280    9100     270
+   10000  268.9410005.47  269.2510050.07  278.3410055.74  278.16 10057.5  277.39
+10070.41   275.410081.58  271.76 10105.6  270.77 10110.9  268.2710119.31  266.75
+10123.87   260.410128.98  257.4210170.37  257.3410210.38  258.31 10221.9  257.67
+10224.78  262.0110250.84  271.0510262.37  270.5110270.15  272.7510282.01  277.21
+10289.82  277.33 10300.6  273.2110322.32  268.3510349.66  267.46   12750     270
+   14150     270   15850     280   16150     290   16450     300
+#Mann= 3 , 0 , 0 
+    7200     .08       0 10057.5     .04       010282.01     .08       0
+#Block Obstruct= 2 , 0 
+        10050.07  278.3410289.82          277.33
+Bank Sta=10057.5,10282.01
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,664     ,3100,3100,3100
+Node Last Edited Time=May/21/2003 14:57:49
+#Sta/Elev= 32 
+    7800     300    8050     290    8200     280    8400     270    9700     260
+    9850     260   10000   266.610020.43  272.6610040.28  276.76   10050  277.25
+10079.56  269.3210099.01  267.9410107.56  265.8910115.92  261.9710124.28  254.44
+10138.87  255.2210179.33  255.7910214.53  255.6810221.15  261.2610239.44  268.98
+10258.51  270.1510265.71  271.3210273.69   276.610278.35  276.6910288.85  273.56
+10307.32  266.3210338.44  265.72   11138     260   14138     270   14838     280
+   15088     290   15238     300
+#Mann= 3 , 0 , 0 
+    7800     .08       0   10050     .04       010273.69     .08       0
+#Block Obstruct= 2 , 0 
+           10050  277.2510278.35          276.69
+Bank Sta=10050,10273.69
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,633     ,3000,3000,3000
+Node Last Edited Time=May/21/2003 14:57:39
+#Sta/Elev= 32 
+    7310     280    7760     270    9160     260    9910     260   10000     262
+ 10004.3  262.1910042.98  272.9110047.27   273.310049.63  272.8210068.01  265.62
+10099.86  265.2410113.54  256.2910121.55  252.7910129.76  253.1810167.87  252.12
+10189.95  252.4210200.57  251.4510206.57  252.3210210.27  255.5410222.39  260.02
+10225.31  263.42   10230  265.08 10251.1  265.1810260.87  268.1110272.78     272
+10282.37   272.210300.15  267.3410329.74  262.87   10810     260   12860     260
+   13560     270   13860     280
+#Mann= 3 , 0 , 0 
+    7310     .08       010049.63     .04       010272.78     .08       0
+#Block Obstruct= 2 , 0 
+        10047.27   273.310282.37           272.2
+Bank Sta=10049.63,10272.78
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,603     ,3000,3000,3000
+Node Last Edited Time=May/21/2003 14:57:31
+#Sta/Elev= 33 
+    5400     300    5500     290    5600     280    6100     270    9200     260
+   10000  257.9610030.41  262.7310050.67   270.510060.03  270.4110064.91  268.18
+10077.97  263.5210089.87  263.2310101.17  263.6210120.68  250.1310189.89  250.74
+10206.66  250.1610214.25  256.1810227.51  260.8410230.04  262.9810241.74  263.28
+ 10254.8  261.92 10266.1  263.0910272.93  264.9410279.74   269.410292.03  268.73
+10302.17  267.27 10312.5  267.5710328.49  264.56   12528     260   12628     270
+   13328     280   13428     290   13628     300
+#Mann= 3 , 0 , 0 
+    5400     .08       010064.91     .04       010279.74     .08       0
+#Block Obstruct= 2 , 0 
+        10050.67   270.510279.74           269.4
+Bank Sta=10064.91,10279.74
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,573     ,2650,2650,2650
+Node Last Edited Time=May/21/2003 14:57:24
+#Sta/Elev= 29 
+    4580     300    4600     290    5800     290    6100     280    6800     270
+    8600     260   10000  255.3510021.64  255.7610049.87  265.0110056.69   265.5
+10076.79  260.37 10087.9  260.4710099.01  262.2310107.42  255.4410119.33  248.56
+10147.02  248.7810208.04  248.2510213.28  254.8510227.49  260.9810247.57  259.54
+ 10265.7  260.0410282.25  266.3710326.33  261.36   11126     250   11826     260
+   12626     270   13126     280   13426     290   13526     300
+#Mann= 3 , 0 , 0 
+    4580     .08       010056.69     .04       010282.25     .08       0
+#Block Obstruct= 2 , 0 
+        10056.69   265.510282.25          266.37
+Bank Sta=10056.69,10282.25
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,546.5   ,3090,3090,3090
+Node Last Edited Time=May/21/2003 14:57:18
+#Sta/Elev= 34 
+    6000     300    6700     290    7500     280    7800     270    8800     260
+   10000  254.1110006.63  254.22 10025.5  259.0810041.84  264.22   10051  264.52
+10071.91  257.7110085.94  258.31 10098.8   259.310103.32  255.3510107.81  253.91
+ 10114.1  246.5910143.15  246.4510162.26  246.3810182.33   246.910202.03  246.35
+10203.98  245.4910207.63  253.12 10222.6  258.8310233.33  259.04 10242.3  258.19
+   10262  257.16 10283.4  263.2810295.68  264.1710321.64  259.77   10922     250
+   11122     250   12322     260   12922     270   13522     300
+#Mann= 3 , 0 , 0 
+    6000     .08       0   10051     .04       010295.68     .08       0
+#Block Obstruct= 2 , 0 
+           10051  264.5210295.68          264.17
+Bank Sta=10051,10295.68
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,515.6   ,3710,3710,3710
+Node Last Edited Time=May/21/2003 14:57:07
+#Sta/Elev= 31 
+    6600     280    6700     270    7000     260    7200     250    9600     250
+   10000  252.8710008.38  253.8510039.76  261.7310050.89  261.46 10054.8  260.11
+10074.34  255.8810094.45  255.8110105.95  257.3810110.47  253.0310115.17  249.94
+10120.07  245.7810139.79  245.13 10159.5  245.7410219.62  245.0510240.44  255.63
+10262.89   254.710280.06  256.0810296.23  261.9110303.84  261.5310319.88  255.94
+ 10335.1  255.4810339.61  252.77   10840     250   12040     260   14740     270
+   15240     280
+#Mann= 3 , 0 , 0 
+    6600     .08       010050.89     .04       010296.23     .08       0
+#Block Obstruct= 2 , 0 
+        10039.76  261.7310296.23          261.91
+Bank Sta=10050.89,10296.23
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,478.5   ,2697,2697,2697
+Node Last Edited Time=May/21/2003 14:56:38
+#Sta/Elev= 31 
+    6800     280    7200     270    7400     260    8200     250    9950     250
+   10000  252.4310004.87  253.0910018.53  257.1310027.89  258.0710048.07   252.4
+   10087  252.7910099.05  251.7910108.17  248.6610116.08  241.9610125.81  241.65
+10143.72  242.0810163.57  241.7410210.08  241.9110215.01  247.71   10224  251.08
+10248.71  251.2110267.41  251.9410276.98   255.510301.71  256.6910322.31  253.73
+   10422     250   12922     250   13122     260   13222     270   13422     280
+   13622     300
+#Mann= 3 , 0 , 0 
+    6800      .1       010027.89     .03       010301.71      .1       0
+#Block Obstruct= 2 , 0 
+        10027.89  258.0710301.71          256.69
+Bank Sta=10027.89,10301.71
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,451.5   ,50,50,50
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 16 
+       0     270     400     260    1200     250    2904     250    2920     258
+    2930     258    2931     255    2970   234.8    3030   234.8    3069     255
+    3070     258    3080     258    3096     250    4400     250    4550     260
+    4750     270
+#Mann= 3 , 0 , 0 
+       0      .1       0    2930     .03       0    3070      .1       0
+#XS Ineff= 2 , 0 
+            2930     258    3070             258
+Permanent Ineff=
+       F       F
+Bank Sta=2930,3070
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,451     ,25,25,25
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 16 
+       0     270     400     260    1200     250    2904     250    2920     258
+    2930     258    2931     255    2970   234.8    3030   234.8    3069     255
+    3070     258    3080     258    3096     250    4400     250    4550     260
+    4750     270
+#Mann= 3 , 0 , 0 
+       0      .1       0    2930     .03       0    3070      .1       0
+#XS Ineff= 2 , 0 
+            2930     258    3070             258
+Permanent Ineff=
+       F       F
+Bank Sta=2930,3070
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 3 ,450.9   ,,,
+BEGIN DESCRIPTION:
+Bridge #6
+
+END DESCRIPTION:
+Node Last Edited Time=May/20/2003 11:50:13
+Bridge Culvert--1,0,-1,-1, 0 
+Deck Dist Width WeirC Skew NumUp NumDn MinLoCord MaxHiCord MaxSubmerge Is_Ogee
+3,21,2.6,0, 11, 11, 258, , 0.95, 0, 0,0,,
+       0     650     800    2520    2680    2930    2930    3070    3070    4000
+    4150
+     260     251     250     258     258256.4849256.4849255.6364255.6364     250
+     260
+   234.8   234.8   234.8   234.8   234.8   234.8     255     255   234.8   234.8
+   234.8
+       0     650     800    2520    2680    2930    2930    3070    3070    4000
+    4150
+     260     251     250     258     258256.4849256.4849255.6364255.6364     250
+     260
+   234.8   234.8   234.8   234.8   234.8   234.8     255     255   234.8   234.8
+   234.8
+Pier Skew, UpSta & Num, DnSta & Num=  ,3000, 2 ,3000, 2 , 0 , 0 , 0 ,,
+    3.33    3.33
+   234.8     255
+    3.33    3.33
+   234.8     255
+BR Coef= 0 , 0 ,-1 ,1.05, 0 ,,,0.8006408,0,,2,255
+WSPro=,,,, 1 ,,,, 0 ,,,, 0 ,,,,-1 ,-1 ,-1 , 0 , 0 , 0 , 0 , 0 
+BC Design=,, 0 ,, 0 ,,,,,,
+BC Use User HTab Curves=0
+BC User HTab FreeFlow(D)= 0 
+
+Type RM Length L Ch R = 1 ,450.8   ,200,200,200
+BEGIN DESCRIPTION:
+USGS Gage
+COUNTY ROAD BRIDGE
+END DESCRIPTION:
+Node Last Edited Time=May/19/2003 15:47:38
+#Sta/Elev= 16 
+       0     270     400     260    1200     250    2904     250    2920     258
+    2930     258    2931     255    2970   234.8    3030   234.8    3069     255
+    3070     258    3080     258    3096     250    4400     250    4550     260
+    4750     270
+#Mann= 3 , 0 , 0 
+       0      .1       0    2930     .03       0    3070      .1       0
+#XS Ineff= 2 , 0 
+            2930     258    3070             258
+Permanent Ineff=
+       F       F
+Bank Sta=2930,3070
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,448.8   ,2728,2728,2728
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 16 
+       0     270     400     260    1200     250    2904     250    2920     258
+    2930     258    2931     255    2970   234.8    3030   234.8    3069     255
+    3070     258    3080     258    3096     250    4400     250    4550     260
+    4750     270
+#Mann= 3 , 0 , 0 
+       0      .1       0    2930     .03       0    3070      .1       0
+Bank Sta=2930,3070
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,421.5   ,4050,4050,4050
+Node Last Edited Time=May/21/2003 14:56:14
+#Sta/Elev= 38 
+    6000     270    6300     260    6700     250    9600     245   10000  244.37
+10006.05  244.8410013.68  247.3410038.03  261.1910042.91  261.2710058.38  251.68
+10068.48  248.44 10079.2  248.3110100.27   249.510109.19  245.4910113.82  241.58
+10116.15   240.710129.41  241.24 10149.5  241.5610168.79  241.4110180.88  240.98
+10203.68  240.4210218.48   239.410220.07  241.6310224.24  247.3610229.32  248.61
+10249.21  248.4510269.48   247.910279.07  250.7910283.77  252.9210294.74  256.87
+10309.18   257.710324.76  256.4910328.26   255.6   10528     245   11528     245
+   12228     250   12428     260   12728     270
+#Mann= 3 , 0 , 0 
+    6000      .1       010042.91     .03       010294.74      .1       0
+#Block Obstruct= 2 , 0 
+        10042.91  261.2710309.18           257.7
+Bank Sta=10042.91,10294.74
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,381     ,3285,3285,3285
+Node Last Edited Time=May/21/2003 14:55:55
+#Sta/Elev= 34 
+    6190     270    7140     260    7290     250    7640     245    8390     245
+    8410     250    8510     258    8590     250    8600     245    9000     240
+    9100     240   10000  247.3710019.51  248.2910029.24  245.5710052.85  245.52
+10079.77  245.4710092.58   238.510131.99  239.1910152.67  238.7710172.55  237.28
+ 10182.9   238.910185.06  239.6710186.66  245.1610192.72   246.410207.94  246.76
+10232.51  245.9410243.44  246.8810250.88  250.0510258.91  253.5110272.57  254.54
+10291.68  253.83   13092     250   14192     260   14592     270
+#Mann= 3 , 0 , 0 
+    6190      .1       010019.51     .03       010250.88      .1       0
+#Block Obstruct= 2 , 0 
+        10019.51  248.2910272.57          254.54
+Bank Sta=10019.51,10250.88
+XS Rating Curve= 0 ,0
+Sediment Elevation=0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,348.65  ,50,50,50
+Node Last Edited Time=May/21/2003 14:55:38
+#Sta/Elev= 44 
+    5450     270    5850     260    7200     250    7700     245    8800     240
+    9900     240   10000  242.9510012.85  243.4610034.66  243.4910058.34  257.35
+10062.23  257.5510067.49  256.5910090.73  244.64 10099.5  244.4610107.51  239.89
+10113.38  235.0310123.13   232.810132.27  233.69 10142.4  233.4110152.72  233.23
+10163.04  234.3210173.36  234.1410182.31  235.3210192.83  234.4610203.54  233.99
+10213.27  235.46 10219.5  236.2510228.26  236.1710235.05  240.5610242.82  243.98
+10269.51  243.0410280.41  243.6410302.97  247.9610313.07  252.7510325.13  255.79
+10342.06  257.08   10542     245   10742     250   10792     240   13742     240
+   14342     245   14842     250   15692     260   16092     270
+#Mann= 3 , 0 , 0 
+    5450      .1       010062.23    .055       010342.06      .1       0
+#Block Obstruct= 2 , 0 
+        10058.34  257.3510342.06          257.08
+Bank Sta=10062.23,10342.06
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,348.15  ,40,40,40
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 15 
+       0     270    2500     260    2900     250    6750     258    6751   256.5
+    6790     244    6910     244    6941   228.4    7144   228.4    7210   250.5
+    7249   256.5    7250     258    9800     250   13900     260   14000     270
+#Mann= 3 , 0 , 0 
+       0      .1       0    6750    .055       0    7250      .1       0
+#XS Ineff= 2 , 0 
+            6750     258    7250             258
+Permanent Ineff=
+       F       F
+Bank Sta=6750,7250
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 3 ,347.95  ,,,
+BEGIN DESCRIPTION:
+Bridge #5
+
+END DESCRIPTION:
+Node Last Edited Time=May/20/2003 11:50:13
+Bridge Culvert--1,0,-1,-1, 0 
+Deck Dist Width WeirC Skew NumUp NumDn MinLoCord MaxHiCord MaxSubmerge Is_Ogee
+3,36,2.6,0, 10, 10, 258, , 0.95, 0, 0,0,,
+       0    2500    2900    6750    6750    7250    7250    9800   13900   14000
+     270     260     250     258   260.5   260.5     258     250     260     270
+   228.4   228.4   228.4   228.4   256.5   256.5   228.4   228.4   228.4   228.4
+       0    2500    2900    6750    6750    7250    7250    9800   13900   14000
+     270     260     250     258   260.5   260.5     258     250     260     270
+   228.4   228.4   228.4   228.4   256.5   256.5   228.4   228.4   228.4   228.4
+Pier Skew, UpSta & Num, DnSta & Num=  ,7000, 2 ,7000, 2 , 0 , 0 , 0 ,,
+      16      16
+   228.4   256.5
+      16      16
+   228.4   256.5
+BR Coef= 0 , 0 ,-1 ,1.15, 0 ,,,0.8006408,0,,2,256.5
+WSPro=,,,, 1 ,,,, 0 ,,,, 0 ,,,,-1 ,-1 ,-1 , 0 , 0 , 0 , 0 , 0 
+BC Design=,, 0 ,, 0 ,,,,,,
+BC Use User HTab Curves=0
+BC User HTab FreeFlow(D)= 0 
+
+Type RM Length L Ch R = 1 ,347.75  ,80,80,80
+BEGIN DESCRIPTION:
+I-55 NORTH BOUND LANE BRIDGE
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 15 
+       0     270    2500     260    2900     250    6750     258    6751   256.5
+    6790     244    6910     244    6941   228.4    7144   228.4    7210   250.5
+    7249   256.5    7250     258    9800     250   13900     260   14000     270
+#Mann= 3 , 0 , 0 
+       0      .1       0    6750    .055       0    7250      .1       0
+#XS Ineff= 2 , 0 
+            6750     258    7250             258
+Permanent Ineff=
+       F       F
+Bank Sta=6750,7250
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,346.95  ,40,40,40
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 15 
+       0     270    2500     260    2900     250    6750     258    6751   256.5
+    6790     244    6910     244    6946   225.8    7136   225.8    7210   250.5
+    7249   256.5    7250     258    9800     250   13900     260   14000     270
+#Mann= 3 , 0 , 0 
+       0      .1       0    6750    .055       0    7250      .1       0
+#XS Ineff= 2 , 0 
+            6750     258    7250             258
+Permanent Ineff=
+       F       F
+Bank Sta=6750,7250
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 3 ,346.75  ,,,
+BEGIN DESCRIPTION:
+Bridge #4
+
+END DESCRIPTION:
+Node Last Edited Time=May/20/2003 11:50:13
+Bridge Culvert--1,0,-1,-1, 0 
+Deck Dist Width WeirC Skew NumUp NumDn MinLoCord MaxHiCord MaxSubmerge Is_Ogee
+3,36,2.6,0, 10, 10, 258, , 0.95, 0, 0,0,,
+       0    2500    2900    6750    6750    7250    7250    9800   13900   14000
+     270     260     250     258   260.5   260.5     258     250     260     270
+   225.8   225.8   225.8   225.8   256.5   256.5   225.8   225.8   225.8   225.8
+       0    2500    2900    6750    6750    7250    7250    9800   13900   14000
+     270     260     250     258   260.5   260.5     258     250     260     270
+   225.8   225.8   225.8   225.8   256.5   256.5   225.8   225.8   225.8   225.8
+Pier Skew, UpSta & Num, DnSta & Num=  ,7000, 2 ,7000, 2 , 0 , 0 , 0 ,,
+      16      16
+   225.8   256.5
+      16      16
+   225.8   256.5
+BR Coef= 0 , 0 ,-1 ,1.15, 0 ,,,0.8006408,0,,2,256.5
+WSPro=,,,, 1 ,,,, 0 ,,,, 0 ,,,,-1 ,-1 ,-1 , 0 , 0 , 0 , 0 , 0 
+BC Design=,, 0 ,, 0 ,,,,,,
+BC Use User HTab Curves=0
+BC User HTab FreeFlow(D)= 0 
+
+Type RM Length L Ch R = 1 ,346.55  ,355,355,355
+BEGIN DESCRIPTION:
+I-55 SOUTH BOUND LANE BRIDGE
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 15 
+       0     270    2500     260    2900     250    6750     258    6751   256.5
+    6790     244    6910     244    6946   225.8    7136   225.8    7210   250.5
+    7249   256.5    7250     258    9800     250   13900     260   14000     270
+#Mann= 3 , 0 , 0 
+       0      .1       0    6750    .055       0    7250      .1       0
+#XS Ineff= 2 , 0 
+            6750     258    7250             258
+Permanent Ineff=
+       F       F
+Bank Sta=6750,7250
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,343     ,5800,5800,5800
+Node Last Edited Time=May/21/2003 14:55:05
+#Sta/Elev= 44 
+    5450     270    5850     260    7200     250    7700     245    8800     240
+    9900     240   10000  242.9510012.85  243.4610034.66  243.4910058.34  257.35
+10062.23  257.5510067.49  256.5910090.73  244.64 10099.5  244.4610107.51  239.89
+10113.38  235.0310123.13   232.810132.27  233.69 10142.4  233.4110152.72  233.23
+10163.04  234.3210173.36  234.1410182.31  235.3210192.83  234.4610203.54  233.99
+10213.27  235.46 10219.5  236.2510228.26  236.1710235.05  240.5610242.82  243.98
+10269.51  243.0410280.41  243.6410302.97  247.9610313.07  252.7510325.13  255.79
+10342.06  257.08   10542     245   10742     250   10792     240   13742     240
+   14342     245   14842     250   15692     260   16092     270
+#Mann= 3 , 0 , 0 
+    5450      .1       010058.34    .055       010342.06      .1       0
+#Block Obstruct= 2 , 0 
+        10058.34  257.3510342.06          257.08
+Bank Sta=10058.34,10342.06
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,285     ,1805,1805,1805
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=May/21/2003 14:54:50
+#Sta/Elev= 30 
+    6950     260    7200     250    7400     240    7900     230   10000  239.62
+10021.89  239.7610047.19  253.7810049.34  253.8810052.27  253.7910075.03  240.93
+10099.85  240.4810108.87  235.22 10112.4  234.5410122.16  235.05 10142.3   234.2
+ 10172.2   232.410192.33  232.0410202.88  233.0410207.94  235.3910209.87  238.91
+ 10212.4  240.68 10234.1  240.0310262.04  240.0810284.45  248.2310292.65  249.02
+10311.99  249.93   12112     230   13112     240   13212     250   13562     260
+#Mann= 3 , 0 , 0 
+    6950      .1       010049.34    .055       010311.99      .1       0
+#Block Obstruct= 2 , 0 
+        10049.34  253.8810311.99          249.93
+Bank Sta=10049.34,10311.99
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,266.95  ,50,50,50
+Node Last Edited Time=May/21/2003 14:54:40
+#Sta/Elev= 30 
+    6950  256.76    7200  246.76    7400  236.76    7900  226.76   10000  236.38
+10021.89  236.5210047.19  250.5410049.34  250.6410052.27  250.5510075.03  237.69
+10099.85  237.2410108.87  231.98 10112.4   231.310122.16  231.81 10142.3  230.96
+ 10172.2  229.1610192.33   228.810202.88   229.810207.94  232.1510209.87  235.67
+ 10212.4  237.44 10234.1  236.7910262.04  236.8410284.45  244.9910292.65  245.78
+10311.99  246.69   12112  226.76   13112  236.76   13212  246.76   13562  256.76
+#Mann= 3 , 0 , 0 
+    6950      .1       010052.27    .055       010311.99      .1       0
+#Block Obstruct= 2 , 0 
+        10049.34  250.6410311.99          246.69
+Bank Sta=10052.27,10311.99
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,266.45  ,10,10,10
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 14 
+       0     260     850     250    1550     244    6360     244    6360   242.5
+    6405   236.5    6405   226.6    6495   226.6    6495   232.5    6546   242.5
+    6546     244   10100     244   11850     250   12150     260
+#Mann= 3 , 0 , 0 
+       0      .1       0    6360    .055       0    6546      .1       0
+#XS Ineff= 2 , 0 
+            6360     244    6546             244
+Permanent Ineff=
+       F       F
+Bank Sta=6360,6546
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 3 ,266.4   ,,,
+BEGIN DESCRIPTION:
+Bridge #3
+
+END DESCRIPTION:
+Node Last Edited Time=May/20/2003 11:50:13
+Bridge Culvert--1,0,-1,-1, 0 
+Deck Dist Width WeirC Skew NumUp NumDn MinLoCord MaxHiCord MaxSubmerge Is_Ogee
+3,6,2.6,0, 14, 14, 244, , 0.95, 0, 0,0,,
+       0     850    1550    6360    6360    6405    6405    6495    6495    6546
+    6546   10100   11850   12150
+     260     250     244     244     244     244   247.5   247.5     244     244
+     244     244     250     260
+   226.6   226.6   226.6   226.6   241.5   241.5   241.5   241.5   241.5   241.5
+   226.6   226.6   226.6   226.6
+       0     850    1550    6360    6360    6405    6405    6495    6495    6546
+    6546   10100   11850   12150
+     260     250     244     244     244     244   247.5   247.5     244     244
+     244     244     250     260
+   226.6   226.6   226.6   226.6   241.5   241.5   241.5   241.5   241.5   241.5
+   226.6   226.6   226.6   226.6
+Pier Skew, UpSta & Num, DnSta & Num=  ,6453, 2 ,6453, 2 , 0 , 0 , 0 ,,
+       9       9
+   226.6   241.5
+       9       9
+   226.6   241.5
+BR Coef= 0 , 0 ,-1 ,1.25, 0 ,,,0.8006408,0,,2,241.5
+WSPro=,,,, 1 ,,,, 0 ,,,, 0 ,,,,-1 ,-1 ,-1 , 0 , 0 , 0 , 0 , 0 
+BC Design=,, 0 ,, 0 ,,,,,,
+BC Use User HTab Curves=0
+BC User HTab FreeFlow(D)= 0 
+
+Type RM Length L Ch R = 1 ,266.35  ,85,85,85
+BEGIN DESCRIPTION:
+I.C.G. RAILROAD BRIDGE
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 14 
+       0     260     850     250    1550     244    6360     244    6360   242.5
+    6405   236.5    6405   226.6    6495   226.6    6495   232.5    6546   242.5
+    6546     244   10100     244   11850     250   12150     260
+#Mann= 3 , 0 , 0 
+       0      .1       0    6360    .055       0    6546      .1       0
+#XS Ineff= 2 , 0 
+            6360     244    6546             244
+Permanent Ineff=
+       F       F
+Bank Sta=6360,6546
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,265.5   ,20,20,20
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 10 
+       0     260     700     250    1150     243    4150     241    6400     242
+    6400     227    6500     227    6500     242   11900     250   12200     260
+#Mann= 3 , 0 , 0 
+       0      .1       0    6400    .055       0    6500      .1       0
+#XS Ineff= 2 , 0 
+            6400     242    6500             242
+Permanent Ineff=
+       F       F
+Bank Sta=6400,6500
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 3 ,265.4   ,,,
+BEGIN DESCRIPTION:
+Bridge #2
+
+END DESCRIPTION:
+Node Last Edited Time=May/20/2003 11:50:13
+Bridge Culvert--1,0,-1,-1, 0 
+Deck Dist Width WeirC Skew NumUp NumDn MinLoCord MaxHiCord MaxSubmerge Is_Ogee
+3,16,2.6,0, 10, 10, 242, , 0.95, 0, 0,0,,
+       0     700    1150    4150    6400    6400    6500    6500   11900   12200
+     260     250     242     241     242   244.5   244.5     242     250     260
+     227     227     227     227     227   239.5   239.5     227     227     227
+       0     700    1150    4150    6400    6400    6500    6500   11900   12200
+     260     250     242     241     242   244.5   244.5     242     250     260
+     227     227     227     227     227   239.5   239.5     227     227     227
+BR Coef=-1 , 0 , 0 ,1.25, 0 ,,,0.8006408,0,,1,239.5
+WSPro=,,,, 1 ,,,, 0 ,,,, 0 ,,,,-1 ,-1 ,-1 , 0 , 0 , 0 , 0 , 0 
+BC Design=,, 0 ,, 0 ,,,,,,
+BC Use User HTab Curves=0
+BC User HTab FreeFlow(D)= 0 
+
+Type RM Length L Ch R = 1 ,265.3   ,400,400,400
+BEGIN DESCRIPTION:
+U.S. HIGHWAY 51 BRIDGE
+
+END DESCRIPTION:
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 10 
+       0     260     700     250    1150     243    4150     241    6400     242
+    6400     227    6500     227    6500     242   11900     250   12200     260
+#Mann= 3 , 0 , 0 
+       0      .1       0    6400    .055       0    6500      .1       0
+#XS Ineff= 2 , 0 
+            6400     242    6500             242
+Permanent Ineff=
+       F       F
+Bank Sta=6400,6500
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,261.3   ,2830,2830,2830
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=May/21/2003 14:54:21
+#Sta/Elev= 31 
+    5200  253.15    5300  243.15    6600  233.15    8200  233.15   10000  239.98
+10007.03  240.6710040.96   245.310058.55  241.1410079.63  241.36 10086.1  236.89
+10094.89  234.2710105.05  233.2210124.37  233.3410134.52  233.7510145.06  233.47
+10155.02   232.810164.58  233.5910174.72   233.810178.81  236.6310180.75  238.68
+10185.23  240.3410227.78  239.7210235.38  241.3910238.69  242.9510249.41   245.5
+10265.21   246.610284.34  246.23   11184  233.15   11384  243.15   11684  243.15
+   11784  253.15
+#Mann= 3 , 0 , 0 
+    5200      .1       010040.96    .055       010265.21      .1       0
+#Block Obstruct= 2 , 0 
+        10040.96   245.310265.21           247.6
+Bank Sta=10040.96,10265.21
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,233     ,5400,5400,5400
+Node Last Edited Time=May/21/2003 14:54:14
+#Sta/Elev= 31 
+    5200     250    5300     240    6600     230    8200     230   10000  236.83
+10007.03  237.5210040.96  242.1510058.55  237.9910079.63  238.21 10086.1  233.74
+10094.89  231.1210105.05  230.0710124.37  230.1910134.52   230.610145.06  230.32
+10155.02  229.6510164.58  230.4410174.72  230.6510178.81  233.4810180.75  235.53
+10185.23  237.1910227.78  236.5710235.38  238.2410238.69   239.810249.41  242.35
+10265.21  243.4510284.34  243.08   11184     230   11384     240   11684     240
+   11784     250
+#Mann= 3 , 0 , 0 
+    5200      .1       010040.96    .055       010265.21      .1       0
+#Block Obstruct= 2 , 0 
+        10040.96  242.1510265.21          243.45
+Bank Sta=10040.96,10265.21
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,179     ,5900,5900,5900
+Node Last Edited Time=May/21/2003 14:54:02
+#Sta/Elev= 24 
+    6800     250    7000     240    7200     230   10000  233.3410007.18  233.86
+10053.24  233.7610064.44  238.1110072.64  235.4110078.86  235.4310092.79  227.49
+10102.32  226.9510113.78   226.910133.59  227.9610142.32  228.7810153.98  228.82
+ 10172.8  230.3710182.23  235.6810202.82  236.0610209.64  235.0110281.14  235.22
+   11281     230   11781     240   13481     240   13981     250
+#Mann= 3 , 0 , 0 
+    6800      .1       010064.44    .055       010202.82      .1       0
+#Block Obstruct= 2 , 0 
+        10064.44  238.1110202.82          236.06
+Bank Sta=10064.44,10202.82
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,120     ,680,680,680
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 23 
+    6500     250    6600     240    6800     230   10000  230.6810033.18  230.98
+   10048  232.0910099.92  232.3410113.05   227.610128.47  228.2310137.27   226.7
+10156.22  225.4810173.39  225.44 10179.6  228.6710183.27  232.3910202.79  231.77
+ 10216.4  236.5910229.86  236.8210243.02  230.3210248.09  230.2410282.64  230.44
+   10583     230   10683     240   12283     250
+#Mann= 3 , 0 , 0 
+    6500      .1       010099.92    .055       010183.27      .1       0
+#Block Obstruct= 2 , 0 
+        10099.92  232.3410229.86          236.82
+Bank Sta=10099.92,10183.27
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,113.2   ,100,100,100
+Node Last Edited Time=May/21/2003 14:53:23
+#Sta/Elev= 16 
+       0     250      50     240     150     238     550     230    2300     225
+    2406     222    2410     215    2450     215    2454     222    2500     225
+    5000     225    5400     230    5550     235    5700     240    5900     240
+    8400     250
+#Mann= 3 , 0 , 0 
+       0      .1       0    2300    .055       0    2500      .1       0
+Bank Sta=2300,2500
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,112.2   ,20,20,20
+BEGIN DESCRIPTION:
+This is a REPEATED section.
+
+END DESCRIPTION:
+Node Last Edited Time=May/21/2003 14:53:19
+#Sta/Elev= 14 
+       0     250     100     243    1400     243    2250     246    2296     223
+    2453     222    2457     215    2497     215    2501     222    2658     222
+    2704     245    3700     245    6100     243    8350     250
+#Mann= 3 , 0 , 0 
+       0      .1       0    2250    .055       0    2704      .1       0
+#XS Ineff= 2 , 0 
+            2453     245    2658             245
+Permanent Ineff=
+       F       F
+Bank Sta=2250,2704
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 3 ,112.1   ,,,
+BEGIN DESCRIPTION:
+Bridge #1
+
+END DESCRIPTION:
+Node Last Edited Time=May/20/2003 11:50:13
+Bridge Culvert--1,0,-1,-1, 0 
+Deck Dist Width WeirC Skew NumUp NumDn MinLoCord MaxHiCord MaxSubmerge Is_Ogee
+3,16,2.6,0, 15, 15, 245, , 0.95, 0, 0,0,,
+       0     100    1400    2250    2250    2453    2453    2477    2658    2658
+    2704    2704    3700    6100    8350
+     250     243     243     246     246245.1057245.1057     245     245     245
+     245     245     245     243     250
+     215     215     215     215     215     215     242     242     242     215
+     215     215     215     215     215
+       0     100    1400    2250    2250    2453    2453    2477    2658    2658
+    2704    2704    3700    6100    8350
+     250     243     243     246     246245.1057245.1057     245     245     245
+     245     245     245     243     250
+     215     215     215     215     215     215     242     242     242     215
+     215     215     215     215     215
+Pier Skew, UpSta & Num, DnSta & Num=  ,2555.5, 2 ,2555.5, 2 , 0 , 0 , 0 ,,
+      17      17
+     215     242
+      17      17
+     215     242
+BR Coef= 0 , 0 ,-1 ,1.25, 0 ,,,0.8006408,0,,2,242
+WSPro=,,,, 1 ,,,, 0 ,,,, 0 ,,,,-1 ,-1 ,-1 , 0 , 0 , 0 , 0 , 0 
+BC Design=,, 0 ,, 0 ,,,,,,
+BC Use User HTab Curves=0
+BC User HTab FreeFlow(D)= 0 
+
+Type RM Length L Ch R = 1 ,112     ,200,200,200
+BEGIN DESCRIPTION:
+RESERVOIR ACCESS ROAD BRIDGE
+
+END DESCRIPTION:
+Node Last Edited Time=May/21/2003 14:53:13
+#Sta/Elev= 14 
+       0     250     100     243    1400     243    2250     246    2296     223
+    2453     222    2457     215    2497     215    2501     222    2658     222
+    2704     245    3700     245    6100     243    8350     250
+#Mann= 3 , 0 , 0 
+       0      .1       0    2250    .055       0    2704      .1       0
+#XS Ineff= 2 , 0 
+            2453   243.5    2658           243.5
+Permanent Ineff=
+       F       F
+Bank Sta=2250,2704
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,110     ,5600,5600,5600
+Node Last Edited Time=May/21/2003 14:52:56
+#Sta/Elev= 16 
+       0     250      50     240     150     238     550     230    2300     225
+    2406     222    2410     215    2450     215    2454     222    2500     225
+    5000     225    5400     230    5550     235    5700     240    5900     240
+    8400     250
+#Mann= 3 , 0 , 0 
+       0      .1       0    2300    .055       0    2500      .1       0
+Bank Sta=2300,2500
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,54      ,4325,4325,4325
+Node Last Edited Time=May/21/2003 14:52:50
+#Sta/Elev= 40 
+    4800     240    5000     230    5400     225    7400     225    8000  223.98
+ 8007.17  221.63 8022.35  221.02 8030.17  224.88 8041.86  226.12 8066.86  236.06
+  8072.5  236.34 8100.28  229.97 8119.51  226.04 8120.48  225.85 8121.64  225.46
+ 8128.03  221.56 8143.01  220.85 8156.04  219.55 8160.16  223.33 8161.13  223.52
+ 8172.62  224.37 8200.27  225.47 8224.98  225.22 8259.83   226.6   10000  225.54
+10049.74  225.7210099.65  227.5310124.88  223.2810142.65  222.0810149.26  223.56
+10168.18  223.7210173.97   227.610207.72  227.2410221.55  229.2210235.01  228.59
+10243.22  227.6610253.79  225.0910263.75  224.73   10800     230   11950     240
+#Mann= 5 ,-1 , 0 
+    4800      .1       0 8120.48    .055       0 8161.13      .1       0
+10099.65    .055       010173.97      .1       0
+#Block Obstruct= 2 , 0 
+         8066.86  236.0610243.22          227.66
+Bank Sta=8119.51,8259.83
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,10.75   ,0,0,0
+Node Last Edited Time=Mar/11/2003 15:40:50
+#Sta/Elev= 41 
+    2800     230    3200     225    7000  221.74 7012.65  222.21 7028.79  222.68
+ 7061.07  222.14 7080.32  221.82 7089.65   222.1 7099.77  222.28 7100.54  222.08
+ 7109.65  217.08 7119.94  213.44  7129.8  203.94 7139.92  204.81 7149.26  206.26
+ 7159.98  210.25 7169.36  217.57 7179.69  222.35 7180.67  222.45 7190.78  222.33
+ 7229.67  222.08 7279.45  221.81   10000   222.8   10070   221.7   10090     222
+   10100   222.1   10130   222.2   10157   222.5   10165     222   10170   222.2
+   10180   221.5   10200   222.3   10217   222.3   10228     224   10257   224.8
+   10273   220.8   10290   220.5   10740   220.3   12300     225   14500     225
+   14700     230
+#Mann= 3 , 0 , 0 
+    2800      .1       0 7100.54    .055       0 7180.67      .1       0
+#Block Obstruct= 2 , 0 
+            2800     230   10257           224.8
+Bank Sta=7100.54,7180.67
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Chan Stop Cuts=-1 
+
+
+
+Use User Specified Reach Order=0
+User Specified Reach Order=RIVER-1         ,Reach-1         
+GIS Ratio Cuts To Invert=-1

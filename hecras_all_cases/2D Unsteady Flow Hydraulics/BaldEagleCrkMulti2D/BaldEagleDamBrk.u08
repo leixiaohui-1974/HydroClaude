@@ -1,0 +1,156 @@
+Flow Title=PMF for Upstream 2D
+Program Version=4.20
+Use Restart= 0 
+Initial Flow Loc=Bald Eagle Cr.  ,Lock Haven      ,82303   ,5000
+Initial Flow Loc=Bald Eagle Cr.  ,Lock Haven      ,81914   ,5000
+Initial Flow Loc=Bald Eagle Cr.  ,Lock Haven      ,-897    ,11000
+Initial Storage Elev=193             ,559.7
+Initial Storage Elev=195             ,615.6
+Initial Storage Elev=Upper 2D Area   ,630
+Initial RRR Elev=Bald Eagle Cr.  ,Lock Haven      ,82303   ,630
+Initial RRR Elev=Bald Eagle Cr.  ,Lock Haven      ,81914   ,630
+Boundary Location=Bald Eagle Cr.  ,Lock Haven      ,28519   ,        ,                ,                ,                ,                
+Interval=1HOUR
+Lateral Inflow Hydrograph= 0 
+DSS File=Bald_Eagle_Creek.dss
+DSS Path=//FISHING CREEK/FLOW/01JAN1999/15MIN/RUN:PMF-EVENT/
+Use DSS=True
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=
+Boundary Location=Bald Eagle Cr.  ,Lock Haven      ,1       ,        ,                ,                ,                ,                
+Interval=1HOUR
+Lateral Inflow Hydrograph= 200 
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+    5000    5000    5000    5000    5000    5000    5000    5000    5000    5000
+DSS Path=
+Use DSS=False
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=
+Boundary Location=Bald Eagle Cr.  ,Lock Haven      ,80720   ,67130   ,                ,                ,                ,                
+Interval=1HOUR
+Uniform Lateral Inflow Hydrograph= 0 
+DSS File=Bald_Eagle_Creek.dss
+DSS Path=//LOCAL DOWNSTREAM OF DAM/FLOW/01JAN1999/15MIN/RUN:PMF-EVENT/
+Use DSS=True
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=
+Boundary Location=Bald Eagle Cr.  ,Lock Haven      ,76865   ,        ,                ,                ,                ,                
+Interval=1HOUR
+Lateral Inflow Hydrograph= 0 
+DSS File=Bald_Eagle_Creek.dss
+DSS Path=//MARSH CREEK/FLOW/01JAN1999/15MIN/RUN:PMF-EVENT/
+Use DSS=True
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=
+Boundary Location=Bald Eagle Cr.  ,Lock Haven      ,67130   ,        ,                ,                ,                ,                
+Interval=1HOUR
+Lateral Inflow Hydrograph= 0 
+DSS File=Bald_Eagle_Creek.dss
+DSS Path=//BEECH CREEK FLOW/FLOW/01JAN1999/15MIN/RUN:PMF-EVENT/
+Use DSS=True
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=
+Boundary Location=Bald Eagle Cr.  ,Lock Haven      ,66041   ,1       ,                ,                ,                ,                
+Interval=1HOUR
+Uniform Lateral Inflow Hydrograph= 0 
+DSS File=Bald_Eagle_Creek.dss
+DSS Path=//BALD EAGLE LOCAL/FLOW/01JAN1999/15MIN/RUN:PMF-EVENT/
+Use DSS=True
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=
+Boundary Location=Bald Eagle Cr.  ,Lock Haven      ,-1867   ,        ,                ,                ,                ,                
+Friction Slope=0.0003
+Boundary Location=                ,                ,        ,        ,                ,Upper 2D Area   ,                ,Upstream Q      
+Interval=1HOUR
+Flow Hydrograph= 245 
+     720  734.88  765.31  797.35  830.86  865.64  901.55  938.46  976.37 1015.48
+ 1056.06 1098.36 1142.57 1188.83 1237.36 1288.43 1342.44 1399.83 1461.04 1526.51
+ 1596.64 1671.86 1752.56 1839.06 1931.61 2030.41  2135.6 2247.28 2365.56 2490.52
+ 2622.34 2761.35 2908.49 3065.57 3234.81 3418.33 3617.87 3834.95 4070.88 4326.91
+ 4604.37 4904.79 5229.73 5580.71 5959.22  6366.9 6805.35 7275.93 7779.77 8317.91
+ 8891.23 9500.3410145.7610828.0911548.0112306.4213105.2213947.8214838.5315782.04
+16784.3517853.8419000.3620234.32 21568.123017.3924600.1926337.5228260.2130413.81
+32850.6835613.8738722.9242168.6545923.2749954.7554231.9658723.8963399.8268229.13
+73178.08   7820783272.0988327.9893327.4798221.05102959.3107496.2111791.6115809.6
+119517.2122886.1125892.9128518.6130747.2132566.6  133968134943.8135490.5135616.7
+135349.5134731.8133812.6132634.3131227.8129615.1127813.1125837.1123706.7121450.4
+119103.2116699.3114265.3111818.6109371.1106932.3104509.9102110.899741.9897409.84
+95119.1592872.34 90670.388513.1386400.6284332.4682308.3880328.0378390.9176496.29
+74643.34 72831.371059.6169327.8667635.7365982.7964368.3262791.4161251.13 59746.5
+58276.6556840.7655438.1354068.1452730.1651423.52 50147.548901.3947684.5246496.23
+45335.96 44203.143097.0942017.3440963.26 39934.338930.0237950.09 36994.336062.34
+35153.7634267.97 33404.432562.4231741.4830941.0230160.5629399.6328657.7827934.55
+27229.4926542.15 25872.1 25218.924582.1623961.4823356.4922766.8322192.1421632.07
+21086.2720554.4420036.4119531.9519040.7718562.5418096.9217643.5717202.1416772.31
+16353.7615946.1915549.2915162.83 14787.514427.8814095.3913801.0413541.74 13304.1
+13078.4512860.0812647.1212438.8212234.9112035.2211839.6411648.0711460.4211276.61
+11096.5510920.1510747.3310578.06 10412.910255.6310117.3610012.38 9941.74 9891.24
+  9849.7 9811.59 9774.72 9738.33 9702.18 9666.19 9630.34 9594.62 9559.04 9523.59
+ 9488.27 9453.09 9418.03  9383.1 9348.31 9313.64  9279.1 9244.69  9210.4 9176.25
+ 9142.22 9108.31 9074.53 9040.88 9007.35
+Flow Hydrograph QMin= 5000 
+Flow Hydrograph Slope= 0.0007 
+DSS Path=
+Use DSS=False
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=
+Boundary Location=Bald Eagle Cr.  ,Lock Haven      ,81454   ,        ,                ,                ,                ,                
+Gate Name=Gate #1     
+Gate DSS Path=
+Gate Use DSS=False
+Gate Time Interval=1HOUR
+Gate Use Fixed Start Time=False
+Gate Fixed Start Date/Time=,
+Gate Openings= 200 
+       2       3       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4
+       4       4       4       4       4       4       4       4       4       4

@@ -1,0 +1,404 @@
+<RASMapper>
+  <Version>2.0.0</Version>
+  <Features Checked="True" Expanded="True">
+    <Layer Name="Profile Lines" Type="PolylineFeatureLayer" Checked="True" Filename=".\Features\Profile Lines.shp" />
+  </Features>
+  <Geometries Checked="True" Expanded="True">
+    <Layer Name="2D Sediment Workshop" Type="RASGeometry" Checked="True" Expanded="True" Filename=".\Weise.g08.hdf">
+      <Layer Type="RASRiver">
+        <Symbology>
+          <Pen B="0" G="0" R="0" A="255" Dash="0" Width="2" />
+          <Brush Type="SolidBrush" B="0" G="0" R="0" A="50" Name="PolygonFill" />
+        </Symbology>
+      </Layer>
+      <Layer Type="RASJunction">
+        <Symbology>
+          <PointSymbol Type="1" Size="7" pA="255" pR="0" pG="0" pB="0" bA="255" bR="0" bG="0" bB="0" />
+          <Pen B="0" G="0" R="0" A="255" Dash="0" Width="2" />
+          <Brush Type="SolidBrush" B="0" G="0" R="0" A="50" Name="PolygonFill" />
+        </Symbology>
+      </Layer>
+      <Layer Type="RASBankLines">
+        <Symbology>
+          <Pen B="0" G="0" R="0" A="255" Dash="0" Width="2" />
+          <Brush Type="SolidBrush" B="0" G="0" R="0" A="50" Name="PolygonFill" />
+        </Symbology>
+      </Layer>
+      <Layer Type="RASXS" UnitsRiverStation="Meters" RiverStationDecimalPlaces="0">
+        <Symbology>
+          <Pen B="0" G="0" R="0" A="255" Dash="0" Width="2" />
+          <Brush Type="SolidBrush" B="0" G="0" R="0" A="50" Name="PolygonFill" />
+        </Symbology>
+      </Layer>
+      <Layer Type="RASXSInterpolationSurface">
+        <Symbology>
+          <PointSymbol Type="1" Size="7" pA="255" pR="0" pG="0" pB="0" bA="255" bR="0" bG="0" bB="0" />
+          <HillShade On="True" Azimuth="315" Zenith="45" ZFactor="3" />
+          <Pen B="0" G="0" R="0" A="255" Dash="0" Width="2" />
+          <SurfaceFill Colors="-1,-16777216" Values="-2,2" Stretched="True" AlphaTag="255" UseDatasetMinMax="False" RegenerateForScreen="False" />
+          <Brush Type="SolidBrush" B="0" G="0" R="0" A="50" Name="PolygonFill" />
+        </Symbology>
+      </Layer>
+      <Layer Type="RASStorageArea">
+        <Symbology>
+          <Pen B="0" G="0" R="0" A="255" Dash="0" Width="2" />
+          <Brush Type="SolidBrush" B="0" G="0" R="0" A="50" Name="PolygonFill" />
+        </Symbology>
+      </Layer>
+      <Layer Type="RASD2FlowArea" Checked="True">
+        <Symbology>
+          <Pen B="0" G="0" R="0" A="255" Dash="0" Width="2" />
+          <Brush Type="SolidBrush" B="0" G="0" R="0" A="50" Name="PolygonFill" />
+        </Symbology>
+        <DataColumnGroupVisibilities>
+          <DataColumnGroupVisibility DisplayName="Feature Parameters" IsVisible="False" />
+        </DataColumnGroupVisibilities>
+      </Layer>
+      <Layer Type="MeshPerimeterLayer" Checked="True">
+        <DataColumnGroupVisibilities>
+          <DataColumnGroupVisibility DisplayName="Feature Parameters" IsVisible="True" />
+        </DataColumnGroupVisibilities>
+      </Layer>
+      <Layer Type="MeshPointLayer">
+        <Symbology>
+          <PointSymbol Type="1" Size="7" pA="255" pR="0" pG="0" pB="0" bA="255" bR="0" bG="0" bB="0" />
+          <Pen B="0" G="0" R="0" A="255" Dash="0" Width="2" />
+          <Brush Type="SolidBrush" B="0" G="0" R="0" A="50" Name="PolygonFill" />
+        </Symbology>
+      </Layer>
+      <Layer Type="RASBreakLines">
+        <Symbology>
+          <PointSymbol Type="1" Size="7" pA="255" pR="0" pG="0" pB="0" bA="255" bR="0" bG="0" bB="0" />
+          <Pen B="0" G="0" R="0" A="255" Dash="0" Width="2" />
+          <Brush Type="SolidBrush" B="0" G="0" R="0" A="50" Name="PolygonFill" />
+        </Symbology>
+      </Layer>
+      <Layer Name="Culvert Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Culvert Barrels" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Bridges/Culverts" />
+      <Layer Name="Gate Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Gate Openings" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Inline Structures" />
+      <Layer Name="Culvert Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Culvert Barrels" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Inline Structures" />
+      <Layer Name="Rating Curve Outlets" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Inline Structures" />
+      <Layer Name="Outlet Time Series" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Inline Structures" />
+      <Layer Name="Gate Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Gate Openings" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Lateral Structures" />
+      <Layer Name="Culvert Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Culvert Barrels" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Lateral Structures" />
+      <Layer Name="Rating Curve Outlets" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Lateral Structures" />
+      <Layer Name="Outlet Time Series" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Lateral Structures" />
+      <Layer Name="Gate Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Gate Openings" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="SA/2D Connections" />
+      <Layer Name="Culvert Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Culvert Barrels" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="SA/2D Connections" />
+      <Layer Name="Rating Curve Outlets" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="SA/2D Connections" />
+      <Layer Name="Outlet Time Series" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="SA/2D Connections" />
+      <Layer Type="StructureLayer" UnitsRiverStation="Feet" RiverStationDecimalPlaces="0" />
+      <Layer Type="RASPipeNodes">
+        <SymbologyByAttributeColumns Checked="True" SelectedColumn="Node Type">
+          <ValueToSymbology Value="Start">
+            <Symbology>
+              <PointSymbol Type="1" Size="8" pA="255" pR="255" pG="255" pB="255" bA="255" bR="0" bG="128" bB="0" />
+              <HillShade On="True" Azimuth="315" Zenith="45" ZFactor="3" />
+              <Contour On="False" Interval="5" Color="-16777216" />
+              <Pen B="0" G="128" R="0" A="255" Dash="0" Width="2" />
+              <SurfaceFill Colors="-1,-16777216" Values="0,100" Stretched="True" AlphaTag="255" UseDatasetMinMax="False" RegenerateForScreen="False" />
+              <Brush Type="SolidBrush" B="0" G="128" R="0" A="50" Name="PolygonFill" />
+            </Symbology>
+          </ValueToSymbology>
+          <ValueToSymbology Value="Junction">
+            <Symbology>
+              <PointSymbol Type="1" Size="8" pA="255" pR="255" pG="255" pB="255" bA="255" bR="128" bG="0" bB="0" />
+              <HillShade On="True" Azimuth="315" Zenith="45" ZFactor="3" />
+              <Contour On="False" Interval="5" Color="-16777216" />
+              <Pen B="0" G="0" R="128" A="255" Dash="0" Width="2" />
+              <SurfaceFill Colors="-1,-16777216" Values="0,100" Stretched="True" AlphaTag="255" UseDatasetMinMax="False" RegenerateForScreen="False" />
+              <Brush Type="SolidBrush" B="0" G="0" R="128" A="50" Name="PolygonFill" />
+            </Symbology>
+          </ValueToSymbology>
+          <ValueToSymbology Value="Culvert Opening">
+            <Symbology>
+              <PointSymbol Type="1" Size="8" pA="255" pR="128" pG="128" pB="128" bA="255" bR="128" bG="128" bB="128" />
+              <HillShade On="True" Azimuth="315" Zenith="45" ZFactor="3" />
+              <Contour On="False" Interval="5" Color="-16777216" />
+              <Pen B="128" G="128" R="128" A="255" Dash="0" Width="2" />
+              <SurfaceFill Colors="-1,-16777216" Values="0,100" Stretched="True" AlphaTag="255" UseDatasetMinMax="False" RegenerateForScreen="False" />
+              <Brush Type="SolidBrush" B="128" G="128" R="128" A="50" Name="PolygonFill" />
+            </Symbology>
+          </ValueToSymbology>
+          <ValueToSymbology Value="External">
+            <Symbology>
+              <PointSymbol Type="1" Size="8" pA="255" pR="255" pG="255" pB="0" bA="255" bR="255" bG="255" bB="0" />
+              <HillShade On="True" Azimuth="315" Zenith="45" ZFactor="3" />
+              <Contour On="False" Interval="5" Color="-16777216" />
+              <Pen B="0" G="255" R="255" A="255" Dash="0" Width="2" />
+              <SurfaceFill Colors="-1,-16777216" Values="0,100" Stretched="True" AlphaTag="255" UseDatasetMinMax="False" RegenerateForScreen="False" />
+              <Brush Type="SolidBrush" B="0" G="255" R="255" A="50" Name="PolygonFill" />
+            </Symbology>
+          </ValueToSymbology>
+          <ValueToSymbology Value="Closed">
+            <Symbology>
+              <PointSymbol Type="1" Size="8" pA="255" pR="255" pG="255" pB="255" bA="255" bR="0" bG="0" bB="255" />
+              <HillShade On="True" Azimuth="315" Zenith="45" ZFactor="3" />
+              <Contour On="False" Interval="5" Color="-16777216" />
+              <Pen B="255" G="0" R="0" A="255" Dash="0" Width="2" />
+              <SurfaceFill Colors="-1,-16777216" Values="0,100" Stretched="True" AlphaTag="255" UseDatasetMinMax="False" RegenerateForScreen="False" />
+              <Brush Type="SolidBrush" B="255" G="0" R="0" A="50" Name="PolygonFill" />
+            </Symbology>
+          </ValueToSymbology>
+          <ValueToSymbology Value="Error">
+            <Symbology>
+              <PointSymbol Type="1" Size="8" pA="255" pR="255" pG="0" pB="0" bA="255" bR="255" bG="0" bB="0" />
+              <HillShade On="True" Azimuth="315" Zenith="45" ZFactor="3" />
+              <Contour On="False" Interval="5" Color="-16777216" />
+              <Pen B="0" G="0" R="255" A="255" Dash="0" Width="2" />
+              <SurfaceFill Colors="-1,-16777216" Values="0,100" Stretched="True" AlphaTag="255" UseDatasetMinMax="False" RegenerateForScreen="False" />
+              <Brush Type="SolidBrush" B="0" G="0" R="255" A="50" Name="PolygonFill" />
+            </Symbology>
+          </ValueToSymbology>
+        </SymbologyByAttributeColumns>
+      </Layer>
+      <Layer Type="FinalNValueLayer">
+        <ResampleMethod>near</ResampleMethod>
+        <Surface On="True" />
+      </Layer>
+      <Layer Name="Final Values" Type="InterpretationRasterizerLayer" Filename=".\Weise.g08.hdf">
+        <ResampleMethod>near</ResampleMethod>
+        <Surface On="True" />
+      </Layer>
+      <Layer Name="Final Values" Type="InterpretationRasterizerLayer" Filename=".\Weise.g08.hdf">
+        <ResampleMethod>near</ResampleMethod>
+        <Surface On="True" />
+      </Layer>
+      <Layer Type="RASErrors">
+        <Symbology>
+          <PointSymbol Type="1" Size="7" pA="255" pR="0" pG="0" pB="0" bA="255" bR="0" bG="0" bB="0" />
+          <Pen B="0" G="0" R="0" A="255" Dash="0" Width="2" />
+          <Brush Type="SolidBrush" B="0" G="0" R="0" A="50" Name="PolygonFill" />
+        </Symbology>
+      </Layer>
+    </Layer>
+  </Geometries>
+  <Plans>
+    <Layer Name="Weise" Type="RASPlan" Filename=".\Weise.p01" GeometryHDF=".\Weise.g08.hdf">
+      <Layer Name="Encroachments" Type="RASEncroachments" Filename=".\Weise.p01" />
+      <Layer Name="Zones" Type="RASEncroachmentZones" Filename=".\Weise.p01" />
+      <Layer Name="Regions" Type="RASEncroachmentPolygons" Filename=".\Weise.p01" />
+    </Layer>
+  </Plans>
+  <EventConditions>
+    <Layer Name="2D Sediment" Type="RASEventConditions" Filename=".\Weise.u01.hdf" />
+  </EventConditions>
+  <Results Checked="True">
+    <Layer Name="Weise" Type="RASResults" Checked="True" Expanded="True" Filename=".\Weise.p01.hdf">
+      <Layer Name="Event Conditions" Type="RASEventConditions" Filename=".\Weise.p01.hdf">
+        <Layer Name="Wind Layer" Type="ResultWindLayer" Filename=".\Weise.p01.hdf">
+          <ResampleMethod>near</ResampleMethod>
+          <Surface On="True" />
+          <Metadata BandIndex="0" SubDataset="" />
+        </Layer>
+        <Layer Name="Wind Layer" Type="ResultWindLayer" Filename=".\Weise.p01.hdf">
+          <ResampleMethod>near</ResampleMethod>
+          <Surface On="True" />
+          <Metadata BandIndex="0" SubDataset="" />
+        </Layer>
+      </Layer>
+      <Layer Type="RASGeometry" Filename=".\Weise.p01.hdf">
+        <Layer Type="RASXS" UnitsRiverStation="Feet" RiverStationDecimalPlaces="0" />
+        <Layer Type="RASD2FlowArea">
+          <DataColumnGroupVisibilities>
+            <DataColumnGroupVisibility DisplayName="Feature Parameters" IsVisible="False" />
+          </DataColumnGroupVisibilities>
+        </Layer>
+        <Layer Type="MeshPerimeterLayer">
+          <DataColumnGroupVisibilities>
+            <DataColumnGroupVisibility DisplayName="Feature Parameters" IsVisible="True" />
+          </DataColumnGroupVisibilities>
+        </Layer>
+        <Layer Name="Culvert Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+        <Layer Name="Culvert Barrels" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Bridges/Culverts" />
+        <Layer Name="Gate Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+        <Layer Name="Gate Openings" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Inline Structures" />
+        <Layer Name="Culvert Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+        <Layer Name="Culvert Barrels" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Inline Structures" />
+        <Layer Name="Rating Curve Outlets" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Inline Structures" />
+        <Layer Name="Outlet Time Series" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Inline Structures" />
+        <Layer Name="Gate Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+        <Layer Name="Gate Openings" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Lateral Structures" />
+        <Layer Name="Culvert Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+        <Layer Name="Culvert Barrels" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Lateral Structures" />
+        <Layer Name="Rating Curve Outlets" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Lateral Structures" />
+        <Layer Name="Outlet Time Series" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Lateral Structures" />
+        <Layer Name="Gate Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+        <Layer Name="Gate Openings" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="SA/2D Connections" />
+        <Layer Name="Culvert Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+        <Layer Name="Culvert Barrels" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="SA/2D Connections" />
+        <Layer Name="Rating Curve Outlets" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="SA/2D Connections" />
+        <Layer Name="Outlet Time Series" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="SA/2D Connections" />
+        <Layer Type="StructureLayer" UnitsRiverStation="Feet" RiverStationDecimalPlaces="0" />
+        <Layer Type="RASPipeNodes">
+          <SymbologyByAttributeColumns Checked="True" SelectedColumn="Node Type">
+            <ValueToSymbology Value="Start">
+              <Symbology>
+                <PointSymbol Type="1" Size="8" pA="255" pR="255" pG="255" pB="255" bA="255" bR="0" bG="128" bB="0" />
+                <HillShade On="True" Azimuth="315" Zenith="45" ZFactor="3" />
+                <Contour On="False" Interval="5" Color="-16777216" />
+                <Pen B="0" G="128" R="0" A="255" Dash="0" Width="2" />
+                <SurfaceFill Colors="-1,-16777216" Values="0,100" Stretched="True" AlphaTag="255" UseDatasetMinMax="False" RegenerateForScreen="False" />
+                <Brush Type="SolidBrush" B="0" G="128" R="0" A="50" Name="PolygonFill" />
+              </Symbology>
+            </ValueToSymbology>
+            <ValueToSymbology Value="Junction">
+              <Symbology>
+                <PointSymbol Type="1" Size="8" pA="255" pR="255" pG="255" pB="255" bA="255" bR="128" bG="0" bB="0" />
+                <HillShade On="True" Azimuth="315" Zenith="45" ZFactor="3" />
+                <Contour On="False" Interval="5" Color="-16777216" />
+                <Pen B="0" G="0" R="128" A="255" Dash="0" Width="2" />
+                <SurfaceFill Colors="-1,-16777216" Values="0,100" Stretched="True" AlphaTag="255" UseDatasetMinMax="False" RegenerateForScreen="False" />
+                <Brush Type="SolidBrush" B="0" G="0" R="128" A="50" Name="PolygonFill" />
+              </Symbology>
+            </ValueToSymbology>
+            <ValueToSymbology Value="Culvert Opening">
+              <Symbology>
+                <PointSymbol Type="1" Size="8" pA="255" pR="128" pG="128" pB="128" bA="255" bR="128" bG="128" bB="128" />
+                <HillShade On="True" Azimuth="315" Zenith="45" ZFactor="3" />
+                <Contour On="False" Interval="5" Color="-16777216" />
+                <Pen B="128" G="128" R="128" A="255" Dash="0" Width="2" />
+                <SurfaceFill Colors="-1,-16777216" Values="0,100" Stretched="True" AlphaTag="255" UseDatasetMinMax="False" RegenerateForScreen="False" />
+                <Brush Type="SolidBrush" B="128" G="128" R="128" A="50" Name="PolygonFill" />
+              </Symbology>
+            </ValueToSymbology>
+            <ValueToSymbology Value="External">
+              <Symbology>
+                <PointSymbol Type="1" Size="8" pA="255" pR="255" pG="255" pB="0" bA="255" bR="255" bG="255" bB="0" />
+                <HillShade On="True" Azimuth="315" Zenith="45" ZFactor="3" />
+                <Contour On="False" Interval="5" Color="-16777216" />
+                <Pen B="0" G="255" R="255" A="255" Dash="0" Width="2" />
+                <SurfaceFill Colors="-1,-16777216" Values="0,100" Stretched="True" AlphaTag="255" UseDatasetMinMax="False" RegenerateForScreen="False" />
+                <Brush Type="SolidBrush" B="0" G="255" R="255" A="50" Name="PolygonFill" />
+              </Symbology>
+            </ValueToSymbology>
+            <ValueToSymbology Value="Closed">
+              <Symbology>
+                <PointSymbol Type="1" Size="8" pA="255" pR="255" pG="255" pB="255" bA="255" bR="0" bG="0" bB="255" />
+                <HillShade On="True" Azimuth="315" Zenith="45" ZFactor="3" />
+                <Contour On="False" Interval="5" Color="-16777216" />
+                <Pen B="255" G="0" R="0" A="255" Dash="0" Width="2" />
+                <SurfaceFill Colors="-1,-16777216" Values="0,100" Stretched="True" AlphaTag="255" UseDatasetMinMax="False" RegenerateForScreen="False" />
+                <Brush Type="SolidBrush" B="255" G="0" R="0" A="50" Name="PolygonFill" />
+              </Symbology>
+            </ValueToSymbology>
+            <ValueToSymbology Value="Error">
+              <Symbology>
+                <PointSymbol Type="1" Size="8" pA="255" pR="255" pG="0" pB="0" bA="255" bR="255" bG="0" bB="0" />
+                <HillShade On="True" Azimuth="315" Zenith="45" ZFactor="3" />
+                <Contour On="False" Interval="5" Color="-16777216" />
+                <Pen B="0" G="0" R="255" A="255" Dash="0" Width="2" />
+                <SurfaceFill Colors="-1,-16777216" Values="0,100" Stretched="True" AlphaTag="255" UseDatasetMinMax="False" RegenerateForScreen="False" />
+                <Brush Type="SolidBrush" B="0" G="0" R="255" A="50" Name="PolygonFill" />
+              </Symbology>
+            </ValueToSymbology>
+          </SymbologyByAttributeColumns>
+        </Layer>
+        <Layer Type="FinalNValueLayer">
+          <ResampleMethod>near</ResampleMethod>
+          <Surface On="True" />
+        </Layer>
+        <Layer Name="Final Values" Type="InterpretationRasterizerLayer" Filename=".\Weise.p01.hdf">
+          <ResampleMethod>near</ResampleMethod>
+          <Surface On="True" />
+        </Layer>
+        <Layer Name="Final Values" Type="InterpretationRasterizerLayer" Filename=".\Weise.p01.hdf">
+          <ResampleMethod>near</ResampleMethod>
+          <Surface On="True" />
+        </Layer>
+      </Layer>
+      <Layer Name="Plan" Type="RASPlan" Checked="True" Filename=".\Weise.p01.hdf" GeometryHDF=".\Weise.p01.hdf">
+        <Layer Name="Encroachments" Type="RASEncroachments" Filename=".\Weise.p01.hdf" />
+        <Layer Name="Zones" Type="RASEncroachmentZones" Filename=".\Weise.p01.hdf" />
+        <Layer Name="Regions" Type="RASEncroachmentPolygons" Filename=".\Weise.p01.hdf" />
+      </Layer>
+      <Layer Name="Velocity" Type="RASResultsMap" Checked="True">
+        <MapParameters MapType="velocity" ProfileIndex="2147483647" ProfileName="Max" />
+      </Layer>
+      <Layer Name="WSE" Type="RASResultsMap">
+        <MapParameters MapType="elevation" ProfileIndex="2147483647" ProfileName="Max" />
+      </Layer>
+      <Layer Name="Variable Depth" Type="RASResultsMap">
+        <MapParameters MapType="variable depth" OutputBlock="Sediment Bed" OutputBlockLocation="Unsteady Time Series" Dataset="Subcell Bed Change" UseDatasetMinMax="False" Units="" VirtualDataset="Variable Depth" NeedsProfile="True" ProfileIndex="0" ProfileName="08DEC2016 00:00:00" />
+      </Layer>
+      <Layer Name="Bed Elevation" Type="RASResultsMap">
+        <MapParameters MapType="Bed Elevation" OutputBlock="Sediment Bed" OutputBlockLocation="Unsteady Time Series" Dataset="Cell Bed Change" UseDatasetMinMax="True" Units="" VirtualDataset="Cell Bed Elevation" NeedsProfile="True" ProfileIndex="0" ProfileName="08DEC2016 00:00:00" />
+      </Layer>
+    </Layer>
+  </Results>
+  <MapLayers>
+    <Layer Name="Mannings_n" Type="LandCoverLayer" Filename=".\LandCover.hdf" SelectedParameterForSurfaceFillLabel="ID">
+      <Symbology>
+        <ColorByteMap Type="System.Int32" Alpha="128" Values="" Colors="" ValuesExcludeLegend="" />
+      </Symbology>
+      <ColorByteMap Type="System.Int32" Alpha="128" Values="" Colors="" ValuesExcludeLegend="" />
+      <Layer Name="Classification Polygons" Type="LandCoverClassificationLayer" />
+    </Layer>
+    <Layer Name="Sediment Bed Material" Type="LandCoverLayer" Checked="True" Expanded="True" Filename=".\Land Classification\Sediment Bed Material.hdf" SelectedParameterForSurfaceFillLabel="ID">
+      <Symbology>
+        <ColorByteMap Type="System.Int32" Alpha="128" Values="1" Colors="-1946231" ValuesExcludeLegend="0" />
+      </Symbology>
+      <ColorByteMap Type="System.Int32" Alpha="128" Values="1" Colors="-1946231" ValuesExcludeLegend="0" />
+      <Layer Name="Classification Polygons" Type="LandCoverClassificationLayer" Checked="True" />
+    </Layer>
+  </MapLayers>
+  <Terrains Expanded="True">
+    <Layer Name="Terrain_With_Walls_0p01m" Type="TerrainLayer" Checked="True" Filename=".\Terrain_With_Walls_0p01m.hdf">
+      <Symbology>
+        <PointSymbol Type="1" Size="7" pA="255" pR="0" pG="0" pB="0" bA="255" bR="255" bG="255" bB="255" />
+        <SurfaceFill Colors="-10039894,-256,-16744448,-23296,-7667712,-5952982,-8355712,-1286" Values="0,0.00160563570043205,0.0032112714008641,0.996578838958296,0.997434129218722,0.998289419479148,0.999144709739574,1" Stretched="True" AlphaTag="255" UseDatasetMinMax="False" RegenerateForScreen="False" />
+      </Symbology>
+      <ResampleMethod>near</ResampleMethod>
+      <Surface On="True" />
+    </Layer>
+  </Terrains>
+  <CurrentView>
+    <MaxX>17.5707569956351</MaxX>
+    <MinX>-0.18268621003962</MinX>
+    <MaxY>1.38239524116007</MaxY>
+    <MinY>-0.704013682583748</MinY>
+  </CurrentView>
+  <VelocitySettings>
+    <Density>1.5</Density>
+    <Lifetime>100</Lifetime>
+    <Radius>0.75</Radius>
+    <Method>2</Method>
+    <Timestep>1</Timestep>
+    <StaticColor>White</StaticColor>
+    <SpeedRelativeToZoom>False</SpeedRelativeToZoom>
+  </VelocitySettings>
+  <AnimationSettings>
+    <DelayTimer>0</DelayTimer>
+  </AnimationSettings>
+  <Units>SI Units</Units>
+  <RenderMode>sloping</RenderMode>
+  <FullExtentPlotting />
+  <MarksWarpMethod>False</MarksWarpMethod>
+  <CurrentSettings>
+    <ProjectSettings>
+      <RiverStationUnits>Feet</RiverStationUnits>
+      <RiverStationDecimalPlaces>0</RiverStationDecimalPlaces>
+      <HorizontalDecimalPlaces>1</HorizontalDecimalPlaces>
+      <VerticalDecimalPlaces>2</VerticalDecimalPlaces>
+      <XSMaxPoints>450</XSMaxPoints>
+      <LSMaxPoints>1000</LSMaxPoints>
+      <ProfilePointMinCount>0</ProfilePointMinCount>
+      <ShowLegend>True</ShowLegend>
+      <ShowNorthArrow>False</ShowNorthArrow>
+      <ShowScaleBar>True</ShowScaleBar>
+      <ShowGreaterThanInLegend>False</ShowGreaterThanInLegend>
+    </ProjectSettings>
+    <Folders>
+      <TerrainDestinationFolder>..\RAS_503</TerrainDestinationFolder>
+      <TerrainSourceFolder>..\RAS_503</TerrainSourceFolder>
+      <AddDataFolder>..\RAS_503</AddDataFolder>
+      <LandCoverDestinationFolder>.\Land Classification</LandCoverDestinationFolder>
+    </Folders>
+  </CurrentSettings>
+</RASMapper>

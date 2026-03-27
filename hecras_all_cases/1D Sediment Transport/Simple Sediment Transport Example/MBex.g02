@@ -1,0 +1,527 @@
+Geom Title=Mobile Bed Geometry
+Program Version=4.00
+Viewing Rectangle= 0 , 1 , 1 , 0 
+
+River Reach=Yang Flume      ,Yang Flume      
+Reach XY= 2 
+0.438172043010750.954301075268820.440860215053760.08602150537634
+Rch Text X Y=0.4388441,0.7372312
+Reverse River Text= 0 
+
+Type RM Length L Ch R = 1 ,1000    ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0      50       5       0      20       0      25      50
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,980.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.99       5    -.01      20    -.01      25   49.99
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,960.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.98       5    -.02      20    -.02      25   49.98
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,940.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.97       5    -.03      20    -.03      25   49.97
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,920.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.96       5    -.04      20    -.04      25   49.96
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,900.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.95       5    -.05      20    -.05      25   49.95
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,880.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.94       5    -.06      20    -.06      25   49.94
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,860.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.93       5    -.07      20    -.07      25   49.93
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,840.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.92       5    -.08      20    -.08      25   49.92
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,820.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.91       5    -.09      20    -.09      25   49.91
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,800.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0    49.9       5     -.1      20     -.1      25    49.9
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,780.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.89       5    -.11      20    -.11      25   49.89
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,760.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.88       5    -.12      20    -.12      25   49.88
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,740.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.87       5    -.13      20    -.13      25   49.87
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,720.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.86       5    -.14      20    -.14      25   49.86
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,700.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.85       5    -.15      20    -.15      25   49.85
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,680.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.84       5    -.16      20    -.16      25   49.84
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,660.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.83       5    -.17      20    -.17      25   49.83
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,640.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.82       5    -.18      20    -.18      25   49.82
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,620.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.81       5    -.19      20    -.19      25   49.81
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,600.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0    49.8       5     -.2      20     -.2      25    49.8
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,580.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.79       5    -.21      20    -.21      25   49.79
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,560.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.78       5    -.22      20    -.22      25   49.78
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,540.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.77       5    -.23      20    -.23      25   49.77
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,520.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.76       5    -.24      20    -.24      25   49.76
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,500.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.75       5    -.25      20    -.25      25   49.75
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,480.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.74       5    -.26      20    -.26      25   49.74
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,460.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.73       5    -.27      20    -.27      25   49.73
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,440.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.72       5    -.28      20    -.28      25   49.72
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,420.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.71       5    -.29      20    -.29      25   49.71
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,400.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0    49.7       5     -.3      20     -.3      25    49.7
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,380.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.69       5    -.31      20    -.31      25   49.69
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,360.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.68       5    -.32      20    -.32      25   49.68
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,340.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.67       5    -.33      20    -.33      25   49.67
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,320.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.66       5    -.34      20    -.34      25   49.66
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,300.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.65       5    -.35      20    -.35      25   49.65
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,280.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.64       5    -.36      20    -.36      25   49.64
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,260.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.63       5    -.37      20    -.37      25   49.63
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,240.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.62       5    -.38      20    -.38      25   49.62
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,220.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.61       5    -.39      20    -.39      25   49.61
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,200.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0    49.6       5     -.4      20     -.4      25    49.6
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,180.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.59       5    -.41      20    -.41      25   49.59
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,160.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.58       5    -.42      20    -.42      25   49.58
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,140.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.57       5    -.43      20    -.43      25   49.57
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,120.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.56       5    -.44      20    -.44      25   49.56
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,100.*   ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.55       5    -.45      20    -.45      25   49.55
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,79.9999*,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.54       5    -.46      20    -.46      25   49.54
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,60.*    ,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.53       5    -.47      20    -.47      25   49.53
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,40.0000*,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.52       5    -.48      20    -.48      25   49.52
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,19.9999*,20,20,20
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0   49.51       5    -.49      20    -.49      25   49.51
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,0       ,0,0,0
+Node Last Edited Time=Jun/12/2006 14:28:59
+#Sta/Elev= 4 
+       0    49.5       5     -.5      20     -.5      25    49.5
+#Mann= 3 , 0 , 0 
+       0    .035       0       0    .035       0      25    .035       0
+Bank Sta=0,25
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Chan Stop Cuts=-1 
+
+
+
+Use User Specified Reach Order=0
+User Specified Reach Order=Yang Flume      ,Yang Flume      
+GIS Ratio Cuts To Invert=-1

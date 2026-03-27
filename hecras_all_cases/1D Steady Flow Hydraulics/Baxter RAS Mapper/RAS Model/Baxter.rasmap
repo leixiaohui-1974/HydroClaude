@@ -1,0 +1,103 @@
+<RASMapper>
+  <Version>2.0.0</Version>
+  <Features>
+    <Layer Name="Profile Lines" Type="PolylineFeatureLayer" Filename=".\Features\Profile Lines.shp" />
+  </Features>
+  <Geometries>
+    <Layer Name="Imported GIS Data +Bridges" Type="RASGeometry" Expanded="True" Filename=".\Baxter.g02.hdf">
+      <Layer Type="RASXS" UnitsRiverStation="Feet" RiverStationDecimalPlaces="0" />
+      <Layer Name="Culvert Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Culvert Barrels" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Bridges/Culverts" />
+      <Layer Name="Gate Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Gate Openings" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Inline Structures" />
+      <Layer Name="Culvert Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Culvert Barrels" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Inline Structures" />
+      <Layer Name="Rating Curve Outlets" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Inline Structures" />
+      <Layer Name="Outlet Time Series" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Inline Structures" />
+      <Layer Name="Gate Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Gate Openings" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Lateral Structures" />
+      <Layer Name="Culvert Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Culvert Barrels" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Lateral Structures" />
+      <Layer Name="Rating Curve Outlets" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Lateral Structures" />
+      <Layer Name="Outlet Time Series" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="Lateral Structures" />
+      <Layer Name="Gate Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Gate Openings" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="SA/2D Connections" />
+      <Layer Name="Culvert Groups" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="" />
+      <Layer Name="Culvert Barrels" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="SA/2D Connections" />
+      <Layer Name="Rating Curve Outlets" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="SA/2D Connections" />
+      <Layer Name="Outlet Time Series" Type="VirtualGeometryFeatureLayer" ParentIdentifiers="SA/2D Connections" />
+      <Layer Type="StructureLayer" UnitsRiverStation="Feet" RiverStationDecimalPlaces="0" />
+      <Layer Type="FinalNValueLayer">
+        <ResampleMethod>near</ResampleMethod>
+        <Surface On="True" />
+      </Layer>
+      <Layer Name="TEMP N-Value Rasterizer" Type="InterpretationRasterizerLayer">
+        <ResampleMethod>near</ResampleMethod>
+        <Surface On="True" />
+      </Layer>
+      <Layer Name="Final Values" Type="InterpretationRasterizerLayer">
+        <ResampleMethod>near</ResampleMethod>
+        <Surface On="True" />
+      </Layer>
+      <Layer Name="Final Values" Type="InterpretationRasterizerLayer">
+        <ResampleMethod>near</ResampleMethod>
+        <Surface On="True" />
+      </Layer>
+    </Layer>
+  </Geometries>
+  <EventConditions>
+    <Layer Name="Flood Event" Type="RASEventConditions" Filename=".\Baxter.u01.hdf" />
+    <Layer Name="Unsteady Flow 02" Type="RASEventConditions" Filename=".\Baxter.u02.hdf" />
+    <Layer Name="Unsteady Flow 03" Type="RASEventConditions" Filename=".\Baxter.u03.hdf" />
+  </EventConditions>
+  <Results />
+  <MapLayers />
+  <Terrains Checked="True" Expanded="True">
+    <Layer Name="Terrain" Type="TerrainLayer" Checked="True" Filename=".\Terrain\Terrain.hdf">
+      <Symbology>
+        <SurfaceFill Colors="-10039894,-256,-16744448,-23296,-7667712,-5952982,-8355712,-1286" Values="21.0625,55.0446559561577,60.0107789636053,65.7853849479481,76.1946036112055,87.9880905336385,97.771509291554,125" Stretched="True" AlphaTag="255" UseDatasetMinMax="False" RegenerateForScreen="False" />
+      </Symbology>
+      <ResampleMethod>near</ResampleMethod>
+      <Surface On="True" />
+    </Layer>
+  </Terrains>
+  <CurrentView>
+    <MaxX>6454277.66</MaxX>
+    <MinX>6384997.66</MinX>
+    <MaxY>2061059.89</MaxY>
+    <MinY>2027359.89</MinY>
+  </CurrentView>
+  <VelocitySettings>
+    <Density>1.5</Density>
+    <Lifetime>100</Lifetime>
+    <Radius>0.75</Radius>
+    <Method>2</Method>
+    <Timestep>1</Timestep>
+    <StaticColor>Black</StaticColor>
+    <SpeedRelativeToZoom>False</SpeedRelativeToZoom>
+  </VelocitySettings>
+  <AnimationSettings>
+    <DelayTimer>0</DelayTimer>
+  </AnimationSettings>
+  <Units>US Customary</Units>
+  <RenderMode>sloping</RenderMode>
+  <MarksWarpMethod>False</MarksWarpMethod>
+  <CurrentSettings>
+    <ProjectSettings>
+      <RiverStationUnits>Feet</RiverStationUnits>
+      <RiverStationDecimalPlaces>0</RiverStationDecimalPlaces>
+      <HorizontalDecimalPlaces>1</HorizontalDecimalPlaces>
+      <VerticalDecimalPlaces>2</VerticalDecimalPlaces>
+      <XSMaxPoints>450</XSMaxPoints>
+      <LSMaxPoints>1000</LSMaxPoints>
+      <ProfilePointMinCount>0</ProfilePointMinCount>
+      <ShowLegend>True</ShowLegend>
+      <ShowNorthArrow>False</ShowNorthArrow>
+      <ShowScaleBar>True</ShowScaleBar>
+      <ShowGreaterThanInLegend>False</ShowGreaterThanInLegend>
+      <MeshTolerance_MinFaceLength>0.05</MeshTolerance_MinFaceLength>
+      <MeshTolerance_EnsureCellPoint>False</MeshTolerance_EnsureCellPoint>
+    </ProjectSettings>
+    <Folders />
+  </CurrentSettings>
+</RASMapper>

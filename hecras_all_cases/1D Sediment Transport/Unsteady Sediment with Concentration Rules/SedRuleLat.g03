@@ -1,0 +1,884 @@
+Geom Title=Unsteady Sediment with Conc Rules (Ch)
+Program Version=6.00
+Viewing Rectangle=-0.0472 , 0.9229 , 1.0786 ,-0.1742 
+
+River Reach=Beaver Creek    ,Kentwood        
+Reach XY= 19 
+       0.1116468       0.9147431       0.1562375       0.8801709
+       0.1916546       0.8452925       0.2186391       0.8169539
+        0.240564       0.7886153        0.265862       0.7471973
+       0.3058412       0.6950805       0.3373772        0.656989
+       0.3737268       0.6130833       0.4167317       0.5589963
+       0.4499728       0.5171891       0.4863997       0.4713752
+       0.5728105       0.3626967       0.6097265       0.3162677
+        0.659477       0.2536967       0.7149554       0.2051987
+       0.7703907       0.1567384       0.8054645       0.1260777
+       0.8465474       0.0901639
+Rch Text X Y=0.1315114,0.5657992
+Reverse River Text= 0 
+
+Type RM Length L Ch R = 1 ,5.99    ,73.33,100,66.67
+BEGIN DESCRIPTION:
+Upstream Boundary Cross Section
+END DESCRIPTION:
+Node Last Edited Time=Sep/25/2014 10:30:56
+#Sta/Elev= 9 
+    8.03  221.08   80.32  216.76  787.15  216.25  883.53  210.14  987.95  209.88
+ 1012.05   216.6 1220.88  218.23 1783.13  218.03 1919.68  221.03
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05      .1       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=210.4,0.53, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.97    ,73.33,100,66.67
+Node Last Edited Time=Sep/25/2014 10:31:31
+#Sta/Elev= 9 
+    8.03  220.69   80.32  216.37  787.15  215.86  883.53  209.75  987.95  209.49
+ 1012.05  216.21 1220.88  217.84 1783.13  217.64 1919.68  220.64
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05     .14       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=209.99,0.54, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.951   ,73.33,100,66.67
+Node Last Edited Time=Sep/25/2014 10:31:38
+#Sta/Elev= 9 
+    8.03  220.28   80.32  215.96  787.15  215.45  883.53  209.34  987.95  209.08
+ 1012.05   215.8 1220.88  217.43 1783.13  217.23 1919.68  220.23
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05     .14       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=209.58,0.55, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.93    ,73.33,100,66.67
+Node Last Edited Time=Sep/25/2014 10:31:46
+#Sta/Elev= 9 
+    8.03  219.87   80.32  215.55  787.15  215.04  883.53  208.93  987.95  208.67
+ 1012.05  215.39 1220.88  217.02 1783.13  216.82 1919.68  219.82
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05     .14       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=209.17,0.56, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.913   ,73.33,100,66.67
+Node Last Edited Time=Sep/25/2014 10:31:55
+#Sta/Elev= 9 
+    8.03  219.47   80.32  215.15  787.15  214.64  883.53  208.53  987.95  208.27
+ 1012.05  214.99 1220.88  216.62 1783.13  216.42 1919.68  219.42
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05     .14       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=208.77,0.57, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.894   ,73.33,100,66.67
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  219.06   80.32  214.74  787.15  214.23  883.53  208.12  987.95  207.86
+ 1012.05  214.58 1220.88  216.21 1783.13  216.01 1919.68  219.01
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05     .14       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=208.36,0.58, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.875   ,73.33,100,66.67
+BEGIN DESCRIPTION:
+River Mile 5.875
+END DESCRIPTION:
+Node Last Edited Time=Sep/25/2014 10:32:07
+#Sta/Elev= 9 
+    8.03  218.65   80.32  214.33  787.15  213.82  883.53  207.71  987.95  207.45
+ 1012.05  214.17 1220.88   215.8 1783.13   215.6 1919.68   218.6
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05     .14       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=207.95,0.6, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.855   ,73.33,100,66.67
+Node Last Edited Time=Sep/25/2014 10:32:14
+#Sta/Elev= 9 
+    8.03  218.24   80.32  213.92  787.15  213.41  883.53   207.3  987.95  207.04
+ 1012.05  213.76 1220.88  215.39 1783.13  215.19 1919.68  218.19
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05     .14       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=207.54,0.61, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.836   ,73.33,100,66.67
+Node Last Edited Time=Sep/25/2014 10:32:22
+#Sta/Elev= 9 
+    8.03  217.83   80.32  213.51  787.15     213  883.53  206.89  987.95  206.63
+ 1012.05  213.35 1220.88  214.98 1783.13  214.78 1919.68  217.78
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05     .14       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=207.13,0.62, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.81    ,73.33,100,66.67
+Node Last Edited Time=Sep/25/2014 10:32:30
+#Sta/Elev= 9 
+    8.03  217.43   80.32  213.11  787.15   212.6  883.53  206.49  987.95  206.23
+ 1012.05  212.95 1220.88  214.58 1783.13  214.38 1919.68  217.38
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05     .14       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=206.73,0.63, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.798   ,73.33,100,66.67
+Node Last Edited Time=Sep/25/2014 10:32:36
+#Sta/Elev= 9 
+    8.03  217.02   80.32   212.7  787.15  212.19  883.53  206.08  987.95  205.82
+ 1012.05  212.54 1220.88  214.17 1783.13  213.97 1919.68  216.97
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05     .14       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=206.32,0.64, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.779   ,73.33,100,66.67
+Node Last Edited Time=Sep/25/2014 10:32:47
+#Sta/Elev= 9 
+    8.03  216.61   80.32  212.29  787.15  211.78  883.53  205.67  987.95  205.41
+ 1012.05  212.13 1220.88  213.76 1783.13  213.56 1919.68  216.56
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05     .14       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=205.91,0.66, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.76    ,56.25,100,68.75
+BEGIN DESCRIPTION:
+River Mile 5.76
+END DESCRIPTION:
+Node Last Edited Time=Sep/25/2014 10:32:54
+#Sta/Elev= 9 
+    8.03   216.2   80.32  211.88  787.15  211.37  883.53  205.26  987.95     205
+ 1012.05  211.72 1220.88  213.35 1783.13  213.15 1919.68  216.15
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05     .14       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=205.5,0.67, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.741   ,56.25,100,68.75
+Node Last Edited Time=Sep/25/2014 10:33:01
+#Sta/Elev= 9 
+    8.03  216.13   80.32  211.81  787.15   211.3  883.53  205.19  987.95  204.93
+ 1012.05  211.65 1220.88  213.28 1783.13  213.08 1919.68  216.08
+#Mann= 3 ,0,0
+    8.03    .098       0  787.15     .04       0 1012.05     .13       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=205.43,0.67, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.72    ,56.25,100,68.75
+Node Last Edited Time=Sep/25/2014 10:33:09
+#Sta/Elev= 9 
+    8.03  216.05   80.32  211.73  787.15  211.22  883.53  205.11  987.95  204.85
+ 1012.05  211.57 1220.88   213.2 1783.13     213 1919.68     216
+#Mann= 3 ,0,0
+    8.03    .095       0  787.15     .04       0 1012.05     .12       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=205.35,0.67, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.703   ,56.25,100,68.75
+Node Last Edited Time=Sep/25/2014 10:33:26
+#Sta/Elev= 9 
+    8.03  216.09   80.32  211.77  787.15  211.26  883.53  205.15  987.95  204.89
+ 1012.05  211.61 1220.88  213.24 1783.13  213.04 1919.68  216.04
+#Mann= 3 ,0,0
+    8.03    .093       0  787.15     .04       0 1012.05     .11       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=205.27,0.67, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.685   ,56.25,100,68.75
+BEGIN DESCRIPTION:
+River Mile 5.685
+END DESCRIPTION:
+Node Last Edited Time=Sep/25/2014 10:35:04
+#Sta/Elev= 9 
+    8.03   215.9   80.32  211.58  787.15  211.07  883.53  204.96  987.95   204.7
+ 1012.05  211.42 1220.88  213.05 1783.13  212.85 1919.68  215.85
+#Mann= 3 ,0,0
+    8.03     .09       0  787.15     .04       0 1012.05      .1       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=205.2,0.68, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.666   ,56.25,100,68.75
+Node Last Edited Time=Sep/25/2014 10:35:18
+#Sta/Elev= 9 
+    8.03  215.82   80.32   211.5  787.15  210.99  883.53  204.88  987.95  204.62
+ 1012.05  211.34 1220.88  212.97 1783.13  212.77 1919.68  215.77
+#Mann= 3 ,0,0
+    8.03    .088       0  787.15     .04       0 1012.05     .09       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=205.12,0.68, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.647   ,56.25,100,68.75
+Node Last Edited Time=Sep/25/2014 10:35:30
+#Sta/Elev= 9 
+    8.03  215.75   80.32  211.43  787.15  210.92  883.53  204.81  987.95  204.55
+ 1012.05  211.27 1220.88   212.9 1783.13   212.7 1919.68   215.7
+#Mann= 3 ,0,0
+    8.03    .085       0  787.15     .04       0 1012.05     .08       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=205.05,0.68, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.628   ,56.25,100,68.75
+Node Last Edited Time=Sep/25/2014 10:35:39
+#Sta/Elev= 9 
+    8.03  215.67   80.32  211.35  787.15  210.84  883.53  204.73  987.95  204.47
+ 1012.05  211.19 1220.88  212.82 1783.13  212.62 1919.68  215.62
+#Mann= 3 ,0,0
+    8.03    .082       0  787.15     .04       0 1012.05     .07       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=204.97,0.68, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.61    ,48,92,38
+BEGIN DESCRIPTION:
+River Mile 5.61
+END DESCRIPTION:
+Node Last Edited Time=Sep/25/2014 10:36:07
+#Sta/Elev= 9 
+    8.03   215.6   80.32  211.28  787.15  210.77  883.53  204.66  987.95   204.4
+ 1012.05  211.12 1220.88  212.75 1783.13  212.55 1919.68  215.55
+#Mann= 3 ,0,0
+    8.03     .08       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=204.9,0.68, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.593   ,48,92,38
+Node Last Edited Time=Sep/25/2014 10:36:16
+#Sta/Elev= 9 
+    8.03  215.55   80.32  211.23  787.15  210.72  883.53  204.61  987.95  204.35
+ 1012.05  211.07 1220.88   212.7 1783.13   212.5 1919.68   215.5
+#Mann= 3 ,0,0
+    8.03    .078       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=204.85,0.7, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.576   ,48,92,38
+Node Last Edited Time=Sep/25/2014 10:36:25
+#Sta/Elev= 9 
+    8.03   215.5   80.32  211.18  787.15  210.67  883.53  204.56  987.95   204.3
+ 1012.05  211.02 1220.88  212.65 1783.13  212.45 1919.68  215.45
+#Mann= 3 ,0,0
+    8.03    .076       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=204.8,0.72, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.559   ,48,92,38
+Node Last Edited Time=Sep/25/2014 10:48:49
+#Sta/Elev= 9 
+    8.03  215.45   80.32  211.13  787.15  210.62  883.53  204.51  987.95  204.25
+ 1012.05  210.97 1220.88   212.6 1783.13   212.4 1919.68   215.4
+#Mann= 3 ,0,0
+    8.03    .076       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=204.75,0.74, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.542   ,48,92,38
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  215.54   80.32  211.22  787.15  210.71  883.53   204.6  987.95  204.34
+ 1012.05  211.06 1220.88  212.69 1783.13  212.49 1919.68  215.49
+#Mann= 3 ,0,0
+    8.03    .072       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=204.7,0.76, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.525   ,48,92,38
+BEGIN DESCRIPTION:
+River Mile 5.525
+END DESCRIPTION:
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  215.35   80.32  211.03  787.15  210.52  883.53  204.41  987.95  204.15
+ 1012.05  210.87 1220.88   212.5 1783.13   212.3 1919.68   215.3
+#Mann= 3 ,0,0
+    8.03     .07       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=204.65,0.77, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.508   ,48,92,38
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03   215.3   80.32  210.98  787.15  210.47  883.53  204.36  987.95   204.1
+ 1012.05  210.82 1220.88  212.45 1783.13  212.25 1919.68  215.25
+#Mann= 3 ,0,0
+    8.03    .068       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=204.6,0.79, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.491   ,48,92,38
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  215.25   80.32  210.93  787.15  210.42  883.53  204.31  987.95  204.05
+ 1012.05  210.77 1220.88   212.4 1783.13   212.2 1919.68   215.2
+#Mann= 3 ,0,0
+    8.03    .066       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=204.55,0.81, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.474   ,48,92,38
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03   215.2   80.32  210.88  787.15  210.37  883.53  204.26  987.95     204
+ 1012.05  210.72 1220.88  212.35 1783.13  212.15 1919.68  215.15
+#Mann= 3 ,0,0
+    8.03    .064       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=204.5,0.83, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.457   ,48,92,38
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  215.15   80.32  210.83  787.15  210.32  883.53  204.21  987.95  203.95
+ 1012.05  210.67 1220.88   212.3 1783.13   212.1 1919.68   215.1
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15    .045       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=204.45,0.85, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.44    ,135,85,250
+BEGIN DESCRIPTION:
+River Mile 5.44
+END DESCRIPTION:
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03   215.1   80.32  210.78  787.15  210.27  883.53  204.16  987.95   203.9
+ 1012.05  210.62 1220.88  212.25 1783.13  212.05 1919.68  215.05
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15    .045       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=204.4,0.87, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,5.425   ,135,85,250
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03   214.5   80.32  210.18  787.15  209.67  883.53  203.56  987.95   203.3
+ 1012.05  210.02 1220.88  211.65 1783.13  211.45 1919.68  214.45
+#Mann= 3 ,0,0
+    8.03    .105       0  787.15    .045       0 1012.05    .105       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=203.8,0.87, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,5.41    ,100,100,100
+BEGIN DESCRIPTION:
+Upstream of bridge embankment
+END DESCRIPTION:
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03   213.9   80.32  209.58  787.15  209.07  883.53  202.96  987.95   202.7
+ 1012.05  209.42 1220.88  211.05 1783.13  210.85 1919.68  213.85
+#Mann= 3 ,0,0
+    8.03     .15       0  787.15    .045       0 1012.05     .15       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=203.2,0.87, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 6 ,5.4     ,,,
+Node Last Edited Time=Nov/20/2020 10:50:47
+Lateral Weir Pos= 3 
+Lateral Weir End=                ,                ,        ,STo #1          
+Lateral Weir Distance=10
+Lateral Weir TW Multiple XS=0
+Lateral Weir WD=10
+Lateral Weir Coef=2
+LW OverFlow Method 2D=0
+LW OverFlow Use Velocity Into 2D=0
+Lateral Weir WSCriteria=-1 
+Lateral Weir Flap Gates= 0 
+Lateral Weir Hagers EQN= 0 ,,,,,
+Lateral Weir SS=0.05,0.05,
+Lateral Weir Type= 0 
+Lateral Weir Connection Pos and Dist= 1 ,
+Lateral Weir SE= 6 
+       0     225      10     225      60     225     160     225     260     225
+     360     225
+Lateral Weir Centerline= 0 
+Lateral Weir HW RS Station=5.41    ,-10
+Lateral Weir TW RS Station=,0
+LW Gate Name Wd,H,Inv,GCoef,Exp_T,Exp_O,Exp_H,Type,WCoef,Is_Ogee,SpillHt,DesHd,#Openings
+Gate #1     ,10,5,205,0.6,0,1,0.5, 0 ,3, 0 ,,, 12 ,0,0.8, 0 ,0.6,,0,0,0, 0 
+      80     100     120     140     160     180     200     220     240     260
+     280     300
+LW Gate Opening=1,Opening #1,0
+LW Gate Opening=2,Opening #2,0
+LW Gate Opening=3,Opening #3,0
+LW Gate Opening=4,Opening #4,0
+LW Gate Opening=5,Opening #5,0
+LW Gate Opening=6,Opening #6,0
+LW Gate Opening=7,Opening #7,0
+LW Gate Opening=8,Opening #8,0
+LW Gate Opening=9,Opening #9,0
+LW Gate Opening=10,Opening #10,0
+LW Gate Opening=11,Opening #11,0
+LW Gate Opening=12,Opening #12,0
+LW Div RC= 0 ,False,,
+
+Type RM Length L Ch R = 1 ,5.39    ,50,50,50
+BEGIN DESCRIPTION:
+Downstream of bridge embankment
+END DESCRIPTION:
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03   213.9   80.32  209.58  787.15  209.07  883.53  202.96  987.95   202.7
+ 1012.05  209.42 1220.88  211.05 1783.13  210.85 1919.68  213.85
+#Mann= 3 ,0,0
+    8.03     .15       0  787.15    .045       0 1012.05      .2       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=203.2,0.7, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,5.37    ,50,50,50
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  213.92   80.32   209.6  787.15  209.09  883.53  202.98  987.95  202.72
+ 1012.05  209.44 1220.88  211.07 1783.13  210.87 1919.68  213.87
+#Mann= 3 ,0,0
+    8.03    .128       0  787.15     .04       0 1012.05    .172       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=203.22,0.69, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,5.35    ,50,50,50
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  213.94   80.32  209.62  787.15  209.11  883.53     203  987.95  202.74
+ 1012.05  209.46 1220.88  211.09 1783.13  210.89 1919.68  213.89
+#Mann= 3 ,0,0
+    8.03    .106       0  787.15     .04       0 1012.05    .144       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=203.24,0.68, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,5.33    ,50,50,50
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  213.96   80.32  209.64  787.15  209.13  883.53  203.02  987.95  202.76
+ 1012.05  209.48 1220.88  211.11 1783.13  210.91 1919.68  213.91
+#Mann= 3 ,0,0
+    8.03    .084       0  787.15     .04       0 1012.05    .116       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=203.26,0.67, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,5.31    ,50,50,50
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  213.98   80.32  209.66  787.15  209.15  883.53  203.04  987.95  202.78
+ 1012.05   209.5 1220.88  211.13 1783.13  210.93 1919.68  213.93
+#Mann= 3 ,0,0
+    8.03    .062       0  787.15     .04       0 1012.05    .088       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=203.28,0.66, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,5.29    ,82,83.3,82
+BEGIN DESCRIPTION:
+River Mile 5.29
+END DESCRIPTION:
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03     214   80.32  209.68  787.15  209.17  883.53  203.06  987.95   202.8
+ 1012.05  209.52 1220.88  211.15 1783.13  210.95 1919.68  213.95
+#Mann= 3 ,0,0
+    8.03     .04       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=203.3,0.65, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.274   ,82,83.3,82
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  213.71   80.32  209.39  787.15  208.88  883.53  202.77  987.95  202.51
+ 1012.05  209.23 1220.88  210.86 1783.13  210.66 1919.68  213.66
+#Mann= 3 ,0,0
+    8.03    .046       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=203.01,0.66, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.258   ,82,83.3,82
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  213.42   80.32   209.1  787.15  208.59  883.53  202.48  987.95  202.22
+ 1012.05  208.94 1220.88  210.57 1783.13  210.37 1919.68  213.37
+#Mann= 3 ,0,0
+    8.03    .052       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=202.72,0.67, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.242   ,82,83.3,82
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  213.13   80.32  208.81  787.15   208.3  883.53  202.19  987.95  201.93
+ 1012.05  208.65 1220.88  210.28 1783.13  210.08 1919.68  213.08
+#Mann= 3 ,0,0
+    8.03    .058       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=202.43,0.69, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.226   ,82,83.3,82
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  212.84   80.32  208.52  787.15  208.01  883.53   201.9  987.95  201.64
+ 1012.05  208.36 1220.88  209.99 1783.13  209.79 1919.68  212.79
+#Mann= 3 ,0,0
+    8.03    .064       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=202.14,0.7, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.21    ,82,83.3,82
+BEGIN DESCRIPTION:
+River Mile 5.21
+END DESCRIPTION:
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  212.55   80.32  208.23  787.15  207.72  883.53  201.61  987.95  201.35
+ 1012.05  208.07 1220.88   209.7 1783.13   209.5 1919.68   212.5
+#Mann= 3 ,0,0
+    8.03     .07       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=201.85,0.71, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.194   ,82,83.3,82
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  212.26   80.32  207.94  787.15  207.43  883.53  201.32  987.95  201.06
+ 1012.05  207.78 1220.88  209.41 1783.13  209.21 1919.68  212.21
+#Mann= 3 ,0,0
+    8.03    .076       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=201.56,0.73, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.178   ,82,83.3,82
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  211.97   80.32  207.65  787.15  207.14  883.53  201.03  987.95  200.77
+ 1012.05  207.49 1220.88  209.12 1783.13  208.92 1919.68  211.92
+#Mann= 3 ,0,0
+    8.03    .082       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=201.27,0.74, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.162   ,82,83.3,82
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  211.68   80.32  207.36  787.15  206.85  883.53  200.74  987.95  200.48
+ 1012.05   207.2 1220.88  208.83 1783.13  208.63 1919.68  211.63
+#Mann= 3 ,0,0
+    8.03    .088       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=200.98,0.76, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.146   ,82,83.3,82
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03  211.39   80.32  207.07  787.15  206.56  883.53  200.45  987.95  200.19
+ 1012.05  206.91 1220.88  208.54 1783.13  208.34 1919.68  211.34
+#Mann= 3 ,0,0
+    8.03    .094       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=200.69,0.77, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.13    ,77.5,88.75,85
+BEGIN DESCRIPTION:
+River Mile 5.13
+END DESCRIPTION:
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03   211.1   80.32  206.78  787.15  206.27  883.53  200.16  987.95   199.9
+ 1012.05  206.62 1220.88  208.25 1783.13  208.05 1919.68  211.05
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05     .06       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=200.4,0.79, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.113   ,77.5,88.75,85
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03   211.1   80.32  206.78  787.15  206.27  883.53  200.16  987.95   199.9
+ 1012.05  206.62 1220.88  208.25 1783.13  208.05 1919.68  211.05
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05    .065       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=200.4,0.76, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.097   ,77.5,88.75,85
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03   211.1   80.32  206.78  787.15  206.27  883.53  200.16  987.95   199.9
+ 1012.05  206.62 1220.88  208.25 1783.13  208.05 1919.68  211.05
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05     .07       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=200.4,0.74, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.081   ,77.5,88.75,85
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03   211.1   80.32  206.78  787.15  206.27  883.53  200.16  987.95   199.9
+ 1012.05  206.62 1220.88  208.25 1783.13  208.05 1919.68  211.05
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05    .075       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=200.4,0.72, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.065   ,77.5,88.75,85
+BEGIN DESCRIPTION:
+River Mile 5.065
+END DESCRIPTION:
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03   211.1   80.32  206.78  787.15  206.27  883.53  200.16  987.95   199.9
+ 1012.05  206.62 1220.88  208.25 1783.13  208.05 1919.68  211.05
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05     .08       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=200.4,0.7, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.048   ,77.5,88.75,85
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03   211.1   80.32  206.78  787.15  206.27  883.53  200.16  987.95   199.9
+ 1012.05  206.62 1220.88  208.25 1783.13  208.05 1919.68  211.05
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05    .085       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=200.4,0.68, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.032   ,77.5,88.75,85
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03   211.1   80.32  206.78  787.15  206.27  883.53  200.16  987.95   199.9
+ 1012.05  206.62 1220.88  208.25 1783.13  208.05 1919.68  211.05
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05     .09       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=200.4,0.67, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.016   ,77.5,88.75,85
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03   211.1   80.32  206.78  787.15  206.27  883.53  200.16  987.95   199.9
+ 1012.05  206.62 1220.88  208.25 1783.13  208.05 1919.68  211.05
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05    .095       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=200.4,0.66, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.0     ,0,0,0
+BEGIN DESCRIPTION:
+Downstream Boundary Cross Section
+END DESCRIPTION:
+Node Last Edited Time=Sep/25/2014 15:12:14
+#Sta/Elev= 9 
+    8.03   211.1   80.32  206.78  787.15  206.27  883.53  200.16  987.95   199.9
+ 1012.05  206.62 1220.88  208.25 1783.13  208.05 1919.68  211.05
+#Mann= 3 ,0,0
+    8.03      .1       0  787.15     .04       0 1012.05      .1       0
+Bank Sta=787.15,1012.05
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=200.4,0.65, 50 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Storage Area=STo #1          ,0.285763,0.1469918
+Storage Area Surface Line= 11 
+ 0.29410522388060.27690149253731                
+0.291767910447760.27456417910448                
+0.368899253731340.21613134328358                
+0.420320149253730.17405970149254                
+0.422657462686570.14367462686567                
+0.373573880597020.02914626865672                
+0.28475597014925-0.0339611940298                
+0.198275373134330.05251940298507                
+0.114132089552240.20678208955224                
+0.230997761194030.28157611940299                
+ 0.29410522388060.27690149253731                
+Storage Area Type= 0 
+Storage Area Area=4000
+Storage Area Min Elev=200
+Storage Area Vol Elev= 1 
+               0
+Storage Area Is2D=0
+Storage Area Point Generation Data=,,,
+Storage Area 2D Points= 0 
+Storage Area 2D PointsPerimeterTime=20Nov2020 09:45:04
+Storage Area Mannings=0.06
+2D Cell Volume Filter Tolerance=0.01
+2D Cell Minimum Area Fraction=0.01
+2D Face Profile Filter Tolerance=0.01
+2D Face Area Elevation Profile Filter Tolerance=0.01
+2D Face Area Elevation Conveyance Ratio=0.02
+2D Face Area Laminar Depth=0.2
+
+LCMann Time=Dec/30/1899 00:00:00
+LCMann Region Time=Dec/30/1899 00:00:00
+LCMann Table=0
+Chan Stop Cuts=-1 
+
+
+
+Use User Specified Reach Order=0
+User Specified Reach Order=Beaver Creek    ,Kentwood        
+GIS Ratio Cuts To Invert=-1
+GIS Limit At Bridges=0
+Composite Channel Slope=5

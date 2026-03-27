@@ -1,0 +1,34 @@
+Flow Title=Test event - Navigation Dam Control
+Program Version=3.19
+Use Restart= 0 
+Initial Flow Loc=Reach 1         ,A               ,1000    ,100
+Boundary Location=Reach 1         ,A               ,1000    ,        ,                ,                
+Interval=1HOUR
+Flow Hydrograph= 100 
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     105     110     115     120     128     136     144     152
+     160     168     176     184     192     200     190     180     170     160
+     150   142.5     135   127.5     120     116     112     108     104     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+DSS Path=
+Use DSS=False
+CWMS InputPosition= 0 
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=
+Boundary Location=Reach 1         ,A               ,250     ,        ,                ,                
+Navigation Dam=2,0.5,1200,1,0.5,0.5, 1 ,6
+Navigation Dam SFT= 0 
+Navigation Dam Flow Monitor RRR=Reach 1         ,A               ,1000    
+Navigation Dam Hinge Point RRR=Reach 1         ,A               ,700.*   
+Navigation Dam CP Hinge Point=94.8,94.7,94.6,94.52,94.5,94.48,94.4,94.3,94.2,300,1.07,1.03,0.93,0.97,50
+Navigation Dam CP Min Pool=,,,,,,,,,,,,,,
+Navigation Dam CP Max Pool=,,,,,,,,,,,,,,
+Boundary Location=Reach 1         ,A               ,0.0     ,        ,                ,                
+Friction Slope=0.0002

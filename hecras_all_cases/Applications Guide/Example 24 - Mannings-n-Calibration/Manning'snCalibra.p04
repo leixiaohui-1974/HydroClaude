@@ -1,0 +1,193 @@
+Plan Title=Automatic Calibration - Sequential
+Program Version=4.20
+Short Identifier=AutoCalSequentia                                                
+Simulation Date=25sep2004,12:00,05MAR2005,12:00
+Geom File=g01
+Flow File=u01
+Subcritical Flow
+K Sum by GR= 0 
+Std Step Tol= 0.01 
+Critical Tol= 0.01 
+Num of Std Step Trials= 20 
+Max Error Tol= 0.3 
+Flow Tol Ratio= 0.001 
+Split Flow NTrial= 30 
+Split Flow Tol= 0.02 
+Split Flow Ratio= 0.02 
+Log Output Level= 0 
+Friction Slope Method= 1 
+Unsteady Friction Slope Method= 2 
+Unsteady Bridges Friction Slope Method= 1 
+Parabolic Critical Depth
+Global Vel Dist= 0 , 0 , 0 
+Global Log Level= 0 
+CheckData=True
+Encroach Param=-1 ,0,0, 0 
+Computation Interval=30MIN
+Output Interval=6HOUR
+Run HTab= 1 
+Run UNet= 1 
+Run PostProcess= 1 
+Run WQNet= 0 
+Run RASMapper= 0 
+UNET Theta= 0.8 
+UNET Theta Warmup= 1 
+UNET ZTol= 0.02 
+UNET ZSATol= 0.05 
+UNET QTol=
+UNET MxIter= 20 
+UNET MaxInSteps= 30 
+UNET DtIC= 0 
+UNET DtMin= 0 
+UNET MaxCRTS= 20 
+UNET WFStab= 2 
+UNET SFStab= 1 
+UNET WFX= 1 
+UNET SFX= 1 
+UNET DSS MLevel= 4 
+UNET DZMax Abort= 100 
+UNET Convert EG Bridges= 0 
+UNET Use Existing IB Tables=-1 
+UNET Froude Reduction=False
+UNET Froude Limit= 1 
+UNET Froude Power= 10 
+UNET Time Slicing=0,0, 5 
+UNET Junction Losses=0
+Instantaneous Interval=1DAY
+DSS File=dss
+Write IC File= 0 
+IC Time=,,
+Write IC File Reoccurance=
+Write IC File at Sim End=0
+Echo Input=False
+Echo Parameters=False
+Echo Output=False
+Write Detailed= 0 
+Roughness Change=Mississippi     ,Upper Miss      ,43.7    ,29.09   , 15 
+  100000       1  150000       1  200000       1  250000       1  300000       1
+  350000       1  400000       1  450000       1  500000       1  550000       1
+  600000       1  650000       1  700000       1  750000       1  800000       1
+Roughness Change=Mississippi     ,Lower Miss.     ,953.5   ,923     , 13 
+  100000       1  200000       1  300000       1  400000       1  500000       1
+  600000       1  700000       1  800000       1  900000       1 1000000       1
+ 1100000       1 1200000       1 1300000       1
+Roughness Change=Mississippi     ,Lower Miss.     ,922     ,874     , 16 
+  100000       1  200000       1  300000       1  400000       1  500000       1
+  600000       1  700000       1  800000       1  900000       1 1000000       1
+ 1100000       1 1200000       1 1300000       1 1400000       1 1500000       1
+ 1600000       1
+Roughness Change=Mississippi     ,Lower Miss.     ,873     ,846     , 24 
+  100000       1  200000       1  300000       1  400000       1  500000       1
+  600000       1  700000       1  800000       1  900000       1 1000000       1
+ 1100000       1 1200000       1 1300000       1 1400000       1 1500000       1
+ 1600000       1 1700000       1 1800000       1 1900000       1 2000000       1
+ 2100000       1 2200000       1 2300000       1 2400000       1
+Roughness Change=Mississippi     ,Upper Miss      ,110.4   ,43.702  , 14 
+  100000       1  150000       1  200000       1  250000       1  300000       1
+  350000       1  400000       1  450000       1  500000       1  550000       1
+  600000       1  650000       1  700000       1  750000       1
+Roughness Change=Mississippi     ,Upper Miss      ,28.57   ,1.39    , 14 
+  100000       1  150000       1  200000       1  250000       1  300000       1
+  350000       1  400000       1  450000       1  500000       1  550000       1
+  600000       1  650000       1  700000       1  750000       1
+Roughness Change=Ohio River      ,OHS             ,-961    ,-981    , 14 
+   50000       1  100000       1  200000       1  300000       1  400000       1
+  500000       1  600000       1  700000       1  800000       1  900000       1
+ 1000000       1 1100000       1 1200000       1 1300000       1
+Roughness Change=Ohio River      ,OHS             ,-944.1  ,-960    , 14 
+   50000       1  100000       1  200000       1  300000       1  400000       1
+  500000       1  600000       1  700000       1  800000       1  900000       1
+ 1000000       1 1100000       1 1200000       1 1300000       1
+Roughness Change=Ohio River      ,OHS             ,-933.33 ,-943    , 14 
+   50000       1  100000       1  200000       1  300000       1  400000       1
+  500000       1  600000       1  700000       1  800000       1  900000       1
+ 1000000       1 1100000       1 1200000       1 1300000       1
+Calibration Method= 0 
+Calibration Iterations= 10 
+Calibration Max Change=0.05
+Calibration Tolerance=0.1
+Calibration Maximum=1.7
+Calibration Minimum=0.5
+Calibration Optimization Method= 0 
+Calibration Window=12OCT2004,0000,08FEB2005,0000
+Calibration Mann=Mississippi     ,Upper Miss      ,43.7    ,29.09   ,-1,Mississippi     ,Upper Miss      ,43.7    
+Calibration Mann=Mississippi     ,Lower Miss.     ,953.5   ,923     ,-1,Mississippi     ,Lower Miss.     ,953.5   
+Calibration Mann=Mississippi     ,Lower Miss.     ,922     ,874     ,-1,Mississippi     ,Lower Miss.     ,922     
+Calibration Mann=Mississippi     ,Lower Miss.     ,873     ,846     ,-1,Mississippi     ,Lower Miss.     ,873     
+Calibration Mann=Mississippi     ,Upper Miss      ,110.4   ,43.702  ,-1,Mississippi     ,Upper Miss      ,110.4   
+Calibration Mann=Mississippi     ,Upper Miss      ,28.57   ,1.39    ,-1,Mississippi     ,Upper Miss      ,28.57   
+Calibration Mann=Ohio River      ,OHS             ,-961    ,-981    ,-1,Ohio River      ,OHS             ,-961    
+Calibration Mann=Ohio River      ,OHS             ,-944.1  ,-960    ,-1,Ohio River      ,OHS             ,-944.1  
+Calibration Mann=Ohio River      ,OHS             ,-933.33 ,-943    ,-1,Ohio River      ,OHS             ,-935.66 
+Calibration Forced Stage=Mississippi     ,Upper Miss      ,43.7    
+Calibration Forced Stage=Mississippi     ,Upper Miss      ,28.57   
+Calibration Forced Stage=Ohio River      ,OHS             ,-944.1  
+Calibration Forced Stage=Ohio River      ,OHS             ,-961    
+WQ AD Non Conservative
+WQ ULTIMATE=-1
+WQ Max Comp Step=1HOUR
+WQ Output Interval=15MIN
+WQ Output Selected Increments= 0 
+WQ Output face flow=0
+WQ Output face velocity=0
+WQ Output face area=0
+WQ Output face dispersion=0
+WQ Output cell volume=0
+WQ Output cell surface area=0
+WQ Output cell continuity=0
+WQ Output cumulative cell continuity=0
+WQ Output face conc=0
+WQ Output face dconc_dx=0
+WQ Output face courant=0
+WQ Output face peclet=0
+WQ Output face adv mass=0
+WQ Output face disp mass=0
+WQ Output cell mass=0
+WQ Output cell source sink temp=0
+WQ Output cell source sink nsm=0
+WQ Output MaxMinRange=-1
+WQ Daily Max Min Mean=-1
+WQ Daily Range=0
+WQ Daily Time=0
+WQ Create Restart=0
+WQ Fixed Restart=0
+WQ Restart Simtime=
+WQ Restart Date=
+WQ Restart Hour=
+WQ System Summary=0
+WQ Use Fixed Temperature=0
+WQ Fixed Temperature=
+WQ StartDate=25sep2004
+WQ StartTime=12:00
+WQ EndDate=1jan2008
+WQ EndTime=12:00
+Sorting and Armoring Iterations= 10 
+XS Update Threshold= 0.02 
+Bed Roughness Predictor= 0 
+Hydraulics Update Threshold= 0.02 
+Energy Slope Method= 1 
+Volume Change Method= 0 
+XS Weighting Method= 0 
+Number of US Weighted Cross Sections= 1 
+Number of DS Weighted Cross Sections= 1 
+Upstream XS Weight=0.25
+Main XS Weight=0.5
+Downstream XS Weight=0.25
+Number of DS XS's Weighted with US Boundary= 1 
+Upstream Boundary Weight= 1 
+Weight of XSs Associated with US Boundary= 0 
+Number of US XS's Weighted with DS Boundary= 1 
+Downstream Boundary Weight= 0.5 
+Weight of XSs Associated with DS Boundary= 0.5 
+Sediment Output Level= 4 
+Mass or Volume Output= 0 
+Output Increment Type= 1 
+Profile and TS Output Increment= 10 
+XS Output Flag= 0 
+XS Output Increment= 10 
+Write Gradation File= 0 
+Write DSS Sediment File= 0 
+Disregard all LS=0
+Disregard all Conn=0
+Disregard all Breaches=0
+Disregard all Pumps=0

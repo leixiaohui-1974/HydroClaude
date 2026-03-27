@@ -1,0 +1,148 @@
+Geom Title=Open To the Air Overflow Gates
+Program Version=3.19
+Viewing Rectangle= 0 , 1 , 1 , 0 
+
+River Reach=Reach 1         ,A               
+Reach XY= 2 
+0.211895910780670.884758364312270.799256505576210.22676579925651
+Rch Text X Y=0.3587361,0.7202602
+Reverse River Text= 0 
+
+Type RM Length L Ch R = 1 ,1000    ,100,100,100
+Node Last Edited Time=Dec/12/2005 15:04:34
+#Sta/Elev= 8 
+       0     100      10      90     100      89     110      80     140      80
+     150      90     200      91     210     100
+#Mann= 3 , 0 , 0 
+       0     .04       0     100    .035       0     150     .04       0
+Bank Sta=100,150
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,900.*   ,100,100,100
+Node Last Edited Time=Dec/12/2005 15:06:40
+#Sta/Elev= 8 
+       0   99.98      10   89.98     100   88.98     110   79.98     140   79.98
+     150   89.98     200   90.98     210   99.98
+#Mann= 3 , 0 , 0 
+       0     .04       0     100    .035       0     150     .04       0
+Bank Sta=100,150
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,800.*   ,100,100,100
+Node Last Edited Time=Dec/12/2005 15:06:40
+#Sta/Elev= 8 
+       0   99.96      10   89.96     100   88.96     110   79.96     140   79.96
+     150   89.96     200   90.96     210   99.96
+#Mann= 3 , 0 , 0 
+       0     .04       0     100    .035       0     150     .04       0
+Bank Sta=100,150
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,700.*   ,100,100,100
+Node Last Edited Time=Dec/12/2005 15:06:40
+#Sta/Elev= 8 
+       0   99.94      10   89.94     100   88.94     110   79.94     140   79.94
+     150   89.94     200   90.94     210   99.94
+#Mann= 3 , 0 , 0 
+       0     .04       0     100    .035       0     150     .04       0
+Bank Sta=100,150
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,600.*   ,100,100,100
+Node Last Edited Time=Dec/12/2005 15:06:40
+#Sta/Elev= 8 
+       0   99.92      10   89.92     100   88.92     110   79.92     140   79.92
+     150   89.92     200   90.92     210   99.92
+#Mann= 3 , 0 , 0 
+       0     .04       0     100    .035       0     150     .04       0
+Bank Sta=100,150
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,500.*   ,100,100,100
+Node Last Edited Time=Dec/12/2005 15:06:40
+#Sta/Elev= 8 
+       0    99.9      10    89.9     100    88.9     110    79.9     140    79.9
+     150    89.9     200    90.9     210    99.9
+#Mann= 3 , 0 , 0 
+       0     .04       0     100    .035       0     150     .04       0
+Bank Sta=100,150
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,400.*   ,100,100,100
+Node Last Edited Time=Dec/12/2005 15:06:40
+#Sta/Elev= 8 
+       0   99.88      10   89.88     100   88.88     110   79.88     140   79.88
+     150   89.88     200   90.88     210   99.88
+#Mann= 3 , 0 , 0 
+       0     .04       0     100    .035       0     150     .04       0
+Bank Sta=100,150
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,300.*   ,100,100,100
+Node Last Edited Time=Dec/12/2005 15:06:40
+#Sta/Elev= 8 
+       0   99.86      10   89.86     100   88.86     110   79.86     140   79.86
+     150   89.86     200   90.86     210   99.86
+#Mann= 3 , 0 , 0 
+       0     .04       0     100    .035       0     150     .04       0
+Bank Sta=100,150
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 5 ,250     ,,,
+Node Last Edited Time=Dec/16/2005 08:38:01
+IW Pilot Flow=0
+#Inline Weir SE= 2 
+       0      95     210      95
+IW Dist,WD,Coef,Skew,MaxSub,Min_El,Is_Ogee,SpillHt,DesHd
+10,80,2.6,0,0.95,, 0 ,,,0,0,
+IW Gate Name Wd,H,Inv,GCoef,Exp_T,Exp_O,Exp_H,Type,WCoef,Is_Ogee,SpillHt,DesHd,#Openings
+Gate #1     ,6,6,89,,0,1,0.5, 3 ,3.2, 0 ,,, 2 ,0,0.8, 0 ,,,-1,0,0, 10 
+     115     130
+
+Type RM Length L Ch R = 1 ,200.*   ,100,100,100
+Node Last Edited Time=Dec/12/2005 15:06:40
+#Sta/Elev= 8 
+       0   99.84      10   89.84     100   88.84     110   79.84     140   79.84
+     150   89.84     200   90.84     210   99.84
+#Mann= 3 , 0 , 0 
+       0     .04       0     100    .035       0     150     .04       0
+Bank Sta=100,150
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,100.*   ,100,100,100
+Node Last Edited Time=Dec/12/2005 15:06:40
+#Sta/Elev= 8 
+       0   99.82      10   89.82     100   88.82     110   79.82     140   79.82
+     150   89.82     200   90.82     210   99.82
+#Mann= 3 , 0 , 0 
+       0     .04       0     100    .035       0     150     .04       0
+Bank Sta=100,150
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,0.0     ,0,0,0
+Node Last Edited Time=Dec/12/2005 15:06:29
+#Sta/Elev= 8 
+       0    99.8      10    89.8     100    88.8     110    79.8     140    79.8
+     150    89.8     200    90.8     210    99.8
+#Mann= 3 , 0 , 0 
+       0     .04       0     100    .035       0     150     .04       0
+Bank Sta=100,150
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Chan Stop Cuts=-1 
+
+
+
+Use User Specified Reach Order=0
+User Specified Reach Order=Reach 1         ,A               

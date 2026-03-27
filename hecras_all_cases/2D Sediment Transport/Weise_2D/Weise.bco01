@@ -1,0 +1,338 @@
+ 
+                                              HEC-RAS - River Analysis System
+ 
+ 
+Project File:  f:\6X Testing\Weise\Weise.prj
+ 
+Project Name:  Weise
+ 
+ 
+Plan Name:     Weise
+ 
+Short ID:      Weise
+ 
+
+Starting Time:   07Dec2016 2400
+
+Ending Time:     08Dec2016 0100
+
+
+                ################################################
+                #                                              #
+                #                                              #
+                #       1D and 2D Unsteady Flow Module         #
+                #                                              #
+                #                                              #
+                #          HEC-RAS 6.6 August 2024             #
+                #                                              #
+                #             27SEP24 at 16:05:44              #
+                #                                              #
+                ################################################
+                
+ 
+ 
+
+Sediment Grain Classes:
+  Number of Grains:                 3
+  Number of Cohesive Grains:        0
+  Number of Floccable Grains:       0
+  Upper Diameter Limits:
+    Cohesive (mm):                   0.00
+    Flocculation (mm):               0.0625
+  Grain Classes:
+    ID:                             1
+    Name:                     VFG
+    Diameter (mm):                 2.8300
+    Diameter limits (mm):        2.0000    4.0000
+    Aggregate Name:           Gravel
+    Grain density (kg/m^3):     2650.0001
+    Dry density (kg/m^3):       1489.0763
+    Porosity:                      0.4381
+    Corey Shape Factor:            0.6000
+    Powers Roundness:              3.5000
+    ID:                             2
+    Name:                     FG
+    Diameter (mm):                 5.6600
+    Diameter limits (mm):        4.0000    8.0000
+    Aggregate Name:           Gravel
+    Grain density (kg/m^3):     2650.0001
+    Dry density (kg/m^3):       1489.0763
+    Porosity:                      0.4381
+    Corey Shape Factor:            0.6000
+    Powers Roundness:              3.5000
+    ID:                             3
+    Name:                     MG
+    Diameter (mm):                11.3000
+    Diameter limits (mm):        8.0000   16.0000
+    Aggregate Name:           Gravel
+    Grain density (kg/m^3):     2650.0001
+    Dry density (kg/m^3):       1489.0763
+    Porosity:                      0.4381
+    Corey Shape Factor:            0.6000
+    Powers Roundness:              3.5000
+
+Sediment 2D Region
+  Region Index:            1
+  Region Name: 2DArea
+  Sediment Control:
+    Number of threads:            2
+    Transport Model:  Total-load
+    Computation Multiplier:                   5
+    Computation Period Length (s):      30.0000
+    Scaling Factors:
+      Total-load:           1.0000
+      Bed-load:             1.0000
+      Suspended-load:       1.0000
+      Morphologic:         12.5000
+      Mobility:             1.0000
+    Depth Change Concentration Correction:   ON
+    Transport Limiter:     OFF
+    Maximum Concentrations:
+      Total-load (mg/L):   1.490E+06
+    Erosion and Deposition Formulations:
+      Noncohesives:
+        Wet Erosion Method:    ADAPTATION
+        Wet Deposition Method: ADAPTATION
+        Cohesive Correction Method:   NONE
+    Transport Potentials:
+      Total-load Method:      WU
+    Adaptation Coefficient Parameters:
+      Limiter:  OFF
+      Total-load:
+        Method:               LENGTH
+        Adaptation Length (m):        0.2000
+    Bed-Slope Term:           OFF
+    Dry Density Method:       CONSTANT
+    Load Correction Factor:
+      Total-load Method:      WEIGHTED
+      Bed-load Method:       BEDLOAD_VELOCITY
+      Suspended-load Method: EXPONENTIAL
+    Bed-load Velocity Method: VAN_RIJN_WU
+    Diffusion Coefficient:
+      Total-load Method:     NONE
+    Incipient Motion:
+      Noncohesives Method:     WU
+    Hiding and Exposure Method:     WU
+      Hiding and Exposure Exponent:       0.6000
+      Minimum Correction Value:       0.1000
+      Maximum Correction Value:      10.0000
+    Incipient Motion Bed-slope Correction Method: NONE
+    Settling Velocity:
+      Grain Settling Velocity Method:      SOULSBY
+      Floc Settling Velocity Method:       NONE
+      Hindered Settling Correction Method: NONE
+    Consolidation:  OFF
+    Fraction of Suspended Sediments Method: TRANSPORT
+    Bed Sorting Method:               ACTIVE_LAYER
+      Active Layer Thickness Method:    X_D90
+      Active layer scaling factor for d90:           3.0000
+      Minimum active layer thickness (m):            0.5000
+      Maximum active layer thickness (m):            0.3200
+      Initial subsurface layer thickness (m):        0.3048
+      Minimum subsurface layer thickness (m):        0.0085
+      Maximum subsurface thickness (m):              0.3200
+      Toro-Escobar Exchange Parameter (-):           0.00
+      Coupling Method: Picard
+    Subcell Erosion Method:    CONSTANT
+    Subcell Deposition Method: CONSTANT
+    Avalanching:             OFF
+    Sediment Bottom Roughness:
+      Total Roughness Method:           FLOW
+      Total Roughness Scale Factor:           1.0000
+      Grain Roughness Method:           LI_LIU
+      Grain Roughness Scale Factor:           1.0000
+      Transport Roughness Method:       NONE
+      Transport Roughness Scale Factor:       1.0000
+      Ripple Roughness Method:          NONE
+      Ripple Roughness Scale Factor:          1.0000
+      Dune Roughness Method:            NONE
+      Dune Roughness Scale Factor:            1.0000
+    Bed Forms:
+      Ripple Method:                      NONE
+      Dune Method:                        NONE
+    Convergence Parameters (Outer Loop):
+      Minimum Iterations:            0
+      Maximum Iterations:            5
+      Concentration Corrections MaxAbsCor (mg/L):   1.000E-06
+      Concentration Corrections RMS (mg/L):         1.000E-06
+      Grain Class Fractions MaxAbsCor (%):               0.0010
+    Transport Control:
+      Number of Threads:            2
+      Number of States:        3
+      Temporal Scheme:  BACKWARD_EULER
+      Number of subcycles:            1
+      Advection Scheme: UPWIND
+        Deferred Correction:  OFF
+        Sweby-R Method: NONE
+      Diffusion Scheme: NONE
+      Beta Correction:  ON
+      States Limts:
+        ID     Min        Max     Units
+        1   0.000E+00   1.490E+06  mg/L
+        2   0.000E+00   1.490E+06  mg/L
+        3   0.000E+00   1.490E+06  mg/L
+      Cell Gradient Method: NONE
+      Cell Slope Limiter:  NONE
+      Water Volume Correction:  OFF
+      Minimum Number of Outer Iterations:            0
+      Maximum Number of Outer Iterations:            5
+    Tolerance for Outer Loop:
+      State   MaxAbs      RMSE     Units
+        1   1.000E-06   1.000E-06  mg/L
+        2   1.000E-06   1.000E-06  mg/L
+        3   1.000E-06   1.000E-06  mg/L
+      Sparse Linear System Solver Control:
+        Number of Threads:            2
+        Matrix Solver Name: PFGMRES
+        Iterations:
+          Minimum Number:            2
+          Maximum Number:            9
+          Restart:           10
+        Minimum Iterations for Stalled Condition:            5
+        Interval for Convergence Stats:            1
+        Tolerances:
+          Divergence:               1.000E-05
+          Convergence:              1.000E-14
+          Stalled Relative Change:  1.000E-16
+          Non-Trivial Solution:     1.000E-25
+        Convergence Statistic Parameters:
+          Alpha:  0.000E+00
+          Beta:   1.000E+00
+        Preconditioner Name: SOR
+          Relaxation Coefficient:  1.300E+00
+          Number of Iterations:            7
+        Reorder Matrix:    OFF
+        Filter Matrix:    OFF
+        Scale Matrix:    OFF
+    Sediment Problem Size:
+      Number of grain classes:        3
+      Number of water elements:            1
+      Number of cells:                  3073
+      Number of internal cells:         2702
+      Number of faces:                  5599
+      Sediment Subgrid:
+        Specified maximum number of cell subregions:       1
+        Specified maximum number of bed layers:            5
+        Computed total number of cell subregions:            2702
+        Computed total number of bed layers:                13510
+        Computed total number of face subsegments:          12838
+        Maximum total number of cell subregions:             2702
+        Maximum total number of bed layers:                 13510
+        Maximum total number of face subsegments:           12838
+      Flow Subgrid:
+        Specified number of cell subregions:                 3033
+        Specified number of face subsegments:               12838
+    Sediment Bathymetry:
+      Minimum cell bed elevation (m):             0.00
+      Maximum cell bed elevation (m):             0.0636
+      Area Averaged cell bed elevation (m):       0.0034
+      Minimum cell subregion area (m^2):          0.0037
+      Maximum cell subregion area (m^2):          0.0194
+      Average cell subregion area (m^2):          0.0050
+    Sediment Bed:
+      Exchange Dry Bulk Density (kg/m^3):
+        Minimum:    1489.0763
+        Maximum:    1489.0763
+        Average:    1489.0763
+      Minimum number of Subregions:            1
+      Maximum number of Subregions:            1
+      Minimum number of Layers:                1
+      Maximum number of Layers:                5
+      Grain Fractions (%):
+         Grain     Minimum    Maximum    Average
+          1         22.00      22.00      22.00
+          2         70.00      70.00      70.00
+          3          8.00       8.00       8.00
+        Layer   Grain    Minimum     Maximum     Average
+          1       1       22.00       22.00       22.00
+          1       2       70.00       70.00       70.00
+          1       3        8.00        8.00        8.00
+          2       1       22.00       22.00       22.00
+          2       2       70.00       70.00       70.00
+          2       3        8.00        8.00        8.00
+          3       1       22.00       22.00       22.00
+          3       2       70.00       70.00       70.00
+          3       3        8.00        8.00        8.00
+          4       1       22.00       22.00       22.00
+          4       2       70.00       70.00       70.00
+          4       3        8.00        8.00        8.00
+          5       1       22.00       22.00       22.00
+          5       2       70.00       70.00       70.00
+          5       3        8.00        8.00        8.00
+      Bed Layer Thickness (m):
+        Minimum:       0.2896
+        Maximum:       0.3200
+        Average:       0.3048
+        Layer     Minimum    Maximum    Average
+          1        0.320      0.320      0.320
+          2        0.290      0.290      0.290
+          3        0.305      0.305      0.305
+          4        0.305      0.305      0.305
+          5        0.305      0.305      0.305
+    Sediment Coefficient Data:
+      Particle Fall Velocity (m/s):
+         Grain    Minimum    Maximum    Average
+           1     3.927E-01  3.927E-01  3.927E-01
+           2     5.593E-01  5.593E-01  5.593E-01
+           3     7.923E-01  7.923E-01  7.923E-01
+      Critical Shields Parameter (-):
+         Grain     Minimum    Maximum    Average
+           1        0.0300     0.0300     0.0300
+           2        0.0300     0.0300     0.0300
+           3        0.0300     0.0300     0.0300
+    Transport Engine:
+      Index:            1
+      Name:  2DArea
+      Number of States:                    3
+      Number of Cells:                  3073
+      Number of Internal Cells:         2702
+      Number of Faces:                  5599
+        State   Minimum   Maximum   Average   Units
+         1     0.000E+00 0.000E+00 0.000E+00  mg/L
+         2     0.000E+00 0.000E+00 0.000E+00  mg/L
+         3     0.000E+00 0.000E+00 0.000E+00  mg/L
+    Sediment Setup:
+    Transport Setup:
+      External Equilibrium Boundary Condition:
+        Number of cells:           40
+ 
+
+         US Inflow      DS Outflow       Lat Hydro        SA Hydro     Groundwater      Diversions   Precip Excess
+         *********      **********       *********        ********     ***********      **********   *************
+                                                                                                                                  
+
+    Start 1D Reach  Final 1D Reach   Starting SA's      Final SA's
+    **************  **************   *************      **********
+                                                                  
+
+
+
+                 ***   Volume Accounting for 2D Flow Area in 1000 m^3   ***
+
+           2D Area    Starting Vol      Ending Vol      Cum Inflow     Cum Outflow           Error   Percent Error   Precip Excess   Precip Excess  Sed Bed Change
+                                                    (incl. precip)                                                           (m^3)            (mm)
+           *******    ************      **********      **********     ***********           *****   *************   *************   *************   *************
+ 
+ 
+            2DArea        0.004295        0.004230          0.5400          0.5400   -0.0000000000    0.0000000000                                    0.0000341465
+
+
+
+                 ***  Total Volume Accounting (for the entire model) in 1000 m^3   ***
+
+Total Boundary Flux of Water In           0.5400
+Total Boundary Flux of Water Out          0.5400
+
+Starting Volume                         0.004295
+Ending Volume                           0.004230
+
+Total Sediment Bed Change           0.0000341465
+ 
+
+
+                             Error   Percent Error
+                             *****   *************
+                     -0.0000000000    0.0000000000
+
+
+

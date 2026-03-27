@@ -1,0 +1,1090 @@
+HDes Title=HickahalaSiam
+Version=HEC-RAS 5.0.0 Beta August 2015
+Default HD Type=SIAM
+
+Uniform Flow Gradation=,,
+Uniform Flow Data for Depth, Slope, Discharge, and Roughness Solutions
+Temperature=
+Specific Gravity=
+Uniform Flow d84=
+Uniform Flow d50=
+Uniform Flow d16=
+Uniform Flow Depth=
+Uniform Flow Slope=
+Uniform Flow Discharge=
+Selected River Station=
+X, Y, Roughness Eq, Roughness Value, Equivalent Mannings #.  Number of Nodes= 0 
+Uniform Flow Data for Bottom Width Solutions
+Temperature (Width)=
+Specific Gravity (Width)=
+Uniform Flow Depth (Width)=
+Uniform Flow Slope (Width)=
+Uniform Flow Discharge (Width)=
+Overbank Left Side Slope=
+Overbank Right Side Slope=
+Overbank Left Width=
+Overbank Right Width=
+Overbank Height=
+Overbank Invert=
+Main Channel Left Side Slope=
+Main Channel Right Side Slope=
+Main Channel Left Width=
+Main Channel Right Width=
+Main Channel Height=
+Main Channel Invert=
+Low Flow Channel Left Side Slope=
+Low Flow Channel Right Side Slope=
+Low Flow Channel Left Width=
+Low Flow Channel Right Width=
+Low Flow Channel Height=
+Low Flow Channel Invert=
+Solve for bottom width in the Main Channel, cbobox index value=0
+Solve for bottom width equally on the left and right side of centerline, cbobox index value=0
+X, Y, Roughness Eq, Roughness Value, Equivalent Mannings # (for width).  Number of nodes= 0 
+
+Stable Channel Design-Copeland Method
+Stable Design Discharge=
+Stable Specific Gravity=
+Stable d84=
+Stable d50=
+Stable d16=
+Stable Temperature=
+Stable Valley Slope (optional)=
+Stable Median Channel Width (optional)=
+Stable Design Left Side Slope=
+Stable Design Right Side Slope=
+Stable Design Left Side Slope Equation=Mannings
+Stable Design Right Side Slope Equation=Mannings
+Stable Design Left Side Slope Roughness Value=
+Stable Design Right Side Slope Roughness Value=
+Stable Supply Sediment Concentration=
+Stable Supply Channel Width=
+Stable Supply Channel Bank Height=
+Stable Supply Channel Slope=
+Stable Supply Left Side Slope=
+Stable Supply Right Side Slope=
+Stable Supply Left Side Slope Equation=Mannings
+Stable Supply Right Side Slope Equation=Mannings
+Stable Supply Left Side Slope Roughness Value=
+Stable Supply Right Side Slope Roughness Value=
+RAS calculates inflowing sediment concentration.  Opt Value=0
+Lower Regime is selected as default for transitional conditions.  Opt Value=0
+
+Stable Channel Design-Regime Method
+Regime d50=
+Regime Discharge=
+Regime Sediment Concentration=
+Regime Side Factor=
+Regime Temperature=
+
+Stable Channel Design-Tractive Force Method
+Tractive Force d Left=
+Tractive Force d Bed=
+Tractive Force d Right=
+Tractive Force Depth=
+Tractive Force Discharge=
+Tractive Force Angle of Repose Bed=
+Tractive Force Angle of Repose Left=
+Tractive Force Angle of Repose Right=
+Tractive Force Roughness Bed=
+Tractive Force Roughness Left=
+Tractive Force Roughness Right=
+Tractive Force Slope=
+Tractive Force Specific Gravity Bed=
+Tractive Force Specific Gravity Left=
+Tractive Force Specific Gravity Right=
+Tractive Force Side Slope Left=
+Tractive Force Side Slope Right=
+Tractive Force Shield's Parameter Bed=
+Tractive Force Shield's Parameter Left=
+Tractive Force Shield's Parameter Right=
+Tractive Force Temperature=
+Tractive Force Width=
+Tractive Force Bed Equation=Mannings
+Tractive Force Left Side Slope Equation=Mannings
+Tractive Force Right Side Slope Equation=Mannings
+Solution Method=Lane
+
+Sediment Transport Potential
+Number of Sediment Reaches=0
+Active Sediment Reach=H - 0
+
+Sediment Impact Assessment Module
+Siam Short ID=HickSIAM
+Siam Plan Name=HickNormal
+Number of Siam Sediment Reaches=5
+Active Siam Sediment Reach=H - 1
+User-Defined Sediment Particle Sizes=False
+User-Defined Sediment Particle Sizes Up, Down, Lable=False
+Multiple Transport Functions By Grain Size=False
+
+Siam Sediment Reach ID=1
+Siam Sediment Reach Name=H - 1
+Siam River=RIVER-1         
+Siam Reach=Reach-1         
+Siam Upstream River Station=348.65  
+Siam Downstream River Station=110     
+Bed Sampling=HickBed
+Duration Curve=Hydro H - 1
+Sed Prop Group=HickWashBW
+Sed Source Group=H - 1 Local Inputs
+Budget Tolerance= 0 
+Siam Cross Sections to Remove=54      ,10.75   ,,,,,
+Siam Bed Slope= 0.01 
+Hydraulic Parameter Note= Some cross sections not used in this sediment reach.
+
+Siam Sediment Reach ID=2
+Siam Sediment Reach Name=H - 2
+Siam River=RIVER-1         
+Siam Reach=Reach-1         
+Siam Upstream River Station=478.5   
+Siam Downstream River Station=381     
+Bed Sampling=HickBed
+Duration Curve=Hydro H - 2
+Sed Prop Group=H2Wash
+Sed Source Group=H - 2 Local Inputs
+Budget Tolerance= 0 
+Siam Cross Sections to Remove=
+Siam Bed Slope= 0.012 
+Hydraulic Parameter Note= Some cross sections not used in this sediment reach.
+
+Siam Sediment Reach ID=3
+Siam Sediment Reach Name=H - 3
+Siam River=RIVER-1         
+Siam Reach=Reach-1         
+Siam Upstream River Station=633     
+Siam Downstream River Station=515.6   
+Bed Sampling=HickBed
+Duration Curve=Hydro H - 3
+Sed Prop Group=H3Wash
+Sed Source Group=H - 3 Local Inputs
+Budget Tolerance= 0 
+Siam Cross Sections to Remove=
+Siam Bed Slope= 0.012 
+Hydraulic Parameter Note= Some cross sections not used in this sediment reach.
+
+Siam Sediment Reach ID=4
+Siam Sediment Reach Name=H - 4
+Siam River=RIVER-1         
+Siam Reach=Reach-1         
+Siam Upstream River Station=693     
+Siam Downstream River Station=664     
+Bed Sampling=HickBed
+Duration Curve=Hydro H - 4
+Sed Prop Group=H4Wash
+Sed Source Group=H - 4 Local Inputs
+Budget Tolerance= 0 
+Siam Cross Sections to Remove=
+Siam Bed Slope= 0.015 
+Hydraulic Parameter Note= Some cross sections not used in this sediment reach.
+
+Siam Sediment Reach ID=5
+Siam Sediment Reach Name=H - 0
+Siam River=RIVER-1         
+Siam Reach=Reach-1         
+Siam Upstream River Station=54      
+Siam Downstream River Station=10.75   
+Bed Sampling=HickBed
+Duration Curve=Hydro H - 0
+Sed Prop Group=HickWashBW
+Sed Source Group=H - 0 Local Inputs
+Budget Tolerance= 0 
+Siam Cross Sections to Remove=
+Siam Bed Slope= 3.402823E+38 
+Hydraulic Parameter Note= Some cross sections not used in this sediment reach.
+
+Number of Siam Bed Samplings= 1 
+Bed Sampling Name=HickBed
+Bed Sampling Note=Hickahala Bed used in orig. SIAM run
+dm, %Finer=
+0.004,0,0
+0.008,0,0
+0.016,0,0
+0.032,0.5,0.005
+0.0625,1,0.005
+0.125,2,0.01
+0.25,3,0.01
+0.5,43,0.4
+1,45,0.02
+2,3.5,-0.415
+4,2,-0.015
+8,0,-0.02
+16,0,0
+32,0,0
+64,0,0
+128,0,0
+256,0,0
+512,0,0
+1024,0,0
+2048,0,0
+
+Number Duration Curves= 5 
+Duration Curve Name=Hydro H - 1
+Duration Curve Note=
+Number of Time Values=14
+Number of Time Values to Compute=14
+Discharge, Time Value, Temperature=
+25,92,60
+50,52,60
+100,29,60
+150,21,60
+200,16,60
+250,14,60
+488,8,60
+939,4,60
+1744,3,60
+2121,2,60
+3750,1,60
+6216,0.6,60
+9941,0.4,60
+10632,0.3,60
+
+Duration Curve Name=Hydro H - 2
+Duration Curve Note=
+Number of Time Values=14
+Number of Time Values to Compute=14
+Discharge, Time Value, Temperature=
+12,92,60
+24,52,60
+48,29,60
+72,21,60
+95,16,60
+119,14,60
+239,8,60
+477,4,60
+954,3,60
+1193,2,60
+2297,1,60
+3889,0.6,60
+5815,0.4,60
+6789,0.3,60
+
+Duration Curve Name=Hydro H - 3
+Duration Curve Note=
+Number of Time Values=14
+Number of Time Values to Compute=14
+Discharge, Time Value, Temperature=
+11,92,60
+22,52,60
+45,29,60
+67,21,60
+89,16,60
+111,14,60
+223,8,60
+445,4,60
+890,3,60
+1113,2,60
+2226,1,60
+4452,0.6,60
+8903,0.4,60
+11129,0.3,60
+
+Duration Curve Name=Hydro H - 4
+Duration Curve Note=
+Number of Time Values=14
+Number of Time Values to Compute=14
+Discharge, Time Value, Temperature=
+9,92,60
+18,52,60
+40,29,60
+60,21,60
+78,16,60
+100,14,60
+210,8,60
+380,4,60
+780,3,60
+1000,2,60
+2000,1,60
+4000,0.6,60
+8000,0.4,60
+10000,0.3,60
+
+Duration Curve Name=Hydro H - 0
+Duration Curve Note=
+Number of Time Values=14
+Number of Time Values to Compute=14
+Discharge, Time Value, Temperature=
+25,92,60
+50,52,60
+100,29,60
+149,21,60
+195,16,60
+239,14,60
+434,8,60
+776,4,60
+1224,3,60
+1398,2,60
+2237,1,60
+2931,0.6,60
+3874,0.4,60
+4365,0.3,60
+
+Number Sediment Property Groups= 4 
+Sed Prop Name=HickWashBW
+Sed Prop Note=Wash load threshold for backwater area
+Sed Prop Fall Velocity Method=Default
+Sed Prop Wash Load Max= 5 
+Sed Prop Hiding Factor=False
+Sed Prop Specific Gravity=2.65
+Sed Prop Concentration of Fines=3.402823E+38
+Sed Prop Transport Function by Grain=
+1,Yang
+2,Yang
+3,Yang
+4,Yang
+5,Yang
+6,Yang
+7,Yang
+8,Yang
+9,Yang
+10,Yang
+11,Yang
+12,Yang
+13,Yang
+14,Yang
+15,Yang
+16,Yang
+17,Yang
+18,Yang
+19,Yang
+20,Yang
+
+Sed Prop Name=H2Wash
+Sed Prop Note=Wash load threshold for H-2
+Sed Prop Fall Velocity Method=Default
+Sed Prop Wash Load Max= 7 
+Sed Prop Hiding Factor=False
+Sed Prop Specific Gravity=2.65
+Sed Prop Concentration of Fines=3.402823E+38
+Sed Prop Transport Function by Grain=
+1,Yang
+2,Yang
+3,Yang
+4,Yang
+5,Yang
+6,Yang
+7,Yang
+8,Yang
+9,Yang
+10,Yang
+11,Yang
+12,Yang
+13,Yang
+14,Yang
+15,Yang
+16,Yang
+17,Yang
+18,Yang
+19,Yang
+20,Yang
+
+Sed Prop Name=H3Wash
+Sed Prop Note=Wash load threshold for H-3
+Sed Prop Fall Velocity Method=Default
+Sed Prop Wash Load Max= 7 
+Sed Prop Hiding Factor=False
+Sed Prop Specific Gravity=2.65
+Sed Prop Concentration of Fines=3.402823E+38
+Sed Prop Transport Function by Grain=
+1,Yang
+2,Yang
+3,Yang
+4,Yang
+5,Yang
+6,Yang
+7,Yang
+8,Yang
+9,Yang
+10,Yang
+11,Yang
+12,Yang
+13,Yang
+14,Yang
+15,Yang
+16,Yang
+17,Yang
+18,Yang
+19,Yang
+20,Yang
+
+Sed Prop Name=H4Wash
+Sed Prop Note=Wash load threshold for H-4
+Sed Prop Fall Velocity Method=Default
+Sed Prop Wash Load Max= 7 
+Sed Prop Hiding Factor=False
+Sed Prop Specific Gravity=2.65
+Sed Prop Concentration of Fines=3.402823E+38
+Sed Prop Transport Function by Grain=
+1,Yang
+2,Yang
+3,Yang
+4,Yang
+5,Yang
+6,Yang
+7,Yang
+8,Yang
+9,Yang
+10,Yang
+11,Yang
+12,Yang
+13,Yang
+14,Yang
+15,Yang
+16,Yang
+17,Yang
+18,Yang
+19,Yang
+20,Yang
+
+Number Sediment Sources= 24 
+Sed Source Name=WestDitchBankModerate
+Sed Source Note=
+Sed Source Type=Bank
+Class, Load=
+1,
+2,
+3,60.17
+4,60.17
+5,60.17
+6,6.95
+7,29.19
+8,11.54
+9,0.87
+10,0.25
+11,0.22
+12,0.1
+13,0
+14,0
+15,0
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=WestDitchWatershed
+Sed Source Note=surface contribution from west ditch
+Sed Source Type=Surface
+Class, Load=
+1,
+2,
+3,18462
+4,18462
+5,18462
+6,3077
+7,3077
+8,
+9,
+10,
+11,
+12,
+13,
+14,
+15,
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=SenatobiaGulleyFast
+Sed Source Note=contribution from fast gulleys in senatobia w/s
+Sed Source Type=Gully
+Class, Load=
+1,
+2,
+3,1265
+4,1265
+5,1265
+6,103
+7,433
+8,407
+9,60
+10,20
+11,13
+12,9
+13,25
+14,16.5
+15,12
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=SenatobiaGulleySlow
+Sed Source Note=slow gulleys from senatobia w/s
+Sed Source Type=Gully
+Class, Load=
+1,
+2,
+3,328
+4,328
+5,328
+6,28
+7,119
+8,112
+9,16
+10,5
+11,3
+12,2
+13,6
+14,4
+15,3
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=SenatobiaBankSevere
+Sed Source Note=severe bank input from Sena.
+Sed Source Type=Bank
+Class, Load=
+1,
+2,
+3,1109
+4,1109
+5,1109
+6,136
+7,681
+8,619
+9,73
+10,16
+11,8
+12,2
+13,6
+14,4
+15,3
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=SenaWatershed
+Sed Source Note=
+Sed Source Type=Surface
+Class, Load=
+1,
+2,
+3,70910
+4,70910
+5,70910
+6,13265
+7,12508
+8,
+9,
+10,1268
+11,
+12,
+13,
+14,
+15,
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=SenaBankModerate
+Sed Source Note=
+Sed Source Type=Bank
+Class, Load=
+1,
+2,
+3,84
+4,84
+5,84
+6,6
+7,26
+8,25
+9,4
+10,1
+11,1
+12,0.6
+13,2
+14,1
+15,1
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=H2Watershed
+Sed Source Note=
+Sed Source Type=Surface
+Class, Load=
+1,
+2,
+3,3891.94
+4,3891.94
+5,3891.94
+6,657.11
+7,652.69
+8,0
+9,0
+10,7.41
+11,0
+12,0
+13,0
+14,0
+15,0
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=BillysBankSevere
+Sed Source Note=
+Sed Source Type=Bank
+Class, Load=
+1,
+2,
+3,12.36
+4,12.36
+5,12.36
+6,1.43
+7,5.99
+8,2.37
+9,0.18
+10,0.05
+11,0.04
+12,0.02
+13,0
+14,0
+15,0
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=BillysBankModerate
+Sed Source Note=
+Sed Source Type=Bank
+Class, Load=
+1,
+2,
+3,1.24
+4,1.24
+5,1.24
+6,0.14
+7,0.6
+8,0.24
+9,0.02
+10,0.01
+11,0
+12,0
+13,0
+14,0
+15,0
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=BillysWatershed
+Sed Source Note=
+Sed Source Type=Bank
+Class, Load=
+1,
+2,
+3,3212.22
+4,3212.22
+5,3212.22
+6,535.37
+7,535.37
+8,0
+9,0
+10,0
+11,0
+12,0
+13,0
+14,0
+15,0
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=ThortonGulleyFast
+Sed Source Note=
+Sed Source Type=Gully
+Class, Load=
+1,
+2,
+3,33.61
+4,33.61
+5,33.61
+6,3.88
+7,16.31
+8,6.44
+9,0.49
+10,0.14
+11,0.12
+12,0.06
+13,0
+14,0
+15,0
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=ThortonGulleySlow
+Sed Source Note=
+Sed Source Type=Gully
+Class, Load=
+1,
+2,
+3,8.4
+4,8.4
+5,8.4
+6,0.97
+7,4.08
+8,1.61
+9,0.12
+10,0.03
+11,0.03
+12,0.01
+13,0
+14,0
+15,0
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=ThortonBankSevere
+Sed Source Note=
+Sed Source Type=Bank
+Class, Load=
+1,
+2,
+3,60.17
+4,60.17
+5,60.17
+6,6.95
+7,29.19
+8,11.54
+9,0.87
+10,0.25
+11,0.22
+12,0.1
+13,0
+14,0
+15,0
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=ThortonBankModerate
+Sed Source Note=
+Sed Source Type=Bank
+Class, Load=
+1,
+2,
+3,9.63
+4,9.63
+5,9.63
+6,1.11
+7,4.67
+8,1.85
+9,0.14
+10,0.04
+11,0.03
+12,0.02
+13,0
+14,0
+15,0
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=ThortonWatershed
+Sed Source Note=
+Sed Source Type=Surface
+Class, Load=
+1,
+2,
+3,5097.89
+4,5097.89
+5,5097.89
+6,849.65
+7,849.65
+8,0
+9,0
+10,0
+11,0
+12,0
+13,0
+14,0
+15,0
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=BasketGulleyFast
+Sed Source Note=
+Sed Source Type=Gully
+Class, Load=
+1,
+2,
+3,11.76
+4,11.76
+5,11.76
+6,0.75
+7,5.17
+8,30.22
+9,11.54
+10,3.79
+11,4.46
+12,6.75
+13,12.5
+14,11.26
+15,0
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=BasketGulleySlow
+Sed Source Note=
+Sed Source Type=Gully
+Class, Load=
+1,
+2,
+3,2.94
+4,2.94
+5,2.94
+6,0.19
+7,1.29
+8,7.56
+9,2.88
+10,0.95
+11,1.12
+12,1.69
+13,3.12
+14,2.82
+15,0
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=BasketBankModerate
+Sed Source Note=
+Sed Source Type=Bank
+Class, Load=
+1,
+2,
+3,0.47
+4,0.47
+5,0.47
+6,0.03
+7,0.21
+8,1.22
+9,0.46
+10,0.15
+11,0.18
+12,0.27
+13,0.5
+14,0.45
+15,0
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=BasketWatershed
+Sed Source Note=
+Sed Source Type=Surface
+Class, Load=
+1,
+2,
+3,10645.27
+4,10645.27
+5,10645.27
+6,1774.21
+7,1774.21
+8,0
+9,0
+10,0
+11,0
+12,0
+13,0
+14,0
+15,0
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=H3Watershed
+Sed Source Note=
+Sed Source Type=Surface
+Class, Load=
+1,
+2,
+3,7301.49
+4,7301.49
+5,7301.49
+6,1244.33
+7,1229.98
+8,0
+9,0
+10,24.03
+11,0
+12,0
+13,0
+14,0
+15,0
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=LickWatershed
+Sed Source Note=
+Sed Source Type=Surface
+Class, Load=
+1,
+2,
+3,3409.56
+4,3409.56
+5,3409.56
+6,568.26
+7,568.26
+8,0
+9,0
+10,0
+11,0
+12,0
+13,0
+14,0
+15,0
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=H4Watershed
+Sed Source Note=
+Sed Source Type=Surface
+Class, Load=
+1,
+2,
+3,3541.11
+4,3541.11
+5,3541.11
+6,621.81
+7,605.25
+8,0
+9,0
+10,27.71
+11,0
+12,0
+13,0
+14,0
+15,0
+16,
+17,
+18,
+19,
+20,
+
+Sed Source Name=H4Upstream
+Sed Source Note=upstream load determined from SIAM
+Sed Source Type=Upstream
+Class, Load=
+1,
+2,
+3,105239
+4,105239
+5,105239
+6,23796
+7,22025
+8,6913
+9,13675
+10,4413
+11,546
+12,385
+13,
+14,
+15,
+16,
+17,
+18,
+19,
+20,
+
+Number Sediment Source Groups= 5 
+Sed Source Group Name=H - 1 Local Inputs
+Sed Source Group Note=Local sediment sources for H - 1
+Number of Sed Sources in Group= 7 
+Source, Type, Multiplier=
+WestDitchBankModerate, , 5
+WestDitchWatershed, , 1
+SenatobiaGulleyFast, , 1
+SenatobiaGulleySlow, , 1
+SenatobiaBankSevere, , 1
+SenaBankModerate, , 1
+SenaWatershed, , 1
+
+Sed Source Group Name=H - 2 Local Inputs
+Sed Source Group Note=
+Number of Sed Sources in Group= 13 
+Source, Type, Multiplier=
+H2Watershed,      , 1
+BillysBankSevere,      , 4
+BillysBankModerate,      , 9.4
+BillysWatershed,      , 1
+ThortonGulleyFast,      , 3
+ThortonGulleySlow,      , 4
+ThortonBankSevere,      , 1
+ThortonBankModerate,      , 1
+ThortonWatershed,      , 1
+BasketGulleyFast,      , 1
+BasketGulleySlow,      , 1
+BasketBankModerate,      , 4.7
+BasketWatershed,      , 1
+
+Sed Source Group Name=H - 3 Local Inputs
+Sed Source Group Note=
+Number of Sed Sources in Group= 2 
+Source, Type, Multiplier=
+H3Watershed,    , 1
+LickWatershed,    , 1
+
+Sed Source Group Name=H - 4 Local Inputs
+Sed Source Group Note=
+Number of Sed Sources in Group= 2 
+Source, Type, Multiplier=
+H4Watershed,    , 1
+H4Upstream,    , 1
+
+Sed Source Group Name=H - 0 Local Inputs
+Sed Source Group Note=
+Number of Sed Sources in Group= 1 
+Source, Type, Multiplier=
+WestDitchBankModerate,    , 0
+

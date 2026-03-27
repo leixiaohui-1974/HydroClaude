@@ -1,0 +1,99 @@
+Flow Title=HickNormal
+Program Version=3.12
+Number of Profiles= 14 
+Profile Names=PF 1,PF 2,PF 3,PF 4,PF 5,PF 6,PF 7,PF 8,PF 9,PF 10,PF 11,PF 12,PF 13,PF 14
+River Rch & RM=RIVER-1,Reach-1         ,1369.4  
+       2       5      10      10      10      10      10      10      25      25
+      50      50     100     100
+River Rch & RM=RIVER-1,Reach-1         ,1283.5  
+       2       5      25      10      10      10      10      10      25      25
+      50      50     100     100
+River Rch & RM=RIVER-1,Reach-1         ,1239.6  
+       3       8      35      10      10      10      10      10      25      25
+      50      50     500     500
+River Rch & RM=RIVER-1,Reach-1         ,1208.3  
+       3       8      35      10      10      10      10      10     100     100
+     100     100     500     500
+River Rch & RM=RIVER-1,Reach-1         ,1182    
+       3       8      35      10      10      10      50      50     100     100
+     100     100     500     500
+River Rch & RM=RIVER-1,Reach-1         ,1125.8  
+       5      10      50      10      10      10      50      50     100     100
+     100     100    1000    1000
+River Rch & RM=RIVER-1,Reach-1         ,1124.1  
+       5      10      50      10      10      10      50      50     200     200
+     500     500    1000    1000
+River Rch & RM=RIVER-1,Reach-1         ,1054    
+       6      15      30      50      50      50      50      50     200     200
+     500     500    1000    1000
+River Rch & RM=RIVER-1,Reach-1         ,1036.7  
+       6      15      30      50      50      50     100     100     200     200
+     500     500    2000    2000
+River Rch & RM=RIVER-1,Reach-1         ,993.3   
+       6      15      30      50      50      50     100     100     200     200
+     500     500    2000    2000
+River Rch & RM=RIVER-1,Reach-1         ,933     
+       8      15      30      50      50      50     100     100     500     500
+    1000    1000    2000    2000
+River Rch & RM=RIVER-1,Reach-1         ,771     
+       8      15      30      50      50      50     100     100     500     500
+    1000    1000    5000    5000
+River Rch & RM=RIVER-1,Reach-1         ,726.5   
+       8      15      30      50      50      50     100     100     500     500
+    1000    1000    5000    5000
+River Rch & RM=RIVER-1,Reach-1         ,693     
+       9      18      40      60      78     100     210     380     780    1000
+    2000    4000    8000   10000
+River Rch & RM=RIVER-1,Reach-1         ,633     
+      11      22      45      67      89     111     223     445     890    1113
+    2226    4452    8903   11129
+River Rch & RM=RIVER-1,Reach-1         ,478.5   
+      12      24      48      72      95     119     239     477     954    1193
+    2386    4772    9545   11931
+River Rch & RM=RIVER-1,Reach-1         ,348.65  
+      25      50     100     150     200     250     500    1000    2000    2500
+    5000   10000   20000   25000
+Boundary for River Rch & Prof#=RIVER-1,Reach-1         , 1 
+Up Type= 0 
+Dn Type= 3 
+Dn Slope=0.0029
+Boundary for River Rch & Prof#=RIVER-1,Reach-1         , 2 
+Up Type= 0 
+Dn Type= 3 
+Dn Slope=0.0029
+Boundary for River Rch & Prof#=RIVER-1,Reach-1         , 3 
+Up Type= 0 
+Dn Type= 3 
+Dn Slope=0.0029
+Boundary for River Rch & Prof#=RIVER-1,Reach-1         , 4 
+Up Type= 0 
+Dn Type= 3 
+Dn Slope=0.0029
+Boundary for River Rch & Prof#=RIVER-1,Reach-1         , 5 
+Up Type= 0 
+Dn Type= 3 
+Dn Slope=0.0029
+Boundary for River Rch & Prof#=RIVER-1,Reach-1         , 6 
+Up Type= 0 
+Dn Type= 3 
+Dn Slope=0.0029
+Boundary for River Rch & Prof#=RIVER-1,Reach-1         , 7 
+Up Type= 0 
+Dn Type= 3 
+Dn Slope=0.0029
+Boundary for River Rch & Prof#=RIVER-1,Reach-1         , 8 
+Up Type= 0 
+Dn Type= 3 
+Dn Slope=0.0029
+Boundary for River Rch & Prof#=RIVER-1,Reach-1         , 9 
+Up Type= 0 
+Dn Type= 3 
+Dn Slope=0.0029
+DSS Import StartDate=
+DSS Import StartTime=
+DSS Import EndDate=
+DSS Import EndTime=
+DSS Import GetInterval= 0 
+DSS Import Interval=
+DSS Import GetPeak= 0 
+DSS Import FillOption= 0 

@@ -1,0 +1,94 @@
+HEC-RAS 6.2.0 March 2022
+Section - Arrays Sizes
+Grid Precip Infiltration                                        
+       1       1       0       7      20       F
+       4       7       0       1       0       0       1       0
+       0       1       0       F       T       1       0       0       1       0       0       0
+       1       0       F       F       0       0       0       F       0       0       F
+       0
+       1       1       0       F       T       F       0       4      30       T       T       F       0
+       0     .01       F     .01      20      .3     .01       T       5       T       F
+Section - Expansion and Contraction Coefficients
+       0       0       3
+Section - Expansion and Contraction Coefficients (Unsteady)
+       2
+       0       0       0       0
+Section - Minor Loss Coefficients (Geometry)
+       2
+       0       0
+Section - Job Control
+       1       1       1       F       F       1
+Section - Junction Information
+Section - Reach Boundaries
+       T       T       3       4        Fake River             F       F
+Section - Encroachment Data
+Section - Observed Water Surface Data
+Section - Roughness Change Factors
+Section - Breach Data
+Section - Storage Area Data
+SA     8                                                        BaldEagleCr     
+       0       0       0     537       T
+Section - Storage Area Connection Data
+Conn   6                                                        Sayers Dam      
+       T     3.1     .98       F              20       F       F       F       F
+     3.1       7       T       4               T       1       F     .02       F       F       F       F                      80               F       T       1
+       T       1       F       0       F       F       F       0       0       F      28      28       T
+   19315-8.0E-02   19316262.2394   19317504.0602   19318 737.709   19319962.6063
+   193201193.435   193211448.144   193221762.955   193231965.452   145132211.492
+   193242365.105   193252672.695   193262948.621   193273194.104   193283399.234
+   193293649.621   193303866.878   193314143.806   193324392.894   193334669.135
+   193344953.609   14836 5202.64   193355456.686   193365898.522   193376144.399
+   193386390.276   193396635.674   193406823.917
+   17727   17729   17731   17733   17735   17737   17739   17741   17743   17745
+   17747   17749   17751   17753   17755   17757   17759   17761   17763   17765
+   17767   13520   17771   17773   17775   17777   17779
+   19315-8.0E-02   19316262.2394   19317504.0602   19318 737.709   19319962.6063
+   193201193.435   193211448.144   193221762.955   193231965.452   145132211.492
+   193242365.105   193252672.695   193262948.621   193273194.104   193283399.234
+   193293649.621   193303866.878   193314143.806   193324392.894   193334669.135
+   193344953.609   14836 5202.64   193355456.686   193365898.522   193376144.399
+   193386390.276   193396635.674   193406823.917
+   17726   17728   17730   17732   17734   17736   17738   17740   17742   17744
+   17746   17748   17750   17752   17754   17756   17758   17760   17762   17764
+   17766   17721   17770   17772   17774   17776   17778
+-8.0E-02     683       0     683  1774.3     683  1774.3     657  2374.3     657
+  2374.3     6836823.917     683
+ 3.4E+38
+Section - Gate Data
+Gate #1               15       7     593      .8       F       2       F
+Section - Hydraulic Gate Computation Data
+       0     .65       0       1      .5       3               F       F       F
+       F       F       F       1        
+Section - Gate Opening Data
+       2      15
+Section - Gate Centerline Data
+       2
+    5258    5278
+Section - Pump Station Data
+Section - River Reach Data
+NODE   1Fake Reach      100                  100               0                                                
+       1       F
+       4
+       0      10       0       0     100       0     100      10
+Section - XS Manning's/Roughness Data
+       1       F       F       0
+       0     .03
+       0       0       0       0       F       F       0     100       F       F       0       0       0       0
+       1       0       F
+       0     100       0
+       0       T
+       0       0       0
+      .5     .47      20
+NODE   1Fake Reach      0                                      0                                                
+       1       F
+       4
+       0      10       0       0     100       0     100      10
+Section - XS Manning's/Roughness Data
+       1       F       F       0
+       0     .03
+       0       0       0       0       F       F       0     100       F       F       0       0       0       0
+       1       0       F
+       0     100       0
+       0       T
+       0       0       0
+      .5     .47      20

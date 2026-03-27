@@ -1,0 +1,252 @@
+HEC-RAS 6.0.0 June 2021
+Section - Arrays Sizes
+Set WSE                                                         
+       1       1       0      54      72       F
+       1       4       0      18
+      18      18       0       0       0       0       0       0
+       0       0       0       F       F       0       0       0       0       0       0       0
+       0       0       F       T       0       0       0       F       0       0       F
+       0
+       0       0
+       1       1       0       F       T       F       0      18      30       F       F       F       0
+       1
+       0     .01       F   .0098      20   .3281   .0098       F       5       T       F
+Section - Expansion and Contraction Coefficients
+      .1      .3       1
+Section - Job Control
+       1       1       1       F       F       1
+Section - Flow Data
+       4       0PF 1
+  26.486       161.80067       397.11533       761.80067      12
+Section - Flow and Seasonal Roughness Flag (plan)
+       F       F
+Section - Changes in WS and EG
+       1
+       35499.396
+       2
+       35493.819
+       3
+       35488.721
+       4
+       35477.565
+       5
+       35466.411
+       6
+       35455.256
+       7
+       35445.941
+       8
+       35436.181
+       9
+       35426.421
+      10
+       3 5416.66
+      11
+       35406.899
+      12
+       35398.094
+      13
+       35389.728
+      14
+       35381.362
+      15
+       35372.995
+      16
+       35364.629
+      17
+       35356.263
+      18
+       35347.897
+Section - Junction Information
+Section - Reach Boundaries
+       T       T       1      18        Chester Creek          F       F
+       0       0        
+       3       0   .0003
+Section - Encroachment Data
+Section - Observed Water Surface Data
+Section - Roughness Change Factors
+Section - Breach Data
+Section - Storage Area Data
+Section - Storage Area Connection Data
+Section - Pump Station Data
+Section - River Reach Data
+NODE   1Upstream Reach  13.6    1377.9531377.9531377.953       0                           0.413            3.08
+       1       F
+       4
+       05511.811       05498.688   41.015498.688   41.015511.811
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .08   41.01     .08
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F
+NODE   1Upstream Reach  13.18   1410.7611410.7611410.761       0                           0.419           3.012
+       1       F
+       4
+       05506.234       0 5493.11   41.01 5493.11   41.015506.234
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .08   41.01     .08
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F
+NODE   1Upstream Reach  12.75   2788.7142788.7142788.714       0                           0.425           2.942
+       1       F
+       4
+       05500.656       05487.533   41.015487.533   41.015500.656
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .08   41.01     .08
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F
+NODE   1Upstream Reach  11.90   2788.7142788.7142788.714       0                           0.437           2.804
+       1       F
+       4
+       05489.501       05476.378   41.015476.378   41.015489.501
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .08   41.01     .08
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F
+NODE   1Upstream Reach  11.05   2788.7142788.7142788.714       0                           0.448           2.666
+       1       F
+       4
+       05478.347       05465.223   41.015465.223   41.015478.347
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .08   41.01     .08
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F
+NODE   1Upstream Reach  10.2    2788.7142788.7142788.714       0                            0.46           2.528
+       1       F
+       4
+       05467.192       05454.068   41.015454.068   41.015467.192
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .08   41.01     .08
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F
+NODE   1Upstream Reach  9.35    2788.7142788.7142788.714       0                           0.472            2.39
+       1       F
+       4
+       05457.431       05444.308   41.015444.308   41.015457.431
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .08   41.01     .08
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F
+NODE   1Upstream Reach  8.5     2788.7142788.7142788.714       0                           0.484           2.252
+       1       F
+       4
+       05479.002       05434.547   41.015434.547   41.015479.002
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .08   41.01     .08
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F
+NODE   1Upstream Reach  7.65    2788.7142788.7142788.714       0                           0.495           2.114
+       1       F
+       4
+       0 5437.91       05424.787   41.015424.787   41.01 5437.91
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .08   41.01     .08
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F
+NODE   1Upstream Reach  6.8     2788.7142788.7142788.714       0                           0.507           1.975
+       1       F
+       4
+       05428.149       05415.026   41.015415.026   41.015428.149
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .08   41.01     .08
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F
+NODE   1Upstream Reach  5.95    2788.7142788.7142788.714       0                           0.519           1.837
+       1       F
+       4
+       05418.389       05405.266   41.015405.266   41.015418.389
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .07   41.01     .07
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F
+NODE   1Upstream Reach  5.10    2788.7142788.7142788.714       0                           0.531           1.699
+       1       F
+       4
+       05410.023       05396.899   41.015396.899   41.015410.023
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .07   41.01     .07
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F
+NODE   1Upstream Reach  4.25    2788.7142788.7142788.714       0                           0.542           1.561
+       1       F
+       4
+       05401.657       05388.534   41.015388.534   41.015401.657
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .07   41.01     .07
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F
+NODE   1Upstream Reach  3.4     2788.7142788.7142788.714       0                           0.554           1.423
+       1       F
+       4
+       05393.291       05380.167   41.015380.167   41.015393.291
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .07   41.01     .07
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F
+NODE   1Upstream Reach  2.55    2788.7142788.7142788.714       0                           0.566           1.285
+       1       F
+       4
+       05381.644       05371.801   41.015371.801   41.015381.644
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .07   41.01     .07
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F
+NODE   1Upstream Reach  1.7     2788.7142788.7142788.714       0                           0.578           1.147
+       1       F
+       4
+       05376.559       05363.435   41.015363.435   41.015376.559
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .07   41.01     .07
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F
+NODE   1Upstream Reach  0.85    2788.7142788.7142788.714       0                           0.589           1.008
+       1       F
+       4
+       05368.192       05355.069   41.015355.069   41.015368.192
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .07   41.01     .07
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F
+NODE   1Upstream Reach  0         65.617  65.617  65.617       0                           0.601            0.87
+       1       F
+       4
+       05359.826       05346.703   41.015346.703   41.015359.826
+Section - XS Manning's/Roughness Data
+       2       F       F       0
+       0     .07   41.01     .07
+                                       F       F       0   41.01       F       F      .1      .3                
+       0       0       F
+       0       F

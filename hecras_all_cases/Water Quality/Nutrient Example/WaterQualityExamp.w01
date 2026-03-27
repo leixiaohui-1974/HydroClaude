@@ -1,0 +1,931 @@
+WQ   Title=Water Quality Example Project Point Only
+Program Version=6.00
+Model Temperature=0
+Model Nutrients=0
+Model TDG=0
+Model Arbitrary=0
+Constituent= Water Temperature
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 1 
+Observed Data=0
+Table Data= 97 
+          36759.   14.8836759.0416666667   14.0436759.0833333333   13.29       36759.125   12.6936759.1666666667   12.26
+36759.2083333333   12.05        36759.25   12.0736759.2916666667   12.3136759.3333333333   12.75       36759.375   13.38
+36759.4166666667   14.1436759.4583333333   14.99         36759.5   15.8636759.5416666667    16.736759.5833333333   17.45
+       36759.625   18.0636759.6666666667   18.4836759.7083333333   18.69        36759.75   18.6836759.7916666667   18.44
+36759.8333333333   17.99       36759.875   17.3636759.9166666667    16.636759.9583333333   15.75          36760.   14.88
+36760.0416666667   14.0436760.0833333333   13.29       36760.125   12.6936760.1666666667   12.2636760.2083333333   12.05
+        36760.25   12.0736760.2916666667   12.3136760.3333333333   12.75       36760.375   13.3836760.4166666667   14.14
+36760.4583333333   14.99         36760.5   15.8636760.5416666667    16.736760.5833333333   17.45       36760.625   18.06
+36760.6666666667   18.4836760.7083333333   18.69        36760.75   18.6836760.7916666667   18.4436760.8333333333   17.99
+       36760.875   17.3636760.9166666667    16.636760.9583333333   15.75          36761.   14.8836761.0416666667   14.04
+36761.0833333333   13.29       36761.125   12.6936761.1666666667   12.2636761.2083333333   12.05        36761.25   12.07
+36761.2916666667   12.3136761.3333333333   12.75       36761.375   13.3836761.4166666667   14.1436761.4583333333   14.99
+         36761.5   15.8636761.5416666667    16.736761.5833333333   17.45       36761.625   18.0636761.6666666667   18.48
+36761.7083333333   18.69        36761.75   18.6836761.7916666667   18.4436761.8333333333   17.99       36761.875   17.36
+36761.9166666667    16.636761.9583333333   15.75          36762.   14.8836762.0416666667   14.0436762.0833333333   13.29
+       36762.125   12.6936762.1666666667   12.2636762.2083333333   12.05        36762.25   12.0736762.2916666667   12.31
+36762.3333333333   12.75       36762.375   13.3836762.4166666667   14.1436762.4583333333   14.99         36762.5   15.86
+36762.5416666667    16.736762.5833333333   17.45       36762.625   18.0636762.6666666667   18.4836762.7083333333   18.69
+        36762.75   18.6836762.7916666667   18.4436762.8333333333   17.99       36762.875   17.3636762.9166666667    16.6
+36762.9583333333   15.75          36763.   14.88
+Table Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=10
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=15
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+Constituent= Algae
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0.05
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,12.75,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,9.35,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,5.10,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+Constituent= Dissolved Oxygen
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 1 
+Observed Data=0
+Table Data= 97 
+          36759.6.98058636759.04166666676.98411336759.08333333337.075928       36759.1257.24977236759.1666666667  7.4938
+36759.20833333337.791379        36759.258.12223236759.29166666678.46381236759.33333333338.792838       36759.3759.086891
+36759.4166666667 9.3259336759.45833333339.493665         36759.59.57866436759.54166666679.57513736759.58333333339.483322
+       36759.6259.30947836759.66666666679.06545136759.70833333338.767871        36759.758.43701736759.79166666678.095439
+36759.83333333337.766412       36759.8757.47235936759.91666666677.23332136759.95833333337.065586          36760.6.980586
+36760.04166666676.98411336760.08333333337.075928       36760.1257.24977236760.1666666667  7.493836760.20833333337.791379
+        36760.258.12223236760.29166666678.46381236760.33333333338.792838       36760.3759.08689136760.4166666667 9.32593
+36760.45833333339.493665         36760.59.57866436760.54166666679.57513736760.58333333339.483322       36760.6259.309478
+36760.66666666679.06545136760.70833333338.767871        36760.758.43701736760.79166666678.09543936760.83333333337.766412
+       36760.8757.47235936760.91666666677.23332136760.95833333337.065586          36761.6.98058636761.04166666676.984113
+36761.08333333337.075928       36761.1257.24977236761.1666666667  7.493836761.20833333337.791379        36761.258.122232
+36761.29166666678.46381236761.33333333338.792838       36761.3759.08689136761.4166666667 9.3259336761.45833333339.493665
+         36761.59.57866436761.54166666679.57513736761.58333333339.483322       36761.6259.30947836761.66666666679.065451
+36761.70833333338.767871        36761.758.43701736761.79166666678.09543936761.83333333337.766412       36761.8757.472359
+36761.91666666677.23332136761.95833333337.065586          36762.6.98058636762.04166666676.98411336762.08333333337.075928
+       36762.1257.24977236762.1666666667  7.493836762.20833333337.791379        36762.258.12223236762.29166666678.463812
+36762.33333333338.792838       36762.3759.08689136762.4166666667 9.3259336762.45833333339.493665         36762.59.578664
+36762.54166666679.57513736762.58333333339.483322       36762.6259.30947836762.66666666679.06545136762.70833333338.767871
+        36762.758.43701736762.79166666678.09543936762.83333333337.766412       36762.8757.47235936762.91666666677.233321
+36762.95833333337.065586          36763.6.980586
+Table Units= 1 
+Constant Value=6
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,12.75,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=3
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,9.35,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=4
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,5.10,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+Description4=This boundary is a flow withdrawl
+End Time Series Data
+Constituent= Carbonaceous BOD
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,12.75,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,9.35,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,5.10,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+Constituent= Organic Nitrogen
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 1 
+Observed Data=0
+Table Data= 97 
+          36759.   1.56136759.04166666671.56027336759.08333333331.565732       36759.1251.57700836759.1666666667 1.59333
+36759.20833333331.613587        36759.251.63639836759.29166666671.66020936759.33333333331.683397       36759.3751.704381
+36759.41666666671.72173236759.45833333331.734267         36759.51.74113336759.5416666667 1.7418636759.5833333333  1.7364
+       36759.6251.72512536759.66666666671.70880336759.70833333331.688546        36759.751.66573536759.79166666671.641924
+36759.83333333331.618736       36759.8751.59775236759.91666666671.58040136759.95833333331.567865          36760.   1.561
+36760.04166666671.56027336760.08333333331.565732       36760.1251.57700836760.1666666667 1.5933336760.20833333331.613587
+        36760.251.63639836760.29166666671.66020936760.33333333331.683397       36760.3751.70438136760.41666666671.721732
+36760.45833333331.734267         36760.51.74113336760.5416666667 1.7418636760.5833333333  1.7364       36760.6251.725125
+36760.66666666671.70880336760.70833333331.688546        36760.751.66573536760.79166666671.64192436760.83333333331.618736
+       36760.8751.59775236760.91666666671.58040136760.95833333331.567865          36761.   1.56136761.04166666671.560273
+36761.08333333331.565732       36761.1251.57700836761.1666666667 1.5933336761.20833333331.613587        36761.251.636398
+36761.29166666671.66020936761.33333333331.683397       36761.3751.70438136761.41666666671.72173236761.45833333331.734267
+         36761.51.74113336761.5416666667 1.7418636761.5833333333  1.7364       36761.6251.72512536761.66666666671.708803
+36761.70833333331.688546        36761.751.66573536761.79166666671.64192436761.83333333331.618736       36761.8751.597752
+36761.91666666671.58040136761.95833333331.567865          36762.   1.56136762.04166666671.56027336762.08333333331.565732
+       36762.1251.57700836762.1666666667 1.5933336762.20833333331.613587        36762.251.63639836762.29166666671.660209
+36762.33333333331.683397       36762.3751.70438136762.41666666671.72173236762.45833333331.734267         36762.51.741133
+36762.5416666667 1.7418636762.5833333333  1.7364       36762.6251.72512536762.66666666671.70880336762.70833333331.688546
+        36762.751.66573536762.79166666671.64192436762.83333333331.618736       36762.8751.59775236762.91666666671.580401
+36762.95833333331.567865          36763.   1.561
+Table Units= 1 
+Constant Value=1.5
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,12.75,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=5
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,9.35,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=2.5
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,5.10,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+Constituent= Ammonium Nitrogen
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=8.759291E-02
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,12.75,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=11
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,9.35,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=5
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,5.10,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=2
+Constant Units= 1 
+End Time Series Data
+Constituent= Nitrite Nitrogen(NO2)
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,12.75,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,9.35,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,5.10,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+Constituent= Nitrate Nitrogen(NO3)
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0.15
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,12.75,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=2.39
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,9.35,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0.1
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,5.10,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+Constituent= Organic Phosphorus
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 1 
+Observed Data=0
+Table Data= 97 
+          36759.   .018136759.0416666667   .025336759.0833333333   .0334       36759.125   .041936759.1666666667   .0503
+36759.2083333333   .0579        36759.25   .064236759.2916666667   .068936759.3333333333.0715951       36759.375    .072
+36759.4166666667   .070236759.4583333333   .0664         36759.5   .060736759.5416666667   .053536759.5833333333   .0454
+       36759.625   .036836759.6666666667   .028536759.7083333333   .0209        36759.75   .014536759.7916666667  .00991
+36759.8333333333  .00726       36759.875   .006836759.9166666667  .0085736759.9583333333   .0124          36760.   .0181
+36760.0416666667   .025336760.0833333333   .0334       36760.125   .041936760.1666666667   .050336760.2083333333   .0579
+        36760.25   .064236760.2916666667   .068936760.3333333333.0715951       36760.375    .07236760.4166666667   .0702
+36760.4583333333   .0664         36760.5   .060736760.5416666667   .053536760.5833333333   .0454       36760.625   .0368
+36760.6666666667   .028536760.7083333333   .0209        36760.75   .014536760.7916666667  .0099136760.8333333333  .00726
+       36760.875   .006836760.9166666667  .0085736760.9583333333   .0124          36761.   .018136761.0416666667   .0253
+36761.0833333333   .0334       36761.125   .041936761.1666666667   .050336761.2083333333   .0579        36761.25   .0642
+36761.2916666667   .068936761.3333333333.0715951       36761.375    .07236761.4166666667   .070236761.4583333333   .0664
+         36761.5   .060736761.5416666667   .053536761.5833333333   .0454       36761.625   .036836761.6666666667   .0285
+36761.7083333333   .0209        36761.75   .014536761.7916666667  .0099136761.8333333333  .00726       36761.875   .0068
+36761.9166666667  .0085736761.9583333333   .0124          36762.   .018136762.0416666667   .025336762.0833333333   .0334
+       36762.125   .041936762.1666666667   .050336762.2083333333   .0579        36762.25   .064236762.2916666667   .0689
+36762.3333333333.0715951       36762.375    .07236762.4166666667   .070236762.4583333333   .0664         36762.5   .0607
+36762.5416666667   .053536762.5833333333   .0454       36762.625   .036836762.6666666667   .028536762.7083333333   .0209
+        36762.75   .014536762.7916666667  .0099136762.8333333333  .00726       36762.875   .006836762.9166666667  .00857
+36762.9583333333   .0124          36763.   .0181
+Table Units= 1 
+Constant Value=0.5
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,12.75,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0.55
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,9.35,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0.005
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,5.10,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+Constituent= Orthophosphate
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 1 
+Observed Data=0
+Table Data= 97 
+          36759.   .073436759.0416666667   .069436759.0833333333    .064       36759.125   .057736759.1666666667    .051
+36759.2083333333.0441833        36759.25   .037736759.2916666667   .032236759.3333333333   .0279       36759.375   .0251
+36759.4166666667    .02436759.4583333333   .0248         36759.5   .027236759.5416666667   .031336759.5833333333.0366673
+       36759.625   .042936759.6666666667.049729636759.7083333333   .0565        36759.75   .062936759.7916666667   .0685
+36759.8333333333   .0728       36759.875   .075636759.9166666667   .076636759.9583333333   .0759          36760.   .0734
+36760.0416666667   .069436760.0833333333    .064       36760.125   .057736760.1666666667    .05136760.2083333333.0441833
+        36760.25   .037736760.2916666667   .032236760.3333333333   .0279       36760.375   .025136760.4166666667    .024
+36760.4583333333   .0248         36760.5   .027236760.5416666667   .031336760.5833333333.0366673       36760.625   .0429
+36760.6666666667.049729636760.7083333333   .0565        36760.75   .062936760.7916666667   .068536760.8333333333   .0728
+       36760.875   .075636760.9166666667   .076636760.9583333333   .0759          36761.   .073436761.0416666667   .0694
+36761.0833333333    .064       36761.125   .057736761.1666666667    .05136761.2083333333.0441833        36761.25   .0377
+36761.2916666667   .032236761.3333333333   .0279       36761.375   .025136761.4166666667    .02436761.4583333333   .0248
+         36761.5   .027236761.5416666667   .031336761.5833333333.0366673       36761.625   .042936761.6666666667.0497296
+36761.7083333333   .0565        36761.75   .062936761.7916666667   .068536761.8333333333   .0728       36761.875   .0756
+36761.9166666667   .076636761.9583333333   .0759          36762.   .073436762.0416666667   .069436762.0833333333    .064
+       36762.125   .057736762.1666666667    .05136762.2083333333.0441833        36762.25   .037736762.2916666667   .0322
+36762.3333333333   .0279       36762.375   .025136762.4166666667    .02436762.4583333333   .0248         36762.5   .0272
+36762.5416666667   .031336762.5833333333.0366673       36762.625   .042936762.6666666667.049729636762.7083333333   .0565
+        36762.75   .062936762.7916666667   .068536762.8333333333   .0728       36762.875   .075636762.9166666667   .0766
+36762.9583333333   .0759          36763.   .0734
+Table Units= 1 
+Constant Value=0.05
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,12.75,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=4
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,9.35,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=1
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,5.10,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+Constituent= Conservative1
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,12.75,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=5
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,9.35,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=5
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,5.10,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+Constituent= Ap
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 1 
+Observed Data=0
+Table Data= 97 
+          36759.   14.8836759.0416666667   14.0436759.0833333333   13.29       36759.125   12.6936759.1666666667   12.26
+36759.2083333333   12.05        36759.25   12.0736759.2916666667   12.3136759.3333333333   12.75       36759.375   13.38
+36759.4166666667   14.1436759.4583333333   14.99         36759.5   15.8636759.5416666667    16.736759.5833333333   17.45
+       36759.625   18.0636759.6666666667   18.4836759.7083333333   18.69        36759.75   18.6836759.7916666667   18.44
+36759.8333333333   17.99       36759.875   17.3636759.9166666667    16.636759.9583333333   15.75          36760.   14.88
+36760.0416666667   14.0436760.0833333333   13.29       36760.125   12.6936760.1666666667   12.2636760.2083333333   12.05
+        36760.25   12.0736760.2916666667   12.3136760.3333333333   12.75       36760.375   13.3836760.4166666667   14.14
+36760.4583333333   14.99         36760.5   15.8636760.5416666667    16.736760.5833333333   17.45       36760.625   18.06
+36760.6666666667   18.4836760.7083333333   18.69        36760.75   18.6836760.7916666667   18.4436760.8333333333   17.99
+       36760.875   17.3636760.9166666667    16.636760.9583333333   15.75          36761.   14.8836761.0416666667   14.04
+36761.0833333333   13.29       36761.125   12.6936761.1666666667   12.2636761.2083333333   12.05        36761.25   12.07
+36761.2916666667   12.3136761.3333333333   12.75       36761.375   13.3836761.4166666667   14.1436761.4583333333   14.99
+         36761.5   15.8636761.5416666667    16.736761.5833333333   17.45       36761.625   18.0636761.6666666667   18.48
+36761.7083333333   18.69        36761.75   18.6836761.7916666667   18.4436761.8333333333   17.99       36761.875   17.36
+36761.9166666667    16.636761.9583333333   15.75          36762.   14.8836762.0416666667   14.0436762.0833333333   13.29
+       36762.125   12.6936762.1666666667   12.2636762.2083333333   12.05        36762.25   12.0736762.2916666667   12.31
+36762.3333333333   12.75       36762.375   13.3836762.4166666667   14.1436762.4583333333   14.99         36762.5   15.86
+36762.5416666667    16.736762.5833333333   17.45       36762.625   18.0636762.6666666667   18.4836762.7083333333   18.69
+        36762.75   18.6836762.7916666667   18.4436762.8333333333   17.99       36762.875   17.3636762.9166666667    16.6
+36762.9583333333   15.75          36763.   14.88
+Table Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=10
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=15
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+Constituent= NH4
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=8.759291E-02
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=11
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=5
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=2
+Constant Units= 1 
+End Time Series Data
+Constituent= NO3
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0.15
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=2.39
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0.1
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+Constituent= OrgN
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=1.5
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=5
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=2.5
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+Constituent= TIP
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 1 
+Observed Data=0
+Table Data= 97 
+          36759.   .073436759.0416666667   .069436759.0833333333    .064       36759.125   .057736759.1666666667    .051
+36759.2083333333.0441833        36759.25   .037736759.2916666667   .032236759.3333333333   .0279       36759.375   .0251
+36759.4166666667    .02436759.4583333333   .0248         36759.5   .027236759.5416666667   .031336759.5833333333.0366673
+       36759.625   .042936759.6666666667.049729636759.7083333333   .0565        36759.75   .062936759.7916666667   .0685
+36759.8333333333   .0728       36759.875   .075636759.9166666667   .076636759.9583333333   .0759          36760.   .0734
+36760.0416666667   .069436760.0833333333    .064       36760.125   .057736760.1666666667    .05136760.2083333333.0441833
+        36760.25   .037736760.2916666667   .032236760.3333333333   .0279       36760.375   .025136760.4166666667    .024
+36760.4583333333   .0248         36760.5   .027236760.5416666667   .031336760.5833333333.0366673       36760.625   .0429
+36760.6666666667.049729636760.7083333333   .0565        36760.75   .062936760.7916666667   .068536760.8333333333   .0728
+       36760.875   .075636760.9166666667   .076636760.9583333333   .0759          36761.   .073436761.0416666667   .0694
+36761.0833333333    .064       36761.125   .057736761.1666666667    .05136761.2083333333.0441833        36761.25   .0377
+36761.2916666667   .032236761.3333333333   .0279       36761.375   .025136761.4166666667    .02436761.4583333333   .0248
+         36761.5   .027236761.5416666667   .031336761.5833333333.0366673       36761.625   .042936761.6666666667.0497296
+36761.7083333333   .0565        36761.75   .062936761.7916666667   .068536761.8333333333   .0728       36761.875   .0756
+36761.9166666667   .076636761.9583333333   .0759          36762.   .073436762.0416666667   .069436762.0833333333    .064
+       36762.125   .057736762.1666666667    .05136762.2083333333.0441833        36762.25   .037736762.2916666667   .0322
+36762.3333333333   .0279       36762.375   .025136762.4166666667    .02436762.4583333333   .0248         36762.5   .0272
+36762.5416666667   .031336762.5833333333.0366673       36762.625   .042936762.6666666667.049729636762.7083333333   .0565
+        36762.75   .062936762.7916666667   .068536762.8333333333   .0728       36762.875   .075636762.9166666667   .0766
+36762.9583333333   .0759          36763.   .0734
+Table Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=4
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=1
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+Constituent= OrgP
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 1 
+Observed Data=0
+Table Data= 97 
+          36759.   .018136759.0416666667   .025336759.0833333333   .0334       36759.125   .041936759.1666666667   .0503
+36759.2083333333   .0579        36759.25   .064236759.2916666667   .068936759.3333333333.0715951       36759.375    .072
+36759.4166666667   .070236759.4583333333   .0664         36759.5   .060736759.5416666667   .053536759.5833333333   .0454
+       36759.625   .036836759.6666666667   .028536759.7083333333   .0209        36759.75   .014536759.7916666667  .00991
+36759.8333333333  .00726       36759.875   .006836759.9166666667  .0085736759.9583333333   .0124          36760.   .0181
+36760.0416666667   .025336760.0833333333   .0334       36760.125   .041936760.1666666667   .050336760.2083333333   .0579
+        36760.25   .064236760.2916666667   .068936760.3333333333.0715951       36760.375    .07236760.4166666667   .0702
+36760.4583333333   .0664         36760.5   .060736760.5416666667   .053536760.5833333333   .0454       36760.625   .0368
+36760.6666666667   .028536760.7083333333   .0209        36760.75   .014536760.7916666667  .0099136760.8333333333  .00726
+       36760.875   .006836760.9166666667  .0085736760.9583333333   .0124          36761.   .018136761.0416666667   .0253
+36761.0833333333   .0334       36761.125   .041936761.1666666667   .050336761.2083333333   .0579        36761.25   .0642
+36761.2916666667   .068936761.3333333333.0715951       36761.375    .07236761.4166666667   .070236761.4583333333   .0664
+         36761.5   .060736761.5416666667   .053536761.5833333333   .0454       36761.625   .036836761.6666666667   .0285
+36761.7083333333   .0209        36761.75   .014536761.7916666667  .0099136761.8333333333  .00726       36761.875   .0068
+36761.9166666667  .0085736761.9583333333   .0124          36762.   .018136762.0416666667   .025336762.0833333333   .0334
+       36762.125   .041936762.1666666667   .050336762.2083333333   .0579        36762.25   .064236762.2916666667   .0689
+36762.3333333333.0715951       36762.375    .07236762.4166666667   .070236762.4583333333   .0664         36762.5   .0607
+36762.5416666667   .053536762.5833333333   .0454       36762.625   .036836762.6666666667   .028536762.7083333333   .0209
+        36762.75   .014536762.7916666667  .0099136762.8333333333  .00726       36762.875   .006836762.9166666667  .00857
+36762.9583333333   .0124          36763.   .0181
+Table Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0.55
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0.005
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+Constituent= DO
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 1 
+Observed Data=0
+Table Data= 97 
+          36759.6.98058636759.04166666676.98411336759.08333333337.075928       36759.1257.24977236759.1666666667  7.4938
+36759.20833333337.791379        36759.258.12223236759.29166666678.46381236759.33333333338.792838       36759.3759.086891
+36759.4166666667 9.3259336759.45833333339.493665         36759.59.57866436759.54166666679.57513736759.58333333339.483322
+       36759.6259.30947836759.66666666679.06545136759.70833333338.767871        36759.758.43701736759.79166666678.095439
+36759.83333333337.766412       36759.8757.47235936759.91666666677.23332136759.95833333337.065586          36760.6.980586
+36760.04166666676.98411336760.08333333337.075928       36760.1257.24977236760.1666666667  7.493836760.20833333337.791379
+        36760.258.12223236760.29166666678.46381236760.33333333338.792838       36760.3759.08689136760.4166666667 9.32593
+36760.45833333339.493665         36760.59.57866436760.54166666679.57513736760.58333333339.483322       36760.6259.309478
+36760.66666666679.06545136760.70833333338.767871        36760.758.43701736760.79166666678.09543936760.83333333337.766412
+       36760.8757.47235936760.91666666677.23332136760.95833333337.065586          36761.6.98058636761.04166666676.984113
+36761.08333333337.075928       36761.1257.24977236761.1666666667  7.493836761.20833333337.791379        36761.258.122232
+36761.29166666678.46381236761.33333333338.792838       36761.3759.08689136761.4166666667 9.3259336761.45833333339.493665
+         36761.59.57866436761.54166666679.57513736761.58333333339.483322       36761.6259.30947836761.66666666679.065451
+36761.70833333338.767871        36761.758.43701736761.79166666678.09543936761.83333333337.766412       36761.8757.472359
+36761.91666666677.23332136761.95833333337.065586          36762.6.98058636762.04166666676.98411336762.08333333337.075928
+       36762.1257.24977236762.1666666667  7.493836762.20833333337.791379        36762.258.12223236762.29166666678.463812
+36762.33333333338.792838       36762.3759.08689136762.4166666667 9.3259336762.45833333339.493665         36762.59.578664
+36762.54166666679.57513736762.58333333339.483322       36762.6259.30947836762.66666666679.06545136762.70833333338.767871
+        36762.758.43701736762.79166666678.09543936762.83333333337.766412       36762.8757.47235936762.91666666677.233321
+36762.95833333337.065586          36763.6.980586
+Table Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=3
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=4
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+Constituent= CBOD[1]
+BC=Chester Creek,Upstream Reach,13.6,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,13.18,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,10.2,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+BC=Chester Creek,Upstream Reach,5.95,,,,,,,
+BC Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0
+Constant Units= 1 
+End Time Series Data
+IC Use Restart= 0
+Restart Filename= 
+Constituent=Ap
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=0
+Constituent=NH4
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=1
+Constituent=NO3
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=0.1
+Constituent=OrgN
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=1
+Constituent=TIP
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=0.1
+Constituent=OrgP
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=0.1
+Constituent=DO
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=7
+Constituent=CBOD[1]
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=1
+Constituent=Water Temperature
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=15
+Constituent=Algae
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=0.05
+Constituent=Dissolved Oxygen
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=7
+Constituent=Carbonaceous BOD
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=1
+Constituent=Organic Nitrogen
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=1
+Constituent=Ammonium Nitrogen
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=1
+Constituent=Nitrite Nitrogen
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=0
+Constituent=Nitrate Nitrogen
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=0.1
+Constituent=Organic Phosphorus
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=0.1
+Constituent=Orthophosphate
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=0.1
+Constituent=Conservative1
+IC=Chester Creek,Upstream Reach,13.6,,,,,,,
+IC Value=0
+Compute Dispersion=0
+Dispersion Factor=1
+Dispersion=Chester Creek,Upstream Reach,13.6,,,,,,,
+Dispersion Value=0
+Use Shading=0
+Min Cell Length= 100
+Met Assignment=0
+Met Region=Happy Valley Fire Station
+Reference Elevation=200
+Longitude=105
+Latitude=40
+Nearest Meridian=105W
+Met Location(Schem Coord)=0.2,0.5
+Barometric Pressure Time Series
+Time Series Mode= 5 
+Observed Data=0
+End Time Series Data
+Air Temperature Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=18.5
+Constant Units= 1 
+End Time Series Data
+Humidity Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=3.9
+Constant Units= 4 
+End Time Series Data
+Short Wave Time Series
+Time Series Mode= 5 
+Observed Data=0
+End Time Series Data
+Short Wave Dust Coef=0.2
+Short Wave Interval=10MIN
+Cloudiness Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=0.62
+Constant Units= 1 
+End Time Series Data
+Wind Time Series
+Time Series Mode= 4 
+Observed Data=0
+Constant Value=2
+Constant Units= 1 
+End Time Series Data
+Wind Non standard gage height=0
+Wind Gage Height=
+Wind Surface Characteristic= 1 
+NSM algae growth formulation=  1 
+NSM algae light limitation=  0 
+NSM algae growth formulationB=  0 
+NSM algae light limitationB=  0 
+NSM alpha0    = 10
+NSM alpha1    = 0.07
+NSM alpha2    = 0.01
+NSM alpha3    = 1.076
+NSM alpha4    = 1.076
+NSM alpha5    = 0
+NSM alpha6    = 4.57
+NSM mu_max    = 2.5
+NSM rho       = 0.1
+NSM KL        = 4
+NSM KP        = 0.002
+NSM KN        = 0.015
+NSM lambda0   = 0.2
+NSM lambda1   = 0.00088
+NSM lambda2   = 0.05
+NSM PN        = 0
+NSM sigma1    = 0
+NSM sigma2    = 0
+NSM sigma3    = 0
+NSM sigma4    = 0
+NSM sigma5    = 0
+NSM K1        = 0
+NSM K2        = 0
+NSM K3        = 0
+NSM K4        = 0
+NSM beta1     = 0.3
+NSM beta2     = 0.2
+NSM beta3     = 0.02
+NSM beta4     = 0.2
+NSM mu max tc = 1.047
+NSM sigma1 tc = 1.024
+NSM sigma2 tc = 1.074
+NSM sigma3 tc = 1.074
+NSM sigma4 tc = 1.024
+NSM sigma5 tc = 1.024
+NSM K1 tc     = 1.047
+NSM K2 tc     = 1.024
+NSM K3 tc     = 1.024
+NSM K4 tc     = 1.06
+NSM beta1 tc  = 1.083
+NSM beta2 tc  = 1.047
+NSM beta3 tc  = 1.047
+NSM beta4 tc  = 1.047
+NSM KNR       = 0.6
+Use Bethic Algae = 0
+NSM mu maxb= 0.3
+NSM mu maxb tc= 1.047
+NSM k Deathb= 0
+NSM k Deathb tc= 1.047
+NSM KLb= 6276
+NSM KNb= 0.01
+NSM KPb= 0.001
+NSM KSb= 10
+NSM Alpha0b= 5
+NSM Alpha1b= 0.07
+NSM Alpha2b= 0.01
+NSM Alpha3b= 1.4
+NSM Alpha4b= 1.6
+NSM Respirationb= 0.01
+NSM Respirationb tc= 1.047
+NSM PNH4b= 0
+NSM Benthic Fraction Bottom Area= 0
+NSM Benthic Light Attenuation Method= 0
+TDG kah= 1
+TDG kah_tc= 1
+TDG kah Method= 1
+TDG kaw= 10
+TDG kaw_tc= 1
+TDG kaw Method= 1
+TDG SOD= 0.2
+TDG SOD_tc= 1
+TDG KsSod= 1

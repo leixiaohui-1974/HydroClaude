@@ -1,0 +1,30 @@
+Flow Title=Test event - Elevation controlled gates
+Program Version=3.19
+Use Restart= 0 
+Initial Flow Loc=Reach 1         ,A               ,1000    ,100
+Boundary Location=Reach 1         ,A               ,1000    ,        ,                ,                
+Interval=1HOUR
+Flow Hydrograph= 100 
+     100     100     100     100     100     100     105     110     115     120
+     128     136     144     152     160     168     176     184     192     200
+     190     180     170     160     150   142.5     135   127.5     120     116
+     112     108     104     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+     100     100     100     100     100     100     100     100     100     100
+DSS Path=
+Use DSS=False
+CWMS InputPosition= 0 
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=
+Boundary Location=Reach 1         ,A               ,250     ,        ,                ,                
+Elev Controlled Gate=Gate #1     ,95,94,1,1,6,0,1, 0 
+Elev Controlled Gate Ref=,,                ,                ,        ,                
+Elev Controlled Gate Stage Diff=,,                ,                ,        ,                ,                ,                ,        ,                
+Boundary Location=Reach 1         ,A               ,0.0     ,        ,                ,                
+Friction Slope=0.0002

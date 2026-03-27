@@ -1,0 +1,89 @@
+ 
+                                              HEC-RAS - River Analysis System
+ 
+ 
+Project File:  C:\Users\HEC\Desktop\Davis\DavisStormSystem.prj
+ 
+Project Name:  DavisStormSystem
+ 
+ 
+Plan Name:     Full System ROM with Pump
+ 
+Short ID:      Full System ROM with Pump
+ 
+
+Starting Time:   10Jan2000 1200
+
+Ending Time:     11Jan2000 2400
+
+
+                ################################################
+                #                                              #
+                #                                              #
+                #       1D and 2D Unsteady Flow Module         #
+                #                                              #
+                #                                              #
+                #          HEC-RAS 6.6 September 2024          #
+                #                                              #
+                #             30SEP24 at 14:06:59              #
+                #                                              #
+                ################################################
+                
+ 
+ 
+ 
+
+         US Inflow      DS Outflow       Lat Hydro        SA Hydro     Groundwater      Diversions   Precip Excess   Precip Excess
+                                                                                                       (Acre Feet)        (Inches)
+         *********      **********       *********        ********     ***********      **********   *************   *************
+                                                                                                                      0.0000000000
+
+    Start 1D Reach  Final 1D Reach   Starting SA's      Final SA's
+    **************  **************   *************      **********
+                                                                  
+
+
+
+                 ***   Volume Accounting for 2D Flow Areas in Acre Feet   ***
+
+           2D Area    Starting Vol      Ending Vol      Cum Inflow     Cum Outflow           Error   Percent Error   Precip Excess   Precip Excess
+                                                    (incl. precip)                                                     (Acre Feet)        (Inches)
+           *******    ************      **********      **********     ***********           *****   *************   *************   *************
+ 
+ 
+             area2                           24.69           159.3           134.8          0.2009          0.1261           142.4           1.200
+        DS Channel                           1.479                           116.2           117.6           7955.                           1.200
+ 
+ 
+ 
+
+
+
+                 ***   Volume Accounting for Pipe Network in Acre Feet   ***
+
+      Pipe Network    Starting Vol      Ending Vol      Cum Inflow     Cum Outflow           Error   Percent Error
+           *******    ************      **********      **********     ***********           *****   *************
+ 
+ 
+             Davis                          0.2592           134.8           16.97 -117.6235893257           87.23
+
+
+
+                 ***   Total Volume Accounting (for the entire model) in Acre Feet   ***
+
+Total Boundary Flux of Water In            142.4
+Total Boundary Flux of Water Out           116.2
+
+Starting Volume                     0.0000000000
+Ending Volume                              26.43
+
+Precipitation Excess (Acre Feet)           142.4
+Precipitation Excess (inches)              1.187
+
+
+                             Error   Percent Error
+                             *****   *************
+                            0.2305          0.1619
+
+
+

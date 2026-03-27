@@ -1,0 +1,184 @@
+HEC-RAS 5.0.0 Beta August 2015
+       1       1       0       0
+       0       0
+       F       F
+       1
+Initial Conditions Flow Information
+       1        Initial Profile
+     100       4
+Flow and Seasonal Roughness Flag (plan)
+       F       F
+       2       0       0
+       3       0   .0002
+      90
+      90
+       1       1       0       0
+       0       0
+       F
+Project Title, Plan Title and Plan ShortID
+Test of Overflow Gates
+Open Air Gates - Complex Network
+Open-Complex                                                    
+Job Control Information
+  Computation Interval  = 1MIN
+  Warmup Interval       =  0 
+  Instantaneous Profile = 1HOUR
+  Hydrograph Interval   = 5MIN
+  Theta Simulation      =        1
+  Theta Warmup          =        1
+  Friction Slope Method =        2
+  Maximum Iterations    =       20
+  Max Iter WOImprovement=        0
+  Number Warmup Steps   =        0
+  Abort DZ Tolerance    =      100
+  DZ Tolerance          =      .02
+  DZSA Tolerance        =      .05
+  DQ Tolerance          =  3.1E+38
+  Weir Flow Stability   =        2
+  Spillway Stability    =        1
+  Write Restart File    =        F       F
+  Echo Input TS         =        F
+  Echo Parameters       =        F
+  Echo Output TS        =        F
+  DSS Message Level     =        4
+  Write HDF5 File       =        T
+  Write DSS File        =        T
+d:\HEC Data\HEC-RAS\Example Data\Applications Guide\Chapter 21 - Overflow Gates\Overflow.dss
+Computational Time Window
+  Start Date/Time       = 01Jan2006 1200
+  End Date/Time         = 05Jan2006 1200
+Initial Conditions (use restart file?)
+       F
+Log File Information
+       F       0       0
+Computation Level Output
+       F-3.4E+38 3.4E+38       F       F       F       F       F       F       F       F       F   1HOUR
+Mixed Flow - Acceleration term reduction based on Froude number
+       F      10       1       1
+Number of Gate Groups and Internal Boundaries with Gates
+       4     291       3       0
+Time Series of Gate Opening Data for:Reach 1         A               250     
+      13       2       T       F       F
+Gate:Gate #1     
+      97
+       0       1       1       1       2       1       3       1       4       1
+       5       1       6       1       7       1       8       1       9       1
+      10       1      11     1.2      12     1.4      13     1.6      14     1.8
+      15       2      16    2.17      17    2.33      18     2.5      19    2.67
+      20    2.83      21       3      22    3.14      23    3.29      24    3.43
+      25    3.57      26    3.71      27    3.86      28       4      29    4.17
+      30    4.33      31     4.5      32    4.67      33    4.83      34       5
+      35    5.14      36    5.29      37    5.43      38    5.57      39    5.71
+      40    5.86      41       6      42    5.86      43    5.71      44    5.57
+      45    5.43      46    5.29      47    5.14      48       5      49    4.89
+      50    4.78      51    4.67      52    4.56      53    4.44      54    4.33
+      55    4.22      56    4.11      57       4      58    3.89      59    3.78
+      60    3.67      61    3.56      62    3.44      63    3.33      64    3.22
+      65    3.11      66       3      67    2.83      68    2.67      69     2.5
+      70    2.33      71    2.17      72       2      73    1.86      74    1.71
+      75    1.57      76    1.43      77    1.29      78    1.14      79       1
+      80       1      81       1      82       1      83       1      84       1
+      85       1      86       1      87       1      88       1      89       1
+      90       1      91       1      92       1      93       1      94       1
+      95       1      96       1
+Gate:Gate #2     
+      97
+       0      .1       1      .1       2      .1       3      .1       4      .1
+       5      .1       6      .1       7      .1       8      .1       9      .1
+      10      .1      11      .1      12      .1      13      .1      14      .1
+      15      .1      16      .1      17      .1      18      .1      19      .1
+      20      .1      21      .1      22      .1      23      .1      24      .1
+      25      .1      26      .1      27      .1      28      .1      29      .1
+      30      .1      31      .1      32      .1      33      .1      34      .1
+      35      .1      36      .1      37      .1      38      .1      39      .1
+      40      .1      41      .1      42      .1      43      .1      44      .1
+      45      .1      46      .1      47      .1      48      .1      49      .1
+      50      .1      51      .1      52      .1      53      .1      54      .1
+      55      .1      56      .1      57      .1      58      .1      59      .1
+      60      .1      61      .1      62      .1      63      .1      64      .1
+      65      .1      66      .1      67      .1      68      .1      69      .1
+      70      .1      71      .1      72      .1      73      .1      74      .1
+      75      .1      76      .1      77      .1      78      .1      79      .1
+      80      .1      81      .1      82      .1      83      .1      84      .1
+      85      .1      86      .1      87      .1      88      .1      89      .1
+      90      .1      91      .1      92      .1      93      .1      94      .1
+      95      .1      96      .1
+Time Series of Gate Opening Data for:Reach 1         A               899     
+       6       1       T       F       F
+Gate:Gate #1     
+      97
+       0       1       1       1       2       1       3       1       4       1
+       5       1       6       1       7       1       8       1       9     1.5
+      10       2      11     2.5      12       3      13     3.5      14       4
+      15     4.5      16       5      17    5.09      18    5.17      19    5.26
+      20    5.34      21    5.43      22    5.52      23     5.6      24    5.69
+      25    5.78      26    5.86      27    5.95      28    6.03      29    6.12
+      30    6.21      31    6.29      32    6.38      33    6.47      34    6.55
+      35    6.64      36    6.72      37    6.81      38     6.9      39    6.98
+      40    7.07      41    7.16      42    7.24      43    7.33      44    7.41
+      45     7.5      46    7.41      47    7.33      48    7.24      49    7.16
+      50    7.07      51    6.98      52     6.9      53    6.81      54    6.72
+      55    6.64      56    6.55      57    6.47      58    6.38      59    6.29
+      60    6.21      61    6.12      62    6.03      63    5.95      64    5.86
+      65    5.78      66    5.69      67     5.6      68    5.52      69    5.43
+      70    5.34      71    5.26      72    5.17      73    5.09      74       5
+      75       5      76       5      77       5      78       5      79       5
+      80       5      81       5      82       5      83       5      84       5
+      85       5      86       5      87       5      88       5      89       5
+      90       5      91       5      92       5      93       5      94       5
+      95       5      96       5
+Elevation Controlled Gate Data for:SA1toSA2        
+       3       1       F       T       F
+Gate:Gate #1     
+       0       0      .1      .1       5       0       2
+       F       T       1       2       2       0
+Breach Data
+       0
+Hydrograph Data
+       1
+       F       F       T       F       F
+Upstream Flow Hydrograph
+      97
+       0     100       1     100       2     100       3     100       4     100
+       5     100       6     100       7  108.33       8  116.67       9     125
+      10  133.33      11  141.67      12     150      13  158.33      14  166.67
+      15     175      16  183.33      17  191.67      18     200      19   212.5
+      20     225      21   237.5      22     250      23   262.5      24     275
+      25   287.5      26     300      27   312.5      28     325      29   337.5
+      30     350      31  341.67      32  333.33      33     325      34  316.67
+      35  308.33      36     300      37  291.67      38  283.33      39     275
+      40  266.67      41  258.33      42     250      43  241.67      44  233.33
+      45     225      46  216.67      47  208.33      48     200      49  195.83
+      50  191.67      51   187.5      52  183.33      53  179.17      54     175
+      55  172.92      56  170.83      57  168.75      58  166.67      59  164.58
+      60   162.5      61  160.42      62  158.33      63  156.25      64  154.17
+      65  152.08      66     150      67  147.92      68  145.83      69  143.75
+      70  141.67      71  139.58      72   137.5      73  135.42      74  133.33
+      75  131.25      76  129.17      77  127.08      78     125      79  123.81
+      80  122.62      81  121.43      82  120.24      83  119.05      84  117.86
+      85  116.67      86  115.48      87  114.29      88   113.1      89   111.9
+      90  110.71      91  109.52      92  108.33      93  107.14      94  105.95
+      95  104.76      96  103.57
+ 3.4E+38
+       F       F       F       T       F
+Downstream Normal Depth
+   .0002
+Internal Observed Stage/Flow Boundaries
+       0
+Ground Water Interflows
+       0
+Old River Diversions
+       F
+Lateral Inflows, Ungaged Lateral Inflows, Outlet TS, and Observed DSS
+       0       0       0       0
+Stage and Flow Boundary and Ungaged Areas
+       0       0
+Time Slicing Parameters
+       F
+HYDROGRAPH LOCATIONS
+ 4 
+       4      12      14      16
+Rules (number of rule sets, number of lookbacks, number of tables)
+       0       0       0
+Extra Commands
+       0

@@ -1,0 +1,70 @@
+Proj Title=Bald Eagle Creek Example Dam Break Study
+Current Plan=p05
+Default Exp/Contr=0.3,0.1
+English Units
+Geom File=g06
+Geom File=g08
+Geom File=g10
+Geom File=g11
+Geom File=g12
+Geom File=g09
+Geom File=g13
+Geom File=g01
+Geom File=g03
+Geom File=g02
+Unsteady File=u07
+Unsteady File=u08
+Unsteady File=u09
+Unsteady File=u10
+Unsteady File=u11
+Unsteady File=u12
+Unsteady File=u13
+Unsteady File=u01
+Unsteady File=u02
+Unsteady File=u03
+Plan File=p13
+Plan File=p15
+Plan File=p17
+Plan File=p18
+Plan File=p19
+Plan File=p03
+Plan File=p04
+Plan File=p02
+Plan File=p01
+Plan File=p05
+Plan File=p06
+Y Axis Title=Elevation
+X Axis Title(PF)=Main Channel Distance
+X Axis Title(XS)=Station
+DSS Caption Additional Text=PMF Inflow Hydrograph
+BEGIN DESCRIPTION:
+ The United States Army Corps of Engineers has granted access to the information in this model for instructional purposes only.  Do not copy, forward, or release the information without United States Army Corps of Engineers approval.  The results of this model do not deppict the data and final results from an official Corps of engineers study of this area.  These models have been develped for demonstration purposes only.
+
+This model is not a detailed model of this area.  The examples in this data set are put together to show the various ways you can link 1D and 2D elements.  The 2D areas are not detailed models (i.e. not a lot of time was spent laying out breaklines and testing cell size, time step, etc...  So this is not meant to be an example of best practices for modeling, just an example of all the different ways you can use 1D and 2D elements to model a system like this.
+
+END DESCRIPTION:
+DSS Start Date=01JAN1999
+DSS Start Time=1200
+DSS End Date=04JAN1999
+DSS End Time=1200
+DSS File=dss
+DSS File=Bald_Eagle_Creek.dss
+DSS Export Filename=
+DSS Export Rating Curves= 1 
+Bald Eagle Cr.  ,Lock Haven      ,58756     U/S Bridge
+DSS Export Rating Curve Sorted= 0 
+DSS Export Volume Flow Curves= 0 
+DXF Filename=
+DXF OffsetX= 0 
+DXF OffsetY= 0 
+DXF ScaleX= 1 
+DXF ScaleY= 10 
+GIS Export Reach=Bald Eagle Cr.  ,Lock Haven      
+GIS Export SA=190             
+GIS Export SA=191             
+GIS Export SA=192             
+GIS Export SA=193             
+GIS Export SA=194             
+GIS Export SA=195             
+GIS Export SA=255             
+GIS Export Profiles= 0 

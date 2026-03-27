@@ -1,0 +1,230 @@
+Geom Title=Adjusted Ineffective + n Values
+Program Version=4.01
+Viewing Rectangle= 0 , 1 , 1 , 0 
+
+River Reach=Spring Creek    ,Culvrt Reach    
+Reach XY= 5 
+        0.140665       0.8705235       0.2748268       0.7259475
+        0.334873       0.5860058       0.5727483       0.2623907
+       0.7413395       0.1720117
+Rch Text X Y=0.0762125,0.6355685
+Reverse River Text= 0 
+
+Type RM Length L Ch R = 1 ,20.535  ,650,600,500
+BEGIN DESCRIPTION:
+River mile 20.535 - Upstream Cross Section
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.173568838374960.901057185973420.148057060381520.87738309029503
+        0.140665       0.87052350.133272939618480.86366390970497
+0.103215966827490.83577202189378
+Node Last Edited Time=Sep/11/1996 10:29:42
+#Sta/Elev= 8 
+     856    37.5   910.9    34.1   960.4    32.3   975.8    26.5  1005.5    26.5
+  1020.9    32.4  1088.9    34.6  1143.9    38.6
+#Mann= 3 , 0 , 0 
+     856      .1       0   960.4     .04       0  1020.9      .1       0
+Bank Sta=960.4,1020.9
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,20.422  ,650,600,500
+BEGIN DESCRIPTION:
+River mile 20.422
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.314068071960530.747044700541230.284632640812060.72847405123434
+0.275926005784720.723385727129060.267219370757370.71829740302378
+ 0.23258563477160.69634556139948
+Node Last Edited Time=Sep/11/1996 10:29:42
+#Sta/Elev= 8 
+     856    36.9   910.9    33.5   960.4    31.7   975.8    25.8  1005.5    25.9
+  1020.9    31.8  1088.9      34  1143.9      38
+#Mann= 3 , 0 , 0 
+     856      .1       0   960.4     .04       0  1020.9      .1       0
+Bank Sta=960.4,1020.9
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,20.308  ,300,300,350
+BEGIN DESCRIPTION:
+River mile 20.308
+END DESCRIPTION:
+XS GIS Cut Line=5
+ 0.40096875152430.571877430594610.372925745843590.55126424416048
+0.364800259986650.54529155504348 0.35667477412970.53931886592648
+ 0.32363560849650.51503322092182
+Node Last Edited Time=Sep/11/1996 10:29:42
+#Sta/Elev= 8 
+     856    36.4   910.9      33   960.4    31.2   975.8    25.4  1005.5    25.4
+  1020.9    31.3  1088.9    33.5  1143.9    37.5
+#Mann= 3 , 0 , 0 
+     856      .1       0   960.4     .04       0  1020.9      .1       0
+Bank Sta=960.4,1020.9
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,20.251  ,70,70,70
+BEGIN DESCRIPTION:
+River mile 20.251
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.462579233724550.493041476736230.431420345810310.47013794160989
+0.42403354048582 0.46470822423080.416646735161320.45927850685171
+0.383607569528120.43499286184705
+Node Last Edited Time=Sep/11/1996 10:29:42
+#Sta/Elev= 8 
+     856    36.1     917    32.7     972    30.9     986    25.1    1013    25.1
+    1027      31    1095    33.2    1150    37.2
+#Mann= 3 , 0 , 0 
+     856      .1       0     972     .04       0    1027      .1       0
+Bank Sta=972,1027
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,20.238  ,57,57,57
+BEGIN DESCRIPTION:
+River mile 20.238 - Upstream end of culvert
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.476400332507690.474238699546610.445241444593450.45133516442026
+0.437854639268960.445905447041170.430467833944460.44047572966208
+0.397428668311260.41619008465743
+Node Last Edited Time=Sep/11/1996 10:29:42
+#Sta/Elev= 10 
+     856    36.1     917    32.7     972    30.9     986    25.1     993    25.1
+    1007    25.1    1013    25.1    1027      31    1095    33.2    1150    37.2
+#Mann= 3 , 1 , 0 
+     856      .4       0     972     .04       0    1027      .4       0
+#XS Ineff= 2 , 0 
+             988    33.7    1012            33.7
+Permanent Ineff=
+       F       F
+Bank Sta=972,1027
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 2 ,20.237  ,,,
+BEGIN DESCRIPTION:
+Twin Circular Pipe Crossing
+END DESCRIPTION:
+Node Last Edited Time=Sep/11/1996 10:29:42
+Bridge Culvert-0,0,1,-1, 0 
+Deck Dist Width WeirC Skew NumUp NumDn MinLoCord MaxHiCord MaxSubmerge Is_Ogee
+10,40,2.6,0, 8, 8, 33.7, , 0.95, 0, 2,2,,
+     856     917     972     993    1007    1027    1095    1150
+    36.1    34.8    33.9    33.8    33.8    33.7    35.7    37.2
+                                                                
+     856     917     972     993    1007    1027    1095    1150
+    36.1    34.8    33.9    33.8    33.8    33.7    35.7    37.2
+                                                                
+Multiple Barrel Culv=1,6,,50,0.013,0.5,1,1,1,25.1,25, 2,Culvert # 1 , 0 ,5
+     996     996    1004    1004
+Culvert Bottom n=0.013
+BC Design=,, 0 ,, 0 ,,,,,,
+BC HTab HWMax=37.2
+BC Use User HTab Curves=0
+BC User HTab FreeFlow(D)= 0 
+
+Type RM Length L Ch R = 1 ,20.227  ,100,100,100
+BEGIN DESCRIPTION:
+River mile 20.227 - Downstream end of culvert
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.48765465580253 0.45892786669220.456495767888290.43602433156585
+ 0.44910896256380.43059461418676 0.44172215723930.42516489680767
+ 0.40868299160610.40087925180302
+Node Last Edited Time=Sep/11/1996 10:29:42
+#Sta/Elev= 10 
+     856    36.1     917    32.7     972    30.9     986      25     993      25
+    1007      25    1013      25    1027      31    1095    33.2    1150    37.2
+#Mann= 3 , 1 , 0 
+     856     .06       0     972     .04       0    1027     .06       0
+#XS Ineff= 2 , 0 
+             991      32    1009              32
+Permanent Ineff=
+       F       F
+Bank Sta=972,1027
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,20.208* ,100,100,100
+BEGIN DESCRIPTION:
+River mile 20.208
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.507399082635590.432066756421310.476240194721350.40916322129496
+0.468853389396850.403733503915870.461466584072360.39830378653678
+0.428427418439160.37401814153212
+Node Last Edited Time=Sep/11/1996 10:29:42
+#Sta/Elev= 10 
+     856    36.1     917    32.7     972    30.9     986    24.9     993    24.9
+    1007    24.9    1013    24.9    1027      31    1095    33.2    1150    37.2
+#Mann= 3 , 1 , 0 
+     856      .1       0     972     .04       0    1027      .1       0
+Bank Sta=972,1027
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,20.189  ,600,500,550
+BEGIN DESCRIPTION:
+River mile 20.189
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.527143509468640.40520564615041 0.49598462155440.38230211102407
+0.488597816229910.376872393644980.481211010905410.37144267626589
+0.448171845272210.34715703126123
+Node Last Edited Time=Sep/11/1996 10:29:42
+#Sta/Elev= 8 
+     856    36.1     917    32.7     972    30.9     986    24.8    1013    24.8
+    1027      31    1095    33.2    1150    37.2
+#Mann= 3 , 0 , 0 
+     856      .1       0     972     .04       0    1027      .1       0
+Bank Sta=972,1027
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,20.095  ,500,500,450
+BEGIN DESCRIPTION:
+River mile 20.095
+END DESCRIPTION:
+XS GIS Cut Line=5
+ 0.6226667160193 0.29513176551360.599196862093990.25965420066945
+0.594432208218230.250766309516660.589667554342470.24187841836386
+0.561806516541480.20132046527086
+Node Last Edited Time=Sep/11/1996 10:29:42
+#Sta/Elev= 8 
+     856   35.75   923.1   32.35   983.6   30.55     999   24.25  1028.7   24.45
+  1044.1   30.65  1125.7   32.85  1191.7   36.85
+#Mann= 3 , 0 , 0 
+     856      .1       0   983.6     .04       0  1044.1      .1       0
+Bank Sta=983.6,1044.1
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,20.000  ,0,0,0
+BEGIN DESCRIPTION:
+River mile 20.000 - Downstream Cross Section
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.76620232637897 0.21839032484230.74610415387576 0.1808995911528
+       0.7413395       0.17201170.73657484612424 0.1631238088472
+0.713326489240370.11975678348643
+Node Last Edited Time=Sep/11/1996 10:29:42
+#Sta/Elev= 8 
+     856    35.3   923.1    31.9   983.6    30.1     999   23.95  1028.7      24
+  1044.1    30.2  1125.7    32.4  1191.7    36.4
+#Mann= 3 , 0 , 0 
+     856      .1       0   983.6     .04       0  1044.1      .1       0
+Bank Sta=983.6,1044.1
+XS Rating Curve= 0 ,0
+Exp/Cntr=0.3,0.1
+
+Chan Stop Cuts=-1 
+
+
+
+Use User Specified Reach Order=0
+GIS Ratio Cuts To Invert=-1
+GIS Limit At Bridges=0
+Composite Channel Slope=5

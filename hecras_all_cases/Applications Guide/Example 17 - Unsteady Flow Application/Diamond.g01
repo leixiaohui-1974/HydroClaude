@@ -1,0 +1,1881 @@
+Geom Title=Diamond River Base Geometry
+Program Version=5.00
+Viewing Rectangle= 0.4851 , 0.4952 , 0.9011 , 0.8892 
+
+Junct Name=Upper           
+Junct Desc=, 0 , 0 ,-1 ,0
+Junct X Y & Text X Y=0.4907893,0.8988792,0.4910009,0.8990762
+Up River,Reach=Diamond         ,North           
+Dn River,Reach=Diamond         ,Northwest       
+Dn River,Reach=Diamond         ,Northeast       
+Junc L&A=50,
+Junc L&A=50,
+
+Junct Name=Right           
+Junct Desc=, 0 , 0 ,-1 ,0
+Junct X Y & Text X Y=0.4950883,0.8953352,0.4950883,0.8953352
+Up River,Reach=Diamond         ,Northeast       
+Dn River,Reach=Diamond         ,Southeast       
+Dn River,Reach=Diamond         ,East            
+Junc L&A=50,
+Junc L&A=50,0
+
+Junct Name=Left            
+Junct Desc=, 0 , 0 ,-1 ,0
+Junct X Y & Text X Y=0.4866743,0.8954172,0.4860534,0.8955314
+Up River,Reach=Diamond         ,Northwest       
+Dn River,Reach=Diamond         ,Southwest       
+Dn River,Reach=Diamond         ,West            
+Junc L&A=50,
+Junc L&A=50,0
+
+Junct Name=Lower           
+Junct Desc=, 0 , 0 ,-1 ,0
+Junct X Y & Text X Y=0.4906821,0.8921478,0.4910198,0.8921952
+Up River,Reach=Diamond         ,Southeast       
+Up River,Reach=Diamond         ,Southwest       
+Dn River,Reach=Diamond         ,South           
+Junc L&A=50,
+Junc L&A=50,0
+
+River Reach=Diamond         ,North           
+Reach XY= 2 
+       0.4907893       0.9009692       0.4907893       0.8988792
+Rch Text X Y=0.4910922,0.9000302
+Reverse River Text= 0 
+
+Type RM Length L Ch R = 1 ,6.0     ,1056,1056,1056
+BEGIN DESCRIPTION:
+6
+                                                                                                                                                                                                                                                              
+ XK record is used to define hydraulic table limits and cross-section                                                                                                                                                                                        
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.49081348752952       0.90096920.49079374260746       0.9009692
+       0.4907893       0.90096920.49078485739254       0.9009692
+0.49076412522437       0.9009692
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      33      10      15     100      13     105       3     140       3
+     145      13     240      15     250      33
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=3.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.8     ,1056,1056,1056
+XS GIS Cut Line=5
+0.490813487529520.900760693623050.490793742607460.90076069362305
+       0.49078930.900760693623050.490784857392540.90076069362305
+0.490764125224370.90076069362305
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0    32.2      10    14.2     100    12.2     105     2.2     140     2.2
+     145    12.2     240    14.2     250    32.2
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=2.7,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.6     ,1056,1056,1056
+XS GIS Cut Line=5
+0.49081348752952 0.90055218724610.49079374260746 0.9005521872461
+       0.4907893 0.90055218724610.49078485739254 0.9005521872461
+0.49076412522437 0.9005521872461
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0    31.4      10    13.4     100    11.4     105     1.4     140     1.4
+     145    11.4     240    13.4     250    31.4
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=1.9,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.4     ,1056,1056,1056
+XS GIS Cut Line=5
+0.490813487529520.900343680869160.490793742607460.90034368086916
+       0.49078930.900343680869160.490784857392540.90034368086916
+0.490764125224370.90034368086916
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0    30.6      10    12.6     100    10.6     105      .6     140      .6
+     145    10.6     240    12.6     250    30.6
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=1.1,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.2     ,1056,1056,1056
+XS GIS Cut Line=5
+0.490813487529520.900135174492210.490793742607460.90013517449221
+       0.49078930.900135174492210.490784857392540.90013517449221
+0.490764125224370.90013517449221
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0    29.8      10    11.8     100     9.8     105     -.2     140     -.2
+     145     9.8     240    11.8     250    29.8
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=0.3,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,5.0     ,1056,1056,1056
+BEGIN DESCRIPTION:
+5
+                                                                                                                                                                                                                                                              
+
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.490813487529520.899926668115260.490793742607460.89992666811526
+       0.49078930.899926668115260.490784857392540.89992666811526
+0.490764125224370.89992666811526
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,4.8     ,1056,1056,1056
+XS GIS Cut Line=5
+0.490813487529520.899718161738310.490793742607460.89971816173831
+       0.49078930.899718161738310.490784857392540.89971816173831
+0.490764125224370.89971816173831
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,4.6     ,1056,1056,1056
+XS GIS Cut Line=5
+0.490813487529520.899509655361360.490793742607460.89950965536136
+       0.49078930.899509655361360.490784857392540.89950965536136
+0.490764125224370.89950965536136
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,4.4     ,1056,1056,1056
+XS GIS Cut Line=5
+0.490813487529520.899301148984410.490793742607460.89930114898441
+       0.49078930.899301148984410.490784857392540.89930114898441
+0.490764125224370.89930114898441
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,4.2     ,1056,1056,1056
+XS GIS Cut Line=5
+0.490813487529520.899092642607460.490793742607460.89909264260746
+       0.49078930.899092642607460.490784857392540.89909264260746
+0.490764125224370.89909264260746
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,4.0     ,0,5280,0
+BEGIN DESCRIPTION:
+4
+                                                                                                                                                                                                                                                              
+
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.490813487529520.898884136230520.490793742607460.89888413623052
+       0.49078930.898884136230520.490784857392540.89888413623052
+0.490764125224370.89888413623052
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+River Reach=Diamond         ,Northwest       
+Reach XY= 2 
+       0.4907893       0.8988792       0.4866743       0.8954172
+Rch Text X Y=0.4878731,0.8977872
+Reverse River Text=-1 
+
+Type RM Length L Ch R = 1 ,4.0     ,880,880,880
+BEGIN DESCRIPTION:
+4
+                                                                                                                                                                                                                                                              
+ Downstream Boundary of reach 1 connects to reach 2 and 5.                                                                                                                                                                                                   
+END DESCRIPTION:
+XS GIS Cut Line=5
+ 0.49089855850340.898678302891160.490780803401360.89881826887755
+ 0.49075430850340.898849761224490.490727813605440.89888125357143
+ 0.49060417074830.89902821785714
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,3.8     ,880,880,880
+XS GIS Cut Line=5
+0.48966685782313 0.89764205799320.489549102721090.89778202397959
+0.489522607823130.897813516326530.489496112925170.89784500867347
+0.489372470068030.89799197295918
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,3.6     ,880,880,880
+XS GIS Cut Line=5
+0.488435157142860.896605813095240.488317402040820.89674577908163
+0.488290907142860.89677727142857 0.48826441224490.89680876377551
+0.488140769387760.89695572806122
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,3.4     ,50,50,50
+BEGIN DESCRIPTION:
+3.4
+                                                                                                                                                                                                                                                              
+ The default for the program is to use a family of rating curves, rather                                                                                                                                                                                   
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.487203456462590.895569568197280.487085701360540.89570953418367
+0.487059206462590.895741026530610.487032711564630.89577251887755
+0.486909068707480.89591948316327
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+#XS Ineff= 2 , 0 
+       0     100    20.5     145       0    20.5
+Permanent Ineff=
+       F       F
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 2 ,3.395   ,,,
+Node Last Edited Time=Aug/24/2000 09:33:32
+Bridge Culvert--1,0,-1,-1, 0 
+Deck Dist Width WeirC Skew NumUp NumDn MinLoCord MaxHiCord MaxSubmerge Is_Ogee
+20,10,2.6,0, 2, 2, , , 0.95, 0, 1,1,,
+       0     250
+      20      20
+                
+       0     250
+      20      20
+                
+Culvert=1,6,,30,0.025,0.5,1,2,1,3,122.5,3,122.5,Culvert #1  , 0 ,10
+Culvert Bottom n=0.025
+BC Design=,, 0 ,, 0 ,,,,,,
+BC HTab HWMax=20
+BC HTab TWMax=20
+BC Use User HTab Curves=0
+BC User HTab FreeFlow(D)= 0 
+
+Type RM Length L Ch R = 1 ,3.39    ,200,200,200
+BEGIN DESCRIPTION:
+3.39
+This is a REPEATED section.
+                                                                                                                                                                                                                                                              
+ The next three records desribe a circular culvert crossing, between sections                                                                                                                                                
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.487133473469390.895510690646260.487015718367350.89565065663265
+0.486989223469390.895682148979590.486962728571430.89571364132653
+0.486839085714290.89586060561225
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+#XS Ineff= 2 , 0 
+       0     100      19     145       0      19
+Permanent Ineff=
+       F       F
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,3.35    ,4000,4000,4000
+BEGIN DESCRIPTION:
+3.39
+This is a REPEATED section.
+                                                                                                                                                                                                                                                              
+ The next three records desribe a circular culvert crossing, between sections                                                                                                                                                
+END DESCRIPTION:
+XS GIS Cut Line=5
+ 0.48685354149660.895275180442180.486735786394560.89541514642857
+ 0.48670929149660.895446638775510.486682796598640.89547813112245
+ 0.48655915374150.89562509540816
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+#XS Ineff= 2 , 0 
+       0     100      19     145       0      19
+Permanent Ineff=
+       F       F
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+River Reach=Diamond         ,Northeast       
+Reach XY= 2 
+       0.4907893       0.8988792       0.4950883       0.8953352
+Rch Text X Y=0.4929344,0.8976355
+Reverse River Text= 0 
+
+Type RM Length L Ch R = 1 ,3.9999  ,1173.33,1173.33,1173.33
+BEGIN DESCRIPTION:
+3.9999
+                                                                                                                                                                                                                                                              
+ The downstream boundary of reach 4 is reach 8.                                                                                                                                                                                                         
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.490840347742850.898920484519780.490806945196640.89887996602482
+0.490799429623740.898870849363450.490791914050840.89886173270208
+0.490756841377320.89881918828237
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,3.77768 ,1173.33,1173.33,1173.33
+XS GIS Cut Line=5
+0.491315763382020.898528562439010.491282360835810.89848804394405
+0.491274845262910.898478927282680.491267329690010.89846981062131
+0.49123225701649 0.8984272662016
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,3.55547 ,1173.33,1173.33,1173.33
+XS GIS Cut Line=5
+0.491791179021190.898136640358250.491757776474980.89809612186328
+0.491750260902080.898087005201920.491742745329180.89807788854055
+0.491707672655660.89803534412084
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,3.33326 ,1173.33,1173.33,1173.33
+XS GIS Cut Line=5
+0.492266594660350.897744718277480.492233192114140.89770419978252
+0.492225676541250.897695083121150.492218160968350.89768596645978
+0.492183088294830.89764342204007
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,3.11105 ,1173.33,1173.33,1173.33
+XS GIS Cut Line=5
+0.492742010299520.897352796196720.492708607753310.89731227770175
+0.492701092180420.897303161040380.492693576607520.89729404437902
+  0.492658503934 0.8972514999593
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,2.88884 ,1173.33,1173.33,1173.33
+XS GIS Cut Line=5
+0.493217425938690.896960874115950.493184023392480.89692035562098
+0.493176507819580.896911238959620.493168992246690.89690212229825
+0.493133919573170.89685957787854
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,2.66663 ,1173.33,1173.33,1173.33
+XS GIS Cut Line=5
+0.493692841577860.896568952035180.493659439031650.89652843354022
+0.493651923458750.896519316878850.493644407885860.89651020021748
+0.493609335212340.89646765579777
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,2.44442 ,1173.33,1173.33,1173.33
+XS GIS Cut Line=5
+0.494168257217030.896177029954420.494134854670820.89613651145945
+0.494127339097920.896127394798090.494119823525020.89611827813672
+ 0.4940847508515  0.896075733717
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,2.22221 ,1173.33,1173.33,1173.33
+XS GIS Cut Line=5
+ 0.49464367285620.895785107873650.494610270309990.89574458937869
+0.494602754737090.895735472717320.494595239164190.89572635605595
+0.494560166490670.89568381163624
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,2.0     ,0,10560,0
+BEGIN DESCRIPTION:
+2
+This is a REPEATED section.
+                                                                                                                                                                                                                                                              
+
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.495119088495370.895393185792890.495085685949160.89535266729792
+0.495078170376260.895343550636550.495070654803360.89533443397519
+0.495035582129840.89529188955547
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+River Reach=Diamond         ,Southeast       
+Reach XY= 2 
+       0.4950883       0.8953352       0.4906821       0.8921478
+Rch Text X Y=0.493124,0.8937116
+Reverse River Text=-1 
+
+Type RM Length L Ch R = 1 ,2.0     ,560,560,560
+BEGIN DESCRIPTION:
+2
+                                                                                                                                                                                                                                                              
+ Downstream boundary of reach 6 is storage area number 1.                                                                                                                                                                                                    
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.49511471861452  0.895276816918 0.49508467714420.89531834566447
+0.495077917813380.895327689632420.495071158482560.89533703360038
+0.495039614938740.89538063878417
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1.9     ,1250,1250,1250
+BEGIN DESCRIPTION:
+1.9
+This is a REPEATED section.
+                                                                                                                                                                                                                                                              
+ The next four records describe a special connection from rech 7 to storage                                                                                                                                                   
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.494882157634310.89510858468426  0.4948521161640.89515011343073
+0.494845356833180.895159457398680.494838597502360.89516880136664
+0.494807053958530.89521240655042
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 6 ,1.78125 ,,,
+Node Last Edited Time=Jun/17/2002 14:17:12
+Lateral Weir Pos= 3 
+Lateral Weir End=                ,                ,        ,Eagle Lake      
+Lateral Weir Distance=0
+Lateral Weir TW Multiple XS=0
+Lateral Weir WD=10
+Lateral Weir Coef=2
+Lateral Weir WSCriteria=-1 
+Lateral Weir Flap Gates= 0 
+Lateral Weir Hagers EQN= 0 ,,,,,
+Lateral Weir SS=0.05,0.05,
+Lateral Weir Type= 0 
+Lateral Weir Connection Pos and Dist= 1 ,
+Lateral Weir SE= 2 
+       0      17     100      17
+Lateral Weir Centerline= 0 
+LW Culv=1,6,,20,0.022,0.5,1,2,1,8,8, 1 ,Culvert #1  , 0 ,0
+      50      50
+LW Culv Bottom n=0.022
+LW Div RC= 0 ,False,
+
+Type RM Length L Ch R = 1 ,1.6625  ,1250,1250,1250
+XS GIS Cut Line=5
+0.494363048303490.894733066305370.494333006833180.89477459505184
+0.494326247502360.894783939019790.494319488171540.89479328298775
+0.494287944627710.89483688817154
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1.425   ,1250,1250,1250
+XS GIS Cut Line=5
+0.493843938972670.894357547926480.493813897502360.89439907667295
+0.493807138171540.894408420640910.493800378840720.89441776460886
+0.493768835296890.89446136979265
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1.1875  ,1250,1250,1250
+XS GIS Cut Line=5
+0.49332482964185 0.89398202954760.493294788171540.89402355829406
+0.493288028840720.89403290226202 0.49328126950990.89404224622997
+0.493249725966070.89408585141376
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.95     ,1250,1250,1250
+XS GIS Cut Line=5
+0.492805720311030.893606511168710.492775678840720.89364803991517
+ 0.49276891950990.893657383883130.492762160179080.89366672785108
+0.492730616635250.89371033303487
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.7125   ,1250,1250,1250
+XS GIS Cut Line=5
+0.492286610980210.89323099278982 0.49225656950990.89327252153629
+0.492249810179080.893281865504240.49224305084826 0.8932912094722
+0.492211507304430.89333481465599
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.475    ,1250,1250,1250
+XS GIS Cut Line=5
+0.491767501649390.892855474410930.49173746017908 0.8928970031574
+0.491730700848260.892906347125350.491723941517440.89291569109331
+0.49169239797361 0.8929592962771
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.2375   ,1250,1250,1250
+XS GIS Cut Line=5
+0.491248392318570.892479956032050.491218350848260.89252148477851
+0.491211591517440.892530828746470.491204832186620.89254017271442
+0.491173288642790.89258377789821
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,0.0     ,0,10000,0
+BEGIN DESCRIPTION:
+0
+This is a REPEATED section.
+                                                                                                                                                                                                                                                              
+
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.490729282987750.892104437653160.490699241517440.89214596639962
+0.490692482186620.89215531036758 0.49068572285580.89216465433553
+0.490654179311970.89220825951932
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+River Reach=Diamond         ,Southwest       
+Reach XY= 2 
+       0.4866743       0.8954172       0.4906821       0.8921478
+Rch Text X Y=0.4886314,0.8927449
+Reverse River Text= 0 
+
+Type RM Length L Ch R = 1 ,2.0     ,300,300,300
+BEGIN DESCRIPTION:
+2
+                                                                                                                                                                                                                                                              
+ The downstream boundary of reach 3 is storage area number 1.                                                                                                                                                                                                
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.486721759383890.895455988672990.486690769810430.89541800004739
+ 0.48668379715640.895409452606640.486676824502370.89540090516588
+0.486644285450240.89536101710901
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1.99    ,200,200,200
+BEGIN DESCRIPTION:
+2
+                                                                                                                                                                                                                                                              
+ The downstream boundary of reach 3 is storage area number 1.                                                                                                                                                                                                
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.486835725260660.89536301995261 0.48680473568720.89532503132701
+0.486797763033180.895316483886260.48679079037915 0.8953079364455
+0.486758251327010.89526804838863
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 6 ,1.95    ,,,
+Node Last Edited Time=Aug/24/2000 09:33:32
+Lateral Weir Pos= 3 
+Lateral Weir End=                ,                ,        ,Upper Angora    
+Lateral Weir Distance=10
+Lateral Weir TW Multiple XS=0
+Lateral Weir WD=10
+Lateral Weir Coef=2.2
+Lateral Weir WSCriteria=-1 
+Lateral Weir Flap Gates= 0 
+Lateral Weir Hagers EQN= 0 ,,,,,
+Lateral Weir SS=0.05,0.05,
+Lateral Weir Type= 0 
+Lateral Weir Connection Pos and Dist= 1 ,
+Lateral Weir SE= 6 
+       0      30      25      30      25      10      75      10      75      30
+     100      30
+Lateral Weir Centerline= 0 
+LW Div RC= 0 ,False,
+
+Type RM Length L Ch R = 1 ,1.9     ,1250,1250,1250
+BEGIN DESCRIPTION:
+1.9
+                                                                                                                                                                                                                                                              
+ The next four records describe storage areas 3 and 4.                                                                                                                                                                                                     
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.486911702511850.895301040805690.48688071293839 0.8952630521801
+0.486873740284360.895254504739340.486866767630330.89524595729858
+ 0.48683422857820.89520606924171
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1.6625  ,1250,1250,1250
+XS GIS Cut Line=5
+0.487386560331750.894913671137440.487355570758290.89487568251185
+0.487348598104270.894867135071090.487341625450240.89485858763033
+ 0.48730908639810.89481869957346
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1.425   ,1250,1250,1250
+XS GIS Cut Line=5
+0.487861418151660.89452630146919 0.4878304285782 0.8944883128436
+0.487823455924170.894479765402840.487816483270140.89447121796209
+0.487783944218010.89443132990521
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1.1875  ,1250,1250,1250
+XS GIS Cut Line=5
+0.488336275971560.89413893180095 0.48830528639810.89410094317536
+0.48829831374408 0.89409239573460.488291341090050.89408384829384
+0.488258802037920.89404396023697
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.95     ,1250,1250,1250
+XS GIS Cut Line=5
+0.48881113379147 0.89375156213270.488780144218010.89371357350711
+0.488773171563980.893705026066350.488766198909950.89369647862559
+0.488733659857820.89365659056872
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.7125   ,1250,1250,1250
+XS GIS Cut Line=5
+0.489285991611370.893364192464460.489255002037920.89332620383886
+0.48924802938389 0.89331765639810.489241056729860.89330910895735
+0.489208517677730.89326922090047
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.475    ,1250,1250,1250
+XS GIS Cut Line=5
+0.489760849431280.892976822796210.489729859857820.89293883417062
+0.489722887203790.892930286729860.48971591454976 0.8929217392891
+0.489683375497630.89288185123223
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.2375   ,1250,1250,1250
+XS GIS Cut Line=5
+0.490235707251190.892589453127960.490204717677730.89255146450237
+ 0.49019774502370.892542917061610.490190772369670.89253436962085
+0.490158233317540.89249448156398
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,0       ,0,10000,0
+BEGIN DESCRIPTION:
+0
+This is a REPEATED section.
+                                                                                                                                                                                                                                                              
+
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.490710565071090.892202083459720.490679575497630.89216409483412
+ 0.49067260284360.892155547393370.490665630189570.89214699995261
+0.490633091137440.89210711189574
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+River Reach=Diamond         ,East            
+Reach XY= 2 
+       0.4950883       0.8953352        0.491636       0.8957014
+Rch Text X Y=0.4928965,0.8959674
+Reverse River Text=-1 
+Reach Downstream Storage Area=Pyramid Lake    
+
+Type RM Length L Ch R = 1 ,1.0     ,1173.33,1173.33,1173.33
+BEGIN DESCRIPTION:
+1
+                                                                                                                                                                                                                                                              
+ The downstream boundary of reach 5 is reach 6 and 7.                                                                                                                                                                                                        
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.495075908183590.895296111389880.495079367806190.89532872650479
+0.495080146221270.895336064905650.49508092463636 0.8953434033065
+0.495084557240080.89537764917716
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.888889 ,1173.33,1173.33,1173.33
+XS GIS Cut Line=5
+0.494693225270120.895336704178140.494696684892710.89536931929305
+ 0.49469746330780.895376657693910.494698241722880.89538399609477
+ 0.49470187432660.89541824196542
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.777778 ,1173.33,1173.33,1173.33
+XS GIS Cut Line=5
+0.49431054235665 0.89537729696640.494314001979240.89540991208132
+0.494314780394320.895417250482170.494315558809410.89542458888303
+0.494319191413130.89545883475369
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.666667 ,1173.33,1173.33,1173.33
+XS GIS Cut Line=5
+0.493927859443170.895417889754660.493931319065760.89545050486958
+0.493932097480850.895457843270430.493932875895930.89546518167129
+0.493936508499660.89549942754195
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.555556 ,1173.33,1173.33,1173.33
+XS GIS Cut Line=5
+ 0.49354517652970.895458482542930.493548636152290.89549109765784
+0.493549414567370.895498436058690.493550192982460.89550577445955
+0.493553825586180.89554002033021
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.444444 ,1173.33,1173.33,1173.33
+XS GIS Cut Line=5
+0.493162493616220.895499075331190.49316595323882 0.8955316904461
+ 0.49316673165390.895539028846960.493167510068980.89554636724781
+0.493171142672710.89558061311847
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.333333 ,1173.33,1173.33,1173.33
+XS GIS Cut Line=5
+0.492779810702750.895539668119450.492783270325340.89557228323436
+0.492784048740420.895579621635220.492784827155510.89558696003607
+0.492788459759230.89562120590673
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.222222 ,1173.33,1173.33,1173.33
+XS GIS Cut Line=5
+0.492397127789270.895580260907710.492400587411870.89561287602262
+0.492401365826950.895620214423480.492402144242030.89562755282433
+0.492405776845760.89566179869499
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.111111 ,1173.33,1173.33,1173.33
+XS GIS Cut Line=5
+ 0.49201444487580.895620853695970.492017904498390.89565346881088
+0.492018682913480.895660807211740.492019461328560.89566814561259
+0.492023093932280.89570239148325
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,0.0     ,0,10560,0
+BEGIN DESCRIPTION:
+0
+This is a REPEATED section.
+                                                                                                                                                                                                                                                              
+
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.491631761962320.895661446484230.491635221584920.89569406159915
+        0.491636       0.89570140.491636778415080.89570873840086
+0.491640411018810.89574298427151
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+River Reach=Diamond         ,West            
+Reach XY= 2 
+       0.4866743       0.8954172       0.4901752        0.895806
+Rch Text X Y=0.4883281,0.8959674
+Reverse River Text= 0 
+Reach Downstream Storage Area=Pyramid Lake    
+
+Type RM Length L Ch R = 1 ,1.0     ,1056,1056,1056
+BEGIN DESCRIPTION:
+1
+                                                                                                                                                                                                                                                              
+ The downstream boundary of reach 2 connects to reaches 3 and 4.                                                                                                                                                                                             
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.486681820169650.895499872997170.486689149104620.89543388053723
+0.486690798114990.895419032233740.486692447125350.89540418393025
+0.486700142507070.89533489184731
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.8      ,1056,1056,1056
+XS GIS Cut Line=5
+0.487378700546650.895577266550420.487386029481620.89551127409048
+0.487387678491990.895496425786990.487389327502360.89548157748351
+0.487397022884070.89541228540057
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.6      ,1056,1056,1056
+XS GIS Cut Line=5
+0.488075580923660.895654660103680.488082909858620.89558866764373
+0.488084558868990.895573819340250.488086207879360.89555897103676
+0.488093903261070.89548967895382
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.4      ,1056,1056,1056
+XS GIS Cut Line=5
+0.488772461300660.895732053656930.488779790235630.89566606119698
+0.48878143924599 0.89565121289350.488783088256360.89563636459001
+0.488790783638080.89556707250707
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.2      ,1056,1056,1056
+XS GIS Cut Line=5
+0.489469341677660.895809447210180.489476670612630.89574345475024
+  0.4894783196230.895728606446750.489479968633370.89571375814326
+0.489487664015080.89564446606032
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,0.0     ,7900,7900,7900
+BEGIN DESCRIPTION:
+0
+This is a REPEATED section.
+                                                                                                                                                                                                                                                              
+ The next four records describe two storage areas located in the center of                                                                                                                                                      
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.490166222054670.895886840763430.490173550989630.89582084830349
+       0.4901752        0.8958060.490176849010370.89579115169651
+0.490184544392080.89572185961357
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+River Reach=Diamond         ,South           
+Reach XY= 2 
+       0.4906821       0.8921478       0.4906821       0.8893354
+Rch Text X Y=0.490971,0.8907311
+Reverse River Text= 0 
+
+Type RM Length L Ch R = 1 ,2.0     ,150,150,150
+BEGIN DESCRIPTION:
+2
+                                                                                                                                                                                                                                                              
+ The downstream boundary of reach 7 is reach 8.                                                                                                                                                                                                              
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.490714586468650.892141170108440.490688066902410.89214117010844
+       0.49068210.89214117010844 0.49067613309760.89214117010844
+0.490648287553040.89214117010844
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1.9     ,50,50,50
+BEGIN DESCRIPTION:
+1.9
+                                                                                                                                                                                                                                                              
+UPSTREAM CONSTRICTED CROSS-SECTION                                                                                                                                                                                                                         
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.490714586468650.892101390759080.490688066902410.89210139075908
+       0.49068210.89210139075908 0.49067613309760.89210139075908
+0.490648287553040.89210139075908
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+#XS Ineff= 2 , 0 
+       0      90    15.5     155       0    15.5
+Permanent Ineff=
+       F       F
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 3 ,1.895   ,,,
+Node Last Edited Time=Aug/24/2000 09:33:32
+Bridge Culvert--1,0,-1,-1, 0 
+Deck Dist Width WeirC Skew NumUp NumDn MinLoCord MaxHiCord MaxSubmerge Is_Ogee
+10,30,2.6,0, 6, 6, , , 0.95, 0, 0,0,,
+       0     100     100     145     145     250
+      15      15      15      15      15      15
+       0       0      11      11       0       0
+       0     100     100     145     145     250
+      15      15      15      15      15      15
+       0       0      11      11       0       0
+Pier Skew, UpSta & Num, DnSta & Num=  ,115, 2 ,115, 2 , 0 , 0 , 0 ,,
+       5       5
+      -5      11
+       5       5
+      -5      11
+Pier Skew, UpSta & Num, DnSta & Num=  ,130, 2 ,130, 2 , 0 , 0 , 0 ,,
+       5       5
+      -5      11
+       5       5
+      -5      11
+BR Coef=-1 , 0 , 0 ,, 0 ,,,0.8,0,,0,
+WSPro=,,,, 1 ,,,, 0 ,,,, 0 ,,,,-1 ,-1 ,-1 , 0 , 0 , 0 , 0 , 0 
+BC Design=,, 0 ,, 0 ,,,,,,
+BC HTab HWMax=19
+BC HTab TWMax=19
+BC Use User HTab Curves=0
+BC User HTab FreeFlow(D)= 0 
+
+Type RM Length L Ch R = 1 ,1.89    ,600,600,600
+BEGIN DESCRIPTION:
+1.89
+                                                                                                                                                                                                                                                              
+BRIDGE DATA                                                                                                                                                                                                                                               
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.490714586468650.892088130975960.490688066902410.89208813097596
+       0.49068210.89208813097596 0.49067613309760.89208813097596
+0.490648287553040.89208813097596
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+#XS Ineff= 2 , 0 
+       0      90      14     155       0      14
+Permanent Ineff=
+       F       F
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1.8     ,1125,1125,1125
+BEGIN DESCRIPTION:
+1.8
+                                                                                                                                                                                                                                                              
+FULL WIDTH CROSS-SECTION                                                                                                                                                                                                                                   
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.49071458646865 0.89192901357850.49068806690241 0.8919290135785
+       0.4906821 0.8919290135785 0.4906761330976 0.8919290135785
+0.49064828755304 0.8919290135785
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1.6     ,1125,1125,1125
+XS GIS Cut Line=5
+0.490714586468650.891630668458270.490688066902410.89163066845827
+       0.49068210.89163066845827 0.49067613309760.89163066845827
+0.490648287553040.89163066845827
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1.4     ,1125,1125,1125
+XS GIS Cut Line=5
+0.490714586468650.891332323338050.490688066902410.89133232333805
+       0.49068210.89133232333805 0.49067613309760.89133232333805
+0.490648287553040.89133232333805
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1.2     ,1125,1125,1125
+XS GIS Cut Line=5
+0.490714586468650.891033978217820.490688066902410.89103397821782
+       0.49068210.89103397821782 0.49067613309760.89103397821782
+0.490648287553040.89103397821782
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,1.0     ,1056,1056,1056
+BEGIN DESCRIPTION:
+1
+                                                                                                                                                                                                                                                              
+
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.49071458646865 0.89073563309760.49068806690241 0.8907356330976
+       0.4906821 0.8907356330976 0.4906761330976 0.8907356330976
+0.49064828755304 0.8907356330976
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.8      ,1056,1056,1056
+XS GIS Cut Line=5
+0.490714586468650.890455586478080.490688066902410.89045558647808
+       0.49068210.89045558647808 0.49067613309760.89045558647808
+0.490648287553040.89045558647808
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.6      ,1056,1056,1056
+XS GIS Cut Line=5
+0.490714586468650.890175539858560.490688066902410.89017553985856
+       0.49068210.89017553985856 0.49067613309760.89017553985856
+0.490648287553040.89017553985856
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.4      ,1056,1056,1056
+XS GIS Cut Line=5
+0.490714586468650.889895493239040.490688066902410.88989549323904
+       0.49068210.88989549323904 0.49067613309760.88989549323904
+0.490648287553040.88989549323904
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,.2      ,1056,1056,1056
+XS GIS Cut Line=5
+0.490714586468650.889615446619520.490688066902410.88961544661952
+       0.49068210.88961544661952 0.49067613309760.88961544661952
+0.490648287553040.88961544661952
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 4 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+     250     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,0.0     ,0,5280,0
+BEGIN DESCRIPTION:
+0
+                                                                                                                                                                                                                                                              
+
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.49071458646865       0.88933540.49068806690241       0.8893354
+       0.4906821       0.8893354 0.4906761330976       0.8893354
+0.49064828755304       0.8893354
+Node Last Edited Time=Aug/24/2000 09:33:32
+#Sta/Elev= 8 
+       0      29      10      11     100       9     105      -1     140      -1
+     145       9     240      11     250      29
+#Mann= 3 , 0 , 0 
+       0     .08       0     100     .03       0     145     .08       0
+Bank Sta=100,145
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=-0.5,1, 30 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Storage Area=Eagle Lake      ,0.4914558,0.8945078
+Storage Area Surface Line= 17 
+       0.4922252       0.8947692                
+       0.4921713       0.8947858                
+       0.4917774       0.8947824                
+       0.4917044       0.8947616                
+       0.4916003       0.8947225                
+       0.4914544       0.8945897                
+       0.4913998       0.8944777                
+       0.4914076        0.894311                
+        0.491431       0.8942225                
+        0.491593       0.8939291                
+       0.4916436       0.8938701                
+       0.4917026        0.893856                
+        0.492377       0.8941005                
+       0.4923994        0.894151                
+        0.492399       0.8942361                
+       0.4922702       0.8947102                
+       0.4922252       0.8947692                
+Storage Area Type= 1 
+Storage Area Area=
+Storage Area Min Elev=
+Storage Area Vol Elev= 10 
+       0       0       2    1000       4    3000       6    5000       8    7000
+      10   10000      12   13000      14   16000      16   19000      18   22000
+Storage Area Is2D=0
+Storage Area Point Generation Data=0,0,,
+Storage Area 2D Points= 0 
+Storage Area 2D PointsPerimeterTime=16Oct2015 09:01:31
+Storage Area Mannings=0.06
+2D Cell Volume Filter Tolerance=0.01
+2D Face Profile Filter Tolerance=0.01
+2D Face Area Elevation Profile Filter Tolerance=0.01
+2D Face Area Elevation Conveyance Ratio=0.02
+
+Storage Area=Lower Angora    ,0.4854089,0.8921762
+Storage Area Surface Line= 15 
+       0.4867705       0.8927449                
+       0.4863724       0.8928965                
+       0.4859364       0.8928776                
+       0.4854625        0.892688                
+       0.4851971        0.892271                
+        0.485235       0.8917213                
+       0.4855762       0.8913232                
+        0.486126       0.8912284                
+       0.4866188        0.891418                
+       0.4868463       0.8917023                
+       0.4869411       0.8920625                
+       0.4869221       0.8924985                
+       0.4867705       0.8927259                
+       0.4867694       0.8927456                
+       0.4867705       0.8927449                
+Storage Area Type= 0 
+Storage Area Area=1000
+Storage Area Min Elev=0
+Storage Area Is2D=0
+Storage Area Point Generation Data=0,0,,
+Storage Area 2D Points= 0 
+Storage Area 2D PointsPerimeterTime=16Oct2015 09:01:31
+Storage Area Mannings=0.06
+2D Cell Volume Filter Tolerance=0.01
+2D Face Profile Filter Tolerance=0.01
+2D Face Area Elevation Profile Filter Tolerance=0.01
+2D Face Area Elevation Conveyance Ratio=0.02
+
+Storage Area=Pyramid Lake    ,0.4902806,0.8959485
+Storage Area Surface Line= 7 
+       0.4913204       0.8963136                
+       0.4904747       0.8963047                
+        0.490169       0.8958181                
+       0.4904895       0.8951919                
+       0.4912631       0.8951822                
+       0.4916374       0.8956987                
+       0.4913204       0.8963136                
+Storage Area Type= 0 
+Storage Area Area=1000
+Storage Area Min Elev=-1
+Storage Area Vol Elev= 1 
+               0
+Storage Area Is2D=0
+Storage Area Point Generation Data=0,0,,
+Storage Area 2D Points= 0 
+Storage Area 2D PointsPerimeterTime=16Oct2015 09:01:31
+Storage Area Mannings=0.06
+2D Cell Volume Filter Tolerance=0.01
+2D Face Profile Filter Tolerance=0.01
+2D Face Area Elevation Profile Filter Tolerance=0.01
+2D Face Area Elevation Conveyance Ratio=0.02
+
+Storage Area=Upper Angora    ,0.4867737,0.8934273
+Storage Area Surface Line= 14 
+       0.4869628       0.8927456                
+       0.4872097       0.8926311                
+       0.4876836       0.8925743                
+       0.4880438       0.8927828                
+       0.4883091        0.893143                
+       0.4882333        0.893541                
+         0.48793       0.8939012                
+       0.4875509       0.8940149                
+        0.487077       0.8940149                
+       0.4866789         0.89356                
+        0.486622       0.8931809                
+       0.4866979       0.8928586                
+       0.4869633       0.8927449                
+       0.4869628       0.8927456                
+Storage Area Type= 0 
+Storage Area Area=1000
+Storage Area Min Elev=0
+Storage Area Is2D=0
+Storage Area Point Generation Data=0,0,,
+Storage Area 2D Points= 0 
+Storage Area 2D PointsPerimeterTime=16Oct2015 09:01:31
+Storage Area Mannings=0.06
+2D Cell Volume Filter Tolerance=0.01
+2D Face Profile Filter Tolerance=0.01
+2D Face Area Elevation Profile Filter Tolerance=0.01
+2D Face Area Elevation Conveyance Ratio=0.02
+
+Connection=Lower to Upper  ,0.4869822,0.8925553
+Connection Desc=Third
+Connection Line=2
+         0.48668         0.89282         0.48717          0.8926
+Connection Last Edited Time=Aug/24/2000 09:33:32
+Connection Up SA=Lower Angora    
+Connection Dn SA=Upper Angora    
+Conn Routing Type= 3 
+Conn Use RC Family=False
+Conn OverFlow Method 2D=True
+Conn Weir WD=10
+Conn Weir Coef=2.5
+Conn Weir Is Ogee= 0 
+Conn Simple Spill Pos Coef=0.05
+Conn Simple Spill Neg Coef=0.05
+Conn Weir SE= 2 
+       0    16.5     500    16.5
+Connection Culv=1,5,,50,0.022,0.4,1,1,1,10,10, 1 ,Culvert #1  , 0 ,0
+     250     250
+Conn Culv Bottom n=0.022
+Conn HTab HWMax=25
+Conn HTab TWMax=25
+
+Connection=Pyramid to Eagle,0.4911525,0.8951144
+Connection Desc=First
+Connection Line=2
+         0.49133         0.89493         0.49178          0.8952
+Connection Last Edited Time=Feb/08/2008 14:49:24
+Connection Up SA=Pyramid Lake    
+Connection Dn SA=Eagle Lake      
+Conn Routing Type= 3 
+Conn Use RC Family=False
+Conn OverFlow Method 2D=True
+Conn Weir WD=10
+Conn Weir Coef=2.6
+Conn Weir Is Ogee= 0 
+Conn Simple Spill Pos Coef=0.05
+Conn Simple Spill Neg Coef=0.05
+Conn Weir SE= 2 
+       0    16.5     500    16.5
+Connection Culv=1,5,,50,0.022,0.4,1,1,1,11.5,11.4, 1 ,Culvert #1  , 0 ,0
+     250     250
+Conn Culv Bottom n=0.022
+Conn HTab HWMax=25
+Conn HTab TWMax=25
+
+LCMann Time=Dec/30/1899 00:00:00
+LCMann Region Time=Dec/30/1899 00:00:00
+LCMann Table=0
+Chan Stop Cuts=-1 
+
+
+
+Use User Specified Reach Order=0
+User Specified Reach Order=Diamond         ,North           
+User Specified Reach Order=Diamond         ,Northwest       
+User Specified Reach Order=Diamond         ,Northeast       
+User Specified Reach Order=Diamond         ,Southeast       
+User Specified Reach Order=Diamond         ,Southwest       
+User Specified Reach Order=Diamond         ,East            
+User Specified Reach Order=Diamond         ,West            
+User Specified Reach Order=Diamond         ,South           
+GIS Ratio Cuts To Invert=-1
+GIS Limit At Bridges=0
+Composite Channel Slope=5

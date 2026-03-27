@@ -1,0 +1,27 @@
+
+Geometric Preprocessor Version 4.0.0 March 2008
+
+Finished Processing Geometry
+
+Performing Unsteady Flow Simulation  Version 4.0.0 March 2008
+
+
+
+Finished Unsteady Flow Simulation
+
+Writing Results to DSS
+Finished Writing Results to DSS
+
+Reading Data for Post Process
+
+Running Post Processor  Version 4.0.0 March 2008
+
+Finished Post Processing
+
+Task	Time
+Preprocessing Geometry	0.08 sec
+Unsteady Flow Computations	2.17 sec
+Writing to DSS	0.49 sec
+Post-Processing	3.86 sec
+Complete Process	6.61 sec
+

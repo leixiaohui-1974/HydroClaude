@@ -1,0 +1,8 @@
+Total: 67 projects
+Auto-dismiss dialog thread started
+[38/67] 1D Unsteady Flow Hydraulics\Unsteady Flow Encroachment Analysis... C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+C:\Users\lxh\AppData\Local\Programs\Python\Python310\lib\site-packages\ras_commander\RasPrj.py:1682: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  self.results_df = pd.concat(frames, ignore_index=True)
+2/3 OK (356s, 2 HDF)
+[39/67] 2D Unsteady Flow Hydraulics\BaldEagleCrkMulti2D... 

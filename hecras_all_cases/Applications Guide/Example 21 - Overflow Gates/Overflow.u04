@@ -1,0 +1,85 @@
+Flow Title=Test event - Complex Network
+Program Version=4.20
+Use Restart= 0 
+Initial Flow Loc=Reach 1         ,A               ,1000    ,100
+Initial Storage Elev=SA 1            ,90
+Initial Storage Elev=SA 2            ,90
+Boundary Location=Reach 1         ,A               ,1000    ,        ,                ,                ,                
+Interval=1HOUR
+Flow Hydrograph= 100 
+     100     100     100     100     100     100     100  108.33  116.67     125
+  133.33  141.67     150  158.33  166.67     175  183.33  191.67     200   212.5
+     225   237.5     250   262.5     275   287.5     300   312.5     325   337.5
+     350  341.67  333.33     325  316.67  308.33     300  291.67  283.33     275
+  266.67  258.33     250  241.67  233.33     225  216.67  208.33     200  195.83
+  191.67   187.5  183.33  179.17     175  172.92  170.83  168.75  166.67  164.58
+   162.5  160.42  158.33  156.25  154.17  152.08     150  147.92  145.83  143.75
+  141.67  139.58   137.5  135.42  133.33  131.25  129.17  127.08     125  123.81
+  122.62  121.43  120.24  119.05  117.86  116.67  115.48  114.29   113.1   111.9
+  110.71  109.52  108.33  107.14  105.95  104.76  103.57  102.38  101.19     100
+DSS Path=
+Use DSS=False
+CWMS InputPosition= 0 
+Use Fixed Start Time=False
+Fixed Start Date/Time=,
+Is Critical Boundary=False
+Critical Boundary Flow=
+Boundary Location=Reach 1         ,A               ,250     ,        ,                ,                ,                
+Gate Name=Gate #1     
+Gate DSS Path=
+Gate Use DSS=False
+Gate Time Interval=1HOUR
+Gate Use Fixed Start Time=False
+Gate Fixed Start Date/Time=,
+Gate Openings= 100 
+       1       1       1       1       1       1       1       1       1       1
+       1     1.2     1.4     1.6     1.8       2    2.17    2.33     2.5    2.67
+    2.83       3    3.14    3.29    3.43    3.57    3.71    3.86       4    4.17
+    4.33     4.5    4.67    4.83       5    5.14    5.29    5.43    5.57    5.71
+    5.86       6    5.86    5.71    5.57    5.43    5.29    5.14       5    4.89
+    4.78    4.67    4.56    4.44    4.33    4.22    4.11       4    3.89    3.78
+    3.67    3.56    3.44    3.33    3.22    3.11       3    2.83    2.67     2.5
+    2.33    2.17       2    1.86    1.71    1.57    1.43    1.29    1.14       1
+       1       1       1       1       1       1       1       1       1       1
+       1       1       1       1       1       1       1       1       1       1
+Gate Name=Gate #2     
+Gate DSS Path=
+Gate Use DSS=False
+Gate Time Interval=1HOUR
+Gate Use Fixed Start Time=False
+Gate Fixed Start Date/Time=,
+Gate Openings= 100 
+      .1      .1      .1      .1      .1      .1      .1      .1      .1      .1
+      .1      .1      .1      .1      .1      .1      .1      .1      .1      .1
+      .1      .1      .1      .1      .1      .1      .1      .1      .1      .1
+      .1      .1      .1      .1      .1      .1      .1      .1      .1      .1
+      .1      .1      .1      .1      .1      .1      .1      .1      .1      .1
+      .1      .1      .1      .1      .1      .1      .1      .1      .1      .1
+      .1      .1      .1      .1      .1      .1      .1      .1      .1      .1
+      .1      .1      .1      .1      .1      .1      .1      .1      .1      .1
+      .1      .1      .1      .1      .1      .1      .1      .1      .1      .1
+      .1      .1      .1      .1      .1      .1      .1      .1      .1      .1
+Boundary Location=Reach 1         ,A               ,899     ,        ,                ,                ,                
+Gate Name=Gate #1     
+Gate DSS Path=
+Gate Use DSS=False
+Gate Time Interval=1HOUR
+Gate Use Fixed Start Time=False
+Gate Fixed Start Date/Time=,
+Gate Openings= 100 
+       1       1       1       1       1       1       1       1       1     1.5
+       2     2.5       3     3.5       4     4.5       5    5.09    5.17    5.26
+    5.34    5.43    5.52     5.6    5.69    5.78    5.86    5.95    6.03    6.12
+    6.21    6.29    6.38    6.47    6.55    6.64    6.72    6.81     6.9    6.98
+    7.07    7.16    7.24    7.33    7.41     7.5    7.41    7.33    7.24    7.16
+    7.07    6.98     6.9    6.81    6.72    6.64    6.55    6.47    6.38    6.29
+    6.21    6.12    6.03    5.95    5.86    5.78    5.69     5.6    5.52    5.43
+    5.34    5.26    5.17    5.09       5       5       5       5       5       5
+       5       5       5       5       5       5       5       5       5       5
+       5       5       5       5       5       5       5       5       5       5
+Boundary Location=Reach 1         ,A               ,0.0     ,        ,                ,                ,                
+Friction Slope=0.0002
+Boundary Location=                ,                ,        ,        ,SA1toSA2        ,                ,                
+Elev Controlled Gate=Gate #1     ,,,0.1,0.1,5,0,2, 2 
+Elev Controlled Gate Ref=,,                ,                ,        ,                
+Elev Controlled Gate Stage Diff=2,0,                ,                ,        ,SA 1            ,                ,                ,        ,SA 2            

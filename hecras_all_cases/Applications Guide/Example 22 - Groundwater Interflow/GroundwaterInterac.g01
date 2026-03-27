@@ -1,0 +1,621 @@
+Geom Title=Groundwater Geometry
+Program Version=6.30
+Viewing Rectangle=-0.1345 , 0.7318 , 0.9154 , 0.0235 
+
+Junct Name=Sutter          
+Junct Desc=FLow confluence of Fall River and Butte Creek, 0 , 0 , 0 ,0
+Junct X Y & Text X Y=0.4030612,0.472973,0.2905983,0.4962687
+Up River,Reach=Fall River      ,Upper Reach
+Up River,Reach=Butte Cr.       ,Butte Cr.
+Dn River,Reach=Fall River      ,Lower Reach
+Junc L&A=100,
+Junc L&A=120,
+
+River Reach=Butte Cr.       ,Butte Cr.       
+Reach XY= 10 
+       0.6760204       0.8986486       0.6602527       0.8861722
+       0.6479592       0.8581081       0.6426911       0.8299168
+       0.6462034       0.7939134       0.6356665       0.7511593
+       0.6022995       0.7039048       0.5021986       0.6296477
+       0.4550103       0.5616855       0.4030612        0.472973
+Rch Text X Y=0.6324787,0.7350746
+Reverse River Text= 0 
+
+Type RM Length L Ch R = 1 ,0.4     ,500,500,500
+BEGIN DESCRIPTION:
+upstream boundary of butte cr.
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.684616953404980.887784258112620.677141689574560.89723151192773
+       0.6760204       0.89864860.674899110425440.90006568807227
+0.669666425744150.90667876574285
+Node Last Edited Time=Feb/01/2000 12:21:04
+#Sta/Elev= 8 
+     210   90.25     220   82.25     260   80.25     265   70.25     270   71.25
+     275   81.25     300   83.25     310   91.25
+#Mann= 3 ,-1,0
+     210     .07       0     260     .04       0     275     .07       0
+Bank Sta=260,275
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=70.75,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,0.3     ,500,500,500
+BEGIN DESCRIPTION:
+butte cr riv sta  0.3
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.658719346655030.787055359587620.646792344410440.78875147026766
+0.645037794301860.789183885381970.643283244193290.78961630049629
+0.634972903961910.79104879150483
+Node Last Edited Time=Feb/01/2000 12:21:04
+#Sta/Elev= 8 
+     210    90.1     220    82.1     260    80.1     265    70.1     270    71.1
+     275    81.1     300    83.1     310    91.1
+#Mann= 9 ,-1,0
+     210     .07       0     210     .07       0     260     .04       0
+     210     .07       0     260     .04       0     275     .07       0
+     210     .07       0     260     .04       0     275     .07       0
+Bank Sta=260,275
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=70.6,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.4,0.2
+
+Type RM Length L Ch R = 1 ,0.24    ,120,120,120
+BEGIN DESCRIPTION:
+upstream of bridge
+END DESCRIPTION:
+XS GIS Cut Line=5
+ 0.59171185793740.67880082525089 0.58453439597750.68847626910611
+0.58345777668351 0.68992758568440.582381157389530.69137890226268
+ 0.57735693401760.69815171296134
+Node Last Edited Time=Feb/01/2000 12:21:04
+#Sta/Elev= 8 
+     210      90     220      82     260      80     265      70     270      70
+     275      81     300      83     310      91
+#Mann= 3 ,-1,0
+     210     .07       0     260     .04       0     275     .07       0
+#XS Ineff= 2 ,-1 
+     210     260    81.9     275     310    81.9
+Permanent Ineff=
+       F       F
+Bank Sta=260,275
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=70.5,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.4,0.2
+
+Type RM Length L Ch R = 1 ,0.20    ,500,500,500
+BEGIN DESCRIPTION:
+downstream of bridge
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.568490792684860.661574916547120.561313330724950.67125036040235
+0.560236711430970.672701676980630.559160092136980.67415299355892
+0.554135868765050.68092580425758
+Node Last Edited Time=Feb/01/2000 12:21:04
+#Sta/Elev= 8 
+     210      90     220      82     260      80     265      70     270      70
+     275      81     300      83     310      91
+#Mann= 3 ,-1,0
+     210     .07       0     260     .04       0     275     .07       0
+#XS Ineff= 2 ,-1 
+     210     260    81.7     275     310    81.7
+Permanent Ineff=
+       F       F
+Bank Sta=260,275
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=70.5,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.4,0.2
+
+Type RM Length L Ch R = 1 ,0.1     ,500,500,500
+BEGIN DESCRIPTION:
+river mile 0.1 of butte creek
+END DESCRIPTION:
+XS GIS Cut Line=5
+ 0.48608495221730.582149128354090.476189386092470.58901993216809
+0.47470505117374 0.59005055274020.47322071625502 0.5910811733123
+0.46629381996764 0.5958907359821
+Node Last Edited Time=Apr/29/2009 15:50:04
+#Sta/Elev= 8 
+     210    89.4     220    81.4     260    79.4  264.45   69.51  271.05   69.58
+     275    80.4     300    82.4     310    90.4
+#Mann= 3 ,-1,0
+     210     .07       0     260     .04       0     275     .07       0
+Bank Sta=260,275
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=70.01,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,0.0     ,500,500,500
+BEGIN DESCRIPTION:
+river mile 0.0 of butte creek
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.423538952284310.48052624152114 0.41314323156640.48661386542022
+0.411583873458710.487527009005080.410024515351020.48844015258994
+0.40274751084848 0.4927014893193
+Node Last Edited Time=Apr/29/2009 15:49:40
+#Sta/Elev= 8 
+     210    89.1     220    81.1     260    79.1  264.88    69.1  270.48   69.19
+     275    80.1     300    82.1     310    90.1
+#Mann= 3 ,-1,0
+     210     .07       0     260     .04       0     275     .07       0
+Bank Sta=260,275
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=69.6,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+River Reach=Fall River      ,Upper Reach     
+Reach XY= 8 
+          0.0313       0.8283582       0.1047571        0.832167
+       0.1913536       0.8096649       0.2457962       0.7759117
+       0.3072596       0.7241567       0.3617001       0.6453992
+       0.3879031       0.5599615       0.4030612        0.472973
+Rch Text X Y=0.042735,0.7425373
+Reverse River Text= 0 
+
+Type RM Length L Ch R = 1 ,10.4    ,450,500,550
+BEGIN DESCRIPTION:
+Upstream boundary of yolo cr.
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.029859739176450.856135290774460.03096031024563 0.8349095086158
+          0.0313       0.82835820.031639689754370.82180689138421
+0.033107196315320.79350433514657
+Node Last Edited Time=Apr/30/2009 12:21:39
+#Sta/Elev= 8 
+     110   90.93  120.37   80.93  203.31   78.93  217.71   70.93  246.51   71.93
+  260.91   79.93  374.96   81.93  385.33   91.93
+#Mann= 3 ,-1,0
+     110     .06       0  203.31    .035       0  260.91     .05       0
+Bank Sta=203.31,260.91
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=71.43,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,10.3    ,450,500,500
+BEGIN DESCRIPTION:
+river mile 10.3 of fall cr.
+END DESCRIPTION:
+XS GIS Cut Line=5
+ 0.15009716539150.846273452600630.144941373970610.82643203816468
+0.143795642543740.822022834956680.142649911116870.81761363174869
+0.135775522555680.79115841250075
+Node Last Edited Time=Feb/01/2000 12:21:04
+#Sta/Elev= 8 
+     110    90.3     120    80.3     200    78.3     210    70.3     230    71.3
+     240    79.3     350    81.3     360    91.3
+#Mann= 6 ,-1,0
+     110       0       0               0       0               0       0
+     110     .06       0     200    .035       0     240     .05       0
+Bank Sta=200,240
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=70.8,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 6 ,10.29   ,,,
+Node Last Edited Time=Apr/29/2009 15:25:31
+Lateral Weir Pos= 3 
+Lateral Weir End=                ,                ,        ,Upper Pond      
+Lateral Weir Distance=1
+Lateral Weir TW Multiple XS=0
+Lateral Weir WD=20
+Lateral Weir Coef=2
+LW OverFlow Method 2D=0
+LW OverFlow Use Velocity Into 2D=0
+Lateral Weir WSCriteria=-1 
+Lateral Weir Flap Gates= 0 
+Lateral Weir Hagers EQN= 0 ,,,,,
+Lateral Weir SS=0.05,0.05,
+Lateral Weir Type= 0 
+Lateral Weir Connection Pos and Dist= 0 ,
+Lateral Weir SE= 2 
+       0      82     200      81
+Lateral Weir Centerline= 0 
+Lateral Weir HW RS Station=10.3    ,-1
+Lateral Weir TW RS Station=,0
+LW Div RC= 0 ,False,,
+
+Type RM Length L Ch R = 1 ,10.2    ,100,100,100
+BEGIN DESCRIPTION:
+river mile 10.2 of fall cr.
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.261120002305410.795687316193940.24904424405454 0.7791210862468
+0.246329071699970.77546299760423 0.24361389934540.77180490896167
+0.227526508127090.74970668081243
+Node Last Edited Time=Feb/01/2000 12:21:04
+#Sta/Elev= 8 
+     110    90.1     120    80.1     200    78.1     210    70.1     235    70.1
+     240    79.1     350    81.1     360    91.1
+#Mann= 3 ,-1,0
+     110     .06       0     200    .035       0     240     .05       0
+Bank Sta=200,240
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=70.6,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.4,0.2
+
+Type RM Length L Ch R = 1 ,10.11   ,110,110,110
+BEGIN DESCRIPTION:
+Upstream of culverts
+END DESCRIPTION:
+XS GIS Cut Line=5
+ 0.27989162721030.779957533144930.266687171115910.76427613488946
+0.263752847539380.760791379721580.26081852396285 0.7573066245537
+ 0.24342672958610.73621963017556
+Node Last Edited Time=Feb/01/2000 12:21:04
+#Sta/Elev= 8 
+     110    90.1     120    80.1     200    78.1     210    70.1     235    70.1
+     240    79.1     350    81.1     360    91.1
+#Mann= 3 ,-1,0
+     110     .06       0     200    .035       0     240     .05       0
+#XS Ineff= 2 ,-1 
+     110     203    79.9     236     360    79.9
+Permanent Ineff=
+       F       F
+Bank Sta=200,240
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=70.6,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.4,0.2
+
+Type RM Length L Ch R = 1 ,10.09   ,290,290,290
+BEGIN DESCRIPTION:
+downstream of culverts
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.299057780633650.763818753474010.285853324539260.74813735521855
+0.282919000962730.74465260005066 0.27998467738620.74116784488278
+0.262378735927020.72025931387549
+Node Last Edited Time=Feb/01/2000 12:21:04
+#Sta/Elev= 8 
+     110    90.1     120    80.1     200    78.1     210    70.1     235    70.1
+     240    79.1     350    81.1     360    91.1
+#Mann= 3 ,-1,0
+     110     .06       0     200    .035       0     240     .05       0
+#XS Ineff= 2 ,-1 
+     110     206    79.7     236     360    79.7
+Permanent Ineff=
+       F       F
+Bank Sta=200,240
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=70.6,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.4,0.2
+
+Type RM Length L Ch R = 1 ,10      ,450,500,550
+BEGIN DESCRIPTION:
+river mile 10 of fall creek
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.34733794029154 0.71024125784090.330474315947480.69858441066949
+0.326726843871030.695994000186950.322979371794570.69340358970442
+0.30049453933583 0.6778611268092
+Node Last Edited Time=Feb/01/2000 12:21:04
+#Sta/Elev= 8 
+     110      90     120      80     200      78     210      70     235      70
+     240      79     350      81     360      91
+#Mann= 3 ,-1,0
+     110     .06       0     200    .035       0     240     .05       0
+Bank Sta=200,240
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=70.5,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,9.9     ,450,500,550
+BEGIN DESCRIPTION:
+river mile 9.9 of fall creek
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.399054748974210.602062268381340.38141537871393 0.5966524268368
+0.377059978649670.59531666349247 0.37270457858540.59398090014814
+0.349185418238370.58676777808875
+Node Last Edited Time=Feb/01/2000 12:21:04
+#Sta/Elev= 8 
+     110    89.5     119    79.5     191    77.5     201    69.5     221    70.5
+     231    78.5     330    80.5     339    90.5
+#Mann= 6 ,-1,0
+     110     .06       0     191    .035       0     231     .05       0
+     110     .06       0     191    .035       0     231     .05       0
+Bank Sta=191,231
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=70,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,9.8     ,450,500,550
+BEGIN DESCRIPTION:
+river mile 9.8 of fall creek
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.420135199789390.487508909990230.405594070802420.48497505910997
+0.401106068240030.484193006405980.396618065677630.48341095370199
+0.377229892553650.48003248566276
+Node Last Edited Time=Apr/29/2009 15:49:09
+#Sta/Elev= 8 
+     110    89.1   117.2    79.1   174.8    77.1  185.31   69.08  203.78   69.05
+   214.8    78.1     294    80.1   301.2    90.1
+#Mann= 3 ,-1,0
+     110     .06       0   174.8    .035       0   214.8     .05       0
+Bank Sta=174.8,214.8
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=69.55,1, 21 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+River Reach=Fall River      ,Lower Reach     
+Reach XY= 7 
+       0.4030612        0.472973        0.438495       0.4001589
+       0.5186069       0.2949519       0.5674885       0.2703733
+       0.6028526       0.2432137        0.658797       0.1825279
+       0.6951567           0.082
+Rch Text X Y=0.6353276,0.3470149
+Reverse River Text= 0 
+
+Type RM Length L Ch R = 1 ,9.79    ,500,500,500
+BEGIN DESCRIPTION:
+river mile 9.79 of yolo river
+END DESCRIPTION:
+XS GIS Cut Line=5
+ 0.43082295780850.472867284745870.413702446105280.46453586558956
+0.408418337181620.461964439742380.40313422825797 0.4593930138952
+ 0.38030687596080.44828445338525
+Node Last Edited Time=Feb/01/2000 12:21:04
+#Sta/Elev= 8 
+     110      89  118.64      79  187.76      77  199.76      69  223.76      70
+  235.76      78   330.8      80  339.44      90
+#Mann= 3 ,-1,0
+     110     .06       0  187.76    .035       0  235.76     .05       0
+Bank Sta=187.76,235.76
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=69.5,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,9.7     ,500,500,500
+BEGIN DESCRIPTION:
+river mile 9.7 of yolo river
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.494811652368690.375554438136780.476634130098040.36171281308907
+0.471023662725130.357440614460360.465413195352230.35316841583164
+ 0.4411752029673 0.3347119288855
+Node Last Edited Time=Feb/01/2000 12:21:04
+#Sta/Elev= 8 
+     110    88.5  120.37    78.5  203.31    76.5  217.71    68.5  246.51    69.5
+  260.91    77.5  374.96    79.5  385.33    89.5
+#Mann= 3 ,-1,0
+     110     .06       0  203.31    .035       0  260.91     .05       0
+Bank Sta=203.31,260.91
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=69,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,9.6     ,100,100,100
+BEGIN DESCRIPTION:
+river mile 9.6 of yolo river
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.572246386190420.301415888323920.560982843379530.28153762121614
+0.557814945673320.275237347461090.554647047967110.26893707370604
+0.53933187460322 0.2426014011291
+Node Last Edited Time=Nov/07/2002 16:34:01
+#Sta/Elev= 8 
+     110    88.2  120.37    78.2  203.31    76.2  217.71    68.2  246.51    69.2
+  260.91    77.2  374.96    79.2  385.33    89.2
+#Mann= 3 ,-1,0
+     110     .15       0  203.31    .035       0  260.91     .15       0
+#XS Ineff= 2 , 0 
+       0     193      83     270       0      83
+Permanent Ineff=
+       F       F
+Bank Sta=203.31,260.91
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=68.7,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 1 ,9.5     ,400,400,400
+BEGIN DESCRIPTION:
+river mile 9.5 of yolo river
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.595835695765860.286281695500340.582615968261810.26764700460996
+0.57832068925556 0.26205418747330.574025410249310.25646137033665
+0.55675110673169 0.2313671354763
+Node Last Edited Time=Nov/07/2002 16:34:43
+#Sta/Elev= 8 
+     110    88.1  120.37    78.1  203.31    76.1  217.71    68.1  246.51    69.1
+  260.91    77.1  374.96    79.1  385.33    89.1
+#Mann= 3 ,-1,0
+     110     .15       0  203.31    .035       0  260.91     .15       0
+#XS Ineff= 2 , 0 
+       0     193      83     270       0      83
+Permanent Ineff=
+       F       F
+Bank Sta=203.31,260.91
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=68.6,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.5,0.3
+
+Type RM Length L Ch R = 6 ,9.49    ,,,
+Node Last Edited Time=Apr/29/2009 15:28:02
+Lateral Weir Pos= 3 
+Lateral Weir End=                ,                ,        ,Lower Pond      
+Lateral Weir Distance=1
+Lateral Weir TW Multiple XS=0
+Lateral Weir WD=20
+Lateral Weir Coef=2
+LW OverFlow Method 2D=0
+LW OverFlow Use Velocity Into 2D=0
+Lateral Weir WSCriteria=-1 
+Lateral Weir Flap Gates= 0 
+Lateral Weir Hagers EQN= 0 ,,,,,
+Lateral Weir SS=0.05,0.05,
+Lateral Weir Type= 0 
+Lateral Weir Connection Pos and Dist= 0 ,
+Lateral Weir SE= 2 
+       0      80     200      79
+Lateral Weir Centerline= 0 
+Lateral Weir HW RS Station=9.5     ,-1
+Lateral Weir TW RS Station=,0
+LW Div RC= 0 ,False,,
+
+Type RM Length L Ch R = 1 ,9.4     ,500,500,500
+BEGIN DESCRIPTION:
+river mile 9.4 of yolo river
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.67119420710685 0.2131261570294 0.65345752932730.19872396409895
+0.648272664343230.193944194192080.643087799359170.18916442428521
+  0.618802974121 0.1707696030467
+Node Last Edited Time=Feb/01/2000 12:21:04
+#Sta/Elev= 8 
+     110      88  120.37      78  203.31      76  217.71      68  246.51      69
+  260.91      77  374.96      79  385.33      89
+#Mann= 3 ,-1,0
+     110     .06       0  203.31    .035       0  260.91     .05       0
+Bank Sta=203.31,260.91
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=68.5,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Type RM Length L Ch R = 1 ,9.3     ,500,500,500
+BEGIN DESCRIPTION:
+river mile 9.3 of yolo river
+END DESCRIPTION:
+XS GIS Cut Line=5
+0.723273592787190.092169532902550.701788151920640.08439851426717
+       0.6951567           0.0820.688525248079360.07960148573283
+0.659876461718020.06923957349292
+Node Last Edited Time=Feb/01/2000 12:21:04
+#Sta/Elev= 8 
+     110   87.85  120.37   77.85  203.31   75.85  217.71   67.85  246.51   68.85
+  260.91   76.85  374.96   78.85  385.33   88.85
+#Mann= 3 ,-1,0
+     110     .06       0  203.31    .035       0  260.91     .05       0
+Bank Sta=203.31,260.91
+XS Rating Curve= 0 ,0
+XS HTab Starting El and Incr=68.35,1, 20 
+XS HTab Horizontal Distribution= 5 , 5 , 5 
+Exp/Cntr=0.3,0.1
+
+Storage Area=Lower Pond      ,0.3075376,0.2287422
+Storage Area Surface Line= 31 
+0.645683521923620.09796152758133                
+0.64955042259728  0.073471145686                
+0.653417328463540.04769179632249                
+0.631504878042830.03222418670438                
+0.478117752791690.03995799151344                
+0.420114213262060.06187043847242                
+0.38015622521036 0.0837828854314                
+0.360821709725990.10053946251768                
+0.349221005974150.11987397454031                
+ 0.30797404353080.17143267326733                
+0.249970510924640.20236789250354                
+0.175210394308730.20623479490806                
+0.137830341193380.20236789250354                
+ 0.09787234621820.19205615275813                
+0.032135008802980.20107892503536                
+-0.04906994515380.23459207920792                
+-0.06067064890570.29259561527581                
+-0.02973543313130.33384257425743                
+0.011511529311770.34286534653465                
+0.06693712698116  0.345443281471                
+0.172632462832430.35962192362093                
+0.257704312268580.38797920792079                
+0.341487201158340.41504752475248                
+0.39433486388503 0.4086026874116                
+ 0.41753628176040.38411230551627                
+0.438159757762430.32739773691655                
+0.465228078001750.28872871287129                
+0.534832317713310.24232588401697                
+0.559322702854020.21654653465347                
+0.618615202495640.15983196605375                
+0.645683521923620.09796152758133                
+Storage Area Type= 0 
+Storage Area Area=60
+Storage Area Min Elev=68
+Storage Area Vol Elev= 1 
+               0
+Storage Area Is2D=0
+Storage Area Point Generation Data=0,0,,
+Storage Area 2D Points= 0 
+Storage Area 2D PointsPerimeterTime=17Aug2022 16:13:40
+Storage Area Mannings=0.06
+2D Cell Volume Filter Tolerance=0.01
+2D Cell Minimum Area Fraction=0.01
+2D Face Profile Filter Tolerance=0.01
+2D Face Area Elevation Profile Filter Tolerance=0.01
+2D Face Area Elevation Conveyance Ratio=0.02
+2D Face Area Laminar Depth=0.2
+2D Multiple Face Mann n=0
+
+Storage Area=Upper Pond      ,0.115733,0.572124
+Storage Area Surface Line= 24 
+0.372193983611060.47641282103551                
+0.372193983611060.45849331885826                
+0.361442282304710.43101674885314                
+0.313656943165370.42862748189617                
+ 0.27542867185390.42743284841769                
+0.221670165322150.44296308363797                
+0.197777495752480.41668114711134                
+0.173884826182820.40115091189106                
+0.118931686172580.37845287579987                
+-0.01247799646050.38800994362774                
+-0.03517603255170.42743284841769                
+-0.08893453908350.44774161755191                
+-0.11163257517470.51464109234698                
+-0.12596817691650.56242643148631                
+-0.11641110908860.64724540845863                
+-0.04353846690110.74401072021578                
+0.032918075721780.79060142587663                
+0.136851188349830.78462825848422                
+0.230032599671540.74759462065123                
+0.240784300977890.73206438543095                
+0.264676970547550.71295024977522                
+0.301710608380540.67233271150678                
+0.348301314041390.58392983409901                
+0.372193983611060.47641282103551                
+Storage Area Type= 0 
+Storage Area Area=50
+Storage Area Min Elev=70
+Storage Area Vol Elev= 1 
+               0
+Storage Area Is2D=0
+Storage Area Point Generation Data=0,0,,
+Storage Area 2D Points= 0 
+Storage Area 2D PointsPerimeterTime=17Aug2022 16:13:40
+Storage Area Mannings=0.06
+2D Cell Volume Filter Tolerance=0.01
+2D Cell Minimum Area Fraction=0.01
+2D Face Profile Filter Tolerance=0.01
+2D Face Area Elevation Profile Filter Tolerance=0.01
+2D Face Area Elevation Conveyance Ratio=0.02
+2D Face Area Laminar Depth=0.2
+2D Multiple Face Mann n=0
+
+LCMann Time=Dec/30/1899 00:00:00
+LCMann Region Time=Dec/30/1899 00:00:00
+LCMann Table=0
+Chan Stop Cuts=-1 
+
+
+
+Use User Specified Reach Order=0
+GIS Ratio Cuts To Invert=-1
+GIS Limit At Bridges=0
+Composite Channel Slope=5

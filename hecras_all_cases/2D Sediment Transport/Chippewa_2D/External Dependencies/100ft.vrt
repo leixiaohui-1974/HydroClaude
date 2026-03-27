@@ -1,0 +1,32 @@
+<VRTDataset rasterXSize="131" rasterYSize="315">
+  <SRS>PROJCS["USA_Contiguous_Albers_Equal_Area_Conic_USGS_version",GEOGCS["NAD83",DATUM["North_American_Datum_1983",SPHEROID["GRS 1980",6378137,298.2572221010042,AUTHORITY["EPSG","7019"]],AUTHORITY["EPSG","6269"]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433],AUTHORITY["EPSG","4269"]],PROJECTION["Albers_Conic_Equal_Area"],PARAMETER["standard_parallel_1",29.5],PARAMETER["standard_parallel_2",45.5],PARAMETER["latitude_of_center",23],PARAMETER["longitude_of_center",-96],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["US survey foot",0.3048006096012192,AUTHORITY["EPSG","9003"]]]</SRS>
+  <GeoTransform>  1.0243600174072300e+06,  2.5000000000000000e+01,  0.0000000000000000e+00,  7.8582974238293301e+06,  0.0000000000000000e+00, -2.5000000000000000e+01</GeoTransform>
+  <VRTRasterBand dataType="Float32" band="1">
+    <Metadata>
+      <MDI key="STATISTICS_MAXIMUM">769.08178710938</MDI>
+      <MDI key="STATISTICS_MEAN">680.17411777811</MDI>
+      <MDI key="STATISTICS_MINIMUM">667.51080322266</MDI>
+      <MDI key="STATISTICS_STDDEV">10.347182488617</MDI>
+    </Metadata>
+    <NoDataValue>-9999</NoDataValue>
+    <ColorInterp>Gray</ColorInterp>
+    <Histograms>
+      <HistItem>
+        <HistMin>667.510803222656</HistMin>
+        <HistMax>769.081787109375</HistMax>
+        <BucketCount>256</BucketCount>
+        <IncludeOutOfRange>1</IncludeOutOfRange>
+        <Approximate>0</Approximate>
+        <HistCounts>8|22|56|99|173|202|260|332|470|882|819|700|626|590|695|796|429|358|290|286|293|316|279|280|282|300|279|268|263|294|320|1167|1234|1004|1576|727|827|1883|2286|629|978|892|153|75|74|32|51|48|44|31|24|24|23|24|19|16|20|10|11|9|13|16|12|8|10|10|9|4|12|3|9|6|7|6|6|3|5|8|8|7|6|11|8|5|10|5|12|9|7|6|6|8|10|12|10|5|8|13|7|5|8|8|4|6|7|7|10|12|5|5|6|7|6|6|8|8|10|4|6|2|8|10|7|5|4|8|15|2|6|4|6|11|3|5|11|3|9|5|10|5|10|9|7|9|8|6|5|10|11|4|9|5|9|6|7|6|3|5|9|4|8|4|8|7|3|10|4|6|7|5|7|7|4|5|7|12|4|7|4|5|9|6|8|8|0|4|5|5|11|4|7|4|4|4|5|5|5|3|7|3|5|6|5|4|0|4|2|5|0|1|4|5|1|1|3|2|1|3|1|1|2|2|0|2|5|2|5|2|0|1|1|0|1|1|2|1|3|3|1|2|2|0|2|1|0|0|0|0|1|2|1|0|2|2|3|2</HistCounts>
+      </HistItem>
+    </Histograms>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">100ft.test1d.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="131" RasterYSize="315" DataType="Float32" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="131" ySize="315" />
+      <DstRect xOff="0" yOff="0" xSize="131" ySize="315" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+</VRTDataset>
