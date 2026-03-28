@@ -4403,5 +4403,47 @@
         396.43585228800004
       ]
     }
+  ],
+  "levees": [
+    {
+      "left_station_ft": 866.0,
+      "left_elevation_ft": 214.8,
+      "left_station_m": 263.9568,
+      "left_elevation_m": 65.47104
+    },
+    null,
+    {
+      "right_station_ft": 906.0,
+      "right_elevation_ft": 214.3,
+      "right_station_m": 276.1488,
+      "right_elevation_m": 65.31864
+    },
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    {
+      "right_station_ft": 358.0,
+      "right_elevation_ft": 209.0,
+      "right_station_m": 109.11840000000001,
+      "right_elevation_m": 63.7032
+    },
+    {
+      "right_station_ft": 365.5,
+      "right_elevation_ft": 208.6,
+      "right_station_m": 111.40440000000001,
+      "right_elevation_m": 63.58128
+    },
+    {
+      "right_station_ft": 518.0,
+      "right_elevation_ft": 209.0,
+      "right_station_m": 157.8864,
+      "right_elevation_m": 63.7032
+    }
   ]
 }

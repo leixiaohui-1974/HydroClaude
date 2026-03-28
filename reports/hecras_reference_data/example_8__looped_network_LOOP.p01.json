@@ -5487,5 +5487,113 @@
         15.85743409152
       ]
     }
+  ],
+  "levees": [
+    {
+      "left_station_ft": 55.35,
+      "left_elevation_ft": 27.15,
+      "left_station_m": 16.87068,
+      "left_elevation_m": 8.27532
+    },
+    {
+      "left_station_ft": 35.0,
+      "left_elevation_ft": 26.7,
+      "left_station_m": 10.668000000000001,
+      "left_elevation_m": 8.138160000000001
+    },
+    {
+      "left_station_ft": 27.6,
+      "left_elevation_ft": 26.65,
+      "left_station_m": 8.41248,
+      "left_elevation_m": 8.12292
+    },
+    null,
+    null,
+    null,
+    {
+      "left_station_ft": 27.8,
+      "left_elevation_ft": 24.2,
+      "left_station_m": 8.47344,
+      "left_elevation_m": 7.3761600000000005
+    },
+    null,
+    null,
+    null,
+    {
+      "left_station_ft": 18.8,
+      "left_elevation_ft": 22.41,
+      "left_station_m": 5.73024,
+      "left_elevation_m": 6.830568
+    },
+    {
+      "left_station_ft": 21.0,
+      "left_elevation_ft": 22.13,
+      "left_station_m": 6.4008,
+      "left_elevation_m": 6.745224
+    },
+    {
+      "left_station_ft": 23.2,
+      "left_elevation_ft": 21.86,
+      "left_station_m": 7.07136,
+      "left_elevation_m": 6.662928
+    },
+    {
+      "left_station_ft": 25.3,
+      "left_elevation_ft": 21.58,
+      "left_station_m": 7.7114400000000005,
+      "left_elevation_m": 6.577584
+    },
+    {
+      "left_station_ft": 34.3,
+      "left_elevation_ft": 25.15,
+      "left_station_m": 10.45464,
+      "left_elevation_m": 7.66572
+    },
+    {
+      "left_station_ft": 33.0,
+      "left_elevation_ft": 24.5,
+      "left_station_m": 10.0584,
+      "left_elevation_m": 7.4676
+    },
+    {
+      "left_station_ft": 31.7,
+      "left_elevation_ft": 24.7,
+      "left_station_m": 9.66216,
+      "left_elevation_m": 7.528560000000001
+    },
+    {
+      "left_station_ft": 30.4,
+      "left_elevation_ft": 24.6,
+      "left_station_m": 9.26592,
+      "left_elevation_m": 7.498080000000001
+    },
+    {
+      "left_station_ft": 29.2,
+      "left_elevation_ft": 24.4,
+      "left_station_m": 8.90016,
+      "left_elevation_m": 7.43712
+    },
+    {
+      "left_station_ft": 27.8,
+      "left_elevation_ft": 24.2,
+      "left_station_m": 8.47344,
+      "left_elevation_m": 7.3761600000000005
+    },
+    {
+      "left_station_ft": 26.6,
+      "left_elevation_ft": 24.0,
+      "left_station_m": 8.10768,
+      "left_elevation_m": 7.315200000000001
+    },
+    {
+      "left_station_ft": 25.3,
+      "left_elevation_ft": 23.8,
+      "left_station_m": 7.7114400000000005,
+      "left_elevation_m": 7.25424
+    },
+    null,
+    null,
+    null,
+    null
   ]
 }

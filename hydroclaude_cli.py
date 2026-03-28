@@ -82,6 +82,41 @@ def _build_from_ref(ref: dict):
         ec.append(float(xg.get("expansion", 0.3)))
     ifa = ref.get("ineffective_areas", [])
 
+    # Levee → 等效 IFA 转换 (HEC-RAS TRM: levee 在 WSE < levee_elev 时阻断外侧流动)
+    _levees = ref.get("levees", [])
+    if _levees:
+        # 确保 ifa 长度匹配 n_xs
+        while len(ifa) < n_xs:
+            ifa.append(None)
+        for _li in range(min(len(_levees), n_xs)):
+            _lv = _levees[_li]
+            if not _lv or not isinstance(_lv, dict):
+                continue
+            _lv_blocks = []
+            # 左侧 levee: 阻断 [section_min, levee_station] 区域
+            if "left_station_m" in _lv and "left_elevation_m" in _lv:
+                se = gd[_li].get("station_elevation", [])
+                sta_min_m = se[0][0] * LF if se else 0
+                _lv_blocks.append({
+                    "sta_l": sta_min_m,
+                    "sta_r": float(_lv["left_station_m"]),
+                    "elev": float(_lv["left_elevation_m"]),
+                })
+            # 右侧 levee: 阻断 [levee_station, section_max] 区域
+            if "right_station_m" in _lv and "right_elevation_m" in _lv:
+                se = gd[_li].get("station_elevation", [])
+                sta_max_m = se[-1][0] * LF if se else 1e9
+                _lv_blocks.append({
+                    "sta_l": float(_lv["right_station_m"]),
+                    "sta_r": sta_max_m,
+                    "elev": float(_lv["right_elevation_m"]),
+                })
+            if _lv_blocks:
+                if ifa[_li] is None:
+                    ifa[_li] = _lv_blocks
+                elif isinstance(ifa[_li], list):
+                    ifa[_li].extend(_lv_blocks)
+
     # 桥梁参数：从 geometry.bridges 提取，扁平化 us_xs_index
     # 尝试从 HDF 文件加载 Lid Profile（arch 桥面积截断）
     _hdf_bridge_lid_map: dict = {}  # us_rs -> {bridge_opening_stations, bridge_opening_elevations, lid_offset_m}
