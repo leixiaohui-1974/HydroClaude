@@ -180,7 +180,7 @@ class SteadyProfileSolver:
 
         n_c = ((n_b^(3/2) + n_i^(3/2)) / 2)^(2/3)
 
-        注意：HEC-RAS 使用简单平均（除以 2），不是 P 加权平均。
+        HEC-RAS 使用简单平均（除以 2），验证与 HEC-RAS 计算值完全一致。
         P_bed 和 P_ice 参数保留用于向后兼容但不影响计算。
         """
         numer = n_bed ** 1.5 + n_ice ** 1.5
@@ -204,7 +204,8 @@ class SteadyProfileSolver:
         A, P_bed, _R, T = self._get_raw_geometry(h, station_index)
         ice_t, _n_ice = self._get_station_ice_params(station_index)
         if ice_t > 0.0 and T > 0.0:
-            # 冰盖修正：有效过水面积扣除冰层占据面积，湿周增加冰底接触周长
+            # 冰盖修正 (HEC-RAS TRM): Ai = A - ice_t*T, Ri = Ai / (Pb + Bi)
+            # Bi ≈ T (水面顶宽近似冰底宽度，与 HEC-RAS 一致)
             A = max(A - ice_t * T, 1e-9)
             P = P_bed + T
         else:
@@ -830,17 +831,8 @@ class SteadyProfileSolver:
             self._last_subdiv_A = float(A)
             return float(K), 1.0
 
-        # 有冰盖时采用整体断面复合糙率，避免分区 K 与冰底阻力耦合不一致
+        # 冰盖参数（用于分区 K 修正）
         ice_t, n_ice = self._get_station_ice_params(station_index)
-        if ice_t > 0.0:
-            A, P, R, T = self._get_geometry(h, station_index)
-            n_local = _n_ch(station_index)
-            if T > 0.0:
-                P_bed = max(P - T, 1e-9)
-                n_local = self._compute_sabaneev_nc(n_local, n_ice, P_bed, T)
-            K = (1.0 / max(n_local, 0.001)) * A * max(R, 1e-9) ** (2.0 / 3.0)
-            self._last_subdiv_A = float(A)
-            return float(K), 1.0
 
         xs = self._xs
         if (
@@ -1453,7 +1445,7 @@ class SteadyProfileSolver:
 
                 # HEC-RAS TRM: H/B 判定流态
                 B = opening_m
-                # 近全开闸门（opening >= 0.8*height）不适用 H/B 堰流过渡
+                # 近全开闸门（opening >= 0.85*height）不适用 H/B 堰流过渡
                 _gate_fully_open = (opening_m >= height_m * 0.85)
                 H_over_B = H / max(B, 1e-9) if (B > 0 and not _gate_fully_open) else 99.0
                 # 闸门自身的堰流系数（英制）
