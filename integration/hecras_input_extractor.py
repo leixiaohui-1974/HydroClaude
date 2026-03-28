@@ -749,10 +749,24 @@ class HECRASInputExtractor:
                                 _lid_data = _prof_data[_lid_start:_lid_start + _lid_count]
                                 _lid_stations_ft = [float(r[0]) for r in _lid_data]
                                 _lid_elevations_ft = [float(r[1]) for r in _lid_data]
-                                # Opening width = station range where lid > 0
-                                _lid_nonzero = [s for s, e in zip(_lid_stations_ft, _lid_elevations_ft) if e > 0.01]
-                                if len(_lid_nonzero) >= 2:
-                                    _bridge_opening_width_ft = float(_lid_nonzero[-1]) - float(_lid_nonzero[0])
+                                # Opening width = station range where bridge deck restricts flow
+                                # Lid profile has deck elevations (high) within channel and
+                                # ground elevations (low) on overbank. The bridge opening is
+                                # where the lid transitions from ground to deck level.
+                                if len(_lid_elevations_ft) >= 2:
+                                    _min_lid = min(_lid_elevations_ft)
+                                    _max_lid = max(_lid_elevations_ft)
+                                    if _max_lid > _min_lid + 1.0:
+                                        # Deck = elevated portion; threshold = midpoint
+                                        _threshold = 0.5 * (_min_lid + _max_lid)
+                                        _deck_stations = [s for s, e in zip(_lid_stations_ft, _lid_elevations_ft) if e >= _threshold]
+                                        if len(_deck_stations) >= 2:
+                                            _bridge_opening_width_ft = float(_deck_stations[-1]) - float(_deck_stations[0])
+                                    else:
+                                        # Uniform elevation — full span is bridge opening
+                                        _lid_nonzero = [s for s, e in zip(_lid_stations_ft, _lid_elevations_ft) if e > 0.01]
+                                        if len(_lid_nonzero) >= 2:
+                                            _bridge_opening_width_ft = float(_lid_nonzero[-1]) - float(_lid_nonzero[0])
                     # Get US approach XS min elevation as Lid Profile offset (relative -> absolute)
                     _us_rs_val = _get_field_s(srow, "US RS") if "US RS" in srow.dtype.names else ""
                     if (_xs_se_info_ds is not None and _xs_se_vals_ds is not None
@@ -772,6 +786,64 @@ class HECRASInputExtractor:
                         except Exception:
                             _lid_offset_ft = 0.0
 
+                    # --- cross_section_reference: map US/DS RS to XS indices ---
+                    _us_rs_str = _get_field_s(srow, "US RS") if "US RS" in srow.dtype.names else ""
+                    _ds_rs_str = _get_field_s(srow, "DS RS") if "DS RS" in srow.dtype.names else ""
+                    _us_xs_idx = None
+                    _ds_xs_idx = None
+                    if _xs_attrs_ds is not None and (_us_rs_str or _ds_rs_str):
+                        _xs_attrs_arr2 = _xs_attrs_ds[...]
+                        for _xi2, _xa2 in enumerate(_xs_attrs_arr2):
+                            _xa_rs2 = _get_field_s(_xa2, "RS") if "RS" in _xa2.dtype.names else ""
+                            if _xa_rs2.strip() == _us_rs_str.strip():
+                                _us_xs_idx = _xi2
+                            if _xa_rs2.strip() == _ds_rs_str.strip():
+                                _ds_xs_idx = _xi2
+
+                    # --- deck_geometry: extract high/low chord from Profile Data ---
+                    _low_chord_ft = None
+                    _high_chord_ft = None
+                    if (_prof_data_ds is not None and _table_info_ds is not None
+                            and i < len(_table_info_ds[...])):
+                        _ti2 = _table_info_ds[...][i]
+                        _ti2_names = _ti2.dtype.names if hasattr(_ti2, "dtype") else ()
+                        # High chord: US BR Weir Profile (road deck surface)
+                        _weir_idx_col = next((n for n in (_ti2_names or ()) if "weir" in n.lower() and "us" in n.lower() and "index" in n.lower()), None)
+                        _weir_cnt_col = next((n for n in (_ti2_names or ()) if "weir" in n.lower() and "us" in n.lower() and "count" in n.lower()), None)
+                        if _weir_idx_col and _weir_cnt_col:
+                            _w_start = int(_ti2[_weir_idx_col])
+                            _w_count = int(_ti2[_weir_cnt_col])
+                            if _w_count > 0 and _w_start + _w_count <= len(_prof_data):
+                                _weir_data = _prof_data[_w_start:_w_start + _w_count]
+                                _high_chord_ft = float(np.min(_weir_data[:, 1]))
+                        # Low chord: max elevation of Lid Profile (bridge deck underside in channel)
+                        if _lid_elevations_ft:
+                            _low_chord_ft = float(max(_lid_elevations_ft))
+
+                    # --- piers summary dict ---
+                    _pier_list = piers_by_sid.get(i, [])
+                    _pier_summary: dict = {}
+                    if _pier_list:
+                        # Pier width from Pier Data (width, height pairs)
+                        _pier_data_ds = self._hdf_get(hdf, "Geometry/Structures/Pier Data")
+                        _total_pier_width_ft = 0.0
+                        if _pier_data_ds is not None:
+                            _pd = _pier_data_ds[...]
+                            # Each pier has US and DS profiles; pier width = first column of profile
+                            _pa_ds = self._hdf_get(hdf, "Geometry/Structures/Pier Attributes")
+                            if _pa_ds is not None:
+                                _pa = _pa_ds[...]
+                                for _pi, _pr in enumerate(_pa):
+                                    if int(_get_field(_pr, "Structure ID", -1)) == i:
+                                        _us_prof_idx = int(_get_field(_pr, "US Profile (Index)", 0))
+                                        _us_prof_cnt = int(_get_field(_pr, "US Profile (Count)", 0))
+                                        if _us_prof_cnt > 0 and _us_prof_idx < len(_pd):
+                                            _total_pier_width_ft += float(_pd[_us_prof_idx][0])
+                        _pier_summary = {
+                            "pier_count": len(_pier_list),
+                            "total_pier_width_ft": _total_pier_width_ft if _total_pier_width_ft > 0 else len(_pier_list) * 1.0,
+                        }
+
                     bridges.append({
                         "structure_id": i,
                         "type": stype,
@@ -783,8 +855,20 @@ class HECRASInputExtractor:
                         "upstream_distance_m": float(up_dist * LF) if not math.isnan(up_dist) else None,
                         "weir_width_ft": float(weir_width) if not math.isnan(weir_width) else None,
                         "weir_width_m": float(weir_width * LF) if not math.isnan(weir_width) else None,
-                        "piers": piers_by_sid.get(i, []),
+                        "piers": _pier_summary if _pier_summary else piers_by_sid.get(i, []),
                         "coefficients": coef_by_sid.get(i, {}),
+                        # cross_section_reference (CLI required)
+                        "cross_section_reference": {
+                            "us_xs_index": _us_xs_idx,
+                            "ds_xs_index": _ds_xs_idx,
+                            "upstream_distance_ft": float(up_dist) if not math.isnan(up_dist) else 30.0,
+                        },
+                        # deck_geometry (CLI required)
+                        "deck_geometry": {
+                            "low_chord_elev_ft": _low_chord_ft,
+                            "high_chord_elev_ft": _high_chord_ft,
+                            "bridge_opening_width_ft": float(weir_width) if not math.isnan(weir_width) else None,
+                        },
                         # Lid Profile (arch intrados) for arch bridge effective area calculation
                         "lid_stations_ft": _lid_stations_ft if _lid_stations_ft else None,
                         "lid_elevations_ft": _lid_elevations_ft if _lid_elevations_ft else None,

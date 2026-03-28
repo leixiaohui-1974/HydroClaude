@@ -3797,6 +3797,61 @@
         ],
         "rs": "5.0"
       }
+    ],
+    "bridges": [
+      {
+        "structure_id": 0,
+        "type": "Bridge",
+        "mode": "",
+        "river": "Beaver Creek",
+        "reach": "Kentwood",
+        "rs": "5.4",
+        "upstream_distance_ft": 30.0,
+        "upstream_distance_m": 9.144,
+        "weir_width_ft": 40.0,
+        "weir_width_m": 12.192,
+        "piers": {
+          "pier_count": 9,
+          "total_pier_width_ft": 11.25
+        },
+        "coefficients": {
+          "method": 0,
+          "low_standard_step": true,
+          "use_momentum": true,
+          "momentum_cd": 2.0,
+          "use_yarnell": true,
+          "yarnell_k": 1.25
+        },
+        "cross_section_reference": {
+          "us_xs_index": 7,
+          "ds_xs_index": 8,
+          "upstream_distance_ft": 30.0
+        },
+        "deck_geometry": {
+          "low_chord_elev_ft": 215.6999969482422,
+          "high_chord_elev_ft": 216.92999267578125,
+          "bridge_opening_width_ft": 40.0
+        },
+        "lid_stations_ft": [
+          0.0,
+          450.0,
+          450.0,
+          647.0,
+          647.0,
+          2000.0
+        ],
+        "lid_elevations_ft": [
+          200.0,
+          200.0,
+          215.6999969482422,
+          215.6999969482422,
+          200.0,
+          200.0
+        ],
+        "lid_offset_ft": 202.6999969482422,
+        "bridge_opening_width_ft": 197.0,
+        "bridge_opening_width_m": 60.0456
+      }
     ]
   },
   "ineffective_areas": [

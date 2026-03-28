@@ -153,6 +153,8 @@ class SteadyProfileSolver:
         self._effective_bank_stations = None
         # 最近一次标准步求解的绝对水位线（用于 encroachment 基准 WSE）
         self._last_wse_profile = None
+        # 最近��次分区 conveyance 计算的 A_total（用于速度水头 V=Q/A）
+        self._last_subdiv_A = 0.0
 
     # Hydraulic geometry helpers
 
@@ -825,6 +827,7 @@ class SteadyProfileSolver:
                 P_bed = max(P - T, 1e-9)
                 n_local = self._compute_sabaneev_nc(n_local, n_ice, P_bed, T)
             K = (1.0 / n_local) * A * max(R, 1e-9) ** (2.0 / 3.0)
+            self._last_subdiv_A = float(A)
             return float(K), 1.0
 
         # 有冰盖时采用整体断面复合糙率，避免分区 K 与冰底阻力耦合不一致
@@ -836,6 +839,7 @@ class SteadyProfileSolver:
                 P_bed = max(P - T, 1e-9)
                 n_local = self._compute_sabaneev_nc(n_local, n_ice, P_bed, T)
             K = (1.0 / max(n_local, 0.001)) * A * max(R, 1e-9) ** (2.0 / 3.0)
+            self._last_subdiv_A = float(A)
             return float(K), 1.0
 
         xs = self._xs
@@ -962,7 +966,178 @@ class SteadyProfileSolver:
         alpha = A_total ** 2 * sum_k3_a2 / K_total ** 3
         alpha = max(alpha, 1.0)
 
+        # 缓存分区 A_total，供能量方程中 V = Q/A_subdiv 使用
+        # （_get_geometry 的 A 包含 eff_limits 外的面积，不适合计算速度水头）
+        self._last_subdiv_A = float(A_total)
+
         return float(K_total), float(alpha)
+
+    def _compute_subdivided_conveyance_detailed(
+        self,
+        h: float,
+        station_index: int,
+    ) -> dict:
+        """Compute detailed subdivided conveyance for diagnostics.
+
+        Returns dict with K/A/P/R per zone (LOB/Ch/ROB) plus alpha and Sf components.
+        """
+        def _n_ch(idx):
+            if self._manning_ns and idx < len(self._manning_ns):
+                v = self._manning_ns[idx]
+                if v and float(v) > 0:
+                    return float(v)
+            return self.n
+
+        def _n_lob(idx):
+            if self._manning_n_lob and idx < len(self._manning_n_lob):
+                v = self._manning_n_lob[idx]
+                if v and float(v) > 0:
+                    return float(v)
+            return _n_ch(idx)
+
+        def _n_rob(idx):
+            if self._manning_n_rob and idx < len(self._manning_n_rob):
+                v = self._manning_n_rob[idx]
+                if v and float(v) > 0:
+                    return float(v)
+            return _n_ch(idx)
+
+        A_total_g, P_total_g, R_total_g, T_total_g = self._get_geometry(h, station_index)
+        result = {
+            "K_total": 0.0, "K_lob": 0.0, "K_ch": 0.0, "K_rob": 0.0,
+            "A_total": A_total_g, "A_lob": 0.0, "A_ch": A_total_g, "A_rob": 0.0,
+            "P_total": P_total_g, "R_total": R_total_g, "T_total": T_total_g,
+            "alpha": 1.0,
+            "n_ch": _n_ch(station_index), "n_lob": _n_lob(station_index), "n_rob": _n_rob(station_index),
+        }
+
+        xs = self._xs
+        if self._xs_array and station_index < len(self._xs_array):
+            xs = self._xs_array[station_index]
+
+        if xs is None or not hasattr(xs, "distances") or not hasattr(xs, "elevations"):
+            K = (1.0 / result["n_ch"]) * A_total_g * max(R_total_g, 1e-9) ** (2.0 / 3.0)
+            result["K_total"] = K
+            result["K_ch"] = K
+            return result
+
+        _banks_ref = self._channel_bank_stations if self._channel_bank_stations else self._bank_stations
+        if not _banks_ref or station_index >= len(_banks_ref):
+            K = (1.0 / result["n_ch"]) * A_total_g * max(R_total_g, 1e-9) ** (2.0 / 3.0)
+            result["K_total"] = K
+            result["K_ch"] = K
+            return result
+
+        left_bank, right_bank = _banks_ref[station_index]
+        if left_bank is None or right_bank is None or float(left_bank) >= float(right_bank):
+            K = (1.0 / result["n_ch"]) * A_total_g * max(R_total_g, 1e-9) ** (2.0 / 3.0)
+            result["K_total"] = K
+            result["K_ch"] = K
+            return result
+
+        stations_arr = np.asarray(xs.distances, dtype=float)
+        elevations_arr = np.asarray(xs.elevations, dtype=float)
+        water_level = float(xs.min_elevation) + max(float(h), 1e-6)
+        sta_min_all = float(np.min(stations_arr))
+        sta_max_all = float(np.max(stations_arr))
+        left_bank = float(left_bank)
+        right_bank = float(right_bank)
+
+        eff_left, eff_right = self._resolve_effective_flow_limits(
+            station_index=station_index,
+            sta_min_all=sta_min_all, sta_max_all=sta_max_all,
+            left_bank=left_bank, right_bank=right_bank,
+            effective_limits=None,
+        )
+
+        _n_segs = None
+        if self._manning_n_segments and station_index < len(self._manning_n_segments):
+            _n_segs = self._manning_n_segments[station_index]
+
+        K_lob, A_lob = 0.0, 0.0
+        if eff_left < left_bank - 1e-6:
+            K_lob, A_lob = self._zone_conveyance(
+                stations_arr, elevations_arr, water_level,
+                sta_min=eff_left, sta_max=left_bank,
+                n=_n_lob(station_index), n_segments=_n_segs)
+        K_ch, A_ch = self._zone_conveyance(
+            stations_arr, elevations_arr, water_level,
+            sta_min=left_bank, sta_max=right_bank,
+            n=_n_ch(station_index), n_segments=_n_segs)
+        K_rob, A_rob = 0.0, 0.0
+        if eff_right > right_bank + 1e-6:
+            K_rob, A_rob = self._zone_conveyance(
+                stations_arr, elevations_arr, water_level,
+                sta_min=right_bank, sta_max=eff_right,
+                n=_n_rob(station_index), n_segments=_n_segs)
+
+        K_total = K_lob + K_ch + K_rob
+        A_total = A_lob + A_ch + A_rob
+
+        # Compute per-zone P and R
+        P_lob, P_ch, P_rob = 0.0, 0.0, 0.0
+        if eff_left < left_bank - 1e-6:
+            _, P_lob = self._segment_area_perimeter(stations_arr, elevations_arr, water_level, eff_left, left_bank)
+        _, P_ch = self._segment_area_perimeter(stations_arr, elevations_arr, water_level, left_bank, right_bank)
+        if eff_right > right_bank + 1e-6:
+            _, P_rob = self._segment_area_perimeter(stations_arr, elevations_arr, water_level, right_bank, eff_right)
+
+        # Alpha
+        alpha_val = 1.0
+        if K_total > 0 and A_total > 0:
+            sum_k3_a2 = 0.0
+            for K_i, A_i in ((K_lob, A_lob), (K_ch, A_ch), (K_rob, A_rob)):
+                if K_i > 0 and A_i > 0:
+                    sum_k3_a2 += K_i ** 3 / A_i ** 2
+            alpha_val = max(A_total ** 2 * sum_k3_a2 / K_total ** 3, 1.0)
+
+        result.update({
+            "K_total": K_total, "K_lob": K_lob, "K_ch": K_ch, "K_rob": K_rob,
+            "A_total": A_total if A_total > 0 else A_total_g,
+            "A_lob": A_lob, "A_ch": A_ch, "A_rob": A_rob,
+            "P_lob": P_lob, "P_ch": P_ch, "P_rob": P_rob,
+            "P_total": P_lob + P_ch + P_rob,
+            "R_lob": A_lob / max(P_lob, 1e-9) if P_lob > 0 else 0.0,
+            "R_ch": A_ch / max(P_ch, 1e-9) if P_ch > 0 else 0.0,
+            "R_rob": A_rob / max(P_rob, 1e-9) if P_rob > 0 else 0.0,
+            "R_total": (A_total if A_total > 0 else A_total_g) / max(P_lob + P_ch + P_rob, 1e-9),
+            "T_total": T_total_g,
+            "alpha": alpha_val,
+        })
+        return result
+
+    def compute_hydraulics_profile(self, result: dict) -> list[dict]:
+        """Compute detailed hydraulics for each XS from a solved profile.
+
+        Args:
+            result: Dictionary returned by solve_standard_step (must contain W, Q, bed, x).
+
+        Returns:
+            List of dicts, one per cross-section, with K/A/P/R/Sf/alpha by zone.
+        """
+        W = np.asarray(result["W"], dtype=float)
+        Q_arr = np.asarray(result["Q"], dtype=float)
+        bed = np.asarray(result["bed"], dtype=float)
+        n_xs = len(W)
+        hydraulics = []
+        for i in range(n_xs):
+            h_i = max(float(W[i] - bed[i]), 0.001)
+            Q_i = float(Q_arr[i])
+            detail = self._compute_subdivided_conveyance_detailed(h_i, i)
+            # Add Sf and velocity
+            K = detail["K_total"]
+            A = detail["A_total"]
+            V = Q_i / max(A, 1e-9)
+            Sf = (Q_i / K) ** 2 if K > 0 else 0.0
+            detail["Sf"] = Sf
+            detail["V"] = V
+            detail["Q"] = Q_i
+            detail["wse"] = float(W[i])
+            detail["bed"] = float(bed[i])
+            detail["depth"] = h_i
+            detail["station_index"] = i
+            hydraulics.append(detail)
+        return hydraulics
 
 
     # Bridge Momentum Method (HEC-RAS Technical Reference Manual Chapter 5)
@@ -2093,10 +2268,41 @@ class SteadyProfileSolver:
                     if _eff_r > float(_rb) + 1e-6:
                         _K_ds_rob, _ = self._zone_conveyance(_sta, _ele, _wl, float(_rb), _eff_r, _n_r)
 
-            # 加权平均 reach length (HEC-RAS TRM 2-3: K-weighted)
-            _K_sum = _K_ds_lob + _K_ds_ch + _K_ds_rob
+            # 加权平均 reach length (HEC-RAS TRM Eq 2-3: discharge-weighted)
+            # 使用上下游平均分区 K 加权（HEC-RAS 用分区 Q 的平均，等价于 K 平均当 Sf 近似相等时）
+            # 上游断面分区 K（用下游 WSE 的初估值）
+            _K_us_lob, _K_us_ch, _K_us_rob = 0.0, K_ds, 0.0
+            if _banks_ref and i < len(_banks_ref):
+                xs_us = self._xs_array[i] if self._xs_array and i < len(self._xs_array) else None
+                if xs_us is not None and hasattr(xs_us, 'distances'):
+                    _lb_u, _rb_u = _banks_ref[i]
+                    _sta_u = np.asarray(xs_us.distances)
+                    _ele_u = np.asarray(xs_us.elevations)
+                    _wl_u = float(xs_us.min_elevation) + h_ds  # 初估用下游水深
+                    _n_l_u = self._manning_n_lob[i] if self._manning_n_lob and i < len(self._manning_n_lob) else self.n
+                    _n_c_u = self._manning_ns[i] if self._manning_ns and i < len(self._manning_ns) else self.n
+                    _n_r_u = self._manning_n_rob[i] if self._manning_n_rob and i < len(self._manning_n_rob) else self.n
+                    _sta_min_u = float(np.min(_sta_u))
+                    _sta_max_u = float(np.max(_sta_u))
+                    _eff_l_u, _eff_r_u = self._resolve_effective_flow_limits(
+                        station_index=i,
+                        sta_min_all=_sta_min_u, sta_max_all=_sta_max_u,
+                        left_bank=float(_lb_u), right_bank=float(_rb_u),
+                        effective_limits=None,
+                    )
+                    if _eff_l_u < float(_lb_u) - 1e-6:
+                        _K_us_lob, _ = self._zone_conveyance(_sta_u, _ele_u, _wl_u, _eff_l_u, float(_lb_u), _n_l_u)
+                    _K_us_ch, _ = self._zone_conveyance(_sta_u, _ele_u, _wl_u, float(_lb_u), float(_rb_u), _n_c_u)
+                    if _eff_r_u > float(_rb_u) + 1e-6:
+                        _K_us_rob, _ = self._zone_conveyance(_sta_u, _ele_u, _wl_u, float(_rb_u), _eff_r_u, _n_r_u)
+
+            # 使用上下游平均分区 K 加权 reach length
+            _Kavg_lob = 0.5 * (_K_ds_lob + _K_us_lob)
+            _Kavg_ch = 0.5 * (_K_ds_ch + _K_us_ch)
+            _Kavg_rob = 0.5 * (_K_ds_rob + _K_us_rob)
+            _K_sum = _Kavg_lob + _Kavg_ch + _Kavg_rob
             if _K_sum > 0:
-                dx_seg = (_K_ds_lob * dx_lob + _K_ds_ch * dx_ch + _K_ds_rob * dx_rob) / _K_sum
+                dx_seg = (_Kavg_lob * dx_lob + _Kavg_ch * dx_ch + _Kavg_rob * dx_rob) / _K_sum
             else:
                 dx_seg = dx_ch
             vh_ds = alpha_ds * V_ds ** 2 / (2.0 * self.g)
@@ -2181,13 +2387,15 @@ class SteadyProfileSolver:
                     # HEC-RAS 默认: Average Conveyance Equation
                     # Sf_avg = ((Q_us + Q_ds) / (K_us + K_ds))^2
                     Sf_avg_r = min(
-                        ((Q_seg_local + Q_seg_local) / max(K_us_r + _K_ds_sub, 1e-9)) ** 2,
+                        ((Q_us_local + Q_ds_local) / max(K_us_r + _K_ds_sub, 1e-9)) ** 2,
                         1.0,
                     )
                     cc_r = self._contraction_coefs[i] if self._contraction_coefs and i < len(self._contraction_coefs) else contraction_coef
                     ec_r = self._expansion_coefs[i]   if self._expansion_coefs   and i < len(self._expansion_coefs)   else expansion_coef
                     h_f_r = dx_sub * Sf_avg_r
-                    h_e_r = cc_r * (vh_us_r - _vh_ds_sub) if vh_us_r > _vh_ds_sub else ec_r * (_vh_ds_sub - vh_us_r)
+                    # HEC-RAS TRM: contraction when velocity increases downstream (vh_ds > vh_us)
+                    # expansion when velocity decreases downstream (vh_us > vh_ds)
+                    h_e_r = ec_r * (vh_us_r - _vh_ds_sub) if vh_us_r > _vh_ds_sub else cc_r * (_vh_ds_sub - vh_us_r)
                     # 残差 = 上游总能量头 - 下游总能量头 - 摩擦损失 - 局部损失
                     return (W_us_val + vh_us_r) - (W_sub_ds + _vh_ds_sub) - h_f_r - h_e_r
 
@@ -2338,9 +2546,9 @@ class SteadyProfileSolver:
                             else self.compute_friction_slope(h_us, Q_seg_local, i)
                         )
                         vh_us = alpha_us * V_us ** 2 / (2.0 * self.g)
-                        # HEC-RAS 默认: Average Conveyance Equation
+                        # HEC-RAS 默认: Average Conveyance Equation (Q_us + Q_ds)
                         Sf_avg = min(
-                            ((Q_seg_local + Q_seg_local) / max(K_us + _K_ds_sub, 1e-9)) ** 2,
+                            ((Q_us_local + Q_ds_local) / max(K_us + _K_ds_sub, 1e-9)) ** 2,
                             1.0,
                         )
                         cc = contraction_coef
@@ -2349,10 +2557,11 @@ class SteadyProfileSolver:
                             cc = self._contraction_coefs[i]
                         if self._expansion_coefs and i < len(self._expansion_coefs):
                             ec = self._expansion_coefs[i]
+                        # HEC-RAS TRM: expansion when vh_us > vh_ds (velocity decreases downstream)
                         if vh_us > _vh_ds_sub:
-                            h_minor = cc * (vh_us - _vh_ds_sub)
+                            h_minor = ec * (vh_us - _vh_ds_sub)
                         else:
-                            h_minor = ec * (_vh_ds_sub - vh_us)
+                            h_minor = cc * (_vh_ds_sub - vh_us)
                         W_new = W_sub_ds + _vh_ds_sub - vh_us + dx_sub * Sf_avg + h_minor
                         # 亚临界解下界：至少等于临界水位（HEC-RAS 混合流默认）
                         W_new = max(W_new, _W_critical_us)
@@ -2381,13 +2590,17 @@ class SteadyProfileSolver:
             if W_trial > _W_MAX or W_trial < bed[i] - 10 or np.isnan(W_trial):
                 W_trial = W[i + 1] + (bed[i] - bed[i + 1])  # follow bed slope
                 _diverge_count += 1
-            # --- Bridge Momentum Method (HEC-RAS TRM Chapter 5) ----------------
-            # Default: Momentum Method; set bridge_method="energy" for legacy mode.
+            # --- Bridge Method Selection (HEC-RAS TRM Chapter 5) ----------------
+            # Always compute momentum. Then decide based on result vs deck elevation:
+            # - W_momentum >= deck: pressure flow → use momentum (correct)
+            # - W_momentum < deck: low flow → momentum overestimates → cap with standard step
             if i in _bridge_at_us:
                 _br = _bridge_at_us[i]
-                _use_momentum = str(_br.get("bridge_method", "momentum")).lower() != "energy"
+                _deck_elev_m = float(_br.get("deck_elevation_m", 1e9))
+                _W_standard = W_trial  # save standard step result before bridge override
+                _use_momentum = True
                 if _use_momentum:
-                    W_trial = self._solve_bridge_momentum(
+                    W_momentum = self._solve_bridge_momentum(
                         Q=Q_seg_local,
                         W_downstream=W[i + 1],
                         bridge=_br,
@@ -2396,6 +2609,13 @@ class SteadyProfileSolver:
                         ds_xs_index=i + 1,
                         us_xs_index=i,
                     )
+                    # Low flow cap: if momentum result is near/below deck, momentum overestimates
+                    # pier drag for free-surface flow. Cap with standard step result.
+                    # 0.15m buffer handles transition zone near deck elevation.
+                    if _deck_elev_m < 1e8 and W_momentum < _deck_elev_m + 0.5:
+                        W_trial = min(_W_standard, W_momentum)
+                    else:
+                        W_trial = W_momentum
                 else:
                     # Legacy Energy Method path
                     _br_len = max(float(_br.get("bridge_length_m", 0.0)), 1.0)
