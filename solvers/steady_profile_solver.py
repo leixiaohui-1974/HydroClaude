@@ -3063,13 +3063,20 @@ class SteadyProfileSolver:
         W_critical = bed_arr + y_c
 
         def _specific_force(W_val: float, idx: int) -> float:
-            """Specific Force：当前几何接口下取 beta=1，y_bar≈A/T。"""
+            """Specific Force M = Q²β/(gA) + A·ȳ, ȳ = centroid depth from surface.
+
+            For a rectangular channel ȳ = y/2 = A/(2T).  This is the standard
+            open-channel textbook definition (Chaudhry, Henderson) and matches
+            HEC-RAS.  Previous code used ȳ = A/T (hydraulic depth), which is
+            2× too large and caused false hydraulic-jump detection at the
+            control section.
+            """
             h_val = max(float(W_val) - bed_arr[idx], 1e-6)
             A, _P, _R, T = self._get_geometry(h_val, idx)
             A = max(float(A), 1e-9)
             T = max(float(T), 1e-9)
             beta_sf = 1.0
-            y_bar = A / T
+            y_bar = A / (2.0 * T)
             return float(Q ** 2 * beta_sf / (self.g * A) + A * y_bar)
 
         def _local_bed_slope(idx: int) -> float:
