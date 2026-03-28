@@ -857,7 +857,10 @@ class Culvert:
             flow_depth = D
         else:
             h_o = max(tw_depth, y_c)
-            flow_depth = min(D, max(y_c, y_n))
+            # HDS-5 非满流: 涵洞内实际流深取尾水/临界/正常水深中最大值,
+            # 但不超过管顶。当尾水高于 y_c/y_n 时, 涵洞内水深由尾水控制,
+            # 流速更低, 损失更小 — 与大涵洞低流量物理一致。
+            flow_depth = min(D, max(tw_depth, y_c, y_n))
 
         A = max(self._area_at_depth(flow_depth), 1e-12)
         R = max(self._hydraulic_radius_at_depth(flow_depth), 1e-12)

@@ -205,24 +205,55 @@ def _build_from_ref(ref: dict):
             _valid_cv.append((_orig_idx, _cv, _rs))
     _valid_cv_sorted = sorted(_valid_cv, key=lambda t: t[2], reverse=True)
 
-    _used_pos: set = set()          # 已被有效RS涵洞占用的跳变位置（防止重复占用）
+    # 构建 XS RS 列表用于直接 RS 匹配
+    _xs_rs_list = ref.get("geometry", {}).get("cross_sections", [])
+    _xs_rs_vals = []
+    for _ii in range(n_xs):
+        _xs_item = _xs_rs_list[_ii] if _ii < len(_xs_rs_list) else {}
+        try:
+            _xs_rs_vals.append(float(_xs_item.get("rs", 0)))
+        except (TypeError, ValueError):
+            _xs_rs_vals.append(0.0)
+
+    _used_pos: set = set()          # 已被有效RS涵洞占用的位置（防止重复占用）
     _cv_idx_map_valid: dict = {}    # 原始索引 -> us_xs_index（仅 RS 有效的涵洞）
 
     for _orig_idx, cv, _rs in _valid_cv_sorted:
         _best_i = None
-        _best_jump = _WSE_JUMP_THRESHOLD    # 只接受超过阈值的跳变
 
-        # 在未被占用的位置中寻找最大正向跳变（上游 WSE 高于下游）
+        # 策略 1: 直接用 RS 匹配最近的上游 XS
+        # 涵洞 RS 应介于两个相邻 XS 的 RS 之间，上游 XS 为 us_xs_index
+        _best_rs_diff = 1e9
         for _i in range(n_xs - 1):
             if _i in _used_pos:
                 continue
-            _jump = _wse0[_i] - _wse0[_i + 1]
-            if _jump > _best_jump:
-                _best_jump = _jump
+            _rs_i = _xs_rs_vals[_i]
+            _rs_next = _xs_rs_vals[_i + 1]
+            # 涵洞 RS 应在 XS[i] 和 XS[i+1] 之间
+            if min(_rs_i, _rs_next) <= _rs <= max(_rs_i, _rs_next):
+                _best_i = _i
+                break
+            # 或者找最近的 XS（RS 差值最小且 RS >= culvert RS）
+            _diff = abs(_rs_i - _rs)
+            if _diff < _best_rs_diff:
+                _best_rs_diff = _diff
                 _best_i = _i
 
+        # 策略 2: RS 匹配失败时，用 WSE 跳变检测
+        if _best_i is None or _best_rs_diff > 0.5:
+            _jump_i = None
+            _best_jump = _WSE_JUMP_THRESHOLD
+            for _i in range(n_xs - 1):
+                if _i in _used_pos:
+                    continue
+                _jump = _wse0[_i] - _wse0[_i + 1]
+                if _jump > _best_jump:
+                    _best_jump = _jump
+                    _jump_i = _i
+            if _jump_i is not None:
+                _best_i = _jump_i
+
         if _best_i is not None:
-            # 通过 WSE 跳变成功定位涵洞上游断面
             _used_pos.add(_best_i)
             _cv_idx_map_valid[_orig_idx] = _best_i
         else:
