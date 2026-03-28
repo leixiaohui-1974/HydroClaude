@@ -984,6 +984,61 @@
         ],
         "rs": "10.00"
       }
+    ],
+    "bridges": [
+      {
+        "structure_id": 0,
+        "type": "Bridge",
+        "mode": "",
+        "river": "Pine Creek",
+        "reach": "Pine Creek",
+        "rs": "10.36",
+        "upstream_distance_ft": 10.0,
+        "upstream_distance_m": 3.048,
+        "weir_width_ft": 50.0,
+        "weir_width_m": 15.24,
+        "piers": {
+          "pier_count": 6,
+          "total_pier_width_ft": 30.0
+        },
+        "coefficients": {
+          "method": 0,
+          "low_standard_step": true,
+          "use_momentum": true,
+          "momentum_cd": 1.3300000429153442,
+          "use_yarnell": false,
+          "yarnell_k": null
+        },
+        "cross_section_reference": {
+          "us_xs_index": 4,
+          "ds_xs_index": 5,
+          "upstream_distance_ft": 10.0
+        },
+        "deck_geometry": {
+          "low_chord_elev_ft": 18.0,
+          "high_chord_elev_ft": 22.0,
+          "bridge_opening_width_ft": 50.0
+        },
+        "lid_stations_ft": [
+          0.0,
+          865.4000244140625,
+          865.4000244140625,
+          1515.4000244140625,
+          1515.4000244140625,
+          3000.0
+        ],
+        "lid_elevations_ft": [
+          0.0,
+          0.0,
+          18.0,
+          18.0,
+          0.0,
+          0.0
+        ],
+        "lid_offset_ft": 4.46999979019165,
+        "bridge_opening_width_ft": 650.0,
+        "bridge_opening_width_m": 198.12
+      }
     ]
   },
   "ineffective_areas": [
