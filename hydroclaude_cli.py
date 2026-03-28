@@ -622,6 +622,20 @@ def _run_profile(  # noqa: C901
             }
             sv._inline_structures = [inline_param]
 
+        # Floodway Encroachment: 从 profile 读取预计算的 encroachment stations
+        _enc_stations = profile.get("encroachment_stations")
+        if _enc_stations and len(_enc_stations) == n_xs:
+            _eff_banks = []
+            for _enc in _enc_stations:
+                if _enc and isinstance(_enc, dict):
+                    _eff_banks.append((
+                        float(_enc.get("left_station_m", 0)),
+                        float(_enc.get("right_station_m", 1e9)),
+                    ))
+                else:
+                    _eff_banks.append(None)
+            sv._effective_bank_stations = _eff_banks
+
         r0 = sv.solve_without_structures(Q=Q, h_downstream=hd)
         errs0 = [abs(float(r0["W"][i]) - wr[i]) for i in range(n_xs)]
         return r0, wr, errs0, Q, profile["name"]

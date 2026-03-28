@@ -2673,15 +2673,18 @@ class SteadyProfileSolver:
             # --- Culvert (HDS-5) ------------------------------------------------
             if i in _culvert_at_us:
                 _cv_list = _culvert_at_us[i]
+                _W_open_channel = W_trial  # 保存标准步结果（开放水面回水）
                 if len(_cv_list) == 1:
-                    W_trial = self._solve_culvert(
+                    _W_culvert = self._solve_culvert(
                         Q=Q_seg_local, W_downstream=W[i + 1],
                         culvert_dict=_cv_list[0], bed_us=bed[i])
                 else:
-                    # 并联涵洞（Multiple Culverts）：各涵洞共同分担总流量
-                    W_trial = self._solve_culverts_parallel(
+                    _W_culvert = self._solve_culverts_parallel(
                         Q=Q_seg_local, W_downstream=W[i + 1],
                         culvert_list=_cv_list, bed_us=bed[i])
+                # HEC-RAS 逻辑：涵洞壅水仅在高于开放水面时生效
+                # 低流量时涵洞不是瓶颈，标准步回水更高 → 用标准步结果
+                W_trial = max(_W_culvert, _W_open_channel)
                 W_trial = max(W_trial, bed[i] + 1e-4)
                 W_trial = min(W_trial, _W_MAX)
             # --- Inline Structure (gate + weir) ---------------------------------
